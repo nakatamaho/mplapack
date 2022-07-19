@@ -14,8 +14,8 @@ The following parameter values will be used:
     ISHFTS:      1     2     4     2     1
     IACC22:      0     1     2     0     1
  
- Relative machine underflow is taken to be+6.4447927660133239e-1292913987
- Relative machine overflow  is taken to be+1.5516402719316431e+1292913986
+ Relative machine underflow is taken to be+1.1353231052007463e-646456993
+ Relative machine overflow  is taken to be+8.8080652584198168e+646456992
  Relative machine precision is taken to be+7.4583407312002067e-155
 
  Routines pass computational tests if test ratio is less than+2.0000000000000000e+01
@@ -56,3 +56,119 @@ The following parameter values will be used:
  Matrix order=    5, type=11, seed=   0,   0,   0,   1, result   4 is +3.6946678112090625e+01
  Matrix order=    5, type=11, seed=   0,   0,   0,   1, result   5 is +2.8986222308038739e+01
  Matrix order=    5, type=11, seed=   0,   0,   0,   1, result   6 is +3.6669615818653463e+01
+ DHS:    4 out of  1764 tests failed to pass the threshold
+
+
+ NEP:  NB =   3, NBMIN =   2, NX =   0, INMIN=  12, INWIN =   3, INIBL =   5, ISHFTS =   2, IACC22 =   1
+
+ DHS -- Real Non-symmetric eigenvalue problem
+ Matrix types (see xCHKHS for details): 
+
+ Special Matrices:
+  1=Zero matrix.                          5=Diagonal: geometr. spaced entries.
+  2=Identity matrix.                      6=Diagonal: clustered entries.
+  3=Transposed Jordan block.              7=Diagonal: large, evenly spaced.
+  4=Diagonal: evenly spaced entries.      8=Diagonal: small, evenly spaced.
+ Dense, Non-Symmetric Matrices:
+  9=Well-cond., evenly spaced eigenvals. 14=Ill-cond., geomet. spaced eigenals.
+ 10=Well-cond., geom. spaced eigenvals.  15=Ill-conditioned, clustered e.vals.
+ 11=Well-conditioned, clustered e.vals.  16=Ill-cond., random complex pairs 
+ 12=Well-cond., random complex pairs     17=Ill-cond., large rand. complx prs.
+ 13=Ill-conditioned, evenly spaced.      18=Ill-cond., small rand. complx prs.
+ 19=Matrix with random O(1) entries.     21=Matrix with small random entries.
+ 20=Matrix with large random entries.   
+
+ Tests performed:   (H is Hessenberg, T is Schur, U and Z are orthogonal,
+                    '=transpose, W is a diagonal matrix of eigenvalues,
+                    L and R are the left and right eigenvector matrices)
+  1 = | A - U H U' | / ( |A| n ulp )           2 = | I - U U' | / ( n ulp )
+  3 = | H - Z T Z' | / ( |H| n ulp )           4 = | I - Z Z' | / ( n ulp )
+  5 = | A - UZ T (UZ)' | / ( |A| n ulp )       6 = | I - UZ (UZ)' | / ( n ulp )
+  7 = | T(e.vects.) - T(no e.vects.) | / ( |T| ulp )
+  8 = | W(e.vects.) - W(no e.vects.) | / ( |W| ulp )
+  9 = | TR - RW | / ( |T| |R| ulp )      10 = | LT - WL | / ( |T| |L| ulp )
+ 11= |HX - XW| / (|H| |X| ulp)  (inv.it) 12= |YH - WY| / (|H| |Y| ulp)  (inv.it)
+ Matrix order=    5, type=10, seed=   0,   0,   0,   1, result   3 is +2.8881008998707797e+01
+ Matrix order=    5, type=10, seed=   0,   0,   0,   1, result   4 is +3.6985192988183636e+01
+ Matrix order=    5, type=10, seed=   0,   0,   0,   1, result   5 is +3.2098210601516626e+01
+ Matrix order=    5, type=10, seed=   0,   0,   0,   1, result   6 is +3.6882138561899771e+01
+ DHS:    4 out of  1764 tests failed to pass the threshold
+
+
+ NEP:  NB =   3, NBMIN =   2, NX =   5, INMIN=  11, INWIN =   5, INIBL =   7, ISHFTS =   4, IACC22 =   2
+
+ All tests for DHS passed the threshold (  1764 tests run)
+
+
+ NEP:  NB =   3, NBMIN =   2, NX =   9, INMIN=  15, INWIN =   3, INIBL =   3, ISHFTS =   2, IACC22 =   0
+
+ DHS -- Real Non-symmetric eigenvalue problem
+ Matrix types (see xCHKHS for details): 
+
+ Special Matrices:
+  1=Zero matrix.                          5=Diagonal: geometr. spaced entries.
+  2=Identity matrix.                      6=Diagonal: clustered entries.
+  3=Transposed Jordan block.              7=Diagonal: large, evenly spaced.
+  4=Diagonal: evenly spaced entries.      8=Diagonal: small, evenly spaced.
+ Dense, Non-Symmetric Matrices:
+  9=Well-cond., evenly spaced eigenvals. 14=Ill-cond., geomet. spaced eigenals.
+ 10=Well-cond., geom. spaced eigenvals.  15=Ill-conditioned, clustered e.vals.
+ 11=Well-conditioned, clustered e.vals.  16=Ill-cond., random complex pairs 
+ 12=Well-cond., random complex pairs     17=Ill-cond., large rand. complx prs.
+ 13=Ill-conditioned, evenly spaced.      18=Ill-cond., small rand. complx prs.
+ 19=Matrix with random O(1) entries.     21=Matrix with small random entries.
+ 20=Matrix with large random entries.   
+
+ Tests performed:   (H is Hessenberg, T is Schur, U and Z are orthogonal,
+                    '=transpose, W is a diagonal matrix of eigenvalues,
+                    L and R are the left and right eigenvector matrices)
+  1 = | A - U H U' | / ( |A| n ulp )           2 = | I - U U' | / ( n ulp )
+  3 = | H - Z T Z' | / ( |H| n ulp )           4 = | I - Z Z' | / ( n ulp )
+  5 = | A - UZ T (UZ)' | / ( |A| n ulp )       6 = | I - UZ (UZ)' | / ( n ulp )
+  7 = | T(e.vects.) - T(no e.vects.) | / ( |T| ulp )
+  8 = | W(e.vects.) - W(no e.vects.) | / ( |W| ulp )
+  9 = | TR - RW | / ( |T| |R| ulp )      10 = | LT - WL | / ( |T| |L| ulp )
+ 11= |HX - XW| / (|H| |X| ulp)  (inv.it) 12= |YH - WY| / (|H| |Y| ulp)  (inv.it)
+ Matrix order=    5, type=10, seed=   0,   0,   0,   1, result   3 is +2.8921736583014551e+01
+ DHS:    1 out of  1764 tests failed to pass the threshold
+
+
+ NEP:  NB =  20, NBMIN =   2, NX =   1, INMIN=  11, INWIN =   2, INIBL = 200, ISHFTS =   1, IACC22 =   1
+
+ DHS -- Real Non-symmetric eigenvalue problem
+ Matrix types (see xCHKHS for details): 
+
+ Special Matrices:
+  1=Zero matrix.                          5=Diagonal: geometr. spaced entries.
+  2=Identity matrix.                      6=Diagonal: clustered entries.
+  3=Transposed Jordan block.              7=Diagonal: large, evenly spaced.
+  4=Diagonal: evenly spaced entries.      8=Diagonal: small, evenly spaced.
+ Dense, Non-Symmetric Matrices:
+  9=Well-cond., evenly spaced eigenvals. 14=Ill-cond., geomet. spaced eigenals.
+ 10=Well-cond., geom. spaced eigenvals.  15=Ill-conditioned, clustered e.vals.
+ 11=Well-conditioned, clustered e.vals.  16=Ill-cond., random complex pairs 
+ 12=Well-cond., random complex pairs     17=Ill-cond., large rand. complx prs.
+ 13=Ill-conditioned, evenly spaced.      18=Ill-cond., small rand. complx prs.
+ 19=Matrix with random O(1) entries.     21=Matrix with small random entries.
+ 20=Matrix with large random entries.   
+
+ Tests performed:   (H is Hessenberg, T is Schur, U and Z are orthogonal,
+                    '=transpose, W is a diagonal matrix of eigenvalues,
+                    L and R are the left and right eigenvector matrices)
+  1 = | A - U H U' | / ( |A| n ulp )           2 = | I - U U' | / ( n ulp )
+  3 = | H - Z T Z' | / ( |H| n ulp )           4 = | I - Z Z' | / ( n ulp )
+  5 = | A - UZ T (UZ)' | / ( |A| n ulp )       6 = | I - UZ (UZ)' | / ( n ulp )
+  7 = | T(e.vects.) - T(no e.vects.) | / ( |T| ulp )
+  8 = | W(e.vects.) - W(no e.vects.) | / ( |W| ulp )
+  9 = | TR - RW | / ( |T| |R| ulp )      10 = | LT - WL | / ( |T| |L| ulp )
+ 11= |HX - XW| / (|H| |X| ulp)  (inv.it) 12= |YH - WY| / (|H| |Y| ulp)  (inv.it)
+ Matrix order=    5, type=10, seed=   0,   0,   0,   1, result   3 is +2.9468159223700417e+01
+ Matrix order=    5, type=10, seed=   0,   0,   0,   1, result   5 is +2.3204325934951800e+01
+ Matrix order=    5, type=11, seed=   0,   0,   0,   1, result   3 is +2.1839297710840062e+01
+ Matrix order=    5, type=11, seed=   0,   0,   0,   1, result   5 is +2.2707971143859746e+01
+ DHS:    4 out of  1764 tests failed to pass the threshold
+
+
+ End of tests
+ Total time used =        84.00 seconds
+

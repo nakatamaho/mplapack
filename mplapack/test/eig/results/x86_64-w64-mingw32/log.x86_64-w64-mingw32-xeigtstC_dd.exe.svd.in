@@ -28,20 +28,6 @@ The following parameter values will be used:
 
  SVD:  NB =   1, NBMIN =   2, NX =   1, NRHS =   2
 
- All tests for CBD routines passed the threshold (   4085 tests run)
-
- All tests for ZBD drivers  passed the threshold (  14340 tests run)
-
-
- SVD:  NB =   3, NBMIN =   2, NX =   0, NRHS =   0
-
- All tests for CBD routines passed the threshold (   4085 tests run)
-
- All tests for ZBD drivers  passed the threshold (  14340 tests run)
-
-
- SVD:  NB =   3, NBMIN =   2, NX =   5, NRHS =   2
-
  CBD -- Complex Singular Value Decomposition
  Matrix types (see xCHKBD for details):
  Diagonal matrices:
@@ -96,8 +82,22 @@ The following parameter values will be used:
   33: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
   34: norm( S - S1 )      / ( norm(S) ulp ), where S1 is computed
                                              without computing U and V'
- M=   40, N=   40, type 16, seed=   0,   0,   0,   1, test(10)=7.2057594037927936e+18
+ M=   30, N=   40, type 16, seed=   0,   0,   0,   1, test(10)=5.9029581035870565e+22
  CBD:      1 out of   4085 tests failed to pass the threshold
+
+ All tests for ZBD drivers  passed the threshold (  14340 tests run)
+
+
+ SVD:  NB =   3, NBMIN =   2, NX =   0, NRHS =   0
+
+ All tests for CBD routines passed the threshold (   4085 tests run)
+
+ All tests for ZBD drivers  passed the threshold (  14340 tests run)
+
+
+ SVD:  NB =   3, NBMIN =   2, NX =   5, NRHS =   2
+
+ All tests for CBD routines passed the threshold (   4085 tests run)
 
  All tests for ZBD drivers  passed the threshold (  14340 tests run)
 
@@ -158,7 +158,7 @@ The following parameter values will be used:
   33: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
   34: norm( S - S1 )      / ( norm(S) ulp ), where S1 is computed
                                              without computing U and V'
- M=   10, N=   10, type 16, seed=   0,   0,   0,   1, test(10)=1.5845632502852868e+31
+ M=   10, N=   16, type 16, seed=   0,   0,   0,   1, test(10)=1.5845632502852868e+31
  CBD:      1 out of   4085 tests failed to pass the threshold
 
  All tests for ZBD drivers  passed the threshold (  14340 tests run)
@@ -172,5 +172,5 @@ The following parameter values will be used:
 
 
  End of tests
- Total time used =       119.00 seconds
+ Total time used =       170.00 seconds
 

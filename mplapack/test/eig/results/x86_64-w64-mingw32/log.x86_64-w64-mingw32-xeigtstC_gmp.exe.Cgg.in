@@ -13,8 +13,8 @@ The following parameter values will be used:
     IACC22:      1     2     1     2
     NBCOL:    40    40     2     2
  
- Relative machine underflow is taken to be+6.4447927660133239e-1292913987
- Relative machine overflow  is taken to be+1.5516402719316431e+1292913986
+ Relative machine underflow is taken to be+1.1353231052007463e-646456993
+ Relative machine overflow  is taken to be+8.8080652584198168e+646456992
  Relative machine precision is taken to be+7.4583407312002067e-155
 
  Routines pass computational tests if test ratio is less than+2.0000000000000000e+01
@@ -23,3 +23,25 @@ The following parameter values will be used:
 
 
  ZGG:  NB =   1, NBMIN =  40, NS =   2, MAXB =  40, IACC22 =   1, NBCOL =  40
+
+ All tests for ZGG passed the threshold (  2184 tests run)
+
+
+ ZGG:  NB =   1, NBMIN =  40, NS =   4, MAXB =  40, IACC22 =   2, NBCOL =  40
+
+ All tests for ZGG passed the threshold (  2184 tests run)
+
+
+ ZGG:  NB =   2, NBMIN =   2, NS =   2, MAXB =   2, IACC22 =   1, NBCOL =   2
+
+ All tests for ZGG passed the threshold (  2184 tests run)
+
+
+ ZGG:  NB =   2, NBMIN =   2, NS =   4, MAXB =   2, IACC22 =   2, NBCOL =   2
+
+ All tests for ZGG passed the threshold (  2184 tests run)
+
+
+ End of tests
+ Total time used =        44.00 seconds
+

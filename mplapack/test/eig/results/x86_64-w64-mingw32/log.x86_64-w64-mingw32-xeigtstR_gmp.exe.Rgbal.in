@@ -1,5 +1,5 @@
  .. test output of Rggbal .. 
- value of largest test error            = +4.4585636310967910e+15
+ value of largest test error            = +4.5035996273704960e+15
  example number where info is not zero  =    0
  example number where ILO or IHI wrong  =    0
  example number having largest error    =    7

@@ -12,8 +12,8 @@ The following parameter values will be used:
     NX:        1     0     5     9     1
     NS:        2     0     2     2     2
  
- Relative machine underflow is taken to be+6.4447927660133239e-1292913987
- Relative machine overflow  is taken to be+1.5516402719316431e+1292913986
+ Relative machine underflow is taken to be+1.1353231052007463e-646456993
+ Relative machine overflow  is taken to be+8.8080652584198168e+646456992
  Relative machine precision is taken to be+7.4583407312002067e-155
 
  Routines pass computational tests if test ratio is less than+5.0000000000000000e+01
@@ -27,7 +27,7 @@ The following parameter values will be used:
 
 
  SVD:  NB =   1, NBMIN =   2, NX =   1, NRHS =   2
- Rchkbd: Rbdsvdx(vects,A) returned INFO=     7.
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
          M=     3, N=     3, JTYPE=     2, ISEED=(    0,    0,    0,    1)
 
  DBD -- Real Singular Value Decomposition
@@ -84,22 +84,1361 @@ The following parameter values will be used:
   33: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
   34: norm( S - S1 )      / ( norm(S) ulp ), where S1 is computed
                                              without computing U and V'
- M=    3, N=    3, type  2, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
- Rchkbd: Rbdsvdx(vects,A) returned INFO=     7.
+ M=    3, N=    3, type  2, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
          M=     3, N=     3, JTYPE=     3, ISEED=(    0,    0,    0,    1)
- M=    3, N=    3, type  3, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
- Rchkbd: Rbdsvdx(vects,A) returned INFO=     7.
+ M=    3, N=    3, type  3, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
          M=     3, N=     3, JTYPE=     4, ISEED=(    0,    0,    0,    1)
- M=    3, N=    3, type  4, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
- Rchkbd: Rbdsvdx(vects,A) returned INFO=     7.
+ M=    3, N=    3, type  4, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
          M=     3, N=     3, JTYPE=     5, ISEED=(    0,    0,    0,    1)
- M=    3, N=    3, type  5, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
- Rchkbd: Rbdsvdx(vects,A) returned INFO=     7.
-         M=     3, N=     3, JTYPE=     7, ISEED=(    0,    0,    0,    1)
- M=    3, N=    3, type  7, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
- Rchkbd: Rbdsvdx(vects,A) returned INFO=     7.
+ M=    3, N=    3, type  5, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
          M=     3, N=     3, JTYPE=     8, ISEED=(    0,    0,    0,    1)
- M=    3, N=    3, type  8, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
- Rchkbd: Rbdsvdx(vects,A) returned INFO=     7.
-         M=     3, N=     3, JTYPE=     9, ISEED=(    0,    0,    0,    1)
- M=    3, N=    3, type  9, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ M=    3, N=    3, type  8, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=     3, N=     3, JTYPE=    13, ISEED=(    0,    0,    0,    1)
+ M=    3, N=    3, type 13, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=    10, N=    10, JTYPE=     2, ISEED=(    0,    0,    0,    1)
+ M=   10, N=   10, type  2, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    21.
+         M=    10, N=    10, JTYPE=     3, ISEED=(    0,    0,    0,    1)
+ M=   10, N=   10, type  3, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    21.
+         M=    10, N=    10, JTYPE=     4, ISEED=(    0,    0,    0,    1)
+ M=   10, N=   10, type  4, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    21.
+         M=    10, N=    10, JTYPE=     5, ISEED=(    0,    0,    0,    1)
+ M=   10, N=   10, type  5, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=    10, N=    10, JTYPE=     8, ISEED=(    0,    0,    0,    1)
+ M=   10, N=   10, type  8, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=    10, N=    10, JTYPE=    13, ISEED=(    0,    0,    0,    1)
+ M=   10, N=   10, type 13, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ M=   10, N=   10, type 15, seed=   0,   0,   0,   1, test( 9)=+5.3968978062851441e+01
+ M=   10, N=   10, type 15, seed=   0,   0,   0,   1, test(19)=+5.3968978062851441e+01
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=    10, N=    16, JTYPE=     2, ISEED=(    0,    0,    0,    1)
+ M=   10, N=   16, type  2, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    21.
+         M=    10, N=    16, JTYPE=     3, ISEED=(    0,    0,    0,    1)
+ M=   10, N=   16, type  3, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    21.
+         M=    10, N=    16, JTYPE=     4, ISEED=(    0,    0,    0,    1)
+ M=   10, N=   16, type  4, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    21.
+         M=    10, N=    16, JTYPE=     5, ISEED=(    0,    0,    0,    1)
+ M=   10, N=   16, type  5, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=    10, N=    16, JTYPE=     8, ISEED=(    0,    0,    0,    1)
+ M=   10, N=   16, type  8, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=    10, N=    16, JTYPE=    13, ISEED=(    0,    0,    0,    1)
+ M=   10, N=   16, type 13, seed=   0,   0,   0,   1, test(19)=+5.0093826586761894e+01
+ M=   10, N=   16, type 13, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ M=   10, N=   16, type 14, seed=   0,   0,   0,   1, test(19)=+5.6332866452229741e+01
+ M=   10, N=   16, type 15, seed=   0,   0,   0,   1, test( 9)=+5.6848533697759036e+01
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=    16, N=    10, JTYPE=     2, ISEED=(    0,    0,    0,    1)
+ M=   16, N=   10, type  2, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    21.
+         M=    16, N=    10, JTYPE=     3, ISEED=(    0,    0,    0,    1)
+ M=   16, N=   10, type  3, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    21.
+         M=    16, N=    10, JTYPE=     4, ISEED=(    0,    0,    0,    1)
+ M=   16, N=   10, type  4, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    21.
+         M=    16, N=    10, JTYPE=     5, ISEED=(    0,    0,    0,    1)
+ M=   16, N=   10, type  5, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=    16, N=    10, JTYPE=     8, ISEED=(    0,    0,    0,    1)
+ M=   16, N=   10, type  8, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=    16, N=    10, JTYPE=    13, ISEED=(    0,    0,    0,    1)
+ M=   16, N=   10, type 13, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=    16, N=    16, JTYPE=     2, ISEED=(    0,    0,    0,    1)
+ M=   16, N=   16, type  2, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    33.
+         M=    16, N=    16, JTYPE=     3, ISEED=(    0,    0,    0,    1)
+ M=   16, N=   16, type  3, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    33.
+         M=    16, N=    16, JTYPE=     4, ISEED=(    0,    0,    0,    1)
+ M=   16, N=   16, type  4, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    33.
+         M=    16, N=    16, JTYPE=     5, ISEED=(    0,    0,    0,    1)
+ M=   16, N=   16, type  5, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=    16, N=    16, JTYPE=     8, ISEED=(    0,    0,    0,    1)
+ M=   16, N=   16, type  8, seed=   0,   0,   0,   1, test( 9)=+6.1059473174333627e+01
+ M=   16, N=   16, type  8, seed=   0,   0,   0,   1, test(19)=+6.1059473174333627e+01
+ M=   16, N=   16, type  8, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ M=   16, N=   16, type 11, seed=   0,   0,   0,   1, test( 9)=+5.7754825513947893e+01
+ M=   16, N=   16, type 11, seed=   0,   0,   0,   1, test(19)=+5.7754825513947893e+01
+ M=   16, N=   16, type 12, seed=   0,   0,   0,   1, test( 9)=+6.0971138869302573e+01
+ M=   16, N=   16, type 12, seed=   0,   0,   0,   1, test(19)=+6.0971138869302573e+01
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=    16, N=    16, JTYPE=    13, ISEED=(    0,    0,    0,    1)
+ M=   16, N=   16, type 13, seed=   0,   0,   0,   1, test( 9)=+7.4592341791384298e+01
+ M=   16, N=   16, type 13, seed=   0,   0,   0,   1, test(19)=+7.4592341791384298e+01
+ M=   16, N=   16, type 13, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ M=   16, N=   16, type 14, seed=   0,   0,   0,   1, test( 9)=+6.1899981921821289e+01
+ M=   16, N=   16, type 14, seed=   0,   0,   0,   1, test(19)=+6.1899981921821289e+01
+ M=   16, N=   16, type 15, seed=   0,   0,   0,   1, test( 9)=+6.5250991631504212e+01
+ M=   16, N=   16, type 15, seed=   0,   0,   0,   1, test(19)=+6.5250991631504212e+01
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=    30, N=    30, JTYPE=     2, ISEED=(    0,    0,    0,    1)
+ M=   30, N=   30, type  2, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    61.
+         M=    30, N=    30, JTYPE=     3, ISEED=(    0,    0,    0,    1)
+ M=   30, N=   30, type  3, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    61.
+         M=    30, N=    30, JTYPE=     4, ISEED=(    0,    0,    0,    1)
+ M=   30, N=   30, type  4, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    61.
+         M=    30, N=    30, JTYPE=     5, ISEED=(    0,    0,    0,    1)
+ M=   30, N=   30, type  5, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=    30, N=    30, JTYPE=     8, ISEED=(    0,    0,    0,    1)
+ M=   30, N=   30, type  8, seed=   0,   0,   0,   1, test( 9)=+1.2108486615098261e+02
+ M=   30, N=   30, type  8, seed=   0,   0,   0,   1, test(19)=+1.0054887223568194e+02
+ M=   30, N=   30, type  8, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ M=   30, N=   30, type 11, seed=   0,   0,   0,   1, test( 9)=+1.0623053252132901e+02
+ M=   30, N=   30, type 11, seed=   0,   0,   0,   1, test(19)=+9.0277104476225643e+01
+ M=   30, N=   30, type 12, seed=   0,   0,   0,   1, test( 9)=+1.3030790261615070e+02
+ M=   30, N=   30, type 12, seed=   0,   0,   0,   1, test(19)=+1.0476457620641434e+02
+ M=   30, N=   30, type 13, seed=   0,   0,   0,   1, test( 9)=+1.3017132578774031e+02
+ M=   30, N=   30, type 13, seed=   0,   0,   0,   1, test(19)=+1.0679842790167894e+02
+ M=   30, N=   30, type 14, seed=   0,   0,   0,   1, test( 9)=+1.2187988769649136e+02
+ M=   30, N=   30, type 14, seed=   0,   0,   0,   1, test(19)=+1.0729848979253176e+02
+ M=   30, N=   30, type 15, seed=   0,   0,   0,   1, test( 9)=+1.4433032075532125e+02
+ M=   30, N=   30, type 15, seed=   0,   0,   0,   1, test(19)=+1.2885541048645406e+02
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=    30, N=    40, JTYPE=     2, ISEED=(    0,    0,    0,    1)
+ M=   30, N=   40, type  2, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    61.
+         M=    30, N=    40, JTYPE=     3, ISEED=(    0,    0,    0,    1)
+ M=   30, N=   40, type  3, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    61.
+         M=    30, N=    40, JTYPE=     4, ISEED=(    0,    0,    0,    1)
+ M=   30, N=   40, type  4, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    61.
+         M=    30, N=    40, JTYPE=     5, ISEED=(    0,    0,    0,    1)
+ M=   30, N=   40, type  5, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=    30, N=    40, JTYPE=     8, ISEED=(    0,    0,    0,    1)
+ M=   30, N=   40, type  8, seed=   0,   0,   0,   1, test( 9)=+1.0609247520113578e+02
+ M=   30, N=   40, type  8, seed=   0,   0,   0,   1, test(19)=+1.2045626177136404e+02
+ M=   30, N=   40, type  8, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ M=   30, N=   40, type 10, seed=   0,   0,   0,   1, test( 9)=+5.0208461343718125e+01
+ M=   30, N=   40, type 11, seed=   0,   0,   0,   1, test( 9)=+1.0948162092450433e+02
+ M=   30, N=   40, type 11, seed=   0,   0,   0,   1, test(19)=+1.1170879647862145e+02
+ M=   30, N=   40, type 12, seed=   0,   0,   0,   1, test( 9)=+1.0815897547796539e+02
+ M=   30, N=   40, type 12, seed=   0,   0,   0,   1, test(19)=+1.1764292535539773e+02
+ M=   30, N=   40, type 13, seed=   0,   0,   0,   1, test( 9)=+1.2962469169771496e+02
+ M=   30, N=   40, type 13, seed=   0,   0,   0,   1, test(19)=+1.2632983968801705e+02
+ M=   30, N=   40, type 14, seed=   0,   0,   0,   1, test( 9)=+1.1350189299639061e+02
+ M=   30, N=   40, type 14, seed=   0,   0,   0,   1, test(19)=+1.2958599565504698e+02
+ M=   30, N=   40, type 15, seed=   0,   0,   0,   1, test( 9)=+1.3425600018183925e+02
+ M=   30, N=   40, type 15, seed=   0,   0,   0,   1, test(19)=+1.2873344917506460e+02
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=    40, N=    30, JTYPE=     2, ISEED=(    0,    0,    0,    1)
+ M=   40, N=   30, type  2, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    61.
+         M=    40, N=    30, JTYPE=     3, ISEED=(    0,    0,    0,    1)
+ M=   40, N=   30, type  3, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    61.
+         M=    40, N=    30, JTYPE=     4, ISEED=(    0,    0,    0,    1)
+ M=   40, N=   30, type  4, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    61.
+         M=    40, N=    30, JTYPE=     5, ISEED=(    0,    0,    0,    1)
+ M=   40, N=   30, type  5, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=    40, N=    30, JTYPE=     8, ISEED=(    0,    0,    0,    1)
+ M=   40, N=   30, type  8, seed=   0,   0,   0,   1, test( 9)=+1.1317130893011073e+02
+ M=   40, N=   30, type  8, seed=   0,   0,   0,   1, test(19)=+9.4268403873237132e+01
+ M=   40, N=   30, type  8, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ M=   40, N=   30, type 11, seed=   0,   0,   0,   1, test( 9)=+1.0993848915233445e+02
+ M=   40, N=   30, type 11, seed=   0,   0,   0,   1, test(19)=+9.1054562539823649e+01
+ M=   40, N=   30, type 12, seed=   0,   0,   0,   1, test( 9)=+1.2385381012102495e+02
+ M=   40, N=   30, type 12, seed=   0,   0,   0,   1, test(19)=+1.0214795702270645e+02
+ M=   40, N=   30, type 13, seed=   0,   0,   0,   1, test( 9)=+1.4713598336801324e+02
+ M=   40, N=   30, type 13, seed=   0,   0,   0,   1, test(19)=+1.3215803851975871e+02
+ M=   40, N=   30, type 14, seed=   0,   0,   0,   1, test( 9)=+1.3269979771570375e+02
+ M=   40, N=   30, type 14, seed=   0,   0,   0,   1, test(19)=+1.1928229353413273e+02
+ M=   40, N=   30, type 15, seed=   0,   0,   0,   1, test( 9)=+1.1615049840364351e+02
+ M=   40, N=   30, type 15, seed=   0,   0,   0,   1, test(19)=+1.0401689123717792e+02
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=    40, N=    40, JTYPE=     2, ISEED=(    0,    0,    0,    1)
+ M=   40, N=   40, type  2, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    81.
+         M=    40, N=    40, JTYPE=     3, ISEED=(    0,    0,    0,    1)
+ M=   40, N=   40, type  3, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    81.
+         M=    40, N=    40, JTYPE=     4, ISEED=(    0,    0,    0,    1)
+ M=   40, N=   40, type  4, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    81.
+         M=    40, N=    40, JTYPE=     5, ISEED=(    0,    0,    0,    1)
+ M=   40, N=   40, type  5, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=    40, N=    40, JTYPE=     8, ISEED=(    0,    0,    0,    1)
+ M=   40, N=   40, type  8, seed=   0,   0,   0,   1, test( 9)=+1.6031766640674516e+02
+ M=   40, N=   40, type  8, seed=   0,   0,   0,   1, test(19)=+1.3496249904880474e+02
+ M=   40, N=   40, type  8, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ M=   40, N=   40, type 10, seed=   0,   0,   0,   1, test( 9)=+7.8942110594096849e+01
+ M=   40, N=   40, type 11, seed=   0,   0,   0,   1, test( 9)=+1.3574156415292850e+02
+ M=   40, N=   40, type 11, seed=   0,   0,   0,   1, test(19)=+1.1590738215216922e+02
+ M=   40, N=   40, type 12, seed=   0,   0,   0,   1, test( 9)=+1.4800829706373584e+02
+ M=   40, N=   40, type 12, seed=   0,   0,   0,   1, test(19)=+1.1452294337913609e+02
+ M=   40, N=   40, type 13, seed=   0,   0,   0,   1, test( 9)=+1.4335952272183157e+02
+ M=   40, N=   40, type 13, seed=   0,   0,   0,   1, test(19)=+1.2714895428658922e+02
+ M=   40, N=   40, type 14, seed=   0,   0,   0,   1, test( 9)=+1.5354890950437058e+02
+ M=   40, N=   40, type 14, seed=   0,   0,   0,   1, test(19)=+1.3597172507928825e+02
+ M=   40, N=   40, type 15, seed=   0,   0,   0,   1, test( 9)=+1.5346461595190607e+02
+ M=   40, N=   40, type 15, seed=   0,   0,   0,   1, test(19)=+1.3887108417969875e+02
+ DBD:    117 out of  10260 tests failed to pass the threshold
+ *** Error code from Rchkbd =    4
+ *** On entry to Rstevx parameter number      7 had an illegal value ***
+ *** XERBLA was called with SRNAME = Rstevx instead of Rgesvj ***
+ Rdrvbd: GESVDX returned INFO=    -7.
+         M=     3, N=     3, JTYPE=     2, LSWORK=    75
+         ISEED=(    0,    0,    0,    1)
+
+
+ SVD:  NB =   3, NBMIN =   2, NX =   0, NRHS =   0
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=     3, N=     3, JTYPE=     2, ISEED=(    0,    0,    0,    1)
+
+ DBD -- Real Singular Value Decomposition
+ Matrix types (see xCHKBD for details):
+ Diagonal matrices:
+   1: Zero                             5: Clustered entries
+   2: Identity                         6: Large, evenly spaced entries
+   3: Evenly spaced entries            7: Small, evenly spaced entries
+   4: Geometrically spaced entries
+ General matrices:
+   8: Evenly spaced sing. vals.       12: Small, evenly spaced sing vals
+   9: Geometrically spaced sing vals  13: Random, O(1) entries
+  10: Clustered sing. vals.           14: Random, scaled near overflow
+  11: Large, evenly spaced sing vals  15: Random, scaled near underflow
+
+ Test ratios:  (B: bidiagonal, S: diagonal, Q, P, U, and V: orthogonal
+                X: m x nrhs, Y = Q' X, and Z = U' Y)
+   1: norm( A - Q B P' ) / ( norm(A) max(m,n) ulp )
+   2: norm( I - Q' Q )   / ( m ulp )
+   3: norm( I - P' P )   / ( n ulp )
+   4: norm( B - U S V' ) / ( norm(B) min(m,n) ulp )
+   5: norm( Y - U Z )    / ( norm(Z) max(min(m,n),k) ulp )
+   6: norm( I - U' U )   / ( min(m,n) ulp )
+   7: norm( I - V' V )   / ( min(m,n) ulp )
+   8: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
+   9: norm( S - S1 )     / ( norm(S) ulp ), where S1 is computed
+                                            without computing U and V'
+  10: Sturm sequence test (0 if sing. vals of B within THRESH of S)
+  11: norm( A - (QU) S (V' P') ) / ( norm(A) max(m,n) ulp )
+  12: norm( X - (QU) Z )         / ( |X| max(M,k) ulp )
+  13: norm( I - (QU)'(QU) )      / ( M ulp )
+  14: norm( I - (V' P') (P V) )  / ( N ulp )
+  15: norm( B - U S V' ) / ( norm(B) min(m,n) ulp )
+  16: norm( I - U' U )   / ( min(m,n) ulp )
+  17: norm( I - V' V )   / ( min(m,n) ulp )
+  18: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
+  19: norm( S - S1 )     / ( norm(S) ulp ), where S1 is computed
+                                            without computing U and V'
+  20: norm( B - U S V' )  / ( norm(B) min(m,n) ulp )  DBDSVX(V,A)
+  21: norm( I - U' U )    / ( min(m,n) ulp )
+  22: norm( I - V' V )    / ( min(m,n) ulp )
+  23: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
+  24: norm( S - S1 )      / ( norm(S) ulp ), where S1 is computed
+                                             without computing U and V'
+  25: norm( S - U' B V ) / ( norm(B) n ulp )  DBDSVX(V,I)
+  26: norm( I - U' U )    / ( min(m,n) ulp )
+  27: norm( I - V' V )    / ( min(m,n) ulp )
+  28: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
+  29: norm( S - S1 )      / ( norm(S) ulp ), where S1 is computed
+                                             without computing U and V'
+  30: norm( S - U' B V ) / ( norm(B) n ulp )  DBDSVX(V,V)
+  31: norm( I - U' U )    / ( min(m,n) ulp )
+  32: norm( I - V' V )    / ( min(m,n) ulp )
+  33: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
+  34: norm( S - S1 )      / ( norm(S) ulp ), where S1 is computed
+                                             without computing U and V'
+ M=    3, N=    3, type  2, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=     3, N=     3, JTYPE=     3, ISEED=(    0,    0,    0,    1)
+ M=    3, N=    3, type  3, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=     3, N=     3, JTYPE=     4, ISEED=(    0,    0,    0,    1)
+ M=    3, N=    3, type  4, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=     3, N=     3, JTYPE=     5, ISEED=(    0,    0,    0,    1)
+ M=    3, N=    3, type  5, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=     3, N=     3, JTYPE=     8, ISEED=(    0,    0,    0,    1)
+ M=    3, N=    3, type  8, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=     3, N=     3, JTYPE=    13, ISEED=(    0,    0,    0,    1)
+ M=    3, N=    3, type 13, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=    10, N=    10, JTYPE=     2, ISEED=(    0,    0,    0,    1)
+ M=   10, N=   10, type  2, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    21.
+         M=    10, N=    10, JTYPE=     3, ISEED=(    0,    0,    0,    1)
+ M=   10, N=   10, type  3, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    21.
+         M=    10, N=    10, JTYPE=     4, ISEED=(    0,    0,    0,    1)
+ M=   10, N=   10, type  4, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    21.
+         M=    10, N=    10, JTYPE=     5, ISEED=(    0,    0,    0,    1)
+ M=   10, N=   10, type  5, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=    10, N=    10, JTYPE=     8, ISEED=(    0,    0,    0,    1)
+ M=   10, N=   10, type  8, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=    10, N=    10, JTYPE=    13, ISEED=(    0,    0,    0,    1)
+ M=   10, N=   10, type 13, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=    10, N=    16, JTYPE=     2, ISEED=(    0,    0,    0,    1)
+ M=   10, N=   16, type  2, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    21.
+         M=    10, N=    16, JTYPE=     3, ISEED=(    0,    0,    0,    1)
+ M=   10, N=   16, type  3, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    21.
+         M=    10, N=    16, JTYPE=     4, ISEED=(    0,    0,    0,    1)
+ M=   10, N=   16, type  4, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    21.
+         M=    10, N=    16, JTYPE=     5, ISEED=(    0,    0,    0,    1)
+ M=   10, N=   16, type  5, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=    10, N=    16, JTYPE=     8, ISEED=(    0,    0,    0,    1)
+ M=   10, N=   16, type  8, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=    10, N=    16, JTYPE=    13, ISEED=(    0,    0,    0,    1)
+ M=   10, N=   16, type 13, seed=   0,   0,   0,   1, test(19)=+5.1678729057613225e+01
+ M=   10, N=   16, type 13, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ M=   10, N=   16, type 15, seed=   0,   0,   0,   1, test(19)=+5.6563279773398311e+01
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=    16, N=    10, JTYPE=     2, ISEED=(    0,    0,    0,    1)
+ M=   16, N=   10, type  2, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    21.
+         M=    16, N=    10, JTYPE=     3, ISEED=(    0,    0,    0,    1)
+ M=   16, N=   10, type  3, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    21.
+         M=    16, N=    10, JTYPE=     4, ISEED=(    0,    0,    0,    1)
+ M=   16, N=   10, type  4, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    21.
+         M=    16, N=    10, JTYPE=     5, ISEED=(    0,    0,    0,    1)
+ M=   16, N=   10, type  5, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=    16, N=    10, JTYPE=     8, ISEED=(    0,    0,    0,    1)
+ M=   16, N=   10, type  8, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=    16, N=    10, JTYPE=    13, ISEED=(    0,    0,    0,    1)
+ M=   16, N=   10, type 13, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=    16, N=    16, JTYPE=     2, ISEED=(    0,    0,    0,    1)
+ M=   16, N=   16, type  2, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    33.
+         M=    16, N=    16, JTYPE=     3, ISEED=(    0,    0,    0,    1)
+ M=   16, N=   16, type  3, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    33.
+         M=    16, N=    16, JTYPE=     4, ISEED=(    0,    0,    0,    1)
+ M=   16, N=   16, type  4, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    33.
+         M=    16, N=    16, JTYPE=     5, ISEED=(    0,    0,    0,    1)
+ M=   16, N=   16, type  5, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=    16, N=    16, JTYPE=     8, ISEED=(    0,    0,    0,    1)
+ M=   16, N=   16, type  8, seed=   0,   0,   0,   1, test( 9)=+6.4146646980740574e+01
+ M=   16, N=   16, type  8, seed=   0,   0,   0,   1, test(19)=+6.4146646980740574e+01
+ M=   16, N=   16, type  8, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ M=   16, N=   16, type 11, seed=   0,   0,   0,   1, test( 9)=+5.5518867827928542e+01
+ M=   16, N=   16, type 11, seed=   0,   0,   0,   1, test(19)=+5.5518867827928542e+01
+ M=   16, N=   16, type 12, seed=   0,   0,   0,   1, test( 9)=+7.2938373519930252e+01
+ M=   16, N=   16, type 12, seed=   0,   0,   0,   1, test(19)=+7.2938373519930252e+01
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=    16, N=    16, JTYPE=    13, ISEED=(    0,    0,    0,    1)
+ M=   16, N=   16, type 13, seed=   0,   0,   0,   1, test( 9)=+6.7814388181535744e+01
+ M=   16, N=   16, type 13, seed=   0,   0,   0,   1, test(19)=+6.7814388181535744e+01
+ M=   16, N=   16, type 13, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ M=   16, N=   16, type 14, seed=   0,   0,   0,   1, test( 9)=+7.8155816917723759e+01
+ M=   16, N=   16, type 14, seed=   0,   0,   0,   1, test(19)=+7.8155816917723759e+01
+ M=   16, N=   16, type 15, seed=   0,   0,   0,   1, test( 9)=+6.4464492961287724e+01
+ M=   16, N=   16, type 15, seed=   0,   0,   0,   1, test(19)=+6.4464492961287724e+01
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=    30, N=    30, JTYPE=     2, ISEED=(    0,    0,    0,    1)
+ M=   30, N=   30, type  2, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    61.
+         M=    30, N=    30, JTYPE=     3, ISEED=(    0,    0,    0,    1)
+ M=   30, N=   30, type  3, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    61.
+         M=    30, N=    30, JTYPE=     4, ISEED=(    0,    0,    0,    1)
+ M=   30, N=   30, type  4, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    61.
+         M=    30, N=    30, JTYPE=     5, ISEED=(    0,    0,    0,    1)
+ M=   30, N=   30, type  5, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=    30, N=    30, JTYPE=     8, ISEED=(    0,    0,    0,    1)
+ M=   30, N=   30, type  8, seed=   0,   0,   0,   1, test( 9)=+1.1754875465869808e+02
+ M=   30, N=   30, type  8, seed=   0,   0,   0,   1, test(19)=+9.9396810601126922e+01
+ M=   30, N=   30, type  8, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ M=   30, N=   30, type 11, seed=   0,   0,   0,   1, test( 9)=+1.0895901299838815e+02
+ M=   30, N=   30, type 11, seed=   0,   0,   0,   1, test(19)=+9.0293912420056208e+01
+ M=   30, N=   30, type 12, seed=   0,   0,   0,   1, test( 9)=+1.1396799062176334e+02
+ M=   30, N=   30, type 12, seed=   0,   0,   0,   1, test(19)=+9.1542918095922035e+01
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=    30, N=    30, JTYPE=    13, ISEED=(    0,    0,    0,    1)
+ M=   30, N=   30, type 13, seed=   0,   0,   0,   1, test( 9)=+1.1885966938574449e+02
+ M=   30, N=   30, type 13, seed=   0,   0,   0,   1, test(19)=+1.0481475598860506e+02
+ M=   30, N=   30, type 13, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ M=   30, N=   30, type 14, seed=   0,   0,   0,   1, test( 9)=+1.2139421765654752e+02
+ M=   30, N=   30, type 14, seed=   0,   0,   0,   1, test(19)=+1.0584845553014653e+02
+ M=   30, N=   30, type 15, seed=   0,   0,   0,   1, test( 9)=+1.1610720307979860e+02
+ M=   30, N=   30, type 15, seed=   0,   0,   0,   1, test(19)=+1.0417642039330485e+02
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=    30, N=    40, JTYPE=     2, ISEED=(    0,    0,    0,    1)
+ M=   30, N=   40, type  2, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    61.
+         M=    30, N=    40, JTYPE=     3, ISEED=(    0,    0,    0,    1)
+ M=   30, N=   40, type  3, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    61.
+         M=    30, N=    40, JTYPE=     4, ISEED=(    0,    0,    0,    1)
+ M=   30, N=   40, type  4, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    61.
+         M=    30, N=    40, JTYPE=     5, ISEED=(    0,    0,    0,    1)
+ M=   30, N=   40, type  5, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=    30, N=    40, JTYPE=     8, ISEED=(    0,    0,    0,    1)
+ M=   30, N=   40, type  8, seed=   0,   0,   0,   1, test( 9)=+1.1517823675656213e+02
+ M=   30, N=   40, type  8, seed=   0,   0,   0,   1, test(19)=+1.1814828854874575e+02
+ M=   30, N=   40, type  8, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ M=   30, N=   40, type 11, seed=   0,   0,   0,   1, test( 9)=+1.0969861722175133e+02
+ M=   30, N=   40, type 11, seed=   0,   0,   0,   1, test(19)=+1.2387343628612812e+02
+ M=   30, N=   40, type 12, seed=   0,   0,   0,   1, test( 9)=+1.0736106377146523e+02
+ M=   30, N=   40, type 12, seed=   0,   0,   0,   1, test(19)=+1.0528716857023333e+02
+ M=   30, N=   40, type 13, seed=   0,   0,   0,   1, test( 9)=+1.2203150644751881e+02
+ M=   30, N=   40, type 13, seed=   0,   0,   0,   1, test(19)=+1.3549797549973531e+02
+ M=   30, N=   40, type 14, seed=   0,   0,   0,   1, test( 9)=+1.3444321978626094e+02
+ M=   30, N=   40, type 14, seed=   0,   0,   0,   1, test(19)=+1.1802779559589493e+02
+ M=   30, N=   40, type 15, seed=   0,   0,   0,   1, test( 9)=+1.2381927340810695e+02
+ M=   30, N=   40, type 15, seed=   0,   0,   0,   1, test(19)=+1.2128434329624267e+02
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=    40, N=    30, JTYPE=     2, ISEED=(    0,    0,    0,    1)
+ M=   40, N=   30, type  2, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    61.
+         M=    40, N=    30, JTYPE=     3, ISEED=(    0,    0,    0,    1)
+ M=   40, N=   30, type  3, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    61.
+         M=    40, N=    30, JTYPE=     4, ISEED=(    0,    0,    0,    1)
+ M=   40, N=   30, type  4, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    61.
+         M=    40, N=    30, JTYPE=     5, ISEED=(    0,    0,    0,    1)
+ M=   40, N=   30, type  5, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=    40, N=    30, JTYPE=     8, ISEED=(    0,    0,    0,    1)
+ M=   40, N=   30, type  8, seed=   0,   0,   0,   1, test( 9)=+1.0015037379640258e+02
+ M=   40, N=   30, type  8, seed=   0,   0,   0,   1, test(19)=+8.5185666511785952e+01
+ M=   40, N=   30, type  8, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ M=   40, N=   30, type 11, seed=   0,   0,   0,   1, test( 9)=+1.1215624087060198e+02
+ M=   40, N=   30, type 11, seed=   0,   0,   0,   1, test(19)=+9.6479123385252166e+01
+ M=   40, N=   30, type 12, seed=   0,   0,   0,   1, test( 9)=+1.2086240430755273e+02
+ M=   40, N=   30, type 12, seed=   0,   0,   0,   1, test(19)=+8.2506363718192588e+01
+ M=   40, N=   30, type 13, seed=   0,   0,   0,   1, test( 9)=+1.2894980134074056e+02
+ M=   40, N=   30, type 13, seed=   0,   0,   0,   1, test(19)=+1.0986925675336901e+02
+ M=   40, N=   30, type 14, seed=   0,   0,   0,   1, test( 9)=+1.3375579178307264e+02
+ M=   40, N=   30, type 14, seed=   0,   0,   0,   1, test(19)=+1.1425191808130757e+02
+ M=   40, N=   30, type 15, seed=   0,   0,   0,   1, test( 9)=+1.3055304551675890e+02
+ M=   40, N=   30, type 15, seed=   0,   0,   0,   1, test(19)=+1.1194545547047296e+02
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=    40, N=    40, JTYPE=     2, ISEED=(    0,    0,    0,    1)
+ M=   40, N=   40, type  2, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    81.
+         M=    40, N=    40, JTYPE=     3, ISEED=(    0,    0,    0,    1)
+ M=   40, N=   40, type  3, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    81.
+         M=    40, N=    40, JTYPE=     4, ISEED=(    0,    0,    0,    1)
+ M=   40, N=   40, type  4, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    81.
+         M=    40, N=    40, JTYPE=     5, ISEED=(    0,    0,    0,    1)
+ M=   40, N=   40, type  5, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=    40, N=    40, JTYPE=     8, ISEED=(    0,    0,    0,    1)
+ M=   40, N=   40, type  8, seed=   0,   0,   0,   1, test( 9)=+1.5535333858327284e+02
+ M=   40, N=   40, type  8, seed=   0,   0,   0,   1, test(19)=+1.2590914425489501e+02
+ M=   40, N=   40, type  8, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ M=   40, N=   40, type 10, seed=   0,   0,   0,   1, test( 9)=+6.8997297675302781e+01
+ M=   40, N=   40, type 11, seed=   0,   0,   0,   1, test( 9)=+1.3848926877424423e+02
+ M=   40, N=   40, type 11, seed=   0,   0,   0,   1, test(19)=+1.1338393168000040e+02
+ M=   40, N=   40, type 12, seed=   0,   0,   0,   1, test( 9)=+1.6308328585625131e+02
+ M=   40, N=   40, type 12, seed=   0,   0,   0,   1, test(19)=+1.3547455655339731e+02
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=    40, N=    40, JTYPE=    13, ISEED=(    0,    0,    0,    1)
+ M=   40, N=   40, type 13, seed=   0,   0,   0,   1, test( 9)=+1.4490075692954528e+02
+ M=   40, N=   40, type 13, seed=   0,   0,   0,   1, test(19)=+1.1917732718284910e+02
+ M=   40, N=   40, type 13, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ M=   40, N=   40, type 14, seed=   0,   0,   0,   1, test( 9)=+1.3375211670053710e+02
+ M=   40, N=   40, type 14, seed=   0,   0,   0,   1, test(19)=+1.1918828577671523e+02
+ M=   40, N=   40, type 15, seed=   0,   0,   0,   1, test( 9)=+1.5423917217601819e+02
+ M=   40, N=   40, type 15, seed=   0,   0,   0,   1, test(19)=+1.3627838754241792e+02
+ DBD:    115 out of  10260 tests failed to pass the threshold
+ *** Error code from Rchkbd =    4
+ *** On entry to Rstevx parameter number      7 had an illegal value ***
+ *** XERBLA was called with SRNAME = Rstevx instead of Rgesvj ***
+ Rdrvbd: GESVDX returned INFO=    -7.
+         M=     3, N=     3, JTYPE=     2, LSWORK=    75
+         ISEED=(    0,    0,    0,    1)
+
+
+ SVD:  NB =   3, NBMIN =   2, NX =   5, NRHS =   2
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=     3, N=     3, JTYPE=     2, ISEED=(    0,    0,    0,    1)
+
+ DBD -- Real Singular Value Decomposition
+ Matrix types (see xCHKBD for details):
+ Diagonal matrices:
+   1: Zero                             5: Clustered entries
+   2: Identity                         6: Large, evenly spaced entries
+   3: Evenly spaced entries            7: Small, evenly spaced entries
+   4: Geometrically spaced entries
+ General matrices:
+   8: Evenly spaced sing. vals.       12: Small, evenly spaced sing vals
+   9: Geometrically spaced sing vals  13: Random, O(1) entries
+  10: Clustered sing. vals.           14: Random, scaled near overflow
+  11: Large, evenly spaced sing vals  15: Random, scaled near underflow
+
+ Test ratios:  (B: bidiagonal, S: diagonal, Q, P, U, and V: orthogonal
+                X: m x nrhs, Y = Q' X, and Z = U' Y)
+   1: norm( A - Q B P' ) / ( norm(A) max(m,n) ulp )
+   2: norm( I - Q' Q )   / ( m ulp )
+   3: norm( I - P' P )   / ( n ulp )
+   4: norm( B - U S V' ) / ( norm(B) min(m,n) ulp )
+   5: norm( Y - U Z )    / ( norm(Z) max(min(m,n),k) ulp )
+   6: norm( I - U' U )   / ( min(m,n) ulp )
+   7: norm( I - V' V )   / ( min(m,n) ulp )
+   8: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
+   9: norm( S - S1 )     / ( norm(S) ulp ), where S1 is computed
+                                            without computing U and V'
+  10: Sturm sequence test (0 if sing. vals of B within THRESH of S)
+  11: norm( A - (QU) S (V' P') ) / ( norm(A) max(m,n) ulp )
+  12: norm( X - (QU) Z )         / ( |X| max(M,k) ulp )
+  13: norm( I - (QU)'(QU) )      / ( M ulp )
+  14: norm( I - (V' P') (P V) )  / ( N ulp )
+  15: norm( B - U S V' ) / ( norm(B) min(m,n) ulp )
+  16: norm( I - U' U )   / ( min(m,n) ulp )
+  17: norm( I - V' V )   / ( min(m,n) ulp )
+  18: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
+  19: norm( S - S1 )     / ( norm(S) ulp ), where S1 is computed
+                                            without computing U and V'
+  20: norm( B - U S V' )  / ( norm(B) min(m,n) ulp )  DBDSVX(V,A)
+  21: norm( I - U' U )    / ( min(m,n) ulp )
+  22: norm( I - V' V )    / ( min(m,n) ulp )
+  23: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
+  24: norm( S - S1 )      / ( norm(S) ulp ), where S1 is computed
+                                             without computing U and V'
+  25: norm( S - U' B V ) / ( norm(B) n ulp )  DBDSVX(V,I)
+  26: norm( I - U' U )    / ( min(m,n) ulp )
+  27: norm( I - V' V )    / ( min(m,n) ulp )
+  28: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
+  29: norm( S - S1 )      / ( norm(S) ulp ), where S1 is computed
+                                             without computing U and V'
+  30: norm( S - U' B V ) / ( norm(B) n ulp )  DBDSVX(V,V)
+  31: norm( I - U' U )    / ( min(m,n) ulp )
+  32: norm( I - V' V )    / ( min(m,n) ulp )
+  33: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
+  34: norm( S - S1 )      / ( norm(S) ulp ), where S1 is computed
+                                             without computing U and V'
+ M=    3, N=    3, type  2, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=     3, N=     3, JTYPE=     3, ISEED=(    0,    0,    0,    1)
+ M=    3, N=    3, type  3, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=     3, N=     3, JTYPE=     4, ISEED=(    0,    0,    0,    1)
+ M=    3, N=    3, type  4, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=     3, N=     3, JTYPE=     5, ISEED=(    0,    0,    0,    1)
+ M=    3, N=    3, type  5, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=     3, N=     3, JTYPE=     8, ISEED=(    0,    0,    0,    1)
+ M=    3, N=    3, type  8, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=     3, N=     3, JTYPE=    13, ISEED=(    0,    0,    0,    1)
+ M=    3, N=    3, type 13, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=    10, N=    10, JTYPE=     2, ISEED=(    0,    0,    0,    1)
+ M=   10, N=   10, type  2, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    21.
+         M=    10, N=    10, JTYPE=     3, ISEED=(    0,    0,    0,    1)
+ M=   10, N=   10, type  3, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    21.
+         M=    10, N=    10, JTYPE=     4, ISEED=(    0,    0,    0,    1)
+ M=   10, N=   10, type  4, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    21.
+         M=    10, N=    10, JTYPE=     5, ISEED=(    0,    0,    0,    1)
+ M=   10, N=   10, type  5, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=    10, N=    10, JTYPE=     8, ISEED=(    0,    0,    0,    1)
+ M=   10, N=   10, type  8, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=    10, N=    10, JTYPE=    13, ISEED=(    0,    0,    0,    1)
+ M=   10, N=   10, type 13, seed=   0,   0,   0,   1, test( 9)=+5.4740705206870026e+01
+ M=   10, N=   10, type 13, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=    10, N=    16, JTYPE=     2, ISEED=(    0,    0,    0,    1)
+ M=   10, N=   16, type  2, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    21.
+         M=    10, N=    16, JTYPE=     3, ISEED=(    0,    0,    0,    1)
+ M=   10, N=   16, type  3, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    21.
+         M=    10, N=    16, JTYPE=     4, ISEED=(    0,    0,    0,    1)
+ M=   10, N=   16, type  4, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    21.
+         M=    10, N=    16, JTYPE=     5, ISEED=(    0,    0,    0,    1)
+ M=   10, N=   16, type  5, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=    10, N=    16, JTYPE=     8, ISEED=(    0,    0,    0,    1)
+ M=   10, N=   16, type  8, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=    10, N=    16, JTYPE=    13, ISEED=(    0,    0,    0,    1)
+ M=   10, N=   16, type 13, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ M=   10, N=   16, type 15, seed=   0,   0,   0,   1, test(19)=+5.4277185687076502e+01
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=    16, N=    10, JTYPE=     2, ISEED=(    0,    0,    0,    1)
+ M=   16, N=   10, type  2, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    21.
+         M=    16, N=    10, JTYPE=     3, ISEED=(    0,    0,    0,    1)
+ M=   16, N=   10, type  3, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    21.
+         M=    16, N=    10, JTYPE=     4, ISEED=(    0,    0,    0,    1)
+ M=   16, N=   10, type  4, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    21.
+         M=    16, N=    10, JTYPE=     5, ISEED=(    0,    0,    0,    1)
+ M=   16, N=   10, type  5, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=    16, N=    10, JTYPE=     8, ISEED=(    0,    0,    0,    1)
+ M=   16, N=   10, type  8, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=    16, N=    10, JTYPE=    13, ISEED=(    0,    0,    0,    1)
+ M=   16, N=   10, type 13, seed=   0,   0,   0,   1, test( 9)=+5.0509428274040702e+01
+ M=   16, N=   10, type 13, seed=   0,   0,   0,   1, test(19)=+5.0509428274040702e+01
+ M=   16, N=   10, type 13, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=    16, N=    16, JTYPE=     2, ISEED=(    0,    0,    0,    1)
+ M=   16, N=   16, type  2, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    33.
+         M=    16, N=    16, JTYPE=     3, ISEED=(    0,    0,    0,    1)
+ M=   16, N=   16, type  3, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    33.
+         M=    16, N=    16, JTYPE=     4, ISEED=(    0,    0,    0,    1)
+ M=   16, N=   16, type  4, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    33.
+         M=    16, N=    16, JTYPE=     5, ISEED=(    0,    0,    0,    1)
+ M=   16, N=   16, type  5, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=    16, N=    16, JTYPE=     8, ISEED=(    0,    0,    0,    1)
+ M=   16, N=   16, type  8, seed=   0,   0,   0,   1, test( 9)=+7.2829580112028667e+01
+ M=   16, N=   16, type  8, seed=   0,   0,   0,   1, test(19)=+7.2829580112028667e+01
+ M=   16, N=   16, type  8, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ M=   16, N=   16, type 11, seed=   0,   0,   0,   1, test( 9)=+7.7976132270132655e+01
+ M=   16, N=   16, type 11, seed=   0,   0,   0,   1, test(19)=+7.7976132270132655e+01
+ M=   16, N=   16, type 12, seed=   0,   0,   0,   1, test( 9)=+5.8474375066699748e+01
+ M=   16, N=   16, type 12, seed=   0,   0,   0,   1, test(19)=+5.8474375066699748e+01
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=    16, N=    16, JTYPE=    13, ISEED=(    0,    0,    0,    1)
+ M=   16, N=   16, type 13, seed=   0,   0,   0,   1, test( 9)=+7.7312103554729514e+01
+ M=   16, N=   16, type 13, seed=   0,   0,   0,   1, test(19)=+7.7312103554729514e+01
+ M=   16, N=   16, type 13, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ M=   16, N=   16, type 14, seed=   0,   0,   0,   1, test( 9)=+6.7063062175618394e+01
+ M=   16, N=   16, type 14, seed=   0,   0,   0,   1, test(19)=+6.7063062175618394e+01
+ M=   16, N=   16, type 15, seed=   0,   0,   0,   1, test( 9)=+6.9957270698021494e+01
+ M=   16, N=   16, type 15, seed=   0,   0,   0,   1, test(19)=+6.9957270698021494e+01
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=    30, N=    30, JTYPE=     2, ISEED=(    0,    0,    0,    1)
+ M=   30, N=   30, type  2, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    61.
+         M=    30, N=    30, JTYPE=     3, ISEED=(    0,    0,    0,    1)
+ M=   30, N=   30, type  3, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    61.
+         M=    30, N=    30, JTYPE=     4, ISEED=(    0,    0,    0,    1)
+ M=   30, N=   30, type  4, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    61.
+         M=    30, N=    30, JTYPE=     5, ISEED=(    0,    0,    0,    1)
+ M=   30, N=   30, type  5, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=    30, N=    30, JTYPE=     8, ISEED=(    0,    0,    0,    1)
+ M=   30, N=   30, type  8, seed=   0,   0,   0,   1, test( 9)=+1.1014263016398634e+02
+ M=   30, N=   30, type  8, seed=   0,   0,   0,   1, test(19)=+9.0056000447754553e+01
+ M=   30, N=   30, type  8, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ M=   30, N=   30, type 11, seed=   0,   0,   0,   1, test( 9)=+1.0737990252994898e+02
+ M=   30, N=   30, type 11, seed=   0,   0,   0,   1, test(19)=+8.8488190803830501e+01
+ M=   30, N=   30, type 12, seed=   0,   0,   0,   1, test( 9)=+1.1364380742308220e+02
+ M=   30, N=   30, type 12, seed=   0,   0,   0,   1, test(19)=+9.8496193905322339e+01
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=    30, N=    30, JTYPE=    13, ISEED=(    0,    0,    0,    1)
+ M=   30, N=   30, type 13, seed=   0,   0,   0,   1, test( 9)=+1.1642453661331273e+02
+ M=   30, N=   30, type 13, seed=   0,   0,   0,   1, test(19)=+1.0087696484295606e+02
+ M=   30, N=   30, type 13, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ M=   30, N=   30, type 14, seed=   0,   0,   0,   1, test( 9)=+1.2053388640505913e+02
+ M=   30, N=   30, type 14, seed=   0,   0,   0,   1, test(19)=+1.0294726235237789e+02
+ M=   30, N=   30, type 15, seed=   0,   0,   0,   1, test( 9)=+1.2047346793767399e+02
+ M=   30, N=   30, type 15, seed=   0,   0,   0,   1, test(19)=+1.0701453196922639e+02
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=    30, N=    40, JTYPE=     2, ISEED=(    0,    0,    0,    1)
+ M=   30, N=   40, type  2, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    61.
+         M=    30, N=    40, JTYPE=     3, ISEED=(    0,    0,    0,    1)
+ M=   30, N=   40, type  3, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    61.
+         M=    30, N=    40, JTYPE=     4, ISEED=(    0,    0,    0,    1)
+ M=   30, N=   40, type  4, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    61.
+         M=    30, N=    40, JTYPE=     5, ISEED=(    0,    0,    0,    1)
+ M=   30, N=   40, type  5, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=    30, N=    40, JTYPE=     8, ISEED=(    0,    0,    0,    1)
+ M=   30, N=   40, type  8, seed=   0,   0,   0,   1, test( 9)=+1.2811303767708638e+02
+ M=   30, N=   40, type  8, seed=   0,   0,   0,   1, test(19)=+1.1729900317243812e+02
+ M=   30, N=   40, type  8, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ M=   30, N=   40, type 11, seed=   0,   0,   0,   1, test( 9)=+1.1251052850067475e+02
+ M=   30, N=   40, type 11, seed=   0,   0,   0,   1, test(19)=+1.2115373902440791e+02
+ M=   30, N=   40, type 12, seed=   0,   0,   0,   1, test( 9)=+1.2633530759953055e+02
+ M=   30, N=   40, type 12, seed=   0,   0,   0,   1, test(19)=+1.0136156851862398e+02
+ M=   30, N=   40, type 13, seed=   0,   0,   0,   1, test( 9)=+1.1861096824581211e+02
+ M=   30, N=   40, type 13, seed=   0,   0,   0,   1, test(19)=+1.3719543505168496e+02
+ M=   30, N=   40, type 14, seed=   0,   0,   0,   1, test( 9)=+1.2793280580580283e+02
+ M=   30, N=   40, type 14, seed=   0,   0,   0,   1, test(19)=+1.2742394744712331e+02
+ M=   30, N=   40, type 15, seed=   0,   0,   0,   1, test( 9)=+1.1197562356475199e+02
+ M=   30, N=   40, type 15, seed=   0,   0,   0,   1, test(19)=+1.3708493881284719e+02
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=    40, N=    30, JTYPE=     2, ISEED=(    0,    0,    0,    1)
+ M=   40, N=   30, type  2, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    61.
+         M=    40, N=    30, JTYPE=     3, ISEED=(    0,    0,    0,    1)
+ M=   40, N=   30, type  3, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    61.
+         M=    40, N=    30, JTYPE=     4, ISEED=(    0,    0,    0,    1)
+ M=   40, N=   30, type  4, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    61.
+         M=    40, N=    30, JTYPE=     5, ISEED=(    0,    0,    0,    1)
+ M=   40, N=   30, type  5, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=    40, N=    30, JTYPE=     8, ISEED=(    0,    0,    0,    1)
+ M=   40, N=   30, type  8, seed=   0,   0,   0,   1, test( 9)=+1.1838472565297318e+02
+ M=   40, N=   30, type  8, seed=   0,   0,   0,   1, test(19)=+9.8701647933414145e+01
+ M=   40, N=   30, type  8, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ M=   40, N=   30, type 11, seed=   0,   0,   0,   1, test( 9)=+1.1683306204222385e+02
+ M=   40, N=   30, type 11, seed=   0,   0,   0,   1, test(19)=+9.9268371373469219e+01
+ M=   40, N=   30, type 12, seed=   0,   0,   0,   1, test( 9)=+1.0402711701766959e+02
+ M=   40, N=   30, type 12, seed=   0,   0,   0,   1, test(19)=+8.1591825955323059e+01
+ M=   40, N=   30, type 13, seed=   0,   0,   0,   1, test( 9)=+1.1073456990961815e+02
+ M=   40, N=   30, type 13, seed=   0,   0,   0,   1, test(19)=+9.4651383828251030e+01
+ M=   40, N=   30, type 14, seed=   0,   0,   0,   1, test( 9)=+1.1146836699806948e+02
+ M=   40, N=   30, type 14, seed=   0,   0,   0,   1, test(19)=+9.2401811235350240e+01
+ M=   40, N=   30, type 15, seed=   0,   0,   0,   1, test( 9)=+1.3038901934043767e+02
+ M=   40, N=   30, type 15, seed=   0,   0,   0,   1, test(19)=+1.1325725562662715e+02
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=    40, N=    40, JTYPE=     2, ISEED=(    0,    0,    0,    1)
+ M=   40, N=   40, type  2, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    81.
+         M=    40, N=    40, JTYPE=     3, ISEED=(    0,    0,    0,    1)
+ M=   40, N=   40, type  3, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    81.
+         M=    40, N=    40, JTYPE=     4, ISEED=(    0,    0,    0,    1)
+ M=   40, N=   40, type  4, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    81.
+         M=    40, N=    40, JTYPE=     5, ISEED=(    0,    0,    0,    1)
+ M=   40, N=   40, type  5, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=    40, N=    40, JTYPE=     8, ISEED=(    0,    0,    0,    1)
+ M=   40, N=   40, type  8, seed=   0,   0,   0,   1, test( 9)=+1.6985697858186309e+02
+ M=   40, N=   40, type  8, seed=   0,   0,   0,   1, test(19)=+1.4237572035636322e+02
+ M=   40, N=   40, type  8, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ M=   40, N=   40, type 10, seed=   0,   0,   0,   1, test( 9)=+6.9007013527835277e+01
+ M=   40, N=   40, type 11, seed=   0,   0,   0,   1, test( 9)=+1.6748754415502433e+02
+ M=   40, N=   40, type 11, seed=   0,   0,   0,   1, test(19)=+1.3985751379069439e+02
+ M=   40, N=   40, type 12, seed=   0,   0,   0,   1, test( 9)=+1.6949296291754732e+02
+ M=   40, N=   40, type 12, seed=   0,   0,   0,   1, test(19)=+1.3584443432059734e+02
+ M=   40, N=   40, type 13, seed=   0,   0,   0,   1, test( 9)=+1.4414444356715138e+02
+ M=   40, N=   40, type 13, seed=   0,   0,   0,   1, test(19)=+1.2630240218161996e+02
+ M=   40, N=   40, type 14, seed=   0,   0,   0,   1, test( 9)=+1.5156307382900011e+02
+ M=   40, N=   40, type 14, seed=   0,   0,   0,   1, test(19)=+1.3580908240583669e+02
+ M=   40, N=   40, type 15, seed=   0,   0,   0,   1, test( 9)=+1.4210553704111637e+02
+ M=   40, N=   40, type 15, seed=   0,   0,   0,   1, test(19)=+1.2459182066215344e+02
+ DBD:    116 out of  10260 tests failed to pass the threshold
+ *** Error code from Rchkbd =    4
+ *** On entry to Rstevx parameter number      7 had an illegal value ***
+ *** XERBLA was called with SRNAME = Rstevx instead of Rgesvj ***
+ Rdrvbd: GESVDX returned INFO=    -7.
+         M=     3, N=     3, JTYPE=     2, LSWORK=    75
+         ISEED=(    0,    0,    0,    1)
+
+
+ SVD:  NB =   3, NBMIN =   2, NX =   9, NRHS =   2
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=     3, N=     3, JTYPE=     2, ISEED=(    0,    0,    0,    1)
+
+ DBD -- Real Singular Value Decomposition
+ Matrix types (see xCHKBD for details):
+ Diagonal matrices:
+   1: Zero                             5: Clustered entries
+   2: Identity                         6: Large, evenly spaced entries
+   3: Evenly spaced entries            7: Small, evenly spaced entries
+   4: Geometrically spaced entries
+ General matrices:
+   8: Evenly spaced sing. vals.       12: Small, evenly spaced sing vals
+   9: Geometrically spaced sing vals  13: Random, O(1) entries
+  10: Clustered sing. vals.           14: Random, scaled near overflow
+  11: Large, evenly spaced sing vals  15: Random, scaled near underflow
+
+ Test ratios:  (B: bidiagonal, S: diagonal, Q, P, U, and V: orthogonal
+                X: m x nrhs, Y = Q' X, and Z = U' Y)
+   1: norm( A - Q B P' ) / ( norm(A) max(m,n) ulp )
+   2: norm( I - Q' Q )   / ( m ulp )
+   3: norm( I - P' P )   / ( n ulp )
+   4: norm( B - U S V' ) / ( norm(B) min(m,n) ulp )
+   5: norm( Y - U Z )    / ( norm(Z) max(min(m,n),k) ulp )
+   6: norm( I - U' U )   / ( min(m,n) ulp )
+   7: norm( I - V' V )   / ( min(m,n) ulp )
+   8: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
+   9: norm( S - S1 )     / ( norm(S) ulp ), where S1 is computed
+                                            without computing U and V'
+  10: Sturm sequence test (0 if sing. vals of B within THRESH of S)
+  11: norm( A - (QU) S (V' P') ) / ( norm(A) max(m,n) ulp )
+  12: norm( X - (QU) Z )         / ( |X| max(M,k) ulp )
+  13: norm( I - (QU)'(QU) )      / ( M ulp )
+  14: norm( I - (V' P') (P V) )  / ( N ulp )
+  15: norm( B - U S V' ) / ( norm(B) min(m,n) ulp )
+  16: norm( I - U' U )   / ( min(m,n) ulp )
+  17: norm( I - V' V )   / ( min(m,n) ulp )
+  18: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
+  19: norm( S - S1 )     / ( norm(S) ulp ), where S1 is computed
+                                            without computing U and V'
+  20: norm( B - U S V' )  / ( norm(B) min(m,n) ulp )  DBDSVX(V,A)
+  21: norm( I - U' U )    / ( min(m,n) ulp )
+  22: norm( I - V' V )    / ( min(m,n) ulp )
+  23: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
+  24: norm( S - S1 )      / ( norm(S) ulp ), where S1 is computed
+                                             without computing U and V'
+  25: norm( S - U' B V ) / ( norm(B) n ulp )  DBDSVX(V,I)
+  26: norm( I - U' U )    / ( min(m,n) ulp )
+  27: norm( I - V' V )    / ( min(m,n) ulp )
+  28: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
+  29: norm( S - S1 )      / ( norm(S) ulp ), where S1 is computed
+                                             without computing U and V'
+  30: norm( S - U' B V ) / ( norm(B) n ulp )  DBDSVX(V,V)
+  31: norm( I - U' U )    / ( min(m,n) ulp )
+  32: norm( I - V' V )    / ( min(m,n) ulp )
+  33: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
+  34: norm( S - S1 )      / ( norm(S) ulp ), where S1 is computed
+                                             without computing U and V'
+ M=    3, N=    3, type  2, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=     3, N=     3, JTYPE=     3, ISEED=(    0,    0,    0,    1)
+ M=    3, N=    3, type  3, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=     3, N=     3, JTYPE=     4, ISEED=(    0,    0,    0,    1)
+ M=    3, N=    3, type  4, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=     3, N=     3, JTYPE=     5, ISEED=(    0,    0,    0,    1)
+ M=    3, N=    3, type  5, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=     3, N=     3, JTYPE=     8, ISEED=(    0,    0,    0,    1)
+ M=    3, N=    3, type  8, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=     3, N=     3, JTYPE=    13, ISEED=(    0,    0,    0,    1)
+ M=    3, N=    3, type 13, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=    10, N=    10, JTYPE=     2, ISEED=(    0,    0,    0,    1)
+ M=   10, N=   10, type  2, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    21.
+         M=    10, N=    10, JTYPE=     3, ISEED=(    0,    0,    0,    1)
+ M=   10, N=   10, type  3, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    21.
+         M=    10, N=    10, JTYPE=     4, ISEED=(    0,    0,    0,    1)
+ M=   10, N=   10, type  4, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    21.
+         M=    10, N=    10, JTYPE=     5, ISEED=(    0,    0,    0,    1)
+ M=   10, N=   10, type  5, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=    10, N=    10, JTYPE=     8, ISEED=(    0,    0,    0,    1)
+ M=   10, N=   10, type  8, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=    10, N=    10, JTYPE=    13, ISEED=(    0,    0,    0,    1)
+ M=   10, N=   10, type 13, seed=   0,   0,   0,   1, test( 9)=+6.8016268935971306e+01
+ M=   10, N=   10, type 13, seed=   0,   0,   0,   1, test(19)=+5.0183805754898921e+01
+ M=   10, N=   10, type 13, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ M=   10, N=   10, type 15, seed=   0,   0,   0,   1, test( 9)=+5.0832759817524687e+01
+ M=   10, N=   10, type 15, seed=   0,   0,   0,   1, test(19)=+5.0832759817524687e+01
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=    10, N=    16, JTYPE=     2, ISEED=(    0,    0,    0,    1)
+ M=   10, N=   16, type  2, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    21.
+         M=    10, N=    16, JTYPE=     3, ISEED=(    0,    0,    0,    1)
+ M=   10, N=   16, type  3, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    21.
+         M=    10, N=    16, JTYPE=     4, ISEED=(    0,    0,    0,    1)
+ M=   10, N=   16, type  4, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    21.
+         M=    10, N=    16, JTYPE=     5, ISEED=(    0,    0,    0,    1)
+ M=   10, N=   16, type  5, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=    10, N=    16, JTYPE=     8, ISEED=(    0,    0,    0,    1)
+ M=   10, N=   16, type  8, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=    10, N=    16, JTYPE=    13, ISEED=(    0,    0,    0,    1)
+ M=   10, N=   16, type 13, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ M=   10, N=   16, type 14, seed=   0,   0,   0,   1, test( 9)=+5.4664215704812174e+01
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=    16, N=    10, JTYPE=     2, ISEED=(    0,    0,    0,    1)
+ M=   16, N=   10, type  2, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    21.
+         M=    16, N=    10, JTYPE=     3, ISEED=(    0,    0,    0,    1)
+ M=   16, N=   10, type  3, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    21.
+         M=    16, N=    10, JTYPE=     4, ISEED=(    0,    0,    0,    1)
+ M=   16, N=   10, type  4, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    21.
+         M=    16, N=    10, JTYPE=     5, ISEED=(    0,    0,    0,    1)
+ M=   16, N=   10, type  5, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=    16, N=    10, JTYPE=     8, ISEED=(    0,    0,    0,    1)
+ M=   16, N=   10, type  8, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=    16, N=    10, JTYPE=    13, ISEED=(    0,    0,    0,    1)
+ M=   16, N=   10, type 13, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=    16, N=    16, JTYPE=     2, ISEED=(    0,    0,    0,    1)
+ M=   16, N=   16, type  2, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    33.
+         M=    16, N=    16, JTYPE=     3, ISEED=(    0,    0,    0,    1)
+ M=   16, N=   16, type  3, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    33.
+         M=    16, N=    16, JTYPE=     4, ISEED=(    0,    0,    0,    1)
+ M=   16, N=   16, type  4, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    33.
+         M=    16, N=    16, JTYPE=     5, ISEED=(    0,    0,    0,    1)
+ M=   16, N=   16, type  5, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=    16, N=    16, JTYPE=     8, ISEED=(    0,    0,    0,    1)
+ M=   16, N=   16, type  8, seed=   0,   0,   0,   1, test( 9)=+5.5930999841388362e+01
+ M=   16, N=   16, type  8, seed=   0,   0,   0,   1, test(19)=+5.5930999841388362e+01
+ M=   16, N=   16, type  8, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ M=   16, N=   16, type 11, seed=   0,   0,   0,   1, test( 9)=+5.3119076186247779e+01
+ M=   16, N=   16, type 11, seed=   0,   0,   0,   1, test(19)=+5.3119076186247779e+01
+ M=   16, N=   16, type 12, seed=   0,   0,   0,   1, test( 9)=+6.1426435825199589e+01
+ M=   16, N=   16, type 12, seed=   0,   0,   0,   1, test(19)=+6.1426435825199589e+01
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=    16, N=    16, JTYPE=    13, ISEED=(    0,    0,    0,    1)
+ M=   16, N=   16, type 13, seed=   0,   0,   0,   1, test( 9)=+6.1563880899181759e+01
+ M=   16, N=   16, type 13, seed=   0,   0,   0,   1, test(19)=+6.1563880899181759e+01
+ M=   16, N=   16, type 13, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ M=   16, N=   16, type 14, seed=   0,   0,   0,   1, test( 9)=+6.4203380822980619e+01
+ M=   16, N=   16, type 14, seed=   0,   0,   0,   1, test(19)=+6.4203380822980619e+01
+ M=   16, N=   16, type 15, seed=   0,   0,   0,   1, test( 9)=+6.0662752612107719e+01
+ M=   16, N=   16, type 15, seed=   0,   0,   0,   1, test(19)=+6.0662752612107719e+01
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=    30, N=    30, JTYPE=     2, ISEED=(    0,    0,    0,    1)
+ M=   30, N=   30, type  2, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    61.
+         M=    30, N=    30, JTYPE=     3, ISEED=(    0,    0,    0,    1)
+ M=   30, N=   30, type  3, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    61.
+         M=    30, N=    30, JTYPE=     4, ISEED=(    0,    0,    0,    1)
+ M=   30, N=   30, type  4, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    61.
+         M=    30, N=    30, JTYPE=     5, ISEED=(    0,    0,    0,    1)
+ M=   30, N=   30, type  5, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=    30, N=    30, JTYPE=     8, ISEED=(    0,    0,    0,    1)
+ M=   30, N=   30, type  8, seed=   0,   0,   0,   1, test( 9)=+1.0939793318981367e+02
+ M=   30, N=   30, type  8, seed=   0,   0,   0,   1, test(19)=+9.1524051754268530e+01
+ M=   30, N=   30, type  8, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ M=   30, N=   30, type 11, seed=   0,   0,   0,   1, test( 9)=+9.7764507959336398e+01
+ M=   30, N=   30, type 11, seed=   0,   0,   0,   1, test(19)=+8.0524891489789430e+01
+ M=   30, N=   30, type 12, seed=   0,   0,   0,   1, test( 9)=+1.1398028014410210e+02
+ M=   30, N=   30, type 12, seed=   0,   0,   0,   1, test(19)=+9.7189382182110784e+01
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=    30, N=    30, JTYPE=    13, ISEED=(    0,    0,    0,    1)
+ M=   30, N=   30, type 13, seed=   0,   0,   0,   1, test( 9)=+1.2385511532337672e+02
+ M=   30, N=   30, type 13, seed=   0,   0,   0,   1, test(19)=+1.1151953657987712e+02
+ M=   30, N=   30, type 13, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ M=   30, N=   30, type 14, seed=   0,   0,   0,   1, test( 9)=+1.0887434543804276e+02
+ M=   30, N=   30, type 14, seed=   0,   0,   0,   1, test(19)=+9.7453337692395009e+01
+ M=   30, N=   30, type 15, seed=   0,   0,   0,   1, test( 9)=+1.0681393058226874e+02
+ M=   30, N=   30, type 15, seed=   0,   0,   0,   1, test(19)=+9.2836794380731006e+01
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=    30, N=    40, JTYPE=     2, ISEED=(    0,    0,    0,    1)
+ M=   30, N=   40, type  2, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    61.
+         M=    30, N=    40, JTYPE=     3, ISEED=(    0,    0,    0,    1)
+ M=   30, N=   40, type  3, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    61.
+         M=    30, N=    40, JTYPE=     4, ISEED=(    0,    0,    0,    1)
+ M=   30, N=   40, type  4, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    61.
+         M=    30, N=    40, JTYPE=     5, ISEED=(    0,    0,    0,    1)
+ M=   30, N=   40, type  5, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=    30, N=    40, JTYPE=     8, ISEED=(    0,    0,    0,    1)
+ M=   30, N=   40, type  8, seed=   0,   0,   0,   1, test( 9)=+1.1864764886295931e+02
+ M=   30, N=   40, type  8, seed=   0,   0,   0,   1, test(19)=+1.2293534966970812e+02
+ M=   30, N=   40, type  8, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ M=   30, N=   40, type 11, seed=   0,   0,   0,   1, test( 9)=+1.1802998150214000e+02
+ M=   30, N=   40, type 11, seed=   0,   0,   0,   1, test(19)=+1.1068570240791926e+02
+ M=   30, N=   40, type 12, seed=   0,   0,   0,   1, test( 9)=+1.1592784070623671e+02
+ M=   30, N=   40, type 12, seed=   0,   0,   0,   1, test(19)=+1.0139615920170836e+02
+ M=   30, N=   40, type 13, seed=   0,   0,   0,   1, test( 9)=+1.2779312456301285e+02
+ M=   30, N=   40, type 13, seed=   0,   0,   0,   1, test(19)=+1.2569857222225066e+02
+ M=   30, N=   40, type 14, seed=   0,   0,   0,   1, test( 9)=+9.5993163270871569e+01
+ M=   30, N=   40, type 14, seed=   0,   0,   0,   1, test(19)=+1.2216188740037096e+02
+ M=   30, N=   40, type 15, seed=   0,   0,   0,   1, test( 9)=+1.2818127604076201e+02
+ M=   30, N=   40, type 15, seed=   0,   0,   0,   1, test(19)=+1.4531003670245467e+02
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=    40, N=    30, JTYPE=     2, ISEED=(    0,    0,    0,    1)
+ M=   40, N=   30, type  2, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    61.
+         M=    40, N=    30, JTYPE=     3, ISEED=(    0,    0,    0,    1)
+ M=   40, N=   30, type  3, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    61.
+         M=    40, N=    30, JTYPE=     4, ISEED=(    0,    0,    0,    1)
+ M=   40, N=   30, type  4, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    61.
+         M=    40, N=    30, JTYPE=     5, ISEED=(    0,    0,    0,    1)
+ M=   40, N=   30, type  5, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=    40, N=    30, JTYPE=     8, ISEED=(    0,    0,    0,    1)
+ M=   40, N=   30, type  8, seed=   0,   0,   0,   1, test( 9)=+1.2275298148059692e+02
+ M=   40, N=   30, type  8, seed=   0,   0,   0,   1, test(19)=+9.8209942437179408e+01
+ M=   40, N=   30, type  8, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ M=   40, N=   30, type 11, seed=   0,   0,   0,   1, test( 9)=+1.1037146668474442e+02
+ M=   40, N=   30, type 11, seed=   0,   0,   0,   1, test(19)=+9.2344207589286475e+01
+ M=   40, N=   30, type 12, seed=   0,   0,   0,   1, test( 9)=+1.1249173219917587e+02
+ M=   40, N=   30, type 12, seed=   0,   0,   0,   1, test(19)=+9.1953207050580199e+01
+ M=   40, N=   30, type 13, seed=   0,   0,   0,   1, test( 9)=+1.3034685379502901e+02
+ M=   40, N=   30, type 13, seed=   0,   0,   0,   1, test(19)=+1.1878703697497696e+02
+ M=   40, N=   30, type 14, seed=   0,   0,   0,   1, test( 9)=+1.2439540249366913e+02
+ M=   40, N=   30, type 14, seed=   0,   0,   0,   1, test(19)=+1.0172462948367671e+02
+ M=   40, N=   30, type 15, seed=   0,   0,   0,   1, test( 9)=+1.2259196108672794e+02
+ M=   40, N=   30, type 15, seed=   0,   0,   0,   1, test(19)=+9.4790801073202525e+01
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=    40, N=    40, JTYPE=     2, ISEED=(    0,    0,    0,    1)
+ M=   40, N=   40, type  2, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    81.
+         M=    40, N=    40, JTYPE=     3, ISEED=(    0,    0,    0,    1)
+ M=   40, N=   40, type  3, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    81.
+         M=    40, N=    40, JTYPE=     4, ISEED=(    0,    0,    0,    1)
+ M=   40, N=   40, type  4, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    81.
+         M=    40, N=    40, JTYPE=     5, ISEED=(    0,    0,    0,    1)
+ M=   40, N=   40, type  5, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=    40, N=    40, JTYPE=     8, ISEED=(    0,    0,    0,    1)
+ M=   40, N=   40, type  8, seed=   0,   0,   0,   1, test( 9)=+1.3819162367587102e+02
+ M=   40, N=   40, type  8, seed=   0,   0,   0,   1, test(19)=+1.1337608690885243e+02
+ M=   40, N=   40, type  8, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ M=   40, N=   40, type 10, seed=   0,   0,   0,   1, test( 9)=+6.3504615798594487e+01
+ M=   40, N=   40, type 11, seed=   0,   0,   0,   1, test( 9)=+1.4862380024200434e+02
+ M=   40, N=   40, type 11, seed=   0,   0,   0,   1, test(19)=+1.2482952110201231e+02
+ M=   40, N=   40, type 12, seed=   0,   0,   0,   1, test( 9)=+1.4555962798573515e+02
+ M=   40, N=   40, type 12, seed=   0,   0,   0,   1, test(19)=+1.2372534865946693e+02
+ M=   40, N=   40, type 13, seed=   0,   0,   0,   1, test( 9)=+1.6145173269037965e+02
+ M=   40, N=   40, type 13, seed=   0,   0,   0,   1, test(19)=+1.4384262236056967e+02
+ M=   40, N=   40, type 14, seed=   0,   0,   0,   1, test( 9)=+1.4563203615805922e+02
+ M=   40, N=   40, type 14, seed=   0,   0,   0,   1, test(19)=+1.3118100406293456e+02
+ M=   40, N=   40, type 15, seed=   0,   0,   0,   1, test( 9)=+1.6144822801567785e+02
+ M=   40, N=   40, type 15, seed=   0,   0,   0,   1, test(19)=+1.4517672722114969e+02
+ DBD:    117 out of  10260 tests failed to pass the threshold
+ *** Error code from Rchkbd =    4
+ *** On entry to Rstevx parameter number      7 had an illegal value ***
+ *** XERBLA was called with SRNAME = Rstevx instead of Rgesvj ***
+ Rdrvbd: GESVDX returned INFO=    -7.
+         M=     3, N=     3, JTYPE=     2, LSWORK=    75
+         ISEED=(    0,    0,    0,    1)
+
+
+ SVD:  NB =  20, NBMIN =   2, NX =   1, NRHS =   2
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=     3, N=     3, JTYPE=     2, ISEED=(    0,    0,    0,    1)
+
+ DBD -- Real Singular Value Decomposition
+ Matrix types (see xCHKBD for details):
+ Diagonal matrices:
+   1: Zero                             5: Clustered entries
+   2: Identity                         6: Large, evenly spaced entries
+   3: Evenly spaced entries            7: Small, evenly spaced entries
+   4: Geometrically spaced entries
+ General matrices:
+   8: Evenly spaced sing. vals.       12: Small, evenly spaced sing vals
+   9: Geometrically spaced sing vals  13: Random, O(1) entries
+  10: Clustered sing. vals.           14: Random, scaled near overflow
+  11: Large, evenly spaced sing vals  15: Random, scaled near underflow
+
+ Test ratios:  (B: bidiagonal, S: diagonal, Q, P, U, and V: orthogonal
+                X: m x nrhs, Y = Q' X, and Z = U' Y)
+   1: norm( A - Q B P' ) / ( norm(A) max(m,n) ulp )
+   2: norm( I - Q' Q )   / ( m ulp )
+   3: norm( I - P' P )   / ( n ulp )
+   4: norm( B - U S V' ) / ( norm(B) min(m,n) ulp )
+   5: norm( Y - U Z )    / ( norm(Z) max(min(m,n),k) ulp )
+   6: norm( I - U' U )   / ( min(m,n) ulp )
+   7: norm( I - V' V )   / ( min(m,n) ulp )
+   8: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
+   9: norm( S - S1 )     / ( norm(S) ulp ), where S1 is computed
+                                            without computing U and V'
+  10: Sturm sequence test (0 if sing. vals of B within THRESH of S)
+  11: norm( A - (QU) S (V' P') ) / ( norm(A) max(m,n) ulp )
+  12: norm( X - (QU) Z )         / ( |X| max(M,k) ulp )
+  13: norm( I - (QU)'(QU) )      / ( M ulp )
+  14: norm( I - (V' P') (P V) )  / ( N ulp )
+  15: norm( B - U S V' ) / ( norm(B) min(m,n) ulp )
+  16: norm( I - U' U )   / ( min(m,n) ulp )
+  17: norm( I - V' V )   / ( min(m,n) ulp )
+  18: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
+  19: norm( S - S1 )     / ( norm(S) ulp ), where S1 is computed
+                                            without computing U and V'
+  20: norm( B - U S V' )  / ( norm(B) min(m,n) ulp )  DBDSVX(V,A)
+  21: norm( I - U' U )    / ( min(m,n) ulp )
+  22: norm( I - V' V )    / ( min(m,n) ulp )
+  23: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
+  24: norm( S - S1 )      / ( norm(S) ulp ), where S1 is computed
+                                             without computing U and V'
+  25: norm( S - U' B V ) / ( norm(B) n ulp )  DBDSVX(V,I)
+  26: norm( I - U' U )    / ( min(m,n) ulp )
+  27: norm( I - V' V )    / ( min(m,n) ulp )
+  28: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
+  29: norm( S - S1 )      / ( norm(S) ulp ), where S1 is computed
+                                             without computing U and V'
+  30: norm( S - U' B V ) / ( norm(B) n ulp )  DBDSVX(V,V)
+  31: norm( I - U' U )    / ( min(m,n) ulp )
+  32: norm( I - V' V )    / ( min(m,n) ulp )
+  33: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
+  34: norm( S - S1 )      / ( norm(S) ulp ), where S1 is computed
+                                             without computing U and V'
+ M=    3, N=    3, type  2, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=     3, N=     3, JTYPE=     3, ISEED=(    0,    0,    0,    1)
+ M=    3, N=    3, type  3, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=     3, N=     3, JTYPE=     4, ISEED=(    0,    0,    0,    1)
+ M=    3, N=    3, type  4, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=     3, N=     3, JTYPE=     5, ISEED=(    0,    0,    0,    1)
+ M=    3, N=    3, type  5, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=     3, N=     3, JTYPE=     8, ISEED=(    0,    0,    0,    1)
+ M=    3, N=    3, type  8, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=     3, N=     3, JTYPE=    13, ISEED=(    0,    0,    0,    1)
+ M=    3, N=    3, type 13, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=    10, N=    10, JTYPE=     2, ISEED=(    0,    0,    0,    1)
+ M=   10, N=   10, type  2, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    21.
+         M=    10, N=    10, JTYPE=     3, ISEED=(    0,    0,    0,    1)
+ M=   10, N=   10, type  3, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    21.
+         M=    10, N=    10, JTYPE=     4, ISEED=(    0,    0,    0,    1)
+ M=   10, N=   10, type  4, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    21.
+         M=    10, N=    10, JTYPE=     5, ISEED=(    0,    0,    0,    1)
+ M=   10, N=   10, type  5, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=    10, N=    10, JTYPE=     8, ISEED=(    0,    0,    0,    1)
+ M=   10, N=   10, type  8, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=    10, N=    10, JTYPE=    13, ISEED=(    0,    0,    0,    1)
+ M=   10, N=   10, type 13, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=    10, N=    16, JTYPE=     2, ISEED=(    0,    0,    0,    1)
+ M=   10, N=   16, type  2, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    21.
+         M=    10, N=    16, JTYPE=     3, ISEED=(    0,    0,    0,    1)
+ M=   10, N=   16, type  3, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    21.
+         M=    10, N=    16, JTYPE=     4, ISEED=(    0,    0,    0,    1)
+ M=   10, N=   16, type  4, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    21.
+         M=    10, N=    16, JTYPE=     5, ISEED=(    0,    0,    0,    1)
+ M=   10, N=   16, type  5, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=    10, N=    16, JTYPE=     8, ISEED=(    0,    0,    0,    1)
+ M=   10, N=   16, type  8, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=    10, N=    16, JTYPE=    13, ISEED=(    0,    0,    0,    1)
+ M=   10, N=   16, type 13, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=    16, N=    10, JTYPE=     2, ISEED=(    0,    0,    0,    1)
+ M=   16, N=   10, type  2, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    21.
+         M=    16, N=    10, JTYPE=     3, ISEED=(    0,    0,    0,    1)
+ M=   16, N=   10, type  3, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    21.
+         M=    16, N=    10, JTYPE=     4, ISEED=(    0,    0,    0,    1)
+ M=   16, N=   10, type  4, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    21.
+         M=    16, N=    10, JTYPE=     5, ISEED=(    0,    0,    0,    1)
+ M=   16, N=   10, type  5, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=    16, N=    10, JTYPE=     8, ISEED=(    0,    0,    0,    1)
+ M=   16, N=   10, type  8, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=    16, N=    10, JTYPE=    13, ISEED=(    0,    0,    0,    1)
+ M=   16, N=   10, type 13, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=    16, N=    16, JTYPE=     2, ISEED=(    0,    0,    0,    1)
+ M=   16, N=   16, type  2, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    33.
+         M=    16, N=    16, JTYPE=     3, ISEED=(    0,    0,    0,    1)
+ M=   16, N=   16, type  3, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    33.
+         M=    16, N=    16, JTYPE=     4, ISEED=(    0,    0,    0,    1)
+ M=   16, N=   16, type  4, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    33.
+         M=    16, N=    16, JTYPE=     5, ISEED=(    0,    0,    0,    1)
+ M=   16, N=   16, type  5, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=    16, N=    16, JTYPE=     8, ISEED=(    0,    0,    0,    1)
+ M=   16, N=   16, type  8, seed=   0,   0,   0,   1, test( 9)=+6.7760590585072421e+01
+ M=   16, N=   16, type  8, seed=   0,   0,   0,   1, test(19)=+6.7760590585072421e+01
+ M=   16, N=   16, type  8, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ M=   16, N=   16, type 11, seed=   0,   0,   0,   1, test( 9)=+6.0778287170915851e+01
+ M=   16, N=   16, type 11, seed=   0,   0,   0,   1, test(19)=+6.0778287170915851e+01
+ M=   16, N=   16, type 12, seed=   0,   0,   0,   1, test( 9)=+5.6060389550636200e+01
+ M=   16, N=   16, type 12, seed=   0,   0,   0,   1, test(19)=+5.6060389550636200e+01
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=    16, N=    16, JTYPE=    13, ISEED=(    0,    0,    0,    1)
+ M=   16, N=   16, type 13, seed=   0,   0,   0,   1, test( 9)=+9.1357281884569381e+01
+ M=   16, N=   16, type 13, seed=   0,   0,   0,   1, test(19)=+7.2421881233127053e+01
+ M=   16, N=   16, type 13, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ M=   16, N=   16, type 14, seed=   0,   0,   0,   1, test( 9)=+6.4502452833732177e+01
+ M=   16, N=   16, type 14, seed=   0,   0,   0,   1, test(19)=+6.4502452833732177e+01
+ M=   16, N=   16, type 15, seed=   0,   0,   0,   1, test( 9)=+5.8888550088926241e+01
+ M=   16, N=   16, type 15, seed=   0,   0,   0,   1, test(19)=+5.8888550088926241e+01
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=    30, N=    30, JTYPE=     2, ISEED=(    0,    0,    0,    1)
+ M=   30, N=   30, type  2, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    61.
+         M=    30, N=    30, JTYPE=     3, ISEED=(    0,    0,    0,    1)
+ M=   30, N=   30, type  3, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    61.
+         M=    30, N=    30, JTYPE=     4, ISEED=(    0,    0,    0,    1)
+ M=   30, N=   30, type  4, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    61.
+         M=    30, N=    30, JTYPE=     5, ISEED=(    0,    0,    0,    1)
+ M=   30, N=   30, type  5, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=    30, N=    30, JTYPE=     8, ISEED=(    0,    0,    0,    1)
+ M=   30, N=   30, type  8, seed=   0,   0,   0,   1, test( 9)=+1.1219323931269493e+02
+ M=   30, N=   30, type  8, seed=   0,   0,   0,   1, test(19)=+9.7661258948467445e+01
+ M=   30, N=   30, type  8, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ M=   30, N=   30, type 11, seed=   0,   0,   0,   1, test( 9)=+1.0979029191497796e+02
+ M=   30, N=   30, type 11, seed=   0,   0,   0,   1, test(19)=+9.4718368629136328e+01
+ M=   30, N=   30, type 12, seed=   0,   0,   0,   1, test( 9)=+1.1554386486296246e+02
+ M=   30, N=   30, type 12, seed=   0,   0,   0,   1, test(19)=+8.4828557295248463e+01
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=    30, N=    30, JTYPE=    13, ISEED=(    0,    0,    0,    1)
+ M=   30, N=   30, type 13, seed=   0,   0,   0,   1, test( 9)=+1.2511890096049211e+02
+ M=   30, N=   30, type 13, seed=   0,   0,   0,   1, test(19)=+1.0607912455538734e+02
+ M=   30, N=   30, type 13, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ M=   30, N=   30, type 14, seed=   0,   0,   0,   1, test( 9)=+1.2679745243122115e+02
+ M=   30, N=   30, type 14, seed=   0,   0,   0,   1, test(19)=+1.1012883380803440e+02
+ M=   30, N=   30, type 15, seed=   0,   0,   0,   1, test( 9)=+1.2048656606717215e+02
+ M=   30, N=   30, type 15, seed=   0,   0,   0,   1, test(19)=+1.0432480002813003e+02
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=    30, N=    40, JTYPE=     2, ISEED=(    0,    0,    0,    1)
+ M=   30, N=   40, type  2, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    61.
+         M=    30, N=    40, JTYPE=     3, ISEED=(    0,    0,    0,    1)
+ M=   30, N=   40, type  3, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    61.
+         M=    30, N=    40, JTYPE=     4, ISEED=(    0,    0,    0,    1)
+ M=   30, N=   40, type  4, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    61.
+         M=    30, N=    40, JTYPE=     5, ISEED=(    0,    0,    0,    1)
+ M=   30, N=   40, type  5, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=    30, N=    40, JTYPE=     8, ISEED=(    0,    0,    0,    1)
+ M=   30, N=   40, type  8, seed=   0,   0,   0,   1, test( 9)=+1.0159089945927471e+02
+ M=   30, N=   40, type  8, seed=   0,   0,   0,   1, test(19)=+1.0981211424384640e+02
+ M=   30, N=   40, type  8, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ M=   30, N=   40, type 11, seed=   0,   0,   0,   1, test( 9)=+9.8307916138626623e+01
+ M=   30, N=   40, type 11, seed=   0,   0,   0,   1, test(19)=+1.1527606053221866e+02
+ M=   30, N=   40, type 12, seed=   0,   0,   0,   1, test( 9)=+1.0974012615683169e+02
+ M=   30, N=   40, type 12, seed=   0,   0,   0,   1, test(19)=+1.1510656747063384e+02
+ M=   30, N=   40, type 13, seed=   0,   0,   0,   1, test( 9)=+1.3579704168272216e+02
+ M=   30, N=   40, type 13, seed=   0,   0,   0,   1, test(19)=+1.2596966646597717e+02
+ M=   30, N=   40, type 14, seed=   0,   0,   0,   1, test( 9)=+1.2600907107598092e+02
+ M=   30, N=   40, type 14, seed=   0,   0,   0,   1, test(19)=+1.2049598601478843e+02
+ M=   30, N=   40, type 15, seed=   0,   0,   0,   1, test( 9)=+1.3123267489097089e+02
+ M=   30, N=   40, type 15, seed=   0,   0,   0,   1, test(19)=+1.3888329395147999e+02
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=    40, N=    30, JTYPE=     2, ISEED=(    0,    0,    0,    1)
+ M=   40, N=   30, type  2, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    61.
+         M=    40, N=    30, JTYPE=     3, ISEED=(    0,    0,    0,    1)
+ M=   40, N=   30, type  3, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    61.
+         M=    40, N=    30, JTYPE=     4, ISEED=(    0,    0,    0,    1)
+ M=   40, N=   30, type  4, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    61.
+         M=    40, N=    30, JTYPE=     5, ISEED=(    0,    0,    0,    1)
+ M=   40, N=   30, type  5, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=    40, N=    30, JTYPE=     8, ISEED=(    0,    0,    0,    1)
+ M=   40, N=   30, type  8, seed=   0,   0,   0,   1, test( 9)=+1.1618441581204182e+02
+ M=   40, N=   30, type  8, seed=   0,   0,   0,   1, test(19)=+1.0140660070467826e+02
+ M=   40, N=   30, type  8, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ M=   40, N=   30, type 10, seed=   0,   0,   0,   1, test( 9)=+5.6532967504600864e+01
+ M=   40, N=   30, type 11, seed=   0,   0,   0,   1, test( 9)=+1.1981942632439696e+02
+ M=   40, N=   30, type 11, seed=   0,   0,   0,   1, test(19)=+1.0216951518426983e+02
+ M=   40, N=   30, type 12, seed=   0,   0,   0,   1, test( 9)=+1.0650576527717026e+02
+ M=   40, N=   30, type 12, seed=   0,   0,   0,   1, test(19)=+8.7245408721075009e+01
+ M=   40, N=   30, type 13, seed=   0,   0,   0,   1, test( 9)=+1.4731136308091726e+02
+ M=   40, N=   30, type 13, seed=   0,   0,   0,   1, test(19)=+1.3006707423363936e+02
+ M=   40, N=   30, type 14, seed=   0,   0,   0,   1, test( 9)=+1.1171714331493340e+02
+ M=   40, N=   30, type 14, seed=   0,   0,   0,   1, test(19)=+9.9137735246437976e+01
+ M=   40, N=   30, type 15, seed=   0,   0,   0,   1, test( 9)=+1.2874244813784859e+02
+ M=   40, N=   30, type 15, seed=   0,   0,   0,   1, test(19)=+1.0396949297281646e+02
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=    40, N=    40, JTYPE=     2, ISEED=(    0,    0,    0,    1)
+ M=   40, N=   40, type  2, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    81.
+         M=    40, N=    40, JTYPE=     3, ISEED=(    0,    0,    0,    1)
+ M=   40, N=   40, type  3, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    81.
+         M=    40, N=    40, JTYPE=     4, ISEED=(    0,    0,    0,    1)
+ M=   40, N=   40, type  4, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(vects,A) returned INFO=    81.
+         M=    40, N=    40, JTYPE=     5, ISEED=(    0,    0,    0,    1)
+ M=   40, N=   40, type  5, seed=   0,   0,   0,   1, test(20)=+6.7039039649712985e+153
+ Rchkbd: Rbdsvdx(values,A) returned INFO=     4.
+         M=    40, N=    40, JTYPE=     8, ISEED=(    0,    0,    0,    1)
+ M=   40, N=   40, type  8, seed=   0,   0,   0,   1, test( 9)=+1.3985791535685345e+02
+ M=   40, N=   40, type  8, seed=   0,   0,   0,   1, test(19)=+1.1134889747807822e+02
+ M=   40, N=   40, type  8, seed=   0,   0,   0,   1, test(24)=+6.7039039649712985e+153
+ M=   40, N=   40, type 10, seed=   0,   0,   0,   1, test( 9)=+7.5122130721358524e+01
+ M=   40, N=   40, type 11, seed=   0,   0,   0,   1, test( 9)=+1.3346237621689678e+02
+ M=   40, N=   40, type 11, seed=   0,   0,   0,   1, test(19)=+9.7507262120694139e+01
+ M=   40, N=   40, type 12, seed=   0,   0,   0,   1, test( 9)=+1.4882824441964349e+02
+ M=   40, N=   40, type 12, seed=   0,   0,   0,   1, test(19)=+1.3023286943829308e+02
+ M=   40, N=   40, type 13, seed=   0,   0,   0,   1, test( 9)=+1.7175149493790588e+02
+ M=   40, N=   40, type 13, seed=   0,   0,   0,   1, test(19)=+1.4527194980669446e+02
+ M=   40, N=   40, type 14, seed=   0,   0,   0,   1, test( 9)=+1.3744311068152746e+02
+ M=   40, N=   40, type 14, seed=   0,   0,   0,   1, test(19)=+1.2049516307101897e+02
+ M=   40, N=   40, type 15, seed=   0,   0,   0,   1, test( 9)=+1.6022551132498112e+02
+ M=   40, N=   40, type 15, seed=   0,   0,   0,   1, test(19)=+1.4158482812886210e+02
+ DBD:    113 out of  10260 tests failed to pass the threshold
+ *** Error code from Rchkbd =    4
+ *** On entry to Rstevx parameter number      7 had an illegal value ***
+ *** XERBLA was called with SRNAME = Rstevx instead of Rgesvj ***
+ Rdrvbd: GESVDX returned INFO=    -7.
+         M=     3, N=     3, JTYPE=     2, LSWORK=    75
+         ISEED=(    0,    0,    0,    1)
+
+
+ End of tests
+ Total time used =       292.00 seconds
+
