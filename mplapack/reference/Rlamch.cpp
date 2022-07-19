@@ -233,7 +233,11 @@ REAL RlamchS_gmp(void) {
     REAL one = 1.0;
     unsigned long exp2;
     // XXX
+#if defined _WIN32 //sizeof long = 4; mpf_get_d_2exp is long, not long long (64bit long)
+    exp2 = 0x7fffffff;
+#else
     exp2 = 0xffffffff;
+#endif
     mpf_div_2exp(sfmin.get_mpf_t(), one.get_mpf_t(), exp2);
     return sfmin;
 
@@ -310,7 +314,11 @@ REAL RlamchM_gmp(void) {
     REAL tmp;
     REAL uflowmin, one = 1.0;
     // XXX
+#if defined _WIN32 //sizeof long = 4; mpf_get_d_2exp is long, not long long (64bit long)
+    exp2 = 0x7fffffff;
+#else
     exp2 = 0xffffffff;
+#endif
     tmp = exp2;
     return -tmp;
 
@@ -342,7 +350,11 @@ REAL RlamchU_gmp(void) {
     REAL one = 1.0;
     unsigned long exp2;
     // XXX    exp2 = (1UL << (mp_bits_per_limb - 8)) - 1; // 6 seems to be the smallest on amd64 but for safty
+#if defined _WIN32 //sizeof long = 4; mpf_get_d_2exp is long, not long long (64bit long)
+    exp2 = 0x7fffffff;
+#else
     exp2 = 0xffffffff;
+#endif
     mpf_div_2exp(underflowmin.get_mpf_t(), one.get_mpf_t(), exp2);
     return underflowmin;
 }
@@ -365,7 +377,11 @@ REAL RlamchO_gmp(void) {
     REAL one = 1.0;
     unsigned long exp2;
     // XXX    exp2 = (1UL << (mp_bits_per_limb - 8)) - 1; // 6 seems to be the smallest on amd64 but for safty
+#if defined _WIN32 //sizeof long = 4; mpf_get_d_2exp is long, not long long (64bit long)
+    exp2 = 0x7fffffff;
+#else
     exp2 = 0xffffffff;
+#endif
     mpf_mul_2exp(overflowmax.get_mpf_t(), one.get_mpf_t(), exp2);
 
     return overflowmax;
