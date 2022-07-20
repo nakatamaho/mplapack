@@ -74,7 +74,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <blas.h>
 #include <lapack.h>
 
-#define VERBOSE_TEST
+//#define VERBOSE_TEST
 
 /* dlamch result on FreeBSD 6/i386 + Lapack 3.1.1
   Epsilon                      =   1.110223024625157E-016
@@ -92,6 +92,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
 void Rlamch_mpfr_test() {
     REAL tmp, tmp2;
+#if defined VERBOSE_TEST
+    REAL one = 1.0;
+    REAL two = 2.0;
+    REAL tmp3, tmp4, tmp5, tmp6;
+#endif
+
     tmp = Rlamch_mpfr("E");
 
     printf("Rlamch E: Epsilon                      ");
@@ -106,19 +112,18 @@ void Rlamch_mpfr_test() {
     printf("Rlamch S: Safe minimum                 ");
     printnum(tmp);
     printf("\n");
-
-    /*
-        REAL tmp3 = tmp / 2.0;
-        REAL tmp4 = 1.0 / (tmp);
-        REAL tmp5 = 1.0 / (tmp3);
-        REAL tmp6 = 2.225073858507201e-308;
-        mpfr_printf("%72.64Rb\n", mpfr_ptr(tmp));
-        mpfr_printf("%72.64Rb should be smaller than above\n", mpfr_ptr(tmp3));
-        mpfr_printf("%72.64Rb\n", mpfr_ptr(tmp4));
-        mpfr_printf("%72.64Rb should overflow\n", mpfr_ptr(tmp5));
-        mpfr_printf("%72.64Rb just a ref.\n", mpfr_ptr(tmp6));
-    */
-
+#if defined VERBOSE_TEST
+    tmp3 = tmp / 2.0;
+    tmp4 = 1.0 / (tmp);
+    tmp5 = 1.0 / (tmp3);
+    tmp6 = 2.225073858507201e-308;
+    mpfr_printf("%72.64Rb\n", mpfr_ptr(tmp));
+    mpfr_printf("%72.64Rb safmin/2; should be smaller than above\n", mpfr_ptr(tmp3));
+    mpfr_printf("%72.64Rb 1/safmin, this should not be inf\n", mpfr_ptr(tmp4));
+    mpfr_printf("%72.64Rb 1/(safmin/2); inf it's okay\n", mpfr_ptr(tmp5));
+    mpfr_printf("%72.64Re same as above but in decimal digits\n", mpfr_ptr(tmp5));
+    mpfr_printf("%72.64Rb safe minimum of double\n", mpfr_ptr(tmp6));
+#endif
     tmp = Rlamch_mpfr("B");
     printf("Rlamch B: Base                         ");
     printnum(tmp);
@@ -143,40 +148,40 @@ void Rlamch_mpfr_test() {
     printf("Rlamch M: Minimum exponent:            ");
     printnum(tmp);
     printf("\n");
+#if defined VERBOSE_TEST
+    tmp3 = mul_2si(one, (long)tmp);
+    tmp4 = (one - Rlamch_mpfr("E")) * mul_2si(one, (long)tmp); // fill out sig. dig. by 1.
+    tmp5 = tmp4 / two;
+    mpfr_printf("%.512Rb 2^minexponent: fill out by 1: default 512bits\n", mpfr_ptr(tmp4));
+    mpfr_printf("%.76Re 2^minexponent: fill out by 1: in decimal digits\n", mpfr_ptr(tmp4));
+    mpfr_printf("%.512Rb divided by two; abrupt underflow by MPFR\n", mpfr_ptr(tmp5));
 
-    /*
-        REAL tmp3, tmp4, tmp5;
-        REAL one = 1.0;
-        tmp3= mul_2si(one, (long)tmp);
-        tmp4= (1.0 - Rlamch_mpfr("E")) * mul_2si(one, (long)tmp); //fill out sig. dig. by 1.
-        tmp5= tmp4 / 2.0;
-        tmp5= tmp5 * 2.0;
-        mpfr_printf("%72.64Rb 2^(minexp)\n", mpfr_ptr(tmp3));
-        mpfr_printf("%72.64Rb fill out by 1\n", mpfr_ptr(tmp4));
-        mpfr_printf("%72.64Rb abrupt undeflow MPFR; gradual underflow: lost one bit\n", mpfr_ptr(tmp5));
-    */
+    tmp4 = (one - Rlamch_mpfr("E")) * mul_2si(one, (long)tmp + 1); // fill out sig. dig. by 1.
+    tmp5 = tmp4 / two;
+    mpfr_printf("%.512Rb 2^(minexponent+1): fill out by 1: default 512bits\n", mpfr_ptr(tmp4));
+    mpfr_printf("%.76Re 2^(minexponent+1): fill out by 1: in decimal digits\n", mpfr_ptr(tmp4));
+    mpfr_printf("%.512Rb divided by two; do not underflow\n", mpfr_ptr(tmp5));
+#endif
     //
     tmp = Rlamch_mpfr("U");
     printf("Rlamch U: Underflow threshold          ");
     printnum(tmp);
     printf("\n");
-    /*
-        mpfr_printf("%72.64Rb\n", mpfr_ptr(tmp));
-    */
-
+#if defined VERBOSE_TEST
+    tmp2 = tmp / two;
+    mpfr_printf("%.512Rb underflow threshold: default 512bits\n", mpfr_ptr(tmp));
+    mpfr_printf("%.512Rb underflow threshold/2: default 512bits\n", mpfr_ptr(tmp2));
+#endif
     tmp = Rlamch_mpfr("L");
     printf("Rlamch L: Largest exponent             ");
     printnum(tmp);
     printf("\n");
-
-    /*
-        REAL tmp3, tmp4;
-        REAL one = 1.0;
+#if defined VERBOSE_TEST
         tmp3= mul_2si(one, (long)tmp);
-        tmp4 = tmp3*2.0;
+        tmp4 = tmp3 * 2.0;
         mpfr_printf("%72.64Rb 2^(largeexp)\n", mpfr_ptr(tmp3));
         mpfr_printf("%72.64Rb should overflow\n", mpfr_ptr(tmp4));
-    */
+#endif
 
     tmp = Rlamch_mpfr("O");
     printf("Rlamch O: Overflow threshold           ");
