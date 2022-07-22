@@ -1,3 +1,11 @@
+2022/07/22    Nakata Maho <maho@riken.jp> 2.0 branch
+            * Fix iMparam2stage.
+            * Fix issues for test programs; stack overflows, possible memory leaks and memory accesses.
+            * Extensive tests and fixes for mingw64; we provide DLLs for libqd and mpblas.
+            * Correct exponent ranges for GMP, MPFR and each OS.
+            * Update test results for aarch64-unknown-linux-gnu, x86_64-apple-darwin20.6.0,
+              x86_64-pc-linux-gnu, x86_64-pc-linux-gnu_inteloneapi and x86_64-w64-mingw32.
+
 2022/06/21    Nakata Maho <maho@riken.jp> 2.0 branch
             * Enable Rgejsv, Cgejsv, Rgesvj and Cgesvj for dd/qd by changing Rlamch("O") to approx.
               1e-16 * Rlamch("O").

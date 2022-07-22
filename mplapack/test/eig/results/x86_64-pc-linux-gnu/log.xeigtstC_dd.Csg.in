@@ -18,3 +18,20 @@ The following parameter values will be used:
 
 
  ZSG:  NB =   1, NBMIN =   2, NX =   1
+
+ All tests for ZSG passed the threshold ( 11172 tests run)
+
+
+ ZSG:  NB =   3, NBMIN =   2, NX =   1
+
+ All tests for ZSG passed the threshold ( 11172 tests run)
+
+
+ ZSG:  NB =  20, NBMIN =   2, NX =   1
+
+ All tests for ZSG passed the threshold ( 11172 tests run)
+
+
+ End of tests
+ Total time used =        13.00 seconds
+

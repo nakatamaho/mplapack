@@ -22,7 +22,78 @@ The following parameter values will be used:
  All tests for CGE drivers  passed the threshold (   5748 tests run)
  CGB routines passed the tests of the error exits
 
- All tests for CGB routines passed the threshold (  28938 tests run)
+ CGB:  General band matrices
+ Matrix types:
+    1. Random, CNDNUM = 2              5. Random, CNDNUM = sqrt(0.1/EPS)
+    2. First column zero               6. Random, CNDNUM = .01/EPS
+    3. Last column zero                7. Scaled near underflow
+    4. Last n/2 columns zero           8. Scaled near overflow
+ Test ratios:
+    1: norm( L * U - A )  / ( N * norm(A) * EPS )
+    2: norm( B - A * X )  / ( norm(A) * norm(X) * EPS )
+    3: norm( X - XACT )   / ( norm(XACT) * CNDNUM * EPS )
+    4: norm( X - XACT )   / ( norm(XACT) * CNDNUM * EPS ), refined
+    5: norm( X - XACT )   / ( norm(XACT) * (error bound) )
+    6: (backward error)   / EPS
+    7: RCOND * CNDNUM - 1.0
+ Messages:
+ M =    5, N =    5, KL=    3, KU=    0, NB =   3, type 5, test(1)=3.7531534408656721e+15
+ M =    5, N =    5, KL=    3, KU=    0, NB =   3, type 6, test(1)=5.1847937513754909e+04
+ M =    5, N =    5, KL=    3, KU=    1, NB =   3, type 6, test(1)=8.6511069957213961e+10
+ M =    5, N =    5, KL=    3, KU=    1, NB =   3, type 7, test(1)=9.6871915583084141e+29
+ M =    5, N =    5, KL=    3, KU=    1, NB =   3, type 8, test(1)=1.4546682226110763e+29
+ M =    5, N =   10, KL=    3, KU=    0, NB =   3, type 5, test(1)=1.0535543453947393e+19
+ M =    5, N =   10, KL=    3, KU=    0, NB =   3, type 6, test(1)=6.3248606158490684e+10
+ M =    5, N =   10, KL=    3, KU=    2, NB =   3, type 1, test(1)=5.1937944551335355e+29
+ M =    5, N =   10, KL=    3, KU=    2, NB =   3, type 2, test(1)=1.5679762559070910e+30
+ M =    5, N =   10, KL=    3, KU=    2, NB =   3, type 3, test(1)=5.1937944551335355e+29
+ M =    5, N =   10, KL=    3, KU=    2, NB =   3, type 5, test(1)=1.7303409957763898e+18
+ M =    5, N =   10, KL=    3, KU=    2, NB =   3, type 6, test(1)=2.1939728580796348e+10
+ M =    5, N =   10, KL=    3, KU=    2, NB =   3, type 8, test(1)=7.5348509008411670e+29
+ M =    5, N =   50, KL=    3, KU=   37, NB =   3, type 1, test(1)=1.1489887955538696e+29
+ M =    5, N =   50, KL=    3, KU=   37, NB =   3, type 3, test(1)=1.1489887955538696e+29
+ M =    5, N =   50, KL=    3, KU=   37, NB =   3, type 5, test(1)=9.3793844133099467e+16
+ M =    5, N =   50, KL=    3, KU=   37, NB =   3, type 6, test(1)=3.3781584866251052e+10
+ M =    5, N =   50, KL=    3, KU=   37, NB =   3, type 7, test(1)=4.5035040836229729e+28
+ M =    5, N =   50, KL=    3, KU=   12, NB =   3, type 1, test(1)=1.3543185347541253e+29
+ M =    5, N =   50, KL=    3, KU=   12, NB =   3, type 2, test(1)=8.2724970180458846e+28
+ M =    5, N =   50, KL=    3, KU=   12, NB =   3, type 3, test(1)=1.3543185347541253e+29
+ M =    5, N =   50, KL=    3, KU=   12, NB =   3, type 6, test(1)=1.0045214760996594e+10
+ M =    5, N =   50, KL=    3, KU=   12, NB =   3, type 7, test(1)=8.4998119190304845e+28
+ M =    5, N =   50, KL=    3, KU=   12, NB =   3, type 8, test(1)=2.0344756760229918e+28
+ M =   10, N =   10, KL=    7, KU=    2, NB =   3, type 1, test(1)=3.5467183105804695e+28
+ M =   10, N =   10, KL=    7, KU=    2, NB =   3, type 5, test(1)=2.3536290241272807e+18
+ M =   10, N =   10, KL=    7, KU=    2, NB =   3, type 6, test(1)=1.2090465173145539e+11
+ M =   10, N =   10, KL=    7, KU=    2, NB =   3, type 8, test(1)=2.2535890130727357e+29
+ M =   10, N =   50, KL=    7, KU=   37, NB =   3, type 1, test(1)=8.7848091074843440e+28
+ M =   10, N =   50, KL=    7, KU=   37, NB =   3, type 3, test(1)=8.7848091074843440e+28
+ M =   10, N =   50, KL=    7, KU=   37, NB =   3, type 5, test(1)=2.2347084009020515e+17
+ M =   10, N =   50, KL=    7, KU=   37, NB =   3, type 6, test(1)=1.0851787887936045e+09
+ M =   10, N =   50, KL=    7, KU=   37, NB =   3, type 7, test(1)=7.4544873984420818e+28
+ M =   10, N =   50, KL=    7, KU=   37, NB =   3, type 8, test(1)=6.1126026847781216e+28
+ M =   10, N =   50, KL=    7, KU=   12, NB =   3, type 2, test(1)=4.2078029895874896e+28
+ M =   10, N =   50, KL=    7, KU=   12, NB =   3, type 5, test(1)=2.7110086349512846e+18
+ M =   10, N =   50, KL=    7, KU=   12, NB =   3, type 6, test(1)=5.4758916748572814e+09
+ M =   10, N =   50, KL=    7, KU=   12, NB =   3, type 7, test(1)=7.2083600887066937e+28
+ M =   50, N =   50, KL=   37, KU=   12, NB =   3, type 1, test(1)=4.4109220055190343e+28
+ M =   50, N =   50, KL=   37, KU=   12, NB =  20, type 1, test(1)=6.2618281483725084e+28
+ M =   50, N =   50, KL=   37, KU=   12, NB =   3, type 2, test(1)=3.7921684561004103e+28
+ M =   50, N =   50, KL=   37, KU=   12, NB =  20, type 2, test(1)=6.3423787048299618e+28
+ M =   50, N =   50, KL=   37, KU=   12, NB =   3, type 5, test(1)=8.6356420481976493e+17
+ M =   50, N =   50, KL=   37, KU=   12, NB =  20, type 5, test(1)=1.2505792275771662e+18
+ M =   50, N =   50, KL=   37, KU=   12, NB =   3, type 6, test(1)=2.0249926200112399e+09
+ M =   50, N =   50, KL=   37, KU=   12, NB =  20, type 6, test(1)=1.1777273031082617e+10
+ M =   50, N =   50, KL=   37, KU=   12, NB =   3, type 7, test(1)=2.9989591633100055e+28
+ M =   50, N =   50, KL=   37, KU=   12, NB =  20, type 7, test(1)=7.5998238496759152e+28
+ M =   50, N =   50, KL=   37, KU=   12, NB =   3, type 8, test(1)=5.2763222282949737e+27
+ M =   50, N =   50, KL=   37, KU=   12, NB =  20, type 8, test(1)=3.6854623338295272e+28
+ M =   50, N =   50, KL=   12, KU=   37, NB =   3, type 1, test(1)=8.4567534754330726e+27
+ M =   50, N =   50, KL=   12, KU=   37, NB =   3, type 2, test(1)=1.2239496570372960e+28
+ M =   50, N =   50, KL=   12, KU=   37, NB =   3, type 5, test(1)=9.1858040629747933e+24
+ M =   50, N =   50, KL=   12, KU=   37, NB =   3, type 6, test(1)=1.8093260769249476e+23
+ M =   50, N =   50, KL=   12, KU=   37, NB =   3, type 7, test(1)=1.6006815046183348e+28
+ M =   50, N =   50, KL=   12, KU=   37, NB =   3, type 8, test(1)=1.0330246876653334e+28
+ CGB:     56 out of  28938 tests failed to pass the threshold
  CGB drivers passed the tests of the error exits
 
  All tests for CGB drivers  passed the threshold (  36567 tests run)
@@ -49,7 +120,115 @@ The following parameter values will be used:
  All tests for CPP drivers  passed the threshold (   1910 tests run)
  CPB routines passed the tests of the error exits
 
- All tests for CPB routines passed the threshold (   3458 tests run)
+ CPB:  Hermitian positive definite band matrices
+ Matrix types:
+    1. Random, CNDNUM = 2              5. Random, CNDNUM = sqrt(0.1/EPS)
+   *2. First row and column zero       6. Random, CNDNUM = 0.1/EPS
+   *3. Last row and column zero        7. Scaled near underflow
+   *4. Middle row and column zero      8. Scaled near overflow
+   (* - tests error exits from CPBTRF, no test ratios are computed)
+ Test ratios:
+    1: norm( U' * U - A ) / ( N * norm(A) * EPS ), or
+       norm( L * L' - A ) / ( N * norm(A) * EPS )
+    2: norm( B - A * X )  / ( norm(A) * norm(X) * EPS )
+    3: norm( X - XACT )   / ( norm(XACT) * CNDNUM * EPS )
+    4: norm( X - XACT )   / ( norm(XACT) * CNDNUM * EPS ), refined
+    5: norm( X - XACT )   / ( norm(XACT) * (error bound) )
+    6: (backward error)   / EPS
+    7: RCOND * CNDNUM - 1.0
+ Messages:
+ UPLO='U', N=    5, KD=    3, NB=   3, type  1, test  1, ratio= 4.8914665826828608e+29
+ *** Error code from Cpbtrf =    4
+ ==> UPLO = 'U', N =    5, KD =    3, NB =   3, type  5
+ ==> Doing only the condition estimate for this case
+ *** Error code from Cpbtrf =    4
+ ==> UPLO = 'U', N =    5, KD =    3, NB =   3, type  6
+ ==> Doing only the condition estimate for this case
+ UPLO='U', N=    5, KD=    3, NB=   3, type  7, test  1, ratio= 9.2847667681935954e+29
+ UPLO='U', N=    5, KD=    3, NB=   3, type  8, test  1, ratio= 1.4879015421456126e+30
+ UPLO='L', N=    5, KD=    3, NB=   3, type  1, test  1, ratio= 1.3305473940689350e+30
+ *** Error code from Cpbtrf =    4
+ ==> UPLO = 'L', N =    5, KD =    3, NB =   3, type  5
+ ==> Doing only the condition estimate for this case
+ *** Error code from Cpbtrf =    4
+ ==> UPLO = 'L', N =    5, KD =    3, NB =   3, type  6
+ ==> Doing only the condition estimate for this case
+ UPLO='L', N=    5, KD=    3, NB=   3, type  7, test  1, ratio= 5.8878554031475711e+29
+ UPLO='L', N=    5, KD=    3, NB=   3, type  8, test  1, ratio= 1.3796809981623003e+30
+ UPLO='U', N=   10, KD=    7, NB=   3, type  1, test  1, ratio= 9.6308406349462989e+28
+ *** Error code from Cpbtrf =    8
+ ==> UPLO = 'U', N =   10, KD =    7, NB =   3, type  5
+ ==> Doing only the condition estimate for this case
+ *** Error code from Cpbtrf =    8
+ ==> UPLO = 'U', N =   10, KD =    7, NB =   3, type  6
+ ==> Doing only the condition estimate for this case
+ UPLO='U', N=   10, KD=    7, NB=   3, type  7, test  1, ratio= 3.0308389062115000e+28
+ UPLO='U', N=   10, KD=    7, NB=   3, type  8, test  1, ratio= 7.4761311954091875e+28
+ UPLO='L', N=   10, KD=    7, NB=   3, type  1, test  1, ratio= 6.8245607900295075e+28
+ *** Error code from Cpbtrf =    8
+ ==> UPLO = 'L', N =   10, KD =    7, NB =   3, type  5
+ ==> Doing only the condition estimate for this case
+ *** Error code from Cpbtrf =    8
+ ==> UPLO = 'L', N =   10, KD =    7, NB =   3, type  6
+ ==> Doing only the condition estimate for this case
+ UPLO='L', N=   10, KD=    7, NB=   3, type  7, test  1, ratio= 5.4714079629932551e+28
+ UPLO='L', N=   10, KD=    7, NB=   3, type  8, test  1, ratio= 1.9148211483602877e+29
+ UPLO='U', N=   50, KD=   37, NB=   3, type  1, test  1, ratio= 3.2968021181017754e+26
+ UPLO='U', N=   50, KD=   37, NB=  20, type  1, test  1, ratio= 1.9165636918306916e+28
+ *** Error code from Cpbtrf =   38
+ ==> UPLO = 'U', N =   50, KD =   37, NB =   3, type  5
+ ==> Doing only the condition estimate for this case
+ *** Error code from Cpbtrf =   38
+ ==> UPLO = 'U', N =   50, KD =   37, NB =  20, type  5
+ ==> Doing only the condition estimate for this case
+ *** Error code from Cpbtrf =   38
+ ==> UPLO = 'U', N =   50, KD =   37, NB =   3, type  6
+ ==> Doing only the condition estimate for this case
+ *** Error code from Cpbtrf =   38
+ ==> UPLO = 'U', N =   50, KD =   37, NB =  20, type  6
+ ==> Doing only the condition estimate for this case
+ UPLO='U', N=   50, KD=   37, NB=   3, type  7, test  1, ratio= 1.9777062312554720e+25
+ UPLO='U', N=   50, KD=   37, NB=  20, type  7, test  1, ratio= 1.9503342385772542e+28
+ UPLO='U', N=   50, KD=   37, NB=   3, type  8, test  1, ratio= 6.9013148788198367e+25
+ UPLO='U', N=   50, KD=   37, NB=  20, type  8, test  1, ratio= 1.3504612873873823e+28
+ UPLO='L', N=   50, KD=   37, NB=   3, type  1, test  1, ratio= 1.2463507473291043e+26
+ UPLO='L', N=   50, KD=   37, NB=  20, type  1, test  1, ratio= 1.8191996129928142e+28
+ *** Error code from Cpbtrf =   38
+ ==> UPLO = 'L', N =   50, KD =   37, NB =   3, type  5
+ ==> Doing only the condition estimate for this case
+ *** Error code from Cpbtrf =   38
+ ==> UPLO = 'L', N =   50, KD =   37, NB =  20, type  5
+ ==> Doing only the condition estimate for this case
+ *** Error code from Cpbtrf =   38
+ ==> UPLO = 'L', N =   50, KD =   37, NB =   3, type  6
+ ==> Doing only the condition estimate for this case
+ *** Error code from Cpbtrf =   38
+ ==> UPLO = 'L', N =   50, KD =   37, NB =  20, type  6
+ ==> Doing only the condition estimate for this case
+ UPLO='L', N=   50, KD=   37, NB=   3, type  7, test  1, ratio= 1.2036104352435972e+26
+ UPLO='L', N=   50, KD=   37, NB=  20, type  7, test  1, ratio= 1.2515358909286007e+28
+ UPLO='L', N=   50, KD=   37, NB=   3, type  8, test  1, ratio= 6.6550903423736722e+26
+ UPLO='L', N=   50, KD=   37, NB=  20, type  8, test  1, ratio= 1.7948644330899824e+28
+ UPLO='U', N=   50, KD=   12, NB=   3, type  1, test  1, ratio= 8.8398642976548375e+27
+ *** Error code from Cpbtrf =   13
+ ==> UPLO = 'U', N =   50, KD =   12, NB =   3, type  5
+ ==> Doing only the condition estimate for this case
+ *** Error code from Cpbtrf =   13
+ ==> UPLO = 'U', N =   50, KD =   12, NB =   3, type  6
+ ==> Doing only the condition estimate for this case
+ UPLO='U', N=   50, KD=   12, NB=   3, type  7, test  1, ratio= 1.9379445994980546e+28
+ UPLO='U', N=   50, KD=   12, NB=   3, type  8, test  1, ratio= 2.6132378208207825e+28
+ UPLO='L', N=   50, KD=   12, NB=   3, type  1, test  1, ratio= 1.6249357132800487e+28
+ *** Error code from Cpbtrf =   13
+ ==> UPLO = 'L', N =   50, KD =   12, NB =   3, type  5
+ ==> Doing only the condition estimate for this case
+ *** Error code from Cpbtrf =   13
+ ==> UPLO = 'L', N =   50, KD =   12, NB =   3, type  6
+ ==> Doing only the condition estimate for this case
+ UPLO='L', N=   50, KD=   12, NB=   3, type  7, test  1, ratio= 2.0479075843024250e+28
+ UPLO='L', N=   50, KD=   12, NB=   3, type  8, test  1, ratio= 1.2745400636713606e+28
+ CPB:     30 out of   3438 tests failed to pass the threshold
+          20 error messages recorded
  CPB drivers passed the tests of the error exits
 
  All tests for CPB drivers  passed the threshold (   4750 tests run)
@@ -85,7 +264,95 @@ The following parameter values will be used:
  All tests for CHA drivers  passed the threshold (    148 tests run)
  CH2 routines passed the tests of the error exits
 
- All tests for CH2 routines passed the threshold (    666 tests run)
+ CH2:  No header available
+ UPLO = 'U', N =   10, NRHS=  1, type  2, test( 2) =3.5856188753952615e+30
+ UPLO = 'U', N =   10, NRHS=  2, type  2, test( 2) =5.8713066924127913e+30
+ UPLO = 'U', N =   10, NRHS= 15, type  2, test( 2) =6.5675287044172734e+30
+ UPLO = 'L', N =   10, NRHS=  1, type  2, test( 2) =1.7810000505551126e+30
+ UPLO = 'L', N =   10, NRHS=  2, type  2, test( 2) =1.4229967663403018e+30
+ UPLO = 'L', N =   10, NRHS= 15, type  2, test( 2) =1.8441743047750835e+30
+ UPLO = 'U', N =   10, NRHS=  1, type  7, test( 2) =6.8405484305012798e+19
+ UPLO = 'U', N =   10, NRHS=  2, type  7, test( 2) =7.6091904778854486e+19
+ UPLO = 'U', N =   10, NRHS= 15, type  7, test( 2) =8.7873328198179326e+19
+ UPLO = 'L', N =   10, NRHS=  1, type  7, test( 2) =8.3897114481625041e+19
+ UPLO = 'L', N =   10, NRHS=  2, type  7, test( 2) =8.8260165389683060e+19
+ UPLO = 'L', N =   10, NRHS= 15, type  7, test( 2) =1.2269936233489290e+20
+ UPLO = 'U', N =   10, NRHS=  1, type  8, test( 2) =3.6762488444042906e+08
+ UPLO = 'U', N =   10, NRHS=  2, type  8, test( 2) =3.7473744887967311e+08
+ UPLO = 'U', N =   10, NRHS= 15, type  8, test( 2) =5.1480689571003003e+08
+ UPLO = 'L', N =   10, NRHS=  1, type  8, test( 2) =1.7697799333251266e+08
+ UPLO = 'L', N =   10, NRHS=  2, type  8, test( 2) =2.1205703358221166e+08
+ UPLO = 'L', N =   10, NRHS= 15, type  8, test( 2) =2.0737527170419606e+08
+ UPLO = 'U', N =   10, NRHS=  1, type  9, test( 2) =1.2761465392635363e+30
+ UPLO = 'U', N =   10, NRHS=  2, type  9, test( 2) =3.4179270979690763e+30
+ UPLO = 'U', N =   10, NRHS= 15, type  9, test( 2) =4.1505086861412932e+30
+ UPLO = 'L', N =   10, NRHS=  1, type  9, test( 2) =2.0252827523023616e+30
+ UPLO = 'L', N =   10, NRHS=  2, type  9, test( 2) =3.9817440210656834e+30
+ UPLO = 'L', N =   10, NRHS= 15, type  9, test( 2) =4.7156898585029738e+30
+ UPLO = 'L', N =   10, NRHS=  1, type 10, test( 2) =6.2263573540329458e+30
+ UPLO = 'L', N =   10, NRHS=  2, type 10, test( 2) =5.5790604390968969e+30
+ UPLO = 'L', N =   10, NRHS= 15, type 10, test( 2) =6.2218249483738588e+30
+ UPLO = 'U', N =   50, NRHS=  1, type  2, test( 2) =3.0441794090041791e+30
+ UPLO = 'U', N =   50, NRHS=  2, type  2, test( 2) =3.3524202869545071e+30
+ UPLO = 'U', N =   50, NRHS= 15, type  2, test( 2) =4.1196567747059151e+30
+ UPLO = 'U', N =   50, NRHS=  1, type  2, test( 2) =2.1614344356537100e+30
+ UPLO = 'U', N =   50, NRHS=  2, type  2, test( 2) =2.5767324558932588e+30
+ UPLO = 'U', N =   50, NRHS= 15, type  2, test( 2) =2.6061043517760501e+30
+ UPLO = 'L', N =   50, NRHS=  1, type  2, test( 2) =3.4855715448947945e+30
+ UPLO = 'L', N =   50, NRHS=  2, type  2, test( 2) =3.8755789834566129e+30
+ UPLO = 'L', N =   50, NRHS= 15, type  2, test( 2) =3.7854270172099995e+30
+ UPLO = 'L', N =   50, NRHS=  1, type  2, test( 2) =2.4562915687463394e+30
+ UPLO = 'L', N =   50, NRHS=  2, type  2, test( 2) =2.4237322141814219e+30
+ UPLO = 'L', N =   50, NRHS= 15, type  2, test( 2) =2.6110981676887365e+30
+ UPLO = 'U', N =   50, NRHS=  1, type  7, test( 2) =5.2471473921523918e+27
+ UPLO = 'U', N =   50, NRHS=  2, type  7, test( 2) =7.4944870683798643e+27
+ UPLO = 'U', N =   50, NRHS= 15, type  7, test( 2) =1.3218489632035276e+28
+ UPLO = 'U', N =   50, NRHS=  1, type  7, test( 2) =1.7564879041142380e+19
+ UPLO = 'U', N =   50, NRHS=  2, type  7, test( 2) =1.9600215677714878e+19
+ UPLO = 'U', N =   50, NRHS= 15, type  7, test( 2) =2.1948851364719750e+19
+ UPLO = 'L', N =   50, NRHS=  1, type  7, test( 2) =6.3449954428299189e+26
+ UPLO = 'L', N =   50, NRHS=  2, type  7, test( 2) =2.9151613775639238e+27
+ UPLO = 'L', N =   50, NRHS= 15, type  7, test( 2) =7.8162651938029680e+27
+ UPLO = 'L', N =   50, NRHS=  1, type  7, test( 2) =1.5765436017777299e+19
+ UPLO = 'L', N =   50, NRHS=  2, type  7, test( 2) =1.0639653589444081e+19
+ UPLO = 'L', N =   50, NRHS= 15, type  7, test( 2) =2.9814889641423407e+19
+ UPLO = 'U', N =   50, NRHS=  1, type  8, test( 2) =1.0296705412872045e+25
+ UPLO = 'U', N =   50, NRHS=  2, type  8, test( 2) =1.6787786690847280e+25
+ UPLO = 'U', N =   50, NRHS= 15, type  8, test( 2) =2.1004491527726228e+25
+ UPLO = 'U', N =   50, NRHS=  1, type  8, test( 2) =4.6834617987141625e+06
+ UPLO = 'U', N =   50, NRHS=  2, type  8, test( 2) =6.3069510511496093e+06
+ UPLO = 'U', N =   50, NRHS= 15, type  8, test( 2) =1.0810690444423279e+07
+ UPLO = 'L', N =   50, NRHS=  1, type  8, test( 2) =7.5465654571933261e+25
+ UPLO = 'L', N =   50, NRHS=  2, type  8, test( 2) =1.6993062193074670e+26
+ UPLO = 'L', N =   50, NRHS= 15, type  8, test( 2) =1.2840955669641371e+26
+ UPLO = 'L', N =   50, NRHS=  1, type  8, test( 2) =3.9171350814697170e+06
+ UPLO = 'L', N =   50, NRHS=  2, type  8, test( 2) =1.0214813909467282e+07
+ UPLO = 'L', N =   50, NRHS= 15, type  8, test( 2) =1.1293514780053737e+07
+ UPLO = 'U', N =   50, NRHS=  1, type  9, test( 2) =2.7372174535765854e+30
+ UPLO = 'U', N =   50, NRHS=  2, type  9, test( 2) =3.1083959722514709e+30
+ UPLO = 'U', N =   50, NRHS= 15, type  9, test( 2) =3.3397493352613209e+30
+ UPLO = 'U', N =   50, NRHS=  1, type  9, test( 2) =2.2029066534090410e+30
+ UPLO = 'U', N =   50, NRHS=  2, type  9, test( 2) =2.5424709593611489e+30
+ UPLO = 'U', N =   50, NRHS= 15, type  9, test( 2) =2.6951230277048962e+30
+ UPLO = 'L', N =   50, NRHS=  1, type  9, test( 2) =3.9067779792502351e+30
+ UPLO = 'L', N =   50, NRHS=  2, type  9, test( 2) =3.7968777971523907e+30
+ UPLO = 'L', N =   50, NRHS= 15, type  9, test( 2) =3.9202968809429370e+30
+ UPLO = 'L', N =   50, NRHS=  1, type  9, test( 2) =2.2396032700180838e+30
+ UPLO = 'L', N =   50, NRHS=  2, type  9, test( 2) =2.3945636427510563e+30
+ UPLO = 'L', N =   50, NRHS= 15, type  9, test( 2) =2.5703807883324698e+30
+ UPLO = 'U', N =   50, NRHS=  1, type 10, test( 2) =3.1748132531722190e+30
+ UPLO = 'U', N =   50, NRHS=  2, type 10, test( 2) =3.0118998459761423e+30
+ UPLO = 'U', N =   50, NRHS= 15, type 10, test( 2) =3.1678440238211201e+30
+ UPLO = 'U', N =   50, NRHS=  1, type 10, test( 2) =2.4962863503368855e+30
+ UPLO = 'U', N =   50, NRHS=  2, type 10, test( 2) =2.4806098970209802e+30
+ UPLO = 'U', N =   50, NRHS= 15, type 10, test( 2) =2.5320317893232162e+30
+ UPLO = 'L', N =   50, NRHS=  1, type 10, test( 2) =2.9157524324740258e+30
+ UPLO = 'L', N =   50, NRHS=  2, type 10, test( 2) =4.0272661964432578e+30
+ UPLO = 'L', N =   50, NRHS= 15, type 10, test( 2) =4.0812667248624532e+30
+ UPLO = 'L', N =   50, NRHS=  1, type 10, test( 2) =2.6521557132349753e+30
+ UPLO = 'L', N =   50, NRHS=  2, type 10, test( 2) =2.5699840693216599e+30
+ UPLO = 'L', N =   50, NRHS= 15, type 10, test( 2) =3.0288230458426119e+30
+ CH2:     87 out of    666 tests failed to pass the threshold
  CH2 drivers passed the tests of the error exits
 
  All tests for CH2 drivers  passed the threshold (     74 tests run)
@@ -97,7 +364,98 @@ The following parameter values will be used:
  All tests for CSA drivers  passed the threshold (    148 tests run)
  CS2 routines passed the tests of the error exits
 
- All tests for CS2 routines passed the threshold (    666 tests run)
+ CS2:  No header available
+ UPLO = 'U', N =   10, NRHS=  1, type  2, test( 2) =4.7363642203848033e+30
+ UPLO = 'U', N =   10, NRHS=  2, type  2, test( 2) =5.0016566534602681e+30
+ UPLO = 'U', N =   10, NRHS= 15, type  2, test( 2) =6.8000381493407061e+30
+ UPLO = 'L', N =   10, NRHS=  1, type  2, test( 2) =2.7973985232014780e+30
+ UPLO = 'L', N =   10, NRHS=  2, type  2, test( 2) =4.1146806471229754e+30
+ UPLO = 'L', N =   10, NRHS= 15, type  2, test( 2) =5.1627115661239432e+30
+ UPLO = 'U', N =   10, NRHS=  1, type  7, test( 2) =1.9941589601975106e+20
+ UPLO = 'U', N =   10, NRHS=  2, type  7, test( 2) =2.3500981848186279e+20
+ UPLO = 'U', N =   10, NRHS= 15, type  7, test( 2) =2.1825685716804003e+20
+ UPLO = 'L', N =   10, NRHS=  1, type  7, test( 2) =3.8681895547962237e+16
+ UPLO = 'L', N =   10, NRHS=  2, type  7, test( 2) =3.1721469148858662e+16
+ UPLO = 'L', N =   10, NRHS= 15, type  7, test( 2) =5.7055652611573274e+16
+ UPLO = 'U', N =   10, NRHS=  1, type  8, test( 2) =2.8350969474583831e+08
+ UPLO = 'U', N =   10, NRHS=  2, type  8, test( 2) =2.6585822975814646e+08
+ UPLO = 'U', N =   10, NRHS= 15, type  8, test( 2) =2.1140935463240587e+08
+ UPLO = 'L', N =   10, NRHS=  1, type  8, test( 2) =3.6586268969182360e+08
+ UPLO = 'L', N =   10, NRHS=  2, type  8, test( 2) =4.6814080707466451e+08
+ UPLO = 'L', N =   10, NRHS= 15, type  8, test( 2) =6.6836969468102725e+08
+ UPLO = 'U', N =   10, NRHS=  1, type  9, test( 2) =1.4626829620820815e+30
+ UPLO = 'U', N =   10, NRHS=  2, type  9, test( 2) =3.7179828742737914e+30
+ UPLO = 'U', N =   10, NRHS= 15, type  9, test( 2) =3.8678942512964282e+30
+ UPLO = 'L', N =   10, NRHS=  1, type  9, test( 2) =2.7649416799470446e+30
+ UPLO = 'L', N =   10, NRHS=  2, type  9, test( 2) =4.9782465489235091e+30
+ UPLO = 'L', N =   10, NRHS= 15, type  9, test( 2) =4.8697448217111263e+30
+ UPLO = 'U', N =   10, NRHS=  1, type 10, test( 2) =3.1201194798347788e+30
+ UPLO = 'U', N =   10, NRHS=  2, type 10, test( 2) =3.2866817754857131e+30
+ UPLO = 'U', N =   10, NRHS= 15, type 10, test( 2) =3.5792765725034634e+30
+ UPLO = 'L', N =   10, NRHS=  1, type 10, test( 2) =1.5463941200574253e+30
+ UPLO = 'L', N =   10, NRHS=  2, type 10, test( 2) =5.0549744684672872e+30
+ UPLO = 'L', N =   10, NRHS= 15, type 10, test( 2) =5.9118811038435026e+30
+ UPLO = 'U', N =   50, NRHS=  1, type  2, test( 2) =3.3222054168145826e+30
+ UPLO = 'U', N =   50, NRHS=  2, type  2, test( 2) =3.0854195808181848e+30
+ UPLO = 'U', N =   50, NRHS= 15, type  2, test( 2) =3.7557503237116399e+30
+ UPLO = 'U', N =   50, NRHS=  1, type  2, test( 2) =2.4275871124424260e+30
+ UPLO = 'U', N =   50, NRHS=  2, type  2, test( 2) =2.4257911892143011e+30
+ UPLO = 'U', N =   50, NRHS= 15, type  2, test( 2) =2.5245812728229467e+30
+ UPLO = 'L', N =   50, NRHS=  1, type  2, test( 2) =3.3064491816000455e+30
+ UPLO = 'L', N =   50, NRHS=  2, type  2, test( 2) =3.6870157174839775e+30
+ UPLO = 'L', N =   50, NRHS= 15, type  2, test( 2) =3.7002309222684712e+30
+ UPLO = 'L', N =   50, NRHS=  1, type  2, test( 2) =2.0788428224536442e+30
+ UPLO = 'L', N =   50, NRHS=  2, type  2, test( 2) =2.1673438756665123e+30
+ UPLO = 'L', N =   50, NRHS= 15, type  2, test( 2) =2.4052459595807870e+30
+ UPLO = 'U', N =   50, NRHS=  1, type  7, test( 2) =3.2106296124736847e+27
+ UPLO = 'U', N =   50, NRHS=  2, type  7, test( 2) =4.2817840139095274e+27
+ UPLO = 'U', N =   50, NRHS= 15, type  7, test( 2) =1.0055763810018002e+28
+ UPLO = 'U', N =   50, NRHS=  1, type  7, test( 2) =3.4373050243097060e+19
+ UPLO = 'U', N =   50, NRHS=  2, type  7, test( 2) =3.2435652809664553e+19
+ UPLO = 'U', N =   50, NRHS= 15, type  7, test( 2) =5.3118394892717795e+19
+ UPLO = 'L', N =   50, NRHS=  1, type  7, test( 2) =1.7679813098721490e+27
+ UPLO = 'L', N =   50, NRHS=  2, type  7, test( 2) =4.0783007173459528e+27
+ UPLO = 'L', N =   50, NRHS= 15, type  7, test( 2) =4.9549190244343320e+27
+ UPLO = 'L', N =   50, NRHS=  1, type  7, test( 2) =1.6229035529935555e+19
+ UPLO = 'L', N =   50, NRHS=  2, type  7, test( 2) =1.8911625276856185e+19
+ UPLO = 'L', N =   50, NRHS= 15, type  7, test( 2) =2.8094038671824162e+19
+ UPLO = 'U', N =   50, NRHS=  1, type  8, test( 2) =3.2879765844807221e+26
+ UPLO = 'U', N =   50, NRHS=  2, type  8, test( 2) =2.6846096943100933e+26
+ UPLO = 'U', N =   50, NRHS= 15, type  8, test( 2) =4.7806922022466719e+26
+ UPLO = 'U', N =   50, NRHS=  1, type  8, test( 2) =1.6064268193203713e+07
+ UPLO = 'U', N =   50, NRHS=  2, type  8, test( 2) =1.6809770815057249e+07
+ UPLO = 'U', N =   50, NRHS= 15, type  8, test( 2) =2.6033592905962334e+07
+ UPLO = 'L', N =   50, NRHS=  1, type  8, test( 2) =4.5017461565488318e+25
+ UPLO = 'L', N =   50, NRHS=  2, type  8, test( 2) =5.5850269555322857e+25
+ UPLO = 'L', N =   50, NRHS= 15, type  8, test( 2) =9.8159349708327967e+25
+ UPLO = 'L', N =   50, NRHS=  1, type  8, test( 2) =7.3514774931321584e+06
+ UPLO = 'L', N =   50, NRHS=  2, type  8, test( 2) =2.1775547526182862e+07
+ UPLO = 'L', N =   50, NRHS= 15, type  8, test( 2) =2.5166049485104441e+07
+ UPLO = 'U', N =   50, NRHS=  1, type  9, test( 2) =3.6734873106603888e+30
+ UPLO = 'U', N =   50, NRHS=  2, type  9, test( 2) =3.7626766399180842e+30
+ UPLO = 'U', N =   50, NRHS= 15, type  9, test( 2) =3.8922688423191862e+30
+ UPLO = 'U', N =   50, NRHS=  1, type  9, test( 2) =2.4599346378631757e+30
+ UPLO = 'U', N =   50, NRHS=  2, type  9, test( 2) =2.6038228213243651e+30
+ UPLO = 'U', N =   50, NRHS= 15, type  9, test( 2) =2.5317373383872645e+30
+ UPLO = 'L', N =   50, NRHS=  1, type  9, test( 2) =3.0923887768482634e+30
+ UPLO = 'L', N =   50, NRHS=  2, type  9, test( 2) =3.1103300629464611e+30
+ UPLO = 'L', N =   50, NRHS= 15, type  9, test( 2) =3.5004371337381737e+30
+ UPLO = 'L', N =   50, NRHS=  1, type  9, test( 2) =2.5502889703627503e+30
+ UPLO = 'L', N =   50, NRHS=  2, type  9, test( 2) =2.6227444298949319e+30
+ UPLO = 'L', N =   50, NRHS= 15, type  9, test( 2) =2.4802461502751392e+30
+ UPLO = 'U', N =   50, NRHS=  1, type 10, test( 2) =3.8856389534854551e+30
+ UPLO = 'U', N =   50, NRHS=  2, type 10, test( 2) =4.1728878545023831e+30
+ UPLO = 'U', N =   50, NRHS= 15, type 10, test( 2) =4.2258709676628231e+30
+ UPLO = 'U', N =   50, NRHS=  1, type 10, test( 2) =2.1113993624557653e+30
+ UPLO = 'U', N =   50, NRHS=  2, type 10, test( 2) =2.0643055929206737e+30
+ UPLO = 'U', N =   50, NRHS= 15, type 10, test( 2) =2.5457585028582138e+30
+ UPLO = 'L', N =   50, NRHS=  1, type 10, test( 2) =3.2612533817931753e+30
+ UPLO = 'L', N =   50, NRHS=  2, type 10, test( 2) =3.9485243787784949e+30
+ UPLO = 'L', N =   50, NRHS= 15, type 10, test( 2) =4.1348473429967984e+30
+ UPLO = 'L', N =   50, NRHS=  1, type 10, test( 2) =2.2745834641608939e+30
+ UPLO = 'L', N =   50, NRHS=  2, type 10, test( 2) =2.1813335368382514e+30
+ UPLO = 'L', N =   50, NRHS= 15, type 10, test( 2) =2.3769309316048727e+30
+ CS2:     90 out of    666 tests failed to pass the threshold
  CH2 drivers passed the tests of the error exits
 
  All tests for CH2 drivers  passed the threshold (     74 tests run)
@@ -184,7 +542,7 @@ The following parameter values will be used:
  All tests for CHH routines passed the threshold (  15900 tests run)
 
  End of tests
- Total time used =  920 seconds
+ Total time used =  142 seconds
 
-920.18user 0.00system 15:20.36elapsed 99%CPU (0avgtext+0avgdata 34620maxresident)k
-0inputs+128outputs (0major+8869minor)pagefaults 0swaps
+141.52user 0.01system 2:22.36elapsed 99%CPU (0avgtext+0avgdata 34732maxresident)k
+168inputs+120outputs (2major+7770minor)pagefaults 0swaps

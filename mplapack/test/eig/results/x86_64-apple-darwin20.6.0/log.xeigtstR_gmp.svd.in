@@ -12,8 +12,8 @@ The following parameter values will be used:
     NX:        1     0     5     9     1
     NS:        2     0     2     2     2
  
- Relative machine underflow is taken to be+6.4447927660133239e-1292913987
- Relative machine overflow  is taken to be+1.5516402719316431e+1292913986
+ Relative machine underflow is taken to be+1.7019382623481672e-1388255822130839283
+ Relative machine overflow  is taken to be+5.8756537891115876e+1388255822130839282
  Relative machine precision is taken to be+7.4583407312002067e-155
 
  Routines pass computational tests if test ratio is less than+5.0000000000000000e+01
@@ -373,7 +373,7 @@ The following parameter values will be used:
  M=   30, N=   40, type 13, seed=   0,   0,   0,   1, test(19)=+1.3575644510945300e+02
  M=   30, N=   40, type 14, seed=   0,   0,   0,   1, test( 9)=+1.1817218997380557e+02
  M=   30, N=   40, type 14, seed=   0,   0,   0,   1, test(19)=+1.3118098852233190e+02
- M=   30, N=   40, type 15, seed=   0,   0,   0,   1, test( 9)=+1.2874753243994308e+02
+ M=   30, N=   40, type 15, seed=   0,   0,   0,   1, test( 9)=+1.2874191096707769e+02
  M=   30, N=   40, type 15, seed=   0,   0,   0,   1, test(19)=+1.1444530323161962e+02
  M=   40, N=   30, type  8, seed=   0,   0,   0,   1, test( 9)=+1.2666236375038828e+02
  M=   40, N=   30, type  8, seed=   0,   0,   0,   1, test(19)=+1.0633020415951237e+02
@@ -462,7 +462,7 @@ The following parameter values will be used:
   34: norm( S - S1 )      / ( norm(S) ulp ), where S1 is computed
                                              without computing U and V'
  M=   10, N=   16, type 13, seed=   0,   0,   0,   1, test(19)=+5.4184312984435271e+01
- M=   10, N=   16, type 15, seed=   0,   0,   0,   1, test(19)=+5.6243857099614879e+01
+ M=   10, N=   16, type 15, seed=   0,   0,   0,   1, test(19)=+5.6256054752940160e+01
  M=   16, N=   16, type  8, seed=   0,   0,   0,   1, test( 9)=+6.1111815003418396e+01
  M=   16, N=   16, type  8, seed=   0,   0,   0,   1, test(19)=+6.1111815003418396e+01
  M=   16, N=   16, type 11, seed=   0,   0,   0,   1, test( 9)=+6.2360570553843508e+01
@@ -509,7 +509,7 @@ The following parameter values will be used:
  M=   40, N=   30, type 13, seed=   0,   0,   0,   1, test(19)=+9.9805772862463047e+01
  M=   40, N=   30, type 14, seed=   0,   0,   0,   1, test( 9)=+1.1703004980474984e+02
  M=   40, N=   30, type 14, seed=   0,   0,   0,   1, test(19)=+9.8482497542098239e+01
- M=   40, N=   30, type 15, seed=   0,   0,   0,   1, test( 9)=+1.1994969820786055e+02
+ M=   40, N=   30, type 15, seed=   0,   0,   0,   1, test( 9)=+1.1996021957719366e+02
  M=   40, N=   30, type 15, seed=   0,   0,   0,   1, test(19)=+1.0331253379955551e+02
  M=   40, N=   40, type  8, seed=   0,   0,   0,   1, test( 9)=+1.5167706710165033e+02
  M=   40, N=   40, type  8, seed=   0,   0,   0,   1, test(19)=+1.3020100765567024e+02
@@ -613,7 +613,7 @@ The following parameter values will be used:
  M=   30, N=   30, type 13, seed=   0,   0,   0,   1, test(19)=+1.0685089651354472e+02
  M=   30, N=   30, type 14, seed=   0,   0,   0,   1, test( 9)=+1.1991075322332453e+02
  M=   30, N=   30, type 14, seed=   0,   0,   0,   1, test(19)=+1.0538360391728653e+02
- M=   30, N=   30, type 15, seed=   0,   0,   0,   1, test( 9)=+1.1511261165597000e+02
+ M=   30, N=   30, type 15, seed=   0,   0,   0,   1, test( 9)=+1.1515472687992974e+02
  M=   30, N=   30, type 15, seed=   0,   0,   0,   1, test(19)=+9.8977468303522773e+01
  M=   30, N=   40, type  8, seed=   0,   0,   0,   1, test( 9)=+9.9832082583229755e+01
  M=   30, N=   40, type  8, seed=   0,   0,   0,   1, test(19)=+8.4517082188697463e+01
@@ -659,5 +659,5 @@ The following parameter values will be used:
 
 
  End of tests
- Total time used =      1242.00 seconds
+ Total time used =      1349.00 seconds
 

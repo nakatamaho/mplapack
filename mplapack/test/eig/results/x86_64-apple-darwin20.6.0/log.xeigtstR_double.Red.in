@@ -24,35 +24,7 @@ The following parameter values will be used:
 
  Rgeev passed the tests of the error exits (  7 tests done)
 
- REV -- Real Eigenvalue-Eigenvector Decomposition Driver
- Matrix types (see Rdrvev for details): 
-
- Special Matrices:
-  1=Zero matrix.                          5=Diagonal: geometr. spaced entries.
-  2=Identity matrix.                      6=Diagonal: clustered entries.
-  3=Transposed Jordan block.              7=Diagonal: large, evenly spaced.
-  4=Diagonal: evenly spaced entries.      8=Diagonal: small, evenly spaced.
- Dense, Non-Symmetric Matrices:
-  9=Well-cond., evenly spaced eigenvals. 14=Ill-cond., geomet. spaced eigenals.
- 10=Well-cond., geom. spaced eigenvals.  15=Ill-conditioned, clustered e.vals.
- 11=Well-conditioned, clustered e.vals.  16=Ill-cond., random complex 
- 12=Well-cond., random complex           17=Ill-cond., large rand. complx 
- 13=Ill-conditioned, evenly spaced.      18=Ill-cond., small rand. complx 
- 19=Matrix with random O(1) entries.     21=Matrix with small random entries.
- 20=Matrix with large random entries.   
-
- Tests performed with test threshold =+2.0000000000000000e+01
-
- 1 = | A VR - VR W | / ( n |A| ulp ) 
- 2 = | transpose(A) VL - VL W | / ( n |A| ulp ) 
- 3 = | |VR(i)| - 1 | / ulp 
- 4 = | |VL(i)| - 1 | / ulp 
- 5 = 0 if W same no matter if VR or VL computed, 1/ulp otherwise
- 6 = 0 if VR same no matter if VL computed,  1/ulp otherwise
- 7 = 0 if VL same no matter if VR computed,  1/ulp otherwise
-
- N=   20, IWK= 1, seed=2518,3899, 995, 397, type 14, test( 1)=+3.3288076755139258e+01
- REV:    1 out of  1092 tests failed to pass the threshold
+ All tests for REV passed the threshold (  1092 tests run)
 
  -----------------------------------------------------------------------
 

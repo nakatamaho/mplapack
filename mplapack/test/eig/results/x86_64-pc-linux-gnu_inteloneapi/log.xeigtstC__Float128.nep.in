@@ -24,30 +24,3 @@ The following parameter values will be used:
 
 
  NEP:  NB =   1, NBMIN =   2, NX =   1, INMIN=  11, INWIN =   2, INIBL =   0, ISHFTS =   1, IACC22 =   0
-
- All tests for ZHS passed the threshold (  1764 tests run)
-
-
- NEP:  NB =   3, NBMIN =   2, NX =   0, INMIN=  12, INWIN =   3, INIBL =   5, ISHFTS =   2, IACC22 =   1
-
- All tests for ZHS passed the threshold (  1764 tests run)
-
-
- NEP:  NB =   3, NBMIN =   2, NX =   5, INMIN=  11, INWIN =   5, INIBL =   7, ISHFTS =   4, IACC22 =   2
-
- All tests for ZHS passed the threshold (  1764 tests run)
-
-
- NEP:  NB =   3, NBMIN =   2, NX =   9, INMIN=  15, INWIN =   3, INIBL =   3, ISHFTS =   2, IACC22 =   0
-
- All tests for ZHS passed the threshold (  1764 tests run)
-
-
- NEP:  NB =  20, NBMIN =   2, NX =   1, INMIN=  11, INWIN =   2, INIBL = 200, ISHFTS =   1, IACC22 =   1
-
- All tests for ZHS passed the threshold (  1764 tests run)
-
-
- End of tests
- Total time used =        30.00 seconds
-

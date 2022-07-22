@@ -14,3 +14,11 @@ The following parameter values will be used:
 
  Routines pass computational tests if test ratio is less than2.0000000000000000e+01
 
+ ZHB routines passed the tests of the error exits ( 80 tests done)
+
+ All tests for ZHB passed the threshold (   810 tests run)
+
+
+ End of tests
+ Total time used =         5.00 seconds
+

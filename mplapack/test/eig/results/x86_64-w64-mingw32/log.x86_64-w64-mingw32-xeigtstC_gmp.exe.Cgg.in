@@ -13,8 +13,8 @@ The following parameter values will be used:
     IACC22:      1     2     1     2
     NBCOL:    40    40     2     2
  
- Relative machine underflow is taken to be+1.1353231052007463e-646456993
- Relative machine overflow  is taken to be+8.8080652584198168e+646456992
+ Relative machine underflow is taken to be+4.7651298097759021e-323228497
+ Relative machine overflow  is taken to be+2.0985787164673877e+323228496
  Relative machine precision is taken to be+7.4583407312002067e-155
 
  Routines pass computational tests if test ratio is less than+2.0000000000000000e+01
@@ -43,5 +43,5 @@ The following parameter values will be used:
 
 
  End of tests
- Total time used =        44.00 seconds
+ Total time used =        60.00 seconds
 

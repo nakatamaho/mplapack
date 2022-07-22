@@ -111,33 +111,11 @@ The following parameter values will be used:
 
  Cgeevx passed the tests of the error exits ( 10 tests done)
 
- CVX -- Complex Eigenvalue-Eigenvector Decomposition Expert Driver
- Matrix types (see Cdrvvx for details): 
+ All tests for CVX passed the threshold (  5172 tests run)
 
- Special Matrices:
-  1=Zero matrix.                          5=Diagonal: geometr. spaced entries.
-  2=Identity matrix.                      6=Diagonal: clustered entries.
-  3=Transposed Jordan block.              7=Diagonal: large, evenly spaced.
-  4=Diagonal: evenly spaced entries.      8=Diagonal: small, evenly spaced.
- Dense, Non-Symmetric Matrices:
-  9=Well-cond., evenly spaced eigenvals. 14=Ill-cond., geomet. spaced eigenals.
- 10=Well-cond., geom. spaced eigenvals.  15=Ill-conditioned, clustered e.vals.
- 11=Well-conditioned, clustered e.vals.  16=Ill-cond., random complex 
- 12=Well-cond., random complex           17=Ill-cond., large rand. complx 
- 13=Ill-conditioned, evenly spaced.      18=Ill-cond., small rand. complx 
- 19=Matrix with random O(1) entries.     21=Matrix with small random entries.
- 20=Matrix with large random entries.    22=Matrix read from input file
+ -----------------------------------------------------------------------
 
- Tests performed with test threshold =+2.0000000000000000e+01
 
- 1 = | A VR - VR W | / ( n |A| ulp ) 
- 2 = | transpose(A) VL - VL W | / ( n |A| ulp ) 
- 3 = | |VR(i)| - 1 | / ulp 
- 4 = | |VL(i)| - 1 | / ulp 
- 5 = 0 if W same no matter if VR or VL computed, 1/ulp otherwise
- 6 = 0 if VR same no matter what else computed,  1/ulp otherwise
- 7 = 0 if VL same no matter what else computed,  1/ulp otherwise
- 8 = 0 if RCONDV same no matter what else computed,  1/ulp otherwise
- 9 = 0 if SCALE, ILO, IHI, ABNRM same no matter what else computed,  1/ulp otherwise
- 10 = | RCONDV - RCONDV(precomputed) | / cond(RCONDV),
- 11 = | RCONDE - RCONDE(precomputed) | / cond(RCONDE),
+ End of tests
+ Total time used =       327.00 seconds
+

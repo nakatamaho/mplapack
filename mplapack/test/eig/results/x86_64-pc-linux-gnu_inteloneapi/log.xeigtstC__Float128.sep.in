@@ -15,3 +15,44 @@ The following parameter values will be used:
 
  Routines pass computational tests if test ratio is less than+6.0000000000000000e+01
 
+ ZST routines passed the tests of the error exits (176 tests done)
+
+
+ SEP:  NB =   1, NBMIN =   2, NX =   1
+
+ All tests for ZST passed the threshold (  4440 tests run)
+
+ All tests for ZST drivers  passed the threshold (  11016 tests run)
+
+
+ SEP:  NB =   3, NBMIN =   2, NX =   0
+
+ All tests for ZST passed the threshold (  4440 tests run)
+
+ All tests for ZST drivers  passed the threshold (  11016 tests run)
+
+
+ SEP:  NB =   3, NBMIN =   2, NX =   5
+
+ All tests for ZST passed the threshold (  4440 tests run)
+
+ All tests for ZST drivers  passed the threshold (  11016 tests run)
+
+
+ SEP:  NB =   3, NBMIN =   2, NX =   9
+
+ All tests for ZST passed the threshold (  4440 tests run)
+
+ All tests for ZST drivers  passed the threshold (  11016 tests run)
+
+
+ SEP:  NB =  10, NBMIN =   2, NX =   1
+
+ All tests for ZST passed the threshold (  4440 tests run)
+
+ All tests for ZST drivers  passed the threshold (  11016 tests run)
+
+
+ End of tests
+ Total time used =        66.00 seconds
+

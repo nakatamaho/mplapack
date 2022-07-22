@@ -1,5 +1,5 @@
  .. test output of Cggbak .. 
- value of largest test error                  =+2.8053856449454494e-1292913993
+ value of largest test error                  =+1.0076429422924763e+02
  example number where Cggbal info is not 0    =   0
  example number where Cggbak(L) info is not 0 =   0
  example number where Cggbak(R) info is not 0 =   0

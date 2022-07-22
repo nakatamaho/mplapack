@@ -2,7 +2,7 @@
  Rlaln2, Rlasy2, Rlanv2, Rlaexc, Rtrsyl, Rtrexc, Rtrsna, Rtrsen, Rlaqtr, Rtgexc
 
  Relative machine precision (EPS) = +1.4916681462400413e-154
- Safe minimum (SFMIN)             = +1.1353231052007463e-646456993
+ Safe minimum (SFMIN)             = +4.7651298097759021e-323228497
 
  Routines pass computational tests if test ratio is less than+2.0000000000000000e+01
 
@@ -13,5 +13,5 @@
 
 
  End of tests
- Total time used =        32.00 seconds
+ Total time used =        27.00 seconds
 

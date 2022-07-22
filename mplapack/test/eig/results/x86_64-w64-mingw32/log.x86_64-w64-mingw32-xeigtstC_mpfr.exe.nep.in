@@ -24,91 +24,13 @@ The following parameter values will be used:
 
 
  NEP:  NB =   1, NBMIN =   2, NX =   1, INMIN=  11, INWIN =   2, INIBL =   0, ISHFTS =   1, IACC22 =   0
- Cchkhs: Chsein(R) returned INFO=     1.
-         N=     2, JTYPE=    18, ISEED=(    0,    0,    0,    1)
- Cchkhs: Chsein(L) returned INFO=     1.
-         N=     2, JTYPE=    18, ISEED=(    0,    0,    0,    1)
 
- ZHS -- Complex Non-symmetric eigenvalue problem
- Matrix types (see xCHKHS for details): 
-
- Special Matrices:
-  1=Zero matrix.                          5=Diagonal: geometr. spaced entries.
-  2=Identity matrix.                      6=Diagonal: clustered entries.
-  3=Transposed Jordan block.              7=Diagonal: large, evenly spaced.
-  4=Diagonal: evenly spaced entries.      8=Diagonal: small, evenly spaced.
- Dense, Non-Symmetric Matrices:
-  9=Well-cond., evenly spaced eigenvals. 14=Ill-cond., geomet. spaced eigenals.
- 10=Well-cond., geom. spaced eigenvals.  15=Ill-conditioned, clustered e.vals.
- 11=Well-conditioned, clustered e.vals.  16=Ill-cond., random complex e.vals
- 12=Well-cond., random complex e.vals    17=Ill-cond., large rand. complx e.vs
- 13=Ill-conditioned, evenly spaced.      18=Ill-cond., small rand. complx e.vs
- 19=Matrix with random O(1) entries.     21=Matrix with small random entries.
- 20=Matrix with large random entries.   
-
- Tests performed:   (H is Hessenberg, T is Schur, U and Z are unitary,
-                    *=conj.transp., W is a diagonal matrix of eigenvalues,
-                    L and R are the left and right eigenvector matrices)
-  1 = | A - U H U* | / ( |A| n ulp )           2 = | I - U U* | / ( n ulp )
-  3 = | H - Z T Z* | / ( |H| n ulp )           4 = | I - Z Z* | / ( n ulp )
-  5 = | A - UZ T (UZ)* | / ( |A| n ulp )       6 = | I - UZ (UZ)* | / ( n ulp )
-  7 = | T(e.vects.) - T(no e.vects.) | / ( |T| ulp )
-  8 = | W(e.vects.) - W(no e.vects.) | / ( |W| ulp )
-  9 = | TR - RW | / ( |T| |R| ulp )      10 = | LT - WL | / ( |T| |L| ulp )
- 11= |HX - XW| / (|H| |X| ulp)  (inv.it) 12= |YH - WY| / (|H| |Y| ulp)  (inv.it)
- Matrix order=    2, type=18, seed=   0,   0,   0,   1, result  11 is +6.7039039649712985e+153
- Matrix order=    2, type=18, seed=   0,   0,   0,   1, result  12 is +6.7039039649712985e+153
- Matrix order=    2, type=18, seed=   0,   0,   0,   1, result  13 is +1.7262218952235789e+153
- Matrix order=    2, type=18, seed=   0,   0,   0,   1, result  14 is +1.6343022153155419e+153
- ZHS:    4 out of  1764 tests failed to pass the threshold
- *** Error code from Cchkhs =    1
+ All tests for ZHS passed the threshold (  1764 tests run)
 
 
  NEP:  NB =   3, NBMIN =   2, NX =   0, INMIN=  12, INWIN =   3, INIBL =   5, ISHFTS =   2, IACC22 =   1
- Cchkhs: Chsein(R) returned INFO=     2.
-         N=     2, JTYPE=    18, ISEED=(    0,    0,    0,    1)
- Cchkhs: Chsein(L) returned INFO=     2.
-         N=     2, JTYPE=    18, ISEED=(    0,    0,    0,    1)
 
- ZHS -- Complex Non-symmetric eigenvalue problem
- Matrix types (see xCHKHS for details): 
-
- Special Matrices:
-  1=Zero matrix.                          5=Diagonal: geometr. spaced entries.
-  2=Identity matrix.                      6=Diagonal: clustered entries.
-  3=Transposed Jordan block.              7=Diagonal: large, evenly spaced.
-  4=Diagonal: evenly spaced entries.      8=Diagonal: small, evenly spaced.
- Dense, Non-Symmetric Matrices:
-  9=Well-cond., evenly spaced eigenvals. 14=Ill-cond., geomet. spaced eigenals.
- 10=Well-cond., geom. spaced eigenvals.  15=Ill-conditioned, clustered e.vals.
- 11=Well-conditioned, clustered e.vals.  16=Ill-cond., random complex e.vals
- 12=Well-cond., random complex e.vals    17=Ill-cond., large rand. complx e.vs
- 13=Ill-conditioned, evenly spaced.      18=Ill-cond., small rand. complx e.vs
- 19=Matrix with random O(1) entries.     21=Matrix with small random entries.
- 20=Matrix with large random entries.   
-
- Tests performed:   (H is Hessenberg, T is Schur, U and Z are unitary,
-                    *=conj.transp., W is a diagonal matrix of eigenvalues,
-                    L and R are the left and right eigenvector matrices)
-  1 = | A - U H U* | / ( |A| n ulp )           2 = | I - U U* | / ( n ulp )
-  3 = | H - Z T Z* | / ( |H| n ulp )           4 = | I - Z Z* | / ( n ulp )
-  5 = | A - UZ T (UZ)* | / ( |A| n ulp )       6 = | I - UZ (UZ)* | / ( n ulp )
-  7 = | T(e.vects.) - T(no e.vects.) | / ( |T| ulp )
-  8 = | W(e.vects.) - W(no e.vects.) | / ( |W| ulp )
-  9 = | TR - RW | / ( |T| |R| ulp )      10 = | LT - WL | / ( |T| |L| ulp )
- 11= |HX - XW| / (|H| |X| ulp)  (inv.it) 12= |YH - WY| / (|H| |Y| ulp)  (inv.it)
- Matrix order=    2, type=18, seed=   0,   0,   0,   1, result  11 is +6.7039039649712985e+153
- Matrix order=    2, type=18, seed=   0,   0,   0,   1, result  12 is +6.7039039649712985e+153
- Matrix order=    2, type=18, seed=   0,   0,   0,   1, result  13 is +1.1924647683945326e+153
- Matrix order=    2, type=18, seed=   0,   0,   0,   1, result  14 is +2.3088322355379042e+153
- Cchkhs: Chsein(L) returned INFO=     1.
-         N=     3, JTYPE=    18, ISEED=(    0,    0,    0,    1)
- Matrix order=    3, type=18, seed=   0,   0,   0,   1, result  12 is +6.7039039649712985e+153
- Matrix order=    3, type=18, seed=   0,   0,   0,   1, result  14 is +1.3015472404396198e+153
- Matrix order=    5, type=11, seed=   0,   0,   0,   1, result   4 is +2.1174412968914948e+01
- Matrix order=    5, type=11, seed=   0,   0,   0,   1, result   6 is +2.1944758960624267e+01
- ZHS:    8 out of  1764 tests failed to pass the threshold
- *** Error code from Cchkhs =    1
+ All tests for ZHS passed the threshold (  1764 tests run)
 
 
  NEP:  NB =   3, NBMIN =   2, NX =   5, INMIN=  11, INWIN =   5, INIBL =   7, ISHFTS =   4, IACC22 =   2
@@ -117,87 +39,15 @@ The following parameter values will be used:
 
 
  NEP:  NB =   3, NBMIN =   2, NX =   9, INMIN=  15, INWIN =   3, INIBL =   3, ISHFTS =   2, IACC22 =   0
- Cchkhs: Chsein(R) returned INFO=     2.
-         N=     2, JTYPE=    18, ISEED=(    0,    0,    0,    1)
- Cchkhs: Chsein(L) returned INFO=     2.
-         N=     2, JTYPE=    18, ISEED=(    0,    0,    0,    1)
 
- ZHS -- Complex Non-symmetric eigenvalue problem
- Matrix types (see xCHKHS for details): 
-
- Special Matrices:
-  1=Zero matrix.                          5=Diagonal: geometr. spaced entries.
-  2=Identity matrix.                      6=Diagonal: clustered entries.
-  3=Transposed Jordan block.              7=Diagonal: large, evenly spaced.
-  4=Diagonal: evenly spaced entries.      8=Diagonal: small, evenly spaced.
- Dense, Non-Symmetric Matrices:
-  9=Well-cond., evenly spaced eigenvals. 14=Ill-cond., geomet. spaced eigenals.
- 10=Well-cond., geom. spaced eigenvals.  15=Ill-conditioned, clustered e.vals.
- 11=Well-conditioned, clustered e.vals.  16=Ill-cond., random complex e.vals
- 12=Well-cond., random complex e.vals    17=Ill-cond., large rand. complx e.vs
- 13=Ill-conditioned, evenly spaced.      18=Ill-cond., small rand. complx e.vs
- 19=Matrix with random O(1) entries.     21=Matrix with small random entries.
- 20=Matrix with large random entries.   
-
- Tests performed:   (H is Hessenberg, T is Schur, U and Z are unitary,
-                    *=conj.transp., W is a diagonal matrix of eigenvalues,
-                    L and R are the left and right eigenvector matrices)
-  1 = | A - U H U* | / ( |A| n ulp )           2 = | I - U U* | / ( n ulp )
-  3 = | H - Z T Z* | / ( |H| n ulp )           4 = | I - Z Z* | / ( n ulp )
-  5 = | A - UZ T (UZ)* | / ( |A| n ulp )       6 = | I - UZ (UZ)* | / ( n ulp )
-  7 = | T(e.vects.) - T(no e.vects.) | / ( |T| ulp )
-  8 = | W(e.vects.) - W(no e.vects.) | / ( |W| ulp )
-  9 = | TR - RW | / ( |T| |R| ulp )      10 = | LT - WL | / ( |T| |L| ulp )
- 11= |HX - XW| / (|H| |X| ulp)  (inv.it) 12= |YH - WY| / (|H| |Y| ulp)  (inv.it)
- Matrix order=    2, type=18, seed=   0,   0,   0,   1, result  11 is +6.7039039649712985e+153
- Matrix order=    2, type=18, seed=   0,   0,   0,   1, result  12 is +6.7039039649712985e+153
- Matrix order=    2, type=18, seed=   0,   0,   0,   1, result  13 is +2.1492043424217566e+153
- Matrix order=    2, type=18, seed=   0,   0,   0,   1, result  14 is +1.2975644069363604e+153
- Cchkhs: Chsein(R) returned INFO=     1.
-         N=     2, JTYPE=    21, ISEED=(    0,    0,    0,    1)
- Matrix order=    2, type=21, seed=   0,   0,   0,   1, result  11 is +6.7039039649712985e+153
- Matrix order=    2, type=21, seed=   0,   0,   0,   1, result  13 is +2.3451592540079591e+153
- ZHS:    6 out of  1764 tests failed to pass the threshold
- *** Error code from Cchkhs =    1
+ All tests for ZHS passed the threshold (  1764 tests run)
 
 
  NEP:  NB =  20, NBMIN =   2, NX =   1, INMIN=  11, INWIN =   2, INIBL = 200, ISHFTS =   1, IACC22 =   1
- Cchkhs: Chsein(R) returned INFO=     1.
-         N=     3, JTYPE=    18, ISEED=(    0,    0,    0,    1)
 
- ZHS -- Complex Non-symmetric eigenvalue problem
- Matrix types (see xCHKHS for details): 
-
- Special Matrices:
-  1=Zero matrix.                          5=Diagonal: geometr. spaced entries.
-  2=Identity matrix.                      6=Diagonal: clustered entries.
-  3=Transposed Jordan block.              7=Diagonal: large, evenly spaced.
-  4=Diagonal: evenly spaced entries.      8=Diagonal: small, evenly spaced.
- Dense, Non-Symmetric Matrices:
-  9=Well-cond., evenly spaced eigenvals. 14=Ill-cond., geomet. spaced eigenals.
- 10=Well-cond., geom. spaced eigenvals.  15=Ill-conditioned, clustered e.vals.
- 11=Well-conditioned, clustered e.vals.  16=Ill-cond., random complex e.vals
- 12=Well-cond., random complex e.vals    17=Ill-cond., large rand. complx e.vs
- 13=Ill-conditioned, evenly spaced.      18=Ill-cond., small rand. complx e.vs
- 19=Matrix with random O(1) entries.     21=Matrix with small random entries.
- 20=Matrix with large random entries.   
-
- Tests performed:   (H is Hessenberg, T is Schur, U and Z are unitary,
-                    *=conj.transp., W is a diagonal matrix of eigenvalues,
-                    L and R are the left and right eigenvector matrices)
-  1 = | A - U H U* | / ( |A| n ulp )           2 = | I - U U* | / ( n ulp )
-  3 = | H - Z T Z* | / ( |H| n ulp )           4 = | I - Z Z* | / ( n ulp )
-  5 = | A - UZ T (UZ)* | / ( |A| n ulp )       6 = | I - UZ (UZ)* | / ( n ulp )
-  7 = | T(e.vects.) - T(no e.vects.) | / ( |T| ulp )
-  8 = | W(e.vects.) - W(no e.vects.) | / ( |W| ulp )
-  9 = | TR - RW | / ( |T| |R| ulp )      10 = | LT - WL | / ( |T| |L| ulp )
- 11= |HX - XW| / (|H| |X| ulp)  (inv.it) 12= |YH - WY| / (|H| |Y| ulp)  (inv.it)
- Matrix order=    3, type=18, seed=   0,   0,   0,   1, result  11 is +6.7039039649712985e+153
- Matrix order=    3, type=18, seed=   0,   0,   0,   1, result  13 is +3.4553398099363148e+152
- ZHS:    2 out of  1764 tests failed to pass the threshold
- *** Error code from Cchkhs =    1
+ All tests for ZHS passed the threshold (  1764 tests run)
 
 
  End of tests
- Total time used =       639.00 seconds
+ Total time used =       490.00 seconds
 

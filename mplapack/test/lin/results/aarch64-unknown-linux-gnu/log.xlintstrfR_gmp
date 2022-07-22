@@ -7,8 +7,8 @@ The following parameter values will be used:
         M  :     1     2     3     4     5     6     7     8     9
  Routines pass computational tests if test ratio is less than   30.00
 
- Relative machine underflow is taken to be : +6.4447927660133239e-1292913987
- Relative machine overflow  is taken to be : +1.5516402719316431e+1292913986
+ Relative machine underflow is taken to be : +1.7019382623481672e-1388255822130839283
+ Relative machine overflow  is taken to be : +5.8756537891115876e+1388255822130839282
  Relative machine precision is taken to be : +7.4583407312002067e-155
 
  All tests for RPF drivers  passed the threshold (   2304 tests run)
@@ -18,7 +18,7 @@ The following parameter values will be used:
  All tests for Rsfrk auxiliary routine passed the threshold (  2592 tests run)
 
  End of tests
- Total time used =  122 seconds
+ Total time used =  96 seconds
 
-122.11user 0.01system 2:02.26elapsed 99%CPU (0avgtext+0avgdata 9976maxresident)k
+96.46user 0.00system 1:36.55elapsed 99%CPU (0avgtext+0avgdata 9888maxresident)k
 0inputs+16outputs (0major+847minor)pagefaults 0swaps

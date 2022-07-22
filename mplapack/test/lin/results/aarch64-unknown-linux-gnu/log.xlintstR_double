@@ -138,16 +138,7 @@ The following parameter values will be used:
  All tests for RXQ routines passed the threshold (   1482 tests run)
  RTQ routines passed the tests of the error exits
 
- RTQ:  LQT factorization for general matrices
- Test ratios:
-    1: norm( L - A*Q' ) / ( (M+N) * norm(A) * EPS )
-    2: norm( I - Q*Q' ) / ( (M+N) * EPS )
-    3: norm( Q*C - Q*C ) / ( (M+N) * norm(C) * EPS )
-    4: norm( Q'*C - Q'*C ) / ( (M+N) * norm(C) * EPS )
-    5: norm( C*Q - C*Q ) / ( (M+N) * norm(C) * EPS )
-    6: norm( C*Q' - C*Q' ) / ( (M+N) * norm(C) * EPS )
- M=    1, N=   50, NB=   1 test( 1)=+3.1288829192174983e+01
- RTQ:      1 out of    510 tests failed to pass the threshold
+ All tests for RTQ routines passed the threshold (    510 tests run)
  
  RTS routines passed the tests of the error exits
 
@@ -158,5 +149,5 @@ The following parameter values will be used:
  All tests for RHH routines passed the threshold (  15900 tests run)
 
  End of tests
- Total time used =  26 seconds
+ Total time used =  22 seconds
 
