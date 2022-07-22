@@ -7,9 +7,10 @@ The following parameter values will be used:
         M  :     1     2     3     4     5     6     7     8     9
  Routines pass computational tests if test ratio is less than   30.00
 
- Relative machine underflow is taken to be : +6.4447927660133239e-1292913987
- Relative machine overflow  is taken to be : +1.5516402719316431e+1292913986
+ Relative machine underflow is taken to be : +1.7019382623481672e-1388255822130839283
+ Relative machine overflow  is taken to be : +5.8756537891115876e+1388255822130839282
  Relative machine precision is taken to be : +7.4583407312002067e-155
+ MULTIPLE PRECISION COMPLEX RFP routines passed the tests of the error exits
 
  All tests for ZPF drivers  passed the threshold (   2304 tests run)
  All tests for Clanhf auxiliary routine passed the threshold (   384 tests run)
@@ -18,7 +19,7 @@ The following parameter values will be used:
  All tests for Chfrk auxiliary routine passed the threshold (   2592 tests run)
 
  End of tests
- Total time used =  139 seconds
+ Total time used =  94 seconds
 
-138.57user 0.00system 2:18.61elapsed 99%CPU (0avgtext+0avgdata 18020maxresident)k
-0inputs+16outputs (0major+1564minor)pagefaults 0swaps
+94.74user 0.00system 1:34.82elapsed 99%CPU (0avgtext+0avgdata 20872maxresident)k
+1464inputs+16outputs (13major+2081minor)pagefaults 0swaps

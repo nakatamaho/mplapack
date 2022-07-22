@@ -176,15 +176,4 @@ The following parameter values will be used:
  CTQ routines passed the tests of the error exits
 
  All tests for CTQ routines passed the threshold (    510 tests run)
- CTS routines passed the tests of the error exits
-
- All tests for CTS routines passed the threshold (  10800 tests run)
- CHH routines passed the tests of the error exits
-
- All tests for CHH routines passed the threshold (  15900 tests run)
-
- End of tests
- Total time used =  2161 seconds
-
-2160.67user 0.05system 36:01.23elapsed 99%CPU (0avgtext+0avgdata 161268maxresident)k
-0inputs+176outputs (0major+54926minor)pagefaults 0swaps
+init2.c:52: MPFR assertion failed: ((p) >= 1 && (p) <= ((mpfr_prec_t) ((((mpfr_uprec_t) -1) >> 1) - 256)))

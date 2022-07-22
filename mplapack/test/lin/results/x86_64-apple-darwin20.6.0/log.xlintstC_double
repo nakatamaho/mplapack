@@ -184,6 +184,6 @@ The following parameter values will be used:
  All tests for CHH routines passed the threshold (  15900 tests run)
 
  End of tests
- Total time used =  21 seconds
+ Total time used =  25 seconds
 
-       21.83 real        21.40 user         0.22 sys
+       25.25 real        24.55 user         0.10 sys

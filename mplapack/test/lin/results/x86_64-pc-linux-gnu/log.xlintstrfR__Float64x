@@ -19,7 +19,7 @@ The following parameter values will be used:
  All tests for Rsfrk auxiliary routine passed the threshold (  2592 tests run)
 
  End of tests
- Total time used =  40 seconds
+ Total time used =  16 seconds
 
-40.69user 0.00system 0:40.70elapsed 99%CPU (0avgtext+0avgdata 9344maxresident)k
-0inputs+16outputs (0major+356minor)pagefaults 0swaps
+16.55user 0.00system 0:16.59elapsed 99%CPU (0avgtext+0avgdata 9980maxresident)k
+384inputs+24outputs (4major+361minor)pagefaults 0swaps

@@ -2,9 +2,16 @@
  Ctrsyl, Ctrexc, Ctrsna, Ctrsen
 
  Relative machine precision (EPS) = +1.4916681462400413e-154
- Safe minimum (SFMIN)             = +6.4447927660133239e-1292913987
+ Safe minimum (SFMIN)             = +4.7651298097759021e-323228497
 
  Routines pass computational tests if test ratio is less than+2.0000000000000000e+01
 
 
  CEC routines passed the tests of the error exits ( 33 tests done)
+
+ All tests for CEC routines passed the threshold (   5966 tests run)
+
+
+ End of tests
+ Total time used =         4.00 seconds
+

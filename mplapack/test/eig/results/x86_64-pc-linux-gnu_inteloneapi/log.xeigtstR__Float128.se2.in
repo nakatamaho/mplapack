@@ -15,3 +15,44 @@ The following parameter values will be used:
 
  Routines pass computational tests if test ratio is less than+5.0000000000000000e+01
 
+ RST routines passed the tests of the error exits (209 tests done)
+
+
+ SE2:  NB =   1, NBMIN =   2, NX =   1
+
+ All tests for DST passed the threshold (  4440 tests run)
+
+ All tests for RST drivers  passed the threshold (  13464 tests run)
+
+
+ SE2:  NB =   3, NBMIN =   2, NX =   0
+
+ All tests for DST passed the threshold (  4440 tests run)
+
+ All tests for RST drivers  passed the threshold (  13464 tests run)
+
+
+ SE2:  NB =   3, NBMIN =   2, NX =   5
+
+ All tests for DST passed the threshold (  4440 tests run)
+
+ All tests for RST drivers  passed the threshold (  13464 tests run)
+
+
+ SE2:  NB =   3, NBMIN =   2, NX =   9
+
+ All tests for DST passed the threshold (  4440 tests run)
+
+ All tests for RST drivers  passed the threshold (  13464 tests run)
+
+
+ SE2:  NB =  10, NBMIN =   2, NX =   1
+
+ All tests for DST passed the threshold (  4440 tests run)
+
+ All tests for RST drivers  passed the threshold (  13464 tests run)
+
+
+ End of tests
+ Total time used =        18.00 seconds
+

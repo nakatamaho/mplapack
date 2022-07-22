@@ -52,8 +52,8 @@ The following parameter values will be used:
  Routines pass computational tests if test ratio is less than2.0000000000000000e+01
 
  Rgees passed the tests of the error exits (  6 tests done)
- Rdrves: Rgees1 returned INFO=     6.
-         N=     5, JTYPE=    15, ISEED=( 2518, 3899,  995,  397)
+ Rdrves: Rgees1 returned INFO=    11.
+         N=    10, JTYPE=    14, ISEED=( 2518, 3899,  995,  397)
 
  RES -- Real Schur Form Decomposition Driver
  Matrix types (see Rdrves for details): 
@@ -89,12 +89,12 @@ The following parameter values will be used:
  12 = 0 if WR, WI same no matter if VS computed (sort),  1/ulp otherwise
  13 = 0 if sorting successful, 1/ulp otherwise
 
- N=    5, IWK= 1, seed=2518,3899, 995, 397, type 15, test( 7)=4.1137613933030293e+62
- Rdrves: Rgees1 returned INFO=     6.
-         N=     5, JTYPE=    15, ISEED=( 2518, 3899,  995,  397)
- N=    5, IWK= 2, seed=2518,3899, 995, 397, type 15, test( 7)=4.1137613933030293e+62
+ N=   10, IWK= 1, seed=2518,3899, 995, 397, type 14, test( 7)=4.1137613933030293e+62
+ Rdrves: Rgees1 returned INFO=    11.
+         N=    10, JTYPE=    14, ISEED=( 2518, 3899,  995,  397)
+ N=   10, IWK= 2, seed=2518,3899, 995, 397, type 14, test( 7)=4.1137613933030293e+62
  RES:    2 out of  3810 tests failed to pass the threshold
- *** Error code from Rgees =    6
+ *** Error code from Rgees =   11
 
  -----------------------------------------------------------------------
 
@@ -151,55 +151,12 @@ The following parameter values will be used:
  Routines pass computational tests if test ratio is less than2.0000000000000000e+01
 
  Rgeesx passed the tests of the error exits (  7 tests done)
- Rget24: Rgeesx1 returned INFO=     6.
-         N=     5, JTYPE=    15, ISEED=(T,
 
- RSX -- Real Schur Form Decomposition Expert Driver
- Matrix types (see Rdrvsx for details):
-
- Special Matrices:
-  1=Zero matrix.                          5=Diagonal: geometr. spaced entries.
-  2=Identity matrix.                      6=Diagonal: clustered entries.
-  3=Transposed Jordan block.              7=Diagonal: large, evenly spaced.
-  4=Diagonal: evenly spaced entries.      8=Diagonal: small, evenly spaced.
- Dense, Non-Symmetric Matrices:
-  9=Well-cond., evenly spaced eigenvals. 14=Ill-cond., geomet. spaced eigenals.
- 10=Well-cond., geom. spaced eigenvals.  15=Ill-conditioned, clustered e.vals.
- 11=Well-conditioned, clustered e.vals.  16=Ill-cond., random complex 
- 12=Well-cond., random complex           17=Ill-cond., large rand. complx 
- 13=Ill-conditioned, evenly spaced.      18=Ill-cond., small rand. complx 
- 19=Matrix with random O(1) entries.     21=Matrix with small random entries.
- 20=Matrix with large random entries.   
-
- Tests performed with test threshold =2.0000000000000000e+01
- ( A denotes A on input and T denotes A on output)
-
- 1 = 0 if T in Schur form (no sort),   1/ulp otherwise
- 2 = | A - VS T transpose(VS) | / ( n |A| ulp ) (no sort)
- 3 = | I - VS transpose(VS) | / ( n ulp ) (no sort) 
- 4 = 0 if WR+sqrt(-1)*WI are eigenvalues of T (no sort),  1/ulp otherwise
- 5 = 0 if T same no matter if VS computed (no sort),  1/ulp otherwise
- 6 = 0 if WR, WI same no matter if VS computed (no sort),  1/ulp otherwise
- 7 = 0 if T in Schur form (sort),   1/ulp otherwise
- 8 = | A - VS T transpose(VS) | / ( n |A| ulp ) (sort)
- 9 = | I - VS transpose(VS) | / ( n ulp ) (sort) 
- 10 = 0 if WR+sqrt(-1)*WI are eigenvalues of T (sort),  1/ulp otherwise
- 11 = 0 if T same no matter what else computed (sort),  1/ulp otherwise
- 12 = 0 if WR, WI same no matter what else computed (sort), 1/ulp otherwise
- 13 = 0 if sorting successful, 1/ulp otherwise
- 14 = 0 if RCONDE same no matter what else computed, 1/ulp otherwise
- 15 = 0 if RCONDv same no matter what else computed, 1/ulp otherwise
- 16 = | RCONDE - RCONDE(precomputed) | / cond(RCONDE),
- 17 = | RCONDV - RCONDV(precomputed) | / cond(RCONDV),
- N=    5, IWK= 1, seed=2518,3899, 995, 397, type 15, test( 7)=4.1137613933030293e+62
- Rget24: Rgeesx1 returned INFO=     6.
-         N=     5, JTYPE=    15, ISEED=(T,
- N=    5, IWK= 2, seed=2518,3899, 995, 397, type 15, test( 7)=4.1137613933030293e+62
- RSX:    2 out of  3494 tests failed to pass the threshold
+ All tests for RSX passed the threshold (  3508 tests run)
 
  -----------------------------------------------------------------------
 
 
  End of tests
- Total time used =       374.00 seconds
+ Total time used =       105.00 seconds
 

@@ -9,8 +9,8 @@ The following parameter values will be used:
     NBMIN:     2     2     2     2     2
     NX:        1     0     5     9     1
  
- Relative machine underflow is taken to be+6.4447927660133239e-1292913987
- Relative machine overflow  is taken to be+1.5516402719316431e+1292913986
+ Relative machine underflow is taken to be+4.7651298097759021e-323228497
+ Relative machine overflow  is taken to be+2.0985787164673877e+323228496
  Relative machine precision is taken to be+7.4583407312002067e-155
 
  Routines pass computational tests if test ratio is less than+5.0000000000000000e+01
@@ -20,59 +20,39 @@ The following parameter values will be used:
 
  SE2:  NB =   1, NBMIN =   2, NX =   1
 
- DST -- Real Symmetric eigenvalue problem
- Matrix types (see Rchkst2stg for details): 
+ All tests for DST passed the threshold (  3120 tests run)
 
- Special Matrices:
-  1=Zero matrix.                          5=Diagonal: clustered entries.
-  2=Identity matrix.                      6=Diagonal: large, evenly spaced.
-  3=Diagonal: evenly spaced entries.      7=Diagonal: small, evenly spaced.
-  4=Diagonal: geometr. spaced entries.
- Dense Symmetric Matrices:
-  8=Evenly spaced eigenvals.             12=Small, evenly spaced eigenvals.
-  9=Geometrically spaced eigenvals.      13=Matrix with random O(1) entries.
- 10=Clustered eigenvalues.               14=Matrix with large random entries.
- 11=Large, evenly spaced eigenvals.      15=Matrix with small random entries.
- 16=Positive definite, evenly spaced eigenvalues
- 17=Positive definite, geometrically spaced eigenvlaues
- 18=Positive definite, clustered eigenvalues
- 19=Positive definite, small evenly spaced eigenvalues
- 20=Positive definite, large evenly spaced eigenvalues
- 21=Diagonally dominant tridiagonal, geometrically spaced eigenvalues
+ All tests for RST drivers  passed the threshold (  13464 tests run)
 
-Test performed:  see Rchkst2stg for details.
 
- N=    2, seed=   0,   0,   0,   1, type  5, test(19)=+1.3407807929942597e+154
- Rchkst2stg: Rstebz(I) returned INFO=     4.
-         N=     2, JTYPE=     7, ISEED=(    0,    0,    0,    1)
- N=    2, seed=   0,   0,   0,   1, type  7, test(19)=+6.7039039649712985e+153
- Rchkst2stg: Rstebz(A) returned INFO=     1.
-         N=     2, JTYPE=     8, ISEED=(    0,    0,    0,    1)
- N=    2, seed=   0,   0,   0,   1, type  8, test(18)=+6.7039039649712985e+153
- Rchkst2stg: Rstebz(A) returned INFO=     1.
-         N=     2, JTYPE=    10, ISEED=(    0,    0,    0,    1)
- N=    2, seed=   0,   0,   0,   1, type 10, test(18)=+6.7039039649712985e+153
- Rchkst2stg: Rstebz(A) returned INFO=     1.
-         N=     2, JTYPE=    11, ISEED=(    0,    0,    0,    1)
- N=    2, seed=   0,   0,   0,   1, type 11, test(18)=+6.7039039649712985e+153
- Rchkst2stg: Rstebz(A) returned INFO=     1.
-         N=     2, JTYPE=    12, ISEED=(    0,    0,    0,    1)
- N=    2, seed=   0,   0,   0,   1, type 12, test(18)=+6.7039039649712985e+153
- Rchkst2stg: Rstebz(A) returned INFO=     1.
-         N=     2, JTYPE=    13, ISEED=(    0,    0,    0,    1)
- N=    2, seed=   0,   0,   0,   1, type 13, test(18)=+6.7039039649712985e+153
- Rchkst2stg: Rstebz(A) returned INFO=     1.
-         N=     2, JTYPE=    15, ISEED=(    0,    0,    0,    1)
- N=    2, seed=   0,   0,   0,   1, type 15, test(18)=+6.7039039649712985e+153
- Rchkst2stg: Rstebz(A) returned INFO=     1.
-         N=     2, JTYPE=    16, ISEED=(    0,    0,    0,    1)
- N=    2, seed=   0,   0,   0,   1, type 16, test(18)=+6.7039039649712985e+153
- Rchkst2stg: Rstebz(A) returned INFO=     1.
-         N=     2, JTYPE=    17, ISEED=(    0,    0,    0,    1)
- N=    2, seed=   0,   0,   0,   1, type 17, test(18)=+6.7039039649712985e+153
- Rchkst2stg: Rstebz(A) returned INFO=     1.
-         N=     2, JTYPE=    18, ISEED=(    0,    0,    0,    1)
- N=    2, seed=   0,   0,   0,   1, type 18, test(18)=+6.7039039649712985e+153
- Rchkst2stg: Rstebz(A) returned INFO=     1.
-         N=     2, JTYPE=    19, ISEED=(    0,    0,    0,    1)
- N=    2, seed=   0,   0,   0,   1, type 19, test(18)=+6.7039039649712985e+153
+ SE2:  NB =   3, NBMIN =   2, NX =   0
+
+ All tests for DST passed the threshold (  3120 tests run)
+
+ All tests for RST drivers  passed the threshold (  13464 tests run)
+
+
+ SE2:  NB =   3, NBMIN =   2, NX =   5
+
+ All tests for DST passed the threshold (  3120 tests run)
+
+ All tests for RST drivers  passed the threshold (  13464 tests run)
+
+
+ SE2:  NB =   3, NBMIN =   2, NX =   9
+
+ All tests for DST passed the threshold (  3120 tests run)
+
+ All tests for RST drivers  passed the threshold (  13464 tests run)
+
+
+ SE2:  NB =  10, NBMIN =   2, NX =   1
+
+ All tests for DST passed the threshold (  3120 tests run)
+
+ All tests for RST drivers  passed the threshold (  13464 tests run)
+
+
+ End of tests
+ Total time used =       162.00 seconds
+

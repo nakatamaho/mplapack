@@ -11,8 +11,8 @@ The following parameter values will be used:
     K:         0     1     2     3    16
     NS:        1     2
  
- Relative machine underflow is taken to be+6.4447927660133239e-1292913987
- Relative machine overflow  is taken to be+1.5516402719316431e+1292913986
+ Relative machine underflow is taken to be+4.7651298097759021e-323228497
+ Relative machine overflow  is taken to be+2.0985787164673877e+323228496
  Relative machine precision is taken to be+7.4583407312002067e-155
 
  Routines pass computational tests if test ratio is less than+2.0000000000000000e+01
@@ -20,3 +20,15 @@ The following parameter values will be used:
 
 
  DBB:  NRHS =   1
+
+ All tests for DBB passed the threshold (  3000 tests run)
+
+
+ DBB:  NRHS =   2
+
+ All tests for DBB passed the threshold (  3000 tests run)
+
+
+ End of tests
+ Total time used =         2.00 seconds
+

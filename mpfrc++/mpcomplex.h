@@ -241,13 +241,12 @@ class mpcomplex {
 };
 
 #if defined ___MPLAPACK_MPLAPACK_INIT___
-mpc_rnd_t mpfr::mpcomplex::default_rnd = MPFR_RNDN; //must be initialized at mpblas/reference/mplapackinit.cpp
+mpc_rnd_t mpfr::mpcomplex::default_rnd = MPFR_RNDN; // must be initialized at mpblas/reference/mplapackinit.cpp
 mp_prec_t mpfr::mpcomplex::default_real_prec = ___MPREAL_DEFAULT_PRECISION___;
 mp_prec_t mpfr::mpcomplex::default_imag_prec = ___MPREAL_DEFAULT_PRECISION___;
 int mpfr::mpcomplex::default_base = 2;
 int mpfr::mpcomplex::double_bits = -1;
 #endif
-
 
 //+ addition
 const mpcomplex operator+(const mpcomplex &a, const mpcomplex &b);
@@ -747,8 +746,36 @@ inline const mpcomplex operator*(const mpreal &a, const mpcomplex &b) {
 
 // / division
 inline mpcomplex &mpcomplex::operator/=(const mpcomplex &a) {
+// mpc doesn't consider overflow/underflow for devision.
+// usually, they don't occur as exponent range is 4bytes in MPFR, and 8bytes GMP, respectively.
+// however, for Windows, whose long is int = 4bytes, we have to consider overflow and underflow.
+#if defined _WIN32
+    mpcomplex tmp(*this);
+    mpreal abr, abi, ratio, den;
+    if ((abr = a.real()) < 0.)
+        abr = -abr;
+    if ((abi = a.imag()) < 0.)
+        abi = -abi;
+    if (abr <= abi) {
+        if (abi == 0) {
+            if (tmp.imag() != 0 || tmp.real() != 0)
+                abi = 1.;
+            (*this) = mpcomplex(abi / abr, abi / abr);
+            return (*this);
+        }
+        ratio = a.real() / a.imag();
+        den = a.imag() * (1.0 + ratio * ratio);
+        (*this) = mpcomplex((tmp.real() * ratio + tmp.imag()) / den, (tmp.imag() * ratio - tmp.real()) / den);
+    } else {
+        ratio = a.imag() / a.real();
+        den = a.real() * (1.0 + ratio * ratio);
+        (*this) = mpcomplex((tmp.real() + tmp.imag() * ratio) / den, (tmp.imag() - tmp.real() * ratio) / den);
+    }
+    return (*this);
+#else
     mpc_div(mpc, mpc, a.mpc, default_rnd);
     return *this;
+#endif
 }
 
 inline mpcomplex &mpcomplex::operator/=(const mpc_t a) {

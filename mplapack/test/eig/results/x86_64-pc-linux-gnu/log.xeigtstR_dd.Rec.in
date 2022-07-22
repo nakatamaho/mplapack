@@ -8,10 +8,10 @@
 
 
  REC routines passed the tests of the error exits ( 35 tests done)
-
- All tests for REC routines passed the threshold ( 501261 tests run)
+ Error in Rlasy2: RMAX =5.7916661874620552e+12
+ LMAX =   127569 NINFO=   56772 KNT=  135000
 
 
  End of tests
- Total time used =         6.00 seconds
+ Total time used =         2.00 seconds
 

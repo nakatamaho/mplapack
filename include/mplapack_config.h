@@ -54,15 +54,13 @@
 #define USE64BITINT
 
 #ifdef USE64BITINT
-    #if defined __APPLE__ //workaround for int64_t is long long which contradicts with GMP. However, sizeof(long long)==sizeof(long).
+    #if defined _WIN32  //workaround for Windows. long int is 32bit and int64_t is long long. Supporting GMP version is not straightfoward.
         typedef long int mplapackint;
-    #elif defined _WIN32  //workaround for Windows, and cannot be fixed. int64_t is long long and support GMP version is not straightfoward.
-        typedef long int mplapackint;
+    #elif defined __APPLE__ //on apple int64_t doesn't work, but it long works and it is 8 bytes.
+        typedef long mplapackint;
     #else
         typedef int64_t mplapackint;
     #endif
-#else
-    typedef int32_t mplapackint;
 #endif
 
 typedef mplapackint mplapacklogical;

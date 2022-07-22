@@ -12,8 +12,8 @@ The following parameter values will be used:
     NX:        1     0     5     9     1
     NS:        2     0     2     2     2
  
- Relative machine underflow is taken to be+6.4447927660133239e-1292913987
- Relative machine overflow  is taken to be+1.5516402719316431e+1292913986
+ Relative machine underflow is taken to be+1.7019382623481672e-1388255822130839283
+ Relative machine overflow  is taken to be+5.8756537891115876e+1388255822130839282
  Relative machine precision is taken to be+7.4583407312002067e-155
 
  Routines pass computational tests if test ratio is less than+5.0000000000000000e+01
@@ -641,7 +641,7 @@ The following parameter values will be used:
  M=   40, N=   30, type 13, seed=   0,   0,   0,   1, test(19)=+1.1539539047988870e+02
  M=   40, N=   30, type 14, seed=   0,   0,   0,   1, test( 9)=+1.3806439552687336e+02
  M=   40, N=   30, type 14, seed=   0,   0,   0,   1, test(19)=+1.1412457130945231e+02
- M=   40, N=   30, type 15, seed=   0,   0,   0,   1, test( 9)=+1.1304728115940478e+02
+ M=   40, N=   30, type 15, seed=   0,   0,   0,   1, test( 9)=+1.1305253575753717e+02
  M=   40, N=   30, type 15, seed=   0,   0,   0,   1, test(19)=+1.0134725563268615e+02
  M=   40, N=   40, type  8, seed=   0,   0,   0,   1, test( 9)=+1.4233351613599645e+02
  M=   40, N=   40, type  8, seed=   0,   0,   0,   1, test(19)=+1.2397540538744603e+02
@@ -662,5 +662,5 @@ The following parameter values will be used:
 
 
  End of tests
- Total time used =      5875.00 seconds
+ Total time used =      4814.00 seconds
 

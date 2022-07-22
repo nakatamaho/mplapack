@@ -11,8 +11,8 @@ The following parameter values will be used:
 
  Routines pass computational tests if test ratio is less than   60.00
 
- Relative machine underflow is taken to be : +6.4447927660133239e-1292913987
- Relative machine overflow  is taken to be : +1.5516402719316431e+1292913986
+ Relative machine underflow is taken to be : +1.7019382623481672e-1388255822130839283
+ Relative machine overflow  is taken to be : +5.8756537891115876e+1388255822130839282
  Relative machine precision is taken to be : +7.4583407312002067e-155
  CGE routines passed the tests of the error exits
 
@@ -184,7 +184,7 @@ The following parameter values will be used:
  All tests for CHH routines passed the threshold (  15900 tests run)
 
  End of tests
- Total time used =  2157 seconds
+ Total time used =  2040 seconds
 
-2156.67user 0.07system 35:57.21elapsed 99%CPU (0avgtext+0avgdata 170280maxresident)k
-0inputs+184outputs (0major+55702minor)pagefaults 0swaps
+2035.82user 0.31system 34:00.21elapsed 99%CPU (0avgtext+0avgdata 118476maxresident)k
+8400inputs+296outputs (64major+43140minor)pagefaults 0swaps

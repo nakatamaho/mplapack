@@ -7,8 +7,8 @@ The following parameter values will be used:
         M  :     1     2     3     4     5     6     7     8     9
  Routines pass computational tests if test ratio is less than   30.00
 
- Relative machine underflow is taken to be : +6.4447927660133239e-1292913987
- Relative machine overflow  is taken to be : +1.5516402719316431e+1292913986
+ Relative machine underflow is taken to be : +1.7019382623481672e-1388255822130839283
+ Relative machine overflow  is taken to be : +5.8756537891115876e+1388255822130839282
  Relative machine precision is taken to be : +7.4583407312002067e-155
  MULTIPLE PRECISION RFP routines passed the tests of the error exits
 
@@ -19,7 +19,7 @@ The following parameter values will be used:
  All tests for Rsfrk auxiliary routine passed the threshold (  2592 tests run)
 
  End of tests
- Total time used =  26 seconds
+ Total time used =  23 seconds
 
-26.63user 0.00system 0:26.63elapsed 99%CPU (0avgtext+0avgdata 15204maxresident)k
-0inputs+8outputs (0major+956minor)pagefaults 0swaps
+23.10user 0.00system 0:23.14elapsed 99%CPU (0avgtext+0avgdata 13604maxresident)k
+656inputs+24outputs (8major+916minor)pagefaults 0swaps

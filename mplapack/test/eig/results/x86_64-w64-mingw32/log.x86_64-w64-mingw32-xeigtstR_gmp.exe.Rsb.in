@@ -8,10 +8,17 @@ The following parameter values will be used:
     N:         5    20
     K:         0     1     2     5    16
  
- Relative machine underflow is taken to be+6.4447927660133239e-1292913987
- Relative machine overflow  is taken to be+1.5516402719316431e+1292913986
+ Relative machine underflow is taken to be+4.7651298097759021e-323228497
+ Relative machine overflow  is taken to be+2.0985787164673877e+323228496
  Relative machine precision is taken to be+7.4583407312002067e-155
 
  Routines pass computational tests if test ratio is less than+2.0000000000000000e+01
 
  DSB routines passed the tests of the error exits ( 75 tests done)
+
+ All tests for DSB passed the threshold (   810 tests run)
+
+
+ End of tests
+ Total time used =         1.00 seconds
+

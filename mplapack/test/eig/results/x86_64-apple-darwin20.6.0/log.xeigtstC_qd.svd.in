@@ -82,12 +82,326 @@ The following parameter values will be used:
   33: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
   34: norm( S - S1 )      / ( norm(S) ulp ), where S1 is computed
                                              without computing U and V'
- M=   10, N=   10, type 16, seed=   0,   0,   0,   1, test(10)=6.4277521770359611e+62
- M=   16, N=   10, type 16, seed=   0,   0,   0,   1, test(10)=6.4277521770359611e+62
- M=   16, N=   16, type 16, seed=   0,   0,   0,   1, test(10)=3.2138760885179806e+62
+ M=   30, N=   30, type 16, seed=   0,   0,   0,   1, test(10)=1.6069380442589903e+62
  M=   30, N=   40, type 16, seed=   0,   0,   0,   1, test(10)=1.6069380442589903e+62
  M=   40, N=   30, type 16, seed=   0,   0,   0,   1, test(10)=1.6069380442589903e+62
- M=   40, N=   40, type 16, seed=   0,   0,   0,   1, test( 9)=6.1731146865024205e+13
+ M=   40, N=   40, type 16, seed=   0,   0,   0,   1, test(10)=1.6069380442589903e+62
+ CBD:      4 out of   4085 tests failed to pass the threshold
+ SVD -- Complex Singular Value Decomposition Driver 
+ Matrix types (see Cdrvbd for details):
+
+ 1 = Zero matrix
+ 2 = Identity matrix
+ 3 = Evenly spaced singular values near 1
+ 4 = Evenly spaced singular values near underflow
+ 5 = Evenly spaced singular values near overflow
+
+ Tests performed: ( A is dense, U and V are unitary,
+                    S is an array, and Upartial, VTpartial, and
+                    Spartial are partially computed U, VT and S),
+
+ Tests performed with Test Threshold = 5.0000000000000000e+01
+ Cgesvd: 
+ 1 = | A - U diag(S) VT | / ( |A| max(M,N) ulp ) 
+ 2 = | I - U**T U | / ( M ulp ) 
+ 3 = | I - VT VT**T | / ( N ulp ) 
+ 4 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
+ 5 = | U - Upartial | / ( M ulp )
+ 6 = | VT - VTpartial | / ( N ulp )
+ 7 = | S - Spartial | / ( min(M,N) ulp |S| )
+ Cgesdd: 
+ 8 = | A - U diag(S) VT | / ( |A| max(M,N) ulp ) 
+ 9 = | I - U**T U | / ( M ulp ) 
+10 = | I - VT VT**T | / ( N ulp ) 
+11 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
+12 = | U - Upartial | / ( M ulp )
+13 = | VT - VTpartial | / ( N ulp )
+14 = | S - Spartial | / ( min(M,N) ulp |S| )
+ Cgesvj: 
+
+15 = | A - U diag(S) VT | / ( |A| max(M,N) ulp ) 
+16 = | I - U**T U | / ( M ulp ) 
+17 = | I - VT VT**T | / ( N ulp ) 
+18 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
+ ZGESJV: 
+
+19 = | A - U diag(S) VT | / ( |A| max(M,N) ulp )
+20 = | I - U**T U | / ( M ulp ) 
+21 = | I - VT VT**T | / ( N ulp ) 
+22 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
+ Cgesvdx(V,V,A): 
+23 = | A - U diag(S) VT | / ( |A| max(M,N) ulp ) 
+24 = | I - U**T U | / ( M ulp ) 
+25 = | I - VT VT**T | / ( N ulp ) 
+26 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
+27 = | U - Upartial | / ( M ulp )
+28 = | VT - VTpartial | / ( N ulp )
+29 = | S - Spartial | / ( min(M,N) ulp |S| )
+ Cgesvdx(V,V,I): 
+30 = | U**T A VT**T - diag(S) | / ( |A| max(M,N) ulp )
+31 = | I - U**T U | / ( M ulp ) 
+32 = | I - VT VT**T | / ( N ulp ) 
+ Cgesvdx(V,V,V) 
+33 = | U**T A VT**T - diag(S) | / ( |A| max(M,N) ulp )
+34 = | I - U**T U | / ( M ulp ) 
+35 = | I - VT VT**T | / ( N ulp )  Cgesvdq(H,N,N,A,A
+36 = | A - U diag(S) VT | / ( |A| max(M,N) ulp ) 
+37 = | I - U**T U | / ( M ulp ) 
+38 = | I - VT VT**T | / ( N ulp ) 
+39 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
+
+
+ M=    3, N=    3, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.4552373035673049e+29
+ M=    3, N=    3, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.4552373035673049e+29
+ M=    3, N=    3, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.4552373035673049e+29
+ M=    3, N=    3, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.4552373035673049e+29
+ M=   10, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=4.1184196239309399e+28
+ M=   10, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=4.1184196239309399e+28
+ M=   10, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=4.1184196239309399e+28
+ M=   10, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=4.1184196239309399e+28
+ M=   16, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=4.3657881550115860e+28
+ M=   16, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=4.3657881550115860e+28
+ M=   16, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=4.3657881550115860e+28
+ M=   16, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=4.3657881550115860e+28
+ M=   16, N=   16, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=2.7436137342471827e+28
+ M=   16, N=   16, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=2.7436137342471827e+28
+ M=   16, N=   16, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=2.7436137342471827e+28
+ M=   16, N=   16, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=2.7436137342471827e+28
+ M=   30, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.3984929918548615e+28
+ M=   30, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.3984929918548615e+28
+ M=   30, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.3984929918548615e+28
+ M=   30, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.3984929918548615e+28
+ M=   40, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.3669732950421099e+28
+ M=   40, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.3669732950421099e+28
+ M=   40, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.3669732950421099e+28
+ M=   40, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.3669732950421099e+28
+ M=   40, N=   40, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.0758021643738988e+28
+ M=   40, N=   40, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.0758021643738988e+28
+ M=   40, N=   40, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.0758021643738988e+28
+ M=   40, N=   40, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.0758021643738988e+28
+ ZBD drivers:     28 out of  14340 tests failed to pass the threshold
+
+
+ SVD:  NB =   3, NBMIN =   2, NX =   0, NRHS =   0
+
+ CBD -- Complex Singular Value Decomposition
+ Matrix types (see xCHKBD for details):
+ Diagonal matrices:
+   1: Zero                             5: Clustered entries
+   2: Identity                         6: Large, evenly spaced entries
+   3: Evenly spaced entries            7: Small, evenly spaced entries
+   4: Geometrically spaced entries
+ General matrices:
+   8: Evenly spaced sing. vals.       12: Small, evenly spaced sing vals
+   9: Geometrically spaced sing vals  13: Random, O(1) entries
+  10: Clustered sing. vals.           14: Random, scaled near overflow
+  11: Large, evenly spaced sing vals  15: Random, scaled near underflow
+
+ Test ratios:  (B: bidiagonal, S: diagonal, Q, P, U, and V: unitary   
+                X: m x nrhs, Y = Q' X, and Z = U' Y)
+   1: norm( A - Q B P' ) / ( norm(A) max(m,n) ulp )
+   2: norm( I - Q' Q )   / ( m ulp )
+   3: norm( I - P' P )   / ( n ulp )
+   4: norm( B - U S V' ) / ( norm(B) min(m,n) ulp )
+   5: norm( Y - U Z )    / ( norm(Z) max(min(m,n),k) ulp )
+   6: norm( I - U' U )   / ( min(m,n) ulp )
+   7: norm( I - V' V )   / ( min(m,n) ulp )
+   8: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
+   9: norm( S - S1 )     / ( norm(S) ulp ), where S1 is computed
+                                            without computing U and V'
+  10: Sturm sequence test (0 if sing. vals of B within THRESH of S)
+  11: norm( A - (QU) S (V' P') ) / ( norm(A) max(m,n) ulp )
+  12: norm( X - (QU) Z )         / ( |X| max(M,k) ulp )
+  13: norm( I - (QU)'(QU) )      / ( M ulp )
+  14: norm( I - (V' P') (P V) )  / ( N ulp )
+  15: norm( B - U S V' ) / ( norm(B) min(m,n) ulp )
+  16: norm( I - U' U )   / ( min(m,n) ulp )
+  17: norm( I - V' V )   / ( min(m,n) ulp )
+  18: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
+  19: norm( S - S1 )     / ( norm(S) ulp ), where S1 is computed
+                                            without computing U and V'
+  20: norm( B - U S V' )  / ( norm(B) min(m,n) ulp )  DBDSVX(V,A)
+  21: norm( I - U' U )    / ( min(m,n) ulp )
+  22: norm( I - V' V )    / ( min(m,n) ulp )
+  23: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
+  24: norm( S - S1 )      / ( norm(S) ulp ), where S1 is computed
+                                             without computing U and V'
+  25: norm( S - U' B V ) / ( norm(B) n ulp )  DBDSVX(V,I)
+  26: norm( I - U' U )    / ( min(m,n) ulp )
+  27: norm( I - V' V )    / ( min(m,n) ulp )
+  28: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
+  29: norm( S - S1 )      / ( norm(S) ulp ), where S1 is computed
+                                             without computing U and V'
+  30: norm( S - U' B V ) / ( norm(B) n ulp )  DBDSVX(V,V)
+  31: norm( I - U' U )    / ( min(m,n) ulp )
+  32: norm( I - V' V )    / ( min(m,n) ulp )
+  33: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
+  34: norm( S - S1 )      / ( norm(S) ulp ), where S1 is computed
+                                             without computing U and V'
+ M=   10, N=   10, type 16, seed=   0,   0,   0,   1, test(10)=6.4277521770359611e+62
+ M=   10, N=   16, type 16, seed=   0,   0,   0,   1, test(10)=7.3786976294838206e+21
+ M=   30, N=   30, type 16, seed=   0,   0,   0,   1, test(10)=1.6069380442589903e+62
+ M=   30, N=   40, type 16, seed=   0,   0,   0,   1, test(10)=1.0737418240000000e+11
+ M=   40, N=   30, type 16, seed=   0,   0,   0,   1, test(10)=1.6069380442589903e+62
+ M=   40, N=   40, type 16, seed=   0,   0,   0,   1, test(10)=1.6069380442589903e+62
+ CBD:      6 out of   4085 tests failed to pass the threshold
+ SVD -- Complex Singular Value Decomposition Driver 
+ Matrix types (see Cdrvbd for details):
+
+ 1 = Zero matrix
+ 2 = Identity matrix
+ 3 = Evenly spaced singular values near 1
+ 4 = Evenly spaced singular values near underflow
+ 5 = Evenly spaced singular values near overflow
+
+ Tests performed: ( A is dense, U and V are unitary,
+                    S is an array, and Upartial, VTpartial, and
+                    Spartial are partially computed U, VT and S),
+
+ Tests performed with Test Threshold = 5.0000000000000000e+01
+ Cgesvd: 
+ 1 = | A - U diag(S) VT | / ( |A| max(M,N) ulp ) 
+ 2 = | I - U**T U | / ( M ulp ) 
+ 3 = | I - VT VT**T | / ( N ulp ) 
+ 4 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
+ 5 = | U - Upartial | / ( M ulp )
+ 6 = | VT - VTpartial | / ( N ulp )
+ 7 = | S - Spartial | / ( min(M,N) ulp |S| )
+ Cgesdd: 
+ 8 = | A - U diag(S) VT | / ( |A| max(M,N) ulp ) 
+ 9 = | I - U**T U | / ( M ulp ) 
+10 = | I - VT VT**T | / ( N ulp ) 
+11 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
+12 = | U - Upartial | / ( M ulp )
+13 = | VT - VTpartial | / ( N ulp )
+14 = | S - Spartial | / ( min(M,N) ulp |S| )
+ Cgesvj: 
+
+15 = | A - U diag(S) VT | / ( |A| max(M,N) ulp ) 
+16 = | I - U**T U | / ( M ulp ) 
+17 = | I - VT VT**T | / ( N ulp ) 
+18 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
+ ZGESJV: 
+
+19 = | A - U diag(S) VT | / ( |A| max(M,N) ulp )
+20 = | I - U**T U | / ( M ulp ) 
+21 = | I - VT VT**T | / ( N ulp ) 
+22 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
+ Cgesvdx(V,V,A): 
+23 = | A - U diag(S) VT | / ( |A| max(M,N) ulp ) 
+24 = | I - U**T U | / ( M ulp ) 
+25 = | I - VT VT**T | / ( N ulp ) 
+26 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
+27 = | U - Upartial | / ( M ulp )
+28 = | VT - VTpartial | / ( N ulp )
+29 = | S - Spartial | / ( min(M,N) ulp |S| )
+ Cgesvdx(V,V,I): 
+30 = | U**T A VT**T - diag(S) | / ( |A| max(M,N) ulp )
+31 = | I - U**T U | / ( M ulp ) 
+32 = | I - VT VT**T | / ( N ulp ) 
+ Cgesvdx(V,V,V) 
+33 = | U**T A VT**T - diag(S) | / ( |A| max(M,N) ulp )
+34 = | I - U**T U | / ( M ulp ) 
+35 = | I - VT VT**T | / ( N ulp )  Cgesvdq(H,N,N,A,A
+36 = | A - U diag(S) VT | / ( |A| max(M,N) ulp ) 
+37 = | I - U**T U | / ( M ulp ) 
+38 = | I - VT VT**T | / ( N ulp ) 
+39 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
+
+
+ M=    3, N=    3, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.2945696736907516e+29
+ M=    3, N=    3, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.2945696736907516e+29
+ M=    3, N=    3, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.2945696736907516e+29
+ M=    3, N=    3, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.2945696736907516e+29
+ M=   10, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=4.1466193217687077e+28
+ M=   10, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=4.1466193217687077e+28
+ M=   10, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=4.1466193217687077e+28
+ M=   10, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=4.1466193217687077e+28
+ M=   16, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=4.0181360906004513e+28
+ M=   16, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=4.0181360906004513e+28
+ M=   16, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=4.0181360906004513e+28
+ M=   16, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=4.0181360906004513e+28
+ M=   16, N=   16, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=2.6368678631611928e+28
+ M=   16, N=   16, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=2.6368678631611928e+28
+ M=   16, N=   16, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=2.6368678631611928e+28
+ M=   16, N=   16, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=2.6368678631611928e+28
+ M=   30, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.4416725641137820e+28
+ M=   30, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.4416725641137820e+28
+ M=   30, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.4416725641137820e+28
+ M=   30, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.4416725641137820e+28
+ M=   40, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.3798593152440034e+28
+ M=   40, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.3798593152440034e+28
+ M=   40, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.3798593152440034e+28
+ M=   40, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.3798593152440034e+28
+ M=   40, N=   40, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.0278665598117538e+28
+ M=   40, N=   40, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.0278665598117538e+28
+ M=   40, N=   40, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.0278665598117538e+28
+ M=   40, N=   40, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.0278665598117538e+28
+ ZBD drivers:     28 out of  14340 tests failed to pass the threshold
+
+
+ SVD:  NB =   3, NBMIN =   2, NX =   5, NRHS =   2
+
+ CBD -- Complex Singular Value Decomposition
+ Matrix types (see xCHKBD for details):
+ Diagonal matrices:
+   1: Zero                             5: Clustered entries
+   2: Identity                         6: Large, evenly spaced entries
+   3: Evenly spaced entries            7: Small, evenly spaced entries
+   4: Geometrically spaced entries
+ General matrices:
+   8: Evenly spaced sing. vals.       12: Small, evenly spaced sing vals
+   9: Geometrically spaced sing vals  13: Random, O(1) entries
+  10: Clustered sing. vals.           14: Random, scaled near overflow
+  11: Large, evenly spaced sing vals  15: Random, scaled near underflow
+
+ Test ratios:  (B: bidiagonal, S: diagonal, Q, P, U, and V: unitary   
+                X: m x nrhs, Y = Q' X, and Z = U' Y)
+   1: norm( A - Q B P' ) / ( norm(A) max(m,n) ulp )
+   2: norm( I - Q' Q )   / ( m ulp )
+   3: norm( I - P' P )   / ( n ulp )
+   4: norm( B - U S V' ) / ( norm(B) min(m,n) ulp )
+   5: norm( Y - U Z )    / ( norm(Z) max(min(m,n),k) ulp )
+   6: norm( I - U' U )   / ( min(m,n) ulp )
+   7: norm( I - V' V )   / ( min(m,n) ulp )
+   8: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
+   9: norm( S - S1 )     / ( norm(S) ulp ), where S1 is computed
+                                            without computing U and V'
+  10: Sturm sequence test (0 if sing. vals of B within THRESH of S)
+  11: norm( A - (QU) S (V' P') ) / ( norm(A) max(m,n) ulp )
+  12: norm( X - (QU) Z )         / ( |X| max(M,k) ulp )
+  13: norm( I - (QU)'(QU) )      / ( M ulp )
+  14: norm( I - (V' P') (P V) )  / ( N ulp )
+  15: norm( B - U S V' ) / ( norm(B) min(m,n) ulp )
+  16: norm( I - U' U )   / ( min(m,n) ulp )
+  17: norm( I - V' V )   / ( min(m,n) ulp )
+  18: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
+  19: norm( S - S1 )     / ( norm(S) ulp ), where S1 is computed
+                                            without computing U and V'
+  20: norm( B - U S V' )  / ( norm(B) min(m,n) ulp )  DBDSVX(V,A)
+  21: norm( I - U' U )    / ( min(m,n) ulp )
+  22: norm( I - V' V )    / ( min(m,n) ulp )
+  23: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
+  24: norm( S - S1 )      / ( norm(S) ulp ), where S1 is computed
+                                             without computing U and V'
+  25: norm( S - U' B V ) / ( norm(B) n ulp )  DBDSVX(V,I)
+  26: norm( I - U' U )    / ( min(m,n) ulp )
+  27: norm( I - V' V )    / ( min(m,n) ulp )
+  28: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
+  29: norm( S - S1 )      / ( norm(S) ulp ), where S1 is computed
+                                             without computing U and V'
+  30: norm( S - U' B V ) / ( norm(B) n ulp )  DBDSVX(V,V)
+  31: norm( I - U' U )    / ( min(m,n) ulp )
+  32: norm( I - V' V )    / ( min(m,n) ulp )
+  33: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
+  34: norm( S - S1 )      / ( norm(S) ulp ), where S1 is computed
+                                             without computing U and V'
+ M=   10, N=   10, type 16, seed=   0,   0,   0,   1, test(10)=6.4277521770359611e+62
+ M=   30, N=   30, type 16, seed=   0,   0,   0,   1, test( 9)=1.6478715335216115e+11
+ M=   30, N=   30, type 16, seed=   0,   0,   0,   1, test(10)=1.6069380442589903e+62
+ M=   30, N=   40, type 16, seed=   0,   0,   0,   1, test(10)=1.6069380442589903e+62
+ M=   40, N=   30, type 16, seed=   0,   0,   0,   1, test(10)=1.6069380442589903e+62
+ M=   40, N=   40, type 16, seed=   0,   0,   0,   1, test( 9)=1.1301851262943811e+34
  M=   40, N=   40, type 16, seed=   0,   0,   0,   1, test(10)=1.6069380442589903e+62
  CBD:      7 out of   4085 tests failed to pass the threshold
  SVD -- Complex Singular Value Decomposition Driver 
@@ -154,38 +468,38 @@ The following parameter values will be used:
 39 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
 
 
- M=    3, N=    3, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.3931666620417210e+29
- M=    3, N=    3, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.3931666620417210e+29
- M=    3, N=    3, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.3931666620417210e+29
- M=    3, N=    3, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.3931666620417210e+29
- M=   10, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=4.0796057708679927e+28
- M=   10, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=4.0796057708679927e+28
- M=   10, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=4.0796057708679927e+28
- M=   10, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=4.0796057708679927e+28
- M=   16, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=4.1151881675035800e+28
- M=   16, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=4.1151881675035800e+28
- M=   16, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=4.1151881675035800e+28
- M=   16, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=4.1151881675035800e+28
- M=   16, N=   16, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=2.6302337303767719e+28
- M=   16, N=   16, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=2.6302337303767719e+28
- M=   16, N=   16, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=2.6302337303767719e+28
- M=   16, N=   16, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=2.6302337303767719e+28
- M=   30, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.3930760915867195e+28
- M=   30, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.3930760915867195e+28
- M=   30, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.3930760915867195e+28
- M=   30, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.3930760915867195e+28
- M=   40, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.3866503379816532e+28
- M=   40, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.3866503379816532e+28
- M=   40, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.3866503379816532e+28
- M=   40, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.3866503379816532e+28
- M=   40, N=   40, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.0561395732983470e+28
- M=   40, N=   40, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.0561395732983470e+28
- M=   40, N=   40, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.0561395732983470e+28
- M=   40, N=   40, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.0561395732983470e+28
+ M=    3, N=    3, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.4316521905184495e+29
+ M=    3, N=    3, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.4316521905184495e+29
+ M=    3, N=    3, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.4316521905184495e+29
+ M=    3, N=    3, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.4316521905184495e+29
+ M=   10, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=4.2081913971637833e+28
+ M=   10, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=4.2081913971637833e+28
+ M=   10, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=4.2081913971637833e+28
+ M=   10, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=4.2081913971637833e+28
+ M=   16, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=4.1000208201888188e+28
+ M=   16, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=4.1000208201888188e+28
+ M=   16, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=4.1000208201888188e+28
+ M=   16, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=4.1000208201888188e+28
+ M=   16, N=   16, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=2.5626059389152668e+28
+ M=   16, N=   16, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=2.5626059389152668e+28
+ M=   16, N=   16, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=2.5626059389152668e+28
+ M=   16, N=   16, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=2.5626059389152668e+28
+ M=   30, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.4132429753010747e+28
+ M=   30, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.4132429753010747e+28
+ M=   30, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.4132429753010747e+28
+ M=   30, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.4132429753010747e+28
+ M=   40, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.4267986428002025e+28
+ M=   40, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.4267986428002025e+28
+ M=   40, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.4267986428002025e+28
+ M=   40, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.4267986428002025e+28
+ M=   40, N=   40, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.0530637001708866e+28
+ M=   40, N=   40, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.0530637001708866e+28
+ M=   40, N=   40, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.0530637001708866e+28
+ M=   40, N=   40, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.0530637001708866e+28
  ZBD drivers:     28 out of  14340 tests failed to pass the threshold
 
 
- SVD:  NB =   3, NBMIN =   2, NX =   0, NRHS =   0
+ SVD:  NB =   3, NBMIN =   2, NX =   9, NRHS =   2
 
  CBD -- Complex Singular Value Decomposition
  Matrix types (see xCHKBD for details):
@@ -241,10 +555,10 @@ The following parameter values will be used:
   33: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
   34: norm( S - S1 )      / ( norm(S) ulp ), where S1 is computed
                                              without computing U and V'
- M=   10, N=   10, type 16, seed=   0,   0,   0,   1, test(10)=6.4277521770359611e+62
- M=   10, N=   16, type 16, seed=   0,   0,   0,   1, test(10)=1.2676506002282294e+32
+ M=   10, N=   16, type 16, seed=   0,   0,   0,   1, test(10)=6.4277521770359611e+62
  M=   16, N=   10, type 16, seed=   0,   0,   0,   1, test(10)=6.4277521770359611e+62
  M=   16, N=   16, type 16, seed=   0,   0,   0,   1, test(10)=3.2138760885179806e+62
+ M=   30, N=   30, type 16, seed=   0,   0,   0,   1, test( 9)=2.6139173712235159e+19
  M=   30, N=   30, type 16, seed=   0,   0,   0,   1, test(10)=1.6069380442589903e+62
  M=   30, N=   40, type 16, seed=   0,   0,   0,   1, test(10)=1.6069380442589903e+62
  M=   40, N=   30, type 16, seed=   0,   0,   0,   1, test(10)=1.6069380442589903e+62
@@ -314,38 +628,38 @@ The following parameter values will be used:
 39 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
 
 
- M=    3, N=    3, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.4939681835676273e+29
- M=    3, N=    3, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.4939681835676273e+29
- M=    3, N=    3, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.4939681835676273e+29
- M=    3, N=    3, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.4939681835676273e+29
- M=   10, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=4.1315589039581964e+28
- M=   10, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=4.1315589039581964e+28
- M=   10, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=4.1315589039581964e+28
- M=   10, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=4.1315589039581964e+28
- M=   16, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=4.0723520776384863e+28
- M=   16, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=4.0723520776384863e+28
- M=   16, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=4.0723520776384863e+28
- M=   16, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=4.0723520776384863e+28
- M=   16, N=   16, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=2.6605243478302684e+28
- M=   16, N=   16, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=2.6605243478302684e+28
- M=   16, N=   16, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=2.6605243478302684e+28
- M=   16, N=   16, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=2.6605243478302684e+28
- M=   30, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.4139935620640053e+28
- M=   30, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.4139935620640053e+28
- M=   30, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.4139935620640053e+28
- M=   30, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.4139935620640053e+28
- M=   40, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.4104724445065380e+28
- M=   40, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.4104724445065380e+28
- M=   40, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.4104724445065380e+28
- M=   40, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.4104724445065380e+28
- M=   40, N=   40, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.0590136783440309e+28
- M=   40, N=   40, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.0590136783440309e+28
- M=   40, N=   40, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.0590136783440309e+28
- M=   40, N=   40, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.0590136783440309e+28
+ M=    3, N=    3, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.4399299228293363e+29
+ M=    3, N=    3, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.4399299228293363e+29
+ M=    3, N=    3, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.4399299228293363e+29
+ M=    3, N=    3, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.4399299228293363e+29
+ M=   10, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=4.3709206111995958e+28
+ M=   10, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=4.3709206111995958e+28
+ M=   10, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=4.3709206111995958e+28
+ M=   10, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=4.3709206111995958e+28
+ M=   16, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=4.2649286147327532e+28
+ M=   16, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=4.2649286147327532e+28
+ M=   16, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=4.2649286147327532e+28
+ M=   16, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=4.2649286147327532e+28
+ M=   16, N=   16, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=2.5992251346423580e+28
+ M=   16, N=   16, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=2.5992251346423580e+28
+ M=   16, N=   16, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=2.5992251346423580e+28
+ M=   16, N=   16, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=2.5992251346423580e+28
+ M=   30, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.4220660413337619e+28
+ M=   30, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.4220660413337619e+28
+ M=   30, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.4220660413337619e+28
+ M=   30, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.4220660413337619e+28
+ M=   40, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.4089967937324524e+28
+ M=   40, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.4089967937324524e+28
+ M=   40, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.4089967937324524e+28
+ M=   40, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.4089967937324524e+28
+ M=   40, N=   40, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.0375861901439631e+28
+ M=   40, N=   40, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.0375861901439631e+28
+ M=   40, N=   40, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.0375861901439631e+28
+ M=   40, N=   40, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.0375861901439631e+28
  ZBD drivers:     28 out of  14340 tests failed to pass the threshold
 
 
- SVD:  NB =   3, NBMIN =   2, NX =   5, NRHS =   2
+ SVD:  NB =  20, NBMIN =   2, NX =   1, NRHS =   2
 
  CBD -- Complex Singular Value Decomposition
  Matrix types (see xCHKBD for details):
@@ -402,9 +716,9 @@ The following parameter values will be used:
   34: norm( S - S1 )      / ( norm(S) ulp ), where S1 is computed
                                              without computing U and V'
  M=   10, N=   16, type 16, seed=   0,   0,   0,   1, test(10)=6.4277521770359611e+62
- M=   16, N=   16, type 16, seed=   0,   0,   0,   1, test(10)=3.2138760885179806e+62
- M=   30, N=   30, type 16, seed=   0,   0,   0,   1, test(10)=1.6069380442589903e+62
- M=   30, N=   40, type 16, seed=   0,   0,   0,   1, test(10)=1.6069380442589903e+62
+ M=   16, N=   10, type 16, seed=   0,   0,   0,   1, test(10)=6.4277521770359611e+62
+ M=   40, N=   30, type 16, seed=   0,   0,   0,   1, test( 9)=2.3385122451230700e+08
+ M=   40, N=   30, type 16, seed=   0,   0,   0,   1, test(10)=1.6069380442589903e+62
  M=   40, N=   40, type 16, seed=   0,   0,   0,   1, test(10)=1.6069380442589903e+62
  CBD:      5 out of   4085 tests failed to pass the threshold
  SVD -- Complex Singular Value Decomposition Driver 
@@ -471,351 +785,37 @@ The following parameter values will be used:
 39 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
 
 
- M=    3, N=    3, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.4631579062648875e+29
- M=    3, N=    3, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.4631579062648875e+29
- M=    3, N=    3, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.4631579062648875e+29
- M=    3, N=    3, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.4631579062648875e+29
- M=   10, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=4.2173559772191073e+28
- M=   10, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=4.2173559772191073e+28
- M=   10, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=4.2173559772191073e+28
- M=   10, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=4.2173559772191073e+28
- M=   16, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=4.1654734331080783e+28
- M=   16, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=4.1654734331080783e+28
- M=   16, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=4.1654734331080783e+28
- M=   16, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=4.1654734331080783e+28
- M=   16, N=   16, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=2.5621490602698226e+28
- M=   16, N=   16, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=2.5621490602698226e+28
- M=   16, N=   16, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=2.5621490602698226e+28
- M=   16, N=   16, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=2.5621490602698226e+28
- M=   30, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.4251248061195405e+28
- M=   30, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.4251248061195405e+28
- M=   30, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.4251248061195405e+28
- M=   30, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.4251248061195405e+28
- M=   40, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.4482398215553357e+28
- M=   40, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.4482398215553357e+28
- M=   40, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.4482398215553357e+28
- M=   40, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.4482398215553357e+28
- M=   40, N=   40, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.0571588610311882e+28
- M=   40, N=   40, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.0571588610311882e+28
- M=   40, N=   40, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.0571588610311882e+28
- M=   40, N=   40, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.0571588610311882e+28
- ZBD drivers:     28 out of  14340 tests failed to pass the threshold
-
-
- SVD:  NB =   3, NBMIN =   2, NX =   9, NRHS =   2
-
- CBD -- Complex Singular Value Decomposition
- Matrix types (see xCHKBD for details):
- Diagonal matrices:
-   1: Zero                             5: Clustered entries
-   2: Identity                         6: Large, evenly spaced entries
-   3: Evenly spaced entries            7: Small, evenly spaced entries
-   4: Geometrically spaced entries
- General matrices:
-   8: Evenly spaced sing. vals.       12: Small, evenly spaced sing vals
-   9: Geometrically spaced sing vals  13: Random, O(1) entries
-  10: Clustered sing. vals.           14: Random, scaled near overflow
-  11: Large, evenly spaced sing vals  15: Random, scaled near underflow
-
- Test ratios:  (B: bidiagonal, S: diagonal, Q, P, U, and V: unitary   
-                X: m x nrhs, Y = Q' X, and Z = U' Y)
-   1: norm( A - Q B P' ) / ( norm(A) max(m,n) ulp )
-   2: norm( I - Q' Q )   / ( m ulp )
-   3: norm( I - P' P )   / ( n ulp )
-   4: norm( B - U S V' ) / ( norm(B) min(m,n) ulp )
-   5: norm( Y - U Z )    / ( norm(Z) max(min(m,n),k) ulp )
-   6: norm( I - U' U )   / ( min(m,n) ulp )
-   7: norm( I - V' V )   / ( min(m,n) ulp )
-   8: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
-   9: norm( S - S1 )     / ( norm(S) ulp ), where S1 is computed
-                                            without computing U and V'
-  10: Sturm sequence test (0 if sing. vals of B within THRESH of S)
-  11: norm( A - (QU) S (V' P') ) / ( norm(A) max(m,n) ulp )
-  12: norm( X - (QU) Z )         / ( |X| max(M,k) ulp )
-  13: norm( I - (QU)'(QU) )      / ( M ulp )
-  14: norm( I - (V' P') (P V) )  / ( N ulp )
-  15: norm( B - U S V' ) / ( norm(B) min(m,n) ulp )
-  16: norm( I - U' U )   / ( min(m,n) ulp )
-  17: norm( I - V' V )   / ( min(m,n) ulp )
-  18: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
-  19: norm( S - S1 )     / ( norm(S) ulp ), where S1 is computed
-                                            without computing U and V'
-  20: norm( B - U S V' )  / ( norm(B) min(m,n) ulp )  DBDSVX(V,A)
-  21: norm( I - U' U )    / ( min(m,n) ulp )
-  22: norm( I - V' V )    / ( min(m,n) ulp )
-  23: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
-  24: norm( S - S1 )      / ( norm(S) ulp ), where S1 is computed
-                                             without computing U and V'
-  25: norm( S - U' B V ) / ( norm(B) n ulp )  DBDSVX(V,I)
-  26: norm( I - U' U )    / ( min(m,n) ulp )
-  27: norm( I - V' V )    / ( min(m,n) ulp )
-  28: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
-  29: norm( S - S1 )      / ( norm(S) ulp ), where S1 is computed
-                                             without computing U and V'
-  30: norm( S - U' B V ) / ( norm(B) n ulp )  DBDSVX(V,V)
-  31: norm( I - U' U )    / ( min(m,n) ulp )
-  32: norm( I - V' V )    / ( min(m,n) ulp )
-  33: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
-  34: norm( S - S1 )      / ( norm(S) ulp ), where S1 is computed
-                                             without computing U and V'
- M=   10, N=   10, type 16, seed=   0,   0,   0,   1, test(10)=6.4277521770359611e+62
- M=   30, N=   40, type 16, seed=   0,   0,   0,   1, test(10)=1.6069380442589903e+62
- M=   40, N=   30, type 16, seed=   0,   0,   0,   1, test(10)=1.6069380442589903e+62
- M=   40, N=   40, type 16, seed=   0,   0,   0,   1, test(10)=1.6069380442589903e+62
- CBD:      4 out of   4085 tests failed to pass the threshold
- SVD -- Complex Singular Value Decomposition Driver 
- Matrix types (see Cdrvbd for details):
-
- 1 = Zero matrix
- 2 = Identity matrix
- 3 = Evenly spaced singular values near 1
- 4 = Evenly spaced singular values near underflow
- 5 = Evenly spaced singular values near overflow
-
- Tests performed: ( A is dense, U and V are unitary,
-                    S is an array, and Upartial, VTpartial, and
-                    Spartial are partially computed U, VT and S),
-
- Tests performed with Test Threshold = 5.0000000000000000e+01
- Cgesvd: 
- 1 = | A - U diag(S) VT | / ( |A| max(M,N) ulp ) 
- 2 = | I - U**T U | / ( M ulp ) 
- 3 = | I - VT VT**T | / ( N ulp ) 
- 4 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
- 5 = | U - Upartial | / ( M ulp )
- 6 = | VT - VTpartial | / ( N ulp )
- 7 = | S - Spartial | / ( min(M,N) ulp |S| )
- Cgesdd: 
- 8 = | A - U diag(S) VT | / ( |A| max(M,N) ulp ) 
- 9 = | I - U**T U | / ( M ulp ) 
-10 = | I - VT VT**T | / ( N ulp ) 
-11 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
-12 = | U - Upartial | / ( M ulp )
-13 = | VT - VTpartial | / ( N ulp )
-14 = | S - Spartial | / ( min(M,N) ulp |S| )
- Cgesvj: 
-
-15 = | A - U diag(S) VT | / ( |A| max(M,N) ulp ) 
-16 = | I - U**T U | / ( M ulp ) 
-17 = | I - VT VT**T | / ( N ulp ) 
-18 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
- ZGESJV: 
-
-19 = | A - U diag(S) VT | / ( |A| max(M,N) ulp )
-20 = | I - U**T U | / ( M ulp ) 
-21 = | I - VT VT**T | / ( N ulp ) 
-22 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
- Cgesvdx(V,V,A): 
-23 = | A - U diag(S) VT | / ( |A| max(M,N) ulp ) 
-24 = | I - U**T U | / ( M ulp ) 
-25 = | I - VT VT**T | / ( N ulp ) 
-26 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
-27 = | U - Upartial | / ( M ulp )
-28 = | VT - VTpartial | / ( N ulp )
-29 = | S - Spartial | / ( min(M,N) ulp |S| )
- Cgesvdx(V,V,I): 
-30 = | U**T A VT**T - diag(S) | / ( |A| max(M,N) ulp )
-31 = | I - U**T U | / ( M ulp ) 
-32 = | I - VT VT**T | / ( N ulp ) 
- Cgesvdx(V,V,V) 
-33 = | U**T A VT**T - diag(S) | / ( |A| max(M,N) ulp )
-34 = | I - U**T U | / ( M ulp ) 
-35 = | I - VT VT**T | / ( N ulp )  Cgesvdq(H,N,N,A,A
-36 = | A - U diag(S) VT | / ( |A| max(M,N) ulp ) 
-37 = | I - U**T U | / ( M ulp ) 
-38 = | I - VT VT**T | / ( N ulp ) 
-39 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
-
-
- M=    3, N=    3, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.5213891626692182e+29
- M=    3, N=    3, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.5213891626692182e+29
- M=    3, N=    3, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.5213891626692182e+29
- M=    3, N=    3, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.5213891626692182e+29
- M=   10, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=4.2502835636982870e+28
- M=   10, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=4.2502835636982870e+28
- M=   10, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=4.2502835636982870e+28
- M=   10, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=4.2502835636982870e+28
- M=   16, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=4.0432820554044095e+28
- M=   16, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=4.0432820554044095e+28
- M=   16, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=4.0432820554044095e+28
- M=   16, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=4.0432820554044095e+28
- M=   16, N=   16, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=2.6499777542381164e+28
- M=   16, N=   16, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=2.6499777542381164e+28
- M=   16, N=   16, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=2.6499777542381164e+28
- M=   16, N=   16, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=2.6499777542381164e+28
- M=   30, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.3921101949124800e+28
- M=   30, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.3921101949124800e+28
- M=   30, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.3921101949124800e+28
- M=   30, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.3921101949124800e+28
- M=   40, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.4063175509476528e+28
- M=   40, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.4063175509476528e+28
- M=   40, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.4063175509476528e+28
- M=   40, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.4063175509476528e+28
- M=   40, N=   40, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.0375256366208447e+28
- M=   40, N=   40, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.0375256366208447e+28
- M=   40, N=   40, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.0375256366208447e+28
- M=   40, N=   40, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.0375256366208447e+28
- ZBD drivers:     28 out of  14340 tests failed to pass the threshold
-
-
- SVD:  NB =  20, NBMIN =   2, NX =   1, NRHS =   2
-
- CBD -- Complex Singular Value Decomposition
- Matrix types (see xCHKBD for details):
- Diagonal matrices:
-   1: Zero                             5: Clustered entries
-   2: Identity                         6: Large, evenly spaced entries
-   3: Evenly spaced entries            7: Small, evenly spaced entries
-   4: Geometrically spaced entries
- General matrices:
-   8: Evenly spaced sing. vals.       12: Small, evenly spaced sing vals
-   9: Geometrically spaced sing vals  13: Random, O(1) entries
-  10: Clustered sing. vals.           14: Random, scaled near overflow
-  11: Large, evenly spaced sing vals  15: Random, scaled near underflow
-
- Test ratios:  (B: bidiagonal, S: diagonal, Q, P, U, and V: unitary   
-                X: m x nrhs, Y = Q' X, and Z = U' Y)
-   1: norm( A - Q B P' ) / ( norm(A) max(m,n) ulp )
-   2: norm( I - Q' Q )   / ( m ulp )
-   3: norm( I - P' P )   / ( n ulp )
-   4: norm( B - U S V' ) / ( norm(B) min(m,n) ulp )
-   5: norm( Y - U Z )    / ( norm(Z) max(min(m,n),k) ulp )
-   6: norm( I - U' U )   / ( min(m,n) ulp )
-   7: norm( I - V' V )   / ( min(m,n) ulp )
-   8: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
-   9: norm( S - S1 )     / ( norm(S) ulp ), where S1 is computed
-                                            without computing U and V'
-  10: Sturm sequence test (0 if sing. vals of B within THRESH of S)
-  11: norm( A - (QU) S (V' P') ) / ( norm(A) max(m,n) ulp )
-  12: norm( X - (QU) Z )         / ( |X| max(M,k) ulp )
-  13: norm( I - (QU)'(QU) )      / ( M ulp )
-  14: norm( I - (V' P') (P V) )  / ( N ulp )
-  15: norm( B - U S V' ) / ( norm(B) min(m,n) ulp )
-  16: norm( I - U' U )   / ( min(m,n) ulp )
-  17: norm( I - V' V )   / ( min(m,n) ulp )
-  18: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
-  19: norm( S - S1 )     / ( norm(S) ulp ), where S1 is computed
-                                            without computing U and V'
-  20: norm( B - U S V' )  / ( norm(B) min(m,n) ulp )  DBDSVX(V,A)
-  21: norm( I - U' U )    / ( min(m,n) ulp )
-  22: norm( I - V' V )    / ( min(m,n) ulp )
-  23: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
-  24: norm( S - S1 )      / ( norm(S) ulp ), where S1 is computed
-                                             without computing U and V'
-  25: norm( S - U' B V ) / ( norm(B) n ulp )  DBDSVX(V,I)
-  26: norm( I - U' U )    / ( min(m,n) ulp )
-  27: norm( I - V' V )    / ( min(m,n) ulp )
-  28: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
-  29: norm( S - S1 )      / ( norm(S) ulp ), where S1 is computed
-                                             without computing U and V'
-  30: norm( S - U' B V ) / ( norm(B) n ulp )  DBDSVX(V,V)
-  31: norm( I - U' U )    / ( min(m,n) ulp )
-  32: norm( I - V' V )    / ( min(m,n) ulp )
-  33: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
-  34: norm( S - S1 )      / ( norm(S) ulp ), where S1 is computed
-                                             without computing U and V'
- M=   10, N=   10, type 16, seed=   0,   0,   0,   1, test(10)=6.4277521770359611e+62
- M=   16, N=   16, type 16, seed=   0,   0,   0,   1, test(10)=3.2138760885179806e+62
- M=   30, N=   30, type 16, seed=   0,   0,   0,   1, test(10)=2.3384026197294447e+51
- M=   30, N=   40, type 16, seed=   0,   0,   0,   1, test(10)=1.6069380442589903e+62
- M=   40, N=   30, type 16, seed=   0,   0,   0,   1, test(10)=1.6069380442589903e+62
- M=   40, N=   40, type 16, seed=   0,   0,   0,   1, test(10)=1.6069380442589903e+62
- CBD:      6 out of   4085 tests failed to pass the threshold
- SVD -- Complex Singular Value Decomposition Driver 
- Matrix types (see Cdrvbd for details):
-
- 1 = Zero matrix
- 2 = Identity matrix
- 3 = Evenly spaced singular values near 1
- 4 = Evenly spaced singular values near underflow
- 5 = Evenly spaced singular values near overflow
-
- Tests performed: ( A is dense, U and V are unitary,
-                    S is an array, and Upartial, VTpartial, and
-                    Spartial are partially computed U, VT and S),
-
- Tests performed with Test Threshold = 5.0000000000000000e+01
- Cgesvd: 
- 1 = | A - U diag(S) VT | / ( |A| max(M,N) ulp ) 
- 2 = | I - U**T U | / ( M ulp ) 
- 3 = | I - VT VT**T | / ( N ulp ) 
- 4 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
- 5 = | U - Upartial | / ( M ulp )
- 6 = | VT - VTpartial | / ( N ulp )
- 7 = | S - Spartial | / ( min(M,N) ulp |S| )
- Cgesdd: 
- 8 = | A - U diag(S) VT | / ( |A| max(M,N) ulp ) 
- 9 = | I - U**T U | / ( M ulp ) 
-10 = | I - VT VT**T | / ( N ulp ) 
-11 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
-12 = | U - Upartial | / ( M ulp )
-13 = | VT - VTpartial | / ( N ulp )
-14 = | S - Spartial | / ( min(M,N) ulp |S| )
- Cgesvj: 
-
-15 = | A - U diag(S) VT | / ( |A| max(M,N) ulp ) 
-16 = | I - U**T U | / ( M ulp ) 
-17 = | I - VT VT**T | / ( N ulp ) 
-18 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
- ZGESJV: 
-
-19 = | A - U diag(S) VT | / ( |A| max(M,N) ulp )
-20 = | I - U**T U | / ( M ulp ) 
-21 = | I - VT VT**T | / ( N ulp ) 
-22 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
- Cgesvdx(V,V,A): 
-23 = | A - U diag(S) VT | / ( |A| max(M,N) ulp ) 
-24 = | I - U**T U | / ( M ulp ) 
-25 = | I - VT VT**T | / ( N ulp ) 
-26 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
-27 = | U - Upartial | / ( M ulp )
-28 = | VT - VTpartial | / ( N ulp )
-29 = | S - Spartial | / ( min(M,N) ulp |S| )
- Cgesvdx(V,V,I): 
-30 = | U**T A VT**T - diag(S) | / ( |A| max(M,N) ulp )
-31 = | I - U**T U | / ( M ulp ) 
-32 = | I - VT VT**T | / ( N ulp ) 
- Cgesvdx(V,V,V) 
-33 = | U**T A VT**T - diag(S) | / ( |A| max(M,N) ulp )
-34 = | I - U**T U | / ( M ulp ) 
-35 = | I - VT VT**T | / ( N ulp )  Cgesvdq(H,N,N,A,A
-36 = | A - U diag(S) VT | / ( |A| max(M,N) ulp ) 
-37 = | I - U**T U | / ( M ulp ) 
-38 = | I - VT VT**T | / ( N ulp ) 
-39 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
-
-
- M=    3, N=    3, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.4866169146250596e+29
- M=    3, N=    3, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.4866169146250596e+29
- M=    3, N=    3, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.4866169146250596e+29
- M=    3, N=    3, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.4866169146250596e+29
- M=   10, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=4.1778554062703089e+28
- M=   10, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=4.1778554062703089e+28
- M=   10, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=4.1778554062703089e+28
- M=   10, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=4.1778554062703089e+28
- M=   16, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=4.2602350269031051e+28
- M=   16, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=4.2602350269031051e+28
- M=   16, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=4.2602350269031051e+28
- M=   16, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=4.2602350269031051e+28
- M=   16, N=   16, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=2.6924227281026583e+28
- M=   16, N=   16, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=2.6924227281026583e+28
- M=   16, N=   16, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=2.6924227281026583e+28
- M=   16, N=   16, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=2.6924227281026583e+28
- M=   30, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.3833522762132211e+28
- M=   30, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.3833522762132211e+28
- M=   30, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.3833522762132211e+28
- M=   30, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.3833522762132211e+28
- M=   40, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.4155325941504647e+28
- M=   40, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.4155325941504647e+28
- M=   40, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.4155325941504647e+28
- M=   40, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.4155325941504647e+28
- M=   40, N=   40, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.0583243898287064e+28
- M=   40, N=   40, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.0583243898287064e+28
- M=   40, N=   40, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.0583243898287064e+28
- M=   40, N=   40, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.0583243898287064e+28
+ M=    3, N=    3, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.4294747002241242e+29
+ M=    3, N=    3, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.4294747002241242e+29
+ M=    3, N=    3, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.4294747002241242e+29
+ M=    3, N=    3, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.4294747002241242e+29
+ M=   10, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=4.1453390354804064e+28
+ M=   10, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=4.1453390354804064e+28
+ M=   10, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=4.1453390354804064e+28
+ M=   10, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=4.1453390354804064e+28
+ M=   16, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=4.1908173946644061e+28
+ M=   16, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=4.1908173946644061e+28
+ M=   16, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=4.1908173946644061e+28
+ M=   16, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=4.1908173946644061e+28
+ M=   16, N=   16, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=2.7808287539136460e+28
+ M=   16, N=   16, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=2.7808287539136460e+28
+ M=   16, N=   16, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=2.7808287539136460e+28
+ M=   16, N=   16, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=2.7808287539136460e+28
+ M=   30, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.3919234414075959e+28
+ M=   30, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.3919234414075959e+28
+ M=   30, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.3919234414075959e+28
+ M=   30, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.3919234414075959e+28
+ M=   40, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.3851222224126315e+28
+ M=   40, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.3851222224126315e+28
+ M=   40, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.3851222224126315e+28
+ M=   40, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.3851222224126315e+28
+ M=   40, N=   40, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.0447224272593255e+28
+ M=   40, N=   40, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.0447224272593255e+28
+ M=   40, N=   40, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.0447224272593255e+28
+ M=   40, N=   40, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.0447224272593255e+28
  ZBD drivers:     28 out of  14340 tests failed to pass the threshold
 
 
  End of tests
- Total time used =      2098.00 seconds
+ Total time used =      2117.00 seconds
 

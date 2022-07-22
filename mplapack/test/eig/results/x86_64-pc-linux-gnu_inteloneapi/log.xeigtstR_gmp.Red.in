@@ -16,8 +16,8 @@ The following parameter values will be used:
     ISHFTS:      2
     IACC22:      0
  
- Relative machine underflow is taken to be+6.4447927660133239e-1292913987
- Relative machine overflow  is taken to be+1.5516402719316431e+1292913986
+ Relative machine underflow is taken to be+1.7019382623481672e-1388255822130839283
+ Relative machine overflow  is taken to be+5.8756537891115876e+1388255822130839282
  Relative machine precision is taken to be+7.4583407312002067e-155
 
  Routines pass computational tests if test ratio is less than+2.0000000000000000e+01
@@ -76,8 +76,8 @@ The following parameter values will be used:
     ISHFTS:      2
     IACC22:      0
  
- Relative machine underflow is taken to be+6.4447927660133239e-1292913987
- Relative machine overflow  is taken to be+1.5516402719316431e+1292913986
+ Relative machine underflow is taken to be+1.7019382623481672e-1388255822130839283
+ Relative machine overflow  is taken to be+5.8756537891115876e+1388255822130839282
  Relative machine precision is taken to be+7.4583407312002067e-155
 
  Routines pass computational tests if test ratio is less than+2.0000000000000000e+01
@@ -105,8 +105,8 @@ The following parameter values will be used:
     ISHFTS:      2
     IACC22:      0
  
- Relative machine underflow is taken to be+6.4447927660133239e-1292913987
- Relative machine overflow  is taken to be+1.5516402719316431e+1292913986
+ Relative machine underflow is taken to be+1.7019382623481672e-1388255822130839283
+ Relative machine overflow  is taken to be+5.8756537891115876e+1388255822130839282
  Relative machine precision is taken to be+7.4583407312002067e-155
 
  Routines pass computational tests if test ratio is less than+2.0000000000000000e+01
@@ -143,30 +143,30 @@ The following parameter values will be used:
  9 = 0 if SCALE, ILO, IHI, ABNRM same no matter what else computed,  1/ulp otherwise
  10 = | RCONDV - RCONDV(precomputed) | / cond(RCONDV),
  11 = | RCONDE - RCONDE(precomputed) | / cond(RCONDE),
- BALANC='N',N=   5,IWK=1, seed=2518,3899, 995, 397, type 10, test( 1)=+5.2630879339729035e+01
- BALANC='N',N=   5,IWK=1, seed=2518,3899, 995, 397, type 10, test( 2)=+5.8798784956982326e+01
- BALANC='P',N=   5,IWK=1, seed=2518,3899, 995, 397, type 10, test( 1)=+5.2630879339729035e+01
- BALANC='P',N=   5,IWK=1, seed=2518,3899, 995, 397, type 10, test( 2)=+5.8798784956982326e+01
- BALANC='S',N=   5,IWK=1, seed=2518,3899, 995, 397, type 10, test( 1)=+5.2630879339729035e+01
- BALANC='S',N=   5,IWK=1, seed=2518,3899, 995, 397, type 10, test( 2)=+5.8798784956982326e+01
- BALANC='B',N=   5,IWK=1, seed=2518,3899, 995, 397, type 10, test( 1)=+5.2630879339729035e+01
- BALANC='B',N=   5,IWK=1, seed=2518,3899, 995, 397, type 10, test( 2)=+5.8798784956982326e+01
- BALANC='N',N=   5,IWK=2, seed=2518,3899, 995, 397, type 10, test( 1)=+5.2557310383245301e+01
- BALANC='N',N=   5,IWK=2, seed=2518,3899, 995, 397, type 10, test( 2)=+5.8893191735047088e+01
- BALANC='P',N=   5,IWK=2, seed=2518,3899, 995, 397, type 10, test( 1)=+5.2557310383245301e+01
- BALANC='P',N=   5,IWK=2, seed=2518,3899, 995, 397, type 10, test( 2)=+5.8893191735047088e+01
- BALANC='S',N=   5,IWK=2, seed=2518,3899, 995, 397, type 10, test( 1)=+5.2557310383245301e+01
- BALANC='S',N=   5,IWK=2, seed=2518,3899, 995, 397, type 10, test( 2)=+5.8893191735047088e+01
- BALANC='B',N=   5,IWK=2, seed=2518,3899, 995, 397, type 10, test( 1)=+5.2557310383245301e+01
- BALANC='B',N=   5,IWK=2, seed=2518,3899, 995, 397, type 10, test( 2)=+5.8893191735047088e+01
- BALANC='N',N=   5,IWK=3, seed=2518,3899, 995, 397, type 10, test( 1)=+5.2557310383245301e+01
- BALANC='N',N=   5,IWK=3, seed=2518,3899, 995, 397, type 10, test( 2)=+5.8893191735047088e+01
- BALANC='P',N=   5,IWK=3, seed=2518,3899, 995, 397, type 10, test( 1)=+5.2557310383245301e+01
- BALANC='P',N=   5,IWK=3, seed=2518,3899, 995, 397, type 10, test( 2)=+5.8893191735047088e+01
- BALANC='S',N=   5,IWK=3, seed=2518,3899, 995, 397, type 10, test( 1)=+5.2557310383245301e+01
- BALANC='S',N=   5,IWK=3, seed=2518,3899, 995, 397, type 10, test( 2)=+5.8893191735047088e+01
- BALANC='B',N=   5,IWK=3, seed=2518,3899, 995, 397, type 10, test( 1)=+5.2557310383245301e+01
- BALANC='B',N=   5,IWK=3, seed=2518,3899, 995, 397, type 10, test( 2)=+5.8893191735047088e+01
+ BALANC='N',N=   5,IWK=1, seed=2518,3899, 995, 397, type 10, test( 1)=+5.2641113593543110e+01
+ BALANC='N',N=   5,IWK=1, seed=2518,3899, 995, 397, type 10, test( 2)=+5.8406560609407996e+01
+ BALANC='P',N=   5,IWK=1, seed=2518,3899, 995, 397, type 10, test( 1)=+5.2641113593543110e+01
+ BALANC='P',N=   5,IWK=1, seed=2518,3899, 995, 397, type 10, test( 2)=+5.8406560609407996e+01
+ BALANC='S',N=   5,IWK=1, seed=2518,3899, 995, 397, type 10, test( 1)=+5.2641113593543110e+01
+ BALANC='S',N=   5,IWK=1, seed=2518,3899, 995, 397, type 10, test( 2)=+5.8406560609407996e+01
+ BALANC='B',N=   5,IWK=1, seed=2518,3899, 995, 397, type 10, test( 1)=+5.2641113593543110e+01
+ BALANC='B',N=   5,IWK=1, seed=2518,3899, 995, 397, type 10, test( 2)=+5.8406560609407996e+01
+ BALANC='N',N=   5,IWK=2, seed=2518,3899, 995, 397, type 10, test( 1)=+5.2555344401599186e+01
+ BALANC='N',N=   5,IWK=2, seed=2518,3899, 995, 397, type 10, test( 2)=+5.8410418258668469e+01
+ BALANC='P',N=   5,IWK=2, seed=2518,3899, 995, 397, type 10, test( 1)=+5.2555344401599186e+01
+ BALANC='P',N=   5,IWK=2, seed=2518,3899, 995, 397, type 10, test( 2)=+5.8410418258668469e+01
+ BALANC='S',N=   5,IWK=2, seed=2518,3899, 995, 397, type 10, test( 1)=+5.2555344401599186e+01
+ BALANC='S',N=   5,IWK=2, seed=2518,3899, 995, 397, type 10, test( 2)=+5.8410418258668469e+01
+ BALANC='B',N=   5,IWK=2, seed=2518,3899, 995, 397, type 10, test( 1)=+5.2555344401599186e+01
+ BALANC='B',N=   5,IWK=2, seed=2518,3899, 995, 397, type 10, test( 2)=+5.8410418258668469e+01
+ BALANC='N',N=   5,IWK=3, seed=2518,3899, 995, 397, type 10, test( 1)=+5.2555344401599186e+01
+ BALANC='N',N=   5,IWK=3, seed=2518,3899, 995, 397, type 10, test( 2)=+5.8410418258668469e+01
+ BALANC='P',N=   5,IWK=3, seed=2518,3899, 995, 397, type 10, test( 1)=+5.2555344401599186e+01
+ BALANC='P',N=   5,IWK=3, seed=2518,3899, 995, 397, type 10, test( 2)=+5.8410418258668469e+01
+ BALANC='S',N=   5,IWK=3, seed=2518,3899, 995, 397, type 10, test( 1)=+5.2555344401599186e+01
+ BALANC='S',N=   5,IWK=3, seed=2518,3899, 995, 397, type 10, test( 2)=+5.8410418258668469e+01
+ BALANC='B',N=   5,IWK=3, seed=2518,3899, 995, 397, type 10, test( 1)=+5.2555344401599186e+01
+ BALANC='B',N=   5,IWK=3, seed=2518,3899, 995, 397, type 10, test( 2)=+5.8410418258668469e+01
  BALANC='N',N=   5,IWK=1, seed=2518,3899, 995, 397, type 11, test( 2)=+2.9508793736800889e+01
  BALANC='P',N=   5,IWK=1, seed=2518,3899, 995, 397, type 11, test( 2)=+2.9508793736800889e+01
  BALANC='S',N=   5,IWK=1, seed=2518,3899, 995, 397, type 11, test( 2)=+3.2606369739965785e+01
@@ -206,8 +206,8 @@ The following parameter values will be used:
     ISHFTS:      2
     IACC22:      0
  
- Relative machine underflow is taken to be+6.4447927660133239e-1292913987
- Relative machine overflow  is taken to be+1.5516402719316431e+1292913986
+ Relative machine underflow is taken to be+1.7019382623481672e-1388255822130839283
+ Relative machine overflow  is taken to be+5.8756537891115876e+1388255822130839282
  Relative machine precision is taken to be+7.4583407312002067e-155
 
  Routines pass computational tests if test ratio is less than+2.0000000000000000e+01
@@ -265,5 +265,5 @@ The following parameter values will be used:
 
 
  End of tests
- Total time used =       124.00 seconds
+ Total time used =       104.00 seconds
 

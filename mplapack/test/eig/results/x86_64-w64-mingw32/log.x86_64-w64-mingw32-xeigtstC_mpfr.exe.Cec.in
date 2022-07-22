@@ -8,10 +8,10 @@
 
 
  CEC routines passed the tests of the error exits ( 33 tests done)
- Error in Ctrsna: RMAX =+0.0000000000000000e+00+1.6777116013757236e+07+1.6777116013757236e+07
- LMAX = TT      66 NINFO=
+
+ All tests for CEC routines passed the threshold (   5966 tests run)
 
 
  End of tests
- Total time used =         4.00 seconds
+ Total time used =         6.00 seconds
 

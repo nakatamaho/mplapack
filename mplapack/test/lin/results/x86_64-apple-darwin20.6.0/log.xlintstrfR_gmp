@@ -7,8 +7,8 @@ The following parameter values will be used:
         M  :     1     2     3     4     5     6     7     8     9
  Routines pass computational tests if test ratio is less than   30.00
 
- Relative machine underflow is taken to be : +6.4447927660133239e-1292913987
- Relative machine overflow  is taken to be : +1.5516402719316431e+1292913986
+ Relative machine underflow is taken to be : +1.7019382623481672e-1388255822130839283
+ Relative machine overflow  is taken to be : +5.8756537891115876e+1388255822130839282
  Relative machine precision is taken to be : +7.4583407312002067e-155
  MULTIPLE PRECISION RFP routines passed the tests of the error exits
 
@@ -21,4 +21,4 @@ The following parameter values will be used:
  End of tests
  Total time used =  27 seconds
 
-       27.23 real        26.79 user         0.25 sys
+       27.40 real        27.16 user         0.05 sys
