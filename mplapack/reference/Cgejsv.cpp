@@ -438,6 +438,7 @@ void Cgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
 #else
     big = Rlamch("Overflow");
 #endif
+    small = sfmin / epsln;
     //     BIG   = ONE / SFMIN
     //
     //     Initialize SVA(1:N) = diag( ||A e_i||_2 )_1^N
@@ -706,7 +707,7 @@ void Cgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
     //     >> change in the April 2016 update: allow bigger range, i.e. the
     //     largest column is allowed up to BIG/N and Cgesvj will do the rest.
     big1 = sqrt(big);
-    temp1 = sqrt(big) / sqrt(castREAL(n));
+    temp1 = sqrt(big / castREAL(n));
     //      TEMP1  = BIG/DBLE(N)
     //
     Rlascl("G", 0, 0, aapp, temp1, n, 1, sva, n, ierr);

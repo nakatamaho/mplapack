@@ -419,7 +419,7 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
     //     one should use Rgesvj instead of Rgejsv.
     //
     big1 = sqrt(big);
-    temp1 = big1 / sqrt(castREAL(n)); // The original code fails on dd and qd. dd_real::_max or qd_real::_max / any value give nan.
+    temp1 = sqrt(big / castREAL(n));
     //
     Rlascl("G", 0, 0, aapp, temp1, n, 1, sva, n, ierr);
     if (aaqq > (aapp * sfmin)) {
