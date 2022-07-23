@@ -110,32 +110,6 @@ void Cgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
     INTEGER numrank = 0;
     REAL cond_ok = 0.0;
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  ===========================================================================
-    //
-    //     .. Local Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //
-    //     ..
-    //     .. Local Arrays
-    //
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //
-    //     ..
-    //
     //     Test the input arguments
     //
     lsvec = Mlsame(jobu, "U") || Mlsame(jobu, "F");
@@ -431,13 +405,7 @@ void Cgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
     //
     epsln = Rlamch("Epsilon");
     sfmin = Rlamch("SafeMinimum");
-#if defined ___MPLAPACK_BUILD_WITH_DD___
-    big = Rlamch_dd("Q");
-#elif defined ___MPLAPACK_BUILD_WITH_QD___
-    big = Rlamch_qd("Q");
-#else
     big = Rlamch("Overflow");
-#endif
     small = sfmin / epsln;
     //     BIG   = ONE / SFMIN
     //
