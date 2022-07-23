@@ -486,14 +486,6 @@ qd_real RlamchO_qd(void) {
     return a;
 }
 
-//"Q" 1e-17 * RlamchO_qd(); for small x, RlamchQ / x doesn't overflow. XXX a bad hack
-qd_real RlamchQ_qd(void) {
-    // thus we use smaller values
-    //qd_real a = qd_real(1.79769313486231570815e+308, 9.97920154767359795037e+291, 5.53956966280111259858e+275, 3.07507889307840487279e+259);
-    qd_real a = qd_real(1.79769313486231570815e+291, 9.97920154767359795037e+275, 5.53956966280111259858e+259, 3.07507889307840487279e+243);
-    return a;
-}
-
 //"Z" :dummy
 // cf.http://www.netlib.org/blas/dlamch.f
 qd_real RlamchZ_qd(void) {
@@ -520,8 +512,6 @@ qd_real Rlamch_qd(const char *cmach) {
         return RlamchU_qd();
     if (Mlsame(cmach, "L"))
         return RlamchL_qd();
-    if (Mlsame(cmach, "Q"))
-        return RlamchQ_qd();
     if (Mlsame(cmach, "O"))
         return RlamchO_qd();
 
@@ -599,15 +589,6 @@ dd_real RlamchO_dd(void) {
     return a;
 }
 
-//"Q" 1e-16 * RlamchO_dd(); for small x, RlamchQ / x doesn't overflow. XXX a bad hack
-dd_real RlamchQ_dd(void) {
-    // due to bug of dd_real, we cannot take some arithmetic for dd_real::_max; e.g. sqrt.
-    // thus we use smaller values
-    //dd_real a = dd_real(1.79769313486231570815e+308, 9.97920154767359795037e+291);
-    dd_real a = dd_real(1.79769313486231570815e+291, 9.97920154767359795037e+275);
-    return a;
-}
-
 //"Z" :dummy
 // cf.http://www.netlib.org/blas/dlamch.f
 dd_real RlamchZ_dd(void) {
@@ -636,8 +617,6 @@ dd_real Rlamch_dd(const char *cmach) {
         return RlamchL_dd();
     if (Mlsame(cmach, "O"))
         return RlamchO_dd();
-    if (Mlsame(cmach, "Q"))
-        return RlamchQ_dd();
 
     Mxerbla("Rlamch", 1);
     return RlamchZ_dd();
