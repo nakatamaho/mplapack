@@ -1,0 +1,145 @@
+--- src/dd_real.cpp	2018-10-31 01:05:03.000000000 +0900
++++ src/dd_real.cpp	2021-12-12 16:19:53.521240571 +0900
+@@ -63,6 +63,13 @@
+     return dd_real::_nan;
+   }
+ 
++  if (a.x[0] > 0x1p+969) { //0x1p+(1022-53)
++      dd_real b = a.x[0] * 0.25 + a.x[1] * 0.25;
++      double x = 1.0 / std::sqrt(b.x[0]);
++      double bx = b.x[0] * x;
++      b = dd_real::add(bx, (b - dd_real::sqr(bx)).x[0] * (x * 0.5));
++      return b * 2.0;
++  }
+   double x = 1.0 / std::sqrt(a.x[0]);
+   double ax = a.x[0] * x;
+   return dd_real::add(ax, (a - dd_real::sqr(ax)).x[0] * (x * 0.5));
+
+--- src/qd_real.cpp	2021-12-12 16:55:26.249360742 +0900
++++ src/qd_real.cpp	2021-12-12 16:58:34.708057994 +0900
+@@ -758,6 +758,19 @@
+     return qd_real::_nan;
+   }
+ 
++  if (a.x[0] > 0x1p+969) { //0x1p+(1022-53)
++      qd_real b = a.x[0] * 0.25 + a.x[1] * 0.25 + a.x[2] * 0.25 + a.x[3] * 0.25;
++      qd_real r = (1.0 / std::sqrt(b[0]));
++      qd_real h = mul_pwr2(b, 0.5);
++
++      r += ((0.5 - h * sqr(r)) * r);
++      r += ((0.5 - h * sqr(r)) * r);
++      r += ((0.5 - h * sqr(r)) * r);
++
++      r = r * b * 2.0;
++      return r;
++  }
++
+   qd_real r = (1.0 / std::sqrt(a[0]));
+   qd_real h = mul_pwr2(a, 0.5);
+ 
+--- tests/huge.cpp	2018-10-31 01:04:57.000000000 +0900
++++ tests/huge.cpp	2021-12-12 17:10:24.302058714 +0900
+@@ -121,6 +121,23 @@
+     }
+   }
+ 
++  dd_real dd_large = dd_real::_max;
++  dd_real done = 1.0;
++  dd_real dquot = 2.2360679;
++  cout << "dd max / one  : " << dd_large/done << endl;
++  cout << "dd max / 1.0  : " << dd_large/1.0  << endl;
++  cout << "dd max / quot : " << dd_large/dquot << endl;
++  cout << "dd max sqrt   : " << sqrt(dd_large) << endl;
++
++  qd_real qd_large = qd_real::_max;
++  qd_real qone = 1.0;
++  qd_real qquot = 2.2360679;
++  cout << "qd max / qone  : " << qd_large/qone << endl;
++  cout << "qd max / done  : " << qd_large/done << endl;
++  cout << "qd max / 1.0   : " << qd_large/1.0  << endl;
++  cout << "qd max / quot  : " << qd_large/qquot << endl;
++  cout << "qd max sqrt    : " << sqrt(qd_large) << endl;
++
+   /* If no flag, test both double-double and quad-double. */
+   if (!flag_test_dd && !flag_test_qd) {
+     flag_test_dd = true;
+
+--- include/qd/dd_inline.h	2021-08-14 04:12:55.000000000 +0900
++++ include/qd/dd_inline.h	2022-07-23 12:07:48.698072700 +0900
+@@ -282,21 +282,33 @@
+   double p1, p2;
+   double s, e;
+   dd_real r;
+-  
+-  q1 = a.x[0] / b;   /* approximate quotient. */
++  dd_real _a;
++
++  if (fabs(a.x[0]) > 0x1p+969) {
++      _a.x[0] = a.x[0] * 0x1p-53;
++      _a.x[1] = a.x[1] * 0x1p-53;
++  } else {
++      _a = a;
++  }
++
++  q1 = _a.x[0] / b;   /* approximate quotient. */
+ 
+   /* Compute  this - q1 * d */
+   p1 = qd::two_prod(q1, b, p2);
+-  s = qd::two_diff(a.x[0], p1, e);
+-  e += a.x[1];
++  s = qd::two_diff(_a.x[0], p1, e);
++  e += _a.x[1];
+   e -= p2;
+-  
++
+   /* get next approximation. */
+   q2 = (s + e) / b;
+ 
+   /* renormalize */
+   r.x[0] = qd::quick_two_sum(q1, q2, r.x[1]);
+ 
++  if (fabs(a.x[0]) > 0x1p+969) {
++      r.x[0] = r.x[0] * 0x1p+53;
++      r.x[1] = r.x[1] * 0x1p+53;
++  }
+   return r;
+ }
+ 
+@@ -324,11 +336,18 @@
+ inline dd_real dd_real::accurate_div(const dd_real &a, const dd_real &b) {
+   double q1, q2, q3;
+   dd_real r;
++  dd_real _a;
++  if (b == 1.0) return a;
++  if (fabs(a.x[0]) > 0x1p+969) {
++      _a.x[0] = a.x[0] * 0x1p-53;
++      _a.x[1] = a.x[1] * 0x1p-53;
++  } else {
++      _a = a;
++  }
++  q1 = _a.x[0] / b.x[0];  /* approximate quotient */
+ 
+-  q1 = a.x[0] / b.x[0];  /* approximate quotient */
++  r = _a - q1 * b;
+ 
+-  r = a - q1 * b;
+-  
+   q2 = r.x[0] / b.x[0];
+   r -= (q2 * b);
+ 
+@@ -336,9 +355,12 @@
+ 
+   q1 = qd::quick_two_sum(q1, q2, q2);
+   r = dd_real(q1, q2) + q3;
++  if (fabs(a.x[0]) > 0x1p+969) {
++      r.x[0] = r.x[0] * 0x1p+53;
++      r.x[1] = r.x[1] * 0x1p+53;
++  }
+   return r;
+ }
+-
+ /* double-double / double-double */
+ inline dd_real operator/(const dd_real &a, const dd_real &b) {
+ #ifdef QD_SLOPPY_DIV
+
+ 
