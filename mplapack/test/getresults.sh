@@ -3,7 +3,7 @@ cd /home/docker/mplapack/mplapack/test/eig/
 rm -rf results/aarch64-unknown-linux-gnu
 mkdir -p results/aarch64-unknown-linux-gnu
 cd results/aarch64-unknown-linux-gnu
-rsync -arv maho@172.27.109.65:/data/mnt/aarch64-unknown-linux-gnu/mplapack/test/eig/log* .
+rsync -arv maho@172.27.109.65:/data/mnt/MPLAPACK/lib/aarch64-unknown-linux-gnu/mplapack/test/eig/log* .
 
 ##########
 cd /home/docker/mplapack/mplapack/test/eig/
@@ -38,7 +38,7 @@ cd /home/docker/mplapack/mplapack/test/lin/
 rm -rf results/aarch64-unknown-linux-gnu
 mkdir -p results/aarch64-unknown-linux-gnu
 cd results/aarch64-unknown-linux-gnu
-rsync -arv maho@172.27.109.65:/data/mnt/aarch64-unknown-linux-gnu/mplapack/test/lin/log* .
+rsync -arv maho@172.27.109.65:/data/mnt/MPLAPACK/lib/aarch64-unknown-linux-gnu/mplapack/test/lin/log* .
 
 ##########
 cd /home/docker/mplapack/mplapack/test/lin/
