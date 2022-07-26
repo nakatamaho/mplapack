@@ -8,10 +8,12 @@
 
 
  REC routines passed the tests of the error exits ( 35 tests done)
- Error in Rlaln2: RMAX =5.6294995342131058e+14
+ Error in Rlaln2: RMAX =8.4442493013196350e+14
  LMAX =    60549 NINFO=       0   74238 KNT=  230400
 
 
  End of tests
  Total time used =         5.00 seconds
 
+4.63user 0.02system 0:04.68elapsed 99%CPU (0avgtext+0avgdata 14620maxresident)k
+0inputs+8outputs (0major+2566minor)pagefaults 0swaps

@@ -110,32 +110,6 @@ void Cgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
     INTEGER numrank = 0;
     REAL cond_ok = 0.0;
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  ===========================================================================
-    //
-    //     .. Local Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //
-    //     ..
-    //     .. Local Arrays
-    //
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //
-    //     ..
-    //
     //     Test the input arguments
     //
     lsvec = Mlsame(jobu, "U") || Mlsame(jobu, "F");
@@ -431,13 +405,12 @@ void Cgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
     //
     epsln = Rlamch("Epsilon");
     sfmin = Rlamch("SafeMinimum");
-#if defined ___MPLAPACK_BUILD_WITH_DD___
-    big = Rlamch_dd("Q");
-#elif defined ___MPLAPACK_BUILD_WITH_QD___
-    big = Rlamch_qd("Q");
+#if defined ___MPLAPACK_BUILD_WITH_DD___ || defined ___MPLAPACK_BUILD_WITH_QD___
+    big = one / sfmin;
 #else
-    big = Rlamch("Overflow");
+     big = Rlamch("Overflow");
 #endif
+    small = sfmin / epsln;
     //     BIG   = ONE / SFMIN
     //
     //     Initialize SVA(1:N) = diag( ||A e_i||_2 )_1^N
@@ -706,7 +679,7 @@ void Cgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
     //     >> change in the April 2016 update: allow bigger range, i.e. the
     //     largest column is allowed up to BIG/N and Cgesvj will do the rest.
     big1 = sqrt(big);
-    temp1 = sqrt(big) / sqrt(castREAL(n));
+    temp1 = sqrt(big / castREAL(n));
     //      TEMP1  = BIG/DBLE(N)
     //
     Rlascl("G", 0, 0, aapp, temp1, n, 1, sva, n, ierr);

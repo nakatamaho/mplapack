@@ -28,8 +28,11 @@ The following parameter values will be used:
  SEP:  NB =   3, NBMIN =   2, NX =   0
 
  All tests for DST passed the threshold (  4440 tests run)
-
- All tests for DST drivers  passed the threshold (  13464 tests run)
+ *** XERBLA was called from Rspevx with INFO =      6 instead of 14 ***
+ *** XERBLA was called with SRNAME = Rstein instead of Rspevx ***
+ Rdrvst: Rsyevx(V,A,L) returned INFO=    -6.
+         N=     3, JTYPE=    10, ISEED=(    0,    0,    0,    1)
+ *** Error code from Rdrvst =    6
 
 
  SEP:  NB =   3, NBMIN =   2, NX =   5
@@ -54,5 +57,7 @@ The following parameter values will be used:
 
 
  End of tests
- Total time used =       398.00 seconds
+ Total time used =       306.00 seconds
 
+305.45user 0.02system 5:06.13elapsed 99%CPU (0avgtext+0avgdata 76920maxresident)k
+0inputs+80outputs (0major+16481minor)pagefaults 0swaps

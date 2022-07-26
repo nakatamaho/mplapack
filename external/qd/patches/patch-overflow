@@ -1,0 +1,242 @@
+--- src/dd_real.cpp	2018-10-31 01:05:03.000000000 +0900
++++ src/dd_real.cpp	2021-12-12 16:19:53.521240571 +0900
+@@ -63,6 +63,13 @@
+     return dd_real::_nan;
+   }
+ 
++  if (a.x[0] > 0x1p+969) { //0x1p+(1022-53)
++      dd_real b = a.x[0] * 0.25 + a.x[1] * 0.25;
++      double x = 1.0 / std::sqrt(b.x[0]);
++      double bx = b.x[0] * x;
++      b = dd_real::add(bx, (b - dd_real::sqr(bx)).x[0] * (x * 0.5));
++      return b * 2.0;
++  }
+   double x = 1.0 / std::sqrt(a.x[0]);
+   double ax = a.x[0] * x;
+   return dd_real::add(ax, (a - dd_real::sqr(ax)).x[0] * (x * 0.5));
+
+--- tests/huge.cpp	2018-10-31 01:04:57.000000000 +0900
++++ tests/huge.cpp	2021-12-12 17:10:24.302058714 +0900
+@@ -121,6 +121,23 @@
+     }
+   }
+ 
++  dd_real dd_large = dd_real::_max;
++  dd_real done = 1.0;
++  dd_real dquot = 2.2360679;
++  cout << "dd max / one  : " << dd_large/done << endl;
++  cout << "dd max / 1.0  : " << dd_large/1.0  << endl;
++  cout << "dd max / quot : " << dd_large/dquot << endl;
++  cout << "dd max sqrt   : " << sqrt(dd_large) << endl;
++
++  qd_real qd_large = qd_real::_max;
++  qd_real qone = 1.0;
++  qd_real qquot = 2.2360679;
++  cout << "qd max / qone  : " << qd_large/qone << endl;
++  cout << "qd max / done  : " << qd_large/done << endl;
++  cout << "qd max / 1.0   : " << qd_large/1.0  << endl;
++  cout << "qd max / quot  : " << qd_large/qquot << endl;
++  cout << "qd max sqrt    : " << sqrt(qd_large) << endl;
++
+   /* If no flag, test both double-double and quad-double. */
+   if (!flag_test_dd && !flag_test_qd) {
+     flag_test_dd = true;
+
+--- include/qd/dd_inline.h	2022-07-23 22:16:21.226170730 +0900
++++ include/qd/dd_inline.h	2022-07-23 22:19:35.021260754 +0900
+@@ -284,12 +284,20 @@
+   double s, e;
+   dd_real r;
+   
+-  q1 = a.x[0] / b;   /* approximate quotient. */
++  dd_real _a;
++  if (fabs(a.x[0]) > 0x1p+969) {
++      _a.x[0] = a.x[0] * 0x1p-53;
++      _a.x[1] = a.x[1] * 0x1p-53;
++  } else {
++      _a = a;
++  }
++
++  q1 = _a.x[0] / b;   /* approximate quotient. */
+ 
+   /* Compute  this - q1 * d */
+   p1 = qd::two_prod(q1, b, p2);
+-  s = qd::two_diff(a.x[0], p1, e);
+-  e += a.x[1];
++  s = qd::two_diff(_a.x[0], p1, e);
++  e += _a.x[1];
+   e -= p2;
+   
+   /* get next approximation. */
+@@ -298,6 +306,10 @@
+   /* renormalize */
+   r.x[0] = qd::quick_two_sum(q1, q2, r.x[1]);
+ 
++  if (fabs(a.x[0]) > 0x1p+969) {
++      r.x[0] = r.x[0] * 0x1p+53;
++      r.x[1] = r.x[1] * 0x1p+53;
++  }
+   return r;
+ }
+ 
+@@ -326,9 +338,17 @@
+   double q1, q2, q3;
+   dd_real r;
+ 
+-  q1 = a.x[0] / b.x[0];  /* approximate quotient */
++  dd_real _a;
++  if (b == 1.0) return a;
++  if (fabs(a.x[0]) > 0x1p+969) {
++      _a.x[0] = a.x[0] * 0x1p-53;
++      _a.x[1] = a.x[1] * 0x1p-53;
++  } else {
++      _a = a;
++  }
++  q1 = _a.x[0] / b.x[0];  /* approximate quotient */
+ 
+-  r = a - q1 * b;
++  r = _a - q1 * b;
+   
+   q2 = r.x[0] / b.x[0];
+   r -= (q2 * b);
+@@ -337,6 +357,10 @@
+ 
+   q1 = qd::quick_two_sum(q1, q2, q2);
+   r = dd_real(q1, q2) + q3;
++  if (fabs(a.x[0]) > 0x1p+969) {
++      r.x[0] = r.x[0] * 0x1p+53;
++      r.x[1] = r.x[1] * 0x1p+53;
++  }
+   return r;
+ }
+ 
+--- src/qd_real.cpp	2022-07-23 23:39:56.695243715 +0900
++++ src/qd_real.cpp	2022-07-23 23:40:04.291354335 +0900
+@@ -143,11 +143,21 @@
+   double q0, q1, q2, q3;
+   qd_real r;
+ 
+-  q0 = a[0] / b;  /* approximate quotient */
++  qd_real _a;
++  if (b == 1.0) return a;
++  if (fabs(a.x[0]) > 0x1p+969) {
++      _a.x[0] = a.x[0] * 0x1p-53;
++      _a.x[1] = a.x[1] * 0x1p-53;
++      _a.x[2] = a.x[2] * 0x1p-53;
++      _a.x[3] = a.x[3] * 0x1p-53;
++  } else {
++      _a = a;
++  }
++  q0 = _a[0] / b;  /* approximate quotient */
+ 
+   /* Compute the remainder  a - q0 * b */
+   t0 = two_prod(q0, b, t1);
+-  r = a - dd_real(t0, t1);
++  r = _a - dd_real(t0, t1);
+ 
+   /* Compute the first correction */
+   q1 = r[0] / b;
+@@ -163,6 +173,12 @@
+   q3 = r[0] / b;
+ 
+   renorm(q0, q1, q2, q3);
++  if (fabs(a.x[0]) > 0x1p+969) {
++      q0 = q0 * 0x1p+53;
++      q1 = q1 * 0x1p+53;
++      q2 = q2 * 0x1p+53;
++      q3 = q3 * 0x1p+53;
++  }
+   return qd_real(q0, q1, q2, q3);
+ }
+ 
+@@ -672,8 +688,19 @@
+   qd_real r;
+   qd_real qd_b(b);
+ 
+-  q0 = a[0] / b._hi();
+-  r = a - q0 * qd_b;
++  qd_real _a;
++  if (b == 1.0) return a;
++  if (fabs(a.x[0]) > 0x1p+969) {
++      _a.x[0] = a.x[0] * 0x1p-53;
++      _a.x[1] = a.x[1] * 0x1p-53;
++      _a.x[2] = a.x[2] * 0x1p-53;
++      _a.x[3] = a.x[3] * 0x1p-53;
++  } else {
++      _a = a;
++  }
++
++  q0 = _a[0] / b._hi();
++  r = _a - q0 * qd_b;
+ 
+   q1 = r[0] / b._hi();
+   r -= (q1 * qd_b);
+@@ -687,6 +714,12 @@
+   q4 = r[0] / b._hi();
+ 
+   ::renorm(q0, q1, q2, q3, q4);
++  if (fabs(a.x[0]) > 0x1p+969) {
++      q0 = q0 * 0x1p+53;
++      q1 = q1 * 0x1p+53;
++      q2 = q2 * 0x1p+53;
++      q3 = q3 * 0x1p+53;
++  }
+   return qd_real(q0, q1, q2, q3);
+ }
+ 
+@@ -717,8 +750,19 @@
+ 
+   qd_real r;
+ 
+-  q0 = a[0] / b[0];
+-  r = a - (b * q0);
++  qd_real _a;
++  if (b == 1.0) return a;
++  if (fabs(a.x[0]) > 0x1p+969) {
++      _a.x[0] = a.x[0] * 0x1p-53;
++      _a.x[1] = a.x[1] * 0x1p-53;
++      _a.x[2] = a.x[2] * 0x1p-53;
++      _a.x[3] = a.x[3] * 0x1p-53;
++  } else {
++      _a = a;
++  }
++
++  q0 = _a[0] / b[0];
++  r = _a - (b * q0);
+ 
+   q1 = r[0] / b[0];
+   r -= (b * q1);
+@@ -732,7 +776,12 @@
+   double q4 = r[0] / b[0];
+ 
+   ::renorm(q0, q1, q2, q3, q4);
+-
++  if (fabs(a.x[0]) > 0x1p+969) {
++      q0 = q0 * 0x1p+53;
++      q1 = q1 * 0x1p+53;
++      q2 = q2 * 0x1p+53;
++      q3 = q3 * 0x1p+53;
++  }
+   return qd_real(q0, q1, q2, q3);
+ }
+ 
+@@ -758,6 +807,19 @@
+     return qd_real::_nan;
+   }
+ 
++  if (a.x[0] > 0x1p+969) { //0x1p+(1022-53)
++      qd_real b = a.x[0] * 0.25 + a.x[1] * 0.25 + a.x[2] * 0.25 + a.x[3] * 0.25;
++      qd_real r = (1.0 / std::sqrt(b[0]));
++      qd_real h = mul_pwr2(b, 0.5);
++
++      r += ((0.5 - h * sqr(r)) * r);
++      r += ((0.5 - h * sqr(r)) * r);
++      r += ((0.5 - h * sqr(r)) * r);
++
++      r = r * b * 2.0;
++      return r;
++  }
++
+   qd_real r = (1.0 / std::sqrt(a[0]));
+   qd_real h = mul_pwr2(a, 0.5);
+ 

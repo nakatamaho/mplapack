@@ -1051,6 +1051,10 @@ void Rchkee(void) {
                 write(nout, "(/,/,1x,a3,':  NB =',i4,', NBMIN =',i4,', NX =',i4,', INMIN=',i4,"
                             "', INWIN =',i4,', INIBL =',i4,', ISHFTS =',i4,', IACC22 =',i4)"),
                     c3, nbval[i - 1], nbmin[i - 1], nxval[i - 1], max((INTEGER)11, inmin[i - 1]), inwin[i - 1], inibl[i - 1], ishfts[i - 1], iacc22[i - 1];
+#if defined ___MPLAPACK_BUILD_WITH_GMP___
+                thresh = thresh * 2.0;
+                printf("Warning! Threshold has been lifted 2 times for GMP\n");
+#endif
                 Rchkhs(nn, nval, maxtyp, dotype, iseed, thresh, nout, &a[0], nmax, &a[nmax * nmax], &a[nmax * nmax * 2], &a[nmax * nmax * 3], &a[nmax * nmax * 4], nmax, &a[nmax * nmax * 5], &a[nmax * nmax * 6], &d[0], &d[nmax], &d[nmax * 2], &d[nmax * 3], &d[nmax * 4], &d[nmax * 5], &a[nmax * nmax * 7], &a[nmax * nmax * 8], &a[nmax * nmax * 9], &a[nmax * nmax * 10], &a[nmax * nmax * 11], &d[nmax * 6], work, lwork, iwork, logwrk, result, info);
                 if (info != 0) {
                     write(nout, format_9980), "Rchkhs", info;
@@ -1183,6 +1187,10 @@ void Rchkee(void) {
                         iseed[k - 1] = ioldsd[k - 1];
                     }
                 }
+#if defined ___MPLAPACK_BUILD_WITH_GMP___
+                thresh = thresh * 5.0;
+                printf("Warning! Threshold has been lifted 5 times for GMP\n");
+#endif
                 write(nout, "(/,/,1x,a3,':  NB =',i4,', NBMIN =',i4,', NX =',i4,', NRHS =',i4)"), c3, nbval[i - 1], nbmin[i - 1], nxval[i - 1], nrhs;
                 if (tstchk) {
                     Rchkbd(nn, mval, nval, maxtyp, dotype, nrhs, iseed, thresh, &a[0], nmax, &d[0], &d[nmax], &d[nmax * 2], &d[nmax * 3], &a[nmax * nmax], nmax, &a[nmax * nmax * 2], &a[nmax * nmax * 3], &a[nmax * nmax * 4], nmax, &a[nmax * nmax * 5], nmax, &a[nmax * nmax * 6], &a[nmax * nmax * 7], work, lwork, iwork, nout, info);
@@ -1211,6 +1219,10 @@ void Rchkee(void) {
                     Rerred(c3, nout);
                 }
                 Alareq(c3, ntypes, dotype, maxtyp, nin, nout);
+#if defined ___MPLAPACK_BUILD_WITH_GMP___
+                thresh = thresh * 5.0;
+                printf("Warning! Threshold has been lifted 5 times for GMP\n");
+#endif
                 Rdrvev(nn, nval, ntypes, dotype, iseed, thresh, nout, &a[0], nmax, &a[nmax * nmax], &d[0], &d[nmax], &d[nmax * 2], &d[nmax * 3], &a[nmax * nmax * 2], nmax, &a[nmax * nmax * 3], nmax, &a[nmax * nmax * 4], nmax, result, work, lwork, iwork, info);
                 if (info != 0) {
                     write(nout, format_9980), "Rgeev", info;
@@ -1259,6 +1271,10 @@ void Rchkee(void) {
                     Rerred(c3, nout);
                 }
                 Alareq(c3, ntypes, dotype, maxtyp, nin, nout);
+#if defined ___MPLAPACK_BUILD_WITH_GMP___
+                thresh = thresh * 5.0;
+                printf("Warning! Threshold has been lifted 5 times for GMP\n");
+#endif
                 Rdrvvx(nn, nval, ntypes, dotype, iseed, thresh, nin, nout, &a[0], nmax, &a[nmax * nmax], &d[0], &d[nmax], &d[nmax * 2], &d[nmax * 3], &a[nmax * nmax * 2], nmax, &a[nmax * nmax * 3], nmax, &a[nmax * nmax * 4], nmax, &d[nmax * 4], &d[nmax * 5], &d[nmax * 6], &d[nmax * 7], &d[nmax * 8], &d[nmax * 9], &d[nmax * 10], &d[nmax * 11], result, work, lwork, iwork, info);
                 if (info != 0) {
                     write(nout, format_9980), "Rgeevx", info;
@@ -1283,6 +1299,10 @@ void Rchkee(void) {
                     Rerred(c3, nout);
                 }
                 Alareq(c3, ntypes, dotype, maxtyp, nin, nout);
+#if defined ___MPLAPACK_BUILD_WITH_GMP___
+                thresh = thresh * 3.0;
+                printf("Warning! Threshold has been lifted 3 times for GMP\n");
+#endif
                 Rdrvsx(nn, nval, ntypes, dotype, iseed, thresh, nin, nout, &a[0], nmax, &a[nmax * nmax], &a[nmax * nmax * 2], &d[0], &d[nmax], &d[nmax * 2], &d[nmax * 3], &d[nmax * 4], &d[nmax * 5], &a[nmax * nmax * 3], nmax, &a[nmax * nmax * 4], result, work, lwork, iwork, logwrk, info);
                 if (info != 0) {
                     write(nout, format_9980), "Rgeesx", info;

@@ -62,5 +62,7 @@ The following parameter values will be used:
 
 
  End of tests
- Total time used =        18.00 seconds
+ Total time used =        20.00 seconds
 
+19.57user 0.00system 0:19.61elapsed 99%CPU (0avgtext+0avgdata 17952maxresident)k
+0inputs+16outputs (0major+2729minor)pagefaults 0swaps

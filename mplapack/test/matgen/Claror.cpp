@@ -30,30 +30,12 @@
 #include <mplapack.h>
 #include <mplapack_matgen.h>
 
+#if defined ___MPLAPACK_BUILD_WITH_DD___
+#pragma GCC push_options
+#pragma GCC optimize("O0")
+#endif
+
 void Claror(const char *side, const char *init, INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, INTEGER *iseed, COMPLEX *x, INTEGER &info) {
-    //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
     info = 0;
     if (n == 0 || m == 0) {
@@ -151,7 +133,7 @@ void Claror(const char *side, const char *init, INTEGER const m, INTEGER const n
         } else {
             factor = one / factor;
         }
-        x[kbeg - 1] += xnorms;
+        x[kbeg - 1] += xnorms; //this somehow doesn't work properly with GCC + libqd
         //
         //        Apply Householder transformation to A
         //
@@ -213,3 +195,7 @@ void Claror(const char *side, const char *init, INTEGER const m, INTEGER const n
     //     End of Claror
     //
 }
+
+#if defined ___MPLAPACK_BUILD_WITH_DD___
+#pragma GCC pop_options
+#endif

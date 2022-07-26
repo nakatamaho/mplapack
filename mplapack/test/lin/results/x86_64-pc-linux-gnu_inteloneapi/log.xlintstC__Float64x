@@ -184,7 +184,7 @@ The following parameter values will be used:
  All tests for CHH routines passed the threshold (  15900 tests run)
 
  End of tests
- Total time used =  50 seconds
+ Total time used =  72 seconds
 
-49.73user 0.01system 0:49.95elapsed 99%CPU (0avgtext+0avgdata 30048maxresident)k
-544inputs+40outputs (16major+7579minor)pagefaults 0swaps
+72.21user 0.01system 1:12.40elapsed 99%CPU (0avgtext+0avgdata 30168maxresident)k
+1088inputs+32outputs (21major+7576minor)pagefaults 0swaps

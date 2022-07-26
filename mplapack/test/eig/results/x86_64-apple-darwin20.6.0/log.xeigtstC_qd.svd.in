@@ -82,104 +82,12 @@ The following parameter values will be used:
   33: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
   34: norm( S - S1 )      / ( norm(S) ulp ), where S1 is computed
                                              without computing U and V'
- M=   30, N=   30, type 16, seed=   0,   0,   0,   1, test(10)=1.6069380442589903e+62
  M=   30, N=   40, type 16, seed=   0,   0,   0,   1, test(10)=1.6069380442589903e+62
  M=   40, N=   30, type 16, seed=   0,   0,   0,   1, test(10)=1.6069380442589903e+62
  M=   40, N=   40, type 16, seed=   0,   0,   0,   1, test(10)=1.6069380442589903e+62
- CBD:      4 out of   4085 tests failed to pass the threshold
- SVD -- Complex Singular Value Decomposition Driver 
- Matrix types (see Cdrvbd for details):
+ CBD:      3 out of   4085 tests failed to pass the threshold
 
- 1 = Zero matrix
- 2 = Identity matrix
- 3 = Evenly spaced singular values near 1
- 4 = Evenly spaced singular values near underflow
- 5 = Evenly spaced singular values near overflow
-
- Tests performed: ( A is dense, U and V are unitary,
-                    S is an array, and Upartial, VTpartial, and
-                    Spartial are partially computed U, VT and S),
-
- Tests performed with Test Threshold = 5.0000000000000000e+01
- Cgesvd: 
- 1 = | A - U diag(S) VT | / ( |A| max(M,N) ulp ) 
- 2 = | I - U**T U | / ( M ulp ) 
- 3 = | I - VT VT**T | / ( N ulp ) 
- 4 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
- 5 = | U - Upartial | / ( M ulp )
- 6 = | VT - VTpartial | / ( N ulp )
- 7 = | S - Spartial | / ( min(M,N) ulp |S| )
- Cgesdd: 
- 8 = | A - U diag(S) VT | / ( |A| max(M,N) ulp ) 
- 9 = | I - U**T U | / ( M ulp ) 
-10 = | I - VT VT**T | / ( N ulp ) 
-11 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
-12 = | U - Upartial | / ( M ulp )
-13 = | VT - VTpartial | / ( N ulp )
-14 = | S - Spartial | / ( min(M,N) ulp |S| )
- Cgesvj: 
-
-15 = | A - U diag(S) VT | / ( |A| max(M,N) ulp ) 
-16 = | I - U**T U | / ( M ulp ) 
-17 = | I - VT VT**T | / ( N ulp ) 
-18 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
- ZGESJV: 
-
-19 = | A - U diag(S) VT | / ( |A| max(M,N) ulp )
-20 = | I - U**T U | / ( M ulp ) 
-21 = | I - VT VT**T | / ( N ulp ) 
-22 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
- Cgesvdx(V,V,A): 
-23 = | A - U diag(S) VT | / ( |A| max(M,N) ulp ) 
-24 = | I - U**T U | / ( M ulp ) 
-25 = | I - VT VT**T | / ( N ulp ) 
-26 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
-27 = | U - Upartial | / ( M ulp )
-28 = | VT - VTpartial | / ( N ulp )
-29 = | S - Spartial | / ( min(M,N) ulp |S| )
- Cgesvdx(V,V,I): 
-30 = | U**T A VT**T - diag(S) | / ( |A| max(M,N) ulp )
-31 = | I - U**T U | / ( M ulp ) 
-32 = | I - VT VT**T | / ( N ulp ) 
- Cgesvdx(V,V,V) 
-33 = | U**T A VT**T - diag(S) | / ( |A| max(M,N) ulp )
-34 = | I - U**T U | / ( M ulp ) 
-35 = | I - VT VT**T | / ( N ulp )  Cgesvdq(H,N,N,A,A
-36 = | A - U diag(S) VT | / ( |A| max(M,N) ulp ) 
-37 = | I - U**T U | / ( M ulp ) 
-38 = | I - VT VT**T | / ( N ulp ) 
-39 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
-
-
- M=    3, N=    3, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.4552373035673049e+29
- M=    3, N=    3, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.4552373035673049e+29
- M=    3, N=    3, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.4552373035673049e+29
- M=    3, N=    3, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.4552373035673049e+29
- M=   10, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=4.1184196239309399e+28
- M=   10, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=4.1184196239309399e+28
- M=   10, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=4.1184196239309399e+28
- M=   10, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=4.1184196239309399e+28
- M=   16, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=4.3657881550115860e+28
- M=   16, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=4.3657881550115860e+28
- M=   16, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=4.3657881550115860e+28
- M=   16, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=4.3657881550115860e+28
- M=   16, N=   16, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=2.7436137342471827e+28
- M=   16, N=   16, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=2.7436137342471827e+28
- M=   16, N=   16, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=2.7436137342471827e+28
- M=   16, N=   16, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=2.7436137342471827e+28
- M=   30, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.3984929918548615e+28
- M=   30, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.3984929918548615e+28
- M=   30, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.3984929918548615e+28
- M=   30, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.3984929918548615e+28
- M=   40, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.3669732950421099e+28
- M=   40, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.3669732950421099e+28
- M=   40, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.3669732950421099e+28
- M=   40, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.3669732950421099e+28
- M=   40, N=   40, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.0758021643738988e+28
- M=   40, N=   40, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.0758021643738988e+28
- M=   40, N=   40, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.0758021643738988e+28
- M=   40, N=   40, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.0758021643738988e+28
- ZBD drivers:     28 out of  14340 tests failed to pass the threshold
+ All tests for ZBD drivers  passed the threshold (  14340 tests run)
 
 
  SVD:  NB =   3, NBMIN =   2, NX =   0, NRHS =   0
@@ -238,106 +146,15 @@ The following parameter values will be used:
   33: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
   34: norm( S - S1 )      / ( norm(S) ulp ), where S1 is computed
                                              without computing U and V'
- M=   10, N=   10, type 16, seed=   0,   0,   0,   1, test(10)=6.4277521770359611e+62
- M=   10, N=   16, type 16, seed=   0,   0,   0,   1, test(10)=7.3786976294838206e+21
- M=   30, N=   30, type 16, seed=   0,   0,   0,   1, test(10)=1.6069380442589903e+62
- M=   30, N=   40, type 16, seed=   0,   0,   0,   1, test(10)=1.0737418240000000e+11
+ M=   16, N=   10, type 16, seed=   0,   0,   0,   1, test(10)=6.4277521770359611e+62
+ M=   30, N=   30, type 16, seed=   0,   0,   0,   1, test(10)=1.0141204801825835e+33
+ M=   30, N=   40, type 16, seed=   0,   0,   0,   1, test(10)=1.6069380442589903e+62
  M=   40, N=   30, type 16, seed=   0,   0,   0,   1, test(10)=1.6069380442589903e+62
+ M=   40, N=   40, type 16, seed=   0,   0,   0,   1, test( 9)=7.1838331083583060e+05
  M=   40, N=   40, type 16, seed=   0,   0,   0,   1, test(10)=1.6069380442589903e+62
  CBD:      6 out of   4085 tests failed to pass the threshold
- SVD -- Complex Singular Value Decomposition Driver 
- Matrix types (see Cdrvbd for details):
 
- 1 = Zero matrix
- 2 = Identity matrix
- 3 = Evenly spaced singular values near 1
- 4 = Evenly spaced singular values near underflow
- 5 = Evenly spaced singular values near overflow
-
- Tests performed: ( A is dense, U and V are unitary,
-                    S is an array, and Upartial, VTpartial, and
-                    Spartial are partially computed U, VT and S),
-
- Tests performed with Test Threshold = 5.0000000000000000e+01
- Cgesvd: 
- 1 = | A - U diag(S) VT | / ( |A| max(M,N) ulp ) 
- 2 = | I - U**T U | / ( M ulp ) 
- 3 = | I - VT VT**T | / ( N ulp ) 
- 4 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
- 5 = | U - Upartial | / ( M ulp )
- 6 = | VT - VTpartial | / ( N ulp )
- 7 = | S - Spartial | / ( min(M,N) ulp |S| )
- Cgesdd: 
- 8 = | A - U diag(S) VT | / ( |A| max(M,N) ulp ) 
- 9 = | I - U**T U | / ( M ulp ) 
-10 = | I - VT VT**T | / ( N ulp ) 
-11 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
-12 = | U - Upartial | / ( M ulp )
-13 = | VT - VTpartial | / ( N ulp )
-14 = | S - Spartial | / ( min(M,N) ulp |S| )
- Cgesvj: 
-
-15 = | A - U diag(S) VT | / ( |A| max(M,N) ulp ) 
-16 = | I - U**T U | / ( M ulp ) 
-17 = | I - VT VT**T | / ( N ulp ) 
-18 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
- ZGESJV: 
-
-19 = | A - U diag(S) VT | / ( |A| max(M,N) ulp )
-20 = | I - U**T U | / ( M ulp ) 
-21 = | I - VT VT**T | / ( N ulp ) 
-22 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
- Cgesvdx(V,V,A): 
-23 = | A - U diag(S) VT | / ( |A| max(M,N) ulp ) 
-24 = | I - U**T U | / ( M ulp ) 
-25 = | I - VT VT**T | / ( N ulp ) 
-26 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
-27 = | U - Upartial | / ( M ulp )
-28 = | VT - VTpartial | / ( N ulp )
-29 = | S - Spartial | / ( min(M,N) ulp |S| )
- Cgesvdx(V,V,I): 
-30 = | U**T A VT**T - diag(S) | / ( |A| max(M,N) ulp )
-31 = | I - U**T U | / ( M ulp ) 
-32 = | I - VT VT**T | / ( N ulp ) 
- Cgesvdx(V,V,V) 
-33 = | U**T A VT**T - diag(S) | / ( |A| max(M,N) ulp )
-34 = | I - U**T U | / ( M ulp ) 
-35 = | I - VT VT**T | / ( N ulp )  Cgesvdq(H,N,N,A,A
-36 = | A - U diag(S) VT | / ( |A| max(M,N) ulp ) 
-37 = | I - U**T U | / ( M ulp ) 
-38 = | I - VT VT**T | / ( N ulp ) 
-39 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
-
-
- M=    3, N=    3, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.2945696736907516e+29
- M=    3, N=    3, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.2945696736907516e+29
- M=    3, N=    3, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.2945696736907516e+29
- M=    3, N=    3, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.2945696736907516e+29
- M=   10, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=4.1466193217687077e+28
- M=   10, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=4.1466193217687077e+28
- M=   10, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=4.1466193217687077e+28
- M=   10, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=4.1466193217687077e+28
- M=   16, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=4.0181360906004513e+28
- M=   16, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=4.0181360906004513e+28
- M=   16, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=4.0181360906004513e+28
- M=   16, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=4.0181360906004513e+28
- M=   16, N=   16, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=2.6368678631611928e+28
- M=   16, N=   16, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=2.6368678631611928e+28
- M=   16, N=   16, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=2.6368678631611928e+28
- M=   16, N=   16, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=2.6368678631611928e+28
- M=   30, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.4416725641137820e+28
- M=   30, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.4416725641137820e+28
- M=   30, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.4416725641137820e+28
- M=   30, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.4416725641137820e+28
- M=   40, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.3798593152440034e+28
- M=   40, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.3798593152440034e+28
- M=   40, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.3798593152440034e+28
- M=   40, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.3798593152440034e+28
- M=   40, N=   40, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.0278665598117538e+28
- M=   40, N=   40, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.0278665598117538e+28
- M=   40, N=   40, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.0278665598117538e+28
- M=   40, N=   40, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.0278665598117538e+28
- ZBD drivers:     28 out of  14340 tests failed to pass the threshold
+ All tests for ZBD drivers  passed the threshold (  14340 tests run)
 
 
  SVD:  NB =   3, NBMIN =   2, NX =   5, NRHS =   2
@@ -396,107 +213,14 @@ The following parameter values will be used:
   33: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
   34: norm( S - S1 )      / ( norm(S) ulp ), where S1 is computed
                                              without computing U and V'
- M=   10, N=   10, type 16, seed=   0,   0,   0,   1, test(10)=6.4277521770359611e+62
- M=   30, N=   30, type 16, seed=   0,   0,   0,   1, test( 9)=1.6478715335216115e+11
+ M=   10, N=   16, type 16, seed=   0,   0,   0,   1, test(10)=6.4277521770359611e+62
+ M=   16, N=   16, type 16, seed=   0,   0,   0,   1, test(10)=3.2138760885179806e+62
  M=   30, N=   30, type 16, seed=   0,   0,   0,   1, test(10)=1.6069380442589903e+62
  M=   30, N=   40, type 16, seed=   0,   0,   0,   1, test(10)=1.6069380442589903e+62
- M=   40, N=   30, type 16, seed=   0,   0,   0,   1, test(10)=1.6069380442589903e+62
- M=   40, N=   40, type 16, seed=   0,   0,   0,   1, test( 9)=1.1301851262943811e+34
  M=   40, N=   40, type 16, seed=   0,   0,   0,   1, test(10)=1.6069380442589903e+62
- CBD:      7 out of   4085 tests failed to pass the threshold
- SVD -- Complex Singular Value Decomposition Driver 
- Matrix types (see Cdrvbd for details):
+ CBD:      5 out of   4085 tests failed to pass the threshold
 
- 1 = Zero matrix
- 2 = Identity matrix
- 3 = Evenly spaced singular values near 1
- 4 = Evenly spaced singular values near underflow
- 5 = Evenly spaced singular values near overflow
-
- Tests performed: ( A is dense, U and V are unitary,
-                    S is an array, and Upartial, VTpartial, and
-                    Spartial are partially computed U, VT and S),
-
- Tests performed with Test Threshold = 5.0000000000000000e+01
- Cgesvd: 
- 1 = | A - U diag(S) VT | / ( |A| max(M,N) ulp ) 
- 2 = | I - U**T U | / ( M ulp ) 
- 3 = | I - VT VT**T | / ( N ulp ) 
- 4 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
- 5 = | U - Upartial | / ( M ulp )
- 6 = | VT - VTpartial | / ( N ulp )
- 7 = | S - Spartial | / ( min(M,N) ulp |S| )
- Cgesdd: 
- 8 = | A - U diag(S) VT | / ( |A| max(M,N) ulp ) 
- 9 = | I - U**T U | / ( M ulp ) 
-10 = | I - VT VT**T | / ( N ulp ) 
-11 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
-12 = | U - Upartial | / ( M ulp )
-13 = | VT - VTpartial | / ( N ulp )
-14 = | S - Spartial | / ( min(M,N) ulp |S| )
- Cgesvj: 
-
-15 = | A - U diag(S) VT | / ( |A| max(M,N) ulp ) 
-16 = | I - U**T U | / ( M ulp ) 
-17 = | I - VT VT**T | / ( N ulp ) 
-18 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
- ZGESJV: 
-
-19 = | A - U diag(S) VT | / ( |A| max(M,N) ulp )
-20 = | I - U**T U | / ( M ulp ) 
-21 = | I - VT VT**T | / ( N ulp ) 
-22 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
- Cgesvdx(V,V,A): 
-23 = | A - U diag(S) VT | / ( |A| max(M,N) ulp ) 
-24 = | I - U**T U | / ( M ulp ) 
-25 = | I - VT VT**T | / ( N ulp ) 
-26 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
-27 = | U - Upartial | / ( M ulp )
-28 = | VT - VTpartial | / ( N ulp )
-29 = | S - Spartial | / ( min(M,N) ulp |S| )
- Cgesvdx(V,V,I): 
-30 = | U**T A VT**T - diag(S) | / ( |A| max(M,N) ulp )
-31 = | I - U**T U | / ( M ulp ) 
-32 = | I - VT VT**T | / ( N ulp ) 
- Cgesvdx(V,V,V) 
-33 = | U**T A VT**T - diag(S) | / ( |A| max(M,N) ulp )
-34 = | I - U**T U | / ( M ulp ) 
-35 = | I - VT VT**T | / ( N ulp )  Cgesvdq(H,N,N,A,A
-36 = | A - U diag(S) VT | / ( |A| max(M,N) ulp ) 
-37 = | I - U**T U | / ( M ulp ) 
-38 = | I - VT VT**T | / ( N ulp ) 
-39 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
-
-
- M=    3, N=    3, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.4316521905184495e+29
- M=    3, N=    3, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.4316521905184495e+29
- M=    3, N=    3, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.4316521905184495e+29
- M=    3, N=    3, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.4316521905184495e+29
- M=   10, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=4.2081913971637833e+28
- M=   10, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=4.2081913971637833e+28
- M=   10, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=4.2081913971637833e+28
- M=   10, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=4.2081913971637833e+28
- M=   16, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=4.1000208201888188e+28
- M=   16, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=4.1000208201888188e+28
- M=   16, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=4.1000208201888188e+28
- M=   16, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=4.1000208201888188e+28
- M=   16, N=   16, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=2.5626059389152668e+28
- M=   16, N=   16, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=2.5626059389152668e+28
- M=   16, N=   16, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=2.5626059389152668e+28
- M=   16, N=   16, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=2.5626059389152668e+28
- M=   30, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.4132429753010747e+28
- M=   30, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.4132429753010747e+28
- M=   30, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.4132429753010747e+28
- M=   30, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.4132429753010747e+28
- M=   40, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.4267986428002025e+28
- M=   40, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.4267986428002025e+28
- M=   40, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.4267986428002025e+28
- M=   40, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.4267986428002025e+28
- M=   40, N=   40, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.0530637001708866e+28
- M=   40, N=   40, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.0530637001708866e+28
- M=   40, N=   40, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.0530637001708866e+28
- M=   40, N=   40, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.0530637001708866e+28
- ZBD drivers:     28 out of  14340 tests failed to pass the threshold
+ All tests for ZBD drivers  passed the threshold (  14340 tests run)
 
 
  SVD:  NB =   3, NBMIN =   2, NX =   9, NRHS =   2
@@ -555,108 +279,13 @@ The following parameter values will be used:
   33: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
   34: norm( S - S1 )      / ( norm(S) ulp ), where S1 is computed
                                              without computing U and V'
- M=   10, N=   16, type 16, seed=   0,   0,   0,   1, test(10)=6.4277521770359611e+62
- M=   16, N=   10, type 16, seed=   0,   0,   0,   1, test(10)=6.4277521770359611e+62
- M=   16, N=   16, type 16, seed=   0,   0,   0,   1, test(10)=3.2138760885179806e+62
- M=   30, N=   30, type 16, seed=   0,   0,   0,   1, test( 9)=2.6139173712235159e+19
+ M=   16, N=   16, type 16, seed=   0,   0,   0,   1, test(10)=4.8357032784585167e+26
  M=   30, N=   30, type 16, seed=   0,   0,   0,   1, test(10)=1.6069380442589903e+62
- M=   30, N=   40, type 16, seed=   0,   0,   0,   1, test(10)=1.6069380442589903e+62
  M=   40, N=   30, type 16, seed=   0,   0,   0,   1, test(10)=1.6069380442589903e+62
  M=   40, N=   40, type 16, seed=   0,   0,   0,   1, test(10)=1.6069380442589903e+62
- CBD:      8 out of   4085 tests failed to pass the threshold
- SVD -- Complex Singular Value Decomposition Driver 
- Matrix types (see Cdrvbd for details):
+ CBD:      4 out of   4085 tests failed to pass the threshold
 
- 1 = Zero matrix
- 2 = Identity matrix
- 3 = Evenly spaced singular values near 1
- 4 = Evenly spaced singular values near underflow
- 5 = Evenly spaced singular values near overflow
-
- Tests performed: ( A is dense, U and V are unitary,
-                    S is an array, and Upartial, VTpartial, and
-                    Spartial are partially computed U, VT and S),
-
- Tests performed with Test Threshold = 5.0000000000000000e+01
- Cgesvd: 
- 1 = | A - U diag(S) VT | / ( |A| max(M,N) ulp ) 
- 2 = | I - U**T U | / ( M ulp ) 
- 3 = | I - VT VT**T | / ( N ulp ) 
- 4 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
- 5 = | U - Upartial | / ( M ulp )
- 6 = | VT - VTpartial | / ( N ulp )
- 7 = | S - Spartial | / ( min(M,N) ulp |S| )
- Cgesdd: 
- 8 = | A - U diag(S) VT | / ( |A| max(M,N) ulp ) 
- 9 = | I - U**T U | / ( M ulp ) 
-10 = | I - VT VT**T | / ( N ulp ) 
-11 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
-12 = | U - Upartial | / ( M ulp )
-13 = | VT - VTpartial | / ( N ulp )
-14 = | S - Spartial | / ( min(M,N) ulp |S| )
- Cgesvj: 
-
-15 = | A - U diag(S) VT | / ( |A| max(M,N) ulp ) 
-16 = | I - U**T U | / ( M ulp ) 
-17 = | I - VT VT**T | / ( N ulp ) 
-18 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
- ZGESJV: 
-
-19 = | A - U diag(S) VT | / ( |A| max(M,N) ulp )
-20 = | I - U**T U | / ( M ulp ) 
-21 = | I - VT VT**T | / ( N ulp ) 
-22 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
- Cgesvdx(V,V,A): 
-23 = | A - U diag(S) VT | / ( |A| max(M,N) ulp ) 
-24 = | I - U**T U | / ( M ulp ) 
-25 = | I - VT VT**T | / ( N ulp ) 
-26 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
-27 = | U - Upartial | / ( M ulp )
-28 = | VT - VTpartial | / ( N ulp )
-29 = | S - Spartial | / ( min(M,N) ulp |S| )
- Cgesvdx(V,V,I): 
-30 = | U**T A VT**T - diag(S) | / ( |A| max(M,N) ulp )
-31 = | I - U**T U | / ( M ulp ) 
-32 = | I - VT VT**T | / ( N ulp ) 
- Cgesvdx(V,V,V) 
-33 = | U**T A VT**T - diag(S) | / ( |A| max(M,N) ulp )
-34 = | I - U**T U | / ( M ulp ) 
-35 = | I - VT VT**T | / ( N ulp )  Cgesvdq(H,N,N,A,A
-36 = | A - U diag(S) VT | / ( |A| max(M,N) ulp ) 
-37 = | I - U**T U | / ( M ulp ) 
-38 = | I - VT VT**T | / ( N ulp ) 
-39 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
-
-
- M=    3, N=    3, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.4399299228293363e+29
- M=    3, N=    3, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.4399299228293363e+29
- M=    3, N=    3, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.4399299228293363e+29
- M=    3, N=    3, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.4399299228293363e+29
- M=   10, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=4.3709206111995958e+28
- M=   10, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=4.3709206111995958e+28
- M=   10, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=4.3709206111995958e+28
- M=   10, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=4.3709206111995958e+28
- M=   16, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=4.2649286147327532e+28
- M=   16, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=4.2649286147327532e+28
- M=   16, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=4.2649286147327532e+28
- M=   16, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=4.2649286147327532e+28
- M=   16, N=   16, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=2.5992251346423580e+28
- M=   16, N=   16, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=2.5992251346423580e+28
- M=   16, N=   16, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=2.5992251346423580e+28
- M=   16, N=   16, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=2.5992251346423580e+28
- M=   30, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.4220660413337619e+28
- M=   30, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.4220660413337619e+28
- M=   30, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.4220660413337619e+28
- M=   30, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.4220660413337619e+28
- M=   40, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.4089967937324524e+28
- M=   40, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.4089967937324524e+28
- M=   40, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.4089967937324524e+28
- M=   40, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.4089967937324524e+28
- M=   40, N=   40, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.0375861901439631e+28
- M=   40, N=   40, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.0375861901439631e+28
- M=   40, N=   40, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.0375861901439631e+28
- M=   40, N=   40, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.0375861901439631e+28
- ZBD drivers:     28 out of  14340 tests failed to pass the threshold
+ All tests for ZBD drivers  passed the threshold (  14340 tests run)
 
 
  SVD:  NB =  20, NBMIN =   2, NX =   1, NRHS =   2
@@ -717,105 +346,17 @@ The following parameter values will be used:
                                              without computing U and V'
  M=   10, N=   16, type 16, seed=   0,   0,   0,   1, test(10)=6.4277521770359611e+62
  M=   16, N=   10, type 16, seed=   0,   0,   0,   1, test(10)=6.4277521770359611e+62
- M=   40, N=   30, type 16, seed=   0,   0,   0,   1, test( 9)=2.3385122451230700e+08
+ M=   16, N=   16, type 16, seed=   0,   0,   0,   1, test(10)=3.2138760885179806e+62
+ M=   30, N=   30, type 16, seed=   0,   0,   0,   1, test(10)=4.0173451106474757e+61
+ M=   30, N=   40, type 16, seed=   0,   0,   0,   1, test(10)=9.6714065569170334e+26
  M=   40, N=   30, type 16, seed=   0,   0,   0,   1, test(10)=1.6069380442589903e+62
- M=   40, N=   40, type 16, seed=   0,   0,   0,   1, test(10)=1.6069380442589903e+62
- CBD:      5 out of   4085 tests failed to pass the threshold
- SVD -- Complex Singular Value Decomposition Driver 
- Matrix types (see Cdrvbd for details):
+ M=   40, N=   40, type 16, seed=   0,   0,   0,   1, test(10)=4.3556142965880123e+42
+ CBD:      7 out of   4085 tests failed to pass the threshold
 
- 1 = Zero matrix
- 2 = Identity matrix
- 3 = Evenly spaced singular values near 1
- 4 = Evenly spaced singular values near underflow
- 5 = Evenly spaced singular values near overflow
-
- Tests performed: ( A is dense, U and V are unitary,
-                    S is an array, and Upartial, VTpartial, and
-                    Spartial are partially computed U, VT and S),
-
- Tests performed with Test Threshold = 5.0000000000000000e+01
- Cgesvd: 
- 1 = | A - U diag(S) VT | / ( |A| max(M,N) ulp ) 
- 2 = | I - U**T U | / ( M ulp ) 
- 3 = | I - VT VT**T | / ( N ulp ) 
- 4 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
- 5 = | U - Upartial | / ( M ulp )
- 6 = | VT - VTpartial | / ( N ulp )
- 7 = | S - Spartial | / ( min(M,N) ulp |S| )
- Cgesdd: 
- 8 = | A - U diag(S) VT | / ( |A| max(M,N) ulp ) 
- 9 = | I - U**T U | / ( M ulp ) 
-10 = | I - VT VT**T | / ( N ulp ) 
-11 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
-12 = | U - Upartial | / ( M ulp )
-13 = | VT - VTpartial | / ( N ulp )
-14 = | S - Spartial | / ( min(M,N) ulp |S| )
- Cgesvj: 
-
-15 = | A - U diag(S) VT | / ( |A| max(M,N) ulp ) 
-16 = | I - U**T U | / ( M ulp ) 
-17 = | I - VT VT**T | / ( N ulp ) 
-18 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
- ZGESJV: 
-
-19 = | A - U diag(S) VT | / ( |A| max(M,N) ulp )
-20 = | I - U**T U | / ( M ulp ) 
-21 = | I - VT VT**T | / ( N ulp ) 
-22 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
- Cgesvdx(V,V,A): 
-23 = | A - U diag(S) VT | / ( |A| max(M,N) ulp ) 
-24 = | I - U**T U | / ( M ulp ) 
-25 = | I - VT VT**T | / ( N ulp ) 
-26 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
-27 = | U - Upartial | / ( M ulp )
-28 = | VT - VTpartial | / ( N ulp )
-29 = | S - Spartial | / ( min(M,N) ulp |S| )
- Cgesvdx(V,V,I): 
-30 = | U**T A VT**T - diag(S) | / ( |A| max(M,N) ulp )
-31 = | I - U**T U | / ( M ulp ) 
-32 = | I - VT VT**T | / ( N ulp ) 
- Cgesvdx(V,V,V) 
-33 = | U**T A VT**T - diag(S) | / ( |A| max(M,N) ulp )
-34 = | I - U**T U | / ( M ulp ) 
-35 = | I - VT VT**T | / ( N ulp )  Cgesvdq(H,N,N,A,A
-36 = | A - U diag(S) VT | / ( |A| max(M,N) ulp ) 
-37 = | I - U**T U | / ( M ulp ) 
-38 = | I - VT VT**T | / ( N ulp ) 
-39 = 0 if S contains min(M,N) nonnegative values in decreasing order, else 1/ulp
-
-
- M=    3, N=    3, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.4294747002241242e+29
- M=    3, N=    3, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.4294747002241242e+29
- M=    3, N=    3, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.4294747002241242e+29
- M=    3, N=    3, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.4294747002241242e+29
- M=   10, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=4.1453390354804064e+28
- M=   10, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=4.1453390354804064e+28
- M=   10, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=4.1453390354804064e+28
- M=   10, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=4.1453390354804064e+28
- M=   16, N=   10, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=4.1908173946644061e+28
- M=   16, N=   10, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=4.1908173946644061e+28
- M=   16, N=   10, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=4.1908173946644061e+28
- M=   16, N=   10, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=4.1908173946644061e+28
- M=   16, N=   16, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=2.7808287539136460e+28
- M=   16, N=   16, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=2.7808287539136460e+28
- M=   16, N=   16, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=2.7808287539136460e+28
- M=   16, N=   16, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=2.7808287539136460e+28
- M=   30, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.3919234414075959e+28
- M=   30, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.3919234414075959e+28
- M=   30, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.3919234414075959e+28
- M=   30, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.3919234414075959e+28
- M=   40, N=   30, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.3851222224126315e+28
- M=   40, N=   30, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.3851222224126315e+28
- M=   40, N=   30, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.3851222224126315e+28
- M=   40, N=   30, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.3851222224126315e+28
- M=   40, N=   40, type 4, IWS=1, seed=   0,   0,   0,   1, test(15)=1.0447224272593255e+28
- M=   40, N=   40, type 4, IWS=2, seed=   0,   0,   0,   1, test(15)=1.0447224272593255e+28
- M=   40, N=   40, type 4, IWS=3, seed=   0,   0,   0,   1, test(15)=1.0447224272593255e+28
- M=   40, N=   40, type 4, IWS=4, seed=   0,   0,   0,   1, test(15)=1.0447224272593255e+28
- ZBD drivers:     28 out of  14340 tests failed to pass the threshold
+ All tests for ZBD drivers  passed the threshold (  14340 tests run)
 
 
  End of tests
- Total time used =      2117.00 seconds
+ Total time used =      2234.00 seconds
 
+     2233.63 real      2227.00 user         3.02 sys

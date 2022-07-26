@@ -23,3 +23,6 @@ The following parameter values will be used:
  Routines pass computational tests if test ratio is less than+2.0000000000000000e+01
 
  Cgees passed the tests of the error exits (  6 tests done)
+Command terminated by signal 11
+1.02user 0.01system 0:01.29elapsed 80%CPU (0avgtext+0avgdata 35448maxresident)k
+240inputs+8outputs (1major+5863minor)pagefaults 0swaps

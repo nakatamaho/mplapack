@@ -1,3 +1,15 @@
+2022/07/26    Nakata Maho <maho@riken.jp> 2.0.0
+            * tag 2.0.0
+            * Update test results for aarch64-unknown-linux-gnu, x86_64-apple-darwin20.6.0,
+              x86_64-pc-linux-gnu, x86_64-pc-linux-gnu_inteloneapi and x86_64-w64-mingw32.
+            * Update Dockerfiles accordingly.
+
+2022/07/24    Nakata Maho <maho@riken.jp> 2.0
+            * Fix double-double CLS (Ctest.in) by disabling gcc optimization mplapack/test/matgen/Claror.cpp. (#30)
+            * Correct fixes for Rgejsv, Cgejsv, Rgesvj and Cgesvj using dd/qd. Rlamch("O")s are replaced by
+	      "one / sfmin", indicated by the comments in the source codes.
+            * Fix qd/dd division overflow bug.
+
 2022/07/22    Nakata Maho <maho@riken.jp> 2.0 branch
             * Fix iMparam2stage.
             * Fix issues for test programs; stack overflows, possible memory leaks and memory accesses.

@@ -153,7 +153,11 @@ mplapack/test/eig/nep.in \
 mplapack/test/eig/se2.in \
 mplapack/test/eig/sep.in \
 mplapack/test/eig/svd.in \
+mplapack/test/eig/test_eig_all.sh \
+mplapack/test/eig/test_eig_all_mingw.sh \
 mplapack/test/lin/Ctest.in \
 mplapack/test/lin/Ctest_rfp.in \
 mplapack/test/lin/Rtest.in \
-mplapack/test/lin/Rtest_rfp.in
+mplapack/test/lin/Rtest_rfp.in \
+mplapack/test/lin/test_lin_all.sh \
+mplapack/test/lin/test_lin_all_mingw.sh
