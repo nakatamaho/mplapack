@@ -42,6 +42,10 @@ We use MPFR + MPC as the primary arithmetic class.
 * macOS (Intel) + gcc via macports (you may use homebrew instead, small modification of build script req'ed)
 * Windows (64bit; mingw64 on Ubuntu with wine64)
 
+# MPLAPACK test results
+* https://github.com/nakatamaho/mplapack/tree/master/mplapack/test/lin/results
+* https://github.com/nakatamaho/mplapack/tree/master/mplapack/test/eig/results
+
 # Manual
 * Please wait for update of the manual. However, usage has not changed. 
 * https://arxiv.org/abs/2109.13406
