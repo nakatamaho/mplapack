@@ -43,6 +43,7 @@ We use MPFR + MPC as the primary arithmetic class.
 * Windows (64bit; mingw64 on Ubuntu with wine64)
 
 # Manual
+* Please wait for update of the manual. However, usage has not changed. 
 * https://arxiv.org/abs/2109.13406
 * https://raw.githubusercontent.com/nakatamaho/mplapack/master/doc/manual/manual.pdf (updated frequently)
 ```
