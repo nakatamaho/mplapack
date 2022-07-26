@@ -19,6 +19,6 @@ The following parameter values will be used:
  All tests for Chfrk auxiliary routine passed the threshold (   2592 tests run)
 
  End of tests
- Total time used =  202 seconds
+ Total time used =  334 seconds
 
-      202.55 real       201.89 user         0.38 sys
+      333.47 real       230.99 user         1.28 sys

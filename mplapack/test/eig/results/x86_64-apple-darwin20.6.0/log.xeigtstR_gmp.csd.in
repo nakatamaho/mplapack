@@ -19,3 +19,4 @@ The following parameter values will be used:
 
  CSD routines passed the tests of the error exits (  8 tests done)
 MPLAPACK ERROR Rorbdb.cpp is not supported for GMP
+        0.07 real         0.04 user         0.00 sys

@@ -149,5 +149,7 @@ The following parameter values will be used:
  All tests for RHH routines passed the threshold (  15900 tests run)
 
  End of tests
- Total time used =  1196 seconds
+ Total time used =  1193 seconds
 
+1182.00user 9.70system 19:53.13elapsed 99%CPU (0avgtext+0avgdata 25204maxresident)k
+0inputs+0outputs (0major+8589minor)pagefaults 0swaps

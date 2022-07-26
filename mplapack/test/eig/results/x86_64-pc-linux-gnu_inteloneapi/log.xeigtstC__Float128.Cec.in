@@ -8,3 +8,6 @@
 
 
  CEC routines passed the tests of the error exits ( 33 tests done)
+Command terminated by signal 11
+22.71user 0.03system 0:23.19elapsed 98%CPU (0avgtext+0avgdata 35352maxresident)k
+1424inputs+8outputs (7major+5860minor)pagefaults 0swaps

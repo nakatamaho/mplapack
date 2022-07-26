@@ -25,8 +25,8 @@ RUN echo "[user]" >> /home/$DOCKER_USER/.gitconfig && \
     echo "name = ${GIT_NAME}" >> /home/$DOCKER_USER/.gitconfig
 
 RUN cd /home/$DOCKER_USER && echo "cd /home/$DOCKER_USER" >> .bashrc
-RUN cd /home/$DOCKER_USER && wget https://github.com/nakatamaho/mplapack/releases/download/v1.9.9/mplapack-2.0.0-alpha.tar.xz
-RUN cd /home/$DOCKER_USER && tar xvfJ mplapack-2.0.0-alpha.tar.xz
+RUN cd /home/$DOCKER_USER && wget https://github.com/nakatamaho/mplapack/releases/download/v2.0.0/mplapack-2.0.0.tar.xz
+RUN cd /home/$DOCKER_USER && tar xvfJ mplapack-2.0.0.tar.xz
 RUN cd /home/$DOCKER_USER/mplapack-2.0.0
 ARG CXX="/opt/rh/devtoolset-9/root/usr/bin/g++"
 ARG CC="/opt/rh/devtoolset-9/root/usr/bin/gcc"

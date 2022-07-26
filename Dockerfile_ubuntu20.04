@@ -17,7 +17,7 @@ RUN echo "${TZ}" > /etc/timezone \
 
 RUN apt install -y build-essential gfortran python3
 RUN apt install -y autotools-dev automake libtool
-RUN apt install -y git wget time
+RUN apt install -y git wget time parallel
 RUN apt install -y ng-common ng-cjk emacs-nox
 RUN sudo update-alternatives --install /usr/bin/python python /usr/bin/python3 1
 
@@ -33,8 +33,8 @@ RUN echo "\n\
 " > /home/$DOCKER_USER/.gitconfig
 
 RUN cd /home/$DOCKER_USER && echo "cd /home/$DOCKER_USER" >> .bashrc
-RUN cd /home/$DOCKER_USER && wget https://github.com/nakatamaho/mplapack/releases/download/v1.9.9/mplapack-2.0.0-alpha.tar.xz
-RUN cd /home/$DOCKER_USER && tar xvfJ mplapack-2.0.0-alpha.tar.xz
+RUN cd /home/$DOCKER_USER && wget https://github.com/nakatamaho/mplapack/releases/download/v2.0.0/mplapack-2.0.0.tar.xz
+RUN cd /home/$DOCKER_USER && tar xvfJ mplapack-2.0.0.tar.xz
 RUN cd /home/$DOCKER_USER/mplapack-2.0.0
 ARG CXX="g++"
 ARG CC="gcc"

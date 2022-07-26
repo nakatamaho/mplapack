@@ -63,5 +63,7 @@ Warning! Threshold has been lifted 10 times for GMP
 
 
  End of tests
- Total time used =     10880.00 seconds
+ Total time used =     15549.00 seconds
 
+13260.93user 3.17system 4:19:10elapsed 85%CPU (0avgtext+0avgdata 158324maxresident)k
+80inputs+88outputs (0major+38549minor)pagefaults 0swaps

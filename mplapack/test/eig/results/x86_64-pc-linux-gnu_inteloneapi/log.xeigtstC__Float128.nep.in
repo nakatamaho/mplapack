@@ -24,3 +24,6 @@ The following parameter values will be used:
 
 
  NEP:  NB =   1, NBMIN =   2, NX =   1, INMIN=  11, INWIN =   2, INIBL =   0, ISHFTS =   1, IACC22 =   0
+Command terminated by signal 11
+1.21user 0.02system 0:01.51elapsed 81%CPU (0avgtext+0avgdata 35616maxresident)k
+0inputs+8outputs (0major+5865minor)pagefaults 0swaps

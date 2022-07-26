@@ -9,3 +9,5 @@
  End of tests
  Total time used =         0.00 seconds
 
+0.21user 0.09system 0:00.47elapsed 64%CPU (0avgtext+0avgdata 68988maxresident)k
+5088inputs+8outputs (17major+16182minor)pagefaults 0swaps

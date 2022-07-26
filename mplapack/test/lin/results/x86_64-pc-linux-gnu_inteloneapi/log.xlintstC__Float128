@@ -75,3 +75,6 @@ The following parameter values will be used:
  Messages:
 terminate called after throwing an instance of 'std::runtime_error'
   what():  Not implemented: ../../../mplapack/test/fable/fem/write.hpp(237)
+Command terminated by signal 6
+146.32user 0.00system 2:26.91elapsed 99%CPU (0avgtext+0avgdata 22096maxresident)k
+1240inputs+32outputs (9major+2372minor)pagefaults 0swaps

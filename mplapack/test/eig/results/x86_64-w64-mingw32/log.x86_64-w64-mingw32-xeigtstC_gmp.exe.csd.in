@@ -19,3 +19,6 @@ The following parameter values will be used:
 
  CSD routines passed the tests of the error exits (  8 tests done)
 MPLAPACK ERROR Cunbdb.cpp is not supported for GMP
+Command exited with non-zero status 1
+0.12user 0.10system 0:00.44elapsed 49%CPU (0avgtext+0avgdata 177528maxresident)k
+0inputs+8outputs (0major+43447minor)pagefaults 0swaps
