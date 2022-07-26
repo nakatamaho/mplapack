@@ -6,7 +6,7 @@ original license by LAPACK).
 
 # News
 
-* 2022/6/14 MPLAPACK 2.0.0 alpha released. Complex version and RFP version are now working. If you find problems feel free to raise issues.
+* 2022/7/26 MPLAPACK 2.0.0 released! All routines excpet for mixed precision routines are now working and checked by extensive tests.
 
 # Capabilities
 * MPBLAS: All BLAS routines can be done in multiple precision arithmetic.
@@ -122,8 +122,8 @@ $ /usr/bin/time docker build -t mplapack:ubuntu1804 -f Dockerfile_ubuntu18.04 . 
 $ rm -rf $HOME/tmp $HOME/MPLAPACK
 $ mkdir $HOME/tmp
 $ cd $HOME/tmp
-$ wget https://github.com/nakatamaho/mplapack/releases/download/v1.9.9/mplapack-2.0.0-alpha.tar.xz
-$ tar xvfz mplapack-2.0.0-alpha.tar.xz
+$ wget https://github.com/nakatamaho/mplapack/releases/download/v2.0.0/mplapack-2.0.0.tar.xz
+$ tar xvfz mplapack-2.0.0.tar.xz
 $ cd mplapack-2.0.0
 $ CXX="g++" ; export CXX
 $ CC="gcc" ; export CC
@@ -140,8 +140,8 @@ $ sudo port install gcc10 coreutils git gsed
 $ rm -rf $HOME/tmp $HOME/MPLAPACK
 $ mkdir $HOME/tmp
 $ cd $HOME/tmp
-$ wget https://github.com/nakatamaho/mplapack/releases/download/v1.9.9/mplapack-2.0.0-alpha.tar.xz
-$ tar xvfz mplapack-2.0.0-alpha.tar.xz
+$ wget https://github.com/nakatamaho/mplapack/releases/download/v2.0.0/mplapack-2.0.0.tar.xz
+$ tar xvfz mplapack-2.0.0.tar.xz
 $ cd mplapack-2.0.0
 $ CXX="g++-mp-10" ; export CXX
 $ CC="gcc-mp-10" ; export CC
@@ -236,12 +236,13 @@ This is the release process for MPLAPACK 2.0.0
 | make tar ball for distribution          | 2022/06/14 |     |                          |
 | alpha release                           | 2022/06/14 |     |                          |
 | update document                         |            |     |                          |
+| release                                 | 2022/7/26  |     |                          |
 
 ## old schedules
 * version 1.0.0 https://github.com/nakatamaho/mplapack/blob/master/doc/Release1.0.0.md
 
 # History
-* 2022/6/14 MPLAPACK 2.0.0 alpha released. Complex version and RFP version are now working. 
+* 2022/6/14 MPLAPACK 2.0.0 alpha released. Complex version and RFP version are now working. If you find problems feel free to raise issues.
 * 2022/05/24 2.0 All tests for complex and RFP have passed! alpha version is merged into HEAD.
 * 2022/03/21 2.0 (develoment ongoing). Now complex lin tests have passed for all precisions.
 * 2021/11/1 1.0.1 release. Fixing dd and qd arithmetic by Inte One API.
