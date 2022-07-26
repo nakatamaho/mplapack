@@ -6,7 +6,7 @@ original license by LAPACK).
 
 # News
 
-* 2022/7/26 MPLAPACK 2.0.0 released! All routines excpet for mixed precision routines are now working and checked by extensive tests.
+* 2022/7/26 MPLAPACK 2.0.0 released! All routines excpet for mixed precision routines are now working and checked by extensive tests for all mutiple precisions.
 
 # Capabilities
 * MPBLAS: All BLAS routines can be done in multiple precision arithmetic.
