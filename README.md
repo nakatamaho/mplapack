@@ -105,7 +105,7 @@ CentOS 8
 ```
 $ git clone https://github.com/nakatamaho/mplapack/
 $ cd mplapack
-$ /usr/bin/time docker build -t mplapack:centos8 -f Dockerfile_CentOS8_amd64 . 2>&1 | tee log.CentOS8
+$ /usr/bin/time docker build -t mplapack:centos8 -f Dockerfile_CentOS8 . 2>&1 | tee log.CentOS8
 ```
 
 Ubuntu 18.04
@@ -165,7 +165,7 @@ FABLE: Automatic Fortran to C++ conversion (https://doi.org/10.1186/1751-0473-7-
 ```
 $ git clone https://github.com/nakatamaho/mplapack/
 $ cd mplapack
-$ /usr/bin/time docker image build -t mplapack:fable -f Dockerfile_fable . 2>&1 | tee log.fable
+$ /usr/bin/time docker build -t mplapack:fable -f Dockerfile_fable . 2>&1 | tee log.fable
 ```
 
 ## How to convert a sample Fortran to C++
