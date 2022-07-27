@@ -187,7 +187,6 @@ This is the release process for MPLAPACK 3.0.0
 | --- | --- | --- | --- |
 | Impliment mixed precision version              |            |     |                     | 
 | Performance tuning using FAM on amd64          |            |     |                     |
-| Fix Rlamch for QD, DD                          |            |     | svd.in fails.used with caution | 
 | cleanup pow (REAL, long int)                   |            |     |                          | 
 | Get rid of compiler warnings                   |            |     |                          | 
 | lp64 ilp64 llp64 ilp32 lp32 cleanup            |            |     |                          | 
@@ -237,6 +236,8 @@ This is the release process for MPLAPACK 2.0.0
 | complex eig svd.in                      | 2022/05/06 | NG for dd, qd | Testing Singular Value Decomposition routines for complex matrices. In some cases, Cgesvj has large error for dd and qd. Othre than that, it is ok|
 | complex eig gsv.in                      | 2022/05/09 |  ok   | testing complex Generalized SVD routines |
 | Impliment RFP version                   | 2022/05/16 |  ok   |  Test for linear equation routines RFP format (real, complex) | 
+| libqd overflow fix                      | 2022/07/23 |  ok   |  sqrt(Rlamch("O") and Rlamch("O")/1.0 failed | 
+| Fixes for Rgejsv, Cgejsv, Rgesvj and Cgesvj using dd/qd | 2022/07/24 | ok |  |
 | Add more examples                       | 2022/06/14 |     |                          | 
 | make tar ball for distribution          | 2022/06/14 |     |                          |
 | alpha release                           | 2022/06/14 |     |                          |
