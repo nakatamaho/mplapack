@@ -6,7 +6,7 @@ original license by LAPACK).
 
 # News
 
-* 2022/7/26 MPLAPACK 2.0.0 released! All routines excpet for mixed precision routines are now working and checked by extensive tests for all mutiple precisions.
+* 2022/7/26 MPLAPACK 2.0.0 released! All routines excpet for mixed precision routines are now working and checked by extensive tests for all multiple precisions.
 
 # Capabilities
 * MPBLAS: All BLAS routines can be done in multiple precision arithmetic.
@@ -42,7 +42,12 @@ We use MPFR + MPC as the primary arithmetic class.
 * macOS (Intel) + gcc via macports (you may use homebrew instead, small modification of build script req'ed)
 * Windows (64bit; mingw64 on Ubuntu with wine64)
 
+# MPLAPACK test results
+* https://github.com/nakatamaho/mplapack/tree/master/mplapack/test/lin/results
+* https://github.com/nakatamaho/mplapack/tree/master/mplapack/test/eig/results
+
 # Manual
+* Please wait for update of the manual. However, usage has not changed. 
 * https://arxiv.org/abs/2109.13406
 * https://raw.githubusercontent.com/nakatamaho/mplapack/master/doc/manual/manual.pdf (updated frequently)
 ```
