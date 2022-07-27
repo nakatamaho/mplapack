@@ -5,7 +5,7 @@ RUN yum install -y devtoolset-9
 RUN scl enable devtoolset-9 bash
 RUN yum install -y gcc gcc-c++ gcc-gfortran make automake libtool
 RUN yum install -y python3
-RUN yum install -y sudo which patch bzip2 git wget time
+RUN yum install -y sudo which patch bzip2 git wget time parallel
 RUN yum install -y emacs
 
 ARG DOCKER_UID=1000
@@ -31,6 +31,6 @@ RUN cd /home/$DOCKER_USER/mplapack-2.0.0
 ARG CXX="/opt/rh/devtoolset-9/root/usr/bin/g++"
 ARG CC="/opt/rh/devtoolset-9/root/usr/bin/gcc"
 ARG FC="/opt/rh/devtoolset-9/root/usr/bin/gfortran"
-RUN cd /home/$DOCKER_USER/mplapack-2.0.0 && ./configure --prefix=$HOME/MPLAPACK --enable-gmp=yes --enable-mpfr=yes --enable-_Float128=yes --enable-qd=yes --enable-dd=yes --enable-double=yes --enable-_Float64x=yes --enable-test=yes
+RUN cd /home/$DOCKER_USER/mplapack-2.0.0 && ./configure --prefix=$HOME/MPLAPACK --enable-gmp=yes --enable-mpfr=yes --enable-_Float128=yes --enable-qd=yes --enable-dd=yes --enable-double=yes --enable-test=yes
 RUN cd /home/$DOCKER_USER/mplapack-2.0.0 && make -j`getconf _NPROCESSORS_ONLN`
 RUN cd /home/$DOCKER_USER/mplapack-2.0.0 && make install
