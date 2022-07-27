@@ -7,7 +7,7 @@ RUN yum install -y python3
 RUN yum install -y sudo which patch bzip2 git wget time file
 RUN yum install -y emacs
 RUN yum install -y epel-release
-RUN yum install -y diffutils
+RUN yum install -y diffutils parallel
 
 ARG DOCKER_UID=1000
 ARG DOCKER_USER=docker
