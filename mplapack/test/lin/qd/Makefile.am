@@ -5,7 +5,12 @@ mplapack_qd_testdir = $(prefix)/lib/$(target)/mplapack/test/lin
 
 $(check_PROGRAMS): ../liblin_qd.la ../liblin_override_qd.la
 
+if IS_MINGW
+libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,$(top_builddir)/mplapack/test/lin/.libs/liblin_qd.a,$(top_builddir)/mplapack/test/lin/.libs/liblin_override_qd.a,$(top_builddir)/mplapack/test/matgen/.libs/libmatgen_qd.a,$(top_builddir)/mpblas/reference/.libs/libmpblas_qd.a,$(top_builddir)/mplapack/reference/.libs/libmplapack_qd.a,--no-whole-archive
+else
 libdepends = -L$(top_builddir)/mplapack/test/lin -llin_qd -llin_override_qd -L$(top_builddir)/mplapack/test/matgen -lmatgen_qd -L$(top_builddir)/mplapack/reference -lmplapack_qd -L$(top_builddir)/mpblas/reference -lmpblas_qd
+endif
+
 mplibs = -L$(QD_LIBDIR) -lqd -lm
 cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(QD_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_QD___ -D___MPLAPACK_INTERNAL___ -I$(top_srcdir)/mplapack/test/fable
 

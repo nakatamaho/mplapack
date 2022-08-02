@@ -5,7 +5,12 @@ mplapack_gmp_testdir = $(prefix)/lib/$(target)/mplapack/test/lin
 
 $(check_PROGRAMS): ../liblin_gmp.la ../liblin_override_gmp.la
 
+if IS_MINGW
+libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,$(top_builddir)/mplapack/test/lin/.libs/liblin_gmp.a,$(top_builddir)/mplapack/test/lin/.libs/liblin_override_gmp.a,$(top_builddir)/mplapack/test/matgen/.libs/libmatgen_gmp.a,$(top_builddir)/mpblas/reference/.libs/libmpblas_gmp.a,$(top_builddir)/mplapack/reference/.libs/libmplapack_gmp.a,--no-whole-archive
+else
 libdepends = -L$(top_builddir)/mplapack/test/lin -llin_gmp -llin_override_gmp -L$(top_builddir)/mplapack/test/matgen -lmatgen_gmp -L$(top_builddir)/mplapack/reference -lmplapack_gmp -L$(top_builddir)/mpblas/reference -lmpblas_gmp
+endif
+
 mplibs = -L$(GMP_LIBDIR) -lgmpxx -lgmp -lm
 cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_GMP___ -D___MPLAPACK_INTERNAL___ -I$(top_srcdir)/mplapack/test/fable
 

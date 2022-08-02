@@ -5,7 +5,12 @@ mplapack__Float64x_testdir = $(prefix)/lib/$(target)/mplapack/test/eig
 
 $(check_PROGRAMS): ../libeig__Float64x.la ../libeig_override__Float64x.la
 
-libdepends = -L$(top_builddir)/mplapack/test/eig -leig__Float64x -leig_override__Float64x -L$(top_builddir)/mplapack/test/matgen -lmatgen__Float64x -L$(top_builddir)/mplapack/reference -lmplapack__Float64x -L$(top_builddir)/mpblas/reference -lmpblas__Float64x 
+if IS_MINGW
+libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,$(top_builddir)/mplapack/test/eig/.libs/libeig__Float64x.a,$(top_builddir)/mplapack/test/eig/.libs/libeig_override__Float64x.a,$(top_builddir)/mplapack/test/matgen/.libs/libmatgen__Float64x.a,$(top_builddir)/mpblas/reference/.libs/libmpblas__Float64x.a,$(top_builddir)/mplapack/reference/.libs/libmplapack__Float64x.a,--no-whole-archive
+else
+libdepends = -L$(top_builddir)/mplapack/test/eig -leig__Float64x -leig_override__Float64x -L$(top_builddir)/mplapack/test/matgen -lmatgen__Float64x -L$(top_builddir)/mplapack/reference -lmplapack__Float64x -L$(top_builddir)/mpblas/reference -lmpblas__Float64x
+endif
+
 mplibs = -lm
 cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(LAPACK_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH__FLOAT64X___ -D___MPLAPACK_INTERNAL___ -I$(top_srcdir)/mplapack/test/fable
 

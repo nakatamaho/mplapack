@@ -5,7 +5,12 @@ mplapack_double_testdir = $(prefix)/lib/$(target)/mplapack/test/lin
 
 $(check_PROGRAMS): ../liblin_double.la ../liblin_override_double.la
 
+if IS_MINGW
+libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,$(top_builddir)/mplapack/test/lin/.libs/liblin_double.a,$(top_builddir)/mplapack/test/lin/.libs/liblin_override_double.a,$(top_builddir)/mplapack/test/matgen/.libs/libmatgen_double.a,$(top_builddir)/mpblas/reference/.libs/libmpblas_double.a,$(top_builddir)/mplapack/reference/.libs/libmplapack_double.a,--no-whole-archive
+else
 libdepends = -L.. -llin_double -llin_override_double -L$(top_builddir)/mplapack/test/matgen -lmatgen_double -L$(top_builddir)/mplapack/reference -lmplapack_double -L$(top_builddir)/mpblas/reference -lmpblas_double
+endif
+
 mplibs = -lm
 cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WITH_DOUBLE___ -I$(top_srcdir)/mplapack/test/fable -D___MPLAPACK_INTERNAL___
 

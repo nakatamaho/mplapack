@@ -82,8 +82,6 @@ Rtrsv.test.dd_opt  Rtrsv.test.dd
 
 mpblas_dd_testdir = $(prefix)/lib/$(target)/mplapack/test/compare/dd
 
-libdepends = -L$(top_builddir)/mpblas/reference -lmpblas_dd -lmpblas_mpfr
-opt_libdepends = -L$(top_builddir)/mpblas/optimized/dd -lmpblas_dd_opt -L$(top_builddir)/mpblas/reference -lmpblas_mpfr
 mplibs=-L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(GMP_LIBDIR) -lmpc -lmpfr -lgmpxx -lgmp -L$(QD_LIBDIR) -lqd
 refblas=-L$(top_builddir)/external/i/LAPACK/lib -lblas $(FCLIBS)
 test_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/mpfrc++ -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR) -I$(QD_INCLUDEDIR) -I$(top_srcdir)/mpfrc++ -D___MPLAPACK_BUILD_WITH_DD___ -D___MPLAPACK_INTERNAL___
@@ -100,6 +98,26 @@ libmxerbla_override_la_LDFLAGS= -Wl,-flat_namespace,-undefined,dynamic_lookup
 test_srcdepends = ../common/xerbla.cpp ../common/mplapack.test.cpp
 mplibs+=-Wl,-flat_namespace,-undefined,dynamic_lookup
 TESTS_ENVIRONMENT=DYLD_INSERT_LIBRARIES=.libs/libmxerbla_override.0.dylib
+endif
+
+if IS_MINGW
+$(check_PROGRAMS): libmxerbla_override.la
+lib_LTLIBRARIES = libmxerbla_override.la
+libmxerbla_override_la_CPPFLAGS = -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WITH_DD___
+libmxerbla_override_la_SOURCES =  ../common/Mxerbla.override.cpp
+libmxerbla_override_la_LDFLAGS = -no-undefined
+endif
+
+if IS_MINGW
+libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,.libs/libmxerbla_override.a,$(top_builddir)/mpblas/reference/.libs/libmpblas_dd.a,$(top_builddir)/mpblas/reference/.libs/libmpblas_mpfr.a,--no-whole-archive
+else
+libdepends = -L$(top_builddir)/mpblas/reference -lmpblas_dd -lmpblas_mpfr
+endif
+
+if IS_MINGW
+opt_libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,.libs/libmxerbla_override.a,$(top_builddir)/mpblas/optimized/dd/.libs/libmpblas_dd_opt.a,$(top_builddir)/mpblas/reference/.libs/libmpblas_mpfr.a,--no-whole-archive
+else
+opt_libdepends = -L$(top_builddir)/mpblas/optimized/dd -lmpblas_dd_opt -L$(top_builddir)/mpblas/reference -lmpblas_mpfr
 endif
 
 ##

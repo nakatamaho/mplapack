@@ -36,9 +36,9 @@ libmplapack_gmp_la_LDFLAGS = -Wl,-rpath,$(libdir) -Wl,-flat_namespace,-undefined
 else
 libmplapack_gmp_la_LDFLAGS = -Wl,-rpath=$(libdir)
 endif
-#if IS_MINGW
-#libmplapack_gmp_la_LDFLAGS += -no-undefined -L$(GMP_LIBDIR) -lgmp -L$(top_builddir)/mpblas/reference -lmpblas_gmp
-#endif
+if IS_MINGW
+libmplapack_gmp_la_LDFLAGS += -no-undefined -L$(GMP_LIBDIR) -lgmp -L$(top_builddir)/mpblas/reference -lmpblas_gmp
+endif
 endif
 
 if ENABLE_MPFR
@@ -48,9 +48,9 @@ libmplapack_mpfr_la_LDFLAGS = -Wl,-rpath,$(libdir)
 if IS_MACOS
 libmplapack_mpfr_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
 endif
-#if IS_MINGW
-#libmplapack_mpfr_la_LDFLAGS += -no-undefined -L$(top_builddir)/mpblas/reference -lmpblas_mpfr -L$(MPC_LIBDIR) -lmpc -L$(MPFR_LIBDIR) -lmpfr -L$(GMP_LIBDIR) -lgmp
-#endif
+if IS_MINGW
+libmplapack_mpfr_la_LDFLAGS += -no-undefined -L$(top_builddir)/mpblas/reference -lmpblas_mpfr -L$(MPC_LIBDIR) -lmpc -L$(MPFR_LIBDIR) -lmpfr -L$(GMP_LIBDIR) -lgmp
+endif
 endif
 
 if ENABLE_QD
@@ -60,9 +60,9 @@ libmplapack_qd_la_LDFLAGS = -Wl,-rpath,$(libdir)
 if IS_MACOS
 libmplapack_qd_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
 endif
-#if IS_MINGW
-#libmplapack_qd_la_LDFLAGS += -no-undefined -L$(top_builddir)/mpblas/reference -lmpblas_qd -L$(QD_LIBDIR) -lqd
-#endif
+if IS_MINGW
+libmplapack_qd_la_LDFLAGS += -no-undefined -L$(top_builddir)/mpblas/reference -lmpblas_qd -L$(QD_LIBDIR) -lqd
+endif
 endif
 
 if ENABLE_DD
@@ -72,9 +72,9 @@ libmplapack_dd_la_LDFLAGS = -Wl,-rpath,$(libdir)
 if IS_MACOS
 libmplapack_dd_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
 endif
-#if IS_MINGW
-#libmplapack_dd_la_LDFLAGS += -no-undefined -L$(top_builddir)/mpblas/reference -lmpblas_dd -L$(QD_LIBDIR) -lqd
-#endif
+if IS_MINGW
+libmplapack_dd_la_LDFLAGS += -no-undefined -L$(top_builddir)/mpblas/reference -lmpblas_dd -L$(QD_LIBDIR) -lqd
+endif
 endif
 
 if ENABLE_DOUBLE
@@ -84,9 +84,9 @@ libmplapack_double_la_LDFLAGS = -Wl,-rpath,$(libdir)
 if IS_MACOS
 libmplapack_double_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
 endif
-#if IS_MINGW
-#libmplapack_double_la_LDFLAGS += -no-undefined -L$(top_builddir)/mpblas/reference -lmpblas_double
-#endif
+if IS_MINGW
+libmplapack_double_la_LDFLAGS += -no-undefined -L$(top_builddir)/mpblas/reference -lmpblas_double
+endif
 endif
 
 if ENABLE__FLOAT64X
@@ -96,9 +96,9 @@ libmplapack__Float64x_la_LDFLAGS = -Wl,-rpath,$(libdir)
 if IS_MACOS
 libmplapack__Float64x_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
 endif
-#if IS_MINGW
-#libmplapack__Float64x_la_LDFLAGS += -no-undefined -L$(top_builddir)/mpblas/reference -lmpblas__Float64x
-#endif
+if IS_MINGW
+libmplapack__Float64x_la_LDFLAGS += -no-undefined -L$(top_builddir)/mpblas/reference -lmpblas__Float64x
+endif
 endif
 
 if ENABLE__FLOAT128
@@ -108,9 +108,9 @@ libmplapack__Float128_la_LDFLAGS = -Wl,-rpath,$(libdir)
 if IS_MACOS
 libmplapack__Float128_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
 endif
-#if IS_MINGW
-#libmplapack__Float128_la_LDFLAGS += -no-undefined -L$(top_builddir)/mpblas/reference -lmpblas__Float128 -lquadmath
-#endif
+if IS_MINGW
+libmplapack__Float128_la_LDFLAGS += -no-undefined -L$(top_builddir)/mpblas/reference -lmpblas__Float128 -lquadmath
+endif
 endif
 
 MPLAPACK_SOURCES = \

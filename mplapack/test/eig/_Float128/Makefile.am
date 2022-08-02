@@ -5,7 +5,12 @@ mplapack__Float128_testdir = $(prefix)/lib/$(target)/mplapack/test/eig
 
 $(check_PROGRAMS): ../libeig__Float128.la ../libeig_override__Float128.la
 
-libdepends = -L$(top_builddir)/mplapack/test/eig -leig__Float128 -leig_override__Float128 -L$(top_builddir)/mplapack/test/matgen -lmatgen__Float128 -L$(top_builddir)/mplapack/reference -lmplapack__Float128 -L$(top_builddir)/mpblas/reference -lmpblas__Float128 
+if IS_MINGW
+libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,$(top_builddir)/mplapack/test/eig/.libs/libeig__Float128.a,$(top_builddir)/mplapack/test/eig/.libs/libeig_override__Float128.a,$(top_builddir)/mplapack/test/matgen/.libs/libmatgen__Float128.a,$(top_builddir)/mpblas/reference/.libs/libmpblas__Float128.a,$(top_builddir)/mplapack/reference/.libs/libmplapack__Float128.a,--no-whole-archive
+else
+libdepends = -L$(top_builddir)/mplapack/test/eig -leig__Float128 -leig_override__Float128 -L$(top_builddir)/mplapack/test/matgen -lmatgen__Float128 -L$(top_builddir)/mplapack/reference -lmplapack__Float128 -L$(top_builddir)/mpblas/reference -lmpblas__Float128
+endif
+
 if WANT_QUADMATH
 mplibs = -lm -lquadmath
 else
