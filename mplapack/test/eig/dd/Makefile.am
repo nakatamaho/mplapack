@@ -5,7 +5,12 @@ mplapack_dd_testdir = $(prefix)/lib/$(target)/mplapack/test/eig
 
 $(check_PROGRAMS): ../libeig_dd.la ../libeig_override_dd.la
 
-libdepends = -L$(top_builddir)/mplapack/test/eig -leig_dd -leig_override_dd -L$(top_builddir)/mplapack/test/matgen -lmatgen_dd -L$(top_builddir)/mplapack/reference -lmplapack_dd -L$(top_builddir)/mpblas/reference -lmpblas_dd 
+if IS_MINGW
+libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,$(top_builddir)/mplapack/test/eig/.libs/libeig_dd.a,$(top_builddir)/mplapack/test/eig/.libs/libeig_override_dd.a,$(top_builddir)/mplapack/test/matgen/.libs/libmatgen_dd.a,$(top_builddir)/mpblas/reference/.libs/libmpblas_dd.a,$(top_builddir)/mplapack/reference/.libs/libmplapack_dd.a,--no-whole-archive
+else
+libdepends = -L$(top_builddir)/mplapack/test/eig -leig_dd -leig_override_dd -L$(top_builddir)/mplapack/test/matgen -lmatgen_dd -L$(top_builddir)/mplapack/reference -lmplapack_dd -L$(top_builddir)/mpblas/reference -lmpblas_dd
+endif
+
 mplibs = -L$(QD_LIBDIR) -lqd -lm
 cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(LAPACK_INCLUDEDIR) -I$(QD_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_DD___ -D___MPLAPACK_INTERNAL___ -I$(top_srcdir)/mplapack/test/fable
 

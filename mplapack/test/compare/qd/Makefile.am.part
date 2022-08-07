@@ -10,7 +10,6 @@ if IS_MACOS
 	bash $(top_builddir)/misc/fix_dylib_macOS.sh $(mplapack_qd_testdir) $(prefix)
 endif
 
-ref_libdepends = -L$(top_builddir)/mplapack/reference -lmplapack_qd -lmplapack_mpfr -L$(top_builddir)/mpblas/reference -lmpblas_qd -lmpblas_mpfr
 mplibs=-L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(QD_LIBDIR) -lmpc -lmpfr -lgmpxx -lgmp -lqd
 refblas=-L$(top_builddir)/external/i/LAPACK/lib -lblas $(FCLIBS)
 reflapack=-L$(top_builddir)/external/i/LAPACK/lib -llapack $(FCLIBS)
@@ -38,17 +37,32 @@ mplibs+=-Wl,-flat_namespace,-undefined,dynamic_lookup
 TESTS_ENVIRONMENT=DYLD_INSERT_LIBRARIES=.libs/libmxerbla_override.0.dylib
 endif
 
+if IS_MINGW
+$(check_PROGRAMS): libmxerbla_override.la
+lib_LTLIBRARIES = libmxerbla_override.la
+libmxerbla_override_la_CPPFLAGS = -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WITH_QD___
+libmxerbla_override_la_SOURCES =  ../../../../mpblas/test/common/Mxerbla.override.cpp
+test_srcdepends = ../../../../mpblas/test/common/xerbla.cpp ../../../../mpblas/test/common/mplapack.test.cpp
+libmxerbla_override_la_LDFLAGS = -no-undefined
+endif
+
+if IS_MINGW
+libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,.libs/libmxerbla_override.a,$(top_builddir)/mpblas/reference/.libs/libmpblas_qd.a,$(top_builddir)/mplapack/reference/.libs/libmplapack_qd.a,$(top_builddir)/mplapack/reference/.libs/libmplapack_mpfr.a,$(top_builddir)/mpblas/reference/.libs/libmpblas_mpfr.a,--no-whole-archive
+else
+libdepends = -L$(top_builddir)/mplapack/reference -lmplapack_qd -lmplapack_mpfr -L$(top_builddir)/mpblas/reference -lmpblas_qd -lmpblas_mpfr
+endif
+
 Mutils_test_qd_SOURCES  = ../common/Mutils.test.cpp $(test_srcdepends)
-Mutils_test_qd_LDFLAGS    = $(ref_libdepends) $(test_libdepends)
+Mutils_test_qd_LDFLAGS    = $(libdepends) $(test_libdepends)
 Mutils_test_qd_CXXFLAGS = $(test_cxxflags)  
 
 %%insert here2%%
 %%FUNCTION%%_test_qd_SOURCES  = ../common/%%FUNCTION%%.test.cpp $(test_srcdepends)
-%%FUNCTION%%_test_qd_LDFLAGS    = $(ref_libdepends) $(test_libdepends)
+%%FUNCTION%%_test_qd_LDFLAGS    = $(libdepends) $(test_libdepends)
 %%FUNCTION%%_test_qd_CXXFLAGS = $(test_cxxflags)  
 
 %%TEST%%_test_qd_SOURCES  = ../common/%%TEST%%.test.cpp $(test_srcdepends)
-%%TEST%%_test_qd_LDFLAGS    = $(ref_libdepends) $(test_libdepends)
+%%TEST%%_test_qd_LDFLAGS    = $(libdepends) $(test_libdepends)
 %%TEST%%_test_qd_CXXFLAGS = $(test_cxxflags)
 
 install-data-hook:
