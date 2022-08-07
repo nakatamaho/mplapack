@@ -6,7 +6,7 @@ original license by LAPACK).
 
 # News
 
-* 2022/6/14 MPLAPACK 2.0.0 alpha released. Complex version and RFP version are now working. If you find problems feel free to raise issues.
+* 2022/7/26 MPLAPACK 2.0.0 released! All routines excpet for mixed precision routines are now working and checked by extensive tests for all multiple precisions.
 
 # Capabilities
 * MPBLAS: All BLAS routines can be done in multiple precision arithmetic.
@@ -42,7 +42,12 @@ We use MPFR + MPC as the primary arithmetic class.
 * macOS (Intel) + gcc via macports (you may use homebrew instead, small modification of build script req'ed)
 * Windows (64bit; mingw64 on Ubuntu with wine64)
 
+# MPLAPACK test results
+* https://github.com/nakatamaho/mplapack/tree/master/mplapack/test/lin/results
+* https://github.com/nakatamaho/mplapack/tree/master/mplapack/test/eig/results
+
 # Manual
+* Please wait for update of the manual. However, usage has not changed. 
 * https://arxiv.org/abs/2109.13406
 * https://raw.githubusercontent.com/nakatamaho/mplapack/master/doc/manual/manual.pdf (updated frequently)
 ```
@@ -105,7 +110,7 @@ CentOS 8
 ```
 $ git clone https://github.com/nakatamaho/mplapack/
 $ cd mplapack
-$ /usr/bin/time docker build -t mplapack:centos8 -f Dockerfile_CentOS8_amd64 . 2>&1 | tee log.CentOS8
+$ /usr/bin/time docker build -t mplapack:centos8 -f Dockerfile_CentOS8 . 2>&1 | tee log.CentOS8
 ```
 
 Ubuntu 18.04
@@ -122,8 +127,8 @@ $ /usr/bin/time docker build -t mplapack:ubuntu1804 -f Dockerfile_ubuntu18.04 . 
 $ rm -rf $HOME/tmp $HOME/MPLAPACK
 $ mkdir $HOME/tmp
 $ cd $HOME/tmp
-$ wget https://github.com/nakatamaho/mplapack/releases/download/v1.9.9/mplapack-2.0.0-alpha.tar.xz
-$ tar xvfz mplapack-2.0.0-alpha.tar.xz
+$ wget https://github.com/nakatamaho/mplapack/releases/download/v2.0.0/mplapack-2.0.0.tar.xz
+$ tar xvfz mplapack-2.0.0.tar.xz
 $ cd mplapack-2.0.0
 $ CXX="g++" ; export CXX
 $ CC="gcc" ; export CC
@@ -140,8 +145,8 @@ $ sudo port install gcc10 coreutils git gsed
 $ rm -rf $HOME/tmp $HOME/MPLAPACK
 $ mkdir $HOME/tmp
 $ cd $HOME/tmp
-$ wget https://github.com/nakatamaho/mplapack/releases/download/v1.9.9/mplapack-2.0.0-alpha.tar.xz
-$ tar xvfz mplapack-2.0.0-alpha.tar.xz
+$ wget https://github.com/nakatamaho/mplapack/releases/download/v2.0.0/mplapack-2.0.0.tar.xz
+$ tar xvfz mplapack-2.0.0.tar.xz
 $ cd mplapack-2.0.0
 $ CXX="g++-mp-10" ; export CXX
 $ CC="gcc-mp-10" ; export CC
@@ -165,7 +170,7 @@ FABLE: Automatic Fortran to C++ conversion (https://doi.org/10.1186/1751-0473-7-
 ```
 $ git clone https://github.com/nakatamaho/mplapack/
 $ cd mplapack
-$ /usr/bin/time docker image build -t mplapack:fable -f Dockerfile_fable . 2>&1 | tee log.fable
+$ /usr/bin/time docker build -t mplapack:fable -f Dockerfile_fable . 2>&1 | tee log.fable
 ```
 
 ## How to convert a sample Fortran to C++
@@ -182,7 +187,6 @@ This is the release process for MPLAPACK 3.0.0
 | --- | --- | --- | --- |
 | Impliment mixed precision version              |            |     |                     | 
 | Performance tuning using FAM on amd64          |            |     |                     |
-| Fix Rlamch for QD, DD                          |            |     | svd.in fails.used with caution | 
 | cleanup pow (REAL, long int)                   |            |     |                          | 
 | Get rid of compiler warnings                   |            |     |                          | 
 | lp64 ilp64 llp64 ilp32 lp32 cleanup            |            |     |                          | 
@@ -232,16 +236,19 @@ This is the release process for MPLAPACK 2.0.0
 | complex eig svd.in                      | 2022/05/06 | NG for dd, qd | Testing Singular Value Decomposition routines for complex matrices. In some cases, Cgesvj has large error for dd and qd. Othre than that, it is ok|
 | complex eig gsv.in                      | 2022/05/09 |  ok   | testing complex Generalized SVD routines |
 | Impliment RFP version                   | 2022/05/16 |  ok   |  Test for linear equation routines RFP format (real, complex) | 
+| libqd overflow fix                      | 2022/07/23 |  ok   |  sqrt(Rlamch("O") and Rlamch("O")/1.0 failed | 
+| Fixes for Rgejsv, Cgejsv, Rgesvj and Cgesvj using dd/qd | 2022/07/24 | ok |  |
 | Add more examples                       | 2022/06/14 |     |                          | 
 | make tar ball for distribution          | 2022/06/14 |     |                          |
 | alpha release                           | 2022/06/14 |     |                          |
 | update document                         |            |     |                          |
+| release                                 | 2022/7/26  |     |                          |
 
 ## old schedules
 * version 1.0.0 https://github.com/nakatamaho/mplapack/blob/master/doc/Release1.0.0.md
 
 # History
-* 2022/6/14 MPLAPACK 2.0.0 alpha released. Complex version and RFP version are now working. 
+* 2022/6/14 MPLAPACK 2.0.0 alpha released. Complex version and RFP version are now working. If you find problems feel free to raise issues.
 * 2022/05/24 2.0 All tests for complex and RFP have passed! alpha version is merged into HEAD.
 * 2022/03/21 2.0 (develoment ongoing). Now complex lin tests have passed for all precisions.
 * 2021/11/1 1.0.1 release. Fixing dd and qd arithmetic by Inte One API.
