@@ -37,7 +37,7 @@ args.extend(["-Xcompiler","-fPIC"]) # position indep code
 args.append("-o")
 args.append(pic_filepath)
 command = " ".join(args)
-print command
+print (command)
 
 # compile the .cu
 rv = os.system(command)
@@ -49,7 +49,7 @@ args = sys.argv[2:]
 args.append("-o")
 args.append(npic_filepath)
 command = " ".join(args)
-print command
+print (command)
 
 # compile the .cu
 rv = os.system(command)
