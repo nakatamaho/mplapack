@@ -19,6 +19,10 @@ if ENABLE_DD
 include Makefile.dd.am
 endif
 
+if ENABLE_CUDA
+include Makefile.dd_cuda.am
+endif
+
 if ENABLE_DOUBLE
 include Makefile.double.am
 endif

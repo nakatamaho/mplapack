@@ -6,7 +6,7 @@ Rgemm.dd Rgemm.dd_opt \
 Rgemv.dd Rgemv.dd_opt
 
 if ENABLE_CUDA
-include Makefile.dd.cuda.am
+include Makefile.dd_cuda.am
 endif
 
 #lapack is needed for Rlange

@@ -3,7 +3,7 @@ Rpotrf.dd_cuda_total \
 Rgetrf.dd_cuda_total
 
 dd_cuda_cxxflags = -I$(top_srcdir)/include -I$(QD_INCLUDEDIR) $(CUDA_CFLAGS) -D___MPLAPACK_BUILD_WITH_DD___
-dd_cuda_libdepends = $(ddlapack_libdepends) -L$(top_builddir)/mpblas/optimized/dd/cuda -lmpblas_dd_cuda $(CUDA_LDFLAGS) -lcudart -L$(top_builddir)/mpblas/optimized/dd -lmpblas_dd -L$(top_builddir)/mplapack/optimized/dd -lmplapack_dd -L$(QD_LIBDIR) -lqd $(DYLD)
+dd_cuda_libdepends = $(ddlapack_libdepends) -L$(top_builddir)/mplapack/reference -lmplapack_dd -L$(top_builddir)/mpblas/optimized/dd/cuda -lmpblas_dd_cuda $(CUDA_LDFLAGS) -lcudart -L$(top_builddir)/mpblas/optimized/dd -lmpblas_dd_opt -L$(QD_LIBDIR) -lqd $(DYLD)
 dd_cuda_link = $(LIBTOOL) --mode=link $(CXX) -o $@ $(CUDA_LDFLAGS) $(CUDA_LIBS) $(dd_cuda_libdepends) $(OPENMP_CXXFLAGS)
 
 Rpotrf_dd_cuda_total_SOURCES = Rpotrf.cpp

@@ -110,6 +110,7 @@ mpfrc++/org/makefile mpfrc++/org/mpfrc++.tar.gz \
 mpfrc++/org/mpreal.cpp mpfrc++/org/mpreal.h \
 examples/mpblas/Makefile.freebsd.in \
 examples/mpblas/Makefile.linux.in \
+examples/mpblas/Makefile.linux_cuda.in \
 examples/mpblas/Makefile.macos.in \
 examples/mpblas/Makefile.mingw.in \
 examples/mplapack/*/Makefile.freebsd.in \

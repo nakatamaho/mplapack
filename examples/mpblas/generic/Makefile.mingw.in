@@ -3,7 +3,7 @@
 CXX=x86_64-w64-mingw32-g++
 MPLAPACKDIR=%%MPLAPACKDIR%%
 CXXFLAGS= -I$(MPLAPACKDIR)/include -I$(MPLAPACKDIR)/include/mplapack -I$(MPLAPACKDIR)/include/qd
-OPTFLAGS= -O2
+OPTFLAGS= -O2 -fopenmp
 LIBFLAGS=-L$(MPLAPACKDIR)/lib -static-libgcc -static-libstdc++
 MPFRLIBS=-lmpblas_mpfr -lmpfr -lmpc -lgmp
 GMPLIBS=-lmpblas_gmp -lgmpxx -lgmp 
@@ -12,11 +12,21 @@ DDLIBS=-lmpblas_dd -lqd
 _FLOAT64xLIBS=-lmpblas__Float64x
 _FLOAT128LIBS=-lmpblas__Float128%%LIBQUADMATH%%
 DOUBLELIBS=-lmpblas_double
+
+MPFROPTLIBS=-fopenmp -lmpblas_mpfr_opt -lmpfr -lmpc -lgmp
+GMPOPTLIBS=-fopenmp -lmpblas_gmp_opt -lgmpxx -lgmp
+QDOPTLIBS=-fopenmp -lmpblas_qd_opt -lqd
+DDOPTLIBS=-fopenmp -lmpblas_dd_opt -lqd
+_FLOAT64xOPTLIBS=-fopenmp -lmpblas__Float64x
+_FLOAT128OPTLIBS=-fopenmp -lmpblas__Float128_opt%%LIBQUADMATH%%
+DOUBLEOPTLIBS=-fopenmp -lmpblas_double_opt
+
 BLAS=
 LAPACK=
 FLIBS=
 
-programs=%%ROUTINE%%_mpfr.exe %%ROUTINE%%_gmp.exe %%ROUTINE%%_qd.exe %%ROUTINE%%_dd.exe %%ROUTINE%%__Float64x.exe %%ROUTINE%%__Float128.exe %%ROUTINE%%_double.exe
+programs=%%ROUTINE%%_mpfr.exe %%ROUTINE%%_gmp.exe %%ROUTINE%%_qd.exe %%ROUTINE%%_dd.exe %%ROUTINE%%__Float64x.exe %%ROUTINE%%__Float128.exe %%ROUTINE%%_double.exe \
+%%ROUTINE%%_mpfr_opt.exe %%ROUTINE%%_gmp_opt.exe %%ROUTINE%%_qd_opt.exe %%ROUTINE%%_dd_opt.exe %%ROUTINE%%__Float64x_opt.exe %%ROUTINE%%__Float128_opt.exe %%ROUTINE%%_double_opt.exe
 
 all: $(programs)
 
@@ -26,23 +36,44 @@ all: $(programs)
 %%ROUTINE%%_mpfr.exe: %%ROUTINE%%_mpfr.o
 	$(CXX) -o %%ROUTINE%%_mpfr.exe %%ROUTINE%%_mpfr.o $(LIBFLAGS) $(MPFRLIBS)
 
+%%ROUTINE%%_mpfr_opt.exe: %%ROUTINE%%_mpfr.o
+	$(CXX) -o %%ROUTINE%%_mpfr_opt.exe %%ROUTINE%%_mpfr.o $(LIBFLAGS) $(MPFROPTLIBS)
+
 %%ROUTINE%%_gmp.exe: %%ROUTINE%%_gmp.o
 	$(CXX) -o %%ROUTINE%%_gmp.exe %%ROUTINE%%_gmp.o $(LIBFLAGS) $(GMPLIBS)
+
+%%ROUTINE%%_gmp_opt.exe: %%ROUTINE%%_gmp.o
+	$(CXX) -o %%ROUTINE%%_gmp_opt.exe %%ROUTINE%%_gmp_opt.o $(LIBFLAGS) $(GMPOPTLIBS)
 
 %%ROUTINE%%_qd.exe: %%ROUTINE%%_qd.o
 	$(CXX) -o %%ROUTINE%%_qd.exe %%ROUTINE%%_qd.o $(LIBFLAGS) $(QDLIBS)
 
+%%ROUTINE%%_qd_opt.exe: %%ROUTINE%%_qd.o
+	$(CXX) -o %%ROUTINE%%_qd_opt.exe %%ROUTINE%%_qd.o $(LIBFLAGS) $(QDOPTLIBS)
+
 %%ROUTINE%%_dd.exe: %%ROUTINE%%_dd.o
 	$(CXX) -o %%ROUTINE%%_dd.exe %%ROUTINE%%_dd.o $(LIBFLAGS) $(DDLIBS)
 
+%%ROUTINE%%_dd_opt.exe: %%ROUTINE%%_dd.o
+	$(CXX) -o %%ROUTINE%%_dd_opt.exe %%ROUTINE%%_dd.o $(LIBFLAGS) $(DDOPTLIBS)
+
 %%ROUTINE%%__Float64x.exe: %%ROUTINE%%__Float64x.o
-	$(CXX) -o %%ROUTINE%%__Float64x %%ROUTINE%%__Float64x.o $(LIBFLAGS) $(_FLOAT64xLIBS)
+	$(CXX) -o %%ROUTINE%%__Float64x.exe %%ROUTINE%%__Float64x.o $(LIBFLAGS) $(_FLOAT64xLIBS)
+
+%%ROUTINE%%__Float64x_opt.exe: %%ROUTINE%%__Float64x.o
+	$(CXX) -o %%ROUTINE%%__Float64x_opt.exe %%ROUTINE%%__Float64x.o $(LIBFLAGS) $(_FLOAT64xOPTLIBS)
 
 %%ROUTINE%%__Float128.exe: %%ROUTINE%%__Float128.o
-	$(CXX) -o %%ROUTINE%%__Float128 %%ROUTINE%%__Float128.o $(LIBFLAGS) $(_FLOAT128LIBS)
+	$(CXX) -o %%ROUTINE%%__Float128.exe %%ROUTINE%%__Float128.o $(LIBFLAGS) $(_FLOAT128LIBS)
+
+%%ROUTINE%%__Float128_opt.exe: %%ROUTINE%%__Float128.o
+	$(CXX) -o %%ROUTINE%%__Float128_opt.exe %%ROUTINE%%__Float128.o $(LIBFLAGS) $(_FLOAT128OPTLIBS)
 
 %%ROUTINE%%_double.exe: %%ROUTINE%%_double.o
-	$(CXX) -o %%ROUTINE%%_double %%ROUTINE%%_double.o $(LIBFLAGS) $(DOUBLELIBS)
+	$(CXX) -o %%ROUTINE%%_double.exe %%ROUTINE%%_double.o $(LIBFLAGS) $(DOUBLELIBS)
+
+%%ROUTINE%%_double_opt.exe: %%ROUTINE%%_double.o
+	$(CXX) -o %%ROUTINE%%_double_opt.exe %%ROUTINE%%_double.o $(LIBFLAGS) $(DOUBLEOPTLIBS)
 
 clean:
 	rm -rf *.o *~ $(programs) *bak

@@ -360,7 +360,7 @@ if test "$enable_examples" != "no" ; then
         sed -e "s|%%MPLAPACKDIR%%|$prefix|g" -e "s|%%LIBQUADMATH%%| -lquadmath|g" $_file > $__file
     done
 # see FreeBSD ABI: https://www.freebsd.org/cgi/man.cgi?query=arch&sektion=7&format=html
-    _FILES=`ls examples/mpblas/Makefile.linux.in examples/mpblas/Makefile.freebsd.in examples/mplapack/*/Makefile.linux.in examples/mplapack/*/Makefile.freebsd.in` 
+    _FILES=`ls examples/mpblas/Makefile.linux.in examples/mpblas/Makefile.linux_cuda.in examples/mpblas/Makefile.freebsd.in examples/mplapack/*/Makefile.linux.in examples/mplapack/*/Makefile.freebsd.in`
     if test "$want_libquadmath" = "yes" ; then
         for _file in $_FILES; do
             __file=`echo $_file | sed 's/\.in//g'`

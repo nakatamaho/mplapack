@@ -1,0 +1,31 @@
+# public domain
+# whether _FLOAT128 libs is requred or not is heavily dependent on your environment.
+
+CXX=c++
+MPLAPACKDIR=%%MPLAPACKDIR%%
+CXXFLAGS= -I$(MPLAPACKDIR)/include -I$(MPLAPACKDIR)/include/mplapack -I$(MPLAPACKDIR)/include/qd -I/usr/local/cuda/include
+OPTFLAGS= -O2
+LIBFLAGS=-L$(MPLAPACKDIR)/lib -L/usr/local/cuda/lib64 -Wl,--rpath=$(MPLAPACKDIR)/lib
+MPFRLIBS=-lmpblas_mpfr -lmpfr -lmpc -lgmp
+GMPLIBS=-lmpblas_gmp -lgmpxx -lgmp 
+QDLIBS=-lmpblas_qd -lqd
+DDLIBS=-fopenmp -lmpblas_dd_cuda -lcudart -lmpblas_dd_opt -lqd
+_FLOAT64xLIBS=-lmpblas__Float64x
+_FLOAT128LIBS=-lmpblas__Float128%%LIBQUADMATH%%
+DOUBLELIBS=-lmpblas_double
+BLAS=
+LAPACK=
+FLIBS=
+
+programs=Rgemm_dd_cuda
+
+all: $(programs)
+
+.cpp.o:
+	$(CXX) -c $(OPTFLAGS) $(CXXFLAGS) $<
+
+Rgemm_dd_cuda: Rgemm_dd.o
+	$(CXX) -o Rgemm_dd_cuda Rgemm_dd.o $(LIBFLAGS) $(DDLIBS)
+
+clean:
+	rm -rf *.o *~ $(programs) *bak

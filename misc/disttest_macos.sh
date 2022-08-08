@@ -1,5 +1,5 @@
 TOPDIR=/Volumes/Users/maho/tmp/mplapack
-VERSION=2.0.0
+VERSION=2.0.1
 ####################
 cd $TOPDIR
 pushd mplapack/test/compare ; bash gen.Makefile.am.sh ; popd

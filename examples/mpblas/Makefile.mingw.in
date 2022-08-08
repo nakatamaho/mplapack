@@ -3,7 +3,7 @@
 CXX=x86_64-w64-mingw32-g++
 MPLAPACKDIR=%%MPLAPACKDIR%%
 CXXFLAGS= -I$(MPLAPACKDIR)/include -I$(MPLAPACKDIR)/include/mplapack -I$(MPLAPACKDIR)/include/qd
-OPTFLAGS= -O2
+OPTFLAGS= -O2 -fopenmp
 LIBFLAGS=-L$(MPLAPACKDIR)/lib -static-libgcc -static-libstdc++
 MPFRLIBS=-lmpblas_mpfr -lmpfr -lmpc -lgmp
 GMPLIBS=-lmpblas_gmp -lgmpxx -lgmp 
@@ -12,11 +12,21 @@ DDLIBS=-lmpblas_dd -lqd
 _FLOAT64xLIBS=-lmpblas__Float64x
 _FLOAT128LIBS=-lmpblas__Float128%%LIBQUADMATH%%
 DOUBLELIBS=-lmpblas_double
+
+MPFROPTLIBS=-fopenmp -lmpblas_mpfr_opt -lmpfr -lmpc -lgmp
+GMPOPTLIBS=-fopenmp -lmpblas_gmp_opt -lgmpxx -lgmp
+QDOPTLIBS=-fopenmp -lmpblas_qd_opt -lqd
+DDOPTLIBS=-fopenmp -lmpblas_dd_opt -lqd
+_FLOAT64xOPTLIBS=-fopenmp -lmpblas__Float64x
+_FLOAT128OPTLIBS=-fopenmp -lmpblas__Float128_opt%%LIBQUADMATH%%
+DOUBLEOPTLIBS=-fopenmp -lmpblas_double_opt
+
 BLAS=
 LAPACK=
 FLIBS=
 
-programs=Rgemm_mpfr.exe Rgemm_gmp.exe Rgemm_qd.exe Rgemm_dd.exe Rgemm__Float64x.exe Rgemm__Float128.exe Rgemm_double.exe
+programs=Rgemm_mpfr.exe Rgemm_gmp.exe Rgemm_qd.exe Rgemm_dd.exe Rgemm__Float64x.exe Rgemm__Float128.exe Rgemm_double.exe \
+Rgemm_mpfr_opt.exe Rgemm_gmp_opt.exe Rgemm_qd_opt.exe Rgemm_dd_opt.exe Rgemm__Float64x_opt.exe Rgemm__Float128_opt.exe Rgemm_double_opt.exe
 
 all: $(programs)
 
@@ -26,23 +36,44 @@ all: $(programs)
 Rgemm_mpfr.exe: Rgemm_mpfr.o
 	$(CXX) -o Rgemm_mpfr.exe Rgemm_mpfr.o $(LIBFLAGS) $(MPFRLIBS)
 
+Rgemm_mpfr_opt.exe: Rgemm_mpfr.o
+	$(CXX) -o Rgemm_mpfr_opt.exe Rgemm_mpfr.o $(LIBFLAGS) $(MPFROPTLIBS)
+
 Rgemm_gmp.exe: Rgemm_gmp.o
 	$(CXX) -o Rgemm_gmp.exe Rgemm_gmp.o $(LIBFLAGS) $(GMPLIBS)
+
+Rgemm_gmp_opt.exe: Rgemm_gmp.o
+	$(CXX) -o Rgemm_gmp_opt.exe Rgemm_gmp.o $(LIBFLAGS) $(GMPOPTLIBS)
 
 Rgemm_qd.exe: Rgemm_qd.o
 	$(CXX) -o Rgemm_qd.exe Rgemm_qd.o $(LIBFLAGS) $(QDLIBS)
 
+Rgemm_qd_opt.exe: Rgemm_qd.o
+	$(CXX) -o Rgemm_qd_opt.exe Rgemm_qd.o $(LIBFLAGS) $(QDOPTLIBS)
+
 Rgemm_dd.exe: Rgemm_dd.o
 	$(CXX) -o Rgemm_dd.exe Rgemm_dd.o $(LIBFLAGS) $(DDLIBS)
 
+Rgemm_dd_opt.exe: Rgemm_dd.o
+	$(CXX) -o Rgemm_dd_opt.exe Rgemm_dd.o $(LIBFLAGS) $(DDOPTLIBS)
+
 Rgemm__Float64x.exe: Rgemm__Float64x.o
-	$(CXX) -o Rgemm__Float64x Rgemm__Float64x.o $(LIBFLAGS) $(_FLOAT64xLIBS)
+	$(CXX) -o Rgemm__Float64x.exe Rgemm__Float64x.o $(LIBFLAGS) $(_FLOAT64xLIBS)
+
+Rgemm__Float64x_opt.exe: Rgemm__Float64x.o
+	$(CXX) -o Rgemm__Float64x_opt.exe Rgemm__Float64x.o $(LIBFLAGS) $(_FLOAT64xOPTLIBS)
 
 Rgemm__Float128.exe: Rgemm__Float128.o
-	$(CXX) -o Rgemm__Float128 Rgemm__Float128.o $(LIBFLAGS) $(_FLOAT128LIBS)
+	$(CXX) -o Rgemm__Float128.exe Rgemm__Float128.o $(LIBFLAGS) $(_FLOAT128LIBS)
+
+Rgemm__Float128_opt.exe: Rgemm__Float128.o
+	$(CXX) -o Rgemm__Float128_opt.exe Rgemm__Float128.o $(LIBFLAGS) $(_FLOAT128OPTLIBS)
 
 Rgemm_double.exe: Rgemm_double.o
-	$(CXX) -o Rgemm_double Rgemm_double.o $(LIBFLAGS) $(DOUBLELIBS)
+	$(CXX) -o Rgemm_double.exe Rgemm_double.o $(LIBFLAGS) $(DOUBLELIBS)
+
+Rgemm_double_opt.exe: Rgemm_double.o
+	$(CXX) -o Rgemm_double_opt.exe Rgemm_double.o $(LIBFLAGS) $(DOUBLEOPTLIBS)
 
 clean:
 	rm -rf *.o *~ $(programs) *bak

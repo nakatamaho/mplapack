@@ -20,7 +20,7 @@ pushd mplapack/test/compare ; bash gen.Makefile.am.sh ; popd
 aclocal ; autoconf ; automake --add-missing
 autoreconf --force --install
 if [ `uname -m` = "x86_64" ]; then
-./configure --prefix=$HOME/MPLAPACK --enable-gmp=yes --enable-mpfr=yes --enable-_Float128=yes --enable-qd=yes --enable-dd=yes --enable-double=yes --enable-_Float64x=yes --enable-cuda=yes --enable-test=yes
+./configure --prefix=$HOME/MPLAPACK_CUDA --enable-gmp=yes --enable-mpfr=yes --enable-_Float128=yes --enable-qd=yes --enable-dd=yes --enable-double=yes --enable-_Float64x=yes --enable-cuda=yes --enable-test=yes
 else
-./configure --prefix=$HOME/MPLAPACK --enable-gmp=yes --enable-mpfr=yes --enable-_Float128=yes --enable-qd=yes --enable-dd=yes --enable-double=yes --enable-cuda=yes --enable-test=yes
+./configure --prefix=$HOME/MPLAPACK_CUDA --enable-gmp=yes --enable-mpfr=yes --enable-_Float128=yes --enable-qd=yes --enable-dd=yes --enable-double=yes --enable-cuda=yes --enable-test=yes
 fi
