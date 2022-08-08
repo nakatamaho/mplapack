@@ -1,4 +1,13 @@
-FROM ubuntu:20.04
+# * How to build
+#  docker build -f Dockerfile_fable --build-arg SSH_KEY="$(cat ~/.ssh/id_ed25519)" -t mplapack:fable .
+# * How to run
+#  docker run --gpus all --rm -it mplapack:fable /bin/bash
+#
+FROM nvidia/cuda:11.7.0-devel-ubuntu20.04
+
+#git setting
+ARG GIT_EMAIL="maho.nakata@gmail.com"
+ARG GIT_NAME="NAKATA Maho"
 
 LABEL maintainer="maho.nakata@gmail.com"
 
@@ -55,8 +64,6 @@ RUN cd ${WORK} && cd ctags && ./autogen.sh && ./configure --prefix=/usr/local &&
 
 USER docker     
 USER ${DOCKER_USER}
-ARG GIT_EMAIL="maho.nakata@gmail.com"
-ARG GIT_NAME="NAKATA Maho"
 RUN echo "\n\
 [user]\n\
         email = ${GIT_EMAIL}\n\
@@ -124,7 +131,7 @@ RUN echo -e "(require 'package)\n\
 
 RUN cd ${WORK} && echo "cd /home/$DOCKER_USER" >> .bashrc
 RUN cd ${WORK} && echo 'eval "$(ssh-agent -s)"' >> .bashrc
-RUN cd ${WORK} && echo 'ssh-add ~/.ssh/id_ed25519' >> .bashrc
+RUN cd ${WORK} && echo 'ssh-add ~/.ssh/id_rsa' >> .bashrc
 
 ## intel one api and wine settings start ###
 RUN cd ${WORK} && echo "#source /opt/intel/oneapi/setvars.sh" >> .bashrc
@@ -132,9 +139,17 @@ RUN cd ${WORK} && echo "export WINEPATH=\"/usr/x86_64-w64-mingw32/lib/;/usr/lib/
 RUN cd ${WORK} && echo "export WINEDEBUG=\"-all\"" >> .bashrc
 ## intel one api and wine settings end ###
 
+### ssh ###
+# Authorize SSH Host
+RUN mkdir -p /home/$DOCKER_USER/.ssh && \
+    chmod 0700 /home/$DOCKER_USER/.ssh && \
+    ssh-keyscan github.com > /home/$DOCKER_USER/.ssh/known_hosts
+# Add the keys and set permissions
+ARG SSH_KEY
+RUN echo "$SSH_KEY" > /home/$DOCKER_USER/.ssh/id_rsa
+RUN chmod 600 /home/$DOCKER_USER/.ssh/id_rsa
+
 RUN cd ${WORK} && git clone https://github.com/nakatamaho/mplapack.git
-RUN cd ${WORK}/mplapack && git fetch origin v2.0
-RUN cd ${WORK}/mplapack && git checkout v2.0
 RUN cd ${WORK}/mplapack && git remote set-url origin git@github.com:nakatamaho/mplapack.git
 RUN cd ${WORK}/mplapack && git log -1
 RUN cd ${WORK}/mplapack && bash -x misc/reconfig.develop.sh
