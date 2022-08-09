@@ -20,6 +20,7 @@ RUN useradd -u $DOCKER_UID -m $DOCKER_USER --shell /bin/bash -G wheel,root && \
     echo "$DOCKER_USER ALL=(ALL) ALL" >> /etc/sudoers && \
     echo "$DOCKER_USER ALL=NOPASSWD: ALL" >> /etc/sudoers
 
+USER ${DOCKER_USER}
 RUN cd /home/$DOCKER_USER && echo "cd /home/$DOCKER_USER" >> .bashrc
 RUN cd /home/$DOCKER_USER && wget https://github.com/nakatamaho/mplapack/releases/download/v${MPLAPACK_VER}/mplapack-${MPLAPACK_VER}.tar.xz
 RUN cd /home/$DOCKER_USER && tar xvfJ mplapack-${MPLAPACK_VER}.tar.xz
