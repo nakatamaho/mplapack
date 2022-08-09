@@ -1,7 +1,13 @@
-FROM ubuntu:22.04
+# * How to build
+#  docker build -f Dockerfile_ubuntu20.04_cuda -t mplapack:ubuntu2004_cuda .
+# * How to run
+#  docker run --gpus all --rm -it mplapack:ubuntu2004_cuda /bin/bash
+#
+FROM nvidia/cuda:11.7.0-devel-ubuntu20.04
 
 ARG MPLAPACK_VER="2.0.1"
 
+ARG DEBIAN_FRONTEND=noninteractive 
 RUN apt -y update
 RUN apt -y upgrade
 RUN apt install -y sudo 
@@ -19,6 +25,11 @@ RUN apt install -y git wget time parallel
 RUN apt install -y ng-common ng-cjk emacs-nox
 RUN sudo update-alternatives --install /usr/bin/python python /usr/bin/python3 1
 
+## cuda start ##
+RUN apt install -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" keyboard-configuration
+RUN apt install -y cuda-drivers
+## cuda end ##
+
 ARG DOCKER_UID=1000
 ARG DOCKER_USER=docker
 ARG DOCKER_PASSWORD=docker
@@ -28,16 +39,22 @@ USER ${DOCKER_USER}
 RUN cd /home/$DOCKER_USER && echo "cd /home/$DOCKER_USER" >> .bashrc
 RUN cd /home/$DOCKER_USER && wget https://github.com/nakatamaho/mplapack/releases/download/v${MPLAPACK_VER}/mplapack-${MPLAPACK_VER}.tar.xz
 RUN cd /home/$DOCKER_USER && tar xvfJ mplapack-${MPLAPACK_VER}.tar.xz
-RUN cd /home/$DOCKER_USER/mplapack-${MPLAPACK_VER}
+RUN cd /home/$DOCKER_USER/mplapack-2.0.1
 ARG CXX="g++"
 ARG CC="gcc"
 ARG FC="gfortran"
 RUN /bin/bash -c 'set -ex && \
     ARCH=`uname -m` && \
     if [ "$ARCH" == "x86_64" ]; then \
-       cd /home/$DOCKER_USER/mplapack-${MPLAPACK_VER} && ./configure --prefix=$HOME/MPLAPACK --enable-gmp=yes --enable-mpfr=yes --enable-_Float128=yes --enable-qd=yes --enable-dd=yes --enable-double=yes --enable-_Float64x=yes --enable-test=yes; \
+       cd /home/$DOCKER_USER/mplapack-${MPLAPACK_VER} && ./configure --prefix=$HOME/MPLAPACK --enable-gmp=yes --enable-mpfr=yes --enable-_Float128=yes --enable-qd=yes --enable-dd=yes --enable-double=yes --enable-_Float64x=yes --enable-test=yes --enbale-cuda=yes; \
     else \
-       cd /home/$DOCKER_USER/mplapack-${MPLAPACK_VER} && ./configure --prefix=$HOME/MPLAPACK --enable-gmp=yes --enable-mpfr=yes --enable-_Float128=yes --enable-qd=yes --enable-dd=yes --enable-double=yes --enable-test=yes ; \
+       cd /home/$DOCKER_USER/mplapack-${MPLAPACK_VER} && ./configure --prefix=$HOME/MPLAPACK --enable-gmp=yes --enable-mpfr=yes --enable-_Float128=yes --enable-qd=yes --enable-dd=yes --enable-double=yes --enable-test=yes --enbale-cuda=yes; \
     fi'
 RUN cd /home/$DOCKER_USER/mplapack-${MPLAPACK_VER} && make -j`getconf _NPROCESSORS_ONLN`
 RUN cd /home/$DOCKER_USER/mplapack-${MPLAPACK_VER} && make install
+
+
+
+
+
+

@@ -1,4 +1,7 @@
 FROM centos:8
+
+ARG MPLAPACK_VER="2.0.1"
+
 RUN sed -i 's/mirrorlist/#mirrorlist/g' /etc/yum.repos.d/CentOS-*
 RUN sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g' /etc/yum.repos.d/CentOS-*
 RUN yum update -y
@@ -17,27 +20,19 @@ RUN useradd -u $DOCKER_UID -m $DOCKER_USER --shell /bin/bash -G wheel,root && \
     echo "$DOCKER_USER ALL=(ALL) ALL" >> /etc/sudoers && \
     echo "$DOCKER_USER ALL=NOPASSWD: ALL" >> /etc/sudoers
 
-ARG GIT_EMAIL="maho.nakata@gmail.com"
-ARG GIT_NAME="NAKATA Maho"
-
-USER ${DOCKER_USER}
-RUN echo "[user]" >> /home/$DOCKER_USER/.gitconfig && \
-    echo "email = ${GIT_EMAIL}" >> /home/$DOCKER_USER/.gitconfig && \
-    echo "name = ${GIT_NAME}" >> /home/$DOCKER_USER/.gitconfig
-
 RUN cd /home/$DOCKER_USER && echo "cd /home/$DOCKER_USER" >> .bashrc
-RUN cd /home/$DOCKER_USER && wget https://github.com/nakatamaho/mplapack/releases/download/v2.0.0/mplapack-2.0.0.tar.xz
-RUN cd /home/$DOCKER_USER && tar xvfJ mplapack-2.0.0.tar.xz
-RUN cd /home/$DOCKER_USER/mplapack-2.0.0
+RUN cd /home/$DOCKER_USER && wget https://github.com/nakatamaho/mplapack/releases/download/v${MPLAPACK_VER}/mplapack-${MPLAPACK_VER}.tar.xz
+RUN cd /home/$DOCKER_USER && tar xvfJ mplapack-${MPLAPACK_VER}.tar.xz
+RUN cd /home/$DOCKER_USER/mplapack-${MPLAPACK_VER}
 ARG CXX="g++"
 ARG CC="gcc"
 ARG FC="gfortran"
 RUN /bin/bash -c 'set -ex && \
     ARCH=`uname -m` && \
     if [ "$ARCH" == "x86_64" ]; then \
-       cd /home/$DOCKER_USER/mplapack-2.0.0 && ./configure --prefix=$HOME/MPLAPACK --enable-gmp=yes --enable-mpfr=yes --enable-_Float128=yes --enable-qd=yes --enable-dd=yes --enable-double=yes --enable-_Float64x=yes --enable-test=yes; \
+       cd /home/$DOCKER_USER/mplapack-${MPLAPACK_VER} && ./configure --prefix=$HOME/MPLAPACK --enable-gmp=yes --enable-mpfr=yes --enable-_Float128=yes --enable-qd=yes --enable-dd=yes --enable-double=yes --enable-_Float64x=yes --enable-test=yes; \
     else \
-       cd /home/$DOCKER_USER/mplapack-2.0.0 && ./configure --prefix=$HOME/MPLAPACK --enable-gmp=yes --enable-mpfr=yes --enable-_Float128=yes --enable-qd=yes --enable-dd=yes --enable-double=yes --enable-test=yes ; \
+       cd /home/$DOCKER_USER/mplapack-${MPLAPACK_VER} && ./configure --prefix=$HOME/MPLAPACK --enable-gmp=yes --enable-mpfr=yes --enable-_Float128=yes --enable-qd=yes --enable-dd=yes --enable-double=yes --enable-test=yes ; \
     fi'
-RUN cd /home/$DOCKER_USER/mplapack-2.0.0 && make -j`getconf _NPROCESSORS_ONLN`
-RUN cd /home/$DOCKER_USER/mplapack-2.0.0 && make install
+RUN cd /home/$DOCKER_USER/mplapack-${MPLAPACK_VER} && make -j`getconf _NPROCESSORS_ONLN`
+RUN cd /home/$DOCKER_USER/mplapack-${MPLAPACK_VER} && make install

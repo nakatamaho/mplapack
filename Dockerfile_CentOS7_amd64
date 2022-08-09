@@ -1,4 +1,6 @@
 FROM centos:7.9.2009
+ARG MPLAPACK_VER="2.0.1"
+
 RUN yum install -y https://repo.ius.io/ius-release-el7.rpm
 RUN yum install -y centos-release-scl
 RUN yum install -y devtoolset-9
@@ -16,21 +18,13 @@ RUN useradd -u $DOCKER_UID -m $DOCKER_USER --shell /bin/bash -G wheel,root && \
     echo "$DOCKER_USER ALL=(ALL) ALL" >> /etc/sudoers && \
     echo "$DOCKER_USER ALL=NOPASSWD: ALL" >> /etc/sudoers
 
-ARG GIT_EMAIL="maho.nakata@gmail.com"
-ARG GIT_NAME="NAKATA Maho"
-
-USER ${DOCKER_USER}
-RUN echo "[user]" >> /home/$DOCKER_USER/.gitconfig && \
-    echo "email = ${GIT_EMAIL}" >> /home/$DOCKER_USER/.gitconfig && \
-    echo "name = ${GIT_NAME}" >> /home/$DOCKER_USER/.gitconfig
-
 RUN cd /home/$DOCKER_USER && echo "cd /home/$DOCKER_USER" >> .bashrc
-RUN cd /home/$DOCKER_USER && wget https://github.com/nakatamaho/mplapack/releases/download/v2.0.0/mplapack-2.0.0.tar.xz
-RUN cd /home/$DOCKER_USER && tar xvfJ mplapack-2.0.0.tar.xz
-RUN cd /home/$DOCKER_USER/mplapack-2.0.0
+RUN cd /home/$DOCKER_USER && wget https://github.com/nakatamaho/mplapack/releases/download/v${MPLAPACK_VER}/mplapack-${MPLAPACK_VER}.tar.xz
+RUN cd /home/$DOCKER_USER && tar xvfJ mplapack-${MPLAPACK_VER}.tar.xz
+RUN cd /home/$DOCKER_USER/mplapack-${MPLAPACK_VER}
 ARG CXX="/opt/rh/devtoolset-9/root/usr/bin/g++"
 ARG CC="/opt/rh/devtoolset-9/root/usr/bin/gcc"
 ARG FC="/opt/rh/devtoolset-9/root/usr/bin/gfortran"
-RUN cd /home/$DOCKER_USER/mplapack-2.0.0 && ./configure --prefix=$HOME/MPLAPACK --enable-gmp=yes --enable-mpfr=yes --enable-_Float128=yes --e\nable-qd=yes --enable-dd=yes --enable-double=yes --enable-_Float64x=yes --enable-test=yes
-RUN cd /home/$DOCKER_USER/mplapack-2.0.0 && make -j`getconf _NPROCESSORS_ONLN`
-RUN cd /home/$DOCKER_USER/mplapack-2.0.0 && make install
+RUN cd /home/$DOCKER_USER/mplapack-${MPLAPACK_VER} && ./configure --prefix=$HOME/MPLAPACK --enable-gmp=yes --enable-mpfr=yes --enable-_Float128=yes --e\nable-qd=yes --enable-dd=yes --enable-double=yes --enable-_Float64x=yes --enable-test=yes
+RUN cd /home/$DOCKER_USER/mplapack-${MPLAPACK_VER} && make -j`getconf _NPROCESSORS_ONLN`
+RUN cd /home/$DOCKER_USER/mplapack-${MPLAPACK_VER} && make install

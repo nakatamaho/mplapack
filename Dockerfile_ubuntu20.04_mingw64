@@ -1,8 +1,6 @@
 FROM ubuntu:20.04
 
-# change following two lines
-ARG GIT_EMAIL="maho.nakata@gmail.com"
-ARG GIT_NAME="NAKATA Maho"
+ARG MPLAPACK_VER="2.0.1"
 
 RUN apt -y update
 RUN apt -y upgrade
@@ -34,11 +32,6 @@ ARG DOCKER_USER=docker
 ARG DOCKER_PASSWORD=docker
 RUN useradd -u $DOCKER_UID -m $DOCKER_USER --shell /bin/bash && echo "$DOCKER_USER:$DOCKER_PASSWORD" | chpasswd && echo "$DOCKER_USER ALL=(ALL) ALL" >> /etc/sudoers
 USER ${DOCKER_USER}
-RUN echo "\n\
-[user]\n\
-        email = ${GIT_EMAIL}\n\
-        name = ${GIT_NAME}\n\
-" > /home/$DOCKER_USER/.gitconfig
 
 RUN cd /home/$DOCKER_USER && echo "cd /home/$DOCKER_USER" >> .bashrc
 RUN cd /home/$DOCKER_USER && echo "export WINEPATH=\"/usr/x86_64-w64-mingw32/lib/;/usr/lib/gcc/x86_64-w64-mingw32/9.3-win32/;/usr/lib/gcc/x86_64-w64-mingw32/9.3-posix;/home/$DOCKER_USER/MPLAPACK/bin\"" >> .bashrc
@@ -47,16 +40,16 @@ ARG WINEPATH="/usr/x86_64-w64-mingw32/lib/;/usr/lib/gcc/x86_64-w64-mingw32/9.3-w
 ARG WINEDEBUG="-all"
 
 RUN cd /home/$DOCKER_USER && echo "cd /home/$DOCKER_USER" >> .bashrc
-RUN cd /home/$DOCKER_USER && wget https://github.com/nakatamaho/mplapack/releases/download/v2.0.0/mplapack-2.0.0.tar.xz
-RUN cd /home/$DOCKER_USER && tar xvfJ mplapack-2.0.0.tar.xz
-RUN cd /home/$DOCKER_USER/mplapack-2.0.0
+RUN cd /home/$DOCKER_USER && wget https://github.com/nakatamaho/mplapack/releases/download/v${MPLAPACK_VER}/mplapack-${MPLAPACK_VER}.tar.xz
+RUN cd /home/$DOCKER_USER && tar xvfJ mplapack-${MPLAPACK_VER}.tar.xz
+RUN cd /home/$DOCKER_USER/mplapack-${MPLAPACK_VER}
 ARG CXX="x86_64-w64-mingw32-g++"
 ARG CC="x86_64-w64-mingw32-gcc"
 ARG FC="x86_64-w64-mingw32-gfortran"
 ARG NM="x86_64-w64-mingw32-nm"
 ARG RANLIB="x86_64-w64-mingw32-ranlib"
 ARG AR="x86_64-w64-mingw32-ar"
-RUN cd /home/$DOCKER_USER/mplapack-2.0.0 && ./configure --prefix=$HOME/MPLAPACK --host=x86_64-w64-mingw32 --target=x86_64-w64-mingw32 --enable-gmp=yes --enable-mpfr=yes --enable-_Float128=yes --enable-qd=yes --enable-dd=yes --enable-double=yes --enable-_Float64x=yes --enable-test=yes
-RUN cd /home/$DOCKER_USER/mplapack-2.0.0 && make -j`getconf _NPROCESSORS_ONLN`
-RUN cd /home/$DOCKER_USER/mplapack-2.0.0 && make install
+RUN cd /home/$DOCKER_USER/mplapack-${MPLAPACK_VER} && ./configure --prefix=$HOME/MPLAPACK --host=x86_64-w64-mingw32 --target=x86_64-w64-mingw32 --enable-gmp=yes --enable-mpfr=yes --enable-_Float128=yes --enable-qd=yes --enable-dd=yes --enable-double=yes --enable-_Float64x=yes --enable-test=yes
+RUN cd /home/$DOCKER_USER/mplapack-${MPLAPACK_VER} && make -j`getconf _NPROCESSORS_ONLN`
+RUN cd /home/$DOCKER_USER/mplapack-${MPLAPACK_VER} && make install
 

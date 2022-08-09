@@ -1,8 +1,6 @@
 FROM debian:bullseye
 
-# change following two lines
-ARG GIT_EMAIL="maho.nakata@gmail.com"
-ARG GIT_NAME="NAKATA Maho"
+ARG MPLAPACK_VER="2.0.1"
 
 RUN apt update
 RUN apt -y upgrade
@@ -26,25 +24,20 @@ ARG DOCKER_USER=docker
 ARG DOCKER_PASSWORD=docker
 RUN useradd -u $DOCKER_UID -m $DOCKER_USER --shell /bin/bash && echo "$DOCKER_USER:$DOCKER_PASSWORD" | chpasswd && echo "$DOCKER_USER ALL=(ALL) ALL" >> /etc/sudoers
 USER ${DOCKER_USER}
-RUN echo "\n\
-[user]\n\
-        email = ${GIT_EMAIL}\n\
-        name = ${GIT_NAME}\n\
-" > /home/$DOCKER_USER/.gitconfig
 
 RUN cd /home/$DOCKER_USER && echo "cd /home/$DOCKER_USER" >> .bashrc
-RUN cd /home/$DOCKER_USER && wget https://github.com/nakatamaho/mplapack/releases/download/v2.0.0/mplapack-2.0.0.tar.xz
-RUN cd /home/$DOCKER_USER && tar xvfJ mplapack-2.0.0.tar.xz
-RUN cd /home/$DOCKER_USER/mplapack-2.0.0
+RUN cd /home/$DOCKER_USER && wget https://github.com/nakatamaho/mplapack/releases/download/v${MPLAPACK_VER}/mplapack-${MPLAPACK_VER}.tar.xz
+RUN cd /home/$DOCKER_USER && tar xvfJ mplapack-${MPLAPACK_VER}.tar.xz
+RUN cd /home/$DOCKER_USER/mplapack-${MPLAPACK_VER}
 ARG CXX="g++"
 ARG CC="gcc"
 ARG FC="gfortran"
 RUN /bin/bash -c 'set -ex && \
     ARCH=`uname -m` && \
     if [ "$ARCH" == "x86_64" ]; then \
-       cd /home/$DOCKER_USER/mplapack-2.0.0 && ./configure --prefix=$HOME/MPLAPACK --enable-gmp=yes --enable-mpfr=yes --enable-_Float128=yes --enable-qd=yes --enable-dd=yes --enable-double=yes --enable-_Float64x=yes --enable-test=yes; \
+       cd /home/$DOCKER_USER/mplapack-${MPLAPACK_VER} && ./configure --prefix=$HOME/MPLAPACK --enable-gmp=yes --enable-mpfr=yes --enable-_Float128=yes --enable-qd=yes --enable-dd=yes --enable-double=yes --enable-_Float64x=yes --enable-test=yes; \
     else \
-       cd /home/$DOCKER_USER/mplapack-2.0.0 && ./configure --prefix=$HOME/MPLAPACK --enable-gmp=yes --enable-mpfr=yes --enable-_Float128=yes --enable-qd=yes --enable-dd=yes --enable-double=yes --enable-test=yes ; \
+       cd /home/$DOCKER_USER/mplapack-${MPLAPACK_VER} && ./configure --prefix=$HOME/MPLAPACK --enable-gmp=yes --enable-mpfr=yes --enable-_Float128=yes --enable-qd=yes --enable-dd=yes --enable-double=yes --enable-test=yes ; \
     fi'
-RUN cd /home/$DOCKER_USER/mplapack-2.0.0 && make -j`getconf _NPROCESSORS_ONLN`
-RUN cd /home/$DOCKER_USER/mplapack-2.0.0 && make install
+RUN cd /home/$DOCKER_USER/mplapack-${MPLAPACK_VER} && make -j`getconf _NPROCESSORS_ONLN`
+RUN cd /home/$DOCKER_USER/mplapack-${MPLAPACK_VER} && make install

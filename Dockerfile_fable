@@ -11,7 +11,7 @@ ARG GIT_NAME="NAKATA Maho"
 
 LABEL maintainer="maho.nakata@gmail.com"
 
-ARG DEBIAN_FRONTEND=noninteractive 
+ARG DEBIAN_FRONTEND=noninteractive
 RUN apt -y update
 RUN apt -y upgrade
 RUN apt install -y sudo 
@@ -51,6 +51,11 @@ RUN mv winehq-focal.sources /etc/apt/sources.list.d/
 RUN apt update -y
 RUN apt install -y --install-recommends winehq-stable
 ### mingw end ###
+
+## cuda start ##
+RUN apt install -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" keyboard-configuration
+RUN apt install -y cuda-drivers
+## cuda end ##
 
 ARG DOCKER_UID=1000
 ARG DOCKER_USER=docker
