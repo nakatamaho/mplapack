@@ -20,7 +20,7 @@ RUN echo "${TZ}" > /etc/timezone \
   && dpkg-reconfigure -f noninteractive tzdata
 
 RUN apt install -y build-essential gfortran python3
-RUN apt install -y autotools-dev automake libtool
+RUN apt install -y autotools-dev automake libtool libtool-bin
 RUN apt install -y git wget time parallel
 RUN apt install -y ng-common ng-cjk emacs-nox
 RUN sudo update-alternatives --install /usr/bin/python python /usr/bin/python3 1
@@ -52,9 +52,3 @@ RUN /bin/bash -c 'set -ex && \
     fi'
 RUN cd /home/$DOCKER_USER/mplapack-${MPLAPACK_VER} && make -j`getconf _NPROCESSORS_ONLN`
 RUN cd /home/$DOCKER_USER/mplapack-${MPLAPACK_VER} && make install
-
-
-
-
-
-
