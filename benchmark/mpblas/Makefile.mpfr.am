@@ -3,7 +3,8 @@ Raxpy.mpfr Raxpy.mpfr_opt \
 Rcopy.mpfr Rcopy.mpfr_opt \
 Rdot.mpfr  Rdot.mpfr_opt \
 Rgemm.mpfr Rgemm.mpfr_opt \
-Rgemv.mpfr Rgemv.mpfr_opt
+Rgemv.mpfr Rgemv.mpfr_opt \
+Rsyrk.mpfr Rsyrk.mpfr_opt
 
 mpfrcxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/mpfrc++ -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_MPFR___
 mpfrlapack_libdepends = -L$(top_builddir)/mplapack/reference -lmplapack_mpfr
@@ -41,6 +42,14 @@ Rgemm_mpfr_opt_LDFLAGS= $(mpfropt_libdepends)
 Rgemm_mpfr_SOURCES= Rgemm.cpp
 Rgemm_mpfr_CXXFLAGS= $(mpfrcxxflags)
 Rgemm_mpfr_LDFLAGS= $(mpfr_libdepends)
+
+Rsyrk_mpfr_opt_SOURCES= Rsyrk.cpp
+Rsyrk_mpfr_opt_CXXFLAGS= $(mpfrcxxflags)
+Rsyrk_mpfr_opt_LDFLAGS= $(mpfropt_libdepends)
+
+Rsyrk_mpfr_SOURCES= Rsyrk.cpp
+Rsyrk_mpfr_CXXFLAGS= $(mpfrcxxflags)
+Rsyrk_mpfr_LDFLAGS= $(mpfr_libdepends)
 
 Rgemv_mpfr_opt_SOURCES= Rgemv.cpp
 Rgemv_mpfr_opt_CXXFLAGS= $(mpfrcxxflags)

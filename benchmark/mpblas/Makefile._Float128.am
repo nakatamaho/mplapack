@@ -3,6 +3,7 @@ Raxpy._Float128 Raxpy._Float128_opt \
 Rcopy._Float128 Rcopy._Float128_opt \
 Rdot._Float128  Rdot._Float128_opt \
 Rgemm._Float128 Rgemm._Float128_opt \
+Rsyrk._Float128 Rsyrk._Float128_opt \
 Rgemv._Float128 Rgemv._Float128_opt
 
 #lapack is needed for Rlange
@@ -47,6 +48,14 @@ Rgemm__Float128_opt_LDFLAGS= $(_Float128opt_libdepends)
 Rgemm__Float128_SOURCES= Rgemm.cpp
 Rgemm__Float128_CXXFLAGS= $(_Float128cxxflags)
 Rgemm__Float128_LDFLAGS= $(_Float128_libdepends)
+
+Rsyrk__Float128_opt_SOURCES= Rsyrk.cpp
+Rsyrk__Float128_opt_CXXFLAGS= $(_Float128cxxflags)
+Rsyrk__Float128_opt_LDFLAGS= $(_Float128opt_libdepends)
+
+Rsyrk__Float128_SOURCES= Rsyrk.cpp
+Rsyrk__Float128_CXXFLAGS= $(_Float128cxxflags)
+Rsyrk__Float128_LDFLAGS= $(_Float128_libdepends)
 
 Rgemv__Float128_opt_SOURCES= Rgemv.cpp
 Rgemv__Float128_opt_CXXFLAGS= $(_Float128cxxflags)

@@ -3,6 +3,7 @@ Raxpy.dd Raxpy.dd_opt \
 Rcopy.dd Rcopy.dd_opt \
 Rdot.dd  Rdot.dd_opt \
 Rgemm.dd Rgemm.dd_opt \
+Rsyrk.dd Rsyrk.dd_opt \
 Rgemv.dd Rgemv.dd_opt
 
 if ENABLE_CUDA
@@ -46,6 +47,14 @@ Rgemm_dd_LDFLAGS= $(dd_libdepends)
 Rgemm_dd_opt_SOURCES= Rgemm.cpp
 Rgemm_dd_opt_CXXFLAGS= $(ddcxxflags)
 Rgemm_dd_opt_LDFLAGS= $(ddopt_libdepends)
+
+Rsyrk_dd_SOURCES= Rsyrk.cpp
+Rsyrk_dd_CXXFLAGS= $(ddcxxflags)
+Rsyrk_dd_LDFLAGS= $(dd_libdepends)
+
+Rsyrk_dd_opt_SOURCES= Rsyrk.cpp
+Rsyrk_dd_opt_CXXFLAGS= $(ddcxxflags)
+Rsyrk_dd_opt_LDFLAGS= $(ddopt_libdepends)
 
 Rgemv_dd_SOURCES= Rgemv.cpp
 Rgemv_dd_CXXFLAGS= $(ddcxxflags)

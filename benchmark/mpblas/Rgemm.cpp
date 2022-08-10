@@ -185,7 +185,7 @@ int main(int argc, char *argv[]) {
             elapsedtime = elapsedtime / (double)LOOP;
             printf("    m     n     k     MFLOPS    transa   transb\n");
             // 2mnk+2mn flops are needed
-            printf("%5d %5d %5d %10.3f         %c        %c\n", (int)m, (int)n, (int)k, flops_gemm(k, m, n) / elapsedtime * MFLOPS, diffr, transa, transb);
+            printf("%5d %5d %5d %10.3f         %c        %c\n", (int)m, (int)n, (int)k, flops_gemm(k, m, n) / elapsedtime * MFLOPS, transa, transb);
         }
         delete[] Cd;
         delete[] C;

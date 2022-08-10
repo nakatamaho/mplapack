@@ -3,6 +3,7 @@ Raxpy.qd Raxpy.qd_opt \
 Rcopy.qd Rcopy.qd_opt \
 Rdot.qd  Rdot.qd_opt \
 Rgemm.qd Rgemm.qd_opt \
+Rsyrk.qd Rsyrk.qd_opt \
 Rgemv.qd Rgemv.qd_opt
 
 #lapack is needed for Rlange
@@ -42,6 +43,14 @@ Rgemm_qd_opt_LDFLAGS= $(qdopt_libdepends)
 Rgemm_qd_SOURCES= Rgemm.cpp
 Rgemm_qd_CXXFLAGS= $(qdcxxflags)
 Rgemm_qd_LDFLAGS= $(qd_libdepends)
+
+Rsyrk_qd_opt_SOURCES= Rsyrk.cpp
+Rsyrk_qd_opt_CXXFLAGS= $(qdcxxflags)
+Rsyrk_qd_opt_LDFLAGS= $(qdopt_libdepends)
+
+Rsyrk_qd_SOURCES= Rsyrk.cpp
+Rsyrk_qd_CXXFLAGS= $(qdcxxflags)
+Rsyrk_qd_LDFLAGS= $(qd_libdepends)
 
 Rgemv_qd_opt_SOURCES= Rgemv.cpp
 Rgemv_qd_opt_CXXFLAGS= $(qdcxxflags)

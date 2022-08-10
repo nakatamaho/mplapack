@@ -3,6 +3,7 @@ Raxpy._Float64x Raxpy._Float64x_opt \
 Rcopy._Float64x Rcopy._Float64x_opt \
 Rdot._Float64x  Rdot._Float64x_opt \
 Rgemm._Float64x Rgemm._Float64x_opt \
+Rsyrk._Float64x Rsyrk._Float64x_opt \
 Rgemv._Float64x Rgemv._Float64x_opt
 
 #lapack is needed for Rlange
@@ -47,6 +48,14 @@ Rgemm__Float64x_opt_LDFLAGS= $(_Float64xopt_libdepends)
 Rgemm__Float64x_SOURCES= Rgemm.cpp
 Rgemm__Float64x_CXXFLAGS= $(_Float64xcxxflags)
 Rgemm__Float64x_LDFLAGS= $(_Float64x_libdepends)
+
+Rsyrk__Float64x_opt_SOURCES= Rsyrk.cpp
+Rsyrk__Float64x_opt_CXXFLAGS= $(_Float64xcxxflags)
+Rsyrk__Float64x_opt_LDFLAGS= $(_Float64xopt_libdepends)
+
+Rsyrk__Float64x_SOURCES= Rsyrk.cpp
+Rsyrk__Float64x_CXXFLAGS= $(_Float64xcxxflags)
+Rsyrk__Float64x_LDFLAGS= $(_Float64x_libdepends)
 
 Rgemv__Float64x_opt_SOURCES= Rgemv.cpp
 Rgemv__Float64x_opt_CXXFLAGS= $(_Float64xcxxflags)

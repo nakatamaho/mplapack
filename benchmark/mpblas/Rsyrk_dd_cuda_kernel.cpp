@@ -218,9 +218,9 @@ int main(int argc, char *argv[]) {
             cudaFree(Cdev);
 
             elapsedtime = (t2 - t1);
-            printf("    n     k      MFLOPS       error    uplo    trans\n");
+            printf("    n     k      MFLOPS       uplo    trans\n");
             // 2n^2k+2n^2 flops are needed
-            printf("%5d %5d %10.3f     %5.2e        %c\n", (int)n, (int)k, (2.0 * (double)n * (double)n * (double)k + 2.0 * (double)n * (double)n) / elapsedtime * MFLOPS, uplo, trans);
+            printf("%5d %5d %10.3f      %c    %c\n", (int)n, (int)k, (2.0 * (double)n * (double)n * (double)k + 2.0 * (double)n * (double)n) / elapsedtime * MFLOPS, uplo, trans);
         }
         delete[] Cd;
         delete[] C;

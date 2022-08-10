@@ -1,4 +1,9 @@
 bench_PROGRAMS =
+bench_DATA = Raxpy1.plt Raxpy2.plt \
+Rgemm1.plt Rgemm2.plt Rgemm_cuda.plt \
+Rsyrk1.plt Rsyrk2.plt Rsyrk_cuda.plt \
+go.Raxpy.sh go.Rgemm.sh go.Rgemm_cuda.sh go.Rsyrk.sh go.Rsyrk_cuda.sh
+
 benchdir=$(prefix)/lib/$(target)/mplapack/benchmark
 
 if !IS_MINGW

@@ -3,6 +3,7 @@ Raxpy.double Raxpy.double_opt \
 Rcopy.double Rcopy.double_opt \
 Rdot.double  Rdot.double_opt \
 Rgemm.double Rgemm.double_opt \
+Rsyrk.double Rsyrk.double_opt \
 Rgemv.double Rgemv.double_opt
 
 #lapack is needed for Rlange
@@ -42,6 +43,14 @@ Rgemm_double_opt_LDFLAGS= $(doubleopt_libdepends)
 Rgemm_double_SOURCES= Rgemm.cpp
 Rgemm_double_CXXFLAGS= $(doublecxxflags)
 Rgemm_double_LDFLAGS= $(double_libdepends)
+
+Rsyrk_double_opt_SOURCES= Rsyrk.cpp
+Rsyrk_double_opt_CXXFLAGS= $(doublecxxflags)
+Rsyrk_double_opt_LDFLAGS= $(doubleopt_libdepends)
+
+Rsyrk_double_SOURCES= Rsyrk.cpp
+Rsyrk_double_CXXFLAGS= $(doublecxxflags)
+Rsyrk_double_LDFLAGS= $(double_libdepends)
 
 Rgemv_double_opt_SOURCES= Rgemv.cpp
 Rgemv_double_opt_CXXFLAGS= $(doublecxxflags)

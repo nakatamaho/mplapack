@@ -41,7 +41,6 @@ int main(int argc, char *argv[]) {
     mplapackint n;
     mplapackint incx = 1, incy = 1, STEP, N0;
     REAL dummy, ans, ans_ref;
-    REAL mOne = -1;
     double elapsedtime, t1, t2;
     int i, p;
     int check_flag = 1;

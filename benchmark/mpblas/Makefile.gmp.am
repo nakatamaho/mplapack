@@ -3,6 +3,7 @@ Raxpy.gmp Raxpy.gmp_opt \
 Rcopy.gmp Rcopy.gmp_opt \
 Rdot.gmp  Rdot.gmp_opt \
 Rgemm.gmp Rgemm.gmp_opt \
+Rsyrk.gmp Rsyrk.gmp_opt \
 Rgemv.gmp Rgemv.gmp_opt
 
 #lapack is needed for Rlange
@@ -42,6 +43,14 @@ Rgemm_gmp_opt_LDFLAGS= $(gmpopt_libdepends)
 Rgemm_gmp_SOURCES= Rgemm.cpp
 Rgemm_gmp_CXXFLAGS= $(gmpcxxflags)
 Rgemm_gmp_LDFLAGS= $(gmp_libdepends)
+
+Rsyrk_gmp_opt_SOURCES= Rsyrk.cpp
+Rsyrk_gmp_opt_CXXFLAGS= $(gmpcxxflags)
+Rsyrk_gmp_opt_LDFLAGS= $(gmpopt_libdepends)
+
+Rsyrk_gmp_SOURCES= Rsyrk.cpp
+Rsyrk_gmp_CXXFLAGS= $(gmpcxxflags)
+Rsyrk_gmp_LDFLAGS= $(gmp_libdepends)
 
 Rgemv_gmp_opt_SOURCES= Rgemv.cpp
 Rgemv_gmp_opt_CXXFLAGS= $(gmpcxxflags)

@@ -81,6 +81,30 @@ pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = mplapack.pc
 
 EXTRA_DIST = \
+benchmark/benchall.sh \
+benchmark/mpblas/Raxpy1.plt \
+benchmark/mpblas/Raxpy2.plt \
+benchmark/mpblas/Rgemm1.plt \
+benchmark/mpblas/Rgemm2.plt \
+benchmark/mpblas/Rgemm_cuda.plt \
+benchmark/mpblas/Rsyrk1.plt \
+benchmark/mpblas/Rsyrk2.plt \
+benchmark/mpblas/Rsyrk_cuda.plt \
+benchmark/mpblas/go.Raxpy.sh \
+benchmark/mpblas/go.Rgemm.sh \
+benchmark/mpblas/go.Rgemm_cuda.sh \
+benchmark/mpblas/go.Rsyrk.sh \
+benchmark/mpblas/go.Rsyrk_cuda.sh \
+benchmark/mplapack/Rgetrf1.plt \
+benchmark/mplapack/Rgetrf2.plt \
+benchmark/mplapack/Rpotrf1.plt \
+benchmark/mplapack/Rpotrf2.plt \
+benchmark/mplapack/Rgetrf_cuda.plt \
+benchmark/mplapack/Rpotrf_cuda.plt \
+benchmark/mplapack/go.Rgetrf.sh \
+benchmark/mplapack/go.Rgetrf_cuda.sh \
+benchmark/mplapack/go.Rpotrf.sh \
+benchmark/mplapack/go.Rpotrf_cuda.sh \
 misc/cudalt.py \
 misc/build_mplapack_for_mic.sh \
 misc/prepare_mplapacklibs_for_mic.sh \

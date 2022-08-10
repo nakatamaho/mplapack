@@ -3,6 +3,7 @@ daxpy_ref \
 dcopy_ref \
 ddot_ref  \
 dgemm_ref \
+dsyrk_ref \
 dgemv_ref
 
 if HAVE_EXTERNAL_BLAS
@@ -11,6 +12,7 @@ daxpy \
 dcopy \
 ddot  \
 dgemm \
+dsyrk \
 dgemv
 endif
 
@@ -59,6 +61,16 @@ if HAVE_EXTERNAL_BLAS
 dgemm_SOURCES= dgemm.cpp
 dgemm_CXXFLAGS= $(cxxflags)
 dgemm_LDFLAGS= $(opt_libdepends)
+endif
+
+dsyrk_ref_SOURCES= dsyrk.cpp
+dsyrk_ref_CXXFLAGS= $(cxxflags)
+dsyrk_ref_LDFLAGS= $(ref_libdepends)
+
+if HAVE_EXTERNAL_BLAS
+dsyrk_SOURCES= dsyrk.cpp
+dsyrk_CXXFLAGS= $(cxxflags)
+dsyrk_LDFLAGS= $(opt_libdepends)
 endif
 
 dgemv_ref_SOURCES= dgemv.cpp
