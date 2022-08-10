@@ -159,3 +159,4 @@ RUN cd ${WORK}/mplapack && git remote set-url origin git@github.com:nakatamaho/m
 RUN cd ${WORK}/mplapack && git log -1
 RUN cd ${WORK}/mplapack && bash -x misc/reconfig.develop.sh
 RUN cd ${WORK}/mplapack && make -j`getconf _NPROCESSORS_ONLN`
+RUN cd ${WORK}/mplapack && make install
