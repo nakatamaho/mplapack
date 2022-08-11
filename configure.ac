@@ -153,11 +153,12 @@ AS_HELP_STRING([--with-cudatoolkithome], [Specify path to CUDA Toolkit (default:
 )
 
 ARCH=`uname -m`
-if test $ARCH = "x86_64"; then
-  SUFFIX="64"
-else
-  SUFFIX=""
-fi
+SUFFIX="64"
+#if test $ARCH = "x86_64"; then
+#  SUFFIX="64"
+#else
+#  SUFFIX=""
+#fi
 
 CUDA_CFLAGS="-I$CUDATOOLKITHOME/include"
 CUDA_LIBS="-L$CUDATOOLKITHOME/lib$SUFFIX"
