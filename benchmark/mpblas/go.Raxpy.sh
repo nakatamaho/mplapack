@@ -1,11 +1,17 @@
 #!/bin/bash
 
+if [ `uname` = "Darwin" ]; then
+    LDPATHPREFIX="DYLD_LIBRARY_PATH=%%PREFIX%%/lib"
+else
+    LDPATHPREFIX="LD_LIBRARY_PATH=%%PREFIX%%/lib:$LD_LIBRARY_PATH"
+fi
+
 ####
 MPLIBS="_Float128 _Float64x dd double"
 
 for _mplib in $MPLIBS; do
-./Raxpy.${_mplib}_opt -NOCHECK -TOTALSTEPS 100 -STEP 3000 -LOOP 10  >& log.Raxpy.${_mplib}_opt
-./Raxpy.${_mplib} -NOCHECK -TOTALSTEPS 100 -STEP 3000 -LOOP 3      >& log.Raxpy.${_mplib}
+env $LDPATHPREFIX ./Raxpy.${_mplib}_opt -NOCHECK -TOTALSTEPS 100 -STEP 3000 -LOOP 10  >& log.Raxpy.${_mplib}_opt
+env $LDPATHPREFIX ./Raxpy.${_mplib} -NOCHECK -TOTALSTEPS 100 -STEP 3000 -LOOP 3      >& log.Raxpy.${_mplib}
 done
 ####
 
@@ -13,8 +19,8 @@ done
 MPLIBS="mpfr gmp qd"
 
 for _mplib in $MPLIBS; do
-./Raxpy.${_mplib}_opt -NOCHECK -TOTALSTEPS 100 -STEP 3000 -LOOP 10  >& log.Raxpy.${_mplib}_opt
-./Raxpy.${_mplib} -NOCHECK -TOTALSTEPS 100 -STEP 3000 -LOOP 3       >& log.Raxpy.${_mplib}
+env $LDPATHPREFIX ./Raxpy.${_mplib}_opt -NOCHECK -TOTALSTEPS 100 -STEP 3000 -LOOP 10  >& log.Raxpy.${_mplib}_opt
+env $LDPATHPREFIX ./Raxpy.${_mplib} -NOCHECK -TOTALSTEPS 100 -STEP 3000 -LOOP 3       >& log.Raxpy.${_mplib}
 done
 ####
 

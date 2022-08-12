@@ -44,6 +44,7 @@ include Makefile.lapack.am
 endif
 
 install-data-hook:
+	bash $(top_builddir)/misc/add_ldlibpath.sh $(prefix) $(benchdir)/go.*.sh
 if IS_MACOS
 	bash $(top_builddir)/misc/fix_dylib_macOS.sh $(benchdir) $(prefix)
 endif
