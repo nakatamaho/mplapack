@@ -2,10 +2,11 @@ set xlabel font "Helvetica,20"
 set ylabel font "Helvetica,20"
 set key font "Helvetica,20"
 set title font "Helvetica,24"
-set title "Rgemm Intel(R) Xeon(R) CPU E5-2623 v3 @ 3.00GHz "
+set title "Rgemm %%MODELNAME%%"
 set xlabel "Dimension"
 set ylabel "MFLOPS"
-set terminal postscript eps color enhanced
+#set terminal postscript eps color enhanced
+set terminal pdf
 
 plot \
 "log.Rgemm.mpfr"            using 1:4 title 'MPFR 512bit'            with lines linewidth 6, \

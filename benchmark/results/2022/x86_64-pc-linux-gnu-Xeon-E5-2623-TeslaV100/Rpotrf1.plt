@@ -5,7 +5,8 @@ set title font "Helvetica,24"
 set title "Rpotrf performance %%MODELNAME%%"
 set xlabel "Dimension"
 set ylabel "MFLOPS"
-set terminal postscript eps color enhanced
+#set terminal postscript eps color enhanced
+set terminal pdf
 
 plot \
 "log.Rgemm._Float128"       using 1:4 title '\_Float128'             with lines linewidth 6, \

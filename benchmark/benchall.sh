@@ -7,5 +7,5 @@ done
 FILES=`ls *.plt`
 
 for _file in $FILES; do
-    gnuplot $_file > ${_file%.*}.eps
+    gnuplot $_file > ${_file%.*}.pdf
 done

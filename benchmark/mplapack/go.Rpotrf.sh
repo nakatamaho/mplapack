@@ -35,8 +35,8 @@ else
     MODELNAME="unknown"
 fi
 
-$SED -i -e "s/%%MODELNAME%%/$MODELNAME/g" Rpotrf1.eps
-$SED -i -e "s/%%MODELNAME%%/$MODELNAME/g" Rpotrf2.eps
+$SED -i -e "s/%%MODELNAME%%/$MODELNAME/g" Rpotrf1.plt
+$SED -i -e "s/%%MODELNAME%%/$MODELNAME/g" Rpotrf2.plt
 ####
 
 gnuplot Rpotrf1.plt > Rpotrf1.pdf

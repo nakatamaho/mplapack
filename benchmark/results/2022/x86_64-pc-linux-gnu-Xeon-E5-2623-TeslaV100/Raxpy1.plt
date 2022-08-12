@@ -2,10 +2,10 @@ set xlabel font "Helvetica,20"
 set ylabel font "Helvetica,20"
 set key font "Helvetica,20"
 set title font "Helvetica,24"
-set title "Raxpy Intel(R) Xeon(R) CPU E5-2623 v3 @ 3.00GHz "
+set title "Raxpy %%MODELNAME%%"
 set xlabel "Dimension"
 set ylabel "MFLOPS"
-set terminal postscript eps color enhanced
+set terminal pdf
 
 plot \
 "log.Raxpy._Float128"       using 1:2 title '\_Float128'             with lines linewidth 6, \

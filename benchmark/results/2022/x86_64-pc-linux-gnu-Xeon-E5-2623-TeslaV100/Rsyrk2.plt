@@ -5,7 +5,8 @@ set title font "Helvetica,24"
 set title "Rsyrk %%MODELNAME%%"
 set xlabel "Dimension"
 set ylabel "MFLOPS"
-set terminal postscript eps color enhanced
+#set terminal postscript eps color enhanced
+set terminal pdf
 
 plot \
 "log.Rsyrk.mpfr"            using 1:3 title 'MPFR 512bit'            with lines linewidth 6, \
