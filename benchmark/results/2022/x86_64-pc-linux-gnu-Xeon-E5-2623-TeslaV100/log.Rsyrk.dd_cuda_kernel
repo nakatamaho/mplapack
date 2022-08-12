@@ -3,519 +3,933 @@ device name -> Tesla V100-PCIE-32GB
 cudareturn -> 0
 cudaGetDevice()=0
     n     k      MFLOPS       uplo    trans
-    1     1      0.087      u    n
+    1     1      0.083      u    n
     n     k      MFLOPS       uplo    trans
-    6     6     27.815      u    n
+    8     8     57.522      u    n
     n     k      MFLOPS       uplo    trans
-   11    11    154.180      u    n
+   15    15    328.250      u    n
     n     k      MFLOPS       uplo    trans
-   16    16    414.855      u    n
+   22    22    889.352      u    n
     n     k      MFLOPS       uplo    trans
-   21    21    805.805      u    n
+   29    29   1734.792      u    n
     n     k      MFLOPS       uplo    trans
-   26    26   1472.201      u    n
+   36    36   3094.235      u    n
     n     k      MFLOPS       uplo    trans
-   31    31   2282.889      u    n
+   43    43   4806.082      u    n
     n     k      MFLOPS       uplo    trans
-   36    36   3192.465      u    n
+   50    50   6521.631      u    n
     n     k      MFLOPS       uplo    trans
-   41    41   4555.788      u    n
+   57    57   9190.500      u    n
     n     k      MFLOPS       uplo    trans
-   46    46   5834.013      u    n
+   64    64  12407.683      u    n
     n     k      MFLOPS       uplo    trans
-   51    51   7319.845      u    n
+   71    71  14852.010      u    n
     n     k      MFLOPS       uplo    trans
-   56    56   9199.267      u    n
+   78    78  18840.500      u    n
     n     k      MFLOPS       uplo    trans
-   61    61  11519.456      u    n
+   85    85  19376.437      u    n
     n     k      MFLOPS       uplo    trans
-   66    66  12953.609      u    n
+   92    92  23837.941      u    n
     n     k      MFLOPS       uplo    trans
-   71    71  15775.451      u    n
+   99    99  27589.512      u    n
     n     k      MFLOPS       uplo    trans
-   76    76  18110.923      u    n
+  106   106  32958.238      u    n
     n     k      MFLOPS       uplo    trans
-   81    81  20702.238      u    n
+  113   113  37804.989      u    n
     n     k      MFLOPS       uplo    trans
-   86    86  20445.707      u    n
+  120   120  43630.778      u    n
     n     k      MFLOPS       uplo    trans
-   91    91  26299.909      u    n
+  127   127  44866.274      u    n
     n     k      MFLOPS       uplo    trans
-   96    96  27072.249      u    n
+  134   134  51091.681      u    n
     n     k      MFLOPS       uplo    trans
-  101   101  29688.311      u    n
+  141   141  56927.635      u    n
     n     k      MFLOPS       uplo    trans
-  106   106  33394.771      u    n
+  148   148  63966.978      u    n
     n     k      MFLOPS       uplo    trans
-  111   111  37341.537      u    n
+  155   155  65636.042      u    n
     n     k      MFLOPS       uplo    trans
-  116   116  40887.374      u    n
+  162   162  73084.628      u    n
     n     k      MFLOPS       uplo    trans
-  121   121  41051.365      u    n
+  169   169  80176.763      u    n
     n     k      MFLOPS       uplo    trans
-  126   126  44744.835      u    n
+  176   176  83623.013      u    n
     n     k      MFLOPS       uplo    trans
-  131   131  48229.216      u    n
+  183   183  91164.729      u    n
     n     k      MFLOPS       uplo    trans
-  136   136  53950.076      u    n
+  190   190  94510.279      u    n
     n     k      MFLOPS       uplo    trans
-  141   141  58764.010      u    n
+  197   197 102479.476      u    n
     n     k      MFLOPS       uplo    trans
-  146   146  57391.486      u    n
+  204   204 110954.362      u    n
     n     k      MFLOPS       uplo    trans
-  151   151  62388.058      u    n
+  211   211 115080.631      u    n
     n     k      MFLOPS       uplo    trans
-  156   156  68193.172      u    n
+  218   218 123839.128      u    n
     n     k      MFLOPS       uplo    trans
-  161   161  73539.581      u    n
+  225   225 130757.713      u    n
     n     k      MFLOPS       uplo    trans
-  166   166  72973.785      u    n
+  232   232 136271.329      u    n
     n     k      MFLOPS       uplo    trans
-  171   171  77985.400      u    n
+  239   239 140758.583      u    n
     n     k      MFLOPS       uplo    trans
-  176   176  84235.636      u    n
+  246   246 149449.720      u    n
     n     k      MFLOPS       uplo    trans
-  181   181  90283.560      u    n
+  253   253 154806.343      u    n
     n     k      MFLOPS       uplo    trans
-  186   186  89850.491      u    n
+  260   260 116907.776      u    n
     n     k      MFLOPS       uplo    trans
-  191   191  95229.762      u    n
+  267   267 124046.554      u    n
     n     k      MFLOPS       uplo    trans
-  196   196 100929.384      u    n
+  274   274 131904.312      u    n
     n     k      MFLOPS       uplo    trans
-  201   201 107303.208      u    n
+  281   281 133325.590      u    n
     n     k      MFLOPS       uplo    trans
-  206   206 109166.884      u    n
+  288   288 138581.515      u    n
     n     k      MFLOPS       uplo    trans
-  211   211 115753.617      u    n
+  295   295 147599.391      u    n
     n     k      MFLOPS       uplo    trans
-  216   216 121327.457      u    n
+  302   302 155269.662      u    n
     n     k      MFLOPS       uplo    trans
-  221   221 127566.868      u    n
+  309   309 167767.115      u    n
     n     k      MFLOPS       uplo    trans
-  226   226 127973.204      u    n
+  316   316 169238.974      u    n
     n     k      MFLOPS       uplo    trans
-  231   231 135219.905      u    n
+  323   323 180839.750      u    n
     n     k      MFLOPS       uplo    trans
-  236   236 136030.986      u    n
+  330   330 191740.599      u    n
     n     k      MFLOPS       uplo    trans
-  241   241 143264.806      u    n
+  337   337 198893.025      u    n
     n     k      MFLOPS       uplo    trans
-  246   246 143793.940      u    n
+  344   344 210493.325      u    n
     n     k      MFLOPS       uplo    trans
-  251   251 151168.734      u    n
+  351   351 210524.701      u    n
     n     k      MFLOPS       uplo    trans
-  256   256 168399.576      u    n
+  358   358 223878.888      u    n
     n     k      MFLOPS       uplo    trans
-  261   261 118166.832      u    n
+  365   365 243181.606      u    n
     n     k      MFLOPS       uplo    trans
-  266   266 123520.141      u    n
+  372   372 268109.427      u    n
     n     k      MFLOPS       uplo    trans
-  271   271 125709.250      u    n
+  379   379 271577.850      u    n
     n     k      MFLOPS       uplo    trans
-  276   276 129864.957      u    n
+  386   386 271436.205      u    n
     n     k      MFLOPS       uplo    trans
-  281   281 135747.930      u    n
+  393   393 298346.683      u    n
     n     k      MFLOPS       uplo    trans
-  286   286 141470.089      u    n
+  400   400 295721.478      u    n
     n     k      MFLOPS       uplo    trans
-  291   291 146692.976      u    n
+  407   407 299020.215      u    n
     n     k      MFLOPS       uplo    trans
-  296   296 150439.666      u    n
+  414   414 324810.098      u    n
     n     k      MFLOPS       uplo    trans
-  301   301 150311.012      u    n
+  421   421 338420.617      u    n
     n     k      MFLOPS       uplo    trans
-  306   306 161082.859      u    n
+  428   428 340333.821      u    n
     n     k      MFLOPS       uplo    trans
-  311   311 166760.620      u    n
+  435   435 357109.276      u    n
     n     k      MFLOPS       uplo    trans
-  316   316 168808.614      u    n
+  442   442 379509.975      u    n
     n     k      MFLOPS       uplo    trans
-  321   321 183230.625      u    n
+  449   449 395334.178      u    n
     n     k      MFLOPS       uplo    trans
-  326   326 185801.797      u    n
+  456   456 401785.369      u    n
     n     k      MFLOPS       uplo    trans
-  331   331 183260.866      u    n
+  463   463 422262.897      u    n
     n     k      MFLOPS       uplo    trans
-  336   336 190198.199      u    n
+  470   470 428254.903      u    n
     n     k      MFLOPS       uplo    trans
-  341   341 205039.348      u    n
+  477   477 437570.964      u    n
     n     k      MFLOPS       uplo    trans
-  346   346 213526.321      u    n
+  484   484 453408.493      u    n
     n     k      MFLOPS       uplo    trans
-  351   351 209072.806      u    n
+  491   491 482067.990      u    n
     n     k      MFLOPS       uplo    trans
-  356   356 224580.171      u    n
+  498   498 506154.930      u    n
     n     k      MFLOPS       uplo    trans
-  361   361 222577.427      u    n
+  505   505 520176.937      u    n
     n     k      MFLOPS       uplo    trans
-  366   366 245768.477      u    n
+  512   512 388731.540      u    n
     n     k      MFLOPS       uplo    trans
-  371   371 259998.365      u    n
+  519   519 384354.987      u    n
     n     k      MFLOPS       uplo    trans
-  376   376 262538.072      u    n
+  526   526 394557.506      u    n
     n     k      MFLOPS       uplo    trans
-  381   381 268568.657      u    n
+  533   533 406186.215      u    n
     n     k      MFLOPS       uplo    trans
-  386   386 271283.969      u    n
+  540   540 411361.482      u    n
     n     k      MFLOPS       uplo    trans
-  391   391 279446.271      u    n
+  547   547 427026.067      u    n
     n     k      MFLOPS       uplo    trans
-  396   396 287577.520      u    n
+  554   554 452327.286      u    n
     n     k      MFLOPS       uplo    trans
-  401   401 306359.557      u    n
+  561   561 460068.204      u    n
     n     k      MFLOPS       uplo    trans
-  406   406 311270.491      u    n
+  568   568 470205.315      u    n
     n     k      MFLOPS       uplo    trans
-  411   411 312197.308      u    n
+  575   575 473762.309      u    n
     n     k      MFLOPS       uplo    trans
-  416   416 324415.038      u    n
+  582   582 492580.888      u    n
     n     k      MFLOPS       uplo    trans
-  421   421 326617.295      u    n
+  589   589 498695.534      u    n
     n     k      MFLOPS       uplo    trans
-  426   426 345212.612      u    n
+  596   596 509136.052      u    n
     n     k      MFLOPS       uplo    trans
-  431   431 342234.531      u    n
+  603   603 527881.007      u    n
     n     k      MFLOPS       uplo    trans
-  436   436 344127.428      u    n
+  610   610 534972.239      u    n
     n     k      MFLOPS       uplo    trans
-  441   441 356093.725      u    n
+  617   617 451200.866      u    n
     n     k      MFLOPS       uplo    trans
-  446   446 383287.190      u    n
+  624   624 460097.283      u    n
     n     k      MFLOPS       uplo    trans
-  451   451 403149.800      u    n
+  631   631 471286.104      u    n
     n     k      MFLOPS       uplo    trans
-  456   456 395800.483      u    n
+  638   638 601401.958      u    n
     n     k      MFLOPS       uplo    trans
-  461   461 415346.937      u    n
+  645   645 489036.103      u    n
     n     k      MFLOPS       uplo    trans
-  466   466 427060.378      u    n
+  652   652 509767.540      u    n
     n     k      MFLOPS       uplo    trans
-  471   471 425769.439      u    n
+  659   659 516406.492      u    n
     n     k      MFLOPS       uplo    trans
-  476   476 445729.354      u    n
+  666   666 533143.977      u    n
     n     k      MFLOPS       uplo    trans
-  481   481 446948.890      u    n
+  673   673 536523.181      u    n
     n     k      MFLOPS       uplo    trans
-  486   486 452801.597      u    n
+  680   680 549059.589      u    n
     n     k      MFLOPS       uplo    trans
-  491   491 476298.866      u    n
+  687   687 563255.603      u    n
     n     k      MFLOPS       uplo    trans
-  496   496 474849.397      u    n
+  694   694 567382.834      u    n
     n     k      MFLOPS       uplo    trans
-  501   501 492997.013      u    n
+  701   701 578752.719      u    n
     n     k      MFLOPS       uplo    trans
-  506   506 495417.342      u    n
+  708   708 591875.959      u    n
     n     k      MFLOPS       uplo    trans
-  511   511 518016.700      u    n
+  715   715 610567.060      u    n
     n     k      MFLOPS       uplo    trans
-  516   516 377609.025      u    n
+  722   722 497180.135      u    n
     n     k      MFLOPS       uplo    trans
-  521   521 387166.234      u    n
+  729   729 512500.262      u    n
     n     k      MFLOPS       uplo    trans
-  526   526 393036.076      u    n
+  736   736 523524.085      u    n
     n     k      MFLOPS       uplo    trans
-  531   531 404864.376      u    n
+  743   743 533427.227      u    n
     n     k      MFLOPS       uplo    trans
-  536   536 407486.544      u    n
+  750   750 539534.499      u    n
     n     k      MFLOPS       uplo    trans
-  541   541 420180.268      u    n
+  757   757 548512.605      u    n
     n     k      MFLOPS       uplo    trans
-  546   546 420382.824      u    n
+  764   764 565224.635      u    n
     n     k      MFLOPS       uplo    trans
-  551   551 429654.021      u    n
+  771   771 566868.372      u    n
     n     k      MFLOPS       uplo    trans
-  556   556 441449.860      u    n
+  778   778 578523.456      u    n
     n     k      MFLOPS       uplo    trans
-  561   561 451115.828      u    n
+  785   785 589958.791      u    n
     n     k      MFLOPS       uplo    trans
-  566   566 460478.179      u    n
+  792   792 602202.965      u    n
     n     k      MFLOPS       uplo    trans
-  571   571 467414.772      u    n
+  799   799 612734.066      u    n
     n     k      MFLOPS       uplo    trans
-  576   576 391103.529      u    n
+  806   806 536576.402      u    n
     n     k      MFLOPS       uplo    trans
-  581   581 488160.586      u    n
+  813   813 627110.242      u    n
     n     k      MFLOPS       uplo    trans
-  586   586 498943.839      u    n
+  820   820 647490.285      u    n
     n     k      MFLOPS       uplo    trans
-  591   591 507920.639      u    n
+  827   827 661248.854      u    n
     n     k      MFLOPS       uplo    trans
-  596   596 511625.356      u    n
+  834   834 574191.330      u    n
     n     k      MFLOPS       uplo    trans
-  601   601 518931.467      u    n
+  841   841 586415.398      u    n
     n     k      MFLOPS       uplo    trans
-  606   606 527035.936      u    n
+  848   848 589344.885      u    n
     n     k      MFLOPS       uplo    trans
-  611   611 433906.687      u    n
+  855   855 596571.603      u    n
     n     k      MFLOPS       uplo    trans
-  616   616 446358.503      u    n
+  862   862 608916.627      u    n
     n     k      MFLOPS       uplo    trans
-  621   621 461717.419      u    n
+  869   869 619239.568      u    n
     n     k      MFLOPS       uplo    trans
-  626   626 464010.228      u    n
+  876   876 633109.659      u    n
     n     k      MFLOPS       uplo    trans
-  631   631 467735.533      u    n
+  883   883 642994.524      u    n
     n     k      MFLOPS       uplo    trans
-  636   636 480747.751      u    n
+  890   890 653172.243      u    n
     n     k      MFLOPS       uplo    trans
-  641   641 479167.174      u    n
+  897   897 564295.265      u    n
     n     k      MFLOPS       uplo    trans
-  646   646 490887.108      u    n
+  904   904 579384.641      u    n
     n     k      MFLOPS       uplo    trans
-  651   651 505986.793      u    n
+  911   911 586480.356      u    n
     n     k      MFLOPS       uplo    trans
-  656   656 504835.557      u    n
+  918   918 600098.790      u    n
     n     k      MFLOPS       uplo    trans
-  661   661 514708.370      u    n
+  925   925 607862.403      u    n
     n     k      MFLOPS       uplo    trans
-  666   666 530182.699      u    n
+  932   932 616965.935      u    n
     n     k      MFLOPS       uplo    trans
-  671   671 533657.193      u    n
+  939   939 626701.562      u    n
     n     k      MFLOPS       uplo    trans
-  676   676 535646.386      u    n
+  946   946 633677.087      u    n
     n     k      MFLOPS       uplo    trans
-  681   681 549087.520      u    n
+  953   953 642744.363      u    n
     n     k      MFLOPS       uplo    trans
-  686   686 554041.342      u    n
+  960   960 597029.446      u    n
     n     k      MFLOPS       uplo    trans
-  691   691 560399.808      u    n
+  967   967 661937.409      u    n
     n     k      MFLOPS       uplo    trans
-  696   696 578140.932      u    n
+  974   974 671262.160      u    n
     n     k      MFLOPS       uplo    trans
-  701   701 576906.617      u    n
+  981   981 611316.898      u    n
     n     k      MFLOPS       uplo    trans
-  706   706 585829.814      u    n
+  988   988 618058.153      u    n
     n     k      MFLOPS       uplo    trans
-  711   711 600381.719      u    n
+  995   995 625082.136      u    n
     n     k      MFLOPS       uplo    trans
-  716   716 602586.897      u    n
+ 1002  1002 634146.278      u    n
     n     k      MFLOPS       uplo    trans
-  721   721 503430.763      u    n
+ 1009  1009 643083.967      u    n
     n     k      MFLOPS       uplo    trans
-  726   726 507560.790      u    n
+ 1016  1016 654896.794      u    n
     n     k      MFLOPS       uplo    trans
-  731   731 513332.746      u    n
+ 1023  1023 666045.466      u    n
     n     k      MFLOPS       uplo    trans
-  736   736 517137.673      u    n
+ 1030  1030 667347.293      u    n
     n     k      MFLOPS       uplo    trans
-  741   741 532596.346      u    n
+ 1037  1037 676075.181      u    n
     n     k      MFLOPS       uplo    trans
-  746   746 475626.124      u    n
+ 1044  1044 686533.226      u    n
     n     k      MFLOPS       uplo    trans
-  751   751 481701.847      u    n
+ 1051  1051 699375.818      u    n
     n     k      MFLOPS       uplo    trans
-  756   756 496423.791      u    n
+ 1058  1058 703495.596      u    n
     n     k      MFLOPS       uplo    trans
-  761   761 500650.598      u    n
+ 1065  1065 713308.282      u    n
     n     k      MFLOPS       uplo    trans
-  766   766 502893.923      u    n
+ 1072  1072 724049.982      u    n
     n     k      MFLOPS       uplo    trans
-  771   771 441063.601      u    n
+ 1079  1079 735541.860      u    n
     n     k      MFLOPS       uplo    trans
-  776   776 444099.582      u    n
+ 1086  1086 744288.491      u    n
     n     k      MFLOPS       uplo    trans
-  781   781 517362.032      u    n
+ 1093  1093 665096.926      u    n
     n     k      MFLOPS       uplo    trans
-  786   786 531689.082      u    n
+ 1100  1100 675372.422      u    n
     n     k      MFLOPS       uplo    trans
-  791   791 537760.074      u    n
+ 1107  1107 686808.424      u    n
     n     k      MFLOPS       uplo    trans
-  796   796 545056.553      u    n
+ 1114  1114 634145.832      u    n
     n     k      MFLOPS       uplo    trans
-  801   801 552402.829      u    n
+ 1121  1121 644095.623      u    n
     n     k      MFLOPS       uplo    trans
-  806   806 561299.322      u    n
+ 1128  1128 650600.154      u    n
     n     k      MFLOPS       uplo    trans
-  811   811 564528.639      u    n
+ 1135  1135 662605.220      u    n
     n     k      MFLOPS       uplo    trans
-  816   816 575392.669      u    n
+ 1142  1142 669982.737      u    n
     n     k      MFLOPS       uplo    trans
-  821   821 583528.741      u    n
+ 1149  1149 675355.073      u    n
     n     k      MFLOPS       uplo    trans
-  826   826 583482.134      u    n
+ 1156  1156 682917.475      u    n
     n     k      MFLOPS       uplo    trans
-  831   831 589847.935      u    n
+ 1163  1163 690378.630      u    n
     n     k      MFLOPS       uplo    trans
-  836   836 514482.486      u    n
+ 1170  1170 698026.723      u    n
     n     k      MFLOPS       uplo    trans
-  841   841 520111.689      u    n
+ 1177  1177 705681.567      u    n
     n     k      MFLOPS       uplo    trans
-  846   846 528065.445      u    n
+ 1184  1184 711122.180      u    n
     n     k      MFLOPS       uplo    trans
-  851   851 531901.411      u    n
+ 1191  1191 720240.930      u    n
     n     k      MFLOPS       uplo    trans
-  856   856 540606.143      u    n
+ 1198  1198 734765.201      u    n
     n     k      MFLOPS       uplo    trans
-  861   861 549679.799      u    n
+ 1205  1205 741077.845      u    n
     n     k      MFLOPS       uplo    trans
-  866   866 556455.044      u    n
+ 1212  1212 671235.208      u    n
     n     k      MFLOPS       uplo    trans
-  871   871 561562.173      u    n
+ 1219  1219 611208.395      u    n
     n     k      MFLOPS       uplo    trans
-  876   876 570592.160      u    n
+ 1226  1226 619504.815      u    n
     n     k      MFLOPS       uplo    trans
-  881   881 578893.443      u    n
+ 1233  1233 624919.027      u    n
     n     k      MFLOPS       uplo    trans
-  886   886 582170.442      u    n
+ 1240  1240 590941.029      u    n
     n     k      MFLOPS       uplo    trans
-  891   891 590372.133      u    n
+ 1247  1247 598044.247      u    n
     n     k      MFLOPS       uplo    trans
-  896   896 463397.846      u    n
+ 1254  1254 602964.069      u    n
     n     k      MFLOPS       uplo    trans
-  901   901 516177.486      u    n
+ 1261  1261 610890.332      u    n
     n     k      MFLOPS       uplo    trans
-  906   906 522269.944      u    n
+ 1268  1268 619230.003      u    n
     n     k      MFLOPS       uplo    trans
-  911   911 525251.185      u    n
+ 1275  1275 625736.069      u    n
     n     k      MFLOPS       uplo    trans
-  916   916 528825.513      u    n
+ 1282  1282 626654.098      u    n
     n     k      MFLOPS       uplo    trans
-  921   921 538986.811      u    n
+ 1289  1289 632914.122      u    n
     n     k      MFLOPS       uplo    trans
-  926   926 541316.678      u    n
+ 1296  1296 640438.192      u    n
     n     k      MFLOPS       uplo    trans
-  931   931 551966.752      u    n
+ 1303  1303 645574.924      u    n
     n     k      MFLOPS       uplo    trans
-  936   936 558267.100      u    n
+ 1310  1310 653714.923      u    n
     n     k      MFLOPS       uplo    trans
-  941   941 560937.288      u    n
+ 1317  1317 659655.047      u    n
     n     k      MFLOPS       uplo    trans
-  946   946 570655.261      u    n
+ 1324  1324 669374.837      u    n
     n     k      MFLOPS       uplo    trans
-  951   951 574765.679      u    n
+ 1331  1331 675542.959      u    n
     n     k      MFLOPS       uplo    trans
-  956   956 578854.821      u    n
+ 1338  1338 683920.830      u    n
     n     k      MFLOPS       uplo    trans
-  961   961 587749.806      u    n
+ 1345  1345 635348.575      u    n
     n     k      MFLOPS       uplo    trans
-  966   966 590771.861      u    n
+ 1352  1352 640793.192      u    n
     n     k      MFLOPS       uplo    trans
-  971   971 592224.643      u    n
+ 1359  1359 611065.648      u    n
     n     k      MFLOPS       uplo    trans
-  976   976 609683.605      u    n
+ 1366  1366 616353.879      u    n
     n     k      MFLOPS       uplo    trans
-  981   981 545636.832      u    n
+ 1373  1373 622629.386      u    n
     n     k      MFLOPS       uplo    trans
-  986   986 551778.950      u    n
+ 1380  1380 629098.094      u    n
     n     k      MFLOPS       uplo    trans
-  991   991 553534.692      u    n
+ 1387  1387 636430.990      u    n
     n     k      MFLOPS       uplo    trans
-  996   996 562295.388      u    n
+ 1394  1394 640471.986      u    n
     n     k      MFLOPS       uplo    trans
- 1001  1001 569337.145      u    n
+ 1401  1401 647104.695      u    n
     n     k      MFLOPS       uplo    trans
- 1006  1006 573181.381      u    n
+ 1408  1408 626435.764      u    n
     n     k      MFLOPS       uplo    trans
- 1011  1011 579823.753      u    n
+ 1415  1415 614007.513      u    n
     n     k      MFLOPS       uplo    trans
- 1016  1016 586155.297      u    n
+ 1422  1422 621542.290      u    n
     n     k      MFLOPS       uplo    trans
- 1021  1021 592051.060      u    n
+ 1429  1429 626970.323      u    n
     n     k      MFLOPS       uplo    trans
- 1026  1026 593515.016      u    n
+ 1436  1436 632825.643      u    n
     n     k      MFLOPS       uplo    trans
- 1031  1031 599446.262      u    n
+ 1443  1443 639258.779      u    n
     n     k      MFLOPS       uplo    trans
- 1036  1036 606390.038      u    n
+ 1450  1450 645447.732      u    n
     n     k      MFLOPS       uplo    trans
- 1041  1041 610215.761      u    n
+ 1457  1457 648670.782      u    n
     n     k      MFLOPS       uplo    trans
- 1046  1046 615203.676      u    n
+ 1464  1464 659034.466      u    n
     n     k      MFLOPS       uplo    trans
- 1051  1051 620411.161      u    n
+ 1471  1471 662743.717      u    n
     n     k      MFLOPS       uplo    trans
- 1056  1056 626632.979      u    n
+ 1478  1478 630785.960      u    n
     n     k      MFLOPS       uplo    trans
- 1061  1061 635734.554      u    n
+ 1485  1485 637297.013      u    n
     n     k      MFLOPS       uplo    trans
- 1066  1066 639652.780      u    n
+ 1492  1492 642966.084      u    n
     n     k      MFLOPS       uplo    trans
- 1071  1071 651602.456      u    n
+ 1499  1499 649360.737      u    n
     n     k      MFLOPS       uplo    trans
- 1076  1076 656290.811      u    n
+ 1506  1506 656297.687      u    n
     n     k      MFLOPS       uplo    trans
- 1081  1081 657150.766      u    n
+ 1513  1513 661793.569      u    n
     n     k      MFLOPS       uplo    trans
- 1086  1086 664743.752      u    n
+ 1520  1520 667252.806      u    n
     n     k      MFLOPS       uplo    trans
- 1091  1091 595391.382      u    n
+ 1527  1527 673326.568      u    n
     n     k      MFLOPS       uplo    trans
- 1096  1096 599520.207      u    n
+ 1534  1534 681398.859      u    n
     n     k      MFLOPS       uplo    trans
- 1101  1101 606379.019      u    n
+ 1541  1541 641904.443      u    n
     n     k      MFLOPS       uplo    trans
- 1106  1106 611071.104      u    n
+ 1548  1548 646783.753      u    n
     n     k      MFLOPS       uplo    trans
- 1111  1111 617566.474      u    n
+ 1555  1555 653315.921      u    n
     n     k      MFLOPS       uplo    trans
- 1116  1116 568991.531      u    n
+ 1562  1562 658008.819      u    n
     n     k      MFLOPS       uplo    trans
- 1121  1121 572567.553      u    n
+ 1569  1569 664024.790      u    n
     n     k      MFLOPS       uplo    trans
- 1126  1126 580738.882      u    n
+ 1576  1576 672027.947      u    n
     n     k      MFLOPS       uplo    trans
- 1131  1131 586121.906      u    n
+ 1583  1583 677073.856      u    n
     n     k      MFLOPS       uplo    trans
- 1136  1136 591899.677      u    n
+ 1590  1590 682996.673      u    n
     n     k      MFLOPS       uplo    trans
- 1141  1141 597706.653      u    n
+ 1597  1597 688973.064      u    n
     n     k      MFLOPS       uplo    trans
- 1146  1146 602564.322      u    n
+ 1604  1604 658799.230      u    n
     n     k      MFLOPS       uplo    trans
- 1151  1151 605402.572      u    n
+ 1611  1611 665019.278      u    n
     n     k      MFLOPS       uplo    trans
- 1156  1156 607521.134      u    n
+ 1618  1618 671002.985      u    n
     n     k      MFLOPS       uplo    trans
- 1161  1161 615090.314      u    n
+ 1625  1625 676746.443      u    n
     n     k      MFLOPS       uplo    trans
- 1166  1166 620744.414      u    n
+ 1632  1632 683755.091      u    n
     n     k      MFLOPS       uplo    trans
- 1171  1171 622778.462      u    n
+ 1639  1639 688845.664      u    n
     n     k      MFLOPS       uplo    trans
- 1176  1176 629566.308      u    n
+ 1646  1646 694303.992      u    n
     n     k      MFLOPS       uplo    trans
- 1181  1181 632380.177      u    n
+ 1653  1653 701818.113      u    n
     n     k      MFLOPS       uplo    trans
- 1186  1186 640912.780      u    n
+ 1660  1660 707365.494      u    n
     n     k      MFLOPS       uplo    trans
- 1191  1191 647214.448      u    n
+ 1667  1667 646698.803      u    n
     n     k      MFLOPS       uplo    trans
- 1196  1196 652006.052      u    n
+ 1674  1674 650646.960      u    n
     n     k      MFLOPS       uplo    trans
- 1201  1201 656727.326      u    n
+ 1681  1681 654043.088      u    n
     n     k      MFLOPS       uplo    trans
- 1206  1206 661585.741      u    n
+ 1688  1688 661736.005      u    n
     n     k      MFLOPS       uplo    trans
- 1211  1211 670750.308      u    n
+ 1695  1695 667953.625      u    n
     n     k      MFLOPS       uplo    trans
- 1216  1216 690111.748      u    n
+ 1702  1702 673433.482      u    n
     n     k      MFLOPS       uplo    trans
- 1221  1221 616202.196      u    n
+ 1709  1709 678715.754      u    n
     n     k      MFLOPS       uplo    trans
- 1226  1226 620648.042      u    n
+ 1716  1716 682774.508      u    n
     n     k      MFLOPS       uplo    trans
- 1231  1231 624786.560      u    n
+ 1723  1723 689265.209      u    n
     n     k      MFLOPS       uplo    trans
- 1236  1236 629940.610      u    n
+ 1730  1730 658918.119      u    n
     n     k      MFLOPS       uplo    trans
- 1241  1241 589455.445      u    n
+ 1737  1737 637977.025      u    n
     n     k      MFLOPS       uplo    trans
- 1246  1246 595404.012      u    n
+ 1744  1744 643675.228      u    n
     n     k      MFLOPS       uplo    trans
- 1251  1251 601034.163      u    n
+ 1751  1751 648941.197      u    n
     n     k      MFLOPS       uplo    trans
- 1256  1256 605963.251      u    n
+ 1758  1758 654820.469      u    n
     n     k      MFLOPS       uplo    trans
- 1261  1261 610225.984      u    n
+ 1765  1765 660292.458      u    n
     n     k      MFLOPS       uplo    trans
- 1266  1266 614881.530      u    n
+ 1772  1772 665853.804      u    n
     n     k      MFLOPS       uplo    trans
- 1271  1271 621363.875      u    n
+ 1779  1779 670124.743      u    n
     n     k      MFLOPS       uplo    trans
- 1276  1276 628067.421      u    n
+ 1786  1786 676137.635      u    n
     n     k      MFLOPS       uplo    trans
- 1281  1281 625078.469      u    n
+ 1793  1793 648788.213      u    n
     n     k      MFLOPS       uplo    trans
- 1286  1286 630659.838      u    n
-    n     
+ 1800  1800 651800.170      u    n
+    n     k      MFLOPS       uplo    trans
+ 1807  1807 659696.228      u    n
+    n     k      MFLOPS       uplo    trans
+ 1814  1814 663159.695      u    n
+    n     k      MFLOPS       uplo    trans
+ 1821  1821 669341.202      u    n
+    n     k      MFLOPS       uplo    trans
+ 1828  1828 673397.712      u    n
+    n     k      MFLOPS       uplo    trans
+ 1835  1835 678319.812      u    n
+    n     k      MFLOPS       uplo    trans
+ 1842  1842 684052.963      u    n
+    n     k      MFLOPS       uplo    trans
+ 1849  1849 690062.113      u    n
+    n     k      MFLOPS       uplo    trans
+ 1856  1856 685297.814      u    n
+    n     k      MFLOPS       uplo    trans
+ 1863  1863 670515.852      u    n
+    n     k      MFLOPS       uplo    trans
+ 1870  1870 675863.172      u    n
+    n     k      MFLOPS       uplo    trans
+ 1877  1877 680914.346      u    n
+    n     k      MFLOPS       uplo    trans
+ 1884  1884 685523.501      u    n
+    n     k      MFLOPS       uplo    trans
+ 1891  1891 689838.318      u    n
+    n     k      MFLOPS       uplo    trans
+ 1898  1898 695438.273      u    n
+    n     k      MFLOPS       uplo    trans
+ 1905  1905 701010.551      u    n
+    n     k      MFLOPS       uplo    trans
+ 1912  1912 706341.728      u    n
+    n     k      MFLOPS       uplo    trans
+ 1919  1919 710925.415      u    n
+    n     k      MFLOPS       uplo    trans
+ 1926  1926 665598.622      u    n
+    n     k      MFLOPS       uplo    trans
+ 1933  1933 669381.437      u    n
+    n     k      MFLOPS       uplo    trans
+ 1940  1940 674310.830      u    n
+    n     k      MFLOPS       uplo    trans
+ 1947  1947 679474.389      u    n
+    n     k      MFLOPS       uplo    trans
+ 1954  1954 683648.681      u    n
+    n     k      MFLOPS       uplo    trans
+ 1961  1961 688967.505      u    n
+    n     k      MFLOPS       uplo    trans
+ 1968  1968 694623.949      u    n
+    n     k      MFLOPS       uplo    trans
+ 1975  1975 699395.632      u    n
+    n     k      MFLOPS       uplo    trans
+ 1982  1982 703531.716      u    n
+    n     k      MFLOPS       uplo    trans
+ 1989  1989 658860.010      u    n
+    n     k      MFLOPS       uplo    trans
+ 1996  1996 664447.568      u    n
+    n     k      MFLOPS       uplo    trans
+ 2003  2003 668785.014      u    n
+    n     k      MFLOPS       uplo    trans
+ 2010  2010 673263.156      u    n
+    n     k      MFLOPS       uplo    trans
+ 2017  2017 678103.350      u    n
+    n     k      MFLOPS       uplo    trans
+ 2024  2024 683182.190      u    n
+    n     k      MFLOPS       uplo    trans
+ 2031  2031 687465.999      u    n
+    n     k      MFLOPS       uplo    trans
+ 2038  2038 691985.994      u    n
+    n     k      MFLOPS       uplo    trans
+ 2045  2045 720444.852      u    n
+    n     k      MFLOPS       uplo    trans
+ 2052  2052 675515.875      u    n
+    n     k      MFLOPS       uplo    trans
+ 2059  2059 680486.435      u    n
+    n     k      MFLOPS       uplo    trans
+ 2066  2066 684936.268      u    n
+    n     k      MFLOPS       uplo    trans
+ 2073  2073 689489.684      u    n
+    n     k      MFLOPS       uplo    trans
+ 2080  2080 694830.836      u    n
+    n     k      MFLOPS       uplo    trans
+ 2087  2087 698872.235      u    n
+    n     k      MFLOPS       uplo    trans
+ 2094  2094 703985.807      u    n
+    n     k      MFLOPS       uplo    trans
+ 2101  2101 708324.644      u    n
+    n     k      MFLOPS       uplo    trans
+ 2108  2108 712838.661      u    n
+    n     k      MFLOPS       uplo    trans
+ 2115  2115 671558.615      u    n
+    n     k      MFLOPS       uplo    trans
+ 2122  2122 676519.604      u    n
+    n     k      MFLOPS       uplo    trans
+ 2129  2129 680829.124      u    n
+    n     k      MFLOPS       uplo    trans
+ 2136  2136 685054.825      u    n
+    n     k      MFLOPS       uplo    trans
+ 2143  2143 689800.328      u    n
+    n     k      MFLOPS       uplo    trans
+ 2150  2150 694464.034      u    n
+    n     k      MFLOPS       uplo    trans
+ 2157  2157 699050.658      u    n
+    n     k      MFLOPS       uplo    trans
+ 2164  2164 703495.233      u    n
+    n     k      MFLOPS       uplo    trans
+ 2171  2171 708871.407      u    n
+    n     k      MFLOPS       uplo    trans
+ 2178  2178 691981.495      u    n
+    n     k      MFLOPS       uplo    trans
+ 2185  2185 696555.997      u    n
+    n     k      MFLOPS       uplo    trans
+ 2192  2192 701512.865      u    n
+    n     k      MFLOPS       uplo    trans
+ 2199  2199 705527.123      u    n
+    n     k      MFLOPS       uplo    trans
+ 2206  2206 709743.354      u    n
+    n     k      MFLOPS       uplo    trans
+ 2213  2213 714892.626      u    n
+    n     k      MFLOPS       uplo    trans
+ 2220  2220 719328.042      u    n
+    n     k      MFLOPS       uplo    trans
+ 2227  2227 723489.080      u    n
+    n     k      MFLOPS       uplo    trans
+ 2234  2234 728398.811      u    n
+    n     k      MFLOPS       uplo    trans
+ 2241  2241 690092.489      u    n
+    n     k      MFLOPS       uplo    trans
+ 2248  2248 694406.992      u    n
+    n     k      MFLOPS       uplo    trans
+ 2255  2255 699009.013      u    n
+    n     k      MFLOPS       uplo    trans
+ 2262  2262 703096.690      u    n
+    n     k      MFLOPS       uplo    trans
+ 2269  2269 707242.342      u    n
+    n     k      MFLOPS       uplo    trans
+ 2276  2276 711866.029      u    n
+    n     k      MFLOPS       uplo    trans
+ 2283  2283 716422.671      u    n
+    n     k      MFLOPS       uplo    trans
+ 2290  2290 720277.668      u    n
+    n     k      MFLOPS       uplo    trans
+ 2297  2297 724339.593      u    n
+    n     k      MFLOPS       uplo    trans
+ 2304  2304 726274.238      u    n
+    n     k      MFLOPS       uplo    trans
+ 2311  2311 693327.859      u    n
+    n     k      MFLOPS       uplo    trans
+ 2318  2318 697601.071      u    n
+    n     k      MFLOPS       uplo    trans
+ 2325  2325 701588.617      u    n
+    n     k      MFLOPS       uplo    trans
+ 2332  2332 706074.467      u    n
+    n     k      MFLOPS       uplo    trans
+ 2339  2339 710076.722      u    n
+    n     k      MFLOPS       uplo    trans
+ 2346  2346 714801.718      u    n
+    n     k      MFLOPS       uplo    trans
+ 2353  2353 718200.448      u    n
+    n     k      MFLOPS       uplo    trans
+ 2360  2360 722895.102      u    n
+    n     k      MFLOPS       uplo    trans
+ 2367  2367 727924.259      u    n
+    n     k      MFLOPS       uplo    trans
+ 2374  2374 693513.122      u    n
+    n     k      MFLOPS       uplo    trans
+ 2381  2381 714191.056      u    n
+    n     k      MFLOPS       uplo    trans
+ 2388  2388 735366.968      u    n
+    n     k      MFLOPS       uplo    trans
+ 2395  2395 739933.043      u    n
+    n     k      MFLOPS       uplo    trans
+ 2402  2402 743994.242      u    n
+    n     k      MFLOPS       uplo    trans
+ 2409  2409 773919.279      u    n
+    n     k      MFLOPS       uplo    trans
+ 2416  2416 778747.798      u    n
+    n     k      MFLOPS       uplo    trans
+ 2423  2423 784389.574      u    n
+    n     k      MFLOPS       uplo    trans
+ 2430  2430 787986.140      u    n
+    n     k      MFLOPS       uplo    trans
+ 2437  2437 753340.818      u    n
+    n     k      MFLOPS       uplo    trans
+ 2444  2444 774354.776      u    n
+    n     k      MFLOPS       uplo    trans
+ 2451  2451 778983.200      u    n
+    n     k      MFLOPS       uplo    trans
+ 2458  2458 783477.692      u    n
+    n     k      MFLOPS       uplo    trans
+ 2465  2465 796468.382      u    n
+    n     k      MFLOPS       uplo    trans
+ 2472  2472 800846.422      u    n
+    n     k      MFLOPS       uplo    trans
+ 2479  2479 805282.151      u    n
+    n     k      MFLOPS       uplo    trans
+ 2486  2486 809699.642      u    n
+    n     k      MFLOPS       uplo    trans
+ 2493  2493 814996.745      u    n
+    n     k      MFLOPS       uplo    trans
+ 2500  2500 780451.451      u    n
+    n     k      MFLOPS       uplo    trans
+ 2507  2507 784694.162      u    n
+    n     k      MFLOPS       uplo    trans
+ 2514  2514 788691.747      u    n
+    n     k      MFLOPS       uplo    trans
+ 2521  2521 793424.823      u    n
+    n     k      MFLOPS       uplo    trans
+ 2528  2528 797824.700      u    n
+    n     k      MFLOPS       uplo    trans
+ 2535  2535 802368.580      u    n
+    n     k      MFLOPS       uplo    trans
+ 2542  2542 807067.126      u    n
+    n     k      MFLOPS       uplo    trans
+ 2549  2549 810742.475      u    n
+    n     k      MFLOPS       uplo    trans
+ 2556  2556 815802.249      u    n
+    n     k      MFLOPS       uplo    trans
+ 2563  2563 782567.979      u    n
+    n     k      MFLOPS       uplo    trans
+ 2570  2570 787735.715      u    n
+    n     k      MFLOPS       uplo    trans
+ 2577  2577 791122.385      u    n
+    n     k      MFLOPS       uplo    trans
+ 2584  2584 710383.606      u    n
+    n     k      MFLOPS       uplo    trans
+ 2591  2591 714552.058      u    n
+    n     k      MFLOPS       uplo    trans
+ 2598  2598 804357.621      u    n
+    n     k      MFLOPS       uplo    trans
+ 2605  2605 808630.679      u    n
+    n     k      MFLOPS       uplo    trans
+ 2612  2612 813083.018      u    n
+    n     k      MFLOPS       uplo    trans
+ 2619  2619 817662.891      u    n
+    n     k      MFLOPS       uplo    trans
+ 2626  2626 786450.885      u    n
+    n     k      MFLOPS       uplo    trans
+ 2633  2633 790612.063      u    n
+    n     k      MFLOPS       uplo    trans
+ 2640  2640 794866.052      u    n
+    n     k      MFLOPS       uplo    trans
+ 2647  2647 798946.859      u    n
+    n     k      MFLOPS       uplo    trans
+ 2654  2654 803502.928      u    n
+    n     k      MFLOPS       uplo    trans
+ 2661  2661 807292.399      u    n
+    n     k      MFLOPS       uplo    trans
+ 2668  2668 811210.894      u    n
+    n     k      MFLOPS       uplo    trans
+ 2675  2675 815768.324      u    n
+    n     k      MFLOPS       uplo    trans
+ 2682  2682 820401.037      u    n
+    n     k      MFLOPS       uplo    trans
+ 2689  2689 790212.126      u    n
+    n     k      MFLOPS       uplo    trans
+ 2696  2696 794570.799      u    n
+    n     k      MFLOPS       uplo    trans
+ 2703  2703 798383.476      u    n
+    n     k      MFLOPS       uplo    trans
+ 2710  2710 802702.830      u    n
+    n     k      MFLOPS       uplo    trans
+ 2717  2717 807119.036      u    n
+    n     k      MFLOPS       uplo    trans
+ 2724  2724 810907.313      u    n
+    n     k      MFLOPS       uplo    trans
+ 2731  2731 815307.055      u    n
+    n     k      MFLOPS       uplo    trans
+ 2738  2738 819169.117      u    n
+    n     k      MFLOPS       uplo    trans
+ 2745  2745 823595.054      u    n
+    n     k      MFLOPS       uplo    trans
+ 2752  2752 847936.282      u    n
+    n     k      MFLOPS       uplo    trans
+ 2759  2759 798654.767      u    n
+    n     k      MFLOPS       uplo    trans
+ 2766  2766 802656.905      u    n
+    n     k      MFLOPS       uplo    trans
+ 2773  2773 790524.979      u    n
+    n     k      MFLOPS       uplo    trans
+ 2780  2780 794217.256      u    n
+    n     k      MFLOPS       uplo    trans
+ 2787  2787 798121.637      u    n
+    n     k      MFLOPS       uplo    trans
+ 2794  2794 803630.842      u    n
+    n     k      MFLOPS       uplo    trans
+ 2801  2801 806583.127      u    n
+    n     k      MFLOPS       uplo    trans
+ 2808  2808 722547.174      u    n
+    n     k      MFLOPS       uplo    trans
+ 2815  2815 796706.489      u    n
+    n     k      MFLOPS       uplo    trans
+ 2822  2822 770257.568      u    n
+    n     k      MFLOPS       uplo    trans
+ 2829  2829 791250.315      u    n
+    n     k      MFLOPS       uplo    trans
+ 2836  2836 795358.983      u    n
+    n     k      MFLOPS       uplo    trans
+ 2843  2843 798885.472      u    n
+    n     k      MFLOPS       uplo    trans
+ 2850  2850 802897.649      u    n
+    n     k      MFLOPS       uplo    trans
+ 2857  2857 806873.306      u    n
+    n     k      MFLOPS       uplo    trans
+ 2864  2864 811105.669      u    n
+    n     k      MFLOPS       uplo    trans
+ 2871  2871 814760.471      u    n
+    n     k      MFLOPS       uplo    trans
+ 2878  2878 819000.008      u    n
+    n     k      MFLOPS       uplo    trans
+ 2885  2885 792872.085      u    n
+    n     k      MFLOPS       uplo    trans
+ 2892  2892 796932.086      u    n
+    n     k      MFLOPS       uplo    trans
+ 2899  2899 800375.384      u    n
+    n     k      MFLOPS       uplo    trans
+ 2906  2906 804599.025      u    n
+    n     k      MFLOPS       uplo    trans
+ 2913  2913 808651.126      u    n
+    n     k      MFLOPS       uplo    trans
+ 2920  2920 812754.560      u    n
+    n     k      MFLOPS       uplo    trans
+ 2927  2927 816332.913      u    n
+    n     k      MFLOPS       uplo    trans
+ 2934  2934 820043.041      u    n
+    n     k      MFLOPS       uplo    trans
+ 2941  2941 823774.368      u    n
+    n     k      MFLOPS       uplo    trans
+ 2948  2948 798892.200      u    n
+    n     k      MFLOPS       uplo    trans
+ 2955  2955 802832.848      u    n
+    n     k      MFLOPS       uplo    trans
+ 2962  2962 806717.567      u    n
+    n     k      MFLOPS       uplo    trans
+ 2969  2969 810252.795      u    n
+    n     k      MFLOPS       uplo    trans
+ 2976  2976 814395.200      u    n
+    n     k      MFLOPS       uplo    trans
+ 2983  2983 805534.942      u    n
+    n     k      MFLOPS       uplo    trans
+ 2990  2990 809657.808      u    n
+    n     k      MFLOPS       uplo    trans
+ 2997  2997 813451.466      u    n
+    n     k      MFLOPS       uplo    trans
+ 3004  3004 817347.959      u    n
+    n     k      MFLOPS       uplo    trans
+ 3011  3011 793351.127      u    n
+    n     k      MFLOPS       uplo    trans
+ 3018  3018 797030.516      u    n
+    n     k      MFLOPS       uplo    trans
+ 3025  3025 800942.061      u    n
+    n     k      MFLOPS       uplo    trans
+ 3032  3032 804558.719      u    n
+    n     k      MFLOPS       uplo    trans
+ 3039  3039 808302.809      u    n
+    n     k      MFLOPS       uplo    trans
+ 3046  3046 812041.689      u    n
+    n     k      MFLOPS       uplo    trans
+ 3053  3053 815602.507      u    n
+    n     k      MFLOPS       uplo    trans
+ 3060  3060 819603.998      u    n
+    n     k      MFLOPS       uplo    trans
+ 3067  3067 823534.152      u    n
+    n     k      MFLOPS       uplo    trans
+ 3074  3074 800231.604      u    n
+    n     k      MFLOPS       uplo    trans
+ 3081  3081 804023.523      u    n
+    n     k      MFLOPS       uplo    trans
+ 3088  3088 808051.634      u    n
+    n     k      MFLOPS       uplo    trans
+ 3095  3095 811245.303      u    n
+    n     k      MFLOPS       uplo    trans
+ 3102  3102 814856.378      u    n
+    n     k      MFLOPS       uplo    trans
+ 3109  3109 818340.018      u    n
+    n     k      MFLOPS       uplo    trans
+ 3116  3116 822291.664      u    n
+    n     k      MFLOPS       uplo    trans
+ 3123  3123 826004.620      u    n
+    n     k      MFLOPS       uplo    trans
+ 3130  3130 829873.121      u    n
+    n     k      MFLOPS       uplo    trans
+ 3137  3137 793889.626      u    n
+    n     k      MFLOPS       uplo    trans
+ 3144  3144 797514.333      u    n
+    n     k      MFLOPS       uplo    trans
+ 3151  3151 801003.088      u    n
+    n     k      MFLOPS       uplo    trans
+ 3158  3158 804602.336      u    n
+    n     k      MFLOPS       uplo    trans
+ 3165  3165 808403.668      u    n
+    n     k      MFLOPS       uplo    trans
+ 3172  3172 812029.352      u    n
+    n     k      MFLOPS       uplo    trans
+ 3179  3179 815623.669      u    n
+    n     k      MFLOPS       uplo    trans
+ 3186  3186 819183.883      u    n
+    n     k      MFLOPS       uplo    trans
+ 3193  3193 822709.726      u    n
+    n     k      MFLOPS       uplo    trans
+ 3200  3200 834328.509      u    n
+    n     k      MFLOPS       uplo    trans
+ 3207  3207 804944.211      u    n
+    n     k      MFLOPS       uplo    trans
+ 3214  3214 808725.489      u    n
+    n     k      MFLOPS       uplo    trans
+ 3221  3221 811894.690      u    n
+    n     k      MFLOPS       uplo    trans
+ 3228  3228 805238.599      u    n
+    n     k      MFLOPS       uplo    trans
+ 3235  3235 808428.319      u    n
+    n     k      MFLOPS       uplo    trans
+ 3242  3242 812115.527      u    n
+    n     k      MFLOPS       uplo    trans
+ 3249  3249 815785.749      u    n
+    n     k      MFLOPS       uplo    tra
