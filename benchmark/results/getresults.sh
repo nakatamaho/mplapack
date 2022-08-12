@@ -6,8 +6,8 @@ rsync -arv maho@172.27.109.87:~/MPLAPACK/lib/*/mplapack/benchmark/*.plt .
 rsync -arv maho@172.27.109.87:~/MPLAPACK/lib/*/mplapack/benchmark/*.eps .
  
 cd /home/docker/mplapack/benchmark/results
-mkdir -p 2022/x86_64-pc-linux-gnu-Xeon-E5-2623
-cd 2022/x86_64-pc-linux-gnu-Xeon-E5-2623
+mkdir -p 2022/x86_64-pc-linux-gnu-Xeon-E5-2623-TeslaV100
+cd 2022/x86_64-pc-linux-gnu-Xeon-E5-2623-TeslaV100
 rsync -arv maho@dadeba:~/MPLAPACK/lib/*/mplapack/benchmark/log.* .
 rsync -arv maho@dadeba:~/MPLAPACK/lib/*/mplapack/benchmark/*.plt .
 rsync -arv maho@dadeba:~/MPLAPACK/lib/*/mplapack/benchmark/*.eps .
