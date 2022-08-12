@@ -2,7 +2,7 @@ set xlabel font "Helvetica,20"
 set ylabel font "Helvetica,20"
 set key font "Helvetica,20"
 set title font "Helvetica,24"
-set title "Rsyrk performance on GPU"
+set title "Rsyrk GPU"
 set xlabel "Dimension"
 set ylabel "MFLOPS"
 #set terminal postscript eps color enhanced
