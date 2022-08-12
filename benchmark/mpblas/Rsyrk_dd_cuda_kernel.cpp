@@ -39,8 +39,6 @@
 #include <cuda.h>
 #include <cuda_runtime.h>
 
-#define TOTALSTEPS 1000
-
 void Rsyrk_cuda(const char *uplo, const char *trans, mplapackint n, mplapackint k, dd_real alpha, dd_real *Adev, mplapackint lda, dd_real beta, dd_real *Cdev, mplapackint ldc);
 
 void SetDevice() {
@@ -123,6 +121,10 @@ int main(int argc, char *argv[]) {
                 uplo = 'l', trans = 'c';
             } else if (strcmp("-NOCHECK", argv[i]) == 0) {
                 check_flag = 0;
+            } else if (strcmp("-LOOP", argv[i]) == 0) {
+                LOOP = atoi(argv[++i]);
+            } else if (strcmp("-TOTALSTEPS", argv[i]) == 0) {
+                TOTALSTEPS = atoi(argv[++i]);
             }
         }
     }
@@ -209,15 +211,19 @@ int main(int argc, char *argv[]) {
             cudaMemcpy(Adev, A, size_A * sizeof(REAL), cudaMemcpyHostToDevice);
             cudaMemcpy(Cdev, C, size_C * sizeof(REAL), cudaMemcpyHostToDevice);
 
-            t1 = gettime();
-            Rsyrk_cuda(&uplo, &trans, n, k, alpha, Adev, lda, beta, Cdev, ldc);
-            t2 = gettime();
+            elapsedtime = 0.0;
+	    for (int j = 0; j < LOOP; j++) {
+                t1 = gettime();
+                Rsyrk_cuda(&uplo, &trans, n, k, alpha, Adev, lda, beta, Cdev, ldc);
+                t2 = gettime();
+                elapsedtime = elapsedtime + (t2 - t1);
+	    }
+            elapsedtime = elapsedtime / (double)LOOP;
 
             cudaMemcpy(C, Cdev, size_C * sizeof(dd_real), cudaMemcpyDeviceToHost);
             cudaFree(Adev);
             cudaFree(Cdev);
 
-            elapsedtime = (t2 - t1);
             printf("    n     k      MFLOPS       uplo    trans\n");
             // 2n^2k+2n^2 flops are needed
             printf("%5d %5d %10.3f      %c    %c\n", (int)n, (int)k, (2.0 * (double)n * (double)n * (double)k + 2.0 * (double)n * (double)n) / elapsedtime * MFLOPS, uplo, trans);
