@@ -136,15 +136,15 @@ int main(int argc, char *argv[]) {
             (*raxpy_ref)((mplapackint)(lda * n), mOne, A, (mplapackint)1, Ad, (mplapackint)1);
             diff = Rlange(&normtype, (mplapackint)lda, (mplapackint)n, Ad, lda, dummywork);
             diffr = cast2double(diff);
-            printf("    n     MFLOPS     error   uplo\n");
-            printf("%5d %10.3f %5.2e      %c\n", (int)n, flops_getrf(m, n) / elapsedtime * MFLOPS, diffr, uplo);
+            printf("    n     m     MFLOPS   error   uplo\n");
+            printf("%5d %5d %10.3f %5.2e      %c\n", (int)n, (int)m, flops_getrf(m, n) / elapsedtime * MFLOPS, diffr, uplo);
         } else {
             t1 = gettime();
             Rgetrf(m, n, A, lda, ipiv, info);
             t2 = gettime();
             elapsedtime = (t2 - t1);
-            printf("    n     MFLOPS   uplo\n");
-            printf("%5d %10.3f      %c\n", (int)n, flops_getrf(m, n) / elapsedtime * MFLOPS, uplo);
+            printf("    n     m     MFLOPS      uplo\n");
+            printf("%5d %5d %10.3f       %c\n", (int)n, (int)m, flops_getrf(m, n) / elapsedtime * MFLOPS, uplo);
         }
         delete[] ipivd;
         delete[] ipiv;

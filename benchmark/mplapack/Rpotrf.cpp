@@ -139,8 +139,8 @@ int main(int argc, char *argv[]) {
             (*raxpy_ref)((mplapackint)(lda * n), mOne, A, (mplapackint)1, Ad, (mplapackint)1);
             diff = Rlange(&normtype, (mplapackint)lda, (mplapackint)n, Ad, lda, dummywork);
             diffr = cast2double(diff);
-            printf("    n     MFLOPS     error   uplo\n");
-            printf("%5d %10.3f %5.2e      %c\n", (int)n, ((double)n * (double)n * (double)n / 3.0) / elapsedtime * MFLOPS, diffr, uplo);
+            printf("    n     MFLOPS     error     uplo\n");
+            printf("%5d %10.3f   %7.2e      %c\n", (int)n, ((double)n * (double)n * (double)n / 3.0) / elapsedtime * MFLOPS, diffr, uplo);
         } else {
             t1 = gettime();
             Rpotrf(&uplo, n, A, lda, info);
