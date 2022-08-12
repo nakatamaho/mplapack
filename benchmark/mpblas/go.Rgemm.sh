@@ -10,8 +10,8 @@ fi
 MPLIBS="_Float64x dd double _Float128"
 
 for _mplib in $MPLIBS; do
-env $LDPATHPREFIX ./Rgemm.${_mplib}_opt -NOCHECK -TOTALSTEPS 200 -STEPK 5 -STEPM 5 -STEPN 5 -LOOP 5   >& log.Rgemm.${_mplib}_opt
-env $LDPATHPREFIX ./Rgemm.${_mplib} -NOCHECK -TOTALSTEPS 200 -STEPK 5 -STEPM 5 -STEPN 5 -LOOP 3       >& log.Rgemm.${_mplib}
+env $LDPATHPREFIX ./Rgemm.${_mplib}_opt -NOCHECK -TOTALSTEPS 200 -STEPK 5 -STEPM 5 -STEPN 5 -LOOP 3   >& log.Rgemm.${_mplib}_opt
+env $LDPATHPREFIX ./Rgemm.${_mplib}     -NOCHECK -TOTALSTEPS 200 -STEPK 5 -STEPM 5 -STEPN 5 -LOOP 3   >& log.Rgemm.${_mplib}
 done
 ####
 
@@ -19,8 +19,8 @@ done
 MPLIBS="mpfr gmp qd"
 
 for _mplib in $MPLIBS; do
-env $LDPATHPREFIX ./Rgemm.${_mplib}_opt -NOCHECK -TOTALSTEPS 200 -STEPK 5 -STEPM 5 -STEPN 5 -LOOP 5    >& log.Rgemm.${_mplib}_opt
-env $LDPATHPREFIX ./Rgemm.${_mplib} -NOCHECK -TOTALSTEPS 200 -STEPK 5 -STEPM 5 -STEPN 5 -LOOP 3        >& log.Rgemm.${_mplib}
+env $LDPATHPREFIX ./Rgemm.${_mplib}_opt -NOCHECK -TOTALSTEPS 200 -STEPK 5 -STEPM 5 -STEPN 5 -LOOP 3    >& log.Rgemm.${_mplib}_opt
+env $LDPATHPREFIX ./Rgemm.${_mplib}     -NOCHECK -TOTALSTEPS 200 -STEPK 5 -STEPM 5 -STEPN 5 -LOOP 3    >& log.Rgemm.${_mplib}
 done
 ####
 

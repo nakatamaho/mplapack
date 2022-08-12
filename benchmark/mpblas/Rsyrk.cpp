@@ -35,14 +35,12 @@
 #include <mplapack.h>
 #include <mplapack_benchmark.h>
 
-#define TOTALSTEPS 1000
-
 int main(int argc, char *argv[]) {
     REAL alpha, beta, dummy;
     REAL *dummywork;
     double elapsedtime, t1, t2;
     char uplo, trans, normtype;
-    int N0, K0, STEPN, STEPK;
+    int N0, K0, STEPN, STEPK, LOOP = 3, TOTALSTEPS = 100;
     int lda, ldc;
     int i, j, n, k, ka, kb, p, q;
     int check_flag = 1;
@@ -88,6 +86,10 @@ int main(int argc, char *argv[]) {
                 uplo = 'l', trans = 'c';
             } else if (strcmp("-NOCHECK", argv[i]) == 0) {
                 check_flag = 0;
+            } else if (strcmp("-LOOP", argv[i]) == 0) {
+                LOOP = atoi(argv[++i]);
+            } else if (strcmp("-TOTALSTEPS", argv[i]) == 0) {
+                TOTALSTEPS = atoi(argv[++i]);
             }
         }
     }
@@ -152,10 +154,14 @@ int main(int argc, char *argv[]) {
             // 2n^2k+2n^2 flops are needed
             printf("%5d %5d  %10.3f    %5.2e       %c        %c\n", (int)n, (int)k, (2.0 * (double)n * (double)n * (double)k + 2.0 * (double)n * (double)n) / elapsedtime * MFLOPS, diffr, uplo, trans);
         } else {
-            t1 = gettime();
-            Rsyrk(&uplo, &trans, n, k, alpha, A, lda, beta, C, ldc);
-            t2 = gettime();
-            elapsedtime = (t2 - t1);
+            elapsedtime = 0.0;
+	    for (int j = 0; j < LOOP; j++) {
+                t1 = gettime();
+                Rsyrk(&uplo, &trans, n, k, alpha, A, lda, beta, C, ldc);
+                t2 = gettime();
+                elapsedtime = elapsedtime + (t2 - t1);
+	    } 
+            elapsedtime = elapsedtime / (double)LOOP;
             printf("    n     k      MFLOPS     uplo   trans\n");
             // 2n^2k+2n^2 flops are needed
             printf("%5d %5d %10.3f      %c      %c\n", (int)n, (int)k, (2.0 * (double)n * (double)n * (double)k + 2.0 * (double)n * (double)n) / elapsedtime * MFLOPS, uplo, trans);

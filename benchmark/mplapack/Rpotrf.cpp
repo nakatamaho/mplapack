@@ -35,15 +35,13 @@
 #include <mplapack.h>
 #include <mplapack_benchmark.h>
 
-#define TOTALSTEPS 1000
-
 int main(int argc, char *argv[]) {
     REAL alpha, beta, mtemp, dummy;
     REAL *dummywork;
     double elapsedtime, t1, t2;
     char uplo, normtype;
-    mplapackint N0, STEP, info;
-    mplapackint lda;
+    mplapackint N0, STEP, TOTALSTEPS = 100;
+    mplapackint info, lda;
     int i, j, m, n, k, ka, kb, p, q;
     int check_flag = 1;
 
@@ -79,6 +77,8 @@ int main(int argc, char *argv[]) {
                 uplo = 'l';
             } else if (strcmp("-NOCHECK", argv[i]) == 0) {
                 check_flag = 0;
+            } else if (strcmp("-TOTALSTEPS", argv[i]) == 0) {
+                TOTALSTEPS = atoi(argv[++i]);
             }
         }
     }

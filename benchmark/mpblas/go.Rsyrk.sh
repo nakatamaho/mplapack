@@ -10,8 +10,8 @@ fi
 MPLIBS="_Float64x dd double _Float128"
 
 for _mplib in $MPLIBS; do
-env $LDPATHPREFIX ./Rsyrk.${_mplib}_opt -NOCHECK -TOTALSTEPS 200 -STEPK 5 -STEPM 5 -STEPN 5 -LOOP 5   >& log.Rsyrk.${_mplib}_opt
-env $LDPATHPREFIX ./Rsyrk.${_mplib} -NOCHECK -TOTALSTEPS 200 -STEPK 5 -STEPM 5 -STEPN 5 -LOOP 3       >& log.Rsyrk.${_mplib}
+env $LDPATHPREFIX ./Rsyrk.${_mplib}_opt -NOCHECK -TOTALSTEPS 200 -STEPK 5 -STEPN 5 -LOOP 3   >& log.Rsyrk.${_mplib}_opt
+env $LDPATHPREFIX ./Rsyrk.${_mplib}     -NOCHECK -TOTALSTEPS 200 -STEPK 5 -STEPN 5 -LOOP 3   >& log.Rsyrk.${_mplib}
 done
 ####
 
@@ -19,8 +19,8 @@ done
 MPLIBS="mpfr gmp qd"
 
 for _mplib in $MPLIBS; do
-env $LDPATHPREFIX ./Rsyrk.${_mplib}_opt -NOCHECK -TOTALSTEPS 200 -STEPK 5 -STEPM 5 -STEPN 5 -LOOP 5    >& log.Rsyrk.${_mplib}_opt
-env $LDPATHPREFIX ./Rsyrk.${_mplib} -NOCHECK -TOTALSTEPS 200 -STEPK 5 -STEPM 5 -STEPN 5 -LOOP 3        >& log.Rsyrk.${_mplib}
+env $LDPATHPREFIX ./Rsyrk.${_mplib}_opt -NOCHECK -TOTALSTEPS 200 -STEPK 5 -STEPN 5 -LOOP 3    >& log.Rsyrk.${_mplib}_opt
+env $LDPATHPREFIX ./Rsyrk.${_mplib}     -NOCHECK -TOTALSTEPS 200 -STEPK 5 -STEPN 5 -LOOP 3    >& log.Rsyrk.${_mplib}
 done
 ####
 

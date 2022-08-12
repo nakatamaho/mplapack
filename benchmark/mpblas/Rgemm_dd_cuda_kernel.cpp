@@ -38,8 +38,6 @@
 #include <cuda.h>
 #include <cuda_runtime.h>
 
-#define TOTALSTEPS 1000
-
 void Rgemm_cuda(const char *transa, const char *transb, mplapackint m, mplapackint n, mplapackint k, REAL alpha, REAL *Adev, mplapackint lda, REAL *Bdev, mplapackint ldb, REAL beta, REAL *Cdev, mplapackint ldc);
 
 void SetDevice() {
@@ -79,7 +77,7 @@ int main(int argc, char *argv[]) {
     double elapsedtime, t1, t2;
     double *dummyd;
     char transa, transb, normtype;
-    int N0, M0, K0, STEPN, STEPM, STEPK;
+    int N0, M0, K0, STEPN, STEPM, STEPK, LOOP = 3, TOTALSTEPS = 100;
     int lda, ldb, ldc;
     int i, j, m, n, k, ka, kb, p, q;
     int check_flag = 1;
@@ -124,6 +122,10 @@ int main(int argc, char *argv[]) {
                 transb = 'n';
             } else if (strcmp("-NOCHECK", argv[i]) == 0) {
                 check_flag = 0;
+            } else if (strcmp("-LOOP", argv[i]) == 0) {
+                LOOP = atoi(argv[++i]);
+            } else if (strcmp("-TOTALSTEPS", argv[i]) == 0) {
+                TOTALSTEPS = atoi(argv[++i]);
             }
         }
     }
@@ -232,9 +234,14 @@ int main(int argc, char *argv[]) {
             cudaMemcpy(Bdev, B, size_B * sizeof(REAL), cudaMemcpyHostToDevice);
             cudaMemcpy(Cdev, C, size_C * sizeof(REAL), cudaMemcpyHostToDevice);
 
-            t1 = gettime();
-            Rgemm_cuda(&transa, &transb, m, n, k, alpha, Adev, lda, Bdev, ldb, beta, Cdev, ldc);
-            t2 = gettime();
+            elapsedtime = 0.0;
+	    for (int j = 0; j < LOOP; j++) {
+                t1 = gettime();
+                Rgemm_cuda(&transa, &transb, m, n, k, alpha, Adev, lda, Bdev, ldb, beta, Cdev, ldc);
+                t2 = gettime();
+                elapsedtime = elapsedtime + (t2 - t1);
+	    } 
+            elapsedtime = elapsedtime / (double)LOOP;
 
             cudaMemcpy(C, Cdev, size_C * sizeof(dd_real), cudaMemcpyDeviceToHost);
             cudaFree(Adev);
