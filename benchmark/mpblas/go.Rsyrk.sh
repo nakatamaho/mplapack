@@ -39,5 +39,5 @@ $SED -i -e "s/%%MODELNAME%%/$MODELNAME/g" Rsyrk1.plt
 $SED -i -e "s/%%MODELNAME%%/$MODELNAME/g" Rsyrk2.plt
 ####
 
-gnuplot Rsyrk1.plt > Rsyrk1.eps
-gnuplot Rsyrk2.plt > Rsyrk2.eps
+gnuplot Rsyrk1.plt > Rsyrk1.pdf
+gnuplot Rsyrk2.plt > Rsyrk2.pdf

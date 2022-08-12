@@ -39,5 +39,5 @@ $SED -i -e "s/%%MODELNAME%%/$MODELNAME/g" Rgemm1.plt
 $SED -i -e "s/%%MODELNAME%%/$MODELNAME/g" Rgemm2.plt
 ####
 
-gnuplot Rgemm1.plt > Rgemm1.eps
-gnuplot Rgemm2.plt > Rgemm2.eps
+gnuplot Rgemm1.plt > Rgemm1.pdf
+gnuplot Rgemm2.plt > Rgemm2.pdf

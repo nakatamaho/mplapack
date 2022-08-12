@@ -39,5 +39,5 @@ $SED -i -e "s/%%MODELNAME%%/$MODELNAME/g" Raxpy1.plt
 $SED -i -e "s/%%MODELNAME%%/$MODELNAME/g" Raxpy2.plt
 ####
 
-gnuplot Raxpy1.plt > Raxpy1.eps
-gnuplot Raxpy2.plt > Raxpy2.eps
+gnuplot Raxpy1.plt > Raxpy1.pdf
+gnuplot Raxpy2.plt > Raxpy2.pdf

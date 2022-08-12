@@ -9,4 +9,5 @@ fi
 env $LDPATHPREFIX ./Rsyrk.dd_cuda_kernel -NOCHECK -TOTALSTEPS 700 -STEPK 5 -STEPM 5 -STEPN 5 -LOOP 5   >& log.Rsyrk.dd_cuda_kernel
 env $LDPATHPREFIX ./Rsyrk.dd_cuda_total  -NOCHECK -TOTALSTEPS 700 -STEPK 5 -STEPM 5 -STEPN 5 -LOOP 3   >& log.Rsyrk.dd_cuda_total
 
-gnuplot Rsyrk_cuda.plt > Rsyrk_cuda.eps
+gnuplot Rsyrk_cuda.plt > Rsyrk_cuda.pdf
+

@@ -5,7 +5,8 @@ set title font "Helvetica,24"
 set title "Rgetrf performance on %%MODELNAME%%"
 set xlabel "Dimension"
 set ylabel "MFLOPS"
-set terminal postscript eps color enhanced
+#set terminal postscript eps color enhanced
+set terminal pdf
 
 plot \
 "log.Rgemm.mpfr"            using 1:4 title 'MPFR 512bit'            with lines linewidth 6, \

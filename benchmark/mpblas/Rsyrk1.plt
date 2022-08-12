@@ -5,7 +5,8 @@ set title font "Helvetica,24"
 set title "Rsyrk performance on %%MODELNAME%%"
 set xlabel "Dimension"
 set ylabel "MFLOPS"
-set terminal postscript eps color enhanced
+#set terminal postscript eps color enhanced
+set terminal pdf
 
 plot \
 "log.Rsyrk._Float128"       using 1:3 title '\_Float128'             with lines linewidth 6, \
