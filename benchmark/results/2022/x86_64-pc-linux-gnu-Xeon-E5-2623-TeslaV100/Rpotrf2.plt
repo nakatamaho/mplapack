@@ -1,8 +1,8 @@
 set xlabel font "Helvetica,20"
 set ylabel font "Helvetica,20"
-set key font "Helvetica,20"
+set key font "Helvetica,16"
 set title font "Helvetica,24"
-set title "Rportrf performance on %%MODELNAME%%"
+set title "Rportrf on %%MODELNAME%%"
 set xlabel "Dimension"
 set ylabel "MFLOPS"
 #set terminal postscript eps color enhanced

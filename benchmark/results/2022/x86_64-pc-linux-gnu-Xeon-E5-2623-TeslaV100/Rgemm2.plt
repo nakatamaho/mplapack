@@ -1,8 +1,8 @@
 set xlabel font "Helvetica,20"
 set ylabel font "Helvetica,20"
-set key font "Helvetica,20"
+set key font "Helvetica,16"
 set title font "Helvetica,24"
-set title "Rgemm %%MODELNAME%%"
+set title "Rgemm on %%MODELNAME%%"
 set xlabel "Dimension"
 set ylabel "MFLOPS"
 #set terminal postscript eps color enhanced
