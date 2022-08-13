@@ -8,4 +8,4 @@ set ylabel "MFLOPS"
 #set terminal postscript eps color enhanced
 set terminal pdf
 
-plot "log.Rgetrf.dd_cuda_total"  using 1:2 title 'Total ' with lines linewidth 6
+plot "log.Rgetrf.dd_cuda_total"  using 1:3 title 'Total ' with lines linewidth 6
