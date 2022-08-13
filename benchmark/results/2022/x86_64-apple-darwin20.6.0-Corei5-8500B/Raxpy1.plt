@@ -1,8 +1,8 @@
 set xlabel font "Helvetica,20"
 set ylabel font "Helvetica,20"
-set key font "Helvetica,20"
+set key font "Helvetica,16"
 set title font "Helvetica,24"
-set title "Raxpy Intel(R) Core(TM) i5-8500B CPU @ 3.00GHz "
+set title "Raxpy on Intel(R) Core(TM) i5-8500B CPU @ 3.00GHz "
 set xlabel "Dimension"
 set ylabel "MFLOPS"
 set terminal pdf
