@@ -1,400 +1,400 @@
     m     n     k     MFLOPS    transa   transb
     1     1     1      0.001         n        n
     m     n     k     MFLOPS    transa   transb
-    6     6     6     41.814         n        n
+    6     6     6     40.566         n        n
     m     n     k     MFLOPS    transa   transb
-   11    11    11    142.535         n        n
+   11    11    11    132.919         n        n
     m     n     k     MFLOPS    transa   transb
-   16    16    16    250.801         n        n
+   16    16    16    241.403         n        n
     m     n     k     MFLOPS    transa   transb
-   21    21    21    271.001         n        n
+   21    21    21     30.614         n        n
     m     n     k     MFLOPS    transa   transb
-   26    26    26    377.724         n        n
+   26    26    26    361.073         n        n
     m     n     k     MFLOPS    transa   transb
-   31    31    31    466.821         n        n
+   31    31    31    367.147         n        n
     m     n     k     MFLOPS    transa   transb
-   36    36    36    434.062         n        n
+   36    36    36    429.300         n        n
     m     n     k     MFLOPS    transa   transb
-   41    41    41    429.427         n        n
+   41    41    41    678.847         n        n
     m     n     k     MFLOPS    transa   transb
-   46    46    46    962.113         n        n
+   46    46    46    776.646         n        n
     m     n     k     MFLOPS    transa   transb
-   51    51    51    962.593         n        n
+   51    51    51    826.509         n        n
     m     n     k     MFLOPS    transa   transb
-   56    56    56   1063.152         n        n
+   56    56    56   1077.406         n        n
     m     n     k     MFLOPS    transa   transb
-   61    61    61    564.890         n        n
+   61    61    61   1180.443         n        n
     m     n     k     MFLOPS    transa   transb
-   66    66    66   1115.835         n        n
+   66    66    66   1093.077         n        n
     m     n     k     MFLOPS    transa   transb
-   71    71    71   1105.304         n        n
+   71    71    71   1036.374         n        n
     m     n     k     MFLOPS    transa   transb
-   76    76    76   1039.834         n        n
+   76    76    76   1073.690         n        n
     m     n     k     MFLOPS    transa   transb
-   81    81    81   1077.605         n        n
+   81    81    81    755.047         n        n
     m     n     k     MFLOPS    transa   transb
-   86    86    86    829.286         n        n
+   86    86    86   1133.150         n        n
     m     n     k     MFLOPS    transa   transb
-   91    91    91   1199.357         n        n
+   91    91    91    852.287         n        n
     m     n     k     MFLOPS    transa   transb
-   96    96    96   1029.934         n        n
+   96    96    96   1261.765         n        n
     m     n     k     MFLOPS    transa   transb
-  101   101   101   1119.291         n        n
+  101   101   101    979.057         n        n
     m     n     k     MFLOPS    transa   transb
-  106   106   106   1063.246         n        n
+  106   106   106   1192.619         n        n
     m     n     k     MFLOPS    transa   transb
-  111   111   111   1270.677         n        n
+  111   111   111   1147.520         n        n
     m     n     k     MFLOPS    transa   transb
-  116   116   116   1042.108         n        n
+  116   116   116   1240.956         n        n
     m     n     k     MFLOPS    transa   transb
-  121   121   121   1116.160         n        n
+  121   121   121   1217.278         n        n
     m     n     k     MFLOPS    transa   transb
-  126   126   126   1257.428         n        n
+  126   126   126   1043.490         n        n
     m     n     k     MFLOPS    transa   transb
-  131   131   131   1104.184         n        n
+  131   131   131   1177.102         n        n
     m     n     k     MFLOPS    transa   transb
-  136   136   136   1205.207         n        n
+  136   136   136   1191.215         n        n
     m     n     k     MFLOPS    transa   transb
-  141   141   141   1102.185         n        n
+  141   141   141   1230.922         n        n
     m     n     k     MFLOPS    transa   transb
-  146   146   146   1199.967         n        n
+  146   146   146   1208.839         n        n
     m     n     k     MFLOPS    transa   transb
-  151   151   151   1157.439         n        n
+  151   151   151   1156.651         n        n
     m     n     k     MFLOPS    transa   transb
-  156   156   156   1149.671         n        n
+  156   156   156   1169.944         n        n
     m     n     k     MFLOPS    transa   transb
-  161   161   161   1104.772         n        n
+  161   161   161   1151.946         n        n
     m     n     k     MFLOPS    transa   transb
-  166   166   166   1161.977         n        n
+  166   166   166   1137.509         n        n
     m     n     k     MFLOPS    transa   transb
-  171   171   171   1140.476         n        n
+  171   171   171   1129.309         n        n
     m     n     k     MFLOPS    transa   transb
-  176   176   176   1148.181         n        n
+  176   176   176   1118.964         n        n
     m     n     k     MFLOPS    transa   transb
-  181   181   181   1119.489         n        n
+  181   181   181   1134.149         n        n
     m     n     k     MFLOPS    transa   transb
-  186   186   186   1133.927         n        n
+  186   186   186   1128.916         n        n
     m     n     k     MFLOPS    transa   transb
-  191   191   191   1122.039         n        n
+  191   191   191   1025.038         n        n
     m     n     k     MFLOPS    transa   transb
-  196   196   196   1042.489         n        n
+  196   196   196   1164.755         n        n
     m     n     k     MFLOPS    transa   transb
-  201   201   201   1169.418         n        n
+  201   201   201   1124.015         n        n
     m     n     k     MFLOPS    transa   transb
-  206   206   206   1189.715         n        n
+  206   206   206   1074.289         n        n
     m     n     k     MFLOPS    transa   transb
-  211   211   211   1182.692         n        n
+  211   211   211   1177.385         n        n
     m     n     k     MFLOPS    transa   transb
-  216   216   216   1181.554         n        n
+  216   216   216   1190.394         n        n
     m     n     k     MFLOPS    transa   transb
-  221   221   221   1207.412         n        n
+  221   221   221   1195.993         n        n
     m     n     k     MFLOPS    transa   transb
-  226   226   226   1163.939         n        n
+  226   226   226   1218.171         n        n
     m     n     k     MFLOPS    transa   transb
-  231   231   231   1178.134         n        n
+  231   231   231   1205.869         n        n
     m     n     k     MFLOPS    transa   transb
-  236   236   236   1204.111         n        n
+  236   236   236   1219.281         n        n
     m     n     k     MFLOPS    transa   transb
-  241   241   241   1222.328         n        n
+  241   241   241   1256.641         n        n
     m     n     k     MFLOPS    transa   transb
-  246   246   246   1169.791         n        n
+  246   246   246   1253.847         n        n
     m     n     k     MFLOPS    transa   transb
-  251   251   251   1243.426         n        n
+  251   251   251   1231.151         n        n
     m     n     k     MFLOPS    transa   transb
-  256   256   256   1231.489         n        n
+  256   256   256   1262.250         n        n
     m     n     k     MFLOPS    transa   transb
-  261   261   261   1230.746         n        n
+  261   261   261   1235.695         n        n
     m     n     k     MFLOPS    transa   transb
-  266   266   266   1220.353         n        n
+  266   266   266   1234.752         n        n
     m     n     k     MFLOPS    transa   transb
-  271   271   271   1209.215         n        n
+  271   271   271   1258.377         n        n
     m     n     k     MFLOPS    transa   transb
-  276   276   276   1248.724         n        n
+  276   276   276   1289.744         n        n
     m     n     k     MFLOPS    transa   transb
-  281   281   281   1244.945         n        n
+  281   281   281   1232.282         n        n
     m     n     k     MFLOPS    transa   transb
-  286   286   286   1255.833         n        n
+  286   286   286   1261.600         n        n
     m     n     k     MFLOPS    transa   transb
-  291   291   291   1242.963         n        n
+  291   291   291   1245.172         n        n
     m     n     k     MFLOPS    transa   transb
-  296   296   296   1260.721         n        n
+  296   296   296   1259.519         n        n
     m     n     k     MFLOPS    transa   transb
-  301   301   301   1245.381         n        n
+  301   301   301   1274.558         n        n
     m     n     k     MFLOPS    transa   transb
-  306   306   306   1261.173         n        n
+  306   306   306   1269.434         n        n
     m     n     k     MFLOPS    transa   transb
-  311   311   311   1253.127         n        n
+  311   311   311   1281.099         n        n
     m     n     k     MFLOPS    transa   transb
-  316   316   316   1302.290         n        n
+  316   316   316   1382.583         n        n
     m     n     k     MFLOPS    transa   transb
-  321   321   321   1321.099         n        n
+  321   321   321   1364.970         n        n
     m     n     k     MFLOPS    transa   transb
-  326   326   326   1371.511         n        n
+  326   326   326   1357.140         n        n
     m     n     k     MFLOPS    transa   transb
-  331   331   331   1396.175         n        n
+  331   331   331   1054.216         n        n
     m     n     k     MFLOPS    transa   transb
-  336   336   336   1379.701         n        n
+  336   336   336   1121.189         n        n
     m     n     k     MFLOPS    transa   transb
-  341   341   341   1372.368         n        n
+  341   341   341   1266.386         n        n
     m     n     k     MFLOPS    transa   transb
-  346   346   346   1379.889         n        n
+  346   346   346   1408.983         n        n
     m     n     k     MFLOPS    transa   transb
-  351   351   351   1412.079         n        n
+  351   351   351   1406.614         n        n
     m     n     k     MFLOPS    transa   transb
-  356   356   356   1412.779         n        n
+  356   356   356   1412.410         n        n
     m     n     k     MFLOPS    transa   transb
-  361   361   361   1386.353         n        n
+  361   361   361   1405.670         n        n
     m     n     k     MFLOPS    transa   transb
-  366   366   366   1396.429         n        n
+  366   366   366   1411.395         n        n
     m     n     k     MFLOPS    transa   transb
-  371   371   371   1423.086         n        n
+  371   371   371   1414.734         n        n
     m     n     k     MFLOPS    transa   transb
-  376   376   376   1398.123         n        n
+  376   376   376   1407.832         n        n
     m     n     k     MFLOPS    transa   transb
-  381   381   381   1400.000         n        n
+  381   381   381   1416.857         n        n
     m     n     k     MFLOPS    transa   transb
-  386   386   386   1405.513         n        n
+  386   386   386   1401.029         n        n
     m     n     k     MFLOPS    transa   transb
-  391   391   391   1414.136         n        n
+  391   391   391   1393.272         n        n
     m     n     k     MFLOPS    transa   transb
-  396   396   396   1408.703         n        n
+  396   396   396   1429.614         n        n
     m     n     k     MFLOPS    transa   transb
-  401   401   401   1414.336         n        n
+  401   401   401   1401.593         n        n
     m     n     k     MFLOPS    transa   transb
-  406   406   406   1395.827         n        n
+  406   406   406   1198.489         n        n
     m     n     k     MFLOPS    transa   transb
-  411   411   411   1411.079         n        n
+  411   411   411   1401.282         n        n
     m     n     k     MFLOPS    transa   transb
-  416   416   416   1423.677         n        n
+  416   416   416   1406.199         n        n
     m     n     k     MFLOPS    transa   transb
-  421   421   421   1403.368         n        n
+  421   421   421   1412.908         n        n
     m     n     k     MFLOPS    transa   transb
-  426   426   426   1430.753         n        n
+  426   426   426   1408.709         n        n
     m     n     k     MFLOPS    transa   transb
-  431   431   431   1425.809         n        n
+  431   431   431   1431.656         n        n
     m     n     k     MFLOPS    transa   transb
-  436   436   436   1416.784         n        n
+  436   436   436   1430.288         n        n
     m     n     k     MFLOPS    transa   transb
-  441   441   441   1418.071         n        n
+  441   441   441   1418.201         n        n
     m     n     k     MFLOPS    transa   transb
-  446   446   446   1430.243         n        n
+  446   446   446   1426.307         n        n
     m     n     k     MFLOPS    transa   transb
-  451   451   451   1427.387         n        n
+  451   451   451   1422.602         n        n
     m     n     k     MFLOPS    transa   transb
-  456   456   456   1431.890         n        n
+  456   456   456   1418.906         n        n
     m     n     k     MFLOPS    transa   transb
-  461   461   461   1425.517         n        n
+  461   461   461   1430.554         n        n
     m     n     k     MFLOPS    transa   transb
-  466   466   466   1429.991         n        n
+  466   466   466   1424.208         n        n
     m     n     k     MFLOPS    transa   transb
-  471   471   471   1422.746         n        n
+  471   471   471   1432.278         n        n
     m     n     k     MFLOPS    transa   transb
-  476   476   476   1436.862         n        n
+  476   476   476   1438.844         n        n
     m     n     k     MFLOPS    transa   transb
-  481   481   481   1426.641         n        n
+  481   481   481   1435.752         n        n
     m     n     k     MFLOPS    transa   transb
-  486   486   486   1439.762         n        n
+  486   486   486   1436.327         n        n
     m     n     k     MFLOPS    transa   transb
-  491   491   491   1418.089         n        n
+  491   491   491   1336.267         n        n
     m     n     k     MFLOPS    transa   transb
-  496   496   496   1438.181         n        n
+  496   496   496   1434.909         n        n
     m     n     k     MFLOPS    transa   transb
-  501   501   501   1431.727         n        n
+  501   501   501   1424.137         n        n
     m     n     k     MFLOPS    transa   transb
-  506   506   506   1444.923         n        n
+  506   506   506   1448.051         n        n
     m     n     k     MFLOPS    transa   transb
-  511   511   511   1428.406         n        n
+  511   511   511   1432.912         n        n
     m     n     k     MFLOPS    transa   transb
-  516   516   516   1442.862         n        n
+  516   516   516   1437.567         n        n
     m     n     k     MFLOPS    transa   transb
-  521   521   521   1445.215         n        n
+  521   521   521   1434.872         n        n
     m     n     k     MFLOPS    transa   transb
-  526   526   526   1434.779         n        n
+  526   526   526   1438.851         n        n
     m     n     k     MFLOPS    transa   transb
-  531   531   531   1441.911         n        n
+  531   531   531   1447.466         n        n
     m     n     k     MFLOPS    transa   transb
-  536   536   536   1425.287         n        n
+  536   536   536   1445.478         n        n
     m     n     k     MFLOPS    transa   transb
-  541   541   541   1434.796         n        n
+  541   541   541   1441.566         n        n
     m     n     k     MFLOPS    transa   transb
-  546   546   546   1445.169         n        n
+  546   546   546   1441.583         n        n
     m     n     k     MFLOPS    transa   transb
-  551   551   551   1436.680         n        n
+  551   551   551   1404.561         n        n
     m     n     k     MFLOPS    transa   transb
-  556   556   556   1440.220         n        n
+  556   556   556   1414.373         n        n
     m     n     k     MFLOPS    transa   transb
-  561   561   561   1440.087         n        n
+  561   561   561   1444.874         n        n
     m     n     k     MFLOPS    transa   transb
-  566   566   566   1440.681         n        n
+  566   566   566   1446.689         n        n
     m     n     k     MFLOPS    transa   transb
-  571   571   571   1449.466         n        n
+  571   571   571   1450.365         n        n
     m     n     k     MFLOPS    transa   transb
-  576   576   576   1449.423         n        n
+  576   576   576   1443.122         n        n
     m     n     k     MFLOPS    transa   transb
-  581   581   581   1447.076         n        n
+  581   581   581   1434.231         n        n
     m     n     k     MFLOPS    transa   transb
-  586   586   586   1449.559         n        n
+  586   586   586   1443.858         n        n
     m     n     k     MFLOPS    transa   transb
-  591   591   591   1437.559         n        n
+  591   591   591   1444.633         n        n
     m     n     k     MFLOPS    transa   transb
-  596   596   596   1445.790         n        n
+  596   596   596   1457.467         n        n
     m     n     k     MFLOPS    transa   transb
-  601   601   601   1449.089         n        n
+  601   601   601   1450.106         n        n
     m     n     k     MFLOPS    transa   transb
-  606   606   606   1447.151         n        n
+  606   606   606   1463.138         n        n
     m     n     k     MFLOPS    transa   transb
-  611   611   611   1356.146         n        n
+  611   611   611   1441.485         n        n
     m     n     k     MFLOPS    transa   transb
-  616   616   616   1453.947         n        n
+  616   616   616   1453.838         n        n
     m     n     k     MFLOPS    transa   transb
-  621   621   621   1448.714         n        n
+  621   621   621   1444.025         n        n
     m     n     k     MFLOPS    transa   transb
-  626   626   626   1439.374         n        n
+  626   626   626   1451.068         n        n
     m     n     k     MFLOPS    transa   transb
-  631   631   631   1444.416         n        n
+  631   631   631   1455.495         n        n
     m     n     k     MFLOPS    transa   transb
-  636   636   636   1427.625         n        n
+  636   636   636   1453.788         n        n
     m     n     k     MFLOPS    transa   transb
-  641   641   641   1448.716         n        n
+  641   641   641   1452.906         n        n
     m     n     k     MFLOPS    transa   transb
-  646   646   646   1453.425         n        n
+  646   646   646   1454.544         n        n
     m     n     k     MFLOPS    transa   transb
-  651   651   651   1430.282         n        n
+  651   651   651   1436.586         n        n
     m     n     k     MFLOPS    transa   transb
-  656   656   656   1445.563         n        n
+  656   656   656   1447.803         n        n
     m     n     k     MFLOPS    transa   transb
-  661   661   661   1439.241         n        n
+  661   661   661   1432.820         n        n
     m     n     k     MFLOPS    transa   transb
-  666   666   666   1456.657         n        n
+  666   666   666   1452.274         n        n
     m     n     k     MFLOPS    transa   transb
-  671   671   671   1447.909         n        n
+  671   671   671   1459.025         n        n
     m     n     k     MFLOPS    transa   transb
-  676   676   676   1454.659         n        n
+  676   676   676   1451.374         n        n
     m     n     k     MFLOPS    transa   transb
-  681   681   681   1448.144         n        n
+  681   681   681   1456.702         n        n
     m     n     k     MFLOPS    transa   transb
-  686   686   686   1444.916         n        n
+  686   686   686   1451.074         n        n
     m     n     k     MFLOPS    transa   transb
-  691   691   691   1458.665         n        n
+  691   691   691   1448.604         n        n
     m     n     k     MFLOPS    transa   transb
-  696   696   696   1438.121         n        n
+  696   696   696   1455.415         n        n
     m     n     k     MFLOPS    transa   transb
-  701   701   701   1463.685         n        n
+  701   701   701   1451.259         n        n
     m     n     k     MFLOPS    transa   transb
-  706   706   706   1448.251         n        n
+  706   706   706   1453.726         n        n
     m     n     k     MFLOPS    transa   transb
-  711   711   711   1438.959         n        n
+  711   711   711   1444.654         n        n
     m     n     k     MFLOPS    transa   transb
-  716   716   716   1454.268         n        n
+  716   716   716   1452.988         n        n
     m     n     k     MFLOPS    transa   transb
-  721   721   721   1451.294         n        n
+  721   721   721   1454.072         n        n
     m     n     k     MFLOPS    transa   transb
-  726   726   726   1456.866         n        n
+  726   726   726   1438.260         n        n
     m     n     k     MFLOPS    transa   transb
-  731   731   731   1449.114         n        n
+  731   731   731   1460.220         n        n
     m     n     k     MFLOPS    transa   transb
-  736   736   736   1436.261         n        n
+  736   736   736   1447.829         n        n
     m     n     k     MFLOPS    transa   transb
-  741   741   741   1449.939         n        n
+  741   741   741   1455.930         n        n
     m     n     k     MFLOPS    transa   transb
-  746   746   746   1453.114         n        n
+  746   746   746   1464.136         n        n
     m     n     k     MFLOPS    transa   transb
-  751   751   751   1443.661         n        n
+  751   751   751   1444.135         n        n
     m     n     k     MFLOPS    transa   transb
-  756   756   756   1449.985         n        n
+  756   756   756   1461.899         n        n
     m     n     k     MFLOPS    transa   transb
-  761   761   761   1449.860         n        n
+  761   761   761   1443.999         n        n
     m     n     k     MFLOPS    transa   transb
-  766   766   766   1448.963         n        n
+  766   766   766   1455.254         n        n
     m     n     k     MFLOPS    transa   transb
-  771   771   771   1457.111         n        n
+  771   771   771   1447.478         n        n
     m     n     k     MFLOPS    transa   transb
-  776   776   776   1456.516         n        n
+  776   776   776   1449.696         n        n
     m     n     k     MFLOPS    transa   transb
-  781   781   781   1460.439         n        n
+  781   781   781   1455.805         n        n
     m     n     k     MFLOPS    transa   transb
-  786   786   786   1449.573         n        n
+  786   786   786   1452.328         n        n
     m     n     k     MFLOPS    transa   transb
-  791   791   791   1459.062         n        n
+  791   791   791   1454.440         n        n
     m     n     k     MFLOPS    transa   transb
-  796   796   796   1464.393         n        n
+  796   796   796   1443.919         n        n
     m     n     k     MFLOPS    transa   transb
-  801   801   801   1451.438         n        n
+  801   801   801   1435.727         n        n
     m     n     k     MFLOPS    transa   transb
-  806   806   806   1454.887         n        n
+  806   806   806   1455.232         n        n
     m     n     k     MFLOPS    transa   transb
-  811   811   811   1461.105         n        n
+  811   811   811   1432.571         n        n
     m     n     k     MFLOPS    transa   transb
-  816   816   816   1450.853         n        n
+  816   816   816   1436.233         n        n
     m     n     k     MFLOPS    transa   transb
-  821   821   821   1446.214         n        n
+  821   821   821   1462.325         n        n
     m     n     k     MFLOPS    transa   transb
-  826   826   826   1435.279         n        n
+  826   826   826   1454.038         n        n
     m     n     k     MFLOPS    transa   transb
-  831   831   831   1443.516         n        n
+  831   831   831   1446.429         n        n
     m     n     k     MFLOPS    transa   transb
-  836   836   836   1453.428         n        n
+  836   836   836   1449.079         n        n
     m     n     k     MFLOPS    transa   transb
-  841   841   841   1459.015         n        n
+  841   841   841   1457.357         n        n
     m     n     k     MFLOPS    transa   transb
-  846   846   846   1451.994         n        n
+  846   846   846   1452.792         n        n
     m     n     k     MFLOPS    transa   transb
-  851   851   851   1452.152         n        n
+  851   851   851   1451.620         n        n
     m     n     k     MFLOPS    transa   transb
-  856   856   856   1453.502         n        n
+  856   856   856   1457.476         n        n
     m     n     k     MFLOPS    transa   transb
-  861   861   861   1452.277         n        n
+  861   861   861   1452.478         n        n
     m     n     k     MFLOPS    transa   transb
-  866   866   866   1454.094         n        n
+  866   866   866   1453.611         n        n
     m     n     k     MFLOPS    transa   transb
-  871   871   871   1442.678         n        n
+  871   871   871   1456.392         n        n
     m     n     k     MFLOPS    transa   transb
-  876   876   876   1445.719         n        n
+  876   876   876   1449.475         n        n
     m     n     k     MFLOPS    transa   transb
-  881   881   881   1457.247         n        n
+  881   881   881   1453.533         n        n
     m     n     k     MFLOPS    transa   transb
-  886   886   886   1446.308         n        n
+  886   886   886   1456.905         n        n
     m     n     k     MFLOPS    transa   transb
-  891   891   891   1456.645         n        n
+  891   891   891   1457.065         n        n
     m     n     k     MFLOPS    transa   transb
-  896   896   896   1449.257         n        n
+  896   896   896   1414.676         n        n
     m     n     k     MFLOPS    transa   transb
-  901   901   901   1449.849         n        n
+  901   901   901   1452.351         n        n
     m     n     k     MFLOPS    transa   transb
-  906   906   906   1457.480         n        n
+  906   906   906   1454.523         n        n
     m     n     k     MFLOPS    transa   transb
-  911   911   911   1452.025         n        n
+  911   911   911   1447.672         n        n
     m     n     k     MFLOPS    transa   transb
-  916   916   916   1444.816         n        n
+  916   916   916   1450.578         n        n
     m     n     k     MFLOPS    transa   transb
-  921   921   921   1453.306         n        n
+  921   921   921   1455.432         n        n
     m     n     k     MFLOPS    transa   transb
-  926   926   926   1451.548         n        n
+  926   926   926   1453.587         n        n
     m     n     k     MFLOPS    transa   transb
-  931   931   931   1460.134         n        n
+  931   931   931   1448.376         n        n
     m     n     k     MFLOPS    transa   transb
-  936   936   936   1458.378         n        n
+  936   936   936   1456.236         n        n
     m     n     k     MFLOPS    transa   transb
-  941   941   941   1454.636         n        n
+  941   941   941   1452.157         n        n
     m     n     k     MFLOPS    transa   transb
-  946   946   946   1459.041         n        n
+  946   946   946   1459.224         n        n
     m     n     k     MFLOPS    transa   transb
-  951   951   951   1460.351         n        n
+  951   951   951   1452.936         n        n
     m     n     k     MFLOPS    transa   transb
-  956   956   956   1451.045         n        n
+  956   956   956   1450.839         n        n
     m     n     k     MFLOPS    transa   transb
-  961   961   961   1450.074         n        n
+  961   961   961   1460.152         n        n
     m     n     k     MFLOPS    transa   transb
-  966   966   966   1455.421         n        n
+  966   966   966   1456.568         n        n
     m     n     k     MFLOPS    transa   transb
-  971   971   971   1445.646         n        n
+  971   971   971   1451.094         n        n
     m     n     k     MFLOPS    transa   transb
-  976   976   976   1450.350         n        n
+  976   976   976   1451.382         n        n
     m     n     k     MFLOPS    transa   transb
-  981   981   981   1450.022         n        n
+  981   981   981   1454.682         n        n
     m     n     k     MFLOPS    transa   transb
-  986   986   986   1457.650         n        n
+  986   986   986   1463.765         n        n
     m     n     k     MFLOPS    transa   transb
-  991   991   991   1449.471         n        n
+  991   991   991   1452.060         n        n
     m     n     k     MFLOPS    transa   transb
-  996   996   996   1457.439         n        n
+  996   996   996   1454.506         n        n
