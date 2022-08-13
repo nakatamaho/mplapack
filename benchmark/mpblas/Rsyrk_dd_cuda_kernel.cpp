@@ -77,7 +77,7 @@ int main(int argc, char *argv[]) {
     double elapsedtime, t1, t2;
     double *dummyd;
     char uplo, trans, normtype;
-    int N0, K0, STEPN, STEPK;
+    int N0, K0, STEPN, STEPK, LOOP = 3, TOTALSTEPS = 100;
     int lda, ldc;
     int i, j, n, k, ka, kb, p, q;
     int check_flag = 1;
