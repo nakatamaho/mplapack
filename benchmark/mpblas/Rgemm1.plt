@@ -15,5 +15,5 @@ plot \
 "log.Rgemm._Float64x_opt"   using 1:4 title '\_Float64x (OpenMP)'    with lines linewidth 6, \
 "log.Rgemm.dd"              using 1:4 title 'double double'          with lines linewidth 6, \
 "log.Rgemm.dd_opt"          using 1:4 title 'double double (OpenMP)' with lines linewidth 6, \
-"log.Rgemm.double"          using 1:4 title 'double'                 with lines linewidth 6, \
-"log.Rgemm.double_opt"	    using 1:4 title 'double (OpenMP)'        with lines linewidth 6
+"log.Rgemm.double"          using 1:4 title 'double'                 with lines linewidth 6
+
