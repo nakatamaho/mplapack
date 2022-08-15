@@ -14,5 +14,5 @@ plot \
 "log.Raxpy._Float64x_opt"   using 1:2 title '\_Float64x (OpenMP)'    with lines linewidth 6, \
 "log.Raxpy.dd"              using 1:2 title 'double double'          with lines linewidth 6, \
 "log.Raxpy.dd_opt"          using 1:2 title 'double double (OpenMP)' with lines linewidth 6, \
-"log.Raxpy.double"          using 1:2 title 'double'                 with lines linewidth 6, \
-"log.Raxpy.double_opt"	    using 1:2 title 'double (OpenMP)'        with lines linewidth 6
+"log.Raxpy.double"          using 1:2 title 'double'                 with lines linewidth 6
+
