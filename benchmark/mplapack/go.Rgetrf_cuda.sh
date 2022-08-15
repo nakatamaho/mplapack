@@ -9,7 +9,7 @@ fi
 env $LDPATHPREFIX ./Rgetrf.dd_cuda_total  -NOCHECK -TOTALSTEPS 700 -STEPM 5 -STEPN 5   >& log.Rgetrf.dd_cuda_total
 
 if [ `uname` = "Linux" ]; then
-    GPUNAME=`nvidia-smi --query-gpu=name --format=csv | uniq`
+    MODELNAME=`nvidia-smi --query-gpu=name --format=csv | uniq`
     SED=sed
 else
     MODELNAME="unknown"
