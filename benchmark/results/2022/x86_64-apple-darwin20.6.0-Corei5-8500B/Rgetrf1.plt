@@ -15,5 +15,5 @@ plot \
 "log.Rgetrf._Float64x_opt"   using 1:3 title '\_Float64x (OpenMP)'    with lines linewidth 6, \
 "log.Rgetrf.dd"              using 1:3 title 'double double'          with lines linewidth 6, \
 "log.Rgetrf.dd_opt"          using 1:3 title 'double double (OpenMP)' with lines linewidth 6, \
-"log.Rgetrf.double"          using 1:3 title 'double'                 with lines linewidth 6, \
-"log.Rgetrf.double_opt"	    using 1:3 title 'double (OpenMP)'        with lines linewidth 6
+"log.Rgetrf.double"          using 1:3 title 'double'                 with lines linewidth 6
+
