@@ -37,7 +37,9 @@ fi
 
 $SED -i -e "s/%%MODELNAME%%/$MODELNAME/g" Rgetrf1.plt
 $SED -i -e "s/%%MODELNAME%%/$MODELNAME/g" Rgetrf2.plt
+$SED -i -e "s/%%MODELNAME%%/$MODELNAME/g" Rgetrf3.plt
 ####
 
 gnuplot Rgetrf1.plt > Rgetrf1.pdf
 gnuplot Rgetrf2.plt > Rgetrf2.pdf
+gnuplot Rgetrf3.plt > Rgetrf3.pdf
