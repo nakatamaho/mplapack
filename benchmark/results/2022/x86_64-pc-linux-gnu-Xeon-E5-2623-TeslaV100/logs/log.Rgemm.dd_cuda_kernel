@@ -910,4 +910,80 @@ cudaGetDevice()=0
  3165  3165  3165  424121.472    4.35e-322       n        n
     m     n     k     MFLOPS    transa   transb
  3172  3172  3172  425899.264    4.35e-322       n        n
-    m     n     k     MFLOPS    
+    m     n     k     MFLOPS    transa   transb
+ 3179  3179  3179  426061.985    4.35e-322       n        n
+    m     n     k     MFLOPS    transa   transb
+ 3186  3186  3186  427723.077    4.35e-322       n        n
+    m     n     k     MFLOPS    transa   transb
+ 3193  3193  3193  429590.824    4.35e-322       n        n
+    m     n     k     MFLOPS    transa   transb
+ 3200  3200  3200  430711.765    4.35e-322       n        n
+    m     n     k     MFLOPS    transa   transb
+ 3207  3207  3207  423252.519    4.35e-322       n        n
+    m     n     k     MFLOPS    transa   transb
+ 3214  3214  3214  425105.387    4.35e-322       n        n
+    m     n     k     MFLOPS    transa   transb
+ 3221  3221  3221  425711.925    4.35e-322       n        n
+    m     n     k     MFLOPS    transa   transb
+ 3228  3228  3228  427545.530    4.35e-322       n        n
+    m     n     k     MFLOPS    transa   transb
+ 3235  3235  3235  424196.113    4.35e-322       n        n
+    m     n     k     MFLOPS    transa   transb
+ 3242  3242  3242  424752.732    4.35e-322       n        n
+    m     n     k     MFLOPS    transa   transb
+ 3249  3249  3249  423217.028    4.35e-322       n        n
+    m     n     k     MFLOPS    transa   transb
+ 3256  3256  3256  429507.869    4.35e-322       n        n
+    m     n     k     MFLOPS    transa   transb
+ 3263  3263  3263  428660.589    4.35e-322       n        n
+    m     n     k     MFLOPS    transa   transb
+ 3270  3270  3270  420812.507    4.35e-322       n        n
+    m     n     k     MFLOPS    transa   transb
+ 3277  3277  3277  422496.408    4.35e-322       n        n
+    m     n     k     MFLOPS    transa   transb
+ 3284  3284  3284  424128.029    4.35e-322       n        n
+    m     n     k     MFLOPS    transa   transb
+ 3291  3291  3291  425907.199    4.35e-322       n        n
+    m     n     k     MFLOPS    transa   transb
+ 3298  3298  3298  426975.428    4.35e-322       n        n
+    m     n     k     MFLOPS    transa   transb
+ 3305  3305  3305  428674.477    4.35e-322       n        n
+    m     n     k     MFLOPS    transa   transb
+ 3312  3312  3312  430547.136    4.35e-322       n        n
+    m     n     k     MFLOPS    transa   transb
+ 3319  3319  3319  428377.814    4.35e-322       n        n
+    m     n     k     MFLOPS    transa   transb
+ 3326  3326  3326  428908.337    4.35e-322       n        n
+    m     n     k     MFLOPS    transa   transb
+ 3333  3333  3333  419859.316    4.35e-322       n        n
+    m     n     k     MFLOPS    transa   transb
+ 3340  3340  3340  422182.504    4.35e-322       n        n
+    m     n     k     MFLOPS    transa   transb
+ 3347  3347  3347  423484.115    4.35e-322       n        n
+    m     n     k     MFLOPS    transa   transb
+ 3354  3354  3354  426582.274    4.35e-322       n        n
+    m     n     k     MFLOPS    transa   transb
+ 3361  3361  3361  425321.469    4.35e-322       n        n
+    m     n     k     MFLOPS    transa   transb
+ 3368  3368  3368  427063.427    4.35e-322       n        n
+    m     n     k     MFLOPS    transa   transb
+ 3375  3375  3375  428859.117    4.35e-322       n        n
+    m     n     k     MFLOPS    transa   transb
+ 3382  3382  3382  430115.874    4.35e-322       n        n
+    m     n     k     MFLOPS    transa   transb
+ 3389  3389  3389  431831.699    4.35e-322       n        n
+    m     n     k     MFLOPS    transa   transb
+ 3396  3396  3396  424036.672    4.35e-322       n        n
+    m     n     k     MFLOPS    transa   transb
+ 3403  3403  3403  425871.590    4.35e-322       n        n
+    m     n     k     MFLOPS    transa   transb
+ 3410  3410  3410  422986.431    4.35e-322       n        n
+    m     n     k     MFLOPS    transa   transb
+ 3417  3417  3417  424650.062    4.35e-322       n        n
+    m     n     k     MFLOPS    transa   transb
+ 3424  3424  3424  425747.415    4.35e-322       n        n
+    m     n     k     MFLOPS    transa   transb
+ 3431  3431  3431  425552.712    4.35e-322       n        n
+    m     n     k     MFLOPS    transa   transb
+ 3438  3438  3438  428740.635    4.35e-322       n        n
+    m     n     k     MF
