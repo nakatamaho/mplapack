@@ -1,566 +1,566 @@
      m       n      MFLOPS  trans
-     1       1       0.629      n
+     1       1       0.599      n
      m       n      MFLOPS  trans
-     8       8      15.487      n
+     8       8       4.194      n
      m       n      MFLOPS  trans
-    15      15      16.368      n
+    15      15       4.501      n
      m       n      MFLOPS  trans
-    22      22      15.977      n
+    22      22       4.451      n
      m       n      MFLOPS  trans
-    29      29      16.726      n
+    29      29       4.424      n
      m       n      MFLOPS  trans
-    36      36      17.007      n
+    36      36       4.515      n
      m       n      MFLOPS  trans
-    43      43      17.177      n
+    43      43      11.329      n
      m       n      MFLOPS  trans
-    50      50      17.288      n
+    50      50      11.334      n
      m       n      MFLOPS  trans
-    57      57      17.351      n
+    57      57      11.138      n
      m       n      MFLOPS  trans
-    64      64      19.998      n
+    64      64      11.154      n
      m       n      MFLOPS  trans
-    71      71      42.124      n
+    71      71      11.137      n
      m       n      MFLOPS  trans
-    78      78      42.439      n
+    78      78      11.059      n
      m       n      MFLOPS  trans
-    85      85      43.214      n
+    85      85      11.380      n
      m       n      MFLOPS  trans
-    92      92      41.640      n
+    92      92      11.441      n
      m       n      MFLOPS  trans
-    99      99      43.511      n
+    99      99      10.910      n
      m       n      MFLOPS  trans
-   106     106      43.260      n
+   106     106      11.074      n
      m       n      MFLOPS  trans
-   113     113      42.990      n
+   113     113      11.213      n
      m       n      MFLOPS  trans
-   120     120      43.558      n
+   120     120      10.983      n
      m       n      MFLOPS  trans
-   127     127      43.369      n
+   127     127      11.235      n
      m       n      MFLOPS  trans
-   134     134      43.661      n
+   134     134      10.950      n
      m       n      MFLOPS  trans
-   141     141      43.542      n
+   141     141      11.084      n
      m       n      MFLOPS  trans
-   148     148      43.929      n
+   148     148      13.182      n
      m       n      MFLOPS  trans
-   155     155      43.618      n
+   155     155      12.931      n
      m       n      MFLOPS  trans
-   162     162      43.889      n
+   162     162      12.999      n
      m       n      MFLOPS  trans
-   169     169      43.851      n
+   169     169      12.848      n
      m       n      MFLOPS  trans
-   176     176      43.731      n
+   176     176      12.969      n
      m       n      MFLOPS  trans
-   183     183      43.578      n
+   183     183      12.896      n
      m       n      MFLOPS  trans
-   190     190      43.470      n
+   190     190      12.915      n
      m       n      MFLOPS  trans
-   197     197      43.662      n
+   197     197      12.986      n
      m       n      MFLOPS  trans
-   204     204      43.262      n
+   204     204      12.999      n
      m       n      MFLOPS  trans
-   211     211      44.694      n
+   211     211      12.893      n
      m       n      MFLOPS  trans
-   218     218      51.152      n
+   218     218      12.869      n
      m       n      MFLOPS  trans
-   225     225      49.666      n
+   225     225      12.956      n
      m       n      MFLOPS  trans
-   232     232      51.205      n
+   232     232      12.986      n
      m       n      MFLOPS  trans
-   239     239      51.199      n
+   239     239      12.904      n
      m       n      MFLOPS  trans
-   246     246      51.232      n
+   246     246      13.203      n
      m       n      MFLOPS  trans
-   253     253      50.166      n
+   253     253      12.940      n
      m       n      MFLOPS  trans
-   260     260      51.106      n
+   260     260      13.343      n
      m       n      MFLOPS  trans
-   267     267      51.387      n
+   267     267      12.789      n
      m       n      MFLOPS  trans
-   274     274      51.240      n
+   274     274      12.873      n
      m       n      MFLOPS  trans
-   281     281      51.172      n
+   281     281      12.820      n
      m       n      MFLOPS  trans
-   288     288      50.272      n
+   288     288      13.333      n
      m       n      MFLOPS  trans
-   295     295      51.294      n
+   295     295      13.344      n
      m       n      MFLOPS  trans
-   302     302      49.588      n
+   302     302      12.951      n
      m       n      MFLOPS  trans
-   309     309      51.256      n
+   309     309      12.859      n
      m       n      MFLOPS  trans
-   316     316      51.409      n
+   316     316      12.799      n
      m       n      MFLOPS  trans
-   323     323      51.274      n
+   323     323      13.325      n
      m       n      MFLOPS  trans
-   330     330      51.306      n
+   330     330      12.879      n
      m       n      MFLOPS  trans
-   337     337      51.406      n
+   337     337      12.929      n
      m       n      MFLOPS  trans
-   344     344      51.303      n
+   344     344      12.826      n
      m       n      MFLOPS  trans
-   351     351      51.509      n
+   351     351      12.900      n
      m       n      MFLOPS  trans
-   358     358      51.547      n
+   358     358      12.870      n
      m       n      MFLOPS  trans
-   365     365      51.470      n
+   365     365      12.771      n
      m       n      MFLOPS  trans
-   372     372      51.309      n
+   372     372      12.851      n
      m       n      MFLOPS  trans
-   379     379      51.675      n
+   379     379      12.905      n
      m       n      MFLOPS  trans
-   386     386      51.443      n
+   386     386      12.802      n
      m       n      MFLOPS  trans
-   393     393      51.519      n
+   393     393      12.829      n
      m       n      MFLOPS  trans
-   400     400      51.548      n
+   400     400      12.709      n
      m       n      MFLOPS  trans
-   407     407      51.331      n
+   407     407      13.020      n
      m       n      MFLOPS  trans
-   414     414      51.633      n
+   414     414      12.775      n
      m       n      MFLOPS  trans
-   421     421      51.367      n
+   421     421      12.785      n
      m       n      MFLOPS  trans
-   428     428      51.603      n
+   428     428      12.802      n
      m       n      MFLOPS  trans
-   435     435      51.278      n
+   435     435      12.925      n
      m       n      MFLOPS  trans
-   442     442      51.442      n
+   442     442      12.709      n
      m       n      MFLOPS  trans
-   449     449      51.342      n
+   449     449      12.910      n
      m       n      MFLOPS  trans
-   456     456      51.227      n
+   456     456      13.294      n
      m       n      MFLOPS  trans
-   463     463      51.238      n
+   463     463      12.861      n
      m       n      MFLOPS  trans
-   470     470      51.475      n
+   470     470      12.989      n
      m       n      MFLOPS  trans
-   477     477      51.535      n
+   477     477      12.799      n
      m       n      MFLOPS  trans
-   484     484      51.610      n
+   484     484      12.941      n
      m       n      MFLOPS  trans
-   491     491      51.190      n
+   491     491      12.857      n
      m       n      MFLOPS  trans
-   498     498      51.303      n
+   498     498      12.852      n
      m       n      MFLOPS  trans
-   505     505      51.472      n
+   505     505      12.947      n
      m       n      MFLOPS  trans
-   512     512      51.466      n
+   512     512      12.810      n
      m       n      MFLOPS  trans
-   519     519      51.297      n
+   519     519      12.810      n
      m       n      MFLOPS  trans
-   526     526      51.502      n
+   526     526      12.886      n
      m       n      MFLOPS  trans
-   533     533      51.438      n
+   533     533      12.785      n
      m       n      MFLOPS  trans
-   540     540      51.541      n
+   540     540      12.931      n
      m       n      MFLOPS  trans
-   547     547      51.434      n
+   547     547      13.199      n
      m       n      MFLOPS  trans
-   554     554      51.055      n
+   554     554      12.880      n
      m       n      MFLOPS  trans
-   561     561      51.521      n
+   561     561      12.755      n
      m       n      MFLOPS  trans
-   568     568      51.541      n
+   568     568      13.311      n
      m       n      MFLOPS  trans
-   575     575      49.313      n
+   575     575      12.988      n
      m       n      MFLOPS  trans
-   582     582      51.712      n
+   582     582      12.851      n
      m       n      MFLOPS  trans
-   589     589      51.648      n
+   589     589      12.802      n
      m       n      MFLOPS  trans
-   596     596      51.400      n
+   596     596      12.816      n
      m       n      MFLOPS  trans
-   603     603      51.735      n
+   603     603      12.892      n
      m       n      MFLOPS  trans
-   610     610      51.468      n
+   610     610      12.879      n
      m       n      MFLOPS  trans
-   617     617      51.326      n
+   617     617      12.849      n
      m       n      MFLOPS  trans
-   624     624      51.262      n
+   624     624      12.903      n
      m       n      MFLOPS  trans
-   631     631      51.445      n
+   631     631      12.852      n
      m       n      MFLOPS  trans
-   638     638      51.430      n
+   638     638      12.813      n
      m       n      MFLOPS  trans
-   645     645      51.365      n
+   645     645      12.960      n
      m       n      MFLOPS  trans
-   652     652      51.166      n
+   652     652      12.821      n
      m       n      MFLOPS  trans
-   659     659      51.250      n
+   659     659      12.898      n
      m       n      MFLOPS  trans
-   666     666      51.615      n
+   666     666      13.285      n
      m       n      MFLOPS  trans
-   673     673      51.524      n
+   673     673      12.961      n
      m       n      MFLOPS  trans
-   680     680      51.550      n
+   680     680      12.816      n
      m       n      MFLOPS  trans
-   687     687      51.492      n
+   687     687      12.774      n
      m       n      MFLOPS  trans
-   694     694      51.773      n
+   694     694      12.871      n
      m       n      MFLOPS  trans
-   701     701      51.671      n
+   701     701      12.833      n
      m       n      MFLOPS  trans
-   708     708      49.595      n
+   708     708      12.926      n
      m       n      MFLOPS  trans
-   715     715      51.474      n
+   715     715      12.795      n
      m       n      MFLOPS  trans
-   722     722      50.901      n
+   722     722      12.857      n
      m       n      MFLOPS  trans
-   729     729      51.466      n
+   729     729      12.444      n
      m       n      MFLOPS  trans
-   736     736      51.581      n
+   736     736      12.843      n
      m       n      MFLOPS  trans
-   743     743      51.585      n
+   743     743      12.572      n
      m       n      MFLOPS  trans
-   750     750      51.553      n
+   750     750      12.813      n
      m       n      MFLOPS  trans
-   757     757      51.467      n
+   757     757      12.879      n
      m       n      MFLOPS  trans
-   764     764      51.512      n
+   764     764      12.483      n
      m       n      MFLOPS  trans
-   771     771      51.654      n
+   771     771      12.903      n
      m       n      MFLOPS  trans
-   778     778      51.342      n
+   778     778      13.239      n
      m       n      MFLOPS  trans
-   785     785      51.513      n
+   785     785      12.834      n
      m       n      MFLOPS  trans
-   792     792      51.457      n
+   792     792      12.788      n
      m       n      MFLOPS  trans
-   799     799      51.421      n
+   799     799      13.303      n
      m       n      MFLOPS  trans
-   806     806      51.428      n
+   806     806      12.910      n
      m       n      MFLOPS  trans
-   813     813      51.496      n
+   813     813      12.921      n
      m       n      MFLOPS  trans
-   820     820      51.473      n
+   820     820      12.897      n
      m       n      MFLOPS  trans
-   827     827      51.612      n
+   827     827      13.300      n
      m       n      MFLOPS  trans
-   834     834      51.551      n
+   834     834      12.840      n
      m       n      MFLOPS  trans
-   841     841      51.502      n
+   841     841      12.832      n
      m       n      MFLOPS  trans
-   848     848      51.516      n
+   848     848      12.836      n
      m       n      MFLOPS  trans
-   855     855      51.779      n
+   855     855      12.908      n
      m       n      MFLOPS  trans
-   862     862      51.247      n
+   862     862      12.435      n
      m       n      MFLOPS  trans
-   869     869      50.749      n
+   869     869      12.854      n
      m       n      MFLOPS  trans
-   876     876      51.514      n
+   876     876      12.908      n
      m       n      MFLOPS  trans
-   883     883      51.458      n
+   883     883      12.928      n
      m       n      MFLOPS  trans
-   890     890      51.543      n
+   890     890      13.165      n
      m       n      MFLOPS  trans
-   897     897      51.721      n
+   897     897      12.858      n
      m       n      MFLOPS  trans
-   904     904      51.606      n
+   904     904      12.922      n
      m       n      MFLOPS  trans
-   911     911      51.511      n
+   911     911      12.932      n
      m       n      MFLOPS  trans
-   918     918      51.539      n
+   918     918      12.964      n
      m       n      MFLOPS  trans
-   925     925      51.401      n
+   925     925      12.841      n
      m       n      MFLOPS  trans
-   932     932      51.479      n
+   932     932      12.860      n
      m       n      MFLOPS  trans
-   939     939      51.644      n
+   939     939      12.823      n
      m       n      MFLOPS  trans
-   946     946      51.282      n
+   946     946      12.803      n
      m       n      MFLOPS  trans
-   953     953      51.384      n
+   953     953      12.856      n
      m       n      MFLOPS  trans
-   960     960      51.536      n
+   960     960      12.945      n
      m       n      MFLOPS  trans
-   967     967      51.408      n
+   967     967      12.896      n
      m       n      MFLOPS  trans
-   974     974      51.524      n
+   974     974      12.977      n
      m       n      MFLOPS  trans
-   981     981      51.401      n
+   981     981      12.857      n
      m       n      MFLOPS  trans
-   988     988      51.437      n
+   988     988      13.124      n
      m       n      MFLOPS  trans
-   995     995      51.495      n
+   995     995      13.149      n
      m       n      MFLOPS  trans
-  1002    1002      51.560      n
+  1002    1002      12.881      n
      m       n      MFLOPS  trans
-  1009    1009      51.562      n
+  1009    1009      13.143      n
      m       n      MFLOPS  trans
-  1016    1016      51.393      n
+  1016    1016      12.791      n
      m       n      MFLOPS  trans
-  1023    1023      51.435      n
+  1023    1023      12.882      n
      m       n      MFLOPS  trans
-  1030    1030      51.551      n
+  1030    1030      12.822      n
      m       n      MFLOPS  trans
-  1037    1037      51.597      n
+  1037    1037      12.792      n
      m       n      MFLOPS  trans
-  1044    1044      51.460      n
+  1044    1044      12.930      n
      m       n      MFLOPS  trans
-  1051    1051      51.689      n
+  1051    1051      13.213      n
      m       n      MFLOPS  trans
-  1058    1058      51.715      n
+  1058    1058      12.892      n
      m       n      MFLOPS  trans
-  1065    1065      51.552      n
+  1065    1065      12.915      n
      m       n      MFLOPS  trans
-  1072    1072      51.744      n
+  1072    1072      12.844      n
      m       n      MFLOPS  trans
-  1079    1079      51.546      n
+  1079    1079      12.851      n
      m       n      MFLOPS  trans
-  1086    1086      51.753      n
+  1086    1086      13.198      n
      m       n      MFLOPS  trans
-  1093    1093      51.451      n
+  1093    1093      12.803      n
      m       n      MFLOPS  trans
-  1100    1100      51.135      n
+  1100    1100      12.868      n
      m       n      MFLOPS  trans
-  1107    1107      51.720      n
+  1107    1107      13.008      n
      m       n      MFLOPS  trans
-  1114    1114      51.564      n
+  1114    1114      12.946      n
      m       n      MFLOPS  trans
-  1121    1121      51.415      n
+  1121    1121      12.849      n
      m       n      MFLOPS  trans
-  1128    1128      51.706      n
+  1128    1128      12.971      n
      m       n      MFLOPS  trans
-  1135    1135      51.609      n
+  1135    1135      12.905      n
      m       n      MFLOPS  trans
-  1142    1142      51.582      n
+  1142    1142      12.852      n
      m       n      MFLOPS  trans
-  1149    1149      51.296      n
+  1149    1149      12.825      n
      m       n      MFLOPS  trans
-  1156    1156      51.628      n
+  1156    1156      13.003      n
      m       n      MFLOPS  trans
-  1163    1163      51.619      n
+  1163    1163      13.059      n
      m       n      MFLOPS  trans
-  1170    1170      51.513      n
+  1170    1170      12.890      n
      m       n      MFLOPS  trans
-  1177    1177      51.630      n
+  1177    1177      12.941      n
      m       n      MFLOPS  trans
-  1184    1184      49.815      n
+  1184    1184      12.833      n
      m       n      MFLOPS  trans
-  1191    1191      51.541      n
+  1191    1191      12.824      n
      m       n      MFLOPS  trans
-  1198    1198      51.862      n
+  1198    1198      12.912      n
      m       n      MFLOPS  trans
-  1205    1205      51.708      n
+  1205    1205      12.990      n
      m       n      MFLOPS  trans
-  1212    1212      51.554      n
+  1212    1212      12.936      n
      m       n      MFLOPS  trans
-  1219    1219      51.885      n
+  1219    1219      12.963      n
      m       n      MFLOPS  trans
-  1226    1226      51.846      n
+  1226    1226      12.868      n
      m       n      MFLOPS  trans
-  1233    1233      51.682      n
+  1233    1233      12.884      n
      m       n      MFLOPS  trans
-  1240    1240      51.728      n
+  1240    1240      12.920      n
      m       n      MFLOPS  trans
-  1247    1247      51.644      n
+  1247    1247      12.865      n
      m       n      MFLOPS  trans
-  1254    1254      51.653      n
+  1254    1254      12.911      n
      m       n      MFLOPS  trans
-  1261    1261      51.620      n
+  1261    1261      12.918      n
      m       n      MFLOPS  trans
-  1268    1268      51.612      n
+  1268    1268      12.867      n
      m       n      MFLOPS  trans
-  1275    1275      51.644      n
+  1275    1275      12.866      n
      m       n      MFLOPS  trans
-  1282    1282      51.754      n
+  1282    1282      12.886      n
      m       n      MFLOPS  trans
-  1289    1289      51.689      n
+  1289    1289      12.861      n
      m       n      MFLOPS  trans
-  1296    1296      51.916      n
+  1296    1296      12.964      n
      m       n      MFLOPS  trans
-  1303    1303      51.460      n
+  1303    1303      12.880      n
      m       n      MFLOPS  trans
-  1310    1310      51.594      n
+  1310    1310      12.850      n
      m       n      MFLOPS  trans
-  1317    1317      51.669      n
+  1317    1317      12.879      n
      m       n      MFLOPS  trans
-  1324    1324      51.748      n
+  1324    1324      12.892      n
      m       n      MFLOPS  trans
-  1331    1331      51.766      n
+  1331    1331      13.270      n
      m       n      MFLOPS  trans
-  1338    1338      51.746      n
+  1338    1338      12.918      n
      m       n      MFLOPS  trans
-  1345    1345      51.709      n
+  1345    1345      12.787      n
      m       n      MFLOPS  trans
-  1352    1352      51.691      n
+  1352    1352      12.886      n
      m       n      MFLOPS  trans
-  1359    1359      51.676      n
+  1359    1359      12.847      n
      m       n      MFLOPS  trans
-  1366    1366      51.807      n
+  1366    1366      13.141      n
      m       n      MFLOPS  trans
-  1373    1373      51.763      n
+  1373    1373      13.236      n
      m       n      MFLOPS  trans
-  1380    1380      51.494      n
+  1380    1380      13.286      n
      m       n      MFLOPS  trans
-  1387    1387      51.887      n
+  1387    1387      12.868      n
      m       n      MFLOPS  trans
-  1394    1394      51.704      n
+  1394    1394      12.956      n
      m       n      MFLOPS  trans
-  1401    1401      51.684      n
+  1401    1401      12.931      n
      m       n      MFLOPS  trans
-  1408    1408      50.056      n
+  1408    1408      12.900      n
      m       n      MFLOPS  trans
-  1415    1415      51.524      n
+  1415    1415      12.835      n
      m       n      MFLOPS  trans
-  1422    1422      51.874      n
+  1422    1422      12.869      n
      m       n      MFLOPS  trans
-  1429    1429      51.500      n
+  1429    1429      12.869      n
      m       n      MFLOPS  trans
-  1436    1436      51.774      n
+  1436    1436      12.876      n
      m       n      MFLOPS  trans
-  1443    1443      51.630      n
+  1443    1443      12.972      n
      m       n      MFLOPS  trans
-  1450    1450      51.707      n
+  1450    1450      12.876      n
      m       n      MFLOPS  trans
-  1457    1457      49.869      n
+  1457    1457      13.230      n
      m       n      MFLOPS  trans
-  1464    1464      51.281      n
+  1464    1464      12.902      n
      m       n      MFLOPS  trans
-  1471    1471      51.538      n
+  1471    1471      12.870      n
      m       n      MFLOPS  trans
-  1478    1478      51.681      n
+  1478    1478      12.871      n
      m       n      MFLOPS  trans
-  1485    1485      50.292      n
+  1485    1485      12.841      n
      m       n      MFLOPS  trans
-  1492    1492      51.857      n
+  1492    1492      13.015      n
      m       n      MFLOPS  trans
-  1499    1499      51.506      n
+  1499    1499      12.914      n
      m       n      MFLOPS  trans
-  1506    1506      51.475      n
+  1506    1506      12.920      n
      m       n      MFLOPS  trans
-  1513    1513      51.676      n
+  1513    1513      12.929      n
      m       n      MFLOPS  trans
-  1520    1520      51.484      n
+  1520    1520      12.965      n
      m       n      MFLOPS  trans
-  1527    1527      50.795      n
+  1527    1527      13.069      n
      m       n      MFLOPS  trans
-  1534    1534      50.916      n
+  1534    1534      12.892      n
      m       n      MFLOPS  trans
-  1541    1541      51.476      n
+  1541    1541      12.966      n
      m       n      MFLOPS  trans
-  1548    1548      51.661      n
+  1548    1548      12.965      n
      m       n      MFLOPS  trans
-  1555    1555      51.545      n
+  1555    1555      12.847      n
      m       n      MFLOPS  trans
-  1562    1562      50.031      n
+  1562    1562      12.884      n
      m       n      MFLOPS  trans
-  1569    1569      51.636      n
+  1569    1569      12.920      n
      m       n      MFLOPS  trans
-  1576    1576      51.681      n
+  1576    1576      12.970      n
      m       n      MFLOPS  trans
-  1583    1583      51.658      n
+  1583    1583      12.941      n
      m       n      MFLOPS  trans
-  1590    1590      51.574      n
+  1590    1590      12.814      n
      m       n      MFLOPS  trans
-  1597    1597      51.627      n
+  1597    1597      12.930      n
      m       n      MFLOPS  trans
-  1604    1604      51.750      n
+  1604    1604      12.922      n
      m       n      MFLOPS  trans
-  1611    1611      51.654      n
+  1611    1611      12.893      n
      m       n      MFLOPS  trans
-  1618    1618      51.552      n
+  1618    1618      12.877      n
      m       n      MFLOPS  trans
-  1625    1625      51.926      n
+  1625    1625      12.905      n
      m       n      MFLOPS  trans
-  1632    1632      51.721      n
+  1632    1632      12.786      n
      m       n      MFLOPS  trans
-  1639    1639      51.718      n
+  1639    1639      12.879      n
      m       n      MFLOPS  trans
-  1646    1646      51.941      n
+  1646    1646      12.886      n
      m       n      MFLOPS  trans
-  1653    1653      51.567      n
+  1653    1653      12.877      n
      m       n      MFLOPS  trans
-  1660    1660      51.698      n
+  1660    1660      12.823      n
      m       n      MFLOPS  trans
-  1667    1667      51.729      n
+  1667    1667      13.009      n
      m       n      MFLOPS  trans
-  1674    1674      51.546      n
+  1674    1674      12.963      n
      m       n      MFLOPS  trans
-  1681    1681      51.287      n
+  1681    1681      12.885      n
      m       n      MFLOPS  trans
-  1688    1688      50.610      n
+  1688    1688      12.972      n
      m       n      MFLOPS  trans
-  1695    1695      51.785      n
+  1695    1695      12.831      n
      m       n      MFLOPS  trans
-  1702    1702      51.712      n
+  1702    1702      13.177      n
      m       n      MFLOPS  trans
-  1709    1709      51.674      n
+  1709    1709      12.877      n
      m       n      MFLOPS  trans
-  1716    1716      51.904      n
+  1716    1716      12.861      n
      m       n      MFLOPS  trans
-  1723    1723      51.888      n
+  1723    1723      12.900      n
      m       n      MFLOPS  trans
-  1730    1730      51.404      n
+  1730    1730      13.094      n
      m       n      MFLOPS  trans
-  1737    1737      51.555      n
+  1737    1737      12.951      n
      m       n      MFLOPS  trans
-  1744    1744      51.647      n
+  1744    1744      12.785      n
      m       n      MFLOPS  trans
-  1751    1751      51.745      n
+  1751    1751      12.877      n
      m       n      MFLOPS  trans
-  1758    1758      51.626      n
+  1758    1758      12.957      n
      m       n      MFLOPS  trans
-  1765    1765      51.650      n
+  1765    1765      12.902      n
      m       n      MFLOPS  trans
-  1772    1772      51.594      n
+  1772    1772      12.864      n
      m       n      MFLOPS  trans
-  1779    1779      51.688      n
+  1779    1779      13.022      n
      m       n      MFLOPS  trans
-  1786    1786      51.627      n
+  1786    1786      12.881      n
      m       n      MFLOPS  trans
-  1793    1793      51.899      n
+  1793    1793      12.837      n
      m       n      MFLOPS  trans
-  1800    1800      51.605      n
+  1800    1800      12.935      n
      m       n      MFLOPS  trans
-  1807    1807      51.764      n
+  1807    1807      12.863      n
      m       n      MFLOPS  trans
-  1814    1814      51.733      n
+  1814    1814      12.616      n
      m       n      MFLOPS  trans
-  1821    1821      51.677      n
+  1821    1821      12.918      n
      m       n      MFLOPS  trans
-  1828    1828      51.741      n
+  1828    1828      12.719      n
      m       n      MFLOPS  trans
-  1835    1835      51.881      n
+  1835    1835      12.848      n
      m       n      MFLOPS  trans
-  1842    1842      51.761      n
+  1842    1842      12.868      n
      m       n      MFLOPS  trans
-  1849    1849      51.791      n
+  1849    1849      12.879      n
      m       n      MFLOPS  trans
-  1856    1856      51.137      n
+  1856    1856      12.815      n
      m       n      MFLOPS  trans
-  1863    1863      51.927      n
+  1863    1863      12.877      n
      m       n      MFLOPS  trans
-  1870    1870      51.726      n
+  1870    1870      12.836      n
      m       n      MFLOPS  trans
-  1877    1877      51.685      n
+  1877    1877      12.918      n
      m       n      MFLOPS  trans
-  1884    1884      51.138      n
+  1884    1884      12.851      n
      m       n      MFLOPS  trans
-  1891    1891      51.590      n
+  1891    1891      13.022      n
      m       n      MFLOPS  trans
-  1898    1898      51.596      n
+  1898    1898      12.895      n
      m       n      MFLOPS  trans
-  1905    1905      51.662      n
+  1905    1905      12.815      n
      m       n      MFLOPS  trans
-  1912    1912      51.711      n
+  1912    1912      12.956      n
      m       n      MFLOPS  trans
-  1919    1919      51.619      n
+  1919    1919      12.855      n
      m       n      MFLOPS  trans
-  1926    1926      51.678      n
+  1926    1926      12.870      n
      m       n      MFLOPS  trans
-  1933    1933      50.112      n
+  1933    1933      12.973      n
      m       n      MFLOPS  trans
-  1940    1940      51.948      n
+  1940    1940      12.951      n
      m       n      MFLOPS  trans
-  1947    1947      51.709      n
+  1947    1947      12.846      n
      m       n      MFLOPS  trans
-  1954    1954      51.905      n
+  1954    1954      12.882      n
      m       n      MFLOPS  trans
-  1961    1961      51.573      n
+  1961    1961      12.922      n
      m       n      MFLOPS  trans
-  1968    1968      51.631      n
+  1968    1968      12.949      n
      m       n      MFLOPS  trans
-  1975    1975      51.736      n
+  1975    1975      12.874      n
