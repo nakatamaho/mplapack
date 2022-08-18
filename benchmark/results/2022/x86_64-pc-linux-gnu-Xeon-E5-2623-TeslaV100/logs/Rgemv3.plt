@@ -8,4 +8,4 @@ set ylabel "MFLOPS"
 #set terminal postscript eps color enhanced
 set terminal pdf
 
-plot "log.Rgemv.double_opt"	    using 1:3 title 'double (OpenMP)'     with lines linewidth 6
+plot "log.Rgemv.double_opt"	    using 1:3 title 'double (OpenMP)'     with lines linewidth 2
