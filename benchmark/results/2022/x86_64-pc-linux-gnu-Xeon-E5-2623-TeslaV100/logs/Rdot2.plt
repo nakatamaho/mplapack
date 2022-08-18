@@ -9,9 +9,9 @@ set ylabel "MFLOPS"
 set terminal pdf
 
 plot \
-"log.Rdot.mpfr"            using 1:2 title 'MPFR 512bit'            with lines linewidth 6, \
-"log.Rdot.mpfr_opt"        using 1:2 title 'MPFR 512bit(OpenMP)'    with lines linewidth 6, \
-"log.Rdot.gmp"             using 1:2 title 'GMP  512bit'            with lines linewidth 6, \
-"log.Rdot.gmp_opt"         using 1:2 title 'GMP  512bit(OpenMP)'    with lines linewidth 6, \
-"log.Rdot.qd"              using 1:2 title 'quad-double'            with lines linewidth 6, \
-"log.Rdot.qd_opt"          using 1:2 title 'quad-double(OpenMP)'    with lines linewidth 6
+"log.Rdot.mpfr"            using 1:2 title 'MPFR 512bit'            with lines linewidth 2, \
+"log.Rdot.mpfr_opt"        using 1:2 title 'MPFR 512bit(OpenMP)'    with lines linewidth 2, \
+"log.Rdot.gmp"             using 1:2 title 'GMP  512bit'            with lines linewidth 2, \
+"log.Rdot.gmp_opt"         using 1:2 title 'GMP  512bit(OpenMP)'    with lines linewidth 2, \
+"log.Rdot.qd"              using 1:2 title 'quad-double'            with lines linewidth 2, \
+"log.Rdot.qd_opt"          using 1:2 title 'quad-double(OpenMP)'    with lines linewidth 2
