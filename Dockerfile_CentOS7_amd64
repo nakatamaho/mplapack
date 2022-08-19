@@ -5,7 +5,7 @@ RUN yum install -y https://repo.ius.io/ius-release-el7.rpm
 RUN yum install -y centos-release-scl
 RUN yum install -y devtoolset-9
 RUN scl enable devtoolset-9 bash
-RUN yum install -y gcc gcc-c++ gcc-gfortran make automake libtool
+RUN yum install -y gcc gcc-c++ gcc-gfortran make automake libtool gnuplot
 RUN yum install -y python3
 RUN yum install -y sudo which patch bzip2 git wget time parallel
 RUN yum install -y emacs

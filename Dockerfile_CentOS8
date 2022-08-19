@@ -5,7 +5,7 @@ ARG MPLAPACK_VER="2.0.1"
 RUN sed -i 's/mirrorlist/#mirrorlist/g' /etc/yum.repos.d/CentOS-*
 RUN sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g' /etc/yum.repos.d/CentOS-*
 RUN yum update -y
-RUN yum install -y gcc gcc-c++ gcc-gfortran make automake libtool
+RUN yum install -y gcc gcc-c++ gcc-gfortran make automake libtool gnuplot
 RUN yum install -y python3
 RUN yum install -y sudo which patch bzip2 git wget time file
 RUN yum install -y emacs

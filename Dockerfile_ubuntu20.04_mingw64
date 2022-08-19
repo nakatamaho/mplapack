@@ -14,7 +14,7 @@ RUN echo "${TZ}" > /etc/timezone \
   && dpkg-reconfigure -f noninteractive tzdata
 
 RUN apt install -y build-essential mingw-w64 gfortran-mingw-w64 python3
-RUN apt install -y autotools-dev automake libtool
+RUN apt install -y autotools-dev automake libtool gnuplot
 RUN apt install -y git wget time parallel
 RUN apt install -y ng-common ng-cjk emacs-nox
 RUN sudo update-alternatives --install /usr/bin/python python /usr/bin/python3 1
