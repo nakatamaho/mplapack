@@ -2,7 +2,7 @@ set xlabel font "Helvetica,20"
 set ylabel font "Helvetica,20"
 set key font "Helvetica,16"
 set title font "Helvetica,20"
-set title "Rgemm on %%GPU%%"
+set title "Rgemm on Tesla V100-PCIE-32GB"
 set xlabel "Dimension"
 set ylabel "MFLOPS"
 #set terminal postscript eps color enhanced
