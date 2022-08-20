@@ -1441,4 +1441,4 @@ cudaGetDevice()=0
     m     n     k     MFLOPS    transa   transb
  5027  5027  5027  429692.829    4.35e-322       n        n
     m     n     k     MFLOPS    transa   transb
- 5034  5034  5034  431004.061    4.3
+ 5034  5034  5034  431004.061    4.35e-322       n        n
