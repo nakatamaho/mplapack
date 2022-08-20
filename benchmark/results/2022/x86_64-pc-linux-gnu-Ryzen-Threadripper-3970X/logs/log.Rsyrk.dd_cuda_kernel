@@ -1,0 +1,5 @@
+could not bind to texture A : n:1 k:1 lda:1 ldc:1
+device_count : 1
+device name -> NVIDIA GeForce RTX 3080 
+cudareturn -> 0
+cudaGetDevice()=0
