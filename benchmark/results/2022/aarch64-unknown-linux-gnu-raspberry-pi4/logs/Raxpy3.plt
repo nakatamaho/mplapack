@@ -8,4 +8,4 @@ set ylabel "MFLOPS"
 #set terminal postscript eps color enhanced
 set terminal pdf
 
-plot "log.Raxpy.double_opt"	    using 1:2 title 'double (OpenMP)'     with lines linewidth 6
+plot "log.Raxpy.double_opt"	    using 1:2 title 'double (OpenMP)'     with lines linewidth 1
