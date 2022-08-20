@@ -1,7 +1,7 @@
 set xlabel font "Helvetica,20"
 set ylabel font "Helvetica,20"
 set key font "Helvetica,16"
-set title font "Helvetica,24"
+set title font "Helvetica,20"
 set title "Rsyrk on %%MODELNAME%%"
 set xlabel "Dimension"
 set ylabel "MFLOPS"
@@ -9,4 +9,4 @@ set ylabel "MFLOPS"
 set terminal pdf
 
 plot \
-"log.Rsyrk.double_opt"	    using 1:3 title 'double (OpenMP)'        with lines linewidth 6
+"log.Rsyrk.double_opt"	    using 1:3 title 'double (OpenMP)'        with lines linewidth 1
