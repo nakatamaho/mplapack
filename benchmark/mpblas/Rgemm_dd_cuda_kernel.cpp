@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2012
+ * Copyright (c) 2008-2022
  *	Nakata, Maho
  * 	All rights reserved.
  *
@@ -40,6 +40,18 @@
 
 void Rgemm_cuda(const char *transa, const char *transb, mplapackint m, mplapackint n, mplapackint k, REAL alpha, REAL *Adev, mplapackint lda, REAL *Bdev, mplapackint ldb, REAL beta, REAL *Cdev, mplapackint ldc);
 
+double flops_gemm(mplapackint k_i, mplapackint m_i, mplapackint n_i) {
+    double adds, muls, flops;
+    double k, m, n;
+    m = (double)m_i;
+    n = (double)n_i;
+    k = (double)k_i;
+    muls = m * (k + 2) * n;
+    adds = m * k * n;
+    flops = muls + adds;
+    return flops;
+}
+
 void SetDevice() {
     int gpudevice = 0; // cpu number 0,1,...
 
@@ -77,7 +89,7 @@ int main(int argc, char *argv[]) {
     double elapsedtime, t1, t2;
     double *dummyd;
     char transa, transb, normtype;
-    int N0, M0, K0, STEPN, STEPM, STEPK, LOOP = 3, TOTALSTEPS = 100;
+    int N0, M0, K0, STEPN = 7, STEPM = 7, STEPK = 7, LOOP = 3, TOTALSTEPS = 720;
     int lda, ldb, ldc;
     int i, j, m, n, k, ka, kb, p, q;
     int check_flag = 1;
@@ -141,7 +153,6 @@ int main(int argc, char *argv[]) {
             fprintf(stderr, "%s\n", error);
             return 1;
         }
-
         raxpy_ref = (void (*)(mplapackint, REAL, REAL *, mplapackint, REAL *, mplapackint))dlsym(handle, raxpy_sym);
         if ((error = dlerror()) != NULL) {
             fprintf(stderr, "%s\n", error);
@@ -177,7 +188,7 @@ int main(int argc, char *argv[]) {
         REAL *A = new REAL[lda * ka];
         REAL *B = new REAL[ldb * kb];
         REAL *C = new REAL[ldc * n];
-        REAL *Cd = new REAL[ldc * n];
+        REAL *Cref = new REAL[ldc * n];
         REAL mOne = -1;
         alpha = randomnumber(dummy);
         beta = randomnumber(dummy);
@@ -188,9 +199,9 @@ int main(int argc, char *argv[]) {
             B[i] = randomnumber(dummy);
         }
         for (i = 0; i < ldc * n; i++) {
-            C[i] = Cd[i] = randomnumber(dummy);
+            C[i] = Cref[i] = randomnumber(dummy);
         }
-        dd_real *Adev, *Bdev, *Cdev;
+        dd_real *Adev, *Bdev, *Crefev;
         int size_A, size_B, size_C;
         if (Mlsame(&transa, "n")) {
             size_A = lda * k - (lda - m);
@@ -205,55 +216,53 @@ int main(int argc, char *argv[]) {
         if (check_flag) {
             cudaMalloc((void **)&Adev, size_A * sizeof(REAL));
             cudaMalloc((void **)&Bdev, size_B * sizeof(REAL));
-            cudaMalloc((void **)&Cdev, size_C * sizeof(REAL));
+            cudaMalloc((void **)&Crefev, size_C * sizeof(REAL));
             cudaMemcpy(Adev, A, size_A * sizeof(REAL), cudaMemcpyHostToDevice);
             cudaMemcpy(Bdev, B, size_B * sizeof(REAL), cudaMemcpyHostToDevice);
-            cudaMemcpy(Cdev, C, size_C * sizeof(REAL), cudaMemcpyHostToDevice);
+            cudaMemcpy(Crefev, C, size_C * sizeof(REAL), cudaMemcpyHostToDevice);
 
             t1 = gettime();
-            Rgemm_cuda(&transa, &transb, m, n, k, alpha, Adev, lda, Bdev, ldb, beta, Cdev, ldc);
+            Rgemm_cuda(&transa, &transb, m, n, k, alpha, Adev, lda, Bdev, ldb, beta, Crefev, ldc);
             t2 = gettime();
-            cudaMemcpy(C, Cdev, size_C * sizeof(dd_real), cudaMemcpyDeviceToHost);
+            cudaMemcpy(C, Crefev, size_C * sizeof(dd_real), cudaMemcpyDeviceToHost);
             cudaFree(Adev);
             cudaFree(Bdev);
-            cudaFree(Cdev);
+            cudaFree(Crefev);
 
             elapsedtime = (t2 - t1);
-            (*mpblas_ref)(&transa, &transb, m, n, k, alpha, A, lda, B, ldb, beta, Cd, ldc);
-            (*raxpy_ref)((mplapackint)(ldc * n), mOne, C, (mplapackint)1, Cd, (mplapackint)1);
-            diff = Rlange(&normtype, (mplapackint)ldc, (mplapackint)n, Cd, ldc, dummywork);
+            (*mpblas_ref)(&transa, &transb, m, n, k, alpha, A, lda, B, ldb, beta, Cref, ldc);
+            (*raxpy_ref)((mplapackint)(ldc * n), mOne, C, (mplapackint)1, Cref, (mplapackint)1);
+            diff = Rlange(&normtype, (mplapackint)ldc, (mplapackint)n, Cref, ldc, dummywork);
             diffr = cast2double(diff);
             printf("    m     n     k     MFLOPS   error   transa   transb\n");
-            // 2mnk+2mn flops are needed
-            printf("%5d %5d %5d %10.3f %5.2e       %c        %c\n", (int)m, (int)n, (int)k, (2.0 * (double)m * (double)n * (double)k + 2.0 * (double)m * (double)n) / elapsedtime * MFLOPS, diffr, transa, transb);
+            printf("%5d %5d %5d  %10.3f    %5.2e       %c        %c\n", (int)m, (int)n, (int)k, flops_gemm(k, m, n) / elapsedtime * MFLOPS, diffr, transa, transb);
         } else {
             cudaMalloc((void **)&Adev, size_A * sizeof(REAL));
             cudaMalloc((void **)&Bdev, size_B * sizeof(REAL));
-            cudaMalloc((void **)&Cdev, size_C * sizeof(REAL));
+            cudaMalloc((void **)&Crefev, size_C * sizeof(REAL));
             cudaMemcpy(Adev, A, size_A * sizeof(REAL), cudaMemcpyHostToDevice);
             cudaMemcpy(Bdev, B, size_B * sizeof(REAL), cudaMemcpyHostToDevice);
-            cudaMemcpy(Cdev, C, size_C * sizeof(REAL), cudaMemcpyHostToDevice);
+            cudaMemcpy(Crefev, C, size_C * sizeof(REAL), cudaMemcpyHostToDevice);
 
             elapsedtime = 0.0;
-	    for (int j = 0; j < LOOP; j++) {
+            for (int j = 0; j < LOOP; j++) {
                 t1 = gettime();
-                Rgemm_cuda(&transa, &transb, m, n, k, alpha, Adev, lda, Bdev, ldb, beta, Cdev, ldc);
+                Rgemm_cuda(&transa, &transb, m, n, k, alpha, Adev, lda, Bdev, ldb, beta, Crefev, ldc);
                 t2 = gettime();
                 elapsedtime = elapsedtime + (t2 - t1);
-	    } 
+            }
             elapsedtime = elapsedtime / (double)LOOP;
 
-            cudaMemcpy(C, Cdev, size_C * sizeof(dd_real), cudaMemcpyDeviceToHost);
+            cudaMemcpy(C, Crefev, size_C * sizeof(dd_real), cudaMemcpyDeviceToHost);
             cudaFree(Adev);
             cudaFree(Bdev);
-            cudaFree(Cdev);
+            cudaFree(Crefev);
 
             elapsedtime = (t2 - t1);
             printf("    m     n     k     MFLOPS    transa   transb\n");
-            // 2mnk+2mn flops are needed
-            printf("%5d %5d %5d %10.3f         %c        %c\n", (int)m, (int)n, (int)k, (2.0 * (double)m * (double)n * (double)k + 2.0 * (double)m * (double)n) / elapsedtime * MFLOPS, diffr, transa, transb);
+            printf("%5d %5d %5d  %10.3f    %5.2e       %c        %c\n", (int)m, (int)n, (int)k, flops_gemm(k, m, n) / elapsedtime * MFLOPS, diffr, transa, transb);
         }
-        delete[] Cd;
+        delete[] Cref;
         delete[] C;
         delete[] B;
         delete[] A;

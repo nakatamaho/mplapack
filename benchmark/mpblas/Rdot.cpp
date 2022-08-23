@@ -1,9 +1,7 @@
 /*
- * Copyright (c) 2008-2010
+ * Copyright (c) 2008-2022
  *	Nakata, Maho
  * 	All rights reserved.
- *
- * $Id: Rdot_dd.cpp,v 1.3 2010/08/07 05:50:09 nakatamaho Exp $
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -35,16 +33,13 @@
 #include <mplapack.h>
 #include <mplapack_benchmark.h>
 
-#define TOTALSTEPS 1000
-
 int main(int argc, char *argv[]) {
     mplapackint n;
-    mplapackint incx = 1, incy = 1, STEP, N0;
+    mplapackint incx = 1, incy = 1, STEP = 97, N0 = 1, LOOP = 3, TOTALSTEPS = 3000;
     REAL dummy, ans, ans_ref;
     double elapsedtime, t1, t2;
     int i, p;
     int check_flag = 1;
-    char normtype;
     ___MPLAPACK_INITIALIZE___
 
     const char mpblas_sym[] = SYMBOL_GCC_RDOT;
@@ -54,10 +49,6 @@ int main(int argc, char *argv[]) {
     REAL diff;
     double diffr;
 
-    // initialization
-    N0 = 1;
-    STEP = 1;
-    normtype = 'm';
     if (argc != 1) {
         for (i = 1; i < argc; i++) {
             if (strcmp("-N", argv[i]) == 0) {
@@ -66,6 +57,10 @@ int main(int argc, char *argv[]) {
                 STEP = atoi(argv[++i]);
             } else if (strcmp("-NOCHECK", argv[i]) == 0) {
                 check_flag = 0;
+            } else if (strcmp("-LOOP", argv[i]) == 0) {
+                LOOP = atoi(argv[++i]);
+            } else if (strcmp("-TOTALSTEPS", argv[i]) == 0) {
+                TOTALSTEPS = atoi(argv[++i]);
             }
         }
     }
@@ -99,16 +94,20 @@ int main(int argc, char *argv[]) {
             diff = ans - ans_ref;
             diffr = cast2double(diff);
             printf("         n       MFLOPS      error\n");
-            printf("%10d   %10.3f   %5.2e\n", (int)n, (2.0 * (double)n) / elapsedtime * MFLOPS, diffr);
+            printf("%10d   %10.3f   %10.2e\n", (int)n, (2.0 * (double)n) / elapsedtime * MFLOPS, diffr);
         } else {
             for (i = 0; i < n; i++) {
                 x[i] = randomnumber(dummy);
                 y[i] = randomnumber(dummy);
             }
-            t1 = gettime();
-            ans = Rdot(n, x, incx, y, incy);
-            t2 = gettime();
-            elapsedtime = (t2 - t1);
+            elapsedtime = 0.0;
+            for (int j = 0; j < LOOP; j++) {
+                t1 = gettime();
+                ans = Rdot(n, x, incx, y, incy);
+                t2 = gettime();
+                elapsedtime = elapsedtime + (t2 - t1);
+            }
+            elapsedtime = elapsedtime / (double)LOOP;
             printf("         n       MFLOPS\n");
             printf("%10d   %10.3f\n", (int)n, (2.0 * (double)n) / elapsedtime * MFLOPS);
         }

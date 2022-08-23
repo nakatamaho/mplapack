@@ -35,13 +35,14 @@
 #include <mplapack.h>
 #include <mplapack_benchmark.h>
 
+// cf. https://netlib.org/lapack/lawnspdf/lawn41.pdf p.120
 double flops_gemm(mplapackint k_i, mplapackint m_i, mplapackint n_i) {
     double adds, muls, flops;
     double k, m, n;
     m = (double)m_i;
     n = (double)n_i;
     k = (double)k_i;
-    muls = m * k * n;
+    muls = m * (k + 2) * n;
     adds = m * k * n;
     flops = muls + adds;
     return flops;
@@ -52,9 +53,9 @@ int main(int argc, char *argv[]) {
     REAL *dummywork;
     double elapsedtime, t1, t2;
     char transa, transb, normtype;
-    int N0, M0, K0, STEPN, STEPM, STEPK, LOOP = 3, TOTALSTEPS = 100;
+    int N0, M0, K0, STEPN = 3, STEPM = 3, STEPK = 3, LOOP = 3, TOTALSTEPS = 400;
     int lda, ldb, ldc;
-    int i, j, m, n, k, ka, kb, p, q;
+    int i, m, n, k, ka, kb, p;
     int check_flag = 1;
 
     ___MPLAPACK_INITIALIZE___
@@ -70,7 +71,6 @@ int main(int argc, char *argv[]) {
 
     // initialization
     N0 = M0 = K0 = 1;
-    STEPM = STEPN = STEPK = 1;
     transa = transb = 'n';
     normtype = 'm';
     if (argc != 1) {
@@ -171,17 +171,16 @@ int main(int argc, char *argv[]) {
             (*raxpy_ref)((mplapackint)(ldc * n), mOne, C, (mplapackint)1, Cd, (mplapackint)1);
             diff = Rlange(&normtype, (mplapackint)ldc, (mplapackint)n, Cd, ldc, dummywork);
             diffr = cast2double(diff);
-            printf("    m     n     k     MFLOPS   error   transa   transb\n");
-            // 2mnk+2mn flops are needed
-            printf("%5d %5d %5d %10.3f %5.2e       %c        %c\n", (int)m, (int)n, (int)k, flops_gemm(k, m, n) / elapsedtime * MFLOPS, diffr, transa, transb);
+            printf("    m     n     k       MFLOPS     error   transa   transb\n");
+            printf("%5d %5d %5d  %10.3f    %5.2e       %c        %c\n", (int)m, (int)n, (int)k, flops_gemm(k, m, n) / elapsedtime * MFLOPS, diffr, transa, transb);
         } else {
             elapsedtime = 0.0;
-	    for (int j = 0; j < LOOP; j++) {
+            for (int j = 0; j < LOOP; j++) {
                 t1 = gettime();
                 Rgemm(&transa, &transb, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc);
                 t2 = gettime();
                 elapsedtime = elapsedtime + (t2 - t1);
-	    } 
+            }
             elapsedtime = elapsedtime / (double)LOOP;
             printf("    m     n     k     MFLOPS    transa   transb\n");
             // 2mnk+2mn flops are needed

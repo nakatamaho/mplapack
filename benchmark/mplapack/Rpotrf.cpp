@@ -1,9 +1,7 @@
 /*
- * Copyright (c) 2008-2012
+ * Copyright (c) 2008-2022
  *	Nakata, Maho
  * 	All rights reserved.
- *
- * $Id: Rgemm_dd.cpp,v 1.4 2010/08/07 05:50:09 nakatamaho Exp $
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -34,6 +32,18 @@
 #include <mpblas.h>
 #include <mplapack.h>
 #include <mplapack_benchmark.h>
+
+// https://netlib.org/lapack/lawnspdf/lawn41.pdf
+// see also p.175 operation count, Trefethen, David Bau III 1997 ISBN13: 9780898713619
+double flops_potrf(mplapackint n_i) {
+    double adds, muls, flops;
+    double n;
+    n = (double)n_i;
+    muls = 1. / 6. * n * n * n + 1. / 2. * n * n + 1. / 3. * n;
+    adds = 1. / 6. * n * n * n - 1. / 6. * n * n;
+    flops = muls + adds;
+    return flops;
+}
 
 int main(int argc, char *argv[]) {
     REAL alpha, beta, mtemp, dummy;
@@ -111,7 +121,7 @@ int main(int argc, char *argv[]) {
     for (p = 0; p < TOTALSTEPS; p++) {
         lda = n;
         REAL *A = new REAL[lda * n];
-        REAL *Ad = new REAL[lda * n];
+        REAL *Aref = new REAL[lda * n];
         REAL mOne = -1;
         for (i = 0; i < lda * n; i++) {
             A[i] = randomnumber(dummy);
@@ -123,11 +133,11 @@ int main(int argc, char *argv[]) {
                 for (k = 0; k < n; k++) {
                     mtemp = mtemp + A[i + k * lda] * A[j + k * lda];
                 }
-                Ad[i + j * lda] = mtemp;
+                Aref[i + j * lda] = mtemp;
             }
         }
         for (i = 0; i < lda * n; i++) {
-            A[i] = Ad[i];
+            A[i] = Aref[i];
         }
 
         if (check_flag) {
@@ -135,21 +145,21 @@ int main(int argc, char *argv[]) {
             Rpotrf(&uplo, n, A, lda, info);
             t2 = gettime();
             elapsedtime = (t2 - t1);
-            (*mplapack_ref)(&uplo, n, Ad, lda, &info);
-            (*raxpy_ref)((mplapackint)(lda * n), mOne, A, (mplapackint)1, Ad, (mplapackint)1);
-            diff = Rlange(&normtype, (mplapackint)lda, (mplapackint)n, Ad, lda, dummywork);
+            (*mplapack_ref)(&uplo, n, Aref, lda, &info);
+            (*raxpy_ref)((mplapackint)(lda * n), mOne, A, (mplapackint)1, Aref, (mplapackint)1);
+            diff = Rlange(&normtype, (mplapackint)lda, (mplapackint)n, Aref, lda, dummywork);
             diffr = cast2double(diff);
             printf("    n     MFLOPS     error     uplo\n");
-            printf("%5d %10.3f   %7.2e      %c\n", (int)n, ((double)n * (double)n * (double)n / 3.0) / elapsedtime * MFLOPS, diffr, uplo);
+            printf("%5d %10.3f   %7.2e      %c\n", (int)n, flops_potrf(n) / elapsedtime * MFLOPS, diffr, uplo);
         } else {
             t1 = gettime();
             Rpotrf(&uplo, n, A, lda, info);
             t2 = gettime();
             elapsedtime = (t2 - t1);
             printf("    n     MFLOPS   uplo\n");
-            printf("%5d %10.3f      %c\n", (int)n, ((double)n * (double)n * (double)n / 3.0) / elapsedtime * MFLOPS, uplo);
+            printf("%5d %10.3f      %c\n", (int)n, flops_potrf(n) / elapsedtime * MFLOPS, uplo);
         }
-        delete[] Ad;
+        delete[] Aref;
         delete[] A;
         n = n + STEP;
     }

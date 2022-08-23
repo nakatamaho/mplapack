@@ -1,9 +1,7 @@
 /*
- * Copyright (c) 2008-2012
+ * Copyright (c) 2008-2022
  *	Nakata, Maho
  * 	All rights reserved.
- *
- * $Id: Rgemm_dd.cpp,v 1.4 2010/08/07 05:50:09 nakatamaho Exp $
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -35,6 +33,7 @@
 #include <mplapack.h>
 #include <mplapack_benchmark.h>
 
+// https://netlib.org/lapack/lawnspdf/lawn41.pdf
 double flops_getrf(mplapackint m_i, mplapackint n_i) {
     double adds, muls, flops;
     double m, n;
@@ -119,12 +118,12 @@ int main(int argc, char *argv[]) {
     for (p = 0; p < TOTALSTEPS; p++) {
         lda = m;
         REAL *A = new REAL[lda * n];
-        REAL *Ad = new REAL[lda * n];
+        REAL *Aref = new REAL[lda * n];
         mplapackint *ipiv = new mplapackint[min(m, n)];
         mplapackint *ipivd = new mplapackint[min(m, n)];
         REAL mOne = -1;
         for (i = 0; i < lda * n; i++) {
-            A[i] = Ad[i] = randomnumber(dummy);
+            A[i] = Aref[i] = randomnumber(dummy);
         }
 
         if (check_flag) {
@@ -132,9 +131,9 @@ int main(int argc, char *argv[]) {
             Rgetrf(m, n, A, lda, ipiv, info);
             t2 = gettime();
             elapsedtime = (t2 - t1);
-            (*mplapack_ref)(m, n, Ad, lda, ipivd, &info);
-            (*raxpy_ref)((mplapackint)(lda * n), mOne, A, (mplapackint)1, Ad, (mplapackint)1);
-            diff = Rlange(&normtype, (mplapackint)lda, (mplapackint)n, Ad, lda, dummywork);
+            (*mplapack_ref)(m, n, Aref, lda, ipivd, &info);
+            (*raxpy_ref)((mplapackint)(lda * n), mOne, A, (mplapackint)1, Aref, (mplapackint)1);
+            diff = Rlange(&normtype, (mplapackint)lda, (mplapackint)n, Aref, lda, dummywork);
             diffr = cast2double(diff);
             printf("    n     m     MFLOPS   error\n");
             printf("%5d %5d %10.3f %5.2e\n", (int)n, (int)m, flops_getrf(m, n) / elapsedtime * MFLOPS, diffr);
@@ -148,7 +147,7 @@ int main(int argc, char *argv[]) {
         }
         delete[] ipivd;
         delete[] ipiv;
-        delete[] Ad;
+        delete[] Aref;
         delete[] A;
         n = n + STEPN;
         m = m + STEPM;

@@ -1,9 +1,7 @@
 /*
- * Copyright (c) 2008-2010
+ * Copyright (c) 2008-2022
  *	Nakata, Maho
  * 	All rights reserved.
- *
- * $Id: Raxpy_dd.cpp,v 1.4 2010/08/07 05:50:08 nakatamaho Exp $
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -37,29 +35,22 @@
 
 int main(int argc, char *argv[]) {
     mplapackint n;
-    mplapackint incx = 1, incy = 1, STEP, N0, LOOP = 3, TOTALSTEPS = 100;
+    mplapackint incx = 1, incy = 1, STEP = 97, N0 = 1, LOOP = 3, TOTALSTEPS = 3000;
     REAL alpha, dummy, *dummywork;
-    REAL mOne = -1;
     double elapsedtime, t1, t2;
     int i, p;
     int check_flag = 1;
-    char normtype;
+    char normtype = 'm';
 
     ___MPLAPACK_INITIALIZE___
 
     const char mpblas_sym[] = SYMBOL_GCC_RAXPY;
-    const char raxpy_sym[] = SYMBOL_GCC_RAXPY;
     void *handle;
     void (*mpblas_ref)(mplapackint, REAL, REAL *, mplapackint, REAL *, mplapackint);
-    void (*raxpy_ref)(mplapackint, REAL, REAL *, mplapackint, REAL *, mplapackint);
     char *error;
     REAL diff;
     double diffr;
 
-    // initialization
-    N0 = 1;
-    STEP = 1;
-    normtype = 'm';
     if (argc != 1) {
         for (i = 1; i < argc; i++) {
             if (strcmp("-N", argv[i]) == 0) {
@@ -86,11 +77,6 @@ int main(int argc, char *argv[]) {
             fprintf(stderr, "%s\n", error);
             return 1;
         }
-        raxpy_ref = (void (*)(mplapackint, REAL, REAL *, mplapackint, REAL *, mplapackint))dlsym(handle, raxpy_sym);
-        if ((error = dlerror()) != NULL) {
-            fprintf(stderr, "%s\n", error);
-            return 1;
-        }
     }
 
     n = N0;
@@ -109,11 +95,10 @@ int main(int argc, char *argv[]) {
             t2 = gettime();
             elapsedtime = (t2 - t1);
             (*mpblas_ref)(n, alpha, x, incx, yd, incy);
-            (*raxpy_ref)(n, mOne, y, (mplapackint)1, yd, (mplapackint)1);
             diff = Rlange(&normtype, (mplapackint)n, (mplapackint)1, yd, 1, dummywork);
             diffr = cast2double(diff);
             printf("         n       MFLOPS      error\n");
-            printf("%10d   %10.3f   %5.2e\n", (int)n, (2.0 * (double)n) / elapsedtime * MFLOPS, diffr);
+            printf("%10d   %10.3f   %10.3f\n", (int)n, (2.0 * (double)n) / elapsedtime * MFLOPS, diffr);
         } else {
             for (i = 0; i < n; i++) {
                 x[i] = randomnumber(dummy);
@@ -121,12 +106,12 @@ int main(int argc, char *argv[]) {
             }
             alpha = randomnumber(dummy);
             elapsedtime = 0.0;
-	    for (int j = 0; j < LOOP; j++) {
+            for (int j = 0; j < LOOP; j++) {
                 t1 = gettime();
                 Raxpy(n, alpha, x, incx, y, incy);
                 t2 = gettime();
                 elapsedtime = elapsedtime + (t2 - t1);
-	    } 
+            }
             elapsedtime = elapsedtime / (double)LOOP;
             printf("         n       MFLOPS\n");
             printf("%10d   %10.3f\n", (int)n, (2.0 * (double)n) / elapsedtime * MFLOPS);

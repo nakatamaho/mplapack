@@ -35,17 +35,27 @@
 #include <mplapack.h>
 #include <mplapack_benchmark.h>
 
-#define TOTALSTEPS 1000
+// cf. https://netlib.org/lapack/lawnspdf/lawn41.pdf p.120
+double flops_gemv(mplapackint m_i, mplapackint n_i) {
+    double adds, muls, flops;
+    double n, m;
+    n = (double)n_i;
+    m = (double)m_i;
+    muls = m * n + 2. * m;
+    adds = m * n;
+    flops = muls + adds;
+    return flops;
+}
 
 int main(int argc, char *argv[]) {
     mplapackint k, l, m, n;
-    mplapackint incx = 1, incy = 1, STEPN, STEPM, N0, M0;
+    mplapackint STEPN = 7, STEPM = 7, N0, M0, LOOP = 3, TOTALSTEPS = 283;
     REAL alpha, beta, dummy, *dummywork;
     REAL mOne = -1;
     double elapsedtime, t1, t2;
     int i, p;
     int check_flag = 1;
-    char trans, normtype;
+    char trans = 'n', normtype = 'm';
 
     ___MPLAPACK_INITIALIZE___
 
@@ -60,9 +70,6 @@ int main(int argc, char *argv[]) {
 
     // initialization
     N0 = M0 = 1;
-    STEPN = STEPM = 1;
-    trans = 'n';
-    normtype = 'm';
     if (argc != 1) {
         for (i = 1; i < argc; i++) {
             if (strcmp("-N", argv[i]) == 0) {
@@ -77,6 +84,10 @@ int main(int argc, char *argv[]) {
                 trans = 't';
             } else if (strcmp("-NOCHECK", argv[i]) == 0) {
                 check_flag = 0;
+            } else if (strcmp("-LOOP", argv[i]) == 0) {
+                LOOP = atoi(argv[++i]);
+            } else if (strcmp("-TOTALSTEPS", argv[i]) == 0) {
+                TOTALSTEPS = atoi(argv[++i]);
             }
         }
     }
@@ -110,14 +121,14 @@ int main(int argc, char *argv[]) {
         }
         REAL *x = new REAL[k];
         REAL *y = new REAL[l];
-        REAL *yd = new REAL[l];
+        REAL *yref = new REAL[l];
         REAL *A = new REAL[n * m];
         if (check_flag) {
             for (i = 0; i < k; i++) {
                 x[i] = randomnumber(dummy);
             }
             for (i = 0; i < l; i++) {
-                y[i] = yd[i] = randomnumber(dummy);
+                y[i] = yref[i] = randomnumber(dummy);
             }
             for (i = 0; i < k * l; i++) {
                 A[i] = randomnumber(dummy);
@@ -128,9 +139,9 @@ int main(int argc, char *argv[]) {
             Rgemv(&trans, m, n, alpha, A, m, x, (mplapackint)1, beta, y, (mplapackint)1);
             t2 = gettime();
             elapsedtime = (t2 - t1);
-            (*mpblas_ref)(&trans, m, n, alpha, A, m, x, (mplapackint)1, beta, yd, (mplapackint)1);
-            (*raxpy_ref)(l, mOne, y, (mplapackint)1, yd, (mplapackint)1);
-            diff = Rlange(&normtype, (mplapackint)l, (mplapackint)1, yd, 1, dummywork);
+            (*mpblas_ref)(&trans, m, n, alpha, A, m, x, (mplapackint)1, beta, yref, (mplapackint)1);
+            (*raxpy_ref)(l, mOne, y, (mplapackint)1, yref, (mplapackint)1);
+            diff = Rlange(&normtype, (mplapackint)l, (mplapackint)1, yref, 1, dummywork);
             diffr = cast2double(diff);
             printf("     m       n      MFLOPS      error    trans\n");
             printf("%6d  %6d  %10.3f   %5.2e        %c\n", (int)n, (int)m, (2.0 * (double)n * (double)m) / elapsedtime * MFLOPS, diffr, trans);
@@ -139,21 +150,25 @@ int main(int argc, char *argv[]) {
                 x[i] = randomnumber(dummy);
             }
             for (i = 0; i < l; i++) {
-                y[i] = yd[i] = randomnumber(dummy);
+                y[i] = yref[i] = randomnumber(dummy);
             }
             for (i = 0; i < k * l; i++) {
                 A[i] = randomnumber(dummy);
             }
             alpha = randomnumber(dummy);
             beta = randomnumber(dummy);
-            t1 = gettime();
-            Rgemv(&trans, m, n, alpha, A, m, x, (mplapackint)1, beta, y, (mplapackint)1);
-            t2 = gettime();
-            elapsedtime = (t2 - t1);
+            elapsedtime = 0.0;
+            for (int j = 0; j < LOOP; j++) {
+                t1 = gettime();
+                Rgemv(&trans, m, n, alpha, A, m, x, (mplapackint)1, beta, y, (mplapackint)1);
+                t2 = gettime();
+                elapsedtime = elapsedtime + (t2 - t1);
+            }
+            elapsedtime = elapsedtime / (double)LOOP;
             printf("     m       n      MFLOPS  trans\n");
-            printf("%6d  %6d  %10.3f      %c\n", (int)n, (int)m, (2.0 * (double)n * (double)m) / elapsedtime * MFLOPS, trans);
+            printf("%6d  %6d  %10.3f      %c\n", (int)n, (int)m, flops_gemv(m, n) / elapsedtime * MFLOPS, trans);
         }
-        delete[] yd;
+        delete[] yref;
         delete[] y;
         delete[] x;
         delete[] A;

@@ -10,8 +10,8 @@ fi
 MPLIBS="_Float128 _Float64x dd double"
 
 for _mplib in $MPLIBS; do
-env $LDPATHPREFIX ./Raxpy.${_mplib}_opt -NOCHECK  >& log.Raxpy.${_mplib}_opt
-env $LDPATHPREFIX ./Raxpy.${_mplib} -NOCHECK      >& log.Raxpy.${_mplib}
+env $LDPATHPREFIX ./Rdot.${_mplib}_opt -NOCHECK  >& log.Rdot.${_mplib}_opt
+env $LDPATHPREFIX ./Rdot.${_mplib}     -NOCHECK  >& log.Rdot.${_mplib}
 done
 ####
 
@@ -19,8 +19,8 @@ done
 MPLIBS="mpfr gmp qd"
 
 for _mplib in $MPLIBS; do
-env $LDPATHPREFIX ./Raxpy.${_mplib}_opt -NOCHECK  >& log.Raxpy.${_mplib}_opt
-env $LDPATHPREFIX ./Raxpy.${_mplib} -NOCHECK      >& log.Raxpy.${_mplib}
+env $LDPATHPREFIX ./Rdot.${_mplib}_opt -NOCHECK  >& log.Rdot.${_mplib}_opt
+env $LDPATHPREFIX ./Rdot.${_mplib}     -NOCHECK  >& log.Rdot.${_mplib}
 done
 ####
 
@@ -35,11 +35,11 @@ else
     MODELNAME="unknown"
 fi
 
-$SED -i -e "s/%%MODELNAME%%/$MODELNAME/g" Raxpy1.plt
-$SED -i -e "s/%%MODELNAME%%/$MODELNAME/g" Raxpy2.plt
-$SED -i -e "s/%%MODELNAME%%/$MODELNAME/g" Raxpy3.plt
+$SED -i -e "s/%%MODELNAME%%/$MODELNAME/g" Rdot1.plt
+$SED -i -e "s/%%MODELNAME%%/$MODELNAME/g" Rdot2.plt
+$SED -i -e "s/%%MODELNAME%%/$MODELNAME/g" Rdot3.plt
 ####
 
-gnuplot Raxpy1.plt > Raxpy1.pdf
-gnuplot Raxpy2.plt > Raxpy2.pdf
-gnuplot Raxpy3.plt > Raxpy3.pdf
+gnuplot Rdot1.plt > Rdot1.pdf
+gnuplot Rdot2.plt > Rdot2.pdf
+gnuplot Rdot3.plt > Rdot3.pdf

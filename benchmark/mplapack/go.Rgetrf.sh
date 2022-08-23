@@ -26,7 +26,7 @@ done
 
 ####
 if [ `uname` = "Linux" ]; then
-    MODELNAME=`cat /proc/cpuinfo | grep 'model name' | uniq | awk '{for(i=4;i<=NF;i++) printf $i FS }'`
+    MODELNAME=`lscpu | grep 'Model name' | uniq | awk '{for(i=3;i<=NF;i++) printf $i FS }'`
     SED=sed
 elif [ `uname` = "Darwin" ]; then
     MODELNAME=`sysctl machdep.cpu.brand_string | awk '{for(i=2;i<=NF;i++) printf $i FS }'`

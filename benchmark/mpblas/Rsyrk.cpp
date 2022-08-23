@@ -35,14 +35,26 @@
 #include <mplapack.h>
 #include <mplapack_benchmark.h>
 
+// cf. https://netlib.org/lapack/lawnspdf/lawn41.pdf p.120
+double flops_syrk(mplapackint k_i, mplapackint n_i) {
+    double adds, muls, flops;
+    double n, k;
+    n = (double)n_i;
+    k = (double)k_i;
+    muls = k * n * (n + 1) * 0.5 +  n * n + n;
+    adds = k * n * (n + 1) * 0.5;
+    flops = muls + adds;
+    return flops;
+}
+
 int main(int argc, char *argv[]) {
     REAL alpha, beta, dummy;
     REAL *dummywork;
     double elapsedtime, t1, t2;
     char uplo, trans, normtype;
-    int N0, K0, STEPN, STEPK, LOOP = 3, TOTALSTEPS = 100;
+    int N0, K0, STEPN = 3, STEPK = 3, LOOP = 3, TOTALSTEPS = 340;
     int lda, ldc;
-    int i, j, n, k, ka, kb, p, q;
+    int i, n, k, ka, p, q;
     int check_flag = 1;
 
     ___MPLAPACK_INITIALIZE___
@@ -126,7 +138,7 @@ int main(int argc, char *argv[]) {
 
         REAL *A = new REAL[lda * ka];
         REAL *C = new REAL[ldc * n];
-        REAL *Cd = new REAL[ldc * n];
+        REAL *Cref = new REAL[ldc * n];
         REAL mOne = -1;
         //    alpha = randomnumber (dummy);
         //    beta = randomnumber (dummy);
@@ -137,7 +149,7 @@ int main(int argc, char *argv[]) {
             A[i] = randomnumber(dummy);
         }
         for (i = 0; i < ldc * n; i++) {
-            C[i] = Cd[i] = randomnumber(dummy);
+            C[i] = Cref[i] = randomnumber(dummy);
         }
 
         if (check_flag) {
@@ -145,28 +157,26 @@ int main(int argc, char *argv[]) {
             Rsyrk(&uplo, &trans, n, k, alpha, A, lda, beta, C, ldc);
             t2 = gettime();
             elapsedtime = (t2 - t1);
-            (*mpblas_ref)(&uplo, &trans, n, k, alpha, A, lda, beta, Cd, ldc);
-            (*raxpy_ref)((mplapackint)(ldc * n), mOne, C, (mplapackint)1, Cd, (mplapackint)1);
+            (*mpblas_ref)(&uplo, &trans, n, k, alpha, A, lda, beta, Cref, ldc);
+            (*raxpy_ref)((mplapackint)(ldc * n), mOne, C, (mplapackint)1, Cref, (mplapackint)1);
 
-            diff = Rlange(&normtype, (mplapackint)ldc, (mplapackint)n, Cd, ldc, dummywork);
+            diff = Rlange(&normtype, (mplapackint)ldc, (mplapackint)n, Cref, ldc, dummywork);
             diffr = cast2double(diff);
             printf("    n     k      MFLOPS       error    uplo    trans\n");
-            // 2n^2k+2n^2 flops are needed
-            printf("%5d %5d  %10.3f    %5.2e       %c        %c\n", (int)n, (int)k, (2.0 * (double)n * (double)n * (double)k + 2.0 * (double)n * (double)n) / elapsedtime * MFLOPS, diffr, uplo, trans);
+            printf("%5d %5d  %10.3f    %5.2e       %c        %c\n", (int)n, (int)k, flops_syrk(k, n) / elapsedtime * MFLOPS, diffr, uplo, trans);
         } else {
             elapsedtime = 0.0;
-	    for (int j = 0; j < LOOP; j++) {
+            for (int j = 0; j < LOOP; j++) {
                 t1 = gettime();
                 Rsyrk(&uplo, &trans, n, k, alpha, A, lda, beta, C, ldc);
                 t2 = gettime();
                 elapsedtime = elapsedtime + (t2 - t1);
-	    } 
+            }
             elapsedtime = elapsedtime / (double)LOOP;
             printf("    n     k      MFLOPS     uplo   trans\n");
-            // 2n^2k+2n^2 flops are needed
-            printf("%5d %5d %10.3f      %c      %c\n", (int)n, (int)k, (2.0 * (double)n * (double)n * (double)k + 2.0 * (double)n * (double)n) / elapsedtime * MFLOPS, uplo, trans);
+            printf("%5d %5d %10.3f      %c      %c\n", (int)n, (int)k, flops_syrk(k, n) / elapsedtime * MFLOPS, uplo, trans);
         }
-        delete[] Cd;
+        delete[] Cref;
         delete[] C;
         delete[] A;
         n = n + STEPN;

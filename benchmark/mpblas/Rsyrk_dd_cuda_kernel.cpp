@@ -71,6 +71,18 @@ void SetDevice() {
     }
 }
 
+// cf. https://netlib.org/lapack/lawnspdf/lawn41.pdf p.120
+double flops_syrk(mplapackint k_i, mplapackint n_i) {
+    double adds, muls, flops;
+    double n, k;
+    n = (double)n_i;
+    k = (double)k_i;
+    muls = k * n * (n + 1) * 0.5 +  n * n + n;
+    adds = k * n * (n + 1) * 0.5;
+    flops = muls + adds;
+    return flops;
+}
+
 int main(int argc, char *argv[]) {
     REAL alpha, beta, dummy;
     REAL *dummywork;
@@ -212,12 +224,12 @@ int main(int argc, char *argv[]) {
             cudaMemcpy(Cdev, C, size_C * sizeof(REAL), cudaMemcpyHostToDevice);
 
             elapsedtime = 0.0;
-	    for (int j = 0; j < LOOP; j++) {
+            for (int j = 0; j < LOOP; j++) {
                 t1 = gettime();
                 Rsyrk_cuda(&uplo, &trans, n, k, alpha, Adev, lda, beta, Cdev, ldc);
                 t2 = gettime();
                 elapsedtime = elapsedtime + (t2 - t1);
-	    }
+            }
             elapsedtime = elapsedtime / (double)LOOP;
 
             cudaMemcpy(C, Cdev, size_C * sizeof(dd_real), cudaMemcpyDeviceToHost);
@@ -225,8 +237,7 @@ int main(int argc, char *argv[]) {
             cudaFree(Cdev);
 
             printf("    n     k      MFLOPS       uplo    trans\n");
-            // 2n^2k+2n^2 flops are needed
-            printf("%5d %5d %10.3f      %c    %c\n", (int)n, (int)k, (2.0 * (double)n * (double)n * (double)k + 2.0 * (double)n * (double)n) / elapsedtime * MFLOPS, uplo, trans);
+            printf("%5d %5d %10.3f      %c    %c\n", (int)n, (int)k, flops_syrk(k, n) / elapsedtime * MFLOPS, uplo, trans);
         }
         delete[] Cd;
         delete[] C;

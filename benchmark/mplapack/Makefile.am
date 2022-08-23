@@ -1,6 +1,6 @@
 bench_PROGRAMS =
-bench_DATA = Rgetrf1.plt Rgetrf2.plt Rgetrf_cuda.plt \
-Rpotrf1.plt Rpotrf2.plt Rpotrf_cuda.plt \
+bench_DATA = Rgetrf1.plt Rgetrf2.plt Rgetrf3.plt Rgetrf_cuda.plt \
+Rpotrf1.plt Rpotrf2.plt Rpotrf3.plt Rpotrf_cuda.plt \
 go.Rgetrf.sh go.Rgetrf_cuda.sh go.Rpotrf.sh go.Rpotrf_cuda.sh
 
 benchdir=$(prefix)/lib/$(target)/mplapack/benchmark
