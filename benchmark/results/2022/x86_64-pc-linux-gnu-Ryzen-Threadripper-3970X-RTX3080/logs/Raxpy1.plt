@@ -2,7 +2,7 @@ set xlabel font "Helvetica,20"
 set ylabel font "Helvetica,20"
 set key font "Helvetica,16"
 set title font "Helvetica,20"
-set title "Raxpy on AMD Ryzen Threadripper 3970X 32-Core Processor "
+set title "Raxpy on %%MODELNAME%%"
 set xlabel "Dimension"
 set ylabel "MFLOPS"
 set terminal pdf
