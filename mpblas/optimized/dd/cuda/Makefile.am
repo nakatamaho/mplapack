@@ -7,7 +7,7 @@
 	$(NVCC) $(VOLTA_FLAGS) -o $@ -c $< $(CUDA_CFLAGS)
 
 .cu.lo:
-	$(top_srcdir)/misc/cudalt.py $@ $(NVCC) --compiler-options=\"$(CFLAGS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) \" $(VOLTA_FLAGS) -c $<
+	$(top_srcdir)/misc/cudalt.py $@ $(NVCC) --compiler-options=\"$(CFLAGS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) \" $(AMPERE_FLAGS) $(VOLTA_FLAGS) -c $<
 
 lib_LTLIBRARIES = libmpblas_dd_cuda.la
 
@@ -42,6 +42,7 @@ Rsyrk_TU_p.cu
 TESLA_FLAGS = -gencode arch=compute_13,code=sm_13 -m64 -O3 --ptxas-options=-v 
 FERMI_FLAGS = -gencode arch=compute_20,code=sm_21 -m64 -O3 --ptxas-options=-v
 VOLTA_FLAGS = -gencode arch=compute_70,code=sm_70 -m64 -O3 --ptxas-options=-v
+AMPERE_FLAGS = -gencode arch=compute_80,code=sm_80 -m64 -O3 --ptxas-options=-v
 
 libmpblas_dd_cuda_la_SOURCES = Rgemm.cu Rgemm_cuda.cu Rgemm_fermi.cu Rgemm_tesla.cu \
 				Rsyrk.cu Rsyrk_cuda.cu
