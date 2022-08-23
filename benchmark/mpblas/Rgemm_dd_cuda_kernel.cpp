@@ -234,8 +234,8 @@ int main(int argc, char *argv[]) {
             (*raxpy_ref)((mplapackint)(ldc * n), mOne, C, (mplapackint)1, Cref, (mplapackint)1);
             diff = Rlange(&normtype, (mplapackint)ldc, (mplapackint)n, Cref, ldc, dummywork);
             diffr = cast2double(diff);
-            printf("    m     n     k     MFLOPS   error   transa   transb\n");
-            printf("%5d %5d %5d  %10.3f    %5.2e       %c        %c\n", (int)m, (int)n, (int)k, flops_gemm(k, m, n) / elapsedtime * MFLOPS, diffr, transa, transb);
+            printf("    m     n     k     MFLOPS      error   transa   transb\n");
+            printf("%5d %5d %5d  %10.3f    %5.2e     %c        %c\n", (int)m, (int)n, (int)k, flops_gemm(k, m, n) / elapsedtime * MFLOPS, diffr, transa, transb);
         } else {
             cudaMalloc((void **)&Adev, size_A * sizeof(REAL));
             cudaMalloc((void **)&Bdev, size_B * sizeof(REAL));
@@ -260,7 +260,7 @@ int main(int argc, char *argv[]) {
 
             elapsedtime = (t2 - t1);
             printf("    m     n     k     MFLOPS    transa   transb\n");
-            printf("%5d %5d %5d  %10.3f    %5.2e       %c        %c\n", (int)m, (int)n, (int)k, flops_gemm(k, m, n) / elapsedtime * MFLOPS, diffr, transa, transb);
+            printf("%5d %5d %5d  %10.3f        %c        %c\n", (int)m, (int)n, (int)k, flops_gemm(k, m, n) / elapsedtime * MFLOPS, transa, transb);
         }
         delete[] Cref;
         delete[] C;
