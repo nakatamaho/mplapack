@@ -766,3 +766,35 @@
  1147  1147  1147     81.217         n        n
     m     n     k     MFLOPS    transa   transb
  1150  1150  1150     81.065         n        n
+    m     n     k     MFLOPS    transa   transb
+ 1153  1153  1153     80.617         n        n
+    m     n     k     MFLOPS    transa   transb
+ 1156  1156  1156     80.877         n        n
+    m     n     k     MFLOPS    transa   transb
+ 1159  1159  1159     80.657         n        n
+    m     n     k     MFLOPS    transa   transb
+ 1162  1162  1162     81.138         n        n
+    m     n     k     MFLOPS    transa   transb
+ 1165  1165  1165     75.661         n        n
+    m     n     k     MFLOPS    transa   transb
+ 1168  1168  1168     81.357         n        n
+    m     n     k     MFLOPS    transa   transb
+ 1171  1171  1171     81.391         n        n
+    m     n     k     MFLOPS    transa   transb
+ 1174  1174  1174     81.261         n        n
+    m     n     k     MFLOPS    transa   transb
+ 1177  1177  1177     81.162         n        n
+    m     n     k     MFLOPS    transa   transb
+ 1180  1180  1180     80.008         n        n
+    m     n     k     MFLOPS    transa   transb
+ 1183  1183  1183     80.954         n        n
+    m     n     k     MFLOPS    transa   transb
+ 1186  1186  1186     77.147         n        n
+    m     n     k     MFLOPS    transa   transb
+ 1189  1189  1189     81.306         n        n
+    m     n     k     MFLOPS    transa   transb
+ 1192  1192  1192     81.218         n        n
+    m     n     k     MFLOPS    transa   transb
+ 1195  1195  1195     81.523         n        n
+    m     n     k     MFLOPS    transa   transb
+ 1198  1198  1198     80.845         n        n
