@@ -1,400 +1,400 @@
     n     MFLOPS   uplo
-    1      0.011      u
+    1      0.014      u
     n     MFLOPS   uplo
-    6      0.524      u
+    6      0.585      u
     n     MFLOPS   uplo
-   11      1.240      u
+   11      1.355      u
     n     MFLOPS   uplo
-   16      3.843      u
+   16      4.480      u
     n     MFLOPS   uplo
-   21      4.203      u
+   21      4.897      u
     n     MFLOPS   uplo
-   26      4.520      u
+   26      5.081      u
     n     MFLOPS   uplo
-   31      4.726      u
+   31      5.384      u
     n     MFLOPS   uplo
-   36      4.877      u
+   36      5.719      u
     n     MFLOPS   uplo
-   41      5.001      u
+   41      5.853      u
     n     MFLOPS   uplo
-   46      5.938      u
+   46      5.988      u
     n     MFLOPS   uplo
-   51      6.033      u
+   51      6.079      u
     n     MFLOPS   uplo
-   56      6.102      u
+   56      6.138      u
     n     MFLOPS   uplo
-   61      6.186      u
+   61      6.221      u
     n     MFLOPS   uplo
-   66      6.188      u
+   66      6.242      u
     n     MFLOPS   uplo
-   71      6.144      u
+   71      6.202      u
     n     MFLOPS   uplo
-   76      6.146      u
+   76      6.175      u
     n     MFLOPS   uplo
-   81      6.178      u
+   81      6.220      u
     n     MFLOPS   uplo
-   86      6.222      u
+   86      6.264      u
     n     MFLOPS   uplo
-   91      6.255      u
+   91      6.310      u
     n     MFLOPS   uplo
-   96      6.310      u
+   96      6.339      u
     n     MFLOPS   uplo
-  101      6.333      u
+  101      6.393      u
     n     MFLOPS   uplo
-  106      6.392      u
+  106      6.302      u
     n     MFLOPS   uplo
-  111      6.426      u
+  111      6.474      u
     n     MFLOPS   uplo
-  116      6.468      u
+  116      6.514      u
     n     MFLOPS   uplo
-  121      6.522      u
+  121      6.555      u
     n     MFLOPS   uplo
-  126      6.553      u
+  126      6.594      u
     n     MFLOPS   uplo
-  131      6.208      u
+  131      6.609      u
     n     MFLOPS   uplo
-  136      6.635      u
+  136      6.630      u
     n     MFLOPS   uplo
-  141      6.768      u
+  141      6.659      u
     n     MFLOPS   uplo
-  146      6.837      u
+  146      6.676      u
     n     MFLOPS   uplo
-  151      6.944      u
+  151      6.657      u
     n     MFLOPS   uplo
-  156      7.163      u
+  156      6.743      u
     n     MFLOPS   uplo
-  161      7.384      u
+  161      6.755      u
     n     MFLOPS   uplo
-  166      7.413      u
+  166      6.791      u
     n     MFLOPS   uplo
-  171      7.527      u
+  171      6.807      u
     n     MFLOPS   uplo
-  176      7.699      u
+  176      6.840      u
     n     MFLOPS   uplo
-  181      7.568      u
+  181      6.869      u
     n     MFLOPS   uplo
-  186      7.858      u
+  186      6.886      u
     n     MFLOPS   uplo
-  191      7.950      u
+  191      6.916      u
     n     MFLOPS   uplo
-  196      7.801      u
+  196      6.922      u
     n     MFLOPS   uplo
-  201      7.839      u
+  201      6.935      u
     n     MFLOPS   uplo
-  206      8.401      u
+  206      6.949      u
     n     MFLOPS   uplo
-  211      8.481      u
+  211      6.979      u
     n     MFLOPS   uplo
-  216      8.769      u
+  216      6.989      u
     n     MFLOPS   uplo
-  221      8.876      u
+  221      7.009      u
     n     MFLOPS   uplo
-  226      8.928      u
+  226      7.012      u
     n     MFLOPS   uplo
-  231      9.007      u
+  231      7.054      u
     n     MFLOPS   uplo
-  236      9.187      u
+  236      7.065      u
     n     MFLOPS   uplo
-  241      9.356      u
+  241      7.066      u
     n     MFLOPS   uplo
-  246      9.430      u
+  246      7.085      u
     n     MFLOPS   uplo
-  251      9.395      u
+  251      7.117      u
     n     MFLOPS   uplo
-  256      9.574      u
+  256      7.114      u
     n     MFLOPS   uplo
-  261      9.594      u
+  261      7.135      u
     n     MFLOPS   uplo
-  266      9.768      u
+  266      7.118      u
     n     MFLOPS   uplo
-  271     10.046      u
+  271      7.144      u
     n     MFLOPS   uplo
-  276     10.230      u
+  276      7.165      u
     n     MFLOPS   uplo
-  281     10.309      u
+  281      7.187      u
     n     MFLOPS   uplo
-  286     10.415      u
+  286      7.199      u
     n     MFLOPS   uplo
-  291     10.665      u
+  291      7.211      u
     n     MFLOPS   uplo
-  296     10.673      u
+  296      7.213      u
     n     MFLOPS   uplo
-  301     10.804      u
+  301      7.225      u
     n     MFLOPS   uplo
-  306     10.883      u
+  306      7.229      u
     n     MFLOPS   uplo
-  311     11.046      u
+  311      7.242      u
     n     MFLOPS   uplo
-  316     10.912      u
+  316      7.261      u
     n     MFLOPS   uplo
-  321     11.025      u
+  321      7.265      u
     n     MFLOPS   uplo
-  326     11.204      u
+  326      7.283      u
     n     MFLOPS   uplo
-  331     11.408      u
+  331      7.281      u
     n     MFLOPS   uplo
-  336     11.424      u
+  336      7.290      u
     n     MFLOPS   uplo
-  341     11.712      u
+  341      7.304      u
     n     MFLOPS   uplo
-  346     11.835      u
+  346      7.317      u
     n     MFLOPS   uplo
-  351     11.950      u
+  351      7.311      u
     n     MFLOPS   uplo
-  356     12.051      u
+  356      7.328      u
     n     MFLOPS   uplo
-  361     12.206      u
+  361      7.335      u
     n     MFLOPS   uplo
-  366     12.229      u
+  366      7.320      u
     n     MFLOPS   uplo
-  371     12.054      u
+  371      7.366      u
     n     MFLOPS   uplo
-  376     12.421      u
+  376      7.377      u
     n     MFLOPS   uplo
-  381     12.415      u
+  381      7.371      u
     n     MFLOPS   uplo
-  386     12.470      u
+  386      7.380      u
     n     MFLOPS   uplo
-  391     12.206      u
+  391      7.386      u
     n     MFLOPS   uplo
-  396     12.633      u
+  396      7.390      u
     n     MFLOPS   uplo
-  401     13.041      u
+  401      7.400      u
     n     MFLOPS   uplo
-  406     13.046      u
+  406      7.406      u
     n     MFLOPS   uplo
-  411     13.406      u
+  411      7.421      u
     n     MFLOPS   uplo
-  416     13.419      u
+  416      7.433      u
     n     MFLOPS   uplo
-  421     13.461      u
+  421      7.429      u
     n     MFLOPS   uplo
-  426     13.111      u
+  426      7.441      u
     n     MFLOPS   uplo
-  431     13.523      u
+  431      7.440      u
     n     MFLOPS   uplo
-  436     13.870      u
+  436      7.460      u
     n     MFLOPS   uplo
-  441     13.791      u
+  441      7.446      u
     n     MFLOPS   uplo
-  446     13.763      u
+  446      7.471      u
     n     MFLOPS   uplo
-  451     13.974      u
+  451      7.468      u
     n     MFLOPS   uplo
-  456     14.059      u
+  456      7.467      u
     n     MFLOPS   uplo
-  461     14.213      u
+  461      7.476      u
     n     MFLOPS   uplo
-  466     14.505      u
+  466      7.478      u
     n     MFLOPS   uplo
-  471     14.488      u
+  471      7.495      u
     n     MFLOPS   uplo
-  476     14.603      u
+  476      7.503      u
     n     MFLOPS   uplo
-  481     14.882      u
+  481      7.493      u
     n     MFLOPS   uplo
-  486     14.774      u
+  486      7.509      u
     n     MFLOPS   uplo
-  491     14.890      u
+  491      7.519      u
     n     MFLOPS   uplo
-  496     15.049      u
+  496      7.520      u
     n     MFLOPS   uplo
-  501     14.820      u
+  501      7.517      u
     n     MFLOPS   uplo
-  506     14.762      u
+  506      7.520      u
     n     MFLOPS   uplo
-  511     15.134      u
+  511      7.524      u
     n     MFLOPS   uplo
-  516     15.058      u
+  516      7.537      u
     n     MFLOPS   uplo
-  521     15.509      u
+  521      7.539      u
     n     MFLOPS   uplo
-  526     15.594      u
+  526      7.524      u
     n     MFLOPS   uplo
-  531     15.898      u
+  531      7.544      u
     n     MFLOPS   uplo
-  536     16.018      u
+  536      7.546      u
     n     MFLOPS   uplo
-  541     15.812      u
+  541      7.549      u
     n     MFLOPS   uplo
-  546     15.876      u
+  546      7.565      u
     n     MFLOPS   uplo
-  551     15.909      u
+  551      7.568      u
     n     MFLOPS   uplo
-  556     16.479      u
+  556      7.556      u
     n     MFLOPS   uplo
-  561     16.539      u
+  561      7.578      u
     n     MFLOPS   uplo
-  566     16.486      u
+  566      7.577      u
     n     MFLOPS   uplo
-  571     16.647      u
+  571      7.576      u
     n     MFLOPS   uplo
-  576     16.640      u
+  576      7.567      u
     n     MFLOPS   uplo
-  581     16.773      u
+  581      7.587      u
     n     MFLOPS   uplo
-  586     16.839      u
+  586      7.582      u
     n     MFLOPS   uplo
-  591     17.087      u
+  591      7.579      u
     n     MFLOPS   uplo
-  596     17.009      u
+  596      7.583      u
     n     MFLOPS   uplo
-  601     17.322      u
+  601      7.592      u
     n     MFLOPS   uplo
-  606     17.346      u
+  606      7.592      u
     n     MFLOPS   uplo
-  611     17.668      u
+  611      7.593      u
     n     MFLOPS   uplo
-  616     17.602      u
+  616      7.611      u
     n     MFLOPS   uplo
-  621     17.751      u
+  621      7.599      u
     n     MFLOPS   uplo
-  626     17.678      u
+  626      7.607      u
     n     MFLOPS   uplo
-  631     17.712      u
+  631      7.604      u
     n     MFLOPS   uplo
-  636     17.638      u
+  636      7.614      u
     n     MFLOPS   uplo
-  641     17.815      u
+  641      7.628      u
     n     MFLOPS   uplo
-  646     17.707      u
+  646      7.631      u
     n     MFLOPS   uplo
-  651     17.935      u
+  651      7.626      u
     n     MFLOPS   uplo
-  656     18.437      u
+  656      7.629      u
     n     MFLOPS   uplo
-  661     18.404      u
+  661      7.636      u
     n     MFLOPS   uplo
-  666     18.638      u
+  666      7.636      u
     n     MFLOPS   uplo
-  671     18.670      u
+  671      7.626      u
     n     MFLOPS   uplo
-  676     18.749      u
+  676      7.644      u
     n     MFLOPS   uplo
-  681     18.811      u
+  681      7.653      u
     n     MFLOPS   uplo
-  686     18.890      u
+  686      7.663      u
     n     MFLOPS   uplo
-  691     18.974      u
+  691      7.672      u
     n     MFLOPS   uplo
-  696     19.089      u
+  696      7.668      u
     n     MFLOPS   uplo
-  701     19.022      u
+  701      7.671      u
     n     MFLOPS   uplo
-  706     19.109      u
+  706      7.680      u
     n     MFLOPS   uplo
-  711     19.321      u
+  711      7.667      u
     n     MFLOPS   uplo
-  716     18.982      u
+  716      7.682      u
     n     MFLOPS   uplo
-  721     19.579      u
+  721      7.669      u
     n     MFLOPS   uplo
-  726     19.598      u
+  726      7.685      u
     n     MFLOPS   uplo
-  731     19.691      u
+  731      7.692      u
     n     MFLOPS   uplo
-  736     19.529      u
+  736      7.703      u
     n     MFLOPS   uplo
-  741     19.780      u
+  741      7.697      u
     n     MFLOPS   uplo
-  746     19.886      u
+  746      7.699      u
     n     MFLOPS   uplo
-  751     19.979      u
+  751      7.684      u
     n     MFLOPS   uplo
-  756     19.893      u
+  756      7.697      u
     n     MFLOPS   uplo
-  761     19.901      u
+  761      7.706      u
     n     MFLOPS   uplo
-  766     20.017      u
+  766      7.707      u
     n     MFLOPS   uplo
-  771     20.146      u
+  771      7.711      u
     n     MFLOPS   uplo
-  776     20.243      u
+  776      7.713      u
     n     MFLOPS   uplo
-  781     20.411      u
+  781      7.717      u
     n     MFLOPS   uplo
-  786     20.480      u
+  786      7.713      u
     n     MFLOPS   uplo
-  791     20.380      u
+  791      7.729      u
     n     MFLOPS   uplo
-  796     20.719      u
+  796      7.729      u
     n     MFLOPS   uplo
-  801     20.625      u
+  801      7.721      u
     n     MFLOPS   uplo
-  806     20.948      u
+  806      7.728      u
     n     MFLOPS   uplo
-  811     20.966      u
+  811      7.740      u
     n     MFLOPS   uplo
-  816     21.087      u
+  816      7.734      u
     n     MFLOPS   uplo
-  821     21.080      u
+  821      7.704      u
     n     MFLOPS   uplo
-  826     20.933      u
+  826      7.725      u
     n     MFLOPS   uplo
-  831     21.131      u
+  831      7.728      u
     n     MFLOPS   uplo
-  836     21.208      u
+  836      7.744      u
     n     MFLOPS   uplo
-  841     21.400      u
+  841      7.718      u
     n     MFLOPS   uplo
-  846     21.474      u
+  846      7.743      u
     n     MFLOPS   uplo
-  851     21.311      u
+  851      7.741      u
     n     MFLOPS   uplo
-  856     21.664      u
+  856      7.744      u
     n     MFLOPS   uplo
-  861     21.832      u
+  861      7.750      u
     n     MFLOPS   uplo
-  866     21.661      u
+  866      7.755      u
     n     MFLOPS   uplo
-  871     21.895      u
+  871      7.760      u
     n     MFLOPS   uplo
-  876     21.872      u
+  876      7.758      u
     n     MFLOPS   uplo
-  881     21.957      u
+  881      7.762      u
     n     MFLOPS   uplo
-  886     22.026      u
+  886      7.754      u
     n     MFLOPS   uplo
-  891     22.079      u
+  891      7.764      u
     n     MFLOPS   uplo
-  896     22.042      u
+  896      7.760      u
     n     MFLOPS   uplo
-  901     22.125      u
+  901      7.766      u
     n     MFLOPS   uplo
-  906     22.124      u
+  906      7.755      u
     n     MFLOPS   uplo
-  911     22.474      u
+  911      7.765      u
     n     MFLOPS   uplo
-  916     22.441      u
+  916      7.762      u
     n     MFLOPS   uplo
-  921     22.235      u
+  921      7.771      u
     n     MFLOPS   uplo
-  926     22.590      u
+  926      7.775      u
     n     MFLOPS   uplo
-  931     22.537      u
+  931      7.777      u
     n     MFLOPS   uplo
-  936     22.871      u
+  936      7.773      u
     n     MFLOPS   uplo
-  941     22.940      u
+  941      7.775      u
     n     MFLOPS   uplo
-  946     22.987      u
+  946      7.779      u
     n     MFLOPS   uplo
-  951     22.953      u
+  951      7.789      u
     n     MFLOPS   uplo
-  956     22.955      u
+  956      7.764      u
     n     MFLOPS   uplo
-  961     23.084      u
+  961      7.772      u
     n     MFLOPS   uplo
-  966     23.207      u
+  966      7.783      u
     n     MFLOPS   uplo
-  971     23.231      u
+  971      7.783      u
     n     MFLOPS   uplo
-  976     23.405      u
+  976      7.780      u
     n     MFLOPS   uplo
-  981     23.436      u
+  981      7.778      u
     n     MFLOPS   uplo
-  986     23.509      u
+  986      7.795      u
     n     MFLOPS   uplo
-  991     23.649      u
+  991      7.791      u
     n     MFLOPS   uplo
-  996     23.627      u
+  996      7.800      u
