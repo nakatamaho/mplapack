@@ -46,6 +46,9 @@ We use MPFR + MPC as the primary arithmetic class.
 * https://github.com/nakatamaho/mplapack/tree/master/mplapack/test/lin/results
 * https://github.com/nakatamaho/mplapack/tree/master/mplapack/test/eig/results
 
+# MPLAPACK benchmark results
+* https://github.com/nakatamaho/mplapack/tree/master/benchmark/results/2022
+
 # Manual
 * Please wait for update of the manual. However, usage has not changed. 
 * https://arxiv.org/abs/2109.13406
