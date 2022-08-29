@@ -45,6 +45,7 @@ if IS_INTELCC
 	cd $(abs_builddir)/work/install/gmp-$(GMPVERSION) ; env "CC=$(CC) -fp-model precise" "CXX=$(CXX) -fp-model precise" "F77=$(F77)" "LDFLAGS=$(LDFLAGS)" "NM=$(NM)" "RANLIB=$(RANLIB)" ./configure $(CONFIGURE_ARGS2)
 else
 if IS_MACOS
+#https://gmplib.org/list-archives/gmp-bugs/2008-February/000930.html
 #https://gmplib.org/list-archives/gmp-bugs/2008-February/000928.html
 	cd $(abs_builddir)/work/internal/gmp-$(GMPVERSION) ; env "CC=gcc" "CXX=g++" ./configure $(CONFIGURE_ARGS)
 	cd $(abs_builddir)/work/install/gmp-$(GMPVERSION) ; env "CC=gcc" "CXX=g++" ./configure $(CONFIGURE_ARGS2)
