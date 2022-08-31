@@ -202,6 +202,8 @@ This is the release process for MPLAPACK 3.0.0
 | --- | --- | --- | --- |
 | more benchmarks, Rsyev, Rgesvd                 |            |     |                          | 
 | add openblas for benchmark of double           |            |     |                          | 
+| python integration ?                           |            |     |                          | 
+| octave integration ?                           |            |     |                          | 
 | FMA for QD, DD                                 |            |     |                          |
 | optimized implementations                      |            |     |                          | 
 | Drop GMP version                               |            |     | Since trigonometric functions req'ed | 
