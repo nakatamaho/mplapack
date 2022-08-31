@@ -184,6 +184,15 @@ $ cd ; fable.cout sample.f
 
 # MPLAPACK Release process
 
+## MPLAPACK 2.0.1 Release process
+This is the release process for MPLAPACK 2.0.1
+| Action | Date | Status | Description |
+| --- | --- | --- | --- |
+| Take benchmark on raspberry pi4                |            |     |                     | 
+| Take benchmark on A100 (Rgemm, Rsyrk dd)       |            |     |                     |
+| Update manual                                  |            |     | https://ja.overleaf.com/project/612c178853d4512487b45e8d |
+
+
 ## MPLAPACK 3.0.0 Release process
 This is the release process for MPLAPACK 3.0.0
 | Action | Date | Status | Description |
