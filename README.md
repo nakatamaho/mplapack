@@ -193,26 +193,32 @@ This is the release process for MPLAPACK 2.0.1
 | Take benchmark on Ryzen 3970 + Intel one API   | 2022-08-28 | done |                     | 
 | Take benchmark on Xeon E5-2623                 | 2022-08-26 | done |                     | 
 | Take benchmark on Core i5 8500B                | 2022-08-27 | done |                     | 
-| Take benchmark on A100 (Rgemm, Rsyrk dd)       |            |      |                     |
 | Update manual                                  |            |      | https://ja.overleaf.com/project/612c178853d4512487b45e8d |
 
 ## MPLAPACK 3.0.0 Release process
 This is the release process for MPLAPACK 3.0.0
 | Action | Date | Status | Description |
 | --- | --- | --- | --- |
-| more benchmarks, Rsyev, Rgesvd                 |            |     |                          | 
 | add openblas for benchmark of double           |            |     |                          | 
+| FMA for QD, DD                                 |            |     |                          |
+| add more benchmarks, Rsyev, Rgesvd etc         |            |     |                          | 
+| optimized implementations                      |            |     |                          | 
 | add qa program of BLAS                         |            |     |                          | 
+| Take benchmark on A100 (Rgemm, Rsyrk dd)       |            |     |                          |
 | python integration?                            |            |     |                          | 
 | octave integration?                            |            |     |                          | 
-| FMA for QD, DD                                 |            |     |                          |
-| optimized implementations                      |            |     |                          | 
 | Drop GMP version                               |            |     | Since trigonometric functions req'ed | 
 | add gmpfrxx                                    |            |     | https://math.berkeley.edu/~wilken/code/gmpfrxx/ | 
 | Impliment mixed precision version              |            |     |                     | 
 | cleanup pow (REAL, long int)                   |            |     |                          | 
 | Get rid of compiler warnings                   |            |     |                          | 
 | lp64 ilp64 llp64 ilp32 lp32 cleanup            |            |     |                          | 
+
+## MPLAPACK 4.0.0 Release process
+This is the release process for MPLAPACK 3.0.0
+| Action | Date | Status | Description |
+| --- | --- | --- | --- |
+| template version                               |            |     | mockup https://github.com/nakatamaho/mplapack-template | 
 
 ## old schedules
 
