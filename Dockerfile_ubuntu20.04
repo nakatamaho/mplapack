@@ -2,6 +2,7 @@ FROM ubuntu:20.04
 
 ARG MPLAPACK_VER="2.0.1"
 
+ARG DEBIAN_FRONTEND=noninteractive
 RUN apt -y update
 RUN apt -y upgrade
 RUN apt install -y sudo 
