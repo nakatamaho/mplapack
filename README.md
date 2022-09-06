@@ -200,6 +200,7 @@ This is the release process for MPLAPACK 3.0.0
 | Action | Date | Status | Description |
 | --- | --- | --- | --- |
 | add openblas for benchmark of double           |            |     |                          | 
+| update to LAPACK 3.10.1                        |            |     |                          | 
 | FMA for QD, DD                                 |            |     |                          |
 | add more benchmarks, Rsyev, Rgesvd etc         |            |     |                          | 
 | optimized implementations                      |            |     |                          | 
