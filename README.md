@@ -204,6 +204,7 @@ This is the release process for MPLAPACK 3.0.0
 | FMA for QD, DD                                 |            |     |                          |
 | add more benchmarks, Rsyev, Rgesvd etc         |            |     |                          | 
 | optimized implementations                      |            |     |                          | 
+| optimized implementations should be the default|            |     |                          | 
 | add qa program of BLAS                         |            |     |                          | 
 | Take benchmark on A100 (Rgemm, Rsyrk dd)       |            |     |                          |
 | python integration?                            |            |     |                          | 
