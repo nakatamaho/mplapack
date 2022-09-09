@@ -67,6 +67,8 @@ Eprint = {arXiv:2109.13406},
 
 # How to build on Linux and Win (using Docker; recommended)
 
+It took 3.5 hours on my Mac mini (2018), Core i5-8500B (6 cores@3GHz), to finish the build.
+
 Ubuntu 22.04
 ```
 $ git clone https://github.com/nakatamaho/mplapack/
