@@ -2,7 +2,7 @@ set xlabel font "Helvetica,20"
 set ylabel font "Helvetica,20"
 set key font "Helvetica,16"
 set title font "Helvetica,20"
-set title "Rpotrf on %%MODELNAME%%"
+set title "Rpotrf on Cortex-A72 "
 set xlabel "Dimension"
 set ylabel "MFLOPS"
 #set terminal postscript eps color enhanced
