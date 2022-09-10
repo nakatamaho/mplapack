@@ -190,7 +190,7 @@ $ cd ; fable.cout sample.f
 This is the release process for MPLAPACK 2.0.1
 | Action | Date | Status | Description |
 | --- | --- | --- | --- |
-| Take benchmark on Raspberry pi4                |            | WIP  |                     | 
+| Take benchmark on Raspberry pi4                | 2022-09-11 | done |                     |
 | Take benchmark on Ryzen 3970                   | 2022-08-24 | done |                     | 
 | Take benchmark on Ryzen 3970 + Intel one API   | 2022-08-28 | done |                     | 
 | Take benchmark on Xeon E5-2623                 | 2022-08-26 | done |                     | 
