@@ -195,7 +195,7 @@ This is the release process for MPLAPACK 2.0.1
 | Take benchmark on Ryzen 3970 + Intel one API   | 2022-08-28 | done |                     | 
 | Take benchmark on Xeon E5-2623                 | 2022-08-26 | done |                     | 
 | Take benchmark on Core i5 8500B                | 2022-08-27 | done |                     | 
-| Release                                        | 2022-09-12 | --   | md5sum: 16d745d94134533fef6bd4f4d048cd03 |
+| Release                                        | 2022-09-12 | done | md5sum: 71ed6fe8935bd499e9d0fc35df92d9d6 |
 | Update manual                                  |            |      | https://ja.overleaf.com/project/612c178853d4512487b45e8d |
 
 ## MPLAPACK 3.0.0 Release process
