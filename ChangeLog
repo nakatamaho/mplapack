@@ -1,3 +1,8 @@
+2022/09/12    Nakata Maho <maho@riken.jp> 2.0.1
+            * tag 2.0.1
+            * Cuda support for Rgemm dd and Rsyrk dd (Tesla V100 and A100).
+            * Add benchmark results for Ryzen 3970X, Core5-8500B, Xeon-E5-2623, Raspberry Pi4, NVIDIA Tesla V100 and A100.
+
 2022/07/26    Nakata Maho <maho@riken.jp> 2.0.0
             * tag 2.0.0
             * Update test results for aarch64-unknown-linux-gnu, x86_64-apple-darwin20.6.0,
