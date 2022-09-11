@@ -6,6 +6,7 @@ original license by LAPACK).
 
 # News
 
+* 2022/9/12 MPLAPACK 2.0.1 released! CUDA version of Rgemm (dd) and Rsyrk (dd) on Vota and Ampere; on Tesla V100; performance of both are approximately 450GFlops! V100 and A100 support revived by Nakazato (aizu-u), provide DLLs for MINGW mplapack.
 * 2022/7/26 MPLAPACK 2.0.0 released! All routines excpet for mixed precision routines are now working and checked by extensive tests for all multiple precisions.
 
 # Capabilities
