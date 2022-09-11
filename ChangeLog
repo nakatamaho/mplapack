@@ -1,7 +1,8 @@
 2022/09/12    Nakata Maho <maho@riken.jp> 2.0.1
             * tag 2.0.1
-            * Cuda support for Rgemm dd and Rsyrk dd (Tesla V100 and A100).
+            * Cuda support for Rgemm dd and Rsyrk dd (Tesla V100 and A100); A100 support revived by Nakazato (aizu-u)
             * Add benchmark results for Ryzen 3970X, Core5-8500B, Xeon-E5-2623, Raspberry Pi4, NVIDIA Tesla V100 and A100.
+            * provide DLLs for MINGW mplapack.
 
 2022/07/26    Nakata Maho <maho@riken.jp> 2.0.0
             * tag 2.0.0
