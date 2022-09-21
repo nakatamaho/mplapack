@@ -1,9 +1,9 @@
 # * How to build
 #  docker build -f Dockerfile_fable --build-arg SSH_KEY="$(cat ~/.ssh/id_ed25519)" -t mplapack:fable .
 # * How to run
-#  docker run --gpus all --rm -it mplapack:fable /bin/bash
+#  docker run --privileged --gpus all -it mplapack:fable /bin/bash
 #
-FROM nvidia/cuda:11.7.0-devel-ubuntu20.04
+FROM nvidia/cuda:11.7.0-devel-ubuntu22.04
 
 #git setting
 ARG GIT_EMAIL="maho.nakata@gmail.com"
@@ -24,9 +24,8 @@ RUN echo "${TZ}" > /etc/timezone \
   && dpkg-reconfigure -f noninteractive tzdata
 
 RUN apt install -y build-essential python3 gcc g++ gfortran
-RUN apt install -y gcc-10 g++-10 gfortran-10
 RUN apt install -y autotools-dev automake libtool libtool-bin gnuplot
-RUN apt install -y gdb valgrind
+RUN apt install -y gdb valgrind linux-tools-`uname -r` google-perftools linux-headers-`uname -r`
 RUN apt install -y git wget ccache time parallel
 RUN apt install -y pkg-config clangd clang-format unifdef octave
 RUN apt install -y ng-common ng-cjk emacs-nox
@@ -44,18 +43,18 @@ RUN apt install -y intel-hpckit
 ### mingw start ###
 RUN apt install -y mingw-w64 gfortran-mingw-w64 gdb-mingw-w64
 RUN dpkg --add-architecture i386
+RUN wget -nc https://dl.winehq.org/wine-builds/ubuntu/dists/jammy/winehq-jammy.sources
+RUN mv winehq-jammy.sources /etc/apt/sources.list.d/
 RUN wget -nc https://dl.winehq.org/wine-builds/winehq.key
 RUN mv winehq.key /usr/share/keyrings/winehq-archive.key
-RUN wget -nc https://dl.winehq.org/wine-builds/ubuntu/dists/focal/winehq-focal.sources
-RUN mv winehq-focal.sources /etc/apt/sources.list.d/
 RUN apt update -y
-RUN apt install -y --install-recommends winehq-stable
+RUN apt install -y --install-recommends wine-stable
 ### mingw end ###
 
-## cuda start ##
+### cuda start ###
 RUN apt install -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" keyboard-configuration
 RUN apt install -y cuda-drivers
-## cuda end ##
+### cuda end ###
 
 ARG DOCKER_UID=1000
 ARG DOCKER_USER=docker
@@ -81,6 +80,7 @@ RUN cd ${WORK} && wget https://repo.anaconda.com/miniconda/Miniconda2-4.5.11-Lin
 RUN cd ${WORK} && bash ./Miniconda2-4.5.11-Linux-x86_64.sh -b -p
 
 RUN cd ${WORK} && source miniconda2/etc/profile.d/conda.sh && conda create -y --name fable38 python=3.8 && conda activate fable38 && conda install six future && mkdir build38 && cd ${WORK}/build38 && python ../modules/cctbx_project/libtbx/configure.py fable
+RUN sed -i 's|#if PTHREAD_STACK_MIN > 0|#ifdef PTHREAD_STACK_MIN|g' ${WORK}/modules/boost/boost/thread/pthread/thread_data.hpp
 RUN source ${WORK}/build38/setpaths.sh && cd ${WORK}/build38 && make && cd ${WORK} && cd ${WORK}/build38 && make ; cd ${WORK}
 RUN cd ${WORK} && echo "source /home/docker/miniconda2/etc/profile.d/conda.sh" >> .bashrc
 RUN cd ${WORK} && echo "conda activate fable38" >> .bashrc
@@ -136,11 +136,11 @@ RUN echo -e "(require 'package)\n\
 
 RUN cd ${WORK} && echo "cd /home/$DOCKER_USER" >> .bashrc
 RUN cd ${WORK} && echo 'eval "$(ssh-agent -s)"' >> .bashrc
-RUN cd ${WORK} && echo 'ssh-add ~/.ssh/id_rsa' >> .bashrc
+RUN cd ${WORK} && echo 'ssh-add ~/.ssh/id_ed25519' >> .bashrc
 
 ## intel one api and wine settings start ###
 RUN cd ${WORK} && echo "#source /opt/intel/oneapi/setvars.sh" >> .bashrc
-RUN cd ${WORK} && echo "export WINEPATH=\"/usr/x86_64-w64-mingw32/lib/;/usr/lib/gcc/x86_64-w64-mingw32/9.3-win32/;/usr/lib/gcc/x86_64-w64-mingw32/9.3-posix;/home/$DOCKER_USER/MPLAPACK_MINGW/bin\"" >> .bashrc
+RUN cd ${WORK} && echo "export WINEPATH=\"/usr/x86_64-w64-mingw32/lib/;/usr/lib/gcc/x86_64-w64-mingw32/10-win32/;/usr/lib/gcc/x86_64-w64-mingw32/10-posix;/home/$DOCKER_USER/MPLAPACK_MINGW/bin\"" >> .bashrc
 RUN cd ${WORK} && echo "export WINEDEBUG=\"-all\"" >> .bashrc
 ## intel one api and wine settings end ###
 
@@ -151,12 +151,26 @@ RUN mkdir -p /home/$DOCKER_USER/.ssh && \
     ssh-keyscan github.com > /home/$DOCKER_USER/.ssh/known_hosts
 # Add the keys and set permissions
 ARG SSH_KEY
-RUN echo "$SSH_KEY" > /home/$DOCKER_USER/.ssh/id_rsa
-RUN chmod 600 /home/$DOCKER_USER/.ssh/id_rsa
+RUN echo "$SSH_KEY" > /home/$DOCKER_USER/.ssh/id_ed25519
+RUN chmod 600 /home/$DOCKER_USER/.ssh/id_ed25519
 
 RUN cd ${WORK} && git clone https://github.com/nakatamaho/mplapack.git
 RUN cd ${WORK}/mplapack && git remote set-url origin git@github.com:nakatamaho/mplapack.git
 RUN cd ${WORK}/mplapack && git log -1
-RUN cd ${WORK}/mplapack && bash -x misc/reconfig.develop.sh
+
+RUN cd ${WORK}/mplapack && bash -x misc/reconfig.ubuntu22.04.nvidia.sh
+RUN cd ${WORK}/mplapack && make clean
+RUN cd ${WORK}/mplapack && make -j`getconf _NPROCESSORS_ONLN`
+RUN cd ${WORK}/mplapack && make install
+
+ARG WINEPATH="/usr/x86_64-w64-mingw32/lib/;/usr/lib/gcc/x86_64-w64-mingw32/10-win32/;/usr/lib/gcc/x86_64-w64-mingw32/10-posix"
+ARG WINEDEBUG="-all"
+RUN cd ${WORK}/mplapack && bash -x misc/reconfig.ubuntu22.04.mingw64.sh
+RUN cd ${WORK}/mplapack && make clean
+RUN cd ${WORK}/mplapack && make -j`getconf _NPROCESSORS_ONLN`
+RUN cd ${WORK}/mplapack && make install
+
+RUN cd ${WORK}/mplapack && bash -x misc/reconfig.ubuntu22.04.sh
+RUN cd ${WORK}/mplapack && make clean
 RUN cd ${WORK}/mplapack && make -j`getconf _NPROCESSORS_ONLN`
 RUN cd ${WORK}/mplapack && make install
