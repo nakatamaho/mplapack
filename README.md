@@ -52,14 +52,14 @@ We use MPFR + MPC as the primary arithmetic class.
 
 # Manual
 * Please wait for update of the manual. However, usage has not changed. 
-* https://arxiv.org/abs/2109.13406
+* https://arxiv.org/abs/2109.13406v2
 * https://raw.githubusercontent.com/nakatamaho/mplapack/master/doc/manual/manual.pdf (updated frequently)
 ```
-@misc{2109.13406,
+@misc{2109.13406v2,
 Author = {Maho Nakata},
-Title = {MPLAPACK version 1.0.0 user manual},
+Title = {MPLAPACK version 2.0.1 user manual},
 Year = {2021},
-Eprint = {arXiv:2109.13406},
+Eprint = {arXiv:2109.13406v2},
 }
 ```
 
@@ -295,11 +295,11 @@ Also the M.N would like to thank Dr. Imamura Toshiyuki. Dr. Nakasato Naohito, Dr
 
 # Citation
 ```
-@misc{2109.13406,
+@misc{2109.13406v2,
 Author = {Maho Nakata},
-Title = {MPLAPACK version 1.0.0 user manual},
-Year = {2021},
-Eprint = {arXiv:2109.13406},
+Title = {MPLAPACK version 2.0.1 user manual},
+Year = {2022},
+Eprint = {arXiv:2109.13406v2},
 }
 ```
 
