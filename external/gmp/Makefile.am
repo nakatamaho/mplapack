@@ -22,6 +22,9 @@ INSTALL_STAMP=.gmp_install_done
 INSTALL_INTERNAL_STAMP=.gmp_install_internal_done
 CHECK_STAMP=.gmp_check_done
 
+CC_CCACHE=`echo $(CC) | awk -F ' ' '{ (NF==2) ? x=$$(NF-1) : x=""; print x }'`
+CXX_CCACHE=`echo $(CXX) | awk -F ' ' '{ (NF==2) ? x=$$(NF-1) : x=""; print x }'`
+
 all: extract config build check install_internal
 
 work/$(EXTRACT_STAMP):
@@ -47,8 +50,8 @@ else
 if IS_MACOS
 #https://gmplib.org/list-archives/gmp-bugs/2008-February/000930.html
 #https://gmplib.org/list-archives/gmp-bugs/2008-February/000928.html
-	cd $(abs_builddir)/work/internal/gmp-$(GMPVERSION) ; env "CC=gcc" "CXX=g++" ./configure $(CONFIGURE_ARGS)
-	cd $(abs_builddir)/work/install/gmp-$(GMPVERSION) ; env "CC=gcc" "CXX=g++" ./configure $(CONFIGURE_ARGS2)
+	cd $(abs_builddir)/work/internal/gmp-$(GMPVERSION) ; env "CC=$(CC_CCACHE) gcc" "CXX=$(CXX_CCACHE) g++" ./configure $(CONFIGURE_ARGS)
+	cd $(abs_builddir)/work/install/gmp-$(GMPVERSION)  ; env "CC=$(CC_CCACHE) gcc" "CXX=$(CXX_CCACHE) g++" ./configure $(CONFIGURE_ARGS2)
 else
 	cd $(abs_builddir)/work/internal/gmp-$(GMPVERSION) ; env "CC=$(CC)" "CXX=$(CXX)" "F77=$(F77)" "LDFLAGS=$(LDFLAGS)" "NM=$(NM)" "RANLIB=$(RANLIB)" ./configure $(CONFIGURE_ARGS)
 	cd $(abs_builddir)/work/install/gmp-$(GMPVERSION) ; env "CC=$(CC)" "CXX=$(CXX)" "F77=$(F77)" "LDFLAGS=$(LDFLAGS)" "NM=$(NM)" "RANLIB=$(RANLIB)" ./configure $(CONFIGURE_ARGS2)
