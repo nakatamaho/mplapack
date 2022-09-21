@@ -29,9 +29,13 @@ endif
 work/$(CONFIGURE_STAMP): work/$(PATCH_STAMP)
 	echo "SHELL = /bin/sh"      >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
 	echo "CC = $(CC)"           >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
-	echo "CFLAGS = -O0"         >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
+	echo "CFLAGS = $(CFLAGS)"   >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
 	echo "FC = $(FC)"           >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
-	echo "FFLAGS = -O0"         >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
+if IS_MINGW
+	echo "FFLAGS = -O2 -march=native" >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
+else
+	echo "FFLAGS = $(FCFLAGS)" >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
+endif
 	echo "FFLAGS_DRV = \$$(FFLAGS)" >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
 	echo "FFLAGS_NOOPT = -O0" >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
 	echo "LDFLAGS ="       >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
@@ -52,9 +56,9 @@ endif
 	touch $(abs_builddir)/work/$(CONFIGURE_STAMP)
 
 work/$(BUILD_STAMP): work/$(CONFIGURE_STAMP)
-	cd $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/BLAS/SRC ; ${MAKE} -j1
-	cd $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION) ; ${MAKE} -j1
-	cd $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/LAPACKE ; ${MAKE} -j1
+	cd $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/BLAS/SRC ; ${MAKE}
+	cd $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION) ; ${MAKE}
+	cd $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/LAPACKE ; ${MAKE}
 	touch $(abs_builddir)/work/$(BUILD_STAMP)
 
 work/$(CHECK_STAMP): work/$(BUILD_STAMP)

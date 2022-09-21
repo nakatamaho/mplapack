@@ -853,7 +853,7 @@ if test x"$enable_optimization" = x"yes" && test x"$enable_debug" != x"yes" ; th
        powerpc*-*-*)
            CFLAGS="$CFLAGS -mcpu=native -O2 -finline-functions -funroll-all-loops"
            CXXFLAGS="$CXXFLAGS -mcpu=native -O2 -finline-functions -funroll-all-loops"
-           FCFLAGS="$FCFLAGS -mcpu=native -O2 -finline-functions -funroll-all-loops"
+           FCFLAGS="$FCFLAGS -mcpu=native -O2 -frecursive -fno-optimize-sibling-calls -finline-functions -funroll-all-loops"
        ;;
        * ) 
            if test x"$is_intelcxx" = x"1"; then
@@ -873,8 +873,8 @@ if test x"$enable_optimization" = x"yes" && test x"$enable_debug" != x"yes" ; th
                fi
            else #GCC
                CFLAGS="$CFLAGS -march=native -O2 -finline-functions -funroll-all-loops"
+               FCFLAGS="$FCFLAGS -march=native -O2 -frecursive -fno-optimize-sibling-calls -finline-functions -funroll-all-loops"
            fi
-           FCFLAGS="$FCFLAGS -O2 -finline-functions -funroll-all-loops"
        ;;
     esac
 fi
