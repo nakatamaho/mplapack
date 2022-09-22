@@ -26,6 +26,6 @@ RUN cd /home/$DOCKER_USER/mplapack-${MPLAPACK_VER}
 ARG CXX="/opt/rh/devtoolset-9/root/usr/bin/g++"
 ARG CC="/opt/rh/devtoolset-9/root/usr/bin/gcc"
 ARG FC="/opt/rh/devtoolset-9/root/usr/bin/gfortran"
-RUN cd /home/$DOCKER_USER/mplapack-${MPLAPACK_VER} && ./configure --prefix=$HOME/MPLAPACK --enable-gmp=yes --enable-mpfr=yes --enable-_Float128=yes --e\nable-qd=yes --enable-dd=yes --enable-double=yes --enable-_Float64x=yes --enable-test=yes
+RUN cd /home/$DOCKER_USER/mplapack-${MPLAPACK_VER} && ./configure --prefix=$HOME/MPLAPACK --enable-gmp=yes --enable-mpfr=yes --enable-_Float128=yes --e\nable-qd=yes --enable-dd=yes --enable-double=yes --enable-_Float64x=yes --enable-test=yes --enable-benchmark=yes
 RUN cd /home/$DOCKER_USER/mplapack-${MPLAPACK_VER} && make -j`getconf _NPROCESSORS_ONLN`
 RUN cd /home/$DOCKER_USER/mplapack-${MPLAPACK_VER} && make install

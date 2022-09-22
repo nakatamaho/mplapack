@@ -40,6 +40,6 @@ RUN cd /home/$DOCKER_USER && tar xvfJ mplapack-${MPLAPACK_VER}.tar.xz
 ARG CXX="icpc"
 ARG CC="icc"
 ARG FC="ifort"
-RUN cd /home/$DOCKER_USER && source /opt/intel/oneapi/setvars.sh && cd mplapack-${MPLAPACK_VER} && ./configure --prefix=$HOME/MPLAPACK --enable-gmp=yes --enable-mpfr=yes --enable-_Float128=yes --enable-qd=yes --enable-dd=yes --enable-double=yes --enable-_Float64x=yes --enable-test=yes
+RUN cd /home/$DOCKER_USER && source /opt/intel/oneapi/setvars.sh && cd mplapack-${MPLAPACK_VER} && ./configure --prefix=$HOME/MPLAPACK --enable-gmp=yes --enable-mpfr=yes --enable-_Float128=yes --enable-qd=yes --enable-dd=yes --enable-double=yes --enable-_Float64x=yes --enable-test=yes --enable-benchmark=yes
 RUN cd /home/$DOCKER_USER/mplapack-${MPLAPACK_VER} && source /opt/intel/oneapi/setvars.sh && make -j`getconf _NPROCESSORS_ONLN`
 RUN cd /home/$DOCKER_USER/mplapack-${MPLAPACK_VER} && source /opt/intel/oneapi/setvars.sh && make install

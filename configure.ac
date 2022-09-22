@@ -185,10 +185,10 @@ AC_SUBST(CUDA_VERSION_MAJOR)
 AC_SUBST(IS_CUDA_VERSION_MAJOR_3)
 AC_SUBST(NVCC)
 
-dnl disable benchmark
+dnl enable benchmark; compare with reference LAPACK and BLAS, and OpenBLAS
 AC_ARG_ENABLE(benchmark,
-AS_HELP_STRING([--disable-benchmark], [Disable benchmark]))
-AM_CONDITIONAL(DISABLE_BENCHMARK, test x$enable_benchmark = xno)
+AS_HELP_STRING([--enable-benchmark], [Enable benchmark]))
+AM_CONDITIONAL(ENABLE_BENCHMARK, test x$enable_benchmark = xyes)
 
 dnl disable examples
 AC_ARG_ENABLE(examples, 
@@ -694,7 +694,7 @@ fi
 #AM_CONDITIONAL(NEED_INTERNAL_MPCLIB, test x$need_internal_mpclib = xyes)
 
 need_internal_openblas=no
-if test x$enable_benchmark != x"no"; then
+if test x$enable_benchmark = x"yes"; then
     need_internal_openblas=yes
     AC_SUBST(OPENBLAS_DIR, [openblas])
 fi
@@ -762,28 +762,39 @@ else
         AC_MSG_RESULT([disable _Float128])
 fi
 
+ENABLE_BENCHMARK=no
+if test x$enable_benchmark = x"yes"; then
+ENABLE_BENCHMARK=yes
+AC_MSG_RESULT([Enable benchmark])
+AC_MSG_RESULT([Build internal OpenBLAS])
+else
+AC_MSG_RESULT([Disable benchmark])
+AC_MSG_RESULT([Do not build internal OpenBLAS])
+fi
+AM_CONDITIONAL(ENABLE_BENCHMARK, test x$enable_benchmark = xyes)
+
 if test x$enable_test = x"yes"; then
 AC_MSG_RESULT([Enable test])
+else
+AC_MSG_RESULT([Disable test])
+fi
+
+if test x$enable_test = x"yes" || test x$enable_bench = x"yes" ; then
+AC_MSG_RESULT([Build internal LAPACK])
 AC_SUBST(LAPACK_DIR, [lapack])
 LAPACK_INCLUDEDIR=$highest_abs_top_srcdir/external/i/LAPACK/include/
 LAPACK_LIBDIR=$highest_abs_top_srcdir/external/i/LAPACK/lib/
 AC_SUBST(LAPACK_INCLUDEDIR, [$LAPACK_INCLUDEDIR])
 AC_SUBST(LAPACK_LIBDIR, [$LAPACK_LIBDIR])
 else
+AC_MSG_RESULT([Build internal LAPACK])
 LAPACK_INCLUDEDIR=.
 LAPACK_LIBDIR=.
 AC_SUBST(LAPACK_INCLUDEDIR, [$LAPACK_INCLUDEDIR])
 AC_SUBST(LAPACK_LIBDIR, [$LAPACK_LIBDIR])
-AC_MSG_RESULT([Disable test])
 fi
 
 dnl print status...end
-
-AC_ARG_WITH(external-blas,
-AS_HELP_STRING([--with-external-blas], [Specify location of external BLAS e.g. "-L/usr/local/lib -lblas". It is used for benchmark only.]))
-
-AC_ARG_WITH(external-lapack,
-AS_HELP_STRING([--with-external-lapack], [Specify how to link against external LAPACK e.g. "-L/usr/local/lib -llapack". It is used for benchmark only.]))
 
 dnl First we check Fotran 90 compiler stuffs.
 
@@ -796,57 +807,6 @@ if test x"$enable_test" = x"yes"; then
     AC_OPENMP
     AC_LANG_POP([Fortran])
 fi
-
-dnl For benchmarking, we can set explicitly BLAS and LAPACK
-dnl libraries, like Intel MKL, GotoBLAS2, etc.
-dnl very specific case: veclib is shipped for macOS. it should be used without fortran compiler
-dnl this library should be the default for benchmarking (actually it is ATLAS).
-dnl TODO: macOS support.
-if test x"$with_external_blas" != x""; then
-    HAVE_EXTERNAL_BLAS=""
-    BLAS=$with_external_blas;
-    save_LIBS="$LIBS"
-    AC_FC_FUNC(dgemm)
-    LIBS="$LIBS $BLAS $FCLIBS"
-    AC_CHECK_FUNC($dgemm, [HAVE_EXTERNAL_BLAS=yes])
-    LIBS="$save_LIBS"
-    AC_SUBST(BLAS)
-    if test x"$HAVE_EXTERNAL_BLAS" != xyes; then
-        AC_MSG_ERROR([No external BLAS found])
-    fi
-fi
-if test x"$with_external_lapack" != x""; then
-    dnl Check whether we can call LAPACK subroutines
-    HAVE_EXTERNAL_LAPACK=""
-    LAPACK=$with_external_lapack;
-    dnl default blas name is libblas, thus we pass -lblas.
-    if test x"$with_external_blas" = x; then
-        BLAS="-lblas"
-    fi
-    save_LIBS="$LIBS"
-    AC_FC_FUNC(dsyev)
-    LIBS="$LIBS $LAPACK $BLAS $FCLIBS"
-    AC_CHECK_FUNC($dsyev, [HAVE_EXTERNAL_LAPACK=yes])
-    LIBS="$save_LIBS"
-    AC_SUBST(LAPACK)
-    if test x"$HAVE_EXTERNAL_LAPACK" != xyes; then
-       AC_MSG_ERROR([No external LAPACK found])
-    fi
-fi
-AM_CONDITIONAL(HAVE_EXTERNAL_BLAS, test x$HAVE_EXTERNAL_BLAS = xyes)
-AM_CONDITIONAL(HAVE_EXTERNAL_LAPACK, test x$HAVE_EXTERNAL_LAPACK = xyes)
-
-DO_BLASBENCH=no
-if test x"$enable_test" = x"yes" || test x"$HAVE_EXTERNAL_BLAS" = x"yes"; then
-DO_BLASBENCH=yes
-fi
-AM_CONDITIONAL(DO_BLASBENCH, test x$DO_BLASBENCH = xyes)
-
-DO_LAPACKBENCH=no
-if test x"$enable_test" = x"yes" || test x"$HAVE_EXTERNAL_LAPACK" = x"yes"; then
-DO_LAPACKBENCH=yes
-fi
-AM_CONDITIONAL(DO_LAPACKBENCH, test x$DO_LAPACKBENCH = xyes)
 
 if test x"$enable_optimization" = x"no" && test x"$enable_debug" = x"yes" ; then
     CFLAGS="-O0 -g"

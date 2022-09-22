@@ -39,7 +39,7 @@ if ENABLE__FLOAT64X
 include Makefile._Float64x.am
 endif
 
-if DO_LAPACKBENCH
+if ENABLE_BENCHMARK
 include Makefile.lapack.am
 endif
 

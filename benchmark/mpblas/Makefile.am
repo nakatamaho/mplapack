@@ -43,7 +43,7 @@ if ENABLE__FLOAT64X
 include Makefile._Float64x.am
 endif
 
-if DO_BLASBENCH
+if ENABLE_BENCHMARK
 include Makefile.blas.am
 endif
 

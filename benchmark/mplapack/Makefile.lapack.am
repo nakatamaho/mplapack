@@ -1,45 +1,40 @@
 bench_PROGRAMS+=\
 dpotf2_ref\
-dpotrf_ref
+dpotrf_ref\
+dgetrf_ref
 
-if HAVE_EXTERNAL_LAPACK
 bench_PROGRAMS+=\
-dpotf2\
-dpotrf
-endif
+dpotf2_openblas\
+dpotrf_openblas\
+dgetrf_openblas
 
-if HAVE_EXTERNAL_BLAS
-_BLAS = $(BLAS)
-else
 _BLAS = -L$(top_builddir)/external/i/LAPACK/lib -lblas
-endif
-
-if HAVE_EXTERNAL_LAPACK
-_LAPACK = $(LAPACK)
-else
 _LAPACK = -L$(top_builddir)/external/i/LAPACK/lib -llapack
-endif
 
 cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include
 ref_libdepends = -L$(top_builddir)/external/i/LAPACK/lib -llapack -lblas $(FCLIBS)
-opt_libdepends = $(_LAPACK) $(_BLAS) $(FCLIBS)
+opt_libdepends = $(top_builddir)/external/i/OPENBLAS/lib/libopenblas.a $(FCLIBS)
 
 dpotf2_ref_SOURCES= dpotf2.cpp
 dpotf2_ref_CXXFLAGS= $(cxxflags)
 dpotf2_ref_LDFLAGS= $(ref_libdepends)
 
-if HAVE_EXTERNAL_LAPACK
-dpotf2_SOURCES= dpotf2.cpp
-dpotf2_CXXFLAGS= $(cxxflags)
-dpotf2_LDFLAGS= $(opt_libdepends)
-endif
+dpotf2_openblas_SOURCES= dpotf2.cpp
+dpotf2_openblas_CXXFLAGS= $(cxxflags)
+dpotf2_openblas_LDFLAGS= $(opt_libdepends)
 
 dpotrf_ref_SOURCES= dpotrf.cpp
 dpotrf_ref_CXXFLAGS= $(cxxflags)
 dpotrf_ref_LDFLAGS= $(ref_libdepends)
 
-if HAVE_EXTERNAL_LAPACK
-dpotrf_SOURCES= dpotrf.cpp
-dpotrf_CXXFLAGS= $(cxxflags)
-dpotrf_LDFLAGS= $(opt_libdepends)
-endif
+dpotrf_openblas_SOURCES= dpotrf.cpp
+dpotrf_openblas_CXXFLAGS= $(cxxflags)
+dpotrf_openblas_LDFLAGS= $(opt_libdepends)
+
+dgetrf_ref_SOURCES= dgetrf.cpp
+dgetrf_ref_CXXFLAGS= $(cxxflags)
+dgetrf_ref_LDFLAGS= $(ref_libdepends)
+
+dgetrf_openblas_SOURCES= dgetrf.cpp
+dgetrf_openblas_CXXFLAGS= $(cxxflags)
+dgetrf_openblas_LDFLAGS= $(opt_libdepends)

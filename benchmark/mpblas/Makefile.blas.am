@@ -6,79 +6,63 @@ dgemm_ref \
 dsyrk_ref \
 dgemv_ref
 
-if HAVE_EXTERNAL_BLAS
 bench_PROGRAMS+=\
-daxpy \
-dcopy \
-ddot  \
-dgemm \
-dsyrk \
-dgemv
-endif
+daxpy_openblas \
+dcopy_openblas \
+ddot_openblas \
+dgemm_openblas \
+dsyrk_openblas \
+dgemv_openblas
 
 cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include
 
-if HAVE_EXTERNAL_BLAS
-opt_libdepends = $(BLAS) $(FCLIBS)
-endif
 ref_libdepends = -L$(top_builddir)/external/i/LAPACK/lib -lblas $(FCLIBS)
+opt_libdepends = $(top_builddir)/external/i/OPENBLAS/lib/libopenblas.a $(FCLIBS)
 
 daxpy_ref_SOURCES= daxpy.cpp
 daxpy_ref_CXXFLAGS= $(cxxflags)
 daxpy_ref_LDFLAGS= $(ref_libdepends)
 
-if HAVE_EXTERNAL_BLAS
-daxpy_SOURCES= daxpy.cpp
-daxpy_CXXFLAGS= $(cxxflags)
-daxpy_LDFLAGS= $(opt_libdepends)
-endif
+daxpy_openblas_SOURCES= daxpy.cpp
+daxpy_openblas_CXXFLAGS= $(cxxflags)
+daxpy_openblas_LDFLAGS= $(opt_libdepends)
 
 dcopy_ref_SOURCES= dcopy.cpp
 dcopy_ref_CXXFLAGS= $(cxxflags)
 dcopy_ref_LDFLAGS= $(ref_libdepends)
 
-if HAVE_EXTERNAL_BLAS
-dcopy_SOURCES= dcopy.cpp
-dcopy_CXXFLAGS= $(cxxflags)
-dcopy_LDFLAGS= $(opt_libdepends)
-endif
+dcopy_openblas_SOURCES= dcopy.cpp
+dcopy_openblas_CXXFLAGS= $(cxxflags)
+dcopy_openblas_LDFLAGS= $(opt_libdepends)
 
 ddot_ref_SOURCES= ddot.cpp
 ddot_ref_CXXFLAGS= $(cxxflags)
 ddot_ref_LDFLAGS= $(ref_libdepends)
 
-if HAVE_EXTERNAL_BLAS
-ddot_SOURCES= ddot.cpp
-ddot_CXXFLAGS= $(cxxflags)
-ddot_LDFLAGS= $(opt_libdepends)
-endif
+ddot_openblas_SOURCES= ddot.cpp
+ddot_openblas_CXXFLAGS= $(cxxflags)
+ddot_openblas_LDFLAGS= $(opt_libdepends)
 
 dgemm_ref_SOURCES= dgemm.cpp
 dgemm_ref_CXXFLAGS= $(cxxflags)
 dgemm_ref_LDFLAGS= $(ref_libdepends)
 
-if HAVE_EXTERNAL_BLAS
-dgemm_SOURCES= dgemm.cpp
-dgemm_CXXFLAGS= $(cxxflags)
-dgemm_LDFLAGS= $(opt_libdepends)
-endif
+dgemm_openblas_SOURCES= dgemm.cpp
+dgemm_openblas_CXXFLAGS= $(cxxflags)
+dgemm_openblas_LDFLAGS= $(opt_libdepends)
 
 dsyrk_ref_SOURCES= dsyrk.cpp
 dsyrk_ref_CXXFLAGS= $(cxxflags)
 dsyrk_ref_LDFLAGS= $(ref_libdepends)
 
-if HAVE_EXTERNAL_BLAS
-dsyrk_SOURCES= dsyrk.cpp
-dsyrk_CXXFLAGS= $(cxxflags)
-dsyrk_LDFLAGS= $(opt_libdepends)
-endif
+dsyrk_openblas_SOURCES= dsyrk.cpp
+dsyrk_openblas_CXXFLAGS= $(cxxflags)
+dsyrk_openblas_LDFLAGS= $(opt_libdepends)
 
 dgemv_ref_SOURCES= dgemv.cpp
 dgemv_ref_CXXFLAGS= $(cxxflags)
 dgemv_ref_LDFLAGS= $(ref_libdepends)
 
-if HAVE_EXTERNAL_BLAS
-dgemv_SOURCES= dgemv.cpp
-dgemv_CXXFLAGS= $(cxxflags)
-dgemv_LDFLAGS= $(opt_libdepends)
-endif
+dgemv_openblas_SOURCES= dgemv.cpp
+dgemv_openblas_CXXFLAGS= $(cxxflags)
+dgemv_openblas_LDFLAGS= $(opt_libdepends)
