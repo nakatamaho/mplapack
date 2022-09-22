@@ -34,6 +34,6 @@ void iMlaver(INTEGER &mplapack_ver_major, INTEGER &mplapack_ver_minor, INTEGER &
     mplapack_ver_minor = 0;
     mplapack_ver_patch = 1;
     lapack_ver_major = 3;
-    lapack_ver_minor = 9;
+    lapack_ver_minor = 10;
     lapack_ver_patch = 1;
 }
