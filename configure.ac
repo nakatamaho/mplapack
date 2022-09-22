@@ -693,6 +693,12 @@ if test x$enable_mpfr = x"yes" && test x$SYSTEM_MPC != x"yes"; then
 fi
 #AM_CONDITIONAL(NEED_INTERNAL_MPCLIB, test x$need_internal_mpclib = xyes)
 
+need_internal_openblas=no
+if test x$enable_benchmark != x"no"; then
+    need_internal_openblas=yes
+    AC_SUBST(OPENBLAS_DIR, [openblas])
+fi
+
 dnl print status...start
 if test x$enable_gmp = x"yes"; then
 AC_MSG_RESULT([Enable GMP version])
@@ -995,6 +1001,7 @@ external/mpfr/Makefile
 external/mpc/Makefile
 external/qd/Makefile
 external/lapack/Makefile
+external/openblas/Makefile
 ])
 
 if test x$enable_benchmark != xno; then
