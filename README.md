@@ -139,7 +139,7 @@ $ cd mplapack-2.0.1
 $ CXX="g++" ; export CXX
 $ CC="gcc" ; export CC
 $ FC="gfortran"; export FC
-$ ./configure --prefix=$HOME/MPLAPACK --enable-gmp=yes --enable-mpfr=yes --enable-_Float128=yes --enable-qd=yes --enable-dd=yes --enable-double=yes --enable-test=yes #--enable-_Float64x=yes 
+$ ./configure --prefix=$HOME/MPLAPACK --enable-gmp=yes --enable-mpfr=yes --enable-_Float128=yes --enable-qd=yes --enable-dd=yes --enable-double=yes --enable-test=yes --enable-benchmark=yes #--enable-_Float64x=yes 
 $ make -j4
 $ make install
 ```
@@ -158,7 +158,7 @@ $ INSTALL="/usr/bin/install"; export INSTALL
 $ CXX="g++-mp-10" ; export CXX
 $ CC="gcc-mp-10" ; export CC
 $ FC="gfortran-mp-10"; export FC
-$ ./configure --prefix=$HOME/MPLAPACK --enable-gmp=yes --enable-mpfr=yes --enable-_Float128=yes --enable-qd=yes --enable-dd=yes --enable-double=yes --enable-test=yes #--enable-_Float64x=yes 
+$ ./configure --prefix=$HOME/MPLAPACK --enable-gmp=yes --enable-mpfr=yes --enable-_Float128=yes --enable-qd=yes --enable-dd=yes --enable-double=yes --enable-test=yes --enable-benchmark=yes #--enable-_Float64x=yes 
 $ make -j4
 $ make install
 ```
