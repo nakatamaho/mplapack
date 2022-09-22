@@ -20,15 +20,24 @@ work/$(EXTRACT_STAMP):
 	touch $(abs_builddir)/work/$(EXTRACT_STAMP)
 
 work/$(PATCH_STAMP): work/$(EXTRACT_STAMP)
+if IS_MINGW
+	cd $(abs_builddir)/work/install/OpenBLAS-$(OPENBLASVERSION) ; patch -p0 < $(abs_builddir)/patches/patch-mingw
+endif
 	touch $(abs_builddir)/work/$(PATCH_STAMP)
 
 work/$(BUILD_STAMP): work/$(PATCH_STAMP)
+if IS_MINGW
+	cd $(abs_builddir)/work/install/OpenBLAS-$(OPENBLASVERSION) ; ${MAKE} BINARY=64 CC=`$(_CC)` FC=`$(_FC)` DYNAMIC_ARCH=1 HOSTCC=gcc
+else
 	cd $(abs_builddir)/work/install/OpenBLAS-$(OPENBLASVERSION) ; ${MAKE} BINARY=64 CC=`$(_CC)` FC=`$(_FC)` DYNAMIC_ARCH=1
+endif
 	touch $(abs_builddir)/work/$(BUILD_STAMP)
 
 work/$(CHECK_STAMP): work/$(BUILD_STAMP)
-	touch $(abs_builddir)/work/$(CHECK_STAMP)
+if !IS_MINGW
 	cd $(abs_builddir)/work/install/OpenBLAS-$(OPENBLASVERSION) ; ${MAKE} -j lapack-test
+endif
+	touch $(abs_builddir)/work/$(CHECK_STAMP)
 
 work/$(INSTALL_INTERNAL_STAMP): work/$(CHECK_STAMP)
 	cd $(abs_builddir)/work/install/OpenBLAS-$(OPENBLASVERSION) ; ${MAKE} PREFIX=$(abs_builddir)/../i/OPENBLAS/ install
