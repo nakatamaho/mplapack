@@ -117,8 +117,8 @@ int main(int argc, char *argv[]) {
                 elapsedtime = elapsedtime + (double)duration_cast<nanoseconds>(t2 - t1).count() / 1.0e9;
             }
             elapsedtime = elapsedtime / (double)LOOPS;
-            printf("         n       MFLOPS\n");
-            printf("%10d   %10.3f\n", (int)n, (2.0 * (double)n) / elapsedtime * MFLOPS);
+            printf("         n       MFLOPS     LOOPS\n");
+            printf("%10d   %10.3f        %d\n", (int)n, (2.0 * (double)n) / elapsedtime * MFLOPS, (int)LOOPS);
         }
         delete[] yd;
         delete[] y;

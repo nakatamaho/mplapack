@@ -48,13 +48,16 @@ int main(int argc, char *argv[]) {
     using std::chrono::nanoseconds;
 
     // initialization
-    N0 = 1;
     if (argc != 1) {
         for (i = 1; i < argc; i++) {
             if (strcmp("-N", argv[i]) == 0) {
                 N0 = atoi(argv[++i]);
             } else if (strcmp("-STEP", argv[i]) == 0) {
                 STEP = atoi(argv[++i]);
+            } else if (strcmp("-LOOPS", argv[i]) == 0) {
+                LOOPS = atoi(argv[++i]);
+            } else if (strcmp("-TOTALSTEPS", argv[i]) == 0) {
+                TOTALSTEPS = atoi(argv[++i]);
             }
         }
     }
@@ -75,8 +78,8 @@ int main(int argc, char *argv[]) {
             elapsedtime = elapsedtime + (double)duration_cast<nanoseconds>(t2 - t1).count() / 1.0e9;
         }
         elapsedtime = elapsedtime / (double)LOOPS;
-        printf("         n       MFLOPS\n");
-        printf("%10d   %10.3f\n", (int)n, (2.0 * (double)n) / elapsedtime * MFLOPS);
+        printf("         n       MFLOPS    loops\n");
+        printf("%10d   %10.3f       %d\n", (int)n, (2.0 * (double)n) / elapsedtime * MFLOPS, LOOPS);
         delete[] y;
         delete[] x;
         n = n + STEP;

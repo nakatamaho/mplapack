@@ -6,8 +6,8 @@ else
     LDPATHPREFIX="LD_LIBRARY_PATH=%%PREFIX%%/lib:$LD_LIBRARY_PATH"
 fi
 
-env $LDPATHPREFIX ./daxpy_ref                    >& log.daxpy.ref
-env $LDPATHPREFIX ./daxpy_openblas               >& log.daxpy.openblas
+env $LDPATHPREFIX ./daxpy_ref      -STEP 7 -TOTALSTEPS 42000 -LOOPS 3 >& log.daxpy.ref
+env $LDPATHPREFIX ./daxpy_openblas -STEP 7 -TOTALSTEPS 42000 -LOOPS 3 >& log.daxpy.openblas
 
 ####
 MPLIBS="_Float128 _Float64x dd double"
