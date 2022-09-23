@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2010
+ * Copyright (c) 2008-2022
  *	Nakata, Maho
  * 	All rights reserved.
  *
@@ -124,9 +124,13 @@ double randomnumber(double dummy) {
 #define ___MPLAPACK_INITIALIZE___
 _Float64x randomnumber(_Float64x dummy) {
     _Float64x mtmp;
-    mtmp = lrand48();          // uniform random between [0,1] via lrand48
-    mtmp += lrand48() * 1e-16; // uniform random between [0,1] via lrand48
-    mtmp += lrand48() * 1e-32; // uniform random between [0,1] via lrand48
+#if defined _WIN32
+    mtmp = drand();          // uniform random between [0,1] via rand
+    mtmp += drand() * 1e-16; // uniform random between [0,1] via rand
+#else
+    mtmp = drand48();          // uniform random between [0,1] via lrand48
+    mtmp += drand48() * 1e-16; // uniform random between [0,1] via lrand48
+#endif
     mtmp = 2.0 * mtmp - 1.0;
     return mtmp;
 }
@@ -139,9 +143,15 @@ _Float64x randomnumber(_Float64x dummy) {
 #define ___MPLAPACK_INITIALIZE___
 _Float128 randomnumber(_Float128 dummy) {
     _Float128 mtmp;
-    mtmp = lrand48();          // uniform random between [0,1] via lrand48
-    mtmp += lrand48() * 1e-16; // uniform random between [0,1] via lrand48
-    mtmp += lrand48() * 1e-32; // uniform random between [0,1] via lrand48
+#if defined _WIN32
+    mtmp = drand();          // uniform random between [0,1] via rand
+    mtmp += drand() * 1e-16; // uniform random between [0,1] via rand
+    mtmp += drand() * 1e-32; // uniform random between [0,1] via rand
+#else
+    mtmp = drand48();          // uniform random between [0,1] via drand48
+    mtmp += drand48() * 1e-16; // uniform random between [0,1] via drand48
+    mtmp += drand48() * 1e-32; // uniform random between [0,1] via drand48
+#endif
     mtmp = 2.0 * mtmp - 1.0;
     return mtmp;
 }
