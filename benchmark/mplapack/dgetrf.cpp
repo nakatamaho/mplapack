@@ -26,11 +26,12 @@
  *
  */
 
+#include <complex>
 #include <stdio.h>
 #include <string.h>
-#include <dlfcn.h>
-#include <mpblas.h>
-#include <mplapack.h>
+#include <blas.h>
+#include <lapack.h>
+#define ___DOUBLE_BENCH___
 #include <mplapack_benchmark.h>
 
 // https://netlib.org/lapack/lawnspdf/lawn41.pdf
@@ -54,8 +55,8 @@ int main(int argc, char *argv[]) {
     double *dummywork;
     double elapsedtime, t1, t2;
     char uplo, normtype;
-    int N0, M0, K0, STEPN = 3, STEPM = 3, STEPK = 3, LOOP = 3, TOTALSTEPS = 400;
-    int lda, ldb, ldc;
+    int N0, M0, K0, STEPN = 3, STEPM = 3, STEPK = 3, TOTALSTEPS = 400;
+    int lda, ldb, ldc, info;
     int i, j, m, n, k, ka, kb, p, q;
 
     // initialization
@@ -73,10 +74,6 @@ int main(int argc, char *argv[]) {
                 N0 = atoi(argv[++i]);
             } else if (strcmp("-M0", argv[i]) == 0) {
                 M0 = atoi(argv[++i]);
-            } else if (strcmp("-NOCHECK", argv[i]) == 0) {
-                check_flag = 0;
-            } else if (strcmp("-LOOPS", argv[i]) == 0) {
-                LOOPS = atoi(argv[++i]);
             } else if (strcmp("-TOTALSTEPS", argv[i]) == 0) {
                 TOTALSTEPS = atoi(argv[++i]);
             }
@@ -88,20 +85,16 @@ int main(int argc, char *argv[]) {
     for (p = 0; p < TOTALSTEPS; p++) {
         lda = m;
         double *a = new double[lda * n];
-        int *ipiv = new int[min(m, n)];
+        int *ipiv = new int[std::min(m, n)];
         for (i = 0; i < lda * n; i++) {
             a[i] = randomnumber(dummy);
         }
-        for (int j = 0; j < LOOPS; j++) {
-            t1 = get_realtime();
-            dgetrf_f77(&m, &n, a, lda, ipiv, info);
-            t2 = gettime();
-            elapsedtime = elapsedtime + t2 - t1;
-        }
-        elapsedtime = elapsedtime / (double)LOOPS;
+        t1 = gettime();
+        dgetrf_f77(&m, &n, a, &lda, ipiv, &info);
+        t2 = gettime();
+        elapsedtime = elapsedtime + t2 - t1;
         printf("    n     m     MFLOPS\n");
         printf("%5d %5d %10.3f\n", (int)n, (int)m, flops_getrf(m, n) / elapsedtime * MFLOPS);
-        delete[] ipivd;
         delete[] ipiv;
         delete[] a;
         n = n + STEPN;
