@@ -41,7 +41,7 @@ double flops_syrk(mplapackint k_i, mplapackint n_i) {
     double n, k;
     n = (double)n_i;
     k = (double)k_i;
-    muls = k * n * (n + 1) * 0.5 +  n * n + n;
+    muls = k * n * (n + 1) * 0.5 + n * n + n;
     adds = k * n * (n + 1) * 0.5;
     flops = muls + adds;
     return flops;
