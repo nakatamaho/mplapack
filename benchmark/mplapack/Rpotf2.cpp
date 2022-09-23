@@ -1,9 +1,7 @@
 /*
- * Copyright (c) 2008-2012
+ * Copyright (c) 2008-2022
  *	Nakata, Maho
  * 	All rights reserved.
- *
- * $Id: Rgemm_dd.cpp,v 1.4 2010/08/07 05:50:09 nakatamaho Exp $
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -31,6 +29,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <dlfcn.h>
+#include <chrono>
 #include <mpblas.h>
 #include <mplapack.h>
 #include <mplapack_benchmark.h>
@@ -40,12 +39,16 @@
 int main(int argc, char *argv[]) {
     REAL alpha, beta, mtemp, dummy;
     REAL *dummywork;
-    double elapsedtime, t1, t2;
+    double elapsedtime;
     char uplo, normtype;
     mplapackint N0, STEP, info;
     mplapackint lda;
     int i, j, m, n, k, ka, kb, p, q;
     int check_flag = 1;
+
+    using Clock = std::chrono::high_resolution_clock;
+    using std::chrono::duration_cast;
+    using std::chrono::nanoseconds;
 
     ___MPLAPACK_INITIALIZE___
 
@@ -131,10 +134,10 @@ int main(int argc, char *argv[]) {
         }
 
         if (check_flag) {
-            t1 = gettime();
+            auto t1 = Clock::now();
             Rpotf2(&uplo, n, A, lda, info);
-            t2 = gettime();
-            elapsedtime = (t2 - t1);
+            auto t2 = Clock::now();
+            elapsedtime = (double)duration_cast<nanoseconds>(t2 - t1).count() / 1.0e9;
             (*mplapack_ref)(&uplo, n, Ad, lda, &info);
             (*raxpy_ref)((mplapackint)(lda * n), mOne, A, (mplapackint)1, Ad, (mplapackint)1);
             diff = Rlange(&normtype, (mplapackint)lda, (mplapackint)n, Ad, lda, dummywork);
@@ -142,10 +145,10 @@ int main(int argc, char *argv[]) {
             printf("    n     MFLOPS     error   uplo\n");
             printf("%5d %10.3f %5.2e      %c\n", (int)n, ((double)n * (double)n * (double)n / 3.0) / elapsedtime * MFLOPS, diffr, uplo);
         } else {
-            t1 = gettime();
+            auto t1 = Clock::now();
             Rpotf2(&uplo, n, A, lda, info);
-            t2 = gettime();
-            elapsedtime = (t2 - t1);
+            auto t2 = Clock::now();
+            elapsedtime = (double)duration_cast<nanoseconds>(t2 - t1).count() / 1.0e9;
             printf("    n     MFLOPS   uplo\n");
             printf("%5d %10.3f      %c\n", (int)n, ((double)n * (double)n * (double)n / 3.0) / elapsedtime * MFLOPS, uplo);
         }

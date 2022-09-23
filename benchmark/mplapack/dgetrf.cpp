@@ -29,6 +29,7 @@
 #include <complex>
 #include <stdio.h>
 #include <string.h>
+#include <chrono>
 #include <blas.h>
 #include <lapack.h>
 #define ___DOUBLE_BENCH___
@@ -45,19 +46,19 @@ double flops_getrf(int m_i, int n_i) {
     flops = muls + adds;
     return flops;
 }
-double get_realtime(void) {
-    struct timespec t;
-    clock_gettime(CLOCK_REALTIME, &t);
-    return t.tv_sec + (double)t.tv_nsec * 1e-9;
-}
+
 int main(int argc, char *argv[]) {
     double alpha, beta, dummy;
     double *dummywork;
-    double elapsedtime, t1, t2;
+    double elapsedtime;
     char uplo, normtype;
     int N0, M0, K0, STEPN = 3, STEPM = 3, STEPK = 3, TOTALSTEPS = 400;
     int lda, ldb, ldc, info;
     int i, j, m, n, k, ka, kb, p, q;
+
+    using Clock = std::chrono::high_resolution_clock;
+    using std::chrono::duration_cast;
+    using std::chrono::nanoseconds;
 
     // initialization
     N0 = 1;
@@ -89,10 +90,10 @@ int main(int argc, char *argv[]) {
         for (i = 0; i < lda * n; i++) {
             a[i] = randomnumber(dummy);
         }
-        t1 = gettime();
+        auto t1 = Clock::now();
         dgetrf_f77(&m, &n, a, &lda, ipiv, &info);
-        t2 = gettime();
-        elapsedtime = elapsedtime + t2 - t1;
+        auto t2 = Clock::now();
+        elapsedtime = (double)duration_cast<nanoseconds>(t2 - t1).count() / 1.0e9;
         printf("    n     m     MFLOPS\n");
         printf("%5d %5d %10.3f\n", (int)n, (int)m, flops_getrf(m, n) / elapsedtime * MFLOPS);
         delete[] ipiv;

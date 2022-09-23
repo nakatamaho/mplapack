@@ -28,6 +28,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <chrono>
 #include <dlfcn.h>
 #include <mpblas.h>
 #include <mplapack.h>
@@ -48,12 +49,16 @@ double flops_getrf(mplapackint m_i, mplapackint n_i) {
 int main(int argc, char *argv[]) {
     REAL alpha, beta, mtemp, dummy;
     REAL *dummywork;
-    double elapsedtime, t1, t2;
+    double elapsedtime;
     char uplo, normtype;
     mplapackint N0, M0, STEPN, STEPM, TOTALSTEPS = 100;
     mplapackint info, lda;
     int i, j, m, n, k, ka, kb, p, q;
     int check_flag = 1;
+
+    using Clock = std::chrono::high_resolution_clock;
+    using std::chrono::duration_cast;
+    using std::chrono::nanoseconds;
 
     ___MPLAPACK_INITIALIZE___
 
@@ -127,10 +132,10 @@ int main(int argc, char *argv[]) {
         }
 
         if (check_flag) {
-            t1 = gettime();
+            auto t1 = Clock::now();
             Rgetrf(m, n, A, lda, ipiv, info);
-            t2 = gettime();
-            elapsedtime = (t2 - t1);
+            auto t2 = Clock::now();
+            elapsedtime = (double)duration_cast<nanoseconds>(t2 - t1).count() / 1.0e9;
             (*mplapack_ref)(m, n, Aref, lda, ipivd, &info);
             (*raxpy_ref)((mplapackint)(lda * n), mOne, A, (mplapackint)1, Aref, (mplapackint)1);
             diff = Rlange(&normtype, (mplapackint)lda, (mplapackint)n, Aref, lda, dummywork);
@@ -138,10 +143,10 @@ int main(int argc, char *argv[]) {
             printf("    n     m     MFLOPS   error\n");
             printf("%5d %5d %10.3f %5.2e\n", (int)n, (int)m, flops_getrf(m, n) / elapsedtime * MFLOPS, diffr);
         } else {
-            t1 = gettime();
+            auto t1 = Clock::now();
             Rgetrf(m, n, A, lda, ipiv, info);
-            t2 = gettime();
-            elapsedtime = (t2 - t1);
+            auto t2 = Clock::now();
+            elapsedtime = elapsedtime + (double)duration_cast<nanoseconds>(t2 - t1).count() / 1.0e9;
             printf("    n     m     MFLOPS\n");
             printf("%5d %5d %10.3f\n", (int)n, (int)m, flops_getrf(m, n) / elapsedtime * MFLOPS);
         }

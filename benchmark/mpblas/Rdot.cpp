@@ -28,6 +28,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <chrono>
 #include <dlfcn.h>
 #include <mpblas.h>
 #include <mplapack.h>
@@ -37,9 +38,14 @@ int main(int argc, char *argv[]) {
     mplapackint n;
     mplapackint incx = 1, incy = 1, STEP = 97, N0 = 1, LOOP = 3, TOTALSTEPS = 3000;
     REAL dummy, ans, ans_ref;
-    double elapsedtime, t1, t2;
+    double elapsedtime;
     int i, p;
     int check_flag = 1;
+
+    using Clock = std::chrono::high_resolution_clock;
+    using std::chrono::duration_cast;
+    using std::chrono::nanoseconds;
+
     ___MPLAPACK_INITIALIZE___
 
     const char mpblas_sym[] = SYMBOL_GCC_RDOT;
@@ -86,10 +92,10 @@ int main(int argc, char *argv[]) {
                 x[i] = randomnumber(dummy);
                 y[i] = randomnumber(dummy);
             }
-            t1 = gettime();
+            auto t1 = Clock::now();
             ans = Rdot(n, x, incx, y, incy);
-            t2 = gettime();
-            elapsedtime = (t2 - t1);
+            auto t2 = Clock::now();
+            elapsedtime = (double)duration_cast<nanoseconds>(t2 - t1).count() / 1.0e9;
             ans_ref = (*mpblas_ref)(n, x, incx, y, incy);
             diff = ans - ans_ref;
             diffr = cast2double(diff);
@@ -102,10 +108,10 @@ int main(int argc, char *argv[]) {
             }
             elapsedtime = 0.0;
             for (int j = 0; j < LOOP; j++) {
-                t1 = gettime();
+                auto t1 = Clock::now();
                 ans = Rdot(n, x, incx, y, incy);
-                t2 = gettime();
-                elapsedtime = elapsedtime + (t2 - t1);
+                auto t2 = Clock::now();
+                elapsedtime = elapsedtime + (double)duration_cast<nanoseconds>(t2 - t1).count() / 1.0e9;
             }
             elapsedtime = elapsedtime / (double)LOOP;
             printf("         n       MFLOPS\n");

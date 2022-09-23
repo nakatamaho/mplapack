@@ -1,9 +1,7 @@
 /*
- * Copyright (c) 2008-2010
+ * Copyright (c) 2008-2022
  *	Nakata, Maho
  * 	All rights reserved.
- *
- * $Id: dgemm.cpp,v 1.5 2010/08/19 01:29:39 nakatamaho Exp $
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -32,6 +30,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <chrono>
 #include <blas.h>
 #include <lapack.h>
 #define ___DOUBLE_BENCH___
@@ -42,11 +41,15 @@
 int main(int argc, char *argv[]) {
     double alpha, beta, mtemp, dummy;
     double *dummywork;
-    double elapsedtime, t1, t2;
+    double elapsedtime;
     char uplo, normtype;
     int N0, STEP, info;
     int lda;
     int i, j, m, n, k, ka, kb, p, q;
+
+    using Clock = std::chrono::high_resolution_clock;
+    using std::chrono::duration_cast;
+    using std::chrono::nanoseconds;
 
     // initialization
     N0 = 1;
@@ -91,11 +94,10 @@ int main(int argc, char *argv[]) {
         for (i = 0; i < lda * n; i++) {
             A[i] = Ad[i];
         }
-
-        t1 = gettime();
+        auto t1 = Clock::now();
         dpotrf_f77(&uplo, &n, A, &lda, &info);
-        t2 = gettime();
-        elapsedtime = (t2 - t1);
+        auto t2 = Clock::now();
+        elapsedtime = (double)duration_cast<nanoseconds>(t2 - t1).count() / 1.0e9;
         printf("    n     MFLOPS   uplo\n");
         printf("%5d %10.3f      %c\n", (int)n, ((double)n * (double)n * (double)n / 3.0) / elapsedtime * MFLOPS, uplo);
         delete[] Ad;

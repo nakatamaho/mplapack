@@ -3,8 +3,6 @@
  *	Nakata, Maho
  * 	All rights reserved.
  *
- * $Id: dgemm.cpp,v 1.5 2010/08/19 01:29:39 nakatamaho Exp $
- *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
  * are met:
@@ -29,6 +27,7 @@
  */
 
 #include <complex>
+#include <chrono>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -41,12 +40,16 @@
 int main(int argc, char *argv[]) {
     double alpha, beta, dummy;
     double *dummywork;
-    double elapsedtime, t1, t2;
+    double elapsedtime;
     char uplo, trans, normtype;
     int N0, K0, STEPN, STEPK;
     int lda, ldc;
     int i, j, n, k, ka, kb, p, q;
     int check_flag = 1;
+
+    using Clock = std::chrono::high_resolution_clock;
+    using std::chrono::duration_cast;
+    using std::chrono::nanoseconds;
 
     // initialization
     N0 = K0 = 1;
@@ -105,10 +108,10 @@ int main(int argc, char *argv[]) {
         for (i = 0; i < ldc * n; i++) {
             C[i] = randomnumber(dummy);
         }
-        t1 = gettime();
+        auto t1 = Clock::now();
         dsyrk_f77(&uplo, &trans, &n, &k, &alpha, A, &lda, &beta, C, &ldc);
-        t2 = gettime();
-        elapsedtime = (t2 - t1);
+        auto t2 = Clock::now();
+        elapsedtime = (double)duration_cast<nanoseconds>(t2 - t1).count() / 1.0e9;
         printf("    n     k      MFLOPS       uplo    trans\n");
         // 2n^2k+2n^2 flops are needed
         printf("%5d %5d  %10.3f     %c        %c\n", (int)n, (int)k, (2.0 * (double)n * (double)n * (double)k + 2.0 * (double)n * (double)n) / elapsedtime * MFLOPS, uplo, trans);

@@ -28,6 +28,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <chrono>
 #include <dlfcn.h>
 #include <mpblas.h>
 #include <mplapack.h>
@@ -37,10 +38,14 @@ int main(int argc, char *argv[]) {
     mplapackint n;
     mplapackint incx = 1, incy = 1, STEP = 97, N0 = 1, LOOP = 3, TOTALSTEPS = 3000;
     REAL alpha, dummy, *dummywork;
-    double elapsedtime, t1, t2;
+    double elapsedtime;
     int i, p;
     int check_flag = 1;
     char normtype = 'm';
+
+    using Clock = std::chrono::high_resolution_clock;
+    using std::chrono::duration_cast;
+    using std::chrono::nanoseconds;
 
     ___MPLAPACK_INITIALIZE___
 
@@ -90,10 +95,10 @@ int main(int argc, char *argv[]) {
                 y[i] = yd[i] = randomnumber(dummy);
             }
             alpha = randomnumber(dummy);
-            t1 = gettime();
+            auto t1 = Clock::now();
             Raxpy(n, alpha, x, incx, y, incy);
-            t2 = gettime();
-            elapsedtime = (t2 - t1);
+            auto t2 = Clock::now();
+            elapsedtime = (double)duration_cast<nanoseconds>(t2 - t1).count() / 1.0e9;
             (*mpblas_ref)(n, alpha, x, incx, yd, incy);
             diff = Rlange(&normtype, (mplapackint)n, (mplapackint)1, yd, 1, dummywork);
             diffr = cast2double(diff);
@@ -107,10 +112,10 @@ int main(int argc, char *argv[]) {
             alpha = randomnumber(dummy);
             elapsedtime = 0.0;
             for (int j = 0; j < LOOP; j++) {
-                t1 = gettime();
+                auto t1 = Clock::now();
                 Raxpy(n, alpha, x, incx, y, incy);
-                t2 = gettime();
-                elapsedtime = elapsedtime + (t2 - t1);
+                auto t2 = Clock::now();
+                elapsedtime = elapsedtime + (double)duration_cast<nanoseconds>(t2 - t1).count() / 1.0e9;
             }
             elapsedtime = elapsedtime / (double)LOOP;
             printf("         n       MFLOPS\n");

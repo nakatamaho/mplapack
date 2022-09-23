@@ -1,9 +1,7 @@
 /*
- * Copyright (c) 2008-2010
+ * Copyright (c) 2008-2022
  *	Nakata, Maho
  * 	All rights reserved.
- *
- * $Id: daxpy.cpp,v 1.4 2010/08/07 05:50:09 nakatamaho Exp $
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -31,6 +29,7 @@
 #include <complex>
 #include <stdio.h>
 #include <stdlib.h>
+#include <chrono>
 #include <string.h>
 #include <blas.h>
 #define ___DOUBLE_BENCH___
@@ -43,8 +42,12 @@ int main(int argc, char *argv[]) {
     int incx = 1, incy = 1, STEP, N0;
     double alpha, dummy, *dummywork;
     double mOne = -1;
-    double elapsedtime, t1, t2;
+    double elapsedtime;
     int i, p;
+
+    using Clock = std::chrono::high_resolution_clock;
+    using std::chrono::duration_cast;
+    using std::chrono::nanoseconds;
 
     // initialization
     N0 = 1;
@@ -67,10 +70,10 @@ int main(int argc, char *argv[]) {
             y[i] = randomnumber(dummy);
         }
         alpha = randomnumber(dummy);
-        t1 = gettime();
+        auto t1 = Clock::now();
         daxpy_f77(&n, &alpha, x, &incx, y, &incy);
-        t2 = gettime();
-        elapsedtime = (t2 - t1);
+        auto t2 = Clock::now();
+        elapsedtime = (double)duration_cast<nanoseconds>(t2 - t1).count() / 1.0e9;
         printf("         n       MFLOPS\n");
         printf("%10d   %10.3f\n", (int)n, (2.0 * (double)n) / elapsedtime * MFLOPS);
         delete[] y;

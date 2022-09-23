@@ -3,8 +3,6 @@
  *	Nakata, Maho
  * 	All rights reserved.
  *
- * $Id: Rgemm_dd.cpp,v 1.4 2010/08/07 05:50:09 nakatamaho Exp $
- *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
  * are met:
@@ -30,6 +28,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <chrono>
 #include <dlfcn.h>
 #include <mpblas.h>
 #include <mplapack.h>
@@ -56,6 +55,10 @@ int main(int argc, char *argv[]) {
     int lda, ldc;
     int i, n, k, ka, p, q;
     int check_flag = 1;
+
+    using Clock = std::chrono::high_resolution_clock;
+    using std::chrono::duration_cast;
+    using std::chrono::nanoseconds;
 
     ___MPLAPACK_INITIALIZE___
 
@@ -153,10 +156,10 @@ int main(int argc, char *argv[]) {
         }
 
         if (check_flag) {
-            t1 = gettime();
+            auto t1 = Clock::now();
             Rsyrk(&uplo, &trans, n, k, alpha, A, lda, beta, C, ldc);
-            t2 = gettime();
-            elapsedtime = (t2 - t1);
+            auto t2 = Clock::now();
+            elapsedtime = (double)duration_cast<nanoseconds>(t2 - t1).count() / 1.0e9;
             (*mpblas_ref)(&uplo, &trans, n, k, alpha, A, lda, beta, Cref, ldc);
             (*raxpy_ref)((mplapackint)(ldc * n), mOne, C, (mplapackint)1, Cref, (mplapackint)1);
 
@@ -167,10 +170,10 @@ int main(int argc, char *argv[]) {
         } else {
             elapsedtime = 0.0;
             for (int j = 0; j < LOOP; j++) {
-                t1 = gettime();
+                auto t1 = Clock::now();
                 Rsyrk(&uplo, &trans, n, k, alpha, A, lda, beta, C, ldc);
-                t2 = gettime();
-                elapsedtime = elapsedtime + (t2 - t1);
+                auto t2 = Clock::now();
+                elapsedtime = elapsedtime + (double)duration_cast<nanoseconds>(t2 - t1).count() / 1.0e9;
             }
             elapsedtime = elapsedtime / (double)LOOP;
             printf("    n     k      MFLOPS     uplo   trans\n");

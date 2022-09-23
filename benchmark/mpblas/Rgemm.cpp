@@ -1,9 +1,7 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2022
  *	Nakata, Maho
  * 	All rights reserved.
- *
- * $Id: Rgemm_dd.cpp,v 1.4 2010/08/07 05:50:09 nakatamaho Exp $
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -30,6 +28,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <chrono>
 #include <dlfcn.h>
 #include <mpblas.h>
 #include <mplapack.h>
@@ -51,12 +50,16 @@ double flops_gemm(mplapackint k_i, mplapackint m_i, mplapackint n_i) {
 int main(int argc, char *argv[]) {
     REAL alpha, beta, dummy;
     REAL *dummywork;
-    double elapsedtime, t1, t2;
+    double elapsedtime;
     char transa, transb, normtype;
     int N0, M0, K0, STEPN = 3, STEPM = 3, STEPK = 3, LOOP = 3, TOTALSTEPS = 400;
     int lda, ldb, ldc;
     int i, m, n, k, ka, kb, p;
     int check_flag = 1;
+
+    using Clock = std::chrono::high_resolution_clock;
+    using std::chrono::duration_cast;
+    using std::chrono::nanoseconds;
 
     ___MPLAPACK_INITIALIZE___
 
@@ -118,7 +121,6 @@ int main(int argc, char *argv[]) {
             fprintf(stderr, "%s\n", error);
             return 1;
         }
-
         raxpy_ref = (void (*)(mplapackint, REAL, REAL *, mplapackint, REAL *, mplapackint))dlsym(handle, raxpy_sym);
         if ((error = dlerror()) != NULL) {
             fprintf(stderr, "%s\n", error);
@@ -163,10 +165,10 @@ int main(int argc, char *argv[]) {
             C[i] = Cd[i] = randomnumber(dummy);
         }
         if (check_flag) {
-            t1 = gettime();
+            auto t1 = Clock::now();
             Rgemm(&transa, &transb, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc);
-            t2 = gettime();
-            elapsedtime = (t2 - t1);
+            auto t2 = Clock::now();
+            elapsedtime = (double)duration_cast<nanoseconds>(t2 - t1).count() / 1.0e9;
             (*mpblas_ref)(&transa, &transb, m, n, k, alpha, A, lda, B, ldb, beta, Cd, ldc);
             (*raxpy_ref)((mplapackint)(ldc * n), mOne, C, (mplapackint)1, Cd, (mplapackint)1);
             diff = Rlange(&normtype, (mplapackint)ldc, (mplapackint)n, Cd, ldc, dummywork);
@@ -176,14 +178,13 @@ int main(int argc, char *argv[]) {
         } else {
             elapsedtime = 0.0;
             for (int j = 0; j < LOOP; j++) {
-                t1 = gettime();
+                auto t1 = Clock::now();
                 Rgemm(&transa, &transb, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc);
-                t2 = gettime();
-                elapsedtime = elapsedtime + (t2 - t1);
+                auto t2 = Clock::now();
+                elapsedtime = elapsedtime + (double)duration_cast<nanoseconds>(t2 - t1).count() / 1.0e9;
             }
             elapsedtime = elapsedtime / (double)LOOP;
             printf("    m     n     k     MFLOPS    transa   transb\n");
-            // 2mnk+2mn flops are needed
             printf("%5d %5d %5d %10.3f         %c        %c\n", (int)m, (int)n, (int)k, flops_gemm(k, m, n) / elapsedtime * MFLOPS, transa, transb);
         }
         delete[] Cd;

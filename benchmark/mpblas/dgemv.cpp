@@ -1,9 +1,7 @@
 /*
- * Copyright (c) 2008-2010
+ * Copyright (c) 2008-2022
  *	Nakata, Maho
  * 	All rights reserved.
- *
- * $Id: dgemv.cpp,v 1.4 2010/08/07 05:50:09 nakatamaho Exp $
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -29,6 +27,7 @@
  */
 
 #include <complex>
+#include <chrono>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -46,6 +45,10 @@ int main(int argc, char *argv[]) {
     double elapsedtime, t1, t2;
     int i, p;
     char trans, normtype;
+
+    using Clock = std::chrono::high_resolution_clock;
+    using std::chrono::duration_cast;
+    using std::chrono::nanoseconds;
 
     // initialization
     N0 = M0 = 1;
@@ -91,10 +94,10 @@ int main(int argc, char *argv[]) {
         }
         alpha = randomnumber(dummy);
         beta = randomnumber(dummy);
-        t1 = gettime();
+        auto t1 = Clock::now();
         dgemv_f77(&trans, &m, &n, &alpha, A, &m, x, &incx, &beta, y, &incy);
-        t2 = gettime();
-        elapsedtime = (t2 - t1);
+        auto t2 = Clock::now();
+        elapsedtime = (double)duration_cast<nanoseconds>(t2 - t1).count() / 1.0e9;
         printf("     m       n      MFLOPS  trans\n");
         printf("%6d  %6d  %10.3f      %c\n", (int)n, (int)m, (2.0 * (double)n * (double)m) / elapsedtime * MFLOPS, trans);
         delete[] y;

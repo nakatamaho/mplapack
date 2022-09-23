@@ -3,8 +3,6 @@
  *	Nakata, Maho
  * 	All rights reserved.
  *
- * $Id: Rgemm_dd.cpp,v 1.4 2010/08/07 05:50:09 nakatamaho Exp $
- *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
  * are met:
@@ -30,6 +28,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <chrono>
 #include <dlfcn.h>
 #include <mpblas.h>
 #include <mplapack.h>
@@ -86,7 +85,7 @@ void SetDevice() {
 int main(int argc, char *argv[]) {
     REAL alpha, beta, dummy;
     REAL *dummywork;
-    double elapsedtime, t1, t2;
+    double elapsedtime;
     double *dummyd;
     char transa, transb, normtype;
     int N0, M0, K0, STEPN = 7, STEPM = 7, STEPK = 7, LOOP = 3, TOTALSTEPS = 720;
@@ -102,6 +101,10 @@ int main(int argc, char *argv[]) {
     char *error;
     REAL diff;
     double diffr;
+
+    using Clock = std::chrono::high_resolution_clock;
+    using std::chrono::duration_cast;
+    using std::chrono::nanoseconds;
 
     // initialization
     N0 = M0 = K0 = 1;
@@ -221,15 +224,15 @@ int main(int argc, char *argv[]) {
             cudaMemcpy(Bdev, B, size_B * sizeof(REAL), cudaMemcpyHostToDevice);
             cudaMemcpy(Crefev, C, size_C * sizeof(REAL), cudaMemcpyHostToDevice);
 
-            t1 = gettime();
+            auto t1 = Clock::now();
             Rgemm_cuda(&transa, &transb, m, n, k, alpha, Adev, lda, Bdev, ldb, beta, Crefev, ldc);
-            t2 = gettime();
+            auto t2 = Clock::now();
             cudaMemcpy(C, Crefev, size_C * sizeof(dd_real), cudaMemcpyDeviceToHost);
             cudaFree(Adev);
             cudaFree(Bdev);
             cudaFree(Crefev);
+            elapsedtime = (double)duration_cast<nanoseconds>(t2 - t1).count() / 1.0e9;
 
-            elapsedtime = (t2 - t1);
             (*mpblas_ref)(&transa, &transb, m, n, k, alpha, A, lda, B, ldb, beta, Cref, ldc);
             (*raxpy_ref)((mplapackint)(ldc * n), mOne, C, (mplapackint)1, Cref, (mplapackint)1);
             diff = Rlange(&normtype, (mplapackint)ldc, (mplapackint)n, Cref, ldc, dummywork);
@@ -246,10 +249,10 @@ int main(int argc, char *argv[]) {
 
             elapsedtime = 0.0;
             for (int j = 0; j < LOOP; j++) {
-                t1 = gettime();
+                auto t1 = Clock::now();
                 Rgemm_cuda(&transa, &transb, m, n, k, alpha, Adev, lda, Bdev, ldb, beta, Crefev, ldc);
-                t2 = gettime();
-                elapsedtime = elapsedtime + (t2 - t1);
+                auto t2 = Clock::now();
+                elapsedtime = elapsedtime + (double)duration_cast<nanoseconds>(t2 - t1).count() / 1.0e9;
             }
             elapsedtime = elapsedtime / (double)LOOP;
 
@@ -257,8 +260,6 @@ int main(int argc, char *argv[]) {
             cudaFree(Adev);
             cudaFree(Bdev);
             cudaFree(Crefev);
-
-            elapsedtime = (t2 - t1);
             printf("    m     n     k     MFLOPS    transa   transb\n");
             printf("%5d %5d %5d  %10.3f        %c        %c\n", (int)m, (int)n, (int)k, flops_gemm(k, m, n) / elapsedtime * MFLOPS, transa, transb);
         }

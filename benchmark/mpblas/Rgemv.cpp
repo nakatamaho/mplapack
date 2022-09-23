@@ -1,9 +1,7 @@
 /*
- * Copyright (c) 2008-2010
+ * Copyright (c) 2008-2022
  *	Nakata, Maho
  * 	All rights reserved.
- *
- * $Id: Rgemv_qd.cpp,v 1.3 2010/08/07 05:50:09 nakatamaho Exp $
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -30,6 +28,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <chrono>
 #include <dlfcn.h>
 #include <mpblas.h>
 #include <mplapack.h>
@@ -52,10 +51,14 @@ int main(int argc, char *argv[]) {
     mplapackint STEPN = 7, STEPM = 7, N0, M0, LOOP = 3, TOTALSTEPS = 283;
     REAL alpha, beta, dummy, *dummywork;
     REAL mOne = -1;
-    double elapsedtime, t1, t2;
+    double elapsedtime;
     int i, p;
     int check_flag = 1;
     char trans = 'n', normtype = 'm';
+
+    using Clock = std::chrono::high_resolution_clock;
+    using std::chrono::duration_cast;
+    using std::chrono::nanoseconds;
 
     ___MPLAPACK_INITIALIZE___
 
@@ -135,10 +138,10 @@ int main(int argc, char *argv[]) {
             }
             alpha = randomnumber(dummy);
             beta = randomnumber(dummy);
-            t1 = gettime();
+            auto t1 = Clock::now();
             Rgemv(&trans, m, n, alpha, A, m, x, (mplapackint)1, beta, y, (mplapackint)1);
-            t2 = gettime();
-            elapsedtime = (t2 - t1);
+            auto t2 = Clock::now();
+            elapsedtime = (double)duration_cast<nanoseconds>(t2 - t1).count() / 1.0e9;
             (*mpblas_ref)(&trans, m, n, alpha, A, m, x, (mplapackint)1, beta, yref, (mplapackint)1);
             (*raxpy_ref)(l, mOne, y, (mplapackint)1, yref, (mplapackint)1);
             diff = Rlange(&normtype, (mplapackint)l, (mplapackint)1, yref, 1, dummywork);
@@ -159,10 +162,10 @@ int main(int argc, char *argv[]) {
             beta = randomnumber(dummy);
             elapsedtime = 0.0;
             for (int j = 0; j < LOOP; j++) {
-                t1 = gettime();
+                auto t1 = Clock::now();
                 Rgemv(&trans, m, n, alpha, A, m, x, (mplapackint)1, beta, y, (mplapackint)1);
-                t2 = gettime();
-                elapsedtime = elapsedtime + (t2 - t1);
+                auto t2 = Clock::now();
+                elapsedtime = elapsedtime + (double)duration_cast<nanoseconds>(t2 - t1).count() / 1.0e9;
             }
             elapsedtime = elapsedtime / (double)LOOP;
             printf("     m       n      MFLOPS  trans\n");
