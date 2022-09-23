@@ -1,0 +1,4 @@
+A,AMD Ryzen 3970X,x86_64-pc-linux-gnu-Ryzen-Threadripper-3970X-RTX3080
+B,Intel Xeon E5 2623,x86_64-pc-linux-gnu-Xeon-E5-2623-TeslaV100
+C,Intel Core i5-8500B,x86_64-apple-darwin20.6.0-Corei5-8500B
+G,Raspberry Pi4 ARM Cortex A72,aarch64-unknown-linux-gnu-raspberry-pi4
