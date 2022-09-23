@@ -26,7 +26,6 @@
  *
  */
 
-#include <sys/time.h>
 #include <sys/types.h>
 #if !defined _WIN32
 #include <sys/resource.h>
@@ -156,22 +155,6 @@ _Float128 randomnumber(_Float128 dummy) {
     return mtmp;
 }
 #endif
-
-#if !defined _WIN32
-unsigned long microseconds(void) {
-    rusage t;
-    timeval tv;
-    getrusage(RUSAGE_SELF, &t);
-    tv = t.ru_utime;
-    return ((unsigned long)tv.tv_sec) * 1000000 + tv.tv_usec;
-}
-#endif
-
-inline double gettime(void) {
-    struct timeval tv;
-    gettimeofday(&tv, NULL);
-    return tv.tv_sec + (double)tv.tv_usec * 1e-6;
-}
 
 #if defined ___DOUBLE_BENCH___
 double randomnumber(double dummy) {
