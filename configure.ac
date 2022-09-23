@@ -697,6 +697,12 @@ need_internal_openblas=no
 if test x$enable_benchmark = x"yes"; then
     need_internal_openblas=yes
     AC_SUBST(OPENBLAS_DIR, [openblas])
+    if test x$IS_MINGW = x"1"; then
+	DLFCN_WIN32_INCLUDEDIR=$highest_abs_top_srcdir/external/i/DLFCN_WIN32/include/
+	DLFCN_WIN32_LIBDIR=$highest_abs_top_srcdir/external/i/DLFCN_WIN32/lib/
+        AC_SUBST(DLFCN_WIN32_INCLUDEDIR, [$DLFCN_WIN32_INCLUDEDIR])
+        AC_SUBST(DLFCN_WIN32_LIBDIR, [$DLFCN_WIN32_LIBDIR])
+    fi
 fi
 
 dnl print status...start
@@ -762,16 +768,13 @@ else
         AC_MSG_RESULT([disable _Float128])
 fi
 
-ENABLE_BENCHMARK=no
 if test x$enable_benchmark = x"yes"; then
-ENABLE_BENCHMARK=yes
 AC_MSG_RESULT([Enable benchmark])
 AC_MSG_RESULT([Build internal OpenBLAS])
 else
 AC_MSG_RESULT([Disable benchmark])
 AC_MSG_RESULT([Do not build internal OpenBLAS])
 fi
-AM_CONDITIONAL(ENABLE_BENCHMARK, test x$enable_benchmark = xyes)
 
 if test x$enable_test = x"yes"; then
 AC_MSG_RESULT([Enable test])
@@ -962,6 +965,7 @@ external/mpc/Makefile
 external/qd/Makefile
 external/lapack/Makefile
 external/openblas/Makefile
+external/dlfcn-win32/Makefile
 ])
 
 if test x$enable_benchmark != xno; then

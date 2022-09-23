@@ -17,6 +17,12 @@ _Float64x_libdepends = $(_Float64xlapack_libdepends) -L$(top_builddir)/mpblas/re
 _Float64xopt_libdepends = $(_Float64xlapack_libdepends) -L$(top_builddir)/mpblas/optimized/_Float64x -lmpblas__Float64x_opt $(DYLD)
 endif
 
+if IS_MINGW
+_Float64xcxxflags += -I$(DLFCN_WIN32_INCLUDEDIR)
+_Float64x_libdepends += -L$(DLFCN_WIN32_LIBDIR) -ldl
+_Float64xopt_libdepends += -L$(DLFCN_WIN32_LIBDIR) -ldl
+endif
+
 Raxpy__Float64x_opt_SOURCES= Raxpy.cpp
 Raxpy__Float64x_opt_CXXFLAGS= $(_Float64xcxxflags)
 Raxpy__Float64x_opt_LDFLAGS= $(_Float64xopt_libdepends)

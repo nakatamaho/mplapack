@@ -12,6 +12,12 @@ gmplapack_libdepends = -L$(top_builddir)/mplapack/reference -lmplapack_gmp
 gmp_libdepends = $(gmplapack_libdepends) -L$(top_builddir)/mpblas/reference -lmpblas_gmp -L$(GMP_LIBDIR) -lgmpxx -lgmp $(DYLD)
 gmpopt_libdepends = $(gmplapack_libdepends) -L$(top_builddir)/mpblas/optimized/gmp -lmpblas_gmp_opt -L$(GMP_LIBDIR) -lgmpxx -lgmp $(DYLD)
 
+if IS_MINGW
+gmpcxxflags += -I$(DLFCN_WIN32_INCLUDEDIR)
+gmp_libdepends += -L$(DLFCN_WIN32_LIBDIR) -ldl
+gmpopt_libdepends += -L$(DLFCN_WIN32_LIBDIR) -ldl
+endif
+
 Raxpy_gmp_opt_SOURCES= Raxpy.cpp
 Raxpy_gmp_opt_CXXFLAGS= $(gmpcxxflags)
 Raxpy_gmp_opt_LDFLAGS= $(gmpopt_libdepends)

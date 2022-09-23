@@ -16,6 +16,12 @@ ddlapack_libdepends = -L$(top_builddir)/mplapack/reference -lmplapack_dd
 dd_libdepends = $(ddlapack_libdepends) -L$(top_builddir)/mpblas/reference -lmpblas_dd -L$(QD_LIBDIR) -lqd $(DYLD)
 ddopt_libdepends = $(ddlapack_libdepends) -L$(top_builddir)/mpblas/optimized/dd -lmpblas_dd_opt -L$(QD_LIBDIR) -lqd $(DYLD)
 
+if IS_MINGW
+ddcxxflags += -I$(DLFCN_WIN32_INCLUDEDIR)
+dd_libdepends += -L$(DLFCN_WIN32_LIBDIR) -ldl
+ddopt_libdepends += -L$(DLFCN_WIN32_LIBDIR) -ldl
+endif
+
 Raxpy_dd_SOURCES= Raxpy.cpp
 Raxpy_dd_CXXFLAGS= $(ddcxxflags)
 Raxpy_dd_LDFLAGS= $(dd_libdepends)

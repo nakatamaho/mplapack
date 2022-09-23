@@ -12,6 +12,12 @@ doublelapack_libdepends = -L$(top_builddir)/mplapack/reference -lmplapack_double
 double_libdepends = $(doublelapack_libdepends) -L$(top_builddir)/mpblas/reference -lmpblas_double $(DYLD)
 doubleopt_libdepends = $(doublelapack_libdepends) -L$(top_builddir)/mpblas/optimized/double -lmpblas_double_opt $(DYLD)
 
+if IS_MINGW
+doublecxxflags += -I$(DLFCN_WIN32_INCLUDEDIR)
+double_libdepends += -L$(DLFCN_WIN32_LIBDIR) -ldl
+doubleopt_libdepends += -L$(DLFCN_WIN32_LIBDIR) -ldl
+endif
+
 Raxpy_double_opt_SOURCES= Raxpy.cpp
 Raxpy_double_opt_CXXFLAGS= $(doublecxxflags)
 Raxpy_double_opt_LDFLAGS= $(doubleopt_libdepends)

@@ -8,6 +8,12 @@ qdlapack_libdepends = -L$(top_builddir)/mplapack/reference -lmplapack_qd
 qd_libdepends = $(qdlapack_libdepends) -L$(top_builddir)/mpblas/reference -lmpblas_qd -L$(QD_LIBDIR) -lqd $(DYLD)
 qdopt_libdepends = $(qdlapack_libdepends) -L$(top_builddir)/mpblas/optimized/qd -lmpblas_qd_opt -L$(QD_LIBDIR) -lqd $(DYLD)
 
+if IS_MINGW
+qdcxxflags += -I$(DLFCN_WIN32_INCLUDEDIR)
+qd_libdepends += -L$(DLFCN_WIN32_LIBDIR) -ldl
+qdopt_libdepends += -L$(DLFCN_WIN32_LIBDIR) -ldl
+endif
+
 Rpotrf_qd_opt_SOURCES= Rpotrf.cpp
 Rpotrf_qd_opt_CXXFLAGS= $(qdcxxflags)
 Rpotrf_qd_opt_LDFLAGS= $(qdopt_libdepends)

@@ -13,8 +13,6 @@ go.Rsyrk_cuda.sh
 
 benchdir=$(prefix)/lib/$(target)/mplapack/benchmark
 
-if !IS_MINGW
-
 if ENABLE_MPFR
 include Makefile.mpfr.am
 endif
@@ -51,6 +49,4 @@ install-data-hook:
 	bash $(top_builddir)/misc/add_ldlibpath.sh $(prefix) $(benchdir)/go.*.sh
 if IS_MACOS
 	bash $(top_builddir)/misc/fix_dylib_macOS.sh $(benchdir) $(prefix)
-endif
-
 endif

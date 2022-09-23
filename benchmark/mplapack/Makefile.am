@@ -5,8 +5,6 @@ go.Rgetrf.sh go.Rgetrf_cuda.sh go.Rpotrf.sh go.Rpotrf_cuda.sh
 
 benchdir=$(prefix)/lib/$(target)/mplapack/benchmark
 
-if !IS_MINGW
-
 if ENABLE_MPFR
 include Makefile.mpfr.am
 endif
@@ -48,6 +46,3 @@ install-data-hook:
 if IS_MACOS
 	bash $(top_builddir)/misc/fix_dylib_macOS.sh $(benchdir) $(prefix)
 endif
-
-endif
-

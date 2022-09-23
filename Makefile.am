@@ -1,5 +1,5 @@
 SUBDIRS = external mpblas mplapack
-if !ENABLE_BENCHMARK
+if ENABLE_BENCHMARK
 SUBDIRS += benchmark 
 endif
 if !DISABLE_EXAMPLES

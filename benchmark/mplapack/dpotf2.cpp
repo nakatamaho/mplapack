@@ -37,6 +37,7 @@
 #define ___DOUBLE_BENCH___
 #include <mplapack_benchmark.h>
 
+
 #define TOTALSTEPS 1000
 
 int main(int argc, char *argv[]) {

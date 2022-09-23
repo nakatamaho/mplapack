@@ -11,6 +11,12 @@ mpfrlapack_libdepends = -L$(top_builddir)/mplapack/reference -lmplapack_mpfr
 mpfr_libdepends = $(mpfrlapack_libdepends) -L$(top_builddir)/mpblas/reference -lmpblas_mpfr -L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(GMP_LIBDIR) -lmpfr -lmpc -lgmp $(DYLD)
 mpfropt_libdepends = $(mpfrlapack_libdepends) -L$(top_builddir)/mpblas/optimized/mpfr -lmpblas_mpfr_opt -L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(GMP_LIBDIR) -lmpfr -lmpc -lgmp $(DYLD)
 
+if IS_MINGW
+mpfrcxxflags += -I$(DLFCN_WIN32_INCLUDEDIR)
+mpfr_libdepends += -L$(DLFCN_WIN32_LIBDIR) -ldl
+mpfropt_libdepends += -L$(DLFCN_WIN32_LIBDIR) -ldl
+endif
+
 Raxpy_mpfr_opt_SOURCES= Raxpy.cpp
 Raxpy_mpfr_opt_CXXFLAGS= $(mpfrcxxflags)
 Raxpy_mpfr_opt_LDFLAGS= $(mpfropt_libdepends)

@@ -17,6 +17,12 @@ _Float128_libdepends = $(_Float128lapack_libdepends) -L$(top_builddir)/mpblas/re
 _Float128opt_libdepends = $(_Float128lapack_libdepends) -L$(top_builddir)/mpblas/optimized/_Float128 -lmpblas__Float128_opt $(DYLD)
 endif
 
+if IS_MINGW
+_Float128cxxflags += -I$(DLFCN_WIN32_INCLUDEDIR)
+_Float128_libdepends += -L$(DLFCN_WIN32_LIBDIR) -ldl
+_Float128opt_libdepends += -L$(DLFCN_WIN32_LIBDIR) -ldl
+endif
+
 Raxpy__Float128_opt_SOURCES= Raxpy.cpp
 Raxpy__Float128_opt_CXXFLAGS= $(_Float128cxxflags)
 Raxpy__Float128_opt_LDFLAGS= $(_Float128opt_libdepends)

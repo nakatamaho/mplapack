@@ -41,6 +41,8 @@
 
 #if defined __APPLE__
 #define DYLIB_SUFFIX ".dylib"
+#elif defined _WIN32
+#define DYLIB_SUFFIX "-0.dll" //XXX
 #else
 #define DYLIB_SUFFIX ".so"
 #endif
