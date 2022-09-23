@@ -87,26 +87,26 @@ int main(int argc, char *argv[]) {
     for (p = 0; p < TOTALSTEPS; p++) {
         REAL *x = new REAL[n];
         REAL *y = new REAL[n];
-        REAL *yd = new REAL[n];
+        REAL *y_ref = new REAL[n];
         if (check_flag) {
             for (i = 0; i < n; i++) {
                 x[i] = randomnumber(dummy);
-                y[i] = yd[i] = randomnumber(dummy);
+                y[i] = y_ref[i] = randomnumber(dummy);
             }
             alpha = randomnumber(dummy);
             auto t1 = Clock::now();
             Raxpy(n, alpha, x, incx, y, incy);
             auto t2 = Clock::now();
             elapsedtime = (double)duration_cast<nanoseconds>(t2 - t1).count() / 1.0e9;
-            (*mpblas_ref)(n, alpha, x, incx, yd, incy);
-            diff = Rlange(&normtype, (mplapackint)n, (mplapackint)1, yd, 1, dummywork);
+            (*mpblas_ref)(n, alpha, x, incx, y_ref, incy);
+            diff = Rlange(&normtype, (mplapackint)n, (mplapackint)1, y_ref, 1, dummywork);
             diffr = cast2double(diff);
             printf("         n       MFLOPS      error\n");
             printf("%10d   %10.3f   %10.3f\n", (int)n, (2.0 * (double)n) / elapsedtime * MFLOPS, diffr);
         } else {
             for (i = 0; i < n; i++) {
                 x[i] = randomnumber(dummy);
-                y[i] = yd[i] = randomnumber(dummy);
+                y[i] = y_ref[i] = randomnumber(dummy);
             }
             alpha = randomnumber(dummy);
             elapsedtime = 0.0;
@@ -120,7 +120,7 @@ int main(int argc, char *argv[]) {
             printf("         n       MFLOPS     LOOPS\n");
             printf("%10d   %10.3f        %d\n", (int)n, (2.0 * (double)n) / elapsedtime * MFLOPS, (int)LOOPS);
         }
-        delete[] yd;
+        delete[] y_ref;
         delete[] y;
         delete[] x;
         n = n + STEP;
