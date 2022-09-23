@@ -82,7 +82,7 @@ mpf_class randomnumber(mpf_class dummy) {
 #define MPBLAS_REF_LIB "libmpblas_dd"
 dd_real randomnumber(dd_real dummy) {
     dd_real mtmp;
-    mtmp = ddrand(); // uniform random between [0,1] via lrand48
+    mtmp = ddrand();
     mtmp = 2.0 * mtmp - 1.0;
     return mtmp;
 }
@@ -109,7 +109,7 @@ qd_real randomnumber(qd_real dummy) {
 #define ___MPLAPACK_INITIALIZE___
 double randomnumber(double dummy) {
 #if defined _WIN32 // XXX
-    double mtmp = (double)rand();
+    double mtmp = (double)rand() / (double)RAND_MAX;
 #else
     double mtmp = drand48();
 #endif
@@ -125,8 +125,8 @@ double randomnumber(double dummy) {
 _Float64x randomnumber(_Float64x dummy) {
     _Float64x mtmp;
 #if defined _WIN32
-    mtmp = drand();          // uniform random between [0,1] via rand
-    mtmp += drand() * 1e-16; // uniform random between [0,1] via rand
+    mtmp = ((double)rand() / (double)RAND_MAX);          // uniform random between [0,1] via rand
+    mtmp += ((double)rand() / (double)RAND_MAX) * 1e-16; // uniform random between [0,1] via rand
 #else
     mtmp = drand48();          // uniform random between [0,1] via lrand48
     mtmp += drand48() * 1e-16; // uniform random between [0,1] via lrand48
@@ -144,9 +144,9 @@ _Float64x randomnumber(_Float64x dummy) {
 _Float128 randomnumber(_Float128 dummy) {
     _Float128 mtmp;
 #if defined _WIN32
-    mtmp = drand();          // uniform random between [0,1] via rand
-    mtmp += drand() * 1e-16; // uniform random between [0,1] via rand
-    mtmp += drand() * 1e-32; // uniform random between [0,1] via rand
+    mtmp = ((double)rand() / (double)RAND_MAX);          // uniform random between [0,1] via rand
+    mtmp += ((double)rand() / (double)RAND_MAX) * 1e-16; // uniform random between [0,1] via rand
+    mtmp += ((double)rand() / (double)RAND_MAX) * 1e-32; // uniform random between [0,1] via rand
 #else
     mtmp = drand48();          // uniform random between [0,1] via drand48
     mtmp += drand48() * 1e-16; // uniform random between [0,1] via drand48
@@ -176,7 +176,7 @@ inline double gettime(void) {
 #if defined ___DOUBLE_BENCH___
 double randomnumber(double dummy) {
 #if defined _WIN32 // XXX
-    double mtmp = (double)rand();
+    double mtmp = ((double)rand() / (double)RAND_MAX);
 #else
     double mtmp = drand48();
 #endif
