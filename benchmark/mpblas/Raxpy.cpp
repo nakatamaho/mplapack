@@ -36,7 +36,7 @@
 
 int main(int argc, char *argv[]) {
     mplapackint n;
-    mplapackint incx = 1, incy = 1, STEP = 97, N0 = 1, LOOP = 3, TOTALSTEPS = 3000;
+    mplapackint incx = 1, incy = 1, STEP = 97, N0 = 1, LOOPS = 3, TOTALSTEPS = 3000;
     REAL alpha, dummy, *dummywork;
     double elapsedtime;
     int i, p;
@@ -64,8 +64,8 @@ int main(int argc, char *argv[]) {
                 STEP = atoi(argv[++i]);
             } else if (strcmp("-NOCHECK", argv[i]) == 0) {
                 check_flag = 0;
-            } else if (strcmp("-LOOP", argv[i]) == 0) {
-                LOOP = atoi(argv[++i]);
+            } else if (strcmp("-LOOPS", argv[i]) == 0) {
+                LOOPS = atoi(argv[++i]);
             } else if (strcmp("-TOTALSTEPS", argv[i]) == 0) {
                 TOTALSTEPS = atoi(argv[++i]);
             }
@@ -83,7 +83,6 @@ int main(int argc, char *argv[]) {
             return 1;
         }
     }
-
     n = N0;
     for (p = 0; p < TOTALSTEPS; p++) {
         REAL *x = new REAL[n];
@@ -111,13 +110,13 @@ int main(int argc, char *argv[]) {
             }
             alpha = randomnumber(dummy);
             elapsedtime = 0.0;
-            for (int j = 0; j < LOOP; j++) {
+            for (int j = 0; j < LOOPS; j++) {
                 auto t1 = Clock::now();
                 Raxpy(n, alpha, x, incx, y, incy);
                 auto t2 = Clock::now();
                 elapsedtime = elapsedtime + (double)duration_cast<nanoseconds>(t2 - t1).count() / 1.0e9;
             }
-            elapsedtime = elapsedtime / (double)LOOP;
+            elapsedtime = elapsedtime / (double)LOOPS;
             printf("         n       MFLOPS\n");
             printf("%10d   %10.3f\n", (int)n, (2.0 * (double)n) / elapsedtime * MFLOPS);
         }

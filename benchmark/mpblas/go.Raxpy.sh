@@ -6,6 +6,9 @@ else
     LDPATHPREFIX="LD_LIBRARY_PATH=%%PREFIX%%/lib:$LD_LIBRARY_PATH"
 fi
 
+env $LDPATHPREFIX ./daxpy_ref                    >& log.daxpy.ref
+env $LDPATHPREFIX ./daxpy_openblas               >& log.daxpy.openblas
+
 ####
 MPLIBS="_Float128 _Float64x dd double"
 
@@ -35,9 +38,9 @@ else
     MODELNAME="unknown"
 fi
 
-$SED -i -e "s/%%MODELNAME%%/$MODELNAME/g" Raxpy1.plt
-$SED -i -e "s/%%MODELNAME%%/$MODELNAME/g" Raxpy2.plt
-$SED -i -e "s/%%MODELNAME%%/$MODELNAME/g" Raxpy3.plt
+$SED -e "s/%%MODELNAME%%/$MODELNAME/g" Raxpy1.plt.in > Raxpy1.plt
+$SED -e "s/%%MODELNAME%%/$MODELNAME/g" Raxpy2.plt.in > Raxpy2.plt
+$SED -e "s/%%MODELNAME%%/$MODELNAME/g" Raxpy3.plt.in > Raxpy3.plt
 ####
 
 gnuplot Raxpy1.plt > Raxpy1.pdf
