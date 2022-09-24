@@ -40,8 +40,8 @@ int main(int argc, char *argv[]) {
     double elapsedtime;
     char transa = 'n', transb = 'n';
     int STEPN = 7, STEPM = 7, STEPK = 7, LOOPS = 7, TOTALSTEPS = 428;
-    int m = 1, n = 1, k = 1, int lda, ldb, ldc;
-    int i, ka, kb, p;
+    int m = 1, n = 1, k = 1;
+    int i, ka, kb, p, lda, ldb, ldc;
 
     using Clock = std::chrono::high_resolution_clock;
     using std::chrono::duration_cast;
