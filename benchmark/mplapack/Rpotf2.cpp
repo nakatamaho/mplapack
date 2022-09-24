@@ -40,8 +40,8 @@ int main(int argc, char *argv[]) {
     REAL alpha, beta, mtemp, dummy;
     REAL *dummywork = new REAL[1];
     double elapsedtime;
-    char uplo, normtype;
-    mplapackint N0, STEP, info;
+    char uplo = 'u', normtype = 'm';
+    mplapackint STEP = 1, info;
     mplapackint lda;
     int i, j, n, k, p;
     int check_flag = 1;
@@ -62,22 +62,16 @@ int main(int argc, char *argv[]) {
     double diffr;
 
     // initialization
-    N0 = 1;
-    STEP = 1;
-    uplo = 'u';
-    normtype = 'm';
     if (argc != 1) {
         for (i = 1; i < argc; i++) {
             if (strcmp("-N", argv[i]) == 0) {
-                N0 = atoi(argv[++i]);
+                n = atoi(argv[++i]);
             } else if (strcmp("-STEP", argv[i]) == 0) {
                 STEP = atoi(argv[++i]);
             } else if (strcmp("-U", argv[i]) == 0) {
                 uplo = 'u';
-            } else if (strcmp("-N0", argv[i]) == 0) {
-                N0 = atoi(argv[++i]);
-            } else if (strcmp("-STEP", argv[i]) == 0) {
-                STEP = atoi(argv[++i]);
+            } else if (strcmp("-N", argv[i]) == 0) {
+                n = atoi(argv[++i]);
             } else if (strcmp("-L", argv[i]) == 0) {
                 uplo = 'l';
             } else if (strcmp("-NOCHECK", argv[i]) == 0) {
@@ -109,51 +103,49 @@ int main(int argc, char *argv[]) {
             return 1;
         }
     }
-
-    n = N0;
     for (p = 0; p < TOTALSTEPS; p++) {
         lda = n;
-        REAL *A = new REAL[lda * n];
-        REAL *Ad = new REAL[lda * n];
+        REAL *a = new REAL[lda * n];
+        REAL *a_ref = new REAL[lda * n];
         REAL mOne = -1;
         for (i = 0; i < lda * n; i++) {
-            A[i] = randomnumber(dummy);
+            a[i] = randomnumber(dummy);
         }
         // Positive semidefinite matrix
         for (i = 0; i < n; i++) {
             for (j = 0; j < n; j++) {
                 mtemp = 0.0;
                 for (k = 0; k < n; k++) {
-                    mtemp = mtemp + A[i + k * lda] * A[j + k * lda];
+                    mtemp = mtemp + a[i + k * lda] * a[j + k * lda];
                 }
-                Ad[i + j * lda] = mtemp;
+                a_ref[i + j * lda] = mtemp;
             }
         }
         for (i = 0; i < lda * n; i++) {
-            A[i] = Ad[i];
+            a[i] = a_ref[i];
         }
 
         if (check_flag) {
             auto t1 = Clock::now();
-            Rpotf2(&uplo, n, A, lda, info);
+            Rpotf2(&uplo, n, a, lda, info);
             auto t2 = Clock::now();
             elapsedtime = (double)duration_cast<nanoseconds>(t2 - t1).count() / 1.0e9;
-            (*mplapack_ref)(&uplo, n, Ad, lda, &info);
-            (*raxpy_ref)((mplapackint)(lda * n), mOne, A, (mplapackint)1, Ad, (mplapackint)1);
-            diff = Rlange(&normtype, (mplapackint)lda, (mplapackint)n, Ad, lda, dummywork);
+            (*mplapack_ref)(&uplo, n, a_ref, lda, &info);
+            (*raxpy_ref)((mplapackint)(lda * n), mOne, a, (mplapackint)1, a_ref, (mplapackint)1);
+            diff = Rlange(&normtype, (mplapackint)lda, (mplapackint)n, a_ref, lda, dummywork);
             diffr = cast2double(diff);
             printf("    n     MFLOPS     error   uplo\n");
             printf("%5d %10.3f %5.2e      %c\n", (int)n, ((double)n * (double)n * (double)n / 3.0) / elapsedtime * MFLOPS, diffr, uplo);
         } else {
             auto t1 = Clock::now();
-            Rpotf2(&uplo, n, A, lda, info);
+            Rpotf2(&uplo, n, a, lda, info);
             auto t2 = Clock::now();
             elapsedtime = (double)duration_cast<nanoseconds>(t2 - t1).count() / 1.0e9;
             printf("    n     MFLOPS   uplo\n");
             printf("%5d %10.3f      %c\n", (int)n, ((double)n * (double)n * (double)n / 3.0) / elapsedtime * MFLOPS, uplo);
         }
-        delete[] Ad;
-        delete[] A;
+        delete[] a_ref;
+        delete[] a;
         n = n + STEP;
     }
     if (check_flag)

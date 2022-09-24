@@ -78,9 +78,9 @@ int main(int argc, char *argv[]) {
                 STEPN = atoi(argv[++i]);
             } else if (strcmp("-STEPM", argv[i]) == 0) {
                 STEPM = atoi(argv[++i]);
-            } else if (strcmp("-N0", argv[i]) == 0) {
+            } else if (strcmp("-N", argv[i]) == 0) {
                 n = atoi(argv[++i]);
-            } else if (strcmp("-M0", argv[i]) == 0) {
+            } else if (strcmp("-M", argv[i]) == 0) {
                 m = atoi(argv[++i]);
             } else if (strcmp("-TOTALSTEPS", argv[i]) == 0) {
                 TOTALSTEPS = atoi(argv[++i]);
