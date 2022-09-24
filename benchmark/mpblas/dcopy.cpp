@@ -35,11 +35,9 @@
 #define ___DOUBLE_BENCH___
 #include <mplapack_benchmark.h>
 
-#define TOTALSTEPS 1000
-
 int main(int argc, char *argv[]) {
     int n;
-    int incx = 1, incy = 1, STEP, N0;
+    int incx = 1, incy = 1, STEP = 97, N0 = 1, LOOPS = 3, TOTALSTEPS = 3000;
     double alpha, dummy, *dummywork;
     double mOne = -1;
     double elapsedtime;
@@ -51,18 +49,19 @@ int main(int argc, char *argv[]) {
     using std::chrono::nanoseconds;
 
     // initialization
-    N0 = 1;
-    STEP = 1;
     if (argc != 1) {
         for (i = 1; i < argc; i++) {
             if (strcmp("-N", argv[i]) == 0) {
                 N0 = atoi(argv[++i]);
             } else if (strcmp("-STEP", argv[i]) == 0) {
                 STEP = atoi(argv[++i]);
+            } else if (strcmp("-LOOPS", argv[i]) == 0) {
+                LOOPS = atoi(argv[++i]);
+            } else if (strcmp("-TOTALSTEPS", argv[i]) == 0) {
+                TOTALSTEPS = atoi(argv[++i]);
             }
         }
     }
-
     n = N0;
     for (p = 0; p < TOTALSTEPS; p++) {
         double *x = new double[n];

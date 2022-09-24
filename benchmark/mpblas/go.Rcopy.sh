@@ -6,6 +6,9 @@ else
     LDPATHPREFIX="LD_LIBRARY_PATH=%%PREFIX%%/lib:$LD_LIBRARY_PATH"
 fi
 
+env $LDPATHPREFIX ./dcopy_ref      -STEP 7 -TOTALSTEPS 42857 -LOOPS 3 >& log.dcopy.ref
+env $LDPATHPREFIX ./dcopy_openblas -STEP 7 -TOTALSTEPS 42857 -LOOPS 3 >& log.dcopy.openblas
+
 ####
 MPLIBS="_Float128 _Float64x dd double"
 
@@ -35,9 +38,9 @@ else
     MODELNAME="unknown"
 fi
 
-$SED -i -e "s/%%MODELNAME%%/$MODELNAME/g" Rcopy1.plt
-$SED -i -e "s/%%MODELNAME%%/$MODELNAME/g" Rcopy2.plt
-$SED -i -e "s/%%MODELNAME%%/$MODELNAME/g" Rcopy3.plt
+$SED -e "s/%%MODELNAME%%/$MODELNAME/g" Rcopy1.plt.in > Rcopy1.plt
+$SED -e "s/%%MODELNAME%%/$MODELNAME/g" Rcopy2.plt.in > Rcopy2.plt
+$SED -e "s/%%MODELNAME%%/$MODELNAME/g" Rcopy3.plt.in > Rcopy3.plt
 ####
 
 gnuplot Rcopy1.plt > Rcopy1.pdf

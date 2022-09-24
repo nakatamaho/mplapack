@@ -42,7 +42,6 @@ int main(int argc, char *argv[]) {
     double mOne = -1;
     double elapsedtime;
     int i, p;
-    int check_flag = 1;
 
     using Clock = std::chrono::high_resolution_clock;
     using std::chrono::duration_cast;
