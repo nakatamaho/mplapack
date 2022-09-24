@@ -36,7 +36,7 @@
 
 int main(int argc, char *argv[]) {
     mplapackint n;
-    mplapackint incx = 1, incy = 1, STEP = 97, N0 = 1, LOOPS = 3, TOTALSTEPS = 3000;
+    mplapackint incx = 1, incy = 1, STEP = 97, N0 = 1, LOOPS = 3, TOTALSTEPS = 3092;
     REAL alpha, dummy, *dummywork;
     double elapsedtime;
     int i, p;
@@ -88,6 +88,7 @@ int main(int argc, char *argv[]) {
         REAL *x = new REAL[n];
         REAL *y = new REAL[n];
         REAL *y_ref = new REAL[n];
+        REAL *z = new REAL[n];
         if (check_flag) {
             for (i = 0; i < n; i++) {
                 x[i] = randomnumber(dummy);
@@ -99,7 +100,10 @@ int main(int argc, char *argv[]) {
             auto t2 = Clock::now();
             elapsedtime = (double)duration_cast<nanoseconds>(t2 - t1).count() / 1.0e9;
             (*mpblas_ref)(n, alpha, x, incx, y_ref, incy);
-            diff = Rlange(&normtype, (mplapackint)n, (mplapackint)1, y_ref, 1, dummywork);
+            for (i = 0; i < n; i++) {
+                z[i] = y[i] - y_ref[i];
+            }
+            diff = Rlange(&normtype, (mplapackint)n, (mplapackint)1, z, 1, dummywork);
             diffr = cast2double(diff);
             printf("         n       MFLOPS      error\n");
             printf("%10d   %10.3f   %10.3f\n", (int)n, (2.0 * (double)n) / elapsedtime * MFLOPS, diffr);
@@ -120,6 +124,7 @@ int main(int argc, char *argv[]) {
             printf("         n       MFLOPS     LOOPS\n");
             printf("%10d   %10.3f        %d\n", (int)n, (2.0 * (double)n) / elapsedtime * MFLOPS, (int)LOOPS);
         }
+        delete[] z;
         delete[] y_ref;
         delete[] y;
         delete[] x;

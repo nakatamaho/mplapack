@@ -6,6 +6,9 @@ else
     LDPATHPREFIX="LD_LIBRARY_PATH=%%PREFIX%%/lib:$LD_LIBRARY_PATH"
 fi
 
+env $LDPATHPREFIX ./ddot_ref      -STEP 7 -TOTALSTEPS 42857 -LOOPS 3 >& log.ddot.ref
+env $LDPATHPREFIX ./ddot_openblas -STEP 7 -TOTALSTEPS 42857 -LOOPS 3 >& log.ddot.openblas
+
 ####
 MPLIBS="_Float128 _Float64x dd double"
 
@@ -35,9 +38,9 @@ else
     MODELNAME="unknown"
 fi
 
-$SED -i -e "s/%%MODELNAME%%/$MODELNAME/g" Rdot1.plt
-$SED -i -e "s/%%MODELNAME%%/$MODELNAME/g" Rdot2.plt
-$SED -i -e "s/%%MODELNAME%%/$MODELNAME/g" Rdot3.plt
+$SED -e "s/%%MODELNAME%%/$MODELNAME/g" Rdot1.plt.in > Rdot1.plt
+$SED -e "s/%%MODELNAME%%/$MODELNAME/g" Rdot2.plt.in > Rdot2.plt
+$SED -e "s/%%MODELNAME%%/$MODELNAME/g" Rdot3.plt.in > Rdot3.plt
 ####
 
 gnuplot Rdot1.plt > Rdot1.pdf

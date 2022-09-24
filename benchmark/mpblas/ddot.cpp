@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2010
+ * Copyright (c) 2008-2022
  *	Nakata, Maho
  * 	All rights reserved.
  *
@@ -35,11 +35,9 @@
 #define ___DOUBLE_BENCH___
 #include <mplapack_benchmark.h>
 
-#define TOTALSTEPS 1000
-
 int main(int argc, char *argv[]) {
     int n;
-    int incx = 1, incy = 1, STEP, N0;
+    int incx = 1, incy = 1, STEP = 97, N0 = 1, LOOPS = 3, TOTALSTEPS = 3000;
     double dummy, ans, ans_ref;
     double mOne = -1;
     double elapsedtime;
@@ -51,20 +49,19 @@ int main(int argc, char *argv[]) {
     using std::chrono::nanoseconds;
 
     // initialization
-    N0 = 1;
-    STEP = 1;
     if (argc != 1) {
         for (i = 1; i < argc; i++) {
             if (strcmp("-N", argv[i]) == 0) {
                 N0 = atoi(argv[++i]);
             } else if (strcmp("-STEP", argv[i]) == 0) {
                 STEP = atoi(argv[++i]);
-            } else if (strcmp("-NOCHECK", argv[i]) == 0) {
-                check_flag = 0;
+            } else if (strcmp("-LOOPS", argv[i]) == 0) {
+                LOOPS = atoi(argv[++i]);
+            } else if (strcmp("-TOTALSTEPS", argv[i]) == 0) {
+                TOTALSTEPS = atoi(argv[++i]);
             }
         }
     }
-
     n = N0;
     for (p = 0; p < TOTALSTEPS; p++) {
         double *x = new double[n];
@@ -73,12 +70,16 @@ int main(int argc, char *argv[]) {
             x[i] = randomnumber(dummy);
             y[i] = randomnumber(dummy);
         }
-        auto t1 = Clock::now();
-        ans = ddot_f77(&n, x, &incx, y, &incy);
-        auto t2 = Clock::now();
-        elapsedtime = elapsedtime + (double)duration_cast<nanoseconds>(t2 - t1).count() / 1.0e9;
-        printf("         n       MFLOPS\n");
-        printf("%10d   %10.3f\n", (int)n, (2.0 * (double)n) / elapsedtime * MFLOPS);
+        elapsedtime = 0.0;
+        for (int j = 0; j < LOOPS; j++) {
+            auto t1 = Clock::now();
+            ans = ddot_f77(&n, x, &incx, y, &incy);
+            auto t2 = Clock::now();
+            elapsedtime = elapsedtime + (double)duration_cast<nanoseconds>(t2 - t1).count() / 1.0e9;
+        }
+        elapsedtime = elapsedtime / (double)LOOPS;
+        printf("         n       MFLOPS    loops\n");
+        printf("%10d   %10.3f       %d\n", (int)n, (2.0 * (double)n) / elapsedtime * MFLOPS, LOOPS);
         delete[] y;
         delete[] x;
         n = n + STEP;
