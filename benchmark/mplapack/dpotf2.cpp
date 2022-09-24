@@ -36,13 +36,24 @@
 #define ___DOUBLE_BENCH___
 #include <mplapack_benchmark.h>
 
+// https://netlib.org/lapack/lawnspdf/lawn41.pdf p.120
+double flops_potrf(int n_i) {
+    double adds, muls, flops;
+    double n;
+    n = (double)n_i;
+    muls = (1. / 6.) * n * n * n + 0.5 * n * n + (1. / 3.) * n;
+    adds = (1. / 6.) * n * n * n - (1. / 6.) * n;
+    flops = muls + adds;
+    return flops;
+}
+
 int main(int argc, char *argv[]) {
     double mtemp, dummy;
     double elapsedtime;
     char uplo = 'u';
-    int STEP = 1, TOTALSTEPS = 400, info;
+    int STEP = 1, TOTALSTEPS = 400, n = 1, info;
     int lda;
-    int i, j, n, k, p;
+    int i, j, k, p;
 
     using Clock = std::chrono::high_resolution_clock;
     using std::chrono::duration_cast;
@@ -64,7 +75,6 @@ int main(int argc, char *argv[]) {
             }
         }
     }
-
     for (p = 0; p < TOTALSTEPS; p++) {
         lda = n;
         double *a = new double[lda * n];
@@ -85,13 +95,12 @@ int main(int argc, char *argv[]) {
         for (i = 0; i < lda * n; i++) {
             a[i] = a_ref[i];
         }
-
         auto t1 = Clock::now();
         dpotf2_f77(&uplo, &n, a, &lda, &info);
         auto t2 = Clock::now();
         elapsedtime = (double)duration_cast<nanoseconds>(t2 - t1).count() / 1.0e9;
         printf("    n     MFLOPS   uplo\n");
-        printf("%5d %10.3f      %c\n", (int)n, ((double)n * (double)n * (double)n / 3.0) / elapsedtime * MFLOPS, uplo);
+        printf("%5d %10.3f      %c\n", (int)n, flops_potrf(n) / elapsedtime * MFLOPS, uplo);
         delete[] a_ref;
         delete[] a;
         n = n + STEP;

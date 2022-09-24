@@ -36,6 +36,17 @@
 #define ___DOUBLE_BENCH___
 #include <mplapack_benchmark.h>
 
+// https://netlib.org/lapack/lawnspdf/lawn41.pdf p.120
+double flops_potrf(int n_i) {
+    double adds, muls, flops;
+    double n;
+    n = (double)n_i;
+    muls = (1. / 6.) * n * n * n + 0.5 * n * n + (1. / 3.) * n;
+    adds = (1. / 6.) * n * n * n - (1. / 6.) * n;
+    flops = muls + adds;
+    return flops;
+}
+
 int main(int argc, char *argv[]) {
     double mtemp, dummy;
     double elapsedtime;
@@ -89,7 +100,7 @@ int main(int argc, char *argv[]) {
         auto t2 = Clock::now();
         elapsedtime = (double)duration_cast<nanoseconds>(t2 - t1).count() / 1.0e9;
         printf("    n     MFLOPS   uplo\n");
-        printf("%5d %10.3f      %c\n", (int)n, ((double)n * (double)n * (double)n / 3.0) / elapsedtime * MFLOPS, uplo);
+        printf("%5d %10.3f      %c\n", (int)n, flops_potrf(n) / elapsedtime * MFLOPS, uplo);
         delete[] a_ref;
         delete[] a;
         n = n + STEP;
