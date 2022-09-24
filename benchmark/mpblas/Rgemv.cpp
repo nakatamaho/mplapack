@@ -141,7 +141,7 @@ int main(int argc, char *argv[]) {
             Rgemv(&trans, m, n, alpha, a, m, x, (mplapackint)1, beta, y, (mplapackint)1);
             auto t2 = Clock::now();
             elapsedtime = (double)duration_cast<nanoseconds>(t2 - t1).count() / 1.0e9;
-            (*mpblas_ref)(&trans, m, n, alpha, A, m, x, (mplapackint)1, beta, yref, (mplapackint)1);
+            (*mpblas_ref)(&trans, m, n, alpha, a, m, x, (mplapackint)1, beta, yref, (mplapackint)1);
             (*raxpy_ref)(l, mOne, y, (mplapackint)1, yref, (mplapackint)1);
             diff = Rlange(&normtype, (mplapackint)l, (mplapackint)1, yref, 1, dummywork);
             diffr = cast2double(diff);

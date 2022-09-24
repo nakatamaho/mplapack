@@ -35,14 +35,12 @@
 #define ___DOUBLE_BENCH___
 #include <mplapack_benchmark.h>
 
-#define TOTALSTEPS 1000
-
 int main(int argc, char *argv[]) {
     double alpha, beta, dummy;
     double *dummywork;
     double elapsedtime;
     char transa, transb, normtype;
-    int N0, M0, K0, STEPN = 7, STEPM = 7, STEPK = 7, LOOP = 7, TOTALSTEPS = 428;
+    int N0, M0, K0, STEPN = 7, STEPM = 7, STEPK = 7, LOOPS = 7, TOTALSTEPS = 428;
     int lda, ldb, ldc;
     int i, j, m, n, k, ka, kb, p, q;
 

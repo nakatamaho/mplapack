@@ -49,7 +49,8 @@ double flops_gemv(int m_i, int n_i) {
 
 int main(int argc, char *argv[]) {
     int k, l, m, n;
-    int STEPN = 7, STEPM = 7, N0, M0, LOOP = 3, TOTALSTEPS = 283;
+    int STEPN = 7, STEPM = 7, N0, M0, LOOPS = 3, TOTALSTEPS = 283;
+    int incx = 1, incy = 1;
     double alpha, beta, dummy, *dummywork;
     double mOne = -1;
     double elapsedtime, t1, t2;
