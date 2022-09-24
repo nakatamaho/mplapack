@@ -38,9 +38,9 @@ else
     MODELNAME="unknown"
 fi
 
-$SED -i -e "s/%%MODELNAME%%/$MODELNAME/g" Rgemm1.plt
-$SED -i -e "s/%%MODELNAME%%/$MODELNAME/g" Rgemm2.plt
-$SED -i -e "s/%%MODELNAME%%/$MODELNAME/g" Rgemm3.plt
+$SED -e "s/%%MODELNAME%%/$MODELNAME/g" Rgemm1.plt.in > Rgemm1.plt
+$SED -e "s/%%MODELNAME%%/$MODELNAME/g" Rgemm2.plt.in > Rgemm2.plt
+$SED -e "s/%%MODELNAME%%/$MODELNAME/g" Rgemm3.plt.in > Rgemm3.plt
 ####
 
 gnuplot Rgemm1.plt > Rgemm1.pdf

@@ -35,9 +35,9 @@ else
     MODELNAME="unknown"
 fi
 
-$SED -i -e "s/%%MODELNAME%%/$MODELNAME/g" Rsyrk1.plt
-$SED -i -e "s/%%MODELNAME%%/$MODELNAME/g" Rsyrk2.plt
-$SED -i -e "s/%%MODELNAME%%/$MODELNAME/g" Rsyrk3.plt
+$SED -e "s/%%MODELNAME%%/$MODELNAME/g" Rsyrk1.plt.in > Rsyrk1.plt
+$SED -e "s/%%MODELNAME%%/$MODELNAME/g" Rsyrk2.plt.in > Rsyrk2.plt
+$SED -e "s/%%MODELNAME%%/$MODELNAME/g" Rsyrk3.plt.in > Rsyrk3.plt
 ####
 
 gnuplot Rsyrk1.plt > Rsyrk1.pdf

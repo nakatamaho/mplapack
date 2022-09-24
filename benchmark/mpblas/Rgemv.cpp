@@ -111,7 +111,6 @@ int main(int argc, char *argv[]) {
             return 1;
         }
     }
-
     n = N0;
     m = M0;
     for (p = 0; p < TOTALSTEPS; p++) {
@@ -125,7 +124,7 @@ int main(int argc, char *argv[]) {
         REAL *x = new REAL[k];
         REAL *y = new REAL[l];
         REAL *yref = new REAL[l];
-        REAL *A = new REAL[n * m];
+        REAL *a = new REAL[n * m];
         if (check_flag) {
             for (i = 0; i < k; i++) {
                 x[i] = randomnumber(dummy);
@@ -134,12 +133,12 @@ int main(int argc, char *argv[]) {
                 y[i] = yref[i] = randomnumber(dummy);
             }
             for (i = 0; i < k * l; i++) {
-                A[i] = randomnumber(dummy);
+                a[i] = randomnumber(dummy);
             }
             alpha = randomnumber(dummy);
             beta = randomnumber(dummy);
             auto t1 = Clock::now();
-            Rgemv(&trans, m, n, alpha, A, m, x, (mplapackint)1, beta, y, (mplapackint)1);
+            Rgemv(&trans, m, n, alpha, a, m, x, (mplapackint)1, beta, y, (mplapackint)1);
             auto t2 = Clock::now();
             elapsedtime = (double)duration_cast<nanoseconds>(t2 - t1).count() / 1.0e9;
             (*mpblas_ref)(&trans, m, n, alpha, A, m, x, (mplapackint)1, beta, yref, (mplapackint)1);
@@ -156,14 +155,14 @@ int main(int argc, char *argv[]) {
                 y[i] = yref[i] = randomnumber(dummy);
             }
             for (i = 0; i < k * l; i++) {
-                A[i] = randomnumber(dummy);
+                a[i] = randomnumber(dummy);
             }
             alpha = randomnumber(dummy);
             beta = randomnumber(dummy);
             elapsedtime = 0.0;
             for (int j = 0; j < LOOP; j++) {
                 auto t1 = Clock::now();
-                Rgemv(&trans, m, n, alpha, A, m, x, (mplapackint)1, beta, y, (mplapackint)1);
+                Rgemv(&trans, m, n, alpha, a, m, x, (mplapackint)1, beta, y, (mplapackint)1);
                 auto t2 = Clock::now();
                 elapsedtime = elapsedtime + (double)duration_cast<nanoseconds>(t2 - t1).count() / 1.0e9;
             }
@@ -174,7 +173,7 @@ int main(int argc, char *argv[]) {
         delete[] yref;
         delete[] y;
         delete[] x;
-        delete[] A;
+        delete[] a;
         n = n + STEPN;
         m = m + STEPM;
     }

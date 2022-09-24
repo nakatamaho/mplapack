@@ -6,6 +6,9 @@ else
     LDPATHPREFIX="LD_LIBRARY_PATH=%%PREFIX%%/lib:$LD_LIBRARY_PATH"
 fi
 
+env $LDPATHPREFIX ./dgemv_ref       >& log.dgemv.ref
+env $LDPATHPREFIX ./dgemv_openblas  >& log.dgemv.openblas
+
 ####
 MPLIBS="_Float128 _Float64x dd double"
 
@@ -35,9 +38,9 @@ else
     MODELNAME="unknown"
 fi
 
-$SED -i -e "s/%%MODELNAME%%/$MODELNAME/g" Rgemv1.plt
-$SED -i -e "s/%%MODELNAME%%/$MODELNAME/g" Rgemv2.plt
-$SED -i -e "s/%%MODELNAME%%/$MODELNAME/g" Rgemv3.plt
+$SED -e "s/%%MODELNAME%%/$MODELNAME/g" Rgemv1.plt.in > Rgemv1.plt
+$SED -e "s/%%MODELNAME%%/$MODELNAME/g" Rgemv2.plt.in > Rgemv2.plt
+$SED -e "s/%%MODELNAME%%/$MODELNAME/g" Rgemv3.plt.in > Rgemv3.plt
 ####
 
 gnuplot Rgemv1.plt > Rgemv1.pdf

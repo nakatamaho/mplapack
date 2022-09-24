@@ -5,9 +5,9 @@ Rcopy1.plt.in Rcopy2.plt.in Rcopy3.plt.in \
 Rdot1.plt.in  Rdot2.plt.in  Rdot3.plt.in \
 Rgemm1.plt.in Rgemm2.plt.in Rgemm3.plt.in \
 Rgemm_cuda.plt.in \
-Rgemv1.plt Rgemv2.plt Rgemv3.plt \
-Rsyrk1.plt Rsyrk2.plt Rsyrk3.plt \
-Rsyrk_cuda.plt \
+Rgemv1.plt.in Rgemv2.plt.in Rgemv3.plt.in \
+Rsyrk1.plt.in Rsyrk2.plt.in Rsyrk3.plt.in \
+Rsyrk_cuda.plt.in \
 go.Raxpy.sh go.Rcopy.sh go.Rdot.sh go.Rgemm.sh \
 go.Rgemm_cuda.sh \
 go.Rgemv.sh go.Rsyrk.sh \
