@@ -52,7 +52,7 @@ int main(int argc, char *argv[]) {
     REAL *dummywork;
     double elapsedtime;
     char transa, transb, normtype;
-    int N0, M0, K0, STEPN = 3, STEPM = 3, STEPK = 3, LOOP = 3, TOTALSTEPS = 400;
+    int N0, M0, K0, STEPN = 3, STEPM = 3, STEPK = 3, LOOPS = 3, TOTALSTEPS = 333;
     int lda, ldb, ldc;
     int i, m, n, k, ka, kb, p;
     int check_flag = 1;
@@ -102,8 +102,8 @@ int main(int argc, char *argv[]) {
                 transb = 'n';
             } else if (strcmp("-NOCHECK", argv[i]) == 0) {
                 check_flag = 0;
-            } else if (strcmp("-LOOP", argv[i]) == 0) {
-                LOOP = atoi(argv[++i]);
+            } else if (strcmp("-LOOPS", argv[i]) == 0) {
+                LOOPS = atoi(argv[++i]);
             } else if (strcmp("-TOTALSTEPS", argv[i]) == 0) {
                 TOTALSTEPS = atoi(argv[++i]);
             }
@@ -148,49 +148,49 @@ int main(int argc, char *argv[]) {
         }
         ldc = m;
 
-        REAL *A = new REAL[lda * ka];
-        REAL *B = new REAL[ldb * kb];
-        REAL *C = new REAL[ldc * n];
-        REAL *Cd = new REAL[ldc * n];
+        REAL *a = new REAL[lda * ka];
+        REAL *b = new REAL[ldb * kb];
+        REAL *c = new REAL[ldc * n];
+        REAL *c_ref = new REAL[ldc * n];
         REAL mOne = -1;
         alpha = randomnumber(dummy);
         beta = randomnumber(dummy);
         for (i = 0; i < lda * ka; i++) {
-            A[i] = randomnumber(dummy);
+            a[i] = randomnumber(dummy);
         }
         for (i = 0; i < ldb * kb; i++) {
-            B[i] = randomnumber(dummy);
+            b[i] = randomnumber(dummy);
         }
         for (i = 0; i < ldc * n; i++) {
-            C[i] = Cd[i] = randomnumber(dummy);
+            c[i] = c_ref[i] = randomnumber(dummy);
         }
         if (check_flag) {
             auto t1 = Clock::now();
-            Rgemm(&transa, &transb, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc);
+            Rgemm(&transa, &transb, m, n, k, alpha, a, lda, b, ldb, beta, c, ldc);
             auto t2 = Clock::now();
             elapsedtime = (double)duration_cast<nanoseconds>(t2 - t1).count() / 1.0e9;
-            (*mpblas_ref)(&transa, &transb, m, n, k, alpha, A, lda, B, ldb, beta, Cd, ldc);
-            (*raxpy_ref)((mplapackint)(ldc * n), mOne, C, (mplapackint)1, Cd, (mplapackint)1);
-            diff = Rlange(&normtype, (mplapackint)ldc, (mplapackint)n, Cd, ldc, dummywork);
+            (*mpblas_ref)(&transa, &transb, m, n, k, alpha, a, lda, b, ldb, beta, c_ref, ldc);
+            (*raxpy_ref)((mplapackint)(ldc * n), mOne, c, (mplapackint)1, c_ref, (mplapackint)1);
+            diff = Rlange(&normtype, (mplapackint)ldc, (mplapackint)n, c_ref, ldc, dummywork);
             diffr = cast2double(diff);
             printf("    m     n     k       MFLOPS     error   transa   transb\n");
             printf("%5d %5d %5d  %10.3f    %5.2e       %c        %c\n", (int)m, (int)n, (int)k, flops_gemm(k, m, n) / elapsedtime * MFLOPS, diffr, transa, transb);
         } else {
             elapsedtime = 0.0;
-            for (int j = 0; j < LOOP; j++) {
+            for (int j = 0; j < LOOPS; j++) {
                 auto t1 = Clock::now();
-                Rgemm(&transa, &transb, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc);
+                Rgemm(&transa, &transb, m, n, k, alpha, a, lda, b, ldb, beta, c, ldc);
                 auto t2 = Clock::now();
                 elapsedtime = elapsedtime + (double)duration_cast<nanoseconds>(t2 - t1).count() / 1.0e9;
             }
-            elapsedtime = elapsedtime / (double)LOOP;
+            elapsedtime = elapsedtime / (double)LOOPS;
             printf("    m     n     k     MFLOPS    transa   transb\n");
             printf("%5d %5d %5d %10.3f         %c        %c\n", (int)m, (int)n, (int)k, flops_gemm(k, m, n) / elapsedtime * MFLOPS, transa, transb);
         }
-        delete[] Cd;
-        delete[] C;
-        delete[] B;
-        delete[] A;
+        delete[] c_ref;
+        delete[] c;
+        delete[] b;
+        delete[] a;
         m = m + STEPM;
         n = n + STEPN;
         k = k + STEPK;

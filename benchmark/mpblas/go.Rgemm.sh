@@ -6,6 +6,9 @@ else
     LDPATHPREFIX="LD_LIBRARY_PATH=%%PREFIX%%/lib:$LD_LIBRARY_PATH"
 fi
 
+env $LDPATHPREFIX ./dgemm_ref      -STEP 7 -TOTALSTEPS 714 -LOOPS 3 >& log.dgemm.ref
+env $LDPATHPREFIX ./dgemm_openblas -STEP 7 -TOTALSTEPS 714 -LOOPS 3 >& log.dgemm.openblas
+
 ####
 MPLIBS="_Float64x dd double _Float128"
 

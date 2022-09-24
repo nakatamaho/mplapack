@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2010
+ * Copyright (c) 2008-2022
  *	Nakata, Maho
  * 	All rights reserved.
  *
@@ -42,7 +42,7 @@ int main(int argc, char *argv[]) {
     double *dummywork;
     double elapsedtime;
     char transa, transb, normtype;
-    int N0, M0, K0, STEPN, STEPM, STEPK;
+    int N0, M0, K0, STEPN = 7, STEPM = 7, STEPK = 7, LOOP = 7, TOTALSTEPS = 428;
     int lda, ldb, ldc;
     int i, j, m, n, k, ka, kb, p, q;
 
@@ -79,6 +79,10 @@ int main(int argc, char *argv[]) {
             } else if (strcmp("-TN", argv[i]) == 0) {
                 transa = 't';
                 transb = 'n';
+            } else if (strcmp("-LOOPS", argv[i]) == 0) {
+                LOOPS = atoi(argv[++i]);
+            } else if (strcmp("-TOTALSTEPS", argv[i]) == 0) {
+                TOTALSTEPS = atoi(argv[++i]);
             }
         }
     }
@@ -103,30 +107,30 @@ int main(int argc, char *argv[]) {
         }
         ldc = m;
 
-        double *A = new double[lda * ka];
-        double *B = new double[ldb * kb];
-        double *C = new double[ldc * n];
+        double *a = new double[lda * ka];
+        double *b = new double[ldb * kb];
+        double *c = new double[ldc * n];
         double mOne = -1;
         alpha = randomnumber(dummy);
         beta = randomnumber(dummy);
         for (i = 0; i < lda * ka; i++) {
-            A[i] = randomnumber(dummy);
+            a[i] = randomnumber(dummy);
         }
         for (i = 0; i < ldb * kb; i++) {
-            B[i] = randomnumber(dummy);
+            b[i] = randomnumber(dummy);
         }
         for (i = 0; i < ldc * n; i++) {
-            C[i] = randomnumber(dummy);
+            c[i] = randomnumber(dummy);
         }
         auto t1 = Clock::now();
-        dgemm_f77(&transa, &transb, &m, &n, &k, &alpha, A, &lda, B, &ldb, &beta, C, &ldc);
+        dgemm_f77(&transa, &transb, &m, &n, &k, &alpha, a, &lda, b, &ldb, &beta, c, &ldc);
         auto t2 = Clock::now();
         elapsedtime = (double)duration_cast<nanoseconds>(t2 - t1).count() / 1.0e9;
         printf("    m     n     k     MFLOPS    transa   transb\n");
         printf("%5d %5d %5d %10.3f         %c        %c\n", (int)m, (int)n, (int)k, (2.0 * (double)m * (double)n * (double)k + 2.0 * (double)m * (double)n) / elapsedtime * MFLOPS, transa, transb);
-        delete[] C;
-        delete[] B;
-        delete[] A;
+        delete[] c;
+        delete[] b;
+        delete[] a;
         m = m + STEPM;
         n = n + STEPN;
         k = k + STEPK;

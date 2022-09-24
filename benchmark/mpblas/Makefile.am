@@ -2,9 +2,9 @@ bench_PROGRAMS =
 bench_DATA = \
 Raxpy1.plt.in Raxpy2.plt.in Raxpy3.plt.in \
 Rcopy1.plt.in Rcopy2.plt.in Rcopy3.plt.in \
-Rdot1.plt.in Rdot2.plt.in Rdot3.plt.in \
-Rgemm1.plt Rgemm2.plt Rgemm3.plt \
-Rgemm_cuda.plt \
+Rdot1.plt.in  Rdot2.plt.in  Rdot3.plt.in \
+Rgemm1.plt.in Rgemm2.plt.in Rgemm3.plt.in \
+Rgemm_cuda.plt.in \
 Rgemv1.plt Rgemv2.plt Rgemv3.plt \
 Rsyrk1.plt Rsyrk2.plt Rsyrk3.plt \
 Rsyrk_cuda.plt \
