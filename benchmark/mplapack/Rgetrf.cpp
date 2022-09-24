@@ -48,12 +48,12 @@ double flops_getrf(mplapackint m_i, mplapackint n_i) {
 
 int main(int argc, char *argv[]) {
     REAL alpha, beta, mtemp, dummy;
-    REAL *dummywork;
+    REAL *dummywork = new REAL[1];
     double elapsedtime;
-    char uplo, normtype;
-    mplapackint N0, M0, STEPN, STEPM, TOTALSTEPS = 100;
+    mplapackint STEPN = 1, STEPM = 1, TOTALSTEPS = 100;
     mplapackint info, lda;
-    int i, j, m, n, k, ka, kb, p, q;
+    int i, m = 1, n = 1, p;
+    char normtype = 'm';
     int check_flag = 1;
 
     using Clock = std::chrono::high_resolution_clock;
@@ -72,10 +72,6 @@ int main(int argc, char *argv[]) {
     double diffr;
 
     // initialization
-    N0 = 1;
-    M0 = 1;
-    STEPN = 1;
-    STEPM = 1;
     if (argc != 1) {
         for (i = 1; i < argc; i++) {
             if (strcmp("-STEPN", argv[i]) == 0) {
@@ -83,11 +79,9 @@ int main(int argc, char *argv[]) {
             } else if (strcmp("-STEPM", argv[i]) == 0) {
                 STEPM = atoi(argv[++i]);
             } else if (strcmp("-N0", argv[i]) == 0) {
-                N0 = atoi(argv[++i]);
+                n = atoi(argv[++i]);
             } else if (strcmp("-M0", argv[i]) == 0) {
-                M0 = atoi(argv[++i]);
-            } else if (strcmp("-NOCHECK", argv[i]) == 0) {
-                check_flag = 0;
+                m = atoi(argv[++i]);
             } else if (strcmp("-TOTALSTEPS", argv[i]) == 0) {
                 TOTALSTEPS = atoi(argv[++i]);
             }
@@ -117,43 +111,40 @@ int main(int argc, char *argv[]) {
             return 1;
         }
     }
-
-    n = N0;
-    m = M0;
     for (p = 0; p < TOTALSTEPS; p++) {
         lda = m;
-        REAL *A = new REAL[lda * n];
-        REAL *Aref = new REAL[lda * n];
+        REAL *a = new REAL[lda * n];
+        REAL *a_ref = new REAL[lda * n];
         mplapackint *ipiv = new mplapackint[min(m, n)];
-        mplapackint *ipivd = new mplapackint[min(m, n)];
+        mplapackint *ipiv_ref = new mplapackint[min(m, n)];
         REAL mOne = -1;
         for (i = 0; i < lda * n; i++) {
-            A[i] = Aref[i] = randomnumber(dummy);
+            a[i] = a_ref[i] = randomnumber(dummy);
         }
 
         if (check_flag) {
             auto t1 = Clock::now();
-            Rgetrf(m, n, A, lda, ipiv, info);
+            Rgetrf(m, n, a, lda, ipiv, info);
             auto t2 = Clock::now();
             elapsedtime = (double)duration_cast<nanoseconds>(t2 - t1).count() / 1.0e9;
-            (*mplapack_ref)(m, n, Aref, lda, ipivd, &info);
-            (*raxpy_ref)((mplapackint)(lda * n), mOne, A, (mplapackint)1, Aref, (mplapackint)1);
-            diff = Rlange(&normtype, (mplapackint)lda, (mplapackint)n, Aref, lda, dummywork);
+            (*mplapack_ref)(m, n, a_ref, lda, ipiv_ref, &info);
+            (*raxpy_ref)((mplapackint)(lda * n), mOne, a, (mplapackint)1, a_ref, (mplapackint)1);
+            diff = Rlange(&normtype, (mplapackint)lda, (mplapackint)n, a_ref, lda, dummywork);
             diffr = cast2double(diff);
             printf("    n     m     MFLOPS   error\n");
             printf("%5d %5d %10.3f %5.2e\n", (int)n, (int)m, flops_getrf(m, n) / elapsedtime * MFLOPS, diffr);
         } else {
             auto t1 = Clock::now();
-            Rgetrf(m, n, A, lda, ipiv, info);
+            Rgetrf(m, n, a, lda, ipiv, info);
             auto t2 = Clock::now();
             elapsedtime = elapsedtime + (double)duration_cast<nanoseconds>(t2 - t1).count() / 1.0e9;
             printf("    n     m     MFLOPS\n");
             printf("%5d %5d %10.3f\n", (int)n, (int)m, flops_getrf(m, n) / elapsedtime * MFLOPS);
         }
-        delete[] ipivd;
+        delete[] ipiv_ref;
         delete[] ipiv;
-        delete[] Aref;
-        delete[] A;
+        delete[] a_ref;
+        delete[] a;
         n = n + STEPN;
         m = m + STEPM;
     }

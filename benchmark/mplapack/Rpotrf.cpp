@@ -48,12 +48,12 @@ double flops_potrf(mplapackint n_i) {
 
 int main(int argc, char *argv[]) {
     REAL alpha, beta, mtemp, dummy;
-    REAL *dummywork;
+    REAL *dummywork = new REAL[1];
     double elapsedtime;
-    char uplo, normtype;
-    mplapackint N0, STEP, TOTALSTEPS = 100;
+    char uplo = 'u', normtype = 'm';
+    mplapackint STEP = 1, TOTALSTEPS = 100;
     mplapackint info, lda;
-    int i, j, m, n, k, ka, kb, p, q;
+    int i, j, n = 1, k, p;
     int check_flag = 1;
 
     using Clock = std::chrono::high_resolution_clock;
@@ -72,20 +72,14 @@ int main(int argc, char *argv[]) {
     double diffr;
 
     // initialization
-    N0 = 1;
-    STEP = 1;
-    uplo = 'u';
-    normtype = 'm';
     if (argc != 1) {
         for (i = 1; i < argc; i++) {
             if (strcmp("-N", argv[i]) == 0) {
-                N0 = atoi(argv[++i]);
+                n = atoi(argv[++i]);
             } else if (strcmp("-STEP", argv[i]) == 0) {
                 STEP = atoi(argv[++i]);
             } else if (strcmp("-U", argv[i]) == 0) {
                 uplo = 'u';
-            } else if (strcmp("-N0", argv[i]) == 0) {
-                N0 = atoi(argv[++i]);
             } else if (strcmp("-STEP", argv[i]) == 0) {
                 STEP = atoi(argv[++i]);
             } else if (strcmp("-L", argv[i]) == 0) {
@@ -122,7 +116,6 @@ int main(int argc, char *argv[]) {
         }
     }
 
-    n = N0;
     for (p = 0; p < TOTALSTEPS; p++) {
         lda = n;
         REAL *A = new REAL[lda * n];

@@ -38,12 +38,12 @@
 
 int main(int argc, char *argv[]) {
     REAL alpha, beta, mtemp, dummy;
-    REAL *dummywork;
+    REAL *dummywork = new REAL[1];
     double elapsedtime;
     char uplo, normtype;
     mplapackint N0, STEP, info;
     mplapackint lda;
-    int i, j, m, n, k, ka, kb, p, q;
+    int i, j, n, k, p;
     int check_flag = 1;
 
     using Clock = std::chrono::high_resolution_clock;

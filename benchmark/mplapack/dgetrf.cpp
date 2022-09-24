@@ -48,41 +48,33 @@ double flops_getrf(int m_i, int n_i) {
 }
 
 int main(int argc, char *argv[]) {
-    double alpha, beta, dummy;
-    double *dummywork;
+    double dummy;
     double elapsedtime;
-    char uplo, normtype;
-    int N0, M0, K0, STEPN = 3, STEPM = 3, STEPK = 3, TOTALSTEPS = 400;
-    int lda, ldb, ldc, info;
-    int i, j, m, n, k, ka, kb, p, q;
+    int STEPN = 3, STEPM = 3, TOTALSTEPS = 400;
+    int m = 1, n = 1;
+    int lda, info;
+    int i, p;
 
     using Clock = std::chrono::high_resolution_clock;
     using std::chrono::duration_cast;
     using std::chrono::nanoseconds;
 
     // initialization
-    N0 = 1;
-    M0 = 1;
-    STEPN = 1;
-    STEPM = 1;
     if (argc != 1) {
         for (i = 1; i < argc; i++) {
             if (strcmp("-STEPN", argv[i]) == 0) {
                 STEPN = atoi(argv[++i]);
             } else if (strcmp("-STEPM", argv[i]) == 0) {
                 STEPM = atoi(argv[++i]);
-            } else if (strcmp("-N0", argv[i]) == 0) {
-                N0 = atoi(argv[++i]);
-            } else if (strcmp("-M0", argv[i]) == 0) {
-                M0 = atoi(argv[++i]);
+            } else if (strcmp("-N", argv[i]) == 0) {
+                n = atoi(argv[++i]);
+            } else if (strcmp("-M", argv[i]) == 0) {
+                m = atoi(argv[++i]);
             } else if (strcmp("-TOTALSTEPS", argv[i]) == 0) {
                 TOTALSTEPS = atoi(argv[++i]);
             }
         }
     }
-
-    n = N0;
-    m = M0;
     for (p = 0; p < TOTALSTEPS; p++) {
         lda = m;
         double *a = new double[lda * n];

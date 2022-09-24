@@ -15,6 +15,6 @@ else
     MODELNAME="unknown"
 fi
 
-$SED -i -e "s/%%GPU%%/$MODELNAME/g" Rgetrf_cuda.plt
+$SED -e "s/%%GPU%%/$MODELNAME/g" Rgetrf_cuda.plt.in > Rgetrf_cuda.plt
 
 gnuplot Rgetrf_cuda.plt > Rgetrf_cuda.pdf

@@ -6,6 +6,9 @@ else
     LDPATHPREFIX="LD_LIBRARY_PATH=%%PREFIX%%/lib:$LD_LIBRARY_PATH"
 fi
 
+env $LDPATHPREFIX ./dgetrf_ref       -TOTALSTEPS 500 -STEPM 7 -STEPN 7 >& log.dgetrf.ref
+env $LDPATHPREFIX ./dgetrf_openblas  -TOTALSTEPS 500 -STEPM 7 -STEPN 7 >& log.dgetrf.openblas
+
 ####
 MPLIBS="_Float64x dd double _Float128"
 
@@ -35,9 +38,9 @@ else
     MODELNAME="unknown"
 fi
 
-$SED -i -e "s/%%MODELNAME%%/$MODELNAME/g" Rgetrf1.plt
-$SED -i -e "s/%%MODELNAME%%/$MODELNAME/g" Rgetrf2.plt
-$SED -i -e "s/%%MODELNAME%%/$MODELNAME/g" Rgetrf3.plt
+$SED -e "s/%%MODELNAME%%/$MODELNAME/g" Rgetrf1.plt.in > Rgetrf1.plt
+$SED -e "s/%%MODELNAME%%/$MODELNAME/g" Rgetrf2.plt.in > Rgetrf2.plt
+$SED -e "s/%%MODELNAME%%/$MODELNAME/g" Rgetrf3.plt.in > Rgetrf3.plt
 ####
 
 gnuplot Rgetrf1.plt > Rgetrf1.pdf
