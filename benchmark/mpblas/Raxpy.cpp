@@ -35,13 +35,13 @@
 #include <mplapack_benchmark.h>
 
 int main(int argc, char *argv[]) {
-    mplapackint n;
-    mplapackint incx = 1, incy = 1, STEP = 97, N0 = 1, LOOPS = 3, TOTALSTEPS = 3092;
-    REAL alpha, dummy, *dummywork;
+    mplapackint n = 1;
+    mplapackint incx = 1, incy = 1, STEP = 97, LOOPS = 3, TOTALSTEPS = 3092;
+    char normtype = 'm';
+    REAL alpha, dummy, *dummywork = new REAL[1];
     double elapsedtime;
     int i, p;
     int check_flag = 1;
-    char normtype = 'm';
 
     using Clock = std::chrono::high_resolution_clock;
     using std::chrono::duration_cast;
@@ -59,7 +59,7 @@ int main(int argc, char *argv[]) {
     if (argc != 1) {
         for (i = 1; i < argc; i++) {
             if (strcmp("-N", argv[i]) == 0) {
-                N0 = atoi(argv[++i]);
+                n = atoi(argv[++i]);
             } else if (strcmp("-STEP", argv[i]) == 0) {
                 STEP = atoi(argv[++i]);
             } else if (strcmp("-NOCHECK", argv[i]) == 0) {
@@ -83,7 +83,6 @@ int main(int argc, char *argv[]) {
             return 1;
         }
     }
-    n = N0;
     for (p = 0; p < TOTALSTEPS; p++) {
         REAL *x = new REAL[n];
         REAL *y = new REAL[n];

@@ -35,9 +35,9 @@
 #include <mplapack_benchmark.h>
 
 int main(int argc, char *argv[]) {
-    mplapackint n;
-    mplapackint incx = 1, incy = 1, STEP = 97, N0 = 1, LOOP = 3, TOTALSTEPS = 3000;
-    REAL dummy, *dummywork;
+    mplapackint n = 1;
+    mplapackint incx = 1, incy = 1, STEP = 97, LOOPS = 3, TOTALSTEPS = 3000;
+    REAL dummy;
     double elapsedtime;
     int i, p;
     int check_flag = 1;
@@ -54,27 +54,25 @@ int main(int argc, char *argv[]) {
     if (argc != 1) {
         for (i = 1; i < argc; i++) {
             if (strcmp("-N", argv[i]) == 0) {
-                N0 = atoi(argv[++i]);
+                n = atoi(argv[++i]);
             } else if (strcmp("-STEP", argv[i]) == 0) {
                 STEP = atoi(argv[++i]);
             } else if (strcmp("-NOCHECK", argv[i]) == 0) {
                 check_flag = 0;
-            } else if (strcmp("-LOOP", argv[i]) == 0) {
-                LOOP = atoi(argv[++i]);
+            } else if (strcmp("-LOOPS", argv[i]) == 0) {
+                LOOPS = atoi(argv[++i]);
             } else if (strcmp("-TOTALSTEPS", argv[i]) == 0) {
                 TOTALSTEPS = atoi(argv[++i]);
             }
         }
     }
-
-    n = N0;
     for (p = 0; p < TOTALSTEPS; p++) {
         REAL *x = new REAL[n];
-        REAL *xorg = new REAL[n];
+        REAL *x_org = new REAL[n];
         REAL *y = new REAL[n];
         if (check_flag) {
             for (i = 0; i < n; i++) {
-                x[i] = xorg[i] = randomnumber(dummy);
+                x[i] = x_org[i] = randomnumber(dummy);
                 y[i] = randomnumber(dummy);
             }
             auto t1 = Clock::now();
@@ -82,7 +80,7 @@ int main(int argc, char *argv[]) {
             auto t2 = Clock::now();
             elapsedtime = (double)duration_cast<nanoseconds>(t2 - t1).count() / 1.0e9;
             for (i = 0; i < n; i++) {
-                x[i] = xorg[i] - y[i];
+                x[i] = x_org[i] - y[i];
             }
             diff = Rasum(n, x, incx);
             diffr = cast2double(diff);
@@ -90,18 +88,18 @@ int main(int argc, char *argv[]) {
             printf("%10d   %10.3f   %10.2e\n", (int)n, (double)n / elapsedtime * MFLOPS, diffr);
         } else {
             elapsedtime = 0.0;
-            for (int j = 0; j < LOOP; j++) {
+            for (int j = 0; j < LOOPS; j++) {
                 auto t1 = Clock::now();
                 Rcopy(n, x, incx, y, incy);
                 auto t2 = Clock::now();
                 elapsedtime = elapsedtime + (double)duration_cast<nanoseconds>(t2 - t1).count() / 1.0e9;
             }
-            elapsedtime = elapsedtime / (double)LOOP;
+            elapsedtime = elapsedtime / (double)LOOPS;
             printf("         n        MFLOATS\n");
             printf("%10d     %10.3f\n", (int)n, (double)n / elapsedtime * MFLOPS);
         }
         delete[] y;
-        delete[] xorg;
+        delete[] x_org;
         delete[] x;
         n = n + STEP;
     }

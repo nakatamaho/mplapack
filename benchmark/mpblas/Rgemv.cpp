@@ -47,14 +47,15 @@ double flops_gemv(mplapackint m_i, mplapackint n_i) {
 }
 
 int main(int argc, char *argv[]) {
-    mplapackint k, l, m, n;
-    mplapackint STEPN = 7, STEPM = 7, N0, M0, LOOP = 3, TOTALSTEPS = 283;
-    REAL alpha, beta, dummy, *dummywork;
+    mplapackint k, l, m = 1, n = 1;
+    mplapackint STEPN = 1, STEPM = 1, LOOPS = 3, TOTALSTEPS = 283;
+    mplapackint incx = 1, incy = 1;
+    char trans = 'n', normtype = 'm';
+    REAL alpha, beta, dummy, *dummywork = new REAL[1];
     REAL mOne = -1;
     double elapsedtime;
     int i, p;
     int check_flag = 1;
-    char trans = 'n', normtype = 'm';
 
     using Clock = std::chrono::high_resolution_clock;
     using std::chrono::duration_cast;
@@ -72,23 +73,26 @@ int main(int argc, char *argv[]) {
     double diffr;
 
     // initialization
-    N0 = M0 = 1;
     if (argc != 1) {
         for (i = 1; i < argc; i++) {
             if (strcmp("-N", argv[i]) == 0) {
-                N0 = atoi(argv[++i]);
+                n = atoi(argv[++i]);
             } else if (strcmp("-M", argv[i]) == 0) {
-                M0 = atoi(argv[++i]);
+                m = atoi(argv[++i]);
             } else if (strcmp("-STEPN", argv[i]) == 0) {
                 STEPN = atoi(argv[++i]);
             } else if (strcmp("-STEPM", argv[i]) == 0) {
                 STEPM = atoi(argv[++i]);
+            } else if (strcmp("-INCX", argv[i]) == 0) {
+                incx = atoi(argv[++i]);
+            } else if (strcmp("-INCY", argv[i]) == 0) {
+                incy = atoi(argv[++i]);
             } else if (strcmp("-T", argv[i]) == 0) {
                 trans = 't';
             } else if (strcmp("-NOCHECK", argv[i]) == 0) {
                 check_flag = 0;
-            } else if (strcmp("-LOOP", argv[i]) == 0) {
-                LOOP = atoi(argv[++i]);
+            } else if (strcmp("-LOOPS", argv[i]) == 0) {
+                LOOPS = atoi(argv[++i]);
             } else if (strcmp("-TOTALSTEPS", argv[i]) == 0) {
                 TOTALSTEPS = atoi(argv[++i]);
             }
@@ -111,8 +115,6 @@ int main(int argc, char *argv[]) {
             return 1;
         }
     }
-    n = N0;
-    m = M0;
     for (p = 0; p < TOTALSTEPS; p++) {
         if (Mlsame(&trans, "n")) {
             k = n;
@@ -138,12 +140,12 @@ int main(int argc, char *argv[]) {
             alpha = randomnumber(dummy);
             beta = randomnumber(dummy);
             auto t1 = Clock::now();
-            Rgemv(&trans, m, n, alpha, a, m, x, (mplapackint)1, beta, y, (mplapackint)1);
+            Rgemv(&trans, m, n, alpha, a, m, x, incx, beta, y, incy);
             auto t2 = Clock::now();
             elapsedtime = (double)duration_cast<nanoseconds>(t2 - t1).count() / 1.0e9;
-            (*mpblas_ref)(&trans, m, n, alpha, a, m, x, (mplapackint)1, beta, yref, (mplapackint)1);
-            (*raxpy_ref)(l, mOne, y, (mplapackint)1, yref, (mplapackint)1);
-            diff = Rlange(&normtype, (mplapackint)l, (mplapackint)1, yref, 1, dummywork);
+            (*mpblas_ref)(&trans, m, n, alpha, a, m, x, incx, beta, yref, incy);
+            (*raxpy_ref)(l, mOne, y, (mplapackint)1, yref, incy);
+            diff = Rlange(&normtype, (mplapackint)l, incx, yref, incy, dummywork);
             diffr = cast2double(diff);
             printf("     m       n      MFLOPS      error    trans\n");
             printf("%6d  %6d  %10.3f   %5.2e        %c\n", (int)n, (int)m, (2.0 * (double)n * (double)m) / elapsedtime * MFLOPS, diffr, trans);
@@ -160,13 +162,13 @@ int main(int argc, char *argv[]) {
             alpha = randomnumber(dummy);
             beta = randomnumber(dummy);
             elapsedtime = 0.0;
-            for (int j = 0; j < LOOP; j++) {
+            for (int j = 0; j < LOOPS; j++) {
                 auto t1 = Clock::now();
-                Rgemv(&trans, m, n, alpha, a, m, x, (mplapackint)1, beta, y, (mplapackint)1);
+                Rgemv(&trans, m, n, alpha, a, m, x, incx, beta, y, incy);
                 auto t2 = Clock::now();
                 elapsedtime = elapsedtime + (double)duration_cast<nanoseconds>(t2 - t1).count() / 1.0e9;
             }
-            elapsedtime = elapsedtime / (double)LOOP;
+            elapsedtime = elapsedtime / (double)LOOPS;
             printf("     m       n      MFLOPS  trans\n");
             printf("%6d  %6d  %10.3f      %c\n", (int)n, (int)m, flops_gemv(m, n) / elapsedtime * MFLOPS, trans);
         }

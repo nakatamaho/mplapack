@@ -16,6 +16,6 @@ else
     MODELNAME="unknown"
 fi
 
-$SED -i -e "s/%%GPU%%/$MODELNAME/g" Rsyrk_cuda.plt
+$SED -e "s/%%GPU%%/$MODELNAME/g" Rsyrk_cuda.plt.in > Rsyrk_cuda.plt
 
 gnuplot Rsyrk_cuda.plt > Rsyrk_cuda.pdf

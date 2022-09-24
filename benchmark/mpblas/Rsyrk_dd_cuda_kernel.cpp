@@ -26,7 +26,6 @@
  *
  */
 
-#define ___MPLAPACK_BUILD_WITH_DD___
 #include <stdio.h>
 #include <string.h>
 #include <chrono>
@@ -88,7 +87,7 @@ int main(int argc, char *argv[]) {
     double elapsedtime;
     double *dummyd;
     char uplo, trans, normtype;
-    int N0, K0, STEPN, STEPK, LOOP = 3, TOTALSTEPS = 100;
+    int N0, K0, STEPN, STEPK, LOOPS = 3, TOTALSTEPS = 100;
     int lda, ldc;
     int i, j, n, k, ka, kb, p, q;
     int check_flag = 1;
@@ -136,8 +135,8 @@ int main(int argc, char *argv[]) {
                 uplo = 'l', trans = 'c';
             } else if (strcmp("-NOCHECK", argv[i]) == 0) {
                 check_flag = 0;
-            } else if (strcmp("-LOOP", argv[i]) == 0) {
-                LOOP = atoi(argv[++i]);
+            } else if (strcmp("-LOOPS", argv[i]) == 0) {
+                LOOPS = atoi(argv[++i]);
             } else if (strcmp("-TOTALSTEPS", argv[i]) == 0) {
                 TOTALSTEPS = atoi(argv[++i]);
             }
@@ -218,7 +217,6 @@ int main(int argc, char *argv[]) {
             diff = Rlange(&normtype, (mplapackint)ldc, (mplapackint)n, Cd, ldc, dummywork);
             diffr = cast2double(diff);
             printf("    n     k      MFLOPS       error    uplo    trans\n");
-            // 2n^2k+2n^2 flops are needed
             printf("%5d %5d  %10.3f    %5.2e       %c        %c\n", (int)n, (int)k, (2.0 * (double)n * (double)n * (double)k + 2.0 * (double)n * (double)n) / elapsedtime * MFLOPS, diffr, uplo, trans);
         } else {
             cudaMalloc((void **)&Adev, size_A * sizeof(REAL));
@@ -227,13 +225,13 @@ int main(int argc, char *argv[]) {
             cudaMemcpy(Cdev, C, size_C * sizeof(REAL), cudaMemcpyHostToDevice);
 
             elapsedtime = 0.0;
-            for (int j = 0; j < LOOP; j++) {
+            for (int j = 0; j < LOOPS; j++) {
                 auto t1 = Clock::now();
                 Rsyrk_cuda(&uplo, &trans, n, k, alpha, Adev, lda, beta, Cdev, ldc);
                 auto t2 = Clock::now();
                 elapsedtime = elapsedtime + (double)duration_cast<nanoseconds>(t2 - t1).count() / 1.0e9;
             }
-            elapsedtime = elapsedtime / (double)LOOP;
+            elapsedtime = elapsedtime / (double)LOOPS;
 
             cudaMemcpy(C, Cdev, size_C * sizeof(dd_real), cudaMemcpyDeviceToHost);
             cudaFree(Adev);

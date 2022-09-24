@@ -48,12 +48,12 @@ double flops_syrk(mplapackint k_i, mplapackint n_i) {
 
 int main(int argc, char *argv[]) {
     REAL alpha, beta, dummy;
-    REAL *dummywork;
-    double elapsedtime, t1, t2;
-    char uplo, trans, normtype;
-    int N0, K0, STEPN = 3, STEPK = 3, LOOP = 3, TOTALSTEPS = 340;
+    REAL *dummywork = new REAL[1];
+    double elapsedtime;
+    char uplo = 'u', trans = 'n', normtype = 'm';
+    int n = 1, k = 1, STEPN = 3, STEPK = 3, LOOPS = 3, TOTALSTEPS = 340;
     int lda, ldc;
-    int i, n, k, ka, p, q;
+    int i, ka, p;
     int check_flag = 1;
 
     using Clock = std::chrono::high_resolution_clock;
@@ -72,17 +72,12 @@ int main(int argc, char *argv[]) {
     double diffr;
 
     // initialization
-    N0 = K0 = 1;
-    STEPN = STEPK = 1;
-    uplo = 'u';
-    trans = 'n';
-    normtype = 'm';
     if (argc != 1) {
         for (i = 1; i < argc; i++) {
             if (strcmp("-N", argv[i]) == 0) {
-                N0 = atoi(argv[++i]);
+                n = atoi(argv[++i]);
             } else if (strcmp("-K", argv[i]) == 0) {
-                K0 = atoi(argv[++i]);
+                k = atoi(argv[++i]);
             } else if (strcmp("-STEPN", argv[i]) == 0) {
                 STEPN = atoi(argv[++i]);
             } else if (strcmp("-STEPK", argv[i]) == 0) {
@@ -101,8 +96,8 @@ int main(int argc, char *argv[]) {
                 uplo = 'l', trans = 'c';
             } else if (strcmp("-NOCHECK", argv[i]) == 0) {
                 check_flag = 0;
-            } else if (strcmp("-LOOP", argv[i]) == 0) {
-                LOOP = atoi(argv[++i]);
+            } else if (strcmp("-LOOPS", argv[i]) == 0) {
+                LOOPS = atoi(argv[++i]);
             } else if (strcmp("-TOTALSTEPS", argv[i]) == 0) {
                 TOTALSTEPS = atoi(argv[++i]);
             }
@@ -127,8 +122,6 @@ int main(int argc, char *argv[]) {
             return 1;
         }
     }
-    n = N0;
-    k = K0;
     for (p = 0; p < TOTALSTEPS; p++) {
         if (Mlsame(&trans, "n")) {
             ka = k;
@@ -139,9 +132,9 @@ int main(int argc, char *argv[]) {
         }
         ldc = n;
 
-        REAL *A = new REAL[lda * ka];
-        REAL *C = new REAL[ldc * n];
-        REAL *Cref = new REAL[ldc * n];
+        REAL *a = new REAL[lda * ka];
+        REAL *c = new REAL[ldc * n];
+        REAL *c_ref = new REAL[ldc * n];
         REAL mOne = -1;
         //    alpha = randomnumber (dummy);
         //    beta = randomnumber (dummy);
@@ -149,39 +142,39 @@ int main(int argc, char *argv[]) {
         alpha = 1.0;
         beta = 0.0;
         for (i = 0; i < lda * ka; i++) {
-            A[i] = randomnumber(dummy);
+            a[i] = randomnumber(dummy);
         }
         for (i = 0; i < ldc * n; i++) {
-            C[i] = Cref[i] = randomnumber(dummy);
+            c[i] = c_ref[i] = randomnumber(dummy);
         }
 
         if (check_flag) {
             auto t1 = Clock::now();
-            Rsyrk(&uplo, &trans, n, k, alpha, A, lda, beta, C, ldc);
+            Rsyrk(&uplo, &trans, n, k, alpha, a, lda, beta, c, ldc);
             auto t2 = Clock::now();
             elapsedtime = (double)duration_cast<nanoseconds>(t2 - t1).count() / 1.0e9;
-            (*mpblas_ref)(&uplo, &trans, n, k, alpha, A, lda, beta, Cref, ldc);
-            (*raxpy_ref)((mplapackint)(ldc * n), mOne, C, (mplapackint)1, Cref, (mplapackint)1);
+            (*mpblas_ref)(&uplo, &trans, n, k, alpha, a, lda, beta, c_ref, ldc);
+            (*raxpy_ref)((mplapackint)(ldc * n), mOne, c, (mplapackint)1, c_ref, (mplapackint)1);
 
-            diff = Rlange(&normtype, (mplapackint)ldc, (mplapackint)n, Cref, ldc, dummywork);
+            diff = Rlange(&normtype, (mplapackint)ldc, (mplapackint)n, c_ref, ldc, dummywork);
             diffr = cast2double(diff);
             printf("    n     k      MFLOPS       error    uplo    trans\n");
             printf("%5d %5d  %10.3f    %5.2e       %c        %c\n", (int)n, (int)k, flops_syrk(k, n) / elapsedtime * MFLOPS, diffr, uplo, trans);
         } else {
             elapsedtime = 0.0;
-            for (int j = 0; j < LOOP; j++) {
+            for (int j = 0; j < LOOPS; j++) {
                 auto t1 = Clock::now();
-                Rsyrk(&uplo, &trans, n, k, alpha, A, lda, beta, C, ldc);
+                Rsyrk(&uplo, &trans, n, k, alpha, a, lda, beta, c, ldc);
                 auto t2 = Clock::now();
                 elapsedtime = elapsedtime + (double)duration_cast<nanoseconds>(t2 - t1).count() / 1.0e9;
             }
-            elapsedtime = elapsedtime / (double)LOOP;
+            elapsedtime = elapsedtime / (double)LOOPS;
             printf("    n     k      MFLOPS     uplo   trans\n");
             printf("%5d %5d %10.3f      %c      %c\n", (int)n, (int)k, flops_syrk(k, n) / elapsedtime * MFLOPS, uplo, trans);
         }
-        delete[] Cref;
-        delete[] C;
-        delete[] A;
+        delete[] c_ref;
+        delete[] c;
+        delete[] a;
         n = n + STEPN;
         k = k + STEPK;
     }

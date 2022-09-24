@@ -35,34 +35,37 @@
 #define ___DOUBLE_BENCH___
 #include <mplapack_benchmark.h>
 
-#define TOTALSTEPS 1000
+// cf. https://netlib.org/lapack/lawnspdf/lawn41.pdf p.120
+double flops_syrk(int k_i, int n_i) {
+    double adds, muls, flops;
+    double n, k;
+    n = (double)n_i;
+    k = (double)k_i;
+    muls = k * n * (n + 1) * 0.5 + n * n + n;
+    adds = k * n * (n + 1) * 0.5;
+    flops = muls + adds;
+    return flops;
+}
 
 int main(int argc, char *argv[]) {
     double alpha, beta, dummy;
-    double *dummywork;
     double elapsedtime;
-    char uplo, trans, normtype;
-    int N0, K0, STEPN, STEPK;
+    char uplo = 'u', trans = 'n';
+    int n = 1, k = 1, STEPN = 3, STEPK = 3, LOOPS = 3, TOTALSTEPS = 340;
     int lda, ldc;
-    int i, j, n, k, ka, kb, p, q;
-    int check_flag = 1;
+    int i, ka, p;
 
     using Clock = std::chrono::high_resolution_clock;
     using std::chrono::duration_cast;
     using std::chrono::nanoseconds;
 
     // initialization
-    N0 = K0 = 1;
-    STEPN = STEPK = 1;
-    uplo = 'u';
-    trans = 'n';
-    normtype = 'm';
     if (argc != 1) {
         for (i = 1; i < argc; i++) {
             if (strcmp("-N", argv[i]) == 0) {
-                N0 = atoi(argv[++i]);
+                n = atoi(argv[++i]);
             } else if (strcmp("-K", argv[i]) == 0) {
-                K0 = atoi(argv[++i]);
+                k = atoi(argv[++i]);
             } else if (strcmp("-STEPN", argv[i]) == 0) {
                 STEPN = atoi(argv[++i]);
             } else if (strcmp("-STEPK", argv[i]) == 0) {
@@ -79,14 +82,9 @@ int main(int argc, char *argv[]) {
                 uplo = 'l', trans = 't';
             } else if (strcmp("-LC", argv[i]) == 0) {
                 uplo = 'l', trans = 'c';
-            } else if (strcmp("-NOCHECK", argv[i]) == 0) {
-                check_flag = 0;
             }
         }
     }
-
-    n = N0;
-    k = K0;
     for (p = 0; p < TOTALSTEPS; p++) {
         if (lsame_f77(&trans, "n")) {
             ka = k;
@@ -97,26 +95,29 @@ int main(int argc, char *argv[]) {
         }
         ldc = n;
 
-        double *A = new double[lda * ka];
-        double *C = new double[ldc * n];
-        double mOne = -1;
+        double *a = new double[lda * ka];
+        double *c = new double[ldc * n];
         alpha = randomnumber(dummy);
         beta = randomnumber(dummy);
         for (i = 0; i < lda * ka; i++) {
-            A[i] = randomnumber(dummy);
+            a[i] = randomnumber(dummy);
         }
         for (i = 0; i < ldc * n; i++) {
-            C[i] = randomnumber(dummy);
+            c[i] = randomnumber(dummy);
         }
-        auto t1 = Clock::now();
-        dsyrk_f77(&uplo, &trans, &n, &k, &alpha, A, &lda, &beta, C, &ldc);
-        auto t2 = Clock::now();
-        elapsedtime = (double)duration_cast<nanoseconds>(t2 - t1).count() / 1.0e9;
-        printf("    n     k      MFLOPS       uplo    trans\n");
-        // 2n^2k+2n^2 flops are needed
-        printf("%5d %5d  %10.3f     %c        %c\n", (int)n, (int)k, (2.0 * (double)n * (double)n * (double)k + 2.0 * (double)n * (double)n) / elapsedtime * MFLOPS, uplo, trans);
-        delete[] C;
-        delete[] A;
+
+        elapsedtime = 0.0;
+        for (int j = 0; j < LOOPS; j++) {
+            auto t1 = Clock::now();
+            dsyrk_f77(&uplo, &trans, &n, &k, &alpha, a, &lda, &beta, c, &ldc);
+            auto t2 = Clock::now();
+            elapsedtime = elapsedtime + (double)duration_cast<nanoseconds>(t2 - t1).count() / 1.0e9;
+        }
+        elapsedtime = elapsedtime / (double)LOOPS;
+        printf("    n     k      MFLOPS     uplo   trans\n");
+        printf("%5d %5d %10.3f      %c      %c\n", (int)n, (int)k, flops_syrk(k, n) / elapsedtime * MFLOPS, uplo, trans);
+        delete[] c;
+        delete[] a;
         n = n + STEPN;
         k = k + STEPK;
     }

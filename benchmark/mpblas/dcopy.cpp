@@ -36,13 +36,11 @@
 #include <mplapack_benchmark.h>
 
 int main(int argc, char *argv[]) {
-    int n;
-    int incx = 1, incy = 1, STEP = 97, N0 = 1, LOOPS = 3, TOTALSTEPS = 3000;
-    double alpha, dummy, *dummywork;
-    double mOne = -1;
+    int n = 1;
+    int incx = 1, incy = 1, STEP = 97, LOOPS = 3, TOTALSTEPS = 3000;
+    double dummy;
     double elapsedtime;
     int i, p;
-    int check_flag = 1;
 
     using Clock = std::chrono::high_resolution_clock;
     using std::chrono::duration_cast;
@@ -52,7 +50,7 @@ int main(int argc, char *argv[]) {
     if (argc != 1) {
         for (i = 1; i < argc; i++) {
             if (strcmp("-N", argv[i]) == 0) {
-                N0 = atoi(argv[++i]);
+                n = atoi(argv[++i]);
             } else if (strcmp("-STEP", argv[i]) == 0) {
                 STEP = atoi(argv[++i]);
             } else if (strcmp("-LOOPS", argv[i]) == 0) {
@@ -62,7 +60,6 @@ int main(int argc, char *argv[]) {
             }
         }
     }
-    n = N0;
     for (p = 0; p < TOTALSTEPS; p++) {
         double *x = new double[n];
         double *y = new double[n];
@@ -70,11 +67,16 @@ int main(int argc, char *argv[]) {
             x[i] = randomnumber(dummy);
             y[i] = randomnumber(dummy);
         }
-        alpha = randomnumber(dummy);
-        auto t1 = Clock::now();
-        dcopy_f77(&n, x, &incx, y, &incy);
-        auto t2 = Clock::now();
-        elapsedtime = (double)duration_cast<nanoseconds>(t2 - t1).count() / 1.0e9;
+
+        elapsedtime = 0.0;
+        for (int j = 0; j < LOOPS; j++) {
+            auto t1 = Clock::now();
+            dcopy_f77(&n, x, &incx, y, &incy);
+            auto t2 = Clock::now();
+            elapsedtime = elapsedtime + (double)duration_cast<nanoseconds>(t2 - t1).count() / 1.0e9;
+        }
+        elapsedtime = elapsedtime / (double)LOOPS;
+
         printf("         n       MFLOPS\n");
         printf("%10d   %10.3f\n", (int)n, (2.0 * (double)n) / elapsedtime * MFLOPS);
         delete[] y;

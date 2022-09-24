@@ -11,7 +11,7 @@ include Makefile.dd_cuda.am
 endif
 
 #lapack is needed for Rlange
-ddcxxflags = -Wall $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(QD_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_DD___
+ddcxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(QD_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_DD___
 ddlapack_libdepends = -L$(top_builddir)/mplapack/reference -lmplapack_dd
 dd_libdepends = $(ddlapack_libdepends) -L$(top_builddir)/mpblas/reference -lmpblas_dd -L$(QD_LIBDIR) -lqd $(DYLD)
 ddopt_libdepends = $(ddlapack_libdepends) -L$(top_builddir)/mpblas/optimized/dd -lmpblas_dd_opt -L$(QD_LIBDIR) -lqd $(DYLD)

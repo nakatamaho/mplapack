@@ -88,7 +88,7 @@ int main(int argc, char *argv[]) {
     double elapsedtime;
     double *dummyd;
     char transa, transb, normtype;
-    int N0, M0, K0, STEPN = 7, STEPM = 7, STEPK = 7, LOOP = 3, TOTALSTEPS = 720;
+    int N0, M0, K0, STEPN = 7, STEPM = 7, STEPK = 7, LOOPS = 3, TOTALSTEPS = 720;
     int lda, ldb, ldc;
     int i, j, m, n, k, ka, kb, p, q;
     int check_flag = 1;
@@ -137,8 +137,8 @@ int main(int argc, char *argv[]) {
                 transb = 'n';
             } else if (strcmp("-NOCHECK", argv[i]) == 0) {
                 check_flag = 0;
-            } else if (strcmp("-LOOP", argv[i]) == 0) {
-                LOOP = atoi(argv[++i]);
+            } else if (strcmp("-LOOPS", argv[i]) == 0) {
+                LOOPS = atoi(argv[++i]);
             } else if (strcmp("-TOTALSTEPS", argv[i]) == 0) {
                 TOTALSTEPS = atoi(argv[++i]);
             }
@@ -248,13 +248,13 @@ int main(int argc, char *argv[]) {
             cudaMemcpy(Crefev, C, size_C * sizeof(REAL), cudaMemcpyHostToDevice);
 
             elapsedtime = 0.0;
-            for (int j = 0; j < LOOP; j++) {
+            for (int j = 0; j < LOOPS; j++) {
                 auto t1 = Clock::now();
                 Rgemm_cuda(&transa, &transb, m, n, k, alpha, Adev, lda, Bdev, ldb, beta, Crefev, ldc);
                 auto t2 = Clock::now();
                 elapsedtime = elapsedtime + (double)duration_cast<nanoseconds>(t2 - t1).count() / 1.0e9;
             }
-            elapsedtime = elapsedtime / (double)LOOP;
+            elapsedtime = elapsedtime / (double)LOOPS;
 
             cudaMemcpy(C, Crefev, size_C * sizeof(dd_real), cudaMemcpyDeviceToHost);
             cudaFree(Adev);

@@ -37,30 +37,25 @@
 
 int main(int argc, char *argv[]) {
     double alpha, beta, dummy;
-    double *dummywork;
     double elapsedtime;
-    char transa, transb, normtype;
-    int N0, M0, K0, STEPN = 7, STEPM = 7, STEPK = 7, LOOPS = 7, TOTALSTEPS = 428;
+    char transa = 'n', transb = 'n';
+    int STEPN = 7, STEPM = 7, STEPK = 7, LOOPS = 7, TOTALSTEPS = 428;
     int lda, ldb, ldc;
-    int i, j, m, n, k, ka, kb, p, q;
+    int i, m = 1, n = 1, k = 1, ka, kb, p;
 
     using Clock = std::chrono::high_resolution_clock;
     using std::chrono::duration_cast;
     using std::chrono::nanoseconds;
 
     // initialization
-    N0 = M0 = K0 = 1;
-    STEPM = STEPN = STEPK = 1;
-    transa = transb = 'n';
-    normtype = 'm';
     if (argc != 1) {
         for (i = 1; i < argc; i++) {
             if (strcmp("-N", argv[i]) == 0) {
-                N0 = atoi(argv[++i]);
+                n = atoi(argv[++i]);
             } else if (strcmp("-M", argv[i]) == 0) {
-                M0 = atoi(argv[++i]);
+                m = atoi(argv[++i]);
             } else if (strcmp("-K", argv[i]) == 0) {
-                K0 = atoi(argv[++i]);
+                k = atoi(argv[++i]);
             } else if (strcmp("-STEPN", argv[i]) == 0) {
                 STEPN = atoi(argv[++i]);
             } else if (strcmp("-STEPM", argv[i]) == 0) {
@@ -85,9 +80,6 @@ int main(int argc, char *argv[]) {
         }
     }
 
-    m = M0;
-    n = N0;
-    k = K0;
     for (p = 0; p < TOTALSTEPS; p++) {
         if (lsame_f77(&transa, "n")) {
             ka = k;
@@ -104,11 +96,9 @@ int main(int argc, char *argv[]) {
             ldb = n;
         }
         ldc = m;
-
         double *a = new double[lda * ka];
         double *b = new double[ldb * kb];
         double *c = new double[ldc * n];
-        double mOne = -1;
         alpha = randomnumber(dummy);
         beta = randomnumber(dummy);
         for (i = 0; i < lda * ka; i++) {
@@ -120,10 +110,15 @@ int main(int argc, char *argv[]) {
         for (i = 0; i < ldc * n; i++) {
             c[i] = randomnumber(dummy);
         }
-        auto t1 = Clock::now();
-        dgemm_f77(&transa, &transb, &m, &n, &k, &alpha, a, &lda, b, &ldb, &beta, c, &ldc);
-        auto t2 = Clock::now();
-        elapsedtime = (double)duration_cast<nanoseconds>(t2 - t1).count() / 1.0e9;
+
+        elapsedtime = 0.0;
+        for (int j = 0; j < LOOPS; j++) {
+            auto t1 = Clock::now();
+            dgemm_f77(&transa, &transb, &m, &n, &k, &alpha, a, &lda, b, &ldb, &beta, c, &ldc);
+            auto t2 = Clock::now();
+            elapsedtime = elapsedtime + (double)duration_cast<nanoseconds>(t2 - t1).count() / 1.0e9;
+        }
+        elapsedtime = elapsedtime / (double)LOOPS;
         printf("    m     n     k     MFLOPS    transa   transb\n");
         printf("%5d %5d %5d %10.3f         %c        %c\n", (int)m, (int)n, (int)k, (2.0 * (double)m * (double)n * (double)k + 2.0 * (double)m * (double)n) / elapsedtime * MFLOPS, transa, transb);
         delete[] c;

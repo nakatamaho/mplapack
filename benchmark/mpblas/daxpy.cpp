@@ -36,10 +36,9 @@
 #include <mplapack_benchmark.h>
 
 int main(int argc, char *argv[]) {
-    int n;
-    int incx = 1, incy = 1, STEP = 97, N0 = 1, LOOPS = 3, TOTALSTEPS = 3000;
-    double alpha, dummy, *dummywork;
-    double mOne = -1;
+    int n = 1;
+    int incx = 1, incy = 1, STEP = 97, LOOPS = 3, TOTALSTEPS = 3000;
+    double alpha, dummy;
     double elapsedtime;
     int i, p;
 
@@ -47,11 +46,10 @@ int main(int argc, char *argv[]) {
     using std::chrono::duration_cast;
     using std::chrono::nanoseconds;
 
-    // initialization
     if (argc != 1) {
         for (i = 1; i < argc; i++) {
             if (strcmp("-N", argv[i]) == 0) {
-                N0 = atoi(argv[++i]);
+                n = atoi(argv[++i]);
             } else if (strcmp("-STEP", argv[i]) == 0) {
                 STEP = atoi(argv[++i]);
             } else if (strcmp("-LOOPS", argv[i]) == 0) {
@@ -61,7 +59,6 @@ int main(int argc, char *argv[]) {
             }
         }
     }
-    n = N0;
     for (p = 0; p < TOTALSTEPS; p++) {
         double *x = new double[n];
         double *y = new double[n];

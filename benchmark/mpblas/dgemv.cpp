@@ -49,26 +49,24 @@ double flops_gemv(int m_i, int n_i) {
 
 int main(int argc, char *argv[]) {
     int k, l, m, n;
-    int STEPN = 7, STEPM = 7, N0, M0, LOOPS = 3, TOTALSTEPS = 283;
+    int STEPN = 1, STEPM = 1, LOOPS = 3, TOTALSTEPS = 283;
     int incx = 1, incy = 1;
-    double alpha, beta, dummy, *dummywork;
-    double mOne = -1;
-    double elapsedtime, t1, t2;
+    char trans = 'n';
+    double alpha, beta, dummy;
+    double elapsedtime;
     int i, p;
-    char trans, normtype;
 
     using Clock = std::chrono::high_resolution_clock;
     using std::chrono::duration_cast;
     using std::chrono::nanoseconds;
 
     // initialization
-    N0 = M0 = 1;
     if (argc != 1) {
         for (i = 1; i < argc; i++) {
             if (strcmp("-N", argv[i]) == 0) {
-                N0 = atoi(argv[++i]);
+                n = atoi(argv[++i]);
             } else if (strcmp("-M", argv[i]) == 0) {
-                M0 = atoi(argv[++i]);
+                m = atoi(argv[++i]);
             } else if (strcmp("-STEPN", argv[i]) == 0) {
                 STEPN = atoi(argv[++i]);
             } else if (strcmp("-STEPM", argv[i]) == 0) {
@@ -82,8 +80,6 @@ int main(int argc, char *argv[]) {
             }
         }
     }
-    n = N0;
-    m = M0;
     for (p = 0; p < TOTALSTEPS; p++) {
         if (lsame_f77(&trans, "n")) {
             k = n;
