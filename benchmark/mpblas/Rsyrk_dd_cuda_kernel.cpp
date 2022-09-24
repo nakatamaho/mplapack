@@ -83,13 +83,13 @@ double flops_syrk(mplapackint k_i, mplapackint n_i) {
 
 int main(int argc, char *argv[]) {
     REAL alpha, beta, dummy;
-    REAL *dummywork;
+    REAL dummywork[1];
     double elapsedtime;
     double *dummyd;
-    char uplo, trans, normtype;
-    int N0, K0, STEPN, STEPK, LOOPS = 3, TOTALSTEPS = 100;
+    char uplo = 'u', trans = 'n', normtype = 'm';
+    int STEPN = 1, STEPK = 1, LOOPS = 3, TOTALSTEPS = 100;
     int lda, ldc;
-    int i, j, n, k, ka, kb, p, q;
+    int i, n = 1, k = 1, ka, p;
     int check_flag = 1;
 
     const char mpblas_sym[] = SYMBOL_GCC_RSYRK;
@@ -106,17 +106,12 @@ int main(int argc, char *argv[]) {
     using std::chrono::nanoseconds;
 
     // initialization
-    N0 = K0 = 1;
-    STEPN = STEPK = 1;
-    uplo = 'u';
-    trans = 'n';
-    normtype = 'm';
     if (argc != 1) {
         for (i = 1; i < argc; i++) {
             if (strcmp("-N", argv[i]) == 0) {
-                N0 = atoi(argv[++i]);
+                n = atoi(argv[++i]);
             } else if (strcmp("-K", argv[i]) == 0) {
-                K0 = atoi(argv[++i]);
+                k = atoi(argv[++i]);
             } else if (strcmp("-STEPN", argv[i]) == 0) {
                 STEPN = atoi(argv[++i]);
             } else if (strcmp("-STEPK", argv[i]) == 0) {
@@ -153,7 +148,6 @@ int main(int argc, char *argv[]) {
             fprintf(stderr, "%s\n", error);
             return 1;
         }
-
         raxpy_ref = (void (*)(mplapackint, REAL, REAL *, mplapackint, REAL *, mplapackint))dlsym(handle, raxpy_sym);
         if ((error = dlerror()) != NULL) {
             fprintf(stderr, "%s\n", error);
@@ -166,8 +160,6 @@ int main(int argc, char *argv[]) {
     cudaMalloc((void **)&dummyd, 16);
     cudaFree(dummyd);
 
-    n = N0;
-    k = K0;
     for (p = 0; p < TOTALSTEPS; p++) {
         if (Mlsame(&trans, "n")) {
             ka = k;

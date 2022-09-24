@@ -84,13 +84,13 @@ void SetDevice() {
 
 int main(int argc, char *argv[]) {
     REAL alpha, beta, dummy;
-    REAL *dummywork;
+    REAL dummywork[1];
     double elapsedtime;
     double *dummyd;
-    char transa, transb, normtype;
-    int N0, M0, K0, STEPN = 7, STEPM = 7, STEPK = 7, LOOPS = 3, TOTALSTEPS = 720;
+    char transa = 'n', transb = 'n', normtype = 'm';
+    int m = 1, n = 1, k = 1, STEPN = 7, STEPM = 7, STEPK = 7, LOOPS = 3, TOTALSTEPS = 720;
     int lda, ldb, ldc;
-    int i, j, m, n, k, ka, kb, p, q;
+    int i, ka, kb, p;
     int check_flag = 1;
 
     const char mpblas_sym[] = SYMBOL_GCC_RGEMM;
@@ -107,18 +107,14 @@ int main(int argc, char *argv[]) {
     using std::chrono::nanoseconds;
 
     // initialization
-    N0 = M0 = K0 = 1;
-    STEPM = STEPN = STEPK = 1;
-    transa = transb = 'n';
-    normtype = 'm';
     if (argc != 1) {
         for (i = 1; i < argc; i++) {
             if (strcmp("-N", argv[i]) == 0) {
-                N0 = atoi(argv[++i]);
+                n = atoi(argv[++i]);
             } else if (strcmp("-M", argv[i]) == 0) {
-                M0 = atoi(argv[++i]);
+                m = atoi(argv[++i]);
             } else if (strcmp("-K", argv[i]) == 0) {
-                K0 = atoi(argv[++i]);
+                k = atoi(argv[++i]);
             } else if (strcmp("-STEPN", argv[i]) == 0) {
                 STEPN = atoi(argv[++i]);
             } else if (strcmp("-STEPM", argv[i]) == 0) {
@@ -168,9 +164,6 @@ int main(int argc, char *argv[]) {
     cudaMalloc((void **)&dummyd, 16);
     cudaFree(dummyd);
 
-    m = M0;
-    n = N0;
-    k = K0;
     for (p = 0; p < TOTALSTEPS; p++) {
         if (Mlsame(&transa, "n")) {
             ka = k;

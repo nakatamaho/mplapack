@@ -48,13 +48,12 @@ double flops_gemv(int m_i, int n_i) {
 }
 
 int main(int argc, char *argv[]) {
-    int k, l, m, n;
     int STEPN = 1, STEPM = 1, LOOPS = 3, TOTALSTEPS = 283;
-    int incx = 1, incy = 1;
+    int m = 1, n = 1, incx = 1, incy = 1;
     char trans = 'n';
     double alpha, beta, dummy;
     double elapsedtime;
-    int i, p;
+    int i, k, l, p;
 
     using Clock = std::chrono::high_resolution_clock;
     using std::chrono::duration_cast;

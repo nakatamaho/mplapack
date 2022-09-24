@@ -49,7 +49,7 @@ double flops_gemm(mplapackint k_i, mplapackint m_i, mplapackint n_i) {
 
 int main(int argc, char *argv[]) {
     REAL alpha, beta, dummy;
-    REAL *dummywork = new REAL[1];
+    REAL dummywork[1];
     double elapsedtime;
     char transa = 'n', transb = 'n', normtype = 'm';
     int m = 1, n = 1, k = 1, STEPN = 3, STEPM = 3, STEPK = 3, LOOPS = 3, TOTALSTEPS = 333;

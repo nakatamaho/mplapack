@@ -51,7 +51,7 @@ int main(int argc, char *argv[]) {
     mplapackint STEPN = 1, STEPM = 1, LOOPS = 3, TOTALSTEPS = 283;
     mplapackint incx = 1, incy = 1;
     char trans = 'n', normtype = 'm';
-    REAL alpha, beta, dummy, *dummywork = new REAL[1];
+    REAL alpha, beta, dummy, dummywork[1];
     REAL mOne = -1;
     double elapsedtime;
     int i, p;

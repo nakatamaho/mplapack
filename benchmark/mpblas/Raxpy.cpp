@@ -38,7 +38,7 @@ int main(int argc, char *argv[]) {
     mplapackint n = 1;
     mplapackint incx = 1, incy = 1, STEP = 97, LOOPS = 3, TOTALSTEPS = 3092;
     char normtype = 'm';
-    REAL alpha, dummy, *dummywork = new REAL[1];
+    REAL alpha, dummy, dummywork[1];
     double elapsedtime;
     int i, p;
     int check_flag = 1;
