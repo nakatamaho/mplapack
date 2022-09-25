@@ -1,20 +1,22 @@
 #!/bin/bash
 
+TIMEOUT=7200
+
 if [ `uname` = "Darwin" ]; then
     LDPATHPREFIX="DYLD_LIBRARY_PATH=%%PREFIX%%/lib"
 else
     LDPATHPREFIX="LD_LIBRARY_PATH=%%PREFIX%%/lib:$LD_LIBRARY_PATH"
 fi
 
-env $LDPATHPREFIX timeout 3600 ./dcopy_ref      -STEP 7 -TOTALSTEPS 42857 -LOOPS 3 >& log.dcopy.ref
-env $LDPATHPREFIX timeout 3600 ./dcopy_openblas -STEP 7 -TOTALSTEPS 42857 -LOOPS 3 >& log.dcopy.openblas
+env $LDPATHPREFIX timeout $TIMEOUT ./dcopy_ref      -STEP 7 -TOTALSTEPS 42857 -LOOPS 3 >& log.dcopy.ref
+env $LDPATHPREFIX timeout $TIMEOUT ./dcopy_openblas -STEP 7 -TOTALSTEPS 42857 -LOOPS 3 >& log.dcopy.openblas
 
 ####
 MPLIBS="_Float128 _Float64x dd double"
 
 for _mplib in $MPLIBS; do
-env $LDPATHPREFIX timeout 3600 ./Rcopy.${_mplib}_opt -NOCHECK  >& log.Rcopy.${_mplib}_opt
-env $LDPATHPREFIX timeout 3600 ./Rcopy.${_mplib}     -NOCHECK  >& log.Rcopy.${_mplib}
+env $LDPATHPREFIX timeout $TIMEOUT ./Rcopy.${_mplib}_opt -NOCHECK  >& log.Rcopy.${_mplib}_opt
+env $LDPATHPREFIX timeout $TIMEOUT ./Rcopy.${_mplib}     -NOCHECK  >& log.Rcopy.${_mplib}
 done
 ####
 
@@ -22,8 +24,8 @@ done
 MPLIBS="mpfr gmp qd"
 
 for _mplib in $MPLIBS; do
-env $LDPATHPREFIX timeout 3600 ./Rcopy.${_mplib}_opt -NOCHECK  >& log.Rcopy.${_mplib}_opt
-env $LDPATHPREFIX timeout 3600 ./Rcopy.${_mplib}     -NOCHECK  >& log.Rcopy.${_mplib}
+env $LDPATHPREFIX timeout $TIMEOUT ./Rcopy.${_mplib}_opt -NOCHECK  >& log.Rcopy.${_mplib}_opt
+env $LDPATHPREFIX timeout $TIMEOUT ./Rcopy.${_mplib}     -NOCHECK  >& log.Rcopy.${_mplib}
 done
 ####
 

@@ -1,5 +1,7 @@
 #!/bin/bash
 
+TIMEOUT=7200
+
 if [ `uname` = "Darwin" ]; then
     LDPATHPREFIX="DYLD_LIBRARY_PATH=%%PREFIX%%/lib"
 else
@@ -10,8 +12,8 @@ fi
 MPLIBS="_Float64x dd double _Float128"
 
 for _mplib in $MPLIBS; do
-env $LDPATHPREFIX timeout 3600 ./Rsyrk.${_mplib}_opt -NOCHECK    >& log.Rsyrk.${_mplib}_opt
-env $LDPATHPREFIX timeout 3600 ./Rsyrk.${_mplib}     -NOCHECK    >& log.Rsyrk.${_mplib}
+env $LDPATHPREFIX timeout $TIMEOUT ./Rsyrk.${_mplib}_opt -NOCHECK    >& log.Rsyrk.${_mplib}_opt
+env $LDPATHPREFIX timeout $TIMEOUT ./Rsyrk.${_mplib}     -NOCHECK    >& log.Rsyrk.${_mplib}
 done
 ####
 
@@ -19,8 +21,8 @@ done
 MPLIBS="mpfr gmp qd"
 
 for _mplib in $MPLIBS; do
-env $LDPATHPREFIX timeout 3600 ./Rsyrk.${_mplib}_opt -NOCHECK    >& log.Rsyrk.${_mplib}_opt
-env $LDPATHPREFIX timeout 3600 ./Rsyrk.${_mplib}     -NOCHECK    >& log.Rsyrk.${_mplib}
+env $LDPATHPREFIX timeout $TIMEOUT ./Rsyrk.${_mplib}_opt -NOCHECK    >& log.Rsyrk.${_mplib}_opt
+env $LDPATHPREFIX timeout $TIMEOUT ./Rsyrk.${_mplib}     -NOCHECK    >& log.Rsyrk.${_mplib}
 done
 ####
 

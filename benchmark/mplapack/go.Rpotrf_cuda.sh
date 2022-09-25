@@ -1,12 +1,14 @@
 #!/bin/bash
 
+TIMEOUT=7200
+
 if [ `uname` = "Darwin" ]; then
     LDPATHPREFIX="DYLD_LIBRARY_PATH=%%PREFIX%%/lib"
 else
     LDPATHPREFIX="LD_LIBRARY_PATH=%%PREFIX%%/lib:$LD_LIBRARY_PATH"
 fi
 
-env $LDPATHPREFIX timeout 3600 ./Rpotrf.dd_cuda_total  -NOCHECK -TOTALSTEPS 700 -STEP 5     >& log.Rpotrf.dd_cuda_total
+env $LDPATHPREFIX timeout $TIMEOUT ./Rpotrf.dd_cuda_total  -NOCHECK -TOTALSTEPS 700 -STEP 5     >& log.Rpotrf.dd_cuda_total
 
 if [ `uname` = "Linux" ]; then
     MODELNAME=`nvidia-smi --query-gpu=name --format=csv | tail -1`
