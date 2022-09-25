@@ -99,6 +99,11 @@ case "$host" in
 esac
 AM_CONDITIONAL(IS_MACOS, test x$IS_MACOS = x1)
 
+if test x$IS_MACOS = x"1"; then
+INSTALL="/usr/bin/install"
+AC_SUBST(INSTALL)
+fi
+
 IS_LINUX=0
 case "$host" in
     *linux*)

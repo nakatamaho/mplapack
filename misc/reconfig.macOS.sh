@@ -6,13 +6,11 @@ if [ x$USE_CCACHE = x"yes" ] ; then
 CXX="ccache g++-mp-10" ; export CXX
 CC="ccache gcc-mp-10" ; export CC
 FC="gfortran-mp-10"; export FC
-INSTALL="/usr/bin/install"; export INSTALL
 ccache -M 60G
 else
 CXX="g++-mp-10" ; export CXX
 CC="gcc-mp-10" ; export CC
 FC="gfortran-mp-10"; export FC
-INSTALL="/usr/bin/install"; export INSTALL
 fi
 
 pushd mplapack/test/compare ; bash gen.Makefile.am.sh ; popd

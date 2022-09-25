@@ -154,7 +154,6 @@ $ cd $HOME/tmp
 $ wget https://github.com/nakatamaho/mplapack/releases/download/v2.0.1/mplapack-2.0.1.tar.xz
 $ tar xvfz mplapack-2.0.1.tar.xz
 $ cd mplapack-2.0.1
-$ INSTALL="/usr/bin/install"; export INSTALL
 $ CXX="g++-mp-10" ; export CXX
 $ CC="gcc-mp-10" ; export CC
 $ FC="gfortran-mp-10"; export FC
