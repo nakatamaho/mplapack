@@ -145,7 +145,7 @@ $ make install
 ```
 
 * on macOS (using macports)
-gcc is required; we don't test clang which doesn't support _Float128.
+gcc is required; we don't test clang which doesn't support _Float128. /opt/local/bin/ginstall is somewhat broken. See https://github.com/nakatamaho/mplapack/issues/44
 ```
 $ sudo port install gcc10 coreutils git gsed
 $ rm -rf $HOME/tmp $HOME/MPLAPACK
@@ -157,6 +157,7 @@ $ cd mplapack-2.0.1
 $ CXX="g++-mp-10" ; export CXX
 $ CC="gcc-mp-10" ; export CC
 $ FC="gfortran-mp-10"; export FC
+$ INSTALL="/usr/bin/install"; export INSTALL
 $ ./configure --prefix=$HOME/MPLAPACK --enable-gmp=yes --enable-mpfr=yes --enable-_Float128=yes --enable-qd=yes --enable-dd=yes --enable-double=yes --enable-test=yes --enable-benchmark=yes #--enable-_Float64x=yes 
 $ make -j4
 $ make install
