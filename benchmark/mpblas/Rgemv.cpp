@@ -47,15 +47,16 @@ double flops_gemv(mplapackint m_i, mplapackint n_i) {
 }
 
 int main(int argc, char *argv[]) {
-    mplapackint k, l, m = 1, n = 1;
     mplapackint STEPN = 1, STEPM = 1, LOOPS = 3, TOTALSTEPS = 283;
-    mplapackint incx = 1, incy = 1;
-    char trans = 'n', normtype = 'm';
+    mplapackint m = 1, n = 1, incx = 1, incy = 1;
+    char trans = 'n';
+    int check_flag = 1;
+
+    char normtype = 'm';
     REAL alpha, beta, dummy, dummywork[1];
     REAL mOne = -1;
     double elapsedtime;
-    int i, p;
-    int check_flag = 1;
+    int i, k, l, p;
 
     using Clock = std::chrono::high_resolution_clock;
     using std::chrono::duration_cast;

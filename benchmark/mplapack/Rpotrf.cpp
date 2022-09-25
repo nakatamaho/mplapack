@@ -47,14 +47,17 @@ double flops_potrf(mplapackint n_i) {
 }
 
 int main(int argc, char *argv[]) {
-    REAL alpha, beta, mtemp, dummy;
+    char uplo = 'u';
+    mplapackint n = 1, STEP = 1, TOTALSTEPS = 100;
+
+    int check_flag = 1;
+    char normtype = 'm';
+
+    REAL mtemp, dummy;
     REAL *dummywork = new REAL[1];
     double elapsedtime;
-    char uplo = 'u', normtype = 'm';
-    mplapackint STEP = 1, TOTALSTEPS = 100;
-    mplapackint info, lda;
-    int i, j, n = 1, k, p;
-    int check_flag = 1;
+    mplapackint lda, info;
+    int i, j, k, p;
 
     using Clock = std::chrono::high_resolution_clock;
     using std::chrono::duration_cast;

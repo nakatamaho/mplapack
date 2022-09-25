@@ -6,15 +6,15 @@ else
     LDPATHPREFIX="LD_LIBRARY_PATH=%%PREFIX%%/lib:$LD_LIBRARY_PATH"
 fi
 
-env $LDPATHPREFIX ./dgetrf_ref       -TOTALSTEPS 500 -STEPM 7 -STEPN 7 >& log.dgetrf.ref
-env $LDPATHPREFIX ./dgetrf_openblas  -TOTALSTEPS 500 -STEPM 7 -STEPN 7 >& log.dgetrf.openblas
+env $LDPATHPREFIX timeout 3600 ./dgetrf_ref       -TOTALSTEPS 500 -STEPM 7 -STEPN 7 >& log.dgetrf.ref
+env $LDPATHPREFIX timeout 3600 ./dgetrf_openblas  -TOTALSTEPS 500 -STEPM 7 -STEPN 7 >& log.dgetrf.openblas
 
 ####
 MPLIBS="_Float64x dd double _Float128"
 
 for _mplib in $MPLIBS; do
-env $LDPATHPREFIX ./Rgetrf.${_mplib}_opt -NOCHECK -TOTALSTEPS 200 -STEPM 5 -STEPN 5    >& log.Rgetrf.${_mplib}_opt
-env $LDPATHPREFIX ./Rgetrf.${_mplib}     -NOCHECK -TOTALSTEPS 200 -STEPM 5 -STEPN 5    >& log.Rgetrf.${_mplib}
+env $LDPATHPREFIX timeout 3600 ./Rgetrf.${_mplib}_opt -NOCHECK -TOTALSTEPS 200 -STEPM 5 -STEPN 5    >& log.Rgetrf.${_mplib}_opt
+env $LDPATHPREFIX timeout 3600 ./Rgetrf.${_mplib}     -NOCHECK -TOTALSTEPS 200 -STEPM 5 -STEPN 5    >& log.Rgetrf.${_mplib}
 done
 ####
 
@@ -22,8 +22,8 @@ done
 MPLIBS="mpfr gmp qd"
 
 for _mplib in $MPLIBS; do
-env $LDPATHPREFIX ./Rgetrf.${_mplib}_opt -NOCHECK -TOTALSTEPS 200 -STEPM 5 -STEPN 5     >& log.Rgetrf.${_mplib}_opt
-env $LDPATHPREFIX ./Rgetrf.${_mplib}     -NOCHECK -TOTALSTEPS 200 -STEPM 5 -STEPN 5     >& log.Rgetrf.${_mplib}
+env $LDPATHPREFIX timeout 3600 ./Rgetrf.${_mplib}_opt -NOCHECK -TOTALSTEPS 200 -STEPM 5 -STEPN 5     >& log.Rgetrf.${_mplib}_opt
+env $LDPATHPREFIX timeout 3600 ./Rgetrf.${_mplib}     -NOCHECK -TOTALSTEPS 200 -STEPM 5 -STEPN 5     >& log.Rgetrf.${_mplib}
 done
 ####
 

@@ -36,7 +36,8 @@
 #include <mplapack_benchmark.h>
 
 int main(int argc, char *argv[]) {
-    int incx = 1, incy = 1, STEP = 97, n = 1, LOOPS = 3, TOTALSTEPS = 3000;
+    int n = 1, incx = 1, incy = 1, STEP = 97, LOOPS = 3, TOTALSTEPS = 3092;
+
     double dummy;
     double elapsedtime;
     int i, p;

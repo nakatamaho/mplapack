@@ -6,15 +6,15 @@ else
     LDPATHPREFIX="LD_LIBRARY_PATH=%%PREFIX%%/lib:$LD_LIBRARY_PATH"
 fi
 
-env $LDPATHPREFIX ./dgemv_ref       >& log.dgemv.ref
-env $LDPATHPREFIX ./dgemv_openblas  >& log.dgemv.openblas
+env $LDPATHPREFIX timeout 3600 ./dgemv_ref      -TOTALSTEPS 10000 >& log.dgemv.ref
+env $LDPATHPREFIX timeout 3600 ./dgemv_openblas -TOTALSTEPS 10000 >& log.dgemv.openblas
 
 ####
 MPLIBS="_Float128 _Float64x dd double"
 
 for _mplib in $MPLIBS; do
-env $LDPATHPREFIX ./Rgemv.${_mplib}_opt -NOCHECK  >& log.Rgemv.${_mplib}_opt
-env $LDPATHPREFIX ./Rgemv.${_mplib}     -NOCHECK  >& log.Rgemv.${_mplib}
+env $LDPATHPREFIX timeout 3600 ./Rgemv.${_mplib}_opt -NOCHECK -TOTALSTEPS 10000 >& log.Rgemv.${_mplib}_opt
+env $LDPATHPREFIX timeout 3600 ./Rgemv.${_mplib}     -NOCHECK -TOTALSTEPS 10000 >& log.Rgemv.${_mplib}
 done
 ####
 
@@ -22,8 +22,8 @@ done
 MPLIBS="mpfr gmp qd"
 
 for _mplib in $MPLIBS; do
-env $LDPATHPREFIX ./Rgemv.${_mplib}_opt -NOCHECK  >& log.Rgemv.${_mplib}_opt
-env $LDPATHPREFIX ./Rgemv.${_mplib}     -NOCHECK  >& log.Rgemv.${_mplib}
+env $LDPATHPREFIX timeout 3600 ./Rgemv.${_mplib}_opt -NOCHECK  >& log.Rgemv.${_mplib}_opt
+env $LDPATHPREFIX timeout 3600 ./Rgemv.${_mplib}     -NOCHECK  >& log.Rgemv.${_mplib}
 done
 ####
 

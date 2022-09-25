@@ -6,15 +6,15 @@ else
     LDPATHPREFIX="LD_LIBRARY_PATH=%%PREFIX%%/lib:$LD_LIBRARY_PATH"
 fi
 
-env $LDPATHPREFIX ./dpotrf_ref       -TOTALSTEPS 500 -STEP 7 >& log.dpotrf.ref
-env $LDPATHPREFIX ./dpotrf_openblas  -TOTALSTEPS 500 -STEP 7 >& log.dpotrf.openblas
+env $LDPATHPREFIX timeout 3600 ./dpotrf_ref       -TOTALSTEPS 500 -STEP 7 >& log.dpotrf.ref
+env $LDPATHPREFIX timeout 3600 ./dpotrf_openblas  -TOTALSTEPS 500 -STEP 7 >& log.dpotrf.openblas
 
 ####
 MPLIBS="_Float64x dd double _Float128"
 
 for _mplib in $MPLIBS; do
-env $LDPATHPREFIX ./Rpotrf.${_mplib}_opt -NOCHECK -TOTALSTEPS 200 -STEP 5    >& log.Rpotrf.${_mplib}_opt
-env $LDPATHPREFIX ./Rpotrf.${_mplib}     -NOCHECK -TOTALSTEPS 200 -STEP 5    >& log.Rpotrf.${_mplib}
+env $LDPATHPREFIX timeout 3600 ./Rpotrf.${_mplib}_opt -NOCHECK -TOTALSTEPS 200 -STEP 5    >& log.Rpotrf.${_mplib}_opt
+env $LDPATHPREFIX timeout 3600 ./Rpotrf.${_mplib}     -NOCHECK -TOTALSTEPS 200 -STEP 5    >& log.Rpotrf.${_mplib}
 done
 ####
 
@@ -22,8 +22,8 @@ done
 MPLIBS="mpfr gmp qd"
 
 for _mplib in $MPLIBS; do
-env $LDPATHPREFIX ./Rpotrf.${_mplib}_opt -NOCHECK -TOTALSTEPS 200 -STEP 5    >& log.Rpotrf.${_mplib}_opt
-env $LDPATHPREFIX ./Rpotrf.${_mplib}     -NOCHECK -TOTALSTEPS 200 -STEP 5    >& log.Rpotrf.${_mplib}
+env $LDPATHPREFIX timeout 3600 ./Rpotrf.${_mplib}_opt -NOCHECK -TOTALSTEPS 200 -STEP 5    >& log.Rpotrf.${_mplib}_opt
+env $LDPATHPREFIX timeout 3600 ./Rpotrf.${_mplib}     -NOCHECK -TOTALSTEPS 200 -STEP 5    >& log.Rpotrf.${_mplib}
 done
 ####
 

@@ -48,14 +48,14 @@ double flops_gemm(mplapackint k_i, mplapackint m_i, mplapackint n_i) {
 }
 
 int main(int argc, char *argv[]) {
-    REAL alpha, beta, dummy;
-    REAL dummywork[1];
-    double elapsedtime;
+    int STEPN = 3, STEPM = 3, STEPK = 3, LOOPS = 3, TOTALSTEPS = 333;
+    int m = 1, n = 1, k = 1;
     char transa = 'n', transb = 'n', normtype = 'm';
-    int m = 1, n = 1, k = 1, STEPN = 3, STEPM = 3, STEPK = 3, LOOPS = 3, TOTALSTEPS = 333;
-    int lda, ldb, ldc;
-    int i, ka, kb, p;
     int check_flag = 1;
+
+    REAL alpha, beta, dummy, dummywork[1];
+    double elapsedtime;
+    int i, ka, kb, p, lda, ldb, ldc;
 
     using Clock = std::chrono::high_resolution_clock;
     using std::chrono::duration_cast;

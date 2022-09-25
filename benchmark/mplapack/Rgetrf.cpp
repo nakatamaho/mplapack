@@ -47,14 +47,17 @@ double flops_getrf(mplapackint m_i, mplapackint n_i) {
 }
 
 int main(int argc, char *argv[]) {
-    REAL alpha, beta, mtemp, dummy;
-    REAL *dummywork = new REAL[1];
-    double elapsedtime;
-    mplapackint STEPN = 1, STEPM = 1, TOTALSTEPS = 100;
-    mplapackint info, lda;
-    int i, m = 1, n = 1, p;
+    int m = 1, n = 1;
+    mplapackint STEPN = 3, STEPM = 3, TOTALSTEPS = 400;
+
     char normtype = 'm';
     int check_flag = 1;
+
+    REAL dummy;
+    REAL *dummywork = new REAL[1];
+    double elapsedtime;
+    mplapackint lda, info;
+    int i, p;
 
     using Clock = std::chrono::high_resolution_clock;
     using std::chrono::duration_cast;

@@ -51,6 +51,7 @@ int main(int argc, char *argv[]) {
     int STEPN = 1, STEPM = 1, LOOPS = 3, TOTALSTEPS = 283;
     int m = 1, n = 1, incx = 1, incy = 1;
     char trans = 'n';
+
     double alpha, beta, dummy;
     double elapsedtime;
     int i, k, l, p;

@@ -48,11 +48,12 @@ double flops_potrf(int n_i) {
 }
 
 int main(int argc, char *argv[]) {
+    char uplo = 'u';
+    int STEP = 1, TOTALSTEPS = 400, n = 1;
+
     double mtemp, dummy;
     double elapsedtime;
-    char uplo = 'u';
-    int STEP = 1, info, TOTALSTEPS = 400, n = 1;
-    int lda;
+    int lda, info;
     int i, j, k, p;
 
     using Clock = std::chrono::high_resolution_clock;

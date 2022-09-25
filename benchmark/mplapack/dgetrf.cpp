@@ -48,10 +48,11 @@ double flops_getrf(int m_i, int n_i) {
 }
 
 int main(int argc, char *argv[]) {
+    int m = 1, n = 1;
+    int STEPN = 3, STEPM = 3, TOTALSTEPS = 400;
+
     double dummy;
     double elapsedtime;
-    int STEPN = 3, STEPM = 3, TOTALSTEPS = 400;
-    int m = 1, n = 1;
     int lda, info;
     int i, p;
 

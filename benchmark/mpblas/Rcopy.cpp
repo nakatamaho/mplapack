@@ -36,7 +36,8 @@
 
 int main(int argc, char *argv[]) {
     mplapackint n = 1;
-    mplapackint incx = 1, incy = 1, STEP = 97, LOOPS = 3, TOTALSTEPS = 3000;
+    mplapackint incx = 1, incy = 1, STEP = 97, LOOPS = 3, TOTALSTEPS = 3092;
+
     REAL dummy;
     double elapsedtime;
     int i, p;

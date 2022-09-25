@@ -6,15 +6,15 @@ else
     LDPATHPREFIX="LD_LIBRARY_PATH=%%PREFIX%%/lib:$LD_LIBRARY_PATH"
 fi
 
-env $LDPATHPREFIX ./dcopy_ref      -STEP 7 -TOTALSTEPS 42857 -LOOPS 3 >& log.dcopy.ref
-env $LDPATHPREFIX ./dcopy_openblas -STEP 7 -TOTALSTEPS 42857 -LOOPS 3 >& log.dcopy.openblas
+env $LDPATHPREFIX timeout 3600 ./dcopy_ref      -STEP 7 -TOTALSTEPS 42857 -LOOPS 3 >& log.dcopy.ref
+env $LDPATHPREFIX timeout 3600 ./dcopy_openblas -STEP 7 -TOTALSTEPS 42857 -LOOPS 3 >& log.dcopy.openblas
 
 ####
 MPLIBS="_Float128 _Float64x dd double"
 
 for _mplib in $MPLIBS; do
-env $LDPATHPREFIX ./Rcopy.${_mplib}_opt -NOCHECK  >& log.Rcopy.${_mplib}_opt
-env $LDPATHPREFIX ./Rcopy.${_mplib}     -NOCHECK  >& log.Rcopy.${_mplib}
+env $LDPATHPREFIX timeout 3600 ./Rcopy.${_mplib}_opt -NOCHECK  >& log.Rcopy.${_mplib}_opt
+env $LDPATHPREFIX timeout 3600 ./Rcopy.${_mplib}     -NOCHECK  >& log.Rcopy.${_mplib}
 done
 ####
 
@@ -22,8 +22,8 @@ done
 MPLIBS="mpfr gmp qd"
 
 for _mplib in $MPLIBS; do
-env $LDPATHPREFIX ./Rcopy.${_mplib}_opt -NOCHECK  >& log.Rcopy.${_mplib}_opt
-env $LDPATHPREFIX ./Rcopy.${_mplib}     -NOCHECK  >& log.Rcopy.${_mplib}
+env $LDPATHPREFIX timeout 3600 ./Rcopy.${_mplib}_opt -NOCHECK  >& log.Rcopy.${_mplib}_opt
+env $LDPATHPREFIX timeout 3600 ./Rcopy.${_mplib}     -NOCHECK  >& log.Rcopy.${_mplib}
 done
 ####
 

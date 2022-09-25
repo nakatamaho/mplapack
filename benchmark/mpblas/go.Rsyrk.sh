@@ -10,8 +10,8 @@ fi
 MPLIBS="_Float64x dd double _Float128"
 
 for _mplib in $MPLIBS; do
-env $LDPATHPREFIX ./Rsyrk.${_mplib}_opt -NOCHECK    >& log.Rsyrk.${_mplib}_opt
-env $LDPATHPREFIX ./Rsyrk.${_mplib}     -NOCHECK    >& log.Rsyrk.${_mplib}
+env $LDPATHPREFIX timeout 3600 ./Rsyrk.${_mplib}_opt -NOCHECK    >& log.Rsyrk.${_mplib}_opt
+env $LDPATHPREFIX timeout 3600 ./Rsyrk.${_mplib}     -NOCHECK    >& log.Rsyrk.${_mplib}
 done
 ####
 
@@ -19,8 +19,8 @@ done
 MPLIBS="mpfr gmp qd"
 
 for _mplib in $MPLIBS; do
-env $LDPATHPREFIX ./Rsyrk.${_mplib}_opt -NOCHECK    >& log.Rsyrk.${_mplib}_opt
-env $LDPATHPREFIX ./Rsyrk.${_mplib}     -NOCHECK    >& log.Rsyrk.${_mplib}
+env $LDPATHPREFIX timeout 3600 ./Rsyrk.${_mplib}_opt -NOCHECK    >& log.Rsyrk.${_mplib}_opt
+env $LDPATHPREFIX timeout 3600 ./Rsyrk.${_mplib}     -NOCHECK    >& log.Rsyrk.${_mplib}
 done
 ####
 

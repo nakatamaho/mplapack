@@ -6,15 +6,15 @@ else
     LDPATHPREFIX="LD_LIBRARY_PATH=%%PREFIX%%/lib:$LD_LIBRARY_PATH"
 fi
 
-env $LDPATHPREFIX ./daxpy_ref      -STEP 7 -TOTALSTEPS 42857 -LOOPS 3 >& log.daxpy.ref
-env $LDPATHPREFIX ./daxpy_openblas -STEP 7 -TOTALSTEPS 42857 -LOOPS 3 >& log.daxpy.openblas
+env $LDPATHPREFIX timeout 3600 ./daxpy_ref      -STEP 7 -TOTALSTEPS 42857 -LOOPS 3 >& log.daxpy.ref
+env $LDPATHPREFIX timeout 3600 ./daxpy_openblas -STEP 7 -TOTALSTEPS 42857 -LOOPS 3 >& log.daxpy.openblas
 
 ####
 MPLIBS="_Float128 _Float64x dd double"
 
 for _mplib in $MPLIBS; do
-env $LDPATHPREFIX ./Raxpy.${_mplib}_opt -NOCHECK  >& log.Raxpy.${_mplib}_opt
-env $LDPATHPREFIX ./Raxpy.${_mplib} -NOCHECK      >& log.Raxpy.${_mplib}
+env $LDPATHPREFIX timeout 3600 ./Raxpy.${_mplib}_opt -NOCHECK  >& log.Raxpy.${_mplib}_opt
+env $LDPATHPREFIX timeout 3600 ./Raxpy.${_mplib} -NOCHECK      >& log.Raxpy.${_mplib}
 done
 ####
 
@@ -22,8 +22,8 @@ done
 MPLIBS="mpfr gmp qd"
 
 for _mplib in $MPLIBS; do
-env $LDPATHPREFIX ./Raxpy.${_mplib}_opt -NOCHECK  >& log.Raxpy.${_mplib}_opt
-env $LDPATHPREFIX ./Raxpy.${_mplib} -NOCHECK      >& log.Raxpy.${_mplib}
+env $LDPATHPREFIX timeout 3600 ./Raxpy.${_mplib}_opt -NOCHECK  >& log.Raxpy.${_mplib}_opt
+env $LDPATHPREFIX timeout 3600 ./Raxpy.${_mplib} -NOCHECK      >& log.Raxpy.${_mplib}
 done
 ####
 

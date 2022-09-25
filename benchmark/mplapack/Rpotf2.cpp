@@ -34,17 +34,18 @@
 #include <mplapack.h>
 #include <mplapack_benchmark.h>
 
-#define TOTALSTEPS 1000
-
 int main(int argc, char *argv[]) {
-    REAL alpha, beta, mtemp, dummy;
+    char uplo = 'u';
+    mplapackint STEP = 1, TOTALSTEPS = 400, n = 1;
+
+    int check_flag = 1;
+    char normtype = 'm';
+
+    mplapackint lda, info;
+    int i, j, k, p;
+    REAL mtemp, dummy;
     REAL *dummywork = new REAL[1];
     double elapsedtime;
-    char uplo = 'u', normtype = 'm';
-    mplapackint STEP = 1, info;
-    mplapackint lda;
-    int i, j, n, k, p;
-    int check_flag = 1;
 
     using Clock = std::chrono::high_resolution_clock;
     using std::chrono::duration_cast;

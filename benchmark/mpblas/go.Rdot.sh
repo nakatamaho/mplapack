@@ -6,15 +6,15 @@ else
     LDPATHPREFIX="LD_LIBRARY_PATH=%%PREFIX%%/lib:$LD_LIBRARY_PATH"
 fi
 
-env $LDPATHPREFIX ./ddot_ref      -STEP 7 -TOTALSTEPS 42857 -LOOPS 3 >& log.ddot.ref
-env $LDPATHPREFIX ./ddot_openblas -STEP 7 -TOTALSTEPS 42857 -LOOPS 3 >& log.ddot.openblas
+env $LDPATHPREFIX timeout 3600 ./ddot_ref      -STEP 7 -TOTALSTEPS 42857 -LOOPS 3 >& log.ddot.ref
+env $LDPATHPREFIX timeout 3600 ./ddot_openblas -STEP 7 -TOTALSTEPS 42857 -LOOPS 3 >& log.ddot.openblas
 
 ####
 MPLIBS="_Float128 _Float64x dd double"
 
 for _mplib in $MPLIBS; do
-env $LDPATHPREFIX ./Rdot.${_mplib}_opt -NOCHECK  >& log.Rdot.${_mplib}_opt
-env $LDPATHPREFIX ./Rdot.${_mplib}     -NOCHECK  >& log.Rdot.${_mplib}
+env $LDPATHPREFIX timeout 3600 ./Rdot.${_mplib}_opt -NOCHECK  >& log.Rdot.${_mplib}_opt
+env $LDPATHPREFIX timeout 3600 ./Rdot.${_mplib}     -NOCHECK  >& log.Rdot.${_mplib}
 done
 ####
 
@@ -22,8 +22,8 @@ done
 MPLIBS="mpfr gmp qd"
 
 for _mplib in $MPLIBS; do
-env $LDPATHPREFIX ./Rdot.${_mplib}_opt -NOCHECK  >& log.Rdot.${_mplib}_opt
-env $LDPATHPREFIX ./Rdot.${_mplib}     -NOCHECK  >& log.Rdot.${_mplib}
+env $LDPATHPREFIX timeout 3600 ./Rdot.${_mplib}_opt -NOCHECK  >& log.Rdot.${_mplib}_opt
+env $LDPATHPREFIX timeout 3600 ./Rdot.${_mplib}     -NOCHECK  >& log.Rdot.${_mplib}
 done
 ####
 
