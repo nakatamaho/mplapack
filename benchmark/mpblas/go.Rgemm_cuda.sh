@@ -18,6 +18,7 @@ if [ `uname` = "Linux" ]; then
     SED=sed
 else
     MODELNAME="unknown"
+    SED=sed
 fi
 
 $SED -e "s/%%GPU%%/$MODELNAME/g" Rgemm_cuda.plt.in > Rgemm_cuda.plt
