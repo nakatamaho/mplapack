@@ -145,7 +145,8 @@ $ make install
 ```
 
 * on macOS (using macports)
-gcc is required; we don't test clang which doesn't support _Float128. /opt/local/bin/ginstall is somewhat broken. See https://github.com/nakatamaho/mplapack/issues/44
+FSF gcc is required (via macports, homebrew, or whatever); we don't test clang which doesn't support _Float128. 
+There are two problems with building the mac version. We have to downgrade the command line tools to 13.4. See https://github.com/nakatamaho/mplapack/issues/60  and /opt/local/bin/ginstall is somewhat broken. See https://github.com/nakatamaho/mplapack/issues/44 to workaround.
 ```
 $ sudo port install gcc10 coreutils git gsed
 $ rm -rf $HOME/tmp $HOME/MPLAPACK
