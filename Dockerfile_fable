@@ -1,6 +1,7 @@
 # * How to build
 #  docker build -f Dockerfile_fable --build-arg SSH_KEY="$(cat ~/.ssh/id_ed25519)" -t mplapack:fable .
 # * How to run
+#  sudo sh -c 'echo 1 >/proc/sys/kernel/perf_event_paranoid' # to run perf
 #  docker run --privileged --gpus all -it mplapack:fable /bin/bash
 #
 FROM nvidia/cuda:11.7.0-devel-ubuntu22.04
