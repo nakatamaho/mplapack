@@ -1,9 +1,0 @@
-TODOs for release
-
-* fixes for gmp mplapack 
-* complex and rfp support
-* test mplapack
-* test by make check for lin and eig
-* test on other platforms
-* add documents
-* add examples
