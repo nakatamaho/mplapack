@@ -157,6 +157,9 @@ ARG SSH_KEY
 RUN echo "$SSH_KEY" > /home/$DOCKER_USER/.ssh/id_ed25519
 RUN chmod 600 /home/$DOCKER_USER/.ssh/id_ed25519
 
+RUN cd ${WORK} && git clone https://github.com/nakatamaho/libqd3.git
+RUN cd ${WORK} && git clone https://github.com/nakatamaho/gmpfrxx.git
+
 RUN cd ${WORK} && git clone https://github.com/nakatamaho/mplapack.git
 RUN cd ${WORK}/mplapack && git remote set-url origin git@github.com:nakatamaho/mplapack.git
 RUN cd ${WORK}/mplapack && git log -1
