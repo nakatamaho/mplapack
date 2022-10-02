@@ -8,6 +8,9 @@ else
     LDPATHPREFIX="LD_LIBRARY_PATH=%%PREFIX%%/lib:$LD_LIBRARY_PATH"
 fi
 
+env $LDPATHPREFIX timeout $TIMEOUT ./dsyrk_ref      -STEP 7 -TOTALSTEPS 714 -LOOPS 3 >& log.dsyrk.ref
+env $LDPATHPREFIX timeout $TIMEOUT ./dsyrk_openblas -STEP 7 -TOTALSTEPS 714 -LOOPS 3 >& log.dsyrk.openblas
+
 ####
 MPLIBS="_Float64x dd double _Float128"
 
