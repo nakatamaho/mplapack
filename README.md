@@ -1,4 +1,5 @@
-# This package has been rewritten in C++ and offers support for various high precision libraries such as GMP, MPFR, and QD, allowing users to choose the library that best suits their needs. The MPLAPACK is a free software, distributed under a 2-clause BSD style license, in addition to the original license from LAPACK.
+# The MPLAPACK is a multiprecision linear algebra package based on BLAS and LAPACK. 
+This package has been rewritten in C++ and offers support for various high precision libraries such as GMP, MPFR, and QD, allowing users to choose the library that best suits their needs. The MPLAPACK is a free software, distributed under a 2-clause BSD style license, in addition to the original license from LAPACK.
 
 # News
 
