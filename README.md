@@ -1,13 +1,9 @@
-# The MPLAPACK is a multiprecision linear algebra package based on BLAS and LAPACK.
-This package is rewritten in C++, and supports several high precision
-libraries like GMP, MPFR and QD etc so that users can choose for user's
-convenience. The MPLAPACK is a free software (2-clause BSD style license with
-original license by LAPACK).
+# This package has been rewritten in C++ and offers support for various high precision libraries such as GMP, MPFR, and QD, allowing users to choose the library that best suits their needs. The MPLAPACK is a free software, distributed under a 2-clause BSD style license, in addition to the original license from LAPACK.
 
 # News
 
-* 2022/9/12 MPLAPACK 2.0.1 released! CUDA version of Rgemm (dd) and Rsyrk (dd) on Vota and Ampere; on Tesla V100; performance of both are approximately 450GFlops! V100 and A100 support revived by Nakazato (aizu-u), provide DLLs for MINGW mplapack.
-* 2022/7/26 MPLAPACK 2.0.0 released! All routines excpet for mixed precision routines are now working and checked by extensive tests for all multiple precisions.
+* 2022-09-12, MPLAPACK 2.0.1 was released, featuring CUDA versions of Rgemm (dd) and Rsyrk (dd) for use on Vota and Ampere, and on Tesla V100, with performance reaching approximately 450 GFlops. Support for V100 and A100 was also reintroduced by Nakazato (aizu-u). We also provide DLLs provided for MINGW mplapack.
+* 2022-07-26, MPLAPACK 2.0.0 was released, with all routines, with the exception of mixed precision routines, now functional and extensively tested for all multiple precisions.
 
 # Capabilities
 * MPBLAS: All BLAS routines can be done in multiple precision arithmetic.
@@ -193,18 +189,19 @@ $ cd ; fable.cout sample.f
 This is the release process for MPLAPACK 3.0.0
 | Action | Date | Status | Description |
 | --- | --- | --- | --- |
+| optimized implementations should be the default|            |     |                          | 
+| add template version                           |            |     | mockup https://github.com/nakatamaho/mplapack-template | 
+| add gmpfrxx                                    |            |     | https://math.berkeley.edu/~wilken/code/gmpfrxx/ | 
 | add openblas for benchmark of double           |            |     |                          | 
 | update to LAPACK 3.10.1                        |            |     |                          | 
 | FMA for QD, DD                                 |            |     |                          |
 | add more benchmarks, Rsyev, Rgesvd etc         |            |     |                          | 
 | optimized implementations                      |            |     |                          | 
-| optimized implementations should be the default|            |     |                          | 
 | add qa program of BLAS                         |            |     |                          | 
 | Take benchmark on A100 (Rgemm, Rsyrk dd)       |            |     |                          |
 | python integration?                            |            |     |                          | 
 | octave integration?                            |            |     |                          | 
 | Drop GMP version                               |            |     | Since trigonometric functions req'ed | 
-| add gmpfrxx                                    |            |     | https://math.berkeley.edu/~wilken/code/gmpfrxx/ | 
 | Impliment mixed precision version              |            |     |                     | 
 | cleanup pow (REAL, long int)                   |            |     |                          | 
 | Get rid of compiler warnings                   |            |     |                          | 
@@ -214,7 +211,6 @@ This is the release process for MPLAPACK 3.0.0
 This is the release process for MPLAPACK 3.0.0
 | Action | Date | Status | Description |
 | --- | --- | --- | --- |
-| template version                               |            |     | mockup https://github.com/nakatamaho/mplapack-template | 
 
 ## old schedules
 
