@@ -4,7 +4,7 @@ ARG MPLAPACK_VER="2.0.1"
 RUN yum install -y epel-release
 RUN yum install -y centos-release-scl
 RUN yum install -y devtoolset-9
-RUN scl enable devtoolset-9 bash
+SHELL [ "scl", "enable", "devtoolset-9" ]
 RUN yum install -y gcc gcc-c++ gcc-gfortran make automake libtool gnuplot
 RUN yum install -y python3
 RUN yum install -y sudo which patch bzip2 git wget time parallel
