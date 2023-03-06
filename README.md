@@ -60,6 +60,9 @@ Eprint = {arXiv:2109.13406v2},
 }
 ```
 
+# Movies
+* https://www.youtube.com/watch?v=M76wHwckNPU (created by Ge Baolai; https://twitter.com/SHARCNET/status/1398280683328618504)
+
 # Slides
 * https://github.com/nakatamaho/mplapack/blob/v2.0/doc/presentation/20211128_%E7%B2%BE%E5%BA%A6%E4%BF%9D%E8%A8%BCmeeting.pdf
 
