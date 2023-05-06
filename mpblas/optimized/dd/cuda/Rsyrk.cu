@@ -48,25 +48,10 @@ an m by k matrix, op(B) a k by n matrix and C an m by n matrix.
 mplapackint Mlsame_dd(const char *a, const char *b);
 void Mxerbla_dd(const char *srname, int info);
 
-// define texture memory
-texture < int4, 1 > tex_x_double_A;
-texture < int4, 1 > tex_x_double_B;
-
 // matrix block size
 #define Bk  (16)
 #define Bn  (16)
 #define Gn   (4)
-
-static
-__inline__ __device__ dd_real fetch_x_A(const int &i)
-{
-    register int4 v = tex1Dfetch(tex_x_double_A, i);
-    register
-    dd_real r;
-    r.x[0] = __hiloint2double(v.y, v.x);
-    r.x[1] = __hiloint2double(v.w, v.z);
-    return r;
-}
 
 __global__ void Rsyrk_NU_0 (dd_real * Adev, dd_real * Cdev, mplapackint n, mplapackint k, mplapackint lda, mplapackint ldc, dd_real alpha, dd_real beta);
 __global__ void Rsyrk_NU_p (dd_real * Adev, dd_real * Cdev, mplapackint n, mplapackint k, mplapackint lda, mplapackint ldc, dd_real alpha, dd_real beta);
@@ -87,6 +72,9 @@ void Is_cuda_Rgemm_error(cudaError_t rc, const char *mes, mplapackint n, mplapac
     }
     /* not an error */
 }
+
+#define fetch_x_A(XX,i) XX[i]
+#define fetch_x_B(XX,i) XX[i]
 
 #include <Rsyrk_NU_0.cu>
 #include <Rsyrk_NU_p.cu>
