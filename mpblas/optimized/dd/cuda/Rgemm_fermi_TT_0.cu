@@ -63,7 +63,7 @@ __global__ void Rgemm_fermi_TT_0(dd_real * Adev, dd_real * Bdev, dd_real * Cdev,
 
     //load first data of A from global memory into register
     A_j = blockDim.y * 0 + threadIdx.y;
-    regA = fetch_x_A(A_i * lda + A_j);
+    regA = fetch_x_A(Adev, A_i * lda + A_j);
 
     //load first data of B from global memory into register
     iBb = 0;
@@ -71,19 +71,19 @@ __global__ void Rgemm_fermi_TT_0(dd_real * Adev, dd_real * Bdev, dd_real * Cdev,
 
     jBb = blockIdx.y * Gn + 0;
     B_j = blockDim.y * jBb + threadIdx.y;
-    regB0 = fetch_x_B(B_i * ldb + B_j);
+    regB0 = fetch_x_B(Bdev, B_i * ldb + B_j);
 
     jBb = blockIdx.y * Gn + 1;
     B_j = blockDim.y * jBb + threadIdx.y;
-    regB1 = fetch_x_B(B_i * ldb + B_j);
+    regB1 = fetch_x_B(Bdev, B_i * ldb + B_j);
 
     jBb = blockIdx.y * Gn + 2;
     B_j = blockDim.y * jBb + threadIdx.y;
-    regB2 = fetch_x_B(B_i * ldb + B_j);
+    regB2 = fetch_x_B(Bdev, B_i * ldb + B_j);
 
     jBb = blockIdx.y * Gn + 3;
     B_j = blockDim.y * jBb + threadIdx.y;
-    regB3 = fetch_x_B(B_i * ldb + B_j);
+    regB3 = fetch_x_B(Bdev, B_i * ldb + B_j);
 
     c_val0.x[0] = c_val0.x[1] = c_val1.x[0] = c_val1.x[1] = 0.0;
     c_val2.x[0] = c_val2.x[1] = c_val3.x[0] = c_val3.x[1] = 0.0;
@@ -117,7 +117,7 @@ __global__ void Rgemm_fermi_TT_0(dd_real * Adev, dd_real * Bdev, dd_real * Cdev,
 	// load next data of A from global memory into register
 	jAb = i + 1;
 	A_j = blockDim.y * jAb + threadIdx.y;
-	regA = fetch_x_A(A_i * lda + A_j);
+	regA = fetch_x_A(Adev, A_i * lda + A_j);
 
 	// load next data of B from global memory into register
 	iBb = i + 1;
@@ -125,19 +125,19 @@ __global__ void Rgemm_fermi_TT_0(dd_real * Adev, dd_real * Bdev, dd_real * Cdev,
 
 	jBb = blockIdx.y * Gn + 0;
 	B_j = blockDim.y * jBb + threadIdx.y;
-	regB0 = fetch_x_B(B_i * ldb + B_j);
+	regB0 = fetch_x_B(Bdev, B_i * ldb + B_j);
 
 	jBb = blockIdx.y * Gn + 1;
 	B_j = blockDim.y * jBb + threadIdx.y;
-	regB1 = fetch_x_B(B_i * ldb + B_j);
+	regB1 = fetch_x_B(Bdev, B_i * ldb + B_j);
 
 	jBb = blockIdx.y * Gn + 2;
 	B_j = blockDim.y * jBb + threadIdx.y;
-	regB2 = fetch_x_B(B_i * ldb + B_j);
+	regB2 = fetch_x_B(Bdev, B_i * ldb + B_j);
 
 	jBb = blockIdx.y * Gn + 3;
 	B_j = blockDim.y * jBb + threadIdx.y;
-	regB3 = fetch_x_B(B_i * ldb + B_j);
+	regB3 = fetch_x_B(Bdev, B_i * ldb + B_j);
 
 	__syncthreads();
     }
