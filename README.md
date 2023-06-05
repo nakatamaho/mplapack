@@ -1,5 +1,5 @@
-# The MPLAPACK is a multiprecision linear algebra package based on BLAS and LAPACK. 
-This package has been rewritten in C++ and offers support for various high precision libraries such as GMP, MPFR, and QD, allowing users to choose the library that best suits their needs. The MPLAPACK is a free software, distributed under a 2-clause BSD style license, in addition to the original license from LAPACK.
+# MPLAPACK constitutes a multi-precision linear algebra package, predicated upon the foundational structures of BLAS and LAPACK. 
+This particular package has undergone a comprehensive conversion into the C++ programming language, further accommodating an array of high-precision libraries, inclusive of GMP, MPFR, and QD. Such a versatile feature enables users to selectively opt for the library most congruous with their specific requirements. MPLAPACK represents a freely accessible software, disseminated under a 2-clause BSD-style license, supplemental to the original license ascribed by LAPACK.
 
 # News
 
@@ -66,9 +66,12 @@ Eprint = {arXiv:2109.13406v2},
 # Slides
 * https://github.com/nakatamaho/mplapack/blob/v2.0/doc/presentation/20211128_%E7%B2%BE%E5%BA%A6%E4%BF%9D%E8%A8%BCmeeting.pdf
 
-# How to build on Linux and Win (using Docker; recommended)
+# Setting up docker environment for CUDA
+The following link provides a comprehensive guide for installation: https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html#install-guide
 
-It took 3.5 hours on my Mac mini (2018), Core i5-8500B (6 cores@3GHz), to finish the build.
+# Building on Linux and Windows via Docker (Recommended)
+
+The construction process necessitated a duration of approximately 3.5 hours, utilizing an Apple Mac mini (2018) equipped with a Core i5-8500B processor, comprising 6 cores operating at a frequency of 3 GHz. The instructions are designed for the Ubuntu 22.04 operating system. Please execute the following commands:
 
 Ubuntu 22.04
 ```

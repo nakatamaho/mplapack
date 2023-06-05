@@ -74,7 +74,7 @@ __global__ void Rsyrk_NL_p(dd_real * Adev, dd_real * Cdev, mplapackint n, mplapa
 
     //load first data of A from global memory into register
     A_j = blockDim.y * 0 + threadIdx.y;
-    regA = fetch_x_A(min(A_i, (int) (n - 1)) + min(A_j, (int) (k - 1)) * lda);
+    regA = fetch_x_A(Adev, min(A_i, (int) (n - 1)) + min(A_j, (int) (k - 1)) * lda);
 
     //load first data of B from global memory into register
     iBb = 0;
@@ -82,19 +82,19 @@ __global__ void Rsyrk_NL_p(dd_real * Adev, dd_real * Cdev, mplapackint n, mplapa
 
     jBb = blockIdx.y * Gn + 0;
     B_j = blockDim.y * jBb + threadIdx.y;
-    regB0 = fetch_x_A(min(B_i, (int) (k - 1)) * lda + min(B_j, (int) (n - 1)));
+    regB0 = fetch_x_A(Adev, min(B_i, (int) (k - 1)) * lda + min(B_j, (int) (n - 1)));
 
     jBb = blockIdx.y * Gn + 1;
     B_j = blockDim.y * jBb + threadIdx.y;
-    regB1 = fetch_x_A(min(B_i, (int) (k - 1)) * lda + min(B_j, (int) (n - 1)));
+    regB1 = fetch_x_A(Adev, min(B_i, (int) (k - 1)) * lda + min(B_j, (int) (n - 1)));
 
     jBb = blockIdx.y * Gn + 2;
     B_j = blockDim.y * jBb + threadIdx.y;
-    regB2 = fetch_x_A(min(B_i, (int) (k - 1)) * lda + min(B_j, (int) (n - 1)));
+    regB2 = fetch_x_A(Adev, min(B_i, (int) (k - 1)) * lda + min(B_j, (int) (n - 1)));
 
     jBb = blockIdx.y * Gn + 3;
     B_j = blockDim.y * jBb + threadIdx.y;
-    regB3 = fetch_x_A(min(B_i, (int) (k - 1)) * lda + min(B_j, (int) (n - 1)));
+    regB3 = fetch_x_A(Adev, min(B_i, (int) (k - 1)) * lda + min(B_j, (int) (n - 1)));
 
     // get initial Cdev data
     iCb = blockIdx.x;
@@ -148,7 +148,7 @@ __global__ void Rsyrk_NL_p(dd_real * Adev, dd_real * Cdev, mplapackint n, mplapa
 	// load next data of A from global memory into register
 	jAb = i + 1;
 	A_j = blockDim.y * jAb + threadIdx.y;
-	regA = fetch_x_A(min(A_i, (int) (n - 1)) + min(A_j, (int) (k - 1)) * lda);
+	regA = fetch_x_A(Adev, min(A_i, (int) (n - 1)) + min(A_j, (int) (k - 1)) * lda);
 
 	// load next data of B from global memory into register
 	iBb = i + 1;
@@ -156,19 +156,19 @@ __global__ void Rsyrk_NL_p(dd_real * Adev, dd_real * Cdev, mplapackint n, mplapa
 
 	jBb = blockIdx.y * Gn + 0;
 	B_j = blockDim.y * jBb + threadIdx.y;
-	regB0 = fetch_x_A(min(B_i, (int) (k - 1)) * lda + min(B_j, (int) (n - 1)));
+	regB0 = fetch_x_A(Adev, min(B_i, (int) (k - 1)) * lda + min(B_j, (int) (n - 1)));
 
 	jBb = blockIdx.y * Gn + 1;
 	B_j = blockDim.y * jBb + threadIdx.y;
-	regB1 = fetch_x_A(min(B_i, (int) (k - 1)) * lda + min(B_j, (int) (n - 1)));
+	regB1 = fetch_x_A(Adev, min(B_i, (int) (k - 1)) * lda + min(B_j, (int) (n - 1)));
 
 	jBb = blockIdx.y * Gn + 2;
 	B_j = blockDim.y * jBb + threadIdx.y;
-	regB2 = fetch_x_A(min(B_i, (int) (k - 1)) * lda + min(B_j, (int) (n - 1)));
+	regB2 = fetch_x_A(Adev, min(B_i, (int) (k - 1)) * lda + min(B_j, (int) (n - 1)));
 
 	jBb = blockIdx.y * Gn + 3;
 	B_j = blockDim.y * jBb + threadIdx.y;
-	regB3 = fetch_x_A(min(B_i, (int) (k - 1)) * lda + min(B_j, (int) (n - 1)));
+	regB3 = fetch_x_A(Adev, min(B_i, (int) (k - 1)) * lda + min(B_j, (int) (n - 1)));
 
 	__syncthreads();
     }

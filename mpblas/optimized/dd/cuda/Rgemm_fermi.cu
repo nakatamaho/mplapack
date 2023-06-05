@@ -48,37 +48,11 @@ an m by k matrix, op(B) a k by n matrix and C an m by n matrix.
 mplapackint Mlsame_dd(const char *a, const char *b);
 void Mxerbla_dd(const char *srname, int info);
 
-// define texture memory
-texture < int4, 1 > tex_x_double_A;
-texture < int4, 1 > tex_x_double_B;
-
 // matrix block size
 #define Bm  (16)
 #define Bk  (16)
 #define Bn  (16)
 #define Gn   (4)
-
-static
-__inline__ __device__ dd_real fetch_x_A(const int &i)
-{
-    register int4 v = tex1Dfetch(tex_x_double_A, i);
-    register
-    dd_real r;
-    r.x[0] = __hiloint2double(v.y, v.x);
-    r.x[1] = __hiloint2double(v.w, v.z);
-    return r;
-}
-
-static
-__inline__ __device__ dd_real fetch_x_B(const int &i)
-{
-    register int4 v = tex1Dfetch(tex_x_double_B, i);
-    register
-    dd_real r;
-    r.x[0] = __hiloint2double(v.y, v.x);
-    r.x[1] = __hiloint2double(v.w, v.z);
-    return r;
-}
 
 //for alpha*A*B + beta
 __global__ void Rgemm_fermi_NN_0 (dd_real * Adev, dd_real * Bdev, dd_real * Cdev, mplapackint m, mplapackint n, mplapackint k, mplapackint lda, mplapackint ldb, mplapackint ldc, dd_real alpha, dd_real beta);
@@ -105,6 +79,9 @@ void Is_cuda_Rgemm_error(cudaError_t rc, const char *mes, mplapackint m, mplapac
     /* not an error */
 }
 
+#define fetch_x_A(XX,i) XX[i]
+#define fetch_x_B(XX,i) XX[i]
+
 #include <Rgemm_fermi_NN_0.cu>
 #include <Rgemm_fermi_NN_p.cu>
 #include <Rgemm_fermi_TN_0.cu>
@@ -121,14 +98,6 @@ void Rgemm_fermi_cuda(const char *transa, const char *transb, mplapackint m, mpl
 
     nota = Mlsame_dd(transa, "N");
     notb = Mlsame_dd(transb, "N");
-
-    cudaChannelFormatDesc channelDesc = cudaCreateChannelDesc(32, 32, 32, 32, cudaChannelFormatKindSigned);
-    // bind texture memory
-    rc = cudaBindTexture(0, tex_x_double_A, Adev, channelDesc);
-        Is_cuda_Rgemm_error(rc, "could not bind to texture A", m, n, k, lda, ldb, ldc);
-
-    rc = cudaBindTexture(0, tex_x_double_B, Bdev, channelDesc);
-        Is_cuda_Rgemm_error(rc, "could not bind to texture B", m, n, k, lda, ldb, ldc);
 
     if (notb) {
         if (nota) {
@@ -175,11 +144,6 @@ void Rgemm_fermi_cuda(const char *transa, const char *transb, mplapackint m, mpl
             }
         }
     }
-    //unbind texture
-    rc = cudaUnbindTexture(tex_x_double_A);
-        Is_cuda_Rgemm_error(rc, "cudaUnbindTexture A error", m, n, k, lda, ldb, ldc);
-    rc = cudaUnbindTexture(tex_x_double_B);
-        Is_cuda_Rgemm_error(rc, "cudaUnbindTexture B error", m, n, k, lda, ldb, ldc);
     cudaThreadSynchronize();
 }
 

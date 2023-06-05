@@ -53,21 +53,6 @@ __global__ void Rsyrk_TL_p (dd_real * Adev, dd_real * Cdev, mplapackint n, mplap
 #define Bn  (16)
 #define Gn   (4)
 
-// define texture memory
-texture < int4, 1 > tex_x_double_A;
-texture < int4, 1 > tex_x_double_B;
-
-static
-__inline__ __device__ dd_real fetch_x_A(const int &i)
-{
-    register int4 v = tex1Dfetch(tex_x_double_A, i);
-    register
-    dd_real r;
-    r.x[0] = __hiloint2double(v.y, v.x);
-    r.x[1] = __hiloint2double(v.w, v.z);
-    return r;
-}
-
 extern void Is_cuda_Rgemm_error(cudaError_t rc, const char *mes, mplapackint n, mplapackint k, mplapackint lda, mplapackint ldc);
 
 void Rsyrk_cuda(const char *uplo, const char *trans, mplapackint n, mplapackint k, dd_real alpha, dd_real * Adev, mplapackint lda, dd_real beta, dd_real * Cdev, mplapackint ldc)
@@ -84,11 +69,6 @@ void Rsyrk_cuda(const char *uplo, const char *trans, mplapackint n, mplapackint 
 	return;
 
     upper = Mlsame_dd(uplo, "U");
-
-    cudaChannelFormatDesc channelDesc = cudaCreateChannelDesc(32, 32, 32, 32, cudaChannelFormatKindSigned);
-    // bind texture memory
-    rc = cudaBindTexture(0, tex_x_double_A, Adev, channelDesc);
-    Is_cuda_Rgemm_error(rc, "could not bind to texture A", n, k, lda, ldc);
 
     //start the operations.
     if (Mlsame_dd(trans, "N")) {
@@ -134,9 +114,6 @@ void Rsyrk_cuda(const char *uplo, const char *trans, mplapackint n, mplapackint 
             }
 	}
     }
-    //unbind texture
-    rc = cudaUnbindTexture(tex_x_double_A);
-        Is_cuda_Rgemm_error(rc, "cudaUnbindTexture A error", n, k, lda, ldc);
     cudaThreadSynchronize();
 }
 
