@@ -64,7 +64,8 @@ Eprint = {arXiv:2109.13406v2},
 * https://www.youtube.com/watch?v=M76wHwckNPU (created by Ge Baolai; https://twitter.com/SHARCNET/status/1398280683328618504)
 
 # Slides
-* https://github.com/nakatamaho/mplapack/blob/v2.0/doc/presentation/20211128_%E7%B2%BE%E5%BA%A6%E4%BF%9D%E8%A8%BCmeeting.pdf
+* https://github.com/nakatamaho/mplapack/blob/master/doc/presentation/2023-06-01%20CMSI%E6%95%99%E8%82%B2%E8%A8%88%E7%AE%97%E7%A7%91%E5%AD%A6%E6%8A%80%E8%A1%93%E7%89%B9%E8%AB%96A%20%E7%AC%AC7%E5%9B%9E%20%E4%B8%AD%E7%94%B0%E7%9C%9F%E7%A7%80.pdf (in Japanese)
+* https://github.com/nakatamaho/mplapack/blob/v2.0/doc/presentation/20211128_%E7%B2%BE%E5%BA%A6%E4%BF%9D%E8%A8%BCmeeting.pdf  (in Japanese)
 
 # Setting up docker environment for CUDA
 The following link provides a comprehensive guide for installation: https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html#install-guide
