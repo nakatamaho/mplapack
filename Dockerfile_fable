@@ -46,10 +46,9 @@ RUN apt install -y intel-hpckit
 ### mingw start ###
 RUN apt install -y mingw-w64 gfortran-mingw-w64 gdb-mingw-w64
 RUN dpkg --add-architecture i386
-RUN wget -nc https://dl.winehq.org/wine-builds/ubuntu/dists/jammy/winehq-jammy.sources
-RUN mv winehq-jammy.sources /etc/apt/sources.list.d/
-RUN wget -nc https://dl.winehq.org/wine-builds/winehq.key
-RUN mv winehq.key /usr/share/keyrings/winehq-archive.key
+RUN mkdir -pm755 /etc/apt/keyrings
+RUN wget -O /etc/apt/keyrings/winehq-archive.key https://dl.winehq.org/wine-builds/winehq.key
+RUN wget -NP /etc/apt/sources.list.d/ https://dl.winehq.org/wine-builds/ubuntu/dists/jammy/winehq-jammy.sources
 RUN apt update -y
 RUN apt install -y --install-recommends wine-stable
 ### mingw end ###
