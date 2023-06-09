@@ -6,7 +6,7 @@
 #  sudo sysctl -w kernel.perf_event_paranoid=-1 # to run perf
 #  docker run --privileged --gpus all -it mplapack:fable /bin/bash
 #
-FROM nvidia/cuda:11.7.0-devel-ubuntu22.04
+FROM nvidia/cuda:11.8.0-devel-ubuntu22.04
 
 #git setting
 ARG GIT_EMAIL="maho.nakata@gmail.com"
@@ -29,7 +29,7 @@ RUN echo "${TZ}" > /etc/timezone \
 RUN apt install -y build-essential python3 gcc g++ gfortran
 RUN apt install -y autotools-dev automake libtool libtool-bin gnuplot
 RUN apt install -y gdb valgrind linux-tools-`uname -r` google-perftools linux-headers-`uname -r`
-RUN apt install -y git wget ccache time parallel
+RUN apt install -y git wget ccache time parallel bc
 RUN apt install -y pkg-config clangd clang-format unifdef octave
 RUN apt install -y ng-common ng-cjk emacs-nox
 RUN update-alternatives --install /usr/bin/python python /usr/bin/python3 1
