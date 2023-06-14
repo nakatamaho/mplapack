@@ -6,6 +6,7 @@
 #  sudo sysctl -w kernel.perf_event_paranoid=-1 # to run perf
 #  docker run --privileged --gpus all -it mplapack:fable /bin/bash
 #
+# https://hub.docker.com/r/nvidia/cuda/tags
 FROM nvidia/cuda:11.8.0-devel-ubuntu22.04
 
 #git setting
@@ -143,6 +144,7 @@ RUN cd ${WORK} && echo 'ssh-add ~/.ssh/id_ed25519' >> .bashrc
 ## intel one api and wine settings start ###
 RUN cd ${WORK} && echo "#source /opt/intel/oneapi/setvars.sh" >> .bashrc
 RUN cd ${WORK} && echo "export WINEPATH=\"/usr/x86_64-w64-mingw32/lib/;/usr/lib/gcc/x86_64-w64-mingw32/10-win32/;/usr/lib/gcc/x86_64-w64-mingw32/10-posix;/home/$DOCKER_USER/MPLAPACK_MINGW/bin\"" >> .bashrc
+RUN cd ${WORK} && echo "export PATH=\"$PATH:/opt/wine-stable/bin\"" >> .bashrc
 RUN cd ${WORK} && echo "export WINEDEBUG=\"-all\"" >> .bashrc
 ## intel one api and wine settings end ###
 
@@ -170,6 +172,7 @@ RUN cd ${WORK}/mplapack && make install
 
 ARG WINEPATH="/usr/x86_64-w64-mingw32/lib/;/usr/lib/gcc/x86_64-w64-mingw32/10-win32/;/usr/lib/gcc/x86_64-w64-mingw32/10-posix"
 ARG WINEDEBUG="-all"
+ENV PATH="$PATH:/opt/wine-stable/bin"
 RUN cd ${WORK}/mplapack && bash -x misc/reconfig.ubuntu22.04.mingw64.sh
 RUN cd ${WORK}/mplapack && make clean
 RUN cd ${WORK}/mplapack && make -j`getconf _NPROCESSORS_ONLN`
