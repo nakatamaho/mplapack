@@ -20,13 +20,13 @@ RUN apt install -y git wget time parallel
 RUN apt install -y ng-common ng-cjk emacs-nox
 RUN sudo update-alternatives --install /usr/bin/python python /usr/bin/python3 1
 
+RUN apt install -y mingw-w64 gfortran-mingw-w64 gdb-mingw-w64
 RUN dpkg --add-architecture i386
-RUN wget -nc https://dl.winehq.org/wine-builds/winehq.key
-RUN mv winehq.key /usr/share/keyrings/winehq-archive.key
-RUN wget -nc https://dl.winehq.org/wine-builds/ubuntu/dists/focal/winehq-focal.sources
-RUN mv winehq-focal.sources /etc/apt/sources.list.d/
+RUN mkdir -pm755 /etc/apt/keyrings
+RUN wget -O /etc/apt/keyrings/winehq-archive.key https://dl.winehq.org/wine-builds/winehq.key
+RUN wget -NP /etc/apt/sources.list.d/ https://dl.winehq.org/wine-builds/ubuntu/dists/focal/winehq-focal.sources
 RUN apt update -y
-RUN apt install -y --install-recommends winehq-stable
+RUN apt install -y --install-recommends wine-stable
 
 ARG DOCKER_UID=1000
 ARG DOCKER_USER=docker
