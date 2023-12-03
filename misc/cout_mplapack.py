@@ -808,7 +808,7 @@ def convert_data_type(conv_info, fdecl, crhs):
         elif (sz == 16):
           ctype = "std::complex<double>"
           if (crhs is None):
-            crhs = "fem::double0"
+            crhs = "0.0" #fem::double0
           else:
             if crhs[0] == '(' and crhs[-1] == ')':
               crhs = "COMPLEX" + crhs
@@ -823,7 +823,7 @@ def convert_data_type(conv_info, fdecl, crhs):
         size_tokens[0].raise_not_supported()
       ctype = "std::complex<double>"
       if (crhs is None):
-        crhs = "fem::double0"
+        crhs = "0.0" #fem::double0
     else:
       raise RuntimeError(
         "Not implemented: data_type_code = %s" % data_type_code)
@@ -936,7 +936,8 @@ def zero_shortcut_if_possible(ctype):
     if (ctype.endswith(">")): s = " "
     else:                     s = ""
     return "fem::zero<%s%s>()" % (ctype, s)
-  return "fem::%s0" % ctype
+#  return "%s" % ctype
+  return "0"
 
 def convert_declaration(rapp, conv_info, fdecl, crhs, const):
   ctype, cdims, crhs, cfill0, _csize, _ctype  = convert_data_type_and_dims(
@@ -948,7 +949,12 @@ def convert_declaration(rapp, conv_info, fdecl, crhs, const):
       if (const): return "const "
       return ""
     if _csize == "" or _csize == "dummy":
-      rapp("%s%s %s = %s;" % (const_qualifier(), ctype, vname, crhs))
+      if ctype == "double":
+          rapp("%s%s %s = %s;" % (const_qualifier(), "REAL", vname, crhs))
+      elif ctype == "int":
+          rapp("%s%s %s = %s;" % (const_qualifier(), "INTEGER", vname, crhs))
+      else:
+          rapp("%s%s %s = %s;" % (const_qualifier(), ctype, vname, crhs))
     else:
       if _csize =="1":
         rapp("%s%s %s;" % (const_qualifier(), ctype, vname))
@@ -2416,7 +2422,10 @@ def convert_to_cpp_function(
     if (    fdecl.data_type is not None
         and fdecl.data_type.value == "character"):
       if (fdecl.dim_tokens is None):
-        cargs_append("str_%sref" % cconst(fdecl=fdecl, short=True), arg_name)
+        if cconst(fdecl=fdecl, short=True) == "c":
+            cargs_append("const char *", arg_name)
+        else:
+            cargs_append("str_%sref" % cconst(fdecl=fdecl, short=True), arg_name)
       else:
         if (len(fdecl.dim_tokens) == 1):
           cdim = ""
@@ -2427,9 +2436,11 @@ def convert_to_cpp_function(
     elif (not fdecl.is_user_defined_callable()):
       ctype = convert_data_type(conv_info=conv_info, fdecl=fdecl, crhs=None)[0]
       if (fdecl.dim_tokens is None):
-        cargs_append("%s%s&" % (
-          ctype,
-          cconst(fdecl=fdecl, short=False)),
+#        cargs_append("%s%s&" % (
+#          ctype,
+#          cconst(fdecl=fdecl, short=False)),
+#          prepend_identifier_if_necessary(arg_name))
+        cargs_append("%s" % ctype,
           prepend_identifier_if_necessary(arg_name))
       else:
         if (len(fdecl.dim_tokens) == 1):
@@ -2438,8 +2449,10 @@ def convert_to_cpp_function(
           t = "%s, %d" % (ctype, len(fdecl.dim_tokens))
         if (t.endswith(">")): templs = " "
         else:                 templs = ""
-        cargs_append("arr_%sref<%s%s>" % (
-          cconst(fdecl=fdecl, short=True), t, templs), arg_name)
+#        cargs_append("arr_%sref<%s%s>" % (
+#         cconst(fdecl=fdecl, short=True), t, templs), arg_name)
+#        cconst(fdecl=fdecl, short=True), t, templs
+        cargs_append("%s *" % ctype, arg_name)
     else:
       passed = conv_info.fproc.externals_passed_by_arg_identifier.get(
         fdecl.id_tok.value)
