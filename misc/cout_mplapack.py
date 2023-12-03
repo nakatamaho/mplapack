@@ -937,6 +937,8 @@ def zero_shortcut_if_possible(ctype):
     else:                     s = ""
     return "fem::zero<%s%s>()" % (ctype, s)
 #  return "%s" % ctype
+  if ctype == "double":
+    return "0.0"
   return "0"
 
 def convert_declaration(rapp, conv_info, fdecl, crhs, const):
@@ -2440,8 +2442,13 @@ def convert_to_cpp_function(
 #          ctype,
 #          cconst(fdecl=fdecl, short=False)),
 #          prepend_identifier_if_necessary(arg_name))
-        cargs_append("%s" % ctype,
-          prepend_identifier_if_necessary(arg_name))
+        if ctype == "int":
+            cargs_append("INTEGER", prepend_identifier_if_necessary(arg_name))
+        elif ctype == "double":
+            cargs_append("REAL", prepend_identifier_if_necessary(arg_name))
+        else:
+              cargs_append("%s" % ctype,
+              prepend_identifier_if_necessary(arg_name))
       else:
         if (len(fdecl.dim_tokens) == 1):
           t = ctype
@@ -2452,7 +2459,10 @@ def convert_to_cpp_function(
 #        cargs_append("arr_%sref<%s%s>" % (
 #         cconst(fdecl=fdecl, short=True), t, templs), arg_name)
 #        cconst(fdecl=fdecl, short=True), t, templs
-        cargs_append("%s *" % ctype, arg_name)
+        if ctype == "double":
+            cargs_append("REAL *", arg_name)
+        else:
+            cargs_append("%s *" % ctype, arg_name)
     else:
       passed = conv_info.fproc.externals_passed_by_arg_identifier.get(
         fdecl.id_tok.value)
