@@ -2443,9 +2443,9 @@ def convert_to_cpp_function(
 #          cconst(fdecl=fdecl, short=False)),
 #          prepend_identifier_if_necessary(arg_name))
         if ctype == "int":
-            cargs_append("INTEGER", prepend_identifier_if_necessary(arg_name))
+            cargs_append("%s INTEGER" % cconst(fdecl=fdecl, short=False), prepend_identifier_if_necessary(arg_name))
         elif ctype == "double":
-            cargs_append("REAL", prepend_identifier_if_necessary(arg_name))
+            cargs_append("%s REAL" % cconst(fdecl=fdecl, short=False), prepend_identifier_if_necessary(arg_name))
         else:
               cargs_append("%s" % ctype,
               prepend_identifier_if_necessary(arg_name))
@@ -2460,7 +2460,10 @@ def convert_to_cpp_function(
 #         cconst(fdecl=fdecl, short=True), t, templs), arg_name)
 #        cconst(fdecl=fdecl, short=True), t, templs
         if ctype == "double":
-            cargs_append("REAL *", arg_name)
+            if cconst(fdecl=fdecl, short=True) == "c":
+                cargs_append("const REAL *", arg_name)
+            else:
+                cargs_append("REAL *",  arg_name)
         else:
             cargs_append("%s *" % ctype, arg_name)
     else:
