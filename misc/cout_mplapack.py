@@ -483,7 +483,7 @@ class conversion_info(global_conversion_info):
       return True
     from fable import intrinsics
     if (identifier in intrinsics.extra_set_lower):
-      O.vmap[identifier] = "fem::" + identifier
+      O.vmap[identifier] = "MAHO0 fem::" + identifier
       return True
     return False
 
@@ -495,11 +495,37 @@ class conversion_info(global_conversion_info):
       O.vmap[identifier] = "sve." + prepend_identifier_if_necessary(identifier)
     elif (fdecl.is_intrinsic()):
       if (identifier in ["float", "int", "char"]):
-        O.vmap[identifier] = "fem::f" + identifier
+        O.vmap[identifier] = "MAHO1 fem::f" + identifier
       elif (identifier == "iargc"):
         O.vmap[identifier] = "cmn.iargc"
+      elif (identifier == "dabs"):
+        O.vmap[identifier] = "" + "abs"
+      elif (identifier == "dconjg"):
+        O.vmap[identifier] = "" + "conj"
+      elif (identifier == "dble"):
+        O.vmap[identifier] = ""
+      elif (identifier == "max"):
+        O.vmap[identifier] = "" + "max"
+      elif (identifier == "min"):
+        O.vmap[identifier] = "" + "min"
+      elif (identifier == "mod"):
+        O.vmap[identifier] = "" + "mod"
+      elif (identifier == "abs"):
+        O.vmap[identifier] = "" + "abs"
+      elif (identifier == "sqrt"):
+        O.vmap[identifier] = "" + "sqrt"
+      elif (identifier == "dsqrt"):
+        O.vmap[identifier] = "" + "sqrt"
+      elif (identifier == "dsign"):
+        O.vmap[identifier] = "" + "sign"
+      elif (identifier == "dcmplx"):
+        O.vmap[identifier] = "" + "COMPLEX"
+      elif (identifier == "dimag"):
+        O.vmap[identifier] = "imag"
+      elif (identifier == "cdabs"):
+        O.vmap[identifier] = "" + "abs"
       else:
-        O.vmap[identifier] = "fem::" + identifier
+        O.vmap[identifier] = "MAHO2 fem::" + identifier
     elif (not O.set_vmap_for_callable(identifier=fdecl.id_tok.value)):
       O.set_vmap_force_local(fdecl=fdecl)
       return False
@@ -548,14 +574,14 @@ def cmn_needs_to_be_inserted(conv_info, prev_tok):
   return False
 
 def convert_power(conv_info, tokens):
-  fun = "fem::pow"
+  fun = "MAHO3 fem::pow"
   pow_tok = tokens[1]
   if (pow_tok.is_integer()):
     if (pow_tok.value == "1"):
       fun = ""
       tokens = tokens[:1]
     elif (pow_tok.value in ["2","3","4"]):
-      fun = "fem::pow%s" % pow_tok.value
+      fun = "pow%s" % pow_tok.value
       tokens = tokens[:1]
   return fun + "(" + convert_tokens(
     conv_info=conv_info, tokens=tokens, commas=True) + ")"
@@ -569,24 +595,6 @@ def convert_tokens(conv_info, tokens, commas=False, had_str_concat=None):
     had_str_concat = mutable(value=False)
   from fable.tokenization import group_power
   for tok in group_power(tokens=tokens):
-    if (tok.value == "dsign"):
-      final = "_MPLAPACK_REPLACE_"
-      rapp(final)
-    if (tok.value == "dcmplx"):
-      final = "_MPLAPACK_REPLACE_"
-      rapp(final)
-    if (tok.value == "dconjg"):
-      final = "_MPLAPACK_REPLACE_"
-      rapp(final)
-    if (tok.value == "dsqrt"):
-      final = "_MPLAPACK_REPLACE_"
-      rapp(final)
-    if (tok.value == "dble"):
-      final = "_MPLAPACK_REPLACE_"
-      rapp(final)
-    if (tok.value == "dimag"):
-      final = "_MPLAPACK_REPLACE_"
-      rapp(final)
     if (tok.is_seq()):
       if (    len(tok.value) == 2
           and tok.value[0].is_op_with(value="*")
@@ -770,12 +778,12 @@ def convert_data_type(conv_info, fdecl, crhs):
     ctype = "char"
     _csize = csize
     if (crhs is None):
-      crhs = "fem::char0"
+      crhs = "MAHO5 fem::char0"
   else:
     def convert_to_ctype_with_size(ctype):
       if (size_tokens is None):
         return ctype
-      return "fem::%s_star_%d" % (data_type_code, convert_to_int_literal(
+      return "MAHO6 fem::%s_star_%d" % (data_type_code, convert_to_int_literal(
         tokens=size_tokens))
     if (data_type_code == "logical"):
       ctype = convert_to_ctype_with_size(ctype="bool")
@@ -795,7 +803,7 @@ def convert_data_type(conv_info, fdecl, crhs):
       if (size_tokens is None):
         ctype = "std::complex<float>"
         if (crhs is None):
-          crhs = "fem::float0"
+          crhs = "MAHO 7fem::float0"
       else:
         sz = convert_to_int_literal(tokens=size_tokens)
         if (sz == 8):
@@ -806,7 +814,7 @@ def convert_data_type(conv_info, fdecl, crhs):
             if crhs[0] == '(' and crhs[-1] == ')':
               crhs = "COMPLEX" + crhs
         elif (sz == 16):
-          ctype = "std::complex<double>"
+          ctype = "COMPLEX"
           if (crhs is None):
             crhs = "0.0" #fem::double0
           else:
@@ -821,7 +829,7 @@ def convert_data_type(conv_info, fdecl, crhs):
     elif (data_type_code == "doublecomplex"):
       if (size_tokens is not None):
         size_tokens[0].raise_not_supported()
-      ctype = "std::complex<double>"
+      ctype = "COMPLEX"
       if (crhs is None):
         crhs = "0.0" #fem::double0
     else:
@@ -1280,7 +1288,7 @@ def equivalence_align_with_arg(conv_info, top_scope, identifier, tok_seq):
 def cconst(fdecl, short):
   if (fdecl.is_modified): return ""
   if (short): return "c"
-  return " const"
+  return "const"
 
 def convert_to_mbr_bind(
       conv_info,
@@ -2443,9 +2451,20 @@ def convert_to_cpp_function(
 #          cconst(fdecl=fdecl, short=False)),
 #          prepend_identifier_if_necessary(arg_name))
         if ctype == "int":
+          if cconst(fdecl=fdecl, short=False) == "const":
             cargs_append("%s INTEGER" % cconst(fdecl=fdecl, short=False), prepend_identifier_if_necessary(arg_name))
+          else: 
+            cargs_append("INTEGER &", prepend_identifier_if_necessary(arg_name))
         elif ctype == "double":
+          if cconst(fdecl=fdecl, short=False) == "const":
             cargs_append("%s REAL" % cconst(fdecl=fdecl, short=False), prepend_identifier_if_necessary(arg_name))
+          else:
+            cargs_append("REAL &", prepend_identifier_if_necessary(arg_name))
+        elif ctype == "COMPLEX":
+          if cconst(fdecl=fdecl, short=False) == "const":
+            cargs_append("%s COMPLEX" % cconst(fdecl=fdecl, short=False), prepend_identifier_if_necessary(arg_name))
+          else:
+            cargs_append("COMPLEX &", prepend_identifier_if_necessary(arg_name))
         else:
               cargs_append("%s" % ctype,
               prepend_identifier_if_necessary(arg_name))
