@@ -2529,6 +2529,8 @@ def convert_to_cpp_function(
       produce_fortran_file_comment(conv_info=conv_info, callback=callback)
     if (conv_info.inline_all):
       callback("inline")
+    if cdecl == "double":
+      cdecl = "REAL"
     callback(cdecl)
     if (callback is hpp_callback): last = ";"
     else:                          last = ""
