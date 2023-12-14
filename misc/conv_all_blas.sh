@@ -14,7 +14,6 @@ FILES=`ls ~/mplapack/external/lapack/work/internal/lapack-$LAPACKVERSION/BLAS/SR
 # etc.
 
 rm BLAS_TO_MPBLAS_FUNCTIONLIST.sh
-echo "sed -i \\"      > BLAS_TO_MPBLAS_FUNCTIONLIST.sh
 
 for _file in $FILES; do
     oldfilename=`basename $_file | sed -e 's/\.f$//' | sed -e 's/\.f90$//' ` 
@@ -23,21 +22,16 @@ for _file in $FILES; do
      echo "-e 's/$oldfilename/$newfilename/g' \\"   >> BLAS_TO_MPBLAS_FUNCTIONLIST.sh
      echo "-e 's/$oldfilenameUPPER/$newfilename/g' \\"   >> BLAS_TO_MPBLAS_FUNCTIONLIST.sh
 done
-#sed -i '$ s/\\$//' BLAS_TO_MPBLAS_FUNCTIONLIST.sh
+
+# avoid side effect of  macro expansion (Rsyr and Rsyr2k)
+sort -r BLAS_TO_MPBLAS_FUNCTIONLIST.sh > ll
+(echo "sed -i \\" ; cat ll )           > BLAS_TO_MPBLAS_FUNCTIONLIST.sh
 mv BLAS_TO_MPBLAS_FUNCTIONLIST.sh ~/mplapack/misc/
 
-exit
-
-# finally convert the file
-
+# finally convert the files
 for _file in $FILES; do
-bash ~/mplapack/misc/fable_convert_blas.sh $_file
-oldfilename=`basename $_file | sed -e 's/\.f$//'`
-newfilename=`basename $_file | sed -e 's/^zdscal/CRscal/g' -e 's/^zdrot/CRrot/g' -e 's/^dcabs/RCabs/g' -e 's/^dzasum/RCasum/g' -e 's/^dznrm2/RCnrm2/g' | sed -e 's/^d/R/' -e 's/^z/C/' -e 's/^id/iR/' -e 's/^iz/iC/' -e 's/\.f$//'`
-cat ${oldfilename}.cpp | bash BLAS_LIST > ${newfilename}.cpp_
-mv ${newfilename}.cpp_  ${newfilename}.cpp
-sed -i -e 's/const &/const /g' ${newfilename}.cpp
-grep -v star]\) ${newfilename}.cpp > ${newfilename}.cpp_ ; mv ${newfilename}.cpp_ ${newfilename}.cpp
-rm ${oldfilename}.cpp
+    bash ~/mplapack/misc/fable_convert_blas.sh $_file
+    oldfilename=`basename $_file | sed -e 's/\.f$//'`
+    newfilename=`basename $_file | sed -e 's/^zdscal/CRscal/g' -e 's/^zdrot/CRrot/g' -e 's/^dcabs/RCabs/g' -e 's/^dzasum/RCasum/g' -e 's/^dznrm2/RCnrm2/g' | sed -e 's/^d/R/' -e 's/^z/C/' -e 's/^id/iR/' -e 's/^iz/iC/' -e 's/\.f$//'`
+    mv ${oldfilename}.cpp ${newfilename}.cpp
 done
-mv BLAS_LIST ~/mplapack/misc/

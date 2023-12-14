@@ -2531,6 +2531,8 @@ def convert_to_cpp_function(
       callback("inline")
     if cdecl == "double":
       cdecl = "REAL"
+    elif cdecl == "int":
+      cdecl = "INTEGER"
     callback(cdecl)
     if (callback is hpp_callback): last = ";"
     else:                          last = ""
