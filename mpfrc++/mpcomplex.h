@@ -706,7 +706,7 @@ inline mpcomplex &mpcomplex::operator*=(const mpfr_t a) {
 
 inline mpcomplex &mpcomplex::operator*=(const double a) {
     mpreal p(a);
-    mpc_add_fr(mpc, mpc, (mpfr_ptr)(&p), default_rnd);
+    mpc_mul_fr(mpc, mpc, (mpfr_ptr)(&p), default_rnd);
     return *this;
 }
 
