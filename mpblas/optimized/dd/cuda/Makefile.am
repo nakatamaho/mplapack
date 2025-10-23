@@ -1,8 +1,3 @@
-# Telsa Code sm_90a  Has alsoHOPPER_FLAGS = \
-  -gencode arch=compute_90,code=sm_90 \
-  -gencode arch=compute_90,code=compute_90 \
-  -m64 -O3 --ptxas-options=-v been added, but it won't run. We need to tune up this Makefile. Source code itself
-# is fine, though.
 # TODO:do not hardcode to run fermi routine in Rgemm.cu and Rgemm_cuda.cu
 #     :cleanup Makefile so that we pass correct compilation flags. 
 
