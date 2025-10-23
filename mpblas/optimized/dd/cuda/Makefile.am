@@ -1,4 +1,7 @@
-# Telsa code has also been added, but it won't run. We need to tune up this Makefile. Source code itself
+# Telsa Code sm_90a  Has alsoHOPPER_FLAGS = \
+  -gencode arch=compute_90,code=sm_90 \
+  -gencode arch=compute_90,code=compute_90 \
+  -m64 -O3 --ptxas-options=-v been added, but it won't run. We need to tune up this Makefile. Source code itself
 # is fine, though.
 # TODO:do not hardcode to run fermi routine in Rgemm.cu and Rgemm_cuda.cu
 #     :cleanup Makefile so that we pass correct compilation flags. 
@@ -7,7 +10,7 @@
 	$(NVCC) $(VOLTA_FLAGS) -o $@ -c $< $(CUDA_CFLAGS)
 
 .cu.lo:
-	$(top_srcdir)/misc/cudalt.py $@ $(NVCC) --compiler-options=\"$(CFLAGS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) \" $(AMPERE_FLAGS) $(VOLTA_FLAGS) $(HOPPER_FLAGS) -c $<
+	$(top_srcdir)/misc/cudalt.py $@ $(NVCC) --compiler-options=\"$(CFLAGS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) \" $(AMPERE_FLAGS) $(HOPPER_FLAGS) -c $<
 
 lib_LTLIBRARIES = libmpblas_dd_cuda.la
 
@@ -39,11 +42,8 @@ Rsyrk_TL_p.cu \
 Rsyrk_TU_0.cu \
 Rsyrk_TU_p.cu
 
-TESLA_FLAGS = -gencode arch=compute_13,code=sm_13 -m64 -O3 --ptxas-options=-v 
-FERMI_FLAGS = -gencode arch=compute_20,code=sm_21 -m64 -O3 --ptxas-options=-v
-VOLTA_FLAGS = -gencode arch=compute_70,code=sm_70 -m64 -O3 --ptxas-options=-v
-AMPERE_FLAGS = -gencode arch=compute_80,code=sm_80 -m64 -O3 --ptxas-options=-v
-HOPPER_FLAGS = -gencode arch=compute_90,code=sm_90 -m64 -O3 --ptxas-options=-v
+AMPERE_FLAGS = -gencode arch=compute_80,code=sm_80 -gencode arch=compute_86,code=sm_86 -gencode arch=compute_80,code=compute_80 -m64 -O3 --ptxas-options=-v
+HOPPER_FLAGS = -gencode arch=compute_90,code=sm_90 -gencode arch=compute_90,code=compute_90 -m64 -O3 --ptxas-options=-v
 
 libmpblas_dd_cuda_la_SOURCES = Rgemm.cu Rgemm_cuda.cu Rgemm_fermi.cu Rgemm_tesla.cu \
 				Rsyrk.cu Rsyrk_cuda.cu

@@ -1,5 +1,5 @@
 # * How to build
-#  docker build -f Dockerfile_fable --build-arg SSH_KEY="$(cat ~/.ssh/id_ed25519)" -t mplapack:fable .
+#  docker build -f Dockerfile_ubuntu24.04_fable --build-arg SSH_KEY="$(cat ~/.ssh/id_ed25519)" -t mplapack:fable .
 # * How to run
 #  sudo sh -c 'echo -1 >/proc/sys/kernel/perf_event_paranoid' # to run perf
 #  or
@@ -7,7 +7,7 @@
 #  docker run --privileged --gpus all -it mplapack:fable /bin/bash
 #
 # https://hub.docker.com/r/nvidia/cuda/tags
-FROM nvidia/cuda:11.8.0-devel-ubuntu22.04
+FROM nvidia/cuda:13.0.1-devel-ubuntu24.04
 
 #git setting
 ARG GIT_EMAIL="maho.nakata@gmail.com"
@@ -59,7 +59,7 @@ RUN apt install -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--fo
 RUN apt install -y cuda-drivers
 ### cuda end ###
 
-ARG DOCKER_UID=1000
+ARG DOCKER_UID=2000
 ARG DOCKER_USER=docker
 ARG DOCKER_PASSWORD=docker
 RUN useradd -u $DOCKER_UID -m $DOCKER_USER --shell /bin/bash && echo "$DOCKER_USER:$DOCKER_PASSWORD" | chpasswd && echo "$DOCKER_USER ALL=(ALL) ALL" >> /etc/sudoers
