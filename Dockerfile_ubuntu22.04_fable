@@ -4,7 +4,7 @@
 #  sudo sh -c 'echo -1 >/proc/sys/kernel/perf_event_paranoid' # to run perf
 #  or
 #  sudo sysctl -w kernel.perf_event_paranoid=-1 # to run perf
-#  docker run --privileged --gpus all -it --rm -u $(id -u):$(id -g) mplapack:fable /bin/bash
+#  docker run --privileged --gpus all -it --rm mplapack:fable /bin/bash
 # https://hub.docker.com/r/nvidia/cuda/tags
 FROM nvidia/cuda:13.0.1-devel-ubuntu22.04
 
