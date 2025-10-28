@@ -162,6 +162,7 @@ RUN cd ${WORK} && git clone https://github.com/nakatamaho/mpfrxx.git
 
 RUN cd ${WORK} && git clone https://github.com/nakatamaho/mplapack.git
 RUN cd ${WORK}/mplapack && git remote set-url origin git@github.com:nakatamaho/mplapack.git
+RUN cd ${WORK}/mplapack && git checkout refactor/fable
 RUN cd ${WORK}/mplapack && git log -1
 
 RUN cd ${WORK}/mplapack && bash -x misc/reconfig.ubuntu22.04.sh
