@@ -165,6 +165,19 @@ RUN cd ${WORK}/mplapack && git remote set-url origin git@github.com:nakatamaho/m
 RUN cd ${WORK}/mplapack && git checkout refactor/fable
 RUN cd ${WORK}/mplapack && git log -1
 
+RUN cd ${WORK}/mplapack && bash -x misc/reconfig.ubuntu22.04.nvidia.sh
+RUN cd ${WORK}/mplapack && make clean
+RUN cd ${WORK}/mplapack && make -j`getconf _NPROCESSORS_ONLN`
+RUN cd ${WORK}/mplapack && make install
+
+ARG WINEPATH="/usr/x86_64-w64-mingw32/lib/;/usr/lib/gcc/x86_64-w64-mingw32/10-win32/;/usr/lib/gcc/x86_64-w64-mingw32/10-posix"
+ARG WINEDEBUG="-all"
+ENV PATH="$PATH:/opt/wine-stable/bin"
+RUN cd ${WORK}/mplapack && bash -x misc/reconfig.ubuntu22.04.mingw64.sh
+RUN cd ${WORK}/mplapack && make clean
+RUN cd ${WORK}/mplapack && make -j`getconf _NPROCESSORS_ONLN`
+RUN cd ${WORK}/mplapack && make install
+
 RUN cd ${WORK}/mplapack && bash -x misc/reconfig.ubuntu22.04.sh
 RUN cd ${WORK}/mplapack && make clean
 RUN cd ${WORK}/mplapack && make -j`getconf _NPROCESSORS_ONLN`
