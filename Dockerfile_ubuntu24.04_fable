@@ -20,7 +20,7 @@ RUN apt -y upgrade
 RUN apt install -y sudo 
 RUN apt install -y tzdata
 # set your timezone
-ENV TZ Asia/Tokyo
+ENV TZ=Asia/Tokyo
 RUN echo "${TZ}" > /etc/timezone \
   && rm /etc/localtime \
   && ln -s /usr/share/zoneinfo/Asia/Tokyo /etc/localtime \
@@ -62,10 +62,13 @@ RUN apt-get update -y && apt-get install -y --install-recommends winehq-stable
 #RUN apt install -y cuda-drivers
 ### cuda end ###
 
+# create non-root user without password and allow passwordless sudo
 ARG DOCKER_UID=2000
 ARG DOCKER_USER=docker
-ARG DOCKER_PASSWORD=docker
-RUN useradd -u $DOCKER_UID -m $DOCKER_USER --shell /bin/bash && echo "$DOCKER_USER:$DOCKER_PASSWORD" | chpasswd && echo "$DOCKER_USER ALL=(ALL) ALL" >> /etc/sudoers
+RUN useradd -u ${DOCKER_UID} -m ${DOCKER_USER} --shell /bin/bash \
+ && usermod -aG sudo ${DOCKER_USER} \
+ && printf "%s ALL=(ALL) NOPASSWD:ALL\n" "${DOCKER_USER}" > /etc/sudoers.d/90-${DOCKER_USER}-nopasswd \
+ && chmod 0440 /etc/sudoers.d/90-${DOCKER_USER}-nopasswd
 ARG WORK=/home/$DOCKER_USER
 
 #install ctag
