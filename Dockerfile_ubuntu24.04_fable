@@ -1,12 +1,12 @@
 # * How to build
-#  docker build -f Dockerfile_ubuntu22.04_fable --build-arg SSH_KEY="$(cat ~/.ssh/id_ed25519)" -t mplapack:fable .
+#  docker build -f Dockerfile_ubuntu24.04_fable --build-arg SSH_KEY="$(cat ~/.ssh/id_ed25519)" -t mplapack:fable .
 # * How to run
 #  sudo sh -c 'echo -1 >/proc/sys/kernel/perf_event_paranoid' # to run perf
 #  or
 #  sudo sysctl -w kernel.perf_event_paranoid=-1 # to run perf
 #  docker run --privileged --gpus all -it --rm mplapack:fable /bin/bash
 # https://hub.docker.com/r/nvidia/cuda/tags
-FROM nvidia/cuda:13.0.1-devel-ubuntu22.04
+FROM nvidia/cuda:13.0.1-devel-ubuntu24.04
 
 #git setting
 ARG GIT_EMAIL="maho.nakata@gmail.com"
@@ -169,7 +169,7 @@ RUN cd ${WORK}/mplapack && git remote set-url origin git@github.com:nakatamaho/m
 RUN cd ${WORK}/mplapack && git checkout refactor/fable
 RUN cd ${WORK}/mplapack && git log -1
 
-#RUN cd ${WORK}/mplapack && bash -x misc/reconfig.ubuntu22.04.nvidia.sh
+#RUN cd ${WORK}/mplapack && bash -x misc/reconfig.ubuntu24.04.nvidia.sh
 #RUN cd ${WORK}/mplapack && make clean
 #RUN cd ${WORK}/mplapack && make -j`getconf _NPROCESSORS_ONLN`
 #RUN cd ${WORK}/mplapack && make install
@@ -177,12 +177,12 @@ RUN cd ${WORK}/mplapack && git log -1
 #ARG WINEPATH="/usr/x86_64-w64-mingw32/lib/;/usr/lib/gcc/x86_64-w64-mingw32/10-win32/;/usr/lib/gcc/x86_64-w64-mingw32/10-posix"
 #ARG WINEDEBUG="-all"
 #ENV PATH="$PATH:/opt/wine-stable/bin"
-#RUN cd ${WORK}/mplapack && bash -x misc/reconfig.ubuntu22.04.mingw64.sh
+#RUN cd ${WORK}/mplapack && bash -x misc/reconfig.ubuntu24.04.mingw64.sh
 #RUN cd ${WORK}/mplapack && make clean
 #RUN cd ${WORK}/mplapack && make -j`getconf _NPROCESSORS_ONLN`
 #RUN cd ${WORK}/mplapack && make install
 
-RUN cd ${WORK}/mplapack && bash -x misc/reconfig.ubuntu22.04.sh
-RUN cd ${WORK}/mplapack && make clean
-RUN cd ${WORK}/mplapack && make -j`getconf _NPROCESSORS_ONLN`
-RUN cd ${WORK}/mplapack && make install
+#RUN cd ${WORK}/mplapack && bash -x misc/reconfig.ubuntu24.04.sh
+#RUN cd ${WORK}/mplapack && make clean
+#RUN cd ${WORK}/mplapack && make -j`getconf _NPROCESSORS_ONLN`
+#RUN cd ${WORK}/mplapack && make install
