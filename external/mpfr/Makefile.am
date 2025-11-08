@@ -1,4 +1,4 @@
-MPFRVERSION=4.1.0
+MPFRVERSION=4.2.2
 MAKEFLAGS =
 
 #GMPINCLUDEDIR=$(abs_builddir)/../i/GMP/include/
@@ -24,8 +24,8 @@ work/$(EXTRACT_STAMP):
 	touch $(abs_builddir)/work/$(EXTRACT_STAMP)
 
 work/$(PATCH_STAMP): work/$(EXTRACT_STAMP)
-	cd $(abs_builddir)/work/internal/mpfr-$(MPFRVERSION) ; patch -N -Z -p1 < ../../../download/allpatches
-	cd $(abs_builddir)/work/install/mpfr-$(MPFRVERSION) ; patch -N -Z -p1 < ../../../download/allpatches
+	#cd $(abs_builddir)/work/internal/mpfr-$(MPFRVERSION) ; patch -N -Z -p1 < ../../../download/allpatches
+	#cd $(abs_builddir)/work/install/mpfr-$(MPFRVERSION) ; patch -N -Z -p1 < ../../../download/allpatches
 	touch $(abs_builddir)/work/$(PATCH_STAMP)
 
 work/$(CONFIGURE_STAMP): work/$(PATCH_STAMP)
