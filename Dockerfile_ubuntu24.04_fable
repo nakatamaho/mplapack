@@ -1,8 +1,14 @@
 # * How to build (for public users - read-only access)
-#  docker build -f Dockerfile_ubuntu24.04_fable_improved -t mplapack:fable .
+#  docker build -f Dockerfile_ubuntu24.04_fable -t mplapack:fable .
 #
 # * How to build (for maintainers with SSH key - read-write access)
-#  DOCKER_BUILDKIT=1 docker build -f Dockerfile_ubuntu24.04_fable_improved --build-arg USE_SSH=true --secret id=ssh_key,src=$HOME/.ssh/id_ed25519 -t mplapack:fable .
+# SSH_KEY_NAME=id_ed25519 DOCKER_BUILDKIT=1 docker build -f Dockerfile_ubuntu24.04_fable --build-arg DOCKER_UID=$(id -u) --build-arg DOCKER_GID=$(id -g) --build-arg USE_SSH=true --build-arg SSH_KEY_NAME=${SSH_KEY_NAME} --secret id=ssh_key,src=$HOME/.ssh/${SSH_KEY_NAME} -t mplapack:fable .
+#
+# * How to build with custom repository (for users with forks)
+# DOCKER_BUILDKIT=1 docker build -f Dockerfile_ubuntu24.04_fable --build-arg DOCKER_UID=$(id -u) --build-arg DOCKER_GID=$(id -g) --build-arg MPLAPACK_REPO=https://github.com/username/mplapack.git -t mplapack:fable .
+#
+# * How to build with custom repository using SSH
+# SSH_KEY_NAME=id_ed25519 DOCKER_BUILDKIT=1 docker build -f Dockerfile_ubuntu24.04_fable --build-arg DOCKER_UID=$(id -u) --build-arg DOCKER_GID=$(id -g) --build-arg USE_SSH=true --build-arg SSH_KEY_NAME=${SSH_KEY_NAME} --build-arg MPLAPACK_REPO=https://github.com/<username>/mplapack.git --secret id=ssh_key,src=$HOME/.ssh/${SSH_KEY_NAME} -t mplapack:fable .
 #
 # * How to run
 #  sudo sh -c 'echo -1 >/proc/sys/kernel/perf_event_paranoid' # to run perf
@@ -11,7 +17,7 @@
 #  docker run --privileged --gpus all -it --rm mplapack:fable /bin/bash
 #
 # * How to run with SSH key for git operations (maintainers only)
-#  docker run --privileged --gpus all -v $HOME/.ssh:/home/docker/.ssh:ro -it --rm mplapack:fable /bin/bash
+#  eval $(ssh-agent); ssh-add ~/.ssh/id_ed25519; docker run --privileged --gpus all -v $SSH_AUTH_SOCK:/ssh-agent -e SSH_AUTH_SOCK=/ssh-agent -it --rm mplapack:fable /bin/bash
 #
 # https://hub.docker.com/r/nvidia/cuda/tags
 FROM nvidia/cuda:13.0.1-devel-ubuntu24.04
@@ -19,11 +25,23 @@ FROM nvidia/cuda:13.0.1-devel-ubuntu24.04
 #git setting
 ARG GIT_EMAIL="maho.nakata@gmail.com"
 ARG GIT_NAME="NAKATA Maho"
+LABEL maintainer="maho.nakata@gmail.com"
 
 # Build argument to choose between HTTPS (public) and SSH (maintainer)
 ARG USE_SSH=false
+ARG SSH_KEY_NAME=id_rsa
 
-LABEL maintainer="maho.nakata@gmail.com"
+# Repository URLs - can be overridden to use forks
+ARG MPLAPACK_REPO=https://github.com/nakatamaho/mplapack.git
+
+# Validate required arguments for SSH mode
+RUN if [ "$USE_SSH" = "true" ] && [ -z "$SSH_KEY_NAME" ]; then \
+      echo "========================================"; \
+      echo "ERROR: Maintainer mode requires SSH_KEY_NAME"; \
+      echo "Usage: --build-arg SSH_KEY_NAME=id_ed25519"; \
+      echo "========================================"; \
+      exit 1; \
+    fi
 
 ARG DEBIAN_FRONTEND=noninteractive
 RUN apt -y update
@@ -74,9 +92,12 @@ RUN apt-get update -y && apt-get install -y --install-recommends winehq-stable
 ### cuda end ###
 
 # create non-root user without password and allow passwordless sudo
+# create non-root user without password and allow passwordless sudo
 ARG DOCKER_UID=2000
+ARG DOCKER_GID=2000
 ARG DOCKER_USER=docker
-RUN useradd -u ${DOCKER_UID} -m ${DOCKER_USER} --shell /bin/bash \
+RUN groupadd -g ${DOCKER_GID} ${DOCKER_USER} 2>/dev/null || true \
+ && useradd -u ${DOCKER_UID} -g ${DOCKER_GID} -m ${DOCKER_USER} --shell /bin/bash \
  && usermod -aG sudo ${DOCKER_USER} \
  && printf "%s ALL=(ALL) NOPASSWD:ALL\n" "${DOCKER_USER}" > /etc/sudoers.d/90-${DOCKER_USER}-nopasswd \
  && chmod 0440 /etc/sudoers.d/90-${DOCKER_USER}-nopasswd
@@ -164,46 +185,44 @@ RUN cd ${WORK} && echo "export WINEDEBUG=\"-all\"" >> .bashrc
 ## intel one api and wine settings end ###
 
 ### Git clone strategy: HTTPS (default) or SSH (with --build-arg USE_SSH=true) ###
+
+# Prepare SSH environment if using SSH mode
 RUN if [ "$USE_SSH" = "true" ]; then \
-        # SSH mode: For maintainers with write access
         mkdir -p /home/$DOCKER_USER/.ssh && \
         chmod 0700 /home/$DOCKER_USER/.ssh && \
         ssh-keyscan github.com > /home/$DOCKER_USER/.ssh/known_hosts; \
     fi
 
-# Clone repositories
-# - HTTPS mode (default): Anyone can build, read-only access
-# - SSH mode (with secret): Maintainers only, read-write access
-RUN if [ "$USE_SSH" = "true" ]; then \
-        # SSH clone (requires --secret id=ssh_key)
-        echo "Cloning via SSH (maintainer mode)"; \
-    else \
-        # HTTPS clone (public access, no authentication needed)
-        cd ${WORK} && git clone https://github.com/nakatamaho/mplapack.git && \
+# Clone repositories - HTTPS mode (default, public access)
+RUN if [ "$USE_SSH" != "true" ]; then \
+        echo "=== Cloning via HTTPS (public read-only mode) ===" && \
+        echo "Repository: ${MPLAPACK_REPO}" && \
+        cd ${WORK} && git clone ${MPLAPACK_REPO} && \
         cd ${WORK}/mplapack && git checkout refactor/fable && \
         cd ${WORK}/mplapack && git log -1; \
     fi
 
-# SSH clone section (only executed when USE_SSH=true)
-RUN --mount=type=secret,id=ssh_key,uid=2000 \
+# Clone repositories - SSH mode (maintainer access, requires --secret)
+RUN --mount=type=secret,id=ssh_key,uid=${DOCKER_UID} \
     if [ "$USE_SSH" = "true" ]; then \
+        echo "=== Cloning via SSH (maintainer mode) ===" && \
+        SSH_REPO=$(echo "${MPLAPACK_REPO}" | sed 's|https://github.com/|git@github.com:|') && \
+        echo "Repository: ${SSH_REPO}" && \
         mkdir -p /home/$DOCKER_USER/.ssh && \
-        cp /run/secrets/ssh_key /home/$DOCKER_USER/.ssh/id_ed25519 && \
-        chmod 600 /home/$DOCKER_USER/.ssh/id_ed25519 && \
+        cp /run/secrets/ssh_key /home/$DOCKER_USER/.ssh/${SSH_KEY_NAME} && \
+        chmod 600 /home/$DOCKER_USER/.ssh/${SSH_KEY_NAME} && \
         eval "$(ssh-agent -s)" && \
-        ssh-add /home/$DOCKER_USER/.ssh/id_ed25519 && \
-        cd ${WORK} && git clone git@github.com:nakatamaho/mpfrxx.git && \
-        cd ${WORK} && git clone git@github.com:nakatamaho/mplapack.git && \
-        cd ${WORK}/mplapack && git remote set-url origin git@github.com:nakatamaho/mplapack.git && \
+        ssh-add /home/$DOCKER_USER/.ssh/${SSH_KEY_NAME} && \
+        cd ${WORK} && git clone ${SSH_REPO} && \
         cd ${WORK}/mplapack && git checkout refactor/fable && \
         cd ${WORK}/mplapack && git log -1 && \
-        rm -f /home/$DOCKER_USER/.ssh/id_ed25519; \
+        rm -f /home/$DOCKER_USER/.ssh/${SSH_KEY_NAME}; \
     fi
 
 RUN cd ${WORK}/mplapack && bash -x misc/reconfig.ubuntu24.04.sh
 RUN cd ${WORK}/mplapack && make clean
-RUN cd ${WORK}/mplapack && make -j`getconf _NPROCESSORS_ONLN`
-RUN cd ${WORK}/mplapack && make install
+#RUN cd ${WORK}/mplapack && make -j`getconf _NPROCESSORS_ONLN`
+#RUN cd ${WORK}/mplapack && make install
 
 #RUN cd ${WORK}/mplapack && bash -x misc/reconfig.ubuntu24.04.nvidia.sh
 #RUN cd ${WORK}/mplapack && make clean
