@@ -1,8 +1,8 @@
 # * How to build (for public users - read-only access)
-#  docker build -f Dockerfile_ubuntu22.04_fable -t mplapack:fable .
+#  docker build -f Dockerfile_ubuntu22.04_fable_improved -t mplapack:fable .
 #
 # * How to build (for maintainers with SSH key - read-write access)
-#  DOCKER_BUILDKIT=1 docker build -f Dockerfile_ubuntu22.04_fable --build-arg USE_SSH=true --secret id=ssh_key,src=$HOME/.ssh/id_ed25519 -t mplapack:fable .
+#   DOCKER_BUILDKIT=1 docker build -f Dockerfile_ubuntu22.04_fable --build-arg USE_SSH=true --build-arg SSH_KEY_NAME=id_rsa --secret id=ssh_key,src=$HOME/.ssh/id_rsa -t mplapack:fable .
 #
 # * How to run
 #  sudo sh -c 'echo -1 >/proc/sys/kernel/perf_event_paranoid' # to run perf
@@ -22,6 +22,8 @@ ARG GIT_NAME="NAKATA Maho"
 
 # Build argument to choose between HTTPS (public) and SSH (maintainer)
 ARG USE_SSH=false
+# Build argument for SSH key filename (default: id_ed25519)
+ARG SSH_KEY_NAME=id_ed25519
 
 LABEL maintainer="maho.nakata@gmail.com"
 
@@ -182,33 +184,39 @@ RUN if [ "$USE_SSH" != "true" ]; then \
     fi
 
 # Clone repositories - SSH mode (maintainer access, requires --secret)
-# Note: The SSH key is only used during build and will NOT be included in the final image
 RUN --mount=type=secret,id=ssh_key,uid=2000 \
     if [ "$USE_SSH" = "true" ]; then \
         echo "=== Cloning via SSH (maintainer mode) ===" && \
         mkdir -p /home/$DOCKER_USER/.ssh && \
-        cp /run/secrets/ssh_key /home/$DOCKER_USER/.ssh/id_ed25519 && \
-        chmod 600 /home/$DOCKER_USER/.ssh/id_ed25519 && \
+        cp /run/secrets/ssh_key /home/$DOCKER_USER/.ssh/${SSH_KEY_NAME} && \
+        chmod 600 /home/$DOCKER_USER/.ssh/${SSH_KEY_NAME} && \
         eval "$(ssh-agent -s)" && \
-        ssh-add /home/$DOCKER_USER/.ssh/id_ed25519 && \
+        ssh-add /home/$DOCKER_USER/.ssh/${SSH_KEY_NAME} && \
         cd ${WORK} && git clone git@github.com:nakatamaho/mpfrxx.git && \
         cd ${WORK} && git clone git@github.com:nakatamaho/mplapack.git && \
         cd ${WORK}/mplapack && git remote set-url origin git@github.com:nakatamaho/mplapack.git && \
         cd ${WORK}/mplapack && git checkout refactor/fable && \
         cd ${WORK}/mplapack && git log -1 && \
-        rm -f /home/$DOCKER_USER/.ssh/id_ed25519; \
+        rm -f /home/$DOCKER_USER/.ssh/${SSH_KEY_NAME}; \
     fi
 
-# Note: For runtime SSH operations (git push/pull), mount your SSH key when running the container:
-# docker run -v $HOME/.ssh:/home/docker/.ssh:ro ...
-# The container does NOT contain any SSH keys in the image itself.
+# Setup ssh-agent auto-start for interactive sessions (only in SSH mode)
+# Uses the SSH key name specified during build
+RUN if [ "$USE_SSH" = "true" ]; then \
+        echo '' >> /home/$DOCKER_USER/.bashrc && \
+        echo '# Auto-setup ssh-agent with the SSH key used during build' >> /home/$DOCKER_USER/.bashrc && \
+        echo "if [ -z \"\$SSH_AUTH_SOCK\" ] && [ -f ~/.ssh/${SSH_KEY_NAME} ]; then" >> /home/$DOCKER_USER/.bashrc && \
+        echo '    eval "$(ssh-agent -s)" > /dev/null 2>&1' >> /home/$DOCKER_USER/.bashrc && \
+        echo "    ssh-add ~/.ssh/${SSH_KEY_NAME} 2>/dev/null" >> /home/$DOCKER_USER/.bashrc && \
+        echo 'fi' >> /home/$DOCKER_USER/.bashrc; \
+    fi
 
 RUN cd ${WORK}/mplapack && bash -x misc/reconfig.ubuntu22.04.sh
 RUN cd ${WORK}/mplapack && make clean
 RUN cd ${WORK}/mplapack && make -j`getconf _NPROCESSORS_ONLN`
 RUN cd ${WORK}/mplapack && make install
 
-#RUN cd ${WORK}/mplapack && bash -x misc/reconfig.ubuntu22.04.nvidia.sh
+#RUN cd ${WORK}/mplapack && bash -x misc/reconfig.ubuntu24.04.nvidia.sh
 #RUN cd ${WORK}/mplapack && make clean
 #RUN cd ${WORK}/mplapack && make -j`getconf _NPROCESSORS_ONLN`
 #RUN cd ${WORK}/mplapack && make install
@@ -216,12 +224,39 @@ RUN cd ${WORK}/mplapack && make install
 #ARG WINEPATH="/usr/x86_64-w64-mingw32/lib/;/usr/lib/gcc/x86_64-w64-mingw32/10-win32/;/usr/lib/gcc/x86_64-w64-mingw32/10-posix"
 #ARG WINEDEBUG="-all"
 #ENV PATH="$PATH:/opt/wine-stable/bin"
-#RUN cd ${WORK}/mplapack && bash -x misc/reconfig.ubuntu22.04.mingw64.sh
+#RUN cd ${WORK}/mplapack && bash -x misc/reconfig.ubuntu24.04.mingw64.sh
 #RUN cd ${WORK}/mplapack && make clean
 #RUN cd ${WORK}/mplapack && make -j`getconf _NPROCESSORS_ONLN`
 #RUN cd ${WORK}/mplapack && make install
 
-#RUN cd ${WORK}/mplapack && bash -x misc/reconfig.ubuntu22.04.sh
+#RUN cd ${WORK}/mplapack && bash -x misc/reconfig.ubuntu24.04.sh
 #RUN cd ${WORK}/mplapack && make clean
 #RUN cd ${WORK}/mplapack && make -j`getconf _NPROCESSORS_ONLN`
 #RUN cd ${WORK}/mplapack && make install
+
+# Setup entrypoint script to automatically configure ssh-agent when SSH keys are mounted
+RUN echo '#!/bin/bash\n\
+# Auto-setup ssh-agent if SSH key is mounted at runtime\n\
+if [ -f ~/.ssh/id_ed25519 ]; then\n\
+    eval "$(ssh-agent -s)" > /dev/null 2>&1\n\
+    ssh-add ~/.ssh/id_ed25519 2>/dev/null\n\
+    if [ $? -eq 0 ]; then\n\
+        echo "✓ SSH agent configured. Git push/pull available."\n\
+    fi\n\
+elif [ -f ~/.ssh/id_rsa ]; then\n\
+    eval "$(ssh-agent -s)" > /dev/null 2>&1\n\
+    ssh-add ~/.ssh/id_rsa 2>/dev/null\n\
+    if [ $? -eq 0 ]; then\n\
+        echo "✓ SSH agent configured. Git push/pull available."\n\
+    fi\n\
+else\n\
+    echo "ℹ  No SSH key mounted. Read-only mode."\n\
+    echo "   To enable git push: docker run -v \\$HOME/.ssh:/home/docker/.ssh:ro ..."\n\
+fi\n\
+\n\
+# Execute the main command\n\
+exec "$@"\n\
+' > /entrypoint.sh && chmod +x /entrypoint.sh
+
+ENTRYPOINT ["/entrypoint.sh"]
+CMD ["/bin/bash"]
