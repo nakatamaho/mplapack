@@ -2,13 +2,13 @@
 #  docker build -f Dockerfile_ubuntu22.04_fable -t mplapack:fable .
 #
 # * How to build (for maintainers with SSH key - read-write access)
-# SSH_KEY_NAME=id_ed25519 DOCKER_BUILDKIT=1 docker build -f Dockerfile_ubuntu22.04_fable --build-arg USE_SSH=true --build-arg SSH_KEY_NAME=${SSH_KEY_NAME} --secret id=ssh_key,src=$HOME/.ssh/${SSH_KEY_NAME} -t mplapack:fable .
+# SSH_KEY_NAME=id_ed25519 DOCKER_BUILDKIT=1 docker build -f Dockerfile_ubuntu22.04_fable --build-arg DOCKER_UID=$(id -u) --build-arg DOCKER_GID=$(id -g) --build-arg USE_SSH=true --build-arg SSH_KEY_NAME=${SSH_KEY_NAME} --secret id=ssh_key,src=$HOME/.ssh/${SSH_KEY_NAME} -t mplapack:fable .
 #
 # * How to build with custom repository (for users with forks)
-# DOCKER_BUILDKIT=1 docker build -f Dockerfile_ubuntu22.04_fable --build-arg MPLAPACK_REPO=https://github.com/username/mplapack.git -t mplapack:fable .
+# DOCKER_BUILDKIT=1 docker build -f Dockerfile_ubuntu22.04_fable --build-arg DOCKER_UID=$(id -u) --build-arg DOCKER_GID=$(id -g) --build-arg MPLAPACK_REPO=https://github.com/username/mplapack.git -t mplapack:fable .
 #
 # * How to build with custom repository using SSH
-# SSH_KEY_NAME=id_ed25519 DOCKER_BUILDKIT=1 docker build -f Dockerfile_ubuntu22.04_fable --build-arg USE_SSH=true --build-arg SSH_KEY_NAME=${SSH_KEY_NAME} --build-arg MPLAPACK_REPO=https://github.com/<username>/mplapack.git --secret id=ssh_key,src=$HOME/.ssh/${SSH_KEY_NAME} -t mplapack:fable .
+# SSH_KEY_NAME=id_ed25519 DOCKER_BUILDKIT=1 docker build -f Dockerfile_ubuntu22.04_fable --build-arg DOCKER_UID=$(id -u) --build-arg DOCKER_GID=$(id -g) --build-arg USE_SSH=true --build-arg SSH_KEY_NAME=${SSH_KEY_NAME} --build-arg MPLAPACK_REPO=https://github.com/<username>/mplapack.git --secret id=ssh_key,src=$HOME/.ssh/${SSH_KEY_NAME} -t mplapack:fable .
 #
 # * How to run
 #  sudo sh -c 'echo -1 >/proc/sys/kernel/perf_event_paranoid' # to run perf
@@ -92,9 +92,12 @@ RUN apt-get update -y && apt-get install -y --install-recommends winehq-stable
 ### cuda end ###
 
 # create non-root user without password and allow passwordless sudo
+# create non-root user without password and allow passwordless sudo
 ARG DOCKER_UID=2000
+ARG DOCKER_GID=2000
 ARG DOCKER_USER=docker
-RUN useradd -u ${DOCKER_UID} -m ${DOCKER_USER} --shell /bin/bash \
+RUN groupadd -g ${DOCKER_GID} ${DOCKER_USER} 2>/dev/null || true \
+ && useradd -u ${DOCKER_UID} -g ${DOCKER_GID} -m ${DOCKER_USER} --shell /bin/bash \
  && usermod -aG sudo ${DOCKER_USER} \
  && printf "%s ALL=(ALL) NOPASSWD:ALL\n" "${DOCKER_USER}" > /etc/sudoers.d/90-${DOCKER_USER}-nopasswd \
  && chmod 0440 /etc/sudoers.d/90-${DOCKER_USER}-nopasswd
