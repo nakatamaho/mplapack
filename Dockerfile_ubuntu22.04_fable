@@ -17,7 +17,7 @@
 #  docker run --privileged --gpus all -it --rm mplapack:fable /bin/bash
 #
 # * How to run with SSH key for git operations (maintainers only)
-#  docker run --privileged --gpus all -v $HOME/.ssh:/home/docker/.ssh:ro -it --rm mplapack:fable /bin/bash
+#  eval $(ssh-agent); ssh-add ~/.ssh/id_ed25519; docker run --privileged --gpus all -v $SSH_AUTH_SOCK:/ssh-agent -e SSH_AUTH_SOCK=/ssh-agent -it --rm mplapack:fable /bin/bash
 #
 # https://hub.docker.com/r/nvidia/cuda/tags
 FROM nvidia/cuda:13.0.1-devel-ubuntu22.04
@@ -29,7 +29,7 @@ LABEL maintainer="maho.nakata@gmail.com"
 
 # Build argument to choose between HTTPS (public) and SSH (maintainer)
 ARG USE_SSH=false
-ARG SSH_KEY_NAME
+ARG SSH_KEY_NAME=id_rsa
 
 # Repository URLs - can be overridden to use forks
 ARG MPLAPACK_REPO=https://github.com/nakatamaho/mplapack.git
@@ -200,7 +200,7 @@ RUN if [ "$USE_SSH" != "true" ]; then \
     fi
 
 # Clone repositories - SSH mode (maintainer access, requires --secret)
-RUN --mount=type=secret,id=ssh_key,uid=2000 \
+RUN --mount=type=secret,id=ssh_key,uid=${DOCKER_UID} \
     if [ "$USE_SSH" = "true" ]; then \
         echo "=== Cloning via SSH (maintainer mode) ===" && \
         SSH_REPO=$(echo "${MPLAPACK_REPO}" | sed 's|https://github.com/|git@github.com:|') && \
@@ -216,21 +216,10 @@ RUN --mount=type=secret,id=ssh_key,uid=2000 \
         rm -f /home/$DOCKER_USER/.ssh/${SSH_KEY_NAME}; \
     fi
 
-# Setup ssh-agent auto-start for interactive sessions (only in SSH mode)
-# Uses the SSH key name specified during build
-RUN if [ "$USE_SSH" = "true" ]; then \
-        echo '' >> /home/$DOCKER_USER/.bashrc && \
-        echo '# Auto-setup ssh-agent with the SSH key used during build' >> /home/$DOCKER_USER/.bashrc && \
-        echo "if [ -z \"\$SSH_AUTH_SOCK\" ] && [ -f ~/.ssh/${SSH_KEY_NAME} ]; then" >> /home/$DOCKER_USER/.bashrc && \
-        echo '    eval "$(ssh-agent -s)" > /dev/null 2>&1' >> /home/$DOCKER_USER/.bashrc && \
-        echo "    ssh-add ~/.ssh/${SSH_KEY_NAME} 2>/dev/null" >> /home/$DOCKER_USER/.bashrc && \
-        echo 'fi' >> /home/$DOCKER_USER/.bashrc; \
-    fi
-
 RUN cd ${WORK}/mplapack && bash -x misc/reconfig.ubuntu22.04.sh
 RUN cd ${WORK}/mplapack && make clean
-RUN cd ${WORK}/mplapack && make -j`getconf _NPROCESSORS_ONLN`
-RUN cd ${WORK}/mplapack && make install
+#RUN cd ${WORK}/mplapack && make -j`getconf _NPROCESSORS_ONLN`
+#RUN cd ${WORK}/mplapack && make install
 
 #RUN cd ${WORK}/mplapack && bash -x misc/reconfig.ubuntu24.04.nvidia.sh
 #RUN cd ${WORK}/mplapack && make clean
@@ -249,30 +238,3 @@ RUN cd ${WORK}/mplapack && make install
 #RUN cd ${WORK}/mplapack && make clean
 #RUN cd ${WORK}/mplapack && make -j`getconf _NPROCESSORS_ONLN`
 #RUN cd ${WORK}/mplapack && make install
-
-# Setup entrypoint script to automatically configure ssh-agent when SSH keys are mounted
-RUN echo '#!/bin/bash\n\
-# Auto-setup ssh-agent if SSH key is mounted at runtime\n\
-if [ -f ~/.ssh/id_ed25519 ]; then\n\
-    eval "$(ssh-agent -s)" > /dev/null 2>&1\n\
-    ssh-add ~/.ssh/id_ed25519 2>/dev/null\n\
-    if [ $? -eq 0 ]; then\n\
-        echo "✓ SSH agent configured. Git push/pull available."\n\
-    fi\n\
-elif [ -f ~/.ssh/id_rsa ]; then\n\
-    eval "$(ssh-agent -s)" > /dev/null 2>&1\n\
-    ssh-add ~/.ssh/id_rsa 2>/dev/null\n\
-    if [ $? -eq 0 ]; then\n\
-        echo "✓ SSH agent configured. Git push/pull available."\n\
-    fi\n\
-else\n\
-    echo "ℹ  No SSH key mounted. Read-only mode."\n\
-    echo "   To enable git push: docker run -v \\$HOME/.ssh:/home/docker/.ssh:ro ..."\n\
-fi\n\
-\n\
-# Execute the main command\n\
-exec "$@"\n\
-' > /entrypoint.sh && chmod +x /entrypoint.sh
-
-ENTRYPOINT ["/entrypoint.sh"]
-CMD ["/bin/bash"]
