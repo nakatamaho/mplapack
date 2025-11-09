@@ -1,9 +1,14 @@
 # * How to build (for public users - read-only access)
-#  docker build -f Dockerfile_ubuntu22.04_fable_improved -t mplapack:fable .
+#  docker build -f Dockerfile_ubuntu22.04_fable -t mplapack:fable .
 #
 # * How to build (for maintainers with SSH key - read-write access)
 # SSH_KEY_NAME=id_ed25519 DOCKER_BUILDKIT=1 docker build -f Dockerfile_ubuntu22.04_fable --build-arg USE_SSH=true --build-arg SSH_KEY_NAME=${SSH_KEY_NAME} --secret id=ssh_key,src=$HOME/.ssh/${SSH_KEY_NAME} -t mplapack:fable .
 #
+# * How to build with custom repository (for users with forks)
+# DOCKER_BUILDKIT=1 docker build -f Dockerfile_ubuntu22.04_fable --build-arg MPLAPACK_REPO=https://github.com/username/mplapack.git -t mplapack:fable .
+#
+# * How to build with custom repository using SSH
+# SSH_KEY_NAME=id_ed25519 DOCKER_BUILDKIT=1 docker build -f Dockerfile_ubuntu22.04_fable --build-arg USE_SSH=true --build-arg SSH_KEY_NAME=${SSH_KEY_NAME} --build-arg MPLAPACK_REPO=https://github.com/<username>/mplapack.git --secret id=ssh_key,src=$HOME/.ssh/${SSH_KEY_NAME} -t mplapack:fable .
 #
 # * How to run
 #  sudo sh -c 'echo -1 >/proc/sys/kernel/perf_event_paranoid' # to run perf
@@ -24,7 +29,12 @@ LABEL maintainer="maho.nakata@gmail.com"
 
 # Build argument to choose between HTTPS (public) and SSH (maintainer)
 ARG USE_SSH=false
-ARG SSH_KEY_NAME=
+ARG SSH_KEY_NAME
+
+# Repository URLs - can be overridden to use forks
+ARG MPLAPACK_REPO=https://github.com/nakatamaho/mplapack.git
+
+# Validate required arguments for SSH mode
 RUN if [ "$USE_SSH" = "true" ] && [ -z "$SSH_KEY_NAME" ]; then \
       echo "========================================"; \
       echo "ERROR: Maintainer mode requires SSH_KEY_NAME"; \
@@ -183,8 +193,8 @@ RUN if [ "$USE_SSH" = "true" ]; then \
 # Clone repositories - HTTPS mode (default, public access)
 RUN if [ "$USE_SSH" != "true" ]; then \
         echo "=== Cloning via HTTPS (public read-only mode) ===" && \
-        cd ${WORK} && git clone https://github.com/nakatamaho/mpfrxx.git && \
-        cd ${WORK} && git clone https://github.com/nakatamaho/mplapack.git && \
+        echo "Repository: ${MPLAPACK_REPO}" && \
+        cd ${WORK} && git clone ${MPLAPACK_REPO} && \
         cd ${WORK}/mplapack && git checkout refactor/fable && \
         cd ${WORK}/mplapack && git log -1; \
     fi
@@ -193,14 +203,14 @@ RUN if [ "$USE_SSH" != "true" ]; then \
 RUN --mount=type=secret,id=ssh_key,uid=2000 \
     if [ "$USE_SSH" = "true" ]; then \
         echo "=== Cloning via SSH (maintainer mode) ===" && \
+        SSH_REPO=$(echo "${MPLAPACK_REPO}" | sed 's|https://github.com/|git@github.com:|') && \
+        echo "Repository: ${SSH_REPO}" && \
         mkdir -p /home/$DOCKER_USER/.ssh && \
         cp /run/secrets/ssh_key /home/$DOCKER_USER/.ssh/${SSH_KEY_NAME} && \
         chmod 600 /home/$DOCKER_USER/.ssh/${SSH_KEY_NAME} && \
         eval "$(ssh-agent -s)" && \
         ssh-add /home/$DOCKER_USER/.ssh/${SSH_KEY_NAME} && \
-        cd ${WORK} && git clone git@github.com:nakatamaho/mpfrxx.git && \
-        cd ${WORK} && git clone git@github.com:nakatamaho/mplapack.git && \
-        cd ${WORK}/mplapack && git remote set-url origin git@github.com:nakatamaho/mplapack.git && \
+        cd ${WORK} && git clone ${SSH_REPO} && \
         cd ${WORK}/mplapack && git checkout refactor/fable && \
         cd ${WORK}/mplapack && git log -1 && \
         rm -f /home/$DOCKER_USER/.ssh/${SSH_KEY_NAME}; \
