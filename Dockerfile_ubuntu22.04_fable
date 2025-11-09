@@ -2,7 +2,8 @@
 #  docker build -f Dockerfile_ubuntu22.04_fable_improved -t mplapack:fable .
 #
 # * How to build (for maintainers with SSH key - read-write access)
-#   DOCKER_BUILDKIT=1 docker build -f Dockerfile_ubuntu22.04_fable --build-arg USE_SSH=true --build-arg SSH_KEY_NAME=id_rsa --secret id=ssh_key,src=$HOME/.ssh/id_rsa -t mplapack:fable .
+# SSH_KEY_NAME=id_ed25519 DOCKER_BUILDKIT=1 docker build -f Dockerfile_ubuntu22.04_fable --build-arg USE_SSH=true --build-arg SSH_KEY_NAME=${SSH_KEY_NAME} --secret id=ssh_key,src=$HOME/.ssh/${SSH_KEY_NAME} -t mplapack:fable .
+#
 #
 # * How to run
 #  sudo sh -c 'echo -1 >/proc/sys/kernel/perf_event_paranoid' # to run perf
@@ -19,13 +20,18 @@ FROM nvidia/cuda:13.0.1-devel-ubuntu22.04
 #git setting
 ARG GIT_EMAIL="maho.nakata@gmail.com"
 ARG GIT_NAME="NAKATA Maho"
+LABEL maintainer="maho.nakata@gmail.com"
 
 # Build argument to choose between HTTPS (public) and SSH (maintainer)
 ARG USE_SSH=false
-# Build argument for SSH key filename (default: id_ed25519)
-ARG SSH_KEY_NAME=id_ed25519
-
-LABEL maintainer="maho.nakata@gmail.com"
+ARG SSH_KEY_NAME=
+RUN if [ "$USE_SSH" = "true" ] && [ -z "$SSH_KEY_NAME" ]; then \
+      echo "========================================"; \
+      echo "ERROR: Maintainer mode requires SSH_KEY_NAME"; \
+      echo "Usage: --build-arg SSH_KEY_NAME=id_ed25519"; \
+      echo "========================================"; \
+      exit 1; \
+    fi
 
 ARG DEBIAN_FRONTEND=noninteractive
 RUN apt -y update
