@@ -27,45 +27,45 @@ work/$(EXTRACT_STAMP):
 
 work/$(PATCH_STAMP): work/$(EXTRACT_STAMP)
 if IS_MINGW
-	cd $(abs_builddir)/work/internal/qd-$(QDVERSION); patch -p0 < $(abs_builddir)/patches/patch-mingw ; autoreconf -f -i ; cp config/* .
-	cd $(abs_builddir)/work/install/qd-$(QDVERSION); patch -p0 < $(abs_builddir)/patches/patch-mingw ; autoreconf -f -i ; cp config/* .
+#	cd $(abs_builddir)/work/internal/QD-$(QDVERSION); patch -p0 < $(abs_builddir)/patches/patch-mingw ; autoreconf -f -i ; cp config/* .
+#	cd $(abs_builddir)/work/install/QD-$(QDVERSION); patch -p0 < $(abs_builddir)/patches/patch-mingw ; autoreconf -f -i ; cp config/* .
 endif
-	cd $(abs_builddir)/work/internal/qd-$(QDVERSION); patch -p0 < $(abs_builddir)/patches/patch-overflow
-	cd $(abs_builddir)/work/install/qd-$(QDVERSION); patch -p0 < $(abs_builddir)/patches/patch-overflow
+#	cd $(abs_builddir)/work/internal/QD-$(QDVERSION); patch -p0 < $(abs_builddir)/patches/patch-overflow
+#	cd $(abs_builddir)/work/install/QD-$(QDVERSION); patch -p0 < $(abs_builddir)/patches/patch-overflow
 
 	touch $(abs_builddir)/work/$(PATCH_STAMP)
 
 work/$(CONFIGURE_STAMP): work/$(PATCH_STAMP)
 if IS_INTELCC
-	cd $(abs_builddir)/work/internal/qd-$(QDVERSION) ; env "CC=$(CC) -fp-model precise" "CXX=$(CXX) -fp-model precise" "FC=$(FC)" "LDFLAGS=$(LDFLAGS)" "NM=$(NM)" "RANLIB=$(RANLIB)" ./configure $(CONFIGURE_ARGS)
-	cd $(abs_builddir)/work/install/qd-$(QDVERSION) ; env "CC=$(CC) -fp-model precise" "CXX=$(CXX) -fp-model precise" "FC=$(FC)" "LDFLAGS=$(LDFLAGS) -Wl,-rpath=$(libdir)" "NM=$(NM)" "RANLIB=$(RANLIB)" ./configure $(CONFIGURE_ARGS2)
+	cd $(abs_builddir)/work/internal/QD-$(QDVERSION) ; autoreconf -f -i ; env "CC=$(CC) -fp-model precise" "CXX=$(CXX) -fp-model precise" "FC=$(FC)" "LDFLAGS=$(LDFLAGS)" "NM=$(NM)" "RANLIB=$(RANLIB)" ./configure $(CONFIGURE_ARGS)
+	cd $(abs_builddir)/work/install/QD-$(QDVERSION) ; autoreconf -f -i ; env "CC=$(CC) -fp-model precise" "CXX=$(CXX) -fp-model precise" "FC=$(FC)" "LDFLAGS=$(LDFLAGS) -Wl,-rpath=$(libdir)" "NM=$(NM)" "RANLIB=$(RANLIB)" ./configure $(CONFIGURE_ARGS2)
 else
-	cd $(abs_builddir)/work/internal/qd-$(QDVERSION) ; env "CC=$(CC)" "CXX=$(CXX)" "FC=$(FC)" "LDFLAGS=$(LDFLAGS)" "NM=$(NM)" "RANLIB=$(RANLIB)" ./configure $(CONFIGURE_ARGS)
-	cd $(abs_builddir)/work/install/qd-$(QDVERSION) ;  env "CC=$(CC)" "CXX=$(CXX)" "FC=$(FC)" "LDFLAGS=$(LDFLAGS) -Wl,-rpath,$(libdir)" "NM=$(NM)" "RANLIB=$(RANLIB)" ./configure $(CONFIGURE_ARGS2)
+	cd $(abs_builddir)/work/internal/QD-$(QDVERSION) ; autoreconf -f -i ; env "CC=$(CC)" "CXX=$(CXX)" "FC=$(FC)" "LDFLAGS=$(LDFLAGS)" "NM=$(NM)" "RANLIB=$(RANLIB)" ./configure $(CONFIGURE_ARGS)
+	cd $(abs_builddir)/work/install/QD-$(QDVERSION) ; autoreconf -f -i ; env "CC=$(CC)" "CXX=$(CXX)" "FC=$(FC)" "LDFLAGS=$(LDFLAGS) -Wl,-rpath,$(libdir)" "NM=$(NM)" "RANLIB=$(RANLIB)" ./configure $(CONFIGURE_ARGS2)
 endif
 	touch $(abs_builddir)/work/$(CONFIGURE_STAMP)
 
 work/$(BUILD_STAMP): work/$(CONFIGURE_STAMP)
-	cd $(abs_builddir)/work/internal/qd-$(QDVERSION) ; ${MAKE}
-	cd $(abs_builddir)/work/install/qd-$(QDVERSION) ; ${MAKE}
+	cd $(abs_builddir)/work/internal/QD-$(QDVERSION) ; ${MAKE}
+	cd $(abs_builddir)/work/install/QD-$(QDVERSION) ; ${MAKE}
 	touch $(abs_builddir)/work/$(BUILD_STAMP)
 
 work/$(CHECK_STAMP): work/$(BUILD_STAMP)
 if IS_MINGW
-	cd $(abs_builddir)/work/internal/qd-$(QDVERSION) ; ${MAKE} check LOG_COMPILER=wine64
-	cd $(abs_builddir)/work/install/qd-$(QDVERSION) ; ${MAKE} check LOG_COMPILER=wine64
+	cd $(abs_builddir)/work/internal/QD-$(QDVERSION) ; ${MAKE} check LOG_COMPILER=wine64
+	cd $(abs_builddir)/work/install/QD-$(QDVERSION) ; ${MAKE} check LOG_COMPILER=wine64
 else
-	cd $(abs_builddir)/work/internal/qd-$(QDVERSION) ; ${MAKE} check
-	cd $(abs_builddir)/work/install/qd-$(QDVERSION) ; ${MAKE} check
+	cd $(abs_builddir)/work/internal/QD-$(QDVERSION) ; ${MAKE} check
+	cd $(abs_builddir)/work/install/QD-$(QDVERSION) ; ${MAKE} check
 endif
 	touch $(abs_builddir)/work/$(CHECK_STAMP)
 
 work/$(INSTALL_INTERNAL_STAMP): work/$(CHECK_STAMP)
-	cd $(abs_builddir)/work/internal/qd-$(QDVERSION) ; ${MAKE} install
+	cd $(abs_builddir)/work/internal/QD-$(QDVERSION) ; ${MAKE} install
 	touch $(abs_builddir)/work/$(INSTALL_INTERNAL_STAMP)
 
 work/$(INSTALL_STAMP): work/$(CHECK_STAMP)
-	cd $(abs_builddir)/work/install/qd-$(QDVERSION) ; ${MAKE} install
+	cd $(abs_builddir)/work/install/QD-$(QDVERSION) ; ${MAKE} install
 	touch $(abs_builddir)/work/$(INSTALL_STAMP)
 
 extract: work/$(EXTRACT_STAMP)
