@@ -32,6 +32,8 @@ if IS_MINGW
 endif
 #	cd $(abs_builddir)/work/internal/QD-$(QDVERSION); patch -p0 < $(abs_builddir)/patches/patch-overflow
 #	cd $(abs_builddir)/work/install/QD-$(QDVERSION); patch -p0 < $(abs_builddir)/patches/patch-overflow
+	cd $(abs_builddir)/work/internal/QD-$(QDVERSION); patch -p0 < $(abs_builddir)/patches/patch-no-doc
+	cd $(abs_builddir)/work/install/QD-$(QDVERSION); patch -p0 < $(abs_builddir)/patches/patch-no-doc
 
 	touch $(abs_builddir)/work/$(PATCH_STAMP)
 
