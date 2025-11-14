@@ -30,8 +30,8 @@ if IS_MINGW
 	cd $(abs_builddir)/work/internal/QD-$(QDVERSION); patch -p0 < $(abs_builddir)/patches/patch-mingw ; autoreconf -f -i ; cp config/* .
 	cd $(abs_builddir)/work/install/QD-$(QDVERSION); patch -p0 < $(abs_builddir)/patches/patch-mingw ; autoreconf -f -i ; cp config/* .
 endif
-#	cd $(abs_builddir)/work/internal/QD-$(QDVERSION); patch -p0 < $(abs_builddir)/patches/patch-overflow
-#	cd $(abs_builddir)/work/install/QD-$(QDVERSION); patch -p0 < $(abs_builddir)/patches/patch-overflow
+	cd $(abs_builddir)/work/internal/QD-$(QDVERSION); patch -p0 < $(abs_builddir)/patches/patch-overflow
+	cd $(abs_builddir)/work/install/QD-$(QDVERSION); patch -p0 < $(abs_builddir)/patches/patch-overflow
 	cd $(abs_builddir)/work/internal/QD-$(QDVERSION); patch -p0 < $(abs_builddir)/patches/patch-no-doc
 	cd $(abs_builddir)/work/install/QD-$(QDVERSION); patch -p0 < $(abs_builddir)/patches/patch-no-doc
 
