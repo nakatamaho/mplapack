@@ -21,7 +21,7 @@ work/$(EXTRACT_STAMP):
 
 work/$(PATCH_STAMP): work/$(EXTRACT_STAMP)
 if IS_MINGW
-	cd $(abs_builddir)/work/install/OpenBLAS-$(OPENBLASVERSION) ; patch -p0 < $(abs_builddir)/patches/patch-mingw
+	cd $(abs_builddir)/work/install/OpenBLAS-$(OPENBLASVERSION) ; #patch -p0 < $(abs_builddir)/patches/patch-mingw
 endif
 	touch $(abs_builddir)/work/$(PATCH_STAMP)
 
@@ -40,11 +40,19 @@ endif
 	touch $(abs_builddir)/work/$(CHECK_STAMP)
 
 work/$(INSTALL_INTERNAL_STAMP): work/$(CHECK_STAMP)
+if IS_MINGW
+	cd $(abs_builddir)/work/install/OpenBLAS-$(OPENBLASVERSION) ; ${MAKE} CC=`$(_CC)` FC=`$(_FC)` DYNAMIC_ARCH=1 HOSTCC=gcc PREFIX=$(abs_builddir)/../i/OPENBLAS/ install
+else
 	cd $(abs_builddir)/work/install/OpenBLAS-$(OPENBLASVERSION) ; ${MAKE} PREFIX=$(abs_builddir)/../i/OPENBLAS/ install
+endif
 	touch $(abs_builddir)/work/$(INSTALL_INTERNAL_STAMP)
 
 work/$(INSTALL_STAMP): work/$(CHECK_STAMP)
+if IS_MINGW
+	cd $(abs_builddir)/work/install/OpenBLAS-$(OPENBLASVERSION) ; ${MAKE} CC=`$(_CC)` FC=`$(_FC)` DYNAMIC_ARCH=1 HOSTCC=gcc PREFIX=$(prefix) install
+else
 	cd $(abs_builddir)/work/install/OpenBLAS-$(OPENBLASVERSION) ; ${MAKE} PREFIX=$(prefix) install
+endif
 	touch $(abs_builddir)/work/$(INSTALL_STAMP)
 
 extract: work/$(EXTRACT_STAMP)
