@@ -94,7 +94,6 @@ RUN apt-get update -y && apt-get install -y --install-recommends winehq-stable
 ### cuda end ###
 
 # create non-root user without password and allow passwordless sudo
-# create non-root user without password and allow passwordless sudo
 ARG DOCKER_UID=2000
 ARG DOCKER_GID=2000
 ARG DOCKER_USER=docker

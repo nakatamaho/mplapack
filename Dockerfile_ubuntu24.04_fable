@@ -2,7 +2,7 @@
 #  docker build -f Dockerfile_ubuntu24.04_fable -t mplapack:fable .
 #
 # * How to build (for maintainers with SSH key - read-write access)
-# SSH_KEY_NAME=id_ed25519 DOCKER_BUILDKIT=1 docker build -f Dockerfile_ubuntu24.04_fable --build-arg DOCKER_UID=$(id -u) --build-arg DOCKER_GID=$(id -g) --build-arg USE_SSH=true --build-arg SSH_KEY_NAME=${SSH_KEY_NAME} --secret id=ssh_key,src=$HOME/.ssh/${SSH_KEY_NAME} -t mplapack:fable .
+# DOCKER_BUILDKIT=1 docker build -f Dockerfile_ubuntu24.04_fable   --build-arg DOCKER_UID="$(id -u)"   --build-arg DOCKER_GID="$(id -g)"   --build-arg USE_SSH=true   --build-arg SSH_KEY_NAME="${SSH_KEY_NAME:-id_ed25519}"   --secret id=ssh_key,src="$HOME/.ssh/${SSH_KEY_NAME:-id_ed25519}"   -t mplapack:fable .
 #
 # * How to build with custom repository (for users with forks)
 # DOCKER_BUILDKIT=1 docker build -f Dockerfile_ubuntu24.04_fable --build-arg DOCKER_UID=$(id -u) --build-arg DOCKER_GID=$(id -g) --build-arg MPLAPACK_REPO=https://github.com/username/mplapack.git -t mplapack:fable .
@@ -28,8 +28,10 @@ ARG GIT_NAME="NAKATA Maho"
 LABEL maintainer="maho.nakata@gmail.com"
 
 # Build argument to choose between HTTPS (public) and SSH (maintainer)
+ARG DOCKER_UID
+ARG DOCKER_GID
 ARG USE_SSH=false
-ARG SSH_KEY_NAME=id_rsa
+ARG SSH_KEY_NAME
 
 # Repository URLs - can be overridden to use forks
 ARG MPLAPACK_REPO=https://github.com/nakatamaho/mplapack.git
@@ -91,7 +93,6 @@ RUN apt-get update -y && apt-get install -y --install-recommends winehq-stable
 #RUN apt install -y cuda-drivers
 ### cuda end ###
 
-# create non-root user without password and allow passwordless sudo
 # create non-root user without password and allow passwordless sudo
 ARG DOCKER_UID=2000
 ARG DOCKER_GID=2000
@@ -220,7 +221,7 @@ RUN --mount=type=secret,id=ssh_key,uid=${DOCKER_UID} \
     fi
 
 RUN cd ${WORK}/mplapack && bash -x misc/reconfig.ubuntu24.04.sh
-RUN cd ${WORK}/mplapack && make clean
+#RUN cd ${WORK}/mplapack && make clean
 #RUN cd ${WORK}/mplapack && make -j`getconf _NPROCESSORS_ONLN`
 #RUN cd ${WORK}/mplapack && make install
 
@@ -233,11 +234,6 @@ RUN cd ${WORK}/mplapack && make clean
 #ARG WINEDEBUG="-all"
 #ENV PATH="$PATH:/opt/wine-stable/bin"
 #RUN cd ${WORK}/mplapack && bash -x misc/reconfig.ubuntu24.04.mingw64.sh
-#RUN cd ${WORK}/mplapack && make clean
-#RUN cd ${WORK}/mplapack && make -j`getconf _NPROCESSORS_ONLN`
-#RUN cd ${WORK}/mplapack && make install
-
-#RUN cd ${WORK}/mplapack && bash -x misc/reconfig.ubuntu24.04.sh
 #RUN cd ${WORK}/mplapack && make clean
 #RUN cd ${WORK}/mplapack && make -j`getconf _NPROCESSORS_ONLN`
 #RUN cd ${WORK}/mplapack && make install
