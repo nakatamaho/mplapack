@@ -119,10 +119,37 @@ inline _Float64x pi(_Float64x dummy) {
 
 #if defined ___MPLAPACK_HAVE_NATIVE__FLOAT64X___
 
+#include <float.h>
+
+#define STR2(x) #x
+#define STR(x) STR2(x)
+
+#if defined(__FLT64X_MANT_DIG__) && defined(__FLT64X_MAX_EXP__) && defined(LDBL_MANT_DIG) && defined(LDBL_MAX_EXP)
+
+// We can compare the formats of _Float64x and long double.
+#if (__FLT64X_MANT_DIG__ == LDBL_MANT_DIG) && (__FLT64X_MAX_EXP__ == LDBL_MAX_EXP)
+// Formats match -> OK
+#define ___MPLAPACK__FLOAT64X_IS_LONGDOUBLE___ 1
+#else
+// Formats differ -> print all four numbers
+#error "_Float64x != long double: __FLT64X_MANT_DIG__=" \
+           STR(__FLT64X_MANT_DIG__)                       \
+           " LDBL_MANT_DIG=" STR(LDBL_MANT_DIG)          \
+           " __FLT64X_MAX_EXP__=" STR(__FLT64X_MAX_EXP__) \
+           " LDBL_MAX_EXP=" STR(LDBL_MAX_EXP)
+#endif
+#else
+#error "Cannot compare _Float64x and long double: missing macros: " \
+         "_FLT64X_MANT_DIG__=" STR(__FLT64X_MANT_DIG__) " " \
+         "_FLT64X_MAX_EXP__=" STR(__FLT64X_MAX_EXP__) " "  \
+         "LDBL_MANT_DIG=" STR(LDBL_MANT_DIG) " "            \
+         "LDBL_MAX_EXP=" STR(LDBL_MAX_EXP)
+#endif
+
 // Intel C/C++ compilers currently only supports long double as extended doule (aka FP80)
 // and following workaround works
 #if defined(__INTEL_COMPILER)
-    typedef long double _Float64x;
+typedef long double _Float64x;
 #endif
 
 #if defined ___MPLAPACK_INTERNAL___
