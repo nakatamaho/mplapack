@@ -133,17 +133,17 @@ inline _Float64x pi(_Float64x dummy) {
 #define __MPLAPACK_BUFLEN__ 1024
 #endif
 
-inline void printnum(_Float64x rtmp) { printf(FLOAT64X_FORMAT, rtmp); }
-inline void printnum(std::complex<_Float64x> ctmp) { printf(FLOAT64X_FORMAT FLOAT64X_FORMAT "i", ctmp.real(), ctmp.imag()); }
+inline void printnum(_Float64x rtmp) { printf(FLOAT64X_FORMAT, (long double)rtmp); }
+inline void printnum(std::complex<_Float64x> ctmp) { printf(FLOAT64X_FORMAT FLOAT64X_FORMAT "i", (long double)ctmp.real(), (long double)ctmp.imag()); }
 
-inline void printnum_short(_Float64x rtmp) { printf(FLOAT64X_SHORT_FORMAT, rtmp); }
-inline void printnum_short(std::complex<_Float64x> ctmp) { printf(FLOAT64X_SHORT_FORMAT FLOAT64X_SHORT_FORMAT "i", ctmp.real(), ctmp.imag()); }
+inline void printnum_short(_Float64x rtmp) { printf(FLOAT64X_SHORT_FORMAT, (long double)rtmp); }
+inline void printnum_short(std::complex<_Float64x> ctmp) { printf(FLOAT64X_SHORT_FORMAT FLOAT64X_SHORT_FORMAT "i", (long double)ctmp.real(), (long double)ctmp.imag()); }
 
-inline void sprintnum(char *buf, _Float64x rtmp) { snprintf(buf, __MPLAPACK_BUFLEN__, FLOAT64X_FORMAT, rtmp); }
-inline void sprintnum(char *buf, std::complex<_Float64x> ctmp) { snprintf(buf, __MPLAPACK_BUFLEN__, FLOAT64X_FORMAT FLOAT64X_FORMAT "i", ctmp.real(), ctmp.imag()); }
+inline void sprintnum(char *buf, _Float64x rtmp) { snprintf(buf, __MPLAPACK_BUFLEN__, FLOAT64X_FORMAT, (long double)rtmp); }
+inline void sprintnum(char *buf, std::complex<_Float64x> ctmp) { snprintf(buf, __MPLAPACK_BUFLEN__, FLOAT64X_FORMAT FLOAT64X_FORMAT "i", (long double)ctmp.real(), (long double)ctmp.imag()); }
 
-inline void sprintnum_short(char *buf, _Float64x rtmp) { snprintf(buf, __MPLAPACK_BUFLEN__, FLOAT64X_SHORT_FORMAT, rtmp); }
-inline void sprintnum_short(char *buf, std::complex<_Float64x> ctmp) { snprintf(buf, __MPLAPACK_BUFLEN__, FLOAT64X_SHORT_FORMAT FLOAT64X_SHORT_FORMAT "i", ctmp.real(), ctmp.imag()); }
+inline void sprintnum_short(char *buf, _Float64x rtmp) { snprintf(buf, __MPLAPACK_BUFLEN__, FLOAT64X_SHORT_FORMAT, (long double)rtmp); }
+inline void sprintnum_short(char *buf, std::complex<_Float64x> ctmp) { snprintf(buf, __MPLAPACK_BUFLEN__, FLOAT64X_SHORT_FORMAT FLOAT64X_SHORT_FORMAT "i", (long double)ctmp.real(), (long double)ctmp.imag()); }
 #endif
 
 inline _Float64x pow2(const _Float64x &a) { return a * a; }
