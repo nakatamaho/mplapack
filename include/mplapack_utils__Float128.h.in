@@ -581,8 +581,8 @@ inline _Float128 pi(_Float128 dummy) { return M_PIq; }
 
 #endif //___MPLAPACK_WANT_LIBQUADMATH___
 
-//Following specialization should be done in the libc/compiler side.
-#if !defined ___MPLAPACK__FLOAT128_IS_LONGDOUBLE___  && !defined ___MPLAPACK_LONGDOUBLE_IS_BINARY128___
+// Following specialization should be done in the libc/compiler side.
+#if !defined ___MPLAPACK__FLOAT128_IS_LONGDOUBLE___ && !defined ___MPLAPACK_LONGDOUBLE_IS_BINARY128___
 template <> template <> inline std::complex<_Float128> &std::complex<_Float128>::operator/=(const std::complex<_Float128> &b) {
     _Float128 abr, abi, ratio, den;
     if ((abr = b.real()) < 0.)

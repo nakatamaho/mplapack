@@ -117,6 +117,116 @@ inline _Float64x pi(_Float64x dummy) {
 
 #endif
 
+#if defined ___MPLAPACK_HAVE_NATIVE__FLOAT64X___
+
+#include <float.h>
+
+#define STR2(x) #x
+#define STR(x) STR2(x)
+
+#if defined(__FLT64X_MANT_DIG__) && defined(__FLT64X_MAX_EXP__) && defined(LDBL_MANT_DIG) && defined(LDBL_MAX_EXP)
+
+// We can compare the formats of _Float64x and long double.
+#if (__FLT64X_MANT_DIG__ == LDBL_MANT_DIG) && (__FLT64X_MAX_EXP__ == LDBL_MAX_EXP)
+// Formats match -> OK
+#define ___MPLAPACK__FLOAT64X_IS_LONGDOUBLE___ 1
+#else
+// Formats differ -> print all four numbers
+#error "_Float64x != long double: __FLT64X_MANT_DIG__=" \
+           STR(__FLT64X_MANT_DIG__)                       \
+           " LDBL_MANT_DIG=" STR(LDBL_MANT_DIG)          \
+           " __FLT64X_MAX_EXP__=" STR(__FLT64X_MAX_EXP__) \
+           " LDBL_MAX_EXP=" STR(LDBL_MAX_EXP)
+#endif
+#else
+#error "Cannot compare _Float64x and long double: missing macros: " \
+         "_FLT64X_MANT_DIG__=" STR(__FLT64X_MANT_DIG__) " " \
+         "_FLT64X_MAX_EXP__=" STR(__FLT64X_MAX_EXP__) " "  \
+         "LDBL_MANT_DIG=" STR(LDBL_MANT_DIG) " "            \
+         "LDBL_MAX_EXP=" STR(LDBL_MAX_EXP)
+#endif
+
+// Intel C/C++ compilers currently only supports long double as extended doule (aka FP80)
+// and following workaround works
+#if defined(__INTEL_COMPILER)
+typedef long double _Float64x;
+#endif
+
+#if defined ___MPLAPACK_INTERNAL___
+#define FLOAT64X_FORMAT "%+25.21Le"
+#define FLOAT64X_SHORT_FORMAT "%+20.16Le"
+
+#if !defined __MPLAPACK_BUFLEN__
+#define __MPLAPACK_BUFLEN__ 1024
+#endif
+
+inline void printnum(_Float64x rtmp) { printf(FLOAT64X_FORMAT, (long double)rtmp); }
+inline void printnum(std::complex<_Float64x> ctmp) { printf(FLOAT64X_FORMAT FLOAT64X_FORMAT "i", (long double)ctmp.real(), (long double)ctmp.imag()); }
+
+inline void printnum_short(_Float64x rtmp) { printf(FLOAT64X_SHORT_FORMAT, (long double)rtmp); }
+inline void printnum_short(std::complex<_Float64x> ctmp) { printf(FLOAT64X_SHORT_FORMAT FLOAT64X_SHORT_FORMAT "i", (long double)ctmp.real(), (long double)ctmp.imag()); }
+
+inline void sprintnum(char *buf, _Float64x rtmp) { snprintf(buf, __MPLAPACK_BUFLEN__, FLOAT64X_FORMAT, (long double)rtmp); }
+inline void sprintnum(char *buf, std::complex<_Float64x> ctmp) { snprintf(buf, __MPLAPACK_BUFLEN__, FLOAT64X_FORMAT FLOAT64X_FORMAT "i", (long double)ctmp.real(), (long double)ctmp.imag()); }
+
+inline void sprintnum_short(char *buf, _Float64x rtmp) { snprintf(buf, __MPLAPACK_BUFLEN__, FLOAT64X_SHORT_FORMAT, (long double)rtmp); }
+inline void sprintnum_short(char *buf, std::complex<_Float64x> ctmp) { snprintf(buf, __MPLAPACK_BUFLEN__, FLOAT64X_SHORT_FORMAT FLOAT64X_SHORT_FORMAT "i", (long double)ctmp.real(), (long double)ctmp.imag()); }
+#endif
+
+inline _Float64x pow2(const _Float64x &a) { return a * a; }
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+#include <complex.h>
+#include <complex>
+#ifdef __cplusplus
+}
+#endif
+
+// implementation of sign transfer function.
+inline _Float64x sign(const _Float64x &a, const _Float64x &b) {
+    _Float64x mtmp;
+    mtmp = std::abs(a);
+    if (b < 0.0) {
+        mtmp = -mtmp;
+    }
+    return mtmp;
+}
+
+inline double cast2double(_Float64x a) { return (double)a; }
+
+inline long nint(_Float64x a) {
+    long i;
+    _Float64x tmp;
+    a = a + 0.5;
+    tmp = floor(a);
+    i = (long)tmp;
+    return i;
+}
+
+inline _Float64x castREAL__Float64x(mplapackint n) {
+    _Float64x ret = n;
+    return ret;
+}
+
+inline mplapackint castINTEGER__Float64x(_Float64x a) {
+    mplapackint i = a;
+    return i;
+}
+
+inline _Float64x pi(_Float64x dummy) {
+#if defined __APPLE__ // __MATH_LONG_DOUBLE_CONSTANTS looks broken
+    return 0xc.90fdaa22168c235p-2L;
+#elif defined __MINGW32__
+    return 0xc.90fdaa22168c235p-2L;
+#else
+    return M_PIl;
+#endif
+}
+
+#endif
+
 #if defined ___MPLAPACK__FLOAT64X_BROKEN___
 inline _Float64x abs(const std::complex<_Float64x> &a) { return sqrtl(a.real() * a.real() + a.imag() * a.imag()); }
 

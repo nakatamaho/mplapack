@@ -62,7 +62,9 @@ void subst_test1() {
 #elif defined ___MPLAPACK_BUILD_WITH_DOUBLE___
     sscanf(buf1, "%le", &tmp1);
 #elif defined ___MPLAPACK_BUILD_WITH__FLOAT64X___
-    sscanf(buf1, "%Le", &tmp1);
+    long double tmp_ld;
+    sscanf(buf1, "%Le", &tmp_ld);
+    tmp1 = (_Float64x)tmp_ld;
 #else
     tmp1 = buf1;
 #endif

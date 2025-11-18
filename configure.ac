@@ -437,7 +437,7 @@ if test x$enable__Float64x = x"yes"; then
                _Float64x *y = x;
            }
         ]]) 
-        ], [float64xislongdouble=yes], [float64islongdouble=no])
+        ], [float64xislongdouble=yes], [float64xislongdouble=no])
     fi
     if test x"$have__Float64x" = x"yes" && test x"$want___float80" = x"yes" ; then    
         AC_MSG_RESULT([_Float64x is supported via __float80])
@@ -468,7 +468,7 @@ if test x$enable__Float64x = x"yes"; then
         sed 's/%%MPLAPACK__FLOAT64X___FLOAT80%%/#define ___MPLAPACK__FLOAT64X_IS_LONGDOUBLE___/g' include/mplapack_utils__Float64x.h.in > include/mplapack_utils__Float64x.h
     fi
     if test "$want___float80" = "no" && test "$float64xislongdouble" = "no" ; then
-        sed 's/%%MPLAPACK__FLOAT64X___FLOAT80%%//g' include/mplapack_utils__Float64x.h.in > include/mplapack_utils__Float64x.h
+        sed 's/%%MPLAPACK__FLOAT64X___FLOAT80%%/#define ___MPLAPACK_HAVE_NATIVE__FLOAT64X___/g' include/mplapack_utils__Float64x.h.in > include/mplapack_utils__Float64x.h
     fi
 fi
 CXXFLAGS="$SAVE_CXXFLAGS"
