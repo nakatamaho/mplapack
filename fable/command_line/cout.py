@@ -91,7 +91,6 @@ class process(object):
             O.dynamic_parameters = None
         else:
             from fable.cout import dynamic_parameter_props
-            from libtbx.utils import Sorry
             O.dynamic_parameters = []
             for opt_dp in options.dynamic_parameter:
                 flds = opt_dp.replace("=", " ").split()
@@ -137,12 +136,11 @@ class process(object):
                                       link=opts.link, file_name_cpp="fable_cout.cpp", show_command=True)
             print()
             if (opts.run):
-                from libtbx import easy_run
                 cmd = os.path.join(".", out_name)
                 if (opts.valgrind):
                     cmd = "valgrind " + cmd
                 print(cmd)
-                easy_run.call(command=cmd)
+                easy_run_call(command=cmd)
 
 
 def run(args):
