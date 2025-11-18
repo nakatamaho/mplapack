@@ -1,0 +1,72 @@
+str<>::operator char*() possible? (certain constructors will have to be removed)
+cout: raise exception at very end if other exceptions caught
+read, write: operator, destructors: copy inp, copy back on success
+distinction: write(i, *) with i not a stdout or stderr?
+g-format, e-format
+
+declare all static const at top of cpp_function
+exercise common with all members not used (elide completely)
+
+fem/read.hpp .rec(), .iostat(): enforce: cannot be called after operator,
+simple_ostream_to_std_string: faster alternative to loop with s.push_back()?
+not-implemented exceptions for all TODO in fem/*.hpp
+data_type_star.hpp types -> write_star.f
+
+read(iostat=ios) with ios passed as argument (requires proper const analysis)
+
+restore fem::common vs. common in function signature, but with recursive analysis
+needs_cmn: not if write/read internal_file only
+write fmt cleanup if string literal
+exercise recursive function, subroutine calls
+handle "array declared but not used"
+
+
+DATA and implied SAVE in subroutines
+  with DATA
+    implied save, 0-init first call (or before?)
+  without DATA
+    ifort
+      scalar not save, 0-init on re-entry
+      array impl save, 0-init first call (or before?)
+    gfortran
+      -fno-automatic
+        scalar, array implied save, 0-init first call (or before?)
+      -fautomatic
+        scalar, array uninitialized each call
+
+Rationale
+  Intentionally no debug mode to keep the fem sources as compact
+  and efficient as possible. Valgrind is usually very reliable
+  for detecting memory access problems.
+
+  0-inits: written by default because it is tedious to manually find
+  the critical places where they need to be inserted. In contrast, in
+  performance critical sections they can easily be removed manually.
+  (Usually only a small fraction of the code is performance critical.
+  If not it means the code is large and complex, and getting it to
+  run at all is likely to be much more valuable than getting it to
+  run as fast as possible.)
+
+  Comprehensive reporting of Fortran errors, but only if important to
+  the conversion process. Some errors that would be found by a regular
+  Fortran compiler are not detected by fable.read or fable.cout.
+  Invalid Fortran code may also lead to raw Python tracebacks (e.g.
+  AssertionError) that are not directly helpful while developing new
+  Fortran code.
+
+Known ifort/fable differences:
+  data_26.f:
+    data are initialized at first execution of a function, not during
+    program initilization
+
+Caveats:
+  Success of fable.cout is not a guarantee that the C++ code will compile.
+
+  FEM_DO assumes that l is not changed inside the loop, otherwise
+  the C++ behavior is different from the Fortran behavior.
+  (But FEM_DO_STEP does not make this assumption.)
+
+  common-equivalence-simple silently assumes target starting point is
+  beginning of array
+
+  arr<T>: T must have trivial destructor (b/o use of memset)

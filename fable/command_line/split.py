@@ -1,0 +1,36 @@
+from __future__ import absolute_import, division, print_function
+def run(args):
+  import fable.read
+  out_names_used = set()
+  for file_name in args:
+    all_fprocs = fable.read.process(
+      file_names=[file_name],
+      basic_only=True,
+      skip_load_includes=True)
+    for fproc in all_fprocs.all_in_input_order:
+      out_name = fproc.name.value
+      i = 2
+      while (out_name in out_names_used):
+        out_name = "%s_%d" % (fproc.name.value, i)
+        i += 1
+      out_names_used.add(out_name)
+      with open(out_name+".f", "w") as out:
+        print(out.name)
+        first_line = True
+        empty_lines = []
+        for ssl in fproc.all_ssl():
+          for sl in ssl.source_line_cluster:
+            line = sl.text
+            if (len(line.strip()) == 0):
+              empty_lines.append(line)
+            else:
+              if (not first_line):
+                for prev_line in empty_lines:
+                  print(prev_line, file=out)
+              print(line, file=out)
+              first_line = False
+              empty_lines = []
+
+if (__name__ == "__main__"):
+  import sys
+  run(args=sys.argv[1:])
