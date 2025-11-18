@@ -1,6 +1,3 @@
-from __future__ import absolute_import, division, print_function
-from six.moves import zip
-
 
 class unique_list(object):
 

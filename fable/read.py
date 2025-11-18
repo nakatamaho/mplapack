@@ -1,5 +1,3 @@
-from __future__ import absolute_import, division, print_function
-from six.moves import range
 from fable \
     import unsigned_integer_scan, \
     identifier_scan, \
@@ -10,8 +8,6 @@ from fable import intrinsics
 from fable import equivalence
 from fable import utils
 import sys
-from six.moves import zip
-
 
 class Error(Exception):
     pass

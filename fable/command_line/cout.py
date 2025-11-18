@@ -155,7 +155,7 @@ def run(args):
     )
 
     parser = optparse.OptionParser(
-        usage="%s [options] fortran_file ..." % libtbx.env.dispatcher_name)
+        usage="%s [options] fortran_file ..." )
     parser.add_option("-?", action="help", help=optparse.SUPPRESS_HELP)
     parser.add_option("--compile", action="store_true", default=False)
     parser.add_option("--link", action="store_true", default=False)
