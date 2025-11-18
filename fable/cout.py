@@ -1,4 +1,5 @@
 from itertools import product
+from io import StringIO
 import os.path
 
 fmt_comma_placeholder = chr(255)
@@ -2699,7 +2700,6 @@ def generate_common_report(
         member_registry,
         variant_due_to_equivalence_common_names,
         stringio):
-    from six.moves import StringIO
     variant_common_names = set()
     if (stringio is None):
         report = StringIO()
