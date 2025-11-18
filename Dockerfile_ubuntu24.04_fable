@@ -93,6 +93,14 @@ RUN apt-get update -y && apt-get install -y --install-recommends winehq-stable
 #RUN apt install -y cuda-drivers
 ### cuda end ###
 
+### clang-format-19 start ###
+RUN apt update && apt install -y wget gnupg lsb-release
+RUN wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | gpg --dearmor -o /usr/share/keyrings/llvm-archive-keyring.gpg
+RUN echo "deb [signed-by=/usr/share/keyrings/llvm-archive-keyring.gpg] http://apt.llvm.org/jammy/ llvm-toolchain-jammy-19 main" \
+    > /etc/apt/sources.list.d/llvm.list
+RUN apt update && apt install -y clang-format-19
+### clang-format-19 end ###
+
 # create non-root user without password and allow passwordless sudo
 ARG DOCKER_UID=2000
 ARG DOCKER_GID=2000
@@ -248,20 +256,20 @@ RUN --mount=type=secret,id=ssh_key,uid=${DOCKER_UID} \
         rm -f /home/$DOCKER_USER/.ssh/${SSH_KEY_NAME}; \
     fi
 
-#RUN cd ${WORK}/mplapack && bash -x misc/reconfig.ubuntu24.04.sh
-#RUN cd ${WORK}/mplapack && make clean
-#RUN cd ${WORK}/mplapack && make -j`getconf _NPROCESSORS_ONLN`
-#RUN cd ${WORK}/mplapack && make install
+RUN cd ${WORK}/mplapack && bash -x misc/reconfig.ubuntu24.04.sh
+RUN cd ${WORK}/mplapack && make clean
+RUN cd ${WORK}/mplapack && make -j`getconf _NPROCESSORS_ONLN`
+RUN cd ${WORK}/mplapack && make install
 
-#RUN cd ${WORK}/mplapack && bash -x misc/reconfig.ubuntu24.04.nvidia.sh
-#RUN cd ${WORK}/mplapack && make clean
-#RUN cd ${WORK}/mplapack && make -j`getconf _NPROCESSORS_ONLN`
-#RUN cd ${WORK}/mplapack && make install
+RUN cd ${WORK}/mplapack && bash -x misc/reconfig.ubuntu24.04.nvidia.sh
+RUN cd ${WORK}/mplapack && make clean
+RUN cd ${WORK}/mplapack && make -j`getconf _NPROCESSORS_ONLN`
+RUN cd ${WORK}/mplapack && make install
 
-#ARG WINEPATH="/usr/x86_64-w64-mingw32/lib/;/usr/lib/gcc/x86_64-w64-mingw32/10-win32/;/usr/lib/gcc/x86_64-w64-mingw32/10-posix"
-#ARG WINEDEBUG="-all"
-#ENV PATH="$PATH:/opt/wine-stable/bin"
-#RUN cd ${WORK}/mplapack && bash -x misc/reconfig.ubuntu24.04.mingw64.sh
-#RUN cd ${WORK}/mplapack && make clean
-#RUN cd ${WORK}/mplapack && make -j`getconf _NPROCESSORS_ONLN`
-#RUN cd ${WORK}/mplapack && make install
+ARG WINEPATH="/usr/x86_64-w64-mingw32/lib/;/usr/lib/gcc/x86_64-w64-mingw32/10-win32/;/usr/lib/gcc/x86_64-w64-mingw32/10-posix"
+ARG WINEDEBUG="-all"
+ENV PATH="$PATH:/opt/wine-stable/bin"
+RUN cd ${WORK}/mplapack && bash -x misc/reconfig.ubuntu24.04.mingw64.sh
+RUN cd ${WORK}/mplapack && make clean
+RUN cd ${WORK}/mplapack && make -j`getconf _NPROCESSORS_ONLN`
+RUN cd ${WORK}/mplapack && make install
