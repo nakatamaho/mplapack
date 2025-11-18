@@ -1,14 +1,36 @@
-from __future__ import absolute_import, division, print_function
-from six.moves import range
-from libtbx.utils import product
-from libtbx import group_args
-from libtbx import mutable
-from libtbx import Auto
+from itertools import product
 import os.path
-from six.moves import zip
 
 fmt_comma_placeholder = chr(255)
 
+class _AutoType:
+    def __repr__(self):
+        return "Auto"
+
+Auto = _AutoType()
+
+class group_args:
+    def __init__(self, **kwargs):
+        self.__dict__.update(kwargs)
+
+    def __repr__(self):
+        args = ", ".join(f"{k}={v!r}" for k, v in self.__dict__.items())
+        return f"group_args({args})"
+
+class mutable:
+    """
+    Minimal replacement for libtbx.mutable.
+
+    Usage:
+        flag = mutable(value=False)
+        flag.value = True
+    """
+    def __init__(self, **kwargs):
+        self.__dict__.update(kwargs)
+
+    def __repr__(self):
+        args = ", ".join(f"{k}={v!r}" for k, v in self.__dict__.items())
+        return f"mutable({args})"
 
 def break_line_if_necessary(callback, line, max_len=80, min_len=70):
     def cb_finalize(line):
