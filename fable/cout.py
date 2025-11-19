@@ -364,9 +364,9 @@ def convert_to_mplapack_type(ctype):
         return "REAL"
     elif ctype_clean == "bool":
         return "LOGICAL"
-    elif ctype_clean == "complex":
+    elif ctype_clean == "std::complex<float>":
         return "COMPLEX"
-    elif ctype_clean == "doublecomplex":
+    elif ctype_clean == "std::complex<double>":
         return "COMPLEX"
 
     # For complex types like arr_ref<double>, extract the inner type
