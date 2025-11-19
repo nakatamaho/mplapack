@@ -927,13 +927,10 @@ def convert_declaration(rapp, conv_info, fdecl, crhs, const):
             if (const):
                 return "const "
             return ""
-        rapp("%s%s %s = %s;" % (const_qualifier(), ctype, vname, crhs))
+        # Use MPLAPACK-style scalar types (INTEGER, REAL, etc.)
+        mplapack_ctype = convert_to_mplapack_type(ctype)
+        rapp("%s%s %s = %s;" % (const_qualifier(), mplapack_ctype, vname, crhs))
         return False
-    if (cdims is Auto):
-        rapp("%s %s(%s);" % (ctype, vname, cfill0))
-    else:
-        rapp("%s %s(%s, %s);" % (ctype, vname, cdims, cfill0))
-    return True
 
 
 class scope(object):
@@ -2474,8 +2471,8 @@ def convert_to_cpp_function(
         if (fdecl.data_type is not None
                 and fdecl.data_type.value == "character"):
             if (fdecl.dim_tokens is None):
-                cargs_append("str_%sref" % cconst(
-                    fdecl=fdecl, short=True), arg_name)
+                # MPLAPACK-style: scalar CHARACTER arguments as const char*
+                cargs_append("const char *", arg_name)
             else:
                 if (len(fdecl.dim_tokens) == 1):
                     cdim = ""
@@ -3008,8 +3005,8 @@ def convert_commons(
     if (len(commons_defined_already) == 0
             and len(save_struct_names) == 0
             and dynamic_parameters is None):
-        callback("")
-        callback("using fem::common;")
+        # Disabled: callback("")
+        # Disabled: callback("using fem::common;")
         return
     callback("")
     callback("struct common :")
@@ -3050,34 +3047,46 @@ def convert_commons(
         save_struct_buffers=save_struct_buffers)
 
 
-include_fem_hpp = \
-    "#include <fem.hpp> // Fortran EMulation library of fable module"
+include_fem_hpp = ""
 
 
 def include_guard(callback, namespace, suffix):
-    s = namespace.upper().replace("::", "_") + suffix
+    if namespace:
+        s = namespace.upper().replace("::", "_") + suffix
+    else:
+        s = "GUARD" + suffix
     callback("#ifndef %s" % s)
     callback("#define %s" % s)
     callback("")
 
 
 def open_namespace(callback, namespace, using_namespace_major_types=True):
-    ns = namespace.split("::")
-    for component in ns:
-        callback("namespace %s {" % component)
-    if (using_namespace_major_types):
-        callback("""
-using namespace fem::major_types;""")
+    # Disabled: no namespace wrapping
+    # ns = namespace.split("::")
+    # for component in ns:
+    #     callback("namespace %s {" % component)
+    # if (using_namespace_major_types):
+    #     callback("""
+    # using namespace fem::major_types;""")
+    if namespace:
+        ns = namespace.split("::")
+    else:
+        ns = []
     return ns
 
 
 def close_namespace(callback, namespace, hpp_guard):
-    callback("")
-    ns = namespace.split("::")
-    callback("%s // namespace %s" % ("}"*len(ns), namespace))
+    # Disabled: no namespace wrapping
+    # callback("")
+    # ns = namespace.split("::")
+    # callback("%s // namespace %s" % ("}"*len(ns), namespace))
     if (hpp_guard):
         callback("")
         callback("#endif // GUARD")
+    if namespace:
+        ns = namespace.split("::")
+    else:
+        ns = []
     return ns
 
 
@@ -3192,7 +3201,7 @@ def process(
         debug=False):
     assert [file_names, all_fprocs].count(None) == 1
     if (namespace is None or namespace == "please_specify"):
-        namespace = "placeholder_please_replace"
+        namespace = ""  # Disabled: was "placeholder_please_replace"
     import fable.read
     if (all_fprocs is None):
         all_fprocs = fable.read.process(file_names=file_names)
