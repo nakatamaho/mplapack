@@ -5,11 +5,14 @@ import math
 
 fmt_comma_placeholder = chr(255)
 
+
 class _AutoType:
     def __repr__(self):
         return "Auto"
 
+
 Auto = _AutoType()
+
 
 class group_args:
     def __init__(self, **kwargs):
@@ -19,6 +22,7 @@ class group_args:
         args = ", ".join(f"{k}={v!r}" for k, v in self.__dict__.items())
         return f"group_args({args})"
 
+
 class mutable:
     """
     Minimal replacement for libtbx.mutable.
@@ -27,12 +31,14 @@ class mutable:
         flag = mutable(value=False)
         flag.value = True
     """
+
     def __init__(self, **kwargs):
         self.__dict__.update(kwargs)
 
     def __repr__(self):
         args = ", ".join(f"{k}={v!r}" for k, v in self.__dict__.items())
         return f"mutable({args})"
+
 
 def break_line_if_necessary(callback, line, max_len=80, min_len=70):
     def cb_finalize(line):
@@ -312,6 +318,7 @@ def convert_token(vmap, leading, tok, had_str_concat=None):
         return convert_complex_literal(vmap=vmap, tok=tok)
     tok.raise_not_supported()
 
+
 class major_types_cache(object):
 
     __slots__ = ["identifiers"]
@@ -322,6 +329,7 @@ class major_types_cache(object):
     def __contains__(self, value):
         # fem::major_types names are ignored in this build
         return False
+
 
 major_types = major_types_cache()
 
@@ -340,6 +348,48 @@ def prepend_identifier_if_necessary(identifier):
     if (identifier in major_types or identifier in cpp_keywords):
         return "identifier_" + identifier
     return identifier
+
+
+def convert_to_mplapack_type(ctype):
+    """Convert C++ types to MPLAPACK types (INTEGER, REAL, etc.)"""
+    # Remove const and & from the type
+    ctype_clean = ctype.replace("const", "").replace("&", "").strip()
+
+    # Convert basic types
+    if ctype_clean == "int":
+        return "INTEGER"
+    elif ctype_clean == "double":
+        return "REAL"
+    elif ctype_clean == "float":
+        return "REAL"
+    elif ctype_clean == "bool":
+        return "LOGICAL"
+    elif ctype_clean == "complex":
+        return "COMPLEX"
+    elif ctype_clean == "doublecomplex":
+        return "COMPLEX"
+
+    # For complex types like arr_ref<double>, extract the inner type
+    if ctype_clean.startswith("arr_ref<"):
+        # Extract type from arr_ref<...>
+        inner_type = ctype_clean[8:-1].strip()
+        if ", " in inner_type:
+            inner_type = inner_type.split(",")[0].strip()
+        return convert_to_mplapack_type(inner_type)
+
+    return ctype_clean
+
+
+def convert_function_name_to_mplapack(name):
+    """Convert function name: drot -> Rrot, zaxpy -> Caxpy, cgemm -> Cgemm"""
+    if name and len(name) > 0:
+        if name[0] == 'd':
+            return 'R' + name[1:]
+        elif name[0] == 'z' or name[0] == 'c':
+            return 'C' + name[1:]
+        else:
+            return name
+    return name
 
 
 def produce_comment_given_sl(callback, sl):
@@ -2422,21 +2472,14 @@ def convert_to_cpp_function(
             ctype = convert_data_type(
                 conv_info=conv_info, fdecl=fdecl, crhs=None)[0]
             if (fdecl.dim_tokens is None):
-                cargs_append("%s%s&" % (
-                    ctype,
-                    cconst(fdecl=fdecl, short=False)),
-                    prepend_identifier_if_necessary(arg_name))
+                # Convert to MPLAPACK style: remove reference, convert type
+                mplapack_type = convert_to_mplapack_type(ctype)
+                cargs_append("%s const &" % mplapack_type,
+                             prepend_identifier_if_necessary(arg_name))
             else:
-                if (len(fdecl.dim_tokens) == 1):
-                    t = ctype
-                else:
-                    t = "%s, %d" % (ctype, len(fdecl.dim_tokens))
-                if (t.endswith(">")):
-                    templs = " "
-                else:
-                    templs = ""
-                cargs_append("arr_%sref<%s%s>" % (
-                    cconst(fdecl=fdecl, short=True), t, templs), arg_name)
+                # Convert to MPLAPACK style: use pointer instead of arr_ref
+                mplapack_type = convert_to_mplapack_type(ctype)
+                cargs_append("%s *" % mplapack_type, arg_name)
         else:
             passed = conv_info.fproc.externals_passed_by_arg_identifier.get(
                 fdecl.id_tok.value)
@@ -2448,13 +2491,16 @@ def convert_to_cpp_function(
                 ctype=ctype+"_function_pointer",
                 name=arg_name)
         if (fdecl.dim_tokens is not None and fdecl.use_count != 0):
-            args_fdecl_with_dim.append(fdecl)
+            # args_fdecl_with_dim.append(fdecl)
+            pass
     cdecl = "void"
     if (conv_info.fproc.name is not None):
         fdecl = conv_info.fproc.get_fdecl(id_tok=conv_info.fproc.name)
         if (fdecl.data_type is not None):
             cdecl = convert_data_type(
                 conv_info=conv_info, fdecl=fdecl, crhs=None)[0]
+            # Convert return type to MPLAPACK style
+            cdecl = convert_to_mplapack_type(cdecl)
             conv_info.vmap[conv_info.fproc.name.value] = "return_value"
     if (declaration_only):
         cpp_callback("")
@@ -2463,7 +2509,7 @@ def convert_to_cpp_function(
             cpp_callback("inline")
         cpp_callback("%s %s(%s);" % (
             cdecl,
-            prepend_identifier_if_necessary(conv_info.fproc.name.value),
+            convert_function_name_to_mplapack(conv_info.fproc.name.value),
             ", ".join(fptr)))
         return
     if (conv_info.fproc.is_passed_as_external):
@@ -2474,7 +2520,7 @@ def convert_to_cpp_function(
         cb("")
         cb("typedef %s (*%s_function_pointer)(%s);" % (
             cdecl,
-            prepend_identifier_if_necessary(conv_info.fproc.name.value),
+            convert_function_name_to_mplapack(conv_info.fproc.name.value),
             ", ".join(fptr)))
     for callback in [hpp_callback, cpp_callback]:
         if (callback is None):
@@ -2491,7 +2537,7 @@ def convert_to_cpp_function(
             last = ";"
         else:
             last = ""
-        cname = prepend_identifier_if_necessary(conv_info.fproc.name.value)
+        cname = convert_function_name_to_mplapack(conv_info.fproc.name.value)
         if (len(cargs) == 0):
             callback(cname+"()" + last)
         else:
