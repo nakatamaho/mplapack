@@ -731,7 +731,7 @@ def convert_data_type(conv_info, fdecl, crhs):
             csize = convert_tokens(conv_info=conv_info, tokens=size_tokens)
         ctype = "fem::str<%s>" % csize
         if (crhs is None):
-            crhs = "fem::char0"
+            crhs = "0"
     else:
         def convert_to_ctype_with_size(ctype):
             if (size_tokens is None):
@@ -756,21 +756,21 @@ def convert_data_type(conv_info, fdecl, crhs):
             if (size_tokens is None):
                 ctype = "std::complex<float>"
                 if (crhs is None):
-                    crhs = "fem::float0"
+                    crhs = "0.0"
             else:
                 sz = convert_to_int_literal(tokens=size_tokens)
                 if (sz == 8):
                     ctype = "std::complex<float>"
                     if (crhs is None):
-                        crhs = "fem::float0"
+                        crhs = "0.0"
                 elif (sz == 16):
                     ctype = "std::complex<double>"
                     if (crhs is None):
-                        crhs = "fem::double0"
+                        crhs = "0.0"
                 elif (sz == 32):
                     ctype = "std::complex<long double>"
                     if (crhs is None):
-                        crhs = "fem::long_double0"
+                        crhs = "0.0"
                 else:
                     size_tokens[0].raise_not_supported()
         elif (data_type_code == "doublecomplex"):
@@ -778,7 +778,7 @@ def convert_data_type(conv_info, fdecl, crhs):
                 size_tokens[0].raise_not_supported()
             ctype = "std::complex<double>"
             if (crhs is None):
-                crhs = "fem::double0"
+                crhs = "0.0"
         else:
             raise RuntimeError(
                 "Not implemented: data_type_code = %s" % data_type_code)
@@ -891,6 +891,21 @@ def ad_hoc_change_arr_to_arr_ref(ctype, cconst=""):
 
 
 def zero_shortcut_if_possible(ctype):
+    # Convert to simple zero values for basic types
+    if ctype == "INTEGER" or ctype == "int":
+        return "0"
+    elif ctype == "REAL" or ctype == "double":
+        return "0.0"
+    elif ctype == "float":
+        return "0.0"
+    elif ctype == "bool" or ctype == "LOGICAL":
+        return "false"
+    elif ctype == "char":
+        return "0"
+    elif ctype.startswith("std::complex<"):
+        return "0.0"
+
+    # Original behavior for fem:: types
     if (ctype.startswith("fem::")):
         if (ctype.endswith(">")):
             s = " "
