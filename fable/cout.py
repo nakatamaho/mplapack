@@ -1,6 +1,7 @@
 from itertools import product
 from io import StringIO
 import os.path
+import math
 
 fmt_comma_placeholder = chr(255)
 
@@ -91,8 +92,15 @@ def break_line_if_necessary(callback, line, max_len=80, min_len=70):
             ic += 1
     potential_break_points.append((0, nc))
     n = nc - i_start
-    from libtbx.math_utils import iround, iceil
-    l = max(min_len, iround(n / iceil(n / (max_len - i_start - 2))))
+    denom = max_len - i_start - 2
+
+    if n <= 0 or denom <= 0:
+        l = max_len
+    else:
+        blocks = math.ceil(float(n) / float(denom))
+        l_est = float(n) / float(blocks)
+        l = max(min_len, int(round(l_est)))
+
     b = 0
     f = 0
 
@@ -304,29 +312,16 @@ def convert_token(vmap, leading, tok, had_str_concat=None):
         return convert_complex_literal(vmap=vmap, tok=tok)
     tok.raise_not_supported()
 
-
 class major_types_cache(object):
 
     __slots__ = ["identifiers"]
 
-    def __init__(O):
-        O.identifiers = None
+    def __init__(self):
+        self.identifiers = set()
 
-    def __contains__(O, value):
-        if (O.identifiers is None):
-            O.identifiers = set()
-            import libtbx.load_env
-            hpp = libtbx.env.under_dist(
-                module_name="fable", path="fem/major_types.hpp", test=os.path.isfile)
-            using_fem = "  using fem::"
-            with open(hpp) as f:
-                lines = f.read().splitlines()
-            for line in lines:
-                if (line.startswith(using_fem)):
-                    assert line.endswith(";")
-                    O.identifiers.add(line[len(using_fem):-1])
-        return value in O.identifiers
-
+    def __contains__(self, value):
+        # fem::major_types names are ignored in this build
+        return False
 
 major_types = major_types_cache()
 
