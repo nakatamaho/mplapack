@@ -151,18 +151,7 @@ RUN echo "\n\
         email = ${GIT_EMAIL}\n\
         name = ${GIT_NAME}\n\
 " > /home/$DOCKER_USER/.gitconfig
-SHELL ["/bin/bash", "-c"]
-RUN cd ${WORK} && wget https://raw.githubusercontent.com/cctbx/cctbx_project/master/libtbx/auto_build/bootstrap.py --no-check-certificate
-RUN cd ${WORK} && python bootstrap.py hot update --builder=cctbx
-RUN cd ${WORK} && wget https://repo.anaconda.com/miniconda/Miniconda2-4.5.11-Linux-x86_64.sh
-RUN cd ${WORK} && bash ./Miniconda2-4.5.11-Linux-x86_64.sh -b -p
 
-RUN cd ${WORK} && source miniconda2/etc/profile.d/conda.sh && conda create -y --name fable38 python=3.8 && conda activate fable38 && conda install six future && mkdir build38 && cd ${WORK}/build38 && python ../modules/cctbx_project/libtbx/configure.py fable
-RUN sed -i 's|#if PTHREAD_STACK_MIN > 0|#ifdef PTHREAD_STACK_MIN|g' ${WORK}/modules/boost/boost/thread/pthread/thread_data.hpp
-RUN source ${WORK}/build38/setpaths.sh && cd ${WORK}/build38 && make && cd ${WORK} && cd ${WORK}/build38 && make ; cd ${WORK}
-RUN cd ${WORK} && echo "source /home/docker/miniconda2/etc/profile.d/conda.sh" >> .bashrc
-RUN cd ${WORK} && echo "conda activate fable38" >> .bashrc
-RUN cd ${WORK} && echo "source /home/docker/build38/setpaths.sh" >> .bashrc
 RUN echo -e "\n\
         PROGRAM HELLO\n\
         PRINT *, 'HELLO, WORLD!'\n\
@@ -171,12 +160,6 @@ RUN echo -e "\n\
 
 #setting lsp mode for C++ https://emacs-lsp.github.io/lsp-mode/tutorials/CPP-guide/
 RUN cd ${WORK} && mkdir -p .emacs.d
-RUN echo -e "\n\
-[user]\n\
-        email = ${GIT_EMAIL}\n\
-        name = ${GIT_NAME}\n\
-" >> /home/$DOCKER_USER/.gitconfig
-
 RUN echo -e "(require 'package)\n\
 (add-to-list 'package-archives '(\"melpa\" . \"http://melpa.org/packages/\") t)\n\
 (package-initialize)\n\
