@@ -8,11 +8,20 @@ fi
 
 src="$1"
 
-# Temporary file for generated C++ code
+# Directory of this script (to find header_blas.txt)
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+header="${script_dir}/header_blas.txt"
+
+if [ ! -f "$header" ]; then
+    echo "Error: header file not found: $header" >&2
+    exit 1
+fi
+
+# Temporary files for generated C++ code
+tmp_body="$(mktemp)"
 tmp_cpp="$(mktemp)"
 
-# Run fable cout, normalize comments, drop leading comment block,
-# then format with clang-format
+# Run fable cout, normalize comments, drop leading comment block
 PYTHONPATH="$HOME/mplapack" \
   python -m fable.command_line.cout "$src" \
   | sed 's|//C|//|g' \
@@ -29,8 +38,12 @@ for line in sys.stdin:
         # First non-comment, non-blank line: start output from here
         started = True
     sys.stdout.write(line)
-' > "$tmp_cpp"
+' > "$tmp_body"
 
+# Prepend header_blas.txt
+cat "$header" "$tmp_body" > "$tmp_cpp"
+
+# Format with clang-format
 clang-format-19 -i -style '{
     BasedOnStyle: llvm,
     IndentWidth: 4,
@@ -42,11 +55,10 @@ clang-format-19 -i -style '{
     NamespaceIndentation: Inner,
     AlwaysBreakTemplateDeclarations: No,
     BreakBeforeConceptDeclarations: Never,
-    MaxEmptyLinesToKeep: 0
   }' "$tmp_cpp"
 
 # Print formatted code to stdout
 cat "$tmp_cpp"
 
 # Clean up
-rm -f "$tmp_cpp"
+rm -f "$tmp_body" "$tmp_cpp"
