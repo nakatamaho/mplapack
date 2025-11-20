@@ -325,7 +325,29 @@ def convert_token(vmap, leading, tok, had_str_concat=None):
     if (tok.is_real()):
         return tv+"f"
     if (tok.is_double_precision()):
-        return tv.replace("d", "e")
+        # Pretty-print double precision literals:
+        # - Normalize Fortran D exponent to e/E
+        # - Use 0.0 / 1.0 instead of 0.0e+0 / 1.0e+0
+        s = tv.replace("D", "d").replace("d", "e")
+        try:
+            v = float(s)
+        except Exception:
+            # Fallback: simple d->e replacement
+            return s
+        # Special cases for common constants
+        if v == 0.0:
+            return "0.0"
+        if v == 1.0:
+            return "1.0"
+        # Generic formatting
+        out = format(v, ".16g")
+        # Ensure it looks like a floating literal in C++
+        if ("e" not in out and "E" not in out
+                and "." not in out
+                and "nan" not in out
+                and "inf" not in out):
+            out += ".0"
+        return out
     if (tok.is_complex()):
         return convert_complex_literal(vmap=vmap, tok=tok)
     tok.raise_not_supported()
