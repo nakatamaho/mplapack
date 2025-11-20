@@ -1075,11 +1075,23 @@ def convert_to_fem_do(conv_info, parent_scope, i_tok, fls_tokens):
     l = convert_tokens(conv_info=conv_info, tokens=fls_tokens[1].value)
     if (len(fls_tokens) == 3):
         s = convert_tokens(conv_info=conv_info, tokens=fls_tokens[2].value)
-        return parent_scope.open_nested_scope(
-            opening_text=["FEM_DOSTEP(%s, %s, %s, %s) {" % (i, f, l, s)])
+        if (s.lstrip('+-').isdigit()):
+            if int(s) >= 0:
+                return parent_scope.open_nested_scope(
+                    opening_text=["for(%s=%s; %s<=%s; %s=%s+%s) {" % (i, f, i, l, i, i, s)])
+            else:
+                return parent_scope.open_nested_scope(
+                    opening_text=["for(%s=%s; %s>=%s; %s=%s%s) {" % (i, f, i, l, i, i, s)])
+        else:
+            if '-' in s:
+                return parent_scope.open_nested_scope(
+                    opening_text=["for(%s=%s; %s>=%s; %s=%s%s) {" % (i, f, i, l, i, i, s)])
+            else:
+                return parent_scope.open_nested_scope(
+                    opening_text=["for(%s=%s; %s<=%s; %s=%s+%s) {" % (i, f, i, l, i, i, s)])
     if (conv_info.fem_do_safe):
         return parent_scope.open_nested_scope(
-            opening_text=["FEM_DO_SAFE(%s, %s, %s) {" % (i, f, l)])
+            opening_text=["for(%s=%s; %s<=%s; %s=%s+1) {" % (i, f, i, l, i, i)])
     if (is_simple_do_last(tokens=fls_tokens[1].value)):
         return parent_scope.open_nested_scope(
             opening_text=["FEM_DO(%s, %s, %s) {" % (i, f, l)])
@@ -3273,19 +3285,11 @@ def process(
     topological_fprocs = all_fprocs.build_bottom_up_fproc_list_following_calls(
         top_procedures=top_procedures)
     missing = topological_fprocs.missing_external_fdecls_by_identifier
-    if (len(missing) != 0):
-        for identifier in sorted(missing.keys()):
-            if (identifier in ignore_missing):
-                continue
-            return_type = get_missing_external_return_type(
-                fdecls=missing[identifier])
-            callback("""
-%s
-%s(...)
-{
-  throw std::runtime_error(
-    "Missing function implementation: %s");
-}""" % (return_type, identifier, identifier))
+    # Do not emit stub implementations for missing external functions.
+    # All such functions (lsame, xerbla, etc.) must be provided elsewhere.
+    # If you ever want to see the list, you can add diagnostic prints here,
+    # but no code should be generated into the output.
+
     #
     dep_cycles = topological_fprocs.dependency_cycles
     if (len(dep_cycles) != 0):
