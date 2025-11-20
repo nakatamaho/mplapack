@@ -690,6 +690,121 @@ def convert_power(conv_info, tokens):
     return fun + "(" + convert_tokens(
         conv_info=conv_info, tokens=tokens, commas=True) + ")"
 
+import re
+
+def _is_simple_lvalue(expr: str) -> bool:
+    """Return True if expr is a simple variable or an array element.
+
+    Examples considered simple:
+        A
+        A[i]
+        A[i][j]
+        A[(i-1) + (j-1)*lda]
+    """
+    expr = expr.strip()
+    # NAME or NAME[...] or NAME[...]...
+    # This is intentionally permissive: any NAME followed by bracketed expressions.
+    return re.match(r'^[A-Za-z_][A-Za-z0-9_]*(\[[^\]]*\])*$', expr) is not None
+
+
+def _real_repl(arg: str) -> str:
+    """Replacement for DBLE/REAL: choose arg.real() or (arg).real()."""
+    arg = arg.strip()
+    if _is_simple_lvalue(arg):
+        return f"{arg}.real()"
+    return f"({arg}).real()"
+
+
+def _imag_repl(arg: str) -> str:
+    """Replacement for AIMAG/IMAG: always (arg).imag()."""
+    arg = arg.strip()
+    return f"({arg}).imag()"
+
+
+def _conj_repl(arg: str) -> str:
+    """Replacement for CONJG/CONJ: std::conj(arg)."""
+    arg = arg.strip()
+    return f"conj({arg})"
+
+
+def _rewrite_unary_intrinsic(text: str, func_name: str, repl_func):
+    """Rewrite occurrences of func_name(arg) using repl_func(arg).
+
+    This handles nested parentheses in arg by scanning until matching ')'.
+    """
+    out = []
+    i = 0
+    n = len(text)
+    fname_len = len(func_name)
+
+    while i < n:
+        j = text.find(func_name, i)
+        if j < 0:
+            out.append(text[i:])
+            break
+
+        out.append(text[i:j])
+
+        # Find '(' after function name
+        k = text.find("(", j + fname_len)
+        if k < 0:
+            # Malformed: stop rewriting
+            out.append(text[j:])
+            break
+
+        # Scan to matching ')'
+        depth = 0
+        p = k
+        while p < n:
+            c = text[p]
+            if c == "(":
+                depth += 1
+            elif c == ")":
+                depth -= 1
+                if depth == 0:
+                    break
+            p += 1
+        if depth != 0:
+            # Unbalanced; give up
+            out.append(text[j:])
+            break
+
+        # Extract argument
+        arg = text[k + 1:p]
+        out.append(repl_func(arg))
+
+        i = p + 1
+
+    return "".join(out)
+
+
+def rewrite_intrinsics(text: str) -> str:
+    """Rewrite fem::dble/real/aimag/imag/conjg/conj into C++ equivalents."""
+
+    # DBLE: real part, intelligent parentheses
+    if "fem::dble" in text:
+        text = _rewrite_unary_intrinsic(text, "fem::dble", _real_repl)
+
+    # REAL
+    if "fem::real" in text:
+        text = _rewrite_unary_intrinsic(text, "fem::real", _real_repl)
+
+    # AIMAG / IMAG
+    if "fem::aimag" in text:
+        text = _rewrite_unary_intrinsic(text, "fem::aimag", _imag_repl)
+    if "fem::imag" in text:
+        text = _rewrite_unary_intrinsic(text, "fem::imag", _imag_repl)
+
+    # CONJG / CONJ
+    if "fem::conjg" in text:
+        text = _rewrite_unary_intrinsic(text, "fem::conjg", _conj_repl)
+    if "fem::conj" in text:
+        text = _rewrite_unary_intrinsic(text, "fem::conj", _conj_repl)
+    if "fem::dconjg" in text:
+        text = _rewrite_unary_intrinsic(text, "fem::dconjg", _conj_repl)
+
+    return text
+
 
 def convert_tokens(conv_info, tokens, commas=False, had_str_concat=None):
     result = []
@@ -793,10 +908,17 @@ def convert_tokens(conv_info, tokens, commas=False, had_str_concat=None):
                 tok=tok,
                 had_str_concat=had_str_concat))
         prev_tok = tok
-    if (commas):
-        return ", ".join(result)
-    return "".join(result)
 
+    # Build base string
+    if (commas):
+        s = ", ".join(result)
+    else:
+        s = "".join(result)
+
+    # Rewrite intrinsic calls such as fem::dble(), fem::conjg(), etc.
+    s = rewrite_intrinsics(s)
+
+    return s
 
 def convert_to_int_literal(tokens):
     assert tokens is not None and len(tokens) != 0
