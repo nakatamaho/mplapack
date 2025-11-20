@@ -253,7 +253,19 @@ def convert_complex_literal(vmap, tok):
 def convert_token(vmap, leading, tok, had_str_concat=None):
     tv = tok.value
     if (tok.is_identifier()):
-        return vmap.get(tv, tv)
+        # Apply vmap first (Fortran name -> C++ name)
+        raw = vmap.get(tv, tv)
+        name = raw
+
+        # Case-insensitive check for BLAS/LAPACK helpers
+        lname = raw.lower()
+        if lname == "lsame":
+            name = "Mlsame"
+        elif lname == "xerbla":
+            name = "Mxerbla"
+
+        return name
+
     if (tok.is_op()):
         if (tv == ".not."):
             return "!"
@@ -2354,6 +2366,15 @@ def convert_executable(
                         cmn = ""
                     called = conv_info.vmapped_callable(
                         identifier=ei.subroutine_name.value)
+                    # Rename BLAS/LAPACK helper calls (case-insensitive)
+                    simple_name = called.split("::")[-1]
+                    lower_name = simple_name.lower()
+                    prefix = called[:-len(simple_name)]
+                    if lower_name == "lsame":
+                        called = prefix + "Mlsame"
+                    elif lower_name == "xerbla":
+                        called = prefix + "Mxerbla"
+
                 if (ei.arg_token is None):
                     curr_scope.append("%s(%s);" % (called, cmn))
                 else:
