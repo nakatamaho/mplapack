@@ -711,18 +711,77 @@ def convert_tokens(conv_info, tokens, commas=False, had_str_concat=None):
                     commas=False,
                     had_str_concat=had_str_concat))
         elif (tok.is_parentheses()):
-            if (cmn_needs_to_be_inserted(conv_info=conv_info, prev_tok=prev_tok)):
-                if (len(tok.value) != 0) and (len(tok.value[0].value) != 0):
-                    op = "(cmn, "
+            # Detect array reference: a(i) or a(i,j)
+            is_array_ref = False
+            fdecl = None
+            if (prev_tok is not None
+                    and prev_tok.is_identifier()
+                    and conv_info.fproc is not None):
+                try:
+                    fdecl = conv_info.fproc.get_fdecl(id_tok=prev_tok)
+                except Exception:
+                    fdecl = None
+
+            if (fdecl is not None
+                    and getattr(fdecl, "dim_tokens", None) is not None
+                    and not fdecl.is_user_defined_callable()):
+                # Non-callable with dimensions -> array
+                is_array_ref = True
+
+            if is_array_ref:
+                # Convert a(i) / a(i,j) into flat C indexing
+                # a(i)   -> a[(i - 1)]
+                # a(i,j) -> a[(i - 1) + (j - 1)*ld<name>]
+                idx_str = convert_tokens(
+                    conv_info=conv_info,
+                    tokens=tok.value,
+                    commas=True,
+                    had_str_concat=had_str_concat)
+                parts = [p.strip() for p in idx_str.split(",") if p.strip() != ""]
+
+                if len(parts) == 1:
+                    # 1D array: a(i) -> a[(i - 1)]
+                    i_expr = parts[0]
+                    index_expr = f"({i_expr} - 1)"
+                    rapp("[" + index_expr + "]")
+                elif len(parts) == 2:
+                    # 2D array: a(i,j) -> a[(i - 1) + (j - 1)*ld<name>]
+                    i_expr, j_expr = parts
+                    # leading dimension: ld + array name (lowercase)
+                    ldname = "ld" + prev_tok.value.lower()
+                    i_term = f"({i_expr} - 1)"
+                    j_term = f"({j_expr} - 1)"
+                    index_expr = f"{i_term} + {j_term}*{ldname}"
+                    rapp("[" + index_expr + "]")
                 else:
-                    op = "(cmn"
+                    # Fallback: give up and treat like a normal call/parentheses
+                    if (cmn_needs_to_be_inserted(
+                        conv_info=conv_info, prev_tok=prev_tok)):
+                        if (len(tok.value) != 0) and (len(tok.value[0].value) != 0):
+                            op = "(cmn, "
+                        else:
+                            op = "(cmn"
+                    else:
+                        op = "("
+                    rapp(op + convert_tokens(
+                        conv_info=conv_info,
+                        tokens=tok.value,
+                        commas=True,
+                        had_str_concat=had_str_concat) + ")")
             else:
-                op = "("
-            rapp(op + convert_tokens(
-                conv_info=conv_info,
-                tokens=tok.value,
-                commas=True,
-                had_str_concat=had_str_concat) + ")")
+                # Normal function call or parenthesized expression
+                if (cmn_needs_to_be_inserted(conv_info=conv_info, prev_tok=prev_tok)):
+                    if (len(tok.value) != 0) and (len(tok.value[0].value) != 0):
+                        op = "(cmn, "
+                    else:
+                        op = "(cmn"
+                else:
+                    op = "("
+                rapp(op + convert_tokens(
+                    conv_info=conv_info,
+                    tokens=tok.value,
+                    commas=True,
+                    had_str_concat=had_str_concat) + ")")
         elif (tok.is_implied_do()):
             raise AssertionError
         elif (tok.is_power()):
