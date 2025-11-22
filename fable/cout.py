@@ -3839,6 +3839,10 @@ def _postprocess_mplapack_labels_and_comments(lines):
                 mapped = _mplapack_default_name(core)
             line = line[:m.start(2)] + mapped + line[m.end(2):]
 
+        # 3) simplify trivial zero row offset: (1 - 1) + ...
+        #    e.g. a[(1 - 1) + (j - 1) * lda] -> a[(j - 1) * lda]
+        line = re.sub(r'\(\s*1\s*-\s*1\s*\)\s*\+\s*', '', line)
+
         new_lines.append(line)
     return new_lines
 
@@ -3865,6 +3869,7 @@ def _normalize_fortran_comment_prefix(lines):
             normalized.append(line)
     return normalized
 
+
 def _postprocess_complex_initializers(lines):
     """Normalize COMPLEX(a, b) initializers.
 
@@ -3885,6 +3890,7 @@ def _postprocess_complex_initializers(lines):
         out.append(line)
     return out
 
+
 def _postprocess_complex_zero_initializers(lines):
     """Rewrite COMPLEX zero initializers using COMPLEX(0.0, 0.0).
 
@@ -3904,6 +3910,7 @@ def _postprocess_complex_zero_initializers(lines):
         line = pat_const.sub(r'\1COMPLEX(0.0, 0.0);', line)
         out.append(line)
     return out
+
 
 def process(
         file_names=None,
