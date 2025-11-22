@@ -1151,7 +1151,7 @@ def _rewrite_max_min_calls(text: str) -> str:
 
 
 def rewrite_intrinsics(text: str) -> str:
-    """Rewrite fem::dble/real/aimag/imag/conjg/conj into C++ equivalents."""
+    """Rewrite fem::dble/real/aimag/imag/conjg/conj and related intrinsics."""
 
     # DBLE: real part, intelligent parentheses
     if "fem::dble" in text:
@@ -1167,6 +1167,10 @@ def rewrite_intrinsics(text: str) -> str:
     if "fem::imag" in text:
         text = _rewrite_unary_intrinsic(text, "fem::imag", _imag_repl)
 
+    # DIMAG (double-precision imaginary part)
+    if "fem::dimag" in text:
+        text = _rewrite_unary_intrinsic(text, "fem::dimag", _imag_repl)
+
     # CONJG / CONJ
     if "fem::conjg" in text:
         text = _rewrite_unary_intrinsic(text, "fem::conjg", _conj_repl)
@@ -1175,12 +1179,15 @@ def rewrite_intrinsics(text: str) -> str:
     if "fem::dconjg" in text:
         text = _rewrite_unary_intrinsic(text, "fem::dconjg", _conj_repl)
 
-    # MAX / MIN: remove fem:: namespace and cast integer literal first args.
-    text = _rewrite_max_min_calls(text)
+    # DABS / ABS: real absolute value
+    if "fem::dabs" in text:
+        text = text.replace("fem::dabs", "abs")
+    if "fem::abs" in text:
+        text = text.replace("fem::abs", "abs")
 
-    # COMPLEX0 constant: fem::COMPLEX0 -> COMPLEX(0.0, 0.0)
-    if "fem::COMPLEX0" in text:
-        text = text.replace("fem::COMPLEX0", "COMPLEX(0.0, 0.0)")
+    # DCMPLX: double-precision complex constructor
+    if "fem::dcmplx" in text:
+        text = text.replace("fem::dcmplx", "COMPLEX")
 
     return text
 
