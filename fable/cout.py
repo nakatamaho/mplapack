@@ -3791,6 +3791,27 @@ def _postprocess_mplapack_labels_and_comments(lines):
         new_lines.append(line)
     return new_lines
 
+def _normalize_fortran_comment_prefix(lines):
+    """Normalize Fortran-derived comments: //C... -> // ..."""
+    normalized = []
+    for line in lines:
+        stripped = line.lstrip()
+        if stripped.startswith("//C"):
+            # Leading whitespace before //C
+            leading = line[:len(line) - len(stripped)]
+            # Drop the 'C'
+            rest = stripped[3:]  # after "//C"
+            # Ensure there is exactly one space after //
+            # rest may be "" or like "     foo"
+            rest = rest.lstrip()
+            if rest:
+                new_line = f"{leading}// {rest}"
+            else:
+                new_line = f"{leading}//"
+            normalized.append(new_line)
+        else:
+            normalized.append(line)
+    return normalized
 
 def process(
         file_names=None,
@@ -4165,13 +4186,12 @@ def process(
             if (not debug):
                 raise
             show_traceback()
-    #
-    if (top_cpp_file_name is not None):
-        with open(top_cpp_file_name, "w") as f:
-            print("\n".join(result), file=f)
-    #
 
+    # First, fix XERBLA labels and "End of XXX" comments.
     result = _postprocess_mplapack_labels_and_comments(result)
+    # Then, normalize Fortran comment markers: //C... -> // ...
+    result = _normalize_fortran_comment_prefix(result)
+
     if (top_cpp_file_name is not None):
         with open(top_cpp_file_name, "w") as f:
             print("\n".join(result), file=f)
