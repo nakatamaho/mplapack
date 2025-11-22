@@ -1189,6 +1189,9 @@ def rewrite_intrinsics(text: str) -> str:
     if "fem::dcmplx" in text:
         text = text.replace("fem::dcmplx", "COMPLEX")
 
+    # MAX / MIN: remove fem:: and cast integer literal first args.
+    text = _rewrite_max_min_calls(text)
+
     return text
 
 
