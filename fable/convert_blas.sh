@@ -92,7 +92,7 @@ tmp_cpp="$(mktemp)"
 # mplapack_name_map.txt from the same directory as this script.
 (
     cd "$script_dir"
-    python -m fable.command_line.cout "$src_abs"
+    python -m fable.command_line.cout "$src_abs" > /dev/null
 )
 
 # Ensure the expected generated C++ file exists.
@@ -136,9 +136,6 @@ clang-format-19 -i -style '{
 
 # Overwrite the generated C++ file with the formatted version
 cp "$tmp_cpp" "$cpp_generated"
-
-# Print formatted code to stdout
-cat "$tmp_cpp"
 
 # Clean up
 rm -f "$tmp_body" "$tmp_cpp"
