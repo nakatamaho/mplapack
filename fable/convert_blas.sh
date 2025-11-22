@@ -35,10 +35,54 @@ fi
 if [[ "$src" = /* ]]; then
     src_abs="$src"
 else
-    src_dir="$(cd "$(dirname "$src")" && pwd)"
-    src_base="$(basename "$src")"
-    src_abs="${src_dir}/${src_base}"
+    src_dir_tmp="$(cd "$(dirname "$src")" && pwd)"
+    src_base_tmp="$(basename "$src")"
+    src_abs="${src_dir_tmp}/${src_base_tmp}"
 fi
+
+# Derive source directory and base name.
+src_dir="$(cd "$(dirname "$src_abs")" && pwd)"
+src_base="$(basename "$src_abs")"
+
+# Fortran routine name is assumed to be the basename without extension.
+fortran_name="${src_base%.*}"
+lower_fortran="${fortran_name,,}"
+
+# Map Fortran name to MPLAPACK C++ name using mplapack_name_map.txt first.
+mapped_name=""
+while IFS= read -r line; do
+    # Strip comments starting with #
+    line="${line%%#*}"
+    # Trim leading/trailing whitespace
+    line="$(echo "$line" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
+    [ -z "$line" ] && continue
+    set -- $line
+    src_name="$1"
+    dst_name="$2"
+    if [ "${src_name,,}" = "$lower_fortran" ]; then
+        mapped_name="$dst_name"
+        break
+    fi
+done < "$name_map"
+
+# If not found in the map, apply the default MPLAPACK rule: s/d -> R, c/z -> C.
+if [ -z "$mapped_name" ]; then
+    first_char="${lower_fortran:0:1}"
+    tail="${lower_fortran:1}"
+    case "$first_char" in
+        s|d)
+            mapped_name="R${tail}"
+            ;;
+        c|z)
+            mapped_name="C${tail}"
+            ;;
+        *)
+            mapped_name="$fortran_name"
+            ;;
+    esac
+fi
+
+cpp_generated="${src_dir}/${mapped_name}.cpp"
 
 # Temporary files
 tmp_body="$(mktemp)"
@@ -46,12 +90,19 @@ tmp_cpp="$(mktemp)"
 
 # Run fable cout in the script directory so that cout.py can load
 # mplapack_name_map.txt from the same directory as this script.
-# Then strip leading blank lines and leading // comments using the
-# Python filter you specified.
 (
     cd "$script_dir"
     python -m fable.command_line.cout "$src_abs"
-) | python -c 'import sys
+)
+
+# Ensure the expected generated C++ file exists.
+if [ ! -f "$cpp_generated" ]; then
+    echo "Error: expected generated C++ file not found: $cpp_generated" >&2
+    exit 1
+fi
+
+# Strip leading blank lines and leading // comments from the generated C++ file.
+python -c 'import sys
 started = False
 for line in sys.stdin:
     if not started:
@@ -64,7 +115,7 @@ for line in sys.stdin:
         # First non-comment, non-blank line: start output from here
         started = True
     sys.stdout.write(line)
-' > "$tmp_body"
+' < "$cpp_generated" > "$tmp_body"
 
 # Prepend MPLAPACK BLAS header
 cat "$header" "$tmp_body" > "$tmp_cpp"
@@ -82,6 +133,9 @@ clang-format-19 -i -style '{
     AlwaysBreakTemplateDeclarations: No,
     BreakBeforeConceptDeclarations: Never,
   }' "$tmp_cpp"
+
+# Overwrite the generated C++ file with the formatted version
+cp "$tmp_cpp" "$cpp_generated"
 
 # Print formatted code to stdout
 cat "$tmp_cpp"

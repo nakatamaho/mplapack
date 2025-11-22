@@ -3833,6 +3833,16 @@ def process(
         fproc.conv_hook = conv_hook_info()
         fproc.conv_hook.ignore_common_and_save = (
             fproc.name.value in ignore_common_and_save)
+    if top_cpp_file_name is None and file_names is not None and len(file_names) == 1:
+        main_fproc = all_fprocs.all_in_input_order[0]
+        base_name = convert_function_name_to_mplapack(main_fproc.name.value)
+        src_path = file_names[0]
+        src_dir = os.path.dirname(src_path)
+        if src_dir:
+            top_cpp_file_name = os.path.join(src_dir, base_name + ".cpp")
+        else:
+            top_cpp_file_name = base_name + ".cpp"
+
     result = []
 
     def callback(line):
