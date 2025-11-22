@@ -21,7 +21,7 @@ EXCLUDE_BASENAMES_MANUAL=( dznrm2 dnrm2 drotg zrotg)
 EXCLUDE_BASENAMES_UNUSED=( icamax isamax )
 
 # Other helper/utility routines to be excluded from this pass
-EXCLUDE_BASENAMES_MISC=( lsame xerbla )
+EXCLUDE_BASENAMES_MISC=( )
 
 # Combined basename exception list (for iteration)
 EXCLUDE_BASENAMES=(
@@ -38,6 +38,8 @@ EXCLUDE_BASENAMES=(
 declare -A SPECIAL_NAME_MAP=(
   [idamax]="iRamax.cpp"
   [izamax]="iCamax.cpp"
+  [xerbla]="Mxerbla.cpp"
+  [lsame]="Mlsame.cpp"
 )
 
 # ------------------------------------------------------------

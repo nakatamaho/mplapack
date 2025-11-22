@@ -415,14 +415,14 @@ def convert_to_mplapack_type(ctype):
 
 
 def convert_function_name_to_mplapack(name):
-    """Convert function name: drot -> Rrot, zaxpy -> Caxpy, cgemm -> Cgemm"""
-    if name and len(name) > 0:
-        if name[0] == 'd':
-            return 'R' + name[1:]
-        elif name[0] == 'z' or name[0] == 'c':
-            return 'C' + name[1:]
-        else:
-            return name
+#    """Convert function name: drot -> Rrot, zaxpy -> Caxpy, cgemm -> Cgemm"""
+#    if name and len(name) > 0:
+#        if name[0] == 'd':
+#            return 'R' + name[1:]
+#        elif name[0] == 'z' or name[0] == 'c':
+#            return 'C' + name[1:]
+#        else:
+#            return name
     return name
 
 
@@ -434,7 +434,7 @@ def produce_comment_given_sl(callback, sl):
     else:
         t = None
     if (t is not None):
-        callback("//C%s" % t.expandtabs().rstrip())
+        callback("//%s" % t.expandtabs().rstrip())
 
 
 def produce_comment_given_ssl(callback, ssl):
