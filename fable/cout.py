@@ -1,3 +1,4 @@
+import re
 from itertools import product
 from io import StringIO
 import os.path
@@ -426,6 +427,66 @@ def convert_function_name_to_mplapack(name):
     return name
 
 
+def is_blas_boilerplate_comment(t):
+    """
+    Check if the comment text is part of BLAS boilerplate comments that should be removed.
+    """
+    if t is None:
+        return False
+
+    # Strip leading/trailing whitespace for comparison
+    t_stripped = t.strip()
+
+    # Check for empty or near-empty lines that are often part of boilerplate
+    if t_stripped == "" or t_stripped == "..":
+        # This alone is not enough to determine if it's boilerplate
+        # Will be handled in context
+        return False
+
+    # Check for BLAS/LAPACK header patterns
+    if "-- Reference BLAS" in t_stripped:
+        return True
+    if "-- Reference LAPACK" in t_stripped:
+        return True
+    if "-- LAPACK is a software package" in t_stripped:
+        return True
+    if "-- Univ. of Tennessee" in t_stripped:
+        return True
+    if "-- Univ. of California Berkeley" in t_stripped:
+        return True
+    if "-- Univ. of Colorado Denver" in t_stripped:
+        return True
+    if "NAG Ltd" in t_stripped:
+        return True
+
+    # Check for section markers that are part of BLAS boilerplate
+    # More flexible pattern matching
+    if t_stripped.startswith("..") and t_stripped.endswith(".."):
+        # Check for common BLAS/LAPACK section patterns
+        section_keywords = [
+            "Scalar Argument",
+            "Array Argument",
+            "Parameter",
+            "Local Scalar",
+            "External Function",
+            "External Subroutine",
+            "Intrinsic Function",
+            "Local Array",
+            "Statement Function"
+        ]
+        for keyword in section_keywords:
+            if keyword in t_stripped:
+                return True
+
+    # Check for the separator line
+    if t_stripped.startswith("====") and len(t_stripped) > 20:
+        return True
+    if t_stripped.startswith("----") and len(t_stripped) > 20:
+        return True
+
+    return False
+
+
 def produce_comment_given_sl(callback, sl):
     if (sl.stmt_offs is None):
         t = sl.text[1:]
@@ -434,20 +495,174 @@ def produce_comment_given_sl(callback, sl):
     else:
         t = None
     if (t is not None):
-        callback("//%s" % t.expandtabs().rstrip())
+        callback("//C%s" % t.expandtabs().rstrip())
 
 
 def produce_comment_given_ssl(callback, ssl):
     if (ssl is None):
         return
+
+    # Collect all comment lines from this ssl
+    comment_lines = []
     for sl in ssl.source_line_cluster:
-        produce_comment_given_sl(callback=callback, sl=sl)
+        if (sl.stmt_offs is None):
+            t = sl.text[1:]
+        elif (sl.index_of_exclamation_mark is not None):
+            t = sl.stmt[sl.index_of_exclamation_mark+1:]
+        else:
+            t = None
+
+        if t is not None:
+            comment_line = "//C%s" % t.expandtabs().rstrip()
+            comment_lines.append((comment_line, t))
+
+    if not comment_lines:
+        return
+
+    # Identify boilerplate blocks
+    skip_lines = [False] * len(comment_lines)
+
+    # First pass: find definite boilerplate lines
+    boilerplate_indices = []
+    for i, (line, text) in enumerate(comment_lines):
+        if is_blas_boilerplate_comment(text):
+            skip_lines[i] = True
+            boilerplate_indices.append(i)
+
+    # If we found boilerplate, expand to include entire blocks
+    if boilerplate_indices:
+        # Find contiguous blocks of boilerplate
+        blocks = []
+        current_block = [boilerplate_indices[0]]
+
+        for i in range(1, len(boilerplate_indices)):
+            # If indices are close (within 10 lines), consider them part of same block
+            if boilerplate_indices[i] - boilerplate_indices[i-1] <= 10:
+                current_block.append(boilerplate_indices[i])
+            else:
+                blocks.append((min(current_block), max(current_block)))
+                current_block = [boilerplate_indices[i]]
+        blocks.append((min(current_block), max(current_block)))
+
+        # For each block, mark everything between start and end, plus surrounding empties
+        for start, end in blocks:
+            # Mark everything in the block
+            for i in range(start, end + 1):
+                skip_lines[i] = True
+
+            # Mark preceding empty or ".." lines
+            j = start - 1
+            while j >= 0:
+                line_text = comment_lines[j][1].strip()
+                if line_text == "" or line_text == ".." or line_text.startswith("..") and line_text.endswith(".."):
+                    skip_lines[j] = True
+                    j -= 1
+                else:
+                    break
+
+            # Mark following empty or ".." lines
+            j = end + 1
+            while j < len(comment_lines):
+                line_text = comment_lines[j][1].strip()
+                if line_text == "" or line_text == ".." or line_text.startswith("..") and line_text.endswith(".."):
+                    skip_lines[j] = True
+                    j += 1
+                else:
+                    break
+
+    # Output non-skipped lines
+    for i, (line, _) in enumerate(comment_lines):
+        if not skip_lines[i]:
+            callback(line)
     return
 
 
 def produce_comments(callback, ssl_list):
+    """
+    Process comments, filtering out BLAS boilerplate blocks including surrounding empty lines.
+    """
+    # First, collect all comment lines
+    comment_lines = []
+
     for ssl in ssl_list:
-        produce_comment_given_ssl(callback=callback, ssl=ssl)
+        if ssl is not None:
+            for sl in ssl.source_line_cluster:
+                # Extract comment text
+                if (sl.stmt_offs is None):
+                    t = sl.text[1:]
+                elif (sl.index_of_exclamation_mark is not None):
+                    t = sl.stmt[sl.index_of_exclamation_mark+1:]
+                else:
+                    t = None
+
+                if t is not None:
+                    comment_line = "//C%s" % t.expandtabs().rstrip()
+                    comment_lines.append((comment_line, t))
+
+    # If no comments, return
+    if not comment_lines:
+        return
+
+    # Identify boilerplate blocks
+    # A boilerplate block includes:
+    # 1. Lines that match boilerplate patterns
+    # 2. Empty lines and ".." lines between boilerplate lines
+    # 3. Empty lines immediately before and after the block
+
+    skip_lines = [False] * len(comment_lines)
+
+    # First pass: find definite boilerplate lines
+    boilerplate_indices = []
+    for i, (line, text) in enumerate(comment_lines):
+        if is_blas_boilerplate_comment(text):
+            skip_lines[i] = True
+            boilerplate_indices.append(i)
+
+    # If we found boilerplate, expand to include entire blocks
+    if boilerplate_indices:
+        # Find contiguous blocks of boilerplate
+        blocks = []
+        current_block = [boilerplate_indices[0]]
+
+        for i in range(1, len(boilerplate_indices)):
+            # If indices are close (within 10 lines), consider them part of same block
+            if boilerplate_indices[i] - boilerplate_indices[i-1] <= 10:
+                current_block.append(boilerplate_indices[i])
+            else:
+                blocks.append((min(current_block), max(current_block)))
+                current_block = [boilerplate_indices[i]]
+        blocks.append((min(current_block), max(current_block)))
+
+        # For each block, mark everything between start and end, plus surrounding empties
+        for start, end in blocks:
+            # Mark everything in the block
+            for i in range(start, end + 1):
+                skip_lines[i] = True
+
+            # Mark preceding empty or ".." lines
+            j = start - 1
+            while j >= 0:
+                line_text = comment_lines[j][1].strip()
+                if line_text == "" or line_text == ".." or line_text.startswith("..") and line_text.endswith(".."):
+                    skip_lines[j] = True
+                    j -= 1
+                else:
+                    break
+
+            # Mark following empty or ".." lines
+            j = end + 1
+            while j < len(comment_lines):
+                line_text = comment_lines[j][1].strip()
+                if line_text == "" or line_text == ".." or line_text.startswith("..") and line_text.endswith(".."):
+                    skip_lines[j] = True
+                    j += 1
+                else:
+                    break
+
+    # Output non-skipped lines
+    for i, (line, _) in enumerate(comment_lines):
+        if not skip_lines[i]:
+            callback(line)
 
 
 def flush_comments_if_non_trivial(callback, buffer):
@@ -476,7 +691,7 @@ def produce_trailing_comments(callback, fproc):
 
 class comment_manager(object):
 
-    __slots__ = ["sl_list", "index"]
+    __slots__ = ["sl_list", "index", "skip_indices"]
 
     def __init__(O, fproc):
         O.sl_list = []
@@ -487,8 +702,92 @@ class comment_manager(object):
         O.sl_list.sort(key=lambda source_line: source_line.global_line_index)
         O.index = 0
 
+        # Identify boilerplate blocks and mark indices to skip
+        O.skip_indices = set()
+        O._identify_boilerplate_blocks()
+
+    def _identify_boilerplate_blocks(O):
+        """Identify and mark BLAS boilerplate blocks and surrounding empty lines."""
+        # First pass: find definite boilerplate lines
+        boilerplate_indices = []
+        for i, sl in enumerate(O.sl_list):
+            if (sl.stmt_offs is None):
+                t = sl.text[1:]
+            elif (sl.index_of_exclamation_mark is not None):
+                t = sl.stmt[sl.index_of_exclamation_mark+1:]
+            else:
+                t = None
+
+            if t is not None and is_blas_boilerplate_comment(t):
+                boilerplate_indices.append(i)
+                O.skip_indices.add(i)
+
+        # If we found boilerplate, expand to include entire blocks
+        if boilerplate_indices:
+            # Find contiguous blocks of boilerplate
+            blocks = []
+            current_block = [boilerplate_indices[0]]
+
+            for i in range(1, len(boilerplate_indices)):
+                # If indices are close (within 10 lines), consider them part of same block
+                if boilerplate_indices[i] - boilerplate_indices[i-1] <= 10:
+                    current_block.append(boilerplate_indices[i])
+                else:
+                    blocks.append((min(current_block), max(current_block)))
+                    current_block = [boilerplate_indices[i]]
+            blocks.append((min(current_block), max(current_block)))
+
+            # For each block, mark everything between start and end, plus surrounding empties
+            for start, end in blocks:
+                # Mark everything in the block
+                for i in range(start, end + 1):
+                    O.skip_indices.add(i)
+
+                # Mark preceding empty or ".." lines
+                j = start - 1
+                while j >= 0:
+                    sl = O.sl_list[j]
+                    if (sl.stmt_offs is None):
+                        t = sl.text[1:]
+                    elif (sl.index_of_exclamation_mark is not None):
+                        t = sl.stmt[sl.index_of_exclamation_mark+1:]
+                    else:
+                        t = None
+
+                    if t is not None:
+                        t_stripped = t.strip()
+                        if t_stripped == "" or t_stripped == ".." or (t_stripped.startswith("..") and t_stripped.endswith("..")):
+                            O.skip_indices.add(j)
+                            j -= 1
+                        else:
+                            break
+                    else:
+                        break
+
+                # Mark following empty or ".." lines
+                j = end + 1
+                while j < len(O.sl_list):
+                    sl = O.sl_list[j]
+                    if (sl.stmt_offs is None):
+                        t = sl.text[1:]
+                    elif (sl.index_of_exclamation_mark is not None):
+                        t = sl.stmt[sl.index_of_exclamation_mark+1:]
+                    else:
+                        t = None
+
+                    if t is not None:
+                        t_stripped = t.strip()
+                        if t_stripped == "" or t_stripped == ".." or (t_stripped.startswith("..") and t_stripped.endswith("..")):
+                            O.skip_indices.add(j)
+                            j += 1
+                        else:
+                            break
+                    else:
+                        break
+
     def produce(O, callback):
-        produce_comment_given_sl(callback=callback, sl=O.sl_list[O.index])
+        if O.index not in O.skip_indices:
+            produce_comment_given_sl(callback=callback, sl=O.sl_list[O.index])
         O.index += 1
 
     def insert_before(O, executable_info, callback):
@@ -690,7 +989,6 @@ def convert_power(conv_info, tokens):
     return fun + "(" + convert_tokens(
         conv_info=conv_info, tokens=tokens, commas=True) + ")"
 
-import re
 
 def _is_simple_lvalue(expr: str) -> bool:
     """Return True if expr is a simple variable or an array element.
@@ -852,7 +1150,8 @@ def convert_tokens(conv_info, tokens, commas=False, had_str_concat=None):
                     tokens=tok.value,
                     commas=True,
                     had_str_concat=had_str_concat)
-                parts = [p.strip() for p in idx_str.split(",") if p.strip() != ""]
+                parts = [p.strip()
+                         for p in idx_str.split(",") if p.strip() != ""]
 
                 if len(parts) == 1:
                     # 1D array: a(i) -> a[(i - 1)]
@@ -871,7 +1170,7 @@ def convert_tokens(conv_info, tokens, commas=False, had_str_concat=None):
                 else:
                     # Fallback: give up and treat like a normal call/parentheses
                     if (cmn_needs_to_be_inserted(
-                        conv_info=conv_info, prev_tok=prev_tok)):
+                            conv_info=conv_info, prev_tok=prev_tok)):
                         if (len(tok.value) != 0) and (len(tok.value[0].value) != 0):
                             op = "(cmn, "
                         else:
@@ -919,6 +1218,7 @@ def convert_tokens(conv_info, tokens, commas=False, had_str_concat=None):
     s = rewrite_intrinsics(s)
 
     return s
+
 
 def convert_to_int_literal(tokens):
     assert tokens is not None and len(tokens) != 0
