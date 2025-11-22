@@ -39,6 +39,7 @@ declare -A SPECIAL_NAME_MAP=(
   [idamax]="iRamax.cpp"
   [izamax]="iCamax.cpp"
   [xerbla]="Mxerbla.cpp"
+  [xerbla_array]="Mxerbla_array.cpp"
   [lsame]="Mlsame.cpp"
 )
 
