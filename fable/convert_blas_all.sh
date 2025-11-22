@@ -15,7 +15,7 @@ shopt -s nullglob
 EXCLUDE_PREFIXES=( s c )
 
 # Basenames that will be converted manually
-EXCLUDE_BASENAMES_MANUAL=( dznrm2 dnrm2 drotg zrotg)
+EXCLUDE_BASENAMES_MANUAL=( dznrm2 dnrm2 drotg zrotg )
 
 # Basenames that are not needed on the C++ side
 EXCLUDE_BASENAMES_UNUSED=( icamax isamax )
@@ -28,19 +28,6 @@ EXCLUDE_BASENAMES=(
   "${EXCLUDE_BASENAMES_MANUAL[@]}"
   "${EXCLUDE_BASENAMES_UNUSED[@]}"
   "${EXCLUDE_BASENAMES_MISC[@]}"
-)
-
-# ------------------------------------------------------------
-# Special output name mappings
-#   key   = Fortran basename (without extension)
-#   value = C++ output filename
-# ------------------------------------------------------------
-declare -A SPECIAL_NAME_MAP=(
-  [idamax]="iRamax.cpp"
-  [izamax]="iCamax.cpp"
-  [xerbla]="Mxerbla.cpp"
-  [xerbla_array]="Mxerbla_array.cpp"
-  [lsame]="Mlsame.cpp"
 )
 
 # ------------------------------------------------------------
@@ -80,41 +67,10 @@ done
 
 # ------------------------------------------------------------
 # Convert each selected Fortran file using convert_blas.sh
+# (convert_blas.sh / cout.py decide the .cpp name and do all postprocessing)
 # ------------------------------------------------------------
 
 for src in "${files[@]}"; do
-    base="${src##*/}"
-    stem="${base%%.*}"
-
-    # Special naming cases first
-    if [[ -n "${SPECIAL_NAME_MAP[$stem]+set}" ]]; then
-        out="${SPECIAL_NAME_MAP[$stem]}"
-        echo "Converting $src -> $out (special naming)"
-        bash "$FABLE_CONVERT" "$src" > "$out"
-        continue
-    fi
-
-    first="${stem:0:1}"
-    rest="${stem:1}"
-
-    # Determine output prefix based on BLAS naming convention:
-    #   d/s -> R   (real)
-    #   z/c -> C   (complex)
-    #   others -> capitalize first letter
-    case "$first" in
-        d|D|s|S)
-            prefix="R"
-            ;;
-        z|Z|c|C)
-            prefix="C"
-            ;;
-        *)
-            prefix=$(printf '%s' "$first" | tr '[:lower:]' '[:upper:]')
-            ;;
-    esac
-
-    out="${prefix}${rest}.cpp"
-
-    echo "Converting $src -> $out"
-    bash "$FABLE_CONVERT" "$src" > "$out"
+    echo "Converting $src"
+    bash "$FABLE_CONVERT" "$src"
 done
