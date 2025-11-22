@@ -1175,6 +1175,9 @@ def rewrite_intrinsics(text: str) -> str:
     if "fem::dconjg" in text:
         text = _rewrite_unary_intrinsic(text, "fem::dconjg", _conj_repl)
 
+    # MAX / MIN: remove fem:: namespace and cast integer literal first args.
+    text = _rewrite_max_min_calls(text)
+
     # COMPLEX0 constant: fem::COMPLEX0 -> COMPLEX(0.0, 0.0)
     if "fem::COMPLEX0" in text:
         text = text.replace("fem::COMPLEX0", "COMPLEX(0.0, 0.0)")
