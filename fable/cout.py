@@ -309,8 +309,9 @@ def convert_complex_literal(vmap, tok):
             c.append(sign_tok.value)
         c.append(convert_token(vmap=vmap, leading=None, tok=val_tok))
         cc.append("".join(c))
-    # Map Fortran complex literal (a,b) to C++ COMPLEX(a, b)
+    # Map Fortran complex literal (a, b) to C++ COMPLEX(a, b)
     return "COMPLEX(%s)" % ", ".join(cc)
+
 
 def convert_token(vmap, leading, tok, had_str_concat=None):
     tv = tok.value
@@ -1124,6 +1125,7 @@ def _rewrite_unary_intrinsic(text: str, func_name: str, repl_func):
 
     return "".join(out)
 
+
 def _rewrite_max_min_calls(text: str) -> str:
     """Rewrite fem::max/min calls: drop fem:: and cast integer literal first args.
 
@@ -1139,6 +1141,7 @@ def _rewrite_max_min_calls(text: str) -> str:
     # Then cast integer literal first arguments: max(1, x) -> max((INTEGER)1, x)
     # We handle simple +/- integer literals.
     pattern = r'\b(max|min)\(\s*([+-]?[0-9]+)\s*,'
+
     def repl(m):
         func = m.group(1)
         lit = m.group(2)
@@ -1146,8 +1149,9 @@ def _rewrite_max_min_calls(text: str) -> str:
 
     return re.sub(pattern, repl, text)
 
+
 def rewrite_intrinsics(text: str) -> str:
-    """Rewrite fem::dble/real/aimag/imag/conjg/conj/max/min into C++ equivalents."""
+    """Rewrite fem::dble/real/aimag/imag/conjg/conj into C++ equivalents."""
 
     # DBLE: real part, intelligent parentheses
     if "fem::dble" in text:
@@ -1171,8 +1175,9 @@ def rewrite_intrinsics(text: str) -> str:
     if "fem::dconjg" in text:
         text = _rewrite_unary_intrinsic(text, "fem::dconjg", _conj_repl)
 
-    # MAX / MIN: remove fem:: namespace and cast integer literal first args.
-    text = _rewrite_max_min_calls(text)
+    # COMPLEX0 constant: fem::COMPLEX0 -> COMPLEX(0.0, 0.0)
+    if "fem::COMPLEX0" in text:
+        text = text.replace("fem::COMPLEX0", "COMPLEX(0.0, 0.0)")
 
     return text
 
@@ -1506,7 +1511,11 @@ def zero_shortcut_if_possible(ctype):
     elif ctype == "char":
         return "0"
     elif ctype.startswith("std::complex<"):
+        # Complex types in fem:: world; keep old behavior.
         return "0.0"
+    elif ctype == "COMPLEX":
+        # MPLAPACK scalar COMPLEX: explicit complex zero
+        return "COMPLEX(0.0, 0.0)"
 
     # Original behavior for fem:: types
     if (ctype.startswith("fem::")):
@@ -3830,6 +3839,7 @@ def _postprocess_mplapack_labels_and_comments(lines):
         new_lines.append(line)
     return new_lines
 
+
 def _normalize_fortran_comment_prefix(lines):
     """Normalize Fortran-derived comments: //C... -> // ..."""
     normalized = []
@@ -3851,6 +3861,26 @@ def _normalize_fortran_comment_prefix(lines):
         else:
             normalized.append(line)
     return normalized
+
+def _postprocess_complex_zero_initializers(lines):
+    """Rewrite COMPLEX zero initializers using COMPLEX(0.0, 0.0).
+
+    Examples:
+      COMPLEX ztemp = (0.0, 0.0);       -> COMPLEX ztemp = COMPLEX(0.0, 0.0);
+      const COMPLEX zero = (0.0, 0.0);  -> const COMPLEX zero = COMPLEX(0.0, 0.0);
+    """
+    pat_var = re.compile(
+        r'^(\s*COMPLEX\s+[A-Za-z_][A-Za-z0-9_]*\s*=\s*)\(\s*0\.0\s*,\s*0\.0\s*\);'
+    )
+    pat_const = re.compile(
+        r'^(\s*const\s+COMPLEX\s+[A-Za-z_][A-Za-z0-9_]*\s*=\s*)\(\s*0\.0\s*,\s*0\.0\s*\);'
+    )
+    out = []
+    for line in lines:
+        line = pat_var.sub(r'\1COMPLEX(0.0, 0.0);', line)
+        line = pat_const.sub(r'\1COMPLEX(0.0, 0.0);', line)
+        out.append(line)
+    return out
 
 def process(
         file_names=None,
@@ -4230,6 +4260,8 @@ def process(
     result = _postprocess_mplapack_labels_and_comments(result)
     # Then, normalize Fortran comment markers: //C... -> // ...
     result = _normalize_fortran_comment_prefix(result)
+    # Finally, normalize COMPLEX zero initializers.
+    result = _postprocess_complex_zero_initializers(result)
 
     if (top_cpp_file_name is not None):
         with open(top_cpp_file_name, "w") as f:
