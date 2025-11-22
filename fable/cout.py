@@ -4,6 +4,67 @@ from io import StringIO
 import os.path
 import math
 
+
+def _load_mplapack_name_map(path="mplapack_name_map.txt"):
+    """Load Fortran->MPLAPACK name mapping from an external text file.
+
+    Format (whitespace separated, # for comments):
+
+        ztrsv   Ctrsv
+        dgemm   Rgemm
+        dgemmtr Rgemmtr
+
+    Keys are case-insensitive.
+    """
+    mapping = {}
+    try:
+        with open(path) as f:
+            for line in f:
+                line = line.split("#", 1)[0].strip()
+                if not line:
+                    continue
+                parts = line.split()
+                if len(parts) == 1:
+                    src, dst = parts[0], None
+                else:
+                    src, dst = parts[0], parts[1]
+                mapping[src.lower()] = dst
+    except OSError:
+        # No mapping file: we just fall back to rule-based mapping.
+        pass
+    return mapping
+
+
+_MPLAPACK_NAME_MAP = _load_mplapack_name_map()
+
+
+def _mplapack_default_name(name: str) -> str:
+    """Fallback rule: s/d -> R, c/z -> C, others unchanged."""
+    if not name:
+        return name
+    lower = name.lower()
+    head, tail = lower[0], lower[1:]
+    if head in ("s", "d"):
+        return "R" + tail
+    if head in ("c", "z"):
+        return "C" + tail
+    return name
+
+
+def convert_function_name_to_mplapack(name: str) -> str:
+    """Convert Fortran routine name to MPLAPACK-style C++ name.
+
+    Priority:
+      1) explicit external table (_MPLAPACK_NAME_MAP)
+      2) simple head-letter rule (s/d -> R, c/z -> C)
+    """
+    lower = name.lower()
+    mapped = _MPLAPACK_NAME_MAP.get(lower)
+    if mapped is not None:
+        return mapped
+    return _mplapack_default_name(name)
+
+
 fmt_comma_placeholder = chr(255)
 
 
@@ -413,18 +474,6 @@ def convert_to_mplapack_type(ctype):
         return convert_to_mplapack_type(inner_type)
 
     return ctype_clean
-
-
-def convert_function_name_to_mplapack(name):
-#    """Convert function name: drot -> Rrot, zaxpy -> Caxpy, cgemm -> Cgemm"""
-#    if name and len(name) > 0:
-#        if name[0] == 'd':
-#            return 'R' + name[1:]
-#        elif name[0] == 'z' or name[0] == 'c':
-#            return 'C' + name[1:]
-#        else:
-#            return name
-    return name
 
 
 def is_blas_boilerplate_comment(t):
@@ -2877,6 +2926,11 @@ def convert_executable(
                         called = prefix + "Mlsame"
                     elif lower_name == "xerbla":
                         called = prefix + "Mxerbla"
+                    else:
+                        # General MPLAPACK renaming for BLAS/LAPACK-style routines
+                        mpl_name = convert_function_name_to_mplapack(
+                            simple_name)
+                        called = prefix + mpl_name
 
                 if (ei.arg_token is None):
                     curr_scope.append("%s(%s);" % (called, cmn))
@@ -3704,6 +3758,40 @@ def get_missing_external_return_type(fdecls):
 default_arr_nd_size_max = 256
 
 
+def _postprocess_mplapack_labels_and_comments(lines):
+    """Fix XERBLA labels and 'End of XXX' comments using MPLAPACK name map."""
+    import re
+
+    new_lines = []
+    for line in lines:
+        # 1) Mxerbla("ZTRSV ", info);
+        m = re.search(r'Mxerbla\("([^"]+)"', line)
+        if m:
+            label = m.group(1)          # e.g. "ZTRSV "
+            core = label.strip()        # "ZTRSV"
+            lower = core.lower()        # "ztrsv"
+            mapped = _MPLAPACK_NAME_MAP.get(lower)
+            if mapped is None:
+                mapped = _mplapack_default_name(core)
+            # preserve trailing spaces
+            suffix = label[len(core):]
+            repl = f'Mxerbla("{mapped}{suffix}"'
+            line = line[:m.start()] + repl + line[m.end():]
+
+        # 2) //     End of ZTRSV
+        m = re.search(r'(End of )([A-Za-z][A-Za-z0-9_]*)', line)
+        if m:
+            core = m.group(2)
+            lower = core.lower()
+            mapped = _MPLAPACK_NAME_MAP.get(lower)
+            if mapped is None:
+                mapped = _mplapack_default_name(core)
+            line = line[:m.start(2)] + mapped + line[m.end(2):]
+
+        new_lines.append(line)
+    return new_lines
+
+
 def process(
         file_names=None,
         all_fprocs=None,
@@ -4072,4 +4160,10 @@ def process(
         with open(top_cpp_file_name, "w") as f:
             print("\n".join(result), file=f)
     #
+
+    result = _postprocess_mplapack_labels_and_comments(result)
+    if (top_cpp_file_name is not None):
+        with open(top_cpp_file_name, "w") as f:
+            print("\n".join(result), file=f)
+
     return result
