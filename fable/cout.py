@@ -3862,6 +3862,26 @@ def _normalize_fortran_comment_prefix(lines):
             normalized.append(line)
     return normalized
 
+def _postprocess_complex_initializers(lines):
+    """Normalize COMPLEX(a, b) initializers.
+
+    Rewrite:
+      COMPLEX z = (a, b);        -> COMPLEX z = COMPLEX(a, b);
+      const COMPLEX z = (a, b);  -> const COMPLEX z = COMPLEX(a, b);
+    """
+    pat_var = re.compile(
+        r'^(\s*COMPLEX\s+[A-Za-z_][A-Za-z0-9_]*\s*=\s*)\(\s*([^,]+?)\s*,\s*([^,]+?)\s*\);'
+    )
+    pat_const = re.compile(
+        r'^(\s*const\s+COMPLEX\s+[A-Za-z_][A-Za-z0-9_]*\s*=\s*)\(\s*([^,]+?)\s*,\s*([^,]+?)\s*\);'
+    )
+    out = []
+    for line in lines:
+        line = pat_const.sub(r'\1COMPLEX(\2, \3);', line)
+        line = pat_var.sub(r'\1COMPLEX(\2, \3);', line)
+        out.append(line)
+    return out
+
 def _postprocess_complex_zero_initializers(lines):
     """Rewrite COMPLEX zero initializers using COMPLEX(0.0, 0.0).
 
@@ -4260,8 +4280,8 @@ def process(
     result = _postprocess_mplapack_labels_and_comments(result)
     # Then, normalize Fortran comment markers: //C... -> // ...
     result = _normalize_fortran_comment_prefix(result)
-    # Finally, normalize COMPLEX zero initializers.
-    result = _postprocess_complex_zero_initializers(result)
+    # Normalize COMPLEX(a, b) initializers to COMPLEX(a, b) form.
+    result = _postprocess_complex_initializers(result)
 
     if (top_cpp_file_name is not None):
         with open(top_cpp_file_name, "w") as f:
