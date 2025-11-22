@@ -14,8 +14,8 @@ shopt -s nullglob
 # Exclude any file whose basename starts with these prefixes
 EXCLUDE_PREFIXES=( s c )
 
-# Basenames that will be converted manually (hand-written C++)
-EXCLUDE_BASENAMES_MANUAL=( dznrm2 dnrm2 drotg )
+# Basenames that will be converted manually
+EXCLUDE_BASENAMES_MANUAL=( dznrm2 dnrm2 drotg zrotg)
 
 # Basenames that are not needed on the C++ side
 EXCLUDE_BASENAMES_UNUSED=( icamax isamax )
