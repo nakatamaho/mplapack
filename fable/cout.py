@@ -309,8 +309,8 @@ def convert_complex_literal(vmap, tok):
             c.append(sign_tok.value)
         c.append(convert_token(vmap=vmap, leading=None, tok=val_tok))
         cc.append("".join(c))
-    return "fem::cmplx(%s)" % ", ".join(cc)
-
+    # Map Fortran complex literal (a,b) to C++ COMPLEX(a, b)
+    return "COMPLEX(%s)" % ", ".join(cc)
 
 def convert_token(vmap, leading, tok, had_str_concat=None):
     tv = tok.value
