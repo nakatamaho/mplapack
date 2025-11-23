@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # Path to the FABLE Fortran->C++ converter
-FABLE_CONVERT="$HOME/mplapack/fable/convert_blas.sh"
+FABLE_CONVERT="$HOME/mplapack/fable/convert_lapack.sh"
 
 # Enable nullglob to avoid literal "*.f*" when no files exist
 shopt -s nullglob
@@ -15,10 +15,10 @@ shopt -s nullglob
 EXCLUDE_PREFIXES=( s c )
 
 # Basenames that will be converted manually
-EXCLUDE_BASENAMES_MANUAL=( dznrm2 dnrm2 drotg zrotg )
+EXCLUDE_BASENAMES_MANUAL=( dgbcon dgbrfs )
 
 # Basenames that are not needed on the C++ side
-EXCLUDE_BASENAMES_UNUSED=( icamax isamax )
+EXCLUDE_BASENAMES_UNUSED=( )
 
 # Other helper/utility routines to be excluded from this pass
 EXCLUDE_BASENAMES_MISC=( )
