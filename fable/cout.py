@@ -1293,23 +1293,29 @@ def convert_tokens(conv_info, tokens, commas=False, had_str_concat=None):
                         index_expr = f"({i_expr}) - 1"
                     rapp("[" + index_expr + "]")
                 elif len(parts) == 2:
-                    # 2D array: a(i,j) -> a[(row_term) + ((j_expr) - 1)*ld<name>]
+                    # 2D array: a(i,j) -> a[(row_term) + (col_term)*ld<name>]
                     i_expr, j_expr = parts
-                    # leading dimension: ld + array name (lowercase)
                     ldname = "ld" + prev_tok.value.lower()
 
-                    # Row index term: same rule as 1D, but we will wrap the whole term with parentheses later.
-                    if re.match(r"^[A-Za-z_][A-Za-z0-9_]*$", i_expr) or re.match(r"^[0-9]+$", i_expr):
+                    simple_name = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
+                    simple_int  = re.compile(r"^[0-9]+$")
+
+                    # Row index term
+                    # i, 1, etc. -> "i - 1"
+                    # more complex -> "(i_expr) - 1"
+                    if simple_name.match(i_expr) or simple_int.match(i_expr):
                         i_term = f"{i_expr} - 1"
                     else:
                         i_term = f"({i_expr}) - 1"
-                    # Column index term: ((j_expr) - 1) so that ((j_expr) - 1)*ldname has correct precedence
-                    # and the 1-based expression stays visually grouped.
-                    j_term = f"(({j_expr}) - 1)"
 
-                    # Wrap the entire row term with parentheses:
-                    #   a[(i - 1) + (j - 1)*ld]
-                    #   a[((k + i) - 1) + (j - 1)*ld]
+                    # Column index term
+                    # j       -> "(j - 1)"
+                    # j+kun   -> "((j + kun) - 1)"
+                    if simple_name.match(j_expr) or simple_int.match(j_expr):
+                        j_term = f"({j_expr} - 1)"
+                    else:
+                        j_term = f"(({j_expr}) - 1)"
+
                     index_expr = f"({i_term}) + {j_term}*{ldname}"
                     rapp("[" + index_expr + "]")
                 else:
