@@ -3929,6 +3929,25 @@ def _postprocess_complex_initializers(lines):
     return out
 
 
+def _postprocess_complex_constant_assignments(lines):
+    """Rewrite assignments of real literal pairs (a, b) into COMPLEX(a, b).
+
+    Example:
+      return_value = (0.0, 0.0);    ->  return_value = COMPLEX(0.0, 0.0);
+      return_value = (1.0, 2.377);  ->  return_value = COMPLEX(1.0, 2.377);
+    """
+    # Real literal: optional sign, digits with optional decimal point, optional exponent
+    real_lit = r'[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[Ee][+-]?\d+)?'
+    pat = re.compile(
+        rf'(\=\s*)\(\s*({real_lit})\s*,\s*({real_lit})\s*\);'
+    )
+    out = []
+    for line in lines:
+        line = pat.sub(r'\1COMPLEX(\2, \3);', line)
+        out.append(line)
+    return out
+
+
 def _postprocess_complex_zero_initializers(lines):
     """Rewrite COMPLEX zero initializers using COMPLEX(0.0, 0.0).
 
@@ -4330,6 +4349,8 @@ def process(
     result = _normalize_fortran_comment_prefix(result)
     # Normalize COMPLEX(a, b) initializers to COMPLEX(a, b) form.
     result = _postprocess_complex_initializers(result)
+
+    result = _postprocess_complex_constant_assignments(result)
 
     if (top_cpp_file_name is not None):
         with open(top_cpp_file_name, "w") as f:
