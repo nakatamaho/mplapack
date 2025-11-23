@@ -56,6 +56,7 @@ MANUAL_MAPPINGS=(
   "xerbla_array Mxerbla_array"
   "lsame Mlsame"
   "dcabs1 RCabs1"
+  "zdcal CRscal"
 )
 
 # ------------------------------------------------------------

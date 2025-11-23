@@ -748,7 +748,7 @@ def produce_trailing_comments(callback, fproc):
 
 class comment_manager(object):
 
-    __slots__ = ["sl_list", "index", "skip_indices"]
+    __slots__ = ["sl_list", "index", "skip_indices", "first_comment_output"]
 
     def __init__(O, fproc):
         O.sl_list = []
@@ -758,6 +758,7 @@ class comment_manager(object):
                     O.sl_list.append(sl)
         O.sl_list.sort(key=lambda source_line: source_line.global_line_index)
         O.index = 0
+        O.first_comment_output = False
 
         # Identify boilerplate blocks and mark indices to skip
         O.skip_indices = set()
@@ -849,6 +850,20 @@ class comment_manager(object):
 
     def insert_before(O, executable_info, callback):
         i = executable_info.ssl.source_line_cluster[-1].global_line_index
+        # Add leading empty "//" line before the first comment block
+        if (not O.first_comment_output and O.index != len(O.sl_list)):
+            # Check if there are any non-skipped comments to output
+            has_comment_to_output = False
+            for idx in range(O.index, len(O.sl_list)):
+                j = O.sl_list[idx].global_line_index
+                if (j > i):
+                    break
+                if idx not in O.skip_indices:
+                    has_comment_to_output = True
+                    break
+            if has_comment_to_output:
+                callback("//")
+                O.first_comment_output = True
         while (O.index != len(O.sl_list)):
             j = O.sl_list[O.index].global_line_index
             if (j > i):
