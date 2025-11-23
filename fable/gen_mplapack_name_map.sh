@@ -2,16 +2,22 @@
 set -euo pipefail
 
 # ------------------------------------------------------------
-# Locate MPLAPACK root, BLAS source dir, and output file
+# Locate MPLAPACK root, BLAS/LAPACK source dirs, and output file
 # ------------------------------------------------------------
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 mplapack_root="$(cd "${script_dir}/.." && pwd)"
-blas_src="${mplapack_root}/external/lapack/work/internal/lapack-3.12.1/BLAS/SRC"
+lapack_version="${LAPACK_VERSION:-3.12.1}"
+blas_src="${mplapack_root}/external/lapack/work/internal/lapack-${lapack_version}/BLAS/SRC"
+lapack_src="${mplapack_root}/external/lapack/work/internal/lapack-${lapack_version}/SRC"
 out="${script_dir}/mplapack_name_map.txt"
 
 if [[ ! -d "$blas_src" ]]; then
     echo "Error: BLAS source directory not found: $blas_src" >&2
+    exit 1
+fi
+if [[ ! -d "$lapack_src" ]]; then
+    echo "Error: LAPACK source directory not found: $lapack_src" >&2
     exit 1
 fi
 
@@ -106,12 +112,17 @@ make_cpp_name_from_prefix() {
 
 # Input file list:
 #   1) use command-line arguments if given
-#   2) otherwise, use "*.f" and "*.f90" in the BLAS source directory
+#   2) otherwise, use "*.f" and "*.f90" in the BLAS and LAPACK source directories
 files=()
 if [[ "$#" -gt 0 ]]; then
     files=("$@")
 else
-    mapfile -t files < <(find "$blas_src" -maxdepth 1 -type f \( -name '*.f' -o -name '*.f90' \) | sort)
+    mapfile -t files < <(
+        {
+            find "$blas_src"   -maxdepth 1 -type f \( -name '*.f' -o -name '*.f90' \)
+            find "$lapack_src" -maxdepth 1 -type f \( -name '*.f' -o -name '*.f90' \)
+        } | sort
+    )
 fi
 
 # To avoid duplicates for the same basename
