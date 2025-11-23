@@ -1172,6 +1172,12 @@ def rewrite_intrinsics(text: str) -> str:
     if "fem::dconjg" in text:
         text = _rewrite_unary_intrinsic(text, "fem::dconjg", _conj_repl)
 
+    # POW2 and MOD
+    if "fem::pow2" in text:
+        text = text.replace("fem::pow2", "pow2")
+    if "fem::mod" in text:
+        text = text.replace("fem::mod", "mod")
+
     # DABS / ABS: real absolute value
     if "fem::dabs" in text:
         text = text.replace("fem::dabs", "abs")

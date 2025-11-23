@@ -128,7 +128,7 @@ clang-format-19 -i -style '{
     SortIncludes: false,
     AlignEscapedNewlines: LeftWithLastLine,
     SpaceBeforeRangeBasedForLoopColon: false,
-    PointerAlignment: Left,
+    PointerAlignment: Right,
     NamespaceIndentation: Inner,
     AlwaysBreakTemplateDeclarations: No,
     BreakBeforeConceptDeclarations: Never,
