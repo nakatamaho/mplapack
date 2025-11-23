@@ -4,6 +4,7 @@ from io import StringIO
 import os.path
 import math
 
+
 def _load_mplapack_name_map(path=None):
     """Load Fortran -> MPLAPACK C++ name mapping from an external text file.
 
@@ -60,6 +61,7 @@ def convert_function_name_to_mplapack(name):
     if mapped is not None:
         return mapped
     return _mplapack_default_name(name)
+
 
 fmt_comma_placeholder = chr(255)
 
@@ -480,11 +482,9 @@ def is_blas_boilerplate_comment(t):
     # Strip leading/trailing whitespace for comparison
     t_stripped = t.strip()
 
-    # Check for empty or near-empty lines that are often part of boilerplate
-    if t_stripped == "" or t_stripped == "..":
-        # This alone is not enough to determine if it's boilerplate
-        # Will be handled in context
-        return False
+    # Check for single ".." or empty lines - these ARE boilerplate when standalone
+    if t_stripped == ".." or t_stripped == "...":
+        return True
 
     # Check for BLAS/LAPACK header patterns
     if "-- Reference BLAS" in t_stripped:
@@ -503,9 +503,9 @@ def is_blas_boilerplate_comment(t):
         return True
 
     # Check for section markers that are part of BLAS boilerplate
-    # More flexible pattern matching
-    if t_stripped.startswith("..") and t_stripped.endswith(".."):
-        # Check for common BLAS/LAPACK section patterns
+    # Look for patterns starting and ending with ".."
+    if ".." in t_stripped:
+        # Common BLAS/LAPACK section keywords
         section_keywords = [
             "Scalar Argument",
             "Array Argument",
@@ -515,7 +515,13 @@ def is_blas_boilerplate_comment(t):
             "External Subroutine",
             "Intrinsic Function",
             "Local Array",
-            "Statement Function"
+            "Statement Function",
+            "Executable Statement",  # Added this pattern
+            "Local Parameter",
+            "Common Block",
+            "Data Statement",
+            "Equivalence",
+            "Save statement"
         ]
         for keyword in section_keywords:
             if keyword in t_stripped:
@@ -525,6 +531,14 @@ def is_blas_boilerplate_comment(t):
     if t_stripped.startswith("====") and len(t_stripped) > 20:
         return True
     if t_stripped.startswith("----") and len(t_stripped) > 20:
+        return True
+
+    # Check for other common BLAS/LAPACK boilerplate patterns
+    if t_stripped == "Purpose":
+        return True
+    if t_stripped == "Arguments":
+        return True
+    if t_stripped.startswith("===") and t_stripped.endswith("==="):
         return True
 
     return False
