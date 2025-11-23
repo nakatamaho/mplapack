@@ -1173,57 +1173,62 @@ def _rewrite_max_min_calls(text: str) -> str:
 
 
 def rewrite_intrinsics(text: str) -> str:
-    """Rewrite fem::dble/real/aimag/imag/conjg/conj and related intrinsics."""
+    """Rewrite fem:: intrinsics to C++-friendly forms."""
 
-    # DBLE: real part, intelligent parentheses
-    if "fem::dble" in text:
-        text = _rewrite_unary_intrinsic(text, "fem::dble", _real_repl)
+    # --------------------------------------------------------------
+    # 1) Unary intrinsics that need smart handling of parentheses
+    # --------------------------------------------------------------
+    unary_intrinsics = [
+        ("fem::dble",   _real_repl),
+        ("fem::real",   _real_repl),
+        ("fem::aimag",  _imag_repl),
+        ("fem::imag",   _imag_repl),
+        ("fem::dimag",  _imag_repl),
+        ("fem::conjg",  _conj_repl),
+        ("fem::conj",   _conj_repl),
+        ("fem::dconjg", _conj_repl),
+    ]
 
-    # REAL
-    if "fem::real" in text:
-        text = _rewrite_unary_intrinsic(text, "fem::real", _real_repl)
+    for name, repl_fun in unary_intrinsics:
+        if name in text:
+            text = _rewrite_unary_intrinsic(text, name, repl_fun)
 
-    # AIMAG / IMAG
-    if "fem::aimag" in text:
-        text = _rewrite_unary_intrinsic(text, "fem::aimag", _imag_repl)
-    if "fem::imag" in text:
-        text = _rewrite_unary_intrinsic(text, "fem::imag", _imag_repl)
+    # --------------------------------------------------------------
+    # 2) Simple name substitutions
+    #    fem::foo(...) -> foo(...) or a common implementation
+    # --------------------------------------------------------------
+    simple_map = {
+        # integer / real helpers
+        "fem::pow2":  "pow2",
+        "fem::mod":   "mod",
 
-    # DIMAG (double-precision imaginary part)
-    if "fem::dimag" in text:
-        text = _rewrite_unary_intrinsic(text, "fem::dimag", _imag_repl)
+        # elementary math
+        "fem::cos":   "cos",
+        "fem::sin":   "sin",
+        "fem::sqrt":  "sqrt",
+        "fem::atan2": "atan2",
+        "fem::dsqrt": "sqrt",
 
-    # CONJG / CONJ
-    if "fem::conjg" in text:
-        text = _rewrite_unary_intrinsic(text, "fem::conjg", _conj_repl)
-    if "fem::conj" in text:
-        text = _rewrite_unary_intrinsic(text, "fem::conj", _conj_repl)
-    if "fem::dconjg" in text:
-        text = _rewrite_unary_intrinsic(text, "fem::dconjg", _conj_repl)
+        # absolute value
+        "fem::dabs":  "abs",
+        "fem::abs":   "abs",
 
-    # POW2 and MOD
-    if "fem::pow2" in text:
-        text = text.replace("fem::pow2", "pow2")
-    if "fem::mod" in text:
-        text = text.replace("fem::mod", "mod")
+        # complex constructor
+        "fem::dcmplx": "COMPLEX",
 
-    # Elementary math: cos, sin, sqrt, atan2
-    for _fname in ("cos", "sin", "sqrt", "atan2"):
-        _tag = f"fem::{_fname}"
-        if _tag in text:
-            text = text.replace(_tag, _fname)
+        # sign / dsign -> common sign(a, b) helper
+        # (C++ side must provide sign(a, b) implementation)
+        "fem::sign":  "sign",
+        "fem::dsign": "sign",
+    }
 
-    # DABS / ABS: real absolute value
-    if "fem::dabs" in text:
-        text = text.replace("fem::dabs", "abs")
-    if "fem::abs" in text:
-        text = text.replace("fem::abs", "abs")
+    for src, dst in simple_map.items():
+        if src in text:
+            text = text.replace(src, dst)
 
-    # DCMPLX: double-precision complex constructor
-    if "fem::dcmplx" in text:
-        text = text.replace("fem::dcmplx", "COMPLEX")
-
-    # MAX / MIN: remove fem:: and cast integer literal first args.
+    # --------------------------------------------------------------
+    # 3) MAX / MIN need special handling for integer literals, etc.
+    # --------------------------------------------------------------
     text = _rewrite_max_min_calls(text)
 
     return text
@@ -3892,6 +3897,14 @@ def _postprocess_mplapack_labels_and_comments(lines):
         line = re.sub(
             r'\b([A-Za-z_][A-Za-z0-9_]*)\s*\+\s*1\s*-\s*1\b',
             r'((\1 + 1) - 1)',
+            line,
+        )
+
+        # 5) make 1-based shift explicit for sums: (j + kun - 1) -> ((j + kun) - 1)
+        #    This matches exactly two identifiers: (x + y - 1)
+        line = re.sub(
+            r'\(\s*([A-Za-z_][A-Za-z0-9_]*)\s*\+\s*([A-Za-z_][A-Za-z0-9_]*)\s*-\s*1\s*\)',
+            r'((\1 + \2) - 1)',
             line,
         )
 
