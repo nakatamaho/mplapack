@@ -64,6 +64,7 @@ MANUAL_MAPPINGS=(
   "dcabs1 RCabs1"
   "zdcal CRscal"
   "dlamch Rlamch"
+  "ilaenv iMlaenv"
 )
 
 # ------------------------------------------------------------
