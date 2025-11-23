@@ -1184,6 +1184,22 @@ def _rewrite_max_min_calls(text: str) -> str:
 
     return re.sub(pattern, repl, text)
 
+_single_char_string_assign_re = re.compile(
+    r'(\b[A-Za-z_][A-Za-z0-9_]*\b)\s*=\s*"([^"\\])"\s*;'
+)
+_single_char_string_eq_re = re.compile(
+    r'(\b[A-Za-z_][A-Za-z0-9_]*\b)\s*==\s*"([^"\\])"'
+)
+_single_char_string_ne_re = re.compile(
+    r'(\b[A-Za-z_][A-Za-z0-9_]*\b)\s*!=\s*"([^"\\])"'
+)
+
+def rewrite_single_char_string_literals(line: str) -> str:
+    """Rewrite x = "A"; / x == "A" / x != "A" into char literals x = 'A'; etc."""
+    line = _single_char_string_assign_re.sub(r"\1 = '\2';", line)
+    line = _single_char_string_eq_re.sub(r"\1 == '\2'", line)
+    line = _single_char_string_ne_re.sub(r"\1 != '\2'", line)
+    return line
 
 def rewrite_intrinsics(text: str) -> str:
     """Rewrite fem:: intrinsics to C++-friendly forms."""
@@ -1403,14 +1419,24 @@ def convert_data_type(conv_info, fdecl, crhs):
         data_type_code = fdecl.data_type.value
     size_tokens = fdecl.size_tokens
     dim_tokens = fdecl.dim_tokens
-    if (data_type_code == "character"):
-        if (size_tokens is None):
+
+    if data_type_code == "character":
+        if size_tokens is None:
             csize = "1"
         else:
             csize = convert_tokens(conv_info=conv_info, tokens=size_tokens)
-        ctype = "fem::str<%s>" % csize
-        if (crhs is None):
-            crhs = "0"
+
+        # CHARACTER*1 scalar → plain char (no implicit initialization)
+        if csize.strip() == "1" and dim_tokens is None:
+            ctype = "char"
+            # Do not set crhs here if there is no explicit initializer.
+            # If the Fortran code had "CHARACTER*1 normin /'N'/", that will
+            # already be reflected in crhs before this point.
+        else:
+            ctype = f"fem::str<{csize}>"
+            if crhs is None:
+                crhs = "0"
+
     else:
         def convert_to_ctype_with_size(ctype):
             if (size_tokens is None):
@@ -4388,6 +4414,9 @@ def process(
             if (not debug):
                 raise
             show_traceback()
+
+    # Rewrite single-character string literals for CHARACTER*1 variables.
+    result = [rewrite_single_char_string_literals(line) for line in result]
 
     # First, fix XERBLA labels and "End of XXX" comments.
     result = _postprocess_mplapack_labels_and_comments(result)
