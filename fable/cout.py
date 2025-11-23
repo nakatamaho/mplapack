@@ -3,7 +3,7 @@ from itertools import product
 from io import StringIO
 import os.path
 import math
-
+import tempfile
 
 def _load_mplapack_name_map(path=None):
     """Load Fortran -> MPLAPACK C++ name mapping from an external text file.
@@ -1040,12 +1040,16 @@ def called_fproc_needs_cmn(conv_info, called_name):
         called_names = [called_name]
     for called_name in called_names:
         sub_fproc = conv_info.fprocs_by_name.get(called_name)
-        if (sub_fproc is not None
-                and sub_fproc.needs_cmn
-                and not sub_fproc.conv_hook.ignore_common_and_save):
+        if sub_fproc is None:
+            continue
+        # Ensure conv_hook is always initialized
+        ch = getattr(sub_fproc, "conv_hook", None)
+        if ch is None:
+            ch = conv_hook_info()
+            sub_fproc.conv_hook = ch
+        if sub_fproc.needs_cmn and not ch.ignore_common_and_save:
             return True
     return False
-
 
 def cmn_needs_to_be_inserted(conv_info, prev_tok):
     if (prev_tok is not None
@@ -3630,11 +3634,19 @@ def convert_commons(
     common_equiv_tok_seqs = {}
     common_ccode_registry = {}
     member_registry = {}
+
     variant_common_names = set()
     bottom_up_filtered = []
     for fproc in topological_fprocs.bottom_up_list:
-        if (not fproc.conv_hook.ignore_common_and_save):
+        # Ensure conv_hook exists for all fprocs seen here
+        ch = getattr(fproc, "conv_hook", None)
+        if ch is None:
+            ch = conv_hook_info()
+            ch.ignore_common_and_save = False
+            fproc.conv_hook = ch
+        if not ch.ignore_common_and_save:
             bottom_up_filtered.append(fproc)
+
     struct_commons_need_dynamic_parameters = set()
     for fproc in bottom_up_filtered:
         fproc.conv_hook.needs_variant_bind = False
@@ -4040,6 +4052,69 @@ def _postprocess_complex_zero_initializers(lines):
         out.append(line)
     return out
 
+def _fix_fortran_externals(src):
+    """Downgrade simple Fortran 90 EXTERNAL declarations to F77 style.
+
+    Examples:
+      EXTERNAL :: XERBLA, DHGEQZ
+        -> EXTERNAL XERBLA, DHGEQZ
+      DOUBLE PRECISION, EXTERNAL :: DLAMCH, DLANHS
+        -> DOUBLE PRECISION DLAMCH, DLANHS
+    """
+    import re
+    lines = src.splitlines(True)
+    out = []
+    for line in lines:
+        # 1) EXTERNAL :: ...  ->  EXTERNAL ...
+        line2 = re.sub(r'(?i)\bEXTERNAL\s*::', 'EXTERNAL', line)
+
+        # 2) <type>, EXTERNAL ...  ->  <type> ...
+        #    Handles typical LAPACK patterns:
+        #      DOUBLE PRECISION, EXTERNAL :: DLAMCH
+        #      LOGICAL, EXTERNAL :: LSAME
+        #      INTEGER, EXTERNAL :: ILAENV
+        line2 = re.sub(
+            r'(?i)(\bDOUBLE\s+PRECISION|\bINTEGER|\bLOGICAL|\bREAL|\bCOMPLEX|\bCHARACTER)\s*,\s*EXTERNAL\b',
+            r'\1',
+            line2,
+        )
+        out.append(line2)
+    return ''.join(out)
+
+
+def _preprocess_fortran_files(file_names):
+    """Return (patched_file_names, temp_files) for FABLE parsing.
+
+    Each input file is scanned and, if it contains F90-style EXTERNAL
+    declarations, a temporary patched copy is written and used instead.
+    """
+    patched = []
+    temp_files = []
+    for fn in (file_names or []):
+        try:
+            with open(fn, "r") as f:
+                src = f.read()
+        except OSError:
+            # If we can't read it, fall back to the original name.
+            patched.append(fn)
+            continue
+
+        new_src = _fix_fortran_externals(src)
+        if new_src == src:
+            # No change needed.
+            patched.append(fn)
+            continue
+
+        # Write a temporary patched copy.
+        fd, tmp = tempfile.mkstemp(prefix="fable_tmp_", suffix=".f")
+        os.close(fd)
+        with open(tmp, "w") as g:
+            g.write(new_src)
+        patched.append(tmp)
+        temp_files.append(tmp)
+
+    return patched, temp_files
+
 
 def process(
         file_names=None,
@@ -4075,17 +4150,23 @@ def process(
     assert [file_names, all_fprocs].count(None) == 1
     if (namespace is None or namespace == "please_specify"):
         namespace = ""  # Disabled: was "placeholder_please_replace"
+
     import fable.read
+
+    # Keep a copy of the original file names for output paths.
+    orig_file_names = file_names
+    temp_files = []
+
     if (all_fprocs is None):
-        all_fprocs = fable.read.process(file_names=file_names)
-    for fproc in all_fprocs.all_in_input_order:
-        fproc.conv_hook = conv_hook_info()
-        fproc.conv_hook.ignore_common_and_save = (
-            fproc.name.value in ignore_common_and_save)
-    if top_cpp_file_name is None and file_names is not None and len(file_names) == 1:
+        patched_file_names = None
+        if file_names is not None:
+            patched_file_names, temp_files = _preprocess_fortran_files(file_names)
+        all_fprocs = fable.read.process(file_names=patched_file_names)
+
+    if top_cpp_file_name is None and orig_file_names is not None and len(orig_file_names) == 1:
         main_fproc = all_fprocs.all_in_input_order[0]
         base_name = convert_function_name_to_mplapack(main_fproc.name.value)
-        src_path = file_names[0]
+        src_path = orig_file_names[0]
         src_dir = os.path.dirname(src_path)
         if src_dir:
             top_cpp_file_name = os.path.join(src_dir, base_name + ".cpp")
@@ -4426,6 +4507,13 @@ def process(
     result = _postprocess_complex_initializers(result)
 
     result = _postprocess_complex_constant_assignments(result)
+
+    # Clean up temporary Fortran files created for preprocessing.
+    for tmp in temp_files:
+        try:
+            os.remove(tmp)
+        except OSError:
+            pass
 
     if (top_cpp_file_name is not None):
         with open(top_cpp_file_name, "w") as f:

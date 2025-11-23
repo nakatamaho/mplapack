@@ -15,7 +15,7 @@ shopt -s nullglob
 EXCLUDE_PREFIXES=( s c )
 
 # Basenames that will be converted manually
-EXCLUDE_BASENAMES_MANUAL=( dgedmd dgedmdq )
+EXCLUDE_BASENAMES_MANUAL=( dgedmd dgedmdq dgetsqrhrt)
 
 # Basenames that are not needed on the C++ side
 EXCLUDE_BASENAMES_UNUSED=( )
