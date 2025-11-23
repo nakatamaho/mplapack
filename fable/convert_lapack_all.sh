@@ -15,7 +15,7 @@ shopt -s nullglob
 EXCLUDE_PREFIXES=( s c )
 
 # Basenames that will be converted manually
-EXCLUDE_BASENAMES_MANUAL=( dgbcon dgbrfs dgbtrf dgecon dgedmd dgedmdq dgees dgedmdq)
+EXCLUDE_BASENAMES_MANUAL=( ) #dgbcon dgbrfs dgbtrf dgecon dgedmd dgedmdq dgees dgedmdq)
 
 # Basenames that are not needed on the C++ side
 EXCLUDE_BASENAMES_UNUSED=( )
@@ -65,18 +65,7 @@ for src in *.f*; do
     files+=( "$src" )
 done
 
-# ------------------------------------------------------------
-# Convert each selected Fortran file using convert_blas.sh
-# (convert_blas.sh / cout.py decide the .cpp name and do all postprocessing)
-# ------------------------------------------------------------
-
-: "${FABLE_CONVERT:?FABLE_CONVERT is not set}"
-
 for src in "${files[@]}"; do
     echo "Converting $src"
-    if ! bash "$FABLE_CONVERT" "$src"; then
-        echo "Warning: conversion failed for $src (skipped)" >&2
-        continue
-    fi
+    bash "$FABLE_CONVERT" "$src"
 done
-

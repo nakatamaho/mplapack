@@ -1502,7 +1502,7 @@ def convert_data_type_and_dims(conv_info, fdecl, crhs, force_arr=False):
             vals = conv_info.fproc.eval_dimensions_simple(
                 dim_tokens=dt, allow_power=False)
             if (vals.count(None) == 0):
-                sz = product(vals)
+                sz = math.prod(vals)
                 if (sz <= abs(conv_info.arr_nd_size_max)):
                     from fable.read import dimensions_are_simple
                     if (dimensions_are_simple(dim_tokens=dt)):
