@@ -1207,6 +1207,12 @@ def rewrite_intrinsics(text: str) -> str:
     if "fem::mod" in text:
         text = text.replace("fem::mod", "mod")
 
+    # Elementary math: cos, sin, sqrt, atan2
+    for _fname in ("cos", "sin", "sqrt", "atan2"):
+        _tag = f"fem::{_fname}"
+        if _tag in text:
+            text = text.replace(_tag, _fname)
+
     # DABS / ABS: real absolute value
     if "fem::dabs" in text:
         text = text.replace("fem::dabs", "abs")
@@ -3880,6 +3886,14 @@ def _postprocess_mplapack_labels_and_comments(lines):
         # 3) simplify trivial zero row offset: (1 - 1) + ...
         #    e.g. a[(1 - 1) + (j - 1) * lda] -> a[(j - 1) * lda]
         line = re.sub(r'\(\s*1\s*-\s*1\s*\)\s*\+\s*', '', line)
+
+        # 4) make 1-based shift explicit: i + 1 - 1 -> ((i + 1) - 1)
+        #    e.g. ab[(i + 1 - 1) * ldab] -> ab[((i + 1) - 1) * ldab]
+        line = re.sub(
+            r'\b([A-Za-z_][A-Za-z0-9_]*)\s*\+\s*1\s*-\s*1\b',
+            r'((\1 + 1) - 1)',
+            line,
+        )
 
         new_lines.append(line)
     return new_lines
