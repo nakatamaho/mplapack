@@ -1283,7 +1283,7 @@ def convert_tokens(conv_info, tokens, commas=False, had_str_concat=None):
                          for p in idx_str.split(",") if p.strip() != ""]
 
                 if len(parts) == 1:
-                    # 1D array: a(i) -> a[i_expr - 1] or a[(i_expr) - 1]
+                    # 1D array: a(i) -> a[(i_expr) - 1] or a[i_expr - 1] for simple identifiers
                     i_expr = parts[0]
                     # If index is a simple identifier or integer literal, avoid extra parentheses.
                     if re.match(r"^[A-Za-z_][A-Za-z0-9_]*$", i_expr) or re.match(r"^[0-9]+$", i_expr):
@@ -1293,7 +1293,7 @@ def convert_tokens(conv_info, tokens, commas=False, had_str_concat=None):
                         index_expr = f"({i_expr}) - 1"
                     rapp("[" + index_expr + "]")
                 elif len(parts) == 2:
-                    # 2D array: a(i,j) -> a[(row_term) + (j_expr - 1)*ld<name>]
+                    # 2D array: a(i,j) -> a[(row_term) + ((j_expr) - 1)*ld<name>]
                     i_expr, j_expr = parts
                     # leading dimension: ld + array name (lowercase)
                     ldname = "ld" + prev_tok.value.lower()
@@ -1303,9 +1303,9 @@ def convert_tokens(conv_info, tokens, commas=False, had_str_concat=None):
                         i_term = f"{i_expr} - 1"
                     else:
                         i_term = f"({i_expr}) - 1"
-
-                    # Column index term: keep (j_expr - 1) so that (j_expr - 1)*ldname has correct precedence.
-                    j_term = f"({j_expr} - 1)"
+                    # Column index term: ((j_expr) - 1) so that ((j_expr) - 1)*ldname has correct precedence
+                    # and the 1-based expression stays visually grouped.
+                    j_term = f"(({j_expr}) - 1)"
 
                     # Wrap the entire row term with parentheses:
                     #   a[(i - 1) + (j - 1)*ld]
@@ -3857,9 +3857,8 @@ def get_missing_external_return_type(fdecls):
 
 default_arr_nd_size_max = 256
 
-
 def _postprocess_mplapack_labels_and_comments(lines):
-    """MPLAPACK-specific postprocessing for labels, comments, and indices."""
+    """MPLAPACK-specific postprocessing for labels, comments, and trivial zero offsets."""
     import re
 
     new_lines = []
@@ -3889,38 +3888,25 @@ def _postprocess_mplapack_labels_and_comments(lines):
             line = line[:m.start(2)] + mapped + line[m.end(2):]
 
         # 3) Remove trivial zero row offset: (1 - 1) + ...
-        #    e.g. a[(1 - 1) + (j - 1) * lda] -> a[(j - 1) * lda]
+        #    Example: a[(1 - 1) + (j - 1) * lda] -> a[(j - 1) * lda]
         line = re.sub(r'\(\s*1\s*-\s*1\s*\)\s*\+\s*', '', line)
 
         # 4) Remove trivial zero column offset: + (1 - 1) * lda
-        #    e.g. a[(i - 1) + (1 - 1) * lda] -> a[(i - 1)]
+        #    Example: a[(i - 1) + (1 - 1) * lda] -> a[(i - 1)]
         line = re.sub(
             r'\+\s*\(\s*1\s*-\s*1\s*\)\s*\*\s*[A-Za-z_][A-Za-z0-9_]*',
             '',
             line,
         )
-        #    e.g. a[(1 - 1) * lda + (i - 1)] -> a[(i - 1)]
+        #    Example: a[(1 - 1) * lda + (i - 1)] -> a[(i - 1)]
         line = re.sub(
             r'\(\s*1\s*-\s*1\s*\)\s*\*\s*[A-Za-z_][A-Za-z0-9_]*\s*\+\s*',
             '',
             line,
         )
 
-        # 5) Make 1-based shift explicit: i + 1 - 1 -> ((i + 1) - 1)
-        #    e.g. ab[(i + 1 - 1) * ldab] -> ab[((i + 1) - 1) * ldab]
-        line = re.sub(
-            r'\b([A-Za-z_][A-Za-z0-9_]*)\s*\+\s*1\s*-\s*1\b',
-            r'((\1 + 1) - 1)',
-            line,
-        )
-
-        # 6) Make 1-based shift explicit for sums: (j + kun - 1) -> ((j + kun) - 1)
-        #    This matches exactly two identifiers: (x + y - 1)
-        line = re.sub(
-            r'\(\s*([A-Za-z_][A-Za-z0-9_]*)\s*\+\s*([A-Za-z_][A-Za-z0-9_]*)\s*-\s*1\s*\)',
-            r'((\1 + \2) - 1)',
-            line,
-        )
+        # NOTE: Do not touch general index expressions here.
+        # 1-based to 0-based conversion must be handled in the main converter logic.
 
         new_lines.append(line)
     return new_lines
