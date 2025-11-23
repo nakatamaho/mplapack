@@ -482,6 +482,11 @@ def is_blas_boilerplate_comment(t):
     # Strip leading/trailing whitespace for comparison
     t_stripped = t.strip()
 
+    # Never treat "Test the input parameters" lines as boilerplate.
+    # We want to keep these comments in the generated C++.
+    if "Test the input parameters" in t_stripped:
+        return False
+
     # Check for single ".." or empty lines - these ARE boilerplate when standalone
     if t_stripped == ".." or t_stripped == "...":
         return True
@@ -502,10 +507,18 @@ def is_blas_boilerplate_comment(t):
     if "NAG Ltd" in t_stripped:
         return True
 
+    # LAPACK routine-type headers
+    lapack_routine_headers = [
+        "LAPACK computational routine",
+        "LAPACK driver routine",
+        "LAPACK auxiliary routine",
+    ]
+    for phrase in lapack_routine_headers:
+        if phrase in t_stripped:
+            return True
+
     # Check for section markers that are part of BLAS boilerplate
-    # Look for patterns starting and ending with ".."
     if ".." in t_stripped:
-        # Common BLAS/LAPACK section keywords
         section_keywords = [
             "Scalar Argument",
             "Array Argument",
@@ -516,12 +529,12 @@ def is_blas_boilerplate_comment(t):
             "Intrinsic Function",
             "Local Array",
             "Statement Function",
-            "Executable Statement",  # Added this pattern
+            "Executable Statement",
             "Local Parameter",
             "Common Block",
             "Data Statement",
             "Equivalence",
-            "Save statement"
+            "Save statement",
         ]
         for keyword in section_keywords:
             if keyword in t_stripped:
@@ -533,7 +546,7 @@ def is_blas_boilerplate_comment(t):
     if t_stripped.startswith("----") and len(t_stripped) > 20:
         return True
 
-    # Check for other common BLAS/LAPACK boilerplate patterns
+    # Other boilerplate patterns
     if t_stripped == "Purpose":
         return True
     if t_stripped == "Arguments":
