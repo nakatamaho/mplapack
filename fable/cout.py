@@ -4,33 +4,35 @@ from io import StringIO
 import os.path
 import math
 
-
-def _load_mplapack_name_map(path="mplapack_name_map.txt"):
-    """Load Fortran->MPLAPACK name mapping from an external text file.
+def _load_mplapack_name_map(path=None):
+    """Load Fortran -> MPLAPACK C++ name mapping from an external text file.
 
     Format (whitespace separated, # for comments):
 
-        ztrsv   Ctrsv
-        dgemm   Rgemm
-        dgemmtr Rgemmtr
-
-    Keys are case-insensitive.
+        dgemm           Rgemm
+        ztrsv           Ctrsv
+        lsame           Mlsame
+        xerbla          Mxerbla
+        dcabs1          RCabs1
     """
+    if path is None:
+        base_dir = os.path.dirname(__file__)
+        path = os.path.join(base_dir, "mplapack_name_map.txt")
     mapping = {}
     try:
         with open(path) as f:
             for line in f:
+                # Strip comments after '#'
                 line = line.split("#", 1)[0].strip()
                 if not line:
                     continue
                 parts = line.split()
-                if len(parts) == 1:
-                    src, dst = parts[0], None
-                else:
-                    src, dst = parts[0], parts[1]
+                if len(parts) < 2:
+                    continue
+                src, dst = parts[0], parts[1]
                 mapping[src.lower()] = dst
     except OSError:
-        # No mapping file: we just fall back to rule-based mapping.
+        # Map file is optional; fall back to default naming rules.
         pass
     return mapping
 
@@ -51,19 +53,13 @@ def _mplapack_default_name(name: str) -> str:
     return name
 
 
-def convert_function_name_to_mplapack(name: str) -> str:
-    """Convert Fortran routine name to MPLAPACK-style C++ name.
-
-    Priority:
-      1) explicit external table (_MPLAPACK_NAME_MAP)
-      2) simple head-letter rule (s/d -> R, c/z -> C)
-    """
-    lower = name.lower()
-    mapped = _MPLAPACK_NAME_MAP.get(lower)
+def convert_function_name_to_mplapack(name):
+    """Convert top-level routine name using mplapack_name_map.txt and default rule."""
+    lower = name.lower() if name else name
+    mapped = _MPLAPACK_NAME_MAP.get(lower) if name else None
     if mapped is not None:
         return mapped
     return _mplapack_default_name(name)
-
 
 fmt_comma_placeholder = chr(255)
 
@@ -315,19 +311,16 @@ def convert_complex_literal(vmap, tok):
 
 def convert_token(vmap, leading, tok, had_str_concat=None):
     tv = tok.value
-    if (tok.is_identifier()):
-        # Apply vmap first (Fortran name -> C++ name)
+    if tok.is_identifier():
+        # Apply vmap first (Fortran name -> C++ name or other mapped names)
         raw = vmap.get(tv, tv)
-        name = raw
-
-        # Case-insensitive check for BLAS/LAPACK helpers
+        # Case-insensitive lookup in MPLAPACK name map (routine and helper names).
         lname = raw.lower()
-        if lname == "lsame":
-            name = "Mlsame"
-        elif lname == "xerbla":
-            name = "Mxerbla"
-
-        return name
+        mapped = _MPLAPACK_NAME_MAP.get(lname)
+        if mapped is not None:
+            return mapped
+        # No special mapping: keep the vmap result as-is.
+        return raw
 
     if (tok.is_op()):
         if (tv == ".not."):
