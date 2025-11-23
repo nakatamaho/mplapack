@@ -63,6 +63,7 @@ MANUAL_MAPPINGS=(
   "lsame Mlsame"
   "dcabs1 RCabs1"
   "zdcal CRscal"
+  "dlamch Rlamch"
 )
 
 # ------------------------------------------------------------

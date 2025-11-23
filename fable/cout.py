@@ -3859,17 +3859,17 @@ default_arr_nd_size_max = 256
 
 
 def _postprocess_mplapack_labels_and_comments(lines):
-    """Fix XERBLA labels and 'End of XXX' comments using MPLAPACK name map."""
+    """MPLAPACK-specific postprocessing for labels, comments, and indices."""
     import re
 
     new_lines = []
     for line in lines:
-        # 1) Mxerbla("ZTRSV ", info);
+        # 1) Fix Mxerbla("XXXX ", info) labels using the MPLAPACK name map
         m = re.search(r'Mxerbla\("([^"]+)"', line)
         if m:
-            label = m.group(1)          # e.g. "ZTRSV "
-            core = label.strip()        # "ZTRSV"
-            lower = core.lower()        # "ztrsv"
+            label = m.group(1)      # e.g. "ZTRSV "
+            core = label.strip()    # "ZTRSV"
+            lower = core.lower()    # "ztrsv"
             mapped = _MPLAPACK_NAME_MAP.get(lower)
             if mapped is None:
                 mapped = _mplapack_default_name(core)
@@ -3878,7 +3878,7 @@ def _postprocess_mplapack_labels_and_comments(lines):
             repl = f'Mxerbla("{mapped}{suffix}"'
             line = line[:m.start()] + repl + line[m.end():]
 
-        # 2) //     End of ZTRSV
+        # 2) Fix "//     End of XXXX" comments using the MPLAPACK name map
         m = re.search(r'(End of )([A-Za-z][A-Za-z0-9_]*)', line)
         if m:
             core = m.group(2)
@@ -3888,11 +3888,25 @@ def _postprocess_mplapack_labels_and_comments(lines):
                 mapped = _mplapack_default_name(core)
             line = line[:m.start(2)] + mapped + line[m.end(2):]
 
-        # 3) simplify trivial zero row offset: (1 - 1) + ...
+        # 3) Remove trivial zero row offset: (1 - 1) + ...
         #    e.g. a[(1 - 1) + (j - 1) * lda] -> a[(j - 1) * lda]
         line = re.sub(r'\(\s*1\s*-\s*1\s*\)\s*\+\s*', '', line)
 
-        # 4) make 1-based shift explicit: i + 1 - 1 -> ((i + 1) - 1)
+        # 4) Remove trivial zero column offset: + (1 - 1) * lda
+        #    e.g. a[(i - 1) + (1 - 1) * lda] -> a[(i - 1)]
+        line = re.sub(
+            r'\+\s*\(\s*1\s*-\s*1\s*\)\s*\*\s*[A-Za-z_][A-Za-z0-9_]*',
+            '',
+            line,
+        )
+        #    e.g. a[(1 - 1) * lda + (i - 1)] -> a[(i - 1)]
+        line = re.sub(
+            r'\(\s*1\s*-\s*1\s*\)\s*\*\s*[A-Za-z_][A-Za-z0-9_]*\s*\+\s*',
+            '',
+            line,
+        )
+
+        # 5) Make 1-based shift explicit: i + 1 - 1 -> ((i + 1) - 1)
         #    e.g. ab[(i + 1 - 1) * ldab] -> ab[((i + 1) - 1) * ldab]
         line = re.sub(
             r'\b([A-Za-z_][A-Za-z0-9_]*)\s*\+\s*1\s*-\s*1\b',
@@ -3900,7 +3914,7 @@ def _postprocess_mplapack_labels_and_comments(lines):
             line,
         )
 
-        # 5) make 1-based shift explicit for sums: (j + kun - 1) -> ((j + kun) - 1)
+        # 6) Make 1-based shift explicit for sums: (j + kun - 1) -> ((j + kun) - 1)
         #    This matches exactly two identifiers: (x + y - 1)
         line = re.sub(
             r'\(\s*([A-Za-z_][A-Za-z0-9_]*)\s*\+\s*([A-Za-z_][A-Za-z0-9_]*)\s*-\s*1\s*\)',
