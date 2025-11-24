@@ -25,9 +25,7 @@
  * SUCH DAMAGE.
  *
  */
-
 #include <mpblas.h>
-
 void Raxpy(INTEGER const &n, REAL const &da, REAL *dx, INTEGER const &incx, REAL *dy, INTEGER const &incy) {
     //
     if (n <= 0) {

@@ -25,9 +25,7 @@
  * SUCH DAMAGE.
  *
  */
-
 #include <mpblas.h>
-
 void Rtbsv(const char *uplo, const char *trans, const char *diag, INTEGER const &n, INTEGER const &k, REAL *a, INTEGER const &lda, REAL *x, INTEGER const &incx) {
     //
     // Test the input parameters.

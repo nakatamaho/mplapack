@@ -25,9 +25,7 @@
  * SUCH DAMAGE.
  *
  */
-
 #include <mpblas.h>
-
 void Cher(const char *uplo, INTEGER const &n, REAL const &alpha, COMPLEX *x, INTEGER const &incx, COMPLEX *a, INTEGER const &lda) {
     //
     // Test the input parameters.

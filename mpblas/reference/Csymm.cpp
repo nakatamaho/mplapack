@@ -25,9 +25,7 @@
  * SUCH DAMAGE.
  *
  */
-
 #include <mpblas.h>
-
 void Csymm(const char *side, const char *uplo, INTEGER const &m, INTEGER const &n, COMPLEX const &alpha, COMPLEX *a, INTEGER const &lda, COMPLEX *b, INTEGER const &ldb, COMPLEX const &beta, COMPLEX *c, INTEGER const &ldc) {
     //
     // Set NROWA as the number of rows of A.

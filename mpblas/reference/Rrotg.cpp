@@ -25,10 +25,8 @@
  * SUCH DAMAGE.
  *
  */
-
 #include <mpblas.h>
-
-void Rrotg(REAL const &da, REAL const &db, REAL const &c, REAL const &s) {
+void Rrotg(REAL &da, REAL &db, REAL &c, REAL &s) {
     //
     REAL scale = abs(da) + abs(db);
     REAL r = 0.0;

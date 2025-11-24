@@ -25,9 +25,7 @@
  * SUCH DAMAGE.
  *
  */
-
 #include <mpblas.h>
-
 void Ctrmv(const char *uplo, const char *trans, const char *diag, INTEGER const &n, COMPLEX *a, INTEGER const &lda, COMPLEX *x, INTEGER const &incx) {
     //
     // Test the input parameters.

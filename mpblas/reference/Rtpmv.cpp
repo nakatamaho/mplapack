@@ -25,9 +25,7 @@
  * SUCH DAMAGE.
  *
  */
-
 #include <mpblas.h>
-
 void Rtpmv(const char *uplo, const char *trans, const char *diag, INTEGER const &n, REAL *ap, REAL *x, INTEGER const &incx) {
     //
     // Test the input parameters.

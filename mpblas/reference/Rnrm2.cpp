@@ -25,9 +25,7 @@
  * SUCH DAMAGE.
  *
  */
-
 #include <mpblas.h>
-
 REAL Rnrm2(INTEGER const &n, REAL *x, INTEGER const &incx) {
     REAL return_value = 0.0;
     //

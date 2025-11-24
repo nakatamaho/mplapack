@@ -25,9 +25,7 @@
  * SUCH DAMAGE.
  *
  */
-
 #include <mpblas.h>
-
 REAL RCabs1(COMPLEX const &z) {
     REAL return_value = 0.0;
     //

@@ -25,9 +25,7 @@
  * SUCH DAMAGE.
  *
  */
-
 #include <mpblas.h>
-
 INTEGER
 iCamax(INTEGER const &n, COMPLEX *zx, INTEGER const &incx) {
     INTEGER return_value = 0;

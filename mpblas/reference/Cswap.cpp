@@ -25,9 +25,7 @@
  * SUCH DAMAGE.
  *
  */
-
 #include <mpblas.h>
-
 void Cswap(INTEGER const &n, COMPLEX *zx, INTEGER const &incx, COMPLEX *zy, INTEGER const &incy) {
     //
     if (n <= 0) {

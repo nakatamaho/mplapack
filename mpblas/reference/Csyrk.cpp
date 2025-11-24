@@ -25,9 +25,7 @@
  * SUCH DAMAGE.
  *
  */
-
 #include <mpblas.h>
-
 void Csyrk(const char *uplo, const char *trans, INTEGER const &n, INTEGER const &k, COMPLEX const &alpha, COMPLEX *a, INTEGER const &lda, COMPLEX const &beta, COMPLEX *c, INTEGER const &ldc) {
     //
     // Test the input parameters.

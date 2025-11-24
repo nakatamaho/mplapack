@@ -25,9 +25,7 @@
  * SUCH DAMAGE.
  *
  */
-
 #include <mpblas.h>
-
 void Rsbmv(const char *uplo, INTEGER const &n, INTEGER const &k, REAL const &alpha, REAL *a, INTEGER const &lda, REAL *x, INTEGER const &incx, REAL const &beta, REAL *y, INTEGER const &incy) {
     //
     // Test the input parameters.

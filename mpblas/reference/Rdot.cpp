@@ -25,9 +25,7 @@
  * SUCH DAMAGE.
  *
  */
-
 #include <mpblas.h>
-
 REAL Rdot(INTEGER const &n, REAL *dx, INTEGER const &incx, REAL *dy, INTEGER const &incy) {
     REAL return_value = 0.0;
     //

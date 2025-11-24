@@ -25,12 +25,9 @@
  * SUCH DAMAGE.
  *
  */
-
 #define ___MPLAPACK_MPLAPACK_INIT___
-
 #include <mpblas.h>
 #include <stdio.h>
-
 #if defined ___MPLAPACK_BUILD_WITH_GMP___
 void __attribute__((constructor)) mplapack_initialize_gmp(void);
 void __attribute__((destructor)) mplapack_finalize_gmp(void);
@@ -45,11 +42,10 @@ void mplapack_finalize_gmp(void) {
     // no finalization needed
 }
 #endif
-
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
 void __attribute__((constructor)) mplapack_initialize_mpfr(void);
 void mplapack_initialize_mpfr(void) {
-    mpreal::default_rnd  = mpfr_get_default_rounding_mode();
+    mpreal::default_rnd = mpfr_get_default_rounding_mode();
     mpreal::default_prec = ___MPLAPACK_MPFR_DEFAULT_PRECISION___;
     mpreal::default_base = 10;
     mpreal::double_bits = -1;
@@ -68,7 +64,6 @@ void mplapack_initialize_mpfr(void) {
 void __attribute__((destructor)) mplapack_finalize_mpfr(void);
 void mplapack_finalize_mpfr(void) {}
 #endif
-
 #if defined ___MPLAPACK_BUILD_WITH_QD___
 void __attribute__((constructor)) mplapack_initialize_qd(void);
 void __attribute__((destructor)) mplapack_finalize_qd(void);
@@ -76,7 +71,6 @@ static unsigned int oldcw_qd;
 void mplapack_initialize_qd(void) { fpu_fix_start(&oldcw_qd); }
 void mplapack_finalize_qd(void) { fpu_fix_end(&oldcw_qd); }
 #endif
-
 #if defined ___MPLAPACK_BUILD_WITH_DD___
 void __attribute__((constructor)) mplapack_initialize_dd(void);
 void __attribute__((destructor)) mplapack_finalize_dd(void);
@@ -84,38 +78,32 @@ static unsigned int oldcw_dd;
 void mplapack_initialize_dd(void) { fpu_fix_start(&oldcw_dd); }
 void mplapack_finalize_dd(void) { fpu_fix_end(&oldcw_dd); }
 #endif
-
 #if defined ___MPLAPACK_BUILD_WITH_DOUBLE___
 void __attribute__((constructor)) mplapack_initialize_double(void);
 void __attribute__((destructor)) mplapack_finalize_double(void);
 void mplapack_initialize_double(void) {
     // no initializization needed
 }
-
 void mplapack_finalize_double(void) {
     // no finalization needed
 }
 #endif
-
 #if defined ___MPLAPACK_BUILD_WITH__FLOAT64X___
 void __attribute__((constructor)) mplapack_initialize__Float64x(void);
 void __attribute__((destructor)) mplapack_finalize__Float64x(void);
 void mplapack_initialize__Float64x(void) {
     // no initializization needed
 }
-
 void mplapack_finalize__Float64x(void) {
     // no finalization needed
 }
 #endif
-
 #if defined ___MPLAPACK_BUILD_WITH__FLOAT128___
 void __attribute__((constructor)) mplapack_initialize_binary128(void);
 void __attribute__((destructor)) mplapack_finalize_binary128(void);
 void mplapack_initialize__Float128(void) {
     // no initializization needed
 }
-
 void mplapack_finalize__Float128(void) {
     // no finalization needed
 }

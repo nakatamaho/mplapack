@@ -25,9 +25,7 @@
  * SUCH DAMAGE.
  *
  */
-
 #include <mpblas.h>
-
 INTEGER
 iRamax(INTEGER const &n, REAL *dx, INTEGER const &incx) {
     INTEGER return_value = 0;

@@ -25,9 +25,7 @@
  * SUCH DAMAGE.
  *
  */
-
 #include <mpblas.h>
-
 void Rswap(INTEGER const &n, REAL *dx, INTEGER const &incx, REAL *dy, INTEGER const &incy) {
     //
     if (n <= 0) {

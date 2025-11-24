@@ -25,9 +25,7 @@
  * SUCH DAMAGE.
  *
  */
-
 #include <mpblas.h>
-
 REAL Rasum(INTEGER const &n, REAL *dx, INTEGER const &incx) {
     REAL return_value = 0.0;
     //

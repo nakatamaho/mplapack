@@ -25,9 +25,7 @@
  * SUCH DAMAGE.
  *
  */
-
 #include <mpblas.h>
-
 void Ctpsv(const char *uplo, const char *trans, const char *diag, INTEGER const &n, COMPLEX *ap, COMPLEX *x, INTEGER const &incx) {
     //
     // Test the input parameters.

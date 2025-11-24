@@ -25,9 +25,7 @@
  * SUCH DAMAGE.
  *
  */
-
 #include <mpblas.h>
-
 void Rsyr2(const char *uplo, INTEGER const &n, REAL const &alpha, REAL *x, INTEGER const &incx, REAL *y, INTEGER const &incy, REAL *a, INTEGER const &lda) {
     //
     // Test the input parameters.

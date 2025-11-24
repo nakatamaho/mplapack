@@ -25,9 +25,7 @@
  * SUCH DAMAGE.
  *
  */
-
 #include <mpblas.h>
-
 void Chbmv(const char *uplo, INTEGER const &n, INTEGER const &k, COMPLEX const &alpha, COMPLEX *a, INTEGER const &lda, COMPLEX *x, INTEGER const &incx, COMPLEX const &beta, COMPLEX *y, INTEGER const &incy) {
     //
     // Test the input parameters.

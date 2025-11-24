@@ -25,9 +25,7 @@
  * SUCH DAMAGE.
  *
  */
-
 #include <mpblas.h>
-
 void Chpr(const char *uplo, INTEGER const &n, REAL const &alpha, COMPLEX *x, INTEGER const &incx, COMPLEX *ap) {
     //
     // Test the input parameters.

@@ -25,9 +25,7 @@
  * SUCH DAMAGE.
  *
  */
-
 #include <mpblas.h>
-
 void Ctrsm(const char *side, const char *uplo, const char *transa, const char *diag, INTEGER const &m, INTEGER const &n, COMPLEX const &alpha, COMPLEX *a, INTEGER const &lda, COMPLEX *b, INTEGER const &ldb) {
     //
     // Test the input parameters.

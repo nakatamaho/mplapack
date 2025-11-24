@@ -25,9 +25,7 @@
  * SUCH DAMAGE.
  *
  */
-
 #include <mpblas.h>
-
 void Rgemm(const char *transa, const char *transb, INTEGER const &m, INTEGER const &n, INTEGER const &k, REAL const &alpha, REAL *a, INTEGER const &lda, REAL *b, INTEGER const &ldb, REAL const &beta, REAL *c, INTEGER const &ldc) {
     //
     // Set  NOTA  and  NOTB  as  true if  A  and  B  respectively are not

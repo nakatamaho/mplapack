@@ -25,9 +25,7 @@
  * SUCH DAMAGE.
  *
  */
-
 #include <mpblas.h>
-
 void Rsyrk(const char *uplo, const char *trans, INTEGER const &n, INTEGER const &k, REAL const &alpha, REAL *a, INTEGER const &lda, REAL const &beta, REAL *c, INTEGER const &ldc) {
     //
     // Test the input parameters.
