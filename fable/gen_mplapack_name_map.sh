@@ -65,6 +65,8 @@ MANUAL_MAPPINGS=(
   "zdcal CRscal"
   "dlamch Rlamch"
   "ilaenv iMlaenv"
+  "zdrot CRrot"
+  "zdscal CRscal"
 )
 
 # ------------------------------------------------------------

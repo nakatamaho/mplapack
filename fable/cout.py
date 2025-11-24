@@ -4033,6 +4033,24 @@ def _postprocess_complex_constant_assignments(lines):
         out.append(line)
     return out
 
+def _postprocess_intrinsic_aliases(lines):
+    """Final cleanup for intrinsic helper names.
+
+    Ensure that fem::abs, fem::dabs, fem::cdabs, fem::pow2
+    are printed without the fem:: namespace.
+    """
+    out = []
+    for line in lines:
+        # abs family
+        line = line.replace("fem::cdabs", "abs")
+        line = line.replace("fem::dabs", "abs")
+        line = line.replace("fem::abs", "abs")
+
+        # pow2 helper
+        line = line.replace("fem::pow2", "pow2")
+
+        out.append(line)
+    return out
 
 def _postprocess_complex_zero_initializers(lines):
     """Rewrite COMPLEX zero initializers using COMPLEX(0.0, 0.0).
@@ -4509,6 +4527,9 @@ def process(
     result = _postprocess_complex_initializers(result)
 
     result = _postprocess_complex_constant_assignments(result)
+
+    # Final intrinsic cleanup (abs / pow2 aliases).
+    result = _postprocess_intrinsic_aliases(result)
 
     # Clean up temporary Fortran files created for preprocessing.
     for tmp in temp_files:
