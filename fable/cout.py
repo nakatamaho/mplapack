@@ -1323,16 +1323,27 @@ def convert_tokens(conv_info, tokens, commas=False, had_str_concat=None):
                          for p in idx_str.split(",") if p.strip() != ""]
 
                 if len(parts) == 1:
-                    # 1D array: a(i) -> a[(i_expr - 1)] always, to keep index expression explicit.
-                    i_expr = parts[0]
-                    # If index is a simple identifier or integer literal, use "i_expr - 1".
-                    # Otherwise, keep parentheses around the original expression: (i_expr) - 1.
-                    if re.match(r"^[A-Za-z_][A-Za-z0-9_]*$", i_expr) or re.match(r"^[0-9]+$", i_expr):
-                        index_expr = f"{i_expr} - 1"
+                    # 1D array: a(i) -> x[(i - 1)] for symbolic indices,
+                    #            and x[k] for constant indices (i = k).
+                    i_expr = parts[0].strip()
+
+                    # Constant integer index: a(1) -> a[0], a(5) -> a[4]
+                    m_int = re.fullmatch(r"[0-9]+", i_expr)
+                    if m_int:
+                        i_val = int(i_expr)
+                        index_expr = str(i_val - 1)
+                        # For pure integer constant, do not add extra parentheses: a[0]
+                        rapp("[" + index_expr + "]")
                     else:
-                        index_expr = f"({i_expr}) - 1"
-                    # Wrap the whole index expression in parentheses so that generated code uses a[(index_expr)].
-                    rapp("[(" + index_expr + ")]")
+                        # Non-constant index
+                        # simple_name: i, ix, k1, ...
+                        if re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", i_expr):
+                            inner = f"{i_expr} - 1"
+                        else:
+                            # More complex expressions: (i_expr) - 1
+                            inner = f"({i_expr}) - 1"
+                        # Wrap the whole index expression in parentheses: a[(i - 1)], a[((i+1) - 1)], etc.
+                        rapp("[(" + inner + ")]")
 
                 elif len(parts) == 2:
                     # 2D array: a(i,j) -> a[(row_term) + (col_term)*ld<name>]
