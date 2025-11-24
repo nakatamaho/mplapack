@@ -17,12 +17,12 @@ work/$(EXTRACT_STAMP):
 
 work/$(PATCH_STAMP): work/$(EXTRACT_STAMP)
 if IS_MINGW
-	cd $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION); patch -p0 < $(abs_builddir)/patches/patch-mingw
+	cd $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION); patch -p0 < $(abs_builddir)/patches/$(LAPACK_VERSION)/patch-mingw
 endif
 if IS_MIC
-	cd $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION); patch -p0 < $(abs_builddir)/patches/patch-mic
+	cd $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION); patch -p0 < $(abs_builddir)/patches/$(LAPACK_VERSION)/patch-mic
 endif
-	cd $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION); patch -p0 < $(abs_builddir)/patches/patch-print
+	cd $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION); patch -p0 < $(abs_builddir)/patches/$(LAPACK_VERSION)/patch-print
 	cp $(abs_builddir)/patches/print.c $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/BLAS/SRC
 	touch $(abs_builddir)/work/$(PATCH_STAMP)
 
