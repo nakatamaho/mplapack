@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -28,24 +28,90 @@
 
 #include <mpblas.h>
 
-void Rrotm(INTEGER const n, REAL *dx, INTEGER const incx, REAL *dy, INTEGER const incy, REAL *dparam) {
+struct common : fem::common {
+    fem::cmn_sve drotm_sve;
+
+    common(int argc, char const *argv[]) : fem::common(argc, argv) {}
+};
+
+struct drotm_save {
+    double two;
+    double zero;
+
+    drotm_save() : two(0.0), zero(0.0) {}
+};
+
+// > \brief \b DROTM
+// >
+// > \verbatim
+// >
+// >    APPLY THE MODIFIED GIVENS TRANSFORMATION, H, TO THE 2 BY N MATRIX
+// >
+// >    (DX**T) , WHERE **T INDICATES TRANSPOSE. THE ELEMENTS OF DX ARE IN
+// >    (DY**T)
+// >
+// >    DX(LX+I*INCX), I = 0 TO N-1, WHERE LX = 1 IF INCX .GE. 0, ELSE
+// >    LX = (-INCX)*N, AND SIMILARLY FOR SY USING LY AND INCY.
+// >    WITH DPARAM(1)=DFLAG, H HAS ONE OF THE FOLLOWING FORMS..
+// >
+// >    DFLAG=-1.D0     DFLAG=0.D0        DFLAG=1.D0     DFLAG=-2.D0
+// >
+// >      (DH11  DH12)    (1.D0  DH12)    (DH11  1.D0)    (1.D0  0.D0)
+// >    H=(          )    (          )    (          )    (          )
+// >      (DH21  DH22),   (DH21  1.D0),   (-1.D0 DH22),   (0.D0  1.D0).
+// >    SEE DROTMG FOR A DESCRIPTION OF DATA STORAGE IN DPARAM.
+// > \endverbatim
+//
+// Arguments:
+// > \param[in] N
+// > \verbatim
+// >          N is INTEGER
+// >         number of elements in input vector(s)
+// > \endverbatim
+// >
+// > \param[in,out] DX
+// > \verbatim
+// >          DX is DOUBLE PRECISION array, dimension ( 1 + ( N - 1 )*abs( INCX ) )
+// > \endverbatim
+// >
+// > \param[in] INCX
+// > \verbatim
+// >          INCX is INTEGER
+// >         storage spacing between elements of DX
+// > \endverbatim
+// >
+// > \param[in,out] DY
+// > \verbatim
+// >          DY is DOUBLE PRECISION array, dimension ( 1 + ( N - 1 )*abs( INCY ) )
+// > \endverbatim
+// >
+// > \param[in] INCY
+// > \verbatim
+// >          INCY is INTEGER
+// >         storage spacing between elements of DY
+// > \endverbatim
+// >
+// > \param[in] DPARAM
+// > \verbatim
+// >          DPARAM is DOUBLE PRECISION array, dimension (5)
+// >     DPARAM(1)=DFLAG
+// >     DPARAM(2)=DH11
+// >     DPARAM(3)=DH21
+// >     DPARAM(4)=DH12
+// >     DPARAM(5)=DH22
+// > \endverbatim
+//
+// Authors:
+void Rrotm(common &cmn, INTEGER const &n, REAL *dx, INTEGER const &incx, REAL *dy, INTEGER const &incy, REAL *dparam) {
+    FEM_CMN_SVE(drotm);
+    // SAVE
+    double &two = sve.two;
+    double &zero = sve.zero;
     //
-    //  -- Reference BLAS level1 routine --
-    //  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Local Scalars ..
-    //     ..
-    REAL zero = 0.0;
-    REAL two = 2.0;
-    //     ..
+    if (is_called_first_time) {
+        zero = 0.0;
+        two = 2.0;
+    }
     //
     REAL dflag = dparam[1 - 1];
     if (n <= 0 || (dflag + two == zero)) {

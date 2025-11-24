@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -28,21 +28,8 @@
 
 #include <mpblas.h>
 
-void Rrotg(REAL &da, REAL &db, REAL &c, REAL &s) {
+void Rrotg(REAL const &da, REAL const &db, REAL const &c, REAL const &s) {
     //
-    //  -- Reference BLAS level1 routine --
-    //  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
     REAL scale = abs(da) + abs(db);
     REAL r = 0.0;
     REAL z = 0.0;

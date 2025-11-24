@@ -32,6 +32,7 @@
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
 #include <mpblas_mpfr.h>
 typedef mplapackint INTEGER;
+typedef mplapacklogical LOGICAL;
 typedef mpreal REAL;
 typedef mpcomplex COMPLEX;
 #define Mlsame Mlsame_mpfr
@@ -43,6 +44,7 @@ typedef mpcomplex COMPLEX;
 #if defined ___MPLAPACK_BUILD_WITH_GMP___
 #include <mpblas_gmp.h>
 typedef mplapackint INTEGER;
+typedef mplapacklogical LOGICAL;
 typedef mpc_class COMPLEX;
 typedef mpf_class REAL;
 #define Mlsame Mlsame_gmp
@@ -54,6 +56,7 @@ typedef mpf_class REAL;
 #if defined ___MPLAPACK_BUILD_WITH_QD___
 #include <mpblas_qd.h>
 typedef mplapackint INTEGER;
+typedef mplapacklogical LOGICAL;
 typedef qd_real REAL;
 typedef qd_complex COMPLEX;
 #define Mlsame Mlsame_qd
@@ -66,6 +69,7 @@ typedef qd_complex COMPLEX;
 #if defined ___MPLAPACK_BUILD_WITH_DD___
 #include <mpblas_dd.h>
 typedef mplapackint INTEGER;
+typedef mplapacklogical LOGICAL;
 typedef dd_real REAL;
 typedef dd_complex COMPLEX;
 #define Mlsame Mlsame_dd
@@ -78,6 +82,7 @@ typedef dd_complex COMPLEX;
 #if defined ___MPLAPACK_BUILD_WITH_DOUBLE___
 #include <mpblas_double.h>
 typedef mplapackint INTEGER;
+typedef mplapacklogical LOGICAL;
 typedef double REAL;
 typedef std::complex<double> COMPLEX;
 #define Mlsame Mlsame_double
@@ -89,6 +94,7 @@ typedef std::complex<double> COMPLEX;
 #if defined ___MPLAPACK_BUILD_WITH__FLOAT64X___
 #include <mpblas__Float64x.h>
 typedef mplapackint INTEGER;
+typedef mplapacklogical LOGICAL;
 typedef _Float64x REAL;
 typedef std::complex<_Float64x> COMPLEX;
 #define Mlsame Mlsame__Float64x
@@ -100,6 +106,7 @@ typedef std::complex<_Float64x> COMPLEX;
 #if defined ___MPLAPACK_BUILD_WITH__FLOAT128___
 #include <mpblas__Float128.h>
 typedef mplapackint INTEGER;
+typedef mplapacklogical LOGICAL;
 typedef _Float128 REAL;
 typedef std::complex<_Float128> COMPLEX;
 #define Mlsame Mlsame__Float128

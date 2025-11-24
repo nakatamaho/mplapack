@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -28,31 +28,96 @@
 
 #include <mpblas.h>
 
-void Rrotmg(REAL &dd1, REAL &dd2, REAL &dx1, REAL const dy1, REAL *dparam) {
+struct common : fem::common {
+    fem::cmn_sve drotmg_sve;
+
+    common(int argc, char const *argv[]) : fem::common(argc, argv) {}
+};
+
+struct drotmg_save {
+    double gam;
+    double gamsq;
+    double one;
+    double rgamsq;
+    double two;
+    double zero;
+
+    drotmg_save() : gam(0.0), gamsq(0.0), one(0.0), rgamsq(0.0), two(0.0), zero(0.0) {}
+};
+
+// > \brief \b DROTMG
+// >
+// > \verbatim
+// >
+// >    CONSTRUCT THE MODIFIED GIVENS TRANSFORMATION MATRIX H WHICH ZEROS
+// >    THE SECOND COMPONENT OF THE 2-VECTOR  (DSQRT(DD1)*DX1,DSQRT(DD2)*>    DY2)**T.
+// >    WITH DPARAM(1)=DFLAG, H HAS ONE OF THE FOLLOWING FORMS..
+// >
+// >    DFLAG=-1.D0     DFLAG=0.D0        DFLAG=1.D0     DFLAG=-2.D0
+// >
+// >      (DH11  DH12)    (1.D0  DH12)    (DH11  1.D0)    (1.D0  0.D0)
+// >    H=(          )    (          )    (          )    (          )
+// >      (DH21  DH22),   (DH21  1.D0),   (-1.D0 DH22),   (0.D0  1.D0).
+// >    LOCATIONS 2-4 OF DPARAM CONTAIN DH11, DH21, DH12, AND DH22
+// >    RESPECTIVELY. (VALUES OF 1.D0, -1.D0, OR 0.D0 IMPLIED BY THE
+// >    VALUE OF DPARAM(1) ARE NOT STORED IN DPARAM.)
+// >
+// >    THE VALUES OF GAMSQ AND RGAMSQ SET IN THE DATA STATEMENT MAY BE
+// >    INEXACT.  THIS IS OK AS THEY ARE ONLY USED FOR TESTING THE SIZE
+// >    OF DD1 AND DD2.  ALL ACTUAL SCALING OF DATA IS DONE USING GAM.
+// >
+// > \endverbatim
+//
+// Arguments:
+// > \param[in,out] DD1
+// > \verbatim
+// >          DD1 is DOUBLE PRECISION
+// > \endverbatim
+// >
+// > \param[in,out] DD2
+// > \verbatim
+// >          DD2 is DOUBLE PRECISION
+// > \endverbatim
+// >
+// > \param[in,out] DX1
+// > \verbatim
+// >          DX1 is DOUBLE PRECISION
+// > \endverbatim
+// >
+// > \param[in] DY1
+// > \verbatim
+// >          DY1 is DOUBLE PRECISION
+// > \endverbatim
+// >
+// > \param[out] DPARAM
+// > \verbatim
+// >          DPARAM is DOUBLE PRECISION array, dimension (5)
+// >     DPARAM(1)=DFLAG
+// >     DPARAM(2)=DH11
+// >     DPARAM(3)=DH21
+// >     DPARAM(4)=DH12
+// >     DPARAM(5)=DH22
+// > \endverbatim
+//
+// Authors:
+void Rrotmg(common &cmn, REAL const &dd1, REAL const &dd2, REAL const &dx1, REAL const &dy1, REAL *dparam) {
+    FEM_CMN_SVE(drotmg);
+    // SAVE
+    double &gam = sve.gam;
+    double &gamsq = sve.gamsq;
+    double &one = sve.one;
+    double &rgamsq = sve.rgamsq;
+    double &two = sve.two;
+    double &zero = sve.zero;
     //
-    //  -- Reference BLAS level1 routine --
-    //  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //
-    REAL zero = 0.0;
-    REAL one = 1.0;
-    REAL two = 2.0;
-    REAL gam = 4096.0;
-    REAL gamsq = 16777216;
-    REAL rgamsq = 5.9604645e-8;
-    //     ..
+    if (is_called_first_time) {
+        zero = 0.0;
+        one = 1.0;
+        two = 2.0;
+        gam = 4096.0;
+        gamsq = 16777216.0;
+        rgamsq = 5.960464500000001e-08;
+    }
     //
     REAL dflag = 0.0;
     REAL dh11 = 0.0;
@@ -66,7 +131,7 @@ void Rrotmg(REAL &dd1, REAL &dd2, REAL &dx1, REAL const dy1, REAL *dparam) {
     REAL du = 0.0;
     REAL dtemp = 0.0;
     if (dd1 < zero) {
-        //        GO ZERO-H-D-AND-DX1..
+        // GO ZERO-H-D-AND-DX1..
         dflag = -one;
         dh11 = zero;
         dh12 = zero;
@@ -77,14 +142,14 @@ void Rrotmg(REAL &dd1, REAL &dd2, REAL &dx1, REAL const dy1, REAL *dparam) {
         dd2 = zero;
         dx1 = zero;
     } else {
-        //        CASE-DD1-NONNEGATIVE
+        // CASE-DD1-NONNEGATIVE
         dp2 = dd2 * dy1;
         if (dp2 == zero) {
             dflag = -two;
             dparam[1 - 1] = dflag;
             return;
         }
-        //        REGULAR-CASE..
+        // REGULAR-CASE..
         dp1 = dd1 * dx1;
         dq2 = dp2 * dy1;
         dq1 = dp1 * dx1;
@@ -101,9 +166,9 @@ void Rrotmg(REAL &dd1, REAL &dd2, REAL &dx1, REAL const dy1, REAL *dparam) {
                 dd2 = dd2 / du;
                 dx1 = dx1 * du;
             } else {
-                //            This code path if here for safety. We do not expect this
-                //            condition to ever hold except in edge cases with rounding
-                //            errors. See DOI: 10.1145/355841.355847
+                // This code path if here for safety. We do not expect this
+                // condition to ever hold except in edge cases with rounding
+                // errors. See DOI: 10.1145/355841.355847
                 dflag = -one;
                 dh11 = zero;
                 dh12 = zero;
@@ -117,7 +182,7 @@ void Rrotmg(REAL &dd1, REAL &dd2, REAL &dx1, REAL const dy1, REAL *dparam) {
         } else {
             //
             if (dq2 < zero) {
-                //              GO ZERO-H-D-AND-DX1..
+                // GO ZERO-H-D-AND-DX1..
                 dflag = -one;
                 dh11 = zero;
                 dh12 = zero;
@@ -139,7 +204,7 @@ void Rrotmg(REAL &dd1, REAL &dd2, REAL &dx1, REAL const dy1, REAL *dparam) {
             }
         }
         //
-        //     PROCEDURE..SCALE-CHECK
+        // PROCEDURE..SCALE-CHECK
         if (dd1 != zero) {
             while ((dd1 <= rgamsq) || (dd1 >= gamsq)) {
                 if (dflag == zero) {

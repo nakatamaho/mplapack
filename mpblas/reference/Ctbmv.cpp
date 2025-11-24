@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -28,31 +28,9 @@
 
 #include <mpblas.h>
 
-void Ctbmv(const char *uplo, const char *trans, const char *diag, INTEGER const n, INTEGER const k, COMPLEX *a, INTEGER const lda, COMPLEX *x, INTEGER const incx) {
+void Ctbmv(const char *uplo, const char *trans, const char *diag, INTEGER const &n, INTEGER const &k, COMPLEX *a, INTEGER const &lda, COMPLEX *x, INTEGER const &incx) {
     //
-    //  -- Reference BLAS level2 routine --
-    //  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     INTEGER info = 0;
     if (!Mlsame(uplo, "U") && !Mlsame(uplo, "L")) {
@@ -75,17 +53,17 @@ void Ctbmv(const char *uplo, const char *trans, const char *diag, INTEGER const 
         return;
     }
     //
-    //     Quick return if possible.
+    // Quick return if possible.
     //
     if (n == 0) {
         return;
     }
     //
-    bool noconj = Mlsame(trans, "T");
-    bool nounit = Mlsame(diag, "N");
+    LOGICAL noconj = Mlsame(trans, "T");
+    LOGICAL nounit = Mlsame(diag, "N");
     //
-    //     Set up the start point in X if the increment is not unity. This
-    //     will be  ( N - 1 )*INCX   too small for descending loops.
+    // Set up the start point in X if the increment is not unity. This
+    // will be  ( N - 1 )*INCX   too small for descending loops.
     //
     INTEGER kx = 0;
     if (incx <= 0) {
@@ -94,8 +72,8 @@ void Ctbmv(const char *uplo, const char *trans, const char *diag, INTEGER const 
         kx = 1;
     }
     //
-    //     Start the operations. In this version the elements of A are
-    //     accessed sequentially with one pass through A.
+    // Start the operations. In this version the elements of A are
+    // accessed sequentially with one pass through A.
     //
     INTEGER kplus1 = 0;
     INTEGER j = 0;
@@ -107,7 +85,7 @@ void Ctbmv(const char *uplo, const char *trans, const char *diag, INTEGER const 
     INTEGER ix = 0;
     if (Mlsame(trans, "N")) {
         //
-        //         Form  x := A*x.
+        // Form  x := A*x.
         //
         if (Mlsame(uplo, "U")) {
             kplus1 = k + 1;
@@ -184,7 +162,7 @@ void Ctbmv(const char *uplo, const char *trans, const char *diag, INTEGER const 
         }
     } else {
         //
-        //        Form  x := A**T*x  or  x := A**H*x.
+        // Form  x := A**T*x  or  x := A**H*x.
         //
         if (Mlsame(uplo, "U")) {
             kplus1 = k + 1;
@@ -291,6 +269,6 @@ void Ctbmv(const char *uplo, const char *trans, const char *diag, INTEGER const 
         }
     }
     //
-    //     End of Ctbmv .
+    // End of Ctbmv .
     //
 }

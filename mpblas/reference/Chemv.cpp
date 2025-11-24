@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -28,31 +28,9 @@
 
 #include <mpblas.h>
 
-void Chemv(const char *uplo, INTEGER const n, COMPLEX const alpha, COMPLEX *a, INTEGER const lda, COMPLEX *x, INTEGER const incx, COMPLEX const beta, COMPLEX *y, INTEGER const incy) {
+void Chemv(const char *uplo, INTEGER const &n, COMPLEX const &alpha, COMPLEX *a, INTEGER const &lda, COMPLEX *x, INTEGER const &incx, COMPLEX const &beta, COMPLEX *y, INTEGER const &incy) {
     //
-    //  -- Reference BLAS level2 routine --
-    //  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     INTEGER info = 0;
     if (!Mlsame(uplo, "U") && !Mlsame(uplo, "L")) {
@@ -71,7 +49,7 @@ void Chemv(const char *uplo, INTEGER const n, COMPLEX const alpha, COMPLEX *a, I
         return;
     }
     //
-    //     Quick return if possible.
+    // Quick return if possible.
     //
     const COMPLEX zero = COMPLEX(0.0, 0.0);
     const COMPLEX one = COMPLEX(1.0, 0.0);
@@ -79,7 +57,7 @@ void Chemv(const char *uplo, INTEGER const n, COMPLEX const alpha, COMPLEX *a, I
         return;
     }
     //
-    //     Set up the start points in  X  and  Y.
+    // Set up the start points in  X  and  Y.
     //
     INTEGER kx = 0;
     if (incx > 0) {
@@ -94,11 +72,11 @@ void Chemv(const char *uplo, INTEGER const n, COMPLEX const alpha, COMPLEX *a, I
         ky = 1 - (n - 1) * incy;
     }
     //
-    //     Start the operations. In this version the elements of A are
-    //     accessed sequentially with one pass through the triangular part
-    //     of A.
+    // Start the operations. In this version the elements of A are
+    // accessed sequentially with one pass through the triangular part
+    // of A.
     //
-    //     First form  y := beta*y.
+    // First form  y := beta*y.
     //
     INTEGER i = 0;
     INTEGER iy = 0;
@@ -139,7 +117,7 @@ void Chemv(const char *uplo, INTEGER const n, COMPLEX const alpha, COMPLEX *a, I
     INTEGER ix = 0;
     if (Mlsame(uplo, "U")) {
         //
-        //        Form  y  when A is stored in upper triangle.
+        // Form  y  when A is stored in upper triangle.
         //
         if ((incx == 1) && (incy == 1)) {
             for (j = 1; j <= n; j = j + 1) {
@@ -172,7 +150,7 @@ void Chemv(const char *uplo, INTEGER const n, COMPLEX const alpha, COMPLEX *a, I
         }
     } else {
         //
-        //        Form  y  when A is stored in lower triangle.
+        // Form  y  when A is stored in lower triangle.
         //
         if ((incx == 1) && (incy == 1)) {
             for (j = 1; j <= n; j = j + 1) {
@@ -207,6 +185,6 @@ void Chemv(const char *uplo, INTEGER const n, COMPLEX const alpha, COMPLEX *a, I
         }
     }
     //
-    //     End of Chemv .
+    // End of Chemv .
     //
 }
