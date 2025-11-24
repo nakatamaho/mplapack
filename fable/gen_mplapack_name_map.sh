@@ -56,6 +56,7 @@ EXCLUDE_BASENAMES=(
 
 MANUAL_MAPPINGS=(
   "dznrm2 RCnrm2"
+  "dzasum RCasum"
   "idamax iRamax"
   "izamax iCamax"
   "xerbla Mxerbla"
