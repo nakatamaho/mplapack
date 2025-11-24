@@ -1,104 +1,13 @@
-import re
-from itertools import product
-from io import StringIO
+from __future__ import absolute_import, division, print_function
+from six.moves import range
+from libtbx.utils import product
+from libtbx import group_args
+from libtbx import mutable
+from libtbx import Auto
 import os.path
-import math
-import tempfile
-
-
-def _load_mplapack_name_map(path=None):
-    """Load Fortran -> MPLAPACK C++ name mapping from an external text file.
-
-    Format (whitespace separated, # for comments):
-
-        dgemm           Rgemm
-        ztrsv           Ctrsv
-        lsame           Mlsame
-        xerbla          Mxerbla
-        dcabs1          RCabs1
-    """
-    if path is None:
-        base_dir = os.path.dirname(__file__)
-        path = os.path.join(base_dir, "mplapack_name_map.txt")
-    mapping = {}
-    try:
-        with open(path) as f:
-            for line in f:
-                # Strip comments after '#'
-                line = line.split("#", 1)[0].strip()
-                if not line:
-                    continue
-                parts = line.split()
-                if len(parts) < 2:
-                    continue
-                src, dst = parts[0], parts[1]
-                mapping[src.lower()] = dst
-    except OSError:
-        # Map file is optional; fall back to default naming rules.
-        pass
-    return mapping
-
-
-_MPLAPACK_NAME_MAP = _load_mplapack_name_map()
-
-
-def _mplapack_default_name(name: str) -> str:
-    """Fallback rule: s/d -> R, c/z -> C, others unchanged."""
-    if not name:
-        return name
-    lower = name.lower()
-    head, tail = lower[0], lower[1:]
-    if head in ("s", "d"):
-        return "R" + tail
-    if head in ("c", "z"):
-        return "C" + tail
-    return name
-
-
-def convert_function_name_to_mplapack(name):
-    """Convert top-level routine name using mplapack_name_map.txt and default rule."""
-    lower = name.lower() if name else name
-    mapped = _MPLAPACK_NAME_MAP.get(lower) if name else None
-    if mapped is not None:
-        return mapped
-    return _mplapack_default_name(name)
-
+from six.moves import zip
 
 fmt_comma_placeholder = chr(255)
-
-
-class _AutoType:
-    def __repr__(self):
-        return "Auto"
-
-
-Auto = _AutoType()
-
-
-class group_args:
-    def __init__(self, **kwargs):
-        self.__dict__.update(kwargs)
-
-    def __repr__(self):
-        args = ", ".join(f"{k}={v!r}" for k, v in self.__dict__.items())
-        return f"group_args({args})"
-
-
-class mutable:
-    """
-    Minimal replacement for libtbx.mutable.
-
-    Usage:
-        flag = mutable(value=False)
-        flag.value = True
-    """
-
-    def __init__(self, **kwargs):
-        self.__dict__.update(kwargs)
-
-    def __repr__(self):
-        args = ", ".join(f"{k}={v!r}" for k, v in self.__dict__.items())
-        return f"mutable({args})"
 
 
 def break_line_if_necessary(callback, line, max_len=80, min_len=70):
@@ -159,15 +68,8 @@ def break_line_if_necessary(callback, line, max_len=80, min_len=70):
             ic += 1
     potential_break_points.append((0, nc))
     n = nc - i_start
-    denom = max_len - i_start - 2
-
-    if n <= 0 or denom <= 0:
-        l = max_len
-    else:
-        blocks = math.ceil(float(n) / float(denom))
-        l_est = float(n) / float(blocks)
-        l = max(min_len, int(round(l_est)))
-
+    from libtbx.math_utils import iround, iceil
+    l = max(min_len, iround(n / iceil(n / (max_len - i_start - 2))))
     b = 0
     f = 0
 
@@ -308,23 +210,13 @@ def convert_complex_literal(vmap, tok):
             c.append(sign_tok.value)
         c.append(convert_token(vmap=vmap, leading=None, tok=val_tok))
         cc.append("".join(c))
-    # Map Fortran complex literal (a, b) to C++ COMPLEX(a, b)
-    return "COMPLEX(%s)" % ", ".join(cc)
+    return "fem::cmplx(%s)" % ", ".join(cc)
 
 
 def convert_token(vmap, leading, tok, had_str_concat=None):
     tv = tok.value
-    if tok.is_identifier():
-        # Apply vmap first (Fortran name -> C++ name or other mapped names)
-        raw = vmap.get(tv, tv)
-        # Case-insensitive lookup in MPLAPACK name map (routine and helper names).
-        lname = raw.lower()
-        mapped = _MPLAPACK_NAME_MAP.get(lname)
-        if mapped is not None:
-            return mapped
-        # No special mapping: keep the vmap result as-is.
-        return raw
-
+    if (tok.is_identifier()):
+        return vmap.get(tv, tv)
     if (tok.is_op()):
         if (tv == ".not."):
             return "!"
@@ -384,29 +276,7 @@ def convert_token(vmap, leading, tok, had_str_concat=None):
     if (tok.is_real()):
         return tv+"f"
     if (tok.is_double_precision()):
-        # Pretty-print double precision literals:
-        # - Normalize Fortran D exponent to e/E
-        # - Use 0.0 / 1.0 instead of 0.0e+0 / 1.0e+0
-        s = tv.replace("D", "d").replace("d", "e")
-        try:
-            v = float(s)
-        except Exception:
-            # Fallback: simple d->e replacement
-            return s
-        # Special cases for common constants
-        if v == 0.0:
-            return "0.0"
-        if v == 1.0:
-            return "1.0"
-        # Generic formatting
-        out = format(v, ".16g")
-        # Ensure it looks like a floating literal in C++
-        if ("e" not in out and "E" not in out
-                and "." not in out
-                and "nan" not in out
-                and "inf" not in out):
-            out += ".0"
-        return out
+        return tv.replace("d", "e")
     if (tok.is_complex()):
         return convert_complex_literal(vmap=vmap, tok=tok)
     tok.raise_not_supported()
@@ -416,12 +286,23 @@ class major_types_cache(object):
 
     __slots__ = ["identifiers"]
 
-    def __init__(self):
-        self.identifiers = set()
+    def __init__(O):
+        O.identifiers = None
 
-    def __contains__(self, value):
-        # fem::major_types names are ignored in this build
-        return False
+    def __contains__(O, value):
+        if (O.identifiers is None):
+            O.identifiers = set()
+            import libtbx.load_env
+            hpp = libtbx.env.under_dist(
+                module_name="fable", path="fem/major_types.hpp", test=os.path.isfile)
+            using_fem = "  using fem::"
+            with open(hpp) as f:
+                lines = f.read().splitlines()
+            for line in lines:
+                if (line.startswith(using_fem)):
+                    assert line.endswith(";")
+                    O.identifiers.add(line[len(using_fem):-1])
+        return value in O.identifiers
 
 
 major_types = major_types_cache()
@@ -443,121 +324,6 @@ def prepend_identifier_if_necessary(identifier):
     return identifier
 
 
-def convert_to_mplapack_type(ctype):
-    """Convert C++ types to MPLAPACK types (INTEGER, REAL, etc.)"""
-    # Remove const and & from the type
-    ctype_clean = ctype.replace("const", "").replace("&", "").strip()
-
-    # Convert basic types
-    if ctype_clean == "int":
-        return "INTEGER"
-    elif ctype_clean == "double":
-        return "REAL"
-    elif ctype_clean == "float":
-        return "REAL"
-    elif ctype_clean == "bool":
-        return "LOGICAL"
-    elif ctype_clean == "std::complex<float>":
-        return "COMPLEX"
-    elif ctype_clean == "std::complex<double>":
-        return "COMPLEX"
-
-    # For complex types like arr_ref<double>, extract the inner type
-    if ctype_clean.startswith("arr_ref<"):
-        # Extract type from arr_ref<...>
-        inner_type = ctype_clean[8:-1].strip()
-        if ", " in inner_type:
-            inner_type = inner_type.split(",")[0].strip()
-        return convert_to_mplapack_type(inner_type)
-
-    return ctype_clean
-
-
-def is_blas_boilerplate_comment(t):
-    """
-    Check if the comment text is part of BLAS boilerplate comments that should be removed.
-    """
-    if t is None:
-        return False
-
-    # Strip leading/trailing whitespace for comparison
-    t_stripped = t.strip()
-
-    # Never treat "Test the input parameters" lines as boilerplate.
-    # We want to keep these comments in the generated C++.
-    if "Test the input parameters" in t_stripped:
-        return False
-
-    # Check for single ".." or empty lines - these ARE boilerplate when standalone
-    if t_stripped == ".." or t_stripped == "...":
-        return True
-
-    # Check for BLAS/LAPACK header patterns
-    if "-- Reference BLAS" in t_stripped:
-        return True
-    if "-- Reference LAPACK" in t_stripped:
-        return True
-    if "-- LAPACK is a software package" in t_stripped:
-        return True
-    if "-- Univ. of Tennessee" in t_stripped:
-        return True
-    if "-- Univ. of California Berkeley" in t_stripped:
-        return True
-    if "-- Univ. of Colorado Denver" in t_stripped:
-        return True
-    if "NAG Ltd" in t_stripped:
-        return True
-
-    # LAPACK routine-type headers
-    lapack_routine_headers = [
-        "LAPACK computational routine",
-        "LAPACK driver routine",
-        "LAPACK auxiliary routine",
-    ]
-    for phrase in lapack_routine_headers:
-        if phrase in t_stripped:
-            return True
-
-    # Check for section markers that are part of BLAS boilerplate
-    if ".." in t_stripped:
-        section_keywords = [
-            "Scalar Argument",
-            "Array Argument",
-            "Parameter",
-            "Local Scalar",
-            "External Function",
-            "External Subroutine",
-            "Intrinsic Function",
-            "Local Array",
-            "Statement Function",
-            "Executable Statement",
-            "Local Parameter",
-            "Common Block",
-            "Data Statement",
-            "Equivalence",
-            "Save statement",
-        ]
-        for keyword in section_keywords:
-            if keyword in t_stripped:
-                return True
-
-    # Check for the separator line
-    if t_stripped.startswith("====") and len(t_stripped) > 20:
-        return True
-    if t_stripped.startswith("----") and len(t_stripped) > 20:
-        return True
-
-    # Other boilerplate patterns
-    if t_stripped == "Purpose":
-        return True
-    if t_stripped == "Arguments":
-        return True
-    if t_stripped.startswith("===") and t_stripped.endswith("==="):
-        return True
-
-    return False
-
-
 def produce_comment_given_sl(callback, sl):
     if (sl.stmt_offs is None):
         t = sl.text[1:]
@@ -572,168 +338,14 @@ def produce_comment_given_sl(callback, sl):
 def produce_comment_given_ssl(callback, ssl):
     if (ssl is None):
         return
-
-    # Collect all comment lines from this ssl
-    comment_lines = []
     for sl in ssl.source_line_cluster:
-        if (sl.stmt_offs is None):
-            t = sl.text[1:]
-        elif (sl.index_of_exclamation_mark is not None):
-            t = sl.stmt[sl.index_of_exclamation_mark+1:]
-        else:
-            t = None
-
-        if t is not None:
-            comment_line = "//C%s" % t.expandtabs().rstrip()
-            comment_lines.append((comment_line, t))
-
-    if not comment_lines:
-        return
-
-    # Identify boilerplate blocks
-    skip_lines = [False] * len(comment_lines)
-
-    # First pass: find definite boilerplate lines
-    boilerplate_indices = []
-    for i, (line, text) in enumerate(comment_lines):
-        if is_blas_boilerplate_comment(text):
-            skip_lines[i] = True
-            boilerplate_indices.append(i)
-
-    # If we found boilerplate, expand to include entire blocks
-    if boilerplate_indices:
-        # Find contiguous blocks of boilerplate
-        blocks = []
-        current_block = [boilerplate_indices[0]]
-
-        for i in range(1, len(boilerplate_indices)):
-            # If indices are close (within 10 lines), consider them part of same block
-            if boilerplate_indices[i] - boilerplate_indices[i-1] <= 10:
-                current_block.append(boilerplate_indices[i])
-            else:
-                blocks.append((min(current_block), max(current_block)))
-                current_block = [boilerplate_indices[i]]
-        blocks.append((min(current_block), max(current_block)))
-
-        # For each block, mark everything between start and end, plus surrounding empties
-        for start, end in blocks:
-            # Mark everything in the block
-            for i in range(start, end + 1):
-                skip_lines[i] = True
-
-            # Mark preceding empty or ".." lines
-            j = start - 1
-            while j >= 0:
-                line_text = comment_lines[j][1].strip()
-                if line_text == "" or line_text == ".." or line_text.startswith("..") and line_text.endswith(".."):
-                    skip_lines[j] = True
-                    j -= 1
-                else:
-                    break
-
-            # Mark following empty or ".." lines
-            j = end + 1
-            while j < len(comment_lines):
-                line_text = comment_lines[j][1].strip()
-                if line_text == "" or line_text == ".." or line_text.startswith("..") and line_text.endswith(".."):
-                    skip_lines[j] = True
-                    j += 1
-                else:
-                    break
-
-    # Output non-skipped lines
-    for i, (line, _) in enumerate(comment_lines):
-        if not skip_lines[i]:
-            callback(line)
+        produce_comment_given_sl(callback=callback, sl=sl)
     return
 
 
 def produce_comments(callback, ssl_list):
-    """
-    Process comments, filtering out BLAS boilerplate blocks including surrounding empty lines.
-    """
-    # First, collect all comment lines
-    comment_lines = []
-
     for ssl in ssl_list:
-        if ssl is not None:
-            for sl in ssl.source_line_cluster:
-                # Extract comment text
-                if (sl.stmt_offs is None):
-                    t = sl.text[1:]
-                elif (sl.index_of_exclamation_mark is not None):
-                    t = sl.stmt[sl.index_of_exclamation_mark+1:]
-                else:
-                    t = None
-
-                if t is not None:
-                    comment_line = "//C%s" % t.expandtabs().rstrip()
-                    comment_lines.append((comment_line, t))
-
-    # If no comments, return
-    if not comment_lines:
-        return
-
-    # Identify boilerplate blocks
-    # A boilerplate block includes:
-    # 1. Lines that match boilerplate patterns
-    # 2. Empty lines and ".." lines between boilerplate lines
-    # 3. Empty lines immediately before and after the block
-
-    skip_lines = [False] * len(comment_lines)
-
-    # First pass: find definite boilerplate lines
-    boilerplate_indices = []
-    for i, (line, text) in enumerate(comment_lines):
-        if is_blas_boilerplate_comment(text):
-            skip_lines[i] = True
-            boilerplate_indices.append(i)
-
-    # If we found boilerplate, expand to include entire blocks
-    if boilerplate_indices:
-        # Find contiguous blocks of boilerplate
-        blocks = []
-        current_block = [boilerplate_indices[0]]
-
-        for i in range(1, len(boilerplate_indices)):
-            # If indices are close (within 10 lines), consider them part of same block
-            if boilerplate_indices[i] - boilerplate_indices[i-1] <= 10:
-                current_block.append(boilerplate_indices[i])
-            else:
-                blocks.append((min(current_block), max(current_block)))
-                current_block = [boilerplate_indices[i]]
-        blocks.append((min(current_block), max(current_block)))
-
-        # For each block, mark everything between start and end, plus surrounding empties
-        for start, end in blocks:
-            # Mark everything in the block
-            for i in range(start, end + 1):
-                skip_lines[i] = True
-
-            # Mark preceding empty or ".." lines
-            j = start - 1
-            while j >= 0:
-                line_text = comment_lines[j][1].strip()
-                if line_text == "" or line_text == ".." or line_text.startswith("..") and line_text.endswith(".."):
-                    skip_lines[j] = True
-                    j -= 1
-                else:
-                    break
-
-            # Mark following empty or ".." lines
-            j = end + 1
-            while j < len(comment_lines):
-                line_text = comment_lines[j][1].strip()
-                if line_text == "" or line_text == ".." or line_text.startswith("..") and line_text.endswith(".."):
-                    skip_lines[j] = True
-                    j += 1
-                else:
-                    break
-
-    # Output non-skipped lines
-    for i, (line, _) in enumerate(comment_lines):
-        if not skip_lines[i]:
-            callback(line)
+        produce_comment_given_ssl(callback=callback, ssl=ssl)
 
 
 def flush_comments_if_non_trivial(callback, buffer):
@@ -762,7 +374,7 @@ def produce_trailing_comments(callback, fproc):
 
 class comment_manager(object):
 
-    __slots__ = ["sl_list", "index", "skip_indices", "first_comment_output"]
+    __slots__ = ["sl_list", "index"]
 
     def __init__(O, fproc):
         O.sl_list = []
@@ -772,112 +384,13 @@ class comment_manager(object):
                     O.sl_list.append(sl)
         O.sl_list.sort(key=lambda source_line: source_line.global_line_index)
         O.index = 0
-        O.first_comment_output = False
-
-        # Identify boilerplate blocks and mark indices to skip
-        O.skip_indices = set()
-        O._identify_boilerplate_blocks()
-
-    def _identify_boilerplate_blocks(O):
-        """Identify and mark BLAS boilerplate blocks and surrounding empty lines."""
-        # First pass: find definite boilerplate lines
-        boilerplate_indices = []
-        for i, sl in enumerate(O.sl_list):
-            if (sl.stmt_offs is None):
-                t = sl.text[1:]
-            elif (sl.index_of_exclamation_mark is not None):
-                t = sl.stmt[sl.index_of_exclamation_mark+1:]
-            else:
-                t = None
-
-            if t is not None and is_blas_boilerplate_comment(t):
-                boilerplate_indices.append(i)
-                O.skip_indices.add(i)
-
-        # If we found boilerplate, expand to include entire blocks
-        if boilerplate_indices:
-            # Find contiguous blocks of boilerplate
-            blocks = []
-            current_block = [boilerplate_indices[0]]
-
-            for i in range(1, len(boilerplate_indices)):
-                # If indices are close (within 10 lines), consider them part of same block
-                if boilerplate_indices[i] - boilerplate_indices[i-1] <= 10:
-                    current_block.append(boilerplate_indices[i])
-                else:
-                    blocks.append((min(current_block), max(current_block)))
-                    current_block = [boilerplate_indices[i]]
-            blocks.append((min(current_block), max(current_block)))
-
-            # For each block, mark everything between start and end, plus surrounding empties
-            for start, end in blocks:
-                # Mark everything in the block
-                for i in range(start, end + 1):
-                    O.skip_indices.add(i)
-
-                # Mark preceding empty or ".." lines
-                j = start - 1
-                while j >= 0:
-                    sl = O.sl_list[j]
-                    if (sl.stmt_offs is None):
-                        t = sl.text[1:]
-                    elif (sl.index_of_exclamation_mark is not None):
-                        t = sl.stmt[sl.index_of_exclamation_mark+1:]
-                    else:
-                        t = None
-
-                    if t is not None:
-                        t_stripped = t.strip()
-                        if t_stripped == "" or t_stripped == ".." or (t_stripped.startswith("..") and t_stripped.endswith("..")):
-                            O.skip_indices.add(j)
-                            j -= 1
-                        else:
-                            break
-                    else:
-                        break
-
-                # Mark following empty or ".." lines
-                j = end + 1
-                while j < len(O.sl_list):
-                    sl = O.sl_list[j]
-                    if (sl.stmt_offs is None):
-                        t = sl.text[1:]
-                    elif (sl.index_of_exclamation_mark is not None):
-                        t = sl.stmt[sl.index_of_exclamation_mark+1:]
-                    else:
-                        t = None
-
-                    if t is not None:
-                        t_stripped = t.strip()
-                        if t_stripped == "" or t_stripped == ".." or (t_stripped.startswith("..") and t_stripped.endswith("..")):
-                            O.skip_indices.add(j)
-                            j += 1
-                        else:
-                            break
-                    else:
-                        break
 
     def produce(O, callback):
-        if O.index not in O.skip_indices:
-            produce_comment_given_sl(callback=callback, sl=O.sl_list[O.index])
+        produce_comment_given_sl(callback=callback, sl=O.sl_list[O.index])
         O.index += 1
 
     def insert_before(O, executable_info, callback):
         i = executable_info.ssl.source_line_cluster[-1].global_line_index
-        # Add leading empty "//" line before the first comment block
-        if (not O.first_comment_output and O.index != len(O.sl_list)):
-            # Check if there are any non-skipped comments to output
-            has_comment_to_output = False
-            for idx in range(O.index, len(O.sl_list)):
-                j = O.sl_list[idx].global_line_index
-                if (j > i):
-                    break
-                if idx not in O.skip_indices:
-                    has_comment_to_output = True
-                    break
-            if has_comment_to_output:
-                callback("//")
-                O.first_comment_output = True
         while (O.index != len(O.sl_list)):
             j = O.sl_list[O.index].global_line_index
             if (j > i):
@@ -1041,14 +554,9 @@ def called_fproc_needs_cmn(conv_info, called_name):
         called_names = [called_name]
     for called_name in called_names:
         sub_fproc = conv_info.fprocs_by_name.get(called_name)
-        if sub_fproc is None:
-            continue
-        # Ensure conv_hook is always initialized
-        ch = getattr(sub_fproc, "conv_hook", None)
-        if ch is None:
-            ch = conv_hook_info()
-            sub_fproc.conv_hook = ch
-        if sub_fproc.needs_cmn and not ch.ignore_common_and_save:
+        if (sub_fproc is not None
+                and sub_fproc.needs_cmn
+                and not sub_fproc.conv_hook.ignore_common_and_save):
             return True
     return False
 
@@ -1081,199 +589,6 @@ def convert_power(conv_info, tokens):
         conv_info=conv_info, tokens=tokens, commas=True) + ")"
 
 
-def _is_simple_lvalue(expr: str) -> bool:
-    """Return True if expr is a simple variable or an array element.
-
-    Examples considered simple:
-        A
-        A[i]
-        A[i][j]
-        A[(i-1) + (j-1)*lda]
-    """
-    expr = expr.strip()
-    # NAME or NAME[...] or NAME[...]...
-    # This is intentionally permissive: any NAME followed by bracketed expressions.
-    return re.match(r'^[A-Za-z_][A-Za-z0-9_]*(\[[^\]]*\])*$', expr) is not None
-
-
-def _real_repl(arg: str) -> str:
-    """Replacement for DBLE/REAL: choose arg.real() or (arg).real()."""
-    arg = arg.strip()
-    if _is_simple_lvalue(arg):
-        return f"{arg}.real()"
-    return f"({arg}).real()"
-
-
-def _imag_repl(arg: str) -> str:
-    """Replacement for AIMAG/IMAG: always (arg).imag()."""
-    arg = arg.strip()
-    return f"({arg}).imag()"
-
-
-def _conj_repl(arg: str) -> str:
-    """Replacement for CONJG/CONJ: std::conj(arg)."""
-    arg = arg.strip()
-    return f"conj({arg})"
-
-
-def _rewrite_unary_intrinsic(text: str, func_name: str, repl_func):
-    """Rewrite occurrences of func_name(arg) using repl_func(arg).
-
-    This handles nested parentheses in arg by scanning until matching ')'.
-    """
-    out = []
-    i = 0
-    n = len(text)
-    fname_len = len(func_name)
-
-    while i < n:
-        j = text.find(func_name, i)
-        if j < 0:
-            out.append(text[i:])
-            break
-
-        out.append(text[i:j])
-
-        # Find '(' after function name
-        k = text.find("(", j + fname_len)
-        if k < 0:
-            # Malformed: stop rewriting
-            out.append(text[j:])
-            break
-
-        # Scan to matching ')'
-        depth = 0
-        p = k
-        while p < n:
-            c = text[p]
-            if c == "(":
-                depth += 1
-            elif c == ")":
-                depth -= 1
-                if depth == 0:
-                    break
-            p += 1
-        if depth != 0:
-            # Unbalanced; give up
-            out.append(text[j:])
-            break
-
-        # Extract argument
-        arg = text[k + 1:p]
-        out.append(repl_func(arg))
-
-        i = p + 1
-
-    return "".join(out)
-
-
-def _rewrite_max_min_calls(text: str) -> str:
-    """Rewrite fem::max/min calls: drop fem:: and cast integer literal first args.
-
-    Examples:
-      fem::max(1, m)   -> max((INTEGER)1, m)
-      fem::min(-2, n)  -> min((INTEGER)-2, n)
-    """
-    # First drop fem:: namespace for max/min.
-    # This is cheap even if not present.
-    text = text.replace("fem::max", "max")
-    text = text.replace("fem::min", "min")
-
-    # Then cast integer literal first arguments: max(1, x) -> max((INTEGER)1, x)
-    # We handle simple +/- integer literals.
-    pattern = r'\b(max|min)\(\s*([+-]?[0-9]+)\s*,'
-
-    def repl(m):
-        func = m.group(1)
-        lit = m.group(2)
-        return f"{func}((INTEGER){lit}, "
-
-    return re.sub(pattern, repl, text)
-
-
-_single_char_string_assign_re = re.compile(
-    r'(\b[A-Za-z_][A-Za-z0-9_]*\b)\s*=\s*"([^"\\])"\s*;'
-)
-_single_char_string_eq_re = re.compile(
-    r'(\b[A-Za-z_][A-Za-z0-9_]*\b)\s*==\s*"([^"\\])"'
-)
-_single_char_string_ne_re = re.compile(
-    r'(\b[A-Za-z_][A-Za-z0-9_]*\b)\s*!=\s*"([^"\\])"'
-)
-
-
-def rewrite_single_char_string_literals(line: str) -> str:
-    """Rewrite x = "A"; / x == "A" / x != "A" into char literals x = 'A'; etc."""
-    line = _single_char_string_assign_re.sub(r"\1 = '\2';", line)
-    line = _single_char_string_eq_re.sub(r"\1 == '\2'", line)
-    line = _single_char_string_ne_re.sub(r"\1 != '\2'", line)
-    return line
-
-
-def rewrite_intrinsics(text: str) -> str:
-    """Rewrite fem:: intrinsics to C++-friendly forms."""
-
-    # --------------------------------------------------------------
-    # 1) Unary intrinsics that need smart handling of parentheses
-    # --------------------------------------------------------------
-    unary_intrinsics = [
-        ("fem::dble",   _real_repl),
-        ("fem::real",   _real_repl),
-        ("fem::aimag",  _imag_repl),
-        ("fem::imag",   _imag_repl),
-        ("fem::dimag",  _imag_repl),
-        ("fem::conjg",  _conj_repl),
-        ("fem::conj",   _conj_repl),
-        ("fem::dconjg", _conj_repl),
-    ]
-
-    for name, repl_fun in unary_intrinsics:
-        if name in text:
-            text = _rewrite_unary_intrinsic(text, name, repl_fun)
-
-    # --------------------------------------------------------------
-    # 2) Simple name substitutions
-    #    fem::foo(...) -> foo(...) or a common implementation
-    # --------------------------------------------------------------
-    simple_map = {
-        # integer / real helpers
-        "fem::pow2":  "pow2",
-        "fem::mod":   "mod",
-        "fem::fint": "castINTEGER",
-
-        # elementary math
-        "fem::cos":   "cos",
-        "fem::sin":   "sin",
-        "fem::sqrt":  "sqrt",
-        "fem::atan2": "atan2",
-        "fem::dsqrt": "sqrt",
-
-        # absolute value
-        "fem::dabs":  "abs",
-        "fem::abs":   "abs",
-        "fem::cdabs": "abs",
-
-        # complex constructor
-        "fem::dcmplx": "COMPLEX",
-
-        # sign / dsign -> common sign(a, b) helper
-        # (C++ side must provide sign(a, b) implementation)
-        "fem::sign":  "sign",
-        "fem::dsign": "sign",
-    }
-
-    for src, dst in simple_map.items():
-        if src in text:
-            text = text.replace(src, dst)
-
-    # --------------------------------------------------------------
-    # 3) MAX / MIN need special handling for integer literals, etc.
-    # --------------------------------------------------------------
-    text = _rewrite_max_min_calls(text)
-
-    return text
-
-
 def convert_tokens(conv_info, tokens, commas=False, had_str_concat=None):
     result = []
     rapp = result.append
@@ -1294,99 +609,18 @@ def convert_tokens(conv_info, tokens, commas=False, had_str_concat=None):
                     commas=False,
                     had_str_concat=had_str_concat))
         elif (tok.is_parentheses()):
-            # Detect array reference: a(i) or a(i,j)
-            is_array_ref = False
-            fdecl = None
-            if (prev_tok is not None
-                    and prev_tok.is_identifier()
-                    and conv_info.fproc is not None):
-                try:
-                    fdecl = conv_info.fproc.get_fdecl(id_tok=prev_tok)
-                except Exception:
-                    fdecl = None
-
-            if (fdecl is not None
-                    and getattr(fdecl, "dim_tokens", None) is not None
-                    and not fdecl.is_user_defined_callable()):
-                # Non-callable with dimensions -> array
-                is_array_ref = True
-            if is_array_ref:
-                # Convert a(i) / a(i,j) into flat C indexing
-                # a(i)   -> a[i_expr - 1]       (simple) or a[(i_expr) - 1] (compound)
-                # a(i,j) -> a[(row_term) + (j_expr - 1)*ld<name>]
-                idx_str = convert_tokens(
-                    conv_info=conv_info,
-                    tokens=tok.value,
-                    commas=True,
-                    had_str_concat=had_str_concat)
-                parts = [p.strip()
-                         for p in idx_str.split(",") if p.strip() != ""]
-
-                if len(parts) == 1:
-                    # 1D array: a(i) -> a[(i_expr) - 1] or a[i_expr - 1] for simple identifiers
-                    i_expr = parts[0]
-                    # If index is a simple identifier or integer literal, avoid extra parentheses.
-                    if re.match(r"^[A-Za-z_][A-Za-z0-9_]*$", i_expr) or re.match(r"^[0-9]+$", i_expr):
-                        index_expr = f"{i_expr} - 1"
-                    else:
-                        # For compound expressions, keep parentheses: (i_expr) - 1
-                        index_expr = f"({i_expr}) - 1"
-                    rapp("[" + index_expr + "]")
-                elif len(parts) == 2:
-                    # 2D array: a(i,j) -> a[(row_term) + (col_term)*ld<name>]
-                    i_expr, j_expr = parts
-                    ldname = "ld" + prev_tok.value.lower()
-
-                    simple_name = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
-                    simple_int = re.compile(r"^[0-9]+$")
-
-                    # Row index term
-                    # i, 1, etc. -> "i - 1"
-                    # more complex -> "(i_expr) - 1"
-                    if simple_name.match(i_expr) or simple_int.match(i_expr):
-                        i_term = f"{i_expr} - 1"
-                    else:
-                        i_term = f"({i_expr}) - 1"
-
-                    # Column index term
-                    # j       -> "(j - 1)"
-                    # j+kun   -> "((j + kun) - 1)"
-                    if simple_name.match(j_expr) or simple_int.match(j_expr):
-                        j_term = f"({j_expr} - 1)"
-                    else:
-                        j_term = f"(({j_expr}) - 1)"
-
-                    index_expr = f"({i_term}) + {j_term}*{ldname}"
-                    rapp("[" + index_expr + "]")
+            if (cmn_needs_to_be_inserted(conv_info=conv_info, prev_tok=prev_tok)):
+                if (len(tok.value) != 0) and (len(tok.value[0].value) != 0):
+                    op = "(cmn, "
                 else:
-                    # Fallback: give up and treat like a normal call/parentheses
-                    if (cmn_needs_to_be_inserted(
-                            conv_info=conv_info, prev_tok=prev_tok)):
-                        if (len(tok.value) != 0) and (len(tok.value[0].value) != 0):
-                            op = "(cmn, "
-                        else:
-                            op = "(cmn"
-                    else:
-                        op = "("
-                    rapp(op + convert_tokens(
-                        conv_info=conv_info,
-                        tokens=tok.value,
-                        commas=True,
-                        had_str_concat=had_str_concat) + ")")
+                    op = "(cmn"
             else:
-                # Normal function call or parenthesized expression
-                if (cmn_needs_to_be_inserted(conv_info=conv_info, prev_tok=prev_tok)):
-                    if (len(tok.value) != 0) and (len(tok.value[0].value) != 0):
-                        op = "(cmn, "
-                    else:
-                        op = "(cmn"
-                else:
-                    op = "("
-                rapp(op + convert_tokens(
-                    conv_info=conv_info,
-                    tokens=tok.value,
-                    commas=True,
-                    had_str_concat=had_str_concat) + ")")
+                op = "("
+            rapp(op + convert_tokens(
+                conv_info=conv_info,
+                tokens=tok.value,
+                commas=True,
+                had_str_concat=had_str_concat) + ")")
         elif (tok.is_implied_do()):
             raise AssertionError
         elif (tok.is_power()):
@@ -1398,17 +632,9 @@ def convert_tokens(conv_info, tokens, commas=False, had_str_concat=None):
                 tok=tok,
                 had_str_concat=had_str_concat))
         prev_tok = tok
-
-    # Build base string
     if (commas):
-        s = ", ".join(result)
-    else:
-        s = "".join(result)
-
-    # Rewrite intrinsic calls such as fem::dble(), fem::conjg(), etc.
-    s = rewrite_intrinsics(s)
-
-    return s
+        return ", ".join(result)
+    return "".join(result)
 
 
 def convert_to_int_literal(tokens):
@@ -1430,24 +656,14 @@ def convert_data_type(conv_info, fdecl, crhs):
         data_type_code = fdecl.data_type.value
     size_tokens = fdecl.size_tokens
     dim_tokens = fdecl.dim_tokens
-
-    if data_type_code == "character":
-        if size_tokens is None:
+    if (data_type_code == "character"):
+        if (size_tokens is None):
             csize = "1"
         else:
             csize = convert_tokens(conv_info=conv_info, tokens=size_tokens)
-
-        # CHARACTER*1 scalar → plain char (no implicit initialization)
-        if csize.strip() == "1" and dim_tokens is None:
-            ctype = "char"
-            # Do not set crhs here if there is no explicit initializer.
-            # If the Fortran code had "CHARACTER*1 normin /'N'/", that will
-            # already be reflected in crhs before this point.
-        else:
-            ctype = f"fem::str<{csize}>"
-            if crhs is None:
-                crhs = "0"
-
+        ctype = "fem::str<%s>" % csize
+        if (crhs is None):
+            crhs = "fem::char0"
     else:
         def convert_to_ctype_with_size(ctype):
             if (size_tokens is None):
@@ -1472,21 +688,21 @@ def convert_data_type(conv_info, fdecl, crhs):
             if (size_tokens is None):
                 ctype = "std::complex<float>"
                 if (crhs is None):
-                    crhs = "0.0"
+                    crhs = "fem::float0"
             else:
                 sz = convert_to_int_literal(tokens=size_tokens)
                 if (sz == 8):
                     ctype = "std::complex<float>"
                     if (crhs is None):
-                        crhs = "0.0"
+                        crhs = "fem::float0"
                 elif (sz == 16):
                     ctype = "std::complex<double>"
                     if (crhs is None):
-                        crhs = "0.0"
+                        crhs = "fem::double0"
                 elif (sz == 32):
                     ctype = "std::complex<long double>"
                     if (crhs is None):
-                        crhs = "0.0"
+                        crhs = "fem::long_double0"
                 else:
                     size_tokens[0].raise_not_supported()
         elif (data_type_code == "doublecomplex"):
@@ -1494,7 +710,7 @@ def convert_data_type(conv_info, fdecl, crhs):
                 size_tokens[0].raise_not_supported()
             ctype = "std::complex<double>"
             if (crhs is None):
-                crhs = "0.0"
+                crhs = "fem::double0"
         else:
             raise RuntimeError(
                 "Not implemented: data_type_code = %s" % data_type_code)
@@ -1569,7 +785,7 @@ def convert_data_type_and_dims(conv_info, fdecl, crhs, force_arr=False):
             vals = conv_info.fproc.eval_dimensions_simple(
                 dim_tokens=dt, allow_power=False)
             if (vals.count(None) == 0):
-                sz = math.prod(vals)
+                sz = product(vals)
                 if (sz <= abs(conv_info.arr_nd_size_max)):
                     from fable.read import dimensions_are_simple
                     if (dimensions_are_simple(dim_tokens=dt)):
@@ -1607,25 +823,6 @@ def ad_hoc_change_arr_to_arr_ref(ctype, cconst=""):
 
 
 def zero_shortcut_if_possible(ctype):
-    # Convert to simple zero values for basic types
-    if ctype == "INTEGER" or ctype == "int":
-        return "0"
-    elif ctype == "REAL" or ctype == "double":
-        return "0.0"
-    elif ctype == "float":
-        return "0.0"
-    elif ctype == "bool" or ctype == "LOGICAL":
-        return "false"
-    elif ctype == "char":
-        return "0"
-    elif ctype.startswith("std::complex<"):
-        # Complex types in fem:: world; keep old behavior.
-        return "0.0"
-    elif ctype == "COMPLEX":
-        # MPLAPACK scalar COMPLEX: explicit complex zero
-        return "COMPLEX(0.0, 0.0)"
-
-    # Original behavior for fem:: types
     if (ctype.startswith("fem::")):
         if (ctype.endswith(">")):
             s = " "
@@ -1647,10 +844,13 @@ def convert_declaration(rapp, conv_info, fdecl, crhs, const):
             if (const):
                 return "const "
             return ""
-        # Use MPLAPACK-style scalar types (INTEGER, REAL, etc.)
-        mplapack_ctype = convert_to_mplapack_type(ctype)
-        rapp("%s%s %s = %s;" % (const_qualifier(), mplapack_ctype, vname, crhs))
+        rapp("%s%s %s = %s;" % (const_qualifier(), ctype, vname, crhs))
         return False
+    if (cdims is Auto):
+        rapp("%s %s(%s);" % (ctype, vname, cfill0))
+    else:
+        rapp("%s %s(%s, %s);" % (ctype, vname, cdims, cfill0))
+    return True
 
 
 class scope(object):
@@ -1795,23 +995,11 @@ def convert_to_fem_do(conv_info, parent_scope, i_tok, fls_tokens):
     l = convert_tokens(conv_info=conv_info, tokens=fls_tokens[1].value)
     if (len(fls_tokens) == 3):
         s = convert_tokens(conv_info=conv_info, tokens=fls_tokens[2].value)
-        if (s.lstrip('+-').isdigit()):
-            if int(s) >= 0:
-                return parent_scope.open_nested_scope(
-                    opening_text=["for(%s=%s; %s<=%s; %s=%s+%s) {" % (i, f, i, l, i, i, s)])
-            else:
-                return parent_scope.open_nested_scope(
-                    opening_text=["for(%s=%s; %s>=%s; %s=%s%s) {" % (i, f, i, l, i, i, s)])
-        else:
-            if '-' in s:
-                return parent_scope.open_nested_scope(
-                    opening_text=["for(%s=%s; %s>=%s; %s=%s%s) {" % (i, f, i, l, i, i, s)])
-            else:
-                return parent_scope.open_nested_scope(
-                    opening_text=["for(%s=%s; %s<=%s; %s=%s+%s) {" % (i, f, i, l, i, i, s)])
+        return parent_scope.open_nested_scope(
+            opening_text=["FEM_DOSTEP(%s, %s, %s, %s) {" % (i, f, l, s)])
     if (conv_info.fem_do_safe):
         return parent_scope.open_nested_scope(
-            opening_text=["for(%s=%s; %s<=%s; %s=%s+1) {" % (i, f, i, l, i, i)])
+            opening_text=["FEM_DO_SAFE(%s, %s, %s) {" % (i, f, l)])
     if (is_simple_do_last(tokens=fls_tokens[1].value)):
         return parent_scope.open_nested_scope(
             opening_text=["FEM_DO(%s, %s, %s) {" % (i, f, l)])
@@ -3074,20 +2262,6 @@ def convert_executable(
                         cmn = ""
                     called = conv_info.vmapped_callable(
                         identifier=ei.subroutine_name.value)
-                    # Rename BLAS/LAPACK helper calls (case-insensitive)
-                    simple_name = called.split("::")[-1]
-                    lower_name = simple_name.lower()
-                    prefix = called[:-len(simple_name)]
-                    if lower_name == "lsame":
-                        called = prefix + "Mlsame"
-                    elif lower_name == "xerbla":
-                        called = prefix + "Mxerbla"
-                    else:
-                        # General MPLAPACK renaming for BLAS/LAPACK-style routines
-                        mpl_name = convert_function_name_to_mplapack(
-                            simple_name)
-                        called = prefix + mpl_name
-
                 if (ei.arg_token is None):
                     curr_scope.append("%s(%s);" % (called, cmn))
                 else:
@@ -3217,8 +2391,8 @@ def convert_to_cpp_function(
         if (fdecl.data_type is not None
                 and fdecl.data_type.value == "character"):
             if (fdecl.dim_tokens is None):
-                # MPLAPACK-style: scalar CHARACTER arguments as const char*
-                cargs_append("const char *", arg_name)
+                cargs_append("str_%sref" % cconst(
+                    fdecl=fdecl, short=True), arg_name)
             else:
                 if (len(fdecl.dim_tokens) == 1):
                     cdim = ""
@@ -3230,14 +2404,21 @@ def convert_to_cpp_function(
             ctype = convert_data_type(
                 conv_info=conv_info, fdecl=fdecl, crhs=None)[0]
             if (fdecl.dim_tokens is None):
-                # Convert to MPLAPACK style: remove reference, convert type
-                mplapack_type = convert_to_mplapack_type(ctype)
-                cargs_append("%s const &" % mplapack_type,
-                             prepend_identifier_if_necessary(arg_name))
+                cargs_append("%s%s&" % (
+                    ctype,
+                    cconst(fdecl=fdecl, short=False)),
+                    prepend_identifier_if_necessary(arg_name))
             else:
-                # Convert to MPLAPACK style: use pointer instead of arr_ref
-                mplapack_type = convert_to_mplapack_type(ctype)
-                cargs_append("%s *" % mplapack_type, arg_name)
+                if (len(fdecl.dim_tokens) == 1):
+                    t = ctype
+                else:
+                    t = "%s, %d" % (ctype, len(fdecl.dim_tokens))
+                if (t.endswith(">")):
+                    templs = " "
+                else:
+                    templs = ""
+                cargs_append("arr_%sref<%s%s>" % (
+                    cconst(fdecl=fdecl, short=True), t, templs), arg_name)
         else:
             passed = conv_info.fproc.externals_passed_by_arg_identifier.get(
                 fdecl.id_tok.value)
@@ -3249,16 +2430,13 @@ def convert_to_cpp_function(
                 ctype=ctype+"_function_pointer",
                 name=arg_name)
         if (fdecl.dim_tokens is not None and fdecl.use_count != 0):
-            # args_fdecl_with_dim.append(fdecl)
-            pass
+            args_fdecl_with_dim.append(fdecl)
     cdecl = "void"
     if (conv_info.fproc.name is not None):
         fdecl = conv_info.fproc.get_fdecl(id_tok=conv_info.fproc.name)
         if (fdecl.data_type is not None):
             cdecl = convert_data_type(
                 conv_info=conv_info, fdecl=fdecl, crhs=None)[0]
-            # Convert return type to MPLAPACK style
-            cdecl = convert_to_mplapack_type(cdecl)
             conv_info.vmap[conv_info.fproc.name.value] = "return_value"
     if (declaration_only):
         cpp_callback("")
@@ -3267,7 +2445,7 @@ def convert_to_cpp_function(
             cpp_callback("inline")
         cpp_callback("%s %s(%s);" % (
             cdecl,
-            convert_function_name_to_mplapack(conv_info.fproc.name.value),
+            prepend_identifier_if_necessary(conv_info.fproc.name.value),
             ", ".join(fptr)))
         return
     if (conv_info.fproc.is_passed_as_external):
@@ -3278,7 +2456,7 @@ def convert_to_cpp_function(
         cb("")
         cb("typedef %s (*%s_function_pointer)(%s);" % (
             cdecl,
-            convert_function_name_to_mplapack(conv_info.fproc.name.value),
+            prepend_identifier_if_necessary(conv_info.fproc.name.value),
             ", ".join(fptr)))
     for callback in [hpp_callback, cpp_callback]:
         if (callback is None):
@@ -3295,7 +2473,7 @@ def convert_to_cpp_function(
             last = ";"
         else:
             last = ""
-        cname = convert_function_name_to_mplapack(conv_info.fproc.name.value)
+        cname = prepend_identifier_if_necessary(conv_info.fproc.name.value)
         if (len(cargs) == 0):
             callback(cname+"()" + last)
         else:
@@ -3499,6 +2677,7 @@ def generate_common_report(
         member_registry,
         variant_due_to_equivalence_common_names,
         stringio):
+    from six.moves import StringIO
     variant_common_names = set()
     if (stringio is None):
         report = StringIO()
@@ -3641,19 +2820,11 @@ def convert_commons(
     common_equiv_tok_seqs = {}
     common_ccode_registry = {}
     member_registry = {}
-
     variant_common_names = set()
     bottom_up_filtered = []
     for fproc in topological_fprocs.bottom_up_list:
-        # Ensure conv_hook exists for all fprocs seen here
-        ch = getattr(fproc, "conv_hook", None)
-        if ch is None:
-            ch = conv_hook_info()
-            ch.ignore_common_and_save = False
-            fproc.conv_hook = ch
-        if not ch.ignore_common_and_save:
+        if (not fproc.conv_hook.ignore_common_and_save):
             bottom_up_filtered.append(fproc)
-
     struct_commons_need_dynamic_parameters = set()
     for fproc in bottom_up_filtered:
         fproc.conv_hook.needs_variant_bind = False
@@ -3759,8 +2930,8 @@ def convert_commons(
     if (len(commons_defined_already) == 0
             and len(save_struct_names) == 0
             and dynamic_parameters is None):
-        # Disabled: callback("")
-        # Disabled: callback("using fem::common;")
+        callback("")
+        callback("using fem::common;")
         return
     callback("")
     callback("struct common :")
@@ -3801,46 +2972,34 @@ def convert_commons(
         save_struct_buffers=save_struct_buffers)
 
 
-include_fem_hpp = ""
+include_fem_hpp = \
+    "#include <fem.hpp> // Fortran EMulation library of fable module"
 
 
 def include_guard(callback, namespace, suffix):
-    if namespace:
-        s = namespace.upper().replace("::", "_") + suffix
-    else:
-        s = "GUARD" + suffix
+    s = namespace.upper().replace("::", "_") + suffix
     callback("#ifndef %s" % s)
     callback("#define %s" % s)
     callback("")
 
 
 def open_namespace(callback, namespace, using_namespace_major_types=True):
-    # Disabled: no namespace wrapping
-    # ns = namespace.split("::")
-    # for component in ns:
-    #     callback("namespace %s {" % component)
-    # if (using_namespace_major_types):
-    #     callback("""
-    # using namespace fem::major_types;""")
-    if namespace:
-        ns = namespace.split("::")
-    else:
-        ns = []
+    ns = namespace.split("::")
+    for component in ns:
+        callback("namespace %s {" % component)
+    if (using_namespace_major_types):
+        callback("""
+using namespace fem::major_types;""")
     return ns
 
 
 def close_namespace(callback, namespace, hpp_guard):
-    # Disabled: no namespace wrapping
-    # callback("")
-    # ns = namespace.split("::")
-    # callback("%s // namespace %s" % ("}"*len(ns), namespace))
+    callback("")
+    ns = namespace.split("::")
+    callback("%s // namespace %s" % ("}"*len(ns), namespace))
     if (hpp_guard):
         callback("")
         callback("#endif // GUARD")
-    if namespace:
-        ns = namespace.split("::")
-    else:
-        ns = []
     return ns
 
 
@@ -3922,229 +3081,6 @@ def get_missing_external_return_type(fdecls):
 default_arr_nd_size_max = 256
 
 
-def _postprocess_mplapack_labels_and_comments(lines):
-    """MPLAPACK-specific postprocessing for labels, comments, and trivial zero offsets."""
-    import re
-
-    new_lines = []
-    for line in lines:
-        # 1) Fix Mxerbla("XXXX ", info) labels using the MPLAPACK name map
-        m = re.search(r'Mxerbla\("([^"]+)"', line)
-        if m:
-            label = m.group(1)      # e.g. "ZTRSV "
-            core = label.strip()    # "ZTRSV"
-            lower = core.lower()    # "ztrsv"
-            mapped = _MPLAPACK_NAME_MAP.get(lower)
-            if mapped is None:
-                mapped = _mplapack_default_name(core)
-            # preserve trailing spaces
-            suffix = label[len(core):]
-            repl = f'Mxerbla("{mapped}{suffix}"'
-            line = line[:m.start()] + repl + line[m.end():]
-
-        # 2) Fix "//     End of XXXX" comments using the MPLAPACK name map
-        m = re.search(r'(End of )([A-Za-z][A-Za-z0-9_]*)', line)
-        if m:
-            core = m.group(2)
-            lower = core.lower()
-            mapped = _MPLAPACK_NAME_MAP.get(lower)
-            if mapped is None:
-                mapped = _mplapack_default_name(core)
-            line = line[:m.start(2)] + mapped + line[m.end(2):]
-
-        # 3) Remove trivial zero row offset: (1 - 1) + ...
-        #    Example: a[(1 - 1) + (j - 1) * lda] -> a[(j - 1) * lda]
-        line = re.sub(r'\(\s*1\s*-\s*1\s*\)\s*\+\s*', '', line)
-
-        # 4) Remove trivial zero column offset: + (1 - 1) * lda
-        #    Example: a[(i - 1) + (1 - 1) * lda] -> a[(i - 1)]
-        line = re.sub(
-            r'\+\s*\(\s*1\s*-\s*1\s*\)\s*\*\s*[A-Za-z_][A-Za-z0-9_]*',
-            '',
-            line,
-        )
-        #    Example: a[(1 - 1) * lda + (i - 1)] -> a[(i - 1)]
-        line = re.sub(
-            r'\(\s*1\s*-\s*1\s*\)\s*\*\s*[A-Za-z_][A-Za-z0-9_]*\s*\+\s*',
-            '',
-            line,
-        )
-
-        # NOTE: Do not touch general index expressions here.
-        # 1-based to 0-based conversion must be handled in the main converter logic.
-
-        new_lines.append(line)
-    return new_lines
-
-
-def _normalize_fortran_comment_prefix(lines):
-    """Normalize Fortran-derived comments: //C... -> // ..."""
-    normalized = []
-    for line in lines:
-        stripped = line.lstrip()
-        if stripped.startswith("//C"):
-            # Leading whitespace before //C
-            leading = line[:len(line) - len(stripped)]
-            # Drop the 'C'
-            rest = stripped[3:]  # after "//C"
-            # Ensure there is exactly one space after //
-            # rest may be "" or like "     foo"
-            rest = rest.lstrip()
-            if rest:
-                new_line = f"{leading}// {rest}"
-            else:
-                new_line = f"{leading}//"
-            normalized.append(new_line)
-        else:
-            normalized.append(line)
-    return normalized
-
-
-def _postprocess_complex_initializers(lines):
-    """Normalize COMPLEX(a, b) initializers.
-
-    Rewrite:
-      COMPLEX z = (a, b);        -> COMPLEX z = COMPLEX(a, b);
-      const COMPLEX z = (a, b);  -> const COMPLEX z = COMPLEX(a, b);
-    """
-    pat_var = re.compile(
-        r'^(\s*COMPLEX\s+[A-Za-z_][A-Za-z0-9_]*\s*=\s*)\(\s*([^,]+?)\s*,\s*([^,]+?)\s*\);'
-    )
-    pat_const = re.compile(
-        r'^(\s*const\s+COMPLEX\s+[A-Za-z_][A-Za-z0-9_]*\s*=\s*)\(\s*([^,]+?)\s*,\s*([^,]+?)\s*\);'
-    )
-    out = []
-    for line in lines:
-        line = pat_const.sub(r'\1COMPLEX(\2, \3);', line)
-        line = pat_var.sub(r'\1COMPLEX(\2, \3);', line)
-        out.append(line)
-    return out
-
-
-def _postprocess_complex_constant_assignments(lines):
-    """Rewrite assignments of real literal pairs (a, b) into COMPLEX(a, b).
-
-    Example:
-      return_value = (0.0, 0.0);    ->  return_value = COMPLEX(0.0, 0.0);
-      return_value = (1.0, 2.377);  ->  return_value = COMPLEX(1.0, 2.377);
-    """
-    # Real literal: optional sign, digits with optional decimal point, optional exponent
-    real_lit = r'[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[Ee][+-]?\d+)?'
-    pat = re.compile(
-        rf'(\=\s*)\(\s*({real_lit})\s*,\s*({real_lit})\s*\);'
-    )
-    out = []
-    for line in lines:
-        line = pat.sub(r'\1COMPLEX(\2, \3);', line)
-        out.append(line)
-    return out
-
-
-def _postprocess_intrinsic_aliases(lines):
-    """Final cleanup for intrinsic helper names.
-
-    Ensure that fem::abs, fem::dabs, fem::cdabs, fem::pow2
-    are printed without the fem:: namespace.
-    """
-    out = []
-    for line in lines:
-        # abs family
-        line = line.replace("fem::cdabs", "abs")
-        line = line.replace("fem::dabs", "abs")
-        line = line.replace("fem::abs", "abs")
-
-        # pow2 helper
-        line = line.replace("fem::pow2", "pow2")
-
-        out.append(line)
-    return out
-
-
-def _postprocess_complex_zero_initializers(lines):
-    """Rewrite COMPLEX zero initializers using COMPLEX(0.0, 0.0).
-
-    Examples:
-      COMPLEX ztemp = (0.0, 0.0);       -> COMPLEX ztemp = COMPLEX(0.0, 0.0);
-      const COMPLEX zero = (0.0, 0.0);  -> const COMPLEX zero = COMPLEX(0.0, 0.0);
-    """
-    pat_var = re.compile(
-        r'^(\s*COMPLEX\s+[A-Za-z_][A-Za-z0-9_]*\s*=\s*)\(\s*0\.0\s*,\s*0\.0\s*\);'
-    )
-    pat_const = re.compile(
-        r'^(\s*const\s+COMPLEX\s+[A-Za-z_][A-Za-z0-9_]*\s*=\s*)\(\s*0\.0\s*,\s*0\.0\s*\);'
-    )
-    out = []
-    for line in lines:
-        line = pat_var.sub(r'\1COMPLEX(0.0, 0.0);', line)
-        line = pat_const.sub(r'\1COMPLEX(0.0, 0.0);', line)
-        out.append(line)
-    return out
-
-
-def _fix_fortran_externals(src):
-    """Downgrade simple Fortran 90 EXTERNAL declarations to F77 style.
-
-    Examples:
-      EXTERNAL :: XERBLA, DHGEQZ
-        -> EXTERNAL XERBLA, DHGEQZ
-      DOUBLE PRECISION, EXTERNAL :: DLAMCH, DLANHS
-        -> DOUBLE PRECISION DLAMCH, DLANHS
-    """
-    import re
-    lines = src.splitlines(True)
-    out = []
-    for line in lines:
-        # 1) EXTERNAL :: ...  ->  EXTERNAL ...
-        line2 = re.sub(r'(?i)\bEXTERNAL\s*::', 'EXTERNAL', line)
-
-        # 2) <type>, EXTERNAL ...  ->  <type> ...
-        #    Handles typical LAPACK patterns:
-        #      DOUBLE PRECISION, EXTERNAL :: DLAMCH
-        #      LOGICAL, EXTERNAL :: LSAME
-        #      INTEGER, EXTERNAL :: ILAENV
-        line2 = re.sub(
-            r'(?i)(\bDOUBLE\s+PRECISION|\bINTEGER|\bLOGICAL|\bREAL|\bCOMPLEX|\bCHARACTER)\s*,\s*EXTERNAL\b',
-            r'\1',
-            line2,
-        )
-        out.append(line2)
-    return ''.join(out)
-
-
-def _preprocess_fortran_files(file_names):
-    """Return (patched_file_names, temp_files) for FABLE parsing.
-
-    Each input file is scanned and, if it contains F90-style EXTERNAL
-    declarations, a temporary patched copy is written and used instead.
-    """
-    patched = []
-    temp_files = []
-    for fn in (file_names or []):
-        try:
-            with open(fn, "r") as f:
-                src = f.read()
-        except OSError:
-            # If we can't read it, fall back to the original name.
-            patched.append(fn)
-            continue
-
-        new_src = _fix_fortran_externals(src)
-        if new_src == src:
-            # No change needed.
-            patched.append(fn)
-            continue
-
-        # Write a temporary patched copy.
-        fd, tmp = tempfile.mkstemp(prefix="fable_tmp_", suffix=".f")
-        os.close(fd)
-        with open(tmp, "w") as g:
-            g.write(new_src)
-        patched.append(tmp)
-        temp_files.append(tmp)
-
-    return patched, temp_files
-
-
 def process(
         file_names=None,
         all_fprocs=None,
@@ -4178,31 +3114,14 @@ def process(
         debug=False):
     assert [file_names, all_fprocs].count(None) == 1
     if (namespace is None or namespace == "please_specify"):
-        namespace = ""  # Disabled: was "placeholder_please_replace"
-
+        namespace = "placeholder_please_replace"
     import fable.read
-
-    # Keep a copy of the original file names for output paths.
-    orig_file_names = file_names
-    temp_files = []
-
     if (all_fprocs is None):
-        patched_file_names = None
-        if file_names is not None:
-            patched_file_names, temp_files = _preprocess_fortran_files(
-                file_names)
-        all_fprocs = fable.read.process(file_names=patched_file_names)
-
-    if top_cpp_file_name is None and orig_file_names is not None and len(orig_file_names) == 1:
-        main_fproc = all_fprocs.all_in_input_order[0]
-        base_name = convert_function_name_to_mplapack(main_fproc.name.value)
-        src_path = orig_file_names[0]
-        src_dir = os.path.dirname(src_path)
-        if src_dir:
-            top_cpp_file_name = os.path.join(src_dir, base_name + ".cpp")
-        else:
-            top_cpp_file_name = base_name + ".cpp"
-
+        all_fprocs = fable.read.process(file_names=file_names)
+    for fproc in all_fprocs.all_in_input_order:
+        fproc.conv_hook = conv_hook_info()
+        fproc.conv_hook.ignore_common_and_save = (
+            fproc.name.value in ignore_common_and_save)
     result = []
 
     def callback(line):
@@ -4267,11 +3186,19 @@ def process(
     topological_fprocs = all_fprocs.build_bottom_up_fproc_list_following_calls(
         top_procedures=top_procedures)
     missing = topological_fprocs.missing_external_fdecls_by_identifier
-    # Do not emit stub implementations for missing external functions.
-    # All such functions (lsame, xerbla, etc.) must be provided elsewhere.
-    # If you ever want to see the list, you can add diagnostic prints here,
-    # but no code should be generated into the output.
-
+    if (len(missing) != 0):
+        for identifier in sorted(missing.keys()):
+            if (identifier in ignore_missing):
+                continue
+            return_type = get_missing_external_return_type(
+                fdecls=missing[identifier])
+            callback("""
+%s
+%s(...)
+{
+  throw std::runtime_error(
+    "Missing function implementation: %s");
+}""" % (return_type, identifier, identifier))
     #
     dep_cycles = topological_fprocs.dependency_cycles
     if (len(dep_cycles) != 0):
@@ -4525,31 +3452,9 @@ def process(
             if (not debug):
                 raise
             show_traceback()
-
-    # Rewrite single-character string literals for CHARACTER*1 variables.
-    result = [rewrite_single_char_string_literals(line) for line in result]
-
-    # First, fix XERBLA labels and "End of XXX" comments.
-    result = _postprocess_mplapack_labels_and_comments(result)
-    # Then, normalize Fortran comment markers: //C... -> // ...
-    result = _normalize_fortran_comment_prefix(result)
-    # Normalize COMPLEX(a, b) initializers to COMPLEX(a, b) form.
-    result = _postprocess_complex_initializers(result)
-
-    result = _postprocess_complex_constant_assignments(result)
-
-    # Final intrinsic cleanup (abs / pow2 aliases).
-    result = _postprocess_intrinsic_aliases(result)
-
-    # Clean up temporary Fortran files created for preprocessing.
-    for tmp in temp_files:
-        try:
-            os.remove(tmp)
-        except OSError:
-            pass
-
+    #
     if (top_cpp_file_name is not None):
         with open(top_cpp_file_name, "w") as f:
             print("\n".join(result), file=f)
-
+    #
     return result
