@@ -15,13 +15,13 @@ shopt -s nullglob
 EXCLUDE_PREFIXES=( s c )
 
 # Basenames that will be converted manually
-EXCLUDE_BASENAMES_MANUAL=( dgedmd dgedmdq dgetsqrhrt)
+EXCLUDE_BASENAMES_MANUAL=( )
 
 # Basenames that are not needed on the C++ side
 EXCLUDE_BASENAMES_UNUSED=( )
 
 # Other helper/utility routines to be excluded from this pass
-EXCLUDE_BASENAMES_MISC=( )
+EXCLUDE_BASENAMES_MISC=( dgetsqrhrt )
 
 # Combined basename exception list (for iteration)
 EXCLUDE_BASENAMES=(
@@ -67,5 +67,13 @@ done
 
 for src in "${files[@]}"; do
     echo "Converting $src"
-    bash "$FABLE_CONVERT" "$src"
+    bash "$FABLE_CONVERT" "$src" || {
+        echo "Conversion failed: $src" >&2
+        continue
+    }
 done
+
+#for src in "${files[@]}"; do
+#    echo "Converting $src"
+#    bash "$FABLE_CONVERT" "$src"
+#done

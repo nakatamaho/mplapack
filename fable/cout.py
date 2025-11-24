@@ -1234,6 +1234,7 @@ def rewrite_intrinsics(text: str) -> str:
         # integer / real helpers
         "fem::pow2":  "pow2",
         "fem::mod":   "mod",
+        "fem::fint": "castINTEGER",
 
         # elementary math
         "fem::cos":   "cos",
@@ -1245,6 +1246,7 @@ def rewrite_intrinsics(text: str) -> str:
         # absolute value
         "fem::dabs":  "abs",
         "fem::abs":   "abs",
+        "fem::cdabs": "abs",
 
         # complex constructor
         "fem::dcmplx": "COMPLEX",
