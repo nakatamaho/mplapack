@@ -1323,15 +1323,17 @@ def convert_tokens(conv_info, tokens, commas=False, had_str_concat=None):
                          for p in idx_str.split(",") if p.strip() != ""]
 
                 if len(parts) == 1:
-                    # 1D array: a(i) -> a[(i_expr) - 1] or a[i_expr - 1] for simple identifiers
+                    # 1D array: a(i) -> a[(i_expr - 1)] always, to keep index expression explicit.
                     i_expr = parts[0]
-                    # If index is a simple identifier or integer literal, avoid extra parentheses.
+                    # If index is a simple identifier or integer literal, use "i_expr - 1".
+                    # Otherwise, keep parentheses around the original expression: (i_expr) - 1.
                     if re.match(r"^[A-Za-z_][A-Za-z0-9_]*$", i_expr) or re.match(r"^[0-9]+$", i_expr):
                         index_expr = f"{i_expr} - 1"
                     else:
-                        # For compound expressions, keep parentheses: (i_expr) - 1
                         index_expr = f"({i_expr}) - 1"
-                    rapp("[" + index_expr + "]")
+                    # Wrap the whole index expression in parentheses so that generated code uses a[(index_expr)].
+                    rapp("[(" + index_expr + ")]")
+
                 elif len(parts) == 2:
                     # 2D array: a(i,j) -> a[(row_term) + (col_term)*ld<name>]
                     i_expr, j_expr = parts
@@ -3227,16 +3229,42 @@ def convert_to_cpp_function(
                 cargs_append("str_arr_%sref<%s>" % (
                     cconst(fdecl=fdecl, short=True), cdim), arg_name)
         elif (not fdecl.is_user_defined_callable()):
+            # Non-character, non-user-defined argument (typical BLAS/LAPACK args)
             ctype = convert_data_type(
                 conv_info=conv_info, fdecl=fdecl, crhs=None)[0]
+            mplapack_type = convert_to_mplapack_type(ctype)
+
             if (fdecl.dim_tokens is None):
-                # Convert to MPLAPACK style: remove reference, convert type
-                mplapack_type = convert_to_mplapack_type(ctype)
-                cargs_append("%s const &" % mplapack_type,
-                             prepend_identifier_if_necessary(arg_name))
+                # Scalar argument.
+                # Policy:
+                #   - OUT / INOUT (is_modified=True)      -> <TYPE>&
+                #   - IN  INTEGER/LOGICAL                 -> <TYPE> const   (by value)
+                #   - IN  REAL/DOUBLE/COMPLEX/...         -> <TYPE> const&  (by const reference)
+
+                # Determine original Fortran data type code (integer, real, ...)
+                dt_code = None
+                if fdecl.data_type is not None:
+                    if isinstance(fdecl.data_type, str):
+                        dt_code = fdecl.data_type
+                    else:
+                        dt_code = getattr(fdecl.data_type, "value", None)
+                    if dt_code is not None:
+                        dt_code = dt_code.lower()
+
+                name = prepend_identifier_if_necessary(arg_name)
+
+                if fdecl.is_modified:
+                    # OUT / INOUT scalar
+                    cargs_append("%s &" % mplapack_type, name)
+                else:
+                    if dt_code in ("integer", "logical"):
+                        # Small IN scalar: pass by value but keep it const
+                        cargs_append("%s const" % mplapack_type, name)
+                    else:
+                        # REAL / DOUBLE PRECISION / COMPLEX etc.: const reference
+                        cargs_append("%s const &" % mplapack_type, name)
             else:
-                # Convert to MPLAPACK style: use pointer instead of arr_ref
-                mplapack_type = convert_to_mplapack_type(ctype)
+                # Array argument: use plain pointer (REAL*, INTEGER*, ...)
                 cargs_append("%s *" % mplapack_type, arg_name)
         else:
             passed = conv_info.fproc.externals_passed_by_arg_identifier.get(
