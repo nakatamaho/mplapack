@@ -30,28 +30,12 @@
 
 void Rrotmg(REAL &dd1, REAL &dd2, REAL &dx1, REAL const dy1, REAL *dparam) {
     //
-    //  -- Reference BLAS level1 routine --
-    //  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //
     REAL zero = 0.0;
     REAL one = 1.0;
     REAL two = 2.0;
     REAL gam = 4096.0;
     REAL gamsq = 16777216;
-    REAL rgamsq = 5.9604645e-8;
+    REAL rgamsq = 0x1p-24;
     //     ..
     //
     REAL dflag = 0.0;
