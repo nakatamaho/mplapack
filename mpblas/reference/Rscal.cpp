@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025
+ * Copyright (c) 2008-2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,9 +25,26 @@
  * SUCH DAMAGE.
  *
  */
+
 #include <mpblas.h>
-void Rscal(INTEGER const &n, REAL const &da, REAL *dx, INTEGER const &incx) {
+
+void Rscal(INTEGER const n, REAL const da, REAL *dx, INTEGER const incx) {
     //
+    //  -- Reference BLAS level1 routine --
+    //  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --
+    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+    //
+    //     .. Scalar Arguments ..
+    //     ..
+    //     .. Array Arguments ..
+    //     ..
+    //
+    //  =====================================================================
+    //
+    //     .. Local Scalars ..
+    //     ..
+    //     .. Intrinsic Functions ..
+    //     ..
     if (n <= 0 || incx <= 0) {
         return;
     }
@@ -37,9 +54,9 @@ void Rscal(INTEGER const &n, REAL const &da, REAL *dx, INTEGER const &incx) {
     INTEGER nincx = 0;
     if (incx == 1) {
         //
-        // code for increment equal to 1
+        //        code for increment equal to 1
         //
-        // clean-up loop
+        //        clean-up loop
         //
         m = mod(n, 5);
         if (m != 0) {
@@ -60,7 +77,7 @@ void Rscal(INTEGER const &n, REAL const &da, REAL *dx, INTEGER const &incx) {
         }
     } else {
         //
-        // code for increment not equal to 1
+        //        code for increment not equal to 1
         //
         nincx = n * incx;
         for (i = 1; i <= nincx; i = i + incx) {

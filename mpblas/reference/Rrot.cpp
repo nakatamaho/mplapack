@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025
+ * Copyright (c) 2008-2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,9 +25,24 @@
  * SUCH DAMAGE.
  *
  */
+
 #include <mpblas.h>
-void Rrot(INTEGER const &n, REAL *dx, INTEGER const &incx, REAL *dy, INTEGER const &incy, REAL const &c, REAL const &s) {
+
+void Rrot(INTEGER const n, REAL *dx, INTEGER const incx, REAL *dy, INTEGER const incy, REAL const c, REAL const s) {
     //
+    //  -- Reference BLAS level1 routine --
+    //  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --
+    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+    //
+    //     .. Scalar Arguments ..
+    //     ..
+    //     .. Array Arguments ..
+    //     ..
+    //
+    //  =====================================================================
+    //
+    //     .. Local Scalars ..
+    //     ..
     if (n <= 0) {
         return;
     }
@@ -37,7 +52,7 @@ void Rrot(INTEGER const &n, REAL *dx, INTEGER const &incx, REAL *dy, INTEGER con
     INTEGER iy = 0;
     if (incx == 1 && incy == 1) {
         //
-        // code for both increments equal to 1
+        //       code for both increments equal to 1
         //
         for (i = 1; i <= n; i = i + 1) {
             dtemp = c * dx[i - 1] + s * dy[i - 1];
@@ -46,8 +61,8 @@ void Rrot(INTEGER const &n, REAL *dx, INTEGER const &incx, REAL *dy, INTEGER con
         }
     } else {
         //
-        // code for unequal increments or equal increments not equal
-        // to 1
+        //       code for unequal increments or equal increments not equal
+        //         to 1
         //
         ix = 1;
         iy = 1;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025
+ * Copyright (c) 2008-2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,10 +25,27 @@
  * SUCH DAMAGE.
  *
  */
+
 #include <mpblas.h>
-REAL Rasum(INTEGER const &n, REAL *dx, INTEGER const &incx) {
+
+REAL Rasum(INTEGER const n, REAL *dx, INTEGER const incx) {
     REAL return_value = 0.0;
     //
+    //  -- Reference BLAS level1 routine --
+    //  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --
+    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+    //
+    //     .. Scalar Arguments ..
+    //     ..
+    //     .. Array Arguments ..
+    //     ..
+    //
+    //  =====================================================================
+    //
+    //     .. Local Scalars ..
+    //     ..
+    //     .. Intrinsic Functions ..
+    //     ..
     return_value = 0.0;
     REAL dtemp = 0.0;
     if (n <= 0 || incx <= 0) {
@@ -39,9 +56,9 @@ REAL Rasum(INTEGER const &n, REAL *dx, INTEGER const &incx) {
     INTEGER mp1 = 0;
     INTEGER nincx = 0;
     if (incx == 1) {
-        // code for increment equal to 1
+        //        code for increment equal to 1
         //
-        // clean-up loop
+        //        clean-up loop
         //
         m = mod(n, 6);
         if (m != 0) {
@@ -59,7 +76,7 @@ REAL Rasum(INTEGER const &n, REAL *dx, INTEGER const &incx) {
         }
     } else {
         //
-        // code for increment not equal to 1
+        //        code for increment not equal to 1
         //
         nincx = n * incx;
         for (i = 1; i <= nincx; i = i + incx) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025
+ * Copyright (c) 2008-2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,13 +25,28 @@
  * SUCH DAMAGE.
  *
  */
+
 #include <mpblas.h>
+
 COMPLEX
-Cdotu(INTEGER const &n, COMPLEX *zx, INTEGER const &incx, COMPLEX *zy, INTEGER const &incy) {
-    COMPLEX return_value = COMPLEX(0.0, 0.0);
+Cdotu(INTEGER const n, COMPLEX *zx, INTEGER const incx, COMPLEX *zy, INTEGER const incy) {
+    COMPLEX return_value = (0.0, 0.0);
     //
+    //  -- Reference BLAS level1 routine --
+    //  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --
+    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+    //
+    //     .. Scalar Arguments ..
+    //     ..
+    //     .. Array Arguments ..
+    //     ..
+    //
+    //  =====================================================================
+    //
+    //     .. Local Scalars ..
+    //     ..
     COMPLEX ztemp = COMPLEX(0.0, 0.0);
-    return_value = COMPLEX(0.0, 0.0);
+    return_value = (0.0, 0.0);
     if (n <= 0) {
         return return_value;
     }
@@ -40,15 +55,15 @@ Cdotu(INTEGER const &n, COMPLEX *zx, INTEGER const &incx, COMPLEX *zy, INTEGER c
     INTEGER iy = 0;
     if (incx == 1 && incy == 1) {
         //
-        // code for both increments equal to 1
+        //        code for both increments equal to 1
         //
         for (i = 1; i <= n; i = i + 1) {
             ztemp += zx[i - 1] * zy[i - 1];
         }
     } else {
         //
-        // code for unequal increments or equal increments
-        // not equal to 1
+        //        code for unequal increments or equal increments
+        //          not equal to 1
         //
         ix = 1;
         iy = 1;

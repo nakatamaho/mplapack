@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025
+ * Copyright (c) 2008-2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,10 +25,34 @@
  * SUCH DAMAGE.
  *
  */
+
 #include <mpblas.h>
-void Rtrsv(const char *uplo, const char *trans, const char *diag, INTEGER const &n, REAL *a, INTEGER const &lda, REAL *x, INTEGER const &incx) {
+
+void Rtrsv(const char *uplo, const char *trans, const char *diag, INTEGER const n, REAL *a, INTEGER const lda, REAL *x, INTEGER const incx) {
     //
-    // Test the input parameters.
+    //  -- Reference BLAS level1 routine --
+    //  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --
+    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+    //
+    //     .. Scalar Arguments ..
+    //     ..
+    //     .. Array Arguments ..
+    //     ..
+    //
+    //  =====================================================================
+    //
+    //     .. Parameters ..
+    //     ..
+    //     .. Local Scalars ..
+    //     ..
+    //     .. External Functions ..
+    //     ..
+    //     .. External Subroutines ..
+    //     ..
+    //     .. Intrinsic Functions ..
+    //     ..
+    //
+    //     Test the input parameters.
     //
     INTEGER info = 0;
     if (!Mlsame(uplo, "U") && !Mlsame(uplo, "L")) {
@@ -49,16 +73,16 @@ void Rtrsv(const char *uplo, const char *trans, const char *diag, INTEGER const 
         return;
     }
     //
-    // Quick return if possible.
+    //     Quick return if possible.
     //
     if (n == 0) {
         return;
     }
     //
-    LOGICAL nounit = Mlsame(diag, "N");
+    bool nounit = Mlsame(diag, "N");
     //
-    // Set up the start point in X if the increment is not unity. This
-    // will be  ( N - 1 )*INCX  too small for descending loops.
+    //     Set up the start point in X if the increment is not unity. This
+    //     will be  ( N - 1 )*INCX  too small for descending loops.
     //
     INTEGER kx = 0;
     if (incx <= 0) {
@@ -67,8 +91,8 @@ void Rtrsv(const char *uplo, const char *trans, const char *diag, INTEGER const 
         kx = 1;
     }
     //
-    // Start the operations. In this version the elements of A are
-    // accessed sequentially with one pass through A.
+    //     Start the operations. In this version the elements of A are
+    //     accessed sequentially with one pass through A.
     //
     INTEGER j = 0;
     const REAL zero = 0.0;
@@ -78,7 +102,7 @@ void Rtrsv(const char *uplo, const char *trans, const char *diag, INTEGER const 
     INTEGER ix = 0;
     if (Mlsame(trans, "N")) {
         //
-        // Form  x := inv( A )*x.
+        //        Form  x := inv( A )*x.
         //
         if (Mlsame(uplo, "U")) {
             if (incx == 1) {
@@ -143,7 +167,7 @@ void Rtrsv(const char *uplo, const char *trans, const char *diag, INTEGER const 
         }
     } else {
         //
-        // Form  x := inv( A**T )*x.
+        //        Form  x := inv( A**T )*x.
         //
         if (Mlsame(uplo, "U")) {
             if (incx == 1) {
@@ -205,6 +229,6 @@ void Rtrsv(const char *uplo, const char *trans, const char *diag, INTEGER const 
         }
     }
     //
-    // End of Rtrsv .
+    //     End of Rtrsv .
     //
 }

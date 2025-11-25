@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025
+ * Copyright (c) 2008-2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,21 +25,45 @@
  * SUCH DAMAGE.
  *
  */
+
 #include <mpblas.h>
-void Ctrsm(const char *side, const char *uplo, const char *transa, const char *diag, INTEGER const &m, INTEGER const &n, COMPLEX const &alpha, COMPLEX *a, INTEGER const &lda, COMPLEX *b, INTEGER const &ldb) {
+
+void Ctrsm(const char *side, const char *uplo, const char *transa, const char *diag, INTEGER const m, INTEGER const n, COMPLEX const alpha, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb) {
     //
-    // Test the input parameters.
+    //  -- Reference BLAS level3 routine --
+    //  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --
+    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
     //
-    LOGICAL lside = Mlsame(side, "L");
+    //     .. Scalar Arguments ..
+    //     ..
+    //     .. Array Arguments ..
+    //     ..
+    //
+    //  =====================================================================
+    //
+    //     .. External Functions ..
+    //     ..
+    //     .. External Subroutines ..
+    //     ..
+    //     .. Intrinsic Functions ..
+    //     ..
+    //     .. Local Scalars ..
+    //     ..
+    //     .. Parameters ..
+    //     ..
+    //
+    //     Test the input parameters.
+    //
+    bool lside = Mlsame(side, "L");
     INTEGER nrowa = 0;
     if (lside) {
         nrowa = m;
     } else {
         nrowa = n;
     }
-    LOGICAL noconj = Mlsame(transa, "T");
-    LOGICAL nounit = Mlsame(diag, "N");
-    LOGICAL upper = Mlsame(uplo, "U");
+    bool noconj = Mlsame(transa, "T");
+    bool nounit = Mlsame(diag, "N");
+    bool upper = Mlsame(uplo, "U");
     //
     INTEGER info = 0;
     if ((!lside) && (!Mlsame(side, "R"))) {
@@ -64,13 +88,13 @@ void Ctrsm(const char *side, const char *uplo, const char *transa, const char *d
         return;
     }
     //
-    // Quick return if possible.
+    //     Quick return if possible.
     //
     if (m == 0 || n == 0) {
         return;
     }
     //
-    // And when  alpha.eq.zero.
+    //     And when  alpha.eq.zero.
     //
     const COMPLEX zero = COMPLEX(0.0, 0.0);
     INTEGER j = 0;
@@ -84,7 +108,7 @@ void Ctrsm(const char *side, const char *uplo, const char *transa, const char *d
         return;
     }
     //
-    // Start the operations.
+    //     Start the operations.
     //
     const COMPLEX one = COMPLEX(1.0, 0.0);
     INTEGER k = 0;
@@ -92,7 +116,7 @@ void Ctrsm(const char *side, const char *uplo, const char *transa, const char *d
     if (lside) {
         if (Mlsame(transa, "N")) {
             //
-            // Form  B := alpha*inv( A )*B.
+            //           Form  B := alpha*inv( A )*B.
             //
             if (upper) {
                 for (j = 1; j <= n; j = j + 1) {
@@ -133,8 +157,8 @@ void Ctrsm(const char *side, const char *uplo, const char *transa, const char *d
             }
         } else {
             //
-            // Form  B := alpha*inv( A**T )*B
-            // or    B := alpha*inv( A**H )*B.
+            //           Form  B := alpha*inv( A**T )*B
+            //           or    B := alpha*inv( A**H )*B.
             //
             if (upper) {
                 for (j = 1; j <= n; j = j + 1) {
@@ -185,7 +209,7 @@ void Ctrsm(const char *side, const char *uplo, const char *transa, const char *d
     } else {
         if (Mlsame(transa, "N")) {
             //
-            // Form  B := alpha*B*inv( A ).
+            //           Form  B := alpha*B*inv( A ).
             //
             if (upper) {
                 for (j = 1; j <= n; j = j + 1) {
@@ -232,8 +256,8 @@ void Ctrsm(const char *side, const char *uplo, const char *transa, const char *d
             }
         } else {
             //
-            // Form  B := alpha*B*inv( A**T )
-            // or    B := alpha*B*inv( A**H ).
+            //           Form  B := alpha*B*inv( A**T )
+            //           or    B := alpha*B*inv( A**H ).
             //
             if (upper) {
                 for (k = n; k >= 1; k = k - 1) {
@@ -299,6 +323,6 @@ void Ctrsm(const char *side, const char *uplo, const char *transa, const char *d
         }
     }
     //
-    // End of Ctrsm .
+    //     End of Ctrsm .
     //
 }

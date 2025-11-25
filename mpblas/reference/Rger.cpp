@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025
+ * Copyright (c) 2008-2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,10 +25,32 @@
  * SUCH DAMAGE.
  *
  */
+
 #include <mpblas.h>
-void Rger(INTEGER const &m, INTEGER const &n, REAL const &alpha, REAL *x, INTEGER const &incx, REAL *y, INTEGER const &incy, REAL *a, INTEGER const &lda) {
+
+void Rger(INTEGER const m, INTEGER const n, REAL const alpha, REAL *x, INTEGER const incx, REAL *y, INTEGER const incy, REAL *a, INTEGER const lda) {
     //
-    // Test the input parameters.
+    //  -- Reference BLAS level2 routine --
+    //  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --
+    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+    //
+    //     .. Scalar Arguments ..
+    //     ..
+    //     .. Array Arguments ..
+    //     ..
+    //
+    //  =====================================================================
+    //
+    //     .. Parameters ..
+    //     ..
+    //     .. Local Scalars ..
+    //     ..
+    //     .. External Subroutines ..
+    //     ..
+    //     .. Intrinsic Functions ..
+    //     ..
+    //
+    //     Test the input parameters.
     //
     INTEGER info = 0;
     if (m < 0) {
@@ -47,15 +69,15 @@ void Rger(INTEGER const &m, INTEGER const &n, REAL const &alpha, REAL *x, INTEGE
         return;
     }
     //
-    // Quick return if possible.
+    //     Quick return if possible.
     //
     const REAL zero = 0.0;
     if ((m == 0) || (n == 0) || (alpha == zero)) {
         return;
     }
     //
-    // Start the operations. In this version the elements of A are
-    // accessed sequentially with one pass through A.
+    //     Start the operations. In this version the elements of A are
+    //     accessed sequentially with one pass through A.
     //
     INTEGER jy = 0;
     if (incy > 0) {
@@ -97,6 +119,6 @@ void Rger(INTEGER const &m, INTEGER const &n, REAL const &alpha, REAL *x, INTEGE
         }
     }
     //
-    // End of Rger  .
+    //     End of Rger  .
     //
 }

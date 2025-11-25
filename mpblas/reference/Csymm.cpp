@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025
+ * Copyright (c) 2008-2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,10 +25,34 @@
  * SUCH DAMAGE.
  *
  */
+
 #include <mpblas.h>
-void Csymm(const char *side, const char *uplo, INTEGER const &m, INTEGER const &n, COMPLEX const &alpha, COMPLEX *a, INTEGER const &lda, COMPLEX *b, INTEGER const &ldb, COMPLEX const &beta, COMPLEX *c, INTEGER const &ldc) {
+
+void Csymm(const char *side, const char *uplo, INTEGER const m, INTEGER const n, COMPLEX const alpha, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, COMPLEX const beta, COMPLEX *c, INTEGER const ldc) {
     //
-    // Set NROWA as the number of rows of A.
+    //  -- Reference BLAS level3 routine --
+    //  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --
+    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+    //
+    //     .. Scalar Arguments ..
+    //     ..
+    //     .. Array Arguments ..
+    //     ..
+    //
+    //  =====================================================================
+    //
+    //     .. External Functions ..
+    //     ..
+    //     .. External Subroutines ..
+    //     ..
+    //     .. Intrinsic Functions ..
+    //     ..
+    //     .. Local Scalars ..
+    //     ..
+    //     .. Parameters ..
+    //     ..
+    //
+    //     Set NROWA as the number of rows of A.
     //
     INTEGER nrowa = 0;
     if (Mlsame(side, "L")) {
@@ -36,9 +60,9 @@ void Csymm(const char *side, const char *uplo, INTEGER const &m, INTEGER const &
     } else {
         nrowa = n;
     }
-    LOGICAL upper = Mlsame(uplo, "U");
+    bool upper = Mlsame(uplo, "U");
     //
-    // Test the input parameters.
+    //     Test the input parameters.
     //
     INTEGER info = 0;
     if ((!Mlsame(side, "L")) && (!Mlsame(side, "R"))) {
@@ -61,7 +85,7 @@ void Csymm(const char *side, const char *uplo, INTEGER const &m, INTEGER const &
         return;
     }
     //
-    // Quick return if possible.
+    //     Quick return if possible.
     //
     const COMPLEX zero = COMPLEX(0.0, 0.0);
     const COMPLEX one = COMPLEX(1.0, 0.0);
@@ -69,7 +93,7 @@ void Csymm(const char *side, const char *uplo, INTEGER const &m, INTEGER const &
         return;
     }
     //
-    // And when  alpha.eq.zero.
+    //     And when  alpha.eq.zero.
     //
     INTEGER j = 0;
     INTEGER i = 0;
@@ -90,14 +114,14 @@ void Csymm(const char *side, const char *uplo, INTEGER const &m, INTEGER const &
         return;
     }
     //
-    // Start the operations.
+    //     Start the operations.
     //
     COMPLEX temp1 = 0.0;
     COMPLEX temp2 = 0.0;
     INTEGER k = 0;
     if (Mlsame(side, "L")) {
         //
-        // Form  C := alpha*A*B + beta*C.
+        //        Form  C := alpha*A*B + beta*C.
         //
         if (upper) {
             for (j = 1; j <= n; j = j + 1) {
@@ -134,7 +158,7 @@ void Csymm(const char *side, const char *uplo, INTEGER const &m, INTEGER const &
         }
     } else {
         //
-        // Form  C := alpha*B*A + beta*C.
+        //        Form  C := alpha*B*A + beta*C.
         //
         for (j = 1; j <= n; j = j + 1) {
             temp1 = alpha * a[(j - 1) + (j - 1) * lda];
@@ -170,6 +194,6 @@ void Csymm(const char *side, const char *uplo, INTEGER const &m, INTEGER const &
         }
     }
     //
-    // End of Csymm .
+    //     End of Csymm .
     //
 }

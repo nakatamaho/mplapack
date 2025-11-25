@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025
+ * Copyright (c) 2008-2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,10 +25,34 @@
  * SUCH DAMAGE.
  *
  */
+
 #include <mpblas.h>
-void Chpr2(const char *uplo, INTEGER const &n, COMPLEX const &alpha, COMPLEX *x, INTEGER const &incx, COMPLEX *y, INTEGER const &incy, COMPLEX *ap) {
+
+void Chpr2(const char *uplo, INTEGER const n, COMPLEX const alpha, COMPLEX *x, INTEGER const incx, COMPLEX *y, INTEGER const incy, COMPLEX *ap) {
     //
-    // Test the input parameters.
+    //  -- Reference BLAS level2 routine --
+    //  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --
+    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+    //
+    //     .. Scalar Arguments ..
+    //     ..
+    //     .. Array Arguments ..
+    //     ..
+    //
+    //  =====================================================================
+    //
+    //     .. Parameters ..
+    //     ..
+    //     .. Local Scalars ..
+    //     ..
+    //     .. External Functions ..
+    //     ..
+    //     .. External Subroutines ..
+    //     ..
+    //     .. Intrinsic Functions ..
+    //     ..
+    //
+    //     Test the input parameters.
     //
     INTEGER info = 0;
     if (!Mlsame(uplo, "U") && !Mlsame(uplo, "L")) {
@@ -45,15 +69,15 @@ void Chpr2(const char *uplo, INTEGER const &n, COMPLEX const &alpha, COMPLEX *x,
         return;
     }
     //
-    // Quick return if possible.
+    //     Quick return if possible.
     //
     const COMPLEX zero = COMPLEX(0.0, 0.0);
     if ((n == 0) || (alpha == zero)) {
         return;
     }
     //
-    // Set up the start points in X and Y if the increments are not both
-    // unity.
+    //     Set up the start points in X and Y if the increments are not both
+    //     unity.
     //
     INTEGER kx = 0;
     INTEGER ky = 0;
@@ -74,8 +98,8 @@ void Chpr2(const char *uplo, INTEGER const &n, COMPLEX const &alpha, COMPLEX *x,
         jy = ky;
     }
     //
-    // Start the operations. In this version the elements of the array AP
-    // are accessed sequentially with one pass through AP.
+    //     Start the operations. In this version the elements of the array AP
+    //     are accessed sequentially with one pass through AP.
     //
     INTEGER kk = 1;
     INTEGER j = 0;
@@ -87,7 +111,7 @@ void Chpr2(const char *uplo, INTEGER const &n, COMPLEX const &alpha, COMPLEX *x,
     INTEGER iy = 0;
     if (Mlsame(uplo, "U")) {
         //
-        // Form  A  when upper triangle is stored in AP.
+        //        Form  A  when upper triangle is stored in AP.
         //
         if ((incx == 1) && (incy == 1)) {
             for (j = 1; j <= n; j = j + 1) {
@@ -128,7 +152,7 @@ void Chpr2(const char *uplo, INTEGER const &n, COMPLEX const &alpha, COMPLEX *x,
         }
     } else {
         //
-        // Form  A  when lower triangle is stored in AP.
+        //        Form  A  when lower triangle is stored in AP.
         //
         if ((incx == 1) && (incy == 1)) {
             for (j = 1; j <= n; j = j + 1) {
@@ -169,6 +193,6 @@ void Chpr2(const char *uplo, INTEGER const &n, COMPLEX const &alpha, COMPLEX *x,
         }
     }
     //
-    // End of Chpr2 .
+    //     End of Chpr2 .
     //
 }

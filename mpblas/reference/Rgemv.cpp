@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025
+ * Copyright (c) 2008-2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,10 +25,34 @@
  * SUCH DAMAGE.
  *
  */
+
 #include <mpblas.h>
-void Rgemv(const char *trans, INTEGER const &m, INTEGER const &n, REAL const &alpha, REAL *a, INTEGER const &lda, REAL *x, INTEGER const &incx, REAL const &beta, REAL *y, INTEGER const &incy) {
+
+void Rgemv(const char *trans, INTEGER const m, INTEGER const n, REAL const alpha, REAL *a, INTEGER const lda, REAL *x, INTEGER const incx, REAL const beta, REAL *y, INTEGER const incy) {
     //
-    // Test the input parameters.
+    //  -- Reference BLAS level2 routine --
+    //  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --
+    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+    //
+    //     .. Scalar Arguments ..
+    //     ..
+    //     .. Array Arguments ..
+    //     ..
+    //
+    //  =====================================================================
+    //
+    //     .. Parameters ..
+    //     ..
+    //     .. Local Scalars ..
+    //     ..
+    //     .. External Functions ..
+    //     ..
+    //     .. External Subroutines ..
+    //     ..
+    //     .. Intrinsic Functions ..
+    //     ..
+    //
+    //     Test the input parameters.
     //
     INTEGER info = 0;
     if (!Mlsame(trans, "N") && !Mlsame(trans, "T") && !Mlsame(trans, "C")) {
@@ -49,7 +73,7 @@ void Rgemv(const char *trans, INTEGER const &m, INTEGER const &n, REAL const &al
         return;
     }
     //
-    // Quick return if possible.
+    //     Quick return if possible.
     //
     const REAL zero = 0.0;
     const REAL one = 1.0;
@@ -57,8 +81,8 @@ void Rgemv(const char *trans, INTEGER const &m, INTEGER const &n, REAL const &al
         return;
     }
     //
-    // Set  LENX  and  LENY, the lengths of the vectors x and y, and set
-    // up the start points in  X  and  Y.
+    //     Set  LENX  and  LENY, the lengths of the vectors x and y, and set
+    //     up the start points in  X  and  Y.
     //
     INTEGER lenx = 0;
     INTEGER leny = 0;
@@ -82,10 +106,10 @@ void Rgemv(const char *trans, INTEGER const &m, INTEGER const &n, REAL const &al
         ky = 1 - (leny - 1) * incy;
     }
     //
-    // Start the operations. In this version the elements of A are
-    // accessed sequentially with one pass through A.
+    //     Start the operations. In this version the elements of A are
+    //     accessed sequentially with one pass through A.
     //
-    // First form  y := beta*y.
+    //     First form  y := beta*y.
     //
     INTEGER i = 0;
     INTEGER iy = 0;
@@ -125,7 +149,7 @@ void Rgemv(const char *trans, INTEGER const &m, INTEGER const &n, REAL const &al
     INTEGER ix = 0;
     if (Mlsame(trans, "N")) {
         //
-        // Form  y := alpha*A*x + y.
+        //        Form  y := alpha*A*x + y.
         //
         jx = kx;
         if (incy == 1) {
@@ -149,7 +173,7 @@ void Rgemv(const char *trans, INTEGER const &m, INTEGER const &n, REAL const &al
         }
     } else {
         //
-        // Form  y := alpha*A**T*x + y.
+        //        Form  y := alpha*A**T*x + y.
         //
         jy = ky;
         if (incx == 1) {
@@ -175,6 +199,6 @@ void Rgemv(const char *trans, INTEGER const &m, INTEGER const &n, REAL const &al
         }
     }
     //
-    // End of Rgemv .
+    //     End of Rgemv .
     //
 }

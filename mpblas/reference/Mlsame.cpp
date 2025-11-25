@@ -66,12 +66,15 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+
 /*
 Based on http://www.netlib.org/blas/lsame.f
 Mlsame returns 1 if CA is the same letter as CB regardless of case.
 */
+
 #include <ctype.h>
 #include <mpblas.h>
+
 bool Mlsame(const char *a, const char *b) {
     if (toupper(*a) == toupper(*b))
         return true;

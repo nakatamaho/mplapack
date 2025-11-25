@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025
+ * Copyright (c) 2008-2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,15 +25,30 @@
  * SUCH DAMAGE.
  *
  */
+
 #include <mpblas.h>
-void Crotg(COMPLEX &ca, COMPLEX const &cb, REAL &c, COMPLEX &s) {
+
+void Crotg(COMPLEX &ca, COMPLEX const cb, REAL &c, COMPLEX &s) {
     //
+    //  -- Reference BLAS level1 routine --
+    //  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --
+    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+    //
+    //     .. Scalar Arguments ..
+    //     ..
+    //
+    //  =====================================================================
+    //
+    //     .. Local Scalars ..
+    //     ..
+    //     .. Intrinsic Functions ..
+    //     ..
     REAL scale = 0.0;
     REAL norm = 0.0;
     COMPLEX alpha = 0.0;
     if (abs(ca) == 0.0) {
         c = 0.0;
-        s = COMPLEX(1.0, 0.0);
+        s = (1.0, 0.0);
         ca = cb;
     } else {
         scale = abs(ca) + abs(cb);

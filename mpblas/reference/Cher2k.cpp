@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025
+ * Copyright (c) 2008-2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,10 +25,34 @@
  * SUCH DAMAGE.
  *
  */
+
 #include <mpblas.h>
-void Cher2k(const char *uplo, const char *trans, INTEGER const &n, INTEGER const &k, COMPLEX const &alpha, COMPLEX *a, INTEGER const &lda, COMPLEX *b, INTEGER const &ldb, REAL const &beta, COMPLEX *c, INTEGER const &ldc) {
+
+void Cher2k(const char *uplo, const char *trans, INTEGER const n, INTEGER const k, COMPLEX const alpha, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, REAL const beta, COMPLEX *c, INTEGER const ldc) {
     //
-    // Test the input parameters.
+    //  -- Reference BLAS level3 routine --
+    //  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --
+    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+    //
+    //     .. Scalar Arguments ..
+    //     ..
+    //     .. Array Arguments ..
+    //     ..
+    //
+    //  =====================================================================
+    //
+    //     .. External Functions ..
+    //     ..
+    //     .. External Subroutines ..
+    //     ..
+    //     .. Intrinsic Functions ..
+    //     ..
+    //     .. Local Scalars ..
+    //     ..
+    //     .. Parameters ..
+    //     ..
+    //
+    //     Test the input parameters.
     //
     INTEGER nrowa = 0;
     if (Mlsame(trans, "N")) {
@@ -36,7 +60,7 @@ void Cher2k(const char *uplo, const char *trans, INTEGER const &n, INTEGER const
     } else {
         nrowa = k;
     }
-    LOGICAL upper = Mlsame(uplo, "U");
+    bool upper = Mlsame(uplo, "U");
     //
     INTEGER info = 0;
     if ((!upper) && (!Mlsame(uplo, "L"))) {
@@ -59,7 +83,7 @@ void Cher2k(const char *uplo, const char *trans, INTEGER const &n, INTEGER const
         return;
     }
     //
-    // Quick return if possible.
+    //     Quick return if possible.
     //
     const COMPLEX zero = COMPLEX(0.0, 0.0);
     const REAL one = 1.0;
@@ -67,7 +91,7 @@ void Cher2k(const char *uplo, const char *trans, INTEGER const &n, INTEGER const
         return;
     }
     //
-    // And when  alpha.eq.zero.
+    //     And when  alpha.eq.zero.
     //
     INTEGER j = 0;
     INTEGER i = 0;
@@ -106,15 +130,15 @@ void Cher2k(const char *uplo, const char *trans, INTEGER const &n, INTEGER const
         return;
     }
     //
-    // Start the operations.
+    //     Start the operations.
     //
     INTEGER l = 0;
     COMPLEX temp1 = 0.0;
     COMPLEX temp2 = 0.0;
     if (Mlsame(trans, "N")) {
         //
-        // Form  C := alpha*A*B**H + conjg( alpha )*B*A**H +
-        // C.
+        //        Form  C := alpha*A*B**H + conjg( alpha )*B*A**H +
+        //                   C.
         //
         if (upper) {
             for (j = 1; j <= n; j = j + 1) {
@@ -169,8 +193,8 @@ void Cher2k(const char *uplo, const char *trans, INTEGER const &n, INTEGER const
         }
     } else {
         //
-        // Form  C := alpha*A**H*B + conjg( alpha )*B**H*A +
-        // C.
+        //        Form  C := alpha*A**H*B + conjg( alpha )*B**H*A +
+        //                   C.
         //
         if (upper) {
             for (j = 1; j <= n; j = j + 1) {
@@ -223,6 +247,6 @@ void Cher2k(const char *uplo, const char *trans, INTEGER const &n, INTEGER const
         }
     }
     //
-    // End of Cher2k.
+    //     End of Cher2k.
     //
 }

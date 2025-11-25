@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025
+ * Copyright (c) 2008-2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,10 +25,32 @@
  * SUCH DAMAGE.
  *
  */
+
 #include <mpblas.h>
-void Rspr2(const char *uplo, INTEGER const &n, REAL const &alpha, REAL *x, INTEGER const &incx, REAL *y, INTEGER const &incy, REAL *ap) {
+
+void Rspr2(const char *uplo, INTEGER const n, REAL const alpha, REAL *x, INTEGER const incx, REAL *y, INTEGER const incy, REAL *ap) {
     //
-    // Test the input parameters.
+    //  -- Reference BLAS level2 routine --
+    //  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --
+    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+    //
+    //     .. Scalar Arguments ..
+    //     ..
+    //     .. Array Arguments ..
+    //     ..
+    //
+    //  =====================================================================
+    //
+    //     .. Parameters ..
+    //     ..
+    //     .. Local Scalars ..
+    //     ..
+    //     .. External Functions ..
+    //     ..
+    //     .. External Subroutines ..
+    //     ..
+    //
+    //     Test the input parameters.
     //
     INTEGER info = 0;
     if (!Mlsame(uplo, "U") && !Mlsame(uplo, "L")) {
@@ -45,15 +67,15 @@ void Rspr2(const char *uplo, INTEGER const &n, REAL const &alpha, REAL *x, INTEG
         return;
     }
     //
-    // Quick return if possible.
+    //     Quick return if possible.
     //
     const REAL zero = 0.0;
     if ((n == 0) || (alpha == zero)) {
         return;
     }
     //
-    // Set up the start points in X and Y if the increments are not both
-    // unity.
+    //     Set up the start points in X and Y if the increments are not both
+    //     unity.
     //
     INTEGER kx = 0;
     INTEGER ky = 0;
@@ -74,8 +96,8 @@ void Rspr2(const char *uplo, INTEGER const &n, REAL const &alpha, REAL *x, INTEG
         jy = ky;
     }
     //
-    // Start the operations. In this version the elements of the array AP
-    // are accessed sequentially with one pass through AP.
+    //     Start the operations. In this version the elements of the array AP
+    //     are accessed sequentially with one pass through AP.
     //
     INTEGER kk = 1;
     INTEGER j = 0;
@@ -87,7 +109,7 @@ void Rspr2(const char *uplo, INTEGER const &n, REAL const &alpha, REAL *x, INTEG
     INTEGER iy = 0;
     if (Mlsame(uplo, "U")) {
         //
-        // Form  A  when upper triangle is stored in AP.
+        //        Form  A  when upper triangle is stored in AP.
         //
         if ((incx == 1) && (incy == 1)) {
             for (j = 1; j <= n; j = j + 1) {
@@ -122,7 +144,7 @@ void Rspr2(const char *uplo, INTEGER const &n, REAL const &alpha, REAL *x, INTEG
         }
     } else {
         //
-        // Form  A  when lower triangle is stored in AP.
+        //        Form  A  when lower triangle is stored in AP.
         //
         if ((incx == 1) && (incy == 1)) {
             for (j = 1; j <= n; j = j + 1) {
@@ -157,6 +179,6 @@ void Rspr2(const char *uplo, INTEGER const &n, REAL const &alpha, REAL *x, INTEG
         }
     }
     //
-    // End of Rspr2 .
+    //     End of Rspr2 .
     //
 }
