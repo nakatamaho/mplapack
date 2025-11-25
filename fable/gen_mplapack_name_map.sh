@@ -36,7 +36,7 @@ EXCLUDE_PREFIXES=( s c )
 EXCLUDE_BASENAMES_MANUAL=( )
 
 # Basenames that are not needed on the C++ side
-EXCLUDE_BASENAMES_UNUSED=( icamax isamax )
+EXCLUDE_BASENAMES_UNUSED=( icamax isamax dsdot )
 
 # Other helper/utility routines to be excluded from this pass
 EXCLUDE_BASENAMES_MISC=( )
