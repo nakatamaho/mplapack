@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -28,42 +28,20 @@
 
 #include <mpblas.h>
 
-void Ctrmm(const char *side, const char *uplo, const char *transa, const char *diag, INTEGER const m, INTEGER const n, COMPLEX const alpha, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb) {
+void Ctrmm(const char *side, const char *uplo, const char *transa, const char *diag, INTEGER const m, INTEGER const n, COMPLEX const &alpha, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb) {
     //
-    //  -- Reference BLAS level3 routine --
-    //  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+    // Test the input parameters.
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Parameters ..
-    //     ..
-    //
-    //     Test the input parameters.
-    //
-    bool lside = Mlsame(side, "L");
+    LOGICAL lside = Mlsame(side, "L");
     INTEGER nrowa = 0;
     if (lside) {
         nrowa = m;
     } else {
         nrowa = n;
     }
-    bool noconj = Mlsame(transa, "T");
-    bool nounit = Mlsame(diag, "N");
-    bool upper = Mlsame(uplo, "U");
+    LOGICAL noconj = Mlsame(transa, "T");
+    LOGICAL nounit = Mlsame(diag, "N");
+    LOGICAL upper = Mlsame(uplo, "U");
     //
     INTEGER info = 0;
     if ((!lside) && (!Mlsame(side, "R"))) {
@@ -88,13 +66,13 @@ void Ctrmm(const char *side, const char *uplo, const char *transa, const char *d
         return;
     }
     //
-    //     Quick return if possible.
+    // Quick return if possible.
     //
     if (m == 0 || n == 0) {
         return;
     }
     //
-    //     And when  alpha.eq.zero.
+    // And when  alpha.eq.zero.
     //
     const COMPLEX zero = COMPLEX(0.0, 0.0);
     INTEGER j = 0;
@@ -108,7 +86,7 @@ void Ctrmm(const char *side, const char *uplo, const char *transa, const char *d
         return;
     }
     //
-    //     Start the operations.
+    // Start the operations.
     //
     INTEGER k = 0;
     COMPLEX temp = 0.0;
@@ -116,7 +94,7 @@ void Ctrmm(const char *side, const char *uplo, const char *transa, const char *d
     if (lside) {
         if (Mlsame(transa, "N")) {
             //
-            //           Form  B := alpha*A*B.
+            // Form  B := alpha*A*B.
             //
             if (upper) {
                 for (j = 1; j <= n; j = j + 1) {
@@ -151,7 +129,7 @@ void Ctrmm(const char *side, const char *uplo, const char *transa, const char *d
             }
         } else {
             //
-            //           Form  B := alpha*A**T*B   or   B := alpha*A**H*B.
+            // Form  B := alpha*A**T*B   or   B := alpha*A**H*B.
             //
             if (upper) {
                 for (j = 1; j <= n; j = j + 1) {
@@ -202,7 +180,7 @@ void Ctrmm(const char *side, const char *uplo, const char *transa, const char *d
     } else {
         if (Mlsame(transa, "N")) {
             //
-            //           Form  B := alpha*B*A.
+            // Form  B := alpha*B*A.
             //
             if (upper) {
                 for (j = n; j >= 1; j = j - 1) {
@@ -243,7 +221,7 @@ void Ctrmm(const char *side, const char *uplo, const char *transa, const char *d
             }
         } else {
             //
-            //           Form  B := alpha*B*A**T   or   B := alpha*B*A**H.
+            // Form  B := alpha*B*A**T   or   B := alpha*B*A**H.
             //
             if (upper) {
                 for (k = 1; k <= n; k = k + 1) {
@@ -305,6 +283,6 @@ void Ctrmm(const char *side, const char *uplo, const char *transa, const char *d
         }
     }
     //
-    //     End of Ctrmm .
+    // End of Ctrmm .
     //
 }

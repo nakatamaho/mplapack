@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -32,21 +32,6 @@ INTEGER
 iRamax(INTEGER const n, REAL *dx, INTEGER const incx) {
     INTEGER return_value = 0;
     //
-    //  -- Reference BLAS level1 routine --
-    //  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
     return_value = 0;
     if (n < 1 || incx <= 0) {
         return return_value;
@@ -60,9 +45,9 @@ iRamax(INTEGER const n, REAL *dx, INTEGER const incx) {
     INTEGER ix = 0;
     if (incx == 1) {
         //
-        //        code for increment equal to 1
+        // code for increment equal to 1
         //
-        dmax = abs(dx[1 - 1]);
+        dmax = abs(dx[0]);
         for (i = 2; i <= n; i = i + 1) {
             if (abs(dx[i - 1]) > dmax) {
                 return_value = i;
@@ -71,10 +56,10 @@ iRamax(INTEGER const n, REAL *dx, INTEGER const incx) {
         }
     } else {
         //
-        //        code for increment not equal to 1
+        // code for increment not equal to 1
         //
         ix = 1;
-        dmax = abs(dx[1 - 1]);
+        dmax = abs(dx[0]);
         ix += incx;
         for (i = 2; i <= n; i = i + 1) {
             if (abs(dx[ix - 1]) > dmax) {

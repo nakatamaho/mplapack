@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -28,39 +28,17 @@
 
 #include <mpblas.h>
 
-void Cgemm(const char *transa, const char *transb, INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX const alpha, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, COMPLEX const beta, COMPLEX *c, INTEGER const ldc) {
+void Cgemm(const char *transa, const char *transb, INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX const &alpha, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, COMPLEX const &beta, COMPLEX *c, INTEGER const ldc) {
     //
-    //  -- Reference BLAS level3 routine --
-    //  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+    // Set  NOTA  and  NOTB  as  true if  A  and  B  respectively are not
+    // conjugated or transposed, set  CONJA and CONJB  as true if  A  and
+    // B  respectively are to be  transposed but  not conjugated  and set
+    // NROWA and NROWB  as the number of rows  of  A  and  B  respectively.
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Parameters ..
-    //     ..
-    //
-    //     Set  NOTA  and  NOTB  as  true if  A  and  B  respectively are not
-    //     conjugated or transposed, set  CONJA and CONJB  as true if  A  and
-    //     B  respectively are to be  transposed but  not conjugated  and set
-    //     NROWA and NROWB  as the number of rows  of  A  and  B  respectively.
-    //
-    bool nota = Mlsame(transa, "N");
-    bool notb = Mlsame(transb, "N");
-    bool conja = Mlsame(transa, "C");
-    bool conjb = Mlsame(transb, "C");
+    LOGICAL nota = Mlsame(transa, "N");
+    LOGICAL notb = Mlsame(transb, "N");
+    LOGICAL conja = Mlsame(transa, "C");
+    LOGICAL conjb = Mlsame(transb, "C");
     INTEGER nrowa = 0;
     if (nota) {
         nrowa = m;
@@ -74,7 +52,7 @@ void Cgemm(const char *transa, const char *transb, INTEGER const m, INTEGER cons
         nrowb = n;
     }
     //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     INTEGER info = 0;
     if ((!nota) && (!conja) && (!Mlsame(transa, "T"))) {
@@ -99,7 +77,7 @@ void Cgemm(const char *transa, const char *transb, INTEGER const m, INTEGER cons
         return;
     }
     //
-    //     Quick return if possible.
+    // Quick return if possible.
     //
     const COMPLEX zero = COMPLEX(0.0, 0.0);
     const COMPLEX one = COMPLEX(1.0, 0.0);
@@ -107,7 +85,7 @@ void Cgemm(const char *transa, const char *transb, INTEGER const m, INTEGER cons
         return;
     }
     //
-    //     And when  alpha.eq.zero.
+    // And when  alpha.eq.zero.
     //
     INTEGER j = 0;
     INTEGER i = 0;
@@ -128,14 +106,14 @@ void Cgemm(const char *transa, const char *transb, INTEGER const m, INTEGER cons
         return;
     }
     //
-    //     Start the operations.
+    // Start the operations.
     //
     INTEGER l = 0;
     COMPLEX temp = 0.0;
     if (notb) {
         if (nota) {
             //
-            //           Form  C := alpha*A*B + beta*C.
+            // Form  C := alpha*A*B + beta*C.
             //
             for (j = 1; j <= n; j = j + 1) {
                 if (beta == zero) {
@@ -156,7 +134,7 @@ void Cgemm(const char *transa, const char *transb, INTEGER const m, INTEGER cons
             }
         } else if (conja) {
             //
-            //           Form  C := alpha*A**H*B + beta*C.
+            // Form  C := alpha*A**H*B + beta*C.
             //
             for (j = 1; j <= n; j = j + 1) {
                 for (i = 1; i <= m; i = i + 1) {
@@ -173,7 +151,7 @@ void Cgemm(const char *transa, const char *transb, INTEGER const m, INTEGER cons
             }
         } else {
             //
-            //           Form  C := alpha*A**T*B + beta*C
+            // Form  C := alpha*A**T*B + beta*C
             //
             for (j = 1; j <= n; j = j + 1) {
                 for (i = 1; i <= m; i = i + 1) {
@@ -192,7 +170,7 @@ void Cgemm(const char *transa, const char *transb, INTEGER const m, INTEGER cons
     } else if (nota) {
         if (conjb) {
             //
-            //           Form  C := alpha*A*B**H + beta*C.
+            // Form  C := alpha*A*B**H + beta*C.
             //
             for (j = 1; j <= n; j = j + 1) {
                 if (beta == zero) {
@@ -213,7 +191,7 @@ void Cgemm(const char *transa, const char *transb, INTEGER const m, INTEGER cons
             }
         } else {
             //
-            //           Form  C := alpha*A*B**T + beta*C
+            // Form  C := alpha*A*B**T + beta*C
             //
             for (j = 1; j <= n; j = j + 1) {
                 if (beta == zero) {
@@ -236,7 +214,7 @@ void Cgemm(const char *transa, const char *transb, INTEGER const m, INTEGER cons
     } else if (conja) {
         if (conjb) {
             //
-            //           Form  C := alpha*A**H*B**H + beta*C.
+            // Form  C := alpha*A**H*B**H + beta*C.
             //
             for (j = 1; j <= n; j = j + 1) {
                 for (i = 1; i <= m; i = i + 1) {
@@ -253,7 +231,7 @@ void Cgemm(const char *transa, const char *transb, INTEGER const m, INTEGER cons
             }
         } else {
             //
-            //           Form  C := alpha*A**H*B**T + beta*C
+            // Form  C := alpha*A**H*B**T + beta*C
             //
             for (j = 1; j <= n; j = j + 1) {
                 for (i = 1; i <= m; i = i + 1) {
@@ -272,7 +250,7 @@ void Cgemm(const char *transa, const char *transb, INTEGER const m, INTEGER cons
     } else {
         if (conjb) {
             //
-            //           Form  C := alpha*A**T*B**H + beta*C
+            // Form  C := alpha*A**T*B**H + beta*C
             //
             for (j = 1; j <= n; j = j + 1) {
                 for (i = 1; i <= m; i = i + 1) {
@@ -289,7 +267,7 @@ void Cgemm(const char *transa, const char *transb, INTEGER const m, INTEGER cons
             }
         } else {
             //
-            //           Form  C := alpha*A**T*B**T + beta*C
+            // Form  C := alpha*A**T*B**T + beta*C
             //
             for (j = 1; j <= n; j = j + 1) {
                 for (i = 1; i <= m; i = i + 1) {
@@ -307,6 +285,6 @@ void Cgemm(const char *transa, const char *transb, INTEGER const m, INTEGER cons
         }
     }
     //
-    //     End of Cgemm .
+    // End of Cgemm .
     //
 }
