@@ -37,9 +37,7 @@ void __attribute__((constructor)) ___mplapack_Rlaruv_mpfr_initialize(void) {
     gmp_randinit_default(___random_mplapack_mpfr_state);
     gmp_randseed_ui(___random_mplapack_mpfr_state, (unsigned long int)time(NULL));
 }
-void __attribute__((destructor)) ___mplapack_Rlaruv_mpfr_finalize(void) {
-    gmp_randclear(___random_mplapack_mpfr_state);
-}
+void __attribute__((destructor)) ___mplapack_Rlaruv_mpfr_finalize(void) { gmp_randclear(___random_mplapack_mpfr_state); }
 #endif
 
 #if defined ___MPLAPACK_BUILD_WITH_GMP___
@@ -49,9 +47,7 @@ void __attribute__((constructor)) ___mplapack_Rlaruv_gmp_initialize(void) {
     gmp_randinit_default(___random_mplapack_gmp_state);
     gmp_randseed_ui(___random_mplapack_gmp_state, (unsigned long int)time(NULL));
 }
-void __attribute__((destructor)) ___mplapack_Rlaruv_gmp_finalize(void) {
-    gmp_randclear(___random_mplapack_gmp_state);
-}
+void __attribute__((destructor)) ___mplapack_Rlaruv_gmp_finalize(void) { gmp_randclear(___random_mplapack_gmp_state); }
 #endif
 
 void Rlaruv(INTEGER *iseed, INTEGER const n, REAL *x) {
