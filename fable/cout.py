@@ -1111,10 +1111,26 @@ def _imag_repl(arg: str) -> str:
         return f"{arg}.imag()"
     return f"({arg}).imag()"
 
+
 def _conj_repl(arg: str) -> str:
     """Replacement for CONJG/CONJ: std::conj(arg)."""
     arg = arg.strip()
     return f"conj({arg})"
+
+
+_dummy_character_args = set()
+
+
+def _mark_dummy_character_arg(conv_info, name: str) -> None:
+    """Remember that (current fproc, name) is a CHARACTER dummy argument."""
+    key = (id(conv_info.fproc), name.lower())
+    _dummy_character_args.add(key)
+
+
+def _is_dummy_character_arg(conv_info, name: str) -> bool:
+    """Return True if (current fproc, name) is a CHARACTER dummy argument."""
+    key = (id(conv_info.fproc), name.lower())
+    return key in _dummy_character_args
 
 
 def _rewrite_unary_intrinsic(text: str, func_name: str, repl_func):
@@ -1654,6 +1670,24 @@ def convert_declaration(rapp, conv_info, fdecl, crhs, const):
         conv_info=conv_info, fdecl=fdecl, crhs=crhs)
     vname = conv_info.vmapped(fdecl=fdecl)
     if (cdims is None):
+        # Scalar declaration.
+        # For plain CHARACTER*1 (mapped to C++ 'char') without an explicit
+        # Fortran initializer, do not inject an artificial '= 0;'.
+        # This keeps:
+        #   CHARACTER          NORMIN
+        # as:
+        #   char normin;
+        # and relies on the subsequent assignments in the Fortran logic.
+        if crhs is None and ctype == "char":
+            def const_qualifier():
+                if (const):
+                    return "const "
+                return ""
+            # Use MPLAPACK-style scalar types (INTEGER, REAL, etc.)
+            mplapack_ctype = convert_to_mplapack_type(ctype)
+            rapp("%s%s %s;" % (const_qualifier(), mplapack_ctype, vname))
+            return False
+
         if (crhs is None):
             crhs = zero_shortcut_if_possible(ctype=ctype)
 
@@ -2465,10 +2499,16 @@ def declare_identifier(conv_info, top_scope, curr_scope, id_tok, crhs=None):
     conv_info.set_vmap_from_fdecl(fdecl=fdecl)
     have_goto = (len(conv_info.fproc.target_statement_labels()) != 0)
 
+    # Skip CHARACTER declarations for dummy arguments.
+    # Their types are already handled in the generated C++ function signature.
+    if _is_dummy_character_arg(conv_info, id_tok.value):
+        return crhs is not None
+
     def get_rapp():
         if (have_goto):
             return top_scope.top_append
         return top_scope.append
+
     if (not fdecl.is_common()):
         equiv_tok_cluster = conv_info.fproc.equivalence_info() \
             .equiv_tok_cluster_by_identifier.get(id_tok.value)
@@ -3230,6 +3270,9 @@ def convert_to_cpp_function(
             arg_name = prepend_identifier_if_necessary(id_tok.value)
         if (fdecl.data_type is not None
                 and fdecl.data_type.value == "character"):
+            # Mark this as a CHARACTER dummy argument so we can
+            # skip its local declaration later.
+            _mark_dummy_character_arg(conv_info, id_tok.value)
             if (fdecl.dim_tokens is None):
                 # MPLAPACK-style: scalar CHARACTER arguments as const char*
                 cargs_append("const char *", arg_name)
@@ -4100,6 +4143,16 @@ def _postprocess_intrinsic_aliases(lines):
     return out
 
 
+def _postprocess_strip_float_suffix(lines):
+    """Remove 'f' suffix from floating literals like 1.0f, 0.5f, 3.14e-1f."""
+    # Match patterns like:
+    #   1.0f, 0.5f, 3.14e-1f, 1.F, 1.e+0F, etc.
+    pat = re.compile(r'(\d+(?:\.\d*)?(?:[eE][+-]?\d+)?)[fF]\b')
+    out = []
+    for line in lines:
+        out.append(pat.sub(r'\1', line))
+    return out
+
 def _postprocess_complex_zero_initializers(lines):
     """Rewrite COMPLEX zero initializers using COMPLEX(0.0, 0.0).
 
@@ -4580,6 +4633,9 @@ def process(
 
     # Final intrinsic cleanup (abs / pow2 aliases).
     result = _postprocess_intrinsic_aliases(result)
+
+    # Strip C-style float suffixes from literals (1.0f -> 1.0, etc.).
+    result = _postprocess_strip_float_suffix(result)
 
     # Clean up temporary Fortran files created for preprocessing.
     for tmp in temp_files:
