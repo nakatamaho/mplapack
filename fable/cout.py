@@ -4142,6 +4142,37 @@ def _postprocess_intrinsic_aliases(lines):
         out.append(line)
     return out
 
+def _postprocess_math_intrinsics_upper(lines):
+    """Rewrite math intrinsic calls (atan2, cos, sin, tan, log, exp, max, min, abs) to uppercase names."""
+    out = []
+    for line in lines:
+        # Trigonometric intrinsics
+        line = re.sub(r'\bstd::atan2\s*\(', 'ATAN2(', line)
+        line = re.sub(r'\batan2\s*\(', 'ATAN2(', line)
+        line = re.sub(r'\bstd::cos\s*\(', 'COS(', line)
+        line = re.sub(r'\bcos\s*\(', 'COS(', line)
+        line = re.sub(r'\bstd::sin\s*\(', 'SIN(', line)
+        line = re.sub(r'\bsin\s*\(', 'SIN(', line)
+        line = re.sub(r'\bstd::tan\s*\(', 'TAN(', line)
+        line = re.sub(r'\btan\s*\(', 'TAN(', line)
+        # Logarithm and exponential intrinsics
+        line = re.sub(r'\bstd::log\s*\(', 'LOG(', line)
+        line = re.sub(r'\blog\s*\(', 'LOG(', line)
+        line = re.sub(r'\bstd::exp\s*\(', 'EXP(', line)
+        line = re.sub(r'\bexp\s*\(', 'EXP(', line)
+        # Extremum intrinsics
+        line = re.sub(r'\bstd::max\s*\(', 'MAX(', line)
+        line = re.sub(r'\bmax\s*\(', 'MAX(', line)
+        line = re.sub(r'\bstd::min\s*\(', 'MIN(', line)
+        line = re.sub(r'\bmin\s*\(', 'MIN(', line)
+        # Absolute value intrinsics
+        line = re.sub(r'\bstd::abs\s*\(', 'ABS(', line)
+        line = re.sub(r'\babs\s*\(', 'ABS(', line)
+
+        line = re.sub(r'\bstd::mod\s*\(', 'MOD(', line)
+        line = re.sub(r'\bmod\s*\(', 'MOD(', line)
+        out.append(line)
+    return out
 
 def _postprocess_strip_float_suffix(lines):
     """Remove 'f' suffix from floating literals like 1.0f, 0.5f, 3.14e-1f."""
@@ -4636,6 +4667,9 @@ def process(
 
     # Strip C-style float suffixes from literals (1.0f -> 1.0, etc.).
     result = _postprocess_strip_float_suffix(result)
+
+    # Uppercase selected math intrinsics (ATAN2, COS, SIN, TAN, LOG, EXP, MAX, MIN, ABS).
+    result = _postprocess_math_intrinsics_upper(result)
 
     # Clean up temporary Fortran files created for preprocessing.
     for tmp in temp_files:

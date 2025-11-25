@@ -116,9 +116,70 @@ typedef std::complex<_Float128> COMPLEX;
 #endif
 
 #include <algorithm>
-using std::max;
-using std::min;
+#include <cmath>
 
-inline INTEGER mod(INTEGER a, INTEGER b) { return a % b; }
+// Integer MOD (Fortran-style MOD for INTEGER arguments)
+inline INTEGER MOD(INTEGER a, INTEGER b) {
+    return a % b;
+}
+
+// ABS: overloaded for REAL, COMPLEX, and INTEGER.
+// For COMPLEX, return the magnitude as a REAL, matching Fortran ABS.
+inline REAL ABS(const REAL &x) {
+using std::abs;
+    return abs(x);
+}
+
+// COMPLEX version of ABS.
+// For the __Float128 backend we must NOT go through std::abs(std::complex<_Float128>)
+// because libstdc++'s implementation ends up calling sqrt(__float128) with
+// an ambiguous overload set. Instead, we delegate to the backend-specific
+// overload in mplapack_utils__Float128.h via a qualified ::abs call.
+inline REAL ABS(const COMPLEX &z) {
+#if defined ___MPLAPACK_BUILD_WITH__FLOAT128___
+return ::abs(z);  // calls the global abs(std::complex<_Float128>) we define
+#else
+using std::abs;
+    return abs(z);
+#endif
+}
+
+inline INTEGER ABS(const INTEGER &i) {
+  return (i >= 0 ? i : -i);
+}
+
+// MAX/MIN for REAL and INTEGER.
+// Base 2-argument overloads: return by value so that literals are safe
+// (e.g. MAX(0.0, x)) even for mp types.
+
+inline REAL MAX(const REAL &a, const REAL &b) {
+  return (a < b ? b : a);
+}
+
+inline INTEGER MAX(const INTEGER &a, const INTEGER &b) {
+  return (a < b ? b : a);
+}
+
+inline REAL MIN(const REAL &a, const REAL &b) {
+  return (b < a ? b : a);
+}
+
+inline INTEGER MIN(const INTEGER &a, const INTEGER &b) {
+  return (b < a ? b : a);
+}
+
+// Variadic MAX/MIN for more than two arguments.
+// All arguments must have the same type; the base overloads above
+// determine which types are actually supported.
+
+template <typename T, typename... Ts>
+inline T MAX(const T &a, const T &b, const Ts &...rest) {
+    return MAX(MAX(a, b), rest...);
+}
+
+template <typename T, typename... Ts>
+inline T MIN(const T &a, const T &b, const Ts &...rest) {
+    return MIN(MIN(a, b), rest...);
+}
 
 #endif
