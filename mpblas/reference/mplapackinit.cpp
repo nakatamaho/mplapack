@@ -49,7 +49,7 @@ void mplapack_finalize_gmp(void) {
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
 void __attribute__((constructor)) mplapack_initialize_mpfr(void);
 void mplapack_initialize_mpfr(void) {
-    mpreal::default_rnd  = mpfr_get_default_rounding_mode();
+    mpreal::default_rnd = mpfr_get_default_rounding_mode();
     mpreal::default_prec = ___MPLAPACK_MPFR_DEFAULT_PRECISION___;
     mpreal::default_base = 10;
     mpreal::double_bits = -1;
