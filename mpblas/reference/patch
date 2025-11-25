@@ -1,97 +1,246 @@
-diff --git a/mpblas/reference/Rrotm.cpp b/mpblas/reference/Rrotm.cpp
-index 45794f2..c121545 100644
---- a/mpblas/reference/Rrotm.cpp
-+++ b/mpblas/reference/Rrotm.cpp
-@@ -28,16 +28,7 @@
- 
- #include <mpblas.h>
- 
--void Rrotm(common &cmn, INTEGER const n, REAL *dx, INTEGER const incx, REAL *dy, INTEGER const incy, REAL *dparam) {
--    FEM_CMN_SVE(Rrotm);
--    // SAVE
--    REAL &two = sve.two;
--    REAL &zero = sve.zero;
--    //
--    if (is_called_first_time) {
--        zero = 0.0;
--        two = 2.0;
--    }
-+void Rrotm(INTEGER const n, REAL *dx, INTEGER const incx, REAL *dy, INTEGER const incy, REAL *dparam) {
-     //
-     //  -- Reference BLAS level1 routine --
-     //  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --
-@@ -52,7 +43,8 @@ void Rrotm(common &cmn, INTEGER const n, REAL *dx, INTEGER const incx, REAL *dy,
-     //
-     //     .. Local Scalars ..
-     //     ..
--    //     .. Data statements ..
-+    REAL zero = 0.0;
-+    REAL two = 2.0;
-     //     ..
-     //
-     REAL dflag = dparam[1 - 1];
-diff --git a/mpblas/reference/Rrotmg.cpp b/mpblas/reference/Rrotmg.cpp
-index ddf0f6d..3ff870d 100644
---- a/mpblas/reference/Rrotmg.cpp
-+++ b/mpblas/reference/Rrotmg.cpp
-@@ -28,24 +28,7 @@
- 
- #include <mpblas.h>
- 
--void Rrotmg(common &cmn, REAL &dd1, REAL &dd2, REAL &dx1, REAL const dy1, REAL *dparam) {
--    FEM_CMN_SVE(Rrotmg);
--    // SAVE
--    REAL &gam = sve.gam;
--    REAL &gamsq = sve.gamsq;
--    REAL &one = sve.one;
--    REAL &rgamsq = sve.rgamsq;
--    REAL &two = sve.two;
--    REAL &zero = sve.zero;
--    //
--    if (is_called_first_time) {
--        zero = 0.0;
--        one = 1.0;
--        two = 2.0;
--        gam = 4096.0;
--        gamsq = 16777216;
--        rgamsq = 5.9604645e-8;
--    }
-+void Rrotmg(REAL &dd1, REAL &dd2, REAL &dx1, REAL const dy1, REAL *dparam) {
-     //
-     //  -- Reference BLAS level1 routine --
-     //  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --
-@@ -62,8 +45,13 @@ void Rrotmg(common &cmn, REAL &dd1, REAL &dd2, REAL &dx1, REAL const dy1, REAL *
-     //     ..
-     //     .. Intrinsic Functions ..
-     //     ..
--    //     .. Data statements ..
-     //
-+    REAL zero = 0.0;
-+    REAL one = 1.0;
-+    REAL two = 2.0;
-+    REAL gam = 4096.0;
-+    REAL gamsq = 16777216;
-+    REAL rgamsq = 5.9604645e-8;
-     //     ..
-     //
-     REAL dflag = 0.0;
---- a/mpblas/reference/Cherk.cpp	2021-04-21 13:01:46.052000251 +0000
-+++ b/mpblas/reference/Cherk.cpp	2021-04-21 13:03:04.253765955 +0000
-@@ -205,7 +205,7 @@
+diff --git a/mpblas/reference/Cherk.cpp b/mpblas/reference/Cherk.cpp
+index af32c226..131d0477 100644
+--- a/mpblas/reference/Cherk.cpp
++++ b/mpblas/reference/Cherk.cpp
+@@ -173,7 +173,7 @@ void Cherk(const char *uplo, const char *trans, INTEGER const n, INTEGER const k
+                 for (i = 1; i <= j - 1; i = i + 1) {
+                     temp = zero;
+                     for (l = 1; l <= k; l = l + 1) {
+-                        temp += (conj(a[(l - 1) + (i - 1) * lda]) * a[(l - 1) + (j - 1) * lda]).real();
++                        temp += conj(a[(l - 1) + (i - 1) * lda]) * a[(l - 1) + (j - 1) * lda];
+                     }
+                     if (beta == zero) {
+                         c[(i - 1) + (j - 1) * ldc] = alpha * temp;
+@@ -183,7 +183,7 @@ void Cherk(const char *uplo, const char *trans, INTEGER const n, INTEGER const k
                  }
                  rtemp = zero;
                  for (l = 1; l <= k; l = l + 1) {
--                    rtemp += conj(a[(l - 1) + (j - 1) * lda]) * a[(l - 1) + (j - 1) * lda];
-+                    rtemp += (conj(a[(l - 1) + (j - 1) * lda]) * a[(l - 1) + (j - 1) * lda]).real();
+-                    rtemp += (conj(a[(l - 1) + (j - 1) * lda]) * a[(l - 1) + (j - 1) * lda]).real();
++                    rtemp += conj(a[(l - 1) + (j - 1) * lda]) * a[(l - 1) + (j - 1) * lda];
                  }
                  if (beta == zero) {
                      c[(j - 1) + (j - 1) * ldc] = alpha * rtemp;
-@@ -217,7 +217,7 @@
+@@ -195,7 +195,7 @@ void Cherk(const char *uplo, const char *trans, INTEGER const n, INTEGER const k
              for (j = 1; j <= n; j = j + 1) {
                  rtemp = zero;
                  for (l = 1; l <= k; l = l + 1) {
--                    rtemp += conj(a[(l - 1) + (j - 1) * lda]) * a[(l - 1) + (j - 1) * lda];
-+                    rtemp += (conj(a[(l - 1) + (j - 1) * lda]) * a[(l - 1) + (j - 1) * lda]).real();
+-                    rtemp += (conj(a[(l - 1) + (j - 1) * lda]) * a[(l - 1) + (j - 1) * lda]).real();
++                    rtemp += conj(a[(l - 1) + (j - 1) * lda]) * a[(l - 1) + (j - 1) * lda];
                  }
                  if (beta == zero) {
                      c[(j - 1) + (j - 1) * ldc] = alpha * rtemp;
+@@ -205,7 +205,7 @@ void Cherk(const char *uplo, const char *trans, INTEGER const n, INTEGER const k
+                 for (i = j + 1; i <= n; i = i + 1) {
+                     temp = zero;
+                     for (l = 1; l <= k; l = l + 1) {
+-                        temp += (conj(a[(l - 1) + (i - 1) * lda]) * a[(l - 1) + (j - 1) * lda]).real();
++                        temp += conj(a[(l - 1) + (i - 1) * lda]) * a[(l - 1) + (j - 1) * lda];
+                     }
+                     if (beta == zero) {
+                         c[(i - 1) + (j - 1) * ldc] = alpha * temp;
+diff --git a/mpblas/reference/Rrotm.cpp b/mpblas/reference/Rrotm.cpp
+index 80f05dcf..811a1194 100644
+--- a/mpblas/reference/Rrotm.cpp
++++ b/mpblas/reference/Rrotm.cpp
+@@ -28,9 +28,90 @@
+ 
+ #include <mpblas.h>
+ 
+-void Rrotm(INTEGER const n, REAL *dx, INTEGER const incx, REAL *dy, INTEGER const incy, REAL *dparam) {
+-    REAL zero = 0.0;
+-    REAL two = 2.0;
++struct common : fem::common {
++    fem::cmn_sve drotm_sve;
++
++    common(int argc, char const *argv[]) : fem::common(argc, argv) {}
++};
++
++struct drotm_save {
++    double two;
++    double zero;
++
++    drotm_save() : two(0.0), zero(0.0) {}
++};
++
++// > \brief \b DROTM
++// >
++// > \verbatim
++// >
++// >    APPLY THE MODIFIED GIVENS TRANSFORMATION, H, TO THE 2 BY N MATRIX
++// >
++// >    (DX**T) , WHERE **T INDICATES TRANSPOSE. THE ELEMENTS OF DX ARE IN
++// >    (DY**T)
++// >
++// >    DX(LX+I*INCX), I = 0 TO N-1, WHERE LX = 1 IF INCX .GE. 0, ELSE
++// >    LX = (-INCX)*N, AND SIMILARLY FOR SY USING LY AND INCY.
++// >    WITH DPARAM(1)=DFLAG, H HAS ONE OF THE FOLLOWING FORMS..
++// >
++// >    DFLAG=-1.D0     DFLAG=0.D0        DFLAG=1.D0     DFLAG=-2.D0
++// >
++// >      (DH11  DH12)    (1.D0  DH12)    (DH11  1.D0)    (1.D0  0.D0)
++// >    H=(          )    (          )    (          )    (          )
++// >      (DH21  DH22),   (DH21  1.D0),   (-1.D0 DH22),   (0.D0  1.D0).
++// >    SEE DROTMG FOR A DESCRIPTION OF DATA STORAGE IN DPARAM.
++// > \endverbatim
++//
++// Arguments:
++// > \param[in] N
++// > \verbatim
++// >          N is INTEGER
++// >         number of elements in input vector(s)
++// > \endverbatim
++// >
++// > \param[in,out] DX
++// > \verbatim
++// >          DX is DOUBLE PRECISION array, dimension ( 1 + ( N - 1 )*ABS( INCX ) )
++// > \endverbatim
++// >
++// > \param[in] INCX
++// > \verbatim
++// >          INCX is INTEGER
++// >         storage spacing between elements of DX
++// > \endverbatim
++// >
++// > \param[in,out] DY
++// > \verbatim
++// >          DY is DOUBLE PRECISION array, dimension ( 1 + ( N - 1 )*ABS( INCY ) )
++// > \endverbatim
++// >
++// > \param[in] INCY
++// > \verbatim
++// >          INCY is INTEGER
++// >         storage spacing between elements of DY
++// > \endverbatim
++// >
++// > \param[in] DPARAM
++// > \verbatim
++// >          DPARAM is DOUBLE PRECISION array, dimension (5)
++// >     DPARAM(1)=DFLAG
++// >     DPARAM(2)=DH11
++// >     DPARAM(3)=DH21
++// >     DPARAM(4)=DH12
++// >     DPARAM(5)=DH22
++// > \endverbatim
++//
++// Authors:
++void Rrotm(common &cmn, INTEGER const n, REAL *dx, INTEGER const incx, REAL *dy, INTEGER const incy, REAL *dparam) {
++    FEM_CMN_SVE(drotm);
++    // SAVE
++    double &two = sve.two;
++    double &zero = sve.zero;
++    //
++    if (is_called_first_time) {
++        zero = 0.0;
++        two = 2.0;
++    }
+     //
+     REAL dflag = dparam[0];
+     if (n <= 0 || (dflag + two == zero)) {
+diff --git a/mpblas/reference/Rrotmg.cpp b/mpblas/reference/Rrotmg.cpp
+index 3edea7c6..b7eb0e70 100644
+--- a/mpblas/reference/Rrotmg.cpp
++++ b/mpblas/reference/Rrotmg.cpp
+@@ -28,14 +28,96 @@
+ 
+ #include <mpblas.h>
+ 
+-void Rrotmg(REAL &dd1, REAL &dd2, REAL &dx1, REAL const &dy1, REAL *dparam) {
++struct common : fem::common {
++    fem::cmn_sve drotmg_sve;
++
++    common(int argc, char const *argv[]) : fem::common(argc, argv) {}
++};
++
++struct drotmg_save {
++    double gam;
++    double gamsq;
++    double one;
++    double rgamsq;
++    double two;
++    double zero;
++
++    drotmg_save() : gam(0.0), gamsq(0.0), one(0.0), rgamsq(0.0), two(0.0), zero(0.0) {}
++};
++
++// > \brief \b DROTMG
++// >
++// > \verbatim
++// >
++// >    CONSTRUCT THE MODIFIED GIVENS TRANSFORMATION MATRIX H WHICH ZEROS
++// >    THE SECOND COMPONENT OF THE 2-VECTOR  (DSQRT(DD1)*DX1,DSQRT(DD2)*>    DY2)**T.
++// >    WITH DPARAM(1)=DFLAG, H HAS ONE OF THE FOLLOWING FORMS..
++// >
++// >    DFLAG=-1.D0     DFLAG=0.D0        DFLAG=1.D0     DFLAG=-2.D0
++// >
++// >      (DH11  DH12)    (1.D0  DH12)    (DH11  1.D0)    (1.D0  0.D0)
++// >    H=(          )    (          )    (          )    (          )
++// >      (DH21  DH22),   (DH21  1.D0),   (-1.D0 DH22),   (0.D0  1.D0).
++// >    LOCATIONS 2-4 OF DPARAM CONTAIN DH11, DH21, DH12, AND DH22
++// >    RESPECTIVELY. (VALUES OF 1.D0, -1.D0, OR 0.D0 IMPLIED BY THE
++// >    VALUE OF DPARAM(1) ARE NOT STORED IN DPARAM.)
++// >
++// >    THE VALUES OF GAMSQ AND RGAMSQ SET IN THE DATA STATEMENT MAY BE
++// >    INEXACT.  THIS IS OK AS THEY ARE ONLY USED FOR TESTING THE SIZE
++// >    OF DD1 AND DD2.  ALL ACTUAL SCALING OF DATA IS DONE USING GAM.
++// >
++// > \endverbatim
++//
++// Arguments:
++// > \param[in,out] DD1
++// > \verbatim
++// >          DD1 is DOUBLE PRECISION
++// > \endverbatim
++// >
++// > \param[in,out] DD2
++// > \verbatim
++// >          DD2 is DOUBLE PRECISION
++// > \endverbatim
++// >
++// > \param[in,out] DX1
++// > \verbatim
++// >          DX1 is DOUBLE PRECISION
++// > \endverbatim
++// >
++// > \param[in] DY1
++// > \verbatim
++// >          DY1 is DOUBLE PRECISION
++// > \endverbatim
++// >
++// > \param[out] DPARAM
++// > \verbatim
++// >          DPARAM is DOUBLE PRECISION array, dimension (5)
++// >     DPARAM(1)=DFLAG
++// >     DPARAM(2)=DH11
++// >     DPARAM(3)=DH21
++// >     DPARAM(4)=DH12
++// >     DPARAM(5)=DH22
++// > \endverbatim
++//
++// Authors:
++void Rrotmg(common &cmn, REAL &dd1, REAL &dd2, REAL &dx1, REAL const &dy1, REAL *dparam) {
++    FEM_CMN_SVE(drotmg);
++    // SAVE
++    double &gam = sve.gam;
++    double &gamsq = sve.gamsq;
++    double &one = sve.one;
++    double &rgamsq = sve.rgamsq;
++    double &two = sve.two;
++    double &zero = sve.zero;
+     //
+-    REAL zero = 0.0;
+-    REAL one = 1.0;
+-    REAL two = 2.0;
+-    REAL gam = 4096.0;
+-    REAL gamsq = 16777216;
+-    REAL rgamsq = 0x1p-24;
++    if (is_called_first_time) {
++        zero = 0.0;
++        one = 1.0;
++        two = 2.0;
++        gam = 4096.0;
++        gamsq = 16777216.0;
++        rgamsq = 5.960464500000001e-08;
++    }
+     //
+     REAL dflag = 0.0;
+     REAL dh11 = 0.0;
