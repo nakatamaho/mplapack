@@ -53,14 +53,14 @@ REAL Rnrm2(INTEGER const n, REAL *x, INTEGER const incx) {
             if (x[ix - 1] != zero) {
                 absxi = ABS(x[ix - 1]);
                 if (scale < absxi) {
-                    ssq = one + ssq * pow2((scale / absxi));
+                    ssq = one + ssq * POW2((scale / absxi));
                     scale = absxi;
                 } else {
-                    ssq += pow2((absxi / scale));
+                    ssq += POW2((absxi / scale));
                 }
             }
         }
-        norm = scale * sqrt(ssq);
+        norm = scale * SQRT(ssq);
     }
     //
     return_value = norm;

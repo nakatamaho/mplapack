@@ -4168,9 +4168,12 @@ def _postprocess_math_intrinsics_upper(lines):
         # Absolute value intrinsics
         line = re.sub(r'\bstd::abs\s*\(', 'ABS(', line)
         line = re.sub(r'\babs\s*\(', 'ABS(', line)
-
+        # other intrinsics
         line = re.sub(r'\bstd::mod\s*\(', 'MOD(', line)
         line = re.sub(r'\bmod\s*\(', 'MOD(', line)
+        line = re.sub(r'\bstd::sqrt\s*\(', 'SQRT(', line)
+        line = re.sub(r'\bsqrt\s*\(', 'SQRT(', line)
+        line = re.sub(r'\bpow2\s*\(', 'POW2(', line)
         out.append(line)
     return out
 

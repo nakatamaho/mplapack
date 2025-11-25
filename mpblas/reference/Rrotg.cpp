@@ -44,7 +44,7 @@ void Rrotg(REAL &da, REAL &db, REAL &c, REAL &s) {
         if (ABS(da) > ABS(db)) {
             roe = da;
         }
-        r = scale * sqrt(pow2((da / scale)) + pow2((db / scale)));
+        r = scale * SQRT(POW2((da / scale)) + POW2((db / scale)));
         r = sign(1.0, roe) * r;
         c = da / r;
         s = db / r;

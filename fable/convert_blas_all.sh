@@ -21,7 +21,7 @@ EXCLUDE_BASENAMES_MANUAL=( )
 EXCLUDE_BASENAMES_UNUSED=( icamax isamax )
 
 # Other helper/utility routines to be excluded from this pass
-EXCLUDE_BASENAMES_MISC=( xerbla lsame xerbla_array)
+EXCLUDE_BASENAMES_MISC=( xerbla lsame xerbla_array )
 
 # Combined basename exception list (for iteration)
 EXCLUDE_BASENAMES=(

@@ -119,14 +119,12 @@ typedef std::complex<_Float128> COMPLEX;
 #include <cmath>
 
 // Integer MOD (Fortran-style MOD for INTEGER arguments)
-inline INTEGER MOD(INTEGER a, INTEGER b) {
-    return a % b;
-}
+inline INTEGER MOD(INTEGER a, INTEGER b) { return a % b; }
 
 // ABS: overloaded for REAL, COMPLEX, and INTEGER.
 // For COMPLEX, return the magnitude as a REAL, matching Fortran ABS.
 inline REAL ABS(const REAL &x) {
-using std::abs;
+    using std::abs;
     return abs(x);
 }
 
@@ -137,49 +135,39 @@ using std::abs;
 // overload in mplapack_utils__Float128.h via a qualified ::abs call.
 inline REAL ABS(const COMPLEX &z) {
 #if defined ___MPLAPACK_BUILD_WITH__FLOAT128___
-return ::abs(z);  // calls the global abs(std::complex<_Float128>) we define
+    return ::abs(z); // calls the global abs(std::complex<_Float128>) we define
 #else
-using std::abs;
+    using std::abs;
     return abs(z);
 #endif
 }
 
-inline INTEGER ABS(const INTEGER &i) {
-  return (i >= 0 ? i : -i);
-}
+inline INTEGER ABS(const INTEGER &i) { return (i >= 0 ? i : -i); }
 
 // MAX/MIN for REAL and INTEGER.
 // Base 2-argument overloads: return by value so that literals are safe
 // (e.g. MAX(0.0, x)) even for mp types.
 
-inline REAL MAX(const REAL &a, const REAL &b) {
-  return (a < b ? b : a);
-}
-
-inline INTEGER MAX(const INTEGER &a, const INTEGER &b) {
-  return (a < b ? b : a);
-}
-
-inline REAL MIN(const REAL &a, const REAL &b) {
-  return (b < a ? b : a);
-}
-
-inline INTEGER MIN(const INTEGER &a, const INTEGER &b) {
-  return (b < a ? b : a);
-}
+inline REAL MAX(const REAL &a, const REAL &b) { return (a < b ? b : a); }
+inline INTEGER MAX(const INTEGER &a, const INTEGER &b) { return (a < b ? b : a); }
+inline REAL MIN(const REAL &a, const REAL &b) { return (b < a ? b : a); }
+inline INTEGER MIN(const INTEGER &a, const INTEGER &b) { return (b < a ? b : a); }
 
 // Variadic MAX/MIN for more than two arguments.
 // All arguments must have the same type; the base overloads above
 // determine which types are actually supported.
 
-template <typename T, typename... Ts>
-inline T MAX(const T &a, const T &b, const Ts &...rest) {
-    return MAX(MAX(a, b), rest...);
-}
+template <typename T, typename... Ts> inline T MAX(const T &a, const T &b, const Ts &...rest) { return MAX(MAX(a, b), rest...); }
+template <typename T, typename... Ts> inline T MIN(const T &a, const T &b, const Ts &...rest) { return MIN(MIN(a, b), rest...); }
 
-template <typename T, typename... Ts>
-inline T MIN(const T &a, const T &b, const Ts &...rest) {
-    return MIN(MIN(a, b), rest...);
+inline REAL POW2(const REAL &x) { return pow2(x); }
+inline REAL SQRT(const REAL &x) {
+#if defined ___MPLAPACK_BUILD_WITH__FLOAT128___
+    return ::sqrt(x); // calls the global sqrt(_Float128) we define
+#else
+    using std::sqrt;
+    return sqrt(x);
+#endif
 }
 
 #endif

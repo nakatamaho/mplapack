@@ -51,23 +51,23 @@ REAL RCnrm2(INTEGER const n, COMPLEX *x, INTEGER const incx) {
             if (x[ix - 1].real() != zero) {
                 temp = ABS(x[ix - 1].real());
                 if (scale < temp) {
-                    ssq = one + ssq * pow2((scale / temp));
+                    ssq = one + ssq * POW2((scale / temp));
                     scale = temp;
                 } else {
-                    ssq += pow2((temp / scale));
+                    ssq += POW2((temp / scale));
                 }
             }
             if (x[ix - 1].imag() != zero) {
                 temp = ABS(x[ix - 1].imag());
                 if (scale < temp) {
-                    ssq = one + ssq * pow2((scale / temp));
+                    ssq = one + ssq * POW2((scale / temp));
                     scale = temp;
                 } else {
-                    ssq += pow2((temp / scale));
+                    ssq += POW2((temp / scale));
                 }
             }
         }
-        norm = scale * sqrt(ssq);
+        norm = scale * SQRT(ssq);
     }
     //
     return_value = norm;

@@ -32,7 +32,7 @@ void Rrotm(INTEGER const n, REAL *dx, INTEGER const incx, REAL *dy, INTEGER cons
     REAL zero = 0.0;
     REAL two = 2.0;
     //
-    REAL dflag = dparam[1 - 1];
+    REAL dflag = dparam[0];
     if (n <= 0 || (dflag + two == zero)) {
         return;
     }
@@ -50,10 +50,10 @@ void Rrotm(INTEGER const n, REAL *dx, INTEGER const incx, REAL *dy, INTEGER cons
         //
         nsteps = n * incx;
         if (dflag < zero) {
-            dh11 = dparam[2 - 1];
-            dh12 = dparam[4 - 1];
-            dh21 = dparam[3 - 1];
-            dh22 = dparam[5 - 1];
+            dh11 = dparam[1];
+            dh12 = dparam[3];
+            dh21 = dparam[2];
+            dh22 = dparam[4];
             for (i = 1; i <= nsteps; i = i + incx) {
                 w = dx[i - 1];
                 z = dy[i - 1];
@@ -61,8 +61,8 @@ void Rrotm(INTEGER const n, REAL *dx, INTEGER const incx, REAL *dy, INTEGER cons
                 dy[i - 1] = w * dh21 + z * dh22;
             }
         } else if (dflag == zero) {
-            dh12 = dparam[4 - 1];
-            dh21 = dparam[3 - 1];
+            dh12 = dparam[3];
+            dh21 = dparam[2];
             for (i = 1; i <= nsteps; i = i + incx) {
                 w = dx[i - 1];
                 z = dy[i - 1];
@@ -70,8 +70,8 @@ void Rrotm(INTEGER const n, REAL *dx, INTEGER const incx, REAL *dy, INTEGER cons
                 dy[i - 1] = w * dh21 + z;
             }
         } else {
-            dh11 = dparam[2 - 1];
-            dh22 = dparam[5 - 1];
+            dh11 = dparam[1];
+            dh22 = dparam[4];
             for (i = 1; i <= nsteps; i = i + incx) {
                 w = dx[i - 1];
                 z = dy[i - 1];
@@ -90,10 +90,10 @@ void Rrotm(INTEGER const n, REAL *dx, INTEGER const incx, REAL *dy, INTEGER cons
         }
         //
         if (dflag < zero) {
-            dh11 = dparam[2 - 1];
-            dh12 = dparam[4 - 1];
-            dh21 = dparam[3 - 1];
-            dh22 = dparam[5 - 1];
+            dh11 = dparam[1];
+            dh12 = dparam[3];
+            dh21 = dparam[2];
+            dh22 = dparam[4];
             for (i = 1; i <= n; i = i + 1) {
                 w = dx[kx - 1];
                 z = dy[ky - 1];
@@ -103,8 +103,8 @@ void Rrotm(INTEGER const n, REAL *dx, INTEGER const incx, REAL *dy, INTEGER cons
                 ky += incy;
             }
         } else if (dflag == zero) {
-            dh12 = dparam[4 - 1];
-            dh21 = dparam[3 - 1];
+            dh12 = dparam[3];
+            dh21 = dparam[2];
             for (i = 1; i <= n; i = i + 1) {
                 w = dx[kx - 1];
                 z = dy[ky - 1];
@@ -114,8 +114,8 @@ void Rrotm(INTEGER const n, REAL *dx, INTEGER const incx, REAL *dy, INTEGER cons
                 ky += incy;
             }
         } else {
-            dh11 = dparam[2 - 1];
-            dh22 = dparam[5 - 1];
+            dh11 = dparam[1];
+            dh22 = dparam[4];
             for (i = 1; i <= n; i = i + 1) {
                 w = dx[kx - 1];
                 z = dy[ky - 1];
