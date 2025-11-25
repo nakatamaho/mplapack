@@ -1105,10 +1105,11 @@ def _real_repl(arg: str) -> str:
 
 
 def _imag_repl(arg: str) -> str:
-    """Replacement for AIMAG/IMAG: always (arg).imag()."""
+    """Replacement for AIMAG/IMAG: choose arg.imag() or (arg).imag()."""
     arg = arg.strip()
+    if _is_simple_lvalue(arg):
+        return f"{arg}.imag()"
     return f"({arg}).imag()"
-
 
 def _conj_repl(arg: str) -> str:
     """Replacement for CONJG/CONJ: std::conj(arg)."""
@@ -1323,27 +1324,27 @@ def convert_tokens(conv_info, tokens, commas=False, had_str_concat=None):
                          for p in idx_str.split(",") if p.strip() != ""]
 
                 if len(parts) == 1:
-                    # 1D array: a(i) -> x[(i - 1)] for symbolic indices,
-                    #            and x[k] for constant indices (i = k).
+                    # 1D array: a(i)
+                    #   - a(1)         -> a[0]
+                    #   - a(i)         -> a[i - 1]
+                    #   - a(i+1) etc.  -> a[((i+1) - 1)]
                     i_expr = parts[0].strip()
 
-                    # Constant integer index: a(1) -> a[0], a(5) -> a[4]
-                    m_int = re.fullmatch(r"[0-9]+", i_expr)
-                    if m_int:
+                    # Case 1: pure integer literal, e.g. "1" -> a[0]
+                    if re.fullmatch(r"[0-9]+", i_expr):
                         i_val = int(i_expr)
                         index_expr = str(i_val - 1)
-                        # For pure integer constant, do not add extra parentheses: a[0]
                         rapp("[" + index_expr + "]")
+
+                    # Case 2: simple identifier, e.g. "i", "ix", "jy" -> a[i - 1]
+                    elif re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", i_expr):
+                        index_expr = f"{i_expr} - 1"
+                        rapp("[" + index_expr + "]")
+
+                    # Case 3: more complex expression, keep it parenthesized: a[((i+1) - 1)]
                     else:
-                        # Non-constant index
-                        # simple_name: i, ix, k1, ...
-                        if re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", i_expr):
-                            inner = f"{i_expr} - 1"
-                        else:
-                            # More complex expressions: (i_expr) - 1
-                            inner = f"({i_expr}) - 1"
-                        # Wrap the whole index expression in parentheses: a[(i - 1)], a[((i+1) - 1)], etc.
-                        rapp("[(" + inner + ")]")
+                        inner = f"({i_expr}) - 1"
+                        rapp("[" + inner + "]")
 
                 elif len(parts) == 2:
                     # 2D array: a(i,j) -> a[(row_term) + (col_term)*ld<name>]
