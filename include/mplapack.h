@@ -163,4 +163,75 @@ typedef std::complex<_Float128> COMPLEX;
 #define iMparam2stage iMparam2stage__Float128
 #endif
 
+// Elementary functions on REAL / COMPLEX.
+// These rely on ADL so that mp backends can provide their own overloads.
+
+inline REAL EXP(const REAL &x) {
+    using std::exp;
+    return exp(x);
+}
+
+inline COMPLEX EXP(const COMPLEX &z) {
+    using std::exp;
+    return exp(z);
+}
+
+inline REAL SIN(const REAL &x) {
+    using std::sin;
+    return sin(x);
+}
+
+inline COMPLEX SIN(const COMPLEX &z) {
+    using std::sin;
+    return sin(z);
+}
+
+inline REAL COS(const REAL &x) {
+    using std::cos;
+    return cos(x);
+}
+
+inline COMPLEX COS(const COMPLEX &z) {
+    using std::cos;
+    return cos(z);
+}
+
+inline REAL TAN(const REAL &x) {
+    using std::tan;
+    return tan(x);
+}
+
+inline COMPLEX TAN(const COMPLEX &z) {
+    using std::tan;
+    return tan(z);
+}
+
+// ATAN2: Fortran ATAN2(Y, X) for REAL arguments
+inline REAL ATAN2(const REAL &y, const REAL &x) {
+    using std::atan2;
+    return atan2(y, x);
+}
+
+inline REAL LOG(const REAL &x) {
+    using std::log;
+    return log(x);
+}
+
+inline COMPLEX LOG(const COMPLEX &z) {
+    using std::log;
+    return log(z);
+}
+
+// Fortran-style power: z = x**y  or  pow(x, y).
+// This is the generic REAL^REAL case.
+inline REAL POW(const REAL &x, const REAL &y) {
+    using std::pow;
+    return pow(x, y);
+}
+
+inline REAL POW(const REAL &x, INTEGER n) {
+    using std::pow;
+    return pow(x, static_cast<double>(n));
+}
+
 #endif
