@@ -39,7 +39,7 @@ void Cgemv(const char *trans, INTEGER const m, INTEGER const n, COMPLEX const &a
         info = 2;
     } else if (n < 0) {
         info = 3;
-    } else if (lda < max((INTEGER)1, m)) {
+    } else if (lda < MAX((INTEGER)1, m)) {
         info = 6;
     } else if (incx == 0) {
         info = 8;

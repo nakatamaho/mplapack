@@ -96,7 +96,7 @@ void Rtbsv(const char *uplo, const char *trans, const char *diag, INTEGER const 
                             x[j - 1] = x[j - 1] / a[(kplus1 - 1) + (j - 1) * lda];
                         }
                         temp = x[j - 1];
-                        for (i = j - 1; i >= max((INTEGER)1, j - k); i = i - 1) {
+                        for (i = j - 1; i >= MAX((INTEGER)1, j - k); i = i - 1) {
                             x[i - 1] = x[i - 1] - temp * a[((l + i) - 1) + (j - 1) * lda];
                         }
                     }
@@ -113,7 +113,7 @@ void Rtbsv(const char *uplo, const char *trans, const char *diag, INTEGER const 
                             x[jx - 1] = x[jx - 1] / a[(kplus1 - 1) + (j - 1) * lda];
                         }
                         temp = x[jx - 1];
-                        for (i = j - 1; i >= max((INTEGER)1, j - k); i = i - 1) {
+                        for (i = j - 1; i >= MAX((INTEGER)1, j - k); i = i - 1) {
                             x[ix - 1] = x[ix - 1] - temp * a[((l + i) - 1) + (j - 1) * lda];
                             ix = ix - incx;
                         }
@@ -130,7 +130,7 @@ void Rtbsv(const char *uplo, const char *trans, const char *diag, INTEGER const 
                             x[j - 1] = x[j - 1] / a[(j - 1) * lda];
                         }
                         temp = x[j - 1];
-                        for (i = j + 1; i <= min(n, j + k); i = i + 1) {
+                        for (i = j + 1; i <= MIN(n, j + k); i = i + 1) {
                             x[i - 1] = x[i - 1] - temp * a[((l + i) - 1) + (j - 1) * lda];
                         }
                     }
@@ -146,7 +146,7 @@ void Rtbsv(const char *uplo, const char *trans, const char *diag, INTEGER const 
                             x[jx - 1] = x[jx - 1] / a[(j - 1) * lda];
                         }
                         temp = x[jx - 1];
-                        for (i = j + 1; i <= min(n, j + k); i = i + 1) {
+                        for (i = j + 1; i <= MIN(n, j + k); i = i + 1) {
                             x[ix - 1] = x[ix - 1] - temp * a[((l + i) - 1) + (j - 1) * lda];
                             ix += incx;
                         }
@@ -165,7 +165,7 @@ void Rtbsv(const char *uplo, const char *trans, const char *diag, INTEGER const 
                 for (j = 1; j <= n; j = j + 1) {
                     temp = x[j - 1];
                     l = kplus1 - j;
-                    for (i = max((INTEGER)1, j - k); i <= j - 1; i = i + 1) {
+                    for (i = MAX((INTEGER)1, j - k); i <= j - 1; i = i + 1) {
                         temp = temp - a[((l + i) - 1) + (j - 1) * lda] * x[i - 1];
                     }
                     if (nounit) {
@@ -179,7 +179,7 @@ void Rtbsv(const char *uplo, const char *trans, const char *diag, INTEGER const 
                     temp = x[jx - 1];
                     ix = kx;
                     l = kplus1 - j;
-                    for (i = max((INTEGER)1, j - k); i <= j - 1; i = i + 1) {
+                    for (i = MAX((INTEGER)1, j - k); i <= j - 1; i = i + 1) {
                         temp = temp - a[((l + i) - 1) + (j - 1) * lda] * x[ix - 1];
                         ix += incx;
                     }
@@ -198,7 +198,7 @@ void Rtbsv(const char *uplo, const char *trans, const char *diag, INTEGER const 
                 for (j = n; j >= 1; j = j - 1) {
                     temp = x[j - 1];
                     l = 1 - j;
-                    for (i = min(n, j + k); i >= j + 1; i = i - 1) {
+                    for (i = MIN(n, j + k); i >= j + 1; i = i - 1) {
                         temp = temp - a[((l + i) - 1) + (j - 1) * lda] * x[i - 1];
                     }
                     if (nounit) {
@@ -213,7 +213,7 @@ void Rtbsv(const char *uplo, const char *trans, const char *diag, INTEGER const 
                     temp = x[jx - 1];
                     ix = kx;
                     l = 1 - j;
-                    for (i = min(n, j + k); i >= j + 1; i = i - 1) {
+                    for (i = MIN(n, j + k); i >= j + 1; i = i - 1) {
                         temp = temp - a[((l + i) - 1) + (j - 1) * lda] * x[ix - 1];
                         ix = ix - incx;
                     }

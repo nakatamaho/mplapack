@@ -41,7 +41,7 @@ REAL Rnrm2(INTEGER const n, REAL *x, INTEGER const incx) {
     if (n < 1 || incx < 1) {
         norm = zero;
     } else if (n == 1) {
-        norm = abs(x[0]);
+        norm = ABS(x[0]);
     } else {
         scale = zero;
         ssq = one;
@@ -51,7 +51,7 @@ REAL Rnrm2(INTEGER const n, REAL *x, INTEGER const incx) {
         //
         for (ix = 1; ix <= 1 + (n - 1) * incx; ix = ix + incx) {
             if (x[ix - 1] != zero) {
-                absxi = abs(x[ix - 1]);
+                absxi = ABS(x[ix - 1]);
                 if (scale < absxi) {
                     ssq = one + ssq * pow2((scale / absxi));
                     scale = absxi;

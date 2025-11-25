@@ -45,7 +45,7 @@ void Rswap(INTEGER const n, REAL *dx, INTEGER const incx, REAL *dy, INTEGER cons
         //
         // clean-up loop
         //
-        m = mod(n, 3);
+        m = MOD(n, 3);
         if (m != 0) {
             for (i = 1; i <= m; i = i + 1) {
                 dtemp = dx[i - 1];

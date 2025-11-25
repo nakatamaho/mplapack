@@ -39,7 +39,7 @@ void Rsyr(const char *uplo, INTEGER const n, REAL const &alpha, REAL *x, INTEGER
         info = 2;
     } else if (incx == 0) {
         info = 5;
-    } else if (lda < max((INTEGER)1, n)) {
+    } else if (lda < MAX((INTEGER)1, n)) {
         info = 7;
     }
     if (info != 0) {

@@ -49,11 +49,11 @@ void Rsyr2k(const char *uplo, const char *trans, INTEGER const n, INTEGER const 
         info = 3;
     } else if (k < 0) {
         info = 4;
-    } else if (lda < max((INTEGER)1, nrowa)) {
+    } else if (lda < MAX((INTEGER)1, nrowa)) {
         info = 7;
-    } else if (ldb < max((INTEGER)1, nrowa)) {
+    } else if (ldb < MAX((INTEGER)1, nrowa)) {
         info = 9;
-    } else if (ldc < max((INTEGER)1, n)) {
+    } else if (ldc < MAX((INTEGER)1, n)) {
         info = 12;
     }
     if (info != 0) {

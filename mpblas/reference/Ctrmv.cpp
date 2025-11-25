@@ -41,7 +41,7 @@ void Ctrmv(const char *uplo, const char *trans, const char *diag, INTEGER const 
         info = 3;
     } else if (n < 0) {
         info = 4;
-    } else if (lda < max((INTEGER)1, n)) {
+    } else if (lda < MAX((INTEGER)1, n)) {
         info = 6;
     } else if (incx == 0) {
         info = 8;

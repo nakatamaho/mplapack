@@ -93,7 +93,7 @@ void Rtbmv(const char *uplo, const char *trans, const char *diag, INTEGER const 
                     if (x[j - 1] != zero) {
                         temp = x[j - 1];
                         l = kplus1 - j;
-                        for (i = max((INTEGER)1, j - k); i <= j - 1; i = i + 1) {
+                        for (i = MAX((INTEGER)1, j - k); i <= j - 1; i = i + 1) {
                             x[i - 1] += temp * a[((l + i) - 1) + (j - 1) * lda];
                         }
                         if (nounit) {
@@ -108,7 +108,7 @@ void Rtbmv(const char *uplo, const char *trans, const char *diag, INTEGER const 
                         temp = x[jx - 1];
                         ix = kx;
                         l = kplus1 - j;
-                        for (i = max((INTEGER)1, j - k); i <= j - 1; i = i + 1) {
+                        for (i = MAX((INTEGER)1, j - k); i <= j - 1; i = i + 1) {
                             x[ix - 1] += temp * a[((l + i) - 1) + (j - 1) * lda];
                             ix += incx;
                         }
@@ -128,7 +128,7 @@ void Rtbmv(const char *uplo, const char *trans, const char *diag, INTEGER const 
                     if (x[j - 1] != zero) {
                         temp = x[j - 1];
                         l = 1 - j;
-                        for (i = min(n, j + k); i >= j + 1; i = i - 1) {
+                        for (i = MIN(n, j + k); i >= j + 1; i = i - 1) {
                             x[i - 1] += temp * a[((l + i) - 1) + (j - 1) * lda];
                         }
                         if (nounit) {
@@ -144,7 +144,7 @@ void Rtbmv(const char *uplo, const char *trans, const char *diag, INTEGER const 
                         temp = x[jx - 1];
                         ix = kx;
                         l = 1 - j;
-                        for (i = min(n, j + k); i >= j + 1; i = i - 1) {
+                        for (i = MIN(n, j + k); i >= j + 1; i = i - 1) {
                             x[ix - 1] += temp * a[((l + i) - 1) + (j - 1) * lda];
                             ix = ix - incx;
                         }
@@ -172,7 +172,7 @@ void Rtbmv(const char *uplo, const char *trans, const char *diag, INTEGER const 
                     if (nounit) {
                         temp = temp * a[(kplus1 - 1) + (j - 1) * lda];
                     }
-                    for (i = j - 1; i >= max((INTEGER)1, j - k); i = i - 1) {
+                    for (i = j - 1; i >= MAX((INTEGER)1, j - k); i = i - 1) {
                         temp += a[((l + i) - 1) + (j - 1) * lda] * x[i - 1];
                     }
                     x[j - 1] = temp;
@@ -188,7 +188,7 @@ void Rtbmv(const char *uplo, const char *trans, const char *diag, INTEGER const 
                     if (nounit) {
                         temp = temp * a[(kplus1 - 1) + (j - 1) * lda];
                     }
-                    for (i = j - 1; i >= max((INTEGER)1, j - k); i = i - 1) {
+                    for (i = j - 1; i >= MAX((INTEGER)1, j - k); i = i - 1) {
                         temp += a[((l + i) - 1) + (j - 1) * lda] * x[ix - 1];
                         ix = ix - incx;
                     }
@@ -204,7 +204,7 @@ void Rtbmv(const char *uplo, const char *trans, const char *diag, INTEGER const 
                     if (nounit) {
                         temp = temp * a[(j - 1) * lda];
                     }
-                    for (i = j + 1; i <= min(n, j + k); i = i + 1) {
+                    for (i = j + 1; i <= MIN(n, j + k); i = i + 1) {
                         temp += a[((l + i) - 1) + (j - 1) * lda] * x[i - 1];
                     }
                     x[j - 1] = temp;
@@ -219,7 +219,7 @@ void Rtbmv(const char *uplo, const char *trans, const char *diag, INTEGER const 
                     if (nounit) {
                         temp = temp * a[(j - 1) * lda];
                     }
-                    for (i = j + 1; i <= min(n, j + k); i = i + 1) {
+                    for (i = j + 1; i <= MIN(n, j + k); i = i + 1) {
                         temp += a[((l + i) - 1) + (j - 1) * lda] * x[ix - 1];
                         ix += incx;
                     }

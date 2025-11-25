@@ -33,15 +33,15 @@ void Crotg(COMPLEX &ca, COMPLEX const &cb, REAL &c, COMPLEX &s) {
     REAL scale = 0.0;
     REAL norm = 0.0;
     COMPLEX alpha = 0.0;
-    if (abs(ca) == 0.0) {
+    if (ABS(ca) == 0.0) {
         c = 0.0;
         s = COMPLEX(1.0, 0.0);
         ca = cb;
     } else {
-        scale = abs(ca) + abs(cb);
-        norm = scale * sqrt(pow2((abs(ca / COMPLEX(scale, 0.0)))) + pow2((abs(cb / COMPLEX(scale, 0.0)))));
-        alpha = ca / abs(ca);
-        c = abs(ca) / norm;
+        scale = ABS(ca) + ABS(cb);
+        norm = scale * sqrt(pow2((ABS(ca / COMPLEX(scale, 0.0)))) + pow2((ABS(cb / COMPLEX(scale, 0.0)))));
+        alpha = ca / ABS(ca);
+        c = ABS(ca) / norm;
         s = alpha * conj(cb) / norm;
         ca = alpha * norm;
     }

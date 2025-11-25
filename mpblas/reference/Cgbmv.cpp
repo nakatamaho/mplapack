@@ -142,7 +142,7 @@ void Cgbmv(const char *trans, INTEGER const m, INTEGER const n, INTEGER const kl
             for (j = 1; j <= n; j = j + 1) {
                 temp = alpha * x[jx - 1];
                 k = kup1 - j;
-                for (i = max((INTEGER)1, j - ku); i <= min(m, j + kl); i = i + 1) {
+                for (i = MAX((INTEGER)1, j - ku); i <= MIN(m, j + kl); i = i + 1) {
                     y[i - 1] += temp * a[((k + i) - 1) + (j - 1) * lda];
                 }
                 jx += incx;
@@ -152,7 +152,7 @@ void Cgbmv(const char *trans, INTEGER const m, INTEGER const n, INTEGER const kl
                 temp = alpha * x[jx - 1];
                 iy = ky;
                 k = kup1 - j;
-                for (i = max((INTEGER)1, j - ku); i <= min(m, j + kl); i = i + 1) {
+                for (i = MAX((INTEGER)1, j - ku); i <= MIN(m, j + kl); i = i + 1) {
                     y[iy - 1] += temp * a[((k + i) - 1) + (j - 1) * lda];
                     iy += incy;
                 }
@@ -172,11 +172,11 @@ void Cgbmv(const char *trans, INTEGER const m, INTEGER const n, INTEGER const kl
                 temp = zero;
                 k = kup1 - j;
                 if (noconj) {
-                    for (i = max((INTEGER)1, j - ku); i <= min(m, j + kl); i = i + 1) {
+                    for (i = MAX((INTEGER)1, j - ku); i <= MIN(m, j + kl); i = i + 1) {
                         temp += a[((k + i) - 1) + (j - 1) * lda] * x[i - 1];
                     }
                 } else {
-                    for (i = max((INTEGER)1, j - ku); i <= min(m, j + kl); i = i + 1) {
+                    for (i = MAX((INTEGER)1, j - ku); i <= MIN(m, j + kl); i = i + 1) {
                         temp += conj(a[((k + i) - 1) + (j - 1) * lda]) * x[i - 1];
                     }
                 }
@@ -189,12 +189,12 @@ void Cgbmv(const char *trans, INTEGER const m, INTEGER const n, INTEGER const kl
                 ix = kx;
                 k = kup1 - j;
                 if (noconj) {
-                    for (i = max((INTEGER)1, j - ku); i <= min(m, j + kl); i = i + 1) {
+                    for (i = MAX((INTEGER)1, j - ku); i <= MIN(m, j + kl); i = i + 1) {
                         temp += a[((k + i) - 1) + (j - 1) * lda] * x[ix - 1];
                         ix += incx;
                     }
                 } else {
-                    for (i = max((INTEGER)1, j - ku); i <= min(m, j + kl); i = i + 1) {
+                    for (i = MAX((INTEGER)1, j - ku); i <= MIN(m, j + kl); i = i + 1) {
                         temp += conj(a[((k + i) - 1) + (j - 1) * lda]) * x[ix - 1];
                         ix += incx;
                     }
