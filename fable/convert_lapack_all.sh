@@ -65,15 +65,13 @@ for src in *.f*; do
     files+=( "$src" )
 done
 
-for src in "${files[@]}"; do
-    echo "Converting $src"
-    bash "$FABLE_CONVERT" "$src" || {
-        echo "Conversion failed: $src" >&2
-        continue
-    }
-done
-
 #for src in "${files[@]}"; do
 #    echo "Converting $src"
 #    bash "$FABLE_CONVERT" "$src"
 #done
+
+export FABLE_CONVERT
+parallel -j "${JOBS:-$(nproc)}" '
+     echo "Converting {}"
+     bash "$FABLE_CONVERT" "{}"
+ ' ::: "${files[@]}"

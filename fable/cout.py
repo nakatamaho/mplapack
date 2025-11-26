@@ -4275,20 +4275,82 @@ def _postprocess_index_zero_simplify(lines):
     Examples:
       a[(1 - 1) + (i - 1) * lda]   -> a[(i - 1) * lda]
       a[(i - 1) + (1 - 1) * lda]   -> a[(i - 1)]
+      a[(1 - 1) * lda]             -> a[0]
+      a[(1 - 1)]                   -> a[0]
     """
     out = []
-    # Pattern for leading "(1 - 1) + ..." inside brackets.
+    # Leading "(1 - 1) + ..." inside brackets.
     pat_leading = re.compile(r"\[\s*\(1\s*-\s*1\)\s*\+\s*")
-    # Pattern for trailing "+ (1 - 1) * name" inside brackets.
+    # Trailing "+ (1 - 1) * name" inside brackets.
     pat_trailing_mul = re.compile(
         r"\s*\+\s*\(1\s*-\s*1\)\s*\*\s*[A-Za-z_][A-Za-z0-9_]*"
     )
+    # Full "(1 - 1) * name" inside brackets.
+    pat_full_mul = re.compile(
+        r"\[\s*\(1\s*-\s*1\)\s*\*\s*[A-Za-z_][A-Za-z0-9_]*\s*\]"
+    )
+    # Plain "[ (1 - 1) ]".
+    pat_plain = re.compile(r"\[\s*\(1\s*-\s*1\)\s*\]")
+
     for line in lines:
         if "[" in line:
+            # (1 - 1) * lda -> 0
+            line = pat_full_mul.sub("[0]", line)
+            # [ (1 - 1) ] -> [0]
+            line = pat_plain.sub("[0]", line)
+            # (1 - 1) + expr -> expr
             line = pat_leading.sub("[", line)
+            # expr + (1 - 1) * lda -> expr
             line = pat_trailing_mul.sub("", line)
         out.append(line)
     return out
+
+def _postprocess_ilaenv_name_map(lines):
+    """Apply MPLAPACK name mapping inside iMlaenv calls.
+
+    Example:
+      iMlaenv(3, "DGERQF", " ", m, n, -1, -1)
+        -> iMlaenv(3, "Rgerqf", " ", m, n, -1, -1)
+    """
+    # Match: iMlaenv(..., "NAME", ...)
+    pat = re.compile(
+        r'(\biMlaenv\s*\(\s*[^,]*,\s*")([A-Za-z0-9_]+)("\s*,)'
+    )
+
+    def replace_name(name: str) -> str:
+        """Map Fortran routine name to C++ name using _MPLAPACK_NAME_MAP."""
+        for f77_name, cpp_name in _MPLAPACK_NAME_MAP.items():
+            if name.upper() == f77_name.upper():
+                return cpp_name
+        return name
+
+    out = []
+    for line in lines:
+        if "iMlaenv" in line:
+            def _repl(m):
+                old = m.group(2)
+                new = replace_name(old)
+                return m.group(1) + new + m.group(3)
+            line = pat.sub(_repl, line)
+        out.append(line)
+    return out
+
+def _postprocess_integer_literal_casts(lines):
+    """Remove unnecessary (INTEGER) casts on literal 0/1 in MAX/MIN calls.
+
+    Example:
+      MAX(n, (INTEGER)1) -> MAX(n, 1)
+    """
+    pat_max = re.compile(r'MAX\(([^,]+),\s*\(INTEGER\)\s*([0-9]+)\)')
+    pat_min = re.compile(r'MIN\(([^,]+),\s*\(INTEGER\)\s*([0-9]+)\)')
+    out = []
+    for line in lines:
+        line = pat_max.sub(r'MAX(\1, \2)', line)
+        line = pat_min.sub(r'MIN(\1, \2)', line)
+        out.append(line)
+    return out
+
+
 
 def _postprocess_strip_float_suffix(lines):
     """Remove 'f' suffix from floating literals like 1.0f, 0.5f, 3.14e-1f."""
@@ -4769,29 +4831,31 @@ def process(
     # Rewrite single-character string literals for CHARACTER*1 variables.
     result = [rewrite_single_char_string_literals(line) for line in result]
 
-    # First, fix XERBLA labels and "End of XXX" comments.
     result = _postprocess_mplapack_labels_and_comments(result)
-    # Then, normalize Fortran comment markers: //C... -> // ...
     result = _normalize_fortran_comment_prefix(result)
-    # Normalize COMPLEX(a, b) initializers to COMPLEX(a, b) form.
     result = _postprocess_complex_initializers(result)
-
     result = _postprocess_complex_constant_assignments(result)
+
+    # Simplify index expressions with explicit (1 - 1) terms.
+    result = _postprocess_index_zero_simplify(result)
 
     # Final intrinsic cleanup (abs / pow2 aliases).
     result = _postprocess_intrinsic_aliases(result)
 
-    # Strip C-style float suffixes from literals (1.0f -> 1.0, etc.).
-    result = _postprocess_strip_float_suffix(result)
-
     # Uppercase selected math intrinsics (ATAN2, COS, SIN, TAN, LOG, EXP, MAX, MIN, ABS).
     result = _postprocess_math_intrinsics_upper(result)
+
+    # Remove unnecessary (INTEGER) casts in MAX/MIN calls.
+    result = _postprocess_integer_literal_casts(result)
 
     # Apply MPLAPACK name mapping inside comment lines.
     result = _postprocess_comment_name_map(result)
 
-    # Simplify index expressions with explicit (1 - 1) terms.
-    result = _postprocess_index_zero_simplify(result)
+    # Apply MPLAPACK name mapping inside iMlaenv calls.
+    result = _postprocess_ilaenv_name_map(result)
+
+    # Strip C-style float suffixes from literals (1.0f -> 1.0, etc.).
+    result = _postprocess_strip_float_suffix(result)
 
     # Clean up temporary Fortran files created for preprocessing.
     for tmp in temp_files:
