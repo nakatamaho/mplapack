@@ -4185,6 +4185,25 @@ def _postprocess_intrinsic_aliases(lines):
         out.append(line)
     return out
 
+def _postprocess_comment_name_map(lines):
+    """Apply MPLAPACK name mapping inside C++ comment lines.
+
+    For each line that starts with '//' (after optional whitespace),
+    replace occurrences of uppercased Fortran routine names with
+    their mapped C++ names from _MPLAPACK_NAME_MAP.
+    """
+    out = []
+    for line in lines:
+        stripped = line.lstrip()
+        if stripped.startswith("//"):
+            for f77_name, cpp_name in _MPLAPACK_NAME_MAP.items():
+                u = f77_name.upper()
+                if u in line:
+                    pattern = r"\b" + re.escape(u) + r"\b"
+                    line = re.sub(pattern, cpp_name, line)
+        out.append(line)
+    return out
+
 def _postprocess_math_intrinsics_upper(lines):
     """Rewrite math intrinsic calls (atan2, cos, sin, tan, log, exp, max, min, abs) to uppercase names."""
     out = []
@@ -4200,6 +4219,7 @@ def _postprocess_math_intrinsics_upper(lines):
         line = re.sub(r'\btan\s*\(', 'TAN(', line)
         # Logarithm and exponential intrinsics
         line = re.sub(r'\bstd::log\s*\(', 'LOG(', line)
+        line = re.sub(r'\bfem::log\s*\(', 'LOG(', line)
         line = re.sub(r'\blog\s*\(', 'LOG(', line)
         line = re.sub(r'\bstd::exp\s*\(', 'EXP(', line)
         line = re.sub(r'\bexp\s*\(', 'EXP(', line)
@@ -4221,6 +4241,27 @@ def _postprocess_math_intrinsics_upper(lines):
         line = re.sub(r'\bstd::pow\s*\(', 'POW(', line)
         line = re.sub(r'\bfem::pow\s*\(', 'POW(', line)
         line = re.sub(r'\bpow\s*\(', 'POW(', line)
+        out.append(line)
+    return out
+
+def _postprocess_index_zero_simplify(lines):
+    """Simplify index expressions that contain explicit (1 - 1) terms.
+
+    Examples:
+      a[(1 - 1) + (i - 1) * lda]   -> a[(i - 1) * lda]
+      a[(i - 1) + (1 - 1) * lda]   -> a[(i - 1)]
+    """
+    out = []
+    # Pattern for leading "(1 - 1) + ..." inside brackets.
+    pat_leading = re.compile(r"\[\s*\(1\s*-\s*1\)\s*\+\s*")
+    # Pattern for trailing "+ (1 - 1) * name" inside brackets.
+    pat_trailing_mul = re.compile(
+        r"\s*\+\s*\(1\s*-\s*1\)\s*\*\s*[A-Za-z_][A-Za-z0-9_]*"
+    )
+    for line in lines:
+        if "[" in line:
+            line = pat_leading.sub("[", line)
+            line = pat_trailing_mul.sub("", line)
         out.append(line)
     return out
 
@@ -4720,6 +4761,12 @@ def process(
 
     # Uppercase selected math intrinsics (ATAN2, COS, SIN, TAN, LOG, EXP, MAX, MIN, ABS).
     result = _postprocess_math_intrinsics_upper(result)
+
+    # Apply MPLAPACK name mapping inside comment lines.
+    result = _postprocess_comment_name_map(result)
+
+    # Simplify index expressions with explicit (1 - 1) terms.
+    result = _postprocess_index_zero_simplify(result)
 
     # Clean up temporary Fortran files created for preprocessing.
     for tmp in temp_files:
