@@ -42,7 +42,9 @@ def _adjust_actuals_using_signature(arg_string: str, signature) -> str:
     element (e.g. rwork[...]) and is not already passed by address,
     insert '&' in front of it.
 
-    PTR_CHAR and PTR_OTHER arguments are left untouched.
+    For PTR_CHAR arguments, if the expression is a bare identifier
+    (e.g. normin) and not already passed by address, insert '&' in
+    front of it. String literals are left unchanged.
     """
     parts = _split_actuals(arg_string)
     # Be conservative: if the lengths do not match, do nothing.
@@ -52,6 +54,7 @@ def _adjust_actuals_using_signature(arg_string: str, signature) -> str:
     new_parts = []
     for part, kind in zip(parts, signature):
         s = part.lstrip()
+
         if kind == "PTR_NUMERIC":
             # Already passing by address.
             if s.startswith("&"):
@@ -62,7 +65,23 @@ def _adjust_actuals_using_signature(arg_string: str, signature) -> str:
             if "[" in s:
                 leading = part[:len(part) - len(s)]
                 part = leading + "&" + s
+
+        elif kind == "PTR_CHAR":
+            # Already passing by address.
+            if s.startswith("&"):
+                new_parts.append(part)
+                continue
+            # String literal: do not add '&'.
+            if s.startswith('"') or s.startswith("'"):
+                new_parts.append(part)
+                continue
+            # Bare identifier (e.g. normin) -> &normin
+            if re.match(r"[A-Za-z_][A-Za-z0-9_]*$", s):
+                leading = part[:len(part) - len(s)]
+                part = leading + "&" + s
+
         new_parts.append(part)
+
     return ", ".join(p.strip() for p in new_parts)
 
 
@@ -4269,42 +4288,6 @@ def _postprocess_math_intrinsics_upper(lines):
         out.append(line)
     return out
 
-def _postprocess_index_zero_simplify(lines):
-    """Simplify index expressions that contain explicit (1 - 1) terms.
-
-    Examples:
-      a[(1 - 1) + (i - 1) * lda]   -> a[(i - 1) * lda]
-      a[(i - 1) + (1 - 1) * lda]   -> a[(i - 1)]
-      a[(1 - 1) * lda]             -> a[0]
-      a[(1 - 1)]                   -> a[0]
-    """
-    out = []
-    # Leading "(1 - 1) + ..." inside brackets.
-    pat_leading = re.compile(r"\[\s*\(1\s*-\s*1\)\s*\+\s*")
-    # Trailing "+ (1 - 1) * name" inside brackets.
-    pat_trailing_mul = re.compile(
-        r"\s*\+\s*\(1\s*-\s*1\)\s*\*\s*[A-Za-z_][A-Za-z0-9_]*"
-    )
-    # Full "(1 - 1) * name" inside brackets.
-    pat_full_mul = re.compile(
-        r"\[\s*\(1\s*-\s*1\)\s*\*\s*[A-Za-z_][A-Za-z0-9_]*\s*\]"
-    )
-    # Plain "[ (1 - 1) ]".
-    pat_plain = re.compile(r"\[\s*\(1\s*-\s*1\)\s*\]")
-
-    for line in lines:
-        if "[" in line:
-            # (1 - 1) * lda -> 0
-            line = pat_full_mul.sub("[0]", line)
-            # [ (1 - 1) ] -> [0]
-            line = pat_plain.sub("[0]", line)
-            # (1 - 1) + expr -> expr
-            line = pat_leading.sub("[", line)
-            # expr + (1 - 1) * lda -> expr
-            line = pat_trailing_mul.sub("", line)
-        out.append(line)
-    return out
-
 def _postprocess_ilaenv_name_map(lines):
     """Apply MPLAPACK name mapping inside iMlaenv calls.
 
@@ -4835,9 +4818,6 @@ def process(
     result = _normalize_fortran_comment_prefix(result)
     result = _postprocess_complex_initializers(result)
     result = _postprocess_complex_constant_assignments(result)
-
-    # Simplify index expressions with explicit (1 - 1) terms.
-    result = _postprocess_index_zero_simplify(result)
 
     # Final intrinsic cleanup (abs / pow2 aliases).
     result = _postprocess_intrinsic_aliases(result)

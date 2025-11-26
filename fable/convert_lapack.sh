@@ -134,8 +134,51 @@ clang-format-19 -i -style '{
     BreakBeforeConceptDeclarations: Never,
   }' "$tmp_cpp"
 
-# Overwrite the generated C++ file with the formatted version
-cp "$tmp_cpp" "$cpp_generated"
+# Simplify trivial (1 - 1) index arithmetic in the formatted C++ file
+python3 - "$tmp_cpp" << 'EOF'
+import sys
+import re
+from pathlib import Path
 
-# Clean up
-rm -f "$tmp_body" "$tmp_cpp"
+path = Path(sys.argv[1])
+text = path.read_text()
+
+def simplify_expr(expr: str) -> str:
+    """Simplify an index expression that may contain (1 - 1)."""
+    e = expr
+    # (1 - 1) -> 0
+    e = re.sub(r"\(\s*1\s*-\s*1\s*\)", "0", e)
+    # 0 * NAME -> 0
+    e = re.sub(r"\b0\s*\*\s*[A-Za-z_][A-Za-z0-9_]*", "0", e)
+    # NAME * 0 -> 0
+    e = re.sub(r"[A-Za-z_][A-Za-z0-9_]*\s*\*\s*0\b", "0", e)
+    # + 0 / 0 + / - 0 -> remove
+    e = re.sub(r"\+\s*0\b", "", e)
+    e = re.sub(r"\b0\s*\+", "", e)
+    e = re.sub(r"\-\s*0\b", "", e)
+    # Collapse spaces
+    e = re.sub(r"\s+", " ", e).strip()
+    return e
+
+# Simplify inside [...] (indices), allowing newlines inside
+pat_bracket = re.compile(r"\[(.*?)\]", re.DOTALL)
+
+def repl(m):
+    inner = m.group(1)
+    return "[" + simplify_expr(inner) + "]"
+
+text = pat_bracket.sub(repl, text)
+
+# Global cleanup for any remaining trivial (1 - 1), 0*X, X*0, +0, 0+
+text = re.sub(r"\(\s*1\s*-\s*1\s*\)", "0", text)
+text = re.sub(r"\b0\s*\*\s*[A-Za-z_][A-Za-z0-9_]*", "0", text)
+text = re.sub(r"[A-Za-z_][A-Za-z0-9_]*\s*\*\s*0\b", "0", text)
+text = re.sub(r"\+\s*0\b", "", text)
+text = re.sub(r"\b0\s*\+", "", text)
+text = re.sub(r"\-\s*0\b", "", text)
+
+path.write_text(text)
+EOF
+
+# Overwrite the generated C++ file with the formatted and postprocessed version
+cp "$tmp_cpp" "$cpp_generated"
