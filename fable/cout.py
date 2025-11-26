@@ -4174,6 +4174,10 @@ def _postprocess_math_intrinsics_upper(lines):
         line = re.sub(r'\bstd::sqrt\s*\(', 'SQRT(', line)
         line = re.sub(r'\bsqrt\s*\(', 'SQRT(', line)
         line = re.sub(r'\bpow2\s*\(', 'POW2(', line)
+
+        line = re.sub(r'\bstd::pow\s*\(', 'POW(', line)
+        line = re.sub(r'\bfem::pow\s*\(', 'POW(', line)
+        line = re.sub(r'\bpow\s*\(', 'POW(', line)
         out.append(line)
     return out
 
