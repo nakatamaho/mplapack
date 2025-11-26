@@ -5,6 +5,41 @@ import os.path
 import math
 import tempfile
 
+try:
+    from mplapack_signatures import FUNCTION_SIGNATURES
+except ImportError:
+    FUNCTION_SIGNATURES = {}
+
+def _adjust_actuals_using_signature(arg_string: str, signature) -> str:
+    """Adjust actual arguments based on pointer/value signature.
+
+    For PTR_NUMERIC arguments, if the expression looks like an array
+    element (e.g. rwork[...]) and is not already passed by address,
+    insert '&' in front of it.
+
+    PTR_CHAR and PTR_OTHER arguments are left untouched.
+    """
+    parts = [p for p in arg_string.split(",")]
+    # Be conservative: if the lengths do not match, do nothing.
+    if len(parts) != len(signature):
+        return arg_string
+
+    new_parts = []
+    for part, kind in zip(parts, signature):
+        s = part.lstrip()
+        if kind == "PTR_NUMERIC":
+            # Already passing by address.
+            if s.startswith("&"):
+                new_parts.append(part)
+                continue
+            # Only handle simple array element expressions.
+            # We check for '[' to avoid touching plain pointer variables.
+            if "[" in s:
+                leading = part[:len(part) - len(s)]
+                part = leading + "&" + s
+        new_parts.append(part)
+    return ", ".join(p.strip() for p in new_parts)
+
 
 def _load_mplapack_name_map(path=None):
     """Load Fortran -> MPLAPACK C++ name mapping from an external text file.
@@ -3150,6 +3185,13 @@ def convert_executable(
                     a = convert_tokens(
                         conv_info=conv_info, tokens=ei.arg_token.value, commas=True)
 
+                    # Use the callee name (without namespace) as the lookup key.
+                    # For example, "Rlasr" -> "rlasr".
+                    callee_key = called.split("::")[-1].lower()
+                    sig = FUNCTION_SIGNATURES.get(callee_key)
+                    if sig is not None:
+                        a = _adjust_actuals_using_signature(a, sig)
+
                     def cmn_a():
                         if (len(cmn) == 0):
                             return a
@@ -3157,6 +3199,7 @@ def convert_executable(
                             return cmn
                         return cmn + ", " + a
                     curr_scope.append("%s(%s);" % (called, cmn_a()))
+
             elif (ei.key == "return"):
                 if (conv_info.fproc.fproc_type == "function"):
                     curr_scope_append_return_function()
