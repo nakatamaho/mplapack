@@ -10,6 +10,31 @@ try:
 except ImportError:
     FUNCTION_SIGNATURES = {}
 
+def _split_actuals(arg_string: str):
+    """Split a C++ argument list string on commas, ignoring commas inside parentheses."""
+    parts = []
+    buf = []
+    depth = 0
+    for ch in arg_string:
+        if ch == "(":
+            depth += 1
+            buf.append(ch)
+        elif ch == ")":
+            depth -= 1
+            buf.append(ch)
+        elif ch == "," and depth == 0:
+            part = "".join(buf).strip()
+            if part:
+                parts.append(part)
+            buf = []
+        else:
+            buf.append(ch)
+    if buf:
+        part = "".join(buf).strip()
+        if part:
+            parts.append(part)
+    return parts
+
 def _adjust_actuals_using_signature(arg_string: str, signature) -> str:
     """Adjust actual arguments based on pointer/value signature.
 
@@ -19,7 +44,7 @@ def _adjust_actuals_using_signature(arg_string: str, signature) -> str:
 
     PTR_CHAR and PTR_OTHER arguments are left untouched.
     """
-    parts = [p for p in arg_string.split(",")]
+    parts = _split_actuals(arg_string)
     # Be conservative: if the lengths do not match, do nothing.
     if len(parts) != len(signature):
         return arg_string
