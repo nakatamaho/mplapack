@@ -1415,8 +1415,15 @@ def convert_tokens(conv_info, tokens, commas=False, had_str_concat=None):
                     tokens=tok.value,
                     commas=True,
                     had_str_concat=had_str_concat)
-                parts = [p.strip()
-                         for p in idx_str.split(",") if p.strip() != ""]
+
+                idx_str = convert_tokens(
+                    conv_info=conv_info,
+                    tokens=tok.value,
+                    commas=True,
+                    had_str_concat=had_str_concat)
+                # Use parenthesis-aware splitting so that inner commas
+                # inside MAX(...), MIN(...), etc. do not break the index.
+                parts = _split_actuals(idx_str)
 
                 if len(parts) == 1:
                     # 1D array: a(i)
