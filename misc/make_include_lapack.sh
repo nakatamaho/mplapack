@@ -130,5 +130,5 @@ for mplib in $MPLIBS; do
     echo "#endif" >> ~/mplapack/include/mplapack_${mplib}.h
 
 done
-#rm header_all mplapack.h *hpp
-#rm mplapack.h
+mv header_all mplapack_generic.h
+rm mplapack.h *hpp

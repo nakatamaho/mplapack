@@ -89,4 +89,5 @@ for mplib in $MPLIBS; do
     echo "#endif" >> ~/mplapack/include/mpblas_${mplib}.h
 
 done
-rm header_all *hpp
+mv header_all mpblas_generic.h
+rm *hpp
