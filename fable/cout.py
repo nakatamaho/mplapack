@@ -1090,7 +1090,10 @@ class conversion_info(global_conversion_info):
         if (fdecl.is_common()):
             O.vmap[identifier] = "cmn." + \
                 prepend_identifier_if_necessary(identifier)
-        elif (fdecl.is_save()):
+        elif (fdecl.is_save()
+              and not (O.fproc is not None
+                       and getattr(O.fproc, "conv_hook", None) is not None
+                       and O.fproc.conv_hook.ignore_common_and_save)):
             O.vmap[identifier] = "sve." + \
                 prepend_identifier_if_necessary(identifier)
         elif (fdecl.is_intrinsic()):
@@ -2671,6 +2674,16 @@ def declare_identifier(conv_info, top_scope, curr_scope, id_tok, crhs=None):
             common_name, prepend_identifier_if_necessary(identifier))
     else:
         src_var = conv_info.vmap[identifier]
+
+    # For COMMON or SAVE variables, we sometimes create local references
+    # like "REAL& x = cmn.x;" or "REAL& x = sve.x;".
+    save_ok = (
+        fdecl.is_save()
+        and not (conv_info.fproc is not None
+                 and getattr(conv_info.fproc, "conv_hook", None) is not None
+                 and conv_info.fproc.conv_hook.ignore_common_and_save)
+    )
+
     if (fdecl.dim_tokens is not None):
         conv_info.vmap[identifier] = prepend_identifier_if_necessary(
             identifier)
@@ -2695,7 +2708,8 @@ def declare_identifier(conv_info, top_scope, curr_scope, id_tok, crhs=None):
         rapp("%s %s(%s, %s);" % (
             ctype, prepend_identifier_if_necessary(identifier), src_var, cdims))
     elif (common_name is not None
-          or (fdecl.use_count > 1 and (fdecl.is_common() or fdecl.is_save()))):
+          or (fdecl.use_count > 1
+              and (fdecl.is_common() or save_ok))):
         conv_info.vmap[identifier] = prepend_identifier_if_necessary(
             identifier)
         ctype = convert_data_type(
@@ -2703,6 +2717,7 @@ def declare_identifier(conv_info, top_scope, curr_scope, id_tok, crhs=None):
         rapp = get_rapp()
         rapp("%s& %s = %s;" % (
             ctype, prepend_identifier_if_necessary(identifier), src_var))
+
     if (crhs is not None):
         return True
     return False
@@ -2711,7 +2726,9 @@ def declare_identifier(conv_info, top_scope, curr_scope, id_tok, crhs=None):
 def convert_executable(
         callback, conv_info, args_fdecl_with_dim=None, blockdata=None):
     top_scope = scope(parent=None)
-    if (conv_info.fproc.uses_save):
+    if (conv_info.fproc.uses_save
+            and not (getattr(conv_info.fproc, "conv_hook", None) is not None
+                     and conv_info.fproc.conv_hook.ignore_common_and_save)):
         macro = "FEM_CMN_SVE"
         if (conv_info.fproc.conv_hook.needs_sve_dynamic_parameters):
             macro += "_DYNAMIC_PARAMETERS"
@@ -4603,20 +4620,18 @@ def process(
     if (not need_function_hpp):
         if (include_separate(callback=callback)):
             callback("")
+
     open_namespace(
         callback=callback,
         namespace=namespace,
         using_namespace_major_types=need_using_major_types)
     #
-    # Build the bottom-up list of procedures once
     topological_fprocs = all_fprocs.build_bottom_up_fproc_list_following_calls(
         top_procedures=top_procedures)
 
-    # ------------------------------------------------------------
     # Mark procedures whose COMMON/SAVE handling should be ignored.
     # We will implement these routines manually (no auto-generated
     # *_save structs or cmn_sve members).
-    # ------------------------------------------------------------
     hard_ignore_common = {
         "zlacon",  # add more names here if needed
         # "dlacon",
@@ -4634,8 +4649,8 @@ def process(
                 fproc.conv_hook = ch
             ch.ignore_common_and_save = True
 
-    # Missing externals (lsame, xerbla, etc.)
     missing = topological_fprocs.missing_external_fdecls_by_identifier
+
     # Do not emit stub implementations for missing external functions.
     # All such functions (lsame, xerbla, etc.) must be provided elsewhere.
     # If you ever want to see the list, you can add diagnostic prints here,
@@ -4683,7 +4698,7 @@ def process(
         if (not debug):
             raise
         show_traceback()
-        common_commons_info = None
+        converted_commons_info = None
     if (separate_cmn_hpp):
         close_namespace(callback=cmn_callback,
                         namespace=namespace, hpp_guard=True)
