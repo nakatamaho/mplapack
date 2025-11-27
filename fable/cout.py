@@ -1282,28 +1282,42 @@ def _rewrite_unary_intrinsic(text: str, func_name: str, repl_func):
 
 
 def _rewrite_max_min_calls(text: str) -> str:
-    """Rewrite fem::max/min calls: drop fem:: and cast integer literal first args.
+    """Rewrite fem::max/min calls: drop fem:: and cast integer literal arguments.
 
     Examples:
       fem::max(1, m)   -> max((INTEGER)1, m)
       fem::min(-2, n)  -> min((INTEGER)-2, n)
+      max(m, 1)        -> max(m, (INTEGER)1)
     """
     # First drop fem:: namespace for max/min.
     # This is cheap even if not present.
     text = text.replace("fem::max", "max")
     text = text.replace("fem::min", "min")
 
-    # Then cast integer literal first arguments: max(1, x) -> max((INTEGER)1, x)
-    # We handle simple +/- integer literals.
-    pattern = r'\b(max|min)\(\s*([+-]?[0-9]+)\s*,'
-
-    def repl(m):
+    # Case 1: integer literal as FIRST argument
+    #   max(1, m)   -> max((INTEGER)1, m)
+    #   min(-2, n)  -> min((INTEGER)-2, n)
+    pattern_first = r'\b(max|min)\(\s*([+-]?[0-9]+)\s*,'
+    def repl_first(m):
         func = m.group(1)
         lit = m.group(2)
         return f"{func}((INTEGER){lit}, "
 
-    return re.sub(pattern, repl, text)
+    text = re.sub(pattern_first, repl_first, text)
 
+    # Case 2: integer literal as SECOND argument
+    #   max(m, 1)   -> max(m, (INTEGER)1)
+    #   min(k, -2)  -> min(k, (INTEGER)-2)
+    pattern_second = r'\b(max|min)\(\s*([^,]+?),\s*([+-]?[0-9]+)\s*\)'
+    def repl_second(m):
+        func = m.group(1)
+        first = m.group(2)
+        lit = m.group(3)
+        return f"{func}({first}, (INTEGER){lit})"
+
+    text = re.sub(pattern_second, repl_second, text)
+
+    return text
 
 _single_char_string_assign_re = re.compile(
     r'(\b[A-Za-z_][A-Za-z0-9_]*\b)\s*=\s*"([^"\\])"\s*;'
