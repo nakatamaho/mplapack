@@ -4608,8 +4608,33 @@ def process(
         namespace=namespace,
         using_namespace_major_types=need_using_major_types)
     #
+    # Build the bottom-up list of procedures once
     topological_fprocs = all_fprocs.build_bottom_up_fproc_list_following_calls(
         top_procedures=top_procedures)
+
+    # ------------------------------------------------------------
+    # Mark procedures whose COMMON/SAVE handling should be ignored.
+    # We will implement these routines manually (no auto-generated
+    # *_save structs or cmn_sve members).
+    # ------------------------------------------------------------
+    hard_ignore_common = {
+        "zlacon",  # add more names here if needed
+        # "dlacon",
+        # "clacon",
+        # "slacon",
+    }
+
+    for fproc in topological_fprocs.bottom_up_list:
+        if fproc.name is None:
+            continue
+        if fproc.name.value.lower() in hard_ignore_common:
+            ch = getattr(fproc, "conv_hook", None)
+            if ch is None:
+                ch = conv_hook_info()
+                fproc.conv_hook = ch
+            ch.ignore_common_and_save = True
+
+    # Missing externals (lsame, xerbla, etc.)
     missing = topological_fprocs.missing_external_fdecls_by_identifier
     # Do not emit stub implementations for missing external functions.
     # All such functions (lsame, xerbla, etc.) must be provided elsewhere.
@@ -4633,6 +4658,7 @@ def process(
                 if (fdecl is not None):
                     fproc.dynamic_parameters.add(dp_props.name)
     #
+
     if (separate_cmn_hpp):
         cmn_buffer = []
         cmn_callback = cmn_buffer.append
