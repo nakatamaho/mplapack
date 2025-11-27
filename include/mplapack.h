@@ -234,4 +234,18 @@ inline REAL POW(const REAL &x, INTEGER n) {
     return pow(x, static_cast<double>(n));
 }
 
+// Round real x to nearest INTEGER, Fortran NINT-like.
+// T is REAL / double / long double / mpfr_class etc.
+template <class T>
+inline INTEGER NINT(const T &x) {
+    // Assumes castINTEGER(x) truncates toward zero.
+    if (x >= T(0)) {
+      // positive: NINT(x) = trunc(x + 0.5)
+        return castINTEGER(x + T(0.5));
+    } else {
+      // negative: NINT(x) = trunc(x - 0.5)
+        return castINTEGER(x - T(0.5));
+    }
+}
+
 #endif
