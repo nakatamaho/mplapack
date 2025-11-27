@@ -4270,45 +4270,78 @@ def _postprocess_math_intrinsics_upper(lines):
     """Rewrite math intrinsic calls (atan2, cos, sin, tan, log, exp, max, min, abs) to uppercase names."""
     out = []
     for line in lines:
-        # Trigonometric intrinsics
-        line = re.sub(r'\bstd::atan2\s*\(', 'ATAN2(', line)
-        line = re.sub(r'\batan2\s*\(', 'ATAN2(', line)
-        line = re.sub(r'\bstd::cos\s*\(', 'COS(', line)
-        line = re.sub(r'\bcos\s*\(', 'COS(', line)
-        line = re.sub(r'\bstd::sin\s*\(', 'SIN(', line)
-        line = re.sub(r'\bsin\s*\(', 'SIN(', line)
-        line = re.sub(r'\bstd::tan\s*\(', 'TAN(', line)
-        line = re.sub(r'\btan\s*\(', 'TAN(', line)
-        # Logarithm and exponential intrinsics
-        line = re.sub(r'\bstd::log\s*\(', 'LOG(', line)
-        line = re.sub(r'\bfem::log\s*\(', 'LOG(', line)
-        line = re.sub(r'\blog\s*\(', 'LOG(', line)
-        line = re.sub(r'\bdlog\s*\(', 'LOG(', line)
-        line = re.sub(r'\bfem::dlog\s*\(', 'LOG(', line)
-        line = re.sub(r'\blog10\s*\(', 'LOG10(', line)
-        line = re.sub(r'\bdlog10\s*\(', 'LOG10(', line)
-        line = re.sub(r'\bfem::dlog10\s*\(', 'LOG10(', line)
-        line = re.sub(r'\bstd::exp\s*\(', 'EXP(', line)
-        line = re.sub(r'\bfem::exp\s*\(', 'EXP(', line)
-        line = re.sub(r'\bexp\s*\(', 'EXP(', line)
-        # Extremum intrinsics
-        line = re.sub(r'\bstd::max\s*\(', 'MAX(', line)
-        line = re.sub(r'\bmax\s*\(', 'MAX(', line)
-        line = re.sub(r'\bstd::min\s*\(', 'MIN(', line)
-        line = re.sub(r'\bmin\s*\(', 'MIN(', line)
-        # Absolute value intrinsics
-        line = re.sub(r'\bstd::abs\s*\(', 'ABS(', line)
-        line = re.sub(r'\babs\s*\(', 'ABS(', line)
-        # other intrinsics
-        line = re.sub(r'\bstd::mod\s*\(', 'MOD(', line)
-        line = re.sub(r'\bmod\s*\(', 'MOD(', line)
-        line = re.sub(r'\bstd::sqrt\s*\(', 'SQRT(', line)
-        line = re.sub(r'\bsqrt\s*\(', 'SQRT(', line)
-        line = re.sub(r'\bpow2\s*\(', 'POW2(', line)
+        # ----------------------------------------------------------
+        # 1) Canonicalize fem:: and double-precision variants
+        #    to plain lowercase intrinsics
+        # ----------------------------------------------------------
 
-        line = re.sub(r'\bstd::pow\s*\(', 'POW(', line)
-        line = re.sub(r'\bfem::pow\s*\(', 'POW(', line)
-        line = re.sub(r'\bpow\s*\(', 'POW(', line)
+        # log / log10 (fem::LOG, fem::DLOG, LOG, DLOG, dlog, dlog10, etc.)
+        line = re.sub(r'\bfem::d?log10\s*\(', 'log10(', line, flags=re.IGNORECASE)
+        line = re.sub(r'\bfem::d?log\s*\(',   'log(',   line, flags=re.IGNORECASE)
+        line = re.sub(r'\bdlog10\s*\(',       'log10(', line, flags=re.IGNORECASE)
+        line = re.sub(r'\bdlog\s*\(',         'log(',   line, flags=re.IGNORECASE)
+
+        # exp / pow / mod (fem::EXP, fem::exp)
+        line = re.sub(r'\bfem::exp\s*\(',     'exp(',   line, flags=re.IGNORECASE)
+        line = re.sub(r'\bfem::pow\s*\(',     'pow(',   line, flags=re.IGNORECASE)
+        line = re.sub(r'\bfem::mod\s*\(',     'mod(',   line, flags=re.IGNORECASE)
+
+        # NINT-like intrinsics (fem::nint, fem::idnint)
+        line = re.sub(r'\bfem::nint\s*\(',    'nint(',  line, flags=re.IGNORECASE)
+        line = re.sub(r'\bfem::idnint\s*\(',  'nint(',  line, flags=re.IGNORECASE)
+
+        # ----------------------------------------------------------
+        # 2) Trigonometric intrinsics
+        # ----------------------------------------------------------
+        line = re.sub(r'\bstd::atan2\s*\(', 'ATAN2(', line)
+        line = re.sub(r'\batan2\s*\(',      'ATAN2(', line)
+        line = re.sub(r'\bstd::cos\s*\(',   'COS(',   line)
+        line = re.sub(r'\bcos\s*\(',        'COS(',   line)
+        line = re.sub(r'\bstd::sin\s*\(',   'SIN(',   line)
+        line = re.sub(r'\bsin\s*\(',        'SIN(',   line)
+        line = re.sub(r'\bstd::tan\s*\(',   'TAN(',   line)
+        line = re.sub(r'\btan\s*\(',        'TAN(',   line)
+
+        # ----------------------------------------------------------
+        # 3) Logarithm and exponential intrinsics (std:: + plain)
+        # ----------------------------------------------------------
+        line = re.sub(r'\bstd::log10\s*\(', 'LOG10(', line)
+        line = re.sub(r'\blog10\s*\(',      'LOG10(', line)
+        line = re.sub(r'\bstd::log\s*\(',   'LOG(',   line)
+        line = re.sub(r'\blog\s*\(',        'LOG(',   line)
+        line = re.sub(r'\bstd::exp\s*\(',   'EXP(',   line)
+        line = re.sub(r'\bexp\s*\(',        'EXP(',   line)
+
+        # ----------------------------------------------------------
+        # 4) Extremum intrinsics
+        # ----------------------------------------------------------
+        line = re.sub(r'\bstd::max\s*\(',   'MAX(',   line)
+        line = re.sub(r'\bmax\s*\(',        'MAX(',   line)
+        line = re.sub(r'\bstd::min\s*\(',   'MIN(',   line)
+        line = re.sub(r'\bmin\s*\(',        'MIN(',   line)
+
+        # ----------------------------------------------------------
+        # 5) Absolute value intrinsics
+        # ----------------------------------------------------------
+        line = re.sub(r'\bstd::abs\s*\(',   'ABS(',   line)
+        line = re.sub(r'\babs\s*\(',        'ABS(',   line)
+
+        # ----------------------------------------------------------
+        # 6) Other intrinsics
+        # ----------------------------------------------------------
+        line = re.sub(r'\bstd::mod\s*\(',   'MOD(',   line)
+        line = re.sub(r'\bmod\s*\(',        'MOD(',   line)
+        line = re.sub(r'\bstd::sqrt\s*\(',  'SQRT(',  line)
+        line = re.sub(r'\bsqrt\s*\(',       'SQRT(',  line)
+        line = re.sub(r'\bpow2\s*\(',       'POW2(',  line)
+        line = re.sub(r'\bstd::pow\s*\(',   'POW(',   line)
+        line = re.sub(r'\bpow\s*\(',        'POW(',   line)
+
+        # ----------------------------------------------------------
+        # 7) NINT-like rounding intrinsics (already canonicalized)
+        # ----------------------------------------------------------
+        line = re.sub(r'\bnint\s*\(',       'NINT(',  line)
+
         out.append(line)
     return out
 
