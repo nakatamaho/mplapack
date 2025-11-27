@@ -10,6 +10,7 @@ try:
 except ImportError:
     FUNCTION_SIGNATURES = {}
 
+
 def _split_actuals(arg_string: str):
     """Split a C++ argument list string on commas, ignoring commas inside parentheses."""
     parts = []
@@ -35,7 +36,8 @@ def _split_actuals(arg_string: str):
             parts.append(part)
     return parts
 
-def _adjust_actuals_using_signature(arg_string: str, signature) -> str:
+
+def _adjust_actuals_using_signature(arg_string: str, signature, conv_info=None) -> str:
     """Adjust actual arguments based on pointer/value signature.
 
     For PTR_NUMERIC arguments, if the expression looks like an array
@@ -45,6 +47,9 @@ def _adjust_actuals_using_signature(arg_string: str, signature) -> str:
     For PTR_CHAR arguments, if the expression is a bare identifier
     (e.g. normin) and not already passed by address, insert '&' in
     front of it. String literals are left unchanged.
+    If conv_info is given and the identifier is a CHARACTER dummy
+    argument (const char* in the generated interface), it is left
+    unchanged because it is already a pointer.
     """
     parts = _split_actuals(arg_string)
     # Be conservative: if the lengths do not match, do nothing.
@@ -75,8 +80,13 @@ def _adjust_actuals_using_signature(arg_string: str, signature) -> str:
             if s.startswith('"') or s.startswith("'"):
                 new_parts.append(part)
                 continue
-            # Bare identifier (e.g. normin) -> &normin
+            # Bare identifier (e.g. normin) -> &normin,
+            # unless it is a CHARACTER dummy argument (already a pointer).
             if re.match(r"[A-Za-z_][A-Za-z0-9_]*$", s):
+                # Skip CHARACTER dummy arguments
+                if conv_info is not None and _is_dummy_character_arg(conv_info, s):
+                    new_parts.append(part)
+                    continue
                 leading = part[:len(part) - len(s)]
                 part = leading + "&" + s
 
@@ -1472,7 +1482,6 @@ def convert_tokens(conv_info, tokens, commas=False, had_str_concat=None):
                     rapp(op + inner + ")")
             else:
                 # Normal function call or parenthesized expression
-
                 # First, convert the inside of parentheses to a string
                 inner = convert_tokens(
                     conv_info=conv_info,
@@ -1485,10 +1494,12 @@ def convert_tokens(conv_info, tokens, commas=False, had_str_concat=None):
                 # arguments according to the pointer/value information.
                 if (prev_tok is not None
                         and prev_tok.is_identifier()):
-                    mpl_name = convert_function_name_to_mplapack(prev_tok.value)
+                    mpl_name = convert_function_name_to_mplapack(
+                        prev_tok.value)
                     sig = FUNCTION_SIGNATURES.get(mpl_name.lower())
                     if sig is not None:
-                        inner = _adjust_actuals_using_signature(inner, sig)
+                        inner = _adjust_actuals_using_signature(
+                            inner, sig, conv_info)
 
                 # Then decide whether we need to inject "cmn" as the first argument
                 if (cmn_needs_to_be_inserted(conv_info=conv_info, prev_tok=prev_tok)):
@@ -3239,7 +3250,7 @@ def convert_executable(
                     callee_key = called.split("::")[-1].lower()
                     sig = FUNCTION_SIGNATURES.get(callee_key)
                     if sig is not None:
-                        a = _adjust_actuals_using_signature(a, sig)
+                        a = _adjust_actuals_using_signature(a, sig, conv_info)
 
                     def cmn_a():
                         if (len(cmn) == 0):
@@ -4234,6 +4245,7 @@ def _postprocess_intrinsic_aliases(lines):
         out.append(line)
     return out
 
+
 def _postprocess_comment_name_map(lines):
     """Apply MPLAPACK name mapping inside C++ comment lines.
 
@@ -4252,6 +4264,7 @@ def _postprocess_comment_name_map(lines):
                     line = re.sub(pattern, cpp_name, line)
         out.append(line)
     return out
+
 
 def _postprocess_math_intrinsics_upper(lines):
     """Rewrite math intrinsic calls (atan2, cos, sin, tan, log, exp, max, min, abs) to uppercase names."""
@@ -4299,6 +4312,7 @@ def _postprocess_math_intrinsics_upper(lines):
         out.append(line)
     return out
 
+
 def _postprocess_ilaenv_name_map(lines):
     """Apply MPLAPACK name mapping inside iMlaenv calls.
 
@@ -4329,6 +4343,7 @@ def _postprocess_ilaenv_name_map(lines):
         out.append(line)
     return out
 
+
 def _postprocess_integer_literal_casts(lines):
     """Remove unnecessary (INTEGER) casts on literal 0/1 in MAX/MIN calls.
 
@@ -4345,7 +4360,6 @@ def _postprocess_integer_literal_casts(lines):
     return out
 
 
-
 def _postprocess_strip_float_suffix(lines):
     """Remove 'f' suffix from floating literals like 1.0f, 0.5f, 3.14e-1f."""
     # Match patterns like:
@@ -4355,6 +4369,7 @@ def _postprocess_strip_float_suffix(lines):
     for line in lines:
         out.append(pat.sub(r'\1', line))
     return out
+
 
 def _postprocess_complex_zero_initializers(lines):
     """Rewrite COMPLEX zero initializers using COMPLEX(0.0, 0.0).
