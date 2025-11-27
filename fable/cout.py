@@ -1795,7 +1795,8 @@ def convert_declaration(rapp, conv_info, fdecl, crhs, const):
             # Try DATA-based initializer for simple scalar DATA
             if hasattr(conv_info, "data_initializers"):
                 if conv_info.data_initializers is None:
-                    conv_info.data_initializers = build_scalar_data_initializers(conv_info)
+                    conv_info.data_initializers = build_scalar_data_initializers(
+                        conv_info)
                 init = conv_info.data_initializers.get(
                     fdecl.id_tok.value.lower())
                 if init is not None:
@@ -2489,6 +2490,7 @@ def convert_data(conv_info, data_init_scope):
                 tokens=nlist)
             if (data_scope is not data_init_scope):
                 data_scope.close_nested_scope()
+
 
 def build_scalar_data_initializers(conv_info):
     """Collect simple scalar DATA initializers: name -> C++ literal.
@@ -4377,19 +4379,28 @@ def _postprocess_math_intrinsics_upper(lines):
         # ----------------------------------------------------------
 
         # log / log10 (fem::LOG, fem::DLOG, LOG, DLOG, dlog, dlog10, etc.)
-        line = re.sub(r'\bfem::d?log10\s*\(', 'log10(', line, flags=re.IGNORECASE)
-        line = re.sub(r'\bfem::d?log\s*\(',   'log(',   line, flags=re.IGNORECASE)
-        line = re.sub(r'\bdlog10\s*\(',       'log10(', line, flags=re.IGNORECASE)
-        line = re.sub(r'\bdlog\s*\(',         'log(',   line, flags=re.IGNORECASE)
+        line = re.sub(r'\bfem::d?log10\s*\(',
+                      'log10(', line, flags=re.IGNORECASE)
+        line = re.sub(r'\bfem::d?log\s*\(',
+                      'log(',   line, flags=re.IGNORECASE)
+        line = re.sub(r'\bdlog10\s*\(',
+                      'log10(', line, flags=re.IGNORECASE)
+        line = re.sub(r'\bdlog\s*\(',
+                      'log(',   line, flags=re.IGNORECASE)
 
         # exp / pow / mod (fem::EXP, fem::exp)
-        line = re.sub(r'\bfem::exp\s*\(',     'exp(',   line, flags=re.IGNORECASE)
-        line = re.sub(r'\bfem::pow\s*\(',     'pow(',   line, flags=re.IGNORECASE)
-        line = re.sub(r'\bfem::mod\s*\(',     'mod(',   line, flags=re.IGNORECASE)
+        line = re.sub(r'\bfem::exp\s*\(',
+                      'exp(',   line, flags=re.IGNORECASE)
+        line = re.sub(r'\bfem::pow\s*\(',
+                      'pow(',   line, flags=re.IGNORECASE)
+        line = re.sub(r'\bfem::mod\s*\(',
+                      'mod(',   line, flags=re.IGNORECASE)
 
         # NINT-like intrinsics (fem::nint, fem::idnint)
-        line = re.sub(r'\bfem::nint\s*\(',    'nint(',  line, flags=re.IGNORECASE)
-        line = re.sub(r'\bfem::idnint\s*\(',  'nint(',  line, flags=re.IGNORECASE)
+        line = re.sub(r'\bfem::nint\s*\(',
+                      'nint(',  line, flags=re.IGNORECASE)
+        line = re.sub(r'\bfem::idnint\s*\(',
+                      'nint(',  line, flags=re.IGNORECASE)
 
         # ----------------------------------------------------------
         # 2) Trigonometric intrinsics
