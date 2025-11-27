@@ -1453,25 +1453,41 @@ def convert_tokens(conv_info, tokens, commas=False, had_str_concat=None):
                         rapp("[" + inner + "]")
 
                 elif len(parts) == 2:
-                    # Two-dimensional array: a(i, j)
+                    # 2D array: a(i,j) -> a[(row_term) + (col_term)*ld<name>]
                     i_expr, j_expr = parts
                     ldname = "ld" + prev_tok.value.lower()
 
                     simple_name = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
                     simple_int = re.compile(r"^[0-9]+$")
 
+                    # Row index term
+                    # i, 1, etc. -> "i - 1"
+                    # more complex -> "(i_expr) - 1", except MIN/MAX where we
+                    # prefer "MIN(..., ...) - 1" / "MAX(..., ...) - 1".
                     if simple_name.match(i_expr) or simple_int.match(i_expr):
                         i_term = f"{i_expr} - 1"
                     else:
-                        i_term = f"({i_expr}) - 1"
+                        i_str = i_expr.strip()
+                        # Strip one layer of outer parentheses
+                        if i_str.startswith("(") and i_str.endswith(")"):
+                            i_str = i_str[1:-1].strip()
+                        # Special-case MIN/MAX: no extra outer parentheses
+                        low = i_str.lower()
+                        if low.startswith("min(") or low.startswith("max("):
+                            i_term = f"{i_str} - 1"
+                        else:
+                            i_term = f"({i_str}) - 1"
 
-                    if simple_name.match(j_expr) or simple_int.match(j_expr):
-                        j_term = f"({j_expr} - 1)"
-                    else:
-                        j_term = f"(({j_expr}) - 1)"
+                    # Column index term:
+                    # strip outer parentheses repeatedly, then use "(expr - 1)"
+                    j_str = j_expr.strip()
+                    while j_str.startswith("(") and j_str.endswith(")"):
+                        j_str = j_str[1:-1].strip()
+                    j_term = f"({j_str} - 1)"
 
                     index_expr = f"({i_term}) + {j_term}*{ldname}"
                     rapp("[" + index_expr + "]")
+
                 else:
                     # Fallback: treat like a normal call/parenthesized expression
                     if (cmn_needs_to_be_inserted(
