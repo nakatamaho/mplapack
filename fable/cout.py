@@ -1044,9 +1044,7 @@ class conversion_info(global_conversion_info):
     __slots__ = global_conversion_info.__slots__ + [
         "fproc",
         "comment_manager",
-        "vmap",
-        "data_initializers",
-    ]
+        "vmap"]
 
     def __init__(O,
                  global_conv_info=None,
@@ -1066,9 +1064,6 @@ class conversion_info(global_conversion_info):
             O.vmap = {}
         else:
             O.vmap = vmap
-
-        # IMPORTANT: initialize DATA initializer map
-        O.data_initializers = None
 
     def set_vmap_force_local(O, fdecl):
         identifier = fdecl.id_tok.value
@@ -1453,17 +1448,13 @@ def convert_tokens(conv_info, tokens, commas=False, had_str_concat=None):
                         rapp("[" + inner + "]")
 
                 elif len(parts) == 2:
-                    # 2D array: a(i,j) -> a[(row_term) + (col_term)*ld<name>]
+                    # Two-dimensional array: a(i, j)
                     i_expr, j_expr = parts
                     ldname = "ld" + prev_tok.value.lower()
 
                     simple_name = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
                     simple_int = re.compile(r"^[0-9]+$")
 
-                    # Row index term
-                    # i, 1, etc. -> "i - 1"
-                    # more complex -> "(i_expr) - 1", except MIN/MAX where we
-                    # prefer "MIN(..., ...) - 1" / "MAX(..., ...) - 1".
                     if simple_name.match(i_expr) or simple_int.match(i_expr):
                         i_term = f"{i_expr} - 1"
                     else:
@@ -1478,16 +1469,13 @@ def convert_tokens(conv_info, tokens, commas=False, had_str_concat=None):
                         else:
                             i_term = f"({i_str}) - 1"
 
-                    # Column index term:
-                    # strip outer parentheses repeatedly, then use "(expr - 1)"
-                    j_str = j_expr.strip()
-                    while j_str.startswith("(") and j_str.endswith(")"):
-                        j_str = j_str[1:-1].strip()
-                    j_term = f"({j_str} - 1)"
+                    if simple_name.match(j_expr) or simple_int.match(j_expr):
+                        j_term = f"({j_expr} - 1)"
+                    else:
+                        j_term = f"(({j_expr}) - 1)"
 
                     index_expr = f"({i_term}) + {j_term}*{ldname}"
                     rapp("[" + index_expr + "]")
-
                 else:
                     # Fallback: treat like a normal call/parenthesized expression
                     if (cmn_needs_to_be_inserted(
@@ -1808,18 +1796,7 @@ def convert_declaration(rapp, conv_info, fdecl, crhs, const):
             return False
 
         if (crhs is None):
-            # Try DATA-based initializer for simple scalar DATA
-            if hasattr(conv_info, "data_initializers"):
-                if conv_info.data_initializers is None:
-                    conv_info.data_initializers = build_scalar_data_initializers(conv_info)
-                init = conv_info.data_initializers.get(
-                    fdecl.id_tok.value.lower())
-                if init is not None:
-                    crhs = init
-
-            # Fallback: zero-initialize as before
-            if crhs is None:
-                crhs = zero_shortcut_if_possible(ctype=ctype)
+            crhs = zero_shortcut_if_possible(ctype=ctype)
 
         def const_qualifier():
             if (const):
@@ -2505,65 +2482,6 @@ def convert_data(conv_info, data_init_scope):
                 tokens=nlist)
             if (data_scope is not data_init_scope):
                 data_scope.close_nested_scope()
-
-def build_scalar_data_initializers(conv_info):
-    """Collect simple scalar DATA initializers: name -> C++ literal.
-
-    We only handle the simple case:
-      DATA A,B,C / v1, v2, v3 /
-    with no implied DO loops, no repetitions, and scalar targets.
-    """
-    init = {}
-    for nlist, clist in conv_info.fproc.data:
-        # Build ccs exactly as in convert_data
-        ccs = []
-        have_repetitions = False
-        tok_types = set()
-        for repetition_tok, ctoks in clist:
-            i = 0
-            if ctoks and ctoks[0].is_unary_plus_or_minus() and len(ctoks) > 1:
-                i = 1
-            tok_types.add(ctoks[i].type())
-            cc = convert_tokens(conv_info=conv_info, tokens=ctoks)
-            if repetition_tok is not None:
-                # Repeated DATA: skip in this helper for now.
-                have_repetitions = True
-            ccs.append(cc)
-
-        if have_repetitions:
-            continue
-
-        # Skip implied DO loops
-        implied_dos = []
-        find_implied_dos(result=implied_dos, tokens=nlist)
-        if implied_dos:
-            continue
-
-        if len(nlist) != len(ccs):
-            continue
-
-        # Collect scalar identifiers only
-        scalar_ids = []
-        for tok_seq in nlist:
-            toks = tok_seq.value
-            if len(toks) != 1 or not toks[0].is_identifier():
-                scalar_ids = []
-                break
-            id_tok = toks[0]
-            fdecl = conv_info.fproc.get_fdecl(id_tok=id_tok)
-            if fdecl is None or fdecl.dim_tokens is not None:
-                # Array target or unknown: give up
-                scalar_ids = []
-                break
-            scalar_ids.append(id_tok.value.lower())
-
-        if not scalar_ids:
-            continue
-
-        for name, cc in zip(scalar_ids, ccs):
-            init[name] = cc
-
-    return init
 
 
 def declare_identifiers_parameter_recursion(
