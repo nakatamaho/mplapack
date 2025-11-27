@@ -1404,69 +1404,49 @@ def convert_tokens(conv_info, tokens, commas=False, had_str_concat=None):
             if (fdecl is not None
                     and getattr(fdecl, "dim_tokens", None) is not None
                     and not fdecl.is_user_defined_callable()):
-                # Non-callable with dimensions -> array
+                # Non-callable with dimensions -> array reference
                 is_array_ref = True
+
             if is_array_ref:
-                # Convert a(i) / a(i,j) into flat C indexing
-                # a(i)   -> a[i_expr - 1]       (simple) or a[(i_expr) - 1] (compound)
-                # a(i,j) -> a[(row_term) + (j_expr - 1)*ld<name>]
+                # Convert indices inside parentheses to C++ array indexing
                 idx_str = convert_tokens(
                     conv_info=conv_info,
                     tokens=tok.value,
                     commas=True,
                     had_str_concat=had_str_concat)
 
-                idx_str = convert_tokens(
-                    conv_info=conv_info,
-                    tokens=tok.value,
-                    commas=True,
-                    had_str_concat=had_str_concat)
-                # Use parenthesis-aware splitting so that inner commas
-                # inside MAX(...), MIN(...), etc. do not break the index.
+                # Split by top-level commas, ignoring commas inside nested parentheses
                 parts = _split_actuals(idx_str)
 
                 if len(parts) == 1:
-                    # 1D array: a(i)
-                    #   - a(1)         -> a[0]
-                    #   - a(i)         -> a[i - 1]
-                    #   - a(i+1) etc.  -> a[((i+1) - 1)]
                     i_expr = parts[0].strip()
-
-                    # Case 1: pure integer literal, e.g. "1" -> a[0]
                     if re.fullmatch(r"[0-9]+", i_expr):
+                        # Constant index: a(1) -> a[0]
                         i_val = int(i_expr)
                         index_expr = str(i_val - 1)
                         rapp("[" + index_expr + "]")
-
-                    # Case 2: simple identifier, e.g. "i", "ix", "jy" -> a[i - 1]
                     elif re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", i_expr):
+                        # Simple variable: a(i) -> a[i - 1]
                         index_expr = f"{i_expr} - 1"
                         rapp("[" + index_expr + "]")
-
-                    # Case 3: more complex expression, keep it parenthesized: a[((i+1) - 1)]
                     else:
+                        # General expression: a(f(i)) -> a[(f(i)) - 1]
                         inner = f"({i_expr}) - 1"
                         rapp("[" + inner + "]")
 
                 elif len(parts) == 2:
-                    # 2D array: a(i,j) -> a[(row_term) + (col_term)*ld<name>]
+                    # Two-dimensional array: a(i, j)
                     i_expr, j_expr = parts
                     ldname = "ld" + prev_tok.value.lower()
 
                     simple_name = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
                     simple_int = re.compile(r"^[0-9]+$")
 
-                    # Row index term
-                    # i, 1, etc. -> "i - 1"
-                    # more complex -> "(i_expr) - 1"
                     if simple_name.match(i_expr) or simple_int.match(i_expr):
                         i_term = f"{i_expr} - 1"
                     else:
                         i_term = f"({i_expr}) - 1"
 
-                    # Column index term
-                    # j       -> "(j - 1)"
-                    # j+kun   -> "((j + kun) - 1)"
                     if simple_name.match(j_expr) or simple_int.match(j_expr):
                         j_term = f"({j_expr} - 1)"
                     else:
@@ -1475,7 +1455,7 @@ def convert_tokens(conv_info, tokens, commas=False, had_str_concat=None):
                     index_expr = f"({i_term}) + {j_term}*{ldname}"
                     rapp("[" + index_expr + "]")
                 else:
-                    # Fallback: give up and treat like a normal call/parentheses
+                    # Fallback: treat like a normal call/parenthesized expression
                     if (cmn_needs_to_be_inserted(
                             conv_info=conv_info, prev_tok=prev_tok)):
                         if (len(tok.value) != 0) and (len(tok.value[0].value) != 0):
@@ -1484,13 +1464,33 @@ def convert_tokens(conv_info, tokens, commas=False, had_str_concat=None):
                             op = "(cmn"
                     else:
                         op = "("
-                    rapp(op + convert_tokens(
+                    inner = convert_tokens(
                         conv_info=conv_info,
                         tokens=tok.value,
                         commas=True,
-                        had_str_concat=had_str_concat) + ")")
+                        had_str_concat=had_str_concat)
+                    rapp(op + inner + ")")
             else:
                 # Normal function call or parenthesized expression
+
+                # First, convert the inside of parentheses to a string
+                inner = convert_tokens(
+                    conv_info=conv_info,
+                    tokens=tok.value,
+                    commas=True,
+                    had_str_concat=had_str_concat)
+
+                # If the previous token is an identifier and corresponds to a
+                # BLAS/LAPACK routine with a known signature, adjust actual
+                # arguments according to the pointer/value information.
+                if (prev_tok is not None
+                        and prev_tok.is_identifier()):
+                    mpl_name = convert_function_name_to_mplapack(prev_tok.value)
+                    sig = FUNCTION_SIGNATURES.get(mpl_name.lower())
+                    if sig is not None:
+                        inner = _adjust_actuals_using_signature(inner, sig)
+
+                # Then decide whether we need to inject "cmn" as the first argument
                 if (cmn_needs_to_be_inserted(conv_info=conv_info, prev_tok=prev_tok)):
                     if (len(tok.value) != 0) and (len(tok.value[0].value) != 0):
                         op = "(cmn, "
@@ -1498,11 +1498,9 @@ def convert_tokens(conv_info, tokens, commas=False, had_str_concat=None):
                         op = "(cmn"
                 else:
                     op = "("
-                rapp(op + convert_tokens(
-                    conv_info=conv_info,
-                    tokens=tok.value,
-                    commas=True,
-                    had_str_concat=had_str_concat) + ")")
+
+                rapp(op + inner + ")")
+
         elif (tok.is_implied_do()):
             raise AssertionError
         elif (tok.is_power()):
@@ -4272,7 +4270,13 @@ def _postprocess_math_intrinsics_upper(lines):
         line = re.sub(r'\bstd::log\s*\(', 'LOG(', line)
         line = re.sub(r'\bfem::log\s*\(', 'LOG(', line)
         line = re.sub(r'\blog\s*\(', 'LOG(', line)
+        line = re.sub(r'\bdlog\s*\(', 'LOG(', line)
+        line = re.sub(r'\bfem::dlog\s*\(', 'LOG(', line)
+        line = re.sub(r'\blog10\s*\(', 'LOG10(', line)
+        line = re.sub(r'\bdlog10\s*\(', 'LOG10(', line)
+        line = re.sub(r'\bfem::dlog10\s*\(', 'LOG10(', line)
         line = re.sub(r'\bstd::exp\s*\(', 'EXP(', line)
+        line = re.sub(r'\bfem::exp\s*\(', 'EXP(', line)
         line = re.sub(r'\bexp\s*\(', 'EXP(', line)
         # Extremum intrinsics
         line = re.sub(r'\bstd::max\s*\(', 'MAX(', line)
