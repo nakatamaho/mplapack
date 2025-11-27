@@ -2619,9 +2619,17 @@ def declare_identifier(conv_info, top_scope, curr_scope, id_tok, crhs=None):
                 target_fdecl=fdecl,
                 equiv_tok_cluster=equiv_tok_cluster))
             return crhs is not None
+    # check if this procedure wants to ignore COMMON/SAVE
+    ignore_cs = (
+        conv_info.fproc is not None
+        and getattr(conv_info.fproc, "conv_hook", None) is not None
+        and conv_info.fproc.conv_hook.ignore_common_and_save
+    )
+
     if (fdecl is not None
         and (fdecl.is_local()
-             or fdecl.is_parameter())):
+             or fdecl.is_parameter()
+             or (fdecl.is_save() and ignore_cs))):
         const = False
         have_crhs = (crhs is not None)
         if (have_goto or curr_scope != top_scope):
@@ -2668,6 +2676,7 @@ def declare_identifier(conv_info, top_scope, curr_scope, id_tok, crhs=None):
         if (len(common_names) < 2):
             return None
         return conv_info.fproc.common_name_by_identifier().get(identifier)
+
     common_name = get_common_name_if_cast_is_needed()
     if (common_name is not None):
         src_var = "static_cast<common_%s&>(cmn).%s" % (
@@ -4634,7 +4643,8 @@ def process(
     # *_save structs or cmn_sve members).
     hard_ignore_common = {
         "zlacon",  # add more names here if needed
-        # "dlacon",
+        "drotm",
+        "drotmg",
         # "clacon",
         # "slacon",
     }
