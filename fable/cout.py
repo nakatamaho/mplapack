@@ -4458,6 +4458,23 @@ def _postprocess_math_intrinsics_upper(lines):
     return out
 
 
+def _postprocess_minmax_parens(lines):
+    """Drop one level of redundant parentheses around MIN/MAX in index shifts.
+
+    Example:
+      ((MIN(k1 + 1, m)) - 1) -> (MIN(k1 + 1, m) - 1)
+      ((MAX(i, j)) - 1)      -> (MAX(i, j) - 1)
+    """
+    pat_min = re.compile(r'\(\((MIN\([^()]*\))\)\s*-\s*1\)')
+    pat_max = re.compile(r'\(\((MAX\([^()]*\))\)\s*-\s*1\)')
+    out = []
+    for line in lines:
+        line = pat_min.sub(r'(\1 - 1)', line)
+        line = pat_max.sub(r'(\1 - 1)', line)
+        out.append(line)
+    return out
+
+
 def _postprocess_ilaenv_name_map(lines):
     """Apply MPLAPACK name mapping inside iMlaenv calls.
 
@@ -5023,6 +5040,9 @@ def process(
 
     # Remove unnecessary (INTEGER) casts in MAX/MIN calls.
     result = _postprocess_integer_literal_casts(result)
+
+    # Drop redundant parentheses around MIN/MAX index shifts.
+    result = _postprocess_minmax_parens(result)
 
     # Apply MPLAPACK name mapping inside comment lines.
     result = _postprocess_comment_name_map(result)
