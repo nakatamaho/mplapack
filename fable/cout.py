@@ -4505,23 +4505,6 @@ def _postprocess_ilaenv_name_map(lines):
         out.append(line)
     return out
 
-
-def _postprocess_integer_literal_casts(lines):
-    """Remove unnecessary (INTEGER) casts on literal 0/1 in MAX/MIN calls.
-
-    Example:
-      MAX(n, (INTEGER)1) -> MAX(n, 1)
-    """
-    pat_max = re.compile(r'MAX\(([^,]+),\s*\(INTEGER\)\s*([0-9]+)\)')
-    pat_min = re.compile(r'MIN\(([^,]+),\s*\(INTEGER\)\s*([0-9]+)\)')
-    out = []
-    for line in lines:
-        line = pat_max.sub(r'MAX(\1, \2)', line)
-        line = pat_min.sub(r'MIN(\1, \2)', line)
-        out.append(line)
-    return out
-
-
 def _postprocess_strip_float_suffix(lines):
     """Remove 'f' suffix from floating literals like 1.0f, 0.5f, 3.14e-1f."""
     # Match patterns like:
@@ -5037,9 +5020,6 @@ def process(
 
     # Uppercase selected math intrinsics (ATAN2, COS, SIN, TAN, LOG, EXP, MAX, MIN, ABS).
     result = _postprocess_math_intrinsics_upper(result)
-
-    # Remove unnecessary (INTEGER) casts in MAX/MIN calls.
-    result = _postprocess_integer_literal_casts(result)
 
     # Drop redundant parentheses around MIN/MAX index shifts.
     result = _postprocess_minmax_parens(result)
