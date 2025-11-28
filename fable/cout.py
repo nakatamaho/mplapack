@@ -135,10 +135,11 @@ _MPLAPACK_CPP_TO_FORTRAN = {
     cpp.lower(): f_name.lower() for (f_name, cpp) in _MPLAPACK_NAME_MAP.items()
 }
 
-# Track COMPLEX-typed identifiers in the current procedure.
+# Track COMPLEX-typed C++ identifiers in the current procedure.
 # Names are C++ identifiers after vmapping (e.g. "alpha", "a", "cmn.z").
 complex_identifiers = set()
 complex_pointer_identifiers = set()
+
 
 def _mplapack_default_name(name: str) -> str:
     """Fallback rule: s/d -> R, c/z -> C, others unchanged."""
@@ -1284,10 +1285,11 @@ def _real_cast_or_component(arg: str, complex_vars, complex_ptrs) -> str:
     if not arg:
         return "castREAL(0)"
 
-    # If this is a call to a known real-valued helper (RCabs1, ABS, AIMAG, ...),
-    # the whole expression is REAL even if its arguments are COMPLEX.
-    # Do not wrap it in (...).real().
+    # Expressions that are obviously REAL already
     if _is_real_valued_function_call(arg):
+        return f"castREAL({arg})"
+    if ".real()" in arg or ".imag()" in arg:
+        # x.real(), x.imag() are REAL-valued already
         return f"castREAL({arg})"
 
     # Simple lvalue: NAME or NAME[...]...
@@ -1308,11 +1310,27 @@ def _real_cast_or_component(arg: str, complex_vars, complex_ptrs) -> str:
         return f"castREAL({arg})"
 
     # Non-simple expression:
-    # We do NOT try to infer a complex-valued expression here; DBLE/REAL on
-    # such expressions should be handled via castREAL, unless the helper is
-    # explicitly known to be complex. This keeps things safe for expressions
-    # like stemp + RCabs1(zx[i]) or ABS(x.imag()).
-    return f"castREAL({arg})"
+    # For expressions like alpha*temp1 + conj(alpha)*temp2, if they involve
+    # COMPLEX variables, DBLE/REAL should give the real part of the whole
+    # expression.
+    owner = None
+    for name in complex_vars:
+        # Exact name or prefix match (e.g. "cmn.z", "cmn.z[...]", "cmn.z.something")
+        if arg == name or arg.startswith(name + "[") or arg.startswith(name + "."):
+            owner = name
+            break
+        # Name appears somewhere as an identifier
+        if re.search(r'\b' + re.escape(name) + r'\b', arg):
+            owner = name
+            break
+
+    # No COMPLEX variable involved → treat as real/integer expression
+    if owner is None:
+        return f"castREAL({arg})"
+
+    # General COMPLEX expression: take its real part
+    return f"({arg}).real()"
+
 
 def _real_repl(arg: str) -> str:
     """Replacement for DBLE/REAL with COMPLEX-aware behavior.
@@ -3165,6 +3183,44 @@ def convert_executable(
                     declare_identifiers(id_tokens=id_tokens)
                 crhs = convert_tokens(
                     conv_info=conv_info, tokens=ei.rhs_tokens)
+                # If LHS is REAL/DOUBLEPRECISION and RHS is a simple COMPLEX
+                # variable/element, assign its real part.
+                lhs_fdecl = conv_info.fproc.get_fdecl(id_tok=lhs_id_tokens[0])
+                lhs_dt_code = None
+                if lhs_fdecl is not None and lhs_fdecl.data_type is not None:
+                    dt = lhs_fdecl.data_type
+                    if isinstance(dt, str):
+                        lhs_dt_code = dt
+                    else:
+                        lhs_dt_code = getattr(dt, "value", None)
+                    if lhs_dt_code is not None:
+                        lhs_dt_code = lhs_dt_code.lower()
+                lhs_is_real = lhs_dt_code in ("real", "doubleprecision")
+
+                rhs_is_simple = _is_simple_lvalue(crhs)
+                rhs_is_complex = False
+                if lhs_is_real and rhs_is_simple and rhs_id_tokens:
+                    rhs_fdecl = conv_info.fproc.get_fdecl(id_tok=rhs_id_tokens[0])
+                    rhs_dt_code = None
+                    if rhs_fdecl is not None and rhs_fdecl.data_type is not None:
+                        dt = rhs_fdecl.data_type
+                        if isinstance(dt, str):
+                            rhs_dt_code = dt
+                        else:
+                            rhs_dt_code = getattr(dt, "value", None)
+                        if rhs_dt_code is not None:
+                            rhs_dt_code = rhs_dt_code.lower()
+                    rhs_is_complex = rhs_dt_code in ("complex", "doublecomplex")
+
+                if lhs_is_real and rhs_is_complex:
+                    rhs_expr = crhs.strip()
+                    # Avoid double-wrapping if someone already wrote .real()
+                    if ".real()" not in rhs_expr and ".imag()" not in rhs_expr:
+                        if _is_simple_lvalue(rhs_expr):
+                            crhs = f"{rhs_expr}.real()"
+                        else:
+                            crhs = f"({rhs_expr}).real()"
+
                 id_tok = lhs_id_tokens[0]
                 assign_here = id_tok.value in conv_info.vmap
                 if (not assign_here):
