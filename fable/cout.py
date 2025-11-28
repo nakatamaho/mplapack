@@ -535,10 +535,6 @@ template this throw true try typedef typeid typename union unsigned using
 virtual void volatile wchar_t while xor xor_eq argv argc
 """.split())
 
-# Track COMPLEX-typed C++ identifiers in the current procedure.
-complex_identifiers = set()
-complex_pointer_identifiers = set()
-
 def prepend_identifier_if_necessary(identifier):
     if (identifier in major_types or identifier in cpp_keywords):
         return "identifier_" + identifier
@@ -1331,45 +1327,6 @@ def _real_cast_or_component(arg: str, complex_vars, complex_ptrs) -> str:
     # General COMPLEX expression: take its real part
     return f"({arg}).real()"
 
-
-def _real_repl(arg: str) -> str:
-    """Replacement for DBLE/REAL with COMPLEX-aware behavior.
-
-    Policy:
-      - If the argument is a simple COMPLEX variable / array element, take
-        its real part:   alpha      -> alpha.real()
-                         a[i]       -> a[i].real()
-                         a[0] (for COMPLEX*) -> a[0].real()
-      - Otherwise, do not try to pull out a real part from the expression;
-        just convert it to REAL via castREAL(expr).
-        This avoids corrupting expressions that are already REAL-valued,
-        such as RCabs1(zx[i]) or ABS(x.imag()).
-    """
-    arg = arg.strip()
-    if not arg:
-        return "castREAL(0)"
-
-    # Simple lvalue: NAME or NAME[...]...
-    if _is_simple_lvalue(arg):
-        # Extract the base identifier (first token)
-        m = re.match(r'([A-Za-z_][A-Za-z0-9_]*)', arg)
-        base = m.group(1) if m else None
-
-        # COMPLEX scalar or array element: take real part
-        if base is not None and base in complex_identifiers:
-            # COMPLEX* dummy used bare: dble(a) -> a[0].real()
-            if base in complex_pointer_identifiers and "[" not in arg:
-                return f"{base}[0].real()"
-            # General COMPLEX variable / element
-            return f"{arg}.real()"
-
-        # Not a COMPLEX variable: treat as generic real/integer expression
-        return f"castREAL({arg})"
-
-    # Non-simple expression: do not wrap with .real(), just cast to REAL.
-    # Examples: stemp + RCabs1(zx[i]), ABS(x.imag()), LOG(n + 1.0), ...
-    return f"castREAL({arg})"
-
 def _imag_repl(arg: str) -> str:
     """Replacement for AIMAG/IMAG: choose arg.imag() or (arg).imag()."""
     arg = arg.strip()
@@ -1509,16 +1466,23 @@ def rewrite_single_char_string_literals(line: str) -> str:
 
 def rewrite_intrinsics(text: str) -> str:
     """Rewrite fem:: intrinsics to C++-friendly forms."""
-
-    # Use global COMPLEX identifier information collected per procedure.
     def _real_dispatch(arg: str) -> str:
-        # complex_identifiers: COMPLEX scalars/arrays
-        # complex_pointer_identifiers: COMPLEX* dummy arguments
+        # Use COMPLEX information collected for the current procedure
         return _real_cast_or_component(
             arg,
             complex_identifiers,
             complex_pointer_identifiers,
         )
+
+    def _int_dispatch(arg: str) -> str:
+        # First map the argument to a REAL-valued expression, then cast to INTEGER.
+        real_expr = _real_cast_or_component(
+            arg,
+            complex_identifiers,
+            complex_pointer_identifiers,
+        )
+        return f"castINTEGER({real_expr})"
+
 
     # --------------------------------------------------------------
     # 1) Unary intrinsics that need smart handling of parentheses
@@ -1526,6 +1490,7 @@ def rewrite_intrinsics(text: str) -> str:
     unary_intrinsics = [
         ("fem::dble",   _real_dispatch),
         ("fem::real",   _real_dispatch),
+        ("fem::fint",   _int_dispatch),
         ("fem::aimag",  _imag_repl),
         ("fem::imag",   _imag_repl),
         ("fem::dimag",  _imag_repl),
@@ -1546,7 +1511,6 @@ def rewrite_intrinsics(text: str) -> str:
     simple_map = {
         "fem::pow2":  "pow2",
         "fem::mod":   "mod",
-        "fem::fint": "castINTEGER",
 
         # elementary math
         "fem::cos":   "cos",
