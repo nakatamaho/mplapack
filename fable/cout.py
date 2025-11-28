@@ -525,6 +525,9 @@ template this throw true try typedef typeid typename union unsigned using
 virtual void volatile wchar_t while xor xor_eq argv argc
 """.split())
 
+# Track COMPLEX-typed C++ identifiers in the current procedure.
+complex_identifiers = set()
+complex_pointer_identifiers = set()
 
 def prepend_identifier_if_necessary(identifier):
     if (identifier in major_types or identifier in cpp_keywords):
@@ -1193,20 +1196,63 @@ def _is_simple_lvalue(expr: str) -> bool:
     return re.match(r'^[A-Za-z_][A-Za-z0-9_]*(\[[^\]]*\])*$', expr) is not None
 
 
-complex_identifiers = set()
+def _collect_complex_variable_names(text: str):
+    """Collect names of COMPLEX variables and pointers from the C++ translation unit.
 
-def _collect_complex_identifiers(text: str):
-    """Collect names of variables declared as COMPLEX in the generated C++."""
-    ids = set()
-    # Match patterns like:
-    #   COMPLEX alpha;
-    #   COMPLEX alpha[...];
-    #   COMPLEX *x;
-    #   COMPLEX const &alpha;
-    pattern = r'\bCOMPLEX\b\s*(?:const\s+)?(?:\*|&)?\s*([A-Za-z_][A-Za-z0-9_]*)'
-    for m in re.finditer(pattern, text):
-        ids.add(m.group(1))
-    return ids
+    Returns:
+        complex_vars: set of variable names that are COMPLEX (scalars or pointers)
+        complex_ptrs: subset of complex_vars that are declared as pointers.
+    """
+    complex_vars = set()
+    complex_ptrs = set()
+
+    # Pointer-style declarations and arguments: COMPLEX *a, COMPLEX* a, etc.
+    for name in re.findall(r'\bCOMPLEX\s*\*+\s*([A-Za-z_][A-Za-z0-9_]*)', text):
+        complex_vars.add(name)
+        complex_ptrs.add(name)
+
+    # Scalar or reference-style: COMPLEX alpha; COMPLEX const &alpha; etc.
+    for name in re.findall(r'\bCOMPLEX\s+(?:const\s+&\s*)?([A-Za-z_][A-Za-z0-9_]*)', text):
+        complex_vars.add(name)
+
+    return complex_vars, complex_ptrs
+
+
+def _real_cast_or_component(arg: str, complex_vars, complex_ptrs) -> str:
+    """Replacement for DBLE/REAL with a more robust COMPLEX detection.
+
+    - If arg is based on a COMPLEX identifier, return its real part.
+      * COMPLEX scalar / local array      -> <expr>.real()
+      * COMPLEX pointer dummy 'a'        -> a[0].real()  (when used without index)
+      * COMPLEX expression (temp * x[i], cmn.z + 1.0, ...) -> (<expr>).real()
+    - Otherwise, fall back to castREAL(arg).
+    """
+    arg = arg.strip()
+    if not arg:
+        return "castREAL(0)"
+
+    owner = None
+    for name in complex_vars:
+        if arg == name or arg.startswith(name + "[") or arg.startswith(name + "."):
+            owner = name
+            break
+
+        if "." not in name:
+            pattern = r"\b" + re.escape(name) + r"\b"
+            if re.search(pattern, arg):
+                owner = name
+                break
+
+    if owner is None:
+        return f"castREAL({arg})"
+
+    # COMPLEX* dummy: fem::dble(a) → a[0].real()
+    if owner in complex_ptrs and "[" not in arg:
+        return f"{owner}[0].real()"
+
+    if _is_simple_lvalue(arg):
+        return f"{arg}.real()"
+    return f"({arg}).real()"
 
 
 def _real_repl(arg: str) -> str:
@@ -1367,15 +1413,22 @@ def rewrite_single_char_string_literals(line: str) -> str:
 def rewrite_intrinsics(text: str) -> str:
     """Rewrite fem:: intrinsics to C++-friendly forms."""
 
-    global complex_identifiers
-    complex_identifiers = _collect_complex_identifiers(text)
+    # Use global COMPLEX identifier information collected per procedure.
+    def _real_dispatch(arg: str) -> str:
+        # complex_identifiers: COMPLEX scalars/arrays
+        # complex_pointer_identifiers: COMPLEX* dummy arguments
+        return _real_cast_or_component(
+            arg,
+            complex_identifiers,
+            complex_pointer_identifiers,
+        )
 
     # --------------------------------------------------------------
     # 1) Unary intrinsics that need smart handling of parentheses
     # --------------------------------------------------------------
     unary_intrinsics = [
-        ("fem::dble",   _real_repl),
-        ("fem::real",   _real_repl),
+        ("fem::dble",   _real_dispatch),
+        ("fem::real",   _real_dispatch),
         ("fem::aimag",  _imag_repl),
         ("fem::imag",   _imag_repl),
         ("fem::dimag",  _imag_repl),
@@ -1384,16 +1437,16 @@ def rewrite_intrinsics(text: str) -> str:
         ("fem::dconjg", _conj_repl),
     ]
 
-    for name, repl_fun in unary_intrinsics:
-        if name in text:
-            text = _rewrite_unary_intrinsic(text, name, repl_fun)
+    # Apply unary intrinsics first (they keep parentheses balance themselves)
+    for func_name, repl in unary_intrinsics:
+        if func_name in text:
+            text = _rewrite_unary_intrinsic(text, func_name, repl)
 
     # --------------------------------------------------------------
     # 2) Simple name substitutions
     #    fem::foo(...) -> foo(...) or a common implementation
     # --------------------------------------------------------------
     simple_map = {
-        # integer / real helpers
         "fem::pow2":  "pow2",
         "fem::mod":   "mod",
         "fem::fint": "castINTEGER",
@@ -1429,7 +1482,6 @@ def rewrite_intrinsics(text: str) -> str:
     text = _rewrite_max_min_calls(text)
 
     return text
-
 
 def convert_tokens(conv_info, tokens, commas=False, had_str_concat=None):
     result = []
@@ -1815,6 +1867,19 @@ def convert_declaration(rapp, conv_info, fdecl, crhs, const):
     ctype, cdims, crhs, cfill0 = convert_data_type_and_dims(
         conv_info=conv_info, fdecl=fdecl, crhs=crhs)
     vname = conv_info.vmapped(fdecl=fdecl)
+
+    # Track local/save COMPLEX variables (scalars or arrays)
+    dt_code = None
+    if fdecl.data_type is not None:
+        if isinstance(fdecl.data_type, str):
+            dt_code = fdecl.data_type
+        else:
+            dt_code = getattr(fdecl.data_type, "value", None)
+        if dt_code is not None:
+            dt_code = dt_code.lower()
+    if dt_code in ("complex", "doublecomplex"):
+        complex_identifiers.add(vname)
+
     if (cdims is None):
         # Scalar declaration.
         # For plain CHARACTER*1 (mapped to C++ 'char') without an explicit
@@ -3491,6 +3556,11 @@ def convert_to_cpp_function(
         conv_info,
         declaration_only=False,
         force_not_implemented=False):
+    # Reset COMPLEX identifier tracking for this procedure
+    global complex_identifiers, complex_pointer_identifiers
+    complex_identifiers = set()
+    complex_pointer_identifiers = set()
+
     if (not declaration_only):
         export_save_struct(callback=cpp_callback, conv_info=conv_info)
     fptr = []
@@ -3538,23 +3608,21 @@ def convert_to_cpp_function(
                 conv_info=conv_info, fdecl=fdecl, crhs=None)[0]
             mplapack_type = convert_to_mplapack_type(ctype)
 
+            # Determine original Fortran data type code (integer, real, complex, ...)
+            dt_code = None
+            if fdecl.data_type is not None:
+                if isinstance(fdecl.data_type, str):
+                    dt_code = fdecl.data_type
+                else:
+                    dt_code = getattr(fdecl.data_type, "value", None)
+                if dt_code is not None:
+                    dt_code = dt_code.lower()
+
             if (fdecl.dim_tokens is None):
                 # Scalar argument.
-                # Policy:
                 #   - OUT / INOUT (is_modified=True)      -> <TYPE>&
                 #   - IN  INTEGER/LOGICAL                 -> <TYPE> const   (by value)
                 #   - IN  REAL/DOUBLE/COMPLEX/...         -> <TYPE> const&  (by const reference)
-
-                # Determine original Fortran data type code (integer, real, ...)
-                dt_code = None
-                if fdecl.data_type is not None:
-                    if isinstance(fdecl.data_type, str):
-                        dt_code = fdecl.data_type
-                    else:
-                        dt_code = getattr(fdecl.data_type, "value", None)
-                    if dt_code is not None:
-                        dt_code = dt_code.lower()
-
                 name = prepend_identifier_if_necessary(arg_name)
 
                 if fdecl.is_modified:
@@ -3567,9 +3635,20 @@ def convert_to_cpp_function(
                     else:
                         # REAL / DOUBLE PRECISION / COMPLEX etc.: const reference
                         cargs_append("%s const &" % mplapack_type, name)
+
+                # Track COMPLEX scalars
+                if dt_code in ("complex", "doublecomplex"):
+                    complex_identifiers.add(name)
+
             else:
                 # Array argument: use plain pointer (REAL*, INTEGER*, ...)
                 cargs_append("%s *" % mplapack_type, arg_name)
+
+                # Track COMPLEX dummy arrays (COMPLEX* a, x, y, ...)
+                if dt_code in ("complex", "doublecomplex") and fdecl.use_count != 0:
+                    complex_identifiers.add(arg_name)
+                    complex_pointer_identifiers.add(arg_name)
+
         else:
             passed = conv_info.fproc.externals_passed_by_arg_identifier.get(
                 fdecl.id_tok.value)
@@ -4496,6 +4575,11 @@ def _postprocess_math_intrinsics_upper(lines):
         # 7) NINT-like rounding intrinsics (already canonicalized)
         # ----------------------------------------------------------
         line = re.sub(r'\bnint\s*\(',       'NINT(',  line)
+
+        # ----------------------------------------------------------
+        # 8) conjg
+        # ----------------------------------------------------------
+        line = re.sub(r'\bfem::dconjg\s*\(','conj(',   line)
 
         out.append(line)
     return out
