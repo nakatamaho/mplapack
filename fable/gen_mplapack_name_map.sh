@@ -68,6 +68,7 @@ MANUAL_MAPPINGS=(
   "ilaenv iMlaenv"
   "zdrot CRrot"
   "zdscal CRscal"
+  "zdrscl CRrscl"
 )
 
 # ------------------------------------------------------------
