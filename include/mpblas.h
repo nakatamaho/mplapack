@@ -153,6 +153,13 @@ inline INTEGER MAX(const INTEGER &a, const INTEGER &b) { return (a < b ? b : a);
 inline REAL MIN(const REAL &a, const REAL &b) { return (b < a ? b : a); }
 inline INTEGER MIN(const INTEGER &a, const INTEGER &b) { return (b < a ? b : a); }
 
+// Mixed REAL/INTEGER is *forbidden*: force explicit cast at call site.
+inline REAL MAX(const REAL &, const INTEGER &) = delete;
+inline REAL MAX(const INTEGER &, const REAL &) = delete;
+
+inline REAL MIN(const REAL &, const INTEGER &) = delete;
+inline REAL MIN(const INTEGER &, const REAL &) = delete;
+
 // Variadic MAX/MIN for more than two arguments.
 // All arguments must have the same type; the base overloads above
 // determine which types are actually supported.
