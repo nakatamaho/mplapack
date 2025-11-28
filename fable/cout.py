@@ -1193,13 +1193,39 @@ def _is_simple_lvalue(expr: str) -> bool:
     return re.match(r'^[A-Za-z_][A-Za-z0-9_]*(\[[^\]]*\])*$', expr) is not None
 
 
-def _real_repl(arg: str) -> str:
-    """Replacement for DBLE/REAL: choose arg.real() or (arg).real()."""
-    arg = arg.strip()
-    if _is_simple_lvalue(arg):
-        return f"{arg}.real()"
-    return f"({arg}).real()"
+complex_identifiers = set()
 
+def _collect_complex_identifiers(text: str):
+    """Collect names of variables declared as COMPLEX in the generated C++."""
+    ids = set()
+    # Match patterns like:
+    #   COMPLEX alpha;
+    #   COMPLEX alpha[...];
+    #   COMPLEX *x;
+    #   COMPLEX const &alpha;
+    pattern = r'\bCOMPLEX\b\s*(?:const\s+)?(?:\*|&)?\s*([A-Za-z_][A-Za-z0-9_]*)'
+    for m in re.finditer(pattern, text):
+        ids.add(m.group(1))
+    return ids
+
+
+def _real_repl(arg: str) -> str:
+    """Replacement for DBLE/REAL.
+
+    For simple COMPLEX lvalues (e.g., z, z[i]) we use .real().
+    For all other expressions we call castREAL(...).
+    """
+    arg = arg.strip()
+    # Try to extract leading identifier (base name)
+    m = re.match(r'^([A-Za-z_][A-Za-z0-9_]*)', arg)
+    base = m.group(1) if m else None
+
+    # COMPLEX simple lvalue: use .real()
+    if base is not None and base in complex_identifiers and _is_simple_lvalue(arg):
+        return f"{arg}.real()"
+
+    # Fallback: generic conversion (INTEGER/REAL/COMPLEX)
+    return f"castREAL({arg})"
 
 def _imag_repl(arg: str) -> str:
     """Replacement for AIMAG/IMAG: choose arg.imag() or (arg).imag()."""
@@ -1340,6 +1366,9 @@ def rewrite_single_char_string_literals(line: str) -> str:
 
 def rewrite_intrinsics(text: str) -> str:
     """Rewrite fem:: intrinsics to C++-friendly forms."""
+
+    global complex_identifiers
+    complex_identifiers = _collect_complex_identifiers(text)
 
     # --------------------------------------------------------------
     # 1) Unary intrinsics that need smart handling of parentheses
