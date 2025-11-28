@@ -48,8 +48,8 @@ REAL RCnrm2(INTEGER const n, COMPLEX *x, INTEGER const incx) {
         // CALL Classq( N, X, INCX, SCALE, SSQ )
         //
         for (ix = 1; ix <= 1 + (n - 1) * incx; ix = ix + incx) {
-            if (castREAL(x[ix - 1]) != zero) {
-                temp = ABS(castREAL(x[ix - 1]));
+            if (x[ix - 1].real() != zero) {
+                temp = ABS(x[ix - 1].real());
                 if (scale < temp) {
                     ssq = one + ssq * POW2((scale / temp));
                     scale = temp;
