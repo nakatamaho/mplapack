@@ -29,9 +29,9 @@
 #include <mpblas.h>
 
 void Rrotm(INTEGER const n, REAL *dx, INTEGER const incx, REAL *dy, INTEGER const incy, REAL *dparam) {
+    //
     REAL two = 2.0;
     REAL zero = 0.0;
-    //
     //
     REAL dflag = dparam[0];
     if (n <= 0 || (dflag + two == zero)) {
