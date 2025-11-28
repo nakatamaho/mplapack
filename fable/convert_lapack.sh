@@ -144,7 +144,7 @@ path = Path(sys.argv[1])
 text = path.read_text()
 
 def simplify_expr(expr: str) -> str:
-    """Simplify an index expression that may contain (1 - 1)."""
+    """Simplify an index expression that may contain (1 - 1), *0, +0, etc."""
     e = expr
     # (1 - 1) -> 0
     e = re.sub(r"\(\s*1\s*-\s*1\s*\)", "0", e)
@@ -152,7 +152,7 @@ def simplify_expr(expr: str) -> str:
     e = re.sub(r"\b0\s*\*\s*[A-Za-z_][A-Za-z0-9_]*", "0", e)
     # NAME * 0 -> 0
     e = re.sub(r"[A-Za-z_][A-Za-z0-9_]*\s*\*\s*0\b", "0", e)
-    # + 0 / 0 + / - 0 -> remove
+    # + 0 / 0 + / - 0 -> remove (only inside index)
     e = re.sub(r"\+\s*0\b", "", e)
     e = re.sub(r"\b0\s*\+", "", e)
     e = re.sub(r"\-\s*0\b", "", e)
@@ -169,15 +169,11 @@ def repl(m):
 
 text = pat_bracket.sub(repl, text)
 
-# Global cleanup for any remaining trivial (1 - 1), 0*X, X*0, +0, 0+
+# Global cleanup: ONLY (1 - 1) -> 0, do NOT touch "-0", "+0" etc.
 text = re.sub(r"\(\s*1\s*-\s*1\s*\)", "0", text)
-text = re.sub(r"\b0\s*\*\s*[A-Za-z_][A-Za-z0-9_]*", "0", text)
-text = re.sub(r"[A-Za-z_][A-Za-z0-9_]*\s*\*\s*0\b", "0", text)
-text = re.sub(r"\+\s*0\b", "", text)
-text = re.sub(r"\b0\s*\+", "", text)
-text = re.sub(r"\-\s*0\b", "", text)
 
 path.write_text(text)
+
 EOF
 
 # Overwrite the generated C++ file with the formatted and postprocessed version
