@@ -130,6 +130,15 @@ def _load_mplapack_name_map(path=None):
 
 _MPLAPACK_NAME_MAP = _load_mplapack_name_map()
 
+# Reverse lookup: C++ routine name (lowercase) -> Fortran name (lowercase)
+_MPLAPACK_CPP_TO_FORTRAN = {
+    cpp.lower(): f_name.lower() for (f_name, cpp) in _MPLAPACK_NAME_MAP.items()
+}
+
+# Track COMPLEX-typed identifiers in the current procedure.
+# Names are C++ identifiers after vmapping (e.g. "alpha", "a", "cmn.z").
+complex_identifiers = set()
+complex_pointer_identifiers = set()
 
 def _mplapack_default_name(name: str) -> str:
     """Fallback rule: s/d -> R, c/z -> C, others unchanged."""
@@ -1180,6 +1189,45 @@ def convert_power(conv_info, tokens):
     return fun + "(" + convert_tokens(
         conv_info=conv_info, tokens=tokens, commas=True) + ")"
 
+def _is_real_valued_function_call(expr: str) -> bool:
+    """Return True if expr looks like a call to a known real-valued helper.
+
+    This is used to avoid adding .real() on top of expressions that are
+    already REAL-valued, such as RCabs1(zx[i]) or ABS(x.imag()).
+    """
+    expr = expr.strip()
+    m = re.match(r'^([A-Za-z_][A-Za-z0-9_:]*)\s*\(', expr)
+    if not m:
+        return False
+
+    fname_cpp = m.group(1)
+    # Strip namespaces like "fem::aimag"
+    base = fname_cpp.split("::")[-1].lower()
+
+    # Obvious real-valued intrinsics / helpers
+    if base in ("abs", "fabs", "dabs", "sabs"):
+        return True
+    if base in ("aimag", "imag", "dimag"):
+        # AIMAG/IMAG return REAL even if their argument is COMPLEX
+        return True
+
+    # Try to map back to the original Fortran-style name
+    f_name = _MPLAPACK_CPP_TO_FORTRAN.get(base, base)
+    if not f_name:
+        return False
+
+    # BLAS/LAPACK convention for function names:
+    #   s* / d*  → real-valued
+    #   c* / z*  → complex-valued
+    first = f_name[0]
+    if first in ("s", "d"):
+        return True
+    if first in ("c", "z"):
+        return False
+
+    # Unknown prefix: do not assume real-valued
+    return False
+
 
 def _is_simple_lvalue(expr: str) -> bool:
     """Return True if expr is a simple variable or an array element.
@@ -1219,58 +1267,89 @@ def _collect_complex_variable_names(text: str):
 
 
 def _real_cast_or_component(arg: str, complex_vars, complex_ptrs) -> str:
-    """Replacement for DBLE/REAL with a more robust COMPLEX detection.
+    """Replacement for DBLE/REAL with COMPLEX-aware behavior.
 
-    - If arg is based on a COMPLEX identifier, return its real part.
-      * COMPLEX scalar / local array      -> <expr>.real()
-      * COMPLEX pointer dummy 'a'        -> a[0].real()  (when used without index)
-      * COMPLEX expression (temp * x[i], cmn.z + 1.0, ...) -> (<expr>).real()
-    - Otherwise, fall back to castREAL(arg).
+    Policy:
+      - If the argument is a simple COMPLEX variable / array element, take
+        its real part:   alpha      -> alpha.real()
+                         a[i]       -> a[i].real()
+                         a[0] (for COMPLEX*) -> a[0].real()
+      - If the expression is already known to be REAL-valued (e.g. RCabs1(z),
+        ABS(x.imag()), AIMAG(z)), do NOT add .real(); just cast to REAL.
+      - Otherwise, treat it as a generic real/integer expression and use
+        castREAL(expr). This avoids corrupting expressions by blindly adding
+        .real() on top.
     """
     arg = arg.strip()
     if not arg:
         return "castREAL(0)"
 
-    owner = None
-    for name in complex_vars:
-        if arg == name or arg.startswith(name + "[") or arg.startswith(name + "."):
-            owner = name
-            break
-
-        if "." not in name:
-            pattern = r"\b" + re.escape(name) + r"\b"
-            if re.search(pattern, arg):
-                owner = name
-                break
-
-    if owner is None:
+    # If this is a call to a known real-valued helper (RCabs1, ABS, AIMAG, ...),
+    # the whole expression is REAL even if its arguments are COMPLEX.
+    # Do not wrap it in (...).real().
+    if _is_real_valued_function_call(arg):
         return f"castREAL({arg})"
 
-    # COMPLEX* dummy: fem::dble(a) → a[0].real()
-    if owner in complex_ptrs and "[" not in arg:
-        return f"{owner}[0].real()"
-
+    # Simple lvalue: NAME or NAME[...]...
     if _is_simple_lvalue(arg):
-        return f"{arg}.real()"
-    return f"({arg}).real()"
+        # Extract the base identifier (first token)
+        m = re.match(r'([A-Za-z_][A-Za-z0-9_]*)', arg)
+        base = m.group(1) if m else None
 
+        # COMPLEX scalar or array element: take real part
+        if base is not None and base in complex_vars:
+            # COMPLEX* dummy used bare: dble(a) -> a[0].real()
+            if base in complex_ptrs and "[" not in arg:
+                return f"{base}[0].real()"
+            # General COMPLEX variable / element
+            return f"{arg}.real()"
+
+        # Not a COMPLEX variable: treat as generic real/integer expression
+        return f"castREAL({arg})"
+
+    # Non-simple expression:
+    # We do NOT try to infer a complex-valued expression here; DBLE/REAL on
+    # such expressions should be handled via castREAL, unless the helper is
+    # explicitly known to be complex. This keeps things safe for expressions
+    # like stemp + RCabs1(zx[i]) or ABS(x.imag()).
+    return f"castREAL({arg})"
 
 def _real_repl(arg: str) -> str:
-    """Replacement for DBLE/REAL.
+    """Replacement for DBLE/REAL with COMPLEX-aware behavior.
 
-    For simple COMPLEX lvalues (e.g., z, z[i]) we use .real().
-    For all other expressions we call castREAL(...).
+    Policy:
+      - If the argument is a simple COMPLEX variable / array element, take
+        its real part:   alpha      -> alpha.real()
+                         a[i]       -> a[i].real()
+                         a[0] (for COMPLEX*) -> a[0].real()
+      - Otherwise, do not try to pull out a real part from the expression;
+        just convert it to REAL via castREAL(expr).
+        This avoids corrupting expressions that are already REAL-valued,
+        such as RCabs1(zx[i]) or ABS(x.imag()).
     """
     arg = arg.strip()
-    # Try to extract leading identifier (base name)
-    m = re.match(r'^([A-Za-z_][A-Za-z0-9_]*)', arg)
-    base = m.group(1) if m else None
+    if not arg:
+        return "castREAL(0)"
 
-    # COMPLEX simple lvalue: use .real()
-    if base is not None and base in complex_identifiers and _is_simple_lvalue(arg):
-        return f"{arg}.real()"
+    # Simple lvalue: NAME or NAME[...]...
+    if _is_simple_lvalue(arg):
+        # Extract the base identifier (first token)
+        m = re.match(r'([A-Za-z_][A-Za-z0-9_]*)', arg)
+        base = m.group(1) if m else None
 
-    # Fallback: generic conversion (INTEGER/REAL/COMPLEX)
+        # COMPLEX scalar or array element: take real part
+        if base is not None and base in complex_identifiers:
+            # COMPLEX* dummy used bare: dble(a) -> a[0].real()
+            if base in complex_pointer_identifiers and "[" not in arg:
+                return f"{base}[0].real()"
+            # General COMPLEX variable / element
+            return f"{arg}.real()"
+
+        # Not a COMPLEX variable: treat as generic real/integer expression
+        return f"castREAL({arg})"
+
+    # Non-simple expression: do not wrap with .real(), just cast to REAL.
+    # Examples: stemp + RCabs1(zx[i]), ABS(x.imag()), LOG(n + 1.0), ...
     return f"castREAL({arg})"
 
 def _imag_repl(arg: str) -> str:
@@ -1868,7 +1947,7 @@ def convert_declaration(rapp, conv_info, fdecl, crhs, const):
         conv_info=conv_info, fdecl=fdecl, crhs=crhs)
     vname = conv_info.vmapped(fdecl=fdecl)
 
-    # Track local/save COMPLEX variables (scalars or arrays)
+    # Track COMPLEX locals / COMMON / SAVE by their C++ name.
     dt_code = None
     if fdecl.data_type is not None:
         if isinstance(fdecl.data_type, str):
@@ -3602,6 +3681,7 @@ def convert_to_cpp_function(
                     cdim = "%d" % len(fdecl.dim_tokens)
                 cargs_append("str_arr_%sref<%s>" % (
                     cconst(fdecl=fdecl, short=True), cdim), arg_name)
+
         elif (not fdecl.is_user_defined_callable()):
             # Non-character, non-user-defined argument (typical BLAS/LAPACK args)
             ctype = convert_data_type(
