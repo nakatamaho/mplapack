@@ -173,7 +173,7 @@ void Cherk(const char *uplo, const char *trans, INTEGER const n, INTEGER const k
                 for (i = 1; i <= j - 1; i = i + 1) {
                     temp = zero;
                     for (l = 1; l <= k; l = l + 1) {
-                        temp += conj(a[(l - 1) + (i - 1) * lda]) * a[(l - 1) + (j - 1) * lda];
+                        temp += (conj(a[(l - 1) + (i - 1) * lda]) * a[(l - 1) + (j - 1) * lda]).real();
                     }
                     if (beta == zero) {
                         c[(i - 1) + (j - 1) * ldc] = alpha * temp;
@@ -183,7 +183,7 @@ void Cherk(const char *uplo, const char *trans, INTEGER const n, INTEGER const k
                 }
                 rtemp = zero;
                 for (l = 1; l <= k; l = l + 1) {
-                    rtemp += conj(a[(l - 1) + (j - 1) * lda]) * a[(l - 1) + (j - 1) * lda];
+                    rtemp += (conj(a[(l - 1) + (j - 1) * lda]) * a[(l - 1) + (j - 1) * lda]).real();
                 }
                 if (beta == zero) {
                     c[(j - 1) + (j - 1) * ldc] = alpha * rtemp;
@@ -195,7 +195,7 @@ void Cherk(const char *uplo, const char *trans, INTEGER const n, INTEGER const k
             for (j = 1; j <= n; j = j + 1) {
                 rtemp = zero;
                 for (l = 1; l <= k; l = l + 1) {
-                    rtemp += conj(a[(l - 1) + (j - 1) * lda]) * a[(l - 1) + (j - 1) * lda];
+                    rtemp += (conj(a[(l - 1) + (j - 1) * lda]) * a[(l - 1) + (j - 1) * lda]).real();
                 }
                 if (beta == zero) {
                     c[(j - 1) + (j - 1) * ldc] = alpha * rtemp;
@@ -205,7 +205,7 @@ void Cherk(const char *uplo, const char *trans, INTEGER const n, INTEGER const k
                 for (i = j + 1; i <= n; i = i + 1) {
                     temp = zero;
                     for (l = 1; l <= k; l = l + 1) {
-                        temp += conj(a[(l - 1) + (i - 1) * lda]) * a[(l - 1) + (j - 1) * lda];
+                        temp += (conj(a[(l - 1) + (i - 1) * lda]) * a[(l - 1) + (j - 1) * lda]).real();
                     }
                     if (beta == zero) {
                         c[(i - 1) + (j - 1) * ldc] = alpha * temp;
