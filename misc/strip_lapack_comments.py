@@ -1,6 +1,5 @@
-#!/usr/bin/env python3
 """
-Strip netlib LAPACK boilerplate comment blocks from C++ / header files.
+Strip netlib LAPACK boilerplate comment *lines* from C++ / header files.
 
 Usage:
     strip_lapack_comments.py FILE [FILE ...]
@@ -11,6 +10,7 @@ from pathlib import Path
 
 # Keywords that identify LAPACK boilerplate header lines.
 LAPACK_HEADER_KEYWORDS = [
+    "-- LAPACK computational routine --",
     "-- LAPACK auxiliary routine --",
     "LAPACK is a software package provided by",
 ]
@@ -33,45 +33,35 @@ def is_comment_line(line: str) -> bool:
     return stripped.startswith("//")
 
 
-def is_lapack_boilerplate_block(block_lines) -> bool:
-    """Return True if this comment block looks like netlib LAPACK boilerplate.
+def is_lapack_boilerplate_text(text: str) -> bool:
+    """Return True if this comment text is LAPACK boilerplate.
 
-    We only delete blocks that clearly match LAPACK headers or section labels,
+    We delete only lines that clearly match LAPACK headers or section labels,
     not ordinary explanatory comments like 'Test the input parameters.'.
     """
-    has_header = False
-    has_section = False
-    has_separator = False
+    # Header lines
+    for kw in LAPACK_HEADER_KEYWORDS:
+        if kw in text:
+            return True
 
-    for line in block_lines:
-        # Remove leading indentation and the '//' prefix
-        stripped = line.lstrip()
-        if not stripped.startswith("//"):
-            continue
-        text = stripped[2:].strip()
+    # Section markers like '.. Scalar Arguments ..'
+    for kw in LAPACK_SECTION_PATTERNS:
+        if text == kw:
+            return True
 
-        # Header lines (top of file)
-        for kw in LAPACK_HEADER_KEYWORDS:
-            if kw in text:
-                has_header = True
-                break
+    # Separator line "====..."
+    if "====" in text:
+        return True
 
-        # Section markers like '.. Scalar Arguments ..'
-        for kw in LAPACK_SECTION_PATTERNS:
-            if text == kw:
-                has_section = True
-                break
+    # Standalone '..' lines that belong to these sections
+    if text == "..":
+        return True
 
-        # Separator line "====..."
-        if "====" in text:
-            has_separator = True
-
-    # Delete only clearly boilerplate sections, not generic comments.
-    return has_header or has_section or has_separator
+    return False
 
 
 def strip_lapack_comments(path: Path) -> None:
-    """Remove LAPACK boilerplate comment blocks from a file in-place."""
+    """Remove LAPACK boilerplate comment *lines* from a file in-place."""
     try:
         src = path.read_text(encoding="utf-8", errors="ignore").splitlines(keepends=True)
     except OSError as e:
@@ -79,32 +69,22 @@ def strip_lapack_comments(path: Path) -> None:
         return
 
     out_lines = []
-    i = 0
-    n = len(src)
 
-    while i < n:
-        line = src[i]
-
+    for line in src:
         if not is_comment_line(line):
-            # Not a comment line: keep as-is.
             out_lines.append(line)
-            i += 1
             continue
 
-        # Collect a contiguous block of line comments.
-        block_start = i
-        block = []
-        while i < n and is_comment_line(src[i]):
-            block.append(src[i])
-            i += 1
+        # Extract comment text after '//'
+        stripped = line.lstrip()
+        text = stripped[2:].strip()
 
-        # Decide whether this block is LAPACK boilerplate.
-        if is_lapack_boilerplate_block(block):
-            # Skip entire block.
+        # If this line is LAPACK boilerplate, skip it.
+        if is_lapack_boilerplate_text(text):
             continue
 
-        # Keep the whole block.
-        out_lines.extend(block)
+        # Otherwise keep the comment line.
+        out_lines.append(line)
 
     try:
         path.write_text("".join(out_lines), encoding="utf-8")
