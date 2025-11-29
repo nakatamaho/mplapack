@@ -72,7 +72,7 @@ statement_20:
     if (n == 1) {
         v[1 - 1] = x[1 - 1];
         est = abs(v[1 - 1]);
-        //        ... QUIT
+        // ... QUIT
         goto statement_150;
     }
     est = Rasum(n, x, 1);
@@ -124,11 +124,11 @@ statement_70:
             goto statement_90;
         }
     }
-    //     REPEATED SIGN VECTOR DETECTED, HENCE ALGORITHM HAS CONVERGED.
+    // REPEATED SIGN VECTOR DETECTED, HENCE ALGORITHM HAS CONVERGED.
     goto statement_120;
 //
 statement_90:
-    //     TEST FOR CYCLING.
+    // TEST FOR CYCLING.
     if (est <= estold) {
         goto statement_120;
     }

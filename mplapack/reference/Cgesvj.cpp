@@ -159,17 +159,17 @@ void Cgesvj(const char *joba, const char *jobu, const char *jobv, INTEGER const 
     //     where EPS is the round-off and CTOL is defined as follows:
     //
     if (uctol) {
-        //        ... user controlled
+        // ... user controlled
         ctol = rwork[1 - 1];
     } else {
-        //        ... default
+        // ... default
         if (lsvec || rsvec || applv) {
             ctol = sqrt(castREAL(m));
         } else {
             ctol = castREAL(m);
         }
     }
-    //     ... and the machine dependent parameters are
+    // ... and the machine dependent parameters are
     //[!]  (Make sure that SLAMCH() works properly on the target machine.)
     //
     epsln = Rlamch("Epsilon");
@@ -182,9 +182,9 @@ void Cgesvj(const char *joba, const char *jobu, const char *jobv, INTEGER const 
 #else
     big = Rlamch("Overflow");
 #endif
-    //     BIG         = ONE    / SFMIN
+    // BIG         = ONE    / SFMIN
     rootbig = one / rootsfmin;
-    //      LARGE = BIG / SQRT( DBLE( M*N ) )
+    // LARGE = BIG / SQRT( DBLE( M*N ) )
     bigtheta = one / rooteps;
     //
     tol = ctol * epsln;
@@ -220,7 +220,7 @@ void Cgesvj(const char *joba, const char *jobu, const char *jobv, INTEGER const 
     goscale = true;
     //
     if (lower) {
-        //        the input matrix is M-by-N lower triangular (trapezoidal)
+        // the input matrix is M-by-N lower triangular (trapezoidal)
         for (p = 1; p <= n; p = p + 1) {
             aapp = zero;
             aaqq = one;
@@ -245,7 +245,7 @@ void Cgesvj(const char *joba, const char *jobu, const char *jobv, INTEGER const 
             }
         }
     } else if (upper) {
-        //        the input matrix is M-by-N upper triangular (trapezoidal)
+        // the input matrix is M-by-N upper triangular (trapezoidal)
         for (p = 1; p <= n; p = p + 1) {
             aapp = zero;
             aaqq = one;
@@ -270,7 +270,7 @@ void Cgesvj(const char *joba, const char *jobu, const char *jobv, INTEGER const 
             }
         }
     } else {
-        //        the input matrix is M-by-N general dense
+        // the input matrix is M-by-N general dense
         for (p = 1; p <= n; p = p + 1) {
             aapp = zero;
             aaqq = one;
@@ -354,20 +354,20 @@ void Cgesvj(const char *joba, const char *jobu, const char *jobv, INTEGER const 
     temp1 = sqrt(big / castREAL(n));
     if ((aapp <= sn) || (aaqq >= temp1) || ((sn <= aaqq) && (aapp <= temp1))) {
         temp1 = min(big, REAL(temp1 / aapp));
-        //         AAQQ  = AAQQ*TEMP1
-        //         AAPP  = AAPP*TEMP1
+        // AAQQ  = AAQQ*TEMP1
+        // AAPP  = AAPP*TEMP1
     } else if ((aaqq <= sn) && (aapp <= temp1)) {
         temp1 = min(REAL(sn / aaqq), REAL(big / (aapp * sqrt(castREAL(n)))));
-        //         AAQQ  = AAQQ*TEMP1
-        //         AAPP  = AAPP*TEMP1
+        // AAQQ  = AAQQ*TEMP1
+        // AAPP  = AAPP*TEMP1
     } else if ((aaqq >= sn) && (aapp >= temp1)) {
         temp1 = max(sn / aaqq, temp1 / aapp);
-        //         AAQQ  = AAQQ*TEMP1
-        //         AAPP  = AAPP*TEMP1
+        // AAQQ  = AAQQ*TEMP1
+        // AAPP  = AAPP*TEMP1
     } else if ((aaqq <= sn) && (aapp >= temp1)) {
         temp1 = min(REAL(sn / aaqq), REAL(big / (sqrt(castREAL(n)) * aapp)));
-        //         AAQQ  = AAQQ*TEMP1
-        //         AAPP  = AAPP*TEMP1
+        // AAQQ  = AAQQ*TEMP1
+        // AAPP  = AAPP*TEMP1
     } else {
         temp1 = one;
     }
@@ -632,7 +632,7 @@ void Cgesvj(const char *joba, const char *jobu, const char *jobv, INTEGER const 
                                         cwork[p - 1] = -cwork[q - 1] * ompq;
                                         //
                                     } else {
-                                        //              .. have to use modified Gram-Schmidt like transformation
+                                        // .. have to use modified Gram-Schmidt like transformation
                                         Ccopy(m, &a[(p - 1) * lda], 1, &cwork[(n + 1) - 1], 1);
                                         Clascl("G", 0, 0, aapp, one, m, 1, &cwork[(n + 1) - 1], lda, ierr);
                                         Clascl("G", 0, 0, aaqq, one, m, 1, &a[(q - 1) * lda], lda, ierr);
@@ -641,10 +641,10 @@ void Cgesvj(const char *joba, const char *jobu, const char *jobv, INTEGER const 
                                         sva[q - 1] = aaqq * sqrt(max(zero, REAL(one - aapq1 * aapq1)));
                                         mxsinj = max(mxsinj, sfmin);
                                     }
-                                    //           END IF ROTOK THEN ... ELSE
+                                    // END IF ROTOK THEN ... ELSE
                                     //
-                                    //           In the case of cancellation in updating SVA(q), SVA(p)
-                                    //           recompute SVA(q), SVA(p).
+                                    // In the case of cancellation in updating SVA(q), SVA(p)
+                                    // recompute SVA(q), SVA(p).
                                     //
                                     if (pow2((sva[q - 1] / aaqq)) <= rooteps) {
                                         if ((aaqq < rootbig) && (aaqq > rootsfmin)) {
@@ -669,7 +669,7 @@ void Cgesvj(const char *joba, const char *jobu, const char *jobv, INTEGER const 
                                     }
                                     //
                                 } else {
-                                    //                             A(:,p) and A(:,q) already numerically orthogonal
+                                    // A(:,p) and A(:,q) already numerically orthogonal
                                     if (ir1 == 0) {
                                         notrot++;
                                     }
@@ -677,7 +677,7 @@ void Cgesvj(const char *joba, const char *jobu, const char *jobv, INTEGER const 
                                     pskipped++;
                                 }
                             } else {
-                                //                          A(:,q) is zero column
+                                // A(:,q) is zero column
                                 if (ir1 == 0) {
                                     notrot++;
                                 }
@@ -693,10 +693,10 @@ void Cgesvj(const char *joba, const char *jobu, const char *jobv, INTEGER const 
                             }
                             //
                         }
-                    //     END q-LOOP
+                    // END q-LOOP
                     //
                     statement_2103:
-                        //     bailed out of q-loop
+                        // bailed out of q-loop
                         //
                         sva[p - 1] = aapp;
                         //
@@ -708,10 +708,10 @@ void Cgesvj(const char *joba, const char *jobu, const char *jobv, INTEGER const 
                     }
                     //
                 }
-                //     end of the p-loop
-                //     end of doing the block ( ibr, ibr )
+                // end of the p-loop
+                // end of doing the block ( ibr, ibr )
             }
-            //     end of ir1-loop
+            // end of ir1-loop
             //
             // ... go to the off diagonal blocks
             //
@@ -824,7 +824,7 @@ void Cgesvj(const char *joba, const char *jobu, const char *jobv, INTEGER const 
                                         cwork[p - 1] = -cwork[q - 1] * ompq;
                                         //
                                     } else {
-                                        //              .. have to use modified Gram-Schmidt like transformation
+                                        // .. have to use modified Gram-Schmidt like transformation
                                         if (aapp > aaqq) {
                                             Ccopy(m, &a[(p - 1) * lda], 1, &cwork[(n + 1) - 1], 1);
                                             Clascl("G", 0, 0, aapp, one, m, 1, &cwork[(n + 1) - 1], lda, ierr);
@@ -843,10 +843,10 @@ void Cgesvj(const char *joba, const char *jobu, const char *jobv, INTEGER const 
                                             mxsinj = max(mxsinj, sfmin);
                                         }
                                     }
-                                    //           END IF ROTOK THEN ... ELSE
+                                    // END IF ROTOK THEN ... ELSE
                                     //
-                                    //           In the case of cancellation in updating SVA(q), SVA(p)
-                                    //           .. recompute SVA(q), SVA(p)
+                                    // In the case of cancellation in updating SVA(q), SVA(p)
+                                    // .. recompute SVA(q), SVA(p)
                                     if (pow2((sva[q - 1] / aaqq)) <= rooteps) {
                                         if ((aaqq < rootbig) && (aaqq > rootsfmin)) {
                                             sva[q - 1] = RCnrm2(m, &a[(q - 1) * lda], 1);
@@ -868,7 +868,7 @@ void Cgesvj(const char *joba, const char *jobu, const char *jobv, INTEGER const 
                                         }
                                         sva[p - 1] = aapp;
                                     }
-                                    //              end of OK rotation
+                                    // end of OK rotation
                                 } else {
                                     notrot++;
                                     //[RTD]      SKIPPED  = SKIPPED  + 1
@@ -893,7 +893,7 @@ void Cgesvj(const char *joba, const char *jobu, const char *jobv, INTEGER const 
                             }
                             //
                         }
-                    //        end of the q-loop
+                    // end of the q-loop
                     statement_2203:
                         //
                         sva[p - 1] = aapp;
@@ -910,9 +910,9 @@ void Cgesvj(const char *joba, const char *jobu, const char *jobv, INTEGER const 
                     }
                     //
                 }
-                //     end of the p-loop
+                // end of the p-loop
             }
-        //     end of the jbc-loop
+        // end of the jbc-loop
         statement_2011:
             // 2011 bailed out of the jbc-loop
             for (p = igl; p <= min(igl + kbl - 1, n); p = p + 1) {
@@ -947,7 +947,7 @@ void Cgesvj(const char *joba, const char *jobu, const char *jobv, INTEGER const 
         }
         //
     }
-    //     end i=1:NSWEEP loop
+    // end i=1:NSWEEP loop
     //
     // #:( Reaching this point means that the procedure has not converged.
     info = nsweep - 1;
@@ -995,7 +995,7 @@ statement_1995:
     //
     if (lsvec || uctol) {
         for (p = 1; p <= n4; p = p + 1) {
-            //            CALL CRscal( M, ONE / SVA( p ), A( 1, p ), 1 )
+            // CALL CRscal( M, ONE / SVA( p ), A( 1, p ), 1 )
             Clascl("G", 0, 0, sva[p - 1], one, m, 1, &a[(p - 1) * lda], m, ierr);
         }
     }
@@ -1018,30 +1018,30 @@ statement_1995:
     }
     //
     rwork[1 - 1] = skl;
-    //     The singular values of A are SKL*SVA(1:N). If SKL.NE.ONE
-    //     then some of the singular values may overflow or underflow and
-    //     the spectrum is given in this factored representation.
+    // The singular values of A are SKL*SVA(1:N). If SKL.NE.ONE
+    // then some of the singular values may overflow or underflow and
+    // the spectrum is given in this factored representation.
     //
     rwork[2 - 1] = castREAL(n4);
-    //     N4 is the number of computed nonzero singular values of A.
+    // N4 is the number of computed nonzero singular values of A.
     //
     rwork[3 - 1] = castREAL(n2);
-    //     N2 is the number of singular values of A greater than SFMIN.
-    //     If N2<N, SVA(N2:N) contains ZEROS and/or denormalized numbers
-    //     that may carry some information.
+    // N2 is the number of singular values of A greater than SFMIN.
+    // If N2<N, SVA(N2:N) contains ZEROS and/or denormalized numbers
+    // that may carry some information.
     //
     rwork[4 - 1] = castREAL(i);
-    //     i is the index of the last sweep before declaring convergence.
+    // i is the index of the last sweep before declaring convergence.
     //
     rwork[5 - 1] = mxaapq;
-    //     MXAAPQ is the largest absolute value of scaled pivots in the
-    //     last sweep
+    // MXAAPQ is the largest absolute value of scaled pivots in the
+    // last sweep
     //
     rwork[6 - 1] = mxsinj;
-    //     MXSINJ is the largest absolute value of the sines of Jacobi angles
-    //     in the last sweep
+    // MXSINJ is the largest absolute value of the sines of Jacobi angles
+    // in the last sweep
     //
-    //     ..
-    //     .. END OF Cgesvj
-    //     ..
+    // ..
+    // .. END OF Cgesvj
+    // ..
 }

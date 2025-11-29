@@ -55,7 +55,7 @@ void Rsytri2(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INTE
     info = 0;
     bool upper = Mlsame(uplo, "U");
     bool lquery = (lwork == -1);
-    //     Get blocksize
+    // Get blocksize
     INTEGER nbmax = iMlaenv(1, "Rsytri2", uplo, n, -1, -1, -1);
     INTEGER minsize = 0;
     if (nbmax >= n) {

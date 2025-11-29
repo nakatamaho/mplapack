@@ -122,8 +122,8 @@ void Rgesdd(const char *jobz, INTEGER const m, INTEGER const n, REAL *a, INTEGER
             //           Compute space needed for Rbdsdc
             //
             if (wntqn) {
-                //              Rbdsdc needs only 4*N (or 6*N for uplo=L for LAPACK <= 3.6)
-                //              keep 7*N for backwards compatibility.
+                // Rbdsdc needs only 4*N (or 6*N for uplo=L for LAPACK <= 3.6)
+                // keep 7*N for backwards compatibility.
                 bdspac = 7 * n;
             } else {
                 bdspac = 3 * n * n + 4 * n;
@@ -212,24 +212,24 @@ void Rgesdd(const char *jobz, INTEGER const m, INTEGER const n, REAL *a, INTEGER
                 //
                 wrkbl = 3 * n + lwork_Rgebrd_mn;
                 if (wntqn) {
-                    //                 Path 5n (M >= N, jobz='N')
+                    // Path 5n (M >= N, jobz='N')
                     maxwrk = max(wrkbl, 3 * n + bdspac);
                     minwrk = 3 * n + max(m, bdspac);
                 } else if (wntqo) {
-                    //                 Path 5o (M >= N, jobz='O')
+                    // Path 5o (M >= N, jobz='O')
                     wrkbl = max(wrkbl, 3 * n + lwork_Rormbr_prt_nn);
                     wrkbl = max(wrkbl, 3 * n + lwork_Rormbr_qln_mn);
                     wrkbl = max(wrkbl, 3 * n + bdspac);
                     maxwrk = wrkbl + m * n;
                     minwrk = 3 * n + max(m, n * n + bdspac);
                 } else if (wntqs) {
-                    //                 Path 5s (M >= N, jobz='S')
+                    // Path 5s (M >= N, jobz='S')
                     wrkbl = max(wrkbl, 3 * n + lwork_Rormbr_qln_mn);
                     wrkbl = max(wrkbl, 3 * n + lwork_Rormbr_prt_nn);
                     maxwrk = max(wrkbl, 3 * n + bdspac);
                     minwrk = 3 * n + max(m, bdspac);
                 } else if (wntqa) {
-                    //                 Path 5a (M >= N, jobz='A')
+                    // Path 5a (M >= N, jobz='A')
                     wrkbl = max(wrkbl, 3 * n + lwork_Rormbr_qln_mm);
                     wrkbl = max(wrkbl, 3 * n + lwork_Rormbr_prt_nn);
                     maxwrk = max(wrkbl, 3 * n + bdspac);
@@ -241,8 +241,8 @@ void Rgesdd(const char *jobz, INTEGER const m, INTEGER const n, REAL *a, INTEGER
             //           Compute space needed for Rbdsdc
             //
             if (wntqn) {
-                //              Rbdsdc needs only 4*N (or 6*N for uplo=L for LAPACK <= 3.6)
-                //              keep 7*N for backwards compatibility.
+                // Rbdsdc needs only 4*N (or 6*N for uplo=L for LAPACK <= 3.6)
+                // keep 7*N for backwards compatibility.
                 bdspac = 7 * m;
             } else {
                 bdspac = 3 * m * m + 4 * m;
@@ -331,24 +331,24 @@ void Rgesdd(const char *jobz, INTEGER const m, INTEGER const n, REAL *a, INTEGER
                 //
                 wrkbl = 3 * m + lwork_Rgebrd_mn;
                 if (wntqn) {
-                    //                 Path 5tn (N > M, jobz='N')
+                    // Path 5tn (N > M, jobz='N')
                     maxwrk = max(wrkbl, 3 * m + bdspac);
                     minwrk = 3 * m + max(n, bdspac);
                 } else if (wntqo) {
-                    //                 Path 5to (N > M, jobz='O')
+                    // Path 5to (N > M, jobz='O')
                     wrkbl = max(wrkbl, 3 * m + lwork_Rormbr_qln_mm);
                     wrkbl = max(wrkbl, 3 * m + lwork_Rormbr_prt_mn);
                     wrkbl = max(wrkbl, 3 * m + bdspac);
                     maxwrk = wrkbl + m * n;
                     minwrk = 3 * m + max(n, m * m + bdspac);
                 } else if (wntqs) {
-                    //                 Path 5ts (N > M, jobz='S')
+                    // Path 5ts (N > M, jobz='S')
                     wrkbl = max(wrkbl, 3 * m + lwork_Rormbr_qln_mm);
                     wrkbl = max(wrkbl, 3 * m + lwork_Rormbr_prt_mn);
                     maxwrk = max(wrkbl, 3 * m + bdspac);
                     minwrk = 3 * m + max(n, bdspac);
                 } else if (wntqa) {
-                    //                 Path 5ta (N > M, jobz='A')
+                    // Path 5ta (N > M, jobz='A')
                     wrkbl = max(wrkbl, 3 * m + lwork_Rormbr_qln_mm);
                     wrkbl = max(wrkbl, 3 * m + lwork_Rormbr_prt_nn);
                     maxwrk = max(wrkbl, 3 * m + bdspac);
@@ -693,7 +693,7 @@ void Rgesdd(const char *jobz, INTEGER const m, INTEGER const n, REAL *a, INTEGER
                 //
                 Rbdsdc("U", "N", n, s, &work[ie - 1], dum, 1, dum, 1, dum, idum, &work[nwork - 1], iwork, info);
             } else if (wntqo) {
-                //              Path 5o (M >= N, JOBZ='O')
+                // Path 5o (M >= N, JOBZ='O')
                 iu = nwork;
                 if (lwork >= m * n + 3 * n + bdspac) {
                     //
@@ -702,7 +702,7 @@ void Rgesdd(const char *jobz, INTEGER const m, INTEGER const n, REAL *a, INTEGER
                     ldwrku = m;
                     nwork = iu + ldwrku * n;
                     Rlaset("F", m, n, zero, zero, &work[iu - 1], ldwrku);
-                    //                 IR is unused; silence compile warnings
+                    // IR is unused; silence compile warnings
                     ir = -1;
                 } else {
                     //
@@ -1085,7 +1085,7 @@ void Rgesdd(const char *jobz, INTEGER const m, INTEGER const n, REAL *a, INTEGER
                 //
                 Rbdsdc("L", "N", m, s, &work[ie - 1], dum, 1, dum, 1, dum, idum, &work[nwork - 1], iwork, info);
             } else if (wntqo) {
-                //              Path 5to (N > M, JOBZ='O')
+                // Path 5to (N > M, JOBZ='O')
                 ldwkvt = m;
                 ivt = nwork;
                 if (lwork >= m * n + 3 * m + bdspac) {
@@ -1094,7 +1094,7 @@ void Rgesdd(const char *jobz, INTEGER const m, INTEGER const n, REAL *a, INTEGER
                     //
                     Rlaset("F", m, n, zero, zero, &work[ivt - 1], ldwkvt);
                     nwork = ivt + ldwkvt * n;
-                    //                 IL is unused; silence compile warnings
+                    // IL is unused; silence compile warnings
                     il = -1;
                 } else {
                     //

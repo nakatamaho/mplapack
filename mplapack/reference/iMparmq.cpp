@@ -164,7 +164,7 @@ INTEGER iMparmq(INTEGER const ispec, const char *name, const char *opts, INTEGER
         }
         //
     } else {
-        //        ===== invalid value of ispec =====
+        // ===== invalid value of ispec =====
         return_value = -1;
         //
     }

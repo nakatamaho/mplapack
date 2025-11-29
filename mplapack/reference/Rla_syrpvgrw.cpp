@@ -104,7 +104,7 @@ REAL Rla_syrpvgrw(const char *uplo, INTEGER const n, INTEGER const info, REAL *a
         k = n;
         while (k < ncols && k > 0) {
             if (ipiv[k - 1] > 0) {
-                //              1x1 pivot
+                // 1x1 pivot
                 kp = ipiv[k - 1];
                 if (kp != k) {
                     tmp = work[(n + k) - 1];
@@ -116,7 +116,7 @@ REAL Rla_syrpvgrw(const char *uplo, INTEGER const n, INTEGER const info, REAL *a
                 }
                 k = k - 1;
             } else {
-                //              2x2 pivot
+                // 2x2 pivot
                 kp = -ipiv[k - 1];
                 tmp = work[(n + k - 1) - 1];
                 work[(n + k - 1) - 1] = work[(n + kp) - 1];
@@ -151,7 +151,7 @@ REAL Rla_syrpvgrw(const char *uplo, INTEGER const n, INTEGER const info, REAL *a
         k = 1;
         while (k <= ncols) {
             if (ipiv[k - 1] > 0) {
-                //              1x1 pivot
+                // 1x1 pivot
                 kp = ipiv[k - 1];
                 if (kp != k) {
                     tmp = work[(n + k) - 1];
@@ -163,7 +163,7 @@ REAL Rla_syrpvgrw(const char *uplo, INTEGER const n, INTEGER const info, REAL *a
                 }
                 k++;
             } else {
-                //              2x2 pivot
+                // 2x2 pivot
                 kp = -ipiv[k - 1];
                 tmp = work[(n + k + 1) - 1];
                 work[(n + k + 1) - 1] = work[(n + kp) - 1];

@@ -44,8 +44,8 @@ void Rsytrd_2stage(const char *vect, const char *uplo, INTEGER const n, REAL *a,
     INTEGER ib = iMlaenv2stage((INTEGER)2, "Rsytrd_2stage", vect, n, kd, -1, -1);
     INTEGER lhmin = iMlaenv2stage((INTEGER)3, "Rsytrd_2stage", vect, n, kd, ib, -1);
     INTEGER lwmin = iMlaenv2stage((INTEGER)4, "Rsytrd_2stage", vect, n, kd, ib, -1);
-    //      WRITE(*,*),'Rsytrd_2stage N KD UPLO LHMIN LWMIN ',N, KD, UPLO,
-    //     $            LHMIN, LWMIN
+    // WRITE(*,*),'Rsytrd_2stage N KD UPLO LHMIN LWMIN ',N, KD, UPLO,
+    // $            LHMIN, LWMIN
     //
     if (!Mlsame(vect, "N")) {
         info = -1;

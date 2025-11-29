@@ -151,11 +151,11 @@ void Csytri_3x(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda,
         k = 1;
         while (k <= n) {
             if (ipiv[k - 1] > 0) {
-                //              1 x 1 diagonal NNB
+                // 1 x 1 diagonal NNB
                 work[(k - 1) + (invd - 1) * ldwork] = cone / a[(k - 1) + (k - 1) * lda];
                 work[(k - 1) + ((invd + 1) - 1) * ldwork] = czero;
             } else {
-                //              2 x 2 diagonal NNB
+                // 2 x 2 diagonal NNB
                 t = work[((k + 1) - 1)];
                 ak = a[(k - 1) + (k - 1) * lda] / t;
                 akp1 = a[((k + 1) - 1) + ((k + 1) - 1) * lda] / t;
@@ -181,13 +181,13 @@ void Csytri_3x(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda,
                 nnb = cut;
             } else {
                 icount = 0;
-                //              count negative elements,
+                // count negative elements,
                 for (i = cut + 1 - nnb; i <= cut; i = i + 1) {
                     if (ipiv[i - 1] < 0) {
                         icount++;
                     }
                 }
-                //              need a even number for a clear cut
+                // need a even number for a clear cut
                 if (mod(icount, 2) == 1) {
                     nnb++;
                 }
@@ -329,11 +329,11 @@ void Csytri_3x(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda,
         k = n;
         while (k >= 1) {
             if (ipiv[k - 1] > 0) {
-                //              1 x 1 diagonal NNB
+                // 1 x 1 diagonal NNB
                 work[(k - 1) + (invd - 1) * ldwork] = cone / a[(k - 1) + (k - 1) * lda];
                 work[(k - 1) + ((invd + 1) - 1) * ldwork] = czero;
             } else {
-                //              2 x 2 diagonal NNB
+                // 2 x 2 diagonal NNB
                 t = work[((k - 1) - 1)];
                 ak = a[((k - 1) - 1) + ((k - 1) - 1) * lda] / t;
                 akp1 = a[(k - 1) + (k - 1) * lda] / t;
@@ -359,13 +359,13 @@ void Csytri_3x(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda,
                 nnb = n - cut;
             } else {
                 icount = 0;
-                //              count negative elements,
+                // count negative elements,
                 for (i = cut + 1; i <= cut + nnb; i = i + 1) {
                     if (ipiv[i - 1] < 0) {
                         icount++;
                     }
                 }
-                //              need a even number for a clear cut
+                // need a even number for a clear cut
                 if (mod(icount, 2) == 1) {
                     nnb++;
                 }

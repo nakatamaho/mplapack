@@ -254,40 +254,40 @@ void Cheevr(const char *jobz, const char *range, const char *uplo, INTEGER const
     //     WORK(INDTAU:INDTAU+N-1) stores the complex scalar factors of the
     //     elementary reflectors used in Chetrd.
     indtau = 1;
-    //     INDWK is the starting offset of the remaining complex workspace,
-    //     and LLWORK is the remaining complex workspace size.
+    // INDWK is the starting offset of the remaining complex workspace,
+    // and LLWORK is the remaining complex workspace size.
     indwk = indtau + n;
     llwork = lwork - indwk + 1;
     //
     //     RWORK(INDRD:INDRD+N-1) stores the real tridiagonal's diagonal
     //     entries.
     indrd = 1;
-    //     RWORK(INDRE:INDRE+N-1) stores the off-diagonal entries of the
-    //     tridiagonal matrix from Chetrd.
+    // RWORK(INDRE:INDRE+N-1) stores the off-diagonal entries of the
+    // tridiagonal matrix from Chetrd.
     indre = indrd + n;
-    //     RWORK(INDRDD:INDRDD+N-1) is a copy of the diagonal entries over
-    //     -written by Cstemr (the Rsterf path copies the diagonal to W).
+    // RWORK(INDRDD:INDRDD+N-1) is a copy of the diagonal entries over
+    // -written by Cstemr (the Rsterf path copies the diagonal to W).
     indrdd = indre + n;
-    //     RWORK(INDREE:INDREE+N-1) is a copy of the off-diagonal entries over
-    //     -written while computing the eigenvalues in Rsterf and Cstemr.
+    // RWORK(INDREE:INDREE+N-1) is a copy of the off-diagonal entries over
+    // -written while computing the eigenvalues in Rsterf and Cstemr.
     indree = indrdd + n;
-    //     INDRWK is the starting offset of the left-over real workspace, and
-    //     LLRWORK is the remaining workspace size.
+    // INDRWK is the starting offset of the left-over real workspace, and
+    // LLRWORK is the remaining workspace size.
     indrwk = indree + n;
     llrwork = lrwork - indrwk + 1;
     //
     //     IWORK(INDIBL:INDIBL+M-1) corresponds to IBLOCK in Rstebz and
     //     stores the block indices of each of the M<=N eigenvalues.
     indibl = 1;
-    //     IWORK(INDISP:INDISP+NSPLIT-1) corresponds to ISPLIT in Rstebz and
-    //     stores the starting and finishing indices of each block.
+    // IWORK(INDISP:INDISP+NSPLIT-1) corresponds to ISPLIT in Rstebz and
+    // stores the starting and finishing indices of each block.
     indisp = indibl + n;
-    //     IWORK(INDIFL:INDIFL+N-1) stores the indices of eigenvectors
-    //     that corresponding to eigenvectors that fail to converge in
-    //     Rstein.  This information is discarded; if any fail, the driver
-    //     returns INFO > 0.
+    // IWORK(INDIFL:INDIFL+N-1) stores the indices of eigenvectors
+    // that corresponding to eigenvectors that fail to converge in
+    // Rstein.  This information is discarded; if any fail, the driver
+    // returns INFO > 0.
     indifl = indisp + n;
-    //     INDIWO is the offset of the remaining integer workspace.
+    // INDIWO is the offset of the remaining integer workspace.
     indiwo = indifl + n;
     //
     //     Call Chetrd to reduce Hermitian matrix to tridiagonal form.

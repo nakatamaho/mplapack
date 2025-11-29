@@ -436,11 +436,11 @@ void Clahef(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &kb, CO
         jp = ipiv[j - 1];
         if (jp < 0) {
             jp = -jp;
-            //              (Here, J is a diagonal index)
+            // (Here, J is a diagonal index)
             j++;
         }
-        //           (NOTE: Here, J is used to determine row length. Length N-J+1
-        //           of the rows to swap back doesn't include diagonal element)
+        // (NOTE: Here, J is used to determine row length. Length N-J+1
+        // of the rows to swap back doesn't include diagonal element)
         j++;
         if (jp != jj && j <= n) {
             Cswap(n - j + 1, &a[(jp - 1) + (j - 1) * lda], lda, &a[(jj - 1) + (j - 1) * lda], lda);
@@ -793,11 +793,11 @@ void Clahef(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &kb, CO
         jp = ipiv[j - 1];
         if (jp < 0) {
             jp = -jp;
-            //              (Here, J is a diagonal index)
+            // (Here, J is a diagonal index)
             j = j - 1;
         }
-        //           (NOTE: Here, J is used to determine row length. Length J
-        //           of the rows to swap back doesn't include diagonal element)
+        // (NOTE: Here, J is used to determine row length. Length J
+        // of the rows to swap back doesn't include diagonal element)
         j = j - 1;
         if (jp != jj && j >= 1) {
             Cswap(j, &a[(jp - 1)], lda, &a[(jj - 1)], lda);

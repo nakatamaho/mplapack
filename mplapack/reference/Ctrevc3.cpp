@@ -236,8 +236,8 @@ void Ctrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
             //           Copy the vector x or Q*x to VR and normalize.
             //
             if (!over) {
-                //              ------------------------------
-                //              no back-transform: copy x to VR and normalize.
+                // ------------------------------
+                // no back-transform: copy x to VR and normalize.
                 Ccopy(ki, &work[(1 + iv * n) - 1], 1, &vr[(is - 1) * ldvr], 1);
                 //
                 ii = iCamax(ki, &vr[(is - 1) * ldvr], 1);
@@ -249,8 +249,8 @@ void Ctrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                 }
                 //
             } else if (nb == 1) {
-                //              ------------------------------
-                //              version 1: back-transform each vector with GEMV, Q*x.
+                // ------------------------------
+                // version 1: back-transform each vector with GEMV, Q*x.
                 if (ki > 1) {
                     Cgemv("N", n, ki - 1, cone, vr, ldvr, &work[(1 + iv * n) - 1], 1, COMPLEX(scale), &vr[(ki - 1) * ldvr], 1);
                 }
@@ -260,9 +260,9 @@ void Ctrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                 CRscal(n, remax, &vr[(ki - 1) * ldvr], 1);
                 //
             } else {
-                //              ------------------------------
-                //              version 2: back-transform block of vectors with GEMM
-                //              zero out below vector
+                // ------------------------------
+                // version 2: back-transform block of vectors with GEMM
+                // zero out below vector
                 for (k = ki + 1; k <= n; k = k + 1) {
                     work[(k + iv * n) - 1] = czero;
                 }
@@ -272,7 +272,7 @@ void Ctrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                 //              or if this was last vector, do the GEMM
                 if ((iv == 1) || (ki == 1)) {
                     Cgemm("N", "N", n, nb - iv + 1, ki + nb - iv, cone, vr, ldvr, &work[(1 + (iv)*n) - 1], n, czero, &work[(1 + (nb + iv) * n) - 1], n);
-                    //                 normalize vectors
+                    // normalize vectors
                     for (k = iv; k <= nb; k = k + 1) {
                         ii = iCamax(n, &work[(1 + (nb + k) * n) - 1], 1);
                         remax = one / cabs1((work[(ii + (nb + k) * n) - 1]));
@@ -345,8 +345,8 @@ void Ctrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
             //           Copy the vector x or Q*x to VL and normalize.
             //
             if (!over) {
-                //              ------------------------------
-                //              no back-transform: copy x to VL and normalize.
+                // ------------------------------
+                // no back-transform: copy x to VL and normalize.
                 Ccopy(n - ki + 1, &work[(ki + iv * n) - 1], 1, &vl[(ki - 1) + (is - 1) * ldvl], 1);
                 //
                 ii = iCamax(n - ki + 1, &vl[(ki - 1) + (is - 1) * ldvl], 1) + ki - 1;
@@ -358,8 +358,8 @@ void Ctrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                 }
                 //
             } else if (nb == 1) {
-                //              ------------------------------
-                //              version 1: back-transform each vector with GEMV, Q*x.
+                // ------------------------------
+                // version 1: back-transform each vector with GEMV, Q*x.
                 if (ki < n) {
                     Cgemv("N", n, n - ki, cone, &vl[((ki + 1) - 1) * ldvl], ldvl, &work[(ki + 1 + iv * n) - 1], 1, COMPLEX(scale), &vl[(ki - 1) * ldvl], 1);
                 }
@@ -369,10 +369,10 @@ void Ctrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                 CRscal(n, remax, &vl[(ki - 1) * ldvl], 1);
                 //
             } else {
-                //              ------------------------------
-                //              version 2: back-transform block of vectors with GEMM
-                //              zero out above vector
-                //              could go from KI-NV+1 to KI-1
+                // ------------------------------
+                // version 2: back-transform block of vectors with GEMM
+                // zero out above vector
+                // could go from KI-NV+1 to KI-1
                 for (k = 1; k <= ki - 1; k = k + 1) {
                     work[(k + iv * n) - 1] = czero;
                 }
@@ -382,7 +382,7 @@ void Ctrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                 //              or if this was last vector, do the GEMM
                 if ((iv == nb) || (ki == n)) {
                     Cgemm("N", "N", n, iv, n - ki + iv, cone, &vl[((ki - iv + 1) - 1) * ldvl], ldvl, &work[(ki - iv + 1 + (1) * n) - 1], n, czero, &work[(1 + (nb + 1) * n) - 1], n);
-                    //                 normalize vectors
+                    // normalize vectors
                     for (k = 1; k <= iv; k = k + 1) {
                         ii = iCamax(n, &work[(1 + (nb + k) * n) - 1], 1);
                         remax = one / cabs1(work[(ii + (nb + k) * n) - 1]);

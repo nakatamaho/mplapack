@@ -102,16 +102,16 @@ void Rsytrs2(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *a, INT
         k = n;
         while (k >= 1) {
             if (ipiv[k - 1] > 0) {
-                //           1 x 1 diagonal block
-                //           Interchange rows K and IPIV(K).
+                // 1 x 1 diagonal block
+                // Interchange rows K and IPIV(K).
                 kp = ipiv[k - 1];
                 if (kp != k) {
                     Rswap(nrhs, &b[(k - 1)], ldb, &b[(kp - 1)], ldb);
                 }
                 k = k - 1;
             } else {
-                //           2 x 2 diagonal block
-                //           Interchange rows K-1 and -IPIV(K).
+                // 2 x 2 diagonal block
+                // Interchange rows K-1 and -IPIV(K).
                 kp = -ipiv[k - 1];
                 if (kp == -ipiv[(k - 1) - 1]) {
                     Rswap(nrhs, &b[((k - 1) - 1)], ldb, &b[(kp - 1)], ldb);
@@ -157,16 +157,16 @@ void Rsytrs2(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *a, INT
         k = 1;
         while (k <= n) {
             if (ipiv[k - 1] > 0) {
-                //           1 x 1 diagonal block
-                //           Interchange rows K and IPIV(K).
+                // 1 x 1 diagonal block
+                // Interchange rows K and IPIV(K).
                 kp = ipiv[k - 1];
                 if (kp != k) {
                     Rswap(nrhs, &b[(k - 1)], ldb, &b[(kp - 1)], ldb);
                 }
                 k++;
             } else {
-                //           2 x 2 diagonal block
-                //           Interchange rows K-1 and -IPIV(K).
+                // 2 x 2 diagonal block
+                // Interchange rows K-1 and -IPIV(K).
                 kp = -ipiv[k - 1];
                 if (k < n && kp == -ipiv[(k + 1) - 1]) {
                     Rswap(nrhs, &b[(k - 1)], ldb, &b[(kp - 1)], ldb);
@@ -183,16 +183,16 @@ void Rsytrs2(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *a, INT
         k = 1;
         while (k <= n) {
             if (ipiv[k - 1] > 0) {
-                //           1 x 1 diagonal block
-                //           Interchange rows K and IPIV(K).
+                // 1 x 1 diagonal block
+                // Interchange rows K and IPIV(K).
                 kp = ipiv[k - 1];
                 if (kp != k) {
                     Rswap(nrhs, &b[(k - 1)], ldb, &b[(kp - 1)], ldb);
                 }
                 k++;
             } else {
-                //           2 x 2 diagonal block
-                //           Interchange rows K and -IPIV(K+1).
+                // 2 x 2 diagonal block
+                // Interchange rows K and -IPIV(K+1).
                 kp = -ipiv[(k + 1) - 1];
                 if (kp == -ipiv[k - 1]) {
                     Rswap(nrhs, &b[((k + 1) - 1)], ldb, &b[(kp - 1)], ldb);
@@ -236,16 +236,16 @@ void Rsytrs2(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *a, INT
         k = n;
         while (k >= 1) {
             if (ipiv[k - 1] > 0) {
-                //           1 x 1 diagonal block
-                //           Interchange rows K and IPIV(K).
+                // 1 x 1 diagonal block
+                // Interchange rows K and IPIV(K).
                 kp = ipiv[k - 1];
                 if (kp != k) {
                     Rswap(nrhs, &b[(k - 1)], ldb, &b[(kp - 1)], ldb);
                 }
                 k = k - 1;
             } else {
-                //           2 x 2 diagonal block
-                //           Interchange rows K-1 and -IPIV(K).
+                // 2 x 2 diagonal block
+                // Interchange rows K-1 and -IPIV(K).
                 kp = -ipiv[k - 1];
                 if (k > 1 && kp == -ipiv[(k - 1) - 1]) {
                     Rswap(nrhs, &b[(k - 1)], ldb, &b[(kp - 1)], ldb);

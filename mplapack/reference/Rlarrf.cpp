@@ -130,7 +130,7 @@ void Rlarrf(INTEGER const n, REAL *d, REAL *l, REAL *ld, INTEGER const clstrt, I
     clwdth = abs(w[clend - 1] - w[clstrt - 1]) + werr[clend - 1] + werr[clstrt - 1];
     avgap = clwdth / castREAL(clend - clstrt);
     mingap = min(clgapl, clgapr);
-    //     Initial values for shifts to both ends of cluster
+    // Initial values for shifts to both ends of cluster
     lsigma = min(w[clstrt - 1], w[clend - 1]) - werr[clstrt - 1];
     rsigma = max(w[clstrt - 1], w[clend - 1]) + werr[clend - 1];
     //
@@ -160,7 +160,7 @@ void Rlarrf(INTEGER const n, REAL *d, REAL *l, REAL *ld, INTEGER const clstrt, I
 statement_5:
     sawnan1 = false;
     sawnan2 = false;
-    //     Ensure that we do not back off too much of the initial shifts
+    // Ensure that we do not back off too much of the initial shifts
     ldelta = min(ldmax, ldelta);
     rdelta = min(rdmax, rdelta);
     //
@@ -172,8 +172,8 @@ statement_5:
     dplus[1 - 1] = d[1 - 1] + s;
     if (abs(dplus[1 - 1]) < pivmin) {
         dplus[1 - 1] = -pivmin;
-        //        Need to set SAWNAN1 because refined RRR test should not be used
-        //        in this case
+        // Need to set SAWNAN1 because refined RRR test should not be used
+        // in this case
         sawnan1 = true;
     }
     max1 = abs(dplus[1 - 1]);
@@ -183,8 +183,8 @@ statement_5:
         dplus[(i + 1) - 1] = d[(i + 1) - 1] + s;
         if (abs(dplus[(i + 1) - 1]) < pivmin) {
             dplus[(i + 1) - 1] = -pivmin;
-            //           Need to set SAWNAN1 because refined RRR test should not be used
-            //           in this case
+            // Need to set SAWNAN1 because refined RRR test should not be used
+            // in this case
             sawnan1 = true;
         }
         max1 = max(max1, REAL(abs(dplus[(i + 1) - 1])));
@@ -202,8 +202,8 @@ statement_5:
     work[1 - 1] = d[1 - 1] + s;
     if (abs(work[1 - 1]) < pivmin) {
         work[1 - 1] = -pivmin;
-        //        Need to set SAWNAN2 because refined RRR test should not be used
-        //        in this case
+        // Need to set SAWNAN2 because refined RRR test should not be used
+        // in this case
         sawnan2 = true;
     }
     max2 = abs(work[1 - 1]);
@@ -213,8 +213,8 @@ statement_5:
         work[(i + 1) - 1] = d[(i + 1) - 1] + s;
         if (abs(work[(i + 1) - 1]) < pivmin) {
             work[(i + 1) - 1] = -pivmin;
-            //           Need to set SAWNAN2 because refined RRR test should not be used
-            //           in this case
+            // Need to set SAWNAN2 because refined RRR test should not be used
+            // in this case
             sawnan2 = true;
         }
         max2 = max(max2, REAL(abs(work[(i + 1) - 1])));
@@ -226,11 +226,11 @@ statement_5:
         shift = sright;
         goto statement_100;
     }
-    //     If we are at this point, both shifts led to too much element growth
+    // If we are at this point, both shifts led to too much element growth
     //
-    //     Record the better of the two shifts (provided it didn't lead to NaN)
+    // Record the better of the two shifts (provided it didn't lead to NaN)
     if (sawnan1 && sawnan2) {
-        //        both MAX1 and MAX2 are NaN
+        // both MAX1 and MAX2 are NaN
         goto statement_50;
     } else {
         if (!sawnan1) {
@@ -311,8 +311,8 @@ statement_5:
 statement_50:
     //
     if (ktry < ktrymax) {
-        //        If we are here, both shifts failed also the RRR test.
-        //        Back off to the outside
+        // If we are here, both shifts failed also the RRR test.
+        // Back off to the outside
         lsigma = max(lsigma - ldelta, lsigma - ldmax);
         rsigma = min(rsigma + rdelta, rsigma + rdmax);
         ldelta = two * ldelta;
@@ -320,8 +320,8 @@ statement_50:
         ktry++;
         goto statement_5;
     } else {
-        //        None of the representations investigated satisfied our
-        //        criteria. Take the best one we found.
+        // None of the representations investigated satisfied our
+        // criteria. Take the best one we found.
         if ((smlgrowth < fail) || nofail) {
             lsigma = bestshift;
             rsigma = bestshift;
@@ -336,7 +336,7 @@ statement_50:
 statement_100:
     if (shift == sleft) {
     } else if (shift == sright) {
-        //        store new L and D back into DPLUS, LPLUS
+        // store new L and D back into DPLUS, LPLUS
         Rcopy(n, work, 1, dplus, 1);
         Rcopy(n - 1, &work[(n + 1) - 1], 1, lplus, 1);
     }

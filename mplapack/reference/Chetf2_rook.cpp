@@ -265,19 +265,19 @@ void Chetf2_rook(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const ld
             //           in the leading submatrix A(1:k,1:k)
             //
             if ((kstep == 2) && (p != k)) {
-                //              (1) Swap columnar parts
+                // (1) Swap columnar parts
                 if (p > 1) {
                     Cswap(p - 1, &a[(k - 1) * lda], 1, &a[(p - 1) * lda], 1);
                 }
-                //              (2) Swap and conjugate middle parts
+                // (2) Swap and conjugate middle parts
                 for (j = p + 1; j <= k - 1; j = j + 1) {
                     t = conj(a[(j - 1) + (k - 1) * lda]);
                     a[(j - 1) + (k - 1) * lda] = conj(a[(p - 1) + (j - 1) * lda]);
                     a[(p - 1) + (j - 1) * lda] = t;
                 }
-                //              (3) Swap and conjugate corner elements at row-col interserction
+                // (3) Swap and conjugate corner elements at row-col interserction
                 a[(p - 1) + (k - 1) * lda] = conj(a[(p - 1) + (k - 1) * lda]);
-                //              (4) Swap diagonal elements at row-col intersection
+                // (4) Swap diagonal elements at row-col intersection
                 r1 = a[(k - 1) + (k - 1) * lda].real();
                 a[(k - 1) + (k - 1) * lda] = a[(p - 1) + (p - 1) * lda].real();
                 a[(p - 1) + (p - 1) * lda] = r1;
@@ -287,33 +287,33 @@ void Chetf2_rook(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const ld
             //           columns KK and KP in the leading submatrix A(1:k,1:k)
             //
             if (kp != kk) {
-                //              (1) Swap columnar parts
+                // (1) Swap columnar parts
                 if (kp > 1) {
                     Cswap(kp - 1, &a[(kk - 1) * lda], 1, &a[(kp - 1) * lda], 1);
                 }
-                //              (2) Swap and conjugate middle parts
+                // (2) Swap and conjugate middle parts
                 for (j = kp + 1; j <= kk - 1; j = j + 1) {
                     t = conj(a[(j - 1) + (kk - 1) * lda]);
                     a[(j - 1) + (kk - 1) * lda] = conj(a[(kp - 1) + (j - 1) * lda]);
                     a[(kp - 1) + (j - 1) * lda] = t;
                 }
-                //              (3) Swap and conjugate corner elements at row-col interserction
+                // (3) Swap and conjugate corner elements at row-col interserction
                 a[(kp - 1) + (kk - 1) * lda] = conj(a[(kp - 1) + (kk - 1) * lda]);
-                //              (4) Swap diagonal elements at row-col intersection
+                // (4) Swap diagonal elements at row-col intersection
                 r1 = a[(kk - 1) + (kk - 1) * lda].real();
                 a[(kk - 1) + (kk - 1) * lda] = a[(kp - 1) + (kp - 1) * lda].real();
                 a[(kp - 1) + (kp - 1) * lda] = r1;
                 //
                 if (kstep == 2) {
-                    //                 (*) Make sure that diagonal element of pivot is real
+                    // (*) Make sure that diagonal element of pivot is real
                     a[(k - 1) + (k - 1) * lda] = a[(k - 1) + (k - 1) * lda].real();
-                    //                 (5) Swap row elements
+                    // (5) Swap row elements
                     t = a[((k - 1) - 1) + (k - 1) * lda];
                     a[((k - 1) - 1) + (k - 1) * lda] = a[(kp - 1) + (k - 1) * lda];
                     a[(kp - 1) + (k - 1) * lda] = t;
                 }
             } else {
-                //              (*) Make sure that diagonal element of pivot is real
+                // (*) Make sure that diagonal element of pivot is real
                 a[(k - 1) + (k - 1) * lda] = a[(k - 1) + (k - 1) * lda].real();
                 if (kstep == 2) {
                     a[((k - 1) - 1) + ((k - 1) - 1) * lda] = a[((k - 1) - 1) + ((k - 1) - 1) * lda].real();
@@ -382,7 +382,7 @@ void Chetf2_rook(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const ld
                 //              and store L(k) and L(k+1) in columns k and k+1
                 //
                 if (k > 2) {
-                    //                 D = |A12|
+                    // D = |A12|
                     d = Rlapy2(a[((k - 1) - 1) + (k - 1) * lda].real(), a[((k - 1) - 1) + (k - 1) * lda].imag());
                     d11 = (a[(k - 1) + (k - 1) * lda] / d).real();
                     d22 = (a[((k - 1) - 1) + ((k - 1) - 1) * lda] / d).real();
@@ -406,7 +406,7 @@ void Chetf2_rook(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const ld
                         //
                         a[(j - 1) + (k - 1) * lda] = wk / d;
                         a[(j - 1) + ((k - 1) - 1) * lda] = wkm1 / d;
-                        //                    (*) Make sure that diagonal element of pivot is real
+                        // (*) Make sure that diagonal element of pivot is real
                         a[(j - 1) + (j - 1) * lda] = COMPLEX(a[(j - 1) + (j - 1) * lda].real(), zero);
                         //
                     }
@@ -576,19 +576,19 @@ void Chetf2_rook(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const ld
             //           in the trailing submatrix A(k:n,k:n)
             //
             if ((kstep == 2) && (p != k)) {
-                //              (1) Swap columnar parts
+                // (1) Swap columnar parts
                 if (p < n) {
                     Cswap(n - p, &a[((p + 1) - 1) + (k - 1) * lda], 1, &a[((p + 1) - 1) + (p - 1) * lda], 1);
                 }
-                //              (2) Swap and conjugate middle parts
+                // (2) Swap and conjugate middle parts
                 for (j = k + 1; j <= p - 1; j = j + 1) {
                     t = conj(a[(j - 1) + (k - 1) * lda]);
                     a[(j - 1) + (k - 1) * lda] = conj(a[(p - 1) + (j - 1) * lda]);
                     a[(p - 1) + (j - 1) * lda] = t;
                 }
-                //              (3) Swap and conjugate corner elements at row-col interserction
+                // (3) Swap and conjugate corner elements at row-col interserction
                 a[(p - 1) + (k - 1) * lda] = conj(a[(p - 1) + (k - 1) * lda]);
-                //              (4) Swap diagonal elements at row-col intersection
+                // (4) Swap diagonal elements at row-col intersection
                 r1 = a[(k - 1) + (k - 1) * lda].real();
                 a[(k - 1) + (k - 1) * lda] = a[(p - 1) + (p - 1) * lda].real();
                 a[(p - 1) + (p - 1) * lda] = r1;
@@ -598,33 +598,33 @@ void Chetf2_rook(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const ld
             //           columns KK and KP in the trailing submatrix A(k:n,k:n)
             //
             if (kp != kk) {
-                //              (1) Swap columnar parts
+                // (1) Swap columnar parts
                 if (kp < n) {
                     Cswap(n - kp, &a[((kp + 1) - 1) + (kk - 1) * lda], 1, &a[((kp + 1) - 1) + (kp - 1) * lda], 1);
                 }
-                //              (2) Swap and conjugate middle parts
+                // (2) Swap and conjugate middle parts
                 for (j = kk + 1; j <= kp - 1; j = j + 1) {
                     t = conj(a[(j - 1) + (kk - 1) * lda]);
                     a[(j - 1) + (kk - 1) * lda] = conj(a[(kp - 1) + (j - 1) * lda]);
                     a[(kp - 1) + (j - 1) * lda] = t;
                 }
-                //              (3) Swap and conjugate corner elements at row-col interserction
+                // (3) Swap and conjugate corner elements at row-col interserction
                 a[(kp - 1) + (kk - 1) * lda] = conj(a[(kp - 1) + (kk - 1) * lda]);
-                //              (4) Swap diagonal elements at row-col intersection
+                // (4) Swap diagonal elements at row-col intersection
                 r1 = a[(kk - 1) + (kk - 1) * lda].real();
                 a[(kk - 1) + (kk - 1) * lda] = a[(kp - 1) + (kp - 1) * lda].real();
                 a[(kp - 1) + (kp - 1) * lda] = r1;
                 //
                 if (kstep == 2) {
-                    //                 (*) Make sure that diagonal element of pivot is real
+                    // (*) Make sure that diagonal element of pivot is real
                     a[(k - 1) + (k - 1) * lda] = a[(k - 1) + (k - 1) * lda].real();
-                    //                 (5) Swap row elements
+                    // (5) Swap row elements
                     t = a[((k + 1) - 1) + (k - 1) * lda];
                     a[((k + 1) - 1) + (k - 1) * lda] = a[(kp - 1) + (k - 1) * lda];
                     a[(kp - 1) + (k - 1) * lda] = t;
                 }
             } else {
-                //              (*) Make sure that diagonal element of pivot is real
+                // (*) Make sure that diagonal element of pivot is real
                 a[(k - 1) + (k - 1) * lda] = a[(k - 1) + (k - 1) * lda].real();
                 if (kstep == 2) {
                     a[((k + 1) - 1) + ((k + 1) - 1) * lda] = a[((k + 1) - 1) + ((k + 1) - 1) * lda].real();
@@ -695,7 +695,7 @@ void Chetf2_rook(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const ld
                 //              and store L(k) and L(k+1) in columns k and k+1
                 //
                 if (k < n - 1) {
-                    //                 D = |A21|
+                    // D = |A21|
                     d = Rlapy2(a[((k + 1) - 1) + (k - 1) * lda].real(), a[((k + 1) - 1) + (k - 1) * lda].imag());
                     d11 = a[((k + 1) - 1) + ((k + 1) - 1) * lda].real() / d;
                     d22 = a[(k - 1) + (k - 1) * lda].real() / d;
@@ -719,7 +719,7 @@ void Chetf2_rook(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const ld
                         //
                         a[(j - 1) + (k - 1) * lda] = wk / d;
                         a[(j - 1) + ((k + 1) - 1) * lda] = wkp1 / d;
-                        //                    (*) Make sure that diagonal element of pivot is real
+                        // (*) Make sure that diagonal element of pivot is real
                         a[(j - 1) + (j - 1) * lda] = COMPLEX(a[(j - 1) + (j - 1) * lda].real(), zero);
                         //
                     }

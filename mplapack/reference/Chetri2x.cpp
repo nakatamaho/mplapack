@@ -114,8 +114,8 @@ void Chetri2x(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, 
     //     U11 is a block (NB+1,NB+1)
     //     The first element of U11 is in WORK(N+1,1)
     INTEGER u11 = n;
-    //     INVD is a block (N,2)
-    //     The first element of INVD is in WORK(1,INVD)
+    // INVD is a block (N,2)
+    // The first element of INVD is in WORK(1,INVD)
     INTEGER invd = nb + 2;
     //
     INTEGER k = 0;
@@ -147,12 +147,12 @@ void Chetri2x(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, 
         k = 1;
         while (k <= n) {
             if (ipiv[k - 1] > 0) {
-                //           1 x 1 diagonal NNB
+                // 1 x 1 diagonal NNB
                 work[(k - 1) + (invd - 1) * ldwork] = one / (a[(k - 1) + (k - 1) * lda]).real();
                 work[(k - 1) + ((invd + 1) - 1) * ldwork] = 0.0;
                 k++;
             } else {
-                //           2 x 2 diagonal NNB
+                // 2 x 2 diagonal NNB
                 t = abs(work[((k + 1) - 1)]);
                 ak = (a[(k - 1) + (k - 1) * lda]).real() / t;
                 akp1 = (a[((k + 1) - 1) + ((k + 1) - 1) * lda]).real() / t;
@@ -177,13 +177,13 @@ void Chetri2x(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, 
                 nnb = cut;
             } else {
                 count = 0;
-                //             count negative elements,
+                // count negative elements,
                 for (i = cut + 1 - nnb; i <= cut; i = i + 1) {
                     if (ipiv[i - 1] < 0) {
                         count++;
                     }
                 }
-                //             need a even number for a clear cut
+                // need a even number for a clear cut
                 if (mod(count, 2) == 1) {
                     nnb++;
                 }
@@ -326,12 +326,12 @@ void Chetri2x(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, 
         k = n;
         while (k >= 1) {
             if (ipiv[k - 1] > 0) {
-                //           1 x 1 diagonal NNB
+                // 1 x 1 diagonal NNB
                 work[(k - 1) + (invd - 1) * ldwork] = one / a[(k - 1) + (k - 1) * lda].real();
                 work[(k - 1) + ((invd + 1) - 1) * ldwork] = 0.0;
                 k = k - 1;
             } else {
-                //           2 x 2 diagonal NNB
+                // 2 x 2 diagonal NNB
                 t = abs(work[((k - 1) - 1)]);
                 ak = (a[((k - 1) - 1) + ((k - 1) - 1) * lda]).real() / t;
                 akp1 = (a[(k - 1) + (k - 1) * lda]).real() / t;
@@ -356,24 +356,24 @@ void Chetri2x(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, 
                 nnb = n - cut;
             } else {
                 count = 0;
-                //             count negative elements,
+                // count negative elements,
                 for (i = cut + 1; i <= cut + nnb; i = i + 1) {
                     if (ipiv[i - 1] < 0) {
                         count++;
                     }
                 }
-                //             need a even number for a clear cut
+                // need a even number for a clear cut
                 if (mod(count, 2) == 1) {
                     nnb++;
                 }
             }
-            //      L21 Block
+            // L21 Block
             for (i = 1; i <= n - cut - nnb; i = i + 1) {
                 for (j = 1; j <= nnb; j = j + 1) {
                     work[(i - 1) + (j - 1) * ldwork] = a[((cut + nnb + i) - 1) + ((cut + j) - 1) * lda];
                 }
             }
-            //     L11 Block
+            // L11 Block
             for (i = 1; i <= nnb; i = i + 1) {
                 work[((u11 + i) - 1) + (i - 1) * ldwork] = cone;
                 for (j = i + 1; j <= nnb; j = j + 1) {

@@ -177,9 +177,9 @@ void Chetrd_hb2st(const char *stage1, const char *vect, const char *uplo, INTEGE
                 if (i < n - 1) {
                     ab[(abofdpos - 1) + ((i + 2) - 1) * ldab] = ab[(abofdpos - 1) + ((i + 2) - 1) * ldab] * tmp;
                 }
-                //                  IF( WANTZ ) THEN
-                //                     CALL Cscal( N, DCONJG( TMP ), Q( 1, I+1 ), 1 )
-                //                  END IF
+                // IF( WANTZ ) THEN
+                //    CALL Cscal( N, DCONJG( TMP ), Q( 1, I+1 ), 1 )
+                // END IF
             }
         } else {
             for (i = 1; i <= n - 1; i = i + 1) {
@@ -195,9 +195,9 @@ void Chetrd_hb2st(const char *stage1, const char *vect, const char *uplo, INTEGE
                 if (i < n - 1) {
                     ab[(abofdpos - 1) + ((i + 1) - 1) * ldab] = ab[(abofdpos - 1) + ((i + 1) - 1) * ldab] * tmp;
                 }
-                //                 IF( WANTQ ) THEN
-                //                    CALL Cscal( N, TMP, Q( 1, I+1 ), 1 )
-                //                 END IF
+                // IF( WANTQ ) THEN
+                //    CALL Cscal( N, TMP, Q( 1, I+1 ), 1 )
+                // END IF
             }
         }
         //

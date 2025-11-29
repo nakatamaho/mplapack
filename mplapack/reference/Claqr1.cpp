@@ -54,10 +54,10 @@ void Claqr1(INTEGER const n, COMPLEX *h, INTEGER const ldh, COMPLEX const s1, CO
     //     ..
     //     .. Statement Function definitions ..
     COMPLEX cdum = 0.0;
-    //     ..
-    //     .. Executable Statements ..
+    // ..
+    // .. Executable Statements ..
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n != 2 && n != 3) {
         return;

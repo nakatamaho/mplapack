@@ -135,7 +135,7 @@ void Cgelss(INTEGER const m, INTEGER const n, INTEGER const nrhs, COMPLEX *a, IN
                 //              Compute space needed for Cgeqrf
                 Cgeqrf(m, n, a, lda, &dum[1 - 1], &dum[1 - 1], -1, info);
                 lwork_Cgeqrf = castINTEGER(dum[1 - 1].real());
-                //              Compute space needed for Cunmqr
+                // Compute space needed for Cunmqr
                 Cunmqr("L", "C", m, nrhs, n, a, lda, &dum[1 - 1], b, ldb, &dum[1 - 1], -1, info);
                 lwork_Cunmqr = castINTEGER(dum[1 - 1].real());
                 mm = n;
@@ -149,13 +149,13 @@ void Cgelss(INTEGER const m, INTEGER const n, INTEGER const nrhs, COMPLEX *a, IN
                 //              Compute space needed for Cgebrd
                 Cgebrd(mm, n, a, lda, s, s, &dum[1 - 1], &dum[1 - 1], &dum[1 - 1], -1, info);
                 lwork_Cgebrd = castINTEGER(dum[1 - 1].real());
-                //              Compute space needed for Cunmbr
+                // Compute space needed for Cunmbr
                 Cunmbr("Q", "L", "C", mm, nrhs, n, a, lda, &dum[1 - 1], b, ldb, &dum[1 - 1], -1, info);
                 lwork_Cunmbr = castINTEGER(dum[1 - 1].real());
-                //              Compute space needed for Cungbr
+                // Compute space needed for Cungbr
                 Cungbr("P", n, n, n, a, lda, &dum[1 - 1], &dum[1 - 1], -1, info);
                 lwork_Cungbr = castINTEGER(dum[1 - 1].real());
-                //              Compute total workspace needed
+                // Compute total workspace needed
                 maxwrk = max(maxwrk, 2 * n + lwork_Cgebrd);
                 maxwrk = max(maxwrk, 2 * n + lwork_Cunmbr);
                 maxwrk = max(maxwrk, 2 * n + lwork_Cungbr);
@@ -172,19 +172,19 @@ void Cgelss(INTEGER const m, INTEGER const n, INTEGER const nrhs, COMPLEX *a, IN
                     //                 Compute space needed for Cgelqf
                     Cgelqf(m, n, a, lda, &dum[1 - 1], &dum[1 - 1], -1, info);
                     lwork_Cgelqf = castINTEGER(dum[1 - 1].real());
-                    //                 Compute space needed for Cgebrd
+                    // Compute space needed for Cgebrd
                     Cgebrd(m, m, a, lda, s, s, &dum[1 - 1], &dum[1 - 1], &dum[1 - 1], -1, info);
                     lwork_Cgebrd = castINTEGER(dum[1 - 1].real());
-                    //                 Compute space needed for Cunmbr
+                    // Compute space needed for Cunmbr
                     Cunmbr("Q", "L", "C", m, nrhs, n, a, lda, &dum[1 - 1], b, ldb, &dum[1 - 1], -1, info);
                     lwork_Cunmbr = castINTEGER(dum[1 - 1].real());
-                    //                 Compute space needed for Cungbr
+                    // Compute space needed for Cungbr
                     Cungbr("P", m, m, m, a, lda, &dum[1 - 1], &dum[1 - 1], -1, info);
                     lwork_Cungbr = castINTEGER(dum[1 - 1].real());
-                    //                 Compute space needed for Cunmlq
+                    // Compute space needed for Cunmlq
                     Cunmlq("L", "C", n, nrhs, m, a, lda, &dum[1 - 1], b, ldb, &dum[1 - 1], -1, info);
                     lwork_Cunmlq = castINTEGER(dum[1 - 1].real());
-                    //                 Compute total workspace needed
+                    // Compute total workspace needed
                     maxwrk = m + lwork_Cgelqf;
                     maxwrk = max(maxwrk, 3 * m + m * m + lwork_Cgebrd);
                     maxwrk = max(maxwrk, 3 * m + m * m + lwork_Cunmbr);
@@ -202,10 +202,10 @@ void Cgelss(INTEGER const m, INTEGER const n, INTEGER const nrhs, COMPLEX *a, IN
                     //                 Compute space needed for Cgebrd
                     Cgebrd(m, n, a, lda, s, s, &dum[1 - 1], &dum[1 - 1], &dum[1 - 1], -1, info);
                     lwork_Cgebrd = castINTEGER(dum[1 - 1].real());
-                    //                 Compute space needed for Cunmbr
+                    // Compute space needed for Cunmbr
                     Cunmbr("Q", "L", "C", m, nrhs, m, a, lda, &dum[1 - 1], b, ldb, &dum[1 - 1], -1, info);
                     lwork_Cunmbr = castINTEGER(dum[1 - 1].real());
-                    //                 Compute space needed for Cungbr
+                    // Compute space needed for Cungbr
                     Cungbr("P", m, n, m, a, lda, &dum[1 - 1], &dum[1 - 1], -1, info);
                     lwork_Cungbr = castINTEGER(dum[1 - 1].real());
                     maxwrk = 2 * m + lwork_Cgebrd;

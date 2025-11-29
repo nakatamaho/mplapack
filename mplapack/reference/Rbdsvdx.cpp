@@ -367,8 +367,8 @@ void Rbdsvdx(const char *uplo, const char *jobz, const char *range, INTEGER cons
                     iutgk = ntgk / 2;
                     if (allsv || vutgk == zero) {
                         if (sveq0 || smin < eps || mod(ntgk, 2) > 0) {
-                            //                        Special case: eigenvalue equal to zero or very
-                            //                        small, additional eigenvector is needed.
+                            // Special case: eigenvalue equal to zero or very
+                            // small, additional eigenvector is needed.
                             iutgk++;
                         }
                     }
@@ -379,7 +379,7 @@ void Rbdsvdx(const char *uplo, const char *jobz, const char *range, INTEGER cons
                     //
                     Rstevx(jobz, &rngvx, ntgk, &work[(idtgk + isplt - 1) - 1], &work[(ietgk + isplt - 1) - 1], vltgk, vutgk, iltgk, iutgk, abstol, nsl, &s[isbeg - 1], &z[(irowz - 1) + (icolz - 1) * ldz], ldz, &work[itemp - 1], &iwork[iiwork - 1], &iwork[iifail - 1], info);
                     if (info != 0) {
-                        //                    Exit with the error code from Rstevx.
+                        // Exit with the error code from Rstevx.
                         return;
                     }
                     emin = abs(Mmaxval(s, isbeg, isbeg + nsl - 1, 1));
@@ -405,10 +405,10 @@ void Rbdsvdx(const char *uplo, const char *jobz, const char *range, INTEGER cons
                                 z[(l - 1) + ((icolz + nsl - 2) - 1) * ldz] = z[(l - 1) + ((icolz + nsl - 2) - 1) * ldz] + z[(l - 1) + ((icolz + nsl - 1) - 1) * ldz];
                             for (int l = irowz; l <= irowz + ntgk - 1; l++)
                                 z[(l - 1) + ((icolz + nsl - 1) - 1) * ldz] = 0.0;
-                            //                       IF( IUTGK*2.GT.NTGK ) THEN
-                            //                          Eigenvalue equal to zero or very small.
-                            //                          NSL = NSL - 1
-                            //                       END IF
+                            // IF( IUTGK*2.GT.NTGK ) THEN
+                            //    Eigenvalue equal to zero or very small.
+                            //    NSL = NSL - 1
+                            // END IF
                         }
                         //
                         for (i = 0; i <= min(nsl - 1, nru - 1); i = i + 1) {

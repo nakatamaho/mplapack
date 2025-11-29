@@ -103,7 +103,7 @@ void Clahqr(bool const wantt, bool const wantz, INTEGER const n, INTEGER const i
     if (ilo <= ihi - 2) {
         h[(ihi - 1) + ((ihi - 2) - 1) * ldh] = zero;
     }
-    //     ==== ensure that subdiagonal entries are real ====
+    // ==== ensure that subdiagonal entries are real ====
     if (wantt) {
         jlo = 1;
         jhi = n;
@@ -113,9 +113,9 @@ void Clahqr(bool const wantt, bool const wantz, INTEGER const n, INTEGER const i
     }
     for (i = ilo + 1; i <= ihi; i = i + 1) {
         if (h[(i - 1) + ((i - 1) - 1) * ldh].imag() != rzero) {
-            //           ==== The following redundant normalization
-            //           .    avoids problems with both gradual and
-            //           .    sudden underflow in ABS(H(I,I-1)) ====
+            // ==== The following redundant normalization
+            // .    avoids problems with both gradual and
+            // .    sudden underflow in ABS(H(I,I-1)) ====
             sc = h[(i - 1) + ((i - 1) - 1) * ldh] / cabs1(h[(i - 1) + ((i - 1) - 1) * ldh]);
             sc = conj(sc) / abs(sc);
             h[(i - 1) + ((i - 1) - 1) * ldh] = abs(h[(i - 1) + ((i - 1) - 1) * ldh]);
@@ -188,10 +188,10 @@ statement_30:
                     tst += abs(h[((k + 1) - 1) + (k - 1) * ldh].real());
                 }
             }
-            //           ==== The following is a conservative small subdiagonal
-            //           .    deflation criterion due to Ahues & Tisseur (LAWN 122,
-            //           .    1997). It has better mathematical foundation and
-            //           .    improves accuracy in some examples.  ====
+            // ==== The following is a conservative small subdiagonal
+            // .    deflation criterion due to Ahues & Tisseur (LAWN 122,
+            // .    1997). It has better mathematical foundation and
+            // .    improves accuracy in some examples.  ====
             if (abs(h[(k - 1) + ((k - 1) - 1) * ldh].real()) <= ulp * tst) {
                 ab = max(cabs1(h[(k - 1) + ((k - 1) - 1) * ldh]), cabs1(h[((k - 1) - 1) + (k - 1) * ldh]));
                 ba = min(cabs1(h[(k - 1) + ((k - 1) - 1) * ldh]), cabs1(h[((k - 1) - 1) + (k - 1) * ldh]));
@@ -405,7 +405,7 @@ statement_140:
     //     H(I,I-1) is negligible: one eigenvalue has converged.
     //
     w[i - 1] = h[(i - 1) + (i - 1) * ldh];
-    //     reset deflation counter
+    // reset deflation counter
     kdefl = 0;
     //
     //     return to start of the main loop with new value of I.

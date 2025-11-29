@@ -210,15 +210,15 @@ void Rstevr(const char *jobz, const char *range, INTEGER const n, REAL *d, REAL 
     //     IWORK(INDIBL:INDIBL+M-1) corresponds to IBLOCK in Rstebz and
     //     stores the block indices of each of the M<=N eigenvalues.
     indibl = 1;
-    //     IWORK(INDISP:INDISP+NSPLIT-1) corresponds to ISPLIT in Rstebz and
-    //     stores the starting and finishing indices of each block.
+    // IWORK(INDISP:INDISP+NSPLIT-1) corresponds to ISPLIT in Rstebz and
+    // stores the starting and finishing indices of each block.
     indisp = indibl + n;
-    //     IWORK(INDIFL:INDIFL+N-1) stores the indices of eigenvectors
-    //     that corresponding to eigenvectors that fail to converge in
-    //     Rstein.  This information is discarded; if any fail, the driver
-    //     returns INFO > 0.
+    // IWORK(INDIFL:INDIFL+N-1) stores the indices of eigenvectors
+    // that corresponding to eigenvectors that fail to converge in
+    // Rstein.  This information is discarded; if any fail, the driver
+    // returns INFO > 0.
     indifl = indisp + n;
-    //     INDIWO is the offset of the remaining integer workspace.
+    // INDIWO is the offset of the remaining integer workspace.
     indiwo = indisp + n;
     //
     //     If all eigenvalues are desired, then

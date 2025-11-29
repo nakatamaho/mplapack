@@ -174,8 +174,8 @@ void Rsyevd_2stage(const char *jobz, const char *uplo, INTEGER const n, REAL *a,
     if (!wantz) {
         Rsterf(n, w, &work[inde - 1], info);
     } else {
-        //        Not available in this release, and argument checking should not
-        //        let it getting here
+        // Not available in this release, and argument checking should not
+        // let it getting here
         return;
         Rstedc("I", n, w, &work[inde - 1], &work[indwrk - 1], n, &work[indwk2 - 1], llwrk2, iwork, liwork, info);
         Rormtr("L", uplo, "N", n, n, a, lda, &work[indtau - 1], &work[indwrk - 1], n, &work[indwk2 - 1], llwrk2, iinfo);

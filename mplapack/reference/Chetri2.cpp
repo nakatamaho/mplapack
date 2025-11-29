@@ -55,7 +55,7 @@ void Chetri2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, I
     info = 0;
     bool upper = Mlsame(uplo, "U");
     bool lquery = (lwork == -1);
-    //     Get blocksize
+    // Get blocksize
     INTEGER nbmax = iMlaenv(1, "Chetrf", uplo, n, -1, -1, -1);
     INTEGER minsize = 0;
     if (nbmax >= n) {

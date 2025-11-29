@@ -83,7 +83,7 @@ void Rlar1v(INTEGER const n, INTEGER const b1, INTEGER const bn, REAL const lamb
     //
     //     Storage for LPLUS
     indlpl = 0;
-    //     Storage for UMINUS
+    // Storage for UMINUS
     indumn = n;
     inds = 2 * n + 1;
     indp = 3 * n + 1;
@@ -123,7 +123,7 @@ void Rlar1v(INTEGER const n, INTEGER const b1, INTEGER const bn, REAL const lamb
 //
 statement_60:
     if (sawnan1) {
-        //        Runs a slower version of the above loop if a NaN is detected
+        // Runs a slower version of the above loop if a NaN is detected
         neg1 = 0;
         s = work[(inds + b1 - 1) - 1] - lambda;
         for (i = b1; i <= r1 - 1; i = i + 1) {
@@ -174,7 +174,7 @@ statement_60:
     sawnan2 = Risnan(tmp);
     //
     if (sawnan2) {
-        //        Runs a slower version of the above loop if a NaN is detected
+        // Runs a slower version of the above loop if a NaN is detected
         neg2 = 0;
         for (i = bn - 1; i >= r1; i = i - 1) {
             dminus = lld[i - 1] + work[(indp + i) - 1];
@@ -241,7 +241,7 @@ statement_60:
         }
     statement_220:;
     } else {
-        //        Run slower loop if NaN occurred.
+        // Run slower loop if NaN occurred.
         for (i = r - 1; i >= b1; i = i - 1) {
             if (z[(i + 1) - 1] == zero) {
                 z[i - 1] = -(ld[(i + 1) - 1] / ld[i - 1]) * z[(i + 2) - 1];
@@ -271,7 +271,7 @@ statement_60:
         }
     statement_260:;
     } else {
-        //        Run slower loop if NaN occurred.
+        // Run slower loop if NaN occurred.
         for (i = r; i <= bn - 1; i = i + 1) {
             if (z[i - 1] == zero) {
                 z[(i + 1) - 1] = -(ld[(i - 1) - 1] / ld[i - 1]) * z[(i - 1) - 1];

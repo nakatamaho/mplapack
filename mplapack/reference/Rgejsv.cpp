@@ -116,12 +116,12 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
     } else if ((!(lsvec || rsvec || errest) && (lwork < max({(INTEGER)7, 4 * n + 1, 2 * m + n}))) || (!(lsvec || rsvec) && errest && (lwork < max({(INTEGER)7, 4 * n + n * n, 2 * m + n}))) || (lsvec && (!rsvec) && (lwork < max({(INTEGER)7, 2 * m + n, 4 * n + 1}))) || (rsvec && (!lsvec) && (lwork < max({(INTEGER)7, 2 * m + n, 4 * n + 1}))) || (lsvec && rsvec && (!jracc) && (lwork < max({2 * m + n, 6 * n + 2 * n * n}))) || (lsvec && rsvec && jracc && lwork < max({2 * m + n, 4 * n + n * n, 2 * n + n * n + 6}))) {
         info = -17;
     } else {
-        //        #:)
+        // #:)
         info = 0;
     }
     //
     if (info != 0) {
-        //       #:(
+        // #:(
         Mxerbla("Rgejsv", -info);
         return;
     }
@@ -145,7 +145,7 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
     //
     //     Set numerical parameters
     //
-    //!    NOTE: Make sure DLAMCH() does not fail on the target architecture.
+    //! NOTE: Make sure DLAMCH() does not fail on the target architecture.
     //
     epsln = Rlamch("Epsilon");
     sfmin = Rlamch("SafeMinimum");
@@ -155,13 +155,13 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
 #else
     big = Rlamch("Overflow");
 #endif
-    //     BIG   = ONE / SFMIN
+    // BIG   = ONE / SFMIN
     //
-    //     Initialize SVA(1:N) = diag( ||A e_i||_2 )_1^N
+    // Initialize SVA(1:N) = diag( ||A e_i||_2 )_1^N
     //
     //(!)  If necessary, scale SVA() to protect the largest norm from
-    //     overflow. It is possible that this scaling pushes the smallest
-    //     column norm left from the underflow threshold (extreme case).
+    // overflow. It is possible that this scaling pushes the smallest
+    // column norm left from the underflow threshold (extreme case).
     //
     scalem = one / sqrt(castREAL(m * n));
     noscal = true;
@@ -247,7 +247,7 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
         if (lsvec) {
             Rlascl("G", 0, 0, sva[1 - 1], scalem, m, 1, &a[(1 - 1)], lda, ierr);
             Rlacpy("A", m, 1, a, lda, u, ldu);
-            //           computing all M left singular vectors of the M x 1 matrix
+            // computing all M left singular vectors of the M x 1 matrix
             if (n1 != n) {
                 Rgeqrf(m, n, u, ldu, work, &work[(n + 1) - 1], lwork - n, ierr);
                 Rorgqr(m, n1, 1, u, ldu, work, &work[(n + 1) - 1], lwork - n, ierr);
@@ -307,8 +307,8 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
                 xsc = zero;
                 temp1 = one;
                 Rlassq(n, &a[(p - 1)], lda, xsc, temp1);
-                //              Rlassq gets both the ell_2 and the ell_infinity norm
-                //              in one pass through the vector
+                // Rlassq gets both the ell_2 and the ell_infinity norm
+                // in one pass through the vector
                 work[(m + n + p) - 1] = xsc * scalem;
                 work[(n + p) - 1] = xsc * (scalem * sqrt(temp1));
                 aatmax = max(aatmax, work[(n + p) - 1]);
@@ -374,8 +374,8 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
         //        If A^t is better than A, transpose A.
         //
         if (transp) {
-            //           In an optimal implementation, this trivial transpose
-            //           should be replaced with faster transpose.
+            // In an optimal implementation, this trivial transpose
+            // should be replaced with faster transpose.
             for (p = 1; p <= n - 1; p = p + 1) {
                 for (q = p + 1; q <= n; q = q + 1) {
                     temp1 = a[(q - 1) + (p - 1) * lda];
@@ -404,17 +404,17 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
         }
         //
     }
-    //     END IF L2TRAN
+    // END IF L2TRAN
     //
-    //     Scale the matrix so that its maximal singular value remains less
-    //     than DSQRT(BIG) -- the matrix is scaled so that its maximal column
-    //     has Euclidean norm equal to DSQRT(BIG/N). The only reason to keep
-    //     DSQRT(BIG) instead of BIG is the fact that Rgejsv uses LAPACK and
-    //     BLAS routines that, in some implementations, are not capable of
-    //     working in the full interval [SFMIN,BIG] and that they may provoke
-    //     overflows in the intermediate results. If the singular values spread
-    //     from SFMIN to BIG, then Rgesvj will compute them. So, in that case,
-    //     one should use Rgesvj instead of Rgejsv.
+    // Scale the matrix so that its maximal singular value remains less
+    // than DSQRT(BIG) -- the matrix is scaled so that its maximal column
+    // has Euclidean norm equal to DSQRT(BIG/N). The only reason to keep
+    // DSQRT(BIG) instead of BIG is the fact that Rgejsv uses LAPACK and
+    // BLAS routines that, in some implementations, are not capable of
+    // working in the full interval [SFMIN,BIG] and that they may provoke
+    // overflows in the intermediate results. If the singular values spread
+    // from SFMIN to BIG, then Rgesvj will compute them. So, in that case,
+    // one should use Rgesvj instead of Rgejsv.
     //
     big1 = sqrt(big);
     temp1 = sqrt(big / castREAL(n));
@@ -435,9 +435,9 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
     uscal2 = aapp;
     //
     if (l2kill) {
-        //        L2KILL enforces computation of nonzero singular values in
-        //        the restricted range of condition number of the initial A,
-        //        sigma_max(A) / sigma_min(A) approx. DSQRT(BIG)/DSQRT(SFMIN).
+        // L2KILL enforces computation of nonzero singular values in
+        // the restricted range of condition number of the initial A,
+        // sigma_max(A) / sigma_min(A) approx. DSQRT(BIG)/DSQRT(SFMIN).
         xsc = sqrt(sfmin);
     } else {
         xsc = small;
@@ -467,11 +467,11 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
     //     Preconditioning using QR factorization with pivoting
     //
     if (rowpiv) {
-        //        Optional row permutation (Bjoerck row pivoting):
-        //        A result by Cox and Higham shows that the Bjoerck's
-        //        row pivoting combined with standard column pivoting
-        //        has similar effect as Powell-Reid complete pivoting.
-        //        The ell-infinity norms of A are made nonincreasing.
+        // Optional row permutation (Bjoerck row pivoting):
+        // A result by Cox and Higham shows that the Bjoerck's
+        // row pivoting combined with standard column pivoting
+        // has similar effect as Powell-Reid complete pivoting.
+        // The ell-infinity norms of A are made nonincreasing.
         for (p = 1; p <= m - 1; p = p + 1) {
             q = iRamax(m - p + 1, &work[(m + n + p) - 1], 1) + p - 1;
             iwork[(2 * n + p) - 1] = q;
@@ -500,7 +500,7 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
     //
     //     A * P1 = Q1 * [ R1^t 0]^t:
     for (p = 1; p <= n; p = p + 1) {
-        //        .. all columns are free columns
+        // .. all columns are free columns
         iwork[p - 1] = 0;
     }
     Rgeqp3(m, n, a, lda, iwork, work, &work[(n + 1) - 1], lwork - n, ierr);
@@ -515,10 +515,10 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
     //
     nr = 1;
     if (l2aber) {
-        //        Standard absolute error bound suffices. All sigma_i with
-        //        sigma_i < N*EPSLN*||A|| are flushed to zero. This is an
-        //        aggressive enforcement of lower numerical rank by introducing a
-        //        backward error of the order of N*EPSLN*||A||.
+        // Standard absolute error bound suffices. All sigma_i with
+        // sigma_i < N*EPSLN*||A|| are flushed to zero. This is an
+        // aggressive enforcement of lower numerical rank by introducing a
+        // backward error of the order of N*EPSLN*||A||.
         temp1 = sqrt(castREAL(n)) * epsln;
         for (p = 2; p <= n; p = p + 1) {
             if (abs(a[(p - 1) + (p - 1) * lda]) >= (temp1 * abs(a[(1 - 1)]))) {
@@ -529,9 +529,9 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
         }
     statement_3002:;
     } else if (l2rank) {
-        //        .. similarly as above, only slightly more gentle (less aggressive).
-        //        Sudden drop on the diagonal of R1 is used as the criterion for
-        //        close-to-rank-deficient.
+        // .. similarly as above, only slightly more gentle (less aggressive).
+        // Sudden drop on the diagonal of R1 is used as the criterion for
+        // close-to-rank-deficient.
         temp1 = sqrt(sfmin);
         for (p = 2; p <= n; p = p + 1) {
             if ((abs(a[(p - 1) + (p - 1) * lda]) < (epsln * abs(a[((p - 1) - 1) + ((p - 1) - 1) * lda]))) || (abs(a[(p - 1) + (p - 1) * lda]) < small) || (l2kill && (abs(a[(p - 1) + (p - 1) * lda]) < temp1))) {
@@ -542,13 +542,13 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
     statement_3402:;
         //
     } else {
-        //        The goal is high relative accuracy. However, if the matrix
-        //        has high scaled condition number the relative accuracy is in
-        //        general not feasible. Later on, a condition number estimator
-        //        will be deployed to estimate the scaled condition number.
-        //        Here we just remove the underflowed part of the triangular
-        //        factor. This prevents the situation in which the code is
-        //        working hard to get the accuracy not warranted by the data.
+        // The goal is high relative accuracy. However, if the matrix
+        // has high scaled condition number the relative accuracy is in
+        // general not feasible. Later on, a condition number estimator
+        // will be deployed to estimate the scaled condition number.
+        // Here we just remove the underflowed part of the triangular
+        // factor. This prevents the situation in which the code is
+        // working hard to get the accuracy not warranted by the data.
         temp1 = sqrt(sfmin);
         for (p = 2; p <= n; p = p + 1) {
             if ((abs(a[(p - 1) + (p - 1) * lda]) < small) || (l2kill && (abs(a[(p - 1) + (p - 1) * lda]) < temp1))) {
@@ -579,7 +579,7 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
     if (errest) {
         if (n == nr) {
             if (rsvec) {
-                //              .. V is available as workspace
+                // .. V is available as workspace
                 Rlacpy("U", n, n, a, lda, v, ldv);
                 for (p = 1; p <= n; p = p + 1) {
                     temp1 = sva[iwork[p - 1] - 1];
@@ -587,7 +587,7 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
                 }
                 Rpocon("U", n, v, ldv, one, temp1, &work[(n + 1) - 1], &iwork[(2 * n + m + 1) - 1], ierr);
             } else if (lsvec) {
-                //              .. U is available as workspace
+                // .. U is available as workspace
                 Rlacpy("U", n, n, a, lda, u, ldu);
                 for (p = 1; p <= n; p = p + 1) {
                     temp1 = sva[iwork[p - 1] - 1];
@@ -600,21 +600,21 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
                     temp1 = sva[iwork[p - 1] - 1];
                     Rscal(p, one / temp1, &work[(n + (p - 1) * n + 1) - 1], 1);
                 }
-                //           .. the columns of R are scaled to have unit Euclidean lengths.
+                // .. the columns of R are scaled to have unit Euclidean lengths.
                 Rpocon("U", n, &work[(n + 1) - 1], n, one, temp1, &work[(n + n * n + 1) - 1], &iwork[(2 * n + m + 1) - 1], ierr);
             }
             sconda = one / sqrt(temp1);
-            //           SCONDA is an estimate of DSQRT(||(R^t * R)^(-1)||_1).
-            //           N^(-1/4) * SCONDA <= ||R^(-1)||_2 <= N^(1/4) * SCONDA
+            // SCONDA is an estimate of DSQRT(||(R^t * R)^(-1)||_1).
+            // N^(-1/4) * SCONDA <= ||R^(-1)||_2 <= N^(1/4) * SCONDA
         } else {
             sconda = -one;
         }
     }
     //
     l2pert = l2pert && (abs(a[(1 - 1)] / a[(nr - 1) + (nr - 1) * lda]) > sqrt(big1));
-    //     If there is no violent scaling, artificial perturbation is not needed.
+    // If there is no violent scaling, artificial perturbation is not needed.
     //
-    //     Phase 3:
+    // Phase 3:
     //
     if (!(rsvec || lsvec)) {
         //
@@ -640,7 +640,7 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
         if (!almort) {
             //
             if (l2pert) {
-                //              XSC = DSQRT(SMALL)
+                // XSC = DSQRT(SMALL)
                 xsc = epsln / castREAL(n);
                 for (q = 1; q <= nr; q = q + 1) {
                     temp1 = xsc * abs(a[(q - 1) + (q - 1) * lda]);
@@ -670,7 +670,7 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
         //           .. again some perturbation (a "background noise") is added
         //           to drown denormals
         if (l2pert) {
-            //              XSC = DSQRT(SMALL)
+            // XSC = DSQRT(SMALL)
             xsc = epsln / castREAL(n);
             for (q = 1; q <= nr; q = q + 1) {
                 temp1 = xsc * abs(a[(q - 1) + (q - 1) * lda]);
@@ -850,19 +850,19 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
                 }
                 Rpocon("Lower", nr, &work[(2 * n + 1) - 1], nr, one, temp1, &work[(2 * n + nr * nr + 1) - 1], &iwork[(m + 2 * n + 1) - 1], ierr);
                 condr1 = one / sqrt(temp1);
-                //           .. here need a second opinion on the condition number
-                //           .. then assume worst case scenario
-                //           R1 is OK for inverse <=> CONDR1 .LT. DBLE(N)
-                //           more conservative    <=> CONDR1 .LT. DSQRT(DBLE(N))
+                // .. here need a second opinion on the condition number
+                // .. then assume worst case scenario
+                // R1 is OK for inverse <=> CONDR1 .LT. DBLE(N)
+                // more conservative    <=> CONDR1 .LT. DSQRT(DBLE(N))
                 //
                 cond_ok = sqrt(castREAL(nr));
                 //[TP]       COND_OK is a tuning parameter.
                 //
                 if (condr1 < cond_ok) {
-                    //              .. the second QRF without pivoting. Note: in an optimized
-                    //              implementation, this QRF should be implemented as the QRF
-                    //              of a lower triangular matrix.
-                    //              R1^t = Q2 * R2
+                    // .. the second QRF without pivoting. Note: in an optimized
+                    // implementation, this QRF should be implemented as the QRF
+                    // of a lower triangular matrix.
+                    // R1^t = Q2 * R2
                     Rgeqrf(n, nr, v, ldv, &work[(n + 1) - 1], &work[(2 * n + 1) - 1], lwork - 2 * n, ierr);
                     //
                     if (l2pert) {
@@ -880,9 +880,9 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
                     if (nr != n) {
                         Rlacpy("A", n, nr, v, ldv, &work[(2 * n + 1) - 1], n);
                     }
-                    //              .. save ...
+                    // .. save ...
                     //
-                    //           .. this transposed copy should be better than naive
+                    // .. this transposed copy should be better than naive
                     for (p = 1; p <= nr - 1; p = p + 1) {
                         Rcopy(nr - p, &v[(p - 1) + ((p + 1) - 1) * ldv], ldv, &v[((p + 1) - 1) + (p - 1) * ldv], 1);
                     }
@@ -930,9 +930,9 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
                     } else {
                         Rlaset("L", nr - 1, nr - 1, zero, zero, &v[(2 - 1)], ldv);
                     }
-                    //              Now, compute R2 = L3 * Q3, the LQ factorization.
+                    // Now, compute R2 = L3 * Q3, the LQ factorization.
                     Rgelqf(nr, nr, v, ldv, &work[(2 * n + n * nr + 1) - 1], &work[(2 * n + n * nr + nr + 1) - 1], lwork - 2 * n - n * nr - nr, ierr);
-                    //              .. and estimate the condition number
+                    // .. and estimate the condition number
                     Rlacpy("L", nr, nr, v, ldv, &work[(2 * n + n * nr + nr + 1) - 1], nr);
                     for (p = 1; p <= nr; p = p + 1) {
                         temp1 = Rnrm2(p, &work[(2 * n + n * nr + nr + p) - 1], nr);
@@ -942,13 +942,13 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
                     condr2 = one / sqrt(temp1);
                     //
                     if (condr2 >= cond_ok) {
-                        //                 .. save the Householder vectors used for Q3
-                        //                 (this overwrites the copy of R2, as it will not be
-                        //                 needed in this branch, but it does not overwritte the
-                        //                 Huseholder vectors of Q2.).
+                        // .. save the Householder vectors used for Q3
+                        // (this overwrites the copy of R2, as it will not be
+                        // needed in this branch, but it does not overwritte the
+                        // Huseholder vectors of Q2.).
                         Rlacpy("U", nr, nr, v, ldv, &work[(2 * n + 1) - 1], n);
-                        //                 .. and the rest of the information on Q3 is in
-                        //                 WORK(2*N+N*NR+1:2*N+N*NR+N)
+                        // .. and the rest of the information on Q3 is in
+                        // WORK(2*N+N*NR+1:2*N+N*NR+N)
                     }
                     //
                 }
@@ -958,7 +958,7 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
                     for (q = 2; q <= nr; q = q + 1) {
                         temp1 = xsc * v[(q - 1) + (q - 1) * ldv];
                         for (p = 1; p <= q - 1; p = p + 1) {
-                            //                    V(p,q) = - DSIGN( TEMP1, V(q,p) )
+                            // V(p,q) = - DSIGN( TEMP1, V(q,p) )
                             v[(p - 1) + (q - 1) * ldv] = -sign(temp1, v[(p - 1) + (q - 1) * ldv]);
                         }
                     }
@@ -991,10 +991,10 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
                         //                 from the second QR factorization.
                         Rtrsm("L", "U", "N", "N", nr, nr, one, a, lda, v, ldv);
                     } else {
-                        //                 .. R1 is well conditioned, but non-square. Transpose(R2)
-                        //                 is inverted to get the product of the Jacobi rotations
-                        //                 used in Rgesvj. The Q-factor from the second QR
-                        //                 factorization is then built in explicitly.
+                        // .. R1 is well conditioned, but non-square. Transpose(R2)
+                        // is inverted to get the product of the Jacobi rotations
+                        // used in Rgesvj. The Q-factor from the second QR
+                        // factorization is then built in explicitly.
                         Rtrsm("L", "U", "T", "N", nr, nr, one, &work[(2 * n + 1) - 1], n, v, ldv);
                         if (nr < n) {
                             Rlaset("A", n - nr, nr, zero, zero, &v[((nr + 1) - 1)], ldv);
@@ -1020,7 +1020,7 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
                         Rscal(nr, sva[p - 1], &u[(p - 1) * ldu], 1);
                     }
                     Rtrsm("L", "U", "N", "N", nr, nr, one, &work[(2 * n + 1) - 1], n, u, ldu);
-                    //              .. apply the permutation from the second QR factorization
+                    // .. apply the permutation from the second QR factorization
                     for (q = 1; q <= nr; q = q + 1) {
                         for (p = 1; p <= nr; p = p + 1) {
                             work[(2 * n + n * nr + nr + iwork[(n + p) - 1]) - 1] = u[(p - 1) + (q - 1) * ldu];
@@ -1036,17 +1036,17 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
                     }
                     Rormqr("L", "N", n, n, nr, &work[(2 * n + 1) - 1], n, &work[(n + 1) - 1], v, ldv, &work[(2 * n + n * nr + nr + 1) - 1], lwork - 2 * n - n * nr - nr, ierr);
                 } else {
-                    //              Last line of defense.
+                    // Last line of defense.
                     // #:(          This is a rather pathological case: no scaled condition
-                    //              improvement after two pivoted QR factorizations. Other
-                    //              possibility is that the rank revealing QR factorization
-                    //              or the condition estimator has failed, or the COND_OK
-                    //              is set very close to ONE (which is unnecessary). Normally,
-                    //              this branch should never be executed, but in rare cases of
-                    //              failure of the RRQR or condition estimator, the last line of
-                    //              defense ensures that Rgejsv completes the task.
-                    //              Compute the full SVD of L3 using Rgesvj with explicit
-                    //              accumulation of Jacobi rotations.
+                    // improvement after two pivoted QR factorizations. Other
+                    // possibility is that the rank revealing QR factorization
+                    // or the condition estimator has failed, or the COND_OK
+                    // is set very close to ONE (which is unnecessary). Normally,
+                    // this branch should never be executed, but in rare cases of
+                    // failure of the RRQR or condition estimator, the last line of
+                    // defense ensures that Rgejsv completes the task.
+                    // Compute the full SVD of L3 using Rgesvj with explicit
+                    // accumulation of Jacobi rotations.
                     Rgesvj("L", "U", "V", nr, nr, v, ldv, sva, nr, u, ldu, &work[(2 * n + n * nr + nr + 1) - 1], lwork - 2 * n - n * nr - nr, info);
                     scalem = work[(2 * n + n * nr + nr + 1) - 1];
                     numrank = nint(work[(2 * n + n * nr + nr + 2) - 1]);
@@ -1086,8 +1086,8 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
                         Rscal(n, xsc, &v[(q - 1) * ldv], 1);
                     }
                 }
-                //           At this moment, V contains the right singular vectors of A.
-                //           Next, assemble the left singular vector matrix U (M x N).
+                // At this moment, V contains the right singular vectors of A.
+                // Next, assemble the left singular vector matrix U (M x N).
                 if (nr < m) {
                     Rlaset("A", m - nr, nr, zero, zero, &u[((nr + 1) - 1)], ldu);
                     if (nr < n1) {
@@ -1283,16 +1283,16 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
             //
         }
         if (transp) {
-            //           .. swap U and V because the procedure worked on A^t
+            // .. swap U and V because the procedure worked on A^t
             for (p = 1; p <= n; p = p + 1) {
                 Rswap(n, &u[(p - 1) * ldu], 1, &v[(p - 1) * ldv], 1);
             }
         }
         //
     }
-    //     end of the full SVD
+    // end of the full SVD
     //
-    //     Undo scaling, if necessary (and possible)
+    // Undo scaling, if necessary (and possible)
     //
     if (uscal2 <= (big / sva[1 - 1]) * uscal1) {
         Rlascl("G", 0, 0, uscal1, uscal2, nr, 1, sva, n, ierr);

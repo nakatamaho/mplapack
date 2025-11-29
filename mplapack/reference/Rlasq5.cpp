@@ -174,7 +174,7 @@ void Rlasq5(INTEGER const i0, INTEGER const n0, REAL *z, INTEGER const pp, REAL 
             //
         }
     } else {
-        //     This is the version that sets d's to zero if they are small enough
+        // This is the version that sets d's to zero if they are small enough
         j4 = 4 * i0 + pp - 3;
         emin = z[(j4 + 4) - 1];
         d = z[j4 - 1] - tau;

@@ -163,7 +163,7 @@ void Rgsvj0(const char *jobv, INTEGER const m, INTEGER const n, REAL *a, INTEGER
     pskipped = 0;
     //
     for (i = 1; i <= nsweep; i = i + 1) {
-        //     .. go go go ...
+        // .. go go go ...
         //
         mxaapq = zero;
         mxsinj = zero;
@@ -359,7 +359,7 @@ void Rgsvj0(const char *jobv, INTEGER const m, INTEGER const n, REAL *a, INTEGER
                                         }
                                         //
                                     } else {
-                                        //              .. have to use modified Gram-Schmidt like transformation
+                                        // .. have to use modified Gram-Schmidt like transformation
                                         Rcopy(m, &a[(p - 1) * lda], 1, work, 1);
                                         Rlascl("G", 0, 0, aapp, one, m, 1, work, lda, ierr);
                                         Rlascl("G", 0, 0, aaqq, one, m, 1, &a[(q - 1) * lda], lda, ierr);
@@ -369,10 +369,10 @@ void Rgsvj0(const char *jobv, INTEGER const m, INTEGER const n, REAL *a, INTEGER
                                         sva[q - 1] = aaqq * sqrt(max(zero, REAL(one - aapq * aapq)));
                                         mxsinj = max(mxsinj, sfmin);
                                     }
-                                    //           END IF ROTOK THEN ... ELSE
+                                    // END IF ROTOK THEN ... ELSE
                                     //
-                                    //           In the case of cancellation in updating SVA(q), SVA(p)
-                                    //           recompute SVA(q), SVA(p).
+                                    // In the case of cancellation in updating SVA(q), SVA(p)
+                                    // recompute SVA(q), SVA(p).
                                     if (pow2((sva[q - 1] / aaqq)) <= rooteps) {
                                         if ((aaqq < rootbig) && (aaqq > rootsfmin)) {
                                             sva[q - 1] = Rnrm2(m, &a[(q - 1) * lda], 1) * d[q - 1];
@@ -396,14 +396,14 @@ void Rgsvj0(const char *jobv, INTEGER const m, INTEGER const n, REAL *a, INTEGER
                                     }
                                     //
                                 } else {
-                                    //        A(:,p) and A(:,q) already numerically orthogonal
+                                    // A(:,p) and A(:,q) already numerically orthogonal
                                     if (ir1 == 0) {
                                         notrot++;
                                     }
                                     pskipped++;
                                 }
                             } else {
-                                //        A(:,q) is zero column
+                                // A(:,q) is zero column
                                 if (ir1 == 0) {
                                     notrot++;
                                 }
@@ -419,10 +419,10 @@ void Rgsvj0(const char *jobv, INTEGER const m, INTEGER const n, REAL *a, INTEGER
                             }
                             //
                         }
-                    //     END q-LOOP
+                    // END q-LOOP
                     //
                     statement_2103:
-                        //     bailed out of q-loop
+                        // bailed out of q-loop
                         //
                         sva[p - 1] = aapp;
                         //
@@ -434,10 +434,10 @@ void Rgsvj0(const char *jobv, INTEGER const m, INTEGER const n, REAL *a, INTEGER
                     }
                     //
                 }
-                //     end of the p-loop
-                //     end of doing the block ( ibr, ibr )
+                // end of the p-loop
+                // end of doing the block ( ibr, ibr )
             }
-            //     end of ir1-loop
+            // end of ir1-loop
             //
             //........................................................
             // ... go to the off diagonal blocks
@@ -504,7 +504,7 @@ void Rgsvj0(const char *jobv, INTEGER const m, INTEGER const n, REAL *a, INTEGER
                                 //
                                 if (abs(aapq) > tol) {
                                     notrot = 0;
-                                    //           ROTATED  = ROTATED + 1
+                                    // ROTATED  = ROTATED + 1
                                     pskipped = 0;
                                     iswrot++;
                                     //
@@ -621,10 +621,10 @@ void Rgsvj0(const char *jobv, INTEGER const m, INTEGER const n, REAL *a, INTEGER
                                             mxsinj = max(mxsinj, sfmin);
                                         }
                                     }
-                                    //           END IF ROTOK THEN ... ELSE
+                                    // END IF ROTOK THEN ... ELSE
                                     //
-                                    //           In the case of cancellation in updating SVA(q)
-                                    //           .. recompute SVA(q)
+                                    // In the case of cancellation in updating SVA(q)
+                                    // .. recompute SVA(q)
                                     if (pow2((sva[q - 1] / aaqq)) <= rooteps) {
                                         if ((aaqq < rootbig) && (aaqq > rootsfmin)) {
                                             sva[q - 1] = Rnrm2(m, &a[(q - 1) * lda], 1) * d[q - 1];
@@ -646,7 +646,7 @@ void Rgsvj0(const char *jobv, INTEGER const m, INTEGER const n, REAL *a, INTEGER
                                         }
                                         sva[p - 1] = aapp;
                                     }
-                                    //              end of OK rotation
+                                    // end of OK rotation
                                 } else {
                                     notrot++;
                                     pskipped++;
@@ -670,7 +670,7 @@ void Rgsvj0(const char *jobv, INTEGER const m, INTEGER const n, REAL *a, INTEGER
                             }
                             //
                         }
-                    //        end of the q-loop
+                    // end of the q-loop
                     statement_2203:
                         //
                         sva[p - 1] = aapp;
@@ -685,9 +685,9 @@ void Rgsvj0(const char *jobv, INTEGER const m, INTEGER const n, REAL *a, INTEGER
                     }
                     //
                 }
-                //     end of the p-loop
+                // end of the p-loop
             }
-        //     end of the jbc-loop
+        // end of the jbc-loop
         statement_2011:
             // 2011 bailed out of the jbc-loop
             for (p = igl; p <= min(igl + kbl - 1, n); p = p + 1) {
@@ -722,9 +722,9 @@ void Rgsvj0(const char *jobv, INTEGER const m, INTEGER const n, REAL *a, INTEGER
         }
         //
     }
-    //     end i=1:NSWEEP loop
+    // end i=1:NSWEEP loop
     // #:) Reaching this point means that the procedure has completed the given
-    //     number of iterations.
+    // number of iterations.
     info = nsweep - 1;
     goto statement_1995;
 statement_1994:

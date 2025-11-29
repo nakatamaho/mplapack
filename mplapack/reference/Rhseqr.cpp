@@ -86,8 +86,8 @@ void Rhseqr(const char *job, const char *compz, INTEGER const n, INTEGER const i
         //        ==== Quick return in case of a workspace query ====
         //
         Rlaqr0(wantt, wantz, n, ilo, ihi, h, ldh, wr, wi, ilo, ihi, z, ldz, work, lwork, info);
-        //        ==== Ensure reported workspace size is backward-compatible with
-        //        .    previous LAPACK versions. ====
+        // ==== Ensure reported workspace size is backward-compatible with
+        // .    previous LAPACK versions. ====
         work[1 - 1] = max(castREAL(max((INTEGER)1, n)), work[1 - 1]);
         return;
         //

@@ -75,7 +75,7 @@ statement_20:
     if (n == 1) {
         v[1 - 1] = x[1 - 1];
         est = abs(v[1 - 1]);
-        //        ... QUIT
+        // ... QUIT
         goto statement_130;
     }
     est = RCsum1(n, x, 1);

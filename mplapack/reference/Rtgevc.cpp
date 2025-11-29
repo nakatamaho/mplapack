@@ -353,10 +353,10 @@ void Rtgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
             for (jr = 1; jr <= nw * n; jr = jr + 1) {
                 work[(2 * n + jr) - 1] = zero;
             }
-            //                                                 T
-            //           Compute coefficients in  ( a A - b B )  y = 0
-            //              a  is  ACOEF
-            //              b  is  BCOEFR + i*BCOEFI
+            // T
+            // Compute coefficients in  ( a A - b B )  y = 0
+            // a  is  ACOEF
+            // b  is  BCOEFR + i*BCOEFI
             //
             if (!ilcplx) {
                 //

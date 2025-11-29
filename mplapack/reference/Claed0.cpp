@@ -143,7 +143,7 @@ statement_10:
     igivnm = 1;
     iq = igivnm + 2 * n * lgn;
     iwrem = iq + n * n + 1;
-    //     Initialize pointers
+    // Initialize pointers
     for (i = 0; i <= subpbs; i = i + 1) {
         iwork[(iprmpt + i) - 1] = 1;
         iwork[(igivpt + i) - 1] = 1;

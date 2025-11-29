@@ -58,8 +58,8 @@ void Rlarf(const char *side, INTEGER const m, INTEGER const n, REAL *v, INTEGER 
     const REAL zero = 0.0;
     INTEGER i = 0;
     if (tau != zero) {
-        //     Set up variables for scanning V.  LASTV begins pointing to the end
-        //     of V.
+        // Set up variables for scanning V.  LASTV begins pointing to the end
+        // of V.
         if (applyleft) {
             lastv = m;
         } else {
@@ -70,21 +70,21 @@ void Rlarf(const char *side, INTEGER const m, INTEGER const n, REAL *v, INTEGER 
         } else {
             i = 1;
         }
-        //     Look for the last non-zero row in V.
+        // Look for the last non-zero row in V.
         while (lastv > 0 && v[i - 1] == zero) {
             lastv = lastv - 1;
             i = i - incv;
         }
         if (applyleft) {
-            //     Scan for the last non-zero column in C(1:lastv,:).
+            // Scan for the last non-zero column in C(1:lastv,:).
             lastc = iMladlc(lastv, n, c, ldc);
         } else {
-            //     Scan for the last non-zero row in C(:,1:lastv).
+            // Scan for the last non-zero row in C(:,1:lastv).
             lastc = iMladlr(m, lastv, c, ldc);
         }
     }
-    //     Note that lastc.eq.0 renders the BLAS operations null; no special
-    //     case is needed at this level.
+    // Note that lastc.eq.0 renders the BLAS operations null; no special
+    // case is needed at this level.
     const REAL one = 1.0;
     if (applyleft) {
         //

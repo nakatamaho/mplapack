@@ -208,7 +208,7 @@ void Rlasd4(INTEGER const n, INTEGER const i, REAL *d, REAL *z, REAL *delta, REA
         phi = z[n - 1] * temp;
         dphi = temp * temp;
         erretm = eight * (-phi - psi) + erretm - phi + rhoinv;
-        //    $          + ABS( TAU2 )*( DPSI+DPHI )
+        // $          + ABS( TAU2 )*( DPSI+DPHI )
         //
         w = rhoinv + phi + psi;
         //
@@ -280,7 +280,7 @@ void Rlasd4(INTEGER const n, INTEGER const i, REAL *d, REAL *z, REAL *delta, REA
         phi = z[n - 1] * temp;
         dphi = temp * temp;
         erretm = eight * (-phi - psi) + erretm - phi + rhoinv;
-        //    $          + ABS( TAU2 )*( DPSI+DPHI )
+        // $          + ABS( TAU2 )*( DPSI+DPHI )
         //
         w = rhoinv + phi + psi;
         //
@@ -352,7 +352,7 @@ void Rlasd4(INTEGER const n, INTEGER const i, REAL *d, REAL *z, REAL *delta, REA
             phi = z[n - 1] * temp;
             dphi = temp * temp;
             erretm = eight * (-phi - psi) + erretm - phi + rhoinv;
-            //    $             + ABS( TAU2 )*( DPSI+DPHI )
+            // $             + ABS( TAU2 )*( DPSI+DPHI )
             //
             w = rhoinv + phi + psi;
         }
@@ -504,9 +504,9 @@ void Rlasd4(INTEGER const n, INTEGER const i, REAL *d, REAL *z, REAL *delta, REA
         temp = z[ii - 1] * temp;
         w += temp;
         erretm = eight * (phi - psi) + erretm + two * rhoinv + three * abs(temp);
-        //    $          + ABS( TAU2 )*DW
+        // $          + ABS( TAU2 )*DW
         //
-        //        Test for convergence
+        //     Test for convergence
         //
         if (abs(w) <= eps * erretm) {
             goto statement_240;
@@ -683,7 +683,7 @@ void Rlasd4(INTEGER const n, INTEGER const i, REAL *d, REAL *z, REAL *delta, REA
         temp = z[ii - 1] * temp;
         w = rhoinv + phi + psi + temp;
         erretm = eight * (phi - psi) + erretm + two * rhoinv + three * abs(temp);
-        //    $          + ABS( TAU2 )*DW
+        // $          + ABS( TAU2 )*DW
         //
         swtch = false;
         if (orgati) {
@@ -705,7 +705,7 @@ void Rlasd4(INTEGER const n, INTEGER const i, REAL *d, REAL *z, REAL *delta, REA
             //           Test for convergence
             //
             if (abs(w) <= eps * erretm) {
-                //     $          .OR. (SGUB-SGLB).LE.EIGHT*ABS(SGUB+SGLB) ) THEN
+                // $          .OR. (SGUB-SGLB).LE.EIGHT*ABS(SGUB+SGLB) ) THEN
                 goto statement_240;
             }
             //
@@ -914,7 +914,7 @@ void Rlasd4(INTEGER const n, INTEGER const i, REAL *d, REAL *z, REAL *delta, REA
             temp = z[ii - 1] * temp;
             w = rhoinv + phi + psi + temp;
             erretm = eight * (phi - psi) + erretm + two * rhoinv + three * abs(temp);
-            //    $             + ABS( TAU2 )*DW
+            // $             + ABS( TAU2 )*DW
             //
             if (w * prew > zero && abs(w) > abs(prew) / ten) {
                 swtch = !swtch;

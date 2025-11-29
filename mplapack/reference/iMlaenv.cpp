@@ -157,7 +157,7 @@ L50:
         } else if (strncmp(c3, "QR ", 3) == 0) {
             if (n3 == 1) {
                 if (sname) {
-                    //    M*N
+                    // M*N
                     if (n1 * n2 <= 131072 || n1 <= 8192) {
                         nb = n1;
                     } else {
@@ -180,7 +180,7 @@ L50:
         } else if (strncmp(c3, "LQ ", 3) == 0) {
             if (n3 == 2) {
                 if (sname) {
-                    //    M*N
+                    // M*N
                     if (n1 * n2 <= 131072 || n1 <= 8192) {
                         nb = n1;
                     } else {

@@ -138,7 +138,7 @@ void Rsyequb(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL
     for (iter = 1; iter <= max_iter; iter = iter + 1) {
         scale = 0.0;
         sumsq = 0.0;
-        //        beta = |A|s
+        // beta = |A|s
         for (i = 1; i <= n; i = i + 1) {
             work[i - 1] = zero;
         }

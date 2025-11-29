@@ -537,18 +537,18 @@ void Clahef_rook(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &k
         //
         kstep = 1;
         jp1 = 1;
-        //           (Here, J is a diagonal index)
+        // (Here, J is a diagonal index)
         jj = j;
         jp2 = ipiv[j - 1];
         if (jp2 < 0) {
             jp2 = -jp2;
-            //              (Here, J is a diagonal index)
+            // (Here, J is a diagonal index)
             j++;
             jp1 = -ipiv[j - 1];
             kstep = 2;
         }
-        //           (NOTE: Here, J is used to determine row length. Length N-J+1
-        //           of the rows to swap back doesn't include diagonal element)
+        // (NOTE: Here, J is used to determine row length. Length N-J+1
+        // of the rows to swap back doesn't include diagonal element)
         j++;
         if (jp2 != jj && j <= n) {
             Cswap(n - j + 1, &a[(jp2 - 1) + (j - 1) * lda], lda, &a[(jj - 1) + (j - 1) * lda], lda);
@@ -991,18 +991,18 @@ void Clahef_rook(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &k
         //
         kstep = 1;
         jp1 = 1;
-        //           (Here, J is a diagonal index)
+        // (Here, J is a diagonal index)
         jj = j;
         jp2 = ipiv[j - 1];
         if (jp2 < 0) {
             jp2 = -jp2;
-            //              (Here, J is a diagonal index)
+            // (Here, J is a diagonal index)
             j = j - 1;
             jp1 = -ipiv[j - 1];
             kstep = 2;
         }
-        //           (NOTE: Here, J is used to determine row length. Length J
-        //           of the rows to swap back doesn't include diagonal element)
+        // (NOTE: Here, J is used to determine row length. Length J
+        // of the rows to swap back doesn't include diagonal element)
         j = j - 1;
         if (jp2 != jj && j >= 1) {
             Cswap(j, &a[(jp2 - 1)], lda, &a[(jj - 1)], lda);

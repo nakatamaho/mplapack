@@ -169,8 +169,8 @@ void Rlarrv(INTEGER const n, REAL const vl, REAL const /* vu */, REAL *d, REAL *
     //     IWORK(IINDR+1:IINDR+N) hold the twist indices R for the
     //     factorization used to compute the FP vector
     iindr = 0;
-    //     IWORK(IINDC1+1:IINC2+N) are used to store the clusters of the current
-    //     layer and the one above.
+    // IWORK(IINDC1+1:IINC2+N) are used to store the clusters of the current
+    // layer and the one above.
     iindc1 = n;
     iindc2 = 2 * n;
     iindwk = 3 * n + 1;
@@ -182,15 +182,15 @@ void Rlarrv(INTEGER const n, REAL const vl, REAL const /* vu */, REAL *d, REAL *
     //
     zusedl = 1;
     if (dol > 1) {
-        //        Set lower bound for use of Z
+        // Set lower bound for use of Z
         zusedl = dol - 1;
     }
     zusedu = m;
     if (dou < m) {
-        //        Set lower bound for use of Z
+        // Set lower bound for use of Z
         zusedu = dou + 1;
     }
-    //     The width of the part of Z that is used
+    // The width of the part of Z that is used
     zusedw = zusedu - zusedl + 1;
     //
     Rlaset("Full", n, zusedw, zero, zero, &z[(zusedl - 1) * ldz], ldz);
@@ -203,9 +203,9 @@ void Rlarrv(INTEGER const n, REAL const vl, REAL const /* vu */, REAL *d, REAL *
     //
     if ((dol == 1) && (dou == m)) {
     } else {
-        //        Only selected eigenpairs are computed. Since the other evalues
-        //        are not refined by RQ iteration, bisection has to compute to full
-        //        accuracy.
+        // Only selected eigenpairs are computed. Since the other evalues
+        // are not refined by RQ iteration, bisection has to compute to full
+        // accuracy.
         rtol1 = four * eps;
         rtol2 = four * eps;
     }
@@ -223,8 +223,8 @@ void Rlarrv(INTEGER const n, REAL const vl, REAL const /* vu */, REAL *d, REAL *
     for (jblk = 1; jblk <= iblock[m - 1]; jblk = jblk + 1) {
         iend = isplit[jblk - 1];
         sigma = l[iend - 1];
-        //        Find the eigenvectors of the submatrix indexed IBEGIN
-        //        through IEND.
+        // Find the eigenvectors of the submatrix indexed IBEGIN
+        // through IEND.
         wend = wbegin - 1;
     statement_15:
         if (wend < m) {
@@ -253,9 +253,9 @@ void Rlarrv(INTEGER const n, REAL const vl, REAL const /* vu */, REAL *d, REAL *
         //
         //        OLDIEN is the last index of the previous block
         oldien = ibegin - 1;
-        //        Calculate the size of the current block
+        // Calculate the size of the current block
         in = iend - ibegin + 1;
-        //        The number of eigenvalues in the current block
+        // The number of eigenvalues in the current block
         im = wend - wbegin + 1;
         //
         //        This is for a 1x1 block
@@ -287,10 +287,10 @@ void Rlarrv(INTEGER const n, REAL const vl, REAL const /* vu */, REAL *d, REAL *
         //
         //        NDEPTH is the current depth of the representation tree
         ndepth = 0;
-        //        PARITY is either 1 or 0
+        // PARITY is either 1 or 0
         parity = 1;
-        //        NCLUS is the number of clusters for the next level of the
-        //        representation tree, we start with NCLUS = 1 for the root
+        // NCLUS is the number of clusters for the next level of the
+        // representation tree, we start with NCLUS = 1 for the root
         nclus = 1;
         iwork[(iindc1 + 1) - 1] = 1;
         iwork[(iindc1 + 2) - 1] = im;
@@ -298,20 +298,20 @@ void Rlarrv(INTEGER const n, REAL const vl, REAL const /* vu */, REAL *d, REAL *
         //        IDONE is the number of eigenvectors already computed in the current
         //        block
         idone = 0;
-    //        loop while( IDONE.LT.IM )
-    //        generate the representation tree for the current block and
-    //        compute the eigenvectors
+    // loop while( IDONE.LT.IM )
+    // generate the representation tree for the current block and
+    // compute the eigenvectors
     statement_40:
         if (idone < im) {
-            //           This is a crude protection against infinitely deep trees
+            // This is a crude protection against infinitely deep trees
             if (ndepth > m) {
                 info = -2;
                 return;
             }
-            //           breadth first processing of the current level of the representation
-            //           tree: OLDNCL = number of clusters on current level
+            // breadth first processing of the current level of the representation
+            // tree: OLDNCL = number of clusters on current level
             oldncl = nclus;
-            //           reset NCLUS to count the number of child clusters
+            // reset NCLUS to count the number of child clusters
             nclus = 0;
             //
             parity = 1 - parity;
@@ -322,30 +322,30 @@ void Rlarrv(INTEGER const n, REAL const vl, REAL const /* vu */, REAL *d, REAL *
                 oldcls = iindc2;
                 newcls = iindc1;
             }
-            //           Process the clusters on the current level
+            // Process the clusters on the current level
             for (i = 1; i <= oldncl; i = i + 1) {
                 j = oldcls + 2 * i;
-                //              OLDFST, OLDLST = first, last index of current cluster.
-                //                               cluster indices start with 1 and are relative
-                //                               to WBEGIN when accessing W, WGAP, WERR, Z
+                // OLDFST, OLDLST = first, last index of current cluster.
+                //                  cluster indices start with 1 and are relative
+                //                  to WBEGIN when accessing W, WGAP, WERR, Z
                 oldfst = iwork[(j - 1) - 1];
                 oldlst = iwork[j - 1];
                 if (ndepth > 0) {
-                    //                 Retrieve relatively robust representation (RRR) of cluster
-                    //                 that has been computed at the previous level
-                    //                 The RRR is stored in Z and overwritten once the eigenvectors
-                    //                 have been computed or when the cluster is refined
+                    // Retrieve relatively robust representation (RRR) of cluster
+                    // that has been computed at the previous level
+                    // The RRR is stored in Z and overwritten once the eigenvectors
+                    // have been computed or when the cluster is refined
                     //
                     if ((dol == 1) && (dou == m)) {
-                        //                    Get representation from location of the leftmost evalue
-                        //                    of the cluster
+                        // Get representation from location of the leftmost evalue
+                        // of the cluster
                         j = wbegin + oldfst - 1;
                     } else {
                         if (wbegin + oldfst - 1 < dol) {
-                            //                       Get representation from the left end of Z array
+                            // Get representation from the left end of Z array
                             j = dol - 1;
                         } else if (wbegin + oldfst - 1 > dou) {
-                            //                       Get representation from the right end of Z array
+                            // Get representation from the right end of Z array
                             j = dou;
                         } else {
                             j = wbegin + oldfst - 1;
@@ -367,36 +367,36 @@ void Rlarrv(INTEGER const n, REAL const vl, REAL const /* vu */, REAL *d, REAL *
                 }
                 //
                 if (ndepth > 0) {
-                    //                 P and Q are index of the first and last eigenvalue to compute
-                    //                 within the current block
+                    // P and Q are index of the first and last eigenvalue to compute
+                    // within the current block
                     p = indexw[(wbegin - 1 + oldfst) - 1];
                     q = indexw[(wbegin - 1 + oldlst) - 1];
-                    //                 Offset for the arrays WORK, WGAP and WERR, i.e., the P-OFFSET
-                    //                 through the Q-OFFSET elements of these arrays are to be used.
-                    //                  OFFSET = P-OLDFST
+                    // Offset for the arrays WORK, WGAP and WERR, i.e., the P-OFFSET
+                    // through the Q-OFFSET elements of these arrays are to be used.
+                    //  OFFSET = P-OLDFST
                     offset = indexw[wbegin - 1] - 1;
-                    //                 perform limited bisection (if necessary) to get approximate
-                    //                 eigenvalues to the precision needed.
+                    // perform limited bisection (if necessary) to get approximate
+                    // eigenvalues to the precision needed.
                     Rlarrb(in, &d[ibegin - 1], &work[(indlld + ibegin - 1) - 1], p, q, rtol1, rtol2, offset, &work[wbegin - 1], &wgap[wbegin - 1], &werr[wbegin - 1], &work[indwrk - 1], &iwork[iindwk - 1], pivmin, spdiam, in, iinfo);
                     if (iinfo != 0) {
                         info = -1;
                         return;
                     }
-                    //                 We also recompute the extremal gaps. W holds all eigenvalues
-                    //                 of the unshifted matrix and must be used for computation
-                    //                 of WGAP, the entries of WORK might stem from RRRs with
-                    //                 different shifts. The gaps from WBEGIN-1+OLDFST to
-                    //                 WBEGIN-1+OLDLST are correctly computed in Rlarrb.
-                    //                 However, we only allow the gaps to become greater since
-                    //                 this is what should happen when we decrease WERR
+                    // We also recompute the extremal gaps. W holds all eigenvalues
+                    // of the unshifted matrix and must be used for computation
+                    // of WGAP, the entries of WORK might stem from RRRs with
+                    // different shifts. The gaps from WBEGIN-1+OLDFST to
+                    // WBEGIN-1+OLDLST are correctly computed in Rlarrb.
+                    // However, we only allow the gaps to become greater since
+                    // this is what should happen when we decrease WERR
                     if (oldfst > 1) {
                         wgap[(wbegin + oldfst - 2) - 1] = max(wgap[(wbegin + oldfst - 2) - 1], REAL(w[(wbegin + oldfst - 1) - 1] - werr[(wbegin + oldfst - 1) - 1] - w[(wbegin + oldfst - 2) - 1] - werr[(wbegin + oldfst - 2) - 1]));
                     }
                     if (wbegin + oldlst - 1 < wend) {
                         wgap[(wbegin + oldlst - 1) - 1] = max(wgap[(wbegin + oldlst - 1) - 1], REAL(w[(wbegin + oldlst) - 1] - werr[(wbegin + oldlst) - 1] - w[(wbegin + oldlst - 1) - 1] - werr[(wbegin + oldlst - 1) - 1]));
                     }
-                    //                 Each time the eigenvalues in WORK get refined, we store
-                    //                 the newly found approximation with all shifts applied in W
+                    // Each time the eigenvalues in WORK get refined, we store
+                    // the newly found approximation with all shifts applied in W
                     for (j = oldfst; j <= oldlst; j = j + 1) {
                         w[(wbegin + j - 1) - 1] = work[(wbegin + j - 1) - 1] + sigma;
                     }
@@ -406,16 +406,16 @@ void Rlarrv(INTEGER const n, REAL const vl, REAL const /* vu */, REAL *d, REAL *
                 newfst = oldfst;
                 for (j = oldfst; j <= oldlst; j = j + 1) {
                     if (j == oldlst) {
-                        //                    we are at the right end of the cluster, this is also the
-                        //                    boundary of the child cluster
+                        // we are at the right end of the cluster, this is also the
+                        // boundary of the child cluster
                         newlst = j;
                     } else if (wgap[(wbegin + j - 1) - 1] >= minrgp * abs(work[(wbegin + j - 1) - 1])) {
-                        //                    the right relative gap is big enough, the child cluster
-                        //                    (NEWFST,..,NEWLST) is well separated from the following
+                        // the right relative gap is big enough, the child cluster
+                        // (NEWFST,..,NEWLST) is well separated from the following
                         newlst = j;
                     } else {
-                        //                    inside a child cluster, the relative gap is not
-                        //                    big enough.
+                        // inside a child cluster, the relative gap is not
+                        // big enough.
                         goto statement_140;
                     }
                     //
@@ -425,15 +425,15 @@ void Rlarrv(INTEGER const n, REAL const vl, REAL const /* vu */, REAL *d, REAL *
                     //                 NEWFTT is the place in Z where the new RRR or the computed
                     //                 eigenvector is to be stored
                     if ((dol == 1) && (dou == m)) {
-                        //                    Store representation at location of the leftmost evalue
-                        //                    of the cluster
+                        // Store representation at location of the leftmost evalue
+                        // of the cluster
                         newftt = wbegin + newfst - 1;
                     } else {
                         if (wbegin + newfst - 1 < dol) {
-                            //                       Store representation at the left end of Z array
+                            // Store representation at the left end of Z array
                             newftt = dol - 1;
                         } else if (wbegin + newfst - 1 > dou) {
-                            //                       Store representation at the right end of Z array
+                            // Store representation at the right end of Z array
                             newftt = dou;
                         } else {
                             newftt = wbegin + newfst - 1;
@@ -477,13 +477,13 @@ void Rlarrv(INTEGER const n, REAL const vl, REAL const /* vu */, REAL *d, REAL *
                         }
                         //
                         if ((wbegin + newlst - 1 < dol) || (wbegin + newfst - 1 > dou)) {
-                            //                       if the cluster contains no desired eigenvalues
-                            //                       skip the computation of that branch of the rep. tree
+                            // if the cluster contains no desired eigenvalues
+                            // skip the computation of that branch of the rep. tree
                             //
-                            //                       We could skip before the refinement of the extremal
-                            //                       eigenvalues of the child, but then the representation
-                            //                       tree could be different from the one when nothing is
-                            //                       skipped. For this reason we skip at this place.
+                            // We could skip before the refinement of the extremal
+                            // eigenvalues of the child, but then the representation
+                            // tree could be different from the one when nothing is
+                            // skipped. For this reason we skip at this place.
                             idone += newlst - newfst + 1;
                             goto statement_139;
                         }
@@ -494,25 +494,25 @@ void Rlarrv(INTEGER const n, REAL const vl, REAL const /* vu */, REAL *d, REAL *
                         //                    Rlarrf needs LWORK = 2*N
                         Rlarrf(in, &d[ibegin - 1], &l[ibegin - 1], &work[(indld + ibegin - 1) - 1], newfst, newlst, &work[wbegin - 1], &wgap[wbegin - 1], &werr[wbegin - 1], spdiam, lgap, rgap, pivmin, tau, &z[(ibegin - 1) + (newftt - 1) * ldz], &z[(ibegin - 1) + ((newftt + 1) - 1) * ldz], &work[indwrk - 1], iinfo);
                         if (iinfo == 0) {
-                            //                       a new RRR for the cluster was found by Rlarrf
-                            //                       update shift and store it
+                            // a new RRR for the cluster was found by Rlarrf
+                            // update shift and store it
                             ssigma = sigma + tau;
                             z[(iend - 1) + ((newftt + 1) - 1) * ldz] = ssigma;
-                            //                       WORK() are the midpoints and WERR() the semi-width
-                            //                       Note that the entries in W are unchanged.
+                            // WORK() are the midpoints and WERR() the semi-width
+                            // Note that the entries in W are unchanged.
                             for (k = newfst; k <= newlst; k = k + 1) {
                                 fudge = three * eps * abs(work[(wbegin + k - 1) - 1]);
                                 work[(wbegin + k - 1) - 1] = work[(wbegin + k - 1) - 1] - tau;
                                 fudge += four * eps * abs(work[(wbegin + k - 1) - 1]);
-                                //                          Fudge errors
+                                // Fudge errors
                                 werr[(wbegin + k - 1) - 1] += fudge;
-                                //                          Gaps are not fudged. Provided that WERR is small
-                                //                          when eigenvalues are close, a zero gap indicates
-                                //                          that a new representation is needed for resolving
-                                //                          the cluster. A fudge could lead to a wrong decision
-                                //                          of judging eigenvalues 'separated' which in
-                                //                          reality are not. This could have a negative impact
-                                //                          on the orthogonality of the computed eigenvectors.
+                                // Gaps are not fudged. Provided that WERR is small
+                                // when eigenvalues are close, a zero gap indicates
+                                // that a new representation is needed for resolving
+                                // the cluster. A fudge could lead to a wrong decision
+                                // of judging eigenvalues 'separated' which in
+                                // reality are not. This could have a negative impact
+                                // on the orthogonality of the computed eigenvectors.
                             }
                             //
                             nclus++;
@@ -537,7 +537,7 @@ void Rlarrv(INTEGER const n, REAL const vl, REAL const /* vu */, REAL *d, REAL *
                         windpl = min(windex + 1, m);
                         lambda = work[windex - 1];
                         done++;
-                        //                    Check if eigenvector computation is to be skipped
+                        // Check if eigenvector computation is to be skipped
                         if ((windex < dol) || (windex > dou)) {
                             eskip = true;
                             goto statement_125;
@@ -547,66 +547,66 @@ void Rlarrv(INTEGER const n, REAL const vl, REAL const /* vu */, REAL *d, REAL *
                         left = work[windex - 1] - werr[windex - 1];
                         right = work[windex - 1] + werr[windex - 1];
                         indeig = indexw[windex - 1];
-                        //                    Note that since we compute the eigenpairs for a child,
-                        //                    all eigenvalue approximations are w.r.t the same shift.
-                        //                    In this case, the entries in WORK should be used for
-                        //                    computing the gaps since they exhibit even very small
-                        //                    differences in the eigenvalues, as opposed to the
-                        //                    entries in W which might "look" the same.
+                        // Note that since we compute the eigenpairs for a child,
+                        // all eigenvalue approximations are w.r.t the same shift.
+                        // In this case, the entries in WORK should be used for
+                        // computing the gaps since they exhibit even very small
+                        // differences in the eigenvalues, as opposed to the
+                        // entries in W which might "look" the same.
                         //
                         if (k == 1) {
-                            //                       In the case RANGE='I' and with not much initial
-                            //                       accuracy in LAMBDA and VL, the formula
-                            //                       LGAP = MAX( ZERO, (SIGMA - VL) + LAMBDA )
-                            //                       can lead to an overestimation of the left gap and
-                            //                       thus to inadequately early RQI 'convergence'.
-                            //                       Prevent this by forcing a small left gap.
+                            // In the case RANGE='I' and with not much initial
+                            // accuracy in LAMBDA and VL, the formula
+                            // LGAP = MAX( ZERO, (SIGMA - VL) + LAMBDA )
+                            // can lead to an overestimation of the left gap and
+                            // thus to inadequately early RQI 'convergence'.
+                            // Prevent this by forcing a small left gap.
                             lgap = eps * max(abs(left), abs(right));
                         } else {
                             lgap = wgap[windmn - 1];
                         }
                         if (k == im) {
-                            //                       In the case RANGE='I' and with not much initial
-                            //                       accuracy in LAMBDA and VU, the formula
-                            //                       can lead to an overestimation of the right gap and
-                            //                       thus to inadequately early RQI 'convergence'.
-                            //                       Prevent this by forcing a small right gap.
+                            // In the case RANGE='I' and with not much initial
+                            // accuracy in LAMBDA and VU, the formula
+                            // can lead to an overestimation of the right gap and
+                            // thus to inadequately early RQI 'convergence'.
+                            // Prevent this by forcing a small right gap.
                             rgap = eps * max(abs(left), abs(right));
                         } else {
                             rgap = wgap[windex - 1];
                         }
                         gap = min(lgap, rgap);
                         if ((k == 1) || (k == im)) {
-                            //                       The eigenvector support can become wrong
-                            //                       because significant entries could be cut off due to a
-                            //                       large GAPTOL parameter in LAR1V. Prevent this.
+                            // The eigenvector support can become wrong
+                            // because significant entries could be cut off due to a
+                            // large GAPTOL parameter in LAR1V. Prevent this.
                             gaptol = zero;
                         } else {
                             gaptol = gap * eps;
                         }
                         isupmn = in;
                         isupmx = 1;
-                        //                    Update WGAP so that it holds the minimum gap
-                        //                    to the left or the right. This is crucial in the
-                        //                    case where bisection is used to ensure that the
-                        //                    eigenvalue is refined up to the required precision.
-                        //                    The correct value is restored afterwards.
+                        // Update WGAP so that it holds the minimum gap
+                        // to the left or the right. This is crucial in the
+                        // case where bisection is used to ensure that the
+                        // eigenvalue is refined up to the required precision.
+                        // The correct value is restored afterwards.
                         savgap = wgap[windex - 1];
                         wgap[windex - 1] = gap;
-                        //                    We want to use the Rayleigh Quotient Correction
-                        //                    as often as possible since it converges quadratically
-                        //                    when we are close enough to the desired eigenvalue.
-                        //                    However, the Rayleigh Quotient can have the wrong sign
-                        //                    and lead us away from the desired eigenvalue. In this
-                        //                    case, the best we can do is to use bisection.
+                        // We want to use the Rayleigh Quotient Correction
+                        // as often as possible since it converges quadratically
+                        // when we are close enough to the desired eigenvalue.
+                        // However, the Rayleigh Quotient can have the wrong sign
+                        // and lead us away from the desired eigenvalue. In this
+                        // case, the best we can do is to use bisection.
                         usedbs = false;
                         usedrq = false;
-                        //                    Bisection is initially turned off unless it is forced
+                        // Bisection is initially turned off unless it is forced
                         needbs = !tryrqc;
                     statement_120:
-                        //                    Check if bisection should be used to refine eigenvalue
+                        // Check if bisection should be used to refine eigenvalue
                         if (needbs) {
-                            //                       Take the bisection as new iterate
+                            // Take the bisection as new iterate
                             usedbs = true;
                             itmp1 = iwork[(iindr + windex) - 1];
                             offset = indexw[wbegin - 1] - 1;
@@ -616,11 +616,11 @@ void Rlarrv(INTEGER const n, REAL const vl, REAL const /* vu */, REAL *d, REAL *
                                 return;
                             }
                             lambda = work[windex - 1];
-                            //                       Reset twist index from inaccurate LAMBDA to
-                            //                       force computation of true MINGMA
+                            // Reset twist index from inaccurate LAMBDA to
+                            // force computation of true MINGMA
                             iwork[(iindr + windex) - 1] = 0;
                         }
-                        //                    Given LAMBDA, compute the eigenvector.
+                        // Given LAMBDA, compute the eigenvector.
                         Rlar1v(in, 1, in, lambda, &d[ibegin - 1], &l[ibegin - 1], &work[(indld + ibegin - 1) - 1], &work[(indlld + ibegin - 1) - 1], pivmin, gaptol, &z[(ibegin - 1) + (windex - 1) * ldz], !usedbs, negcnt, ztz, mingma, iwork[(iindr + windex) - 1], &isuppz[(2 * windex - 1) - 1], nrminv, resid, rqcorr, &work[indwrk - 1]);
                         if (iter == 0) {
                             bstres = resid;
@@ -642,51 +642,51 @@ void Rlarrv(INTEGER const n, REAL const vl, REAL const /* vu */, REAL *d, REAL *
                         //                    (omitted when Bisection has been used)
                         //
                         if (resid > tol * gap && abs(rqcorr) > rqtol * abs(lambda) && !usedbs) {
-                            //                       We need to check that the RQCORR update doesn't
-                            //                       move the eigenvalue away from the desired one and
-                            //                       towards a neighbor. -> protection with bisection
+                            // We need to check that the RQCORR update doesn't
+                            // move the eigenvalue away from the desired one and
+                            // towards a neighbor. -> protection with bisection
                             if (indeig <= negcnt) {
-                                //                          The wanted eigenvalue lies to the left
+                                // The wanted eigenvalue lies to the left
                                 sgndef = -one;
                             } else {
-                                //                          The wanted eigenvalue lies to the right
+                                // The wanted eigenvalue lies to the right
                                 sgndef = one;
                             }
-                            //                       We only use the RQCORR if it improves the
-                            //                       the iterate reasonably.
+                            // We only use the RQCORR if it improves the
+                            // the iterate reasonably.
                             if ((rqcorr * sgndef >= zero) && (lambda + rqcorr <= right) && (lambda + rqcorr >= left)) {
                                 usedrq = true;
-                                //                          Store new midpoint of bisection interval in WORK
+                                // Store new midpoint of bisection interval in WORK
                                 if (sgndef == one) {
-                                    //                             The current LAMBDA is on the left of the true
-                                    //                             eigenvalue
+                                    // The current LAMBDA is on the left of the true
+                                    // eigenvalue
                                     left = lambda;
-                                    //                             We prefer to assume that the error estimate
-                                    //                             is correct. We could make the interval not
-                                    //                             as a bracket but to be modified if the RQCORR
-                                    //                             chooses to. In this case, the RIGHT side should
-                                    //                             be modified as follows:
-                                    //                              RIGHT = MAX(RIGHT, LAMBDA + RQCORR)
+                                    // We prefer to assume that the error estimate
+                                    // is correct. We could make the interval not
+                                    // as a bracket but to be modified if the RQCORR
+                                    // chooses to. In this case, the RIGHT side should
+                                    // be modified as follows:
+                                    //  RIGHT = MAX(RIGHT, LAMBDA + RQCORR)
                                 } else {
-                                    //                             The current LAMBDA is on the right of the true
-                                    //                             eigenvalue
+                                    // The current LAMBDA is on the right of the true
+                                    // eigenvalue
                                     right = lambda;
-                                    //                             See comment about assuming the error estimate is
-                                    //                             correct above.
-                                    //                              LEFT = MIN(LEFT, LAMBDA + RQCORR)
+                                    // See comment about assuming the error estimate is
+                                    // correct above.
+                                    //  LEFT = MIN(LEFT, LAMBDA + RQCORR)
                                 }
                                 work[windex - 1] = half * (right + left);
-                                //                          Take RQCORR since it has the correct sign and
-                                //                          improves the iterate reasonably
+                                // Take RQCORR since it has the correct sign and
+                                // improves the iterate reasonably
                                 lambda += rqcorr;
-                                //                          Update width of error interval
+                                // Update width of error interval
                                 werr[windex - 1] = half * (right - left);
                             } else {
                                 needbs = true;
                             }
                             if (right - left < rqtol * abs(lambda)) {
-                                //                             The eigenvalue is computed to bisection accuracy
-                                //                             compute eigenvector and stop
+                                // The eigenvalue is computed to bisection accuracy
+                                // compute eigenvector and stop
                                 usedbs = true;
                                 goto statement_120;
                             } else if (iter < maxitr) {
@@ -705,7 +705,7 @@ void Rlarrv(INTEGER const n, REAL const vl, REAL const /* vu */, REAL *d, REAL *
                                 stp2ii = true;
                             }
                             if (stp2ii) {
-                                //                          improve error angle by second step
+                                // improve error angle by second step
                                 Rlar1v(in, 1, in, lambda, &d[ibegin - 1], &l[ibegin - 1], &work[(indld + ibegin - 1) - 1], &work[(indlld + ibegin - 1) - 1], pivmin, gaptol, &z[(ibegin - 1) + (windex - 1) * ldz], !usedbs, negcnt, ztz, mingma, iwork[(iindr + windex) - 1], &isuppz[(2 * windex - 1) - 1], nrminv, resid, rqcorr, &work[indwrk - 1]);
                             }
                             work[windex - 1] = lambda;
@@ -719,7 +719,7 @@ void Rlarrv(INTEGER const n, REAL const vl, REAL const /* vu */, REAL *d, REAL *
                         zto = isuppz[(2 * windex) - 1];
                         isupmn += oldien;
                         isupmx += oldien;
-                        //                    Ensure vector is ok if support in the RQI has changed
+                        // Ensure vector is ok if support in the RQI has changed
                         if (isupmn < zfrom) {
                             for (ii = isupmn; ii <= zfrom - 1; ii = ii + 1) {
                                 z[(ii - 1) + (windex - 1) * ldz] = zero;
@@ -732,14 +732,14 @@ void Rlarrv(INTEGER const n, REAL const vl, REAL const /* vu */, REAL *d, REAL *
                         }
                         Rscal(zto - zfrom + 1, nrminv, &z[(zfrom - 1) + (windex - 1) * ldz], 1);
                     statement_125:
-                        //                    Update W
+                        // Update W
                         w[windex - 1] = lambda + sigma;
-                        //                    Recompute the gaps on the left and right
-                        //                    But only allow them to become larger and not
-                        //                    smaller (which can only happen through "bad"
-                        //                    cancellation and doesn't reflect the theory
-                        //                    where the initial gaps are underestimated due
-                        //                    to WERR being too crude.)
+                        // Recompute the gaps on the left and right
+                        // But only allow them to become larger and not
+                        // smaller (which can only happen through "bad"
+                        // cancellation and doesn't reflect the theory
+                        // where the initial gaps are underestimated due
+                        // to WERR being too crude.)
                         if (!eskip) {
                             if (k > 1) {
                                 wgap[windmn - 1] = max(wgap[windmn - 1], REAL(w[windex - 1] - werr[windex - 1] - w[windmn - 1] - werr[windmn - 1]));
@@ -750,10 +750,10 @@ void Rlarrv(INTEGER const n, REAL const vl, REAL const /* vu */, REAL *d, REAL *
                         }
                         idone++;
                     }
-                //                 here ends the code for the current child
+                // here ends the code for the current child
                 //
                 statement_139:
-                    //                 Proceed to any remaining child nodes
+                    // Proceed to any remaining child nodes
                     newfst = j + 1;
                 statement_140:;
                 }

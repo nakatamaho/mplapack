@@ -158,8 +158,8 @@ void Cgelsd(INTEGER const m, INTEGER const n, INTEGER const nrhs, COMPLEX *a, IN
                         maxwrk = max(maxwrk, m * m + 2 * m);
                     }
                     maxwrk = max(maxwrk, m * m + 4 * m + m * nrhs);
-                    //     XXX: Ensure the Path 2a case below is triggered.  The workspace
-                    //     calculation should use queries for all routines eventually.
+                    // XXX: Ensure the Path 2a case below is triggered.  The workspace
+                    // calculation should use queries for all routines eventually.
                     maxwrk = max({maxwrk, 4 * m + m * m + max({m, 2 * m - 4, nrhs, n - 3 * m})});
                 } else {
                     //

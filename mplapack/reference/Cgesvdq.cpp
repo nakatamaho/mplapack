@@ -90,27 +90,27 @@ void Cgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
     INTEGER n1 = 0;
     COMPLEX ctmp = 0.0;
     INTEGER optratio = 0;
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
+    // .. Scalar Arguments ..
+    // ..
+    // .. Array Arguments ..
     //
-    //  =====================================================================
+    // =====================================================================
     //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays
-    //     ..
-    //     .. External Subroutines (BLAS, LAPACK)
-    //     ..
-    //     .. External Functions (BLAS, LAPACK)
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
+    // .. Parameters ..
+    // ..
+    // .. Local Scalars ..
+    // ..
+    // .. Local Arrays
+    // ..
+    // .. External Subroutines (BLAS, LAPACK)
+    // ..
+    // .. External Functions (BLAS, LAPACK)
+    // ..
+    // .. Intrinsic Functions ..
+    // ..
+    // .. Executable Statements ..
     //
-    //     Test the input arguments
+    // Test the input arguments
     //
     wntus = Mlsame(jobu, "S") || Mlsame(jobu, "U");
     wntur = Mlsame(jobu, "R");
@@ -169,23 +169,23 @@ void Cgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
     }
     //
     if (info == 0) {
-        //        .. compute the minimal and the optimal workspace lengths
-        //        [[The expressions for computing the minimal and the optimal
-        //        values of LCWORK are written with a lot of redundancy and
-        //        can be simplified. However, this detailed form is easier for
-        //        maintenance and modifications of the code.]]
+        // .. compute the minimal and the optimal workspace lengths
+        // [[The expressions for computing the minimal and the optimal
+        // values of LCWORK are written with a lot of redundancy and
+        // can be simplified. However, this detailed form is easier for
+        // maintenance and modifications of the code.]]
         //
-        //        .. minimal workspace length for Cgeqp3 of an M x N matrix
+        // .. minimal workspace length for Cgeqp3 of an M x N matrix
         lwqp3 = n + 1;
-        //        .. minimal workspace length for Cunmqr to build left singular vectors
+        // .. minimal workspace length for Cunmqr to build left singular vectors
         if (wntus || wntur) {
             lwunq = max(n, (INTEGER)1);
         } else if (wntua) {
             lwunq = max(m, (INTEGER)1);
         }
-        //        .. minimal workspace length for Cpocon of an N x N matrix
+        // .. minimal workspace length for Cpocon of an N x N matrix
         lwcon = 2 * n;
-        //        .. Cgesvd of an N x N matrix
+        // .. Cgesvd of an N x N matrix
         lwsvd = max(3 * n, (INTEGER)1);
         if (lquery) {
             Cgeqp3(m, n, a, lda, iwork, cdummy, cdummy, -1, rdummy, ierr);
@@ -203,8 +203,8 @@ void Cgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
         minwrk = 2;
         optwrk = 2;
         if (!(lsvec || rsvec)) {
-            //            .. minimal and optimal sizes of the complex workspace if
-            //            only the singular values are requested
+            // .. minimal and optimal sizes of the complex workspace if
+            // only the singular values are requested
             if (conda) {
                 minwrk = max({n + lwqp3, lwcon, lwsvd});
             } else {
@@ -220,8 +220,8 @@ void Cgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
                 }
             }
         } else if (lsvec && (!rsvec)) {
-            //            .. minimal and optimal sizes of the complex workspace if the
-            //            singular values and the left singular vectors are requested
+            // .. minimal and optimal sizes of the complex workspace if the
+            // singular values and the left singular vectors are requested
             if (conda) {
                 minwrk = n + max({lwqp3, lwcon, lwsvd, lwunq});
             } else {
@@ -241,8 +241,8 @@ void Cgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
                 }
             }
         } else if (rsvec && (!lsvec)) {
-            //            .. minimal and optimal sizes of the complex workspace if the
-            //            singular values and the right singular vectors are requested
+            // .. minimal and optimal sizes of the complex workspace if the
+            // singular values and the right singular vectors are requested
             if (conda) {
                 minwrk = n + max({lwqp3, lwcon, lwsvd});
             } else {
@@ -262,8 +262,8 @@ void Cgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
                 }
             }
         } else {
-            //            .. minimal and optimal sizes of the complex workspace if the
-            //            full SVD is requested
+            // .. minimal and optimal sizes of the complex workspace if the
+            // full SVD is requested
             if (rtrans) {
                 minwrk = max({lwqp3, lwsvd, lwunq});
                 if (conda) {
@@ -271,9 +271,9 @@ void Cgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
                 }
                 minwrk += n;
                 if (wntva) {
-                    //                   .. minimal workspace length for N x N/2 Cgeqrf
+                    // .. minimal workspace length for N x N/2 Cgeqrf
                     lwqrf = max(n / 2, (INTEGER)1);
-                    //                   .. minimal workspace length for N/2 x N/2 Cgesvd
+                    // .. minimal workspace length for N/2 x N/2 Cgesvd
                     lwsvd2 = max(3 * (n / 2), (INTEGER)1);
                     lwunq2 = max(n, (INTEGER)1);
                     minwrk2 = max({lwqp3, n / 2 + lwqrf, n / 2 + lwsvd2, n / 2 + lwunq2, lwunq});
@@ -290,7 +290,7 @@ void Cgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
                 }
                 minwrk += n;
                 if (wntva) {
-                    //                   .. minimal workspace length for N/2 x N Cgelqf
+                    // .. minimal workspace length for N/2 x N Cgelqf
                     lwlqf = max(n / 2, (INTEGER)1);
                     lwsvd2 = max(3 * (n / 2), (INTEGER)1);
                     lwunlq = max(n, (INTEGER)1);
@@ -379,21 +379,21 @@ void Cgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
     //     Quick return if the matrix is void.
     //
     if ((m == 0) || (n == 0)) {
-        //     .. all output is void.
+        // .. all output is void.
         return;
     }
     //
     big = Rlamch("O");
     ascaled = false;
     if (rowprm) {
-        //           .. reordering the rows in decreasing sequence in the
-        //           ell-infinity norm - this enhances numerical robustness in
-        //           the case of differently scaled rows.
+        // .. reordering the rows in decreasing sequence in the
+        // ell-infinity norm - this enhances numerical robustness in
+        // the case of differently scaled rows.
         for (p = 1; p <= m; p = p + 1) {
-            //               RWORK(p) = ABS( A(p,iCamax(N,A(p,1),LDA)) )
-            //               [[Clange will return NaN if an entry of the p-th row is Nan]]
+            // RWORK(p) = ABS( A(p,iCamax(N,A(p,1),LDA)) )
+            // [[Clange will return NaN if an entry of the p-th row is Nan]]
             rwork[p - 1] = Clange("M", 1, n, &a[(p - 1)], lda, rdummy);
-            //               .. check for NaN's and Inf's
+            // .. check for NaN's and Inf's
             if ((rwork[p - 1] != rwork[p - 1]) || ((rwork[p - 1] * zero) != zero)) {
                 info = -8;
                 Mxerbla("Cgesvdq", -info);
@@ -411,7 +411,7 @@ void Cgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
         }
         //
         if (rwork[1 - 1] == zero) {
-            //              Quick return: A is the M x N zero matrix.
+            // Quick return: A is the M x N zero matrix.
             numrank = 0;
             Rlaset("G", n, 1, zero, zero, s, n);
             if (wntus) {
@@ -443,8 +443,8 @@ void Cgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
         }
         //
         if (rwork[1 - 1] > big / sqrt(castREAL(m))) {
-            //               .. to prevent overflow in the QR factorization, scale the
-            //               matrix by 1/sqrt(M) if too large entry detected
+            // .. to prevent overflow in the QR factorization, scale the
+            // matrix by 1/sqrt(M) if too large entry detected
             Clascl("G", 0, 0, sqrt(castREAL(m)), one, m, n, a, lda, ierr);
             ascaled = true;
         }
@@ -464,8 +464,8 @@ void Cgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
             return;
         }
         if (rtmp > big / sqrt(castREAL(m))) {
-            //             .. to prevent overflow in the QR factorization, scale the
-            //             matrix by 1/sqrt(M) if too large entry detected
+            // .. to prevent overflow in the QR factorization, scale the
+            // matrix by 1/sqrt(M) if too large entry detected
             Clascl("G", 0, 0, sqrt(castREAL(m)), one, m, n, a, lda, ierr);
             ascaled = true;
         }
@@ -477,7 +477,7 @@ void Cgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
     //                 [ 0 ]
     //
     for (p = 1; p <= n; p = p + 1) {
-        //        .. all columns are free columns
+        // .. all columns are free columns
         iwork[p - 1] = 0;
     }
     Cgeqp3(m, n, a, lda, iwork, cwork, &cwork[(n + 1) - 1], lcwork - n, rwork, ierr);
@@ -488,7 +488,7 @@ void Cgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
     //
     epsln = Rlamch("E");
     sfmin = Rlamch("S");
-    //     SMALL = SFMIN / EPSLN
+    // SMALL = SFMIN / EPSLN
     nr = n;
     //
     if (accla) {
@@ -508,12 +508,12 @@ void Cgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
     statement_3002:;
         //
     } else if (acclm) {
-        //        .. similarly as above, only slightly more gentle (less aggressive).
-        //        Sudden drop on the diagonal of R is used as the criterion for being
-        //        close-to-rank-deficient. The threshold is set to EPSLN=DLAMCH('E').
-        //        [[This can be made more flexible by replacing this hard-coded value
-        //        with a user specified threshold.]] Also, the values that underflow
-        //        will be truncated.
+        // .. similarly as above, only slightly more gentle (less aggressive).
+        // Sudden drop on the diagonal of R is used as the criterion for being
+        // close-to-rank-deficient. The threshold is set to EPSLN=DLAMCH('E').
+        // [[This can be made more flexible by replacing this hard-coded value
+        // with a user specified threshold.]] Also, the values that underflow
+        // will be truncated.
         nr = 1;
         for (p = 2; p <= n; p = p + 1) {
             if ((abs(a[(p - 1) + (p - 1) * lda]) < (epsln * abs(a[((p - 1) - 1) + ((p - 1) - 1) * lda]))) || (abs(a[(p - 1) + (p - 1) * lda]) < sfmin)) {
@@ -524,10 +524,10 @@ void Cgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
     statement_3402:;
         //
     } else {
-        //        .. RRQR not authorized to determine numerical rank except in the
-        //        obvious case of zero pivots.
-        //        .. inspect R for exact zeros on the diagonal;
-        //        R(i,i)=0 => R(i:N,i:N)=0.
+        // .. RRQR not authorized to determine numerical rank except in the
+        // obvious case of zero pivots.
+        // .. inspect R for exact zeros on the diagonal;
+        // R(i,i)=0 => R(i:N,i:N)=0.
         nr = 1;
         for (p = 2; p <= n; p = p + 1) {
             if (abs(a[(p - 1) + (p - 1) * lda]) == zero) {
@@ -538,15 +538,15 @@ void Cgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
     statement_3502:
         //
         if (conda) {
-            //           Estimate the scaled condition number of A. Use the fact that it is
-            //           the same as the scaled condition number of R.
-            //              .. V is used as workspace
+            // Estimate the scaled condition number of A. Use the fact that it is
+            // the same as the scaled condition number of R.
+            //    .. V is used as workspace
             Clacpy("U", n, n, a, lda, v, ldv);
-            //              Only the leading NR x NR submatrix of the triangular factor
-            //              is considered. Only if NR=N will this give a reliable error
-            //              bound. However, even for NR < N, this can be used on an
-            //              expert level and obtain useful information in the sense of
-            //              perturbation theory.
+            // Only the leading NR x NR submatrix of the triangular factor
+            // is considered. Only if NR=N will this give a reliable error
+            // bound. However, even for NR < N, this can be used on an
+            // expert level and obtain useful information in the sense of
+            // perturbation theory.
             for (p = 1; p <= nr; p = p + 1) {
                 rtmp = RCnrm2(p, &v[(p - 1) * ldv], 1);
                 CRscal(p, one / rtmp, &v[(p - 1) * ldv], 1);
@@ -557,9 +557,9 @@ void Cgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
                 Cpocon("U", nr, v, ldv, one, rtmp, &cwork[(n + 1) - 1], rwork, ierr);
             }
             sconda = one / sqrt(rtmp);
-            //           For NR=N, SCONDA is an estimate of SQRT(||(R^* * R)^(-1)||_1),
-            //           N^(-1/4) * SCONDA <= ||R^(-1)||_2 <= N^(1/4) * SCONDA
-            //           See the reference [1] for more details.
+            // For NR=N, SCONDA is an estimate of SQRT(||(R^* * R)^(-1)||_1),
+            // N^(-1/4) * SCONDA <= ||R^(-1)||_2 <= N^(1/4) * SCONDA
+            // See the reference [1] for more details.
         }
         //
     }
@@ -609,9 +609,9 @@ void Cgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
         //       .. the singular values and the left singular vectors requested
         //.......................................................................""""""""
         if (rtrans) {
-            //            .. apply Cgesvd to R**H
-            //            .. copy R**H into [U] and overwrite [U] with the right singular
-            //            vectors of R
+            // .. apply Cgesvd to R**H
+            // .. copy R**H into [U] and overwrite [U] with the right singular
+            // vectors of R
             for (p = 1; p <= nr; p = p + 1) {
                 for (q = p; q <= n; q = q + 1) {
                     u[(q - 1) + (p - 1) * ldu] = conj(a[(p - 1) + (q - 1) * lda]);
@@ -620,9 +620,9 @@ void Cgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
             if (nr > 1) {
                 Claset("U", nr - 1, nr - 1, czero, czero, &u[(2 - 1) * ldu], ldu);
             }
-            //           .. the left singular vectors not computed, the NR right singular
-            //           vectors overwrite [U](1:NR,1:NR) as conjugate transposed. These
-            //           will be pre-multiplied by Q to build the left singular vectors of A.
+            // .. the left singular vectors not computed, the NR right singular
+            // vectors overwrite [U](1:NR,1:NR) as conjugate transposed. These
+            // will be pre-multiplied by Q to build the left singular vectors of A.
             Cgesvd("N", "O", n, nr, u, ldu, s, u, ldu, u, ldu, &cwork[(n + 1) - 1], lcwork - n, rwork, info);
             //
             for (p = 1; p <= nr; p = p + 1) {
@@ -635,18 +635,18 @@ void Cgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
             }
             //
         } else {
-            //            .. apply Cgesvd to R
-            //            .. copy R into [U] and overwrite [U] with the left singular vectors
+            // .. apply Cgesvd to R
+            // .. copy R into [U] and overwrite [U] with the left singular vectors
             Clacpy("U", nr, n, a, lda, u, ldu);
             if (nr > 1) {
                 Claset("L", nr - 1, nr - 1, czero, czero, &u[(2 - 1)], ldu);
             }
-            //            .. the right singular vectors not computed, the NR left singular
-            //            vectors overwrite [U](1:NR,1:NR)
+            // .. the right singular vectors not computed, the NR left singular
+            // vectors overwrite [U](1:NR,1:NR)
             Cgesvd("O", "N", nr, n, u, ldu, s, u, ldu, v, ldv, &cwork[(n + 1) - 1], lcwork - n, rwork, info);
-            //               .. now [U](1:NR,1:NR) contains the NR left singular vectors of
-            //               R. These will be pre-multiplied by Q to build the left singular
-            //               vectors of A.
+            // .. now [U](1:NR,1:NR) contains the NR left singular vectors of
+            // R. These will be pre-multiplied by Q to build the left singular
+            // vectors of A.
         }
         //
         //              (M x NR) or (M x N) or (M x M).
@@ -673,8 +673,8 @@ void Cgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
         //       .. the singular values and the right singular vectors requested
         //.......................................................................
         if (rtrans) {
-            //            .. apply Cgesvd to R**H
-            //            .. copy R**H into V and overwrite V with the left singular vectors
+            // .. apply Cgesvd to R**H
+            // .. copy R**H into V and overwrite V with the left singular vectors
             for (p = 1; p <= nr; p = p + 1) {
                 for (q = p; q <= n; q = q + 1) {
                     v[(q - 1) + (p - 1) * ldv] = conj(a[(p - 1) + (q - 1) * lda]);
@@ -683,8 +683,8 @@ void Cgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
             if (nr > 1) {
                 Claset("U", nr - 1, nr - 1, czero, czero, &v[(2 - 1) * ldv], ldv);
             }
-            //           .. the left singular vectors of R**H overwrite V, the right singular
-            //           vectors not computed
+            // .. the left singular vectors of R**H overwrite V, the right singular
+            // vectors not computed
             if (wntvr || (nr == n)) {
                 Cgesvd("O", "N", n, nr, v, ldv, s, u, ldu, u, ldu, &cwork[(n + 1) - 1], lcwork - n, rwork, info);
                 //
@@ -706,11 +706,11 @@ void Cgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
                 }
                 Clapmt(false, nr, n, v, ldv, iwork);
             } else {
-                //               .. need all N right singular vectors and NR < N
-                //               [!] This is simple implementation that augments [V](1:N,1:NR)
-                //               by padding a zero block. In the case NR << N, a more efficient
-                //               way is to first use the QR factorization. For more details
-                //               how to implement this, see the " FULL SVD " branch.
+                // .. need all N right singular vectors and NR < N
+                // [!] This is simple implementation that augments [V](1:N,1:NR)
+                // by padding a zero block. In the case NR << N, a more efficient
+                // way is to first use the QR factorization. For more details
+                // how to implement this, see the " FULL SVD " branch.
                 Claset("G", n, n - nr, czero, czero, &v[((nr + 1) - 1) * ldv], ldv);
                 Cgesvd("O", "N", n, n, v, ldv, s, u, ldu, u, ldu, &cwork[(n + 1) - 1], lcwork - n, rwork, info);
                 //
@@ -726,30 +726,30 @@ void Cgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
             }
             //
         } else {
-            //            .. aply Cgesvd to R
-            //            .. copy R into V and overwrite V with the right singular vectors
+            // .. aply Cgesvd to R
+            // .. copy R into V and overwrite V with the right singular vectors
             Clacpy("U", nr, n, a, lda, v, ldv);
             if (nr > 1) {
                 Claset("L", nr - 1, nr - 1, czero, czero, &v[(2 - 1)], ldv);
             }
-            //            .. the right singular vectors overwrite V, the NR left singular
-            //            vectors stored in U(1:NR,1:NR)
+            // .. the right singular vectors overwrite V, the NR left singular
+            // vectors stored in U(1:NR,1:NR)
             if (wntvr || (nr == n)) {
                 Cgesvd("N", "O", nr, n, v, ldv, s, u, ldu, v, ldv, &cwork[(n + 1) - 1], lcwork - n, rwork, info);
                 Clapmt(false, nr, n, v, ldv, iwork);
-                //               .. now [V](1:NR,1:N) contains V(1:N,1:NR)**H
+                // .. now [V](1:NR,1:N) contains V(1:N,1:NR)**H
             } else {
-                //               .. need all N right singular vectors and NR < N
-                //               [!] This is simple implementation that augments [V](1:NR,1:N)
-                //               by padding a zero block. In the case NR << N, a more efficient
-                //               way is to first use the LQ factorization. For more details
-                //               how to implement this, see the " FULL SVD " branch.
+                // .. need all N right singular vectors and NR < N
+                // [!] This is simple implementation that augments [V](1:NR,1:N)
+                // by padding a zero block. In the case NR << N, a more efficient
+                // way is to first use the LQ factorization. For more details
+                // how to implement this, see the " FULL SVD " branch.
                 Claset("G", n - nr, n, czero, czero, &v[((nr + 1) - 1)], ldv);
                 Cgesvd("N", "O", n, n, v, ldv, s, u, ldu, v, ldv, &cwork[(n + 1) - 1], lcwork - n, rwork, info);
                 Clapmt(false, n, n, v, ldv, iwork);
             }
-            //            .. now [V] contains the adjoINTEGER of the matrix of the right singular
-            //            vectors of A.
+            // .. now [V] contains the adjoINTEGER of the matrix of the right singular
+            // vectors of A.
         }
         //
     } else {
@@ -761,8 +761,8 @@ void Cgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
             //            .. apply Cgesvd to R**H [[this option is left for R&D&T]]
             //
             if (wntvr || (nr == n)) {
-                //            .. copy R**H into [V] and overwrite [V] with the left singular
-                //            vectors of R**H
+                // .. copy R**H into [V] and overwrite [V] with the left singular
+                // vectors of R**H
                 for (p = 1; p <= nr; p = p + 1) {
                     for (q = p; q <= n; q = q + 1) {
                         v[(q - 1) + (p - 1) * ldv] = conj(a[(p - 1) + (q - 1) * lda]);
@@ -776,7 +776,7 @@ void Cgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
                 //           singular vectors of R**H stored in [U](1:NR,1:NR) as conjugate
                 //           transposed
                 Cgesvd("O", "A", n, nr, v, ldv, s, v, ldv, u, ldu, &cwork[(n + 1) - 1], lcwork - n, rwork, info);
-                //              .. assemble V
+                // .. assemble V
                 for (p = 1; p <= nr; p = p + 1) {
                     v[(p - 1) + (p - 1) * ldv] = conj(v[(p - 1) + (p - 1) * ldv]);
                     for (q = p + 1; q <= nr; q = q + 1) {
@@ -812,14 +812,14 @@ void Cgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
                 }
                 //
             } else {
-                //               .. need all N right singular vectors and NR < N
-                //            .. copy R**H into [V] and overwrite [V] with the left singular
-                //            vectors of R**H
-                //               [[The optimal ratio N/NR for using QRF instead of padding
-                //                 with zeros. Here hard coded to 2; it must be at least
-                //                 two due to work space constraints.]]
-                //               OPTRATIO = iMlaenv(6, 'Cgesvd', 'S' // 'O', NR,N,0,0)
-                //               OPTRATIO = MAX( OPTRATIO, 2 )
+                // .. need all N right singular vectors and NR < N
+                // .. copy R**H into [V] and overwrite [V] with the left singular
+                // vectors of R**H
+                // [[The optimal ratio N/NR for using QRF instead of padding
+                //   with zeros. Here hard coded to 2; it must be at least
+                //   two due to work space constraints.]]
+                // OPTRATIO = iMlaenv(6, 'Cgesvd', 'S' // 'O', NR,N,0,0)
+                // OPTRATIO = MAX( OPTRATIO, 2 )
                 optratio = 2;
                 if (optratio * nr > n) {
                     for (p = 1; p <= nr; p = p + 1) {
@@ -843,7 +843,7 @@ void Cgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
                         }
                     }
                     Clapmt(false, n, n, v, ldv, iwork);
-                    //              (M x N1), i.e. (M x N) or (M x M).
+                    // (M x N1), i.e. (M x N) or (M x M).
                     //
                     for (p = 1; p <= n; p = p + 1) {
                         u[(p - 1) + (p - 1) * ldu] = conj(u[(p - 1) + (p - 1) * ldu]);
@@ -862,8 +862,8 @@ void Cgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
                         }
                     }
                 } else {
-                    //                  .. copy R**H into [U] and overwrite [U] with the right
-                    //                  singular vectors of R
+                    // .. copy R**H into [U] and overwrite [U] with the right
+                    // singular vectors of R
                     for (p = 1; p <= nr; p = p + 1) {
                         for (q = p; q <= n; q = q + 1) {
                             u[(q - 1) + ((nr + p) - 1) * ldu] = conj(a[(p - 1) + (q - 1) * lda]);
@@ -885,7 +885,7 @@ void Cgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
                     Claset("A", n - nr, n - nr, czero, cone, &v[((nr + 1) - 1) + ((nr + 1) - 1) * ldv], ldv);
                     Cunmqr("R", "C", n, n, nr, &u[((nr + 1) - 1) * ldu], ldu, &cwork[(n + 1) - 1], v, ldv, &cwork[(n + nr + 1) - 1], lcwork - n - nr, ierr);
                     Clapmt(false, n, n, v, ldv, iwork);
-                    //                 (M x NR) or (M x N) or (M x M).
+                    // (M x NR) or (M x N) or (M x M).
                     if ((nr < m) && !(wntuf)) {
                         Claset("A", m - nr, nr, czero, czero, &u[((nr + 1) - 1)], ldu);
                         if (nr < n1) {
@@ -901,17 +901,17 @@ void Cgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
             //            .. apply Cgesvd to R [[this is the recommended option]]
             //
             if (wntvr || (nr == n)) {
-                //                .. copy R into [V] and overwrite V with the right singular vectors
+                // .. copy R into [V] and overwrite V with the right singular vectors
                 Clacpy("U", nr, n, a, lda, v, ldv);
                 if (nr > 1) {
                     Claset("L", nr - 1, nr - 1, czero, czero, &v[(2 - 1)], ldv);
                 }
-                //               .. the right singular vectors of R overwrite [V], the NR left
-                //               singular vectors of R stored in [U](1:NR,1:NR)
+                // .. the right singular vectors of R overwrite [V], the NR left
+                // singular vectors of R stored in [U](1:NR,1:NR)
                 Cgesvd("S", "O", nr, n, v, ldv, s, u, ldu, v, ldv, &cwork[(n + 1) - 1], lcwork - n, rwork, info);
                 Clapmt(false, nr, n, v, ldv, iwork);
-                //               .. now [V](1:NR,1:N) contains V(1:N,1:NR)**H
-                //              (M x NR) or (M x N) or (M x M).
+                // .. now [V](1:NR,1:N) contains V(1:N,1:NR)**H
+                // (M x NR) or (M x N) or (M x M).
                 if ((nr < m) && !(wntuf)) {
                     Claset("A", m - nr, nr, czero, czero, &u[((nr + 1) - 1)], ldu);
                     if (nr < n1) {
@@ -921,29 +921,29 @@ void Cgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
                 }
                 //
             } else {
-                //              .. need all N right singular vectors and NR < N
-                //              .. the requested number of the left singular vectors
-                //               is then N1 (N or M)
-                //               [[The optimal ratio N/NR for using LQ instead of padding
-                //                 with zeros. Here hard coded to 2; it must be at least
-                //                 two due to work space constraints.]]
-                //               OPTRATIO = iMlaenv(6, 'Cgesvd', 'S' // 'O', NR,N,0,0)
-                //               OPTRATIO = MAX( OPTRATIO, 2 )
+                // .. need all N right singular vectors and NR < N
+                // .. the requested number of the left singular vectors
+                //  is then N1 (N or M)
+                //  [[The optimal ratio N/NR for using LQ instead of padding
+                //    with zeros. Here hard coded to 2; it must be at least
+                //    two due to work space constraints.]]
+                //  OPTRATIO = iMlaenv(6, 'Cgesvd', 'S' // 'O', NR,N,0,0)
+                //  OPTRATIO = MAX( OPTRATIO, 2 )
                 optratio = 2;
                 if (optratio * nr > n) {
                     Clacpy("U", nr, n, a, lda, v, ldv);
                     if (nr > 1) {
                         Claset("L", nr - 1, nr - 1, czero, czero, &v[(2 - 1)], ldv);
                     }
-                    //              .. the right singular vectors of R overwrite [V], the NR left
-                    //                 singular vectors of R stored in [U](1:NR,1:NR)
+                    // .. the right singular vectors of R overwrite [V], the NR left
+                    //    singular vectors of R stored in [U](1:NR,1:NR)
                     Claset("A", n - nr, n, czero, czero, &v[((nr + 1) - 1)], ldv);
                     Cgesvd("S", "O", n, n, v, ldv, s, u, ldu, v, ldv, &cwork[(n + 1) - 1], lcwork - n, rwork, info);
                     Clapmt(false, n, n, v, ldv, iwork);
-                    //                 .. now [V] contains the adjoINTEGER of the matrix of the right
-                    //                 singular vectors of A. The leading N left singular vectors
-                    //                 are in [U](1:N,1:N)
-                    //                 (M x N1), i.e. (M x N) or (M x M).
+                    // .. now [V] contains the adjoINTEGER of the matrix of the right
+                    // singular vectors of A. The leading N left singular vectors
+                    // are in [U](1:N,1:N)
+                    // (M x N1), i.e. (M x N) or (M x M).
                     if ((n < m) && !(wntuf)) {
                         Claset("A", m - n, n, czero, czero, &u[((n + 1) - 1)], ldu);
                         if (n < n1) {
@@ -967,7 +967,7 @@ void Cgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
                     Claset("A", n - nr, n - nr, czero, cone, &v[((nr + 1) - 1) + ((nr + 1) - 1) * ldv], ldv);
                     Cunmlq("R", "N", n, n, nr, &u[((nr + 1) - 1)], ldu, &cwork[(n + 1) - 1], v, ldv, &cwork[(n + nr + 1) - 1], lcwork - n - nr, ierr);
                     Clapmt(false, n, n, v, ldv, iwork);
-                    //              (M x NR) or (M x N) or (M x M).
+                    // (M x NR) or (M x N) or (M x M).
                     if ((nr < m) && !(wntuf)) {
                         Claset("A", m - nr, nr, czero, czero, &u[((nr + 1) - 1)], ldu);
                         if (nr < n1) {
@@ -977,7 +977,7 @@ void Cgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
                     }
                 }
             }
-            //        .. end of the "R**H or R" branch
+            // .. end of the "R**H or R" branch
         }
         //
         //           The Q matrix from the first QRF is built into the left singular
@@ -1009,8 +1009,8 @@ statement_4002:
     if (nr < n) {
         Rlaset("G", n - nr, 1, zero, zero, &s[(nr + 1) - 1], n);
     }
-    //     .. undo scaling; this may cause overflow in the largest singular
-    //     values.
+    // .. undo scaling; this may cause overflow in the largest singular
+    // values.
     if (ascaled) {
         Rlascl("G", 0, 0, one, sqrt(castREAL(m)), nr, 1, s, n, ierr);
     }
@@ -1018,9 +1018,9 @@ statement_4002:
         rwork[1 - 1] = sconda;
     }
     rwork[2 - 1] = p - nr;
-    //     .. p-NR is the number of singular values that are computed as
-    //     exact zeros in Cgesvd() applied to the (possibly truncated)
-    //     full row rank triangular (trapezoidal) factor of A.
+    // .. p-NR is the number of singular values that are computed as
+    // exact zeros in Cgesvd() applied to the (possibly truncated)
+    // full row rank triangular (trapezoidal) factor of A.
     numrank = nr;
     //
     //     End of Cgesvdq

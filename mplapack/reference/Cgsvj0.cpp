@@ -353,7 +353,7 @@ void Cgsvj0(const char *jobv, INTEGER const m, INTEGER const n, COMPLEX *a, INTE
                                         d[p - 1] = -d[q - 1] * ompq;
                                         //
                                     } else {
-                                        //              .. have to use modified Gram-Schmidt like transformation
+                                        // .. have to use modified Gram-Schmidt like transformation
                                         Ccopy(m, &a[(p - 1) * lda], 1, work, 1);
                                         Clascl("G", 0, 0, aapp, one, m, 1, work, lda, ierr);
                                         Clascl("G", 0, 0, aaqq, one, m, 1, &a[(q - 1) * lda], lda, ierr);
@@ -362,10 +362,10 @@ void Cgsvj0(const char *jobv, INTEGER const m, INTEGER const n, COMPLEX *a, INTE
                                         sva[q - 1] = aaqq * sqrt(max(zero, REAL(one - aapq1 * aapq1)));
                                         mxsinj = max(mxsinj, sfmin);
                                     }
-                                    //           END IF ROTOK THEN ... ELSE
+                                    // END IF ROTOK THEN ... ELSE
                                     //
-                                    //           In the case of cancellation in updating SVA(q), SVA(p)
-                                    //           recompute SVA(q), SVA(p).
+                                    // In the case of cancellation in updating SVA(q), SVA(p)
+                                    // recompute SVA(q), SVA(p).
                                     //
                                     if (pow2((sva[q - 1] / aaqq)) <= rooteps) {
                                         if ((aaqq < rootbig) && (aaqq > rootsfmin)) {
@@ -390,7 +390,7 @@ void Cgsvj0(const char *jobv, INTEGER const m, INTEGER const n, COMPLEX *a, INTE
                                     }
                                     //
                                 } else {
-                                    //        A(:,p) and A(:,q) already numerically orthogonal
+                                    // A(:,p) and A(:,q) already numerically orthogonal
                                     if (ir1 == 0) {
                                         notrot++;
                                     }
@@ -398,7 +398,7 @@ void Cgsvj0(const char *jobv, INTEGER const m, INTEGER const n, COMPLEX *a, INTE
                                     pskipped++;
                                 }
                             } else {
-                                //        A(:,q) is zero column
+                                // A(:,q) is zero column
                                 if (ir1 == 0) {
                                     notrot++;
                                 }
@@ -414,10 +414,10 @@ void Cgsvj0(const char *jobv, INTEGER const m, INTEGER const n, COMPLEX *a, INTE
                             }
                             //
                         }
-                    //     END q-LOOP
+                    // END q-LOOP
                     //
                     statement_2103:
-                        //     bailed out of q-loop
+                        // bailed out of q-loop
                         //
                         sva[p - 1] = aapp;
                         //
@@ -429,10 +429,10 @@ void Cgsvj0(const char *jobv, INTEGER const m, INTEGER const n, COMPLEX *a, INTE
                     }
                     //
                 }
-                //     end of the p-loop
-                //     end of doing the block ( ibr, ibr )
+                // end of the p-loop
+                // end of doing the block ( ibr, ibr )
             }
-            //     end of ir1-loop
+            // end of ir1-loop
             //
             // ... go to the off diagonal blocks
             //
@@ -545,7 +545,7 @@ void Cgsvj0(const char *jobv, INTEGER const m, INTEGER const n, COMPLEX *a, INTE
                                         d[p - 1] = -d[q - 1] * ompq;
                                         //
                                     } else {
-                                        //              .. have to use modified Gram-Schmidt like transformation
+                                        // .. have to use modified Gram-Schmidt like transformation
                                         if (aapp > aaqq) {
                                             Ccopy(m, &a[(p - 1) * lda], 1, work, 1);
                                             Clascl("G", 0, 0, aapp, one, m, 1, work, lda, ierr);
@@ -564,10 +564,10 @@ void Cgsvj0(const char *jobv, INTEGER const m, INTEGER const n, COMPLEX *a, INTE
                                             mxsinj = max(mxsinj, sfmin);
                                         }
                                     }
-                                    //           END IF ROTOK THEN ... ELSE
+                                    // END IF ROTOK THEN ... ELSE
                                     //
-                                    //           In the case of cancellation in updating SVA(q), SVA(p)
-                                    //           .. recompute SVA(q), SVA(p)
+                                    // In the case of cancellation in updating SVA(q), SVA(p)
+                                    // .. recompute SVA(q), SVA(p)
                                     if (pow2((sva[q - 1] / aaqq)) <= rooteps) {
                                         if ((aaqq < rootbig) && (aaqq > rootsfmin)) {
                                             sva[q - 1] = RCnrm2(m, &a[(q - 1) * lda], 1);
@@ -589,7 +589,7 @@ void Cgsvj0(const char *jobv, INTEGER const m, INTEGER const n, COMPLEX *a, INTE
                                         }
                                         sva[p - 1] = aapp;
                                     }
-                                    //              end of OK rotation
+                                    // end of OK rotation
                                 } else {
                                     notrot++;
                                     //[RTD]      SKIPPED  = SKIPPED  + 1
@@ -614,7 +614,7 @@ void Cgsvj0(const char *jobv, INTEGER const m, INTEGER const n, COMPLEX *a, INTE
                             }
                             //
                         }
-                    //        end of the q-loop
+                    // end of the q-loop
                     statement_2203:
                         //
                         sva[p - 1] = aapp;
@@ -631,9 +631,9 @@ void Cgsvj0(const char *jobv, INTEGER const m, INTEGER const n, COMPLEX *a, INTE
                     }
                     //
                 }
-                //     end of the p-loop
+                // end of the p-loop
             }
-        //     end of the jbc-loop
+        // end of the jbc-loop
         statement_2011:
             // 2011 bailed out of the jbc-loop
             for (p = igl; p <= min(igl + kbl - 1, n); p = p + 1) {
@@ -668,7 +668,7 @@ void Cgsvj0(const char *jobv, INTEGER const m, INTEGER const n, COMPLEX *a, INTE
         }
         //
     }
-    //     end i=1:NSWEEP loop
+    // end i=1:NSWEEP loop
     //
     // #:( Reaching this point means that the procedure has not converged.
     info = nsweep - 1;
