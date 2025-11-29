@@ -16,6 +16,8 @@ clang-format-19 -i -style '{
     NamespaceIndentation: Inner,
     AlwaysBreakTemplateDeclarations: No,
     BreakBeforeConceptDeclarations: Never,
+    ReflowComments: true,
+    SpacesInLineCommentPrefix: { Minimum: 1, Maximum: 1 },
   }' "$1"
 
 
