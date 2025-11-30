@@ -30,7 +30,7 @@
 
 void Rrotg(REAL &da, REAL &db, REAL &c, REAL &s) {
     //
-    REAL scale = ABS(da) + ABS(db);
+    REAL scale = abs(da) + abs(db);
     REAL r = 0.0;
     REAL z = 0.0;
     REAL roe = 0.0;
@@ -41,18 +41,18 @@ void Rrotg(REAL &da, REAL &db, REAL &c, REAL &s) {
         z = 0.0;
     } else {
         roe = db;
-        if (ABS(da) > ABS(db)) {
+        if (abs(da) > abs(db)) {
             roe = da;
         }
-        r = scale * SQRT(POW2((da / scale)) + POW2((db / scale)));
+        r = scale * sqrt(pow2((da / scale)) + pow2((db / scale)));
         r = sign(1.0, roe) * r;
         c = da / r;
         s = db / r;
         z = 1.0;
-        if (ABS(da) > ABS(db)) {
+        if (abs(da) > abs(db)) {
             z = s;
         }
-        if (ABS(db) >= ABS(da) && c != 0.0) {
+        if (abs(db) >= abs(da) && c != 0.0) {
             z = 1.0 / c;
         }
     }

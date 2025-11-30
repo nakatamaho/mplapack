@@ -45,10 +45,10 @@ REAL Rasum(INTEGER const n, REAL *dx, INTEGER const incx) {
         //
         // clean-up loop
         //
-        m = MOD(n, 6);
+        m = mod(n, 6);
         if (m != 0) {
             for (i = 1; i <= m; i = i + 1) {
-                dtemp += ABS(dx[i - 1]);
+                dtemp += abs(dx[i - 1]);
             }
             if (n < 6) {
                 return_value = dtemp;
@@ -57,7 +57,7 @@ REAL Rasum(INTEGER const n, REAL *dx, INTEGER const incx) {
         }
         mp1 = m + 1;
         for (i = mp1; i <= n; i = i + 6) {
-            dtemp += ABS(dx[i - 1]) + ABS(dx[(i + 1) - 1]) + ABS(dx[(i + 2) - 1]) + ABS(dx[(i + 3) - 1]) + ABS(dx[(i + 4) - 1]) + ABS(dx[(i + 5) - 1]);
+            dtemp += abs(dx[i - 1]) + abs(dx[(i + 1) - 1]) + abs(dx[(i + 2) - 1]) + abs(dx[(i + 3) - 1]) + abs(dx[(i + 4) - 1]) + abs(dx[(i + 5) - 1]);
         }
     } else {
         //
@@ -65,7 +65,7 @@ REAL Rasum(INTEGER const n, REAL *dx, INTEGER const incx) {
         //
         nincx = n * incx;
         for (i = 1; i <= nincx; i = i + incx) {
-            dtemp += ABS(dx[i - 1]);
+            dtemp += abs(dx[i - 1]);
         }
     }
     return_value = dtemp;

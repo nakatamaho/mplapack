@@ -44,7 +44,7 @@ void Rcopy(INTEGER const n, REAL *dx, INTEGER const incx, REAL *dy, INTEGER cons
         //
         // clean-up loop
         //
-        m = MOD(n, 7);
+        m = mod(n, 7);
         if (m != 0) {
             for (i = 1; i <= m; i = i + 1) {
                 dy[i - 1] = dx[i - 1];

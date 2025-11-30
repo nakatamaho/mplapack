@@ -47,11 +47,11 @@ iRamax(INTEGER const n, REAL *dx, INTEGER const incx) {
         //
         // code for increment equal to 1
         //
-        dmax = ABS(dx[0]);
+        dmax = abs(dx[0]);
         for (i = 2; i <= n; i = i + 1) {
-            if (ABS(dx[i - 1]) > dmax) {
+            if (abs(dx[i - 1]) > dmax) {
                 return_value = i;
-                dmax = ABS(dx[i - 1]);
+                dmax = abs(dx[i - 1]);
             }
         }
     } else {
@@ -59,12 +59,12 @@ iRamax(INTEGER const n, REAL *dx, INTEGER const incx) {
         // code for increment not equal to 1
         //
         ix = 1;
-        dmax = ABS(dx[0]);
+        dmax = abs(dx[0]);
         ix += incx;
         for (i = 2; i <= n; i = i + 1) {
-            if (ABS(dx[ix - 1]) > dmax) {
+            if (abs(dx[ix - 1]) > dmax) {
                 return_value = i;
-                dmax = ABS(dx[ix - 1]);
+                dmax = abs(dx[ix - 1]);
             }
             ix += incx;
         }

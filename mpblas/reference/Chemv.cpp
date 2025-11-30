@@ -37,7 +37,7 @@ void Chemv(const char *uplo, INTEGER const n, COMPLEX const &alpha, COMPLEX *a, 
         info = 1;
     } else if (n < 0) {
         info = 2;
-    } else if (lda < MAX((INTEGER)1, n)) {
+    } else if (lda < max((INTEGER)1, n)) {
         info = 5;
     } else if (incx == 0) {
         info = 7;

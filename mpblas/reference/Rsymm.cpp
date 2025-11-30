@@ -51,11 +51,11 @@ void Rsymm(const char *side, const char *uplo, INTEGER const m, INTEGER const n,
         info = 3;
     } else if (n < 0) {
         info = 4;
-    } else if (lda < MAX((INTEGER)1, nrowa)) {
+    } else if (lda < max((INTEGER)1, nrowa)) {
         info = 7;
-    } else if (ldb < MAX((INTEGER)1, m)) {
+    } else if (ldb < max((INTEGER)1, m)) {
         info = 9;
-    } else if (ldc < MAX((INTEGER)1, m)) {
+    } else if (ldc < max((INTEGER)1, m)) {
         info = 12;
     }
     if (info != 0) {

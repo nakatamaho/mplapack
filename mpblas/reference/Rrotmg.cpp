@@ -73,7 +73,7 @@ void Rrotmg(REAL &dd1, REAL &dd2, REAL &dx1, REAL const &dy1, REAL *dparam) {
         dq2 = dp2 * dy1;
         dq1 = dp1 * dx1;
         //
-        if (ABS(dq1) > ABS(dq2)) {
+        if (abs(dq1) > abs(dq2)) {
             dh21 = -dy1 / dx1;
             dh12 = dp2 / dp1;
             //
@@ -136,12 +136,12 @@ void Rrotmg(REAL &dd1, REAL &dd2, REAL &dx1, REAL const &dy1, REAL *dparam) {
                     dflag = -one;
                 }
                 if (dd1 <= rgamsq) {
-                    dd1 = dd1 * POW2(gam);
+                    dd1 = dd1 * pow2(gam);
                     dx1 = dx1 / gam;
                     dh11 = dh11 / gam;
                     dh12 = dh12 / gam;
                 } else {
-                    dd1 = dd1 / POW2(gam);
+                    dd1 = dd1 / pow2(gam);
                     dx1 = dx1 * gam;
                     dh11 = dh11 * gam;
                     dh12 = dh12 * gam;
@@ -150,7 +150,7 @@ void Rrotmg(REAL &dd1, REAL &dd2, REAL &dx1, REAL const &dy1, REAL *dparam) {
         }
         //
         if (dd2 != zero) {
-            while ((ABS(dd2) <= rgamsq) || (ABS(dd2) >= gamsq)) {
+            while ((abs(dd2) <= rgamsq) || (abs(dd2) >= gamsq)) {
                 if (dflag == zero) {
                     dh11 = one;
                     dh22 = one;
@@ -160,12 +160,12 @@ void Rrotmg(REAL &dd1, REAL &dd2, REAL &dx1, REAL const &dy1, REAL *dparam) {
                     dh12 = one;
                     dflag = -one;
                 }
-                if (ABS(dd2) <= rgamsq) {
-                    dd2 = dd2 * POW2(gam);
+                if (abs(dd2) <= rgamsq) {
+                    dd2 = dd2 * pow2(gam);
                     dh21 = dh21 / gam;
                     dh22 = dh22 / gam;
                 } else {
-                    dd2 = dd2 / POW2(gam);
+                    dd2 = dd2 / pow2(gam);
                     dh21 = dh21 * gam;
                     dh22 = dh22 * gam;
                 }

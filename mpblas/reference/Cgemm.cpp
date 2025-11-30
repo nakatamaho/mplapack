@@ -65,11 +65,11 @@ void Cgemm(const char *transa, const char *transb, INTEGER const m, INTEGER cons
         info = 4;
     } else if (k < 0) {
         info = 5;
-    } else if (lda < MAX((INTEGER)1, nrowa)) {
+    } else if (lda < max((INTEGER)1, nrowa)) {
         info = 8;
-    } else if (ldb < MAX((INTEGER)1, nrowb)) {
+    } else if (ldb < max((INTEGER)1, nrowb)) {
         info = 10;
-    } else if (ldc < MAX((INTEGER)1, m)) {
+    } else if (ldc < max((INTEGER)1, m)) {
         info = 13;
     }
     if (info != 0) {

@@ -43,7 +43,7 @@ void Rscal(INTEGER const n, REAL const &da, REAL *dx, INTEGER const incx) {
         //
         // clean-up loop
         //
-        m = MOD(n, 5);
+        m = mod(n, 5);
         if (m != 0) {
             for (i = 1; i <= m; i = i + 1) {
                 dx[i - 1] = da * dx[i - 1];

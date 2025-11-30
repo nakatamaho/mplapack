@@ -128,7 +128,7 @@ void Rsbmv(const char *uplo, INTEGER const n, INTEGER const k, REAL const &alpha
                 temp1 = alpha * x[j - 1];
                 temp2 = zero;
                 l = kplus1 - j;
-                for (i = MAX((INTEGER)1, j - k); i <= j - 1; i = i + 1) {
+                for (i = max((INTEGER)1, j - k); i <= j - 1; i = i + 1) {
                     y[i - 1] += temp1 * a[((l + i) - 1) + (j - 1) * lda];
                     temp2 += a[((l + i) - 1) + (j - 1) * lda] * x[i - 1];
                 }
@@ -143,7 +143,7 @@ void Rsbmv(const char *uplo, INTEGER const n, INTEGER const k, REAL const &alpha
                 ix = kx;
                 iy = ky;
                 l = kplus1 - j;
-                for (i = MAX((INTEGER)1, j - k); i <= j - 1; i = i + 1) {
+                for (i = max((INTEGER)1, j - k); i <= j - 1; i = i + 1) {
                     y[iy - 1] += temp1 * a[((l + i) - 1) + (j - 1) * lda];
                     temp2 += a[((l + i) - 1) + (j - 1) * lda] * x[ix - 1];
                     ix += incx;
@@ -168,7 +168,7 @@ void Rsbmv(const char *uplo, INTEGER const n, INTEGER const k, REAL const &alpha
                 temp2 = zero;
                 y[j - 1] += temp1 * a[(j - 1) * lda];
                 l = 1 - j;
-                for (i = j + 1; i <= MIN(n, j + k); i = i + 1) {
+                for (i = j + 1; i <= min(n, j + k); i = i + 1) {
                     y[i - 1] += temp1 * a[((l + i) - 1) + (j - 1) * lda];
                     temp2 += a[((l + i) - 1) + (j - 1) * lda] * x[i - 1];
                 }
@@ -184,7 +184,7 @@ void Rsbmv(const char *uplo, INTEGER const n, INTEGER const k, REAL const &alpha
                 l = 1 - j;
                 ix = jx;
                 iy = jy;
-                for (i = j + 1; i <= MIN(n, j + k); i = i + 1) {
+                for (i = j + 1; i <= min(n, j + k); i = i + 1) {
                     ix += incx;
                     iy += incy;
                     y[iy - 1] += temp1 * a[((l + i) - 1) + (j - 1) * lda];

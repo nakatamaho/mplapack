@@ -47,7 +47,7 @@ REAL Rdot(INTEGER const n, REAL *dx, INTEGER const incx, REAL *dy, INTEGER const
         //
         // clean-up loop
         //
-        m = MOD(n, 5);
+        m = mod(n, 5);
         if (m != 0) {
             for (i = 1; i <= m; i = i + 1) {
                 dtemp += dx[i - 1] * dy[i - 1];

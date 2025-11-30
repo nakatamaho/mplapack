@@ -47,7 +47,7 @@ void Raxpy(INTEGER const n, REAL const &da, REAL *dx, INTEGER const incx, REAL *
         //
         // clean-up loop
         //
-        m = MOD(n, 4);
+        m = mod(n, 4);
         if (m != 0) {
             for (i = 1; i <= m; i = i + 1) {
                 dy[i - 1] += da * dx[i - 1];

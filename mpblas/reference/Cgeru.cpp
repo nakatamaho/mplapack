@@ -41,7 +41,7 @@ void Cgeru(INTEGER const m, INTEGER const n, COMPLEX const &alpha, COMPLEX *x, I
         info = 5;
     } else if (incy == 0) {
         info = 7;
-    } else if (lda < MAX((INTEGER)1, m)) {
+    } else if (lda < max((INTEGER)1, m)) {
         info = 9;
     }
     if (info != 0) {
