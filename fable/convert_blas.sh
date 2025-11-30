@@ -135,9 +135,8 @@ clang-format-19 -i -style '{
   }' "$tmp_cpp"
 
 
-python3 "${script_dir}/strip_lapack_comments.py" "$tmp_cpp"
-
-#python3 "${script_dir}/normalize_comment_prefix.py" "$tmp_cpp"
+python3 "${script_dir}/strip_boilerplate_comments.py" "$tmp_cpp"
+python3 "${script_dir}/add_attribution.py" "$tmp_cpp" "$src"
 
 # Overwrite the generated C++ file with the formatted version
 cp "$tmp_cpp" "$cpp_generated"

@@ -2,7 +2,10 @@
 """
 Normalize LAPACK attribution header comments in MPLAPACK sources.
 
-For each C++/header file, if there is an existing LAPACK attribution block
+Usage:
+    normalize_lapack_header.py CPP_FILE FORTRAN_FILE
+
+For the given C++ file, if there is an existing LAPACK attribution block
 (contains 'Derived from LAPACK routine', 'Original LAPACK authors',
 or 'LAPACK is a software package provided'), replace that whole comment
 block with a canonical form:
@@ -13,8 +16,8 @@ block with a canonical form:
 //   <author2>
 //   ...
 
-Authors are extracted from the corresponding Fortran source file in the
-same directory, by parsing the "Authors" section:
+Authors are extracted from the given Fortran source file, by parsing the
+"Authors" section:
 
 *  Authors:
 *  ========
@@ -23,16 +26,11 @@ same directory, by parsing the "Authors" section:
 *> \\author Univ. of California Berkeley
 *> \\author Univ. of Colorado Denver
 *> \\author NAG Ltd.
-
-The Fortran source is expected to be in the same directory as the C++ file,
-with a matching stem name, e.g.:
-
-Cbdsqr.cpp  <->  cbdsqr.f   or cbdsqr.f90
 """
 
 import sys
 from pathlib import Path
-from typing import List, Optional
+from typing import List
 
 # Markers that indicate we are inside an old LAPACK attribution block.
 LAPACK_ATTR_MARKERS = [
@@ -62,26 +60,6 @@ def line_contains_lapack_attr(line: str) -> bool:
         if kw in text:
             return True
     return False
-
-
-def find_fortran_for_cpp(cpp_path: Path) -> Optional[Path]:
-    """Locate the Fortran source corresponding to a given C++ file.
-
-    Search patterns in the same directory as cpp_path:
-        <stem>.f
-        <stem>.f90
-        <stem>.F
-        <stem>.F90
-    """
-    stem = cpp_path.stem.lower()
-    directory = cpp_path.parent
-
-    for ext in (".f", ".f90", ".F", ".F90"):
-        candidate = directory / (stem + ext)
-        if candidate.is_file():
-            return candidate
-
-    return None
 
 
 def extract_authors_from_fortran(path: Path) -> List[str]:
@@ -149,19 +127,18 @@ def build_canonical_header(
     return [ln + "\n" for ln in lines]
 
 
-def normalize_file(path: Path) -> None:
-    """Normalize LAPACK attribution header in a single C++/header file."""
-    src = path.read_text(encoding="utf-8", errors="ignore").splitlines(keepends=True)
+def normalize_file(cpp_path: Path, fortran_path: Path) -> None:
+    """Normalize LAPACK attribution header in a single C++ file."""
+    src = cpp_path.read_text(encoding="utf-8", errors="ignore").splitlines(keepends=True)
     out: List[str] = []
 
-    # Routine name from file stem, uppercased (e.g. Cbdsqr.cpp -> CBDSQR)
-    routine = path.stem.upper()
+    # Routine name from C++ file stem, uppercased (e.g. Cbdsqr.cpp -> CBDSQR)
+    routine = cpp_path.stem.upper()
 
-    # Try to find and parse the corresponding Fortran source in the same directory.
+    # Extract authors from the given Fortran file (if it exists).
     authors: List[str] = []
-    fpath = find_fortran_for_cpp(path)
-    if fpath is not None:
-        authors = extract_authors_from_fortran(fpath)
+    if fortran_path.is_file():
+        authors = extract_authors_from_fortran(fortran_path)
 
     i = 0
     n = len(src)
@@ -195,20 +172,25 @@ def normalize_file(path: Path) -> None:
             replaced_block = True
         # Old block is dropped entirely.
 
-    path.write_text("".join(out), encoding="utf-8")
+    cpp_path.write_text("".join(out), encoding="utf-8")
 
 
 def main(argv):
-    if len(argv) < 2:
-        print("Usage: normalize_lapack_header.py FILE [FILE...]", file=sys.stderr)
+    if len(argv) != 3:
+        print("Usage: normalize_lapack_header.py CPP_FILE FORTRAN_FILE", file=sys.stderr)
         sys.exit(1)
 
-    for arg in argv[1:]:
-        p = Path(arg)
-        if not p.is_file():
-            print(f"normalize_lapack_header: {p} is not a file, skipping", file=sys.stderr)
-            continue
-        normalize_file(p)
+    cpp_path = Path(argv[1])
+    ft_path = Path(argv[2])
+
+    if not cpp_path.is_file():
+        print(f"normalize_lapack_header: {cpp_path} is not a file", file=sys.stderr)
+        sys.exit(1)
+    if not ft_path.is_file():
+        # We can warn but still proceed with empty authors list.
+        print(f"normalize_lapack_header: WARNING: {ft_path} is not a file, authors will be empty", file=sys.stderr)
+
+    normalize_file(cpp_path, ft_path)
 
 
 if __name__ == "__main__":
