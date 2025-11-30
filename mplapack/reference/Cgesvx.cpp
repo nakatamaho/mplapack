@@ -31,11 +31,6 @@
 
 void Cgesvx(const char *fact, const char *trans, INTEGER const n, INTEGER const nrhs, COMPLEX *a, INTEGER const lda, COMPLEX *af, INTEGER const ldaf, INTEGER *ipiv, char *equed, REAL *r, REAL *c, COMPLEX *b, INTEGER const ldb, COMPLEX *x, INTEGER const ldx, REAL &rcond, REAL *ferr, REAL *berr, COMPLEX *work, REAL *rwork, INTEGER &info) {
     //
-    // -- LAPACK driver routine --
-    //
-    //
-    //
-    //
     info = 0;
     bool nofact = Mlsame(fact, "N");
     bool equil = Mlsame(fact, "E");
@@ -180,7 +175,7 @@ void Cgesvx(const char *fact, const char *trans, INTEGER const n, INTEGER const 
             } else {
                 rpvgrw = Clange("M", n, info, a, lda, rwork) / rpvgrw;
             }
-            rwork[1 - 1] = rpvgrw;
+            rwork[0] = rpvgrw;
             rcond = zero;
             return;
         }
@@ -248,7 +243,7 @@ void Cgesvx(const char *fact, const char *trans, INTEGER const n, INTEGER const 
         info = n + 1;
     }
     //
-    rwork[1 - 1] = rpvgrw;
+    rwork[0] = rpvgrw;
     //
     // End of Cgesvx
     //
