@@ -120,6 +120,9 @@ for line in sys.stdin:
 # Prepend MPLAPACK BLAS header
 cat "$header" "$tmp_body" > "$tmp_cpp"
 
+python3 "${script_dir}/strip_boilerplate_comments.py" "$tmp_cpp"
+python3 "${script_dir}/add_attribution.py" "$tmp_cpp" "$src"
+
 # Format with clang-format (C++ indentation and style)
 clang-format-19 -i -style '{
     BasedOnStyle: llvm,
@@ -133,10 +136,6 @@ clang-format-19 -i -style '{
     AlwaysBreakTemplateDeclarations: No,
     BreakBeforeConceptDeclarations: Never,
   }' "$tmp_cpp"
-
-
-python3 "${script_dir}/strip_boilerplate_comments.py" "$tmp_cpp"
-python3 "${script_dir}/add_attribution.py" "$tmp_cpp" "$src"
 
 # Overwrite the generated C++ file with the formatted version
 cp "$tmp_cpp" "$cpp_generated"
