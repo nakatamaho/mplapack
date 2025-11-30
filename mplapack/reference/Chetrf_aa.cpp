@@ -88,7 +88,7 @@ void Chetrf_aa(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda,
     }
     ipiv[1 - 1] = 1;
     if (n == 1) {
-        a[(1 - 1)] = a[(1 - 1)].real();
+        a[0] = a[0].real();
         return;
     }
     //
@@ -106,7 +106,7 @@ void Chetrf_aa(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda,
         //
         // copy first row A(1, 1:N) into H(1:n) (stored in WORK(1:N))
         //
-        Ccopy(n, &a[(1 - 1)], lda, &work[1 - 1], 1);
+        Ccopy(n, &a[0], lda, &work[1 - 1], 1);
         //
         // J is the main loop index, increasing from 1 to N in steps of
         // JB, where JB is the number of columns factorized by Clahef;
@@ -215,7 +215,7 @@ void Chetrf_aa(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda,
         // copy first column A(1:N, 1) into H(1:N, 1)
         // (stored in WORK(1:N))
         //
-        Ccopy(n, &a[(1 - 1)], 1, &work[1 - 1], 1);
+        Ccopy(n, &a[0], 1, &work[1 - 1], 1);
         //
         // J is the main loop index, increasing from 1 to N in steps of
         // JB, where JB is the number of columns factorized by Clahef;

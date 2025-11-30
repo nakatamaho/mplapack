@@ -169,7 +169,7 @@ void Ctgsna(const char *job, const char *howmny, bool *select, INTEGER const n, 
         //
         if (wantdf) {
             if (n == 1) {
-                dif[ks - 1] = Rlapy2(abs(a[(1 - 1)]), abs(b[(1 - 1)]));
+                dif[ks - 1] = Rlapy2(abs(a[0]), abs(b[0]));
             } else {
                 //
                 // Estimate the reciprocal condition number of the k-th

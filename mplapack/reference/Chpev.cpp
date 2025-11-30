@@ -62,7 +62,7 @@ void Chpev(const char *jobz, const char *uplo, INTEGER const n, COMPLEX *ap, REA
         w[1 - 1] = ap[1 - 1].real();
         rwork[1 - 1] = 1;
         if (wantz) {
-            z[(1 - 1)] = one;
+            z[0] = one;
         }
         return;
     }

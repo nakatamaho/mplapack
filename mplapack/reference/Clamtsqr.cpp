@@ -106,7 +106,7 @@ void Clamtsqr(const char *side, const char *trans, INTEGER const m, INTEGER cons
         ctr = (m - k) / (mb - k);
         if (kk > 0) {
             ii = m - kk + 1;
-            Ctpmqrt("L", "N", kk, n, k, 0, nb, &a[(ii - 1)], lda, &t[((ctr * k + 1) - 1) * ldt], ldt, &c[(1 - 1)], ldc, &c[(ii - 1)], ldc, work, info);
+            Ctpmqrt("L", "N", kk, n, k, 0, nb, &a[(ii - 1)], lda, &t[((ctr * k + 1) - 1) * ldt], ldt, &c[0], ldc, &c[(ii - 1)], ldc, work, info);
         } else {
             ii = m + 1;
         }
@@ -116,13 +116,13 @@ void Clamtsqr(const char *side, const char *trans, INTEGER const m, INTEGER cons
             // Multiply Q to the current block of C (I:I+MB,1:N)
             //
             ctr = ctr - 1;
-            Ctpmqrt("L", "N", mb - k, n, k, 0, nb, &a[(i - 1)], lda, &t[((ctr * k + 1) - 1) * ldt], ldt, &c[(1 - 1)], ldc, &c[(i - 1)], ldc, work, info);
+            Ctpmqrt("L", "N", mb - k, n, k, 0, nb, &a[(i - 1)], lda, &t[((ctr * k + 1) - 1) * ldt], ldt, &c[0], ldc, &c[(i - 1)], ldc, work, info);
             //
         }
         //
         // Multiply Q to the first block of C (1:MB,1:N)
         //
-        Cgemqrt("L", "N", mb, n, k, nb, &a[(1 - 1)], lda, t, ldt, &c[(1 - 1)], ldc, work, info);
+        Cgemqrt("L", "N", mb, n, k, nb, &a[0], lda, t, ldt, &c[0], ldc, work, info);
         //
     } else if (left && tran) {
         //
@@ -131,13 +131,13 @@ void Clamtsqr(const char *side, const char *trans, INTEGER const m, INTEGER cons
         kk = mod((m - k), (mb - k));
         ii = m - kk + 1;
         ctr = 1;
-        Cgemqrt("L", "C", mb, n, k, nb, &a[(1 - 1)], lda, t, ldt, &c[(1 - 1)], ldc, work, info);
+        Cgemqrt("L", "C", mb, n, k, nb, &a[0], lda, t, ldt, &c[0], ldc, work, info);
         //
         for (i = mb + 1; i <= ii - mb + k; i = i + (mb - k)) {
             //
             // Multiply Q to the current block of C (I:I+MB,1:N)
             //
-            Ctpmqrt("L", "C", mb - k, n, k, 0, nb, &a[(i - 1)], lda, &t[((ctr * k + 1) - 1) * ldt], ldt, &c[(1 - 1)], ldc, &c[(i - 1)], ldc, work, info);
+            Ctpmqrt("L", "C", mb - k, n, k, 0, nb, &a[(i - 1)], lda, &t[((ctr * k + 1) - 1) * ldt], ldt, &c[0], ldc, &c[(i - 1)], ldc, work, info);
             ctr++;
             //
         }
@@ -145,7 +145,7 @@ void Clamtsqr(const char *side, const char *trans, INTEGER const m, INTEGER cons
             //
             // Multiply Q to the last block of C
             //
-            Ctpmqrt("L", "C", kk, n, k, 0, nb, &a[(ii - 1)], lda, &t[((ctr * k + 1) - 1) * ldt], ldt, &c[(1 - 1)], ldc, &c[(ii - 1)], ldc, work, info);
+            Ctpmqrt("L", "C", kk, n, k, 0, nb, &a[(ii - 1)], lda, &t[((ctr * k + 1) - 1) * ldt], ldt, &c[0], ldc, &c[(ii - 1)], ldc, work, info);
             //
         }
         //
@@ -157,7 +157,7 @@ void Clamtsqr(const char *side, const char *trans, INTEGER const m, INTEGER cons
         ctr = (n - k) / (mb - k);
         if (kk > 0) {
             ii = n - kk + 1;
-            Ctpmqrt("R", "C", m, kk, k, 0, nb, &a[(ii - 1)], lda, &t[((ctr * k + 1) - 1) * ldt], ldt, &c[(1 - 1)], ldc, &c[(ii - 1) * ldc], ldc, work, info);
+            Ctpmqrt("R", "C", m, kk, k, 0, nb, &a[(ii - 1)], lda, &t[((ctr * k + 1) - 1) * ldt], ldt, &c[0], ldc, &c[(ii - 1) * ldc], ldc, work, info);
         } else {
             ii = n + 1;
         }
@@ -167,13 +167,13 @@ void Clamtsqr(const char *side, const char *trans, INTEGER const m, INTEGER cons
             // Multiply Q to the current block of C (1:M,I:I+MB)
             //
             ctr = ctr - 1;
-            Ctpmqrt("R", "C", m, mb - k, k, 0, nb, &a[(i - 1)], lda, &t[((ctr * k + 1) - 1) * ldt], ldt, &c[(1 - 1)], ldc, &c[(i - 1) * ldc], ldc, work, info);
+            Ctpmqrt("R", "C", m, mb - k, k, 0, nb, &a[(i - 1)], lda, &t[((ctr * k + 1) - 1) * ldt], ldt, &c[0], ldc, &c[(i - 1) * ldc], ldc, work, info);
             //
         }
         //
         // Multiply Q to the first block of C (1:M,1:MB)
         //
-        Cgemqrt("R", "C", m, mb, k, nb, &a[(1 - 1)], lda, t, ldt, &c[(1 - 1)], ldc, work, info);
+        Cgemqrt("R", "C", m, mb, k, nb, &a[0], lda, t, ldt, &c[0], ldc, work, info);
         //
     } else if (right && notran) {
         //
@@ -182,13 +182,13 @@ void Clamtsqr(const char *side, const char *trans, INTEGER const m, INTEGER cons
         kk = mod((n - k), (mb - k));
         ii = n - kk + 1;
         ctr = 1;
-        Cgemqrt("R", "N", m, mb, k, nb, &a[(1 - 1)], lda, t, ldt, &c[(1 - 1)], ldc, work, info);
+        Cgemqrt("R", "N", m, mb, k, nb, &a[0], lda, t, ldt, &c[0], ldc, work, info);
         //
         for (i = mb + 1; i <= ii - mb + k; i = i + (mb - k)) {
             //
             // Multiply Q to the current block of C (1:M,I:I+MB)
             //
-            Ctpmqrt("R", "N", m, mb - k, k, 0, nb, &a[(i - 1)], lda, &t[((ctr * k + 1) - 1) * ldt], ldt, &c[(1 - 1)], ldc, &c[(i - 1) * ldc], ldc, work, info);
+            Ctpmqrt("R", "N", m, mb - k, k, 0, nb, &a[(i - 1)], lda, &t[((ctr * k + 1) - 1) * ldt], ldt, &c[0], ldc, &c[(i - 1) * ldc], ldc, work, info);
             ctr++;
             //
         }
@@ -196,7 +196,7 @@ void Clamtsqr(const char *side, const char *trans, INTEGER const m, INTEGER cons
             //
             // Multiply Q to the last block of C
             //
-            Ctpmqrt("R", "N", m, kk, k, 0, nb, &a[(ii - 1)], lda, &t[((ctr * k + 1) - 1) * ldt], ldt, &c[(1 - 1)], ldc, &c[(ii - 1) * ldc], ldc, work, info);
+            Ctpmqrt("R", "N", m, kk, k, 0, nb, &a[(ii - 1)], lda, &t[((ctr * k + 1) - 1) * ldt], ldt, &c[0], ldc, &c[(ii - 1) * ldc], ldc, work, info);
             //
         }
         //

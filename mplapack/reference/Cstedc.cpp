@@ -135,7 +135,7 @@ void Cstedc(const char *compz, INTEGER const n, REAL *d, REAL *e, COMPLEX *z, IN
     }
     if (n == 1) {
         if (icompz != 0) {
-            z[(1 - 1)] = one;
+            z[0] = one;
         }
         return;
     }

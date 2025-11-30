@@ -120,7 +120,7 @@ void Ctrsna(const char *job, const char *howmny, bool *select, INTEGER const n, 
             s[1 - 1] = one;
         }
         if (wantsp) {
-            sep[1 - 1] = abs(t[(1 - 1)]);
+            sep[1 - 1] = abs(t[0]);
         }
         return;
     }
@@ -166,7 +166,7 @@ void Ctrsna(const char *job, const char *howmny, bool *select, INTEGER const n, 
             // Form  C = T22 - lambda*I in WORK(2:N,2:N).
             //
             for (i = 2; i <= n; i = i + 1) {
-                work[(i - 1) + (i - 1) * ldwork] = work[(i - 1) + (i - 1) * ldwork] - work[(1 - 1)];
+                work[(i - 1) + (i - 1) * ldwork] = work[(i - 1) + (i - 1) * ldwork] - work[0];
             }
             //
             // Estimate a lower bound for the 1-norm of inv(C**H). The 1st

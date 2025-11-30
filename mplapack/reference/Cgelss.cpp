@@ -465,8 +465,8 @@ void Cgelss(INTEGER const m, INTEGER const n, INTEGER const nrhs, COMPLEX *a, IN
                 Clacpy("G", m, bl, &work[iwork - 1], m, &b[(i - 1) * ldb], ldb);
             }
         } else {
-            Cgemv("C", m, m, cone, &work[il - 1], ldwork, &b[(1 - 1)], 1, czero, &work[iwork - 1], 1);
-            Ccopy(m, &work[iwork - 1], 1, &b[(1 - 1)], 1);
+            Cgemv("C", m, m, cone, &work[il - 1], ldwork, &b[0], 1, czero, &work[iwork - 1], 1);
+            Ccopy(m, &work[iwork - 1], 1, &b[0], 1);
         }
         //
         // Zero out below first M rows of B

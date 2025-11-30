@@ -121,8 +121,8 @@ void Rbdsdc(const char *uplo, const char *compq, INTEGER const n, REAL *d, REAL 
             q[1 - 1] = sign(one, d[1 - 1]);
             q[(1 + smlsiz * n) - 1] = one;
         } else if (icompq == 2) {
-            u[(1 - 1)] = sign(one, d[1 - 1]);
-            vt[(1 - 1)] = one;
+            u[0] = sign(one, d[1 - 1]);
+            vt[0] = one;
         }
         d[1 - 1] = abs(d[1 - 1]);
         return;

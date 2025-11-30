@@ -77,10 +77,10 @@ void Rlasrt(const char *id, INTEGER const n, REAL *d, INTEGER &info) {
     }
     //
     stkpnt = 1;
-    stack[(1 - 1) + (1 - 1) * ldstack] = 1;
-    stack[(2 - 1) + (1 - 1) * ldstack] = n;
+    stack[0] = 1;
+    stack[(2 - 1)] = n;
 statement_10:
-    start = stack[(1 - 1) + (stkpnt - 1) * ldstack];
+    start = stack[(stkpnt - 1) * ldstack];
     endd = stack[(2 - 1) + (stkpnt - 1) * ldstack];
     stkpnt = stkpnt - 1;
     if (endd - start <= select && endd - start > 0) {
@@ -176,17 +176,17 @@ statement_10:
             }
             if (j - start > endd - j - 1) {
                 stkpnt++;
-                stack[(1 - 1) + (stkpnt - 1) * ldstack] = start;
+                stack[(stkpnt - 1) * ldstack] = start;
                 stack[(2 - 1) + (stkpnt - 1) * ldstack] = j;
                 stkpnt++;
-                stack[(1 - 1) + (stkpnt - 1) * ldstack] = j + 1;
+                stack[(stkpnt - 1) * ldstack] = j + 1;
                 stack[(2 - 1) + (stkpnt - 1) * ldstack] = endd;
             } else {
                 stkpnt++;
-                stack[(1 - 1) + (stkpnt - 1) * ldstack] = j + 1;
+                stack[(stkpnt - 1) * ldstack] = j + 1;
                 stack[(2 - 1) + (stkpnt - 1) * ldstack] = endd;
                 stkpnt++;
-                stack[(1 - 1) + (stkpnt - 1) * ldstack] = start;
+                stack[(stkpnt - 1) * ldstack] = start;
                 stack[(2 - 1) + (stkpnt - 1) * ldstack] = j;
             }
         } else {
@@ -214,17 +214,17 @@ statement_10:
             }
             if (j - start > endd - j - 1) {
                 stkpnt++;
-                stack[(1 - 1) + (stkpnt - 1) * ldstack] = start;
+                stack[(stkpnt - 1) * ldstack] = start;
                 stack[(2 - 1) + (stkpnt - 1) * ldstack] = j;
                 stkpnt++;
-                stack[(1 - 1) + (stkpnt - 1) * ldstack] = j + 1;
+                stack[(stkpnt - 1) * ldstack] = j + 1;
                 stack[(2 - 1) + (stkpnt - 1) * ldstack] = endd;
             } else {
                 stkpnt++;
-                stack[(1 - 1) + (stkpnt - 1) * ldstack] = j + 1;
+                stack[(stkpnt - 1) * ldstack] = j + 1;
                 stack[(2 - 1) + (stkpnt - 1) * ldstack] = endd;
                 stkpnt++;
-                stack[(1 - 1) + (stkpnt - 1) * ldstack] = start;
+                stack[(stkpnt - 1) * ldstack] = start;
                 stack[(2 - 1) + (stkpnt - 1) * ldstack] = j;
             }
         }

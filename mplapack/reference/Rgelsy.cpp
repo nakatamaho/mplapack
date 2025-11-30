@@ -183,9 +183,9 @@ void Rgelsy(INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEG
     //
     work[ismin - 1] = one;
     work[ismax - 1] = one;
-    smax = abs(a[(1 - 1)]);
+    smax = abs(a[0]);
     smin = smax;
-    if (abs(a[(1 - 1)]) == zero) {
+    if (abs(a[0]) == zero) {
         rank = 0;
         Rlaset("F", max(m, n), nrhs, zero, zero, b, ldb);
         goto statement_70;

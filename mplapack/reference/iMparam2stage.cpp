@@ -147,7 +147,7 @@ INTEGER iMparam2stage(INTEGER const ispec, const char *name, const char *opts, I
         // matrix (V,T) of the second stage. should be >= 1.
         //
         // Will add the VECT OPTION HERE next release
-        vect = opts[(1 - 1)];
+        vect = opts[0];
         if (vect == 'N') {
             lhous = max((INTEGER)1, 4 * ni);
         } else {
@@ -176,7 +176,7 @@ INTEGER iMparam2stage(INTEGER const ispec, const char *name, const char *opts, I
         // + max((INTEGER)2*KD*KD, KD*NTHREADS)
         // + (KD+1)*N
         lwork = -1;
-        subnam[(1 - 1)] = prec;
+        subnam[0] = prec;
         subnam[(2 - 1)] = 'G';
         subnam[(3 - 1)] = 'E';
         subnam[(4 - 1)] = 'Q';

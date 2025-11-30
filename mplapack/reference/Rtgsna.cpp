@@ -255,7 +255,7 @@ void Rtgsna(const char *job, const char *howmny, bool *select, INTEGER const n, 
         //
         if (wantdf) {
             if (n == 1) {
-                dif[ks - 1] = Rlapy2(a[(1 - 1)], b[(1 - 1)]);
+                dif[ks - 1] = Rlapy2(a[0], b[0]);
                 goto statement_20;
             }
             //

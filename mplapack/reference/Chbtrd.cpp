@@ -309,7 +309,7 @@ void Chbtrd(const char *vect, const char *uplo, INTEGER const n, INTEGER const k
             j1 = kdn + 2;
             j2 = 1;
             //
-            ab[(1 - 1)] = ab[(1 - 1)].real();
+            ab[0] = ab[0].real();
             for (i = 1; i <= n - 2; i = i + 1) {
                 //
                 // Reduce i-th column of matrix to tridiagonal form

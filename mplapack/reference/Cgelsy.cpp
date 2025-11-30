@@ -166,9 +166,9 @@ void Cgelsy(INTEGER const m, INTEGER const n, INTEGER const nrhs, COMPLEX *a, IN
     //
     work[ismin - 1] = cone;
     work[ismax - 1] = cone;
-    smax = abs(a[(1 - 1)]);
+    smax = abs(a[0]);
     smin = smax;
-    if (abs(a[(1 - 1)]) == zero) {
+    if (abs(a[0]) == zero) {
         rank = 0;
         Claset("F", max(m, n), nrhs, czero, czero, b, ldb);
         goto statement_70;

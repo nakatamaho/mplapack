@@ -166,7 +166,7 @@ statement_40:
                     //
                     // Build a 2-by-2 system Z * x = RHS
                     //
-                    z[(1 - 1)] = a[(is - 1) + (is - 1) * lda];
+                    z[0] = a[(is - 1) + (is - 1) * lda];
                     z[(2 - 1)] = d[(is - 1) + (is - 1) * ldd];
                     z[(2 - 1) * ldz] = -b[(js - 1) + (js - 1) * ldb];
                     z[(2 - 1) + (2 - 1) * ldz] = -e[(js - 1) + (js - 1) * lde];
@@ -218,7 +218,7 @@ statement_40:
                     //
                     // Build a 4-by-4 system Z * x = RHS
                     //
-                    z[(1 - 1)] = a[(is - 1) + (is - 1) * lda];
+                    z[0] = a[(is - 1) + (is - 1) * lda];
                     z[(2 - 1)] = zero;
                     z[(3 - 1)] = d[(is - 1) + (is - 1) * ldd];
                     z[(4 - 1)] = zero;
@@ -290,7 +290,7 @@ statement_40:
                     //
                     // Build a 4-by-4 system Z * x = RHS
                     //
-                    z[(1 - 1)] = a[(is - 1) + (is - 1) * lda];
+                    z[0] = a[(is - 1) + (is - 1) * lda];
                     z[(2 - 1)] = a[(isp1 - 1) + (is - 1) * lda];
                     z[(3 - 1)] = d[(is - 1) + (is - 1) * ldd];
                     z[(4 - 1)] = zero;
@@ -361,7 +361,7 @@ statement_40:
                     //
                     Rlaset("F", ldz, ldz, zero, zero, z, ldz);
                     //
-                    z[(1 - 1)] = a[(is - 1) + (is - 1) * lda];
+                    z[0] = a[(is - 1) + (is - 1) * lda];
                     z[(2 - 1)] = a[(isp1 - 1) + (is - 1) * lda];
                     z[(5 - 1)] = d[(is - 1) + (is - 1) * ldd];
                     //
@@ -481,7 +481,7 @@ statement_40:
                     //
                     // Build a 2-by-2 system Z**T * x = RHS
                     //
-                    z[(1 - 1)] = a[(is - 1) + (is - 1) * lda];
+                    z[0] = a[(is - 1) + (is - 1) * lda];
                     z[(2 - 1)] = -b[(js - 1) + (js - 1) * ldb];
                     z[(2 - 1) * ldz] = d[(is - 1) + (is - 1) * ldd];
                     z[(2 - 1) + (2 - 1) * ldz] = -e[(js - 1) + (js - 1) * lde];
@@ -532,7 +532,7 @@ statement_40:
                     //
                     // Build a 4-by-4 system Z**T * x = RHS
                     //
-                    z[(1 - 1)] = a[(is - 1) + (is - 1) * lda];
+                    z[0] = a[(is - 1) + (is - 1) * lda];
                     z[(2 - 1)] = zero;
                     z[(3 - 1)] = -b[(js - 1) + (js - 1) * ldb];
                     z[(4 - 1)] = -b[(jsp1 - 1) + (js - 1) * ldb];
@@ -599,7 +599,7 @@ statement_40:
                     //
                     // Build a 4-by-4 system Z**T * x = RHS
                     //
-                    z[(1 - 1)] = a[(is - 1) + (is - 1) * lda];
+                    z[0] = a[(is - 1) + (is - 1) * lda];
                     z[(2 - 1)] = a[(is - 1) + (isp1 - 1) * lda];
                     z[(3 - 1)] = -b[(js - 1) + (js - 1) * ldb];
                     z[(4 - 1)] = zero;
@@ -667,7 +667,7 @@ statement_40:
                     //
                     Rlaset("F", ldz, ldz, zero, zero, z, ldz);
                     //
-                    z[(1 - 1)] = a[(is - 1) + (is - 1) * lda];
+                    z[0] = a[(is - 1) + (is - 1) * lda];
                     z[(2 - 1)] = a[(is - 1) + (isp1 - 1) * lda];
                     z[(5 - 1)] = -b[(js - 1) + (js - 1) * ldb];
                     z[(7 - 1)] = -b[(jsp1 - 1) + (js - 1) * ldb];

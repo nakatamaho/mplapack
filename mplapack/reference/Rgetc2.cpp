@@ -55,9 +55,9 @@ void Rgetc2(INTEGER const n, REAL *a, INTEGER const lda, INTEGER *ipiv, INTEGER 
     if (n == 1) {
         ipiv[1 - 1] = 1;
         jpiv[1 - 1] = 1;
-        if (abs(a[(1 - 1)]) < smlnum) {
+        if (abs(a[0]) < smlnum) {
             info = 1;
-            a[(1 - 1)] = smlnum;
+            a[0] = smlnum;
         }
         return;
     }

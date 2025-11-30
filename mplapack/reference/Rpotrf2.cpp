@@ -68,14 +68,14 @@ void Rpotrf2(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INTE
         //
         // Test for non-positive-definiteness
         //
-        if (a[(1 - 1)] <= zero || Risnan(a[(1 - 1)])) {
+        if (a[0] <= zero || Risnan(a[0])) {
             info = 1;
             return;
         }
         //
         // Factor
         //
-        a[(1 - 1)] = sqrt(a[(1 - 1)]);
+        a[0] = sqrt(a[0]);
         //
         // Use recursive code
         //
@@ -85,7 +85,7 @@ void Rpotrf2(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INTE
         //
         // Factor A11
         //
-        Rpotrf2(uplo, n1, &a[(1 - 1)], lda, iinfo);
+        Rpotrf2(uplo, n1, &a[0], lda, iinfo);
         if (iinfo != 0) {
             info = iinfo;
             return;
@@ -97,7 +97,7 @@ void Rpotrf2(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INTE
             //
             // Update and scale A12
             //
-            Rtrsm("L", "U", "T", "N", n1, n2, one, &a[(1 - 1)], lda, &a[((n1 + 1) - 1) * lda], lda);
+            Rtrsm("L", "U", "T", "N", n1, n2, one, &a[0], lda, &a[((n1 + 1) - 1) * lda], lda);
             //
             // Update and factor A22
             //
@@ -114,7 +114,7 @@ void Rpotrf2(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INTE
             //
             // Update and scale A21
             //
-            Rtrsm("R", "L", "T", "N", n2, n1, one, &a[(1 - 1)], lda, &a[((n1 + 1) - 1)], lda);
+            Rtrsm("R", "L", "T", "N", n2, n1, one, &a[0], lda, &a[((n1 + 1) - 1)], lda);
             //
             // Update and factor A22
             //

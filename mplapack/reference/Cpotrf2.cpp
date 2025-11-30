@@ -70,7 +70,7 @@ void Cpotrf2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, I
         //
         // Test for non-positive-definiteness
         //
-        ajj = a[(1 - 1)].real();
+        ajj = a[0].real();
         if (ajj <= zero || Risnan(ajj)) {
             info = 1;
             return;
@@ -78,7 +78,7 @@ void Cpotrf2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, I
         //
         // Factor
         //
-        a[(1 - 1)] = sqrt(ajj);
+        a[0] = sqrt(ajj);
         //
         // Use recursive code
         //
@@ -88,7 +88,7 @@ void Cpotrf2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, I
         //
         // Factor A11
         //
-        Cpotrf2(uplo, n1, &a[(1 - 1)], lda, iinfo);
+        Cpotrf2(uplo, n1, &a[0], lda, iinfo);
         if (iinfo != 0) {
             info = iinfo;
             return;
@@ -100,7 +100,7 @@ void Cpotrf2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, I
             //
             // Update and scale A12
             //
-            Ctrsm("L", "U", "C", "N", n1, n2, cone, &a[(1 - 1)], lda, &a[((n1 + 1) - 1) * lda], lda);
+            Ctrsm("L", "U", "C", "N", n1, n2, cone, &a[0], lda, &a[((n1 + 1) - 1) * lda], lda);
             //
             // Update and factor A22
             //
@@ -117,7 +117,7 @@ void Cpotrf2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, I
             //
             // Update and scale A21
             //
-            Ctrsm("R", "L", "C", "N", n2, n1, cone, &a[(1 - 1)], lda, &a[((n1 + 1) - 1)], lda);
+            Ctrsm("R", "L", "C", "N", n2, n1, cone, &a[0], lda, &a[((n1 + 1) - 1)], lda);
             //
             // Update and factor A22
             //

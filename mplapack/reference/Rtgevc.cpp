@@ -241,11 +241,11 @@ void Rtgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
     // blocks) of A and B to check for possible overflow in the
     // triangular solver.
     //
-    anorm = abs(s[(1 - 1)]);
+    anorm = abs(s[0]);
     if (n > 1) {
         anorm += abs(s[(2 - 1)]);
     }
-    bnorm = abs(p[(1 - 1)]);
+    bnorm = abs(p[0]);
     work[1 - 1] = zero;
     work[(n + 1) - 1] = zero;
     //

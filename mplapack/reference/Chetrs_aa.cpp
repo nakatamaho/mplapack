@@ -96,7 +96,7 @@ void Chetrs_aa(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a
         //
         // Compute T \ B -> B   [ T \ (U**H \P**T * B) ]
         //
-        Clacpy("F", 1, n, &a[(1 - 1)], lda + 1, &work[n - 1], 1);
+        Clacpy("F", 1, n, &a[0], lda + 1, &work[n - 1], 1);
         if (n > 1) {
             Clacpy("F", 1, n - 1, &a[(2 - 1) * lda], lda + 1, &work[(2 * n) - 1], 1);
             Clacpy("F", 1, n - 1, &a[(2 - 1) * lda], lda + 1, &work[1 - 1], 1);
@@ -148,7 +148,7 @@ void Chetrs_aa(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a
         //
         // Compute T \ B -> B   [ T \ (L \P**T * B) ]
         //
-        Clacpy("F", 1, n, &a[(1 - 1)], lda + 1, &work[n - 1], 1);
+        Clacpy("F", 1, n, &a[0], lda + 1, &work[n - 1], 1);
         if (n > 1) {
             Clacpy("F", 1, n - 1, &a[(2 - 1)], lda + 1, &work[1 - 1], 1);
             Clacpy("F", 1, n - 1, &a[(2 - 1)], lda + 1, &work[(2 * n) - 1], 1);

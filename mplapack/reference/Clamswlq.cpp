@@ -103,7 +103,7 @@ void Clamswlq(const char *side, const char *trans, INTEGER const m, INTEGER cons
         //
         if (kk > 0) {
             ii = m - kk + 1;
-            Ctpmlqt("L", "C", kk, n, k, 0, mb, &a[(ii - 1) * lda], lda, &t[((ctr * k + 1) - 1) * ldt], ldt, &c[(1 - 1)], ldc, &c[(ii - 1)], ldc, work, info);
+            Ctpmlqt("L", "C", kk, n, k, 0, mb, &a[(ii - 1) * lda], lda, &t[((ctr * k + 1) - 1) * ldt], ldt, &c[0], ldc, &c[(ii - 1)], ldc, work, info);
         } else {
             ii = m + 1;
         }
@@ -113,13 +113,13 @@ void Clamswlq(const char *side, const char *trans, INTEGER const m, INTEGER cons
             // Multiply Q to the current block of C (1:M,I:I+NB)
             //
             ctr = ctr - 1;
-            Ctpmlqt("L", "C", nb - k, n, k, 0, mb, &a[(i - 1) * lda], lda, &t[((ctr * k + 1) - 1) * ldt], ldt, &c[(1 - 1)], ldc, &c[(i - 1)], ldc, work, info);
+            Ctpmlqt("L", "C", nb - k, n, k, 0, mb, &a[(i - 1) * lda], lda, &t[((ctr * k + 1) - 1) * ldt], ldt, &c[0], ldc, &c[(i - 1)], ldc, work, info);
             //
         }
         //
         // Multiply Q to the first block of C (1:M,1:NB)
         //
-        Cgemlqt("L", "C", nb, n, k, mb, &a[(1 - 1)], lda, t, ldt, &c[(1 - 1)], ldc, work, info);
+        Cgemlqt("L", "C", nb, n, k, mb, &a[0], lda, t, ldt, &c[0], ldc, work, info);
         //
     } else if (left && notran) {
         //
@@ -128,13 +128,13 @@ void Clamswlq(const char *side, const char *trans, INTEGER const m, INTEGER cons
         kk = mod((m - k), (nb - k));
         ii = m - kk + 1;
         ctr = 1;
-        Cgemlqt("L", "N", nb, n, k, mb, &a[(1 - 1)], lda, t, ldt, &c[(1 - 1)], ldc, work, info);
+        Cgemlqt("L", "N", nb, n, k, mb, &a[0], lda, t, ldt, &c[0], ldc, work, info);
         //
         for (i = nb + 1; i <= ii - nb + k; i = i + (nb - k)) {
             //
             // Multiply Q to the current block of C (I:I+NB,1:N)
             //
-            Ctpmlqt("L", "N", nb - k, n, k, 0, mb, &a[(i - 1) * lda], lda, &t[((ctr * k + 1) - 1) * ldt], ldt, &c[(1 - 1)], ldc, &c[(i - 1)], ldc, work, info);
+            Ctpmlqt("L", "N", nb - k, n, k, 0, mb, &a[(i - 1) * lda], lda, &t[((ctr * k + 1) - 1) * ldt], ldt, &c[0], ldc, &c[(i - 1)], ldc, work, info);
             ctr++;
             //
         }
@@ -142,7 +142,7 @@ void Clamswlq(const char *side, const char *trans, INTEGER const m, INTEGER cons
             //
             // Multiply Q to the last block of C
             //
-            Ctpmlqt("L", "N", kk, n, k, 0, mb, &a[(ii - 1) * lda], lda, &t[((ctr * k + 1) - 1) * ldt], ldt, &c[(1 - 1)], ldc, &c[(ii - 1)], ldc, work, info);
+            Ctpmlqt("L", "N", kk, n, k, 0, mb, &a[(ii - 1) * lda], lda, &t[((ctr * k + 1) - 1) * ldt], ldt, &c[0], ldc, &c[(ii - 1)], ldc, work, info);
             //
         }
         //
@@ -154,7 +154,7 @@ void Clamswlq(const char *side, const char *trans, INTEGER const m, INTEGER cons
         ctr = (n - k) / (nb - k);
         if (kk > 0) {
             ii = n - kk + 1;
-            Ctpmlqt("R", "N", m, kk, k, 0, mb, &a[(ii - 1) * lda], lda, &t[((ctr * k + 1) - 1) * ldt], ldt, &c[(1 - 1)], ldc, &c[(ii - 1) * ldc], ldc, work, info);
+            Ctpmlqt("R", "N", m, kk, k, 0, mb, &a[(ii - 1) * lda], lda, &t[((ctr * k + 1) - 1) * ldt], ldt, &c[0], ldc, &c[(ii - 1) * ldc], ldc, work, info);
         } else {
             ii = n + 1;
         }
@@ -164,13 +164,13 @@ void Clamswlq(const char *side, const char *trans, INTEGER const m, INTEGER cons
             // Multiply Q to the current block of C (1:M,I:I+MB)
             //
             ctr = ctr - 1;
-            Ctpmlqt("R", "N", m, nb - k, k, 0, mb, &a[(i - 1) * lda], lda, &t[((ctr * k + 1) - 1) * ldt], ldt, &c[(1 - 1)], ldc, &c[(i - 1) * ldc], ldc, work, info);
+            Ctpmlqt("R", "N", m, nb - k, k, 0, mb, &a[(i - 1) * lda], lda, &t[((ctr * k + 1) - 1) * ldt], ldt, &c[0], ldc, &c[(i - 1) * ldc], ldc, work, info);
             //
         }
         //
         // Multiply Q to the first block of C (1:M,1:MB)
         //
-        Cgemlqt("R", "N", m, nb, k, mb, &a[(1 - 1)], lda, t, ldt, &c[(1 - 1)], ldc, work, info);
+        Cgemlqt("R", "N", m, nb, k, mb, &a[0], lda, t, ldt, &c[0], ldc, work, info);
         //
     } else if (right && tran) {
         //
@@ -178,14 +178,14 @@ void Clamswlq(const char *side, const char *trans, INTEGER const m, INTEGER cons
         //
         kk = mod((n - k), (nb - k));
         ii = n - kk + 1;
-        Cgemlqt("R", "C", m, nb, k, mb, &a[(1 - 1)], lda, t, ldt, &c[(1 - 1)], ldc, work, info);
+        Cgemlqt("R", "C", m, nb, k, mb, &a[0], lda, t, ldt, &c[0], ldc, work, info);
         ctr = 1;
         //
         for (i = nb + 1; i <= ii - nb + k; i = i + (nb - k)) {
             //
             // Multiply Q to the current block of C (1:M,I:I+MB)
             //
-            Ctpmlqt("R", "C", m, nb - k, k, 0, mb, &a[(i - 1) * lda], lda, &t[((ctr * k + 1) - 1) * ldt], ldt, &c[(1 - 1)], ldc, &c[(i - 1) * ldc], ldc, work, info);
+            Ctpmlqt("R", "C", m, nb - k, k, 0, mb, &a[(i - 1) * lda], lda, &t[((ctr * k + 1) - 1) * ldt], ldt, &c[0], ldc, &c[(i - 1) * ldc], ldc, work, info);
             ctr++;
             //
         }
@@ -193,7 +193,7 @@ void Clamswlq(const char *side, const char *trans, INTEGER const m, INTEGER cons
             //
             // Multiply Q to the last block of C
             //
-            Ctpmlqt("R", "C", m, kk, k, 0, mb, &a[(ii - 1) * lda], lda, &t[((ctr * k + 1) - 1) * ldt], ldt, &c[(1 - 1)], ldc, &c[(ii - 1) * ldc], ldc, work, info);
+            Ctpmlqt("R", "C", m, kk, k, 0, mb, &a[(ii - 1) * lda], lda, &t[((ctr * k + 1) - 1) * ldt], ldt, &c[0], ldc, &c[(ii - 1) * ldc], ldc, work, info);
             //
         }
         //

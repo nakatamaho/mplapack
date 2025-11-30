@@ -147,7 +147,7 @@ void Rstevr(const char *jobz, const char *range, INTEGER const n, REAL *d, REAL 
             }
         }
         if (wantz) {
-            z[(1 - 1)] = one;
+            z[0] = one;
         }
         return;
     }

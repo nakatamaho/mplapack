@@ -268,7 +268,7 @@ void Cuncsd2by1(const char *jobu1, const char *jobu2, const char *jobv1t, INTEGE
             Cungqr(m - p, m - p, q, u2, ldu2, &work[itaup2 - 1], &work[iorgqr - 1], lorgqr, childinfo);
         }
         if (wantv1t && q > 0) {
-            v1t[(1 - 1)] = one;
+            v1t[0] = one;
             for (j = 2; j <= q; j = j + 1) {
                 v1t[(j - 1) * ldv1t] = zero;
                 v1t[(j - 1)] = zero;
@@ -304,7 +304,7 @@ void Cuncsd2by1(const char *jobu1, const char *jobu2, const char *jobv1t, INTEGE
         // Accumulate Householder reflectors
         //
         if (wantu1 && p > 0) {
-            u1[(1 - 1)] = one;
+            u1[0] = one;
             for (j = 2; j <= p; j = j + 1) {
                 u1[(j - 1) * ldu1] = zero;
                 u1[(j - 1)] = zero;
@@ -352,7 +352,7 @@ void Cuncsd2by1(const char *jobu1, const char *jobu2, const char *jobv1t, INTEGE
             Cungqr(p, p, q, u1, ldu1, &work[itaup1 - 1], &work[iorgqr - 1], lorgqr, childinfo);
         }
         if (wantu2 && m - p > 0) {
-            u2[(1 - 1)] = one;
+            u2[0] = one;
             for (j = 2; j <= m - p; j = j + 1) {
                 u2[(j - 1) * ldu2] = zero;
                 u2[(j - 1)] = zero;

@@ -175,15 +175,15 @@ void Cheevr_2stage(const char *jobz, const char *range, const char *uplo, INTEGE
         work[1 - 1] = 2;
         if (alleig || indeig) {
             m = 1;
-            w[1 - 1] = a[(1 - 1)].real();
+            w[1 - 1] = a[0].real();
         } else {
-            if (vl < a[(1 - 1)].real() && vu >= a[(1 - 1)].real()) {
+            if (vl < a[0].real() && vu >= a[0].real()) {
                 m = 1;
-                w[1 - 1] = a[(1 - 1)].real();
+                w[1 - 1] = a[0].real();
             }
         }
         if (wantz) {
-            z[(1 - 1)] = one;
+            z[0] = one;
             isuppz[1 - 1] = 1;
             isuppz[2 - 1] = 1;
         }

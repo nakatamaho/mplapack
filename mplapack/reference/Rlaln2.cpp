@@ -103,7 +103,7 @@ void Rlaln2(bool const ltrans, INTEGER const na, INTEGER const nw, REAL const sm
             //
             // C = ca A - w D
             //
-            csr = ca * a[(1 - 1)] - wr * d1;
+            csr = ca * a[0] - wr * d1;
             cnorm = abs(csr);
             //
             // If | C | < SMINI, use C = SMINI
@@ -116,7 +116,7 @@ void Rlaln2(bool const ltrans, INTEGER const na, INTEGER const nw, REAL const sm
             //
             // Check scaling for  X = B / C
             //
-            bnorm = abs(b[(1 - 1)]);
+            bnorm = abs(b[0]);
             if (cnorm < one && bnorm > one) {
                 if (bnorm > bignum * cnorm) {
                     scale = one / bnorm;
@@ -125,15 +125,15 @@ void Rlaln2(bool const ltrans, INTEGER const na, INTEGER const nw, REAL const sm
             //
             // Compute X
             //
-            x[(1 - 1)] = (b[(1 - 1)] * scale) / csr;
-            xnorm = abs(x[(1 - 1)]);
+            x[0] = (b[0] * scale) / csr;
+            xnorm = abs(x[0]);
         } else {
             //
             // Complex 1x1 system (w is complex)
             //
             // C = ca A - w D
             //
-            csr = ca * a[(1 - 1)] - wr * d1;
+            csr = ca * a[0] - wr * d1;
             csi = -wi * d1;
             cnorm = abs(csr) + abs(csi);
             //
@@ -148,7 +148,7 @@ void Rlaln2(bool const ltrans, INTEGER const na, INTEGER const nw, REAL const sm
             //
             // Check scaling for  X = B / C
             //
-            bnorm = abs(b[(1 - 1)]) + abs(b[(2 - 1) * ldb]);
+            bnorm = abs(b[0]) + abs(b[(2 - 1) * ldb]);
             if (cnorm < one && bnorm > one) {
                 if (bnorm > bignum * cnorm) {
                     scale = one / bnorm;
@@ -157,8 +157,8 @@ void Rlaln2(bool const ltrans, INTEGER const na, INTEGER const nw, REAL const sm
             //
             // Compute X
             //
-            Rladiv(scale * b[(1 - 1)], scale * b[(2 - 1) * ldb], csr, csi, x[(1 - 1)], x[(2 - 1) * ldx]);
-            xnorm = abs(x[(1 - 1)]) + abs(x[(2 - 1) * ldx]);
+            Rladiv(scale * b[0], scale * b[(2 - 1) * ldb], csr, csi, x[0], x[(2 - 1) * ldx]);
+            xnorm = abs(x[0]) + abs(x[(2 - 1) * ldx]);
         }
         //
     } else {
@@ -167,7 +167,7 @@ void Rlaln2(bool const ltrans, INTEGER const na, INTEGER const nw, REAL const sm
         //
         // Compute the real part of  C = ca A - w D  (or  ca A**T - w D )
         //
-        cr[(1 - 1)] = ca * a[(1 - 1)] - wr * d1;
+        cr[0] = ca * a[0] - wr * d1;
         cr[(2 - 1) + (2 - 1) * ldcr] = ca * a[(2 - 1) + (2 - 1) * lda] - wr * d2;
         if (ltrans) {
             cr[(2 - 1) * ldcr] = ca * a[(2 - 1)];
@@ -196,14 +196,14 @@ void Rlaln2(bool const ltrans, INTEGER const na, INTEGER const nw, REAL const sm
             // If norm(C) < SMINI, use SMINI*identity.
             //
             if (cmax < smini) {
-                bnorm = max(abs(b[(1 - 1)]), abs(b[(2 - 1)]));
+                bnorm = max(abs(b[0]), abs(b[(2 - 1)]));
                 if (smini < one && bnorm > one) {
                     if (bnorm > bignum * smini) {
                         scale = one / bnorm;
                     }
                 }
                 temp = scale / smini;
-                x[(1 - 1)] = temp * b[(1 - 1)];
+                x[0] = temp * b[0];
                 x[(2 - 1)] = temp * b[(2 - 1)];
                 xnorm = temp * bnorm;
                 info = 1;
@@ -228,9 +228,9 @@ void Rlaln2(bool const ltrans, INTEGER const na, INTEGER const nw, REAL const sm
             }
             if (rswap[icmax - 1]) {
                 br1 = b[(2 - 1)];
-                br2 = b[(1 - 1)];
+                br2 = b[0];
             } else {
-                br1 = b[(1 - 1)];
+                br1 = b[0];
                 br2 = b[(2 - 1)];
             }
             br2 = br2 - lr21 * br1;
@@ -244,10 +244,10 @@ void Rlaln2(bool const ltrans, INTEGER const na, INTEGER const nw, REAL const sm
             xr2 = (br2 * scale) / ur22;
             xr1 = (scale * br1) * ur11r - xr2 * (ur11r * ur12);
             if (zswap[icmax - 1]) {
-                x[(1 - 1)] = xr2;
+                x[0] = xr2;
                 x[(2 - 1)] = xr1;
             } else {
-                x[(1 - 1)] = xr1;
+                x[0] = xr1;
                 x[(2 - 1)] = xr2;
             }
             xnorm = max(abs(xr1), abs(xr2));
@@ -257,7 +257,7 @@ void Rlaln2(bool const ltrans, INTEGER const na, INTEGER const nw, REAL const sm
             if (xnorm > one && cmax > one) {
                 if (xnorm > bignum / cmax) {
                     temp = cmax / bignum;
-                    x[(1 - 1)] = temp * x[(1 - 1)];
+                    x[0] = temp * x[0];
                     x[(2 - 1)] = temp * x[(2 - 1)];
                     xnorm = temp * xnorm;
                     scale = temp * scale;
@@ -269,7 +269,7 @@ void Rlaln2(bool const ltrans, INTEGER const na, INTEGER const nw, REAL const sm
             //
             // Find the largest element in C
             //
-            ci[(1 - 1)] = -wi * d1;
+            ci[0] = -wi * d1;
             ci[(2 - 1)] = zero;
             ci[(2 - 1) * ldci] = zero;
             ci[(2 - 1) + (2 - 1) * ldci] = -wi * d2;
@@ -286,14 +286,14 @@ void Rlaln2(bool const ltrans, INTEGER const na, INTEGER const nw, REAL const sm
             // If norm(C) < SMINI, use SMINI*identity.
             //
             if (cmax < smini) {
-                bnorm = max(abs(b[(1 - 1)]) + abs(b[(2 - 1) * ldb]), abs(b[(2 - 1)]) + abs(b[(2 - 1) + (2 - 1) * ldb]));
+                bnorm = max(abs(b[0]) + abs(b[(2 - 1) * ldb]), abs(b[(2 - 1)]) + abs(b[(2 - 1) + (2 - 1) * ldb]));
                 if (smini < one && bnorm > one) {
                     if (bnorm > bignum * smini) {
                         scale = one / bnorm;
                     }
                 }
                 temp = scale / smini;
-                x[(1 - 1)] = temp * b[(1 - 1)];
+                x[0] = temp * b[0];
                 x[(2 - 1)] = temp * b[(2 - 1)];
                 x[(2 - 1) * ldx] = temp * b[(2 - 1) * ldb];
                 x[(2 - 1) + (2 - 1) * ldx] = temp * b[(2 - 1) + (2 - 1) * ldb];
@@ -354,12 +354,12 @@ void Rlaln2(bool const ltrans, INTEGER const na, INTEGER const nw, REAL const sm
                 info = 1;
             }
             if (rswap[icmax - 1]) {
-                br2 = b[(1 - 1)];
+                br2 = b[0];
                 br1 = b[(2 - 1)];
                 bi2 = b[(2 - 1) * ldb];
                 bi1 = b[(2 - 1) + (2 - 1) * ldb];
             } else {
-                br1 = b[(1 - 1)];
+                br1 = b[0];
                 br2 = b[(2 - 1)];
                 bi1 = b[(2 - 1) * ldb];
                 bi2 = b[(2 - 1) + (2 - 1) * ldb];
@@ -381,12 +381,12 @@ void Rlaln2(bool const ltrans, INTEGER const na, INTEGER const nw, REAL const sm
             xr1 = ur11r * br1 - ui11r * bi1 - ur12s * xr2 + ui12s * xi2;
             xi1 = ui11r * br1 + ur11r * bi1 - ui12s * xr2 - ur12s * xi2;
             if (zswap[icmax - 1]) {
-                x[(1 - 1)] = xr2;
+                x[0] = xr2;
                 x[(2 - 1)] = xr1;
                 x[(2 - 1) * ldx] = xi2;
                 x[(2 - 1) + (2 - 1) * ldx] = xi1;
             } else {
-                x[(1 - 1)] = xr1;
+                x[0] = xr1;
                 x[(2 - 1)] = xr2;
                 x[(2 - 1) * ldx] = xi1;
                 x[(2 - 1) + (2 - 1) * ldx] = xi2;
@@ -398,7 +398,7 @@ void Rlaln2(bool const ltrans, INTEGER const na, INTEGER const nw, REAL const sm
             if (xnorm > one && cmax > one) {
                 if (xnorm > bignum / cmax) {
                     temp = cmax / bignum;
-                    x[(1 - 1)] = temp * x[(1 - 1)];
+                    x[0] = temp * x[0];
                     x[(2 - 1)] = temp * x[(2 - 1)];
                     x[(2 - 1) * ldx] = temp * x[(2 - 1) * ldx];
                     x[(2 - 1) + (2 - 1) * ldx] = temp * x[(2 - 1) + (2 - 1) * ldx];

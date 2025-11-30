@@ -148,23 +148,23 @@ void Rtgex2(bool const wantq, bool const wantz, INTEGER const n, REAL *a, INTEGE
         // Compute orthogonal QL and RQ that swap 1-by-1 and 1-by-1 blocks
         // using Givens rotations and perform the swap tentatively.
         //
-        f = s[(2 - 1) + (2 - 1) * lds] * t[(1 - 1)] - t[(2 - 1) + (2 - 1) * ldt] * s[(1 - 1)];
+        f = s[(2 - 1) + (2 - 1) * lds] * t[0] - t[(2 - 1) + (2 - 1) * ldt] * s[0];
         g = s[(2 - 1) + (2 - 1) * lds] * t[(2 - 1) * ldt] - t[(2 - 1) + (2 - 1) * ldt] * s[(2 - 1) * lds];
-        sa = abs(s[(2 - 1) + (2 - 1) * lds]) * abs(t[(1 - 1)]);
-        sb = abs(s[(1 - 1)]) * abs(t[(2 - 1) + (2 - 1) * ldt]);
-        Rlartg(f, g, ir[(2 - 1) * ldir], ir[(1 - 1)], ddum);
+        sa = abs(s[(2 - 1) + (2 - 1) * lds]) * abs(t[0]);
+        sb = abs(s[0]) * abs(t[(2 - 1) + (2 - 1) * ldt]);
+        Rlartg(f, g, ir[(2 - 1) * ldir], ir[0], ddum);
         ir[(2 - 1)] = -ir[(2 - 1) * ldir];
-        ir[(2 - 1) + (2 - 1) * ldir] = ir[(1 - 1)];
-        Rrot(2, &s[(1 - 1)], 1, &s[(2 - 1) * lds], 1, ir[(1 - 1)], ir[(2 - 1)]);
-        Rrot(2, &t[(1 - 1)], 1, &t[(2 - 1) * ldt], 1, ir[(1 - 1)], ir[(2 - 1)]);
+        ir[(2 - 1) + (2 - 1) * ldir] = ir[0];
+        Rrot(2, &s[0], 1, &s[(2 - 1) * lds], 1, ir[0], ir[(2 - 1)]);
+        Rrot(2, &t[0], 1, &t[(2 - 1) * ldt], 1, ir[0], ir[(2 - 1)]);
         if (sa >= sb) {
-            Rlartg(s[(1 - 1)], s[(2 - 1)], li[(1 - 1)], li[(2 - 1)], ddum);
+            Rlartg(s[0], s[(2 - 1)], li[0], li[(2 - 1)], ddum);
         } else {
-            Rlartg(t[(1 - 1)], t[(2 - 1)], li[(1 - 1)], li[(2 - 1)], ddum);
+            Rlartg(t[0], t[(2 - 1)], li[0], li[(2 - 1)], ddum);
         }
-        Rrot(2, &s[(1 - 1)], ldst, &s[(2 - 1)], ldst, li[(1 - 1)], li[(2 - 1)]);
-        Rrot(2, &t[(1 - 1)], ldst, &t[(2 - 1)], ldst, li[(1 - 1)], li[(2 - 1)]);
-        li[(2 - 1) + (2 - 1) * ldli] = li[(1 - 1)];
+        Rrot(2, &s[0], ldst, &s[(2 - 1)], ldst, li[0], li[(2 - 1)]);
+        Rrot(2, &t[0], ldst, &t[(2 - 1)], ldst, li[0], li[(2 - 1)]);
+        li[(2 - 1) + (2 - 1) * ldli] = li[0];
         li[(2 - 1) * ldli] = -li[(2 - 1)];
         //
         // Weak stability test: |S21| <= O(EPS F-norm((A)))
@@ -206,10 +206,10 @@ void Rtgex2(bool const wantq, bool const wantz, INTEGER const n, REAL *a, INTEGE
         // Update (A(J1:J1+M-1, M+J1:N), B(J1:J1+M-1, M+J1:N)) and
         // (A(1:J1-1, J1:J1+M), B(1:J1-1, J1:J1+M)).
         //
-        Rrot(j1 + 1, &a[(j1 - 1) * lda], 1, &a[((j1 + 1) - 1) * lda], 1, ir[(1 - 1)], ir[(2 - 1)]);
-        Rrot(j1 + 1, &b[(j1 - 1) * ldb], 1, &b[((j1 + 1) - 1) * ldb], 1, ir[(1 - 1)], ir[(2 - 1)]);
-        Rrot(n - j1 + 1, &a[(j1 - 1) + (j1 - 1) * lda], lda, &a[((j1 + 1) - 1) + (j1 - 1) * lda], lda, li[(1 - 1)], li[(2 - 1)]);
-        Rrot(n - j1 + 1, &b[(j1 - 1) + (j1 - 1) * ldb], ldb, &b[((j1 + 1) - 1) + (j1 - 1) * ldb], ldb, li[(1 - 1)], li[(2 - 1)]);
+        Rrot(j1 + 1, &a[(j1 - 1) * lda], 1, &a[((j1 + 1) - 1) * lda], 1, ir[0], ir[(2 - 1)]);
+        Rrot(j1 + 1, &b[(j1 - 1) * ldb], 1, &b[((j1 + 1) - 1) * ldb], 1, ir[0], ir[(2 - 1)]);
+        Rrot(n - j1 + 1, &a[(j1 - 1) + (j1 - 1) * lda], lda, &a[((j1 + 1) - 1) + (j1 - 1) * lda], lda, li[0], li[(2 - 1)]);
+        Rrot(n - j1 + 1, &b[(j1 - 1) + (j1 - 1) * ldb], ldb, &b[((j1 + 1) - 1) + (j1 - 1) * ldb], ldb, li[0], li[(2 - 1)]);
         //
         // Set  N1-by-N2 (2,1) - blocks to ZERO.
         //
@@ -219,10 +219,10 @@ void Rtgex2(bool const wantq, bool const wantz, INTEGER const n, REAL *a, INTEGE
         // Accumulate transformations into Q and Z if requested.
         //
         if (wantz) {
-            Rrot(n, &z[(j1 - 1) * ldz], 1, &z[((j1 + 1) - 1) * ldz], 1, ir[(1 - 1)], ir[(2 - 1)]);
+            Rrot(n, &z[(j1 - 1) * ldz], 1, &z[((j1 + 1) - 1) * ldz], 1, ir[0], ir[(2 - 1)]);
         }
         if (wantq) {
-            Rrot(n, &q[(j1 - 1) * ldq], 1, &q[((j1 + 1) - 1) * ldq], 1, li[(1 - 1)], li[(2 - 1)]);
+            Rrot(n, &q[(j1 - 1) * ldq], 1, &q[((j1 + 1) - 1) * ldq], 1, li[0], li[(2 - 1)]);
         }
         //
         // Exit with INFO = 0 if swap was successfully performed.
@@ -404,13 +404,13 @@ void Rtgex2(bool const wantq, bool const wantz, INTEGER const n, REAL *a, INTEGE
         //
         Rlaset("Full", m, m, zero, zero, work, m);
         work[1 - 1] = one;
-        t[(1 - 1)] = one;
+        t[0] = one;
         idum = lwork - m * m - 2;
         if (n2 > 1) {
-            Rlagv2(&a[(j1 - 1) + (j1 - 1) * lda], lda, &b[(j1 - 1) + (j1 - 1) * ldb], ldb, ar, ai, be, work[1 - 1], work[2 - 1], t[(1 - 1)], t[(2 - 1)]);
+            Rlagv2(&a[(j1 - 1) + (j1 - 1) * lda], lda, &b[(j1 - 1) + (j1 - 1) * ldb], ldb, ar, ai, be, work[1 - 1], work[2 - 1], t[0], t[(2 - 1)]);
             work[(m + 1) - 1] = -work[2 - 1];
             work[(m + 2) - 1] = work[1 - 1];
-            t[(n2 - 1) + (n2 - 1) * ldt] = t[(1 - 1)];
+            t[(n2 - 1) + (n2 - 1) * ldt] = t[0];
             t[(2 - 1) * ldt] = -t[(2 - 1)];
         }
         work[(m * m) - 1] = one;

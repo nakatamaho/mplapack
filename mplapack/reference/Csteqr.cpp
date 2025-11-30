@@ -108,7 +108,7 @@ void Csteqr(const char *compz, INTEGER const n, REAL *d, REAL *e, COMPLEX *z, IN
     //
     if (n == 1) {
         if (icompz == 2) {
-            z[(1 - 1)] = cone;
+            z[0] = cone;
         }
         return;
     }

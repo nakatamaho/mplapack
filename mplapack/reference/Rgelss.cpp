@@ -458,8 +458,8 @@ void Rgelss(INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEG
                 Rlacpy("G", m, bl, &work[iwork - 1], m, &b[(i - 1) * ldb], ldb);
             }
         } else {
-            Rgemv("T", m, m, one, &work[il - 1], ldwork, &b[(1 - 1)], 1, zero, &work[iwork - 1], 1);
-            Rcopy(m, &work[iwork - 1], 1, &b[(1 - 1)], 1);
+            Rgemv("T", m, m, one, &work[il - 1], ldwork, &b[0], 1, zero, &work[iwork - 1], 1);
+            Rcopy(m, &work[iwork - 1], 1, &b[0], 1);
         }
         //
         // Zero out below first M rows of B

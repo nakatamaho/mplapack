@@ -488,7 +488,7 @@ void Rgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
         nr = 1;
         rtmp = sqrt(castREAL(n)) * epsln;
         for (p = 2; p <= n; p = p + 1) {
-            if (abs(a[(p - 1) + (p - 1) * lda]) < (rtmp * abs(a[(1 - 1)]))) {
+            if (abs(a[(p - 1) + (p - 1) * lda]) < (rtmp * abs(a[0]))) {
                 goto statement_3002;
             }
             nr++;

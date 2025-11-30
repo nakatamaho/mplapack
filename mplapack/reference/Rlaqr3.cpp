@@ -331,7 +331,7 @@ statement_60:
         //
         //
         if (kwtop > 1) {
-            h[(kwtop - 1) + ((kwtop - 1) - 1) * ldh] = s * v[(1 - 1)];
+            h[(kwtop - 1) + ((kwtop - 1) - 1) * ldh] = s * v[0];
         }
         Rlacpy("U", jw, jw, t, ldt, &h[(kwtop - 1) + (kwtop - 1) * ldh], ldh);
         Rcopy(jw - 1, &t[(2 - 1)], ldt + 1, &h[((kwtop + 1) - 1) + (kwtop - 1) * ldh], ldh + 1);

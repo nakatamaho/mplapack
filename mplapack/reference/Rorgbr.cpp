@@ -124,7 +124,7 @@ void Rorgbr(const char *vect, INTEGER const m, INTEGER const n, INTEGER const k,
                     a[(i - 1) + (j - 1) * lda] = a[(i - 1) + ((j - 1) - 1) * lda];
                 }
             }
-            a[(1 - 1)] = one;
+            a[0] = one;
             for (i = 2; i <= m; i = i + 1) {
                 a[(i - 1)] = zero;
             }
@@ -154,7 +154,7 @@ void Rorgbr(const char *vect, INTEGER const m, INTEGER const n, INTEGER const k,
             // row downward, and set the first row and column of P**T to
             // those of the unit matrix
             //
-            a[(1 - 1)] = one;
+            a[0] = one;
             for (i = 2; i <= n; i = i + 1) {
                 a[(i - 1)] = zero;
             }

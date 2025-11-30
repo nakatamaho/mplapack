@@ -189,8 +189,8 @@ void Ctgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
     // part of A and B to check for possible overflow in the triangular
     // solver.
     //
-    anorm = abs1(s[(1 - 1)]);
-    bnorm = abs1(p[(1 - 1)]);
+    anorm = abs1(s[0]);
+    bnorm = abs1(p[0]);
     rwork[1 - 1] = zero;
     rwork[(n + 1) - 1] = zero;
     for (j = 2; j <= n; j = j + 1) {

@@ -109,21 +109,21 @@ void Ctgex2(bool const wantq, bool const wantz, INTEGER const n, COMPLEX *a, INT
     // Compute unitary QL and RQ that swap 1-by-1 and 1-by-1 blocks
     // using Givens rotations and perform the swap tentatively.
     //
-    f = s[(2 - 1) + (2 - 1) * ldst] * t[(1 - 1)] - t[(2 - 1) + (2 - 1) * ldst] * s[(1 - 1)];
+    f = s[(2 - 1) + (2 - 1) * ldst] * t[0] - t[(2 - 1) + (2 - 1) * ldst] * s[0];
     g = s[(2 - 1) + (2 - 1) * ldst] * t[(2 - 1) * ldst] - t[(2 - 1) + (2 - 1) * ldst] * s[(2 - 1) * ldst];
-    sa = abs(s[(2 - 1) + (2 - 1) * ldst]) * abs(t[(1 - 1)]);
-    sb = abs(s[(1 - 1)]) * abs(t[(2 - 1) + (2 - 1) * ldst]);
+    sa = abs(s[(2 - 1) + (2 - 1) * ldst]) * abs(t[0]);
+    sb = abs(s[0]) * abs(t[(2 - 1) + (2 - 1) * ldst]);
     Clartg(g, f, cz, sz, cdum);
     sz = -sz;
-    Crot(2, &s[(1 - 1)], 1, &s[(2 - 1) * ldst], 1, cz, conj(sz));
-    Crot(2, &t[(1 - 1)], 1, &t[(2 - 1) * ldst], 1, cz, conj(sz));
+    Crot(2, &s[0], 1, &s[(2 - 1) * ldst], 1, cz, conj(sz));
+    Crot(2, &t[0], 1, &t[(2 - 1) * ldst], 1, cz, conj(sz));
     if (sa >= sb) {
-        Clartg(s[(1 - 1)], s[(2 - 1)], cq, sq, cdum);
+        Clartg(s[0], s[(2 - 1)], cq, sq, cdum);
     } else {
-        Clartg(t[(1 - 1)], t[(2 - 1)], cq, sq, cdum);
+        Clartg(t[0], t[(2 - 1)], cq, sq, cdum);
     }
-    Crot(2, &s[(1 - 1)], ldst, &s[(2 - 1)], ldst, cq, sq);
-    Crot(2, &t[(1 - 1)], ldst, &t[(2 - 1)], ldst, cq, sq);
+    Crot(2, &s[0], ldst, &s[(2 - 1)], ldst, cq, sq);
+    Crot(2, &t[0], ldst, &t[(2 - 1)], ldst, cq, sq);
     //
     // Weak stability test: |S21| <= O(EPS F-norm((A)))
     // and  |T21| <= O(EPS F-norm((B)))

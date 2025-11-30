@@ -97,9 +97,9 @@ void Rsbevd(const char *jobz, const char *uplo, INTEGER const n, INTEGER const k
     //
     const REAL one = 1.0;
     if (n == 1) {
-        w[1 - 1] = ab[(1 - 1)];
+        w[1 - 1] = ab[0];
         if (wantz) {
-            z[(1 - 1)] = one;
+            z[0] = one;
         }
         return;
     }

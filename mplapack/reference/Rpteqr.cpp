@@ -71,7 +71,7 @@ void Rpteqr(const char *compz, INTEGER const n, REAL *d, REAL *e, REAL *z, INTEG
     const REAL one = 1.0;
     if (n == 1) {
         if (icompz > 0) {
-            z[(1 - 1)] = one;
+            z[0] = one;
         }
         return;
     }

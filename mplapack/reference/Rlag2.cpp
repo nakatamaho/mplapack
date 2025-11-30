@@ -42,16 +42,16 @@ void Rlag2(REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL const sa
     //
     // Scale A
     //
-    REAL anorm = max({REAL(abs(a[(1 - 1)]) + abs(a[(2 - 1)])), REAL(abs(a[(2 - 1) * lda]) + abs(a[(2 - 1) + (2 - 1) * lda])), safmin});
+    REAL anorm = max({REAL(abs(a[0]) + abs(a[(2 - 1)])), REAL(abs(a[(2 - 1) * lda]) + abs(a[(2 - 1) + (2 - 1) * lda])), safmin});
     REAL ascale = one / anorm;
-    REAL a11 = ascale * a[(1 - 1)];
+    REAL a11 = ascale * a[0];
     REAL a21 = ascale * a[(2 - 1)];
     REAL a12 = ascale * a[(2 - 1) * lda];
     REAL a22 = ascale * a[(2 - 1) + (2 - 1) * lda];
     //
     // Perturb B if necessary to insure non-singularity
     //
-    REAL b11 = b[(1 - 1)];
+    REAL b11 = b[0];
     REAL b12 = b[(2 - 1) * ldb];
     REAL b22 = b[(2 - 1) + (2 - 1) * ldb];
     REAL bmin = rtmin * max({REAL(abs(b11)), REAL(abs(b12)), REAL(abs(b22)), rtmin});

@@ -70,7 +70,7 @@ void Cgetrf2(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
         // Just need to handle IPIV and INFO
         //
         ipiv[1 - 1] = 1;
-        if (a[(1 - 1)] == zero) {
+        if (a[0] == zero) {
             info = 1;
         }
         //
@@ -84,25 +84,25 @@ void Cgetrf2(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
         //
         // Find pivot and test for singularity
         //
-        i = iCamax(m, &a[(1 - 1)], 1);
+        i = iCamax(m, &a[0], 1);
         ipiv[1 - 1] = i;
         if (a[(i - 1)] != zero) {
             //
             // Apply the interchange
             //
             if (i != 1) {
-                temp = a[(1 - 1)];
-                a[(1 - 1)] = a[(i - 1)];
+                temp = a[0];
+                a[0] = a[(i - 1)];
                 a[(i - 1)] = temp;
             }
             //
             // Compute elements 2:M of the column
             //
-            if (abs(a[(1 - 1)]) >= sfmin) {
-                Cscal(m - 1, one / a[(1 - 1)], &a[(2 - 1)], 1);
+            if (abs(a[0]) >= sfmin) {
+                Cscal(m - 1, one / a[0], &a[(2 - 1)], 1);
             } else {
                 for (i = 1; i <= m - 1; i = i + 1) {
-                    a[((1 + i) - 1)] = a[((1 + i) - 1)] / a[(1 - 1)];
+                    a[((1 + i) - 1)] = a[((1 + i) - 1)] / a[0];
                 }
             }
             //
@@ -156,7 +156,7 @@ void Cgetrf2(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
         //
         // Apply interchanges to A21
         //
-        Claswp(n1, &a[(1 - 1)], lda, n1 + 1, min(m, n), ipiv, 1);
+        Claswp(n1, &a[0], lda, n1 + 1, min(m, n), ipiv, 1);
         //
     }
     //

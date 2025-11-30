@@ -90,7 +90,7 @@ void Rlals0(INTEGER const icompq, INTEGER const nl, INTEGER const nr, INTEGER co
         //
         // Step (2L): permute rows of B.
         //
-        Rcopy(nrhs, &b[(nlp1 - 1)], ldb, &bx[(1 - 1)], ldbx);
+        Rcopy(nrhs, &b[(nlp1 - 1)], ldb, &bx[0], ldbx);
         for (i = 2; i <= n; i = i + 1) {
             Rcopy(nrhs, &b[(perm[i - 1] - 1)], ldb, &bx[(i - 1)], ldbx);
         }
@@ -183,7 +183,7 @@ void Rlals0(INTEGER const icompq, INTEGER const nl, INTEGER const nr, INTEGER co
         //
         if (sqre == 1) {
             Rcopy(nrhs, &b[(m - 1)], ldb, &bx[(m - 1)], ldbx);
-            Rrot(nrhs, &bx[(1 - 1)], ldbx, &bx[(m - 1)], ldbx, c, s);
+            Rrot(nrhs, &bx[0], ldbx, &bx[(m - 1)], ldbx, c, s);
         }
         if (k < max(m, n)) {
             Rlacpy("A", n - k, nrhs, &b[((k + 1) - 1)], ldb, &bx[((k + 1) - 1)], ldbx);
@@ -191,7 +191,7 @@ void Rlals0(INTEGER const icompq, INTEGER const nl, INTEGER const nr, INTEGER co
         //
         // Step (3R): permute rows of B.
         //
-        Rcopy(nrhs, &bx[(1 - 1)], ldbx, &b[(nlp1 - 1)], ldb);
+        Rcopy(nrhs, &bx[0], ldbx, &b[(nlp1 - 1)], ldb);
         if (sqre == 1) {
             Rcopy(nrhs, &bx[(m - 1)], ldbx, &b[(m - 1)], ldb);
         }

@@ -102,9 +102,9 @@ void Rsyevd_2stage(const char *jobz, const char *uplo, INTEGER const n, REAL *a,
     //
     const REAL one = 1.0;
     if (n == 1) {
-        w[1 - 1] = a[(1 - 1)];
+        w[1 - 1] = a[0];
         if (wantz) {
-            a[(1 - 1)] = one;
+            a[0] = one;
         }
         return;
     }

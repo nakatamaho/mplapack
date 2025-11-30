@@ -62,7 +62,7 @@ void Rgeqrt3(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL 
         //
         // Compute Householder transform when N=1
         //
-        Rlarfg(m, a[(1 - 1)], &a[(min((INTEGER)2, m) - 1) + (1 - 1) * lda], 1, t[(1 - 1)]);
+        Rlarfg(m, a[0], &a[(min((INTEGER)2, m) - 1)], 1, t[0]);
         //
     } else {
         //

@@ -502,17 +502,17 @@ void Cgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
     if (n == 1) {
         //
         if (lsvec) {
-            Clascl("G", 0, 0, sva[1 - 1], scalem, m, 1, &a[(1 - 1)], lda, ierr);
+            Clascl("G", 0, 0, sva[1 - 1], scalem, m, 1, &a[0], lda, ierr);
             Clacpy("A", m, 1, a, lda, u, ldu);
             // computing all M left singular vectors of the M x 1 matrix
             if (n1 != n) {
                 Cgeqrf(m, n, u, ldu, cwork, &cwork[(n + 1) - 1], lwork - n, ierr);
                 Cungqr(m, n1, 1, u, ldu, cwork, &cwork[(n + 1) - 1], lwork - n, ierr);
-                Ccopy(m, &a[(1 - 1)], 1, &u[(1 - 1)], 1);
+                Ccopy(m, &a[0], 1, &u[0], 1);
             }
         }
         if (rsvec) {
-            v[(1 - 1)] = cone;
+            v[0] = cone;
         }
         if (sva[1 - 1] < (big * scalem)) {
             sva[1 - 1] = sva[1 - 1] / scalem;
@@ -789,7 +789,7 @@ void Cgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
         // backward error of the order of N*EPSLN*||A||.
         temp1 = sqrt(castREAL(n)) * epsln;
         for (p = 2; p <= n; p = p + 1) {
-            if (abs(a[(p - 1) + (p - 1) * lda]) >= (temp1 * abs(a[(1 - 1)]))) {
+            if (abs(a[(p - 1) + (p - 1) * lda]) >= (temp1 * abs(a[0]))) {
                 nr++;
             } else {
                 goto statement_3002;
@@ -895,7 +895,7 @@ void Cgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
         }
     }
     //
-    l2pert = l2pert && (abs(a[(1 - 1)] / a[(nr - 1) + (nr - 1) * lda]) > sqrt(big1));
+    l2pert = l2pert && (abs(a[0] / a[(nr - 1) + (nr - 1) * lda]) > sqrt(big1));
     // If there is no violent scaling, artificial perturbation is not needed.
     //
     // Phase 3:

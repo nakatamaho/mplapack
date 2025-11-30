@@ -173,8 +173,8 @@ void Rlaein(bool const rightv, bool const noinit, INTEGER const n, REAL *h, INTE
                     }
                 }
             }
-            if (b[(1 - 1)] == zero) {
-                b[(1 - 1)] = eps3;
+            if (b[0] == zero) {
+                b[0] = eps3;
             }
             //
             trans = 'T';
@@ -362,8 +362,8 @@ void Rlaein(bool const rightv, bool const noinit, INTEGER const n, REAL *h, INTE
                 //
                 work[j - 1] = Rasum(j - 1, &b[(j - 1) * ldb], 1) + Rasum(j - 1, &b[((j + 1) - 1)], ldb);
             }
-            if (b[(1 - 1)] == zero && b[(2 - 1)] == zero) {
-                b[(1 - 1)] = eps3;
+            if (b[0] == zero && b[(2 - 1)] == zero) {
+                b[0] = eps3;
             }
             work[1 - 1] = zero;
             //

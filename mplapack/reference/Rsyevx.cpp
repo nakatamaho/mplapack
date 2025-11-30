@@ -148,15 +148,15 @@ void Rsyevx(const char *jobz, const char *range, const char *uplo, INTEGER const
     if (n == 1) {
         if (alleig || indeig) {
             m = 1;
-            w[1 - 1] = a[(1 - 1)];
+            w[1 - 1] = a[0];
         } else {
-            if (vl < a[(1 - 1)] && vu >= a[(1 - 1)]) {
+            if (vl < a[0] && vu >= a[0]) {
                 m = 1;
-                w[1 - 1] = a[(1 - 1)];
+                w[1 - 1] = a[0];
             }
         }
         if (wantz) {
-            z[(1 - 1)] = one;
+            z[0] = one;
         }
         return;
     }

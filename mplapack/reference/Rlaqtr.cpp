@@ -194,7 +194,7 @@ void Rlaqtr(bool const ltran, bool const lreal, INTEGER const n, REAL *t, INTEGE
                     // Call 2 by 2 linear system solve, to take
                     // care of possible overflow by scaling factor.
                     //
-                    d[(1 - 1)] = x[j1 - 1];
+                    d[0] = x[j1 - 1];
                     d[(2 - 1)] = x[j2 - 1];
                     Rlaln2(false, 2, 1, smin, one, &t[(j1 - 1) + (j1 - 1) * ldt], ldt, one, one, d, 2, zero, zero, v, 2, scaloc, xnorm, ierr);
                     if (ierr != 0) {
@@ -205,13 +205,13 @@ void Rlaqtr(bool const ltran, bool const lreal, INTEGER const n, REAL *t, INTEGE
                         Rscal(n, scaloc, x, 1);
                         scale = scale * scaloc;
                     }
-                    x[j1 - 1] = v[(1 - 1)];
+                    x[j1 - 1] = v[0];
                     x[j2 - 1] = v[(2 - 1)];
                     //
                     // Scale V(1,1) (= X(J1)) and/or V(2,1) (=X(J2))
                     // to avoid overflow in updating right-hand side.
                     //
-                    xj = max(abs(v[(1 - 1)]), abs(v[(2 - 1)]));
+                    xj = max(abs(v[0]), abs(v[(2 - 1)]));
                     if (xj > one) {
                         rec = one / xj;
                         if (max(work[j1 - 1], work[j2 - 1]) > (bignum - xmax) * rec) {
@@ -309,7 +309,7 @@ void Rlaqtr(bool const ltran, bool const lreal, INTEGER const n, REAL *t, INTEGE
                         }
                     }
                     //
-                    d[(1 - 1)] = x[j1 - 1] - Rdot(j1 - 1, &t[(j1 - 1) * ldt], 1, x, 1);
+                    d[0] = x[j1 - 1] - Rdot(j1 - 1, &t[(j1 - 1) * ldt], 1, x, 1);
                     d[(2 - 1)] = x[j2 - 1] - Rdot(j1 - 1, &t[(j2 - 1) * ldt], 1, x, 1);
                     //
                     Rlaln2(true, 2, 1, smin, one, &t[(j1 - 1) + (j1 - 1) * ldt], ldt, one, one, d, 2, zero, zero, v, 2, scaloc, xnorm, ierr);
@@ -321,7 +321,7 @@ void Rlaqtr(bool const ltran, bool const lreal, INTEGER const n, REAL *t, INTEGE
                         Rscal(n, scaloc, x, 1);
                         scale = scale * scaloc;
                     }
-                    x[j1 - 1] = v[(1 - 1)];
+                    x[j1 - 1] = v[0];
                     x[j2 - 1] = v[(2 - 1)];
                     xmax = max({REAL(abs(x[j1 - 1])), REAL(abs(x[j2 - 1])), xmax});
                     //
@@ -416,7 +416,7 @@ void Rlaqtr(bool const ltran, bool const lreal, INTEGER const n, REAL *t, INTEGE
                     //
                     // Meet 2 by 2 diagonal block
                     //
-                    d[(1 - 1)] = x[j1 - 1];
+                    d[0] = x[j1 - 1];
                     d[(2 - 1)] = x[j2 - 1];
                     d[(2 - 1) * ldd] = x[(n + j1) - 1];
                     d[(2 - 1) + (2 - 1) * ldd] = x[(n + j2) - 1];
@@ -429,7 +429,7 @@ void Rlaqtr(bool const ltran, bool const lreal, INTEGER const n, REAL *t, INTEGE
                         Rscal(2 * n, scaloc, x, 1);
                         scale = scaloc * scale;
                     }
-                    x[j1 - 1] = v[(1 - 1)];
+                    x[j1 - 1] = v[0];
                     x[j2 - 1] = v[(2 - 1)];
                     x[(n + j1) - 1] = v[(2 - 1) * ldv];
                     x[(n + j2) - 1] = v[(2 - 1) + (2 - 1) * ldv];
@@ -437,7 +437,7 @@ void Rlaqtr(bool const ltran, bool const lreal, INTEGER const n, REAL *t, INTEGE
                     // Scale X(J1), .... to avoid overflow in
                     // updating right hand side.
                     //
-                    xj = max(abs(v[(1 - 1)]) + abs(v[(2 - 1) * ldv]), abs(v[(2 - 1)]) + abs(v[(2 - 1) + (2 - 1) * ldv]));
+                    xj = max(abs(v[0]) + abs(v[(2 - 1) * ldv]), abs(v[(2 - 1)]) + abs(v[(2 - 1) + (2 - 1) * ldv]));
                     if (xj > one) {
                         rec = one / xj;
                         if (max(work[j1 - 1], work[j2 - 1]) > (bignum - xmax) * rec) {
@@ -558,11 +558,11 @@ void Rlaqtr(bool const ltran, bool const lreal, INTEGER const n, REAL *t, INTEGE
                         }
                     }
                     //
-                    d[(1 - 1)] = x[j1 - 1] - Rdot(j1 - 1, &t[(j1 - 1) * ldt], 1, x, 1);
+                    d[0] = x[j1 - 1] - Rdot(j1 - 1, &t[(j1 - 1) * ldt], 1, x, 1);
                     d[(2 - 1)] = x[j2 - 1] - Rdot(j1 - 1, &t[(j2 - 1) * ldt], 1, x, 1);
                     d[(2 - 1) * ldd] = x[(n + j1) - 1] - Rdot(j1 - 1, &t[(j1 - 1) * ldt], 1, &x[(n + 1) - 1], 1);
                     d[(2 - 1) + (2 - 1) * ldd] = x[(n + j2) - 1] - Rdot(j1 - 1, &t[(j2 - 1) * ldt], 1, &x[(n + 1) - 1], 1);
-                    d[(1 - 1)] = d[(1 - 1)] - b[j1 - 1] * x[(n + 1) - 1];
+                    d[0] = d[0] - b[j1 - 1] * x[(n + 1) - 1];
                     d[(2 - 1)] = d[(2 - 1)] - b[j2 - 1] * x[(n + 1) - 1];
                     d[(2 - 1) * ldd] += b[j1 - 1] * x[1 - 1];
                     d[(2 - 1) + (2 - 1) * ldd] += b[j2 - 1] * x[1 - 1];
@@ -576,7 +576,7 @@ void Rlaqtr(bool const ltran, bool const lreal, INTEGER const n, REAL *t, INTEGE
                         Rscal(n2, scaloc, x, 1);
                         scale = scaloc * scale;
                     }
-                    x[j1 - 1] = v[(1 - 1)];
+                    x[j1 - 1] = v[0];
                     x[j2 - 1] = v[(2 - 1)];
                     x[(n + j1) - 1] = v[(2 - 1) * ldv];
                     x[(n + j2) - 1] = v[(2 - 1) + (2 - 1) * ldv];

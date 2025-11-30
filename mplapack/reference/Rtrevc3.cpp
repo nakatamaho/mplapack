@@ -302,7 +302,7 @@ void Rtrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                         //
                         if (xnorm > one) {
                             if (work[j - 1] > bignum / xnorm) {
-                                x[(1 - 1)] = x[(1 - 1)] / xnorm;
+                                x[0] = x[0] / xnorm;
                                 scale = scale / xnorm;
                             }
                         }
@@ -312,11 +312,11 @@ void Rtrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                         if (scale != one) {
                             Rscal(ki, scale, &work[(1 + iv * n) - 1], 1);
                         }
-                        work[(j + iv * n) - 1] = x[(1 - 1)];
+                        work[(j + iv * n) - 1] = x[0];
                         //
                         // Update right-hand side
                         //
-                        Raxpy(j - 1, -x[(1 - 1)], &t[(j - 1) * ldt], 1, &work[(1 + iv * n) - 1], 1);
+                        Raxpy(j - 1, -x[0], &t[(j - 1) * ldt], 1, &work[(1 + iv * n) - 1], 1);
                         //
                     } else {
                         //
@@ -330,7 +330,7 @@ void Rtrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                         if (xnorm > one) {
                             beta = max(work[(j - 1) - 1], work[j - 1]);
                             if (beta > bignum / xnorm) {
-                                x[(1 - 1)] = x[(1 - 1)] / xnorm;
+                                x[0] = x[0] / xnorm;
                                 x[(2 - 1)] = x[(2 - 1)] / xnorm;
                                 scale = scale / xnorm;
                             }
@@ -341,12 +341,12 @@ void Rtrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                         if (scale != one) {
                             Rscal(ki, scale, &work[(1 + iv * n) - 1], 1);
                         }
-                        work[(j - 1 + iv * n) - 1] = x[(1 - 1)];
+                        work[(j - 1 + iv * n) - 1] = x[0];
                         work[(j + iv * n) - 1] = x[(2 - 1)];
                         //
                         // Update right-hand side
                         //
-                        Raxpy(j - 2, -x[(1 - 1)], &t[((j - 1) - 1) * ldt], 1, &work[(1 + iv * n) - 1], 1);
+                        Raxpy(j - 2, -x[0], &t[((j - 1) - 1) * ldt], 1, &work[(1 + iv * n) - 1], 1);
                         Raxpy(j - 2, -x[(2 - 1)], &t[(j - 1) * ldt], 1, &work[(1 + iv * n) - 1], 1);
                     }
                 statement_60:;
@@ -443,7 +443,7 @@ void Rtrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                         //
                         if (xnorm > one) {
                             if (work[j - 1] > bignum / xnorm) {
-                                x[(1 - 1)] = x[(1 - 1)] / xnorm;
+                                x[0] = x[0] / xnorm;
                                 x[(2 - 1) * ldx] = x[(2 - 1) * ldx] / xnorm;
                                 scale = scale / xnorm;
                             }
@@ -455,12 +455,12 @@ void Rtrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                             Rscal(ki, scale, &work[(1 + (iv - 1) * n) - 1], 1);
                             Rscal(ki, scale, &work[(1 + (iv)*n) - 1], 1);
                         }
-                        work[(j + (iv - 1) * n) - 1] = x[(1 - 1)];
+                        work[(j + (iv - 1) * n) - 1] = x[0];
                         work[(j + (iv)*n) - 1] = x[(2 - 1) * ldx];
                         //
                         // Update the right-hand side
                         //
-                        Raxpy(j - 1, -x[(1 - 1)], &t[(j - 1) * ldt], 1, &work[(1 + (iv - 1) * n) - 1], 1);
+                        Raxpy(j - 1, -x[0], &t[(j - 1) * ldt], 1, &work[(1 + (iv - 1) * n) - 1], 1);
                         Raxpy(j - 1, -x[(2 - 1) * ldx], &t[(j - 1) * ldt], 1, &work[(1 + (iv)*n) - 1], 1);
                         //
                     } else {
@@ -476,7 +476,7 @@ void Rtrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                             beta = max(work[(j - 1) - 1], work[j - 1]);
                             if (beta > bignum / xnorm) {
                                 rec = one / xnorm;
-                                x[(1 - 1)] = x[(1 - 1)] * rec;
+                                x[0] = x[0] * rec;
                                 x[(2 - 1) * ldx] = x[(2 - 1) * ldx] * rec;
                                 x[(2 - 1)] = x[(2 - 1)] * rec;
                                 x[(2 - 1) + (2 - 1) * ldx] = x[(2 - 1) + (2 - 1) * ldx] * rec;
@@ -490,14 +490,14 @@ void Rtrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                             Rscal(ki, scale, &work[(1 + (iv - 1) * n) - 1], 1);
                             Rscal(ki, scale, &work[(1 + (iv)*n) - 1], 1);
                         }
-                        work[(j - 1 + (iv - 1) * n) - 1] = x[(1 - 1)];
+                        work[(j - 1 + (iv - 1) * n) - 1] = x[0];
                         work[(j + (iv - 1) * n) - 1] = x[(2 - 1)];
                         work[(j - 1 + (iv)*n) - 1] = x[(2 - 1) * ldx];
                         work[(j + (iv)*n) - 1] = x[(2 - 1) + (2 - 1) * ldx];
                         //
                         // Update the right-hand side
                         //
-                        Raxpy(j - 2, -x[(1 - 1)], &t[((j - 1) - 1) * ldt], 1, &work[(1 + (iv - 1) * n) - 1], 1);
+                        Raxpy(j - 2, -x[0], &t[((j - 1) - 1) * ldt], 1, &work[(1 + (iv - 1) * n) - 1], 1);
                         Raxpy(j - 2, -x[(2 - 1)], &t[(j - 1) * ldt], 1, &work[(1 + (iv - 1) * n) - 1], 1);
                         Raxpy(j - 2, -x[(2 - 1) * ldx], &t[((j - 1) - 1) * ldt], 1, &work[(1 + (iv)*n) - 1], 1);
                         Raxpy(j - 2, -x[(2 - 1) + (2 - 1) * ldx], &t[(j - 1) * ldt], 1, &work[(1 + (iv)*n) - 1], 1);
@@ -713,7 +713,7 @@ void Rtrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                         if (scale != one) {
                             Rscal(n - ki + 1, scale, &work[(ki + iv * n) - 1], 1);
                         }
-                        work[(j + iv * n) - 1] = x[(1 - 1)];
+                        work[(j + iv * n) - 1] = x[0];
                         vmax = max(REAL(abs(work[(j + iv * n) - 1])), vmax);
                         vcrit = bignum / vmax;
                         //
@@ -747,7 +747,7 @@ void Rtrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                         if (scale != one) {
                             Rscal(n - ki + 1, scale, &work[(ki + iv * n) - 1], 1);
                         }
-                        work[(j + iv * n) - 1] = x[(1 - 1)];
+                        work[(j + iv * n) - 1] = x[0];
                         work[(j + 1 + iv * n) - 1] = x[(2 - 1)];
                         //
                         vmax = max({REAL(abs(work[(j + iv * n) - 1])), REAL(abs(work[(j + 1 + iv * n) - 1])), vmax});
@@ -869,7 +869,7 @@ void Rtrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                             Rscal(n - ki + 1, scale, &work[(ki + (iv)*n) - 1], 1);
                             Rscal(n - ki + 1, scale, &work[(ki + (iv + 1) * n) - 1], 1);
                         }
-                        work[(j + (iv)*n) - 1] = x[(1 - 1)];
+                        work[(j + (iv)*n) - 1] = x[0];
                         work[(j + (iv + 1) * n) - 1] = x[(2 - 1) * ldx];
                         vmax = max({REAL(abs(work[(j + (iv)*n) - 1])), REAL(abs(work[(j + (iv + 1) * n) - 1])), vmax});
                         vcrit = bignum / vmax;
@@ -910,11 +910,11 @@ void Rtrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                             Rscal(n - ki + 1, scale, &work[(ki + (iv)*n) - 1], 1);
                             Rscal(n - ki + 1, scale, &work[(ki + (iv + 1) * n) - 1], 1);
                         }
-                        work[(j + (iv)*n) - 1] = x[(1 - 1)];
+                        work[(j + (iv)*n) - 1] = x[0];
                         work[(j + (iv + 1) * n) - 1] = x[(2 - 1) * ldx];
                         work[(j + 1 + (iv)*n) - 1] = x[(2 - 1)];
                         work[(j + 1 + (iv + 1) * n) - 1] = x[(2 - 1) + (2 - 1) * ldx];
-                        vmax = max({REAL(abs(x[(1 - 1)])), REAL(abs(x[(2 - 1) * ldx])), REAL(abs(x[(2 - 1)])), REAL(abs(x[(2 - 1) + (2 - 1) * ldx])), vmax});
+                        vmax = max({REAL(abs(x[0])), REAL(abs(x[(2 - 1) * ldx])), REAL(abs(x[(2 - 1)])), REAL(abs(x[(2 - 1) + (2 - 1) * ldx])), vmax});
                         vcrit = bignum / vmax;
                         //
                     }

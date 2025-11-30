@@ -84,7 +84,7 @@ void Rstevd(const char *jobz, INTEGER const n, REAL *d, REAL *e, REAL *z, INTEGE
     const REAL one = 1.0;
     if (n == 1) {
         if (wantz) {
-            z[(1 - 1)] = one;
+            z[0] = one;
         }
         return;
     }

@@ -100,7 +100,7 @@ void Rsytd2(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL 
             d[(i + 1) - 1] = a[((i + 1) - 1) + ((i + 1) - 1) * lda];
             tau[i - 1] = taui;
         }
-        d[1 - 1] = a[(1 - 1)];
+        d[1 - 1] = a[0];
     } else {
         //
         // Reduce the lower triangle of A

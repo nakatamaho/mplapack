@@ -94,7 +94,7 @@ void Rbdsvdx(const char *uplo, const char *jobz, const char *range, INTEGER cons
             }
         }
         if (wantz) {
-            z[(1 - 1)] = sign(one, d[1 - 1]);
+            z[0] = sign(one, d[1 - 1]);
             z[(2 - 1)] = one;
         }
         return;

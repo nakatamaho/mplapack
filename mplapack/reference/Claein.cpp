@@ -165,8 +165,8 @@ void Claein(bool const rightv, bool const noinit, INTEGER const n, COMPLEX *h, I
                 }
             }
         }
-        if (b[(1 - 1)] == zero) {
-            b[(1 - 1)] = eps3;
+        if (b[0] == zero) {
+            b[0] = eps3;
         }
         //
         trans = 'C';

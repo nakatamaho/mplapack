@@ -120,7 +120,7 @@ statement_10:
         if (k > 1) {
             Cgemv("Conjugate transpose", m - rk + 1, k - 1, -tau[k - 1], &a[(rk - 1)], lda, &a[(rk - 1) + (k - 1) * lda], 1, czero, &auxv[1 - 1], 1);
             //
-            Cgemv("No transpose", n, k - 1, cone, &f[(1 - 1)], ldf, &auxv[1 - 1], 1, cone, &f[(k - 1) * ldf], 1);
+            Cgemv("No transpose", n, k - 1, cone, &f[0], ldf, &auxv[1 - 1], 1, cone, &f[(k - 1) * ldf], 1);
         }
         //
         // Update the current row of A:

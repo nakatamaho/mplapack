@@ -205,7 +205,7 @@ void Claqr2(bool const wantt, bool const wantz, INTEGER const n, INTEGER const k
         //
         //
         if (kwtop > 1) {
-            h[(kwtop - 1) + ((kwtop - 1) - 1) * ldh] = s * conj(v[(1 - 1)]);
+            h[(kwtop - 1) + ((kwtop - 1) - 1) * ldh] = s * conj(v[0]);
         }
         Clacpy("U", jw, jw, t, ldt, &h[(kwtop - 1) + (kwtop - 1) * ldh], ldh);
         Ccopy(jw - 1, &t[(2 - 1)], ldt + 1, &h[((kwtop + 1) - 1) + (kwtop - 1) * ldh], ldh + 1);

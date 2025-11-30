@@ -110,9 +110,9 @@ void Chbevd_2stage(const char *jobz, const char *uplo, INTEGER const n, INTEGER 
     //
     const COMPLEX cone = COMPLEX(1.0, 0.0);
     if (n == 1) {
-        w[1 - 1] = ab[(1 - 1)].real();
+        w[1 - 1] = ab[0].real();
         if (wantz) {
-            z[(1 - 1)] = cone;
+            z[0] = cone;
         }
         return;
     }

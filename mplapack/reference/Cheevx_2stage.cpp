@@ -157,15 +157,15 @@ void Cheevx_2stage(const char *jobz, const char *range, const char *uplo, INTEGE
     if (n == 1) {
         if (alleig || indeig) {
             m = 1;
-            w[1 - 1] = a[(1 - 1)].real();
+            w[1 - 1] = a[0].real();
         } else if (valeig) {
-            if (vl < a[(1 - 1)].real() && vu >= a[(1 - 1)].real()) {
+            if (vl < a[0].real() && vu >= a[0].real()) {
                 m = 1;
-                w[1 - 1] = a[(1 - 1)].real();
+                w[1 - 1] = a[0].real();
             }
         }
         if (wantz) {
-            z[(1 - 1)] = cone;
+            z[0] = cone;
         }
         return;
     }

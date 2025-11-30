@@ -79,7 +79,7 @@ void Cpstrf(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
         //
         // Use unblocked code
         //
-        Cpstf2(uplo, n, &a[(1 - 1)], lda, piv, rank, tol, work, info);
+        Cpstf2(uplo, n, &a[0], lda, piv, rank, tol, work, info);
         goto statement_230;
         //
     } else {

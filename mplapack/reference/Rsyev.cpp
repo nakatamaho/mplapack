@@ -75,10 +75,10 @@ void Rsyev(const char *jobz, const char *uplo, INTEGER const n, REAL *a, INTEGER
     //
     const REAL one = 1.0;
     if (n == 1) {
-        w[1 - 1] = a[(1 - 1)];
+        w[1 - 1] = a[0];
         work[1 - 1] = 2;
         if (wantz) {
-            a[(1 - 1)] = one;
+            a[0] = one;
         }
         return;
     }

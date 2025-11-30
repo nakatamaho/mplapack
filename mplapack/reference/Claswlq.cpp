@@ -89,7 +89,7 @@ void Claswlq(INTEGER const m, INTEGER const n, INTEGER const mb, INTEGER const n
     //
     // Compute the LQ factorization of the first block A(1:M,1:NB)
     //
-    Cgelqt(m, nb, mb, &a[(1 - 1)], lda, t, ldt, work, info);
+    Cgelqt(m, nb, mb, &a[0], lda, t, ldt, work, info);
     INTEGER ctr = 1;
     //
     INTEGER i = 0;
@@ -97,14 +97,14 @@ void Claswlq(INTEGER const m, INTEGER const n, INTEGER const mb, INTEGER const n
         //
         // Compute the QR factorization of the current block A(1:M,I:I+NB-M)
         //
-        Ctplqt(m, nb - m, 0, mb, &a[(1 - 1)], lda, &a[(i - 1) * lda], lda, &t[((ctr * m + 1) - 1) * ldt], ldt, work, info);
+        Ctplqt(m, nb - m, 0, mb, &a[0], lda, &a[(i - 1) * lda], lda, &t[((ctr * m + 1) - 1) * ldt], ldt, work, info);
         ctr++;
     }
     //
     // Compute the QR factorization of the last block A(1:M,II:N)
     //
     if (ii <= n) {
-        Ctplqt(m, kk, 0, mb, &a[(1 - 1)], lda, &a[(ii - 1) * lda], lda, &t[((ctr * m + 1) - 1) * ldt], ldt, work, info);
+        Ctplqt(m, kk, 0, mb, &a[0], lda, &a[(ii - 1) * lda], lda, &t[((ctr * m + 1) - 1) * ldt], ldt, work, info);
     }
     //
     work[1 - 1] = m * mb;

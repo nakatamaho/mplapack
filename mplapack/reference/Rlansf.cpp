@@ -341,7 +341,7 @@ REAL Rlansf(const char *norm, const char *transr, const char *uplo, INTEGER cons
                         work[j] = s;
                     }
                     // j=n1=k-1 is special
-                    s = abs(a[(0 + j * lda)]);
+                    s = abs(a[( j * lda)]);
                     // A(k-1,k-1)
                     for (i = 1; i <= k - 1; i = i + 1) {
                         aa = abs(a[(i + j * lda)]);
@@ -466,7 +466,7 @@ REAL Rlansf(const char *norm, const char *transr, const char *uplo, INTEGER cons
                         work[j] = s;
                     }
                     // j=k
-                    aa = abs(a[(0 + j * lda)]);
+                    aa = abs(a[( j * lda)]);
                     // A(k,k)
                     s = aa;
                     for (i = 1; i <= k - 1; i = i + 1) {
@@ -617,7 +617,7 @@ REAL Rlansf(const char *norm, const char *transr, const char *uplo, INTEGER cons
                         // L at A(k,0)
                     }
                     for (j = 0; j <= k - 1; j = j + 1) {
-                        Rlassq(k + j - 1, &a[(0 + j * lda)], 1, scale, s);
+                        Rlassq(k + j - 1, &a[( j * lda)], 1, scale, s);
                         // trap U at A(0,0)
                     }
                     s += s;
@@ -633,14 +633,14 @@ REAL Rlansf(const char *norm, const char *transr, const char *uplo, INTEGER cons
                         // trap L at A(0,0)
                     }
                     for (j = 0; j <= k - 2; j = j + 1) {
-                        Rlassq(j, &a[(0 + (1 + j) * lda)], 1, scale, s);
+                        Rlassq(j, &a[( (1 + j) * lda)], 1, scale, s);
                         // U at A(0,1)
                     }
                     s += s;
                     // REAL s for the off diagonal elements
                     Rlassq(k, &a[0], lda + 1, scale, s);
                     // tri L at A(0,0)
-                    Rlassq(k - 1, &a[(0 + lda)], lda + 1, scale, s);
+                    Rlassq(k - 1, &a[( lda)], lda + 1, scale, s);
                     // tri U at A(0,1)
                 }
             } else {
@@ -648,11 +648,11 @@ REAL Rlansf(const char *norm, const char *transr, const char *uplo, INTEGER cons
                 if (ilu == 0) {
                     // A**T is upper
                     for (j = 1; j <= k - 2; j = j + 1) {
-                        Rlassq(j, &a[(0 + (k + j) * lda)], 1, scale, s);
+                        Rlassq(j, &a[( (k + j) * lda)], 1, scale, s);
                         // U at A(0,k)
                     }
                     for (j = 0; j <= k - 2; j = j + 1) {
-                        Rlassq(k, &a[(0 + j * lda)], 1, scale, s);
+                        Rlassq(k, &a[( j * lda)], 1, scale, s);
                         // k by k-1 rect. at A(0,0)
                     }
                     for (j = 0; j <= k - 2; j = j + 1) {
@@ -661,18 +661,18 @@ REAL Rlansf(const char *norm, const char *transr, const char *uplo, INTEGER cons
                     }
                     s += s;
                     // REAL s for the off diagonal elements
-                    Rlassq(k - 1, &a[(0 + k * lda)], lda + 1, scale, s);
+                    Rlassq(k - 1, &a[( k * lda)], lda + 1, scale, s);
                     // tri U at A(0,k)
-                    Rlassq(k, &a[(0 + (k - 1) * lda)], lda + 1, scale, s);
+                    Rlassq(k, &a[( (k - 1) * lda)], lda + 1, scale, s);
                     // tri L at A(0,k-1)
                 } else {
                     // A**T is lower
                     for (j = 1; j <= k - 1; j = j + 1) {
-                        Rlassq(j, &a[(0 + j * lda)], 1, scale, s);
+                        Rlassq(j, &a[( j * lda)], 1, scale, s);
                         // U at A(0,0)
                     }
                     for (j = k; j <= n - 1; j = j + 1) {
-                        Rlassq(k, &a[(0 + j * lda)], 1, scale, s);
+                        Rlassq(k, &a[( j * lda)], 1, scale, s);
                         // k by k-1 rect. at A(0,k)
                     }
                     for (j = 0; j <= k - 3; j = j + 1) {
@@ -698,7 +698,7 @@ REAL Rlansf(const char *norm, const char *transr, const char *uplo, INTEGER cons
                         // L at A(k+1,0)
                     }
                     for (j = 0; j <= k - 1; j = j + 1) {
-                        Rlassq(k + j, &a[(0 + j * lda)], 1, scale, s);
+                        Rlassq(k + j, &a[( j * lda)], 1, scale, s);
                         // trap U at A(0,0)
                     }
                     s += s;
@@ -714,7 +714,7 @@ REAL Rlansf(const char *norm, const char *transr, const char *uplo, INTEGER cons
                         // trap L at A(1,0)
                     }
                     for (j = 1; j <= k - 1; j = j + 1) {
-                        Rlassq(j, &a[(0 + j * lda)], 1, scale, s);
+                        Rlassq(j, &a[( j * lda)], 1, scale, s);
                         // U at A(0,0)
                     }
                     s += s;
@@ -729,11 +729,11 @@ REAL Rlansf(const char *norm, const char *transr, const char *uplo, INTEGER cons
                 if (ilu == 0) {
                     // A**T is upper
                     for (j = 1; j <= k - 1; j = j + 1) {
-                        Rlassq(j, &a[(0 + (k + 1 + j) * lda)], 1, scale, s);
+                        Rlassq(j, &a[( (k + 1 + j) * lda)], 1, scale, s);
                         // U at A(0,k+1)
                     }
                     for (j = 0; j <= k - 1; j = j + 1) {
-                        Rlassq(k, &a[(0 + j * lda)], 1, scale, s);
+                        Rlassq(k, &a[( j * lda)], 1, scale, s);
                         // k by k rect. at A(0,0)
                     }
                     for (j = 0; j <= k - 2; j = j + 1) {
@@ -742,18 +742,18 @@ REAL Rlansf(const char *norm, const char *transr, const char *uplo, INTEGER cons
                     }
                     s += s;
                     // REAL s for the off diagonal elements
-                    Rlassq(k, &a[(0 + (k + 1) * lda)], lda + 1, scale, s);
+                    Rlassq(k, &a[( (k + 1) * lda)], lda + 1, scale, s);
                     // tri U at A(0,k+1)
-                    Rlassq(k, &a[(0 + k * lda)], lda + 1, scale, s);
+                    Rlassq(k, &a[( k * lda)], lda + 1, scale, s);
                     // tri L at A(0,k)
                 } else {
                     // A**T is lower
                     for (j = 1; j <= k - 1; j = j + 1) {
-                        Rlassq(j, &a[(0 + (j + 1) * lda)], 1, scale, s);
+                        Rlassq(j, &a[( (j + 1) * lda)], 1, scale, s);
                         // U at A(0,1)
                     }
                     for (j = k + 1; j <= n; j = j + 1) {
-                        Rlassq(k, &a[(0 + j * lda)], 1, scale, s);
+                        Rlassq(k, &a[( j * lda)], 1, scale, s);
                         // k by k rect. at A(0,k+1)
                     }
                     for (j = 0; j <= k - 2; j = j + 1) {

@@ -181,7 +181,7 @@ void Rstemr(const char *jobz, const char *range, INTEGER const n, REAL *d, REAL 
             nzcmin = 0;
         }
         if (zquery && info == 0) {
-            z[(1 - 1)] = nzcmin;
+            z[0] = nzcmin;
         } else if (nzc < nzcmin && !zquery) {
             info = -14;
         }
@@ -214,7 +214,7 @@ void Rstemr(const char *jobz, const char *range, INTEGER const n, REAL *d, REAL 
             }
         }
         if (wantz && (!zquery)) {
-            z[(1 - 1)] = one;
+            z[0] = one;
             isuppz[1 - 1] = 1;
             isuppz[2 - 1] = 1;
         }

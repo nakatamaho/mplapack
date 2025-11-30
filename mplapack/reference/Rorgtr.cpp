@@ -118,7 +118,7 @@ void Rorgtr(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL 
                 a[(i - 1) + (j - 1) * lda] = a[(i - 1) + ((j - 1) - 1) * lda];
             }
         }
-        a[(1 - 1)] = one;
+        a[0] = one;
         for (i = 2; i <= n; i = i + 1) {
             a[(i - 1)] = zero;
         }

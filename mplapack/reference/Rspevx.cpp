@@ -125,7 +125,7 @@ void Rspevx(const char *jobz, const char *range, const char *uplo, INTEGER const
             }
         }
         if (wantz) {
-            z[(1 - 1)] = one;
+            z[0] = one;
         }
         return;
     }

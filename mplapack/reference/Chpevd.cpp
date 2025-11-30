@@ -101,7 +101,7 @@ void Chpevd(const char *jobz, const char *uplo, INTEGER const n, COMPLEX *ap, RE
     if (n == 1) {
         w[1 - 1] = ap[1 - 1].real();
         if (wantz) {
-            z[(1 - 1)] = cone;
+            z[0] = cone;
         }
         return;
     }

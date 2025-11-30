@@ -320,7 +320,7 @@ void Rgesvj(const char *joba, const char *jobu, const char *jobv, INTEGER const 
     //
     if (n == 1) {
         if (lsvec) {
-            Rlascl("G", 0, 0, sva[1 - 1], skl, m, 1, &a[(1 - 1)], lda, ierr);
+            Rlascl("G", 0, 0, sva[1 - 1], skl, m, 1, &a[0], lda, ierr);
         }
         work[1 - 1] = one / skl;
         if (sva[1 - 1] >= sfmin) {

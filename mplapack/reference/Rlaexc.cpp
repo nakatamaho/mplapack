@@ -157,7 +157,7 @@ void Rlaexc(bool const wantq, INTEGER const n, REAL *t, INTEGER const ldt, REAL 
         // ( scale, X11, X12 ) H = ( 0, 0, * )
         //
         u[1 - 1] = scale;
-        u[2 - 1] = x[(1 - 1)];
+        u[2 - 1] = x[0];
         u[3 - 1] = x[(2 - 1) * ldx];
         Rlarfg(3, u[3 - 1], u, 1, tau);
         u[3 - 1] = one;
@@ -199,7 +199,7 @@ void Rlaexc(bool const wantq, INTEGER const n, REAL *t, INTEGER const ldt, REAL 
         // (  -X21 ) = ( 0 )
         // ( scale ) = ( 0 )
         //
-        u[1 - 1] = -x[(1 - 1)];
+        u[1 - 1] = -x[0];
         u[2 - 1] = -x[(2 - 1)];
         u[3 - 1] = scale;
         Rlarfg(3, u[1 - 1], &u[2 - 1], 1, tau);
@@ -213,7 +213,7 @@ void Rlaexc(bool const wantq, INTEGER const n, REAL *t, INTEGER const ldt, REAL 
         //
         // Test whether to reject swap.
         //
-        if (max({REAL(abs(d[(2 - 1)])), REAL(abs(d[(3 - 1)])), REAL(abs(d[(1 - 1)] - t33))}) > thresh) {
+        if (max({REAL(abs(d[(2 - 1)])), REAL(abs(d[(3 - 1)])), REAL(abs(d[0] - t33))}) > thresh) {
             goto statement_50;
         }
         //
@@ -244,7 +244,7 @@ void Rlaexc(bool const wantq, INTEGER const n, REAL *t, INTEGER const ldt, REAL 
         // ( scale    0  )   (  0  0 )
         // (    0  scale )   (  0  0 )
         //
-        u1[1 - 1] = -x[(1 - 1)];
+        u1[1 - 1] = -x[0];
         u1[2 - 1] = -x[(2 - 1)];
         u1[3 - 1] = scale;
         Rlarfg(3, u1[1 - 1], &u1[2 - 1], 1, tau1);

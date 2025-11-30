@@ -69,11 +69,11 @@ void Rlaorhr_col_getrfnp2(INTEGER const m, INTEGER const n, REAL *a, INTEGER con
         //
         // Transfer the sign
         //
-        d[1 - 1] = -sign(one, a[(1 - 1)]);
+        d[1 - 1] = -sign(one, a[0]);
         //
         // Construct the row of U
         //
-        a[(1 - 1)] = a[(1 - 1)] - d[1 - 1];
+        a[0] = a[0] - d[1 - 1];
         //
     } else if (n == 1) {
         //
@@ -82,11 +82,11 @@ void Rlaorhr_col_getrfnp2(INTEGER const m, INTEGER const n, REAL *a, INTEGER con
         //
         // Transfer the sign
         //
-        d[1 - 1] = -sign(one, a[(1 - 1)]);
+        d[1 - 1] = -sign(one, a[0]);
         //
         // Construct the row of U
         //
-        a[(1 - 1)] = a[(1 - 1)] - d[1 - 1];
+        a[0] = a[0] - d[1 - 1];
         //
         // Scale the elements 2:M of the column
         //
@@ -96,11 +96,11 @@ void Rlaorhr_col_getrfnp2(INTEGER const m, INTEGER const n, REAL *a, INTEGER con
         //
         // Construct the subdiagonal elements of L
         //
-        if (abs(a[(1 - 1)]) >= sfmin) {
-            Rscal(m - 1, one / a[(1 - 1)], &a[(2 - 1)], 1);
+        if (abs(a[0]) >= sfmin) {
+            Rscal(m - 1, one / a[0], &a[(2 - 1)], 1);
         } else {
             for (i = 2; i <= m; i = i + 1) {
-                a[(i - 1)] = a[(i - 1)] / a[(1 - 1)];
+                a[(i - 1)] = a[(i - 1)] / a[0];
             }
         }
         //

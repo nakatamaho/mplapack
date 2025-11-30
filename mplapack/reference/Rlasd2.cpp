@@ -355,7 +355,7 @@ statement_120:
             vt[(m - 1) + (i - 1) * ldvt] = c * vt[(m - 1) + (i - 1) * ldvt];
         }
     } else {
-        Rcopy(m, &vt[(nlp1 - 1)], ldvt, &vt2[(1 - 1)], ldvt2);
+        Rcopy(m, &vt[(nlp1 - 1)], ldvt, &vt2[0], ldvt2);
     }
     if (m > n) {
         Rcopy(m, &vt[(m - 1)], ldvt, &vt2[(m - 1)], ldvt2);

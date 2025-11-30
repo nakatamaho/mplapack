@@ -213,7 +213,7 @@ void Rorcsd(const char *jobu1, const char *jobu2, const char *jobv1t, const char
         }
         if (wantv1t && q > 0) {
             Rlacpy("U", q - 1, q - 1, &x11[(2 - 1) * ldx11], ldx11, &v1t[(2 - 1) + (2 - 1) * ldv1t], ldv1t);
-            v1t[(1 - 1)] = one;
+            v1t[0] = one;
             for (j = 2; j <= q; j = j + 1) {
                 v1t[(j - 1) * ldv1t] = zero;
                 v1t[(j - 1)] = zero;
@@ -240,7 +240,7 @@ void Rorcsd(const char *jobu1, const char *jobu2, const char *jobv1t, const char
         }
         if (wantv1t && q > 0) {
             Rlacpy("L", q - 1, q - 1, &x11[(2 - 1)], ldx11, &v1t[(2 - 1) + (2 - 1) * ldv1t], ldv1t);
-            v1t[(1 - 1)] = one;
+            v1t[0] = one;
             for (j = 2; j <= q; j = j + 1) {
                 v1t[(j - 1) * ldv1t] = zero;
                 v1t[(j - 1)] = zero;

@@ -150,7 +150,7 @@ void Rlaed8(INTEGER const icompq, INTEGER &k, INTEGER const n, INTEGER const qsi
                 perm[j - 1] = indxq[indx[j - 1] - 1];
                 Rcopy(qsiz, &q[(perm[j - 1] - 1) * ldq], 1, &q2[(j - 1) * ldq2], 1);
             }
-            Rlacpy("A", qsiz, n, &q2[(1 - 1)], ldq2, &q[(1 - 1)], ldq);
+            Rlacpy("A", qsiz, n, &q2[0], ldq2, &q[0], ldq);
         }
         return;
     }

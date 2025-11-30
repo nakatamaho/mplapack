@@ -245,17 +245,17 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
     if (n == 1) {
         //
         if (lsvec) {
-            Rlascl("G", 0, 0, sva[1 - 1], scalem, m, 1, &a[(1 - 1)], lda, ierr);
+            Rlascl("G", 0, 0, sva[1 - 1], scalem, m, 1, &a[0], lda, ierr);
             Rlacpy("A", m, 1, a, lda, u, ldu);
             // computing all M left singular vectors of the M x 1 matrix
             if (n1 != n) {
                 Rgeqrf(m, n, u, ldu, work, &work[(n + 1) - 1], lwork - n, ierr);
                 Rorgqr(m, n1, 1, u, ldu, work, &work[(n + 1) - 1], lwork - n, ierr);
-                Rcopy(m, &a[(1 - 1)], 1, &u[(1 - 1)], 1);
+                Rcopy(m, &a[0], 1, &u[0], 1);
             }
         }
         if (rsvec) {
-            v[(1 - 1)] = one;
+            v[0] = one;
         }
         if (sva[1 - 1] < (big * scalem)) {
             sva[1 - 1] = sva[1 - 1] / scalem;
@@ -521,7 +521,7 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
         // backward error of the order of N*EPSLN*||A||.
         temp1 = sqrt(castREAL(n)) * epsln;
         for (p = 2; p <= n; p = p + 1) {
-            if (abs(a[(p - 1) + (p - 1) * lda]) >= (temp1 * abs(a[(1 - 1)]))) {
+            if (abs(a[(p - 1) + (p - 1) * lda]) >= (temp1 * abs(a[0]))) {
                 nr++;
             } else {
                 goto statement_3002;
@@ -611,7 +611,7 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
         }
     }
     //
-    l2pert = l2pert && (abs(a[(1 - 1)] / a[(nr - 1) + (nr - 1) * lda]) > sqrt(big1));
+    l2pert = l2pert && (abs(a[0] / a[(nr - 1) + (nr - 1) * lda]) > sqrt(big1));
     // If there is no violent scaling, artificial perturbation is not needed.
     //
     // Phase 3:

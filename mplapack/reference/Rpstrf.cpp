@@ -77,7 +77,7 @@ void Rpstrf(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INTEG
         //
         // Use unblocked code
         //
-        Rpstf2(uplo, n, &a[(1 - 1)], lda, piv, rank, tol, work, info);
+        Rpstf2(uplo, n, &a[0], lda, piv, rank, tol, work, info);
         goto statement_200;
         //
     } else {

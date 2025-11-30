@@ -332,7 +332,7 @@ void Cgesvj(const char *joba, const char *jobu, const char *jobv, INTEGER const 
     //
     if (n == 1) {
         if (lsvec) {
-            Clascl("G", 0, 0, sva[1 - 1], skl, m, 1, &a[(1 - 1)], lda, ierr);
+            Clascl("G", 0, 0, sva[1 - 1], skl, m, 1, &a[0], lda, ierr);
         }
         rwork[1 - 1] = one / skl;
         if (sva[1 - 1] >= sfmin) {

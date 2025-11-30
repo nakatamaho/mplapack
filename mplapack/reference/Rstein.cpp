@@ -107,7 +107,7 @@ void Rstein(INTEGER const n, REAL *d, REAL *e, INTEGER const m, REAL *w, INTEGER
     if (n == 0 || m == 0) {
         return;
     } else if (n == 1) {
-        z[(1 - 1)] = one;
+        z[0] = one;
         return;
     }
     //
