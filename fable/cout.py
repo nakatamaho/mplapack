@@ -1475,14 +1475,38 @@ def rewrite_intrinsics(text: str) -> str:
         )
 
     def _int_dispatch(arg: str) -> str:
-        # First map the argument to a REAL-valued expression, then cast to INTEGER.
+        """Replacement for INT/FINT.
+
+        Policy:
+          - If the expression involves COMPLEX variables, use the same logic
+            as DBLE/REAL to get a REAL-valued expression, then castINTEGER.
+            (e.g. INT(work(1)) -> castINTEGER(work[0].real()))
+          - If the expression does not involve COMPLEX variables, assume it is
+            already REAL/INTEGER and use castINTEGER(expr) directly, without
+            going through castREAL.
+        """
+        arg_stripped = arg.strip()
+
+        # Detect whether the expression mentions any COMPLEX identifiers.
+        owner = None
+        for name in complex_identifiers:
+            # Match as an identifier, not as a substring of another name.
+            if re.search(r"\b" + re.escape(name) + r"\b", arg_stripped):
+                owner = name
+                break
+
+        if owner is None:
+            # No COMPLEX variables involved: treat as a real/integer expression.
+            return f"castINTEGER({arg_stripped})"
+
+        # COMPLEX variables involved: map to a REAL-valued expression first,
+        # then cast to INTEGER.
         real_expr = _real_cast_or_component(
             arg,
             complex_identifiers,
             complex_pointer_identifiers,
         )
         return f"castINTEGER({real_expr})"
-
 
     # --------------------------------------------------------------
     # 1) Unary intrinsics that need smart handling of parentheses
@@ -4772,6 +4796,22 @@ def _postprocess_strip_float_suffix(lines):
     return out
 
 
+def _postprocess_index_zero_simplify(lines):
+    """Postprocess index expressions to remove redundant parentheses.
+
+    Currently handles patterns like:
+      sva[(iwork[p - 1]) - 1] -> sva[iwork[p - 1] - 1]
+    i.e., remove redundant parentheses around a single array element
+    that is shifted by -1.
+    """
+    pat = re.compile(
+        r'\[\(\s*([A-Za-z_][A-Za-z0-9_]*\[[^]]+\])\s*\)\s*-\s*1\]'
+    )
+    out = []
+    for line in lines:
+        out.append(pat.sub(r'[\1 - 1]', line))
+    return out
+
 def _postprocess_complex_zero_initializers(lines):
     """Rewrite COMPLEX zero initializers using COMPLEX(0.0, 0.0).
 
@@ -5288,6 +5328,9 @@ def process(
 
     # Strip C-style float suffixes from literals (1.0f -> 1.0, etc.).
     result = _postprocess_strip_float_suffix(result)
+
+    # 
+    result = _postprocess_index_zero_simplify(result)
 
     # Clean up temporary Fortran files created for preprocessing.
     for tmp in temp_files:

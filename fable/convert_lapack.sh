@@ -144,7 +144,9 @@ import re
 from pathlib import Path
 
 path = Path(sys.argv[1])
-text = path.read_text()
+lines = path.read_text().splitlines(keepends=True)
+
+BRACKET_RE = re.compile(r"\[(.*?)\]")
 
 def simplify_expr(expr: str) -> str:
     """Simplify an index expression that may contain (1 - 1), *0, +0, etc."""
@@ -155,7 +157,7 @@ def simplify_expr(expr: str) -> str:
     e = re.sub(r"\b0\s*\*\s*[A-Za-z_][A-Za-z0-9_]*", "0", e)
     # NAME * 0 -> 0
     e = re.sub(r"[A-Za-z_][A-Za-z0-9_]*\s*\*\s*0\b", "0", e)
-    # + 0 / 0 + / - 0 -> remove (only inside index)
+    # "+ 0", "0 +", "- 0" -> remove
     e = re.sub(r"\+\s*0\b", "", e)
     e = re.sub(r"\b0\s*\+", "", e)
     e = re.sub(r"\-\s*0\b", "", e)
@@ -163,20 +165,45 @@ def simplify_expr(expr: str) -> str:
     e = re.sub(r"\s+", " ", e).strip()
     return e
 
-# Simplify inside [...] (indices), allowing newlines inside
-pat_bracket = re.compile(r"\[(.*?)\]", re.DOTALL)
+def simplify_line(line: str, in_block_comment: bool):
+    """Simplify indices on a single line, respecting comments.
 
-def repl(m):
-    inner = m.group(1)
-    return "[" + simplify_expr(inner) + "]"
+    - If inside a block comment (/* ... */), return line unchanged.
+    - If the line is a line comment (//...), return unchanged.
+    - Otherwise, simplify expressions inside [...] on this line.
+    """
+    stripped = line.lstrip()
 
-text = pat_bracket.sub(repl, text)
+    # Handle block comment state
+    if in_block_comment:
+        if "*/" in stripped:
+            in_block_comment = False
+        return line, in_block_comment
 
-# Global cleanup: ONLY (1 - 1) -> 0, do NOT touch "-0", "+0" etc.
-text = re.sub(r"\(\s*1\s*-\s*1\s*\)", "0", text)
+    if stripped.startswith("/*"):
+        if "*/" not in stripped:
+            in_block_comment = True
+        return line, in_block_comment
 
-path.write_text(text)
+    # Single-line comment: leave unchanged
+    if stripped.startswith("//"):
+        return line, in_block_comment
 
+    # Apply simplification only to this line
+    def repl(m: re.Match) -> str:
+        inner = m.group(1)
+        return "[" + simplify_expr(inner) + "]"
+
+    new_line = BRACKET_RE.sub(repl, line)
+    return new_line, in_block_comment
+
+out = []
+in_block_comment = False
+for line in lines:
+    new_line, in_block_comment = simplify_line(line, in_block_comment)
+    out.append(new_line)
+
+path.write_text("".join(out))
 EOF
 
 # Overwrite the generated C++ file with the formatted and postprocessed version
