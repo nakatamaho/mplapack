@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from BLAS routine ZHERK.
+// Original BLAS authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 
 void Cherk(const char *uplo, const char *trans, INTEGER const n, INTEGER const k, REAL const &alpha, COMPLEX *a, INTEGER const lda, REAL const &beta, COMPLEX *c, INTEGER const ldc) {

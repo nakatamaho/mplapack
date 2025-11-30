@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from BLAS routine ZHEMV.
+// Original BLAS authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 
 void Chemv(const char *uplo, INTEGER const n, COMPLEX const &alpha, COMPLEX *a, INTEGER const lda, COMPLEX *x, INTEGER const incx, COMPLEX const &beta, COMPLEX *y, INTEGER const incy) {

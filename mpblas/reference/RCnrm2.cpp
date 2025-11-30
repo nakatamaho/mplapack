@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from BLAS routine DZNRM2.
+// Original BLAS authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 
 REAL RCnrm2(INTEGER const n, COMPLEX *x, INTEGER const incx) {

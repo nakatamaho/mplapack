@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from BLAS routine ZSYMM.
+// Original BLAS authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 
 void Csymm(const char *side, const char *uplo, INTEGER const m, INTEGER const n, COMPLEX const &alpha, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, COMPLEX const &beta, COMPLEX *c, INTEGER const ldc) {

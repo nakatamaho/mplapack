@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from BLAS routine DGEMM.
+// Original BLAS authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 
 void Rgemm(const char *transa, const char *transb, INTEGER const m, INTEGER const n, INTEGER const k, REAL const &alpha, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL const &beta, REAL *c, INTEGER const ldc) {

@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from BLAS routine DGBMV.
+// Original BLAS authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 
 void Rgbmv(const char *trans, INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku, REAL const &alpha, REAL *a, INTEGER const lda, REAL *x, INTEGER const incx, REAL const &beta, REAL *y, INTEGER const incy) {

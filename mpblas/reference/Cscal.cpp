@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from BLAS routine ZSCAL.
+// Original BLAS authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 
 void Cscal(INTEGER const n, COMPLEX const &za, COMPLEX *zx, INTEGER const incx) {

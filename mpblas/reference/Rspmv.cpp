@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from BLAS routine DSPMV.
+// Original BLAS authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 
 void Rspmv(const char *uplo, INTEGER const n, REAL const &alpha, REAL *ap, REAL *x, INTEGER const incx, REAL const &beta, REAL *y, INTEGER const incy) {

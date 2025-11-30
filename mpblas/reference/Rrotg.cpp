@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from BLAS routine DROTG.
+// Original BLAS authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 
 void Rrotg(REAL &da, REAL &db, REAL &c, REAL &s) {

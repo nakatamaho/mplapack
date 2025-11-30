@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from BLAS routine ZDSCAL.
+// Original BLAS authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 
 void CRscal(INTEGER const n, REAL const &da, COMPLEX *zx, INTEGER const incx) {

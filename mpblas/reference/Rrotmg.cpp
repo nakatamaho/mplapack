@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from BLAS routine DROTMG.
+// Original BLAS authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 
 void Rrotmg(REAL &dd1, REAL &dd2, REAL &dx1, REAL const &dy1, REAL *dparam) {

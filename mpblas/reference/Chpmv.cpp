@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from BLAS routine ZHPMV.
+// Original BLAS authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 
 void Chpmv(const char *uplo, INTEGER const n, COMPLEX const &alpha, COMPLEX *ap, COMPLEX *x, INTEGER const incx, COMPLEX const &beta, COMPLEX *y, INTEGER const incy) {

@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from BLAS routine ZSYRK.
+// Original BLAS authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 
 void Csyrk(const char *uplo, const char *trans, INTEGER const n, INTEGER const k, COMPLEX const &alpha, COMPLEX *a, INTEGER const lda, COMPLEX const &beta, COMPLEX *c, INTEGER const ldc) {

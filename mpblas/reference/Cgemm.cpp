@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from BLAS routine ZGEMM.
+// Original BLAS authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 
 void Cgemm(const char *transa, const char *transb, INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX const &alpha, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, COMPLEX const &beta, COMPLEX *c, INTEGER const ldc) {

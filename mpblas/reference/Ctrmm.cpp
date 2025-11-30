@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from BLAS routine ZTRMM.
+// Original BLAS authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 
 void Ctrmm(const char *side, const char *uplo, const char *transa, const char *diag, INTEGER const m, INTEGER const n, COMPLEX const &alpha, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb) {

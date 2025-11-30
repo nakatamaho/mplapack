@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from BLAS routine ZROTG.
+// Original BLAS authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 
 void Crotg(COMPLEX &ca, COMPLEX const &cb, REAL &c, COMPLEX &s) {

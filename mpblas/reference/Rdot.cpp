@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from BLAS routine DDOT.
+// Original BLAS authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 
 REAL Rdot(INTEGER const n, REAL *dx, INTEGER const incx, REAL *dy, INTEGER const incy) {

@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from BLAS routine ZHER.
+// Original BLAS authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 
 void Cher(const char *uplo, INTEGER const n, REAL const &alpha, COMPLEX *x, INTEGER const incx, COMPLEX *a, INTEGER const lda) {

@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from BLAS routine DASUM.
+// Original BLAS authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 
 REAL Rasum(INTEGER const n, REAL *dx, INTEGER const incx) {

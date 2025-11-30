@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from BLAS routine DGER.
+// Original BLAS authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 
 void Rger(INTEGER const m, INTEGER const n, REAL const &alpha, REAL *x, INTEGER const incx, REAL *y, INTEGER const incy, REAL *a, INTEGER const lda) {

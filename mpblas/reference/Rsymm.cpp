@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from BLAS routine DSYMM.
+// Original BLAS authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 
 void Rsymm(const char *side, const char *uplo, INTEGER const m, INTEGER const n, REAL const &alpha, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL const &beta, REAL *c, INTEGER const ldc) {

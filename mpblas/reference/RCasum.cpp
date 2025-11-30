@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from BLAS routine DZASUM.
+// Original BLAS authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 
 REAL RCasum(INTEGER const n, COMPLEX *zx, INTEGER const incx) {

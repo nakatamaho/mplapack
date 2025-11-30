@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from BLAS routine ZAXPY.
+// Original BLAS authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 
 void Caxpy(INTEGER const n, COMPLEX const &za, COMPLEX *zx, INTEGER const incx, COMPLEX *zy, INTEGER const incy) {

@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from BLAS routine DAXPY.
+// Original BLAS authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 
 void Raxpy(INTEGER const n, REAL const &da, REAL *dx, INTEGER const incx, REAL *dy, INTEGER const incy) {

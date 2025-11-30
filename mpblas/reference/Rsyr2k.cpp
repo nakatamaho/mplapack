@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from BLAS routine DSYR2K.
+// Original BLAS authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 
 void Rsyr2k(const char *uplo, const char *trans, INTEGER const n, INTEGER const k, REAL const &alpha, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL const &beta, REAL *c, INTEGER const ldc) {

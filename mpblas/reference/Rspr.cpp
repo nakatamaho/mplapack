@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from BLAS routine DSPR.
+// Original BLAS authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 
 void Rspr(const char *uplo, INTEGER const n, REAL const &alpha, REAL *x, INTEGER const incx, REAL *ap) {
