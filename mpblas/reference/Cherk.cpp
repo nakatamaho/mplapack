@@ -49,9 +49,9 @@ void Cherk(const char *uplo, const char *trans, INTEGER const n, INTEGER const k
         info = 3;
     } else if (k < 0) {
         info = 4;
-    } else if (lda < MAX((INTEGER)1, nrowa)) {
+    } else if (lda < max((INTEGER)1, nrowa)) {
         info = 7;
-    } else if (ldc < MAX((INTEGER)1, n)) {
+    } else if (ldc < max((INTEGER)1, n)) {
         info = 10;
     }
     if (info != 0) {
