@@ -3147,8 +3147,9 @@ def convert_executable(
                     declare_identifiers(id_tokens=id_tokens)
                 crhs = convert_tokens(
                     conv_info=conv_info, tokens=ei.rhs_tokens)
-                # If LHS is REAL/DOUBLEPRECISION and RHS is a simple COMPLEX
-                # variable/element, assign its real part.
+                # If LHS is REAL/DOUBLEPRECISION or INTEGER and RHS is a simple
+                # COMPLEX variable/element, map to the real part (and cast to INTEGER
+                # for integer LHS).
                 lhs_fdecl = conv_info.fproc.get_fdecl(id_tok=lhs_id_tokens[0])
                 lhs_dt_code = None
                 if lhs_fdecl is not None and lhs_fdecl.data_type is not None:
@@ -3160,10 +3161,11 @@ def convert_executable(
                     if lhs_dt_code is not None:
                         lhs_dt_code = lhs_dt_code.lower()
                 lhs_is_real = lhs_dt_code in ("real", "doubleprecision")
+                lhs_is_integer = lhs_dt_code == "integer"
 
                 rhs_is_simple = _is_simple_lvalue(crhs)
                 rhs_is_complex = False
-                if lhs_is_real and rhs_is_simple and rhs_id_tokens:
+                if (lhs_is_real or lhs_is_integer) and rhs_is_simple and rhs_id_tokens:
                     rhs_fdecl = conv_info.fproc.get_fdecl(id_tok=rhs_id_tokens[0])
                     rhs_dt_code = None
                     if rhs_fdecl is not None and rhs_fdecl.data_type is not None:
@@ -3184,6 +3186,18 @@ def convert_executable(
                             crhs = f"{rhs_expr}.real()"
                         else:
                             crhs = f"({rhs_expr}).real()"
+                elif lhs_is_integer and rhs_is_complex:
+                    rhs_expr = crhs.strip()
+                    # INTEGER = COMPLEX -> INTEGER = castINTEGER(real(COMPLEX))
+                    if ".real()" not in rhs_expr and ".imag()" not in rhs_expr:
+                        if _is_simple_lvalue(rhs_expr):
+                            real_expr = f"{rhs_expr}.real()"
+                        else:
+                            real_expr = f"({rhs_expr}).real()"
+                    else:
+                        # Already has .real()/.imag(), just reuse
+                        real_expr = rhs_expr
+                    crhs = f"castINTEGER({real_expr})"
 
                 id_tok = lhs_id_tokens[0]
                 assign_here = id_tok.value in conv_info.vmap
