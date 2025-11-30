@@ -553,8 +553,8 @@ def convert_to_mplapack_type(ctype):
         return "REAL"
     elif ctype_clean == "float":
         return "REAL"
-    elif ctype_clean == "bool":
-        return "LOGICAL"
+#    elif ctype_clean == "bool":
+#        return "LOGICAL"
     elif ctype_clean == "std::complex<float>":
         return "COMPLEX"
     elif ctype_clean == "std::complex<double>":
@@ -3148,8 +3148,11 @@ def convert_executable(
                 crhs = convert_tokens(
                     conv_info=conv_info, tokens=ei.rhs_tokens)
                 # If LHS is REAL/DOUBLEPRECISION or INTEGER and RHS is a simple
-                # COMPLEX variable/element, map to the real part (and cast to INTEGER
-                # for integer LHS).
+                # COMPLEX or REAL variable/element, map according to Fortran
+                # implicit conversion rules:
+                #   REAL  = COMPLEX  -> REAL  = real(COMPLEX)
+                #   INTEGER = COMPLEX -> INTEGER = castINTEGER(real(COMPLEX))
+                #   INTEGER = REAL    -> INTEGER = castINTEGER(REAL)
                 lhs_fdecl = conv_info.fproc.get_fdecl(id_tok=lhs_id_tokens[0])
                 lhs_dt_code = None
                 if lhs_fdecl is not None and lhs_fdecl.data_type is not None:
@@ -3164,10 +3167,11 @@ def convert_executable(
                 lhs_is_integer = lhs_dt_code == "integer"
 
                 rhs_is_simple = _is_simple_lvalue(crhs)
+                rhs_dt_code = None
                 rhs_is_complex = False
+                rhs_is_real = False
                 if (lhs_is_real or lhs_is_integer) and rhs_is_simple and rhs_id_tokens:
                     rhs_fdecl = conv_info.fproc.get_fdecl(id_tok=rhs_id_tokens[0])
-                    rhs_dt_code = None
                     if rhs_fdecl is not None and rhs_fdecl.data_type is not None:
                         dt = rhs_fdecl.data_type
                         if isinstance(dt, str):
@@ -3177,6 +3181,7 @@ def convert_executable(
                         if rhs_dt_code is not None:
                             rhs_dt_code = rhs_dt_code.lower()
                     rhs_is_complex = rhs_dt_code in ("complex", "doublecomplex")
+                    rhs_is_real = rhs_dt_code in ("real", "doubleprecision")
 
                 if lhs_is_real and rhs_is_complex:
                     rhs_expr = crhs.strip()
@@ -3198,7 +3203,17 @@ def convert_executable(
                         # Already has .real()/.imag(), just reuse
                         real_expr = rhs_expr
                     crhs = f"castINTEGER({real_expr})"
-
+                elif lhs_is_integer and rhs_is_real:
+                    rhs_expr = crhs.strip()
+                    # INTEGER = REAL -> INTEGER = castINTEGER(REAL)
+                    if "castINTEGER(" in rhs_expr:
+                        # Already converted to INTEGER somewhere else
+                        pass
+                    else:
+                        if _is_simple_lvalue(rhs_expr):
+                            crhs = f"castINTEGER({rhs_expr})"
+                        else:
+                            crhs = f"castINTEGER({rhs_expr})"
                 id_tok = lhs_id_tokens[0]
                 assign_here = id_tok.value in conv_info.vmap
                 if (not assign_here):
