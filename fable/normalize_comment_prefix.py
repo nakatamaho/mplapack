@@ -13,8 +13,8 @@ block with a canonical form:
 //   <author2>
 //   ...
 
-Authors are extracted from the corresponding Fortran source file, by
-parsing the "Authors" section:
+Authors are extracted from the corresponding Fortran source file in the
+same directory, by parsing the "Authors" section:
 
 *  Authors:
 *  ========
@@ -24,13 +24,12 @@ parsing the "Authors" section:
 *> \\author Univ. of Colorado Denver
 *> \\author NAG Ltd.
 
-The Fortran source root is taken from the environment variable
-LAPACK_SRC_ROOT. The script searches recursively under that directory
-for a file whose name matches <routine>.f or <routine>.f90
-(case-insensitive).
+The Fortran source is expected to be in the same directory as the C++ file,
+with a matching stem name, e.g.:
+
+Cbdsqr.cpp  <->  cbdsqr.f   or cbdsqr.f90
 """
 
-import os
 import sys
 from pathlib import Path
 from typing import List, Optional
@@ -65,28 +64,24 @@ def line_contains_lapack_attr(line: str) -> bool:
     return False
 
 
-def find_fortran_file(root: Path, routine: str) -> Optional[Path]:
-    """Try to locate the Fortran source file for the given routine name.
+def find_fortran_for_cpp(cpp_path: Path) -> Optional[Path]:
+    """Locate the Fortran source corresponding to a given C++ file.
 
-    Search patterns:
-        <routine>.f
-        <routine>.f90
-    case-insensitive under root.
+    Search patterns in the same directory as cpp_path:
+        <stem>.f
+        <stem>.f90
+        <stem>.F
+        <stem>.F90
     """
-    candidates = []
-    routine_lower = routine.lower()
+    stem = cpp_path.stem.lower()
+    directory = cpp_path.parent
 
-    # Collect all *.f and *.f90 under root; filter by stem name.
     for ext in (".f", ".f90", ".F", ".F90"):
-        for p in root.rglob(f"*{ext}"):
-            stem = p.stem.lower()
-            if stem == routine_lower:
-                candidates.append(p)
+        candidate = directory / (stem + ext)
+        if candidate.is_file():
+            return candidate
 
-    if not candidates:
-        return None
-    # If multiple matches, pick the first one; user can refine if needed.
-    return candidates[0]
+    return None
 
 
 def extract_authors_from_fortran(path: Path) -> List[str]:
@@ -104,11 +99,11 @@ def extract_authors_from_fortran(path: Path) -> List[str]:
 
     Return a list of author strings without the '\\author' prefix.
     """
-    text = path.read_text(encoding="utf-8", errors="ignore").splitlines()
+    lines = path.read_text(encoding="utf-8", errors="ignore").splitlines()
     authors: List[str] = []
     in_authors_section = False
 
-    for line in text:
+    for line in lines:
         stripped = line.lstrip()
 
         # Detect start of Authors section
@@ -117,16 +112,15 @@ def extract_authors_from_fortran(path: Path) -> List[str]:
                 in_authors_section = True
             continue
 
-        # Once in Authors section:
-        # stop if we hit a non-comment or a blank line without content,
-        # but in practice we just scan for '\author' lines.
+        # Once in Authors section, collect \author lines.
         if "\\author" in stripped:
             # Typical form: "*> \\author Univ. of Tennessee"
             after = stripped.split("\\author", 1)[1]
             author = after.strip()
             if author:
                 authors.append(author)
-        # Heuristic: break when we leave the comment block.
+
+        # Heuristic: stop when we leave the comment block (non-* line).
         if stripped and not stripped.startswith("*"):
             break
 
@@ -155,18 +149,19 @@ def build_canonical_header(
     return [ln + "\n" for ln in lines]
 
 
-def normalize_file(path: Path, lapack_root: Optional[Path]) -> None:
+def normalize_file(path: Path) -> None:
+    """Normalize LAPACK attribution header in a single C++/header file."""
     src = path.read_text(encoding="utf-8", errors="ignore").splitlines(keepends=True)
     out: List[str] = []
 
     # Routine name from file stem, uppercased (e.g. Cbdsqr.cpp -> CBDSQR)
     routine = path.stem.upper()
-    authors: List[str] = []
 
-    if lapack_root is not None:
-        fpath = find_fortran_file(lapack_root, routine)
-        if fpath is not None:
-            authors = extract_authors_from_fortran(fpath)
+    # Try to find and parse the corresponding Fortran source in the same directory.
+    authors: List[str] = []
+    fpath = find_fortran_for_cpp(path)
+    if fpath is not None:
+        authors = extract_authors_from_fortran(fpath)
 
     i = 0
     n = len(src)
@@ -206,21 +201,14 @@ def normalize_file(path: Path, lapack_root: Optional[Path]) -> None:
 def main(argv):
     if len(argv) < 2:
         print("Usage: normalize_lapack_header.py FILE [FILE...]", file=sys.stderr)
-        print("       (set LAPACK_SRC_ROOT to point to the Fortran sources for author extraction.)", file=sys.stderr)
         sys.exit(1)
-
-    lapack_root_env = os.environ.get("LAPACK_SRC_ROOT")
-    lapack_root = Path(lapack_root_env) if lapack_root_env else None
-    if lapack_root is not None and not lapack_root.is_dir():
-        print(f"normalize_lapack_header: LAPACK_SRC_ROOT={lapack_root} is not a directory, ignoring", file=sys.stderr)
-        lapack_root = None
 
     for arg in argv[1:]:
         p = Path(arg)
         if not p.is_file():
             print(f"normalize_lapack_header: {p} is not a file, skipping", file=sys.stderr)
             continue
-        normalize_file(p, lapack_root)
+        normalize_file(p)
 
 
 if __name__ == "__main__":

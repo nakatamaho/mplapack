@@ -142,7 +142,7 @@ python3 "${script_dir}/strip_lapack_comments.py" "$tmp_cpp"
 # Fortran LAPACK sources (used to extract the Authors: section).
 # Example:
 #   export LAPACK_SRC_ROOT="$mplapack_root/external/lapack/work/internal/lapack-3.12.1/SRC"
-python3 "${script_dir}/normalize_lapack_header.py" "$tmp_cpp"
+python3 "${script_dir}/normalize_comment_prefix.py" "$tmp_cpp"
 
 # Overwrite the generated C++ file with the formatted version
 cp "$tmp_cpp" "$cpp_generated"

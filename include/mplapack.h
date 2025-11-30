@@ -166,6 +166,7 @@ typedef std::complex<_Float128> COMPLEX;
 // Elementary functions on REAL / COMPLEX.
 // These rely on ADL so that mp backends can provide their own overloads.
 
+#ifdef MAHO
 inline REAL EXP(const REAL &x) {
     using std::exp;
     return exp(x);
@@ -247,5 +248,6 @@ inline INTEGER NINT(const T &x) {
         return castINTEGER(x - T(0.5));
     }
 }
+#endif 
 
 #endif

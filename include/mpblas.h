@@ -118,6 +118,12 @@ typedef std::complex<_Float128> COMPLEX;
 #include <algorithm>
 #include <cmath>
 
+/* TO BE REMOVED */
+using std::max;
+using std::min;
+
+inline INTEGER mod(INTEGER a, INTEGER b) { return a % b; }
+
 // Integer MOD (Fortran-style MOD for INTEGER arguments)
 inline INTEGER MOD(INTEGER a, INTEGER b) { return a % b; }
 
@@ -127,6 +133,7 @@ inline REAL ABS(const REAL &x) {
     using std::abs;
     return abs(x);
 }
+/* TO BE REMOVED */
 
 // COMPLEX version of ABS.
 // For the __Float128 backend we must NOT go through std::abs(std::complex<_Float128>)
