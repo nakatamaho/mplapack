@@ -31,10 +31,6 @@
 
 void Cgehrd(INTEGER const n, INTEGER const ilo, INTEGER const ihi, COMPLEX *a, INTEGER const lda, COMPLEX *tau, COMPLEX *work, INTEGER const lwork, INTEGER &info) {
     //
-    //
-    //
-    //
-    //
     // Test the input parameters
     //
     info = 0;
@@ -62,7 +58,7 @@ void Cgehrd(INTEGER const n, INTEGER const ilo, INTEGER const ihi, COMPLEX *a, I
         //
         nb = min(nbmax, iMlaenv(1, "Cgehrd", " ", n, ilo, ihi, -1));
         lwkopt = n * nb + tsize;
-        work[1 - 1] = lwkopt;
+        work[0] = lwkopt;
     }
     //
     if (info != 0) {
@@ -87,7 +83,7 @@ void Cgehrd(INTEGER const n, INTEGER const ilo, INTEGER const ihi, COMPLEX *a, I
     //
     INTEGER nh = ihi - ilo + 1;
     if (nh <= 1) {
-        work[1 - 1] = 1;
+        work[0] = 1;
         return;
     }
     //
@@ -176,7 +172,7 @@ void Cgehrd(INTEGER const n, INTEGER const ilo, INTEGER const ihi, COMPLEX *a, I
     //
     INTEGER iinfo = 0;
     Cgehd2(n, i, ihi, a, lda, tau, work, iinfo);
-    work[1 - 1] = lwkopt;
+    work[0] = lwkopt;
     //
     // End of Cgehrd
     //
