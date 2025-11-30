@@ -58,7 +58,7 @@ void Rgehrd(INTEGER const n, INTEGER const ilo, INTEGER const ihi, REAL *a, INTE
         //
         nb = min(nbmax, iMlaenv(1, "Rgehrd", " ", n, ilo, ihi, -1));
         lwkopt = n * nb + tsize;
-        work[1 - 1] = lwkopt;
+        work[0] = lwkopt;
     }
     //
     if (info != 0) {
@@ -83,7 +83,7 @@ void Rgehrd(INTEGER const n, INTEGER const ilo, INTEGER const ihi, REAL *a, INTE
     //
     INTEGER nh = ihi - ilo + 1;
     if (nh <= 1) {
-        work[1 - 1] = 1;
+        work[0] = 1;
         return;
     }
     //
@@ -172,7 +172,7 @@ void Rgehrd(INTEGER const n, INTEGER const ilo, INTEGER const ihi, REAL *a, INTE
     //
     INTEGER iinfo = 0;
     Rgehd2(n, i, ihi, a, lda, tau, work, iinfo);
-    work[1 - 1] = lwkopt;
+    work[0] = lwkopt;
     //
     // End of Rgehrd
     //
