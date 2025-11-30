@@ -4627,54 +4627,54 @@ def _postprocess_math_intrinsics_upper(lines):
         # ----------------------------------------------------------
         # 2) Trigonometric intrinsics
         # ----------------------------------------------------------
-        line = re.sub(r'\bstd::atan2\s*\(', 'ATAN2(', line)
-        line = re.sub(r'\batan2\s*\(',      'ATAN2(', line)
-        line = re.sub(r'\bstd::cos\s*\(',   'COS(',   line)
-        line = re.sub(r'\bcos\s*\(',        'COS(',   line)
-        line = re.sub(r'\bstd::sin\s*\(',   'SIN(',   line)
-        line = re.sub(r'\bsin\s*\(',        'SIN(',   line)
-        line = re.sub(r'\bstd::tan\s*\(',   'TAN(',   line)
-        line = re.sub(r'\btan\s*\(',        'TAN(',   line)
+        line = re.sub(r'\bstd::atan2\s*\(', 'atan2(', line)
+        line = re.sub(r'\batan2\s*\(',      'atan2(', line)
+        line = re.sub(r'\bstd::cos\s*\(',   'cos(',   line)
+        line = re.sub(r'\bcos\s*\(',        'cos(',   line)
+        line = re.sub(r'\bstd::sin\s*\(',   'sin(',   line)
+        line = re.sub(r'\bsin\s*\(',        'sin(',   line)
+        line = re.sub(r'\bstd::tan\s*\(',   'tan(',   line)
+        line = re.sub(r'\btan\s*\(',        'tan(',   line)
 
         # ----------------------------------------------------------
         # 3) Logarithm and exponential intrinsics (std:: + plain)
         # ----------------------------------------------------------
-        line = re.sub(r'\bstd::log10\s*\(', 'LOG10(', line)
-        line = re.sub(r'\blog10\s*\(',      'LOG10(', line)
-        line = re.sub(r'\bstd::log\s*\(',   'LOG(',   line)
-        line = re.sub(r'\blog\s*\(',        'LOG(',   line)
-        line = re.sub(r'\bstd::exp\s*\(',   'EXP(',   line)
-        line = re.sub(r'\bexp\s*\(',        'EXP(',   line)
+        line = re.sub(r'\bstd::log10\s*\(', 'log10(', line)
+        line = re.sub(r'\blog10\s*\(',      'log10(', line)
+        line = re.sub(r'\bstd::log\s*\(',   'log(',   line)
+        line = re.sub(r'\blog\s*\(',        'log(',   line)
+        line = re.sub(r'\bstd::exp\s*\(',   'exp(',   line)
+        line = re.sub(r'\bexp\s*\(',        'exp(',   line)
 
         # ----------------------------------------------------------
         # 4) Extremum intrinsics
         # ----------------------------------------------------------
-        line = re.sub(r'\bstd::max\s*\(',   'MAX(',   line)
-        line = re.sub(r'\bmax\s*\(',        'MAX(',   line)
-        line = re.sub(r'\bstd::min\s*\(',   'MIN(',   line)
-        line = re.sub(r'\bmin\s*\(',        'MIN(',   line)
+        line = re.sub(r'\bstd::max\s*\(',   'max(',   line)
+        line = re.sub(r'\bmax\s*\(',        'max(',   line)
+        line = re.sub(r'\bstd::min\s*\(',   'min(',   line)
+        line = re.sub(r'\bmin\s*\(',        'min(',   line)
 
         # ----------------------------------------------------------
         # 5) Absolute value intrinsics
         # ----------------------------------------------------------
-        line = re.sub(r'\bstd::abs\s*\(',   'ABS(',   line)
-        line = re.sub(r'\babs\s*\(',        'ABS(',   line)
+        line = re.sub(r'\bstd::abs\s*\(',   'abs(',   line)
+        line = re.sub(r'\babs\s*\(',        'abs(',   line)
 
         # ----------------------------------------------------------
         # 6) Other intrinsics
         # ----------------------------------------------------------
-        line = re.sub(r'\bstd::mod\s*\(',   'MOD(',   line)
-        line = re.sub(r'\bmod\s*\(',        'MOD(',   line)
-        line = re.sub(r'\bstd::sqrt\s*\(',  'SQRT(',  line)
-        line = re.sub(r'\bsqrt\s*\(',       'SQRT(',  line)
-        line = re.sub(r'\bpow2\s*\(',       'POW2(',  line)
-        line = re.sub(r'\bstd::pow\s*\(',   'POW(',   line)
-        line = re.sub(r'\bpow\s*\(',        'POW(',   line)
+        line = re.sub(r'\bstd::mod\s*\(',   'mod(',   line)
+        line = re.sub(r'\bmod\s*\(',        'mod(',   line)
+        line = re.sub(r'\bstd::sqrt\s*\(',  'sqrt(',  line)
+        line = re.sub(r'\bsqrt\s*\(',       'sqrt(',  line)
+        line = re.sub(r'\bpow2\s*\(',       'pow2(',  line)
+        line = re.sub(r'\bstd::pow\s*\(',   'pow(',   line)
+        line = re.sub(r'\bpow\s*\(',        'pow(',   line)
 
         # ----------------------------------------------------------
         # 7) NINT-like rounding intrinsics (already canonicalized)
         # ----------------------------------------------------------
-        line = re.sub(r'\bnint\s*\(',       'NINT(',  line)
+        line = re.sub(r'\bnint\s*\(',       'nint(',  line)
 
         # ----------------------------------------------------------
         # 8) conjg
@@ -4692,8 +4692,8 @@ def _postprocess_minmax_parens(lines):
       ((MIN(k1 + 1, m)) - 1) -> (MIN(k1 + 1, m) - 1)
       ((MAX(i, j)) - 1)      -> (MAX(i, j) - 1)
     """
-    pat_min = re.compile(r'\(\((MIN\([^()]*\))\)\s*-\s*1\)')
-    pat_max = re.compile(r'\(\((MAX\([^()]*\))\)\s*-\s*1\)')
+    pat_min = re.compile(r'\(\((min\([^()]*\))\)\s*-\s*1\)')
+    pat_max = re.compile(r'\(\((max\([^()]*\))\)\s*-\s*1\)')
     out = []
     for line in lines:
         line = pat_min.sub(r'(\1 - 1)', line)

@@ -134,6 +134,16 @@ clang-format-19 -i -style '{
     BreakBeforeConceptDeclarations: Never,
   }' "$tmp_cpp"
 
+# After assembling the full C++ file into $tmp_cpp (header + body),
+# strip LAPACK boilerplate comments and normalize attribution headers.
+python3 "${script_dir}/strip_lapack_comments.py" "$tmp_cpp"
+
+# LAPACK_SRC_ROOT should point to the directory containing the original
+# Fortran LAPACK sources (used to extract the Authors: section).
+# Example:
+#   export LAPACK_SRC_ROOT="$mplapack_root/external/lapack/work/internal/lapack-3.12.1/SRC"
+python3 "${script_dir}/normalize_lapack_header.py" "$tmp_cpp"
+
 # Overwrite the generated C++ file with the formatted version
 cp "$tmp_cpp" "$cpp_generated"
 
