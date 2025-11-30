@@ -31,7 +31,7 @@
 
 void Rlasdt(INTEGER const n, INTEGER &lvl, INTEGER &nd, INTEGER *inode, INTEGER *ndiml, INTEGER *ndimr, INTEGER const msub) {
     //
-    //     Find the number of levels on the tree.
+    // Find the number of levels on the tree.
     //
     INTEGER maxn = max((INTEGER)1, n);
     const REAL two = 2.0e+0;
@@ -49,8 +49,8 @@ void Rlasdt(INTEGER const n, INTEGER &lvl, INTEGER &nd, INTEGER *inode, INTEGER 
     INTEGER ncrnt = 0;
     for (nlvl = 1; nlvl <= lvl - 1; nlvl = nlvl + 1) {
         //
-        //        Constructing the tree at (NLVL+1)-st level. The number of
-        //        nodes created on this level is LLST * 2.
+        // Constructing the tree at (NLVL+1)-st level. The number of
+        // nodes created on this level is LLST * 2.
         //
         for (i = 0; i <= llst - 1; i = i + 1) {
             il += 2;
@@ -67,6 +67,6 @@ void Rlasdt(INTEGER const n, INTEGER &lvl, INTEGER &nd, INTEGER *inode, INTEGER 
     }
     nd = llst * 2 - 1;
     //
-    //     End of Rlasdt
+    // End of Rlasdt
     //
 }

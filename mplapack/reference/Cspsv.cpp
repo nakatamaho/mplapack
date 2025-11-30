@@ -31,7 +31,7 @@
 
 void Cspsv(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *ap, INTEGER *ipiv, COMPLEX *b, INTEGER const ldb, INTEGER &info) {
     //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     if (!Mlsame(uplo, "U") && !Mlsame(uplo, "L")) {
@@ -48,17 +48,17 @@ void Cspsv(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *ap, I
         return;
     }
     //
-    //     Compute the factorization A = U*D*U**T or A = L*D*L**T.
+    // Compute the factorization A = U*D*U**T or A = L*D*L**T.
     //
     Csptrf(uplo, n, ap, ipiv, info);
     if (info == 0) {
         //
-        //        Solve the system A*X = B, overwriting B with X.
+        // Solve the system A*X = B, overwriting B with X.
         //
         Csptrs(uplo, n, nrhs, ap, ipiv, b, ldb, info);
         //
     }
     //
-    //     End of Cspsv
+    // End of Cspsv
     //
 }

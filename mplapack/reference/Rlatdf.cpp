@@ -50,11 +50,11 @@ void Rlatdf(INTEGER const ijob, INTEGER const n, REAL *z, INTEGER const ldz, REA
     REAL xm[maxdim];
     if (ijob != 2) {
         //
-        //        Apply permutations IPIV to RHS
+        // Apply permutations IPIV to RHS
         //
         Rlaswp(1, rhs, ldz, 1, n - 1, ipiv, 1);
         //
-        //        Solve for L-part choosing RHS either to +1 or -1.
+        // Solve for L-part choosing RHS either to +1 or -1.
         //
         pmone = -one;
         //
@@ -63,8 +63,8 @@ void Rlatdf(INTEGER const ijob, INTEGER const n, REAL *z, INTEGER const ldz, REA
             bm = rhs[j - 1] - one;
             splus = one;
             //
-            //           Look-ahead for L-part RHS(1:N-1) = + or -1, SPLUS and
-            //           SMIN computed more efficiently than in BSOLVE [1].
+            // Look-ahead for L-part RHS(1:N-1) = + or -1, SPLUS and
+            // SMIN computed more efficiently than in BSOLVE [1].
             //
             splus += Rdot(n - j, &z[((j + 1) - 1) + (j - 1) * ldz], 1, &z[((j + 1) - 1) + (j - 1) * ldz], 1);
             sminu = Rdot(n - j, &z[((j + 1) - 1) + (j - 1) * ldz], 1, &rhs[(j + 1) - 1], 1);
@@ -75,27 +75,27 @@ void Rlatdf(INTEGER const ijob, INTEGER const n, REAL *z, INTEGER const ldz, REA
                 rhs[j - 1] = bm;
             } else {
                 //
-                //              In this case the updating sums are equal and we can
-                //              choose RHS(J) +1 or -1. The first time this happens
-                //              we choose -1, thereafter +1. This is a simple way to
-                //              get good estimates of matrices like Byers well-known
-                //              example (see [1]). (Not done in BSOLVE.)
+                // In this case the updating sums are equal and we can
+                // choose RHS(J) +1 or -1. The first time this happens
+                // we choose -1, thereafter +1. This is a simple way to
+                // get good estimates of matrices like Byers well-known
+                // example (see [1]). (Not done in BSOLVE.)
                 //
                 rhs[j - 1] += pmone;
                 pmone = one;
             }
             //
-            //           Compute the remaining r.h.s.
+            // Compute the remaining r.h.s.
             //
             temp = -rhs[j - 1];
             Raxpy(n - j, temp, &z[((j + 1) - 1) + (j - 1) * ldz], 1, &rhs[(j + 1) - 1], 1);
             //
         }
         //
-        //        Solve for U-part, look-ahead for RHS(N) = +-1. This is not done
-        //        in BSOLVE and will hopefully give us a better estimate because
-        //        any ill-conditioning of the original matrix is transferred to U
-        //        and not to L. U(N, N) is an approximation to sigma_min(LU).
+        // Solve for U-part, look-ahead for RHS(N) = +-1. This is not done
+        // in BSOLVE and will hopefully give us a better estimate because
+        // any ill-conditioning of the original matrix is transferred to U
+        // and not to L. U(N, N) is an approximation to sigma_min(LU).
         //
         Rcopy(n - 1, rhs, 1, xp, 1);
         xp[n - 1] = rhs[n - 1] + one;
@@ -117,22 +117,22 @@ void Rlatdf(INTEGER const ijob, INTEGER const n, REAL *z, INTEGER const ldz, REA
             Rcopy(n, xp, 1, rhs, 1);
         }
         //
-        //        Apply the permutations JPIV to the computed solution (RHS)
+        // Apply the permutations JPIV to the computed solution (RHS)
         //
         Rlaswp(1, rhs, ldz, 1, n - 1, jpiv, -1);
         //
-        //        Compute the sum of squares
+        // Compute the sum of squares
         //
         Rlassq(n, rhs, 1, rdscal, rdsum);
         //
     } else {
         //
-        //        IJOB = 2, Compute approximate nullvector XM of Z
+        // IJOB = 2, Compute approximate nullvector XM of Z
         //
         Rgecon("I", n, z, ldz, one, temp, work, iwork, info);
         Rcopy(n, &work[(n + 1) - 1], 1, xm, 1);
         //
-        //        Compute RHS
+        // Compute RHS
         //
         Rlaswp(1, xm, ldz, 1, n - 1, ipiv, -1);
         temp = one / sqrt(Rdot(n, xm, 1, xm, 1));
@@ -146,12 +146,12 @@ void Rlatdf(INTEGER const ijob, INTEGER const n, REAL *z, INTEGER const ldz, REA
             Rcopy(n, xp, 1, rhs, 1);
         }
         //
-        //        Compute the sum of squares
+        // Compute the sum of squares
         //
         Rlassq(n, rhs, 1, rdscal, rdsum);
         //
     }
     //
-    //     End of Rlatdf
+    // End of Rlatdf
     //
 }

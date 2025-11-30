@@ -31,28 +31,9 @@
 
 void Rlasq1(INTEGER const n, REAL *d, REAL *e, REAL *work, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
     //
-    //  =====================================================================
     //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
     info = 0;
     REAL sigmn = 0.0;
@@ -73,7 +54,7 @@ void Rlasq1(INTEGER const n, REAL *d, REAL *e, REAL *work, INTEGER &info) {
         return;
     }
     //
-    //     Estimate the largest singular value.
+    // Estimate the largest singular value.
     //
     const REAL zero = 0.0;
     sigmx = zero;
@@ -84,7 +65,7 @@ void Rlasq1(INTEGER const n, REAL *d, REAL *e, REAL *work, INTEGER &info) {
     }
     d[n - 1] = abs(d[n - 1]);
     //
-    //     Early return if SIGMX is zero (matrix is already diagonal).
+    // Early return if SIGMX is zero (matrix is already diagonal).
     //
     INTEGER iinfo = 0;
     if (sigmx == zero) {
@@ -96,8 +77,8 @@ void Rlasq1(INTEGER const n, REAL *d, REAL *e, REAL *work, INTEGER &info) {
         sigmx = max(sigmx, d[i - 1]);
     }
     //
-    //     Copy D and E into WORK (in the Z format) and scale (squaring the
-    //     input data makes scaling by a power of the radix pointless).
+    // Copy D and E into WORK (in the Z format) and scale (squaring the
+    // input data makes scaling by a power of the radix pointless).
     //
     REAL eps = Rlamch("Precision");
     REAL safmin = Rlamch("Safe minimum");
@@ -106,7 +87,7 @@ void Rlasq1(INTEGER const n, REAL *d, REAL *e, REAL *work, INTEGER &info) {
     Rcopy(n - 1, e, 1, &work[2 - 1], 2);
     Rlascl("G", 0, 0, sigmx, scale, 2 * n - 1, 1, work, 2 * n - 1, iinfo);
     //
-    //     Compute the q's and e's.
+    // Compute the q's and e's.
     //
     for (i = 1; i <= 2 * n - 1; i = i + 1) {
         work[i - 1] = pow2(work[i - 1]);
@@ -122,8 +103,8 @@ void Rlasq1(INTEGER const n, REAL *d, REAL *e, REAL *work, INTEGER &info) {
         Rlascl("G", 0, 0, scale, sigmx, n, 1, d, n, iinfo);
     } else if (info == 2) {
         //
-        //     Maximum number of iterations exceeded.  Move data from WORK
-        //     into D and E so the calling subroutine can try to finish
+        // Maximum number of iterations exceeded.  Move data from WORK
+        // into D and E so the calling subroutine can try to finish
         //
         for (i = 1; i <= n; i = i + 1) {
             d[i - 1] = sqrt(work[(2 * i - 1) - 1]);
@@ -133,6 +114,6 @@ void Rlasq1(INTEGER const n, REAL *d, REAL *e, REAL *work, INTEGER &info) {
         Rlascl("G", 0, 0, scale, sigmx, n, 1, e, n, iinfo);
     }
     //
-    //     End of Rlasq1
+    // End of Rlasq1
     //
 }

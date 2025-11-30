@@ -31,7 +31,7 @@
 
 void Chesv_rook(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a, INTEGER const lda, INTEGER *ipiv, COMPLEX *b, INTEGER const ldb, COMPLEX *work, INTEGER const lwork, INTEGER &info) {
     //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     bool lquery = (lwork == -1);
@@ -68,14 +68,14 @@ void Chesv_rook(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *
         return;
     }
     //
-    //     Compute the factorization A = U*D*U**H or A = L*D*L**H.
+    // Compute the factorization A = U*D*U**H or A = L*D*L**H.
     //
     Chetrf_rook(uplo, n, a, lda, ipiv, work, lwork, info);
     if (info == 0) {
         //
-        //        Solve the system A*X = B, overwriting B with X.
+        // Solve the system A*X = B, overwriting B with X.
         //
-        //        Solve with TRS ( Use Level BLAS 2)
+        // Solve with TRS ( Use Level BLAS 2)
         //
         Chetrs_rook(uplo, n, nrhs, a, lda, ipiv, b, ldb, info);
         //
@@ -83,6 +83,6 @@ void Chesv_rook(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *
     //
     work[1 - 1] = lwkopt;
     //
-    //     End of Chesv_rook
+    // End of Chesv_rook
     //
 }

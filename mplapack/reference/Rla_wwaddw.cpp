@@ -31,20 +31,9 @@
 
 void Rla_wwaddw(INTEGER const n, REAL *x, REAL *y, REAL *w) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
     //
-    //  =====================================================================
     //
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Executable Statements ..
     //
     INTEGER i = 0;
     REAL s = 0.0;

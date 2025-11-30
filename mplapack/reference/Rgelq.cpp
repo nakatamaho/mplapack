@@ -31,31 +31,11 @@
 
 void Rgelq(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *t, INTEGER const tsize, REAL *work, INTEGER const lwork, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd. --
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
     //
-    //  =====================================================================
     //
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
-    //     Test the input arguments
+    // Test the input arguments
     //
     info = 0;
     //
@@ -72,7 +52,7 @@ void Rgelq(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *t
         }
     }
     //
-    //     Determine the block size
+    // Determine the block size
     //
     INTEGER mb = 0;
     INTEGER nb = 0;
@@ -101,7 +81,7 @@ void Rgelq(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *t
         nblcks = 1;
     }
     //
-    //     Determine if the workspace size satisfies minimal size
+    // Determine if the workspace size satisfies minimal size
     //
     INTEGER lwmin = 0;
     INTEGER lwopt = 0;
@@ -164,13 +144,13 @@ void Rgelq(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *t
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (min(m, n) == 0) {
         return;
     }
     //
-    //     The LQ Decomposition
+    // The LQ Decomposition
     //
     if ((n <= m) || (nb <= m) || (nb >= n)) {
         Rgelqt(m, n, mb, a, lda, &t[6 - 1], mb, work, info);
@@ -180,6 +160,6 @@ void Rgelq(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *t
     //
     work[1 - 1] = lwreq;
     //
-    //     End of Rgelq
+    // End of Rgelq
     //
 }

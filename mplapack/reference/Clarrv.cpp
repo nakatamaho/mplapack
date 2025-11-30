@@ -127,39 +127,19 @@ void Clarrv(INTEGER const n, REAL const vl, REAL const /* vu */, REAL *d, REAL *
     INTEGER zto = 0;
     INTEGER ii = 0;
     //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
     //
-    //  =====================================================================
     //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //     ..
     //
     info = 0;
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n <= 0) {
         return;
     }
     //
-    //     The first N entries of WORK are reserved for the eigenvalues
+    // The first N entries of WORK are reserved for the eigenvalues
     indld = n + 1;
     indlld = 2 * n + 1;
     indin1 = 3 * n + 1;
@@ -171,8 +151,8 @@ void Clarrv(INTEGER const n, REAL const vl, REAL const /* vu */, REAL *d, REAL *
         work[i - 1] = zero;
     }
     //
-    //     IWORK(IINDR+1:IINDR+N) hold the twist indices R for the
-    //     factorization used to compute the FP vector
+    // IWORK(IINDR+1:IINDR+N) hold the twist indices R for the
+    // factorization used to compute the FP vector
     iindr = 0;
     // IWORK(IINDC1+1:IINC2+N) are used to store the clusters of the current
     // layer and the one above.
@@ -203,7 +183,7 @@ void Clarrv(INTEGER const n, REAL const vl, REAL const /* vu */, REAL *d, REAL *
     eps = Rlamch("Precision");
     rqtol = two * eps;
     //
-    //     Set expert flags for standard code.
+    // Set expert flags for standard code.
     tryrqc = true;
     //
     if ((dol == 1) && (dou == m)) {
@@ -215,13 +195,13 @@ void Clarrv(INTEGER const n, REAL const vl, REAL const /* vu */, REAL *d, REAL *
         rtol2 = four * eps;
     }
     //
-    //     The entries WBEGIN:WEND in W, WERR, WGAP correspond to the
-    //     desired eigenvalues. The support of the nonzero eigenvector
-    //     entries is contained in the interval IBEGIN:IEND.
-    //     Remark that if k eigenpairs are desired, then the eigenvectors
-    //     are stored in k contiguous columns of Z.
+    // The entries WBEGIN:WEND in W, WERR, WGAP correspond to the
+    // desired eigenvalues. The support of the nonzero eigenvector
+    // entries is contained in the interval IBEGIN:IEND.
+    // Remark that if k eigenpairs are desired, then the eigenvectors
+    // are stored in k contiguous columns of Z.
     //
-    //     DONE is the number of eigenvectors already computed
+    // DONE is the number of eigenvectors already computed
     done = 0;
     ibegin = 1;
     wbegin = 1;
@@ -247,7 +227,7 @@ void Clarrv(INTEGER const n, REAL const vl, REAL const /* vu */, REAL *d, REAL *
             goto statement_170;
         }
         //
-        //        Find local spectral diameter of the block
+        // Find local spectral diameter of the block
         gl = gers[(2 * ibegin - 1) - 1];
         gu = gers[(2 * ibegin) - 1];
         for (i = ibegin + 1; i <= iend; i = i + 1) {
@@ -256,14 +236,14 @@ void Clarrv(INTEGER const n, REAL const vl, REAL const /* vu */, REAL *d, REAL *
         }
         spdiam = gu - gl;
         //
-        //        OLDIEN is the last index of the previous block
+        // OLDIEN is the last index of the previous block
         oldien = ibegin - 1;
         // Calculate the size of the current block
         in = iend - ibegin + 1;
         // The number of eigenvalues in the current block
         im = wend - wbegin + 1;
         //
-        //        This is for a 1x1 block
+        // This is for a 1x1 block
         if (ibegin == iend) {
             done++;
             z[(ibegin - 1) + (wbegin - 1) * ldz] = COMPLEX(one, zero);
@@ -276,21 +256,21 @@ void Clarrv(INTEGER const n, REAL const vl, REAL const /* vu */, REAL *d, REAL *
             goto statement_170;
         }
         //
-        //        The desired (shifted) eigenvalues are stored in W(WBEGIN:WEND)
-        //        Note that these can be approximations, in this case, the corresp.
-        //        entries of WERR give the size of the uncertainty interval.
-        //        The eigenvalue approximations will be refined when necessary as
-        //        high relative accuracy is required for the computation of the
-        //        corresponding eigenvectors.
+        // The desired (shifted) eigenvalues are stored in W(WBEGIN:WEND)
+        // Note that these can be approximations, in this case, the corresp.
+        // entries of WERR give the size of the uncertainty interval.
+        // The eigenvalue approximations will be refined when necessary as
+        // high relative accuracy is required for the computation of the
+        // corresponding eigenvectors.
         Rcopy(im, &w[wbegin - 1], 1, &work[wbegin - 1], 1);
         //
-        //        We store in W the eigenvalue approximations w.r.t. the original
-        //        matrix T.
+        // We store in W the eigenvalue approximations w.r.t. the original
+        // matrix T.
         for (i = 1; i <= im; i = i + 1) {
             w[(wbegin + i - 1) - 1] += sigma;
         }
         //
-        //        NDEPTH is the current depth of the representation tree
+        // NDEPTH is the current depth of the representation tree
         ndepth = 0;
         // PARITY is either 1 or 0
         parity = 1;
@@ -300,8 +280,8 @@ void Clarrv(INTEGER const n, REAL const vl, REAL const /* vu */, REAL *d, REAL *
         iwork[(iindc1 + 1) - 1] = 1;
         iwork[(iindc1 + 2) - 1] = im;
         //
-        //        IDONE is the number of eigenvectors already computed in the current
-        //        block
+        // IDONE is the number of eigenvectors already computed in the current
+        // block
         idone = 0;
     // loop while( IDONE.LT.IM )
     // generate the representation tree for the current block and
@@ -331,8 +311,8 @@ void Clarrv(INTEGER const n, REAL const vl, REAL const /* vu */, REAL *d, REAL *
             for (i = 1; i <= oldncl; i = i + 1) {
                 j = oldcls + 2 * i;
                 // OLDFST, OLDLST = first, last index of current cluster.
-                //                  cluster indices start with 1 and are relative
-                //                  to WBEGIN when accessing W, WGAP, WERR, Z
+                // cluster indices start with 1 and are relative
+                // to WBEGIN when accessing W, WGAP, WERR, Z
                 oldfst = iwork[(j - 1) - 1];
                 oldlst = iwork[j - 1];
                 if (ndepth > 0) {
@@ -363,11 +343,11 @@ void Clarrv(INTEGER const n, REAL const vl, REAL const /* vu */, REAL *d, REAL *
                     d[iend - 1] = z[(iend - 1) + (j - 1) * ldz].real();
                     sigma = z[(iend - 1) + ((j + 1) - 1) * ldz].real();
                     //
-                    //                 Set the corresponding entries in Z to zero
+                    // Set the corresponding entries in Z to zero
                     Claset("Full", in, 2, czero, czero, &z[(ibegin - 1) + (j - 1) * ldz], ldz);
                 }
                 //
-                //              Compute DL and DLL of current RRR
+                // Compute DL and DLL of current RRR
                 for (j = ibegin; j <= iend - 1; j = j + 1) {
                     tmp = d[j - 1] * l[j - 1];
                     work[(indld - 1 + j) - 1] = tmp;
@@ -381,7 +361,7 @@ void Clarrv(INTEGER const n, REAL const vl, REAL const /* vu */, REAL *d, REAL *
                     q = indexw[(wbegin - 1 + oldlst) - 1];
                     // Offset for the arrays WORK, WGAP and WERR, i.e., the P-OFFSET
                     // through the Q-OFFSET elements of these arrays are to be used.
-                    //  OFFSET = P-OLDFST
+                    // OFFSET = P-OLDFST
                     offset = indexw[wbegin - 1] - 1;
                     // perform limited bisection (if necessary) to get approximate
                     // eigenvalues to the precision needed.
@@ -410,7 +390,7 @@ void Clarrv(INTEGER const n, REAL const vl, REAL const /* vu */, REAL *d, REAL *
                     }
                 }
                 //
-                //              Process the current node.
+                // Process the current node.
                 newfst = oldfst;
                 for (j = oldfst; j <= oldlst; j = j + 1) {
                     if (j == oldlst) {
@@ -427,11 +407,11 @@ void Clarrv(INTEGER const n, REAL const vl, REAL const /* vu */, REAL *d, REAL *
                         goto statement_140;
                     }
                     //
-                    //                 Compute size of child cluster found
+                    // Compute size of child cluster found
                     newsiz = newlst - newfst + 1;
                     //
-                    //                 NEWFTT is the place in Z where the new RRR or the computed
-                    //                 eigenvector is to be stored
+                    // NEWFTT is the place in Z where the new RRR or the computed
+                    // eigenvector is to be stored
                     if ((dol == 1) && (dou == m)) {
                         // Store representation at location of the leftmost evalue
                         // of the cluster
@@ -450,18 +430,18 @@ void Clarrv(INTEGER const n, REAL const vl, REAL const /* vu */, REAL *d, REAL *
                     //
                     if (newsiz > 1) {
                         //
-                        //                    Current child is not a singleton but a cluster.
-                        //                    Compute and store new representation of child.
+                        // Current child is not a singleton but a cluster.
+                        // Compute and store new representation of child.
                         //
-                        //                    Compute left and right cluster gap.
+                        // Compute left and right cluster gap.
                         //
-                        //                    LGAP and RGAP are not computed from WORK because
-                        //                    the eigenvalue approximations may stem from RRRs
-                        //                    different shifts. However, W hold all eigenvalues
-                        //                    of the unshifted matrix. Still, the entries in WGAP
-                        //                    have to be computed from WORK since the entries
-                        //                    in W might be of the same order so that gaps are not
-                        //                    exhibited correctly for very close eigenvalues.
+                        // LGAP and RGAP are not computed from WORK because
+                        // the eigenvalue approximations may stem from RRRs
+                        // different shifts. However, W hold all eigenvalues
+                        // of the unshifted matrix. Still, the entries in WGAP
+                        // have to be computed from WORK since the entries
+                        // in W might be of the same order so that gaps are not
+                        // exhibited correctly for very close eigenvalues.
                         if (newfst == 1) {
                             lgap = max(zero, REAL(w[wbegin - 1] - werr[wbegin - 1] - vl));
                         } else {
@@ -469,10 +449,10 @@ void Clarrv(INTEGER const n, REAL const vl, REAL const /* vu */, REAL *d, REAL *
                         }
                         rgap = wgap[(wbegin + newlst - 1) - 1];
                         //
-                        //                    Compute left- and rightmost eigenvalue of child
-                        //                    to high precision in order to shift as close
-                        //                    as possible and obtain as large relative gaps
-                        //                    as possible
+                        // Compute left- and rightmost eigenvalue of child
+                        // to high precision in order to shift as close
+                        // as possible and obtain as large relative gaps
+                        // as possible
                         //
                         for (k = 1; k <= 2; k = k + 1) {
                             if (k == 1) {
@@ -496,10 +476,10 @@ void Clarrv(INTEGER const n, REAL const vl, REAL const /* vu */, REAL *d, REAL *
                             goto statement_139;
                         }
                         //
-                        //                    Compute RRR of child cluster.
-                        //                    Note that the new RRR is stored in Z
+                        // Compute RRR of child cluster.
+                        // Note that the new RRR is stored in Z
                         //
-                        //                    Rlarrf needs LWORK = 2*N
+                        // Rlarrf needs LWORK = 2*N
                         Rlarrf(in, &d[ibegin - 1], &l[ibegin - 1], &work[(indld + ibegin - 1) - 1], newfst, newlst, &work[wbegin - 1], &wgap[wbegin - 1], &werr[wbegin - 1], spdiam, lgap, rgap, pivmin, tau, &work[indin1 - 1], &work[indin2 - 1], &work[indwrk - 1], iinfo);
                         // In the complex case, Rlarrf cannot write
                         // the new RRR directly into Z and needs an intermediate
@@ -541,7 +521,7 @@ void Clarrv(INTEGER const n, REAL const vl, REAL const /* vu */, REAL *d, REAL *
                         }
                     } else {
                         //
-                        //                    Compute eigenvector of singleton
+                        // Compute eigenvector of singleton
                         //
                         iter = 0;
                         //
@@ -649,13 +629,13 @@ void Clarrv(INTEGER const n, REAL const vl, REAL const /* vu */, REAL *d, REAL *
                         isupmx = max(isupmx, isuppz[(2 * windex) - 1]);
                         iter++;
                         //
-                        //                    sin alpha <= |resid|/gap
-                        //                    Note that both the residual and the gap are
-                        //                    proportional to the matrix, so ||T|| doesn't play
-                        //                    a role in the quotient
+                        // sin alpha <= |resid|/gap
+                        // Note that both the residual and the gap are
+                        // proportional to the matrix, so ||T|| doesn't play
+                        // a role in the quotient
                         //
-                        //                    Convergence test for Rayleigh-Quotient iteration
-                        //                    (omitted when Bisection has been used)
+                        // Convergence test for Rayleigh-Quotient iteration
+                        // (omitted when Bisection has been used)
                         //
                         if (resid > tol * gap && abs(rqcorr) > rqtol * abs(lambda) && !usedbs) {
                             // We need to check that the RQCORR update doesn't
@@ -682,14 +662,14 @@ void Clarrv(INTEGER const n, REAL const vl, REAL const /* vu */, REAL *d, REAL *
                                     // as a bracket but to be modified if the RQCORR
                                     // chooses to. In this case, the RIGHT side should
                                     // be modified as follows:
-                                    //  RIGHT = MAX(RIGHT, LAMBDA + RQCORR)
+                                    // RIGHT = MAX(RIGHT, LAMBDA + RQCORR)
                                 } else {
                                     // The current LAMBDA is on the right of the true
                                     // eigenvalue
                                     right = lambda;
                                     // See comment about assuming the error estimate is
                                     // correct above.
-                                    //  LEFT = MIN(LEFT, LAMBDA + RQCORR)
+                                    // LEFT = MIN(LEFT, LAMBDA + RQCORR)
                                 }
                                 work[windex - 1] = half * (right + left);
                                 // Take RQCORR since it has the correct sign and
@@ -727,7 +707,7 @@ void Clarrv(INTEGER const n, REAL const vl, REAL const /* vu */, REAL *d, REAL *
                             work[windex - 1] = lambda;
                         }
                         //
-                        //                    Compute FP-vector support w.r.t. whole matrix
+                        // Compute FP-vector support w.r.t. whole matrix
                         //
                         isuppz[(2 * windex - 1) - 1] += oldien;
                         isuppz[(2 * windex) - 1] += oldien;
@@ -782,6 +762,6 @@ void Clarrv(INTEGER const n, REAL const vl, REAL const /* vu */, REAL *d, REAL *
     statement_170:;
     }
     //
-    //     End of Clarrv
+    // End of Clarrv
     //
 }

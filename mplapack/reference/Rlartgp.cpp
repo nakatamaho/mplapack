@@ -43,9 +43,8 @@ void Rlartgp(REAL const f, REAL const g, REAL &cs, REAL &sn, REAL &r) {
     INTEGER count = 0;
     INTEGER i = 0;
     //
-    //     .. Executable Statements ..
     //
-    //     IF( FIRST ) THEN
+    // IF( FIRST ) THEN
     safmin = Rlamch("S");
     eps = Rlamch("E");
     safmn2 = pow(Rlamch("B"), castINTEGER(log(safmin / eps) / log(Rlamch("B")) / two));
@@ -108,6 +107,6 @@ void Rlartgp(REAL const f, REAL const g, REAL &cs, REAL &sn, REAL &r) {
         }
     }
     //
-    //     End of Rlartgp
+    // End of Rlartgp
     //
 }

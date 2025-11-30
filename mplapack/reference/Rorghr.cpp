@@ -31,7 +31,7 @@
 
 void Rorghr(INTEGER const n, INTEGER const ilo, INTEGER const ihi, REAL *a, INTEGER const lda, REAL *tau, REAL *work, INTEGER const lwork, INTEGER &info) {
     //
-    //     Test the input arguments
+    // Test the input arguments
     //
     info = 0;
     INTEGER nh = ihi - ilo;
@@ -63,16 +63,16 @@ void Rorghr(INTEGER const n, INTEGER const ilo, INTEGER const ihi, REAL *a, INTE
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0) {
         work[1 - 1] = 1;
         return;
     }
     //
-    //     Shift the vectors which define the elementary reflectors one
-    //     column to the right, and set the first ilo and the last n-ihi
-    //     rows and columns to those of the unit matrix
+    // Shift the vectors which define the elementary reflectors one
+    // column to the right, and set the first ilo and the last n-ihi
+    // rows and columns to those of the unit matrix
     //
     INTEGER j = 0;
     INTEGER i = 0;
@@ -105,12 +105,12 @@ void Rorghr(INTEGER const n, INTEGER const ilo, INTEGER const ihi, REAL *a, INTE
     INTEGER iinfo = 0;
     if (nh > 0) {
         //
-        //        Generate Q(ilo+1:ihi,ilo+1:ihi)
+        // Generate Q(ilo+1:ihi,ilo+1:ihi)
         //
         Rorgqr(nh, nh, nh, &a[((ilo + 1) - 1) + ((ilo + 1) - 1) * lda], lda, &tau[ilo - 1], work, lwork, iinfo);
     }
     work[1 - 1] = lwkopt;
     //
-    //     End of Rorghr
+    // End of Rorghr
     //
 }

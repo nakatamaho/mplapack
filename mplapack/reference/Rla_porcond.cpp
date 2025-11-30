@@ -39,28 +39,9 @@ REAL Rla_porcond(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, 
     INTEGER kase = 0;
     INTEGER isave[3];
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
     //
-    //  =====================================================================
     //
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
     return_value = 0.0;
     //
@@ -82,8 +63,8 @@ REAL Rla_porcond(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, 
         up = true;
     }
     //
-    //     Compute the equilibration matrix R such that
-    //     inv(R)*A*C has unit 1-norm.
+    // Compute the equilibration matrix R such that
+    // inv(R)*A*C has unit 1-norm.
     //
     if (up) {
         for (i = 1; i <= n; i = i + 1) {
@@ -141,7 +122,7 @@ REAL Rla_porcond(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, 
         }
     }
     //
-    //     Estimate the norm of inv(op(A)).
+    // Estimate the norm of inv(op(A)).
     //
     ainvnm = 0.0;
     //
@@ -151,7 +132,7 @@ statement_10:
     if (kase != 0) {
         if (kase == 2) {
             //
-            //           Multiply by R.
+            // Multiply by R.
             //
             for (i = 1; i <= n; i = i + 1) {
                 work[i - 1] = work[i - 1] * work[(2 * n + i) - 1];
@@ -163,7 +144,7 @@ statement_10:
                 Rpotrs("Lower", n, 1, af, ldaf, work, n, info);
             }
             //
-            //           Multiply by inv(C).
+            // Multiply by inv(C).
             //
             if (cmode == 1) {
                 for (i = 1; i <= n; i = i + 1) {
@@ -176,7 +157,7 @@ statement_10:
             }
         } else {
             //
-            //           Multiply by inv(C**T).
+            // Multiply by inv(C**T).
             //
             if (cmode == 1) {
                 for (i = 1; i <= n; i = i + 1) {
@@ -194,7 +175,7 @@ statement_10:
                 Rpotrs("Lower", n, 1, af, ldaf, work, n, info);
             }
             //
-            //           Multiply by R.
+            // Multiply by R.
             //
             for (i = 1; i <= n; i = i + 1) {
                 work[i - 1] = work[i - 1] * work[(2 * n + i) - 1];
@@ -203,7 +184,7 @@ statement_10:
         goto statement_10;
     }
     //
-    //     Compute the estimate of the reciprocal condition number.
+    // Compute the estimate of the reciprocal condition number.
     //
     if (ainvnm != 0.0) {
         return_value = (1.0 / ainvnm);

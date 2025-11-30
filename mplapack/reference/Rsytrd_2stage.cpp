@@ -31,14 +31,14 @@
 
 void Rsytrd_2stage(const char *vect, const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL *d, REAL *e, REAL *tau, REAL *hous2, INTEGER const lhous2, REAL *work, INTEGER const lwork, INTEGER &info) {
     //
-    //     Test the input parameters
+    // Test the input parameters
     //
     info = 0;
     bool wantq = Mlsame(vect, "V");
     bool upper = Mlsame(uplo, "U");
     bool lquery = (lwork == -1) || (lhous2 == -1);
     //
-    //     Determine the block size, the workspace size and the hous size.
+    // Determine the block size, the workspace size and the hous size.
     //
     INTEGER kd = iMlaenv2stage((INTEGER)1, "Rsytrd_2stage", vect, n, -1, -1, -1);
     INTEGER ib = iMlaenv2stage((INTEGER)2, "Rsytrd_2stage", vect, n, kd, -1, -1);
@@ -73,14 +73,14 @@ void Rsytrd_2stage(const char *vect, const char *uplo, INTEGER const n, REAL *a,
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0) {
         work[1 - 1] = 1;
         return;
     }
     //
-    //     Determine pointer position
+    // Determine pointer position
     //
     INTEGER ldab = kd + 1;
     INTEGER lwrk = lwork - ldab * n;
@@ -100,6 +100,6 @@ void Rsytrd_2stage(const char *vect, const char *uplo, INTEGER const n, REAL *a,
     hous2[1 - 1] = lhmin;
     work[1 - 1] = lwmin;
     //
-    //     End of Rsytrd_2stage
+    // End of Rsytrd_2stage
     //
 }

@@ -105,6 +105,6 @@ void Rlartg(REAL const f, REAL const g, REAL &cs, REAL &sn, REAL &r) {
         }
     }
     //
-    //     End of Rlartg
+    // End of Rlartg
     //
 }

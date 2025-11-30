@@ -47,6 +47,6 @@ REAL Rlapy3(REAL const x, REAL const y, REAL const z) {
     }
     return return_value;
     //
-    //     End of Rlapy3
+    // End of Rlapy3
     //
 }

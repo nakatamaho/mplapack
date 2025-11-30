@@ -31,30 +31,11 @@
 
 void Rormrz(const char *side, const char *trans, INTEGER const m, INTEGER const n, INTEGER const k, INTEGER const l, REAL *a, INTEGER const lda, REAL *tau, REAL *c, INTEGER const ldc, REAL *work, INTEGER const lwork, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
     //
-    //  =====================================================================
     //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
-    //     Test the input arguments
+    // Test the input arguments
     //
     info = 0;
     bool left = Mlsame(side, "L");
@@ -102,7 +83,7 @@ void Rormrz(const char *side, const char *trans, INTEGER const m, INTEGER const 
     side_trans[2] = '\0';
     if (info == 0) {
         //
-        //        Compute the workspace requirements
+        // Compute the workspace requirements
         //
         if (m == 0 || n == 0) {
             lwkopt = 1;
@@ -120,7 +101,7 @@ void Rormrz(const char *side, const char *trans, INTEGER const m, INTEGER const 
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (m == 0 || n == 0) {
         work[1 - 1] = 1;
@@ -151,12 +132,12 @@ void Rormrz(const char *side, const char *trans, INTEGER const m, INTEGER const 
     INTEGER ib = 0;
     if (nb < nbmin || nb >= k) {
         //
-        //        Use unblocked code
+        // Use unblocked code
         //
         Rormr3(side, trans, m, n, k, l, a, lda, tau, c, ldc, work, iinfo);
     } else {
         //
-        //        Use blocked code
+        // Use blocked code
         //
         iwt = 1 + nw * nb;
         if ((left && !notran) || (!left && notran)) {
@@ -188,26 +169,26 @@ void Rormrz(const char *side, const char *trans, INTEGER const m, INTEGER const 
         for (i = i1; i3 >= 0 ? i <= i2 : i >= i2; i = i + i3) {
             ib = min(nb, k - i + 1);
             //
-            //           Form the triangular factor of the block reflector
-            //           H = H(i+ib-1) . . . H(i+1) H(i)
+            // Form the triangular factor of the block reflector
+            // H = H(i+ib-1) . . . H(i+1) H(i)
             //
             Rlarzt("Backward", "Rowwise", l, ib, &a[(i - 1) + (ja - 1) * lda], lda, &tau[i - 1], &work[iwt - 1], ldt);
             //
             if (left) {
                 //
-                //              H or H**T is applied to C(i:m,1:n)
+                // H or H**T is applied to C(i:m,1:n)
                 //
                 mi = m - i + 1;
                 ic = i;
             } else {
                 //
-                //              H or H**T is applied to C(1:m,i:n)
+                // H or H**T is applied to C(1:m,i:n)
                 //
                 ni = n - i + 1;
                 jc = i;
             }
             //
-            //           Apply H or H**T
+            // Apply H or H**T
             //
             Rlarzb(side, &transt, "Backward", "Rowwise", mi, ni, ib, l, &a[(i - 1) + (ja - 1) * lda], lda, &work[iwt - 1], ldt, &c[(ic - 1) + (jc - 1) * ldc], ldc, work, ldwork);
         }
@@ -216,6 +197,6 @@ void Rormrz(const char *side, const char *trans, INTEGER const m, INTEGER const 
     //
     work[1 - 1] = lwkopt;
     //
-    //     End of Rormrz
+    // End of Rormrz
     //
 }

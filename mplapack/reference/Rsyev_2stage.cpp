@@ -31,7 +31,7 @@
 
 void Rsyev_2stage(const char *jobz, const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL *w, REAL *work, INTEGER const lwork, INTEGER &info) {
     //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     bool wantz = Mlsame(jobz, "V");
     bool lower = Mlsame(uplo, "L");
@@ -73,7 +73,7 @@ void Rsyev_2stage(const char *jobz, const char *uplo, INTEGER const n, REAL *a, 
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0) {
         return;
@@ -89,7 +89,7 @@ void Rsyev_2stage(const char *jobz, const char *uplo, INTEGER const n, REAL *a, 
         return;
     }
     //
-    //     Get machine constants.
+    // Get machine constants.
     //
     REAL safmin = Rlamch("Safe minimum");
     REAL eps = Rlamch("Precision");
@@ -98,7 +98,7 @@ void Rsyev_2stage(const char *jobz, const char *uplo, INTEGER const n, REAL *a, 
     REAL rmin = sqrt(smlnum);
     REAL rmax = sqrt(bignum);
     //
-    //     Scale matrix to allowable range, if necessary.
+    // Scale matrix to allowable range, if necessary.
     //
     REAL anrm = Rlansy("M", uplo, n, a, lda, work);
     INTEGER iscale = 0;
@@ -115,7 +115,7 @@ void Rsyev_2stage(const char *jobz, const char *uplo, INTEGER const n, REAL *a, 
         Rlascl(uplo, 0, 0, one, sigma, n, n, a, lda, info);
     }
     //
-    //     Call Rsytrd_2stage to reduce symmetric matrix to tridiagonal form.
+    // Call Rsytrd_2stage to reduce symmetric matrix to tridiagonal form.
     //
     INTEGER inde = 1;
     INTEGER indtau = inde + n;
@@ -126,8 +126,8 @@ void Rsyev_2stage(const char *jobz, const char *uplo, INTEGER const n, REAL *a, 
     INTEGER iinfo = 0;
     Rsytrd_2stage(jobz, uplo, n, a, lda, w, &work[inde - 1], &work[indtau - 1], &work[indhous - 1], lhtrd, &work[indwrk - 1], llwork, iinfo);
     //
-    //     For eigenvalues only, call Rsterf.  For eigenvectors, first call
-    //     Rorgtr to generate the orthogonal matrix, then call Rsteqr.
+    // For eigenvalues only, call Rsterf.  For eigenvectors, first call
+    // Rorgtr to generate the orthogonal matrix, then call Rsteqr.
     //
     if (!wantz) {
         Rsterf(n, w, &work[inde - 1], info);
@@ -139,7 +139,7 @@ void Rsyev_2stage(const char *jobz, const char *uplo, INTEGER const n, REAL *a, 
         Rsteqr(jobz, n, w, &work[inde - 1], a, lda, &work[indtau - 1], info);
     }
     //
-    //     If matrix was scaled, then rescale eigenvalues appropriately.
+    // If matrix was scaled, then rescale eigenvalues appropriately.
     //
     INTEGER imax = 0;
     if (iscale == 1) {
@@ -151,10 +151,10 @@ void Rsyev_2stage(const char *jobz, const char *uplo, INTEGER const n, REAL *a, 
         Rscal(imax, one / sigma, w, 1);
     }
     //
-    //     Set WORK(1) to optimal workspace size.
+    // Set WORK(1) to optimal workspace size.
     //
     work[1 - 1] = lwmin;
     //
-    //     End of Rsyev_2stage
+    // End of Rsyev_2stage
     //
 }

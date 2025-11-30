@@ -31,7 +31,7 @@
 
 void Rsysv_aa(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *a, INTEGER const lda, INTEGER *ipiv, REAL *b, INTEGER const ldb, REAL *work, INTEGER const lwork, INTEGER &info) {
     //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     bool lquery = (lwork == -1);
@@ -68,12 +68,12 @@ void Rsysv_aa(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *a, IN
         return;
     }
     //
-    //     Compute the factorization A = U**T*T*U or A = L*T*L**T.
+    // Compute the factorization A = U**T*T*U or A = L*T*L**T.
     //
     Rsytrf_aa(uplo, n, a, lda, ipiv, work, lwork, info);
     if (info == 0) {
         //
-        //        Solve the system A*X = B, overwriting B with X.
+        // Solve the system A*X = B, overwriting B with X.
         //
         Rsytrs_aa(uplo, n, nrhs, a, lda, ipiv, b, ldb, work, lwork, info);
         //
@@ -81,6 +81,6 @@ void Rsysv_aa(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *a, IN
     //
     work[1 - 1] = lwkopt;
     //
-    //     End of Rsysv_aa
+    // End of Rsysv_aa
     //
 }

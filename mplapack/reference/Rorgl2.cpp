@@ -31,28 +31,11 @@
 
 void Rorgl2(INTEGER const m, INTEGER const n, INTEGER const k, REAL *a, INTEGER const lda, REAL *tau, REAL *work, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
     //
-    //  =====================================================================
     //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
-    //     Test the input arguments
+    // Test the input arguments
     //
     info = 0;
     if (m < 0) {
@@ -69,7 +52,7 @@ void Rorgl2(INTEGER const m, INTEGER const n, INTEGER const k, REAL *a, INTEGER 
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (m <= 0) {
         return;
@@ -81,7 +64,7 @@ void Rorgl2(INTEGER const m, INTEGER const n, INTEGER const k, REAL *a, INTEGER 
     const REAL one = 1.0;
     if (k < m) {
         //
-        //        Initialise rows k+1:m to rows of the unit matrix
+        // Initialise rows k+1:m to rows of the unit matrix
         //
         for (j = 1; j <= n; j = j + 1) {
             for (l = k + 1; l <= m; l = l + 1) {
@@ -96,7 +79,7 @@ void Rorgl2(INTEGER const m, INTEGER const n, INTEGER const k, REAL *a, INTEGER 
     INTEGER i = 0;
     for (i = k; i >= 1; i = i - 1) {
         //
-        //        Apply H(i) to A(i:m,i:n) from the right
+        // Apply H(i) to A(i:m,i:n) from the right
         //
         if (i < n) {
             if (i < m) {
@@ -107,13 +90,13 @@ void Rorgl2(INTEGER const m, INTEGER const n, INTEGER const k, REAL *a, INTEGER 
         }
         a[(i - 1) + (i - 1) * lda] = one - tau[i - 1];
         //
-        //        Set A(i,1:i-1) to zero
+        // Set A(i,1:i-1) to zero
         //
         for (l = 1; l <= i - 1; l = l + 1) {
             a[(i - 1) + (l - 1) * lda] = zero;
         }
     }
     //
-    //     End of Rorgl2
+    // End of Rorgl2
     //
 }

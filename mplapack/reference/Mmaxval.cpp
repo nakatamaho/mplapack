@@ -38,7 +38,7 @@ REAL Mmaxval(REAL *dx, INTEGER const start, INTEGER const end, INTEGER incx) {
     INTEGER ix = 0;
     if (incx == 1) {
         //
-        //        code for increment equal to 1
+        // code for increment equal to 1
         //
         dmax = dx[start - 1];
         for (i = start + 1; i <= end; i = i + 1) {
@@ -48,7 +48,7 @@ REAL Mmaxval(REAL *dx, INTEGER const start, INTEGER const end, INTEGER incx) {
         }
     } else {
         //
-        //        code for increment not equal to 1
+        // code for increment not equal to 1
         //
         ix = 1;
         dmax = dx[start - 1];

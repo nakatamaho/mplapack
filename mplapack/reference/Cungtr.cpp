@@ -31,30 +31,11 @@
 
 void Cungtr(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *tau, COMPLEX *work, INTEGER const lwork, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
     //
-    //  =====================================================================
     //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
-    //     Test the input arguments
+    // Test the input arguments
     //
     info = 0;
     bool lquery = (lwork == -1);
@@ -88,7 +69,7 @@ void Cungtr(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, CO
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0) {
         work[1 - 1] = 1;
@@ -102,11 +83,11 @@ void Cungtr(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, CO
     INTEGER iinfo = 0;
     if (upper) {
         //
-        //        Q was determined by a call to Chetrd with UPLO = 'U'
+        // Q was determined by a call to Chetrd with UPLO = 'U'
         //
-        //        Shift the vectors which define the elementary reflectors one
-        //        column to the left, and set the last row and column of Q to
-        //        those of the unit matrix
+        // Shift the vectors which define the elementary reflectors one
+        // column to the left, and set the last row and column of Q to
+        // those of the unit matrix
         //
         for (j = 1; j <= n - 1; j = j + 1) {
             for (i = 1; i <= j - 1; i = i + 1) {
@@ -119,17 +100,17 @@ void Cungtr(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, CO
         }
         a[(n - 1) + (n - 1) * lda] = one;
         //
-        //        Generate Q(1:n-1,1:n-1)
+        // Generate Q(1:n-1,1:n-1)
         //
         Cungql(n - 1, n - 1, n - 1, a, lda, tau, work, lwork, iinfo);
         //
     } else {
         //
-        //        Q was determined by a call to Chetrd with UPLO = 'L'.
+        // Q was determined by a call to Chetrd with UPLO = 'L'.
         //
-        //        Shift the vectors which define the elementary reflectors one
-        //        column to the right, and set the first row and column of Q to
-        //        those of the unit matrix
+        // Shift the vectors which define the elementary reflectors one
+        // column to the right, and set the first row and column of Q to
+        // those of the unit matrix
         //
         for (j = n; j >= 2; j = j - 1) {
             a[(j - 1) * lda] = zero;
@@ -143,13 +124,13 @@ void Cungtr(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, CO
         }
         if (n > 1) {
             //
-            //           Generate Q(2:n,2:n)
+            // Generate Q(2:n,2:n)
             //
             Cungqr(n - 1, n - 1, n - 1, &a[(2 - 1) + (2 - 1) * lda], lda, tau, work, lwork, iinfo);
         }
     }
     work[1 - 1] = lwkopt;
     //
-    //     End of Cungtr
+    // End of Cungtr
     //
 }

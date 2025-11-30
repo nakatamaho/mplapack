@@ -79,7 +79,7 @@ void Rgsvj1(const char *jobv, INTEGER const m, INTEGER const n, INTEGER const n1
     REAL sn = 0.0;
     REAL temp1 = 0.0;
     //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     applv = Mlsame(jobv, "A");
     rsvec = Mlsame(jobv, "V");
@@ -107,7 +107,7 @@ void Rgsvj1(const char *jobv, INTEGER const m, INTEGER const n, INTEGER const n1
         info = 0;
     }
     //
-    //     #:(
+    // #:(
     if (info != 0) {
         Mxerbla("Rgsvj1", -info);
         return;
@@ -128,15 +128,15 @@ void Rgsvj1(const char *jobv, INTEGER const m, INTEGER const n, INTEGER const n1
     bigtheta = one / rooteps;
     roottol = sqrt(tol);
     //
-    //     .. Initialize the right singular vector matrix ..
+    // .. Initialize the right singular vector matrix ..
     //
-    //     RSVEC = LSAME( JOBV, 'Y' )
+    // RSVEC = LSAME( JOBV, 'Y' )
     //
     emptsw = n1 * (n - n1);
     notrot = 0;
     fastr[1 - 1] = zero;
     //
-    //     .. Row-cyclic pivot strategy with de Rijk's pivoting ..
+    // .. Row-cyclic pivot strategy with de Rijk's pivoting ..
     //
     kbl = min((INTEGER)8, n);
     nblr = n1 / kbl;
@@ -144,26 +144,26 @@ void Rgsvj1(const char *jobv, INTEGER const m, INTEGER const n, INTEGER const n1
         nblr++;
     }
     //
-    //     .. the tiling is nblr-by-nblc [tiles]
+    // .. the tiling is nblr-by-nblc [tiles]
     //
     nblc = (n - n1) / kbl;
     if ((nblc * kbl) != (n - n1)) {
         nblc++;
     }
     blskip = kbl * kbl + 11;
-    //[TP] BLKSKIP is a tuning parameter that depends on SWBAND and KBL.
+    // [TP] BLKSKIP is a tuning parameter that depends on SWBAND and KBL.
     //
     rowskip = min((INTEGER)5, kbl);
-    //[TP] ROWSKIP is a tuning parameter.
+    // [TP] ROWSKIP is a tuning parameter.
     swband = 0;
-    //[TP] SWBAND is a tuning parameter. It is meaningful and effective
-    //     if SGESVJ is used as a computational routine in the preconditioned
-    //     Jacobi SVD algorithm SGESVJ.
+    // [TP] SWBAND is a tuning parameter. It is meaningful and effective
+    // if SGESVJ is used as a computational routine in the preconditioned
+    // Jacobi SVD algorithm SGESVJ.
     //
-    //     | *   *   * [x] [x] [x]|
-    //     | *   *   * [x] [x] [x]|    Row-cycling in the nblr-by-nblc [x] blocks.
-    //     | *   *   * [x] [x] [x]|    Row-cyclic pivoting inside each [x] block.
-    //     |[x] [x] [x] *   *   * |
+    // | *   *   * [x] [x] [x]|
+    // | *   *   * [x] [x] [x]|    Row-cycling in the nblr-by-nblc [x] blocks.
+    // | *   *   * [x] [x] [x]|    Row-cyclic pivoting inside each [x] block.
+    // |[x] [x] [x] *   *   * |
     //
     for (i = 1; i <= nsweep; i = i + 1) {
         // .. go go go ...
@@ -179,7 +179,7 @@ void Rgsvj1(const char *jobv, INTEGER const m, INTEGER const n, INTEGER const n1
             //
             igl = (ibr - 1) * kbl + 1;
             //
-            //........................................................
+            // ........................................................
             // ... go to the off diagonal blocks
             //
             igl = (ibr - 1) * kbl + 1;
@@ -188,7 +188,7 @@ void Rgsvj1(const char *jobv, INTEGER const m, INTEGER const n, INTEGER const n1
                 //
                 jgl = n1 + (jbc - 1) * kbl + 1;
                 //
-                //        doing the block at ( ibr, jbc )
+                // doing the block at ( ibr, jbc )
                 //
                 ijblsk = 0;
                 for (p = igl; p <= min(igl + kbl - 1, n1); p = p + 1) {
@@ -206,9 +206,9 @@ void Rgsvj1(const char *jobv, INTEGER const m, INTEGER const n, INTEGER const n1
                             if (aaqq > zero) {
                                 aapp0 = aapp;
                                 //
-                                //     .. M x 2 Jacobi SVD ..
+                                // .. M x 2 Jacobi SVD ..
                                 //
-                                //        .. Safe Gram matrix computation ..
+                                // .. Safe Gram matrix computation ..
                                 //
                                 if (aaqq >= one) {
                                     if (aapp >= aaqq) {
@@ -240,7 +240,7 @@ void Rgsvj1(const char *jobv, INTEGER const m, INTEGER const n, INTEGER const n1
                                 //
                                 mxaapq = max(mxaapq, REAL(abs(aapq)));
                                 //
-                                //        TO rotate or NOT to rotate, THAT is the question ...
+                                // TO rotate or NOT to rotate, THAT is the question ...
                                 //
                                 if (abs(aapq) > tol) {
                                     notrot = 0;
@@ -270,7 +270,7 @@ void Rgsvj1(const char *jobv, INTEGER const m, INTEGER const n, INTEGER const n1
                                             mxsinj = max(mxsinj, REAL(abs(t)));
                                         } else {
                                             //
-                                            //                 .. choose correct signum for THETA and rotate
+                                            // .. choose correct signum for THETA and rotate
                                             //
                                             thsign = -sign(one, aapq);
                                             if (aaqq > aapp0) {
@@ -399,7 +399,7 @@ void Rgsvj1(const char *jobv, INTEGER const m, INTEGER const n, INTEGER const n1
                                 ijblsk++;
                             }
                             //
-                            //      IF ( NOTROT .GE. EMPTSW )  GO TO 2011
+                            // IF ( NOTROT .GE. EMPTSW )  GO TO 2011
                             if ((i <= swband) && (ijblsk >= blskip)) {
                                 sva[p - 1] = aapp;
                                 notrot = 0;
@@ -424,7 +424,7 @@ void Rgsvj1(const char *jobv, INTEGER const m, INTEGER const n, INTEGER const n1
                         if (aapp < zero) {
                             notrot = 0;
                         }
-                        //**      IF ( NOTROT .GE. EMPTSW )  GO TO 2011
+                        // **      IF ( NOTROT .GE. EMPTSW )  GO TO 2011
                     }
                     //
                 }
@@ -436,11 +436,11 @@ void Rgsvj1(const char *jobv, INTEGER const m, INTEGER const n, INTEGER const n1
             for (p = igl; p <= min(igl + kbl - 1, n); p = p + 1) {
                 sva[p - 1] = abs(sva[p - 1]);
             }
-            //**   IF ( NOTROT .GE. EMPTSW ) GO TO 1994
+            // **   IF ( NOTROT .GE. EMPTSW ) GO TO 1994
         }
         // 2000 :: end of the ibr-loop
         //
-        //     .. update SVA(N)
+        // .. update SVA(N)
         if ((sva[n - 1] < rootbig) && (sva[n - 1] > rootsfmin)) {
             sva[n - 1] = Rnrm2(m, &a[(n - 1) * lda], 1) * d[n - 1];
         } else {
@@ -450,7 +450,7 @@ void Rgsvj1(const char *jobv, INTEGER const m, INTEGER const n, INTEGER const n1
             sva[n - 1] = t * sqrt(aapp) * d[n - 1];
         }
         //
-        //     Additional steering devices
+        // Additional steering devices
         //
         if ((i < swband) && ((mxaapq <= roottol) || (iswrot <= n))) {
             swband = i;
@@ -472,13 +472,13 @@ void Rgsvj1(const char *jobv, INTEGER const m, INTEGER const n, INTEGER const n1
     goto statement_1995;
 statement_1994:
     // #:) Reaching this point means that during the i-th sweep all pivots were
-    //     below the given threshold, causing early exit.
+    // below the given threshold, causing early exit.
     //
     info = 0;
 // #:) INFO = 0 confirms successful iterations.
 statement_1995:
     //
-    //     Sort the vector D
+    // Sort the vector D
     //
     for (p = 1; p <= n - 1; p = p + 1) {
         q = iRamax(n - p + 1, &sva[p - 1], 1) + p - 1;
@@ -496,7 +496,5 @@ statement_1995:
         }
     }
     //
-    //     ..
-    //     .. END OF Rgsvj1
-    //     ..
+    // .. END OF Rgsvj1
 }

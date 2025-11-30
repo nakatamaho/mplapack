@@ -38,32 +38,12 @@ void Checon(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
     REAL ainvnm = 0.0;
     INTEGER isave[3];
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
     //
-    //  =====================================================================
     //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
+    // .. Local Arrays ..
     //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     upper = Mlsame(uplo, "U");
@@ -81,7 +61,7 @@ void Checon(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     rcond = zero;
     if (n == 0) {
@@ -91,11 +71,11 @@ void Checon(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
         return;
     }
     //
-    //     Check that the diagonal matrix D is nonsingular.
+    // Check that the diagonal matrix D is nonsingular.
     //
     if (upper) {
         //
-        //        Upper triangular storage: examine D from bottom to top
+        // Upper triangular storage: examine D from bottom to top
         //
         for (i = n; i >= 1; i = i - 1) {
             if (ipiv[i - 1] > 0 && a[(i - 1) + (i - 1) * lda] == zero) {
@@ -104,7 +84,7 @@ void Checon(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
         }
     } else {
         //
-        //        Lower triangular storage: examine D from top to bottom.
+        // Lower triangular storage: examine D from top to bottom.
         //
         for (i = 1; i <= n; i = i + 1) {
             if (ipiv[i - 1] > 0 && a[(i - 1) + (i - 1) * lda] == zero) {
@@ -113,25 +93,25 @@ void Checon(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
         }
     }
     //
-    //     Estimate the 1-norm of the inverse.
+    // Estimate the 1-norm of the inverse.
     //
     kase = 0;
 statement_30:
     Clacn2(n, &work[(n + 1) - 1], work, ainvnm, kase, isave);
     if (kase != 0) {
         //
-        //        Multiply by inv(L*D*L**H) or inv(U*D*U**H).
+        // Multiply by inv(L*D*L**H) or inv(U*D*U**H).
         //
         Chetrs(uplo, n, 1, a, lda, ipiv, work, n, info);
         goto statement_30;
     }
     //
-    //     Compute the estimate of the reciprocal condition number.
+    // Compute the estimate of the reciprocal condition number.
     //
     if (ainvnm != zero) {
         rcond = (one / ainvnm) / anorm;
     }
     //
-    //     End of Checon
+    // End of Checon
     //
 }

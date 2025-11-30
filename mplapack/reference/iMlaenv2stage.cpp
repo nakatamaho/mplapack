@@ -48,19 +48,19 @@ INTEGER iMlaenv2stage(INTEGER const ispec, const char *name, const char *opts, I
         break;
     }
     //
-    //     Invalid value for ISPEC
+    // Invalid value for ISPEC
     //
     return_value = -1;
     return return_value;
 //
 statement_10:
     //
-    //     2stage eigenvalues and SVD or related subroutines.
+    // 2stage eigenvalues and SVD or related subroutines.
     //
     iispec = 16 + ispec;
     return_value = iMparam2stage(iispec, name, opts, n1, n2, n3, n4);
     return return_value;
     //
-    //     End of iMlaenv2stage
+    // End of iMlaenv2stage
     //
 }

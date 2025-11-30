@@ -31,36 +31,17 @@
 
 void Rorm2l(const char *side, const char *trans, INTEGER const m, INTEGER const n, INTEGER const k, REAL *a, INTEGER const lda, REAL *tau, REAL *c, INTEGER const ldc, REAL *work, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
     //
-    //  =====================================================================
     //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
-    //     Test the input arguments
+    // Test the input arguments
     //
     info = 0;
     bool left = Mlsame(side, "L");
     bool notran = Mlsame(trans, "N");
     //
-    //     NQ is the order of Q
+    // NQ is the order of Q
     //
     INTEGER nq = 0;
     if (left) {
@@ -88,7 +69,7 @@ void Rorm2l(const char *side, const char *trans, INTEGER const m, INTEGER const 
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (m == 0 || n == 0 || k == 0) {
         return;
@@ -121,17 +102,17 @@ void Rorm2l(const char *side, const char *trans, INTEGER const m, INTEGER const 
     for (i = i1; i3 > 0 ? i <= i2 : i >= i2; i = i + i3) {
         if (left) {
             //
-            //           H(i) is applied to C(1:m-k+i,1:n)
+            // H(i) is applied to C(1:m-k+i,1:n)
             //
             mi = m - k + i;
         } else {
             //
-            //           H(i) is applied to C(1:m,1:n-k+i)
+            // H(i) is applied to C(1:m,1:n-k+i)
             //
             ni = n - k + i;
         }
         //
-        //        Apply H(i)
+        // Apply H(i)
         //
         aii = a[((nq - k + i) - 1) + (i - 1) * lda];
         a[((nq - k + i) - 1) + (i - 1) * lda] = one;
@@ -139,6 +120,6 @@ void Rorm2l(const char *side, const char *trans, INTEGER const m, INTEGER const 
         a[((nq - k + i) - 1) + (i - 1) * lda] = aii;
     }
     //
-    //     End of Rorm2l
+    // End of Rorm2l
     //
 }

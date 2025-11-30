@@ -31,30 +31,11 @@
 
 void Rtrti2(const char *uplo, const char *diag, INTEGER const n, REAL *a, INTEGER const lda, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
     //
-    //  =====================================================================
     //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     bool upper = Mlsame(uplo, "U");
@@ -78,7 +59,7 @@ void Rtrti2(const char *uplo, const char *diag, INTEGER const n, REAL *a, INTEGE
     REAL ajj = 0.0;
     if (upper) {
         //
-        //        Compute inverse of upper triangular matrix.
+        // Compute inverse of upper triangular matrix.
         //
         for (j = 1; j <= n; j = j + 1) {
             if (nounit) {
@@ -88,14 +69,14 @@ void Rtrti2(const char *uplo, const char *diag, INTEGER const n, REAL *a, INTEGE
                 ajj = -one;
             }
             //
-            //           Compute elements 1:j-1 of j-th column.
+            // Compute elements 1:j-1 of j-th column.
             //
             Rtrmv("Upper", "No transpose", diag, j - 1, a, lda, &a[(j - 1) * lda], 1);
             Rscal(j - 1, ajj, &a[(j - 1) * lda], 1);
         }
     } else {
         //
-        //        Compute inverse of lower triangular matrix.
+        // Compute inverse of lower triangular matrix.
         //
         for (j = n; j >= 1; j = j - 1) {
             if (nounit) {
@@ -106,7 +87,7 @@ void Rtrti2(const char *uplo, const char *diag, INTEGER const n, REAL *a, INTEGE
             }
             if (j < n) {
                 //
-                //              Compute elements j+1:n of j-th column.
+                // Compute elements j+1:n of j-th column.
                 //
                 Rtrmv("Lower", "No transpose", diag, n - j, &a[((j + 1) - 1) + ((j + 1) - 1) * lda], lda, &a[((j + 1) - 1) + (j - 1) * lda], 1);
                 Rscal(n - j, ajj, &a[((j + 1) - 1) + (j - 1) * lda], 1);
@@ -114,6 +95,6 @@ void Rtrti2(const char *uplo, const char *diag, INTEGER const n, REAL *a, INTEGE
         }
     }
     //
-    //     End of Rtrti2
+    // End of Rtrti2
     //
 }

@@ -55,36 +55,14 @@ void Ctprfs(const char *uplo, const char *trans, const char *diag, INTEGER const
     INTEGER isave[3];
     REAL lstres = 0.0;
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
     //
-    //  =====================================================================
     //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Statement Functions ..
-    //     ..
-    //     .. Statement Function definitions ..
-    //     ..
-    //     .. Executable Statements ..
+    // .. Local Arrays ..
+    // .. Statement Functions ..
+    // .. Statement Function definitions ..
     //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     upper = Mlsame(uplo, "U");
@@ -111,7 +89,7 @@ void Ctprfs(const char *uplo, const char *trans, const char *diag, INTEGER const
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0 || nrhs == 0) {
         for (j = 1; j <= nrhs; j = j + 1) {
@@ -129,7 +107,7 @@ void Ctprfs(const char *uplo, const char *trans, const char *diag, INTEGER const
         transt = 'N';
     }
     //
-    //     NZ = maximum number of nonzero elements in each row of A, plus 1
+    // NZ = maximum number of nonzero elements in each row of A, plus 1
     //
     nz = n + 1;
     eps = Rlamch("Epsilon");
@@ -137,25 +115,25 @@ void Ctprfs(const char *uplo, const char *trans, const char *diag, INTEGER const
     safe1 = nz * safmin;
     safe2 = safe1 / eps;
     //
-    //     Do for each right hand side
+    // Do for each right hand side
     //
     for (j = 1; j <= nrhs; j = j + 1) {
         //
-        //        Compute residual R = B - op(A) * X,
-        //        where op(A) = A, A**T, or A**H, depending on TRANS.
+        // Compute residual R = B - op(A) * X,
+        // where op(A) = A, A**T, or A**H, depending on TRANS.
         //
         Ccopy(n, &x[(j - 1) * ldx], 1, work, 1);
         Ctpmv(uplo, trans, diag, n, ap, work, 1);
         Caxpy(n, -one, &b[(j - 1) * ldb], 1, work, 1);
         //
-        //        Compute componentwise relative backward error from formula
+        // Compute componentwise relative backward error from formula
         //
-        //        max(i) ( abs(R(i)) / ( abs(op(A))*abs(X) + abs(B) )(i) )
+        // max(i) ( abs(R(i)) / ( abs(op(A))*abs(X) + abs(B) )(i) )
         //
-        //        where abs(Z) is the componentwise absolute value of the matrix
-        //        or vector Z.  If the i-th component of the denominator is less
-        //        than SAFE2, then SAFE1 is added to the i-th components of the
-        //        numerator and denominator before dividing.
+        // where abs(Z) is the componentwise absolute value of the matrix
+        // or vector Z.  If the i-th component of the denominator is less
+        // than SAFE2, then SAFE1 is added to the i-th components of the
+        // numerator and denominator before dividing.
         //
         for (i = 1; i <= n; i = i + 1) {
             rwork[i - 1] = abs1(b[(i - 1) + (j - 1) * ldb]);
@@ -163,7 +141,7 @@ void Ctprfs(const char *uplo, const char *trans, const char *diag, INTEGER const
         //
         if (notran) {
             //
-            //           Compute abs(A)*abs(X) + abs(B).
+            // Compute abs(A)*abs(X) + abs(B).
             //
             if (upper) {
                 kc = 1;
@@ -208,7 +186,7 @@ void Ctprfs(const char *uplo, const char *trans, const char *diag, INTEGER const
             }
         } else {
             //
-            //           Compute abs(A**H)*abs(X) + abs(B).
+            // Compute abs(A**H)*abs(X) + abs(B).
             //
             if (upper) {
                 kc = 1;
@@ -264,27 +242,27 @@ void Ctprfs(const char *uplo, const char *trans, const char *diag, INTEGER const
         }
         berr[j - 1] = s;
         //
-        //        Bound error from formula
+        // Bound error from formula
         //
-        //        norm(X - XTRUE) / norm(X) .le. FERR =
-        //        norm( abs(inv(op(A)))*
-        //           ( abs(R) + NZ*EPS*( abs(op(A))*abs(X)+abs(B) ))) / norm(X)
+        // norm(X - XTRUE) / norm(X) .le. FERR =
+        // norm( abs(inv(op(A)))*
+        // ( abs(R) + NZ*EPS*( abs(op(A))*abs(X)+abs(B) ))) / norm(X)
         //
-        //        where
-        //          norm(Z) is the magnitude of the largest component of Z
-        //          inv(op(A)) is the inverse of op(A)
-        //          abs(Z) is the componentwise absolute value of the matrix or
-        //             vector Z
-        //          NZ is the maximum number of nonzeros in any row of A, plus 1
-        //          EPS is machine epsilon
+        // where
+        // norm(Z) is the magnitude of the largest component of Z
+        // inv(op(A)) is the inverse of op(A)
+        // abs(Z) is the componentwise absolute value of the matrix or
+        // vector Z
+        // NZ is the maximum number of nonzeros in any row of A, plus 1
+        // EPS is machine epsilon
         //
-        //        The i-th component of abs(R)+NZ*EPS*(abs(op(A))*abs(X)+abs(B))
-        //        is incremented by SAFE1 if the i-th component of
-        //        abs(op(A))*abs(X) + abs(B) is less than SAFE2.
+        // The i-th component of abs(R)+NZ*EPS*(abs(op(A))*abs(X)+abs(B))
+        // is incremented by SAFE1 if the i-th component of
+        // abs(op(A))*abs(X) + abs(B) is less than SAFE2.
         //
-        //        Use Clacn2 to estimate the infinity-norm of the matrix
-        //           inv(op(A)) * diag(W),
-        //        where W = abs(R) + NZ*EPS*( abs(op(A))*abs(X)+abs(B) )))
+        // Use Clacn2 to estimate the infinity-norm of the matrix
+        // inv(op(A)) * diag(W),
+        // where W = abs(R) + NZ*EPS*( abs(op(A))*abs(X)+abs(B) )))
         //
         for (i = 1; i <= n; i = i + 1) {
             if (rwork[i - 1] > safe2) {
@@ -300,7 +278,7 @@ void Ctprfs(const char *uplo, const char *trans, const char *diag, INTEGER const
         if (kase != 0) {
             if (kase == 1) {
                 //
-                //              Multiply by diag(W)*inv(op(A)**H).
+                // Multiply by diag(W)*inv(op(A)**H).
                 //
                 Ctpsv(uplo, &transt, diag, n, ap, work, 1);
                 for (i = 1; i <= n; i = i + 1) {
@@ -308,7 +286,7 @@ void Ctprfs(const char *uplo, const char *trans, const char *diag, INTEGER const
                 }
             } else {
                 //
-                //              Multiply by inv(op(A))*diag(W).
+                // Multiply by inv(op(A))*diag(W).
                 //
                 for (i = 1; i <= n; i = i + 1) {
                     work[i - 1] = rwork[i - 1] * work[i - 1];
@@ -318,7 +296,7 @@ void Ctprfs(const char *uplo, const char *trans, const char *diag, INTEGER const
             goto statement_210;
         }
         //
-        //        Normalize error.
+        // Normalize error.
         //
         lstres = zero;
         for (i = 1; i <= n; i = i + 1) {
@@ -330,6 +308,6 @@ void Ctprfs(const char *uplo, const char *trans, const char *diag, INTEGER const
         //
     }
     //
-    //     End of Ctprfs
+    // End of Ctprfs
     //
 }

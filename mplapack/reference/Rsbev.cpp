@@ -31,7 +31,7 @@
 
 void Rsbev(const char *jobz, const char *uplo, INTEGER const n, INTEGER const kd, REAL *ab, INTEGER const ldab, REAL *w, REAL *z, INTEGER const ldz, REAL *work, INTEGER &info) {
     //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     bool wantz = Mlsame(jobz, "V");
     bool lower = Mlsame(uplo, "L");
@@ -56,7 +56,7 @@ void Rsbev(const char *jobz, const char *uplo, INTEGER const n, INTEGER const kd
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0) {
         return;
@@ -75,7 +75,7 @@ void Rsbev(const char *jobz, const char *uplo, INTEGER const n, INTEGER const kd
         return;
     }
     //
-    //     Get machine constants.
+    // Get machine constants.
     //
     REAL safmin = Rlamch("Safe minimum");
     REAL eps = Rlamch("Precision");
@@ -84,7 +84,7 @@ void Rsbev(const char *jobz, const char *uplo, INTEGER const n, INTEGER const kd
     REAL rmin = sqrt(smlnum);
     REAL rmax = sqrt(bignum);
     //
-    //     Scale matrix to allowable range, if necessary.
+    // Scale matrix to allowable range, if necessary.
     //
     REAL anrm = Rlansb("M", uplo, n, kd, ab, ldab, work);
     INTEGER iscale = 0;
@@ -105,14 +105,14 @@ void Rsbev(const char *jobz, const char *uplo, INTEGER const n, INTEGER const kd
         }
     }
     //
-    //     Call Rsbtrd to reduce symmetric band matrix to tridiagonal form.
+    // Call Rsbtrd to reduce symmetric band matrix to tridiagonal form.
     //
     INTEGER inde = 1;
     INTEGER indwrk = inde + n;
     INTEGER iinfo = 0;
     Rsbtrd(jobz, uplo, n, kd, ab, ldab, w, &work[inde - 1], z, ldz, &work[indwrk - 1], iinfo);
     //
-    //     For eigenvalues only, call Rsterf.  For eigenvectors, call SSTEQR.
+    // For eigenvalues only, call Rsterf.  For eigenvectors, call SSTEQR.
     //
     if (!wantz) {
         Rsterf(n, w, &work[inde - 1], info);
@@ -120,7 +120,7 @@ void Rsbev(const char *jobz, const char *uplo, INTEGER const n, INTEGER const kd
         Rsteqr(jobz, n, w, &work[inde - 1], z, ldz, &work[indwrk - 1], info);
     }
     //
-    //     If matrix was scaled, then rescale eigenvalues appropriately.
+    // If matrix was scaled, then rescale eigenvalues appropriately.
     //
     INTEGER imax = 0;
     if (iscale == 1) {
@@ -132,6 +132,6 @@ void Rsbev(const char *jobz, const char *uplo, INTEGER const n, INTEGER const kd
         Rscal(imax, one / sigma, w, 1);
     }
     //
-    //     End of Rsbev
+    // End of Rsbev
     //
 }

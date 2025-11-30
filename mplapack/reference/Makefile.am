@@ -128,7 +128,7 @@ Cgtcon.cpp \
 Cgttrf.cpp \
 Cbbcsd.cpp \
 Cbdsqr.cpp \
-Cdrscl.cpp \
+CRrscl.cpp \
 Cgbbrd.cpp \
 Cgbcon.cpp \
 Cgbequ.cpp \

@@ -31,7 +31,7 @@
 
 void Rorcsd(const char *jobu1, const char *jobu2, const char *jobv1t, const char *jobv2t, const char *trans, const char *signs, INTEGER const m, INTEGER const p, INTEGER const q, REAL *x11, INTEGER const ldx11, REAL *x12, INTEGER const ldx12, REAL *x21, INTEGER const ldx21, REAL *x22, INTEGER const ldx22, REAL *theta, REAL *u1, INTEGER const ldu1, REAL *u2, INTEGER const ldu2, REAL *v1t, INTEGER const ldv1t, REAL *v2t, INTEGER const ldv2t, REAL *work, INTEGER const lwork, INTEGER *iwork, INTEGER &info) {
     //
-    //     Test input arguments
+    // Test input arguments
     //
     info = 0;
     bool wantu1 = Mlsame(jobu1, "Y");
@@ -73,7 +73,7 @@ void Rorcsd(const char *jobu1, const char *jobu2, const char *jobv1t, const char
         info = -26;
     }
     //
-    //     Work with transpose if convenient
+    // Work with transpose if convenient
     //
     char transt;
     char signst;
@@ -92,8 +92,8 @@ void Rorcsd(const char *jobu1, const char *jobu2, const char *jobv1t, const char
         return;
     }
     //
-    //     Work with permutation [ 0 I; I 0 ] * X * [ 0 I; I 0 ] if
-    //     convenient
+    // Work with permutation [ 0 I; I 0 ] * X * [ 0 I; I 0 ] if
+    // convenient
     //
     if (info == 0 && m - q < q) {
         if (defaultsigns) {
@@ -105,7 +105,7 @@ void Rorcsd(const char *jobu1, const char *jobu2, const char *jobv1t, const char
         return;
     }
     //
-    //     Compute workspace
+    // Compute workspace
     //
     INTEGER iphi = 0;
     INTEGER itaup1 = 0;
@@ -184,7 +184,7 @@ void Rorcsd(const char *jobu1, const char *jobu2, const char *jobv1t, const char
         }
     }
     //
-    //     Abort if any illegal arguments
+    // Abort if any illegal arguments
     //
     if (info != 0) {
         Mxerbla("Rorcsd", -info);
@@ -193,11 +193,11 @@ void Rorcsd(const char *jobu1, const char *jobu2, const char *jobv1t, const char
         return;
     }
     //
-    //     Transform to bidiagonal block form
+    // Transform to bidiagonal block form
     //
     Rorbdb(trans, signs, m, p, q, x11, ldx11, x12, ldx12, x21, ldx21, x22, ldx22, theta, &work[iphi - 1], &work[itaup1 - 1], &work[itaup2 - 1], &work[itauq1 - 1], &work[itauq2 - 1], &work[iorbdb - 1], lorbdbwork, childinfo);
     //
-    //     Accumulate Householder reflectors
+    // Accumulate Householder reflectors
     //
     const REAL one = 1.0;
     INTEGER j = 0;
@@ -254,14 +254,14 @@ void Rorcsd(const char *jobu1, const char *jobu2, const char *jobv1t, const char
         }
     }
     //
-    //     Compute the CSD of the matrix in bidiagonal-block form
+    // Compute the CSD of the matrix in bidiagonal-block form
     //
     Rbbcsd(jobu1, jobu2, jobv1t, jobv2t, trans, m, p, q, theta, &work[iphi - 1], u1, ldu1, u2, ldu2, v1t, ldv1t, v2t, ldv2t, &work[ib11d - 1], &work[ib11e - 1], &work[ib12d - 1], &work[ib12e - 1], &work[ib21d - 1], &work[ib21e - 1], &work[ib22d - 1], &work[ib22e - 1], &work[ibbcsd - 1], lbbcsdwork, info);
     //
-    //     Permute rows and columns to place identity submatrices in top-
-    //     left corner of (1,1)-block and/or bottom-right corner of (1,2)-
-    //     block and/or bottom-right corner of (2,1)-block and/or top-left
-    //     corner of (2,2)-block
+    // Permute rows and columns to place identity submatrices in top-
+    // left corner of (1,1)-block and/or bottom-right corner of (1,2)-
+    // block and/or bottom-right corner of (2,1)-block and/or top-left
+    // corner of (2,2)-block
     //
     INTEGER i = 0;
     if (q > 0 && wantu2) {
@@ -291,6 +291,6 @@ void Rorcsd(const char *jobu1, const char *jobu2, const char *jobv1t, const char
         }
     }
     //
-    //     End Rorcsd
+    // End Rorcsd
     //
 }

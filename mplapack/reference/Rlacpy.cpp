@@ -53,6 +53,6 @@ void Rlacpy(const char *uplo, INTEGER const m, INTEGER const n, REAL *a, INTEGER
         }
     }
     //
-    //     End of Rlacpy
+    // End of Rlacpy
     //
 }

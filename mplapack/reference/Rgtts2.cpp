@@ -35,22 +35,11 @@ void Rgtts2(INTEGER const itrans, INTEGER const n, INTEGER const nrhs, REAL *dl,
     INTEGER ip = 0;
     REAL temp = 0.0;
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
     //
-    //  =====================================================================
     //
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Executable Statements ..
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0 || nrhs == 0) {
         return;
@@ -58,14 +47,14 @@ void Rgtts2(INTEGER const itrans, INTEGER const n, INTEGER const nrhs, REAL *dl,
     //
     if (itrans == 0) {
         //
-        //        Solve A*X = B using the LU factorization of A,
-        //        overwriting each right hand side vector with its solution.
+        // Solve A*X = B using the LU factorization of A,
+        // overwriting each right hand side vector with its solution.
         //
         if (nrhs <= 1) {
             j = 1;
         statement_10:
             //
-            //           Solve L*x = b.
+            // Solve L*x = b.
             //
             for (i = 1; i <= n - 1; i = i + 1) {
                 ip = ipiv[i - 1];
@@ -74,7 +63,7 @@ void Rgtts2(INTEGER const itrans, INTEGER const n, INTEGER const nrhs, REAL *dl,
                 b[((i + 1) - 1) + (j - 1) * ldb] = temp;
             }
             //
-            //           Solve U*x = b.
+            // Solve U*x = b.
             //
             b[(n - 1) + (j - 1) * ldb] = b[(n - 1) + (j - 1) * ldb] / d[n - 1];
             if (n > 1) {
@@ -90,7 +79,7 @@ void Rgtts2(INTEGER const itrans, INTEGER const n, INTEGER const nrhs, REAL *dl,
         } else {
             for (j = 1; j <= nrhs; j = j + 1) {
                 //
-                //              Solve L*x = b.
+                // Solve L*x = b.
                 //
                 for (i = 1; i <= n - 1; i = i + 1) {
                     if (ipiv[i - 1] == i) {
@@ -102,7 +91,7 @@ void Rgtts2(INTEGER const itrans, INTEGER const n, INTEGER const nrhs, REAL *dl,
                     }
                 }
                 //
-                //              Solve U*x = b.
+                // Solve U*x = b.
                 //
                 b[(n - 1) + (j - 1) * ldb] = b[(n - 1) + (j - 1) * ldb] / d[n - 1];
                 if (n > 1) {
@@ -115,11 +104,11 @@ void Rgtts2(INTEGER const itrans, INTEGER const n, INTEGER const nrhs, REAL *dl,
         }
     } else {
         //
-        //        Solve A**T * X = B.
+        // Solve A**T * X = B.
         //
         if (nrhs <= 1) {
             //
-            //           Solve U**T*x = b.
+            // Solve U**T*x = b.
             //
             j = 1;
         statement_70:
@@ -131,7 +120,7 @@ void Rgtts2(INTEGER const itrans, INTEGER const n, INTEGER const nrhs, REAL *dl,
                 b[(i - 1) + (j - 1) * ldb] = (b[(i - 1) + (j - 1) * ldb] - du[(i - 1) - 1] * b[((i - 1) - 1) + (j - 1) * ldb] - du2[(i - 2) - 1] * b[((i - 2) - 1) + (j - 1) * ldb]) / d[i - 1];
             }
             //
-            //           Solve L**T*x = b.
+            // Solve L**T*x = b.
             //
             for (i = n - 1; i >= 1; i = i - 1) {
                 ip = ipiv[i - 1];
@@ -147,7 +136,7 @@ void Rgtts2(INTEGER const itrans, INTEGER const n, INTEGER const nrhs, REAL *dl,
         } else {
             for (j = 1; j <= nrhs; j = j + 1) {
                 //
-                //              Solve U**T*x = b.
+                // Solve U**T*x = b.
                 //
                 b[(j - 1) * ldb] = b[(j - 1) * ldb] / d[1 - 1];
                 if (n > 1) {
@@ -169,6 +158,6 @@ void Rgtts2(INTEGER const itrans, INTEGER const n, INTEGER const nrhs, REAL *dl,
         }
     }
     //
-    //     End of Rgtts2
+    // End of Rgtts2
     //
 }

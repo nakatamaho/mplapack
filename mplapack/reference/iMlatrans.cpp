@@ -32,20 +32,9 @@
 INTEGER iMlatrans(const char *trans) {
     INTEGER return_value = 0;
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
     //
-    //     .. Scalar Arguments ..
-    //     ..
     //
-    //  =====================================================================
     //
-    //     .. Parameters ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Executable Statements ..
     const INTEGER blas_no_trans = 111;
     const INTEGER blas_trans = 112;
     const INTEGER blas_conj_trans = 113;
@@ -60,6 +49,6 @@ INTEGER iMlatrans(const char *trans) {
     }
     return return_value;
     //
-    //     End of iMlatrans
+    // End of iMlatrans
     //
 }

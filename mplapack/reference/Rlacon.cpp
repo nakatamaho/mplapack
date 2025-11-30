@@ -43,30 +43,10 @@ void Rlacon(INTEGER const n, REAL *v, REAL *x, INTEGER *isgn, REAL &est, INTEGER
     const INTEGER itmax = 5;
     const REAL two = 2.0e+0;
     //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
     //
-    //  =====================================================================
     //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Save statement ..
-    //     ..
-    //     .. Executable Statements ..
+    // .. Save statement ..
     //
     if (kase == 0) {
         for (i = 1; i <= n; i = i + 1) {
@@ -92,8 +72,8 @@ void Rlacon(INTEGER const n, REAL *v, REAL *x, INTEGER *isgn, REAL &est, INTEGER
         break;
     }
 //
-//     ................ ENTRY   (JUMP = 1)
-//     FIRST ITERATION.  X HAS BEEN OVERWRITTEN BY A*X.
+// ................ ENTRY   (JUMP = 1)
+// FIRST ITERATION.  X HAS BEEN OVERWRITTEN BY A*X.
 //
 statement_20:
     if (n == 1) {
@@ -112,14 +92,14 @@ statement_20:
     jump = 2;
     return;
 //
-//     ................ ENTRY   (JUMP = 2)
-//     FIRST ITERATION.  X HAS BEEN OVERWRITTEN BY TRANSPOSE(A)*X.
+// ................ ENTRY   (JUMP = 2)
+// FIRST ITERATION.  X HAS BEEN OVERWRITTEN BY TRANSPOSE(A)*X.
 //
 statement_40:
     j = iRamax(n, x, 1);
     iter = 2;
 //
-//     MAIN LOOP - ITERATIONS 2,3,...,ITMAX.
+// MAIN LOOP - ITERATIONS 2,3,...,ITMAX.
 //
 statement_50:
     for (i = 1; i <= n; i = i + 1) {
@@ -130,8 +110,8 @@ statement_50:
     jump = 3;
     return;
 //
-//     ................ ENTRY   (JUMP = 3)
-//     X HAS BEEN OVERWRITTEN BY A*X.
+// ................ ENTRY   (JUMP = 3)
+// X HAS BEEN OVERWRITTEN BY A*X.
 //
 statement_70:
     Rcopy(n, x, 1, v, 1);
@@ -159,8 +139,8 @@ statement_90:
     jump = 4;
     return;
 //
-//     ................ ENTRY   (JUMP = 4)
-//     X HAS BEEN OVERWRITTEN BY TRANSPOSE(A)*X.
+// ................ ENTRY   (JUMP = 4)
+// X HAS BEEN OVERWRITTEN BY TRANSPOSE(A)*X.
 //
 statement_110:
     jlast = j;
@@ -170,7 +150,7 @@ statement_110:
         goto statement_50;
     }
 //
-//     ITERATION COMPLETE.  FINAL STAGE.
+// ITERATION COMPLETE.  FINAL STAGE.
 //
 statement_120:
     altsgn = one;
@@ -182,8 +162,8 @@ statement_120:
     jump = 5;
     return;
 //
-//     ................ ENTRY   (JUMP = 5)
-//     X HAS BEEN OVERWRITTEN BY A*X.
+// ................ ENTRY   (JUMP = 5)
+// X HAS BEEN OVERWRITTEN BY A*X.
 //
 statement_140:
     temp = two * (Rasum(n, x, 1) / castREAL(3 * n));
@@ -195,6 +175,6 @@ statement_140:
 statement_150:
     kase = 0;
     //
-    //     End of Rlacon
+    // End of Rlacon
     //
 }

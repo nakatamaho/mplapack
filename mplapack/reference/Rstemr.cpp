@@ -91,31 +91,12 @@ void Rstemr(const char *jobz, const char *range, INTEGER const n, REAL *d, REAL 
     REAL tmp = 0.0;
     INTEGER jj = 0;
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
     //
-    //  =====================================================================
     //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
     //
-    //     ..
-    //     .. Executable Statements ..
     //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     wantz = Mlsame(jobz, "V");
     alleig = Mlsame(range, "A");
@@ -125,9 +106,9 @@ void Rstemr(const char *jobz, const char *range, INTEGER const n, REAL *d, REAL 
     lquery = ((lwork == -1) || (liwork == -1));
     zquery = (nzc == -1);
     //
-    //     Rstemr needs WORK of size 6*N, IWORK of size 3*N.
-    //     In addition, Rlarre needs WORK of size 6*N, IWORK of size 5*N.
-    //     Furthermore, Rlarrv needs WORK of size 12*N, IWORK of size 7*N.
+    // Rstemr needs WORK of size 6*N, IWORK of size 3*N.
+    // In addition, Rlarre needs WORK of size 6*N, IWORK of size 5*N.
+    // Furthermore, Rlarrv needs WORK of size 12*N, IWORK of size 7*N.
     if (wantz) {
         lwmin = 18 * n;
         liwmin = 10 * n;
@@ -176,7 +157,7 @@ void Rstemr(const char *jobz, const char *range, INTEGER const n, REAL *d, REAL 
         info = -19;
     }
     //
-    //     Get machine constants.
+    // Get machine constants.
     //
     safmin = Rlamch("Safe minimum");
     eps = Rlamch("Precision");
@@ -215,7 +196,7 @@ void Rstemr(const char *jobz, const char *range, INTEGER const n, REAL *d, REAL 
         return;
     }
     //
-    //     Handle N = 0, 1, and 2 cases immediately
+    // Handle N = 0, 1, and 2 cases immediately
     //
     m = 0;
     if (n == 0) {
@@ -291,7 +272,7 @@ void Rstemr(const char *jobz, const char *range, INTEGER const n, REAL *d, REAL 
         //
     } else {
         //
-        //     Continue with general N
+        // Continue with general N
         //
         indgrs = 1;
         inderr = 2 * n + 1;
@@ -305,11 +286,11 @@ void Rstemr(const char *jobz, const char *range, INTEGER const n, REAL *d, REAL 
         iindw = 2 * n + 1;
         iindwk = 3 * n + 1;
         //
-        //        Scale matrix to allowable range, if necessary.
-        //        The allowable range is related to the PIVMIN parameter; see the
-        //        comments in Rlarrd.  The preference for scaling small values
-        //        up is heuristic; we expect users' matrices not to be close to the
-        //        RMAX threshold.
+        // Scale matrix to allowable range, if necessary.
+        // The allowable range is related to the PIVMIN parameter; see the
+        // comments in Rlarrd.  The preference for scaling small values
+        // up is heuristic; we expect users' matrices not to be close to the
+        // RMAX threshold.
         //
         scale = one;
         tnrm = Rlanst("M", n, d, e);
@@ -330,13 +311,13 @@ void Rstemr(const char *jobz, const char *range, INTEGER const n, REAL *d, REAL 
             }
         }
         //
-        //        Compute the desired eigenvalues of the tridiagonal after splitting
-        //        into smaller subblocks if the corresponding off-diagonal elements
-        //        are small
-        //        THRESH is the splitting parameter for Rlarre
-        //        A negative THRESH forces the old splitting criterion based on the
-        //        size of the off-diagonal. A positive THRESH switches to splitting
-        //        which preserves relative accuracy.
+        // Compute the desired eigenvalues of the tridiagonal after splitting
+        // into smaller subblocks if the corresponding off-diagonal elements
+        // are small
+        // THRESH is the splitting parameter for Rlarre
+        // A negative THRESH forces the old splitting criterion based on the
+        // size of the off-diagonal. A positive THRESH switches to splitting
+        // which preserves relative accuracy.
         //
         if (tryrac) {
             // Test whether the matrix warrants the more expensive relative approach.
@@ -363,7 +344,7 @@ void Rstemr(const char *jobz, const char *range, INTEGER const n, REAL *d, REAL 
             work[(inde2 + j - 1) - 1] = pow2(e[j - 1]);
         }
         //
-        //        Set the tolerance parameters for bisection
+        // Set the tolerance parameters for bisection
         if (!wantz) {
             // Rlarre computes the eigenvalues to full precision.
             rtol1 = four * eps;
@@ -387,8 +368,8 @@ void Rstemr(const char *jobz, const char *range, INTEGER const n, REAL *d, REAL 
         //
         if (wantz) {
             //
-            //           Compute the desired eigenvectors corresponding to the computed
-            //           eigenvalues
+            // Compute the desired eigenvectors corresponding to the computed
+            // eigenvalues
             //
             Rlarrv(n, wl, wu, d, e, pivmin, &iwork[iinspl - 1], m, 1, m, minrgp, rtol1, rtol2, w, &work[inderr - 1], &work[indgp - 1], &iwork[iindbl - 1], &iwork[iindw - 1], &work[indgrs - 1], z, ldz, isuppz, &work[indwrk - 1], &iwork[iindwk - 1], iinfo);
             if (iinfo != 0) {
@@ -440,7 +421,7 @@ void Rstemr(const char *jobz, const char *range, INTEGER const n, REAL *d, REAL 
             }
         }
         //
-        //        If matrix was scaled, then rescale eigenvalues appropriately.
+        // If matrix was scaled, then rescale eigenvalues appropriately.
         //
         if (scale != one) {
             Rscal(m, one / scale, w, 1);
@@ -448,8 +429,8 @@ void Rstemr(const char *jobz, const char *range, INTEGER const n, REAL *d, REAL 
         //
     }
     //
-    //     If eigenvalues are not in increasing order, then sort them,
-    //     possibly along with eigenvectors.
+    // If eigenvalues are not in increasing order, then sort them,
+    // possibly along with eigenvectors.
     //
     if (nsplit > 1 || n == 2) {
         if (!wantz) {
@@ -488,6 +469,6 @@ void Rstemr(const char *jobz, const char *range, INTEGER const n, REAL *d, REAL 
     work[1 - 1] = lwmin;
     iwork[1 - 1] = liwmin;
     //
-    //     End of Rstemr
+    // End of Rstemr
     //
 }

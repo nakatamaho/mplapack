@@ -55,33 +55,16 @@ void Rlarfx(const char *side, INTEGER const m, INTEGER const n, REAL *v, REAL co
     REAL v10 = 0.0;
     REAL t10 = 0.0;
     //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
     //
-    //  =====================================================================
     //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Executable Statements ..
     //
     if (tau == zero) {
         return;
     }
     if (Mlsame(side, "L")) {
         //
-        //        Form  H * C, where H has order m.
+        // Form  H * C, where H has order m.
         //
         switch (m) {
         case 1:
@@ -108,13 +91,13 @@ void Rlarfx(const char *side, INTEGER const m, INTEGER const n, REAL *v, REAL co
             break;
         }
         //
-        //        Code for general M
+        // Code for general M
         //
         Rlarf(side, m, n, v, 1, tau, c, ldc, work);
         goto statement_410;
     statement_10:
         //
-        //        Special code for 1 x 1 Householder
+        // Special code for 1 x 1 Householder
         //
         t1 = one - tau * v[1 - 1] * v[1 - 1];
         for (j = 1; j <= n; j = j + 1) {
@@ -123,7 +106,7 @@ void Rlarfx(const char *side, INTEGER const m, INTEGER const n, REAL *v, REAL co
         goto statement_410;
     statement_30:
         //
-        //        Special code for 2 x 2 Householder
+        // Special code for 2 x 2 Householder
         //
         v1 = v[1 - 1];
         t1 = tau * v1;
@@ -137,7 +120,7 @@ void Rlarfx(const char *side, INTEGER const m, INTEGER const n, REAL *v, REAL co
         goto statement_410;
     statement_50:
         //
-        //        Special code for 3 x 3 Householder
+        // Special code for 3 x 3 Householder
         //
         v1 = v[1 - 1];
         t1 = tau * v1;
@@ -154,7 +137,7 @@ void Rlarfx(const char *side, INTEGER const m, INTEGER const n, REAL *v, REAL co
         goto statement_410;
     statement_70:
         //
-        //        Special code for 4 x 4 Householder
+        // Special code for 4 x 4 Householder
         //
         v1 = v[1 - 1];
         t1 = tau * v1;
@@ -174,7 +157,7 @@ void Rlarfx(const char *side, INTEGER const m, INTEGER const n, REAL *v, REAL co
         goto statement_410;
     statement_90:
         //
-        //        Special code for 5 x 5 Householder
+        // Special code for 5 x 5 Householder
         //
         v1 = v[1 - 1];
         t1 = tau * v1;
@@ -197,7 +180,7 @@ void Rlarfx(const char *side, INTEGER const m, INTEGER const n, REAL *v, REAL co
         goto statement_410;
     statement_110:
         //
-        //        Special code for 6 x 6 Householder
+        // Special code for 6 x 6 Householder
         //
         v1 = v[1 - 1];
         t1 = tau * v1;
@@ -223,7 +206,7 @@ void Rlarfx(const char *side, INTEGER const m, INTEGER const n, REAL *v, REAL co
         goto statement_410;
     statement_130:
         //
-        //        Special code for 7 x 7 Householder
+        // Special code for 7 x 7 Householder
         //
         v1 = v[1 - 1];
         t1 = tau * v1;
@@ -252,7 +235,7 @@ void Rlarfx(const char *side, INTEGER const m, INTEGER const n, REAL *v, REAL co
         goto statement_410;
     statement_150:
         //
-        //        Special code for 8 x 8 Householder
+        // Special code for 8 x 8 Householder
         //
         v1 = v[1 - 1];
         t1 = tau * v1;
@@ -284,7 +267,7 @@ void Rlarfx(const char *side, INTEGER const m, INTEGER const n, REAL *v, REAL co
         goto statement_410;
     statement_170:
         //
-        //        Special code for 9 x 9 Householder
+        // Special code for 9 x 9 Householder
         //
         v1 = v[1 - 1];
         t1 = tau * v1;
@@ -319,7 +302,7 @@ void Rlarfx(const char *side, INTEGER const m, INTEGER const n, REAL *v, REAL co
         goto statement_410;
     statement_190:
         //
-        //        Special code for 10 x 10 Householder
+        // Special code for 10 x 10 Householder
         //
         v1 = v[1 - 1];
         t1 = tau * v1;
@@ -357,7 +340,7 @@ void Rlarfx(const char *side, INTEGER const m, INTEGER const n, REAL *v, REAL co
         goto statement_410;
     } else {
         //
-        //        Form  C * H, where H has order n.
+        // Form  C * H, where H has order n.
         //
         switch (n) {
         case 1:
@@ -384,13 +367,13 @@ void Rlarfx(const char *side, INTEGER const m, INTEGER const n, REAL *v, REAL co
             break;
         }
         //
-        //        Code for general N
+        // Code for general N
         //
         Rlarf(side, m, n, v, 1, tau, c, ldc, work);
         goto statement_410;
     statement_210:
         //
-        //        Special code for 1 x 1 Householder
+        // Special code for 1 x 1 Householder
         //
         t1 = one - tau * v[1 - 1] * v[1 - 1];
         for (j = 1; j <= m; j = j + 1) {
@@ -399,7 +382,7 @@ void Rlarfx(const char *side, INTEGER const m, INTEGER const n, REAL *v, REAL co
         goto statement_410;
     statement_230:
         //
-        //        Special code for 2 x 2 Householder
+        // Special code for 2 x 2 Householder
         //
         v1 = v[1 - 1];
         t1 = tau * v1;
@@ -413,7 +396,7 @@ void Rlarfx(const char *side, INTEGER const m, INTEGER const n, REAL *v, REAL co
         goto statement_410;
     statement_250:
         //
-        //        Special code for 3 x 3 Householder
+        // Special code for 3 x 3 Householder
         //
         v1 = v[1 - 1];
         t1 = tau * v1;
@@ -430,7 +413,7 @@ void Rlarfx(const char *side, INTEGER const m, INTEGER const n, REAL *v, REAL co
         goto statement_410;
     statement_270:
         //
-        //        Special code for 4 x 4 Householder
+        // Special code for 4 x 4 Householder
         //
         v1 = v[1 - 1];
         t1 = tau * v1;
@@ -450,7 +433,7 @@ void Rlarfx(const char *side, INTEGER const m, INTEGER const n, REAL *v, REAL co
         goto statement_410;
     statement_290:
         //
-        //        Special code for 5 x 5 Householder
+        // Special code for 5 x 5 Householder
         //
         v1 = v[1 - 1];
         t1 = tau * v1;
@@ -473,7 +456,7 @@ void Rlarfx(const char *side, INTEGER const m, INTEGER const n, REAL *v, REAL co
         goto statement_410;
     statement_310:
         //
-        //        Special code for 6 x 6 Householder
+        // Special code for 6 x 6 Householder
         //
         v1 = v[1 - 1];
         t1 = tau * v1;
@@ -499,7 +482,7 @@ void Rlarfx(const char *side, INTEGER const m, INTEGER const n, REAL *v, REAL co
         goto statement_410;
     statement_330:
         //
-        //        Special code for 7 x 7 Householder
+        // Special code for 7 x 7 Householder
         //
         v1 = v[1 - 1];
         t1 = tau * v1;
@@ -528,7 +511,7 @@ void Rlarfx(const char *side, INTEGER const m, INTEGER const n, REAL *v, REAL co
         goto statement_410;
     statement_350:
         //
-        //        Special code for 8 x 8 Householder
+        // Special code for 8 x 8 Householder
         //
         v1 = v[1 - 1];
         t1 = tau * v1;
@@ -560,7 +543,7 @@ void Rlarfx(const char *side, INTEGER const m, INTEGER const n, REAL *v, REAL co
         goto statement_410;
     statement_370:
         //
-        //        Special code for 9 x 9 Householder
+        // Special code for 9 x 9 Householder
         //
         v1 = v[1 - 1];
         t1 = tau * v1;
@@ -595,7 +578,7 @@ void Rlarfx(const char *side, INTEGER const m, INTEGER const n, REAL *v, REAL co
         goto statement_410;
     statement_390:
         //
-        //        Special code for 10 x 10 Householder
+        // Special code for 10 x 10 Householder
         //
         v1 = v[1 - 1];
         t1 = tau * v1;
@@ -634,6 +617,6 @@ void Rlarfx(const char *side, INTEGER const m, INTEGER const n, REAL *v, REAL co
     }
 statement_410:;
     //
-    //     End of Rlarfx
+    // End of Rlarfx
     //
 }

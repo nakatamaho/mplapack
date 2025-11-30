@@ -69,32 +69,12 @@ void Rbdsdc(const char *uplo, const char *compq, INTEGER const n, REAL *d, REAL 
     REAL p = 0.0;
     INTEGER j = 0;
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
     //
-    //  =====================================================================
-    //  (N-1).  Sven, 17 Feb 05.
-    //  =====================================================================
+    // (N-1).  Sven, 17 Feb 05.
     //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     //
@@ -130,7 +110,7 @@ void Rbdsdc(const char *uplo, const char *compq, INTEGER const n, REAL *d, REAL 
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0) {
         return;
@@ -149,8 +129,8 @@ void Rbdsdc(const char *uplo, const char *compq, INTEGER const n, REAL *d, REAL 
     }
     nm1 = n - 1;
     //
-    //     If matrix lower bidiagonal, rotate to be upper bidiagonal
-    //     by applying Givens rotations on the left
+    // If matrix lower bidiagonal, rotate to be upper bidiagonal
+    // by applying Givens rotations on the left
     //
     wstart = 1;
     qstart = 3;
@@ -178,7 +158,7 @@ void Rbdsdc(const char *uplo, const char *compq, INTEGER const n, REAL *d, REAL 
         }
     }
     //
-    //     If ICOMPQ = 0, use Rlasdq to compute the singular values.
+    // If ICOMPQ = 0, use Rlasdq to compute the singular values.
     //
     if (icompq == 0) {
         // Ignore WSTART, instead using WORK( 1 ), since the two vectors
@@ -188,8 +168,8 @@ void Rbdsdc(const char *uplo, const char *compq, INTEGER const n, REAL *d, REAL 
         goto statement_40;
     }
     //
-    //     If N is smaller than the minimum divide size SMLSIZ, then solve
-    //     the problem with another solver.
+    // If N is smaller than the minimum divide size SMLSIZ, then solve
+    // the problem with another solver.
     //
     if (n <= smlsiz) {
         if (icompq == 2) {
@@ -211,7 +191,7 @@ void Rbdsdc(const char *uplo, const char *compq, INTEGER const n, REAL *d, REAL 
         Rlaset("A", n, n, zero, one, vt, ldvt);
     }
     //
-    //     Scale.
+    // Scale.
     //
     orgnrm = Rlanst("M", n, d, e);
     if (orgnrm == zero) {
@@ -254,24 +234,24 @@ void Rbdsdc(const char *uplo, const char *compq, INTEGER const n, REAL *d, REAL 
     for (i = 1; i <= nm1; i = i + 1) {
         if ((abs(e[i - 1]) < eps) || (i == nm1)) {
             //
-            //           Subproblem found. First determine its size and then
-            //           apply divide and conquer on it.
+            // Subproblem found. First determine its size and then
+            // apply divide and conquer on it.
             //
             if (i < nm1) {
                 //
-                //              A subproblem with E(I) small for I < NM1.
+                // A subproblem with E(I) small for I < NM1.
                 //
                 nsize = i - start + 1;
             } else if (abs(e[i - 1]) >= eps) {
                 //
-                //              A subproblem with E(NM1) not too small but I = NM1.
+                // A subproblem with E(NM1) not too small but I = NM1.
                 //
                 nsize = n - start + 1;
             } else {
                 //
-                //              A subproblem with E(NM1) small. This implies an
-                //              1-by-1 subproblem at D(N). Solve this 1-by-1 problem
-                //              first.
+                // A subproblem with E(NM1) small. This implies an
+                // 1-by-1 subproblem at D(N). Solve this 1-by-1 problem
+                // first.
                 //
                 nsize = i - start + 1;
                 if (icompq == 2) {
@@ -295,12 +275,12 @@ void Rbdsdc(const char *uplo, const char *compq, INTEGER const n, REAL *d, REAL 
         }
     }
     //
-    //     Unscale
+    // Unscale
     //
     Rlascl("G", 0, 0, one, orgnrm, n, 1, d, n, ierr);
 statement_40:
     //
-    //     Use Selection Sort to minimize swaps of singular vectors
+    // Use Selection Sort to minimize swaps of singular vectors
     //
     for (ii = 2; ii <= n; ii = ii + 1) {
         i = ii - 1;
@@ -326,7 +306,7 @@ statement_40:
         }
     }
     //
-    //     If ICOMPQ = 1, use IQ(N,1) as the indicator for UPLO
+    // If ICOMPQ = 1, use IQ(N,1) as the indicator for UPLO
     //
     if (icompq == 1) {
         if (iuplo == 1) {
@@ -336,13 +316,13 @@ statement_40:
         }
     }
     //
-    //     If B is lower bidiagonal, update U by those Givens rotations
-    //     which rotated B to be upper bidiagonal
+    // If B is lower bidiagonal, update U by those Givens rotations
+    // which rotated B to be upper bidiagonal
     //
     if ((iuplo == 2) && (icompq == 2)) {
         Rlasr("L", "V", "B", n, n, &work[1 - 1], &work[n - 1], u, ldu);
     }
     //
-    //     End of Rbdsdc
+    // End of Rbdsdc
     //
 }

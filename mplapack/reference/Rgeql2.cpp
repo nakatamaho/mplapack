@@ -31,28 +31,11 @@
 
 void Rgeql2(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *tau, REAL *work, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
     //
-    //  =====================================================================
     //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
-    //     Test the input arguments
+    // Test the input arguments
     //
     info = 0;
     if (m < 0) {
@@ -74,12 +57,12 @@ void Rgeql2(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *
     const REAL one = 1.0;
     for (i = k; i >= 1; i = i - 1) {
         //
-        //        Generate elementary reflector H(i) to annihilate
-        //        A(1:m-k+i-1,n-k+i)
+        // Generate elementary reflector H(i) to annihilate
+        // A(1:m-k+i-1,n-k+i)
         //
         Rlarfg(m - k + i, a[((m - k + i) - 1) + ((n - k + i) - 1) * lda], &a[((n - k + i) - 1) * lda], 1, tau[i - 1]);
         //
-        //        Apply H(i) to A(1:m-k+i,1:n-k+i-1) from the left
+        // Apply H(i) to A(1:m-k+i,1:n-k+i-1) from the left
         //
         aii = a[((m - k + i) - 1) + ((n - k + i) - 1) * lda];
         a[((m - k + i) - 1) + ((n - k + i) - 1) * lda] = one;
@@ -87,6 +70,6 @@ void Rgeql2(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *
         a[((m - k + i) - 1) + ((n - k + i) - 1) * lda] = aii;
     }
     //
-    //     End of Rgeql2
+    // End of Rgeql2
     //
 }

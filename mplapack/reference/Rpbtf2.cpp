@@ -38,30 +38,11 @@ void Rpbtf2(const char *uplo, INTEGER const n, INTEGER const kd, REAL *ab, INTEG
     INTEGER kn = 0;
     const REAL one = 1.0;
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
     //
-    //  =====================================================================
     //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     upper = Mlsame(uplo, "U");
@@ -79,7 +60,7 @@ void Rpbtf2(const char *uplo, INTEGER const n, INTEGER const kd, REAL *ab, INTEG
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0) {
         return;
@@ -89,11 +70,11 @@ void Rpbtf2(const char *uplo, INTEGER const n, INTEGER const kd, REAL *ab, INTEG
     //
     if (upper) {
         //
-        //        Compute the Cholesky factorization A = U**T*U.
+        // Compute the Cholesky factorization A = U**T*U.
         //
         for (j = 1; j <= n; j = j + 1) {
             //
-            //           Compute U(J,J) and test for non-positive-definiteness.
+            // Compute U(J,J) and test for non-positive-definiteness.
             //
             ajj = ab[((kd + 1) - 1) + (j - 1) * ldab];
             if (ajj <= zero) {
@@ -102,8 +83,8 @@ void Rpbtf2(const char *uplo, INTEGER const n, INTEGER const kd, REAL *ab, INTEG
             ajj = sqrt(ajj);
             ab[((kd + 1) - 1) + (j - 1) * ldab] = ajj;
             //
-            //           Compute elements J+1:J+KN of row J and update the
-            //           trailing submatrix within the band.
+            // Compute elements J+1:J+KN of row J and update the
+            // trailing submatrix within the band.
             //
             kn = min(kd, n - j);
             if (kn > 0) {
@@ -113,11 +94,11 @@ void Rpbtf2(const char *uplo, INTEGER const n, INTEGER const kd, REAL *ab, INTEG
         }
     } else {
         //
-        //        Compute the Cholesky factorization A = L*L**T.
+        // Compute the Cholesky factorization A = L*L**T.
         //
         for (j = 1; j <= n; j = j + 1) {
             //
-            //           Compute L(J,J) and test for non-positive-definiteness.
+            // Compute L(J,J) and test for non-positive-definiteness.
             //
             ajj = ab[(j - 1) * ldab];
             if (ajj <= zero) {
@@ -126,8 +107,8 @@ void Rpbtf2(const char *uplo, INTEGER const n, INTEGER const kd, REAL *ab, INTEG
             ajj = sqrt(ajj);
             ab[(j - 1) * ldab] = ajj;
             //
-            //           Compute elements J+1:J+KN of column J and update the
-            //           trailing submatrix within the band.
+            // Compute elements J+1:J+KN of column J and update the
+            // trailing submatrix within the band.
             //
             kn = min(kd, n - j);
             if (kn > 0) {
@@ -141,6 +122,6 @@ void Rpbtf2(const char *uplo, INTEGER const n, INTEGER const kd, REAL *ab, INTEG
 statement_30:
     info = j;
     //
-    //     End of Rpbtf2
+    // End of Rpbtf2
     //
 }

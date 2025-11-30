@@ -95,7 +95,7 @@ INTEGER iMieeeck(INTEGER const &ispec, REAL const &zero, REAL const &one) {
         return return_value;
     }
     //
-    //     Return if we were only asked to check infinity arithmetic
+    // Return if we were only asked to check infinity arithmetic
     //
     if (ispec == 0) {
         return return_value;

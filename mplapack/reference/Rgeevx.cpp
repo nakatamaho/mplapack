@@ -65,32 +65,13 @@ void Rgeevx(const char *balanc, const char *jobvl, const char *jobvr, const char
     REAL sn = 0.0;
     REAL r = 0.0;
     //
-    //  -- LAPACK driver routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+    // -- LAPACK driver routine --
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
     //
-    //  =====================================================================
     //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
+    // .. Local Arrays ..
     //
-    //     Test the input arguments
+    // Test the input arguments
     //
     info = 0;
     lquery = (lwork == -1);
@@ -118,15 +99,15 @@ void Rgeevx(const char *balanc, const char *jobvl, const char *jobvr, const char
         info = -13;
     }
     //
-    //     Compute workspace
-    //      (Note: Comments in the code beginning "Workspace:" describe the
-    //       minimal amount of workspace needed at that point in the code,
-    //       as well as the preferred amount for good performance.
-    //       NB refers to the optimal block size for the immediately
-    //       following subroutine, as returned by iMlaenv.
-    //       HSWORK refers to the workspace preferred by Rhseqr, as
-    //       calculated below. HSWORK is computed assuming ILO=1 and IHI=N,
-    //       the worst case.)
+    // Compute workspace
+    // (Note: Comments in the code beginning "Workspace:" describe the
+    // minimal amount of workspace needed at that point in the code,
+    // as well as the preferred amount for good performance.
+    // NB refers to the optimal block size for the immediately
+    // following subroutine, as returned by iMlaenv.
+    // HSWORK refers to the workspace preferred by Rhseqr, as
+    // calculated below. HSWORK is computed assuming ILO=1 and IHI=N,
+    // the worst case.)
     //
     if (info == 0) {
         if (n == 0) {
@@ -191,13 +172,13 @@ void Rgeevx(const char *balanc, const char *jobvl, const char *jobvr, const char
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0) {
         return;
     }
     //
-    //     Get machine constants
+    // Get machine constants
     //
     eps = Rlamch("P");
     smlnum = Rlamch("S");
@@ -205,7 +186,7 @@ void Rgeevx(const char *balanc, const char *jobvl, const char *jobvr, const char
     smlnum = sqrt(smlnum) / eps;
     bignum = one / smlnum;
     //
-    //     Scale A if max element outside range [SMLNUM,BIGNUM]
+    // Scale A if max element outside range [SMLNUM,BIGNUM]
     //
     icond = 0;
     anrm = Rlange("M", n, n, a, lda, dum);
@@ -221,7 +202,7 @@ void Rgeevx(const char *balanc, const char *jobvl, const char *jobvr, const char
         Rlascl("G", 0, 0, anrm, cscale, n, n, a, lda, ierr);
     }
     //
-    //     Balance the matrix and compute ABNRM
+    // Balance the matrix and compute ABNRM
     //
     Rgebal(balanc, n, a, lda, ilo, ihi, scale, ierr);
     abnrm = Rlange("1", n, n, a, lda, dum);
@@ -231,8 +212,8 @@ void Rgeevx(const char *balanc, const char *jobvl, const char *jobvr, const char
         abnrm = dum[1 - 1];
     }
     //
-    //     Reduce to upper Hessenberg form
-    //     (Workspace: need 2*N, prefer N+N*NB)
+    // Reduce to upper Hessenberg form
+    // (Workspace: need 2*N, prefer N+N*NB)
     //
     itau = 1;
     iwrk = itau + n;
@@ -240,27 +221,27 @@ void Rgeevx(const char *balanc, const char *jobvl, const char *jobvr, const char
     //
     if (wantvl) {
         //
-        //        Want left eigenvectors
-        //        Copy Householder vectors to VL
+        // Want left eigenvectors
+        // Copy Householder vectors to VL
         //
         side = 'L';
         Rlacpy("L", n, n, a, lda, vl, ldvl);
         //
-        //        Generate orthogonal matrix in VL
-        //        (Workspace: need 2*N-1, prefer N+(N-1)*NB)
+        // Generate orthogonal matrix in VL
+        // (Workspace: need 2*N-1, prefer N+(N-1)*NB)
         //
         Rorghr(n, ilo, ihi, vl, ldvl, &work[itau - 1], &work[iwrk - 1], lwork - iwrk + 1, ierr);
         //
-        //        Perform QR iteration, accumulating Schur vectors in VL
-        //        (Workspace: need 1, prefer HSWORK (see comments) )
+        // Perform QR iteration, accumulating Schur vectors in VL
+        // (Workspace: need 1, prefer HSWORK (see comments) )
         //
         iwrk = itau;
         Rhseqr("S", "V", n, ilo, ihi, a, lda, wr, wi, vl, ldvl, &work[iwrk - 1], lwork - iwrk + 1, info);
         //
         if (wantvr) {
             //
-            //           Want left and right eigenvectors
-            //           Copy Schur vectors to VR
+            // Want left and right eigenvectors
+            // Copy Schur vectors to VR
             //
             side = 'B';
             Rlacpy("F", n, n, vl, ldvl, vr, ldvr);
@@ -268,27 +249,27 @@ void Rgeevx(const char *balanc, const char *jobvl, const char *jobvr, const char
         //
     } else if (wantvr) {
         //
-        //        Want right eigenvectors
-        //        Copy Householder vectors to VR
+        // Want right eigenvectors
+        // Copy Householder vectors to VR
         //
         side = 'R';
         Rlacpy("L", n, n, a, lda, vr, ldvr);
         //
-        //        Generate orthogonal matrix in VR
-        //        (Workspace: need 2*N-1, prefer N+(N-1)*NB)
+        // Generate orthogonal matrix in VR
+        // (Workspace: need 2*N-1, prefer N+(N-1)*NB)
         //
         Rorghr(n, ilo, ihi, vr, ldvr, &work[itau - 1], &work[iwrk - 1], lwork - iwrk + 1, ierr);
         //
-        //        Perform QR iteration, accumulating Schur vectors in VR
-        //        (Workspace: need 1, prefer HSWORK (see comments) )
+        // Perform QR iteration, accumulating Schur vectors in VR
+        // (Workspace: need 1, prefer HSWORK (see comments) )
         //
         iwrk = itau;
         Rhseqr("S", "V", n, ilo, ihi, a, lda, wr, wi, vr, ldvr, &work[iwrk - 1], lwork - iwrk + 1, info);
         //
     } else {
         //
-        //        Compute eigenvalues only
-        //        If condition numbers desired, compute Schur form
+        // Compute eigenvalues only
+        // If condition numbers desired, compute Schur form
         //
         if (wntsnn) {
             job = 'E';
@@ -296,13 +277,13 @@ void Rgeevx(const char *balanc, const char *jobvl, const char *jobvr, const char
             job = 'S';
         }
         //
-        //        (Workspace: need 1, prefer HSWORK (see comments) )
+        // (Workspace: need 1, prefer HSWORK (see comments) )
         //
         iwrk = itau;
         Rhseqr(&job, "N", n, ilo, ihi, a, lda, wr, wi, vr, ldvr, &work[iwrk - 1], lwork - iwrk + 1, info);
     }
     //
-    //     If INFO .NE. 0 from Rhseqr, then quit
+    // If INFO .NE. 0 from Rhseqr, then quit
     //
     if (info != 0) {
         goto statement_50;
@@ -310,14 +291,14 @@ void Rgeevx(const char *balanc, const char *jobvl, const char *jobvr, const char
     //
     if (wantvl || wantvr) {
         //
-        //        Compute left and/or right eigenvectors
-        //        (Workspace: need 3*N, prefer N + 2*N*NB)
+        // Compute left and/or right eigenvectors
+        // (Workspace: need 3*N, prefer N + 2*N*NB)
         //
         Rtrevc3(&side, "B", &select, n, a, lda, vl, ldvl, vr, ldvr, n, nout, &work[iwrk - 1], lwork - iwrk + 1, ierr);
     }
     //
-    //     Compute condition numbers if desired
-    //     (Workspace: need N*N+6*N unless SENSE = 'E')
+    // Compute condition numbers if desired
+    // (Workspace: need N*N+6*N unless SENSE = 'E')
     //
     if (!wntsnn) {
         Rtrsna(sense, "A", &select, n, a, lda, vl, ldvl, vr, ldvr, rconde, rcondv, n, nout, &work[iwrk - 1], n, iwork, icond);
@@ -325,11 +306,11 @@ void Rgeevx(const char *balanc, const char *jobvl, const char *jobvr, const char
     //
     if (wantvl) {
         //
-        //        Undo balancing of left eigenvectors
+        // Undo balancing of left eigenvectors
         //
         Rgebak(balanc, "L", n, ilo, ihi, scale, n, vl, ldvl, ierr);
         //
-        //        Normalize left eigenvectors and make largest component real
+        // Normalize left eigenvectors and make largest component real
         //
         for (i = 1; i <= n; i = i + 1) {
             if (wi[i - 1] == zero) {
@@ -352,11 +333,11 @@ void Rgeevx(const char *balanc, const char *jobvl, const char *jobvr, const char
     //
     if (wantvr) {
         //
-        //        Undo balancing of right eigenvectors
+        // Undo balancing of right eigenvectors
         //
         Rgebak(balanc, "R", n, ilo, ihi, scale, n, vr, ldvr, ierr);
         //
-        //        Normalize right eigenvectors and make largest component real
+        // Normalize right eigenvectors and make largest component real
         //
         for (i = 1; i <= n; i = i + 1) {
             if (wi[i - 1] == zero) {
@@ -377,7 +358,7 @@ void Rgeevx(const char *balanc, const char *jobvl, const char *jobvr, const char
         }
     }
 //
-//     Undo scaling if necessary
+// Undo scaling if necessary
 //
 statement_50:
     if (scalea) {
@@ -395,6 +376,6 @@ statement_50:
     //
     work[1 - 1] = maxwrk;
     //
-    //     End of Rgeevx
+    // End of Rgeevx
     //
 }

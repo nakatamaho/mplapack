@@ -85,14 +85,14 @@ INTEGER iMlaenv(INTEGER const ispec, const char *name, const char *opts, INTEGER
         goto L160;
     }
     //
-    //     Invalid value for ISPEC
+    // Invalid value for ISPEC
     //
     return_value = -1;
     return return_value;
     //
 L10:
     //
-    //     Convert NAME to upper case if the first character is lower case.
+    // Convert NAME to upper case if the first character is lower case.
     //
     return_value = 1;
     //
@@ -124,17 +124,17 @@ L10:
     }
 L50:
     //
-    //     ISPEC = 1:  block size
+    // ISPEC = 1:  block size
     //
-    //     In these examples, separate code is provided for setting NB for
-    //     real and complex.  We assume that NB will take the same value in
-    //     single or REAL precision.
+    // In these examples, separate code is provided for setting NB for
+    // real and complex.  We assume that NB will take the same value in
+    // single or REAL precision.
     //
     nb = 1;
     //
     if (strncmp(subnam + 1, "LAORH", 5) == 0) {
         //
-        //        This is for *LAORHR_GETRFNP routine
+        // This is for *LAORHR_GETRFNP routine
         //
         if (sname) {
             nb = 32;
@@ -352,7 +352,7 @@ L50:
 //
 L60:
     //
-    //     ISPEC = 2:  minimum block size
+    // ISPEC = 2:  minimum block size
     //
     nbmin = 2;
     if (strncmp(c2, "GE", 2) == 0) {
@@ -426,7 +426,7 @@ L60:
 //
 L70:
     //
-    //     ISPEC = 3:  crossover point
+    // ISPEC = 3:  crossover point
     //
     nx = 0;
     if (strncmp(c2, "GE", 2) == 0) {
@@ -480,7 +480,7 @@ L70:
 //
 L80:
     //
-    //     ISPEC = 4:  number of shifts (used by xHSEQR)
+    // ISPEC = 4:  number of shifts (used by xHSEQR)
     //
     return_value = 6;
     return return_value;
@@ -491,39 +491,39 @@ L90:
 
 L100:
     //
-    //     ISPEC = 6:  crossover point for SVD (used by xGELSS and xGESVD)
+    // ISPEC = 6:  crossover point for SVD (used by xGELSS and xGESVD)
     //
     return_value = castINTEGER(castREAL(min(n1, n2)) * 1.6);
     return return_value;
     //
 L110:
     //
-    //     ISPEC = 7:  number of processors (not used)
+    // ISPEC = 7:  number of processors (not used)
     //
     return_value = 1;
     return return_value;
 //
 L120:
     //
-    //     ISPEC = 8:  crossover point for multishift (used by xHSEQR)
+    // ISPEC = 8:  crossover point for multishift (used by xHSEQR)
     //
     return_value = 50;
     return return_value;
 //
 L130:
     //
-    //     ISPEC = 9:  maximum size of the subproblems at the bottom of the
-    //                 computation tree in the divide-and-conquer algorithm
-    //                 (used by xGELSD and xGESDD)
+    // ISPEC = 9:  maximum size of the subproblems at the bottom of the
+    // computation tree in the divide-and-conquer algorithm
+    // (used by xGELSD and xGESDD)
     //
     return_value = 25;
     return return_value;
 //
 L140:
     //
-    //     ISPEC = 10: ieee and infinity NaN arithmetic can be trusted not to trap
+    // ISPEC = 10: ieee and infinity NaN arithmetic can be trusted not to trap
     //
-    //     iMlaenv = 0
+    // iMlaenv = 0
     return_value = 1;
     if (return_value == 1) {
         return_value = iMieeeck(1, 0.0, 1.0);
@@ -532,9 +532,9 @@ L140:
     //
 L150:
     //
-    //     ISPEC = 11: ieee infinity arithmetic can be trusted not to trap
+    // ISPEC = 11: ieee infinity arithmetic can be trusted not to trap
     //
-    //     iMlaenv = 0
+    // iMlaenv = 0
     return_value = 1;
     if (return_value == 1) {
         return_value = iMieeeck(0, 0.0, 1.0);
@@ -543,11 +543,11 @@ L150:
 //
 L160:
     //
-    //     12 <= ISPEC <= 16: xHSEQR or related subroutines.
+    // 12 <= ISPEC <= 16: xHSEQR or related subroutines.
     //
     return_value = iMparmq(ispec, name, opts, n1, n2, n3, n4);
     return return_value;
     //
-    //     End of iMlaenv
+    // End of iMlaenv
     //
 }

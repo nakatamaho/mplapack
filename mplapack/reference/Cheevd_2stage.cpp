@@ -31,31 +31,13 @@
 
 void Cheevd_2stage(const char *jobz, const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, REAL *w, COMPLEX *work, INTEGER const lwork, REAL *rwork, INTEGER const lrwork, INTEGER *iwork, INTEGER const liwork, INTEGER &info) {
     //
-    //  -- LAPACK driver routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+    // -- LAPACK driver routine --
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
     //
-    //  =====================================================================
     //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
     //
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     bool wantz = Mlsame(jobz, "V");
     bool lower = Mlsame(uplo, "L");
@@ -119,7 +101,7 @@ void Cheevd_2stage(const char *jobz, const char *uplo, INTEGER const n, COMPLEX 
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0) {
         return;
@@ -134,7 +116,7 @@ void Cheevd_2stage(const char *jobz, const char *uplo, INTEGER const n, COMPLEX 
         return;
     }
     //
-    //     Get machine constants.
+    // Get machine constants.
     //
     REAL safmin = Rlamch("Safe minimum");
     REAL eps = Rlamch("Precision");
@@ -144,7 +126,7 @@ void Cheevd_2stage(const char *jobz, const char *uplo, INTEGER const n, COMPLEX 
     REAL rmin = sqrt(smlnum);
     REAL rmax = sqrt(bignum);
     //
-    //     Scale matrix to allowable range, if necessary.
+    // Scale matrix to allowable range, if necessary.
     //
     REAL anrm = Clanhe("M", uplo, n, a, lda, rwork);
     INTEGER iscale = 0;
@@ -161,7 +143,7 @@ void Cheevd_2stage(const char *jobz, const char *uplo, INTEGER const n, COMPLEX 
         Clascl(uplo, 0, 0, one, sigma, n, n, a, lda, info);
     }
     //
-    //     Call Chetrd_2stage to reduce Hermitian matrix to tridiagonal form.
+    // Call Chetrd_2stage to reduce Hermitian matrix to tridiagonal form.
     //
     INTEGER inde = 1;
     INTEGER indrwk = inde + n;
@@ -176,11 +158,11 @@ void Cheevd_2stage(const char *jobz, const char *uplo, INTEGER const n, COMPLEX 
     INTEGER iinfo = 0;
     Chetrd_2stage(jobz, uplo, n, a, lda, w, &rwork[inde - 1], &work[indtau - 1], &work[indhous - 1], lhtrd, &work[indwrk - 1], llwork, iinfo);
     //
-    //     For eigenvalues only, call Rsterf.  For eigenvectors, first call
-    //     Cstedc to generate the eigenvector matrix, WORK(INDWRK), of the
-    //     tridiagonal matrix, then call Cunmtr to multiply it to the
-    //     Householder transformations represented as Householder vectors in
-    //     A.
+    // For eigenvalues only, call Rsterf.  For eigenvectors, first call
+    // Cstedc to generate the eigenvector matrix, WORK(INDWRK), of the
+    // tridiagonal matrix, then call Cunmtr to multiply it to the
+    // Householder transformations represented as Householder vectors in
+    // A.
     //
     if (!wantz) {
         Rsterf(n, w, &rwork[inde - 1], info);
@@ -190,7 +172,7 @@ void Cheevd_2stage(const char *jobz, const char *uplo, INTEGER const n, COMPLEX 
         Clacpy("A", n, n, &work[indwrk - 1], n, a, lda);
     }
     //
-    //     If matrix was scaled, then rescale eigenvalues appropriately.
+    // If matrix was scaled, then rescale eigenvalues appropriately.
     //
     INTEGER imax = 0;
     if (iscale == 1) {
@@ -206,6 +188,6 @@ void Cheevd_2stage(const char *jobz, const char *uplo, INTEGER const n, COMPLEX 
     rwork[1 - 1] = lrwmin;
     iwork[1 - 1] = liwmin;
     //
-    //     End of Cheevd_2stage
+    // End of Cheevd_2stage
     //
 }

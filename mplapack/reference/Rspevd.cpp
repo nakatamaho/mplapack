@@ -31,30 +31,12 @@
 
 void Rspevd(const char *jobz, const char *uplo, INTEGER const n, REAL *ap, REAL *w, REAL *z, INTEGER const ldz, REAL *work, INTEGER const lwork, INTEGER *iwork, INTEGER const liwork, INTEGER &info) {
     //
-    //  -- LAPACK driver routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+    // -- LAPACK driver routine --
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
     //
-    //  =====================================================================
     //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     bool wantz = Mlsame(jobz, "V");
     bool lquery = (lwork == -1 || liwork == -1);
@@ -102,7 +84,7 @@ void Rspevd(const char *jobz, const char *uplo, INTEGER const n, REAL *ap, REAL 
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0) {
         return;
@@ -117,7 +99,7 @@ void Rspevd(const char *jobz, const char *uplo, INTEGER const n, REAL *ap, REAL 
         return;
     }
     //
-    //     Get machine constants.
+    // Get machine constants.
     //
     REAL safmin = Rlamch("Safe minimum");
     REAL eps = Rlamch("Precision");
@@ -126,7 +108,7 @@ void Rspevd(const char *jobz, const char *uplo, INTEGER const n, REAL *ap, REAL 
     REAL rmin = sqrt(smlnum);
     REAL rmax = sqrt(bignum);
     //
-    //     Scale matrix to allowable range, if necessary.
+    // Scale matrix to allowable range, if necessary.
     //
     REAL anrm = Rlansp("M", uplo, n, ap, work);
     INTEGER iscale = 0;
@@ -143,17 +125,17 @@ void Rspevd(const char *jobz, const char *uplo, INTEGER const n, REAL *ap, REAL 
         Rscal((n * (n + 1)) / 2, sigma, ap, 1);
     }
     //
-    //     Call Rsptrd to reduce symmetric packed matrix to tridiagonal form.
+    // Call Rsptrd to reduce symmetric packed matrix to tridiagonal form.
     //
     INTEGER inde = 1;
     INTEGER indtau = inde + n;
     INTEGER iinfo = 0;
     Rsptrd(uplo, n, ap, w, &work[inde - 1], &work[indtau - 1], iinfo);
     //
-    //     For eigenvalues only, call Rsterf.  For eigenvectors, first call
-    //     Rstedc to generate the eigenvector matrix, WORK(INDWRK), of the
-    //     tridiagonal matrix, then call Ropmtr to multiply it by the
-    //     Householder transformations represented in AP.
+    // For eigenvalues only, call Rsterf.  For eigenvectors, first call
+    // Rstedc to generate the eigenvector matrix, WORK(INDWRK), of the
+    // tridiagonal matrix, then call Ropmtr to multiply it by the
+    // Householder transformations represented in AP.
     //
     INTEGER indwrk = 0;
     INTEGER llwork = 0;
@@ -166,7 +148,7 @@ void Rspevd(const char *jobz, const char *uplo, INTEGER const n, REAL *ap, REAL 
         Ropmtr("L", uplo, "N", n, n, ap, &work[indtau - 1], z, ldz, &work[indwrk - 1], iinfo);
     }
     //
-    //     If matrix was scaled, then rescale eigenvalues appropriately.
+    // If matrix was scaled, then rescale eigenvalues appropriately.
     //
     if (iscale == 1) {
         Rscal(n, one / sigma, w, 1);
@@ -175,6 +157,6 @@ void Rspevd(const char *jobz, const char *uplo, INTEGER const n, REAL *ap, REAL 
     work[1 - 1] = lwmin;
     iwork[1 - 1] = liwmin;
     //
-    //     End of Rspevd
+    // End of Rspevd
     //
 }

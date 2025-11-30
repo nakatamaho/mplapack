@@ -46,7 +46,7 @@ void Rlapmt(bool const forwrd, INTEGER const m, INTEGER const n, REAL *x, INTEGE
     //
     if (forwrd) {
         //
-        //        Forward permutation
+        // Forward permutation
         //
         for (i = 1; i <= n; i = i + 1) {
             //
@@ -80,7 +80,7 @@ void Rlapmt(bool const forwrd, INTEGER const m, INTEGER const n, REAL *x, INTEGE
         //
     } else {
         //
-        //        Backward permutation
+        // Backward permutation
         //
         for (i = 1; i <= n; i = i + 1) {
             //
@@ -111,6 +111,6 @@ void Rlapmt(bool const forwrd, INTEGER const m, INTEGER const n, REAL *x, INTEGE
         //
     }
     //
-    //     End of Rlapmt
+    // End of Rlapmt
     //
 }

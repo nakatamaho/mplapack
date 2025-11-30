@@ -31,7 +31,7 @@
 
 void Cpbsv(const char *uplo, INTEGER const n, INTEGER const kd, INTEGER const nrhs, COMPLEX *ab, INTEGER const ldab, COMPLEX *b, INTEGER const ldb, INTEGER &info) {
     //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     if (!Mlsame(uplo, "U") && !Mlsame(uplo, "L")) {
@@ -52,17 +52,17 @@ void Cpbsv(const char *uplo, INTEGER const n, INTEGER const kd, INTEGER const nr
         return;
     }
     //
-    //     Compute the Cholesky factorization A = U**H *U or A = L*L**H.
+    // Compute the Cholesky factorization A = U**H *U or A = L*L**H.
     //
     Cpbtrf(uplo, n, kd, ab, ldab, info);
     if (info == 0) {
         //
-        //        Solve the system A*X = B, overwriting B with X.
+        // Solve the system A*X = B, overwriting B with X.
         //
         Cpbtrs(uplo, n, kd, nrhs, ab, ldab, b, ldb, info);
         //
     }
     //
-    //     End of Cpbsv
+    // End of Cpbsv
     //
 }

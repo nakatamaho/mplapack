@@ -84,30 +84,12 @@ void Cheevr(const char *jobz, const char *range, const char *uplo, INTEGER const
     INTEGER jj = 0;
     INTEGER itmp1 = 0;
     //
-    //  -- LAPACK driver routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+    // -- LAPACK driver routine --
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
     //
-    //  =====================================================================
     //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     ieeeok = iMlaenv(10, "Cheevr", "N", 1, 2, 3, 4);
     //
@@ -177,7 +159,7 @@ void Cheevr(const char *jobz, const char *range, const char *uplo, INTEGER const
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     m = 0;
     if (n == 0) {
@@ -204,7 +186,7 @@ void Cheevr(const char *jobz, const char *range, const char *uplo, INTEGER const
         return;
     }
     //
-    //     Get machine constants.
+    // Get machine constants.
     //
     safmin = Rlamch("Safe minimum");
     eps = Rlamch("Precision");
@@ -213,7 +195,7 @@ void Cheevr(const char *jobz, const char *range, const char *uplo, INTEGER const
     rmin = sqrt(smlnum);
     rmax = min(REAL(sqrt(bignum)), REAL(one / sqrt(sqrt(safmin))));
     //
-    //     Scale matrix to allowable range, if necessary.
+    // Scale matrix to allowable range, if necessary.
     //
     iscale = 0;
     abstll = abstol;
@@ -248,19 +230,19 @@ void Cheevr(const char *jobz, const char *range, const char *uplo, INTEGER const
         }
     }
     //
-    //     Initialize indices into workspaces.  Note: The IWORK indices are
-    //     used only if Rsterf or Cstemr fail.
+    // Initialize indices into workspaces.  Note: The IWORK indices are
+    // used only if Rsterf or Cstemr fail.
     //
-    //     WORK(INDTAU:INDTAU+N-1) stores the complex scalar factors of the
-    //     elementary reflectors used in Chetrd.
+    // WORK(INDTAU:INDTAU+N-1) stores the complex scalar factors of the
+    // elementary reflectors used in Chetrd.
     indtau = 1;
     // INDWK is the starting offset of the remaining complex workspace,
     // and LLWORK is the remaining complex workspace size.
     indwk = indtau + n;
     llwork = lwork - indwk + 1;
     //
-    //     RWORK(INDRD:INDRD+N-1) stores the real tridiagonal's diagonal
-    //     entries.
+    // RWORK(INDRD:INDRD+N-1) stores the real tridiagonal's diagonal
+    // entries.
     indrd = 1;
     // RWORK(INDRE:INDRE+N-1) stores the off-diagonal entries of the
     // tridiagonal matrix from Chetrd.
@@ -276,8 +258,8 @@ void Cheevr(const char *jobz, const char *range, const char *uplo, INTEGER const
     indrwk = indree + n;
     llrwork = lrwork - indrwk + 1;
     //
-    //     IWORK(INDIBL:INDIBL+M-1) corresponds to IBLOCK in Rstebz and
-    //     stores the block indices of each of the M<=N eigenvalues.
+    // IWORK(INDIBL:INDIBL+M-1) corresponds to IBLOCK in Rstebz and
+    // stores the block indices of each of the M<=N eigenvalues.
     indibl = 1;
     // IWORK(INDISP:INDISP+NSPLIT-1) corresponds to ISPLIT in Rstebz and
     // stores the starting and finishing indices of each block.
@@ -290,12 +272,12 @@ void Cheevr(const char *jobz, const char *range, const char *uplo, INTEGER const
     // INDIWO is the offset of the remaining integer workspace.
     indiwo = indifl + n;
     //
-    //     Call Chetrd to reduce Hermitian matrix to tridiagonal form.
+    // Call Chetrd to reduce Hermitian matrix to tridiagonal form.
     //
     Chetrd(uplo, n, a, lda, &rwork[indrd - 1], &rwork[indre - 1], &work[indtau - 1], &work[indwk - 1], llwork, iinfo);
     //
-    //     If all eigenvalues are desired
-    //     then call Rsterf or Cstemr and Cunmtr.
+    // If all eigenvalues are desired
+    // then call Rsterf or Cstemr and Cunmtr.
     //
     test = false;
     if (indeig) {
@@ -319,8 +301,8 @@ void Cheevr(const char *jobz, const char *range, const char *uplo, INTEGER const
             }
             Cstemr(jobz, "A", n, &rwork[indrdd - 1], &rwork[indree - 1], vl, vu, il, iu, m, w, z, ldz, n, isuppz, tryrac, &rwork[indrwk - 1], llrwork, iwork, liwork, info);
             //
-            //           Apply unitary matrix used in reduction to tridiagonal
-            //           form to eigenvectors returned by Cstemr.
+            // Apply unitary matrix used in reduction to tridiagonal
+            // form to eigenvectors returned by Cstemr.
             //
             if (wantz && info == 0) {
                 indwkn = indwk;
@@ -336,8 +318,8 @@ void Cheevr(const char *jobz, const char *range, const char *uplo, INTEGER const
         info = 0;
     }
     //
-    //     Otherwise, call Rstebz and, if eigenvectors are desired, Cstein.
-    //     Also call Rstebz and Cstein if Cstemr fails.
+    // Otherwise, call Rstebz and, if eigenvectors are desired, Cstein.
+    // Also call Rstebz and Cstein if Cstemr fails.
     //
     if (wantz) {
         order = 'B';
@@ -350,15 +332,15 @@ void Cheevr(const char *jobz, const char *range, const char *uplo, INTEGER const
     if (wantz) {
         Cstein(n, &rwork[indrd - 1], &rwork[indre - 1], m, w, &iwork[indibl - 1], &iwork[indisp - 1], z, ldz, &rwork[indrwk - 1], &iwork[indiwo - 1], &iwork[indifl - 1], info);
         //
-        //        Apply unitary matrix used in reduction to tridiagonal
-        //        form to eigenvectors returned by Cstein.
+        // Apply unitary matrix used in reduction to tridiagonal
+        // form to eigenvectors returned by Cstein.
         //
         indwkn = indwk;
         llwrkn = lwork - indwkn + 1;
         Cunmtr("L", uplo, "N", n, m, a, lda, &work[indtau - 1], z, ldz, &work[indwkn - 1], llwrkn, iinfo);
     }
 //
-//     If matrix was scaled, then rescale eigenvalues appropriately.
+// If matrix was scaled, then rescale eigenvalues appropriately.
 //
 statement_30:
     if (iscale == 1) {
@@ -370,8 +352,8 @@ statement_30:
         Rscal(imax, one / sigma, w, 1);
     }
     //
-    //     If eigenvalues are not in order, then sort them, along with
-    //     eigenvectors.
+    // If eigenvalues are not in order, then sort them, along with
+    // eigenvectors.
     //
     if (wantz) {
         for (j = 1; j <= m - 1; j = j + 1) {
@@ -395,12 +377,12 @@ statement_30:
         }
     }
     //
-    //     Set WORK(1) to optimal workspace size.
+    // Set WORK(1) to optimal workspace size.
     //
     work[1 - 1] = lwkopt;
     rwork[1 - 1] = lrwmin;
     iwork[1 - 1] = liwmin;
     //
-    //     End of Cheevr
+    // End of Cheevr
     //
 }

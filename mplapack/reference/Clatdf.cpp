@@ -47,11 +47,11 @@ void Clatdf(INTEGER const ijob, INTEGER const n, COMPLEX *z, INTEGER const ldz, 
     INTEGER k = 0;
     if (ijob != 2) {
         //
-        //        Apply permutations IPIV to RHS
+        // Apply permutations IPIV to RHS
         //
         Claswp(1, rhs, ldz, 1, n - 1, ipiv, 1);
         //
-        //        Solve for L-part choosing RHS either to +1 or -1.
+        // Solve for L-part choosing RHS either to +1 or -1.
         //
         pmone = -cone;
         for (j = 1; j <= n - 1; j = j + 1) {
@@ -59,8 +59,8 @@ void Clatdf(INTEGER const ijob, INTEGER const n, COMPLEX *z, INTEGER const ldz, 
             bm = rhs[j - 1] - cone;
             splus = one;
             //
-            //           Lockahead for L- part RHS(1:N-1) = +-1
-            //           SPLUS and SMIN computed more efficiently than in BSOLVE[1].
+            // Lockahead for L- part RHS(1:N-1) = +-1
+            // SPLUS and SMIN computed more efficiently than in BSOLVE[1].
             //
             splus += Cdotc(n - j, &z[((j + 1) - 1) + (j - 1) * ldz], 1, &z[((j + 1) - 1) + (j - 1) * ldz], 1).real();
             sminu = Cdotc(n - j, &z[((j + 1) - 1) + (j - 1) * ldz], 1, &rhs[(j + 1) - 1], 1).real();
@@ -71,26 +71,26 @@ void Clatdf(INTEGER const ijob, INTEGER const n, COMPLEX *z, INTEGER const ldz, 
                 rhs[j - 1] = bm;
             } else {
                 //
-                //              In this case the updating sums are equal and we can
-                //              choose RHS(J) +1 or -1. The first time this happens we
-                //              choose -1, thereafter +1. This is a simple way to get
-                //              good estimates of matrices like Byers well-known example
-                //              (see [1]). (Not done in BSOLVE.)
+                // In this case the updating sums are equal and we can
+                // choose RHS(J) +1 or -1. The first time this happens we
+                // choose -1, thereafter +1. This is a simple way to get
+                // good estimates of matrices like Byers well-known example
+                // (see [1]). (Not done in BSOLVE.)
                 //
                 rhs[j - 1] += pmone;
                 pmone = cone;
             }
             //
-            //           Compute the remaining r.h.s.
+            // Compute the remaining r.h.s.
             //
             temp = -rhs[j - 1];
             Caxpy(n - j, temp, &z[((j + 1) - 1) + (j - 1) * ldz], 1, &rhs[(j + 1) - 1], 1);
         }
         //
-        //        Solve for U- part, lockahead for RHS(N) = +-1. This is not done
-        //        In BSOLVE and will hopefully give us a better estimate because
-        //        any ill-conditioning of the original matrix is transferred to U
-        //        and not to L. U(N, N) is an approximation to sigma_min(LU).
+        // Solve for U- part, lockahead for RHS(N) = +-1. This is not done
+        // In BSOLVE and will hopefully give us a better estimate because
+        // any ill-conditioning of the original matrix is transferred to U
+        // and not to L. U(N, N) is an approximation to sigma_min(LU).
         //
         Ccopy(n - 1, rhs, 1, work, 1);
         work[n - 1] = rhs[n - 1] + cone;
@@ -112,19 +112,19 @@ void Clatdf(INTEGER const ijob, INTEGER const n, COMPLEX *z, INTEGER const ldz, 
             Ccopy(n, work, 1, rhs, 1);
         }
         //
-        //        Apply the permutations JPIV to the computed solution (RHS)
+        // Apply the permutations JPIV to the computed solution (RHS)
         //
         Claswp(1, rhs, ldz, 1, n - 1, jpiv, -1);
         //
-        //        Compute the sum of squares
+        // Compute the sum of squares
         //
         Classq(n, rhs, 1, rdscal, rdsum);
         return;
     }
     //
-    //     ENTRY IJOB = 2
+    // ENTRY IJOB = 2
     //
-    //     Compute approximate nullvector XM of Z
+    // Compute approximate nullvector XM of Z
     //
     REAL rtemp = 0.0;
     REAL rwork[maxdim];
@@ -133,7 +133,7 @@ void Clatdf(INTEGER const ijob, INTEGER const n, COMPLEX *z, INTEGER const ldz, 
     COMPLEX xm[maxdim];
     Ccopy(n, &work[(n + 1) - 1], 1, xm, 1);
     //
-    //     Compute RHS
+    // Compute RHS
     //
     Claswp(1, xm, ldz, 1, n - 1, ipiv, -1);
     temp = cone / sqrt(Cdotc(n, xm, 1, xm, 1));
@@ -149,10 +149,10 @@ void Clatdf(INTEGER const ijob, INTEGER const n, COMPLEX *z, INTEGER const ldz, 
         Ccopy(n, xp, 1, rhs, 1);
     }
     //
-    //     Compute the sum of squares
+    // Compute the sum of squares
     //
     Classq(n, rhs, 1, rdscal, rdsum);
     //
-    //     End of Clatdf
+    // End of Clatdf
     //
 }

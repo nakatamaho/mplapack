@@ -43,30 +43,11 @@ void Cpstf2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
     const COMPLEX cone = COMPLEX(1.0, 0.0);
     const REAL one = 1.0;
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
     //
-    //  =====================================================================
     //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
-    //     Test the input parameters
+    // Test the input parameters
     //
     info = 0;
     upper = Mlsame(uplo, "U");
@@ -82,19 +63,19 @@ void Cpstf2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0) {
         return;
     }
     //
-    //     Initialize PIV
+    // Initialize PIV
     //
     for (i = 1; i <= n; i = i + 1) {
         piv[i - 1] = i;
     }
     //
-    //     Compute stopping value
+    // Compute stopping value
     //
     for (i = 1; i <= n; i = i + 1) {
         work[i - 1] = a[(i - 1) + (i - 1) * lda].real();
@@ -107,7 +88,7 @@ void Cpstf2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
         goto statement_200;
     }
     //
-    //     Compute stopping value if not supplied
+    // Compute stopping value if not supplied
     //
     if (tol < zero) {
         dstop = n * Rlamch("Epsilon") * ajj;
@@ -115,7 +96,7 @@ void Cpstf2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
         dstop = tol;
     }
     //
-    //     Set first half of WORK to zero, holds dot products
+    // Set first half of WORK to zero, holds dot products
     //
     for (i = 1; i <= n; i = i + 1) {
         work[i - 1] = 0.0;
@@ -123,13 +104,13 @@ void Cpstf2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
     //
     if (upper) {
         //
-        //        Compute the Cholesky factorization P**T * A * P = U**H* U
+        // Compute the Cholesky factorization P**T * A * P = U**H* U
         //
         for (j = 1; j <= n; j = j + 1) {
             //
-            //        Find pivot, test for exit, else swap rows and columns
-            //        Update dot products, compute possible pivots which are
-            //        stored in the second half of WORK
+            // Find pivot, test for exit, else swap rows and columns
+            // Update dot products, compute possible pivots which are
+            // stored in the second half of WORK
             //
             for (i = j; i <= n; i = i + 1) {
                 //
@@ -152,7 +133,7 @@ void Cpstf2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
             //
             if (j != pvt) {
                 //
-                //              Pivot OK, so can now swap pivot rows and columns
+                // Pivot OK, so can now swap pivot rows and columns
                 //
                 a[(pvt - 1) + (pvt - 1) * lda] = a[(j - 1) + (j - 1) * lda];
                 Cswap(j - 1, &a[(j - 1) * lda], 1, &a[(pvt - 1) * lda], 1);
@@ -166,7 +147,7 @@ void Cpstf2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
                 }
                 a[(j - 1) + (pvt - 1) * lda] = conj(a[(j - 1) + (pvt - 1) * lda]);
                 //
-                //              Swap dot products and PIV
+                // Swap dot products and PIV
                 //
                 dtemp = work[j - 1];
                 work[j - 1] = work[pvt - 1];
@@ -179,7 +160,7 @@ void Cpstf2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
             ajj = sqrt(ajj);
             a[(j - 1) + (j - 1) * lda] = ajj;
             //
-            //           Compute elements J+1:N of row J
+            // Compute elements J+1:N of row J
             //
             if (j < n) {
                 Clacgv(j - 1, &a[(j - 1) * lda], 1);
@@ -192,13 +173,13 @@ void Cpstf2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
         //
     } else {
         //
-        //        Compute the Cholesky factorization P**T * A * P = L * L**H
+        // Compute the Cholesky factorization P**T * A * P = L * L**H
         //
         for (j = 1; j <= n; j = j + 1) {
             //
-            //        Find pivot, test for exit, else swap rows and columns
-            //        Update dot products, compute possible pivots which are
-            //        stored in the second half of WORK
+            // Find pivot, test for exit, else swap rows and columns
+            // Update dot products, compute possible pivots which are
+            // stored in the second half of WORK
             //
             for (i = j; i <= n; i = i + 1) {
                 //
@@ -221,7 +202,7 @@ void Cpstf2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
             //
             if (j != pvt) {
                 //
-                //              Pivot OK, so can now swap pivot rows and columns
+                // Pivot OK, so can now swap pivot rows and columns
                 //
                 a[(pvt - 1) + (pvt - 1) * lda] = a[(j - 1) + (j - 1) * lda];
                 Cswap(j - 1, &a[(j - 1)], lda, &a[(pvt - 1)], lda);
@@ -235,7 +216,7 @@ void Cpstf2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
                 }
                 a[(pvt - 1) + (j - 1) * lda] = conj(a[(pvt - 1) + (j - 1) * lda]);
                 //
-                //              Swap dot products and PIV
+                // Swap dot products and PIV
                 //
                 dtemp = work[j - 1];
                 work[j - 1] = work[pvt - 1];
@@ -248,7 +229,7 @@ void Cpstf2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
             ajj = sqrt(ajj);
             a[(j - 1) + (j - 1) * lda] = ajj;
             //
-            //           Compute elements J+1:N of column J
+            // Compute elements J+1:N of column J
             //
             if (j < n) {
                 Clacgv(j - 1, &a[(j - 1)], lda);
@@ -261,21 +242,21 @@ void Cpstf2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
         //
     }
     //
-    //     Ran to completion, A has full rank
+    // Ran to completion, A has full rank
     //
     rank = n;
     //
     goto statement_200;
 statement_190:
     //
-    //     Rank is number of steps completed.  Set INFO = 1 to signal
-    //     that the factorization cannot be used to solve a system.
+    // Rank is number of steps completed.  Set INFO = 1 to signal
+    // that the factorization cannot be used to solve a system.
     //
     rank = j - 1;
     info = 1;
 //
 statement_200:;
     //
-    //     End of Cpstf2
+    // End of Cpstf2
     //
 }

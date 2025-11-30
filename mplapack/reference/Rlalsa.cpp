@@ -63,7 +63,7 @@ void Rlalsa(INTEGER const icompq, INTEGER const smlsiz, INTEGER const n, INTEGER
     INTEGER ldperm = ldgcol;
     INTEGER ldgivnum = ldu;
     //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     //
@@ -89,7 +89,7 @@ void Rlalsa(INTEGER const icompq, INTEGER const smlsiz, INTEGER const n, INTEGER
         return;
     }
     //
-    //     Book-keeping and  setting up the computation tree.
+    // Book-keeping and  setting up the computation tree.
     //
     inode = 1;
     ndiml = inode + n;
@@ -97,26 +97,26 @@ void Rlalsa(INTEGER const icompq, INTEGER const smlsiz, INTEGER const n, INTEGER
     //
     Rlasdt(n, nlvl, nd, &iwork[inode - 1], &iwork[ndiml - 1], &iwork[ndimr - 1], smlsiz);
     //
-    //     The following code applies back the left singular vector factors.
-    //     For applying back the right singular vector factors, go to 50.
+    // The following code applies back the left singular vector factors.
+    // For applying back the right singular vector factors, go to 50.
     //
     if (icompq == 1) {
         goto statement_50;
     }
     //
-    //     The nodes on the bottom level of the tree were solved
-    //     by Rlasdq. The corresponding left and right singular vector
-    //     matrices are in explicit form. First apply back the left
-    //     singular vector matrices.
+    // The nodes on the bottom level of the tree were solved
+    // by Rlasdq. The corresponding left and right singular vector
+    // matrices are in explicit form. First apply back the left
+    // singular vector matrices.
     //
     ndb1 = (nd + 1) / 2;
     for (i = ndb1; i <= nd; i = i + 1) {
         //
-        //        IC : center row of each node
-        //        NL : number of rows of left  subproblem
-        //        NR : number of rows of right subproblem
-        //        NLF: starting row of the left   subproblem
-        //        NRF: starting row of the right  subproblem
+        // IC : center row of each node
+        // NL : number of rows of left  subproblem
+        // NR : number of rows of right subproblem
+        // NLF: starting row of the left   subproblem
+        // NRF: starting row of the right  subproblem
         //
         i1 = i - 1;
         ic = iwork[(inode + i1) - 1];
@@ -128,16 +128,16 @@ void Rlalsa(INTEGER const icompq, INTEGER const smlsiz, INTEGER const n, INTEGER
         Rgemm("T", "N", nr, nrhs, nr, one, &u[(nrf - 1)], ldu, &b[(nrf - 1)], ldb, zero, &bx[(nrf - 1)], ldbx);
     }
     //
-    //     Next copy the rows of B that correspond to unchanged rows
-    //     in the bidiagonal matrix to BX.
+    // Next copy the rows of B that correspond to unchanged rows
+    // in the bidiagonal matrix to BX.
     //
     for (i = 1; i <= nd; i = i + 1) {
         ic = iwork[(inode + i - 1) - 1];
         Rcopy(nrhs, &b[(ic - 1)], ldb, &bx[(ic - 1)], ldbx);
     }
     //
-    //     Finally go through the left singular vector matrices of all
-    //     the other subproblems bottom-up on the tree.
+    // Finally go through the left singular vector matrices of all
+    // the other subproblems bottom-up on the tree.
     //
     j = pow((double)2, (double)nlvl);
     sqre = 0;
@@ -145,8 +145,8 @@ void Rlalsa(INTEGER const icompq, INTEGER const smlsiz, INTEGER const n, INTEGER
     for (lvl = nlvl; lvl >= 1; lvl = lvl - 1) {
         lvl2 = 2 * lvl - 1;
         //
-        //        find the first node LF and last node LL on
-        //        the current level LVL
+        // find the first node LF and last node LL on
+        // the current level LVL
         //
         if (lvl == 1) {
             lf = 1;
@@ -168,19 +168,19 @@ void Rlalsa(INTEGER const icompq, INTEGER const smlsiz, INTEGER const n, INTEGER
     }
     goto statement_90;
 //
-//     ICOMPQ = 1: applying back the right singular vector factors.
+// ICOMPQ = 1: applying back the right singular vector factors.
 //
 statement_50:
     //
-    //     First now go through the right singular vector matrices of all
-    //     the tree nodes top-down.
+    // First now go through the right singular vector matrices of all
+    // the tree nodes top-down.
     //
     j = 0;
     for (lvl = 1; lvl <= nlvl; lvl = lvl + 1) {
         lvl2 = 2 * lvl - 1;
         //
-        //        Find the first node LF and last node LL on
-        //        the current level LVL.
+        // Find the first node LF and last node LL on
+        // the current level LVL.
         //
         if (lvl == 1) {
             lf = 1;
@@ -206,9 +206,9 @@ statement_50:
         }
     }
     //
-    //     The nodes on the bottom level of the tree were solved
-    //     by Rlasdq. The corresponding right singular vector
-    //     matrices are in explicit form. Apply them back.
+    // The nodes on the bottom level of the tree were solved
+    // by Rlasdq. The corresponding right singular vector
+    // matrices are in explicit form. Apply them back.
     //
     ndb1 = (nd + 1) / 2;
     for (i = ndb1; i <= nd; i = i + 1) {
@@ -230,6 +230,6 @@ statement_50:
 //
 statement_90:;
     //
-    //     End of Rlalsa
+    // End of Rlalsa
     //
 }

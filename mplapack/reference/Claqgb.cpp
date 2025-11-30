@@ -31,35 +31,18 @@
 
 void Claqgb(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku, COMPLEX *ab, INTEGER const ldab, REAL *r, REAL *c, REAL const rowcnd, REAL const colcnd, REAL const amax, char *equed) {
     //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
     //
-    //  =====================================================================
     //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (m <= 0 || n <= 0) {
         *equed = 'N';
         return;
     }
     //
-    //     Initialize LARGE and SMALL.
+    // Initialize LARGE and SMALL.
     //
     REAL small = Rlamch("Safe minimum") / Rlamch("Precision");
     const REAL one = 1.0;
@@ -71,16 +54,16 @@ void Claqgb(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku
     INTEGER i = 0;
     if (rowcnd >= thresh && amax >= small && amax <= large) {
         //
-        //        No row scaling
+        // No row scaling
         //
         if (colcnd >= thresh) {
             //
-            //           No column scaling
+            // No column scaling
             //
             *equed = 'N';
         } else {
             //
-            //           Column scaling
+            // Column scaling
             //
             for (j = 1; j <= n; j = j + 1) {
                 cj = c[j - 1];
@@ -92,7 +75,7 @@ void Claqgb(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku
         }
     } else if (colcnd >= thresh) {
         //
-        //        Row scaling, no column scaling
+        // Row scaling, no column scaling
         //
         for (j = 1; j <= n; j = j + 1) {
             for (i = max((INTEGER)1, j - ku); i <= min(m, j + kl); i = i + 1) {
@@ -102,7 +85,7 @@ void Claqgb(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku
         *equed = 'R';
     } else {
         //
-        //        Row and column scaling
+        // Row and column scaling
         //
         for (j = 1; j <= n; j = j + 1) {
             cj = c[j - 1];
@@ -113,6 +96,6 @@ void Claqgb(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku
         *equed = 'B';
     }
     //
-    //     End of Claqgb
+    // End of Claqgb
     //
 }

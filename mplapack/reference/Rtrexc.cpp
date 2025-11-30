@@ -37,7 +37,7 @@ void Rtrexc(const char *compq, INTEGER const n, REAL *t, INTEGER const ldt, REAL
     INTEGER here = 0;
     INTEGER nbnext = 0;
     //
-    //     Decode and test the input arguments.
+    // Decode and test the input arguments.
     //
     info = 0;
     wantq = Mlsame(compq, "V");
@@ -59,14 +59,14 @@ void Rtrexc(const char *compq, INTEGER const n, REAL *t, INTEGER const ldt, REAL
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n <= 1) {
         return;
     }
     //
-    //     Determine the first row of specified block
-    //     and find out it is 1 by 1 or 2 by 2.
+    // Determine the first row of specified block
+    // and find out it is 1 by 1 or 2 by 2.
     //
     if (ifst > 1) {
         if (t[(ifst - 1) + ((ifst - 1) - 1) * ldt] != zero) {
@@ -80,8 +80,8 @@ void Rtrexc(const char *compq, INTEGER const n, REAL *t, INTEGER const ldt, REAL
         }
     }
     //
-    //     Determine the first row of the final block
-    //     and find out it is 1 by 1 or 2 by 2.
+    // Determine the first row of the final block
+    // and find out it is 1 by 1 or 2 by 2.
     //
     if (ilst > 1) {
         if (t[(ilst - 1) + ((ilst - 1) - 1) * ldt] != zero) {
@@ -101,7 +101,7 @@ void Rtrexc(const char *compq, INTEGER const n, REAL *t, INTEGER const ldt, REAL
     //
     if (ifst < ilst) {
         //
-        //        Update ILST
+        // Update ILST
         //
         if (nbf == 2 && nbl == 1) {
             ilst = ilst - 1;
@@ -114,11 +114,11 @@ void Rtrexc(const char *compq, INTEGER const n, REAL *t, INTEGER const ldt, REAL
     //
     statement_10:
         //
-        //        Swap block with next one below
+        // Swap block with next one below
         //
         if (nbf == 1 || nbf == 2) {
             //
-            //           Current block either 1 by 1 or 2 by 2
+            // Current block either 1 by 1 or 2 by 2
             //
             nbnext = 1;
             if (here + nbf + 1 <= n) {
@@ -133,7 +133,7 @@ void Rtrexc(const char *compq, INTEGER const n, REAL *t, INTEGER const ldt, REAL
             }
             here += nbnext;
             //
-            //           Test if 2 by 2 block breaks into two 1 by 1 blocks
+            // Test if 2 by 2 block breaks into two 1 by 1 blocks
             //
             if (nbf == 2) {
                 if (t[((here + 1) - 1) + (here - 1) * ldt] == zero) {
@@ -143,8 +143,8 @@ void Rtrexc(const char *compq, INTEGER const n, REAL *t, INTEGER const ldt, REAL
             //
         } else {
             //
-            //           Current block consists of two 1 by 1 blocks each of which
-            //           must be swapped individually
+            // Current block consists of two 1 by 1 blocks each of which
+            // must be swapped individually
             //
             nbnext = 1;
             if (here + 3 <= n) {
@@ -159,20 +159,20 @@ void Rtrexc(const char *compq, INTEGER const n, REAL *t, INTEGER const ldt, REAL
             }
             if (nbnext == 1) {
                 //
-                //              Swap two 1 by 1 blocks, no problems possible
+                // Swap two 1 by 1 blocks, no problems possible
                 //
                 Rlaexc(wantq, n, t, ldt, q, ldq, here, 1, nbnext, work, info);
                 here++;
             } else {
                 //
-                //              Recompute NBNEXT in case 2 by 2 split
+                // Recompute NBNEXT in case 2 by 2 split
                 //
                 if (t[((here + 2) - 1) + ((here + 1) - 1) * ldt] == zero) {
                     nbnext = 1;
                 }
                 if (nbnext == 2) {
                     //
-                    //                 2 by 2 Block did not split
+                    // 2 by 2 Block did not split
                     //
                     Rlaexc(wantq, n, t, ldt, q, ldq, here, 1, nbnext, work, info);
                     if (info != 0) {
@@ -182,7 +182,7 @@ void Rtrexc(const char *compq, INTEGER const n, REAL *t, INTEGER const ldt, REAL
                     here += 2;
                 } else {
                     //
-                    //                 2 by 2 Block did split
+                    // 2 by 2 Block did split
                     //
                     Rlaexc(wantq, n, t, ldt, q, ldq, here, 1, 1, work, info);
                     Rlaexc(wantq, n, t, ldt, q, ldq, here + 1, 1, 1, work, info);
@@ -199,11 +199,11 @@ void Rtrexc(const char *compq, INTEGER const n, REAL *t, INTEGER const ldt, REAL
         here = ifst;
     statement_20:
         //
-        //        Swap block with next one above
+        // Swap block with next one above
         //
         if (nbf == 1 || nbf == 2) {
             //
-            //           Current block either 1 by 1 or 2 by 2
+            // Current block either 1 by 1 or 2 by 2
             //
             nbnext = 1;
             if (here >= 3) {
@@ -218,7 +218,7 @@ void Rtrexc(const char *compq, INTEGER const n, REAL *t, INTEGER const ldt, REAL
             }
             here = here - nbnext;
             //
-            //           Test if 2 by 2 block breaks into two 1 by 1 blocks
+            // Test if 2 by 2 block breaks into two 1 by 1 blocks
             //
             if (nbf == 2) {
                 if (t[((here + 1) - 1) + (here - 1) * ldt] == zero) {
@@ -228,8 +228,8 @@ void Rtrexc(const char *compq, INTEGER const n, REAL *t, INTEGER const ldt, REAL
             //
         } else {
             //
-            //           Current block consists of two 1 by 1 blocks each of which
-            //           must be swapped individually
+            // Current block consists of two 1 by 1 blocks each of which
+            // must be swapped individually
             //
             nbnext = 1;
             if (here >= 3) {
@@ -244,20 +244,20 @@ void Rtrexc(const char *compq, INTEGER const n, REAL *t, INTEGER const ldt, REAL
             }
             if (nbnext == 1) {
                 //
-                //              Swap two 1 by 1 blocks, no problems possible
+                // Swap two 1 by 1 blocks, no problems possible
                 //
                 Rlaexc(wantq, n, t, ldt, q, ldq, here, nbnext, 1, work, info);
                 here = here - 1;
             } else {
                 //
-                //              Recompute NBNEXT in case 2 by 2 split
+                // Recompute NBNEXT in case 2 by 2 split
                 //
                 if (t[(here - 1) + ((here - 1) - 1) * ldt] == zero) {
                     nbnext = 1;
                 }
                 if (nbnext == 2) {
                     //
-                    //                 2 by 2 Block did not split
+                    // 2 by 2 Block did not split
                     //
                     Rlaexc(wantq, n, t, ldt, q, ldq, here - 1, 2, 1, work, info);
                     if (info != 0) {
@@ -267,7 +267,7 @@ void Rtrexc(const char *compq, INTEGER const n, REAL *t, INTEGER const ldt, REAL
                     here = here - 2;
                 } else {
                     //
-                    //                 2 by 2 Block did split
+                    // 2 by 2 Block did split
                     //
                     Rlaexc(wantq, n, t, ldt, q, ldq, here, 1, 1, work, info);
                     Rlaexc(wantq, n, t, ldt, q, ldq, here - 1, 1, 1, work, info);
@@ -281,6 +281,6 @@ void Rtrexc(const char *compq, INTEGER const n, REAL *t, INTEGER const ldt, REAL
     }
     ilst = here;
     //
-    //     End of Rtrexc
+    // End of Rtrexc
     //
 }

@@ -31,28 +31,9 @@
 
 void Rsytrs2(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *a, INTEGER const lda, INTEGER *ipiv, REAL *b, INTEGER const ldb, REAL *work, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
     //
-    //  =====================================================================
     //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
     info = 0;
     bool upper = Mlsame(uplo, "U");
@@ -72,13 +53,13 @@ void Rsytrs2(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *a, INT
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0 || nrhs == 0) {
         return;
     }
     //
-    //     Convert A
+    // Convert A
     //
     INTEGER iinfo = 0;
     Rsyconv(uplo, "C", n, a, lda, ipiv, work, iinfo);
@@ -96,9 +77,9 @@ void Rsytrs2(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *a, INT
     REAL bk = 0.0;
     if (upper) {
         //
-        //        Solve A*X = B, where A = U*D*U**T.
+        // Solve A*X = B, where A = U*D*U**T.
         //
-        //       P**T * B
+        // P**T * B
         k = n;
         while (k >= 1) {
             if (ipiv[k - 1] > 0) {
@@ -120,11 +101,11 @@ void Rsytrs2(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *a, INT
             }
         }
         //
-        //  Compute (U \P**T * B) -> B    [ (U \P**T * B) ]
+        // Compute (U \P**T * B) -> B    [ (U \P**T * B) ]
         //
         Rtrsm("L", "U", "N", "U", n, nrhs, one, a, lda, b, ldb);
         //
-        //  Compute D \ B -> B   [ D \ (U \P**T * B) ]
+        // Compute D \ B -> B   [ D \ (U \P**T * B) ]
         //
         i = n;
         while (i >= 1) {
@@ -148,11 +129,11 @@ void Rsytrs2(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *a, INT
             i = i - 1;
         }
         //
-        //      Compute (U**T \ B) -> B   [ U**T \ (D \ (U \P**T * B) ) ]
+        // Compute (U**T \ B) -> B   [ U**T \ (D \ (U \P**T * B) ) ]
         //
         Rtrsm("L", "U", "T", "U", n, nrhs, one, a, lda, b, ldb);
         //
-        //       P * B  [ P * (U**T \ (D \ (U \P**T * B) )) ]
+        // P * B  [ P * (U**T \ (D \ (U \P**T * B) )) ]
         //
         k = 1;
         while (k <= n) {
@@ -177,9 +158,9 @@ void Rsytrs2(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *a, INT
         //
     } else {
         //
-        //        Solve A*X = B, where A = L*D*L**T.
+        // Solve A*X = B, where A = L*D*L**T.
         //
-        //       P**T * B
+        // P**T * B
         k = 1;
         while (k <= n) {
             if (ipiv[k - 1] > 0) {
@@ -201,11 +182,11 @@ void Rsytrs2(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *a, INT
             }
         }
         //
-        //  Compute (L \P**T * B) -> B    [ (L \P**T * B) ]
+        // Compute (L \P**T * B) -> B    [ (L \P**T * B) ]
         //
         Rtrsm("L", "L", "N", "U", n, nrhs, one, a, lda, b, ldb);
         //
-        //  Compute D \ B -> B   [ D \ (L \P**T * B) ]
+        // Compute D \ B -> B   [ D \ (L \P**T * B) ]
         //
         i = 1;
         while (i <= n) {
@@ -227,11 +208,11 @@ void Rsytrs2(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *a, INT
             i++;
         }
         //
-        //  Compute (L**T \ B) -> B   [ L**T \ (D \ (L \P**T * B) ) ]
+        // Compute (L**T \ B) -> B   [ L**T \ (D \ (L \P**T * B) ) ]
         //
         Rtrsm("L", "L", "T", "U", n, nrhs, one, a, lda, b, ldb);
         //
-        //       P * B  [ P * (L**T \ (D \ (L \P**T * B) )) ]
+        // P * B  [ P * (L**T \ (D \ (L \P**T * B) )) ]
         //
         k = n;
         while (k >= 1) {
@@ -256,10 +237,10 @@ void Rsytrs2(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *a, INT
         //
     }
     //
-    //     Revert A
+    // Revert A
     //
     Rsyconv(uplo, "R", n, a, lda, ipiv, work, iinfo);
     //
-    //     End of Rsytrs2
+    // End of Rsytrs2
     //
 }

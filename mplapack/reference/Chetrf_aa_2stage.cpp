@@ -31,29 +31,11 @@
 
 void Chetrf_aa_2stage(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *tb, INTEGER const ltb, INTEGER *ipiv, INTEGER *ipiv2, COMPLEX *work, INTEGER const lwork, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
     //
-    //  =====================================================================
-    //     .. Parameters ..
     //
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     bool upper = Mlsame(uplo, "U");
@@ -76,7 +58,7 @@ void Chetrf_aa_2stage(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER con
         return;
     }
     //
-    //     Answer the query
+    // Answer the query
     //
     INTEGER nb = iMlaenv(1, "Chetrf_aa_2stage", uplo, n, -1, -1, -1);
     if (info == 0) {
@@ -91,13 +73,13 @@ void Chetrf_aa_2stage(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER con
         return;
     }
     //
-    //     Quick return
+    // Quick return
     //
     if (n == 0) {
         return;
     }
     //
-    //     Determine the number of the block size
+    // Determine the number of the block size
     //
     INTEGER ldtb = ltb / n;
     if (ldtb < 3 * nb + 1) {
@@ -107,20 +89,20 @@ void Chetrf_aa_2stage(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER con
         nb = lwork / n;
     }
     //
-    //     Determine the number of the block columns
+    // Determine the number of the block columns
     //
     INTEGER nt = (n + nb - 1) / nb;
     INTEGER td = 2 * nb;
     INTEGER kb = min(nb, n);
     //
-    //     Initialize vectors/matrices
+    // Initialize vectors/matrices
     //
     INTEGER j = 0;
     for (j = 1; j <= kb; j = j + 1) {
         ipiv[j - 1] = j;
     }
     //
-    //     Save NB
+    // Save NB
     //
     tb[1 - 1] = nb;
     //
@@ -135,13 +117,13 @@ void Chetrf_aa_2stage(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER con
     COMPLEX piv = 0.0;
     if (upper) {
         //
-        //        .....................................................
-        //        Factorize A as U**H*D*U using the upper triangle of A
-        //        .....................................................
+        // .....................................................
+        // Factorize A as U**H*D*U using the upper triangle of A
+        // .....................................................
         //
         for (j = 0; j <= nt - 1; j = j + 1) {
             //
-            //           Generate Jth column of W and H
+            // Generate Jth column of W and H
             //
             kb = min(nb, n - j * nb);
             for (i = 1; i <= j - 1; i = i + 1) {
@@ -164,7 +146,7 @@ void Chetrf_aa_2stage(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER con
                 }
             }
             //
-            //           Compute T(J,J)
+            // Compute T(J,J)
             //
             Clacpy("Upper", kb, kb, &a[((j * nb + 1) - 1) + ((j * nb + 1) - 1) * lda], lda, &tb[(td + 1 + (j * nb) * ldtb) - 1], ldtb - 1);
             if (j > 1) {
@@ -178,7 +160,7 @@ void Chetrf_aa_2stage(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER con
                 Chegst(1, "Upper", kb, &tb[(td + 1 + (j * nb) * ldtb) - 1], ldtb - 1, &a[(((j - 1) * nb + 1) - 1) + ((j * nb + 1) - 1) * lda], lda, iinfo);
             }
             //
-            //           Expand T(J,J) into full format
+            // Expand T(J,J) into full format
             //
             for (i = 1; i <= kb; i = i + 1) {
                 tb[(td + 1 + (j * nb + i - 1) * ldtb) - 1] = tb[(td + 1 + (j * nb + i - 1) * ldtb) - 1].real();
@@ -190,7 +172,7 @@ void Chetrf_aa_2stage(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER con
             if (j < nt - 1) {
                 if (j > 0) {
                     //
-                    //                 Compute H(J,J)
+                    // Compute H(J,J)
                     //
                     if (j == 1) {
                         Cgemm("NoTranspose", "NoTranspose", kb, kb, kb, one, &tb[(td + 1 + (j * nb) * ldtb) - 1], ldtb - 1, &a[(((j - 1) * nb + 1) - 1) + ((j * nb + 1) - 1) * lda], lda, zero, &work[(j * nb + 1) - 1], n);
@@ -198,38 +180,38 @@ void Chetrf_aa_2stage(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER con
                         Cgemm("NoTranspose", "NoTranspose", kb, kb, nb + kb, one, &tb[(td + nb + 1 + ((j - 1) * nb) * ldtb) - 1], ldtb - 1, &a[(((j - 2) * nb + 1) - 1) + ((j * nb + 1) - 1) * lda], lda, zero, &work[(j * nb + 1) - 1], n);
                     }
                     //
-                    //                 Update with the previous column
+                    // Update with the previous column
                     //
                     Cgemm("Conjugate transpose", "NoTranspose", nb, n - (j + 1) * nb, j * nb, -one, &work[(nb + 1) - 1], n, &a[(((j + 1) * nb + 1) - 1) * lda], lda, one, &a[((j * nb + 1) - 1) + (((j + 1) * nb + 1) - 1) * lda], lda);
                 }
                 //
-                //              Copy panel to workspace to call Cgetrf
+                // Copy panel to workspace to call Cgetrf
                 //
                 for (k = 1; k <= nb; k = k + 1) {
                     Ccopy(n - (j + 1) * nb, &a[((j * nb + k) - 1) + (((j + 1) * nb + 1) - 1) * lda], lda, &work[(1 + (k - 1) * n) - 1], 1);
                 }
                 //
-                //              Factorize panel
+                // Factorize panel
                 //
                 Cgetrf(n - (j + 1) * nb, nb, work, n, &ipiv[((j + 1) * nb + 1) - 1], iinfo);
                 // IF (IINFO.NE.0 .AND. INFO.EQ.0) THEN
-                //    INFO = IINFO+(J+1)*NB
+                // INFO = IINFO+(J+1)*NB
                 // END IF
                 //
                 // Copy panel back
                 //
                 for (k = 1; k <= nb; k = k + 1) {
                     //
-                    //                  Copy only L-factor
+                    // Copy only L-factor
                     //
                     Ccopy(n - k - (j + 1) * nb, &work[(k + 1 + (k - 1) * n) - 1], 1, &a[((j * nb + k) - 1) + (((j + 1) * nb + k + 1) - 1) * lda], lda);
                     //
-                    //                  Transpose U-factor to be copied back into T(J+1, J)
+                    // Transpose U-factor to be copied back into T(J+1, J)
                     //
                     Clacgv(k, &work[(1 + (k - 1) * n) - 1], 1);
                 }
                 //
-                //              Compute T(J+1, J), zero out for GEMM update
+                // Compute T(J+1, J), zero out for GEMM update
                 //
                 kb = min(nb, n - (j + 1) * nb);
                 Claset("Full", kb, nb, zero, zero, &tb[(td + nb + 1 + (j * nb) * ldtb) - 1], ldtb - 1);
@@ -238,8 +220,8 @@ void Chetrf_aa_2stage(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER con
                     Ctrsm("R", "U", "N", "U", kb, nb, one, &a[(((j - 1) * nb + 1) - 1) + ((j * nb + 1) - 1) * lda], lda, &tb[(td + nb + 1 + (j * nb) * ldtb) - 1], ldtb - 1);
                 }
                 //
-                //              Copy T(J,J+1) into T(J+1, J), both upper/lower for GEMM
-                //              updates
+                // Copy T(J,J+1) into T(J+1, J), both upper/lower for GEMM
+                // updates
                 //
                 for (k = 1; k <= nb; k = k + 1) {
                     for (i = 1; i <= kb; i = i + 1) {
@@ -248,7 +230,7 @@ void Chetrf_aa_2stage(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER con
                 }
                 Claset("Lower", kb, nb, zero, one, &a[((j * nb + 1) - 1) + (((j + 1) * nb + 1) - 1) * lda], lda);
                 //
-                //              Apply pivots to trailing submatrix of A
+                // Apply pivots to trailing submatrix of A
                 //
                 for (k = 1; k <= kb; k = k + 1) {
                     // > Adjust ipiv
@@ -283,13 +265,13 @@ void Chetrf_aa_2stage(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER con
         }
     } else {
         //
-        //        .....................................................
-        //        Factorize A as L*D*L**H using the lower triangle of A
-        //        .....................................................
+        // .....................................................
+        // Factorize A as L*D*L**H using the lower triangle of A
+        // .....................................................
         //
         for (j = 0; j <= nt - 1; j = j + 1) {
             //
-            //           Generate Jth column of W and H
+            // Generate Jth column of W and H
             //
             kb = min(nb, n - j * nb);
             for (i = 1; i <= j - 1; i = i + 1) {
@@ -312,7 +294,7 @@ void Chetrf_aa_2stage(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER con
                 }
             }
             //
-            //           Compute T(J,J)
+            // Compute T(J,J)
             //
             Clacpy("Lower", kb, kb, &a[((j * nb + 1) - 1) + ((j * nb + 1) - 1) * lda], lda, &tb[(td + 1 + (j * nb) * ldtb) - 1], ldtb - 1);
             if (j > 1) {
@@ -326,7 +308,7 @@ void Chetrf_aa_2stage(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER con
                 Chegst(1, "Lower", kb, &tb[(td + 1 + (j * nb) * ldtb) - 1], ldtb - 1, &a[((j * nb + 1) - 1) + (((j - 1) * nb + 1) - 1) * lda], lda, iinfo);
             }
             //
-            //           Expand T(J,J) into full format
+            // Expand T(J,J) into full format
             //
             for (i = 1; i <= kb; i = i + 1) {
                 tb[(td + 1 + (j * nb + i - 1) * ldtb) - 1] = tb[(td + 1 + (j * nb + i - 1) * ldtb) - 1].real();
@@ -338,7 +320,7 @@ void Chetrf_aa_2stage(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER con
             if (j < nt - 1) {
                 if (j > 0) {
                     //
-                    //                 Compute H(J,J)
+                    // Compute H(J,J)
                     //
                     if (j == 1) {
                         Cgemm("NoTranspose", "Conjugate transpose", kb, kb, kb, one, &tb[(td + 1 + (j * nb) * ldtb) - 1], ldtb - 1, &a[((j * nb + 1) - 1) + (((j - 1) * nb + 1) - 1) * lda], lda, zero, &work[(j * nb + 1) - 1], n);
@@ -346,16 +328,16 @@ void Chetrf_aa_2stage(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER con
                         Cgemm("NoTranspose", "Conjugate transpose", kb, kb, nb + kb, one, &tb[(td + nb + 1 + ((j - 1) * nb) * ldtb) - 1], ldtb - 1, &a[((j * nb + 1) - 1) + (((j - 2) * nb + 1) - 1) * lda], lda, zero, &work[(j * nb + 1) - 1], n);
                     }
                     //
-                    //                 Update with the previous column
+                    // Update with the previous column
                     //
                     Cgemm("NoTranspose", "NoTranspose", n - (j + 1) * nb, nb, j * nb, -one, &a[(((j + 1) * nb + 1) - 1)], lda, &work[(nb + 1) - 1], n, one, &a[(((j + 1) * nb + 1) - 1) + ((j * nb + 1) - 1) * lda], lda);
                 }
                 //
-                //              Factorize panel
+                // Factorize panel
                 //
                 Cgetrf(n - (j + 1) * nb, nb, &a[(((j + 1) * nb + 1) - 1) + ((j * nb + 1) - 1) * lda], lda, &ipiv[((j + 1) * nb + 1) - 1], iinfo);
                 // IF (IINFO.NE.0 .AND. INFO.EQ.0) THEN
-                //    INFO = IINFO+(J+1)*NB
+                // INFO = IINFO+(J+1)*NB
                 // END IF
                 //
                 // Compute T(J+1, J), zero out for GEMM update
@@ -367,8 +349,8 @@ void Chetrf_aa_2stage(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER con
                     Ctrsm("R", "L", "C", "U", kb, nb, one, &a[((j * nb + 1) - 1) + (((j - 1) * nb + 1) - 1) * lda], lda, &tb[(td + nb + 1 + (j * nb) * ldtb) - 1], ldtb - 1);
                 }
                 //
-                //              Copy T(J+1,J) into T(J, J+1), both upper/lower for GEMM
-                //              updates
+                // Copy T(J+1,J) into T(J, J+1), both upper/lower for GEMM
+                // updates
                 //
                 for (k = 1; k <= nb; k = k + 1) {
                     for (i = 1; i <= kb; i = i + 1) {
@@ -377,7 +359,7 @@ void Chetrf_aa_2stage(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER con
                 }
                 Claset("Upper", kb, nb, zero, one, &a[(((j + 1) * nb + 1) - 1) + ((j * nb + 1) - 1) * lda], lda);
                 //
-                //              Apply pivots to trailing submatrix of A
+                // Apply pivots to trailing submatrix of A
                 //
                 for (k = 1; k <= kb; k = k + 1) {
                     // > Adjust ipiv
@@ -409,17 +391,17 @@ void Chetrf_aa_2stage(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER con
                     }
                 }
                 //
-                //              Apply pivots to previous columns of L
+                // Apply pivots to previous columns of L
                 //
-                //               CALL Claswp( J*NB, A( 1, 1 ), LDA,
-                //     $                     (J+1)*NB+1, (J+1)*NB+KB, IPIV, 1 )
+                // CALL Claswp( J*NB, A( 1, 1 ), LDA,
+                // $                     (J+1)*NB+1, (J+1)*NB+KB, IPIV, 1 )
             }
         }
     }
     //
-    //     Factor the band matrix
+    // Factor the band matrix
     Cgbtrf(n, n, nb, nb, tb, ldtb, ipiv2, info);
     //
-    //     End of Chetrf_aa_2stage
+    // End of Chetrf_aa_2stage
     //
 }

@@ -48,36 +48,14 @@ void Ctbcon(const char *norm, const char *uplo, const char *diag, INTEGER const 
     INTEGER ix = 0;
     REAL xnorm = 0.0;
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
     //
-    //  =====================================================================
     //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Statement Functions ..
-    //     ..
-    //     .. Statement Function definitions ..
-    //     ..
-    //     .. Executable Statements ..
+    // .. Local Arrays ..
+    // .. Statement Functions ..
+    // .. Statement Function definitions ..
     //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     upper = Mlsame(uplo, "U");
@@ -102,7 +80,7 @@ void Ctbcon(const char *norm, const char *uplo, const char *diag, INTEGER const 
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0) {
         rcond = one;
@@ -112,15 +90,15 @@ void Ctbcon(const char *norm, const char *uplo, const char *diag, INTEGER const 
     rcond = zero;
     smlnum = Rlamch("Safe minimum") * castREAL(max(n, (INTEGER)1));
     //
-    //     Compute the 1-norm of the triangular matrix A or A**H.
+    // Compute the 1-norm of the triangular matrix A or A**H.
     //
     anorm = Clantb(norm, uplo, diag, n, kd, ab, ldab, rwork);
     //
-    //     Continue only if ANORM > 0.
+    // Continue only if ANORM > 0.
     //
     if (anorm > zero) {
         //
-        //        Estimate the 1-norm of the inverse of A.
+        // Estimate the 1-norm of the inverse of A.
         //
         ainvnm = zero;
         normin = 'N';
@@ -135,18 +113,18 @@ void Ctbcon(const char *norm, const char *uplo, const char *diag, INTEGER const 
         if (kase != 0) {
             if (kase == kase1) {
                 //
-                //              Multiply by inv(A).
+                // Multiply by inv(A).
                 //
                 Clatbs(uplo, "No transpose", diag, &normin, n, kd, ab, ldab, work, scale, rwork, info);
             } else {
                 //
-                //              Multiply by inv(A**H).
+                // Multiply by inv(A**H).
                 //
                 Clatbs(uplo, "Conjugate transpose", diag, &normin, n, kd, ab, ldab, work, scale, rwork, info);
             }
             normin = 'Y';
             //
-            //           Multiply by 1/SCALE if doing so will not cause overflow.
+            // Multiply by 1/SCALE if doing so will not cause overflow.
             //
             if (scale != one) {
                 ix = iCamax(n, work, 1);
@@ -159,7 +137,7 @@ void Ctbcon(const char *norm, const char *uplo, const char *diag, INTEGER const 
             goto statement_10;
         }
         //
-        //        Compute the estimate of the reciprocal condition number.
+        // Compute the estimate of the reciprocal condition number.
         //
         if (ainvnm != zero) {
             rcond = (one / anorm) / ainvnm;
@@ -168,6 +146,6 @@ void Ctbcon(const char *norm, const char *uplo, const char *diag, INTEGER const 
 //
 statement_20:;
     //
-    //     End of Ctbcon
+    // End of Ctbcon
     //
 }

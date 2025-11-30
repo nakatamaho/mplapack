@@ -33,8 +33,8 @@ void Rlartgs(REAL const x, REAL const y, REAL const sigma, REAL &cs, REAL &sn) {
     //
     REAL thresh = Rlamch("E");
     //
-    //     Compute the first column of B**T*B - SIGMA^2*I, up to a scale
-    //     factor.
+    // Compute the first column of B**T*B - SIGMA^2*I, up to a scale
+    // factor.
     //
     const REAL zero = 0.0;
     REAL z = 0.0;
@@ -66,14 +66,14 @@ void Rlartgs(REAL const x, REAL const y, REAL const sigma, REAL &cs, REAL &sn) {
         w = s * y;
     }
     //
-    //     Generate the rotation.
-    //     CALL Rlartgp( Z, W, CS, SN, R ) might seem more natural;
-    //     reordering the arguments ensures that if Z = 0 then the rotation
-    //     is by PI/2.
+    // Generate the rotation.
+    // CALL Rlartgp( Z, W, CS, SN, R ) might seem more natural;
+    // reordering the arguments ensures that if Z = 0 then the rotation
+    // is by PI/2.
     //
     REAL r = 0.0;
     Rlartgp(w, z, sn, cs, r);
     //
-    //     End Rlartgs
+    // End Rlartgs
     //
 }

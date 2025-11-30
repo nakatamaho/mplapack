@@ -31,7 +31,7 @@
 
 void Rlapll(INTEGER const n, REAL *x, INTEGER const incx, REAL *y, INTEGER const incy, REAL &ssmin) {
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     const REAL zero = 0.0;
     if (n <= 1) {
@@ -39,7 +39,7 @@ void Rlapll(INTEGER const n, REAL *x, INTEGER const incx, REAL *y, INTEGER const
         return;
     }
     //
-    //     Compute the QR factorization of the N-by-2 matrix ( X Y )
+    // Compute the QR factorization of the N-by-2 matrix ( X Y )
     //
     REAL tau = 0.0;
     Rlarfg(n, x[1 - 1], &x[(1 + incx) - 1], incx, tau);
@@ -55,11 +55,11 @@ void Rlapll(INTEGER const n, REAL *x, INTEGER const incx, REAL *y, INTEGER const
     REAL a12 = y[1 - 1];
     REAL a22 = y[(1 + incy) - 1];
     //
-    //     Compute the SVD of 2-by-2 Upper triangular matrix.
+    // Compute the SVD of 2-by-2 Upper triangular matrix.
     //
     REAL ssmax = 0.0;
     Rlas2(a11, a12, a22, ssmin, ssmax);
     //
-    //     End of Rlapll
+    // End of Rlapll
     //
 }

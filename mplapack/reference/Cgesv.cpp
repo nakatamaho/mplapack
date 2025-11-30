@@ -31,7 +31,7 @@
 
 void Cgesv(INTEGER const n, INTEGER const nrhs, COMPLEX *a, INTEGER const lda, INTEGER *ipiv, COMPLEX *b, INTEGER const ldb, INTEGER &info) {
     //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     if (n < 0) {
@@ -48,16 +48,16 @@ void Cgesv(INTEGER const n, INTEGER const nrhs, COMPLEX *a, INTEGER const lda, I
         return;
     }
     //
-    //     Compute the LU factorization of A.
+    // Compute the LU factorization of A.
     //
     Cgetrf(n, n, a, lda, ipiv, info);
     if (info == 0) {
         //
-        //        Solve the system A*X = B, overwriting B with X.
+        // Solve the system A*X = B, overwriting B with X.
         //
         Cgetrs("No transpose", n, nrhs, a, lda, ipiv, b, ldb, info);
     }
     //
-    //     End of Cgesv
+    // End of Cgesv
     //
 }

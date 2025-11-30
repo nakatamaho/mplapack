@@ -56,30 +56,30 @@ REAL Rlansf(const char *norm, const char *transr, const char *uplo, INTEGER cons
         return return_value;
     }
     //
-    //     set noe = 1 if n is odd. if n is even set noe=0
+    // set noe = 1 if n is odd. if n is even set noe=0
     //
     noe = 1;
     if (mod(n, 2) == 0) {
         noe = 0;
     }
     //
-    //     set ifm = 0 when form='T or 't' and 1 otherwise
+    // set ifm = 0 when form='T or 't' and 1 otherwise
     //
     ifm = 1;
     if (Mlsame(transr, "T")) {
         ifm = 0;
     }
     //
-    //     set ilu = 0 when uplo='U or 'u' and 1 otherwise
+    // set ilu = 0 when uplo='U or 'u' and 1 otherwise
     //
     ilu = 1;
     if (Mlsame(uplo, "U")) {
         ilu = 0;
     }
     //
-    //     set lda = (n+1)/2 when ifm = 0
-    //     set lda = n when ifm = 1 and noe = 1
-    //     set lda = n+1 when ifm = 1 and noe = 0
+    // set lda = (n+1)/2 when ifm = 0
+    // set lda = n when ifm = 1 and noe = 1
+    // set lda = n+1 when ifm = 1 and noe = 0
     //
     if (ifm == 1) {
         if (noe == 1) {
@@ -95,7 +95,7 @@ REAL Rlansf(const char *norm, const char *transr, const char *uplo, INTEGER cons
     //
     if (Mlsame(norm, "M")) {
         //
-        //       Find max(abs(A(i,j))).
+        // Find max(abs(A(i,j))).
         //
         k = (n + 1) / 2;
         value = zero;
@@ -148,7 +148,7 @@ REAL Rlansf(const char *norm, const char *transr, const char *uplo, INTEGER cons
         }
     } else if ((Mlsame(norm, "I")) || (Mlsame(norm, "O")) || (Mlsame(norm, "1"))) {
         //
-        //        Find normI(A) ( = norm1(A), since A is symmetric).
+        // Find normI(A) ( = norm1(A), since A is symmetric).
         //
         if (ifm == 1) {
             k = n / 2;
@@ -601,7 +601,7 @@ REAL Rlansf(const char *norm, const char *transr, const char *uplo, INTEGER cons
         }
     } else if ((Mlsame(norm, "F")) || (Mlsame(norm, "E"))) {
         //
-        //       Find normF(A).
+        // Find normF(A).
         //
         k = (n + 1) / 2;
         scale = zero;
@@ -775,6 +775,6 @@ REAL Rlansf(const char *norm, const char *transr, const char *uplo, INTEGER cons
     return_value = value;
     return return_value;
     //
-    //     End of Rlansf
+    // End of Rlansf
     //
 }

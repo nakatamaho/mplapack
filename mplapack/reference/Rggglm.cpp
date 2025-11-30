@@ -31,30 +31,12 @@
 
 void Rggglm(INTEGER const n, INTEGER const m, INTEGER const p, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL *d, REAL *x, REAL *y, REAL *work, INTEGER const lwork, INTEGER &info) {
     //
-    //  -- LAPACK driver routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+    // -- LAPACK driver routine --
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
     //
-    //  ===================================================================
     //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
-    //     Test the input parameters
+    // Test the input parameters
     //
     info = 0;
     INTEGER np = min(n, p);
@@ -71,7 +53,7 @@ void Rggglm(INTEGER const n, INTEGER const m, INTEGER const p, REAL *a, INTEGER 
         info = -7;
     }
     //
-    //     Calculate workspace
+    // Calculate workspace
     //
     INTEGER lwkmin = 0;
     INTEGER lwkopt = 0;
@@ -107,7 +89,7 @@ void Rggglm(INTEGER const n, INTEGER const m, INTEGER const p, REAL *a, INTEGER 
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     INTEGER i = 0;
     const REAL zero = 0.0;
@@ -121,25 +103,25 @@ void Rggglm(INTEGER const n, INTEGER const m, INTEGER const p, REAL *a, INTEGER 
         return;
     }
     //
-    //     Compute the GQR factorization of matrices A and B:
+    // Compute the GQR factorization of matrices A and B:
     //
-    //          Q**T*A = ( R11 ) M,    Q**T*B*Z**T = ( T11   T12 ) M
-    //                   (  0  ) N-M                 (  0    T22 ) N-M
-    //                      M                         M+P-N  N-M
+    // Q**T*A = ( R11 ) M,    Q**T*B*Z**T = ( T11   T12 ) M
+    // (  0  ) N-M                 (  0    T22 ) N-M
+    // M                         M+P-N  N-M
     //
-    //     where R11 and T22 are upper triangular, and Q and Z are
-    //     orthogonal.
+    // where R11 and T22 are upper triangular, and Q and Z are
+    // orthogonal.
     //
     Rggqrf(n, m, p, a, lda, work, b, ldb, &work[(m + 1) - 1], &work[(m + np + 1) - 1], lwork - m - np, info);
     INTEGER lopt = castINTEGER(work[(m + np + 1) - 1]);
     //
-    //     Update left-hand-side vector d = Q**T*d = ( d1 ) M
-    //                                               ( d2 ) N-M
+    // Update left-hand-side vector d = Q**T*d = ( d1 ) M
+    // ( d2 ) N-M
     //
     Rormqr("Left", "Transpose", n, 1, m, a, lda, work, d, max((INTEGER)1, n), &work[(m + np + 1) - 1], lwork - m - np, info);
     lopt = max(lopt, castINTEGER(work[(m + np + 1) - 1]));
     //
-    //     Solve T22*y2 = d2 for y2
+    // Solve T22*y2 = d2 for y2
     //
     if (n > m) {
         Rtrtrs("Upper", "No transpose", "Non unit", n - m, 1, &b[((m + 1) - 1) + ((m + p - n + 1) - 1) * ldb], ldb, &d[(m + 1) - 1], n - m, info);
@@ -152,18 +134,18 @@ void Rggglm(INTEGER const n, INTEGER const m, INTEGER const p, REAL *a, INTEGER 
         Rcopy(n - m, &d[(m + 1) - 1], 1, &y[(m + p - n + 1) - 1], 1);
     }
     //
-    //     Set y1 = 0
+    // Set y1 = 0
     //
     for (i = 1; i <= m + p - n; i = i + 1) {
         y[i - 1] = zero;
     }
     //
-    //     Update d1 = d1 - T12*y2
+    // Update d1 = d1 - T12*y2
     //
     const REAL one = 1.0;
     Rgemv("No transpose", m, n - m, -one, &b[((m + p - n + 1) - 1) * ldb], ldb, &y[(m + p - n + 1) - 1], 1, one, d, 1);
     //
-    //     Solve triangular system: R11*x = d1
+    // Solve triangular system: R11*x = d1
     //
     if (m > 0) {
         Rtrtrs("Upper", "No Transpose", "Non unit", m, 1, a, lda, d, m, info);
@@ -173,16 +155,16 @@ void Rggglm(INTEGER const n, INTEGER const m, INTEGER const p, REAL *a, INTEGER 
             return;
         }
         //
-        //        Copy D to X
+        // Copy D to X
         //
         Rcopy(m, d, 1, x, 1);
     }
     //
-    //     Backward transformation y = Z**T *y
+    // Backward transformation y = Z**T *y
     //
     Rormrq("Left", "Transpose", p, 1, np, &b[(max((INTEGER)1, n - p + 1) - 1) + (1 - 1) * ldb], ldb, &work[(m + 1) - 1], y, max((INTEGER)1, p), &work[(m + np + 1) - 1], lwork - m - np, info);
     work[1 - 1] = m + np + max(lopt, castINTEGER(work[(m + np + 1) - 1]));
     //
-    //     End of Rggglm
+    // End of Rggglm
     //
 }

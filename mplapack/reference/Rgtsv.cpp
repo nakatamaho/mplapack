@@ -57,7 +57,7 @@ void Rgtsv(INTEGER const n, INTEGER const nrhs, REAL *dl, REAL *d, REAL *du, REA
         for (i = 1; i <= n - 2; i = i + 1) {
             if (abs(d[i - 1]) >= abs(dl[i - 1])) {
                 //
-                //              No row interchange required
+                // No row interchange required
                 //
                 if (d[i - 1] != zero) {
                     fact = dl[i - 1] / d[i - 1];
@@ -70,7 +70,7 @@ void Rgtsv(INTEGER const n, INTEGER const nrhs, REAL *dl, REAL *d, REAL *du, REA
                 dl[i - 1] = zero;
             } else {
                 //
-                //              Interchange rows I and I+1
+                // Interchange rows I and I+1
                 //
                 fact = d[i - 1] / dl[i - 1];
                 d[i - 1] = dl[i - 1];
@@ -114,7 +114,7 @@ void Rgtsv(INTEGER const n, INTEGER const nrhs, REAL *dl, REAL *d, REAL *du, REA
         for (i = 1; i <= n - 2; i = i + 1) {
             if (abs(d[i - 1]) >= abs(dl[i - 1])) {
                 //
-                //              No row interchange required
+                // No row interchange required
                 //
                 if (d[i - 1] != zero) {
                     fact = dl[i - 1] / d[i - 1];
@@ -129,7 +129,7 @@ void Rgtsv(INTEGER const n, INTEGER const nrhs, REAL *dl, REAL *d, REAL *du, REA
                 dl[i - 1] = zero;
             } else {
                 //
-                //              Interchange rows I and I+1
+                // Interchange rows I and I+1
                 //
                 fact = d[i - 1] / dl[i - 1];
                 d[i - 1] = dl[i - 1];
@@ -177,7 +177,7 @@ void Rgtsv(INTEGER const n, INTEGER const nrhs, REAL *dl, REAL *d, REAL *du, REA
         }
     }
     //
-    //     Back solve with the matrix U from the factorization.
+    // Back solve with the matrix U from the factorization.
     //
     if (nrhs <= 2) {
         j = 1;
@@ -205,6 +205,6 @@ void Rgtsv(INTEGER const n, INTEGER const nrhs, REAL *dl, REAL *d, REAL *du, REA
         }
     }
     //
-    //     End of Rgtsv
+    // End of Rgtsv
     //
 }

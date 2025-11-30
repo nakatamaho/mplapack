@@ -31,30 +31,11 @@
 
 void Rlauum(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INTEGER &info) {
     //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
     //
-    //  =====================================================================
     //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     bool upper = Mlsame(uplo, "U");
@@ -70,13 +51,13 @@ void Rlauum(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INTEG
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0) {
         return;
     }
     //
-    //     Determine the block size for this environment.
+    // Determine the block size for this environment.
     //
     INTEGER nb = iMlaenv(1, "Rlauum", uplo, n, -1, -1, -1);
     //
@@ -85,16 +66,16 @@ void Rlauum(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INTEG
     const REAL one = 1.0;
     if (nb <= 1 || nb >= n) {
         //
-        //        Use unblocked code
+        // Use unblocked code
         //
         Rlauu2(uplo, n, a, lda, info);
     } else {
         //
-        //        Use blocked code
+        // Use blocked code
         //
         if (upper) {
             //
-            //           Compute the product U * U**T.
+            // Compute the product U * U**T.
             //
             for (i = 1; i <= n; i = i + nb) {
                 ib = min(nb, n - i + 1);
@@ -107,7 +88,7 @@ void Rlauum(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INTEG
             }
         } else {
             //
-            //           Compute the product L**T * L.
+            // Compute the product L**T * L.
             //
             for (i = 1; i <= n; i = i + nb) {
                 ib = min(nb, n - i + 1);
@@ -121,6 +102,6 @@ void Rlauum(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INTEG
         }
     }
     //
-    //     End of Rlauum
+    // End of Rlauum
     //
 }

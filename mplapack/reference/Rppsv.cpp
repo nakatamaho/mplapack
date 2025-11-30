@@ -31,7 +31,7 @@
 
 void Rppsv(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *ap, REAL *b, INTEGER const ldb, INTEGER &info) {
     //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     if (!Mlsame(uplo, "U") && !Mlsame(uplo, "L")) {
@@ -48,17 +48,17 @@ void Rppsv(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *ap, REAL
         return;
     }
     //
-    //     Compute the Cholesky factorization A = U**T*U or A = L*L**T.
+    // Compute the Cholesky factorization A = U**T*U or A = L*L**T.
     //
     Rpptrf(uplo, n, ap, info);
     if (info == 0) {
         //
-        //        Solve the system A*X = B, overwriting B with X.
+        // Solve the system A*X = B, overwriting B with X.
         //
         Rpptrs(uplo, n, nrhs, ap, b, ldb, info);
         //
     }
     //
-    //     End of Rppsv
+    // End of Rppsv
     //
 }

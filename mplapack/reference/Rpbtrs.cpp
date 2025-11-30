@@ -31,28 +31,11 @@
 
 void Rpbtrs(const char *uplo, INTEGER const n, INTEGER const kd, INTEGER const nrhs, REAL *ab, INTEGER const ldab, REAL *b, INTEGER const ldb, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
     //
-    //  =====================================================================
     //
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     bool upper = Mlsame(uplo, "U");
@@ -74,7 +57,7 @@ void Rpbtrs(const char *uplo, INTEGER const n, INTEGER const kd, INTEGER const n
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0 || nrhs == 0) {
         return;
@@ -83,34 +66,34 @@ void Rpbtrs(const char *uplo, INTEGER const n, INTEGER const kd, INTEGER const n
     INTEGER j = 0;
     if (upper) {
         //
-        //        Solve A*X = B where A = U**T *U.
+        // Solve A*X = B where A = U**T *U.
         //
         for (j = 1; j <= nrhs; j = j + 1) {
             //
-            //           Solve U**T *X = B, overwriting B with X.
+            // Solve U**T *X = B, overwriting B with X.
             //
             Rtbsv("Upper", "Transpose", "Non-unit", n, kd, ab, ldab, &b[(j - 1) * ldb], 1);
             //
-            //           Solve U*X = B, overwriting B with X.
+            // Solve U*X = B, overwriting B with X.
             //
             Rtbsv("Upper", "No transpose", "Non-unit", n, kd, ab, ldab, &b[(j - 1) * ldb], 1);
         }
     } else {
         //
-        //        Solve A*X = B where A = L*L**T.
+        // Solve A*X = B where A = L*L**T.
         //
         for (j = 1; j <= nrhs; j = j + 1) {
             //
-            //           Solve L*X = B, overwriting B with X.
+            // Solve L*X = B, overwriting B with X.
             //
             Rtbsv("Lower", "No transpose", "Non-unit", n, kd, ab, ldab, &b[(j - 1) * ldb], 1);
             //
-            //           Solve L**T *X = B, overwriting B with X.
+            // Solve L**T *X = B, overwriting B with X.
             //
             Rtbsv("Lower", "Transpose", "Non-unit", n, kd, ab, ldab, &b[(j - 1) * ldb], 1);
         }
     }
     //
-    //     End of Rpbtrs
+    // End of Rpbtrs
     //
 }

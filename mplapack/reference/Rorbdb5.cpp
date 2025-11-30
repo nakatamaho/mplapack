@@ -31,30 +31,12 @@
 
 void Rorbdb5(INTEGER const m1, INTEGER const m2, INTEGER const n, REAL *x1, INTEGER const incx1, REAL *x2, INTEGER const incx2, REAL *q1, INTEGER const ldq1, REAL *q2, INTEGER const ldq2, REAL *work, INTEGER const lwork, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
     //
-    //  =====================================================================
     //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Intrinsic Function ..
-    //     ..
-    //     .. Executable Statements ..
+    // .. Intrinsic Function ..
     //
-    //     Test input arguments
+    // Test input arguments
     //
     info = 0;
     if (m1 < 0) {
@@ -80,20 +62,20 @@ void Rorbdb5(INTEGER const m1, INTEGER const m2, INTEGER const n, REAL *x1, INTE
         return;
     }
     //
-    //     Project X onto the orthogonal complement of Q
+    // Project X onto the orthogonal complement of Q
     //
     INTEGER childinfo = 0;
     Rorbdb6(m1, m2, n, x1, incx1, x2, incx2, q1, ldq1, q2, ldq2, work, lwork, childinfo);
     //
-    //     If the projection is nonzero, then return
+    // If the projection is nonzero, then return
     //
     const REAL zero = 0.0;
     if (Rnrm2(m1, x1, incx1) != zero || Rnrm2(m2, x2, incx2) != zero) {
         return;
     }
     //
-    //     Project each standard basis vector e_1,...,e_M1 in turn, stopping
-    //     when a nonzero projection is found
+    // Project each standard basis vector e_1,...,e_M1 in turn, stopping
+    // when a nonzero projection is found
     //
     INTEGER i = 0;
     INTEGER j = 0;
@@ -112,8 +94,8 @@ void Rorbdb5(INTEGER const m1, INTEGER const m2, INTEGER const n, REAL *x1, INTE
         }
     }
     //
-    //     Project each standard basis vector e_(M1+1),...,e_(M1+M2) in turn,
-    //     stopping when a nonzero projection is found
+    // Project each standard basis vector e_(M1+1),...,e_(M1+M2) in turn,
+    // stopping when a nonzero projection is found
     //
     for (i = 1; i <= m2; i = i + 1) {
         for (j = 1; j <= m1; j = j + 1) {
@@ -129,6 +111,6 @@ void Rorbdb5(INTEGER const m1, INTEGER const m2, INTEGER const n, REAL *x1, INTE
         }
     }
     //
-    //     End of Rorbdb5
+    // End of Rorbdb5
     //
 }

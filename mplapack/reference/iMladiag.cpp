@@ -32,20 +32,9 @@
 INTEGER iMladiag(const char *diag) {
     INTEGER return_value = 0;
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
     //
-    //     .. Scalar Arguments ..
-    //     ..
     //
-    //  =====================================================================
     //
-    //     .. Parameters ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Executable Statements ..
     const INTEGER blas_non_unit_diag = 131;
     const INTEGER blas_unit_diag = 132;
     if (Mlsame(diag, "N")) {
@@ -57,6 +46,6 @@ INTEGER iMladiag(const char *diag) {
     }
     return return_value;
     //
-    //     End of iMladiag
+    // End of iMladiag
     //
 }

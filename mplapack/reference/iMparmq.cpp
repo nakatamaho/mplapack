@@ -44,7 +44,6 @@ INTEGER iMparmq(INTEGER const ispec, const char *name, const char *opts, INTEGER
     const REAL two = 2.0;
     if ((ispec == ishfts) || (ispec == inwin) || (ispec == iacc22)) {
         //
-        //        ==== Set the number simultaneous shifts ====
         //
         nh = ihi - ilo + 1;
         ns = 2;
@@ -82,29 +81,23 @@ INTEGER iMparmq(INTEGER const ispec, const char *name, const char *opts, INTEGER
     const INTEGER kacmin = 14;
     if (ispec == inmin) {
         //
-        //        ===== Matrices of order smaller than NMIN get sent
-        //        .     to xLAHQR, the classic REAL shift algorithm.
-        //        .     This must be at least 11. ====
+        // .     to xLAHQR, the classic REAL shift algorithm.
         //
         return_value = nmin;
         //
     } else if (ispec == inibl) {
         //
-        //        ==== INIBL: skip a multi-shift qr iteration and
-        //        .    whenever aggressive early deflation finds
-        //        .    at least (NIBBLE*(window size)/100) deflations. ====
+        // .    whenever aggressive early deflation finds
         //
         return_value = nibble;
         //
     } else if (ispec == ishfts) {
         //
-        //        ==== NSHFTS: The number of simultaneous shifts =====
         //
         return_value = ns;
         //
     } else if (ispec == inwin) {
         //
-        //        ==== NW: deflation window size.  ====
         //
         if (nh <= knwswp) {
             return_value = ns;
@@ -114,14 +107,13 @@ INTEGER iMparmq(INTEGER const ispec, const char *name, const char *opts, INTEGER
         //
     } else if (ispec == iacc22) {
         //
-        //        ==== IACC22: Whether to accumulate reflections
-        //        .     before updating the far-from-diagonal elements
-        //        .     and whether to use 2-by-2 block structure while
-        //        .     doing it.  A small amount of work could be saved
-        //        .     by making this choice dependent also upon the
-        //        .     NH=IHI-ILO+1.
+        // .     before updating the far-from-diagonal elements
+        // .     and whether to use 2-by-2 block structure while
+        // .     doing it.  A small amount of work could be saved
+        // .     by making this choice dependent also upon the
+        // .     NH=IHI-ILO+1.
         //
-        //        Convert NAME to upper case if the first character is lower case.
+        // Convert NAME to upper case if the first character is lower case.
         //
         return_value = 0;
         strncpy(subnam, name, subnamlen - 1);
@@ -129,7 +121,7 @@ INTEGER iMparmq(INTEGER const ispec, const char *name, const char *opts, INTEGER
         iz = 'Z';
         if (iz == 90 || iz == 122) {
             //
-            //           ASCII character set
+            // ASCII character set
             //
             if (ic >= 97 && ic <= 122) {
                 *subnam = (char)(ic - 32);
@@ -164,12 +156,10 @@ INTEGER iMparmq(INTEGER const ispec, const char *name, const char *opts, INTEGER
         }
         //
     } else {
-        // ===== invalid value of ispec =====
         return_value = -1;
         //
     }
     return return_value;
     //
-    //     ==== End of IPARMQ ====
     //
 }

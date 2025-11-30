@@ -60,6 +60,6 @@ REAL Rlapy2(REAL const x, REAL const y) {
     }
     return return_value;
     //
-    //     End of Rlapy2
+    // End of Rlapy2
     //
 }

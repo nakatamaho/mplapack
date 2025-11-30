@@ -38,30 +38,11 @@ void Cgttrf(INTEGER const n, COMPLEX *dl, COMPLEX *d, COMPLEX *du, COMPLEX *du2,
     COMPLEX fact = 0.0;
     COMPLEX temp = 0.0;
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
     //
-    //  =====================================================================
     //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Statement Functions ..
-    //     ..
-    //     .. Statement Function definitions ..
-    //     ..
-    //     .. Executable Statements ..
+    // .. Statement Functions ..
+    // .. Statement Function definitions ..
     //
     info = 0;
     if (n < 0) {
@@ -70,13 +51,13 @@ void Cgttrf(INTEGER const n, COMPLEX *dl, COMPLEX *d, COMPLEX *du, COMPLEX *du2,
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0) {
         return;
     }
     //
-    //     Initialize IPIV(i) = i and DU2(i) = 0
+    // Initialize IPIV(i) = i and DU2(i) = 0
     //
     for (i = 1; i <= n; i = i + 1) {
         ipiv[i - 1] = i;
@@ -88,7 +69,7 @@ void Cgttrf(INTEGER const n, COMPLEX *dl, COMPLEX *d, COMPLEX *du, COMPLEX *du2,
     for (i = 1; i <= n - 2; i = i + 1) {
         if (abs1(d[i - 1]) >= abs1(dl[i - 1])) {
             //
-            //           No row interchange required, eliminate DL(I)
+            // No row interchange required, eliminate DL(I)
             //
             if (abs1(d[i - 1]) != zero) {
                 fact = dl[i - 1] / d[i - 1];
@@ -97,7 +78,7 @@ void Cgttrf(INTEGER const n, COMPLEX *dl, COMPLEX *d, COMPLEX *du, COMPLEX *du2,
             }
         } else {
             //
-            //           Interchange rows I and I+1, eliminate DL(I)
+            // Interchange rows I and I+1, eliminate DL(I)
             //
             fact = d[i - 1] / dl[i - 1];
             d[i - 1] = dl[i - 1];
@@ -129,7 +110,7 @@ void Cgttrf(INTEGER const n, COMPLEX *dl, COMPLEX *d, COMPLEX *du, COMPLEX *du2,
         }
     }
     //
-    //     Check for a zero on the diagonal of U.
+    // Check for a zero on the diagonal of U.
     //
     for (i = 1; i <= n; i = i + 1) {
         if (abs1(d[i - 1]) == zero) {
@@ -139,6 +120,6 @@ void Cgttrf(INTEGER const n, COMPLEX *dl, COMPLEX *d, COMPLEX *du, COMPLEX *du2,
     }
 statement_50:;
     //
-    //     End of Cgttrf
+    // End of Cgttrf
     //
 }

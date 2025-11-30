@@ -31,30 +31,11 @@
 
 void Rppequ(const char *uplo, INTEGER const n, REAL *ap, REAL *s, REAL &scond, REAL &amax, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
     //
-    //  =====================================================================
     //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     bool upper = Mlsame(uplo, "U");
@@ -68,7 +49,7 @@ void Rppequ(const char *uplo, INTEGER const n, REAL *ap, REAL *s, REAL &scond, R
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     const REAL one = 1.0;
     const REAL zero = 0.0;
@@ -78,7 +59,7 @@ void Rppequ(const char *uplo, INTEGER const n, REAL *ap, REAL *s, REAL &scond, R
         return;
     }
     //
-    //     Initialize SMIN and AMAX.
+    // Initialize SMIN and AMAX.
     //
     s[1 - 1] = ap[1 - 1];
     REAL smin = s[1 - 1];
@@ -88,8 +69,8 @@ void Rppequ(const char *uplo, INTEGER const n, REAL *ap, REAL *s, REAL &scond, R
     INTEGER i = 0;
     if (upper) {
         //
-        //        UPLO = 'U':  Upper triangle of A is stored.
-        //        Find the minimum and maximum diagonal elements.
+        // UPLO = 'U':  Upper triangle of A is stored.
+        // Find the minimum and maximum diagonal elements.
         //
         jj = 1;
         for (i = 2; i <= n; i = i + 1) {
@@ -101,8 +82,8 @@ void Rppequ(const char *uplo, INTEGER const n, REAL *ap, REAL *s, REAL &scond, R
         //
     } else {
         //
-        //        UPLO = 'L':  Lower triangle of A is stored.
-        //        Find the minimum and maximum diagonal elements.
+        // UPLO = 'L':  Lower triangle of A is stored.
+        // Find the minimum and maximum diagonal elements.
         //
         jj = 1;
         for (i = 2; i <= n; i = i + 1) {
@@ -115,7 +96,7 @@ void Rppequ(const char *uplo, INTEGER const n, REAL *ap, REAL *s, REAL &scond, R
     //
     if (smin <= zero) {
         //
-        //        Find the first non-positive diagonal element and return.
+        // Find the first non-positive diagonal element and return.
         //
         for (i = 1; i <= n; i = i + 1) {
             if (s[i - 1] <= zero) {
@@ -125,18 +106,18 @@ void Rppequ(const char *uplo, INTEGER const n, REAL *ap, REAL *s, REAL &scond, R
         }
     } else {
         //
-        //        Set the scale factors to the reciprocals
-        //        of the diagonal elements.
+        // Set the scale factors to the reciprocals
+        // of the diagonal elements.
         //
         for (i = 1; i <= n; i = i + 1) {
             s[i - 1] = one / sqrt(s[i - 1]);
         }
         //
-        //        Compute SCOND = min(S(I)) / max(S(I))
+        // Compute SCOND = min(S(I)) / max(S(I))
         //
         scond = sqrt(smin) / sqrt(amax);
     }
     //
-    //     End of Rppequ
+    // End of Rppequ
     //
 }

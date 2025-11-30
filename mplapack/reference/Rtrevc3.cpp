@@ -77,32 +77,12 @@ void Rtrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
     REAL vmax = 0.0;
     REAL vcrit = 0.0;
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
     //
-    //  =====================================================================
     //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. Executable Statements ..
+    // .. Local Arrays ..
     //
-    //     Decode and test the input parameters
+    // Decode and test the input parameters
     //
     bothv = Mlsame(side, "B");
     rightv = Mlsame(side, "R") || bothv;
@@ -138,9 +118,9 @@ void Rtrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
         info = -14;
     } else {
         //
-        //        Set M to the number of columns required to store the selected
-        //        eigenvectors, standardize the array SELECT if necessary, and
-        //        test MM.
+        // Set M to the number of columns required to store the selected
+        // eigenvectors, standardize the array SELECT if necessary, and
+        // test MM.
         //
         if (somev) {
             m = 0;
@@ -184,14 +164,14 @@ void Rtrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
         return;
     }
     //
-    //     Quick return if possible.
+    // Quick return if possible.
     //
     if (n == 0) {
         return;
     }
     //
-    //     Use blocked version of back-transformation if sufficient workspace.
-    //     Zero-out the workspace to avoid potential NaN propagation.
+    // Use blocked version of back-transformation if sufficient workspace.
+    // Zero-out the workspace to avoid potential NaN propagation.
     //
     if (over && lwork >= n + 2 * n * nbmin) {
         nb = (lwork - n) / (2 * n);
@@ -201,7 +181,7 @@ void Rtrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
         nb = 1;
     }
     //
-    //     Set the constants to control overflow.
+    // Set the constants to control overflow.
     //
     unfl = Rlamch("Safe minimum");
     ovfl = one / unfl;
@@ -209,8 +189,8 @@ void Rtrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
     smlnum = unfl * (castREAL(n) / ulp);
     bignum = (one - ulp) / smlnum;
     //
-    //     Compute 1-norm of each column of strictly upper triangular
-    //     part of T to control overflow in triangular solver.
+    // Compute 1-norm of each column of strictly upper triangular
+    // part of T to control overflow in triangular solver.
     //
     work[1 - 1] = zero;
     for (j = 2; j <= n; j = j + 1) {
@@ -220,22 +200,21 @@ void Rtrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
         }
     }
     //
-    //     Index IP is used to specify the real or complex eigenvalue:
-    //       IP = 0, real eigenvalue,
-    //            1, first  of conjugate complex pair: (wr,wi)
-    //           -1, second of conjugate complex pair: (wr,wi)
-    //       ISCOMPLEX array stores IP for each column in current block.
+    // Index IP is used to specify the real or complex eigenvalue:
+    // IP = 0, real eigenvalue,
+    // 1, first  of conjugate complex pair: (wr,wi)
+    // -1, second of conjugate complex pair: (wr,wi)
+    // ISCOMPLEX array stores IP for each column in current block.
     //
     if (rightv) {
         //
-        //        ============================================================
-        //        Compute right eigenvectors.
+        // Compute right eigenvectors.
         //
-        //        IV is index of column in current block.
-        //        For complex right vector, uses IV-1 for real part and IV for complex part.
-        //        Non-blocked version always uses IV=2;
-        //        blocked     version starts with IV=NB, goes down to 1 or 2.
-        //        (Note the "0-th" column is used for 1-norms computed above.)
+        // IV is index of column in current block.
+        // For complex right vector, uses IV-1 for real part and IV for complex part.
+        // Non-blocked version always uses IV=2;
+        // blocked     version starts with IV=NB, goes down to 1 or 2.
+        // (Note the "0-th" column is used for 1-norms computed above.)
         iv = 2;
         if (nb > 2) {
             iv = nb;
@@ -272,7 +251,7 @@ void Rtrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                 }
             }
             //
-            //           Compute the KI-th eigenvalue (WR,WI).
+            // Compute the KI-th eigenvalue (WR,WI).
             //
             wr = t[(ki - 1) + (ki - 1) * ldt];
             wi = zero;
@@ -283,19 +262,19 @@ void Rtrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
             //
             if (ip == 0) {
                 //
-                //              --------------------------------------------------------
-                //              Real right eigenvector
+                // --------------------------------------------------------
+                // Real right eigenvector
                 //
                 work[(ki + iv * n) - 1] = one;
                 //
-                //              Form right-hand side.
+                // Form right-hand side.
                 //
                 for (k = 1; k <= ki - 1; k = k + 1) {
                     work[(k + iv * n) - 1] = -t[(k - 1) + (ki - 1) * ldt];
                 }
                 //
-                //              Solve upper quasi-triangular system:
-                //              [ T(1:KI-1,1:KI-1) - WR ]*X = SCALE*WORK.
+                // Solve upper quasi-triangular system:
+                // [ T(1:KI-1,1:KI-1) - WR ]*X = SCALE*WORK.
                 //
                 jnxt = ki - 1;
                 for (j = ki - 1; j >= 1; j = j - 1) {
@@ -314,12 +293,12 @@ void Rtrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                     //
                     if (j1 == j2) {
                         //
-                        //                    1-by-1 diagonal block
+                        // 1-by-1 diagonal block
                         //
                         Rlaln2(false, 1, 1, smin, one, &t[(j - 1) + (j - 1) * ldt], ldt, one, one, &work[(j + iv * n) - 1], n, wr, zero, x, 2, scale, xnorm, ierr);
                         //
-                        //                    Scale X(1,1) to avoid overflow when updating
-                        //                    the right-hand side.
+                        // Scale X(1,1) to avoid overflow when updating
+                        // the right-hand side.
                         //
                         if (xnorm > one) {
                             if (work[j - 1] > bignum / xnorm) {
@@ -328,25 +307,25 @@ void Rtrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                             }
                         }
                         //
-                        //                    Scale if necessary
+                        // Scale if necessary
                         //
                         if (scale != one) {
                             Rscal(ki, scale, &work[(1 + iv * n) - 1], 1);
                         }
                         work[(j + iv * n) - 1] = x[(1 - 1)];
                         //
-                        //                    Update right-hand side
+                        // Update right-hand side
                         //
                         Raxpy(j - 1, -x[(1 - 1)], &t[(j - 1) * ldt], 1, &work[(1 + iv * n) - 1], 1);
                         //
                     } else {
                         //
-                        //                    2-by-2 diagonal block
+                        // 2-by-2 diagonal block
                         //
                         Rlaln2(false, 2, 1, smin, one, &t[((j - 1) - 1) + ((j - 1) - 1) * ldt], ldt, one, one, &work[(j - 1 + iv * n) - 1], n, wr, zero, x, 2, scale, xnorm, ierr);
                         //
-                        //                    Scale X(1,1) and X(2,1) to avoid overflow when
-                        //                    updating the right-hand side.
+                        // Scale X(1,1) and X(2,1) to avoid overflow when
+                        // updating the right-hand side.
                         //
                         if (xnorm > one) {
                             beta = max(work[(j - 1) - 1], work[j - 1]);
@@ -357,7 +336,7 @@ void Rtrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                             }
                         }
                         //
-                        //                    Scale if necessary
+                        // Scale if necessary
                         //
                         if (scale != one) {
                             Rscal(ki, scale, &work[(1 + iv * n) - 1], 1);
@@ -365,7 +344,7 @@ void Rtrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                         work[(j - 1 + iv * n) - 1] = x[(1 - 1)];
                         work[(j + iv * n) - 1] = x[(2 - 1)];
                         //
-                        //                    Update right-hand side
+                        // Update right-hand side
                         //
                         Raxpy(j - 2, -x[(1 - 1)], &t[((j - 1) - 1) * ldt], 1, &work[(1 + iv * n) - 1], 1);
                         Raxpy(j - 2, -x[(2 - 1)], &t[(j - 1) * ldt], 1, &work[(1 + iv * n) - 1], 1);
@@ -373,7 +352,7 @@ void Rtrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                 statement_60:;
                 }
                 //
-                //              Copy the vector x or Q*x to VR and normalize.
+                // Copy the vector x or Q*x to VR and normalize.
                 //
                 if (!over) {
                     // ------------------------------
@@ -411,12 +390,12 @@ void Rtrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                 }
             } else {
                 //
-                //              --------------------------------------------------------
-                //              Complex right eigenvector.
+                // --------------------------------------------------------
+                // Complex right eigenvector.
                 //
-                //              Initial solve
-                //              [ ( T(KI-1,KI-1) T(KI-1,KI) ) - (WR + I*WI) ]*X = 0.
-                //              [ ( T(KI,  KI-1) T(KI,  KI) )               ]
+                // Initial solve
+                // [ ( T(KI-1,KI-1) T(KI-1,KI) ) - (WR + I*WI) ]*X = 0.
+                // [ ( T(KI,  KI-1) T(KI,  KI) )               ]
                 //
                 if (abs(t[((ki - 1) - 1) + (ki - 1) * ldt]) >= abs(t[(ki - 1) + ((ki - 1) - 1) * ldt])) {
                     work[(ki - 1 + (iv - 1) * n) - 1] = one;
@@ -428,15 +407,15 @@ void Rtrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                 work[(ki + (iv - 1) * n) - 1] = zero;
                 work[(ki - 1 + (iv)*n) - 1] = zero;
                 //
-                //              Form right-hand side.
+                // Form right-hand side.
                 //
                 for (k = 1; k <= ki - 2; k = k + 1) {
                     work[(k + (iv - 1) * n) - 1] = -work[(ki - 1 + (iv - 1) * n) - 1] * t[(k - 1) + ((ki - 1) - 1) * ldt];
                     work[(k + (iv)*n) - 1] = -work[(ki + (iv)*n) - 1] * t[(k - 1) + (ki - 1) * ldt];
                 }
                 //
-                //              Solve upper quasi-triangular system:
-                //              [ T(1:KI-2,1:KI-2) - (WR+i*WI) ]*X = SCALE*(WORK+i*WORK2)
+                // Solve upper quasi-triangular system:
+                // [ T(1:KI-2,1:KI-2) - (WR+i*WI) ]*X = SCALE*(WORK+i*WORK2)
                 //
                 jnxt = ki - 2;
                 for (j = ki - 2; j >= 1; j = j - 1) {
@@ -455,12 +434,12 @@ void Rtrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                     //
                     if (j1 == j2) {
                         //
-                        //                    1-by-1 diagonal block
+                        // 1-by-1 diagonal block
                         //
                         Rlaln2(false, 1, 2, smin, one, &t[(j - 1) + (j - 1) * ldt], ldt, one, one, &work[(j + (iv - 1) * n) - 1], n, wr, wi, x, 2, scale, xnorm, ierr);
                         //
-                        //                    Scale X(1,1) and X(1,2) to avoid overflow when
-                        //                    updating the right-hand side.
+                        // Scale X(1,1) and X(1,2) to avoid overflow when
+                        // updating the right-hand side.
                         //
                         if (xnorm > one) {
                             if (work[j - 1] > bignum / xnorm) {
@@ -470,7 +449,7 @@ void Rtrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                             }
                         }
                         //
-                        //                    Scale if necessary
+                        // Scale if necessary
                         //
                         if (scale != one) {
                             Rscal(ki, scale, &work[(1 + (iv - 1) * n) - 1], 1);
@@ -479,19 +458,19 @@ void Rtrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                         work[(j + (iv - 1) * n) - 1] = x[(1 - 1)];
                         work[(j + (iv)*n) - 1] = x[(2 - 1) * ldx];
                         //
-                        //                    Update the right-hand side
+                        // Update the right-hand side
                         //
                         Raxpy(j - 1, -x[(1 - 1)], &t[(j - 1) * ldt], 1, &work[(1 + (iv - 1) * n) - 1], 1);
                         Raxpy(j - 1, -x[(2 - 1) * ldx], &t[(j - 1) * ldt], 1, &work[(1 + (iv)*n) - 1], 1);
                         //
                     } else {
                         //
-                        //                    2-by-2 diagonal block
+                        // 2-by-2 diagonal block
                         //
                         Rlaln2(false, 2, 2, smin, one, &t[((j - 1) - 1) + ((j - 1) - 1) * ldt], ldt, one, one, &work[(j - 1 + (iv - 1) * n) - 1], n, wr, wi, x, 2, scale, xnorm, ierr);
                         //
-                        //                    Scale X to avoid overflow when updating
-                        //                    the right-hand side.
+                        // Scale X to avoid overflow when updating
+                        // the right-hand side.
                         //
                         if (xnorm > one) {
                             beta = max(work[(j - 1) - 1], work[j - 1]);
@@ -505,7 +484,7 @@ void Rtrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                             }
                         }
                         //
-                        //                    Scale if necessary
+                        // Scale if necessary
                         //
                         if (scale != one) {
                             Rscal(ki, scale, &work[(1 + (iv - 1) * n) - 1], 1);
@@ -516,7 +495,7 @@ void Rtrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                         work[(j - 1 + (iv)*n) - 1] = x[(2 - 1) * ldx];
                         work[(j + (iv)*n) - 1] = x[(2 - 1) + (2 - 1) * ldx];
                         //
-                        //                    Update the right-hand side
+                        // Update the right-hand side
                         //
                         Raxpy(j - 2, -x[(1 - 1)], &t[((j - 1) - 1) * ldt], 1, &work[(1 + (iv - 1) * n) - 1], 1);
                         Raxpy(j - 2, -x[(2 - 1)], &t[(j - 1) * ldt], 1, &work[(1 + (iv - 1) * n) - 1], 1);
@@ -526,7 +505,7 @@ void Rtrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                 statement_90:;
                 }
                 //
-                //              Copy the vector x or Q*x to VR and normalize.
+                // Copy the vector x or Q*x to VR and normalize.
                 //
                 if (!over) {
                     // ------------------------------
@@ -591,9 +570,9 @@ void Rtrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                     ki2 = ki - 1;
                 }
                 //
-                //              Columns IV:NB of work are valid vectors.
-                //              When the number of vectors stored reaches NB-1 or NB,
-                //              or if this was last vector, do the GEMM
+                // Columns IV:NB of work are valid vectors.
+                // When the number of vectors stored reaches NB-1 or NB,
+                // or if this was last vector, do the GEMM
                 if ((iv <= 2) || (ki2 == 1)) {
                     Rgemm("N", "N", n, nb - iv + 1, ki2 + nb - iv, one, vr, ldvr, &work[(1 + (iv)*n) - 1], n, zero, &work[(1 + (nb + iv) * n) - 1], n);
                     // normalize vectors
@@ -610,8 +589,8 @@ void Rtrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                             }
                             remax = one / emax;
                             // else if ISCOMPLEX(K).EQ.-1
-                            //    second eigenvector of conjugate pair
-                            //    reuse same REMAX as previous K
+                            // second eigenvector of conjugate pair
+                            // reuse same REMAX as previous K
                         }
                         Rscal(n, remax, &work[(1 + (nb + k) * n) - 1], 1);
                     }
@@ -633,14 +612,13 @@ void Rtrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
     //
     if (leftv) {
         //
-        //        ============================================================
-        //        Compute left eigenvectors.
+        // Compute left eigenvectors.
         //
-        //        IV is index of column in current block.
-        //        For complex left vector, uses IV for real part and IV+1 for complex part.
-        //        Non-blocked version always uses IV=1;
-        //        blocked     version starts with IV=1, goes up to NB-1 or NB.
-        //        (Note the "0-th" column is used for 1-norms computed above.)
+        // IV is index of column in current block.
+        // For complex left vector, uses IV for real part and IV+1 for complex part.
+        // Non-blocked version always uses IV=1;
+        // blocked     version starts with IV=1, goes up to NB-1 or NB.
+        // (Note the "0-th" column is used for 1-norms computed above.)
         iv = 1;
         ip = 0;
         is = 1;
@@ -667,7 +645,7 @@ void Rtrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                 }
             }
             //
-            //           Compute the KI-th eigenvalue (WR,WI).
+            // Compute the KI-th eigenvalue (WR,WI).
             //
             wr = t[(ki - 1) + (ki - 1) * ldt];
             wi = zero;
@@ -678,19 +656,19 @@ void Rtrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
             //
             if (ip == 0) {
                 //
-                //              --------------------------------------------------------
-                //              Real left eigenvector
+                // --------------------------------------------------------
+                // Real left eigenvector
                 //
                 work[(ki + iv * n) - 1] = one;
                 //
-                //              Form right-hand side.
+                // Form right-hand side.
                 //
                 for (k = ki + 1; k <= n; k = k + 1) {
                     work[(k + iv * n) - 1] = -t[(ki - 1) + (k - 1) * ldt];
                 }
                 //
-                //              Solve transposed quasi-triangular system:
-                //              [ T(KI+1:N,KI+1:N) - WR ]**T * X = SCALE*WORK
+                // Solve transposed quasi-triangular system:
+                // [ T(KI+1:N,KI+1:N) - WR ]**T * X = SCALE*WORK
                 //
                 vmax = one;
                 vcrit = bignum;
@@ -712,10 +690,10 @@ void Rtrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                     //
                     if (j1 == j2) {
                         //
-                        //                    1-by-1 diagonal block
+                        // 1-by-1 diagonal block
                         //
-                        //                    Scale if necessary to avoid overflow when forming
-                        //                    the right-hand side.
+                        // Scale if necessary to avoid overflow when forming
+                        // the right-hand side.
                         //
                         if (work[j - 1] > vcrit) {
                             rec = one / vmax;
@@ -726,11 +704,11 @@ void Rtrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                         //
                         work[(j + iv * n) - 1] = work[(j + iv * n) - 1] - Rdot(j - ki - 1, &t[((ki + 1) - 1) + (j - 1) * ldt], 1, &work[(ki + 1 + iv * n) - 1], 1);
                         //
-                        //                    Solve [ T(J,J) - WR ]**T * X = WORK
+                        // Solve [ T(J,J) - WR ]**T * X = WORK
                         //
                         Rlaln2(false, 1, 1, smin, one, &t[(j - 1) + (j - 1) * ldt], ldt, one, one, &work[(j + iv * n) - 1], n, wr, zero, x, 2, scale, xnorm, ierr);
                         //
-                        //                    Scale if necessary
+                        // Scale if necessary
                         //
                         if (scale != one) {
                             Rscal(n - ki + 1, scale, &work[(ki + iv * n) - 1], 1);
@@ -741,10 +719,10 @@ void Rtrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                         //
                     } else {
                         //
-                        //                    2-by-2 diagonal block
+                        // 2-by-2 diagonal block
                         //
-                        //                    Scale if necessary to avoid overflow when forming
-                        //                    the right-hand side.
+                        // Scale if necessary to avoid overflow when forming
+                        // the right-hand side.
                         //
                         beta = max(work[j - 1], work[(j + 1) - 1]);
                         if (beta > vcrit) {
@@ -758,13 +736,13 @@ void Rtrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                         //
                         work[(j + 1 + iv * n) - 1] = work[(j + 1 + iv * n) - 1] - Rdot(j - ki - 1, &t[((ki + 1) - 1) + ((j + 1) - 1) * ldt], 1, &work[(ki + 1 + iv * n) - 1], 1);
                         //
-                        //                    Solve
-                        //                    [ T(J,J)-WR   T(J,J+1)      ]**T * X = SCALE*( WORK1 )
-                        //                    [ T(J+1,J)    T(J+1,J+1)-WR ]                ( WORK2 )
+                        // Solve
+                        // [ T(J,J)-WR   T(J,J+1)      ]**T * X = SCALE*( WORK1 )
+                        // [ T(J+1,J)    T(J+1,J+1)-WR ]                ( WORK2 )
                         //
                         Rlaln2(true, 2, 1, smin, one, &t[(j - 1) + (j - 1) * ldt], ldt, one, one, &work[(j + iv * n) - 1], n, wr, zero, x, 2, scale, xnorm, ierr);
                         //
-                        //                    Scale if necessary
+                        // Scale if necessary
                         //
                         if (scale != one) {
                             Rscal(n - ki + 1, scale, &work[(ki + iv * n) - 1], 1);
@@ -779,7 +757,7 @@ void Rtrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                 statement_170:;
                 }
                 //
-                //              Copy the vector x or Q*x to VL and normalize.
+                // Copy the vector x or Q*x to VL and normalize.
                 //
                 if (!over) {
                     // ------------------------------
@@ -818,12 +796,12 @@ void Rtrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                 }
             } else {
                 //
-                //              --------------------------------------------------------
-                //              Complex left eigenvector.
+                // --------------------------------------------------------
+                // Complex left eigenvector.
                 //
-                //              Initial solve:
-                //              [ ( T(KI,KI)    T(KI,KI+1)  )**T - (WR - I* WI) ]*X = 0.
-                //              [ ( T(KI+1,KI) T(KI+1,KI+1) )                   ]
+                // Initial solve:
+                // [ ( T(KI,KI)    T(KI,KI+1)  )**T - (WR - I* WI) ]*X = 0.
+                // [ ( T(KI+1,KI) T(KI+1,KI+1) )                   ]
                 //
                 if (abs(t[(ki - 1) + ((ki + 1) - 1) * ldt]) >= abs(t[((ki + 1) - 1) + (ki - 1) * ldt])) {
                     work[(ki + (iv)*n) - 1] = wi / t[(ki - 1) + ((ki + 1) - 1) * ldt];
@@ -835,15 +813,15 @@ void Rtrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                 work[(ki + 1 + (iv)*n) - 1] = zero;
                 work[(ki + (iv + 1) * n) - 1] = zero;
                 //
-                //              Form right-hand side.
+                // Form right-hand side.
                 //
                 for (k = ki + 2; k <= n; k = k + 1) {
                     work[(k + (iv)*n) - 1] = -work[(ki + (iv)*n) - 1] * t[(ki - 1) + (k - 1) * ldt];
                     work[(k + (iv + 1) * n) - 1] = -work[(ki + 1 + (iv + 1) * n) - 1] * t[((ki + 1) - 1) + (k - 1) * ldt];
                 }
                 //
-                //              Solve transposed quasi-triangular system:
-                //              [ T(KI+2:N,KI+2:N)**T - (WR-i*WI) ]*X = WORK1+i*WORK2
+                // Solve transposed quasi-triangular system:
+                // [ T(KI+2:N,KI+2:N)**T - (WR-i*WI) ]*X = WORK1+i*WORK2
                 //
                 vmax = one;
                 vcrit = bignum;
@@ -865,10 +843,10 @@ void Rtrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                     //
                     if (j1 == j2) {
                         //
-                        //                    1-by-1 diagonal block
+                        // 1-by-1 diagonal block
                         //
-                        //                    Scale if necessary to avoid overflow when
-                        //                    forming the right-hand side elements.
+                        // Scale if necessary to avoid overflow when
+                        // forming the right-hand side elements.
                         //
                         if (work[j - 1] > vcrit) {
                             rec = one / vmax;
@@ -881,11 +859,11 @@ void Rtrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                         work[(j + (iv)*n) - 1] = work[(j + (iv)*n) - 1] - Rdot(j - ki - 2, &t[((ki + 2) - 1) + (j - 1) * ldt], 1, &work[(ki + 2 + (iv)*n) - 1], 1);
                         work[(j + (iv + 1) * n) - 1] = work[(j + (iv + 1) * n) - 1] - Rdot(j - ki - 2, &t[((ki + 2) - 1) + (j - 1) * ldt], 1, &work[(ki + 2 + (iv + 1) * n) - 1], 1);
                         //
-                        //                    Solve [ T(J,J)-(WR-i*WI) ]*(X11+i*X12)= WK+I*WK2
+                        // Solve [ T(J,J)-(WR-i*WI) ]*(X11+i*X12)= WK+I*WK2
                         //
                         Rlaln2(false, 1, 2, smin, one, &t[(j - 1) + (j - 1) * ldt], ldt, one, one, &work[(j + iv * n) - 1], n, wr, -wi, x, 2, scale, xnorm, ierr);
                         //
-                        //                    Scale if necessary
+                        // Scale if necessary
                         //
                         if (scale != one) {
                             Rscal(n - ki + 1, scale, &work[(ki + (iv)*n) - 1], 1);
@@ -898,10 +876,10 @@ void Rtrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                         //
                     } else {
                         //
-                        //                    2-by-2 diagonal block
+                        // 2-by-2 diagonal block
                         //
-                        //                    Scale if necessary to avoid overflow when forming
-                        //                    the right-hand side elements.
+                        // Scale if necessary to avoid overflow when forming
+                        // the right-hand side elements.
                         //
                         beta = max(work[j - 1], work[(j + 1) - 1]);
                         if (beta > vcrit) {
@@ -920,13 +898,13 @@ void Rtrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                         //
                         work[(j + 1 + (iv + 1) * n) - 1] = work[(j + 1 + (iv + 1) * n) - 1] - Rdot(j - ki - 2, &t[((ki + 2) - 1) + ((j + 1) - 1) * ldt], 1, &work[(ki + 2 + (iv + 1) * n) - 1], 1);
                         //
-                        //                    Solve 2-by-2 complex linear equation
-                        //                    [ (T(j,j)   T(j,j+1)  )**T - (wr-i*wi)*I ]*X = SCALE*B
-                        //                    [ (T(j+1,j) T(j+1,j+1))                  ]
+                        // Solve 2-by-2 complex linear equation
+                        // [ (T(j,j)   T(j,j+1)  )**T - (wr-i*wi)*I ]*X = SCALE*B
+                        // [ (T(j+1,j) T(j+1,j+1))                  ]
                         //
                         Rlaln2(true, 2, 2, smin, one, &t[(j - 1) + (j - 1) * ldt], ldt, one, one, &work[(j + iv * n) - 1], n, wr, -wi, x, 2, scale, xnorm, ierr);
                         //
-                        //                    Scale if necessary
+                        // Scale if necessary
                         //
                         if (scale != one) {
                             Rscal(n - ki + 1, scale, &work[(ki + (iv)*n) - 1], 1);
@@ -943,7 +921,7 @@ void Rtrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                 statement_200:;
                 }
                 //
-                //              Copy the vector x or Q*x to VL and normalize.
+                // Copy the vector x or Q*x to VL and normalize.
                 //
                 if (!over) {
                     // ------------------------------
@@ -1009,9 +987,9 @@ void Rtrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                     ki2 = ki + 1;
                 }
                 //
-                //              Columns 1:IV of work are valid vectors.
-                //              When the number of vectors stored reaches NB-1 or NB,
-                //              or if this was last vector, do the GEMM
+                // Columns 1:IV of work are valid vectors.
+                // When the number of vectors stored reaches NB-1 or NB,
+                // or if this was last vector, do the GEMM
                 if ((iv >= nb - 1) || (ki2 == n)) {
                     Rgemm("N", "N", n, iv, n - ki2 + iv, one, &vl[((ki2 - iv + 1) - 1) * ldvl], ldvl, &work[(ki2 - iv + 1 + (1) * n) - 1], n, zero, &work[(1 + (nb + 1) * n) - 1], n);
                     // normalize vectors
@@ -1028,8 +1006,8 @@ void Rtrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                             }
                             remax = one / emax;
                             // else if ISCOMPLEX(K).EQ.-1
-                            //    second eigenvector of conjugate pair
-                            //    reuse same REMAX as previous K
+                            // second eigenvector of conjugate pair
+                            // reuse same REMAX as previous K
                         }
                         Rscal(n, remax, &work[(1 + (nb + k) * n) - 1], 1);
                     }
@@ -1049,6 +1027,6 @@ void Rtrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
         }
     }
     //
-    //     End of Rtrevc3
+    // End of Rtrevc3
     //
 }

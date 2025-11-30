@@ -31,28 +31,11 @@
 
 void Rormtr(const char *side, const char *uplo, const char *trans, INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *tau, REAL *c, INTEGER const ldc, REAL *work, INTEGER const lwork, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
     //
-    //  =====================================================================
     //
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
-    //     Test the input arguments
+    // Test the input arguments
     //
     info = 0;
     bool left = Mlsame(side, "L");
@@ -118,7 +101,7 @@ void Rormtr(const char *side, const char *uplo, const char *trans, INTEGER const
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (m == 0 || n == 0 || nq == 1) {
         work[1 - 1] = 1;
@@ -140,12 +123,12 @@ void Rormtr(const char *side, const char *uplo, const char *trans, INTEGER const
     INTEGER i2 = 0;
     if (upper) {
         //
-        //        Q was determined by a call to Rsytrd with UPLO = 'U'
+        // Q was determined by a call to Rsytrd with UPLO = 'U'
         //
         Rormql(side, trans, mi, ni, nq - 1, &a[(2 - 1) * lda], lda, tau, c, ldc, work, lwork, iinfo);
     } else {
         //
-        //        Q was determined by a call to Rsytrd with UPLO = 'L'
+        // Q was determined by a call to Rsytrd with UPLO = 'L'
         //
         if (left) {
             i1 = 2;
@@ -158,6 +141,6 @@ void Rormtr(const char *side, const char *uplo, const char *trans, INTEGER const
     }
     work[1 - 1] = lwkopt;
     //
-    //     End of Rormtr
+    // End of Rormtr
     //
 }

@@ -31,25 +31,11 @@
 
 void Cgelqt(INTEGER const m, INTEGER const n, INTEGER const mb, COMPLEX *a, INTEGER const lda, COMPLEX *t, INTEGER const ldt, COMPLEX *work, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
     //
-    // =====================================================================
     //
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Executable Statements ..
     //
-    //     Test the input arguments
+    // Test the input arguments
     //
     info = 0;
     if (m < 0) {
@@ -68,14 +54,14 @@ void Cgelqt(INTEGER const m, INTEGER const n, INTEGER const mb, COMPLEX *a, INTE
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     INTEGER k = min(m, n);
     if (k == 0) {
         return;
     }
     //
-    //     Blocked loop of length K
+    // Blocked loop of length K
     //
     INTEGER i = 0;
     INTEGER ib = 0;
@@ -83,17 +69,17 @@ void Cgelqt(INTEGER const m, INTEGER const n, INTEGER const mb, COMPLEX *a, INTE
     for (i = 1; i <= k; i = i + mb) {
         ib = min(k - i + 1, mb);
         //
-        //     Compute the LQ factorization of the current block A(I:M,I:I+IB-1)
+        // Compute the LQ factorization of the current block A(I:M,I:I+IB-1)
         //
         Cgelqt3(ib, n - i + 1, &a[(i - 1) + (i - 1) * lda], lda, &t[(i - 1) * ldt], ldt, iinfo);
         if (i + ib <= m) {
             //
-            //     Update by applying H**T to A(I:M,I+IB:N) from the right
+            // Update by applying H**T to A(I:M,I+IB:N) from the right
             //
             Clarfb("R", "N", "F", "R", m - i - ib + 1, n - i + 1, ib, &a[(i - 1) + (i - 1) * lda], lda, &t[(i - 1) * ldt], ldt, &a[((i + ib) - 1) + (i - 1) * lda], lda, work, m - i - ib + 1);
         }
     }
     //
-    //     End of Cgelqt
+    // End of Cgelqt
     //
 }

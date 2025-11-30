@@ -31,28 +31,11 @@
 
 void Csysv_aa_2stage(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a, INTEGER const lda, COMPLEX *tb, INTEGER const ltb, INTEGER *ipiv, INTEGER *ipiv2, COMPLEX *b, INTEGER const ldb, COMPLEX *work, INTEGER const lwork, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
     //
-    //  =====================================================================
     //
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     bool upper = Mlsame(uplo, "U");
@@ -87,12 +70,12 @@ void Csysv_aa_2stage(const char *uplo, INTEGER const n, INTEGER const nrhs, COMP
         return;
     }
     //
-    //     Compute the factorization A = U**T*T*U or A = L*T*L**T.
+    // Compute the factorization A = U**T*T*U or A = L*T*L**T.
     //
     Csytrf_aa_2stage(uplo, n, a, lda, tb, ltb, ipiv, ipiv2, work, lwork, info);
     if (info == 0) {
         //
-        //        Solve the system A*X = B, overwriting B with X.
+        // Solve the system A*X = B, overwriting B with X.
         //
         Csytrs_aa_2stage(uplo, n, nrhs, a, lda, tb, ltb, ipiv, ipiv2, b, ldb, info);
         //
@@ -100,6 +83,6 @@ void Csysv_aa_2stage(const char *uplo, INTEGER const n, INTEGER const nrhs, COMP
     //
     work[1 - 1] = lwkopt;
     //
-    //     End of Csysv_aa_2stage
+    // End of Csysv_aa_2stage
     //
 }

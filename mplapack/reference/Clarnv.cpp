@@ -43,44 +43,44 @@ void Clarnv(INTEGER const idist, INTEGER *iseed, INTEGER const n, COMPLEX *x) {
     for (iv = 1; iv <= n; iv = iv + lv / 2) {
         il = min(lv / 2, n - iv + 1);
         //
-        //        Call DLARUV to generate 2*IL real numbers from a uniform (0,1)
-        //        distribution (2*IL <= LV)
+        // Call DLARUV to generate 2*IL real numbers from a uniform (0,1)
+        // distribution (2*IL <= LV)
         //
         Rlaruv(iseed, 2 * il, u);
         //
         if (idist == 1) {
             //
-            //           Copy generated numbers
+            // Copy generated numbers
             //
             for (i = 1; i <= il; i = i + 1) {
                 x[(iv + i - 1) - 1] = COMPLEX(u[(2 * i - 1) - 1], u[(2 * i) - 1]);
             }
         } else if (idist == 2) {
             //
-            //           Convert generated numbers to uniform (-1,1) distribution
+            // Convert generated numbers to uniform (-1,1) distribution
             //
             for (i = 1; i <= il; i = i + 1) {
                 x[(iv + i - 1) - 1] = COMPLEX(two * u[(2 * i - 1) - 1] - one, two * u[(2 * i) - 1] - one);
             }
         } else if (idist == 3) {
             //
-            //           Convert generated numbers to normal (0,1) distribution
+            // Convert generated numbers to normal (0,1) distribution
             //
             for (i = 1; i <= il; i = i + 1) {
                 x[(iv + i - 1) - 1] = sqrt(-two * log(u[(2 * i - 1) - 1])) * exp(COMPLEX(zero, twopi * u[(2 * i) - 1]));
             }
         } else if (idist == 4) {
             //
-            //           Convert generated numbers to complex numbers uniformly
-            //           distributed on the unit disk
+            // Convert generated numbers to complex numbers uniformly
+            // distributed on the unit disk
             //
             for (i = 1; i <= il; i = i + 1) {
                 x[(iv + i - 1) - 1] = sqrt(u[(2 * i - 1) - 1]) * exp(COMPLEX(zero, twopi * u[(2 * i) - 1]));
             }
         } else if (idist == 5) {
             //
-            //           Convert generated numbers to complex numbers uniformly
-            //           distributed on the unit circle
+            // Convert generated numbers to complex numbers uniformly
+            // distributed on the unit circle
             //
             for (i = 1; i <= il; i = i + 1) {
                 x[(iv + i - 1) - 1] = exp(COMPLEX(zero, twopi * u[(2 * i) - 1]));
@@ -88,6 +88,6 @@ void Clarnv(INTEGER const idist, INTEGER *iseed, INTEGER const n, COMPLEX *x) {
         }
     }
     //
-    //     End of Clarnv
+    // End of Clarnv
     //
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -29,36 +29,71 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Chpsv(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *ap, INTEGER *ipiv, COMPLEX *b, INTEGER const ldb, INTEGER &info) {
+void CRrscl(INTEGER const n, REAL const sa, COMPLEX *sx, INTEGER const incx) {
+    REAL smlnum = 0.0;
+    const REAL one = 1.0;
+    REAL bignum = 0.0;
+    REAL cden = 0.0;
+    REAL cnum = 0.0;
+    REAL cden1 = 0.0;
+    REAL cnum1 = 0.0;
+    const REAL zero = 0.0;
+    REAL mul = 0.0;
+    bool done = false;
     //
-    // Test the input parameters.
     //
-    info = 0;
-    if (!Mlsame(uplo, "U") && !Mlsame(uplo, "L")) {
-        info = -1;
-    } else if (n < 0) {
-        info = -2;
-    } else if (nrhs < 0) {
-        info = -3;
-    } else if (ldb < max((INTEGER)1, n)) {
-        info = -7;
-    }
-    if (info != 0) {
-        Mxerbla("Chpsv", -info);
+    //
+    //
+    //
+    // Quick return if possible
+    //
+    if (n <= 0) {
         return;
     }
     //
-    // Compute the factorization A = U*D*U**H or A = L*D*L**H.
+    // Get machine parameters
     //
-    Chptrf(uplo, n, ap, ipiv, info);
-    if (info == 0) {
+    smlnum = Rlamch("S");
+    bignum = one / smlnum;
+    //
+    // Initialize the denominator to SA and the numerator to 1.
+    //
+    cden = sa;
+    cnum = one;
+//
+statement_10:
+    cden1 = cden * smlnum;
+    cnum1 = cnum / bignum;
+    if (abs(cden1) > abs(cnum) && cnum != zero) {
         //
-        // Solve the system A*X = B, overwriting B with X.
+        // Pre-multiply X by SMLNUM if CDEN is large compared to CNUM.
         //
-        Chptrs(uplo, n, nrhs, ap, ipiv, b, ldb, info);
+        mul = smlnum;
+        done = false;
+        cden = cden1;
+    } else if (abs(cnum1) > abs(cden)) {
         //
+        // Pre-multiply X by BIGNUM if CDEN is small compared to CNUM.
+        //
+        mul = bignum;
+        done = false;
+        cnum = cnum1;
+    } else {
+        //
+        // Multiply X by CNUM / CDEN and return.
+        //
+        mul = cnum / cden;
+        done = true;
     }
     //
-    // End of Chpsv
+    // Scale the vector X by MUL
+    //
+    CRscal(n, mul, sx, incx);
+    //
+    if (!done) {
+        goto statement_10;
+    }
+    //
+    // End of Cdrscl
     //
 }

@@ -31,7 +31,7 @@
 
 void Rsbgv(const char *jobz, const char *uplo, INTEGER const n, INTEGER const ka, INTEGER const kb, REAL *ab, INTEGER const ldab, REAL *bb, INTEGER const ldbb, REAL *w, REAL *z, INTEGER const ldz, REAL *work, INTEGER &info) {
     //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     bool wantz = Mlsame(jobz, "V");
     bool upper = Mlsame(uplo, "U");
@@ -59,13 +59,13 @@ void Rsbgv(const char *jobz, const char *uplo, INTEGER const n, INTEGER const ka
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0) {
         return;
     }
     //
-    //     Form a split Cholesky factorization of B.
+    // Form a split Cholesky factorization of B.
     //
     Rpbstf(uplo, n, kb, bb, ldbb, info);
     if (info != 0) {
@@ -73,14 +73,14 @@ void Rsbgv(const char *jobz, const char *uplo, INTEGER const n, INTEGER const ka
         return;
     }
     //
-    //     Transform problem to standard eigenvalue problem.
+    // Transform problem to standard eigenvalue problem.
     //
     INTEGER inde = 1;
     INTEGER indwrk = inde + n;
     INTEGER iinfo = 0;
     Rsbgst(jobz, uplo, n, ka, kb, ab, ldab, bb, ldbb, z, ldz, &work[indwrk - 1], iinfo);
     //
-    //     Reduce to tridiagonal form.
+    // Reduce to tridiagonal form.
     //
     char vect;
     if (wantz) {
@@ -90,7 +90,7 @@ void Rsbgv(const char *jobz, const char *uplo, INTEGER const n, INTEGER const ka
     }
     Rsbtrd(&vect, uplo, n, ka, ab, ldab, w, &work[inde - 1], z, ldz, &work[indwrk - 1], iinfo);
     //
-    //     For eigenvalues only, call Rsterf.  For eigenvectors, call SSTEQR.
+    // For eigenvalues only, call Rsterf.  For eigenvectors, call SSTEQR.
     //
     if (!wantz) {
         Rsterf(n, w, &work[inde - 1], info);
@@ -98,6 +98,6 @@ void Rsbgv(const char *jobz, const char *uplo, INTEGER const n, INTEGER const ka
         Rsteqr(jobz, n, w, &work[inde - 1], z, ldz, &work[indwrk - 1], info);
     }
     //
-    //     End of Rsbgv
+    // End of Rsbgv
     //
 }

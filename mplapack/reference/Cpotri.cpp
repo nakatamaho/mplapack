@@ -31,26 +31,11 @@
 
 void Cpotri(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
     //
-    //  =====================================================================
     //
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     if (!Mlsame(uplo, "U") && !Mlsame(uplo, "L")) {
@@ -65,23 +50,23 @@ void Cpotri(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0) {
         return;
     }
     //
-    //     Invert the triangular Cholesky factor U or L.
+    // Invert the triangular Cholesky factor U or L.
     //
     Ctrtri(uplo, "Non-unit", n, a, lda, info);
     if (info > 0) {
         return;
     }
     //
-    //     Form inv(U) * inv(U)**H or inv(L)**H * inv(L).
+    // Form inv(U) * inv(U)**H or inv(L)**H * inv(L).
     //
     Clauum(uplo, n, a, lda, info);
     //
-    //     End of Cpotri
+    // End of Cpotri
     //
 }

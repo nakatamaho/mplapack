@@ -31,27 +31,9 @@
 
 void Rsb2st_kernels(const char *uplo, bool const wantz, INTEGER const ttype, INTEGER const st, INTEGER const ed, INTEGER const sweep, INTEGER const n, INTEGER const nb, INTEGER const ib, REAL *a, INTEGER const lda, REAL *v, REAL *tau, INTEGER const ldvt, REAL *work) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
     //
-    //  =====================================================================
     //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
     INTEGER ajeter = ib + ldvt;
     bool upper = Mlsame(uplo, "U");
@@ -66,7 +48,7 @@ void Rsb2st_kernels(const char *uplo, bool const wantz, INTEGER const ttype, INT
         ofdpos = 2;
     }
     //
-    //     Upper case
+    // Upper case
     //
     INTEGER vpos = 0;
     INTEGER taupos = 0;
@@ -139,7 +121,7 @@ void Rsb2st_kernels(const char *uplo, bool const wantz, INTEGER const ttype, INT
             }
         }
         //
-        //     Lower case
+        // Lower case
         //
     } else {
         //
@@ -204,6 +186,6 @@ void Rsb2st_kernels(const char *uplo, bool const wantz, INTEGER const ttype, INT
         }
     }
     //
-    //     END OF Rsb2st_kernels
+    // END OF Rsb2st_kernels
     //
 }

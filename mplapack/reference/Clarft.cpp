@@ -31,28 +31,11 @@
 
 void Clarft(const char *direct, const char *storev, INTEGER const n, INTEGER const k, COMPLEX *v, INTEGER const ldv, COMPLEX *tau, COMPLEX *t, INTEGER const ldt) {
     //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
     //
-    //  =====================================================================
     //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0) {
         return;
@@ -70,14 +53,14 @@ void Clarft(const char *direct, const char *storev, INTEGER const n, INTEGER con
             prevlastv = max(prevlastv, i);
             if (tau[i - 1] == zero) {
                 //
-                //              H(i)  =  I
+                // H(i)  =  I
                 //
                 for (j = 1; j <= i; j = j + 1) {
                     t[(j - 1) + (i - 1) * ldt] = zero;
                 }
             } else {
                 //
-                //              general case
+                // general case
                 //
                 if (Mlsame(storev, "C")) {
                     // Skip any trailing zeros.
@@ -91,7 +74,7 @@ void Clarft(const char *direct, const char *storev, INTEGER const n, INTEGER con
                     }
                     j = min(lastv, prevlastv);
                     //
-                    //                 T(1:i-1,i) := - tau(i) * V(i:j,1:i-1)**H * V(i:j,i)
+                    // T(1:i-1,i) := - tau(i) * V(i:j,1:i-1)**H * V(i:j,i)
                     //
                     Cgemv("Conjugate transpose", j - i, i - 1, -tau[i - 1], &v[((i + 1) - 1)], ldv, &v[((i + 1) - 1) + (i - 1) * ldv], 1, one, &t[(i - 1) * ldt], 1);
                 } else {
@@ -106,12 +89,12 @@ void Clarft(const char *direct, const char *storev, INTEGER const n, INTEGER con
                     }
                     j = min(lastv, prevlastv);
                     //
-                    //                 T(1:i-1,i) := - tau(i) * V(1:i-1,i:j) * V(i,i:j)**H
+                    // T(1:i-1,i) := - tau(i) * V(1:i-1,i:j) * V(i,i:j)**H
                     //
                     Cgemm("N", "C", i - 1, 1, j - i, -tau[i - 1], &v[((i + 1) - 1) * ldv], ldv, &v[(i - 1) + ((i + 1) - 1) * ldv], ldv, one, &t[(i - 1) * ldt], ldt);
                 }
                 //
-                //              T(1:i-1,i) := T(1:i-1,1:i-1) * T(1:i-1,i)
+                // T(1:i-1,i) := T(1:i-1,1:i-1) * T(1:i-1,i)
                 //
                 Ctrmv("Upper", "No transpose", "Non-unit", i - 1, t, ldt, &t[(i - 1) * ldt], 1);
                 t[(i - 1) + (i - 1) * ldt] = tau[i - 1];
@@ -127,14 +110,14 @@ void Clarft(const char *direct, const char *storev, INTEGER const n, INTEGER con
         for (i = k; i >= 1; i = i - 1) {
             if (tau[i - 1] == zero) {
                 //
-                //              H(i)  =  I
+                // H(i)  =  I
                 //
                 for (j = i; j <= k; j = j + 1) {
                     t[(j - 1) + (i - 1) * ldt] = zero;
                 }
             } else {
                 //
-                //              general case
+                // general case
                 //
                 if (i < k) {
                     if (Mlsame(storev, "C")) {
@@ -149,7 +132,7 @@ void Clarft(const char *direct, const char *storev, INTEGER const n, INTEGER con
                         }
                         j = max(lastv, prevlastv);
                         //
-                        //                    T(i+1:k,i) = -tau(i) * V(j:n-k+i,i+1:k)**H * V(j:n-k+i,i)
+                        // T(i+1:k,i) = -tau(i) * V(j:n-k+i,i+1:k)**H * V(j:n-k+i,i)
                         //
                         Cgemv("Conjugate transpose", n - k + i - j, k - i, -tau[i - 1], &v[(j - 1) + ((i + 1) - 1) * ldv], ldv, &v[(j - 1) + (i - 1) * ldv], 1, one, &t[((i + 1) - 1) + (i - 1) * ldt], 1);
                     } else {
@@ -164,12 +147,12 @@ void Clarft(const char *direct, const char *storev, INTEGER const n, INTEGER con
                         }
                         j = max(lastv, prevlastv);
                         //
-                        //                    T(i+1:k,i) = -tau(i) * V(i+1:k,j:n-k+i) * V(i,j:n-k+i)**H
+                        // T(i+1:k,i) = -tau(i) * V(i+1:k,j:n-k+i) * V(i,j:n-k+i)**H
                         //
                         Cgemm("N", "C", k - i, 1, n - k + i - j, -tau[i - 1], &v[((i + 1) - 1) + (j - 1) * ldv], ldv, &v[(i - 1) + (j - 1) * ldv], ldv, one, &t[((i + 1) - 1) + (i - 1) * ldt], ldt);
                     }
                     //
-                    //                 T(i+1:k,i) := T(i+1:k,i+1:k) * T(i+1:k,i)
+                    // T(i+1:k,i) := T(i+1:k,i+1:k) * T(i+1:k,i)
                     //
                     Ctrmv("Lower", "No transpose", "Non-unit", k - i, &t[((i + 1) - 1) + ((i + 1) - 1) * ldt], ldt, &t[((i + 1) - 1) + (i - 1) * ldt], 1);
                     if (i > 1) {
@@ -183,6 +166,6 @@ void Clarft(const char *direct, const char *storev, INTEGER const n, INTEGER con
         }
     }
     //
-    //     End of Clarft
+    // End of Clarft
     //
 }

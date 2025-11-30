@@ -45,7 +45,7 @@ REAL Rlansy(const char *norm, const char *uplo, INTEGER const n, REAL *a, INTEGE
         value = zero;
     } else if (Mlsame(norm, "M")) {
         //
-        //        Find max(abs(A(i,j))).
+        // Find max(abs(A(i,j))).
         //
         value = zero;
         if (Mlsame(uplo, "U")) {
@@ -69,7 +69,7 @@ REAL Rlansy(const char *norm, const char *uplo, INTEGER const n, REAL *a, INTEGE
         }
     } else if ((Mlsame(norm, "I")) || (Mlsame(norm, "O")) || (Mlsame(norm, "1"))) {
         //
-        //        Find normI(A) ( = norm1(A), since A is symmetric).
+        // Find normI(A) ( = norm1(A), since A is symmetric).
         //
         value = zero;
         if (Mlsame(uplo, "U")) {
@@ -106,15 +106,15 @@ REAL Rlansy(const char *norm, const char *uplo, INTEGER const n, REAL *a, INTEGE
         }
     } else if ((Mlsame(norm, "F")) || (Mlsame(norm, "E"))) {
         //
-        //        Find normF(A).
-        //        SSQ(1) is scale
-        //        SSQ(2) is sum-of-squares
-        //        For better accuracy, sum each column separately.
+        // Find normF(A).
+        // SSQ(1) is scale
+        // SSQ(2) is sum-of-squares
+        // For better accuracy, sum each column separately.
         //
         ssq[1 - 1] = zero;
         ssq[2 - 1] = one;
         //
-        //        Sum off-diagonals
+        // Sum off-diagonals
         //
         if (Mlsame(uplo, "U")) {
             for (j = 2; j <= n; j = j + 1) {
@@ -133,7 +133,7 @@ REAL Rlansy(const char *norm, const char *uplo, INTEGER const n, REAL *a, INTEGE
         }
         ssq[2 - 1] = 2 * ssq[2 - 1];
         //
-        //        Sum diagonal
+        // Sum diagonal
         //
         colssq[1 - 1] = zero;
         colssq[2 - 1] = one;
@@ -145,6 +145,6 @@ REAL Rlansy(const char *norm, const char *uplo, INTEGER const n, REAL *a, INTEGE
     return_value = value;
     return return_value;
     //
-    //     End of Rlansy
+    // End of Rlansy
     //
 }

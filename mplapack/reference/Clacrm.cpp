@@ -31,28 +31,11 @@
 
 void Clacrm(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, REAL *b, INTEGER const ldb, COMPLEX *c, INTEGER const ldc, REAL *rwork) {
     //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
     //
-    //  =====================================================================
     //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Executable Statements ..
     //
-    //     Quick return if possible.
+    // Quick return if possible.
     //
     if ((m == 0) || (n == 0)) {
         return;
@@ -88,6 +71,6 @@ void Clacrm(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, REA
         }
     }
     //
-    //     End of Clacrm
+    // End of Clacrm
     //
 }

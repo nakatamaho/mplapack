@@ -54,31 +54,12 @@ void Rlaed8(INTEGER const icompq, INTEGER &k, INTEGER const n, INTEGER const qsi
     INTEGER ldgivcol = 2;
     INTEGER ldgivnum = 2;
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
     //
-    //  =====================================================================
     //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
     //
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     //
@@ -100,14 +81,14 @@ void Rlaed8(INTEGER const icompq, INTEGER &k, INTEGER const n, INTEGER const qsi
         return;
     }
     //
-    //     Need to initialize GIVPTR to O here in case of quick exit
-    //     to prevent an unspecified code behavior (usually sigfault)
-    //     when IWORK array on entry to *stedc is not zeroed
-    //     (or at least some IWORK entries which used in *laed7 for GIVPTR).
+    // Need to initialize GIVPTR to O here in case of quick exit
+    // to prevent an unspecified code behavior (usually sigfault)
+    // when IWORK array on entry to *stedc is not zeroed
+    // (or at least some IWORK entries which used in *laed7 for GIVPTR).
     //
     givptr = 0;
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0) {
         return;
@@ -121,7 +102,7 @@ void Rlaed8(INTEGER const icompq, INTEGER &k, INTEGER const n, INTEGER const qsi
         Rscal(n2, mone, &z[n1p1 - 1], 1);
     }
     //
-    //     Normalize z so that norm(z) = 1
+    // Normalize z so that norm(z) = 1
     //
     t = one / sqrt(two);
     for (j = 1; j <= n; j = j + 1) {
@@ -130,7 +111,7 @@ void Rlaed8(INTEGER const icompq, INTEGER &k, INTEGER const n, INTEGER const qsi
     Rscal(n, t, z, 1);
     rho = abs(two * rho);
     //
-    //     Sort the eigenvalues into increasing order
+    // Sort the eigenvalues into increasing order
     //
     for (i = cutpnt + 1; i <= n; i = i + 1) {
         indxq[i - 1] += cutpnt;
@@ -147,16 +128,16 @@ void Rlaed8(INTEGER const icompq, INTEGER &k, INTEGER const n, INTEGER const qsi
         z[i - 1] = w[indx[i - 1] - 1];
     }
     //
-    //     Calculate the allowable deflation tolerance
+    // Calculate the allowable deflation tolerance
     //
     imax = iRamax(n, z, 1);
     jmax = iRamax(n, d, 1);
     eps = Rlamch("Epsilon");
     tol = eight * eps * abs(d[jmax - 1]);
     //
-    //     If the rank-1 modifier is small enough, no more needs to be done
-    //     except to reorganize Q so that its columns correspond with the
-    //     elements in D.
+    // If the rank-1 modifier is small enough, no more needs to be done
+    // except to reorganize Q so that its columns correspond with the
+    // elements in D.
     //
     if (rho * abs(z[imax - 1]) <= tol) {
         k = 0;
@@ -174,18 +155,18 @@ void Rlaed8(INTEGER const icompq, INTEGER &k, INTEGER const n, INTEGER const qsi
         return;
     }
     //
-    //     If there are multiple eigenvalues then the problem deflates.  Here
-    //     the number of equal eigenvalues are found.  As each equal
-    //     eigenvalue is found, an elementary reflector is computed to rotate
-    //     the corresponding eigensubspace so that the corresponding
-    //     components of Z are zero in this new basis.
+    // If there are multiple eigenvalues then the problem deflates.  Here
+    // the number of equal eigenvalues are found.  As each equal
+    // eigenvalue is found, an elementary reflector is computed to rotate
+    // the corresponding eigensubspace so that the corresponding
+    // components of Z are zero in this new basis.
     //
     k = 0;
     k2 = n + 1;
     for (j = 1; j <= n; j = j + 1) {
         if (rho * abs(z[j - 1]) <= tol) {
             //
-            //           Deflate due to small z component.
+            // Deflate due to small z component.
             //
             k2 = k2 - 1;
             indxp[k2 - 1] = j;
@@ -204,19 +185,19 @@ statement_80:
     }
     if (rho * abs(z[j - 1]) <= tol) {
         //
-        //        Deflate due to small z component.
+        // Deflate due to small z component.
         //
         k2 = k2 - 1;
         indxp[k2 - 1] = j;
     } else {
         //
-        //        Check if eigenvalues are close enough to allow deflation.
+        // Check if eigenvalues are close enough to allow deflation.
         //
         s = z[jlam - 1];
         c = z[j - 1];
         //
-        //        Find sqrt(a**2+b**2) without overflow or
-        //        destructive underflow.
+        // Find sqrt(a**2+b**2) without overflow or
+        // destructive underflow.
         //
         tau = Rlapy2(c, s);
         t = d[j - 1] - d[jlam - 1];
@@ -224,12 +205,12 @@ statement_80:
         s = -s / tau;
         if (abs(t * c * s) <= tol) {
             //
-            //           Deflation is possible.
+            // Deflation is possible.
             //
             z[j - 1] = tau;
             z[jlam - 1] = zero;
             //
-            //           Record the appropriate Givens rotation
+            // Record the appropriate Givens rotation
             //
             givptr++;
             givcol[(givptr - 1) * ldgivcol] = indxq[indx[jlam - 1] - 1];
@@ -269,7 +250,7 @@ statement_80:
     goto statement_80;
 statement_100:
     //
-    //     Record the last eigenvalue.
+    // Record the last eigenvalue.
     //
     k++;
     w[k - 1] = z[jlam - 1];
@@ -278,10 +259,10 @@ statement_100:
 //
 statement_110:
     //
-    //     Sort the eigenvalues and corresponding eigenvectors into DLAMDA
-    //     and Q2 respectively.  The eigenvalues/vectors which were not
-    //     deflated go into the first K slots of DLAMDA and Q2 respectively,
-    //     while those which were deflated go into the last N - K slots.
+    // Sort the eigenvalues and corresponding eigenvectors into DLAMDA
+    // and Q2 respectively.  The eigenvalues/vectors which were not
+    // deflated go into the first K slots of DLAMDA and Q2 respectively,
+    // while those which were deflated go into the last N - K slots.
     //
     if (icompq == 0) {
         for (j = 1; j <= n; j = j + 1) {
@@ -298,8 +279,8 @@ statement_110:
         }
     }
     //
-    //     The deflated eigenvalues and their corresponding vectors go back
-    //     into the last N - K slots of D and Q respectively.
+    // The deflated eigenvalues and their corresponding vectors go back
+    // into the last N - K slots of D and Q respectively.
     //
     if (k < n) {
         if (icompq == 0) {
@@ -310,6 +291,6 @@ statement_110:
         }
     }
     //
-    //     End of Rlaed8
+    // End of Rlaed8
     //
 }

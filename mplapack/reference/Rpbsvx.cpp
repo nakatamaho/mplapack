@@ -48,7 +48,7 @@ void Rpbsvx(const char *fact, const char *uplo, INTEGER const n, INTEGER const k
         bignum = one / smlnum;
     }
     //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     REAL smin = 0.0;
     const REAL zero = 0.0;
@@ -105,19 +105,19 @@ void Rpbsvx(const char *fact, const char *uplo, INTEGER const n, INTEGER const k
     INTEGER infequ = 0;
     if (equil) {
         //
-        //        Compute row and column scalings to equilibrate the matrix A.
+        // Compute row and column scalings to equilibrate the matrix A.
         //
         Rpbequ(uplo, n, kd, ab, ldab, s, scond, amax, infequ);
         if (infequ == 0) {
             //
-            //           Equilibrate the matrix.
+            // Equilibrate the matrix.
             //
             Rlaqsb(uplo, n, kd, ab, ldab, s, scond, amax, equed);
             rcequ = Mlsame(equed, "Y");
         }
     }
     //
-    //     Scale the right-hand side.
+    // Scale the right-hand side.
     //
     INTEGER i = 0;
     if (rcequ) {
@@ -132,7 +132,7 @@ void Rpbsvx(const char *fact, const char *uplo, INTEGER const n, INTEGER const k
     INTEGER j2 = 0;
     if (nofact || equil) {
         //
-        //        Compute the Cholesky factorization A = U**T *U or A = L*L**T.
+        // Compute the Cholesky factorization A = U**T *U or A = L*L**T.
         //
         if (upper) {
             for (j = 1; j <= n; j = j + 1) {
@@ -148,7 +148,7 @@ void Rpbsvx(const char *fact, const char *uplo, INTEGER const n, INTEGER const k
         //
         Rpbtrf(uplo, n, kd, afb, ldafb, info);
         //
-        //        Return if INFO is non-zero.
+        // Return if INFO is non-zero.
         //
         if (info > 0) {
             rcond = zero;
@@ -156,26 +156,26 @@ void Rpbsvx(const char *fact, const char *uplo, INTEGER const n, INTEGER const k
         }
     }
     //
-    //     Compute the norm of the matrix A.
+    // Compute the norm of the matrix A.
     //
     REAL anorm = Rlansb("1", uplo, n, kd, ab, ldab, work);
     //
-    //     Compute the reciprocal of the condition number of A.
+    // Compute the reciprocal of the condition number of A.
     //
     Rpbcon(uplo, n, kd, afb, ldafb, anorm, rcond, work, iwork, info);
     //
-    //     Compute the solution matrix X.
+    // Compute the solution matrix X.
     //
     Rlacpy("Full", n, nrhs, b, ldb, x, ldx);
     Rpbtrs(uplo, n, kd, nrhs, afb, ldafb, x, ldx, info);
     //
-    //     Use iterative refinement to improve the computed solution and
-    //     compute error bounds and backward error estimates for it.
+    // Use iterative refinement to improve the computed solution and
+    // compute error bounds and backward error estimates for it.
     //
     Rpbrfs(uplo, n, kd, nrhs, ab, ldab, afb, ldafb, b, ldb, x, ldx, ferr, berr, work, iwork, info);
     //
-    //     Transform the solution matrix X to a solution of the original
-    //     system.
+    // Transform the solution matrix X to a solution of the original
+    // system.
     //
     if (rcequ) {
         for (j = 1; j <= nrhs; j = j + 1) {
@@ -188,12 +188,12 @@ void Rpbsvx(const char *fact, const char *uplo, INTEGER const n, INTEGER const k
         }
     }
     //
-    //     Set INFO = N+1 if the matrix is singular to working precision.
+    // Set INFO = N+1 if the matrix is singular to working precision.
     //
     if (rcond < Rlamch("Epsilon")) {
         info = n + 1;
     }
     //
-    //     End of Rpbsvx
+    // End of Rpbsvx
     //
 }

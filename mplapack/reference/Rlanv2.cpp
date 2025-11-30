@@ -67,7 +67,7 @@ void Rlanv2(REAL &a, REAL &b, REAL &c, REAL &d, REAL &rt1r, REAL &rt1i, REAL &rt
         //
     } else if (b == zero) {
         //
-        //        Swap rows and columns
+        // Swap rows and columns
         //
         cs = zero;
         sn = one;
@@ -90,18 +90,18 @@ void Rlanv2(REAL &a, REAL &b, REAL &c, REAL &d, REAL &rt1r, REAL &rt1i, REAL &rt
         scale = max(REAL(abs(p)), bcmax);
         z = (p / scale) * p + (bcmax / scale) * bcmis;
         //
-        //        If Z is of the order of the machine accuracy, postpone the
-        //        decision on the nature of eigenvalues
+        // If Z is of the order of the machine accuracy, postpone the
+        // decision on the nature of eigenvalues
         //
         if (z >= multpl * eps) {
             //
-            //           Real eigenvalues. Compute A and D.
+            // Real eigenvalues. Compute A and D.
             //
             z = p + sign(sqrt(scale) * sqrt(z), p);
             a = d + z;
             d = d - (bcmax / z) * bcmis;
             //
-            //           Compute B and the rotation matrix
+            // Compute B and the rotation matrix
             //
             tau = Rlapy2(c, z);
             cs = z / tau;
@@ -111,8 +111,8 @@ void Rlanv2(REAL &a, REAL &b, REAL &c, REAL &d, REAL &rt1r, REAL &rt1i, REAL &rt
             //
         } else {
             //
-            //           Complex eigenvalues, or real (almost) equal eigenvalues.
-            //           Make diagonal elements equal.
+            // Complex eigenvalues, or real (almost) equal eigenvalues.
+            // Make diagonal elements equal.
             //
             count = 0;
             sigma = b + c;
@@ -138,16 +138,16 @@ void Rlanv2(REAL &a, REAL &b, REAL &c, REAL &d, REAL &rt1r, REAL &rt1i, REAL &rt
             cs = sqrt(half * (one + abs(sigma) / tau));
             sn = -(p / (tau * cs)) * sign(one, sigma);
             //
-            //           Compute [ AA  BB ] = [ A  B ] [ CS -SN ]
-            //                   [ CC  DD ]   [ C  D ] [ SN  CS ]
+            // Compute [ AA  BB ] = [ A  B ] [ CS -SN ]
+            // [ CC  DD ]   [ C  D ] [ SN  CS ]
             //
             aa = a * cs + b * sn;
             bb = -a * sn + b * cs;
             cc = c * cs + d * sn;
             dd = -c * sn + d * cs;
             //
-            //           Compute [ A  B ] = [ CS  SN ] [ AA  BB ]
-            //                   [ C  D ]   [-SN  CS ] [ CC  DD ]
+            // Compute [ A  B ] = [ CS  SN ] [ AA  BB ]
+            // [ C  D ]   [-SN  CS ] [ CC  DD ]
             //
             a = aa * cs + cc * sn;
             b = bb * cs + dd * sn;
@@ -162,7 +162,7 @@ void Rlanv2(REAL &a, REAL &b, REAL &c, REAL &d, REAL &rt1r, REAL &rt1i, REAL &rt
                 if (b != zero) {
                     if (sign(one, b) == sign(one, c)) {
                         //
-                        //                    Real eigenvalues: reduce to upper triangular form
+                        // Real eigenvalues: reduce to upper triangular form
                         //
                         sab = sqrt(abs(b));
                         sac = sqrt(abs(c));
@@ -190,7 +190,7 @@ void Rlanv2(REAL &a, REAL &b, REAL &c, REAL &d, REAL &rt1r, REAL &rt1i, REAL &rt
         //
     }
     //
-    //     Store eigenvalues in (RT1R,RT1I) and (RT2R,RT2I).
+    // Store eigenvalues in (RT1R,RT1I) and (RT2R,RT2I).
     //
     rt1r = a;
     rt2r = d;
@@ -202,6 +202,6 @@ void Rlanv2(REAL &a, REAL &b, REAL &c, REAL &d, REAL &rt1r, REAL &rt1i, REAL &rt
         rt2i = -rt1i;
     }
     //
-    //     End of Rlanv2
+    // End of Rlanv2
     //
 }

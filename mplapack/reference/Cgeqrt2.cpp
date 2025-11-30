@@ -31,26 +31,11 @@
 
 void Cgeqrt2(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *t, INTEGER const ldt, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
     //
-    //  =====================================================================
     //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Executable Statements ..
     //
-    //     Test the input arguments
+    // Test the input arguments
     //
     info = 0;
     if (m < 0) {
@@ -76,21 +61,21 @@ void Cgeqrt2(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, CO
     COMPLEX alpha = 0.0;
     for (i = 1; i <= k; i = i + 1) {
         //
-        //        Generate elem. refl. H(i) to annihilate A(i+1:m,i), tau(I) -> T(I,1)
+        // Generate elem. refl. H(i) to annihilate A(i+1:m,i), tau(I) -> T(I,1)
         //
         Clarfg(m - i + 1, a[(i - 1) + (i - 1) * lda], &a[(min(i + 1, m) - 1) + (i - 1) * lda], 1, t[(i - 1)]);
         if (i < n) {
             //
-            //           Apply H(i) to A(I:M,I+1:N) from the left
+            // Apply H(i) to A(I:M,I+1:N) from the left
             //
             aii = a[(i - 1) + (i - 1) * lda];
             a[(i - 1) + (i - 1) * lda] = one;
             //
-            //           W(1:N-I) := A(I:M,I+1:N)^H * A(I:M,I) [W = T(:,N)]
+            // W(1:N-I) := A(I:M,I+1:N)^H * A(I:M,I) [W = T(:,N)]
             //
             Cgemv("C", m - i + 1, n - i, one, &a[(i - 1) + ((i + 1) - 1) * lda], lda, &a[(i - 1) + (i - 1) * lda], 1, zero, &t[(n - 1) * ldt], 1);
             //
-            //           A(I:M,I+1:N) = A(I:m,I+1:N) + alpha*A(I:M,I)*W(1:N-1)^H
+            // A(I:M,I+1:N) = A(I:m,I+1:N) + alpha*A(I:M,I)*W(1:N-1)^H
             //
             alpha = -conj(t[(i - 1)]);
             Cgerc(m - i + 1, n - i, alpha, &a[(i - 1) + (i - 1) * lda], 1, &t[(n - 1) * ldt], 1, &a[(i - 1) + ((i + 1) - 1) * lda], lda);
@@ -102,22 +87,22 @@ void Cgeqrt2(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, CO
         aii = a[(i - 1) + (i - 1) * lda];
         a[(i - 1) + (i - 1) * lda] = one;
         //
-        //        T(1:I-1,I) := alpha * A(I:M,1:I-1)**H * A(I:M,I)
+        // T(1:I-1,I) := alpha * A(I:M,1:I-1)**H * A(I:M,I)
         //
         alpha = -t[(i - 1)];
         Cgemv("C", m - i + 1, i - 1, alpha, &a[(i - 1)], lda, &a[(i - 1) + (i - 1) * lda], 1, zero, &t[(i - 1) * ldt], 1);
         a[(i - 1) + (i - 1) * lda] = aii;
         //
-        //        T(1:I-1,I) := T(1:I-1,1:I-1) * T(1:I-1,I)
+        // T(1:I-1,I) := T(1:I-1,1:I-1) * T(1:I-1,I)
         //
         Ctrmv("U", "N", "N", i - 1, t, ldt, &t[(i - 1) * ldt], 1);
         //
-        //           T(I,I) = tau(I)
+        // T(I,I) = tau(I)
         //
         t[(i - 1) + (i - 1) * ldt] = t[(i - 1)];
         t[(i - 1)] = zero;
     }
     //
-    //     End of Cgeqrt2
+    // End of Cgeqrt2
     //
 }

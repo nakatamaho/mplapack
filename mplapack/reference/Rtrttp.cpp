@@ -31,7 +31,7 @@
 
 void Rtrttp(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL *ap, INTEGER &info) {
     //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     bool lower = Mlsame(uplo, "L");
@@ -68,6 +68,6 @@ void Rtrttp(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL 
         }
     }
     //
-    //     End of Rtrttp
+    // End of Rtrttp
     //
 }

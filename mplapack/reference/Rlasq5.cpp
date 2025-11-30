@@ -31,24 +31,10 @@
 
 void Rlasq5(INTEGER const i0, INTEGER const n0, REAL *z, INTEGER const pp, REAL &tau, REAL const sigma, REAL &dmin, REAL &dmin1, REAL &dmin2, REAL &dn, REAL &dnm1, REAL &dnm2, bool const ieee, REAL const eps) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
     //
-    //  =====================================================================
     //
-    //     .. Parameter ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
+    // .. Parameter ..
     //
     if ((n0 - i0 - 1) <= 0) {
         return;
@@ -74,7 +60,7 @@ void Rlasq5(INTEGER const i0, INTEGER const n0, REAL *z, INTEGER const pp, REAL 
         //
         if (ieee) {
             //
-            //        Code for IEEE arithmetic.
+            // Code for IEEE arithmetic.
             //
             if (pp == 0) {
                 for (j4 = 4 * i0; j4 <= 4 * (n0 - 3); j4 = j4 + 4) {
@@ -96,7 +82,7 @@ void Rlasq5(INTEGER const i0, INTEGER const n0, REAL *z, INTEGER const pp, REAL 
                 }
             }
             //
-            //        Unroll last two steps.
+            // Unroll last two steps.
             //
             dnm2 = d;
             dmin2 = dmin;
@@ -117,7 +103,7 @@ void Rlasq5(INTEGER const i0, INTEGER const n0, REAL *z, INTEGER const pp, REAL 
             //
         } else {
             //
-            //        Code for non IEEE arithmetic.
+            // Code for non IEEE arithmetic.
             //
             if (pp == 0) {
                 for (j4 = 4 * i0; j4 <= 4 * (n0 - 3); j4 = j4 + 4) {
@@ -145,7 +131,7 @@ void Rlasq5(INTEGER const i0, INTEGER const n0, REAL *z, INTEGER const pp, REAL 
                 }
             }
             //
-            //        Unroll last two steps.
+            // Unroll last two steps.
             //
             dnm2 = d;
             dmin2 = dmin;
@@ -182,7 +168,7 @@ void Rlasq5(INTEGER const i0, INTEGER const n0, REAL *z, INTEGER const pp, REAL 
         dmin1 = -z[j4 - 1];
         if (ieee) {
             //
-            //     Code for IEEE arithmetic.
+            // Code for IEEE arithmetic.
             //
             if (pp == 0) {
                 for (j4 = 4 * i0; j4 <= 4 * (n0 - 3); j4 = j4 + 4) {
@@ -210,7 +196,7 @@ void Rlasq5(INTEGER const i0, INTEGER const n0, REAL *z, INTEGER const pp, REAL 
                 }
             }
             //
-            //     Unroll last two steps.
+            // Unroll last two steps.
             //
             dnm2 = d;
             dmin2 = dmin;
@@ -231,7 +217,7 @@ void Rlasq5(INTEGER const i0, INTEGER const n0, REAL *z, INTEGER const pp, REAL 
             //
         } else {
             //
-            //     Code for non IEEE arithmetic.
+            // Code for non IEEE arithmetic.
             //
             if (pp == 0) {
                 for (j4 = 4 * i0; j4 <= 4 * (n0 - 3); j4 = j4 + 4) {
@@ -265,7 +251,7 @@ void Rlasq5(INTEGER const i0, INTEGER const n0, REAL *z, INTEGER const pp, REAL 
                 }
             }
             //
-            //     Unroll last two steps.
+            // Unroll last two steps.
             //
             dnm2 = d;
             dmin2 = dmin;
@@ -298,6 +284,6 @@ void Rlasq5(INTEGER const i0, INTEGER const n0, REAL *z, INTEGER const pp, REAL 
     z[(j4 + 2) - 1] = dn;
     z[(4 * n0 - pp) - 1] = emin;
     //
-    //     End of Rlasq5
+    // End of Rlasq5
     //
 }

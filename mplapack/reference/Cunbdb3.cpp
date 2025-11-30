@@ -31,7 +31,7 @@
 
 void Cunbdb3(INTEGER const m, INTEGER const p, INTEGER const q, COMPLEX *x11, INTEGER const ldx11, COMPLEX *x21, INTEGER const ldx21, REAL *theta, REAL *phi, COMPLEX *taup1, COMPLEX *taup2, COMPLEX *tauq1, COMPLEX *work, INTEGER const lwork, INTEGER &info) {
     //
-    //     Test input arguments
+    // Test input arguments
     //
     info = 0;
     bool lquery = lwork == -1;
@@ -48,7 +48,7 @@ void Cunbdb3(INTEGER const m, INTEGER const p, INTEGER const q, COMPLEX *x11, IN
         info = -7;
     }
     //
-    //     Compute workspace
+    // Compute workspace
     //
     INTEGER ilarf = 0;
     INTEGER llarf = 0;
@@ -75,7 +75,7 @@ void Cunbdb3(INTEGER const m, INTEGER const p, INTEGER const q, COMPLEX *x11, IN
         return;
     }
     //
-    //     Reduce rows 1, ..., M-P of X11 and X21
+    // Reduce rows 1, ..., M-P of X11 and X21
     //
     INTEGER i = 0;
     REAL c = 0.0;
@@ -113,7 +113,7 @@ void Cunbdb3(INTEGER const m, INTEGER const p, INTEGER const q, COMPLEX *x11, IN
         //
     }
     //
-    //     Reduce the bottom-right portion of X11 to the identity matrix
+    // Reduce the bottom-right portion of X11 to the identity matrix
     //
     for (i = m - p + 1; i <= q; i = i + 1) {
         Clarfgp(p - i + 1, x11[(i - 1) + (i - 1) * ldx11], &x11[((i + 1) - 1) + (i - 1) * ldx11], 1, taup1[i - 1]);
@@ -121,6 +121,6 @@ void Cunbdb3(INTEGER const m, INTEGER const p, INTEGER const q, COMPLEX *x11, IN
         Clarf("L", p - i + 1, q - i, &x11[(i - 1) + (i - 1) * ldx11], 1, conj(taup1[i - 1]), &x11[(i - 1) + ((i + 1) - 1) * ldx11], ldx11, &work[ilarf - 1]);
     }
     //
-    //     End of Cunbdb3
+    // End of Cunbdb3
     //
 }

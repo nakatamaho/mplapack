@@ -32,22 +32,9 @@
 REAL Rla_gbrpvgrw(INTEGER const n, INTEGER const kl, INTEGER const ku, INTEGER const ncols, REAL *ab, INTEGER const ldab, REAL *afb, INTEGER const ldafb) {
     REAL return_value = 0.0;
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
     //
-    //  =====================================================================
     //
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
     REAL rpvgrw = 1.0;
     //

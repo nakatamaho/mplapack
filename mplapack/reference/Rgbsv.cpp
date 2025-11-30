@@ -31,7 +31,7 @@
 
 void Rgbsv(INTEGER const n, INTEGER const kl, INTEGER const ku, INTEGER const nrhs, REAL *ab, INTEGER const ldab, INTEGER *ipiv, REAL *b, INTEGER const ldb, INTEGER &info) {
     //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     if (n < 0) {
@@ -52,16 +52,16 @@ void Rgbsv(INTEGER const n, INTEGER const kl, INTEGER const ku, INTEGER const nr
         return;
     }
     //
-    //     Compute the LU factorization of the band matrix A.
+    // Compute the LU factorization of the band matrix A.
     //
     Rgbtrf(n, n, kl, ku, ab, ldab, ipiv, info);
     if (info == 0) {
         //
-        //        Solve the system A*X = B, overwriting B with X.
+        // Solve the system A*X = B, overwriting B with X.
         //
         Rgbtrs("No transpose", n, kl, ku, nrhs, ab, ldab, ipiv, b, ldb, info);
     }
     //
-    //     End of Rgbsv
+    // End of Rgbsv
     //
 }

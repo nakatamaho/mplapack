@@ -32,20 +32,10 @@
 REAL Rladiv2(REAL const &a, REAL const &b, REAL const &c, REAL const &d, REAL const &r, REAL const &t) {
     REAL return_value = 0.0;
     //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
     //
-    //     .. Scalar Arguments ..
-    //     ..
     //
-    //  =====================================================================
     //
-    //     .. Parameters ..
     //
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Executable Statements ..
     //
     const REAL zero = 0.0;
     REAL br = 0.0;
@@ -62,28 +52,16 @@ REAL Rladiv2(REAL const &a, REAL const &b, REAL const &c, REAL const &d, REAL co
     //
     return return_value;
     //
-    //     End of RLADIV12
+    // End of RLADIV12
     //
 }
 
 void Rladiv1(REAL &a, REAL const &b, REAL const &c, REAL const &d, REAL &p, REAL &q) {
     //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
     //
-    //     .. Scalar Arguments ..
-    //     ..
     //
-    //  =====================================================================
     //
-    //     .. Parameters ..
     //
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
     REAL r = d / c;
     const REAL one = 1.0;
@@ -92,32 +70,16 @@ void Rladiv1(REAL &a, REAL const &b, REAL const &c, REAL const &d, REAL &p, REAL
     a = -a;
     q = Rladiv2(b, a, c, d, r, t);
     //
-    //     End of RLADIV1
+    // End of RLADIV1
     //
 }
 
 void Rladiv(REAL const &a, REAL const &b, REAL const &c, REAL const &d, REAL &p, REAL &q) {
     //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
     //
-    //     .. Scalar Arguments ..
-    //     ..
     //
-    //  =====================================================================
     //
-    //     .. Parameters ..
     //
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
     REAL aa = a;
     REAL bb = b;
@@ -164,6 +126,6 @@ void Rladiv(REAL const &a, REAL const &b, REAL const &c, REAL const &d, REAL &p,
     p = p * s;
     q = q * s;
     //
-    //     End of RLADIV
+    // End of RLADIV
     //
 }

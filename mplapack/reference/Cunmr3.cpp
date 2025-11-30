@@ -31,34 +31,17 @@
 
 void Cunmr3(const char *side, const char *trans, INTEGER const m, INTEGER const n, INTEGER const k, INTEGER const l, COMPLEX *a, INTEGER const lda, COMPLEX *tau, COMPLEX *c, INTEGER const ldc, COMPLEX *work, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
     //
-    //  =====================================================================
     //
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
-    //     Test the input arguments
+    // Test the input arguments
     //
     info = 0;
     bool left = Mlsame(side, "L");
     bool notran = Mlsame(trans, "N");
     //
-    //     NQ is the order of Q
+    // NQ is the order of Q
     //
     INTEGER nq = 0;
     if (left) {
@@ -88,7 +71,7 @@ void Cunmr3(const char *side, const char *trans, INTEGER const m, INTEGER const 
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (m == 0 || n == 0 || k == 0) {
         return;
@@ -127,19 +110,19 @@ void Cunmr3(const char *side, const char *trans, INTEGER const m, INTEGER const 
     for (i = i1; i3 >= 0 ? i <= i2 : i >= i2; i = i + i3) {
         if (left) {
             //
-            //           H(i) or H(i)**H is applied to C(i:m,1:n)
+            // H(i) or H(i)**H is applied to C(i:m,1:n)
             //
             mi = m - i + 1;
             ic = i;
         } else {
             //
-            //           H(i) or H(i)**H is applied to C(1:m,i:n)
+            // H(i) or H(i)**H is applied to C(1:m,i:n)
             //
             ni = n - i + 1;
             jc = i;
         }
         //
-        //        Apply H(i) or H(i)**H
+        // Apply H(i) or H(i)**H
         //
         if (notran) {
             taui = tau[i - 1];
@@ -150,6 +133,6 @@ void Cunmr3(const char *side, const char *trans, INTEGER const m, INTEGER const 
         //
     }
     //
-    //     End of Cunmr3
+    // End of Cunmr3
     //
 }

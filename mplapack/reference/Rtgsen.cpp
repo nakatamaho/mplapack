@@ -59,7 +59,7 @@ void Rtgsen(INTEGER const ijob, bool const wantq, bool const wantz, bool *select
     INTEGER mn2 = 0;
     INTEGER isave[3];
     //
-    //     Decode and test the input parameters
+    // Decode and test the input parameters
     //
     info = 0;
     lquery = (lwork == -1 || liwork == -1);
@@ -83,7 +83,7 @@ void Rtgsen(INTEGER const ijob, bool const wantq, bool const wantz, bool *select
         return;
     }
     //
-    //     Get machine constants
+    // Get machine constants
     //
     eps = Rlamch("P");
     smlnum = Rlamch("S") / eps;
@@ -94,7 +94,7 @@ void Rtgsen(INTEGER const ijob, bool const wantq, bool const wantz, bool *select
     wantd2 = ijob == 3 || ijob == 5;
     wantd = wantd1 || wantd2;
     //
-    //     subspaces.
+    // subspaces.
     //
     m = 0;
     pair = false;
@@ -150,7 +150,7 @@ void Rtgsen(INTEGER const ijob, bool const wantq, bool const wantz, bool *select
         return;
     }
     //
-    //     Quick return if possible.
+    // Quick return if possible.
     //
     if (m == n || m == 0) {
         if (wantp) {
@@ -170,7 +170,7 @@ void Rtgsen(INTEGER const ijob, bool const wantq, bool const wantz, bool *select
         goto statement_60;
     }
     //
-    //     Collect the selected blocks at the top-left corner of (A, B).
+    // Collect the selected blocks at the top-left corner of (A, B).
     //
     ks = 0;
     pair = false;
@@ -190,10 +190,10 @@ void Rtgsen(INTEGER const ijob, bool const wantq, bool const wantz, bool *select
             if (swap) {
                 ks++;
                 //
-                //              Swap the K-th block to position KS.
-                //              Perform the reordering of diagonal blocks in (A, B)
-                //              by orthogonal transformation matrices and update
-                //              Q and Z accordingly (if requested):
+                // Swap the K-th block to position KS.
+                // Perform the reordering of diagonal blocks in (A, B)
+                // by orthogonal transformation matrices and update
+                // Q and Z accordingly (if requested):
                 //
                 kk = k;
                 if (k != ks) {
@@ -202,7 +202,7 @@ void Rtgsen(INTEGER const ijob, bool const wantq, bool const wantz, bool *select
                 //
                 if (ierr > 0) {
                     //
-                    //                 Swap is rejected: exit.
+                    // Swap is rejected: exit.
                     //
                     info = 1;
                     if (wantp) {
@@ -224,8 +224,8 @@ void Rtgsen(INTEGER const ijob, bool const wantq, bool const wantz, bool *select
     }
     if (wantp) {
         //
-        //        Solve generalized Sylvester equation for R and L
-        //        and compute PL and PR.
+        // Solve generalized Sylvester equation for R and L
+        // and compute PL and PR.
         //
         n1 = m;
         n2 = n - m;
@@ -235,8 +235,8 @@ void Rtgsen(INTEGER const ijob, bool const wantq, bool const wantz, bool *select
         Rlacpy("Full", n1, n2, &b[(i - 1) * ldb], ldb, &work[(n1 * n2 + 1) - 1], n1);
         Rtgsyl("N", ijb, n1, n2, a, lda, &a[(i - 1) + (i - 1) * lda], lda, work, n1, b, ldb, &b[(i - 1) + (i - 1) * ldb], ldb, &work[(n1 * n2 + 1) - 1], n1, Rscale, dif[1 - 1], &work[(n1 * n2 * 2 + 1) - 1], lwork - 2 * n1 * n2, iwork, ierr);
         //
-        //        Estimate the reciprocal of norms of "projections" onto left
-        //        and right eigenspaces.
+        // Estimate the reciprocal of norms of "projections" onto left
+        // and right eigenspaces.
         //
         rRscal = zero;
         dsum = one;
@@ -260,7 +260,7 @@ void Rtgsen(INTEGER const ijob, bool const wantq, bool const wantz, bool *select
     //
     if (wantd) {
         //
-        //        Compute estimates of Difu and Difl.
+        // Compute estimates of Difu and Difl.
         //
         if (wantd1) {
             n1 = m;
@@ -268,19 +268,19 @@ void Rtgsen(INTEGER const ijob, bool const wantq, bool const wantz, bool *select
             i = n1 + 1;
             ijb = idifjb;
             //
-            //           Frobenius norm-based Difu-estimate.
+            // Frobenius norm-based Difu-estimate.
             //
             Rtgsyl("N", ijb, n1, n2, a, lda, &a[(i - 1) + (i - 1) * lda], lda, work, n1, b, ldb, &b[(i - 1) + (i - 1) * ldb], ldb, &work[(n1 * n2 + 1) - 1], n1, Rscale, dif[1 - 1], &work[(2 * n1 * n2 + 1) - 1], lwork - 2 * n1 * n2, iwork, ierr);
             //
-            //           Frobenius norm-based Difl-estimate.
+            // Frobenius norm-based Difl-estimate.
             //
             Rtgsyl("N", ijb, n2, n1, &a[(i - 1) + (i - 1) * lda], lda, a, lda, work, n2, &b[(i - 1) + (i - 1) * ldb], ldb, b, ldb, &work[(n1 * n2 + 1) - 1], n2, Rscale, dif[2 - 1], &work[(2 * n1 * n2 + 1) - 1], lwork - 2 * n1 * n2, iwork, ierr);
         } else {
             //
-            //           Compute 1-norm-based estimates of Difu and Difl using
-            //           reversed communication with Rlacn2. In each step a
-            //           generalized Sylvester equation or a transposed variant
-            //           is solved.
+            // Compute 1-norm-based estimates of Difu and Difl using
+            // reversed communication with Rlacn2. In each step a
+            // generalized Sylvester equation or a transposed variant
+            // is solved.
             //
             kase = 0;
             n1 = m;
@@ -289,19 +289,19 @@ void Rtgsen(INTEGER const ijob, bool const wantq, bool const wantz, bool *select
             ijb = 0;
             mn2 = 2 * n1 * n2;
         //
-        //           1-norm-based estimate of Difu.
+        // 1-norm-based estimate of Difu.
         //
         statement_40:
             Rlacn2(mn2, &work[(mn2 + 1) - 1], work, iwork, dif[1 - 1], kase, isave);
             if (kase != 0) {
                 if (kase == 1) {
                     //
-                    //                 Solve generalized Sylvester equation.
+                    // Solve generalized Sylvester equation.
                     //
                     Rtgsyl("N", ijb, n1, n2, a, lda, &a[(i - 1) + (i - 1) * lda], lda, work, n1, b, ldb, &b[(i - 1) + (i - 1) * ldb], ldb, &work[(n1 * n2 + 1) - 1], n1, Rscale, dif[1 - 1], &work[(2 * n1 * n2 + 1) - 1], lwork - 2 * n1 * n2, iwork, ierr);
                 } else {
                     //
-                    //                 Solve the transposed variant.
+                    // Solve the transposed variant.
                     //
                     Rtgsyl("T", ijb, n1, n2, a, lda, &a[(i - 1) + (i - 1) * lda], lda, work, n1, b, ldb, &b[(i - 1) + (i - 1) * ldb], ldb, &work[(n1 * n2 + 1) - 1], n1, Rscale, dif[1 - 1], &work[(2 * n1 * n2 + 1) - 1], lwork - 2 * n1 * n2, iwork, ierr);
                 }
@@ -309,19 +309,19 @@ void Rtgsen(INTEGER const ijob, bool const wantq, bool const wantz, bool *select
             }
             dif[1 - 1] = Rscale / dif[1 - 1];
         //
-        //           1-norm-based estimate of Difl.
+        // 1-norm-based estimate of Difl.
         //
         statement_50:
             Rlacn2(mn2, &work[(mn2 + 1) - 1], work, iwork, dif[2 - 1], kase, isave);
             if (kase != 0) {
                 if (kase == 1) {
                     //
-                    //                 Solve generalized Sylvester equation.
+                    // Solve generalized Sylvester equation.
                     //
                     Rtgsyl("N", ijb, n2, n1, &a[(i - 1) + (i - 1) * lda], lda, a, lda, work, n2, &b[(i - 1) + (i - 1) * ldb], ldb, b, ldb, &work[(n1 * n2 + 1) - 1], n2, Rscale, dif[2 - 1], &work[(2 * n1 * n2 + 1) - 1], lwork - 2 * n1 * n2, iwork, ierr);
                 } else {
                     //
-                    //                 Solve the transposed variant.
+                    // Solve the transposed variant.
                     //
                     Rtgsyl("T", ijb, n2, n1, &a[(i - 1) + (i - 1) * lda], lda, a, lda, work, n2, &b[(i - 1) + (i - 1) * ldb], ldb, b, ldb, &work[(n1 * n2 + 1) - 1], n2, Rscale, dif[2 - 1], &work[(2 * n1 * n2 + 1) - 1], lwork - 2 * n1 * n2, iwork, ierr);
                 }
@@ -334,8 +334,8 @@ void Rtgsen(INTEGER const ijob, bool const wantq, bool const wantz, bool *select
 //
 statement_60:
     //
-    //     Compute generalized eigenvalues of reordered pair (A, B) and
-    //     normalize the generalized Schur form.
+    // Compute generalized eigenvalues of reordered pair (A, B) and
+    // normalize the generalized Schur form.
     //
     pair = false;
     for (k = 1; k <= n; k = k + 1) {
@@ -351,7 +351,7 @@ statement_60:
             //
             if (pair) {
                 //
-                //             Compute the eigenvalue(s) at position K.
+                // Compute the eigenvalue(s) at position K.
                 //
                 work[1 - 1] = a[(k - 1) + (k - 1) * lda];
                 work[2 - 1] = a[((k + 1) - 1) + (k - 1) * lda];
@@ -368,7 +368,7 @@ statement_60:
                 //
                 if (sign(one, b[(k - 1) + (k - 1) * ldb]) < zero) {
                     //
-                    //                 If B(K,K) is negative, make it positive
+                    // If B(K,K) is negative, make it positive
                     //
                     for (i = 1; i <= n; i = i + 1) {
                         a[(k - 1) + (i - 1) * lda] = -a[(k - 1) + (i - 1) * lda];
@@ -390,6 +390,6 @@ statement_60:
     work[1 - 1] = lwmin;
     iwork[1 - 1] = liwmin;
     //
-    //     End of Rtgsen
+    // End of Rtgsen
     //
 }

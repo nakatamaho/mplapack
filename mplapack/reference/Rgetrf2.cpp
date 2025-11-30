@@ -31,30 +31,11 @@
 
 void Rgetrf2(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, INTEGER *ipiv, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
     //
-    //  =====================================================================
     //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
-    //     Test the input parameters
+    // Test the input parameters
     //
     info = 0;
     if (m < 0) {
@@ -69,7 +50,7 @@ void Rgetrf2(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, INTEG
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (m == 0 || n == 0) {
         return;
@@ -85,8 +66,8 @@ void Rgetrf2(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, INTEG
     INTEGER iinfo = 0;
     if (m == 1) {
         //
-        //        Use unblocked code for one row case
-        //        Just need to handle IPIV and INFO
+        // Use unblocked code for one row case
+        // Just need to handle IPIV and INFO
         //
         ipiv[1 - 1] = 1;
         if (a[(1 - 1)] == zero) {
@@ -95,19 +76,19 @@ void Rgetrf2(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, INTEG
         //
     } else if (n == 1) {
         //
-        //        Use unblocked code for one column case
+        // Use unblocked code for one column case
         //
-        //        Compute machine safe minimum
+        // Compute machine safe minimum
         //
         sfmin = Rlamch("S");
         //
-        //        Find pivot and test for singularity
+        // Find pivot and test for singularity
         //
         i = iRamax(m, &a[(1 - 1)], 1);
         ipiv[1 - 1] = i;
         if (a[(i - 1)] != zero) {
             //
-            //           Apply the interchange
+            // Apply the interchange
             //
             if (i != 1) {
                 temp = a[(1 - 1)];
@@ -115,7 +96,7 @@ void Rgetrf2(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, INTEG
                 a[(i - 1)] = temp;
             }
             //
-            //           Compute elements 2:M of the column
+            // Compute elements 2:M of the column
             //
             if (abs(a[(1 - 1)]) >= sfmin) {
                 Rscal(m - 1, one / a[(1 - 1)], &a[(2 - 1)], 1);
@@ -131,14 +112,14 @@ void Rgetrf2(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, INTEG
         //
     } else {
         //
-        //        Use recursive code
+        // Use recursive code
         //
         n1 = min(m, n) / 2;
         n2 = n - n1;
         //
-        //               [ A11 ]
-        //        Factor [ --- ]
-        //               [ A21 ]
+        // [ A11 ]
+        // Factor [ --- ]
+        // [ A21 ]
         //
         Rgetrf2(m, n1, a, lda, ipiv, iinfo);
         //
@@ -146,25 +127,25 @@ void Rgetrf2(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, INTEG
             info = iinfo;
         }
         //
-        //                              [ A12 ]
-        //        Apply interchanges to [ --- ]
-        //                              [ A22 ]
+        // [ A12 ]
+        // Apply interchanges to [ --- ]
+        // [ A22 ]
         //
         Rlaswp(n2, &a[((n1 + 1) - 1) * lda], lda, 1, n1, ipiv, 1);
         //
-        //        Solve A12
+        // Solve A12
         //
         Rtrsm("L", "L", "N", "U", n1, n2, one, a, lda, &a[((n1 + 1) - 1) * lda], lda);
         //
-        //        Update A22
+        // Update A22
         //
         Rgemm("N", "N", m - n1, n2, n1, -one, &a[((n1 + 1) - 1)], lda, &a[((n1 + 1) - 1) * lda], lda, one, &a[((n1 + 1) - 1) + ((n1 + 1) - 1) * lda], lda);
         //
-        //        Factor A22
+        // Factor A22
         //
         Rgetrf2(m - n1, n2, &a[((n1 + 1) - 1) + ((n1 + 1) - 1) * lda], lda, &ipiv[(n1 + 1) - 1], iinfo);
         //
-        //        Adjust INFO and the pivot indices
+        // Adjust INFO and the pivot indices
         //
         if (info == 0 && iinfo > 0) {
             info = iinfo + n1;
@@ -173,12 +154,12 @@ void Rgetrf2(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, INTEG
             ipiv[i - 1] += n1;
         }
         //
-        //        Apply interchanges to A21
+        // Apply interchanges to A21
         //
         Rlaswp(n1, &a[(1 - 1)], lda, n1 + 1, min(m, n), ipiv, 1);
         //
     }
     //
-    //     End of Rgetrf2
+    // End of Rgetrf2
     //
 }

@@ -56,30 +56,30 @@ REAL Clanhf(const char *norm, const char *transr, const char *uplo, INTEGER cons
         return return_value;
     }
     //
-    //     set noe = 1 if n is odd. if n is even set noe=0
+    // set noe = 1 if n is odd. if n is even set noe=0
     //
     noe = 1;
     if (mod(n, 2) == 0) {
         noe = 0;
     }
     //
-    //     set ifm = 0 when form='C' or 'c' and 1 otherwise
+    // set ifm = 0 when form='C' or 'c' and 1 otherwise
     //
     ifm = 1;
     if (Mlsame(transr, "C")) {
         ifm = 0;
     }
     //
-    //     set ilu = 0 when uplo='U or 'u' and 1 otherwise
+    // set ilu = 0 when uplo='U or 'u' and 1 otherwise
     //
     ilu = 1;
     if (Mlsame(uplo, "U")) {
         ilu = 0;
     }
     //
-    //     set lda = (n+1)/2 when ifm = 0
-    //     set lda = n when ifm = 1 and noe = 1
-    //     set lda = n+1 when ifm = 1 and noe = 0
+    // set lda = (n+1)/2 when ifm = 0
+    // set lda = n when ifm = 1 and noe = 1
+    // set lda = n+1 when ifm = 1 and noe = 0
     //
     if (ifm == 1) {
         if (noe == 1) {
@@ -95,7 +95,7 @@ REAL Clanhf(const char *norm, const char *transr, const char *uplo, INTEGER cons
     //
     if (Mlsame(norm, "M")) {
         //
-        //       Find max(abs(A(i,j))).
+        // Find max(abs(A(i,j))).
         //
         k = (n + 1) / 2;
         value = zero;
@@ -509,7 +509,7 @@ REAL Clanhf(const char *norm, const char *transr, const char *uplo, INTEGER cons
         }
     } else if ((Mlsame(norm, "I")) || (Mlsame(norm, "O")) || (Mlsame(norm, "1"))) {
         //
-        //       Find normI(A) ( = norm1(A), since A is Hermitian).
+        // Find normI(A) ( = norm1(A), since A is Hermitian).
         //
         if (ifm == 1) {
             // A is 'N'
@@ -939,7 +939,7 @@ REAL Clanhf(const char *norm, const char *transr, const char *uplo, INTEGER cons
                         s += aa;
                     }
                     //
-                    //                 i=k-1
+                    // i=k-1
                     aa = abs(a[(i + j * lda)].real());
                     // A(k-1,k-1)
                     s += aa;
@@ -947,7 +947,7 @@ REAL Clanhf(const char *norm, const char *transr, const char *uplo, INTEGER cons
                     // done with col j=k+1
                     for (j = k + 1; j <= n; j = j + 1) {
                         //
-                        //                    process col j-1 of A = A(j-1,0:k-1)
+                        // process col j-1 of A = A(j-1,0:k-1)
                         s = zero;
                         for (i = 0; i <= k - 1; i = i + 1) {
                             aa = abs(a[(i + j * lda)]);
@@ -969,7 +969,7 @@ REAL Clanhf(const char *norm, const char *transr, const char *uplo, INTEGER cons
         }
     } else if ((Mlsame(norm, "F")) || (Mlsame(norm, "E"))) {
         //
-        //       Find normF(A).
+        // Find normF(A).
         //
         k = (n + 1) / 2;
         scale = zero;
@@ -1401,6 +1401,6 @@ REAL Clanhf(const char *norm, const char *transr, const char *uplo, INTEGER cons
     return_value = value;
     return return_value;
     //
-    //     End of Clanhf
+    // End of Clanhf
     //
 }

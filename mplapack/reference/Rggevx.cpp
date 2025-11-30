@@ -72,32 +72,13 @@ void Rggevx(const char *balanc, const char *jobvl, const char *jobvr, const char
     REAL temp = 0.0;
     INTEGER jr = 0;
     //
-    //  -- LAPACK driver routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+    // -- LAPACK driver routine --
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
     //
-    //  =====================================================================
     //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
+    // .. Local Arrays ..
     //
-    //     Decode the input arguments
+    // Decode the input arguments
     //
     if (Mlsame(jobvl, "N")) {
         ijobvl = 1;
@@ -128,7 +109,7 @@ void Rggevx(const char *balanc, const char *jobvl, const char *jobvr, const char
     wantsv = Mlsame(sense, "V");
     wantsb = Mlsame(sense, "B");
     //
-    //     Test the input arguments
+    // Test the input arguments
     //
     info = 0;
     lquery = (lwork == -1);
@@ -152,13 +133,13 @@ void Rggevx(const char *balanc, const char *jobvl, const char *jobvr, const char
         info = -16;
     }
     //
-    //     Compute workspace
-    //      (Note: Comments in the code beginning "Workspace:" describe the
-    //       minimal amount of workspace needed at that point in the code,
-    //       as well as the preferred amount for good performance.
-    //       NB refers to the optimal block size for the immediately
-    //       following subroutine, as returned by iMlaenv. The workspace is
-    //       computed assuming ILO = 1 and IHI = N, the worst case.)
+    // Compute workspace
+    // (Note: Comments in the code beginning "Workspace:" describe the
+    // minimal amount of workspace needed at that point in the code,
+    // as well as the preferred amount for good performance.
+    // NB refers to the optimal block size for the immediately
+    // following subroutine, as returned by iMlaenv. The workspace is
+    // computed assuming ILO = 1 and IHI = N, the worst case.)
     //
     if (info == 0) {
         if (n == 0) {
@@ -197,13 +178,13 @@ void Rggevx(const char *balanc, const char *jobvl, const char *jobvr, const char
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0) {
         return;
     }
     //
-    //     Get machine constants
+    // Get machine constants
     //
     eps = Rlamch("P");
     smlnum = Rlamch("S");
@@ -211,7 +192,7 @@ void Rggevx(const char *balanc, const char *jobvl, const char *jobvr, const char
     smlnum = sqrt(smlnum) / eps;
     bignum = one / smlnum;
     //
-    //     Scale A if max element outside range [SMLNUM,BIGNUM]
+    // Scale A if max element outside range [SMLNUM,BIGNUM]
     //
     anrm = Rlange("M", n, n, a, lda, work);
     ilascl = false;
@@ -226,7 +207,7 @@ void Rggevx(const char *balanc, const char *jobvl, const char *jobvr, const char
         Rlascl("G", 0, 0, anrm, anrmto, n, n, a, lda, ierr);
     }
     //
-    //     Scale B if max element outside range [SMLNUM,BIGNUM]
+    // Scale B if max element outside range [SMLNUM,BIGNUM]
     //
     bnrm = Rlange("M", n, n, b, ldb, work);
     ilbscl = false;
@@ -241,12 +222,12 @@ void Rggevx(const char *balanc, const char *jobvl, const char *jobvr, const char
         Rlascl("G", 0, 0, bnrm, bnrmto, n, n, b, ldb, ierr);
     }
     //
-    //     Permute and/or balance the matrix pair (A,B)
-    //     (Workspace: need 6*N if BALANC = 'S' or 'B', 1 otherwise)
+    // Permute and/or balance the matrix pair (A,B)
+    // (Workspace: need 6*N if BALANC = 'S' or 'B', 1 otherwise)
     //
     Rggbal(balanc, n, a, lda, b, ldb, ilo, ihi, lscale, rscale, work, ierr);
     //
-    //     Compute ABNRM and BBNRM
+    // Compute ABNRM and BBNRM
     //
     abnrm = Rlange("1", n, n, a, lda, &work[1 - 1]);
     if (ilascl) {
@@ -262,8 +243,8 @@ void Rggevx(const char *balanc, const char *jobvl, const char *jobvr, const char
         bbnrm = work[1 - 1];
     }
     //
-    //     Reduce B to triangular form (QR decomposition of B)
-    //     (Workspace: need N, prefer N*NB )
+    // Reduce B to triangular form (QR decomposition of B)
+    // (Workspace: need N, prefer N*NB )
     //
     irows = ihi + 1 - ilo;
     if (ilv || !wantsn) {
@@ -275,13 +256,13 @@ void Rggevx(const char *balanc, const char *jobvl, const char *jobvr, const char
     iwrk = itau + irows;
     Rgeqrf(irows, icols, &b[(ilo - 1) + (ilo - 1) * ldb], ldb, &work[itau - 1], &work[iwrk - 1], lwork + 1 - iwrk, ierr);
     //
-    //     Apply the orthogonal transformation to A
-    //     (Workspace: need N, prefer N*NB)
+    // Apply the orthogonal transformation to A
+    // (Workspace: need N, prefer N*NB)
     //
     Rormqr("L", "T", irows, icols, irows, &b[(ilo - 1) + (ilo - 1) * ldb], ldb, &work[itau - 1], &a[(ilo - 1) + (ilo - 1) * lda], lda, &work[iwrk - 1], lwork + 1 - iwrk, ierr);
     //
-    //     Initialize VL and/or VR
-    //     (Workspace: need N, prefer N*NB)
+    // Initialize VL and/or VR
+    // (Workspace: need N, prefer N*NB)
     //
     if (ilvl) {
         Rlaset("Full", n, n, zero, one, vl, ldvl);
@@ -295,21 +276,21 @@ void Rggevx(const char *balanc, const char *jobvl, const char *jobvr, const char
         Rlaset("Full", n, n, zero, one, vr, ldvr);
     }
     //
-    //     Reduce to generalized Hessenberg form
-    //     (Workspace: none needed)
+    // Reduce to generalized Hessenberg form
+    // (Workspace: none needed)
     //
     if (ilv || !wantsn) {
         //
-        //        Eigenvectors requested -- work on whole matrix.
+        // Eigenvectors requested -- work on whole matrix.
         //
         Rgghrd(jobvl, jobvr, n, ilo, ihi, a, lda, b, ldb, vl, ldvl, vr, ldvr, ierr);
     } else {
         Rgghrd("N", "N", irows, 1, irows, &a[(ilo - 1) + (ilo - 1) * lda], lda, &b[(ilo - 1) + (ilo - 1) * ldb], ldb, vl, ldvl, vr, ldvr, ierr);
     }
     //
-    //     Perform QZ algorithm (Compute eigenvalues, and optionally, the
-    //     Schur forms and Schur vectors)
-    //     (Workspace: need N)
+    // Perform QZ algorithm (Compute eigenvalues, and optionally, the
+    // Schur forms and Schur vectors)
+    // (Workspace: need N)
     //
     if (ilv || !wantsn) {
         chtemp = 'S';
@@ -329,10 +310,10 @@ void Rggevx(const char *balanc, const char *jobvl, const char *jobvr, const char
         goto statement_130;
     }
     //
-    //     Compute Eigenvectors and estimate condition numbers if desired
-    //     (Workspace: Rtgevc: need 6*N
-    //                 Rtgsna: need 2*N*(N+2)+16 if SENSE = 'V' or 'B',
-    //                         need N otherwise )
+    // Compute Eigenvectors and estimate condition numbers if desired
+    // (Workspace: Rtgevc: need 6*N
+    // Rtgsna: need 2*N*(N+2)+16 if SENSE = 'V' or 'B',
+    // need N otherwise )
     //
     if (ilv || !wantsn) {
         if (ilv) {
@@ -355,13 +336,13 @@ void Rggevx(const char *balanc, const char *jobvl, const char *jobvr, const char
         //
         if (!wantsn) {
             //
-            //           compute eigenvectors (Rtgevc) and estimate condition
-            //           numbers (Rtgsna). Note that the definition of the condition
-            //           number is not invariant under transformation (u,v) to
-            //           (Q*u, Z*v), where (u,v) are eigenvectors of the generalized
-            //           Schur form (S,T), Q and Z are orthogonal matrices. In order
-            //           to avoid using extra 2*N*N workspace, we have to recalculate
-            //           eigenvectors and estimate one condition numbers at a time.
+            // compute eigenvectors (Rtgevc) and estimate condition
+            // numbers (Rtgsna). Note that the definition of the condition
+            // number is not invariant under transformation (u,v) to
+            // (Q*u, Z*v), where (u,v) are eigenvectors of the generalized
+            // Schur form (S,T), Q and Z are orthogonal matrices. In order
+            // to avoid using extra 2*N*N workspace, we have to recalculate
+            // eigenvectors and estimate one condition numbers at a time.
             //
             pair = false;
             for (i = 1; i <= n; i = i + 1) {
@@ -391,8 +372,8 @@ void Rggevx(const char *balanc, const char *jobvl, const char *jobvr, const char
                 iwrk = mm * n + 1;
                 iwrk1 = iwrk + mm * n;
                 //
-                //              Compute a pair of left and right eigenvectors.
-                //              (compute workspace: need up to 4*N + 6*N)
+                // Compute a pair of left and right eigenvectors.
+                // (compute workspace: need up to 4*N + 6*N)
                 //
                 if (wantse || wantsb) {
                     Rtgevc("B", "S", bwork, n, a, lda, b, ldb, &work[1 - 1], n, &work[iwrk - 1], n, mm, m, &work[iwrk1 - 1], ierr);
@@ -409,8 +390,8 @@ void Rggevx(const char *balanc, const char *jobvl, const char *jobvr, const char
         }
     }
     //
-    //     Undo balancing on VL and VR and normalization
-    //     (Workspace: none needed)
+    // Undo balancing on VL and VR and normalization
+    // (Workspace: none needed)
     //
     if (ilvl) {
         Rggbak(balanc, "L", n, ilo, ihi, lscale, rscale, n, vl, ldvl, ierr);
@@ -480,7 +461,7 @@ void Rggevx(const char *balanc, const char *jobvl, const char *jobvr, const char
         }
     }
 //
-//     Undo scaling if necessary
+// Undo scaling if necessary
 //
 statement_130:
     //
@@ -495,6 +476,6 @@ statement_130:
     //
     work[1 - 1] = maxwrk;
     //
-    //     End of Rggevx
+    // End of Rggevx
     //
 }

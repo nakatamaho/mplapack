@@ -31,30 +31,11 @@
 
 void Ropgtr(const char *uplo, INTEGER const n, REAL *ap, REAL *tau, REAL *q, INTEGER const ldq, REAL *work, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
     //
-    //  =====================================================================
     //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
-    //     Test the input arguments
+    // Test the input arguments
     //
     info = 0;
     bool upper = Mlsame(uplo, "U");
@@ -70,7 +51,7 @@ void Ropgtr(const char *uplo, INTEGER const n, REAL *ap, REAL *tau, REAL *q, INT
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0) {
         return;
@@ -84,11 +65,11 @@ void Ropgtr(const char *uplo, INTEGER const n, REAL *ap, REAL *tau, REAL *q, INT
     INTEGER iinfo = 0;
     if (upper) {
         //
-        //        Q was determined by a call to Rsptrd with UPLO = 'U'
+        // Q was determined by a call to Rsptrd with UPLO = 'U'
         //
-        //        Unpack the vectors which define the elementary reflectors and
-        //        set the last row and column of Q equal to those of the unit
-        //        matrix
+        // Unpack the vectors which define the elementary reflectors and
+        // set the last row and column of Q equal to those of the unit
+        // matrix
         //
         ij = 2;
         for (j = 1; j <= n - 1; j = j + 1) {
@@ -104,17 +85,17 @@ void Ropgtr(const char *uplo, INTEGER const n, REAL *ap, REAL *tau, REAL *q, INT
         }
         q[(n - 1) + (n - 1) * ldq] = one;
         //
-        //        Generate Q(1:n-1,1:n-1)
+        // Generate Q(1:n-1,1:n-1)
         //
         Rorg2l(n - 1, n - 1, n - 1, q, ldq, tau, work, iinfo);
         //
     } else {
         //
-        //        Q was determined by a call to Rsptrd with UPLO = 'L'.
+        // Q was determined by a call to Rsptrd with UPLO = 'L'.
         //
-        //        Unpack the vectors which define the elementary reflectors and
-        //        set the first row and column of Q equal to those of the unit
-        //        matrix
+        // Unpack the vectors which define the elementary reflectors and
+        // set the first row and column of Q equal to those of the unit
+        // matrix
         //
         q[(1 - 1)] = one;
         for (i = 2; i <= n; i = i + 1) {
@@ -131,12 +112,12 @@ void Ropgtr(const char *uplo, INTEGER const n, REAL *ap, REAL *tau, REAL *q, INT
         }
         if (n > 1) {
             //
-            //           Generate Q(2:n,2:n)
+            // Generate Q(2:n,2:n)
             //
             Rorg2r(n - 1, n - 1, n - 1, &q[(2 - 1) + (2 - 1) * ldq], ldq, tau, work, iinfo);
         }
     }
     //
-    //     End of Ropgtr
+    // End of Ropgtr
     //
 }

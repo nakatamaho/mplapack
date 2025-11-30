@@ -31,29 +31,11 @@
 
 void Cgemqr(const char *side, const char *trans, INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX *a, INTEGER const lda, COMPLEX *t, INTEGER const tsize, COMPLEX *c, INTEGER const ldc, COMPLEX *work, INTEGER const lwork, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
     //
-    // =====================================================================
     //
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
-    //     Test the input arguments
+    // Test the input arguments
     //
     bool lquery = lwork == -1;
     bool notran = Mlsame(trans, "N");
@@ -116,7 +98,7 @@ void Cgemqr(const char *side, const char *trans, INTEGER const m, INTEGER const 
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (min({m, n, k}) == 0) {
         return;
@@ -130,6 +112,6 @@ void Cgemqr(const char *side, const char *trans, INTEGER const m, INTEGER const 
     //
     work[1 - 1] = lw;
     //
-    //     End of Cgemqr
+    // End of Cgemqr
     //
 }

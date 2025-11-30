@@ -31,32 +31,15 @@
 
 void Clagtm(const char *trans, INTEGER const n, INTEGER const nrhs, REAL const alpha, COMPLEX *dl, COMPLEX *d, COMPLEX *du, COMPLEX *x, INTEGER const ldx, REAL const beta, COMPLEX *b, INTEGER const ldb) {
     //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
     //
-    //  =====================================================================
     //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
     if (n == 0) {
         return;
     }
     //
-    //     Multiply B by BETA if BETA.NE.1.
+    // Multiply B by BETA if BETA.NE.1.
     //
     const REAL zero = 0.0;
     INTEGER j = 0;
@@ -79,7 +62,7 @@ void Clagtm(const char *trans, INTEGER const n, INTEGER const nrhs, REAL const a
     if (alpha == one) {
         if (Mlsame(trans, "N")) {
             //
-            //           Compute B := B + A*X
+            // Compute B := B + A*X
             //
             for (j = 1; j <= nrhs; j = j + 1) {
                 if (n == 1) {
@@ -94,7 +77,7 @@ void Clagtm(const char *trans, INTEGER const n, INTEGER const nrhs, REAL const a
             }
         } else if (Mlsame(trans, "T")) {
             //
-            //           Compute B := B + A**T * X
+            // Compute B := B + A**T * X
             //
             for (j = 1; j <= nrhs; j = j + 1) {
                 if (n == 1) {
@@ -109,7 +92,7 @@ void Clagtm(const char *trans, INTEGER const n, INTEGER const nrhs, REAL const a
             }
         } else if (Mlsame(trans, "C")) {
             //
-            //           Compute B := B + A**H * X
+            // Compute B := B + A**H * X
             //
             for (j = 1; j <= nrhs; j = j + 1) {
                 if (n == 1) {
@@ -126,7 +109,7 @@ void Clagtm(const char *trans, INTEGER const n, INTEGER const nrhs, REAL const a
     } else if (alpha == -one) {
         if (Mlsame(trans, "N")) {
             //
-            //           Compute B := B - A*X
+            // Compute B := B - A*X
             //
             for (j = 1; j <= nrhs; j = j + 1) {
                 if (n == 1) {
@@ -141,7 +124,7 @@ void Clagtm(const char *trans, INTEGER const n, INTEGER const nrhs, REAL const a
             }
         } else if (Mlsame(trans, "T")) {
             //
-            //           Compute B := B - A**T *X
+            // Compute B := B - A**T *X
             //
             for (j = 1; j <= nrhs; j = j + 1) {
                 if (n == 1) {
@@ -156,7 +139,7 @@ void Clagtm(const char *trans, INTEGER const n, INTEGER const nrhs, REAL const a
             }
         } else if (Mlsame(trans, "C")) {
             //
-            //           Compute B := B - A**H *X
+            // Compute B := B - A**H *X
             //
             for (j = 1; j <= nrhs; j = j + 1) {
                 if (n == 1) {
@@ -172,6 +155,6 @@ void Clagtm(const char *trans, INTEGER const n, INTEGER const nrhs, REAL const a
         }
     }
     //
-    //     End of Clagtm
+    // End of Clagtm
     //
 }

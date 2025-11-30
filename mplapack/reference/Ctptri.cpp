@@ -31,28 +31,11 @@
 
 void Ctptri(const char *uplo, const char *diag, INTEGER const n, COMPLEX *ap, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
     //
-    //  =====================================================================
     //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Executable Statements ..
     //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     bool upper = Mlsame(uplo, "U");
@@ -69,7 +52,7 @@ void Ctptri(const char *uplo, const char *diag, INTEGER const n, COMPLEX *ap, IN
         return;
     }
     //
-    //     Check for singularity if non-unit.
+    // Check for singularity if non-unit.
     //
     INTEGER jj = 0;
     const COMPLEX zero = COMPLEX(0.0, 0.0);
@@ -101,7 +84,7 @@ void Ctptri(const char *uplo, const char *diag, INTEGER const n, COMPLEX *ap, IN
     INTEGER jclast = 0;
     if (upper) {
         //
-        //        Compute inverse of upper triangular matrix.
+        // Compute inverse of upper triangular matrix.
         //
         jc = 1;
         for (j = 1; j <= n; j = j + 1) {
@@ -112,7 +95,7 @@ void Ctptri(const char *uplo, const char *diag, INTEGER const n, COMPLEX *ap, IN
                 ajj = -one;
             }
             //
-            //           Compute elements 1:j-1 of j-th column.
+            // Compute elements 1:j-1 of j-th column.
             //
             Ctpmv("Upper", "No transpose", diag, j - 1, ap, &ap[jc - 1], 1);
             Cscal(j - 1, ajj, &ap[jc - 1], 1);
@@ -121,7 +104,7 @@ void Ctptri(const char *uplo, const char *diag, INTEGER const n, COMPLEX *ap, IN
         //
     } else {
         //
-        //        Compute inverse of lower triangular matrix.
+        // Compute inverse of lower triangular matrix.
         //
         jc = n * (n + 1) / 2;
         for (j = n; j >= 1; j = j - 1) {
@@ -133,7 +116,7 @@ void Ctptri(const char *uplo, const char *diag, INTEGER const n, COMPLEX *ap, IN
             }
             if (j < n) {
                 //
-                //              Compute elements j+1:n of j-th column.
+                // Compute elements j+1:n of j-th column.
                 //
                 Ctpmv("Lower", "No transpose", diag, n - j, &ap[jclast - 1], &ap[(jc + 1) - 1], 1);
                 Cscal(n - j, ajj, &ap[(jc + 1) - 1], 1);
@@ -143,6 +126,6 @@ void Ctptri(const char *uplo, const char *diag, INTEGER const n, COMPLEX *ap, IN
         }
     }
     //
-    //     End of Ctptri
+    // End of Ctptri
     //
 }

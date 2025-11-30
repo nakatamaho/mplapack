@@ -32,28 +32,9 @@
 REAL Rlanst(const char *norm, INTEGER const n, REAL *d, REAL *e) {
     REAL return_value = 0.0;
     //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
     //
-    //  =====================================================================
     //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
     const REAL zero = 0.0;
     REAL anorm = 0.0;
@@ -65,7 +46,7 @@ REAL Rlanst(const char *norm, INTEGER const n, REAL *d, REAL *e) {
         anorm = zero;
     } else if (Mlsame(norm, "M")) {
         //
-        //        Find max(abs(A(i,j))).
+        // Find max(abs(A(i,j))).
         //
         anorm = abs(d[n - 1]);
         for (i = 1; i <= n - 1; i = i + 1) {
@@ -80,7 +61,7 @@ REAL Rlanst(const char *norm, INTEGER const n, REAL *d, REAL *e) {
         }
     } else if (Mlsame(norm, "O") || (Mlsame(norm, "1")) || Mlsame(norm, "I")) {
         //
-        //        Find norm1(A).
+        // Find norm1(A).
         //
         if (n == 1) {
             anorm = abs(d[1 - 1]);
@@ -99,7 +80,7 @@ REAL Rlanst(const char *norm, INTEGER const n, REAL *d, REAL *e) {
         }
     } else if ((Mlsame(norm, "F")) || (Mlsame(norm, "E"))) {
         //
-        //        Find normF(A).
+        // Find normF(A).
         //
         scale = zero;
         sum = one;
@@ -114,6 +95,6 @@ REAL Rlanst(const char *norm, INTEGER const n, REAL *d, REAL *e) {
     return_value = anorm;
     return return_value;
     //
-    //     End of Rlanst
+    // End of Rlanst
     //
 }

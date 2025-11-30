@@ -31,7 +31,7 @@
 
 void Clatrz(INTEGER const m, INTEGER const n, INTEGER const l, COMPLEX *a, INTEGER const lda, COMPLEX *tau, COMPLEX *work) {
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     INTEGER i = 0;
     const COMPLEX zero = COMPLEX(0.0, 0.0);
@@ -47,21 +47,21 @@ void Clatrz(INTEGER const m, INTEGER const n, INTEGER const l, COMPLEX *a, INTEG
     COMPLEX alpha = 0.0;
     for (i = m; i >= 1; i = i - 1) {
         //
-        //        Generate elementary reflector H(i) to annihilate
-        //        [ A(i,i) A(i,n-l+1:n) ]
+        // Generate elementary reflector H(i) to annihilate
+        // [ A(i,i) A(i,n-l+1:n) ]
         //
         Clacgv(l, &a[(i - 1) + ((n - l + 1) - 1) * lda], lda);
         alpha = conj(a[(i - 1) + (i - 1) * lda]);
         Clarfg(l + 1, alpha, &a[(i - 1) + ((n - l + 1) - 1) * lda], lda, tau[i - 1]);
         tau[i - 1] = conj(tau[i - 1]);
         //
-        //        Apply H(i) to A(1:i-1,i:n) from the right
+        // Apply H(i) to A(1:i-1,i:n) from the right
         //
         Clarz("Right", i - 1, n - i + 1, l, &a[(i - 1) + ((n - l + 1) - 1) * lda], lda, conj(tau[i - 1]), &a[(i - 1) * lda], lda, work);
         a[(i - 1) + (i - 1) * lda] = conj(alpha);
         //
     }
     //
-    //     End of Clatrz
+    // End of Clatrz
     //
 }

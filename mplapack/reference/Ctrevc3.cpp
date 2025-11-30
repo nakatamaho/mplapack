@@ -63,34 +63,13 @@ void Ctrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
     INTEGER ii = 0;
     REAL remax = 0.0;
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
     //
-    //  =====================================================================
     //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Statement Functions ..
-    //     ..
-    //     .. Statement Function definitions ..
-    //     ..
-    //     .. Executable Statements ..
+    // .. Statement Functions ..
+    // .. Statement Function definitions ..
     //
-    //     Decode and test the input parameters
+    // Decode and test the input parameters
     //
     bothv = Mlsame(side, "B");
     rightv = Mlsame(side, "R") || bothv;
@@ -100,8 +79,8 @@ void Ctrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
     over = Mlsame(howmny, "B");
     somev = Mlsame(howmny, "S");
     //
-    //     Set M to the number of columns required to store the selected
-    //     eigenvectors.
+    // Set M to the number of columns required to store the selected
+    // eigenvectors.
     //
     if (somev) {
         m = 0;
@@ -150,14 +129,14 @@ void Ctrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
         return;
     }
     //
-    //     Quick return if possible.
+    // Quick return if possible.
     //
     if (n == 0) {
         return;
     }
     //
-    //     Use blocked version of back-transformation if sufficient workspace.
-    //     Zero-out the workspace to avoid potential NaN propagation.
+    // Use blocked version of back-transformation if sufficient workspace.
+    // Zero-out the workspace to avoid potential NaN propagation.
     //
     if (over && lwork >= n + 2 * n * nbmin) {
         nb = (lwork - n) / (2 * n);
@@ -167,21 +146,21 @@ void Ctrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
         nb = 1;
     }
     //
-    //     Set the constants to control overflow.
+    // Set the constants to control overflow.
     //
     unfl = Rlamch("Safe minimum");
     ovfl = one / unfl;
     ulp = Rlamch("Precision");
     smlnum = unfl * (n / ulp);
     //
-    //     Store the diagonal elements of T in working array WORK.
+    // Store the diagonal elements of T in working array WORK.
     //
     for (i = 1; i <= n; i = i + 1) {
         work[i - 1] = t[(i - 1) + (i - 1) * ldt];
     }
     //
-    //     Compute 1-norm of each column of strictly upper triangular
-    //     part of T to control overflow in triangular solver.
+    // Compute 1-norm of each column of strictly upper triangular
+    // part of T to control overflow in triangular solver.
     //
     rwork[1 - 1] = zero;
     for (j = 2; j <= n; j = j + 1) {
@@ -190,13 +169,12 @@ void Ctrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
     //
     if (rightv) {
         //
-        //        ============================================================
-        //        Compute right eigenvectors.
+        // Compute right eigenvectors.
         //
-        //        IV is index of column in current block.
-        //        Non-blocked version always uses IV=NB=1;
-        //        blocked     version starts with IV=NB, goes down to 1.
-        //        (Note the "0-th" column is used to store the original diagonal.)
+        // IV is index of column in current block.
+        // Non-blocked version always uses IV=NB=1;
+        // blocked     version starts with IV=NB, goes down to 1.
+        // (Note the "0-th" column is used to store the original diagonal.)
         iv = nb;
         is = m;
         for (ki = n; ki >= 1; ki = ki - 1) {
@@ -207,19 +185,19 @@ void Ctrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
             }
             smin = max(REAL(ulp * (cabs1(t[(ki - 1) + (ki - 1) * ldt]))), smlnum);
             //
-            //           --------------------------------------------------------
-            //           Complex right eigenvector
+            // --------------------------------------------------------
+            // Complex right eigenvector
             //
             work[(ki + iv * n) - 1] = cone;
             //
-            //           Form right-hand side.
+            // Form right-hand side.
             //
             for (k = 1; k <= ki - 1; k = k + 1) {
                 work[(k + iv * n) - 1] = -t[(k - 1) + (ki - 1) * ldt];
             }
             //
-            //           Solve upper triangular system:
-            //           [ T(1:KI-1,1:KI-1) - T(KI,KI) ]*X = SCALE*WORK.
+            // Solve upper triangular system:
+            // [ T(1:KI-1,1:KI-1) - T(KI,KI) ]*X = SCALE*WORK.
             //
             for (k = 1; k <= ki - 1; k = k + 1) {
                 t[(k - 1) + (k - 1) * ldt] = t[(k - 1) + (k - 1) * ldt] - t[(ki - 1) + (ki - 1) * ldt];
@@ -233,7 +211,7 @@ void Ctrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                 work[(ki + iv * n) - 1] = scale;
             }
             //
-            //           Copy the vector x or Q*x to VR and normalize.
+            // Copy the vector x or Q*x to VR and normalize.
             //
             if (!over) {
                 // ------------------------------
@@ -267,9 +245,9 @@ void Ctrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                     work[(k + iv * n) - 1] = czero;
                 }
                 //
-                //              Columns IV:NB of work are valid vectors.
-                //              When the number of vectors stored reaches NB,
-                //              or if this was last vector, do the GEMM
+                // Columns IV:NB of work are valid vectors.
+                // When the number of vectors stored reaches NB,
+                // or if this was last vector, do the GEMM
                 if ((iv == 1) || (ki == 1)) {
                     Cgemm("N", "N", n, nb - iv + 1, ki + nb - iv, cone, vr, ldvr, &work[(1 + (iv)*n) - 1], n, czero, &work[(1 + (nb + iv) * n) - 1], n);
                     // normalize vectors
@@ -285,7 +263,7 @@ void Ctrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                 }
             }
             //
-            //           Restore the original diagonal elements of T.
+            // Restore the original diagonal elements of T.
             //
             for (k = 1; k <= ki - 1; k = k + 1) {
                 t[(k - 1) + (k - 1) * ldt] = work[k - 1];
@@ -298,13 +276,12 @@ void Ctrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
     //
     if (leftv) {
         //
-        //        ============================================================
-        //        Compute left eigenvectors.
+        // Compute left eigenvectors.
         //
-        //        IV is index of column in current block.
-        //        Non-blocked version always uses IV=1;
-        //        blocked     version starts with IV=1, goes up to NB.
-        //        (Note the "0-th" column is used to store the original diagonal.)
+        // IV is index of column in current block.
+        // Non-blocked version always uses IV=1;
+        // blocked     version starts with IV=1, goes up to NB.
+        // (Note the "0-th" column is used to store the original diagonal.)
         iv = 1;
         is = 1;
         for (ki = 1; ki <= n; ki = ki + 1) {
@@ -316,19 +293,19 @@ void Ctrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
             }
             smin = max(REAL(ulp * (cabs1(t[(ki - 1) + (ki - 1) * ldt]))), smlnum);
             //
-            //           --------------------------------------------------------
-            //           Complex left eigenvector
+            // --------------------------------------------------------
+            // Complex left eigenvector
             //
             work[(ki + iv * n) - 1] = cone;
             //
-            //           Form right-hand side.
+            // Form right-hand side.
             //
             for (k = ki + 1; k <= n; k = k + 1) {
                 work[(k + iv * n) - 1] = -conj(t[(ki - 1) + (k - 1) * ldt]);
             }
             //
-            //           Solve conjugate-transposed triangular system:
-            //           [ T(KI+1:N,KI+1:N) - T(KI,KI) ]**H * X = SCALE*WORK.
+            // Solve conjugate-transposed triangular system:
+            // [ T(KI+1:N,KI+1:N) - T(KI,KI) ]**H * X = SCALE*WORK.
             //
             for (k = ki + 1; k <= n; k = k + 1) {
                 t[(k - 1) + (k - 1) * ldt] = t[(k - 1) + (k - 1) * ldt] - t[(ki - 1) + (ki - 1) * ldt];
@@ -342,7 +319,7 @@ void Ctrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                 work[(ki + iv * n) - 1] = scale;
             }
             //
-            //           Copy the vector x or Q*x to VL and normalize.
+            // Copy the vector x or Q*x to VL and normalize.
             //
             if (!over) {
                 // ------------------------------
@@ -377,9 +354,9 @@ void Ctrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                     work[(k + iv * n) - 1] = czero;
                 }
                 //
-                //              Columns 1:IV of work are valid vectors.
-                //              When the number of vectors stored reaches NB,
-                //              or if this was last vector, do the GEMM
+                // Columns 1:IV of work are valid vectors.
+                // When the number of vectors stored reaches NB,
+                // or if this was last vector, do the GEMM
                 if ((iv == nb) || (ki == n)) {
                     Cgemm("N", "N", n, iv, n - ki + iv, cone, &vl[((ki - iv + 1) - 1) * ldvl], ldvl, &work[(ki - iv + 1 + (1) * n) - 1], n, czero, &work[(1 + (nb + 1) * n) - 1], n);
                     // normalize vectors
@@ -395,7 +372,7 @@ void Ctrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                 }
             }
             //
-            //           Restore the original diagonal elements of T.
+            // Restore the original diagonal elements of T.
             //
             for (k = ki + 1; k <= n; k = k + 1) {
                 t[(k - 1) + (k - 1) * ldt] = work[k - 1];
@@ -406,6 +383,6 @@ void Ctrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
         }
     }
     //
-    //     End of Ctrevc3
+    // End of Ctrevc3
     //
 }

@@ -78,7 +78,7 @@ void Rsyevx_2stage(const char *jobz, const char *range, const char *uplo, INTEGE
     INTEGER jj = 0;
     INTEGER itmp1 = 0;
     //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     lower = Mlsame(uplo, "L");
     wantz = Mlsame(jobz, "V");
@@ -142,7 +142,7 @@ void Rsyevx_2stage(const char *jobz, const char *range, const char *uplo, INTEGE
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     m = 0;
     if (n == 0) {
@@ -165,7 +165,7 @@ void Rsyevx_2stage(const char *jobz, const char *range, const char *uplo, INTEGE
         return;
     }
     //
-    //     Get machine constants.
+    // Get machine constants.
     //
     safmin = Rlamch("Safe minimum");
     eps = Rlamch("Precision");
@@ -174,7 +174,7 @@ void Rsyevx_2stage(const char *jobz, const char *range, const char *uplo, INTEGE
     rmin = sqrt(smlnum);
     rmax = min(REAL(sqrt(bignum)), REAL(one / sqrt(sqrt(safmin))));
     //
-    //     Scale matrix to allowable range, if necessary.
+    // Scale matrix to allowable range, if necessary.
     //
     iscale = 0;
     abstll = abstol;
@@ -209,7 +209,7 @@ void Rsyevx_2stage(const char *jobz, const char *range, const char *uplo, INTEGE
         }
     }
     //
-    //     Call Rsytrd_2stage to reduce symmetric matrix to tridiagonal form.
+    // Call Rsytrd_2stage to reduce symmetric matrix to tridiagonal form.
     //
     indtau = 1;
     inde = indtau + n;
@@ -220,9 +220,9 @@ void Rsyevx_2stage(const char *jobz, const char *range, const char *uplo, INTEGE
     //
     Rsytrd_2stage(jobz, uplo, n, a, lda, &work[indd - 1], &work[inde - 1], &work[indtau - 1], &work[indhous - 1], lhtrd, &work[indwrk - 1], llwork, iinfo);
     //
-    //     If all eigenvalues are desired and ABSTOL is less than or equal to
-    //     zero, then call Rsterf or Rorgtr and Rsteqr.  If this fails for
-    //     some eigenvalue, then try Rstebz.
+    // If all eigenvalues are desired and ABSTOL is less than or equal to
+    // zero, then call Rsterf or Rorgtr and Rsteqr.  If this fails for
+    // some eigenvalue, then try Rstebz.
     //
     test = false;
     if (indeig) {
@@ -254,7 +254,7 @@ void Rsyevx_2stage(const char *jobz, const char *range, const char *uplo, INTEGE
         info = 0;
     }
     //
-    //     Otherwise, call Rstebz and, if eigenvectors are desired, Rstein.
+    // Otherwise, call Rstebz and, if eigenvectors are desired, Rstein.
     //
     if (wantz) {
         order = 'B';
@@ -269,15 +269,15 @@ void Rsyevx_2stage(const char *jobz, const char *range, const char *uplo, INTEGE
     if (wantz) {
         Rstein(n, &work[indd - 1], &work[inde - 1], m, w, &iwork[indibl - 1], &iwork[indisp - 1], z, ldz, &work[indwrk - 1], &iwork[indiwo - 1], ifail, info);
         //
-        //        Apply orthogonal matrix used in reduction to tridiagonal
-        //        form to eigenvectors returned by Rstein.
+        // Apply orthogonal matrix used in reduction to tridiagonal
+        // form to eigenvectors returned by Rstein.
         //
         indwkn = inde;
         llwrkn = lwork - indwkn + 1;
         Rormtr("L", uplo, "N", n, m, a, lda, &work[indtau - 1], z, ldz, &work[indwkn - 1], llwrkn, iinfo);
     }
 //
-//     If matrix was scaled, then rescale eigenvalues appropriately.
+// If matrix was scaled, then rescale eigenvalues appropriately.
 //
 statement_40:
     if (iscale == 1) {
@@ -289,8 +289,8 @@ statement_40:
         Rscal(imax, one / sigma, w, 1);
     }
     //
-    //     If eigenvalues are not in order, then sort them, along with
-    //     eigenvectors.
+    // If eigenvalues are not in order, then sort them, along with
+    // eigenvectors.
     //
     if (wantz) {
         for (j = 1; j <= m - 1; j = j + 1) {
@@ -319,10 +319,10 @@ statement_40:
         }
     }
     //
-    //     Set WORK(1) to optimal workspace size.
+    // Set WORK(1) to optimal workspace size.
     //
     work[1 - 1] = lwmin;
     //
-    //     End of Rsyevx_2stage
+    // End of Rsyevx_2stage
     //
 }

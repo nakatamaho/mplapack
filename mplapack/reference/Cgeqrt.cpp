@@ -31,25 +31,11 @@
 
 void Cgeqrt(INTEGER const m, INTEGER const n, INTEGER const nb, COMPLEX *a, INTEGER const lda, COMPLEX *t, INTEGER const ldt, COMPLEX *work, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
     //
-    // =====================================================================
     //
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Executable Statements ..
     //
-    //     Test the input arguments
+    // Test the input arguments
     //
     info = 0;
     if (m < 0) {
@@ -68,14 +54,14 @@ void Cgeqrt(INTEGER const m, INTEGER const n, INTEGER const nb, COMPLEX *a, INTE
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     INTEGER k = min(m, n);
     if (k == 0) {
         return;
     }
     //
-    //     Blocked loop of length K
+    // Blocked loop of length K
     //
     INTEGER i = 0;
     INTEGER ib = 0;
@@ -84,7 +70,7 @@ void Cgeqrt(INTEGER const m, INTEGER const n, INTEGER const nb, COMPLEX *a, INTE
     for (i = 1; i <= k; i = i + nb) {
         ib = min(k - i + 1, nb);
         //
-        //     Compute the QR factorization of the current block A(I:M,I:I+IB-1)
+        // Compute the QR factorization of the current block A(I:M,I:I+IB-1)
         //
         if (use_recursive_qr) {
             Cgeqrt3(m - i + 1, ib, &a[(i - 1) + (i - 1) * lda], lda, &t[(i - 1) * ldt], ldt, iinfo);
@@ -93,12 +79,12 @@ void Cgeqrt(INTEGER const m, INTEGER const n, INTEGER const nb, COMPLEX *a, INTE
         }
         if (i + ib <= n) {
             //
-            //     Update by applying H**H to A(I:M,I+IB:N) from the left
+            // Update by applying H**H to A(I:M,I+IB:N) from the left
             //
             Clarfb("L", "C", "F", "C", m - i + 1, n - i - ib + 1, ib, &a[(i - 1) + (i - 1) * lda], lda, &t[(i - 1) * ldt], ldt, &a[(i - 1) + ((i + ib) - 1) * lda], lda, work, n - i - ib + 1);
         }
     }
     //
-    //     End of Cgeqrt
+    // End of Cgeqrt
     //
 }

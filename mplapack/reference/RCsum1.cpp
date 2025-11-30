@@ -35,22 +35,9 @@ REAL RCsum1(INTEGER const n, COMPLEX *cx, INTEGER const incx) {
     INTEGER nincx = 0;
     INTEGER i = 0;
     //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
     //
-    //  =====================================================================
     //
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
     return_value = 0.0;
     stemp = 0.0;
@@ -61,30 +48,30 @@ REAL RCsum1(INTEGER const n, COMPLEX *cx, INTEGER const incx) {
         goto statement_20;
     }
     //
-    //     CODE FOR INCREMENT NOT EQUAL TO 1
+    // CODE FOR INCREMENT NOT EQUAL TO 1
     //
     nincx = n * incx;
     for (i = 1; i <= nincx; i = i + incx) {
         //
-        //        NEXT LINE MODIFIED.
+        // NEXT LINE MODIFIED.
         //
         stemp += abs(cx[i - 1]);
     }
     return_value = stemp;
     return return_value;
 //
-//     CODE FOR INCREMENT EQUAL TO 1
+// CODE FOR INCREMENT EQUAL TO 1
 //
 statement_20:
     for (i = 1; i <= n; i = i + 1) {
         //
-        //        NEXT LINE MODIFIED.
+        // NEXT LINE MODIFIED.
         //
         stemp += abs(cx[i - 1]);
     }
     return_value = stemp;
     return return_value;
     //
-    //     End of RCsum1
+    // End of RCsum1
     //
 }

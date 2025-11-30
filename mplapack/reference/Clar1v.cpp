@@ -50,27 +50,10 @@ void Clar1v(INTEGER const n, INTEGER const b1, INTEGER const bn, REAL const lamb
     const COMPLEX cone = COMPLEX(1.0, 0.0);
     const REAL one = 1.0;
     //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
     //
-    //  =====================================================================
     //
-    //     .. Parameters ..
     //
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
     eps = Rlamch("Precision");
     //
@@ -82,7 +65,7 @@ void Clar1v(INTEGER const n, INTEGER const b1, INTEGER const bn, REAL const lamb
         r2 = r;
     }
     //
-    //     Storage for LPLUS
+    // Storage for LPLUS
     indlpl = 0;
     // Storage for UMINUS
     indumn = n;
@@ -95,8 +78,8 @@ void Clar1v(INTEGER const n, INTEGER const b1, INTEGER const bn, REAL const lamb
         work[(inds + b1 - 1) - 1] = lld[(b1 - 1) - 1];
     }
     //
-    //     Compute the stationary transform (using the differential form)
-    //     until the index R2.
+    // Compute the stationary transform (using the differential form)
+    // until the index R2.
     //
     sawnan1 = false;
     neg1 = 0;
@@ -156,8 +139,8 @@ statement_60:
         }
     }
     //
-    //     Compute the progressive transform (using the differential form)
-    //     until the index R1
+    // Compute the progressive transform (using the differential form)
+    // until the index R1
     //
     sawnan2 = false;
     neg2 = 0;
@@ -194,8 +177,8 @@ statement_60:
         }
     }
     //
-    //     Find the index (from R1 to R2) of the largest (in magnitude)
-    //     diagonal element of the inverse
+    // Find the index (from R1 to R2) of the largest (in magnitude)
+    // diagonal element of the inverse
     //
     mingma = work[(inds + r1 - 1) - 1] + work[(indp + r1 - 1) - 1];
     if (mingma < zero) {
@@ -221,14 +204,14 @@ statement_60:
         }
     }
     //
-    //     Compute the FP vector: solve N^T v = e_r
+    // Compute the FP vector: solve N^T v = e_r
     //
     isuppz[1 - 1] = b1;
     isuppz[2 - 1] = bn;
     z[r - 1] = cone;
     ztz = one;
     //
-    //     Compute the FP vector upwards from R
+    // Compute the FP vector upwards from R
     //
     if (!sawnan1 && !sawnan2) {
         for (i = r - 1; i >= b1; i = i - 1) {
@@ -259,7 +242,7 @@ statement_60:
     statement_240:;
     }
     //
-    //     Compute the FP vector downwards from R in blocks of size BLKSIZ
+    // Compute the FP vector downwards from R in blocks of size BLKSIZ
     if (!sawnan1 && !sawnan2) {
         for (i = r; i <= bn - 1; i = i + 1) {
             z[(i + 1) - 1] = -(work[(indumn + i) - 1] * z[i - 1]);
@@ -289,13 +272,13 @@ statement_60:
     statement_280:;
     }
     //
-    //     Compute quantities for convergence test
+    // Compute quantities for convergence test
     //
     tmp = one / ztz;
     nrminv = sqrt(tmp);
     resid = abs(mingma) * nrminv;
     rqcorr = mingma * tmp;
     //
-    //     End of Clar1v
+    // End of Clar1v
     //
 }

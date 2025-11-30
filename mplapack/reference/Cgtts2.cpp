@@ -34,24 +34,11 @@ void Cgtts2(INTEGER const itrans, INTEGER const n, INTEGER const nrhs, COMPLEX *
     INTEGER i = 0;
     COMPLEX temp = 0.0;
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
     //
-    //  =====================================================================
     //
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0 || nrhs == 0) {
         return;
@@ -59,14 +46,14 @@ void Cgtts2(INTEGER const itrans, INTEGER const n, INTEGER const nrhs, COMPLEX *
     //
     if (itrans == 0) {
         //
-        //        Solve A*X = B using the LU factorization of A,
-        //        overwriting each right hand side vector with its solution.
+        // Solve A*X = B using the LU factorization of A,
+        // overwriting each right hand side vector with its solution.
         //
         if (nrhs <= 1) {
             j = 1;
         statement_10:
             //
-            //           Solve L*x = b.
+            // Solve L*x = b.
             //
             for (i = 1; i <= n - 1; i = i + 1) {
                 if (ipiv[i - 1] == i) {
@@ -78,7 +65,7 @@ void Cgtts2(INTEGER const itrans, INTEGER const n, INTEGER const nrhs, COMPLEX *
                 }
             }
             //
-            //           Solve U*x = b.
+            // Solve U*x = b.
             //
             b[(n - 1) + (j - 1) * ldb] = b[(n - 1) + (j - 1) * ldb] / d[n - 1];
             if (n > 1) {
@@ -94,7 +81,7 @@ void Cgtts2(INTEGER const itrans, INTEGER const n, INTEGER const nrhs, COMPLEX *
         } else {
             for (j = 1; j <= nrhs; j = j + 1) {
                 //
-                //           Solve L*x = b.
+                // Solve L*x = b.
                 //
                 for (i = 1; i <= n - 1; i = i + 1) {
                     if (ipiv[i - 1] == i) {
@@ -106,7 +93,7 @@ void Cgtts2(INTEGER const itrans, INTEGER const n, INTEGER const nrhs, COMPLEX *
                     }
                 }
                 //
-                //           Solve U*x = b.
+                // Solve U*x = b.
                 //
                 b[(n - 1) + (j - 1) * ldb] = b[(n - 1) + (j - 1) * ldb] / d[n - 1];
                 if (n > 1) {
@@ -119,13 +106,13 @@ void Cgtts2(INTEGER const itrans, INTEGER const n, INTEGER const nrhs, COMPLEX *
         }
     } else if (itrans == 1) {
         //
-        //        Solve A**T * X = B.
+        // Solve A**T * X = B.
         //
         if (nrhs <= 1) {
             j = 1;
         statement_70:
             //
-            //           Solve U**T * x = b.
+            // Solve U**T * x = b.
             //
             b[(j - 1) * ldb] = b[(j - 1) * ldb] / d[1 - 1];
             if (n > 1) {
@@ -135,7 +122,7 @@ void Cgtts2(INTEGER const itrans, INTEGER const n, INTEGER const nrhs, COMPLEX *
                 b[(i - 1) + (j - 1) * ldb] = (b[(i - 1) + (j - 1) * ldb] - du[(i - 1) - 1] * b[((i - 1) - 1) + (j - 1) * ldb] - du2[(i - 2) - 1] * b[((i - 2) - 1) + (j - 1) * ldb]) / d[i - 1];
             }
             //
-            //           Solve L**T * x = b.
+            // Solve L**T * x = b.
             //
             for (i = n - 1; i >= 1; i = i - 1) {
                 if (ipiv[i - 1] == i) {
@@ -153,7 +140,7 @@ void Cgtts2(INTEGER const itrans, INTEGER const n, INTEGER const nrhs, COMPLEX *
         } else {
             for (j = 1; j <= nrhs; j = j + 1) {
                 //
-                //           Solve U**T * x = b.
+                // Solve U**T * x = b.
                 //
                 b[(j - 1) * ldb] = b[(j - 1) * ldb] / d[1 - 1];
                 if (n > 1) {
@@ -163,7 +150,7 @@ void Cgtts2(INTEGER const itrans, INTEGER const n, INTEGER const nrhs, COMPLEX *
                     b[(i - 1) + (j - 1) * ldb] = (b[(i - 1) + (j - 1) * ldb] - du[(i - 1) - 1] * b[((i - 1) - 1) + (j - 1) * ldb] - du2[(i - 2) - 1] * b[((i - 2) - 1) + (j - 1) * ldb]) / d[i - 1];
                 }
                 //
-                //           Solve L**T * x = b.
+                // Solve L**T * x = b.
                 //
                 for (i = n - 1; i >= 1; i = i - 1) {
                     if (ipiv[i - 1] == i) {
@@ -178,13 +165,13 @@ void Cgtts2(INTEGER const itrans, INTEGER const n, INTEGER const nrhs, COMPLEX *
         }
     } else {
         //
-        //        Solve A**H * X = B.
+        // Solve A**H * X = B.
         //
         if (nrhs <= 1) {
             j = 1;
         statement_130:
             //
-            //           Solve U**H * x = b.
+            // Solve U**H * x = b.
             //
             b[(j - 1) * ldb] = b[(j - 1) * ldb] / conj(d[1 - 1]);
             if (n > 1) {
@@ -194,7 +181,7 @@ void Cgtts2(INTEGER const itrans, INTEGER const n, INTEGER const nrhs, COMPLEX *
                 b[(i - 1) + (j - 1) * ldb] = (b[(i - 1) + (j - 1) * ldb] - conj(du[(i - 1) - 1]) * b[((i - 1) - 1) + (j - 1) * ldb] - conj(du2[(i - 2) - 1]) * b[((i - 2) - 1) + (j - 1) * ldb]) / conj(d[i - 1]);
             }
             //
-            //           Solve L**H * x = b.
+            // Solve L**H * x = b.
             //
             for (i = n - 1; i >= 1; i = i - 1) {
                 if (ipiv[i - 1] == i) {
@@ -212,7 +199,7 @@ void Cgtts2(INTEGER const itrans, INTEGER const n, INTEGER const nrhs, COMPLEX *
         } else {
             for (j = 1; j <= nrhs; j = j + 1) {
                 //
-                //           Solve U**H * x = b.
+                // Solve U**H * x = b.
                 //
                 b[(j - 1) * ldb] = b[(j - 1) * ldb] / conj(d[1 - 1]);
                 if (n > 1) {
@@ -222,7 +209,7 @@ void Cgtts2(INTEGER const itrans, INTEGER const n, INTEGER const nrhs, COMPLEX *
                     b[(i - 1) + (j - 1) * ldb] = (b[(i - 1) + (j - 1) * ldb] - conj(du[(i - 1) - 1]) * b[((i - 1) - 1) + (j - 1) * ldb] - conj(du2[(i - 2) - 1]) * b[((i - 2) - 1) + (j - 1) * ldb]) / conj(d[i - 1]);
                 }
                 //
-                //           Solve L**H * x = b.
+                // Solve L**H * x = b.
                 //
                 for (i = n - 1; i >= 1; i = i - 1) {
                     if (ipiv[i - 1] == i) {
@@ -237,6 +224,6 @@ void Cgtts2(INTEGER const itrans, INTEGER const n, INTEGER const nrhs, COMPLEX *
         }
     }
     //
-    //     End of Cgtts2
+    // End of Cgtts2
     //
 }

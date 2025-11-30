@@ -31,28 +31,13 @@
 
 void Rlatrz(INTEGER const m, INTEGER const n, INTEGER const l, REAL *a, INTEGER const lda, REAL *tau, REAL *work) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
     //
-    //  =====================================================================
     //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Executable Statements ..
     //
-    //     Test the input arguments
+    // Test the input arguments
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     INTEGER i = 0;
     const REAL zero = 0.0;
@@ -67,17 +52,17 @@ void Rlatrz(INTEGER const m, INTEGER const n, INTEGER const l, REAL *a, INTEGER 
     //
     for (i = m; i >= 1; i = i - 1) {
         //
-        //        Generate elementary reflector H(i) to annihilate
-        //        [ A(i,i) A(i,n-l+1:n) ]
+        // Generate elementary reflector H(i) to annihilate
+        // [ A(i,i) A(i,n-l+1:n) ]
         //
         Rlarfg(l + 1, a[(i - 1) + (i - 1) * lda], &a[(i - 1) + ((n - l + 1) - 1) * lda], lda, tau[i - 1]);
         //
-        //        Apply H(i) to A(1:i-1,i:n) from the right
+        // Apply H(i) to A(1:i-1,i:n) from the right
         //
         Rlarz("Right", i - 1, n - i + 1, l, &a[(i - 1) + ((n - l + 1) - 1) * lda], lda, tau[i - 1], &a[(i - 1) * lda], lda, work);
         //
     }
     //
-    //     End of Rlatrz
+    // End of Rlatrz
     //
 }

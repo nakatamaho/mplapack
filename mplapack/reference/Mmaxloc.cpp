@@ -39,7 +39,7 @@ INTEGER Mmaxloc(REAL *dx, INTEGER const start, INTEGER const end, INTEGER const 
     INTEGER ix = 0;
     if (incx == 1) {
         //
-        //        code for increment equal to 1
+        // code for increment equal to 1
         //
         dmax = dx[start - 1];
         for (i = start + 1; i <= end; i = i + 1) {

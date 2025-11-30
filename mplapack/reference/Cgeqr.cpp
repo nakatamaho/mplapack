@@ -31,7 +31,7 @@
 
 void Cgeqr(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *t, INTEGER const tsize, COMPLEX *work, INTEGER const lwork, INTEGER &info) {
     //
-    //     Test the input arguments
+    // Test the input arguments
     //
     info = 0;
     //
@@ -48,7 +48,7 @@ void Cgeqr(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, COMP
         }
     }
     //
-    //     Determine the block size
+    // Determine the block size
     //
     INTEGER mb = 0;
     INTEGER nb = 0;
@@ -77,7 +77,7 @@ void Cgeqr(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, COMP
         nblcks = 1;
     }
     //
-    //     Determine if the workspace size satisfies minimal size
+    // Determine if the workspace size satisfies minimal size
     //
     bool lminws = false;
     if ((tsize < max((INTEGER)1, nb * n * nblcks + 5) || lwork < nb * n) && (lwork >= n) && (tsize >= mintsz) && (!lquery)) {
@@ -125,13 +125,13 @@ void Cgeqr(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, COMP
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (min(m, n) == 0) {
         return;
     }
     //
-    //     The QR Decomposition
+    // The QR Decomposition
     //
     if ((m <= n) || (mb <= n) || (mb >= m)) {
         Cgeqrt(m, n, nb, a, lda, &t[6 - 1], nb, work, info);
@@ -141,6 +141,6 @@ void Cgeqr(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, COMP
     //
     work[1 - 1] = max((INTEGER)1, nb * n);
     //
-    //     End of Cgeqr
+    // End of Cgeqr
     //
 }

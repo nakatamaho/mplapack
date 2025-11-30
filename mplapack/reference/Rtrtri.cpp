@@ -31,30 +31,11 @@
 
 void Rtrtri(const char *uplo, const char *diag, INTEGER const n, REAL *a, INTEGER const lda, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
     //
-    //  =====================================================================
     //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     bool upper = Mlsame(uplo, "U");
@@ -73,13 +54,13 @@ void Rtrtri(const char *uplo, const char *diag, INTEGER const n, REAL *a, INTEGE
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0) {
         return;
     }
     //
-    //     Check for singularity if non-unit.
+    // Check for singularity if non-unit.
     //
     const REAL zero = 0.0;
     if (nounit) {
@@ -91,7 +72,7 @@ void Rtrtri(const char *uplo, const char *diag, INTEGER const n, REAL *a, INTEGE
         info = 0;
     }
     //
-    //     Determine the block size for this environment.
+    // Determine the block size for this environment.
     //
     char uplo_diag[3];
     uplo_diag[0] = uplo[0];
@@ -104,51 +85,51 @@ void Rtrtri(const char *uplo, const char *diag, INTEGER const n, REAL *a, INTEGE
     INTEGER nn = 0;
     if (nb <= 1 || nb >= n) {
         //
-        //        Use unblocked code
+        // Use unblocked code
         //
         Rtrti2(uplo, diag, n, a, lda, info);
     } else {
         //
-        //        Use blocked code
+        // Use blocked code
         //
         if (upper) {
             //
-            //           Compute inverse of upper triangular matrix
+            // Compute inverse of upper triangular matrix
             //
             for (j = 1; j <= n; j = j + nb) {
                 jb = min(nb, n - j + 1);
                 //
-                //              Compute rows 1:j-1 of current block column
+                // Compute rows 1:j-1 of current block column
                 //
                 Rtrmm("Left", "Upper", "No transpose", diag, j - 1, jb, one, a, lda, &a[(j - 1) * lda], lda);
                 Rtrsm("Right", "Upper", "No transpose", diag, j - 1, jb, -one, &a[(j - 1) + (j - 1) * lda], lda, &a[(j - 1) * lda], lda);
                 //
-                //              Compute inverse of current diagonal block
+                // Compute inverse of current diagonal block
                 //
                 Rtrti2("Upper", diag, jb, &a[(j - 1) + (j - 1) * lda], lda, info);
             }
         } else {
             //
-            //           Compute inverse of lower triangular matrix
+            // Compute inverse of lower triangular matrix
             //
             nn = ((n - 1) / nb) * nb + 1;
             for (j = nn; j >= 1; j = j - nb) {
                 jb = min(nb, n - j + 1);
                 if (j + jb <= n) {
                     //
-                    //                 Compute rows j+jb:n of current block column
+                    // Compute rows j+jb:n of current block column
                     //
                     Rtrmm("Left", "Lower", "No transpose", diag, n - j - jb + 1, jb, one, &a[((j + jb) - 1) + ((j + jb) - 1) * lda], lda, &a[((j + jb) - 1) + (j - 1) * lda], lda);
                     Rtrsm("Right", "Lower", "No transpose", diag, n - j - jb + 1, jb, -one, &a[(j - 1) + (j - 1) * lda], lda, &a[((j + jb) - 1) + (j - 1) * lda], lda);
                 }
                 //
-                //              Compute inverse of current diagonal block
+                // Compute inverse of current diagonal block
                 //
                 Rtrti2("Lower", diag, jb, &a[(j - 1) + (j - 1) * lda], lda, info);
             }
         }
     }
     //
-    //     End of Rtrtri
+    // End of Rtrtri
     //
 }

@@ -31,28 +31,11 @@
 
 void Cung2r(INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX *a, INTEGER const lda, COMPLEX *tau, COMPLEX *work, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
     //
-    //  =====================================================================
     //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
-    //     Test the input arguments
+    // Test the input arguments
     //
     info = 0;
     if (m < 0) {
@@ -69,13 +52,13 @@ void Cung2r(INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX *a, INTEG
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n <= 0) {
         return;
     }
     //
-    //     Initialise columns k+1:n to columns of the unit matrix
+    // Initialise columns k+1:n to columns of the unit matrix
     //
     INTEGER j = 0;
     INTEGER l = 0;
@@ -91,7 +74,7 @@ void Cung2r(INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX *a, INTEG
     INTEGER i = 0;
     for (i = k; i >= 1; i = i - 1) {
         //
-        //        Apply H(i) to A(i:m,i:n) from the left
+        // Apply H(i) to A(i:m,i:n) from the left
         //
         if (i < n) {
             a[(i - 1) + (i - 1) * lda] = one;
@@ -102,13 +85,13 @@ void Cung2r(INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX *a, INTEG
         }
         a[(i - 1) + (i - 1) * lda] = one - tau[i - 1];
         //
-        //        Set A(1:i-1,i) to zero
+        // Set A(1:i-1,i) to zero
         //
         for (l = 1; l <= i - 1; l = l + 1) {
             a[(l - 1) + (i - 1) * lda] = zero;
         }
     }
     //
-    //     End of Cung2r
+    // End of Cung2r
     //
 }

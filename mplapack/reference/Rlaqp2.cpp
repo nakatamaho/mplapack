@@ -31,33 +31,14 @@
 
 void Rlaqp2(INTEGER const m, INTEGER const n, INTEGER const offset, REAL *a, INTEGER const lda, INTEGER *jpvt, REAL *tau, REAL *vn1, REAL *vn2, REAL *work) {
     //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
     //
-    //  =====================================================================
     //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
     INTEGER mn = min(m - offset, n);
     REAL tol3z = sqrt(Rlamch("Epsilon"));
     //
-    //     Compute factorization.
+    // Compute factorization.
     //
     INTEGER i = 0;
     INTEGER offpi = 0;
@@ -73,7 +54,7 @@ void Rlaqp2(INTEGER const m, INTEGER const n, INTEGER const offset, REAL *a, INT
         //
         offpi = offset + i;
         //
-        //        Determine ith pivot column and swap if necessary.
+        // Determine ith pivot column and swap if necessary.
         //
         pvt = (i - 1) + iRamax(n - i + 1, &vn1[i - 1], 1);
         //
@@ -86,7 +67,7 @@ void Rlaqp2(INTEGER const m, INTEGER const n, INTEGER const offset, REAL *a, INT
             vn2[pvt - 1] = vn2[i - 1];
         }
         //
-        //        Generate elementary reflector H(i).
+        // Generate elementary reflector H(i).
         //
         if (offpi < m) {
             Rlarfg(m - offpi + 1, a[(offpi - 1) + (i - 1) * lda], &a[((offpi + 1) - 1) + (i - 1) * lda], 1, tau[i - 1]);
@@ -96,7 +77,7 @@ void Rlaqp2(INTEGER const m, INTEGER const n, INTEGER const offset, REAL *a, INT
         //
         if (i < n) {
             //
-            //           Apply H(i)**T to A(offset+i:m,i+1:n) from the left.
+            // Apply H(i)**T to A(offset+i:m,i+1:n) from the left.
             //
             aii = a[(offpi - 1) + (i - 1) * lda];
             a[(offpi - 1) + (i - 1) * lda] = one;
@@ -104,13 +85,13 @@ void Rlaqp2(INTEGER const m, INTEGER const n, INTEGER const offset, REAL *a, INT
             a[(offpi - 1) + (i - 1) * lda] = aii;
         }
         //
-        //        Update partial column norms.
+        // Update partial column norms.
         //
         for (j = i + 1; j <= n; j = j + 1) {
             if (vn1[j - 1] != zero) {
                 //
-                //              NOTE: The following 4 lines follow from the analysis in
-                //              Lapack Working Note 176.
+                // NOTE: The following 4 lines follow from the analysis in
+                // Lapack Working Note 176.
                 //
                 temp = one - pow2((abs(a[(offpi - 1) + (j - 1) * lda]) / vn1[j - 1]));
                 temp = max(temp, zero);
@@ -131,6 +112,6 @@ void Rlaqp2(INTEGER const m, INTEGER const n, INTEGER const offset, REAL *a, INT
         //
     }
     //
-    //     End of Rlaqp2
+    // End of Rlaqp2
     //
 }

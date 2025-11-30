@@ -31,24 +31,9 @@
 
 void Clacpy(const char *uplo, INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb) {
     //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
     //
-    //  =====================================================================
     //
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
     INTEGER j = 0;
     INTEGER i = 0;
@@ -74,6 +59,6 @@ void Clacpy(const char *uplo, INTEGER const m, INTEGER const n, COMPLEX *a, INTE
         }
     }
     //
-    //     End of Clacpy
+    // End of Clacpy
     //
 }

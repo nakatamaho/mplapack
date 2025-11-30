@@ -31,30 +31,11 @@
 
 void Rormqr(const char *side, const char *trans, INTEGER const m, INTEGER const n, INTEGER const k, REAL *a, INTEGER const lda, REAL *tau, REAL *c, INTEGER const ldc, REAL *work, INTEGER const lwork, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
     //
-    //  =====================================================================
     //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
-    //     Test the input arguments
+    // Test the input arguments
     //
     info = 0;
     bool left = Mlsame(side, "L");
@@ -96,7 +77,7 @@ void Rormqr(const char *side, const char *trans, INTEGER const m, INTEGER const 
     INTEGER lwkopt = 0;
     if (info == 0) {
         //
-        //        Compute the workspace requirements
+        // Compute the workspace requirements
         //
         char side_trans[3];
         side_trans[0] = side[0];
@@ -114,7 +95,7 @@ void Rormqr(const char *side, const char *trans, INTEGER const m, INTEGER const 
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (m == 0 || n == 0 || k == 0) {
         work[1 - 1] = 1;
@@ -147,12 +128,12 @@ void Rormqr(const char *side, const char *trans, INTEGER const m, INTEGER const 
     INTEGER ib = 0;
     if (nb < nbmin || nb >= k) {
         //
-        //        Use unblocked code
+        // Use unblocked code
         //
         Rorm2r(side, trans, m, n, k, a, lda, tau, c, ldc, work, iinfo);
     } else {
         //
-        //        Use blocked code
+        // Use blocked code
         //
         iwt = 1 + nw * nb;
         if ((left && !notran) || (!left && notran)) {
@@ -176,31 +157,31 @@ void Rormqr(const char *side, const char *trans, INTEGER const m, INTEGER const 
         for (i = i1; i3 >= 0 ? i <= i2 : i >= i2; i = i + i3) {
             ib = min(nb, k - i + 1);
             //
-            //           Form the triangular factor of the block reflector
-            //           H = H(i) H(i+1) . . . H(i+ib-1)
+            // Form the triangular factor of the block reflector
+            // H = H(i) H(i+1) . . . H(i+ib-1)
             //
             Rlarft("Forward", "Columnwise", nq - i + 1, ib, &a[(i - 1) + (i - 1) * lda], lda, &tau[i - 1], &work[iwt - 1], ldt);
             if (left) {
                 //
-                //              H or H**T is applied to C(i:m,1:n)
+                // H or H**T is applied to C(i:m,1:n)
                 //
                 mi = m - i + 1;
                 ic = i;
             } else {
                 //
-                //              H or H**T is applied to C(1:m,i:n)
+                // H or H**T is applied to C(1:m,i:n)
                 //
                 ni = n - i + 1;
                 jc = i;
             }
             //
-            //           Apply H or H**T
+            // Apply H or H**T
             //
             Rlarfb(side, trans, "Forward", "Columnwise", mi, ni, ib, &a[(i - 1) + (i - 1) * lda], lda, &work[iwt - 1], ldt, &c[(ic - 1) + (jc - 1) * ldc], ldc, work, ldwork);
         }
     }
     work[1 - 1] = lwkopt;
     //
-    //     End of Rormqr
+    // End of Rormqr
     //
 }

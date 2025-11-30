@@ -31,31 +31,16 @@
 
 void Rlaset(const char *uplo, INTEGER const m, INTEGER const n, REAL const alpha, REAL const beta, REAL *a, INTEGER const lda) {
     //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
     //
-    // =====================================================================
     //
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
     INTEGER j = 0;
     INTEGER i = 0;
     if (Mlsame(uplo, "U")) {
         //
-        //        Set the strictly upper triangular or trapezoidal part of the
-        //        array to ALPHA.
+        // Set the strictly upper triangular or trapezoidal part of the
+        // array to ALPHA.
         //
         for (j = 2; j <= n; j = j + 1) {
             for (i = 1; i <= min(j - 1, m); i = i + 1) {
@@ -65,8 +50,8 @@ void Rlaset(const char *uplo, INTEGER const m, INTEGER const n, REAL const alpha
         //
     } else if (Mlsame(uplo, "L")) {
         //
-        //        Set the strictly lower triangular or trapezoidal part of the
-        //        array to ALPHA.
+        // Set the strictly lower triangular or trapezoidal part of the
+        // array to ALPHA.
         //
         for (j = 1; j <= min(m, n); j = j + 1) {
             for (i = j + 1; i <= m; i = i + 1) {
@@ -76,7 +61,7 @@ void Rlaset(const char *uplo, INTEGER const m, INTEGER const n, REAL const alpha
         //
     } else {
         //
-        //        Set the leading m-by-n submatrix to ALPHA.
+        // Set the leading m-by-n submatrix to ALPHA.
         //
         for (j = 1; j <= n; j = j + 1) {
             for (i = 1; i <= m; i = i + 1) {
@@ -85,12 +70,12 @@ void Rlaset(const char *uplo, INTEGER const m, INTEGER const n, REAL const alpha
         }
     }
     //
-    //     Set the first min(M,N) diagonal elements to BETA.
+    // Set the first min(M,N) diagonal elements to BETA.
     //
     for (i = 1; i <= min(m, n); i = i + 1) {
         a[(i - 1) + (i - 1) * lda] = beta;
     }
     //
-    //     End of Rlaset
+    // End of Rlaset
     //
 }

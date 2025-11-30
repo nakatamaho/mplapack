@@ -32,20 +32,9 @@
 INTEGER iMlauplo(const char *uplo) {
     INTEGER return_value = 0;
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
     //
-    //     .. Scalar Arguments ..
-    //     ..
     //
-    //  =====================================================================
     //
-    //     .. Parameters ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Executable Statements ..
     const INTEGER blas_upper = 121;
     const INTEGER blas_lower = 122;
     if (Mlsame(uplo, "U")) {
@@ -57,6 +46,6 @@ INTEGER iMlauplo(const char *uplo) {
     }
     return return_value;
     //
-    //     End of iMlauplo
+    // End of iMlauplo
     //
 }

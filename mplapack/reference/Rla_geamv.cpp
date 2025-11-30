@@ -31,7 +31,7 @@
 
 void Rla_geamv(INTEGER const trans, INTEGER const m, INTEGER const n, REAL const alpha, REAL *a, INTEGER const lda, REAL *x, INTEGER const incx, REAL const beta, REAL *y, INTEGER const incy) {
     //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     INTEGER info = 0;
     if (!((trans == iMlatrans("N")) || (trans == iMlatrans("T")) || (trans == iMlatrans("C")))) {
@@ -52,7 +52,7 @@ void Rla_geamv(INTEGER const trans, INTEGER const m, INTEGER const n, REAL const
         return;
     }
     //
-    //     Quick return if possible.
+    // Quick return if possible.
     //
     const REAL zero = 0.0;
     const REAL one = 1.0;
@@ -60,8 +60,8 @@ void Rla_geamv(INTEGER const trans, INTEGER const m, INTEGER const n, REAL const
         return;
     }
     //
-    //     Set  LENX  and  LENY, the lengths of the vectors x and y, and set
-    //     up the start points in  X  and  Y.
+    // Set  LENX  and  LENY, the lengths of the vectors x and y, and set
+    // up the start points in  X  and  Y.
     //
     INTEGER lenx = 0;
     INTEGER leny = 0;
@@ -85,17 +85,17 @@ void Rla_geamv(INTEGER const trans, INTEGER const m, INTEGER const n, REAL const
         ky = 1 - (leny - 1) * incy;
     }
     //
-    //     Set SAFE1 essentially to be the underflow threshold times the
-    //     number of additions in each row.
+    // Set SAFE1 essentially to be the underflow threshold times the
+    // number of additions in each row.
     //
     REAL safe1 = Rlamch("Safe minimum");
     safe1 = (n + 1) * safe1;
     //
-    //     Form  y := alpha*abs(A)*abs(x) + beta*abs(y).
+    // Form  y := alpha*abs(A)*abs(x) + beta*abs(y).
     //
-    //     The O(M*N) SYMB_ZERO tests could be replaced by O(N) queries to
-    //     the inexact flag.  Still doesn't help change the iteration order
-    //     to per-column.
+    // The O(M*N) SYMB_ZERO tests could be replaced by O(N) queries to
+    // the inexact flag.  Still doesn't help change the iteration order
+    // to per-column.
     //
     INTEGER iy = ky;
     INTEGER i = 0;
@@ -218,6 +218,6 @@ void Rla_geamv(INTEGER const trans, INTEGER const m, INTEGER const n, REAL const
         //
     }
     //
-    //     End of Rla_geamv
+    // End of Rla_geamv
     //
 }

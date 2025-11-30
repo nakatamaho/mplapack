@@ -57,6 +57,6 @@ void Classq(INTEGER const n, COMPLEX *x, INTEGER const incx, REAL &scale, REAL &
         }
     }
     //
-    //     End of Classq
+    // End of Classq
     //
 }

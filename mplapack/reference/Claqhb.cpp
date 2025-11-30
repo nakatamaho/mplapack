@@ -31,35 +31,18 @@
 
 void Claqhb(const char *uplo, INTEGER const n, INTEGER const kd, COMPLEX *ab, INTEGER const ldab, REAL *s, REAL const scond, REAL const amax, char *equed) {
     //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
     //
-    //  =====================================================================
     //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n <= 0) {
         *equed = 'N';
         return;
     }
     //
-    //     Initialize LARGE and SMALL.
+    // Initialize LARGE and SMALL.
     //
     REAL small = Rlamch("Safe minimum") / Rlamch("Precision");
     const REAL one = 1.0;
@@ -71,16 +54,16 @@ void Claqhb(const char *uplo, INTEGER const n, INTEGER const kd, COMPLEX *ab, IN
     INTEGER i = 0;
     if (scond >= thresh && amax >= small && amax <= large) {
         //
-        //        No equilibration
+        // No equilibration
         //
         *equed = 'N';
     } else {
         //
-        //        Replace A by diag(S) * A * diag(S).
+        // Replace A by diag(S) * A * diag(S).
         //
         if (Mlsame(uplo, "U")) {
             //
-            //           Upper triangle of A is stored in band format.
+            // Upper triangle of A is stored in band format.
             //
             for (j = 1; j <= n; j = j + 1) {
                 cj = s[j - 1];
@@ -91,7 +74,7 @@ void Claqhb(const char *uplo, INTEGER const n, INTEGER const kd, COMPLEX *ab, IN
             }
         } else {
             //
-            //           Lower triangle of A is stored.
+            // Lower triangle of A is stored.
             //
             for (j = 1; j <= n; j = j + 1) {
                 cj = s[j - 1];
@@ -104,6 +87,6 @@ void Claqhb(const char *uplo, INTEGER const n, INTEGER const kd, COMPLEX *ab, IN
         *equed = 'Y';
     }
     //
-    //     End of Claqhb
+    // End of Claqhb
     //
 }

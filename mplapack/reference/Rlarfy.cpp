@@ -31,33 +31,17 @@
 
 void Rlarfy(const char *uplo, INTEGER const n, REAL *v, INTEGER const incv, REAL const tau, REAL *c, INTEGER const ldc, REAL *work) {
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+    // -- LAPACK test routine --
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
     //
-    //  =====================================================================
     //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
     const REAL zero = 0.0;
     if (tau == zero) {
         return;
     }
     //
-    //     Form  w:= C * v
+    // Form  w:= C * v
     //
     const REAL one = 1.0;
     Rsymv(uplo, n, one, c, ldc, v, incv, zero, work, 1);
@@ -66,10 +50,10 @@ void Rlarfy(const char *uplo, INTEGER const n, REAL *v, INTEGER const incv, REAL
     REAL alpha = -half * tau * Rdot(n, work, 1, v, incv);
     Raxpy(n, alpha, v, incv, work, 1);
     //
-    //     C := C - v * w' - w * v'
+    // C := C - v * w' - w * v'
     //
     Rsyr2(uplo, n, -tau, v, incv, work, 1, c, ldc);
     //
-    //     End of Rlarfy
+    // End of Rlarfy
     //
 }

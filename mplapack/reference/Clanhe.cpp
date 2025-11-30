@@ -45,7 +45,7 @@ REAL Clanhe(const char *norm, const char *uplo, INTEGER const n, COMPLEX *a, INT
         value = zero;
     } else if (Mlsame(norm, "M")) {
         //
-        //        Find max(abs(A(i,j))).
+        // Find max(abs(A(i,j))).
         //
         value = zero;
         if (Mlsame(uplo, "U")) {
@@ -77,7 +77,7 @@ REAL Clanhe(const char *norm, const char *uplo, INTEGER const n, COMPLEX *a, INT
         }
     } else if ((Mlsame(norm, "I")) || (Mlsame(norm, "O")) || (Mlsame(norm, "1"))) {
         //
-        //        Find normI(A) ( = norm1(A), since A is hermitian).
+        // Find normI(A) ( = norm1(A), since A is hermitian).
         //
         value = zero;
         if (Mlsame(uplo, "U")) {
@@ -114,15 +114,15 @@ REAL Clanhe(const char *norm, const char *uplo, INTEGER const n, COMPLEX *a, INT
         }
     } else if ((Mlsame(norm, "F")) || (Mlsame(norm, "E"))) {
         //
-        //        Find normF(A).
-        //        SSQ(1) is scale
-        //        SSQ(2) is sum-of-squares
-        //        For better accuracy, sum each column separately.
+        // Find normF(A).
+        // SSQ(1) is scale
+        // SSQ(2) is sum-of-squares
+        // For better accuracy, sum each column separately.
         //
         ssq[1 - 1] = zero;
         ssq[2 - 1] = one;
         //
-        //        Sum off-diagonals
+        // Sum off-diagonals
         //
         if (Mlsame(uplo, "U")) {
             for (j = 2; j <= n; j = j + 1) {
@@ -141,7 +141,7 @@ REAL Clanhe(const char *norm, const char *uplo, INTEGER const n, COMPLEX *a, INT
         }
         ssq[2 - 1] = 2 * ssq[2 - 1];
         //
-        //        Sum diagonal
+        // Sum diagonal
         //
         for (i = 1; i <= n; i = i + 1) {
             if (a[(i - 1) + (i - 1) * lda].real() != zero) {
@@ -160,6 +160,6 @@ REAL Clanhe(const char *norm, const char *uplo, INTEGER const n, COMPLEX *a, INT
     return_value = value;
     return return_value;
     //
-    //     End of Clanhe
+    // End of Clanhe
     //
 }

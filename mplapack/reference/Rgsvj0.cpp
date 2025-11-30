@@ -80,7 +80,7 @@ void Rgsvj0(const char *jobv, INTEGER const m, INTEGER const n, REAL *a, INTEGER
     INTEGER jgl = 0;
     INTEGER ijblsk = 0;
     //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     applv = Mlsame(jobv, "A");
     rsvec = Mlsame(jobv, "V");
@@ -106,7 +106,7 @@ void Rgsvj0(const char *jobv, INTEGER const m, INTEGER const n, REAL *a, INTEGER
         info = 0;
     }
     //
-    //     #:(
+    // #:(
     if (info != 0) {
         Mxerbla("Rgsvj0", -info);
         return;
@@ -127,24 +127,24 @@ void Rgsvj0(const char *jobv, INTEGER const m, INTEGER const n, REAL *a, INTEGER
     bigtheta = one / rooteps;
     roottol = sqrt(tol);
     //
-    //     -#- Row-cyclic Jacobi SVD algorithm with column pivoting -#-
+    // -#- Row-cyclic Jacobi SVD algorithm with column pivoting -#-
     //
     emptsw = (n * (n - 1)) / 2;
     notrot = 0;
     fastr[1 - 1] = zero;
     //
-    //     -#- Row-cyclic pivot strategy with de Rijk's pivoting -#-
+    // -#- Row-cyclic pivot strategy with de Rijk's pivoting -#-
     //
     swband = 0;
-    //[TP] SWBAND is a tuning parameter. It is meaningful and effective
-    //     if SGESVJ is used as a computational routine in the preconditioned
-    //     Jacobi SVD algorithm SGESVJ. For sweeps i=1:SWBAND the procedure
-    //     ......
+    // [TP] SWBAND is a tuning parameter. It is meaningful and effective
+    // if SGESVJ is used as a computational routine in the preconditioned
+    // Jacobi SVD algorithm SGESVJ. For sweeps i=1:SWBAND the procedure
+    // ......
     //
     kbl = min((INTEGER)8, n);
-    //[TP] KBL is a tuning parameter that defines the tile size in the
-    //     tiling of the p-q loops of pivot pairs. In general, an optimal
-    //     parameters of the computer's memory.
+    // [TP] KBL is a tuning parameter that defines the tile size in the
+    // tiling of the p-q loops of pivot pairs. In general, an optimal
+    // parameters of the computer's memory.
     //
     nbl = n / kbl;
     if ((nbl * kbl) != n) {
@@ -152,13 +152,13 @@ void Rgsvj0(const char *jobv, INTEGER const m, INTEGER const n, REAL *a, INTEGER
     }
     //
     blskip = kbl * kbl + (INTEGER)1;
-    //[TP] BLKSKIP is a tuning parameter that depends on SWBAND and KBL.
+    // [TP] BLKSKIP is a tuning parameter that depends on SWBAND and KBL.
     //
     rowskip = min((INTEGER)5, kbl);
-    //[TP] ROWSKIP is a tuning parameter.
+    // [TP] ROWSKIP is a tuning parameter.
     //
     lkahead = 1;
-    //[TP] LKAHEAD is a tuning parameter.
+    // [TP] LKAHEAD is a tuning parameter.
     swband = 0;
     pskipped = 0;
     //
@@ -182,7 +182,7 @@ void Rgsvj0(const char *jobv, INTEGER const m, INTEGER const n, REAL *a, INTEGER
                 //
                 for (p = igl; p <= min(igl + kbl - 1, n - 1); p = p + 1) {
                     //
-                    //     .. de Rijk's pivoting
+                    // .. de Rijk's pivoting
                     q = iRamax(n - p + 1, &sva[p - 1], 1) + p - 1;
                     if (p != q) {
                         Rswap(m, &a[(p - 1) * lda], 1, &a[(q - 1) * lda], 1);
@@ -199,17 +199,17 @@ void Rgsvj0(const char *jobv, INTEGER const m, INTEGER const n, REAL *a, INTEGER
                     //
                     if (ir1 == 0) {
                         //
-                        //        Column norms are periodically updated by explicit
-                        //        norm computation.
-                        //        Caveat:
-                        //        Some BLAS implementations compute Rnrm2(M,A(1,p),1)
-                        //        as DSQRT(Rdot(M,A(1,p),1,A(1,p),1)), which may result in
-                        //        overflow for ||A(:,p)||_2 > DSQRT(overflow_threshold), and
-                        //        underflow for ||A(:,p)||_2 < DSQRT(underflow_threshold).
-                        //        Hence, Rnrm2 cannot be trusted, not even in the case when
-                        //        the true norm is far from the under(over)flow boundaries.
-                        //        If properly implemented Rnrm2 is available, the IF-THEN-ELSE
-                        //        below should read "AAPP = Rnrm2( M, A(1,p), 1 ) * D(p)".
+                        // Column norms are periodically updated by explicit
+                        // norm computation.
+                        // Caveat:
+                        // Some BLAS implementations compute Rnrm2(M,A(1,p),1)
+                        // as DSQRT(Rdot(M,A(1,p),1,A(1,p),1)), which may result in
+                        // overflow for ||A(:,p)||_2 > DSQRT(overflow_threshold), and
+                        // underflow for ||A(:,p)||_2 < DSQRT(underflow_threshold).
+                        // Hence, Rnrm2 cannot be trusted, not even in the case when
+                        // the true norm is far from the under(over)flow boundaries.
+                        // If properly implemented Rnrm2 is available, the IF-THEN-ELSE
+                        // below should read "AAPP = Rnrm2( M, A(1,p), 1 ) * D(p)".
                         //
                         if ((sva[p - 1] < rootbig) && (sva[p - 1] > rootsfmin)) {
                             sva[p - 1] = Rnrm2(m, &a[(p - 1) * lda], 1) * d[p - 1];
@@ -257,12 +257,12 @@ void Rgsvj0(const char *jobv, INTEGER const m, INTEGER const n, REAL *a, INTEGER
                                 //
                                 mxaapq = max(mxaapq, REAL(abs(aapq)));
                                 //
-                                //        TO rotate or NOT to rotate, THAT is the question ...
+                                // TO rotate or NOT to rotate, THAT is the question ...
                                 //
                                 if (abs(aapq) > tol) {
                                     //
-                                    //           .. rotate
-                                    //           ROTATED = ROTATED + ONE
+                                    // .. rotate
+                                    // ROTATED = ROTATED + ONE
                                     //
                                     if (ir1 == 0) {
                                         notrot = 0;
@@ -291,7 +291,7 @@ void Rgsvj0(const char *jobv, INTEGER const m, INTEGER const n, REAL *a, INTEGER
                                             //
                                         } else {
                                             //
-                                            //                 .. choose correct signum for THETA and rotate
+                                            // .. choose correct signum for THETA and rotate
                                             //
                                             thsign = -sign(one, aapq);
                                             t = one / (theta + thsign * sqrt(one + theta * theta));
@@ -439,7 +439,7 @@ void Rgsvj0(const char *jobv, INTEGER const m, INTEGER const n, REAL *a, INTEGER
             }
             // end of ir1-loop
             //
-            //........................................................
+            // ........................................................
             // ... go to the off diagonal blocks
             //
             igl = (ibr - 1) * kbl + 1;
@@ -448,7 +448,7 @@ void Rgsvj0(const char *jobv, INTEGER const m, INTEGER const n, REAL *a, INTEGER
                 //
                 jgl = (jbc - 1) * kbl + 1;
                 //
-                //        doing the block at ( ibr, jbc )
+                // doing the block at ( ibr, jbc )
                 //
                 ijblsk = 0;
                 for (p = igl; p <= min(igl + kbl - 1, n); p = p + 1) {
@@ -466,9 +466,9 @@ void Rgsvj0(const char *jobv, INTEGER const m, INTEGER const n, REAL *a, INTEGER
                             if (aaqq > zero) {
                                 aapp0 = aapp;
                                 //
-                                //     -#- M x 2 Jacobi SVD -#-
+                                // -#- M x 2 Jacobi SVD -#-
                                 //
-                                //        -#- Safe Gram matrix computation -#-
+                                // -#- Safe Gram matrix computation -#-
                                 //
                                 if (aaqq >= one) {
                                     if (aapp >= aaqq) {
@@ -500,7 +500,7 @@ void Rgsvj0(const char *jobv, INTEGER const m, INTEGER const n, REAL *a, INTEGER
                                 //
                                 mxaapq = max(mxaapq, REAL(abs(aapq)));
                                 //
-                                //        TO rotate or NOT to rotate, THAT is the question ...
+                                // TO rotate or NOT to rotate, THAT is the question ...
                                 //
                                 if (abs(aapq) > tol) {
                                     notrot = 0;
@@ -530,7 +530,7 @@ void Rgsvj0(const char *jobv, INTEGER const m, INTEGER const n, REAL *a, INTEGER
                                             mxsinj = max(mxsinj, REAL(abs(t)));
                                         } else {
                                             //
-                                            //                 .. choose correct signum for THETA and rotate
+                                            // .. choose correct signum for THETA and rotate
                                             //
                                             thsign = -sign(one, aapq);
                                             if (aaqq > aapp0) {
@@ -697,7 +697,7 @@ void Rgsvj0(const char *jobv, INTEGER const m, INTEGER const n, REAL *a, INTEGER
         }
         // 2000 :: end of the ibr-loop
         //
-        //     .. update SVA(N)
+        // .. update SVA(N)
         if ((sva[n - 1] < rootbig) && (sva[n - 1] > rootsfmin)) {
             sva[n - 1] = Rnrm2(m, &a[(n - 1) * lda], 1) * d[n - 1];
         } else {
@@ -707,7 +707,7 @@ void Rgsvj0(const char *jobv, INTEGER const m, INTEGER const n, REAL *a, INTEGER
             sva[n - 1] = t * sqrt(aapp) * d[n - 1];
         }
         //
-        //     Additional steering devices
+        // Additional steering devices
         //
         if ((i < swband) && ((mxaapq <= roottol) || (iswrot <= n))) {
             swband = i;
@@ -729,13 +729,13 @@ void Rgsvj0(const char *jobv, INTEGER const m, INTEGER const n, REAL *a, INTEGER
     goto statement_1995;
 statement_1994:
     // #:) Reaching this point means that during the i-th sweep all pivots were
-    //     below the given tolerance, causing early exit.
+    // below the given tolerance, causing early exit.
     //
     info = 0;
 // #:) INFO = 0 confirms successful iterations.
 statement_1995:
     //
-    //     Sort the vector D.
+    // Sort the vector D.
     for (p = 1; p <= n - 1; p = p + 1) {
         q = iRamax(n - p + 1, &sva[p - 1], 1) + p - 1;
         if (p != q) {
@@ -752,7 +752,5 @@ statement_1995:
         }
     }
     //
-    //     ..
-    //     .. END OF Rgsvj0
-    //     ..
+    // .. END OF Rgsvj0
 }

@@ -77,7 +77,7 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
     INTEGER numrank = 0;
     REAL cond_ok = 0.0;
     //
-    //     Test the input arguments
+    // Test the input arguments
     //
     lsvec = Mlsame(jobu, "U") || Mlsame(jobu, "F");
     jracc = Mlsame(jobv, "J");
@@ -126,7 +126,7 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
         return;
     }
     //
-    //     Quick return for void matrix (Y3K safe)
+    // Quick return for void matrix (Y3K safe)
     // #:)
     if ((m == 0) || (n == 0)) {
         iwork[0] = iwork[1] = iwork[2] = 0;
@@ -134,7 +134,7 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
         return;
     }
     //
-    //     Determine whether the matrix U should be M x N or M x M
+    // Determine whether the matrix U should be M x N or M x M
     //
     if (lsvec) {
         n1 = n;
@@ -143,9 +143,9 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
         }
     }
     //
-    //     Set numerical parameters
+    // Set numerical parameters
     //
-    //! NOTE: Make sure DLAMCH() does not fail on the target architecture.
+    // !    NOTE: Make sure DLAMCH() does not fail on the target architecture.
     //
     epsln = Rlamch("Epsilon");
     sfmin = Rlamch("SafeMinimum");
@@ -159,7 +159,7 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
     //
     // Initialize SVA(1:N) = diag( ||A e_i||_2 )_1^N
     //
-    //(!)  If necessary, scale SVA() to protect the largest norm from
+    // (!)  If necessary, scale SVA() to protect the largest norm from
     // overflow. It is possible that this scaling pushes the smallest
     // column norm left from the underflow threshold (extreme case).
     //
@@ -201,7 +201,7 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
         }
     }
     //
-    //     Quick return for zero M x N matrix
+    // Quick return for zero M x N matrix
     // #:)
     if (aapp == zero) {
         if (lsvec) {
@@ -229,9 +229,9 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
         return;
     }
     //
-    //     Issue warning if denormalized column norms detected. Override the
-    //     high relative accuracy request. Issue licence to kill columns
-    //     (set them to zero) whose norm is less than sigma_max / BIG (roughly).
+    // Issue warning if denormalized column norms detected. Override the
+    // high relative accuracy request. Issue licence to kill columns
+    // (set them to zero) whose norm is less than sigma_max / BIG (roughly).
     // #:(
     warning = 0;
     if (aaqq <= sfmin) {
@@ -240,7 +240,7 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
         warning = 1;
     }
     //
-    //     Quick return for one-column matrix
+    // Quick return for one-column matrix
     // #:)
     if (n == 1) {
         //
@@ -297,10 +297,10 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
     aatmin = big;
     if (rowpiv || l2tran) {
         //
-        //     Compute the row norms, needed to determine row pivoting sequence
-        //     (in the case of heavily row weighted A, row pivoting is strongly
-        //     advised) and to collect information needed to compare the
-        //     structures of A * A^t and A^t * A (in the case L2TRAN.EQ..TRUE.).
+        // Compute the row norms, needed to determine row pivoting sequence
+        // (in the case of heavily row weighted A, row pivoting is strongly
+        // advised) and to collect information needed to compare the
+        // structures of A * A^t and A^t * A (in the case L2TRAN.EQ..TRUE.).
         //
         if (l2tran) {
             for (p = 1; p <= m; p = p + 1) {
@@ -326,12 +326,12 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
         //
     }
     //
-    //     For square matrix A try to determine whether A^t  would be  better
-    //     input for the preconditioned Jacobi SVD, with faster convergence.
-    //     The decision is based on an O(N) function of the vector of column
-    //     and row norms of A, based on the Shannon entropy. This should give
-    //     the right choice in most cases when the difference actually matters.
-    //     It may fail and pick the slower converging side.
+    // For square matrix A try to determine whether A^t  would be  better
+    // input for the preconditioned Jacobi SVD, with faster convergence.
+    // The decision is based on an O(N) function of the vector of column
+    // and row norms of A, based on the Shannon entropy. This should give
+    // the right choice in most cases when the difference actually matters.
+    // It may fail and pick the slower converging side.
     //
     entra = zero;
     entrat = zero;
@@ -351,11 +351,11 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
         }
         entra = -entra / log(castREAL(n - 1));
         //
-        //        Now, SVA().^2/Trace(A^t * A) is a point in the probability simplex.
-        //        It is derived from the diagonal of  A^t * A.  Do the same with the
-        //        diagonal of A * A^t, compute the entropy of the corresponding
-        //        probability distribution. Note that A * A^t and A^t * A have the
-        //        same trace.
+        // Now, SVA().^2/Trace(A^t * A) is a point in the probability simplex.
+        // It is derived from the diagonal of  A^t * A.  Do the same with the
+        // diagonal of A * A^t, compute the entropy of the corresponding
+        // probability distribution. Note that A * A^t and A^t * A have the
+        // same trace.
         //
         entrat = zero;
         for (p = n + 1; p <= n + m; p = p + 1) {
@@ -366,12 +366,12 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
         }
         entrat = -entrat / log(castREAL(m - 1));
         //
-        //        Analyze the entropies and decide A or A^t. Smaller entropy
-        //        usually means better input for the algorithm.
+        // Analyze the entropies and decide A or A^t. Smaller entropy
+        // usually means better input for the algorithm.
         //
         transp = (entrat < entra);
         //
-        //        If A^t is better than A, transpose A.
+        // If A^t is better than A, transpose A.
         //
         if (transp) {
             // In an optimal implementation, this trivial transpose
@@ -428,8 +428,8 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
     temp1 = temp1 * scalem;
     Rlascl("G", 0, 0, aapp, temp1, m, n, a, lda, ierr);
     //
-    //     To undo scaling at the end of this procedure, multiply the
-    //     computed singular values with USCAL2 / USCAL1.
+    // To undo scaling at the end of this procedure, multiply the
+    // computed singular values with USCAL2 / USCAL1.
     //
     uscal1 = temp1;
     uscal2 = aapp;
@@ -442,14 +442,14 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
     } else {
         xsc = small;
         //
-        //        Now, if the condition number of A is too big,
-        //        sigma_max(A) / sigma_min(A) .GT. DSQRT(BIG/N) * EPSLN / SFMIN,
-        //        as a precaution measure, the full SVD is computed using Rgesvj
-        //        with accumulated Jacobi rotations. This provides numerically
-        //        more robust computation, at the cost of slightly increased run
-        //        time. Depending on the concrete implementation of BLAS and LAPACK
-        //        (i.e. how they behave in presence of extreme ill-conditioning) the
-        //        implementor may decide to remove this switch.
+        // Now, if the condition number of A is too big,
+        // sigma_max(A) / sigma_min(A) .GT. DSQRT(BIG/N) * EPSLN / SFMIN,
+        // as a precaution measure, the full SVD is computed using Rgesvj
+        // with accumulated Jacobi rotations. This provides numerically
+        // more robust computation, at the cost of slightly increased run
+        // time. Depending on the concrete implementation of BLAS and LAPACK
+        // (i.e. how they behave in presence of extreme ill-conditioning) the
+        // implementor may decide to remove this switch.
         if ((aaqq < sqrt(sfmin)) && lsvec && rsvec) {
             jracc = true;
         }
@@ -464,7 +464,7 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
         }
     }
     //
-    //     Preconditioning using QR factorization with pivoting
+    // Preconditioning using QR factorization with pivoting
     //
     if (rowpiv) {
         // Optional row permutation (Bjoerck row pivoting):
@@ -484,34 +484,34 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
         Rlaswp(n, a, lda, 1, m - 1, &iwork[(2 * n + 1) - 1], 1);
     }
     //
-    //     End of the preparation phase (scaling, optional sorting and
-    //     transposing, optional flushing of small columns).
+    // End of the preparation phase (scaling, optional sorting and
+    // transposing, optional flushing of small columns).
     //
-    //     Preconditioning
+    // Preconditioning
     //
-    //     If the full SVD is needed, the right singular vectors are computed
-    //     from a matrix equation, and for that we need theoretical analysis
-    //     of the Businger-Golub pivoting. So we use Rgeqp3 as the first RR QRF.
-    //     In all other cases the first RR QRF can be chosen by other criteria
-    //     (eg speed by replacing global with restricted window pivoting, such
-    //     as in SGEQPX from TOMS # 782). Good results will be obtained using
-    //     SGEQPX with properly (!) chosen numerical parameters.
-    //     Any improvement of Rgeqp3 improves overall performance of Rgejsv.
+    // If the full SVD is needed, the right singular vectors are computed
+    // from a matrix equation, and for that we need theoretical analysis
+    // of the Businger-Golub pivoting. So we use Rgeqp3 as the first RR QRF.
+    // In all other cases the first RR QRF can be chosen by other criteria
+    // (eg speed by replacing global with restricted window pivoting, such
+    // as in SGEQPX from TOMS # 782). Good results will be obtained using
+    // SGEQPX with properly (!) chosen numerical parameters.
+    // Any improvement of Rgeqp3 improves overall performance of Rgejsv.
     //
-    //     A * P1 = Q1 * [ R1^t 0]^t:
+    // A * P1 = Q1 * [ R1^t 0]^t:
     for (p = 1; p <= n; p = p + 1) {
         // .. all columns are free columns
         iwork[p - 1] = 0;
     }
     Rgeqp3(m, n, a, lda, iwork, work, &work[(n + 1) - 1], lwork - n, ierr);
     //
-    //     The upper triangular matrix R1 from the first QRF is inspected for
-    //     rank deficiency and possibilities for deflation, or possible
-    //     ill-conditioning. Depending on the user specified flag L2RANK,
-    //     the procedure explores possibilities to reduce the numerical
-    //     rank by inspecting the computed upper triangular factor. If
-    //     L2RANK or L2ABER are up, then Rgejsv will compute the SVD of
-    //     A + dA, where ||dA|| <= f(M,N)*EPSLN.
+    // The upper triangular matrix R1 from the first QRF is inspected for
+    // rank deficiency and possibilities for deflation, or possible
+    // ill-conditioning. Depending on the user specified flag L2RANK,
+    // the procedure explores possibilities to reduce the numerical
+    // rank by inspecting the computed upper triangular factor. If
+    // L2RANK or L2ABER are up, then Rgejsv will compute the SVD of
+    // A + dA, where ||dA|| <= f(M,N)*EPSLN.
     //
     nr = 1;
     if (l2aber) {
@@ -618,24 +618,24 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
     //
     if (!(rsvec || lsvec)) {
         //
-        //         Singular Values only
+        // Singular Values only
         //
-        //         .. transpose A(1:NR,1:N)
+        // .. transpose A(1:NR,1:N)
         for (p = 1; p <= min(n - 1, nr); p = p + 1) {
             Rcopy(n - p, &a[(p - 1) + ((p + 1) - 1) * lda], lda, &a[((p + 1) - 1) + (p - 1) * lda], 1);
         }
         //
-        //        The following two DO-loops introduce small relative perturbation
-        //        into the strict upper triangle of the lower triangular matrix.
-        //        Small entries below the main diagonal are also changed.
-        //        This modification is useful if the computing environment does not
-        //        provide/allow FLUSH TO ZERO underflow, for it prevents many
-        //        annoying denormalized numbers in case of strongly scaled matrices.
-        //        The perturbation is structured so that it does not introduce any
-        //        new perturbation of the singular values, and it does not destroy
-        //        the job done by the preconditioner.
-        //        The licence for this perturbation is in the variable L2PERT, which
-        //        should be .FALSE. if FLUSH TO ZERO underflow is active.
+        // The following two DO-loops introduce small relative perturbation
+        // into the strict upper triangle of the lower triangular matrix.
+        // Small entries below the main diagonal are also changed.
+        // This modification is useful if the computing environment does not
+        // provide/allow FLUSH TO ZERO underflow, for it prevents many
+        // annoying denormalized numbers in case of strongly scaled matrices.
+        // The perturbation is structured so that it does not introduce any
+        // new perturbation of the singular values, and it does not destroy
+        // the job done by the preconditioner.
+        // The licence for this perturbation is in the variable L2PERT, which
+        // should be .FALSE. if FLUSH TO ZERO underflow is active.
         //
         if (!almort) {
             //
@@ -654,21 +654,21 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
                 Rlaset("U", nr - 1, nr - 1, zero, zero, &a[(2 - 1) * lda], lda);
             }
             //
-            //            .. second preconditioning using the QR factorization
+            // .. second preconditioning using the QR factorization
             //
             Rgeqrf(n, nr, a, lda, work, &work[(n + 1) - 1], lwork - n, ierr);
             //
-            //           .. and transpose upper to lower triangular
+            // .. and transpose upper to lower triangular
             for (p = 1; p <= nr - 1; p = p + 1) {
                 Rcopy(nr - p, &a[(p - 1) + ((p + 1) - 1) * lda], lda, &a[((p + 1) - 1) + (p - 1) * lda], 1);
             }
             //
         }
         //
-        //           Row-cyclic Jacobi SVD algorithm with column pivoting
+        // Row-cyclic Jacobi SVD algorithm with column pivoting
         //
-        //           .. again some perturbation (a "background noise") is added
-        //           to drown denormals
+        // .. again some perturbation (a "background noise") is added
+        // to drown denormals
         if (l2pert) {
             // XSC = DSQRT(SMALL)
             xsc = epsln / castREAL(n);
@@ -684,9 +684,9 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
             Rlaset("U", nr - 1, nr - 1, zero, zero, &a[(2 - 1) * lda], lda);
         }
         //
-        //           .. and one-sided Jacobi rotations are started on a lower
-        //           triangular matrix (plus perturbation which is ignored in
-        //           the part which destroys triangular form (confusing?!))
+        // .. and one-sided Jacobi rotations are started on a lower
+        // triangular matrix (plus perturbation which is ignored in
+        // the part which destroys triangular form (confusing?!))
         //
         Rgesvj("L", "NoU", "NoV", nr, nr, a, lda, sva, n, v, ldv, work, lwork, info);
         //
@@ -695,11 +695,11 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
         //
     } else if (rsvec && (!lsvec)) {
         //
-        //        -> Singular Values and Right Singular Vectors <-
+        // -> Singular Values and Right Singular Vectors <-
         //
         if (almort) {
             //
-            //           .. in this case NR equals N
+            // .. in this case NR equals N
             for (p = 1; p <= nr; p = p + 1) {
                 Rcopy(n - p + 1, &a[(p - 1) + (p - 1) * lda], lda, &v[(p - 1) + (p - 1) * ldv], 1);
             }
@@ -711,8 +711,8 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
             //
         } else {
             //
-            //        .. two more QR factorizations ( one QRF is not enough, two require
-            //        accumulated product of Jacobi rotations, three are perfect )
+            // .. two more QR factorizations ( one QRF is not enough, two require
+            // accumulated product of Jacobi rotations, three are perfect )
             //
             Rlaset("Lower", nr - 1, nr - 1, zero, zero, &a[(2 - 1)], lda);
             Rgelqf(nr, n, a, lda, work, &work[(n + 1) - 1], lwork - n, ierr);
@@ -748,10 +748,10 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
         //
     } else if (lsvec && (!rsvec)) {
         //
-        //        .. Singular Values and Left Singular Vectors                 ..
+        // .. Singular Values and Left Singular Vectors                 ..
         //
-        //        .. second preconditioning step to avoid need to accumulate
-        //        Jacobi rotations in the Jacobi iterations.
+        // .. second preconditioning step to avoid need to accumulate
+        // Jacobi rotations in the Jacobi iterations.
         for (p = 1; p <= nr; p = p + 1) {
             Rcopy(n - p + 1, &a[(p - 1) + (p - 1) * lda], lda, &u[(p - 1) + (p - 1) * ldu], 1);
         }
@@ -793,34 +793,34 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
         //
     } else {
         //
-        //        .. Full SVD ..
+        // .. Full SVD ..
         //
         if (!jracc) {
             //
             if (!almort) {
                 //
-                //           Second Preconditioning Step (QRF [with pivoting])
-                //           Note that the composition of TRANSPOSE, QRF and TRANSPOSE is
-                //           equivalent to an LQF CALL. Since in many libraries the QRF
-                //           seems to be better optimized than the LQF, we do explicit
-                //           transpose and use the QRF. This is subject to changes in an
-                //           optimized implementation of Rgejsv.
+                // Second Preconditioning Step (QRF [with pivoting])
+                // Note that the composition of TRANSPOSE, QRF and TRANSPOSE is
+                // equivalent to an LQF CALL. Since in many libraries the QRF
+                // seems to be better optimized than the LQF, we do explicit
+                // transpose and use the QRF. This is subject to changes in an
+                // optimized implementation of Rgejsv.
                 //
                 for (p = 1; p <= nr; p = p + 1) {
                     Rcopy(n - p + 1, &a[(p - 1) + (p - 1) * lda], lda, &v[(p - 1) + (p - 1) * ldv], 1);
                 }
                 //
-                //           .. the following two loops perturb small entries to avoid
-                //           denormals in the second QR factorization, where they are
-                //           as good as zeros. This is done to avoid painfully slow
-                //           computation with denormals. The relative size of the perturbation
-                //           is a parameter that can be changed by the implementer.
-                //           This perturbation device will be obsolete on machines with
-                //           properly implemented arithmetic.
-                //           To switch it off, set L2PERT=.FALSE. To remove it from  the
-                //           code, remove the action under L2PERT=.TRUE., leave the ELSE part.
-                //           The following two loops should be blocked and fused with the
-                //           transposed copy above.
+                // .. the following two loops perturb small entries to avoid
+                // denormals in the second QR factorization, where they are
+                // as good as zeros. This is done to avoid painfully slow
+                // computation with denormals. The relative size of the perturbation
+                // is a parameter that can be changed by the implementer.
+                // This perturbation device will be obsolete on machines with
+                // properly implemented arithmetic.
+                // To switch it off, set L2PERT=.FALSE. To remove it from  the
+                // code, remove the action under L2PERT=.TRUE., leave the ELSE part.
+                // The following two loops should be blocked and fused with the
+                // transposed copy above.
                 //
                 if (l2pert) {
                     xsc = sqrt(small);
@@ -839,9 +839,9 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
                     Rlaset("U", nr - 1, nr - 1, zero, zero, &v[(2 - 1) * ldv], ldv);
                 }
                 //
-                //           Estimate the row scaled condition number of R1
-                //           (If R1 is rectangular, N > NR, then the condition number
-                //           of the leading NR x NR submatrix is estimated.)
+                // Estimate the row scaled condition number of R1
+                // (If R1 is rectangular, N > NR, then the condition number
+                // of the leading NR x NR submatrix is estimated.)
                 //
                 Rlacpy("L", nr, nr, v, ldv, &work[(2 * n + 1) - 1], nr);
                 for (p = 1; p <= nr; p = p + 1) {
@@ -856,7 +856,7 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
                 // more conservative    <=> CONDR1 .LT. DSQRT(DBLE(N))
                 //
                 cond_ok = sqrt(castREAL(nr));
-                //[TP]       COND_OK is a tuning parameter.
+                // [TP]       COND_OK is a tuning parameter.
                 //
                 if (condr1 < cond_ok) {
                     // .. the second QRF without pivoting. Note: in an optimized
@@ -891,20 +891,20 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
                     //
                 } else {
                     //
-                    //              .. ill-conditioned case: second QRF with pivoting
-                    //              Note that windowed pivoting would be equally good
-                    //              numerically, and more run-time efficient. So, in
-                    //              an optimal implementation, the next call to Rgeqp3
-                    //              should be replaced with eg. CALL SGEQPX (ACM TOMS #782)
-                    //              with properly (carefully) chosen parameters.
+                    // .. ill-conditioned case: second QRF with pivoting
+                    // Note that windowed pivoting would be equally good
+                    // numerically, and more run-time efficient. So, in
+                    // an optimal implementation, the next call to Rgeqp3
+                    // should be replaced with eg. CALL SGEQPX (ACM TOMS #782)
+                    // with properly (carefully) chosen parameters.
                     //
-                    //              R1^t * P2 = Q2 * R2
+                    // R1^t * P2 = Q2 * R2
                     for (p = 1; p <= nr; p = p + 1) {
                         iwork[(n + p) - 1] = 0;
                     }
                     Rgeqp3(n, nr, v, ldv, &iwork[(n + 1) - 1], &work[(n + 1) - 1], &work[(2 * n + 1) - 1], lwork - 2 * n, ierr);
-                    //*               CALL Rgeqrf( N, NR, V, LDV, WORK(N+1), WORK(2*N+1),
-                    //*     $              LWORK-2*N, IERR )
+                    // *               CALL Rgeqrf( N, NR, V, LDV, WORK(N+1), WORK(2*N+1),
+                    // *     $              LWORK-2*N, IERR )
                     if (l2pert) {
                         xsc = sqrt(small);
                         for (p = 2; p <= nr; p = p + 1) {
@@ -966,11 +966,11 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
                     Rlaset("U", nr - 1, nr - 1, zero, zero, &v[(2 - 1) * ldv], ldv);
                 }
                 //
-                //        Second preconditioning finished; continue with Jacobi SVD
-                //        The input matrix is lower trinagular.
+                // Second preconditioning finished; continue with Jacobi SVD
+                // The input matrix is lower trinagular.
                 //
-                //        Recover the right singular vectors as solution of a well
-                //        conditioned triangular matrix equation.
+                // Recover the right singular vectors as solution of a well
+                // conditioned triangular matrix equation.
                 //
                 if (condr1 < cond_ok) {
                     //
@@ -982,13 +982,13 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
                         Rscal(nr, sva[p - 1], &v[(p - 1) * ldv], 1);
                     }
                     //
-                    //        .. pick the right matrix equation and solve it
+                    // .. pick the right matrix equation and solve it
                     //
                     if (nr == n) {
                         // :))             .. best case, R1 is inverted. The solution of this matrix
-                        //                 equation is Q2*V2 = the product of the Jacobi rotations
-                        //                 used in Rgesvj, premultiplied with the orthogonal matrix
-                        //                 from the second QR factorization.
+                        // equation is Q2*V2 = the product of the Jacobi rotations
+                        // used in Rgesvj, premultiplied with the orthogonal matrix
+                        // from the second QR factorization.
                         Rtrsm("L", "U", "N", "N", nr, nr, one, a, lda, v, ldv);
                     } else {
                         // .. R1 is well conditioned, but non-square. Transpose(R2)
@@ -1007,11 +1007,11 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
                 } else if (condr2 < cond_ok) {
                     //
                     // :)           .. the input matrix A is very likely a relative of
-                    //              the Kahan matrix :)
-                    //              The matrix R2 is inverted. The solution of the matrix equation
-                    //              is Q3^T*V3 = the product of the Jacobi rotations (appplied to
-                    //              the lower triangular L3 from the LQ factorization of
-                    //              R2=L3*Q3), pre-multiplied with the transposed Q3.
+                    // the Kahan matrix :)
+                    // The matrix R2 is inverted. The solution of the matrix equation
+                    // is Q3^T*V3 = the product of the Jacobi rotations (appplied to
+                    // the lower triangular L3 from the LQ factorization of
+                    // R2=L3*Q3), pre-multiplied with the transposed Q3.
                     Rgesvj("L", "U", "N", nr, nr, v, ldv, sva, nr, u, ldu, &work[(2 * n + n * nr + nr + 1) - 1], lwork - 2 * n - n * nr - nr, info);
                     scalem = work[(2 * n + n * nr + nr + 1) - 1];
                     numrank = nint(work[(2 * n + n * nr + nr + 2) - 1]);
@@ -1069,9 +1069,9 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
                     //
                 }
                 //
-                //           Permute the rows of V using the (column) permutation from the
-                //           first QRF. Also, scale the columns to make them unit in
-                //           Euclidean norm. This applies to all cases.
+                // Permute the rows of V using the (column) permutation from the
+                // first QRF. Also, scale the columns to make them unit in
+                // Euclidean norm. This applies to all cases.
                 //
                 temp1 = sqrt(castREAL(n)) * epsln;
                 for (q = 1; q <= n; q = q + 1) {
@@ -1096,12 +1096,12 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
                     }
                 }
                 //
-                //           The Q matrix from the first QRF is built into the left singular
-                //           matrix U. This applies to all cases.
+                // The Q matrix from the first QRF is built into the left singular
+                // matrix U. This applies to all cases.
                 //
                 Rormqr("Left", "No_Tr", m, n1, n, a, lda, work, u, ldu, &work[(n + 1) - 1], lwork - n, ierr);
                 //
-                //           The columns of U are normalized. The cost is O(M*N) flops.
+                // The columns of U are normalized. The cost is O(M*N) flops.
                 temp1 = sqrt(castREAL(m)) * epsln;
                 for (p = 1; p <= nr; p = p + 1) {
                     xsc = one / Rnrm2(m, &u[(p - 1) * ldu], 1);
@@ -1110,8 +1110,8 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
                     }
                 }
                 //
-                //           If the initial QRF is computed with row pivoting, the left
-                //           singular vectors must be adjusted.
+                // If the initial QRF is computed with row pivoting, the left
+                // singular vectors must be adjusted.
                 //
                 if (rowpiv) {
                     Rlaswp(n1, u, ldu, 1, m - 1, &iwork[(2 * n + 1) - 1], -1);
@@ -1119,8 +1119,8 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
                 //
             } else {
                 //
-                //        .. the initial matrix A has almost orthogonal columns and
-                //        the second QRF is not needed
+                // .. the initial matrix A has almost orthogonal columns and
+                // the second QRF is not needed
                 //
                 Rlacpy("Upper", n, n, a, lda, &work[(n + 1) - 1], n);
                 if (l2pert) {
@@ -1156,7 +1156,7 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
                     }
                 }
                 //
-                //           Assemble the left singular vector matrix U (M x N).
+                // Assemble the left singular vector matrix U (M x N).
                 //
                 if (n < m) {
                     Rlaset("A", m - n, n, zero, zero, &u[((n + 1) - 1)], ldu);
@@ -1180,19 +1180,19 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
                 //
             }
             //
-            //        end of the  >> almost orthogonal case <<  in the full SVD
+            // end of the  >> almost orthogonal case <<  in the full SVD
             //
         } else {
             //
-            //        This branch deploys a preconditioned Jacobi SVD with explicitly
-            //        accumulated rotations. It is included as optional, mainly for
-            //        experimental purposes. It does perform well, and can also be used.
-            //        In this implementation, this branch will be automatically activated
-            //        if the  condition number sigma_max(A) / sigma_min(A) is predicted
-            //        to be greater than the overflow threshold. This is because the
-            //        a posteriori computation of the singular vectors assumes robust
-            //        implementation of BLAS and some LAPACK procedures, capable of working
-            //        in presence of extreme values. Since that is not always the case, ...
+            // This branch deploys a preconditioned Jacobi SVD with explicitly
+            // accumulated rotations. It is included as optional, mainly for
+            // experimental purposes. It does perform well, and can also be used.
+            // In this implementation, this branch will be automatically activated
+            // if the  condition number sigma_max(A) / sigma_min(A) is predicted
+            // to be greater than the overflow threshold. This is because the
+            // a posteriori computation of the singular vectors assumes robust
+            // implementation of BLAS and some LAPACK procedures, capable of working
+            // in presence of extreme values. Since that is not always the case, ...
             //
             for (p = 1; p <= nr; p = p + 1) {
                 Rcopy(n - p + 1, &a[(p - 1) + (p - 1) * lda], lda, &v[(p - 1) + (p - 1) * ldv], 1);
@@ -1246,9 +1246,9 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
             //
             Rormqr("L", "N", n, n, nr, &work[(2 * n + 1) - 1], n, &work[(n + 1) - 1], v, ldv, &work[(2 * n + n * nr + nr + 1) - 1], lwork - 2 * n - n * nr - nr, ierr);
             //
-            //           Permute the rows of V using the (column) permutation from the
-            //           first QRF. Also, scale the columns to make them unit in
-            //           Euclidean norm. This applies to all cases.
+            // Permute the rows of V using the (column) permutation from the
+            // first QRF. Also, scale the columns to make them unit in
+            // Euclidean norm. This applies to all cases.
             //
             temp1 = sqrt(castREAL(n)) * epsln;
             for (q = 1; q <= n; q = q + 1) {
@@ -1264,8 +1264,8 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
                 }
             }
             //
-            //           At this moment, V contains the right singular vectors of A.
-            //           Next, assemble the left singular vector matrix U (M x N).
+            // At this moment, V contains the right singular vectors of A.
+            // Next, assemble the left singular vector matrix U (M x N).
             //
             if (nr < m) {
                 Rlaset("A", m - nr, nr, zero, zero, &u[((nr + 1) - 1)], ldu);
@@ -1324,7 +1324,5 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
     iwork[2 - 1] = numrank;
     iwork[3 - 1] = warning;
     //
-    //     ..
-    //     .. END OF Rgejsv
-    //     ..
+    // .. END OF Rgejsv
 }

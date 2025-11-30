@@ -51,36 +51,14 @@ void Cgbcon(const char *norm, INTEGER const n, INTEGER const kl, INTEGER const k
     REAL scale = 0.0;
     INTEGER ix = 0;
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
     //
-    //  =====================================================================
     //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Statement Functions ..
-    //     ..
-    //     .. Statement Function definitions ..
-    //     ..
-    //     .. Executable Statements ..
+    // .. Local Arrays ..
+    // .. Statement Functions ..
+    // .. Statement Function definitions ..
     //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     onenrm = Mlsame(norm, "1") || Mlsame(norm, "O");
@@ -102,7 +80,7 @@ void Cgbcon(const char *norm, INTEGER const n, INTEGER const kl, INTEGER const k
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     rcond = zero;
     if (n == 0) {
@@ -114,7 +92,7 @@ void Cgbcon(const char *norm, INTEGER const n, INTEGER const kl, INTEGER const k
     //
     smlnum = Rlamch("Safe minimum");
     //
-    //     Estimate the norm of inv(A).
+    // Estimate the norm of inv(A).
     //
     ainvnm = zero;
     normin = 'N';
@@ -131,7 +109,7 @@ statement_10:
     if (kase != 0) {
         if (kase == kase1) {
             //
-            //           Multiply by inv(L).
+            // Multiply by inv(L).
             //
             if (lnoti) {
                 for (j = 1; j <= n - 1; j = j + 1) {
@@ -146,16 +124,16 @@ statement_10:
                 }
             }
             //
-            //           Multiply by inv(U).
+            // Multiply by inv(U).
             //
             Clatbs("Upper", "No transpose", "Non-unit", &normin, n, kl + ku, ab, ldab, work, scale, rwork, info);
         } else {
             //
-            //           Multiply by inv(U**H).
+            // Multiply by inv(U**H).
             //
             Clatbs("Upper", "Conjugate transpose", "Non-unit", &normin, n, kl + ku, ab, ldab, work, scale, rwork, info);
             //
-            //           Multiply by inv(L**H).
+            // Multiply by inv(L**H).
             //
             if (lnoti) {
                 for (j = n - 1; j >= 1; j = j - 1) {
@@ -171,7 +149,7 @@ statement_10:
             }
         }
         //
-        //        Divide X by 1/SCALE if doing so will not cause overflow.
+        // Divide X by 1/SCALE if doing so will not cause overflow.
         //
         normin = 'Y';
         if (scale != one) {
@@ -184,7 +162,7 @@ statement_10:
         goto statement_10;
     }
     //
-    //     Compute the estimate of the reciprocal condition number.
+    // Compute the estimate of the reciprocal condition number.
     //
     if (ainvnm != zero) {
         rcond = (one / ainvnm) / anorm;
@@ -192,6 +170,6 @@ statement_10:
 //
 statement_40:;
     //
-    //     End of Cgbcon
+    // End of Cgbcon
     //
 }

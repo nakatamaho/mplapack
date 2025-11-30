@@ -39,30 +39,12 @@ void Rspcon(const char *uplo, INTEGER const n, REAL *ap, INTEGER *ipiv, REAL con
     REAL ainvnm = 0.0;
     INTEGER isave[3];
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
     //
-    //  =====================================================================
     //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Executable Statements ..
+    // .. Local Arrays ..
     //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     upper = Mlsame(uplo, "U");
@@ -78,7 +60,7 @@ void Rspcon(const char *uplo, INTEGER const n, REAL *ap, INTEGER *ipiv, REAL con
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     rcond = zero;
     if (n == 0) {
@@ -88,11 +70,11 @@ void Rspcon(const char *uplo, INTEGER const n, REAL *ap, INTEGER *ipiv, REAL con
         return;
     }
     //
-    //     Check that the diagonal matrix D is nonsingular.
+    // Check that the diagonal matrix D is nonsingular.
     //
     if (upper) {
         //
-        //        Upper triangular storage: examine D from bottom to top
+        // Upper triangular storage: examine D from bottom to top
         //
         ip = n * (n + 1) / 2;
         for (i = n; i >= 1; i = i - 1) {
@@ -103,7 +85,7 @@ void Rspcon(const char *uplo, INTEGER const n, REAL *ap, INTEGER *ipiv, REAL con
         }
     } else {
         //
-        //        Lower triangular storage: examine D from top to bottom.
+        // Lower triangular storage: examine D from top to bottom.
         //
         ip = 1;
         for (i = 1; i <= n; i = i + 1) {
@@ -114,25 +96,25 @@ void Rspcon(const char *uplo, INTEGER const n, REAL *ap, INTEGER *ipiv, REAL con
         }
     }
     //
-    //     Estimate the 1-norm of the inverse.
+    // Estimate the 1-norm of the inverse.
     //
     kase = 0;
 statement_30:
     Rlacn2(n, &work[(n + 1) - 1], work, iwork, ainvnm, kase, isave);
     if (kase != 0) {
         //
-        //        Multiply by inv(L*D*L**T) or inv(U*D*U**T).
+        // Multiply by inv(L*D*L**T) or inv(U*D*U**T).
         //
         Rsptrs(uplo, n, 1, ap, ipiv, work, n, info);
         goto statement_30;
     }
     //
-    //     Compute the estimate of the reciprocal condition number.
+    // Compute the estimate of the reciprocal condition number.
     //
     if (ainvnm != zero) {
         rcond = (one / ainvnm) / anorm;
     }
     //
-    //     End of Rspcon
+    // End of Rspcon
     //
 }

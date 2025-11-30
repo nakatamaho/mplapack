@@ -31,13 +31,13 @@
 
 void Cunmr2(const char *side, const char *trans, INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX *a, INTEGER const lda, COMPLEX *tau, COMPLEX *c, INTEGER const ldc, COMPLEX *work, INTEGER &info) {
     //
-    //     Test the input arguments
+    // Test the input arguments
     //
     info = 0;
     bool left = Mlsame(side, "L");
     bool notran = Mlsame(trans, "N");
     //
-    //     NQ is the order of Q
+    // NQ is the order of Q
     //
     INTEGER nq = 0;
     if (left) {
@@ -65,7 +65,7 @@ void Cunmr2(const char *side, const char *trans, INTEGER const m, INTEGER const 
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (m == 0 || n == 0 || k == 0) {
         return;
@@ -99,17 +99,17 @@ void Cunmr2(const char *side, const char *trans, INTEGER const m, INTEGER const 
     for (i = i1; i3 >= 0 ? i <= i2 : i >= i2; i = i + i3) {
         if (left) {
             //
-            //           H(i) or H(i)**H is applied to C(1:m-k+i,1:n)
+            // H(i) or H(i)**H is applied to C(1:m-k+i,1:n)
             //
             mi = m - k + i;
         } else {
             //
-            //           H(i) or H(i)**H is applied to C(1:m,1:n-k+i)
+            // H(i) or H(i)**H is applied to C(1:m,1:n-k+i)
             //
             ni = n - k + i;
         }
         //
-        //        Apply H(i) or H(i)**H
+        // Apply H(i) or H(i)**H
         //
         if (notran) {
             taui = conj(tau[i - 1]);
@@ -124,6 +124,6 @@ void Cunmr2(const char *side, const char *trans, INTEGER const m, INTEGER const 
         Clacgv(nq - k + i - 1, &a[(i - 1)], lda);
     }
     //
-    //     End of Cunmr2
+    // End of Cunmr2
     //
 }

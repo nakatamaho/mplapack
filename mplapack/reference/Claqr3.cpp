@@ -35,7 +35,6 @@ void Claqr3(bool const wantt, bool const wantz, INTEGER const n, INTEGER const k
     //
     COMPLEX cdum = 0.0;
     //
-    //     ==== Estimate optimal workspace. ====
     //
     INTEGER jw = min(nw, kbot - ktop + 1);
     INTEGER lwkopt = 0;
@@ -48,35 +47,28 @@ void Claqr3(bool const wantt, bool const wantz, INTEGER const n, INTEGER const k
         lwkopt = 1;
     } else {
         //
-        //        ==== Workspace query call to Cgehrd ====
         //
         Cgehrd(jw, 1, jw - 1, t, ldt, work, work, -1, info);
         lwk1 = castINTEGER(work[1 - 1].real());
         //
-        //        ==== Workspace query call to Cunmhr ====
         //
         Cunmhr("R", "N", jw, jw, 1, jw - 1, t, ldt, work, v, ldv, work, -1, info);
         lwk2 = castINTEGER(work[1 - 1].real());
         //
-        //        ==== Workspace query call to Claqr4 ====
         //
         Claqr4(true, true, jw, 1, jw, t, ldt, sh, 1, jw, v, ldv, work, -1, infqr);
         lwk3 = castINTEGER(work[1 - 1].real());
         //
-        //        ==== Optimal workspace ====
         //
         lwkopt = max(jw + max(lwk1, lwk2), lwk3);
     }
     //
-    //     ==== Quick return in case of workspace query. ====
     //
     if (lwork == -1) {
         work[1 - 1] = COMPLEX(lwkopt, 0.0);
         return;
     }
     //
-    //     ==== Nothing to do ...
-    //     ... for an empty active block ... ====
     ns = 0;
     nd = 0;
     const COMPLEX one = COMPLEX(1.0, 0.0);
@@ -84,12 +76,10 @@ void Claqr3(bool const wantt, bool const wantz, INTEGER const n, INTEGER const k
     if (ktop > kbot) {
         return;
     }
-    // ... nor for an empty deflation window. ====
     if (nw < 1) {
         return;
     }
     //
-    //     ==== Machine constants ====
     //
     REAL safmin = Rlamch("SAFE MINIMUM");
     const REAL rone = 1.0;
@@ -97,7 +87,6 @@ void Claqr3(bool const wantt, bool const wantz, INTEGER const n, INTEGER const k
     REAL ulp = Rlamch("PRECISION");
     REAL smlnum = safmin * (castREAL(n) / ulp);
     //
-    //     ==== Setup deflation window ====
     //
     jw = min(nw, kbot - ktop + 1);
     INTEGER kwtop = kbot - jw + 1;
@@ -111,7 +100,6 @@ void Claqr3(bool const wantt, bool const wantz, INTEGER const n, INTEGER const k
     //
     if (kbot == kwtop) {
         //
-        //        ==== 1-by-1 deflation window: not much to do ====
         //
         sh[kwtop - 1] = h[(kwtop - 1) + (kwtop - 1) * ldh];
         ns = 1;
@@ -127,11 +115,9 @@ void Claqr3(bool const wantt, bool const wantz, INTEGER const n, INTEGER const k
         return;
     }
     //
-    //     ==== Convert to spike-triangular form.  (In case of a
-    //     .    rare QR failure, this routine continues to do
-    //     .    aggressive early deflation using that part of
-    //     .    the deflation window that converged using INFQR
-    //     .    here and there to keep track.) ====
+    // .    rare QR failure, this routine continues to do
+    // .    aggressive early deflation using that part of
+    // .    the deflation window that converged using INFQR
     //
     Clacpy("U", jw, jw, &h[(kwtop - 1) + (kwtop - 1) * ldh], ldh, t, ldt);
     Ccopy(jw - 1, &h[((kwtop + 1) - 1) + (kwtop - 1) * ldh], ldh + 1, &t[(2 - 1)], ldt + 1);
@@ -144,7 +130,6 @@ void Claqr3(bool const wantt, bool const wantz, INTEGER const n, INTEGER const k
         Clahqr(true, true, jw, 1, jw, t, ldt, &sh[kwtop - 1], 1, jw, v, ldv, infqr);
     }
     //
-    //     ==== Deflation detection loop ====
     //
     ns = jw;
     INTEGER ilst = infqr + 1;
@@ -154,7 +139,6 @@ void Claqr3(bool const wantt, bool const wantz, INTEGER const n, INTEGER const k
     INTEGER ifst = 0;
     for (knt = infqr + 1; knt <= jw; knt = knt + 1) {
         //
-        //        ==== Small spike tip deflation test ====
         //
         foo = cabs1(t[(ns - 1) + (ns - 1) * ldt]);
         if (foo == rzero) {
@@ -162,13 +146,10 @@ void Claqr3(bool const wantt, bool const wantz, INTEGER const n, INTEGER const k
         }
         if (cabs1(s) * cabs1(v[(ns - 1) * ldv]) <= max(smlnum, REAL(ulp * foo))) {
             //
-            //           ==== One more converged eigenvalue ====
             //
             ns = ns - 1;
         } else {
             //
-            //           ==== One undeflatable eigenvalue.  Move it up out of the
-            //           .    way.   (Ctrexc can not fail in this case.) ====
             //
             ifst = ns;
             Ctrexc("V", jw, t, ldt, v, ldv, ifst, ilst, info);
@@ -176,7 +157,6 @@ void Claqr3(bool const wantt, bool const wantz, INTEGER const n, INTEGER const k
         }
     }
     //
-    //        ==== Return to Hessenberg form ====
     //
     if (ns == 0) {
         s = zero;
@@ -186,8 +166,6 @@ void Claqr3(bool const wantt, bool const wantz, INTEGER const n, INTEGER const k
     INTEGER j = 0;
     if (ns < jw) {
         //
-        //        ==== sorting the diagonal of T improves accuracy for
-        //        .    graded matrices.  ====
         //
         for (i = infqr + 1; i <= ns; i = i + 1) {
             ifst = i;
@@ -203,7 +181,6 @@ void Claqr3(bool const wantt, bool const wantz, INTEGER const n, INTEGER const k
         }
     }
     //
-    //     ==== Restore shift/eigenvalue array from T ====
     //
     for (i = infqr + 1; i <= jw; i = i + 1) {
         sh[(kwtop + i - 1) - 1] = t[(i - 1) + (i - 1) * ldt];
@@ -218,7 +195,6 @@ void Claqr3(bool const wantt, bool const wantz, INTEGER const n, INTEGER const k
     if (ns < jw || s == zero) {
         if (ns > 1 && s != zero) {
             //
-            //           ==== Reflect spike back into lower triangle ====
             //
             Ccopy(ns, v, ldv, work, 1);
             for (i = 1; i <= ns; i = i + 1) {
@@ -237,7 +213,6 @@ void Claqr3(bool const wantt, bool const wantz, INTEGER const n, INTEGER const k
             Cgehrd(jw, 1, ns, t, ldt, work, &work[(jw + 1) - 1], lwork - jw, info);
         }
         //
-        //        ==== Copy updated reduced window into place ====
         //
         if (kwtop > 1) {
             h[(kwtop - 1) + ((kwtop - 1) - 1) * ldh] = s * conj(v[(1 - 1)]);
@@ -245,14 +220,11 @@ void Claqr3(bool const wantt, bool const wantz, INTEGER const n, INTEGER const k
         Clacpy("U", jw, jw, t, ldt, &h[(kwtop - 1) + (kwtop - 1) * ldh], ldh);
         Ccopy(jw - 1, &t[(2 - 1)], ldt + 1, &h[((kwtop + 1) - 1) + (kwtop - 1) * ldh], ldh + 1);
         //
-        //        ==== Accumulate orthogonal matrix in order update
-        //        .    H and Z, if requested.  ====
         //
         if (ns > 1 && s != zero) {
             Cunmhr("R", "N", jw, ns, 1, ns, t, ldt, work, v, ldv, &work[(jw + 1) - 1], lwork - jw, info);
         }
         //
-        //        ==== Update vertical slab in H ====
         //
         if (wantt) {
             ltop = 1;
@@ -265,7 +237,6 @@ void Claqr3(bool const wantt, bool const wantz, INTEGER const n, INTEGER const k
             Clacpy("A", kln, jw, wv, ldwv, &h[(krow - 1) + (kwtop - 1) * ldh], ldh);
         }
         //
-        //        ==== Update horizontal slab in H ====
         //
         if (wantt) {
             for (kcol = kbot + 1; kcol <= n; kcol = kcol + nh) {
@@ -275,7 +246,6 @@ void Claqr3(bool const wantt, bool const wantz, INTEGER const n, INTEGER const k
             }
         }
         //
-        //        ==== Update vertical slab in Z ====
         //
         if (wantz) {
             for (krow = iloz; krow <= ihiz; krow = krow + nv) {
@@ -286,22 +256,17 @@ void Claqr3(bool const wantt, bool const wantz, INTEGER const n, INTEGER const k
         }
     }
     //
-    //     ==== Return the number of deflations ... ====
     //
     nd = jw - ns;
     //
-    //     ==== ... and the number of shifts. (Subtracting
-    //     .    INFQR from the spike length takes care
-    //     .    of the case of a rare QR failure while
-    //     .    calculating eigenvalues of the deflation
-    //     .    window.)  ====
+    // .    INFQR from the spike length takes care
+    // .    of the case of a rare QR failure while
+    // .    calculating eigenvalues of the deflation
     //
     ns = ns - infqr;
     //
-    //      ==== Return optimal workspace. ====
     //
     work[1 - 1] = COMPLEX(lwkopt, 0.0);
     //
-    //     ==== End of Claqr3 ====
     //
 }

@@ -31,28 +31,11 @@
 
 void Cunmhr(const char *side, const char *trans, INTEGER const m, INTEGER const n, INTEGER const ilo, INTEGER const ihi, COMPLEX *a, INTEGER const lda, COMPLEX *tau, COMPLEX *c, INTEGER const ldc, COMPLEX *work, INTEGER const lwork, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
     //
-    //  =====================================================================
     //
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
-    //     Test the input arguments
+    // Test the input arguments
     //
     info = 0;
     INTEGER nh = ihi - ilo;
@@ -112,7 +95,7 @@ void Cunmhr(const char *side, const char *trans, INTEGER const m, INTEGER const 
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (m == 0 || n == 0 || nh == 0) {
         work[1 - 1] = 1;
@@ -140,6 +123,6 @@ void Cunmhr(const char *side, const char *trans, INTEGER const m, INTEGER const 
     //
     work[1 - 1] = lwkopt;
     //
-    //     End of Cunmhr
+    // End of Cunmhr
     //
 }

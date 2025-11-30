@@ -92,43 +92,23 @@ void Rlarre(const char *range, INTEGER const n, REAL &vl, REAL &vu, INTEGER cons
     const REAL pert = 8.0;
     REAL rtol = 0.0;
     //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
     //
-    //  =====================================================================
     //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
     //
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
+    // .. Local Arrays ..
     //
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
     //
-    //     ..
-    //     .. Executable Statements ..
     //
     info = 0;
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n <= 0) {
         return;
     }
     //
-    //     Decode RANGE
+    // Decode RANGE
     //
     if (Mlsame(range, "A")) {
         irange = allrng;
@@ -140,15 +120,15 @@ void Rlarre(const char *range, INTEGER const n, REAL &vl, REAL &vu, INTEGER cons
     //
     m = 0;
     //
-    //     Get machine constants
+    // Get machine constants
     safmin = Rlamch("S");
     eps = Rlamch("P");
     //
-    //     Set parameters
+    // Set parameters
     rtl = sqrt(eps);
     bsrtol = sqrt(eps);
     //
-    //     Treat case of 1x1 matrix for quick return
+    // Treat case of 1x1 matrix for quick return
     if (n == 1) {
         if ((irange == allrng) || ((irange == valrng) && (d[1 - 1] > vl) && (d[1 - 1] <= vu)) || ((irange == indrng) && (il == 1) && (iu == 1))) {
             m = 1;
@@ -166,10 +146,10 @@ void Rlarre(const char *range, INTEGER const n, REAL &vl, REAL &vu, INTEGER cons
         return;
     }
     //
-    //     General case: tridiagonal matrix of order > 1
+    // General case: tridiagonal matrix of order > 1
     //
-    //     Init WERR, WGAP. Compute Gerschgorin intervals and spectral diameter.
-    //     Compute maximum off-diagonal entry and pivmin.
+    // Init WERR, WGAP. Compute Gerschgorin intervals and spectral diameter.
+    // Compute maximum off-diagonal entry and pivmin.
     gl = d[1 - 1];
     gu = d[1 - 1];
     eold = zero;
@@ -195,15 +175,15 @@ void Rlarre(const char *range, INTEGER const n, REAL &vl, REAL &vu, INTEGER cons
     // estimate that is wrong by at most a factor of SQRT(2)
     spdiam = gu - gl;
     //
-    //     Compute splitting points
+    // Compute splitting points
     Rlarra(n, d, e, e2, spltol, spdiam, nsplit, isplit, iinfo);
     //
-    //     Can force use of bisection instead of faster DQDS.
-    //     Option left in the code for future multisection work.
+    // Can force use of bisection instead of faster DQDS.
+    // Option left in the code for future multisection work.
     forceb = false;
     //
-    //     Initialize USEDQD, DQDS should be used for ALLRNG unless someone
-    //     explicitly wants bisection.
+    // Initialize USEDQD, DQDS should be used for ALLRNG unless someone
+    // explicitly wants bisection.
     usedqd = ((irange == allrng) && (!forceb));
     //
     if ((irange == allrng) && (!forceb)) {
@@ -231,15 +211,15 @@ void Rlarre(const char *range, INTEGER const n, REAL &vl, REAL &vu, INTEGER cons
         }
     }
     //
-    //**
-    //     Loop over unreduced blocks
+    // **
+    // Loop over unreduced blocks
     ibegin = 1;
     wbegin = 1;
     for (jblk = 1; jblk <= nsplit; jblk = jblk + 1) {
         iend = isplit[jblk - 1];
         in = iend - ibegin + 1;
         //
-        //        1 X 1 block
+        // 1 X 1 block
         if (in == 1) {
             if ((irange == allrng) || ((irange == valrng) && (d[ibegin - 1] > vl) && (d[ibegin - 1] <= vu)) || ((irange == indrng) && (iblock[wbegin - 1] == jblk))) {
                 m++;
@@ -258,12 +238,12 @@ void Rlarre(const char *range, INTEGER const n, REAL &vl, REAL &vu, INTEGER cons
             goto statement_170;
         }
         //
-        //        Blocks of size larger than 1x1
+        // Blocks of size larger than 1x1
         //
-        //        E( IEND ) will hold the shift for the initial RRR, for now set it =0
+        // E( IEND ) will hold the shift for the initial RRR, for now set it =0
         e[iend - 1] = zero;
         //
-        //        Find local outer bounds GL,GU for the block
+        // Find local outer bounds GL,GU for the block
         gl = d[ibegin - 1];
         gu = d[ibegin - 1];
         for (i = ibegin; i <= iend; i = i + 1) {
@@ -292,7 +272,7 @@ void Rlarre(const char *range, INTEGER const n, REAL &vl, REAL &vu, INTEGER cons
                 goto statement_170;
             } else {
                 //
-                //              Decide whether dqds or bisection is more efficient
+                // Decide whether dqds or bisection is more efficient
                 usedqd = ((mb > fac * in) && (!forceb));
                 wend = wbegin + mb - 1;
                 // Calculate gaps for the current block
@@ -333,14 +313,14 @@ void Rlarre(const char *range, INTEGER const n, REAL &vl, REAL &vu, INTEGER cons
             isrght = min(gu, REAL(w[wend - 1] + werr[wend - 1] + hndrd * eps * abs(w[wend - 1] + werr[wend - 1])));
         }
         //
-        //        Decide whether the base representation for the current block
-        //        L_JBLK D_JBLK L_JBLK^T = T_JBLK - sigma_JBLK I
-        //        should be on the left or the right end of the current block.
-        //        The strategy is to shift to the end which is "more populated"
-        //        Furthermore, decide whether to use DQDS for the computation of
-        //        the eigenvalue approximations at the end of Rlarre or bisection.
-        //        dqds is chosen if all eigenvalues are desired or the number of
-        //        eigenvalues to be computed is large compared to the blocksize.
+        // Decide whether the base representation for the current block
+        // L_JBLK D_JBLK L_JBLK^T = T_JBLK - sigma_JBLK I
+        // should be on the left or the right end of the current block.
+        // The strategy is to shift to the end which is "more populated"
+        // Furthermore, decide whether to use DQDS for the computation of
+        // the eigenvalue approximations at the end of Rlarre or bisection.
+        // dqds is chosen if all eigenvalues are desired or the number of
+        // eigenvalues to be computed is large compared to the blocksize.
         if ((irange == allrng) && (!forceb)) {
             // If all the eigenvalues have to be computed, we use dqd
             usedqd = true;
@@ -367,7 +347,7 @@ void Rlarre(const char *range, INTEGER const n, REAL &vl, REAL &vu, INTEGER cons
             }
         }
         //
-        //        Compute the negcount at the 1/4 and 3/4 points
+        // Compute the negcount at the 1/4 and 3/4 points
         if (mb > 1) {
             Rlarrc("T", in, s1, s2, &d[ibegin - 1], &e[ibegin - 1], pivmin, cnt, cnt1, cnt2, iinfo);
         }
@@ -403,11 +383,11 @@ void Rlarre(const char *range, INTEGER const n, REAL &vl, REAL &vu, INTEGER cons
             sgndef = -one;
         }
         //
-        //        An initial SIGMA has been chosen that will be used for computing
-        //        T - SIGMA I = L D L^T
-        //        Define the increment TAU of the shift in case the initial shift
-        //        needs to be refined to obtain a factorization with not too much
-        //        element growth.
+        // An initial SIGMA has been chosen that will be used for computing
+        // T - SIGMA I = L D L^T
+        // Define the increment TAU of the shift in case the initial shift
+        // needs to be refined to obtain a factorization with not too much
+        // element growth.
         if (usedqd) {
             // The initial SIGMA was to the outer end of the spectrum
             // the matrix is definite and we need not retreat.
@@ -498,9 +478,9 @@ void Rlarre(const char *range, INTEGER const n, REAL &vl, REAL &vu, INTEGER cons
         //
         if (mb > 1) {
             //
-            //           Perturb each entry of the base representation by a small
-            //           (but random) relative amount to overcome difficulties with
-            //           glued matrices.
+            // Perturb each entry of the base representation by a small
+            // (but random) relative amount to overcome difficulties with
+            // glued matrices.
             //
             for (i = 1; i <= 4; i = i + 1) {
                 iseed[i - 1] = 1;
@@ -515,12 +495,12 @@ void Rlarre(const char *range, INTEGER const n, REAL &vl, REAL &vu, INTEGER cons
             //
         }
         //
-        //        Don't update the Gerschgorin intervals because keeping track
-        //        of the updates would be too much work in Rlarrv.
-        //        We update W instead and use it to locate the proper Gerschgorin
-        //        intervals.
+        // Don't update the Gerschgorin intervals because keeping track
+        // of the updates would be too much work in Rlarrv.
+        // We update W instead and use it to locate the proper Gerschgorin
+        // intervals.
         //
-        //        Compute the required eigenvalues of L D L' by bisection or dqds
+        // Compute the required eigenvalues of L D L' by bisection or dqds
         if (!usedqd) {
             // If Rlarrd has been used, shift the eigenvalue approximations
             // according to their representation. This is necessary for
@@ -619,6 +599,6 @@ void Rlarre(const char *range, INTEGER const n, REAL &vl, REAL &vu, INTEGER cons
     statement_170:;
     }
     //
-    //     end of Rlarre
+    // end of Rlarre
     //
 }

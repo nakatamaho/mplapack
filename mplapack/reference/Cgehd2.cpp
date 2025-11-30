@@ -31,28 +31,11 @@
 
 void Cgehd2(INTEGER const n, INTEGER const ilo, INTEGER const ihi, COMPLEX *a, INTEGER const lda, COMPLEX *tau, COMPLEX *work, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
     //
-    //  =====================================================================
     //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
-    //     Test the input parameters
+    // Test the input parameters
     //
     info = 0;
     if (n < 0) {
@@ -74,23 +57,23 @@ void Cgehd2(INTEGER const n, INTEGER const ilo, INTEGER const ihi, COMPLEX *a, I
     const COMPLEX one = COMPLEX(1.0, 0.0);
     for (i = ilo; i <= ihi - 1; i = i + 1) {
         //
-        //        Compute elementary reflector H(i) to annihilate A(i+2:ihi,i)
+        // Compute elementary reflector H(i) to annihilate A(i+2:ihi,i)
         //
         alpha = a[((i + 1) - 1) + (i - 1) * lda];
         Clarfg(ihi - i, alpha, &a[(min(i + 2, n) - 1) + (i - 1) * lda], 1, tau[i - 1]);
         a[((i + 1) - 1) + (i - 1) * lda] = one;
         //
-        //        Apply H(i) to A(1:ihi,i+1:ihi) from the right
+        // Apply H(i) to A(1:ihi,i+1:ihi) from the right
         //
         Clarf("Right", ihi, ihi - i, &a[((i + 1) - 1) + (i - 1) * lda], 1, tau[i - 1], &a[((i + 1) - 1) * lda], lda, work);
         //
-        //        Apply H(i)**H to A(i+1:ihi,i+1:n) from the left
+        // Apply H(i)**H to A(i+1:ihi,i+1:n) from the left
         //
         Clarf("Left", ihi - i, n - i, &a[((i + 1) - 1) + (i - 1) * lda], 1, conj(tau[i - 1]), &a[((i + 1) - 1) + ((i + 1) - 1) * lda], lda, work);
         //
         a[((i + 1) - 1) + (i - 1) * lda] = alpha;
     }
     //
-    //     End of Cgehd2
+    // End of Cgehd2
     //
 }

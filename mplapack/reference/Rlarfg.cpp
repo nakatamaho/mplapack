@@ -39,28 +39,9 @@ void Rlarfg(INTEGER const n, REAL &alpha, REAL *x, INTEGER const incx, REAL &tau
     REAL rsafmn = 0.0;
     INTEGER j = 0;
     //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
     //
-    //  =====================================================================
     //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Executable Statements ..
     //
     if (n <= 1) {
         tau = zero;
@@ -71,19 +52,19 @@ void Rlarfg(INTEGER const n, REAL &alpha, REAL *x, INTEGER const incx, REAL &tau
     //
     if (xnorm == zero) {
         //
-        //        H  =  I
+        // H  =  I
         //
         tau = zero;
     } else {
         //
-        //        general case
+        // general case
         //
         beta = -sign(Rlapy2(alpha, xnorm), alpha);
         safmin = Rlamch("S") / Rlamch("E");
         knt = 0;
         if (abs(beta) < safmin) {
             //
-            //           XNORM, BETA may be inaccurate; scale X and recompute them
+            // XNORM, BETA may be inaccurate; scale X and recompute them
             //
             rsafmn = one / safmin;
         statement_10:
@@ -95,7 +76,7 @@ void Rlarfg(INTEGER const n, REAL &alpha, REAL *x, INTEGER const incx, REAL &tau
                 goto statement_10;
             }
             //
-            //           New BETA is at most 1, at least SAFMIN
+            // New BETA is at most 1, at least SAFMIN
             //
             xnorm = Rnrm2(n - 1, x, incx);
             beta = -sign(Rlapy2(alpha, xnorm), alpha);
@@ -103,7 +84,7 @@ void Rlarfg(INTEGER const n, REAL &alpha, REAL *x, INTEGER const incx, REAL &tau
         tau = (beta - alpha) / beta;
         Rscal(n - 1, one / (alpha - beta), x, incx);
         //
-        //        If ALPHA is subnormal, it may lose relative accuracy
+        // If ALPHA is subnormal, it may lose relative accuracy
         //
         for (j = 1; j <= knt; j = j + 1) {
             beta = beta * safmin;
@@ -111,6 +92,6 @@ void Rlarfg(INTEGER const n, REAL &alpha, REAL *x, INTEGER const incx, REAL &tau
         alpha = beta;
     }
     //
-    //     End of Rlarfg
+    // End of Rlarfg
     //
 }

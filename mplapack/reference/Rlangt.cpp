@@ -32,28 +32,9 @@
 REAL Rlangt(const char *norm, INTEGER const n, REAL *dl, REAL *d, REAL *du) {
     REAL return_value = 0.0;
     //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
     //
-    //  =====================================================================
     //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
     const REAL zero = 0.0;
     REAL anorm = 0.0;
@@ -66,7 +47,7 @@ REAL Rlangt(const char *norm, INTEGER const n, REAL *dl, REAL *d, REAL *du) {
         anorm = zero;
     } else if (Mlsame(norm, "M")) {
         //
-        //        Find max(abs(A(i,j))).
+        // Find max(abs(A(i,j))).
         //
         anorm = abs(d[n - 1]);
         for (i = 1; i <= n - 1; i = i + 1) {
@@ -82,7 +63,7 @@ REAL Rlangt(const char *norm, INTEGER const n, REAL *dl, REAL *d, REAL *du) {
         }
     } else if (Mlsame(norm, "O") || (Mlsame(norm, "1"))) {
         //
-        //        Find norm1(A).
+        // Find norm1(A).
         //
         if (n == 1) {
             anorm = abs(d[1 - 1]);
@@ -101,7 +82,7 @@ REAL Rlangt(const char *norm, INTEGER const n, REAL *dl, REAL *d, REAL *du) {
         }
     } else if (Mlsame(norm, "I")) {
         //
-        //        Find normI(A).
+        // Find normI(A).
         //
         if (n == 1) {
             anorm = abs(d[1 - 1]);
@@ -120,7 +101,7 @@ REAL Rlangt(const char *norm, INTEGER const n, REAL *dl, REAL *d, REAL *du) {
         }
     } else if ((Mlsame(norm, "F")) || (Mlsame(norm, "E"))) {
         //
-        //        Find normF(A).
+        // Find normF(A).
         //
         scale = zero;
         sum = one;
@@ -135,6 +116,6 @@ REAL Rlangt(const char *norm, INTEGER const n, REAL *dl, REAL *d, REAL *du) {
     return_value = anorm;
     return return_value;
     //
-    //     End of Rlangt
+    // End of Rlangt
     //
 }

@@ -95,7 +95,7 @@ void Rgesvj(const char *joba, const char *jobu, const char *jobv, INTEGER const 
     INTEGER jgl = 0;
     INTEGER ijblsk = 0;
     //
-    //     Test the input arguments
+    // Test the input arguments
     //
     lsvec = Mlsame(jobu, "U");
     uctol = Mlsame(jobu, "C");
@@ -128,7 +128,7 @@ void Rgesvj(const char *joba, const char *jobu, const char *jobv, INTEGER const 
         info = 0;
     }
     //
-    //     #:(
+    // #:(
     if (info != 0) {
         Mxerbla("Rgesvj", -info);
         return;
@@ -140,12 +140,12 @@ void Rgesvj(const char *joba, const char *jobu, const char *jobv, INTEGER const 
         return;
     }
     //
-    //     Set numerical parameters
-    //     The stopping criterion for Jacobi rotations is
+    // Set numerical parameters
+    // The stopping criterion for Jacobi rotations is
     //
-    //     max_{i<>j}|A(:,i)^T * A(:,j)|/(||A(:,i)||*||A(:,j)||) < CTOL*EPS
+    // max_{i<>j}|A(:,i)^T * A(:,j)|/(||A(:,i)||*||A(:,j)||) < CTOL*EPS
     //
-    //     where EPS is the round-off and CTOL is defined as follows:
+    // where EPS is the round-off and CTOL is defined as follows:
     //
     if (uctol) {
         // ... user controlled
@@ -159,7 +159,7 @@ void Rgesvj(const char *joba, const char *jobu, const char *jobv, INTEGER const 
         }
     }
     // ... and the machine dependent parameters are
-    //[!]  (Make sure that DLAMCH() works properly on the target machine.)
+    // [!]  (Make sure that DLAMCH() works properly on the target machine.)
     //
     epsln = Rlamch("Epsilon");
     rooteps = sqrt(epsln);
@@ -184,7 +184,7 @@ void Rgesvj(const char *joba, const char *jobu, const char *jobv, INTEGER const 
         return;
     }
     //
-    //     Initialize the right singular vector matrix.
+    // Initialize the right singular vector matrix.
     //
     if (rsvec) {
         mvl = n;
@@ -194,14 +194,14 @@ void Rgesvj(const char *joba, const char *jobu, const char *jobv, INTEGER const 
     }
     rsvec = rsvec || applv;
     //
-    //     Initialize SVA( 1:N ) = ( ||A e_i||_2, i = 1:N )
-    //(!)  If necessary, scale A to protect the largest singular value
-    //     from overflow. It is possible that saving the largest singular
-    //     value destroys the information about the small ones.
-    //     This initial scaling is almost minimal in the sense that the
-    //     goal is to make sure that no column norm overflows, and that
-    //     DSQRT(N)*max_i SVA(i) does not overflow. If INFinite entries
-    //     in A are detected, the procedure returns with INFO=-6.
+    // Initialize SVA( 1:N ) = ( ||A e_i||_2, i = 1:N )
+    // (!)  If necessary, scale A to protect the largest singular value
+    // from overflow. It is possible that saving the largest singular
+    // value destroys the information about the small ones.
+    // This initial scaling is almost minimal in the sense that the
+    // goal is to make sure that no column norm overflows, and that
+    // DSQRT(N)*max_i SVA(i) does not overflow. If INFinite entries
+    // in A are detected, the procedure returns with INFO=-6.
     //
     skl = one / sqrt(castREAL(m * n));
     noscale = true;
@@ -288,9 +288,9 @@ void Rgesvj(const char *joba, const char *jobu, const char *jobv, INTEGER const 
         skl = one;
     }
     //
-    //     Move the smaller part of the spectrum from the underflow threshold
-    //(!)  Start by determining the position of the nonzero entries of the
-    //     array SVA() relative to ( SFMIN, BIG ).
+    // Move the smaller part of the spectrum from the underflow threshold
+    // (!)  Start by determining the position of the nonzero entries of the
+    // array SVA() relative to ( SFMIN, BIG ).
     //
     aapp = zero;
     aaqq = big;
@@ -335,8 +335,8 @@ void Rgesvj(const char *joba, const char *jobu, const char *jobv, INTEGER const 
         return;
     }
     //
-    //     Protect small singular values from underflow, and try to
-    //     avoid underflows/overflows in computing Jacobi rotations.
+    // Protect small singular values from underflow, and try to
+    // avoid underflows/overflows in computing Jacobi rotations.
     //
     sn = sqrt(sfmin / epsln);
     temp1 = sqrt(big / castREAL(n));
@@ -360,7 +360,7 @@ void Rgesvj(const char *joba, const char *jobu, const char *jobv, INTEGER const 
         temp1 = one;
     }
     //
-    //     Scale, if necessary
+    // Scale, if necessary
     //
     if (temp1 != one) {
         Rlascl("G", 0, 0, one, temp1, n, 1, sva, n, ierr);
@@ -371,32 +371,32 @@ void Rgesvj(const char *joba, const char *jobu, const char *jobv, INTEGER const 
         skl = one / skl;
     }
     //
-    //     Row-cyclic Jacobi SVD algorithm with column pivoting
+    // Row-cyclic Jacobi SVD algorithm with column pivoting
     //
     emptsw = (n * (n - 1)) / 2;
     notrot = 0;
     fastr[1 - 1] = zero;
     //
-    //     A is represented in factored form A = A * diag(WORK), where diag(WORK)
-    //     is initialized to identity. WORK is updated during fast scaled
-    //     rotations.
+    // A is represented in factored form A = A * diag(WORK), where diag(WORK)
+    // is initialized to identity. WORK is updated during fast scaled
+    // rotations.
     //
     for (q = 1; q <= n; q = q + 1) {
         work[q - 1] = one;
     }
     //
     swband = 3;
-    //[TP] SWBAND is a tuning parameter [TP]. It is meaningful and effective
-    //     if Rgesvj is used as a computational routine in the preconditioned
-    //     Jacobi SVD algorithm Rgesvj. For sweeps i=1:SWBAND the procedure
-    //     works on pivots inside a band-like region around the diagonal.
-    //     The boundaries are determined dynamically, based on the number of
-    //     pivots above a threshold.
+    // [TP] SWBAND is a tuning parameter [TP]. It is meaningful and effective
+    // if Rgesvj is used as a computational routine in the preconditioned
+    // Jacobi SVD algorithm Rgesvj. For sweeps i=1:SWBAND the procedure
+    // works on pivots inside a band-like region around the diagonal.
+    // The boundaries are determined dynamically, based on the number of
+    // pivots above a threshold.
     //
     kbl = min((INTEGER)8, n);
-    //[TP] KBL is a tuning parameter that defines the tile size in the
-    //     tiling of the p-q loops of pivot pairs. In general, an optimal
-    //     parameters of the computer's memory.
+    // [TP] KBL is a tuning parameter that defines the tile size in the
+    // tiling of the p-q loops of pivot pairs. In general, an optimal
+    // parameters of the computer's memory.
     //
     nbl = n / kbl;
     if ((nbl * kbl) != n) {
@@ -404,21 +404,21 @@ void Rgesvj(const char *joba, const char *jobu, const char *jobv, INTEGER const 
     }
     //
     blskip = kbl * kbl;
-    //[TP] BLKSKIP is a tuning parameter that depends on SWBAND and KBL.
+    // [TP] BLKSKIP is a tuning parameter that depends on SWBAND and KBL.
     //
     rowskip = min((INTEGER)5, kbl);
-    //[TP] ROWSKIP is a tuning parameter.
+    // [TP] ROWSKIP is a tuning parameter.
     //
     lkahead = 1;
-    //[TP] LKAHEAD is a tuning parameter.
+    // [TP] LKAHEAD is a tuning parameter.
     //
-    //     Quasi block transformations, using the lower (upper) triangular
-    //     structure of the input matrix. The quasi-block-cycling usually
-    //     invokes cubic convergence. Big part of this cycle is done inside
+    // Quasi block transformations, using the lower (upper) triangular
+    // structure of the input matrix. The quasi-block-cycling usually
+    // invokes cubic convergence. Big part of this cycle is done inside
     //
     if ((lower || upper) && (n > max((INTEGER)64, 4 * kbl))) {
-        //[TP] The number of partition levels and the actual partition are
-        //     tuning parameters.
+        // [TP] The number of partition levels and the actual partition are
+        // tuning parameters.
         n4 = n / 4;
         n2 = n / 2;
         n34 = 3 * n4;
@@ -430,13 +430,13 @@ void Rgesvj(const char *joba, const char *jobu, const char *jobv, INTEGER const 
         //
         if (lower) {
             //
-            //     This works very well on lower triangular matrices, in particular
-            //     in the framework of the preconditioned Jacobi SVD (xGEJSV).
-            //     The idea is simple:
-            //     [+ 0 0 0]   Note that Jacobi transformations of [0 0]
-            //     [+ + 0 0]                                       [0 0]
-            //     [+ + x 0]   actually work on [x 0]              [x 0]
-            //     [+ + x x]                    [x x].             [x x]
+            // This works very well on lower triangular matrices, in particular
+            // in the framework of the preconditioned Jacobi SVD (xGEJSV).
+            // The idea is simple:
+            // [+ 0 0 0]   Note that Jacobi transformations of [0 0]
+            // [+ + 0 0]                                       [0 0]
+            // [+ + x 0]   actually work on [x 0]              [x 0]
+            // [+ + x x]                    [x x].             [x x]
             //
             Rgsvj0(jobv, m - n34, n - n34, &a[((n34 + 1) - 1) + ((n34 + 1) - 1) * lda], lda, &work[(n34 + 1) - 1], &sva[(n34 + 1) - 1], mvl, &v[((n34 * q + 1) - 1) + ((n34 + 1) - 1) * ldv], ldv, epsln, sfmin, tol, 2, &work[(n + 1) - 1], lwork - n, ierr);
             //
@@ -464,11 +464,11 @@ void Rgesvj(const char *joba, const char *jobu, const char *jobv, INTEGER const 
         //
     }
     //
-    //     .. Row-cyclic pivot strategy with de Rijk's pivoting ..
+    // .. Row-cyclic pivot strategy with de Rijk's pivoting ..
     //
     for (i = 1; i <= nsweep; i = i + 1) {
         //
-        //     .. go go go ...
+        // .. go go go ...
         //
         mxaapq = zero;
         mxsinj = zero;
@@ -477,10 +477,10 @@ void Rgesvj(const char *joba, const char *jobu, const char *jobv, INTEGER const 
         notrot = 0;
         pskipped = 0;
         //
-        //     Each sweep is unrolled using KBL-by-KBL tiles over the pivot pairs
-        //     1 <= p < q <= N. This is the first step toward a blocked implementation
-        //     of the rotations. New implementation, based on block transformations,
-        //     is under development.
+        // Each sweep is unrolled using KBL-by-KBL tiles over the pivot pairs
+        // 1 <= p < q <= N. This is the first step toward a blocked implementation
+        // of the rotations. New implementation, based on block transformations,
+        // is under development.
         //
         for (ibr = 1; ibr <= nbl; ibr = ibr + 1) {
             //
@@ -492,7 +492,7 @@ void Rgesvj(const char *joba, const char *jobu, const char *jobv, INTEGER const 
                 //
                 for (p = igl; p <= min(igl + kbl - 1, n - 1); p = p + 1) {
                     //
-                    //     .. de Rijk's pivoting
+                    // .. de Rijk's pivoting
                     //
                     q = iRamax(n - p + 1, &sva[p - 1], 1) + p - 1;
                     if (p != q) {
@@ -510,17 +510,17 @@ void Rgesvj(const char *joba, const char *jobu, const char *jobv, INTEGER const 
                     //
                     if (ir1 == 0) {
                         //
-                        //        Column norms are periodically updated by explicit
-                        //        norm computation.
-                        //        Caveat:
-                        //        Unfortunately, some BLAS implementations compute Rnrm2(M,A(1,p),1)
-                        //        as DSQRT(Rdot(M,A(1,p),1,A(1,p),1)), which may cause the result to
-                        //        overflow for ||A(:,p)||_2 > DSQRT(overflow_threshold), and to
-                        //        underflow for ||A(:,p)||_2 < DSQRT(underflow_threshold).
-                        //        Hence, Rnrm2 cannot be trusted, not even in the case when
-                        //        the true norm is far from the under(over)flow boundaries.
-                        //        If properly implemented Rnrm2 is available, the IF-THEN-ELSE
-                        //        below should read "AAPP = Rnrm2( M, A(1,p), 1 ) * WORK(p)".
+                        // Column norms are periodically updated by explicit
+                        // norm computation.
+                        // Caveat:
+                        // Unfortunately, some BLAS implementations compute Rnrm2(M,A(1,p),1)
+                        // as DSQRT(Rdot(M,A(1,p),1,A(1,p),1)), which may cause the result to
+                        // overflow for ||A(:,p)||_2 > DSQRT(overflow_threshold), and to
+                        // underflow for ||A(:,p)||_2 < DSQRT(underflow_threshold).
+                        // Hence, Rnrm2 cannot be trusted, not even in the case when
+                        // the true norm is far from the under(over)flow boundaries.
+                        // If properly implemented Rnrm2 is available, the IF-THEN-ELSE
+                        // below should read "AAPP = Rnrm2( M, A(1,p), 1 ) * WORK(p)".
                         //
                         if ((sva[p - 1] < rootbig) && (sva[p - 1] > rootsfmin)) {
                             sva[p - 1] = Rnrm2(m, &a[(p - 1) * lda], 1) * work[p - 1];
@@ -568,12 +568,12 @@ void Rgesvj(const char *joba, const char *jobu, const char *jobv, INTEGER const 
                                 //
                                 mxaapq = max(mxaapq, REAL(abs(aapq)));
                                 //
-                                //        TO rotate or NOT to rotate, THAT is the question ...
+                                // TO rotate or NOT to rotate, THAT is the question ...
                                 //
                                 if (abs(aapq) > tol) {
                                     //
-                                    //           .. rotate
-                                    //[RTD]      ROTATED = ROTATED + ONE
+                                    // .. rotate
+                                    // [RTD]      ROTATED = ROTATED + ONE
                                     //
                                     if (ir1 == 0) {
                                         notrot = 0;
@@ -602,7 +602,7 @@ void Rgesvj(const char *joba, const char *jobu, const char *jobv, INTEGER const 
                                             //
                                         } else {
                                             //
-                                            //                 .. choose correct signum for THETA and rotate
+                                            // .. choose correct signum for THETA and rotate
                                             //
                                             thsign = -sign(one, aapq);
                                             t = one / (theta + thsign * sqrt(one + theta * theta));
@@ -712,7 +712,7 @@ void Rgesvj(const char *joba, const char *jobu, const char *jobv, INTEGER const 
                                     if (ir1 == 0) {
                                         notrot++;
                                     }
-                                    //[RTD]      SKIPPED  = SKIPPED  + 1
+                                    // [RTD]      SKIPPED  = SKIPPED  + 1
                                     pskipped++;
                                 }
                             } else {
@@ -760,7 +760,7 @@ void Rgesvj(const char *joba, const char *jobu, const char *jobv, INTEGER const 
                 //
                 jgl = (jbc - 1) * kbl + 1;
                 //
-                //        doing the block at ( ibr, jbc )
+                // doing the block at ( ibr, jbc )
                 //
                 ijblsk = 0;
                 for (p = igl; p <= min(igl + kbl - 1, n); p = p + 1) {
@@ -776,9 +776,9 @@ void Rgesvj(const char *joba, const char *jobu, const char *jobv, INTEGER const 
                             if (aaqq > zero) {
                                 aapp0 = aapp;
                                 //
-                                //     .. M x 2 Jacobi SVD ..
+                                // .. M x 2 Jacobi SVD ..
                                 //
-                                //        Safe Gram matrix computation
+                                // Safe Gram matrix computation
                                 //
                                 if (aaqq >= one) {
                                     if (aapp >= aaqq) {
@@ -810,11 +810,11 @@ void Rgesvj(const char *joba, const char *jobu, const char *jobv, INTEGER const 
                                 //
                                 mxaapq = max(mxaapq, REAL(abs(aapq)));
                                 //
-                                //        TO rotate or NOT to rotate, THAT is the question ...
+                                // TO rotate or NOT to rotate, THAT is the question ...
                                 //
                                 if (abs(aapq) > tol) {
                                     notrot = 0;
-                                    //[RTD]      ROTATED  = ROTATED + 1
+                                    // [RTD]      ROTATED  = ROTATED + 1
                                     pskipped = 0;
                                     iswrot++;
                                     //
@@ -840,7 +840,7 @@ void Rgesvj(const char *joba, const char *jobu, const char *jobv, INTEGER const 
                                             mxsinj = max(mxsinj, REAL(abs(t)));
                                         } else {
                                             //
-                                            //                 .. choose correct signum for THETA and rotate
+                                            // .. choose correct signum for THETA and rotate
                                             //
                                             thsign = -sign(one, aapq);
                                             if (aaqq > aapp0) {
@@ -959,7 +959,7 @@ void Rgesvj(const char *joba, const char *jobu, const char *jobv, INTEGER const 
                                     // end of OK rotation
                                 } else {
                                     notrot++;
-                                    //[RTD]      SKIPPED  = SKIPPED  + 1
+                                    // [RTD]      SKIPPED  = SKIPPED  + 1
                                     pskipped++;
                                     ijblsk++;
                                 }
@@ -1006,11 +1006,11 @@ void Rgesvj(const char *joba, const char *jobu, const char *jobv, INTEGER const 
             for (p = igl; p <= min(igl + kbl - 1, n); p = p + 1) {
                 sva[p - 1] = abs(sva[p - 1]);
             }
-            //**
+            // **
         }
         // 2000 :: end of the ibr-loop
         //
-        //     .. update SVA(N)
+        // .. update SVA(N)
         if ((sva[n - 1] < rootbig) && (sva[n - 1] > rootsfmin)) {
             sva[n - 1] = Rnrm2(m, &a[(n - 1) * lda], 1) * work[n - 1];
         } else {
@@ -1020,7 +1020,7 @@ void Rgesvj(const char *joba, const char *jobu, const char *jobv, INTEGER const 
             sva[n - 1] = t * sqrt(aapp) * work[n - 1];
         }
         //
-        //     Additional steering devices
+        // Additional steering devices
         //
         if ((i < swband) && ((mxaapq <= roottol) || (iswrot <= n))) {
             swband = i;
@@ -1043,14 +1043,14 @@ void Rgesvj(const char *joba, const char *jobu, const char *jobv, INTEGER const 
 //
 statement_1994:
     // #:) Reaching this point means numerical convergence after the i-th
-    //     sweep.
+    // sweep.
     //
     info = 0;
 // #:) INFO = 0 confirms successful iterations.
 statement_1995:
     //
-    //     Sort the singular values and find how many are above
-    //     the underflow threshold.
+    // Sort the singular values and find how many are above
+    // the underflow threshold.
     //
     n2 = 0;
     n4 = 0;
@@ -1082,7 +1082,7 @@ statement_1995:
         }
     }
     //
-    //     Normalize the left singular vectors.
+    // Normalize the left singular vectors.
     //
     if (lsvec || uctol) {
         for (p = 1; p <= n2; p = p + 1) {
@@ -1090,7 +1090,7 @@ statement_1995:
         }
     }
     //
-    //     Scale the product of Jacobi rotations (assemble the fast rotations).
+    // Scale the product of Jacobi rotations (assemble the fast rotations).
     //
     if (rsvec) {
         if (applv) {
@@ -1105,7 +1105,7 @@ statement_1995:
         }
     }
     //
-    //     Undo scaling, if necessary (and possible).
+    // Undo scaling, if necessary (and possible).
     if (((skl > one) && (sva[1 - 1] < (big / skl))) || ((skl < one) && (sva[(max(n2, (INTEGER)1) - 1)] > (sfmin / skl)))) {
         for (p = 1; p <= n; p = p + 1) {
             sva[p - 1] = skl * sva[p - 1];
@@ -1137,7 +1137,5 @@ statement_1995:
     // MXSINJ is the largest absolute value of the sines of Jacobi angles
     // in the last sweep
     //
-    // ..
     // .. END OF Rgesvj
-    // ..
 }

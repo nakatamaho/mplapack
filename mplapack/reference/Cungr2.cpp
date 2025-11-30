@@ -31,28 +31,11 @@
 
 void Cungr2(INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX *a, INTEGER const lda, COMPLEX *tau, COMPLEX *work, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
     //
-    //  =====================================================================
     //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
-    //     Test the input arguments
+    // Test the input arguments
     //
     info = 0;
     if (m < 0) {
@@ -69,7 +52,7 @@ void Cungr2(INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX *a, INTEG
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (m <= 0) {
         return;
@@ -81,7 +64,7 @@ void Cungr2(INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX *a, INTEG
     const COMPLEX one = COMPLEX(1.0, 0.0);
     if (k < m) {
         //
-        //        Initialise rows 1:m-k to rows of the unit matrix
+        // Initialise rows 1:m-k to rows of the unit matrix
         //
         for (j = 1; j <= n; j = j + 1) {
             for (l = 1; l <= m - k; l = l + 1) {
@@ -98,7 +81,7 @@ void Cungr2(INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX *a, INTEG
     for (i = 1; i <= k; i = i + 1) {
         ii = m - k + i;
         //
-        //        Apply H(i)**H to A(1:m-k+i,1:n-k+i) from the right
+        // Apply H(i)**H to A(1:m-k+i,1:n-k+i) from the right
         //
         Clacgv(n - m + ii - 1, &a[(ii - 1)], lda);
         a[(ii - 1) + ((n - m + ii) - 1) * lda] = one;
@@ -107,13 +90,13 @@ void Cungr2(INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX *a, INTEG
         Clacgv(n - m + ii - 1, &a[(ii - 1)], lda);
         a[(ii - 1) + ((n - m + ii) - 1) * lda] = one - conj(tau[i - 1]);
         //
-        //        Set A(m-k+i,n-k+i+1:n) to zero
+        // Set A(m-k+i,n-k+i+1:n) to zero
         //
         for (l = n - m + ii + 1; l <= n; l = l + 1) {
             a[(ii - 1) + (l - 1) * lda] = zero;
         }
     }
     //
-    //     End of Cungr2
+    // End of Cungr2
     //
 }

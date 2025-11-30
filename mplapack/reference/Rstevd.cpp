@@ -31,30 +31,12 @@
 
 void Rstevd(const char *jobz, INTEGER const n, REAL *d, REAL *e, REAL *z, INTEGER const ldz, REAL *work, INTEGER const lwork, INTEGER *iwork, INTEGER const liwork, INTEGER &info) {
     //
-    //  -- LAPACK driver routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+    // -- LAPACK driver routine --
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
     //
-    //  =====================================================================
     //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     bool wantz = Mlsame(jobz, "V");
     bool lquery = (lwork == -1 || liwork == -1);
@@ -93,7 +75,7 @@ void Rstevd(const char *jobz, INTEGER const n, REAL *d, REAL *e, REAL *z, INTEGE
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0) {
         return;
@@ -107,7 +89,7 @@ void Rstevd(const char *jobz, INTEGER const n, REAL *d, REAL *e, REAL *z, INTEGE
         return;
     }
     //
-    //     Get machine constants.
+    // Get machine constants.
     //
     REAL safmin = Rlamch("Safe minimum");
     REAL eps = Rlamch("Precision");
@@ -116,7 +98,7 @@ void Rstevd(const char *jobz, INTEGER const n, REAL *d, REAL *e, REAL *z, INTEGE
     REAL rmin = sqrt(smlnum);
     REAL rmax = sqrt(bignum);
     //
-    //     Scale matrix to allowable range, if necessary.
+    // Scale matrix to allowable range, if necessary.
     //
     INTEGER iscale = 0;
     REAL tnrm = Rlanst("M", n, d, e);
@@ -134,8 +116,8 @@ void Rstevd(const char *jobz, INTEGER const n, REAL *d, REAL *e, REAL *z, INTEGE
         Rscal(n - 1, sigma, &e[1 - 1], 1);
     }
     //
-    //     For eigenvalues only, call Rsterf.  For eigenvalues and
-    //     eigenvectors, call Rstedc.
+    // For eigenvalues only, call Rsterf.  For eigenvalues and
+    // eigenvectors, call Rstedc.
     //
     if (!wantz) {
         Rsterf(n, d, e, info);
@@ -143,7 +125,7 @@ void Rstevd(const char *jobz, INTEGER const n, REAL *d, REAL *e, REAL *z, INTEGE
         Rstedc("I", n, d, e, z, ldz, work, lwork, iwork, liwork, info);
     }
     //
-    //     If matrix was scaled, then rescale eigenvalues appropriately.
+    // If matrix was scaled, then rescale eigenvalues appropriately.
     //
     if (iscale == 1) {
         Rscal(n, one / sigma, d, 1);
@@ -152,6 +134,6 @@ void Rstevd(const char *jobz, INTEGER const n, REAL *d, REAL *e, REAL *z, INTEGE
     work[1 - 1] = lwmin;
     iwork[1 - 1] = liwmin;
     //
-    //     End of Rstevd
+    // End of Rstevd
     //
 }

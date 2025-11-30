@@ -31,7 +31,7 @@
 
 void Rgehrd(INTEGER const n, INTEGER const ilo, INTEGER const ihi, REAL *a, INTEGER const lda, REAL *tau, REAL *work, INTEGER const lwork, INTEGER &info) {
     //
-    //     Test the input parameters
+    // Test the input parameters
     //
     info = 0;
     bool lquery = (lwork == -1);
@@ -54,7 +54,7 @@ void Rgehrd(INTEGER const n, INTEGER const ilo, INTEGER const ihi, REAL *a, INTE
     INTEGER lwkopt = 0;
     if (info == 0) {
         //
-        //        Compute the workspace requirements
+        // Compute the workspace requirements
         //
         nb = min(nbmax, iMlaenv(1, "Rgehrd", " ", n, ilo, ihi, -1));
         lwkopt = n * nb + tsize;
@@ -68,7 +68,7 @@ void Rgehrd(INTEGER const n, INTEGER const ilo, INTEGER const ihi, REAL *a, INTE
         return;
     }
     //
-    //     Set elements 1:ILO-1 and IHI:N-1 of TAU to zero
+    // Set elements 1:ILO-1 and IHI:N-1 of TAU to zero
     //
     INTEGER i = 0;
     const REAL zero = 0.0;
@@ -79,7 +79,7 @@ void Rgehrd(INTEGER const n, INTEGER const ilo, INTEGER const ihi, REAL *a, INTE
         tau[i - 1] = zero;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     INTEGER nh = ihi - ilo + 1;
     if (nh <= 1) {
@@ -87,26 +87,26 @@ void Rgehrd(INTEGER const n, INTEGER const ilo, INTEGER const ihi, REAL *a, INTE
         return;
     }
     //
-    //     Determine the block size
+    // Determine the block size
     //
     nb = min(nbmax, iMlaenv(1, "Rgehrd", " ", n, ilo, ihi, -1));
     INTEGER nbmin = 2;
     INTEGER nx = 0;
     if (nb > 1 && nb < nh) {
         //
-        //        Determine when to cross over from blocked to unblocked code
-        //        (last block is always handled by unblocked code)
+        // Determine when to cross over from blocked to unblocked code
+        // (last block is always handled by unblocked code)
         //
         nx = max(nb, iMlaenv(3, "Rgehrd", " ", n, ilo, ihi, -1));
         if (nx < nh) {
             //
-            //           Determine if workspace is large enough for blocked code
+            // Determine if workspace is large enough for blocked code
             //
             if (lwork < n * nb + tsize) {
                 //
-                //              Not enough workspace to use optimal NB:  determine the
-                //              minimum value of NB, and reduce NB or force use of
-                //              unblocked code
+                // Not enough workspace to use optimal NB:  determine the
+                // minimum value of NB, and reduce NB or force use of
+                // unblocked code
                 //
                 nbmin = max((INTEGER)2, iMlaenv(2, "Rgehrd", " ", n, ilo, ihi, -1));
                 if (lwork >= (n * nbmin + tsize)) {
@@ -126,54 +126,54 @@ void Rgehrd(INTEGER const n, INTEGER const ilo, INTEGER const ihi, REAL *a, INTE
     INTEGER j = 0;
     if (nb < nbmin || nb >= nh) {
         //
-        //        Use unblocked code below
+        // Use unblocked code below
         //
         i = ilo;
         //
     } else {
         //
-        //        Use blocked code
+        // Use blocked code
         //
         iwt = 1 + n * nb;
         for (i = ilo; i <= ihi - 1 - nx; i = i + nb) {
             ib = min(nb, ihi - i);
             //
-            //           Reduce columns i:i+ib-1 to Hessenberg form, returning the
-            //           matrices V and T of the block reflector H = I - V*T*V**T
-            //           which performs the reduction, and also the matrix Y = A*V*T
+            // Reduce columns i:i+ib-1 to Hessenberg form, returning the
+            // matrices V and T of the block reflector H = I - V*T*V**T
+            // which performs the reduction, and also the matrix Y = A*V*T
             //
             Rlahr2(ihi, i, ib, &a[(i - 1) * lda], lda, &tau[i - 1], &work[iwt - 1], ldt, work, ldwork);
             //
-            //           Apply the block reflector H to A(1:ihi,i+ib:ihi) from the
-            //           right, computing  A := A - Y * V**T. V(i+ib,ib-1) must be set
-            //           to 1
+            // Apply the block reflector H to A(1:ihi,i+ib:ihi) from the
+            // right, computing  A := A - Y * V**T. V(i+ib,ib-1) must be set
+            // to 1
             //
             ei = a[((i + ib) - 1) + ((i + ib - 1) - 1) * lda];
             a[((i + ib) - 1) + ((i + ib - 1) - 1) * lda] = one;
             Rgemm("No transpose", "Transpose", ihi, ihi - i - ib + 1, ib, -one, work, ldwork, &a[((i + ib) - 1) + (i - 1) * lda], lda, one, &a[((i + ib) - 1) * lda], lda);
             a[((i + ib) - 1) + ((i + ib - 1) - 1) * lda] = ei;
             //
-            //           Apply the block reflector H to A(1:i,i+1:i+ib-1) from the
-            //           right
+            // Apply the block reflector H to A(1:i,i+1:i+ib-1) from the
+            // right
             //
             Rtrmm("Right", "Lower", "Transpose", "Unit", i, ib - 1, one, &a[((i + 1) - 1) + (i - 1) * lda], lda, work, ldwork);
             for (j = 0; j <= ib - 2; j = j + 1) {
                 Raxpy(i, -one, &work[(ldwork * j + 1) - 1], 1, &a[((i + j + 1) - 1) * lda], 1);
             }
             //
-            //           Apply the block reflector H to A(i+1:ihi,i+ib:n) from the
-            //           left
+            // Apply the block reflector H to A(i+1:ihi,i+ib:n) from the
+            // left
             //
             Rlarfb("Left", "Transpose", "Forward", "Columnwise", ihi - i, n - i - ib + 1, ib, &a[((i + 1) - 1) + (i - 1) * lda], lda, &work[iwt - 1], ldt, &a[((i + 1) - 1) + ((i + ib) - 1) * lda], lda, work, ldwork);
         }
     }
     //
-    //     Use unblocked code to reduce the rest of the matrix
+    // Use unblocked code to reduce the rest of the matrix
     //
     INTEGER iinfo = 0;
     Rgehd2(n, i, ihi, a, lda, tau, work, iinfo);
     work[1 - 1] = lwkopt;
     //
-    //     End of Rgehrd
+    // End of Rgehrd
     //
 }

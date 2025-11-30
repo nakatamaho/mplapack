@@ -31,7 +31,7 @@
 
 void Rstev(const char *jobz, INTEGER const n, REAL *d, REAL *e, REAL *z, INTEGER const ldz, REAL *work, INTEGER &info) {
     //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     bool wantz = Mlsame(jobz, "V");
     //
@@ -49,7 +49,7 @@ void Rstev(const char *jobz, INTEGER const n, REAL *d, REAL *e, REAL *z, INTEGER
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0) {
         return;
@@ -63,7 +63,7 @@ void Rstev(const char *jobz, INTEGER const n, REAL *d, REAL *e, REAL *z, INTEGER
         return;
     }
     //
-    //     Get machine constants.
+    // Get machine constants.
     //
     REAL safmin = Rlamch("Safe minimum");
     REAL eps = Rlamch("Precision");
@@ -72,7 +72,7 @@ void Rstev(const char *jobz, INTEGER const n, REAL *d, REAL *e, REAL *z, INTEGER
     REAL rmin = sqrt(smlnum);
     REAL rmax = sqrt(bignum);
     //
-    //     Scale matrix to allowable range, if necessary.
+    // Scale matrix to allowable range, if necessary.
     //
     INTEGER iscale = 0;
     REAL tnrm = Rlanst("M", n, d, e);
@@ -90,8 +90,8 @@ void Rstev(const char *jobz, INTEGER const n, REAL *d, REAL *e, REAL *z, INTEGER
         Rscal(n - 1, sigma, &e[1 - 1], 1);
     }
     //
-    //     For eigenvalues only, call Rsterf.  For eigenvalues and
-    //     eigenvectors, call Rsteqr.
+    // For eigenvalues only, call Rsterf.  For eigenvalues and
+    // eigenvectors, call Rsteqr.
     //
     if (!wantz) {
         Rsterf(n, d, e, info);
@@ -99,7 +99,7 @@ void Rstev(const char *jobz, INTEGER const n, REAL *d, REAL *e, REAL *z, INTEGER
         Rsteqr("I", n, d, e, z, ldz, work, info);
     }
     //
-    //     If matrix was scaled, then rescale eigenvalues appropriately.
+    // If matrix was scaled, then rescale eigenvalues appropriately.
     //
     INTEGER imax = 0;
     if (iscale == 1) {
@@ -111,6 +111,6 @@ void Rstev(const char *jobz, INTEGER const n, REAL *d, REAL *e, REAL *z, INTEGER
         Rscal(imax, one / sigma, d, 1);
     }
     //
-    //     End of Rstev
+    // End of Rstev
     //
 }

@@ -31,29 +31,11 @@
 
 void Cgemlqt(const char *side, const char *trans, INTEGER const m, INTEGER const n, INTEGER const k, INTEGER const mb, COMPLEX *v, INTEGER const ldv, COMPLEX *t, INTEGER const ldt, COMPLEX *c, INTEGER const ldc, COMPLEX *work, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
     //
-    //  =====================================================================
     //
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
-    //     .. Test the input arguments ..
+    // .. Test the input arguments ..
     //
     info = 0;
     bool left = Mlsame(side, "L");
@@ -92,7 +74,7 @@ void Cgemlqt(const char *side, const char *trans, INTEGER const m, INTEGER const
         return;
     }
     //
-    //     .. Quick return if possible ..
+    // .. Quick return if possible ..
     //
     if (m == 0 || n == 0 || k == 0) {
         return;
@@ -133,6 +115,6 @@ void Cgemlqt(const char *side, const char *trans, INTEGER const m, INTEGER const
         //
     }
     //
-    //     End of Cgemlqt
+    // End of Cgemlqt
     //
 }

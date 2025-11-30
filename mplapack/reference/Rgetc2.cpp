@@ -31,45 +31,26 @@
 
 void Rgetc2(INTEGER const n, REAL *a, INTEGER const lda, INTEGER *ipiv, INTEGER *jpiv, INTEGER &info) {
     //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
     //
-    //  =====================================================================
     //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
     info = 0;
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0) {
         return;
     }
     //
-    //     Set constants to control overflow
+    // Set constants to control overflow
     //
     REAL eps = Rlamch("P");
     REAL smlnum = Rlamch("S") / eps;
     const REAL one = 1.0;
     REAL bignum = one / smlnum;
     //
-    //     Handle the case N=1 by itself
+    // Handle the case N=1 by itself
     //
     if (n == 1) {
         ipiv[1 - 1] = 1;
@@ -81,8 +62,8 @@ void Rgetc2(INTEGER const n, REAL *a, INTEGER const lda, INTEGER *ipiv, INTEGER 
         return;
     }
     //
-    //     Factorize A using complete pivoting.
-    //     Set pivots less than SMIN to SMIN.
+    // Factorize A using complete pivoting.
+    // Set pivots less than SMIN to SMIN.
     //
     INTEGER i = 0;
     const REAL zero = 0.0;
@@ -95,7 +76,7 @@ void Rgetc2(INTEGER const n, REAL *a, INTEGER const lda, INTEGER *ipiv, INTEGER 
     INTEGER j = 0;
     for (i = 1; i <= n - 1; i = i + 1) {
         //
-        //        Find max element in matrix A
+        // Find max element in matrix A
         //
         xmax = zero;
         for (ip = i; ip <= n; ip = ip + 1) {
@@ -111,21 +92,21 @@ void Rgetc2(INTEGER const n, REAL *a, INTEGER const lda, INTEGER *ipiv, INTEGER 
             smin = max(REAL(eps * xmax), smlnum);
         }
         //
-        //        Swap rows
+        // Swap rows
         //
         if (ipv != i) {
             Rswap(n, &a[(ipv - 1)], lda, &a[(i - 1)], lda);
         }
         ipiv[i - 1] = ipv;
         //
-        //        Swap columns
+        // Swap columns
         //
         if (jpv != i) {
             Rswap(n, &a[(jpv - 1) * lda], 1, &a[(i - 1) * lda], 1);
         }
         jpiv[i - 1] = jpv;
         //
-        //        Check for singularity
+        // Check for singularity
         //
         if (abs(a[(i - 1) + (i - 1) * lda]) < smin) {
             info = i;
@@ -142,11 +123,11 @@ void Rgetc2(INTEGER const n, REAL *a, INTEGER const lda, INTEGER *ipiv, INTEGER 
         a[(n - 1) + (n - 1) * lda] = smin;
     }
     //
-    //     Set last pivots to N
+    // Set last pivots to N
     //
     ipiv[n - 1] = n;
     jpiv[n - 1] = n;
     //
-    //     End of Rgetc2
+    // End of Rgetc2
     //
 }

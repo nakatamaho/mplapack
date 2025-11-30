@@ -31,28 +31,11 @@
 
 void Rtprfb(const char *side, const char *trans, const char *direct, const char *storev, INTEGER const m, INTEGER const n, INTEGER const k, INTEGER const l, REAL *v, INTEGER const ldv, REAL *t, INTEGER const ldt, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL *work, INTEGER const ldwork) {
     //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
     //
-    //  ==========================================================================
     //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Executable Statements ..
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (m <= 0 || n <= 0 || k <= 0 || l < 0) {
         return;
@@ -110,16 +93,16 @@ void Rtprfb(const char *side, const char *trans, const char *direct, const char 
         //
         // ---------------------------------------------------------------------------
         //
-        //        Let  W =  [ I ]    (K-by-K)
-        //                  [ V ]    (M-by-K)
+        // Let  W =  [ I ]    (K-by-K)
+        // [ V ]    (M-by-K)
         //
-        //        Form  H C  or  H**T C  where  C = [ A ]  (K-by-N)
-        //                                          [ B ]  (M-by-N)
+        // Form  H C  or  H**T C  where  C = [ A ]  (K-by-N)
+        // [ B ]  (M-by-N)
         //
-        //        H = I - W T W**T          or  H**T = I - W T**T W**T
+        // H = I - W T W**T          or  H**T = I - W T**T W**T
         //
-        //        A = A -   T (A + V**T B)  or  A = A -   T**T (A + V**T B)
-        //        B = B - V T (A + V**T B)  or  B = B - V T**T (A + V**T B)
+        // A = A -   T (A + V**T B)  or  A = A -   T**T (A + V**T B)
+        // B = B - V T (A + V**T B)  or  B = B - V T**T (A + V**T B)
         //
         // ---------------------------------------------------------------------------
         //
@@ -164,15 +147,15 @@ void Rtprfb(const char *side, const char *trans, const char *direct, const char 
         //
         // ---------------------------------------------------------------------------
         //
-        //        Let  W =  [ I ]    (K-by-K)
-        //                  [ V ]    (N-by-K)
+        // Let  W =  [ I ]    (K-by-K)
+        // [ V ]    (N-by-K)
         //
-        //        Form  C H or  C H**T  where  C = [ A B ] (A is M-by-K, B is M-by-N)
+        // Form  C H or  C H**T  where  C = [ A B ] (A is M-by-K, B is M-by-N)
         //
-        //        H = I - W T W**T          or  H**T = I - W T**T W**T
+        // H = I - W T W**T          or  H**T = I - W T**T W**T
         //
-        //        A = A - (A + B V) T      or  A = A - (A + B V) T**T
-        //        B = B - (A + B V) T V**T  or  B = B - (A + B V) T**T V**T
+        // A = A - (A + B V) T      or  A = A - (A + B V) T**T
+        // B = B - (A + B V) T V**T  or  B = B - (A + B V) T**T V**T
         //
         // ---------------------------------------------------------------------------
         //
@@ -217,16 +200,16 @@ void Rtprfb(const char *side, const char *trans, const char *direct, const char 
         //
         // ---------------------------------------------------------------------------
         //
-        //        Let  W =  [ V ]    (M-by-K)
-        //                  [ I ]    (K-by-K)
+        // Let  W =  [ V ]    (M-by-K)
+        // [ I ]    (K-by-K)
         //
-        //        Form  H C  or  H**T C  where  C = [ B ]  (M-by-N)
-        //                                          [ A ]  (K-by-N)
+        // Form  H C  or  H**T C  where  C = [ B ]  (M-by-N)
+        // [ A ]  (K-by-N)
         //
-        //        H = I - W T W**T          or  H**T = I - W T**T W**T
+        // H = I - W T W**T          or  H**T = I - W T**T W**T
         //
-        //        A = A -   T (A + V**T B)  or  A = A -   T**T (A + V**T B)
-        //        B = B - V T (A + V**T B)  or  B = B - V T**T (A + V**T B)
+        // A = A -   T (A + V**T B)  or  A = A -   T**T (A + V**T B)
+        // B = B - V T (A + V**T B)  or  B = B - V T**T (A + V**T B)
         //
         // ---------------------------------------------------------------------------
         //
@@ -272,15 +255,15 @@ void Rtprfb(const char *side, const char *trans, const char *direct, const char 
         //
         // ---------------------------------------------------------------------------
         //
-        //        Let  W =  [ V ]    (N-by-K)
-        //                  [ I ]    (K-by-K)
+        // Let  W =  [ V ]    (N-by-K)
+        // [ I ]    (K-by-K)
         //
-        //        Form  C H  or  C H**T  where  C = [ B A ] (B is M-by-N, A is M-by-K)
+        // Form  C H  or  C H**T  where  C = [ B A ] (B is M-by-N, A is M-by-K)
         //
-        //        H = I - W T W**T          or  H**T = I - W T**T W**T
+        // H = I - W T W**T          or  H**T = I - W T**T W**T
         //
-        //        A = A - (A + B V) T      or  A = A - (A + B V) T**T
-        //        B = B - (A + B V) T V**T  or  B = B - (A + B V) T**T V**T
+        // A = A - (A + B V) T      or  A = A - (A + B V) T**T
+        // B = B - (A + B V) T V**T  or  B = B - (A + B V) T**T V**T
         //
         // ---------------------------------------------------------------------------
         //
@@ -325,15 +308,15 @@ void Rtprfb(const char *side, const char *trans, const char *direct, const char 
         //
         // ---------------------------------------------------------------------------
         //
-        //        Let  W =  [ I V ] ( I is K-by-K, V is K-by-M )
+        // Let  W =  [ I V ] ( I is K-by-K, V is K-by-M )
         //
-        //        Form  H C  or  H**T C  where  C = [ A ]  (K-by-N)
-        //                                          [ B ]  (M-by-N)
+        // Form  H C  or  H**T C  where  C = [ A ]  (K-by-N)
+        // [ B ]  (M-by-N)
         //
-        //        H = I - W**T T W          or  H**T = I - W**T T**T W
+        // H = I - W**T T W          or  H**T = I - W**T T**T W
         //
-        //        A = A -     T (A + V B)  or  A = A -     T**T (A + V B)
-        //        B = B - V**T T (A + V B)  or  B = B - V**T T**T (A + V B)
+        // A = A -     T (A + V B)  or  A = A -     T**T (A + V B)
+        // B = B - V**T T (A + V B)  or  B = B - V**T T**T (A + V B)
         //
         // ---------------------------------------------------------------------------
         //
@@ -378,14 +361,14 @@ void Rtprfb(const char *side, const char *trans, const char *direct, const char 
         //
         // ---------------------------------------------------------------------------
         //
-        //        Let  W =  [ I V ] ( I is K-by-K, V is K-by-N )
+        // Let  W =  [ I V ] ( I is K-by-K, V is K-by-N )
         //
-        //        Form  C H  or  C H**T  where  C = [ A B ] (A is M-by-K, B is M-by-N)
+        // Form  C H  or  C H**T  where  C = [ A B ] (A is M-by-K, B is M-by-N)
         //
-        //        H = I - W**T T W            or  H**T = I - W**T T**T W
+        // H = I - W**T T W            or  H**T = I - W**T T**T W
         //
-        //        A = A - (A + B V**T) T      or  A = A - (A + B V**T) T**T
-        //        B = B - (A + B V**T) T V    or  B = B - (A + B V**T) T**T V
+        // A = A - (A + B V**T) T      or  A = A - (A + B V**T) T**T
+        // B = B - (A + B V**T) T V    or  B = B - (A + B V**T) T**T V
         //
         // ---------------------------------------------------------------------------
         //
@@ -430,15 +413,15 @@ void Rtprfb(const char *side, const char *trans, const char *direct, const char 
         //
         // ---------------------------------------------------------------------------
         //
-        //        Let  W =  [ V I ] ( I is K-by-K, V is K-by-M )
+        // Let  W =  [ V I ] ( I is K-by-K, V is K-by-M )
         //
-        //        Form  H C  or  H**T C  where  C = [ B ]  (M-by-N)
-        //                                          [ A ]  (K-by-N)
+        // Form  H C  or  H**T C  where  C = [ B ]  (M-by-N)
+        // [ A ]  (K-by-N)
         //
-        //        H = I - W**T T W          or  H**T = I - W**T T**T W
+        // H = I - W**T T W          or  H**T = I - W**T T**T W
         //
-        //        A = A -     T (A + V B)  or  A = A -     T**T (A + V B)
-        //        B = B - V**T T (A + V B)  or  B = B - V**T T**T (A + V B)
+        // A = A -     T (A + V B)  or  A = A -     T**T (A + V B)
+        // B = B - V**T T (A + V B)  or  B = B - V**T T**T (A + V B)
         //
         // ---------------------------------------------------------------------------
         //
@@ -483,14 +466,14 @@ void Rtprfb(const char *side, const char *trans, const char *direct, const char 
         //
         // ---------------------------------------------------------------------------
         //
-        //        Let  W =  [ V I ] ( I is K-by-K, V is K-by-N )
+        // Let  W =  [ V I ] ( I is K-by-K, V is K-by-N )
         //
-        //        Form  C H  or  C H**T  where  C = [ B A ] (A is M-by-K, B is M-by-N)
+        // Form  C H  or  C H**T  where  C = [ B A ] (A is M-by-K, B is M-by-N)
         //
-        //        H = I - W**T T W            or  H**T = I - W**T T**T W
+        // H = I - W**T T W            or  H**T = I - W**T T**T W
         //
-        //        A = A - (A + B V**T) T      or  A = A - (A + B V**T) T**T
-        //        B = B - (A + B V**T) T V    or  B = B - (A + B V**T) T**T V
+        // A = A - (A + B V**T) T      or  A = A - (A + B V**T) T**T
+        // B = B - (A + B V**T) T V    or  B = B - (A + B V**T) T**T V
         //
         // ---------------------------------------------------------------------------
         //
@@ -531,6 +514,6 @@ void Rtprfb(const char *side, const char *trans, const char *direct, const char 
         //
     }
     //
-    //     End of Rtprfb
+    // End of Rtprfb
     //
 }

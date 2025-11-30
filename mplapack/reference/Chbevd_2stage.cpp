@@ -31,30 +31,12 @@
 
 void Chbevd_2stage(const char *jobz, const char *uplo, INTEGER const n, INTEGER const kd, COMPLEX *ab, INTEGER const ldab, REAL *w, COMPLEX *z, INTEGER const ldz, COMPLEX *work, INTEGER const lwork, REAL *rwork, INTEGER const lrwork, INTEGER *iwork, INTEGER const liwork, INTEGER &info) {
     //
-    //  -- LAPACK driver routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+    // -- LAPACK driver routine --
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
     //
-    //  =====================================================================
     //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     bool wantz = Mlsame(jobz, "V");
     bool lower = Mlsame(uplo, "L");
@@ -120,7 +102,7 @@ void Chbevd_2stage(const char *jobz, const char *uplo, INTEGER const n, INTEGER 
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0) {
         return;
@@ -135,7 +117,7 @@ void Chbevd_2stage(const char *jobz, const char *uplo, INTEGER const n, INTEGER 
         return;
     }
     //
-    //     Get machine constants.
+    // Get machine constants.
     //
     REAL safmin = Rlamch("Safe minimum");
     REAL eps = Rlamch("Precision");
@@ -145,7 +127,7 @@ void Chbevd_2stage(const char *jobz, const char *uplo, INTEGER const n, INTEGER 
     REAL rmin = sqrt(smlnum);
     REAL rmax = sqrt(bignum);
     //
-    //     Scale matrix to allowable range, if necessary.
+    // Scale matrix to allowable range, if necessary.
     //
     REAL anrm = Clanhb("M", uplo, n, kd, ab, ldab, rwork);
     INTEGER iscale = 0;
@@ -166,7 +148,7 @@ void Chbevd_2stage(const char *jobz, const char *uplo, INTEGER const n, INTEGER 
         }
     }
     //
-    //     Call Chbtrd_HB2ST to reduce Hermitian band matrix to tridiagonal form.
+    // Call Chbtrd_HB2ST to reduce Hermitian band matrix to tridiagonal form.
     //
     INTEGER inde = 1;
     INTEGER indrwk = inde + n;
@@ -180,7 +162,7 @@ void Chbevd_2stage(const char *jobz, const char *uplo, INTEGER const n, INTEGER 
     INTEGER iinfo = 0;
     Chetrd_hb2st("N", jobz, uplo, n, kd, ab, ldab, w, &rwork[inde - 1], &work[indhous - 1], lhtrd, &work[indwk - 1], llwork, iinfo);
     //
-    //     For eigenvalues only, call Rsterf.  For eigenvectors, call Cstedc.
+    // For eigenvalues only, call Rsterf.  For eigenvectors, call Cstedc.
     //
     const COMPLEX czero = COMPLEX(0.0, 0.0);
     if (!wantz) {
@@ -191,7 +173,7 @@ void Chbevd_2stage(const char *jobz, const char *uplo, INTEGER const n, INTEGER 
         Clacpy("A", n, n, &work[indwk2 - 1], n, z, ldz);
     }
     //
-    //     If matrix was scaled, then rescale eigenvalues appropriately.
+    // If matrix was scaled, then rescale eigenvalues appropriately.
     //
     INTEGER imax = 0;
     if (iscale == 1) {
@@ -207,6 +189,6 @@ void Chbevd_2stage(const char *jobz, const char *uplo, INTEGER const n, INTEGER 
     rwork[1 - 1] = lrwmin;
     iwork[1 - 1] = liwmin;
     //
-    //     End of Chbevd_2stage
+    // End of Chbevd_2stage
     //
 }

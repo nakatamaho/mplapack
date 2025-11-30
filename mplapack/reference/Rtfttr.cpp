@@ -31,7 +31,7 @@
 
 void Rtfttr(const char *transr, const char *uplo, INTEGER const n, REAL *arf, REAL *a, INTEGER const lda, INTEGER &info) {
     //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     bool normaltransr = Mlsame(transr, "N");
@@ -50,7 +50,7 @@ void Rtfttr(const char *transr, const char *uplo, INTEGER const n, REAL *arf, RE
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n <= 1) {
         if (n == 1) {
@@ -59,11 +59,11 @@ void Rtfttr(const char *transr, const char *uplo, INTEGER const n, REAL *arf, RE
         return;
     }
     //
-    //     Size of array ARF(0:nt-1)
+    // Size of array ARF(0:nt-1)
     //
     INTEGER nt = n * (n + 1) / 2;
     //
-    //     set N1 and N2 depending on LOWER: for N even N1=N2=K
+    // set N1 and N2 depending on LOWER: for N even N1=N2=K
     //
     INTEGER n2 = 0;
     INTEGER n1 = 0;
@@ -75,9 +75,9 @@ void Rtfttr(const char *transr, const char *uplo, INTEGER const n, REAL *arf, RE
         n2 = n - n1;
     }
     //
-    //     If N is odd, set NISODD = .TRUE., LDA=N+1 and A is (N+1)--by--K2.
-    //     If N is even, set K = N/2 and NISODD = .FALSE., LDA=N and A is
-    //     N--by--(N+1)/2.
+    // If N is odd, set NISODD = .TRUE., LDA=N+1 and A is (N+1)--by--K2.
+    // If N is even, set K = N/2 and NISODD = .FALSE., LDA=N and A is
+    // N--by--(N+1)/2.
     //
     INTEGER k = 0;
     bool nisodd = false;
@@ -102,15 +102,15 @@ void Rtfttr(const char *transr, const char *uplo, INTEGER const n, REAL *arf, RE
     INTEGER l = 0;
     if (nisodd) {
         //
-        //        N is odd
+        // N is odd
         //
         if (normaltransr) {
             //
-            //           N is odd and TRANSR = 'N'
+            // N is odd and TRANSR = 'N'
             //
             if (lower) {
                 //
-                //              N is odd, TRANSR = 'N', and UPLO = 'L'
+                // N is odd, TRANSR = 'N', and UPLO = 'L'
                 //
                 ij = 0;
                 for (j = 0; j <= n2; j = j + 1) {
@@ -126,7 +126,7 @@ void Rtfttr(const char *transr, const char *uplo, INTEGER const n, REAL *arf, RE
                 //
             } else {
                 //
-                //              N is odd, TRANSR = 'N', and UPLO = 'U'
+                // N is odd, TRANSR = 'N', and UPLO = 'U'
                 //
                 ij = nt - n;
                 for (j = n - 1; j >= n1; j = j - 1) {
@@ -145,11 +145,11 @@ void Rtfttr(const char *transr, const char *uplo, INTEGER const n, REAL *arf, RE
             //
         } else {
             //
-            //           N is odd and TRANSR = 'T'
+            // N is odd and TRANSR = 'T'
             //
             if (lower) {
                 //
-                //              N is odd, TRANSR = 'T', and UPLO = 'L'
+                // N is odd, TRANSR = 'T', and UPLO = 'L'
                 //
                 ij = 0;
                 for (j = 0; j <= n2 - 1; j = j + 1) {
@@ -171,7 +171,7 @@ void Rtfttr(const char *transr, const char *uplo, INTEGER const n, REAL *arf, RE
                 //
             } else {
                 //
-                //              N is odd, TRANSR = 'T', and UPLO = 'U'
+                // N is odd, TRANSR = 'T', and UPLO = 'U'
                 //
                 ij = 0;
                 for (j = 0; j <= n1; j = j + 1) {
@@ -197,15 +197,15 @@ void Rtfttr(const char *transr, const char *uplo, INTEGER const n, REAL *arf, RE
         //
     } else {
         //
-        //        N is even
+        // N is even
         //
         if (normaltransr) {
             //
-            //           N is even and TRANSR = 'N'
+            // N is even and TRANSR = 'N'
             //
             if (lower) {
                 //
-                //              N is even, TRANSR = 'N', and UPLO = 'L'
+                // N is even, TRANSR = 'N', and UPLO = 'L'
                 //
                 ij = 0;
                 for (j = 0; j <= k - 1; j = j + 1) {
@@ -221,7 +221,7 @@ void Rtfttr(const char *transr, const char *uplo, INTEGER const n, REAL *arf, RE
                 //
             } else {
                 //
-                //              N is even, TRANSR = 'N', and UPLO = 'U'
+                // N is even, TRANSR = 'N', and UPLO = 'U'
                 //
                 ij = nt - n - 1;
                 for (j = n - 1; j >= k; j = j - 1) {
@@ -240,11 +240,11 @@ void Rtfttr(const char *transr, const char *uplo, INTEGER const n, REAL *arf, RE
             //
         } else {
             //
-            //           N is even and TRANSR = 'T'
+            // N is even and TRANSR = 'T'
             //
             if (lower) {
                 //
-                //              N is even, TRANSR = 'T', and UPLO = 'L'
+                // N is even, TRANSR = 'T', and UPLO = 'L'
                 //
                 ij = 0;
                 j = k;
@@ -271,7 +271,7 @@ void Rtfttr(const char *transr, const char *uplo, INTEGER const n, REAL *arf, RE
                 //
             } else {
                 //
-                //              N is even, TRANSR = 'T', and UPLO = 'U'
+                // N is even, TRANSR = 'T', and UPLO = 'U'
                 //
                 ij = 0;
                 for (j = 0; j <= k; j = j + 1) {
@@ -302,6 +302,6 @@ void Rtfttr(const char *transr, const char *uplo, INTEGER const n, REAL *arf, RE
         //
     }
     //
-    //     End of Rtfttr
+    // End of Rtfttr
     //
 }

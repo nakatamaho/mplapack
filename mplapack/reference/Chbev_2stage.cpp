@@ -31,7 +31,7 @@
 
 void Chbev_2stage(const char *jobz, const char *uplo, INTEGER const n, INTEGER const kd, COMPLEX *ab, INTEGER const ldab, REAL *w, COMPLEX *z, INTEGER const ldz, COMPLEX *work, INTEGER const lwork, REAL *rwork, INTEGER &info) {
     //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     bool wantz = Mlsame(jobz, "V");
     bool lower = Mlsame(uplo, "L");
@@ -80,7 +80,7 @@ void Chbev_2stage(const char *jobz, const char *uplo, INTEGER const n, INTEGER c
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0) {
         return;
@@ -99,7 +99,7 @@ void Chbev_2stage(const char *jobz, const char *uplo, INTEGER const n, INTEGER c
         return;
     }
     //
-    //     Get machine constants.
+    // Get machine constants.
     //
     REAL safmin = Rlamch("Safe minimum");
     REAL eps = Rlamch("Precision");
@@ -108,7 +108,7 @@ void Chbev_2stage(const char *jobz, const char *uplo, INTEGER const n, INTEGER c
     REAL rmin = sqrt(smlnum);
     REAL rmax = sqrt(bignum);
     //
-    //     Scale matrix to allowable range, if necessary.
+    // Scale matrix to allowable range, if necessary.
     //
     REAL anrm = Clanhb("M", uplo, n, kd, ab, ldab, rwork);
     INTEGER iscale = 0;
@@ -129,7 +129,7 @@ void Chbev_2stage(const char *jobz, const char *uplo, INTEGER const n, INTEGER c
         }
     }
     //
-    //     Call Chbtrd_HB2ST to reduce Hermitian band matrix to tridiagonal form.
+    // Call Chbtrd_HB2ST to reduce Hermitian band matrix to tridiagonal form.
     //
     INTEGER inde = 1;
     INTEGER indhous = 1;
@@ -139,7 +139,7 @@ void Chbev_2stage(const char *jobz, const char *uplo, INTEGER const n, INTEGER c
     INTEGER iinfo = 0;
     Chetrd_hb2st("N", jobz, uplo, n, kd, ab, ldab, w, &rwork[inde - 1], &work[indhous - 1], lhtrd, &work[indwrk - 1], llwork, iinfo);
     //
-    //     For eigenvalues only, call Rsterf.  For eigenvectors, call Csteqr.
+    // For eigenvalues only, call Rsterf.  For eigenvectors, call Csteqr.
     //
     INTEGER indrwk = 0;
     if (!wantz) {
@@ -149,7 +149,7 @@ void Chbev_2stage(const char *jobz, const char *uplo, INTEGER const n, INTEGER c
         Csteqr(jobz, n, w, &rwork[inde - 1], z, ldz, &rwork[indrwk - 1], info);
     }
     //
-    //     If matrix was scaled, then rescale eigenvalues appropriately.
+    // If matrix was scaled, then rescale eigenvalues appropriately.
     //
     INTEGER imax = 0;
     if (iscale == 1) {
@@ -161,10 +161,10 @@ void Chbev_2stage(const char *jobz, const char *uplo, INTEGER const n, INTEGER c
         Rscal(imax, one / sigma, w, 1);
     }
     //
-    //     Set WORK(1) to optimal workspace size.
+    // Set WORK(1) to optimal workspace size.
     //
     work[1 - 1] = lwmin;
     //
-    //     End of Chbev_2stage
+    // End of Chbev_2stage
     //
 }

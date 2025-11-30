@@ -31,26 +31,9 @@
 
 void Rgttrs(const char *trans, INTEGER const n, INTEGER const nrhs, REAL *dl, REAL *d, REAL *du, REAL *du2, INTEGER *ipiv, REAL *b, INTEGER const ldb, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
     //
-    //  =====================================================================
     //
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
     info = 0;
     bool notran = (Mlsame(trans, "N") || Mlsame(trans, "n"));
@@ -68,13 +51,13 @@ void Rgttrs(const char *trans, INTEGER const n, INTEGER const nrhs, REAL *dl, RE
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0 || nrhs == 0) {
         return;
     }
     //
-    //     Decode TRANS
+    // Decode TRANS
     //
     INTEGER itrans = 0;
     if (notran) {
@@ -83,7 +66,7 @@ void Rgttrs(const char *trans, INTEGER const n, INTEGER const nrhs, REAL *dl, RE
         itrans = 1;
     }
     //
-    //     Determine the number of right-hand sides to solve at a time.
+    // Determine the number of right-hand sides to solve at a time.
     //
     INTEGER nb = 0;
     if (nrhs == 1) {
@@ -103,6 +86,6 @@ void Rgttrs(const char *trans, INTEGER const n, INTEGER const nrhs, REAL *dl, RE
         }
     }
     //
-    //     End of Rgttrs
+    // End of Rgttrs
     //
 }

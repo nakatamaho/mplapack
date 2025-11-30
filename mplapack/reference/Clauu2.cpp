@@ -31,30 +31,11 @@
 
 void Clauu2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, INTEGER &info) {
     //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
     //
-    //  =====================================================================
     //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     bool upper = Mlsame(uplo, "U");
@@ -70,7 +51,7 @@ void Clauu2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0) {
         return;
@@ -81,7 +62,7 @@ void Clauu2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
     const COMPLEX one = COMPLEX(1.0, 0.0);
     if (upper) {
         //
-        //        Compute the product U * U**H.
+        // Compute the product U * U**H.
         //
         for (i = 1; i <= n; i = i + 1) {
             aii = a[(i - 1) + (i - 1) * lda].real();
@@ -97,7 +78,7 @@ void Clauu2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
         //
     } else {
         //
-        //        Compute the product L**H * L.
+        // Compute the product L**H * L.
         //
         for (i = 1; i <= n; i = i + 1) {
             aii = a[(i - 1) + (i - 1) * lda].real();
@@ -112,6 +93,6 @@ void Clauu2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
         }
     }
     //
-    //     End of Clauu2
+    // End of Clauu2
     //
 }

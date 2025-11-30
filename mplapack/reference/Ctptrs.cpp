@@ -31,30 +31,11 @@
 
 void Ctptrs(const char *uplo, const char *trans, const char *diag, INTEGER const n, INTEGER const nrhs, COMPLEX *ap, COMPLEX *b, INTEGER const ldb, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
     //
-    //  =====================================================================
     //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     bool upper = Mlsame(uplo, "U");
@@ -77,13 +58,13 @@ void Ctptrs(const char *uplo, const char *trans, const char *diag, INTEGER const
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0) {
         return;
     }
     //
-    //     Check for singularity.
+    // Check for singularity.
     //
     INTEGER jc = 0;
     const COMPLEX zero = COMPLEX(0.0, 0.0);
@@ -108,13 +89,13 @@ void Ctptrs(const char *uplo, const char *trans, const char *diag, INTEGER const
     }
     info = 0;
     //
-    //     Solve  A * x = b,  A**T * x = b,  or  A**H * x = b.
+    // Solve  A * x = b,  A**T * x = b,  or  A**H * x = b.
     //
     INTEGER j = 0;
     for (j = 1; j <= nrhs; j = j + 1) {
         Ctpsv(uplo, trans, diag, n, ap, &b[(j - 1) * ldb], 1);
     }
     //
-    //     End of Ctptrs
+    // End of Ctptrs
     //
 }

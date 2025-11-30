@@ -36,14 +36,14 @@
 INTEGER iMparam2stage(INTEGER const ispec, const char *name, const char *opts, INTEGER const ni, INTEGER const nbi, INTEGER const ibi, INTEGER const nxi) {
     INTEGER return_value = 0;
     //
-    //     Invalid value for ISPEC
+    // Invalid value for ISPEC
     //
     if ((ispec < 17) || (ispec > 21)) {
         return_value = -1;
         return return_value;
     }
     //
-    //     Get the number of threads
+    // Get the number of threads
     //
     INTEGER nthreads = 1;
     // WRITE(*,*) 'IPARAM VOICI NTHREADS ISPEC ',NTHREADS, ISPEC
@@ -65,7 +65,7 @@ INTEGER iMparam2stage(INTEGER const ispec, const char *name, const char *opts, I
     }
     if (ispec != 19) {
         //
-        //        Convert NAME to upper case if the first character is lower case.
+        // Convert NAME to upper case if the first character is lower case.
         //
         return_value = -1;
         //
@@ -84,7 +84,7 @@ INTEGER iMparam2stage(INTEGER const ispec, const char *name, const char *opts, I
         rprec = prec == 'R';
         cprec = prec == 'C';
         //
-        //        Invalid value for PRECISION
+        // Invalid value for PRECISION
         //
         if (!(rprec || cprec)) {
             return_value = -1;
@@ -104,9 +104,9 @@ INTEGER iMparam2stage(INTEGER const ispec, const char *name, const char *opts, I
     INTEGER factoptnb = 0;
     if ((ispec == 17) || (ispec == 18)) {
         //
-        //     ISPEC = 17, 18:  block size KD, IB
-        //     Could be also dependent from N but for now it
-        //     depend only on sequential or parallel
+        // ISPEC = 17, 18:  block size KD, IB
+        // Could be also dependent from N but for now it
+        // depend only on sequential or parallel
         //
         if (nthreads > 4) {
             if (cprec) {
@@ -142,11 +142,11 @@ INTEGER iMparam2stage(INTEGER const ispec, const char *name, const char *opts, I
         //
     } else if (ispec == 19) {
         //
-        //     ISPEC = 19:
-        //     LHOUS length of the Houselholder representation
-        //     matrix (V,T) of the second stage. should be >= 1.
+        // ISPEC = 19:
+        // LHOUS length of the Houselholder representation
+        // matrix (V,T) of the second stage. should be >= 1.
         //
-        //     Will add the VECT OPTION HERE next release
+        // Will add the VECT OPTION HERE next release
         vect = opts[(1 - 1)];
         if (vect == 'N') {
             lhous = max((INTEGER)1, 4 * ni);
@@ -162,19 +162,19 @@ INTEGER iMparam2stage(INTEGER const ispec, const char *name, const char *opts, I
         //
     } else if (ispec == 20) {
         //
-        //     ISPEC = 20: (21 for future use)
-        //     LWORK length of the workspace for
-        //     either or both stages for TRD and BRD. should be >= 1.
-        //     TRD:
-        //     TRD_stage 1: = LT + LW + LS1 + LS2
-        //                  = LDT*KD + N*KD + N*MAX(KD,FACTOPTNB) + LDS2*KD
-        //                    where LDT=LDS2=KD
-        //                  = N*KD + N*max(KD,FACTOPTNB) + 2*KD*KD
-        //     TRD_stage 2: = (2NB+1)*N + KD*NTHREADS
-        //     TRD_both   : = max(stage1,stage2) + AB ( AB=(KD+1)*N )
-        //                  = N*KD + N*max(KD+1,FACTOPTNB)
-        //                    + max((INTEGER)2*KD*KD, KD*NTHREADS)
-        //                    + (KD+1)*N
+        // ISPEC = 20: (21 for future use)
+        // LWORK length of the workspace for
+        // either or both stages for TRD and BRD. should be >= 1.
+        // TRD:
+        // TRD_stage 1: = LT + LW + LS1 + LS2
+        // = LDT*KD + N*KD + N*MAX(KD,FACTOPTNB) + LDS2*KD
+        // where LDT=LDS2=KD
+        // = N*KD + N*max(KD,FACTOPTNB) + 2*KD*KD
+        // TRD_stage 2: = (2NB+1)*N + KD*NTHREADS
+        // TRD_both   : = max(stage1,stage2) + AB ( AB=(KD+1)*N )
+        // = N*KD + N*max(KD+1,FACTOPTNB)
+        // + max((INTEGER)2*KD*KD, KD*NTHREADS)
+        // + (KD+1)*N
         lwork = -1;
         subnam[(1 - 1)] = prec;
         subnam[(2 - 1)] = 'G';
@@ -219,11 +219,10 @@ INTEGER iMparam2stage(INTEGER const ispec, const char *name, const char *opts, I
         //
     } else if (ispec == 21) {
         //
-        //     ISPEC = 21 for future use
+        // ISPEC = 21 for future use
         return_value = nxi;
     }
     return return_value;
     //
-    //     ==== End of iMparam2stage ====
     //
 }

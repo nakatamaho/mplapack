@@ -32,30 +32,10 @@
 REAL Clansy(const char *norm, const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, REAL *work) {
     REAL return_value = 0.0;
     //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
     //
-    // =====================================================================
     //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
+    // .. Local Arrays ..
     //
     const REAL zero = 0.0;
     REAL value = 0.0;
@@ -70,7 +50,7 @@ REAL Clansy(const char *norm, const char *uplo, INTEGER const n, COMPLEX *a, INT
         value = zero;
     } else if (Mlsame(norm, "M")) {
         //
-        //        Find max(abs(A(i,j))).
+        // Find max(abs(A(i,j))).
         //
         value = zero;
         if (Mlsame(uplo, "U")) {
@@ -94,7 +74,7 @@ REAL Clansy(const char *norm, const char *uplo, INTEGER const n, COMPLEX *a, INT
         }
     } else if ((Mlsame(norm, "I")) || (Mlsame(norm, "O")) || ((Mlsame(norm, "1")))) {
         //
-        //        Find normI(A) ( = norm1(A), since A is symmetric).
+        // Find normI(A) ( = norm1(A), since A is symmetric).
         //
         value = zero;
         if (Mlsame(uplo, "U")) {
@@ -131,15 +111,15 @@ REAL Clansy(const char *norm, const char *uplo, INTEGER const n, COMPLEX *a, INT
         }
     } else if ((Mlsame(norm, "F")) || (Mlsame(norm, "E"))) {
         //
-        //        Find normF(A).
-        //        SSQ(1) is scale
-        //        SSQ(2) is sum-of-squares
-        //        For better accuracy, sum each column separately.
+        // Find normF(A).
+        // SSQ(1) is scale
+        // SSQ(2) is sum-of-squares
+        // For better accuracy, sum each column separately.
         //
         ssq[1 - 1] = zero;
         ssq[2 - 1] = one;
         //
-        //        Sum off-diagonals
+        // Sum off-diagonals
         //
         if (Mlsame(uplo, "U")) {
             for (j = 2; j <= n; j = j + 1) {
@@ -158,7 +138,7 @@ REAL Clansy(const char *norm, const char *uplo, INTEGER const n, COMPLEX *a, INT
         }
         ssq[2 - 1] = 2 * ssq[2 - 1];
         //
-        //        Sum diagonal
+        // Sum diagonal
         //
         colssq[1 - 1] = zero;
         colssq[2 - 1] = one;
@@ -170,6 +150,6 @@ REAL Clansy(const char *norm, const char *uplo, INTEGER const n, COMPLEX *a, INT
     return_value = value;
     return return_value;
     //
-    //     End of Clansy
+    // End of Clansy
     //
 }

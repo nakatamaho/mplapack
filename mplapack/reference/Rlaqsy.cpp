@@ -31,14 +31,14 @@
 
 void Rlaqsy(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL *s, REAL const scond, REAL const amax, char *equed) {
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n <= 0) {
         *equed = 'N';
         return;
     }
     //
-    //     Initialize LARGE and SMALL.
+    // Initialize LARGE and SMALL.
     //
     REAL small = Rlamch("Safe minimum") / Rlamch("Precision");
     const REAL one = 1.0;
@@ -50,16 +50,16 @@ void Rlaqsy(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL 
     INTEGER i = 0;
     if (scond >= thresh && amax >= small && amax <= large) {
         //
-        //        No equilibration
+        // No equilibration
         //
         *equed = 'N';
     } else {
         //
-        //        Replace A by diag(S) * A * diag(S).
+        // Replace A by diag(S) * A * diag(S).
         //
         if (Mlsame(uplo, "U")) {
             //
-            //           Upper triangle of A is stored.
+            // Upper triangle of A is stored.
             //
             for (j = 1; j <= n; j = j + 1) {
                 cj = s[j - 1];
@@ -69,7 +69,7 @@ void Rlaqsy(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL 
             }
         } else {
             //
-            //           Lower triangle of A is stored.
+            // Lower triangle of A is stored.
             //
             for (j = 1; j <= n; j = j + 1) {
                 cj = s[j - 1];
@@ -81,6 +81,6 @@ void Rlaqsy(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL 
         *equed = 'Y';
     }
     //
-    //     End of Rlaqsy
+    // End of Rlaqsy
     //
 }

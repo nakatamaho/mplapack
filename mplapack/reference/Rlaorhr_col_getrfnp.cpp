@@ -31,30 +31,11 @@
 
 void Rlaorhr_col_getrfnp(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *d, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
     //
-    //  =====================================================================
     //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     if (m < 0) {
@@ -69,13 +50,13 @@ void Rlaorhr_col_getrfnp(INTEGER const m, INTEGER const n, REAL *a, INTEGER cons
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (min(m, n) == 0) {
         return;
     }
     //
-    //     Determine the block size for this environment.
+    // Determine the block size for this environment.
     //
     INTEGER nb = iMlaenv(1, "Rlaorhr_col_getrfnp", " ", m, n, -1, -1);
     //
@@ -85,28 +66,28 @@ void Rlaorhr_col_getrfnp(INTEGER const m, INTEGER const n, REAL *a, INTEGER cons
     const REAL one = 1.0;
     if (nb <= 1 || nb >= min(m, n)) {
         //
-        //        Use unblocked code.
+        // Use unblocked code.
         //
         Rlaorhr_col_getrfnp2(m, n, a, lda, d, info);
     } else {
         //
-        //        Use blocked code.
+        // Use blocked code.
         //
         for (j = 1; j <= min(m, n); j = j + nb) {
             jb = min(min(m, n) - j + 1, nb);
             //
-            //           Factor diagonal and subdiagonal blocks.
+            // Factor diagonal and subdiagonal blocks.
             //
             Rlaorhr_col_getrfnp2(m - j + 1, jb, &a[(j - 1) + (j - 1) * lda], lda, &d[j - 1], iinfo);
             //
             if (j + jb <= n) {
                 //
-                //              Compute block row of U.
+                // Compute block row of U.
                 //
                 Rtrsm("Left", "Lower", "No transpose", "Unit", jb, n - j - jb + 1, one, &a[(j - 1) + (j - 1) * lda], lda, &a[(j - 1) + ((j + jb) - 1) * lda], lda);
                 if (j + jb <= m) {
                     //
-                    //                 Update trailing submatrix.
+                    // Update trailing submatrix.
                     //
                     Rgemm("No transpose", "No transpose", m - j - jb + 1, n - j - jb + 1, jb, -one, &a[((j + jb) - 1) + (j - 1) * lda], lda, &a[(j - 1) + ((j + jb) - 1) * lda], lda, one, &a[((j + jb) - 1) + ((j + jb) - 1) * lda], lda);
                 }
@@ -114,6 +95,6 @@ void Rlaorhr_col_getrfnp(INTEGER const m, INTEGER const n, REAL *a, INTEGER cons
         }
     }
     //
-    //     End of Rlaorhr_col_getrfnp
+    // End of Rlaorhr_col_getrfnp
     //
 }

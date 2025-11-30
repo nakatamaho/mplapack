@@ -37,30 +37,11 @@ void Cpotf2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
     const COMPLEX cone = COMPLEX(1.0, 0.0);
     const REAL one = 1.0;
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
     //
-    //  =====================================================================
     //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     upper = Mlsame(uplo, "U");
@@ -76,7 +57,7 @@ void Cpotf2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0) {
         return;
@@ -84,11 +65,11 @@ void Cpotf2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
     //
     if (upper) {
         //
-        //        Compute the Cholesky factorization A = U**H *U.
+        // Compute the Cholesky factorization A = U**H *U.
         //
         for (j = 1; j <= n; j = j + 1) {
             //
-            //           Compute U(J,J) and test for non-positive-definiteness.
+            // Compute U(J,J) and test for non-positive-definiteness.
             //
             ajj = a[(j - 1) + (j - 1) * lda].real() - Cdotc(j - 1, &a[(j - 1) * lda], 1, &a[(j - 1) * lda], 1).real();
             if (ajj <= zero || Risnan(ajj)) {
@@ -98,7 +79,7 @@ void Cpotf2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
             ajj = sqrt(ajj);
             a[(j - 1) + (j - 1) * lda] = ajj;
             //
-            //           Compute elements J+1:N of row J.
+            // Compute elements J+1:N of row J.
             //
             if (j < n) {
                 Clacgv(j - 1, &a[(j - 1) * lda], 1);
@@ -109,11 +90,11 @@ void Cpotf2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
         }
     } else {
         //
-        //        Compute the Cholesky factorization A = L*L**H.
+        // Compute the Cholesky factorization A = L*L**H.
         //
         for (j = 1; j <= n; j = j + 1) {
             //
-            //           Compute L(J,J) and test for non-positive-definiteness.
+            // Compute L(J,J) and test for non-positive-definiteness.
             //
             ajj = a[(j - 1) + (j - 1) * lda].real() - Cdotc(j - 1, &a[(j - 1)], lda, &a[(j - 1)], lda).real();
             if (ajj <= zero || Risnan(ajj)) {
@@ -123,7 +104,7 @@ void Cpotf2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
             ajj = sqrt(ajj);
             a[(j - 1) + (j - 1) * lda] = ajj;
             //
-            //           Compute elements J+1:N of column J.
+            // Compute elements J+1:N of column J.
             //
             if (j < n) {
                 Clacgv(j - 1, &a[(j - 1)], lda);
@@ -140,6 +121,6 @@ statement_30:
 //
 statement_40:;
     //
-    //     End of Cpotf2
+    // End of Cpotf2
     //
 }

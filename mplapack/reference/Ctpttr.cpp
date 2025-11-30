@@ -31,7 +31,7 @@
 
 void Ctpttr(const char *uplo, INTEGER const n, COMPLEX *ap, COMPLEX *a, INTEGER const lda, INTEGER &info) {
     //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     bool lower = Mlsame(uplo, "L");
@@ -68,6 +68,6 @@ void Ctpttr(const char *uplo, INTEGER const n, COMPLEX *ap, COMPLEX *a, INTEGER 
         }
     }
     //
-    //     End of Ctpttr
+    // End of Ctpttr
     //
 }

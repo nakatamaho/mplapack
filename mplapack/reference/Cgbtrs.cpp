@@ -31,30 +31,11 @@
 
 void Cgbtrs(const char *trans, INTEGER const n, INTEGER const kl, INTEGER const ku, INTEGER const nrhs, COMPLEX *ab, INTEGER const ldab, INTEGER *ipiv, COMPLEX *b, INTEGER const ldb, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
     //
-    //  =====================================================================
     //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     bool notran = Mlsame(trans, "N");
@@ -78,7 +59,7 @@ void Cgbtrs(const char *trans, INTEGER const n, INTEGER const kl, INTEGER const 
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0 || nrhs == 0) {
         return;
@@ -94,14 +75,14 @@ void Cgbtrs(const char *trans, INTEGER const n, INTEGER const kl, INTEGER const 
     INTEGER i = 0;
     if (notran) {
         //
-        //        Solve  A*X = B.
+        // Solve  A*X = B.
         //
-        //        Solve L*X = B, overwriting B with X.
+        // Solve L*X = B, overwriting B with X.
         //
-        //        L is represented as a product of permutations and unit lower
-        //        triangular matrices L = P(1) * L(1) * ... * P(n-1) * L(n-1),
-        //        where each transformation L(i) is a rank-one modification of
-        //        the identity matrix.
+        // L is represented as a product of permutations and unit lower
+        // triangular matrices L = P(1) * L(1) * ... * P(n-1) * L(n-1),
+        // where each transformation L(i) is a rank-one modification of
+        // the identity matrix.
         //
         if (lnoti) {
             for (j = 1; j <= n - 1; j = j + 1) {
@@ -116,23 +97,23 @@ void Cgbtrs(const char *trans, INTEGER const n, INTEGER const kl, INTEGER const 
         //
         for (i = 1; i <= nrhs; i = i + 1) {
             //
-            //           Solve U*X = B, overwriting B with X.
+            // Solve U*X = B, overwriting B with X.
             //
             Ctbsv("Upper", "No transpose", "Non-unit", n, kl + ku, ab, ldab, &b[(i - 1) * ldb], 1);
         }
         //
     } else if (Mlsame(trans, "T")) {
         //
-        //        Solve A**T * X = B.
+        // Solve A**T * X = B.
         //
         for (i = 1; i <= nrhs; i = i + 1) {
             //
-            //           Solve U**T * X = B, overwriting B with X.
+            // Solve U**T * X = B, overwriting B with X.
             //
             Ctbsv("Upper", "Transpose", "Non-unit", n, kl + ku, ab, ldab, &b[(i - 1) * ldb], 1);
         }
         //
-        //        Solve L**T * X = B, overwriting B with X.
+        // Solve L**T * X = B, overwriting B with X.
         //
         if (lnoti) {
             for (j = n - 1; j >= 1; j = j - 1) {
@@ -147,16 +128,16 @@ void Cgbtrs(const char *trans, INTEGER const n, INTEGER const kl, INTEGER const 
         //
     } else {
         //
-        //        Solve A**H * X = B.
+        // Solve A**H * X = B.
         //
         for (i = 1; i <= nrhs; i = i + 1) {
             //
-            //           Solve U**H * X = B, overwriting B with X.
+            // Solve U**H * X = B, overwriting B with X.
             //
             Ctbsv("Upper", "Conjugate transpose", "Non-unit", n, kl + ku, ab, ldab, &b[(i - 1) * ldb], 1);
         }
         //
-        //        Solve L**H * X = B, overwriting B with X.
+        // Solve L**H * X = B, overwriting B with X.
         //
         if (lnoti) {
             for (j = n - 1; j >= 1; j = j - 1) {
@@ -172,6 +153,6 @@ void Cgbtrs(const char *trans, INTEGER const n, INTEGER const kl, INTEGER const 
         }
     }
     //
-    //     End of Cgbtrs
+    // End of Cgbtrs
     //
 }

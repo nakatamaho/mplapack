@@ -31,30 +31,12 @@
 
 void Chpevd(const char *jobz, const char *uplo, INTEGER const n, COMPLEX *ap, REAL *w, COMPLEX *z, INTEGER const ldz, COMPLEX *work, INTEGER const lwork, REAL *rwork, INTEGER const lrwork, INTEGER *iwork, INTEGER const liwork, INTEGER &info) {
     //
-    //  -- LAPACK driver routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+    // -- LAPACK driver routine --
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
     //
-    //  =====================================================================
     //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     bool wantz = Mlsame(jobz, "V");
     bool lquery = (lwork == -1 || lrwork == -1 || liwork == -1);
@@ -109,7 +91,7 @@ void Chpevd(const char *jobz, const char *uplo, INTEGER const n, COMPLEX *ap, RE
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0) {
         return;
@@ -124,7 +106,7 @@ void Chpevd(const char *jobz, const char *uplo, INTEGER const n, COMPLEX *ap, RE
         return;
     }
     //
-    //     Get machine constants.
+    // Get machine constants.
     //
     REAL safmin = Rlamch("Safe minimum");
     REAL eps = Rlamch("Precision");
@@ -134,7 +116,7 @@ void Chpevd(const char *jobz, const char *uplo, INTEGER const n, COMPLEX *ap, RE
     REAL rmin = sqrt(smlnum);
     REAL rmax = sqrt(bignum);
     //
-    //     Scale matrix to allowable range, if necessary.
+    // Scale matrix to allowable range, if necessary.
     //
     REAL anrm = Clanhp("M", uplo, n, ap, rwork);
     INTEGER iscale = 0;
@@ -151,7 +133,7 @@ void Chpevd(const char *jobz, const char *uplo, INTEGER const n, COMPLEX *ap, RE
         CRscal((n * (n + 1)) / 2, sigma, ap, 1);
     }
     //
-    //     Call Chptrd to reduce Hermitian packed matrix to tridiagonal form.
+    // Call Chptrd to reduce Hermitian packed matrix to tridiagonal form.
     //
     INTEGER inde = 1;
     INTEGER indtau = 1;
@@ -162,8 +144,8 @@ void Chpevd(const char *jobz, const char *uplo, INTEGER const n, COMPLEX *ap, RE
     INTEGER iinfo = 0;
     Chptrd(uplo, n, ap, w, &rwork[inde - 1], &work[indtau - 1], iinfo);
     //
-    //     For eigenvalues only, call Rsterf.  For eigenvectors, first call
-    //     Cupgtr to generate the orthogonal matrix, then call Cstedc.
+    // For eigenvalues only, call Rsterf.  For eigenvectors, first call
+    // Cupgtr to generate the orthogonal matrix, then call Cstedc.
     //
     if (!wantz) {
         Rsterf(n, w, &rwork[inde - 1], info);
@@ -172,7 +154,7 @@ void Chpevd(const char *jobz, const char *uplo, INTEGER const n, COMPLEX *ap, RE
         Cupmtr("L", uplo, "N", n, n, ap, &work[indtau - 1], z, ldz, &work[indwrk - 1], iinfo);
     }
     //
-    //     If matrix was scaled, then rescale eigenvalues appropriately.
+    // If matrix was scaled, then rescale eigenvalues appropriately.
     //
     INTEGER imax = 0;
     if (iscale == 1) {
@@ -188,6 +170,6 @@ void Chpevd(const char *jobz, const char *uplo, INTEGER const n, COMPLEX *ap, RE
     rwork[1 - 1] = lrwmin;
     iwork[1 - 1] = liwmin;
     //
-    //     End of Chpevd
+    // End of Chpevd
     //
 }

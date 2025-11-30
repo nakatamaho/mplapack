@@ -32,30 +32,10 @@
 REAL Clanhb(const char *norm, const char *uplo, INTEGER const n, INTEGER const k, COMPLEX *ab, INTEGER const ldab, REAL *work) {
     REAL return_value = 0.0;
     //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
     //
-    // =====================================================================
     //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
+    // .. Local Arrays ..
     //
     const REAL zero = 0.0;
     REAL value = 0.0;
@@ -71,7 +51,7 @@ REAL Clanhb(const char *norm, const char *uplo, INTEGER const n, INTEGER const k
         value = zero;
     } else if (Mlsame(norm, "M")) {
         //
-        //        Find max(abs(A(i,j))).
+        // Find max(abs(A(i,j))).
         //
         value = zero;
         if (Mlsame(uplo, "U")) {
@@ -103,7 +83,7 @@ REAL Clanhb(const char *norm, const char *uplo, INTEGER const n, INTEGER const k
         }
     } else if ((Mlsame(norm, "I")) || (Mlsame(norm, "O")) || ((Mlsame(norm, "1")))) {
         //
-        //        Find normI(A) ( = norm1(A), since A is hermitian).
+        // Find normI(A) ( = norm1(A), since A is hermitian).
         //
         value = zero;
         if (Mlsame(uplo, "U")) {
@@ -142,15 +122,15 @@ REAL Clanhb(const char *norm, const char *uplo, INTEGER const n, INTEGER const k
         }
     } else if ((Mlsame(norm, "F")) || (Mlsame(norm, "E"))) {
         //
-        //        Find normF(A).
-        //        SSQ(1) is scale
-        //        SSQ(2) is sum-of-squares
-        //        For better accuracy, sum each column separately.
+        // Find normF(A).
+        // SSQ(1) is scale
+        // SSQ(2) is sum-of-squares
+        // For better accuracy, sum each column separately.
         //
         ssq[1 - 1] = zero;
         ssq[2 - 1] = one;
         //
-        //        Sum off-diagonals
+        // Sum off-diagonals
         //
         if (k > 0) {
             if (Mlsame(uplo, "U")) {
@@ -175,7 +155,7 @@ REAL Clanhb(const char *norm, const char *uplo, INTEGER const n, INTEGER const k
             l = 1;
         }
         //
-        //        Sum diagonal
+        // Sum diagonal
         //
         colssq[1 - 1] = zero;
         colssq[2 - 1] = one;
@@ -197,6 +177,6 @@ REAL Clanhb(const char *norm, const char *uplo, INTEGER const n, INTEGER const k
     return_value = value;
     return return_value;
     //
-    //     End of Clanhb
+    // End of Clanhb
     //
 }

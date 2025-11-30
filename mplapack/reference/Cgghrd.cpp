@@ -31,30 +31,11 @@
 
 void Cgghrd(const char *compq, const char *compz, INTEGER const n, INTEGER const ilo, INTEGER const ihi, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, COMPLEX *q, INTEGER const ldq, COMPLEX *z, INTEGER const ldz, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
     //
-    //  =====================================================================
     //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
-    //     Decode COMPQ
+    // Decode COMPQ
     //
     bool ilq = false;
     INTEGER icompq = 0;
@@ -71,7 +52,7 @@ void Cgghrd(const char *compq, const char *compz, INTEGER const n, INTEGER const
         icompq = 0;
     }
     //
-    //     Decode COMPZ
+    // Decode COMPZ
     //
     bool ilz = false;
     INTEGER icompz = 0;
@@ -88,7 +69,7 @@ void Cgghrd(const char *compq, const char *compz, INTEGER const n, INTEGER const
         icompz = 0;
     }
     //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     if (icompq <= 0) {
@@ -115,7 +96,7 @@ void Cgghrd(const char *compq, const char *compz, INTEGER const n, INTEGER const
         return;
     }
     //
-    //     Initialize Q and Z if desired.
+    // Initialize Q and Z if desired.
     //
     const COMPLEX czero = COMPLEX(0.0, 0.0);
     const COMPLEX cone = COMPLEX(1.0, 0.0);
@@ -126,13 +107,13 @@ void Cgghrd(const char *compq, const char *compz, INTEGER const n, INTEGER const
         Claset("Full", n, n, czero, cone, z, ldz);
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n <= 1) {
         return;
     }
     //
-    //     Zero out lower triangle of B
+    // Zero out lower triangle of B
     //
     INTEGER jcol = 0;
     INTEGER jrow = 0;
@@ -142,7 +123,7 @@ void Cgghrd(const char *compq, const char *compz, INTEGER const n, INTEGER const
         }
     }
     //
-    //     Reduce A and B
+    // Reduce A and B
     //
     COMPLEX ctemp = 0.0;
     REAL c = 0.0;
@@ -151,7 +132,7 @@ void Cgghrd(const char *compq, const char *compz, INTEGER const n, INTEGER const
         //
         for (jrow = ihi; jrow >= jcol + 2; jrow = jrow - 1) {
             //
-            //           Step 1: rotate rows JROW-1, JROW to kill A(JROW,JCOL)
+            // Step 1: rotate rows JROW-1, JROW to kill A(JROW,JCOL)
             //
             ctemp = a[((jrow - 1) - 1) + (jcol - 1) * lda];
             Clartg(ctemp, a[(jrow - 1) + (jcol - 1) * lda], c, s, a[((jrow - 1) - 1) + (jcol - 1) * lda]);
@@ -162,7 +143,7 @@ void Cgghrd(const char *compq, const char *compz, INTEGER const n, INTEGER const
                 Crot(n, &q[((jrow - 1) - 1) * ldq], 1, &q[(jrow - 1) * ldq], 1, c, conj(s));
             }
             //
-            //           Step 2: rotate columns JROW, JROW-1 to kill B(JROW,JROW-1)
+            // Step 2: rotate columns JROW, JROW-1 to kill B(JROW,JROW-1)
             //
             ctemp = b[(jrow - 1) + (jrow - 1) * ldb];
             Clartg(ctemp, b[(jrow - 1) + ((jrow - 1) - 1) * ldb], c, s, b[(jrow - 1) + (jrow - 1) * ldb]);
@@ -175,6 +156,6 @@ void Cgghrd(const char *compq, const char *compz, INTEGER const n, INTEGER const
         }
     }
     //
-    //     End of Cgghrd
+    // End of Cgghrd
     //
 }

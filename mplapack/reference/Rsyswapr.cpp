@@ -31,38 +31,24 @@
 
 void Rsyswapr(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INTEGER const i1, INTEGER const i2) {
     //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
     //
-    //  =====================================================================
     //
-    //     ..
-    //     .. Local Scalars ..
     //
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Executable Statements ..
     //
     bool upper = Mlsame(uplo, "U");
     REAL tmp = 0.0;
     INTEGER i = 0;
     if (upper) {
         //
-        //         UPPER
-        //         first swap
-        //          - swap column I1 and I2 from I1 to I1-1
+        // UPPER
+        // first swap
+        // - swap column I1 and I2 from I1 to I1-1
         Rswap(i1 - 1, &a[(i1 - 1) * lda], 1, &a[(i2 - 1) * lda], 1);
         //
-        //          second swap :
-        //          - swap A(I1,I1) and A(I2,I2)
-        //          - swap row I1 from I1+1 to I2-1 with col I2 from I1+1 to I2-1
+        // second swap :
+        // - swap A(I1,I1) and A(I2,I2)
+        // - swap row I1 from I1+1 to I2-1 with col I2 from I1+1 to I2-1
         tmp = a[(i1 - 1) + (i1 - 1) * lda];
         a[(i1 - 1) + (i1 - 1) * lda] = a[(i2 - 1) + (i2 - 1) * lda];
         a[(i2 - 1) + (i2 - 1) * lda] = tmp;
@@ -73,8 +59,8 @@ void Rsyswapr(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INT
             a[((i1 + i) - 1) + (i2 - 1) * lda] = tmp;
         }
         //
-        //          third swap
-        //          - swap row I1 and I2 from I2+1 to N
+        // third swap
+        // - swap row I1 and I2 from I2+1 to N
         for (i = i2 + 1; i <= n; i = i + 1) {
             tmp = a[(i1 - 1) + (i - 1) * lda];
             a[(i1 - 1) + (i - 1) * lda] = a[(i2 - 1) + (i - 1) * lda];
@@ -83,14 +69,14 @@ void Rsyswapr(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INT
         //
     } else {
         //
-        //         LOWER
-        //         first swap
-        //          - swap row I1 and I2 from I1 to I1-1
+        // LOWER
+        // first swap
+        // - swap row I1 and I2 from I1 to I1-1
         Rswap(i1 - 1, &a[(i1 - 1)], lda, &a[(i2 - 1)], lda);
         //
-        //         second swap :
-        //          - swap A(I1,I1) and A(I2,I2)
-        //          - swap col I1 from I1+1 to I2-1 with row I2 from I1+1 to I2-1
+        // second swap :
+        // - swap A(I1,I1) and A(I2,I2)
+        // - swap col I1 from I1+1 to I2-1 with row I2 from I1+1 to I2-1
         tmp = a[(i1 - 1) + (i1 - 1) * lda];
         a[(i1 - 1) + (i1 - 1) * lda] = a[(i2 - 1) + (i2 - 1) * lda];
         a[(i2 - 1) + (i2 - 1) * lda] = tmp;
@@ -101,8 +87,8 @@ void Rsyswapr(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INT
             a[(i2 - 1) + ((i1 + i) - 1) * lda] = tmp;
         }
         //
-        //         third swap
-        //          - swap col I1 and I2 from I2+1 to N
+        // third swap
+        // - swap col I1 and I2 from I2+1 to N
         for (i = i2 + 1; i <= n; i = i + 1) {
             tmp = a[(i - 1) + (i1 - 1) * lda];
             a[(i - 1) + (i1 - 1) * lda] = a[(i - 1) + (i2 - 1) * lda];

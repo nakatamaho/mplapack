@@ -54,7 +54,7 @@ void Rtrsen(const char *job, const char *compq, bool *select, INTEGER const n, R
     INTEGER kase = 0;
     INTEGER isave[3];
     //
-    //     Decode and test the input parameters
+    // Decode and test the input parameters
     //
     wantbh = Mlsame(job, "B");
     wants = Mlsame(job, "E") || wantbh;
@@ -75,7 +75,7 @@ void Rtrsen(const char *job, const char *compq, bool *select, INTEGER const n, R
         info = -8;
     } else {
         //
-        //        and test LWORK and LIWORK.
+        // and test LWORK and LIWORK.
         //
         m = 0;
         pair = false;
@@ -136,7 +136,7 @@ void Rtrsen(const char *job, const char *compq, bool *select, INTEGER const n, R
         return;
     }
     //
-    //     Quick return if possible.
+    // Quick return if possible.
     //
     if (m == n || m == 0) {
         if (wants) {
@@ -148,7 +148,7 @@ void Rtrsen(const char *job, const char *compq, bool *select, INTEGER const n, R
         goto statement_40;
     }
     //
-    //     Collect the selected blocks at the top-left corner of T.
+    // Collect the selected blocks at the top-left corner of T.
     //
     ks = 0;
     pair = false;
@@ -166,7 +166,7 @@ void Rtrsen(const char *job, const char *compq, bool *select, INTEGER const n, R
             if (swap) {
                 ks++;
                 //
-                //              Swap the K-th block to position KS.
+                // Swap the K-th block to position KS.
                 //
                 ierr = 0;
                 kk = k;
@@ -175,7 +175,7 @@ void Rtrsen(const char *job, const char *compq, bool *select, INTEGER const n, R
                 }
                 if (ierr == 1 || ierr == 2) {
                     //
-                    //                 Blocks too close to swap: exit.
+                    // Blocks too close to swap: exit.
                     //
                     info = 1;
                     if (wants) {
@@ -195,15 +195,15 @@ void Rtrsen(const char *job, const char *compq, bool *select, INTEGER const n, R
     //
     if (wants) {
         //
-        //        Solve Sylvester equation for R:
+        // Solve Sylvester equation for R:
         //
-        //           T11*R - R*T22 = scale*T12
+        // T11*R - R*T22 = scale*T12
         //
         Rlacpy("F", n1, n2, &t[((n1 + 1) - 1) * ldt], ldt, work, n1);
         Rtrsyl("N", "N", -1, n1, n2, t, ldt, &t[((n1 + 1) - 1) + ((n1 + 1) - 1) * ldt], ldt, work, n1, scale, ierr);
         //
-        //        Estimate the reciprocal of the condition number of the cluster
-        //        of eigenvalues.
+        // Estimate the reciprocal of the condition number of the cluster
+        // of eigenvalues.
         //
         rnorm = Rlange("F", n1, n2, work, n1, work);
         if (rnorm == zero) {
@@ -215,7 +215,7 @@ void Rtrsen(const char *job, const char *compq, bool *select, INTEGER const n, R
     //
     if (wantsp) {
         //
-        //        Estimate sep(T11,T22).
+        // Estimate sep(T11,T22).
         //
         est = zero;
         kase = 0;
@@ -224,12 +224,12 @@ void Rtrsen(const char *job, const char *compq, bool *select, INTEGER const n, R
         if (kase != 0) {
             if (kase == 1) {
                 //
-                //              Solve  T11*R - R*T22 = scale*X.
+                // Solve  T11*R - R*T22 = scale*X.
                 //
                 Rtrsyl("N", "N", -1, n1, n2, t, ldt, &t[((n1 + 1) - 1) + ((n1 + 1) - 1) * ldt], ldt, work, n1, scale, ierr);
             } else {
                 //
-                //              Solve T11**T*R - R*T22**T = scale*X.
+                // Solve T11**T*R - R*T22**T = scale*X.
                 //
                 Rtrsyl("T", "T", -1, n1, n2, t, ldt, &t[((n1 + 1) - 1) + ((n1 + 1) - 1) * ldt], ldt, work, n1, scale, ierr);
             }
@@ -241,7 +241,7 @@ void Rtrsen(const char *job, const char *compq, bool *select, INTEGER const n, R
 //
 statement_40:
     //
-    //     Store the output eigenvalues in WR and WI.
+    // Store the output eigenvalues in WR and WI.
     //
     for (k = 1; k <= n; k = k + 1) {
         wr[k - 1] = t[(k - 1) + (k - 1) * ldt];
@@ -257,6 +257,6 @@ statement_40:
     work[1 - 1] = lwmin;
     iwork[1 - 1] = liwmin;
     //
-    //     End of Rtrsen
+    // End of Rtrsen
     //
 }

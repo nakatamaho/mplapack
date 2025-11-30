@@ -31,26 +31,9 @@
 
 void Rlaic1(INTEGER const job, INTEGER const j, REAL *x, REAL const sest, REAL *w, REAL const gamma, REAL &sestpr, REAL &s, REAL &c) {
     //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
     //
-    //  =====================================================================
     //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
     REAL eps = Rlamch("Epsilon");
     REAL alpha = Rdot(j, x, 1, w, 1);
@@ -77,9 +60,9 @@ void Rlaic1(INTEGER const job, INTEGER const j, REAL *x, REAL const sest, REAL *
     const REAL four = 4.0;
     if (job == 1) {
         //
-        //        Estimating largest singular value
+        // Estimating largest singular value
         //
-        //        special cases
+        // special cases
         //
         if (sest == zero) {
             s1 = max(absgam, absalp);
@@ -136,7 +119,7 @@ void Rlaic1(INTEGER const job, INTEGER const j, REAL *x, REAL const sest, REAL *
             return;
         } else {
             //
-            //           normal case
+            // normal case
             //
             zeta1 = alpha / absest;
             zeta2 = gamma / absest;
@@ -160,9 +143,9 @@ void Rlaic1(INTEGER const job, INTEGER const j, REAL *x, REAL const sest, REAL *
         //
     } else if (job == 2) {
         //
-        //        Estimating smallest singular value
+        // Estimating smallest singular value
         //
-        //        special cases
+        // special cases
         //
         if (sest == zero) {
             sestpr = zero;
@@ -217,19 +200,19 @@ void Rlaic1(INTEGER const job, INTEGER const j, REAL *x, REAL const sest, REAL *
             return;
         } else {
             //
-            //           normal case
+            // normal case
             //
             zeta1 = alpha / absest;
             zeta2 = gamma / absest;
             //
             norma = max(REAL(one + zeta1 * zeta1 + abs(zeta1 * zeta2)), REAL(abs(zeta1 * zeta2) + zeta2 * zeta2));
             //
-            //           See if root is closer to zero or to ONE
+            // See if root is closer to zero or to ONE
             //
             test = one + two * (zeta1 - zeta2) * (zeta1 + zeta2);
             if (test >= zero) {
                 //
-                //              root is close to zero, compute directly
+                // root is close to zero, compute directly
                 //
                 b = (zeta1 * zeta1 + zeta2 * zeta2 + one) * half;
                 c = zeta2 * zeta2;
@@ -239,7 +222,7 @@ void Rlaic1(INTEGER const job, INTEGER const j, REAL *x, REAL const sest, REAL *
                 sestpr = sqrt(t + four * eps * eps * norma) * absest;
             } else {
                 //
-                //              root is closer to ONE, shift by that amount
+                // root is closer to ONE, shift by that amount
                 //
                 b = (zeta2 * zeta2 + zeta1 * zeta1 - one) * half;
                 c = zeta1 * zeta1;
@@ -260,6 +243,6 @@ void Rlaic1(INTEGER const job, INTEGER const j, REAL *x, REAL const sest, REAL *
         }
     }
     //
-    //     End of Rlaic1
+    // End of Rlaic1
     //
 }

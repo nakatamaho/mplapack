@@ -31,24 +31,9 @@
 
 void Cgeqrt3(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *t, INTEGER const ldt, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
     //
-    //  =====================================================================
     //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Executable Statements ..
     //
     info = 0;
     if (n < 0) {
@@ -75,24 +60,24 @@ void Cgeqrt3(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, CO
     const COMPLEX one = COMPLEX(1.00, 0.00);
     if (n == 1) {
         //
-        //        Compute Householder transform when N=1
+        // Compute Householder transform when N=1
         //
         Clarfg(m, a[(1 - 1)], &a[(min((INTEGER)2, m) - 1) + (1 - 1) * lda], 1, t[(1 - 1)]);
         //
     } else {
         //
-        //        Otherwise, split A into blocks...
+        // Otherwise, split A into blocks...
         //
         n1 = n / 2;
         n2 = n - n1;
         j1 = min(n1 + 1, n);
         i1 = min(n + 1, m);
         //
-        //        Compute A(1:M,1:N1) <- (Y1,R1,T1), where Q1 = I - Y1 T1 Y1^H
+        // Compute A(1:M,1:N1) <- (Y1,R1,T1), where Q1 = I - Y1 T1 Y1^H
         //
         Cgeqrt3(m, n1, a, lda, t, ldt, iinfo);
         //
-        //        Compute A(1:M,J1:N) = Q1^H A(1:M,J1:N) [workspace: T(1:N1,J1:N)]
+        // Compute A(1:M,J1:N) = Q1^H A(1:M,J1:N) [workspace: T(1:N1,J1:N)]
         //
         for (j = 1; j <= n2; j = j + 1) {
             for (i = 1; i <= n1; i = i + 1) {
@@ -115,11 +100,11 @@ void Cgeqrt3(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, CO
             }
         }
         //
-        //        Compute A(J1:M,J1:N) <- (Y2,R2,T2) where Q2 = I - Y2 T2 Y2^H
+        // Compute A(J1:M,J1:N) <- (Y2,R2,T2) where Q2 = I - Y2 T2 Y2^H
         //
         Cgeqrt3(m - n1, n2, &a[(j1 - 1) + (j1 - 1) * lda], lda, &t[(j1 - 1) + (j1 - 1) * ldt], ldt, iinfo);
         //
-        //        Compute T3 = T(1:N1,J1:N) = -T1 Y1^H Y2 T2
+        // Compute T3 = T(1:N1,J1:N) = -T1 Y1^H Y2 T2
         //
         for (i = 1; i <= n1; i = i + 1) {
             for (j = 1; j <= n2; j = j + 1) {
@@ -135,11 +120,11 @@ void Cgeqrt3(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, CO
         //
         Ctrmm("R", "U", "N", "N", n1, n2, one, &t[(j1 - 1) + (j1 - 1) * ldt], ldt, &t[(j1 - 1) * ldt], ldt);
         //
-        //        Y = (Y1,Y2); R = [ R1  A(1:N1,J1:N) ];  T = [T1 T3]
-        //                         [  0        R2     ]       [ 0 T2]
+        // Y = (Y1,Y2); R = [ R1  A(1:N1,J1:N) ];  T = [T1 T3]
+        // [  0        R2     ]       [ 0 T2]
         //
     }
     //
-    //     End of Cgeqrt3
+    // End of Cgeqrt3
     //
 }

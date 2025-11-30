@@ -70,36 +70,15 @@ void Cggev3(const char *jobvl, const char *jobvr, INTEGER const n, COMPLEX *a, I
     REAL temp = 0.0;
     INTEGER jr = 0;
     //
-    //  -- LAPACK driver routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+    // -- LAPACK driver routine --
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
     //
-    //  =====================================================================
     //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Statement Functions ..
-    //     ..
-    //     .. Statement Function definitions ..
-    //     ..
-    //     .. Executable Statements ..
+    // .. Local Arrays ..
+    // .. Statement Functions ..
+    // .. Statement Function definitions ..
     //
-    //     Decode the input arguments
+    // Decode the input arguments
     //
     if (Mlsame(jobvl, "N")) {
         ijobvl = 1;
@@ -124,7 +103,7 @@ void Cggev3(const char *jobvl, const char *jobvr, INTEGER const n, COMPLEX *a, I
     }
     ilv = ilvl || ilvr;
     //
-    //     Test the input arguments
+    // Test the input arguments
     //
     info = 0;
     lquery = (lwork == -1);
@@ -146,7 +125,7 @@ void Cggev3(const char *jobvl, const char *jobvr, INTEGER const n, COMPLEX *a, I
         info = -15;
     }
     //
-    //     Compute workspace
+    // Compute workspace
     //
     if (info == 0) {
         Cgeqrf(n, n, b, ldb, work, work, -1, ierr);
@@ -178,13 +157,13 @@ void Cggev3(const char *jobvl, const char *jobvr, INTEGER const n, COMPLEX *a, I
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0) {
         return;
     }
     //
-    //     Get machine constants
+    // Get machine constants
     //
     eps = Rlamch("E") * Rlamch("B");
     smlnum = Rlamch("S");
@@ -192,7 +171,7 @@ void Cggev3(const char *jobvl, const char *jobvr, INTEGER const n, COMPLEX *a, I
     smlnum = sqrt(smlnum) / eps;
     bignum = one / smlnum;
     //
-    //     Scale A if max element outside range [SMLNUM,BIGNUM]
+    // Scale A if max element outside range [SMLNUM,BIGNUM]
     //
     anrm = Clange("M", n, n, a, lda, rwork);
     ilascl = false;
@@ -207,7 +186,7 @@ void Cggev3(const char *jobvl, const char *jobvr, INTEGER const n, COMPLEX *a, I
         Clascl("G", 0, 0, anrm, anrmto, n, n, a, lda, ierr);
     }
     //
-    //     Scale B if max element outside range [SMLNUM,BIGNUM]
+    // Scale B if max element outside range [SMLNUM,BIGNUM]
     //
     bnrm = Clange("M", n, n, b, ldb, rwork);
     ilbscl = false;
@@ -222,14 +201,14 @@ void Cggev3(const char *jobvl, const char *jobvr, INTEGER const n, COMPLEX *a, I
         Clascl("G", 0, 0, bnrm, bnrmto, n, n, b, ldb, ierr);
     }
     //
-    //     Permute the matrices A, B to isolate eigenvalues if possible
+    // Permute the matrices A, B to isolate eigenvalues if possible
     //
     ileft = 1;
     iright = n + 1;
     irwrk = iright + n;
     Cggbal("P", n, a, lda, b, ldb, ilo, ihi, &rwork[ileft - 1], &rwork[iright - 1], &rwork[irwrk - 1], ierr);
     //
-    //     Reduce B to triangular form (QR decomposition of B)
+    // Reduce B to triangular form (QR decomposition of B)
     //
     irows = ihi + 1 - ilo;
     if (ilv) {
@@ -241,11 +220,11 @@ void Cggev3(const char *jobvl, const char *jobvr, INTEGER const n, COMPLEX *a, I
     iwrk = itau + irows;
     Cgeqrf(irows, icols, &b[(ilo - 1) + (ilo - 1) * ldb], ldb, &work[itau - 1], &work[iwrk - 1], lwork + 1 - iwrk, ierr);
     //
-    //     Apply the orthogonal transformation to matrix A
+    // Apply the orthogonal transformation to matrix A
     //
     Cunmqr("L", "C", irows, icols, irows, &b[(ilo - 1) + (ilo - 1) * ldb], ldb, &work[itau - 1], &a[(ilo - 1) + (ilo - 1) * lda], lda, &work[iwrk - 1], lwork + 1 - iwrk, ierr);
     //
-    //     Initialize VL
+    // Initialize VL
     //
     if (ilvl) {
         Claset("Full", n, n, czero, cone, vl, ldvl);
@@ -255,25 +234,25 @@ void Cggev3(const char *jobvl, const char *jobvr, INTEGER const n, COMPLEX *a, I
         Cungqr(irows, irows, irows, &vl[(ilo - 1) + (ilo - 1) * ldvl], ldvl, &work[itau - 1], &work[iwrk - 1], lwork + 1 - iwrk, ierr);
     }
     //
-    //     Initialize VR
+    // Initialize VR
     //
     if (ilvr) {
         Claset("Full", n, n, czero, cone, vr, ldvr);
     }
     //
-    //     Reduce to generalized Hessenberg form
+    // Reduce to generalized Hessenberg form
     //
     if (ilv) {
         //
-        //        Eigenvectors requested -- work on whole matrix.
+        // Eigenvectors requested -- work on whole matrix.
         //
         Cgghd3(jobvl, jobvr, n, ilo, ihi, a, lda, b, ldb, vl, ldvl, vr, ldvr, &work[iwrk - 1], lwork + 1 - iwrk, ierr);
     } else {
         Cgghd3("N", "N", irows, 1, irows, &a[(ilo - 1) + (ilo - 1) * lda], lda, &b[(ilo - 1) + (ilo - 1) * ldb], ldb, vl, ldvl, vr, ldvr, &work[iwrk - 1], lwork + 1 - iwrk, ierr);
     }
     //
-    //     Perform QZ algorithm (Compute eigenvalues, and optionally, the
-    //     Schur form and Schur vectors)
+    // Perform QZ algorithm (Compute eigenvalues, and optionally, the
+    // Schur form and Schur vectors)
     //
     iwrk = itau;
     if (ilv) {
@@ -293,7 +272,7 @@ void Cggev3(const char *jobvl, const char *jobvr, INTEGER const n, COMPLEX *a, I
         goto statement_70;
     }
     //
-    //     Compute Eigenvectors
+    // Compute Eigenvectors
     //
     if (ilv) {
         if (ilvl) {
@@ -312,7 +291,7 @@ void Cggev3(const char *jobvl, const char *jobvr, INTEGER const n, COMPLEX *a, I
             goto statement_70;
         }
         //
-        //        Undo balancing on VL and VR and normalization
+        // Undo balancing on VL and VR and normalization
         //
         if (ilvl) {
             Cggbak("P", "L", n, ilo, ihi, &rwork[ileft - 1], &rwork[iright - 1], n, vl, ldvl, ierr);
@@ -350,7 +329,7 @@ void Cggev3(const char *jobvl, const char *jobvr, INTEGER const n, COMPLEX *a, I
         }
     }
 //
-//     Undo scaling if necessary
+// Undo scaling if necessary
 //
 statement_70:
     //
@@ -364,6 +343,6 @@ statement_70:
     //
     work[1 - 1] = COMPLEX(lwkopt);
     //
-    //     End of Cggev3
+    // End of Cggev3
     //
 }

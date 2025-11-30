@@ -46,7 +46,7 @@ void Clapmt(bool const forwrd, INTEGER const m, INTEGER const n, COMPLEX *x, INT
     //
     if (forwrd) {
         //
-        //        Forward permutation
+        // Forward permutation
         //
         for (i = 1; i <= n; i = i + 1) {
             //
@@ -80,7 +80,7 @@ void Clapmt(bool const forwrd, INTEGER const m, INTEGER const n, COMPLEX *x, INT
         //
     } else {
         //
-        //        Backward permutation
+        // Backward permutation
         //
         for (i = 1; i <= n; i = i + 1) {
             //
@@ -111,6 +111,6 @@ void Clapmt(bool const forwrd, INTEGER const m, INTEGER const n, COMPLEX *x, INT
         //
     }
     //
-    //     End of Clapmt
+    // End of Clapmt
     //
 }

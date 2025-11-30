@@ -43,32 +43,12 @@ void Rpocon(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL 
     REAL scale = 0.0;
     INTEGER ix = 0;
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
     //
-    //  =====================================================================
     //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
+    // .. Local Arrays ..
     //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     upper = Mlsame(uplo, "U");
@@ -86,7 +66,7 @@ void Rpocon(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL 
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     rcond = zero;
     if (n == 0) {
@@ -98,7 +78,7 @@ void Rpocon(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL 
     //
     smlnum = Rlamch("Safe minimum");
     //
-    //     Estimate the 1-norm of inv(A).
+    // Estimate the 1-norm of inv(A).
     //
     kase = 0;
     normin = 'N';
@@ -107,27 +87,27 @@ statement_10:
     if (kase != 0) {
         if (upper) {
             //
-            //           Multiply by inv(U**T).
+            // Multiply by inv(U**T).
             //
             Rlatrs("Upper", "Transpose", "Non-unit", &normin, n, a, lda, work, scalel, &work[(2 * n + 1) - 1], info);
             normin = 'Y';
             //
-            //           Multiply by inv(U).
+            // Multiply by inv(U).
             //
             Rlatrs("Upper", "No transpose", "Non-unit", &normin, n, a, lda, work, scaleu, &work[(2 * n + 1) - 1], info);
         } else {
             //
-            //           Multiply by inv(L).
+            // Multiply by inv(L).
             //
             Rlatrs("Lower", "No transpose", "Non-unit", &normin, n, a, lda, work, scalel, &work[(2 * n + 1) - 1], info);
             normin = 'Y';
             //
-            //           Multiply by inv(L**T).
+            // Multiply by inv(L**T).
             //
             Rlatrs("Lower", "Transpose", "Non-unit", &normin, n, a, lda, work, scaleu, &work[(2 * n + 1) - 1], info);
         }
         //
-        //        Multiply by 1/SCALE if doing so will not cause overflow.
+        // Multiply by 1/SCALE if doing so will not cause overflow.
         //
         scale = scalel * scaleu;
         if (scale != one) {
@@ -140,7 +120,7 @@ statement_10:
         goto statement_10;
     }
     //
-    //     Compute the estimate of the reciprocal condition number.
+    // Compute the estimate of the reciprocal condition number.
     //
     if (ainvnm != zero) {
         rcond = (one / ainvnm) / anorm;
@@ -148,6 +128,6 @@ statement_10:
 //
 statement_20:;
     //
-    //     End of Rpocon
+    // End of Rpocon
     //
 }

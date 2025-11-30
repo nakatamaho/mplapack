@@ -31,31 +31,16 @@
 
 void Rlag2(REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL const safmin, REAL &scale1, REAL &scale2, REAL &wr1, REAL &wr2, REAL &wi) {
     //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
     //
-    //  =====================================================================
     //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
     REAL rtmin = sqrt(safmin);
     const REAL one = 1.0;
     REAL rtmax = one / rtmin;
     REAL safmax = one / safmin;
     //
-    //     Scale A
+    // Scale A
     //
     REAL anorm = max({REAL(abs(a[(1 - 1)]) + abs(a[(2 - 1)])), REAL(abs(a[(2 - 1) * lda]) + abs(a[(2 - 1) + (2 - 1) * lda])), safmin});
     REAL ascale = one / anorm;
@@ -64,7 +49,7 @@ void Rlag2(REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL const sa
     REAL a12 = ascale * a[(2 - 1) * lda];
     REAL a22 = ascale * a[(2 - 1) + (2 - 1) * lda];
     //
-    //     Perturb B if necessary to insure non-singularity
+    // Perturb B if necessary to insure non-singularity
     //
     REAL b11 = b[(1 - 1)];
     REAL b12 = b[(2 - 1) * ldb];
@@ -77,7 +62,7 @@ void Rlag2(REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL const sa
         b22 = sign(bmin, b22);
     }
     //
-    //     Scale B
+    // Scale B
     //
     REAL bnorm = max({REAL(abs(b11)), REAL(abs(b12) + abs(b22)), safmin});
     REAL bsize = max(REAL(abs(b11)), REAL(abs(b22)));
@@ -86,9 +71,9 @@ void Rlag2(REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL const sa
     b12 = b12 * bscale;
     b22 = b22 * bscale;
     //
-    //     Compute larger eigenvalue by method described by C. van Loan
+    // Compute larger eigenvalue by method described by C. van Loan
     //
-    //     ( AS is A shifted by -SHIFT*B )
+    // ( AS is A shifted by -SHIFT*B )
     //
     REAL binv11 = one / b11;
     REAL binv22 = one / b22;
@@ -134,11 +119,11 @@ void Rlag2(REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL const sa
         }
     }
     //
-    //     Note: the test of R in the following IF is to cover the case when
-    //           DISCR is small and negative and is flushed to zero during
-    //           the calculation of R.  On machines which have a consistent
-    //           flush-to-zero threshold and handle numbers above that
-    //           threshold correctly, it would not be necessary.
+    // Note: the test of R in the following IF is to cover the case when
+    // DISCR is small and negative and is flushed to zero during
+    // the calculation of R.  On machines which have a consistent
+    // flush-to-zero threshold and handle numbers above that
+    // threshold correctly, it would not be necessary.
     //
     const REAL zero = 0.0;
     REAL sum = 0.0;
@@ -151,7 +136,7 @@ void Rlag2(REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL const sa
         diff = pp - sign(r, pp);
         wbig = shift + sum;
         //
-        //        Compute smaller eigenvalue
+        // Compute smaller eigenvalue
         //
         wsmall = shift + diff;
         if (half * abs(wbig) > max(REAL(abs(wsmall)), safmin)) {
@@ -159,8 +144,8 @@ void Rlag2(REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL const sa
             wsmall = wdet / wbig;
         }
         //
-        //        Choose (real) eigenvalue closest to 2,2 element of A*B**(-1)
-        //        for WR1.
+        // Choose (real) eigenvalue closest to 2,2 element of A*B**(-1)
+        // for WR1.
         //
         if (pp > abi22) {
             wr1 = min(wbig, wsmall);
@@ -172,24 +157,24 @@ void Rlag2(REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL const sa
         wi = zero;
     } else {
         //
-        //        Complex eigenvalues
+        // Complex eigenvalues
         //
         wr1 = shift + pp;
         wr2 = wr1;
         wi = r;
     }
     //
-    //     Further scaling to avoid underflow and overflow in computing
-    //     SCALE1 and overflow in computing w*B.
+    // Further scaling to avoid underflow and overflow in computing
+    // SCALE1 and overflow in computing w*B.
     //
-    //     This scale factor (WSCALE) is bounded from above using C1 and C2,
-    //     and from below using C3 and C4.
-    //        C1 implements the condition  s A  must never overflow.
-    //        C2 implements the condition  w B  must never overflow.
-    //        C3, with C2,
-    //           implement the condition that s A - w B must never overflow.
-    //        C4 implements the condition  s    should not underflow.
-    //        C5 implements the condition  max(s,|w|) should be at least 2.
+    // This scale factor (WSCALE) is bounded from above using C1 and C2,
+    // and from below using C3 and C4.
+    // C1 implements the condition  s A  must never overflow.
+    // C2 implements the condition  w B  must never overflow.
+    // C3, with C2,
+    // implement the condition that s A - w B must never overflow.
+    // C4 implements the condition  s    should not underflow.
+    // C5 implements the condition  max(s,|w|) should be at least 2.
     //
     REAL c1 = bsize * (safmin * max(one, ascale));
     REAL c2 = safmin * max(one, bnorm);
@@ -207,7 +192,7 @@ void Rlag2(REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL const sa
         c5 = one;
     }
     //
-    //     Scale first eigenvalue
+    // Scale first eigenvalue
     //
     REAL wabs = abs(wr1) + abs(wi);
     const REAL fuzzy1 = one + 1.0e-5;
@@ -231,7 +216,7 @@ void Rlag2(REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL const sa
         scale2 = scale1;
     }
     //
-    //     Scale second eigenvalue (if real)
+    // Scale second eigenvalue (if real)
     //
     if (wi == zero) {
         wsize = max({safmin, c1, REAL(fuzzy1 * (abs(wr2) * c2 + c3)), min(c4, REAL(half * max(REAL(abs(wr2)), c5)))});
@@ -248,6 +233,6 @@ void Rlag2(REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL const sa
         }
     }
     //
-    //     End of Rlag2
+    // End of Rlag2
     //
 }

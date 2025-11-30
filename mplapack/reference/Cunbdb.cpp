@@ -31,7 +31,7 @@
 
 void Cunbdb(const char *trans, const char *signs, INTEGER const m, INTEGER const p, INTEGER const q, COMPLEX *x11, INTEGER const ldx11, COMPLEX *x12, INTEGER const ldx12, COMPLEX *x21, INTEGER const ldx21, COMPLEX *x22, INTEGER const ldx22, REAL *theta, REAL *phi, COMPLEX *taup1, COMPLEX *taup2, COMPLEX *tauq1, COMPLEX *tauq2, COMPLEX *work, INTEGER const lwork, INTEGER &info) {
     //
-    //     Test input arguments
+    // Test input arguments
     //
 #if defined ___MPLAPACK_BUILD_WITH_GMP___
     printf("MPLAPACK ERROR Cunbdb.cpp is not supported for GMP\n");
@@ -81,7 +81,7 @@ void Cunbdb(const char *trans, const char *signs, INTEGER const m, INTEGER const
         info = -13;
     }
     //
-    //     Compute workspace
+    // Compute workspace
     //
     INTEGER lworkopt = 0;
     INTEGER lworkmin = 0;
@@ -100,13 +100,13 @@ void Cunbdb(const char *trans, const char *signs, INTEGER const m, INTEGER const
         return;
     }
     //
-    //     Handle column-major and row-major separately
+    // Handle column-major and row-major separately
     //
     INTEGER i = 0;
     const COMPLEX one = COMPLEX(1.0, 0.0);
     if (colmajor) {
         //
-        //        Reduce columns 1, ..., Q of X11, X12, X21, and X22
+        // Reduce columns 1, ..., Q of X11, X12, X21, and X22
         //
         for (i = 1; i <= q; i = i + 1) {
             //
@@ -195,7 +195,7 @@ void Cunbdb(const char *trans, const char *signs, INTEGER const m, INTEGER const
             //
         }
         //
-        //        Reduce columns Q + 1, ..., P of X12, X22
+        // Reduce columns Q + 1, ..., P of X12, X22
         //
         for (i = q + 1; i <= p; i = i + 1) {
             //
@@ -219,7 +219,7 @@ void Cunbdb(const char *trans, const char *signs, INTEGER const m, INTEGER const
             //
         }
         //
-        //        Reduce columns P + 1, ..., M - Q of X12, X22
+        // Reduce columns P + 1, ..., M - Q of X12, X22
         //
         for (i = 1; i <= m - p - q; i = i + 1) {
             //
@@ -235,7 +235,7 @@ void Cunbdb(const char *trans, const char *signs, INTEGER const m, INTEGER const
         //
     } else {
         //
-        //        Reduce columns 1, ..., Q of X11, X12, X21, X22
+        // Reduce columns 1, ..., Q of X11, X12, X21, X22
         //
         for (i = 1; i <= q; i = i + 1) {
             //
@@ -303,7 +303,7 @@ void Cunbdb(const char *trans, const char *signs, INTEGER const m, INTEGER const
             //
         }
         //
-        //        Reduce columns Q + 1, ..., P of X12, X22
+        // Reduce columns Q + 1, ..., P of X12, X22
         //
         for (i = q + 1; i <= p; i = i + 1) {
             //
@@ -320,7 +320,7 @@ void Cunbdb(const char *trans, const char *signs, INTEGER const m, INTEGER const
             //
         }
         //
-        //        Reduce columns P + 1, ..., M - Q of X12, X22
+        // Reduce columns P + 1, ..., M - Q of X12, X22
         //
         for (i = 1; i <= m - p - q; i = i + 1) {
             //
@@ -336,6 +336,6 @@ void Cunbdb(const char *trans, const char *signs, INTEGER const m, INTEGER const
         //
     }
     //
-    //     End of Cunbdb
+    // End of Cunbdb
     //
 }

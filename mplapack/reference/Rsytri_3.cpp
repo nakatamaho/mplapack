@@ -31,34 +31,17 @@
 
 void Rsytri_3(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL *e, INTEGER *ipiv, REAL *work, INTEGER const lwork, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
     //
-    //  =====================================================================
     //
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     bool upper = Mlsame(uplo, "U");
     bool lquery = (lwork == -1);
     //
-    //     Determine the block size
+    // Determine the block size
     //
     INTEGER nb = max((INTEGER)1, iMlaenv(1, "Rsytri_3", uplo, n, -1, -1, -1));
     INTEGER lwkopt = (n + nb + 1) * (nb + 3);
@@ -81,7 +64,7 @@ void Rsytri_3(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REA
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0) {
         return;
@@ -91,6 +74,6 @@ void Rsytri_3(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REA
     //
     work[1 - 1] = lwkopt;
     //
-    //     End of Rsytri_3
+    // End of Rsytri_3
     //
 }

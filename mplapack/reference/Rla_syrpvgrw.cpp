@@ -32,24 +32,9 @@
 REAL Rla_syrpvgrw(const char *uplo, INTEGER const n, INTEGER const info, REAL *a, INTEGER const lda, REAL *af, INTEGER const ldaf, INTEGER *ipiv, REAL *work) {
     REAL return_value = 0.0;
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
     //
-    //  =====================================================================
     //
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
     bool upper = Mlsame("Upper", uplo);
     INTEGER ncols = 0;
@@ -69,9 +54,9 @@ REAL Rla_syrpvgrw(const char *uplo, INTEGER const n, INTEGER const info, REAL *a
         work[i - 1] = 0.0;
     }
     //
-    //     Find the max magnitude entry of each column of A.  Compute the max
-    //     for all N columns so we can apply the pivot permutation while
-    //     looping below.  Assume a full factorization is the common case.
+    // Find the max magnitude entry of each column of A.  Compute the max
+    // for all N columns so we can apply the pivot permutation while
+    // looping below.  Assume a full factorization is the common case.
     //
     INTEGER j = 0;
     if (upper) {
@@ -90,12 +75,12 @@ REAL Rla_syrpvgrw(const char *uplo, INTEGER const n, INTEGER const info, REAL *a
         }
     }
     //
-    //     Now find the max magnitude entry of each column of U or L.  Also
-    //     permute the magnitudes of A above so they're in the same order as
-    //     the factor.
+    // Now find the max magnitude entry of each column of U or L.  Also
+    // permute the magnitudes of A above so they're in the same order as
+    // the factor.
     //
-    //     The iteration orders and permutations were copied from Rsytrs.
-    //     Calls to SSWAP would be severe overkill.
+    // The iteration orders and permutations were copied from Rsytrs.
+    // Calls to SSWAP would be severe overkill.
     //
     INTEGER k = 0;
     INTEGER kp = 0;
@@ -196,12 +181,12 @@ REAL Rla_syrpvgrw(const char *uplo, INTEGER const n, INTEGER const info, REAL *a
         }
     }
     //
-    //     Compute the *inverse* of the max element growth factor.  Dividing
-    //     by zero would imply the largest entry of the factor's column is
-    //     zero.  Than can happen when either the column of A is zero or
-    //     massive pivots made the factor underflow to zero.  Neither counts
-    //     as growth in itself, so simply ignore terms with zero
-    //     denominators.
+    // Compute the *inverse* of the max element growth factor.  Dividing
+    // by zero would imply the largest entry of the factor's column is
+    // zero.  Than can happen when either the column of A is zero or
+    // massive pivots made the factor underflow to zero.  Neither counts
+    // as growth in itself, so simply ignore terms with zero
+    // denominators.
     //
     REAL umax = 0.0;
     REAL amax = 0.0;

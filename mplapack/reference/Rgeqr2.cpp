@@ -31,28 +31,11 @@
 
 void Rgeqr2(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *tau, REAL *work, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
     //
-    //  =====================================================================
     //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
-    //     Test the input arguments
+    // Test the input arguments
     //
     info = 0;
     if (m < 0) {
@@ -74,12 +57,12 @@ void Rgeqr2(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *
     const REAL one = 1.0;
     for (i = 1; i <= k; i = i + 1) {
         //
-        //        Generate elementary reflector H(i) to annihilate A(i+1:m,i)
+        // Generate elementary reflector H(i) to annihilate A(i+1:m,i)
         //
         Rlarfg(m - i + 1, a[(i - 1) + (i - 1) * lda], &a[(min(i + 1, m) - 1) + (i - 1) * lda], 1, tau[i - 1]);
         if (i < n) {
             //
-            //           Apply H(i) to A(i:m,i+1:n) from the left
+            // Apply H(i) to A(i:m,i+1:n) from the left
             //
             aii = a[(i - 1) + (i - 1) * lda];
             a[(i - 1) + (i - 1) * lda] = one;
@@ -88,6 +71,6 @@ void Rgeqr2(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *
         }
     }
     //
-    //     End of Rgeqr2
+    // End of Rgeqr2
     //
 }

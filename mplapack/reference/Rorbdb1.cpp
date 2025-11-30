@@ -31,30 +31,12 @@
 
 void Rorbdb1(INTEGER const m, INTEGER const p, INTEGER const q, REAL *x11, INTEGER const ldx11, REAL *x21, INTEGER const ldx21, REAL *theta, REAL *phi, REAL *taup1, REAL *taup2, REAL *tauq1, REAL *work, INTEGER const lwork, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
     //
-    //  ====================================================================
     //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Intrinsic Function ..
-    //     ..
-    //     .. Executable Statements ..
+    // .. Intrinsic Function ..
     //
-    //     Test input arguments
+    // Test input arguments
     //
     info = 0;
     bool lquery = lwork == -1;
@@ -71,7 +53,7 @@ void Rorbdb1(INTEGER const m, INTEGER const p, INTEGER const q, REAL *x11, INTEG
         info = -7;
     }
     //
-    //     Compute workspace
+    // Compute workspace
     //
     INTEGER ilarf = 0;
     INTEGER llarf = 0;
@@ -98,7 +80,7 @@ void Rorbdb1(INTEGER const m, INTEGER const p, INTEGER const q, REAL *x11, INTEG
         return;
     }
     //
-    //     Reduce columns 1, ..., Q of X11 and X21
+    // Reduce columns 1, ..., Q of X11 and X21
     //
     INTEGER i = 0;
     REAL c = 0.0;
@@ -131,6 +113,6 @@ void Rorbdb1(INTEGER const m, INTEGER const p, INTEGER const q, REAL *x11, INTEG
         //
     }
     //
-    //     End of Rorbdb1
+    // End of Rorbdb1
     //
 }

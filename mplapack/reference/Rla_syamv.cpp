@@ -31,30 +31,11 @@
 
 void Rla_syamv(INTEGER const uplo, INTEGER const n, REAL const alpha, REAL *a, INTEGER const lda, REAL *x, INTEGER const incx, REAL const beta, REAL *y, INTEGER const incy) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
     //
-    //  =====================================================================
     //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     INTEGER info = 0;
     if (uplo != iMlauplo("U") && uplo != iMlauplo("L")) {
@@ -73,7 +54,7 @@ void Rla_syamv(INTEGER const uplo, INTEGER const n, REAL const alpha, REAL *a, I
         return;
     }
     //
-    //     Quick return if possible.
+    // Quick return if possible.
     //
     const REAL zero = 0.0;
     const REAL one = 1.0;
@@ -81,7 +62,7 @@ void Rla_syamv(INTEGER const uplo, INTEGER const n, REAL const alpha, REAL *a, I
         return;
     }
     //
-    //     Set up the start points in  X  and  Y.
+    // Set up the start points in  X  and  Y.
     //
     INTEGER kx = 0;
     if (incx > 0) {
@@ -96,17 +77,17 @@ void Rla_syamv(INTEGER const uplo, INTEGER const n, REAL const alpha, REAL *a, I
         ky = 1 - (n - 1) * incy;
     }
     //
-    //     Set SAFE1 essentially to be the underflow threshold times the
-    //     number of additions in each row.
+    // Set SAFE1 essentially to be the underflow threshold times the
+    // number of additions in each row.
     //
     REAL safe1 = Rlamch("Safe minimum");
     safe1 = (n + 1) * safe1;
     //
-    //     Form  y := alpha*abs(A)*abs(x) + beta*abs(y).
+    // Form  y := alpha*abs(A)*abs(x) + beta*abs(y).
     //
-    //     The O(N^2) SYMB_ZERO tests could be replaced by O(N) queries to
-    //     the inexact flag.  Still doesn't help change the iteration order
-    //     to per-column.
+    // The O(N^2) SYMB_ZERO tests could be replaced by O(N) queries to
+    // the inexact flag.  Still doesn't help change the iteration order
+    // to per-column.
     //
     INTEGER iy = ky;
     INTEGER i = 0;
@@ -255,6 +236,6 @@ void Rla_syamv(INTEGER const uplo, INTEGER const n, REAL const alpha, REAL *a, I
         //
     }
     //
-    //     End of Rla_syamv
+    // End of Rla_syamv
     //
 }

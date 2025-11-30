@@ -31,27 +31,15 @@
 
 void Clatsqr(INTEGER const m, INTEGER const n, INTEGER const mb, INTEGER const nb, COMPLEX *a, INTEGER const lda, COMPLEX *t, INTEGER const ldt, COMPLEX *work, INTEGER const lwork, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd. --
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
     //
-    //  =====================================================================
     //
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. EXTERNAL FUNCTIONS ..
-    //     .. EXTERNAL SUBROUTINES ..
-    //     .. INTRINSIC FUNCTIONS ..
-    //     ..
-    //     .. EXECUTABLE STATEMENTS ..
+    // .. EXTERNAL FUNCTIONS ..
+    // .. EXTERNAL SUBROUTINES ..
+    // .. INTRINSIC FUNCTIONS ..
+    // .. EXECUTABLE STATEMENTS ..
     //
-    //     TEST THE INPUT ARGUMENTS
+    // TEST THE INPUT ARGUMENTS
     //
     info = 0;
     //
@@ -82,13 +70,13 @@ void Clatsqr(INTEGER const m, INTEGER const n, INTEGER const mb, INTEGER const n
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (min(m, n) == 0) {
         return;
     }
     //
-    //     The QR Decomposition
+    // The QR Decomposition
     //
     if ((mb <= n) || (mb >= m)) {
         Cgeqrt(m, n, nb, a, lda, t, ldt, work, info);
@@ -97,7 +85,7 @@ void Clatsqr(INTEGER const m, INTEGER const n, INTEGER const mb, INTEGER const n
     INTEGER kk = mod((m - n), (mb - n));
     INTEGER ii = m - kk + 1;
     //
-    //      Compute the QR factorization of the first block A(1:MB,1:N)
+    // Compute the QR factorization of the first block A(1:MB,1:N)
     //
     Cgeqrt(mb, n, nb, &a[(1 - 1)], lda, t, ldt, work, info);
     INTEGER ctr = 1;
@@ -105,13 +93,13 @@ void Clatsqr(INTEGER const m, INTEGER const n, INTEGER const mb, INTEGER const n
     INTEGER i = 0;
     for (i = mb + 1; i <= ii - mb + n; i = i + (mb - n)) {
         //
-        //      Compute the QR factorization of the current block A(I:I+MB-N,1:N)
+        // Compute the QR factorization of the current block A(I:I+MB-N,1:N)
         //
         Ctpqrt(mb - n, n, 0, nb, &a[(1 - 1)], lda, &a[(i - 1)], lda, &t[((ctr * n + 1) - 1) * ldt], ldt, work, info);
         ctr++;
     }
     //
-    //      Compute the QR factorization of the last block A(II:M,1:N)
+    // Compute the QR factorization of the last block A(II:M,1:N)
     //
     if (ii <= m) {
         Ctpqrt(kk, n, 0, nb, &a[(1 - 1)], lda, &a[(ii - 1)], lda, &t[((ctr * n + 1) - 1) * ldt], ldt, work, info);
@@ -119,6 +107,6 @@ void Clatsqr(INTEGER const m, INTEGER const n, INTEGER const mb, INTEGER const n
     //
     work[1 - 1] = n * nb;
     //
-    //     End of Clatsqr
+    // End of Clatsqr
     //
 }

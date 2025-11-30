@@ -137,7 +137,7 @@ void Rhgeqz(const char *job, const char *compq, const char *compz, INTEGER const
     REAL w22 = 0.0;
     REAL vs = 0.0;
     //
-    //     Decode JOB, COMPQ, COMPZ
+    // Decode JOB, COMPQ, COMPZ
     //
     if (Mlsame(job, "E")) {
         ilschr = false;
@@ -175,7 +175,7 @@ void Rhgeqz(const char *job, const char *compq, const char *compz, INTEGER const
         icompz = 0;
     }
     //
-    //     Check Argument Values
+    // Check Argument Values
     //
     info = 0;
     work[1 - 1] = max((INTEGER)1, n);
@@ -210,14 +210,14 @@ void Rhgeqz(const char *job, const char *compq, const char *compz, INTEGER const
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n <= 0) {
         work[1 - 1] = 1.0;
         return;
     }
     //
-    //     Initialize Q and Z
+    // Initialize Q and Z
     //
     if (icompq == 3) {
         Rlaset("Full", n, n, zero, one, q, ldq);
@@ -226,7 +226,7 @@ void Rhgeqz(const char *job, const char *compq, const char *compz, INTEGER const
         Rlaset("Full", n, n, zero, one, z, ldz);
     }
     //
-    //     Machine Constants
+    // Machine Constants
     //
     in = ihi + 1 - ilo;
     safmin = Rlamch("S");
@@ -239,7 +239,7 @@ void Rhgeqz(const char *job, const char *compq, const char *compz, INTEGER const
     ascale = one / max(safmin, anorm);
     bscale = one / max(safmin, bnorm);
     //
-    //     Set Eigenvalues IHI+1:N
+    // Set Eigenvalues IHI+1:N
     //
     for (j = ihi + 1; j <= n; j = j + 1) {
         if (t[(j - 1) + (j - 1) * ldt] < zero) {
@@ -263,26 +263,26 @@ void Rhgeqz(const char *job, const char *compq, const char *compz, INTEGER const
         beta[j - 1] = t[(j - 1) + (j - 1) * ldt];
     }
     //
-    //     If IHI < ILO, skip QZ steps
+    // If IHI < ILO, skip QZ steps
     //
     if (ihi < ilo) {
         goto statement_380;
     }
     //
-    //     MAIN QZ ITERATION LOOP
+    // MAIN QZ ITERATION LOOP
     //
-    //     Initialize dynamic indices
+    // Initialize dynamic indices
     //
-    //     Eigenvalues ILAST+1:N have been found.
-    //        Column operations modify rows IFRSTM:whatever.
-    //        Row operations modify columns whatever:ILASTM.
+    // Eigenvalues ILAST+1:N have been found.
+    // Column operations modify rows IFRSTM:whatever.
+    // Row operations modify columns whatever:ILASTM.
     //
-    //     If only eigenvalues are being computed, then
-    //        IFRSTM is the row of the last splitting row above row ILAST;
-    //        this is always at least ILO.
-    //     IITER counts iterations since the last eigenvalue was found,
-    //        to tell when to use an extraordinary shift.
-    //     MAXIT is the maximum number of QZ sweeps allowed.
+    // If only eigenvalues are being computed, then
+    // IFRSTM is the row of the last splitting row above row ILAST;
+    // this is always at least ILO.
+    // IITER counts iterations since the last eigenvalue was found,
+    // to tell when to use an extraordinary shift.
+    // MAXIT is the maximum number of QZ sweeps allowed.
     //
     ilast = ihi;
     if (ilschr) {
@@ -298,15 +298,15 @@ void Rhgeqz(const char *job, const char *compq, const char *compz, INTEGER const
     //
     for (jiter = 1; jiter <= maxit; jiter = jiter + 1) {
         //
-        //        Split the matrix if possible.
+        // Split the matrix if possible.
         //
-        //        Two tests:
-        //           1: H(j,j-1)=0  or  j=ILO
-        //           2: T(j,j)=0
+        // Two tests:
+        // 1: H(j,j-1)=0  or  j=ILO
+        // 2: T(j,j)=0
         //
         if (ilast == ilo) {
             //
-            //           Special case: j=ILAST
+            // Special case: j=ILAST
             //
             goto statement_80;
         } else {
@@ -321,11 +321,11 @@ void Rhgeqz(const char *job, const char *compq, const char *compz, INTEGER const
             goto statement_70;
         }
         //
-        //        General case: j<ILAST
+        // General case: j<ILAST
         //
         for (j = ilast - 1; j >= ilo; j = j - 1) {
             //
-            //           Test 1: for H(j,j-1)=0 or j=ILO
+            // Test 1: for H(j,j-1)=0 or j=ILO
             //
             if (j == ilo) {
                 ilazro = true;
@@ -338,7 +338,7 @@ void Rhgeqz(const char *job, const char *compq, const char *compz, INTEGER const
                 }
             }
             //
-            //           Test 2: for T(j,j)=0
+            // Test 2: for T(j,j)=0
             //
             temp = abs(t[(j - 1) + ((j + 1) - 1) * ldt]);
             if (j > ilo) {
@@ -347,7 +347,7 @@ void Rhgeqz(const char *job, const char *compq, const char *compz, INTEGER const
             if (abs(t[(j - 1) + (j - 1) * ldt]) < max(safmin, REAL(ulp * temp))) {
                 t[(j - 1) + (j - 1) * ldt] = zero;
                 //
-                //              Test 1a: Check for 2 consecutive small subdiagonals in A
+                // Test 1a: Check for 2 consecutive small subdiagonals in A
                 //
                 ilazr2 = false;
                 if (!ilazro) {
@@ -363,11 +363,11 @@ void Rhgeqz(const char *job, const char *compq, const char *compz, INTEGER const
                     }
                 }
                 //
-                //              If both tests pass (1 & 2), i.e., the leading diagonal
-                //              element of B in the block is zero, split a 1x1 block off
-                //              at the top. (I.e., at the J-th row/column) The leading
-                //              diagonal element of the remainder can also be zero, so
-                //              this may have to be done repeatedly.
+                // If both tests pass (1 & 2), i.e., the leading diagonal
+                // element of B in the block is zero, split a 1x1 block off
+                // at the top. (I.e., at the J-th row/column) The leading
+                // diagonal element of the remainder can also be zero, so
+                // this may have to be done repeatedly.
                 //
                 if (ilazro || ilazr2) {
                     for (jch = j; jch <= ilast - 1; jch = jch + 1) {
@@ -396,8 +396,8 @@ void Rhgeqz(const char *job, const char *compq, const char *compz, INTEGER const
                     goto statement_70;
                 } else {
                     //
-                    //                 Only test 2 passed -- chase the zero to T(ILAST,ILAST)
-                    //                 Then process as in the case T(ILAST,ILAST)=0
+                    // Only test 2 passed -- chase the zero to T(ILAST,ILAST)
+                    // Then process as in the case T(ILAST,ILAST)=0
                     //
                     for (jch = j; jch <= ilast - 1; jch = jch + 1) {
                         temp = t[(jch - 1) + ((jch + 1) - 1) * ldt];
@@ -423,23 +423,23 @@ void Rhgeqz(const char *job, const char *compq, const char *compz, INTEGER const
                 }
             } else if (ilazro) {
                 //
-                //              Only test 1 passed -- work on J:ILAST
+                // Only test 1 passed -- work on J:ILAST
                 //
                 ifirst = j;
                 goto statement_110;
             }
             //
-            //           Neither test passed -- try next J
+            // Neither test passed -- try next J
             //
         }
         //
-        //        (Drop-through is "impossible")
+        // (Drop-through is "impossible")
         //
         info = n + 1;
         goto statement_420;
     //
-    //        T(ILAST,ILAST)=0 -- clear H(ILAST,ILAST-1) to split off a
-    //        1x1 block.
+    // T(ILAST,ILAST)=0 -- clear H(ILAST,ILAST-1) to split off a
+    // 1x1 block.
     //
     statement_70:
         temp = h[(ilast - 1) + (ilast - 1) * ldh];
@@ -451,8 +451,8 @@ void Rhgeqz(const char *job, const char *compq, const char *compz, INTEGER const
             Rrot(n, &z[(ilast - 1) * ldz], 1, &z[((ilast - 1) - 1) * ldz], 1, c, s);
         }
     //
-    //        H(ILAST,ILAST-1)=0 -- Standardize B, set ALPHAR, ALPHAI,
-    //                              and BETA
+    // H(ILAST,ILAST-1)=0 -- Standardize B, set ALPHAR, ALPHAI,
+    // and BETA
     //
     statement_80:
         if (t[(ilast - 1) + (ilast - 1) * ldt] < zero) {
@@ -475,14 +475,14 @@ void Rhgeqz(const char *job, const char *compq, const char *compz, INTEGER const
         alphai[ilast - 1] = zero;
         beta[ilast - 1] = t[(ilast - 1) + (ilast - 1) * ldt];
         //
-        //        Go to next block -- exit if finished.
+        // Go to next block -- exit if finished.
         //
         ilast = ilast - 1;
         if (ilast < ilo) {
             goto statement_380;
         }
         //
-        //        Reset counters
+        // Reset counters
         //
         iiter = 0;
         eshift = zero;
@@ -494,10 +494,10 @@ void Rhgeqz(const char *job, const char *compq, const char *compz, INTEGER const
         }
         goto statement_350;
     //
-    //        QZ step
+    // QZ step
     //
-    //        This iteration only involves rows/columns IFIRST:ILAST. We
-    //        assume IFIRST < ILAST, and that the diagonal of B is non-zero.
+    // This iteration only involves rows/columns IFIRST:ILAST. We
+    // assume IFIRST < ILAST, and that the diagonal of B is non-zero.
     //
     statement_110:
         iiter++;
@@ -505,16 +505,16 @@ void Rhgeqz(const char *job, const char *compq, const char *compz, INTEGER const
             ifrstm = ifirst;
         }
         //
-        //        Compute single shifts.
+        // Compute single shifts.
         //
-        //        At this point, IFIRST < ILAST, and the diagonal elements of
-        //        T(IFIRST:ILAST,IFIRST,ILAST) are larger than BTOL (in
-        //        magnitude)
+        // At this point, IFIRST < ILAST, and the diagonal elements of
+        // T(IFIRST:ILAST,IFIRST,ILAST) are larger than BTOL (in
+        // magnitude)
         //
         if ((iiter / 10) * 10 == iiter) {
             //
-            //           Exceptional shift.  Chosen for no particularly good reason.
-            //           (Single shift only.)
+            // Exceptional shift.  Chosen for no particularly good reason.
+            // (Single shift only.)
             //
             if ((castREAL(maxit) * safmin) * abs(h[(ilast - 1) + ((ilast - 1) - 1) * ldh]) < abs(t[((ilast - 1) - 1) + ((ilast - 1) - 1) * ldt])) {
                 eshift = h[(ilast - 1) + ((ilast - 1) - 1) * ldh] / t[((ilast - 1) - 1) + ((ilast - 1) - 1) * ldt];
@@ -526,9 +526,9 @@ void Rhgeqz(const char *job, const char *compq, const char *compz, INTEGER const
             //
         } else {
             //
-            //           Shifts based on the generalized eigenvalues of the
-            //           bottom-right 2x2 block of A and B. The first eigenvalue
-            //           returned by Rlag2 is the Wilkinson shift (AEP p.512),
+            // Shifts based on the generalized eigenvalues of the
+            // bottom-right 2x2 block of A and B. The first eigenvalue
+            // returned by Rlag2 is the Wilkinson shift (AEP p.512),
             //
             Rlag2(&h[((ilast - 1) - 1) + ((ilast - 1) - 1) * ldh], ldh, &t[((ilast - 1) - 1) + ((ilast - 1) - 1) * ldt], ldt, safmin * safety, s1, s2, wr, wr2, wi);
             //
@@ -546,7 +546,7 @@ void Rhgeqz(const char *job, const char *compq, const char *compz, INTEGER const
             }
         }
         //
-        //        Fiddle with shift to avoid overflow
+        // Fiddle with shift to avoid overflow
         //
         temp = min(ascale, one) * (half * safmax);
         if (s1 > temp) {
@@ -562,7 +562,7 @@ void Rhgeqz(const char *job, const char *compq, const char *compz, INTEGER const
         s1 = scale * s1;
         wr = scale * wr;
         //
-        //        Now check for two consecutive small subdiagonals.
+        // Now check for two consecutive small subdiagonals.
         //
         for (j = ilast - 1; j >= ifirst + 1; j = j - 1) {
             istart = j;
@@ -581,15 +581,15 @@ void Rhgeqz(const char *job, const char *compq, const char *compz, INTEGER const
         istart = ifirst;
     statement_130:
         //
-        //        Do an implicit single-shift QZ sweep.
+        // Do an implicit single-shift QZ sweep.
         //
-        //        Initial Q
+        // Initial Q
         //
         temp = s1 * h[(istart - 1) + (istart - 1) * ldh] - wr * t[(istart - 1) + (istart - 1) * ldt];
         temp2 = s1 * h[((istart + 1) - 1) + (istart - 1) * ldh];
         Rlartg(temp, temp2, c, s, tempr);
         //
-        //        Sweep
+        // Sweep
         //
         for (j = istart; j <= ilast - 1; j = j + 1) {
             if (j > istart) {
@@ -639,23 +639,23 @@ void Rhgeqz(const char *job, const char *compq, const char *compz, INTEGER const
         //
         goto statement_350;
     //
-    //        Use Francis REAL-shift
+    // Use Francis REAL-shift
     //
-    //        Note: the Francis REAL-shift should work with real shifts,
-    //              but only if the block is at least 3x3.
-    //              This code may break if this point is reached with
-    //              a 2x2 block with real eigenvalues.
+    // Note: the Francis REAL-shift should work with real shifts,
+    // but only if the block is at least 3x3.
+    // This code may break if this point is reached with
+    // a 2x2 block with real eigenvalues.
     //
     statement_200:
         if (ifirst + 1 == ilast) {
             //
-            //           Special case -- 2x2 block with complex eigenvectors
+            // Special case -- 2x2 block with complex eigenvectors
             //
-            //           Step 1: Standardize, that is, rotate so that
+            // Step 1: Standardize, that is, rotate so that
             //
-            //                       ( B11  0  )
-            //                   B = (         )  with B11 non-negative.
-            //                       (  0  B22 )
+            // ( B11  0  )
+            // B = (         )  with B11 non-negative.
+            // (  0  B22 )
             //
             Rlasv2(t[((ilast - 1) - 1) + ((ilast - 1) - 1) * ldt], t[((ilast - 1) - 1) + (ilast - 1) * ldt], t[(ilast - 1) + (ilast - 1) * ldt], b22, b11, sr, cr, sl, cl);
             //
@@ -688,7 +688,7 @@ void Rhgeqz(const char *job, const char *compq, const char *compz, INTEGER const
             t[(ilast - 1) + ((ilast - 1) - 1) * ldt] = zero;
             t[(ilast - 1) + (ilast - 1) * ldt] = b22;
             //
-            //           If B22 is negative, negate column ILAST
+            // If B22 is negative, negate column ILAST
             //
             if (b22 < zero) {
                 for (j = ifrstm; j <= ilast; j = j + 1) {
@@ -704,32 +704,32 @@ void Rhgeqz(const char *job, const char *compq, const char *compz, INTEGER const
                 b22 = -b22;
             }
             //
-            //           Step 2: Compute ALPHAR, ALPHAI, and BETA (see refs.)
+            // Step 2: Compute ALPHAR, ALPHAI, and BETA (see refs.)
             //
-            //           Recompute shift
+            // Recompute shift
             //
             Rlag2(&h[((ilast - 1) - 1) + ((ilast - 1) - 1) * ldh], ldh, &t[((ilast - 1) - 1) + ((ilast - 1) - 1) * ldt], ldt, safmin * safety, s1, temp, wr, temp2, wi);
             //
-            //           If standardization has perturbed the shift onto real line,
-            //           do another (real single-shift) QR step.
+            // If standardization has perturbed the shift onto real line,
+            // do another (real single-shift) QR step.
             //
             if (wi == zero) {
                 goto statement_350;
             }
             s1inv = one / s1;
             //
-            //           Do EISPACK (QZVAL) computation of alpha and beta
+            // Do EISPACK (QZVAL) computation of alpha and beta
             //
             a11 = h[((ilast - 1) - 1) + ((ilast - 1) - 1) * ldh];
             a21 = h[(ilast - 1) + ((ilast - 1) - 1) * ldh];
             a12 = h[((ilast - 1) - 1) + (ilast - 1) * ldh];
             a22 = h[(ilast - 1) + (ilast - 1) * ldh];
             //
-            //           Compute complex Givens rotation on right
-            //           (Assume some element of C = (sA - wB) > unfl )
-            //                            __
-            //           (sA - wB) ( CZ   -SZ )
-            //                     ( SZ    CZ )
+            // Compute complex Givens rotation on right
+            // (Assume some element of C = (sA - wB) > unfl )
+            // __
+            // (sA - wB) ( CZ   -SZ )
+            // ( SZ    CZ )
             //
             c11r = s1 * a11 - wr * b11;
             c11i = -wi * b11;
@@ -759,11 +759,11 @@ void Rhgeqz(const char *job, const char *compq, const char *compz, INTEGER const
                 }
             }
             //
-            //           Compute Givens rotation on left
+            // Compute Givens rotation on left
             //
-            //           (  CQ   SQ )
-            //           (  __      )  A or B
-            //           ( -SQ   CQ )
+            // (  CQ   SQ )
+            // (  __      )  A or B
+            // ( -SQ   CQ )
             //
             an = abs(a11) + abs(a12) + abs(a21) + abs(a22);
             bn = abs(b11) + abs(b22);
@@ -794,7 +794,7 @@ void Rhgeqz(const char *job, const char *compq, const char *compz, INTEGER const
             sqr = sqr / t1;
             sqi = sqi / t1;
             //
-            //           Compute diagonal elements of QBZ
+            // Compute diagonal elements of QBZ
             //
             tempr = sqr * szr - sqi * szi;
             tempi = sqr * szi + sqi * szr;
@@ -805,7 +805,7 @@ void Rhgeqz(const char *job, const char *compq, const char *compz, INTEGER const
             b2i = -tempi * b11;
             b2a = Rlapy2(b2r, b2i);
             //
-            //           Normalize so beta > 0, and Im( alpha1 ) > 0
+            // Normalize so beta > 0, and Im( alpha1 ) > 0
             //
             beta[(ilast - 1) - 1] = b1a;
             beta[ilast - 1] = b2a;
@@ -814,14 +814,14 @@ void Rhgeqz(const char *job, const char *compq, const char *compz, INTEGER const
             alphar[ilast - 1] = (wr * b2a) * s1inv;
             alphai[ilast - 1] = -(wi * b2a) * s1inv;
             //
-            //           Step 3: Go to next block -- exit if finished.
+            // Step 3: Go to next block -- exit if finished.
             //
             ilast = ifirst - 1;
             if (ilast < ilo) {
                 goto statement_380;
             }
             //
-            //           Reset counters
+            // Reset counters
             //
             iiter = 0;
             eshift = zero;
@@ -834,17 +834,17 @@ void Rhgeqz(const char *job, const char *compq, const char *compz, INTEGER const
             goto statement_350;
         } else {
             //
-            //           Usual case: 3x3 or larger block, using Francis implicit
-            //                       REAL-shift
+            // Usual case: 3x3 or larger block, using Francis implicit
+            // REAL-shift
             //
-            //                                    2
-            //           Eigenvalue equation is  w  - c w + d = 0,
+            // 2
+            // Eigenvalue equation is  w  - c w + d = 0,
             //
-            //                                         -1 2        -1
-            //           so compute 1st column of  (A B  )  - c A B   + d
-            //           using the formula in QZIT (from EISPACK)
+            // -1 2        -1
+            // so compute 1st column of  (A B  )  - c A B   + d
+            // using the formula in QZIT (from EISPACK)
             //
-            //           We assume that the block is at least 3x3
+            // We assume that the block is at least 3x3
             //
             ad11 = (ascale * h[((ilast - 1) - 1) + ((ilast - 1) - 1) * ldh]) / (bscale * t[((ilast - 1) - 1) + ((ilast - 1) - 1) * ldt]);
             ad21 = (ascale * h[(ilast - 1) + ((ilast - 1) - 1) * ldh]) / (bscale * t[((ilast - 1) - 1) + ((ilast - 1) - 1) * ldt]);
@@ -867,13 +867,13 @@ void Rhgeqz(const char *job, const char *compq, const char *compz, INTEGER const
             Rlarfg(3, v[1 - 1], &v[2 - 1], 1, tau);
             v[1 - 1] = one;
             //
-            //           Sweep
+            // Sweep
             //
             for (j = istart; j <= ilast - 2; j = j + 1) {
                 //
-                //              All but last elements: use 3x3 Householder transforms.
+                // All but last elements: use 3x3 Householder transforms.
                 //
-                //              Zero (j-1)st column of A
+                // Zero (j-1)st column of A
                 //
                 if (j > istart) {
                     v[1 - 1] = h[(j - 1) + ((j - 1) - 1) * ldh];
@@ -905,9 +905,9 @@ void Rhgeqz(const char *job, const char *compq, const char *compz, INTEGER const
                     }
                 }
                 //
-                //              Zero j-th column of B (see DLAGBC for details)
+                // Zero j-th column of B (see DLAGBC for details)
                 //
-                //              Swap rows to pivot
+                // Swap rows to pivot
                 //
                 ilpivt = false;
                 temp = max(abs(t[((j + 1) - 1) + ((j + 1) - 1) * ldt]), abs(t[((j + 1) - 1) + ((j + 2) - 1) * ldt]));
@@ -933,7 +933,7 @@ void Rhgeqz(const char *job, const char *compq, const char *compz, INTEGER const
                     u1 = t[((j + 2) - 1) + (j - 1) * ldt];
                 }
                 //
-                //              Swap columns if nec.
+                // Swap columns if nec.
                 //
                 if (abs(w12) > abs(w11)) {
                     ilpivt = true;
@@ -945,14 +945,14 @@ void Rhgeqz(const char *job, const char *compq, const char *compz, INTEGER const
                     w21 = temp2;
                 }
                 //
-                //              LU-factor
+                // LU-factor
                 //
                 temp = w21 / w11;
                 u2 = u2 - temp * u1;
                 w22 = w22 - temp * w12;
                 w21 = zero;
                 //
-                //              Compute SCALE
+                // Compute SCALE
                 //
                 scale = one;
                 if (abs(w22) < safmin) {
@@ -968,7 +968,7 @@ void Rhgeqz(const char *job, const char *compq, const char *compz, INTEGER const
                     scale = min(scale, REAL(abs(w11 / u1)));
                 }
                 //
-                //              Solve
+                // Solve
                 //
                 u2 = (scale * u2) / w22;
                 u1 = (scale * u1 - w12 * u2) / w11;
@@ -980,7 +980,7 @@ void Rhgeqz(const char *job, const char *compq, const char *compz, INTEGER const
                     u1 = temp;
                 }
                 //
-                //              Compute Householder Vector
+                // Compute Householder Vector
                 //
                 t1 = sqrt(pow2(scale) + pow2(u1) + pow2(u2));
                 tau = one + scale / t1;
@@ -989,7 +989,7 @@ void Rhgeqz(const char *job, const char *compq, const char *compz, INTEGER const
                 v[2 - 1] = vs * u1;
                 v[3 - 1] = vs * u2;
                 //
-                //              Apply transformations from the right.
+                // Apply transformations from the right.
                 //
                 for (jr = ifrstm; jr <= min(j + 3, ilast); jr = jr + 1) {
                     temp = tau * (h[(jr - 1) + (j - 1) * ldh] + v[2 - 1] * h[(jr - 1) + ((j + 1) - 1) * ldh] + v[3 - 1] * h[(jr - 1) + ((j + 2) - 1) * ldh]);
@@ -1015,9 +1015,9 @@ void Rhgeqz(const char *job, const char *compq, const char *compz, INTEGER const
                 t[((j + 2) - 1) + (j - 1) * ldt] = zero;
             }
             //
-            //           Last elements: Use Givens rotations
+            // Last elements: Use Givens rotations
             //
-            //           Rotations from the left
+            // Rotations from the left
             //
             j = ilast - 1;
             temp = h[(j - 1) + ((j - 1) - 1) * ldh];
@@ -1040,7 +1040,7 @@ void Rhgeqz(const char *job, const char *compq, const char *compz, INTEGER const
                 }
             }
             //
-            //           Rotations from the right.
+            // Rotations from the right.
             //
             temp = t[((j + 1) - 1) + ((j + 1) - 1) * ldt];
             Rlartg(temp, t[((j + 1) - 1) + (j - 1) * ldt], c, s, t[((j + 1) - 1) + ((j + 1) - 1) * ldt]);
@@ -1064,27 +1064,27 @@ void Rhgeqz(const char *job, const char *compq, const char *compz, INTEGER const
                 }
             }
             //
-            //           End of Double-Shift code
+            // End of Double-Shift code
             //
         }
         //
         goto statement_350;
     //
-    //        End of iteration loop
+    // End of iteration loop
     //
     statement_350:;
     }
     //
-    //     Drop-through = non-convergence
+    // Drop-through = non-convergence
     //
     info = ilast;
     goto statement_420;
 //
-//     Successful completion of all QZ steps
+// Successful completion of all QZ steps
 //
 statement_380:
     //
-    //     Set Eigenvalues 1:ILO-1
+    // Set Eigenvalues 1:ILO-1
     //
     for (j = 1; j <= ilo - 1; j = j + 1) {
         if (t[(j - 1) + (j - 1) * ldt] < zero) {
@@ -1108,15 +1108,15 @@ statement_380:
         beta[j - 1] = t[(j - 1) + (j - 1) * ldt];
     }
     //
-    //     Normal Termination
+    // Normal Termination
     //
     info = 0;
 //
-//     Exit (other than argument error) -- return optimal workspace size
+// Exit (other than argument error) -- return optimal workspace size
 //
 statement_420:
     work[1 - 1] = castREAL(n);
     //
-    //     End of Rhgeqz
+    // End of Rhgeqz
     //
 }

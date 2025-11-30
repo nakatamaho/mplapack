@@ -36,20 +36,9 @@ void Rlapmr(bool const forwrd, INTEGER const m, INTEGER const n, REAL *x, INTEGE
     INTEGER jj = 0;
     REAL temp = 0.0;
     //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
     //
-    //  =====================================================================
     //
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Executable Statements ..
     //
     if (m <= 1) {
         return;
@@ -61,7 +50,7 @@ void Rlapmr(bool const forwrd, INTEGER const m, INTEGER const n, REAL *x, INTEGE
     //
     if (forwrd) {
         //
-        //        Forward permutation
+        // Forward permutation
         //
         for (i = 1; i <= m; i = i + 1) {
             //
@@ -95,7 +84,7 @@ void Rlapmr(bool const forwrd, INTEGER const m, INTEGER const n, REAL *x, INTEGE
         //
     } else {
         //
-        //        Backward permutation
+        // Backward permutation
         //
         for (i = 1; i <= m; i = i + 1) {
             //
@@ -126,6 +115,6 @@ void Rlapmr(bool const forwrd, INTEGER const m, INTEGER const n, REAL *x, INTEGE
         //
     }
     //
-    //     End of Clapmt
+    // End of Clapmt
     //
 }

@@ -31,7 +31,7 @@
 
 void Rsygvx(INTEGER const itype, const char *jobz, const char *range, const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL const vl, REAL const vu, INTEGER const il, INTEGER const iu, REAL const abstol, INTEGER &m, REAL *w, REAL *z, INTEGER const ldz, REAL *work, INTEGER const lwork, INTEGER *iwork, INTEGER *ifail, INTEGER &info) {
     //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     bool upper = Mlsame(uplo, "U");
     bool wantz = Mlsame(jobz, "V");
@@ -95,14 +95,14 @@ void Rsygvx(INTEGER const itype, const char *jobz, const char *range, const char
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     m = 0;
     if (n == 0) {
         return;
     }
     //
-    //     Form a Cholesky factorization of B.
+    // Form a Cholesky factorization of B.
     //
     Rpotrf(uplo, n, b, ldb, info);
     if (info != 0) {
@@ -110,7 +110,7 @@ void Rsygvx(INTEGER const itype, const char *jobz, const char *range, const char
         return;
     }
     //
-    //     Transform problem to standard eigenvalue problem and solve.
+    // Transform problem to standard eigenvalue problem and solve.
     //
     Rsygst(itype, uplo, n, a, lda, b, ldb, info);
     Rsyevx(jobz, range, uplo, n, a, lda, vl, vu, il, iu, abstol, m, w, z, ldz, work, lwork, iwork, ifail, info);
@@ -119,15 +119,15 @@ void Rsygvx(INTEGER const itype, const char *jobz, const char *range, const char
     const REAL one = 1.0;
     if (wantz) {
         //
-        //        Backtransform eigenvectors to the original problem.
+        // Backtransform eigenvectors to the original problem.
         //
         if (info > 0) {
             m = info - 1;
         }
         if (itype == 1 || itype == 2) {
             //
-            //           For A*x=(lambda)*B*x and A*B*x=(lambda)*x;
-            //           backtransform eigenvectors: x = inv(L)**T*y or inv(U)*y
+            // For A*x=(lambda)*B*x and A*B*x=(lambda)*x;
+            // backtransform eigenvectors: x = inv(L)**T*y or inv(U)*y
             //
             if (upper) {
                 trans = 'N';
@@ -139,8 +139,8 @@ void Rsygvx(INTEGER const itype, const char *jobz, const char *range, const char
             //
         } else if (itype == 3) {
             //
-            //           For B*A*x=(lambda)*x;
-            //           backtransform eigenvectors: x = L*y or U**T*y
+            // For B*A*x=(lambda)*x;
+            // backtransform eigenvectors: x = L*y or U**T*y
             //
             if (upper) {
                 trans = 'T';
@@ -152,10 +152,10 @@ void Rsygvx(INTEGER const itype, const char *jobz, const char *range, const char
         }
     }
     //
-    //     Set WORK(1) to optimal workspace size.
+    // Set WORK(1) to optimal workspace size.
     //
     work[1 - 1] = lwkopt;
     //
-    //     End of Rsygvx
+    // End of Rsygvx
     //
 }

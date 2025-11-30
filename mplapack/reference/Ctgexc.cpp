@@ -32,26 +32,11 @@
 void Ctgexc(bool const wantq, bool const wantz, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, COMPLEX *q, INTEGER const ldq, COMPLEX *z, INTEGER const ldz, INTEGER const ifst, INTEGER &ilst, INTEGER &info) {
     INTEGER here = 0;
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
     //
-    //  =====================================================================
     //
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
-    //     Decode and test input arguments.
+    // Decode and test input arguments.
     info = 0;
     if (n < 0) {
         info = -3;
@@ -73,7 +58,7 @@ void Ctgexc(bool const wantq, bool const wantz, INTEGER const n, COMPLEX *a, INT
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n <= 1) {
         return;
@@ -88,7 +73,7 @@ void Ctgexc(bool const wantq, bool const wantz, INTEGER const n, COMPLEX *a, INT
     //
     statement_10:
         //
-        //        Swap with next one below
+        // Swap with next one below
         //
         Ctgex2(wantq, wantz, n, a, lda, b, ldb, q, ldq, z, ldz, here, info);
         if (info != 0) {
@@ -105,7 +90,7 @@ void Ctgexc(bool const wantq, bool const wantz, INTEGER const n, COMPLEX *a, INT
     //
     statement_20:
         //
-        //        Swap with next one above
+        // Swap with next one above
         //
         Ctgex2(wantq, wantz, n, a, lda, b, ldb, q, ldq, z, ldz, here, info);
         if (info != 0) {
@@ -120,6 +105,6 @@ void Ctgexc(bool const wantq, bool const wantz, INTEGER const n, COMPLEX *a, INT
     }
     ilst = here;
     //
-    //     End of Ctgexc
+    // End of Ctgexc
     //
 }

@@ -41,28 +41,9 @@ void Rlagts(INTEGER const job, INTEGER const n, REAL *a, REAL *b, REAL *c, REAL 
     REAL absak = 0.0;
     REAL pert = 0.0;
     //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
     //
-    //  =====================================================================
     //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Executable Statements ..
     //
     info = 0;
     if ((abs(job) > 2) || (job == 0)) {
@@ -170,7 +151,7 @@ void Rlagts(INTEGER const job, INTEGER const n, REAL *a, REAL *b, REAL *c, REAL 
         }
     } else {
         //
-        //        Come to here if  JOB = 2 or -2
+        // Come to here if  JOB = 2 or -2
         //
         if (job == 2) {
             for (k = 1; k <= n; k = k + 1) {
@@ -243,6 +224,6 @@ void Rlagts(INTEGER const job, INTEGER const n, REAL *a, REAL *b, REAL *c, REAL 
         }
     }
     //
-    //     End of Rlagts
+    // End of Rlagts
     //
 }

@@ -31,30 +31,12 @@
 
 void Chesvx(const char *fact, const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a, INTEGER const lda, COMPLEX *af, INTEGER const ldaf, INTEGER *ipiv, COMPLEX *b, INTEGER const ldb, COMPLEX *x, INTEGER const ldx, REAL &rcond, REAL *ferr, REAL *berr, COMPLEX *work, INTEGER const lwork, REAL *rwork, INTEGER &info) {
     //
-    //  -- LAPACK driver routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+    // -- LAPACK driver routine --
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
     //
-    //  =====================================================================
     //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     bool nofact = Mlsame(fact, "N");
@@ -100,12 +82,12 @@ void Chesvx(const char *fact, const char *uplo, INTEGER const n, INTEGER const n
     const REAL zero = 0.0;
     if (nofact) {
         //
-        //        Compute the factorization A = U*D*U**H or A = L*D*L**H.
+        // Compute the factorization A = U*D*U**H or A = L*D*L**H.
         //
         Clacpy(uplo, n, n, a, lda, af, ldaf);
         Chetrf(uplo, n, af, ldaf, ipiv, work, lwork, info);
         //
-        //        Return if INFO is non-zero.
+        // Return if INFO is non-zero.
         //
         if (info > 0) {
             rcond = zero;
@@ -113,25 +95,25 @@ void Chesvx(const char *fact, const char *uplo, INTEGER const n, INTEGER const n
         }
     }
     //
-    //     Compute the norm of the matrix A.
+    // Compute the norm of the matrix A.
     //
     REAL anorm = Clanhe("I", uplo, n, a, lda, rwork);
     //
-    //     Compute the reciprocal of the condition number of A.
+    // Compute the reciprocal of the condition number of A.
     //
     Checon(uplo, n, af, ldaf, ipiv, anorm, rcond, work, info);
     //
-    //     Compute the solution vectors X.
+    // Compute the solution vectors X.
     //
     Clacpy("Full", n, nrhs, b, ldb, x, ldx);
     Chetrs(uplo, n, nrhs, af, ldaf, ipiv, x, ldx, info);
     //
-    //     Use iterative refinement to improve the computed solutions and
-    //     compute error bounds and backward error estimates for them.
+    // Use iterative refinement to improve the computed solutions and
+    // compute error bounds and backward error estimates for them.
     //
     Cherfs(uplo, n, nrhs, a, lda, af, ldaf, ipiv, b, ldb, x, ldx, ferr, berr, work, rwork, info);
     //
-    //     Set INFO = N+1 if the matrix is singular to working precision.
+    // Set INFO = N+1 if the matrix is singular to working precision.
     //
     if (rcond < Rlamch("Epsilon")) {
         info = n + 1;
@@ -139,6 +121,6 @@ void Chesvx(const char *fact, const char *uplo, INTEGER const n, INTEGER const n
     //
     work[1 - 1] = lwkopt;
     //
-    //     End of Chesvx
+    // End of Chesvx
     //
 }

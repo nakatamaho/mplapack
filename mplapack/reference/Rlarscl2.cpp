@@ -31,20 +31,9 @@
 
 void Rlarscl2(INTEGER const m, INTEGER const n, REAL *d, REAL *x, INTEGER const ldx) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
     //
-    //  =====================================================================
     //
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Executable Statements ..
     //
     INTEGER j = 0;
     INTEGER i = 0;

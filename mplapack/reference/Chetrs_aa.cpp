@@ -31,27 +31,9 @@
 
 void Chetrs_aa(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a, INTEGER const lda, INTEGER *ipiv, COMPLEX *b, INTEGER const ldb, COMPLEX *work, INTEGER const lwork, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
     //
-    //  =====================================================================
     //
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
     info = 0;
     bool upper = Mlsame(uplo, "U");
@@ -79,7 +61,7 @@ void Chetrs_aa(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0 || nrhs == 0) {
         return;
@@ -90,13 +72,13 @@ void Chetrs_aa(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a
     const COMPLEX one = 1.0;
     if (upper) {
         //
-        //        Solve A*X = B, where A = U**H*T*U.
+        // Solve A*X = B, where A = U**H*T*U.
         //
-        //        1) Forward substitution with U**H
+        // 1) Forward substitution with U**H
         //
         if (n > 1) {
             //
-            //           Pivot, P**T * B -> B
+            // Pivot, P**T * B -> B
             //
             for (k = 1; k <= n; k = k + 1) {
                 kp = ipiv[k - 1];
@@ -105,14 +87,14 @@ void Chetrs_aa(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a
                 }
             }
             //
-            //           Compute U**H \ B -> B    [ (U**H \P**T * B) ]
+            // Compute U**H \ B -> B    [ (U**H \P**T * B) ]
             //
             Ctrsm("L", "U", "C", "U", n - 1, nrhs, one, &a[(2 - 1) * lda], lda, &b[(2 - 1)], ldb);
         }
         //
-        //        2) Solve with triangular matrix T
+        // 2) Solve with triangular matrix T
         //
-        //        Compute T \ B -> B   [ T \ (U**H \P**T * B) ]
+        // Compute T \ B -> B   [ T \ (U**H \P**T * B) ]
         //
         Clacpy("F", 1, n, &a[(1 - 1)], lda + 1, &work[n - 1], 1);
         if (n > 1) {
@@ -122,15 +104,15 @@ void Chetrs_aa(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a
         }
         Cgtsv(n, nrhs, &work[1 - 1], &work[n - 1], &work[(2 * n) - 1], b, ldb, info);
         //
-        //        3) Backward substitution with U
+        // 3) Backward substitution with U
         //
         if (n > 1) {
             //
-            //           Compute U \ B -> B   [ U \ (T \ (U**H \P**T * B) ) ]
+            // Compute U \ B -> B   [ U \ (T \ (U**H \P**T * B) ) ]
             //
             Ctrsm("L", "U", "N", "U", n - 1, nrhs, one, &a[(2 - 1) * lda], lda, &b[(2 - 1)], ldb);
             //
-            //           Pivot, P * B  [ P * (U**H \ (T \ (U \P**T * B) )) ]
+            // Pivot, P * B  [ P * (U**H \ (T \ (U \P**T * B) )) ]
             //
             for (k = n; k >= 1; k = k - 1) {
                 kp = ipiv[k - 1];
@@ -142,13 +124,13 @@ void Chetrs_aa(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a
         //
     } else {
         //
-        //        Solve A*X = B, where A = L*T*L**H.
+        // Solve A*X = B, where A = L*T*L**H.
         //
-        //        1) Forward substitution with L
+        // 1) Forward substitution with L
         //
         if (n > 1) {
             //
-            //           Pivot, P**T * B -> B
+            // Pivot, P**T * B -> B
             //
             for (k = 1; k <= n; k = k + 1) {
                 kp = ipiv[k - 1];
@@ -157,14 +139,14 @@ void Chetrs_aa(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a
                 }
             }
             //
-            //           Compute L \ B -> B    [ (L \P**T * B) ]
+            // Compute L \ B -> B    [ (L \P**T * B) ]
             //
             Ctrsm("L", "L", "N", "U", n - 1, nrhs, one, &a[(2 - 1)], lda, &b[(2 - 1)], ldb);
         }
         //
-        //        2) Solve with triangular matrix T
+        // 2) Solve with triangular matrix T
         //
-        //        Compute T \ B -> B   [ T \ (L \P**T * B) ]
+        // Compute T \ B -> B   [ T \ (L \P**T * B) ]
         //
         Clacpy("F", 1, n, &a[(1 - 1)], lda + 1, &work[n - 1], 1);
         if (n > 1) {
@@ -174,15 +156,15 @@ void Chetrs_aa(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a
         }
         Cgtsv(n, nrhs, &work[1 - 1], &work[n - 1], &work[(2 * n) - 1], b, ldb, info);
         //
-        //        3) Backward substitution with L**H
+        // 3) Backward substitution with L**H
         //
         if (n > 1) {
             //
-            //           Compute L**H \ B -> B   [ L**H \ (T \ (L \P**T * B) ) ]
+            // Compute L**H \ B -> B   [ L**H \ (T \ (L \P**T * B) ) ]
             //
             Ctrsm("L", "L", "C", "U", n - 1, nrhs, one, &a[(2 - 1)], lda, &b[(2 - 1)], ldb);
             //
-            //           Pivot, P * B  [ P * (L**H \ (T \ (L \P**T * B) )) ]
+            // Pivot, P * B  [ P * (L**H \ (T \ (L \P**T * B) )) ]
             //
             for (k = n; k >= 1; k = k - 1) {
                 kp = ipiv[k - 1];
@@ -194,6 +176,6 @@ void Chetrs_aa(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a
         //
     }
     //
-    //     End of Chetrs_aa
+    // End of Chetrs_aa
     //
 }

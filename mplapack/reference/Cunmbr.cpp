@@ -31,28 +31,11 @@
 
 void Cunmbr(const char *vect, const char *side, const char *trans, INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX *a, INTEGER const lda, COMPLEX *tau, COMPLEX *c, INTEGER const ldc, COMPLEX *work, INTEGER const lwork, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
     //
-    //  =====================================================================
     //
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
-    //     Test the input arguments
+    // Test the input arguments
     //
     info = 0;
     bool applyq = Mlsame(vect, "Q");
@@ -128,7 +111,7 @@ void Cunmbr(const char *vect, const char *side, const char *trans, INTEGER const
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (m == 0 || n == 0) {
         return;
@@ -142,16 +125,16 @@ void Cunmbr(const char *vect, const char *side, const char *trans, INTEGER const
     char transt;
     if (applyq) {
         //
-        //        Apply Q
+        // Apply Q
         //
         if (nq >= k) {
             //
-            //           Q was determined by a call to Cgebrd with nq >= k
+            // Q was determined by a call to Cgebrd with nq >= k
             //
             Cunmqr(side, trans, m, n, k, a, lda, tau, c, ldc, work, lwork, iinfo);
         } else if (nq > 1) {
             //
-            //           Q was determined by a call to Cgebrd with nq < k
+            // Q was determined by a call to Cgebrd with nq < k
             //
             if (left) {
                 mi = m - 1;
@@ -168,7 +151,7 @@ void Cunmbr(const char *vect, const char *side, const char *trans, INTEGER const
         }
     } else {
         //
-        //        Apply P
+        // Apply P
         //
         if (notran) {
             transt = 'C';
@@ -177,12 +160,12 @@ void Cunmbr(const char *vect, const char *side, const char *trans, INTEGER const
         }
         if (nq > k) {
             //
-            //           P was determined by a call to Cgebrd with nq > k
+            // P was determined by a call to Cgebrd with nq > k
             //
             Cunmlq(side, &transt, m, n, k, a, lda, tau, c, ldc, work, lwork, iinfo);
         } else if (nq > 1) {
             //
-            //           P was determined by a call to Cgebrd with nq <= k
+            // P was determined by a call to Cgebrd with nq <= k
             //
             if (left) {
                 mi = m - 1;
@@ -200,6 +183,6 @@ void Cunmbr(const char *vect, const char *side, const char *trans, INTEGER const
     }
     work[1 - 1] = lwkopt;
     //
-    //     End of Cunmbr
+    // End of Cunmbr
     //
 }

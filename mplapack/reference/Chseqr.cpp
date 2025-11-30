@@ -31,7 +31,6 @@
 
 void Chseqr(const char *job, const char *compz, INTEGER const n, INTEGER const ilo, INTEGER const ihi, COMPLEX *h, INTEGER const ldh, COMPLEX *w, COMPLEX *z, INTEGER const ldz, COMPLEX *work, INTEGER const lwork, INTEGER &info) {
     //
-    //     ==== Decode and check the input parameters. ====
     //
     bool wantt = Mlsame(job, "S");
     bool initz = Mlsame(compz, "I");
@@ -75,30 +74,24 @@ void Chseqr(const char *job, const char *compz, INTEGER const n, INTEGER const i
 
     if (info != 0) {
         //
-        //        ==== Quick return in case of invalid argument. ====
         //
         Mxerbla("Chseqr", -info);
         return;
         //
     } else if (n == 0) {
         //
-        //        ==== Quick return in case N = 0; nothing to do. ====
         //
         return;
         //
     } else if (lquery) {
         //
-        //        ==== Quick return in case of a workspace query ====
         //
         Claqr0(wantt, wantz, n, ilo, ihi, h, ldh, w, ilo, ihi, z, ldz, work, lwork, info);
-        // ==== Ensure reported workspace size is backward-compatible with
-        // .    previous LAPACK versions. ====
         work[1 - 1] = COMPLEX(castREAL(max(castINTEGER(work[1 - 1].real()), (max((INTEGER)1, n)))), rzero);
         return;
         //
     } else {
         //
-        //        ==== copy eigenvalues isolated by Cgebal ====
         //
         if (ilo > 1) {
             Ccopy(ilo - 1, h, ldh + 1, w, 1);
@@ -107,54 +100,43 @@ void Chseqr(const char *job, const char *compz, INTEGER const n, INTEGER const i
             Ccopy(n - ihi, &h[((ihi + 1) - 1) + ((ihi + 1) - 1) * ldh], ldh + 1, &w[(ihi + 1) - 1], 1);
         }
         //
-        //        ==== Initialize Z, if requested ====
         //
         if (initz) {
             Claset("A", n, n, zero, one, z, ldz);
         }
         //
-        //        ==== Quick return if possible ====
         //
         if (ilo == ihi) {
             w[ilo - 1] = h[(ilo - 1) + (ilo - 1) * ldh];
             return;
         }
         //
-        //        ==== Clahqr/Claqr0 crossover point ====
         //
         nmin = iMlaenv(12, "Chseqr", job_compz, n, ilo, ihi, lwork);
         nmin = max(ntiny, nmin);
         //
-        //        ==== Claqr0 for big matrices; Clahqr for small ones ====
         //
         if (n > nmin) {
             Claqr0(wantt, wantz, n, ilo, ihi, h, ldh, w, ilo, ihi, z, ldz, work, lwork, info);
         } else {
             //
-            //           ==== Small matrix ====
             //
             Clahqr(wantt, wantz, n, ilo, ihi, h, ldh, w, ilo, ihi, z, ldz, info);
             //
             if (info > 0) {
                 //
-                //              ==== A rare Clahqr failure!  Claqr0 sometimes succeeds
-                //              .    when Clahqr fails. ====
                 //
                 kbot = info;
                 //
                 if (n >= nl) {
                     //
-                    //                 ==== Larger matrices have enough subdiagonal scratch
-                    //                 .    space to call Claqr0 directly. ====
                     //
                     Claqr0(wantt, wantz, n, ilo, kbot, h, ldh, w, ilo, ihi, z, ldz, work, lwork, info);
                     //
                 } else {
                     //
-                    //                 ==== Tiny matrices don't have enough subdiagonal
-                    //                 .    scratch space to benefit from Claqr0.  Hence,
-                    //                 .    tiny matrices must be copied into a larger
-                    //                 .    array before calling Claqr0. ====
+                    // .    scratch space to benefit from Claqr0.  Hence,
+                    // .    tiny matrices must be copied into a larger
                     //
                     Clacpy("A", n, n, h, ldh, hl, nl);
                     hl[((n + 1) - 1) + (n - 1) * ldhl] = zero;
@@ -167,18 +149,14 @@ void Chseqr(const char *job, const char *compz, INTEGER const n, INTEGER const i
             }
         }
         //
-        //        ==== Clear out the trash, if necessary. ====
         //
         if ((wantt || info != 0) && n > 2) {
             Claset("L", n - 2, n - 2, zero, zero, &h[(3 - 1)], ldh);
         }
         //
-        //        ==== Ensure reported workspace size is backward-compatible with
-        //        .    previous LAPACK versions. ====
         //
         work[1 - 1] = COMPLEX(max(castREAL(max((INTEGER)1, n)), work[1 - 1].real()), rzero);
     }
     //
-    //     ==== End of Chseqr ====
     //
 }

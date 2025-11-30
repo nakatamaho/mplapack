@@ -31,7 +31,7 @@
 
 void Cuncsd2by1(const char *jobu1, const char *jobu2, const char *jobv1t, INTEGER const m, INTEGER const p, INTEGER const q, COMPLEX *x11, INTEGER const ldx11, COMPLEX *x21, INTEGER const ldx21, REAL *theta, COMPLEX *u1, INTEGER const ldu1, COMPLEX *u2, INTEGER const ldu2, COMPLEX *v1t, INTEGER const ldv1t, COMPLEX *work, INTEGER const lwork, REAL *rwork, INTEGER const lrwork, INTEGER *iwork, INTEGER &info) {
     //
-    //     Test input arguments
+    // Test input arguments
     //
     info = 0;
     bool wantu1 = Mlsame(jobu1, "Y");
@@ -59,35 +59,35 @@ void Cuncsd2by1(const char *jobu1, const char *jobu2, const char *jobv1t, INTEGE
     //
     INTEGER r = min({p, m - p, q, m - q});
     //
-    //     Compute workspace
+    // Compute workspace
     //
-    //       WORK layout:
-    //     |-----------------------------------------|
-    //     | LWORKOPT (1)                            |
-    //     |-----------------------------------------|
-    //     | TAUP1 (MAX(1,P))                        |
-    //     | TAUP2 (MAX(1,M-P))                      |
-    //     | TAUQ1 (MAX(1,Q))                        |
-    //     |-----------------------------------------|
-    //     | Cunbdb WORK | Cungqr WORK | Cunglq WORK |
-    //     |             |             |             |
-    //     |-----------------------------------------|
-    //       RWORK layout:
-    //     |------------------|
-    //     | LRWORKOPT (1)    |
-    //     |------------------|
-    //     | PHI (MAX(1,R-1)) |
-    //     |------------------|
-    //     | B11D (R)         |
-    //     | B11E (R-1)       |
-    //     | B12D (R)         |
-    //     | B12E (R-1)       |
-    //     | B21D (R)         |
-    //     | B21E (R-1)       |
-    //     | B22D (R)         |
-    //     | B22E (R-1)       |
-    //     | Cbbcsd RWORK     |
-    //     |------------------|
+    // WORK layout:
+    // |-----------------------------------------|
+    // | LWORKOPT (1)                            |
+    // |-----------------------------------------|
+    // | TAUP1 (MAX(1,P))                        |
+    // | TAUP2 (MAX(1,M-P))                      |
+    // | TAUQ1 (MAX(1,Q))                        |
+    // |-----------------------------------------|
+    // | Cunbdb WORK | Cungqr WORK | Cunglq WORK |
+    // |             |             |             |
+    // |-----------------------------------------|
+    // RWORK layout:
+    // |------------------|
+    // | LRWORKOPT (1)    |
+    // |------------------|
+    // | PHI (MAX(1,R-1)) |
+    // |------------------|
+    // | B11D (R)         |
+    // | B11E (R-1)       |
+    // | B12D (R)         |
+    // | B12E (R-1)       |
+    // | B21D (R)         |
+    // | B21E (R-1)       |
+    // | B22D (R)         |
+    // | B22E (R-1)       |
+    // | Cbbcsd RWORK     |
+    // |------------------|
     //
     INTEGER iphi = 0;
     INTEGER ib11d = 0;
@@ -242,8 +242,8 @@ void Cuncsd2by1(const char *jobu1, const char *jobu2, const char *jobv1t, INTEGE
     INTEGER lorgqr = lwork - iorgqr + 1;
     INTEGER lorglq = lwork - iorglq + 1;
     //
-    //     Handle four cases separately: R = Q, R = P, R = M-P, and R = M-Q,
-    //     in which R = MIN(P,M-P,Q,M-Q)
+    // Handle four cases separately: R = Q, R = P, R = M-P, and R = M-Q,
+    // in which R = MIN(P,M-P,Q,M-Q)
     //
     const COMPLEX one = COMPLEX(1.0, 0.0);
     INTEGER j = 0;
@@ -251,13 +251,13 @@ void Cuncsd2by1(const char *jobu1, const char *jobu2, const char *jobv1t, INTEGE
     INTEGER i = 0;
     if (r == q) {
         //
-        //        Case 1: R = Q
+        // Case 1: R = Q
         //
-        //        Simultaneously bidiagonalize X11 and X21
+        // Simultaneously bidiagonalize X11 and X21
         //
         Cunbdb1(m, p, q, x11, ldx11, x21, ldx21, theta, &rwork[iphi - 1], &work[itaup1 - 1], &work[itaup2 - 1], &work[itauq1 - 1], &work[iorbdb - 1], lorbdb, childinfo);
         //
-        //        Accumulate Householder reflectors
+        // Accumulate Householder reflectors
         //
         if (wantu1 && p > 0) {
             Clacpy("L", p, q, x11, ldx11, u1, ldu1);
@@ -277,12 +277,12 @@ void Cuncsd2by1(const char *jobu1, const char *jobu2, const char *jobv1t, INTEGE
             Cunglq(q - 1, q - 1, q - 1, &v1t[(2 - 1) + (2 - 1) * ldv1t], ldv1t, &work[itauq1 - 1], &work[iorglq - 1], lorglq, childinfo);
         }
         //
-        //        Simultaneously diagonalize X11 and X21.
+        // Simultaneously diagonalize X11 and X21.
         //
         Cbbcsd(jobu1, jobu2, jobv1t, "N", "N", m, p, q, theta, &rwork[iphi - 1], u1, ldu1, u2, ldu2, v1t, ldv1t, cdum, 1, &rwork[ib11d - 1], &rwork[ib11e - 1], &rwork[ib12d - 1], &rwork[ib12e - 1], &rwork[ib21d - 1], &rwork[ib21e - 1], &rwork[ib22d - 1], &rwork[ib22e - 1], &rwork[ibbcsd - 1], lrwork - ibbcsd + 1, childinfo);
         //
-        //        Permute rows and columns to place zero submatrices in
-        //        preferred positions
+        // Permute rows and columns to place zero submatrices in
+        // preferred positions
         //
         if (q > 0 && wantu2) {
             for (i = 1; i <= q; i = i + 1) {
@@ -295,13 +295,13 @@ void Cuncsd2by1(const char *jobu1, const char *jobu2, const char *jobv1t, INTEGE
         }
     } else if (r == p) {
         //
-        //        Case 2: R = P
+        // Case 2: R = P
         //
-        //        Simultaneously bidiagonalize X11 and X21
+        // Simultaneously bidiagonalize X11 and X21
         //
         Cunbdb2(m, p, q, x11, ldx11, x21, ldx21, theta, &rwork[iphi - 1], &work[itaup1 - 1], &work[itaup2 - 1], &work[itauq1 - 1], &work[iorbdb - 1], lorbdb, childinfo);
         //
-        //        Accumulate Householder reflectors
+        // Accumulate Householder reflectors
         //
         if (wantu1 && p > 0) {
             u1[(1 - 1)] = one;
@@ -321,12 +321,12 @@ void Cuncsd2by1(const char *jobu1, const char *jobu2, const char *jobv1t, INTEGE
             Cunglq(q, q, r, v1t, ldv1t, &work[itauq1 - 1], &work[iorglq - 1], lorglq, childinfo);
         }
         //
-        //        Simultaneously diagonalize X11 and X21.
+        // Simultaneously diagonalize X11 and X21.
         //
         Cbbcsd(jobv1t, "N", jobu1, jobu2, "T", m, q, p, theta, &rwork[iphi - 1], v1t, ldv1t, cdum, 1, u1, ldu1, u2, ldu2, &rwork[ib11d - 1], &rwork[ib11e - 1], &rwork[ib12d - 1], &rwork[ib12e - 1], &rwork[ib21d - 1], &rwork[ib21e - 1], &rwork[ib22d - 1], &rwork[ib22e - 1], &rwork[ibbcsd - 1], lbbcsd, childinfo);
         //
-        //        Permute rows and columns to place identity submatrices in
-        //        preferred positions
+        // Permute rows and columns to place identity submatrices in
+        // preferred positions
         //
         if (q > 0 && wantu2) {
             for (i = 1; i <= q; i = i + 1) {
@@ -339,13 +339,13 @@ void Cuncsd2by1(const char *jobu1, const char *jobu2, const char *jobv1t, INTEGE
         }
     } else if (r == m - p) {
         //
-        //        Case 3: R = M-P
+        // Case 3: R = M-P
         //
-        //        Simultaneously bidiagonalize X11 and X21
+        // Simultaneously bidiagonalize X11 and X21
         //
         Cunbdb3(m, p, q, x11, ldx11, x21, ldx21, theta, &rwork[iphi - 1], &work[itaup1 - 1], &work[itaup2 - 1], &work[itauq1 - 1], &work[iorbdb - 1], lorbdb, childinfo);
         //
-        //        Accumulate Householder reflectors
+        // Accumulate Householder reflectors
         //
         if (wantu1 && p > 0) {
             Clacpy("L", p, q, x11, ldx11, u1, ldu1);
@@ -365,12 +365,12 @@ void Cuncsd2by1(const char *jobu1, const char *jobu2, const char *jobv1t, INTEGE
             Cunglq(q, q, r, v1t, ldv1t, &work[itauq1 - 1], &work[iorglq - 1], lorglq, childinfo);
         }
         //
-        //        Simultaneously diagonalize X11 and X21.
+        // Simultaneously diagonalize X11 and X21.
         //
         Cbbcsd("N", jobv1t, jobu2, jobu1, "T", m, m - q, m - p, theta, &rwork[iphi - 1], cdum, 1, v1t, ldv1t, u2, ldu2, u1, ldu1, &rwork[ib11d - 1], &rwork[ib11e - 1], &rwork[ib12d - 1], &rwork[ib12e - 1], &rwork[ib21d - 1], &rwork[ib21e - 1], &rwork[ib22d - 1], &rwork[ib22e - 1], &rwork[ibbcsd - 1], lbbcsd, childinfo);
         //
-        //        Permute rows and columns to place identity submatrices in
-        //        preferred positions
+        // Permute rows and columns to place identity submatrices in
+        // preferred positions
         //
         if (q > r) {
             for (i = 1; i <= r; i = i + 1) {
@@ -388,13 +388,13 @@ void Cuncsd2by1(const char *jobu1, const char *jobu2, const char *jobv1t, INTEGE
         }
     } else {
         //
-        //        Case 4: R = M-Q
+        // Case 4: R = M-Q
         //
-        //        Simultaneously bidiagonalize X11 and X21
+        // Simultaneously bidiagonalize X11 and X21
         //
         Cunbdb4(m, p, q, x11, ldx11, x21, ldx21, theta, &rwork[iphi - 1], &work[itaup1 - 1], &work[itaup2 - 1], &work[itauq1 - 1], &work[iorbdb - 1], &work[(iorbdb + m) - 1], lorbdb - m, childinfo);
         //
-        //        Accumulate Householder reflectors
+        // Accumulate Householder reflectors
         //
         if (wantu2 && m - p > 0) {
             Ccopy(m - p, &work[(iorbdb + p) - 1], 1, u2, 1);
@@ -421,12 +421,12 @@ void Cuncsd2by1(const char *jobu1, const char *jobu2, const char *jobv1t, INTEGE
             Cunglq(q, q, q, v1t, ldv1t, &work[itauq1 - 1], &work[iorglq - 1], lorglq, childinfo);
         }
         //
-        //        Simultaneously diagonalize X11 and X21.
+        // Simultaneously diagonalize X11 and X21.
         //
         Cbbcsd(jobu2, jobu1, "N", jobv1t, "N", m, m - p, m - q, theta, &rwork[iphi - 1], u2, ldu2, u1, ldu1, cdum, 1, v1t, ldv1t, &rwork[ib11d - 1], &rwork[ib11e - 1], &rwork[ib12d - 1], &rwork[ib12e - 1], &rwork[ib21d - 1], &rwork[ib21e - 1], &rwork[ib22d - 1], &rwork[ib22e - 1], &rwork[ibbcsd - 1], lbbcsd, childinfo);
         //
-        //        Permute rows and columns to place identity submatrices in
-        //        preferred positions
+        // Permute rows and columns to place identity submatrices in
+        // preferred positions
         //
         if (p > r) {
             for (i = 1; i <= r; i = i + 1) {
@@ -444,6 +444,6 @@ void Cuncsd2by1(const char *jobu1, const char *jobu2, const char *jobv1t, INTEGE
         }
     }
     //
-    //     End of Cuncsd2by1
+    // End of Cuncsd2by1
     //
 }
