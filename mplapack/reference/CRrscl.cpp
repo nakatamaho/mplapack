@@ -29,7 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void CRrscl(INTEGER const n, REAL const sa, COMPLEX *sx, INTEGER const incx) {
+void CRrscl(INTEGER const n, REAL const &sa, COMPLEX *sx, INTEGER const incx) {
     REAL smlnum = 0.0;
     const REAL one = 1.0;
     REAL bignum = 0.0;
@@ -41,10 +41,6 @@ void CRrscl(INTEGER const n, REAL const sa, COMPLEX *sx, INTEGER const incx) {
     REAL mul = 0.0;
     bool done = false;
     //
-    //
-    //
-    //
-    //
     // Quick return if possible
     //
     if (n <= 0) {
@@ -55,6 +51,7 @@ void CRrscl(INTEGER const n, REAL const sa, COMPLEX *sx, INTEGER const incx) {
     //
     smlnum = Rlamch("S");
     bignum = one / smlnum;
+    Rlabad(smlnum, bignum);
     //
     // Initialize the denominator to SA and the numerator to 1.
     //
@@ -94,6 +91,6 @@ statement_10:
         goto statement_10;
     }
     //
-    // End of Cdrscl
+    // End of CRrscl
     //
 }
