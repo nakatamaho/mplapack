@@ -31,10 +31,6 @@
 
 void Rdisna(const char *job, INTEGER const m, INTEGER const n, REAL *d, REAL *sep, INTEGER &info) {
     //
-    //
-    //
-    //
-    //
     // Test the input arguments
     //
     info = 0;
@@ -71,7 +67,7 @@ void Rdisna(const char *job, INTEGER const m, INTEGER const n, REAL *d, REAL *se
         }
         if (sing && k > 0) {
             if (incr) {
-                incr = incr && zero <= d[1 - 1];
+                incr = incr && zero <= d[0];
             }
             if (decr) {
                 decr = decr && d[k - 1] >= zero;
@@ -97,10 +93,10 @@ void Rdisna(const char *job, INTEGER const m, INTEGER const n, REAL *d, REAL *se
     REAL oldgap = 0.0;
     REAL newgap = 0.0;
     if (k == 1) {
-        sep[1 - 1] = Rlamch("O");
+        sep[0] = Rlamch("O");
     } else {
-        oldgap = abs(d[2 - 1] - d[1 - 1]);
-        sep[1 - 1] = oldgap;
+        oldgap = abs(d[1] - d[0]);
+        sep[0] = oldgap;
         for (i = 2; i <= k - 1; i = i + 1) {
             newgap = abs(d[(i + 1) - 1] - d[i - 1]);
             sep[i - 1] = min(oldgap, newgap);
@@ -111,7 +107,7 @@ void Rdisna(const char *job, INTEGER const m, INTEGER const n, REAL *d, REAL *se
     if (sing) {
         if ((left && m > n) || (right && m < n)) {
             if (incr) {
-                sep[1 - 1] = min(sep[1 - 1], d[1 - 1]);
+                sep[0] = min(sep[0], d[0]);
             }
             if (decr) {
                 sep[k - 1] = min(sep[k - 1], d[k - 1]);
@@ -124,12 +120,12 @@ void Rdisna(const char *job, INTEGER const m, INTEGER const n, REAL *d, REAL *se
     //
     REAL eps = Rlamch("E");
     REAL safmin = Rlamch("S");
-    REAL anorm = max(abs(d[1 - 1]), abs(d[k - 1]));
+    REAL anorm = max(abs(d[0]), abs(d[k - 1]));
     REAL thresh = 0.0;
     if (anorm == zero) {
         thresh = eps;
     } else {
-        thresh = max(REAL(eps * anorm), safmin);
+        thresh = max(eps * anorm, safmin);
     }
     for (i = 1; i <= k; i = i + 1) {
         sep[i - 1] = max(sep[i - 1], thresh);
