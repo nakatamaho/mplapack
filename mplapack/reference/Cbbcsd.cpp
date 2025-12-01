@@ -31,6 +31,7 @@
 
 void Cbbcsd(const char *jobu1, const char *jobu2, const char *jobv1t, const char *jobv2t, const char *trans, INTEGER const m, INTEGER const p, INTEGER const q, REAL *theta, REAL *phi, COMPLEX *u1, INTEGER const ldu1, COMPLEX *u2, INTEGER const ldu2, COMPLEX *v1t, INTEGER const ldv1t, COMPLEX *v2t, INTEGER const ldv2t, REAL *b11d, REAL *b11e, REAL *b12d, REAL *b12e, REAL *b21d, REAL *b21e, REAL *b22d, REAL *b22e, REAL *rwork, INTEGER const lrwork, INTEGER &info) {
     //
+    //
     // Test input arguments
     //
     info = 0;
@@ -64,7 +65,7 @@ void Cbbcsd(const char *jobu1, const char *jobu2, const char *jobv1t, const char
     INTEGER lrworkmin = 0;
     if (info == 0 && q == 0) {
         lrworkmin = 1;
-        rwork[1 - 1] = lrworkmin;
+        rwork[0] = lrworkmin;
         return;
     }
     //
@@ -90,7 +91,7 @@ void Cbbcsd(const char *jobu1, const char *jobu2, const char *jobv1t, const char
         iv2tsn = iv2tcs + q;
         lrworkopt = iv2tsn + q - 1;
         lrworkmin = lrworkopt;
-        rwork[1 - 1] = lrworkopt;
+        rwork[0] = lrworkopt;
         if (lrwork < lrworkmin && !lquery) {
             info = -28;
         }
@@ -109,11 +110,11 @@ void Cbbcsd(const char *jobu1, const char *jobu2, const char *jobv1t, const char
     REAL unfl = Rlamch("Safe minimum");
     const REAL ten = 10.0;
     const REAL hundred = 100.0;
-    const REAL meighth = -0.125e0;
+    const REAL meighth = -0.125;
     REAL tolmul = max(ten, min(hundred, pow(eps, meighth)));
     REAL tol = tolmul * eps;
     const INTEGER maxitr = 6;
-    REAL thresh = max(tol, REAL(maxitr * q * q * unfl));
+    REAL thresh = max(tol, maxitr * q * q * unfl);
     //
     // Test for negligible sines or cosines
     //
@@ -262,7 +263,7 @@ void Cbbcsd(const char *jobu1, const char *jobu2, const char *jobv1t, const char
                 }
             } else {
                 nu = sigma21;
-                mu = sqrt(one - nu * nu);
+                mu = sqrt(one - pow2(nu));
                 if (nu < thresh) {
                     mu = one;
                     nu = zero;
