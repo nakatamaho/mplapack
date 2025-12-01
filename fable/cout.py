@@ -3249,7 +3249,23 @@ def convert_executable(
                             crhs = f"castINTEGER({rhs_expr})"
                         else:
                             crhs = f"castINTEGER({rhs_expr})"
+
+                # Promote pure integer literals to real literals when assigning
+                # to REAL/DOUBLEPRECISION variables, so that t[...] = 0; becomes
+                # t[...] = 0.0; in the generated C++.
+                if lhs_is_real:
+                    rhs_expr = crhs.strip()
+                    # Match a pure integer literal (e.g. 0, -1, +2)
+                    if re.fullmatch(r"[+-]?[0-9]+", rhs_expr):
+                        # Normalize zero to 0.0
+                        if rhs_expr in ("0", "+0", "-0"):
+                            crhs = "0.0"
+                        else:
+                            # e.g. 1 -> 1.0, -2 -> -2.0
+                            crhs = rhs_expr + ".0"
+
                 id_tok = lhs_id_tokens[0]
+
                 assign_here = id_tok.value in conv_info.vmap
                 if (not assign_here):
                     assign_here = declare_identifier(
