@@ -69,6 +69,10 @@ MANUAL_MAPPINGS=(
   "zdrot CRrot"
   "zdscal CRscal"
   "zdrscl CRrscl"
+  "dzsum1 RCsum1"
+  "izmax1 iCmax1"
+  "iparmq iMparmq"
+  "ieeeck iMeeeck"
 )
 
 # ------------------------------------------------------------
