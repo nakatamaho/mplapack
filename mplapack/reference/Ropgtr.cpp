@@ -31,10 +31,6 @@
 
 void Ropgtr(const char *uplo, INTEGER const n, REAL *ap, REAL *tau, REAL *q, INTEGER const ldq, REAL *work, INTEGER &info) {
     //
-    //
-    //
-    //
-    //
     // Test the input arguments
     //
     info = 0;
