@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -29,7 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Cgtcon(const char *norm, INTEGER const n, COMPLEX *dl, COMPLEX *d, COMPLEX *du, COMPLEX *du2, INTEGER *ipiv, REAL const anorm, REAL &rcond, COMPLEX *work, INTEGER &info) {
+void Cgtcon(const char *norm, INTEGER const n, COMPLEX *dl, COMPLEX *d, COMPLEX *du, COMPLEX *du2, INTEGER *ipiv, REAL const &anorm, REAL &rcond, COMPLEX *work, INTEGER &info) {
     bool onenrm = false;
     const REAL zero = 0.0;
     const REAL one = 1.0;
@@ -37,17 +37,11 @@ void Cgtcon(const char *norm, INTEGER const n, COMPLEX *dl, COMPLEX *d, COMPLEX 
     REAL ainvnm = 0.0;
     INTEGER kase1 = 0;
     INTEGER kase = 0;
-    INTEGER isave[3];
-    //
-    //
-    //
-    //
-    // .. Local Arrays ..
     //
     // Test the input arguments.
     //
     info = 0;
-    onenrm = Mlsame(norm, "1") || Mlsame(norm, "O");
+    onenrm = norm == '1' || Mlsame(norm, "O");
     if (!onenrm && !Mlsame(norm, "I")) {
         info = -1;
     } else if (n < 0) {
