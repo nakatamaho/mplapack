@@ -3189,6 +3189,7 @@ def convert_executable(
                         lhs_dt_code = lhs_dt_code.lower()
                 lhs_is_real = lhs_dt_code in ("real", "doubleprecision")
                 lhs_is_integer = lhs_dt_code == "integer"
+                lhs_is_character = lhs_dt_code == "character"
 
                 rhs_is_simple = _is_simple_lvalue(crhs)
                 rhs_dt_code = None
@@ -3249,6 +3250,20 @@ def convert_executable(
                         crhs=crhs)
                 clhs = convert_tokens(
                     conv_info=conv_info, tokens=ei.lhs_tokens)
+
+                # For scalar CHARACTER dummy arguments that were mapped as char *,
+                # assignments should dereference the pointer:
+                #   EQUED = 'N'  ->  *equed = 'N';
+                if (
+                    lhs_is_character
+                    and lhs_fdecl is not None
+                    and lhs_fdecl.dim_tokens is None
+                    and _is_dummy_character_arg(conv_info, id_tok.value)
+                ):
+                    # clhs is typically just the mapped name (e.g. "equed")
+                    if not clhs.startswith("*"):
+                        clhs = "*" + clhs
+
                 if (assign_here):
                     def in_place_op_left():
                         if (not crhs.startswith(clhs)):
@@ -3745,9 +3760,22 @@ def convert_to_cpp_function(
             # skip its local declaration later.
             _mark_dummy_character_arg(conv_info, id_tok.value)
             if (fdecl.dim_tokens is None):
-                # MPLAPACK-style: scalar CHARACTER arguments as const char*
-                cargs_append("const char *", arg_name)
+                # Scalar CHARACTER argument.
+                # If it is modified (INTENT OUT/INOUT), use char *.
+                # Otherwise, treat as input-only and use const char *.
+                if fdecl.is_modified:
+                    cargs_append("char *", arg_name)
+                else:
+                    cargs_append("const char *", arg_name)
             else:
+                if (len(fdecl.dim_tokens) == 1):
+                    cdim = ""
+                else:
+                    cdim = "%d" % len(fdecl.dim_tokens)
+                cargs_append(
+                    "str_arr_%sref<%s>" % (cconst(fdecl=fdecl, short=True), cdim),
+                    arg_name,
+                )
                 if (len(fdecl.dim_tokens) == 1):
                     cdim = ""
                 else:
