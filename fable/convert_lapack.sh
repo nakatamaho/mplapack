@@ -222,7 +222,9 @@ text = "".join(out_lines)
 pattern_minmax = re.compile(
     r"\(\s*\(\s*("
     r"(?:[Mm][Ii][Nn]|[Mm][Aa][Xx])"   # MIN, min, MAX, max
-    r"\([^()]*\)"
+    r"\("
+    r"(?:[^()]*|\([^()]*\))*"          # allow one level of nested parentheses
+    r"\)"
     r")\s*\)\s*-\s*1\s*\)",
     re.DOTALL,
 )

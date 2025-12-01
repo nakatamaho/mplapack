@@ -36,37 +36,46 @@ def _split_actuals(arg_string: str):
             parts.append(part)
     return parts
 
-
 def _adjust_actuals_using_signature(arg_string: str, signature, conv_info=None) -> str:
     """Adjust actual arguments based on pointer/value signature.
 
     For PTR_NUMERIC arguments, if the expression looks like an array
     element (e.g. rwork[...]) and is not already passed by address,
-    insert '&' in front of it.
+    insert '&' in front of it. Optionally normalize '&name[0]' into
+    'name' (pointer to the first element) for pointer parameters only.
 
     For PTR_CHAR arguments, if the expression is a bare identifier
     (e.g. normin) and not already passed by address, insert '&' in
     front of it. String literals are left unchanged.
+
     If conv_info is given and the identifier is a CHARACTER dummy
     argument (const char* in the generated interface), it is left
     unchanged because it is already a pointer.
     """
     parts = _split_actuals(arg_string)
+
     # Be conservative: if the lengths do not match, do nothing.
     if len(parts) != len(signature):
         return arg_string
 
     new_parts = []
+
     for part, kind in zip(parts, signature):
         s = part.lstrip()
 
         if kind == "PTR_NUMERIC":
             # Already passing by address.
             if s.startswith("&"):
+                # Normalize '&name[0]' -> 'name' only for pointer params.
+                m = re.fullmatch(r"&\s*([A-Za-z_][A-Za-z0-9_]*)\s*\[\s*0\s*\]", s)
+                if m:
+                    leading = part[:len(part) - len(s)]
+                    part = leading + m.group(1)
                 new_parts.append(part)
                 continue
-            # Only handle simple array element expressions.
-            # We check for '[' to avoid touching plain pointer variables.
+
+            # Only handle array element expressions; plain pointer
+            # variables (e.g. x) are left unchanged.
             if "[" in s:
                 leading = part[:len(part) - len(s)]
                 part = leading + "&" + s
@@ -76,15 +85,17 @@ def _adjust_actuals_using_signature(arg_string: str, signature, conv_info=None) 
             if s.startswith("&"):
                 new_parts.append(part)
                 continue
+
             # String literal: do not add '&'.
             if s.startswith('"') or s.startswith("'"):
                 new_parts.append(part)
                 continue
+
             # Bare identifier (e.g. normin) -> &normin,
             # unless it is a CHARACTER dummy argument (already a pointer).
             if re.match(r"[A-Za-z_][A-Za-z0-9_]*$", s):
-                # Skip CHARACTER dummy arguments
                 if conv_info is not None and _is_dummy_character_arg(conv_info, s):
+                    # CHARACTER dummy arguments are already const char*.
                     new_parts.append(part)
                     continue
                 leading = part[:len(part) - len(s)]
@@ -93,7 +104,6 @@ def _adjust_actuals_using_signature(arg_string: str, signature, conv_info=None) 
         new_parts.append(part)
 
     return ", ".join(p.strip() for p in new_parts)
-
 
 def _load_mplapack_name_map(path=None):
     """Load Fortran -> MPLAPACK C++ name mapping from an external text file.
@@ -4824,21 +4834,86 @@ def _postprocess_strip_float_suffix(lines):
     return out
 
 
-def _postprocess_index_zero_simplify(lines):
-    """Postprocess index expressions to remove redundant parentheses.
-
-    Currently handles patterns like:
-      sva[(iwork[p - 1]) - 1] -> sva[iwork[p - 1] - 1]
-    i.e., remove redundant parentheses around a single array element
-    that is shifted by -1.
+def _postprocess_index_zero_simplify(text):
     """
-    pat = re.compile(
-        r'\[\(\s*([A-Za-z_][A-Za-z0-9_]*\[[^]]+\])\s*\)\s*-\s*1\]'
-    )
-    out = []
-    for line in lines:
-        out.append(pat.sub(r'[\1 - 1]', line))
-    return out
+    Postprocess index expressions to remove redundant arithmetic in array
+    subscripts, such as (1 - 1), +0, *0, and double parentheses around
+    MIN/MAX(...)-1.
+
+    This function is deliberately conservative:
+    - It MUST NOT rewrite `name[0]` into `name`.
+      That would change scalar arguments (REAL&) into pointers (REAL*),
+      which breaks many LAPACK calls.
+    - It accepts either a single string or a list of strings.
+      In the latter case it returns a list of processed lines.
+    - It does not touch comments starting from '//' on each line.
+    """
+    import re
+
+    # Simplify only the code part (before //), leave comments untouched.
+    def simplify_code(code: str) -> str:
+        # 1) Simplify expressions inside [...]
+        bracket_re = re.compile(r"\[(.*?)\]")
+
+        def simplify_expr(expr: str) -> str:
+            e = expr
+            # (1 - 1) -> 0
+            e = re.sub(r"\(\s*1\s*-\s*1\s*\)", "0", e)
+            # 0 * NAME -> 0
+            e = re.sub(r"\b0\s*\*\s*[A-Za-z_][A-Za-z0-9_]*", "0", e)
+            # NAME * 0 -> 0
+            e = re.sub(r"[A-Za-z_][A-Za-z0-9_]*\s*\*\s*0\b", "0", e)
+            # "+ 0", "0 +", "- 0" -> remove
+            e = re.sub(r"\+\s*0\b", "", e)
+            e = re.sub(r"\b0\s*\+", "", e)
+            e = re.sub(r"\-\s*0\b", "", e)
+            # Collapse whitespace inside the index expression
+            e = re.sub(r"\s+", " ", e).strip()
+            return e
+
+        def repl_brackets(m: re.Match) -> str:
+            inner = m.group(1)
+            return "[" + simplify_expr(inner) + "]"
+
+        code2 = bracket_re.sub(repl_brackets, code)
+
+        # 2) Simplify double-parenthesized MIN/MAX(...)-1 in the code part
+        pattern_minmax = re.compile(
+            r"\(\s*\(\s*("
+            r"(?:[Mm][Ii][Nn]|[Mm][Aa][Xx])"   # MIN or MAX, case-insensitive
+            r"\("
+            r"(?:[^()]*|\([^()]*\))*"          # allow one level of nested parentheses
+            r"\)"
+            r")\s*\)\s*-\s*1\s*\)",
+            re.DOTALL,
+        )
+        code2 = pattern_minmax.sub(r"(\1 - 1)", code2)
+
+        return code2
+
+    def simplify_line(line: str) -> str:
+        # Split into code and comment (//). We assume // starts a comment.
+        idx = line.find("//")
+        if idx < 0:
+            # No line comment, treat whole line as code
+            return simplify_code(line)
+        code = line[:idx]
+        comment = line[idx:]
+        return simplify_code(code) + comment
+
+    # If we get a list of lines, process each line and return a list again.
+    if isinstance(text, list):
+        return [simplify_line(line) for line in text]
+
+    # Normal case: a single string containing the whole file.
+    if isinstance(text, str):
+        lines = text.split("\n")
+        new_lines = [simplify_line(line) for line in lines]
+        return "\n".join(new_lines)
+
+    # Fallback: unknown type, do not try to be clever.
+    return text
+
 
 def _postprocess_complex_zero_initializers(lines):
     """Rewrite COMPLEX zero initializers using COMPLEX(0.0, 0.0).
