@@ -144,7 +144,14 @@ import re
 from pathlib import Path
 
 path = Path(sys.argv[1])
-lines = path.read_text().splitlines(keepends=True)
+text = path.read_text()
+
+# ---------------------------------------------------------------------------
+# 1) Line-based simplification inside [...] while respecting comments
+#    (DO NOT touch comments or block comments).
+# ---------------------------------------------------------------------------
+
+lines = text.splitlines(keepends=True)
 
 BRACKET_RE = re.compile(r"\[(.*?)\]")
 
@@ -197,13 +204,32 @@ def simplify_line(line: str, in_block_comment: bool):
     new_line = BRACKET_RE.sub(repl, line)
     return new_line, in_block_comment
 
-out = []
+out_lines = []
 in_block_comment = False
 for line in lines:
     new_line, in_block_comment = simplify_line(line, in_block_comment)
-    out.append(new_line)
+    out_lines.append(new_line)
 
-path.write_text("".join(out))
+text = "".join(out_lines)
+
+# ---------------------------------------------------------------------------
+# 2) Global simplification of double-parenthesized MIN/MAX across newlines:
+#      ((min(i + 2, n)) - 1)   -> (min(i + 2, n) - 1)
+#      ((MAX(i, j)) - 1)       -> (MAX(i, j) - 1)
+#    This does NOT touch comments, because it matches only MIN/MAX(...) calls.
+# ---------------------------------------------------------------------------
+
+pattern_minmax = re.compile(
+    r"\(\s*\(\s*("
+    r"(?:[Mm][Ii][Nn]|[Mm][Aa][Xx])"   # MIN, min, MAX, max
+    r"\([^()]*\)"
+    r")\s*\)\s*-\s*1\s*\)",
+    re.DOTALL,
+)
+
+text = pattern_minmax.sub(r"(\1 - 1)", text)
+
+path.write_text(text)
 EOF
 
 # Overwrite the generated C++ file with the formatted and postprocessed version
