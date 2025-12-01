@@ -31,10 +31,6 @@
 
 void Rtzrzf(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *tau, REAL *work, INTEGER const lwork, INTEGER &info) {
     //
-    //
-    //
-    //
-    //
     // Test the input arguments
     //
     info = 0;
@@ -62,7 +58,7 @@ void Rtzrzf(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *
             lwkopt = m * nb;
             lwkmin = max((INTEGER)1, m);
         }
-        work[1 - 1] = lwkopt;
+        work[0] = lwkopt;
         //
         if (lwork < lwkmin && !lquery) {
             info = -7;
@@ -159,7 +155,7 @@ void Rtzrzf(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *
         Rlatrz(mu, n, n - m, a, lda, tau, work);
     }
     //
-    work[1 - 1] = lwkopt;
+    work[0] = lwkopt;
     //
     // End of Rtzrzf
     //
