@@ -4868,6 +4868,15 @@ def _postprocess_index_zero_simplify(text):
 
     # Simplify only the code part (before //), leave comments untouched.
     def simplify_code(code: str) -> str:
+        # 0) Remove redundant parentheses for an array element immediately after '['.
+        #    Example:
+        #       sva[(iwork[p - 1]) - 1]  ->  sva[iwork[p - 1] - 1]
+        code = re.sub(
+            r"\[\s*\(\s*([A-Za-z_][A-Za-z0-9_]*\s*\[[^\[\]]*\])\s*\)",
+            r"[\1",
+            code,
+        )
+
         # 1) Simplify expressions inside [...]
         bracket_re = re.compile(r"\[(.*?)\]")
 
