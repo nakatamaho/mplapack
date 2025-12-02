@@ -29,7 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Cspmv(const char *uplo, INTEGER const n, COMPLEX const alpha, COMPLEX *ap, COMPLEX *x, INTEGER const incx, COMPLEX const beta, COMPLEX *y, INTEGER const incy) {
+void Cspmv(const char *uplo, INTEGER const n, COMPLEX const &alpha, COMPLEX *ap, COMPLEX *x, INTEGER const incx, COMPLEX const &beta, COMPLEX *y, INTEGER const incy) {
     //
     // Test the input parameters.
     //
@@ -44,7 +44,7 @@ void Cspmv(const char *uplo, INTEGER const n, COMPLEX const alpha, COMPLEX *ap, 
         info = 9;
     }
     if (info != 0) {
-        Mxerbla("Cspmv", info);
+        Mxerbla("Cspmv ", info);
         return;
     }
     //
