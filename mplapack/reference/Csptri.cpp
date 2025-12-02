@@ -49,10 +49,6 @@ void Csptri(const char *uplo, INTEGER const n, COMPLEX *ap, INTEGER *ipiv, COMPL
     COMPLEX temp = 0.0;
     INTEGER npp = 0;
     //
-    //
-    //
-    //
-    //
     // Test the input parameters.
     //
     info = 0;
