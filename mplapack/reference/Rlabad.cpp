@@ -31,10 +31,6 @@
 
 void Rlabad(REAL &small, REAL &large) {
     //
-    //
-    //
-    //
-    //
     // If it looks like we're on a Cray, take the square root of
     // SMALL and LARGE to avoid overflow and underflow problems.
     //

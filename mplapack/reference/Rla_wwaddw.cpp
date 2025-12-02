@@ -31,10 +31,6 @@
 
 void Rla_wwaddw(INTEGER const n, REAL *x, REAL *y, REAL *w) {
     //
-    //
-    //
-    //
-    //
     INTEGER i = 0;
     REAL s = 0.0;
     for (i = 1; i <= n; i = i + 1) {

@@ -31,10 +31,6 @@
 
 void Rlabrd(INTEGER const m, INTEGER const n, INTEGER const nb, REAL *a, INTEGER const lda, REAL *d, REAL *e, REAL *tauq, REAL *taup, REAL *x, INTEGER const ldx, REAL *y, INTEGER const ldy) {
     //
-    //
-    //
-    //
-    //
     // Quick return if possible
     //
     if (m <= 0 || n <= 0) {
