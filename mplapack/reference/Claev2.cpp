@@ -29,11 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Claev2(COMPLEX const a, COMPLEX const b, COMPLEX const c, REAL &rt1, REAL &rt2, REAL &cs1, COMPLEX &sn1) {
-    //
-    //
-    //
-    //
+void Claev2(COMPLEX const &a, COMPLEX const &b, COMPLEX const &c, REAL const &rt1, REAL const &rt2, REAL const &cs1, COMPLEX &sn1) {
     //
     const REAL zero = 0.0;
     const REAL one = 1.0;
