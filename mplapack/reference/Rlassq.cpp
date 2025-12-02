@@ -31,10 +31,6 @@
 
 void Rlassq(INTEGER const n, REAL *x, INTEGER const incx, REAL &scale, REAL &sumsq) {
     //
-    //
-    //
-    //
-    //
     INTEGER ix = 0;
     REAL absxi = 0.0;
     const REAL zero = 0.0;
