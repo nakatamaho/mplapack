@@ -193,7 +193,7 @@ void Cgbsvx(const char *fact, const char *trans, INTEGER const n, INTEGER const 
             } else {
                 rpvgrw = anorm / rpvgrw;
             }
-            rwork[1 - 1] = rpvgrw;
+            rwork[0] = rpvgrw;
             rcond = zero;
             return;
         }
@@ -261,7 +261,7 @@ void Cgbsvx(const char *fact, const char *trans, INTEGER const n, INTEGER const 
         info = n + 1;
     }
     //
-    rwork[1 - 1] = rpvgrw;
+    rwork[0] = rpvgrw;
     //
     // End of Cgbsvx
     //
