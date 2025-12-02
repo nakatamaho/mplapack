@@ -31,10 +31,6 @@
 
 void Cgbtrs(const char *trans, INTEGER const n, INTEGER const kl, INTEGER const ku, INTEGER const nrhs, COMPLEX *ab, INTEGER const ldab, INTEGER *ipiv, COMPLEX *b, INTEGER const ldb, INTEGER &info) {
     //
-    //
-    //
-    //
-    //
     // Test the input parameters.
     //
     info = 0;
