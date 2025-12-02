@@ -60,10 +60,6 @@ void Chbgst(const char *vect, const char *uplo, INTEGER const n, INTEGER const k
     INTEGER nx = 0;
     INTEGER j1t = 0;
     //
-    //
-    //
-    //
-    //
     // Test the input parameters
     //
     wantx = Mlsame(vect, "V");
@@ -109,6 +105,7 @@ void Chbgst(const char *vect, const char *uplo, INTEGER const n, INTEGER const k
     //
     // Set M to the splitting point m. It must be the same value as is
     // used in Cpbstf. The chosen value allows the arrays WORK and RWORK
+    // to be of dimension (N).
     //
     m = (n + kb) / 2;
     //
