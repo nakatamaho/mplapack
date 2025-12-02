@@ -31,11 +31,6 @@
 
 void Csyconvf_rook(const char *uplo, const char *way, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *e, INTEGER *ipiv, INTEGER &info) {
     //
-    //
-    //
-    //
-    //
-    //
     info = 0;
     bool upper = Mlsame(uplo, "U");
     bool convert = Mlsame(way, "C");
@@ -78,7 +73,7 @@ void Csyconvf_rook(const char *uplo, const char *way, INTEGER const n, COMPLEX *
             // corresponding entries in input storage A
             //
             i = n;
-            e[1 - 1] = zero;
+            e[0] = zero;
             while (i > 1) {
                 if (ipiv[i - 1] < 0) {
                     e[i - 1] = a[((i - 1) - 1) + (i - 1) * lda];
