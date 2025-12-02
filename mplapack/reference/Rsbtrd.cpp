@@ -31,10 +31,6 @@
 
 void Rsbtrd(const char *vect, const char *uplo, INTEGER const n, INTEGER const kd, REAL *ab, INTEGER const ldab, REAL *d, REAL *e, REAL *q, INTEGER const ldq, REAL *work, INTEGER &info) {
     //
-    //
-    //
-    //
-    //
     // Test the input parameters
     //
     bool initq = Mlsame(vect, "V");
