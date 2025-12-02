@@ -31,10 +31,6 @@
 
 void Chetrs_aa_2stage(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a, INTEGER const lda, COMPLEX *tb, INTEGER const ltb, INTEGER *ipiv, INTEGER *ipiv2, COMPLEX *b, INTEGER const ldb, INTEGER &info) {
     //
-    //
-    //
-    //
-    //
     info = 0;
     bool upper = Mlsame(uplo, "U");
     if (!upper && !Mlsame(uplo, "L")) {
@@ -63,7 +59,7 @@ void Chetrs_aa_2stage(const char *uplo, INTEGER const n, INTEGER const nrhs, COM
     //
     // Read NB and compute LDTB
     //
-    INTEGER nb = castINTEGER(tb[1 - 1].real());
+    INTEGER nb = castINTEGER(tb[0].real());
     INTEGER ldtb = ltb / n;
     //
     const COMPLEX one = COMPLEX(1.0, 0.0);
