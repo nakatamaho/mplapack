@@ -31,10 +31,6 @@
 
 void Cgbbrd(const char *vect, INTEGER const m, INTEGER const n, INTEGER const ncc, INTEGER const kl, INTEGER const ku, COMPLEX *ab, INTEGER const ldab, REAL *d, REAL *e, COMPLEX *q, INTEGER const ldq, COMPLEX *pt, INTEGER const ldpt, COMPLEX *c, INTEGER const ldc, COMPLEX *work, REAL *rwork, INTEGER &info) {
     //
-    //
-    //
-    //
-    //
     // Test the input parameters
     //
     bool wantb = Mlsame(vect, "B");
