@@ -29,7 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rlaqsp(const char *uplo, INTEGER const n, REAL *ap, REAL *s, REAL const scond, REAL const amax, char *equed) {
+void Rlaqsp(const char *uplo, INTEGER const n, REAL *ap, REAL *s, REAL const &scond, REAL const &amax, char *equed) {
     //
     // Quick return if possible
     //
@@ -44,7 +44,7 @@ void Rlaqsp(const char *uplo, INTEGER const n, REAL *ap, REAL *s, REAL const sco
     const REAL one = 1.0;
     REAL large = one / small;
     //
-    const REAL thresh = 0.1e+0;
+    const REAL thresh = 0.1;
     INTEGER jc = 0;
     INTEGER j = 0;
     REAL cj = 0.0;
