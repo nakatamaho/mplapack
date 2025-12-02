@@ -31,10 +31,6 @@
 
 void Cgelqt(INTEGER const m, INTEGER const n, INTEGER const mb, COMPLEX *a, INTEGER const lda, COMPLEX *t, INTEGER const ldt, COMPLEX *work, INTEGER &info) {
     //
-    //
-    //
-    //
-    //
     // Test the input arguments
     //
     info = 0;
