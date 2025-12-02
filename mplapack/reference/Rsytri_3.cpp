@@ -31,10 +31,6 @@
 
 void Rsytri_3(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL *e, INTEGER *ipiv, REAL *work, INTEGER const lwork, INTEGER &info) {
     //
-    //
-    //
-    //
-    //
     // Test the input parameters.
     //
     info = 0;
@@ -60,7 +56,7 @@ void Rsytri_3(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REA
         Mxerbla("Rsytri_3", -info);
         return;
     } else if (lquery) {
-        work[1 - 1] = lwkopt;
+        work[0] = lwkopt;
         return;
     }
     //
@@ -72,7 +68,7 @@ void Rsytri_3(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REA
     //
     Rsytri_3x(uplo, n, a, lda, e, ipiv, work, nb, info);
     //
-    work[1 - 1] = lwkopt;
+    work[0] = lwkopt;
     //
     // End of Rsytri_3
     //
