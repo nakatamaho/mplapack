@@ -44,7 +44,7 @@ void Cspsv(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *ap, I
         info = -7;
     }
     if (info != 0) {
-        Mxerbla("Cspsv", -info);
+        Mxerbla("Cspsv ", -info);
         return;
     }
     //
