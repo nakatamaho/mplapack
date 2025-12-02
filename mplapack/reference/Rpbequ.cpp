@@ -31,10 +31,6 @@
 
 void Rpbequ(const char *uplo, INTEGER const n, INTEGER const kd, REAL *ab, INTEGER const ldab, REAL *s, REAL &scond, REAL &amax, INTEGER &info) {
     //
-    //
-    //
-    //
-    //
     // Test the input parameters.
     //
     info = 0;
@@ -72,9 +68,9 @@ void Rpbequ(const char *uplo, INTEGER const n, INTEGER const kd, REAL *ab, INTEG
     //
     // Initialize SMIN and AMAX.
     //
-    s[1 - 1] = ab[(j - 1)];
-    REAL smin = s[1 - 1];
-    amax = s[1 - 1];
+    s[0] = ab[(j - 1)];
+    REAL smin = s[0];
+    amax = s[0];
     //
     // Find the minimum and maximum diagonal elements.
     //
