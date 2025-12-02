@@ -48,7 +48,7 @@ void Rpbsv(const char *uplo, INTEGER const n, INTEGER const kd, INTEGER const nr
         info = -8;
     }
     if (info != 0) {
-        Mxerbla("Rpbsv", -info);
+        Mxerbla("Rpbsv ", -info);
         return;
     }
     //
