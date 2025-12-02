@@ -52,7 +52,7 @@ void Chbev(const char *jobz, const char *uplo, INTEGER const n, INTEGER const kd
     }
     //
     if (info != 0) {
-        Mxerbla("Chbev", -info);
+        Mxerbla("Chbev ", -info);
         return;
     }
     //
@@ -65,9 +65,9 @@ void Chbev(const char *jobz, const char *uplo, INTEGER const n, INTEGER const kd
     const REAL one = 1.0;
     if (n == 1) {
         if (lower) {
-            w[1 - 1] = ab[0].real();
+            w[0] = ab[0].real();
         } else {
-            w[1 - 1] = ab[((kd + 1) - 1)].real();
+            w[0] = ab[((kd + 1) - 1)].real();
         }
         if (wantz) {
             z[0] = one;
