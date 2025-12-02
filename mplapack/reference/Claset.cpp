@@ -29,11 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Claset(const char *uplo, INTEGER const m, INTEGER const n, COMPLEX const alpha, COMPLEX const beta, COMPLEX *a, INTEGER const lda) {
-    //
-    //
-    //
-    //
+void Claset(const char *uplo, INTEGER const m, INTEGER const n, COMPLEX const &alpha, COMPLEX const &beta, COMPLEX *a, INTEGER const lda) {
     //
     INTEGER j = 0;
     INTEGER i = 0;
