@@ -39,10 +39,6 @@ void Rpbstf(const char *uplo, INTEGER const n, INTEGER const kd, REAL *ab, INTEG
     INTEGER km = 0;
     const REAL one = 1.0;
     //
-    //
-    //
-    //
-    //
     // Test the input parameters.
     //
     info = 0;
