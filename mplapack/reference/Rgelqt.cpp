@@ -31,10 +31,6 @@
 
 void Rgelqt(INTEGER const m, INTEGER const n, INTEGER const mb, REAL *a, INTEGER const lda, REAL *t, INTEGER const ldt, REAL *work, INTEGER &info) {
     //
-    //
-    //
-    //
-    //
     // Test the input arguments
     //
     info = 0;
