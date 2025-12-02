@@ -31,10 +31,6 @@
 
 void Cgehd2(INTEGER const n, INTEGER const ilo, INTEGER const ihi, COMPLEX *a, INTEGER const lda, COMPLEX *tau, COMPLEX *work, INTEGER &info) {
     //
-    //
-    //
-    //
-    //
     // Test the input parameters
     //
     info = 0;
