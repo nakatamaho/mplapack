@@ -31,10 +31,6 @@
 
 void Rlaqp2(INTEGER const m, INTEGER const n, INTEGER const offset, REAL *a, INTEGER const lda, INTEGER *jpvt, REAL *tau, REAL *vn1, REAL *vn2, REAL *work) {
     //
-    //
-    //
-    //
-    //
     INTEGER mn = min(m - offset, n);
     REAL tol3z = sqrt(Rlamch("Epsilon"));
     //
@@ -81,7 +77,7 @@ void Rlaqp2(INTEGER const m, INTEGER const n, INTEGER const offset, REAL *a, INT
             //
             aii = a[(offpi - 1) + (i - 1) * lda];
             a[(offpi - 1) + (i - 1) * lda] = one;
-            Rlarf("Left", m - offpi + 1, n - i, &a[(offpi - 1) + (i - 1) * lda], 1, tau[i - 1], &a[(offpi - 1) + ((i + 1) - 1) * lda], lda, &work[1 - 1]);
+            Rlarf("Left", m - offpi + 1, n - i, &a[(offpi - 1) + (i - 1) * lda], 1, tau[i - 1], &a[(offpi - 1) + ((i + 1) - 1) * lda], lda, &work[0]);
             a[(offpi - 1) + (i - 1) * lda] = aii;
         }
         //

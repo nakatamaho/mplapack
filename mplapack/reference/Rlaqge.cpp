@@ -29,11 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rlaqge(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *r, REAL *c, REAL const rowcnd, REAL const colcnd, REAL const amax, char *equed) {
-    //
-    //
-    //
-    //
+void Rlaqge(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *r, REAL *c, REAL const &rowcnd, REAL const &colcnd, REAL const &amax, char *equed) {
     //
     // Quick return if possible
     //
@@ -48,7 +44,7 @@ void Rlaqge(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *
     const REAL one = 1.0;
     REAL large = one / small;
     //
-    const REAL thresh = 0.1e+0;
+    const REAL thresh = 0.1;
     INTEGER j = 0;
     REAL cj = 0.0;
     INTEGER i = 0;
