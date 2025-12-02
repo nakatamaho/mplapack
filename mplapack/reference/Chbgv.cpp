@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -55,7 +55,7 @@ void Chbgv(const char *jobz, const char *uplo, INTEGER const n, INTEGER const ka
         info = -12;
     }
     if (info != 0) {
-        Mxerbla("Chbgv", -info);
+        Mxerbla("Chbgv ", -info);
         return;
     }
     //
