@@ -31,8 +31,8 @@
 
 void Rlasyf_rk(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &kb, REAL *a, INTEGER const lda, REAL *e, INTEGER *ipiv, REAL *w, INTEGER const ldw, INTEGER &info) {
     const REAL one = 1.0;
-    const REAL sevten = 17.0e+0;
-    const REAL eight = 8.0e+0;
+    const REAL sevten = 17.0;
+    const REAL eight = 8.0;
     REAL alpha = 0.0;
     REAL sfmin = 0.0;
     const REAL zero = 0.0;
@@ -62,10 +62,6 @@ void Rlasyf_rk(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &kb,
     INTEGER jj = 0;
     REAL d21 = 0.0;
     //
-    //
-    //
-    //
-    //
     info = 0;
     //
     // Initialize ALPHA for use in choosing pivot block size.
@@ -85,7 +81,7 @@ void Rlasyf_rk(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &kb,
         // Initialize the first entry of array E, where superdiagonal
         // elements of D are stored
         //
-        e[1 - 1] = zero;
+        e[0] = zero;
         //
         // K is the main loop index, decreasing from N in steps of 1 or 2
         //
@@ -145,8 +141,6 @@ void Rlasyf_rk(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &kb,
             }
             //
         } else {
-            //
-            //
             // Test for interchange
             //
             // Equivalent to testing for ABSAKK.GE.ALPHA*COLMAX
@@ -246,8 +240,6 @@ void Rlasyf_rk(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &kb,
                 }
                 //
             }
-            //
-            //
             kk = k - kstep + 1;
             //
             // KKW is the column of W which corresponds to column KK of A
@@ -458,8 +450,6 @@ void Rlasyf_rk(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &kb,
             }
             //
         } else {
-            //
-            //
             // Test for interchange
             //
             // Equivalent to testing for ABSAKK.GE.ALPHA*COLMAX
@@ -558,8 +548,6 @@ void Rlasyf_rk(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &kb,
                 }
                 //
             }
-            //
-            //
             kk = k + kstep - 1;
             //
             if ((kstep == 2) && (p != k)) {
