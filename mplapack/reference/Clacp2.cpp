@@ -31,10 +31,6 @@
 
 void Clacp2(const char *uplo, INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb) {
     //
-    //
-    //
-    //
-    //
     INTEGER j = 0;
     INTEGER i = 0;
     if (Mlsame(uplo, "U")) {
