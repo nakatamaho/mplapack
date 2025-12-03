@@ -32,8 +32,8 @@
 void Rsptrf(const char *uplo, INTEGER const n, REAL *ap, INTEGER *ipiv, INTEGER &info) {
     bool upper = false;
     const REAL one = 1.0;
-    const REAL sevten = 17.0e+0;
-    const REAL eight = 8.0e+0;
+    const REAL sevten = 17.0;
+    const REAL eight = 8.0;
     REAL alpha = 0.0;
     INTEGER k = 0;
     INTEGER kc = 0;
@@ -61,10 +61,6 @@ void Rsptrf(const char *uplo, INTEGER const n, REAL *ap, INTEGER *ipiv, INTEGER 
     INTEGER npp = 0;
     REAL d21 = 0.0;
     REAL wkp1 = 0.0;
-    //
-    //
-    //
-    //
     //
     // Test the input parameters.
     //
@@ -147,7 +143,7 @@ void Rsptrf(const char *uplo, INTEGER const n, REAL *ap, INTEGER *ipiv, INTEGER 
                 kpc = (imax - 1) * imax / 2 + 1;
                 if (imax > 1) {
                     jmax = iRamax(imax - 1, &ap[kpc - 1], 1);
-                    rowmax = max(rowmax, REAL(abs(ap[(kpc + jmax - 1) - 1])));
+                    rowmax = max(rowmax, abs(ap[(kpc + jmax - 1) - 1]));
                 }
                 //
                 if (absakk >= alpha * colmax * (colmax / rowmax)) {
@@ -336,7 +332,7 @@ void Rsptrf(const char *uplo, INTEGER const n, REAL *ap, INTEGER *ipiv, INTEGER 
                 kpc = npp - (n - imax + 1) * (n - imax + 2) / 2 + 1;
                 if (imax < n) {
                     jmax = imax + iRamax(n - imax, &ap[(kpc + 1) - 1], 1);
-                    rowmax = max(rowmax, REAL(abs(ap[(kpc + jmax - imax) - 1])));
+                    rowmax = max(rowmax, abs(ap[(kpc + jmax - imax) - 1]));
                 }
                 //
                 if (absakk >= alpha * colmax * (colmax / rowmax)) {

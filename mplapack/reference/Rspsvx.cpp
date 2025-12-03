@@ -31,11 +31,6 @@
 
 void Rspsvx(const char *fact, const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *ap, REAL *afp, INTEGER *ipiv, REAL *b, INTEGER const ldb, REAL *x, INTEGER const ldx, REAL &rcond, REAL *ferr, REAL *berr, REAL *work, INTEGER *iwork, INTEGER &info) {
     //
-    // -- LAPACK driver routine --
-    //
-    //
-    //
-    //
     // Test the input parameters.
     //
     info = 0;

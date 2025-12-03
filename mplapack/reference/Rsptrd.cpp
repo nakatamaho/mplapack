@@ -31,10 +31,6 @@
 
 void Rsptrd(const char *uplo, INTEGER const n, REAL *ap, REAL *d, REAL *e, REAL *tau, INTEGER &info) {
     //
-    //
-    //
-    //
-    //
     // Test the input parameters
     //
     info = 0;
@@ -104,7 +100,7 @@ void Rsptrd(const char *uplo, INTEGER const n, REAL *ap, REAL *d, REAL *e, REAL 
             tau[i - 1] = taui;
             i1 = i1 - i;
         }
-        d[1 - 1] = ap[1 - 1];
+        d[0] = ap[0];
     } else {
         //
         // Reduce the lower triangle of A. II is the index in AP of

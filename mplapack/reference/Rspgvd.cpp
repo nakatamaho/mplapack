@@ -31,11 +31,6 @@
 
 void Rspgvd(INTEGER const itype, const char *jobz, const char *uplo, INTEGER const n, REAL *ap, REAL *bp, REAL *w, REAL *z, INTEGER const ldz, REAL *work, INTEGER const lwork, INTEGER *iwork, INTEGER const liwork, INTEGER &info) {
     //
-    // -- LAPACK driver routine --
-    //
-    //
-    //
-    //
     // Test the input parameters.
     //
     bool wantz = Mlsame(jobz, "V");
@@ -64,14 +59,14 @@ void Rspgvd(INTEGER const itype, const char *jobz, const char *uplo, INTEGER con
         } else {
             if (wantz) {
                 liwmin = 3 + 5 * n;
-                lwmin = 1 + 6 * n + 2 * n * n;
+                lwmin = 1 + 6 * n + 2 * pow2(n);
             } else {
                 liwmin = 1;
                 lwmin = 2 * n;
             }
         }
-        work[1 - 1] = lwmin;
-        iwork[1 - 1] = liwmin;
+        work[0] = lwmin;
+        iwork[0] = liwmin;
         if (lwork < lwmin && !lquery) {
             info = -11;
         } else if (liwork < liwmin && !lquery) {
@@ -104,8 +99,8 @@ void Rspgvd(INTEGER const itype, const char *jobz, const char *uplo, INTEGER con
     //
     Rspgst(itype, uplo, n, ap, bp, info);
     Rspevd(jobz, uplo, n, ap, w, z, ldz, work, lwork, iwork, liwork, info);
-    lwmin = max(lwmin, castINTEGER(work[1 - 1]));
-    liwmin = max(liwmin, iwork[1 - 1]);
+    lwmin = max(castREAL(lwmin), castREAL(work[0]));
+    liwmin = max(castREAL(liwmin), castREAL(iwork[0]));
     //
     INTEGER neig = 0;
     char trans;
@@ -150,8 +145,8 @@ void Rspgvd(INTEGER const itype, const char *jobz, const char *uplo, INTEGER con
         }
     }
     //
-    work[1 - 1] = lwmin;
-    iwork[1 - 1] = liwmin;
+    work[0] = lwmin;
+    iwork[0] = liwmin;
     //
     // End of Rspgvd
     //
