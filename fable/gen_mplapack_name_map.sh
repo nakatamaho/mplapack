@@ -73,6 +73,7 @@ MANUAL_MAPPINGS=(
   "izmax1 iCmax1"
   "iparmq iMparmq"
   "ieeeck iMeeeck"
+  "ilauplo iMlauplo"
 )
 
 # ------------------------------------------------------------
