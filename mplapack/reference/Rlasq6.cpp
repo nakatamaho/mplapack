@@ -31,12 +31,6 @@
 
 void Rlasq6(INTEGER const i0, INTEGER const n0, REAL *z, INTEGER const pp, REAL &dmin, REAL &dmin1, REAL &dmin2, REAL &dn, REAL &dnm1, REAL &dnm2) {
     //
-    //
-    //
-    //
-    // .. Parameter ..
-    // .. External Function ..
-    //
     if ((n0 - i0 - 1) <= 0) {
         return;
     }
