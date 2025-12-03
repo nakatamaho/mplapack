@@ -31,10 +31,6 @@
 
 void Rsytrs_aa(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *a, INTEGER const lda, INTEGER *ipiv, REAL *b, INTEGER const ldb, REAL *work, INTEGER const lwork, INTEGER &info) {
     //
-    //
-    //
-    //
-    //
     info = 0;
     bool upper = Mlsame(uplo, "U");
     bool lquery = (lwork == -1);
@@ -57,7 +53,7 @@ void Rsytrs_aa(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *a, I
         return;
     } else if (lquery) {
         lwkopt = (3 * n - 2);
-        work[1 - 1] = lwkopt;
+        work[0] = lwkopt;
         return;
     }
     //
@@ -98,10 +94,10 @@ void Rsytrs_aa(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *a, I
         //
         Rlacpy("F", 1, n, &a[0], lda + 1, &work[n - 1], 1);
         if (n > 1) {
-            Rlacpy("F", 1, n - 1, &a[(2 - 1) * lda], lda + 1, &work[1 - 1], 1);
+            Rlacpy("F", 1, n - 1, &a[(2 - 1) * lda], lda + 1, &work[0], 1);
             Rlacpy("F", 1, n - 1, &a[(2 - 1) * lda], lda + 1, &work[(2 * n) - 1], 1);
         }
-        Rgtsv(n, nrhs, &work[1 - 1], &work[n - 1], &work[(2 * n) - 1], b, ldb, info);
+        Rgtsv(n, nrhs, &work[0], &work[n - 1], &work[(2 * n) - 1], b, ldb, info);
         //
         // 3) Backward substitution with U
         //
@@ -149,10 +145,10 @@ void Rsytrs_aa(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *a, I
         //
         Rlacpy("F", 1, n, &a[0], lda + 1, &work[n - 1], 1);
         if (n > 1) {
-            Rlacpy("F", 1, n - 1, &a[(2 - 1)], lda + 1, &work[1 - 1], 1);
+            Rlacpy("F", 1, n - 1, &a[(2 - 1)], lda + 1, &work[0], 1);
             Rlacpy("F", 1, n - 1, &a[(2 - 1)], lda + 1, &work[(2 * n) - 1], 1);
         }
-        Rgtsv(n, nrhs, &work[1 - 1], &work[n - 1], &work[(2 * n) - 1], b, ldb, info);
+        Rgtsv(n, nrhs, &work[0], &work[n - 1], &work[(2 * n) - 1], b, ldb, info);
         //
         // 3) Backward substitution with L**T
         //

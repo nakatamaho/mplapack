@@ -42,10 +42,6 @@ void Rsytrs(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *a, INTE
     REAL bkm1 = 0.0;
     REAL bk = 0.0;
     //
-    //
-    //
-    //
-    //
     info = 0;
     upper = Mlsame(uplo, "U");
     if (!upper && !Mlsame(uplo, "L")) {

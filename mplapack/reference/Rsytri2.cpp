@@ -31,10 +31,6 @@
 
 void Rsytri2(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INTEGER *ipiv, REAL *work, INTEGER const lwork, INTEGER &info) {
     //
-    //
-    //
-    //
-    //
     // Test the input parameters.
     //
     info = 0;
@@ -65,7 +61,7 @@ void Rsytri2(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INTE
         Mxerbla("Rsytri2", -info);
         return;
     } else if (lquery) {
-        work[1 - 1] = minsize;
+        work[0] = minsize;
         return;
     }
     if (n == 0) {
