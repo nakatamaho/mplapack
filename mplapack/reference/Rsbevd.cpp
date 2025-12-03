@@ -31,11 +31,6 @@
 
 void Rsbevd(const char *jobz, const char *uplo, INTEGER const n, INTEGER const kd, REAL *ab, INTEGER const ldab, REAL *w, REAL *z, INTEGER const ldz, REAL *work, INTEGER const lwork, INTEGER *iwork, INTEGER const liwork, INTEGER &info) {
     //
-    // -- LAPACK driver routine --
-    //
-    //
-    //
-    //
     // Test the input parameters.
     //
     bool wantz = Mlsame(jobz, "V");
@@ -51,7 +46,7 @@ void Rsbevd(const char *jobz, const char *uplo, INTEGER const n, INTEGER const k
     } else {
         if (wantz) {
             liwmin = 3 + 5 * n;
-            lwmin = 1 + 5 * n + 2 * n * n;
+            lwmin = 1 + 5 * n + 2 * pow2(n);
         } else {
             liwmin = 1;
             lwmin = 2 * n;
@@ -72,8 +67,8 @@ void Rsbevd(const char *jobz, const char *uplo, INTEGER const n, INTEGER const k
     }
     //
     if (info == 0) {
-        work[1 - 1] = lwmin;
-        iwork[1 - 1] = liwmin;
+        work[0] = lwmin;
+        iwork[0] = liwmin;
         //
         if (lwork < lwmin && !lquery) {
             info = -11;
@@ -97,7 +92,7 @@ void Rsbevd(const char *jobz, const char *uplo, INTEGER const n, INTEGER const k
     //
     const REAL one = 1.0;
     if (n == 1) {
-        w[1 - 1] = ab[0];
+        w[0] = ab[0];
         if (wantz) {
             z[0] = one;
         }
@@ -159,8 +154,8 @@ void Rsbevd(const char *jobz, const char *uplo, INTEGER const n, INTEGER const k
         Rscal(n, one / sigma, w, 1);
     }
     //
-    work[1 - 1] = lwmin;
-    iwork[1 - 1] = liwmin;
+    work[0] = lwmin;
+    iwork[0] = liwmin;
     //
     // End of Rsbevd
     //
