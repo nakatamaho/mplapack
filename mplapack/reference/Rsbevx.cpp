@@ -29,7 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rsbevx(const char *jobz, const char *range, const char *uplo, INTEGER const n, INTEGER const kd, REAL *ab, INTEGER const ldab, REAL *q, INTEGER const ldq, REAL const vl, REAL const vu, INTEGER const il, INTEGER const iu, REAL const abstol, INTEGER &m, REAL *w, REAL *z, INTEGER const ldz, REAL *work, INTEGER *iwork, INTEGER *ifail, INTEGER &info) {
+void Rsbevx(const char *jobz, const char *range, const char *uplo, INTEGER const n, INTEGER const kd, REAL *ab, INTEGER const ldab, REAL *q, INTEGER const ldq, REAL const &vl, REAL const &vu, INTEGER const il, INTEGER const iu, REAL const &abstol, INTEGER &m, REAL *w, REAL *z, INTEGER const ldz, REAL *work, INTEGER *iwork, INTEGER *ifail, INTEGER &info) {
     bool wantz = false;
     bool alleig = false;
     bool valeig = false;
@@ -134,7 +134,7 @@ void Rsbevx(const char *jobz, const char *range, const char *uplo, INTEGER const
             }
         }
         if (m == 1) {
-            w[1 - 1] = tmp1;
+            w[0] = tmp1;
             if (wantz) {
                 z[0] = one;
             }
@@ -149,7 +149,7 @@ void Rsbevx(const char *jobz, const char *range, const char *uplo, INTEGER const
     smlnum = safmin / eps;
     bignum = one / smlnum;
     rmin = sqrt(smlnum);
-    rmax = min(REAL(sqrt(bignum)), REAL(one / sqrt(sqrt(safmin))));
+    rmax = min(sqrt(bignum), one / sqrt(sqrt(safmin)));
     //
     // Scale matrix to allowable range, if necessary.
     //
@@ -244,7 +244,7 @@ void Rsbevx(const char *jobz, const char *range, const char *uplo, INTEGER const
         // form to eigenvectors returned by Rstein.
         //
         for (j = 1; j <= m; j = j + 1) {
-            Rcopy(n, &z[(j - 1) * ldz], 1, &work[1 - 1], 1);
+            Rcopy(n, &z[(j - 1) * ldz], 1, &work[0], 1);
             Rgemv("N", n, n, one, q, ldq, work, 1, zero, &z[(j - 1) * ldz], 1);
         }
     }
