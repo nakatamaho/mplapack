@@ -32,9 +32,6 @@
 void Rsb2st_kernels(const char *uplo, bool const wantz, INTEGER const ttype, INTEGER const st, INTEGER const ed, INTEGER const sweep, INTEGER const n, INTEGER const nb, INTEGER const ib, REAL *a, INTEGER const lda, REAL *v, REAL *tau, INTEGER const ldvt, REAL *work) {
     //
     //
-    //
-    //
-    //
     INTEGER ajeter = ib + ldvt;
     bool upper = Mlsame(uplo, "U");
     //
