@@ -31,10 +31,6 @@
 
 void Rlatrz(INTEGER const m, INTEGER const n, INTEGER const l, REAL *a, INTEGER const lda, REAL *tau, REAL *work) {
     //
-    //
-    //
-    //
-    //
     // Test the input arguments
     //
     // Quick return if possible
