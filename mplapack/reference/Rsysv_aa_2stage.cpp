@@ -31,10 +31,6 @@
 
 void Rsysv_aa_2stage(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *a, INTEGER const lda, REAL *tb, INTEGER const ltb, INTEGER *ipiv, INTEGER *ipiv2, REAL *b, INTEGER const ldb, REAL *work, INTEGER const lwork, INTEGER &info) {
     //
-    //
-    //
-    //
-    //
     // Test the input parameters.
     //
     info = 0;
@@ -60,7 +56,7 @@ void Rsysv_aa_2stage(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL
     INTEGER lwkopt = 0;
     if (info == 0) {
         Rsytrf_aa_2stage(uplo, n, a, lda, tb, -1, ipiv, ipiv2, work, -1, info);
-        lwkopt = castINTEGER(work[1 - 1]);
+        lwkopt = castINTEGER(work[0]);
     }
     //
     if (info != 0) {
@@ -81,7 +77,7 @@ void Rsysv_aa_2stage(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL
         //
     }
     //
-    work[1 - 1] = lwkopt;
+    work[0] = lwkopt;
     //
     // End of Rsysv_aa_2stage
     //

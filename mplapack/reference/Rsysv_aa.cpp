@@ -54,15 +54,15 @@ void Rsysv_aa(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *a, IN
     INTEGER lwkopt = 0;
     if (info == 0) {
         Rsytrf_aa(uplo, n, a, lda, ipiv, work, -1, info);
-        lwkopt_sytrf = castINTEGER(work[1 - 1]);
+        lwkopt_sytrf = castINTEGER(work[0]);
         Rsytrs_aa(uplo, n, nrhs, a, lda, ipiv, b, ldb, work, -1, info);
-        lwkopt_sytrs = castINTEGER(work[1 - 1]);
+        lwkopt_sytrs = castINTEGER(work[0]);
         lwkopt = max(lwkopt_sytrf, lwkopt_sytrs);
-        work[1 - 1] = lwkopt;
+        work[0] = lwkopt;
     }
     //
     if (info != 0) {
-        Mxerbla("Rsysv_aa", -info);
+        Mxerbla("Rsysv_aa ", -info);
         return;
     } else if (lquery) {
         return;
@@ -79,7 +79,7 @@ void Rsysv_aa(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *a, IN
         //
     }
     //
-    work[1 - 1] = lwkopt;
+    work[0] = lwkopt;
     //
     // End of Rsysv_aa
     //
