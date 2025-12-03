@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -59,7 +59,7 @@ void Rsygv(INTEGER const itype, const char *jobz, const char *uplo, INTEGER cons
         lwkmin = max((INTEGER)1, 3 * n - 1);
         nb = iMlaenv(1, "Rsytrd", uplo, n, -1, -1, -1);
         lwkopt = max(lwkmin, (nb + 2) * n);
-        work[1 - 1] = lwkopt;
+        work[0] = lwkopt;
         //
         if (lwork < lwkmin && !lquery) {
             info = -11;
@@ -67,7 +67,7 @@ void Rsygv(INTEGER const itype, const char *jobz, const char *uplo, INTEGER cons
     }
     //
     if (info != 0) {
-        Mxerbla("Rsygv", -info);
+        Mxerbla("Rsygv ", -info);
         return;
     } else if (lquery) {
         return;
@@ -131,7 +131,7 @@ void Rsygv(INTEGER const itype, const char *jobz, const char *uplo, INTEGER cons
         }
     }
     //
-    work[1 - 1] = lwkopt;
+    work[0] = lwkopt;
     //
     // End of Rsygv
     //
