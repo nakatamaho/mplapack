@@ -31,11 +31,6 @@
 
 void Rsysvx(const char *fact, const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *a, INTEGER const lda, REAL *af, INTEGER const ldaf, INTEGER *ipiv, REAL *b, INTEGER const ldb, REAL *x, INTEGER const ldx, REAL &rcond, REAL *ferr, REAL *berr, REAL *work, INTEGER const lwork, INTEGER *iwork, INTEGER &info) {
     //
-    // -- LAPACK driver routine --
-    //
-    //
-    //
-    //
     // Test the input parameters.
     //
     info = 0;
@@ -69,7 +64,7 @@ void Rsysvx(const char *fact, const char *uplo, INTEGER const n, INTEGER const n
             nb = iMlaenv(1, "Rsytrf", uplo, n, -1, -1, -1);
             lwkopt = max(lwkopt, n * nb);
         }
-        work[1 - 1] = lwkopt;
+        work[0] = lwkopt;
     }
     //
     if (info != 0) {
@@ -119,7 +114,7 @@ void Rsysvx(const char *fact, const char *uplo, INTEGER const n, INTEGER const n
         info = n + 1;
     }
     //
-    work[1 - 1] = lwkopt;
+    work[0] = lwkopt;
     //
     // End of Rsysvx
     //

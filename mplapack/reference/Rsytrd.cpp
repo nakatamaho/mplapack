@@ -54,7 +54,7 @@ void Rsytrd(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL 
         //
         nb = iMlaenv(1, "Rsytrd", uplo, n, -1, -1, -1);
         lwkopt = n * nb;
-        work[1 - 1] = lwkopt;
+        work[0] = lwkopt;
     }
     //
     if (info != 0) {
@@ -67,7 +67,7 @@ void Rsytrd(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL 
     // Quick return if possible
     //
     if (n == 0) {
-        work[1 - 1] = 1;
+        work[0] = 1.0;
         return;
     }
     //
@@ -173,7 +173,7 @@ void Rsytrd(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL 
         Rsytd2(uplo, n - i + 1, &a[(i - 1) + (i - 1) * lda], lda, &d[i - 1], &e[i - 1], &tau[i - 1], iinfo);
     }
     //
-    work[1 - 1] = lwkopt;
+    work[0] = lwkopt;
     //
     // End of Rsytrd
     //

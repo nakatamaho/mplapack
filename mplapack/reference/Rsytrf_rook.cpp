@@ -42,10 +42,6 @@ void Rsytrf_rook(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, 
     INTEGER iinfo = 0;
     INTEGER j = 0;
     //
-    //
-    //
-    //
-    //
     // Test the input parameters.
     //
     info = 0;
@@ -67,7 +63,7 @@ void Rsytrf_rook(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, 
         //
         nb = iMlaenv(1, "Rsytrf_rook", uplo, n, -1, -1, -1);
         lwkopt = max((INTEGER)1, n * nb);
-        work[1 - 1] = lwkopt;
+        work[0] = lwkopt;
     }
     //
     if (info != 0) {
@@ -191,7 +187,7 @@ void Rsytrf_rook(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, 
     }
 //
 statement_40:
-    work[1 - 1] = lwkopt;
+    work[0] = lwkopt;
     //
     // End of Rsytrf_rook
     //

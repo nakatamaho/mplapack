@@ -32,8 +32,8 @@
 void Rsytf2(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INTEGER *ipiv, INTEGER &info) {
     bool upper = false;
     const REAL one = 1.0;
-    const REAL sevten = 17.0e+0;
-    const REAL eight = 8.0e+0;
+    const REAL sevten = 17.0;
+    const REAL eight = 8.0;
     REAL alpha = 0.0;
     INTEGER k = 0;
     INTEGER kstep = 0;
@@ -56,10 +56,6 @@ void Rsytf2(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INTEG
     INTEGER i = 0;
     REAL d21 = 0.0;
     REAL wkp1 = 0.0;
-    //
-    //
-    //
-    //
     //
     // Test the input parameters.
     //
@@ -138,7 +134,7 @@ void Rsytf2(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INTEG
                 rowmax = abs(a[(imax - 1) + (jmax - 1) * lda]);
                 if (imax > 1) {
                     jmax = iRamax(imax - 1, &a[(imax - 1) * lda], 1);
-                    rowmax = max(rowmax, REAL(abs(a[(jmax - 1) + (imax - 1) * lda])));
+                    rowmax = max(rowmax, abs(a[(jmax - 1) + (imax - 1) * lda]));
                 }
                 //
                 if (absakk >= alpha * colmax * (colmax / rowmax)) {
@@ -308,7 +304,7 @@ void Rsytf2(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INTEG
                 rowmax = abs(a[(imax - 1) + (jmax - 1) * lda]);
                 if (imax < n) {
                     jmax = imax + iRamax(n - imax, &a[((imax + 1) - 1) + (imax - 1) * lda], 1);
-                    rowmax = max(rowmax, REAL(abs(a[(jmax - 1) + (imax - 1) * lda])));
+                    rowmax = max(rowmax, abs(a[(jmax - 1) + (imax - 1) * lda]));
                 }
                 //
                 if (absakk >= alpha * colmax * (colmax / rowmax)) {
