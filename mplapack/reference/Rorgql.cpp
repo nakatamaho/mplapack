@@ -31,10 +31,6 @@
 
 void Rorgql(INTEGER const m, INTEGER const n, INTEGER const k, REAL *a, INTEGER const lda, REAL *tau, REAL *work, INTEGER const lwork, INTEGER &info) {
     //
-    //
-    //
-    //
-    //
     // Test the input arguments
     //
     info = 0;
@@ -58,7 +54,7 @@ void Rorgql(INTEGER const m, INTEGER const n, INTEGER const k, REAL *a, INTEGER 
             nb = iMlaenv(1, "Rorgql", " ", m, n, k, -1);
             lwkopt = n * nb;
         }
-        work[1 - 1] = lwkopt;
+        work[0] = lwkopt;
         //
         if (lwork < max((INTEGER)1, n) && !lquery) {
             info = -8;
@@ -165,7 +161,7 @@ void Rorgql(INTEGER const m, INTEGER const n, INTEGER const k, REAL *a, INTEGER 
         }
     }
     //
-    work[1 - 1] = iws;
+    work[0] = iws;
     //
     // End of Rorgql
     //

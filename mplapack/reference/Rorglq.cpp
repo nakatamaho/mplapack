@@ -31,16 +31,12 @@
 
 void Rorglq(INTEGER const m, INTEGER const n, INTEGER const k, REAL *a, INTEGER const lda, REAL *tau, REAL *work, INTEGER const lwork, INTEGER &info) {
     //
-    //
-    //
-    //
-    //
     // Test the input arguments
     //
     info = 0;
     INTEGER nb = iMlaenv(1, "Rorglq", " ", m, n, k, -1);
     INTEGER lwkopt = max((INTEGER)1, m) * nb;
-    work[1 - 1] = lwkopt;
+    work[0] = lwkopt;
     bool lquery = (lwork == -1);
     if (m < 0) {
         info = -1;
@@ -63,7 +59,7 @@ void Rorglq(INTEGER const m, INTEGER const n, INTEGER const k, REAL *a, INTEGER 
     // Quick return if possible
     //
     if (m <= 0) {
-        work[1 - 1] = 1;
+        work[0] = 1.0;
         return;
     }
     //
@@ -158,7 +154,7 @@ void Rorglq(INTEGER const m, INTEGER const n, INTEGER const k, REAL *a, INTEGER 
         }
     }
     //
-    work[1 - 1] = iws;
+    work[0] = iws;
     //
     // End of Rorglq
     //
