@@ -31,10 +31,6 @@
 
 void Rgghrd(const char *compq, const char *compz, INTEGER const n, INTEGER const ilo, INTEGER const ihi, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL *q, INTEGER const ldq, REAL *z, INTEGER const ldz, INTEGER &info) {
     //
-    //
-    //
-    //
-    //
     // Decode COMPQ
     //
     bool ilq = false;

@@ -29,7 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rggsvp3(const char *jobu, const char *jobv, const char *jobq, INTEGER const m, INTEGER const p, INTEGER const n, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL const tola, REAL const tolb, INTEGER &k, INTEGER &l, REAL *u, INTEGER const ldu, REAL *v, INTEGER const ldv, REAL *q, INTEGER const ldq, INTEGER *iwork, REAL *tau, REAL *work, INTEGER const lwork, INTEGER &info) {
+void Rggsvp3(const char *jobu, const char *jobv, const char *jobq, INTEGER const m, INTEGER const p, INTEGER const n, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL const &tola, REAL const &tolb, INTEGER &k, INTEGER &l, REAL *u, INTEGER const ldu, REAL *v, INTEGER const ldv, REAL *q, INTEGER const ldq, INTEGER *iwork, REAL *tau, REAL *work, INTEGER const lwork, INTEGER &info) {
     //
     // Test the input parameters
     //
@@ -73,7 +73,7 @@ void Rggsvp3(const char *jobu, const char *jobv, const char *jobq, INTEGER const
     //
     if (info == 0) {
         Rgeqp3(p, n, b, ldb, iwork, tau, work, -1, info);
-        lwkopt = castINTEGER(work[1 - 1]);
+        lwkopt = castINTEGER(work[0]);
         if (wantv) {
             lwkopt = max(lwkopt, p);
         }
@@ -83,9 +83,9 @@ void Rggsvp3(const char *jobu, const char *jobv, const char *jobq, INTEGER const
             lwkopt = max(lwkopt, n);
         }
         Rgeqp3(m, n, a, lda, iwork, tau, work, -1, info);
-        lwkopt = max(lwkopt, castINTEGER(work[1 - 1]));
+        lwkopt = max(lwkopt, castINTEGER(work[0]));
         lwkopt = max((INTEGER)1, lwkopt);
-        work[1 - 1] = castREAL(lwkopt);
+        work[0] = castREAL(lwkopt);
     }
     //
     if (info != 0) {
@@ -282,7 +282,7 @@ void Rggsvp3(const char *jobu, const char *jobv, const char *jobq, INTEGER const
         //
     }
     //
-    work[1 - 1] = castREAL(lwkopt);
+    work[0] = castREAL(lwkopt);
     //
     // End of Rggsvp3
     //

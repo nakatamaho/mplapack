@@ -31,11 +31,6 @@
 
 void Rgglse(INTEGER const m, INTEGER const n, INTEGER const p, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL *c, REAL *d, REAL *x, REAL *work, INTEGER const lwork, INTEGER &info) {
     //
-    // -- LAPACK driver routine --
-    //
-    //
-    //
-    //
     // Test the input parameters
     //
     info = 0;
@@ -71,11 +66,11 @@ void Rgglse(INTEGER const m, INTEGER const n, INTEGER const p, REAL *a, INTEGER 
             nb2 = iMlaenv(1, "Rgerqf", " ", m, n, -1, -1);
             nb3 = iMlaenv(1, "Rormqr", " ", m, n, p, -1);
             nb4 = iMlaenv(1, "Rormrq", " ", m, n, p, -1);
-            nb = max({nb1, nb2, nb3, nb4});
+            nb = max(nb1, nb2, nb3, nb4);
             lwkmin = m + n + p;
             lwkopt = p + mn + max(m, n) * nb;
         }
-        work[1 - 1] = lwkopt;
+        work[0] = lwkopt;
         //
         if (lwork < lwkmin && !lquery) {
             info = -12;
@@ -166,8 +161,8 @@ void Rgglse(INTEGER const m, INTEGER const n, INTEGER const p, REAL *a, INTEGER 
     //
     // Backward transformation x = Q**T*x
     //
-    Rormrq("Left", "Transpose", n, 1, p, b, ldb, &work[1 - 1], x, n, &work[(p + mn + 1) - 1], lwork - p - mn, info);
-    work[1 - 1] = p + mn + max(lopt, castINTEGER(work[(p + mn + 1) - 1]));
+    Rormrq("Left", "Transpose", n, 1, p, b, ldb, &work[0], x, n, &work[(p + mn + 1) - 1], lwork - p - mn, info);
+    work[0] = p + mn + max(lopt, castINTEGER(work[(p + mn + 1) - 1]));
     //
     // End of Rgglse
     //

@@ -31,11 +31,6 @@
 
 void Rggglm(INTEGER const n, INTEGER const m, INTEGER const p, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL *d, REAL *x, REAL *y, REAL *work, INTEGER const lwork, INTEGER &info) {
     //
-    // -- LAPACK driver routine --
-    //
-    //
-    //
-    //
     // Test the input parameters
     //
     info = 0;
@@ -71,11 +66,11 @@ void Rggglm(INTEGER const n, INTEGER const m, INTEGER const p, REAL *a, INTEGER 
             nb2 = iMlaenv(1, "Rgerqf", " ", n, m, -1, -1);
             nb3 = iMlaenv(1, "Rormqr", " ", n, m, p, -1);
             nb4 = iMlaenv(1, "Rormrq", " ", n, m, p, -1);
-            nb = max({nb1, nb2, nb3, nb4});
+            nb = max(nb1, nb2, nb3, nb4);
             lwkmin = m + n + p;
             lwkopt = m + np + max(n, p) * nb;
         }
-        work[1 - 1] = lwkopt;
+        work[0] = lwkopt;
         //
         if (lwork < lwkmin && !lquery) {
             info = -12;
@@ -163,7 +158,7 @@ void Rggglm(INTEGER const n, INTEGER const m, INTEGER const p, REAL *a, INTEGER 
     // Backward transformation y = Z**T *y
     //
     Rormrq("Left", "Transpose", p, 1, np, &b[(max((INTEGER)1, n - p + 1) - 1)], ldb, &work[(m + 1) - 1], y, max((INTEGER)1, p), &work[(m + np + 1) - 1], lwork - m - np, info);
-    work[1 - 1] = m + np + max(lopt, castINTEGER(work[(m + np + 1) - 1]));
+    work[0] = m + np + max(lopt, castINTEGER(work[(m + np + 1) - 1]));
     //
     // End of Rggglm
     //

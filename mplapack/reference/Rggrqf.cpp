@@ -31,19 +31,15 @@
 
 void Rggrqf(INTEGER const m, INTEGER const p, INTEGER const n, REAL *a, INTEGER const lda, REAL *taua, REAL *b, INTEGER const ldb, REAL *taub, REAL *work, INTEGER const lwork, INTEGER &info) {
     //
-    //
-    //
-    //
-    //
     // Test the input parameters
     //
     info = 0;
     INTEGER nb1 = iMlaenv(1, "Rgerqf", " ", m, n, -1, -1);
     INTEGER nb2 = iMlaenv(1, "Rgeqrf", " ", p, n, -1, -1);
     INTEGER nb3 = iMlaenv(1, "Rormrq", " ", m, n, p, -1);
-    INTEGER nb = max({nb1, nb2, nb3});
-    INTEGER lwkopt = max({n, m, p}) * nb;
-    work[1 - 1] = lwkopt;
+    INTEGER nb = max(nb1, nb2, nb3);
+    INTEGER lwkopt = max(n, m, p) * nb;
+    work[0] = lwkopt;
     bool lquery = (lwork == -1);
     if (m < 0) {
         info = -1;
@@ -55,7 +51,7 @@ void Rggrqf(INTEGER const m, INTEGER const p, INTEGER const n, REAL *a, INTEGER 
         info = -5;
     } else if (ldb < max((INTEGER)1, p)) {
         info = -8;
-    } else if (lwork < max({(INTEGER)1, m, p, n}) && !lquery) {
+    } else if (lwork < max((INTEGER)1, m, p, n) && !lquery) {
         info = -11;
     }
     if (info != 0) {
@@ -68,17 +64,17 @@ void Rggrqf(INTEGER const m, INTEGER const p, INTEGER const n, REAL *a, INTEGER 
     // RQ factorization of M-by-N matrix A: A = R*Q
     //
     Rgerqf(m, n, a, lda, taua, work, lwork, info);
-    INTEGER lopt = castINTEGER(work[1 - 1]);
+    INTEGER lopt = castINTEGER(work[0]);
     //
     // Update B := B*Q**T
     //
     Rormrq("Right", "Transpose", p, n, min(m, n), &a[(max((INTEGER)1, m - n + 1) - 1)], lda, taua, b, ldb, work, lwork, info);
-    lopt = max(lopt, castINTEGER(work[1 - 1]));
+    lopt = max(lopt, castINTEGER(work[0]));
     //
     // QR factorization of P-by-N matrix B: B = Z*T
     //
     Rgeqrf(p, n, b, ldb, taub, work, lwork, info);
-    work[1 - 1] = max(lopt, castINTEGER(work[1 - 1]));
+    work[0] = max(lopt, castINTEGER(work[0]));
     //
     // End of Rggrqf
     //
