@@ -31,10 +31,6 @@
 
 void Rormr3(const char *side, const char *trans, INTEGER const m, INTEGER const n, INTEGER const k, INTEGER const l, REAL *a, INTEGER const lda, REAL *tau, REAL *c, INTEGER const ldc, REAL *work, INTEGER &info) {
     //
-    //
-    //
-    //
-    //
     // Test the input arguments
     //
     info = 0;
