@@ -31,10 +31,6 @@
 
 void Rorgtsqr(INTEGER const m, INTEGER const n, INTEGER const mb, INTEGER const nb, REAL *a, INTEGER const lda, REAL *t, INTEGER const ldt, REAL *work, INTEGER const lwork, INTEGER &info) {
     //
-    //
-    //
-    //
-    //
     // Test the input parameters
     //
     bool lquery = lwork == -1;
@@ -54,10 +50,11 @@ void Rorgtsqr(INTEGER const m, INTEGER const n, INTEGER const mb, INTEGER const 
         info = -4;
     } else if (lda < max((INTEGER)1, m)) {
         info = -6;
-    } else if (ldt < max({(INTEGER)1, min(nb, n)})) {
+    } else if (ldt < max((INTEGER)1, min(nb, n))) {
         info = -8;
     } else {
         //
+        // Test the input LWORK for the dimension of the array WORK.
         // This workspace is used to store array C(LDC, N) and WORK(LWORK)
         // in the call to Rlamtsqr. See the documentation for Rlamtsqr.
         //
@@ -92,14 +89,14 @@ void Rorgtsqr(INTEGER const m, INTEGER const n, INTEGER const mb, INTEGER const 
         Mxerbla("Rorgtsqr", -info);
         return;
     } else if (lquery) {
-        work[1 - 1] = castREAL(lworkopt);
+        work[0] = castREAL(lworkopt);
         return;
     }
     //
     // Quick return if possible
     //
     if (min(m, n) == 0) {
-        work[1 - 1] = castREAL(lworkopt);
+        work[0] = castREAL(lworkopt);
         return;
     }
     //
@@ -127,6 +124,7 @@ void Rorgtsqr(INTEGER const m, INTEGER const n, INTEGER const mb, INTEGER const 
     Rlamtsqr("L", "N", m, n, n, mb, nblocal, a, lda, t, ldt, work, ldc, &work[(lc + 1) - 1], lw, iinfo);
     //
     // (2) Copy the result from the part of the work array (1:M,1:N)
+    // with the leading dimension LDC that starts at WORK(1) into
     // the output array A(1:M,1:N) column-by-column.
     //
     INTEGER j = 0;
@@ -134,7 +132,7 @@ void Rorgtsqr(INTEGER const m, INTEGER const n, INTEGER const mb, INTEGER const 
         Rcopy(m, &work[((j - 1) * ldc + 1) - 1], 1, &a[(j - 1) * lda], 1);
     }
     //
-    work[1 - 1] = castREAL(lworkopt);
+    work[0] = castREAL(lworkopt);
     //
     // End of Rorgtsqr
     //

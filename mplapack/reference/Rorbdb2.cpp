@@ -31,11 +31,6 @@
 
 void Rorbdb2(INTEGER const m, INTEGER const p, INTEGER const q, REAL *x11, INTEGER const ldx11, REAL *x21, INTEGER const ldx21, REAL *theta, REAL *phi, REAL *taup1, REAL *taup2, REAL *tauq1, REAL *work, INTEGER const lwork, INTEGER &info) {
     //
-    //
-    //
-    //
-    // .. Intrinsic Function ..
-    //
     // Test input arguments
     //
     info = 0;
@@ -63,12 +58,12 @@ void Rorbdb2(INTEGER const m, INTEGER const p, INTEGER const q, REAL *x11, INTEG
     INTEGER lworkmin = 0;
     if (info == 0) {
         ilarf = 2;
-        llarf = max({p - 1, m - p, q - 1});
+        llarf = max(p - 1, m - p, q - 1);
         iorbdb5 = 2;
         lorbdb5 = q - 1;
         lworkopt = max(ilarf + llarf - 1, iorbdb5 + lorbdb5 - 1);
         lworkmin = lworkopt;
-        work[1 - 1] = lworkopt;
+        work[0] = lworkopt;
         if (lwork < lworkmin && !lquery) {
             info = -14;
         }
