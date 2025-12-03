@@ -64,7 +64,7 @@ void Rsygst(INTEGER const itype, const char *uplo, INTEGER const n, REAL *a, INT
     INTEGER k = 0;
     INTEGER kb = 0;
     const REAL one = 1.0;
-    const REAL half = 0.5e0;
+    const REAL half = 0.5;
     if (nb <= 1 || nb >= n) {
         //
         // Use unblocked code

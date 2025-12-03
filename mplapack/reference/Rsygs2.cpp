@@ -31,10 +31,6 @@
 
 void Rsygs2(INTEGER const itype, const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, INTEGER &info) {
     //
-    //
-    //
-    //
-    //
     // Test the input parameters.
     //
     info = 0;
@@ -59,7 +55,7 @@ void Rsygs2(INTEGER const itype, const char *uplo, INTEGER const n, REAL *a, INT
     REAL akk = 0.0;
     REAL bkk = 0.0;
     const REAL one = 1.0;
-    const REAL half = 0.5e0;
+    const REAL half = 0.5;
     REAL ct = 0.0;
     if (itype == 1) {
         if (upper) {
