@@ -55,13 +55,13 @@ void Rsysv(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *a, INTEG
             lwkopt = 1;
         } else {
             Rsytrf(uplo, n, a, lda, ipiv, work, -1, info);
-            lwkopt = castINTEGER(work[1 - 1]);
+            lwkopt = castINTEGER(work[0]);
         }
-        work[1 - 1] = lwkopt;
+        work[0] = lwkopt;
     }
     //
     if (info != 0) {
-        Mxerbla("Rsysv", -info);
+        Mxerbla("Rsysv ", -info);
         return;
     } else if (lquery) {
         return;
@@ -90,7 +90,7 @@ void Rsysv(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *a, INTEG
         //
     }
     //
-    work[1 - 1] = lwkopt;
+    work[0] = lwkopt;
     //
     // End of Rsysv
     //
