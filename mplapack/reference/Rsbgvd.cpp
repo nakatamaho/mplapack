@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -31,11 +31,6 @@
 
 void Rsbgvd(const char *jobz, const char *uplo, INTEGER const n, INTEGER const ka, INTEGER const kb, REAL *ab, INTEGER const ldab, REAL *bb, INTEGER const ldbb, REAL *w, REAL *z, INTEGER const ldz, REAL *work, INTEGER const lwork, INTEGER *iwork, INTEGER const liwork, INTEGER &info) {
     //
-    // -- LAPACK driver routine --
-    //
-    //
-    //
-    //
     // Test the input parameters.
     //
     bool wantz = Mlsame(jobz, "V");
@@ -50,7 +45,7 @@ void Rsbgvd(const char *jobz, const char *uplo, INTEGER const n, INTEGER const k
         lwmin = 1;
     } else if (wantz) {
         liwmin = 3 + 5 * n;
-        lwmin = 1 + 5 * n + 2 * n * n;
+        lwmin = 1 + 5 * n + 2 * pow2(n);
     } else {
         liwmin = 1;
         lwmin = 2 * n;
@@ -75,8 +70,8 @@ void Rsbgvd(const char *jobz, const char *uplo, INTEGER const n, INTEGER const k
     }
     //
     if (info == 0) {
-        work[1 - 1] = lwmin;
-        iwork[1 - 1] = liwmin;
+        work[0] = lwmin;
+        iwork[0] = liwmin;
         //
         if (lwork < lwmin && !lquery) {
             info = -14;
@@ -137,8 +132,8 @@ void Rsbgvd(const char *jobz, const char *uplo, INTEGER const n, INTEGER const k
         Rlacpy("A", n, n, &work[indwk2 - 1], n, z, ldz);
     }
     //
-    work[1 - 1] = lwmin;
-    iwork[1 - 1] = liwmin;
+    work[0] = lwmin;
+    iwork[0] = liwmin;
     //
     // End of Rsbgvd
     //
