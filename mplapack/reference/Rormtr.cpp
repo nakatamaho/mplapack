@@ -31,10 +31,6 @@
 
 void Rormtr(const char *side, const char *uplo, const char *trans, INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *tau, REAL *c, INTEGER const ldc, REAL *work, INTEGER const lwork, INTEGER &info) {
     //
-    //
-    //
-    //
-    //
     // Test the input arguments
     //
     info = 0;
@@ -42,6 +38,7 @@ void Rormtr(const char *side, const char *uplo, const char *trans, INTEGER const
     bool upper = Mlsame(uplo, "U");
     bool lquery = (lwork == -1);
     //
+    // NQ is the order of Q and NW is the minimum dimension of WORK
     //
     INTEGER nq = 0;
     INTEGER nw = 0;
@@ -91,7 +88,7 @@ void Rormtr(const char *side, const char *uplo, const char *trans, INTEGER const
             }
         }
         lwkopt = max((INTEGER)1, nw) * nb;
-        work[1 - 1] = lwkopt;
+        work[0] = lwkopt;
     }
     //
     if (info != 0) {
@@ -104,7 +101,7 @@ void Rormtr(const char *side, const char *uplo, const char *trans, INTEGER const
     // Quick return if possible
     //
     if (m == 0 || n == 0 || nq == 1) {
-        work[1 - 1] = 1;
+        work[0] = 1;
         return;
     }
     //
@@ -139,7 +136,7 @@ void Rormtr(const char *side, const char *uplo, const char *trans, INTEGER const
         }
         Rormqr(side, trans, mi, ni, nq - 1, &a[(2 - 1)], lda, tau, &c[(i1 - 1) + (i2 - 1) * ldc], ldc, work, lwork, iinfo);
     }
-    work[1 - 1] = lwkopt;
+    work[0] = lwkopt;
     //
     // End of Rormtr
     //
