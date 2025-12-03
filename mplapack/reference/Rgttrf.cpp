@@ -35,10 +35,6 @@ void Rgttrf(INTEGER const n, REAL *dl, REAL *d, REAL *du, REAL *du2, INTEGER *ip
     REAL fact = 0.0;
     REAL temp = 0.0;
     //
-    //
-    //
-    //
-    //
     info = 0;
     if (n < 0) {
         info = -1;
