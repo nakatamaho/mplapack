@@ -42,10 +42,6 @@ void Rsytrf(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INTEG
     INTEGER iinfo = 0;
     INTEGER j = 0;
     //
-    //
-    //
-    //
-    //
     // Test the input parameters.
     //
     info = 0;
@@ -67,7 +63,7 @@ void Rsytrf(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INTEG
         //
         nb = iMlaenv(1, "Rsytrf", uplo, n, -1, -1, -1);
         lwkopt = n * nb;
-        work[1 - 1] = lwkopt;
+        work[0] = lwkopt;
     }
     //
     if (info != 0) {
@@ -189,7 +185,7 @@ void Rsytrf(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INTEG
     }
 //
 statement_40:
-    work[1 - 1] = lwkopt;
+    work[0] = lwkopt;
     //
     // End of Rsytrf
     //
