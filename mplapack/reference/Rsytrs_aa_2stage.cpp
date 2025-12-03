@@ -31,10 +31,6 @@
 
 void Rsytrs_aa_2stage(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *a, INTEGER const lda, REAL *tb, INTEGER const ltb, INTEGER *ipiv, INTEGER *ipiv2, REAL *b, INTEGER const ldb, INTEGER &info) {
     //
-    //
-    //
-    //
-    //
     info = 0;
     bool upper = Mlsame(uplo, "U");
     if (!upper && !Mlsame(uplo, "L")) {
@@ -63,7 +59,7 @@ void Rsytrs_aa_2stage(const char *uplo, INTEGER const n, INTEGER const nrhs, REA
     //
     // Read NB and compute LDTB
     //
-    INTEGER nb = castINTEGER(tb[1 - 1]);
+    INTEGER nb = castINTEGER(tb[0]);
     INTEGER ldtb = ltb / n;
     //
     const REAL one = 1.0;
