@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -29,12 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rspgvx(INTEGER const itype, const char *jobz, const char *range, const char *uplo, INTEGER const n, REAL *ap, REAL *bp, REAL const vl, REAL const vu, INTEGER const il, INTEGER const iu, REAL const abstol, INTEGER &m, REAL *w, REAL *z, INTEGER const ldz, REAL *work, INTEGER *iwork, INTEGER *ifail, INTEGER &info) {
-    //
-    // -- LAPACK driver routine --
-    //
-    //
-    //
+void Rspgvx(INTEGER const itype, const char *jobz, const char *range, const char *uplo, INTEGER const n, REAL *ap, REAL *bp, REAL const &vl, REAL const &vu, INTEGER const il, INTEGER const iu, REAL const &abstol, INTEGER &m, REAL *w, REAL *z, INTEGER const ldz, REAL *work, INTEGER *iwork, INTEGER *ifail, INTEGER &info) {
     //
     // Test the input parameters.
     //
