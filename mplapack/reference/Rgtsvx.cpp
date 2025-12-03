@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -30,11 +30,6 @@
 #include <mplapack.h>
 
 void Rgtsvx(const char *fact, const char *trans, INTEGER const n, INTEGER const nrhs, REAL *dl, REAL *d, REAL *du, REAL *dlf, REAL *df, REAL *duf, REAL *du2, INTEGER *ipiv, REAL *b, INTEGER const ldb, REAL *x, INTEGER const ldx, REAL &rcond, REAL *ferr, REAL *berr, REAL *work, INTEGER *iwork, INTEGER &info) {
-    //
-    // -- LAPACK driver routine --
-    //
-    //
-    //
     //
     info = 0;
     bool nofact = Mlsame(fact, "N");

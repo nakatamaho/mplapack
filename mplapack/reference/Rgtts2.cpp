@@ -35,10 +35,6 @@ void Rgtts2(INTEGER const itrans, INTEGER const n, INTEGER const nrhs, REAL *dl,
     INTEGER ip = 0;
     REAL temp = 0.0;
     //
-    //
-    //
-    //
-    //
     // Quick return if possible
     //
     if (n == 0 || nrhs == 0) {
@@ -112,9 +108,9 @@ void Rgtts2(INTEGER const itrans, INTEGER const n, INTEGER const nrhs, REAL *dl,
             //
             j = 1;
         statement_70:
-            b[(j - 1) * ldb] = b[(j - 1) * ldb] / d[1 - 1];
+            b[(j - 1) * ldb] = b[(j - 1) * ldb] / d[0];
             if (n > 1) {
-                b[(2 - 1) + (j - 1) * ldb] = (b[(2 - 1) + (j - 1) * ldb] - du[1 - 1] * b[(j - 1) * ldb]) / d[2 - 1];
+                b[(2 - 1) + (j - 1) * ldb] = (b[(2 - 1) + (j - 1) * ldb] - du[0] * b[(j - 1) * ldb]) / d[1];
             }
             for (i = 3; i <= n; i = i + 1) {
                 b[(i - 1) + (j - 1) * ldb] = (b[(i - 1) + (j - 1) * ldb] - du[(i - 1) - 1] * b[((i - 1) - 1) + (j - 1) * ldb] - du2[(i - 2) - 1] * b[((i - 2) - 1) + (j - 1) * ldb]) / d[i - 1];
@@ -138,9 +134,9 @@ void Rgtts2(INTEGER const itrans, INTEGER const n, INTEGER const nrhs, REAL *dl,
                 //
                 // Solve U**T*x = b.
                 //
-                b[(j - 1) * ldb] = b[(j - 1) * ldb] / d[1 - 1];
+                b[(j - 1) * ldb] = b[(j - 1) * ldb] / d[0];
                 if (n > 1) {
-                    b[(2 - 1) + (j - 1) * ldb] = (b[(2 - 1) + (j - 1) * ldb] - du[1 - 1] * b[(j - 1) * ldb]) / d[2 - 1];
+                    b[(2 - 1) + (j - 1) * ldb] = (b[(2 - 1) + (j - 1) * ldb] - du[0] * b[(j - 1) * ldb]) / d[1];
                 }
                 for (i = 3; i <= n; i = i + 1) {
                     b[(i - 1) + (j - 1) * ldb] = (b[(i - 1) + (j - 1) * ldb] - du[(i - 1) - 1] * b[((i - 1) - 1) + (j - 1) * ldb] - du2[(i - 2) - 1] * b[((i - 2) - 1) + (j - 1) * ldb]) / d[i - 1];
