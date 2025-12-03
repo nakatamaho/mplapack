@@ -74,6 +74,7 @@ MANUAL_MAPPINGS=(
   "iparmq iMparmq"
   "ieeeck iMeeeck"
   "ilauplo iMlauplo"
+  "dlamc3 Rlamc3"
 )
 
 # ------------------------------------------------------------

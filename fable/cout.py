@@ -3742,6 +3742,48 @@ def produce_fortran_file_comment(conv_info, callback):
         callback("// Fortran file: %s"
                  % conv_info.fproc.body_lines[0].source_line_cluster[0].file_name)
 
+def _mark_call_actuals_used(conv_info):
+    """Bump use_count for variables that appear as actual arguments in CALL.
+
+    Some local workspace arrays may only be used as actual arguments to
+    external routines, and their use_count may be zero from the expression
+    analysis. This pass ensures that any such variable is treated as "used"
+    at least once so that its declaration is not dropped.
+    """
+    from fable.tokenization import extract_identifiers
+
+    # conv_info.fproc is the current Fortran procedure
+    fproc = getattr(conv_info, "fproc", None)
+    if fproc is None:
+        return
+
+    # Executable statements are stored in fproc.executable
+    execs = getattr(fproc, "executable", None)
+    if execs is None:
+        return
+
+    for ei in execs:
+        # We only care about CALL statements
+        if getattr(ei, "key", None) != "call":
+            continue
+
+        # The tokens for the actual argument list live in ei.arg_token.value
+        arg_tok = getattr(ei, "arg_token", None)
+        if arg_tok is None:
+            continue
+
+        id_tokens = extract_identifiers(tokens=arg_tok.value)
+        for id_tok in id_tokens:
+            fdecl = fproc.get_fdecl(id_tok=id_tok)
+            if fdecl is None:
+                continue
+            # Only bump use_count for local variables; skip dummies, COMMON, etc.
+            if not fdecl.is_local():
+                continue
+            if getattr(fdecl, "use_count", 0) == 0:
+                # Debug print; comment out when no longer needed
+                print(f"[CALL_USED] bump use_count for {id_tok.value}", file=sys.stderr)
+                fdecl.use_count = 1
 
 def convert_to_cpp_function(
         cpp_callback,
@@ -3753,6 +3795,10 @@ def convert_to_cpp_function(
     global complex_identifiers, complex_pointer_identifiers
     complex_identifiers = set()
     complex_pointer_identifiers = set()
+
+    # Ensure that any variable used as a CALL actual argument is treated
+    # as "used" at least once, so its declaration is not dropped.
+    _mark_call_actuals_used(conv_info)
 
     if (not declaration_only):
         export_save_struct(callback=cpp_callback, conv_info=conv_info)
