@@ -29,7 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rsbgvx(const char *jobz, const char *range, const char *uplo, INTEGER const n, INTEGER const ka, INTEGER const kb, REAL *ab, INTEGER const ldab, REAL *bb, INTEGER const ldbb, REAL *q, INTEGER const ldq, REAL const vl, REAL const vu, INTEGER const il, INTEGER const iu, REAL const abstol, INTEGER &m, REAL *w, REAL *z, INTEGER const ldz, REAL *work, INTEGER *iwork, INTEGER *ifail, INTEGER &info) {
+void Rsbgvx(const char *jobz, const char *range, const char *uplo, INTEGER const n, INTEGER const ka, INTEGER const kb, REAL *ab, INTEGER const ldab, REAL *bb, INTEGER const ldbb, REAL *q, INTEGER const ldq, REAL const &vl, REAL const &vu, INTEGER const il, INTEGER const iu, REAL const &abstol, INTEGER &m, REAL *w, REAL *z, INTEGER const ldz, REAL *work, INTEGER *iwork, INTEGER *ifail, INTEGER &info) {
     bool wantz = false;
     bool upper = false;
     bool alleig = false;
@@ -54,11 +54,6 @@ void Rsbgvx(const char *jobz, const char *range, const char *uplo, INTEGER const
     REAL tmp1 = 0.0;
     INTEGER jj = 0;
     INTEGER itmp1 = 0;
-    //
-    // -- LAPACK driver routine --
-    //
-    //
-    //
     //
     // Test the input parameters.
     //
@@ -194,7 +189,7 @@ void Rsbgvx(const char *jobz, const char *range, const char *uplo, INTEGER const
         // form to eigenvectors returned by Rstein.
         //
         for (j = 1; j <= m; j = j + 1) {
-            Rcopy(n, &z[(j - 1) * ldz], 1, &work[1 - 1], 1);
+            Rcopy(n, &z[(j - 1) * ldz], 1, &work[0], 1);
             Rgemv("N", n, n, one, q, ldq, work, 1, zero, &z[(j - 1) * ldz], 1);
         }
     }
