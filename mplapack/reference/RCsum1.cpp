@@ -35,10 +35,6 @@ REAL RCsum1(INTEGER const n, COMPLEX *cx, INTEGER const incx) {
     INTEGER nincx = 0;
     INTEGER i = 0;
     //
-    //
-    //
-    //
-    //
     return_value = 0.0;
     stemp = 0.0;
     if (n <= 0) {
