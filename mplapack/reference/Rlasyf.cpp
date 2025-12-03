@@ -31,8 +31,8 @@
 
 void Rlasyf(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &kb, REAL *a, INTEGER const lda, INTEGER *ipiv, REAL *w, INTEGER const ldw, INTEGER &info) {
     const REAL one = 1.0;
-    const REAL sevten = 17.0e+0;
-    const REAL eight = 8.0e+0;
+    const REAL sevten = 17.0;
+    const REAL eight = 8.0;
     REAL alpha = 0.0;
     INTEGER k = 0;
     INTEGER kw = 0;
@@ -55,10 +55,6 @@ void Rlasyf(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &kb, RE
     INTEGER jb = 0;
     INTEGER jj = 0;
     INTEGER jp = 0;
-    //
-    //
-    //
-    //
     //
     info = 0;
     //
@@ -142,7 +138,7 @@ void Rlasyf(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &kb, RE
                 rowmax = abs(w[(jmax - 1) + ((kw - 1) - 1) * ldw]);
                 if (imax > 1) {
                     jmax = iRamax(imax - 1, &w[((kw - 1) - 1) * ldw], 1);
-                    rowmax = max(rowmax, REAL(abs(w[(jmax - 1) + ((kw - 1) - 1) * ldw])));
+                    rowmax = max(rowmax, abs(w[(jmax - 1) + ((kw - 1) - 1) * ldw]));
                 }
                 //
                 if (absakk >= alpha * colmax * (colmax / rowmax)) {
@@ -169,8 +165,6 @@ void Rlasyf(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &kb, RE
                     kstep = 2;
                 }
             }
-            //
-            //
             // KK is the column of A where pivoting step stopped
             //
             kk = k - kstep + 1;
@@ -431,7 +425,7 @@ void Rlasyf(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &kb, RE
                 rowmax = abs(w[(jmax - 1) + ((k + 1) - 1) * ldw]);
                 if (imax < n) {
                     jmax = imax + iRamax(n - imax, &w[((imax + 1) - 1) + ((k + 1) - 1) * ldw], 1);
-                    rowmax = max(rowmax, REAL(abs(w[(jmax - 1) + ((k + 1) - 1) * ldw])));
+                    rowmax = max(rowmax, abs(w[(jmax - 1) + ((k + 1) - 1) * ldw]));
                 }
                 //
                 if (absakk >= alpha * colmax * (colmax / rowmax)) {
@@ -458,8 +452,6 @@ void Rlasyf(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &kb, RE
                     kstep = 2;
                 }
             }
-            //
-            //
             // KK is the column of A where pivoting step stopped
             //
             kk = k + kstep - 1;

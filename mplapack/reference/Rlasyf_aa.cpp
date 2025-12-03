@@ -41,10 +41,6 @@ void Rlasyf_aa(const char *uplo, INTEGER const j1, INTEGER const m, INTEGER cons
     INTEGER i1 = 0;
     const REAL zero = 0.0;
     //
-    //
-    //
-    //
-    //
     j = 1;
     //
     // K1 is the first column of the panel to be factorized
@@ -94,7 +90,7 @@ void Rlasyf_aa(const char *uplo, INTEGER const j1, INTEGER const m, INTEGER cons
         //
         // Copy H(i:M, i) into WORK
         //
-        Rcopy(mj, &h[(j - 1) + (j - 1) * ldh], 1, &work[1 - 1], 1);
+        Rcopy(mj, &h[(j - 1) + (j - 1) * ldh], 1, &work[0], 1);
         //
         if (j > k1) {
             //
@@ -102,12 +98,12 @@ void Rlasyf_aa(const char *uplo, INTEGER const j1, INTEGER const m, INTEGER cons
             // where A(J-1, J) stores T(J-1, J) and A(J-2, J:M) stores U(J-1, J:M)
             //
             alpha = -a[((k - 1) - 1) + (j - 1) * lda];
-            Raxpy(mj, alpha, &a[((k - 2) - 1) + (j - 1) * lda], lda, &work[1 - 1], 1);
+            Raxpy(mj, alpha, &a[((k - 2) - 1) + (j - 1) * lda], lda, &work[0], 1);
         }
         //
         // Set A(J, J) = T(J, J)
         //
-        a[(k - 1) + (j - 1) * lda] = work[1 - 1];
+        a[(k - 1) + (j - 1) * lda] = work[0];
         //
         if (j < m) {
             //
@@ -116,12 +112,12 @@ void Rlasyf_aa(const char *uplo, INTEGER const j1, INTEGER const m, INTEGER cons
             //
             if (k > 1) {
                 alpha = -a[(k - 1) + (j - 1) * lda];
-                Raxpy(m - j, alpha, &a[((k - 1) - 1) + ((j + 1) - 1) * lda], lda, &work[2 - 1], 1);
+                Raxpy(m - j, alpha, &a[((k - 1) - 1) + ((j + 1) - 1) * lda], lda, &work[1], 1);
             }
             //
             // Find max(|WORK(2:M)|)
             //
-            i2 = iRamax(m - j, &work[2 - 1], 1) + 1;
+            i2 = iRamax(m - j, &work[1], 1) + 1;
             piv = work[i2 - 1];
             //
             // Apply symmetric pivot
@@ -170,7 +166,7 @@ void Rlasyf_aa(const char *uplo, INTEGER const j1, INTEGER const m, INTEGER cons
             //
             // Set A(J, J+1) = T(J, J+1)
             //
-            a[(k - 1) + ((j + 1) - 1) * lda] = work[2 - 1];
+            a[(k - 1) + ((j + 1) - 1) * lda] = work[1];
             //
             if (j < nb) {
                 //
@@ -185,7 +181,7 @@ void Rlasyf_aa(const char *uplo, INTEGER const j1, INTEGER const m, INTEGER cons
             if (j < (m - 1)) {
                 if (a[(k - 1) + ((j + 1) - 1) * lda] != zero) {
                     alpha = one / a[(k - 1) + ((j + 1) - 1) * lda];
-                    Rcopy(m - j - 1, &work[3 - 1], 1, &a[(k - 1) + ((j + 2) - 1) * lda], lda);
+                    Rcopy(m - j - 1, &work[2], 1, &a[(k - 1) + ((j + 2) - 1) * lda], lda);
                     Rscal(m - j - 1, alpha, &a[(k - 1) + ((j + 2) - 1) * lda], lda);
                 } else {
                     Rlaset("Full", 1, m - j - 1, zero, zero, &a[(k - 1) + ((j + 2) - 1) * lda], lda);
@@ -238,7 +234,7 @@ void Rlasyf_aa(const char *uplo, INTEGER const j1, INTEGER const m, INTEGER cons
         //
         // Copy H(J:M, J) into WORK
         //
-        Rcopy(mj, &h[(j - 1) + (j - 1) * ldh], 1, &work[1 - 1], 1);
+        Rcopy(mj, &h[(j - 1) + (j - 1) * ldh], 1, &work[0], 1);
         //
         if (j > k1) {
             //
@@ -246,12 +242,12 @@ void Rlasyf_aa(const char *uplo, INTEGER const j1, INTEGER const m, INTEGER cons
             // where A(J-1, J) = T(J-1, J) and A(J, J-2) = L(J, J-1)
             //
             alpha = -a[(j - 1) + ((k - 1) - 1) * lda];
-            Raxpy(mj, alpha, &a[(j - 1) + ((k - 2) - 1) * lda], 1, &work[1 - 1], 1);
+            Raxpy(mj, alpha, &a[(j - 1) + ((k - 2) - 1) * lda], 1, &work[0], 1);
         }
         //
         // Set A(J, J) = T(J, J)
         //
-        a[(j - 1) + (k - 1) * lda] = work[1 - 1];
+        a[(j - 1) + (k - 1) * lda] = work[0];
         //
         if (j < m) {
             //
@@ -260,12 +256,12 @@ void Rlasyf_aa(const char *uplo, INTEGER const j1, INTEGER const m, INTEGER cons
             //
             if (k > 1) {
                 alpha = -a[(j - 1) + (k - 1) * lda];
-                Raxpy(m - j, alpha, &a[((j + 1) - 1) + ((k - 1) - 1) * lda], 1, &work[2 - 1], 1);
+                Raxpy(m - j, alpha, &a[((j + 1) - 1) + ((k - 1) - 1) * lda], 1, &work[1], 1);
             }
             //
             // Find max(|WORK(2:M)|)
             //
-            i2 = iRamax(m - j, &work[2 - 1], 1) + 1;
+            i2 = iRamax(m - j, &work[1], 1) + 1;
             piv = work[i2 - 1];
             //
             // Apply symmetric pivot
@@ -314,7 +310,7 @@ void Rlasyf_aa(const char *uplo, INTEGER const j1, INTEGER const m, INTEGER cons
             //
             // Set A(J+1, J) = T(J+1, J)
             //
-            a[((j + 1) - 1) + (k - 1) * lda] = work[2 - 1];
+            a[((j + 1) - 1) + (k - 1) * lda] = work[1];
             //
             if (j < nb) {
                 //
@@ -329,7 +325,7 @@ void Rlasyf_aa(const char *uplo, INTEGER const j1, INTEGER const m, INTEGER cons
             if (j < (m - 1)) {
                 if (a[((j + 1) - 1) + (k - 1) * lda] != zero) {
                     alpha = one / a[((j + 1) - 1) + (k - 1) * lda];
-                    Rcopy(m - j - 1, &work[3 - 1], 1, &a[((j + 2) - 1) + (k - 1) * lda], 1);
+                    Rcopy(m - j - 1, &work[2], 1, &a[((j + 2) - 1) + (k - 1) * lda], 1);
                     Rscal(m - j - 1, alpha, &a[((j + 2) - 1) + (k - 1) * lda], 1);
                 } else {
                     Rlaset("Full", m - j - 1, 1, zero, zero, &a[((j + 2) - 1) + (k - 1) * lda], lda);
