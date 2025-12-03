@@ -31,10 +31,6 @@
 
 void Rorgbr(const char *vect, INTEGER const m, INTEGER const n, INTEGER const k, REAL *a, INTEGER const lda, REAL *tau, REAL *work, INTEGER const lwork, INTEGER &info) {
     //
-    //
-    //
-    //
-    //
     // Test the input arguments
     //
     info = 0;
@@ -58,7 +54,7 @@ void Rorgbr(const char *vect, INTEGER const m, INTEGER const n, INTEGER const k,
     INTEGER iinfo = 0;
     INTEGER lwkopt = 0;
     if (info == 0) {
-        work[1 - 1] = 1;
+        work[0] = 1.0;
         if (wantq) {
             if (m >= k) {
                 Rorgqr(m, n, k, a, lda, tau, work, -1, iinfo);
@@ -76,7 +72,7 @@ void Rorgbr(const char *vect, INTEGER const m, INTEGER const n, INTEGER const k,
                 }
             }
         }
-        lwkopt = castINTEGER(work[1 - 1]);
+        lwkopt = castINTEGER(work[0]);
         lwkopt = max(lwkopt, mn);
     }
     //
@@ -84,14 +80,14 @@ void Rorgbr(const char *vect, INTEGER const m, INTEGER const n, INTEGER const k,
         Mxerbla("Rorgbr", -info);
         return;
     } else if (lquery) {
-        work[1 - 1] = lwkopt;
+        work[0] = lwkopt;
         return;
     }
     //
     // Quick return if possible
     //
     if (m == 0 || n == 0) {
-        work[1 - 1] = 1;
+        work[0] = 1.0;
         return;
     }
     //
@@ -172,7 +168,7 @@ void Rorgbr(const char *vect, INTEGER const m, INTEGER const n, INTEGER const k,
             }
         }
     }
-    work[1 - 1] = lwkopt;
+    work[0] = lwkopt;
     //
     // End of Rorgbr
     //

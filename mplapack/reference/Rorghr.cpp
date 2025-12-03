@@ -53,7 +53,7 @@ void Rorghr(INTEGER const n, INTEGER const ilo, INTEGER const ihi, REAL *a, INTE
     if (info == 0) {
         nb = iMlaenv(1, "Rorgqr", " ", nh, nh, nh, -1);
         lwkopt = max((INTEGER)1, nh) * nb;
-        work[1 - 1] = lwkopt;
+        work[0] = lwkopt;
     }
     //
     if (info != 0) {
@@ -66,7 +66,7 @@ void Rorghr(INTEGER const n, INTEGER const ilo, INTEGER const ihi, REAL *a, INTE
     // Quick return if possible
     //
     if (n == 0) {
-        work[1 - 1] = 1;
+        work[0] = 1.0;
         return;
     }
     //
@@ -109,7 +109,7 @@ void Rorghr(INTEGER const n, INTEGER const ilo, INTEGER const ihi, REAL *a, INTE
         //
         Rorgqr(nh, nh, nh, &a[((ilo + 1) - 1) + ((ilo + 1) - 1) * lda], lda, &tau[ilo - 1], work, lwork, iinfo);
     }
-    work[1 - 1] = lwkopt;
+    work[0] = lwkopt;
     //
     // End of Rorghr
     //

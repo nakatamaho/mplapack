@@ -31,11 +31,6 @@
 
 void Rorbdb5(INTEGER const m1, INTEGER const m2, INTEGER const n, REAL *x1, INTEGER const incx1, REAL *x2, INTEGER const incx2, REAL *q1, INTEGER const ldq1, REAL *q2, INTEGER const ldq2, REAL *work, INTEGER const lwork, INTEGER &info) {
     //
-    //
-    //
-    //
-    // .. Intrinsic Function ..
-    //
     // Test input arguments
     //
     info = 0;

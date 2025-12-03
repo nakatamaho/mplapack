@@ -31,11 +31,6 @@
 
 void Rorbdb6(INTEGER const m1, INTEGER const m2, INTEGER const n, REAL *x1, INTEGER const incx1, REAL *x2, INTEGER const incx2, REAL *q1, INTEGER const ldq1, REAL *q2, INTEGER const ldq2, REAL *work, INTEGER const lwork, INTEGER &info) {
     //
-    //
-    //
-    //
-    // .. Intrinsic Function ..
-    //
     // Test input arguments
     //
     info = 0;
@@ -104,7 +99,7 @@ void Rorbdb6(INTEGER const m1, INTEGER const m2, INTEGER const n, REAL *x1, INTE
     // If projection is zero, then stop.
     // Otherwise, project again.
     //
-    const REAL alphasq = 0.01e0;
+    const REAL alphasq = 0.01;
     if (normsq2 >= alphasq * normsq1) {
         return;
     }
