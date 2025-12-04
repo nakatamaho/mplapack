@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -29,7 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Csycon_rook(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, INTEGER *ipiv, REAL const anorm, REAL &rcond, COMPLEX *work, INTEGER &info) {
+void Csycon_rook(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, INTEGER *ipiv, REAL const &anorm, REAL &rcond, COMPLEX *work, INTEGER &info) {
     bool upper = false;
     const REAL zero = 0.0;
     const REAL one = 1.0;
@@ -38,11 +38,6 @@ void Csycon_rook(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const ld
     INTEGER kase = 0;
     REAL ainvnm = 0.0;
     INTEGER isave[3];
-    //
-    //
-    //
-    //
-    // .. Local Arrays ..
     //
     // Test the input parameters.
     //
