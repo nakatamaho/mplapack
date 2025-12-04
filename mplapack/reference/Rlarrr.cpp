@@ -41,12 +41,7 @@ void Rlarrr(INTEGER const n, REAL *d, REAL *e, INTEGER &info) {
     INTEGER i = 0;
     REAL tmp2 = 0.0;
     REAL offdig2 = 0.0;
-    const REAL relcond = 0.999e0;
-    //
-    //
-    //
-    //
-    //
+    const REAL relcond = 0.999;
     //
     // Quick return if possible
     //
@@ -82,7 +77,7 @@ void Rlarrr(INTEGER const n, REAL *d, REAL *e, INTEGER &info) {
     //
     yesrel = true;
     offdig = zero;
-    tmp = sqrt(abs(d[1 - 1]));
+    tmp = sqrt(abs(d[0]));
     if (tmp < rmin) {
         yesrel = false;
     }
