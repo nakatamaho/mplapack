@@ -33,10 +33,6 @@ INTEGER
 iCmax1(INTEGER const n, COMPLEX *zx, INTEGER const incx) {
     INTEGER return_value = 0;
     //
-    //
-    //
-    //
-    //
     return_value = 0;
     if (n < 1 || incx <= 0) {
         return return_value;
@@ -52,7 +48,7 @@ iCmax1(INTEGER const n, COMPLEX *zx, INTEGER const incx) {
         //
         // code for increment equal to 1
         //
-        dmax = abs(zx[1 - 1]);
+        dmax = abs(zx[0]);
         for (i = 2; i <= n; i = i + 1) {
             if (abs(zx[i - 1]) > dmax) {
                 return_value = i;
@@ -64,7 +60,7 @@ iCmax1(INTEGER const n, COMPLEX *zx, INTEGER const incx) {
         // code for increment not equal to 1
         //
         ix = 1;
-        dmax = abs(zx[1 - 1]);
+        dmax = abs(zx[0]);
         ix += incx;
         for (i = 2; i <= n; i = i + 1) {
             if (abs(zx[ix - 1]) > dmax) {

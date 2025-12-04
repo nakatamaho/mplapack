@@ -33,10 +33,6 @@ INTEGER
 iMladlr(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda) {
     INTEGER return_value = 0;
     //
-    //
-    //
-    //
-    //
     // Quick test for the common case where one corner is non-zero.
     const REAL zero = 0.0;
     INTEGER j = 0;
