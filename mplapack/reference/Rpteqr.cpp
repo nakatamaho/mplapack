@@ -31,11 +31,6 @@
 
 void Rpteqr(const char *compz, INTEGER const n, REAL *d, REAL *e, REAL *z, INTEGER const ldz, REAL *work, INTEGER &info) {
     //
-    //
-    //
-    //
-    // .. Local Arrays ..
-    //
     // Test the input parameters.
     //
     info = 0;
