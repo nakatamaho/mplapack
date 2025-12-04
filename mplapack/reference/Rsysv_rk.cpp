@@ -31,11 +31,6 @@
 
 void Rsysv_rk(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *a, INTEGER const lda, REAL *e, INTEGER *ipiv, REAL *b, INTEGER const ldb, REAL *work, INTEGER const lwork, INTEGER &info) {
     //
-    // -- LAPACK driver routine --
-    //
-    //
-    //
-    //
     // Test the input parameters.
     //
     info = 0;
@@ -60,13 +55,13 @@ void Rsysv_rk(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *a, IN
             lwkopt = 1;
         } else {
             Rsytrf_rk(uplo, n, a, lda, e, ipiv, work, -1, info);
-            lwkopt = castINTEGER(work[1 - 1]);
+            lwkopt = castINTEGER(work[0]);
         }
-        work[1 - 1] = lwkopt;
+        work[0] = lwkopt;
     }
     //
     if (info != 0) {
-        Mxerbla("Rsysv_rk", -info);
+        Mxerbla("Rsysv_rk ", -info);
         return;
     } else if (lquery) {
         return;
@@ -85,7 +80,7 @@ void Rsysv_rk(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *a, IN
         //
     }
     //
-    work[1 - 1] = lwkopt;
+    work[0] = lwkopt;
     //
     // End of Rsysv_rk
     //
