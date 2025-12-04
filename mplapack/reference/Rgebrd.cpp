@@ -58,7 +58,7 @@ void Rgebrd(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *
     //
     INTEGER minmn = min(m, n);
     if (minmn == 0) {
-        work[0] = 1;
+        work[0] = 1.0;
         return;
     }
     //

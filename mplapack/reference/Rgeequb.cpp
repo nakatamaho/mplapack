@@ -31,10 +31,6 @@
 
 void Rgeequb(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *r, REAL *c, REAL &rowcnd, REAL &colcnd, REAL &amax, INTEGER &info) {
     //
-    //
-    //
-    //
-    //
     // Test the input parameters.
     //
     info = 0;
@@ -80,7 +76,7 @@ void Rgeequb(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL 
     INTEGER j = 0;
     for (j = 1; j <= n; j = j + 1) {
         for (i = 1; i <= m; i = i + 1) {
-            r[i - 1] = max(r[i - 1], REAL(abs(a[(i - 1) + (j - 1) * lda])));
+            r[i - 1] = max(r[i - 1], abs(a[(i - 1) + (j - 1) * lda]));
         }
     }
     for (i = 1; i <= m; i = i + 1) {
@@ -133,7 +129,7 @@ void Rgeequb(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL 
     //
     for (j = 1; j <= n; j = j + 1) {
         for (i = 1; i <= m; i = i + 1) {
-            c[j - 1] = max(c[j - 1], REAL(abs(a[(i - 1) + (j - 1) * lda]) * r[i - 1]));
+            c[j - 1] = max(c[j - 1], abs(a[(i - 1) + (j - 1) * lda]) * r[i - 1]);
         }
         if (c[j - 1] > zero) {
             c[j - 1] = pow(radix, castINTEGER(log(c[j - 1]) / logrdx));
