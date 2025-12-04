@@ -32,11 +32,6 @@
 REAL Rlangb(const char *norm, INTEGER const n, INTEGER const kl, INTEGER const ku, REAL *ab, INTEGER const ldab, REAL *work) {
     REAL return_value = 0.0;
     //
-    //
-    //
-    //
-    // .. Local Arrays ..
-    //
     const REAL zero = 0.0;
     REAL value = 0.0;
     INTEGER j = 0;
@@ -63,7 +58,7 @@ REAL Rlangb(const char *norm, INTEGER const n, INTEGER const kl, INTEGER const k
                 }
             }
         }
-    } else if ((Mlsame(norm, "O")) || ((Mlsame(norm, "1")))) {
+    } else if ((Mlsame(norm, "O")) || (Mlsame(norm, "1"))) {
         //
         // Find norm1(A).
         //
@@ -104,17 +99,17 @@ REAL Rlangb(const char *norm, INTEGER const n, INTEGER const kl, INTEGER const k
         // SSQ(2) is sum-of-squares
         // For better accuracy, sum each column separately.
         //
-        ssq[1 - 1] = zero;
-        ssq[2 - 1] = one;
+        ssq[0] = zero;
+        ssq[1] = one;
         for (j = 1; j <= n; j = j + 1) {
             l = max((INTEGER)1, j - ku);
             k = ku + 1 - j + l;
-            colssq[1 - 1] = zero;
-            colssq[2 - 1] = one;
-            Rlassq(min(n, j + kl) - l + 1, &ab[(k - 1) + (j - 1) * ldab], 1, colssq[1 - 1], colssq[2 - 1]);
+            colssq[0] = zero;
+            colssq[1] = one;
+            Rlassq(min(n, j + kl) - l + 1, &ab[(k - 1) + (j - 1) * ldab], 1, colssq[0], colssq[1]);
             Rcombssq(ssq, colssq);
         }
-        value = ssq[1 - 1] * sqrt(ssq[2 - 1]);
+        value = ssq[0] * sqrt(ssq[1]);
     }
     //
     return_value = value;
