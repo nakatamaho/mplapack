@@ -73,10 +73,6 @@ void Rsteqr(const char *compz, INTEGER const n, REAL *d, REAL *e, REAL *z, INTEG
     INTEGER k = 0;
     INTEGER j = 0;
     //
-    //
-    //
-    //
-    //
     // Test the input parameters.
     //
     info = 0;

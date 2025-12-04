@@ -67,10 +67,6 @@ void Rsterf(INTEGER const n, REAL *d, REAL *e, INTEGER &info) {
     REAL oldgam = 0.0;
     REAL alpha = 0.0;
     //
-    //
-    //
-    //
-    //
     // Test the input parameters.
     //
     info = 0;
