@@ -36,10 +36,6 @@ void Rlamrg(INTEGER const n1, INTEGER const n2, REAL *a, INTEGER const dtrd1, IN
     INTEGER ind2 = 0;
     INTEGER i = 0;
     //
-    //
-    //
-    //
-    //
     n1sv = n1;
     n2sv = n2;
     if (dtrd1 > 0) {
