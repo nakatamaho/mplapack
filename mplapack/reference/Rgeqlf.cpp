@@ -31,10 +31,6 @@
 
 void Rgeqlf(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *tau, REAL *work, INTEGER const lwork, INTEGER &info) {
     //
-    //
-    //
-    //
-    //
     // Test the input arguments
     //
     info = 0;
@@ -58,7 +54,7 @@ void Rgeqlf(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *
             nb = iMlaenv(1, "Rgeqlf", " ", m, n, -1, -1);
             lwkopt = n * nb;
         }
-        work[1 - 1] = lwkopt;
+        work[0] = lwkopt;
         //
         if (lwork < max((INTEGER)1, n) && !lquery) {
             info = -7;
@@ -151,7 +147,7 @@ void Rgeqlf(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *
         Rgeql2(mu, nu, a, lda, tau, work, iinfo);
     }
     //
-    work[1 - 1] = iws;
+    work[0] = iws;
     //
     // End of Rgeqlf
     //

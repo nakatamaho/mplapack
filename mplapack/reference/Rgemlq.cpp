@@ -31,10 +31,6 @@
 
 void Rgemlq(const char *side, const char *trans, INTEGER const m, INTEGER const n, INTEGER const k, REAL *a, INTEGER const lda, REAL *t, INTEGER const tsize, REAL *c, INTEGER const ldc, REAL *work, INTEGER const lwork, INTEGER &info) {
     //
-    //
-    //
-    //
-    //
     // Test the input arguments
     //
     bool lquery = lwork == -1;
@@ -43,8 +39,8 @@ void Rgemlq(const char *side, const char *trans, INTEGER const m, INTEGER const 
     bool left = Mlsame(side, "L");
     bool right = Mlsame(side, "R");
     //
-    INTEGER mb = castINTEGER(t[2 - 1]);
-    INTEGER nb = castINTEGER(t[3 - 1]);
+    INTEGER mb = castINTEGER(t[1]);
+    INTEGER nb = castINTEGER(t[2]);
     INTEGER lw = 0;
     INTEGER mn = 0;
     if (left) {
@@ -88,7 +84,7 @@ void Rgemlq(const char *side, const char *trans, INTEGER const m, INTEGER const 
     }
     //
     if (info == 0) {
-        work[1 - 1] = lw;
+        work[0] = lw;
     }
     //
     if (info != 0) {
@@ -100,17 +96,17 @@ void Rgemlq(const char *side, const char *trans, INTEGER const m, INTEGER const 
     //
     // Quick return if possible
     //
-    if (min({m, n, k}) == 0) {
+    if (min(m, n, k) == 0) {
         return;
     }
     //
-    if ((left && m <= k) || (right && n <= k) || (nb <= k) || (nb >= max({m, n, k}))) {
-        Rgemlqt(side, trans, m, n, k, mb, a, lda, &t[6 - 1], mb, c, ldc, work, info);
+    if ((left && m <= k) || (right && n <= k) || (nb <= k) || (nb >= max(m, n, k))) {
+        Rgemlqt(side, trans, m, n, k, mb, a, lda, &t[5], mb, c, ldc, work, info);
     } else {
-        Rlamswlq(side, trans, m, n, k, mb, nb, a, lda, &t[6 - 1], mb, c, ldc, work, lwork, info);
+        Rlamswlq(side, trans, m, n, k, mb, nb, a, lda, &t[5], mb, c, ldc, work, lwork, info);
     }
     //
-    work[1 - 1] = lw;
+    work[0] = lw;
     //
     // End of Rgemlq
     //
