@@ -29,7 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rspevx(const char *jobz, const char *range, const char *uplo, INTEGER const n, REAL *ap, REAL const vl, REAL const vu, INTEGER const il, INTEGER const iu, REAL const abstol, INTEGER &m, REAL *w, REAL *z, INTEGER const ldz, REAL *work, INTEGER *iwork, INTEGER *ifail, INTEGER &info) {
+void Rspevx(const char *jobz, const char *range, const char *uplo, INTEGER const n, REAL *ap, REAL const &vl, REAL const &vu, INTEGER const il, INTEGER const iu, REAL const &abstol, INTEGER &m, REAL *w, REAL *z, INTEGER const ldz, REAL *work, INTEGER *iwork, INTEGER *ifail, INTEGER &info) {
     bool wantz = false;
     bool alleig = false;
     bool valeig = false;
@@ -117,11 +117,11 @@ void Rspevx(const char *jobz, const char *range, const char *uplo, INTEGER const
     if (n == 1) {
         if (alleig || indeig) {
             m = 1;
-            w[1 - 1] = ap[1 - 1];
+            w[0] = ap[0];
         } else {
-            if (vl < ap[1 - 1] && vu >= ap[1 - 1]) {
+            if (vl < ap[0] && vu >= ap[0]) {
                 m = 1;
-                w[1 - 1] = ap[1 - 1];
+                w[0] = ap[0];
             }
         }
         if (wantz) {
@@ -137,7 +137,7 @@ void Rspevx(const char *jobz, const char *range, const char *uplo, INTEGER const
     smlnum = safmin / eps;
     bignum = one / smlnum;
     rmin = sqrt(smlnum);
-    rmax = min(REAL(sqrt(bignum)), REAL(one / sqrt(sqrt(safmin))));
+    rmax = min(sqrt(bignum), one / sqrt(sqrt(safmin)));
     //
     // Scale matrix to allowable range, if necessary.
     //
@@ -210,7 +210,7 @@ void Rspevx(const char *jobz, const char *range, const char *uplo, INTEGER const
         info = 0;
     }
     //
-    // Otherwise, call Rstebz and, if eigenvectors are desired, Rstein.
+    // Otherwise, call Rstebz and, if eigenvectors are desired, SSTEIN.
     //
     if (wantz) {
         order = 'B';
