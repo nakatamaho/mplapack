@@ -29,11 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rlaic1(INTEGER const job, INTEGER const j, REAL *x, REAL const sest, REAL *w, REAL const gamma, REAL &sestpr, REAL &s, REAL &c) {
-    //
-    //
-    //
-    //
+void Rlaic1(INTEGER const job, INTEGER const j, REAL *x, REAL const &sest, REAL *w, REAL const &gamma, REAL &sestpr, REAL &s, REAL &c) {
     //
     REAL eps = Rlamch("Epsilon");
     REAL alpha = Rdot(j, x, 1, w, 1);
@@ -49,7 +45,7 @@ void Rlaic1(INTEGER const job, INTEGER const j, REAL *x, REAL const sest, REAL *
     REAL s2 = 0.0;
     REAL zeta1 = 0.0;
     REAL zeta2 = 0.0;
-    const REAL half = 0.5e0;
+    const REAL half = 0.5;
     REAL b = 0.0;
     REAL t = 0.0;
     REAL sine = 0.0;
@@ -205,7 +201,7 @@ void Rlaic1(INTEGER const job, INTEGER const j, REAL *x, REAL const sest, REAL *
             zeta1 = alpha / absest;
             zeta2 = gamma / absest;
             //
-            norma = max(REAL(one + zeta1 * zeta1 + abs(zeta1 * zeta2)), REAL(abs(zeta1 * zeta2) + zeta2 * zeta2));
+            norma = max(one + zeta1 * zeta1 + abs(zeta1 * zeta2), abs(zeta1 * zeta2) + zeta2 * zeta2);
             //
             // See if root is closer to zero or to ONE
             //
