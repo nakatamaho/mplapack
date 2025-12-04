@@ -46,11 +46,6 @@ void Rtbcon(const char *norm, const char *uplo, const char *diag, INTEGER const 
     INTEGER ix = 0;
     REAL xnorm = 0.0;
     //
-    //
-    //
-    //
-    // .. Local Arrays ..
-    //
     // Test the input parameters.
     //
     info = 0;
