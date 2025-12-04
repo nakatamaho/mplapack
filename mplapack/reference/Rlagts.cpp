@@ -41,10 +41,6 @@ void Rlagts(INTEGER const job, INTEGER const n, REAL *a, REAL *b, REAL *c, REAL 
     REAL absak = 0.0;
     REAL pert = 0.0;
     //
-    //
-    //
-    //
-    //
     info = 0;
     if ((abs(job) > 2) || (job == 0)) {
         info = -1;
@@ -66,12 +62,12 @@ void Rlagts(INTEGER const job, INTEGER const n, REAL *a, REAL *b, REAL *c, REAL 
     //
     if (job < 0) {
         if (tol <= zero) {
-            tol = abs(a[1 - 1]);
+            tol = abs(a[0]);
             if (n > 1) {
-                tol = max({tol, REAL(abs(a[2 - 1])), REAL(abs(b[1 - 1]))});
+                tol = max(tol, abs(a[1]), abs(b[0]));
             }
             for (k = 3; k <= n; k = k + 1) {
-                tol = max({tol, REAL(abs(a[k - 1])), REAL(abs(b[(k - 1) - 1])), REAL(abs(d[(k - 2) - 1]))});
+                tol = max(tol, abs(a[k - 1]), abs(b[(k - 1) - 1]), abs(d[(k - 2) - 1]));
             }
             tol = tol * eps;
             if (tol == zero) {
