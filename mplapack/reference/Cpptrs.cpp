@@ -31,10 +31,6 @@
 
 void Cpptrs(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *ap, COMPLEX *b, INTEGER const ldb, INTEGER &info) {
     //
-    //
-    //
-    //
-    //
     // Test the input parameters.
     //
     info = 0;
