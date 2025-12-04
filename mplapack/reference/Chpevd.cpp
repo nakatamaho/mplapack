@@ -31,11 +31,6 @@
 
 void Chpevd(const char *jobz, const char *uplo, INTEGER const n, COMPLEX *ap, REAL *w, COMPLEX *z, INTEGER const ldz, COMPLEX *work, INTEGER const lwork, REAL *rwork, INTEGER const lrwork, INTEGER *iwork, INTEGER const liwork, INTEGER &info) {
     //
-    // -- LAPACK driver routine --
-    //
-    //
-    //
-    //
     // Test the input parameters.
     //
     bool wantz = Mlsame(jobz, "V");
@@ -63,7 +58,7 @@ void Chpevd(const char *jobz, const char *uplo, INTEGER const n, COMPLEX *ap, RE
         } else {
             if (wantz) {
                 lwmin = 2 * n;
-                lrwmin = 1 + 5 * n + 2 * n * n;
+                lrwmin = 1 + 5 * n + 2 * pow2(n);
                 liwmin = 3 + 5 * n;
             } else {
                 lwmin = n;
@@ -71,9 +66,9 @@ void Chpevd(const char *jobz, const char *uplo, INTEGER const n, COMPLEX *ap, RE
                 liwmin = 1;
             }
         }
-        work[1 - 1] = lwmin;
-        rwork[1 - 1] = lrwmin;
-        iwork[1 - 1] = liwmin;
+        work[0] = lwmin;
+        rwork[0] = lrwmin;
+        iwork[0] = liwmin;
         //
         if (lwork < lwmin && !lquery) {
             info = -9;
@@ -99,7 +94,7 @@ void Chpevd(const char *jobz, const char *uplo, INTEGER const n, COMPLEX *ap, RE
     //
     const COMPLEX cone = COMPLEX(1.0, 0.0);
     if (n == 1) {
-        w[1 - 1] = ap[1 - 1].real();
+        w[0] = ap[0].real();
         if (wantz) {
             z[0] = cone;
         }
@@ -166,9 +161,9 @@ void Chpevd(const char *jobz, const char *uplo, INTEGER const n, COMPLEX *ap, RE
         Rscal(imax, one / sigma, w, 1);
     }
     //
-    work[1 - 1] = lwmin;
-    rwork[1 - 1] = lrwmin;
-    iwork[1 - 1] = liwmin;
+    work[0] = lwmin;
+    rwork[0] = lrwmin;
+    iwork[0] = liwmin;
     //
     // End of Chpevd
     //
