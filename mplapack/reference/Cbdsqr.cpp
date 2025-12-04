@@ -44,7 +44,7 @@ void Cbdsqr(const char *uplo, INTEGER const n, INTEGER const ncvt, INTEGER const
     REAL r = 0.0;
     const REAL ten = 10.0;
     const REAL hndrd = 100.0;
-    const REAL meigth = -0.125e0;
+    const REAL meigth = -0.125;
     REAL tolmul = 0.0;
     REAL tol = 0.0;
     const REAL zero = 0.0;
@@ -70,7 +70,7 @@ void Cbdsqr(const char *uplo, INTEGER const n, INTEGER const ncvt, INTEGER const
     REAL cosr = 0.0;
     REAL sinl = 0.0;
     REAL cosl = 0.0;
-    const REAL hndrth = 0.01e0;
+    const REAL hndrth = 0.01;
     REAL shift = 0.0;
     REAL sll = 0.0;
     const REAL one = 1.0;
@@ -82,10 +82,6 @@ void Cbdsqr(const char *uplo, INTEGER const n, INTEGER const ncvt, INTEGER const
     const REAL negone = -1.0;
     INTEGER isub = 0;
     INTEGER j = 0;
-    //
-    //
-    //
-    //
     //
     // Test the input parameters.
     //
@@ -162,10 +158,10 @@ void Cbdsqr(const char *uplo, INTEGER const n, INTEGER const ncvt, INTEGER const
         // Update singular vectors if desired
         //
         if (nru > 0) {
-            Clasr("R", "V", "F", nru, n, &rwork[1 - 1], &rwork[n - 1], u, ldu);
+            Clasr("R", "V", "F", nru, n, &rwork[0], &rwork[n - 1], u, ldu);
         }
         if (ncc > 0) {
-            Clasr("L", "V", "F", n, ncc, &rwork[1 - 1], &rwork[n - 1], c, ldc);
+            Clasr("L", "V", "F", n, ncc, &rwork[0], &rwork[n - 1], c, ldc);
         }
     }
     //
@@ -180,17 +176,17 @@ void Cbdsqr(const char *uplo, INTEGER const n, INTEGER const ncvt, INTEGER const
     //
     smax = zero;
     for (i = 1; i <= n; i = i + 1) {
-        smax = max(smax, REAL(abs(d[i - 1])));
+        smax = max(smax, abs(d[i - 1]));
     }
     for (i = 1; i <= n - 1; i = i + 1) {
-        smax = max(smax, REAL(abs(e[i - 1])));
+        smax = max(smax, abs(e[i - 1]));
     }
     sminl = zero;
     if (tol >= zero) {
         //
         // Relative accuracy desired
         //
-        sminoa = abs(d[1 - 1]);
+        sminoa = abs(d[0]);
         if (sminoa == zero) {
             goto statement_50;
         }
@@ -204,12 +200,12 @@ void Cbdsqr(const char *uplo, INTEGER const n, INTEGER const ncvt, INTEGER const
         }
     statement_50:
         sminoa = sminoa / sqrt(castREAL(n));
-        thresh = max(REAL(tol * sminoa), REAL(maxitr * n * n * unfl));
+        thresh = max(tol * sminoa, maxitr * n * n * unfl);
     } else {
         //
         // Absolute accuracy desired
         //
-        thresh = max(REAL(abs(tol) * smax), REAL(maxitr * n * n * unfl));
+        thresh = max(abs(tol) * smax, maxitr * n * n * unfl);
     }
     //
     // Prepare for main iteration loop for the singular values
@@ -256,7 +252,7 @@ statement_60:
             goto statement_80;
         }
         smin = min(smin, abss);
-        smax = max({smax, abss, abse});
+        smax = max(smax, abss, abse);
     }
     ll = 0;
     goto statement_90;
@@ -295,7 +291,7 @@ statement_90:
             CRrot(nru, &u[((m - 1) - 1) * ldu], 1, &u[(m - 1) * ldu], 1, cosl, sinl);
         }
         if (ncc > 0) {
-            CRrot(ncc, &c[((m - 1) - 1)], ldc, &c[(m - 1)], ldc, cosl, sinl);
+            CRrot(ncc, &c[((m - 1) - 1)], ldc, &c[(m - 1) + (1 - 1) * ldc], ldc, cosl, sinl);
         }
         m = m - 2;
         goto statement_60;
@@ -380,7 +376,7 @@ statement_90:
     // Compute shift.  First, test if shifting would ruin relative
     // accuracy, and if so set the shift to zero.
     //
-    if (tol >= zero && n * tol * (sminl / smax) <= max(eps, REAL(hndrth * tol))) {
+    if (tol >= zero && n * tol * (sminl / smax) <= max(eps, hndrth * tol)) {
         //
         // Use a zero shift to avoid loss of relative accuracy
         //
@@ -438,7 +434,7 @@ statement_90:
             // Update singular vectors
             //
             if (ncvt > 0) {
-                Clasr("L", "V", "F", m - ll + 1, ncvt, &rwork[1 - 1], &rwork[n - 1], &vt[(ll - 1)], ldvt);
+                Clasr("L", "V", "F", m - ll + 1, ncvt, &rwork[0], &rwork[n - 1], &vt[(ll - 1)], ldvt);
             }
             if (nru > 0) {
                 Clasr("R", "V", "F", nru, m - ll + 1, &rwork[(nm12 + 1) - 1], &rwork[(nm13 + 1) - 1], &u[(ll - 1) * ldu], ldu);
@@ -481,10 +477,10 @@ statement_90:
                 Clasr("L", "V", "B", m - ll + 1, ncvt, &rwork[(nm12 + 1) - 1], &rwork[(nm13 + 1) - 1], &vt[(ll - 1)], ldvt);
             }
             if (nru > 0) {
-                Clasr("R", "V", "B", nru, m - ll + 1, &rwork[1 - 1], &rwork[n - 1], &u[(ll - 1) * ldu], ldu);
+                Clasr("R", "V", "B", nru, m - ll + 1, &rwork[0], &rwork[n - 1], &u[(ll - 1) * ldu], ldu);
             }
             if (ncc > 0) {
-                Clasr("L", "V", "B", m - ll + 1, ncc, &rwork[1 - 1], &rwork[n - 1], &c[(ll - 1)], ldc);
+                Clasr("L", "V", "B", m - ll + 1, ncc, &rwork[0], &rwork[n - 1], &c[(ll - 1)], ldc);
             }
             //
             // Test convergence
@@ -531,7 +527,7 @@ statement_90:
             // Update singular vectors
             //
             if (ncvt > 0) {
-                Clasr("L", "V", "F", m - ll + 1, ncvt, &rwork[1 - 1], &rwork[n - 1], &vt[(ll - 1)], ldvt);
+                Clasr("L", "V", "F", m - ll + 1, ncvt, &rwork[0], &rwork[n - 1], &vt[(ll - 1)], ldvt);
             }
             if (nru > 0) {
                 Clasr("R", "V", "F", nru, m - ll + 1, &rwork[(nm12 + 1) - 1], &rwork[(nm13 + 1) - 1], &u[(ll - 1) * ldu], ldu);
@@ -589,10 +585,10 @@ statement_90:
                 Clasr("L", "V", "B", m - ll + 1, ncvt, &rwork[(nm12 + 1) - 1], &rwork[(nm13 + 1) - 1], &vt[(ll - 1)], ldvt);
             }
             if (nru > 0) {
-                Clasr("R", "V", "B", nru, m - ll + 1, &rwork[1 - 1], &rwork[n - 1], &u[(ll - 1) * ldu], ldu);
+                Clasr("R", "V", "B", nru, m - ll + 1, &rwork[0], &rwork[n - 1], &u[(ll - 1) * ldu], ldu);
             }
             if (ncc > 0) {
-                Clasr("L", "V", "B", m - ll + 1, ncc, &rwork[1 - 1], &rwork[n - 1], &c[(ll - 1)], ldc);
+                Clasr("L", "V", "B", m - ll + 1, ncc, &rwork[0], &rwork[n - 1], &c[(ll - 1)], ldc);
             }
         }
     }
@@ -624,7 +620,7 @@ statement_160:
         // Scan for smallest D(I)
         //
         isub = 1;
-        smin = d[1 - 1];
+        smin = d[0];
         for (j = 2; j <= n + 1 - i; j = j + 1) {
             if (d[j - 1] <= smin) {
                 isub = j;
