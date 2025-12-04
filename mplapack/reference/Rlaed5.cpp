@@ -29,13 +29,9 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rlaed5(INTEGER const i, REAL *d, REAL *z, REAL *delta, REAL const rho, REAL &dlam) {
+void Rlaed5(INTEGER const i, REAL *d, REAL *z, REAL *delta, REAL const &rho, REAL &dlam) {
     //
-    //
-    //
-    //
-    //
-    REAL del = d[2 - 1] - d[1 - 1];
+    REAL del = d[1] - d[0];
     const REAL one = 1.0;
     const REAL two = 2.0;
     REAL w = 0.0;
@@ -46,49 +42,49 @@ void Rlaed5(INTEGER const i, REAL *d, REAL *z, REAL *delta, REAL const rho, REAL
     REAL tau = 0.0;
     REAL temp = 0.0;
     if (i == 1) {
-        w = one + two * rho * (z[2 - 1] * z[2 - 1] - z[1 - 1] * z[1 - 1]) / del;
+        w = one + two * rho * (z[1] * z[1] - z[0] * z[0]) / del;
         if (w > zero) {
-            b = del + rho * (z[1 - 1] * z[1 - 1] + z[2 - 1] * z[2 - 1]);
-            c = rho * z[1 - 1] * z[1 - 1] * del;
+            b = del + rho * (z[0] * z[0] + z[1] * z[1]);
+            c = rho * z[0] * z[0] * del;
             //
             // B > ZERO, always
             //
             tau = two * c / (b + sqrt(abs(b * b - four * c)));
-            dlam = d[1 - 1] + tau;
-            delta[1 - 1] = -z[1 - 1] / tau;
-            delta[2 - 1] = z[2 - 1] / (del - tau);
+            dlam = d[0] + tau;
+            delta[0] = -z[0] / tau;
+            delta[1] = z[1] / (del - tau);
         } else {
-            b = -del + rho * (z[1 - 1] * z[1 - 1] + z[2 - 1] * z[2 - 1]);
-            c = rho * z[2 - 1] * z[2 - 1] * del;
+            b = -del + rho * (z[0] * z[0] + z[1] * z[1]);
+            c = rho * z[1] * z[1] * del;
             if (b > zero) {
                 tau = -two * c / (b + sqrt(b * b + four * c));
             } else {
                 tau = (b - sqrt(b * b + four * c)) / two;
             }
-            dlam = d[2 - 1] + tau;
-            delta[1 - 1] = -z[1 - 1] / (del + tau);
-            delta[2 - 1] = -z[2 - 1] / tau;
+            dlam = d[1] + tau;
+            delta[0] = -z[0] / (del + tau);
+            delta[1] = -z[1] / tau;
         }
-        temp = sqrt(delta[1 - 1] * delta[1 - 1] + delta[2 - 1] * delta[2 - 1]);
-        delta[1 - 1] = delta[1 - 1] / temp;
-        delta[2 - 1] = delta[2 - 1] / temp;
+        temp = sqrt(delta[0] * delta[0] + delta[1] * delta[1]);
+        delta[0] = delta[0] / temp;
+        delta[1] = delta[1] / temp;
     } else {
         //
         // Now I=2
         //
-        b = -del + rho * (z[1 - 1] * z[1 - 1] + z[2 - 1] * z[2 - 1]);
-        c = rho * z[2 - 1] * z[2 - 1] * del;
+        b = -del + rho * (z[0] * z[0] + z[1] * z[1]);
+        c = rho * z[1] * z[1] * del;
         if (b > zero) {
             tau = (b + sqrt(b * b + four * c)) / two;
         } else {
             tau = two * c / (-b + sqrt(b * b + four * c));
         }
-        dlam = d[2 - 1] + tau;
-        delta[1 - 1] = -z[1 - 1] / (del + tau);
-        delta[2 - 1] = -z[2 - 1] / tau;
-        temp = sqrt(delta[1 - 1] * delta[1 - 1] + delta[2 - 1] * delta[2 - 1]);
-        delta[1 - 1] = delta[1 - 1] / temp;
-        delta[2 - 1] = delta[2 - 1] / temp;
+        dlam = d[1] + tau;
+        delta[0] = -z[0] / (del + tau);
+        delta[1] = -z[1] / tau;
+        temp = sqrt(delta[0] * delta[0] + delta[1] * delta[1]);
+        delta[0] = delta[0] / temp;
+        delta[1] = delta[1] / temp;
     }
     //
     // End OF Rlaed5
