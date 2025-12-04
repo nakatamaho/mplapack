@@ -119,42 +119,42 @@ REAL Clanhe(const char *norm, const char *uplo, INTEGER const n, COMPLEX *a, INT
         // SSQ(2) is sum-of-squares
         // For better accuracy, sum each column separately.
         //
-        ssq[1 - 1] = zero;
-        ssq[2 - 1] = one;
+        ssq[0] = zero;
+        ssq[1] = one;
         //
         // Sum off-diagonals
         //
         if (Mlsame(uplo, "U")) {
             for (j = 2; j <= n; j = j + 1) {
-                colssq[1 - 1] = zero;
-                colssq[2 - 1] = one;
-                Classq(j - 1, &a[(j - 1) * lda], 1, colssq[1 - 1], colssq[2 - 1]);
+                colssq[0] = zero;
+                colssq[1] = one;
+                Classq(j - 1, &a[(j - 1) * lda], 1, colssq[0], colssq[1]);
                 Rcombssq(ssq, colssq);
             }
         } else {
             for (j = 1; j <= n - 1; j = j + 1) {
-                colssq[1 - 1] = zero;
-                colssq[2 - 1] = one;
-                Classq(n - j, &a[((j + 1) - 1) + (j - 1) * lda], 1, colssq[1 - 1], colssq[2 - 1]);
+                colssq[0] = zero;
+                colssq[1] = one;
+                Classq(n - j, &a[((j + 1) - 1) + (j - 1) * lda], 1, colssq[0], colssq[1]);
                 Rcombssq(ssq, colssq);
             }
         }
-        ssq[2 - 1] = 2 * ssq[2 - 1];
+        ssq[1] = 2 * ssq[1];
         //
         // Sum diagonal
         //
         for (i = 1; i <= n; i = i + 1) {
             if (a[(i - 1) + (i - 1) * lda].real() != zero) {
                 absa = abs(a[(i - 1) + (i - 1) * lda].real());
-                if (ssq[1 - 1] < absa) {
-                    ssq[2 - 1] = one + ssq[2 - 1] * pow2((ssq[1 - 1] / absa));
-                    ssq[1 - 1] = absa;
+                if (ssq[0] < absa) {
+                    ssq[1] = one + ssq[1] * pow2((ssq[0] / absa));
+                    ssq[0] = absa;
                 } else {
-                    ssq[2 - 1] += pow2((absa / ssq[1 - 1]));
+                    ssq[1] += pow2((absa / ssq[0]));
                 }
             }
         }
-        value = ssq[1 - 1] * sqrt(ssq[2 - 1]);
+        value = ssq[0] * sqrt(ssq[1]);
     }
     //
     return_value = value;

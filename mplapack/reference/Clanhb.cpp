@@ -32,11 +32,6 @@
 REAL Clanhb(const char *norm, const char *uplo, INTEGER const n, INTEGER const k, COMPLEX *ab, INTEGER const ldab, REAL *work) {
     REAL return_value = 0.0;
     //
-    //
-    //
-    //
-    // .. Local Arrays ..
-    //
     const REAL zero = 0.0;
     REAL value = 0.0;
     INTEGER j = 0;
@@ -81,7 +76,7 @@ REAL Clanhb(const char *norm, const char *uplo, INTEGER const n, INTEGER const k
                 }
             }
         }
-    } else if ((Mlsame(norm, "I")) || (Mlsame(norm, "O")) || ((Mlsame(norm, "1")))) {
+    } else if ((Mlsame(norm, "I")) || (Mlsame(norm, "O")) || (Mlsame(norm, "1"))) {
         //
         // Find normI(A) ( = norm1(A), since A is hermitian).
         //
@@ -127,51 +122,51 @@ REAL Clanhb(const char *norm, const char *uplo, INTEGER const n, INTEGER const k
         // SSQ(2) is sum-of-squares
         // For better accuracy, sum each column separately.
         //
-        ssq[1 - 1] = zero;
-        ssq[2 - 1] = one;
+        ssq[0] = zero;
+        ssq[1] = one;
         //
         // Sum off-diagonals
         //
         if (k > 0) {
             if (Mlsame(uplo, "U")) {
                 for (j = 2; j <= n; j = j + 1) {
-                    colssq[1 - 1] = zero;
-                    colssq[2 - 1] = one;
-                    Classq(min(j - 1, k), &ab[(max(k + 2 - j, (INTEGER)1) - 1) + (j - 1) * ldab], 1, colssq[1 - 1], colssq[2 - 1]);
+                    colssq[0] = zero;
+                    colssq[1] = one;
+                    Classq(min(j - 1, k), &ab[(max(k + 2 - j, (INTEGER)1) - 1) + (j - 1) * ldab], 1, colssq[0], colssq[1]);
                     Rcombssq(ssq, colssq);
                 }
                 l = k + 1;
             } else {
                 for (j = 1; j <= n - 1; j = j + 1) {
-                    colssq[1 - 1] = zero;
-                    colssq[2 - 1] = one;
-                    Classq(min(n - j, k), &ab[(2 - 1) + (j - 1) * ldab], 1, colssq[1 - 1], colssq[2 - 1]);
+                    colssq[0] = zero;
+                    colssq[1] = one;
+                    Classq(min(n - j, k), &ab[(2 - 1) + (j - 1) * ldab], 1, colssq[0], colssq[1]);
                     Rcombssq(ssq, colssq);
                 }
                 l = 1;
             }
-            ssq[2 - 1] = 2 * ssq[2 - 1];
+            ssq[1] = 2 * ssq[1];
         } else {
             l = 1;
         }
         //
         // Sum diagonal
         //
-        colssq[1 - 1] = zero;
-        colssq[2 - 1] = one;
+        colssq[0] = zero;
+        colssq[1] = one;
         for (j = 1; j <= n; j = j + 1) {
             if (ab[(l - 1) + (j - 1) * ldab].real() != zero) {
                 absa = abs(ab[(l - 1) + (j - 1) * ldab].real());
-                if (colssq[1 - 1] < absa) {
-                    colssq[2 - 1] = one + colssq[2 - 1] * pow2((colssq[1 - 1] / absa));
-                    colssq[1 - 1] = absa;
+                if (colssq[0] < absa) {
+                    colssq[1] = one + colssq[1] * pow2((colssq[0] / absa));
+                    colssq[0] = absa;
                 } else {
-                    colssq[2 - 1] += pow2((absa / colssq[1 - 1]));
+                    colssq[1] += pow2((absa / colssq[0]));
                 }
             }
         }
         Rcombssq(ssq, colssq);
-        value = ssq[1 - 1] * sqrt(ssq[2 - 1]);
+        value = ssq[0] * sqrt(ssq[1]);
     }
     //
     return_value = value;

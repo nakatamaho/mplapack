@@ -32,10 +32,6 @@
 REAL Clanht(const char *norm, INTEGER const n, REAL *d, COMPLEX *e) {
     REAL return_value = 0.0;
     //
-    //
-    //
-    //
-    //
     const REAL zero = 0.0;
     REAL anorm = 0.0;
     INTEGER i = 0;
@@ -59,14 +55,14 @@ REAL Clanht(const char *norm, INTEGER const n, REAL *d, COMPLEX *e) {
                 anorm = sum;
             }
         }
-    } else if (Mlsame(norm, "O") || (Mlsame(norm, "1")) || Mlsame(norm, "I")) {
+    } else if (Mlsame(norm, "O") || Mlsame(norm, "1") || Mlsame(norm, "I")) {
         //
         // Find norm1(A).
         //
         if (n == 1) {
-            anorm = abs(d[1 - 1]);
+            anorm = abs(d[0]);
         } else {
-            anorm = abs(d[1 - 1]) + abs(e[1 - 1]);
+            anorm = abs(d[0]) + abs(e[0]);
             sum = abs(e[(n - 1) - 1]) + abs(d[n - 1]);
             if (anorm < sum || Risnan(sum)) {
                 anorm = sum;
