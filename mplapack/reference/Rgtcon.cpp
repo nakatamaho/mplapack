@@ -29,7 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rgtcon(const char *norm, INTEGER const n, REAL *dl, REAL *d, REAL *du, REAL *du2, INTEGER *ipiv, REAL const anorm, REAL &rcond, REAL *work, INTEGER *iwork, INTEGER &info) {
+void Rgtcon(const char *norm, INTEGER const n, REAL *dl, REAL *d, REAL *du, REAL *du2, INTEGER *ipiv, REAL const &anorm, REAL &rcond, REAL *work, INTEGER *iwork, INTEGER &info) {
     bool onenrm = false;
     const REAL zero = 0.0;
     const REAL one = 1.0;
@@ -39,15 +39,10 @@ void Rgtcon(const char *norm, INTEGER const n, REAL *dl, REAL *d, REAL *du, REAL
     INTEGER kase = 0;
     INTEGER isave[3];
     //
-    //
-    //
-    //
-    // .. Local Arrays ..
-    //
     // Test the input arguments.
     //
     info = 0;
-    onenrm = (Mlsame(norm, "1")) || Mlsame(norm, "O");
+    onenrm = Mlsame(norm, "1") || Mlsame(norm, "O");
     if (!onenrm && !Mlsame(norm, "I")) {
         info = -1;
     } else if (n < 0) {
