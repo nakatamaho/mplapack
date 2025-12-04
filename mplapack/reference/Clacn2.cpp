@@ -49,11 +49,11 @@ void Clacn2(INTEGER const n, COMPLEX *v, COMPLEX *x, REAL &est, INTEGER &kase, I
             x[i - 1] = COMPLEX(one / castREAL(n));
         }
         kase = 1;
-        isave[1 - 1] = 1;
+        isave[0] = 1;
         return;
     }
     //
-    switch (isave[1 - 1]) {
+    switch (isave[0]) {
     case 1:
         goto statement_20;
     case 2:
@@ -73,8 +73,8 @@ void Clacn2(INTEGER const n, COMPLEX *v, COMPLEX *x, REAL &est, INTEGER &kase, I
 //
 statement_20:
     if (n == 1) {
-        v[1 - 1] = x[1 - 1];
-        est = abs(v[1 - 1]);
+        v[0] = x[0];
+        est = abs(v[0]);
         // ... QUIT
         goto statement_130;
     }
@@ -89,15 +89,15 @@ statement_20:
         }
     }
     kase = 2;
-    isave[1 - 1] = 2;
+    isave[0] = 2;
     return;
 //
 // ................ ENTRY   (ISAVE( 1 ) = 2)
 // FIRST ITERATION.  X HAS BEEN OVERWRITTEN BY CTRANS(A)*X.
 //
 statement_40:
-    isave[2 - 1] = iCmax1(n, x, 1);
-    isave[3 - 1] = 2;
+    isave[1] = iCmax1(n, x, 1);
+    isave[2] = 2;
 //
 // MAIN LOOP - ITERATIONS 2,3,...,ITMAX.
 //
@@ -105,9 +105,9 @@ statement_50:
     for (i = 1; i <= n; i = i + 1) {
         x[i - 1] = czero;
     }
-    x[isave[2 - 1] - 1] = cone;
+    x[isave[1] - 1] = cone;
     kase = 1;
-    isave[1 - 1] = 3;
+    isave[0] = 3;
     return;
 //
 // ................ ENTRY   (ISAVE( 1 ) = 3)
@@ -132,17 +132,17 @@ statement_70:
         }
     }
     kase = 2;
-    isave[1 - 1] = 4;
+    isave[0] = 4;
     return;
 //
 // ................ ENTRY   (ISAVE( 1 ) = 4)
 // X HAS BEEN OVERWRITTEN BY CTRANS(A)*X.
 //
 statement_90:
-    jlast = isave[2 - 1];
-    isave[2 - 1] = iCmax1(n, x, 1);
-    if ((abs(x[jlast - 1]) != abs(x[isave[2 - 1] - 1])) && (isave[3 - 1] < itmax)) {
-        isave[3 - 1]++;
+    jlast = isave[1];
+    isave[1] = iCmax1(n, x, 1);
+    if ((abs(x[jlast - 1]) != abs(x[isave[1] - 1])) && (isave[2] < itmax)) {
+        isave[2]++;
         goto statement_50;
     }
 //
@@ -151,11 +151,11 @@ statement_90:
 statement_100:
     altsgn = one;
     for (i = 1; i <= n; i = i + 1) {
-        x[i - 1] = COMPLEX(altsgn * (one + castREAL(i - 1) / castREAL(n - 1)), 0.0);
+        x[i - 1] = COMPLEX(altsgn * (one + castREAL(i - 1) / castREAL(n - 1)));
         altsgn = -altsgn;
     }
     kase = 1;
-    isave[1 - 1] = 5;
+    isave[0] = 5;
     return;
 //
 // ................ ENTRY   (ISAVE( 1 ) = 5)
