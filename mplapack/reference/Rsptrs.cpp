@@ -43,10 +43,6 @@ void Rsptrs(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *ap, INT
     REAL bkm1 = 0.0;
     REAL bk = 0.0;
     //
-    //
-    //
-    //
-    //
     info = 0;
     upper = Mlsame(uplo, "U");
     if (!upper && !Mlsame(uplo, "L")) {

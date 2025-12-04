@@ -49,10 +49,6 @@ void Rsptri(const char *uplo, INTEGER const n, REAL *ap, INTEGER *ipiv, REAL *wo
     REAL temp = 0.0;
     INTEGER npp = 0;
     //
-    //
-    //
-    //
-    //
     // Test the input parameters.
     //
     info = 0;
