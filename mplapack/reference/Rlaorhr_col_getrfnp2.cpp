@@ -31,10 +31,6 @@
 
 void Rlaorhr_col_getrfnp2(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *d, INTEGER &info) {
     //
-    //
-    //
-    //
-    //
     // Test the input parameters
     //
     info = 0;
@@ -69,11 +65,11 @@ void Rlaorhr_col_getrfnp2(INTEGER const m, INTEGER const n, REAL *a, INTEGER con
         //
         // Transfer the sign
         //
-        d[1 - 1] = -sign(one, a[0]);
+        d[0] = -sign(one, a[0]);
         //
         // Construct the row of U
         //
-        a[0] = a[0] - d[1 - 1];
+        a[0] = a[0] - d[0];
         //
     } else if (n == 1) {
         //
@@ -82,11 +78,11 @@ void Rlaorhr_col_getrfnp2(INTEGER const m, INTEGER const n, REAL *a, INTEGER con
         //
         // Transfer the sign
         //
-        d[1 - 1] = -sign(one, a[0]);
+        d[0] = -sign(one, a[0]);
         //
         // Construct the row of U
         //
-        a[0] = a[0] - d[1 - 1];
+        a[0] = a[0] - d[0];
         //
         // Scale the elements 2:M of the column
         //

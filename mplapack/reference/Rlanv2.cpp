@@ -38,13 +38,13 @@ void Rlanv2(REAL &a, REAL &b, REAL &c, REAL &d, REAL &rt1r, REAL &rt1i, REAL &rt
     REAL safmx2 = 0.0;
     const REAL zero = 0.0;
     REAL temp = 0.0;
-    const REAL half = 0.5e+0;
+    const REAL half = 0.5;
     REAL p = 0.0;
     REAL bcmax = 0.0;
     REAL bcmis = 0.0;
     REAL scale = 0.0;
     REAL z = 0.0;
-    const REAL multpl = 4.0e+0;
+    const REAL multpl = 4.0;
     REAL tau = 0.0;
     INTEGER count = 0;
     REAL sigma = 0.0;
@@ -87,7 +87,7 @@ void Rlanv2(REAL &a, REAL &b, REAL &c, REAL &d, REAL &rt1r, REAL &rt1i, REAL &rt
         p = half * temp;
         bcmax = max(abs(b), abs(c));
         bcmis = min(abs(b), abs(c)) * sign(one, b) * sign(one, c);
-        scale = max(REAL(abs(p)), bcmax);
+        scale = max(abs(p), bcmax);
         z = (p / scale) * p + (bcmax / scale) * bcmis;
         //
         // If Z is of the order of the machine accuracy, postpone the

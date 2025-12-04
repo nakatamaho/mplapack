@@ -31,10 +31,6 @@
 
 void Rlaorhr_col_getrfnp(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *d, INTEGER &info) {
     //
-    //
-    //
-    //
-    //
     // Test the input parameters.
     //
     info = 0;

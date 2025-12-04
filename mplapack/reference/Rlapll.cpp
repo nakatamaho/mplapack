@@ -42,17 +42,17 @@ void Rlapll(INTEGER const n, REAL *x, INTEGER const incx, REAL *y, INTEGER const
     // Compute the QR factorization of the N-by-2 matrix ( X Y )
     //
     REAL tau = 0.0;
-    Rlarfg(n, x[1 - 1], &x[(1 + incx) - 1], incx, tau);
-    REAL a11 = x[1 - 1];
+    Rlarfg(n, x[0], &x[(1 + incx) - 1], incx, tau);
+    REAL a11 = x[0];
     const REAL one = 1.0;
-    x[1 - 1] = one;
+    x[0] = one;
     //
     REAL c = -tau * Rdot(n, x, incx, y, incy);
     Raxpy(n, c, x, incx, y, incy);
     //
     Rlarfg(n - 1, y[(1 + incy) - 1], &y[(1 + 2 * incy) - 1], incy, tau);
     //
-    REAL a12 = y[1 - 1];
+    REAL a12 = y[0];
     REAL a22 = y[(1 + incy) - 1];
     //
     // Compute the SVD of 2-by-2 Upper triangular matrix.
