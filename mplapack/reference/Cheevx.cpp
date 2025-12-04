@@ -29,7 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Cheevx(const char *jobz, const char *range, const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, REAL const vl, REAL const vu, INTEGER const il, INTEGER const iu, REAL const abstol, INTEGER &m, REAL *w, COMPLEX *z, INTEGER const ldz, COMPLEX *work, INTEGER const lwork, REAL *rwork, INTEGER *iwork, INTEGER *ifail, INTEGER &info) {
+void Cheevx(const char *jobz, const char *range, const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, REAL const &vl, REAL const &vu, INTEGER const il, INTEGER const iu, REAL const &abstol, INTEGER &m, REAL *w, COMPLEX *z, INTEGER const ldz, COMPLEX *work, INTEGER const lwork, REAL *rwork, INTEGER *iwork, INTEGER *ifail, INTEGER &info) {
     bool lower = false;
     bool wantz = false;
     bool alleig = false;
@@ -117,13 +117,13 @@ void Cheevx(const char *jobz, const char *range, const char *uplo, INTEGER const
     if (info == 0) {
         if (n <= 1) {
             lwkmin = 1;
-            work[1 - 1] = lwkmin;
+            work[0] = lwkmin;
         } else {
             lwkmin = 2 * n;
             nb = iMlaenv(1, "Chetrd", uplo, n, -1, -1, -1);
-            nb = max({nb, iMlaenv(1, "Cunmtr", uplo, n, -1, -1, -1)});
+            nb = max(nb, iMlaenv(1, "Cunmtr", uplo, n, -1, -1, -1));
             lwkopt = max((INTEGER)1, (nb + 1) * n);
-            work[1 - 1] = lwkopt;
+            work[0] = lwkopt;
         }
         //
         if (lwork < lwkmin && !lquery) {
@@ -148,11 +148,11 @@ void Cheevx(const char *jobz, const char *range, const char *uplo, INTEGER const
     if (n == 1) {
         if (alleig || indeig) {
             m = 1;
-            w[1 - 1] = a[0].real();
+            w[0] = a[0].real();
         } else if (valeig) {
             if (vl < a[0].real() && vu >= a[0].real()) {
                 m = 1;
-                w[1 - 1] = a[0].real();
+                w[0] = a[0].real();
             }
         }
         if (wantz) {
@@ -168,7 +168,7 @@ void Cheevx(const char *jobz, const char *range, const char *uplo, INTEGER const
     smlnum = safmin / eps;
     bignum = one / smlnum;
     rmin = sqrt(smlnum);
-    rmax = min(REAL(sqrt(bignum)), REAL(one / sqrt(sqrt(safmin))));
+    rmax = min(sqrt(bignum), one / sqrt(sqrt(safmin)));
     //
     // Scale matrix to allowable range, if necessary.
     //
@@ -314,7 +314,7 @@ statement_40:
     //
     // Set WORK(1) to optimal complex workspace size.
     //
-    work[1 - 1] = lwkopt;
+    work[0] = lwkopt;
     //
     // End of Cheevx
     //

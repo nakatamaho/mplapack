@@ -31,11 +31,6 @@
 
 void Chbgvd(const char *jobz, const char *uplo, INTEGER const n, INTEGER const ka, INTEGER const kb, COMPLEX *ab, INTEGER const ldab, COMPLEX *bb, INTEGER const ldbb, REAL *w, COMPLEX *z, INTEGER const ldz, COMPLEX *work, INTEGER const lwork, REAL *rwork, INTEGER const lrwork, INTEGER *iwork, INTEGER const liwork, INTEGER &info) {
     //
-    // -- LAPACK driver routine --
-    //
-    //
-    //
-    //
     // Test the input parameters.
     //
     bool wantz = Mlsame(jobz, "V");
@@ -51,8 +46,8 @@ void Chbgvd(const char *jobz, const char *uplo, INTEGER const n, INTEGER const k
         lrwmin = 1 + n;
         liwmin = 1;
     } else if (wantz) {
-        lwmin = 2 * n * n;
-        lrwmin = 1 + 5 * n + 2 * n * n;
+        lwmin = 2 * pow2(n);
+        lrwmin = 1 + 5 * n + 2 * pow2(n);
         liwmin = 3 + 5 * n;
     } else {
         lwmin = n;
@@ -78,9 +73,9 @@ void Chbgvd(const char *jobz, const char *uplo, INTEGER const n, INTEGER const k
     }
     //
     if (info == 0) {
-        work[1 - 1] = lwmin;
-        rwork[1 - 1] = lrwmin;
-        iwork[1 - 1] = liwmin;
+        work[0] = lwmin;
+        rwork[0] = lrwmin;
+        iwork[0] = liwmin;
         //
         if (lwork < lwmin && !lquery) {
             info = -14;
@@ -144,9 +139,9 @@ void Chbgvd(const char *jobz, const char *uplo, INTEGER const n, INTEGER const k
         Clacpy("A", n, n, &work[indwk2 - 1], n, z, ldz);
     }
     //
-    work[1 - 1] = lwmin;
-    rwork[1 - 1] = lrwmin;
-    iwork[1 - 1] = liwmin;
+    work[0] = lwmin;
+    rwork[0] = lrwmin;
+    iwork[0] = liwmin;
     //
     // End of Chbgvd
     //

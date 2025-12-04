@@ -31,11 +31,6 @@
 
 void Cheevd(const char *jobz, const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, REAL *w, COMPLEX *work, INTEGER const lwork, REAL *rwork, INTEGER const lrwork, INTEGER *iwork, INTEGER const liwork, INTEGER &info) {
     //
-    // -- LAPACK driver routine --
-    //
-    //
-    //
-    //
     // Test the input parameters.
     //
     bool wantz = Mlsame(jobz, "V");
@@ -70,20 +65,20 @@ void Cheevd(const char *jobz, const char *uplo, INTEGER const n, COMPLEX *a, INT
         } else {
             if (wantz) {
                 lwmin = 2 * n + n * n;
-                lrwmin = 1 + 5 * n + 2 * n * n;
+                lrwmin = 1 + 5 * n + 2 * pow2(n);
                 liwmin = 3 + 5 * n;
             } else {
                 lwmin = n + 1;
                 lrwmin = n;
                 liwmin = 1;
             }
-            lopt = max({lwmin, n + iMlaenv(1, "Chetrd", uplo, n, -1, -1, -1)});
+            lopt = max(lwmin, n + iMlaenv(1, "Chetrd", uplo, n, -1, -1, -1));
             lropt = lrwmin;
             liopt = liwmin;
         }
-        work[1 - 1] = lopt;
-        rwork[1 - 1] = lropt;
-        iwork[1 - 1] = liopt;
+        work[0] = lopt;
+        rwork[0] = lropt;
+        iwork[0] = liopt;
         //
         if (lwork < lwmin && !lquery) {
             info = -8;
@@ -109,7 +104,7 @@ void Cheevd(const char *jobz, const char *uplo, INTEGER const n, COMPLEX *a, INT
     //
     const COMPLEX cone = COMPLEX(1.0, 0.0);
     if (n == 1) {
-        w[1 - 1] = a[0].real();
+        w[0] = a[0].real();
         if (wantz) {
             a[0] = cone;
         }
@@ -182,9 +177,9 @@ void Cheevd(const char *jobz, const char *uplo, INTEGER const n, COMPLEX *a, INT
         Rscal(imax, one / sigma, w, 1);
     }
     //
-    work[1 - 1] = lopt;
-    rwork[1 - 1] = lropt;
-    iwork[1 - 1] = liopt;
+    work[0] = lopt;
+    rwork[0] = lropt;
+    iwork[0] = liopt;
     //
     // End of Cheevd
     //
