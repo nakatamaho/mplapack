@@ -32,10 +32,6 @@
 REAL Rlangt(const char *norm, INTEGER const n, REAL *dl, REAL *d, REAL *du) {
     REAL return_value = 0.0;
     //
-    //
-    //
-    //
-    //
     const REAL zero = 0.0;
     REAL anorm = 0.0;
     INTEGER i = 0;
@@ -61,14 +57,14 @@ REAL Rlangt(const char *norm, INTEGER const n, REAL *dl, REAL *d, REAL *du) {
                 anorm = abs(du[i - 1]);
             }
         }
-    } else if (Mlsame(norm, "O") || (Mlsame(norm, "1"))) {
+    } else if (Mlsame(norm, "O") || Mlsame(norm, "1")) {
         //
         // Find norm1(A).
         //
         if (n == 1) {
-            anorm = abs(d[1 - 1]);
+            anorm = abs(d[0]);
         } else {
-            anorm = abs(d[1 - 1]) + abs(dl[1 - 1]);
+            anorm = abs(d[0]) + abs(dl[0]);
             temp = abs(d[n - 1]) + abs(du[(n - 1) - 1]);
             if (anorm < temp || Risnan(temp)) {
                 anorm = temp;
@@ -85,9 +81,9 @@ REAL Rlangt(const char *norm, INTEGER const n, REAL *dl, REAL *d, REAL *du) {
         // Find normI(A).
         //
         if (n == 1) {
-            anorm = abs(d[1 - 1]);
+            anorm = abs(d[0]);
         } else {
-            anorm = abs(d[1 - 1]) + abs(du[1 - 1]);
+            anorm = abs(d[0]) + abs(du[0]);
             temp = abs(d[n - 1]) + abs(dl[(n - 1) - 1]);
             if (anorm < temp || Risnan(temp)) {
                 anorm = temp;

@@ -29,7 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rlaed9(INTEGER const k, INTEGER const kstart, INTEGER const kstop, INTEGER const n, REAL *d, REAL *q, INTEGER const ldq, REAL const rho, REAL *dlamda, REAL *w, REAL *s, INTEGER const lds, INTEGER &info) {
+void Rlaed9(INTEGER const k, INTEGER const kstart, INTEGER const kstop, INTEGER const n, REAL *d, REAL *q, INTEGER const ldq, REAL const &rho, REAL *dlamda, REAL *w, REAL *s, INTEGER const lds, INTEGER &info) {
     INTEGER i = 0;
     INTEGER j = 0;
     REAL temp = 0.0;

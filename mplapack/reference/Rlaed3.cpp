@@ -29,7 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rlaed3(INTEGER const k, INTEGER const n, INTEGER const n1, REAL *d, REAL *q, INTEGER const ldq, REAL const rho, REAL *dlamda, REAL *q2, INTEGER *indx, INTEGER *ctot, REAL *w, REAL *s, INTEGER &info) {
+void Rlaed3(INTEGER const k, INTEGER const n, INTEGER const n1, REAL *d, REAL *q, INTEGER const ldq, REAL const &rho, REAL *dlamda, REAL *q2, INTEGER *indx, INTEGER *ctot, REAL *w, REAL *s, INTEGER &info) {
     INTEGER i = 0;
     INTEGER j = 0;
     INTEGER ii = 0;
@@ -40,10 +40,6 @@ void Rlaed3(INTEGER const k, INTEGER const n, INTEGER const n1, REAL *d, REAL *q
     INTEGER iq2 = 0;
     const REAL one = 1.0;
     const REAL zero = 0.0;
-    //
-    //
-    //
-    //
     //
     // Test the input parameters.
     //
@@ -103,11 +99,11 @@ void Rlaed3(INTEGER const k, INTEGER const n, INTEGER const n1, REAL *d, REAL *q
     }
     if (k == 2) {
         for (j = 1; j <= k; j = j + 1) {
-            w[1 - 1] = q[(j - 1) * ldq];
-            w[2 - 1] = q[(2 - 1) + (j - 1) * ldq];
-            ii = indx[1 - 1];
+            w[0] = q[(j - 1) * ldq];
+            w[1] = q[(2 - 1) + (j - 1) * ldq];
+            ii = indx[0];
             q[(j - 1) * ldq] = w[ii - 1];
-            ii = indx[2 - 1];
+            ii = indx[1];
             q[(2 - 1) + (j - 1) * ldq] = w[ii - 1];
         }
         goto statement_110;
@@ -150,10 +146,10 @@ void Rlaed3(INTEGER const k, INTEGER const n, INTEGER const n1, REAL *d, REAL *q
 statement_110:
     //
     n2 = n - n1;
-    n12 = ctot[1 - 1] + ctot[2 - 1];
-    n23 = ctot[2 - 1] + ctot[3 - 1];
+    n12 = ctot[0] + ctot[1];
+    n23 = ctot[1] + ctot[2];
     //
-    Rlacpy("A", n23, k, &q[((ctot[1 - 1] + 1) - 1)], ldq, s, n23);
+    Rlacpy("A", n23, k, &q[((ctot[0] + 1) - 1)], ldq, s, n23);
     iq2 = n1 * n12 + 1;
     if (n23 != 0) {
         Rgemm("N", "N", n2, k, n23, one, &q2[iq2 - 1], n2, s, n23, zero, &q[((n1 + 1) - 1)], ldq);

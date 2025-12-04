@@ -51,13 +51,6 @@ void Rlaed8(INTEGER const icompq, INTEGER &k, INTEGER const n, INTEGER const qsi
     REAL c = 0.0;
     REAL tau = 0.0;
     INTEGER jp = 0;
-    INTEGER ldgivcol = 2;
-    INTEGER ldgivnum = 2;
-    //
-    //
-    //
-    //
-    //
     //
     // Test the input parameters.
     //
@@ -148,7 +141,7 @@ void Rlaed8(INTEGER const icompq, INTEGER &k, INTEGER const n, INTEGER const qsi
         } else {
             for (j = 1; j <= n; j = j + 1) {
                 perm[j - 1] = indxq[indx[j - 1] - 1];
-                Rcopy(qsiz, &q[(perm[j - 1] - 1) * ldq], 1, &q2[(j - 1) * ldq2], 1);
+                Rcopy(qsiz, &q[((perm[j - 1]) - 1) * ldq], 1, &q2[(j - 1) * ldq2], 1);
             }
             Rlacpy("A", qsiz, n, &q2[0], ldq2, &q[0], ldq);
         }
@@ -218,7 +211,7 @@ statement_80:
             givnum[(givptr - 1) * ldgivnum] = c;
             givnum[(2 - 1) + (givptr - 1) * ldgivnum] = s;
             if (icompq == 1) {
-                Rrot(qsiz, &q[(indxq[indx[jlam - 1] - 1] - 1) * ldq], 1, &q[(indxq[indx[j - 1] - 1] - 1) * ldq], 1, c, s);
+                Rrot(qsiz, &q[((indxq[indx[jlam - 1] - 1]) - 1) * ldq], 1, &q[((indxq[indx[j - 1] - 1]) - 1) * ldq], 1, c, s);
             }
             t = d[jlam - 1] * c * c + d[j - 1] * s * s;
             d[j - 1] = d[jlam - 1] * s * s + d[j - 1] * c * c;
@@ -227,7 +220,7 @@ statement_80:
             i = 1;
         statement_90:
             if (k2 + i <= n) {
-                if (d[jlam - 1] < d[(indxp[(k2 + i) - 1]) - 1]) {
+                if (d[jlam - 1] < d[indxp[(k2 + i) - 1] - 1]) {
                     indxp[(k2 + i - 1) - 1] = indxp[(k2 + i) - 1];
                     indxp[(k2 + i) - 1] = jlam;
                     i++;
@@ -275,7 +268,7 @@ statement_110:
             jp = indxp[j - 1];
             dlamda[j - 1] = d[jp - 1];
             perm[j - 1] = indxq[indx[jp - 1] - 1];
-            Rcopy(qsiz, &q[(perm[j - 1] - 1) * ldq], 1, &q2[(j - 1) * ldq2], 1);
+            Rcopy(qsiz, &q[((perm[j - 1]) - 1) * ldq], 1, &q2[(j - 1) * ldq2], 1);
         }
     }
     //
