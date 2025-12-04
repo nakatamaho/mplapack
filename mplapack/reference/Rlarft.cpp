@@ -31,10 +31,6 @@
 
 void Rlarft(const char *direct, const char *storev, INTEGER const n, INTEGER const k, REAL *v, INTEGER const ldv, REAL *tau, REAL *t, INTEGER const ldt) {
     //
-    //
-    //
-    //
-    //
     // Quick return if possible
     //
     if (n == 0) {
