@@ -31,11 +31,6 @@
 
 void Cpbsvx(const char *fact, const char *uplo, INTEGER const n, INTEGER const kd, INTEGER const nrhs, COMPLEX *ab, INTEGER const ldab, COMPLEX *afb, INTEGER const ldafb, char *equed, REAL *s, COMPLEX *b, INTEGER const ldb, COMPLEX *x, INTEGER const ldx, REAL &rcond, REAL *ferr, REAL *berr, COMPLEX *work, REAL *rwork, INTEGER &info) {
     //
-    // -- LAPACK driver routine --
-    //
-    //
-    //
-    //
     info = 0;
     bool nofact = Mlsame(fact, "N");
     bool equil = Mlsame(fact, "E");

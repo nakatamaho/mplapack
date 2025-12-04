@@ -39,10 +39,6 @@ void Cpbstf(const char *uplo, INTEGER const n, INTEGER const kd, COMPLEX *ab, IN
     INTEGER km = 0;
     const REAL one = 1.0;
     //
-    //
-    //
-    //
-    //
     // Test the input parameters.
     //
     info = 0;

@@ -29,9 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-inline REAL cabs1(COMPLEX zdum) { return abs(zdum.real()) + abs(zdum.imag()); }
-
-void Cpocon(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, REAL const anorm, REAL &rcond, COMPLEX *work, REAL *rwork, INTEGER &info) {
+void Cpocon(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, REAL const &anorm, REAL &rcond, COMPLEX *work, REAL *rwork, INTEGER &info) {
     COMPLEX zdum = 0.0;
     bool upper = false;
     const REAL zero = 0.0;
@@ -45,13 +43,6 @@ void Cpocon(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, RE
     REAL scaleu = 0.0;
     REAL scale = 0.0;
     INTEGER ix = 0;
-    //
-    //
-    //
-    //
-    // .. Local Arrays ..
-    // .. Statement Functions ..
-    // .. Statement Function definitions ..
     //
     // Test the input parameters.
     //
