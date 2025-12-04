@@ -31,11 +31,6 @@
 
 void Rptsvx(const char *fact, INTEGER const n, INTEGER const nrhs, REAL *d, REAL *e, REAL *df, REAL *ef, REAL *b, INTEGER const ldb, REAL *x, INTEGER const ldx, REAL &rcond, REAL *ferr, REAL *berr, REAL *work, INTEGER &info) {
     //
-    // -- LAPACK driver routine --
-    //
-    //
-    //
-    //
     // Test the input parameters.
     //
     info = 0;
