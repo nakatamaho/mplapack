@@ -31,11 +31,6 @@
 
 void Rspevd(const char *jobz, const char *uplo, INTEGER const n, REAL *ap, REAL *w, REAL *z, INTEGER const ldz, REAL *work, INTEGER const lwork, INTEGER *iwork, INTEGER const liwork, INTEGER &info) {
     //
-    // -- LAPACK driver routine --
-    //
-    //
-    //
-    //
     // Test the input parameters.
     //
     bool wantz = Mlsame(jobz, "V");
@@ -61,14 +56,14 @@ void Rspevd(const char *jobz, const char *uplo, INTEGER const n, REAL *ap, REAL 
         } else {
             if (wantz) {
                 liwmin = 3 + 5 * n;
-                lwmin = 1 + 6 * n + n * n;
+                lwmin = 1 + 6 * n + pow2(n);
             } else {
                 liwmin = 1;
                 lwmin = 2 * n;
             }
         }
-        iwork[1 - 1] = liwmin;
-        work[1 - 1] = lwmin;
+        iwork[0] = liwmin;
+        work[0] = lwmin;
         //
         if (lwork < lwmin && !lquery) {
             info = -9;
@@ -92,7 +87,7 @@ void Rspevd(const char *jobz, const char *uplo, INTEGER const n, REAL *ap, REAL 
     //
     const REAL one = 1.0;
     if (n == 1) {
-        w[1 - 1] = ap[1 - 1];
+        w[0] = ap[0];
         if (wantz) {
             z[0] = one;
         }
@@ -154,8 +149,8 @@ void Rspevd(const char *jobz, const char *uplo, INTEGER const n, REAL *ap, REAL 
         Rscal(n, one / sigma, w, 1);
     }
     //
-    work[1 - 1] = lwmin;
-    iwork[1 - 1] = liwmin;
+    work[0] = lwmin;
+    iwork[0] = liwmin;
     //
     // End of Rspevd
     //
