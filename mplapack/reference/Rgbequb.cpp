@@ -31,10 +31,6 @@
 
 void Rgbequb(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku, REAL *ab, INTEGER const ldab, REAL *r, REAL *c, REAL &rowcnd, REAL &colcnd, REAL &amax, INTEGER &info) {
     //
-    //
-    //
-    //
-    //
     // Test the input parameters.
     //
     info = 0;
@@ -85,7 +81,7 @@ void Rgbequb(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const k
     INTEGER j = 0;
     for (j = 1; j <= n; j = j + 1) {
         for (i = max(j - ku, (INTEGER)1); i <= min(j + kl, m); i = i + 1) {
-            r[i - 1] = max(r[i - 1], REAL(abs(ab[((kd + i - j) - 1) + (j - 1) * ldab])));
+            r[i - 1] = max(r[i - 1], abs(ab[((kd + i - j) - 1) + (j - 1) * ldab]));
         }
     }
     for (i = 1; i <= m; i = i + 1) {
@@ -138,7 +134,7 @@ void Rgbequb(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const k
     //
     for (j = 1; j <= n; j = j + 1) {
         for (i = max(j - ku, (INTEGER)1); i <= min(j + kl, m); i = i + 1) {
-            c[j - 1] = max(c[j - 1], REAL(abs(ab[((kd + i - j) - 1) + (j - 1) * ldab]) * r[i - 1]));
+            c[j - 1] = max(c[j - 1], abs(ab[((kd + i - j) - 1) + (j - 1) * ldab]) * r[i - 1]);
         }
         if (c[j - 1] > zero) {
             c[j - 1] = pow(radix, castINTEGER(log(c[j - 1]) / logrdx));

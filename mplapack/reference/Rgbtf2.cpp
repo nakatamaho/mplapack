@@ -31,10 +31,6 @@
 
 void Rgbtf2(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku, REAL *ab, INTEGER const ldab, INTEGER *ipiv, INTEGER &info) {
     //
-    //
-    //
-    //
-    //
     // KV is the number of superdiagonals in the factor U, allowing for
     // fill-in.
     //

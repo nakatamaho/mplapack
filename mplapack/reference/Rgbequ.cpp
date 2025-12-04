@@ -31,10 +31,6 @@
 
 void Rgbequ(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku, REAL *ab, INTEGER const ldab, REAL *r, REAL *c, REAL &rowcnd, REAL &colcnd, REAL &amax, INTEGER &info) {
     //
-    //
-    //
-    //
-    //
     // Test the input parameters
     //
     info = 0;
@@ -83,7 +79,7 @@ void Rgbequ(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku
     INTEGER j = 0;
     for (j = 1; j <= n; j = j + 1) {
         for (i = max(j - ku, (INTEGER)1); i <= min(j + kl, m); i = i + 1) {
-            r[i - 1] = max(r[i - 1], REAL(abs(ab[((kd + i - j) - 1) + (j - 1) * ldab])));
+            r[i - 1] = max(r[i - 1], abs(ab[((kd + i - j) - 1) + (j - 1) * ldab]));
         }
     }
     //
@@ -132,7 +128,7 @@ void Rgbequ(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku
     kd = ku + 1;
     for (j = 1; j <= n; j = j + 1) {
         for (i = max(j - ku, (INTEGER)1); i <= min(j + kl, m); i = i + 1) {
-            c[j - 1] = max(c[j - 1], REAL(abs(ab[((kd + i - j) - 1) + (j - 1) * ldab]) * r[i - 1]));
+            c[j - 1] = max(c[j - 1], abs(ab[((kd + i - j) - 1) + (j - 1) * ldab]) * r[i - 1]);
         }
     }
     //
