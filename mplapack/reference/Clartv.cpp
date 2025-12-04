@@ -31,10 +31,6 @@
 
 void Clartv(INTEGER const n, COMPLEX *x, INTEGER const incx, COMPLEX *y, INTEGER const incy, REAL *c, COMPLEX *s, INTEGER const incc) {
     //
-    //
-    //
-    //
-    //
     INTEGER ix = 1;
     INTEGER iy = 1;
     INTEGER ic = 1;
