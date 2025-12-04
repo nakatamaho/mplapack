@@ -31,10 +31,6 @@
 
 void Rpoequb(INTEGER const n, REAL *a, INTEGER const lda, REAL *s, REAL &scond, REAL &amax, INTEGER &info) {
     //
-    //
-    //
-    //
-    //
     // Test the input parameters.
     //
     // Positive definite only performs 1 pass of equilibration.
@@ -61,13 +57,13 @@ void Rpoequb(INTEGER const n, REAL *a, INTEGER const lda, REAL *s, REAL &scond, 
     }
     //
     REAL base = Rlamch("B");
-    REAL tmp = -0.5e+0 / log(base);
+    REAL tmp = -0.5 / log(base);
     //
     // Find the minimum and maximum diagonal elements.
     //
-    s[1 - 1] = a[0];
-    REAL smin = s[1 - 1];
-    amax = s[1 - 1];
+    s[0] = a[0];
+    REAL smin = s[0];
+    amax = s[0];
     INTEGER i = 0;
     for (i = 2; i <= n; i = i + 1) {
         s[i - 1] = a[(i - 1) + (i - 1) * lda];
