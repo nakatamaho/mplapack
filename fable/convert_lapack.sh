@@ -297,6 +297,49 @@ CABS1_STMT_RE = re.compile(
 
 lines = [line for line in lines if not CABS1_STMT_RE.match(line)]
 
+IMLAENV_Z_RE = re.compile(
+    r'(iMlaenv\(\s*\d+\s*,\s*")Z([A-Za-z0-9]+)(\s*")'
+)
+
+def _rewrite_imlaenv_z_to_c(line: str) -> str:
+    # Skip C++ line comments
+    idx = line.find("//")
+    if idx >= 0:
+        code, comment = line[:idx], line[idx:]
+    else:
+        code, comment = line, ""
+
+    def repl(m: re.Match) -> str:
+        prefix, name, suffix = m.groups()
+        return prefix + "C" + name.lower() + suffix
+
+    code = IMLAENV_Z_RE.sub(repl, code)
+    return code + comment
+
+lines = [_rewrite_imlaenv_z_to_c(line) for line in lines]
+
+IMLAENV2_Z_RE = re.compile(
+    r'(iMlaenv2stage\(\s*\d+\s*,\s*")Z([A-Za-z0-9_]+)(\s*")'
+)
+
+def _rewrite_imlaenv2stage_z_to_c(line: str) -> str:
+    # Skip C++ line comments
+    idx = line.find("//")
+    if idx >= 0:
+        code, comment = line[:idx], line[idx:]
+    else:
+        code, comment = line, ""
+
+    def repl(m: re.Match) -> str:
+        prefix, name, suffix = m.groups()
+        # Z + NAME -> C + name.lower()
+        return prefix + "C" + name.lower() + suffix
+
+    code = IMLAENV2_Z_RE.sub(repl, code)
+    return code + comment
+
+lines = [_rewrite_imlaenv2stage_z_to_c(line) for line in lines]
+
 path.write_text("".join(lines))
 EOF
 
