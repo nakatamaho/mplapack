@@ -31,14 +31,9 @@
 
 void Chetri_3x(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *e, INTEGER *ipiv, COMPLEX *work, INTEGER const nb, INTEGER &info) {
     //
-    //
-    //
-    //
-    //
     // Test the input parameters.
     //
     info = 0;
-    INTEGER ldwork = n + nb + 1;
     bool upper = Mlsame(uplo, "U");
     if (!upper && !Mlsame(uplo, "L")) {
         info = -1;
