@@ -31,10 +31,6 @@
 
 void Claqp2(INTEGER const m, INTEGER const n, INTEGER const offset, COMPLEX *a, INTEGER const lda, INTEGER *jpvt, COMPLEX *tau, REAL *vn1, REAL *vn2, COMPLEX *work) {
     //
-    //
-    //
-    //
-    //
     INTEGER mn = min(m - offset, n);
     REAL tol3z = sqrt(Rlamch("Epsilon"));
     //
@@ -82,7 +78,7 @@ void Claqp2(INTEGER const m, INTEGER const n, INTEGER const offset, COMPLEX *a, 
             //
             aii = a[(offpi - 1) + (i - 1) * lda];
             a[(offpi - 1) + (i - 1) * lda] = cone;
-            Clarf("Left", m - offpi + 1, n - i, &a[(offpi - 1) + (i - 1) * lda], 1, conj(tau[i - 1]), &a[(offpi - 1) + ((i + 1) - 1) * lda], lda, &work[1 - 1]);
+            Clarf("Left", m - offpi + 1, n - i, &a[(offpi - 1) + (i - 1) * lda], 1, conj(tau[i - 1]), &a[(offpi - 1) + ((i + 1) - 1) * lda], lda, &work[0]);
             a[(offpi - 1) + (i - 1) * lda] = aii;
         }
         //
