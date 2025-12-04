@@ -29,11 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Claesy(COMPLEX const a, COMPLEX const b, COMPLEX const c, COMPLEX &rt1, COMPLEX &rt2, COMPLEX &evscal, COMPLEX &cs1, COMPLEX &sn1) {
-    //
-    //
-    //
-    //
+void Claesy(COMPLEX const &a, COMPLEX const &b, COMPLEX const &c, COMPLEX &rt1, COMPLEX &rt2, COMPLEX &evscal, COMPLEX &cs1, COMPLEX &sn1) {
     //
     // Special case:  The matrix is actually diagonal.
     // To avoid divide by zero later, we treat this case separately.
@@ -41,7 +37,7 @@ void Claesy(COMPLEX const a, COMPLEX const b, COMPLEX const c, COMPLEX &rt1, COM
     const REAL zero = 0.0;
     COMPLEX tmp = 0.0;
     const REAL one = 1.0;
-    const REAL half = 0.5e0;
+    const REAL half = 0.5;
     COMPLEX s = 0.0;
     COMPLEX t = 0.0;
     REAL babs = 0.0;
@@ -49,7 +45,7 @@ void Claesy(COMPLEX const a, COMPLEX const b, COMPLEX const c, COMPLEX &rt1, COM
     REAL z = 0.0;
     const COMPLEX cone = COMPLEX(1.0, 0.0);
     REAL evnorm = 0.0;
-    const REAL thresh = 0.1e0;
+    const REAL thresh = 0.1;
     if (abs(b) == zero) {
         rt1 = a;
         rt2 = c;
@@ -79,7 +75,7 @@ void Claesy(COMPLEX const a, COMPLEX const b, COMPLEX const c, COMPLEX &rt1, COM
         tabs = abs(t);
         z = max(babs, tabs);
         if (z > zero) {
-            t = z * sqrt((t / z) * (t / z) + (b / z) * (b / z));
+            t = z * sqrt(pow2((t / z)) + pow2((b / z)));
         }
         //
         // Compute the two eigenvalues.  RT1 and RT2 are exchanged
@@ -101,7 +97,7 @@ void Claesy(COMPLEX const a, COMPLEX const b, COMPLEX const c, COMPLEX &rt1, COM
         sn1 = (rt1 - a) / b;
         tabs = abs(sn1);
         if (tabs > one) {
-            t = tabs * sqrt((one / tabs) * (one / tabs) + (sn1 / tabs) * (sn1 / tabs));
+            t = tabs * sqrt(pow2((one / tabs)) + pow2((sn1 / tabs)));
         } else {
             t = sqrt(cone + sn1 * sn1);
         }
