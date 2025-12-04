@@ -31,10 +31,6 @@
 
 void Rgebd2(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *d, REAL *e, REAL *tauq, REAL *taup, REAL *work, INTEGER &info) {
     //
-    //
-    //
-    //
-    //
     // Test the input parameters
     //
     info = 0;
