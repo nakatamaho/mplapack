@@ -36,10 +36,6 @@ void Rpotf2(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INTEG
     const REAL zero = 0.0;
     const REAL one = 1.0;
     //
-    //
-    //
-    //
-    //
     // Test the input parameters.
     //
     info = 0;
