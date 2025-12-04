@@ -97,7 +97,7 @@ void Ctrsen(const char *job, const char *compq, bool *select, INTEGER const n, C
     }
     //
     if (info == 0) {
-        work[1 - 1] = lwmin;
+        work[0] = lwmin;
     }
     //
     if (info != 0) {
@@ -188,7 +188,7 @@ statement_40:
         w[k - 1] = t[(k - 1) + (k - 1) * ldt];
     }
     //
-    work[1 - 1] = lwmin;
+    work[0] = lwmin;
     //
     // End of Ctrsen
     //
