@@ -29,7 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Cgelsy(INTEGER const m, INTEGER const n, INTEGER const nrhs, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, INTEGER *jpvt, REAL const rcond, INTEGER &rank, COMPLEX *work, INTEGER const lwork, REAL *rwork, INTEGER &info) {
+void Cgelsy(INTEGER const m, INTEGER const n, INTEGER const nrhs, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, INTEGER *jpvt, REAL const &rcond, INTEGER &rank, COMPLEX *work, INTEGER const lwork, REAL *rwork, INTEGER &info) {
     INTEGER mn = 0;
     INTEGER ismin = 0;
     INTEGER ismax = 0;
@@ -75,9 +75,9 @@ void Cgelsy(INTEGER const m, INTEGER const n, INTEGER const nrhs, COMPLEX *a, IN
     nb2 = iMlaenv(1, "Cgerqf", " ", m, n, -1, -1);
     nb3 = iMlaenv(1, "Cunmqr", " ", m, n, nrhs, -1);
     nb4 = iMlaenv(1, "Cunmrq", " ", m, n, nrhs, -1);
-    nb = max({nb1, nb2, nb3, nb4});
-    lwkopt = max({(INTEGER)1, mn + 2 * n + nb * (n + 1), 2 * mn + nb * nrhs});
-    work[1 - 1] = COMPLEX(lwkopt);
+    nb = max(nb1, nb2, nb3, nb4);
+    lwkopt = max((INTEGER)1, mn + 2 * n + nb * (n + 1), 2 * mn + nb * nrhs);
+    work[0] = COMPLEX(lwkopt);
     lquery = (lwork == -1);
     if (m < 0) {
         info = -1;
@@ -87,9 +87,9 @@ void Cgelsy(INTEGER const m, INTEGER const n, INTEGER const nrhs, COMPLEX *a, IN
         info = -3;
     } else if (lda < max((INTEGER)1, m)) {
         info = -5;
-    } else if (ldb < max({(INTEGER)1, m, n})) {
+    } else if (ldb < max((INTEGER)1, m, n)) {
         info = -7;
-    } else if (lwork < (mn + max({(INTEGER)2 * mn, n + 1, mn + nrhs})) && !lquery) {
+    } else if (lwork < (mn + max(2 * mn, n + 1, mn + nrhs)) && !lquery) {
         info = -12;
     }
     //
@@ -102,7 +102,7 @@ void Cgelsy(INTEGER const m, INTEGER const n, INTEGER const nrhs, COMPLEX *a, IN
     //
     // Quick return if possible
     //
-    if (min({m, n, nrhs}) == 0) {
+    if (min(m, n, nrhs) == 0) {
         rank = 0;
         return;
     }
@@ -111,6 +111,7 @@ void Cgelsy(INTEGER const m, INTEGER const n, INTEGER const nrhs, COMPLEX *a, IN
     //
     smlnum = Rlamch("S") / Rlamch("P");
     bignum = one / smlnum;
+    Rlabad(smlnum, bignum);
     //
     // Scale A, B if max entries outside range [SMLNUM,BIGNUM]
     //
@@ -156,7 +157,7 @@ void Cgelsy(INTEGER const m, INTEGER const n, INTEGER const nrhs, COMPLEX *a, IN
     // Compute QR factorization with column pivoting of A:
     // A * P = Q * R
     //
-    Cgeqp3(m, n, a, lda, jpvt, &work[1 - 1], &work[(mn + 1) - 1], lwork - mn, rwork, info);
+    Cgeqp3(m, n, a, lda, jpvt, &work[0], &work[(mn + 1) - 1], lwork - mn, rwork, info);
     wsize = mn + work[(mn + 1) - 1].real();
     //
     // complex workspace: MN+NB*(N+1). real workspace 2*N.
@@ -213,8 +214,8 @@ statement_10:
     //
     // B(1:M,1:NRHS) := Q**H * B(1:M,1:NRHS)
     //
-    Cunmqr("Left", "Conjugate transpose", m, nrhs, mn, a, lda, &work[1 - 1], b, ldb, &work[(2 * mn + 1) - 1], lwork - 2 * mn, info);
-    wsize = max(wsize, REAL(2 * mn + work[(2 * mn + 1) - 1].real()));
+    Cunmqr("Left", "Conjugate transpose", m, nrhs, mn, a, lda, &work[0], b, ldb, &work[(2 * mn + 1) - 1], lwork - 2 * mn, info);
+    wsize = max(wsize, 2 * mn + work[(2 * mn + 1) - 1].real());
     //
     // complex workspace: 2*MN+NB*NRHS.
     //
@@ -242,7 +243,7 @@ statement_10:
         for (i = 1; i <= n; i = i + 1) {
             work[jpvt[i - 1] - 1] = b[(i - 1) + (j - 1) * ldb];
         }
-        Ccopy(n, &work[1 - 1], 1, &b[(j - 1) * ldb], 1);
+        Ccopy(n, &work[0], 1, &b[(j - 1) * ldb], 1);
     }
     //
     // complex workspace: N.
@@ -263,7 +264,7 @@ statement_10:
     }
 //
 statement_70:
-    work[1 - 1] = COMPLEX(lwkopt);
+    work[0] = COMPLEX(lwkopt);
     //
     // End of Cgelsy
     //

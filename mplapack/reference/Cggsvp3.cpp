@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022
+ * Copyright (c) 2008-2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -29,7 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Cggsvp3(const char *jobu, const char *jobv, const char *jobq, INTEGER const m, INTEGER const p, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, REAL const tola, REAL const tolb, INTEGER &k, INTEGER &l, COMPLEX *u, INTEGER const ldu, COMPLEX *v, INTEGER const ldv, COMPLEX *q, INTEGER const ldq, INTEGER *iwork, REAL *rwork, COMPLEX *tau, COMPLEX *work, INTEGER const lwork, INTEGER &info) {
+void Cggsvp3(const char *jobu, const char *jobv, const char *jobq, INTEGER const m, INTEGER const p, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, REAL const &tola, REAL const &tolb, INTEGER &k, INTEGER &l, COMPLEX *u, INTEGER const ldu, COMPLEX *v, INTEGER const ldv, COMPLEX *q, INTEGER const ldq, INTEGER *iwork, REAL *rwork, COMPLEX *tau, COMPLEX *work, INTEGER const lwork, INTEGER &info) {
     //
     // Test the input parameters
     //
@@ -73,19 +73,19 @@ void Cggsvp3(const char *jobu, const char *jobv, const char *jobq, INTEGER const
     //
     if (info == 0) {
         Cgeqp3(p, n, b, ldb, iwork, tau, work, -1, rwork, info);
-        lwkopt = castINTEGER(work[1 - 1].real());
+        lwkopt = castINTEGER(work[0].real());
         if (wantv) {
             lwkopt = max(lwkopt, p);
         }
-        lwkopt = max({lwkopt, min(n, p)});
+        lwkopt = max(lwkopt, min(n, p));
         lwkopt = max(lwkopt, m);
         if (wantq) {
             lwkopt = max(lwkopt, n);
         }
         Cgeqp3(m, n, a, lda, iwork, tau, work, -1, rwork, info);
-        lwkopt = max(lwkopt, castINTEGER(work[1 - 1].real()));
+        lwkopt = max(lwkopt, castINTEGER(work[0].real()));
         lwkopt = max((INTEGER)1, lwkopt);
-        work[1 - 1] = castREAL(lwkopt);
+        work[0] = COMPLEX(lwkopt);
     }
     //
     if (info != 0) {
@@ -281,7 +281,7 @@ void Cggsvp3(const char *jobu, const char *jobv, const char *jobq, INTEGER const
         //
     }
     //
-    work[1 - 1] = castREAL(lwkopt);
+    work[0] = COMPLEX(lwkopt);
     //
     // End of Cggsvp3
     //

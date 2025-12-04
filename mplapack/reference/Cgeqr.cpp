@@ -53,8 +53,8 @@ void Cgeqr(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, COMP
     INTEGER mb = 0;
     INTEGER nb = 0;
     if (min(m, n) > 0) {
-        mb = iMlaenv(1, "Cgeqr", " ", m, n, 1, -1);
-        nb = iMlaenv(1, "Cgeqr", " ", m, n, 2, -1);
+        mb = iMlaenv(1, "Cgeqr ", " ", m, n, 1, -1);
+        nb = iMlaenv(1, "Cgeqr ", " ", m, n, 2, -1);
     } else {
         mb = m;
         nb = 1;
@@ -106,16 +106,16 @@ void Cgeqr(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, COMP
     //
     if (info == 0) {
         if (mint) {
-            t[1 - 1] = mintsz;
+            t[0] = mintsz;
         } else {
-            t[1 - 1] = nb * n * nblcks + 5;
+            t[0] = nb * n * nblcks + 5;
         }
-        t[2 - 1] = mb;
-        t[3 - 1] = nb;
+        t[1] = mb;
+        t[2] = nb;
         if (minw) {
-            work[1 - 1] = max((INTEGER)1, n);
+            work[0] = max((INTEGER)1, n);
         } else {
-            work[1 - 1] = max((INTEGER)1, nb * n);
+            work[0] = max((INTEGER)1, nb * n);
         }
     }
     if (info != 0) {
@@ -134,12 +134,12 @@ void Cgeqr(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, COMP
     // The QR Decomposition
     //
     if ((m <= n) || (mb <= n) || (mb >= m)) {
-        Cgeqrt(m, n, nb, a, lda, &t[6 - 1], nb, work, info);
+        Cgeqrt(m, n, nb, a, lda, &t[5], nb, work, info);
     } else {
-        Clatsqr(m, n, mb, nb, a, lda, &t[6 - 1], nb, work, lwork, info);
+        Clatsqr(m, n, mb, nb, a, lda, &t[5], nb, work, lwork, info);
     }
     //
-    work[1 - 1] = max((INTEGER)1, nb * n);
+    work[0] = max((INTEGER)1, nb * n);
     //
     // End of Cgeqr
     //
