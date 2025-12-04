@@ -29,8 +29,6 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-inline REAL abs1(COMPLEX zdum) { return abs(zdum.real()) + abs(zdum.imag()); }
-
 void Cgbrfs(const char *trans, INTEGER const n, INTEGER const kl, INTEGER const ku, INTEGER const nrhs, COMPLEX *ab, INTEGER const ldab, COMPLEX *afb, INTEGER const ldafb, INTEGER *ipiv, COMPLEX *b, INTEGER const ldb, COMPLEX *x, INTEGER const ldx, REAL *ferr, REAL *berr, COMPLEX *work, REAL *rwork, INTEGER &info) {
     COMPLEX zdum = 0.0;
     bool notran = false;
@@ -44,7 +42,7 @@ void Cgbrfs(const char *trans, INTEGER const n, INTEGER const kl, INTEGER const 
     REAL safe1 = 0.0;
     REAL safe2 = 0.0;
     INTEGER count = 0;
-    const REAL three = 3.0e+0;
+    const REAL three = 3.0;
     REAL lstres = 0.0;
     const COMPLEX cone = COMPLEX(1.0, 0.0);
     INTEGER i = 0;
@@ -52,17 +50,10 @@ void Cgbrfs(const char *trans, INTEGER const n, INTEGER const kl, INTEGER const 
     INTEGER kk = 0;
     REAL xk = 0.0;
     REAL s = 0.0;
-    const REAL two = 2.0e+0;
+    const REAL two = 2.0;
     const INTEGER itmax = 5;
     INTEGER kase = 0;
     INTEGER isave[3];
-    //
-    //
-    //
-    //
-    // .. Local Arrays ..
-    // .. Statement Functions ..
-    // .. Statement Function definitions ..
     //
     // Test the input parameters.
     //
@@ -144,7 +135,7 @@ void Cgbrfs(const char *trans, INTEGER const n, INTEGER const kl, INTEGER const 
         // numerator and denominator before dividing.
         //
         for (i = 1; i <= n; i = i + 1) {
-            rwork[i - 1] = abs1(b[(i - 1) + (j - 1) * ldb]);
+            rwork[i - 1] = cabs1(b[(i - 1) + (j - 1) * ldb]);
         }
         //
         // Compute abs(op(A))*abs(X) + abs(B).
@@ -152,9 +143,9 @@ void Cgbrfs(const char *trans, INTEGER const n, INTEGER const kl, INTEGER const 
         if (notran) {
             for (k = 1; k <= n; k = k + 1) {
                 kk = ku + 1 - k;
-                xk = abs1(x[(k - 1) + (j - 1) * ldx]);
+                xk = cabs1(x[(k - 1) + (j - 1) * ldx]);
                 for (i = max((INTEGER)1, k - ku); i <= min(n, k + kl); i = i + 1) {
-                    rwork[i - 1] += abs1(ab[((kk + i) - 1) + (k - 1) * ldab]) * xk;
+                    rwork[i - 1] += cabs1(ab[((kk + i) - 1) + (k - 1) * ldab]) * xk;
                 }
             }
         } else {
@@ -162,7 +153,7 @@ void Cgbrfs(const char *trans, INTEGER const n, INTEGER const kl, INTEGER const 
                 s = zero;
                 kk = ku + 1 - k;
                 for (i = max((INTEGER)1, k - ku); i <= min(n, k + kl); i = i + 1) {
-                    s += abs1(ab[((kk + i) - 1) + (k - 1) * ldab]) * abs1(x[(i - 1) + (j - 1) * ldx]);
+                    s += cabs1(ab[((kk + i) - 1) + (k - 1) * ldab]) * cabs1(x[(i - 1) + (j - 1) * ldx]);
                 }
                 rwork[k - 1] += s;
             }
@@ -170,9 +161,9 @@ void Cgbrfs(const char *trans, INTEGER const n, INTEGER const kl, INTEGER const 
         s = zero;
         for (i = 1; i <= n; i = i + 1) {
             if (rwork[i - 1] > safe2) {
-                s = max(s, REAL(abs1(work[i - 1]) / rwork[i - 1]));
+                s = max(s, cabs1(work[i - 1]) / rwork[i - 1]);
             } else {
-                s = max(s, REAL((abs1(work[i - 1]) + safe1) / (rwork[i - 1] + safe1)));
+                s = max(s, (cabs1(work[i - 1]) + safe1) / (rwork[i - 1] + safe1));
             }
         }
         berr[j - 1] = s;
@@ -218,9 +209,9 @@ void Cgbrfs(const char *trans, INTEGER const n, INTEGER const kl, INTEGER const 
         //
         for (i = 1; i <= n; i = i + 1) {
             if (rwork[i - 1] > safe2) {
-                rwork[i - 1] = abs1(work[i - 1]) + nz * eps * rwork[i - 1];
+                rwork[i - 1] = cabs1(work[i - 1]) + nz * eps * rwork[i - 1];
             } else {
-                rwork[i - 1] = abs1(work[i - 1]) + nz * eps * rwork[i - 1] + safe1;
+                rwork[i - 1] = cabs1(work[i - 1]) + nz * eps * rwork[i - 1] + safe1;
             }
         }
         //
@@ -252,7 +243,7 @@ void Cgbrfs(const char *trans, INTEGER const n, INTEGER const kl, INTEGER const 
         //
         lstres = zero;
         for (i = 1; i <= n; i = i + 1) {
-            lstres = max(lstres, abs1(x[(i - 1) + (j - 1) * ldx]));
+            lstres = max(lstres, cabs1(x[(i - 1) + (j - 1) * ldx]));
         }
         if (lstres != zero) {
             ferr[j - 1] = ferr[j - 1] / lstres;

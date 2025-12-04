@@ -31,10 +31,6 @@
 
 void Cgelq(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *t, INTEGER const tsize, COMPLEX *work, INTEGER const lwork, INTEGER &info) {
     //
-    //
-    //
-    //
-    //
     // Test the input arguments
     //
     info = 0;
@@ -125,16 +121,16 @@ void Cgelq(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, COMP
     //
     if (info == 0) {
         if (mint) {
-            t[1 - 1] = mintsz;
+            t[0] = mintsz;
         } else {
-            t[1 - 1] = mb * m * nblcks + 5;
+            t[0] = mb * m * nblcks + 5;
         }
-        t[2 - 1] = mb;
-        t[3 - 1] = nb;
+        t[1] = mb;
+        t[2] = nb;
         if (minw) {
-            work[1 - 1] = lwmin;
+            work[0] = lwmin;
         } else {
-            work[1 - 1] = lwreq;
+            work[0] = lwreq;
         }
     }
     if (info != 0) {
@@ -153,12 +149,12 @@ void Cgelq(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, COMP
     // The LQ Decomposition
     //
     if ((n <= m) || (nb <= m) || (nb >= n)) {
-        Cgelqt(m, n, mb, a, lda, &t[6 - 1], mb, work, info);
+        Cgelqt(m, n, mb, a, lda, &t[5], mb, work, info);
     } else {
-        Claswlq(m, n, mb, nb, a, lda, &t[6 - 1], mb, work, lwork, info);
+        Claswlq(m, n, mb, nb, a, lda, &t[5], mb, work, lwork, info);
     }
     //
-    work[1 - 1] = lwreq;
+    work[0] = lwreq;
     //
     // End of Cgelq
     //
