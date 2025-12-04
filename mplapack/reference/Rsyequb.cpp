@@ -55,10 +55,6 @@ void Rsyequb(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL
     REAL smax = 0.0;
     REAL base = 0.0;
     //
-    //
-    //
-    //
-    //
     // Test the input parameters.
     //
     info = 0;
@@ -92,21 +88,21 @@ void Rsyequb(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL
     if (up) {
         for (j = 1; j <= n; j = j + 1) {
             for (i = 1; i <= j - 1; i = i + 1) {
-                s[i - 1] = max(s[i - 1], REAL(abs(a[(i - 1) + (j - 1) * lda])));
-                s[j - 1] = max(s[j - 1], REAL(abs(a[(i - 1) + (j - 1) * lda])));
-                amax = max(amax, REAL(abs(a[(i - 1) + (j - 1) * lda])));
+                s[i - 1] = max(s[i - 1], abs(a[(i - 1) + (j - 1) * lda]));
+                s[j - 1] = max(s[j - 1], abs(a[(i - 1) + (j - 1) * lda]));
+                amax = max(amax, abs(a[(i - 1) + (j - 1) * lda]));
             }
-            s[j - 1] = max(s[j - 1], REAL(abs(a[(j - 1) + (j - 1) * lda])));
-            amax = max(amax, REAL(abs(a[(j - 1) + (j - 1) * lda])));
+            s[j - 1] = max(s[j - 1], abs(a[(j - 1) + (j - 1) * lda]));
+            amax = max(amax, abs(a[(j - 1) + (j - 1) * lda]));
         }
     } else {
         for (j = 1; j <= n; j = j + 1) {
-            s[j - 1] = max(s[j - 1], REAL(abs(a[(j - 1) + (j - 1) * lda])));
-            amax = max(amax, REAL(abs(a[(j - 1) + (j - 1) * lda])));
+            s[j - 1] = max(s[j - 1], abs(a[(j - 1) + (j - 1) * lda]));
+            amax = max(amax, abs(a[(j - 1) + (j - 1) * lda]));
             for (i = j + 1; i <= n; i = i + 1) {
-                s[i - 1] = max(s[i - 1], REAL(abs(a[(i - 1) + (j - 1) * lda])));
-                s[j - 1] = max(s[j - 1], REAL(abs(a[(i - 1) + (j - 1) * lda])));
-                amax = max(amax, REAL(abs(a[(i - 1) + (j - 1) * lda])));
+                s[i - 1] = max(s[i - 1], abs(a[(i - 1) + (j - 1) * lda]));
+                s[j - 1] = max(s[j - 1], abs(a[(i - 1) + (j - 1) * lda]));
+                amax = max(amax, abs(a[(i - 1) + (j - 1) * lda]));
             }
         }
     }
@@ -114,7 +110,7 @@ void Rsyequb(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL
         s[j - 1] = 1.0 / s[j - 1];
     }
     //
-    tol = one / sqrt(2.0 * castREAL(n));
+    tol = one / sqrt(2.0 * n);
     //
     for (iter = 1; iter <= max_iter; iter = iter + 1) {
         scale = 0.0;
