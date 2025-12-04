@@ -31,10 +31,6 @@
 
 void Rtrti2(const char *uplo, const char *diag, INTEGER const n, REAL *a, INTEGER const lda, INTEGER &info) {
     //
-    //
-    //
-    //
-    //
     // Test the input parameters.
     //
     info = 0;
