@@ -36,6 +36,26 @@ def _split_actuals(arg_string: str):
             parts.append(part)
     return parts
 
+
+def _is_array_variable(conv_info, name: str) -> bool:
+    """Return True if 'name' is declared as an array in the current procedure.
+
+    Uses conv_info.fproc.fdecl_by_identifier to look up the declaration.
+    Returns False if conv_info is None or the variable is not found/not an array.
+    """
+    if conv_info is None:
+        return False
+    try:
+        fdecl = conv_info.fproc.fdecl_by_identifier.get(name.lower())
+        if fdecl is None:
+            fdecl = conv_info.fproc.fdecl_by_identifier.get(name)
+        if fdecl is None:
+            return False
+        return getattr(fdecl, "dim_tokens", None) is not None
+    except (AttributeError, KeyError):
+        return False
+
+
 def _adjust_actuals_using_signature(arg_string: str, signature, conv_info=None) -> str:
     """Adjust actual arguments based on pointer/value signature.
 
@@ -43,6 +63,12 @@ def _adjust_actuals_using_signature(arg_string: str, signature, conv_info=None) 
     element (e.g. rwork[...]) and is not already passed by address,
     insert '&' in front of it. Optionally normalize '&name[0]' into
     'name' (pointer to the first element) for pointer parameters only.
+
+    For REF_SCALAR arguments (scalar reference like REAL& alpha),
+    the expression should be name[0] if it's an array, or name if scalar.
+    - If input is '&name[...]', remove '&' -> 'name[...]'
+    - If input is 'name[...]', keep as is
+    - If input is bare 'name' AND it's an array, convert to 'name[0]'
 
     For PTR_CHAR arguments, if the expression is a bare identifier
     (e.g. normin) and not already passed by address, insert '&' in
@@ -63,11 +89,38 @@ def _adjust_actuals_using_signature(arg_string: str, signature, conv_info=None) 
     for part, kind in zip(parts, signature):
         s = part.lstrip()
 
+        if kind == "REF_SCALAR":
+            # REF_SCALAR: scalar reference (e.g., REAL& alpha).
+
+            if s.startswith("&"):
+                # &name[...] -> name[...] (remove the '&')
+                m = re.fullmatch(
+                    r"&\s*([A-Za-z_][A-Za-z0-9_]*\s*\[[^\]]+\])", s)
+                if m:
+                    leading = part[:len(part) - len(s)]
+                    inner = re.sub(r"\s+", "", m.group(1))
+                    part = leading + inner
+                    new_parts.append(part)
+                    continue
+
+            if "[" in s:
+                new_parts.append(part)
+                continue
+
+            m = re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", s)
+            if m and _is_array_variable(conv_info, s):
+                leading = part[:len(part) - len(s)]
+                part = leading + s + "[0]"
+
+            new_parts.append(part)
+            continue
+
         if kind == "PTR_NUMERIC":
             # Already passing by address.
             if s.startswith("&"):
                 # Normalize '&name[0]' -> 'name' only for pointer params.
-                m = re.fullmatch(r"&\s*([A-Za-z_][A-Za-z0-9_]*)\s*\[\s*0\s*\]", s)
+                m = re.fullmatch(
+                    r"&\s*([A-Za-z_][A-Za-z0-9_]*)\s*\[\s*0\s*\]", s)
                 if m:
                     leading = part[:len(part) - len(s)]
                     part = leading + m.group(1)
@@ -104,6 +157,7 @@ def _adjust_actuals_using_signature(arg_string: str, signature, conv_info=None) 
         new_parts.append(part)
 
     return ", ".join(p.strip() for p in new_parts)
+
 
 def _load_mplapack_name_map(path=None):
     """Load Fortran -> MPLAPACK C++ name mapping from an external text file.
@@ -544,6 +598,7 @@ reinterpret_cast return short signed sizeof static static_cast struct switch
 template this throw true try typedef typeid typename union unsigned using
 virtual void volatile wchar_t while xor xor_eq argv argc
 """.split())
+
 
 def prepend_identifier_if_necessary(identifier):
     if (identifier in major_types or identifier in cpp_keywords):
@@ -1196,6 +1251,7 @@ def convert_power(conv_info, tokens):
     return fun + "(" + convert_tokens(
         conv_info=conv_info, tokens=tokens, commas=True) + ")"
 
+
 def _is_real_valued_function_call(expr: str) -> bool:
     """Return True if expr looks like a call to a known real-valued helper.
 
@@ -1337,6 +1393,7 @@ def _real_cast_or_component(arg: str, complex_vars, complex_ptrs) -> str:
     # General COMPLEX expression: take its real part
     return f"({arg}).real()"
 
+
 def _imag_repl(arg: str) -> str:
     """Replacement for AIMAG/IMAG: choose arg.imag() or (arg).imag()."""
     arg = arg.strip()
@@ -1434,6 +1491,7 @@ def _rewrite_max_min_calls(text: str) -> str:
     #   max(1, m)   -> max((INTEGER)1, m)
     #   min(-2, n)  -> min((INTEGER)-2, n)
     pattern_first = r'\b(max|min)\(\s*([+-]?[0-9]+)\s*,'
+
     def repl_first(m):
         func = m.group(1)
         lit = m.group(2)
@@ -1445,6 +1503,7 @@ def _rewrite_max_min_calls(text: str) -> str:
     #   max(m, 1)   -> max(m, (INTEGER)1)
     #   min(k, -2)  -> min(k, (INTEGER)-2)
     pattern_second = r'\b(max|min)\(\s*([^,]+?),\s*([+-]?[0-9]+)\s*\)'
+
     def repl_second(m):
         func = m.group(1)
         first = m.group(2)
@@ -1454,6 +1513,7 @@ def _rewrite_max_min_calls(text: str) -> str:
     text = re.sub(pattern_second, repl_second, text)
 
     return text
+
 
 _single_char_string_assign_re = re.compile(
     r'(\b[A-Za-z_][A-Za-z0-9_]*\b)\s*=\s*"([^"\\])"\s*;'
@@ -1577,6 +1637,7 @@ def rewrite_intrinsics(text: str) -> str:
     text = _rewrite_max_min_calls(text)
 
     return text
+
 
 def convert_tokens(conv_info, tokens, commas=False, had_str_concat=None):
     result = []
@@ -2017,7 +2078,7 @@ def convert_declaration(rapp, conv_info, fdecl, crhs, const):
         mplapack_ctype = convert_to_mplapack_type(ctype)
         rapp("%s%s %s = %s;" % (const_qualifier(), mplapack_ctype, vname, crhs))
         return False
- 
+
     # Array declaration (local fixed-size arrays).
     # MPLAPACK reference code prefers plain C arrays for small work arrays,
     # e.g. "INTEGER isave[3];".
@@ -2027,7 +2088,8 @@ def convert_declaration(rapp, conv_info, fdecl, crhs, const):
         return ""
 
     # Determine element type (scalar) and map it to MPLAPACK typedefs.
-    elem_ctype = convert_data_type(conv_info=conv_info, fdecl=fdecl, crhs=None)[0]
+    elem_ctype = convert_data_type(
+        conv_info=conv_info, fdecl=fdecl, crhs=None)[0]
     mplapack_elem_ctype = convert_to_mplapack_type(elem_ctype)
 
     # Only support compile-time constant extents here.
@@ -2043,6 +2105,7 @@ def convert_declaration(rapp, conv_info, fdecl, crhs, const):
     rapp("%s%s %s[%s];" % (
         const_qualifier(), mplapack_elem_ctype, vname, static_size))
     return False
+
 
 class scope(object):
 
@@ -3231,7 +3294,8 @@ def convert_executable(
                 rhs_is_complex = False
                 rhs_is_real = False
                 if (lhs_is_real or lhs_is_integer) and rhs_is_simple and rhs_id_tokens:
-                    rhs_fdecl = conv_info.fproc.get_fdecl(id_tok=rhs_id_tokens[0])
+                    rhs_fdecl = conv_info.fproc.get_fdecl(
+                        id_tok=rhs_id_tokens[0])
                     if rhs_fdecl is not None and rhs_fdecl.data_type is not None:
                         dt = rhs_fdecl.data_type
                         if isinstance(dt, str):
@@ -3240,7 +3304,8 @@ def convert_executable(
                             rhs_dt_code = getattr(dt, "value", None)
                         if rhs_dt_code is not None:
                             rhs_dt_code = rhs_dt_code.lower()
-                    rhs_is_complex = rhs_dt_code in ("complex", "doublecomplex")
+                    rhs_is_complex = rhs_dt_code in (
+                        "complex", "doublecomplex")
                     rhs_is_real = rhs_dt_code in ("real", "doubleprecision")
 
                 if lhs_is_real and rhs_is_complex:
@@ -3767,6 +3832,7 @@ def produce_fortran_file_comment(conv_info, callback):
         callback("// Fortran file: %s"
                  % conv_info.fproc.body_lines[0].source_line_cluster[0].file_name)
 
+
 def _mark_call_actuals_used(conv_info):
     """Bump use_count for variables that appear as actual arguments in CALL.
 
@@ -3807,8 +3873,10 @@ def _mark_call_actuals_used(conv_info):
                 continue
             if getattr(fdecl, "use_count", 0) == 0:
                 # Debug print; comment out when no longer needed
-                print(f"[CALL_USED] bump use_count for {id_tok.value}", file=sys.stderr)
+                print(
+                    f"[CALL_USED] bump use_count for {id_tok.value}", file=sys.stderr)
                 fdecl.use_count = 1
+
 
 def convert_to_cpp_function(
         cpp_callback,
@@ -3870,7 +3938,8 @@ def convert_to_cpp_function(
                 else:
                     cdim = "%d" % len(fdecl.dim_tokens)
                 cargs_append(
-                    "str_arr_%sref<%s>" % (cconst(fdecl=fdecl, short=True), cdim),
+                    "str_arr_%sref<%s>" % (
+                        cconst(fdecl=fdecl, short=True), cdim),
                     arg_name,
                 )
                 if (len(fdecl.dim_tokens) == 1):
@@ -4857,7 +4926,7 @@ def _postprocess_math_intrinsics_upper(lines):
         # ----------------------------------------------------------
         # 8) conjg
         # ----------------------------------------------------------
-        line = re.sub(r'\bfem::dconjg\s*\(','conj(',   line)
+        line = re.sub(r'\bfem::dconjg\s*\(', 'conj(',   line)
 
         out.append(line)
     return out
@@ -4909,6 +4978,7 @@ def _postprocess_ilaenv_name_map(lines):
             line = pat.sub(_repl, line)
         out.append(line)
     return out
+
 
 def _postprocess_strip_float_suffix(lines):
     """Remove 'f' suffix from floating literals like 1.0f, 0.5f, 3.14e-1f."""
@@ -4978,7 +5048,8 @@ def _postprocess_index_zero_simplify(text):
             r"\(\s*\(\s*("
             r"(?:[Mm][Ii][Nn]|[Mm][Aa][Xx])"   # MIN or MAX, case-insensitive
             r"\("
-            r"(?:[^()]*|\([^()]*\))*"          # allow one level of nested parentheses
+            # allow one level of nested parentheses
+            r"(?:[^()]*|\([^()]*\))*"
             r"\)"
             r")\s*\)\s*-\s*1\s*\)",
             re.DOTALL,
@@ -5528,7 +5599,7 @@ def process(
     # Strip C-style float suffixes from literals (1.0f -> 1.0, etc.).
     result = _postprocess_strip_float_suffix(result)
 
-    # 
+    #
     result = _postprocess_index_zero_simplify(result)
 
     # Clean up temporary Fortran files created for preprocessing.
