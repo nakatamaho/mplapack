@@ -29,7 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Clarfx(const char *side, INTEGER const m, INTEGER const n, COMPLEX *v, COMPLEX const tau, COMPLEX *c, INTEGER const ldc, COMPLEX *work) {
+void Clarfx(const char *side, INTEGER const m, INTEGER const n, COMPLEX *v, COMPLEX const &tau, COMPLEX *c, INTEGER const ldc, COMPLEX *work) {
     const COMPLEX zero = COMPLEX(0.0, 0.0);
     const COMPLEX one = COMPLEX(1.0, 0.0);
     COMPLEX t1 = 0.0;
@@ -54,10 +54,6 @@ void Clarfx(const char *side, INTEGER const m, INTEGER const n, COMPLEX *v, COMP
     COMPLEX t9 = 0.0;
     COMPLEX v10 = 0.0;
     COMPLEX t10 = 0.0;
-    //
-    //
-    //
-    //
     //
     if (tau == zero) {
         return;
@@ -99,7 +95,7 @@ void Clarfx(const char *side, INTEGER const m, INTEGER const n, COMPLEX *v, COMP
         //
         // Special code for 1 x 1 Householder
         //
-        t1 = one - tau * v[1 - 1] * conj(v[1 - 1]);
+        t1 = one - tau * v[0] * conj(v[0]);
         for (j = 1; j <= n; j = j + 1) {
             c[(j - 1) * ldc] = t1 * c[(j - 1) * ldc];
         }
@@ -108,9 +104,9 @@ void Clarfx(const char *side, INTEGER const m, INTEGER const n, COMPLEX *v, COMP
         //
         // Special code for 2 x 2 Householder
         //
-        v1 = conj(v[1 - 1]);
+        v1 = conj(v[0]);
         t1 = tau * conj(v1);
-        v2 = conj(v[2 - 1]);
+        v2 = conj(v[1]);
         t2 = tau * conj(v2);
         for (j = 1; j <= n; j = j + 1) {
             sum = v1 * c[(j - 1) * ldc] + v2 * c[(2 - 1) + (j - 1) * ldc];
@@ -122,11 +118,11 @@ void Clarfx(const char *side, INTEGER const m, INTEGER const n, COMPLEX *v, COMP
         //
         // Special code for 3 x 3 Householder
         //
-        v1 = conj(v[1 - 1]);
+        v1 = conj(v[0]);
         t1 = tau * conj(v1);
-        v2 = conj(v[2 - 1]);
+        v2 = conj(v[1]);
         t2 = tau * conj(v2);
-        v3 = conj(v[3 - 1]);
+        v3 = conj(v[2]);
         t3 = tau * conj(v3);
         for (j = 1; j <= n; j = j + 1) {
             sum = v1 * c[(j - 1) * ldc] + v2 * c[(2 - 1) + (j - 1) * ldc] + v3 * c[(3 - 1) + (j - 1) * ldc];
@@ -139,13 +135,13 @@ void Clarfx(const char *side, INTEGER const m, INTEGER const n, COMPLEX *v, COMP
         //
         // Special code for 4 x 4 Householder
         //
-        v1 = conj(v[1 - 1]);
+        v1 = conj(v[0]);
         t1 = tau * conj(v1);
-        v2 = conj(v[2 - 1]);
+        v2 = conj(v[1]);
         t2 = tau * conj(v2);
-        v3 = conj(v[3 - 1]);
+        v3 = conj(v[2]);
         t3 = tau * conj(v3);
-        v4 = conj(v[4 - 1]);
+        v4 = conj(v[3]);
         t4 = tau * conj(v4);
         for (j = 1; j <= n; j = j + 1) {
             sum = v1 * c[(j - 1) * ldc] + v2 * c[(2 - 1) + (j - 1) * ldc] + v3 * c[(3 - 1) + (j - 1) * ldc] + v4 * c[(4 - 1) + (j - 1) * ldc];
@@ -159,15 +155,15 @@ void Clarfx(const char *side, INTEGER const m, INTEGER const n, COMPLEX *v, COMP
         //
         // Special code for 5 x 5 Householder
         //
-        v1 = conj(v[1 - 1]);
+        v1 = conj(v[0]);
         t1 = tau * conj(v1);
-        v2 = conj(v[2 - 1]);
+        v2 = conj(v[1]);
         t2 = tau * conj(v2);
-        v3 = conj(v[3 - 1]);
+        v3 = conj(v[2]);
         t3 = tau * conj(v3);
-        v4 = conj(v[4 - 1]);
+        v4 = conj(v[3]);
         t4 = tau * conj(v4);
-        v5 = conj(v[5 - 1]);
+        v5 = conj(v[4]);
         t5 = tau * conj(v5);
         for (j = 1; j <= n; j = j + 1) {
             sum = v1 * c[(j - 1) * ldc] + v2 * c[(2 - 1) + (j - 1) * ldc] + v3 * c[(3 - 1) + (j - 1) * ldc] + v4 * c[(4 - 1) + (j - 1) * ldc] + v5 * c[(5 - 1) + (j - 1) * ldc];
@@ -182,17 +178,17 @@ void Clarfx(const char *side, INTEGER const m, INTEGER const n, COMPLEX *v, COMP
         //
         // Special code for 6 x 6 Householder
         //
-        v1 = conj(v[1 - 1]);
+        v1 = conj(v[0]);
         t1 = tau * conj(v1);
-        v2 = conj(v[2 - 1]);
+        v2 = conj(v[1]);
         t2 = tau * conj(v2);
-        v3 = conj(v[3 - 1]);
+        v3 = conj(v[2]);
         t3 = tau * conj(v3);
-        v4 = conj(v[4 - 1]);
+        v4 = conj(v[3]);
         t4 = tau * conj(v4);
-        v5 = conj(v[5 - 1]);
+        v5 = conj(v[4]);
         t5 = tau * conj(v5);
-        v6 = conj(v[6 - 1]);
+        v6 = conj(v[5]);
         t6 = tau * conj(v6);
         for (j = 1; j <= n; j = j + 1) {
             sum = v1 * c[(j - 1) * ldc] + v2 * c[(2 - 1) + (j - 1) * ldc] + v3 * c[(3 - 1) + (j - 1) * ldc] + v4 * c[(4 - 1) + (j - 1) * ldc] + v5 * c[(5 - 1) + (j - 1) * ldc] + v6 * c[(6 - 1) + (j - 1) * ldc];
@@ -208,19 +204,19 @@ void Clarfx(const char *side, INTEGER const m, INTEGER const n, COMPLEX *v, COMP
         //
         // Special code for 7 x 7 Householder
         //
-        v1 = conj(v[1 - 1]);
+        v1 = conj(v[0]);
         t1 = tau * conj(v1);
-        v2 = conj(v[2 - 1]);
+        v2 = conj(v[1]);
         t2 = tau * conj(v2);
-        v3 = conj(v[3 - 1]);
+        v3 = conj(v[2]);
         t3 = tau * conj(v3);
-        v4 = conj(v[4 - 1]);
+        v4 = conj(v[3]);
         t4 = tau * conj(v4);
-        v5 = conj(v[5 - 1]);
+        v5 = conj(v[4]);
         t5 = tau * conj(v5);
-        v6 = conj(v[6 - 1]);
+        v6 = conj(v[5]);
         t6 = tau * conj(v6);
-        v7 = conj(v[7 - 1]);
+        v7 = conj(v[6]);
         t7 = tau * conj(v7);
         for (j = 1; j <= n; j = j + 1) {
             sum = v1 * c[(j - 1) * ldc] + v2 * c[(2 - 1) + (j - 1) * ldc] + v3 * c[(3 - 1) + (j - 1) * ldc] + v4 * c[(4 - 1) + (j - 1) * ldc] + v5 * c[(5 - 1) + (j - 1) * ldc] + v6 * c[(6 - 1) + (j - 1) * ldc] + v7 * c[(7 - 1) + (j - 1) * ldc];
@@ -237,21 +233,21 @@ void Clarfx(const char *side, INTEGER const m, INTEGER const n, COMPLEX *v, COMP
         //
         // Special code for 8 x 8 Householder
         //
-        v1 = conj(v[1 - 1]);
+        v1 = conj(v[0]);
         t1 = tau * conj(v1);
-        v2 = conj(v[2 - 1]);
+        v2 = conj(v[1]);
         t2 = tau * conj(v2);
-        v3 = conj(v[3 - 1]);
+        v3 = conj(v[2]);
         t3 = tau * conj(v3);
-        v4 = conj(v[4 - 1]);
+        v4 = conj(v[3]);
         t4 = tau * conj(v4);
-        v5 = conj(v[5 - 1]);
+        v5 = conj(v[4]);
         t5 = tau * conj(v5);
-        v6 = conj(v[6 - 1]);
+        v6 = conj(v[5]);
         t6 = tau * conj(v6);
-        v7 = conj(v[7 - 1]);
+        v7 = conj(v[6]);
         t7 = tau * conj(v7);
-        v8 = conj(v[8 - 1]);
+        v8 = conj(v[7]);
         t8 = tau * conj(v8);
         for (j = 1; j <= n; j = j + 1) {
             sum = v1 * c[(j - 1) * ldc] + v2 * c[(2 - 1) + (j - 1) * ldc] + v3 * c[(3 - 1) + (j - 1) * ldc] + v4 * c[(4 - 1) + (j - 1) * ldc] + v5 * c[(5 - 1) + (j - 1) * ldc] + v6 * c[(6 - 1) + (j - 1) * ldc] + v7 * c[(7 - 1) + (j - 1) * ldc] + v8 * c[(8 - 1) + (j - 1) * ldc];
@@ -269,23 +265,23 @@ void Clarfx(const char *side, INTEGER const m, INTEGER const n, COMPLEX *v, COMP
         //
         // Special code for 9 x 9 Householder
         //
-        v1 = conj(v[1 - 1]);
+        v1 = conj(v[0]);
         t1 = tau * conj(v1);
-        v2 = conj(v[2 - 1]);
+        v2 = conj(v[1]);
         t2 = tau * conj(v2);
-        v3 = conj(v[3 - 1]);
+        v3 = conj(v[2]);
         t3 = tau * conj(v3);
-        v4 = conj(v[4 - 1]);
+        v4 = conj(v[3]);
         t4 = tau * conj(v4);
-        v5 = conj(v[5 - 1]);
+        v5 = conj(v[4]);
         t5 = tau * conj(v5);
-        v6 = conj(v[6 - 1]);
+        v6 = conj(v[5]);
         t6 = tau * conj(v6);
-        v7 = conj(v[7 - 1]);
+        v7 = conj(v[6]);
         t7 = tau * conj(v7);
-        v8 = conj(v[8 - 1]);
+        v8 = conj(v[7]);
         t8 = tau * conj(v8);
-        v9 = conj(v[9 - 1]);
+        v9 = conj(v[8]);
         t9 = tau * conj(v9);
         for (j = 1; j <= n; j = j + 1) {
             sum = v1 * c[(j - 1) * ldc] + v2 * c[(2 - 1) + (j - 1) * ldc] + v3 * c[(3 - 1) + (j - 1) * ldc] + v4 * c[(4 - 1) + (j - 1) * ldc] + v5 * c[(5 - 1) + (j - 1) * ldc] + v6 * c[(6 - 1) + (j - 1) * ldc] + v7 * c[(7 - 1) + (j - 1) * ldc] + v8 * c[(8 - 1) + (j - 1) * ldc] + v9 * c[(9 - 1) + (j - 1) * ldc];
@@ -304,25 +300,25 @@ void Clarfx(const char *side, INTEGER const m, INTEGER const n, COMPLEX *v, COMP
         //
         // Special code for 10 x 10 Householder
         //
-        v1 = conj(v[1 - 1]);
+        v1 = conj(v[0]);
         t1 = tau * conj(v1);
-        v2 = conj(v[2 - 1]);
+        v2 = conj(v[1]);
         t2 = tau * conj(v2);
-        v3 = conj(v[3 - 1]);
+        v3 = conj(v[2]);
         t3 = tau * conj(v3);
-        v4 = conj(v[4 - 1]);
+        v4 = conj(v[3]);
         t4 = tau * conj(v4);
-        v5 = conj(v[5 - 1]);
+        v5 = conj(v[4]);
         t5 = tau * conj(v5);
-        v6 = conj(v[6 - 1]);
+        v6 = conj(v[5]);
         t6 = tau * conj(v6);
-        v7 = conj(v[7 - 1]);
+        v7 = conj(v[6]);
         t7 = tau * conj(v7);
-        v8 = conj(v[8 - 1]);
+        v8 = conj(v[7]);
         t8 = tau * conj(v8);
-        v9 = conj(v[9 - 1]);
+        v9 = conj(v[8]);
         t9 = tau * conj(v9);
-        v10 = conj(v[10 - 1]);
+        v10 = conj(v[9]);
         t10 = tau * conj(v10);
         for (j = 1; j <= n; j = j + 1) {
             sum = v1 * c[(j - 1) * ldc] + v2 * c[(2 - 1) + (j - 1) * ldc] + v3 * c[(3 - 1) + (j - 1) * ldc] + v4 * c[(4 - 1) + (j - 1) * ldc] + v5 * c[(5 - 1) + (j - 1) * ldc] + v6 * c[(6 - 1) + (j - 1) * ldc] + v7 * c[(7 - 1) + (j - 1) * ldc] + v8 * c[(8 - 1) + (j - 1) * ldc] + v9 * c[(9 - 1) + (j - 1) * ldc] + v10 * c[(10 - 1) + (j - 1) * ldc];
@@ -375,7 +371,7 @@ void Clarfx(const char *side, INTEGER const m, INTEGER const n, COMPLEX *v, COMP
         //
         // Special code for 1 x 1 Householder
         //
-        t1 = one - tau * v[1 - 1] * conj(v[1 - 1]);
+        t1 = one - tau * v[0] * conj(v[0]);
         for (j = 1; j <= m; j = j + 1) {
             c[(j - 1)] = t1 * c[(j - 1)];
         }
@@ -384,9 +380,9 @@ void Clarfx(const char *side, INTEGER const m, INTEGER const n, COMPLEX *v, COMP
         //
         // Special code for 2 x 2 Householder
         //
-        v1 = v[1 - 1];
+        v1 = v[0];
         t1 = tau * conj(v1);
-        v2 = v[2 - 1];
+        v2 = v[1];
         t2 = tau * conj(v2);
         for (j = 1; j <= m; j = j + 1) {
             sum = v1 * c[(j - 1)] + v2 * c[(j - 1) + (2 - 1) * ldc];
@@ -398,11 +394,11 @@ void Clarfx(const char *side, INTEGER const m, INTEGER const n, COMPLEX *v, COMP
         //
         // Special code for 3 x 3 Householder
         //
-        v1 = v[1 - 1];
+        v1 = v[0];
         t1 = tau * conj(v1);
-        v2 = v[2 - 1];
+        v2 = v[1];
         t2 = tau * conj(v2);
-        v3 = v[3 - 1];
+        v3 = v[2];
         t3 = tau * conj(v3);
         for (j = 1; j <= m; j = j + 1) {
             sum = v1 * c[(j - 1)] + v2 * c[(j - 1) + (2 - 1) * ldc] + v3 * c[(j - 1) + (3 - 1) * ldc];
@@ -415,13 +411,13 @@ void Clarfx(const char *side, INTEGER const m, INTEGER const n, COMPLEX *v, COMP
         //
         // Special code for 4 x 4 Householder
         //
-        v1 = v[1 - 1];
+        v1 = v[0];
         t1 = tau * conj(v1);
-        v2 = v[2 - 1];
+        v2 = v[1];
         t2 = tau * conj(v2);
-        v3 = v[3 - 1];
+        v3 = v[2];
         t3 = tau * conj(v3);
-        v4 = v[4 - 1];
+        v4 = v[3];
         t4 = tau * conj(v4);
         for (j = 1; j <= m; j = j + 1) {
             sum = v1 * c[(j - 1)] + v2 * c[(j - 1) + (2 - 1) * ldc] + v3 * c[(j - 1) + (3 - 1) * ldc] + v4 * c[(j - 1) + (4 - 1) * ldc];
@@ -435,15 +431,15 @@ void Clarfx(const char *side, INTEGER const m, INTEGER const n, COMPLEX *v, COMP
         //
         // Special code for 5 x 5 Householder
         //
-        v1 = v[1 - 1];
+        v1 = v[0];
         t1 = tau * conj(v1);
-        v2 = v[2 - 1];
+        v2 = v[1];
         t2 = tau * conj(v2);
-        v3 = v[3 - 1];
+        v3 = v[2];
         t3 = tau * conj(v3);
-        v4 = v[4 - 1];
+        v4 = v[3];
         t4 = tau * conj(v4);
-        v5 = v[5 - 1];
+        v5 = v[4];
         t5 = tau * conj(v5);
         for (j = 1; j <= m; j = j + 1) {
             sum = v1 * c[(j - 1)] + v2 * c[(j - 1) + (2 - 1) * ldc] + v3 * c[(j - 1) + (3 - 1) * ldc] + v4 * c[(j - 1) + (4 - 1) * ldc] + v5 * c[(j - 1) + (5 - 1) * ldc];
@@ -458,17 +454,17 @@ void Clarfx(const char *side, INTEGER const m, INTEGER const n, COMPLEX *v, COMP
         //
         // Special code for 6 x 6 Householder
         //
-        v1 = v[1 - 1];
+        v1 = v[0];
         t1 = tau * conj(v1);
-        v2 = v[2 - 1];
+        v2 = v[1];
         t2 = tau * conj(v2);
-        v3 = v[3 - 1];
+        v3 = v[2];
         t3 = tau * conj(v3);
-        v4 = v[4 - 1];
+        v4 = v[3];
         t4 = tau * conj(v4);
-        v5 = v[5 - 1];
+        v5 = v[4];
         t5 = tau * conj(v5);
-        v6 = v[6 - 1];
+        v6 = v[5];
         t6 = tau * conj(v6);
         for (j = 1; j <= m; j = j + 1) {
             sum = v1 * c[(j - 1)] + v2 * c[(j - 1) + (2 - 1) * ldc] + v3 * c[(j - 1) + (3 - 1) * ldc] + v4 * c[(j - 1) + (4 - 1) * ldc] + v5 * c[(j - 1) + (5 - 1) * ldc] + v6 * c[(j - 1) + (6 - 1) * ldc];
@@ -484,19 +480,19 @@ void Clarfx(const char *side, INTEGER const m, INTEGER const n, COMPLEX *v, COMP
         //
         // Special code for 7 x 7 Householder
         //
-        v1 = v[1 - 1];
+        v1 = v[0];
         t1 = tau * conj(v1);
-        v2 = v[2 - 1];
+        v2 = v[1];
         t2 = tau * conj(v2);
-        v3 = v[3 - 1];
+        v3 = v[2];
         t3 = tau * conj(v3);
-        v4 = v[4 - 1];
+        v4 = v[3];
         t4 = tau * conj(v4);
-        v5 = v[5 - 1];
+        v5 = v[4];
         t5 = tau * conj(v5);
-        v6 = v[6 - 1];
+        v6 = v[5];
         t6 = tau * conj(v6);
-        v7 = v[7 - 1];
+        v7 = v[6];
         t7 = tau * conj(v7);
         for (j = 1; j <= m; j = j + 1) {
             sum = v1 * c[(j - 1)] + v2 * c[(j - 1) + (2 - 1) * ldc] + v3 * c[(j - 1) + (3 - 1) * ldc] + v4 * c[(j - 1) + (4 - 1) * ldc] + v5 * c[(j - 1) + (5 - 1) * ldc] + v6 * c[(j - 1) + (6 - 1) * ldc] + v7 * c[(j - 1) + (7 - 1) * ldc];
@@ -513,21 +509,21 @@ void Clarfx(const char *side, INTEGER const m, INTEGER const n, COMPLEX *v, COMP
         //
         // Special code for 8 x 8 Householder
         //
-        v1 = v[1 - 1];
+        v1 = v[0];
         t1 = tau * conj(v1);
-        v2 = v[2 - 1];
+        v2 = v[1];
         t2 = tau * conj(v2);
-        v3 = v[3 - 1];
+        v3 = v[2];
         t3 = tau * conj(v3);
-        v4 = v[4 - 1];
+        v4 = v[3];
         t4 = tau * conj(v4);
-        v5 = v[5 - 1];
+        v5 = v[4];
         t5 = tau * conj(v5);
-        v6 = v[6 - 1];
+        v6 = v[5];
         t6 = tau * conj(v6);
-        v7 = v[7 - 1];
+        v7 = v[6];
         t7 = tau * conj(v7);
-        v8 = v[8 - 1];
+        v8 = v[7];
         t8 = tau * conj(v8);
         for (j = 1; j <= m; j = j + 1) {
             sum = v1 * c[(j - 1)] + v2 * c[(j - 1) + (2 - 1) * ldc] + v3 * c[(j - 1) + (3 - 1) * ldc] + v4 * c[(j - 1) + (4 - 1) * ldc] + v5 * c[(j - 1) + (5 - 1) * ldc] + v6 * c[(j - 1) + (6 - 1) * ldc] + v7 * c[(j - 1) + (7 - 1) * ldc] + v8 * c[(j - 1) + (8 - 1) * ldc];
@@ -545,23 +541,23 @@ void Clarfx(const char *side, INTEGER const m, INTEGER const n, COMPLEX *v, COMP
         //
         // Special code for 9 x 9 Householder
         //
-        v1 = v[1 - 1];
+        v1 = v[0];
         t1 = tau * conj(v1);
-        v2 = v[2 - 1];
+        v2 = v[1];
         t2 = tau * conj(v2);
-        v3 = v[3 - 1];
+        v3 = v[2];
         t3 = tau * conj(v3);
-        v4 = v[4 - 1];
+        v4 = v[3];
         t4 = tau * conj(v4);
-        v5 = v[5 - 1];
+        v5 = v[4];
         t5 = tau * conj(v5);
-        v6 = v[6 - 1];
+        v6 = v[5];
         t6 = tau * conj(v6);
-        v7 = v[7 - 1];
+        v7 = v[6];
         t7 = tau * conj(v7);
-        v8 = v[8 - 1];
+        v8 = v[7];
         t8 = tau * conj(v8);
-        v9 = v[9 - 1];
+        v9 = v[8];
         t9 = tau * conj(v9);
         for (j = 1; j <= m; j = j + 1) {
             sum = v1 * c[(j - 1)] + v2 * c[(j - 1) + (2 - 1) * ldc] + v3 * c[(j - 1) + (3 - 1) * ldc] + v4 * c[(j - 1) + (4 - 1) * ldc] + v5 * c[(j - 1) + (5 - 1) * ldc] + v6 * c[(j - 1) + (6 - 1) * ldc] + v7 * c[(j - 1) + (7 - 1) * ldc] + v8 * c[(j - 1) + (8 - 1) * ldc] + v9 * c[(j - 1) + (9 - 1) * ldc];
@@ -580,25 +576,25 @@ void Clarfx(const char *side, INTEGER const m, INTEGER const n, COMPLEX *v, COMP
         //
         // Special code for 10 x 10 Householder
         //
-        v1 = v[1 - 1];
+        v1 = v[0];
         t1 = tau * conj(v1);
-        v2 = v[2 - 1];
+        v2 = v[1];
         t2 = tau * conj(v2);
-        v3 = v[3 - 1];
+        v3 = v[2];
         t3 = tau * conj(v3);
-        v4 = v[4 - 1];
+        v4 = v[3];
         t4 = tau * conj(v4);
-        v5 = v[5 - 1];
+        v5 = v[4];
         t5 = tau * conj(v5);
-        v6 = v[6 - 1];
+        v6 = v[5];
         t6 = tau * conj(v6);
-        v7 = v[7 - 1];
+        v7 = v[6];
         t7 = tau * conj(v7);
-        v8 = v[8 - 1];
+        v8 = v[7];
         t8 = tau * conj(v8);
-        v9 = v[9 - 1];
+        v9 = v[8];
         t9 = tau * conj(v9);
-        v10 = v[10 - 1];
+        v10 = v[9];
         t10 = tau * conj(v10);
         for (j = 1; j <= m; j = j + 1) {
             sum = v1 * c[(j - 1)] + v2 * c[(j - 1) + (2 - 1) * ldc] + v3 * c[(j - 1) + (3 - 1) * ldc] + v4 * c[(j - 1) + (4 - 1) * ldc] + v5 * c[(j - 1) + (5 - 1) * ldc] + v6 * c[(j - 1) + (6 - 1) * ldc] + v7 * c[(j - 1) + (7 - 1) * ldc] + v8 * c[(j - 1) + (8 - 1) * ldc] + v9 * c[(j - 1) + (9 - 1) * ldc] + v10 * c[(j - 1) + (10 - 1) * ldc];
