@@ -29,11 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rlagtf(INTEGER const n, REAL *a, REAL const lambda, REAL *b, REAL *c, REAL const tol, REAL *d, INTEGER *in, INTEGER &info) {
-    //
-    //
-    //
-    //
+void Rlagtf(INTEGER const n, REAL *a, REAL const &lambda, REAL *b, REAL *c, REAL const &tol, REAL *d, INTEGER *in, INTEGER &info) {
     //
     info = 0;
     if (n < 0) {
@@ -46,12 +42,12 @@ void Rlagtf(INTEGER const n, REAL *a, REAL const lambda, REAL *b, REAL *c, REAL 
         return;
     }
     //
-    a[1 - 1] = a[1 - 1] - lambda;
+    a[0] = a[0] - lambda;
     in[n - 1] = 0;
     const REAL zero = 0.0;
     if (n == 1) {
-        if (a[1 - 1] == zero) {
-            in[1 - 1] = 1;
+        if (a[0] == zero) {
+            in[0] = 1;
         }
         return;
     }
@@ -59,7 +55,7 @@ void Rlagtf(INTEGER const n, REAL *a, REAL const lambda, REAL *b, REAL *c, REAL 
     REAL eps = Rlamch("Epsilon");
     //
     REAL tl = max(tol, eps);
-    REAL scale1 = abs(a[1 - 1]) + abs(b[1 - 1]);
+    REAL scale1 = abs(a[0]) + abs(b[0]);
     INTEGER k = 0;
     REAL scale2 = 0.0;
     REAL piv1 = 0.0;
