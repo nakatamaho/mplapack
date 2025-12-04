@@ -29,7 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Clar1v(INTEGER const n, INTEGER const b1, INTEGER const bn, REAL const lambda, REAL *d, REAL *l, REAL *ld, REAL *lld, REAL const pivmin, REAL const gaptol, COMPLEX *z, bool const wantnc, INTEGER &negcnt, REAL &ztz, REAL &mingma, INTEGER &r, INTEGER *isuppz, REAL &nrminv, REAL &resid, REAL &rqcorr, REAL *work) {
+void Clar1v(INTEGER const n, INTEGER const b1, INTEGER const bn, REAL const &lambda, REAL *d, REAL *l, REAL *ld, REAL *lld, REAL const &pivmin, REAL const &gaptol, COMPLEX *z, bool const wantnc, INTEGER &negcnt, REAL &ztz, REAL &mingma, INTEGER &r, INTEGER *isuppz, REAL &nrminv, REAL &resid, REAL &rqcorr, REAL *work) {
     REAL eps = 0.0;
     INTEGER r1 = 0;
     INTEGER r2 = 0;
@@ -49,11 +49,6 @@ void Clar1v(INTEGER const n, INTEGER const b1, INTEGER const bn, REAL const lamb
     REAL tmp = 0.0;
     const COMPLEX cone = COMPLEX(1.0, 0.0);
     const REAL one = 1.0;
-    //
-    //
-    //
-    //
-    //
     //
     eps = Rlamch("Precision");
     //
@@ -206,8 +201,8 @@ statement_60:
     //
     // Compute the FP vector: solve N^T v = e_r
     //
-    isuppz[1 - 1] = b1;
-    isuppz[2 - 1] = bn;
+    isuppz[0] = b1;
+    isuppz[1] = bn;
     z[r - 1] = cone;
     ztz = one;
     //
@@ -218,7 +213,7 @@ statement_60:
             z[i - 1] = -(work[(indlpl + i) - 1] * z[(i + 1) - 1]);
             if ((abs(z[i - 1]) + abs(z[(i + 1) - 1])) * abs(ld[i - 1]) < gaptol) {
                 z[i - 1] = zero;
-                isuppz[1 - 1] = i + 1;
+                isuppz[0] = i + 1;
                 goto statement_220;
             }
             ztz += (z[i - 1] * z[i - 1]).real();
@@ -234,7 +229,7 @@ statement_60:
             }
             if ((abs(z[i - 1]) + abs(z[(i + 1) - 1])) * abs(ld[i - 1]) < gaptol) {
                 z[i - 1] = zero;
-                isuppz[1 - 1] = i + 1;
+                isuppz[0] = i + 1;
                 goto statement_240;
             }
             ztz += (z[i - 1] * z[i - 1]).real();
@@ -248,7 +243,7 @@ statement_60:
             z[(i + 1) - 1] = -(work[(indumn + i) - 1] * z[i - 1]);
             if ((abs(z[i - 1]) + abs(z[(i + 1) - 1])) * abs(ld[i - 1]) < gaptol) {
                 z[(i + 1) - 1] = zero;
-                isuppz[2 - 1] = i;
+                isuppz[1] = i;
                 goto statement_260;
             }
             ztz += (z[(i + 1) - 1] * z[(i + 1) - 1]).real();
@@ -264,7 +259,7 @@ statement_60:
             }
             if ((abs(z[i - 1]) + abs(z[(i + 1) - 1])) * abs(ld[i - 1]) < gaptol) {
                 z[(i + 1) - 1] = zero;
-                isuppz[2 - 1] = i;
+                isuppz[1] = i;
                 goto statement_280;
             }
             ztz += (z[(i + 1) - 1] * z[(i + 1) - 1]).real();
