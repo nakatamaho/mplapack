@@ -29,7 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rgbcon(const char *norm, INTEGER const n, INTEGER const kl, INTEGER const ku, REAL *ab, INTEGER const ldab, INTEGER *ipiv, REAL const anorm, REAL &rcond, REAL *work, INTEGER *iwork, INTEGER &info) {
+void Rgbcon(const char *norm, INTEGER const n, INTEGER const kl, INTEGER const ku, REAL *ab, INTEGER const ldab, INTEGER *ipiv, REAL const &anorm, REAL &rcond, REAL *work, INTEGER *iwork, INTEGER &info) {
     bool onenrm = false;
     const REAL zero = 0.0;
     const REAL one = 1.0;
@@ -48,15 +48,10 @@ void Rgbcon(const char *norm, INTEGER const n, INTEGER const kl, INTEGER const k
     REAL scale = 0.0;
     INTEGER ix = 0;
     //
-    //
-    //
-    //
-    // .. Local Arrays ..
-    //
     // Test the input parameters.
     //
     info = 0;
-    onenrm = (Mlsame(norm, "1")) || Mlsame(norm, "O");
+    onenrm = Mlsame(norm, "1") || Mlsame(norm, "O");
     if (!onenrm && !Mlsame(norm, "I")) {
         info = -1;
     } else if (n < 0) {
