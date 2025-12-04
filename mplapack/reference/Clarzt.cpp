@@ -31,10 +31,6 @@
 
 void Clarzt(const char *direct, const char *storev, INTEGER const n, INTEGER const k, COMPLEX *v, INTEGER const ldv, COMPLEX *tau, COMPLEX *t, INTEGER const ldt) {
     //
-    //
-    //
-    //
-    //
     // Check for currently supported options
     //
     INTEGER info = 0;
