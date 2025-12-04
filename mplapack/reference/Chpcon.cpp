@@ -29,7 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Chpcon(const char *uplo, INTEGER const n, COMPLEX *ap, INTEGER *ipiv, REAL const anorm, REAL &rcond, COMPLEX *work, INTEGER &info) {
+void Chpcon(const char *uplo, INTEGER const n, COMPLEX *ap, INTEGER *ipiv, REAL const &anorm, REAL &rcond, COMPLEX *work, INTEGER &info) {
     bool upper = false;
     const REAL zero = 0.0;
     const REAL one = 1.0;
@@ -38,11 +38,6 @@ void Chpcon(const char *uplo, INTEGER const n, COMPLEX *ap, INTEGER *ipiv, REAL 
     INTEGER kase = 0;
     REAL ainvnm = 0.0;
     INTEGER isave[3];
-    //
-    //
-    //
-    //
-    // .. Local Arrays ..
     //
     // Test the input parameters.
     //
