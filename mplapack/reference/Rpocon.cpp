@@ -29,7 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rpocon(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL const anorm, REAL &rcond, REAL *work, INTEGER *iwork, INTEGER &info) {
+void Rpocon(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL const &anorm, REAL &rcond, REAL *work, INTEGER *iwork, INTEGER &info) {
     bool upper = false;
     const REAL zero = 0.0;
     const REAL one = 1.0;
@@ -42,11 +42,6 @@ void Rpocon(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL 
     REAL scaleu = 0.0;
     REAL scale = 0.0;
     INTEGER ix = 0;
-    //
-    //
-    //
-    //
-    // .. Local Arrays ..
     //
     // Test the input parameters.
     //

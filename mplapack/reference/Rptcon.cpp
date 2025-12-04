@@ -29,11 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rptcon(INTEGER const n, REAL *d, REAL *e, REAL const anorm, REAL &rcond, REAL *work, INTEGER &info) {
-    //
-    //
-    //
-    //
+void Rptcon(INTEGER const n, REAL *d, REAL *e, REAL const &anorm, REAL &rcond, REAL *work, INTEGER &info) {
     //
     // Test the input arguments.
     //
@@ -78,7 +74,7 @@ void Rptcon(INTEGER const n, REAL *d, REAL *e, REAL const anorm, REAL &rcond, RE
     //
     // Solve M(L) * x = e.
     //
-    work[1 - 1] = one;
+    work[0] = one;
     for (i = 2; i <= n; i = i + 1) {
         work[i - 1] = one + work[(i - 1) - 1] * abs(e[(i - 1) - 1]);
     }
