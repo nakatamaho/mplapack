@@ -83,7 +83,7 @@ void Rgehrd(INTEGER const n, INTEGER const ilo, INTEGER const ihi, REAL *a, INTE
     //
     INTEGER nh = ihi - ilo + 1;
     if (nh <= 1) {
-        work[0] = 1;
+        work[0] = 1.0;
         return;
     }
     //
