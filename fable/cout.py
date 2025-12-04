@@ -2017,7 +2017,32 @@ def convert_declaration(rapp, conv_info, fdecl, crhs, const):
         mplapack_ctype = convert_to_mplapack_type(ctype)
         rapp("%s%s %s = %s;" % (const_qualifier(), mplapack_ctype, vname, crhs))
         return False
+ 
+    # Array declaration (local fixed-size arrays).
+    # MPLAPACK reference code prefers plain C arrays for small work arrays,
+    # e.g. "INTEGER isave[3];".
+    def const_qualifier():
+        if (const):
+            return "const "
+        return ""
 
+    # Determine element type (scalar) and map it to MPLAPACK typedefs.
+    elem_ctype = convert_data_type(conv_info=conv_info, fdecl=fdecl, crhs=None)[0]
+    mplapack_elem_ctype = convert_to_mplapack_type(elem_ctype)
+
+    # Only support compile-time constant extents here.
+    # (Non-constant local arrays would require heap allocation or std::vector
+    # plus call-site adjustments.)
+    vals = conv_info.fproc.eval_dimensions_simple(
+        dim_tokens=fdecl.dim_tokens, allow_power=False)
+    if (vals is None or vals.count(None) != 0):
+        # Fail fast instead of silently dropping the declaration.
+        fdecl.id_tok.raise_not_supported()
+
+    static_size = str(math.prod(vals))
+    rapp("%s%s %s[%s];" % (
+        const_qualifier(), mplapack_elem_ctype, vname, static_size))
+    return False
 
 class scope(object):
 
