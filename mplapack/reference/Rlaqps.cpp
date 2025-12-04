@@ -44,10 +44,6 @@ void Rlaqps(INTEGER const m, INTEGER const n, INTEGER const offset, INTEGER cons
     REAL temp = 0.0;
     REAL temp2 = 0.0;
     //
-    //
-    //
-    //
-    //
     lastrk = min(m, n + offset);
     lsticc = 0;
     k = 0;
@@ -110,9 +106,9 @@ statement_10:
         // *A(RK:M,K).
         //
         if (k > 1) {
-            Rgemv("Transpose", m - rk + 1, k - 1, -tau[k - 1], &a[(rk - 1)], lda, &a[(rk - 1) + (k - 1) * lda], 1, zero, &auxv[1 - 1], 1);
+            Rgemv("Transpose", m - rk + 1, k - 1, -tau[k - 1], &a[(rk - 1)], lda, &a[(rk - 1) + (k - 1) * lda], 1, zero, &auxv[0], 1);
             //
-            Rgemv("No transpose", n, k - 1, one, &f[0], ldf, &auxv[1 - 1], 1, one, &f[(k - 1) * ldf], 1);
+            Rgemv("No transpose", n, k - 1, one, &f[0], ldf, &auxv[0], 1, one, &f[(k - 1) * ldf], 1);
         }
         //
         // Update the current row of A:
@@ -132,7 +128,7 @@ statement_10:
                     // Lapack Working Note 176.
                     //
                     temp = abs(a[(rk - 1) + (j - 1) * lda]) / vn1[j - 1];
-                    temp = max(zero, REAL((one + temp) * (one - temp)));
+                    temp = max(zero, (one + temp) * (one - temp));
                     temp2 = temp * pow2((vn1[j - 1] / vn2[j - 1]));
                     if (temp2 <= tol3z) {
                         vn2[j - 1] = castREAL(lsticc);
@@ -170,7 +166,7 @@ statement_40:
         //
         // NOTE: The computation of VN1( LSTICC ) relies on the fact that
         // SNRM2 does not fail on vectors with norm below the value of
-        // SQRT(DLAMCH('S'))
+        // SQRT(Rlamch('S'))
         //
         vn2[lsticc - 1] = vn1[lsticc - 1];
         lsticc = itemp;
