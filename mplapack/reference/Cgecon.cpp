@@ -29,9 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-inline REAL abs1(COMPLEX zdum) { return abs(zdum.real()) + abs(zdum.imag()); }
-
-void Cgecon(const char *norm, INTEGER const n, COMPLEX *a, INTEGER const lda, REAL const anorm, REAL &rcond, COMPLEX *work, REAL *rwork, INTEGER &info) {
+void Cgecon(const char *norm, INTEGER const n, COMPLEX *a, INTEGER const lda, REAL const &anorm, REAL &rcond, COMPLEX *work, REAL *rwork, INTEGER &info) {
     COMPLEX zdum = 0.0;
     bool onenrm = false;
     const REAL zero = 0.0;
@@ -46,13 +44,6 @@ void Cgecon(const char *norm, INTEGER const n, COMPLEX *a, INTEGER const lda, RE
     REAL su = 0.0;
     REAL scale = 0.0;
     INTEGER ix = 0;
-    //
-    //
-    //
-    //
-    // .. Local Arrays ..
-    // .. Statement Functions ..
-    // .. Statement Function definitions ..
     //
     // Test the input parameters.
     //
@@ -123,7 +114,7 @@ statement_10:
         normin = 'Y';
         if (scale != one) {
             ix = iCamax(n, work, 1);
-            if (scale < abs1(work[ix - 1]) * smlnum || scale == zero) {
+            if (scale < cabs1(work[ix - 1]) * smlnum || scale == zero) {
                 goto statement_20;
             }
             CRrscl(n, scale, work, 1);

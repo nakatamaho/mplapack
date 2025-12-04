@@ -102,22 +102,22 @@ void Cgeev(const char *jobvl, const char *jobvr, INTEGER const n, COMPLEX *a, IN
             if (wantvl) {
                 maxwrk = max(maxwrk, n + (n - 1) * iMlaenv(1, "Cunghr", " ", n, 1, n, -1));
                 Ctrevc3("L", "B", select, n, a, lda, vl, ldvl, vr, ldvr, n, nout, work, -1, rwork, -1, ierr);
-                lwork_trevc = castINTEGER(work[1 - 1].real());
+                lwork_trevc = castINTEGER(work[0].real());
                 maxwrk = max(maxwrk, n + lwork_trevc);
                 Chseqr("S", "V", n, 1, n, a, lda, w, vl, ldvl, work, -1, info);
             } else if (wantvr) {
                 maxwrk = max(maxwrk, n + (n - 1) * iMlaenv(1, "Cunghr", " ", n, 1, n, -1));
                 Ctrevc3("R", "B", select, n, a, lda, vl, ldvl, vr, ldvr, n, nout, work, -1, rwork, -1, ierr);
-                lwork_trevc = castINTEGER(work[1 - 1].real());
+                lwork_trevc = castINTEGER(work[0].real());
                 maxwrk = max(maxwrk, n + lwork_trevc);
                 Chseqr("S", "V", n, 1, n, a, lda, w, vr, ldvr, work, -1, info);
             } else {
                 Chseqr("E", "N", n, 1, n, a, lda, w, vr, ldvr, work, -1, info);
             }
-            hswork = castINTEGER(work[1 - 1].real());
-            maxwrk = max({maxwrk, hswork, minwrk});
+            hswork = castINTEGER(work[0].real());
+            maxwrk = max(maxwrk, hswork, minwrk);
         }
-        work[1 - 1] = maxwrk;
+        work[0] = maxwrk;
         //
         if (lwork < minwrk && !lquery) {
             info = -12;
@@ -125,7 +125,7 @@ void Cgeev(const char *jobvl, const char *jobvr, INTEGER const n, COMPLEX *a, IN
     }
     //
     if (info != 0) {
-        Mxerbla("Cgeev", -info);
+        Mxerbla("Cgeev ", -info);
         return;
     } else if (lquery) {
         return;
@@ -142,6 +142,7 @@ void Cgeev(const char *jobvl, const char *jobvr, INTEGER const n, COMPLEX *a, IN
     eps = Rlamch("P");
     smlnum = Rlamch("S");
     bignum = one / smlnum;
+    Rlabad(smlnum, bignum);
     smlnum = sqrt(smlnum) / eps;
     bignum = one / smlnum;
     //
@@ -308,7 +309,7 @@ statement_50:
         }
     }
     //
-    work[1 - 1] = maxwrk;
+    work[0] = maxwrk;
     //
     // End of Cgeev
     //
