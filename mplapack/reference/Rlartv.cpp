@@ -31,10 +31,6 @@
 
 void Rlartv(INTEGER const n, REAL *x, INTEGER const incx, REAL *y, INTEGER const incy, REAL *c, REAL *s, INTEGER const incc) {
     //
-    //
-    //
-    //
-    //
     INTEGER ix = 1;
     INTEGER iy = 1;
     INTEGER ic = 1;
