@@ -32,11 +32,6 @@
 REAL Rlantp(const char *norm, const char *uplo, const char *diag, INTEGER const n, REAL *ap, REAL *work) {
     REAL return_value = 0.0;
     //
-    //
-    //
-    //
-    // .. Local Arrays ..
-    //
     const REAL zero = 0.0;
     REAL value = 0.0;
     INTEGER k = 0;
@@ -213,54 +208,54 @@ REAL Rlantp(const char *norm, const char *uplo, const char *diag, INTEGER const 
         //
         if (Mlsame(uplo, "U")) {
             if (Mlsame(diag, "U")) {
-                ssq[1 - 1] = one;
-                ssq[2 - 1] = n;
+                ssq[0] = one;
+                ssq[1] = n;
                 k = 2;
                 for (j = 2; j <= n; j = j + 1) {
-                    colssq[1 - 1] = zero;
-                    colssq[2 - 1] = one;
-                    Rlassq(j - 1, &ap[k - 1], 1, colssq[1 - 1], colssq[2 - 1]);
+                    colssq[0] = zero;
+                    colssq[1] = one;
+                    Rlassq(j - 1, &ap[k - 1], 1, colssq[0], colssq[1]);
                     Rcombssq(ssq, colssq);
                     k += j;
                 }
             } else {
-                ssq[1 - 1] = zero;
-                ssq[2 - 1] = one;
+                ssq[0] = zero;
+                ssq[1] = one;
                 k = 1;
                 for (j = 1; j <= n; j = j + 1) {
-                    colssq[1 - 1] = zero;
-                    colssq[2 - 1] = one;
-                    Rlassq(j, &ap[k - 1], 1, colssq[1 - 1], colssq[2 - 1]);
+                    colssq[0] = zero;
+                    colssq[1] = one;
+                    Rlassq(j, &ap[k - 1], 1, colssq[0], colssq[1]);
                     Rcombssq(ssq, colssq);
                     k += j;
                 }
             }
         } else {
             if (Mlsame(diag, "U")) {
-                ssq[1 - 1] = one;
-                ssq[2 - 1] = n;
+                ssq[0] = one;
+                ssq[1] = n;
                 k = 2;
                 for (j = 1; j <= n - 1; j = j + 1) {
-                    colssq[1 - 1] = zero;
-                    colssq[2 - 1] = one;
-                    Rlassq(n - j, &ap[k - 1], 1, colssq[1 - 1], colssq[2 - 1]);
+                    colssq[0] = zero;
+                    colssq[1] = one;
+                    Rlassq(n - j, &ap[k - 1], 1, colssq[0], colssq[1]);
                     Rcombssq(ssq, colssq);
                     k += n - j + 1;
                 }
             } else {
-                ssq[1 - 1] = zero;
-                ssq[2 - 1] = one;
+                ssq[0] = zero;
+                ssq[1] = one;
                 k = 1;
                 for (j = 1; j <= n; j = j + 1) {
-                    colssq[1 - 1] = zero;
-                    colssq[2 - 1] = one;
-                    Rlassq(n - j + 1, &ap[k - 1], 1, colssq[1 - 1], colssq[2 - 1]);
+                    colssq[0] = zero;
+                    colssq[1] = one;
+                    Rlassq(n - j + 1, &ap[k - 1], 1, colssq[0], colssq[1]);
                     Rcombssq(ssq, colssq);
                     k += n - j + 1;
                 }
             }
         }
-        value = ssq[1 - 1] * sqrt(ssq[2 - 1]);
+        value = ssq[0] * sqrt(ssq[1]);
     }
     //
     return_value = value;
