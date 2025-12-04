@@ -91,4 +91,8 @@ inline std::complex<double> exp(std::complex<double> x) {
 
 inline double pi(double dummy) { return M_PI; }
 
+static inline double cabs1(const std::complex<double> &z) {
+    return abs(z.real()) + abs(z.imag());
+}
+
 #endif

@@ -136,4 +136,8 @@ inline mpreal pi(mpreal dummy) {
     return _PI;
 }
 
+static inline mpreal cabs1(const mpcomplex &z) {
+    return abs(z.real()) + abs(z.imag());
+}
+
 #endif

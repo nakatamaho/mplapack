@@ -185,4 +185,9 @@ inline qd_complex exp(qd_complex x) {
 }
 
 inline qd_real pi(qd_real dummy) { return qd_real::_pi; }
+
+static inline qd_real cabs1(const qd_complex &z) {
+    return abs(z.real()) + abs(z.imag());
+}
+
 #endif

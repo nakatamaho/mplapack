@@ -238,4 +238,8 @@ inline mpc_class exp(mpc_class x) {
     return ans;
 }
 
+static inline mpf_class cabs1(const mpc_class &z) {
+    return abs(z.real()) + abs(z.imag());
+}
+
 #endif

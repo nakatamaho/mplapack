@@ -182,4 +182,8 @@ inline dd_complex exp(dd_complex x) {
 
 inline dd_real pi(dd_real dummy) { return dd_real::_pi; }
 
+static inline dd_real cabs1(const dd_complex &z) {
+    return abs(z.real()) + abs(z.imag());
+}
+
 #endif
