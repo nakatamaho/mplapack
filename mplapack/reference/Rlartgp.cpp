@@ -29,7 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rlartgp(REAL const f, REAL const g, REAL &cs, REAL &sn, REAL &r) {
+void Rlartgp(REAL const &f, REAL const &g, REAL &cs, REAL &sn, REAL &r) {
     REAL safmin = 0.0;
     REAL eps = 0.0;
     const REAL two = 2.0;
@@ -42,7 +42,6 @@ void Rlartgp(REAL const f, REAL const g, REAL &cs, REAL &sn, REAL &r) {
     REAL scale = 0.0;
     INTEGER count = 0;
     INTEGER i = 0;
-    //
     //
     // IF( FIRST ) THEN
     safmin = Rlamch("S");
