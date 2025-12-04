@@ -45,13 +45,14 @@ void Cgetc2(INTEGER const n, COMPLEX *a, INTEGER const lda, INTEGER *ipiv, INTEG
     REAL smlnum = Rlamch("S") / eps;
     const REAL one = 1.0;
     REAL bignum = one / smlnum;
+    Rlabad(smlnum, bignum);
     //
     // Handle the case N=1 by itself
     //
     const REAL zero = 0.0;
     if (n == 1) {
-        ipiv[1 - 1] = 1;
-        jpiv[1 - 1] = 1;
+        ipiv[0] = 1;
+        jpiv[0] = 1;
         if (abs(a[0]) < smlnum) {
             info = 1;
             a[0] = COMPLEX(smlnum, zero);
@@ -85,7 +86,7 @@ void Cgetc2(INTEGER const n, COMPLEX *a, INTEGER const lda, INTEGER *ipiv, INTEG
             }
         }
         if (i == 1) {
-            smin = max(REAL(eps * xmax), smlnum);
+            smin = max(eps * xmax, smlnum);
         }
         //
         // Swap rows

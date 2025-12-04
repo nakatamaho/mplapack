@@ -31,16 +31,12 @@
 
 void Cgetri(INTEGER const n, COMPLEX *a, INTEGER const lda, INTEGER *ipiv, COMPLEX *work, INTEGER const lwork, INTEGER &info) {
     //
-    //
-    //
-    //
-    //
     // Test the input parameters.
     //
     info = 0;
     INTEGER nb = iMlaenv(1, "Cgetri", " ", n, -1, -1, -1);
     INTEGER lwkopt = n * nb;
-    work[1 - 1] = lwkopt;
+    work[0] = lwkopt;
     bool lquery = (lwork == -1);
     if (n < 0) {
         info = -1;
@@ -148,7 +144,7 @@ void Cgetri(INTEGER const n, COMPLEX *a, INTEGER const lda, INTEGER *ipiv, COMPL
         }
     }
     //
-    work[1 - 1] = iws;
+    work[0] = iws;
     //
     // End of Cgetri
     //

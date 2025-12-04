@@ -35,10 +35,6 @@ void Cggbak(const char *job, const char *side, INTEGER const n, INTEGER const il
     INTEGER i = 0;
     INTEGER k = 0;
     //
-    //
-    //
-    //
-    //
     // Test the input parameters
     //
     rightv = Mlsame(side, "R");
