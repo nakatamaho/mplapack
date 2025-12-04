@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022
+ * Copyright (c) 2008-2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -30,10 +30,6 @@
 #include <mplapack.h>
 
 void Clabrd(INTEGER const m, INTEGER const n, INTEGER const nb, COMPLEX *a, INTEGER const lda, REAL *d, REAL *e, COMPLEX *tauq, COMPLEX *taup, COMPLEX *x, INTEGER const ldx, COMPLEX *y, INTEGER const ldy) {
-    //
-    //
-    //
-    //
     //
     // Quick return if possible
     //
