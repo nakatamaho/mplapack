@@ -75,6 +75,7 @@ MANUAL_MAPPINGS=(
   "ieeeck iMeeeck"
   "ilauplo iMlauplo"
   "dlamc3 Rlamc3"
+  "ilaenv2stage iMlaenv2stage"
 )
 
 # ------------------------------------------------------------
