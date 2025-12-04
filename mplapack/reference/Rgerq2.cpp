@@ -31,10 +31,6 @@
 
 void Rgerq2(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *tau, REAL *work, INTEGER &info) {
     //
-    //
-    //
-    //
-    //
     // Test the input arguments
     //
     info = 0;
@@ -70,6 +66,6 @@ void Rgerq2(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *
         a[((m - k + i) - 1) + ((n - k + i) - 1) * lda] = aii;
     }
     //
-    // End of RgerQ2
+    // End of Rgerq2
     //
 }
