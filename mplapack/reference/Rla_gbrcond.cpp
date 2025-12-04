@@ -41,11 +41,6 @@ REAL Rla_gbrcond(const char *trans, INTEGER const n, INTEGER const kl, INTEGER c
     INTEGER kase = 0;
     INTEGER isave[3];
     //
-    //
-    //
-    //
-    // .. Local Arrays ..
-    //
     return_value = 0.0;
     //
     info = 0;
@@ -81,15 +76,15 @@ REAL Rla_gbrcond(const char *trans, INTEGER const n, INTEGER const kl, INTEGER c
         for (i = 1; i <= n; i = i + 1) {
             tmp = 0.0;
             if (cmode == 1) {
-                for (j = max(i - kl, 1); j <= min(i + ku, n); j = j + 1) {
+                for (j = max(i - kl, (INTEGER)1); j <= min(i + ku, n); j = j + 1) {
                     tmp += abs(ab[((kd + i - j) - 1) + (j - 1) * ldab] * c[j - 1]);
                 }
             } else if (cmode == 0) {
-                for (j = max(i - kl, 1); j <= min(i + ku, n); j = j + 1) {
+                for (j = max(i - kl, (INTEGER)1); j <= min(i + ku, n); j = j + 1) {
                     tmp += abs(ab[((kd + i - j) - 1) + (j - 1) * ldab]);
                 }
             } else {
-                for (j = max(i - kl, 1); j <= min(i + ku, n); j = j + 1) {
+                for (j = max(i - kl, (INTEGER)1); j <= min(i + ku, n); j = j + 1) {
                     tmp += abs(ab[((kd + i - j) - 1) + (j - 1) * ldab] / c[j - 1]);
                 }
             }
@@ -99,15 +94,15 @@ REAL Rla_gbrcond(const char *trans, INTEGER const n, INTEGER const kl, INTEGER c
         for (i = 1; i <= n; i = i + 1) {
             tmp = 0.0;
             if (cmode == 1) {
-                for (j = max(i - kl, 1); j <= min(i + ku, n); j = j + 1) {
+                for (j = max(i - kl, (INTEGER)1); j <= min(i + ku, n); j = j + 1) {
                     tmp += abs(ab[((ke - i + j) - 1) + (i - 1) * ldab] * c[j - 1]);
                 }
             } else if (cmode == 0) {
-                for (j = max(i - kl, 1); j <= min(i + ku, n); j = j + 1) {
+                for (j = max(i - kl, (INTEGER)1); j <= min(i + ku, n); j = j + 1) {
                     tmp += abs(ab[((ke - i + j) - 1) + (i - 1) * ldab]);
                 }
             } else {
-                for (j = max(i - kl, 1); j <= min(i + ku, n); j = j + 1) {
+                for (j = max(i - kl, (INTEGER)1); j <= min(i + ku, n); j = j + 1) {
                     tmp += abs(ab[((ke - i + j) - 1) + (i - 1) * ldab] / c[j - 1]);
                 }
             }
