@@ -31,16 +31,12 @@
 
 void Rlagv2(REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL *alphar, REAL *alphai, REAL *beta, REAL &csl, REAL &snl, REAL &csr, REAL &snr) {
     //
-    //
-    //
-    //
-    //
     REAL safmin = Rlamch("S");
     REAL ulp = Rlamch("P");
     //
     // Scale A
     //
-    REAL anorm = max({REAL(abs(a[0]) + abs(a[(2 - 1)])), REAL(abs(a[(2 - 1) * lda]) + abs(a[(2 - 1) + (2 - 1) * lda])), safmin});
+    REAL anorm = max(abs(a[0]) + abs(a[(2 - 1) + (1 - 1) * lda]), abs(a[(2 - 1) * lda]) + abs(a[(2 - 1) + (2 - 1) * lda]), safmin);
     const REAL one = 1.0;
     REAL ascale = one / anorm;
     a[0] = ascale * a[0];
@@ -50,7 +46,7 @@ void Rlagv2(REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL *alphar
     //
     // Scale B
     //
-    REAL bnorm = max({REAL(abs(b[0])), REAL(abs(b[(2 - 1) * ldb]) + abs(b[(2 - 1) + (2 - 1) * ldb])), safmin});
+    REAL bnorm = max(abs(b[0]), abs(b[(2 - 1) * ldb]) + abs(b[(2 - 1) + (2 - 1) * ldb]), safmin);
     REAL bscale = one / bnorm;
     b[0] = bscale * b[0];
     b[(2 - 1) * ldb] = bscale * b[(2 - 1) * ldb];
@@ -201,19 +197,19 @@ void Rlagv2(REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL *alphar
     b[(2 - 1) + (2 - 1) * ldb] = bnorm * b[(2 - 1) + (2 - 1) * ldb];
     //
     if (wi == zero) {
-        alphar[1 - 1] = a[0];
-        alphar[2 - 1] = a[(2 - 1) + (2 - 1) * lda];
-        alphai[1 - 1] = zero;
-        alphai[2 - 1] = zero;
-        beta[1 - 1] = b[0];
-        beta[2 - 1] = b[(2 - 1) + (2 - 1) * ldb];
+        alphar[0] = a[0];
+        alphar[1] = a[(2 - 1) + (2 - 1) * lda];
+        alphai[0] = zero;
+        alphai[1] = zero;
+        beta[0] = b[0];
+        beta[1] = b[(2 - 1) + (2 - 1) * ldb];
     } else {
-        alphar[1 - 1] = anorm * wr1 / scale1 / bnorm;
-        alphai[1 - 1] = anorm * wi / scale1 / bnorm;
-        alphar[2 - 1] = alphar[1 - 1];
-        alphai[2 - 1] = -alphai[1 - 1];
-        beta[1 - 1] = one;
-        beta[2 - 1] = one;
+        alphar[0] = anorm * wr1 / scale1 / bnorm;
+        alphai[0] = anorm * wi / scale1 / bnorm;
+        alphar[1] = alphar[0];
+        alphai[1] = -alphai[0];
+        beta[0] = one;
+        beta[1] = one;
     }
     //
     // End of Rlagv2
