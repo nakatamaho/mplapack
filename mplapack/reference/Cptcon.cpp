@@ -29,11 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Cptcon(INTEGER const n, REAL *d, COMPLEX *e, REAL const anorm, REAL &rcond, REAL *rwork, INTEGER &info) {
-    //
-    //
-    //
-    //
+void Cptcon(INTEGER const n, REAL *d, COMPLEX *e, REAL const &anorm, REAL &rcond, REAL *rwork, INTEGER &info) {
     //
     // Test the input arguments.
     //
@@ -78,7 +74,7 @@ void Cptcon(INTEGER const n, REAL *d, COMPLEX *e, REAL const anorm, REAL &rcond,
     //
     // Solve M(L) * x = e.
     //
-    rwork[1 - 1] = one;
+    rwork[0] = one;
     for (i = 2; i <= n; i = i + 1) {
         rwork[i - 1] = one + rwork[(i - 1) - 1] * abs(e[(i - 1) - 1]);
     }
