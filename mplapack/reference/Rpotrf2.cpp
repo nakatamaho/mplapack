@@ -31,10 +31,6 @@
 
 void Rpotrf2(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INTEGER &info) {
     //
-    //
-    //
-    //
-    //
     // Test the input parameters
     //
     info = 0;
