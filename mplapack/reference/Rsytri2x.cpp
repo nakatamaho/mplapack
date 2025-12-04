@@ -31,11 +31,6 @@
 
 void Rsytri2x(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INTEGER *ipiv, REAL *work, INTEGER const nb, INTEGER &info) {
     //
-    //
-    //
-    //
-    //
-    //
     // Test the input parameters.
     //
     info = 0;
@@ -114,7 +109,6 @@ void Rsytri2x(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INT
     REAL u01_ip1_j = 0.0;
     REAL u11_i_j = 0.0;
     REAL u11_ip1_j = 0.0;
-    INTEGER ldwork = n + nb + 1;
     INTEGER ip = 0;
     if (upper) {
         //
