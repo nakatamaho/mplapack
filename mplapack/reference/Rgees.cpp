@@ -29,7 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rgees(const char *jobvs, const char *sort, bool (*select)(REAL, REAL), INTEGER const n, REAL *a, INTEGER const lda, INTEGER &sdim, REAL *wr, REAL *wi, REAL *vs, INTEGER const ldvs, REAL *work, INTEGER const lwork, bool *bwork, INTEGER &info) {
+void Rgees(const char *jobvs, const char *sort, UNHANDLED_function_pointer select, INTEGER const n, REAL *a, INTEGER const lda, INTEGER &sdim, REAL *wr, REAL *wi, REAL *vs, INTEGER const ldvs, REAL *work, INTEGER const lwork, bool *bwork, INTEGER &info) {
     bool lquery = false;
     bool wantvs = false;
     bool wantst = false;
@@ -102,7 +102,7 @@ void Rgees(const char *jobvs, const char *sort, bool (*select)(REAL, REAL), INTE
             minwrk = 3 * n;
             //
             Rhseqr("S", jobvs, n, 1, n, a, lda, wr, wi, vs, ldvs, work, -1, ieval);
-            hswork = castINTEGER(work[1 - 1]);
+            hswork = castINTEGER(work[0]);
             //
             if (!wantvs) {
                 maxwrk = max(maxwrk, n + hswork);
@@ -111,7 +111,7 @@ void Rgees(const char *jobvs, const char *sort, bool (*select)(REAL, REAL), INTE
                 maxwrk = max(maxwrk, n + hswork);
             }
         }
-        work[1 - 1] = maxwrk;
+        work[0] = maxwrk;
         //
         if (lwork < minwrk && !lquery) {
             info = -13;
@@ -119,7 +119,7 @@ void Rgees(const char *jobvs, const char *sort, bool (*select)(REAL, REAL), INTE
     }
     //
     if (info != 0) {
-        Mxerbla("Rgees", -info);
+        Mxerbla("Rgees ", -info);
         return;
     } else if (lquery) {
         return;
@@ -137,6 +137,7 @@ void Rgees(const char *jobvs, const char *sort, bool (*select)(REAL, REAL), INTE
     eps = Rlamch("P");
     smlnum = Rlamch("S");
     bignum = one / smlnum;
+    Rlabad(smlnum, bignum);
     smlnum = sqrt(smlnum) / eps;
     bignum = one / smlnum;
     //
@@ -323,7 +324,7 @@ void Rgees(const char *jobvs, const char *sort, bool (*select)(REAL, REAL), INTE
         }
     }
     //
-    work[1 - 1] = maxwrk;
+    work[0] = maxwrk;
     //
     // End of Rgees
     //

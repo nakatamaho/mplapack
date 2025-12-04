@@ -29,7 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rgeesx(const char *jobvs, const char *sort, bool (*select)(REAL, REAL), const char *sense, INTEGER const n, REAL *a, INTEGER const lda, INTEGER &sdim, REAL *wr, REAL *wi, REAL *vs, INTEGER const ldvs, REAL &rconde, REAL &rcondv, REAL *work, INTEGER const lwork, INTEGER *iwork, INTEGER const liwork, bool *bwork, INTEGER &info) {
+void Rgeesx(const char *jobvs, const char *sort, UNHANDLED_function_pointer select, const char *sense, INTEGER const n, REAL *a, INTEGER const lda, INTEGER &sdim, REAL *wr, REAL *wi, REAL *vs, INTEGER const ldvs, REAL const &rconde, REAL &rcondv, REAL *work, INTEGER const lwork, INTEGER *iwork, INTEGER const liwork, bool *bwork, INTEGER &info) {
     bool wantvs = false;
     bool wantst = false;
     bool wantsn = false;
@@ -67,13 +67,6 @@ void Rgeesx(const char *jobvs, const char *sort, bool (*select)(REAL, REAL), con
     bool lst2sl = false;
     INTEGER ip = 0;
     bool cursl = false;
-    //
-    // -- LAPACK driver routine --
-    //
-    // .. Function Arguments ..
-    //
-    //
-    // .. Local Arrays ..
     //
     // Test the input arguments
     //
@@ -124,7 +117,7 @@ void Rgeesx(const char *jobvs, const char *sort, bool (*select)(REAL, REAL), con
             minwrk = 3 * n;
             //
             Rhseqr("S", jobvs, n, 1, n, a, lda, wr, wi, vs, ldvs, work, -1, ieval);
-            hswork = castINTEGER(work[1 - 1]);
+            hswork = castINTEGER(work[0]);
             //
             if (!wantvs) {
                 maxwrk = max(maxwrk, n + hswork);
@@ -140,8 +133,8 @@ void Rgeesx(const char *jobvs, const char *sort, bool (*select)(REAL, REAL), con
                 liwrk = (n * n) / 4;
             }
         }
-        iwork[1 - 1] = liwrk;
-        work[1 - 1] = lwrk;
+        iwork[0] = liwrk;
+        work[0] = lwrk;
         //
         if (lwork < minwrk && !lquery) {
             info = -16;
@@ -169,6 +162,7 @@ void Rgeesx(const char *jobvs, const char *sort, bool (*select)(REAL, REAL), con
     eps = Rlamch("P");
     smlnum = Rlamch("S");
     bignum = one / smlnum;
+    Rlabad(smlnum, bignum);
     smlnum = sqrt(smlnum) / eps;
     bignum = one / smlnum;
     //
@@ -278,9 +272,9 @@ void Rgeesx(const char *jobvs, const char *sort, bool (*select)(REAL, REAL), con
         Rlascl("H", 0, 0, cscale, anrm, n, n, a, lda, ierr);
         Rcopy(n, a, lda + 1, wr, 1);
         if ((wantsv || wantsb) && info == 0) {
-            dum[1 - 1] = rcondv;
+            dum[0] = rcondv;
             Rlascl("G", 0, 0, cscale, anrm, 1, 1, dum, 1, ierr);
-            rcondv = dum[1 - 1];
+            rcondv = dum[0];
         }
         if (cscale == smlnum) {
             //
@@ -377,11 +371,11 @@ void Rgeesx(const char *jobvs, const char *sort, bool (*select)(REAL, REAL), con
         }
     }
     //
-    work[1 - 1] = maxwrk;
+    work[0] = maxwrk;
     if (wantsv || wantsb) {
-        iwork[1 - 1] = max((INTEGER)1, sdim * (n - sdim));
+        iwork[0] = max((INTEGER)1, sdim * (n - sdim));
     } else {
-        iwork[1 - 1] = 1;
+        iwork[0] = 1;
     }
     //
     // End of Rgeesx
