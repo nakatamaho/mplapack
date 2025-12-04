@@ -32,8 +32,8 @@
 void Rsytf2_rk(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL *e, INTEGER *ipiv, INTEGER &info) {
     bool upper = false;
     const REAL one = 1.0;
-    const REAL sevten = 17.0e+0;
-    const REAL eight = 8.0e+0;
+    const REAL sevten = 17.0;
+    const REAL eight = 8.0;
     REAL alpha = 0.0;
     REAL sfmin = 0.0;
     const REAL zero = 0.0;
@@ -61,10 +61,6 @@ void Rsytf2_rk(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, RE
     INTEGER i = 0;
     REAL d21 = 0.0;
     REAL wkp1 = 0.0;
-    //
-    //
-    //
-    //
     //
     // Test the input parameters.
     //
@@ -97,7 +93,7 @@ void Rsytf2_rk(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, RE
         // Initialize the first entry of array E, where superdiagonal
         // elements of D are stored
         //
-        e[1 - 1] = zero;
+        e[0] = zero;
         //
         // K is the main loop index, decreasing from N to 1 in steps of
         // 1 or 2
