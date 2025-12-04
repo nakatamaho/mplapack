@@ -29,7 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Cgees(const char *jobvs, const char *sort, bool (*select)(COMPLEX), INTEGER const n, COMPLEX *a, INTEGER const lda, INTEGER &sdim, COMPLEX *w, COMPLEX *vs, INTEGER const ldvs, COMPLEX *work, INTEGER const lwork, REAL *rwork, bool *bwork, INTEGER &info) {
+void Cgees(const char *jobvs, const char *sort, UNHANDLED_function_pointer select, INTEGER const n, COMPLEX *a, INTEGER const lda, INTEGER &sdim, COMPLEX *w, COMPLEX *vs, INTEGER const ldvs, COMPLEX *work, INTEGER const lwork, REAL *rwork, bool *bwork, INTEGER &info) {
     //
     // Test the input arguments
     //
@@ -73,7 +73,7 @@ void Cgees(const char *jobvs, const char *sort, bool (*select)(COMPLEX), INTEGER
             minwrk = 2 * n;
             //
             Chseqr("S", jobvs, n, 1, n, a, lda, w, vs, ldvs, work, -1, ieval);
-            hswork = castINTEGER(work[1 - 1].real());
+            hswork = castINTEGER(work[0].real());
             //
             if (!wantvs) {
                 maxwrk = max(maxwrk, hswork);
@@ -82,7 +82,7 @@ void Cgees(const char *jobvs, const char *sort, bool (*select)(COMPLEX), INTEGER
                 maxwrk = max(maxwrk, hswork);
             }
         }
-        work[1 - 1] = maxwrk;
+        work[0] = maxwrk;
         //
         if (lwork < minwrk && !lquery) {
             info = -12;
@@ -90,7 +90,7 @@ void Cgees(const char *jobvs, const char *sort, bool (*select)(COMPLEX), INTEGER
     }
     //
     if (info != 0) {
-        Mxerbla("Cgees", -info);
+        Mxerbla("Cgees ", -info);
         return;
     } else if (lquery) {
         return;
@@ -109,6 +109,7 @@ void Cgees(const char *jobvs, const char *sort, bool (*select)(COMPLEX), INTEGER
     REAL smlnum = Rlamch("S");
     const REAL one = 1.0;
     REAL bignum = one / smlnum;
+    Rlabad(smlnum, bignum);
     smlnum = sqrt(smlnum) / eps;
     bignum = one / smlnum;
     //
@@ -211,7 +212,7 @@ void Cgees(const char *jobvs, const char *sort, bool (*select)(COMPLEX), INTEGER
         Ccopy(n, a, lda + 1, w, 1);
     }
     //
-    work[1 - 1] = maxwrk;
+    work[0] = maxwrk;
     //
     // End of Cgees
     //
