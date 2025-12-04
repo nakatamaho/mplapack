@@ -30,26 +30,21 @@
 #include <mplapack.h>
 
 void Clacon(INTEGER const n, COMPLEX *v, COMPLEX *x, REAL &est, INTEGER &kase) {
-    REAL absxi;
-    REAL altsgn;
-    REAL estold;
-    INTEGER i;
-    INTEGER iter;
-    INTEGER j;
-    INTEGER jlast;
-    INTEGER jump;
-    REAL safmin;
-    REAL temp;
+    REAL absxi = 0.0;
+    REAL altsgn = 0.0;
+    REAL estold = 0.0;
+    INTEGER i = 0;
+    INTEGER iter = 0;
+    INTEGER j = 0;
+    INTEGER jlast = 0;
+    INTEGER jump = 0;
+    REAL safmin = 0.0;
+    REAL temp = 0.0;
     const REAL one = 1.0;
     const COMPLEX cone = COMPLEX(1.0, 0.0);
     const COMPLEX czero = COMPLEX(0.0, 0.0);
     const INTEGER itmax = 5;
     const REAL two = 2.0;
-    //
-    //
-    //
-    //
-    // .. Save statement ..
     //
     safmin = Rlamch("Safe minimum");
     if (kase == 0) {
@@ -81,8 +76,8 @@ void Clacon(INTEGER const n, COMPLEX *v, COMPLEX *x, REAL &est, INTEGER &kase) {
 //
 statement_20:
     if (n == 1) {
-        v[1 - 1] = x[1 - 1];
-        est = abs(v[1 - 1]);
+        v[0] = x[0];
+        est = abs(v[0]);
         // ... QUIT
         goto statement_130;
     }
