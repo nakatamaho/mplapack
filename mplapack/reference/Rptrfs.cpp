@@ -38,7 +38,7 @@ void Rptrfs(INTEGER const n, INTEGER const nrhs, REAL *d, REAL *e, REAL *df, REA
     REAL safe1 = 0.0;
     REAL safe2 = 0.0;
     INTEGER count = 0;
-    const REAL three = 3.0e+0;
+    const REAL three = 3.0;
     REAL lstres = 0.0;
     REAL bi = 0.0;
     REAL dx = 0.0;
@@ -46,14 +46,10 @@ void Rptrfs(INTEGER const n, INTEGER const nrhs, REAL *d, REAL *e, REAL *df, REA
     INTEGER i = 0;
     REAL cx = 0.0;
     REAL s = 0.0;
-    const REAL two = 2.0e+0;
+    const REAL two = 2.0;
     const INTEGER itmax = 5;
     const REAL one = 1.0;
     INTEGER ix = 0;
-    //
-    //
-    //
-    //
     //
     // Test the input parameters.
     //
@@ -105,15 +101,15 @@ void Rptrfs(INTEGER const n, INTEGER const nrhs, REAL *d, REAL *e, REAL *df, REA
         //
         if (n == 1) {
             bi = b[(j - 1) * ldb];
-            dx = d[1 - 1] * x[(j - 1) * ldx];
+            dx = d[0] * x[(j - 1) * ldx];
             work[(n + 1) - 1] = bi - dx;
-            work[1 - 1] = abs(bi) + abs(dx);
+            work[0] = abs(bi) + abs(dx);
         } else {
             bi = b[(j - 1) * ldb];
-            dx = d[1 - 1] * x[(j - 1) * ldx];
-            ex = e[1 - 1] * x[(2 - 1) + (j - 1) * ldx];
+            dx = d[0] * x[(j - 1) * ldx];
+            ex = e[0] * x[(2 - 1) + (j - 1) * ldx];
             work[(n + 1) - 1] = bi - dx - ex;
-            work[1 - 1] = abs(bi) + abs(dx) + abs(ex);
+            work[0] = abs(bi) + abs(dx) + abs(ex);
             for (i = 2; i <= n - 1; i = i + 1) {
                 bi = b[(i - 1) + (j - 1) * ldb];
                 cx = e[(i - 1) - 1] * x[((i - 1) - 1) + (j - 1) * ldx];
@@ -141,9 +137,9 @@ void Rptrfs(INTEGER const n, INTEGER const nrhs, REAL *d, REAL *e, REAL *df, REA
         s = zero;
         for (i = 1; i <= n; i = i + 1) {
             if (work[i - 1] > safe2) {
-                s = max(s, REAL(abs(work[(n + i) - 1]) / work[i - 1]));
+                s = max(s, abs(work[(n + i) - 1]) / work[i - 1]);
             } else {
-                s = max(s, REAL((abs(work[(n + i) - 1]) + safe1) / (work[i - 1] + safe1)));
+                s = max(s, (abs(work[(n + i) - 1]) + safe1) / (work[i - 1] + safe1));
             }
         }
         berr[j - 1] = s;
@@ -204,7 +200,7 @@ void Rptrfs(INTEGER const n, INTEGER const nrhs, REAL *d, REAL *e, REAL *df, REA
         //
         // Solve M(L) * x = e.
         //
-        work[1 - 1] = one;
+        work[0] = one;
         for (i = 2; i <= n; i = i + 1) {
             work[i - 1] = one + work[(i - 1) - 1] * abs(ef[(i - 1) - 1]);
         }
@@ -225,7 +221,7 @@ void Rptrfs(INTEGER const n, INTEGER const nrhs, REAL *d, REAL *e, REAL *df, REA
         //
         lstres = zero;
         for (i = 1; i <= n; i = i + 1) {
-            lstres = max(lstres, REAL(abs(x[(i - 1) + (j - 1) * ldx])));
+            lstres = max(lstres, abs(x[(i - 1) + (j - 1) * ldx]));
         }
         if (lstres != zero) {
             ferr[j - 1] = ferr[j - 1] / lstres;
