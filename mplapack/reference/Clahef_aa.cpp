@@ -41,10 +41,6 @@ void Clahef_aa(const char *uplo, INTEGER const j1, INTEGER const m, INTEGER cons
     INTEGER i1 = 0;
     const COMPLEX zero = COMPLEX(0.0, 0.0);
     //
-    //
-    //
-    //
-    //
     j = 1;
     //
     // K1 is the first column of the panel to be factorized
@@ -96,7 +92,7 @@ void Clahef_aa(const char *uplo, INTEGER const j1, INTEGER const m, INTEGER cons
         //
         // Copy H(i:n, i) into WORK
         //
-        Ccopy(mj, &h[(j - 1) + (j - 1) * ldh], 1, &work[1 - 1], 1);
+        Ccopy(mj, &h[(j - 1) + (j - 1) * ldh], 1, &work[0], 1);
         //
         if (j > k1) {
             //
@@ -104,12 +100,12 @@ void Clahef_aa(const char *uplo, INTEGER const j1, INTEGER const m, INTEGER cons
             // where A(J-1, J) stores T(J-1, J) and A(J-2, J:N) stores U(J-1, J:N)
             //
             alpha = -conj(a[((k - 1) - 1) + (j - 1) * lda]);
-            Caxpy(mj, alpha, &a[((k - 2) - 1) + (j - 1) * lda], lda, &work[1 - 1], 1);
+            Caxpy(mj, alpha, &a[((k - 2) - 1) + (j - 1) * lda], lda, &work[0], 1);
         }
         //
         // Set A(J, J) = T(J, J)
         //
-        a[(k - 1) + (j - 1) * lda] = work[1 - 1].real();
+        a[(k - 1) + (j - 1) * lda] = work[0].real();
         //
         if (j < m) {
             //
@@ -118,17 +114,17 @@ void Clahef_aa(const char *uplo, INTEGER const j1, INTEGER const m, INTEGER cons
             //
             if (k > 1) {
                 alpha = -a[(k - 1) + (j - 1) * lda];
-                Caxpy(m - j, alpha, &a[((k - 1) - 1) + ((j + 1) - 1) * lda], lda, &work[2 - 1], 1);
+                Caxpy(m - j, alpha, &a[((k - 1) - 1) + ((j + 1) - 1) * lda], lda, &work[1], 1);
             }
             //
             // Find max(|WORK(2:n)|)
             //
-            i2 = iCamax(m - j, &work[2 - 1], 1) + 1;
+            i2 = iCamax(m - j, &work[1], 1) + 1;
             piv = work[i2 - 1];
             //
             // Apply hermitian pivot
             //
-            if ((i2 != 2) && (piv != zero)) {
+            if ((i2 != 2) && (piv != 0)) {
                 //
                 // Swap WORK(I1) and WORK(I2)
                 //
@@ -174,7 +170,7 @@ void Clahef_aa(const char *uplo, INTEGER const j1, INTEGER const m, INTEGER cons
             //
             // Set A(J, J+1) = T(J, J+1)
             //
-            a[(k - 1) + ((j + 1) - 1) * lda] = work[2 - 1];
+            a[(k - 1) + ((j + 1) - 1) * lda] = work[1];
             //
             if (j < nb) {
                 //
@@ -189,7 +185,7 @@ void Clahef_aa(const char *uplo, INTEGER const j1, INTEGER const m, INTEGER cons
             if (j < (m - 1)) {
                 if (a[(k - 1) + ((j + 1) - 1) * lda] != zero) {
                     alpha = one / a[(k - 1) + ((j + 1) - 1) * lda];
-                    Ccopy(m - j - 1, &work[3 - 1], 1, &a[(k - 1) + ((j + 2) - 1) * lda], lda);
+                    Ccopy(m - j - 1, &work[2], 1, &a[(k - 1) + ((j + 2) - 1) * lda], lda);
                     Cscal(m - j - 1, alpha, &a[(k - 1) + ((j + 2) - 1) * lda], lda);
                 } else {
                     Claset("Full", 1, m - j - 1, zero, zero, &a[(k - 1) + ((j + 2) - 1) * lda], lda);
@@ -244,7 +240,7 @@ void Clahef_aa(const char *uplo, INTEGER const j1, INTEGER const m, INTEGER cons
         //
         // Copy H(J:N, J) into WORK
         //
-        Ccopy(mj, &h[(j - 1) + (j - 1) * ldh], 1, &work[1 - 1], 1);
+        Ccopy(mj, &h[(j - 1) + (j - 1) * ldh], 1, &work[0], 1);
         //
         if (j > k1) {
             //
@@ -252,12 +248,12 @@ void Clahef_aa(const char *uplo, INTEGER const j1, INTEGER const m, INTEGER cons
             // where A(J-1, J) = T(J-1, J) and A(J, J-2) = L(J, J-1)
             //
             alpha = -conj(a[(j - 1) + ((k - 1) - 1) * lda]);
-            Caxpy(mj, alpha, &a[(j - 1) + ((k - 2) - 1) * lda], 1, &work[1 - 1], 1);
+            Caxpy(mj, alpha, &a[(j - 1) + ((k - 2) - 1) * lda], 1, &work[0], 1);
         }
         //
         // Set A(J, J) = T(J, J)
         //
-        a[(j - 1) + (k - 1) * lda] = work[1 - 1].real();
+        a[(j - 1) + (k - 1) * lda] = work[0].real();
         //
         if (j < m) {
             //
@@ -266,17 +262,17 @@ void Clahef_aa(const char *uplo, INTEGER const j1, INTEGER const m, INTEGER cons
             //
             if (k > 1) {
                 alpha = -a[(j - 1) + (k - 1) * lda];
-                Caxpy(m - j, alpha, &a[((j + 1) - 1) + ((k - 1) - 1) * lda], 1, &work[2 - 1], 1);
+                Caxpy(m - j, alpha, &a[((j + 1) - 1) + ((k - 1) - 1) * lda], 1, &work[1], 1);
             }
             //
             // Find max(|WORK(2:n)|)
             //
-            i2 = iCamax(m - j, &work[2 - 1], 1) + 1;
+            i2 = iCamax(m - j, &work[1], 1) + 1;
             piv = work[i2 - 1];
             //
             // Apply hermitian pivot
             //
-            if ((i2 != 2) && (piv != zero)) {
+            if ((i2 != 2) && (piv != 0)) {
                 //
                 // Swap WORK(I1) and WORK(I2)
                 //
@@ -322,7 +318,7 @@ void Clahef_aa(const char *uplo, INTEGER const j1, INTEGER const m, INTEGER cons
             //
             // Set A(J+1, J) = T(J+1, J)
             //
-            a[((j + 1) - 1) + (k - 1) * lda] = work[2 - 1];
+            a[((j + 1) - 1) + (k - 1) * lda] = work[1];
             //
             if (j < nb) {
                 //
@@ -337,7 +333,7 @@ void Clahef_aa(const char *uplo, INTEGER const j1, INTEGER const m, INTEGER cons
             if (j < (m - 1)) {
                 if (a[((j + 1) - 1) + (k - 1) * lda] != zero) {
                     alpha = one / a[((j + 1) - 1) + (k - 1) * lda];
-                    Ccopy(m - j - 1, &work[3 - 1], 1, &a[((j + 2) - 1) + (k - 1) * lda], 1);
+                    Ccopy(m - j - 1, &work[2], 1, &a[((j + 2) - 1) + (k - 1) * lda], 1);
                     Cscal(m - j - 1, alpha, &a[((j + 2) - 1) + (k - 1) * lda], 1);
                 } else {
                     Claset("Full", m - j - 1, 1, zero, zero, &a[((j + 2) - 1) + (k - 1) * lda], lda);
