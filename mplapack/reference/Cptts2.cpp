@@ -33,15 +33,11 @@ void Cptts2(INTEGER const iuplo, INTEGER const n, INTEGER const nrhs, REAL *d, C
     INTEGER j = 0;
     INTEGER i = 0;
     //
-    //
-    //
-    //
-    //
     // Quick return if possible
     //
     if (n <= 1) {
         if (n == 1) {
-            CRscal(nrhs, 1.0 / d[1 - 1], b, ldb);
+            CRscal(nrhs, 1.0 / d[0], b, ldb);
         }
         return;
     }
