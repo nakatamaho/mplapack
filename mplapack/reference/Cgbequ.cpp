@@ -29,15 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-inline REAL abs1(COMPLEX zdum) { return abs(zdum.real()) + abs(zdum.imag()); }
-
 void Cgbequ(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku, COMPLEX *ab, INTEGER const ldab, REAL *r, REAL *c, REAL &rowcnd, REAL &colcnd, REAL &amax, INTEGER &info) {
-    //
-    //
-    //
-    //
-    // .. Statement Functions ..
-    // .. Statement Function definitions ..
     COMPLEX zdum = 0.0;
     //
     // Test the input parameters
@@ -88,7 +80,7 @@ void Cgbequ(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku
     INTEGER j = 0;
     for (j = 1; j <= n; j = j + 1) {
         for (i = max(j - ku, (INTEGER)1); i <= min(j + kl, m); i = i + 1) {
-            r[i - 1] = max(r[i - 1], abs1(ab[((kd + i - j) - 1) + (j - 1) * ldab]));
+            r[i - 1] = max(r[i - 1], cabs1(ab[((kd + i - j) - 1) + (j - 1) * ldab]));
         }
     }
     //
@@ -137,7 +129,7 @@ void Cgbequ(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku
     kd = ku + 1;
     for (j = 1; j <= n; j = j + 1) {
         for (i = max(j - ku, (INTEGER)1); i <= min(j + kl, m); i = i + 1) {
-            c[j - 1] = max(c[j - 1], REAL(abs1(ab[((kd + i - j) - 1) + (j - 1) * ldab]) * r[i - 1]));
+            c[j - 1] = max(c[j - 1], cabs1(ab[((kd + i - j) - 1) + (j - 1) * ldab]) * r[i - 1]);
         }
     }
     //
