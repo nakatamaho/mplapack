@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022
+ * Copyright (c) 2008-2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -29,7 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Cggsvd3(const char *jobu, const char *jobv, const char *jobq, INTEGER const m, INTEGER const n, INTEGER const p, INTEGER &k, INTEGER &l, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, REAL *alpha, REAL *beta, COMPLEX *u, INTEGER const ldu, COMPLEX *v, INTEGER const ldv, COMPLEX *q, INTEGER const ldq, COMPLEX *work, INTEGER const lwork, REAL *rwork, INTEGER *iwork, INTEGER &info) {
+void Cggsvd3(const char *jobu, const char *jobv, const char *jobq, INTEGER const m, INTEGER const n, INTEGER const p, INTEGER const k, INTEGER const l, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, REAL *alpha, REAL *beta, COMPLEX *u, INTEGER const ldu, COMPLEX *v, INTEGER const ldv, COMPLEX *q, INTEGER const ldq, COMPLEX *work, INTEGER const lwork, REAL *rwork, INTEGER *iwork, INTEGER &info) {
     //
     // Decode and test the input parameters
     //
@@ -74,10 +74,10 @@ void Cggsvd3(const char *jobu, const char *jobv, const char *jobq, INTEGER const
     REAL tolb = 0.0;
     if (info == 0) {
         Cggsvp3(jobu, jobv, jobq, m, p, n, a, lda, b, ldb, tola, tolb, k, l, u, ldu, v, ldv, q, ldq, iwork, rwork, work, work, -1, info);
-        lwkopt = n + castINTEGER(work[1 - 1].real());
-        lwkopt = max((INTEGER)2 * n, lwkopt);
+        lwkopt = n + castINTEGER(work[0].real());
+        lwkopt = max(2 * n, lwkopt);
         lwkopt = max((INTEGER)1, lwkopt);
-        work[1 - 1] = COMPLEX(lwkopt);
+        work[0] = COMPLEX(lwkopt);
     }
     //
     if (info != 0) {
@@ -98,8 +98,8 @@ void Cggsvd3(const char *jobu, const char *jobv, const char *jobq, INTEGER const
     //
     REAL ulp = Rlamch("Precision");
     REAL unfl = Rlamch("Safe Minimum");
-    tola = castREAL(max(m, n)) * max(anorm, unfl) * ulp;
-    tolb = castREAL(max(p, n)) * max(bnorm, unfl) * ulp;
+    tola = max(m, n) * max(anorm, unfl) * ulp;
+    tolb = max(p, n) * max(bnorm, unfl) * ulp;
     //
     Cggsvp3(jobu, jobv, jobq, m, p, n, a, lda, b, ldb, tola, tolb, k, l, u, ldu, v, ldv, q, ldq, iwork, rwork, work, &work[(n + 1) - 1], lwork - n, info);
     //
@@ -140,7 +140,7 @@ void Cggsvd3(const char *jobu, const char *jobv, const char *jobq, INTEGER const
         }
     }
     //
-    work[1 - 1] = COMPLEX(lwkopt);
+    work[0] = COMPLEX(lwkopt);
     //
     // End of Cggsvd3
     //
