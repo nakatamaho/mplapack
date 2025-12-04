@@ -158,18 +158,44 @@ BRACKET_RE = re.compile(r"\[(.*?)\]")
 def simplify_expr(expr: str) -> str:
     """Simplify an index expression that may contain (1 - 1), *0, +0, etc."""
     e = expr
+    
+    # (1 - 1) + ... or ... + (1 - 1) -> remove the (1-1) and the operator
+    e = re.sub(r"\(\s*1\s*-\s*1\s*\)\s*\+\s*", "", e)
+    e = re.sub(r"\+\s*\(\s*1\s*-\s*1\s*\)", "", e)
+    e = re.sub(r"\(\s*1\s*-\s*1\s*\)\s*\-\s*", "", e)
+    
+    # (1 - 1) * NAME or NAME * (1 - 1) -> 0
+    e = re.sub(
+        r"\(\s*1\s*-\s*1\s*\)\s*\*\s*[A-Za-z_][A-Za-z0-9_]*",
+        "0",
+        e,
+    )
+    e = re.sub(
+        r"[A-Za-z_][A-Za-z0-9_]*\s*\*\s*\(\s*1\s*-\s*1\s*\)",
+        "0",
+        e,
+    )
+    
     # (1 - 1) -> 0
     e = re.sub(r"\(\s*1\s*-\s*1\s*\)", "0", e)
+    
     # 0 * NAME -> 0
-    e = re.sub(r"\b0\s*\*\s*[A-Za-z_][A-Za-z0-9_]*", "0", e)
+    e = re.sub(r"0\s*\*\s*[A-Za-z_][A-Za-z0-9_]*", "0", e)
     # NAME * 0 -> 0
-    e = re.sub(r"[A-Za-z_][A-Za-z0-9_]*\s*\*\s*0\b", "0", e)
-    # "+ 0", "0 +", "- 0" -> remove
-    e = re.sub(r"\+\s*0\b", "", e)
-    e = re.sub(r"\b0\s*\+", "", e)
-    e = re.sub(r"\-\s*0\b", "", e)
+    e = re.sub(r"[A-Za-z_][A-Za-z0-9_]*\s*\*\s*0", "0", e)
+    
+    # Remove "+ 0", "0 +", "- 0" (without word boundary constraints)
+    e = re.sub(r"\+\s*0(?=\s*[^\d]|$)", "", e)  # + 0 followed by non-digit or end
+    e = re.sub(r"(?<=\D)0\s*\+", "", e)  # 0 + preceded by non-digit
+    e = re.sub(r"\-\s*0(?=\s*[^\d]|$)", "", e)  # - 0 followed by non-digit or end
+    
+    # Clean up leading/trailing operators and spaces
+    e = re.sub(r"^\s*\+\s*", "", e)  # Leading +
+    e = re.sub(r"\s*\+\s*$", "", e)  # Trailing +
+    
     # Collapse spaces
     e = re.sub(r"\s+", " ", e).strip()
+    
     return e
 
 def simplify_line(line: str, in_block_comment: bool):
@@ -247,10 +273,10 @@ def _rewrite_norm_eq_one(line: str) -> str:
     code = NORM_EQ_ONE_RE.sub('Mlsame(norm, "1")', code)
     return code + comment
 
+lines = text.splitlines(keepends=True)
 lines = [_rewrite_norm_eq_one(line) for line in lines]
 
 path.write_text("".join(lines))
-
 EOF
 
 # Overwrite the generated C++ file with the formatted and postprocessed version
