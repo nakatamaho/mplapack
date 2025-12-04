@@ -31,10 +31,6 @@
 
 void Rppequ(const char *uplo, INTEGER const n, REAL *ap, REAL *s, REAL &scond, REAL &amax, INTEGER &info) {
     //
-    //
-    //
-    //
-    //
     // Test the input parameters.
     //
     info = 0;
@@ -61,9 +57,9 @@ void Rppequ(const char *uplo, INTEGER const n, REAL *ap, REAL *s, REAL &scond, R
     //
     // Initialize SMIN and AMAX.
     //
-    s[1 - 1] = ap[1 - 1];
-    REAL smin = s[1 - 1];
-    amax = s[1 - 1];
+    s[0] = ap[0];
+    REAL smin = s[0];
+    amax = s[0];
     //
     INTEGER jj = 0;
     INTEGER i = 0;
