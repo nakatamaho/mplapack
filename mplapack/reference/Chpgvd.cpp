@@ -31,11 +31,6 @@
 
 void Chpgvd(INTEGER const itype, const char *jobz, const char *uplo, INTEGER const n, COMPLEX *ap, COMPLEX *bp, REAL *w, COMPLEX *z, INTEGER const ldz, COMPLEX *work, INTEGER const lwork, REAL *rwork, INTEGER const lrwork, INTEGER *iwork, INTEGER const liwork, INTEGER &info) {
     //
-    // -- LAPACK driver routine --
-    //
-    //
-    //
-    //
     // Test the input parameters.
     //
     bool wantz = Mlsame(jobz, "V");
@@ -66,7 +61,7 @@ void Chpgvd(INTEGER const itype, const char *jobz, const char *uplo, INTEGER con
         } else {
             if (wantz) {
                 lwmin = 2 * n;
-                lrwmin = 1 + 5 * n + 2 * n * n;
+                lrwmin = 1 + 5 * n + 2 * pow2(n);
                 liwmin = 3 + 5 * n;
             } else {
                 lwmin = n;
@@ -75,9 +70,9 @@ void Chpgvd(INTEGER const itype, const char *jobz, const char *uplo, INTEGER con
             }
         }
         //
-        work[1 - 1] = lwmin;
-        rwork[1 - 1] = lrwmin;
-        iwork[1 - 1] = liwmin;
+        work[0] = lwmin;
+        rwork[0] = lrwmin;
+        iwork[0] = liwmin;
         if (lwork < lwmin && !lquery) {
             info = -11;
         } else if (lrwork < lrwmin && !lquery) {
@@ -112,9 +107,9 @@ void Chpgvd(INTEGER const itype, const char *jobz, const char *uplo, INTEGER con
     //
     Chpgst(itype, uplo, n, ap, bp, info);
     Chpevd(jobz, uplo, n, ap, w, z, ldz, work, lwork, rwork, lrwork, iwork, liwork, info);
-    lwmin = max(lwmin, castINTEGER(work[1 - 1].real()));
-    lrwmin = max(lrwmin, castINTEGER(rwork[1 - 1]));
-    liwmin = max(liwmin, iwork[1 - 1]);
+    lwmin = max(castREAL(lwmin), work[0].real());
+    lrwmin = max(castREAL(lrwmin), castREAL(rwork[0]));
+    liwmin = max(castREAL(liwmin), castREAL(iwork[0]));
     //
     INTEGER neig = 0;
     char trans;
@@ -159,9 +154,9 @@ void Chpgvd(INTEGER const itype, const char *jobz, const char *uplo, INTEGER con
         }
     }
     //
-    work[1 - 1] = lwmin;
-    rwork[1 - 1] = lrwmin;
-    iwork[1 - 1] = liwmin;
+    work[0] = lwmin;
+    rwork[0] = lrwmin;
+    iwork[0] = liwmin;
     //
     // End of Chpgvd
     //

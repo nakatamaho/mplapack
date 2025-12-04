@@ -58,7 +58,7 @@ void Chpgst(INTEGER const itype, const char *uplo, INTEGER const n, COMPLEX *ap,
     INTEGER k1k1 = 0;
     REAL akk = 0.0;
     REAL bkk = 0.0;
-    const REAL half = 0.5e+0;
+    const REAL half = 0.5;
     COMPLEX ct = 0.0;
     INTEGER k1 = 0;
     INTEGER j1j1 = 0;

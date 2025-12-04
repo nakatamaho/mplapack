@@ -29,8 +29,6 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-inline REAL cabs1(COMPLEX zdum) { return (abs(zdum.real()) + abs(zdum.imag())); }
-
 void Chprfs(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *ap, COMPLEX *afp, INTEGER *ipiv, COMPLEX *b, INTEGER const ldb, COMPLEX *x, INTEGER const ldx, REAL *ferr, REAL *berr, COMPLEX *work, REAL *rwork, INTEGER &info) {
     COMPLEX zdum = 0.0;
     bool upper = false;
@@ -42,7 +40,7 @@ void Chprfs(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *ap, 
     REAL safe1 = 0.0;
     REAL safe2 = 0.0;
     INTEGER count = 0;
-    const REAL three = 3.0e+0;
+    const REAL three = 3.0;
     REAL lstres = 0.0;
     const COMPLEX one = COMPLEX(1.0, 0.0);
     INTEGER i = 0;
@@ -51,17 +49,10 @@ void Chprfs(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *ap, 
     REAL s = 0.0;
     REAL xk = 0.0;
     INTEGER ik = 0;
-    const REAL two = 2.0e+0;
+    const REAL two = 2.0;
     const INTEGER itmax = 5;
     INTEGER kase = 0;
     INTEGER isave[3];
-    //
-    //
-    //
-    //
-    // .. Local Arrays ..
-    // .. Statement Functions ..
-    // .. Statement Function definitions ..
     //
     // Test the input parameters.
     //
@@ -79,7 +70,7 @@ void Chprfs(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *ap, 
         info = -10;
     }
     if (info != 0) {
-        Mxerbla("ChprFS", -info);
+        Mxerbla("Chprfs", -info);
         return;
     }
     //
@@ -163,9 +154,9 @@ void Chprfs(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *ap, 
         s = zero;
         for (i = 1; i <= n; i = i + 1) {
             if (rwork[i - 1] > safe2) {
-                s = max(s, REAL(cabs1(work[i - 1]) / rwork[i - 1]));
+                s = max(s, cabs1(work[i - 1]) / rwork[i - 1]);
             } else {
-                s = max(s, REAL((cabs1(work[i - 1]) + safe1) / (rwork[i - 1] + safe1)));
+                s = max(s, (cabs1(work[i - 1]) + safe1) / (rwork[i - 1] + safe1));
             }
         }
         berr[j - 1] = s;
@@ -253,6 +244,6 @@ void Chprfs(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *ap, 
         //
     }
     //
-    // End of ChprFS
+    // End of Chprfs
     //
 }
