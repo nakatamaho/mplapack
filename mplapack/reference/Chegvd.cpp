@@ -31,11 +31,6 @@
 
 void Chegvd(INTEGER const itype, const char *jobz, const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, REAL *w, COMPLEX *work, INTEGER const lwork, REAL *rwork, INTEGER const lrwork, INTEGER *iwork, INTEGER const liwork, INTEGER &info) {
     //
-    // -- LAPACK driver routine --
-    //
-    //
-    //
-    //
     // Test the input parameters.
     //
     bool wantz = Mlsame(jobz, "V");
@@ -77,9 +72,9 @@ void Chegvd(INTEGER const itype, const char *jobz, const char *uplo, INTEGER con
     }
     //
     if (info == 0) {
-        work[1 - 1] = lopt;
-        rwork[1 - 1] = lropt;
-        iwork[1 - 1] = liopt;
+        work[0] = lopt;
+        rwork[0] = lropt;
+        iwork[0] = liopt;
         //
         if (lwork < lwmin && !lquery) {
             info = -11;
@@ -115,9 +110,9 @@ void Chegvd(INTEGER const itype, const char *jobz, const char *uplo, INTEGER con
     //
     Chegst(itype, uplo, n, a, lda, b, ldb, info);
     Cheevd(jobz, uplo, n, a, lda, w, work, lwork, rwork, lrwork, iwork, liwork, info);
-    lopt = max(lopt, castINTEGER(work[1 - 1].real()));
-    lropt = max(lropt, castINTEGER(rwork[1 - 1]));
-    liopt = max(liopt, iwork[1 - 1]);
+    lopt = max(castREAL(lopt), work[0].real());
+    lropt = max(castREAL(lropt), castREAL(rwork[0]));
+    liopt = max(castREAL(liopt), castREAL(iwork[0]));
     //
     char trans;
     const COMPLEX cone = COMPLEX(1.0, 0.0);
@@ -153,9 +148,9 @@ void Chegvd(INTEGER const itype, const char *jobz, const char *uplo, INTEGER con
         }
     }
     //
-    work[1 - 1] = lopt;
-    rwork[1 - 1] = lropt;
-    iwork[1 - 1] = liopt;
+    work[0] = lopt;
+    rwork[0] = lropt;
+    iwork[0] = liopt;
     //
     // End of Chegvd
     //

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -57,7 +57,7 @@ void Chegv(INTEGER const itype, const char *jobz, const char *uplo, INTEGER cons
     if (info == 0) {
         nb = iMlaenv(1, "Chetrd", uplo, n, -1, -1, -1);
         lwkopt = max((INTEGER)1, (nb + 1) * n);
-        work[1 - 1] = lwkopt;
+        work[0] = lwkopt;
         //
         if (lwork < max((INTEGER)1, 2 * n - 1) && !lquery) {
             info = -11;
@@ -65,7 +65,7 @@ void Chegv(INTEGER const itype, const char *jobz, const char *uplo, INTEGER cons
     }
     //
     if (info != 0) {
-        Mxerbla("Chegv", -info);
+        Mxerbla("Chegv ", -info);
         return;
     } else if (lquery) {
         return;
@@ -129,7 +129,7 @@ void Chegv(INTEGER const itype, const char *jobz, const char *uplo, INTEGER cons
         }
     }
     //
-    work[1 - 1] = lwkopt;
+    work[0] = lwkopt;
     //
     // End of Chegv
     //

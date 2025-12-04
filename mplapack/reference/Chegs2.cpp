@@ -31,10 +31,6 @@
 
 void Chegs2(INTEGER const itype, const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, INTEGER &info) {
     //
-    //
-    //
-    //
-    //
     // Test the input parameters.
     //
     info = 0;
@@ -59,7 +55,7 @@ void Chegs2(INTEGER const itype, const char *uplo, INTEGER const n, COMPLEX *a, 
     REAL akk = 0.0;
     REAL bkk = 0.0;
     const REAL one = 1.0;
-    const REAL half = 0.5e+0;
+    const REAL half = 0.5;
     COMPLEX ct = 0.0;
     const COMPLEX cone = COMPLEX(1.0, 0.0);
     if (itype == 1) {
