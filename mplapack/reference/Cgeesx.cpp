@@ -29,7 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Cgeesx(const char *jobvs, const char *sort, bool (*select)(COMPLEX), const char *sense, INTEGER const n, COMPLEX *a, INTEGER const lda, INTEGER &sdim, COMPLEX *w, COMPLEX *vs, INTEGER const ldvs, REAL &rconde, REAL &rcondv, COMPLEX *work, INTEGER const lwork, REAL *rwork, bool *bwork, INTEGER &info) {
+void Cgeesx(const char *jobvs, const char *sort, UNHANDLED_function_pointer select, const char *sense, INTEGER const n, COMPLEX *a, INTEGER const lda, INTEGER &sdim, COMPLEX *w, COMPLEX *vs, INTEGER const ldvs, REAL const &rconde, REAL &rcondv, COMPLEX *work, INTEGER const lwork, REAL *rwork, bool *bwork, INTEGER &info) {
     //
     // Test the input arguments
     //
@@ -84,7 +84,7 @@ void Cgeesx(const char *jobvs, const char *sort, bool (*select)(COMPLEX), const 
             minwrk = 2 * n;
             //
             Chseqr("S", jobvs, n, 1, n, a, lda, w, vs, ldvs, work, -1, ieval);
-            hswork = castINTEGER(work[1 - 1].real());
+            hswork = castINTEGER(work[0].real());
             //
             if (!wantvs) {
                 maxwrk = max(maxwrk, hswork);
@@ -97,7 +97,7 @@ void Cgeesx(const char *jobvs, const char *sort, bool (*select)(COMPLEX), const 
                 lwrk = max(lwrk, (n * n) / 2);
             }
         }
-        work[1 - 1] = lwrk;
+        work[0] = lwrk;
         //
         if (lwork < minwrk && !lquery) {
             info = -15;
@@ -124,6 +124,7 @@ void Cgeesx(const char *jobvs, const char *sort, bool (*select)(COMPLEX), const 
     REAL smlnum = Rlamch("S");
     const REAL one = 1.0;
     REAL bignum = one / smlnum;
+    Rlabad(smlnum, bignum);
     smlnum = sqrt(smlnum) / eps;
     bignum = one / smlnum;
     //
@@ -234,13 +235,13 @@ void Cgeesx(const char *jobvs, const char *sort, bool (*select)(COMPLEX), const 
         Clascl("U", 0, 0, cscale, anrm, n, n, a, lda, ierr);
         Ccopy(n, a, lda + 1, w, 1);
         if ((wantsv || wantsb) && info == 0) {
-            dum[1 - 1] = rcondv;
+            dum[0] = rcondv;
             Rlascl("G", 0, 0, cscale, anrm, 1, 1, dum, 1, ierr);
-            rcondv = dum[1 - 1];
+            rcondv = dum[0];
         }
     }
     //
-    work[1 - 1] = maxwrk;
+    work[0] = maxwrk;
     //
     // End of Cgeesx
     //

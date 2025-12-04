@@ -31,10 +31,6 @@
 
 void Cgemqr(const char *side, const char *trans, INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX *a, INTEGER const lda, COMPLEX *t, INTEGER const tsize, COMPLEX *c, INTEGER const ldc, COMPLEX *work, INTEGER const lwork, INTEGER &info) {
     //
-    //
-    //
-    //
-    //
     // Test the input arguments
     //
     bool lquery = lwork == -1;
@@ -43,8 +39,8 @@ void Cgemqr(const char *side, const char *trans, INTEGER const m, INTEGER const 
     bool left = Mlsame(side, "L");
     bool right = Mlsame(side, "R");
     //
-    INTEGER mb = castINTEGER(t[2 - 1].real());
-    INTEGER nb = castINTEGER(t[3 - 1].real());
+    INTEGER mb = castINTEGER(t[1].real());
+    INTEGER nb = castINTEGER(t[2].real());
     INTEGER lw = 0;
     INTEGER mn = 0;
     if (left) {
@@ -88,7 +84,7 @@ void Cgemqr(const char *side, const char *trans, INTEGER const m, INTEGER const 
     }
     //
     if (info == 0) {
-        work[1 - 1] = lw;
+        work[0] = lw;
     }
     //
     if (info != 0) {
@@ -100,17 +96,17 @@ void Cgemqr(const char *side, const char *trans, INTEGER const m, INTEGER const 
     //
     // Quick return if possible
     //
-    if (min({m, n, k}) == 0) {
+    if (min(m, n, k) == 0) {
         return;
     }
     //
-    if ((left && m <= k) || (right && n <= k) || (mb <= k) || (mb >= max({m, n, k}))) {
-        Cgemqrt(side, trans, m, n, k, nb, a, lda, &t[6 - 1], nb, c, ldc, work, info);
+    if ((left && m <= k) || (right && n <= k) || (mb <= k) || (mb >= max(m, n, k))) {
+        Cgemqrt(side, trans, m, n, k, nb, a, lda, &t[5], nb, c, ldc, work, info);
     } else {
-        Clamtsqr(side, trans, m, n, k, mb, nb, a, lda, &t[6 - 1], nb, c, ldc, work, lwork, info);
+        Clamtsqr(side, trans, m, n, k, mb, nb, a, lda, &t[5], nb, c, ldc, work, lwork, info);
     }
     //
-    work[1 - 1] = lw;
+    work[0] = lw;
     //
     // End of Cgemqr
     //

@@ -31,10 +31,6 @@
 
 void Cgeqlf(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *tau, COMPLEX *work, INTEGER const lwork, INTEGER &info) {
     //
-    //
-    //
-    //
-    //
     // Test the input arguments
     //
     info = 0;
@@ -58,7 +54,7 @@ void Cgeqlf(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, COM
             nb = iMlaenv(1, "Cgeqlf", " ", m, n, -1, -1);
             lwkopt = n * nb;
         }
-        work[1 - 1] = lwkopt;
+        work[0] = lwkopt;
         //
         if (lwork < max((INTEGER)1, n) && !lquery) {
             info = -7;
@@ -151,7 +147,7 @@ void Cgeqlf(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, COM
         Cgeql2(mu, nu, a, lda, tau, work, iinfo);
     }
     //
-    work[1 - 1] = iws;
+    work[0] = iws;
     //
     // End of Cgeqlf
     //

@@ -51,8 +51,6 @@ void Cgeqp3(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, INT
     INTEGER jb = 0;
     INTEGER fjb = 0;
     //
-    // Test input arguments
-    //
     info = 0;
     lquery = (lwork == -1);
     if (m < 0) {
@@ -73,7 +71,7 @@ void Cgeqp3(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, INT
             nb = iMlaenv(inb, "Cgeqrf", " ", m, n, -1, -1);
             lwkopt = (n + 1) * nb;
         }
-        work[1 - 1] = COMPLEX(lwkopt);
+        work[0] = COMPLEX(lwkopt);
         //
         if ((lwork < iws) && !lquery) {
             info = -8;
@@ -107,7 +105,6 @@ void Cgeqp3(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, INT
     nfxd = nfxd - 1;
     //
     // Factorize fixed columns
-    //
     // Compute the QR factorization of fixed columns and update
     // remaining columns.
     //
@@ -115,18 +112,17 @@ void Cgeqp3(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, INT
         na = min(m, nfxd);
         // CC      CALL Cgeqr2( M, NA, A, LDA, TAU, WORK, INFO )
         Cgeqrf(m, na, a, lda, tau, work, lwork, info);
-        iws = max(iws, castINTEGER(work[1 - 1].real()));
+        iws = max(iws, castINTEGER(work[0].real()));
         if (na < n) {
             // CC         CALL Cunm2r( 'Left', 'Conjugate Transpose', M, N-NA,
             // CC  $                   NA, A, LDA, TAU, A( 1, NA+1 ), LDA, WORK,
             // CC  $                   INFO )
             Cunmqr("Left", "Conjugate Transpose", m, n - na, na, a, lda, tau, &a[((na + 1) - 1) * lda], lda, work, lwork, info);
-            iws = max(iws, castINTEGER(work[1 - 1].real()));
+            iws = max(iws, castINTEGER(work[0].real()));
         }
     }
     //
     // Factorize free columns
-    //
     if (nfxd < minmn) {
         //
         sm = m - nfxd;
@@ -186,7 +182,7 @@ void Cgeqp3(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, INT
                 //
                 // Factorize JB columns among columns J:N.
                 //
-                Claqps(m, n - j + 1, j - 1, jb, fjb, &a[(j - 1) * lda], lda, &jpvt[j - 1], &tau[j - 1], &rwork[j - 1], &rwork[(n + j) - 1], &work[1 - 1], &work[(jb + 1) - 1], n - j + 1);
+                Claqps(m, n - j + 1, j - 1, jb, fjb, &a[(j - 1) * lda], lda, &jpvt[j - 1], &tau[j - 1], &rwork[j - 1], &rwork[(n + j) - 1], &work[0], &work[(jb + 1) - 1], n - j + 1);
                 //
                 j += fjb;
                 goto statement_30;
@@ -198,12 +194,12 @@ void Cgeqp3(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, INT
         // Use unblocked code to factor the last or only block.
         //
         if (j <= minmn) {
-            Claqp2(m, n - j + 1, j - 1, &a[(j - 1) * lda], lda, &jpvt[j - 1], &tau[j - 1], &rwork[j - 1], &rwork[(n + j) - 1], &work[1 - 1]);
+            Claqp2(m, n - j + 1, j - 1, &a[(j - 1) * lda], lda, &jpvt[j - 1], &tau[j - 1], &rwork[j - 1], &rwork[(n + j) - 1], &work[0]);
         }
         //
     }
     //
-    work[1 - 1] = COMPLEX(lwkopt);
+    work[0] = COMPLEX(lwkopt);
     //
     // End of Cgeqp3
     //
