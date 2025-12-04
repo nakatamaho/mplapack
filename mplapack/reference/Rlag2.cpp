@@ -38,7 +38,7 @@ void Rlag2(REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL const &s
     //
     // Scale A
     //
-    REAL anorm = max(abs(a[0]) + abs(a[(2 - 1) + (1 - 1) * lda]), abs(a[(2 - 1) * lda]) + abs(a[(2 - 1) + (2 - 1) * lda]), safmin);
+    REAL anorm = max(abs(a[0]) + abs(a[(2 - 1)]), abs(a[(2 - 1) * lda]) + abs(a[(2 - 1) + (2 - 1) * lda]), safmin);
     REAL ascale = one / anorm;
     REAL a11 = ascale * a[0];
     REAL a21 = ascale * a[(2 - 1)];

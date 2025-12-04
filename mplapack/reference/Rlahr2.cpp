@@ -31,10 +31,6 @@
 
 void Rlahr2(INTEGER const n, INTEGER const k, INTEGER const nb, REAL *a, INTEGER const lda, REAL *tau, REAL *t, INTEGER const ldt, REAL *y, INTEGER const ldy) {
     //
-    //
-    //
-    //
-    //
     // Quick return if possible
     //
     if (n <= 1) {

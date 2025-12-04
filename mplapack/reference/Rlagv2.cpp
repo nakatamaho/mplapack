@@ -36,7 +36,7 @@ void Rlagv2(REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL *alphar
     //
     // Scale A
     //
-    REAL anorm = max(abs(a[0]) + abs(a[(2 - 1) + (1 - 1) * lda]), abs(a[(2 - 1) * lda]) + abs(a[(2 - 1) + (2 - 1) * lda]), safmin);
+    REAL anorm = max(abs(a[0]) + abs(a[(2 - 1)]), abs(a[(2 - 1) * lda]) + abs(a[(2 - 1) + (2 - 1) * lda]), safmin);
     const REAL one = 1.0;
     REAL ascale = one / anorm;
     a[0] = ascale * a[0];

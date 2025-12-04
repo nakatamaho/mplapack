@@ -56,10 +56,6 @@ void Rhsein(const char *side, const char *eigsrc, const char *initv, bool *selec
     INTEGER ksi = 0;
     INTEGER iinfo = 0;
     //
-    //
-    //
-    //
-    //
     // Decode and test the input parameters.
     //
     bothv = Mlsame(side, "B");
