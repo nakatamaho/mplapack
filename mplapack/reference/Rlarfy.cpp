@@ -29,13 +29,10 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rlarfy(const char *uplo, INTEGER const n, REAL *v, INTEGER const incv, REAL const tau, REAL *c, INTEGER const ldc, REAL *work) {
+void Rlarfy(const char *uplo, INTEGER const n, REAL *v, INTEGER const incv, REAL const &tau, REAL *c, INTEGER const ldc, REAL *work) {
+    //
     //
     // -- LAPACK test routine --
-    //
-    //
-    //
-    //
     const REAL zero = 0.0;
     if (tau == zero) {
         return;
@@ -46,7 +43,7 @@ void Rlarfy(const char *uplo, INTEGER const n, REAL *v, INTEGER const incv, REAL
     const REAL one = 1.0;
     Rsymv(uplo, n, one, c, ldc, v, incv, zero, work, 1);
     //
-    const REAL half = 0.5e+0;
+    const REAL half = 0.5;
     REAL alpha = -half * tau * Rdot(n, work, 1, v, incv);
     Raxpy(n, alpha, v, incv, work, 1);
     //
