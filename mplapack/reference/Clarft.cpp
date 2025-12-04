@@ -31,10 +31,6 @@
 
 void Clarft(const char *direct, const char *storev, INTEGER const n, INTEGER const k, COMPLEX *v, INTEGER const ldv, COMPLEX *tau, COMPLEX *t, INTEGER const ldt) {
     //
-    //
-    //
-    //
-    //
     // Quick return if possible
     //
     if (n == 0) {

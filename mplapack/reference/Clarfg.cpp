@@ -41,10 +41,6 @@ void Clarfg(INTEGER const n, COMPLEX &alpha, COMPLEX *x, INTEGER const incx, COM
     INTEGER knt = 0;
     INTEGER j = 0;
     //
-    //
-    //
-    //
-    //
     if (n <= 0) {
         tau = zero;
         return;

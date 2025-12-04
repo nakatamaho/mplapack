@@ -29,13 +29,10 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Clarfy(const char *uplo, INTEGER const n, COMPLEX *v, INTEGER const incv, COMPLEX const tau, COMPLEX *c, INTEGER const ldc, COMPLEX *work) {
+void Clarfy(const char *uplo, INTEGER const n, COMPLEX *v, INTEGER const incv, COMPLEX const &tau, COMPLEX *c, INTEGER const ldc, COMPLEX *work) {
+    //
     //
     // -- LAPACK test routine --
-    //
-    //
-    //
-    //
     const COMPLEX zero = COMPLEX(0.0, 0.0);
     if (tau == zero) {
         return;
@@ -46,7 +43,7 @@ void Clarfy(const char *uplo, INTEGER const n, COMPLEX *v, INTEGER const incv, C
     const COMPLEX one = COMPLEX(1.0, 0.0);
     Chemv(uplo, n, one, c, ldc, v, incv, zero, work, 1);
     //
-    const COMPLEX half = COMPLEX(0.5e+0, 0.0);
+    const COMPLEX half = COMPLEX(0.5, 0.0);
     COMPLEX alpha = -half * tau * Cdotc(n, work, 1, v, incv);
     Caxpy(n, alpha, v, incv, work, 1);
     //

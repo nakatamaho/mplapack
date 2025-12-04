@@ -31,10 +31,6 @@
 
 void Clarscl2(INTEGER const m, INTEGER const n, REAL *d, COMPLEX *x, INTEGER const ldx) {
     //
-    //
-    //
-    //
-    //
     INTEGER j = 0;
     INTEGER i = 0;
     for (j = 1; j <= n; j = j + 1) {
