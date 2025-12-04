@@ -102,31 +102,31 @@ void Rgeev(const char *jobvl, const char *jobvr, INTEGER const n, REAL *a, INTEG
                 minwrk = 4 * n;
                 maxwrk = max(maxwrk, 2 * n + (n - 1) * iMlaenv(1, "Rorghr", " ", n, 1, n, -1));
                 Rhseqr("S", "V", n, 1, n, a, lda, wr, wi, vl, ldvl, work, -1, info);
-                hswork = castINTEGER(work[1 - 1]);
-                maxwrk = max({maxwrk, n + 1, n + hswork});
+                hswork = castINTEGER(work[0]);
+                maxwrk = max(maxwrk, n + 1, n + hswork);
                 Rtrevc3("L", "B", select, n, a, lda, vl, ldvl, vr, ldvr, n, nout, work, -1, ierr);
-                lwork_trevc = castINTEGER(work[1 - 1]);
+                lwork_trevc = castINTEGER(work[0]);
                 maxwrk = max(maxwrk, n + lwork_trevc);
                 maxwrk = max(maxwrk, 4 * n);
             } else if (wantvr) {
                 minwrk = 4 * n;
                 maxwrk = max(maxwrk, 2 * n + (n - 1) * iMlaenv(1, "Rorghr", " ", n, 1, n, -1));
                 Rhseqr("S", "V", n, 1, n, a, lda, wr, wi, vr, ldvr, work, -1, info);
-                hswork = castINTEGER(work[1 - 1]);
-                maxwrk = max({maxwrk, n + 1, n + hswork});
+                hswork = castINTEGER(work[0]);
+                maxwrk = max(maxwrk, n + 1, n + hswork);
                 Rtrevc3("R", "B", select, n, a, lda, vl, ldvl, vr, ldvr, n, nout, work, -1, ierr);
-                lwork_trevc = castINTEGER(work[1 - 1]);
+                lwork_trevc = castINTEGER(work[0]);
                 maxwrk = max(maxwrk, n + lwork_trevc);
                 maxwrk = max(maxwrk, 4 * n);
             } else {
                 minwrk = 3 * n;
                 Rhseqr("E", "N", n, 1, n, a, lda, wr, wi, vr, ldvr, work, -1, info);
-                hswork = castINTEGER(work[1 - 1]);
-                maxwrk = max({maxwrk, n + 1, n + hswork});
+                hswork = castINTEGER(work[0]);
+                maxwrk = max(maxwrk, n + 1, n + hswork);
             }
             maxwrk = max(maxwrk, minwrk);
         }
-        work[1 - 1] = maxwrk;
+        work[0] = maxwrk;
         //
         if (lwork < minwrk && !lquery) {
             info = -13;
@@ -134,7 +134,7 @@ void Rgeev(const char *jobvl, const char *jobvr, INTEGER const n, REAL *a, INTEG
     }
     //
     if (info != 0) {
-        Mxerbla("Rgeev", -info);
+        Mxerbla("Rgeev ", -info);
         return;
     } else if (lquery) {
         return;
@@ -151,6 +151,7 @@ void Rgeev(const char *jobvl, const char *jobvr, INTEGER const n, REAL *a, INTEG
     eps = Rlamch("P");
     smlnum = Rlamch("S");
     bignum = one / smlnum;
+    Rlabad(smlnum, bignum);
     smlnum = sqrt(smlnum) / eps;
     bignum = one / smlnum;
     //
@@ -307,9 +308,9 @@ void Rgeev(const char *jobvl, const char *jobvr, INTEGER const n, REAL *a, INTEG
             }
         }
     }
-    //
-    // Undo scaling if necessary
-    //
+//
+// Undo scaling if necessary
+//
 statement_50:
     if (scalea) {
         Rlascl("G", 0, 0, cscale, anrm, n - info, 1, &wr[(info + 1) - 1], max(n - info, (INTEGER)1), ierr);
@@ -320,7 +321,7 @@ statement_50:
         }
     }
     //
-    work[1 - 1] = maxwrk;
+    work[0] = maxwrk;
     //
     // End of Rgeev
     //
