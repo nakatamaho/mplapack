@@ -34,10 +34,6 @@ void Cgtts2(INTEGER const itrans, INTEGER const n, INTEGER const nrhs, COMPLEX *
     INTEGER i = 0;
     COMPLEX temp = 0.0;
     //
-    //
-    //
-    //
-    //
     // Quick return if possible
     //
     if (n == 0 || nrhs == 0) {
@@ -114,9 +110,9 @@ void Cgtts2(INTEGER const itrans, INTEGER const n, INTEGER const nrhs, COMPLEX *
             //
             // Solve U**T * x = b.
             //
-            b[(j - 1) * ldb] = b[(j - 1) * ldb] / d[1 - 1];
+            b[(j - 1) * ldb] = b[(j - 1) * ldb] / d[0];
             if (n > 1) {
-                b[(2 - 1) + (j - 1) * ldb] = (b[(2 - 1) + (j - 1) * ldb] - du[1 - 1] * b[(j - 1) * ldb]) / d[2 - 1];
+                b[(2 - 1) + (j - 1) * ldb] = (b[(2 - 1) + (j - 1) * ldb] - du[0] * b[(j - 1) * ldb]) / d[1];
             }
             for (i = 3; i <= n; i = i + 1) {
                 b[(i - 1) + (j - 1) * ldb] = (b[(i - 1) + (j - 1) * ldb] - du[(i - 1) - 1] * b[((i - 1) - 1) + (j - 1) * ldb] - du2[(i - 2) - 1] * b[((i - 2) - 1) + (j - 1) * ldb]) / d[i - 1];
@@ -142,9 +138,9 @@ void Cgtts2(INTEGER const itrans, INTEGER const n, INTEGER const nrhs, COMPLEX *
                 //
                 // Solve U**T * x = b.
                 //
-                b[(j - 1) * ldb] = b[(j - 1) * ldb] / d[1 - 1];
+                b[(j - 1) * ldb] = b[(j - 1) * ldb] / d[0];
                 if (n > 1) {
-                    b[(2 - 1) + (j - 1) * ldb] = (b[(2 - 1) + (j - 1) * ldb] - du[1 - 1] * b[(j - 1) * ldb]) / d[2 - 1];
+                    b[(2 - 1) + (j - 1) * ldb] = (b[(2 - 1) + (j - 1) * ldb] - du[0] * b[(j - 1) * ldb]) / d[1];
                 }
                 for (i = 3; i <= n; i = i + 1) {
                     b[(i - 1) + (j - 1) * ldb] = (b[(i - 1) + (j - 1) * ldb] - du[(i - 1) - 1] * b[((i - 1) - 1) + (j - 1) * ldb] - du2[(i - 2) - 1] * b[((i - 2) - 1) + (j - 1) * ldb]) / d[i - 1];
@@ -173,9 +169,9 @@ void Cgtts2(INTEGER const itrans, INTEGER const n, INTEGER const nrhs, COMPLEX *
             //
             // Solve U**H * x = b.
             //
-            b[(j - 1) * ldb] = b[(j - 1) * ldb] / conj(d[1 - 1]);
+            b[(j - 1) * ldb] = b[(j - 1) * ldb] / conj(d[0]);
             if (n > 1) {
-                b[(2 - 1) + (j - 1) * ldb] = (b[(2 - 1) + (j - 1) * ldb] - conj(du[1 - 1]) * b[(j - 1) * ldb]) / conj(d[2 - 1]);
+                b[(2 - 1) + (j - 1) * ldb] = (b[(2 - 1) + (j - 1) * ldb] - conj(du[0]) * b[(j - 1) * ldb]) / conj(d[1]);
             }
             for (i = 3; i <= n; i = i + 1) {
                 b[(i - 1) + (j - 1) * ldb] = (b[(i - 1) + (j - 1) * ldb] - conj(du[(i - 1) - 1]) * b[((i - 1) - 1) + (j - 1) * ldb] - conj(du2[(i - 2) - 1]) * b[((i - 2) - 1) + (j - 1) * ldb]) / conj(d[i - 1]);
@@ -201,9 +197,9 @@ void Cgtts2(INTEGER const itrans, INTEGER const n, INTEGER const nrhs, COMPLEX *
                 //
                 // Solve U**H * x = b.
                 //
-                b[(j - 1) * ldb] = b[(j - 1) * ldb] / conj(d[1 - 1]);
+                b[(j - 1) * ldb] = b[(j - 1) * ldb] / conj(d[0]);
                 if (n > 1) {
-                    b[(2 - 1) + (j - 1) * ldb] = (b[(2 - 1) + (j - 1) * ldb] - conj(du[1 - 1]) * b[(j - 1) * ldb]) / conj(d[2 - 1]);
+                    b[(2 - 1) + (j - 1) * ldb] = (b[(2 - 1) + (j - 1) * ldb] - conj(du[0]) * b[(j - 1) * ldb]) / conj(d[1]);
                 }
                 for (i = 3; i <= n; i = i + 1) {
                     b[(i - 1) + (j - 1) * ldb] = (b[(i - 1) + (j - 1) * ldb] - conj(du[(i - 1) - 1]) * b[((i - 1) - 1) + (j - 1) * ldb] - conj(du2[(i - 2) - 1]) * b[((i - 2) - 1) + (j - 1) * ldb]) / conj(d[i - 1]);
