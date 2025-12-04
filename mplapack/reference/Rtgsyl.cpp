@@ -100,7 +100,7 @@ void Rtgsyl(const char *trans, INTEGER const ijob, INTEGER const m, INTEGER cons
         } else {
             lwmin = 1;
         }
-        work[1 - 1] = lwmin;
+        work[0] = lwmin;
         //
         if (lwork < lwmin && !lquery) {
             info = -20;
@@ -117,7 +117,7 @@ void Rtgsyl(const char *trans, INTEGER const ijob, INTEGER const m, INTEGER cons
     // Quick return if possible
     //
     if (m == 0 || n == 0) {
-        scale = 1;
+        scale = 1.0;
         if (notran) {
             if (ijob != 0) {
                 dif = 0.0;
@@ -369,7 +369,7 @@ statement_70:
         //
     }
     //
-    work[1 - 1] = lwmin;
+    work[0] = lwmin;
     //
     // End of Rtgsyl
     //

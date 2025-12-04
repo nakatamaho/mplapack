@@ -29,7 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rtgsja(const char *jobu, const char *jobv, const char *jobq, INTEGER const m, INTEGER const p, INTEGER const n, INTEGER const k, INTEGER const l, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL const tola, REAL const tolb, REAL *alpha, REAL *beta, REAL *u, INTEGER const ldu, REAL *v, INTEGER const ldv, REAL *q, INTEGER const ldq, REAL *work, INTEGER &ncycle, INTEGER &info) {
+void Rtgsja(const char *jobu, const char *jobv, const char *jobq, INTEGER const m, INTEGER const p, INTEGER const n, INTEGER const k, INTEGER const l, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL const &tola, REAL const &tolb, REAL *alpha, REAL *beta, REAL *u, INTEGER const ldu, REAL *v, INTEGER const ldv, REAL *q, INTEGER const ldq, REAL *work, INTEGER &ncycle, INTEGER &info) {
     bool initu = false;
     bool wantu = false;
     bool initv = false;
@@ -216,7 +216,7 @@ void Rtgsja(const char *jobu, const char *jobv, const char *jobq, INTEGER const 
             }
         }
         //
-        // End of cycle loop
+        // End of Cycle loop
         //
     }
     //

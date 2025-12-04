@@ -64,7 +64,7 @@ void Rtgexc(bool const wantq, bool const wantz, INTEGER const n, REAL *a, INTEGE
         } else {
             lwmin = 4 * n + 16;
         }
-        work[1 - 1] = lwmin;
+        work[0] = lwmin;
         //
         if (lwork < lwmin && !lquery) {
             info = -15;
@@ -325,7 +325,7 @@ void Rtgexc(bool const wantq, bool const wantz, INTEGER const n, REAL *a, INTEGE
         }
     }
     ilst = here;
-    work[1 - 1] = lwmin;
+    work[0] = lwmin;
     //
     // End of Rtgexc
     //
