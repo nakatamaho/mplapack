@@ -31,10 +31,6 @@
 
 void Rtpqrt(INTEGER const m, INTEGER const n, INTEGER const l, INTEGER const nb, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL *t, INTEGER const ldt, REAL *work, INTEGER &info) {
     //
-    //
-    //
-    //
-    //
     // Test the input arguments
     //
     info = 0;

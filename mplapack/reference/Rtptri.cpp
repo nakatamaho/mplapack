@@ -31,10 +31,6 @@
 
 void Rtptri(const char *uplo, const char *diag, INTEGER const n, REAL *ap, INTEGER &info) {
     //
-    //
-    //
-    //
-    //
     // Test the input parameters.
     //
     info = 0;

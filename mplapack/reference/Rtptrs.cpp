@@ -31,10 +31,6 @@
 
 void Rtptrs(const char *uplo, const char *trans, const char *diag, INTEGER const n, INTEGER const nrhs, REAL *ap, REAL *b, INTEGER const ldb, INTEGER &info) {
     //
-    //
-    //
-    //
-    //
     // Test the input parameters.
     //
     info = 0;
