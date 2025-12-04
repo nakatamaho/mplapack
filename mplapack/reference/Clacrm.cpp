@@ -31,10 +31,6 @@
 
 void Clacrm(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, REAL *b, INTEGER const ldb, COMPLEX *c, INTEGER const ldc, REAL *rwork) {
     //
-    //
-    //
-    //
-    //
     // Quick return if possible.
     //
     if ((m == 0) || (n == 0)) {

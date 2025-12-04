@@ -29,15 +29,11 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Clacrt(INTEGER const n, COMPLEX *cx, INTEGER const incx, COMPLEX *cy, INTEGER const incy, COMPLEX const c, COMPLEX const s) {
+void Clacrt(INTEGER const n, COMPLEX *cx, INTEGER const incx, COMPLEX *cy, INTEGER const incy, COMPLEX const &c, COMPLEX const &s) {
     INTEGER ix = 0;
     INTEGER iy = 0;
     INTEGER i = 0;
     COMPLEX ctemp = 0.0;
-    //
-    //
-    //
-    //
     //
     if (n <= 0) {
         return;
