@@ -44,10 +44,6 @@ void Chptrs(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *ap, 
     COMPLEX bkm1 = 0.0;
     COMPLEX bk = 0.0;
     //
-    //
-    //
-    //
-    //
     info = 0;
     upper = Mlsame(uplo, "U");
     if (!upper && !Mlsame(uplo, "L")) {

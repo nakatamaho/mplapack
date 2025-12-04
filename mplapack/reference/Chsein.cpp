@@ -29,8 +29,6 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-inline REAL abs1(COMPLEX cdum) { return abs(cdum.real()) + abs(cdum.imag()); }
-
 void Chsein(const char *side, const char *eigsrc, const char *initv, bool *select, INTEGER const n, COMPLEX *h, INTEGER const ldh, COMPLEX *w, COMPLEX *vl, INTEGER const ldvl, COMPLEX *vr, INTEGER const ldvr, INTEGER const mm, INTEGER &m, COMPLEX *work, REAL *rwork, INTEGER *ifaill, INTEGER *ifailr, INTEGER &info) {
     COMPLEX cdum = 0.0;
     bool bothv = false;
@@ -54,12 +52,7 @@ void Chsein(const char *side, const char *eigsrc, const char *initv, bool *selec
     REAL eps3 = 0.0;
     COMPLEX wk = 0.0;
     INTEGER iinfo = 0;
-    //
-    //
-    //
-    //
-    // .. Statement Functions ..
-    // .. Statement Function definitions ..
+    cabs1(cdum) = abs(cdum.real()) + abs(cdum.imag());
     //
     // Decode and test the input parameters.
     //
@@ -187,7 +180,7 @@ void Chsein(const char *side, const char *eigsrc, const char *initv, bool *selec
             wk = w[k - 1];
         statement_60:
             for (i = k - 1; i >= kl; i = i - 1) {
-                if (select[i - 1] && abs1(w[i - 1] - wk) < eps3) {
+                if (select[i - 1] && cabs1(w[i - 1] - wk) < eps3) {
                     wk += eps3;
                     goto statement_60;
                 }

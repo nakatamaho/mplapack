@@ -29,7 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Cgges3(const char *jobvsl, const char *jobvsr, const char *sort, bool (*selctg)(COMPLEX, COMPLEX), INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, INTEGER &sdim, COMPLEX *alpha, COMPLEX *beta, COMPLEX *vsl, INTEGER const ldvsl, COMPLEX *vsr, INTEGER const ldvsr, COMPLEX *work, INTEGER const lwork, REAL *rwork, bool *bwork, INTEGER &info) {
+void Cgges3(const char *jobvsl, const char *jobvsr, const char *sort, UNHANDLED_function_pointer selctg, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, INTEGER &sdim, COMPLEX *alpha, COMPLEX *beta, COMPLEX *vsl, INTEGER const ldvsl, COMPLEX *vsr, INTEGER const ldvsr, COMPLEX *work, INTEGER const lwork, REAL *rwork, bool *bwork, INTEGER &info) {
     INTEGER ijobvl = 0;
     bool ilvsl = false;
     INTEGER ijobvr = 0;
@@ -122,26 +122,26 @@ void Cgges3(const char *jobvsl, const char *jobvsr, const char *sort, bool (*sel
     //
     if (info == 0) {
         Cgeqrf(n, n, b, ldb, work, work, -1, ierr);
-        lwkopt = max((INTEGER)1, n + castINTEGER(work[1 - 1].real()));
+        lwkopt = max((INTEGER)1, n + castINTEGER(work[0].real()));
         Cunmqr("L", "C", n, n, n, b, ldb, work, a, lda, work, -1, ierr);
-        lwkopt = max(lwkopt, n + castINTEGER(work[1 - 1].real()));
+        lwkopt = max(lwkopt, n + castINTEGER(work[0].real()));
         if (ilvsl) {
             Cungqr(n, n, n, vsl, ldvsl, work, work, -1, ierr);
-            lwkopt = max(lwkopt, n + castINTEGER(work[1 - 1].real()));
+            lwkopt = max(lwkopt, n + castINTEGER(work[0].real()));
         }
         Cgghd3(jobvsl, jobvsr, n, 1, n, a, lda, b, ldb, vsl, ldvsl, vsr, ldvsr, work, -1, ierr);
-        lwkopt = max(lwkopt, n + castINTEGER(work[1 - 1].real()));
+        lwkopt = max(lwkopt, n + castINTEGER(work[0].real()));
         Chgeqz("S", jobvsl, jobvsr, n, 1, n, a, lda, b, ldb, alpha, beta, vsl, ldvsl, vsr, ldvsr, work, -1, rwork, ierr);
-        lwkopt = max(lwkopt, castINTEGER(work[1 - 1].real()));
+        lwkopt = max(lwkopt, castINTEGER(work[0].real()));
         if (wantst) {
             Ctgsen(0, ilvsl, ilvsr, bwork, n, a, lda, b, ldb, alpha, beta, vsl, ldvsl, vsr, ldvsr, sdim, pvsl, pvsr, dif, work, -1, idum, 1, ierr);
-            lwkopt = max(lwkopt, castINTEGER(work[1 - 1].real()));
+            lwkopt = max(lwkopt, castINTEGER(work[0].real()));
         }
-        work[1 - 1] = COMPLEX(lwkopt);
+        work[0] = COMPLEX(lwkopt);
     }
     //
     if (info != 0) {
-        Mxerbla("Cgges3", -info);
+        Mxerbla("Cgges3 ", -info);
         return;
     } else if (lquery) {
         return;
@@ -159,6 +159,7 @@ void Cgges3(const char *jobvsl, const char *jobvsr, const char *sort, bool (*sel
     eps = Rlamch("P");
     smlnum = Rlamch("S");
     bignum = one / smlnum;
+    Rlabad(smlnum, bignum);
     smlnum = sqrt(smlnum) / eps;
     bignum = one / smlnum;
     //
@@ -318,7 +319,7 @@ void Cgges3(const char *jobvsl, const char *jobvsr, const char *sort, bool (*sel
 //
 statement_30:
     //
-    work[1 - 1] = COMPLEX(lwkopt);
+    work[0] = COMPLEX(lwkopt);
     //
     // End of Cgges3
     //
