@@ -32,10 +32,6 @@
 REAL Rla_syrpvgrw(const char *uplo, INTEGER const n, INTEGER const info, REAL *a, INTEGER const lda, REAL *af, INTEGER const ldaf, INTEGER *ipiv, REAL *work) {
     REAL return_value = 0.0;
     //
-    //
-    //
-    //
-    //
     bool upper = Mlsame("Upper", uplo);
     INTEGER ncols = 0;
     if (info == 0) {
@@ -79,7 +75,7 @@ REAL Rla_syrpvgrw(const char *uplo, INTEGER const n, INTEGER const info, REAL *a
     // permute the magnitudes of A above so they're in the same order as
     // the factor.
     //
-    // The iteration orders and permutations were copied from Rsytrs.
+    // The iteration orders and permutations were copied from dsytrs.
     // Calls to SSWAP would be severe overkill.
     //
     INTEGER k = 0;

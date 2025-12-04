@@ -29,11 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rla_syamv(INTEGER const uplo, INTEGER const n, REAL const alpha, REAL *a, INTEGER const lda, REAL *x, INTEGER const incx, REAL const beta, REAL *y, INTEGER const incy) {
-    //
-    //
-    //
-    //
+void Rla_syamv(INTEGER const uplo, INTEGER const n, REAL const &alpha, REAL *a, INTEGER const lda, REAL *x, INTEGER const incx, REAL const &beta, REAL *y, INTEGER const incy) {
     //
     // Test the input parameters.
     //

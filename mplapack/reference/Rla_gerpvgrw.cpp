@@ -32,10 +32,6 @@
 REAL Rla_gerpvgrw(INTEGER const n, INTEGER const ncols, REAL *a, INTEGER const lda, REAL *af, INTEGER const ldaf) {
     REAL return_value = 0.0;
     //
-    //
-    //
-    //
-    //
     REAL rpvgrw = 1.0;
     //
     INTEGER j = 0;
@@ -46,13 +42,13 @@ REAL Rla_gerpvgrw(INTEGER const n, INTEGER const ncols, REAL *a, INTEGER const l
         amax = 0.0;
         umax = 0.0;
         for (i = 1; i <= n; i = i + 1) {
-            amax = max(REAL(abs(a[(i - 1) + (j - 1) * lda])), amax);
+            amax = max(abs(a[(i - 1) + (j - 1) * lda]), amax);
         }
         for (i = 1; i <= j; i = i + 1) {
-            umax = max(REAL(abs(af[(i - 1) + (j - 1) * ldaf])), umax);
+            umax = max(abs(af[(i - 1) + (j - 1) * ldaf]), umax);
         }
         if (umax != 0.0) {
-            rpvgrw = min(REAL(amax / umax), rpvgrw);
+            rpvgrw = min(amax / umax, rpvgrw);
         }
     }
     return_value = rpvgrw;
