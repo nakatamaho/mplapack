@@ -36,18 +36,13 @@ void Rpbtrf(const char *uplo, INTEGER const n, INTEGER const kd, REAL *ab, INTEG
     INTEGER i = 0;
     const REAL zero = 0.0;
     const INTEGER ldwork = nbmax + 1;
+    REAL work[ldwork * nbmax];
     INTEGER ib = 0;
     INTEGER ii = 0;
     INTEGER i2 = 0;
     INTEGER i3 = 0;
     const REAL one = 1.0;
     INTEGER jj = 0;
-    REAL work[ldwork * nbmax];
-    //
-    //
-    //
-    //
-    // .. Local Arrays ..
     //
     // Test the input parameters.
     //
