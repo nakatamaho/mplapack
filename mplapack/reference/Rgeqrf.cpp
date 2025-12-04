@@ -31,16 +31,12 @@
 
 void Rgeqrf(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *tau, REAL *work, INTEGER const lwork, INTEGER &info) {
     //
-    //
-    //
-    //
-    //
     // Test the input arguments
     //
     info = 0;
     INTEGER nb = iMlaenv(1, "Rgeqrf", " ", m, n, -1, -1);
     INTEGER lwkopt = n * nb;
-    work[1 - 1] = lwkopt;
+    work[0] = lwkopt;
     bool lquery = (lwork == -1);
     if (m < 0) {
         info = -1;
@@ -62,7 +58,7 @@ void Rgeqrf(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *
     //
     INTEGER k = min(m, n);
     if (k == 0) {
-        work[1 - 1] = 1;
+        work[0] = 1.0;
         return;
     }
     //
@@ -128,7 +124,7 @@ void Rgeqrf(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *
         Rgeqr2(m - i + 1, n - i + 1, &a[(i - 1) + (i - 1) * lda], lda, &tau[i - 1], work, iinfo);
     }
     //
-    work[1 - 1] = iws;
+    work[0] = iws;
     //
     // End of Rgeqrf
     //
