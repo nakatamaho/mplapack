@@ -31,11 +31,6 @@
 
 void Rppsvx(const char *fact, const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *ap, REAL *afp, char *equed, REAL *s, REAL *b, INTEGER const ldb, REAL *x, INTEGER const ldx, REAL &rcond, REAL *ferr, REAL *berr, REAL *work, INTEGER *iwork, INTEGER &info) {
     //
-    // -- LAPACK driver routine --
-    //
-    //
-    //
-    //
     info = 0;
     bool nofact = Mlsame(fact, "N");
     bool equil = Mlsame(fact, "E");

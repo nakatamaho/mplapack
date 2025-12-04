@@ -44,7 +44,7 @@ void Rppsv(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *ap, REAL
         info = -6;
     }
     if (info != 0) {
-        Mxerbla("Rppsv", -info);
+        Mxerbla("Rppsv ", -info);
         return;
     }
     //
