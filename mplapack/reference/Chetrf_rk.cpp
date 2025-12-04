@@ -43,10 +43,6 @@ void Chetrf_rk(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda,
     INTEGER i = 0;
     INTEGER ip = 0;
     //
-    //
-    //
-    //
-    //
     // Test the input parameters.
     //
     info = 0;
@@ -68,7 +64,7 @@ void Chetrf_rk(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda,
         //
         nb = iMlaenv(1, "Chetrf_rk", uplo, n, -1, -1, -1);
         lwkopt = n * nb;
-        work[1 - 1] = lwkopt;
+        work[0] = lwkopt;
     }
     //
     if (info != 0) {
@@ -241,7 +237,7 @@ void Chetrf_rk(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda,
         //
     }
     //
-    work[1 - 1] = lwkopt;
+    work[0] = lwkopt;
     //
     // End of Chetrf_rk
     //

@@ -31,10 +31,6 @@
 
 void Chetri_3(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *e, INTEGER *ipiv, COMPLEX *work, INTEGER const lwork, INTEGER &info) {
     //
-    //
-    //
-    //
-    //
     // Test the input parameters.
     //
     info = 0;
@@ -60,7 +56,7 @@ void Chetri_3(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, 
         Mxerbla("Chetri_3", -info);
         return;
     } else if (lquery) {
-        work[1 - 1] = lwkopt;
+        work[0] = lwkopt;
         return;
     }
     //
@@ -72,7 +68,7 @@ void Chetri_3(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, 
     //
     Chetri_3x(uplo, n, a, lda, e, ipiv, work, nb, info);
     //
-    work[1 - 1] = lwkopt;
+    work[0] = lwkopt;
     //
     // End of Chetri_3
     //

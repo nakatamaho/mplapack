@@ -46,10 +46,6 @@ void Chetrf_aa(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda,
     INTEGER j3 = 0;
     INTEGER mj = 0;
     //
-    //
-    //
-    //
-    //
     // Determine the block size
     //
     nb = iMlaenv(1, "Chetrf_aa", uplo, n, -1, -1, -1);
@@ -71,7 +67,7 @@ void Chetrf_aa(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda,
     //
     if (info == 0) {
         lwkopt = (nb + 1) * n;
-        work[1 - 1] = lwkopt;
+        work[0] = lwkopt;
     }
     //
     if (info != 0) {
@@ -86,7 +82,7 @@ void Chetrf_aa(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda,
     if (n == 0) {
         return;
     }
-    ipiv[1 - 1] = 1;
+    ipiv[0] = 1;
     if (n == 1) {
         a[0] = a[0].real();
         return;
@@ -106,7 +102,7 @@ void Chetrf_aa(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda,
         //
         // copy first row A(1, 1:N) into H(1:n) (stored in WORK(1:N))
         //
-        Ccopy(n, &a[0], lda, &work[1 - 1], 1);
+        Ccopy(n, &a[0], lda, &work[0], 1);
         //
         // J is the main loop index, increasing from 1 to N in steps of
         // JB, where JB is the number of columns factorized by Clahef;
@@ -138,7 +134,7 @@ void Chetrf_aa(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda,
         for (j2 = j + 2; j2 <= min(n, j + jb + 1); j2 = j2 + 1) {
             ipiv[j2 - 1] += j;
             if ((j2 != ipiv[j2 - 1]) && ((j1 - k1) > 2)) {
-                Cswap(j1 - k1 - 2, &a[(j2 - 1) * lda], 1, &a[(ipiv[j2 - 1] - 1) * lda], 1);
+                Cswap(j1 - k1 - 2, &a[(j2 - 1) * lda], 1, &a[((ipiv[j2 - 1]) - 1) * lda], 1);
             }
         }
         j += jb;
@@ -203,7 +199,7 @@ void Chetrf_aa(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda,
             //
             // WORK(J+1, 1) stores H(J+1, 1)
             //
-            Ccopy(n - j, &a[((j + 1) - 1) + ((j + 1) - 1) * lda], lda, &work[1 - 1], 1);
+            Ccopy(n - j, &a[((j + 1) - 1) + ((j + 1) - 1) * lda], lda, &work[0], 1);
         }
         goto statement_10;
     } else {
@@ -215,7 +211,7 @@ void Chetrf_aa(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda,
         // copy first column A(1:N, 1) into H(1:N, 1)
         // (stored in WORK(1:N))
         //
-        Ccopy(n, &a[0], 1, &work[1 - 1], 1);
+        Ccopy(n, &a[0], 1, &work[0], 1);
         //
         // J is the main loop index, increasing from 1 to N in steps of
         // JB, where JB is the number of columns factorized by Clahef;
@@ -247,7 +243,7 @@ void Chetrf_aa(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda,
         for (j2 = j + 2; j2 <= min(n, j + jb + 1); j2 = j2 + 1) {
             ipiv[j2 - 1] += j;
             if ((j2 != ipiv[j2 - 1]) && ((j1 - k1) > 2)) {
-                Cswap(j1 - k1 - 2, &a[(j2 - 1)], lda, &a[(ipiv[j2 - 1] - 1)], lda);
+                Cswap(j1 - k1 - 2, &a[(j2 - 1)], lda, &a[((ipiv[j2 - 1]) - 1)], lda);
             }
         }
         j += jb;
@@ -312,7 +308,7 @@ void Chetrf_aa(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda,
             //
             // WORK(J+1, 1) stores H(J+1, 1)
             //
-            Ccopy(n - j, &a[((j + 1) - 1) + ((j + 1) - 1) * lda], 1, &work[1 - 1], 1);
+            Ccopy(n - j, &a[((j + 1) - 1) + ((j + 1) - 1) * lda], 1, &work[0], 1);
         }
         goto statement_11;
     }

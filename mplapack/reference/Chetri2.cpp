@@ -31,10 +31,6 @@
 
 void Chetri2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, INTEGER *ipiv, COMPLEX *work, INTEGER const lwork, INTEGER &info) {
     //
-    //
-    //
-    //
-    //
     // Test the input parameters.
     //
     info = 0;
@@ -65,7 +61,7 @@ void Chetri2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, I
         Mxerbla("Chetri2", -info);
         return;
     } else if (lquery) {
-        work[1 - 1] = minsize;
+        work[0] = minsize;
         return;
     }
     if (n == 0) {
