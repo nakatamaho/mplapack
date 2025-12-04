@@ -29,12 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rlarrc(const char *jobt, INTEGER const n, REAL const vl, REAL const vu, REAL *d, REAL *e, REAL const /* pivmin */, INTEGER &eigcnt, INTEGER &lcnt, INTEGER &rcnt, INTEGER &info) {
-    //
-    //
-    //
-    //
-    //
+void Rlarrc(const char *jobt, INTEGER const n, REAL const &vl, REAL const &vu, REAL *d, REAL *e, REAL const & /* pivmin */, INTEGER &eigcnt, INTEGER &lcnt, INTEGER &rcnt, INTEGER &info) {
     //
     info = 0;
     //
@@ -59,8 +54,8 @@ void Rlarrc(const char *jobt, INTEGER const n, REAL const vl, REAL const vu, REA
     REAL tmp2 = 0.0;
     if (matt) {
         // Sturm sequence count on T
-        lpivot = d[1 - 1] - vl;
-        rpivot = d[1 - 1] - vu;
+        lpivot = d[0] - vl;
+        rpivot = d[0] - vu;
         if (lpivot <= zero) {
             lcnt++;
         }

@@ -31,10 +31,6 @@
 
 void Rlarzb(const char *side, const char *trans, const char *direct, const char *storev, INTEGER const m, INTEGER const n, INTEGER const k, INTEGER const l, REAL *v, INTEGER const ldv, REAL *t, INTEGER const ldt, REAL *c, INTEGER const ldc, REAL *work, INTEGER const ldwork) {
     //
-    //
-    //
-    //
-    //
     // Quick return if possible
     //
     if (m <= 0 || n <= 0) {

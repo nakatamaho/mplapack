@@ -31,10 +31,6 @@
 
 void Rlarzt(const char *direct, const char *storev, INTEGER const n, INTEGER const k, REAL *v, INTEGER const ldv, REAL *tau, REAL *t, INTEGER const ldt) {
     //
-    //
-    //
-    //
-    //
     // Check for currently supported options
     //
     INTEGER info = 0;

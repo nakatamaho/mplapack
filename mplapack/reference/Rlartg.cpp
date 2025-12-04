@@ -29,7 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rlartg(REAL const f, REAL const g, REAL &cs, REAL &sn, REAL &r) {
+void Rlartg(REAL const &f, REAL const &g, REAL &cs, REAL &sn, REAL &r) {
     REAL safmin = 0.0;
     REAL eps = 0.0;
     const REAL two = 2.0;
@@ -43,6 +43,7 @@ void Rlartg(REAL const f, REAL const g, REAL &cs, REAL &sn, REAL &r) {
     INTEGER count = 0;
     INTEGER i = 0;
     //
+    // IF( FIRST ) THEN
     safmin = Rlamch("S");
     eps = Rlamch("E");
     safmn2 = pow(Rlamch("B"), castINTEGER(log(safmin / eps) / log(Rlamch("B")) / two));
