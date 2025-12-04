@@ -29,7 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Cgges(const char *jobvsl, const char *jobvsr, const char *sort, bool (*selctg)(COMPLEX, COMPLEX), INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, INTEGER &sdim, COMPLEX *alpha, COMPLEX *beta, COMPLEX *vsl, INTEGER const ldvsl, COMPLEX *vsr, INTEGER const ldvsr, COMPLEX *work, INTEGER const lwork, REAL *rwork, bool *bwork, INTEGER &info) {
+void Cgges(const char *jobvsl, const char *jobvsr, const char *sort, UNHANDLED_function_pointer selctg, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, INTEGER &sdim, COMPLEX *alpha, COMPLEX *beta, COMPLEX *vsl, INTEGER const ldvsl, COMPLEX *vsr, INTEGER const ldvsr, COMPLEX *work, INTEGER const lwork, REAL *rwork, bool *bwork, INTEGER &info) {
     INTEGER ijobvl = 0;
     bool ilvsl = false;
     INTEGER ijobvr = 0;
@@ -68,13 +68,6 @@ void Cgges(const char *jobvsl, const char *jobvsr, const char *sort, bool (*selc
     INTEGER idum[1];
     bool lastsl = false;
     bool cursl = false;
-    //
-    // -- LAPACK driver routine --
-    //
-    // .. Function Arguments ..
-    //
-    //
-    // .. Local Arrays ..
     //
     // Decode the input arguments
     //
@@ -133,12 +126,12 @@ void Cgges(const char *jobvsl, const char *jobvsr, const char *sort, bool (*selc
     //
     if (info == 0) {
         lwkmin = max((INTEGER)1, 2 * n);
-        lwkopt = max({(INTEGER)1, n + n * iMlaenv(1, "Cgeqrf", " ", n, 1, n, 0)});
-        lwkopt = max({lwkopt, n + n * iMlaenv(1, "Cunmqr", " ", n, 1, n, -1)});
+        lwkopt = max((INTEGER)1, n + n * iMlaenv(1, "Cgeqrf", " ", n, 1, n, 0));
+        lwkopt = max(lwkopt, n + n * iMlaenv(1, "Cunmqr", " ", n, 1, n, -1));
         if (ilvsl) {
-            lwkopt = max({lwkopt, n + n * iMlaenv(1, "Cungqr", " ", n, 1, n, -1)});
+            lwkopt = max(lwkopt, n + n * iMlaenv(1, "Cungqr", " ", n, 1, n, -1));
         }
-        work[1 - 1] = lwkopt;
+        work[0] = lwkopt;
         //
         if (lwork < lwkmin && !lquery) {
             info = -18;
@@ -146,7 +139,7 @@ void Cgges(const char *jobvsl, const char *jobvsr, const char *sort, bool (*selc
     }
     //
     if (info != 0) {
-        Mxerbla("Cgges", -info);
+        Mxerbla("Cgges ", -info);
         return;
     } else if (lquery) {
         return;
@@ -164,6 +157,7 @@ void Cgges(const char *jobvsl, const char *jobvsr, const char *sort, bool (*selc
     eps = Rlamch("P");
     smlnum = Rlamch("S");
     bignum = one / smlnum;
+    Rlabad(smlnum, bignum);
     smlnum = sqrt(smlnum) / eps;
     bignum = one / smlnum;
     //
@@ -332,7 +326,7 @@ void Cgges(const char *jobvsl, const char *jobvsr, const char *sort, bool (*selc
 //
 statement_30:
     //
-    work[1 - 1] = lwkopt;
+    work[0] = lwkopt;
     //
     // End of Cgges
     //
