@@ -31,10 +31,6 @@
 
 void Rlar2v(INTEGER const n, REAL *x, REAL *y, REAL *z, INTEGER const incx, REAL *c, REAL *s, INTEGER const incc) {
     //
-    //
-    //
-    //
-    //
     INTEGER ix = 1;
     INTEGER ic = 1;
     INTEGER i = 0;
