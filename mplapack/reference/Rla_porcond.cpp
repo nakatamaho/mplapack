@@ -39,10 +39,6 @@ REAL Rla_porcond(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, 
     INTEGER kase = 0;
     INTEGER isave[3];
     //
-    //
-    //
-    //
-    //
     return_value = 0.0;
     //
     info = 0;

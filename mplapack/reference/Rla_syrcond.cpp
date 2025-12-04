@@ -41,12 +41,6 @@ REAL Rla_syrcond(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, 
     INTEGER kase = 0;
     INTEGER isave[3];
     //
-    //
-    // .. Array Arguments
-    //
-    //
-    // .. Local Arrays ..
-    //
     return_value = 0.0;
     //
     info = 0;
