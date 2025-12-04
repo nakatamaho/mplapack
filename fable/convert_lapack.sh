@@ -287,6 +287,16 @@ def _rewrite_norm_eq_one(line: str) -> str:
 lines = text.splitlines(keepends=True)
 lines = [_rewrite_norm_eq_one(line) for line in lines]
 
+# ---------------------------------------------------------------------------
+# 4) Drop bogus "cabs1(zdum) = abs(zdum.real()) + abs(zdum.imag());" line
+# ---------------------------------------------------------------------------
+
+CABS1_STMT_RE = re.compile(
+    r"^\s*cabs1\s*\(\s*zdum\s*\)\s*=\s*abs\s*\(\s*zdum\.real\(\)\s*\)\s*\+\s*abs\s*\(\s*zdum\.imag\(\)\s*\)\s*;\s*$"
+)
+
+lines = [line for line in lines if not CABS1_STMT_RE.match(line)]
+
 path.write_text("".join(lines))
 EOF
 

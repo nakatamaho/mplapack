@@ -76,6 +76,8 @@ MANUAL_MAPPINGS=(
   "ilauplo iMlauplo"
   "dlamc3 Rlamc3"
   "ilaenv2stage iMlaenv2stage"
+  "iladlc iMladlc"
+  "iladlr iMladlr"
 )
 
 # ------------------------------------------------------------
