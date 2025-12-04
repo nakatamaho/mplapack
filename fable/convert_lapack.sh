@@ -231,7 +231,26 @@ pattern_minmax = re.compile(
 
 text = pattern_minmax.sub(r"(\1 - 1)", text)
 
-path.write_text(text)
+# ---------------------------------------------------------------------------
+# 3) Replace "norm == '1'" with Mlsame(norm, "1") in code (not in comments)
+# ---------------------------------------------------------------------------
+
+NORM_EQ_ONE_RE = re.compile(r"\bnorm\s*==\s*'1'")
+
+def _rewrite_norm_eq_one(line: str) -> str:
+    # Do not touch C++ line comments.
+    idx = line.find("//")
+    if idx >= 0:
+        code, comment = line[:idx], line[idx:]
+    else:
+        code, comment = line, ""
+    code = NORM_EQ_ONE_RE.sub('Mlsame(norm, "1")', code)
+    return code + comment
+
+lines = [_rewrite_norm_eq_one(line) for line in lines]
+
+path.write_text("".join(lines))
+
 EOF
 
 # Overwrite the generated C++ file with the formatted and postprocessed version
