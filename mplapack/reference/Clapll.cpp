@@ -31,10 +31,6 @@
 
 void Clapll(INTEGER const n, COMPLEX *x, INTEGER const incx, COMPLEX *y, INTEGER const incy, REAL &ssmin) {
     //
-    //
-    //
-    //
-    //
     // Quick return if possible
     //
     const REAL zero = 0.0;
@@ -46,17 +42,17 @@ void Clapll(INTEGER const n, COMPLEX *x, INTEGER const incx, COMPLEX *y, INTEGER
     // Compute the QR factorization of the N-by-2 matrix ( X Y )
     //
     COMPLEX tau = 0.0;
-    Clarfg(n, x[1 - 1], &x[(1 + incx) - 1], incx, tau);
-    COMPLEX a11 = x[1 - 1];
+    Clarfg(n, x[0], &x[(1 + incx) - 1], incx, tau);
+    COMPLEX a11 = x[0];
     const COMPLEX cone = COMPLEX(1.0, 0.0);
-    x[1 - 1] = cone;
+    x[0] = cone;
     //
     COMPLEX c = -conj(tau) * Cdotc(n, x, incx, y, incy);
     Caxpy(n, c, x, incx, y, incy);
     //
     Clarfg(n - 1, y[(1 + incy) - 1], &y[(1 + 2 * incy) - 1], incy, tau);
     //
-    COMPLEX a12 = y[1 - 1];
+    COMPLEX a12 = y[0];
     COMPLEX a22 = y[(1 + incy) - 1];
     //
     // Compute the SVD of 2-by-2 Upper triangular matrix.

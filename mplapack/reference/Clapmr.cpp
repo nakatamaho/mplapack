@@ -36,10 +36,6 @@ void Clapmr(bool const forwrd, INTEGER const m, INTEGER const n, COMPLEX *x, INT
     INTEGER jj = 0;
     COMPLEX temp = 0.0;
     //
-    //
-    //
-    //
-    //
     if (m <= 1) {
         return;
     }
