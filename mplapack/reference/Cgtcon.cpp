@@ -37,6 +37,7 @@ void Cgtcon(const char *norm, INTEGER const n, COMPLEX *dl, COMPLEX *d, COMPLEX 
     REAL ainvnm = 0.0;
     INTEGER kase1 = 0;
     INTEGER kase = 0;
+    INTEGER isave[3];
     //
     // Test the input arguments.
     //
