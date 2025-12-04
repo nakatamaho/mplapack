@@ -29,7 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rlaev2(REAL const a, REAL const b, REAL const c, REAL &rt1, REAL &rt2, REAL &cs1, REAL &sn1) {
+void Rlaev2(REAL const &a, REAL const &b, REAL const &c, REAL &rt1, REAL &rt2, REAL &cs1, REAL &sn1) {
     //
     // Compute the eigenvalues
     //
@@ -61,7 +61,7 @@ void Rlaev2(REAL const a, REAL const b, REAL const c, REAL &rt1, REAL &rt2, REAL
         rt = ab * sqrt(two);
     }
     const REAL zero = 0.0;
-    const REAL half = 0.5e0;
+    const REAL half = 0.5;
     INTEGER sgn1 = 0;
     if (sm < zero) {
         rt1 = half * (sm - rt);
