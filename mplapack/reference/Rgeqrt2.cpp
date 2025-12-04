@@ -31,10 +31,6 @@
 
 void Rgeqrt2(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *t, INTEGER const ldt, INTEGER &info) {
     //
-    //
-    //
-    //
-    //
     // Test the input arguments
     //
     info = 0;
@@ -56,8 +52,8 @@ void Rgeqrt2(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL 
     //
     INTEGER i = 0;
     REAL aii = 0.0;
-    const REAL one = 1.00;
-    const REAL zero = 0.00;
+    const REAL one = 1.0;
+    const REAL zero = 0.0;
     REAL alpha = 0.0;
     for (i = 1; i <= k; i = i + 1) {
         //

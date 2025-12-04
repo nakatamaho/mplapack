@@ -31,10 +31,6 @@
 
 void Rgeqrt3(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *t, INTEGER const ldt, INTEGER &info) {
     //
-    //
-    //
-    //
-    //
     info = 0;
     if (n < 0) {
         info = -2;
@@ -57,7 +53,7 @@ void Rgeqrt3(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL 
     INTEGER iinfo = 0;
     INTEGER j = 0;
     INTEGER i = 0;
-    const REAL one = 1.00;
+    const REAL one = 1.0;
     if (n == 1) {
         //
         // Compute Householder transform when N=1
