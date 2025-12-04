@@ -36,7 +36,7 @@ void Cgebrd(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, REA
     info = 0;
     INTEGER nb = max((INTEGER)1, iMlaenv(1, "Cgebrd", " ", m, n, -1, -1));
     INTEGER lwkopt = (m + n) * nb;
-    work[1 - 1] = castREAL(lwkopt);
+    work[0] = castREAL(lwkopt);
     bool lquery = (lwork == -1);
     if (m < 0) {
         info = -1;
@@ -44,7 +44,7 @@ void Cgebrd(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, REA
         info = -2;
     } else if (lda < max((INTEGER)1, m)) {
         info = -4;
-    } else if (lwork < max({(INTEGER)1, m, n}) && !lquery) {
+    } else if (lwork < max((INTEGER)1, m, n) && !lquery) {
         info = -10;
     }
     if (info < 0) {
@@ -58,7 +58,7 @@ void Cgebrd(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, REA
     //
     INTEGER minmn = min(m, n);
     if (minmn == 0) {
-        work[1 - 1] = 1;
+        work[0] = 1;
         return;
     }
     //
@@ -132,7 +132,7 @@ void Cgebrd(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, REA
     //
     INTEGER iinfo = 0;
     Cgebd2(m - i + 1, n - i + 1, &a[(i - 1) + (i - 1) * lda], lda, &d[i - 1], &e[i - 1], &tauq[i - 1], &taup[i - 1], work, iinfo);
-    work[1 - 1] = ws;
+    work[0] = ws;
     //
     // End of Cgebrd
     //
