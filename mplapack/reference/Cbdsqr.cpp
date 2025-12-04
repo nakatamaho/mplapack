@@ -291,7 +291,7 @@ statement_90:
             CRrot(nru, &u[((m - 1) - 1) * ldu], 1, &u[(m - 1) * ldu], 1, cosl, sinl);
         }
         if (ncc > 0) {
-            CRrot(ncc, &c[((m - 1) - 1)], ldc, &c[(m - 1) + (1 - 1) * ldc], ldc, cosl, sinl);
+            CRrot(ncc, &c[((m - 1) - 1)], ldc, &c[(m - 1)], ldc, cosl, sinl);
         }
         m = m - 2;
         goto statement_60;
