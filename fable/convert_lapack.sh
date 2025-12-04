@@ -159,10 +159,10 @@ def simplify_expr(expr: str) -> str:
     """Simplify an index expression that may contain (1 - 1), *0, +0, etc."""
     e = expr
     
-    # (1 - 1) + ... or ... + (1 - 1) -> remove the (1-1) and the operator
-    e = re.sub(r"\(\s*1\s*-\s*1\s*\)\s*\+\s*", "", e)
-    e = re.sub(r"\+\s*\(\s*1\s*-\s*1\s*\)", "", e)
-    e = re.sub(r"\(\s*1\s*-\s*1\s*\)\s*\-\s*", "", e)
+    # -------------------------------------------------------------------------
+    # STEP 1: Handle multiplications FIRST (before touching + (1-1) patterns)
+    #         This prevents "+ (1 - 1) * lda" from becoming "* lda"
+    # -------------------------------------------------------------------------
     
     # (1 - 1) * NAME or NAME * (1 - 1) -> 0
     e = re.sub(
@@ -176,7 +176,7 @@ def simplify_expr(expr: str) -> str:
         e,
     )
     
-    # (1 - 1) -> 0
+    # (1 - 1) -> 0 (standalone, after multiplication patterns are handled)
     e = re.sub(r"\(\s*1\s*-\s*1\s*\)", "0", e)
     
     # 0 * NAME -> 0
@@ -184,10 +184,21 @@ def simplify_expr(expr: str) -> str:
     # NAME * 0 -> 0
     e = re.sub(r"[A-Za-z_][A-Za-z0-9_]*\s*\*\s*0", "0", e)
     
-    # Remove "+ 0", "0 +", "- 0" (without word boundary constraints)
-    e = re.sub(r"\+\s*0(?=\s*[^\d]|$)", "", e)  # + 0 followed by non-digit or end
-    e = re.sub(r"(?<=\D)0\s*\+", "", e)  # 0 + preceded by non-digit
-    e = re.sub(r"\-\s*0(?=\s*[^\d]|$)", "", e)  # - 0 followed by non-digit or end
+    # -------------------------------------------------------------------------
+    # STEP 2: Now handle addition/subtraction of zero
+    # -------------------------------------------------------------------------
+    
+    # Remove "0 + " at the beginning or after opening paren
+    e = re.sub(r"^\s*0\s*\+\s*", "", e)
+    e = re.sub(r"\(\s*0\s*\+\s*", "(", e)
+    
+    # Remove "+ 0" at the end or before closing paren
+    e = re.sub(r"\s*\+\s*0\s*$", "", e)
+    e = re.sub(r"\s*\+\s*0\s*\)", ")", e)
+    
+    # Remove "- 0" patterns
+    e = re.sub(r"\s*\-\s*0\s*$", "", e)
+    e = re.sub(r"\s*\-\s*0\s*\)", ")", e)
     
     # Clean up leading/trailing operators and spaces
     e = re.sub(r"^\s*\+\s*", "", e)  # Leading +
