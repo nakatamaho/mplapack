@@ -31,10 +31,6 @@
 
 void Clacgv(INTEGER const n, COMPLEX *x, INTEGER const incx) {
     //
-    //
-    //
-    //
-    //
     INTEGER i = 0;
     INTEGER ioff = 0;
     if (incx == 1) {
