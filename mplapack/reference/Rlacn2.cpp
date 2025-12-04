@@ -38,7 +38,7 @@ void Rlacn2(INTEGER const n, REAL *v, REAL *x, INTEGER *isgn, REAL &est, INTEGER
     INTEGER jlast = 0;
     const INTEGER itmax = 5;
     REAL altsgn = 0.0;
-    const REAL two = 2.0e+0;
+    const REAL two = 2.0;
     REAL temp = 0.0;
     //
     if (kase == 0) {
@@ -46,11 +46,11 @@ void Rlacn2(INTEGER const n, REAL *v, REAL *x, INTEGER *isgn, REAL &est, INTEGER
             x[i - 1] = one / castREAL(n);
         }
         kase = 1;
-        isave[1 - 1] = 1;
+        isave[0] = 1;
         return;
     }
     //
-    switch (isave[1 - 1]) {
+    switch (isave[0]) {
     case 1:
         goto statement_20;
     case 2:
@@ -70,8 +70,8 @@ void Rlacn2(INTEGER const n, REAL *v, REAL *x, INTEGER *isgn, REAL &est, INTEGER
 //
 statement_20:
     if (n == 1) {
-        v[1 - 1] = x[1 - 1];
-        est = abs(v[1 - 1]);
+        v[0] = x[0];
+        est = abs(v[0]);
         // ... QUIT
         goto statement_150;
     }
@@ -86,15 +86,15 @@ statement_20:
         isgn[i - 1] = nint(x[i - 1]);
     }
     kase = 2;
-    isave[1 - 1] = 2;
+    isave[0] = 2;
     return;
 //
 // ................ ENTRY   (ISAVE( 1 ) = 2)
 // FIRST ITERATION.  X HAS BEEN OVERWRITTEN BY TRANSPOSE(A)*X.
 //
 statement_40:
-    isave[2 - 1] = iRamax(n, x, 1);
-    isave[3 - 1] = 2;
+    isave[1] = iRamax(n, x, 1);
+    isave[2] = 2;
 //
 // MAIN LOOP - ITERATIONS 2,3,...,ITMAX.
 //
@@ -102,9 +102,9 @@ statement_50:
     for (i = 1; i <= n; i = i + 1) {
         x[i - 1] = zero;
     }
-    x[isave[2 - 1] - 1] = one;
+    x[isave[1] - 1] = one;
     kase = 1;
-    isave[1 - 1] = 3;
+    isave[0] = 3;
     return;
 //
 // ................ ENTRY   (ISAVE( 1 ) = 3)
@@ -142,17 +142,17 @@ statement_90:
         isgn[i - 1] = nint(x[i - 1]);
     }
     kase = 2;
-    isave[1 - 1] = 4;
+    isave[0] = 4;
     return;
 //
 // ................ ENTRY   (ISAVE( 1 ) = 4)
 // X HAS BEEN OVERWRITTEN BY TRANSPOSE(A)*X.
 //
 statement_110:
-    jlast = isave[2 - 1];
-    isave[2 - 1] = iRamax(n, x, 1);
-    if ((x[jlast - 1] != abs(x[isave[2 - 1] - 1])) && (isave[3 - 1] < itmax)) {
-        isave[3 - 1]++;
+    jlast = isave[1];
+    isave[1] = iRamax(n, x, 1);
+    if ((x[jlast - 1] != abs(x[isave[1] - 1])) && (isave[2] < itmax)) {
+        isave[2]++;
         goto statement_50;
     }
 //
@@ -165,7 +165,7 @@ statement_120:
         altsgn = -altsgn;
     }
     kase = 1;
-    isave[1 - 1] = 5;
+    isave[0] = 5;
     return;
 //
 // ................ ENTRY   (ISAVE( 1 ) = 5)
