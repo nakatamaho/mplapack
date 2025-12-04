@@ -31,10 +31,6 @@
 
 void Rorhr_col(INTEGER const m, INTEGER const n, INTEGER const nb, REAL *a, INTEGER const lda, REAL *t, INTEGER const ldt, REAL *d, INTEGER &info) {
     //
-    //
-    //
-    //
-    //
     // Test the input parameters
     //
     info = 0;

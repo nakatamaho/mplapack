@@ -31,11 +31,6 @@
 
 void Rorm22(const char *side, const char *trans, INTEGER const m, INTEGER const n, INTEGER const n1, INTEGER const n2, REAL *q, INTEGER const ldq, REAL *c, INTEGER const ldc, REAL *work, INTEGER const lwork, INTEGER &info) {
     //
-    //
-    //
-    //
-    //
-    //
     // Test the input arguments
     //
     info = 0;
@@ -44,6 +39,7 @@ void Rorm22(const char *side, const char *trans, INTEGER const m, INTEGER const 
     bool lquery = (lwork == -1);
     //
     // NQ is the order of Q;
+    // NW is the minimum dimension of WORK.
     //
     INTEGER nq = 0;
     if (left) {
@@ -78,7 +74,7 @@ void Rorm22(const char *side, const char *trans, INTEGER const m, INTEGER const 
     INTEGER lwkopt = 0;
     if (info == 0) {
         lwkopt = m * n;
-        work[1 - 1] = castREAL(lwkopt);
+        work[0] = castREAL(lwkopt);
     }
     //
     if (info != 0) {
@@ -91,7 +87,7 @@ void Rorm22(const char *side, const char *trans, INTEGER const m, INTEGER const 
     // Quick return if possible
     //
     if (m == 0 || n == 0) {
-        work[1 - 1] = 1;
+        work[0] = 1.0;
         return;
     }
     //
@@ -100,11 +96,11 @@ void Rorm22(const char *side, const char *trans, INTEGER const m, INTEGER const 
     const REAL one = 1.0;
     if (n1 == 0) {
         Rtrmm(side, "Upper", trans, "Non-Unit", m, n, one, q, ldq, c, ldc);
-        work[1 - 1] = one;
+        work[0] = one;
         return;
     } else if (n2 == 0) {
         Rtrmm(side, "Lower", trans, "Non-Unit", m, n, one, q, ldq, c, ldc);
-        work[1 - 1] = one;
+        work[0] = one;
         return;
     }
     //
@@ -229,7 +225,7 @@ void Rorm22(const char *side, const char *trans, INTEGER const m, INTEGER const 
         }
     }
     //
-    work[1 - 1] = castREAL(lwkopt);
+    work[0] = castREAL(lwkopt);
     //
     // End of Rorm22
     //
