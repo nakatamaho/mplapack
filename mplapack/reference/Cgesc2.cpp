@@ -37,6 +37,7 @@ void Cgesc2(INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *rhs, INTEGE
     REAL smlnum = Rlamch("S") / eps;
     const REAL one = 1.0;
     REAL bignum = one / smlnum;
+    Rlabad(smlnum, bignum);
     //
     // Apply permutations IPIV to RHS
     //
@@ -59,12 +60,12 @@ void Cgesc2(INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *rhs, INTEGE
     // Check for scaling
     //
     i = iCamax(n, rhs, 1);
-    const REAL two = 2.0e+0;
+    const REAL two = 2.0;
     const REAL zero = 0.0;
     COMPLEX temp = 0.0;
     if (two * smlnum * abs(rhs[i - 1]) > abs(a[(n - 1) + (n - 1) * lda])) {
         temp = COMPLEX(one / two, zero) / abs(rhs[i - 1]);
-        Cscal(n, temp, &rhs[1 - 1], 1);
+        Cscal(n, temp, &rhs[0], 1);
         scale = scale * temp.real();
     }
     for (i = n; i >= 1; i = i - 1) {
