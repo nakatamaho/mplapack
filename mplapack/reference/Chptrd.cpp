@@ -31,10 +31,6 @@
 
 void Chptrd(const char *uplo, INTEGER const n, COMPLEX *ap, REAL *d, REAL *e, COMPLEX *tau, INTEGER &info) {
     //
-    //
-    //
-    //
-    //
     // Test the input parameters
     //
     info = 0;
@@ -61,7 +57,7 @@ void Chptrd(const char *uplo, INTEGER const n, COMPLEX *ap, REAL *d, REAL *e, CO
     COMPLEX taui = 0.0;
     const COMPLEX zero = COMPLEX(0.0, 0.0);
     const COMPLEX one = COMPLEX(1.0, 0.0);
-    const COMPLEX half = COMPLEX(0.5e+0, 0.0);
+    const COMPLEX half = COMPLEX(0.5, 0.0);
     INTEGER ii = 0;
     INTEGER i1i1 = 0;
     if (upper) {
@@ -106,14 +102,14 @@ void Chptrd(const char *uplo, INTEGER const n, COMPLEX *ap, REAL *d, REAL *e, CO
             tau[i - 1] = taui;
             i1 = i1 - i;
         }
-        d[1 - 1] = ap[1 - 1].real();
+        d[0] = ap[0].real();
     } else {
         //
         // Reduce the lower triangle of A. II is the index in AP of
         // A(i,i) and I1I1 is the index of A(i+1,i+1).
         //
         ii = 1;
-        ap[1 - 1] = ap[1 - 1].real();
+        ap[0] = ap[0].real();
         for (i = 1; i <= n - 1; i = i + 1) {
             i1i1 = ii + n - i + 1;
             //

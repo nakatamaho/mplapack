@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -44,7 +44,7 @@ void Chpsv(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *ap, I
         info = -7;
     }
     if (info != 0) {
-        Mxerbla("Chpsv", -info);
+        Mxerbla("Chpsv ", -info);
         return;
     }
     //
