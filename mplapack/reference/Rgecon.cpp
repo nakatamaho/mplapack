@@ -29,7 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rgecon(const char *norm, INTEGER const n, REAL *a, INTEGER const lda, REAL const anorm, REAL &rcond, REAL *work, INTEGER *iwork, INTEGER &info) {
+void Rgecon(const char *norm, INTEGER const n, REAL *a, INTEGER const lda, REAL const &anorm, REAL &rcond, REAL *work, INTEGER *iwork, INTEGER &info) {
     bool onenrm = false;
     const REAL zero = 0.0;
     const REAL one = 1.0;
@@ -44,15 +44,10 @@ void Rgecon(const char *norm, INTEGER const n, REAL *a, INTEGER const lda, REAL 
     REAL scale = 0.0;
     INTEGER ix = 0;
     //
-    //
-    //
-    //
-    // .. Local Arrays ..
-    //
     // Test the input parameters.
     //
     info = 0;
-    onenrm = (Mlsame(norm, "1")) || Mlsame(norm, "O");
+    onenrm = Mlsame(norm, "1") || Mlsame(norm, "O");
     if (!onenrm && !Mlsame(norm, "I")) {
         info = -1;
     } else if (n < 0) {
