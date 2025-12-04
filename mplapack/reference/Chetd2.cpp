@@ -31,10 +31,6 @@
 
 void Chetd2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, REAL *d, REAL *e, COMPLEX *tau, INTEGER &info) {
     //
-    //
-    //
-    //
-    //
     // Test the input parameters
     //
     info = 0;
@@ -62,7 +58,7 @@ void Chetd2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, RE
     COMPLEX taui = 0.0;
     const COMPLEX zero = COMPLEX(0.0, 0.0);
     const COMPLEX one = COMPLEX(1.0, 0.0);
-    const COMPLEX half = COMPLEX(0.5e+0, 0.0);
+    const COMPLEX half = COMPLEX(0.5, 0.0);
     if (upper) {
         //
         // Reduce the upper triangle of A
@@ -104,7 +100,7 @@ void Chetd2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, RE
             d[(i + 1) - 1] = a[((i + 1) - 1) + ((i + 1) - 1) * lda].real();
             tau[i - 1] = taui;
         }
-        d[1 - 1] = a[0].real();
+        d[0] = a[0].real();
     } else {
         //
         // Reduce the lower triangle of A

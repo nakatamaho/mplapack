@@ -29,14 +29,12 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-inline REAL cabs1(COMPLEX zdum) { return abs(zdum.real()) + abs(zdum.imag()); }
-
 void Chetf2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, INTEGER *ipiv, INTEGER &info) {
     COMPLEX zdum = 0.0;
     bool upper = false;
     const REAL one = 1.0;
-    const REAL sevten = 17.0e+0;
-    const REAL eight = 8.0e+0;
+    const REAL sevten = 17.0;
+    const REAL eight = 8.0;
     REAL alpha = 0.0;
     INTEGER k = 0;
     INTEGER kstep = 0;
@@ -61,12 +59,6 @@ void Chetf2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
     INTEGER i = 0;
     COMPLEX d21 = 0.0;
     COMPLEX wkp1 = 0.0;
-    //
-    //
-    //
-    //
-    // .. Statement Functions ..
-    // .. Statement Function definitions ..
     //
     // Test the input parameters.
     //
@@ -132,8 +124,6 @@ void Chetf2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
             kp = k;
             a[(k - 1) + (k - 1) * lda] = a[(k - 1) + (k - 1) * lda].real();
         } else {
-            //
-            //
             // Test for interchange
             //
             if (absakk >= alpha * colmax) {
@@ -176,8 +166,6 @@ void Chetf2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
                 }
                 //
             }
-            //
-            //
             kk = k - kstep + 1;
             if (kp != kk) {
                 //
@@ -324,8 +312,6 @@ void Chetf2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
             kp = k;
             a[(k - 1) + (k - 1) * lda] = a[(k - 1) + (k - 1) * lda].real();
         } else {
-            //
-            //
             // Test for interchange
             //
             if (absakk >= alpha * colmax) {
@@ -368,8 +354,6 @@ void Chetf2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
                 }
                 //
             }
-            //
-            //
             kk = k + kstep - 1;
             if (kp != kk) {
                 //

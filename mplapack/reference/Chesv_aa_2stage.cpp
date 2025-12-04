@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -31,11 +31,6 @@
 
 void Chesv_aa_2stage(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a, INTEGER const lda, COMPLEX *tb, INTEGER const ltb, INTEGER *ipiv, INTEGER *ipiv2, COMPLEX *b, INTEGER const ldb, COMPLEX *work, INTEGER const lwork, INTEGER &info) {
     //
-    // -- LAPACK driver routine --
-    //
-    //
-    //
-    //
     // Test the input parameters.
     //
     info = 0;
@@ -61,7 +56,7 @@ void Chesv_aa_2stage(const char *uplo, INTEGER const n, INTEGER const nrhs, COMP
     INTEGER lwkopt = 0;
     if (info == 0) {
         Chetrf_aa_2stage(uplo, n, a, lda, tb, -1, ipiv, ipiv2, work, -1, info);
-        lwkopt = castINTEGER(work[1 - 1].real());
+        lwkopt = castINTEGER(work[0].real());
     }
     //
     if (info != 0) {
@@ -82,7 +77,7 @@ void Chesv_aa_2stage(const char *uplo, INTEGER const n, INTEGER const nrhs, COMP
         //
     }
     //
-    work[1 - 1] = castREAL(lwkopt);
+    work[0] = lwkopt;
     //
     // End of Chesv_aa_2stage
     //

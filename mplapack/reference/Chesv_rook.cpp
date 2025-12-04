@@ -58,11 +58,11 @@ void Chesv_rook(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *
             nb = iMlaenv(1, "Chetrf_rook", uplo, n, -1, -1, -1);
             lwkopt = n * nb;
         }
-        work[1 - 1] = lwkopt;
+        work[0] = lwkopt;
     }
     //
     if (info != 0) {
-        Mxerbla("Chesv_rook", -info);
+        Mxerbla("Chesv_rook ", -info);
         return;
     } else if (lquery) {
         return;
@@ -81,7 +81,7 @@ void Chesv_rook(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *
         //
     }
     //
-    work[1 - 1] = lwkopt;
+    work[0] = lwkopt;
     //
     // End of Chesv_rook
     //

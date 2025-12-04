@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -55,13 +55,13 @@ void Chesv_rk(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a,
             lwkopt = 1;
         } else {
             Chetrf_rk(uplo, n, a, lda, e, ipiv, work, -1, info);
-            lwkopt = castINTEGER(work[1 - 1].real());
+            lwkopt = castINTEGER(work[0].real());
         }
-        work[1 - 1] = castREAL(lwkopt);
+        work[0] = lwkopt;
     }
     //
     if (info != 0) {
-        Mxerbla("Chesv_rk", -info);
+        Mxerbla("Chesv_rk ", -info);
         return;
     } else if (lquery) {
         return;
@@ -80,7 +80,7 @@ void Chesv_rk(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a,
         //
     }
     //
-    work[1 - 1] = castREAL(lwkopt);
+    work[0] = lwkopt;
     //
     // End of Chesv_rk
     //
