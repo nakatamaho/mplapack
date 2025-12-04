@@ -31,11 +31,6 @@
 
 void Rsyconv(const char *uplo, const char *way, INTEGER const n, REAL *a, INTEGER const lda, INTEGER *ipiv, REAL *e, INTEGER &info) {
     //
-    //
-    //
-    //
-    //
-    //
     info = 0;
     bool upper = Mlsame(uplo, "U");
     bool convert = Mlsame(way, "C");
@@ -75,7 +70,7 @@ void Rsyconv(const char *uplo, const char *way, INTEGER const n, REAL *a, INTEGE
         //
         if (convert) {
             i = n;
-            e[1 - 1] = zero;
+            e[0] = zero;
             while (i > 1) {
                 if (ipiv[i - 1] < 0) {
                     e[i - 1] = a[((i - 1) - 1) + (i - 1) * lda];
