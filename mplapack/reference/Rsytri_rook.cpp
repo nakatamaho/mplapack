@@ -43,10 +43,6 @@ void Rsytri_rook(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, 
     INTEGER kp = 0;
     REAL temp = 0.0;
     //
-    //
-    //
-    //
-    //
     // Test the input parameters.
     //
     info = 0;
