@@ -29,7 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Cheevr(const char *jobz, const char *range, const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, REAL const vl, REAL const vu, INTEGER const il, INTEGER const iu, REAL const abstol, INTEGER &m, REAL *w, COMPLEX *z, INTEGER const ldz, INTEGER *isuppz, COMPLEX *work, INTEGER const lwork, REAL *rwork, INTEGER const lrwork, INTEGER *iwork, INTEGER const liwork, INTEGER &info) {
+void Cheevr(const char *jobz, const char *range, const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, REAL const &vl, REAL const &vu, INTEGER const il, INTEGER const iu, REAL const &abstol, INTEGER &m, REAL *w, COMPLEX *z, INTEGER const ldz, INTEGER *isuppz, COMPLEX *work, INTEGER const lwork, REAL *rwork, INTEGER const lrwork, INTEGER *iwork, INTEGER const liwork, INTEGER &info) {
     INTEGER ieeeok = 0;
     bool lower = false;
     bool wantz = false;
@@ -72,7 +72,7 @@ void Cheevr(const char *jobz, const char *range, const char *uplo, INTEGER const
     INTEGER indiwo = 0;
     INTEGER iinfo = 0;
     bool test = false;
-    const REAL two = 2.0e+0;
+    const REAL two = 2.0;
     bool tryrac = false;
     INTEGER indwkn = 0;
     INTEGER llwrkn = 0;
@@ -83,11 +83,6 @@ void Cheevr(const char *jobz, const char *range, const char *uplo, INTEGER const
     REAL tmp1 = 0.0;
     INTEGER jj = 0;
     INTEGER itmp1 = 0;
-    //
-    // -- LAPACK driver routine --
-    //
-    //
-    //
     //
     // Test the input parameters.
     //
@@ -137,11 +132,11 @@ void Cheevr(const char *jobz, const char *range, const char *uplo, INTEGER const
     //
     if (info == 0) {
         nb = iMlaenv(1, "Chetrd", uplo, n, -1, -1, -1);
-        nb = max({nb, iMlaenv(1, "Cunmtr", uplo, n, -1, -1, -1)});
+        nb = max(nb, iMlaenv(1, "Cunmtr", uplo, n, -1, -1, -1));
         lwkopt = max((nb + 1) * n, lwmin);
-        work[1 - 1] = lwkopt;
-        rwork[1 - 1] = lrwmin;
-        iwork[1 - 1] = liwmin;
+        work[0] = lwkopt;
+        rwork[0] = lrwmin;
+        iwork[0] = liwmin;
         //
         if (lwork < lwmin && !lquery) {
             info = -18;
@@ -163,25 +158,25 @@ void Cheevr(const char *jobz, const char *range, const char *uplo, INTEGER const
     //
     m = 0;
     if (n == 0) {
-        work[1 - 1] = 1;
+        work[0] = 1;
         return;
     }
     //
     if (n == 1) {
-        work[1 - 1] = 2;
+        work[0] = 2;
         if (alleig || indeig) {
             m = 1;
-            w[1 - 1] = a[0].real();
+            w[0] = a[0].real();
         } else {
             if (vl < a[0].real() && vu >= a[0].real()) {
                 m = 1;
-                w[1 - 1] = a[0].real();
+                w[0] = a[0].real();
             }
         }
         if (wantz) {
             z[0] = one;
-            isuppz[1 - 1] = 1;
-            isuppz[2 - 1] = 1;
+            isuppz[0] = 1;
+            isuppz[1] = 1;
         }
         return;
     }
@@ -193,7 +188,7 @@ void Cheevr(const char *jobz, const char *range, const char *uplo, INTEGER const
     smlnum = safmin / eps;
     bignum = one / smlnum;
     rmin = sqrt(smlnum);
-    rmax = min(REAL(sqrt(bignum)), REAL(one / sqrt(sqrt(safmin))));
+    rmax = min(sqrt(bignum), one / sqrt(sqrt(safmin)));
     //
     // Scale matrix to allowable range, if necessary.
     //
@@ -379,9 +374,9 @@ statement_30:
     //
     // Set WORK(1) to optimal workspace size.
     //
-    work[1 - 1] = lwkopt;
-    rwork[1 - 1] = lrwmin;
-    iwork[1 - 1] = liwmin;
+    work[0] = lwkopt;
+    rwork[0] = lrwmin;
+    iwork[0] = liwmin;
     //
     // End of Cheevr
     //
