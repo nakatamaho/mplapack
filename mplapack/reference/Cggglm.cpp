@@ -31,11 +31,6 @@
 
 void Cggglm(INTEGER const n, INTEGER const m, INTEGER const p, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, COMPLEX *d, COMPLEX *x, COMPLEX *y, COMPLEX *work, INTEGER const lwork, INTEGER &info) {
     //
-    // -- LAPACK driver routine --
-    //
-    //
-    //
-    //
     // Test the input parameters
     //
     info = 0;
@@ -71,11 +66,11 @@ void Cggglm(INTEGER const n, INTEGER const m, INTEGER const p, COMPLEX *a, INTEG
             nb2 = iMlaenv(1, "Cgerqf", " ", n, m, -1, -1);
             nb3 = iMlaenv(1, "Cunmqr", " ", n, m, p, -1);
             nb4 = iMlaenv(1, "Cunmrq", " ", n, m, p, -1);
-            nb = max({nb1, nb2, nb3, nb4});
+            nb = max(nb1, nb2, nb3, nb4);
             lwkmin = m + n + p;
             lwkopt = m + np + max(n, p) * nb;
         }
-        work[1 - 1] = lwkopt;
+        work[0] = lwkopt;
         //
         if (lwork < lwkmin && !lquery) {
             info = -12;
@@ -163,7 +158,7 @@ void Cggglm(INTEGER const n, INTEGER const m, INTEGER const p, COMPLEX *a, INTEG
     // Backward transformation y = Z**H *y
     //
     Cunmrq("Left", "Conjugate transpose", p, 1, np, &b[(max((INTEGER)1, n - p + 1) - 1)], ldb, &work[(m + 1) - 1], y, max((INTEGER)1, p), &work[(m + np + 1) - 1], lwork - m - np, info);
-    work[1 - 1] = m + np + max(lopt, castINTEGER(work[(m + np + 1) - 1].real()));
+    work[0] = m + np + max(lopt, castINTEGER(work[(m + np + 1) - 1].real()));
     //
     // End of Cggglm
     //

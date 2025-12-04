@@ -31,19 +31,15 @@
 
 void Cggqrf(INTEGER const n, INTEGER const m, INTEGER const p, COMPLEX *a, INTEGER const lda, COMPLEX *taua, COMPLEX *b, INTEGER const ldb, COMPLEX *taub, COMPLEX *work, INTEGER const lwork, INTEGER &info) {
     //
-    //
-    //
-    //
-    //
     // Test the input parameters
     //
     info = 0;
     INTEGER nb1 = iMlaenv(1, "Cgeqrf", " ", n, m, -1, -1);
     INTEGER nb2 = iMlaenv(1, "Cgerqf", " ", n, p, -1, -1);
     INTEGER nb3 = iMlaenv(1, "Cunmqr", " ", n, m, p, -1);
-    INTEGER nb = max({nb1, nb2, nb3});
-    INTEGER lwkopt = max({n, m, p}) * nb;
-    work[1 - 1] = lwkopt;
+    INTEGER nb = max(nb1, nb2, nb3);
+    INTEGER lwkopt = max(n, m, p) * nb;
+    work[0] = lwkopt;
     bool lquery = (lwork == -1);
     if (n < 0) {
         info = -1;
@@ -55,7 +51,7 @@ void Cggqrf(INTEGER const n, INTEGER const m, INTEGER const p, COMPLEX *a, INTEG
         info = -5;
     } else if (ldb < max((INTEGER)1, n)) {
         info = -8;
-    } else if (lwork < max({(INTEGER)1, n, m, p}) && !lquery) {
+    } else if (lwork < max((INTEGER)1, n, m, p) && !lquery) {
         info = -11;
     }
     if (info != 0) {
@@ -68,17 +64,17 @@ void Cggqrf(INTEGER const n, INTEGER const m, INTEGER const p, COMPLEX *a, INTEG
     // QR factorization of N-by-M matrix A: A = Q*R
     //
     Cgeqrf(n, m, a, lda, taua, work, lwork, info);
-    INTEGER lopt = castINTEGER(work[1 - 1].real());
+    INTEGER lopt = castINTEGER(work[0].real());
     //
     // Update B := Q**H*B.
     //
     Cunmqr("Left", "Conjugate Transpose", n, p, min(n, m), a, lda, taua, b, ldb, work, lwork, info);
-    lopt = max(lopt, castINTEGER(work[1 - 1].real()));
+    lopt = max(lopt, castINTEGER(work[0].real()));
     //
     // RQ factorization of N-by-P matrix B: B = T*Z.
     //
     Cgerqf(n, p, b, ldb, taub, work, lwork, info);
-    work[1 - 1] = max(lopt, castINTEGER(work[1 - 1].real()));
+    work[0] = max(lopt, castINTEGER(work[0].real()));
     //
     // End of Cggqrf
     //

@@ -29,8 +29,6 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-inline REAL abs1(COMPLEX x) { return abs(x.real()) + abs(x.imag()); }
-
 void Cggev(const char *jobvl, const char *jobvr, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, COMPLEX *alpha, COMPLEX *beta, COMPLEX *vl, INTEGER const ldvl, COMPLEX *vr, INTEGER const ldvr, COMPLEX *work, INTEGER const lwork, REAL *rwork, INTEGER &info) {
     COMPLEX x = 0.0;
     INTEGER ijobvl = 0;
@@ -70,14 +68,7 @@ void Cggev(const char *jobvl, const char *jobvr, INTEGER const n, COMPLEX *a, IN
     INTEGER jc = 0;
     REAL temp = 0.0;
     INTEGER jr = 0;
-    //
-    // -- LAPACK driver routine --
-    //
-    //
-    //
-    // .. Local Arrays ..
-    // .. Statement Functions ..
-    // .. Statement Function definitions ..
+    abs1(x) = abs(x.real()) + abs(x.imag());
     //
     // Decode the input arguments
     //
@@ -134,12 +125,12 @@ void Cggev(const char *jobvl, const char *jobvr, INTEGER const n, COMPLEX *a, IN
     //
     if (info == 0) {
         lwkmin = max((INTEGER)1, 2 * n);
-        lwkopt = max({(INTEGER)1, n + n * iMlaenv(1, "Cgeqrf", " ", n, 1, n, 0)});
-        lwkopt = max({lwkopt, n + n * iMlaenv(1, "Cunmqr", " ", n, 1, n, 0)});
+        lwkopt = max((INTEGER)1, n + n * iMlaenv(1, "Cgeqrf", " ", n, 1, n, 0));
+        lwkopt = max(lwkopt, n + n * iMlaenv(1, "Cunmqr", " ", n, 1, n, 0));
         if (ilvl) {
-            lwkopt = max({lwkopt, n + n * iMlaenv(1, "Cungqr", " ", n, 1, n, -1)});
+            lwkopt = max(lwkopt, n + n * iMlaenv(1, "Cungqr", " ", n, 1, n, -1));
         }
-        work[1 - 1] = lwkopt;
+        work[0] = lwkopt;
         //
         if (lwork < lwkmin && !lquery) {
             info = -15;
@@ -147,7 +138,7 @@ void Cggev(const char *jobvl, const char *jobvr, INTEGER const n, COMPLEX *a, IN
     }
     //
     if (info != 0) {
-        Mxerbla("Cggev", -info);
+        Mxerbla("Cggev ", -info);
         return;
     } else if (lquery) {
         return;
@@ -164,6 +155,7 @@ void Cggev(const char *jobvl, const char *jobvr, INTEGER const n, COMPLEX *a, IN
     eps = Rlamch("E") * Rlamch("B");
     smlnum = Rlamch("S");
     bignum = one / smlnum;
+    Rlabad(smlnum, bignum);
     smlnum = sqrt(smlnum) / eps;
     bignum = one / smlnum;
     //
@@ -346,7 +338,7 @@ statement_70:
         Clascl("G", 0, 0, bnrmto, bnrm, n, 1, beta, n, ierr);
     }
     //
-    work[1 - 1] = lwkopt;
+    work[0] = lwkopt;
     //
     // End of Cggev
     //

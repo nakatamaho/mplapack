@@ -36,7 +36,7 @@ void Cgghd3(const char *compq, const char *compz, INTEGER const n, INTEGER const
     info = 0;
     INTEGER nb = iMlaenv(1, "Cgghd3", " ", n, ilo, ihi, -1);
     INTEGER lwkopt = max(6 * n * nb, (INTEGER)1);
-    work[1 - 1] = COMPLEX(lwkopt);
+    work[0] = COMPLEX(lwkopt);
     bool initq = Mlsame(compq, "I");
     bool wantq = initq || Mlsame(compq, "V");
     bool initz = Mlsame(compz, "I");
@@ -92,7 +92,7 @@ void Cgghd3(const char *compq, const char *compz, INTEGER const n, INTEGER const
     //
     INTEGER nh = ihi - ilo + 1;
     if (nh <= 1) {
-        work[1 - 1] = cone;
+        work[0] = cone;
         return;
     }
     //
@@ -104,7 +104,7 @@ void Cgghd3(const char *compq, const char *compz, INTEGER const n, INTEGER const
         //
         // Determine when to use unblocked instead of blocked code.
         //
-        nx = max({nb, iMlaenv(3, "Cgghd3", " ", n, ilo, ihi, -1)});
+        nx = max(nb, iMlaenv(3, "Cgghd3", " ", n, ilo, ihi, -1));
         if (nx < nh) {
             //
             // Determine if workspace is large enough for blocked code.
@@ -115,7 +115,7 @@ void Cgghd3(const char *compq, const char *compz, INTEGER const n, INTEGER const
                 // minimum value of NB, and reduce NB or force use of
                 // unblocked code.
                 //
-                nbmin = max({(INTEGER)2, iMlaenv(2, "Cgghd3", " ", n, ilo, ihi, -1)});
+                nbmin = max((INTEGER)2, iMlaenv(2, "Cgghd3", " ", n, ilo, ihi, -1));
                 if (lwork >= 6 * n * nbmin) {
                     nb = lwork / (6 * n);
                 } else {
@@ -589,8 +589,8 @@ void Cgghd3(const char *compq, const char *compz, INTEGER const n, INTEGER const
     // Use unblocked code to reduce the rest of the matrix
     // Avoid re-initialization of modified Q and Z.
     //
-    char compq2 = *compq;
-    char compz2 = *compz;
+    char compq2 = compq;
+    char compz2 = compz;
     if (jcol != ilo) {
         if (wantq) {
             compq2 = 'V';
@@ -603,7 +603,7 @@ void Cgghd3(const char *compq, const char *compz, INTEGER const n, INTEGER const
     if (jcol < ihi) {
         Cgghrd(&compq2, &compz2, n, jcol, ihi, a, lda, b, ldb, q, ldq, z, ldz, ierr);
     }
-    work[1 - 1] = COMPLEX(lwkopt);
+    work[0] = COMPLEX(lwkopt);
     //
     // End of Cgghd3
     //
