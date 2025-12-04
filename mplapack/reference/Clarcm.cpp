@@ -31,10 +31,6 @@
 
 void Clarcm(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, COMPLEX *c, INTEGER const ldc, REAL *rwork) {
     //
-    //
-    //
-    //
-    //
     // Quick return if possible.
     //
     if ((m == 0) || (n == 0)) {

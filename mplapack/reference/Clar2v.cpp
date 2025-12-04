@@ -31,10 +31,6 @@
 
 void Clar2v(INTEGER const n, COMPLEX *x, COMPLEX *y, COMPLEX *z, INTEGER const incx, REAL *c, COMPLEX *s, INTEGER const incc) {
     //
-    //
-    //
-    //
-    //
     INTEGER ix = 1;
     INTEGER ic = 1;
     INTEGER i = 0;

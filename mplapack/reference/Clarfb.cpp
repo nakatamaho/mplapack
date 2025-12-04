@@ -31,10 +31,6 @@
 
 void Clarfb(const char *side, const char *trans, const char *direct, const char *storev, INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX *v, INTEGER const ldv, COMPLEX *t, INTEGER const ldt, COMPLEX *c, INTEGER const ldc, COMPLEX *work, INTEGER const ldwork) {
     //
-    //
-    //
-    //
-    //
     // Quick return if possible
     //
     if (m <= 0 || n <= 0) {
