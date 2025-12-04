@@ -32,11 +32,6 @@
 REAL Rlansp(const char *norm, const char *uplo, INTEGER const n, REAL *ap, REAL *work) {
     REAL return_value = 0.0;
     //
-    //
-    //
-    //
-    // .. Local Arrays ..
-    //
     const REAL zero = 0.0;
     REAL value = 0.0;
     INTEGER k = 0;
@@ -77,7 +72,7 @@ REAL Rlansp(const char *norm, const char *uplo, INTEGER const n, REAL *ap, REAL 
                 k += n - j + 1;
             }
         }
-    } else if ((Mlsame(norm, "I")) || (Mlsame(norm, "O")) || ((Mlsame(norm, "1")))) {
+    } else if ((Mlsame(norm, "I")) || (Mlsame(norm, "O")) || (Mlsame(norm, "1"))) {
         //
         // Find normI(A) ( = norm1(A), since A is symmetric).
         //
@@ -126,44 +121,44 @@ REAL Rlansp(const char *norm, const char *uplo, INTEGER const n, REAL *ap, REAL 
         // SSQ(2) is sum-of-squares
         // For better accuracy, sum each column separately.
         //
-        ssq[1 - 1] = zero;
-        ssq[2 - 1] = one;
+        ssq[0] = zero;
+        ssq[1] = one;
         //
         // Sum off-diagonals
         //
         k = 2;
         if (Mlsame(uplo, "U")) {
             for (j = 2; j <= n; j = j + 1) {
-                colssq[1 - 1] = zero;
-                colssq[2 - 1] = one;
-                Rlassq(j - 1, &ap[k - 1], 1, colssq[1 - 1], colssq[2 - 1]);
+                colssq[0] = zero;
+                colssq[1] = one;
+                Rlassq(j - 1, &ap[k - 1], 1, colssq[0], colssq[1]);
                 Rcombssq(ssq, colssq);
                 k += j;
             }
         } else {
             for (j = 1; j <= n - 1; j = j + 1) {
-                colssq[1 - 1] = zero;
-                colssq[2 - 1] = one;
-                Rlassq(n - j, &ap[k - 1], 1, colssq[1 - 1], colssq[2 - 1]);
+                colssq[0] = zero;
+                colssq[1] = one;
+                Rlassq(n - j, &ap[k - 1], 1, colssq[0], colssq[1]);
                 Rcombssq(ssq, colssq);
                 k += n - j + 1;
             }
         }
-        ssq[2 - 1] = 2 * ssq[2 - 1];
+        ssq[1] = 2 * ssq[1];
         //
         // Sum diagonal
         //
         k = 1;
-        colssq[1 - 1] = zero;
-        colssq[2 - 1] = one;
+        colssq[0] = zero;
+        colssq[1] = one;
         for (i = 1; i <= n; i = i + 1) {
             if (ap[k - 1] != zero) {
                 absa = abs(ap[k - 1]);
-                if (colssq[1 - 1] < absa) {
-                    colssq[2 - 1] = one + colssq[2 - 1] * pow2((colssq[1 - 1] / absa));
-                    colssq[1 - 1] = absa;
+                if (colssq[0] < absa) {
+                    colssq[1] = one + colssq[1] * pow2((colssq[0] / absa));
+                    colssq[0] = absa;
                 } else {
-                    colssq[2 - 1] += pow2((absa / colssq[1 - 1]));
+                    colssq[1] += pow2((absa / colssq[0]));
                 }
             }
             if (Mlsame(uplo, "U")) {
@@ -173,7 +168,7 @@ REAL Rlansp(const char *norm, const char *uplo, INTEGER const n, REAL *ap, REAL 
             }
         }
         Rcombssq(ssq, colssq);
-        value = ssq[1 - 1] * sqrt(ssq[2 - 1]);
+        value = ssq[0] * sqrt(ssq[1]);
     }
     //
     return_value = value;

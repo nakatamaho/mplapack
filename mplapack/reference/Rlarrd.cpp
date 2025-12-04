@@ -29,7 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rlarrd(const char *range, const char *order, INTEGER const n, REAL const vl, REAL const vu, INTEGER const il, INTEGER const iu, REAL *gers, REAL const reltol, REAL *d, REAL *e, REAL *e2, REAL const pivmin, INTEGER const nsplit, INTEGER *isplit, INTEGER &m, REAL *w, REAL *werr, REAL &wl, REAL &wu, INTEGER *iblock, INTEGER *indexw, REAL *work, INTEGER *iwork, INTEGER &info) {
+void Rlarrd(const char *range, const char *order, INTEGER const n, REAL const &vl, REAL const &vu, INTEGER const il, INTEGER const iu, REAL *gers, REAL const &reltol, REAL *d, REAL *e, REAL *e2, REAL const &pivmin, INTEGER const nsplit, INTEGER *isplit, INTEGER &m, REAL *w, REAL *werr, REAL &wl, REAL &wu, INTEGER *iblock, INTEGER *indexw, REAL *work, INTEGER *iwork, INTEGER &info) {
     const INTEGER allrng = 1;
     INTEGER irange = 0;
     const INTEGER valrng = 2;
@@ -145,13 +145,13 @@ void Rlarrd(const char *range, const char *order, INTEGER const n, REAL const vl
     // Special Case when N=1
     // Treat case of 1x1 matrix for quick return
     if (n == 1) {
-        if ((irange == allrng) || ((irange == valrng) && (d[1 - 1] > vl) && (d[1 - 1] <= vu)) || ((irange == indrng) && (il == 1) && (iu == 1))) {
+        if ((irange == allrng) || ((irange == valrng) && (d[0] > vl) && (d[0] <= vu)) || ((irange == indrng) && (il == 1) && (iu == 1))) {
             m = 1;
-            w[1 - 1] = d[1 - 1];
+            w[0] = d[0];
             // The computation error of the eigenvalue is zero
-            werr[1 - 1] = zero;
-            iblock[1 - 1] = 1;
-            indexw[1 - 1] = 1;
+            werr[0] = zero;
+            iblock[0] = 1;
+            indexw[0] = 1;
         }
         return;
     }
@@ -164,8 +164,8 @@ void Rlarrd(const char *range, const char *order, INTEGER const n, REAL const vl
     }
     //
     // Find global spectral radius
-    gl = d[1 - 1];
-    gu = d[1 - 1];
+    gl = d[0];
+    gu = d[0];
     for (i = 1; i <= n; i = i + 1) {
         gl = min(gl, gers[(2 * i - 1) - 1]);
         gu = max(gu, gers[(2 * i) - 1]);
@@ -194,41 +194,39 @@ void Rlarrd(const char *range, const char *order, INTEGER const n, REAL const vl
         // IL through IU. The initial interval [GL,GU] from the global
         // Gerschgorin bounds GL and GU is refined by Rlaebz.
         itmax = castINTEGER((log(tnorm + pivmin) - log(pivmin)) / log(two)) + 2;
-        if (itmax >= 1024)
-            itmax = 1024; // XXX itmax can be too large for MPFR (=10^8)
         work[(n + 1) - 1] = gl;
         work[(n + 2) - 1] = gl;
         work[(n + 3) - 1] = gu;
         work[(n + 4) - 1] = gu;
         work[(n + 5) - 1] = gl;
         work[(n + 6) - 1] = gu;
-        iwork[1 - 1] = -1;
-        iwork[2 - 1] = -1;
-        iwork[3 - 1] = n + 1;
-        iwork[4 - 1] = n + 1;
-        iwork[5 - 1] = il - 1;
-        iwork[6 - 1] = iu;
+        iwork[0] = -1;
+        iwork[1] = -1;
+        iwork[2] = n + 1;
+        iwork[3] = n + 1;
+        iwork[4] = il - 1;
+        iwork[5] = iu;
         //
-        Rlaebz(3, itmax, n, 2, 2, nb, atoli, rtoli, pivmin, d, e, e2, &iwork[5 - 1], &work[(n + 1) - 1], &work[(n + 5) - 1], iout, iwork, w, iblock, iinfo);
+        Rlaebz(3, itmax, n, 2, 2, nb, atoli, rtoli, pivmin, d, e, e2, &iwork[4], &work[(n + 1) - 1], &work[(n + 5) - 1], iout, iwork, w, iblock, iinfo);
         if (iinfo != 0) {
             info = iinfo;
             return;
         }
         // On exit, output intervals may not be ordered by ascending negcount
-        if (iwork[6 - 1] == iu) {
+        if (iwork[5] == iu) {
             wl = work[(n + 1) - 1];
             wlu = work[(n + 3) - 1];
-            nwl = iwork[1 - 1];
+            nwl = iwork[0];
             wu = work[(n + 4) - 1];
             wul = work[(n + 2) - 1];
-            nwu = iwork[4 - 1];
+            nwu = iwork[3];
         } else {
             wl = work[(n + 2) - 1];
             wlu = work[(n + 4) - 1];
-            nwl = iwork[2 - 1];
+            nwl = iwork[1];
             wu = work[(n + 3) - 1];
             wul = work[(n + 1) - 1];
-            nwu = iwork[3 - 1];
+            nwu = iwork[2];
         }
         // On exit, the interval [WL, WLU] contains a value with negcount NWL,
         // and [WUL, WU] contains a value with negcount NWU.
@@ -370,9 +368,9 @@ void Rlarrd(const char *range, const char *order, INTEGER const n, REAL const vl
                 return;
             }
             //
-            nwl += iwork[1 - 1];
+            nwl += iwork[0];
             nwu += iwork[(in + 1) - 1];
-            iwoff = m - iwork[1 - 1];
+            iwoff = m - iwork[0];
             //
             // Compute Eigenvalues
             itmax = castINTEGER((log(gu - gl + pivmin) - log(pivmin)) / log(two)) + 2;
