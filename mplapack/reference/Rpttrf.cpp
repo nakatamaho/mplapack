@@ -35,10 +35,6 @@ void Rpttrf(INTEGER const n, REAL *d, REAL *e, INTEGER &info) {
     const REAL zero = 0.0;
     REAL ei = 0.0;
     //
-    //
-    //
-    //
-    //
     // Test the input parameters.
     //
     info = 0;

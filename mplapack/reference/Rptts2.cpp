@@ -31,15 +31,11 @@
 
 void Rptts2(INTEGER const n, INTEGER const nrhs, REAL *d, REAL *e, REAL *b, INTEGER const ldb) {
     //
-    //
-    //
-    //
-    //
     // Quick return if possible
     //
     if (n <= 1) {
         if (n == 1) {
-            Rscal(nrhs, 1.0 / d[1 - 1], b, ldb);
+            Rscal(nrhs, 1.0 / d[0], b, ldb);
         }
         return;
     }

@@ -31,10 +31,6 @@
 
 void Rpttrs(INTEGER const n, INTEGER const nrhs, REAL *d, REAL *e, REAL *b, INTEGER const ldb, INTEGER &info) {
     //
-    //
-    //
-    //
-    //
     // Test the input arguments.
     //
     info = 0;
