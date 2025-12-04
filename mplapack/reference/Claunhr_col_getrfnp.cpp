@@ -31,10 +31,6 @@
 
 void Claunhr_col_getrfnp(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *d, INTEGER &info) {
     //
-    //
-    //
-    //
-    //
     // Test the input parameters.
     //
     info = 0;
