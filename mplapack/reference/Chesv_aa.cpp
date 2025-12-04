@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -45,7 +45,7 @@ void Chesv_aa(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a,
         info = -5;
     } else if (ldb < max((INTEGER)1, n)) {
         info = -8;
-    } else if (lwork < max((INTEGER)2 * n, 3 * n - 2) && !lquery) {
+    } else if (lwork < max(2 * n, 3 * n - 2) && !lquery) {
         info = -10;
     }
     //
@@ -54,15 +54,15 @@ void Chesv_aa(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a,
     INTEGER lwkopt = 0;
     if (info == 0) {
         Chetrf_aa(uplo, n, a, lda, ipiv, work, -1, info);
-        lwkopt_hetrf = castINTEGER(work[1 - 1].real());
+        lwkopt_hetrf = castINTEGER(work[0].real());
         Chetrs_aa(uplo, n, nrhs, a, lda, ipiv, b, ldb, work, -1, info);
-        lwkopt_hetrs = castINTEGER(work[1 - 1].real());
+        lwkopt_hetrs = castINTEGER(work[0].real());
         lwkopt = max(lwkopt_hetrf, lwkopt_hetrs);
-        work[1 - 1] = lwkopt;
+        work[0] = lwkopt;
     }
     //
     if (info != 0) {
-        Mxerbla("Chesv_aa", -info);
+        Mxerbla("Chesv_aa ", -info);
         return;
     } else if (lquery) {
         return;
@@ -79,7 +79,7 @@ void Chesv_aa(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a,
         //
     }
     //
-    work[1 - 1] = lwkopt;
+    work[0] = lwkopt;
     //
     // End of Chesv_aa
     //

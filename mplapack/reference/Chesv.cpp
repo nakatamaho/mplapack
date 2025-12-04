@@ -58,11 +58,11 @@ void Chesv(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a, IN
             nb = iMlaenv(1, "Chetrf", uplo, n, -1, -1, -1);
             lwkopt = n * nb;
         }
-        work[1 - 1] = lwkopt;
+        work[0] = lwkopt;
     }
     //
     if (info != 0) {
-        Mxerbla("Chesv", -info);
+        Mxerbla("Chesv ", -info);
         return;
     } else if (lquery) {
         return;
@@ -91,7 +91,7 @@ void Chesv(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a, IN
         //
     }
     //
-    work[1 - 1] = lwkopt;
+    work[0] = lwkopt;
     //
     // End of Chesv
     //

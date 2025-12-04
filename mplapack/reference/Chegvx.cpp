@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -29,7 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Chegvx(INTEGER const itype, const char *jobz, const char *range, const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, REAL const vl, REAL const vu, INTEGER const il, INTEGER const iu, REAL const abstol, INTEGER &m, REAL *w, COMPLEX *z, INTEGER const ldz, COMPLEX *work, INTEGER const lwork, REAL *rwork, INTEGER *iwork, INTEGER *ifail, INTEGER &info) {
+void Chegvx(INTEGER const itype, const char *jobz, const char *range, const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, REAL const &vl, REAL const &vu, INTEGER const il, INTEGER const iu, REAL const &abstol, INTEGER &m, REAL *w, COMPLEX *z, INTEGER const ldz, COMPLEX *work, INTEGER const lwork, REAL *rwork, INTEGER *iwork, INTEGER *ifail, INTEGER &info) {
     //
     // Test the input parameters.
     //
@@ -79,7 +79,7 @@ void Chegvx(INTEGER const itype, const char *jobz, const char *range, const char
     if (info == 0) {
         nb = iMlaenv(1, "Chetrd", uplo, n, -1, -1, -1);
         lwkopt = max((INTEGER)1, (nb + 1) * n);
-        work[1 - 1] = lwkopt;
+        work[0] = lwkopt;
         //
         if (lwork < max((INTEGER)1, 2 * n) && !lquery) {
             info = -20;
@@ -152,7 +152,7 @@ void Chegvx(INTEGER const itype, const char *jobz, const char *range, const char
     //
     // Set WORK(1) to optimal complex workspace size.
     //
-    work[1 - 1] = lwkopt;
+    work[0] = lwkopt;
     //
     // End of Chegvx
     //

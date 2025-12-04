@@ -29,8 +29,6 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-inline REAL cabs1(COMPLEX zdum) { return (abs(zdum.real()) + abs(zdum.imag())); }
-
 void Cherfs(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a, INTEGER const lda, COMPLEX *af, INTEGER const ldaf, INTEGER *ipiv, COMPLEX *b, INTEGER const ldb, COMPLEX *x, INTEGER const ldx, REAL *ferr, REAL *berr, COMPLEX *work, REAL *rwork, INTEGER &info) {
     COMPLEX zdum = 0.0;
     bool upper = false;
@@ -42,24 +40,17 @@ void Cherfs(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a, I
     REAL safe1 = 0.0;
     REAL safe2 = 0.0;
     INTEGER count = 0;
-    const REAL three = 3.0e+0;
+    const REAL three = 3.0;
     REAL lstres = 0.0;
     const COMPLEX one = COMPLEX(1.0, 0.0);
     INTEGER i = 0;
     INTEGER k = 0;
     REAL s = 0.0;
     REAL xk = 0.0;
-    const REAL two = 2.0e+0;
+    const REAL two = 2.0;
     const INTEGER itmax = 5;
     INTEGER kase = 0;
     INTEGER isave[3];
-    //
-    //
-    //
-    //
-    // .. Local Arrays ..
-    // .. Statement Functions ..
-    // .. Statement Function definitions ..
     //
     // Test the input parameters.
     //
@@ -158,9 +149,9 @@ void Cherfs(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a, I
         s = zero;
         for (i = 1; i <= n; i = i + 1) {
             if (rwork[i - 1] > safe2) {
-                s = max(s, REAL(cabs1(work[i - 1]) / rwork[i - 1]));
+                s = max(s, cabs1(work[i - 1]) / rwork[i - 1]);
             } else {
-                s = max(s, REAL((cabs1(work[i - 1]) + safe1) / (rwork[i - 1] + safe1)));
+                s = max(s, (cabs1(work[i - 1]) + safe1) / (rwork[i - 1] + safe1));
             }
         }
         berr[j - 1] = s;
@@ -248,6 +239,6 @@ void Cherfs(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a, I
         //
     }
     //
-    // End of CherFS
+    // End of Cherfs
     //
 }
