@@ -96,15 +96,15 @@ REAL Clange(const char *norm, INTEGER const m, INTEGER const n, COMPLEX *a, INTE
         // SSQ(2) is sum-of-squares
         // For better accuracy, sum each column separately.
         //
-        ssq[1 - 1] = zero;
-        ssq[2 - 1] = one;
+        ssq[0] = zero;
+        ssq[1] = one;
         for (j = 1; j <= n; j = j + 1) {
-            colssq[1 - 1] = zero;
-            colssq[2 - 1] = one;
-            Classq(m, &a[(j - 1) * lda], 1, colssq[1 - 1], colssq[2 - 1]);
+            colssq[0] = zero;
+            colssq[1] = one;
+            Classq(m, &a[(j - 1) * lda], 1, colssq[0], colssq[1]);
             Rcombssq(ssq, colssq);
         }
-        value = ssq[1 - 1] * sqrt(ssq[2 - 1]);
+        value = ssq[0] * sqrt(ssq[1]);
     }
     //
     return_value = value;

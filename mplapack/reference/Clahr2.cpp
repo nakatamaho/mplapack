@@ -31,10 +31,6 @@
 
 void Clahr2(INTEGER const n, INTEGER const k, INTEGER const nb, COMPLEX *a, INTEGER const lda, COMPLEX *tau, COMPLEX *t, INTEGER const ldt, COMPLEX *y, INTEGER const ldy) {
     //
-    //
-    //
-    //
-    //
     // Quick return if possible
     //
     if (n <= 1) {
