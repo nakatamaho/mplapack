@@ -31,11 +31,6 @@
 
 void Cgbtrf(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku, COMPLEX *ab, INTEGER const ldab, INTEGER *ipiv, INTEGER &info) {
     //
-    //
-    //
-    //
-    // .. Local Arrays ..
-    //
     // KV is the number of superdiagonals in the factor U, allowing for
     // fill-in
     //
@@ -82,8 +77,6 @@ void Cgbtrf(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku
     const INTEGER ldwork = nbmax + 1;
     COMPLEX work13[ldwork * nbmax];
     COMPLEX work31[ldwork * nbmax];
-    INTEGER ldwork13 = ldwork;
-    INTEGER ldwork31 = ldwork;
     INTEGER ju = 0;
     INTEGER jb = 0;
     INTEGER i2 = 0;
