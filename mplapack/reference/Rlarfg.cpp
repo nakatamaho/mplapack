@@ -39,10 +39,6 @@ void Rlarfg(INTEGER const n, REAL &alpha, REAL *x, INTEGER const incx, REAL &tau
     REAL rsafmn = 0.0;
     INTEGER j = 0;
     //
-    //
-    //
-    //
-    //
     if (n <= 1) {
         tau = zero;
         return;
