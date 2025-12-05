@@ -31,18 +31,12 @@
 
 void Cgesdd(const char *jobz, INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, REAL *s, COMPLEX *u, INTEGER const ldu, COMPLEX *vt, INTEGER const ldvt, COMPLEX *work, INTEGER const lwork, REAL *rwork, INTEGER *iwork, INTEGER &info) {
     //
-    // -- LAPACK driver routine --
-    //
-    //
-    //
-    // .. Local Arrays ..
-    //
     // Test the input arguments
     //
     info = 0;
     INTEGER minmn = min(m, n);
-    INTEGER mnthr1 = int(minmn * 17.0 / 9.0);
-    INTEGER mnthr2 = int(minmn * 5.0 / 3.0);
+    INTEGER mnthr1 = castINTEGER(minmn * 17.0 / 9.0);
+    INTEGER mnthr2 = castINTEGER(minmn * 5.0 / 3.0);
     bool wntqa = Mlsame(jobz, "A");
     bool wntqs = Mlsame(jobz, "S");
     bool wntqas = wntqa || wntqs;
@@ -103,47 +97,47 @@ void Cgesdd(const char *jobz, INTEGER const m, INTEGER const n, COMPLEX *a, INTE
         if (m >= n && minmn > 0) {
             //
             // There is no complex work space needed for bidiagonal SVD
-            // The real work space needed for bidiagonal SVD (Rbdsdc) is
+            // The real work space needed for bidiagonal SVD (dbdsdc) is
             // BDSPAC = 3*N*N + 4*N for singular values and vectors;
             // BDSPAC = 4*N         for singular values only;
             // not including e, RU, and RVT matrices.
             //
             // Compute space preferred for each routine
-            Cgebrd(m, n, &cdum[1 - 1], m, &dum[1 - 1], &dum[1 - 1], &cdum[1 - 1], &cdum[1 - 1], &cdum[1 - 1], -1, ierr);
-            lwork_Cgebrd_mn = castINTEGER(cdum[1 - 1].real());
+            Cgebrd(m, n, &cdum[0], m, &dum[0], &dum[0], &cdum[0], &cdum[0], &cdum[0], -1, ierr);
+            lwork_Cgebrd_mn = castINTEGER(cdum[0].real());
             //
-            Cgebrd(n, n, &cdum[1 - 1], n, &dum[1 - 1], &dum[1 - 1], &cdum[1 - 1], &cdum[1 - 1], &cdum[1 - 1], -1, ierr);
-            lwork_Cgebrd_nn = castINTEGER(cdum[1 - 1].real());
+            Cgebrd(n, n, &cdum[0], n, &dum[0], &dum[0], &cdum[0], &cdum[0], &cdum[0], -1, ierr);
+            lwork_Cgebrd_nn = castINTEGER(cdum[0].real());
             //
-            Cgeqrf(m, n, &cdum[1 - 1], m, &cdum[1 - 1], &cdum[1 - 1], -1, ierr);
-            lwork_Cgeqrf_mn = castINTEGER(cdum[1 - 1].real());
+            Cgeqrf(m, n, &cdum[0], m, &cdum[0], &cdum[0], -1, ierr);
+            lwork_Cgeqrf_mn = castINTEGER(cdum[0].real());
             //
-            Cungbr("P", n, n, n, &cdum[1 - 1], n, &cdum[1 - 1], &cdum[1 - 1], -1, ierr);
-            lwork_Cungbr_p_nn = castINTEGER(cdum[1 - 1].real());
+            Cungbr("P", n, n, n, &cdum[0], n, &cdum[0], &cdum[0], -1, ierr);
+            lwork_Cungbr_p_nn = castINTEGER(cdum[0].real());
             //
-            Cungbr("Q", m, m, n, &cdum[1 - 1], m, &cdum[1 - 1], &cdum[1 - 1], -1, ierr);
-            lwork_Cungbr_q_mm = castINTEGER(cdum[1 - 1].real());
+            Cungbr("Q", m, m, n, &cdum[0], m, &cdum[0], &cdum[0], -1, ierr);
+            lwork_Cungbr_q_mm = castINTEGER(cdum[0].real());
             //
-            Cungbr("Q", m, n, n, &cdum[1 - 1], m, &cdum[1 - 1], &cdum[1 - 1], -1, ierr);
-            lwork_Cungbr_q_mn = castINTEGER(cdum[1 - 1].real());
+            Cungbr("Q", m, n, n, &cdum[0], m, &cdum[0], &cdum[0], -1, ierr);
+            lwork_Cungbr_q_mn = castINTEGER(cdum[0].real());
             //
-            Cungqr(m, m, n, &cdum[1 - 1], m, &cdum[1 - 1], &cdum[1 - 1], -1, ierr);
-            lwork_Cungqr_mm = castINTEGER(cdum[1 - 1].real());
+            Cungqr(m, m, n, &cdum[0], m, &cdum[0], &cdum[0], -1, ierr);
+            lwork_Cungqr_mm = castINTEGER(cdum[0].real());
             //
-            Cungqr(m, n, n, &cdum[1 - 1], m, &cdum[1 - 1], &cdum[1 - 1], -1, ierr);
-            lwork_Cungqr_mn = castINTEGER(cdum[1 - 1].real());
+            Cungqr(m, n, n, &cdum[0], m, &cdum[0], &cdum[0], -1, ierr);
+            lwork_Cungqr_mn = castINTEGER(cdum[0].real());
             //
-            Cunmbr("P", "R", "C", n, n, n, &cdum[1 - 1], n, &cdum[1 - 1], &cdum[1 - 1], n, &cdum[1 - 1], -1, ierr);
-            lwork_Cunmbr_prc_nn = castINTEGER(cdum[1 - 1].real());
+            Cunmbr("P", "R", "C", n, n, n, &cdum[0], n, &cdum[0], &cdum[0], n, &cdum[0], -1, ierr);
+            lwork_Cunmbr_prc_nn = castINTEGER(cdum[0].real());
             //
-            Cunmbr("Q", "L", "N", m, m, n, &cdum[1 - 1], m, &cdum[1 - 1], &cdum[1 - 1], m, &cdum[1 - 1], -1, ierr);
-            lwork_Cunmbr_qln_mm = castINTEGER(cdum[1 - 1].real());
+            Cunmbr("Q", "L", "N", m, m, n, &cdum[0], m, &cdum[0], &cdum[0], m, &cdum[0], -1, ierr);
+            lwork_Cunmbr_qln_mm = castINTEGER(cdum[0].real());
             //
-            Cunmbr("Q", "L", "N", m, n, n, &cdum[1 - 1], m, &cdum[1 - 1], &cdum[1 - 1], m, &cdum[1 - 1], -1, ierr);
-            lwork_Cunmbr_qln_mn = castINTEGER(cdum[1 - 1].real());
+            Cunmbr("Q", "L", "N", m, n, n, &cdum[0], m, &cdum[0], &cdum[0], m, &cdum[0], -1, ierr);
+            lwork_Cunmbr_qln_mn = castINTEGER(cdum[0].real());
             //
-            Cunmbr("Q", "L", "N", n, n, n, &cdum[1 - 1], n, &cdum[1 - 1], &cdum[1 - 1], n, &cdum[1 - 1], -1, ierr);
-            lwork_Cunmbr_qln_nn = castINTEGER(cdum[1 - 1].real());
+            Cunmbr("Q", "L", "N", n, n, n, &cdum[0], n, &cdum[0], &cdum[0], n, &cdum[0], -1, ierr);
+            lwork_Cunmbr_qln_nn = castINTEGER(cdum[0].real());
             //
             if (m >= mnthr1) {
                 if (wntqn) {
@@ -233,47 +227,47 @@ void Cgesdd(const char *jobz, INTEGER const m, INTEGER const n, COMPLEX *a, INTE
         } else if (minmn > 0) {
             //
             // There is no complex work space needed for bidiagonal SVD
-            // The real work space needed for bidiagonal SVD (Rbdsdc) is
+            // The real work space needed for bidiagonal SVD (dbdsdc) is
             // BDSPAC = 3*M*M + 4*M for singular values and vectors;
             // BDSPAC = 4*M         for singular values only;
             // not including e, RU, and RVT matrices.
             //
             // Compute space preferred for each routine
-            Cgebrd(m, n, &cdum[1 - 1], m, &dum[1 - 1], &dum[1 - 1], &cdum[1 - 1], &cdum[1 - 1], &cdum[1 - 1], -1, ierr);
-            lwork_Cgebrd_mn = castINTEGER(cdum[1 - 1].real());
+            Cgebrd(m, n, &cdum[0], m, &dum[0], &dum[0], &cdum[0], &cdum[0], &cdum[0], -1, ierr);
+            lwork_Cgebrd_mn = castINTEGER(cdum[0].real());
             //
-            Cgebrd(m, m, &cdum[1 - 1], m, &dum[1 - 1], &dum[1 - 1], &cdum[1 - 1], &cdum[1 - 1], &cdum[1 - 1], -1, ierr);
-            lwork_Cgebrd_mm = castINTEGER(cdum[1 - 1].real());
+            Cgebrd(m, m, &cdum[0], m, &dum[0], &dum[0], &cdum[0], &cdum[0], &cdum[0], -1, ierr);
+            lwork_Cgebrd_mm = castINTEGER(cdum[0].real());
             //
-            Cgelqf(m, n, &cdum[1 - 1], m, &cdum[1 - 1], &cdum[1 - 1], -1, ierr);
-            lwork_Cgelqf_mn = castINTEGER(cdum[1 - 1].real());
+            Cgelqf(m, n, &cdum[0], m, &cdum[0], &cdum[0], -1, ierr);
+            lwork_Cgelqf_mn = castINTEGER(cdum[0].real());
             //
-            Cungbr("P", m, n, m, &cdum[1 - 1], m, &cdum[1 - 1], &cdum[1 - 1], -1, ierr);
-            lwork_Cungbr_p_mn = castINTEGER(cdum[1 - 1].real());
+            Cungbr("P", m, n, m, &cdum[0], m, &cdum[0], &cdum[0], -1, ierr);
+            lwork_Cungbr_p_mn = castINTEGER(cdum[0].real());
             //
-            Cungbr("P", n, n, m, &cdum[1 - 1], n, &cdum[1 - 1], &cdum[1 - 1], -1, ierr);
-            lwork_Cungbr_p_nn = castINTEGER(cdum[1 - 1].real());
+            Cungbr("P", n, n, m, &cdum[0], n, &cdum[0], &cdum[0], -1, ierr);
+            lwork_Cungbr_p_nn = castINTEGER(cdum[0].real());
             //
-            Cungbr("Q", m, m, n, &cdum[1 - 1], m, &cdum[1 - 1], &cdum[1 - 1], -1, ierr);
-            lwork_Cungbr_q_mm = castINTEGER(cdum[1 - 1].real());
+            Cungbr("Q", m, m, n, &cdum[0], m, &cdum[0], &cdum[0], -1, ierr);
+            lwork_Cungbr_q_mm = castINTEGER(cdum[0].real());
             //
-            Cunglq(m, n, m, &cdum[1 - 1], m, &cdum[1 - 1], &cdum[1 - 1], -1, ierr);
-            lwork_Cunglq_mn = castINTEGER(cdum[1 - 1].real());
+            Cunglq(m, n, m, &cdum[0], m, &cdum[0], &cdum[0], -1, ierr);
+            lwork_Cunglq_mn = castINTEGER(cdum[0].real());
             //
-            Cunglq(n, n, m, &cdum[1 - 1], n, &cdum[1 - 1], &cdum[1 - 1], -1, ierr);
-            lwork_Cunglq_nn = castINTEGER(cdum[1 - 1].real());
+            Cunglq(n, n, m, &cdum[0], n, &cdum[0], &cdum[0], -1, ierr);
+            lwork_Cunglq_nn = castINTEGER(cdum[0].real());
             //
-            Cunmbr("P", "R", "C", m, m, m, &cdum[1 - 1], m, &cdum[1 - 1], &cdum[1 - 1], m, &cdum[1 - 1], -1, ierr);
-            lwork_Cunmbr_prc_mm = castINTEGER(cdum[1 - 1].real());
+            Cunmbr("P", "R", "C", m, m, m, &cdum[0], m, &cdum[0], &cdum[0], m, &cdum[0], -1, ierr);
+            lwork_Cunmbr_prc_mm = castINTEGER(cdum[0].real());
             //
-            Cunmbr("P", "R", "C", m, n, m, &cdum[1 - 1], m, &cdum[1 - 1], &cdum[1 - 1], m, &cdum[1 - 1], -1, ierr);
-            lwork_Cunmbr_prc_mn = castINTEGER(cdum[1 - 1].real());
+            Cunmbr("P", "R", "C", m, n, m, &cdum[0], m, &cdum[0], &cdum[0], m, &cdum[0], -1, ierr);
+            lwork_Cunmbr_prc_mn = castINTEGER(cdum[0].real());
             //
-            Cunmbr("P", "R", "C", n, n, m, &cdum[1 - 1], n, &cdum[1 - 1], &cdum[1 - 1], n, &cdum[1 - 1], -1, ierr);
-            lwork_Cunmbr_prc_nn = castINTEGER(cdum[1 - 1].real());
+            Cunmbr("P", "R", "C", n, n, m, &cdum[0], n, &cdum[0], &cdum[0], n, &cdum[0], -1, ierr);
+            lwork_Cunmbr_prc_nn = castINTEGER(cdum[0].real());
             //
-            Cunmbr("Q", "L", "N", m, m, m, &cdum[1 - 1], m, &cdum[1 - 1], &cdum[1 - 1], m, &cdum[1 - 1], -1, ierr);
-            lwork_Cunmbr_qln_mm = castINTEGER(cdum[1 - 1].real());
+            Cunmbr("Q", "L", "N", m, m, m, &cdum[0], m, &cdum[0], &cdum[0], m, &cdum[0], -1, ierr);
+            lwork_Cunmbr_qln_mm = castINTEGER(cdum[0].real());
             //
             if (n >= mnthr1) {
                 if (wntqn) {
@@ -364,7 +358,7 @@ void Cgesdd(const char *jobz, INTEGER const m, INTEGER const n, COMPLEX *a, INTE
         maxwrk = max(maxwrk, minwrk);
     }
     if (info == 0) {
-        work[1 - 1] = maxwrk;
+        work[0] = maxwrk;
         if (lwork < minwrk && !lquery) {
             info = -12;
         }
@@ -1795,7 +1789,7 @@ void Cgesdd(const char *jobz, INTEGER const m, INTEGER const n, COMPLEX *a, INTE
     //
     // Return optimal workspace in WORK(1)
     //
-    work[1 - 1] = maxwrk;
+    work[0] = maxwrk;
     //
     // End of Cgesdd
     //
