@@ -62,7 +62,7 @@ void Rtrsna(const char *job, const char *howmny, bool *select, INTEGER const n, 
     REAL cs = 0.0;
     REAL sn = 0.0;
     INTEGER j = 0;
-    const REAL two = 2.0e+0;
+    const REAL two = 2.0;
     INTEGER kase = 0;
     INTEGER isave[3];
     REAL dumm = 0.0;
@@ -141,15 +141,15 @@ void Rtrsna(const char *job, const char *howmny, bool *select, INTEGER const n, 
     //
     if (n == 1) {
         if (somcon) {
-            if (!select[1 - 1]) {
+            if (!select[0]) {
                 return;
             }
         }
         if (wants) {
-            s[1 - 1] = one;
+            s[0] = one;
         }
         if (wantsp) {
-            sep[1 - 1] = abs(t[0]);
+            sep[0] = abs(t[0]);
         }
         return;
     }
@@ -159,6 +159,7 @@ void Rtrsna(const char *job, const char *howmny, bool *select, INTEGER const n, 
     eps = Rlamch("P");
     smlnum = Rlamch("S") / eps;
     bignum = one / smlnum;
+    Rlabad(smlnum, bignum);
     //
     ks = 0;
     pair = false;

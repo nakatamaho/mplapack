@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -75,6 +75,7 @@ void Rtrsen(const char *job, const char *compq, bool *select, INTEGER const n, R
         info = -8;
     } else {
         //
+        // Set M to the dimension of the specified invariant subspace,
         // and test LWORK and LIWORK.
         //
         m = 0;
@@ -125,8 +126,8 @@ void Rtrsen(const char *job, const char *compq, bool *select, INTEGER const n, R
     }
     //
     if (info == 0) {
-        work[1 - 1] = lwmin;
-        iwork[1 - 1] = liwmin;
+        work[0] = lwmin;
+        iwork[0] = liwmin;
     }
     //
     if (info != 0) {
@@ -254,8 +255,8 @@ statement_40:
         }
     }
     //
-    work[1 - 1] = lwmin;
-    iwork[1 - 1] = liwmin;
+    work[0] = lwmin;
+    iwork[0] = liwmin;
     //
     // End of Rtrsen
     //
