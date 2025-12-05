@@ -29,7 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rlaed4(INTEGER const n, INTEGER const i, REAL *d, REAL *z, REAL *delta, REAL const rho, REAL &dlam, INTEGER &info) {
+void Rlaed4(INTEGER const n, INTEGER const i, REAL *d, REAL *z, REAL *delta, REAL const &rho, REAL &dlam, INTEGER &info) {
     const REAL one = 1.0;
     REAL eps = 0.0;
     REAL rhoinv = 0.0;
@@ -71,11 +71,6 @@ void Rlaed4(INTEGER const n, INTEGER const i, REAL *d, REAL *z, REAL *delta, REA
     bool swtch = false;
     const REAL ten = 10.0;
     //
-    //
-    //
-    //
-    // .. Local Arrays ..
-    //
     // Since this routine is called in an inner loop, we do no argument
     // checking.
     //
@@ -86,8 +81,8 @@ void Rlaed4(INTEGER const n, INTEGER const i, REAL *d, REAL *z, REAL *delta, REA
         //
         // Presumably, I=1 upon entry
         //
-        dlam = d[1 - 1] + rho * z[1 - 1] * z[1 - 1];
-        delta[1 - 1] = one;
+        dlam = d[0] + rho * z[0] * z[0];
+        delta[0] = one;
         return;
     }
     if (n == 2) {
@@ -530,16 +525,16 @@ void Rlaed4(INTEGER const n, INTEGER const i, REAL *d, REAL *z, REAL *delta, REA
                 temp1 = z[iim1 - 1] / delta[iim1 - 1];
                 temp1 = temp1 * temp1;
                 c = temp - delta[iip1 - 1] * (dpsi + dphi) - (d[iim1 - 1] - d[iip1 - 1]) * temp1;
-                zz[1 - 1] = z[iim1 - 1] * z[iim1 - 1];
-                zz[3 - 1] = delta[iip1 - 1] * delta[iip1 - 1] * ((dpsi - temp1) + dphi);
+                zz[0] = z[iim1 - 1] * z[iim1 - 1];
+                zz[2] = delta[iip1 - 1] * delta[iip1 - 1] * ((dpsi - temp1) + dphi);
             } else {
                 temp1 = z[iip1 - 1] / delta[iip1 - 1];
                 temp1 = temp1 * temp1;
                 c = temp - delta[iim1 - 1] * (dpsi + dphi) - (d[iip1 - 1] - d[iim1 - 1]) * temp1;
-                zz[1 - 1] = delta[iim1 - 1] * delta[iim1 - 1] * (dpsi + (dphi - temp1));
-                zz[3 - 1] = z[iip1 - 1] * z[iip1 - 1];
+                zz[0] = delta[iim1 - 1] * delta[iim1 - 1] * (dpsi + (dphi - temp1));
+                zz[2] = z[iip1 - 1] * z[iip1 - 1];
             }
-            zz[2 - 1] = z[ii - 1] * z[ii - 1];
+            zz[1] = z[ii - 1] * z[ii - 1];
             Rlaed6(niter, orgati, c, &delta[iim1 - 1], zz, w, eta, info);
             if (info != 0) {
                 goto statement_250;
@@ -681,21 +676,21 @@ void Rlaed4(INTEGER const n, INTEGER const i, REAL *d, REAL *z, REAL *delta, REA
                 temp = rhoinv + psi + phi;
                 if (swtch) {
                     c = temp - delta[iim1 - 1] * dpsi - delta[iip1 - 1] * dphi;
-                    zz[1 - 1] = delta[iim1 - 1] * delta[iim1 - 1] * dpsi;
-                    zz[3 - 1] = delta[iip1 - 1] * delta[iip1 - 1] * dphi;
+                    zz[0] = delta[iim1 - 1] * delta[iim1 - 1] * dpsi;
+                    zz[2] = delta[iip1 - 1] * delta[iip1 - 1] * dphi;
                 } else {
                     if (orgati) {
                         temp1 = z[iim1 - 1] / delta[iim1 - 1];
                         temp1 = temp1 * temp1;
                         c = temp - delta[iip1 - 1] * (dpsi + dphi) - (d[iim1 - 1] - d[iip1 - 1]) * temp1;
-                        zz[1 - 1] = z[iim1 - 1] * z[iim1 - 1];
-                        zz[3 - 1] = delta[iip1 - 1] * delta[iip1 - 1] * ((dpsi - temp1) + dphi);
+                        zz[0] = z[iim1 - 1] * z[iim1 - 1];
+                        zz[2] = delta[iip1 - 1] * delta[iip1 - 1] * ((dpsi - temp1) + dphi);
                     } else {
                         temp1 = z[iip1 - 1] / delta[iip1 - 1];
                         temp1 = temp1 * temp1;
                         c = temp - delta[iim1 - 1] * (dpsi + dphi) - (d[iip1 - 1] - d[iim1 - 1]) * temp1;
-                        zz[1 - 1] = delta[iim1 - 1] * delta[iim1 - 1] * (dpsi + (dphi - temp1));
-                        zz[3 - 1] = z[iip1 - 1] * z[iip1 - 1];
+                        zz[0] = delta[iim1 - 1] * delta[iim1 - 1] * (dpsi + (dphi - temp1));
+                        zz[2] = z[iip1 - 1] * z[iip1 - 1];
                     }
                 }
                 Rlaed6(niter, orgati, c, &delta[iim1 - 1], zz, w, eta, info);

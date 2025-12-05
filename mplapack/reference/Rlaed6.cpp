@@ -29,7 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rlaed6(INTEGER const kniter, bool const orgati, REAL const rho, REAL *d, REAL *z, REAL const finit, REAL &tau, INTEGER &info) {
+void Rlaed6(INTEGER const kniter, bool const orgati, REAL const &rho, REAL *d, REAL *z, REAL const &finit, REAL &tau, INTEGER &info) {
     REAL lbd = 0.0;
     REAL ubd = 0.0;
     const REAL zero = 0.0;
@@ -52,8 +52,8 @@ void Rlaed6(INTEGER const kniter, bool const orgati, REAL const rho, REAL *d, RE
     REAL sclfac = 0.0;
     REAL sclinv = 0.0;
     INTEGER i = 0;
-    REAL rscale[3];
-    REAL cscale[3];
+    REAL dscale[3];
+    REAL zscale[3];
     REAL fc = 0.0;
     REAL df = 0.0;
     REAL ddf = 0.0;
@@ -68,19 +68,14 @@ void Rlaed6(INTEGER const kniter, bool const orgati, REAL const rho, REAL *d, RE
     REAL temp4 = 0.0;
     const REAL eight = 8.0;
     //
-    //
-    //
-    //
-    // .. Local Arrays ..
-    //
     info = 0;
     //
     if (orgati) {
-        lbd = d[2 - 1];
-        ubd = d[3 - 1];
+        lbd = d[1];
+        ubd = d[2];
     } else {
-        lbd = d[1 - 1];
-        ubd = d[2 - 1];
+        lbd = d[0];
+        ubd = d[1];
     }
     if (finit < zero) {
         lbd = zero;
@@ -92,17 +87,17 @@ void Rlaed6(INTEGER const kniter, bool const orgati, REAL const rho, REAL *d, RE
     tau = zero;
     if (kniter == 2) {
         if (orgati) {
-            temp = (d[3 - 1] - d[2 - 1]) / two;
-            c = rho + z[1 - 1] / ((d[1 - 1] - d[2 - 1]) - temp);
-            a = c * (d[2 - 1] + d[3 - 1]) + z[2 - 1] + z[3 - 1];
-            b = c * d[2 - 1] * d[3 - 1] + z[2 - 1] * d[3 - 1] + z[3 - 1] * d[2 - 1];
+            temp = (d[2] - d[1]) / two;
+            c = rho + z[0] / ((d[0] - d[1]) - temp);
+            a = c * (d[1] + d[2]) + z[1] + z[2];
+            b = c * d[1] * d[2] + z[1] * d[2] + z[2] * d[1];
         } else {
-            temp = (d[1 - 1] - d[2 - 1]) / two;
-            c = rho + z[3 - 1] / ((d[3 - 1] - d[2 - 1]) - temp);
-            a = c * (d[1 - 1] + d[2 - 1]) + z[1 - 1] + z[2 - 1];
-            b = c * d[1 - 1] * d[2 - 1] + z[1 - 1] * d[2 - 1] + z[2 - 1] * d[1 - 1];
+            temp = (d[0] - d[1]) / two;
+            c = rho + z[2] / ((d[2] - d[1]) - temp);
+            a = c * (d[0] + d[1]) + z[0] + z[1];
+            b = c * d[0] * d[1] + z[0] * d[1] + z[1] * d[0];
         }
-        temp = max({abs(a), abs(b), abs(c)});
+        temp = max(abs(a), abs(b), abs(c));
         a = a / temp;
         b = b / temp;
         c = c / temp;
@@ -116,10 +111,10 @@ void Rlaed6(INTEGER const kniter, bool const orgati, REAL const rho, REAL *d, RE
         if (tau < lbd || tau > ubd) {
             tau = (lbd + ubd) / two;
         }
-        if (d[1 - 1] == tau || d[2 - 1] == tau || d[3 - 1] == tau) {
+        if (d[0] == tau || d[1] == tau || d[2] == tau) {
             tau = zero;
         } else {
-            temp = finit + tau * z[1 - 1] / (d[1 - 1] * (d[1 - 1] - tau)) + tau * z[2 - 1] / (d[2 - 1] * (d[2 - 1] - tau)) + tau * z[3 - 1] / (d[3 - 1] * (d[3 - 1] - tau));
+            temp = finit + tau * z[0] / (d[0] * (d[0] - tau)) + tau * z[1] / (d[1] * (d[1] - tau)) + tau * z[2] / (d[2] * (d[2] - tau));
             if (temp <= zero) {
                 lbd = tau;
             } else {
@@ -148,9 +143,9 @@ void Rlaed6(INTEGER const kniter, bool const orgati, REAL const rho, REAL *d, RE
     // when computing 1/TEMP**3
     //
     if (orgati) {
-        temp = min(abs(d[2 - 1] - tau), abs(d[3 - 1] - tau));
+        temp = min(abs(d[1] - tau), abs(d[2] - tau));
     } else {
-        temp = min(abs(d[1 - 1] - tau), abs(d[2 - 1] - tau));
+        temp = min(abs(d[0] - tau), abs(d[1] - tau));
     }
     scale = false;
     if (temp <= small1) {
@@ -172,19 +167,19 @@ void Rlaed6(INTEGER const kniter, bool const orgati, REAL const rho, REAL *d, RE
         // Scaling up safe because D, Z, TAU scaled elsewhere to be O(1)
         //
         for (i = 1; i <= 3; i = i + 1) {
-            rscale[i - 1] = d[i - 1] * sclfac;
-            cscale[i - 1] = z[i - 1] * sclfac;
+            dscale[i - 1] = d[i - 1] * sclfac;
+            zscale[i - 1] = z[i - 1] * sclfac;
         }
         tau = tau * sclfac;
         lbd = lbd * sclfac;
         ubd = ubd * sclfac;
     } else {
         //
-        // Copy D and Z to RscalE and CscalE
+        // Copy D and Z to DSCALE and ZSCALE
         //
         for (i = 1; i <= 3; i = i + 1) {
-            rscale[i - 1] = d[i - 1];
-            cscale[i - 1] = z[i - 1];
+            dscale[i - 1] = d[i - 1];
+            zscale[i - 1] = z[i - 1];
         }
     }
     //
@@ -192,11 +187,11 @@ void Rlaed6(INTEGER const kniter, bool const orgati, REAL const rho, REAL *d, RE
     df = zero;
     ddf = zero;
     for (i = 1; i <= 3; i = i + 1) {
-        temp = one / (rscale[i - 1] - tau);
-        temp1 = cscale[i - 1] * temp;
+        temp = one / (dscale[i - 1] - tau);
+        temp1 = zscale[i - 1] * temp;
         temp2 = temp1 * temp;
         temp3 = temp2 * temp;
-        fc += temp1 / rscale[i - 1];
+        fc += temp1 / dscale[i - 1];
         df += temp2;
         ddf += temp3;
     }
@@ -227,16 +222,16 @@ void Rlaed6(INTEGER const kniter, bool const orgati, REAL const rho, REAL *d, RE
     for (niter = iter; niter <= maxit; niter = niter + 1) {
         //
         if (orgati) {
-            temp1 = rscale[2 - 1] - tau;
-            temp2 = rscale[3 - 1] - tau;
+            temp1 = dscale[1] - tau;
+            temp2 = dscale[2] - tau;
         } else {
-            temp1 = rscale[1 - 1] - tau;
-            temp2 = rscale[2 - 1] - tau;
+            temp1 = dscale[0] - tau;
+            temp2 = dscale[1] - tau;
         }
         a = (temp1 + temp2) * f - temp1 * temp2 * df;
         b = temp1 * temp2 * f;
         c = f - (temp1 + temp2) * df + temp1 * temp2 * ddf;
-        temp = max({abs(a), abs(b), abs(c)});
+        temp = max(abs(a), abs(b), abs(c));
         a = a / temp;
         b = b / temp;
         c = c / temp;
@@ -261,12 +256,12 @@ void Rlaed6(INTEGER const kniter, bool const orgati, REAL const rho, REAL *d, RE
         df = zero;
         ddf = zero;
         for (i = 1; i <= 3; i = i + 1) {
-            if ((rscale[i - 1] - tau) != zero) {
-                temp = one / (rscale[i - 1] - tau);
-                temp1 = cscale[i - 1] * temp;
+            if ((dscale[i - 1] - tau) != zero) {
+                temp = one / (dscale[i - 1] - tau);
+                temp1 = zscale[i - 1] * temp;
                 temp2 = temp1 * temp;
                 temp3 = temp2 * temp;
-                temp4 = temp1 / rscale[i - 1];
+                temp4 = temp1 / dscale[i - 1];
                 fc += temp4;
                 erretm += abs(temp4);
                 df += temp2;
