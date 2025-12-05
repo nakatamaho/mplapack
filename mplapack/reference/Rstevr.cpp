@@ -29,7 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rstevr(const char *jobz, const char *range, INTEGER const n, REAL *d, REAL *e, REAL const vl, REAL const vu, INTEGER const il, INTEGER const iu, REAL const abstol, INTEGER &m, REAL *w, REAL *z, INTEGER const ldz, INTEGER *isuppz, REAL *work, INTEGER const lwork, INTEGER *iwork, INTEGER const liwork, INTEGER &info) {
+void Rstevr(const char *jobz, const char *range, INTEGER const n, REAL *d, REAL *e, REAL const &vl, REAL const &vu, INTEGER const il, INTEGER const iu, REAL const &abstol, INTEGER &m, REAL *w, REAL *z, INTEGER const ldz, INTEGER *isuppz, REAL *work, INTEGER const lwork, INTEGER *iwork, INTEGER const liwork, INTEGER &info) {
     INTEGER ieeeok = 0;
     bool wantz = false;
     bool alleig = false;
@@ -56,7 +56,7 @@ void Rstevr(const char *jobz, const char *range, INTEGER const n, REAL *d, REAL 
     INTEGER indifl = 0;
     INTEGER indiwo = 0;
     bool test = false;
-    const REAL two = 2.0e+0;
+    const REAL two = 2.0;
     bool tryrac = false;
     char order;
     INTEGER nsplit = 0;
@@ -66,11 +66,6 @@ void Rstevr(const char *jobz, const char *range, INTEGER const n, REAL *d, REAL 
     REAL tmp1 = 0.0;
     INTEGER jj = 0;
     INTEGER itmp1 = 0;
-    //
-    // -- LAPACK driver routine --
-    //
-    //
-    //
     //
     // Test the input parameters.
     //
@@ -159,7 +154,7 @@ void Rstevr(const char *jobz, const char *range, INTEGER const n, REAL *d, REAL 
     smlnum = safmin / eps;
     bignum = one / smlnum;
     rmin = sqrt(smlnum);
-    rmax = min(REAL(sqrt(bignum)), REAL(one / sqrt(sqrt(safmin))));
+    rmax = min(sqrt(bignum), one / sqrt(sqrt(safmin)));
     //
     // Scale matrix to allowable range, if necessary.
     //

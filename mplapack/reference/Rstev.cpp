@@ -45,7 +45,7 @@ void Rstev(const char *jobz, INTEGER const n, REAL *d, REAL *e, REAL *z, INTEGER
     }
     //
     if (info != 0) {
-        Mxerbla("Rstev", -info);
+        Mxerbla("Rstev ", -info);
         return;
     }
     //
