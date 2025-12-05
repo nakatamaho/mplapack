@@ -31,10 +31,6 @@
 
 void Cupgtr(const char *uplo, INTEGER const n, COMPLEX *ap, COMPLEX *tau, COMPLEX *q, INTEGER const ldq, COMPLEX *work, INTEGER &info) {
     //
-    //
-    //
-    //
-    //
     // Test the input arguments
     //
     info = 0;

@@ -31,11 +31,6 @@
 
 void Cungtsqr_row(INTEGER const m, INTEGER const n, INTEGER const mb, INTEGER const nb, COMPLEX *a, INTEGER const lda, COMPLEX *t, INTEGER const ldt, COMPLEX *work, INTEGER const lwork, INTEGER &info) {
     //
-    //
-    //
-    //
-    // .. Local Arrays ..
-    //
     // Test the input parameters
     //
     info = 0;
@@ -50,7 +45,7 @@ void Cungtsqr_row(INTEGER const m, INTEGER const n, INTEGER const mb, INTEGER co
         info = -4;
     } else if (lda < max((INTEGER)1, m)) {
         info = -6;
-    } else if (ldt < max({(INTEGER)1, min(nb, n)})) {
+    } else if (ldt < max((INTEGER)1, min(nb, n))) {
         info = -8;
     } else if (lwork < 1 && !lquery) {
         info = -10;
@@ -71,14 +66,14 @@ void Cungtsqr_row(INTEGER const m, INTEGER const n, INTEGER const mb, INTEGER co
         Mxerbla("Cungtsqr_row", -info);
         return;
     } else if (lquery) {
-        work[1 - 1] = COMPLEX(lworkopt);
+        work[0] = COMPLEX(lworkopt);
         return;
     }
     //
     // Quick return if possible
     //
     if (min(m, n) == 0) {
-        work[1 - 1] = COMPLEX(lworkopt);
+        work[0] = COMPLEX(lworkopt);
         return;
     }
     //
@@ -185,7 +180,7 @@ void Cungtsqr_row(INTEGER const m, INTEGER const n, INTEGER const mb, INTEGER co
             // does not exist, hence we need to pass a dummy array
             // reference DUMMY(1,1) to B with LDDUMMY=1.
             //
-            Clarfb_gett("N", 0, n - kb + 1, knb, &t[(kb - 1) * ldt], ldt, &a[(kb - 1) + (kb - 1) * lda], lda, dummy, 1, work, knb);
+            Clarfb_gett("N", 0, n - kb + 1, knb, &t[(kb - 1) * ldt], ldt, &a[(kb - 1) + (kb - 1) * lda], lda, &dummy[0], 1, work, knb);
         } else {
             Clarfb_gett("N", mb1 - kb - knb + 1, n - kb + 1, knb, &t[(kb - 1) * ldt], ldt, &a[(kb - 1) + (kb - 1) * lda], lda, &a[((kb + knb) - 1) + (kb - 1) * lda], lda, work, knb);
             //
@@ -193,7 +188,7 @@ void Cungtsqr_row(INTEGER const m, INTEGER const n, INTEGER const mb, INTEGER co
         //
     }
     //
-    work[1 - 1] = COMPLEX(lworkopt);
+    work[0] = COMPLEX(lworkopt);
     //
     // End of Cungtsqr_row
     //

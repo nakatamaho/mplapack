@@ -31,10 +31,6 @@
 
 void Cungtsqr(INTEGER const m, INTEGER const n, INTEGER const mb, INTEGER const nb, COMPLEX *a, INTEGER const lda, COMPLEX *t, INTEGER const ldt, COMPLEX *work, INTEGER const lwork, INTEGER &info) {
     //
-    //
-    //
-    //
-    //
     // Test the input parameters
     //
     bool lquery = lwork == -1;
@@ -58,6 +54,7 @@ void Cungtsqr(INTEGER const m, INTEGER const n, INTEGER const mb, INTEGER const 
         info = -8;
     } else {
         //
+        // Test the input LWORK for the dimension of the array WORK.
         // This workspace is used to store array C(LDC, N) and WORK(LWORK)
         // in the call to Clamtsqr. See the documentation for Clamtsqr.
         //
@@ -92,14 +89,14 @@ void Cungtsqr(INTEGER const m, INTEGER const n, INTEGER const mb, INTEGER const 
         Mxerbla("Cungtsqr", -info);
         return;
     } else if (lquery) {
-        work[1 - 1] = COMPLEX(lworkopt);
+        work[0] = COMPLEX(lworkopt);
         return;
     }
     //
     // Quick return if possible
     //
     if (min(m, n) == 0) {
-        work[1 - 1] = COMPLEX(lworkopt);
+        work[0] = COMPLEX(lworkopt);
         return;
     }
     //
@@ -127,6 +124,7 @@ void Cungtsqr(INTEGER const m, INTEGER const n, INTEGER const mb, INTEGER const 
     Clamtsqr("L", "N", m, n, n, mb, nblocal, a, lda, t, ldt, work, ldc, &work[(lc + 1) - 1], lw, iinfo);
     //
     // (2) Copy the result from the part of the work array (1:M,1:N)
+    // with the leading dimension LDC that starts at WORK(1) into
     // the output array A(1:M,1:N) column-by-column.
     //
     INTEGER j = 0;
@@ -134,7 +132,7 @@ void Cungtsqr(INTEGER const m, INTEGER const n, INTEGER const mb, INTEGER const 
         Ccopy(m, &work[((j - 1) * ldc + 1) - 1], 1, &a[(j - 1) * lda], 1);
     }
     //
-    work[1 - 1] = COMPLEX(lworkopt);
+    work[0] = COMPLEX(lworkopt);
     //
     // End of Cungtsqr
     //

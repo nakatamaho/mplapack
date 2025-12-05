@@ -31,10 +31,6 @@
 
 void Cunhr_col(INTEGER const m, INTEGER const n, INTEGER const nb, COMPLEX *a, INTEGER const lda, COMPLEX *t, INTEGER const ldt, COMPLEX *d, INTEGER &info) {
     //
-    //
-    //
-    //
-    //
     // Test the input parameters
     //
     info = 0;
