@@ -39,7 +39,7 @@ void Rpprfs(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *ap, REA
     REAL safe1 = 0.0;
     REAL safe2 = 0.0;
     INTEGER count = 0;
-    const REAL three = 3.0e+0;
+    const REAL three = 3.0;
     REAL lstres = 0.0;
     const REAL one = 1.0;
     INTEGER i = 0;
@@ -48,15 +48,10 @@ void Rpprfs(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *ap, REA
     REAL s = 0.0;
     REAL xk = 0.0;
     INTEGER ik = 0;
-    const REAL two = 2.0e+0;
+    const REAL two = 2.0;
     const INTEGER itmax = 5;
     INTEGER kase = 0;
     INTEGER isave[3];
-    //
-    //
-    //
-    //
-    // .. Local Arrays ..
     //
     // Test the input parameters.
     //
