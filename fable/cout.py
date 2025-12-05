@@ -1645,7 +1645,10 @@ def rewrite_intrinsics(text: str) -> str:
         "fem::sign":  "sign",
         "fem::dsign": "sign",
 
+        # array intrinsics
         "fem::maxloc": "Mmaxloc",
+        "fem::maxval": "Mmaxval",
+        "fem::minval": "Mminval",
     }
 
     for src, dst in simple_map.items():
@@ -1722,13 +1725,22 @@ def convert_tokens(conv_info, tokens, commas=False, had_str_concat=None):
                 parts = _split_actuals(idx_str)
 
                 if is_array_slice and len(parts) == 2:
-                    # Array slice: a(start:end) was converted to "start, end"
+                    # 1D Array slice: a(start:end) was converted to "start, end"
                     # Output special marker format that will be processed later
                     # Format: [__SLICE__(start, end)]
                     # This marker will be transformed by _postprocess_mmaxloc for Mmaxloc calls
                     start_expr = parts[0].strip()
                     end_expr = parts[1].strip()
                     rapp(f"[__SLICE__({start_expr}, {end_expr})]")
+                elif is_array_slice and len(parts) == 3:
+                    # 2D Array slice on first dimension: z(start:end, col)
+                    # was converted to "start, end, col"
+                    # Format: [__SLICE2D__(start, end, col, ldname)]
+                    start_expr = parts[0].strip()
+                    end_expr = parts[1].strip()
+                    col_expr = parts[2].strip()
+                    ldname = "ld" + prev_tok.value.lower()
+                    rapp(f"[__SLICE2D__({start_expr}, {end_expr}, {col_expr}, {ldname})]")
                 elif len(parts) == 1:
                     i_expr = parts[0].strip()
                     if re.fullmatch(r"[0-9]+", i_expr):
@@ -5280,25 +5292,18 @@ def _postprocess_index_zero_simplify(text):
     return text
 
 
-def _postprocess_mmaxloc(lines):
-    """Rewrite Mmaxloc(array[__SLICE__(start, end)], dim) to Mmaxloc(array, start, end, dim).
+def _postprocess_array_slice_intrinsics(lines):
+    """Rewrite array slice intrinsics (Mmaxloc, Mmaxval, Mminval).
 
-    FORTRAN: itemp = maxloc( work( (n+j):(2*n) ), 1 )
-    Expected output: itemp = Mmaxloc(work, (n + j), (2 * n), 1);
+    Mmaxloc: Mmaxloc(array[__SLICE__(start, end)], dim) -> Mmaxloc(array, start, end, dim)
+    Mmaxval: Mmaxval(array[__SLICE__(start, end)]) -> Mmaxval(array, start, end)
+    Mminval: Mminval(array[__SLICE__(start, end)]) -> Mminval(array, start, end)
 
-    Array slices are marked with __SLICE__(start, end) by convert_tokens.
-    This function transforms:
-        Mmaxloc(array[__SLICE__(start, end)], dim) -> Mmaxloc(array, start, end, dim)
+    FORTRAN examples:
+        itemp = maxloc( work( (n+j):(2*n) ), 1 )  -> Mmaxloc(work, (n+j), (2*n), 1)
+        emin = abs(maxval(s(isbeg:isbeg+nsl-1)))  -> abs(Mmaxval(s, isbeg, isbeg+nsl-1))
     """
     import re
-
-    # Pattern to match: Mmaxloc(identifier[__SLICE__(args)], dim)
-    # We need to handle nested parentheses in args
-    pattern = re.compile(
-        r'\bMmaxloc\s*\(\s*'           # Mmaxloc(
-        r'([A-Za-z_][A-Za-z0-9_]*)'    # array name (group 1)
-        r'\s*\[\s*__SLICE__\s*\('      # [__SLICE__(
-    )
 
     def find_matching_paren(s, start):
         """Find the index of the closing paren matching the one at 'start'."""
@@ -5312,142 +5317,8 @@ def _postprocess_mmaxloc(lines):
                     return i
         return -1
 
-    def rewrite_mmaxloc_in_line(line):
-        result = []
-        pos = 0
-
-        for m in pattern.finditer(line):
-            result.append(line[pos:m.start()])
-            array_name = m.group(1)
-
-            # Find the end of __SLICE__(...)
-            slice_paren_start = m.end() - 1  # position of '(' after __SLICE__
-            slice_paren_end = find_matching_paren(line, slice_paren_start)
-            if slice_paren_end < 0:
-                result.append(line[m.start():m.end()])
-                pos = m.end()
-                continue
-
-            # Extract slice args (start, end)
-            slice_args = line[slice_paren_start + 1:slice_paren_end]
-
-            # After __SLICE__(...) should be "], dim)"
-            rest_start = slice_paren_end + 1
-            # Skip whitespace and expect ']'
-            rest_pos = rest_start
-            while rest_pos < len(line) and line[rest_pos] in ' \t':
-                rest_pos += 1
-            if rest_pos >= len(line) or line[rest_pos] != ']':
-                result.append(line[m.start():m.end()])
-                pos = m.end()
-                continue
-            rest_pos += 1  # skip ']'
-
-            # Skip whitespace and expect ','
-            while rest_pos < len(line) and line[rest_pos] in ' \t':
-                rest_pos += 1
-            if rest_pos >= len(line) or line[rest_pos] != ',':
-                result.append(line[m.start():m.end()])
-                pos = m.end()
-                continue
-            rest_pos += 1  # skip ','
-
-            # Find the closing ')' of Mmaxloc
-            mmaxloc_paren_end = find_matching_paren(line, m.end() - len('('))
-            # Actually, we need to find it from the Mmaxloc( position
-            # Let's find it differently - scan from rest_pos for ')'
-            paren_depth = 1  # we're inside Mmaxloc(
-            dim_start = rest_pos
-            dim_end = -1
-            for i in range(rest_pos, len(line)):
-                if line[i] == '(':
-                    paren_depth += 1
-                elif line[i] == ')':
-                    paren_depth -= 1
-                    if paren_depth == 0:
-                        dim_end = i
-                        break
-            if dim_end < 0:
-                result.append(line[m.start():m.end()])
-                pos = m.end()
-                continue
-
-            dim_part = line[dim_start:dim_end].strip()
-
-            # Split slice_args by comma (handling nested parens)
-            slice_arg_list = []
-            current_arg = []
-            arg_depth = 0
-            for ch in slice_args:
-                if ch == '(':
-                    arg_depth += 1
-                    current_arg.append(ch)
-                elif ch == ')':
-                    arg_depth -= 1
-                    current_arg.append(ch)
-                elif ch == ',' and arg_depth == 0:
-                    slice_arg_list.append(''.join(current_arg).strip())
-                    current_arg = []
-                else:
-                    current_arg.append(ch)
-            if current_arg:
-                slice_arg_list.append(''.join(current_arg).strip())
-
-            if len(slice_arg_list) != 2:
-                result.append(line[m.start():m.end()])
-                pos = m.end()
-                continue
-
-            start_arg = slice_arg_list[0]
-            end_arg = slice_arg_list[1]
-
-            # Build the new call: Mmaxloc(array, start, end, dim)
-            new_call = f"Mmaxloc({array_name}, {start_arg}, {end_arg}, {dim_part})"
-            result.append(new_call)
-            pos = dim_end + 1
-
-        result.append(line[pos:])
-        return ''.join(result)
-
-    if isinstance(lines, list):
-        return [rewrite_mmaxloc_in_line(line) for line in lines]
-    elif isinstance(lines, str):
-        return '\n'.join(rewrite_mmaxloc_in_line(l) for l in lines.split('\n'))
-    return lines
-
-
-def _postprocess_slice_assignment(lines):
-    """Convert array slice assignment to for loop.
-
-    FORTRAN: work(idtgk:idtgk + 2*n - 1) = zero
-    After FABLE: work[__SLICE__(idtgk, idtgk + 2 * n - 1)] = zero;
-    Expected:    for (INTEGER i = idtgk; i <= idtgk + 2 * n - 1; i++) { work[i - 1] = zero; }
-
-    Pattern: array[__SLICE__(start, end)] = value;
-    """
-    import re
-
-    # Pattern to match: identifier[__SLICE__(...)] = ...;
-    pattern = re.compile(
-        r'(\s*)'                           # leading whitespace (group 1)
-        r'([A-Za-z_][A-Za-z0-9_]*)'         # array name (group 2)
-        r'\s*\[\s*__SLICE__\s*\('           # [__SLICE__(
-    )
-
-    def find_matching_paren(s, start):
-        """Find the index of the closing paren matching the one at 'start'."""
-        depth = 0
-        for i in range(start, len(s)):
-            if s[i] == '(':
-                depth += 1
-            elif s[i] == ')':
-                depth -= 1
-                if depth == 0:
-                    return i
-        return -1
-
-    def split_slice_args(s):
-        """Split slice args by top-level comma."""
+    def split_args(s):
+        """Split by top-level comma."""
         parts = []
         current = []
         depth = 0
@@ -5467,48 +5338,261 @@ def _postprocess_slice_assignment(lines):
             parts.append(''.join(current).strip())
         return parts
 
+    # Pattern to match: FuncName(identifier[__SLICE__(args)]...)
+    # FuncName is one of: Mmaxloc, Mmaxval, Mminval
+    pattern = re.compile(
+        r'\b(Mmaxloc|Mmaxval|Mminval)\s*\(\s*'  # function name (group 1)
+        r'([A-Za-z_][A-Za-z0-9_]*)'              # array name (group 2)
+        r'\s*\[\s*__SLICE__\s*\('                # [__SLICE__(
+    )
+
     def rewrite_line(line):
         result = []
         pos = 0
 
         for m in pattern.finditer(line):
-            leading_ws = m.group(1)
+            result.append(line[pos:m.start()])
+            func_name = m.group(1)
             array_name = m.group(2)
 
-            # Find __SLICE__( start position
-            slice_paren_start = m.end() - 1
+            # Find the end of __SLICE__(...)
+            slice_paren_start = m.end() - 1  # position of '(' after __SLICE__
             slice_paren_end = find_matching_paren(line, slice_paren_start)
             if slice_paren_end < 0:
-                result.append(line[pos:m.end()])
+                result.append(line[m.start():m.end()])
                 pos = m.end()
                 continue
 
             # Extract slice args (start, end)
             slice_args_str = line[slice_paren_start + 1:slice_paren_end]
-            slice_args = split_slice_args(slice_args_str)
+            slice_arg_list = split_args(slice_args_str)
 
-            if len(slice_args) != 2:
-                result.append(line[pos:m.end()])
+            if len(slice_arg_list) != 2:
+                result.append(line[m.start():m.end()])
                 pos = m.end()
                 continue
 
-            start_expr = slice_args[0]
-            end_expr = slice_args[1]
+            start_arg = slice_arg_list[0]
+            end_arg = slice_arg_list[1]
 
-            # After __SLICE__(...) should be "] = value;"
+            # After __SLICE__(...) should be "]" followed by optional ", dim" then ")"
+            rest_start = slice_paren_end + 1
+            rest_pos = rest_start
+            while rest_pos < len(line) and line[rest_pos] in ' \t':
+                rest_pos += 1
+            if rest_pos >= len(line) or line[rest_pos] != ']':
+                result.append(line[m.start():m.end()])
+                pos = m.end()
+                continue
+            rest_pos += 1  # skip ']'
+
+            # Skip whitespace
+            while rest_pos < len(line) and line[rest_pos] in ' \t':
+                rest_pos += 1
+
+            if rest_pos >= len(line):
+                result.append(line[m.start():m.end()])
+                pos = m.end()
+                continue
+
+            # Check what comes next: ',' (has extra args) or ')' (no extra args)
+            if line[rest_pos] == ')':
+                # No extra arguments (Mmaxval, Mminval style)
+                new_call = f"{func_name}({array_name}, {start_arg}, {end_arg})"
+                result.append(new_call)
+                pos = rest_pos + 1
+            elif line[rest_pos] == ',':
+                # Has extra arguments (Mmaxloc style with dim)
+                rest_pos += 1  # skip ','
+
+                # Find the closing ')' of the function call
+                paren_depth = 1
+                extra_args_start = rest_pos
+                close_paren_pos = -1
+                for i in range(rest_pos, len(line)):
+                    if line[i] == '(':
+                        paren_depth += 1
+                    elif line[i] == ')':
+                        paren_depth -= 1
+                        if paren_depth == 0:
+                            close_paren_pos = i
+                            break
+
+                if close_paren_pos < 0:
+                    result.append(line[m.start():m.end()])
+                    pos = m.end()
+                    continue
+
+                extra_args = line[extra_args_start:close_paren_pos].strip()
+                new_call = f"{func_name}({array_name}, {start_arg}, {end_arg}, {extra_args})"
+                result.append(new_call)
+                pos = close_paren_pos + 1
+            else:
+                result.append(line[m.start():m.end()])
+                pos = m.end()
+                continue
+
+        result.append(line[pos:])
+        return ''.join(result)
+
+    if isinstance(lines, list):
+        return [rewrite_line(line) for line in lines]
+    elif isinstance(lines, str):
+        return '\n'.join(rewrite_line(l) for l in lines.split('\n'))
+    return lines
+
+
+# Keep old name as alias for compatibility
+_postprocess_mmaxloc = _postprocess_array_slice_intrinsics
+
+
+def _postprocess_slice_assignment(lines):
+    """Convert array slice assignment to for loop.
+
+    1D slice:
+    FORTRAN: work(idtgk:idtgk + 2*n - 1) = zero
+    After FABLE: work[__SLICE__(idtgk, idtgk + 2 * n - 1)] = zero;
+    Expected:    for (INTEGER i = idtgk; i <= idtgk + 2 * n - 1; i++) { work[i - 1] = zero; }
+
+    2D slice (first dimension):
+    FORTRAN: z(idbeg:idend, isbeg) = z(idbeg:idend, isbeg) + z(idbeg:idend, n+1)
+    After FABLE: z[__SLICE2D__(idbeg, idend, isbeg, ldz)] += z[__SLICE2D__(idbeg, idend, n + 1, ldz)];
+    Expected: for (INTEGER i = idbeg; i <= idend; i++) { z[(i - 1) + (isbeg - 1) * ldz] += z[(i - 1) + ((n + 1) - 1) * ldz]; }
+    """
+    import re
+
+    def find_matching_paren(s, start):
+        """Find the index of the closing paren matching the one at 'start'."""
+        depth = 0
+        for i in range(start, len(s)):
+            if s[i] == '(':
+                depth += 1
+            elif s[i] == ')':
+                depth -= 1
+                if depth == 0:
+                    return i
+        return -1
+
+    def split_args(s):
+        """Split by top-level comma."""
+        parts = []
+        current = []
+        depth = 0
+        for ch in s:
+            if ch == '(':
+                depth += 1
+                current.append(ch)
+            elif ch == ')':
+                depth -= 1
+                current.append(ch)
+            elif ch == ',' and depth == 0:
+                parts.append(''.join(current).strip())
+                current = []
+            else:
+                current.append(ch)
+        if current:
+            parts.append(''.join(current).strip())
+        return parts
+
+    def make_index_expr(col_expr, ldname):
+        """Generate index expression: (i - 1) + (col - 1) * ldname"""
+        simple_name = re.compile(r'^[A-Za-z_][A-Za-z0-9_]*$')
+        simple_int = re.compile(r'^[0-9]+$')
+        if simple_name.match(col_expr) or simple_int.match(col_expr):
+            col_term = f"({col_expr} - 1)"
+        else:
+            col_term = f"(({col_expr}) - 1)"
+        return f"(i - 1) + {col_term} * {ldname}"
+
+    def replace_slice2d_with_index(expr, loop_var='i'):
+        """Replace __SLICE2D__(start, end, col, ld) in expr with array index using loop_var."""
+        pattern = re.compile(
+            r'([A-Za-z_][A-Za-z0-9_]*)'     # array name
+            r'\s*\[\s*__SLICE2D__\s*\('     # [__SLICE2D__(
+        )
+        result = []
+        pos = 0
+        for m in pattern.finditer(expr):
+            result.append(expr[pos:m.start()])
+            array_name = m.group(1)
+            paren_start = m.end() - 1
+            paren_end = find_matching_paren(expr, paren_start)
+            if paren_end < 0:
+                result.append(expr[m.start():m.end()])
+                pos = m.end()
+                continue
+            
+            args_str = expr[paren_start + 1:paren_end]
+            args = split_args(args_str)
+            if len(args) != 4:
+                result.append(expr[m.start():m.end()])
+                pos = m.end()
+                continue
+            
+            # args: start, end, col, ldname
+            col_expr = args[2]
+            ldname = args[3]
+            index_expr = make_index_expr(col_expr, ldname)
+            
+            # Skip past ")]"
+            rest_pos = paren_end + 1
+            while rest_pos < len(expr) and expr[rest_pos] in ' \t':
+                rest_pos += 1
+            if rest_pos < len(expr) and expr[rest_pos] == ']':
+                rest_pos += 1
+            
+            result.append(f"{array_name}[{index_expr}]")
+            pos = rest_pos
+        
+        result.append(expr[pos:])
+        return ''.join(result)
+
+    # Pattern for 1D slice: identifier[__SLICE__(...)]
+    pattern_1d = re.compile(
+        r'(\s*)'                           # leading whitespace (group 1)
+        r'([A-Za-z_][A-Za-z0-9_]*)'         # array name (group 2)
+        r'\s*\[\s*__SLICE__\s*\('           # [__SLICE__(
+    )
+
+    # Pattern for 2D slice: identifier[__SLICE2D__(...)]
+    pattern_2d = re.compile(
+        r'(\s*)'                           # leading whitespace (group 1)
+        r'([A-Za-z_][A-Za-z0-9_]*)'         # array name (group 2)
+        r'\s*\[\s*__SLICE2D__\s*\('         # [__SLICE2D__(
+    )
+
+    def rewrite_line(line):
+        # First try 2D slice
+        m = pattern_2d.search(line)
+        if m:
+            leading_ws = m.group(1)
+            array_name = m.group(2)
+
+            slice_paren_start = m.end() - 1
+            slice_paren_end = find_matching_paren(line, slice_paren_start)
+            if slice_paren_end < 0:
+                return line
+
+            args_str = line[slice_paren_start + 1:slice_paren_end]
+            args = split_args(args_str)
+            if len(args) != 4:
+                return line
+
+            start_expr, end_expr, col_expr, ldname = args
+
+            # After __SLICE2D__(...) should be "] op= value;" where op is optional (=, +=, -=, etc.)
             rest_start = slice_paren_end + 1
             rest = line[rest_start:]
 
-            # Match "] = value;"
-            assign_match = re.match(r'\s*\]\s*=\s*', rest)
+            # Match "] op= ..." where op can be empty, +, -, *, /
+            assign_match = re.match(r'\s*\]\s*([+\-*/]?=)\s*', rest)
             if not assign_match:
-                result.append(line[pos:m.end()])
-                pos = m.end()
-                continue
+                return line
 
+            assign_op = assign_match.group(1)
             value_start = rest_start + assign_match.end()
 
-            # Find the semicolon (handling nested parens/brackets)
+            # Find the semicolon
             depth_paren = 0
             depth_bracket = 0
             semicolon_pos = -1
@@ -5527,24 +5611,82 @@ def _postprocess_slice_assignment(lines):
                     break
 
             if semicolon_pos < 0:
-                result.append(line[pos:m.end()])
-                pos = m.end()
-                continue
+                return line
 
             value_expr = line[value_start:semicolon_pos].strip()
 
-            # Build the for loop
+            # Replace any __SLICE2D__ in value_expr with array indexing
+            value_expr_converted = replace_slice2d_with_index(value_expr)
+
+            # Build left side index
+            lhs_index = make_index_expr(col_expr, ldname)
+
+            # Build for loop
             for_loop = (
                 f"{leading_ws}for (INTEGER i = {start_expr}; i <= {end_expr}; i++) {{ "
-                f"{array_name}[i - 1] = {value_expr}; }}"
+                f"{array_name}[{lhs_index}] {assign_op} {value_expr_converted}; }}"
             )
 
-            result.append(line[pos:m.start()])
-            result.append(for_loop)
-            pos = semicolon_pos + 1
+            return line[:m.start()] + for_loop + line[semicolon_pos + 1:]
 
-        result.append(line[pos:])
-        return ''.join(result)
+        # Then try 1D slice
+        m = pattern_1d.search(line)
+        if m:
+            leading_ws = m.group(1)
+            array_name = m.group(2)
+
+            slice_paren_start = m.end() - 1
+            slice_paren_end = find_matching_paren(line, slice_paren_start)
+            if slice_paren_end < 0:
+                return line
+
+            args_str = line[slice_paren_start + 1:slice_paren_end]
+            args = split_args(args_str)
+            if len(args) != 2:
+                return line
+
+            start_expr, end_expr = args
+
+            rest_start = slice_paren_end + 1
+            rest = line[rest_start:]
+
+            assign_match = re.match(r'\s*\]\s*([+\-*/]?=)\s*', rest)
+            if not assign_match:
+                return line
+
+            assign_op = assign_match.group(1)
+            value_start = rest_start + assign_match.end()
+
+            depth_paren = 0
+            depth_bracket = 0
+            semicolon_pos = -1
+            for i in range(value_start, len(line)):
+                ch = line[i]
+                if ch == '(':
+                    depth_paren += 1
+                elif ch == ')':
+                    depth_paren -= 1
+                elif ch == '[':
+                    depth_bracket += 1
+                elif ch == ']':
+                    depth_bracket -= 1
+                elif ch == ';' and depth_paren == 0 and depth_bracket == 0:
+                    semicolon_pos = i
+                    break
+
+            if semicolon_pos < 0:
+                return line
+
+            value_expr = line[value_start:semicolon_pos].strip()
+
+            for_loop = (
+                f"{leading_ws}for (INTEGER i = {start_expr}; i <= {end_expr}; i++) {{ "
+                f"{array_name}[i - 1] {assign_op} {value_expr}; }}"
+            )
+
+            return line[:m.start()] + for_loop + line[semicolon_pos + 1:]
+
+        return line
 
     if isinstance(lines, list):
         return [rewrite_line(line) for line in lines]
