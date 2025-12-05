@@ -87,10 +87,6 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
     INTEGER lwork_Cgelqf = 0;
     INTEGER lwork_Cunglq_n = 0;
     INTEGER lwork_Cunglq_m = 0;
-    char jobu_jobvt[3];
-    jobu_jobvt[0] = jobu[0];
-    jobu_jobvt[1] = jobvt[0];
-    jobu_jobvt[2] = '\0';
     if (info == 0) {
         minwrk = 1;
         maxwrk = 1;
@@ -98,7 +94,7 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
             //
             // Space needed for Cbdsqr is BDSPAC = 5*N
             //
-            mnthr = iMlaenv(6, "Cgesvd", jobu_jobvt, m, n, 0, 0);
+            mnthr = iMlaenv(6, "Cgesvd", CHAR2(jobu, jobvt), m, n, 0, 0);
             // Compute space needed for Cgeqrf
             Cgeqrf(m, n, a, lda, &cdum[0], &cdum[0], -1, ierr);
             lwork_Cgeqrf = castINTEGER(cdum[0].real());
@@ -242,7 +238,7 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
             //
             // Space needed for Cbdsqr is BDSPAC = 5*M
             //
-            mnthr = iMlaenv(6, "Cgesvd", jobu_jobvt, m, n, 0, 0);
+            mnthr = iMlaenv(6, "Cgesvd", CHAR2(jobu, jobvt), m, n, 0, 0);
             // Compute space needed for Cgelqf
             Cgelqf(m, n, a, lda, &cdum[0], &cdum[0], -1, ierr);
             lwork_Cgelqf = castINTEGER(cdum[0].real());
@@ -263,7 +259,7 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
             if (n >= mnthr) {
                 if (wntvn) {
                     //
-                    // Path 1 (N much larger than M, JOBVT='N')
+                    // Path 1t(N much larger than M, JOBVT='N')
                     //
                     maxwrk = m + lwork_Cgelqf;
                     maxwrk = max(maxwrk, 2 * m + lwork_Cgebrd);
@@ -273,7 +269,7 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
                     minwrk = 3 * m;
                 } else if (wntvo && wntun) {
                     //
-                    // Path 2 (N much larger than M, JOBU='N', JOBVT='O')
+                    // Path 2t(N much larger than M, JOBU='N', JOBVT='O')
                     //
                     wrkbl = m + lwork_Cgelqf;
                     wrkbl = max(wrkbl, m + lwork_Cunglq_m);
@@ -283,7 +279,7 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
                     minwrk = 2 * m + n;
                 } else if (wntvo && wntuas) {
                     //
-                    // Path 3 (N much larger than M, JOBU='S' or 'A',
+                    // Path 3t(N much larger than M, JOBU='S' or 'A',
                     // JOBVT='O')
                     //
                     wrkbl = m + lwork_Cgelqf;
@@ -295,7 +291,7 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
                     minwrk = 2 * m + n;
                 } else if (wntvs && wntun) {
                     //
-                    // Path 4 (N much larger than M, JOBU='N', JOBVT='S')
+                    // Path 4t(N much larger than M, JOBU='N', JOBVT='S')
                     //
                     wrkbl = m + lwork_Cgelqf;
                     wrkbl = max(wrkbl, m + lwork_Cunglq_m);
@@ -305,7 +301,7 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
                     minwrk = 2 * m + n;
                 } else if (wntvs && wntuo) {
                     //
-                    // Path 5 (N much larger than M, JOBU='O', JOBVT='S')
+                    // Path 5t(N much larger than M, JOBU='O', JOBVT='S')
                     //
                     wrkbl = m + lwork_Cgelqf;
                     wrkbl = max(wrkbl, m + lwork_Cunglq_m);
@@ -316,7 +312,7 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
                     minwrk = 2 * m + n;
                 } else if (wntvs && wntuas) {
                     //
-                    // Path 6 (N much larger than M, JOBU='S' or 'A',
+                    // Path 6t(N much larger than M, JOBU='S' or 'A',
                     // JOBVT='S')
                     //
                     wrkbl = m + lwork_Cgelqf;
@@ -328,7 +324,7 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
                     minwrk = 2 * m + n;
                 } else if (wntva && wntun) {
                     //
-                    // Path 7 (N much larger than M, JOBU='N', JOBVT='A')
+                    // Path 7t(N much larger than M, JOBU='N', JOBVT='A')
                     //
                     wrkbl = m + lwork_Cgelqf;
                     wrkbl = max(wrkbl, m + lwork_Cunglq_n);
@@ -338,7 +334,7 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
                     minwrk = 2 * m + n;
                 } else if (wntva && wntuo) {
                     //
-                    // Path 8 (N much larger than M, JOBU='O', JOBVT='A')
+                    // Path 8t(N much larger than M, JOBU='O', JOBVT='A')
                     //
                     wrkbl = m + lwork_Cgelqf;
                     wrkbl = max(wrkbl, m + lwork_Cunglq_n);
@@ -349,7 +345,7 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
                     minwrk = 2 * m + n;
                 } else if (wntva && wntuas) {
                     //
-                    // Path 9 (N much larger than M, JOBU='S' or 'A',
+                    // Path 9t(N much larger than M, JOBU='S' or 'A',
                     // JOBVT='A')
                     //
                     wrkbl = m + lwork_Cgelqf;
@@ -362,7 +358,7 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
                 }
             } else {
                 //
-                // Path 10 (N greater than M, but not much larger)
+                // Path 10t(N greater than M, but not much larger)
                 //
                 Cgebrd(m, n, a, lda, s, &dum[0], &cdum[0], &cdum[0], &cdum[0], -1, ierr);
                 lwork_Cgebrd = castINTEGER(cdum[0].real());
