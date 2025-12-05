@@ -5416,6 +5416,143 @@ def _postprocess_mmaxloc(lines):
     return lines
 
 
+def _postprocess_slice_assignment(lines):
+    """Convert array slice assignment to for loop.
+
+    FORTRAN: work(idtgk:idtgk + 2*n - 1) = zero
+    After FABLE: work[__SLICE__(idtgk, idtgk + 2 * n - 1)] = zero;
+    Expected:    for (INTEGER i = idtgk; i <= idtgk + 2 * n - 1; i++) { work[i - 1] = zero; }
+
+    Pattern: array[__SLICE__(start, end)] = value;
+    """
+    import re
+
+    # Pattern to match: identifier[__SLICE__(...)] = ...;
+    pattern = re.compile(
+        r'(\s*)'                           # leading whitespace (group 1)
+        r'([A-Za-z_][A-Za-z0-9_]*)'         # array name (group 2)
+        r'\s*\[\s*__SLICE__\s*\('           # [__SLICE__(
+    )
+
+    def find_matching_paren(s, start):
+        """Find the index of the closing paren matching the one at 'start'."""
+        depth = 0
+        for i in range(start, len(s)):
+            if s[i] == '(':
+                depth += 1
+            elif s[i] == ')':
+                depth -= 1
+                if depth == 0:
+                    return i
+        return -1
+
+    def split_slice_args(s):
+        """Split slice args by top-level comma."""
+        parts = []
+        current = []
+        depth = 0
+        for ch in s:
+            if ch == '(':
+                depth += 1
+                current.append(ch)
+            elif ch == ')':
+                depth -= 1
+                current.append(ch)
+            elif ch == ',' and depth == 0:
+                parts.append(''.join(current).strip())
+                current = []
+            else:
+                current.append(ch)
+        if current:
+            parts.append(''.join(current).strip())
+        return parts
+
+    def rewrite_line(line):
+        result = []
+        pos = 0
+
+        for m in pattern.finditer(line):
+            leading_ws = m.group(1)
+            array_name = m.group(2)
+
+            # Find __SLICE__( start position
+            slice_paren_start = m.end() - 1
+            slice_paren_end = find_matching_paren(line, slice_paren_start)
+            if slice_paren_end < 0:
+                result.append(line[pos:m.end()])
+                pos = m.end()
+                continue
+
+            # Extract slice args (start, end)
+            slice_args_str = line[slice_paren_start + 1:slice_paren_end]
+            slice_args = split_slice_args(slice_args_str)
+
+            if len(slice_args) != 2:
+                result.append(line[pos:m.end()])
+                pos = m.end()
+                continue
+
+            start_expr = slice_args[0]
+            end_expr = slice_args[1]
+
+            # After __SLICE__(...) should be "] = value;"
+            rest_start = slice_paren_end + 1
+            rest = line[rest_start:]
+
+            # Match "] = value;"
+            assign_match = re.match(r'\s*\]\s*=\s*', rest)
+            if not assign_match:
+                result.append(line[pos:m.end()])
+                pos = m.end()
+                continue
+
+            value_start = rest_start + assign_match.end()
+
+            # Find the semicolon (handling nested parens/brackets)
+            depth_paren = 0
+            depth_bracket = 0
+            semicolon_pos = -1
+            for i in range(value_start, len(line)):
+                ch = line[i]
+                if ch == '(':
+                    depth_paren += 1
+                elif ch == ')':
+                    depth_paren -= 1
+                elif ch == '[':
+                    depth_bracket += 1
+                elif ch == ']':
+                    depth_bracket -= 1
+                elif ch == ';' and depth_paren == 0 and depth_bracket == 0:
+                    semicolon_pos = i
+                    break
+
+            if semicolon_pos < 0:
+                result.append(line[pos:m.end()])
+                pos = m.end()
+                continue
+
+            value_expr = line[value_start:semicolon_pos].strip()
+
+            # Build the for loop
+            for_loop = (
+                f"{leading_ws}for (INTEGER i = {start_expr}; i <= {end_expr}; i++) {{ "
+                f"{array_name}[i - 1] = {value_expr}; }}"
+            )
+
+            result.append(line[pos:m.start()])
+            result.append(for_loop)
+            pos = semicolon_pos + 1
+
+        result.append(line[pos:])
+        return ''.join(result)
+
+    if isinstance(lines, list):
+        return [rewrite_line(line) for line in lines]
+    elif isinstance(lines, str):
+        return '\n'.join(rewrite_line(l) for l in lines.split('\n'))
+    return lines
+
+
 def _postprocess_complex_zero_initializers(lines):
     """Rewrite COMPLEX zero initializers using COMPLEX(0.0, 0.0).
 
@@ -5941,6 +6078,9 @@ def process(
 
     # Rewrite Mmaxloc(array(start, end), dim) to Mmaxloc(array, start, end, dim)
     result = _postprocess_mmaxloc(result)
+
+    # Convert array slice assignments to for loops
+    result = _postprocess_slice_assignment(result)
 
     # Clean up temporary Fortran files created for preprocessing.
     for tmp in temp_files:
