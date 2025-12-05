@@ -29,7 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rpstrf(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INTEGER *piv, INTEGER &rank, REAL const tol, REAL *work, INTEGER &info) {
+void Rpstrf(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INTEGER *piv, INTEGER &rank, REAL const &tol, REAL *work, INTEGER &info) {
     bool upper = false;
     INTEGER nb = 0;
     INTEGER i = 0;
@@ -43,10 +43,6 @@ void Rpstrf(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INTEG
     INTEGER itemp = 0;
     REAL dtemp = 0.0;
     const REAL one = 1.0;
-    //
-    //
-    //
-    //
     //
     // Test the input parameters.
     //
