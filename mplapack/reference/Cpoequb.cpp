@@ -31,10 +31,6 @@
 
 void Cpoequb(INTEGER const n, COMPLEX *a, INTEGER const lda, REAL *s, REAL &scond, REAL &amax, INTEGER &info) {
     //
-    //
-    //
-    //
-    //
     // Test the input parameters.
     //
     // Positive definite only performs 1 pass of equilibration.
@@ -61,7 +57,7 @@ void Cpoequb(INTEGER const n, COMPLEX *a, INTEGER const lda, REAL *s, REAL &scon
     }
     //
     REAL base = Rlamch("B");
-    REAL tmp = -0.5e+0 / log(base);
+    REAL tmp = -0.5 / log(base);
     //
     // Find the minimum and maximum diagonal elements.
     //

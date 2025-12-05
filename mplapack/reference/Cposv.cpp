@@ -46,7 +46,7 @@ void Cposv(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a, IN
         info = -7;
     }
     if (info != 0) {
-        Mxerbla("Cposv", -info);
+        Mxerbla("Cposv ", -info);
         return;
     }
     //

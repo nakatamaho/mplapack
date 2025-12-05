@@ -31,10 +31,6 @@
 
 void Cpoequ(INTEGER const n, COMPLEX *a, INTEGER const lda, REAL *s, REAL &scond, REAL &amax, INTEGER &info) {
     //
-    //
-    //
-    //
-    //
     // Test the input parameters.
     //
     info = 0;
