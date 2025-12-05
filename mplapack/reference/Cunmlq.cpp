@@ -31,10 +31,6 @@
 
 void Cunmlq(const char *side, const char *trans, INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX *a, INTEGER const lda, COMPLEX *tau, COMPLEX *c, INTEGER const ldc, COMPLEX *work, INTEGER const lwork, INTEGER &info) {
     //
-    //
-    //
-    //
-    //
     // Test the input arguments
     //
     info = 0;
@@ -42,6 +38,7 @@ void Cunmlq(const char *side, const char *trans, INTEGER const m, INTEGER const 
     bool notran = Mlsame(trans, "N");
     bool lquery = (lwork == -1);
     //
+    // NQ is the order of Q and NW is the minimum dimension of WORK
     //
     INTEGER nq = 0;
     INTEGER nw = 0;
@@ -75,15 +72,11 @@ void Cunmlq(const char *side, const char *trans, INTEGER const m, INTEGER const 
     const INTEGER ldt = nbmax + 1;
     const INTEGER tsize = ldt * nbmax;
     INTEGER lwkopt = 0;
-    char side_trans[3];
-    side_trans[0] = side[0];
-    side_trans[1] = trans[0];
-    side_trans[2] = '\0';
     if (info == 0) {
         //
         // Compute the workspace requirements
         //
-        nb = min(nbmax, iMlaenv(1, "Cunmlq", side_trans, m, n, k, -1));
+        nb = min(nbmax, iMlaenv(1, "Cunmlq", CHAR2(side, trans), m, n, k, -1));
         lwkopt = max((INTEGER)1, nw) * nb + tsize;
         work[0] = lwkopt;
     }
@@ -107,7 +100,7 @@ void Cunmlq(const char *side, const char *trans, INTEGER const m, INTEGER const 
     if (nb > 1 && nb < k) {
         if (lwork < nw * nb + tsize) {
             nb = (lwork - tsize) / ldwork;
-            nbmin = max((INTEGER)2, iMlaenv(2, "Cunmlq", side_trans, m, n, k, -1));
+            nbmin = max((INTEGER)2, iMlaenv(2, "Cunmlq", CHAR2(side, trans), m, n, k, -1));
         }
     }
     //

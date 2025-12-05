@@ -31,10 +31,6 @@
 
 void Cunmhr(const char *side, const char *trans, INTEGER const m, INTEGER const n, INTEGER const ilo, INTEGER const ihi, COMPLEX *a, INTEGER const lda, COMPLEX *tau, COMPLEX *c, INTEGER const ldc, COMPLEX *work, INTEGER const lwork, INTEGER &info) {
     //
-    //
-    //
-    //
-    //
     // Test the input arguments
     //
     info = 0;
@@ -42,6 +38,7 @@ void Cunmhr(const char *side, const char *trans, INTEGER const m, INTEGER const 
     bool left = Mlsame(side, "L");
     bool lquery = (lwork == -1);
     //
+    // NQ is the order of Q and NW is the minimum dimension of WORK
     //
     INTEGER nq = 0;
     INTEGER nw = 0;
@@ -74,15 +71,11 @@ void Cunmhr(const char *side, const char *trans, INTEGER const m, INTEGER const 
     //
     INTEGER nb = 0;
     INTEGER lwkopt = 0;
-    char side_trans[3];
-    side_trans[0] = side[0];
-    side_trans[1] = trans[0];
-    side_trans[2] = '\0';
     if (info == 0) {
         if (left) {
-            nb = iMlaenv(1, "Cunmqr", side_trans, nh, n, nh, -1);
+            nb = iMlaenv(1, "Cunmqr", CHAR2(side, trans), nh, n, nh, -1);
         } else {
-            nb = iMlaenv(1, "Cunmqr", side_trans, m, nh, nh, -1);
+            nb = iMlaenv(1, "Cunmqr", CHAR2(side, trans), m, nh, nh, -1);
         }
         lwkopt = max((INTEGER)1, nw) * nb;
         work[0] = lwkopt;
