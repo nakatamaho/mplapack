@@ -70,11 +70,7 @@ void Rtrtri(const char *uplo, const char *diag, INTEGER const n, REAL *a, INTEGE
     //
     // Determine the block size for this environment.
     //
-    char uplo_diag[3];
-    uplo_diag[0] = uplo[0];
-    uplo_diag[1] = diag[0];
-    uplo_diag[2] = '\0';
-    INTEGER nb = iMlaenv(1, "Rtrtri", uplo_diag, n, -1, -1, -1);
+    INTEGER nb = iMlaenv(1, "Rtrtri", CHAR2(uplo, diag), n, -1, -1, -1);
     INTEGER j = 0;
     INTEGER jb = 0;
     const REAL one = 1.0;
