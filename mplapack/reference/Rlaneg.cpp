@@ -29,17 +29,9 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-INTEGER Rlaneg(INTEGER const n, REAL *d, REAL *lld, REAL const sigma, REAL const /* pivmin */, INTEGER const r) {
+INTEGER
+Rlaneg(INTEGER const n, REAL *d, REAL *lld, REAL const &sigma, REAL const & /* pivmin */, INTEGER const r) {
     INTEGER return_value = 0;
-    //
-    //
-    //
-    //
-    // Some architectures propagate Infinities and NaNs very slowly, so
-    // the code computes counts in BLKLEN chunks.  Then a NaN can
-    // propagate at most BLKLEN columns before being detected.  This is
-    // not a general tuning parameter; it needs only to be just large
-    // enough that the overhead is tiny in common cases.
     //
     INTEGER negcnt = 0;
     //
