@@ -36,7 +36,7 @@ void Cungqr(INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX *a, INTEG
     info = 0;
     INTEGER nb = iMlaenv(1, "Cungqr", " ", m, n, k, -1);
     INTEGER lwkopt = max((INTEGER)1, n) * nb;
-    work[1 - 1] = lwkopt;
+    work[0] = lwkopt;
     bool lquery = (lwork == -1);
     if (m < 0) {
         info = -1;
@@ -59,7 +59,7 @@ void Cungqr(INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX *a, INTEG
     // Quick return if possible
     //
     if (n <= 0) {
-        work[1 - 1] = 1;
+        work[0] = 1;
         return;
     }
     //
@@ -154,7 +154,7 @@ void Cungqr(INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX *a, INTEG
         }
     }
     //
-    work[1 - 1] = iws;
+    work[0] = iws;
     //
     // End of Cungqr
     //
