@@ -96,12 +96,12 @@ void Rgels(const char *trans, INTEGER const m, INTEGER const n, INTEGER const nr
         }
         //
         wsize = max((INTEGER)1, mn + max(mn, nrhs) * nb);
-        work[1 - 1] = castREAL(wsize);
+        work[0] = castREAL(wsize);
         //
     }
     //
     if (info != 0) {
-        Mxerbla("Rgels", -info);
+        Mxerbla("Rgels ", -info);
         return;
     } else if (lquery) {
         return;
@@ -118,6 +118,7 @@ void Rgels(const char *trans, INTEGER const m, INTEGER const n, INTEGER const nr
     //
     smlnum = Rlamch("S") / Rlamch("P");
     bignum = one / smlnum;
+    Rlabad(smlnum, bignum);
     //
     // Scale A, B if max element outside range [SMLNUM,BIGNUM]
     //
@@ -167,7 +168,7 @@ void Rgels(const char *trans, INTEGER const m, INTEGER const n, INTEGER const nr
         //
         // compute QR factorization of A
         //
-        Rgeqrf(m, n, a, lda, &work[1 - 1], &work[(mn + 1) - 1], lwork - mn, info);
+        Rgeqrf(m, n, a, lda, &work[0], &work[(mn + 1) - 1], lwork - mn, info);
         //
         // workspace at least N, optimally N*NB
         //
@@ -177,7 +178,7 @@ void Rgels(const char *trans, INTEGER const m, INTEGER const n, INTEGER const nr
             //
             // B(1:M,1:NRHS) := Q**T * B(1:M,1:NRHS)
             //
-            Rormqr("Left", "Transpose", m, nrhs, n, a, lda, &work[1 - 1], b, ldb, &work[(mn + 1) - 1], lwork - mn, info);
+            Rormqr("Left", "Transpose", m, nrhs, n, a, lda, &work[0], b, ldb, &work[(mn + 1) - 1], lwork - mn, info);
             //
             // workspace at least NRHS, optimally NRHS*NB
             //
@@ -213,7 +214,7 @@ void Rgels(const char *trans, INTEGER const m, INTEGER const n, INTEGER const nr
             //
             // B(1:M,1:NRHS) := Q(1:N,:) * B(1:N,1:NRHS)
             //
-            Rormqr("Left", "No transpose", m, nrhs, n, a, lda, &work[1 - 1], b, ldb, &work[(mn + 1) - 1], lwork - mn, info);
+            Rormqr("Left", "No transpose", m, nrhs, n, a, lda, &work[0], b, ldb, &work[(mn + 1) - 1], lwork - mn, info);
             //
             // workspace at least NRHS, optimally NRHS*NB
             //
@@ -225,7 +226,7 @@ void Rgels(const char *trans, INTEGER const m, INTEGER const n, INTEGER const nr
         //
         // Compute LQ factorization of A
         //
-        Rgelqf(m, n, a, lda, &work[1 - 1], &work[(mn + 1) - 1], lwork - mn, info);
+        Rgelqf(m, n, a, lda, &work[0], &work[(mn + 1) - 1], lwork - mn, info);
         //
         // workspace at least M, optimally M*NB.
         //
@@ -251,7 +252,7 @@ void Rgels(const char *trans, INTEGER const m, INTEGER const n, INTEGER const nr
             //
             // B(1:N,1:NRHS) := Q(1:N,:)**T * B(1:M,1:NRHS)
             //
-            Rormlq("Left", "Transpose", n, nrhs, m, a, lda, &work[1 - 1], b, ldb, &work[(mn + 1) - 1], lwork - mn, info);
+            Rormlq("Left", "Transpose", n, nrhs, m, a, lda, &work[0], b, ldb, &work[(mn + 1) - 1], lwork - mn, info);
             //
             // workspace at least NRHS, optimally NRHS*NB
             //
@@ -263,7 +264,7 @@ void Rgels(const char *trans, INTEGER const m, INTEGER const n, INTEGER const nr
             //
             // B(1:N,1:NRHS) := Q * B(1:N,1:NRHS)
             //
-            Rormlq("Left", "No transpose", n, nrhs, m, a, lda, &work[1 - 1], b, ldb, &work[(mn + 1) - 1], lwork - mn, info);
+            Rormlq("Left", "No transpose", n, nrhs, m, a, lda, &work[0], b, ldb, &work[(mn + 1) - 1], lwork - mn, info);
             //
             // workspace at least NRHS, optimally NRHS*NB
             //
@@ -295,7 +296,7 @@ void Rgels(const char *trans, INTEGER const m, INTEGER const n, INTEGER const nr
     }
 //
 statement_50:
-    work[1 - 1] = castREAL(wsize);
+    work[0] = castREAL(wsize);
     //
     // End of Rgels
     //

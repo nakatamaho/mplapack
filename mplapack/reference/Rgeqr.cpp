@@ -31,10 +31,6 @@
 
 void Rgeqr(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *t, INTEGER const tsize, REAL *work, INTEGER const lwork, INTEGER &info) {
     //
-    //
-    //
-    //
-    //
     // Test the input arguments
     //
     info = 0;
@@ -57,8 +53,8 @@ void Rgeqr(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *t
     INTEGER mb = 0;
     INTEGER nb = 0;
     if (min(m, n) > 0) {
-        mb = iMlaenv(1, "Rgeqr", " ", m, n, 1, -1);
-        nb = iMlaenv(1, "Rgeqr", " ", m, n, 2, -1);
+        mb = iMlaenv(1, "Rgeqr ", " ", m, n, 1, -1);
+        nb = iMlaenv(1, "Rgeqr ", " ", m, n, 2, -1);
     } else {
         mb = m;
         nb = 1;
@@ -102,7 +98,7 @@ void Rgeqr(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *t
         info = -2;
     } else if (lda < max((INTEGER)1, m)) {
         info = -4;
-    } else if ((tsize < max((INTEGER)1, nb * n * nblcks + 5)) && (!lquery) && (!lminws)) {
+    } else if (tsize < max((INTEGER)1, nb * n * nblcks + 5) && (!lquery) && (!lminws)) {
         info = -6;
     } else if ((lwork < max((INTEGER)1, n * nb)) && (!lquery) && (!lminws)) {
         info = -8;
@@ -110,16 +106,16 @@ void Rgeqr(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *t
     //
     if (info == 0) {
         if (mint) {
-            t[1 - 1] = mintsz;
+            t[0] = mintsz;
         } else {
-            t[1 - 1] = nb * n * nblcks + 5;
+            t[0] = nb * n * nblcks + 5;
         }
-        t[2 - 1] = mb;
-        t[3 - 1] = nb;
+        t[1] = mb;
+        t[2] = nb;
         if (minw) {
-            work[1 - 1] = max((INTEGER)1, n);
+            work[0] = max((INTEGER)1, n);
         } else {
-            work[1 - 1] = max((INTEGER)1, nb * n);
+            work[0] = max((INTEGER)1, nb * n);
         }
     }
     if (info != 0) {
@@ -138,12 +134,12 @@ void Rgeqr(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *t
     // The QR Decomposition
     //
     if ((m <= n) || (mb <= n) || (mb >= m)) {
-        Rgeqrt(m, n, nb, a, lda, &t[6 - 1], nb, work, info);
+        Rgeqrt(m, n, nb, a, lda, &t[5], nb, work, info);
     } else {
-        Rlatsqr(m, n, mb, nb, a, lda, &t[6 - 1], nb, work, lwork, info);
+        Rlatsqr(m, n, mb, nb, a, lda, &t[5], nb, work, lwork, info);
     }
     //
-    work[1 - 1] = max((INTEGER)1, nb * n);
+    work[0] = max((INTEGER)1, nb * n);
     //
     // End of Rgeqr
     //

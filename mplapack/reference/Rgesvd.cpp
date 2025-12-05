@@ -31,12 +31,6 @@
 
 void Rgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *s, REAL *u, INTEGER const ldu, REAL *vt, INTEGER const ldvt, REAL *work, INTEGER const lwork, INTEGER &info) {
     //
-    // -- LAPACK driver routine --
-    //
-    //
-    //
-    // .. Local Arrays ..
-    //
     // Test the input arguments
     //
     info = 0;
@@ -74,7 +68,7 @@ void Rgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
     // minimal amount of workspace needed at that point in the code,
     // as well as the preferred amount for good performance.
     // NB refers to the optimal block size for the immediately
-    // following subroutine, as returned by ILAENV.)
+    // following subroutine, as returned by iMlaenv.)
     //
     INTEGER minwrk = 0;
     INTEGER maxwrk = 0;
@@ -92,10 +86,6 @@ void Rgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
     INTEGER lwork_Rgelqf = 0;
     INTEGER lwork_Rorglq_n = 0;
     INTEGER lwork_Rorglq_m = 0;
-    char jobu_jobvt[3];
-    jobu_jobvt[0] = jobu[0];
-    jobu_jobvt[1] = jobvt[0];
-    jobu_jobvt[2] = '\0';
     if (info == 0) {
         minwrk = 1;
         maxwrk = 1;
@@ -103,25 +93,25 @@ void Rgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
             //
             // Compute space needed for Rbdsqr
             //
-            mnthr = iMlaenv(6, "Rgesvd", jobu_jobvt, m, n, 0, 0);
+            mnthr = iMlaenv(6, "Rgesvd", CHAR2(jobu, jobvt), m, n, 0, 0);
             bdspac = 5 * n;
             // Compute space needed for Rgeqrf
-            Rgeqrf(m, n, a, lda, &dum[1 - 1], &dum[1 - 1], -1, ierr);
-            lwork_Rgeqrf = castINTEGER(dum[1 - 1]);
+            Rgeqrf(m, n, a, lda, &dum[0], &dum[0], -1, ierr);
+            lwork_Rgeqrf = castINTEGER(dum[0]);
             // Compute space needed for Rorgqr
-            Rorgqr(m, n, n, a, lda, &dum[1 - 1], &dum[1 - 1], -1, ierr);
-            lwork_Rorgqr_n = castINTEGER(dum[1 - 1]);
-            Rorgqr(m, m, n, a, lda, &dum[1 - 1], &dum[1 - 1], -1, ierr);
-            lwork_Rorgqr_m = castINTEGER(dum[1 - 1]);
+            Rorgqr(m, n, n, a, lda, &dum[0], &dum[0], -1, ierr);
+            lwork_Rorgqr_n = castINTEGER(dum[0]);
+            Rorgqr(m, m, n, a, lda, &dum[0], &dum[0], -1, ierr);
+            lwork_Rorgqr_m = castINTEGER(dum[0]);
             // Compute space needed for Rgebrd
-            Rgebrd(n, n, a, lda, s, &dum[1 - 1], &dum[1 - 1], &dum[1 - 1], &dum[1 - 1], -1, ierr);
-            lwork_Rgebrd = castINTEGER(dum[1 - 1]);
+            Rgebrd(n, n, a, lda, s, &dum[0], &dum[0], &dum[0], &dum[0], -1, ierr);
+            lwork_Rgebrd = castINTEGER(dum[0]);
             // Compute space needed for Rorgbr P
-            Rorgbr("P", n, n, n, a, lda, &dum[1 - 1], &dum[1 - 1], -1, ierr);
-            lwork_Rorgbr_p = castINTEGER(dum[1 - 1]);
+            Rorgbr("P", n, n, n, a, lda, &dum[0], &dum[0], -1, ierr);
+            lwork_Rorgbr_p = castINTEGER(dum[0]);
             // Compute space needed for Rorgbr Q
-            Rorgbr("Q", n, n, n, a, lda, &dum[1 - 1], &dum[1 - 1], -1, ierr);
-            lwork_Rorgbr_q = castINTEGER(dum[1 - 1]);
+            Rorgbr("Q", n, n, n, a, lda, &dum[0], &dum[0], -1, ierr);
+            lwork_Rorgbr_q = castINTEGER(dum[0]);
             //
             if (m >= mnthr) {
                 if (wntun) {
@@ -236,17 +226,17 @@ void Rgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
                 //
                 // Path 10 (M at least N, but not much larger)
                 //
-                Rgebrd(m, n, a, lda, s, &dum[1 - 1], &dum[1 - 1], &dum[1 - 1], &dum[1 - 1], -1, ierr);
-                lwork_Rgebrd = castINTEGER(dum[1 - 1]);
+                Rgebrd(m, n, a, lda, s, &dum[0], &dum[0], &dum[0], &dum[0], -1, ierr);
+                lwork_Rgebrd = castINTEGER(dum[0]);
                 maxwrk = 3 * n + lwork_Rgebrd;
                 if (wntus || wntuo) {
-                    Rorgbr("Q", m, n, n, a, lda, &dum[1 - 1], &dum[1 - 1], -1, ierr);
-                    lwork_Rorgbr_q = castINTEGER(dum[1 - 1]);
+                    Rorgbr("Q", m, n, n, a, lda, &dum[0], &dum[0], -1, ierr);
+                    lwork_Rorgbr_q = castINTEGER(dum[0]);
                     maxwrk = max(maxwrk, 3 * n + lwork_Rorgbr_q);
                 }
                 if (wntua) {
-                    Rorgbr("Q", m, m, n, a, lda, &dum[1 - 1], &dum[1 - 1], -1, ierr);
-                    lwork_Rorgbr_q = castINTEGER(dum[1 - 1]);
+                    Rorgbr("Q", m, m, n, a, lda, &dum[0], &dum[0], -1, ierr);
+                    lwork_Rorgbr_q = castINTEGER(dum[0]);
                     maxwrk = max(maxwrk, 3 * n + lwork_Rorgbr_q);
                 }
                 if (!wntvn) {
@@ -259,29 +249,25 @@ void Rgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
             //
             // Compute space needed for Rbdsqr
             //
-            char jobu_jobvt[3];
-            jobu_jobvt[0] = jobu[0];
-            jobu_jobvt[1] = jobvt[0];
-            jobu_jobvt[2] = '\0';
-            mnthr = iMlaenv(6, "Rgesvd", jobu_jobvt, m, n, 0, 0);
+            mnthr = iMlaenv(6, "Rgesvd", CHAR2(jobu, jobvt), m, n, 0, 0);
             bdspac = 5 * m;
             // Compute space needed for Rgelqf
-            Rgelqf(m, n, a, lda, &dum[1 - 1], &dum[1 - 1], -1, ierr);
-            lwork_Rgelqf = castINTEGER(dum[1 - 1]);
+            Rgelqf(m, n, a, lda, &dum[0], &dum[0], -1, ierr);
+            lwork_Rgelqf = castINTEGER(dum[0]);
             // Compute space needed for Rorglq
-            Rorglq(n, n, m, &dum[1 - 1], n, &dum[1 - 1], &dum[1 - 1], -1, ierr);
-            lwork_Rorglq_n = castINTEGER(dum[1 - 1]);
-            Rorglq(m, n, m, a, lda, &dum[1 - 1], &dum[1 - 1], -1, ierr);
-            lwork_Rorglq_m = castINTEGER(dum[1 - 1]);
+            Rorglq(n, n, m, &dum[0], n, &dum[0], &dum[0], -1, ierr);
+            lwork_Rorglq_n = castINTEGER(dum[0]);
+            Rorglq(m, n, m, a, lda, &dum[0], &dum[0], -1, ierr);
+            lwork_Rorglq_m = castINTEGER(dum[0]);
             // Compute space needed for Rgebrd
-            Rgebrd(m, m, a, lda, s, &dum[1 - 1], &dum[1 - 1], &dum[1 - 1], &dum[1 - 1], -1, ierr);
-            lwork_Rgebrd = castINTEGER(dum[1 - 1]);
+            Rgebrd(m, m, a, lda, s, &dum[0], &dum[0], &dum[0], &dum[0], -1, ierr);
+            lwork_Rgebrd = castINTEGER(dum[0]);
             // Compute space needed for Rorgbr P
-            Rorgbr("P", m, m, m, a, n, &dum[1 - 1], &dum[1 - 1], -1, ierr);
-            lwork_Rorgbr_p = castINTEGER(dum[1 - 1]);
+            Rorgbr("P", m, m, m, a, n, &dum[0], &dum[0], -1, ierr);
+            lwork_Rorgbr_p = castINTEGER(dum[0]);
             // Compute space needed for Rorgbr Q
-            Rorgbr("Q", m, m, m, a, n, &dum[1 - 1], &dum[1 - 1], -1, ierr);
-            lwork_Rorgbr_q = castINTEGER(dum[1 - 1]);
+            Rorgbr("Q", m, m, m, a, n, &dum[0], &dum[0], -1, ierr);
+            lwork_Rorgbr_q = castINTEGER(dum[0]);
             if (n >= mnthr) {
                 if (wntvn) {
                     //
@@ -395,18 +381,18 @@ void Rgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
                 //
                 // Path 10t(N greater than M, but not much larger)
                 //
-                Rgebrd(m, n, a, lda, s, &dum[1 - 1], &dum[1 - 1], &dum[1 - 1], &dum[1 - 1], -1, ierr);
-                lwork_Rgebrd = castINTEGER(dum[1 - 1]);
+                Rgebrd(m, n, a, lda, s, &dum[0], &dum[0], &dum[0], &dum[0], -1, ierr);
+                lwork_Rgebrd = castINTEGER(dum[0]);
                 maxwrk = 3 * m + lwork_Rgebrd;
                 if (wntvs || wntvo) {
                     // Compute space needed for Rorgbr P
-                    Rorgbr("P", m, n, m, a, n, &dum[1 - 1], &dum[1 - 1], -1, ierr);
-                    lwork_Rorgbr_p = castINTEGER(dum[1 - 1]);
+                    Rorgbr("P", m, n, m, a, n, &dum[0], &dum[0], -1, ierr);
+                    lwork_Rorgbr_p = castINTEGER(dum[0]);
                     maxwrk = max(maxwrk, 3 * m + lwork_Rorgbr_p);
                 }
                 if (wntva) {
-                    Rorgbr("P", n, n, m, a, n, &dum[1 - 1], &dum[1 - 1], -1, ierr);
-                    lwork_Rorgbr_p = castINTEGER(dum[1 - 1]);
+                    Rorgbr("P", n, n, m, a, n, &dum[0], &dum[0], -1, ierr);
+                    lwork_Rorgbr_p = castINTEGER(dum[0]);
                     maxwrk = max(maxwrk, 3 * m + lwork_Rorgbr_p);
                 }
                 if (!wntun) {
@@ -417,7 +403,7 @@ void Rgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
             }
         }
         maxwrk = max(maxwrk, minwrk);
-        work[1 - 1] = maxwrk;
+        work[0] = maxwrk;
         //
         if (lwork < minwrk && !lquery) {
             info = -13;
@@ -2918,19 +2904,19 @@ void Rgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
             Rlascl("G", 0, 0, bignum, anrm, minmn, 1, s, minmn, ierr);
         }
         if (info != 0 && anrm > bignum) {
-            Rlascl("G", 0, 0, bignum, anrm, minmn - 1, 1, &work[2 - 1], minmn, ierr);
+            Rlascl("G", 0, 0, bignum, anrm, minmn - 1, 1, &work[1], minmn, ierr);
         }
         if (anrm < smlnum) {
             Rlascl("G", 0, 0, smlnum, anrm, minmn, 1, s, minmn, ierr);
         }
         if (info != 0 && anrm < smlnum) {
-            Rlascl("G", 0, 0, smlnum, anrm, minmn - 1, 1, &work[2 - 1], minmn, ierr);
+            Rlascl("G", 0, 0, smlnum, anrm, minmn - 1, 1, &work[1], minmn, ierr);
         }
     }
     //
     // Return optimal workspace in WORK(1)
     //
-    work[1 - 1] = maxwrk;
+    work[0] = maxwrk;
     //
     // End of Rgesvd
     //

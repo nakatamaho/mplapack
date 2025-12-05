@@ -51,8 +51,6 @@ void Rgeqp3(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, INTEGE
     INTEGER jb = 0;
     INTEGER fjb = 0;
     //
-    // Test input arguments
-    //
     info = 0;
     lquery = (lwork == -1);
     if (m < 0) {
@@ -73,7 +71,7 @@ void Rgeqp3(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, INTEGE
             nb = iMlaenv(inb, "Rgeqrf", " ", m, n, -1, -1);
             lwkopt = 2 * n + (n + 1) * nb;
         }
-        work[1 - 1] = lwkopt;
+        work[0] = lwkopt;
         //
         if ((lwork < iws) && !lquery) {
             info = -8;
@@ -107,7 +105,6 @@ void Rgeqp3(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, INTEGE
     nfxd = nfxd - 1;
     //
     // Factorize fixed columns
-    //
     // Compute the QR factorization of fixed columns and update
     // remaining columns.
     //
@@ -115,17 +112,16 @@ void Rgeqp3(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, INTEGE
         na = min(m, nfxd);
         // CC      CALL Rgeqr2( M, NA, A, LDA, TAU, WORK, INFO )
         Rgeqrf(m, na, a, lda, tau, work, lwork, info);
-        iws = max(iws, castINTEGER(work[1 - 1]));
+        iws = max(iws, castINTEGER(work[0]));
         if (na < n) {
             // CC         CALL Rorm2r( 'Left', 'Transpose', M, N-NA, NA, A, LDA,
             // CC  $                   TAU, A( 1, NA+1 ), LDA, WORK, INFO )
             Rormqr("Left", "Transpose", m, n - na, na, a, lda, tau, &a[((na + 1) - 1) * lda], lda, work, lwork, info);
-            iws = max(iws, castINTEGER(work[1 - 1]));
+            iws = max(iws, castINTEGER(work[0]));
         }
     }
     //
     // Factorize free columns
-    //
     if (nfxd < minmn) {
         //
         sm = m - nfxd;
@@ -202,7 +198,7 @@ void Rgeqp3(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, INTEGE
         //
     }
     //
-    work[1 - 1] = iws;
+    work[0] = iws;
     //
     // End of Rgeqp3
     //
