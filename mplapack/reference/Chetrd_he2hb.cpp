@@ -32,9 +32,6 @@
 void Chetrd_he2hb(const char *uplo, INTEGER const n, INTEGER const kd, COMPLEX *a, INTEGER const lda, COMPLEX *ab, INTEGER const ldab, COMPLEX *tau, COMPLEX *work, INTEGER const lwork, INTEGER &info) {
     //
     //
-    //
-    //
-    //
     // Determine the minimal workspace size required
     // and test the input parameters
     //
@@ -120,7 +117,7 @@ void Chetrd_he2hb(const char *uplo, INTEGER const n, INTEGER const kd, COMPLEX *
     INTEGER iinfo = 0;
     INTEGER j = 0;
     const COMPLEX one = COMPLEX(1.0, 0.0);
-    const COMPLEX half = COMPLEX(0.5e+0, 0.0);
+    const COMPLEX half = COMPLEX(0.5, 0.0);
     const REAL rone = 1.0;
     if (upper) {
         for (i = 1; i <= n - kd; i = i + kd) {
@@ -206,11 +203,6 @@ void Chetrd_he2hb(const char *uplo, INTEGER const n, INTEGER const kd, COMPLEX *
             // an update of the form:  A := A - V*W' - W*V'
             //
             Cher2k(uplo, "No transpose", pn, pk, -one, &a[((i + kd) - 1) + (i - 1) * lda], lda, &work[wpos - 1], ldw, rone, &a[((i + kd) - 1) + ((i + kd) - 1) * lda], lda);
-            // RESTORE A FOR COMPARISON AND CHECKING TO BE REMOVED
-            // DO 45 J = I, I+PK-1
-            // LK = MIN( KD, N-J ) + 1
-            // CALL Ccopy( LK, AB( 1, J ), 1, A( J, J ), 1 )
-            // 45        CONTINUE
         }
         //
         // Copy the lower band to AB which is the band storage matrix

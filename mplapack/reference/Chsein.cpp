@@ -52,7 +52,6 @@ void Chsein(const char *side, const char *eigsrc, const char *initv, bool *selec
     REAL eps3 = 0.0;
     COMPLEX wk = 0.0;
     INTEGER iinfo = 0;
-    cabs1(cdum) = abs(cdum.real()) + abs(cdum.imag());
     //
     // Decode and test the input parameters.
     //

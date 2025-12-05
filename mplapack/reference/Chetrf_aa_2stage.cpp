@@ -31,10 +31,6 @@
 
 void Chetrf_aa_2stage(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *tb, INTEGER const ltb, INTEGER *ipiv, INTEGER *ipiv2, COMPLEX *work, INTEGER const lwork, INTEGER &info) {
     //
-    //
-    //
-    //
-    //
     // Test the input parameters.
     //
     info = 0;
@@ -108,8 +104,8 @@ void Chetrf_aa_2stage(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER con
     //
     INTEGER i = 0;
     INTEGER jb = 0;
-    const COMPLEX one = COMPLEX(1.0f, 0.0f);
-    const COMPLEX zero = COMPLEX(0.0f, 0.0f);
+    const COMPLEX one = COMPLEX(1.0e+0, 0.0e+0);
+    const COMPLEX zero = COMPLEX(0.0e+0, 0.0e+0);
     INTEGER iinfo = 0;
     INTEGER k = 0;
     INTEGER i1 = 0;
