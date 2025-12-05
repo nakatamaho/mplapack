@@ -29,11 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Clagtm(const char *trans, INTEGER const n, INTEGER const nrhs, REAL const alpha, COMPLEX *dl, COMPLEX *d, COMPLEX *du, COMPLEX *x, INTEGER const ldx, REAL const beta, COMPLEX *b, INTEGER const ldb) {
-    //
-    //
-    //
-    //
+void Clagtm(const char *trans, INTEGER const n, INTEGER const nrhs, REAL const &alpha, COMPLEX *dl, COMPLEX *d, COMPLEX *du, COMPLEX *x, INTEGER const ldx, REAL const &beta, COMPLEX *b, INTEGER const ldb) {
     //
     if (n == 0) {
         return;
