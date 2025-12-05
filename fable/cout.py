@@ -1306,6 +1306,32 @@ def _is_simple_lvalue(expr: str) -> bool:
     # This is intentionally permissive: any NAME followed by bracketed expressions.
     return re.match(r'^[A-Za-z_][A-Za-z0-9_]*(\[[^\]]*\])*$', expr) is not None
 
+def _extract_base_identifier_from_unary(expr: str):
+    """Extract base identifier from unary expression like '-alpha' or '-x[i]'.
+
+    Returns (sign, base_identifier, full_base_expr) or (None, None, None) if not matching.
+
+    Examples:
+        '-alpha'    -> ('-', 'alpha', 'alpha')
+        '-x[i]'     -> ('-', 'x', 'x[i]')
+        '+beta'     -> ('+', 'beta', 'beta')
+        'gamma'     -> (None, 'gamma', 'gamma')  # No unary operator
+        'a + b'     -> (None, None, None)  # Complex expression
+    """
+    expr = expr.strip()
+
+    # Check for unary operator at the start
+    sign = None
+    if expr.startswith('-') or expr.startswith('+'):
+        sign = expr[0]
+        expr = expr[1:].strip()
+
+    # Now check if remaining is a simple lvalue
+    m = re.match(r'^([A-Za-z_][A-Za-z0-9_]*)(\[[^\]]*\])*$', expr)
+    if m:
+        return (sign, m.group(1), expr)
+
+    return (None, None, None)
 
 def _collect_complex_variable_names(text: str):
     """Collect names of COMPLEX variables and pointers from the C++ translation unit.
@@ -3284,9 +3310,25 @@ def convert_executable(
                 rhs_dt_code = None
                 rhs_is_complex = False
                 rhs_is_real = False
-                if (lhs_is_real or lhs_is_integer) and rhs_is_simple and rhs_id_tokens:
-                    rhs_fdecl = conv_info.fproc.get_fdecl(
-                        id_tok=rhs_id_tokens[0])
+
+                # Determine the base identifier for type lookup
+                # Handle both simple lvalues and unary-negated expressions
+                rhs_base_id = None
+                if rhs_is_simple and rhs_id_tokens:
+                    rhs_base_id = rhs_id_tokens[0]
+                elif rhs_id_tokens:
+                    # Try to extract base identifier from unary expression
+                    # e.g., "-savealpha" -> "savealpha"
+                    sign, base_name, base_expr = _extract_base_identifier_from_unary(crhs)
+                    if base_name is not None:
+                        # Find the corresponding id_token
+                        for tok in rhs_id_tokens:
+                            if tok.value.lower() == base_name.lower():
+                                rhs_base_id = tok
+                                break
+
+                if (lhs_is_real or lhs_is_integer) and rhs_base_id is not None:
+                    rhs_fdecl = conv_info.fproc.get_fdecl(id_tok=rhs_base_id)
                     if rhs_fdecl is not None and rhs_fdecl.data_type is not None:
                         dt = rhs_fdecl.data_type
                         if isinstance(dt, str):
