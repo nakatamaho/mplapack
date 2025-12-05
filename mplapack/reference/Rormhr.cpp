@@ -31,10 +31,6 @@
 
 void Rormhr(const char *side, const char *trans, INTEGER const m, INTEGER const n, INTEGER const ilo, INTEGER const ihi, REAL *a, INTEGER const lda, REAL *tau, REAL *c, INTEGER const ldc, REAL *work, INTEGER const lwork, INTEGER &info) {
     //
-    //
-    //
-    //
-    //
     // Test the input arguments
     //
     info = 0;
@@ -42,6 +38,7 @@ void Rormhr(const char *side, const char *trans, INTEGER const m, INTEGER const 
     bool left = Mlsame(side, "L");
     bool lquery = (lwork == -1);
     //
+    // NQ is the order of Q and NW is the minimum dimension of WORK
     //
     INTEGER nq = 0;
     INTEGER nw = 0;
@@ -74,15 +71,11 @@ void Rormhr(const char *side, const char *trans, INTEGER const m, INTEGER const 
     //
     INTEGER nb = 0;
     INTEGER lwkopt = 0;
-    char side_trans[3];
-    side_trans[0] = side[0];
-    side_trans[1] = trans[0];
-    side_trans[2] = '\0';
     if (info == 0) {
         if (left) {
-            nb = iMlaenv(1, "Rormqr", side_trans, nh, n, nh, -1);
+            nb = iMlaenv(1, "Rormqr", CHAR2(side, trans), nh, n, nh, -1);
         } else {
-            nb = iMlaenv(1, "Rormqr", side_trans, m, nh, nh, -1);
+            nb = iMlaenv(1, "Rormqr", CHAR2(side, trans), m, nh, nh, -1);
         }
         lwkopt = max((INTEGER)1, nw) * nb;
         work[0] = lwkopt;
@@ -98,7 +91,7 @@ void Rormhr(const char *side, const char *trans, INTEGER const m, INTEGER const 
     // Quick return if possible
     //
     if (m == 0 || n == 0 || nh == 0) {
-        work[0] = 1;
+        work[0] = 1.0;
         return;
     }
     //
