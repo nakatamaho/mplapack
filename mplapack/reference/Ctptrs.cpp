@@ -31,10 +31,6 @@
 
 void Ctptrs(const char *uplo, const char *trans, const char *diag, INTEGER const n, INTEGER const nrhs, COMPLEX *ap, COMPLEX *b, INTEGER const ldb, INTEGER &info) {
     //
-    //
-    //
-    //
-    //
     // Test the input parameters.
     //
     info = 0;

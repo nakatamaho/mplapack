@@ -31,10 +31,6 @@
 
 void Ctptri(const char *uplo, const char *diag, INTEGER const n, COMPLEX *ap, INTEGER &info) {
     //
-    //
-    //
-    //
-    //
     // Test the input parameters.
     //
     info = 0;
