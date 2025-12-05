@@ -60,9 +60,9 @@ void Rtgsna(const char *job, const char *howmny, bool *select, INTEGER const n, 
     REAL dummy[1];
     REAL alphai = 0.0;
     REAL alprqt = 0.0;
-    const REAL two = 2.0e+0;
+    const REAL two = 2.0;
     REAL c1 = 0.0;
-    const REAL four = 4.0e+0;
+    const REAL four = 4.0;
     REAL c2 = 0.0;
     REAL root1 = 0.0;
     REAL root2 = 0.0;
@@ -267,14 +267,14 @@ void Rtgsna(const char *job, const char *howmny, bool *select, INTEGER const n, 
                 // Compute the eigenvalue(s) at position K.
                 //
                 work[0] = a[(k - 1) + (k - 1) * lda];
-                work[2 - 1] = a[((k + 1) - 1) + (k - 1) * lda];
-                work[3 - 1] = a[(k - 1) + ((k + 1) - 1) * lda];
-                work[4 - 1] = a[((k + 1) - 1) + ((k + 1) - 1) * lda];
-                work[5 - 1] = b[(k - 1) + (k - 1) * ldb];
-                work[6 - 1] = b[((k + 1) - 1) + (k - 1) * ldb];
-                work[7 - 1] = b[(k - 1) + ((k + 1) - 1) * ldb];
-                work[8 - 1] = b[((k + 1) - 1) + ((k + 1) - 1) * ldb];
-                Rlag2(work, 2, &work[5 - 1], 2, smlnum * eps, beta, dummy1[0], alphar, dummy[0], alphai);
+                work[1] = a[((k + 1) - 1) + (k - 1) * lda];
+                work[2] = a[(k - 1) + ((k + 1) - 1) * lda];
+                work[3] = a[((k + 1) - 1) + ((k + 1) - 1) * lda];
+                work[4] = b[(k - 1) + (k - 1) * ldb];
+                work[5] = b[((k + 1) - 1) + (k - 1) * ldb];
+                work[6] = b[(k - 1) + ((k + 1) - 1) * ldb];
+                work[7] = b[((k + 1) - 1) + ((k + 1) - 1) * ldb];
+                Rlag2(work, 2, &work[4], 2, smlnum * eps, beta, dummy1[0], alphar, dummy[0], alphai);
                 alprqt = one;
                 c1 = two * (alphar * alphar + alphai * alphai + beta * beta);
                 c2 = four * beta * beta * alphai * alphai;
@@ -308,7 +308,7 @@ void Rtgsna(const char *job, const char *howmny, bool *select, INTEGER const n, 
                 // and compute estimate of Difl((A11,B11), (A22, B22)).
                 //
                 n1 = 1;
-                if (work[2 - 1] != zero) {
+                if (work[1] != zero) {
                     n1 = 2;
                 }
                 n2 = n - n1;
@@ -320,7 +320,7 @@ void Rtgsna(const char *job, const char *howmny, bool *select, INTEGER const n, 
                     Rtgsyl("N", difdri, n2, n1, &work[(n * n1 + n1 + 1) - 1], n, work, n, &work[(n1 + 1) - 1], n, &work[(n * n1 + n1 + i) - 1], n, &work[i - 1], n, &work[(n1 + i) - 1], n, scale, dif[ks - 1], &work[(iz + 1) - 1], lwork - 2 * n * n, iwork, ierr);
                     //
                     if (pair) {
-                        dif[ks - 1] = min(REAL(max(one, alprqt) * dif[ks - 1]), cond);
+                        dif[ks - 1] = min(max(one, alprqt) * dif[ks - 1], cond);
                     }
                 }
             }
