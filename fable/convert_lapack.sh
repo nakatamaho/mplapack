@@ -338,6 +338,37 @@ def _rewrite_imlaenv_typed(line: str) -> str:
 
 lines = [_rewrite_imlaenv_typed(line) for line in lines]
 
+# ---------------------------------------------------------------------------
+# 6) Rewrite lwork_* variables with type letter:
+#    lwork_zxxxx -> lwork_Cxxxx
+#    lwork_Zxxxx -> lwork_Cxxxx
+#    lwork_dxxxx -> lwork_Rxxxx
+#    lwork_Dxxxx -> lwork_Rxxxx
+#    (Other type letters are left unchanged.)
+# ---------------------------------------------------------------------------
+
+LWORK_T_RE = re.compile(r'\blwork_([ZzDd])([A-Za-z0-9_]+)')
+
+def _rewrite_lwork_typed(line: str) -> str:
+    # Do not touch C++ line comments
+    idx = line.find("//")
+    if idx >= 0:
+        code, comment = line[:idx], line[idx:]
+    else:
+        code, comment = line, ""
+
+    def repl(m: re.Match) -> str:
+        tchar, rest = m.groups()
+        # Map type letter Z/z -> C, D/d -> R
+        tmap = {"Z": "C", "z": "C", "D": "R", "d": "R"}
+        new_t = tmap.get(tchar, tchar)
+        return f"lwork_{new_t}{rest}"
+
+    code = LWORK_T_RE.sub(repl, code)
+    return code + comment
+
+lines = [_rewrite_lwork_typed(line) for line in lines]
+
 path.write_text("".join(lines))
 EOF
 
