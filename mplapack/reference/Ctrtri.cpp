@@ -70,11 +70,7 @@ void Ctrtri(const char *uplo, const char *diag, INTEGER const n, COMPLEX *a, INT
     //
     // Determine the block size for this environment.
     //
-    char uplo_diag[3];
-    uplo_diag[0] = uplo[0];
-    uplo_diag[1] = diag[0];
-    uplo_diag[2] = '\0';
-    INTEGER nb = iMlaenv(1, "Ctrtri", uplo_diag, n, -1, -1, -1);
+    INTEGER nb = iMlaenv(1, "Ctrtri", CHAR2(uplo, diag), n, -1, -1, -1);
     INTEGER j = 0;
     INTEGER jb = 0;
     const COMPLEX one = COMPLEX(1.0, 0.0);
