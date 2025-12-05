@@ -31,10 +31,6 @@
 
 void Ctplqt2(INTEGER const m, INTEGER const n, INTEGER const l, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, COMPLEX *t, INTEGER const ldt, INTEGER &info) {
     //
-    //
-    //
-    //
-    //
     // Test the input arguments
     //
     info = 0;

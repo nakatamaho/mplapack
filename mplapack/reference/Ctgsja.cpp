@@ -29,7 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Ctgsja(const char *jobu, const char *jobv, const char *jobq, INTEGER const m, INTEGER const p, INTEGER const n, INTEGER const k, INTEGER const l, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, REAL const tola, REAL const tolb, REAL *alpha, REAL *beta, COMPLEX *u, INTEGER const ldu, COMPLEX *v, INTEGER const ldv, COMPLEX *q, INTEGER const ldq, COMPLEX *work, INTEGER &ncycle, INTEGER &info) {
+void Ctgsja(const char *jobu, const char *jobv, const char *jobq, INTEGER const m, INTEGER const p, INTEGER const n, INTEGER const k, INTEGER const l, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, REAL const &tola, REAL const &tolb, REAL *alpha, REAL *beta, COMPLEX *u, INTEGER const ldu, COMPLEX *v, INTEGER const ldv, COMPLEX *q, INTEGER const ldq, COMPLEX *work, INTEGER &ncycle, INTEGER &info) {
     bool initu = false;
     bool wantu = false;
     bool initv = false;
@@ -229,7 +229,7 @@ void Ctgsja(const char *jobu, const char *jobv, const char *jobq, INTEGER const 
             }
         }
         //
-        // End of cycle loop
+        // End of Cycle loop
         //
     }
     //

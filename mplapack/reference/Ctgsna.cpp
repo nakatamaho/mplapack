@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022
+ * Copyright (c) 2008-2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -107,7 +107,7 @@ void Ctgsna(const char *job, const char *howmny, bool *select, INTEGER const n, 
         } else {
             lwmin = n;
         }
-        work[1 - 1] = lwmin;
+        work[0] = lwmin;
         //
         if (mm < m) {
             info = -15;
@@ -134,6 +134,7 @@ void Ctgsna(const char *job, const char *howmny, bool *select, INTEGER const n, 
     eps = Rlamch("P");
     smlnum = Rlamch("S") / eps;
     bignum = one / smlnum;
+    Rlabad(smlnum, bignum);
     ks = 0;
     for (k = 1; k <= n; k = k + 1) {
         //
@@ -208,7 +209,7 @@ void Ctgsna(const char *job, const char *howmny, bool *select, INTEGER const n, 
     //
     statement_20:;
     }
-    work[1 - 1] = lwmin;
+    work[0] = lwmin;
     //
     // End of Ctgsna
     //

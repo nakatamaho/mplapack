@@ -31,10 +31,6 @@
 
 void Ctpqrt2(INTEGER const m, INTEGER const n, INTEGER const l, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, COMPLEX *t, INTEGER const ldt, INTEGER &info) {
     //
-    //
-    //
-    //
-    //
     // Test the input arguments
     //
     info = 0;
@@ -65,7 +61,7 @@ void Ctpqrt2(INTEGER const m, INTEGER const n, INTEGER const l, COMPLEX *a, INTE
     INTEGER i = 0;
     INTEGER p = 0;
     INTEGER j = 0;
-    const COMPLEX one = COMPLEX(1.0f, 0.0f);
+    const COMPLEX one = COMPLEX(1.0, 0.0);
     COMPLEX alpha = 0.0;
     for (i = 1; i <= n; i = i + 1) {
         //
@@ -92,7 +88,7 @@ void Ctpqrt2(INTEGER const m, INTEGER const n, INTEGER const l, COMPLEX *a, INTE
         }
     }
     //
-    const COMPLEX zero = COMPLEX(0.0f, 0.0f);
+    const COMPLEX zero = COMPLEX(0.0, 0.0);
     INTEGER mp = 0;
     INTEGER np = 0;
     for (i = 2; i <= n; i = i + 1) {
