@@ -5044,6 +5044,140 @@ def _postprocess_ilaenv_name_map(lines):
     return out
 
 
+def _postprocess_ilaenv_char_concat(lines):
+    """Convert character concatenation in iMlaenv's 3rd argument to CHAR2/CHAR3.
+
+    FORTRAN: ILAENV(1, 'DORMQR', SIDE // TRANS, M-1, N, M-1, -1)
+    After FABLE: iMlaenv(1, "Rormqr", side + trans, m - 1, n, m - 1, -1)
+    Expected:    iMlaenv(1, "Rormqr", CHAR2(side, trans), m - 1, n, m - 1, -1)
+
+    Also handles 3-way concatenation:
+    FORTRAN: SIDE // TRANS // DIAG
+    After FABLE: side + trans + diag
+    Expected:    CHAR3(side, trans, diag)
+
+    Requires header definition:
+        #define CHAR2(a, b) ((char[]){(a)[0], (b)[0], '\\0'})
+        #define CHAR3(a, b, c) ((char[]){(a)[0], (b)[0], (c)[0], '\\0'})
+    """
+    import re
+
+    def find_matching_paren(s, start):
+        """Find index of closing paren matching the one at 'start'."""
+        depth = 0
+        for i in range(start, len(s)):
+            if s[i] == '(':
+                depth += 1
+            elif s[i] == ')':
+                depth -= 1
+                if depth == 0:
+                    return i
+        return -1
+
+    def split_args(s):
+        """Split argument string by top-level commas."""
+        parts = []
+        current = []
+        depth = 0
+        for ch in s:
+            if ch == '(':
+                depth += 1
+                current.append(ch)
+            elif ch == ')':
+                depth -= 1
+                current.append(ch)
+            elif ch == ',' and depth == 0:
+                parts.append(''.join(current).strip())
+                current = []
+            else:
+                current.append(ch)
+        if current:
+            parts.append(''.join(current).strip())
+        return parts
+
+    def is_char_concat(arg):
+        """Check if argument looks like 'var1 + var2' or 'var1 + var2 + var3'."""
+        # Pattern: identifier + identifier (+ identifier)?
+        # Must not contain other operators or complex expressions
+        stripped = arg.strip()
+        # Split by '+' at top level
+        parts = []
+        current = []
+        depth = 0
+        for ch in stripped:
+            if ch == '(':
+                depth += 1
+                current.append(ch)
+            elif ch == ')':
+                depth -= 1
+                current.append(ch)
+            elif ch == '+' and depth == 0:
+                parts.append(''.join(current).strip())
+                current = []
+            else:
+                current.append(ch)
+        if current:
+            parts.append(''.join(current).strip())
+
+        # Check if all parts are simple identifiers
+        ident_pat = re.compile(r'^[A-Za-z_][A-Za-z0-9_]*$')
+        if len(parts) < 2 or len(parts) > 3:
+            return None
+        for p in parts:
+            if not ident_pat.match(p):
+                return None
+        return parts
+
+    def rewrite_line(line):
+        # Find iMlaenv( calls
+        pattern = r'\biMlaenv\s*\('
+        result = []
+        pos = 0
+
+        for m in re.finditer(pattern, line):
+            result.append(line[pos:m.start()])
+            call_start = m.start()
+            paren_start = m.end() - 1
+
+            paren_end = find_matching_paren(line, paren_start)
+            if paren_end < 0:
+                result.append(line[call_start:m.end()])
+                pos = m.end()
+                continue
+
+            # Extract arguments
+            args_str = line[paren_start + 1:paren_end]
+            args = split_args(args_str)
+
+            # iMlaenv has at least 7 arguments, 3rd is the character string
+            if len(args) >= 3:
+                third_arg = args[2]
+                char_parts = is_char_concat(third_arg)
+                if char_parts:
+                    # Replace with CHAR2 or CHAR3
+                    if len(char_parts) == 2:
+                        args[2] = f"CHAR2({char_parts[0]}, {char_parts[1]})"
+                    elif len(char_parts) == 3:
+                        args[2] = f"CHAR3({char_parts[0]}, {char_parts[1]}, {char_parts[2]})"
+                    new_call = f"iMlaenv({', '.join(args)})"
+                    result.append(new_call)
+                    pos = paren_end + 1
+                    continue
+
+            # No transformation needed
+            result.append(line[call_start:paren_end + 1])
+            pos = paren_end + 1
+
+        result.append(line[pos:])
+        return ''.join(result)
+
+    if isinstance(lines, list):
+        return [rewrite_line(line) for line in lines]
+    elif isinstance(lines, str):
+        return '\n'.join(rewrite_line(l) for l in lines.split('\n'))
+    return lines
+
+
 def _postprocess_strip_float_suffix(lines):
     """Remove 'f' suffix from floating literals like 1.0f, 0.5f, 3.14e-1f."""
     # Match patterns like:
@@ -5795,6 +5929,9 @@ def process(
 
     # Apply MPLAPACK name mapping inside iMlaenv calls.
     result = _postprocess_ilaenv_name_map(result)
+
+    # Convert character concatenation in iMlaenv to CHAR2/CHAR3.
+    result = _postprocess_ilaenv_char_concat(result)
 
     # Strip C-style float suffixes from literals (1.0f -> 1.0, etc.).
     result = _postprocess_strip_float_suffix(result)
