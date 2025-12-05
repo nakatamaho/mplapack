@@ -31,11 +31,6 @@
 
 void Rorbdb4(INTEGER const m, INTEGER const p, INTEGER const q, REAL *x11, INTEGER const ldx11, REAL *x21, INTEGER const ldx21, REAL *theta, REAL *phi, REAL *taup1, REAL *taup2, REAL *tauq1, REAL *phantom, REAL *work, INTEGER const lwork, INTEGER &info) {
     //
-    //
-    //
-    //
-    // .. Intrinsic Function ..
-    //
     // Test input arguments
     //
     info = 0;
@@ -97,9 +92,9 @@ void Rorbdb4(INTEGER const m, INTEGER const p, INTEGER const q, REAL *x11, INTEG
             for (j = 1; j <= m; j = j + 1) {
                 phantom[j - 1] = zero;
             }
-            Rorbdb5(p, m - p, q, phantom, 1, &phantom[(p + 1) - 1], 1, x11, ldx11, x21, ldx21, &work[iorbdb5 - 1], lorbdb5, childinfo);
-            Rscal(p, negone, phantom, 1);
-            Rlarfgp(p, phantom[0], &phantom[2 - 1], 1, taup1[0]);
+            Rorbdb5(p, m - p, q, &phantom[0], 1, &phantom[(p + 1) - 1], 1, x11, ldx11, x21, ldx21, &work[iorbdb5 - 1], lorbdb5, childinfo);
+            Rscal(p, negone, &phantom[0], 1);
+            Rlarfgp(p, phantom[0], &phantom[1], 1, taup1[0]);
             Rlarfgp(m - p, phantom[(p + 1) - 1], &phantom[(p + 2) - 1], 1, taup2[0]);
             theta[i - 1] = atan2(phantom[0], phantom[(p + 1) - 1]);
             c = cos(theta[i - 1]);

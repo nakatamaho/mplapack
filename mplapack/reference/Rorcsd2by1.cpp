@@ -31,13 +31,6 @@
 
 void Rorcsd2by1(const char *jobu1, const char *jobu2, const char *jobv1t, INTEGER const m, INTEGER const p, INTEGER const q, REAL *x11, INTEGER const ldx11, REAL *x21, INTEGER const ldx21, REAL *theta, REAL *u1, INTEGER const ldu1, REAL *u2, INTEGER const ldu2, REAL *v1t, INTEGER const ldv1t, REAL *work, INTEGER const lwork, INTEGER *iwork, INTEGER &info) {
     //
-    // -- LAPACK computational routine (3.5.0) --
-    //
-    //
-    //
-    // .. Local Arrays ..
-    // .. Intrinsic Function ..
-    //
     // Test input arguments
     //
     info = 0;
