@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022
+ * Copyright (c) 2008-2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -64,7 +64,7 @@ void Cunbdb4(INTEGER const m, INTEGER const p, INTEGER const q, COMPLEX *x11, IN
         lworkopt = ilarf + llarf - 1;
         lworkopt = max(lworkopt, iorbdb5 + lorbdb5 - 1);
         lworkmin = lworkopt;
-        work[0] = castREAL(lworkopt);
+        work[0] = lworkopt;
         if (lwork < lworkmin && !lquery) {
             info = -14;
         }
@@ -94,7 +94,7 @@ void Cunbdb4(INTEGER const m, INTEGER const p, INTEGER const q, COMPLEX *x11, IN
             }
             Cunbdb5(p, m - p, q, &phantom[0], 1, &phantom[(p + 1) - 1], 1, x11, ldx11, x21, ldx21, &work[iorbdb5 - 1], lorbdb5, childinfo);
             Cscal(p, negone, &phantom[0], 1);
-            Clarfgp(p, phantom[0], &phantom[2 - 1], 1, taup1[0]);
+            Clarfgp(p, phantom[0], &phantom[1], 1, taup1[0]);
             Clarfgp(m - p, phantom[(p + 1) - 1], &phantom[(p + 2) - 1], 1, taup2[0]);
             theta[i - 1] = atan2(phantom[0].real(), phantom[(p + 1) - 1].real());
             c = cos(theta[i - 1]);

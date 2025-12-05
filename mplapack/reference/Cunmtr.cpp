@@ -38,6 +38,7 @@ void Cunmtr(const char *side, const char *uplo, const char *trans, INTEGER const
     bool upper = Mlsame(uplo, "U");
     bool lquery = (lwork == -1);
     //
+    // NQ is the order of Q and NW is the minimum dimension of WORK
     //
     INTEGER nq = 0;
     INTEGER nw = 0;
@@ -68,22 +69,18 @@ void Cunmtr(const char *side, const char *uplo, const char *trans, INTEGER const
     //
     INTEGER nb = 0;
     INTEGER lwkopt = 0;
-    char side_trans[3];
-    side_trans[0] = side[0];
-    side_trans[1] = trans[0];
-    side_trans[2] = '\0';
     if (info == 0) {
         if (upper) {
             if (left) {
-                nb = iMlaenv(1, "Cunmql", side_trans, m - 1, n, m - 1, -1);
+                nb = iMlaenv(1, "Cunmql", CHAR2(side, trans), m - 1, n, m - 1, -1);
             } else {
-                nb = iMlaenv(1, "Cunmql", side_trans, m, n - 1, n - 1, -1);
+                nb = iMlaenv(1, "Cunmql", CHAR2(side, trans), m, n - 1, n - 1, -1);
             }
         } else {
             if (left) {
-                nb = iMlaenv(1, "Cunmqr", side_trans, m - 1, n, m - 1, -1);
+                nb = iMlaenv(1, "Cunmqr", CHAR2(side, trans), m - 1, n, m - 1, -1);
             } else {
-                nb = iMlaenv(1, "Cunmqr", side_trans, m, n - 1, n - 1, -1);
+                nb = iMlaenv(1, "Cunmqr", CHAR2(side, trans), m, n - 1, n - 1, -1);
             }
         }
         lwkopt = max((INTEGER)1, nw) * nb;
