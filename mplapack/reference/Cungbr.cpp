@@ -31,10 +31,6 @@
 
 void Cungbr(const char *vect, INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX *a, INTEGER const lda, COMPLEX *tau, COMPLEX *work, INTEGER const lwork, INTEGER &info) {
     //
-    //
-    //
-    //
-    //
     // Test the input arguments
     //
     info = 0;
@@ -58,7 +54,7 @@ void Cungbr(const char *vect, INTEGER const m, INTEGER const n, INTEGER const k,
     INTEGER iinfo = 0;
     INTEGER lwkopt = 0;
     if (info == 0) {
-        work[1 - 1] = 1;
+        work[0] = 1;
         if (wantq) {
             if (m >= k) {
                 Cungqr(m, n, k, a, lda, tau, work, -1, iinfo);
@@ -76,7 +72,7 @@ void Cungbr(const char *vect, INTEGER const m, INTEGER const n, INTEGER const k,
                 }
             }
         }
-        lwkopt = castINTEGER(work[1 - 1].real());
+        lwkopt = castINTEGER(work[0].real());
         lwkopt = max(lwkopt, mn);
     }
     //
@@ -84,14 +80,14 @@ void Cungbr(const char *vect, INTEGER const m, INTEGER const n, INTEGER const k,
         Mxerbla("Cungbr", -info);
         return;
     } else if (lquery) {
-        work[1 - 1] = lwkopt;
+        work[0] = lwkopt;
         return;
     }
     //
     // Quick return if possible
     //
     if (m == 0 || n == 0) {
-        work[1 - 1] = 1;
+        work[0] = 1;
         return;
     }
     //
@@ -172,7 +168,7 @@ void Cungbr(const char *vect, INTEGER const m, INTEGER const n, INTEGER const k,
             }
         }
     }
-    work[1 - 1] = lwkopt;
+    work[0] = lwkopt;
     //
     // End of Cungbr
     //
