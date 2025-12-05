@@ -31,7 +31,6 @@
 
 void Rormrz(const char *side, const char *trans, INTEGER const m, INTEGER const n, INTEGER const k, INTEGER const l, REAL *a, INTEGER const lda, REAL *tau, REAL *c, INTEGER const ldc, REAL *work, INTEGER const lwork, INTEGER &info) {
     //
-    //
     // Test the input arguments
     //
     info = 0;
@@ -101,7 +100,7 @@ void Rormrz(const char *side, const char *trans, INTEGER const m, INTEGER const 
     // Quick return if possible
     //
     if (m == 0 || n == 0) {
-        work[0] = 1;
+        work[0] = 1.0;
         return;
     }
     //
