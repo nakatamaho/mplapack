@@ -47,7 +47,7 @@ void Rbdsdc(const char *uplo, const char *compq, INTEGER const n, REAL *d, REAL 
     REAL orgnrm = 0.0;
     INTEGER ierr = 0;
     REAL eps = 0.0;
-    const REAL two = 2.0e+0;
+    const REAL two = 2.0;
     INTEGER mlvl = 0;
     INTEGER smlszp = 0;
     INTEGER difl = 0;
@@ -68,11 +68,6 @@ void Rbdsdc(const char *uplo, const char *compq, INTEGER const n, REAL *d, REAL 
     INTEGER kk = 0;
     REAL p = 0.0;
     INTEGER j = 0;
-    //
-    //
-    //
-    // (N-1).  Sven, 17 Feb 05.
-    //
     //
     // Test the input parameters.
     //
@@ -118,13 +113,13 @@ void Rbdsdc(const char *uplo, const char *compq, INTEGER const n, REAL *d, REAL 
     smlsiz = iMlaenv(9, "Rbdsdc", " ", 0, 0, 0, 0);
     if (n == 1) {
         if (icompq == 1) {
-            q[1 - 1] = sign(one, d[1 - 1]);
+            q[0] = sign(one, d[0]);
             q[(1 + smlsiz * n) - 1] = one;
         } else if (icompq == 2) {
-            u[0] = sign(one, d[1 - 1]);
+            u[0] = sign(one, d[0]);
             vt[0] = one;
         }
-        d[1 - 1] = abs(d[1 - 1]);
+        d[0] = abs(d[0]);
         return;
     }
     nm1 = n - 1;
@@ -135,7 +130,7 @@ void Rbdsdc(const char *uplo, const char *compq, INTEGER const n, REAL *d, REAL 
     wstart = 1;
     qstart = 3;
     if (icompq == 1) {
-        Rcopy(n, d, 1, &q[1 - 1], 1);
+        Rcopy(n, d, 1, &q[0], 1);
         Rcopy(n - 1, e, 1, &q[(n + 1) - 1], 1);
     }
     if (iuplo == 2) {
@@ -164,7 +159,7 @@ void Rbdsdc(const char *uplo, const char *compq, INTEGER const n, REAL *d, REAL 
         // Ignore WSTART, instead using WORK( 1 ), since the two vectors
         // for CS and -SN above are added only if ICOMPQ == 2,
         // and adding them exceeds documented WORK size of 4*n.
-        Rlasdq("U", 0, n, 0, 0, 0, d, e, vt, ldvt, u, ldu, u, ldu, &work[1 - 1], info);
+        Rlasdq("U", 0, n, 0, 0, 0, d, e, vt, ldvt, u, ldu, u, ldu, &work[0], info);
         goto statement_40;
     }
     //
@@ -200,7 +195,7 @@ void Rbdsdc(const char *uplo, const char *compq, INTEGER const n, REAL *d, REAL 
     Rlascl("G", 0, 0, orgnrm, one, n, 1, d, n, ierr);
     Rlascl("G", 0, 0, orgnrm, one, nm1, 1, e, nm1, ierr);
     //
-    eps = (0.9e+0) * Rlamch("Epsilon");
+    eps = (0.9) * Rlamch("Epsilon");
     //
     mlvl = castINTEGER(log(castREAL(n) / castREAL(smlsiz + 1)) / log(two)) + 1;
     smlszp = smlsiz + 1;
@@ -320,7 +315,7 @@ statement_40:
     // which rotated B to be upper bidiagonal
     //
     if ((iuplo == 2) && (icompq == 2)) {
-        Rlasr("L", "V", "B", n, n, &work[1 - 1], &work[n - 1], u, ldu);
+        Rlasr("L", "V", "B", n, n, &work[0], &work[n - 1], u, ldu);
     }
     //
     // End of Rbdsdc
