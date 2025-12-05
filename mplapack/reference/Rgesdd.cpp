@@ -31,12 +31,6 @@
 
 void Rgesdd(const char *jobz, INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *s, REAL *u, INTEGER const ldu, REAL *vt, INTEGER const ldvt, REAL *work, INTEGER const lwork, INTEGER *iwork, INTEGER &info) {
     //
-    // -- LAPACK driver routine --
-    //
-    //
-    //
-    // .. Local Arrays ..
-    //
     // Test the input arguments
     //
     info = 0;
@@ -97,13 +91,13 @@ void Rgesdd(const char *jobz, INTEGER const m, INTEGER const n, REAL *a, INTEGER
         minwrk = 1;
         maxwrk = 1;
         bdspac = 0;
-        mnthr = int(minmn * 11.0 / 6.0);
+        mnthr = castINTEGER(minmn * 11.0 / 6.0);
         if (m >= n && minmn > 0) {
             //
             // Compute space needed for Rbdsdc
             //
             if (wntqn) {
-                // Rbdsdc needs only 4*N (or 6*N for uplo=L for LAPACK <= 3.6)
+                // dbdsdc needs only 4*N (or 6*N for uplo=L for LAPACK <= 3.6)
                 // keep 7*N for backwards compatibility.
                 bdspac = 7 * n;
             } else {
@@ -222,7 +216,7 @@ void Rgesdd(const char *jobz, INTEGER const m, INTEGER const n, REAL *a, INTEGER
             // Compute space needed for Rbdsdc
             //
             if (wntqn) {
-                // Rbdsdc needs only 4*N (or 6*N for uplo=L for LAPACK <= 3.6)
+                // dbdsdc needs only 4*N (or 6*N for uplo=L for LAPACK <= 3.6)
                 // keep 7*N for backwards compatibility.
                 bdspac = 7 * m;
             } else {

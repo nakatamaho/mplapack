@@ -29,7 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rgelsy(INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, INTEGER *jpvt, REAL const rcond, INTEGER &rank, REAL *work, INTEGER const lwork, INTEGER &info) {
+void Rgelsy(INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, INTEGER *jpvt, REAL const &rcond, INTEGER &rank, REAL *work, INTEGER const lwork, INTEGER &info) {
     INTEGER mn = 0;
     INTEGER ismin = 0;
     INTEGER ismax = 0;
@@ -62,11 +62,6 @@ void Rgelsy(INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEG
     REAL s2 = 0.0;
     REAL c2 = 0.0;
     INTEGER j = 0;
-    //
-    // -- LAPACK driver routine --
-    //
-    //
-    //
     //
     mn = min(m, n);
     ismin = mn + 1;
@@ -128,6 +123,7 @@ void Rgelsy(INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEG
     //
     smlnum = Rlamch("S") / Rlamch("P");
     bignum = one / smlnum;
+    Rlabad(smlnum, bignum);
     //
     // Scale A, B if max entries outside range [SMLNUM,BIGNUM]
     //
@@ -231,7 +227,7 @@ statement_10:
     // B(1:M,1:NRHS) := Q**T * B(1:M,1:NRHS)
     //
     Rormqr("Left", "Transpose", m, nrhs, mn, a, lda, &work[0], b, ldb, &work[(2 * mn + 1) - 1], lwork - 2 * mn, info);
-    wsize = max(wsize, REAL(2 * mn + work[(2 * mn + 1) - 1]));
+    wsize = max(wsize, 2 * mn + work[(2 * mn + 1) - 1]);
     //
     // workspace: 2*MN+NB*NRHS.
     //

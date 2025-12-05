@@ -29,13 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rgesvdx(const char *jobu, const char *jobvt, const char *range, INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL const vl, REAL const vu, INTEGER const il, INTEGER const iu, INTEGER &ns, REAL *s, REAL *u, INTEGER const ldu, REAL *vt, INTEGER const ldvt, REAL *work, INTEGER const lwork, INTEGER *iwork, INTEGER &info) {
-    //
-    // -- LAPACK driver routine --
-    //
-    //
-    //
-    // .. Local Arrays ..
+void Rgesvdx(const char *jobu, const char *jobvt, const char *range, INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL const &vl, REAL const &vu, INTEGER const il, INTEGER const iu, INTEGER &ns, REAL *s, REAL *u, INTEGER const ldu, REAL *vt, INTEGER const ldvt, REAL *work, INTEGER const lwork, INTEGER *iwork, INTEGER &info) {
     //
     // Test the input arguments.
     //
@@ -110,16 +104,12 @@ void Rgesvdx(const char *jobu, const char *jobvt, const char *range, INTEGER con
     INTEGER minwrk = 0;
     INTEGER maxwrk = 0;
     INTEGER mnthr = 0;
-    char jobu_jobvt[3];
-    jobu_jobvt[0] = jobu[0];
-    jobu_jobvt[1] = jobvt[0];
-    jobu_jobvt[2] = '\0';
     if (info == 0) {
         minwrk = 1;
         maxwrk = 1;
         if (minmn > 0) {
             if (m >= n) {
-                mnthr = iMlaenv(6, "Rgesvd", jobu_jobvt, m, n, 0, 0);
+                mnthr = iMlaenv(6, "Rgesvd", CHAR2(jobu, jobvt), m, n, 0, 0);
                 if (m >= mnthr) {
                     //
                     // Path 1 (M much larger than N)
@@ -147,7 +137,7 @@ void Rgesvdx(const char *jobu, const char *jobvt, const char *range, INTEGER con
                     minwrk = max(n * (n * 2 + 19), 4 * n + m);
                 }
             } else {
-                mnthr = iMlaenv(6, "Rgesvd", jobu_jobvt, m, n, 0, 0);
+                mnthr = iMlaenv(6, "Rgesvd", CHAR2(jobu, jobvt), m, n, 0, 0);
                 if (n >= mnthr) {
                     //
                     // Path 1t (N much larger than M)

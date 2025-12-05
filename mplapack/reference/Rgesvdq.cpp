@@ -88,6 +88,7 @@ void Rgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
     INTEGER n1 = 0;
     INTEGER optratio = 0;
     //
+    //
     // Test the input arguments
     //
     wntus = Mlsame(jobu, "S") || Mlsame(jobu, "U");
@@ -357,7 +358,7 @@ void Rgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
         //
         iwork[0] = iminwrk;
         work[0] = optwrk;
-        work[2 - 1] = minwrk;
+        work[1] = minwrk;
         rwork[0] = rminwrk;
         return;
     }
@@ -424,9 +425,9 @@ void Rgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
                 }
             }
             if (conda) {
-                rwork[0] = -1;
+                rwork[0] = -1.0;
             }
-            rwork[2 - 1] = -1;
+            rwork[1] = -1.0;
             return;
         }
         //
@@ -498,7 +499,7 @@ void Rgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
     } else if (acclm) {
         // .. similarly as above, only slightly more gentle (less aggressive).
         // Sudden drop on the diagonal of R is used as the criterion for being
-        // close-to-rank-deficient. The threshold is set to EPSLN=DLAMCH('E').
+        // close-to-rank-deficient. The threshold is set to EPSLN=Rlamch('E').
         // [[This can be made more flexible by replacing this hard-coded value
         // with a user specified threshold.]] Also, the values that underflow
         // will be truncated.
@@ -635,6 +636,7 @@ void Rgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
             // vectors of A.
         }
         //
+        // .. assemble the left singular vector matrix U of dimensions
         // (M x NR) or (M x N) or (M x M).
         if ((nr < m) && (!wntuf)) {
             Rlaset("A", m - nr, nr, zero, zero, &u[((nr + 1) - 1)], ldu);
@@ -823,6 +825,7 @@ void Rgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
                         }
                     }
                     Rlapmt(false, n, n, v, ldv, iwork);
+                    // .. assemble the left singular vector matrix U of dimensions
                     // (M x N1), i.e. (M x N) or (M x M).
                     //
                     for (p = 1; p <= n; p = p + 1) {
@@ -864,6 +867,7 @@ void Rgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
                     Rlaset("A", n - nr, n - nr, zero, one, &v[((nr + 1) - 1) + ((nr + 1) - 1) * ldv], ldv);
                     Rormqr("R", "C", n, n, nr, &u[((nr + 1) - 1) * ldu], ldu, &work[(n + 1) - 1], v, ldv, &work[(n + nr + 1) - 1], lwork - n - nr, ierr);
                     Rlapmt(false, n, n, v, ldv, iwork);
+                    // .. assemble the left singular vector matrix U of dimensions
                     // (M x NR) or (M x N) or (M x M).
                     if ((nr < m) && !(wntuf)) {
                         Rlaset("A", m - nr, nr, zero, zero, &u[((nr + 1) - 1)], ldu);
@@ -890,6 +894,7 @@ void Rgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
                 Rgesvd("S", "O", nr, n, v, ldv, s, u, ldu, v, ldv, &work[(n + 1) - 1], lwork - n, info);
                 Rlapmt(false, nr, n, v, ldv, iwork);
                 // .. now [V](1:NR,1:N) contains V(1:N,1:NR)**T
+                // .. assemble the left singular vector matrix U of dimensions
                 // (M x NR) or (M x N) or (M x M).
                 if ((nr < m) && !(wntuf)) {
                     Rlaset("A", m - nr, nr, zero, zero, &u[((nr + 1) - 1)], ldu);
@@ -922,6 +927,7 @@ void Rgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
                     // .. now [V] contains the transposed matrix of the right
                     // singular vectors of A. The leading N left singular vectors
                     // are in [U](1:N,1:N)
+                    // .. assemble the left singular vector matrix U of dimensions
                     // (M x N1), i.e. (M x N) or (M x M).
                     if ((n < m) && !(wntuf)) {
                         Rlaset("A", m - n, n, zero, zero, &u[((n + 1) - 1)], ldu);
@@ -946,6 +952,7 @@ void Rgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
                     Rlaset("A", n - nr, n - nr, zero, one, &v[((nr + 1) - 1) + ((nr + 1) - 1) * ldv], ldv);
                     Rormlq("R", "N", n, n, nr, &u[((nr + 1) - 1)], ldu, &work[(n + 1) - 1], v, ldv, &work[(n + nr + 1) - 1], lwork - n - nr, ierr);
                     Rlapmt(false, n, n, v, ldv, iwork);
+                    // .. assemble the left singular vector matrix U of dimensions
                     // (M x NR) or (M x N) or (M x M).
                     if ((nr < m) && !(wntuf)) {
                         Rlaset("A", m - nr, nr, zero, zero, &u[((nr + 1) - 1)], ldu);
@@ -996,7 +1003,7 @@ statement_4002:
     if (conda) {
         rwork[0] = sconda;
     }
-    rwork[2 - 1] = p - nr;
+    rwork[1] = p - nr;
     // .. p-NR is the number of singular values that are computed as
     // exact zeros in Rgesvd() applied to the (possibly truncated)
     // full row rank triangular (trapezoidal) factor of A.
