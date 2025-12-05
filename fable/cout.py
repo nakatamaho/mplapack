@@ -1306,6 +1306,7 @@ def _is_simple_lvalue(expr: str) -> bool:
     # This is intentionally permissive: any NAME followed by bracketed expressions.
     return re.match(r'^[A-Za-z_][A-Za-z0-9_]*(\[[^\]]*\])*$', expr) is not None
 
+
 def _extract_base_identifier_from_unary(expr: str):
     """Extract base identifier from unary expression like '-alpha' or '-x[i]'.
 
@@ -1332,6 +1333,7 @@ def _extract_base_identifier_from_unary(expr: str):
         return (sign, m.group(1), expr)
 
     return (None, None, None)
+
 
 def _collect_complex_variable_names(text: str):
     """Collect names of COMPLEX variables and pointers from the C++ translation unit.
@@ -2259,6 +2261,7 @@ def is_simple_do_last(tokens):
     return False
 
 
+# this part is very dangerous. It can change the meanings of the loops.
 def convert_to_fem_do(conv_info, parent_scope, i_tok, fls_tokens):
     assert 2 <= len(fls_tokens) <= 3
     i = convert_token(vmap=conv_info.vmap, leading=True, tok=i_tok)
@@ -2274,12 +2277,20 @@ def convert_to_fem_do(conv_info, parent_scope, i_tok, fls_tokens):
                 return parent_scope.open_nested_scope(
                     opening_text=["for(%s=%s; %s>=%s; %s=%s%s) {" % (i, f, i, l, i, i, s)])
         else:
-            if '-' in s:
+            if s.lstrip().startswith('-'):
+                # Step starts with '-', definitely negative.
                 return parent_scope.open_nested_scope(
                     opening_text=["for(%s=%s; %s>=%s; %s=%s%s) {" % (i, f, i, l, i, i, s)])
+            elif re.match(r'^[a-zA-Z_][a-zA-Z0-9_]*$', s.strip()):
+                # Simple variable name, assume positive step.
+                return parent_scope.open_nested_scope(
+                    opening_text=["for(%s=%s; %s > 0 ? %s<=%s : %s>=%s; %s=%s+%s) {" % (i, f, s, i, l, i, l, i, i, s)])
             else:
+                # Step is a complex expression; sign unknown at compile time.
+                # Use ternary operator to select the correct loop condition.
                 return parent_scope.open_nested_scope(
                     opening_text=["for(%s=%s; %s<=%s; %s=%s+%s) {" % (i, f, i, l, i, i, s)])
+
     if (conv_info.fem_do_safe):
         return parent_scope.open_nested_scope(
             opening_text=["for(%s=%s; %s<=%s; %s=%s+1) {" % (i, f, i, l, i, i)])
@@ -3319,7 +3330,8 @@ def convert_executable(
                 elif rhs_id_tokens:
                     # Try to extract base identifier from unary expression
                     # e.g., "-savealpha" -> "savealpha"
-                    sign, base_name, base_expr = _extract_base_identifier_from_unary(crhs)
+                    sign, base_name, base_expr = _extract_base_identifier_from_unary(
+                        crhs)
                     if base_name is not None:
                         # Find the corresponding id_token
                         for tok in rhs_id_tokens:
