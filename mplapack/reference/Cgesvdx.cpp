@@ -29,13 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Cgesvdx(const char *jobu, const char *jobvt, const char *range, INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, REAL const vl, REAL const vu, INTEGER const il, INTEGER const iu, INTEGER &ns, REAL *s, COMPLEX *u, INTEGER const ldu, COMPLEX *vt, INTEGER const ldvt, COMPLEX *work, INTEGER const lwork, REAL *rwork, INTEGER *iwork, INTEGER &info) {
-    //
-    // -- LAPACK driver routine --
-    //
-    //
-    //
-    // .. Local Arrays ..
+void Cgesvdx(const char *jobu, const char *jobvt, const char *range, INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, REAL const &vl, REAL const &vu, INTEGER const il, INTEGER const iu, INTEGER &ns, REAL *s, COMPLEX *u, INTEGER const ldu, COMPLEX *vt, INTEGER const ldvt, COMPLEX *work, INTEGER const lwork, REAL *rwork, INTEGER *iwork, INTEGER &info) {
     //
     // Test the input arguments.
     //
@@ -110,16 +104,12 @@ void Cgesvdx(const char *jobu, const char *jobvt, const char *range, INTEGER con
     INTEGER minwrk = 0;
     INTEGER maxwrk = 0;
     INTEGER mnthr = 0;
-    char jobu_jobvt[3];
-    jobu_jobvt[0] = jobu[0];
-    jobu_jobvt[1] = jobvt[0];
-    jobu_jobvt[2] = '\0';
     if (info == 0) {
         minwrk = 1;
         maxwrk = 1;
         if (minmn > 0) {
             if (m >= n) {
-                mnthr = iMlaenv(6, "Cgesvd", jobu_jobvt, m, n, 0, 0);
+                mnthr = iMlaenv(6, "Cgesvd", CHAR2(jobu, jobvt), m, n, 0, 0);
                 if (m >= mnthr) {
                     //
                     // Path 1 (M much larger than N)
@@ -141,7 +131,7 @@ void Cgesvdx(const char *jobu, const char *jobvt, const char *range, INTEGER con
                     }
                 }
             } else {
-                mnthr = iMlaenv(6, "Cgesvd", jobu_jobvt, m, n, 0, 0);
+                mnthr = iMlaenv(6, "Cgesvd", CHAR2(jobu, jobvt), m, n, 0, 0);
                 if (n >= mnthr) {
                     //
                     // Path 1t (N much larger than M)

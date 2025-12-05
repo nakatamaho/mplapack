@@ -61,12 +61,6 @@ void Cgetsls(const char *trans, INTEGER const m, INTEGER const n, INTEGER const 
     INTEGER j = 0;
     INTEGER i = 0;
     //
-    // -- LAPACK driver routine --
-    //
-    //
-    //
-    //
-    //
     // Test the input arguments.
     //
     info = 0;
@@ -161,6 +155,7 @@ void Cgetsls(const char *trans, INTEGER const m, INTEGER const n, INTEGER const 
     //
     smlnum = Rlamch("S") / Rlamch("P");
     bignum = one / smlnum;
+    Rlabad(smlnum, bignum);
     //
     // Scale A, B if max element outside range [SMLNUM,BIGNUM]
     //
