@@ -29,8 +29,6 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-inline REAL cabs1(COMPLEX cdum) { return (abs(cdum.real()) + abs(cdum.imag())); }
-
 void Clahqr(bool const wantt, bool const wantz, INTEGER const n, INTEGER const ilo, INTEGER const ihi, COMPLEX *h, INTEGER const ldh, COMPLEX *w, INTEGER const iloz, INTEGER const ihiz, COMPLEX *z, INTEGER const ldz, INTEGER &info) {
     COMPLEX cdum = 0.0;
     INTEGER j = 0;
@@ -64,7 +62,7 @@ void Clahqr(bool const wantt, bool const wantz, INTEGER const n, INTEGER const i
     const REAL dat1 = 3.0 / 4.0;
     COMPLEX t = 0.0;
     COMPLEX u = 0.0;
-    const REAL half = 0.5e0;
+    const REAL half = 0.5;
     COMPLEX x = 0.0;
     REAL sx = 0.0;
     COMPLEX y = 0.0;
@@ -94,7 +92,6 @@ void Clahqr(bool const wantt, bool const wantz, INTEGER const n, INTEGER const i
         w[ilo - 1] = h[(ilo - 1) + (ilo - 1) * ldh];
         return;
     }
-    //
     for (j = ilo; j <= ihi - 3; j = j + 1) {
         h[((j + 2) - 1) + (j - 1) * ldh] = zero;
         h[((j + 3) - 1) + (j - 1) * ldh] = zero;
@@ -130,6 +127,7 @@ void Clahqr(bool const wantt, bool const wantz, INTEGER const n, INTEGER const i
     //
     safmin = Rlamch("SAFE MINIMUM");
     safmax = rone / safmin;
+    Rlabad(safmin, safmax);
     ulp = Rlamch("PRECISION");
     smlnum = safmin * (castREAL(nh) / ulp);
     //
@@ -192,7 +190,7 @@ statement_30:
                 aa = max(cabs1(h[(k - 1) + (k - 1) * ldh]), cabs1(h[((k - 1) - 1) + ((k - 1) - 1) * ldh] - h[(k - 1) + (k - 1) * ldh]));
                 bb = min(cabs1(h[(k - 1) + (k - 1) * ldh]), cabs1(h[((k - 1) - 1) + ((k - 1) - 1) * ldh] - h[(k - 1) + (k - 1) * ldh]));
                 s = aa + ab;
-                if (ba * (ab / s) <= max(smlnum, REAL(ulp * (bb * (aa / s))))) {
+                if (ba * (ab / s) <= max(smlnum, ulp * (bb * (aa / s)))) {
                     goto statement_50;
                 }
             }
@@ -245,7 +243,7 @@ statement_30:
                 x = half * (h[((i - 1) - 1) + ((i - 1) - 1) * ldh] - t);
                 sx = cabs1(x);
                 s = max(s, cabs1(x));
-                y = s * sqrt((x / s) * (x / s) + (u / s) * (u / s));
+                y = s * sqrt(pow2((x / s)) + pow2((u / s)));
                 if (sx > rzero) {
                     if ((x / sx).real() * y.real() + (x / sx).imag() * y.imag() < rzero) {
                         y = -y;
@@ -271,7 +269,7 @@ statement_30:
             h11s = h11s / s;
             h21 = h21 / s;
             v[0] = h11s;
-            v[2 - 1] = h21;
+            v[1] = h21;
             h10 = h[(m - 1) + ((m - 1) - 1) * ldh].real();
             if (abs(h10) * abs(h21) <= ulp * (cabs1(h11s) * (cabs1(h11) + cabs1(h22)))) {
                 goto statement_70;
@@ -285,7 +283,7 @@ statement_30:
         h11s = h11s / s;
         h21 = h21 / s;
         v[0] = h11s;
-        v[2 - 1] = h21;
+        v[1] = h21;
     statement_70:
         //
         // Single-shift QR step
@@ -307,12 +305,12 @@ statement_30:
             if (k > m) {
                 Ccopy(2, &h[(k - 1) + ((k - 1) - 1) * ldh], 1, v, 1);
             }
-            Clarfg(2, v[0], &v[2 - 1], 1, t1);
+            Clarfg(2, v[0], &v[1], 1, t1);
             if (k > m) {
                 h[(k - 1) + ((k - 1) - 1) * ldh] = v[0];
                 h[((k + 1) - 1) + ((k - 1) - 1) * ldh] = zero;
             }
-            v2 = v[2 - 1];
+            v2 = v[1];
             t2 = (t1 * v2).real();
             //
             // Apply G from the left to transform the rows of the matrix

@@ -29,13 +29,11 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-inline REAL cabs1(COMPLEX z) { return abs(z.real()) + abs(z.imag()); }
-
 void Clahef_rk(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &kb, COMPLEX *a, INTEGER const lda, COMPLEX *e, INTEGER *ipiv, COMPLEX *w, INTEGER const ldw, INTEGER &info) {
     COMPLEX z = 0.0;
     const REAL one = 1.0;
-    const REAL sevten = 17.0e+0;
-    const REAL eight = 8.0e+0;
+    const REAL sevten = 17.0;
+    const REAL eight = 8.0;
     REAL alpha = 0.0;
     REAL sfmin = 0.0;
     const COMPLEX czero = COMPLEX(0.0, 0.0);
@@ -66,12 +64,6 @@ void Clahef_rk(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &kb,
     INTEGER jb = 0;
     INTEGER jj = 0;
     //
-    //
-    //
-    //
-    // .. Statement Functions ..
-    // .. Statement Function definitions ..
-    //
     info = 0;
     //
     // Initialize ALPHA for use in choosing pivot block size.
@@ -86,7 +78,7 @@ void Clahef_rk(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &kb,
         //
         // Factorize the trailing columns of A using the upper triangle
         // of A and working backwards, and compute the matrix W = U12*D
-        // for use in updating A11 (note that conj(W) is actually stored)
+        // for use in updating A11 (note that conjg(W) is actually stored)
         // Initialize the first entry of array E, where superdiagonal
         // elements of D are stored
         //
@@ -157,8 +149,6 @@ void Clahef_rk(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &kb,
             }
             //
         } else {
-            //
-            //
             // BEGIN pivot search
             //
             // Case(1)
@@ -270,8 +260,6 @@ void Clahef_rk(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &kb,
             }
             //
             // END pivot search
-            //
-            //
             // KK is the column of A where pivoting step stopped
             //
             kk = k - kstep + 1;
@@ -503,7 +491,7 @@ void Clahef_rk(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &kb,
         //
         // A11 := A11 - U12*D*U12**H = A11 - U12*W**H
         //
-        // computing blocks of NB columns at a time (note that conj(W) is
+        // computing blocks of NB columns at a time (note that conjg(W) is
         // actually stored)
         //
         for (j = ((k - 1) / nb) * nb + 1; j >= 1; j = j - nb) {
@@ -532,7 +520,7 @@ void Clahef_rk(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &kb,
         //
         // Factorize the leading columns of A using the lower triangle
         // of A and working forwards, and compute the matrix W = L21*D
-        // for use in updating A22 (note that conj(W) is actually stored)
+        // for use in updating A22 (note that conjg(W) is actually stored)
         //
         // Initialize the unused last entry of the subdiagonal array E.
         //
@@ -599,8 +587,6 @@ void Clahef_rk(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &kb,
             }
             //
         } else {
-            //
-            //
             // BEGIN pivot search
             //
             // Case(1)
@@ -713,8 +699,6 @@ void Clahef_rk(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &kb,
             }
             //
             // END pivot search
-            //
-            //
             // KK is the column of A where pivoting step stopped
             //
             kk = k + kstep - 1;
@@ -942,7 +926,7 @@ void Clahef_rk(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &kb,
         //
         // A22 := A22 - L21*D*L21**H = A22 - L21*W**H
         //
-        // computing blocks of NB columns at a time (note that conj(W) is
+        // computing blocks of NB columns at a time (note that conjg(W) is
         // actually stored)
         //
         for (j = k; j <= n; j = j + nb) {
