@@ -29,8 +29,6 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-inline REAL cabs1(COMPLEX zdum) { return (abs(zdum.real()) + abs(zdum.imag())); }
-
 void Cptrfs(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *d, COMPLEX *e, REAL *df, COMPLEX *ef, COMPLEX *b, INTEGER const ldb, COMPLEX *x, INTEGER const ldx, REAL *ferr, REAL *berr, COMPLEX *work, REAL *rwork, INTEGER &info) {
     COMPLEX zdum = 0.0;
     bool upper = false;
@@ -42,7 +40,7 @@ void Cptrfs(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *d, COMP
     REAL safe1 = 0.0;
     REAL safe2 = 0.0;
     INTEGER count = 0;
-    const REAL three = 3.0e+0;
+    const REAL three = 3.0;
     REAL lstres = 0.0;
     COMPLEX bi = 0.0;
     COMPLEX dx = 0.0;
@@ -50,16 +48,10 @@ void Cptrfs(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *d, COMP
     INTEGER i = 0;
     COMPLEX cx = 0.0;
     REAL s = 0.0;
-    const REAL two = 2.0e+0;
+    const REAL two = 2.0;
     const INTEGER itmax = 5;
     const REAL one = 1.0;
     INTEGER ix = 0;
-    //
-    //
-    //
-    //
-    // .. Statement Functions ..
-    // .. Statement Function definitions ..
     //
     // Test the input parameters.
     //
@@ -178,9 +170,9 @@ void Cptrfs(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *d, COMP
         s = zero;
         for (i = 1; i <= n; i = i + 1) {
             if (rwork[i - 1] > safe2) {
-                s = max(s, REAL(cabs1(work[i - 1]) / rwork[i - 1]));
+                s = max(s, cabs1(work[i - 1]) / rwork[i - 1]);
             } else {
-                s = max(s, REAL((cabs1(work[i - 1]) + safe1) / (rwork[i - 1] + safe1)));
+                s = max(s, (cabs1(work[i - 1]) + safe1) / (rwork[i - 1] + safe1));
             }
         }
         berr[j - 1] = s;
