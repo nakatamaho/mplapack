@@ -2281,10 +2281,6 @@ def convert_to_fem_do(conv_info, parent_scope, i_tok, fls_tokens):
                 # Step starts with '-', definitely negative.
                 return parent_scope.open_nested_scope(
                     opening_text=["for(%s=%s; %s>=%s; %s=%s%s) {" % (i, f, i, l, i, i, s)])
-            elif re.match(r'^[a-zA-Z_][a-zA-Z0-9_]*$', s.strip()):
-                # Simple variable name, assume positive step.
-                return parent_scope.open_nested_scope(
-                    opening_text=["for(%s=%s; %s > 0 ? %s<=%s : %s>=%s; %s=%s+%s) {" % (i, f, s, i, l, i, l, i, i, s)])
             else:
                 # Step is a complex expression; sign unknown at compile time.
                 # Use ternary operator to select the correct loop condition.
