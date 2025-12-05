@@ -1644,6 +1644,8 @@ def rewrite_intrinsics(text: str) -> str:
         # (C++ side must provide sign(a, b) implementation)
         "fem::sign":  "sign",
         "fem::dsign": "sign",
+
+        "fem::maxloc": "Mmaxloc",
     }
 
     for src, dst in simple_map.items():
@@ -1696,6 +1698,19 @@ def convert_tokens(conv_info, tokens, commas=False, had_str_concat=None):
                 is_array_ref = True
 
             if is_array_ref:
+                # Check if this is an array slice (contains ':' operator)
+                def _contains_colon_op(tokens):
+                    """Check if token list contains a colon operator (array slice)."""
+                    for t in tokens:
+                        if hasattr(t, 'is_op_with') and t.is_op_with(value=":"):
+                            return True
+                        if hasattr(t, 'value') and isinstance(t.value, (list, tuple)):
+                            if _contains_colon_op(t.value):
+                                return True
+                    return False
+
+                is_array_slice = _contains_colon_op(tok.value)
+
                 # Convert indices inside parentheses to C++ array indexing
                 idx_str = convert_tokens(
                     conv_info=conv_info,
@@ -1706,7 +1721,15 @@ def convert_tokens(conv_info, tokens, commas=False, had_str_concat=None):
                 # Split by top-level commas, ignoring commas inside nested parentheses
                 parts = _split_actuals(idx_str)
 
-                if len(parts) == 1:
+                if is_array_slice and len(parts) == 2:
+                    # Array slice: a(start:end) was converted to "start, end"
+                    # Output special marker format that will be processed later
+                    # Format: [__SLICE__(start, end)]
+                    # This marker will be transformed by _postprocess_mmaxloc for Mmaxloc calls
+                    start_expr = parts[0].strip()
+                    end_expr = parts[1].strip()
+                    rapp(f"[__SLICE__({start_expr}, {end_expr})]")
+                elif len(parts) == 1:
                     i_expr = parts[0].strip()
                     if re.fullmatch(r"[0-9]+", i_expr):
                         # Constant index: a(1) -> a[0]
@@ -5123,6 +5146,142 @@ def _postprocess_index_zero_simplify(text):
     return text
 
 
+def _postprocess_mmaxloc(lines):
+    """Rewrite Mmaxloc(array[__SLICE__(start, end)], dim) to Mmaxloc(array, start, end, dim).
+
+    FORTRAN: itemp = maxloc( work( (n+j):(2*n) ), 1 )
+    Expected output: itemp = Mmaxloc(work, (n + j), (2 * n), 1);
+
+    Array slices are marked with __SLICE__(start, end) by convert_tokens.
+    This function transforms:
+        Mmaxloc(array[__SLICE__(start, end)], dim) -> Mmaxloc(array, start, end, dim)
+    """
+    import re
+
+    # Pattern to match: Mmaxloc(identifier[__SLICE__(args)], dim)
+    # We need to handle nested parentheses in args
+    pattern = re.compile(
+        r'\bMmaxloc\s*\(\s*'           # Mmaxloc(
+        r'([A-Za-z_][A-Za-z0-9_]*)'    # array name (group 1)
+        r'\s*\[\s*__SLICE__\s*\('      # [__SLICE__(
+    )
+
+    def find_matching_paren(s, start):
+        """Find the index of the closing paren matching the one at 'start'."""
+        depth = 0
+        for i in range(start, len(s)):
+            if s[i] == '(':
+                depth += 1
+            elif s[i] == ')':
+                depth -= 1
+                if depth == 0:
+                    return i
+        return -1
+
+    def rewrite_mmaxloc_in_line(line):
+        result = []
+        pos = 0
+
+        for m in pattern.finditer(line):
+            result.append(line[pos:m.start()])
+            array_name = m.group(1)
+
+            # Find the end of __SLICE__(...)
+            slice_paren_start = m.end() - 1  # position of '(' after __SLICE__
+            slice_paren_end = find_matching_paren(line, slice_paren_start)
+            if slice_paren_end < 0:
+                result.append(line[m.start():m.end()])
+                pos = m.end()
+                continue
+
+            # Extract slice args (start, end)
+            slice_args = line[slice_paren_start + 1:slice_paren_end]
+
+            # After __SLICE__(...) should be "], dim)"
+            rest_start = slice_paren_end + 1
+            # Skip whitespace and expect ']'
+            rest_pos = rest_start
+            while rest_pos < len(line) and line[rest_pos] in ' \t':
+                rest_pos += 1
+            if rest_pos >= len(line) or line[rest_pos] != ']':
+                result.append(line[m.start():m.end()])
+                pos = m.end()
+                continue
+            rest_pos += 1  # skip ']'
+
+            # Skip whitespace and expect ','
+            while rest_pos < len(line) and line[rest_pos] in ' \t':
+                rest_pos += 1
+            if rest_pos >= len(line) or line[rest_pos] != ',':
+                result.append(line[m.start():m.end()])
+                pos = m.end()
+                continue
+            rest_pos += 1  # skip ','
+
+            # Find the closing ')' of Mmaxloc
+            mmaxloc_paren_end = find_matching_paren(line, m.end() - len('('))
+            # Actually, we need to find it from the Mmaxloc( position
+            # Let's find it differently - scan from rest_pos for ')'
+            paren_depth = 1  # we're inside Mmaxloc(
+            dim_start = rest_pos
+            dim_end = -1
+            for i in range(rest_pos, len(line)):
+                if line[i] == '(':
+                    paren_depth += 1
+                elif line[i] == ')':
+                    paren_depth -= 1
+                    if paren_depth == 0:
+                        dim_end = i
+                        break
+            if dim_end < 0:
+                result.append(line[m.start():m.end()])
+                pos = m.end()
+                continue
+
+            dim_part = line[dim_start:dim_end].strip()
+
+            # Split slice_args by comma (handling nested parens)
+            slice_arg_list = []
+            current_arg = []
+            arg_depth = 0
+            for ch in slice_args:
+                if ch == '(':
+                    arg_depth += 1
+                    current_arg.append(ch)
+                elif ch == ')':
+                    arg_depth -= 1
+                    current_arg.append(ch)
+                elif ch == ',' and arg_depth == 0:
+                    slice_arg_list.append(''.join(current_arg).strip())
+                    current_arg = []
+                else:
+                    current_arg.append(ch)
+            if current_arg:
+                slice_arg_list.append(''.join(current_arg).strip())
+
+            if len(slice_arg_list) != 2:
+                result.append(line[m.start():m.end()])
+                pos = m.end()
+                continue
+
+            start_arg = slice_arg_list[0]
+            end_arg = slice_arg_list[1]
+
+            # Build the new call: Mmaxloc(array, start, end, dim)
+            new_call = f"Mmaxloc({array_name}, {start_arg}, {end_arg}, {dim_part})"
+            result.append(new_call)
+            pos = dim_end + 1
+
+        result.append(line[pos:])
+        return ''.join(result)
+
+    if isinstance(lines, list):
+        return [rewrite_mmaxloc_in_line(line) for line in lines]
+    elif isinstance(lines, str):
+        return '\n'.join(rewrite_mmaxloc_in_line(l) for l in lines.split('\n'))
+    return lines
+
+
 def _postprocess_complex_zero_initializers(lines):
     """Rewrite COMPLEX zero initializers using COMPLEX(0.0, 0.0).
 
@@ -5642,6 +5801,9 @@ def process(
 
     #
     result = _postprocess_index_zero_simplify(result)
+
+    # Rewrite Mmaxloc(array(start, end), dim) to Mmaxloc(array, start, end, dim)
+    result = _postprocess_mmaxloc(result)
 
     # Clean up temporary Fortran files created for preprocessing.
     for tmp in temp_files:
