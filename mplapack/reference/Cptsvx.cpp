@@ -31,11 +31,6 @@
 
 void Cptsvx(const char *fact, INTEGER const n, INTEGER const nrhs, REAL *d, COMPLEX *e, REAL *df, COMPLEX *ef, COMPLEX *b, INTEGER const ldb, COMPLEX *x, INTEGER const ldx, REAL &rcond, REAL *ferr, REAL *berr, COMPLEX *work, REAL *rwork, INTEGER &info) {
     //
-    // -- LAPACK driver routine --
-    //
-    //
-    //
-    //
     // Test the input parameters.
     //
     info = 0;

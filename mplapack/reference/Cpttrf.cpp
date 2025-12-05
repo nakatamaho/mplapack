@@ -38,10 +38,6 @@ void Cpttrf(INTEGER const n, REAL *d, COMPLEX *e, INTEGER &info) {
     REAL f = 0.0;
     REAL g = 0.0;
     //
-    //
-    //
-    //
-    //
     // Test the input parameters.
     //
     info = 0;
