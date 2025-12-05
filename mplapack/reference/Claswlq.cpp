@@ -31,14 +31,6 @@
 
 void Claswlq(INTEGER const m, INTEGER const n, INTEGER const mb, INTEGER const nb, COMPLEX *a, INTEGER const lda, COMPLEX *t, INTEGER const ldt, COMPLEX *work, INTEGER const lwork, INTEGER &info) {
     //
-    //
-    //
-    //
-    // .. EXTERNAL FUNCTIONS ..
-    // .. EXTERNAL SUBROUTINES ..
-    // .. INTRINSIC FUNCTIONS ..
-    // .. EXECUTABLE STATEMENTS ..
-    //
     // TEST THE INPUT ARGUMENTS
     //
     info = 0;
