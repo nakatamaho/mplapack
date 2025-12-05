@@ -369,6 +369,33 @@ def _rewrite_lwork_typed(line: str) -> str:
 
 lines = [_rewrite_lwork_typed(line) for line in lines]
 
+# ---------------------------------------------------------------------------
+# Fix broken DO loop translation:
+#   for (i = i1; i <= i2; i = i + i3)
+# should be
+#   for (i = i1; i3 > 0 ? i <= i2 : i >= i2; i = i + i3)
+# ---------------------------------------------------------------------------
+
+FOR_I_I1_I2_I3_RE = re.compile(
+    r'\bfor\s*\(\s*i\s*=\s*i1\s*;\s*i\s*<=\s*i2\s*;\s*i\s*=\s*i\s*\+\s*i3\s*\)'
+)
+
+def _fix_do_i1_i2_i3(line: str) -> str:
+    # Do not touch C++ line comments
+    idx = line.find("//")
+    if idx >= 0:
+        code, comment = line[:idx], line[idx:]
+    else:
+        code, comment = line, ""
+
+    code = FOR_I_I1_I2_I3_RE.sub(
+        'for (i = i1; i3 > 0 ? i <= i2 : i >= i2; i = i + i3)',
+        code,
+    )
+    return code + comment
+
+lines = [_fix_do_i1_i2_i3(line) for line in lines]
+
 path.write_text("".join(lines))
 EOF
 
