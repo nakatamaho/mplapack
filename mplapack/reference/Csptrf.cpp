@@ -29,14 +29,12 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-inline REAL cabs1(COMPLEX zdum) { return (abs(zdum.real()) + abs(zdum.imag())); }
-
 void Csptrf(const char *uplo, INTEGER const n, COMPLEX *ap, INTEGER *ipiv, INTEGER &info) {
     COMPLEX zdum = 0.0;
     bool upper = false;
     const REAL one = 1.0;
-    const REAL sevten = 17.0e+0;
-    const REAL eight = 8.0e+0;
+    const REAL sevten = 17.0;
+    const REAL eight = 8.0;
     REAL alpha = 0.0;
     INTEGER k = 0;
     INTEGER kc = 0;
@@ -65,12 +63,6 @@ void Csptrf(const char *uplo, INTEGER const n, COMPLEX *ap, INTEGER *ipiv, INTEG
     INTEGER npp = 0;
     COMPLEX d21 = 0.0;
     COMPLEX wkp1 = 0.0;
-    //
-    //
-    //
-    //
-    // .. Statement Functions ..
-    // .. Statement Function definitions ..
     //
     // Test the input parameters.
     //
