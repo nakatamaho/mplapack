@@ -79,6 +79,7 @@ MANUAL_MAPPINGS=(
   "iladlc iMladlc"
   "iladlr iMladlr"
   "ilazlc iMlazlc"
+  "ilazlr iMlazlr"
   "ilatrans iMlatrans"
 )
 
