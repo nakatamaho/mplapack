@@ -31,10 +31,6 @@
 
 void Rormr2(const char *side, const char *trans, INTEGER const m, INTEGER const n, INTEGER const k, REAL *a, INTEGER const lda, REAL *tau, REAL *c, INTEGER const ldc, REAL *work, INTEGER &info) {
     //
-    //
-    //
-    //
-    //
     // Test the input arguments
     //
     info = 0;
@@ -99,7 +95,7 @@ void Rormr2(const char *side, const char *trans, INTEGER const m, INTEGER const 
     INTEGER i = 0;
     REAL aii = 0.0;
     const REAL one = 1.0;
-    for (i = i1; i3 >= 0 ? i <= i2 : i >= i2; i = i + i3) {
+    for (i = i1; i3 > 0 ? i <= i2 : i >= i2; i = i + i3) {
         if (left) {
             //
             // H(i) is applied to C(1:m-k+i,1:n)

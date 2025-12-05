@@ -31,10 +31,6 @@
 
 void Ropmtr(const char *side, const char *uplo, const char *trans, INTEGER const m, INTEGER const n, REAL *ap, REAL *tau, REAL *c, INTEGER const ldc, REAL *work, INTEGER &info) {
     //
-    //
-    //
-    //
-    //
     // Test the input arguments
     //
     info = 0;
@@ -110,7 +106,7 @@ void Ropmtr(const char *side, const char *uplo, const char *trans, INTEGER const
             mi = m;
         }
         //
-        for (i = i1; i3 >= 0 ? i <= i2 : i >= i2; i = i + i3) {
+        for (i = i1; i3 > 0 ? i <= i2 : i >= i2; i = i + i3) {
             if (left) {
                 //
                 // H(i) is applied to C(1:i,1:n)
@@ -162,7 +158,7 @@ void Ropmtr(const char *side, const char *uplo, const char *trans, INTEGER const
             ic = 1;
         }
         //
-        for (i = i1; i3 >= 0 ? i <= i2 : i >= i2; i = i + i3) {
+        for (i = i1; i3 > 0 ? i <= i2 : i >= i2; i = i + i3) {
             aii = ap[ii - 1];
             ap[ii - 1] = one;
             if (left) {

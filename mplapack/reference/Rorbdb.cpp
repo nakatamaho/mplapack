@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -33,10 +33,6 @@ void Rorbdb(const char *trans, const char *signs, INTEGER const m, INTEGER const
     //
     // Test input arguments
     //
-#if defined ___MPLAPACK_BUILD_WITH_GMP___
-    printf("MPLAPACK ERROR Rorbdb.cpp is not supported for GMP\n");
-    exit(1);
-#endif
     info = 0;
     bool colmajor = !Mlsame(trans, "T");
     const REAL realone = 1.0;
@@ -88,7 +84,7 @@ void Rorbdb(const char *trans, const char *signs, INTEGER const m, INTEGER const
     if (info == 0) {
         lworkopt = m - q;
         lworkmin = m - q;
-        work[1 - 1] = lworkopt;
+        work[0] = lworkopt;
         if (lwork < lworkmin && !lquery) {
             info = -21;
         }
