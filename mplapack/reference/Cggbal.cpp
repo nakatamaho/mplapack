@@ -79,7 +79,6 @@ void Cggbal(const char *job, INTEGER const n, COMPLEX *a, INTEGER const lda, COM
     REAL cab = 0.0;
     INTEGER lcab = 0;
     INTEGER jc = 0;
-    cabs1(cdum) = abs(cdum.real()) + abs(cdum.imag());
     //
     // Test the input parameters
     //
