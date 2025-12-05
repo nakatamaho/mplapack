@@ -31,10 +31,6 @@
 
 void Cppequ(const char *uplo, INTEGER const n, COMPLEX *ap, REAL *s, REAL &scond, REAL &amax, INTEGER &info) {
     //
-    //
-    //
-    //
-    //
     // Test the input parameters.
     //
     info = 0;
