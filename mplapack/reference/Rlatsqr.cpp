@@ -31,14 +31,6 @@
 
 void Rlatsqr(INTEGER const m, INTEGER const n, INTEGER const mb, INTEGER const nb, REAL *a, INTEGER const lda, REAL *t, INTEGER const ldt, REAL *work, INTEGER const lwork, INTEGER &info) {
     //
-    //
-    //
-    //
-    // .. EXTERNAL FUNCTIONS ..
-    // .. EXTERNAL SUBROUTINES ..
-    // .. INTRINSIC FUNCTIONS ..
-    // .. EXECUTABLE STATEMENTS ..
-    //
     // TEST THE INPUT ARGUMENTS
     //
     info = 0;

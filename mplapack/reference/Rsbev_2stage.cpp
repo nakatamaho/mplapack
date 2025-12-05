@@ -31,6 +31,7 @@
 
 void Rsbev_2stage(const char *jobz, const char *uplo, INTEGER const n, INTEGER const kd, REAL *ab, INTEGER const ldab, REAL *w, REAL *z, INTEGER const ldz, REAL *work, INTEGER const lwork, INTEGER &info) {
     //
+    //
     // Test the input parameters.
     //
     bool wantz = Mlsame(jobz, "V");
@@ -74,7 +75,7 @@ void Rsbev_2stage(const char *jobz, const char *uplo, INTEGER const n, INTEGER c
     }
     //
     if (info != 0) {
-        Mxerbla("Rsbev_2stage", -info);
+        Mxerbla("Rsbev_2stage ", -info);
         return;
     } else if (lquery) {
         return;
@@ -129,7 +130,7 @@ void Rsbev_2stage(const char *jobz, const char *uplo, INTEGER const n, INTEGER c
         }
     }
     //
-    // Call Rsytrd_sb2st to reduce symmetric band matrix to tridiagonal form.
+    // Call DSYTRD_SB2ST to reduce symmetric band matrix to tridiagonal form.
     //
     INTEGER inde = 1;
     INTEGER indhous = inde + n;

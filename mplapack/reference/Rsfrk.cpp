@@ -29,7 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rsfrk(const char *transr, const char *uplo, const char *trans, INTEGER const n, INTEGER const k, REAL const alpha, REAL *a, INTEGER const lda, REAL const beta, REAL *c) {
+void Rsfrk(const char *transr, const char *uplo, const char *trans, INTEGER const n, INTEGER const k, REAL const &alpha, REAL *a, INTEGER const lda, REAL const &beta, REAL *c) {
     //
     // Test the input parameters.
     //
@@ -59,7 +59,7 @@ void Rsfrk(const char *transr, const char *uplo, const char *trans, INTEGER cons
         info = -8;
     }
     if (info != 0) {
-        Mxerbla("Rsfrk", -info);
+        Mxerbla("Rsfrk ", -info);
         return;
     }
     //
@@ -171,7 +171,7 @@ void Rsfrk(const char *transr, const char *uplo, const char *trans, INTEGER cons
                     // N is odd, TRANSR = 'T', UPLO = 'L', and TRANS = 'N'
                     //
                     Rsyrk("U", "N", n1, k, alpha, &a[0], lda, beta, &c[0], n1);
-                    Rsyrk("L", "N", n2, k, alpha, &a[((n1 + 1) - 1)], lda, beta, &c[2 - 1], n1);
+                    Rsyrk("L", "N", n2, k, alpha, &a[((n1 + 1) - 1)], lda, beta, &c[1], n1);
                     Rgemm("N", "T", n1, n2, k, alpha, &a[0], lda, &a[((n1 + 1) - 1)], lda, beta, &c[(n1 * n1 + 1) - 1], n1);
                     //
                 } else {
@@ -179,7 +179,7 @@ void Rsfrk(const char *transr, const char *uplo, const char *trans, INTEGER cons
                     // N is odd, TRANSR = 'T', UPLO = 'L', and TRANS = 'T'
                     //
                     Rsyrk("U", "T", n1, k, alpha, &a[0], lda, beta, &c[0], n1);
-                    Rsyrk("L", "T", n2, k, alpha, &a[((n1 + 1) - 1) * lda], lda, beta, &c[2 - 1], n1);
+                    Rsyrk("L", "T", n2, k, alpha, &a[((n1 + 1) - 1) * lda], lda, beta, &c[1], n1);
                     Rgemm("T", "N", n1, n2, k, alpha, &a[0], lda, &a[((n1 + 1) - 1) * lda], lda, beta, &c[(n1 * n1 + 1) - 1], n1);
                     //
                 }
@@ -226,7 +226,7 @@ void Rsfrk(const char *transr, const char *uplo, const char *trans, INTEGER cons
                     //
                     // N is even, TRANSR = 'N', UPLO = 'L', and TRANS = 'N'
                     //
-                    Rsyrk("L", "N", nk, k, alpha, &a[0], lda, beta, &c[2 - 1], n + 1);
+                    Rsyrk("L", "N", nk, k, alpha, &a[0], lda, beta, &c[1], n + 1);
                     Rsyrk("U", "N", nk, k, alpha, &a[((nk + 1) - 1)], lda, beta, &c[0], n + 1);
                     Rgemm("N", "T", nk, nk, k, alpha, &a[((nk + 1) - 1)], lda, &a[0], lda, beta, &c[(nk + 2) - 1], n + 1);
                     //
@@ -234,7 +234,7 @@ void Rsfrk(const char *transr, const char *uplo, const char *trans, INTEGER cons
                     //
                     // N is even, TRANSR = 'N', UPLO = 'L', and TRANS = 'T'
                     //
-                    Rsyrk("L", "T", nk, k, alpha, &a[0], lda, beta, &c[2 - 1], n + 1);
+                    Rsyrk("L", "T", nk, k, alpha, &a[0], lda, beta, &c[1], n + 1);
                     Rsyrk("U", "T", nk, k, alpha, &a[((nk + 1) - 1) * lda], lda, beta, &c[0], n + 1);
                     Rgemm("T", "N", nk, nk, k, alpha, &a[((nk + 1) - 1) * lda], lda, &a[0], lda, beta, &c[(nk + 2) - 1], n + 1);
                     //
