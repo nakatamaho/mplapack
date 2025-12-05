@@ -31,10 +31,6 @@
 
 void Cungtr(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *tau, COMPLEX *work, INTEGER const lwork, INTEGER &info) {
     //
-    //
-    //
-    //
-    //
     // Test the input arguments
     //
     info = 0;
@@ -59,7 +55,7 @@ void Cungtr(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, CO
             nb = iMlaenv(1, "Cungqr", " ", n - 1, n - 1, n - 1, -1);
         }
         lwkopt = max((INTEGER)1, n - 1) * nb;
-        work[1 - 1] = lwkopt;
+        work[0] = lwkopt;
     }
     //
     if (info != 0) {
@@ -72,7 +68,7 @@ void Cungtr(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, CO
     // Quick return if possible
     //
     if (n == 0) {
-        work[1 - 1] = 1;
+        work[0] = 1;
         return;
     }
     //
@@ -129,7 +125,7 @@ void Cungtr(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, CO
             Cungqr(n - 1, n - 1, n - 1, &a[(2 - 1) + (2 - 1) * lda], lda, tau, work, lwork, iinfo);
         }
     }
-    work[1 - 1] = lwkopt;
+    work[0] = lwkopt;
     //
     // End of Cungtr
     //

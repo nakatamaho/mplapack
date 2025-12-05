@@ -31,10 +31,6 @@
 
 void Cunmr3(const char *side, const char *trans, INTEGER const m, INTEGER const n, INTEGER const k, INTEGER const l, COMPLEX *a, INTEGER const lda, COMPLEX *tau, COMPLEX *c, INTEGER const ldc, COMPLEX *work, INTEGER &info) {
     //
-    //
-    //
-    //
-    //
     // Test the input arguments
     //
     info = 0;
@@ -107,7 +103,7 @@ void Cunmr3(const char *side, const char *trans, INTEGER const m, INTEGER const 
     //
     INTEGER i = 0;
     COMPLEX taui = 0.0;
-    for (i = i1; i3 >= 0 ? i <= i2 : i >= i2; i = i + i3) {
+    for (i = i1; i3 > 0 ? i <= i2 : i >= i2; i = i + i3) {
         if (left) {
             //
             // H(i) or H(i)**H is applied to C(i:m,1:n)

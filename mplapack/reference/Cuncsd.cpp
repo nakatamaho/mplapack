@@ -157,11 +157,11 @@ void Cuncsd(const char *jobu1, const char *jobu2, const char *jobv1t, const char
         ib22e = ib22d + max((INTEGER)1, q);
         ibbcsd = ib22e + max((INTEGER)1, q - 1);
         Cbbcsd(jobu1, jobu2, jobv1t, jobv2t, trans, m, p, q, theta, theta, u1, ldu1, u2, ldu2, v1t, ldv1t, v2t, ldv2t, theta, theta, theta, theta, theta, theta, theta, theta, rwork, -1, childinfo);
-        lbbcsdworkopt = castINTEGER(rwork[1 - 1]);
+        lbbcsdworkopt = castINTEGER(rwork[0]);
         lbbcsdworkmin = lbbcsdworkopt;
         lrworkopt = ibbcsd + lbbcsdworkopt - 1;
         lrworkmin = ibbcsd + lbbcsdworkmin - 1;
-        rwork[1 - 1] = lrworkopt;
+        rwork[0] = lrworkopt;
         //
         // Complex workspace
         //
@@ -171,19 +171,19 @@ void Cuncsd(const char *jobu1, const char *jobu2, const char *jobv1t, const char
         itauq2 = itauq1 + max((INTEGER)1, q);
         iorgqr = itauq2 + max((INTEGER)1, m - q);
         Cungqr(m - q, m - q, m - q, u1, max((INTEGER)1, m - q), u1, work, -1, childinfo);
-        lorgqrworkopt = castINTEGER(work[1 - 1].real());
+        lorgqrworkopt = castINTEGER(work[0].real());
         lorgqrworkmin = max((INTEGER)1, m - q);
         iorglq = itauq2 + max((INTEGER)1, m - q);
         Cunglq(m - q, m - q, m - q, u1, max((INTEGER)1, m - q), u1, work, -1, childinfo);
-        lorglqworkopt = castINTEGER(work[1 - 1].real());
+        lorglqworkopt = castINTEGER(work[0].real());
         lorglqworkmin = max((INTEGER)1, m - q);
         iorbdb = itauq2 + max((INTEGER)1, m - q);
         Cunbdb(trans, signs, m, p, q, x11, ldx11, x12, ldx12, x21, ldx21, x22, ldx22, theta, theta, u1, u2, v1t, v2t, work, -1, childinfo);
-        lorbdbworkopt = castINTEGER(work[1 - 1].real());
+        lorbdbworkopt = castINTEGER(work[0].real());
         lorbdbworkmin = lorbdbworkopt;
-        lworkopt = max({iorgqr + lorgqrworkopt, iorglq + lorglqworkopt, iorbdb + lorbdbworkopt}) - 1;
-        lworkmin = max({iorgqr + lorgqrworkmin, iorglq + lorglqworkmin, iorbdb + lorbdbworkmin}) - 1;
-        work[1 - 1] = max(lworkopt, lworkmin);
+        lworkopt = max(iorgqr + lorgqrworkopt, iorglq + lorglqworkopt, iorbdb + lorbdbworkopt) - 1;
+        lworkmin = max(iorgqr + lorgqrworkmin, iorglq + lorglqworkmin, iorbdb + lorbdbworkmin) - 1;
+        work[0] = max(lworkopt, lworkmin);
         //
         if (lwork < lworkmin && !(lquery || lrquery)) {
             info = -22;
