@@ -31,6 +31,7 @@
 
 void Rsytrd_2stage(const char *vect, const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL *d, REAL *e, REAL *tau, REAL *hous2, INTEGER const lhous2, REAL *work, INTEGER const lwork, INTEGER &info) {
     //
+    //
     // Test the input parameters
     //
     info = 0;
@@ -40,10 +41,10 @@ void Rsytrd_2stage(const char *vect, const char *uplo, INTEGER const n, REAL *a,
     //
     // Determine the block size, the workspace size and the hous size.
     //
-    INTEGER kd = iMlaenv2stage((INTEGER)1, "Rsytrd_2stage", vect, n, -1, -1, -1);
-    INTEGER ib = iMlaenv2stage((INTEGER)2, "Rsytrd_2stage", vect, n, kd, -1, -1);
-    INTEGER lhmin = iMlaenv2stage((INTEGER)3, "Rsytrd_2stage", vect, n, kd, ib, -1);
-    INTEGER lwmin = iMlaenv2stage((INTEGER)4, "Rsytrd_2stage", vect, n, kd, ib, -1);
+    INTEGER kd = iMlaenv2stage(1, "Rsytrd_2stage", vect, n, -1, -1, -1);
+    INTEGER ib = iMlaenv2stage(2, "Rsytrd_2stage", vect, n, kd, -1, -1);
+    INTEGER lhmin = iMlaenv2stage(3, "Rsytrd_2stage", vect, n, kd, ib, -1);
+    INTEGER lwmin = iMlaenv2stage(4, "Rsytrd_2stage", vect, n, kd, ib, -1);
     // WRITE(*,*),'Rsytrd_2stage N KD UPLO LHMIN LWMIN ',N, KD, UPLO,
     // $            LHMIN, LWMIN
     //
@@ -76,7 +77,7 @@ void Rsytrd_2stage(const char *vect, const char *uplo, INTEGER const n, REAL *a,
     // Quick return if possible
     //
     if (n == 0) {
-        work[0] = 1;
+        work[0] = 1.0;
         return;
     }
     //
