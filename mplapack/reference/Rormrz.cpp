@@ -38,6 +38,7 @@ void Rormrz(const char *side, const char *trans, INTEGER const m, INTEGER const 
     bool notran = Mlsame(trans, "N");
     bool lquery = (lwork == -1);
     //
+    // NQ is the order of Q and NW is the minimum dimension of WORK
     //
     INTEGER nq = 0;
     INTEGER nw = 0;
@@ -73,10 +74,6 @@ void Rormrz(const char *side, const char *trans, INTEGER const m, INTEGER const 
     INTEGER nb = 0;
     const INTEGER ldt = nbmax + 1;
     const INTEGER tsize = ldt * nbmax;
-    char side_trans[3];
-    side_trans[0] = side[0];
-    side_trans[1] = trans[0];
-    side_trans[2] = '\0';
     if (info == 0) {
         //
         // Compute the workspace requirements
@@ -84,7 +81,7 @@ void Rormrz(const char *side, const char *trans, INTEGER const m, INTEGER const 
         if (m == 0 || n == 0) {
             lwkopt = 1;
         } else {
-            nb = min(nbmax, iMlaenv(1, "Rormrq", side_trans, m, n, k, -1));
+            nb = min(nbmax, iMlaenv(1, "Rormrq", CHAR2(side, trans), m, n, k, -1));
             lwkopt = nw * nb + tsize;
         }
         work[0] = lwkopt;
@@ -109,7 +106,7 @@ void Rormrz(const char *side, const char *trans, INTEGER const m, INTEGER const 
     if (nb > 1 && nb < k) {
         if (lwork < nw * nb + tsize) {
             nb = (lwork - tsize) / ldwork;
-            nbmin = max((INTEGER)2, iMlaenv(2, "Rormrq", side_trans, m, n, k, -1));
+            nbmin = max((INTEGER)2, iMlaenv(2, "Rormrq", CHAR2(side, trans), m, n, k, -1));
         }
     }
     //
@@ -162,7 +159,7 @@ void Rormrz(const char *side, const char *trans, INTEGER const m, INTEGER const 
             transt = 'N';
         }
         //
-        for (i = i1; i3 >= 0 ? i <= i2 : i >= i2; i = i + i3) {
+        for (i = i1; i3 > 0 ? i <= i2 : i >= i2; i = i + i3) {
             ib = min(nb, k - i + 1);
             //
             // Form the triangular factor of the block reflector
