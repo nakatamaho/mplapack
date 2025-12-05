@@ -31,16 +31,12 @@
 
 void Rgghd3(const char *compq, const char *compz, INTEGER const n, INTEGER const ilo, INTEGER const ihi, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL *q, INTEGER const ldq, REAL *z, INTEGER const ldz, REAL *work, INTEGER const lwork, INTEGER &info) {
     //
-    //
-    //
-    //
-    //
     // Decode and test the input parameters.
     //
     info = 0;
     INTEGER nb = iMlaenv(1, "Rgghd3", " ", n, ilo, ihi, -1);
     INTEGER lwkopt = max(6 * n * nb, (INTEGER)1);
-    work[1 - 1] = castREAL(lwkopt);
+    work[0] = castREAL(lwkopt);
     bool initq = Mlsame(compq, "I");
     bool wantq = initq || Mlsame(compq, "V");
     bool initz = Mlsame(compz, "I");
@@ -96,7 +92,7 @@ void Rgghd3(const char *compq, const char *compz, INTEGER const n, INTEGER const
     //
     INTEGER nh = ihi - ilo + 1;
     if (nh <= 1) {
-        work[1 - 1] = one;
+        work[0] = one;
         return;
     }
     //
@@ -596,8 +592,8 @@ void Rgghd3(const char *compq, const char *compz, INTEGER const n, INTEGER const
     // Use unblocked code to reduce the rest of the matrix
     // Avoid re-initialization of modified Q and Z.
     //
-    char compq2 = *compq;
-    char compz2 = *compz;
+    char compq2 = compq;
+    char compz2 = compz;
     if (jcol != ilo) {
         if (wantq) {
             compq2 = 'V';
@@ -610,7 +606,7 @@ void Rgghd3(const char *compq, const char *compz, INTEGER const n, INTEGER const
     if (jcol < ihi) {
         Rgghrd(&compq2, &compz2, n, jcol, ihi, a, lda, b, ldb, q, ldq, z, ldz, ierr);
     }
-    work[1 - 1] = castREAL(lwkopt);
+    work[0] = castREAL(lwkopt);
     //
     // End of Rgghd3
     //
