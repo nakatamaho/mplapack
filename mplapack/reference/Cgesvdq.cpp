@@ -91,11 +91,6 @@ void Cgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
     COMPLEX ctmp = 0.0;
     INTEGER optratio = 0;
     //
-    //
-    // .. Local Arrays
-    // .. External Subroutines (BLAS, LAPACK)
-    // .. External Functions (BLAS, LAPACK)
-    //
     // Test the input arguments
     //
     wntus = Mlsame(jobu, "S") || Mlsame(jobu, "U");
@@ -357,7 +352,7 @@ void Cgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
         //
         iwork[0] = iminwrk;
         cwork[0] = optwrk;
-        cwork[2 - 1] = minwrk;
+        cwork[1] = minwrk;
         rwork[0] = rminwrk;
         return;
     }
@@ -422,9 +417,9 @@ void Cgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
                 }
             }
             if (conda) {
-                rwork[0] = -1;
+                rwork[0] = -1.0;
             }
-            rwork[2 - 1] = -1;
+            rwork[1] = -1.0;
             return;
         }
         //
@@ -496,7 +491,7 @@ void Cgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
     } else if (acclm) {
         // .. similarly as above, only slightly more gentle (less aggressive).
         // Sudden drop on the diagonal of R is used as the criterion for being
-        // close-to-rank-deficient. The threshold is set to EPSLN=DLAMCH('E').
+        // close-to-rank-deficient. The threshold is set to EPSLN=Rlamch('E').
         // [[This can be made more flexible by replacing this hard-coded value
         // with a user specified threshold.]] Also, the values that underflow
         // will be truncated.
@@ -635,6 +630,7 @@ void Cgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
             // vectors of A.
         }
         //
+        // .. assemble the left singular vector matrix U of dimensions
         // (M x NR) or (M x N) or (M x M).
         if ((nr < m) && (!wntuf)) {
             Claset("A", m - nr, nr, czero, czero, &u[((nr + 1) - 1)], ldu);
@@ -734,7 +730,7 @@ void Cgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
                 Cgesvd("N", "O", n, n, v, ldv, s, u, ldu, v, ldv, &cwork[(n + 1) - 1], lcwork - n, rwork, info);
                 Clapmt(false, n, n, v, ldv, iwork);
             }
-            // .. now [V] contains the adjoINTEGER of the matrix of the right singular
+            // .. now [V] contains the adjoint of the matrix of the right singular
             // vectors of A.
         }
         //
@@ -829,6 +825,7 @@ void Cgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
                         }
                     }
                     Clapmt(false, n, n, v, ldv, iwork);
+                    // .. assemble the left singular vector matrix U of dimensions
                     // (M x N1), i.e. (M x N) or (M x M).
                     //
                     for (p = 1; p <= n; p = p + 1) {
@@ -871,6 +868,7 @@ void Cgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
                     Claset("A", n - nr, n - nr, czero, cone, &v[((nr + 1) - 1) + ((nr + 1) - 1) * ldv], ldv);
                     Cunmqr("R", "C", n, n, nr, &u[((nr + 1) - 1) * ldu], ldu, &cwork[(n + 1) - 1], v, ldv, &cwork[(n + nr + 1) - 1], lcwork - n - nr, ierr);
                     Clapmt(false, n, n, v, ldv, iwork);
+                    // .. assemble the left singular vector matrix U of dimensions
                     // (M x NR) or (M x N) or (M x M).
                     if ((nr < m) && !(wntuf)) {
                         Claset("A", m - nr, nr, czero, czero, &u[((nr + 1) - 1)], ldu);
@@ -897,6 +895,7 @@ void Cgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
                 Cgesvd("S", "O", nr, n, v, ldv, s, u, ldu, v, ldv, &cwork[(n + 1) - 1], lcwork - n, rwork, info);
                 Clapmt(false, nr, n, v, ldv, iwork);
                 // .. now [V](1:NR,1:N) contains V(1:N,1:NR)**H
+                // .. assemble the left singular vector matrix U of dimensions
                 // (M x NR) or (M x N) or (M x M).
                 if ((nr < m) && !(wntuf)) {
                     Claset("A", m - nr, nr, czero, czero, &u[((nr + 1) - 1)], ldu);
@@ -926,9 +925,10 @@ void Cgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
                     Claset("A", n - nr, n, czero, czero, &v[((nr + 1) - 1)], ldv);
                     Cgesvd("S", "O", n, n, v, ldv, s, u, ldu, v, ldv, &cwork[(n + 1) - 1], lcwork - n, rwork, info);
                     Clapmt(false, n, n, v, ldv, iwork);
-                    // .. now [V] contains the adjoINTEGER of the matrix of the right
+                    // .. now [V] contains the adjoint of the matrix of the right
                     // singular vectors of A. The leading N left singular vectors
                     // are in [U](1:N,1:N)
+                    // .. assemble the left singular vector matrix U of dimensions
                     // (M x N1), i.e. (M x N) or (M x M).
                     if ((n < m) && !(wntuf)) {
                         Claset("A", m - n, n, czero, czero, &u[((n + 1) - 1)], ldu);
@@ -953,6 +953,7 @@ void Cgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
                     Claset("A", n - nr, n - nr, czero, cone, &v[((nr + 1) - 1) + ((nr + 1) - 1) * ldv], ldv);
                     Cunmlq("R", "N", n, n, nr, &u[((nr + 1) - 1)], ldu, &cwork[(n + 1) - 1], v, ldv, &cwork[(n + nr + 1) - 1], lcwork - n - nr, ierr);
                     Clapmt(false, n, n, v, ldv, iwork);
+                    // .. assemble the left singular vector matrix U of dimensions
                     // (M x NR) or (M x N) or (M x M).
                     if ((nr < m) && !(wntuf)) {
                         Claset("A", m - nr, nr, czero, czero, &u[((nr + 1) - 1)], ldu);
@@ -1003,7 +1004,7 @@ statement_4002:
     if (conda) {
         rwork[0] = sconda;
     }
-    rwork[2 - 1] = p - nr;
+    rwork[1] = p - nr;
     // .. p-NR is the number of singular values that are computed as
     // exact zeros in Cgesvd() applied to the (possibly truncated)
     // full row rank triangular (trapezoidal) factor of A.
