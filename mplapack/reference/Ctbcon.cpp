@@ -29,7 +29,6 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-inline REAL abs1(COMPLEX zdum) { return abs(zdum.real()) + abs(zdum.imag()); }
 void Ctbcon(const char *norm, const char *uplo, const char *diag, INTEGER const n, INTEGER const kd, COMPLEX *ab, INTEGER const ldab, REAL &rcond, COMPLEX *work, REAL *rwork, INTEGER &info) {
     COMPLEX zdum = 0.0;
     bool upper = false;
@@ -47,13 +46,6 @@ void Ctbcon(const char *norm, const char *uplo, const char *diag, INTEGER const 
     REAL scale = 0.0;
     INTEGER ix = 0;
     REAL xnorm = 0.0;
-    //
-    //
-    //
-    //
-    // .. Local Arrays ..
-    // .. Statement Functions ..
-    // .. Statement Function definitions ..
     //
     // Test the input parameters.
     //
@@ -128,7 +120,7 @@ void Ctbcon(const char *norm, const char *uplo, const char *diag, INTEGER const 
             //
             if (scale != one) {
                 ix = iCamax(n, work, 1);
-                xnorm = abs1(work[ix - 1]);
+                xnorm = cabs1(work[ix - 1]);
                 if (scale < xnorm * smlnum || scale == zero) {
                     goto statement_20;
                 }

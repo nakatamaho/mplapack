@@ -32,10 +32,6 @@
 void Ctgexc(bool const wantq, bool const wantz, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, COMPLEX *q, INTEGER const ldq, COMPLEX *z, INTEGER const ldz, INTEGER const ifst, INTEGER &ilst, INTEGER &info) {
     INTEGER here = 0;
     //
-    //
-    //
-    //
-    //
     // Decode and test input arguments.
     info = 0;
     if (n < 0) {
