@@ -58,7 +58,7 @@ void Ctzrzf(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, COM
             lwkopt = m * nb;
             lwkmin = max((INTEGER)1, m);
         }
-        work[1 - 1] = lwkopt;
+        work[0] = lwkopt;
         //
         if (lwork < lwkmin && !lquery) {
             info = -7;
@@ -155,7 +155,7 @@ void Ctzrzf(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, COM
         Clatrz(mu, n, n - m, a, lda, tau, work);
     }
     //
-    work[1 - 1] = lwkopt;
+    work[0] = lwkopt;
     //
     // End of Ctzrzf
     //
