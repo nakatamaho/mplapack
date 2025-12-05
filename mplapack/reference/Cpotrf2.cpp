@@ -31,10 +31,6 @@
 
 void Cpotrf2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, INTEGER &info) {
     //
-    //
-    //
-    //
-    //
     // Test the input parameters
     //
     info = 0;
