@@ -29,7 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Chbevx_2stage(const char *jobz, const char *range, const char *uplo, INTEGER const n, INTEGER const kd, COMPLEX *ab, INTEGER const ldab, COMPLEX *q, INTEGER const ldq, REAL const vl, REAL const vu, INTEGER const il, INTEGER const iu, REAL const abstol, INTEGER &m, REAL *w, COMPLEX *z, INTEGER const ldz, COMPLEX *work, INTEGER const lwork, REAL *rwork, INTEGER *iwork, INTEGER *ifail, INTEGER &info) {
+void Chbevx_2stage(const char *jobz, const char *range, const char *uplo, INTEGER const n, INTEGER const kd, COMPLEX *ab, INTEGER const ldab, COMPLEX *q, INTEGER const ldq, REAL const &vl, REAL const &vu, INTEGER const il, INTEGER const iu, REAL const &abstol, INTEGER &m, REAL *w, COMPLEX *z, INTEGER const ldz, COMPLEX *work, INTEGER const lwork, REAL *rwork, INTEGER *iwork, INTEGER *ifail, INTEGER &info) {
     bool wantz = false;
     bool alleig = false;
     bool valeig = false;
@@ -77,10 +77,6 @@ void Chbevx_2stage(const char *jobz, const char *range, const char *uplo, INTEGE
     INTEGER imax = 0;
     INTEGER jj = 0;
     INTEGER itmp1 = 0;
-    //
-    // -- LAPACK driver routine --
-    //
-    //
     //
     //
     // Test the input parameters.
@@ -186,7 +182,7 @@ void Chbevx_2stage(const char *jobz, const char *range, const char *uplo, INTEGE
     smlnum = safmin / eps;
     bignum = one / smlnum;
     rmin = sqrt(smlnum);
-    rmax = min(REAL(sqrt(bignum)), REAL(one / sqrt(sqrt(safmin))));
+    rmax = min(sqrt(bignum), one / sqrt(sqrt(safmin)));
     //
     // Scale matrix to allowable range, if necessary.
     //
@@ -222,7 +218,7 @@ void Chbevx_2stage(const char *jobz, const char *range, const char *uplo, INTEGE
         }
     }
     //
-    // Call Chbtrd_HB2ST to reduce Hermitian band matrix to tridiagonal form.
+    // Call ZHBTRD_HB2ST to reduce Hermitian band matrix to tridiagonal form.
     //
     indd = 1;
     inde = indd + n;
