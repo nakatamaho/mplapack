@@ -125,7 +125,7 @@ void Rlamswlq(const char *side, const char *trans, INTEGER const m, INTEGER cons
         ctr = 1;
         Rgemlqt("L", "N", nb, n, k, mb, &a[0], lda, t, ldt, &c[0], ldc, work, info);
         //
-        for (i = nb + 1; i >= ii - nb + k; i = i(nb - k)) {
+        for (i = nb + 1; i <= ii - nb + k; i = i + (nb - k)) {
             //
             // Multiply Q to the current block of C (I:I+NB,1:N)
             //
@@ -176,7 +176,7 @@ void Rlamswlq(const char *side, const char *trans, INTEGER const m, INTEGER cons
         ii = n - kk + 1;
         Rgemlqt("R", "T", m, nb, k, mb, &a[0], lda, t, ldt, &c[0], ldc, work, info);
         //
-        for (i = nb + 1; i >= ii - nb + k; i = i(nb - k)) {
+        for (i = nb + 1; i <= ii - nb + k; i = i + (nb - k)) {
             //
             // Multiply Q to the current block of C (1:M,I:I+MB)
             //

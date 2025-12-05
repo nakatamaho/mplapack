@@ -29,11 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rlamtsqr(const char *side, const char *trans, INTEGER const &m, INTEGER const &n, INTEGER const &k, INTEGER const &mb, INTEGER const &nb, REAL *a, INTEGER const &lda, REAL *t, INTEGER const &ldt, REAL *c, INTEGER const &ldc, REAL *work, INTEGER const &lwork, INTEGER &info) {
-    //
-    //
-    //
-    //
+void Rlamtsqr(const char *side, const char *trans, INTEGER const m, INTEGER const n, INTEGER const k, INTEGER const mb, INTEGER const nb, REAL *a, INTEGER const lda, REAL *t, INTEGER const ldt, REAL *c, INTEGER const ldc, REAL *work, INTEGER const lwork, INTEGER &info) {
     //
     // Test the input arguments
     //
@@ -77,7 +73,7 @@ void Rlamtsqr(const char *side, const char *trans, INTEGER const &m, INTEGER con
     }
     //
     if (info != 0) {
-        Mxerbla("RLAMTSQR", -info);
+        Mxerbla("Rlamtsqr", -info);
         return;
     } else if (lquery) {
         return;
@@ -204,6 +200,6 @@ void Rlamtsqr(const char *side, const char *trans, INTEGER const &m, INTEGER con
     //
     work[0] = lw;
     //
-    // End of RLAMTSQR
+    // End of Rlamtsqr
     //
 }
