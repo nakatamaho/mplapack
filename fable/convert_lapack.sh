@@ -288,33 +288,34 @@ lines = text.splitlines(keepends=True)
 lines = [_rewrite_norm_eq_one(line) for line in lines]
 
 # ---------------------------------------------------------------------------
-# 4) Drop bogus "cabs1(zdum) = abs(zdum.real()) + abs(zdum.imag());" line
+# 4) Drop bogus "cabs1(v) = abs(v.real()) + abs(v.imag());" line
 # ---------------------------------------------------------------------------
 
 CABS1_STMT_RE = re.compile(
-    r"^\s*cabs1\s*\(\s*zdum\s*\)\s*=\s*abs\s*\(\s*zdum\.real\(\)\s*\)\s*\+\s*abs\s*\(\s*zdum\.imag\(\)\s*\)\s*;\s*$"
+    r"^\s*cabs1\s*\(\s*([A-Za-z_][A-Za-z0-9_]*)\s*\)\s*=\s*"
+    r"abs\s*\(\s*\1\s*\.\s*real\s*\(\s*\)\s*\)\s*\+\s*"
+    r"abs\s*\(\s*\1\s*\.\s*imag\s*\(\s*\)\s*\)\s*;\s*$"
 )
 
 lines = [line for line in lines if not CABS1_STMT_RE.match(line)]
 
-CABS1_STMT_RE2 = re.compile(
-    r"^\s*cabs1\s*\(\s*cdum\s*\)\s*=\s*abs\s*\(\s*cdum\.real\(\)\s*\)\s*\+\s*abs\s*\(\s*cdum\.imag\(\)\s*\)\s*;\s*$"
+# ---------------------------------------------------------------------------
+# 5) Rewrite iMlaenv / iMlaenv2stage(..., "Txxxx", ...) where
+#    T is a type letter:
+#      Z -> C   (complex double  -> complex)
+#      D -> R   (double real     -> real)
+#    The rest of the routine name is lowercased:
+#      "ZGEQR "        -> "Cgeqr "
+#      "ZHETRD_2STAGE" -> "Chetrd_2stage"
+#      "DSYTRD_2STAGE" -> "Rsytrd_2stage"
+#    C++ line comments are not touched.
+# ---------------------------------------------------------------------------
+
+IMLAENV_T_RE = re.compile(
+    r'(iMlaenv(?:2stage)?\s*\(\s*\d+\s*,\s*")([ZDSC])([^"]*)(\s*")'
 )
 
-lines = [line for line in lines if not CABS1_STMT_RE2.match(line)]
-
-CABS1_STMT_RE3 = re.compile(
-    r"^\s*cabs1\s*\(\s*z\s*\)\s*=\s*abs\s*\(\s*z\.real\(\)\s*\)\s*\+\s*abs\s*\(\s*z\.imag\(\)\s*\)\s*;\s*$"
-)
-
-lines = [line for line in lines if not CABS1_STMT_RE2.match(line)]
-
-
-IMLAENV_Z_RE = re.compile(
-    r'(iMlaenv\(\s*\d+\s*,\s*")Z([A-Za-z0-9]+)(\s*")'
-)
-
-def _rewrite_imlaenv_z_to_c(line: str) -> str:
+def _rewrite_imlaenv_typed(line: str) -> str:
     # Skip C++ line comments
     idx = line.find("//")
     if idx >= 0:
@@ -323,35 +324,19 @@ def _rewrite_imlaenv_z_to_c(line: str) -> str:
         code, comment = line, ""
 
     def repl(m: re.Match) -> str:
-        prefix, name, suffix = m.groups()
-        return prefix + "C" + name.lower() + suffix
+        prefix, tchar, name, suffix = m.groups()
+        # Map type letter: Z->C, D->R, others unchanged
+        tmap = {"Z": "C", "D": "R"}
+        new_t = tmap.get(tchar, tchar)
+        # name contains the rest, e.g. "GEQR " or "SYTRD_2STAGE"
+        stripped = name.rstrip()
+        trailing = name[len(stripped):]  # keep trailing spaces
+        return prefix + new_t + stripped.lower() + trailing + suffix
 
-    code = IMLAENV_Z_RE.sub(repl, code)
+    code = IMLAENV_T_RE.sub(repl, code)
     return code + comment
 
-lines = [_rewrite_imlaenv_z_to_c(line) for line in lines]
-
-IMLAENV2_Z_RE = re.compile(
-    r'(iMlaenv2stage\(\s*\d+\s*,\s*")Z([A-Za-z0-9_]+)(\s*")'
-)
-
-def _rewrite_imlaenv2stage_z_to_c(line: str) -> str:
-    # Skip C++ line comments
-    idx = line.find("//")
-    if idx >= 0:
-        code, comment = line[:idx], line[idx:]
-    else:
-        code, comment = line, ""
-
-    def repl(m: re.Match) -> str:
-        prefix, name, suffix = m.groups()
-        # Z + NAME -> C + name.lower()
-        return prefix + "C" + name.lower() + suffix
-
-    code = IMLAENV2_Z_RE.sub(repl, code)
-    return code + comment
-
-lines = [_rewrite_imlaenv2stage_z_to_c(line) for line in lines]
+lines = [_rewrite_imlaenv_typed(line) for line in lines]
 
 path.write_text("".join(lines))
 EOF

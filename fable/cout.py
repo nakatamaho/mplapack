@@ -1330,67 +1330,58 @@ def _collect_complex_variable_names(text: str):
 
 
 def _real_cast_or_component(arg: str, complex_vars, complex_ptrs) -> str:
-    """Replacement for DBLE/REAL with COMPLEX-aware behavior.
-
-    Policy:
-      - If the argument is a simple COMPLEX variable / array element, take
-        its real part:   alpha      -> alpha.real()
-                         a[i]       -> a[i].real()
-                         a[0] (for COMPLEX*) -> a[0].real()
-      - If the expression is already known to be REAL-valued (e.g. RCabs1(z),
-        ABS(x.imag()), AIMAG(z)), do NOT add .real(); just cast to REAL.
-      - Otherwise, treat it as a generic real/integer expression and use
-        castREAL(expr). This avoids corrupting expressions by blindly adding
-        .real() on top.
-    """
+    """Replacement for DBLE/REAL with COMPLEX-aware behavior."""
     arg = arg.strip()
     if not arg:
         return "castREAL(0)"
+
+    # Handle unary minus on a simple COMPLEX lvalue:
+    #   REAL(-alpha) -> -alpha.real()
+    #   REAL(-a(i))  -> -a(i).real()
+    m_unary = re.match(r'^-\s*([A-Za-z_][A-Za-z0-9_]*(?:\[[^\]]*\])*)$', arg)
+    if m_unary:
+        base_expr = m_unary.group(1)
+        m_name = re.match(r'([A-Za-z_][A-Za-z0-9_]*)', base_expr)
+        base = m_name.group(1) if m_name else None
+        if base is not None and base in complex_vars:
+            # COMPLEX* dummy used bare: -a -> -a[0].real()
+            if base in complex_ptrs and "[" not in base_expr:
+                return f"-{base}[0].real()"
+            # General COMPLEX variable / element: -a(i) -> -a(i).real()
+            return f"-{base_expr}.real()"
 
     # Expressions that are obviously REAL already
     if _is_real_valued_function_call(arg):
         return f"castREAL({arg})"
     if ".real()" in arg or ".imag()" in arg:
-        # x.real(), x.imag() are REAL-valued already
         return f"castREAL({arg})"
 
     # Simple lvalue: NAME or NAME[...]...
     if _is_simple_lvalue(arg):
-        # Extract the base identifier (first token)
         m = re.match(r'([A-Za-z_][A-Za-z0-9_]*)', arg)
         base = m.group(1) if m else None
 
         # COMPLEX scalar or array element: take real part
         if base is not None and base in complex_vars:
-            # COMPLEX* dummy used bare: dble(a) -> a[0].real()
             if base in complex_ptrs and "[" not in arg:
                 return f"{base}[0].real()"
-            # General COMPLEX variable / element
             return f"{arg}.real()"
 
-        # Not a COMPLEX variable: treat as generic real/integer expression
         return f"castREAL({arg})"
 
-    # Non-simple expression:
-    # For expressions like alpha*temp1 + conj(alpha)*temp2, if they involve
-    # COMPLEX variables, DBLE/REAL should give the real part of the whole
-    # expression.
+    # Non-simple expression: determine if any COMPLEX variable appears
     owner = None
     for name in complex_vars:
-        # Exact name or prefix match (e.g. "cmn.z", "cmn.z[...]", "cmn.z.something")
         if arg == name or arg.startswith(name + "[") or arg.startswith(name + "."):
             owner = name
             break
-        # Name appears somewhere as an identifier
         if re.search(r'\b' + re.escape(name) + r'\b', arg):
             owner = name
             break
 
-    # No COMPLEX variable involved → treat as real/integer expression
     if owner is None:
         return f"castREAL({arg})"
 
-    # General COMPLEX expression: take its real part
     return f"({arg}).real()"
 
 
