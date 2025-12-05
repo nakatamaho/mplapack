@@ -297,6 +297,19 @@ CABS1_STMT_RE = re.compile(
 
 lines = [line for line in lines if not CABS1_STMT_RE.match(line)]
 
+CABS1_STMT_RE2 = re.compile(
+    r"^\s*cabs1\s*\(\s*cdum\s*\)\s*=\s*abs\s*\(\s*cdum\.real\(\)\s*\)\s*\+\s*abs\s*\(\s*cdum\.imag\(\)\s*\)\s*;\s*$"
+)
+
+lines = [line for line in lines if not CABS1_STMT_RE2.match(line)]
+
+CABS1_STMT_RE3 = re.compile(
+    r"^\s*cabs1\s*\(\s*z\s*\)\s*=\s*abs\s*\(\s*z\.real\(\)\s*\)\s*\+\s*abs\s*\(\s*z\.imag\(\)\s*\)\s*;\s*$"
+)
+
+lines = [line for line in lines if not CABS1_STMT_RE2.match(line)]
+
+
 IMLAENV_Z_RE = re.compile(
     r'(iMlaenv\(\s*\d+\s*,\s*")Z([A-Za-z0-9]+)(\s*")'
 )
