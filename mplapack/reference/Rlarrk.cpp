@@ -78,7 +78,7 @@ statement_10:
     //
     tmp1 = abs(right - left);
     tmp2 = max(abs(right), abs(left));
-    if (tmp1 < max({atoli, pivmin, REAL(rtoli * tmp2)})) {
+    if (tmp1 < max(atoli, pivmin, REAL(rtoli * tmp2))) {
         info = 0;
         goto statement_30;
     }

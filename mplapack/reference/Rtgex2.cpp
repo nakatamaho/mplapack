@@ -99,9 +99,9 @@ void Rtgex2(bool const wantq, bool const wantz, INTEGER const n, REAL *a, INTEGE
         return;
     }
     m = n1 + n2;
-    if (lwork < max({(INTEGER)1, n * m, m * m * 2})) {
+    if (lwork < max((INTEGER)1, n * m, m * m * 2)) {
         info = -16;
-        work[1 - 1] = max({(INTEGER)1, n * m, m * m * 2});
+        work[1 - 1] = max((INTEGER)1, n * m, m * m * 2);
         return;
     }
     //

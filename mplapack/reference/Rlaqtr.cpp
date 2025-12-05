@@ -86,7 +86,7 @@ void Rlaqtr(bool const ltran, bool const lreal, INTEGER const n, REAL *t, INTEGE
     //
     xnorm = Rlange("M", n, n, t, ldt, d);
     if (!lreal) {
-        xnorm = max({xnorm, REAL(abs(w)), REAL(Rlange("M", n, 1, b, n, d))});
+        xnorm = max(xnorm, REAL(abs(w)), REAL(Rlange("M", n, 1, b, n, d)));
     }
     smin = max(smlnum, REAL(eps * xnorm));
     //
@@ -323,7 +323,7 @@ void Rlaqtr(bool const ltran, bool const lreal, INTEGER const n, REAL *t, INTEGE
                     }
                     x[j1 - 1] = v[0];
                     x[j2 - 1] = v[(2 - 1)];
-                    xmax = max({REAL(abs(x[j1 - 1])), REAL(abs(x[j2 - 1])), xmax});
+                    xmax = max(REAL(abs(x[j1 - 1])), REAL(abs(x[j2 - 1])), xmax);
                     //
                 }
             statement_40:;
@@ -580,7 +580,7 @@ void Rlaqtr(bool const ltran, bool const lreal, INTEGER const n, REAL *t, INTEGE
                     x[j2 - 1] = v[(2 - 1)];
                     x[(n + j1) - 1] = v[(2 - 1) * ldv];
                     x[(n + j2) - 1] = v[(2 - 1) + (2 - 1) * ldv];
-                    xmax = max({REAL(abs(x[j1 - 1]) + abs(x[(n + j1) - 1])), REAL(abs(x[j2 - 1]) + abs(x[(n + j2) - 1])), xmax});
+                    xmax = max(REAL(abs(x[j1 - 1]) + abs(x[(n + j1) - 1])), REAL(abs(x[j2 - 1]) + abs(x[(n + j2) - 1])), xmax);
                     //
                 }
             //

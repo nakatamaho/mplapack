@@ -86,7 +86,7 @@ void Cgetsls(const char *trans, INTEGER const m, INTEGER const n, INTEGER const 
         info = -4;
     } else if (lda < max((INTEGER)1, m)) {
         info = -6;
-    } else if (ldb < max({(INTEGER)1, m, n})) {
+    } else if (ldb < max((INTEGER)1, m, n)) {
         info = -8;
     }
     //
@@ -152,7 +152,7 @@ void Cgetsls(const char *trans, INTEGER const m, INTEGER const n, INTEGER const 
     //
     // Quick return if possible
     //
-    if (min({m, n, nrhs}) == 0) {
+    if (min(m, n, nrhs) == 0) {
         Claset("FULL", max(m, n), nrhs, czero, czero, b, ldb);
         return;
     }

@@ -150,9 +150,9 @@ void Rggesx(const char *jobvsl, const char *jobvsr, const char *sort, bool (*sel
         if (n > 0) {
             minwrk = max(8 * n, 6 * n + 16);
             maxwrk = minwrk - n + n * iMlaenv(1, "Rgeqrf", " ", n, 1, n, 0);
-            maxwrk = max({maxwrk, minwrk - n + n * iMlaenv(1, "Rormqr", " ", n, 1, n, -1)});
+            maxwrk = max(maxwrk, minwrk - n + n * iMlaenv(1, "Rormqr", " ", n, 1, n, -1));
             if (ilvsl) {
-                maxwrk = max({maxwrk, minwrk - n + n * iMlaenv(1, "Rorgqr", " ", n, 1, n, -1)});
+                maxwrk = max(maxwrk, minwrk - n + n * iMlaenv(1, "Rorgqr", " ", n, 1, n, -1));
             }
             lwrk = maxwrk;
             if (ijob >= 1) {

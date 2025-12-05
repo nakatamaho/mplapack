@@ -115,7 +115,7 @@ void Rggev3(const char *jobvl, const char *jobvr, INTEGER const n, REAL *a, INTE
     //
     if (info == 0) {
         Rgeqrf(n, n, b, ldb, work, work, -1, ierr);
-        lwkopt = max({(INTEGER)1, 8 * n, 3 * n + castINTEGER(work[1 - 1])});
+        lwkopt = max((INTEGER)1, 8 * n, 3 * n + castINTEGER(work[1 - 1]));
         Rormqr("L", "T", n, n, n, b, ldb, work, a, lda, work, -1, ierr);
         lwkopt = max(lwkopt, 3 * n + castINTEGER(work[1 - 1]));
         if (ilvl) {

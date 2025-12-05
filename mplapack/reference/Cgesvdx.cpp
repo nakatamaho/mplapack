@@ -126,9 +126,9 @@ void Cgesvdx(const char *jobu, const char *jobvt, const char *range, INTEGER con
                     //
                     minwrk = n * (n + 5);
                     maxwrk = n + n * iMlaenv(1, "Cgeqrf", " ", m, n, -1, -1);
-                    maxwrk = max({maxwrk, n * n + 2 * n + 2 * n * iMlaenv(1, "Cgebrd", " ", n, n, -1, -1)});
+                    maxwrk = max(maxwrk, n * n + 2 * n + 2 * n * iMlaenv(1, "Cgebrd", " ", n, n, -1, -1));
                     if (wantu || wantvt) {
-                        maxwrk = max({maxwrk, n * n + 2 * n + n * iMlaenv(1, "Cunmqr", "LN", n, n, n, -1)});
+                        maxwrk = max(maxwrk, n * n + 2 * n + n * iMlaenv(1, "Cunmqr", "LN", n, n, n, -1));
                     }
                 } else {
                     //
@@ -137,7 +137,7 @@ void Cgesvdx(const char *jobu, const char *jobvt, const char *range, INTEGER con
                     minwrk = 3 * n + m;
                     maxwrk = 2 * n + (m + n) * iMlaenv(1, "Cgebrd", " ", m, n, -1, -1);
                     if (wantu || wantvt) {
-                        maxwrk = max({maxwrk, 2 * n + n * iMlaenv(1, "Cunmqr", "LN", n, n, n, -1)});
+                        maxwrk = max(maxwrk, 2 * n + n * iMlaenv(1, "Cunmqr", "LN", n, n, n, -1));
                     }
                 }
             } else {
@@ -148,9 +148,9 @@ void Cgesvdx(const char *jobu, const char *jobvt, const char *range, INTEGER con
                     //
                     minwrk = m * (m + 5);
                     maxwrk = m + m * iMlaenv(1, "Cgelqf", " ", m, n, -1, -1);
-                    maxwrk = max({maxwrk, m * m + 2 * m + 2 * m * iMlaenv(1, "Cgebrd", " ", m, m, -1, -1)});
+                    maxwrk = max(maxwrk, m * m + 2 * m + 2 * m * iMlaenv(1, "Cgebrd", " ", m, m, -1, -1));
                     if (wantu || wantvt) {
-                        maxwrk = max({maxwrk, m * m + 2 * m + m * iMlaenv(1, "Cunmqr", "LN", m, m, m, -1)});
+                        maxwrk = max(maxwrk, m * m + 2 * m + m * iMlaenv(1, "Cunmqr", "LN", m, m, m, -1));
                     }
                 } else {
                     //
@@ -159,7 +159,7 @@ void Cgesvdx(const char *jobu, const char *jobvt, const char *range, INTEGER con
                     minwrk = 3 * m + n;
                     maxwrk = 2 * m + (m + n) * iMlaenv(1, "Cgebrd", " ", m, n, -1, -1);
                     if (wantu || wantvt) {
-                        maxwrk = max({maxwrk, 2 * m + m * iMlaenv(1, "Cunmqr", "LN", m, m, m, -1)});
+                        maxwrk = max(maxwrk, 2 * m + m * iMlaenv(1, "Cunmqr", "LN", m, m, m, -1));
                     }
                 }
             }

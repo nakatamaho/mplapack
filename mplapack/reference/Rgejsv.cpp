@@ -113,7 +113,7 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
         info = -13;
     } else if (rsvec && (ldv < n)) {
         info = -15;
-    } else if ((!(lsvec || rsvec || errest) && (lwork < max({(INTEGER)7, 4 * n + 1, 2 * m + n}))) || (!(lsvec || rsvec) && errest && (lwork < max({(INTEGER)7, 4 * n + n * n, 2 * m + n}))) || (lsvec && (!rsvec) && (lwork < max({(INTEGER)7, 2 * m + n, 4 * n + 1}))) || (rsvec && (!lsvec) && (lwork < max({(INTEGER)7, 2 * m + n, 4 * n + 1}))) || (lsvec && rsvec && (!jracc) && (lwork < max({2 * m + n, 6 * n + 2 * n * n}))) || (lsvec && rsvec && jracc && lwork < max({2 * m + n, 4 * n + n * n, 2 * n + n * n + 6}))) {
+    } else if ((!(lsvec || rsvec || errest) && (lwork < max((INTEGER)7, 4 * n + 1, 2 * m + n))) || (!(lsvec || rsvec) && errest && (lwork < max((INTEGER)7, 4 * n + n * n, 2 * m + n))) || (lsvec && (!rsvec) && (lwork < max((INTEGER)7, 2 * m + n, 4 * n + 1))) || (rsvec && (!lsvec) && (lwork < max((INTEGER)7, 2 * m + n, 4 * n + 1))) || (lsvec && rsvec && (!jracc) && (lwork < max(2 * m + n, 6 * n + 2 * n * n))) || (lsvec && rsvec && jracc && lwork < max(2 * m + n, 4 * n + n * n, 2 * n + n * n + 6))) {
         info = -17;
     } else {
         // #:)

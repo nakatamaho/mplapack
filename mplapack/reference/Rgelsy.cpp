@@ -84,7 +84,7 @@ void Rgelsy(INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEG
         info = -3;
     } else if (lda < max((INTEGER)1, m)) {
         info = -5;
-    } else if (ldb < max({(INTEGER)1, m, n})) {
+    } else if (ldb < max((INTEGER)1, m, n)) {
         info = -7;
     }
     //
@@ -99,9 +99,9 @@ void Rgelsy(INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEG
             nb2 = iMlaenv(1, "Rgerqf", " ", m, n, -1, -1);
             nb3 = iMlaenv(1, "Rormqr", " ", m, n, nrhs, -1);
             nb4 = iMlaenv(1, "Rormrq", " ", m, n, nrhs, -1);
-            nb = max({nb1, nb2, nb3, nb4});
-            lwkmin = mn + max({2 * mn, n + 1, mn + nrhs});
-            lwkopt = max({lwkmin, mn + 2 * n + nb * (n + 1), 2 * mn + nb * nrhs});
+            nb = max(nb1, nb2, nb3, nb4);
+            lwkmin = mn + max(2 * mn, n + 1, mn + nrhs);
+            lwkopt = max(lwkmin, mn + 2 * n + nb * (n + 1), 2 * mn + nb * nrhs);
         }
         work[1 - 1] = lwkopt;
         //

@@ -124,11 +124,11 @@ void Rtgsen(INTEGER const ijob, bool const wantq, bool const wantz, bool *select
     }
     //
     if (ijob == 1 || ijob == 2 || ijob == 4) {
-        lwmin = max({(INTEGER)1, 4 * n + 16, 2 * m * (n - m)});
+        lwmin = max((INTEGER)1, 4 * n + 16, 2 * m * (n - m));
         liwmin = max((INTEGER)1, n + 6);
     } else if (ijob == 3 || ijob == 5) {
-        lwmin = max({(INTEGER)1, 4 * n + 16, 4 * m * (n - m)});
-        liwmin = max({(INTEGER)1, 2 * m * (n - m), n + 6});
+        lwmin = max((INTEGER)1, 4 * n + 16, 4 * m * (n - m));
+        liwmin = max((INTEGER)1, 2 * m * (n - m), n + 6);
     } else {
         lwmin = max((INTEGER)1, 4 * n + 16);
         liwmin = 1;

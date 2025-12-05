@@ -135,7 +135,7 @@ void Rsyevr(const char *jobz, const char *range, const char *uplo, INTEGER const
     //
     if (info == 0) {
         nb = iMlaenv(1, "Rsytrd", uplo, n, -1, -1, -1);
-        nb = max({nb, iMlaenv(1, "Rormtr", uplo, n, -1, -1, -1)});
+        nb = max(nb, iMlaenv(1, "Rormtr", uplo, n, -1, -1, -1));
         lwkopt = max((nb + 1) * n, lwmin);
         work[1 - 1] = lwkopt;
         iwork[1 - 1] = liwmin;

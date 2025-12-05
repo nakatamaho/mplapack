@@ -158,10 +158,10 @@ void Rggevx(const char *balanc, const char *jobvl, const char *jobvr, const char
                 minwrk = max(minwrk, 2 * n * (n + 4) + 16);
             }
             maxwrk = minwrk;
-            maxwrk = max({maxwrk, n + n * iMlaenv(1, "Rgeqrf", " ", n, 1, n, 0)});
-            maxwrk = max({maxwrk, n + n * iMlaenv(1, "Rormqr", " ", n, 1, n, 0)});
+            maxwrk = max(maxwrk, n + n * iMlaenv(1, "Rgeqrf", " ", n, 1, n, 0));
+            maxwrk = max(maxwrk, n + n * iMlaenv(1, "Rormqr", " ", n, 1, n, 0));
             if (ilvl) {
-                maxwrk = max({maxwrk, n + n * iMlaenv(1, "Rorgqr", " ", n, 1, n, 0)});
+                maxwrk = max(maxwrk, n + n * iMlaenv(1, "Rorgqr", " ", n, 1, n, 0));
             }
         }
         work[1 - 1] = maxwrk;

@@ -192,7 +192,7 @@ void Rgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
             // .. minimal and optimal sizes of the workspace if
             // only the singular values are requested
             if (conda) {
-                minwrk = max({n + lwqp3, lwcon, lwsvd});
+                minwrk = max(n + lwqp3, lwcon, lwsvd);
             } else {
                 minwrk = max(n + lwqp3, lwsvd);
             }
@@ -200,7 +200,7 @@ void Rgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
                 Rgesvd("N", "N", n, n, a, lda, s, u, ldu, v, ldv, rdummy, -1, ierr);
                 lwrk_Rgesvd = castINTEGER(rdummy[1 - 1]);
                 if (conda) {
-                    optwrk = max({n + lwrk_Rgeqp3, n + lwcon, lwrk_Rgesvd});
+                    optwrk = max(n + lwrk_Rgeqp3, n + lwcon, lwrk_Rgesvd);
                 } else {
                     optwrk = max(n + lwrk_Rgeqp3, lwrk_Rgesvd);
                 }
@@ -209,9 +209,9 @@ void Rgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
             // .. minimal and optimal sizes of the workspace if the
             // singular values and the left singular vectors are requested
             if (conda) {
-                minwrk = n + max({lwqp3, lwcon, lwsvd, lworq});
+                minwrk = n + max(lwqp3, lwcon, lwsvd, lworq);
             } else {
-                minwrk = n + max({lwqp3, lwsvd, lworq});
+                minwrk = n + max(lwqp3, lwsvd, lworq);
             }
             if (lquery) {
                 if (rtrans) {
@@ -221,16 +221,16 @@ void Rgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
                 }
                 lwrk_Rgesvd = castINTEGER(rdummy[1 - 1]);
                 if (conda) {
-                    optwrk = n + max({lwrk_Rgeqp3, lwcon, lwrk_Rgesvd, lwrk_Rormqr});
+                    optwrk = n + max(lwrk_Rgeqp3, lwcon, lwrk_Rgesvd, lwrk_Rormqr);
                 } else {
-                    optwrk = n + max({lwrk_Rgeqp3, lwrk_Rgesvd, lwrk_Rormqr});
+                    optwrk = n + max(lwrk_Rgeqp3, lwrk_Rgesvd, lwrk_Rormqr);
                 }
             }
         } else if (rsvec && (!lsvec)) {
             // .. minimal and optimal sizes of the workspace if the
             // singular values and the right singular vectors are requested
             if (conda) {
-                minwrk = n + max({lwqp3, lwcon, lwsvd});
+                minwrk = n + max(lwqp3, lwcon, lwsvd);
             } else {
                 minwrk = n + max(lwqp3, lwsvd);
             }
@@ -242,7 +242,7 @@ void Rgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
                 }
                 lwrk_Rgesvd = castINTEGER(rdummy[1 - 1]);
                 if (conda) {
-                    optwrk = n + max({lwrk_Rgeqp3, lwcon, lwrk_Rgesvd});
+                    optwrk = n + max(lwrk_Rgeqp3, lwcon, lwrk_Rgesvd);
                 } else {
                     optwrk = n + max(lwrk_Rgeqp3, lwrk_Rgesvd);
                 }
@@ -251,7 +251,7 @@ void Rgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
             // .. minimal and optimal sizes of the workspace if the
             // full SVD is requested
             if (rtrans) {
-                minwrk = max({lwqp3, lwsvd, lworq});
+                minwrk = max(lwqp3, lwsvd, lworq);
                 if (conda) {
                     minwrk = max(minwrk, lwcon);
                 }
@@ -262,7 +262,7 @@ void Rgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
                     // .. minimal workspace length for N/2 x N/2 Rgesvd
                     lwsvd2 = max(5 * (n / 2), (INTEGER)1);
                     lworq2 = max(n, (INTEGER)1);
-                    minwrk2 = max({lwqp3, n / 2 + lwqrf, n / 2 + lwsvd2, n / 2 + lworq2, lworq});
+                    minwrk2 = max(lwqp3, n / 2 + lwqrf, n / 2 + lwsvd2, n / 2 + lworq2, lworq);
                     if (conda) {
                         minwrk2 = max(minwrk2, lwcon);
                     }
@@ -270,7 +270,7 @@ void Rgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
                     minwrk = max(minwrk, minwrk2);
                 }
             } else {
-                minwrk = max({lwqp3, lwsvd, lworq});
+                minwrk = max(lwqp3, lwsvd, lworq);
                 if (conda) {
                     minwrk = max(minwrk, lwcon);
                 }
@@ -280,7 +280,7 @@ void Rgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
                     lwlqf = max(n / 2, (INTEGER)1);
                     lwsvd2 = max(5 * (n / 2), (INTEGER)1);
                     lworlq = max(n, (INTEGER)1);
-                    minwrk2 = max({lwqp3, n / 2 + lwlqf, n / 2 + lwsvd2, n / 2 + lworlq, lworq});
+                    minwrk2 = max(lwqp3, n / 2 + lwlqf, n / 2 + lwsvd2, n / 2 + lworlq, lworq);
                     if (conda) {
                         minwrk2 = max(minwrk2, lwcon);
                     }
@@ -292,7 +292,7 @@ void Rgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
                 if (rtrans) {
                     Rgesvd("O", "A", n, n, a, lda, s, u, ldu, v, ldv, rdummy, -1, ierr);
                     lwrk_Rgesvd = castINTEGER(rdummy[1 - 1]);
-                    optwrk = max({lwrk_Rgeqp3, lwrk_Rgesvd, lwrk_Rormqr});
+                    optwrk = max(lwrk_Rgeqp3, lwrk_Rgesvd, lwrk_Rormqr);
                     if (conda) {
                         optwrk = max(optwrk, lwcon);
                     }
@@ -304,7 +304,7 @@ void Rgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
                         lwrk_Rgesvd2 = castINTEGER(rdummy[1 - 1]);
                         Rormqr("R", "C", n, n, n / 2, u, ldu, rdummy, v, ldv, rdummy, -1, ierr);
                         lwrk_Rormqr2 = castINTEGER(rdummy[1 - 1]);
-                        optwrk2 = max({lwrk_Rgeqp3, n / 2 + lwrk_Rgeqrf, n / 2 + lwrk_Rgesvd2, n / 2 + lwrk_Rormqr2});
+                        optwrk2 = max(lwrk_Rgeqp3, n / 2 + lwrk_Rgeqrf, n / 2 + lwrk_Rgesvd2, n / 2 + lwrk_Rormqr2);
                         if (conda) {
                             optwrk2 = max(optwrk2, lwcon);
                         }
@@ -314,7 +314,7 @@ void Rgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
                 } else {
                     Rgesvd("S", "O", n, n, a, lda, s, u, ldu, v, ldv, rdummy, -1, ierr);
                     lwrk_Rgesvd = castINTEGER(rdummy[1 - 1]);
-                    optwrk = max({lwrk_Rgeqp3, lwrk_Rgesvd, lwrk_Rormqr});
+                    optwrk = max(lwrk_Rgeqp3, lwrk_Rgesvd, lwrk_Rormqr);
                     if (conda) {
                         optwrk = max(optwrk, lwcon);
                     }
@@ -326,7 +326,7 @@ void Rgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
                         lwrk_Rgesvd2 = castINTEGER(rdummy[1 - 1]);
                         Rormlq("R", "N", n, n, n / 2, u, ldu, rdummy, v, ldv, rdummy, -1, ierr);
                         lwrk_Rormlq = castINTEGER(rdummy[1 - 1]);
-                        optwrk2 = max({lwrk_Rgeqp3, n / 2 + lwrk_Rgelqf, n / 2 + lwrk_Rgesvd2, n / 2 + lwrk_Rormlq});
+                        optwrk2 = max(lwrk_Rgeqp3, n / 2 + lwrk_Rgelqf, n / 2 + lwrk_Rgesvd2, n / 2 + lwrk_Rormlq);
                         if (conda) {
                             optwrk2 = max(optwrk2, lwcon);
                         }

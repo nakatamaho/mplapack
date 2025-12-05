@@ -85,11 +85,11 @@ void Rlamtsqr(const char *side, const char *trans, INTEGER const &m, INTEGER con
     //
     // Quick return if possible
     //
-    if (min({m, n, k}) == 0) {
+    if (min(m, n, k) == 0) {
         return;
     }
     //
-    if ((mb <= k) || (mb >= max({m, n, k}))) {
+    if ((mb <= k) || (mb >= max(m, n, k))) {
         Rgemqrt(side, trans, m, n, k, nb, a, lda, t, ldt, c, ldc, work, info);
         return;
     }

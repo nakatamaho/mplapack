@@ -540,7 +540,7 @@ void Rhgeqz(const char *job, const char *compq, const char *compz, INTEGER const
                 s1 = s2;
                 s2 = temp;
             }
-            temp = max(s1, REAL(safmin * max({one, REAL(abs(wr)), REAL(abs(wi))})));
+            temp = max(s1, REAL(safmin * max(one, REAL(abs(wr)), REAL(abs(wi)))));
             if (wi != zero) {
                 goto statement_200;
             }

@@ -57,7 +57,7 @@ void Cuncsd2by1(const char *jobu1, const char *jobu2, const char *jobv1t, INTEGE
         info = -17;
     }
     //
-    INTEGER r = min({p, m - p, q, m - q});
+    INTEGER r = min(p, m - p, q, m - q);
     //
     // Compute workspace
     //
@@ -223,8 +223,8 @@ void Cuncsd2by1(const char *jobu1, const char *jobu2, const char *jobv1t, INTEGE
         lrworkmin = ibbcsd + lbbcsd - 1;
         lrworkopt = lrworkmin;
         rwork[1 - 1] = lrworkopt;
-        lworkmin = max({iorbdb + lorbdb - 1, iorgqr + lorgqrmin - 1, iorglq + lorglqmin - 1});
-        lworkopt = max({iorbdb + lorbdb - 1, iorgqr + lorgqropt - 1, iorglq + lorglqopt - 1});
+        lworkmin = max(iorbdb + lorbdb - 1, iorgqr + lorgqrmin - 1, iorglq + lorglqmin - 1);
+        lworkopt = max(iorbdb + lorbdb - 1, iorgqr + lorgqropt - 1, iorglq + lorglqopt - 1);
         work[1 - 1] = lworkopt;
         if (lwork < lworkmin && !lquery) {
             info = -19;

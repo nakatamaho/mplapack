@@ -109,17 +109,17 @@ void Cgelsd(INTEGER const m, INTEGER const n, INTEGER const nrhs, COMPLEX *a, IN
                 // columns.
                 //
                 mm = n;
-                maxwrk = max({maxwrk, n * iMlaenv(1, "Cgeqrf", " ", m, n, -1, -1)});
-                maxwrk = max({maxwrk, nrhs * iMlaenv(1, "Cunmqr", "LC", m, nrhs, n, -1)});
+                maxwrk = max(maxwrk, n * iMlaenv(1, "Cgeqrf", " ", m, n, -1, -1));
+                maxwrk = max(maxwrk, nrhs * iMlaenv(1, "Cunmqr", "LC", m, nrhs, n, -1));
             }
             if (m >= n) {
                 //
                 // Path 1 - overdetermined or exactly determined.
                 //
                 lrwork = 10 * n + 2 * n * smlsiz + 8 * n * nlvl + 3 * smlsiz * nrhs + max((smlsiz + 1) * (smlsiz + 1), n * (1 + nrhs) + 2 * nrhs);
-                maxwrk = max({maxwrk, 2 * n + (mm + n) * iMlaenv(1, "Cgebrd", " ", mm, n, -1, -1)});
-                maxwrk = max({maxwrk, 2 * n + nrhs * iMlaenv(1, "Cunmbr", "QLC", mm, nrhs, n, -1)});
-                maxwrk = max({maxwrk, 2 * n + (n - 1) * iMlaenv(1, "Cunmbr", "PLN", n, nrhs, n, -1)});
+                maxwrk = max(maxwrk, 2 * n + (mm + n) * iMlaenv(1, "Cgebrd", " ", mm, n, -1, -1));
+                maxwrk = max(maxwrk, 2 * n + nrhs * iMlaenv(1, "Cunmbr", "QLC", mm, nrhs, n, -1));
+                maxwrk = max(maxwrk, 2 * n + (n - 1) * iMlaenv(1, "Cunmbr", "PLN", n, nrhs, n, -1));
                 maxwrk = max(maxwrk, 2 * n + n * nrhs);
                 minwrk = max((INTEGER)2 * n + mm, 2 * n + n * nrhs);
             }
@@ -131,9 +131,9 @@ void Cgelsd(INTEGER const m, INTEGER const n, INTEGER const nrhs, COMPLEX *a, IN
                     // than rows.
                     //
                     maxwrk = m + m * iMlaenv(1, "Cgelqf", " ", m, n, -1, -1);
-                    maxwrk = max({maxwrk, m * m + 4 * m + 2 * m * iMlaenv(1, "Cgebrd", " ", m, m, -1, -1)});
-                    maxwrk = max({maxwrk, m * m + 4 * m + nrhs * iMlaenv(1, "Cunmbr", "QLC", m, nrhs, m, -1)});
-                    maxwrk = max({maxwrk, m * m + 4 * m + (m - 1) * iMlaenv(1, "Cunmlq", "LC", n, nrhs, m, -1)});
+                    maxwrk = max(maxwrk, m * m + 4 * m + 2 * m * iMlaenv(1, "Cgebrd", " ", m, m, -1, -1));
+                    maxwrk = max(maxwrk, m * m + 4 * m + nrhs * iMlaenv(1, "Cunmbr", "QLC", m, nrhs, m, -1));
+                    maxwrk = max(maxwrk, m * m + 4 * m + (m - 1) * iMlaenv(1, "Cunmlq", "LC", n, nrhs, m, -1));
                     if (nrhs > 1) {
                         maxwrk = max(maxwrk, m * m + m + m * nrhs);
                     } else {
@@ -142,14 +142,14 @@ void Cgelsd(INTEGER const m, INTEGER const n, INTEGER const nrhs, COMPLEX *a, IN
                     maxwrk = max(maxwrk, m * m + 4 * m + m * nrhs);
                     // XXX: Ensure the Path 2a case below is triggered.  The workspace
                     // calculation should use queries for all routines eventually.
-                    maxwrk = max({maxwrk, 4 * m + m * m + max({m, 2 * m - 4, nrhs, n - 3 * m})});
+                    maxwrk = max({maxwrk, 4 * m + m * m + max(m, 2 * m - 4, nrhs, n - 3 * m)});
                 } else {
                     //
                     // Path 2 - underdetermined.
                     //
                     maxwrk = 2 * m + (n + m) * iMlaenv(1, "Cgebrd", " ", m, n, -1, -1);
-                    maxwrk = max({maxwrk, 2 * m + nrhs * iMlaenv(1, "Cunmbr", "QLC", m, nrhs, m, -1)});
-                    maxwrk = max({maxwrk, 2 * m + m * iMlaenv(1, "Cunmbr", "PLN", n, nrhs, m, -1)});
+                    maxwrk = max(maxwrk, 2 * m + nrhs * iMlaenv(1, "Cunmbr", "QLC", m, nrhs, m, -1));
+                    maxwrk = max(maxwrk, 2 * m + m * iMlaenv(1, "Cunmbr", "PLN", n, nrhs, m, -1));
                     maxwrk = max(maxwrk, 2 * m + m * nrhs);
                 }
                 minwrk = max((INTEGER)2 * m + n, 2 * m + m * nrhs);
@@ -298,13 +298,13 @@ void Cgelsd(INTEGER const m, INTEGER const n, INTEGER const nrhs, COMPLEX *a, IN
         //
         Cunmbr("P", "L", "N", n, nrhs, n, a, lda, &work[itaup - 1], b, ldb, &work[nwork - 1], lwork - nwork + 1, info);
         //
-    } else if (n >= mnthr && lwork >= 4 * m + m * m + max({m, 2 * m - 4, nrhs, n - 3 * m})) {
+    } else if (n >= mnthr && lwork >= 4 * m + m * m + max(m, 2 * m - 4, nrhs, n - 3 * m)) {
         //
         // Path 2a - underdetermined, with many more columns than rows
         // and sufficient workspace for an efficient algorithm.
         //
         ldwork = m;
-        if (lwork >= max({4 * m + m * lda + max({m, 2 * m - 4, nrhs, n - 3 * m}), m * lda + m + m * nrhs})) {
+        if (lwork >= max({4 * m + m * lda + max(m, 2 * m - 4, nrhs, n - 3 * m), m * lda + m + m * nrhs})) {
             ldwork = lda;
         }
         itau = 1;

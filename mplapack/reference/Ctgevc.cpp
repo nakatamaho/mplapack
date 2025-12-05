@@ -239,7 +239,7 @@ void Ctgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
                 // H
                 // y  ( a A - b B ) = 0
                 //
-                temp = one / max({REAL(abs1(s[(je - 1) + (je - 1) * lds]) * ascale), REAL(abs(p[(je - 1) + (je - 1) * ldp].real()) * bscale), safmin});
+                temp = one / max(REAL(abs1(s[(je - 1) + (je - 1) * lds]) * ascale), REAL(abs(p[(je - 1) + (je - 1) * ldp].real()) * bscale), safmin);
                 salpha = (temp * s[(je - 1) + (je - 1) * lds]) * ascale;
                 sbeta = (temp * p[(je - 1) + (je - 1) * ldp].real()) * bscale;
                 acoeff = sbeta * ascale;
@@ -258,7 +258,7 @@ void Ctgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
                     scale = max(scale, REAL((small / abs1(salpha)) * min(bnorm, big)));
                 }
                 if (lsa || lsb) {
-                    scale = min(scale, REAL(one / REAL(safmin * max({one, REAL(abs(acoeff)), REAL(abs1(bcoeff))}))));
+                    scale = min(scale, REAL(one / REAL(safmin * max(one, REAL(abs(acoeff)), REAL(abs1(bcoeff))))));
                     if (lsa) {
                         acoeff = ascale * (scale * sbeta);
                     } else {
@@ -278,7 +278,7 @@ void Ctgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
                     work[jr - 1] = czero;
                 }
                 work[je - 1] = cone;
-                dmin = max({REAL(ulp * acoefa * anorm), REAL(ulp * bcoefa * bnorm), safmin});
+                dmin = max(REAL(ulp * acoefa * anorm), REAL(ulp * bcoefa * bnorm), safmin);
                 //
                 // H
                 // Triangular solve of  (a A - b B)  y = 0
@@ -401,7 +401,7 @@ void Ctgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
                 //
                 // ( a A - b B ) x  = 0
                 //
-                temp = one / max({REAL(abs1(s[(je - 1) + (je - 1) * lds]) * ascale), REAL(abs(p[(je - 1) + (je - 1) * ldp].real()) * bscale), safmin});
+                temp = one / max(REAL(abs1(s[(je - 1) + (je - 1) * lds]) * ascale), REAL(abs(p[(je - 1) + (je - 1) * ldp].real()) * bscale), safmin);
                 salpha = (temp * s[(je - 1) + (je - 1) * lds]) * ascale;
                 sbeta = (temp * p[(je - 1) + (je - 1) * ldp].real()) * bscale;
                 acoeff = sbeta * ascale;
@@ -420,7 +420,7 @@ void Ctgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
                     scale = max(scale, REAL((small / abs1(salpha)) * min(bnorm, big)));
                 }
                 if (lsa || lsb) {
-                    scale = min(scale, REAL(one / (safmin * max({one, REAL(abs(acoeff)), REAL(abs1(bcoeff))}))));
+                    scale = min(scale, REAL(one / (safmin * max(one, REAL(abs(acoeff)), REAL(abs1(bcoeff))))));
                     if (lsa) {
                         acoeff = ascale * (scale * sbeta);
                     } else {
@@ -440,7 +440,7 @@ void Ctgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
                     work[jr - 1] = czero;
                 }
                 work[je - 1] = cone;
-                dmin = max({REAL(ulp * acoefa * anorm), REAL(ulp * bcoefa * bnorm), safmin});
+                dmin = max(REAL(ulp * acoefa * anorm), REAL(ulp * bcoefa * bnorm), safmin);
                 //
                 // Triangular solve of  (a A - b B) x = 0  (columnwise)
                 //

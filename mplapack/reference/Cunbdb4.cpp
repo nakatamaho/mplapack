@@ -58,7 +58,7 @@ void Cunbdb4(INTEGER const m, INTEGER const p, INTEGER const q, COMPLEX *x11, IN
     INTEGER lworkmin = 0;
     if (info == 0) {
         ilarf = 2;
-        llarf = max({q - 1, p - 1, m - p - 1});
+        llarf = max(q - 1, p - 1, m - p - 1);
         iorbdb5 = 2;
         lorbdb5 = q;
         lworkopt = ilarf + llarf - 1;

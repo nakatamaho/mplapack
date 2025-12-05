@@ -177,7 +177,7 @@ void Rlasq2(INTEGER const n, REAL *z, INTEGER &info) {
         e += z[(k + 1) - 1];
         qmax = max(qmax, z[k - 1]);
         emin = min(emin, z[(k + 1) - 1]);
-        zmax = max({qmax, zmax, z[(k + 1) - 1]});
+        zmax = max(qmax, zmax, z[(k + 1) - 1]);
     }
     if (z[(2 * n - 1) - 1] < zero) {
         info = -(200 + 2 * n - 1);

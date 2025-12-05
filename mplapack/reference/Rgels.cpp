@@ -64,7 +64,7 @@ void Rgels(const char *trans, INTEGER const m, INTEGER const n, INTEGER const nr
         info = -4;
     } else if (lda < max((INTEGER)1, m)) {
         info = -6;
-    } else if (ldb < max({(INTEGER)1, m, n})) {
+    } else if (ldb < max((INTEGER)1, m, n)) {
         info = -8;
     } else if (lwork < max((INTEGER)1, mn + max(mn, nrhs)) && !lquery) {
         info = -10;
@@ -109,7 +109,7 @@ void Rgels(const char *trans, INTEGER const m, INTEGER const n, INTEGER const nr
     //
     // Quick return if possible
     //
-    if (min({m, n, nrhs}) == 0) {
+    if (min(m, n, nrhs) == 0) {
         Rlaset("Full", max(m, n), nrhs, zero, zero, b, ldb);
         return;
     }

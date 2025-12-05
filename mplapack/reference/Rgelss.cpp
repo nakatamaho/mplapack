@@ -142,7 +142,7 @@ void Rgelss(INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEG
                 maxwrk = max(maxwrk, 3 * n + lwork_Rorgbr);
                 maxwrk = max(maxwrk, bdspac);
                 maxwrk = max(maxwrk, n * nrhs);
-                minwrk = max({3 * n + mm, 3 * n + nrhs, bdspac});
+                minwrk = max(3 * n + mm, 3 * n + nrhs, bdspac);
                 maxwrk = max(minwrk, maxwrk);
             }
             if (n > m) {
@@ -150,7 +150,7 @@ void Rgelss(INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEG
                 // Compute workspace needed for Rbdsqr
                 //
                 bdspac = max((INTEGER)1, 5 * m);
-                minwrk = max({3 * m + nrhs, 3 * m + n, bdspac});
+                minwrk = max(3 * m + nrhs, 3 * m + n, bdspac);
                 if (n >= mnthr) {
                     //
                     // Path 2a - underdetermined, with many more columns
@@ -374,13 +374,13 @@ void Rgelss(INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEG
             Rcopy(n, work, 1, b, 1);
         }
         //
-    } else if (n >= mnthr && lwork >= 4 * m + m * m + max({m, 2 * m - 4, nrhs, n - 3 * m})) {
+    } else if (n >= mnthr && lwork >= 4 * m + m * m + max(m, 2 * m - 4, nrhs, n - 3 * m)) {
         //
         // Path 2a - underdetermined, with many more columns than rows
         // and sufficient workspace for an efficient algorithm
         //
         ldwork = m;
-        if (lwork >= max({4 * m + m * lda + max({m, 2 * m - 4, nrhs, n - 3 * m}), m * lda + m + m * nrhs})) {
+        if (lwork >= max({4 * m + m * lda + max(m, 2 * m - 4, nrhs, n - 3 * m), m * lda + m + m * nrhs})) {
             ldwork = lda;
         }
         itau = 1;

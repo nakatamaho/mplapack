@@ -133,7 +133,7 @@ statement_10:
 //
 statement_20:
     //
-    smin = max(REAL(eps * max({abs(tl[0]), abs(tr[0]), abs(tr[(2 - 1) * ldtr]), abs(tr[(2 - 1)]), abs(tr[(2 - 1) + (2 - 1) * ldtr])})), smlnum);
+    smin = max(REAL(eps * max(abs(tl[0]), abs(tr[0]), abs(tr[(2 - 1) * ldtr]), abs(tr[(2 - 1)]), abs(tr[(2 - 1) + (2 - 1) * ldtr]))), smlnum);
     tmp[1 - 1] = tl[0] + sgn * tr[0];
     tmp[4 - 1] = tl[0] + sgn * tr[(2 - 1) + (2 - 1) * ldtr];
     if (ltranr) {
@@ -152,7 +152,7 @@ statement_20:
 // [TL21 TL22] [X21]         [X21]         [B21]
 //
 statement_30:
-    smin = max(REAL(eps * max({abs(tr[0]), abs(tl[0]), abs(tl[(2 - 1) * ldtl]), abs(tl[(2 - 1)]), abs(tl[(2 - 1) + (2 - 1) * ldtl])})), smlnum);
+    smin = max(REAL(eps * max(abs(tr[0]), abs(tl[0]), abs(tl[(2 - 1) * ldtl]), abs(tl[(2 - 1)]), abs(tl[(2 - 1) + (2 - 1) * ldtl]))), smlnum);
     tmp[1 - 1] = tl[0] + sgn * tr[0];
     tmp[4 - 1] = tl[(2 - 1) + (2 - 1) * ldtl] + sgn * tr[0];
     if (ltranl) {
@@ -222,8 +222,8 @@ statement_40:
 // Set pivots less than SMIN to SMIN.
 //
 statement_50:
-    smin = max({abs(tr[0]), abs(tr[(2 - 1) * ldtr]), abs(tr[(2 - 1)]), abs(tr[(2 - 1) + (2 - 1) * ldtr])});
-    smin = max({smin, REAL(abs(tl[0])), REAL(abs(tl[(2 - 1) * ldtl])), REAL(abs(tl[(2 - 1)])), REAL(abs(tl[(2 - 1) + (2 - 1) * ldtl]))});
+    smin = max(abs(tr[0]), abs(tr[(2 - 1) * ldtr]), abs(tr[(2 - 1)]), abs(tr[(2 - 1) + (2 - 1) * ldtr]));
+    smin = max(smin, REAL(abs(tl[0])), REAL(abs(tl[(2 - 1) * ldtl])), REAL(abs(tl[(2 - 1)])), REAL(abs(tl[(2 - 1) + (2 - 1) * ldtl])));
     smin = max(REAL(eps * smin), smlnum);
     btmp[1 - 1] = zero;
     Rcopy(16, btmp, 0, t16, 1);
@@ -299,7 +299,7 @@ statement_50:
     }
     scale = one;
     if ((eight * smlnum) * abs(btmp[1 - 1]) > abs(t16[0]) || (eight * smlnum) * abs(btmp[2 - 1]) > abs(t16[(2 - 1) + (2 - 1) * ldt16]) || (eight * smlnum) * abs(btmp[3 - 1]) > abs(t16[(3 - 1) + (3 - 1) * ldt16]) || (eight * smlnum) * abs(btmp[4 - 1]) > abs(t16[(4 - 1) + (4 - 1) * ldt16])) {
-        scale = (one / eight) / max({abs(btmp[1 - 1]), abs(btmp[2 - 1]), abs(btmp[3 - 1]), abs(btmp[4 - 1])});
+        scale = (one / eight) / max(abs(btmp[1 - 1]), abs(btmp[2 - 1]), abs(btmp[3 - 1]), abs(btmp[4 - 1]));
         btmp[1 - 1] = btmp[1 - 1] * scale;
         btmp[2 - 1] = btmp[2 - 1] * scale;
         btmp[3 - 1] = btmp[3 - 1] * scale;

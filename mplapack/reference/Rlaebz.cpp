@@ -146,7 +146,7 @@ void Rlaebz(INTEGER const ijob, INTEGER const nitmax, INTEGER const n, INTEGER c
                     //
                     // Insure that N(w) is monotone
                     //
-                    iwork[ji - 1] = min({nab[(ji - 1) + (2 - 1) * ldnab], max(nab[(ji - 1)], iwork[ji - 1])});
+                    iwork[ji - 1] = min(nab[(ji - 1) + (2 - 1) * ldnab], max(nab[(ji - 1)], iwork[ji - 1]));
                     //
                     // Update the Queue -- add intervals if both halves
                     // contain eigenvalues.
@@ -236,7 +236,7 @@ void Rlaebz(INTEGER const ijob, INTEGER const nitmax, INTEGER const n, INTEGER c
                     //
                     // Insure that N(w) is monotone
                     //
-                    itmp1 = min({nab[(ji - 1) + (2 - 1) * ldnab], max(nab[(ji - 1)], itmp1)});
+                    itmp1 = min(nab[(ji - 1) + (2 - 1) * ldnab], max(nab[(ji - 1)], itmp1));
                     //
                     // Update the Queue -- add intervals if both halves
                     // contain eigenvalues.
@@ -294,7 +294,7 @@ void Rlaebz(INTEGER const ijob, INTEGER const nitmax, INTEGER const n, INTEGER c
         for (ji = kf; ji <= kl; ji = ji + 1) {
             tmp1 = abs(ab[(ji - 1) + (2 - 1) * ldab] - ab[(ji - 1)]);
             tmp2 = max(abs(ab[(ji - 1) + (2 - 1) * ldab]), abs(ab[(ji - 1)]));
-            if (tmp1 < max({abstol, pivmin, REAL(reltol * tmp2)}) || nab[(ji - 1)] >= nab[(ji - 1) + (2 - 1) * ldnab]) {
+            if (tmp1 < max(abstol, pivmin, REAL(reltol * tmp2)) || nab[(ji - 1)] >= nab[(ji - 1) + (2 - 1) * ldnab]) {
                 //
                 // Converged -- Swap with position KFNEW,
                 // then increment KFNEW

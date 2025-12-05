@@ -64,7 +64,7 @@ void Rorcsd2by1(const char *jobu1, const char *jobu2, const char *jobv1t, INTEGE
         info = -17;
     }
     //
-    INTEGER r = min({p, m - p, q, m - q});
+    INTEGER r = min(p, m - p, q, m - q);
     //
     // Compute workspace
     //
@@ -214,8 +214,8 @@ void Rorcsd2by1(const char *jobu1, const char *jobu2, const char *jobv1t, INTEGE
             Rbbcsd(jobu2, jobu1, "N", jobv1t, "N", m, m - p, m - q, theta, dum1, u2, ldu2, u1, ldu1, dum2, 1, v1t, ldv1t, dum1, dum1, dum1, dum1, dum1, dum1, dum1, dum1, &work[1 - 1], -1, childinfo);
             lbbcsd = castINTEGER(work[1 - 1]);
         }
-        lworkmin = max({iorbdb + lorbdb - 1, iorgqr + lorgqrmin - 1, iorglq + lorglqmin - 1, ibbcsd + lbbcsd - 1});
-        lworkopt = max({iorbdb + lorbdb - 1, iorgqr + lorgqropt - 1, iorglq + lorglqopt - 1, ibbcsd + lbbcsd - 1});
+        lworkmin = max(iorbdb + lorbdb - 1, iorgqr + lorgqrmin - 1, iorglq + lorglqmin - 1, ibbcsd + lbbcsd - 1);
+        lworkopt = max(iorbdb + lorbdb - 1, iorgqr + lorgqropt - 1, iorglq + lorglqopt - 1, ibbcsd + lbbcsd - 1);
         work[1 - 1] = lworkopt;
         if (lwork < lworkmin && !lquery) {
             info = -19;

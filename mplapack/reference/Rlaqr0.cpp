@@ -121,13 +121,13 @@ void Rlaqr0(bool const wantt, bool const wantz, INTEGER const n, INTEGER const i
         //
         nwr = iMlaenv(13, "Rlaqr0", jbcmpz, n, ilo, ihi, lwork);
         nwr = max((INTEGER)2, nwr);
-        nwr = min({ihi - ilo + 1, (n - 1) / 3, nwr});
+        nwr = min(ihi - ilo + 1, (n - 1) / 3, nwr);
         //
         // .    At this point N .GT. NTINY = 15, so there is at
         // .    enough subdiagonal workspace for NSR to be even
         //
         nsr = iMlaenv(15, "Rlaqr0", jbcmpz, n, ilo, ihi, lwork);
-        nsr = min({nsr, (n - 3) / 6, ihi - ilo});
+        nsr = min(nsr, (n - 3) / 6, ihi - ilo);
         nsr = max((INTEGER)2, nsr - mod(nsr, 2));
         //
         //
@@ -264,7 +264,7 @@ void Rlaqr0(bool const wantt, bool const wantz, INTEGER const n, INTEGER const i
                 //
                 // .    This may be lowered (slightly) if Rlaqr3
                 //
-                ns = min({nsmax, nsr, max((INTEGER)2, kbot - ktop)});
+                ns = min(nsmax, nsr, max((INTEGER)2, kbot - ktop));
                 ns = ns - mod(ns, 2);
                 //
                 // .    in a multiple of KEXSH iterations,

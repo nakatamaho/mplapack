@@ -81,11 +81,11 @@ void Clamswlq(const char *side, const char *trans, INTEGER const m, INTEGER cons
     //
     // Quick return if possible
     //
-    if (min({m, n, k}) == 0) {
+    if (min(m, n, k) == 0) {
         return;
     }
     //
-    if ((nb <= k) || (nb >= max({m, n, k}))) {
+    if ((nb <= k) || (nb >= max(m, n, k))) {
         Cgemlqt(side, trans, m, n, k, mb, a, lda, t, ldt, c, ldc, work, info);
         return;
     }

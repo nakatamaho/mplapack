@@ -750,7 +750,7 @@ void Rtrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                         work[(j + iv * n) - 1] = x[0];
                         work[(j + 1 + iv * n) - 1] = x[(2 - 1)];
                         //
-                        vmax = max({REAL(abs(work[(j + iv * n) - 1])), REAL(abs(work[(j + 1 + iv * n) - 1])), vmax});
+                        vmax = max(REAL(abs(work[(j + iv * n) - 1])), REAL(abs(work[(j + 1 + iv * n) - 1])), vmax);
                         vcrit = bignum / vmax;
                         //
                     }
@@ -871,7 +871,7 @@ void Rtrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                         }
                         work[(j + (iv)*n) - 1] = x[0];
                         work[(j + (iv + 1) * n) - 1] = x[(2 - 1) * ldx];
-                        vmax = max({REAL(abs(work[(j + (iv)*n) - 1])), REAL(abs(work[(j + (iv + 1) * n) - 1])), vmax});
+                        vmax = max(REAL(abs(work[(j + (iv)*n) - 1])), REAL(abs(work[(j + (iv + 1) * n) - 1])), vmax);
                         vcrit = bignum / vmax;
                         //
                     } else {
@@ -914,7 +914,7 @@ void Rtrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                         work[(j + (iv + 1) * n) - 1] = x[(2 - 1) * ldx];
                         work[(j + 1 + (iv)*n) - 1] = x[(2 - 1)];
                         work[(j + 1 + (iv + 1) * n) - 1] = x[(2 - 1) + (2 - 1) * ldx];
-                        vmax = max({REAL(abs(x[0])), REAL(abs(x[(2 - 1) * ldx])), REAL(abs(x[(2 - 1)])), REAL(abs(x[(2 - 1) + (2 - 1) * ldx])), vmax});
+                        vmax = max(REAL(abs(x[0])), REAL(abs(x[(2 - 1) * ldx])), REAL(abs(x[(2 - 1)])), REAL(abs(x[(2 - 1) + (2 - 1) * ldx])), vmax);
                         vcrit = bignum / vmax;
                         //
                     }

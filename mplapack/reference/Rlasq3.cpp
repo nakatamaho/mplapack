@@ -146,9 +146,9 @@ statement_50:
                 z[(4 * n0 - pp) - 1] = z[(4 * i0 - pp) - 1];
             }
             dmin2 = min(dmin2, z[(4 * n0 + pp - 1) - 1]);
-            z[(4 * n0 + pp - 1) - 1] = min({z[(4 * n0 + pp - 1) - 1], z[(4 * i0 + pp - 1) - 1], z[(4 * i0 + pp + 3) - 1]});
-            z[(4 * n0 - pp) - 1] = min({z[(4 * n0 - pp) - 1], z[(4 * i0 - pp) - 1], z[(4 * i0 - pp + 4) - 1]});
-            qmax = max({qmax, z[(4 * i0 + pp - 3) - 1], z[(4 * i0 + pp + 1) - 1]});
+            z[(4 * n0 + pp - 1) - 1] = min(z[(4 * n0 + pp - 1) - 1], z[(4 * i0 + pp - 1) - 1], z[(4 * i0 + pp + 3) - 1]);
+            z[(4 * n0 - pp) - 1] = min(z[(4 * n0 - pp) - 1], z[(4 * i0 - pp) - 1], z[(4 * i0 - pp + 4) - 1]);
+            qmax = max(qmax, z[(4 * i0 + pp - 3) - 1], z[(4 * i0 + pp + 1) - 1]);
             dmin = -zero;
         }
     }

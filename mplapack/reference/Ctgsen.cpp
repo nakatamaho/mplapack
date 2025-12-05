@@ -113,7 +113,7 @@ void Ctgsen(INTEGER const ijob, bool const wantq, bool const wantz, bool *select
         liwmin = max((INTEGER)1, n + 2);
     } else if (ijob == 3 || ijob == 5) {
         lwmin = max((INTEGER)1, 4 * m * (n - m));
-        liwmin = max({(INTEGER)1, 2 * m * (n - m), n + 2});
+        liwmin = max((INTEGER)1, 2 * m * (n - m), n + 2);
     } else {
         lwmin = 1;
         liwmin = 1;

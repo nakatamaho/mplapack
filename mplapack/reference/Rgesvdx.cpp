@@ -125,12 +125,12 @@ void Rgesvdx(const char *jobu, const char *jobvt, const char *range, INTEGER con
                     // Path 1 (M much larger than N)
                     //
                     maxwrk = n + n * iMlaenv(1, "Rgeqrf", " ", m, n, -1, -1);
-                    maxwrk = max({maxwrk, n * (n + 5) + 2 * n * iMlaenv(1, "Rgebrd", " ", n, n, -1, -1)});
+                    maxwrk = max(maxwrk, n * (n + 5) + 2 * n * iMlaenv(1, "Rgebrd", " ", n, n, -1, -1));
                     if (wantu) {
-                        maxwrk = max({maxwrk, n * (n * 3 + 6) + n * iMlaenv(1, "Rormqr", " ", n, n, -1, -1)});
+                        maxwrk = max(maxwrk, n * (n * 3 + 6) + n * iMlaenv(1, "Rormqr", " ", n, n, -1, -1));
                     }
                     if (wantvt) {
-                        maxwrk = max({maxwrk, n * (n * 3 + 6) + n * iMlaenv(1, "Rormlq", " ", n, n, -1, -1)});
+                        maxwrk = max(maxwrk, n * (n * 3 + 6) + n * iMlaenv(1, "Rormlq", " ", n, n, -1, -1));
                     }
                     minwrk = n * (n * 3 + 20);
                 } else {
@@ -139,10 +139,10 @@ void Rgesvdx(const char *jobu, const char *jobvt, const char *range, INTEGER con
                     //
                     maxwrk = 4 * n + (m + n) * iMlaenv(1, "Rgebrd", " ", m, n, -1, -1);
                     if (wantu) {
-                        maxwrk = max({maxwrk, n * (n * 2 + 5) + n * iMlaenv(1, "Rormqr", " ", n, n, -1, -1)});
+                        maxwrk = max(maxwrk, n * (n * 2 + 5) + n * iMlaenv(1, "Rormqr", " ", n, n, -1, -1));
                     }
                     if (wantvt) {
-                        maxwrk = max({maxwrk, n * (n * 2 + 5) + n * iMlaenv(1, "Rormlq", " ", n, n, -1, -1)});
+                        maxwrk = max(maxwrk, n * (n * 2 + 5) + n * iMlaenv(1, "Rormlq", " ", n, n, -1, -1));
                     }
                     minwrk = max(n * (n * 2 + 19), 4 * n + m);
                 }
@@ -153,12 +153,12 @@ void Rgesvdx(const char *jobu, const char *jobvt, const char *range, INTEGER con
                     // Path 1t (N much larger than M)
                     //
                     maxwrk = m + m * iMlaenv(1, "Rgelqf", " ", m, n, -1, -1);
-                    maxwrk = max({maxwrk, m * (m + 5) + 2 * m * iMlaenv(1, "Rgebrd", " ", m, m, -1, -1)});
+                    maxwrk = max(maxwrk, m * (m + 5) + 2 * m * iMlaenv(1, "Rgebrd", " ", m, m, -1, -1));
                     if (wantu) {
-                        maxwrk = max({maxwrk, m * (m * 3 + 6) + m * iMlaenv(1, "Rormqr", " ", m, m, -1, -1)});
+                        maxwrk = max(maxwrk, m * (m * 3 + 6) + m * iMlaenv(1, "Rormqr", " ", m, m, -1, -1));
                     }
                     if (wantvt) {
-                        maxwrk = max({maxwrk, m * (m * 3 + 6) + m * iMlaenv(1, "Rormlq", " ", m, m, -1, -1)});
+                        maxwrk = max(maxwrk, m * (m * 3 + 6) + m * iMlaenv(1, "Rormlq", " ", m, m, -1, -1));
                     }
                     minwrk = m * (m * 3 + 20);
                 } else {
@@ -167,10 +167,10 @@ void Rgesvdx(const char *jobu, const char *jobvt, const char *range, INTEGER con
                     //
                     maxwrk = 4 * m + (m + n) * iMlaenv(1, "Rgebrd", " ", m, n, -1, -1);
                     if (wantu) {
-                        maxwrk = max({maxwrk, m * (m * 2 + 5) + m * iMlaenv(1, "Rormqr", " ", m, m, -1, -1)});
+                        maxwrk = max(maxwrk, m * (m * 2 + 5) + m * iMlaenv(1, "Rormqr", " ", m, m, -1, -1));
                     }
                     if (wantvt) {
-                        maxwrk = max({maxwrk, m * (m * 2 + 5) + m * iMlaenv(1, "Rormlq", " ", m, m, -1, -1)});
+                        maxwrk = max(maxwrk, m * (m * 2 + 5) + m * iMlaenv(1, "Rormlq", " ", m, m, -1, -1));
                     }
                     minwrk = max(m * (m * 2 + 19), 4 * m + n);
                 }

@@ -121,7 +121,7 @@ void Rsyevx(const char *jobz, const char *range, const char *uplo, INTEGER const
         } else {
             lwkmin = 8 * n;
             nb = iMlaenv(1, "Rsytrd", uplo, n, -1, -1, -1);
-            nb = max({nb, iMlaenv(1, "Rormtr", uplo, n, -1, -1, -1)});
+            nb = max(nb, iMlaenv(1, "Rormtr", uplo, n, -1, -1, -1));
             lwkopt = max(lwkmin, (nb + 3) * n);
             work[1 - 1] = lwkopt;
         }
