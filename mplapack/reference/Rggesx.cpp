@@ -29,7 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rggesx(const char *jobvsl, const char *jobvsr, const char *sort, bool (*selctg)(REAL, REAL, REAL), const char *sense, INTEGER const n, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, INTEGER &sdim, REAL *alphar, REAL *alphai, REAL *beta, REAL *vsl, INTEGER const ldvsl, REAL *vsr, INTEGER const ldvsr, REAL *rconde, REAL *rcondv, REAL *work, INTEGER const lwork, INTEGER *iwork, INTEGER const liwork, bool *bwork, INTEGER &info) {
+void Rggesx(const char *jobvsl, const char *jobvsr, const char *sort, UNHANDLED_function_pointer selctg, const char *sense, INTEGER const n, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, INTEGER &sdim, REAL *alphar, REAL *alphai, REAL *beta, REAL *vsl, INTEGER const ldvsl, REAL *vsr, INTEGER const ldvsr, REAL *rconde, REAL *rcondv, REAL *work, INTEGER const lwork, INTEGER *iwork, INTEGER const liwork, bool *bwork, INTEGER &info) {
     INTEGER ijobvl = 0;
     bool ilvsl = false;
     INTEGER ijobvr = 0;
@@ -197,6 +197,7 @@ void Rggesx(const char *jobvsl, const char *jobvsr, const char *sort, bool (*sel
     eps = Rlamch("P");
     safmin = Rlamch("S");
     safmax = one / safmin;
+    Rlabad(safmin, safmax);
     smlnum = sqrt(safmin) / eps;
     bignum = one / smlnum;
     //
@@ -331,11 +332,11 @@ void Rggesx(const char *jobvsl, const char *jobvsr, const char *sort, bool (*sel
         } else {
             if (ijob == 1 || ijob == 4) {
                 rconde[0] = pl;
-                rconde[2 - 1] = pr;
+                rconde[1] = pr;
             }
             if (ijob == 2 || ijob == 4) {
                 rcondv[0] = dif[0];
-                rcondv[2 - 1] = dif[2 - 1];
+                rcondv[1] = dif[1];
             }
             if (ierr == 1) {
                 info = n + 3;

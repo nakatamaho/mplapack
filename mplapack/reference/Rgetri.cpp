@@ -31,10 +31,6 @@
 
 void Rgetri(INTEGER const n, REAL *a, INTEGER const lda, INTEGER *ipiv, REAL *work, INTEGER const lwork, INTEGER &info) {
     //
-    //
-    //
-    //
-    //
     // Test the input parameters.
     //
     info = 0;
