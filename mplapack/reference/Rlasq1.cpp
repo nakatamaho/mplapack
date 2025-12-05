@@ -31,10 +31,6 @@
 
 void Rlasq1(INTEGER const n, REAL *d, REAL *e, REAL *work, INTEGER &info) {
     //
-    //
-    //
-    //
-    //
     info = 0;
     REAL sigmn = 0.0;
     REAL sigmx = 0.0;
@@ -45,12 +41,12 @@ void Rlasq1(INTEGER const n, REAL *d, REAL *e, REAL *work, INTEGER &info) {
     } else if (n == 0) {
         return;
     } else if (n == 1) {
-        d[1 - 1] = abs(d[1 - 1]);
+        d[0] = abs(d[0]);
         return;
     } else if (n == 2) {
-        Rlas2(d[1 - 1], e[1 - 1], d[2 - 1], sigmn, sigmx);
-        d[1 - 1] = sigmx;
-        d[2 - 1] = sigmn;
+        Rlas2(d[0], e[0], d[1], sigmn, sigmx);
+        d[0] = sigmx;
+        d[1] = sigmn;
         return;
     }
     //
@@ -61,7 +57,7 @@ void Rlasq1(INTEGER const n, REAL *d, REAL *e, REAL *work, INTEGER &info) {
     INTEGER i = 0;
     for (i = 1; i <= n - 1; i = i + 1) {
         d[i - 1] = abs(d[i - 1]);
-        sigmx = max(sigmx, REAL(abs(e[i - 1])));
+        sigmx = max(sigmx, abs(e[i - 1]));
     }
     d[n - 1] = abs(d[n - 1]);
     //
@@ -83,8 +79,8 @@ void Rlasq1(INTEGER const n, REAL *d, REAL *e, REAL *work, INTEGER &info) {
     REAL eps = Rlamch("Precision");
     REAL safmin = Rlamch("Safe minimum");
     REAL scale = sqrt(eps / safmin);
-    Rcopy(n, d, 1, &work[1 - 1], 2);
-    Rcopy(n - 1, e, 1, &work[2 - 1], 2);
+    Rcopy(n, d, 1, &work[0], 2);
+    Rcopy(n - 1, e, 1, &work[1], 2);
     Rlascl("G", 0, 0, sigmx, scale, 2 * n - 1, 1, work, 2 * n - 1, iinfo);
     //
     // Compute the q's and e's.

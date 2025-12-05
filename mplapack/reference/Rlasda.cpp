@@ -30,7 +30,6 @@
 #include <mplapack.h>
 
 void Rlasda(INTEGER const icompq, INTEGER const smlsiz, INTEGER const n, INTEGER const sqre, REAL *d, REAL *e, REAL *u, INTEGER const ldu, REAL *vt, INTEGER *k, REAL *difl, REAL *difr, REAL *z, REAL *poles, INTEGER *givptr, INTEGER *givcol, INTEGER const ldgcol, INTEGER *perm, REAL *givnum, REAL *c, REAL *s, REAL *work, INTEGER *iwork, INTEGER &info) {
-    INTEGER ldvt = ldu;
     //
     // Test the input parameters.
     //
@@ -179,7 +178,7 @@ void Rlasda(INTEGER const icompq, INTEGER const smlsiz, INTEGER const n, INTEGER
     //
     // Now conquer each subproblem bottom-up.
     //
-    j = (INTEGER)pow((double)2, (double)nlvl);
+    j = pow(2, nlvl);
     INTEGER lvl = 0;
     INTEGER lvl2 = 0;
     INTEGER lf = 0;
@@ -197,7 +196,7 @@ void Rlasda(INTEGER const icompq, INTEGER const smlsiz, INTEGER const n, INTEGER
             lf = 1;
             ll = 1;
         } else {
-            lf = (INTEGER)pow((double)2, (double)(lvl - 1));
+            lf = pow(2, (lvl - 1));
             ll = 2 * lf - 1;
         }
         for (i = lf; i <= ll; i = i + 1) {
@@ -218,10 +217,10 @@ void Rlasda(INTEGER const icompq, INTEGER const smlsiz, INTEGER const n, INTEGER
             alpha = d[ic - 1];
             beta = e[ic - 1];
             if (icompq == 0) {
-                Rlasd6(icompq, nl, nr, sqrei, &d[nlf - 1], &work[vfi - 1], &work[vli - 1], alpha, beta, &iwork[idxqi - 1], perm, givptr[1 - 1], givcol, ldgcol, givnum, ldu, poles, difl, difr, z, k[1 - 1], c[1 - 1], s[1 - 1], &work[nwork1 - 1], &iwork[iwk - 1], info);
+                Rlasd6(icompq, nl, nr, sqrei, &d[nlf - 1], &work[vfi - 1], &work[vli - 1], alpha, beta, &iwork[idxqi - 1], perm, givptr[0], givcol, ldgcol, givnum, ldu, poles, difl, difr, z, k[0], c[0], s[0], &work[nwork1 - 1], &iwork[iwk - 1], info);
             } else {
                 j = j - 1;
-                Rlasd6(icompq, nl, nr, sqrei, &d[nlf - 1], &work[vfi - 1], &work[vli - 1], alpha, beta, &iwork[idxqi - 1], &perm[(nlf - 1) + (lvl - 1) * ldgcol], givptr[j - 1], &givcol[(nlf - 1) + (lvl2 - 1) * ldgcol], ldgcol, &givnum[(nlf - 1) + (lvl2 - 1) * ldu], ldu, &poles[(nlf - 1) + (lvl2 - 1) * ldu], &difl[(nlf - 1) + (lvl - 1) * ldu], &difr[(nlf - 1) + (lvl2 - 1) * ldu], &z[(nlf - 1) + (lvl - 1) * ldu], k[j - 1], c[j - 1], s[j - 1], &work[nwork1 - 1], &iwork[iwk - 1], info);
+                Rlasd6(icompq, nl, nr, sqrei, &d[nlf - 1], &work[vfi - 1], &work[vli - 1], alpha, beta, &iwork[idxqi - 1], &perm[(nlf - 1) + (lvl - 1) * ldperm], givptr[j - 1], &givcol[(nlf - 1) + (lvl2 - 1) * ldgivcol], ldgcol, &givnum[(nlf - 1) + (lvl2 - 1) * ldgivnum], ldu, &poles[(nlf - 1) + (lvl2 - 1) * ldpoles], &difl[(nlf - 1) + (lvl - 1) * lddifl], &difr[(nlf - 1) + (lvl2 - 1) * lddifr], &z[(nlf - 1) + (lvl - 1) * ldz], k[j - 1], c[j - 1], s[j - 1], &work[nwork1 - 1], &iwork[iwk - 1], info);
             }
             if (info != 0) {
                 return;

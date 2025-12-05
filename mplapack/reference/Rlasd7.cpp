@@ -29,7 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rlasd7(INTEGER const icompq, INTEGER const nl, INTEGER const nr, INTEGER const sqre, INTEGER &k, REAL *d, REAL *z, REAL *zw, REAL *vf, REAL *vfw, REAL *vl, REAL *vlw, REAL const alpha, REAL const beta, REAL *dsigma, INTEGER *idx, INTEGER *idxp, INTEGER *idxq, INTEGER *perm, INTEGER &givptr, INTEGER *givcol, INTEGER const ldgcol, REAL *givnum, INTEGER const ldgnum, REAL &c, REAL &s, INTEGER &info) {
+void Rlasd7(INTEGER const icompq, INTEGER const nl, INTEGER const nr, INTEGER const sqre, INTEGER &k, REAL *d, REAL *z, REAL *zw, REAL *vf, REAL *vfw, REAL *vl, REAL *vlw, REAL const &alpha, REAL const &beta, REAL *dsigma, INTEGER *idx, INTEGER *idxp, INTEGER *idxq, INTEGER *perm, INTEGER &givptr, INTEGER *givcol, INTEGER const ldgcol, REAL *givnum, INTEGER const ldgnum, REAL &c, REAL &s, INTEGER &info) {
     INTEGER n = 0;
     INTEGER m = 0;
     INTEGER nlp1 = 0;
@@ -41,14 +41,14 @@ void Rlasd7(INTEGER const icompq, INTEGER const nl, INTEGER const nr, INTEGER co
     INTEGER idxi = 0;
     REAL eps = 0.0;
     REAL tol = 0.0;
-    const REAL eight = 8.0e+0;
+    const REAL eight = 8.0;
     INTEGER k2 = 0;
     INTEGER j = 0;
     INTEGER jprev = 0;
     INTEGER idxjp = 0;
     INTEGER idxj = 0;
     INTEGER jp = 0;
-    const REAL two = 2.0e+0;
+    const REAL two = 2.0;
     REAL hlftol = 0.0;
     const REAL one = 1.0;
     //
@@ -95,7 +95,7 @@ void Rlasd7(INTEGER const icompq, INTEGER const nl, INTEGER const nr, INTEGER co
         d[(i + 1) - 1] = d[i - 1];
         idxq[(i + 1) - 1] = idxq[i - 1] + 1;
     }
-    vf[1 - 1] = tau;
+    vf[0] = tau;
     //
     // Generate the second part of the vector Z.
     //
@@ -119,7 +119,7 @@ void Rlasd7(INTEGER const icompq, INTEGER const nl, INTEGER const nr, INTEGER co
         vlw[i - 1] = vl[idxq[i - 1] - 1];
     }
     //
-    Rlamrg(nl, nr, &dsigma[2 - 1], 1, 1, &idx[2 - 1]);
+    Rlamrg(nl, nr, &dsigma[1], 1, 1, &idx[1]);
     //
     for (i = 2; i <= n; i = i + 1) {
         idxi = 1 + idx[i - 1];
@@ -133,7 +133,7 @@ void Rlasd7(INTEGER const icompq, INTEGER const nl, INTEGER const nr, INTEGER co
     //
     eps = Rlamch("Epsilon");
     tol = max(abs(alpha), abs(beta));
-    tol = eight * eight * eps * max(REAL(abs(d[n - 1])), tol);
+    tol = eight * eight * eps * max(abs(d[n - 1]), tol);
     //
     // There are 2 kinds of deflation -- first a value in the z-vector
     // is small, second two (or more) singular values are very close
@@ -216,9 +216,9 @@ statement_80:
                 if (idxj <= nlp1) {
                     idxj = idxj - 1;
                 }
-                givcol[(givptr - 1) + (2 - 1) * ldgcol] = idxjp;
+                givcol[(givptr - 1) + (2 - 1) * ldgivcol] = idxjp;
                 givcol[(givptr - 1)] = idxj;
-                givnum[(givptr - 1) + (2 - 1) * ldgnum] = c;
+                givnum[(givptr - 1) + (2 - 1) * ldgivnum] = c;
                 givnum[(givptr - 1)] = s;
             }
             Rrot(1, &vf[jprev - 1], 1, &vf[j - 1], 1, c, s);
@@ -274,36 +274,36 @@ statement_100:
     // Determine DSIGMA(1), DSIGMA(2), Z(1), VF(1), VL(1), VF(M), and
     // VL(M).
     //
-    dsigma[1 - 1] = zero;
+    dsigma[0] = zero;
     hlftol = tol / two;
-    if (abs(dsigma[2 - 1]) <= hlftol) {
-        dsigma[2 - 1] = hlftol;
+    if (abs(dsigma[1]) <= hlftol) {
+        dsigma[1] = hlftol;
     }
     if (m > n) {
-        z[1 - 1] = Rlapy2(z1, z[m - 1]);
-        if (z[1 - 1] <= tol) {
+        z[0] = Rlapy2(z1, z[m - 1]);
+        if (z[0] <= tol) {
             c = one;
             s = zero;
-            z[1 - 1] = tol;
+            z[0] = tol;
         } else {
-            c = z1 / z[1 - 1];
-            s = -z[m - 1] / z[1 - 1];
+            c = z1 / z[0];
+            s = -z[m - 1] / z[0];
         }
-        Rrot(1, &vf[m - 1], 1, &vf[1 - 1], 1, c, s);
-        Rrot(1, &vl[m - 1], 1, &vl[1 - 1], 1, c, s);
+        Rrot(1, &vf[m - 1], 1, &vf[0], 1, c, s);
+        Rrot(1, &vl[m - 1], 1, &vl[0], 1, c, s);
     } else {
         if (abs(z1) <= tol) {
-            z[1 - 1] = tol;
+            z[0] = tol;
         } else {
-            z[1 - 1] = z1;
+            z[0] = z1;
         }
     }
     //
     // Restore Z, VF, and VL.
     //
-    Rcopy(k - 1, &zw[2 - 1], 1, &z[2 - 1], 1);
-    Rcopy(n - 1, &vfw[2 - 1], 1, &vf[2 - 1], 1);
-    Rcopy(n - 1, &vlw[2 - 1], 1, &vl[2 - 1], 1);
+    Rcopy(k - 1, &zw[1], 1, &z[1], 1);
+    Rcopy(n - 1, &vfw[1], 1, &vf[1], 1);
+    Rcopy(n - 1, &vlw[1], 1, &vl[1], 1);
     //
     // End of Rlasd7
     //

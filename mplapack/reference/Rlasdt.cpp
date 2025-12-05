@@ -34,14 +34,14 @@ void Rlasdt(INTEGER const n, INTEGER &lvl, INTEGER &nd, INTEGER *inode, INTEGER 
     // Find the number of levels on the tree.
     //
     INTEGER maxn = max((INTEGER)1, n);
-    const REAL two = 2.0e+0;
-    REAL temp = log(castREAL(maxn) / castREAL(msub + (INTEGER)1)) / log(two);
+    const REAL two = 2.0;
+    REAL temp = log(castREAL(maxn) / castREAL(msub + 1)) / log(two);
     lvl = castINTEGER(temp) + 1;
     //
     INTEGER i = n / 2;
-    inode[1 - 1] = i + 1;
-    ndiml[1 - 1] = i;
-    ndimr[1 - 1] = n - i - 1;
+    inode[0] = i + 1;
+    ndiml[0] = i;
+    ndimr[0] = n - i - 1;
     INTEGER il = 0;
     INTEGER ir = 1;
     INTEGER llst = 1;

@@ -51,10 +51,10 @@ void Rlasd8(INTEGER const icompq, INTEGER const k, REAL *d, REAL *z, REAL *vf, R
     //
     const REAL one = 1.0;
     if (k == 1) {
-        d[1 - 1] = abs(z[1 - 1]);
-        difl[1 - 1] = d[1 - 1];
+        d[0] = abs(z[0]);
+        difl[0] = d[0];
         if (icompq == 1) {
-            difl[2 - 1] = one;
+            difl[1] = one;
             difr[(2 - 1) * lddifr] = one;
         }
         return;

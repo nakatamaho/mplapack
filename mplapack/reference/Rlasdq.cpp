@@ -106,7 +106,7 @@ void Rlasdq(const char *uplo, INTEGER const sqre, INTEGER const n, INTEGER const
         // Update singular vectors if desired.
         //
         if (ncvt > 0) {
-            Rlasr("L", "V", "F", np1, ncvt, &work[1 - 1], &work[np1 - 1], vt, ldvt);
+            Rlasr("L", "V", "F", np1, ncvt, &work[0], &work[np1 - 1], vt, ldvt);
         }
     }
     //
@@ -141,16 +141,16 @@ void Rlasdq(const char *uplo, INTEGER const sqre, INTEGER const n, INTEGER const
         //
         if (nru > 0) {
             if (sqre1 == 0) {
-                Rlasr("R", "V", "F", nru, n, &work[1 - 1], &work[np1 - 1], u, ldu);
+                Rlasr("R", "V", "F", nru, n, &work[0], &work[np1 - 1], u, ldu);
             } else {
-                Rlasr("R", "V", "F", nru, np1, &work[1 - 1], &work[np1 - 1], u, ldu);
+                Rlasr("R", "V", "F", nru, np1, &work[0], &work[np1 - 1], u, ldu);
             }
         }
         if (ncc > 0) {
             if (sqre1 == 0) {
-                Rlasr("L", "V", "F", n, ncc, &work[1 - 1], &work[np1 - 1], c, ldc);
+                Rlasr("L", "V", "F", n, ncc, &work[0], &work[np1 - 1], c, ldc);
             } else {
-                Rlasr("L", "V", "F", np1, ncc, &work[1 - 1], &work[np1 - 1], c, ldc);
+                Rlasr("L", "V", "F", np1, ncc, &work[0], &work[np1 - 1], c, ldc);
             }
         }
     }
