@@ -31,10 +31,6 @@
 
 void Rormbr(const char *vect, const char *side, const char *trans, INTEGER const m, INTEGER const n, INTEGER const k, REAL *a, INTEGER const lda, REAL *tau, REAL *c, INTEGER const ldc, REAL *work, INTEGER const lwork, INTEGER &info) {
     //
-    //
-    //
-    //
-    //
     // Test the input arguments
     //
     info = 0;
@@ -43,6 +39,7 @@ void Rormbr(const char *vect, const char *side, const char *trans, INTEGER const
     bool notran = Mlsame(trans, "N");
     bool lquery = (lwork == -1);
     //
+    // NQ is the order of Q or P and NW is the minimum dimension of WORK
     //
     INTEGER nq = 0;
     INTEGER nw = 0;
@@ -76,25 +73,21 @@ void Rormbr(const char *vect, const char *side, const char *trans, INTEGER const
     INTEGER nb = 0;
     INTEGER lwkopt = 0;
     if (info == 0) {
-        char side_trans[3];
-        side_trans[0] = side[0];
-        side_trans[1] = trans[0];
-        side_trans[2] = '\0';
         if (applyq) {
             if (left) {
-                nb = iMlaenv(1, "Rormqr", side_trans, m - 1, n, m - 1, -1);
+                nb = iMlaenv(1, "Rormqr", CHAR2(side, trans), m - 1, n, m - 1, -1);
             } else {
-                nb = iMlaenv(1, "Rormqr", side_trans, m, n - 1, n - 1, -1);
+                nb = iMlaenv(1, "Rormqr", CHAR2(side, trans), m, n - 1, n - 1, -1);
             }
         } else {
             if (left) {
-                nb = iMlaenv(1, "Rormlq", side_trans, m - 1, n, m - 1, -1);
+                nb = iMlaenv(1, "Rormlq", CHAR2(side, trans), m - 1, n, m - 1, -1);
             } else {
-                nb = iMlaenv(1, "Rormlq", side_trans, m, n - 1, n - 1, -1);
+                nb = iMlaenv(1, "Rormlq", CHAR2(side, trans), m, n - 1, n - 1, -1);
             }
         }
         lwkopt = max((INTEGER)1, nw) * nb;
-        work[1 - 1] = lwkopt;
+        work[0] = lwkopt;
     }
     //
     if (info != 0) {
@@ -106,7 +99,7 @@ void Rormbr(const char *vect, const char *side, const char *trans, INTEGER const
     //
     // Quick return if possible
     //
-    work[1 - 1] = 1;
+    work[0] = 1.0;
     if (m == 0 || n == 0) {
         return;
     }
@@ -175,7 +168,7 @@ void Rormbr(const char *vect, const char *side, const char *trans, INTEGER const
             Rormlq(side, &transt, mi, ni, nq - 1, &a[(2 - 1) * lda], lda, tau, &c[(i1 - 1) + (i2 - 1) * ldc], ldc, work, lwork, iinfo);
         }
     }
-    work[1 - 1] = lwkopt;
+    work[0] = lwkopt;
     //
     // End of Rormbr
     //
