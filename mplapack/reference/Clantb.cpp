@@ -32,11 +32,6 @@
 REAL Clantb(const char *norm, const char *uplo, const char *diag, INTEGER const n, INTEGER const k, COMPLEX *ab, INTEGER const ldab, REAL *work) {
     REAL return_value = 0.0;
     //
-    //
-    //
-    //
-    // .. Local Arrays ..
-    //
     const REAL zero = 0.0;
     REAL value = 0.0;
     const REAL one = 1.0;
@@ -202,50 +197,50 @@ REAL Clantb(const char *norm, const char *uplo, const char *diag, INTEGER const 
         //
         if (Mlsame(uplo, "U")) {
             if (Mlsame(diag, "U")) {
-                ssq[1 - 1] = one;
-                ssq[2 - 1] = n;
+                ssq[0] = one;
+                ssq[1] = n;
                 if (k > 0) {
                     for (j = 2; j <= n; j = j + 1) {
-                        colssq[1 - 1] = zero;
-                        colssq[2 - 1] = one;
-                        Classq(min(j - 1, k), &ab[(max(k + 2 - j, (INTEGER)1) - 1) + (j - 1) * ldab], 1, colssq[1 - 1], colssq[2 - 1]);
+                        colssq[0] = zero;
+                        colssq[1] = one;
+                        Classq(min(j - 1, k), &ab[(max(k + 2 - j, (INTEGER)1) - 1) + (j - 1) * ldab], 1, colssq[0], colssq[1]);
                         Rcombssq(ssq, colssq);
                     }
                 }
             } else {
-                ssq[1 - 1] = zero;
-                ssq[2 - 1] = one;
+                ssq[0] = zero;
+                ssq[1] = one;
                 for (j = 1; j <= n; j = j + 1) {
-                    colssq[1 - 1] = zero;
-                    colssq[2 - 1] = one;
-                    Classq(min(j, k + 1), &ab[(max(k + 2 - j, (INTEGER)1) - 1) + (j - 1) * ldab], 1, colssq[1 - 1], colssq[2 - 1]);
+                    colssq[0] = zero;
+                    colssq[1] = one;
+                    Classq(min(j, k + 1), &ab[(max(k + 2 - j, (INTEGER)1) - 1) + (j - 1) * ldab], 1, colssq[0], colssq[1]);
                     Rcombssq(ssq, colssq);
                 }
             }
         } else {
             if (Mlsame(diag, "U")) {
-                ssq[1 - 1] = one;
-                ssq[2 - 1] = n;
+                ssq[0] = one;
+                ssq[1] = n;
                 if (k > 0) {
                     for (j = 1; j <= n - 1; j = j + 1) {
-                        colssq[1 - 1] = zero;
-                        colssq[2 - 1] = one;
-                        Classq(min(n - j, k), &ab[(2 - 1) + (j - 1) * ldab], 1, colssq[1 - 1], colssq[2 - 1]);
+                        colssq[0] = zero;
+                        colssq[1] = one;
+                        Classq(min(n - j, k), &ab[(2 - 1) + (j - 1) * ldab], 1, colssq[0], colssq[1]);
                         Rcombssq(ssq, colssq);
                     }
                 }
             } else {
-                ssq[1 - 1] = zero;
-                ssq[2 - 1] = one;
+                ssq[0] = zero;
+                ssq[1] = one;
                 for (j = 1; j <= n; j = j + 1) {
-                    colssq[1 - 1] = zero;
-                    colssq[2 - 1] = one;
-                    Classq(min(n - j + 1, k + 1), &ab[(j - 1) * ldab], 1, colssq[1 - 1], colssq[2 - 1]);
+                    colssq[0] = zero;
+                    colssq[1] = one;
+                    Classq(min(n - j + 1, k + 1), &ab[(j - 1) * ldab], 1, colssq[0], colssq[1]);
                     Rcombssq(ssq, colssq);
                 }
             }
         }
-        value = ssq[1 - 1] * sqrt(ssq[2 - 1]);
+        value = ssq[0] * sqrt(ssq[1]);
     }
     //
     return_value = value;

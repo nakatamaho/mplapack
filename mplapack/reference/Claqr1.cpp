@@ -31,7 +31,6 @@
 
 void Claqr1(INTEGER const n, COMPLEX *h, INTEGER const ldh, COMPLEX const &s1, COMPLEX const &s2, COMPLEX *v) {
     COMPLEX cdum = 0.0;
-    cabs1(cdum) = abs(cdum.real()) + abs(cdum.imag());
     //
     // Quick return if possible
     //
