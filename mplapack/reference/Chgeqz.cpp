@@ -29,8 +29,6 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-inline REAL abs1(COMPLEX x) { return abs(x.real()) + abs(x.imag()); }
-
 void Chgeqz(const char *job, const char *compq, const char *compz, INTEGER const n, INTEGER const ilo, INTEGER const ihi, COMPLEX *h, INTEGER const ldh, COMPLEX *t, INTEGER const ldt, COMPLEX *alpha, COMPLEX *beta, COMPLEX *q, INTEGER const ldq, COMPLEX *z, INTEGER const ldz, COMPLEX *work, INTEGER const lwork, REAL *rwork, INTEGER &info) {
     COMPLEX x = 0.0;
     bool ilschr = false;
@@ -79,7 +77,7 @@ void Chgeqz(const char *job, const char *compq, const char *compz, INTEGER const
     COMPLEX abi12 = 0.0;
     COMPLEX shift = 0.0;
     const REAL zero = 0.0;
-    const REAL half = 0.5e+0;
+    const REAL half = 0.5;
     REAL temp2 = 0.0;
     COMPLEX y = 0.0;
     INTEGER istart = 0;
@@ -88,6 +86,7 @@ void Chgeqz(const char *job, const char *compq, const char *compz, INTEGER const
     COMPLEX ctemp3 = 0.0;
     INTEGER jc = 0;
     INTEGER jr = 0;
+    abs1(x) = abs(x.real()) + abs(x.imag());
     //
     // Decode JOB, COMPQ, COMPZ
     //
@@ -133,7 +132,7 @@ void Chgeqz(const char *job, const char *compq, const char *compz, INTEGER const
     // Check Argument Values
     //
     info = 0;
-    work[1 - 1] = max((INTEGER)1, n);
+    work[0] = max((INTEGER)1, n);
     lquery = (lwork == -1);
     if (ischur == 0) {
         info = -1;
@@ -169,7 +168,7 @@ void Chgeqz(const char *job, const char *compq, const char *compz, INTEGER const
     //
     // WORK( 1 ) = CMPLX( 1 )
     if (n <= 0) {
-        work[1 - 1] = COMPLEX(1);
+        work[0] = COMPLEX(1);
         return;
     }
     //
@@ -189,8 +188,8 @@ void Chgeqz(const char *job, const char *compq, const char *compz, INTEGER const
     ulp = Rlamch("E") * Rlamch("B");
     anorm = Clanhs("F", in, &h[(ilo - 1) + (ilo - 1) * ldh], ldh, rwork);
     bnorm = Clanhs("F", in, &t[(ilo - 1) + (ilo - 1) * ldt], ldt, rwork);
-    atol = max(safmin, REAL(ulp * anorm));
-    btol = max(safmin, REAL(ulp * bnorm));
+    atol = max(safmin, ulp * anorm);
+    btol = max(safmin, ulp * bnorm);
     ascale = one / max(safmin, anorm);
     bscale = one / max(safmin, bnorm);
     //
@@ -269,13 +268,13 @@ void Chgeqz(const char *job, const char *compq, const char *compz, INTEGER const
         if (ilast == ilo) {
             goto statement_60;
         } else {
-            if (abs1(h[(ilast - 1) + ((ilast - 1) - 1) * ldh]) <= max(safmin, REAL(ulp * (abs1(h[(ilast - 1) + (ilast - 1) * ldh]) + abs1(h[((ilast - 1) - 1) + ((ilast - 1) - 1) * ldh]))))) {
+            if (abs1(h[(ilast - 1) + ((ilast - 1) - 1) * ldh]) <= max(safmin, ulp * (abs1(h[(ilast - 1) + (ilast - 1) * ldh]) + abs1(h[((ilast - 1) - 1) + ((ilast - 1) - 1) * ldh])))) {
                 h[(ilast - 1) + ((ilast - 1) - 1) * ldh] = czero;
                 goto statement_60;
             }
         }
         //
-        if (abs(t[(ilast - 1) + (ilast - 1) * ldt]) <= max(safmin, REAL(ulp * (abs(t[((ilast - 1) - 1) + (ilast - 1) * ldt]) + abs(t[((ilast - 1) - 1) + ((ilast - 1) - 1) * ldt]))))) {
+        if (abs(t[(ilast - 1) + (ilast - 1) * ldt]) <= max(safmin, ulp * (abs(t[((ilast - 1) - 1) + (ilast - 1) * ldt]) + abs(t[((ilast - 1) - 1) + ((ilast - 1) - 1) * ldt])))) {
             t[(ilast - 1) + (ilast - 1) * ldt] = czero;
             goto statement_50;
         }
@@ -289,7 +288,7 @@ void Chgeqz(const char *job, const char *compq, const char *compz, INTEGER const
             if (j == ilo) {
                 ilazro = true;
             } else {
-                if (abs1(h[(j - 1) + ((j - 1) - 1) * ldh]) <= max(safmin, REAL(ulp * (abs1(h[(j - 1) + (j - 1) * ldh]) + abs1(h[((j - 1) - 1) + ((j - 1) - 1) * ldh]))))) {
+                if (abs1(h[(j - 1) + ((j - 1) - 1) * ldh]) <= max(safmin, ulp * (abs1(h[(j - 1) + (j - 1) * ldh]) + abs1(h[((j - 1) - 1) + ((j - 1) - 1) * ldh])))) {
                     h[(j - 1) + ((j - 1) - 1) * ldh] = czero;
                     ilazro = true;
                 } else {
@@ -303,7 +302,7 @@ void Chgeqz(const char *job, const char *compq, const char *compz, INTEGER const
             if (j > ilo) {
                 temp += abs(t[((j - 1) - 1) + (j - 1) * ldt]);
             }
-            if (abs(t[(j - 1) + (j - 1) * ldt]) < max(safmin, REAL(ulp * temp))) {
+            if (abs(t[(j - 1) + (j - 1) * ldt]) < max(safmin, ulp * temp)) {
                 t[(j - 1) + (j - 1) * ldt] = czero;
                 //
                 // Test 1a: Check for 2 consecutive small subdiagonals in A
@@ -485,7 +484,7 @@ void Chgeqz(const char *job, const char *compq, const char *compz, INTEGER const
                 x = half * (ad11 - shift);
                 temp2 = abs1(x);
                 temp = max(temp, abs1(x));
-                y = temp * sqrt((x / temp) * (x / temp) + (ctemp / temp) * (ctemp / temp));
+                y = temp * sqrt(pow2((x / temp)) + pow2((ctemp / temp)));
                 if (temp2 > zero) {
                     if ((x / temp2).real() * y.real() + (x / temp2).imag() * y.imag() < zero) {
                         y = -y;
@@ -625,7 +624,7 @@ statement_190:
 // Exit (other than argument error) -- return optimal workspace size
 //
 statement_210:
-    work[1 - 1] = COMPLEX(n);
+    work[0] = COMPLEX(n);
     //
     // End of Chgeqz
     //

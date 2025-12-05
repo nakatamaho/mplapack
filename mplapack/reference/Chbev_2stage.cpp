@@ -31,6 +31,7 @@
 
 void Chbev_2stage(const char *jobz, const char *uplo, INTEGER const n, INTEGER const kd, COMPLEX *ab, INTEGER const ldab, REAL *w, COMPLEX *z, INTEGER const ldz, COMPLEX *work, INTEGER const lwork, REAL *rwork, INTEGER &info) {
     //
+    //
     // Test the input parameters.
     //
     bool wantz = Mlsame(jobz, "V");
@@ -59,13 +60,13 @@ void Chbev_2stage(const char *jobz, const char *uplo, INTEGER const n, INTEGER c
     if (info == 0) {
         if (n <= 1) {
             lwmin = 1;
-            work[1 - 1] = lwmin;
+            work[0] = lwmin;
         } else {
             ib = iMlaenv2stage(2, "Chetrd_hb2st", jobz, n, kd, -1, -1);
             lhtrd = iMlaenv2stage(3, "Chetrd_hb2st", jobz, n, kd, ib, -1);
             lwtrd = iMlaenv2stage(4, "Chetrd_hb2st", jobz, n, kd, ib, -1);
             lwmin = lhtrd + lwtrd;
-            work[1 - 1] = lwmin;
+            work[0] = lwmin;
         }
         //
         if (lwork < lwmin && !lquery) {
@@ -74,7 +75,7 @@ void Chbev_2stage(const char *jobz, const char *uplo, INTEGER const n, INTEGER c
     }
     //
     if (info != 0) {
-        Mxerbla("Chbev_2stage", -info);
+        Mxerbla("Chbev_2stage ", -info);
         return;
     } else if (lquery) {
         return;
@@ -89,9 +90,9 @@ void Chbev_2stage(const char *jobz, const char *uplo, INTEGER const n, INTEGER c
     const REAL one = 1.0;
     if (n == 1) {
         if (lower) {
-            w[1 - 1] = ab[0].real();
+            w[0] = ab[0].real();
         } else {
-            w[1 - 1] = ab[((kd + 1) - 1)].real();
+            w[0] = ab[((kd + 1) - 1)].real();
         }
         if (wantz) {
             z[0] = one;
@@ -129,7 +130,7 @@ void Chbev_2stage(const char *jobz, const char *uplo, INTEGER const n, INTEGER c
         }
     }
     //
-    // Call Chbtrd_HB2ST to reduce Hermitian band matrix to tridiagonal form.
+    // Call ZHBTRD_HB2ST to reduce Hermitian band matrix to tridiagonal form.
     //
     INTEGER inde = 1;
     INTEGER indhous = 1;
@@ -163,7 +164,7 @@ void Chbev_2stage(const char *jobz, const char *uplo, INTEGER const n, INTEGER c
     //
     // Set WORK(1) to optimal workspace size.
     //
-    work[1 - 1] = lwmin;
+    work[0] = lwmin;
     //
     // End of Chbev_2stage
     //
