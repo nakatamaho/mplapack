@@ -100,7 +100,7 @@ void Rlals0(INTEGER const icompq, INTEGER const nl, INTEGER const nr, INTEGER co
         //
         if (k == 1) {
             Rcopy(nrhs, bx, ldbx, b, ldb);
-            if (z[1 - 1] < zero) {
+            if (z[0] < zero) {
                 Rscal(nrhs, negone, b, ldb);
             }
         } else {
@@ -131,7 +131,7 @@ void Rlals0(INTEGER const icompq, INTEGER const nl, INTEGER const nr, INTEGER co
                         work[i - 1] = poles[(i - 1) + (2 - 1) * ldgnum] * z[i - 1] / (Rlamc3(poles[(i - 1) + (2 - 1) * ldgnum], dsigjp) + difrj) / (poles[(i - 1) + (2 - 1) * ldgnum] + dj);
                     }
                 }
-                work[1 - 1] = negone;
+                work[0] = negone;
                 temp = Rnrm2(k, work, 1);
                 Rgemv("T", k, nrhs, one, bx, ldbx, work, 1, zero, &b[(j - 1)], ldb);
                 Rlascl("G", 0, 0, temp, one, 1, nrhs, &b[(j - 1)], ldb, info);

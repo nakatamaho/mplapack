@@ -64,7 +64,7 @@ void Rbbcsd(const char *jobu1, const char *jobu2, const char *jobv1t, const char
     INTEGER lworkmin = 0;
     if (info == 0 && q == 0) {
         lworkmin = 1;
-        work[1 - 1] = castREAL(lworkmin);
+        work[0] = castREAL(lworkmin);
         return;
     }
     //
@@ -90,7 +90,7 @@ void Rbbcsd(const char *jobu1, const char *jobu2, const char *jobv1t, const char
         iv2tsn = iv2tcs + q;
         lworkopt = iv2tsn + q - 1;
         lworkmin = lworkopt;
-        work[1 - 1] = castREAL(lworkopt);
+        work[0] = castREAL(lworkopt);
         if (lwork < lworkmin && !lquery) {
             info = -28;
         }

@@ -134,7 +134,7 @@ statement_10:
 statement_20:
     //
     smin = max(REAL(eps * max(abs(tl[0]), abs(tr[0]), abs(tr[(2 - 1) * ldtr]), abs(tr[(2 - 1)]), abs(tr[(2 - 1) + (2 - 1) * ldtr]))), smlnum);
-    tmp[1 - 1] = tl[0] + sgn * tr[0];
+    tmp[0] = tl[0] + sgn * tr[0];
     tmp[4 - 1] = tl[0] + sgn * tr[(2 - 1) + (2 - 1) * ldtr];
     if (ltranr) {
         tmp[2 - 1] = sgn * tr[(2 - 1)];
@@ -143,7 +143,7 @@ statement_20:
         tmp[2 - 1] = sgn * tr[(2 - 1) * ldtr];
         tmp[3 - 1] = sgn * tr[(2 - 1)];
     }
-    btmp[1 - 1] = b[0];
+    btmp[0] = b[0];
     btmp[2 - 1] = b[(2 - 1) * ldb];
     goto statement_40;
 //
@@ -153,7 +153,7 @@ statement_20:
 //
 statement_30:
     smin = max(REAL(eps * max(abs(tr[0]), abs(tl[0]), abs(tl[(2 - 1) * ldtl]), abs(tl[(2 - 1)]), abs(tl[(2 - 1) + (2 - 1) * ldtl]))), smlnum);
-    tmp[1 - 1] = tl[0] + sgn * tr[0];
+    tmp[0] = tl[0] + sgn * tr[0];
     tmp[4 - 1] = tl[(2 - 1) + (2 - 1) * ldtl] + sgn * tr[0];
     if (ltranl) {
         tmp[2 - 1] = tl[(2 - 1) * ldtl];
@@ -162,7 +162,7 @@ statement_30:
         tmp[2 - 1] = tl[(2 - 1)];
         tmp[3 - 1] = tl[(2 - 1) * ldtl];
     }
-    btmp[1 - 1] = b[0];
+    btmp[0] = b[0];
     btmp[2 - 1] = b[(2 - 1)];
 statement_40:
     //
@@ -186,25 +186,25 @@ statement_40:
     }
     if (bswap) {
         temp = btmp[2 - 1];
-        btmp[2 - 1] = btmp[1 - 1] - l21 * temp;
-        btmp[1 - 1] = temp;
+        btmp[2 - 1] = btmp[0] - l21 * temp;
+        btmp[0] = temp;
     } else {
-        btmp[2 - 1] = btmp[2 - 1] - l21 * btmp[1 - 1];
+        btmp[2 - 1] = btmp[2 - 1] - l21 * btmp[0];
     }
     scale = one;
-    if ((two * smlnum) * abs(btmp[2 - 1]) > abs(u22) || (two * smlnum) * abs(btmp[1 - 1]) > abs(u11)) {
-        scale = half / max(abs(btmp[1 - 1]), abs(btmp[2 - 1]));
-        btmp[1 - 1] = btmp[1 - 1] * scale;
+    if ((two * smlnum) * abs(btmp[2 - 1]) > abs(u22) || (two * smlnum) * abs(btmp[0]) > abs(u11)) {
+        scale = half / max(abs(btmp[0]), abs(btmp[2 - 1]));
+        btmp[0] = btmp[0] * scale;
         btmp[2 - 1] = btmp[2 - 1] * scale;
     }
     x2[2 - 1] = btmp[2 - 1] / u22;
-    x2[1 - 1] = btmp[1 - 1] / u11 - (u12 / u11) * x2[2 - 1];
+    x2[0] = btmp[0] / u11 - (u12 / u11) * x2[2 - 1];
     if (xswap) {
         temp = x2[2 - 1];
-        x2[2 - 1] = x2[1 - 1];
-        x2[1 - 1] = temp;
+        x2[2 - 1] = x2[0];
+        x2[0] = temp;
     }
-    x[0] = x2[1 - 1];
+    x[0] = x2[0];
     if (n1 == 1) {
         x[(2 - 1) * ldx] = x2[2 - 1];
         xnorm = abs(x[0]) + abs(x[(2 - 1) * ldx]);
@@ -225,7 +225,7 @@ statement_50:
     smin = max(abs(tr[0]), abs(tr[(2 - 1) * ldtr]), abs(tr[(2 - 1)]), abs(tr[(2 - 1) + (2 - 1) * ldtr]));
     smin = max(smin, REAL(abs(tl[0])), REAL(abs(tl[(2 - 1) * ldtl])), REAL(abs(tl[(2 - 1)])), REAL(abs(tl[(2 - 1) + (2 - 1) * ldtl])));
     smin = max(REAL(eps * smin), smlnum);
-    btmp[1 - 1] = zero;
+    btmp[0] = zero;
     Rcopy(16, btmp, 0, t16, 1);
     t16[0] = tl[0] + sgn * tr[0];
     t16[(2 - 1) + (2 - 1) * ldt16] = tl[(2 - 1) + (2 - 1) * ldtl] + sgn * tr[0];
@@ -253,7 +253,7 @@ statement_50:
         t16[(3 - 1)] = sgn * tr[(2 - 1) * ldtr];
         t16[(4 - 1) + (2 - 1) * ldt16] = sgn * tr[(2 - 1) * ldtr];
     }
-    btmp[1 - 1] = b[0];
+    btmp[0] = b[0];
     btmp[2 - 1] = b[(2 - 1)];
     btmp[3 - 1] = b[(2 - 1) * ldb];
     btmp[4 - 1] = b[(2 - 1) + (2 - 1) * ldb];
@@ -298,9 +298,9 @@ statement_50:
         t16[(4 - 1) + (4 - 1) * ldt16] = smin;
     }
     scale = one;
-    if ((eight * smlnum) * abs(btmp[1 - 1]) > abs(t16[0]) || (eight * smlnum) * abs(btmp[2 - 1]) > abs(t16[(2 - 1) + (2 - 1) * ldt16]) || (eight * smlnum) * abs(btmp[3 - 1]) > abs(t16[(3 - 1) + (3 - 1) * ldt16]) || (eight * smlnum) * abs(btmp[4 - 1]) > abs(t16[(4 - 1) + (4 - 1) * ldt16])) {
-        scale = (one / eight) / max(abs(btmp[1 - 1]), abs(btmp[2 - 1]), abs(btmp[3 - 1]), abs(btmp[4 - 1]));
-        btmp[1 - 1] = btmp[1 - 1] * scale;
+    if ((eight * smlnum) * abs(btmp[0]) > abs(t16[0]) || (eight * smlnum) * abs(btmp[2 - 1]) > abs(t16[(2 - 1) + (2 - 1) * ldt16]) || (eight * smlnum) * abs(btmp[3 - 1]) > abs(t16[(3 - 1) + (3 - 1) * ldt16]) || (eight * smlnum) * abs(btmp[4 - 1]) > abs(t16[(4 - 1) + (4 - 1) * ldt16])) {
+        scale = (one / eight) / max(abs(btmp[0]), abs(btmp[2 - 1]), abs(btmp[3 - 1]), abs(btmp[4 - 1]));
+        btmp[0] = btmp[0] * scale;
         btmp[2 - 1] = btmp[2 - 1] * scale;
         btmp[3 - 1] = btmp[3 - 1] * scale;
         btmp[4 - 1] = btmp[4 - 1] * scale;
@@ -320,11 +320,11 @@ statement_50:
             tmp[(jpiv[(4 - i) - 1]) - 1] = temp;
         }
     }
-    x[0] = tmp[1 - 1];
+    x[0] = tmp[0];
     x[(2 - 1)] = tmp[2 - 1];
     x[(2 - 1) * ldx] = tmp[3 - 1];
     x[(2 - 1) + (2 - 1) * ldx] = tmp[4 - 1];
-    xnorm = max(abs(tmp[1 - 1]) + abs(tmp[3 - 1]), abs(tmp[2 - 1]) + abs(tmp[4 - 1]));
+    xnorm = max(abs(tmp[0]) + abs(tmp[3 - 1]), abs(tmp[2 - 1]) + abs(tmp[4 - 1]));
     //
     // End of Rlasy2
     //

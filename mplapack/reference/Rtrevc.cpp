@@ -156,7 +156,7 @@ void Rtrevc(const char *side, const char *howmny, bool *select, INTEGER const n,
     // Compute 1-norm of each column of strictly upper triangular
     // part of T to control overflow in triangular solver.
     //
-    work[1 - 1] = zero;
+    work[0] = zero;
     for (j = 2; j <= n; j = j + 1) {
         work[j - 1] = zero;
         for (i = 1; i <= j - 1; i = i + 1) {

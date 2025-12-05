@@ -49,15 +49,15 @@ void Claqr3(bool const wantt, bool const wantz, INTEGER const n, INTEGER const k
         //
         //
         Cgehrd(jw, 1, jw - 1, t, ldt, work, work, -1, info);
-        lwk1 = castINTEGER(work[1 - 1].real());
+        lwk1 = castINTEGER(work[0].real());
         //
         //
         Cunmhr("R", "N", jw, jw, 1, jw - 1, t, ldt, work, v, ldv, work, -1, info);
-        lwk2 = castINTEGER(work[1 - 1].real());
+        lwk2 = castINTEGER(work[0].real());
         //
         //
         Claqr4(true, true, jw, 1, jw, t, ldt, sh, 1, jw, v, ldv, work, -1, infqr);
-        lwk3 = castINTEGER(work[1 - 1].real());
+        lwk3 = castINTEGER(work[0].real());
         //
         //
         lwkopt = max(jw + max(lwk1, lwk2), lwk3);
@@ -65,14 +65,14 @@ void Claqr3(bool const wantt, bool const wantz, INTEGER const n, INTEGER const k
     //
     //
     if (lwork == -1) {
-        work[1 - 1] = COMPLEX(lwkopt, 0.0);
+        work[0] = COMPLEX(lwkopt, 0.0);
         return;
     }
     //
     ns = 0;
     nd = 0;
     const COMPLEX one = COMPLEX(1.0, 0.0);
-    work[1 - 1] = one;
+    work[0] = one;
     if (ktop > kbot) {
         return;
     }
@@ -111,7 +111,7 @@ void Claqr3(bool const wantt, bool const wantz, INTEGER const n, INTEGER const k
                 h[(kwtop - 1) + ((kwtop - 1) - 1) * ldh] = zero;
             }
         }
-        work[1 - 1] = one;
+        work[0] = one;
         return;
     }
     //
@@ -200,9 +200,9 @@ void Claqr3(bool const wantt, bool const wantz, INTEGER const n, INTEGER const k
             for (i = 1; i <= ns; i = i + 1) {
                 work[i - 1] = conj(work[i - 1]);
             }
-            beta = work[1 - 1];
+            beta = work[0];
             Clarfg(ns, beta, &work[2 - 1], 1, tau);
-            work[1 - 1] = one;
+            work[0] = one;
             //
             Claset("L", jw - 2, jw - 2, zero, zero, &t[(3 - 1)], ldt);
             //
@@ -266,7 +266,7 @@ void Claqr3(bool const wantt, bool const wantz, INTEGER const n, INTEGER const k
     ns = ns - infqr;
     //
     //
-    work[1 - 1] = COMPLEX(lwkopt, 0.0);
+    work[0] = COMPLEX(lwkopt, 0.0);
     //
     //
 }

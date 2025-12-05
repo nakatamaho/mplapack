@@ -93,7 +93,7 @@ void Rlaqtr(bool const ltran, bool const lreal, INTEGER const n, REAL *t, INTEGE
     // Compute 1-norm of each column of strictly upper triangular
     // part of T to control overflow in triangular solver.
     //
-    work[1 - 1] = zero;
+    work[0] = zero;
     for (j = 2; j <= n; j = j + 1) {
         work[j - 1] = Rasum(j - 1, &t[(j - 1) * ldt], 1);
     }
@@ -360,7 +360,7 @@ void Rlaqtr(bool const ltran, bool const lreal, INTEGER const n, REAL *t, INTEGE
                     //
                     z = w;
                     if (j1 == 1) {
-                        z = b[1 - 1];
+                        z = b[0];
                     }
                     xj = abs(x[j1 - 1]) + abs(x[(n + j1) - 1]);
                     tjj = abs(t[(j1 - 1) + (j1 - 1) * ldt]) + abs(z);
@@ -403,7 +403,7 @@ void Rlaqtr(bool const ltran, bool const lreal, INTEGER const n, REAL *t, INTEGE
                         Raxpy(j1 - 1, -x[j1 - 1], &t[(j1 - 1) * ldt], 1, x, 1);
                         Raxpy(j1 - 1, -x[(n + j1) - 1], &t[(j1 - 1) * ldt], 1, &x[(n + 1) - 1], 1);
                         //
-                        x[1 - 1] += b[j1 - 1] * x[(n + j1) - 1];
+                        x[0] += b[j1 - 1] * x[(n + j1) - 1];
                         x[(n + 1) - 1] = x[(n + 1) - 1] - b[j1 - 1] * x[j1 - 1];
                         //
                         xmax = zero;
@@ -455,7 +455,7 @@ void Rlaqtr(bool const ltran, bool const lreal, INTEGER const n, REAL *t, INTEGE
                         Raxpy(j1 - 1, -x[(n + j1) - 1], &t[(j1 - 1) * ldt], 1, &x[(n + 1) - 1], 1);
                         Raxpy(j1 - 1, -x[(n + j2) - 1], &t[(j2 - 1) * ldt], 1, &x[(n + 1) - 1], 1);
                         //
-                        x[1 - 1] += b[j1 - 1] * x[(n + j1) - 1] + b[j2 - 1] * x[(n + j2) - 1];
+                        x[0] += b[j1 - 1] * x[(n + j1) - 1] + b[j2 - 1] * x[(n + j2) - 1];
                         x[(n + 1) - 1] = x[(n + 1) - 1] - b[j1 - 1] * x[j1 - 1] - b[j2 - 1] * x[j2 - 1];
                         //
                         xmax = zero;
@@ -508,13 +508,13 @@ void Rlaqtr(bool const ltran, bool const lreal, INTEGER const n, REAL *t, INTEGE
                     x[(n + j1) - 1] = x[(n + j1) - 1] - Rdot(j1 - 1, &t[(j1 - 1) * ldt], 1, &x[(n + 1) - 1], 1);
                     if (j1 > 1) {
                         x[j1 - 1] = x[j1 - 1] - b[j1 - 1] * x[(n + 1) - 1];
-                        x[(n + j1) - 1] += b[j1 - 1] * x[1 - 1];
+                        x[(n + j1) - 1] += b[j1 - 1] * x[0];
                     }
                     xj = abs(x[j1 - 1]) + abs(x[(j1 + n) - 1]);
                     //
                     z = w;
                     if (j1 == 1) {
-                        z = b[1 - 1];
+                        z = b[0];
                     }
                     //
                     // Scale if necessary to avoid overflow in
@@ -564,8 +564,8 @@ void Rlaqtr(bool const ltran, bool const lreal, INTEGER const n, REAL *t, INTEGE
                     d[(2 - 1) + (2 - 1) * ldd] = x[(n + j2) - 1] - Rdot(j1 - 1, &t[(j2 - 1) * ldt], 1, &x[(n + 1) - 1], 1);
                     d[0] = d[0] - b[j1 - 1] * x[(n + 1) - 1];
                     d[(2 - 1)] = d[(2 - 1)] - b[j2 - 1] * x[(n + 1) - 1];
-                    d[(2 - 1) * ldd] += b[j1 - 1] * x[1 - 1];
-                    d[(2 - 1) + (2 - 1) * ldd] += b[j2 - 1] * x[1 - 1];
+                    d[(2 - 1) * ldd] += b[j1 - 1] * x[0];
+                    d[(2 - 1) + (2 - 1) * ldd] += b[j2 - 1] * x[0];
                     //
                     Rlaln2(true, 2, 2, sminw, one, &t[(j1 - 1) + (j1 - 1) * ldt], ldt, one, one, d, 2, zero, w, v, 2, scaloc, xnorm, ierr);
                     if (ierr != 0) {

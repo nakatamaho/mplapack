@@ -63,7 +63,7 @@ void Csytrf_rook(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const ld
         //
         nb = iMlaenv(1, "Csytrf_rook", uplo, n, -1, -1, -1);
         lwkopt = max((INTEGER)1, n * nb);
-        work[1 - 1] = lwkopt;
+        work[0] = lwkopt;
     }
     //
     if (info != 0) {
@@ -187,7 +187,7 @@ void Csytrf_rook(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const ld
     }
 //
 statement_40:
-    work[1 - 1] = lwkopt;
+    work[0] = lwkopt;
     //
     // End of Csytrf_rook
     //

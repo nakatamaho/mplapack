@@ -177,7 +177,7 @@ void Rgesvdx(const char *jobu, const char *jobvt, const char *range, INTEGER con
             }
         }
         maxwrk = max(maxwrk, minwrk);
-        work[1 - 1] = castREAL(maxwrk);
+        work[0] = castREAL(maxwrk);
         //
         if (lwork < minwrk && !lquery) {
             info = -19;
@@ -522,7 +522,7 @@ void Rgesvdx(const char *jobu, const char *jobvt, const char *range, INTEGER con
     //
     // Return optimal workspace in WORK(1)
     //
-    work[1 - 1] = castREAL(maxwrk);
+    work[0] = castREAL(maxwrk);
     //
     // End of Rgesvdx
     //

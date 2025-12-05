@@ -167,8 +167,8 @@ void Cstemr(const char *jobz, const char *range, INTEGER const n, REAL *d, REAL 
     rmax = min(REAL(sqrt(bignum)), REAL(one / sqrt(sqrt(safmin))));
     //
     if (info == 0) {
-        work[1 - 1] = lwmin;
-        iwork[1 - 1] = liwmin;
+        work[0] = lwmin;
+        iwork[0] = liwmin;
         //
         if (wantz && alleig) {
             nzcmin = n;
@@ -206,16 +206,16 @@ void Cstemr(const char *jobz, const char *range, INTEGER const n, REAL *d, REAL 
     if (n == 1) {
         if (alleig || indeig) {
             m = 1;
-            w[1 - 1] = d[1 - 1];
+            w[0] = d[0];
         } else {
-            if (wl < d[1 - 1] && wu >= d[1 - 1]) {
+            if (wl < d[0] && wu >= d[0]) {
                 m = 1;
-                w[1 - 1] = d[1 - 1];
+                w[0] = d[0];
             }
         }
         if (wantz && (!zquery)) {
             z[0] = one;
-            isuppz[1 - 1] = 1;
+            isuppz[0] = 1;
             isuppz[2 - 1] = 1;
         }
         return;
@@ -223,9 +223,9 @@ void Cstemr(const char *jobz, const char *range, INTEGER const n, REAL *d, REAL 
     //
     if (n == 2) {
         if (!wantz) {
-            Rlae2(d[1 - 1], e[1 - 1], d[2 - 1], r1, r2);
+            Rlae2(d[0], e[0], d[2 - 1], r1, r2);
         } else if (wantz && (!zquery)) {
-            Rlaev2(d[1 - 1], e[1 - 1], d[2 - 1], r1, r2, cs, sn);
+            Rlaev2(d[0], e[0], d[2 - 1], r1, r2, cs, sn);
         }
         if (alleig || (valeig && (r2 > wl) && (r2 <= wu)) || (indeig && (iil == 1))) {
             m++;
@@ -464,8 +464,8 @@ void Cstemr(const char *jobz, const char *range, INTEGER const n, REAL *d, REAL 
         }
     }
     //
-    work[1 - 1] = lwmin;
-    iwork[1 - 1] = liwmin;
+    work[0] = lwmin;
+    iwork[0] = liwmin;
     //
     // End of Cstemr
     //

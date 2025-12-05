@@ -129,25 +129,25 @@ void Cggev3(const char *jobvl, const char *jobvr, INTEGER const n, COMPLEX *a, I
     //
     if (info == 0) {
         Cgeqrf(n, n, b, ldb, work, work, -1, ierr);
-        lwkopt = max((INTEGER)1, n + castINTEGER(work[1 - 1].real()));
+        lwkopt = max((INTEGER)1, n + castINTEGER(work[0].real()));
         Cunmqr("L", "C", n, n, n, b, ldb, work, a, lda, work, -1, ierr);
-        lwkopt = max(lwkopt, n + castINTEGER(work[1 - 1].real()));
+        lwkopt = max(lwkopt, n + castINTEGER(work[0].real()));
         if (ilvl) {
             Cungqr(n, n, n, vl, ldvl, work, work, -1, ierr);
-            lwkopt = max(lwkopt, n + castINTEGER(work[1 - 1].real()));
+            lwkopt = max(lwkopt, n + castINTEGER(work[0].real()));
         }
         if (ilv) {
             Cgghd3(jobvl, jobvr, n, 1, n, a, lda, b, ldb, vl, ldvl, vr, ldvr, work, -1, ierr);
-            lwkopt = max(lwkopt, n + castINTEGER(work[1 - 1].real()));
+            lwkopt = max(lwkopt, n + castINTEGER(work[0].real()));
             Chgeqz("S", jobvl, jobvr, n, 1, n, a, lda, b, ldb, alpha, beta, vl, ldvl, vr, ldvr, work, -1, rwork, ierr);
-            lwkopt = max(lwkopt, n + castINTEGER(work[1 - 1].real()));
+            lwkopt = max(lwkopt, n + castINTEGER(work[0].real()));
         } else {
             Cgghd3(jobvl, jobvr, n, 1, n, a, lda, b, ldb, vl, ldvl, vr, ldvr, work, -1, ierr);
-            lwkopt = max(lwkopt, n + castINTEGER(work[1 - 1].real()));
+            lwkopt = max(lwkopt, n + castINTEGER(work[0].real()));
             Chgeqz("E", jobvl, jobvr, n, 1, n, a, lda, b, ldb, alpha, beta, vl, ldvl, vr, ldvr, work, -1, rwork, ierr);
-            lwkopt = max(lwkopt, n + castINTEGER(work[1 - 1].real()));
+            lwkopt = max(lwkopt, n + castINTEGER(work[0].real()));
         }
-        work[1 - 1] = COMPLEX(lwkopt);
+        work[0] = COMPLEX(lwkopt);
     }
     //
     if (info != 0) {
@@ -341,7 +341,7 @@ statement_70:
         Clascl("G", 0, 0, bnrmto, bnrm, n, 1, beta, n, ierr);
     }
     //
-    work[1 - 1] = COMPLEX(lwkopt);
+    work[0] = COMPLEX(lwkopt);
     //
     // End of Cggev3
     //

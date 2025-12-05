@@ -246,7 +246,7 @@ void Rtgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
         anorm += abs(s[(2 - 1)]);
     }
     bnorm = abs(p[0]);
-    work[1 - 1] = zero;
+    work[0] = zero;
     work[(n + 1) - 1] = zero;
     //
     for (j = 2; j <= n; j = j + 1) {
@@ -453,7 +453,7 @@ void Rtgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
                 }
                 //
                 na = 1;
-                bdiag[1 - 1] = p[(j - 1) + (j - 1) * ldp];
+                bdiag[0] = p[(j - 1) + (j - 1) * ldp];
                 if (j < n) {
                     if (s[((j + 1) - 1) + (j - 1) * lds] != zero) {
                         il2by2 = true;
@@ -518,7 +518,7 @@ void Rtgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
                 // Solve  ( a A - b B )  y = SUM(,)
                 // with scaling and perturbation of the denominator
                 //
-                Rlaln2(true, na, nw, dmin, acoef, &s[(j - 1) + (j - 1) * lds], lds, bdiag[1 - 1], bdiag[2 - 1], sum, 2, bcoefr, bcoefi, &work[(2 * n + j) - 1], n, scale, temp, iinfo);
+                Rlaln2(true, na, nw, dmin, acoef, &s[(j - 1) + (j - 1) * lds], lds, bdiag[0], bdiag[2 - 1], sum, 2, bcoefr, bcoefi, &work[(2 * n + j) - 1], n, scale, temp, iinfo);
                 if (scale < one) {
                     for (jw = 0; jw <= nw - 1; jw = jw + 1) {
                         for (jr = je; jr <= j - 1; jr = jr + 1) {
@@ -781,7 +781,7 @@ void Rtgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
                         goto statement_370;
                     }
                 }
-                bdiag[1 - 1] = p[(j - 1) + (j - 1) * ldp];
+                bdiag[0] = p[(j - 1) + (j - 1) * ldp];
                 if (il2by2) {
                     na = 2;
                     bdiag[2 - 1] = p[((j + 1) - 1) + ((j + 1) - 1) * ldp];
@@ -791,7 +791,7 @@ void Rtgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
                 //
                 // Compute x(j) (and x(j+1), if 2-by-2 block)
                 //
-                Rlaln2(false, na, nw, dmin, acoef, &s[(j - 1) + (j - 1) * lds], lds, bdiag[1 - 1], bdiag[2 - 1], &work[(2 * n + j) - 1], n, bcoefr, bcoefi, sum, 2, scale, temp, iinfo);
+                Rlaln2(false, na, nw, dmin, acoef, &s[(j - 1) + (j - 1) * lds], lds, bdiag[0], bdiag[2 - 1], &work[(2 * n + j) - 1], n, bcoefr, bcoefi, sum, 2, scale, temp, iinfo);
                 if (scale < one) {
                     //
                     for (jw = 0; jw <= nw - 1; jw = jw + 1) {

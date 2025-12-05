@@ -95,7 +95,7 @@ void Rlaed0(INTEGER const icompq, INTEGER const qsiz, INTEGER const n, REAL *d, 
     // Determine the size and placement of the submatrices, and save in
     // the leading elements of IWORK.
     //
-    iwork[1 - 1] = n;
+    iwork[0] = n;
     subpbs = 1;
     tlvls = 0;
 statement_10:
@@ -163,7 +163,7 @@ statement_10:
     for (i = 0; i <= spm1; i = i + 1) {
         if (i == 0) {
             submat = 1;
-            matsiz = iwork[1 - 1];
+            matsiz = iwork[0];
         } else {
             submat = iwork[i - 1] + 1;
             matsiz = iwork[(i + 1) - 1] - iwork[i - 1];
@@ -204,7 +204,7 @@ statement_80:
             if (i == 0) {
                 submat = 1;
                 matsiz = iwork[2 - 1];
-                msd2 = iwork[1 - 1];
+                msd2 = iwork[0];
                 curprb = 0;
             } else {
                 submat = iwork[i - 1] + 1;

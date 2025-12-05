@@ -65,9 +65,9 @@ void Cpoequb(INTEGER const n, COMPLEX *a, INTEGER const lda, REAL *s, REAL &scon
     //
     // Find the minimum and maximum diagonal elements.
     //
-    s[1 - 1] = a[0].real();
-    REAL smin = s[1 - 1];
-    amax = s[1 - 1];
+    s[0] = a[0].real();
+    REAL smin = s[0];
+    amax = s[0];
     INTEGER i = 0;
     for (i = 2; i <= n; i = i + 1) {
         s[i - 1] = a[(i - 1) + (i - 1) * lda].real();

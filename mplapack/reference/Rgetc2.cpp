@@ -53,8 +53,8 @@ void Rgetc2(INTEGER const n, REAL *a, INTEGER const lda, INTEGER *ipiv, INTEGER 
     // Handle the case N=1 by itself
     //
     if (n == 1) {
-        ipiv[1 - 1] = 1;
-        jpiv[1 - 1] = 1;
+        ipiv[0] = 1;
+        jpiv[0] = 1;
         if (abs(a[0]) < smlnum) {
             info = 1;
             a[0] = smlnum;

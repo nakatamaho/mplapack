@@ -65,7 +65,7 @@ void Rlaebz(INTEGER const ijob, INTEGER const nitmax, INTEGER const n, INTEGER c
         mout = 0;
         for (ji = 1; ji <= minp; ji = ji + 1) {
             for (jp = 1; jp <= 2; jp = jp + 1) {
-                tmp1 = d[1 - 1] - ab[(ji - 1) + (jp - 1) * ldab];
+                tmp1 = d[0] - ab[(ji - 1) + (jp - 1) * ldab];
                 if (abs(tmp1) < pivmin) {
                     tmp1 = -pivmin;
                 }
@@ -121,7 +121,7 @@ void Rlaebz(INTEGER const ijob, INTEGER const nitmax, INTEGER const n, INTEGER c
                 //
                 // Compute N(c), the number of eigenvalues less than c
                 //
-                work[ji - 1] = d[1 - 1] - c[ji - 1];
+                work[ji - 1] = d[0] - c[ji - 1];
                 iwork[ji - 1] = 0;
                 if (work[ji - 1] <= pivmin) {
                     iwork[ji - 1] = 1;
@@ -215,7 +215,7 @@ void Rlaebz(INTEGER const ijob, INTEGER const nitmax, INTEGER const n, INTEGER c
                 // Compute N(w), the number of eigenvalues less than w
                 //
                 tmp1 = c[ji - 1];
-                tmp2 = d[1 - 1] - tmp1;
+                tmp2 = d[0] - tmp1;
                 itmp1 = 0;
                 if (tmp2 <= pivmin) {
                     itmp1 = 1;

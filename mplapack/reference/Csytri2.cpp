@@ -65,7 +65,7 @@ void Csytri2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, I
         Mxerbla("Csytri2", -info);
         return;
     } else if (lquery) {
-        work[1 - 1] = minsize;
+        work[0] = minsize;
         return;
     }
     if (n == 0) {

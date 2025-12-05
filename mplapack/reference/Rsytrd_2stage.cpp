@@ -62,8 +62,8 @@ void Rsytrd_2stage(const char *vect, const char *uplo, INTEGER const n, REAL *a,
     }
     //
     if (info == 0) {
-        hous2[1 - 1] = lhmin;
-        work[1 - 1] = lwmin;
+        hous2[0] = lhmin;
+        work[0] = lwmin;
     }
     //
     if (info != 0) {
@@ -76,7 +76,7 @@ void Rsytrd_2stage(const char *vect, const char *uplo, INTEGER const n, REAL *a,
     // Quick return if possible
     //
     if (n == 0) {
-        work[1 - 1] = 1;
+        work[0] = 1;
         return;
     }
     //
@@ -97,8 +97,8 @@ void Rsytrd_2stage(const char *vect, const char *uplo, INTEGER const n, REAL *a,
         return;
     }
     //
-    hous2[1 - 1] = lhmin;
-    work[1 - 1] = lwmin;
+    hous2[0] = lhmin;
+    work[0] = lwmin;
     //
     // End of Rsytrd_2stage
     //

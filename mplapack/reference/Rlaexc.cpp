@@ -156,7 +156,7 @@ void Rlaexc(bool const wantq, INTEGER const n, REAL *t, INTEGER const ldt, REAL 
         //
         // ( scale, X11, X12 ) H = ( 0, 0, * )
         //
-        u[1 - 1] = scale;
+        u[0] = scale;
         u[2 - 1] = x[0];
         u[3 - 1] = x[(2 - 1) * ldx];
         Rlarfg(3, u[3 - 1], u, 1, tau);
@@ -199,11 +199,11 @@ void Rlaexc(bool const wantq, INTEGER const n, REAL *t, INTEGER const ldt, REAL 
         // (  -X21 ) = ( 0 )
         // ( scale ) = ( 0 )
         //
-        u[1 - 1] = -x[0];
+        u[0] = -x[0];
         u[2 - 1] = -x[(2 - 1)];
         u[3 - 1] = scale;
-        Rlarfg(3, u[1 - 1], &u[2 - 1], 1, tau);
-        u[1 - 1] = one;
+        Rlarfg(3, u[0], &u[2 - 1], 1, tau);
+        u[0] = one;
         t33 = t[(j3 - 1) + (j3 - 1) * ldt];
         //
         // Perform swap provisionally on diagonal block in D.
@@ -244,18 +244,18 @@ void Rlaexc(bool const wantq, INTEGER const n, REAL *t, INTEGER const ldt, REAL 
         // ( scale    0  )   (  0  0 )
         // (    0  scale )   (  0  0 )
         //
-        u1[1 - 1] = -x[0];
+        u1[0] = -x[0];
         u1[2 - 1] = -x[(2 - 1)];
         u1[3 - 1] = scale;
-        Rlarfg(3, u1[1 - 1], &u1[2 - 1], 1, tau1);
-        u1[1 - 1] = one;
+        Rlarfg(3, u1[0], &u1[2 - 1], 1, tau1);
+        u1[0] = one;
         //
         temp = -tau1 * (x[(2 - 1) * ldx] + u1[2 - 1] * x[(2 - 1) + (2 - 1) * ldx]);
-        u2[1 - 1] = -temp * u1[2 - 1] - x[(2 - 1) + (2 - 1) * ldx];
+        u2[0] = -temp * u1[2 - 1] - x[(2 - 1) + (2 - 1) * ldx];
         u2[2 - 1] = -temp * u1[3 - 1];
         u2[3 - 1] = scale;
-        Rlarfg(3, u2[1 - 1], &u2[2 - 1], 1, tau2);
-        u2[1 - 1] = one;
+        Rlarfg(3, u2[0], &u2[2 - 1], 1, tau2);
+        u2[0] = one;
         //
         // Perform swap provisionally on diagonal block in D.
         //

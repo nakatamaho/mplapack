@@ -69,7 +69,7 @@ void Csysvx(const char *fact, const char *uplo, INTEGER const n, INTEGER const n
             nb = iMlaenv(1, "Csytrf", uplo, n, -1, -1, -1);
             lwkopt = max(lwkopt, n * nb);
         }
-        work[1 - 1] = lwkopt;
+        work[0] = lwkopt;
     }
     //
     if (info != 0) {
@@ -119,7 +119,7 @@ void Csysvx(const char *fact, const char *uplo, INTEGER const n, INTEGER const n
         info = n + 1;
     }
     //
-    work[1 - 1] = lwkopt;
+    work[0] = lwkopt;
     //
     // End of Csysvx
     //

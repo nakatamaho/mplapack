@@ -40,7 +40,7 @@ void Chseqr(const char *job, const char *compz, INTEGER const n, INTEGER const i
     job_compz[1] = compz[0];
     job_compz[2] = '\0';
     const REAL rzero = 0.0;
-    work[1 - 1] = COMPLEX(castREAL((max((INTEGER)1, n))), rzero);
+    work[0] = COMPLEX(castREAL((max((INTEGER)1, n))), rzero);
     bool lquery = lwork == -1;
     //
     info = 0;
@@ -87,7 +87,7 @@ void Chseqr(const char *job, const char *compz, INTEGER const n, INTEGER const i
         //
         //
         Claqr0(wantt, wantz, n, ilo, ihi, h, ldh, w, ilo, ihi, z, ldz, work, lwork, info);
-        work[1 - 1] = COMPLEX(castREAL(max(castINTEGER(work[1 - 1].real()), (max((INTEGER)1, n)))), rzero);
+        work[0] = COMPLEX(castREAL(max(castINTEGER(work[0].real()), (max((INTEGER)1, n)))), rzero);
         return;
         //
     } else {
@@ -155,7 +155,7 @@ void Chseqr(const char *job, const char *compz, INTEGER const n, INTEGER const i
         }
         //
         //
-        work[1 - 1] = COMPLEX(max(castREAL(max((INTEGER)1, n)), work[1 - 1].real()), rzero);
+        work[0] = COMPLEX(max(castREAL(max((INTEGER)1, n)), work[0].real()), rzero);
     }
     //
     //

@@ -60,7 +60,7 @@ void Csytri_3(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, 
         Mxerbla("Csytri_3", -info);
         return;
     } else if (lquery) {
-        work[1 - 1] = lwkopt;
+        work[0] = lwkopt;
         return;
     }
     //
@@ -72,7 +72,7 @@ void Csytri_3(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, 
     //
     Csytri_3x(uplo, n, a, lda, e, ipiv, work, nb, info);
     //
-    work[1 - 1] = lwkopt;
+    work[0] = lwkopt;
     //
     // End of Csytri_3
     //

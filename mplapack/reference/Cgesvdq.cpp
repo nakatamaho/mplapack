@@ -175,13 +175,13 @@ void Cgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
         lwsvd = max(3 * n, (INTEGER)1);
         if (lquery) {
             Cgeqp3(m, n, a, lda, iwork, cdummy, cdummy, -1, rdummy, ierr);
-            lwrk_Cgeqp3 = castINTEGER(cdummy[1 - 1].real());
+            lwrk_Cgeqp3 = castINTEGER(cdummy[0].real());
             if (wntus || wntur) {
                 Cunmqr("L", "N", m, n, n, a, lda, cdummy, u, ldu, cdummy, -1, ierr);
-                lwrk_Cunmqr = castINTEGER(cdummy[1 - 1].real());
+                lwrk_Cunmqr = castINTEGER(cdummy[0].real());
             } else if (wntua) {
                 Cunmqr("L", "N", m, m, n, a, lda, cdummy, u, ldu, cdummy, -1, ierr);
-                lwrk_Cunmqr = castINTEGER(cdummy[1 - 1].real());
+                lwrk_Cunmqr = castINTEGER(cdummy[0].real());
             } else {
                 lwrk_Cunmqr = 0;
             }
@@ -198,7 +198,7 @@ void Cgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
             }
             if (lquery) {
                 Cgesvd("N", "N", n, n, a, lda, s, u, ldu, v, ldv, cdummy, -1, rdummy, ierr);
-                lwrk_Cgesvd = castINTEGER(cdummy[1 - 1].real());
+                lwrk_Cgesvd = castINTEGER(cdummy[0].real());
                 if (conda) {
                     optwrk = max(n + lwrk_Cgeqp3, n + lwcon, lwrk_Cgesvd);
                 } else {
@@ -219,7 +219,7 @@ void Cgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
                 } else {
                     Cgesvd("O", "N", n, n, a, lda, s, u, ldu, v, ldv, cdummy, -1, rdummy, ierr);
                 }
-                lwrk_Cgesvd = castINTEGER(cdummy[1 - 1].real());
+                lwrk_Cgesvd = castINTEGER(cdummy[0].real());
                 if (conda) {
                     optwrk = n + max(lwrk_Cgeqp3, lwcon, lwrk_Cgesvd, lwrk_Cunmqr);
                 } else {
@@ -240,7 +240,7 @@ void Cgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
                 } else {
                     Cgesvd("N", "O", n, n, a, lda, s, u, ldu, v, ldv, cdummy, -1, rdummy, ierr);
                 }
-                lwrk_Cgesvd = castINTEGER(cdummy[1 - 1].real());
+                lwrk_Cgesvd = castINTEGER(cdummy[0].real());
                 if (conda) {
                     optwrk = n + max(lwrk_Cgeqp3, lwcon, lwrk_Cgesvd);
                 } else {
@@ -291,7 +291,7 @@ void Cgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
             if (lquery) {
                 if (rtrans) {
                     Cgesvd("O", "A", n, n, a, lda, s, u, ldu, v, ldv, cdummy, -1, rdummy, ierr);
-                    lwrk_Cgesvd = castINTEGER(cdummy[1 - 1].real());
+                    lwrk_Cgesvd = castINTEGER(cdummy[0].real());
                     optwrk = max(lwrk_Cgeqp3, lwrk_Cgesvd, lwrk_Cunmqr);
                     if (conda) {
                         optwrk = max(optwrk, lwcon);
@@ -299,11 +299,11 @@ void Cgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
                     optwrk += n;
                     if (wntva) {
                         Cgeqrf(n, n / 2, u, ldu, cdummy, cdummy, -1, ierr);
-                        lwrk_Cgeqrf = castINTEGER(cdummy[1 - 1].real());
+                        lwrk_Cgeqrf = castINTEGER(cdummy[0].real());
                         Cgesvd("S", "O", n / 2, n / 2, v, ldv, s, u, ldu, v, ldv, cdummy, -1, rdummy, ierr);
-                        lwrk_Cgesvd2 = castINTEGER(cdummy[1 - 1].real());
+                        lwrk_Cgesvd2 = castINTEGER(cdummy[0].real());
                         Cunmqr("R", "C", n, n, n / 2, u, ldu, cdummy, v, ldv, cdummy, -1, ierr);
-                        lwrk_Cunmqr2 = castINTEGER(cdummy[1 - 1].real());
+                        lwrk_Cunmqr2 = castINTEGER(cdummy[0].real());
                         optwrk2 = max(lwrk_Cgeqp3, n / 2 + lwrk_Cgeqrf, n / 2 + lwrk_Cgesvd2, n / 2 + lwrk_Cunmqr2);
                         if (conda) {
                             optwrk2 = max(optwrk2, lwcon);
@@ -313,7 +313,7 @@ void Cgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
                     }
                 } else {
                     Cgesvd("S", "O", n, n, a, lda, s, u, ldu, v, ldv, cdummy, -1, rdummy, ierr);
-                    lwrk_Cgesvd = castINTEGER(cdummy[1 - 1].real());
+                    lwrk_Cgesvd = castINTEGER(cdummy[0].real());
                     optwrk = max(lwrk_Cgeqp3, lwrk_Cgesvd, lwrk_Cunmqr);
                     if (conda) {
                         optwrk = max(optwrk, lwcon);
@@ -321,11 +321,11 @@ void Cgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
                     optwrk += n;
                     if (wntva) {
                         Cgelqf(n / 2, n, u, ldu, cdummy, cdummy, -1, ierr);
-                        lwrk_Cgelqf = castINTEGER(cdummy[1 - 1].real());
+                        lwrk_Cgelqf = castINTEGER(cdummy[0].real());
                         Cgesvd("S", "O", n / 2, n / 2, v, ldv, s, u, ldu, v, ldv, cdummy, -1, rdummy, ierr);
-                        lwrk_Cgesvd2 = castINTEGER(cdummy[1 - 1].real());
+                        lwrk_Cgesvd2 = castINTEGER(cdummy[0].real());
                         Cunmlq("R", "N", n, n, n / 2, u, ldu, cdummy, v, ldv, cdummy, -1, ierr);
-                        lwrk_Cunmlq = castINTEGER(cdummy[1 - 1].real());
+                        lwrk_Cunmlq = castINTEGER(cdummy[0].real());
                         optwrk2 = max(lwrk_Cgeqp3, n / 2 + lwrk_Cgelqf, n / 2 + lwrk_Cgesvd2, n / 2 + lwrk_Cunmlq);
                         if (conda) {
                             optwrk2 = max(optwrk2, lwcon);
@@ -355,10 +355,10 @@ void Cgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
         //
         // Return optimal workspace
         //
-        iwork[1 - 1] = iminwrk;
-        cwork[1 - 1] = optwrk;
+        iwork[0] = iminwrk;
+        cwork[0] = optwrk;
         cwork[2 - 1] = minwrk;
-        rwork[1 - 1] = rminwrk;
+        rwork[0] = rminwrk;
         return;
     }
     //
@@ -396,7 +396,7 @@ void Cgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
             }
         }
         //
-        if (rwork[1 - 1] == zero) {
+        if (rwork[0] == zero) {
             // Quick return: A is the M x N zero matrix.
             numrank = 0;
             Rlaset("G", n, 1, zero, zero, s, n);
@@ -422,13 +422,13 @@ void Cgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
                 }
             }
             if (conda) {
-                rwork[1 - 1] = -1;
+                rwork[0] = -1;
             }
             rwork[2 - 1] = -1;
             return;
         }
         //
-        if (rwork[1 - 1] > big / sqrt(castREAL(m))) {
+        if (rwork[0] > big / sqrt(castREAL(m))) {
             // .. to prevent overflow in the QR factorization, scale the
             // matrix by 1/sqrt(M) if too large entry detected
             Clascl("G", 0, 0, sqrt(castREAL(m)), one, m, n, a, lda, ierr);
@@ -1001,7 +1001,7 @@ statement_4002:
         Rlascl("G", 0, 0, one, sqrt(castREAL(m)), nr, 1, s, n, ierr);
     }
     if (conda) {
-        rwork[1 - 1] = sconda;
+        rwork[0] = sconda;
     }
     rwork[2 - 1] = p - nr;
     // .. p-NR is the number of singular values that are computed as

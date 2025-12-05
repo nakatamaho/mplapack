@@ -76,9 +76,9 @@ void Chbevd(const char *jobz, const char *uplo, INTEGER const n, INTEGER const k
     }
     //
     if (info == 0) {
-        work[1 - 1] = lwmin;
-        rwork[1 - 1] = lrwmin;
-        iwork[1 - 1] = liwmin;
+        work[0] = lwmin;
+        rwork[0] = lrwmin;
+        iwork[0] = liwmin;
         //
         if (lwork < lwmin && !lquery) {
             info = -11;
@@ -104,7 +104,7 @@ void Chbevd(const char *jobz, const char *uplo, INTEGER const n, INTEGER const k
     //
     const COMPLEX cone = COMPLEX(1.0, 0.0);
     if (n == 1) {
-        w[1 - 1] = ab[0].real();
+        w[0] = ab[0].real();
         if (wantz) {
             z[0] = cone;
         }
@@ -175,9 +175,9 @@ void Chbevd(const char *jobz, const char *uplo, INTEGER const n, INTEGER const k
         Rscal(imax, one / sigma, w, 1);
     }
     //
-    work[1 - 1] = lwmin;
-    rwork[1 - 1] = lrwmin;
-    iwork[1 - 1] = liwmin;
+    work[0] = lwmin;
+    rwork[0] = lrwmin;
+    iwork[0] = liwmin;
     //
     // End of Chbevd
     //

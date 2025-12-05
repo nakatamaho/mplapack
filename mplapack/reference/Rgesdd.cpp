@@ -111,35 +111,35 @@ void Rgesdd(const char *jobz, INTEGER const m, INTEGER const n, REAL *a, INTEGER
             }
             //
             // Compute space preferred for each routine
-            Rgebrd(m, n, &dum[1 - 1], m, &dum[1 - 1], &dum[1 - 1], &dum[1 - 1], &dum[1 - 1], &dum[1 - 1], -1, ierr);
-            lwork_Rgebrd_mn = castINTEGER(dum[1 - 1]);
+            Rgebrd(m, n, &dum[0], m, &dum[0], &dum[0], &dum[0], &dum[0], &dum[0], -1, ierr);
+            lwork_Rgebrd_mn = castINTEGER(dum[0]);
             //
-            Rgebrd(n, n, &dum[1 - 1], n, &dum[1 - 1], &dum[1 - 1], &dum[1 - 1], &dum[1 - 1], &dum[1 - 1], -1, ierr);
-            lwork_Rgebrd_nn = castINTEGER(dum[1 - 1]);
+            Rgebrd(n, n, &dum[0], n, &dum[0], &dum[0], &dum[0], &dum[0], &dum[0], -1, ierr);
+            lwork_Rgebrd_nn = castINTEGER(dum[0]);
             //
-            Rgeqrf(m, n, &dum[1 - 1], m, &dum[1 - 1], &dum[1 - 1], -1, ierr);
-            lwork_Rgeqrf_mn = castINTEGER(dum[1 - 1]);
+            Rgeqrf(m, n, &dum[0], m, &dum[0], &dum[0], -1, ierr);
+            lwork_Rgeqrf_mn = castINTEGER(dum[0]);
             //
-            Rorgbr("Q", n, n, n, &dum[1 - 1], n, &dum[1 - 1], &dum[1 - 1], -1, ierr);
-            lwork_Rorgbr_q_nn = castINTEGER(dum[1 - 1]);
+            Rorgbr("Q", n, n, n, &dum[0], n, &dum[0], &dum[0], -1, ierr);
+            lwork_Rorgbr_q_nn = castINTEGER(dum[0]);
             //
-            Rorgqr(m, m, n, &dum[1 - 1], m, &dum[1 - 1], &dum[1 - 1], -1, ierr);
-            lwork_Rorgqr_mm = castINTEGER(dum[1 - 1]);
+            Rorgqr(m, m, n, &dum[0], m, &dum[0], &dum[0], -1, ierr);
+            lwork_Rorgqr_mm = castINTEGER(dum[0]);
             //
-            Rorgqr(m, n, n, &dum[1 - 1], m, &dum[1 - 1], &dum[1 - 1], -1, ierr);
-            lwork_Rorgqr_mn = castINTEGER(dum[1 - 1]);
+            Rorgqr(m, n, n, &dum[0], m, &dum[0], &dum[0], -1, ierr);
+            lwork_Rorgqr_mn = castINTEGER(dum[0]);
             //
-            Rormbr("P", "R", "T", n, n, n, &dum[1 - 1], n, &dum[1 - 1], &dum[1 - 1], n, &dum[1 - 1], -1, ierr);
-            lwork_Rormbr_prt_nn = castINTEGER(dum[1 - 1]);
+            Rormbr("P", "R", "T", n, n, n, &dum[0], n, &dum[0], &dum[0], n, &dum[0], -1, ierr);
+            lwork_Rormbr_prt_nn = castINTEGER(dum[0]);
             //
-            Rormbr("Q", "L", "N", n, n, n, &dum[1 - 1], n, &dum[1 - 1], &dum[1 - 1], n, &dum[1 - 1], -1, ierr);
-            lwork_Rormbr_qln_nn = castINTEGER(dum[1 - 1]);
+            Rormbr("Q", "L", "N", n, n, n, &dum[0], n, &dum[0], &dum[0], n, &dum[0], -1, ierr);
+            lwork_Rormbr_qln_nn = castINTEGER(dum[0]);
             //
-            Rormbr("Q", "L", "N", m, n, n, &dum[1 - 1], m, &dum[1 - 1], &dum[1 - 1], m, &dum[1 - 1], -1, ierr);
-            lwork_Rormbr_qln_mn = castINTEGER(dum[1 - 1]);
+            Rormbr("Q", "L", "N", m, n, n, &dum[0], m, &dum[0], &dum[0], m, &dum[0], -1, ierr);
+            lwork_Rormbr_qln_mn = castINTEGER(dum[0]);
             //
-            Rormbr("Q", "L", "N", m, m, n, &dum[1 - 1], m, &dum[1 - 1], &dum[1 - 1], m, &dum[1 - 1], -1, ierr);
-            lwork_Rormbr_qln_mm = castINTEGER(dum[1 - 1]);
+            Rormbr("Q", "L", "N", m, m, n, &dum[0], m, &dum[0], &dum[0], m, &dum[0], -1, ierr);
+            lwork_Rormbr_qln_mm = castINTEGER(dum[0]);
             //
             if (m >= mnthr) {
                 if (wntqn) {
@@ -230,35 +230,35 @@ void Rgesdd(const char *jobz, INTEGER const m, INTEGER const n, REAL *a, INTEGER
             }
             //
             // Compute space preferred for each routine
-            Rgebrd(m, n, &dum[1 - 1], m, &dum[1 - 1], &dum[1 - 1], &dum[1 - 1], &dum[1 - 1], &dum[1 - 1], -1, ierr);
-            lwork_Rgebrd_mn = castINTEGER(dum[1 - 1]);
+            Rgebrd(m, n, &dum[0], m, &dum[0], &dum[0], &dum[0], &dum[0], &dum[0], -1, ierr);
+            lwork_Rgebrd_mn = castINTEGER(dum[0]);
             //
-            Rgebrd(m, m, a, m, s, &dum[1 - 1], &dum[1 - 1], &dum[1 - 1], &dum[1 - 1], -1, ierr);
-            lwork_Rgebrd_mm = castINTEGER(dum[1 - 1]);
+            Rgebrd(m, m, a, m, s, &dum[0], &dum[0], &dum[0], &dum[0], -1, ierr);
+            lwork_Rgebrd_mm = castINTEGER(dum[0]);
             //
-            Rgelqf(m, n, a, m, &dum[1 - 1], &dum[1 - 1], -1, ierr);
-            lwork_Rgelqf_mn = castINTEGER(dum[1 - 1]);
+            Rgelqf(m, n, a, m, &dum[0], &dum[0], -1, ierr);
+            lwork_Rgelqf_mn = castINTEGER(dum[0]);
             //
-            Rorglq(n, n, m, &dum[1 - 1], n, &dum[1 - 1], &dum[1 - 1], -1, ierr);
-            lwork_Rorglq_nn = castINTEGER(dum[1 - 1]);
+            Rorglq(n, n, m, &dum[0], n, &dum[0], &dum[0], -1, ierr);
+            lwork_Rorglq_nn = castINTEGER(dum[0]);
             //
-            Rorglq(m, n, m, a, m, &dum[1 - 1], &dum[1 - 1], -1, ierr);
-            lwork_Rorglq_mn = castINTEGER(dum[1 - 1]);
+            Rorglq(m, n, m, a, m, &dum[0], &dum[0], -1, ierr);
+            lwork_Rorglq_mn = castINTEGER(dum[0]);
             //
-            Rorgbr("P", m, m, m, a, n, &dum[1 - 1], &dum[1 - 1], -1, ierr);
-            lwork_Rorgbr_p_mm = castINTEGER(dum[1 - 1]);
+            Rorgbr("P", m, m, m, a, n, &dum[0], &dum[0], -1, ierr);
+            lwork_Rorgbr_p_mm = castINTEGER(dum[0]);
             //
-            Rormbr("P", "R", "T", m, m, m, &dum[1 - 1], m, &dum[1 - 1], &dum[1 - 1], m, &dum[1 - 1], -1, ierr);
-            lwork_Rormbr_prt_mm = castINTEGER(dum[1 - 1]);
+            Rormbr("P", "R", "T", m, m, m, &dum[0], m, &dum[0], &dum[0], m, &dum[0], -1, ierr);
+            lwork_Rormbr_prt_mm = castINTEGER(dum[0]);
             //
-            Rormbr("P", "R", "T", m, n, m, &dum[1 - 1], m, &dum[1 - 1], &dum[1 - 1], m, &dum[1 - 1], -1, ierr);
-            lwork_Rormbr_prt_mn = castINTEGER(dum[1 - 1]);
+            Rormbr("P", "R", "T", m, n, m, &dum[0], m, &dum[0], &dum[0], m, &dum[0], -1, ierr);
+            lwork_Rormbr_prt_mn = castINTEGER(dum[0]);
             //
-            Rormbr("P", "R", "T", n, n, m, &dum[1 - 1], n, &dum[1 - 1], &dum[1 - 1], n, &dum[1 - 1], -1, ierr);
-            lwork_Rormbr_prt_nn = castINTEGER(dum[1 - 1]);
+            Rormbr("P", "R", "T", n, n, m, &dum[0], n, &dum[0], &dum[0], n, &dum[0], -1, ierr);
+            lwork_Rormbr_prt_nn = castINTEGER(dum[0]);
             //
-            Rormbr("Q", "L", "N", m, m, m, &dum[1 - 1], m, &dum[1 - 1], &dum[1 - 1], m, &dum[1 - 1], -1, ierr);
-            lwork_Rormbr_qln_mm = castINTEGER(dum[1 - 1]);
+            Rormbr("Q", "L", "N", m, m, m, &dum[0], m, &dum[0], &dum[0], m, &dum[0], -1, ierr);
+            lwork_Rormbr_qln_mm = castINTEGER(dum[0]);
             //
             if (n >= mnthr) {
                 if (wntqn) {
@@ -339,7 +339,7 @@ void Rgesdd(const char *jobz, INTEGER const m, INTEGER const n, REAL *a, INTEGER
         }
         //
         maxwrk = max(maxwrk, minwrk);
-        work[1 - 1] = maxwrk;
+        work[0] = maxwrk;
         //
         if (lwork < minwrk && !lquery) {
             info = -12;
@@ -1196,7 +1196,7 @@ void Rgesdd(const char *jobz, INTEGER const m, INTEGER const n, REAL *a, INTEGER
     //
     // Return optimal workspace in WORK(1)
     //
-    work[1 - 1] = maxwrk;
+    work[0] = maxwrk;
     //
     // End of Rgesdd
     //

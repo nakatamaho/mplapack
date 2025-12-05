@@ -85,7 +85,7 @@ void Cunmhr(const char *side, const char *trans, INTEGER const m, INTEGER const 
             nb = iMlaenv(1, "Cunmqr", side_trans, m, nh, nh, -1);
         }
         lwkopt = max((INTEGER)1, nw) * nb;
-        work[1 - 1] = lwkopt;
+        work[0] = lwkopt;
     }
     //
     if (info != 0) {
@@ -98,7 +98,7 @@ void Cunmhr(const char *side, const char *trans, INTEGER const m, INTEGER const 
     // Quick return if possible
     //
     if (m == 0 || n == 0 || nh == 0) {
-        work[1 - 1] = 1;
+        work[0] = 1;
         return;
     }
     //
@@ -121,7 +121,7 @@ void Cunmhr(const char *side, const char *trans, INTEGER const m, INTEGER const 
     INTEGER iinfo = 0;
     Cunmqr(side, trans, mi, ni, nh, &a[((ilo + 1) - 1) + (ilo - 1) * lda], lda, &tau[ilo - 1], &c[(i1 - 1) + (i2 - 1) * ldc], ldc, work, lwork, iinfo);
     //
-    work[1 - 1] = lwkopt;
+    work[0] = lwkopt;
     //
     // End of Cunmhr
     //

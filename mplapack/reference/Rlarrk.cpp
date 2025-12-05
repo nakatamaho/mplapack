@@ -91,7 +91,7 @@ statement_10:
     it++;
     mid = half * (left + right);
     negcnt = 0;
-    tmp1 = d[1 - 1] - mid;
+    tmp1 = d[0] - mid;
     if (abs(tmp1) < pivmin) {
         tmp1 = -pivmin;
     }

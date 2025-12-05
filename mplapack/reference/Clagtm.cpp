@@ -66,9 +66,9 @@ void Clagtm(const char *trans, INTEGER const n, INTEGER const nrhs, REAL const a
             //
             for (j = 1; j <= nrhs; j = j + 1) {
                 if (n == 1) {
-                    b[(j - 1) * ldb] += d[1 - 1] * x[(j - 1) * ldx];
+                    b[(j - 1) * ldb] += d[0] * x[(j - 1) * ldx];
                 } else {
-                    b[(j - 1) * ldb] += d[1 - 1] * x[(j - 1) * ldx] + du[1 - 1] * x[(2 - 1) + (j - 1) * ldx];
+                    b[(j - 1) * ldb] += d[0] * x[(j - 1) * ldx] + du[0] * x[(2 - 1) + (j - 1) * ldx];
                     b[(n - 1) + (j - 1) * ldb] += dl[(n - 1) - 1] * x[((n - 1) - 1) + (j - 1) * ldx] + d[n - 1] * x[(n - 1) + (j - 1) * ldx];
                     for (i = 2; i <= n - 1; i = i + 1) {
                         b[(i - 1) + (j - 1) * ldb] += dl[(i - 1) - 1] * x[((i - 1) - 1) + (j - 1) * ldx] + d[i - 1] * x[(i - 1) + (j - 1) * ldx] + du[i - 1] * x[((i + 1) - 1) + (j - 1) * ldx];
@@ -81,9 +81,9 @@ void Clagtm(const char *trans, INTEGER const n, INTEGER const nrhs, REAL const a
             //
             for (j = 1; j <= nrhs; j = j + 1) {
                 if (n == 1) {
-                    b[(j - 1) * ldb] += d[1 - 1] * x[(j - 1) * ldx];
+                    b[(j - 1) * ldb] += d[0] * x[(j - 1) * ldx];
                 } else {
-                    b[(j - 1) * ldb] += d[1 - 1] * x[(j - 1) * ldx] + dl[1 - 1] * x[(2 - 1) + (j - 1) * ldx];
+                    b[(j - 1) * ldb] += d[0] * x[(j - 1) * ldx] + dl[0] * x[(2 - 1) + (j - 1) * ldx];
                     b[(n - 1) + (j - 1) * ldb] += du[(n - 1) - 1] * x[((n - 1) - 1) + (j - 1) * ldx] + d[n - 1] * x[(n - 1) + (j - 1) * ldx];
                     for (i = 2; i <= n - 1; i = i + 1) {
                         b[(i - 1) + (j - 1) * ldb] += du[(i - 1) - 1] * x[((i - 1) - 1) + (j - 1) * ldx] + d[i - 1] * x[(i - 1) + (j - 1) * ldx] + dl[i - 1] * x[((i + 1) - 1) + (j - 1) * ldx];
@@ -96,9 +96,9 @@ void Clagtm(const char *trans, INTEGER const n, INTEGER const nrhs, REAL const a
             //
             for (j = 1; j <= nrhs; j = j + 1) {
                 if (n == 1) {
-                    b[(j - 1) * ldb] += conj(d[1 - 1]) * x[(j - 1) * ldx];
+                    b[(j - 1) * ldb] += conj(d[0]) * x[(j - 1) * ldx];
                 } else {
-                    b[(j - 1) * ldb] += conj(d[1 - 1]) * x[(j - 1) * ldx] + conj(dl[1 - 1]) * x[(2 - 1) + (j - 1) * ldx];
+                    b[(j - 1) * ldb] += conj(d[0]) * x[(j - 1) * ldx] + conj(dl[0]) * x[(2 - 1) + (j - 1) * ldx];
                     b[(n - 1) + (j - 1) * ldb] += conj(du[(n - 1) - 1]) * x[((n - 1) - 1) + (j - 1) * ldx] + conj(d[n - 1]) * x[(n - 1) + (j - 1) * ldx];
                     for (i = 2; i <= n - 1; i = i + 1) {
                         b[(i - 1) + (j - 1) * ldb] += conj(du[(i - 1) - 1]) * x[((i - 1) - 1) + (j - 1) * ldx] + conj(d[i - 1]) * x[(i - 1) + (j - 1) * ldx] + conj(dl[i - 1]) * x[((i + 1) - 1) + (j - 1) * ldx];
@@ -113,9 +113,9 @@ void Clagtm(const char *trans, INTEGER const n, INTEGER const nrhs, REAL const a
             //
             for (j = 1; j <= nrhs; j = j + 1) {
                 if (n == 1) {
-                    b[(j - 1) * ldb] = b[(j - 1) * ldb] - d[1 - 1] * x[(j - 1) * ldx];
+                    b[(j - 1) * ldb] = b[(j - 1) * ldb] - d[0] * x[(j - 1) * ldx];
                 } else {
-                    b[(j - 1) * ldb] = b[(j - 1) * ldb] - d[1 - 1] * x[(j - 1) * ldx] - du[1 - 1] * x[(2 - 1) + (j - 1) * ldx];
+                    b[(j - 1) * ldb] = b[(j - 1) * ldb] - d[0] * x[(j - 1) * ldx] - du[0] * x[(2 - 1) + (j - 1) * ldx];
                     b[(n - 1) + (j - 1) * ldb] = b[(n - 1) + (j - 1) * ldb] - dl[(n - 1) - 1] * x[((n - 1) - 1) + (j - 1) * ldx] - d[n - 1] * x[(n - 1) + (j - 1) * ldx];
                     for (i = 2; i <= n - 1; i = i + 1) {
                         b[(i - 1) + (j - 1) * ldb] = b[(i - 1) + (j - 1) * ldb] - dl[(i - 1) - 1] * x[((i - 1) - 1) + (j - 1) * ldx] - d[i - 1] * x[(i - 1) + (j - 1) * ldx] - du[i - 1] * x[((i + 1) - 1) + (j - 1) * ldx];
@@ -128,9 +128,9 @@ void Clagtm(const char *trans, INTEGER const n, INTEGER const nrhs, REAL const a
             //
             for (j = 1; j <= nrhs; j = j + 1) {
                 if (n == 1) {
-                    b[(j - 1) * ldb] = b[(j - 1) * ldb] - d[1 - 1] * x[(j - 1) * ldx];
+                    b[(j - 1) * ldb] = b[(j - 1) * ldb] - d[0] * x[(j - 1) * ldx];
                 } else {
-                    b[(j - 1) * ldb] = b[(j - 1) * ldb] - d[1 - 1] * x[(j - 1) * ldx] - dl[1 - 1] * x[(2 - 1) + (j - 1) * ldx];
+                    b[(j - 1) * ldb] = b[(j - 1) * ldb] - d[0] * x[(j - 1) * ldx] - dl[0] * x[(2 - 1) + (j - 1) * ldx];
                     b[(n - 1) + (j - 1) * ldb] = b[(n - 1) + (j - 1) * ldb] - du[(n - 1) - 1] * x[((n - 1) - 1) + (j - 1) * ldx] - d[n - 1] * x[(n - 1) + (j - 1) * ldx];
                     for (i = 2; i <= n - 1; i = i + 1) {
                         b[(i - 1) + (j - 1) * ldb] = b[(i - 1) + (j - 1) * ldb] - du[(i - 1) - 1] * x[((i - 1) - 1) + (j - 1) * ldx] - d[i - 1] * x[(i - 1) + (j - 1) * ldx] - dl[i - 1] * x[((i + 1) - 1) + (j - 1) * ldx];
@@ -143,9 +143,9 @@ void Clagtm(const char *trans, INTEGER const n, INTEGER const nrhs, REAL const a
             //
             for (j = 1; j <= nrhs; j = j + 1) {
                 if (n == 1) {
-                    b[(j - 1) * ldb] = b[(j - 1) * ldb] - conj(d[1 - 1]) * x[(j - 1) * ldx];
+                    b[(j - 1) * ldb] = b[(j - 1) * ldb] - conj(d[0]) * x[(j - 1) * ldx];
                 } else {
-                    b[(j - 1) * ldb] = b[(j - 1) * ldb] - conj(d[1 - 1]) * x[(j - 1) * ldx] - conj(dl[1 - 1]) * x[(2 - 1) + (j - 1) * ldx];
+                    b[(j - 1) * ldb] = b[(j - 1) * ldb] - conj(d[0]) * x[(j - 1) * ldx] - conj(dl[0]) * x[(2 - 1) + (j - 1) * ldx];
                     b[(n - 1) + (j - 1) * ldb] = b[(n - 1) + (j - 1) * ldb] - conj(du[(n - 1) - 1]) * x[((n - 1) - 1) + (j - 1) * ldx] - conj(d[n - 1]) * x[(n - 1) + (j - 1) * ldx];
                     for (i = 2; i <= n - 1; i = i + 1) {
                         b[(i - 1) + (j - 1) * ldb] = b[(i - 1) + (j - 1) * ldb] - conj(du[(i - 1) - 1]) * x[((i - 1) - 1) + (j - 1) * ldx] - conj(d[i - 1]) * x[(i - 1) + (j - 1) * ldx] - conj(dl[i - 1]) * x[((i + 1) - 1) + (j - 1) * ldx];

@@ -59,13 +59,13 @@ void Rsbev_2stage(const char *jobz, const char *uplo, INTEGER const n, INTEGER c
     if (info == 0) {
         if (n <= 1) {
             lwmin = 1;
-            work[1 - 1] = lwmin;
+            work[0] = lwmin;
         } else {
             ib = iMlaenv2stage(2, "Rsytrd_sb2st", jobz, n, kd, -1, -1);
             lhtrd = iMlaenv2stage(3, "Rsytrd_sb2st", jobz, n, kd, ib, -1);
             lwtrd = iMlaenv2stage(4, "Rsytrd_sb2st", jobz, n, kd, ib, -1);
             lwmin = n + lhtrd + lwtrd;
-            work[1 - 1] = lwmin;
+            work[0] = lwmin;
         }
         //
         if (lwork < lwmin && !lquery) {
@@ -89,9 +89,9 @@ void Rsbev_2stage(const char *jobz, const char *uplo, INTEGER const n, INTEGER c
     const REAL one = 1.0;
     if (n == 1) {
         if (lower) {
-            w[1 - 1] = ab[0];
+            w[0] = ab[0];
         } else {
-            w[1 - 1] = ab[((kd + 1) - 1)];
+            w[0] = ab[((kd + 1) - 1)];
         }
         if (wantz) {
             z[0] = one;
@@ -161,7 +161,7 @@ void Rsbev_2stage(const char *jobz, const char *uplo, INTEGER const n, INTEGER c
     //
     // Set WORK(1) to optimal workspace size.
     //
-    work[1 - 1] = lwmin;
+    work[0] = lwmin;
     //
     // End of Rsbev_2stage
     //

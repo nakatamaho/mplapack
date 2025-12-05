@@ -97,7 +97,7 @@ void Cgels(const char *trans, INTEGER const m, INTEGER const n, INTEGER const nr
         }
         //
         wsize = max((INTEGER)1, mn + max(mn, nrhs) * nb);
-        work[1 - 1] = castREAL(wsize);
+        work[0] = castREAL(wsize);
         //
     }
     //
@@ -168,7 +168,7 @@ void Cgels(const char *trans, INTEGER const m, INTEGER const n, INTEGER const nr
         //
         // compute QR factorization of A
         //
-        Cgeqrf(m, n, a, lda, &work[1 - 1], &work[(mn + 1) - 1], lwork - mn, info);
+        Cgeqrf(m, n, a, lda, &work[0], &work[(mn + 1) - 1], lwork - mn, info);
         //
         // workspace at least N, optimally N*NB
         //
@@ -178,7 +178,7 @@ void Cgels(const char *trans, INTEGER const m, INTEGER const n, INTEGER const nr
             //
             // B(1:M,1:NRHS) := Q**H * B(1:M,1:NRHS)
             //
-            Cunmqr("Left", "Conjugate transpose", m, nrhs, n, a, lda, &work[1 - 1], b, ldb, &work[(mn + 1) - 1], lwork - mn, info);
+            Cunmqr("Left", "Conjugate transpose", m, nrhs, n, a, lda, &work[0], b, ldb, &work[(mn + 1) - 1], lwork - mn, info);
             //
             // workspace at least NRHS, optimally NRHS*NB
             //
@@ -214,7 +214,7 @@ void Cgels(const char *trans, INTEGER const m, INTEGER const n, INTEGER const nr
             //
             // B(1:M,1:NRHS) := Q(1:N,:) * B(1:N,1:NRHS)
             //
-            Cunmqr("Left", "No transpose", m, nrhs, n, a, lda, &work[1 - 1], b, ldb, &work[(mn + 1) - 1], lwork - mn, info);
+            Cunmqr("Left", "No transpose", m, nrhs, n, a, lda, &work[0], b, ldb, &work[(mn + 1) - 1], lwork - mn, info);
             //
             // workspace at least NRHS, optimally NRHS*NB
             //
@@ -226,7 +226,7 @@ void Cgels(const char *trans, INTEGER const m, INTEGER const n, INTEGER const nr
         //
         // Compute LQ factorization of A
         //
-        Cgelqf(m, n, a, lda, &work[1 - 1], &work[(mn + 1) - 1], lwork - mn, info);
+        Cgelqf(m, n, a, lda, &work[0], &work[(mn + 1) - 1], lwork - mn, info);
         //
         // workspace at least M, optimally M*NB.
         //
@@ -252,7 +252,7 @@ void Cgels(const char *trans, INTEGER const m, INTEGER const n, INTEGER const nr
             //
             // B(1:N,1:NRHS) := Q(1:N,:)**H * B(1:M,1:NRHS)
             //
-            Cunmlq("Left", "Conjugate transpose", n, nrhs, m, a, lda, &work[1 - 1], b, ldb, &work[(mn + 1) - 1], lwork - mn, info);
+            Cunmlq("Left", "Conjugate transpose", n, nrhs, m, a, lda, &work[0], b, ldb, &work[(mn + 1) - 1], lwork - mn, info);
             //
             // workspace at least NRHS, optimally NRHS*NB
             //
@@ -264,7 +264,7 @@ void Cgels(const char *trans, INTEGER const m, INTEGER const n, INTEGER const nr
             //
             // B(1:N,1:NRHS) := Q * B(1:N,1:NRHS)
             //
-            Cunmlq("Left", "No transpose", n, nrhs, m, a, lda, &work[1 - 1], b, ldb, &work[(mn + 1) - 1], lwork - mn, info);
+            Cunmlq("Left", "No transpose", n, nrhs, m, a, lda, &work[0], b, ldb, &work[(mn + 1) - 1], lwork - mn, info);
             //
             // workspace at least NRHS, optimally NRHS*NB
             //
@@ -296,7 +296,7 @@ void Cgels(const char *trans, INTEGER const m, INTEGER const n, INTEGER const nr
     }
 //
 statement_50:
-    work[1 - 1] = castREAL(wsize);
+    work[0] = castREAL(wsize);
     //
     // End of Cgels
     //

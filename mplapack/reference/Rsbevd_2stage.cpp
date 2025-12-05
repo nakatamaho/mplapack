@@ -78,8 +78,8 @@ void Rsbevd_2stage(const char *jobz, const char *uplo, INTEGER const n, INTEGER 
     }
     //
     if (info == 0) {
-        work[1 - 1] = lwmin;
-        iwork[1 - 1] = liwmin;
+        work[0] = lwmin;
+        iwork[0] = liwmin;
         //
         if (lwork < lwmin && !lquery) {
             info = -11;
@@ -103,7 +103,7 @@ void Rsbevd_2stage(const char *jobz, const char *uplo, INTEGER const n, INTEGER 
     //
     const REAL one = 1.0;
     if (n == 1) {
-        w[1 - 1] = ab[0];
+        w[0] = ab[0];
         if (wantz) {
             z[0] = one;
         }
@@ -168,8 +168,8 @@ void Rsbevd_2stage(const char *jobz, const char *uplo, INTEGER const n, INTEGER 
         Rscal(n, one / sigma, w, 1);
     }
     //
-    work[1 - 1] = lwmin;
-    iwork[1 - 1] = liwmin;
+    work[0] = lwmin;
+    iwork[0] = liwmin;
     //
     // End of Rsbevd_2stage
     //

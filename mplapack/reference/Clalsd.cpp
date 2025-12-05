@@ -72,12 +72,12 @@ void Clalsd(const char *uplo, INTEGER const smlsiz, INTEGER const n, INTEGER con
     if (n == 0) {
         return;
     } else if (n == 1) {
-        if (d[1 - 1] == zero) {
+        if (d[0] == zero) {
             Claset("A", 1, nrhs, czero, czero, b, ldb);
         } else {
             rank = 1;
-            Clascl("G", 0, 0, d[1 - 1], one, 1, nrhs, b, ldb, info);
-            d[1 - 1] = abs(d[1 - 1]);
+            Clascl("G", 0, 0, d[0], one, 1, nrhs, b, ldb, info);
+            d[0] = abs(d[0]);
         }
         return;
     }

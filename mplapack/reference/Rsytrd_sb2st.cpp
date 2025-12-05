@@ -70,8 +70,8 @@ void Rsytrd_sb2st(const char *stage1, const char *vect, const char *uplo, INTEGE
     }
     //
     if (info == 0) {
-        hous[1 - 1] = lhmin;
-        work[1 - 1] = lwmin;
+        hous[0] = lhmin;
+        work[0] = lwmin;
     }
     //
     if (info != 0) {
@@ -84,8 +84,8 @@ void Rsytrd_sb2st(const char *stage1, const char *vect, const char *uplo, INTEGE
     // Quick return if possible
     //
     if (n == 0) {
-        hous[1 - 1] = 1;
-        work[1 - 1] = 1;
+        hous[0] = 1;
+        work[0] = 1;
         return;
     }
     //
@@ -142,8 +142,8 @@ void Rsytrd_sb2st(const char *stage1, const char *vect, const char *uplo, INTEGE
             e[i - 1] = rzero;
         }
         //
-        hous[1 - 1] = 1;
-        work[1 - 1] = 1;
+        hous[0] = 1;
+        work[0] = 1;
         return;
     }
     //
@@ -172,8 +172,8 @@ void Rsytrd_sb2st(const char *stage1, const char *vect, const char *uplo, INTEGE
             }
         }
         //
-        hous[1 - 1] = 1;
-        work[1 - 1] = 1;
+        hous[0] = 1;
+        work[0] = 1;
         return;
     }
     //
@@ -275,8 +275,8 @@ void Rsytrd_sb2st(const char *stage1, const char *vect, const char *uplo, INTEGE
         }
     }
     //
-    hous[1 - 1] = lhmin;
-    work[1 - 1] = lwmin;
+    hous[0] = lhmin;
+    work[0] = lwmin;
     //
     // End of Rsytrd_sb2st
     //

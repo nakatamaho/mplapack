@@ -302,9 +302,9 @@ void Rlaqr5(bool const wantt, bool const wantz, INTEGER const kacc22, INTEGER co
                         // .    reflector is too large, then abandon it.
                         //
                         Rlaqr1(3, &h[((k + 1) - 1) + ((k + 1) - 1) * ldh], ldh, sr[(2 * m - 1) - 1], si[(2 * m - 1) - 1], sr[(2 * m) - 1], si[(2 * m) - 1], vt);
-                        alpha = vt[1 - 1];
-                        Rlarfg(3, alpha, &vt[2 - 1], 1, vt[1 - 1]);
-                        refsum = vt[1 - 1] * (h[((k + 1) - 1) + (k - 1) * ldh] + vt[2 - 1] * h[((k + 2) - 1) + (k - 1) * ldh]);
+                        alpha = vt[0];
+                        Rlarfg(3, alpha, &vt[2 - 1], 1, vt[0]);
+                        refsum = vt[0] * (h[((k + 1) - 1) + (k - 1) * ldh] + vt[2 - 1] * h[((k + 2) - 1) + (k - 1) * ldh]);
                         //
                         if (abs(h[((k + 2) - 1) + (k - 1) * ldh] - refsum * vt[2 - 1]) + abs(refsum * vt[3 - 1]) > ulp * (abs(h[(k - 1) + (k - 1) * ldh]) + abs(h[((k + 1) - 1) + ((k + 1) - 1) * ldh]) + abs(h[((k + 2) - 1) + ((k + 2) - 1) * ldh]))) {
                             //
@@ -321,7 +321,7 @@ void Rlaqr5(bool const wantt, bool const wantz, INTEGER const kacc22, INTEGER co
                             h[((k + 1) - 1) + (k - 1) * ldh] = h[((k + 1) - 1) + (k - 1) * ldh] - refsum;
                             h[((k + 2) - 1) + (k - 1) * ldh] = zero;
                             h[((k + 3) - 1) + (k - 1) * ldh] = zero;
-                            v[(m - 1) * ldv] = vt[1 - 1];
+                            v[(m - 1) * ldv] = vt[0];
                             v[(2 - 1) + (m - 1) * ldv] = vt[2 - 1];
                             v[(3 - 1) + (m - 1) * ldv] = vt[3 - 1];
                         }

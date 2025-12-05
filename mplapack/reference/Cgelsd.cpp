@@ -156,9 +156,9 @@ void Cgelsd(INTEGER const m, INTEGER const n, INTEGER const nrhs, COMPLEX *a, IN
             }
         }
         minwrk = min(minwrk, maxwrk);
-        work[1 - 1] = maxwrk;
-        iwork[1 - 1] = liwork;
-        rwork[1 - 1] = lrwork;
+        work[0] = maxwrk;
+        iwork[0] = liwork;
+        rwork[0] = lrwork;
         //
         if (lwork < minwrk && !lquery) {
             info = -12;
@@ -408,9 +408,9 @@ void Cgelsd(INTEGER const m, INTEGER const n, INTEGER const nrhs, COMPLEX *a, IN
     }
 //
 statement_10:
-    work[1 - 1] = maxwrk;
-    iwork[1 - 1] = liwork;
-    rwork[1 - 1] = lrwork;
+    work[0] = maxwrk;
+    iwork[0] = liwork;
+    rwork[0] = lrwork;
     //
     // End of Cgelsd
     //

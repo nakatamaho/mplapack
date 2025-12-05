@@ -117,12 +117,12 @@ void Cgeevx(const char *balanc, const char *jobvl, const char *jobvr, const char
             //
             if (wantvl) {
                 Ctrevc3("L", "B", select, n, a, lda, vl, ldvl, vr, ldvr, n, nout, work, -1, rwork, -1, ierr);
-                lwork_trevc = castINTEGER(work[1 - 1].real());
+                lwork_trevc = castINTEGER(work[0].real());
                 maxwrk = max(maxwrk, lwork_trevc);
                 Chseqr("S", "V", n, 1, n, a, lda, w, vl, ldvl, work, -1, info);
             } else if (wantvr) {
                 Ctrevc3("R", "B", select, n, a, lda, vl, ldvl, vr, ldvr, n, nout, work, -1, rwork, -1, ierr);
-                lwork_trevc = castINTEGER(work[1 - 1].real());
+                lwork_trevc = castINTEGER(work[0].real());
                 maxwrk = max(maxwrk, lwork_trevc);
                 Chseqr("S", "V", n, 1, n, a, lda, w, vr, ldvr, work, -1, info);
             } else {
@@ -132,7 +132,7 @@ void Cgeevx(const char *balanc, const char *jobvl, const char *jobvr, const char
                     Chseqr("S", "N", n, 1, n, a, lda, w, vr, ldvr, work, -1, info);
                 }
             }
-            hswork = castINTEGER(work[1 - 1].real());
+            hswork = castINTEGER(work[0].real());
             //
             if ((!wantvl) && (!wantvr)) {
                 minwrk = 2 * n;
@@ -157,7 +157,7 @@ void Cgeevx(const char *balanc, const char *jobvl, const char *jobvr, const char
             }
             maxwrk = max(maxwrk, minwrk);
         }
-        work[1 - 1] = maxwrk;
+        work[0] = maxwrk;
         //
         if (lwork < minwrk && !lquery) {
             info = -20;
@@ -206,9 +206,9 @@ void Cgeevx(const char *balanc, const char *jobvl, const char *jobvr, const char
     Cgebal(balanc, n, a, lda, ilo, ihi, scale, ierr);
     abnrm = Clange("1", n, n, a, lda, dum);
     if (scalea) {
-        dum[1 - 1] = abnrm;
+        dum[0] = abnrm;
         Rlascl("G", 0, 0, cscale, anrm, 1, 1, dum, 1, ierr);
-        abnrm = dum[1 - 1];
+        abnrm = dum[0];
     }
     //
     // Reduce to upper Hessenberg form
@@ -367,7 +367,7 @@ statement_50:
         }
     }
     //
-    work[1 - 1] = maxwrk;
+    work[0] = maxwrk;
     //
     // End of Cgeevx
     //

@@ -106,8 +106,8 @@ void Rstedc(const char *compz, INTEGER const n, REAL *d, REAL *e, REAL *z, INTEG
                 liwmin = 3 + 5 * n;
             }
         }
-        work[1 - 1] = lwmin;
-        iwork[1 - 1] = liwmin;
+        work[0] = lwmin;
+        iwork[0] = liwmin;
         //
         if (lwork < lwmin && !lquery) {
             info = -8;
@@ -225,7 +225,7 @@ void Rstedc(const char *compz, INTEGER const n, REAL *d, REAL *e, REAL *z, INTEG
                 } else {
                     strtrw = start;
                 }
-                Rlaed0(icompz, n, m, &d[start - 1], &e[start - 1], &z[(strtrw - 1) + (start - 1) * ldz], ldz, &work[1 - 1], n, &work[storez - 1], iwork, info);
+                Rlaed0(icompz, n, m, &d[start - 1], &e[start - 1], &z[(strtrw - 1) + (start - 1) * ldz], ldz, &work[0], n, &work[storez - 1], iwork, info);
                 if (info != 0) {
                     info = (info / (m + 1) + start - 1) * (n + 1) + mod(info, (m + 1)) + start - 1;
                     goto statement_50;
@@ -292,8 +292,8 @@ void Rstedc(const char *compz, INTEGER const n, REAL *d, REAL *e, REAL *z, INTEG
     }
 //
 statement_50:
-    work[1 - 1] = lwmin;
-    iwork[1 - 1] = liwmin;
+    work[0] = lwmin;
+    iwork[0] = liwmin;
     //
     // End of Rstedc
     //

@@ -142,7 +142,7 @@ void Rtgsna(const char *job, const char *howmny, bool *select, INTEGER const n, 
         } else {
             lwmin = n;
         }
-        work[1 - 1] = lwmin;
+        work[0] = lwmin;
         //
         if (mm < m) {
             info = -15;
@@ -266,7 +266,7 @@ void Rtgsna(const char *job, const char *howmny, bool *select, INTEGER const n, 
                 // Copy the  2-by 2 pencil beginning at (A(k,k), B(k, k)).
                 // Compute the eigenvalue(s) at position K.
                 //
-                work[1 - 1] = a[(k - 1) + (k - 1) * lda];
+                work[0] = a[(k - 1) + (k - 1) * lda];
                 work[2 - 1] = a[((k + 1) - 1) + (k - 1) * lda];
                 work[3 - 1] = a[(k - 1) + ((k + 1) - 1) * lda];
                 work[4 - 1] = a[((k + 1) - 1) + ((k + 1) - 1) * lda];
@@ -274,7 +274,7 @@ void Rtgsna(const char *job, const char *howmny, bool *select, INTEGER const n, 
                 work[6 - 1] = b[((k + 1) - 1) + (k - 1) * ldb];
                 work[7 - 1] = b[(k - 1) + ((k + 1) - 1) * ldb];
                 work[8 - 1] = b[((k + 1) - 1) + ((k + 1) - 1) * ldb];
-                Rlag2(work, 2, &work[5 - 1], 2, smlnum * eps, beta, dummy1[1 - 1], alphar, dummy[1 - 1], alphai);
+                Rlag2(work, 2, &work[5 - 1], 2, smlnum * eps, beta, dummy1[0], alphar, dummy[0], alphai);
                 alprqt = one;
                 c1 = two * (alphar * alphar + alphai * alphai + beta * beta);
                 c2 = four * beta * beta * alphai * alphai;
@@ -334,7 +334,7 @@ void Rtgsna(const char *job, const char *howmny, bool *select, INTEGER const n, 
     //
     statement_20:;
     }
-    work[1 - 1] = lwmin;
+    work[0] = lwmin;
     //
     // End of Rtgsna
     //

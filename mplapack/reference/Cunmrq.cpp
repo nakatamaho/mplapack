@@ -89,7 +89,7 @@ void Cunmrq(const char *side, const char *trans, INTEGER const m, INTEGER const 
             nb = min(nbmax, iMlaenv(1, "Cunmrq", side_trans, m, n, k, -1));
             lwkopt = nw * nb + tsize;
         }
-        work[1 - 1] = lwkopt;
+        work[0] = lwkopt;
     }
     //
     if (info != 0) {
@@ -180,7 +180,7 @@ void Cunmrq(const char *side, const char *trans, INTEGER const m, INTEGER const 
             Clarfb(side, &transt, "Backward", "Rowwise", mi, ni, ib, &a[(i - 1)], lda, &work[iwt - 1], ldt, c, ldc, work, ldwork);
         }
     }
-    work[1 - 1] = lwkopt;
+    work[0] = lwkopt;
     //
     // End of Cunmrq
     //

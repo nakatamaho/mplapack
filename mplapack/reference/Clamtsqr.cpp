@@ -73,7 +73,7 @@ void Clamtsqr(const char *side, const char *trans, INTEGER const m, INTEGER cons
     // Determine the block size if it is tall skinny or short and wide
     //
     if (info == 0) {
-        work[1 - 1] = lw;
+        work[0] = lw;
     }
     //
     if (info != 0) {
@@ -202,7 +202,7 @@ void Clamtsqr(const char *side, const char *trans, INTEGER const m, INTEGER cons
         //
     }
     //
-    work[1 - 1] = lw;
+    work[0] = lw;
     //
     // End of Clamtsqr
     //

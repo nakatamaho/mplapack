@@ -129,13 +129,13 @@ void Chbevx_2stage(const char *jobz, const char *range, const char *uplo, INTEGE
     if (info == 0) {
         if (n <= 1) {
             lwmin = 1;
-            work[1 - 1] = lwmin;
+            work[0] = lwmin;
         } else {
             ib = iMlaenv2stage(2, "Chetrd_hb2st", jobz, n, kd, -1, -1);
             lhtrd = iMlaenv2stage(3, "Chetrd_hb2st", jobz, n, kd, ib, -1);
             lwtrd = iMlaenv2stage(4, "Chetrd_hb2st", jobz, n, kd, ib, -1);
             lwmin = lhtrd + lwtrd;
-            work[1 - 1] = lwmin;
+            work[0] = lwmin;
         }
         //
         if (lwork < lwmin && !lquery) {
@@ -171,7 +171,7 @@ void Chbevx_2stage(const char *jobz, const char *range, const char *uplo, INTEGE
             }
         }
         if (m == 1) {
-            w[1 - 1] = ctmp1.real();
+            w[0] = ctmp1.real();
             if (wantz) {
                 z[0] = cone;
             }
@@ -286,7 +286,7 @@ void Chbevx_2stage(const char *jobz, const char *range, const char *uplo, INTEGE
         // form to eigenvectors returned by Cstein.
         //
         for (j = 1; j <= m; j = j + 1) {
-            Ccopy(n, &z[(j - 1) * ldz], 1, &work[1 - 1], 1);
+            Ccopy(n, &z[(j - 1) * ldz], 1, &work[0], 1);
             Cgemv("N", n, n, cone, q, ldq, work, 1, czero, &z[(j - 1) * ldz], 1);
         }
     }
@@ -335,7 +335,7 @@ statement_30:
     //
     // Set WORK(1) to optimal workspace size.
     //
-    work[1 - 1] = lwmin;
+    work[0] = lwmin;
     //
     // End of Chbevx_2stage
     //

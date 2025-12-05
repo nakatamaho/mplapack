@@ -86,15 +86,15 @@ void Rbdsvdx(const char *uplo, const char *jobz, const char *range, INTEGER cons
     if (n == 1) {
         if (allsv || indsv) {
             ns = 1;
-            s[1 - 1] = abs(d[1 - 1]);
+            s[0] = abs(d[0]);
         } else {
-            if (vl < abs(d[1 - 1]) && vu >= abs(d[1 - 1])) {
+            if (vl < abs(d[0]) && vu >= abs(d[0])) {
                 ns = 1;
-                s[1 - 1] = abs(d[1 - 1]);
+                s[0] = abs(d[0]);
             }
         }
         if (wantz) {
-            z[0] = sign(one, d[1 - 1]);
+            z[0] = sign(one, d[0]);
             z[(2 - 1)] = one;
         }
         return;
@@ -126,7 +126,7 @@ void Rbdsvdx(const char *uplo, const char *jobz, const char *range, INTEGER cons
     //
     // Compute threshold for neglecting D's and E's.
     //
-    REAL smin = abs(d[1 - 1]);
+    REAL smin = abs(d[0]);
     REAL mu = 0.0;
     if (smin != zero) {
         mu = smin;
@@ -222,13 +222,13 @@ void Rbdsvdx(const char *uplo, const char *jobz, const char *range, INTEGER cons
         Rcopy(n, d, 1, &work[ietgk - 1], 2);
         Rcopy(n - 1, e, 1, &work[(ietgk + 1) - 1], 2);
         Rstevx("N", "I", n * 2, &work[idtgk - 1], &work[ietgk - 1], vltgk, vltgk, iltgk, iltgk, abstol, ns, s, z, ldz, &work[itemp - 1], &iwork[iiwork - 1], &iwork[iifail - 1], info);
-        vltgk = s[1 - 1] - fudge * smax * ulp * n;
+        vltgk = s[0] - fudge * smax * ulp * n;
         for (int l = idtgk; l <= idtgk + 2 * n - 1; l++)
             work[l - 1] = zero;
         Rcopy(n, d, 1, &work[ietgk - 1], 2);
         Rcopy(n - 1, e, 1, &work[(ietgk + 1) - 1], 2);
         Rstevx("N", "I", n * 2, &work[idtgk - 1], &work[ietgk - 1], vutgk, vutgk, iutgk, iutgk, abstol, ns, s, z, ldz, &work[itemp - 1], &iwork[iiwork - 1], &iwork[iifail - 1], info);
-        vutgk = s[1 - 1] + fudge * smax * ulp * n;
+        vutgk = s[0] + fudge * smax * ulp * n;
         vutgk = min(vutgk, zero);
         //
         // If VLTGK=VUTGK, Rstevx returns an error message,
@@ -514,7 +514,7 @@ void Rbdsvdx(const char *uplo, const char *jobz, const char *range, INTEGER cons
     INTEGER k = 0;
     for (i = 1; i <= ns - 1; i = i + 1) {
         k = 1;
-        smin = s[1 - 1];
+        smin = s[0];
         for (j = 2; j <= ns + 1 - i; j = j + 1) {
             if (s[j - 1] <= smin) {
                 k = j;
@@ -554,10 +554,10 @@ void Rbdsvdx(const char *uplo, const char *jobz, const char *range, INTEGER cons
             Rcopy(n * 2, &z[(i - 1) * ldz], 1, work, 1);
             if (lower) {
                 Rcopy(n, &work[2 - 1], 2, &z[((n + 1) - 1) + (i - 1) * ldz], 1);
-                Rcopy(n, &work[1 - 1], 2, &z[(i - 1) * ldz], 1);
+                Rcopy(n, &work[0], 2, &z[(i - 1) * ldz], 1);
             } else {
                 Rcopy(n, &work[2 - 1], 2, &z[(i - 1) * ldz], 1);
-                Rcopy(n, &work[1 - 1], 2, &z[((n + 1) - 1) + (i - 1) * ldz], 1);
+                Rcopy(n, &work[0], 2, &z[((n + 1) - 1) + (i - 1) * ldz], 1);
             }
         }
     }

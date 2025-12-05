@@ -61,7 +61,7 @@ void Clatsqr(INTEGER const m, INTEGER const n, INTEGER const mb, INTEGER const n
         info = -10;
     }
     if (info == 0) {
-        work[1 - 1] = nb * n;
+        work[0] = nb * n;
     }
     if (info != 0) {
         Mxerbla("Clatsqr", -info);
@@ -105,7 +105,7 @@ void Clatsqr(INTEGER const m, INTEGER const n, INTEGER const mb, INTEGER const n
         Ctpqrt(kk, n, 0, nb, &a[0], lda, &a[(ii - 1)], lda, &t[((ctr * n + 1) - 1) * ldt], ldt, work, info);
     }
     //
-    work[1 - 1] = n * nb;
+    work[0] = n * nb;
     //
     // End of Clatsqr
     //

@@ -77,8 +77,8 @@ void Rlacon(INTEGER const n, REAL *v, REAL *x, INTEGER *isgn, REAL &est, INTEGER
 //
 statement_20:
     if (n == 1) {
-        v[1 - 1] = x[1 - 1];
-        est = abs(v[1 - 1]);
+        v[0] = x[0];
+        est = abs(v[0]);
         // ... QUIT
         goto statement_150;
     }

@@ -112,8 +112,8 @@ void Rstevr(const char *jobz, const char *range, INTEGER const n, REAL *d, REAL 
     }
     //
     if (info == 0) {
-        work[1 - 1] = lwmin;
-        iwork[1 - 1] = liwmin;
+        work[0] = lwmin;
+        iwork[0] = liwmin;
         //
         if (lwork < lwmin && !lquery) {
             info = -17;
@@ -139,11 +139,11 @@ void Rstevr(const char *jobz, const char *range, INTEGER const n, REAL *d, REAL 
     if (n == 1) {
         if (alleig || indeig) {
             m = 1;
-            w[1 - 1] = d[1 - 1];
+            w[0] = d[0];
         } else {
-            if (vl < d[1 - 1] && vu >= d[1 - 1]) {
+            if (vl < d[0] && vu >= d[0]) {
                 m = 1;
-                w[1 - 1] = d[1 - 1];
+                w[0] = d[0];
             }
         }
         if (wantz) {
@@ -179,7 +179,7 @@ void Rstevr(const char *jobz, const char *range, INTEGER const n, REAL *d, REAL 
     }
     if (iscale == 1) {
         Rscal(n, sigma, d, 1);
-        Rscal(n - 1, sigma, &e[1 - 1], 1);
+        Rscal(n - 1, sigma, &e[0], 1);
         if (valeig) {
             vll = vl * sigma;
             vuu = vu * sigma;
@@ -214,7 +214,7 @@ void Rstevr(const char *jobz, const char *range, INTEGER const n, REAL *d, REAL 
         }
     }
     if ((alleig || test) && ieeeok == 1) {
-        Rcopy(n - 1, &e[1 - 1], 1, &work[1 - 1], 1);
+        Rcopy(n - 1, &e[0], 1, &work[0], 1);
         if (!wantz) {
             Rcopy(n, d, 1, w, 1);
             Rsterf(n, w, work, info);
@@ -289,8 +289,8 @@ statement_10:
     // Causes problems with tests 19 & 20:
     // IF (wantz .and. INDEIG ) Z( 1,1) = Z(1,1) / 1.002 + .002
     //
-    work[1 - 1] = lwmin;
-    iwork[1 - 1] = liwmin;
+    work[0] = lwmin;
+    iwork[0] = liwmin;
     //
     // End of Rstevr
     //

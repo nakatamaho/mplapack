@@ -107,14 +107,14 @@ void Rgetsqrhrt(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER con
         Mxerbla("Rgetsqrhrt", -info);
         return;
     } else if (lquery) {
-        work[1 - 1] = castREAL(lworkopt);
+        work[0] = castREAL(lworkopt);
         return;
     }
     //
     // Quick return if possible
     //
     if (min(m, n) == 0) {
-        work[1 - 1] = castREAL(lworkopt);
+        work[0] = castREAL(lworkopt);
         return;
     }
     //
@@ -170,7 +170,7 @@ void Rgetsqrhrt(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER con
         }
     }
     //
-    work[1 - 1] = castREAL(lworkopt);
+    work[0] = castREAL(lworkopt);
     //
     // End of Rgetsqrhrt
     //

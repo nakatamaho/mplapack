@@ -120,13 +120,13 @@ void Rsbevx_2stage(const char *jobz, const char *range, const char *uplo, INTEGE
     if (info == 0) {
         if (n <= 1) {
             lwmin = 1;
-            work[1 - 1] = lwmin;
+            work[0] = lwmin;
         } else {
             ib = iMlaenv2stage(2, "Rsytrd_sb2st", jobz, n, kd, -1, -1);
             lhtrd = iMlaenv2stage(3, "Rsytrd_sb2st", jobz, n, kd, ib, -1);
             lwtrd = iMlaenv2stage(4, "Rsytrd_sb2st", jobz, n, kd, ib, -1);
             lwmin = 2 * n + lhtrd + lwtrd;
-            work[1 - 1] = lwmin;
+            work[0] = lwmin;
         }
         //
         if (lwork < lwmin && !lquery) {
@@ -161,7 +161,7 @@ void Rsbevx_2stage(const char *jobz, const char *range, const char *uplo, INTEGE
             }
         }
         if (m == 1) {
-            w[1 - 1] = tmp1;
+            w[0] = tmp1;
             if (wantz) {
                 z[0] = one;
             }
@@ -274,7 +274,7 @@ void Rsbevx_2stage(const char *jobz, const char *range, const char *uplo, INTEGE
         // form to eigenvectors returned by Rstein.
         //
         for (j = 1; j <= m; j = j + 1) {
-            Rcopy(n, &z[(j - 1) * ldz], 1, &work[1 - 1], 1);
+            Rcopy(n, &z[(j - 1) * ldz], 1, &work[0], 1);
             Rgemv("N", n, n, one, q, ldq, work, 1, zero, &z[(j - 1) * ldz], 1);
         }
     }
@@ -323,7 +323,7 @@ statement_30:
     //
     // Set WORK(1) to optimal workspace size.
     //
-    work[1 - 1] = lwmin;
+    work[0] = lwmin;
     //
     // End of Rsbevx_2stage
     //

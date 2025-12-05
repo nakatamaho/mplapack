@@ -100,21 +100,21 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
             //
             mnthr = iMlaenv(6, "Cgesvd", jobu_jobvt, m, n, 0, 0);
             // Compute space needed for Cgeqrf
-            Cgeqrf(m, n, a, lda, &cdum[1 - 1], &cdum[1 - 1], -1, ierr);
-            lwork_Cgeqrf = castINTEGER(cdum[1 - 1].real());
+            Cgeqrf(m, n, a, lda, &cdum[0], &cdum[0], -1, ierr);
+            lwork_Cgeqrf = castINTEGER(cdum[0].real());
             // Compute space needed for Cungqr
-            Cungqr(m, n, n, a, lda, &cdum[1 - 1], &cdum[1 - 1], -1, ierr);
-            lwork_Cungqr_n = castINTEGER(cdum[1 - 1].real());
-            Cungqr(m, m, n, a, lda, &cdum[1 - 1], &cdum[1 - 1], -1, ierr);
-            lwork_Cungqr_m = castINTEGER(cdum[1 - 1].real());
+            Cungqr(m, n, n, a, lda, &cdum[0], &cdum[0], -1, ierr);
+            lwork_Cungqr_n = castINTEGER(cdum[0].real());
+            Cungqr(m, m, n, a, lda, &cdum[0], &cdum[0], -1, ierr);
+            lwork_Cungqr_m = castINTEGER(cdum[0].real());
             // Compute space needed for Cgebrd
-            Cgebrd(n, n, a, lda, s, &dum[1 - 1], &cdum[1 - 1], &cdum[1 - 1], &cdum[1 - 1], -1, ierr);
-            lwork_Cgebrd = castINTEGER(cdum[1 - 1].real());
+            Cgebrd(n, n, a, lda, s, &dum[0], &cdum[0], &cdum[0], &cdum[0], -1, ierr);
+            lwork_Cgebrd = castINTEGER(cdum[0].real());
             // Compute space needed for Cungbr
-            Cungbr("P", n, n, n, a, lda, &cdum[1 - 1], &cdum[1 - 1], -1, ierr);
-            lwork_Cungbr_p = castINTEGER(cdum[1 - 1].real());
-            Cungbr("Q", n, n, n, a, lda, &cdum[1 - 1], &cdum[1 - 1], -1, ierr);
-            lwork_Cungbr_q = castINTEGER(cdum[1 - 1].real());
+            Cungbr("P", n, n, n, a, lda, &cdum[0], &cdum[0], -1, ierr);
+            lwork_Cungbr_p = castINTEGER(cdum[0].real());
+            Cungbr("Q", n, n, n, a, lda, &cdum[0], &cdum[0], -1, ierr);
+            lwork_Cungbr_q = castINTEGER(cdum[0].real());
             //
             if (m >= mnthr) {
                 if (wntun) {
@@ -220,17 +220,17 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
                 //
                 // Path 10 (M at least N, but not much larger)
                 //
-                Cgebrd(m, n, a, lda, s, &dum[1 - 1], &cdum[1 - 1], &cdum[1 - 1], &cdum[1 - 1], -1, ierr);
-                lwork_Cgebrd = castINTEGER(cdum[1 - 1].real());
+                Cgebrd(m, n, a, lda, s, &dum[0], &cdum[0], &cdum[0], &cdum[0], -1, ierr);
+                lwork_Cgebrd = castINTEGER(cdum[0].real());
                 maxwrk = 2 * n + lwork_Cgebrd;
                 if (wntus || wntuo) {
-                    Cungbr("Q", m, n, n, a, lda, &cdum[1 - 1], &cdum[1 - 1], -1, ierr);
-                    lwork_Cungbr_q = castINTEGER(cdum[1 - 1].real());
+                    Cungbr("Q", m, n, n, a, lda, &cdum[0], &cdum[0], -1, ierr);
+                    lwork_Cungbr_q = castINTEGER(cdum[0].real());
                     maxwrk = max(maxwrk, 2 * n + lwork_Cungbr_q);
                 }
                 if (wntua) {
-                    Cungbr("Q", m, m, n, a, lda, &cdum[1 - 1], &cdum[1 - 1], -1, ierr);
-                    lwork_Cungbr_q = castINTEGER(cdum[1 - 1].real());
+                    Cungbr("Q", m, m, n, a, lda, &cdum[0], &cdum[0], -1, ierr);
+                    lwork_Cungbr_q = castINTEGER(cdum[0].real());
                     maxwrk = max(maxwrk, 2 * n + lwork_Cungbr_q);
                 }
                 if (!wntvn) {
@@ -244,22 +244,22 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
             //
             mnthr = iMlaenv(6, "Cgesvd", jobu_jobvt, m, n, 0, 0);
             // Compute space needed for Cgelqf
-            Cgelqf(m, n, a, lda, &cdum[1 - 1], &cdum[1 - 1], -1, ierr);
-            lwork_Cgelqf = castINTEGER(cdum[1 - 1].real());
+            Cgelqf(m, n, a, lda, &cdum[0], &cdum[0], -1, ierr);
+            lwork_Cgelqf = castINTEGER(cdum[0].real());
             // Compute space needed for Cunglq
-            Cunglq(n, n, m, &cdum[1 - 1], n, &cdum[1 - 1], &cdum[1 - 1], -1, ierr);
-            lwork_Cunglq_n = castINTEGER(cdum[1 - 1].real());
-            Cunglq(m, n, m, a, lda, &cdum[1 - 1], &cdum[1 - 1], -1, ierr);
-            lwork_Cunglq_m = castINTEGER(cdum[1 - 1].real());
+            Cunglq(n, n, m, &cdum[0], n, &cdum[0], &cdum[0], -1, ierr);
+            lwork_Cunglq_n = castINTEGER(cdum[0].real());
+            Cunglq(m, n, m, a, lda, &cdum[0], &cdum[0], -1, ierr);
+            lwork_Cunglq_m = castINTEGER(cdum[0].real());
             // Compute space needed for Cgebrd
-            Cgebrd(m, m, a, lda, s, &dum[1 - 1], &cdum[1 - 1], &cdum[1 - 1], &cdum[1 - 1], -1, ierr);
-            lwork_Cgebrd = castINTEGER(cdum[1 - 1].real());
+            Cgebrd(m, m, a, lda, s, &dum[0], &cdum[0], &cdum[0], &cdum[0], -1, ierr);
+            lwork_Cgebrd = castINTEGER(cdum[0].real());
             // Compute space needed for Cungbr P
-            Cungbr("P", m, m, m, a, n, &cdum[1 - 1], &cdum[1 - 1], -1, ierr);
-            lwork_Cungbr_p = castINTEGER(cdum[1 - 1].real());
+            Cungbr("P", m, m, m, a, n, &cdum[0], &cdum[0], -1, ierr);
+            lwork_Cungbr_p = castINTEGER(cdum[0].real());
             // Compute space needed for Cungbr Q
-            Cungbr("Q", m, m, m, a, n, &cdum[1 - 1], &cdum[1 - 1], -1, ierr);
-            lwork_Cungbr_q = castINTEGER(cdum[1 - 1].real());
+            Cungbr("Q", m, m, m, a, n, &cdum[0], &cdum[0], -1, ierr);
+            lwork_Cungbr_q = castINTEGER(cdum[0].real());
             if (n >= mnthr) {
                 if (wntvn) {
                     //
@@ -364,18 +364,18 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
                 //
                 // Path 10 (N greater than M, but not much larger)
                 //
-                Cgebrd(m, n, a, lda, s, &dum[1 - 1], &cdum[1 - 1], &cdum[1 - 1], &cdum[1 - 1], -1, ierr);
-                lwork_Cgebrd = castINTEGER(cdum[1 - 1].real());
+                Cgebrd(m, n, a, lda, s, &dum[0], &cdum[0], &cdum[0], &cdum[0], -1, ierr);
+                lwork_Cgebrd = castINTEGER(cdum[0].real());
                 maxwrk = 2 * m + lwork_Cgebrd;
                 if (wntvs || wntvo) {
                     // Compute space needed for Cungbr P
-                    Cungbr("P", m, n, m, a, n, &cdum[1 - 1], &cdum[1 - 1], -1, ierr);
-                    lwork_Cungbr_p = castINTEGER(cdum[1 - 1].real());
+                    Cungbr("P", m, n, m, a, n, &cdum[0], &cdum[0], -1, ierr);
+                    lwork_Cungbr_p = castINTEGER(cdum[0].real());
                     maxwrk = max(maxwrk, 2 * m + lwork_Cungbr_p);
                 }
                 if (wntva) {
-                    Cungbr("P", n, n, m, a, n, &cdum[1 - 1], &cdum[1 - 1], -1, ierr);
-                    lwork_Cungbr_p = castINTEGER(cdum[1 - 1].real());
+                    Cungbr("P", n, n, m, a, n, &cdum[0], &cdum[0], -1, ierr);
+                    lwork_Cungbr_p = castINTEGER(cdum[0].real());
                     maxwrk = max(maxwrk, 2 * m + lwork_Cungbr_p);
                 }
                 if (!wntun) {
@@ -385,7 +385,7 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
             }
         }
         maxwrk = max(maxwrk, minwrk);
-        work[1 - 1] = maxwrk;
+        work[0] = maxwrk;
         //
         if (lwork < minwrk && !lquery) {
             info = -13;
@@ -3103,7 +3103,7 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
     //
     // Return optimal workspace in WORK(1)
     //
-    work[1 - 1] = maxwrk;
+    work[0] = maxwrk;
     //
     // End of Cgesvd
     //

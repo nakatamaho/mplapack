@@ -112,15 +112,15 @@ void Ctrsna(const char *job, const char *howmny, bool *select, INTEGER const n, 
     //
     if (n == 1) {
         if (somcon) {
-            if (!select[1 - 1]) {
+            if (!select[0]) {
                 return;
             }
         }
         if (wants) {
-            s[1 - 1] = one;
+            s[0] = one;
         }
         if (wantsp) {
-            sep[1 - 1] = abs(t[0]);
+            sep[0] = abs(t[0]);
         }
         return;
     }

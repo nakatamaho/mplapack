@@ -278,17 +278,17 @@ statement_20:
             h21s = h[((m + 1) - 1) + (m - 1) * ldh];
             s = abs(h[(m - 1) + (m - 1) * ldh] - rt2r) + abs(rt2i) + abs(h21s);
             h21s = h[((m + 1) - 1) + (m - 1) * ldh] / s;
-            v[1 - 1] = h21s * h[(m - 1) + ((m + 1) - 1) * ldh] + (h[(m - 1) + (m - 1) * ldh] - rt1r) * ((h[(m - 1) + (m - 1) * ldh] - rt2r) / s) - rt1i * (rt2i / s);
+            v[0] = h21s * h[(m - 1) + ((m + 1) - 1) * ldh] + (h[(m - 1) + (m - 1) * ldh] - rt1r) * ((h[(m - 1) + (m - 1) * ldh] - rt2r) / s) - rt1i * (rt2i / s);
             v[2 - 1] = h21s * (h[(m - 1) + (m - 1) * ldh] + h[((m + 1) - 1) + ((m + 1) - 1) * ldh] - rt1r - rt2r);
             v[3 - 1] = h21s * h[((m + 2) - 1) + ((m + 1) - 1) * ldh];
-            s = abs(v[1 - 1]) + abs(v[2 - 1]) + abs(v[3 - 1]);
-            v[1 - 1] = v[1 - 1] / s;
+            s = abs(v[0]) + abs(v[2 - 1]) + abs(v[3 - 1]);
+            v[0] = v[0] / s;
             v[2 - 1] = v[2 - 1] / s;
             v[3 - 1] = v[3 - 1] / s;
             if (m == l) {
                 goto statement_60;
             }
-            if (abs(h[(m - 1) + ((m - 1) - 1) * ldh]) * (abs(v[2 - 1]) + abs(v[3 - 1])) <= ulp * abs(v[1 - 1]) * (abs(h[((m - 1) - 1) + ((m - 1) - 1) * ldh]) + abs(h[(m - 1) + (m - 1) * ldh]) + abs(h[((m + 1) - 1) + ((m + 1) - 1) * ldh]))) {
+            if (abs(h[(m - 1) + ((m - 1) - 1) * ldh]) * (abs(v[2 - 1]) + abs(v[3 - 1])) <= ulp * abs(v[0]) * (abs(h[((m - 1) - 1) + ((m - 1) - 1) * ldh]) + abs(h[(m - 1) + (m - 1) * ldh]) + abs(h[((m + 1) - 1) + ((m + 1) - 1) * ldh]))) {
                 goto statement_60;
             }
         }
@@ -311,9 +311,9 @@ statement_20:
             if (k > m) {
                 Rcopy(nr, &h[(k - 1) + ((k - 1) - 1) * ldh], 1, v, 1);
             }
-            Rlarfg(nr, v[1 - 1], &v[2 - 1], 1, t1);
+            Rlarfg(nr, v[0], &v[2 - 1], 1, t1);
             if (k > m) {
-                h[(k - 1) + ((k - 1) - 1) * ldh] = v[1 - 1];
+                h[(k - 1) + ((k - 1) - 1) * ldh] = v[0];
                 h[((k + 1) - 1) + ((k - 1) - 1) * ldh] = zero;
                 if (k < i - 1) {
                     h[((k + 2) - 1) + ((k - 1) - 1) * ldh] = zero;

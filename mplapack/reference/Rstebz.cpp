@@ -162,12 +162,12 @@ void Rstebz(const char *range, const char *order, INTEGER const n, REAL const vl
     //
     if (n == 1) {
         nsplit = 1;
-        isplit[1 - 1] = 1;
-        if (irange == 2 && (vl >= d[1 - 1] || vu < d[1 - 1])) {
+        isplit[0] = 1;
+        if (irange == 2 && (vl >= d[0] || vu < d[0])) {
             m = 0;
         } else {
-            w[1 - 1] = d[1 - 1];
-            iblock[1 - 1] = 1;
+            w[0] = d[0];
+            iblock[0] = 1;
             m = 1;
         }
         return;
@@ -203,8 +203,8 @@ void Rstebz(const char *range, const char *order, INTEGER const n, REAL const vl
         // Compute Gershgorin interval for entire (split) matrix
         // and use it as the initial interval
         //
-        gu = d[1 - 1];
-        gl = d[1 - 1];
+        gu = d[0];
+        gl = d[0];
         tmp1 = zero;
         //
         for (j = 1; j <= n - 1; j = j + 1) {
@@ -239,7 +239,7 @@ void Rstebz(const char *range, const char *order, INTEGER const n, REAL const vl
         work[(n + 4) - 1] = gu;
         work[(n + 5) - 1] = gl;
         work[(n + 6) - 1] = gu;
-        iwork[1 - 1] = -1;
+        iwork[0] = -1;
         iwork[2 - 1] = -1;
         iwork[3 - 1] = n + 1;
         iwork[4 - 1] = n + 1;
@@ -251,7 +251,7 @@ void Rstebz(const char *range, const char *order, INTEGER const n, REAL const vl
         if (iwork[6 - 1] == iu) {
             wl = work[(n + 1) - 1];
             wlu = work[(n + 3) - 1];
-            nwl = iwork[1 - 1];
+            nwl = iwork[0];
             wu = work[(n + 4) - 1];
             wul = work[(n + 2) - 1];
             nwu = iwork[4 - 1];
@@ -272,7 +272,7 @@ void Rstebz(const char *range, const char *order, INTEGER const n, REAL const vl
         //
         // RANGE='A' or 'V' -- Set ATOLI
         //
-        tnorm = max(abs(d[1 - 1]) + abs(e[1 - 1]), abs(d[n - 1]) + abs(e[(n - 1) - 1]));
+        tnorm = max(abs(d[0]) + abs(e[0]), abs(d[n - 1]) + abs(e[(n - 1) - 1]));
         //
         for (j = 2; j <= n - 1; j = j + 1) {
             tnorm = max(tnorm, REAL(abs(d[j - 1]) + abs(e[(j - 1) - 1]) + abs(e[j - 1])));
@@ -375,9 +375,9 @@ void Rstebz(const char *range, const char *order, INTEGER const n, REAL const vl
             work[(n + in + 1) - 1] = gu;
             Rlaebz(1, 0, in, in, 1, nb, atoli, rtoli, pivmin, &d[ibegin - 1], &e[ibegin - 1], &work[ibegin - 1], idumma, &work[(n + 1) - 1], &work[(n + 2 * in + 1) - 1], im, iwork, &w[(m + 1) - 1], &iblock[(m + 1) - 1], iinfo);
             //
-            nwl += iwork[1 - 1];
+            nwl += iwork[0];
             nwu += iwork[(in + 1) - 1];
-            iwoff = m - iwork[1 - 1];
+            iwoff = m - iwork[0];
             //
             // Compute Eigenvalues
             //

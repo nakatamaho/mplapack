@@ -61,7 +61,7 @@ void Claswlq(INTEGER const m, INTEGER const n, INTEGER const mb, INTEGER const n
         info = -10;
     }
     if (info == 0) {
-        work[1 - 1] = mb * m;
+        work[0] = mb * m;
     }
     //
     if (info != 0) {
@@ -107,7 +107,7 @@ void Claswlq(INTEGER const m, INTEGER const n, INTEGER const mb, INTEGER const n
         Ctplqt(m, kk, 0, mb, &a[0], lda, &a[(ii - 1) * lda], lda, &t[((ctr * m + 1) - 1) * ldt], ldt, work, info);
     }
     //
-    work[1 - 1] = m * mb;
+    work[0] = m * mb;
     //
     // End of Claswlq
     //

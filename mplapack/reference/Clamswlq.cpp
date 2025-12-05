@@ -72,10 +72,10 @@ void Clamswlq(const char *side, const char *trans, INTEGER const m, INTEGER cons
     //
     if (info != 0) {
         Mxerbla("Clamswlq", -info);
-        work[1 - 1] = lw;
+        work[0] = lw;
         return;
     } else if (lquery) {
-        work[1 - 1] = lw;
+        work[0] = lw;
         return;
     }
     //
@@ -199,7 +199,7 @@ void Clamswlq(const char *side, const char *trans, INTEGER const m, INTEGER cons
         //
     }
     //
-    work[1 - 1] = lw;
+    work[0] = lw;
     //
     // End of Clamswlq
     //

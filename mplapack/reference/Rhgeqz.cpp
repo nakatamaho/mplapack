@@ -178,7 +178,7 @@ void Rhgeqz(const char *job, const char *compq, const char *compz, INTEGER const
     // Check Argument Values
     //
     info = 0;
-    work[1 - 1] = max((INTEGER)1, n);
+    work[0] = max((INTEGER)1, n);
     lquery = (lwork == -1);
     if (ischur == 0) {
         info = -1;
@@ -213,7 +213,7 @@ void Rhgeqz(const char *job, const char *compq, const char *compz, INTEGER const
     // Quick return if possible
     //
     if (n <= 0) {
-        work[1 - 1] = 1.0;
+        work[0] = 1.0;
         return;
     }
     //
@@ -858,14 +858,14 @@ void Rhgeqz(const char *job, const char *compq, const char *compz, INTEGER const
             ad32l = (ascale * h[((ifirst + 2) - 1) + ((ifirst + 1) - 1) * ldh]) / (bscale * t[((ifirst + 1) - 1) + ((ifirst + 1) - 1) * ldt]);
             u12l = t[(ifirst - 1) + ((ifirst + 1) - 1) * ldt] / t[((ifirst + 1) - 1) + ((ifirst + 1) - 1) * ldt];
             //
-            v[1 - 1] = (ad11 - ad11l) * (ad22 - ad11l) - ad12 * ad21 + ad21 * u12 * ad11l + (ad12l - ad11l * u12l) * ad21l;
+            v[0] = (ad11 - ad11l) * (ad22 - ad11l) - ad12 * ad21 + ad21 * u12 * ad11l + (ad12l - ad11l * u12l) * ad21l;
             v[2 - 1] = ((ad22l - ad11l) - ad21l * u12l - (ad11 - ad11l) - (ad22 - ad11l) + ad21 * u12) * ad21l;
             v[3 - 1] = ad32l * ad21l;
             //
             istart = ifirst;
             //
-            Rlarfg(3, v[1 - 1], &v[2 - 1], 1, tau);
-            v[1 - 1] = one;
+            Rlarfg(3, v[0], &v[2 - 1], 1, tau);
+            v[0] = one;
             //
             // Sweep
             //
@@ -876,12 +876,12 @@ void Rhgeqz(const char *job, const char *compq, const char *compz, INTEGER const
                 // Zero (j-1)st column of A
                 //
                 if (j > istart) {
-                    v[1 - 1] = h[(j - 1) + ((j - 1) - 1) * ldh];
+                    v[0] = h[(j - 1) + ((j - 1) - 1) * ldh];
                     v[2 - 1] = h[((j + 1) - 1) + ((j - 1) - 1) * ldh];
                     v[3 - 1] = h[((j + 2) - 1) + ((j - 1) - 1) * ldh];
                     //
                     Rlarfg(3, h[(j - 1) + ((j - 1) - 1) * ldh], &v[2 - 1], 1, tau);
-                    v[1 - 1] = one;
+                    v[0] = one;
                     h[((j + 1) - 1) + ((j - 1) - 1) * ldh] = zero;
                     h[((j + 2) - 1) + ((j - 1) - 1) * ldh] = zero;
                 }
@@ -985,7 +985,7 @@ void Rhgeqz(const char *job, const char *compq, const char *compz, INTEGER const
                 t1 = sqrt(pow2(scale) + pow2(u1) + pow2(u2));
                 tau = one + scale / t1;
                 vs = -one / (scale + t1);
-                v[1 - 1] = one;
+                v[0] = one;
                 v[2 - 1] = vs * u1;
                 v[3 - 1] = vs * u2;
                 //
@@ -1115,7 +1115,7 @@ statement_380:
 // Exit (other than argument error) -- return optimal workspace size
 //
 statement_420:
-    work[1 - 1] = castREAL(n);
+    work[0] = castREAL(n);
     //
     // End of Rhgeqz
     //

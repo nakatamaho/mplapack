@@ -114,11 +114,11 @@ void Rstevx(const char *jobz, const char *range, INTEGER const n, REAL *d, REAL 
     if (n == 1) {
         if (alleig || indeig) {
             m = 1;
-            w[1 - 1] = d[1 - 1];
+            w[0] = d[0];
         } else {
-            if (vl < d[1 - 1] && vu >= d[1 - 1]) {
+            if (vl < d[0] && vu >= d[0]) {
                 m = 1;
-                w[1 - 1] = d[1 - 1];
+                w[0] = d[0];
             }
         }
         if (wantz) {
@@ -156,7 +156,7 @@ void Rstevx(const char *jobz, const char *range, INTEGER const n, REAL *d, REAL 
     }
     if (iscale == 1) {
         Rscal(n, sigma, d, 1);
-        Rscal(n - 1, sigma, &e[1 - 1], 1);
+        Rscal(n - 1, sigma, &e[0], 1);
         if (valeig) {
             vll = vl * sigma;
             vuu = vu * sigma;
@@ -175,7 +175,7 @@ void Rstevx(const char *jobz, const char *range, INTEGER const n, REAL *d, REAL 
     }
     if ((alleig || test) && (abstol <= zero)) {
         Rcopy(n, d, 1, w, 1);
-        Rcopy(n - 1, &e[1 - 1], 1, &work[1 - 1], 1);
+        Rcopy(n - 1, &e[0], 1, &work[0], 1);
         indwrk = n + 1;
         if (!wantz) {
             Rsterf(n, w, work, info);

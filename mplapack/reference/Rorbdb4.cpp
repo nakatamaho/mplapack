@@ -69,7 +69,7 @@ void Rorbdb4(INTEGER const m, INTEGER const p, INTEGER const q, REAL *x11, INTEG
         lworkopt = ilarf + llarf - 1;
         lworkopt = max(lworkopt, iorbdb5 + lorbdb5 - 1);
         lworkmin = lworkopt;
-        work[1 - 1] = lworkopt;
+        work[0] = lworkopt;
         if (lwork < lworkmin && !lquery) {
             info = -14;
         }
@@ -100,14 +100,14 @@ void Rorbdb4(INTEGER const m, INTEGER const p, INTEGER const q, REAL *x11, INTEG
             Rorbdb5(p, m - p, q, phantom, 1, &phantom[(p + 1) - 1], 1, x11, ldx11, x21, ldx21, &work[iorbdb5 - 1], lorbdb5, childinfo);
             Rscal(p, negone, phantom, 1);
             Rlarfgp(p, phantom[0], &phantom[2 - 1], 1, taup1[0]);
-            Rlarfgp(m - p, phantom[(p + 1) - 1], &phantom[(p + 2) - 1], 1, taup2[1 - 1]);
-            theta[i - 1] = atan2(phantom[1 - 1], phantom[(p + 1) - 1]);
+            Rlarfgp(m - p, phantom[(p + 1) - 1], &phantom[(p + 2) - 1], 1, taup2[0]);
+            theta[i - 1] = atan2(phantom[0], phantom[(p + 1) - 1]);
             c = cos(theta[i - 1]);
             s = sin(theta[i - 1]);
-            phantom[1 - 1] = one;
+            phantom[0] = one;
             phantom[(p + 1) - 1] = one;
-            Rlarf("L", p, q, &phantom[1 - 1], 1, taup1[1 - 1], x11, ldx11, &work[ilarf - 1]);
-            Rlarf("L", m - p, q, &phantom[(p + 1) - 1], 1, taup2[1 - 1], x21, ldx21, &work[ilarf - 1]);
+            Rlarf("L", p, q, &phantom[0], 1, taup1[0], x11, ldx11, &work[ilarf - 1]);
+            Rlarf("L", m - p, q, &phantom[(p + 1) - 1], 1, taup2[0], x21, ldx21, &work[ilarf - 1]);
         } else {
             Rorbdb5(p - i + 1, m - p - i + 1, q - i + 1, &x11[(i - 1) + ((i - 1) - 1) * ldx11], 1, &x21[(i - 1) + ((i - 1) - 1) * ldx21], 1, &x11[(i - 1) + (i - 1) * ldx11], ldx11, &x21[(i - 1) + (i - 1) * ldx21], ldx21, &work[iorbdb5 - 1], lorbdb5, childinfo);
             Rscal(p - i + 1, negone, &x11[(i - 1) + ((i - 1) - 1) * ldx11], 1);

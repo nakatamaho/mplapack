@@ -86,7 +86,7 @@ void Rlaqr4(bool const wantt, bool const wantz, INTEGER const n, INTEGER const i
     //
     //
     if (n == 0) {
-        work[1 - 1] = one;
+        work[0] = one;
         return;
     }
     //
@@ -135,11 +135,11 @@ void Rlaqr4(bool const wantt, bool const wantz, INTEGER const n, INTEGER const i
         Rlaqr2(wantt, wantz, n, ilo, ihi, nwr + 1, h, ldh, iloz, ihiz, z, ldz, ls, ld, wr, wi, h, ldh, n, h, ldh, n, h, ldh, work, -1);
         //
         //
-        lwkopt = max(3 * nsr / 2, castINTEGER(work[1 - 1]));
+        lwkopt = max(3 * nsr / 2, castINTEGER(work[0]));
         //
         //
         if (lwork == -1) {
-            work[1 - 1] = castREAL(lwkopt);
+            work[0] = castREAL(lwkopt);
             return;
         }
         //
@@ -415,7 +415,7 @@ void Rlaqr4(bool const wantt, bool const wantz, INTEGER const n, INTEGER const i
     }
     //
     //
-    work[1 - 1] = castREAL(lwkopt);
+    work[0] = castREAL(lwkopt);
     //
     //
 }

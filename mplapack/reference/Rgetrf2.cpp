@@ -69,7 +69,7 @@ void Rgetrf2(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, INTEG
         // Use unblocked code for one row case
         // Just need to handle IPIV and INFO
         //
-        ipiv[1 - 1] = 1;
+        ipiv[0] = 1;
         if (a[0] == zero) {
             info = 1;
         }
@@ -85,7 +85,7 @@ void Rgetrf2(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, INTEG
         // Find pivot and test for singularity
         //
         i = iRamax(m, &a[0], 1);
-        ipiv[1 - 1] = i;
+        ipiv[0] = i;
         if (a[(i - 1)] != zero) {
             //
             // Apply the interchange

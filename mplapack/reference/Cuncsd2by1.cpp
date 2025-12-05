@@ -141,91 +141,91 @@ void Cuncsd2by1(const char *jobu1, const char *jobu2, const char *jobv1t, INTEGE
         lorglqopt = 1;
         if (r == q) {
             Cunbdb1(m, p, q, x11, ldx11, x21, ldx21, theta, dum, cdum, cdum, cdum, work, -1, childinfo);
-            lorbdb = castINTEGER(work[1 - 1].real());
+            lorbdb = castINTEGER(work[0].real());
             if (wantu1 && p > 0) {
-                Cungqr(p, p, q, u1, ldu1, cdum, &work[1 - 1], -1, childinfo);
+                Cungqr(p, p, q, u1, ldu1, cdum, &work[0], -1, childinfo);
                 lorgqrmin = max(lorgqrmin, p);
-                lorgqropt = max(lorgqropt, castINTEGER(work[1 - 1].real()));
+                lorgqropt = max(lorgqropt, castINTEGER(work[0].real()));
             }
             if (wantu2 && m - p > 0) {
-                Cungqr(m - p, m - p, q, u2, ldu2, cdum, &work[1 - 1], -1, childinfo);
+                Cungqr(m - p, m - p, q, u2, ldu2, cdum, &work[0], -1, childinfo);
                 lorgqrmin = max(lorgqrmin, m - p);
-                lorgqropt = max(lorgqropt, castINTEGER(work[1 - 1].real()));
+                lorgqropt = max(lorgqropt, castINTEGER(work[0].real()));
             }
             if (wantv1t && q > 0) {
-                Cunglq(q - 1, q - 1, q - 1, v1t, ldv1t, cdum, &work[1 - 1], -1, childinfo);
+                Cunglq(q - 1, q - 1, q - 1, v1t, ldv1t, cdum, &work[0], -1, childinfo);
                 lorglqmin = max(lorglqmin, q - 1);
-                lorglqopt = max(lorglqopt, castINTEGER(work[1 - 1].real()));
+                lorglqopt = max(lorglqopt, castINTEGER(work[0].real()));
             }
-            Cbbcsd(jobu1, jobu2, jobv1t, "N", "N", m, p, q, theta, dum, u1, ldu1, u2, ldu2, v1t, ldv1t, cdum, 1, dum, dum, dum, dum, dum, dum, dum, dum, &rwork[1 - 1], -1, childinfo);
-            lbbcsd = castINTEGER(rwork[1 - 1]);
+            Cbbcsd(jobu1, jobu2, jobv1t, "N", "N", m, p, q, theta, dum, u1, ldu1, u2, ldu2, v1t, ldv1t, cdum, 1, dum, dum, dum, dum, dum, dum, dum, dum, &rwork[0], -1, childinfo);
+            lbbcsd = castINTEGER(rwork[0]);
         } else if (r == p) {
-            Cunbdb2(m, p, q, x11, ldx11, x21, ldx21, theta, dum, cdum, cdum, cdum, &work[1 - 1], -1, childinfo);
-            lorbdb = castINTEGER(work[1 - 1].real());
+            Cunbdb2(m, p, q, x11, ldx11, x21, ldx21, theta, dum, cdum, cdum, cdum, &work[0], -1, childinfo);
+            lorbdb = castINTEGER(work[0].real());
             if (wantu1 && p > 0) {
-                Cungqr(p - 1, p - 1, p - 1, &u1[(2 - 1) + (2 - 1) * ldu1], ldu1, cdum, &work[1 - 1], -1, childinfo);
+                Cungqr(p - 1, p - 1, p - 1, &u1[(2 - 1) + (2 - 1) * ldu1], ldu1, cdum, &work[0], -1, childinfo);
                 lorgqrmin = max(lorgqrmin, p - 1);
-                lorgqropt = max(lorgqropt, castINTEGER(work[1 - 1].real()));
+                lorgqropt = max(lorgqropt, castINTEGER(work[0].real()));
             }
             if (wantu2 && m - p > 0) {
-                Cungqr(m - p, m - p, q, u2, ldu2, cdum, &work[1 - 1], -1, childinfo);
+                Cungqr(m - p, m - p, q, u2, ldu2, cdum, &work[0], -1, childinfo);
                 lorgqrmin = max(lorgqrmin, m - p);
-                lorgqropt = max(lorgqropt, castINTEGER(work[1 - 1].real()));
+                lorgqropt = max(lorgqropt, castINTEGER(work[0].real()));
             }
             if (wantv1t && q > 0) {
-                Cunglq(q, q, r, v1t, ldv1t, cdum, &work[1 - 1], -1, childinfo);
+                Cunglq(q, q, r, v1t, ldv1t, cdum, &work[0], -1, childinfo);
                 lorglqmin = max(lorglqmin, q);
-                lorglqopt = max(lorglqopt, castINTEGER(work[1 - 1].real()));
+                lorglqopt = max(lorglqopt, castINTEGER(work[0].real()));
             }
-            Cbbcsd(jobv1t, "N", jobu1, jobu2, "T", m, q, p, theta, dum, v1t, ldv1t, cdum, 1, u1, ldu1, u2, ldu2, dum, dum, dum, dum, dum, dum, dum, dum, &rwork[1 - 1], -1, childinfo);
-            lbbcsd = castINTEGER(rwork[1 - 1]);
+            Cbbcsd(jobv1t, "N", jobu1, jobu2, "T", m, q, p, theta, dum, v1t, ldv1t, cdum, 1, u1, ldu1, u2, ldu2, dum, dum, dum, dum, dum, dum, dum, dum, &rwork[0], -1, childinfo);
+            lbbcsd = castINTEGER(rwork[0]);
         } else if (r == m - p) {
-            Cunbdb3(m, p, q, x11, ldx11, x21, ldx21, theta, dum, cdum, cdum, cdum, &work[1 - 1], -1, childinfo);
-            lorbdb = castINTEGER(work[1 - 1].real());
+            Cunbdb3(m, p, q, x11, ldx11, x21, ldx21, theta, dum, cdum, cdum, cdum, &work[0], -1, childinfo);
+            lorbdb = castINTEGER(work[0].real());
             if (wantu1 && p > 0) {
-                Cungqr(p, p, q, u1, ldu1, cdum, &work[1 - 1], -1, childinfo);
+                Cungqr(p, p, q, u1, ldu1, cdum, &work[0], -1, childinfo);
                 lorgqrmin = max(lorgqrmin, p);
-                lorgqropt = max(lorgqropt, castINTEGER(work[1 - 1].real()));
+                lorgqropt = max(lorgqropt, castINTEGER(work[0].real()));
             }
             if (wantu2 && m - p > 0) {
-                Cungqr(m - p - 1, m - p - 1, m - p - 1, &u2[(2 - 1) + (2 - 1) * ldu2], ldu2, cdum, &work[1 - 1], -1, childinfo);
+                Cungqr(m - p - 1, m - p - 1, m - p - 1, &u2[(2 - 1) + (2 - 1) * ldu2], ldu2, cdum, &work[0], -1, childinfo);
                 lorgqrmin = max(lorgqrmin, m - p - 1);
-                lorgqropt = max(lorgqropt, castINTEGER(work[1 - 1].real()));
+                lorgqropt = max(lorgqropt, castINTEGER(work[0].real()));
             }
             if (wantv1t && q > 0) {
-                Cunglq(q, q, r, v1t, ldv1t, cdum, &work[1 - 1], -1, childinfo);
+                Cunglq(q, q, r, v1t, ldv1t, cdum, &work[0], -1, childinfo);
                 lorglqmin = max(lorglqmin, q);
-                lorglqopt = max(lorglqopt, castINTEGER(work[1 - 1].real()));
+                lorglqopt = max(lorglqopt, castINTEGER(work[0].real()));
             }
-            Cbbcsd("N", jobv1t, jobu2, jobu1, "T", m, m - q, m - p, theta, dum, cdum, 1, v1t, ldv1t, u2, ldu2, u1, ldu1, dum, dum, dum, dum, dum, dum, dum, dum, &rwork[1 - 1], -1, childinfo);
-            lbbcsd = castINTEGER(rwork[1 - 1]);
+            Cbbcsd("N", jobv1t, jobu2, jobu1, "T", m, m - q, m - p, theta, dum, cdum, 1, v1t, ldv1t, u2, ldu2, u1, ldu1, dum, dum, dum, dum, dum, dum, dum, dum, &rwork[0], -1, childinfo);
+            lbbcsd = castINTEGER(rwork[0]);
         } else {
-            Cunbdb4(m, p, q, x11, ldx11, x21, ldx21, theta, dum, cdum, cdum, cdum, cdum, &work[1 - 1], -1, childinfo);
-            lorbdb = m + castINTEGER(work[1 - 1].real());
+            Cunbdb4(m, p, q, x11, ldx11, x21, ldx21, theta, dum, cdum, cdum, cdum, cdum, &work[0], -1, childinfo);
+            lorbdb = m + castINTEGER(work[0].real());
             if (wantu1 && p > 0) {
-                Cungqr(p, p, m - q, u1, ldu1, cdum, &work[1 - 1], -1, childinfo);
+                Cungqr(p, p, m - q, u1, ldu1, cdum, &work[0], -1, childinfo);
                 lorgqrmin = max(lorgqrmin, p);
-                lorgqropt = max(lorgqropt, castINTEGER(work[1 - 1].real()));
+                lorgqropt = max(lorgqropt, castINTEGER(work[0].real()));
             }
             if (wantu2 && m - p > 0) {
-                Cungqr(m - p, m - p, m - q, u2, ldu2, cdum, &work[1 - 1], -1, childinfo);
+                Cungqr(m - p, m - p, m - q, u2, ldu2, cdum, &work[0], -1, childinfo);
                 lorgqrmin = max(lorgqrmin, m - p);
-                lorgqropt = max(lorgqropt, castINTEGER(work[1 - 1].real()));
+                lorgqropt = max(lorgqropt, castINTEGER(work[0].real()));
             }
             if (wantv1t && q > 0) {
-                Cunglq(q, q, q, v1t, ldv1t, cdum, &work[1 - 1], -1, childinfo);
+                Cunglq(q, q, q, v1t, ldv1t, cdum, &work[0], -1, childinfo);
                 lorglqmin = max(lorglqmin, q);
-                lorglqopt = max(lorglqopt, castINTEGER(work[1 - 1].real()));
+                lorglqopt = max(lorglqopt, castINTEGER(work[0].real()));
             }
-            Cbbcsd(jobu2, jobu1, "N", jobv1t, "N", m, m - p, m - q, theta, dum, u2, ldu2, u1, ldu1, cdum, 1, v1t, ldv1t, dum, dum, dum, dum, dum, dum, dum, dum, &rwork[1 - 1], -1, childinfo);
-            lbbcsd = castINTEGER(rwork[1 - 1]);
+            Cbbcsd(jobu2, jobu1, "N", jobv1t, "N", m, m - p, m - q, theta, dum, u2, ldu2, u1, ldu1, cdum, 1, v1t, ldv1t, dum, dum, dum, dum, dum, dum, dum, dum, &rwork[0], -1, childinfo);
+            lbbcsd = castINTEGER(rwork[0]);
         }
         lrworkmin = ibbcsd + lbbcsd - 1;
         lrworkopt = lrworkmin;
-        rwork[1 - 1] = lrworkopt;
+        rwork[0] = lrworkopt;
         lworkmin = max(iorbdb + lorbdb - 1, iorgqr + lorgqrmin - 1, iorglq + lorglqmin - 1);
         lworkopt = max(iorbdb + lorbdb - 1, iorgqr + lorgqropt - 1, iorglq + lorglqopt - 1);
-        work[1 - 1] = lworkopt;
+        work[0] = lworkopt;
         if (lwork < lworkmin && !lquery) {
             info = -19;
         }

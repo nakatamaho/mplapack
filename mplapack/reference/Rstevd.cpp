@@ -58,8 +58,8 @@ void Rstevd(const char *jobz, INTEGER const n, REAL *d, REAL *e, REAL *z, INTEGE
     }
     //
     if (info == 0) {
-        work[1 - 1] = lwmin;
-        iwork[1 - 1] = liwmin;
+        work[0] = lwmin;
+        iwork[0] = liwmin;
         //
         if (lwork < lwmin && !lquery) {
             info = -8;
@@ -113,7 +113,7 @@ void Rstevd(const char *jobz, INTEGER const n, REAL *d, REAL *e, REAL *z, INTEGE
     }
     if (iscale == 1) {
         Rscal(n, sigma, d, 1);
-        Rscal(n - 1, sigma, &e[1 - 1], 1);
+        Rscal(n - 1, sigma, &e[0], 1);
     }
     //
     // For eigenvalues only, call Rsterf.  For eigenvalues and
@@ -131,8 +131,8 @@ void Rstevd(const char *jobz, INTEGER const n, REAL *d, REAL *e, REAL *z, INTEGE
         Rscal(n, one / sigma, d, 1);
     }
     //
-    work[1 - 1] = lwmin;
-    iwork[1 - 1] = liwmin;
+    work[0] = lwmin;
+    iwork[0] = liwmin;
     //
     // End of Rstevd
     //

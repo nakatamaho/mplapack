@@ -146,7 +146,7 @@ void Clalsa(INTEGER const icompq, INTEGER const smlsiz, INTEGER const n, INTEGER
                 rwork[j - 1] = b[(jrow - 1) + (jcol - 1) * ldb].real();
             }
         }
-        Rgemm("T", "N", nl, nrhs, nl, one, &u[(nlf - 1)], ldu, &rwork[(1 + nl * nrhs * 2) - 1], nl, zero, &rwork[1 - 1], nl);
+        Rgemm("T", "N", nl, nrhs, nl, one, &u[(nlf - 1)], ldu, &rwork[(1 + nl * nrhs * 2) - 1], nl, zero, &rwork[0], nl);
         j = nl * nrhs * 2;
         for (jcol = 1; jcol <= nrhs; jcol = jcol + 1) {
             for (jrow = nlf; jrow <= nlf + nl - 1; jrow = jrow + 1) {
@@ -178,7 +178,7 @@ void Clalsa(INTEGER const icompq, INTEGER const smlsiz, INTEGER const n, INTEGER
                 rwork[j - 1] = b[(jrow - 1) + (jcol - 1) * ldb].real();
             }
         }
-        Rgemm("T", "N", nr, nrhs, nr, one, &u[(nrf - 1)], ldu, &rwork[(1 + nr * nrhs * 2) - 1], nr, zero, &rwork[1 - 1], nr);
+        Rgemm("T", "N", nr, nrhs, nr, one, &u[(nrf - 1)], ldu, &rwork[(1 + nr * nrhs * 2) - 1], nr, zero, &rwork[0], nr);
         j = nr * nrhs * 2;
         for (jcol = 1; jcol <= nrhs; jcol = jcol + 1) {
             for (jrow = nrf; jrow <= nrf + nr - 1; jrow = jrow + 1) {
@@ -309,7 +309,7 @@ statement_170:
                 rwork[j - 1] = b[(jrow - 1) + (jcol - 1) * ldb].real();
             }
         }
-        Rgemm("T", "N", nlp1, nrhs, nlp1, one, &vt[(nlf - 1)], ldu, &rwork[(1 + nlp1 * nrhs * 2) - 1], nlp1, zero, &rwork[1 - 1], nlp1);
+        Rgemm("T", "N", nlp1, nrhs, nlp1, one, &vt[(nlf - 1)], ldu, &rwork[(1 + nlp1 * nrhs * 2) - 1], nlp1, zero, &rwork[0], nlp1);
         j = nlp1 * nrhs * 2;
         for (jcol = 1; jcol <= nrhs; jcol = jcol + 1) {
             for (jrow = nlf; jrow <= nlf + nlp1 - 1; jrow = jrow + 1) {
@@ -341,7 +341,7 @@ statement_170:
                 rwork[j - 1] = b[(jrow - 1) + (jcol - 1) * ldb].real();
             }
         }
-        Rgemm("T", "N", nrp1, nrhs, nrp1, one, &vt[(nrf - 1)], ldu, &rwork[(1 + nrp1 * nrhs * 2) - 1], nrp1, zero, &rwork[1 - 1], nrp1);
+        Rgemm("T", "N", nrp1, nrhs, nrp1, one, &vt[(nrf - 1)], ldu, &rwork[(1 + nrp1 * nrhs * 2) - 1], nrp1, zero, &rwork[0], nrp1);
         j = nrp1 * nrhs * 2;
         for (jcol = 1; jcol <= nrhs; jcol = jcol + 1) {
             for (jrow = nrf; jrow <= nrf + nrp1 - 1; jrow = jrow + 1) {

@@ -156,7 +156,7 @@ void Cggevx(const char *balanc, const char *jobvl, const char *jobvr, const char
                 maxwrk = max(maxwrk, n + n * iMlaenv(1, "Cungqr", " ", n, 1, n, 0));
             }
         }
-        work[1 - 1] = maxwrk;
+        work[0] = maxwrk;
         //
         if (lwork < minwrk && !lquery) {
             info = -25;
@@ -221,18 +221,18 @@ void Cggevx(const char *balanc, const char *jobvl, const char *jobvr, const char
     //
     // Compute ABNRM and BBNRM
     //
-    abnrm = Clange("1", n, n, a, lda, &rwork[1 - 1]);
+    abnrm = Clange("1", n, n, a, lda, &rwork[0]);
     if (ilascl) {
-        rwork[1 - 1] = abnrm;
-        Rlascl("G", 0, 0, anrmto, anrm, 1, 1, &rwork[1 - 1], 1, ierr);
-        abnrm = rwork[1 - 1];
+        rwork[0] = abnrm;
+        Rlascl("G", 0, 0, anrmto, anrm, 1, 1, &rwork[0], 1, ierr);
+        abnrm = rwork[0];
     }
     //
-    bbnrm = Clange("1", n, n, b, ldb, &rwork[1 - 1]);
+    bbnrm = Clange("1", n, n, b, ldb, &rwork[0]);
     if (ilbscl) {
-        rwork[1 - 1] = bbnrm;
-        Rlascl("G", 0, 0, bnrmto, bnrm, 1, 1, &rwork[1 - 1], 1, ierr);
-        bbnrm = rwork[1 - 1];
+        rwork[0] = bbnrm;
+        Rlascl("G", 0, 0, bnrmto, bnrm, 1, 1, &rwork[0], 1, ierr);
+        bbnrm = rwork[0];
     }
     //
     // Reduce B to triangular form (QR decomposition of B)
@@ -351,14 +351,14 @@ void Cggevx(const char *balanc, const char *jobvl, const char *jobvr, const char
                 iwrk1 = iwrk + n;
                 //
                 if (wantse || wantsb) {
-                    Ctgevc("B", "S", bwork, n, a, lda, b, ldb, &work[1 - 1], n, &work[iwrk - 1], n, 1, m, &work[iwrk1 - 1], rwork, ierr);
+                    Ctgevc("B", "S", bwork, n, a, lda, b, ldb, &work[0], n, &work[iwrk - 1], n, 1, m, &work[iwrk1 - 1], rwork, ierr);
                     if (ierr != 0) {
                         info = n + 2;
                         goto statement_90;
                     }
                 }
                 //
-                Ctgsna(sense, "S", bwork, n, a, lda, b, ldb, &work[1 - 1], n, &work[iwrk - 1], n, &rconde[i - 1], &rcondv[i - 1], 1, m, &work[iwrk1 - 1], lwork - iwrk1 + 1, iwork, ierr);
+                Ctgsna(sense, "S", bwork, n, a, lda, b, ldb, &work[0], n, &work[iwrk - 1], n, &rconde[i - 1], &rcondv[i - 1], 1, m, &work[iwrk1 - 1], lwork - iwrk1 + 1, iwork, ierr);
                 //
             }
         }
@@ -416,7 +416,7 @@ statement_90:
         Clascl("G", 0, 0, bnrmto, bnrm, n, 1, beta, n, ierr);
     }
     //
-    work[1 - 1] = maxwrk;
+    work[0] = maxwrk;
     //
     // End of Cggevx
     //

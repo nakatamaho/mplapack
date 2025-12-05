@@ -100,7 +100,7 @@ void Ctgsy2(const char *trans, INTEGER const ijob, INTEGER const m, INTEGER cons
                 //
                 // Set up right hand side(s)
                 //
-                rhs[1 - 1] = c[(i - 1) + (j - 1) * ldc];
+                rhs[0] = c[(i - 1) + (j - 1) * ldc];
                 rhs[2 - 1] = f[(i - 1) + (j - 1) * ldf];
                 //
                 // Solve Z * x = RHS
@@ -124,13 +124,13 @@ void Ctgsy2(const char *trans, INTEGER const ijob, INTEGER const m, INTEGER cons
                 //
                 // Unpack solution vector(s)
                 //
-                c[(i - 1) + (j - 1) * ldc] = rhs[1 - 1];
+                c[(i - 1) + (j - 1) * ldc] = rhs[0];
                 f[(i - 1) + (j - 1) * ldf] = rhs[2 - 1];
                 //
                 // Substitute R(I, J) and L(I, J) into remaining equation.
                 //
                 if (i > 1) {
-                    alpha = -rhs[1 - 1];
+                    alpha = -rhs[0];
                     Caxpy(i - 1, alpha, &a[(i - 1) * lda], 1, &c[(j - 1) * ldc], 1);
                     Caxpy(i - 1, alpha, &d[(i - 1) * ldd], 1, &f[(j - 1) * ldf], 1);
                 }
@@ -162,7 +162,7 @@ void Ctgsy2(const char *trans, INTEGER const ijob, INTEGER const m, INTEGER cons
                 //
                 // Set up right hand side(s)
                 //
-                rhs[1 - 1] = c[(i - 1) + (j - 1) * ldc];
+                rhs[0] = c[(i - 1) + (j - 1) * ldc];
                 rhs[2 - 1] = f[(i - 1) + (j - 1) * ldf];
                 //
                 // Solve Z**H * x = RHS
@@ -182,16 +182,16 @@ void Ctgsy2(const char *trans, INTEGER const ijob, INTEGER const m, INTEGER cons
                 //
                 // Unpack solution vector(s)
                 //
-                c[(i - 1) + (j - 1) * ldc] = rhs[1 - 1];
+                c[(i - 1) + (j - 1) * ldc] = rhs[0];
                 f[(i - 1) + (j - 1) * ldf] = rhs[2 - 1];
                 //
                 // Substitute R(I, J) and L(I, J) into remaining equation.
                 //
                 for (k = 1; k <= j - 1; k = k + 1) {
-                    f[(i - 1) + (k - 1) * ldf] += rhs[1 - 1] * conj(b[(k - 1) + (j - 1) * ldb]) + rhs[2 - 1] * conj(e[(k - 1) + (j - 1) * lde]);
+                    f[(i - 1) + (k - 1) * ldf] += rhs[0] * conj(b[(k - 1) + (j - 1) * ldb]) + rhs[2 - 1] * conj(e[(k - 1) + (j - 1) * lde]);
                 }
                 for (k = i + 1; k <= m; k = k + 1) {
-                    c[(k - 1) + (j - 1) * ldc] = c[(k - 1) + (j - 1) * ldc] - conj(a[(i - 1) + (k - 1) * lda]) * rhs[1 - 1] - conj(d[(i - 1) + (k - 1) * ldd]) * rhs[2 - 1];
+                    c[(k - 1) + (j - 1) * ldc] = c[(k - 1) + (j - 1) * ldc] - conj(a[(i - 1) + (k - 1) * lda]) * rhs[0] - conj(d[(i - 1) + (k - 1) * ldd]) * rhs[2 - 1];
                 }
                 //
             }

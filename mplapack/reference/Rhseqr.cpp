@@ -35,7 +35,7 @@ void Rhseqr(const char *job, const char *compz, INTEGER const n, INTEGER const i
     bool wantt = Mlsame(job, "S");
     bool initz = Mlsame(compz, "I");
     bool wantz = initz || Mlsame(compz, "V");
-    work[1 - 1] = castREAL(max((INTEGER)1, n));
+    work[0] = castREAL(max((INTEGER)1, n));
     bool lquery = lwork == -1;
     //
     info = 0;
@@ -82,7 +82,7 @@ void Rhseqr(const char *job, const char *compz, INTEGER const n, INTEGER const i
         //
         //
         Rlaqr0(wantt, wantz, n, ilo, ihi, h, ldh, wr, wi, ilo, ihi, z, ldz, work, lwork, info);
-        work[1 - 1] = max(castREAL(max((INTEGER)1, n)), work[1 - 1]);
+        work[0] = max(castREAL(max((INTEGER)1, n)), work[0]);
         return;
         //
     } else {
@@ -157,7 +157,7 @@ void Rhseqr(const char *job, const char *compz, INTEGER const n, INTEGER const i
         }
         //
         //
-        work[1 - 1] = max(castREAL(max((INTEGER)1, n)), work[1 - 1]);
+        work[0] = max(castREAL(max((INTEGER)1, n)), work[0]);
     }
     //
     //

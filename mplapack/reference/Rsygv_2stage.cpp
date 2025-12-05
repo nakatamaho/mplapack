@@ -63,7 +63,7 @@ void Rsygv_2stage(INTEGER const itype, const char *jobz, const char *uplo, INTEG
         lhtrd = iMlaenv2stage(3, "Rsytrd_2stage", jobz, n, kd, ib, -1);
         lwtrd = iMlaenv2stage(4, "Rsytrd_2stage", jobz, n, kd, ib, -1);
         lwmin = 2 * n + lhtrd + lwtrd;
-        work[1 - 1] = lwmin;
+        work[0] = lwmin;
         //
         if (lwork < lwmin && !lquery) {
             info = -11;
@@ -135,7 +135,7 @@ void Rsygv_2stage(INTEGER const itype, const char *jobz, const char *uplo, INTEG
         }
     }
     //
-    work[1 - 1] = lwmin;
+    work[0] = lwmin;
     //
     // End of Rsygv_2stage
     //

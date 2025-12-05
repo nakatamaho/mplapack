@@ -100,8 +100,8 @@ void Ctrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
     side_howmny[2] = '\0';
     nb = iMlaenv(1, "Ctrevc", side_howmny, n, -1, -1, -1);
     maxwrk = n + 2 * n * nb;
-    work[1 - 1] = maxwrk;
-    rwork[1 - 1] = n;
+    work[0] = maxwrk;
+    rwork[0] = n;
     lquery = (lwork == -1 || lrwork == -1);
     if (!rightv && !leftv) {
         info = -1;
@@ -162,7 +162,7 @@ void Ctrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
     // Compute 1-norm of each column of strictly upper triangular
     // part of T to control overflow in triangular solver.
     //
-    rwork[1 - 1] = zero;
+    rwork[0] = zero;
     for (j = 2; j <= n; j = j + 1) {
         rwork[j - 1] = RCasum(j - 1, &t[(j - 1) * ldt], 1);
     }

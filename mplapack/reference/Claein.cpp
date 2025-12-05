@@ -193,7 +193,7 @@ void Claein(bool const rightv, bool const noinit, INTEGER const n, COMPLEX *h, I
         // Choose new orthogonal starting vector and try again.
         //
         rtemp = eps3 / (rootn + one);
-        v[1 - 1] = eps3;
+        v[0] = eps3;
         for (i = 2; i <= n; i = i + 1) {
             v[i - 1] = rtemp;
         }

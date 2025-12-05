@@ -103,7 +103,7 @@ void Claqr0(bool const wantt, bool const wantz, INTEGER const n, INTEGER const i
     //
     //
     if (n == 0) {
-        work[1 - 1] = one;
+        work[0] = one;
         return;
     }
     //
@@ -152,11 +152,11 @@ void Claqr0(bool const wantt, bool const wantz, INTEGER const n, INTEGER const i
         Claqr3(wantt, wantz, n, ilo, ihi, nwr + 1, h, ldh, iloz, ihiz, z, ldz, ls, ld, w, h, ldh, n, h, ldh, n, h, ldh, work, -1);
         //
         //
-        lwkopt = max(3 * nsr / 2, castINTEGER(work[1 - 1].real()));
+        lwkopt = max(3 * nsr / 2, castINTEGER(work[0].real()));
         //
         //
         if (lwork == -1) {
-            work[1 - 1] = COMPLEX(lwkopt, 0.0);
+            work[0] = COMPLEX(lwkopt, 0.0);
             return;
         }
         //
@@ -408,7 +408,7 @@ void Claqr0(bool const wantt, bool const wantz, INTEGER const n, INTEGER const i
     }
     //
     //
-    work[1 - 1] = COMPLEX(lwkopt, 0.0);
+    work[0] = COMPLEX(lwkopt, 0.0);
     //
     //
 }

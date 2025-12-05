@@ -68,7 +68,7 @@ void Csytrf_rk(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda,
         //
         nb = iMlaenv(1, "Csytrf_rk", uplo, n, -1, -1, -1);
         lwkopt = n * nb;
-        work[1 - 1] = lwkopt;
+        work[0] = lwkopt;
     }
     //
     if (info != 0) {
@@ -241,7 +241,7 @@ void Csytrf_rk(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda,
         //
     }
     //
-    work[1 - 1] = lwkopt;
+    work[0] = lwkopt;
     //
     // End of Csytrf_rk
     //

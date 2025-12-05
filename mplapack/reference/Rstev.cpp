@@ -87,7 +87,7 @@ void Rstev(const char *jobz, INTEGER const n, REAL *d, REAL *e, REAL *z, INTEGER
     }
     if (iscale == 1) {
         Rscal(n, sigma, d, 1);
-        Rscal(n - 1, sigma, &e[1 - 1], 1);
+        Rscal(n - 1, sigma, &e[0], 1);
     }
     //
     // For eigenvalues only, call Rsterf.  For eigenvalues and

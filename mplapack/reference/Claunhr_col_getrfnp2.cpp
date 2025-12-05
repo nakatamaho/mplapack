@@ -75,11 +75,11 @@ void Claunhr_col_getrfnp2(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER 
         //
         // Transfer the sign
         //
-        d[1 - 1] = COMPLEX(-sign(one, a[0].real()), 0.0);
+        d[0] = COMPLEX(-sign(one, a[0].real()), 0.0);
         //
         // Construct the row of U
         //
-        a[0] = a[0] - d[1 - 1];
+        a[0] = a[0] - d[0];
         //
     } else if (n == 1) {
         //
@@ -88,11 +88,11 @@ void Claunhr_col_getrfnp2(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER 
         //
         // Transfer the sign
         //
-        d[1 - 1] = COMPLEX(-sign(one, a[0].real()), 0.0);
+        d[0] = COMPLEX(-sign(one, a[0].real()), 0.0);
         //
         // Construct the row of U
         //
-        a[0] = a[0] - d[1 - 1];
+        a[0] = a[0] - d[0];
         //
         // Scale the elements 2:M of the column
         //

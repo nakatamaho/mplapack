@@ -117,7 +117,7 @@ void Rlarrj(INTEGER const n, REAL *d, REAL *e2, INTEGER const ifirst, INTEGER co
         statement_20:
             cnt = 0;
             s = left;
-            dplus = d[1 - 1] - s;
+            dplus = d[0] - s;
             if (dplus < zero) {
                 cnt++;
             }
@@ -139,7 +139,7 @@ void Rlarrj(INTEGER const n, REAL *d, REAL *e2, INTEGER const ifirst, INTEGER co
         statement_50:
             cnt = 0;
             s = right;
-            dplus = d[1 - 1] - s;
+            dplus = d[0] - s;
             if (dplus < zero) {
                 cnt++;
             }
@@ -207,7 +207,7 @@ statement_80:
         //
         cnt = 0;
         s = mid;
-        dplus = d[1 - 1] - s;
+        dplus = d[0] - s;
         if (dplus < zero) {
             cnt++;
         }

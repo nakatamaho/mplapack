@@ -125,7 +125,7 @@ void Rggev(const char *jobvl, const char *jobvr, INTEGER const n, REAL *a, INTEG
         if (ilvl) {
             maxwrk = max(maxwrk, n * (7 + iMlaenv(1, "Rorgqr", " ", n, 1, n, -1)));
         }
-        work[1 - 1] = maxwrk;
+        work[0] = maxwrk;
         //
         if (lwork < minwrk && !lquery) {
             info = -16;
@@ -366,7 +366,7 @@ statement_110:
         Rlascl("G", 0, 0, bnrmto, bnrm, n, 1, beta, n, ierr);
     }
     //
-    work[1 - 1] = maxwrk;
+    work[0] = maxwrk;
     //
     // End of Rggev
     //

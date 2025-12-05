@@ -101,7 +101,7 @@ void Cunmbr(const char *vect, const char *side, const char *trans, INTEGER const
         } else {
             lwkopt = 1;
         }
-        work[1 - 1] = lwkopt;
+        work[0] = lwkopt;
     }
     //
     if (info != 0) {
@@ -181,7 +181,7 @@ void Cunmbr(const char *vect, const char *side, const char *trans, INTEGER const
             Cunmlq(side, &transt, mi, ni, nq - 1, &a[(2 - 1) * lda], lda, tau, &c[(i1 - 1) + (i2 - 1) * ldc], ldc, work, lwork, iinfo);
         }
     }
-    work[1 - 1] = lwkopt;
+    work[0] = lwkopt;
     //
     // End of Cunmbr
     //

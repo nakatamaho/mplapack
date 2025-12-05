@@ -84,9 +84,9 @@ void Rlasd3(INTEGER const nl, INTEGER const nr, INTEGER const sqre, INTEGER cons
     // Quick return if possible
     //
     if (k == 1) {
-        d[1 - 1] = abs(z[1 - 1]);
+        d[0] = abs(z[0]);
         Rcopy(m, &vt2[0], ldvt2, &vt[0], ldvt);
-        if (z[1 - 1] > zero) {
+        if (z[0] > zero) {
             Rcopy(n, &u2[0], 1, &u[0], 1);
         } else {
             for (i = 1; i <= n; i = i + 1) {
@@ -156,7 +156,7 @@ void Rlasd3(INTEGER const nl, INTEGER const nr, INTEGER const sqre, INTEGER cons
     // and store related information for the right singular vectors.
     //
     for (i = 1; i <= k; i = i + 1) {
-        vt[(i - 1) * ldvt] = z[1 - 1] / u[(i - 1) * ldu] / vt[(i - 1) * ldvt];
+        vt[(i - 1) * ldvt] = z[0] / u[(i - 1) * ldu] / vt[(i - 1) * ldvt];
         u[(i - 1) * ldu] = negone;
         for (j = 2; j <= k; j = j + 1) {
             vt[(j - 1) + (i - 1) * ldvt] = z[j - 1] / u[(j - 1) + (i - 1) * ldu] / vt[(j - 1) + (i - 1) * ldvt];
@@ -176,20 +176,20 @@ void Rlasd3(INTEGER const nl, INTEGER const nr, INTEGER const sqre, INTEGER cons
         Rgemm("N", "N", n, k, k, one, u2, ldu2, q, ldq, zero, u, ldu);
         goto statement_100;
     }
-    if (ctot[1 - 1] > 0) {
-        Rgemm("N", "N", nl, k, ctot[1 - 1], one, &u2[(2 - 1) * ldu2], ldu2, &q[(2 - 1)], ldq, zero, &u[0], ldu);
+    if (ctot[0] > 0) {
+        Rgemm("N", "N", nl, k, ctot[0], one, &u2[(2 - 1) * ldu2], ldu2, &q[(2 - 1)], ldq, zero, &u[0], ldu);
         if (ctot[3 - 1] > 0) {
-            ktemp = 2 + ctot[1 - 1] + ctot[2 - 1];
+            ktemp = 2 + ctot[0] + ctot[2 - 1];
             Rgemm("N", "N", nl, k, ctot[3 - 1], one, &u2[(ktemp - 1) * ldu2], ldu2, &q[(ktemp - 1)], ldq, one, &u[0], ldu);
         }
     } else if (ctot[3 - 1] > 0) {
-        ktemp = 2 + ctot[1 - 1] + ctot[2 - 1];
+        ktemp = 2 + ctot[0] + ctot[2 - 1];
         Rgemm("N", "N", nl, k, ctot[3 - 1], one, &u2[(ktemp - 1) * ldu2], ldu2, &q[(ktemp - 1)], ldq, zero, &u[0], ldu);
     } else {
         Rlacpy("F", nl, k, u2, ldu2, u, ldu);
     }
     Rcopy(k, &q[0], ldq, &u[(nlp1 - 1)], ldu);
-    ktemp = 2 + ctot[1 - 1];
+    ktemp = 2 + ctot[0];
     ctemp = ctot[2 - 1] + ctot[3 - 1];
     Rgemm("N", "N", nr, k, ctemp, one, &u2[(nlp2 - 1) + (ktemp - 1) * ldu2], ldu2, &q[(ktemp - 1)], ldq, zero, &u[(nlp2 - 1)], ldu);
 //
@@ -211,14 +211,14 @@ statement_100:
         Rgemm("N", "N", k, m, k, one, q, ldq, vt2, ldvt2, zero, vt, ldvt);
         return;
     }
-    ktemp = 1 + ctot[1 - 1];
+    ktemp = 1 + ctot[0];
     Rgemm("N", "N", k, nlp1, ktemp, one, &q[0], ldq, &vt2[0], ldvt2, zero, &vt[0], ldvt);
-    ktemp = 2 + ctot[1 - 1] + ctot[2 - 1];
+    ktemp = 2 + ctot[0] + ctot[2 - 1];
     if (ktemp <= ldvt2) {
         Rgemm("N", "N", k, nlp1, ctot[3 - 1], one, &q[(ktemp - 1) * ldq], ldq, &vt2[(ktemp - 1)], ldvt2, one, &vt[0], ldvt);
     }
     //
-    ktemp = ctot[1 - 1] + 1;
+    ktemp = ctot[0] + 1;
     nrp1 = nr + sqre;
     if (ktemp > 1) {
         for (i = 1; i <= k; i = i + 1) {

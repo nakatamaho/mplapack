@@ -85,7 +85,7 @@ void Cunmlq(const char *side, const char *trans, INTEGER const m, INTEGER const 
         //
         nb = min(nbmax, iMlaenv(1, "Cunmlq", side_trans, m, n, k, -1));
         lwkopt = max((INTEGER)1, nw) * nb + tsize;
-        work[1 - 1] = lwkopt;
+        work[0] = lwkopt;
     }
     //
     if (info != 0) {
@@ -98,7 +98,7 @@ void Cunmlq(const char *side, const char *trans, INTEGER const m, INTEGER const 
     // Quick return if possible
     //
     if (m == 0 || n == 0 || k == 0) {
-        work[1 - 1] = 1;
+        work[0] = 1;
         return;
     }
     //
@@ -183,7 +183,7 @@ void Cunmlq(const char *side, const char *trans, INTEGER const m, INTEGER const 
             Clarfb(side, &transt, "Forward", "Rowwise", mi, ni, ib, &a[(i - 1) + (i - 1) * lda], lda, &work[iwt - 1], ldt, &c[(ic - 1) + (jc - 1) * ldc], ldc, work, ldwork);
         }
     }
-    work[1 - 1] = lwkopt;
+    work[0] = lwkopt;
     //
     // End of Cunmlq
     //

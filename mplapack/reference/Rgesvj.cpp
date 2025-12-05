@@ -120,7 +120,7 @@ void Rgesvj(const char *joba, const char *jobu, const char *jobv, INTEGER const 
         info = -9;
     } else if ((rsvec && (ldv < n)) || (applv && (ldv < mv))) {
         info = -11;
-    } else if (uctol && (work[1 - 1] <= one)) {
+    } else if (uctol && (work[0] <= one)) {
         info = -12;
     } else if (lwork < max(m + n, (INTEGER)6)) {
         info = -13;
@@ -149,7 +149,7 @@ void Rgesvj(const char *joba, const char *jobu, const char *jobv, INTEGER const 
     //
     if (uctol) {
         // ... user controlled
-        ctol = work[1 - 1];
+        ctol = work[0];
     } else {
         // ... default
         if (lsvec || rsvec || applv) {
@@ -307,7 +307,7 @@ void Rgesvj(const char *joba, const char *jobu, const char *jobv, INTEGER const 
         if (lsvec) {
             Rlaset("G", m, n, zero, one, a, lda);
         }
-        work[1 - 1] = one;
+        work[0] = one;
         work[2 - 1] = zero;
         work[3 - 1] = zero;
         work[4 - 1] = zero;
@@ -320,10 +320,10 @@ void Rgesvj(const char *joba, const char *jobu, const char *jobv, INTEGER const 
     //
     if (n == 1) {
         if (lsvec) {
-            Rlascl("G", 0, 0, sva[1 - 1], skl, m, 1, &a[0], lda, ierr);
+            Rlascl("G", 0, 0, sva[0], skl, m, 1, &a[0], lda, ierr);
         }
-        work[1 - 1] = one / skl;
-        if (sva[1 - 1] >= sfmin) {
+        work[0] = one / skl;
+        if (sva[0] >= sfmin) {
             work[2 - 1] = one;
         } else {
             work[2 - 1] = zero;
@@ -375,7 +375,7 @@ void Rgesvj(const char *joba, const char *jobu, const char *jobv, INTEGER const 
     //
     emptsw = (n * (n - 1)) / 2;
     notrot = 0;
-    fastr[1 - 1] = zero;
+    fastr[0] = zero;
     //
     // A is represented in factored form A = A * diag(WORK), where diag(WORK)
     // is initialized to identity. WORK is updated during fast scaled
@@ -1106,14 +1106,14 @@ statement_1995:
     }
     //
     // Undo scaling, if necessary (and possible).
-    if (((skl > one) && (sva[1 - 1] < (big / skl))) || ((skl < one) && (sva[(max(n2, (INTEGER)1) - 1)] > (sfmin / skl)))) {
+    if (((skl > one) && (sva[0] < (big / skl))) || ((skl < one) && (sva[(max(n2, (INTEGER)1) - 1)] > (sfmin / skl)))) {
         for (p = 1; p <= n; p = p + 1) {
             sva[p - 1] = skl * sva[p - 1];
         }
         skl = one;
     }
     //
-    work[1 - 1] = skl;
+    work[0] = skl;
     // The singular values of A are SKL*SVA(1:N). If SKL.NE.ONE
     // then some of the singular values may overflow or underflow and
     // the spectrum is given in this factored representation.

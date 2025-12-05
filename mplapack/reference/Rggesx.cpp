@@ -163,13 +163,13 @@ void Rggesx(const char *jobvsl, const char *jobvsr, const char *sort, bool (*sel
             maxwrk = 1;
             lwrk = 1;
         }
-        work[1 - 1] = lwrk;
+        work[0] = lwrk;
         if (wantsn || n == 0) {
             liwmin = 1;
         } else {
             liwmin = n + 6;
         }
-        iwork[1 - 1] = liwmin;
+        iwork[0] = liwmin;
         //
         if (lwork < minwrk && !lquery) {
             info = -22;
@@ -330,11 +330,11 @@ void Rggesx(const char *jobvsl, const char *jobvsr, const char *sort, bool (*sel
             info = -22;
         } else {
             if (ijob == 1 || ijob == 4) {
-                rconde[1 - 1] = pl;
+                rconde[0] = pl;
                 rconde[2 - 1] = pr;
             }
             if (ijob == 2 || ijob == 4) {
-                rcondv[1 - 1] = dif[1 - 1];
+                rcondv[0] = dif[0];
                 rcondv[2 - 1] = dif[2 - 1];
             }
             if (ierr == 1) {
@@ -363,15 +363,15 @@ void Rggesx(const char *jobvsl, const char *jobvsr, const char *sort, bool (*sel
         for (i = 1; i <= n; i = i + 1) {
             if (alphai[i - 1] != zero) {
                 if ((alphar[i - 1] / safmax) > (anrmto / anrm) || (safmin / alphar[i - 1]) > (anrm / anrmto)) {
-                    work[1 - 1] = abs(a[(i - 1) + (i - 1) * lda] / alphar[i - 1]);
-                    beta[i - 1] = beta[i - 1] * work[1 - 1];
-                    alphar[i - 1] = alphar[i - 1] * work[1 - 1];
-                    alphai[i - 1] = alphai[i - 1] * work[1 - 1];
+                    work[0] = abs(a[(i - 1) + (i - 1) * lda] / alphar[i - 1]);
+                    beta[i - 1] = beta[i - 1] * work[0];
+                    alphar[i - 1] = alphar[i - 1] * work[0];
+                    alphai[i - 1] = alphai[i - 1] * work[0];
                 } else if ((alphai[i - 1] / safmax) > (anrmto / anrm) || (safmin / alphai[i - 1]) > (anrm / anrmto)) {
-                    work[1 - 1] = abs(a[(i - 1) + ((i + 1) - 1) * lda] / alphai[i - 1]);
-                    beta[i - 1] = beta[i - 1] * work[1 - 1];
-                    alphar[i - 1] = alphar[i - 1] * work[1 - 1];
-                    alphai[i - 1] = alphai[i - 1] * work[1 - 1];
+                    work[0] = abs(a[(i - 1) + ((i + 1) - 1) * lda] / alphai[i - 1]);
+                    beta[i - 1] = beta[i - 1] * work[0];
+                    alphar[i - 1] = alphar[i - 1] * work[0];
+                    alphai[i - 1] = alphai[i - 1] * work[0];
                 }
             }
         }
@@ -381,10 +381,10 @@ void Rggesx(const char *jobvsl, const char *jobvsr, const char *sort, bool (*sel
         for (i = 1; i <= n; i = i + 1) {
             if (alphai[i - 1] != zero) {
                 if ((beta[i - 1] / safmax) > (bnrmto / bnrm) || (safmin / beta[i - 1]) > (bnrm / bnrmto)) {
-                    work[1 - 1] = abs(b[(i - 1) + (i - 1) * ldb] / beta[i - 1]);
-                    beta[i - 1] = beta[i - 1] * work[1 - 1];
-                    alphar[i - 1] = alphar[i - 1] * work[1 - 1];
-                    alphai[i - 1] = alphai[i - 1] * work[1 - 1];
+                    work[0] = abs(b[(i - 1) + (i - 1) * ldb] / beta[i - 1]);
+                    beta[i - 1] = beta[i - 1] * work[0];
+                    alphar[i - 1] = alphar[i - 1] * work[0];
+                    alphai[i - 1] = alphai[i - 1] * work[0];
                 }
             }
         }
@@ -450,8 +450,8 @@ void Rggesx(const char *jobvsl, const char *jobvsr, const char *sort, bool (*sel
 //
 statement_60:
     //
-    work[1 - 1] = maxwrk;
-    iwork[1 - 1] = liwmin;
+    work[0] = maxwrk;
+    iwork[0] = liwmin;
     //
     // End of Rggesx
     //

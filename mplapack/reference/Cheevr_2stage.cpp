@@ -143,9 +143,9 @@ void Cheevr_2stage(const char *jobz, const char *range, const char *uplo, INTEGE
     }
     //
     if (info == 0) {
-        work[1 - 1] = lwmin;
-        rwork[1 - 1] = lrwmin;
-        iwork[1 - 1] = liwmin;
+        work[0] = lwmin;
+        rwork[0] = lrwmin;
+        iwork[0] = liwmin;
         //
         if (lwork < lwmin && !lquery) {
             info = -18;
@@ -167,24 +167,24 @@ void Cheevr_2stage(const char *jobz, const char *range, const char *uplo, INTEGE
     //
     m = 0;
     if (n == 0) {
-        work[1 - 1] = 1;
+        work[0] = 1;
         return;
     }
     //
     if (n == 1) {
-        work[1 - 1] = 2;
+        work[0] = 2;
         if (alleig || indeig) {
             m = 1;
-            w[1 - 1] = a[0].real();
+            w[0] = a[0].real();
         } else {
             if (vl < a[0].real() && vu >= a[0].real()) {
                 m = 1;
-                w[1 - 1] = a[0].real();
+                w[0] = a[0].real();
             }
         }
         if (wantz) {
             z[0] = one;
-            isuppz[1 - 1] = 1;
+            isuppz[0] = 1;
             isuppz[2 - 1] = 1;
         }
         return;
@@ -384,9 +384,9 @@ statement_30:
     //
     // Set WORK(1) to optimal workspace size.
     //
-    work[1 - 1] = lwmin;
-    rwork[1 - 1] = lrwmin;
-    iwork[1 - 1] = liwmin;
+    work[0] = lwmin;
+    rwork[0] = lrwmin;
+    iwork[0] = liwmin;
     //
     // End of Cheevr_2stage
     //

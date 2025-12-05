@@ -108,9 +108,9 @@ void Cstedc(const char *compz, INTEGER const n, REAL *d, REAL *e, COMPLEX *z, IN
             lrwmin = 1 + 4 * n + 2 * n * n;
             liwmin = 3 + 5 * n;
         }
-        work[1 - 1] = lwmin;
-        rwork[1 - 1] = lrwmin;
-        iwork[1 - 1] = liwmin;
+        work[0] = lwmin;
+        rwork[0] = lrwmin;
+        iwork[0] = liwmin;
         //
         if (lwork < lwmin && !lquery) {
             info = -8;
@@ -272,9 +272,9 @@ void Cstedc(const char *compz, INTEGER const n, REAL *d, REAL *e, COMPLEX *z, IN
     }
 //
 statement_70:
-    work[1 - 1] = lwmin;
-    rwork[1 - 1] = lrwmin;
-    iwork[1 - 1] = liwmin;
+    work[0] = lwmin;
+    rwork[0] = lrwmin;
+    iwork[0] = liwmin;
     //
     // End of Cstedc
     //

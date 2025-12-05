@@ -149,8 +149,8 @@ void Rgelsd(INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEG
             minwrk = max(3 * m + nrhs, 3 * m + m, 3 * m + wlalsd);
         }
         minwrk = min(minwrk, maxwrk);
-        work[1 - 1] = maxwrk;
-        iwork[1 - 1] = liwork;
+        work[0] = maxwrk;
+        iwork[0] = liwork;
         //
         if (lwork < minwrk && !lquery) {
             info = -12;
@@ -392,8 +392,8 @@ void Rgelsd(INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEG
     }
 //
 statement_10:
-    work[1 - 1] = maxwrk;
-    iwork[1 - 1] = liwork;
+    work[0] = maxwrk;
+    iwork[0] = liwork;
     //
     // End of Rgelsd
     //

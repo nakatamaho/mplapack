@@ -117,13 +117,13 @@ void Rsyevx(const char *jobz, const char *range, const char *uplo, INTEGER const
     if (info == 0) {
         if (n <= 1) {
             lwkmin = 1;
-            work[1 - 1] = lwkmin;
+            work[0] = lwkmin;
         } else {
             lwkmin = 8 * n;
             nb = iMlaenv(1, "Rsytrd", uplo, n, -1, -1, -1);
             nb = max(nb, iMlaenv(1, "Rormtr", uplo, n, -1, -1, -1));
             lwkopt = max(lwkmin, (nb + 3) * n);
-            work[1 - 1] = lwkopt;
+            work[0] = lwkopt;
         }
         //
         if (lwork < lwkmin && !lquery) {
@@ -148,11 +148,11 @@ void Rsyevx(const char *jobz, const char *range, const char *uplo, INTEGER const
     if (n == 1) {
         if (alleig || indeig) {
             m = 1;
-            w[1 - 1] = a[0];
+            w[0] = a[0];
         } else {
             if (vl < a[0] && vu >= a[0]) {
                 m = 1;
-                w[1 - 1] = a[0];
+                w[0] = a[0];
             }
         }
         if (wantz) {
@@ -315,7 +315,7 @@ statement_40:
     //
     // Set WORK(1) to optimal workspace size.
     //
-    work[1 - 1] = lwkopt;
+    work[0] = lwkopt;
     //
     // End of Rsyevx
     //

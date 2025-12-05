@@ -40,7 +40,7 @@ void Rgetri(INTEGER const n, REAL *a, INTEGER const lda, INTEGER *ipiv, REAL *wo
     info = 0;
     INTEGER nb = iMlaenv(1, "Rgetri", " ", n, -1, -1, -1);
     INTEGER lwkopt = n * nb;
-    work[1 - 1] = lwkopt;
+    work[0] = lwkopt;
     bool lquery = (lwork == -1);
     if (n < 0) {
         info = -1;
@@ -148,7 +148,7 @@ void Rgetri(INTEGER const n, REAL *a, INTEGER const lda, INTEGER *ipiv, REAL *wo
         }
     }
     //
-    work[1 - 1] = iws;
+    work[0] = iws;
     //
     // End of Rgetri
     //

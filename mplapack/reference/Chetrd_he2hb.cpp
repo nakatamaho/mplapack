@@ -61,7 +61,7 @@ void Chetrd_he2hb(const char *uplo, INTEGER const n, INTEGER const kd, COMPLEX *
         Mxerbla("Chetrd_he2hb", -info);
         return;
     } else if (lquery) {
-        work[1 - 1] = lwmin;
+        work[0] = lwmin;
         return;
     }
     //
@@ -82,7 +82,7 @@ void Chetrd_he2hb(const char *uplo, INTEGER const n, INTEGER const kd, COMPLEX *
                 Ccopy(lk, &a[(i - 1) + (i - 1) * lda], 1, &ab[(i - 1) * ldab], 1);
             }
         }
-        work[1 - 1] = 1;
+        work[0] = 1;
         return;
     }
     //
@@ -222,7 +222,7 @@ void Chetrd_he2hb(const char *uplo, INTEGER const n, INTEGER const kd, COMPLEX *
         //
     }
     //
-    work[1 - 1] = lwmin;
+    work[0] = lwmin;
     //
     // End of Chetrd_he2hb
     //

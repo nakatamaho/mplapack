@@ -77,8 +77,8 @@ void Rsyevd_2stage(const char *jobz, const char *uplo, INTEGER const n, REAL *a,
                 lwmin = 2 * n + 1 + lhtrd + lwtrd;
             }
         }
-        work[1 - 1] = lwmin;
-        iwork[1 - 1] = liwmin;
+        work[0] = lwmin;
+        iwork[0] = liwmin;
         //
         if (lwork < lwmin && !lquery) {
             info = -8;
@@ -102,7 +102,7 @@ void Rsyevd_2stage(const char *jobz, const char *uplo, INTEGER const n, REAL *a,
     //
     const REAL one = 1.0;
     if (n == 1) {
-        w[1 - 1] = a[0];
+        w[0] = a[0];
         if (wantz) {
             a[0] = one;
         }
@@ -170,8 +170,8 @@ void Rsyevd_2stage(const char *jobz, const char *uplo, INTEGER const n, REAL *a,
         Rscal(n, one / sigma, w, 1);
     }
     //
-    work[1 - 1] = lwmin;
-    iwork[1 - 1] = liwmin;
+    work[0] = lwmin;
+    iwork[0] = liwmin;
     //
     // End of Rsyevd_2stage
     //

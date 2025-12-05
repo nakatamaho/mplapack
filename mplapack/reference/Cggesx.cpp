@@ -162,13 +162,13 @@ void Cggesx(const char *jobvsl, const char *jobvsr, const char *sort, bool (*sel
             maxwrk = 1;
             lwrk = 1;
         }
-        work[1 - 1] = lwrk;
+        work[0] = lwrk;
         if (wantsn || n == 0) {
             liwmin = 1;
         } else {
             liwmin = n + 2;
         }
-        iwork[1 - 1] = liwmin;
+        iwork[0] = liwmin;
         //
         if (lwork < minwrk && !lquery) {
             info = -21;
@@ -329,11 +329,11 @@ void Cggesx(const char *jobvsl, const char *jobvsr, const char *sort, bool (*sel
             info = -21;
         } else {
             if (ijob == 1 || ijob == 4) {
-                rconde[1 - 1] = pl;
+                rconde[0] = pl;
                 rconde[2 - 1] = pr;
             }
             if (ijob == 2 || ijob == 4) {
-                rcondv[1 - 1] = dif[1 - 1];
+                rcondv[0] = dif[0];
                 rcondv[2 - 1] = dif[2 - 1];
             }
             if (ierr == 1) {
@@ -387,8 +387,8 @@ void Cggesx(const char *jobvsl, const char *jobvsr, const char *sort, bool (*sel
 //
 statement_40:
     //
-    work[1 - 1] = maxwrk;
-    iwork[1 - 1] = liwmin;
+    work[0] = maxwrk;
+    iwork[0] = liwmin;
     //
     // End of Cggesx
     //

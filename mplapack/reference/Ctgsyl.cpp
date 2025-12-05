@@ -100,7 +100,7 @@ void Ctgsyl(const char *trans, INTEGER const ijob, INTEGER const m, INTEGER cons
         } else {
             lwmin = 1;
         }
-        work[1 - 1] = lwmin;
+        work[0] = lwmin;
         //
         if (lwork < lwmin && !lquery) {
             info = -20;
@@ -358,7 +358,7 @@ statement_70:
         }
     }
     //
-    work[1 - 1] = lwmin;
+    work[0] = lwmin;
     //
     // End of Ctgsyl
     //

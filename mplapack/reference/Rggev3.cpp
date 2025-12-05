@@ -115,26 +115,26 @@ void Rggev3(const char *jobvl, const char *jobvr, INTEGER const n, REAL *a, INTE
     //
     if (info == 0) {
         Rgeqrf(n, n, b, ldb, work, work, -1, ierr);
-        lwkopt = max((INTEGER)1, 8 * n, 3 * n + castINTEGER(work[1 - 1]));
+        lwkopt = max((INTEGER)1, 8 * n, 3 * n + castINTEGER(work[0]));
         Rormqr("L", "T", n, n, n, b, ldb, work, a, lda, work, -1, ierr);
-        lwkopt = max(lwkopt, 3 * n + castINTEGER(work[1 - 1]));
+        lwkopt = max(lwkopt, 3 * n + castINTEGER(work[0]));
         if (ilvl) {
             Rorgqr(n, n, n, vl, ldvl, work, work, -1, ierr);
-            lwkopt = max(lwkopt, 3 * n + castINTEGER(work[1 - 1]));
+            lwkopt = max(lwkopt, 3 * n + castINTEGER(work[0]));
         }
         if (ilv) {
             Rgghd3(jobvl, jobvr, n, 1, n, a, lda, b, ldb, vl, ldvl, vr, ldvr, work, -1, ierr);
-            lwkopt = max(lwkopt, 3 * n + castINTEGER(work[1 - 1]));
+            lwkopt = max(lwkopt, 3 * n + castINTEGER(work[0]));
             Rhgeqz("S", jobvl, jobvr, n, 1, n, a, lda, b, ldb, alphar, alphai, beta, vl, ldvl, vr, ldvr, work, -1, ierr);
-            lwkopt = max(lwkopt, 2 * n + castINTEGER(work[1 - 1]));
+            lwkopt = max(lwkopt, 2 * n + castINTEGER(work[0]));
         } else {
             Rgghd3("N", "N", n, 1, n, a, lda, b, ldb, vl, ldvl, vr, ldvr, work, -1, ierr);
-            lwkopt = max(lwkopt, 3 * n + castINTEGER(work[1 - 1]));
+            lwkopt = max(lwkopt, 3 * n + castINTEGER(work[0]));
             Rhgeqz("E", jobvl, jobvr, n, 1, n, a, lda, b, ldb, alphar, alphai, beta, vl, ldvl, vr, ldvr, work, -1, ierr);
-            lwkopt = max(lwkopt, 2 * n + castINTEGER(work[1 - 1]));
+            lwkopt = max(lwkopt, 2 * n + castINTEGER(work[0]));
         }
         //
-        work[1 - 1] = lwkopt;
+        work[0] = lwkopt;
     }
     //
     if (info != 0) {
@@ -363,7 +363,7 @@ statement_110:
         Rlascl("G", 0, 0, bnrmto, bnrm, n, 1, beta, n, ierr);
     }
     //
-    work[1 - 1] = lwkopt;
+    work[0] = lwkopt;
     //
     // End of Rggev3
     //

@@ -126,7 +126,7 @@ void Rlaeda(INTEGER const n, INTEGER const tlvls, INTEGER const curlvl, INTEGER 
         bsiz1 = castINTEGER(half + sqrt(castREAL(qptr[(curr + 1) - 1] - qptr[curr - 1])));
         bsiz2 = castINTEGER(half + sqrt(castREAL(qptr[(curr + 2) - 1] - qptr[(curr + 1) - 1])));
         if (bsiz1 > 0) {
-            Rgemv("T", bsiz1, bsiz1, one, &q[qptr[curr - 1] - 1], bsiz1, &ztemp[1 - 1], 1, zero, &z[zptr1 - 1], 1);
+            Rgemv("T", bsiz1, bsiz1, one, &q[qptr[curr - 1] - 1], bsiz1, &ztemp[0], 1, zero, &z[zptr1 - 1], 1);
         }
         Rcopy(psiz1 - bsiz1, &ztemp[(bsiz1 + 1) - 1], 1, &z[(zptr1 + bsiz1) - 1], 1);
         if (bsiz2 > 0) {

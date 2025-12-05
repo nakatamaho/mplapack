@@ -101,7 +101,7 @@ void Rtgex2(bool const wantq, bool const wantz, INTEGER const n, REAL *a, INTEGE
     m = n1 + n2;
     if (lwork < max((INTEGER)1, n * m, m * m * 2)) {
         info = -16;
-        work[1 - 1] = max((INTEGER)1, n * m, m * m * 2);
+        work[0] = max((INTEGER)1, n * m, m * m * 2);
         return;
     }
     //
@@ -403,13 +403,13 @@ void Rtgex2(bool const wantq, bool const wantz, INTEGER const n, REAL *a, INTEGE
         // Standardize existing 2-by-2 blocks.
         //
         Rlaset("Full", m, m, zero, zero, work, m);
-        work[1 - 1] = one;
+        work[0] = one;
         t[0] = one;
         idum = lwork - m * m - 2;
         if (n2 > 1) {
-            Rlagv2(&a[(j1 - 1) + (j1 - 1) * lda], lda, &b[(j1 - 1) + (j1 - 1) * ldb], ldb, ar, ai, be, work[1 - 1], work[2 - 1], t[0], t[(2 - 1)]);
+            Rlagv2(&a[(j1 - 1) + (j1 - 1) * lda], lda, &b[(j1 - 1) + (j1 - 1) * ldb], ldb, ar, ai, be, work[0], work[2 - 1], t[0], t[(2 - 1)]);
             work[(m + 1) - 1] = -work[2 - 1];
-            work[(m + 2) - 1] = work[1 - 1];
+            work[(m + 2) - 1] = work[0];
             t[(n2 - 1) + (n2 - 1) * ldt] = t[0];
             t[(2 - 1) * ldt] = -t[(2 - 1)];
         }

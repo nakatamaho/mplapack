@@ -57,7 +57,7 @@ void Csytrs_aa(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a
         return;
     } else if (lquery) {
         lwkopt = (3 * n - 2);
-        work[1 - 1] = lwkopt;
+        work[0] = lwkopt;
         return;
     }
     //
@@ -98,10 +98,10 @@ void Csytrs_aa(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a
         //
         Clacpy("F", 1, n, &a[0], lda + 1, &work[n - 1], 1);
         if (n > 1) {
-            Clacpy("F", 1, n - 1, &a[(2 - 1) * lda], lda + 1, &work[1 - 1], 1);
+            Clacpy("F", 1, n - 1, &a[(2 - 1) * lda], lda + 1, &work[0], 1);
             Clacpy("F", 1, n - 1, &a[(2 - 1) * lda], lda + 1, &work[(2 * n) - 1], 1);
         }
-        Cgtsv(n, nrhs, &work[1 - 1], &work[n - 1], &work[(2 * n) - 1], b, ldb, info);
+        Cgtsv(n, nrhs, &work[0], &work[n - 1], &work[(2 * n) - 1], b, ldb, info);
         //
         // 3) Backward substitution with U
         //
@@ -149,10 +149,10 @@ void Csytrs_aa(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a
         //
         Clacpy("F", 1, n, &a[0], lda + 1, &work[n - 1], 1);
         if (n > 1) {
-            Clacpy("F", 1, n - 1, &a[(2 - 1)], lda + 1, &work[1 - 1], 1);
+            Clacpy("F", 1, n - 1, &a[(2 - 1)], lda + 1, &work[0], 1);
             Clacpy("F", 1, n - 1, &a[(2 - 1)], lda + 1, &work[(2 * n) - 1], 1);
         }
-        Cgtsv(n, nrhs, &work[1 - 1], &work[n - 1], &work[(2 * n) - 1], b, ldb, info);
+        Cgtsv(n, nrhs, &work[0], &work[n - 1], &work[(2 * n) - 1], b, ldb, info);
         //
         // 3) Backward substitution with L**T
         //

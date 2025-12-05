@@ -175,7 +175,7 @@ void Rgesvx(const char *fact, const char *trans, INTEGER const n, INTEGER const 
             } else {
                 rpvgrw = Rlange("M", n, info, a, lda, work) / rpvgrw;
             }
-            work[1 - 1] = rpvgrw;
+            work[0] = rpvgrw;
             rcond = zero;
             return;
         }
@@ -237,7 +237,7 @@ void Rgesvx(const char *fact, const char *trans, INTEGER const n, INTEGER const 
         }
     }
     //
-    work[1 - 1] = rpvgrw;
+    work[0] = rpvgrw;
     //
     // Set INFO = N+1 if the matrix is singular to working precision.
     //

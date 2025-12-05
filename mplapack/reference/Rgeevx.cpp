@@ -118,12 +118,12 @@ void Rgeevx(const char *balanc, const char *jobvl, const char *jobvr, const char
             //
             if (wantvl) {
                 Rtrevc3("L", "B", &select, n, a, lda, vl, ldvl, vr, ldvr, n, nout, work, -1, ierr);
-                lwork_trevc = castINTEGER(work[1 - 1]);
+                lwork_trevc = castINTEGER(work[0]);
                 maxwrk = max(maxwrk, n + lwork_trevc);
                 Rhseqr("S", "V", n, 1, n, a, lda, wr, wi, vl, ldvl, work, -1, info);
             } else if (wantvr) {
                 Rtrevc3("R", "B", &select, n, a, lda, vl, ldvl, vr, ldvr, n, nout, work, -1, ierr);
-                lwork_trevc = castINTEGER(work[1 - 1]);
+                lwork_trevc = castINTEGER(work[0]);
                 maxwrk = max(maxwrk, n + lwork_trevc);
                 Rhseqr("S", "V", n, 1, n, a, lda, wr, wi, vr, ldvr, work, -1, info);
             } else {
@@ -133,7 +133,7 @@ void Rgeevx(const char *balanc, const char *jobvl, const char *jobvr, const char
                     Rhseqr("S", "N", n, 1, n, a, lda, wr, wi, vr, ldvr, work, -1, info);
                 }
             }
-            hswork = castINTEGER(work[1 - 1]);
+            hswork = castINTEGER(work[0]);
             //
             if ((!wantvl) && (!wantvr)) {
                 minwrk = 2 * n;
@@ -158,7 +158,7 @@ void Rgeevx(const char *balanc, const char *jobvl, const char *jobvr, const char
             }
             maxwrk = max(maxwrk, minwrk);
         }
-        work[1 - 1] = maxwrk;
+        work[0] = maxwrk;
         //
         if (lwork < minwrk && !lquery) {
             info = -21;
@@ -207,9 +207,9 @@ void Rgeevx(const char *balanc, const char *jobvl, const char *jobvr, const char
     Rgebal(balanc, n, a, lda, ilo, ihi, scale, ierr);
     abnrm = Rlange("1", n, n, a, lda, dum);
     if (scalea) {
-        dum[1 - 1] = abnrm;
+        dum[0] = abnrm;
         Rlascl("G", 0, 0, cscale, anrm, 1, 1, dum, 1, ierr);
-        abnrm = dum[1 - 1];
+        abnrm = dum[0];
     }
     //
     // Reduce to upper Hessenberg form
@@ -374,7 +374,7 @@ statement_50:
         }
     }
     //
-    work[1 - 1] = maxwrk;
+    work[0] = maxwrk;
     //
     // End of Rgeevx
     //

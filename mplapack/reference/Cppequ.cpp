@@ -61,9 +61,9 @@ void Cppequ(const char *uplo, INTEGER const n, COMPLEX *ap, REAL *s, REAL &scond
     //
     // Initialize SMIN and AMAX.
     //
-    s[1 - 1] = ap[1 - 1].real();
-    REAL smin = s[1 - 1];
-    amax = s[1 - 1];
+    s[0] = ap[0].real();
+    REAL smin = s[0];
+    amax = s[0];
     //
     INTEGER jj = 0;
     INTEGER i = 0;

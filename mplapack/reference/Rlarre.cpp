@@ -130,19 +130,19 @@ void Rlarre(const char *range, INTEGER const n, REAL &vl, REAL &vu, INTEGER cons
     //
     // Treat case of 1x1 matrix for quick return
     if (n == 1) {
-        if ((irange == allrng) || ((irange == valrng) && (d[1 - 1] > vl) && (d[1 - 1] <= vu)) || ((irange == indrng) && (il == 1) && (iu == 1))) {
+        if ((irange == allrng) || ((irange == valrng) && (d[0] > vl) && (d[0] <= vu)) || ((irange == indrng) && (il == 1) && (iu == 1))) {
             m = 1;
-            w[1 - 1] = d[1 - 1];
+            w[0] = d[0];
             // The computation error of the eigenvalue is zero
-            werr[1 - 1] = zero;
-            wgap[1 - 1] = zero;
-            iblock[1 - 1] = 1;
-            indexw[1 - 1] = 1;
-            gers[1 - 1] = d[1 - 1];
-            gers[2 - 1] = d[1 - 1];
+            werr[0] = zero;
+            wgap[0] = zero;
+            iblock[0] = 1;
+            indexw[0] = 1;
+            gers[0] = d[0];
+            gers[2 - 1] = d[0];
         }
         // store the shift for the initial RRR, which is zero in this case
-        e[1 - 1] = zero;
+        e[0] = zero;
         return;
     }
     //
@@ -150,8 +150,8 @@ void Rlarre(const char *range, INTEGER const n, REAL &vl, REAL &vu, INTEGER cons
     //
     // Init WERR, WGAP. Compute Gerschgorin intervals and spectral diameter.
     // Compute maximum off-diagonal entry and pivmin.
-    gl = d[1 - 1];
-    gu = d[1 - 1];
+    gl = d[0];
+    gu = d[0];
     eold = zero;
     emax = zero;
     e[n - 1] = zero;
@@ -414,8 +414,8 @@ void Rlarre(const char *range, INTEGER const n, REAL &vl, REAL &vu, INTEGER cons
             // Store D in WORK(1:IN), L in WORK(IN+1:2*IN), and reciprocals of
             // pivots in WORK(2*IN+1:3*IN)
             dpivot = d[ibegin - 1] - sigma;
-            work[1 - 1] = dpivot;
-            dmax = abs(work[1 - 1]);
+            work[0] = dpivot;
+            dmax = abs(work[0]);
             j = ibegin;
             for (i = 1; i <= in - 1; i = i + 1) {
                 work[(2 * in + i) - 1] = one / work[i - 1];
@@ -486,7 +486,7 @@ void Rlarre(const char *range, INTEGER const n, REAL &vl, REAL &vu, INTEGER cons
                 iseed[i - 1] = 1;
             }
             //
-            Rlarnv(2, iseed, 2 * in - 1, &work[1 - 1]);
+            Rlarnv(2, iseed, 2 * in - 1, &work[0]);
             for (i = 1; i <= in - 1; i = i + 1) {
                 d[(ibegin + i - 1) - 1] = d[(ibegin + i - 1) - 1] * (one + eps * pert * work[i - 1]);
                 e[(ibegin + i - 1) - 1] = e[(ibegin + i - 1) - 1] * (one + eps * pert * work[(in + i) - 1]);

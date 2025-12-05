@@ -59,7 +59,7 @@ void Cheev_2stage(const char *jobz, const char *uplo, INTEGER const n, COMPLEX *
         lhtrd = iMlaenv2stage(3, "Chetrd_2stage", jobz, n, kd, ib, -1);
         lwtrd = iMlaenv2stage(4, "Chetrd_2stage", jobz, n, kd, ib, -1);
         lwmin = n + lhtrd + lwtrd;
-        work[1 - 1] = lwmin;
+        work[0] = lwmin;
         //
         if (lwork < lwmin && !lquery) {
             info = -8;
@@ -81,8 +81,8 @@ void Cheev_2stage(const char *jobz, const char *uplo, INTEGER const n, COMPLEX *
     //
     const COMPLEX cone = COMPLEX(1.0, 0.0);
     if (n == 1) {
-        w[1 - 1] = a[0].real();
-        work[1 - 1] = 1;
+        w[0] = a[0].real();
+        work[0] = 1;
         if (wantz) {
             a[0] = cone;
         }
@@ -152,7 +152,7 @@ void Cheev_2stage(const char *jobz, const char *uplo, INTEGER const n, COMPLEX *
     //
     // Set WORK(1) to optimal complex workspace size.
     //
-    work[1 - 1] = lwmin;
+    work[0] = lwmin;
     //
     // End of Cheev_2stage
     //

@@ -75,8 +75,8 @@ void Rsyevd(const char *jobz, const char *uplo, INTEGER const n, REAL *a, INTEGE
             lopt = max(lwmin, 2 * n + iMlaenv(1, "Rsytrd", uplo, n, -1, -1, -1));
             liopt = liwmin;
         }
-        work[1 - 1] = lopt;
-        iwork[1 - 1] = liopt;
+        work[0] = lopt;
+        iwork[0] = liopt;
         //
         if (lwork < lwmin && !lquery) {
             info = -8;
@@ -100,7 +100,7 @@ void Rsyevd(const char *jobz, const char *uplo, INTEGER const n, REAL *a, INTEGE
     //
     const REAL one = 1.0;
     if (n == 1) {
-        w[1 - 1] = a[0];
+        w[0] = a[0];
         if (wantz) {
             a[0] = one;
         }
@@ -164,8 +164,8 @@ void Rsyevd(const char *jobz, const char *uplo, INTEGER const n, REAL *a, INTEGE
         Rscal(n, one / sigma, w, 1);
     }
     //
-    work[1 - 1] = lopt;
-    iwork[1 - 1] = liopt;
+    work[0] = lopt;
+    iwork[0] = liopt;
     //
     // End of Rsyevd
     //

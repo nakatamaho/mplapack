@@ -31,8 +31,8 @@
 
 void Rlasd5(INTEGER const i, REAL *d, REAL *z, REAL *delta, REAL const rho, REAL &dsigma, REAL *work) {
     //
-    REAL del = d[2 - 1] - d[1 - 1];
-    REAL delsq = del * (d[2 - 1] + d[1 - 1]);
+    REAL del = d[2 - 1] - d[0];
+    REAL delsq = del * (d[2 - 1] + d[0]);
     const REAL one = 1.0;
     const REAL four = 4.0e+0;
     const REAL three = 3.0e+0;
@@ -43,10 +43,10 @@ void Rlasd5(INTEGER const i, REAL *d, REAL *z, REAL *delta, REAL const rho, REAL
     const REAL two = 2.0e+0;
     REAL tau = 0.0;
     if (i == 1) {
-        w = one + four * rho * (z[2 - 1] * z[2 - 1] / (d[1 - 1] + three * d[2 - 1]) - z[1 - 1] * z[1 - 1] / (three * d[1 - 1] + d[2 - 1])) / del;
+        w = one + four * rho * (z[2 - 1] * z[2 - 1] / (d[0] + three * d[2 - 1]) - z[0] * z[0] / (three * d[0] + d[2 - 1])) / del;
         if (w > zero) {
-            b = delsq + rho * (z[1 - 1] * z[1 - 1] + z[2 - 1] * z[2 - 1]);
-            c = rho * z[1 - 1] * z[1 - 1] * delsq;
+            b = delsq + rho * (z[0] * z[0] + z[2 - 1] * z[2 - 1]);
+            c = rho * z[0] * z[0] * delsq;
             //
             // B > ZERO, always
             //
@@ -56,16 +56,16 @@ void Rlasd5(INTEGER const i, REAL *d, REAL *z, REAL *delta, REAL const rho, REAL
             //
             // The following TAU is DSIGMA - D( 1 )
             //
-            tau = tau / (d[1 - 1] + sqrt(d[1 - 1] * d[1 - 1] + tau));
-            dsigma = d[1 - 1] + tau;
-            delta[1 - 1] = -tau;
+            tau = tau / (d[0] + sqrt(d[0] * d[0] + tau));
+            dsigma = d[0] + tau;
+            delta[0] = -tau;
             delta[2 - 1] = del - tau;
-            work[1 - 1] = two * d[1 - 1] + tau;
-            work[2 - 1] = (d[1 - 1] + tau) + d[2 - 1];
+            work[0] = two * d[0] + tau;
+            work[2 - 1] = (d[0] + tau) + d[2 - 1];
             // DELTA( 1 ) = -Z( 1 ) / TAU
             // DELTA( 2 ) = Z( 2 ) / ( DEL-TAU )
         } else {
-            b = -delsq + rho * (z[1 - 1] * z[1 - 1] + z[2 - 1] * z[2 - 1]);
+            b = -delsq + rho * (z[0] * z[0] + z[2 - 1] * z[2 - 1]);
             c = rho * z[2 - 1] * z[2 - 1] * delsq;
             //
             // The following TAU is DSIGMA * DSIGMA - D( 2 ) * D( 2 )
@@ -80,9 +80,9 @@ void Rlasd5(INTEGER const i, REAL *d, REAL *z, REAL *delta, REAL const rho, REAL
             //
             tau = tau / (d[2 - 1] + sqrt(abs(d[2 - 1] * d[2 - 1] + tau)));
             dsigma = d[2 - 1] + tau;
-            delta[1 - 1] = -(del + tau);
+            delta[0] = -(del + tau);
             delta[2 - 1] = -tau;
-            work[1 - 1] = d[1 - 1] + tau + d[2 - 1];
+            work[0] = d[0] + tau + d[2 - 1];
             work[2 - 1] = two * d[2 - 1] + tau;
             // DELTA( 1 ) = -Z( 1 ) / ( DEL+TAU )
             // DELTA( 2 ) = -Z( 2 ) / TAU
@@ -94,7 +94,7 @@ void Rlasd5(INTEGER const i, REAL *d, REAL *z, REAL *delta, REAL const rho, REAL
         //
         // Now I=2
         //
-        b = -delsq + rho * (z[1 - 1] * z[1 - 1] + z[2 - 1] * z[2 - 1]);
+        b = -delsq + rho * (z[0] * z[0] + z[2 - 1] * z[2 - 1]);
         c = rho * z[2 - 1] * z[2 - 1] * delsq;
         //
         // The following TAU is DSIGMA * DSIGMA - D( 2 ) * D( 2 )
@@ -109,9 +109,9 @@ void Rlasd5(INTEGER const i, REAL *d, REAL *z, REAL *delta, REAL const rho, REAL
         //
         tau = tau / (d[2 - 1] + sqrt(d[2 - 1] * d[2 - 1] + tau));
         dsigma = d[2 - 1] + tau;
-        delta[1 - 1] = -(del + tau);
+        delta[0] = -(del + tau);
         delta[2 - 1] = -tau;
-        work[1 - 1] = d[1 - 1] + tau + d[2 - 1];
+        work[0] = d[0] + tau + d[2 - 1];
         work[2 - 1] = two * d[2 - 1] + tau;
         // DELTA( 1 ) = -Z( 1 ) / ( DEL+TAU )
         // DELTA( 2 ) = -Z( 2 ) / TAU

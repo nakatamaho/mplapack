@@ -191,7 +191,7 @@ void Ctgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
     //
     anorm = abs1(s[0]);
     bnorm = abs1(p[0]);
-    rwork[1 - 1] = zero;
+    rwork[0] = zero;
     rwork[(n + 1) - 1] = zero;
     for (j = 2; j <= n; j = j + 1) {
         rwork[j - 1] = zero;

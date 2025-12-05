@@ -87,7 +87,7 @@ void Cunmtr(const char *side, const char *uplo, const char *trans, INTEGER const
             }
         }
         lwkopt = max((INTEGER)1, nw) * nb;
-        work[1 - 1] = lwkopt;
+        work[0] = lwkopt;
     }
     //
     if (info != 0) {
@@ -100,7 +100,7 @@ void Cunmtr(const char *side, const char *uplo, const char *trans, INTEGER const
     // Quick return if possible
     //
     if (m == 0 || n == 0 || nq == 1) {
-        work[1 - 1] = 1;
+        work[0] = 1;
         return;
     }
     //

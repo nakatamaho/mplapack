@@ -104,7 +104,7 @@ void Csytf2_rk(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda,
         // Initialize the first entry of array E, where superdiagonal
         // elements of D are stored
         //
-        e[1 - 1] = czero;
+        e[0] = czero;
         //
         // K is the main loop index, decreasing from N to 1 in steps of
         // 1 or 2

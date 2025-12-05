@@ -55,9 +55,9 @@ void Csysv_rook(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *
             lwkopt = 1;
         } else {
             Csytrf_rook(uplo, n, a, lda, ipiv, work, -1, info);
-            lwkopt = castINTEGER(work[1 - 1].real());
+            lwkopt = castINTEGER(work[0].real());
         }
-        work[1 - 1] = lwkopt;
+        work[0] = lwkopt;
     }
     //
     if (info != 0) {
@@ -80,7 +80,7 @@ void Csysv_rook(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *
         //
     }
     //
-    work[1 - 1] = lwkopt;
+    work[0] = lwkopt;
     //
     // End of Csysv_rook
     //

@@ -67,12 +67,12 @@ void Rlalsd(const char *uplo, INTEGER const smlsiz, INTEGER const n, INTEGER con
     if (n == 0) {
         return;
     } else if (n == 1) {
-        if (d[1 - 1] == zero) {
+        if (d[0] == zero) {
             Rlaset("A", 1, nrhs, zero, zero, b, ldb);
         } else {
             rank = 1;
-            Rlascl("G", 0, 0, d[1 - 1], one, 1, nrhs, b, ldb, info);
-            d[1 - 1] = abs(d[1 - 1]);
+            Rlascl("G", 0, 0, d[0], one, 1, nrhs, b, ldb, info);
+            d[0] = abs(d[0]);
         }
         return;
     }

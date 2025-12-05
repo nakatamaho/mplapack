@@ -139,8 +139,8 @@ void Rsyevr_2stage(const char *jobz, const char *range, const char *uplo, INTEGE
         // NB = iMlaenv( 1, 'Rsytrd', UPLO, N, -1, -1, -1 )
         // NB = MAX( NB, iMlaenv( 1, 'Rormtr', UPLO, N, -1, -1, -1 ) )
         // LWKOPT = MAX( ( NB+1 )*N, LWMIN )
-        work[1 - 1] = lwmin;
-        iwork[1 - 1] = liwmin;
+        work[0] = lwmin;
+        iwork[0] = liwmin;
     }
     //
     if (info != 0) {
@@ -154,24 +154,24 @@ void Rsyevr_2stage(const char *jobz, const char *range, const char *uplo, INTEGE
     //
     m = 0;
     if (n == 0) {
-        work[1 - 1] = 1;
+        work[0] = 1;
         return;
     }
     //
     if (n == 1) {
-        work[1 - 1] = 7;
+        work[0] = 7;
         if (alleig || indeig) {
             m = 1;
-            w[1 - 1] = a[0];
+            w[0] = a[0];
         } else {
             if (vl < a[0] && vu >= a[0]) {
                 m = 1;
-                w[1 - 1] = a[0];
+                w[0] = a[0];
             }
         }
         if (wantz) {
             z[0] = one;
-            isuppz[1 - 1] = 1;
+            isuppz[0] = 1;
             isuppz[2 - 1] = 1;
         }
         return;
@@ -362,8 +362,8 @@ statement_30:
     //
     // Set WORK(1) to optimal workspace size.
     //
-    work[1 - 1] = lwmin;
-    iwork[1 - 1] = liwmin;
+    work[0] = lwmin;
+    iwork[0] = liwmin;
     //
     // End of Rsyevr_2stage
     //

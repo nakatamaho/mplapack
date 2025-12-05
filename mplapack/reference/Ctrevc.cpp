@@ -124,7 +124,7 @@ void Ctrevc(const char *side, const char *howmny, bool *select, INTEGER const n,
     // Compute 1-norm of each column of strictly upper triangular
     // part of T to control overflow in triangular solver.
     //
-    rwork[1 - 1] = zero;
+    rwork[0] = zero;
     for (j = 2; j <= n; j = j + 1) {
         rwork[j - 1] = RCasum(j - 1, &t[(j - 1) * ldt], 1);
     }
@@ -143,7 +143,7 @@ void Ctrevc(const char *side, const char *howmny, bool *select, INTEGER const n,
             }
             smin = max(REAL(ulp * (cabs1(t[(ki - 1) + (ki - 1) * ldt]))), smlnum);
             //
-            work[1 - 1] = cmone;
+            work[0] = cmone;
             //
             // Form right-hand side.
             //
@@ -162,14 +162,14 @@ void Ctrevc(const char *side, const char *howmny, bool *select, INTEGER const n,
             }
             //
             if (ki > 1) {
-                Clatrs("Upper", "No transpose", "Non-unit", "Y", ki - 1, t, ldt, &work[1 - 1], scale, rwork, info);
+                Clatrs("Upper", "No transpose", "Non-unit", "Y", ki - 1, t, ldt, &work[0], scale, rwork, info);
                 work[ki - 1] = scale;
             }
             //
             // Copy the vector x or Q*x to VR and normalize.
             //
             if (!over) {
-                Ccopy(ki, &work[1 - 1], 1, &vr[(is - 1) * ldvr], 1);
+                Ccopy(ki, &work[0], 1, &vr[(is - 1) * ldvr], 1);
                 //
                 ii = iCamax(ki, &vr[(is - 1) * ldvr], 1);
                 remax = one / cabs1(vr[(ii - 1) + (is - 1) * ldvr]);
@@ -180,7 +180,7 @@ void Ctrevc(const char *side, const char *howmny, bool *select, INTEGER const n,
                 }
             } else {
                 if (ki > 1) {
-                    Cgemv("N", n, ki - 1, cmone, vr, ldvr, &work[1 - 1], 1, COMPLEX(scale), &vr[(ki - 1) * ldvr], 1);
+                    Cgemv("N", n, ki - 1, cmone, vr, ldvr, &work[0], 1, COMPLEX(scale), &vr[(ki - 1) * ldvr], 1);
                 }
                 //
                 ii = iCamax(n, &vr[(ki - 1) * ldvr], 1);

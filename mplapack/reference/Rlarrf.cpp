@@ -150,14 +150,14 @@ statement_5:
     //
     // Left end
     s = -lsigma;
-    dplus[1 - 1] = d[1 - 1] + s;
-    if (abs(dplus[1 - 1]) < pivmin) {
-        dplus[1 - 1] = -pivmin;
+    dplus[0] = d[0] + s;
+    if (abs(dplus[0]) < pivmin) {
+        dplus[0] = -pivmin;
         // Need to set SAWNAN1 because refined RRR test should not be used
         // in this case
         sawnan1 = true;
     }
-    max1 = abs(dplus[1 - 1]);
+    max1 = abs(dplus[0]);
     for (i = 1; i <= n - 1; i = i + 1) {
         lplus[i - 1] = ld[i - 1] / dplus[i - 1];
         s = s * lplus[i - 1] * l[i - 1] - lsigma;
@@ -180,14 +180,14 @@ statement_5:
     //
     // Right end
     s = -rsigma;
-    work[1 - 1] = d[1 - 1] + s;
-    if (abs(work[1 - 1]) < pivmin) {
-        work[1 - 1] = -pivmin;
+    work[0] = d[0] + s;
+    if (abs(work[0]) < pivmin) {
+        work[0] = -pivmin;
         // Need to set SAWNAN2 because refined RRR test should not be used
         // in this case
         sawnan2 = true;
     }
-    max2 = abs(work[1 - 1]);
+    max2 = abs(work[0]);
     for (i = 1; i <= n - 1; i = i + 1) {
         work[(n + i) - 1] = ld[i - 1] / work[i - 1];
         s = s * work[(n + i) - 1] * l[i - 1] - rsigma;

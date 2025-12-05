@@ -55,9 +55,9 @@ void Csysv(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a, IN
             lwkopt = 1;
         } else {
             Csytrf(uplo, n, a, lda, ipiv, work, -1, info);
-            lwkopt = castINTEGER(work[1 - 1].real());
+            lwkopt = castINTEGER(work[0].real());
         }
-        work[1 - 1] = lwkopt;
+        work[0] = lwkopt;
     }
     //
     if (info != 0) {
@@ -90,7 +90,7 @@ void Csysv(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a, IN
         //
     }
     //
-    work[1 - 1] = lwkopt;
+    work[0] = lwkopt;
     //
     // End of Csysv
     //

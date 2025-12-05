@@ -164,7 +164,7 @@ void Rggevx(const char *balanc, const char *jobvl, const char *jobvr, const char
                 maxwrk = max(maxwrk, n + n * iMlaenv(1, "Rorgqr", " ", n, 1, n, 0));
             }
         }
-        work[1 - 1] = maxwrk;
+        work[0] = maxwrk;
         //
         if (lwork < minwrk && !lquery) {
             info = -26;
@@ -229,18 +229,18 @@ void Rggevx(const char *balanc, const char *jobvl, const char *jobvr, const char
     //
     // Compute ABNRM and BBNRM
     //
-    abnrm = Rlange("1", n, n, a, lda, &work[1 - 1]);
+    abnrm = Rlange("1", n, n, a, lda, &work[0]);
     if (ilascl) {
-        work[1 - 1] = abnrm;
-        Rlascl("G", 0, 0, anrmto, anrm, 1, 1, &work[1 - 1], 1, ierr);
-        abnrm = work[1 - 1];
+        work[0] = abnrm;
+        Rlascl("G", 0, 0, anrmto, anrm, 1, 1, &work[0], 1, ierr);
+        abnrm = work[0];
     }
     //
-    bbnrm = Rlange("1", n, n, b, ldb, &work[1 - 1]);
+    bbnrm = Rlange("1", n, n, b, ldb, &work[0]);
     if (ilbscl) {
-        work[1 - 1] = bbnrm;
-        Rlascl("G", 0, 0, bnrmto, bnrm, 1, 1, &work[1 - 1], 1, ierr);
-        bbnrm = work[1 - 1];
+        work[0] = bbnrm;
+        Rlascl("G", 0, 0, bnrmto, bnrm, 1, 1, &work[0], 1, ierr);
+        bbnrm = work[0];
     }
     //
     // Reduce B to triangular form (QR decomposition of B)
@@ -376,14 +376,14 @@ void Rggevx(const char *balanc, const char *jobvl, const char *jobvr, const char
                 // (compute workspace: need up to 4*N + 6*N)
                 //
                 if (wantse || wantsb) {
-                    Rtgevc("B", "S", bwork, n, a, lda, b, ldb, &work[1 - 1], n, &work[iwrk - 1], n, mm, m, &work[iwrk1 - 1], ierr);
+                    Rtgevc("B", "S", bwork, n, a, lda, b, ldb, &work[0], n, &work[iwrk - 1], n, mm, m, &work[iwrk1 - 1], ierr);
                     if (ierr != 0) {
                         info = n + 2;
                         goto statement_130;
                     }
                 }
                 //
-                Rtgsna(sense, "S", bwork, n, a, lda, b, ldb, &work[1 - 1], n, &work[iwrk - 1], n, &rconde[i - 1], &rcondv[i - 1], mm, m, &work[iwrk1 - 1], lwork - iwrk1 + 1, iwork, ierr);
+                Rtgsna(sense, "S", bwork, n, a, lda, b, ldb, &work[0], n, &work[iwrk - 1], n, &rconde[i - 1], &rcondv[i - 1], mm, m, &work[iwrk1 - 1], lwork - iwrk1 + 1, iwork, ierr);
             //
             statement_20:;
             }
@@ -474,7 +474,7 @@ statement_130:
         Rlascl("G", 0, 0, bnrmto, bnrm, n, 1, beta, n, ierr);
     }
     //
-    work[1 - 1] = maxwrk;
+    work[0] = maxwrk;
     //
     // End of Rggevx
     //

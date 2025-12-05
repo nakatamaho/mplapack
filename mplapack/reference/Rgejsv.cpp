@@ -210,7 +210,7 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
         if (rsvec) {
             Rlaset("G", n, n, zero, one, v, ldv);
         }
-        work[1 - 1] = one;
+        work[0] = one;
         work[2 - 1] = one;
         if (errest) {
             work[3 - 1] = one;
@@ -223,7 +223,7 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
             work[6 - 1] = zero;
             work[7 - 1] = zero;
         }
-        iwork[1 - 1] = 0;
+        iwork[0] = 0;
         iwork[2 - 1] = 0;
         iwork[3 - 1] = 0;
         return;
@@ -245,7 +245,7 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
     if (n == 1) {
         //
         if (lsvec) {
-            Rlascl("G", 0, 0, sva[1 - 1], scalem, m, 1, &a[0], lda, ierr);
+            Rlascl("G", 0, 0, sva[0], scalem, m, 1, &a[0], lda, ierr);
             Rlacpy("A", m, 1, a, lda, u, ldu);
             // computing all M left singular vectors of the M x 1 matrix
             if (n1 != n) {
@@ -257,21 +257,21 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
         if (rsvec) {
             v[0] = one;
         }
-        if (sva[1 - 1] < (big * scalem)) {
-            sva[1 - 1] = sva[1 - 1] / scalem;
+        if (sva[0] < (big * scalem)) {
+            sva[0] = sva[0] / scalem;
             scalem = one;
         }
-        work[1 - 1] = one / scalem;
+        work[0] = one / scalem;
         work[2 - 1] = one;
-        if (sva[1 - 1] != zero) {
-            iwork[1 - 1] = 1;
-            if ((sva[1 - 1] / scalem) >= sfmin) {
+        if (sva[0] != zero) {
+            iwork[0] = 1;
+            if ((sva[0] / scalem) >= sfmin) {
                 iwork[2 - 1] = 1;
             } else {
                 iwork[2 - 1] = 0;
             }
         } else {
-            iwork[1 - 1] = 0;
+            iwork[0] = 0;
             iwork[2 - 1] = 0;
         }
         iwork[3 - 1] = 0;
@@ -690,7 +690,7 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
         //
         Rgesvj("L", "NoU", "NoV", nr, nr, a, lda, sva, n, v, ldv, work, lwork, info);
         //
-        scalem = work[1 - 1];
+        scalem = work[0];
         numrank = nint(work[2 - 1]);
         //
     } else if (rsvec && (!lsvec)) {
@@ -706,7 +706,7 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
             Rlaset("Upper", nr - 1, nr - 1, zero, zero, &v[(2 - 1) * ldv], ldv);
             //
             Rgesvj("L", "U", "N", n, nr, v, ldv, sva, nr, a, lda, work, lwork, info);
-            scalem = work[1 - 1];
+            scalem = work[0];
             numrank = castINTEGER(work[2 - 1]);
             //
         } else {
@@ -1294,7 +1294,7 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
     //
     // Undo scaling, if necessary (and possible)
     //
-    if (uscal2 <= (big / sva[1 - 1]) * uscal1) {
+    if (uscal2 <= (big / sva[0]) * uscal1) {
         Rlascl("G", 0, 0, uscal1, uscal2, nr, 1, sva, n, ierr);
         uscal1 = one;
         uscal2 = one;
@@ -1306,7 +1306,7 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
         }
     }
     //
-    work[1 - 1] = uscal2 * scalem;
+    work[0] = uscal2 * scalem;
     work[2 - 1] = uscal1;
     if (errest) {
         work[3 - 1] = sconda;
@@ -1320,7 +1320,7 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
         work[7 - 1] = entrat;
     }
     //
-    iwork[1 - 1] = nr;
+    iwork[0] = nr;
     iwork[2 - 1] = numrank;
     iwork[3 - 1] = warning;
     //

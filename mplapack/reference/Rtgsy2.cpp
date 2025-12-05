@@ -173,7 +173,7 @@ statement_40:
                     //
                     // Set up right hand side(s)
                     //
-                    rhs[1 - 1] = c[(is - 1) + (js - 1) * ldc];
+                    rhs[0] = c[(is - 1) + (js - 1) * ldc];
                     rhs[2 - 1] = f[(is - 1) + (js - 1) * ldf];
                     //
                     // Solve Z * x = RHS
@@ -198,14 +198,14 @@ statement_40:
                     //
                     // Unpack solution vector(s)
                     //
-                    c[(is - 1) + (js - 1) * ldc] = rhs[1 - 1];
+                    c[(is - 1) + (js - 1) * ldc] = rhs[0];
                     f[(is - 1) + (js - 1) * ldf] = rhs[2 - 1];
                     //
                     // Substitute R(I, J) and L(I, J) into remaining
                     // equation.
                     //
                     if (i > 1) {
-                        alpha = -rhs[1 - 1];
+                        alpha = -rhs[0];
                         Raxpy(is - 1, alpha, &a[(is - 1) * lda], 1, &c[(js - 1) * ldc], 1);
                         Raxpy(is - 1, alpha, &d[(is - 1) * ldd], 1, &f[(js - 1) * ldf], 1);
                     }
@@ -240,7 +240,7 @@ statement_40:
                     //
                     // Set up right hand side(s)
                     //
-                    rhs[1 - 1] = c[(is - 1) + (js - 1) * ldc];
+                    rhs[0] = c[(is - 1) + (js - 1) * ldc];
                     rhs[2 - 1] = c[(is - 1) + (jsp1 - 1) * ldc];
                     rhs[3 - 1] = f[(is - 1) + (js - 1) * ldf];
                     rhs[4 - 1] = f[(is - 1) + (jsp1 - 1) * ldf];
@@ -267,7 +267,7 @@ statement_40:
                     //
                     // Unpack solution vector(s)
                     //
-                    c[(is - 1) + (js - 1) * ldc] = rhs[1 - 1];
+                    c[(is - 1) + (js - 1) * ldc] = rhs[0];
                     c[(is - 1) + (jsp1 - 1) * ldc] = rhs[2 - 1];
                     f[(is - 1) + (js - 1) * ldf] = rhs[3 - 1];
                     f[(is - 1) + (jsp1 - 1) * ldf] = rhs[4 - 1];
@@ -276,8 +276,8 @@ statement_40:
                     // equation.
                     //
                     if (i > 1) {
-                        Rger(is - 1, nb, -one, &a[(is - 1) * lda], 1, &rhs[1 - 1], 1, &c[(js - 1) * ldc], ldc);
-                        Rger(is - 1, nb, -one, &d[(is - 1) * ldd], 1, &rhs[1 - 1], 1, &f[(js - 1) * ldf], ldf);
+                        Rger(is - 1, nb, -one, &a[(is - 1) * lda], 1, &rhs[0], 1, &c[(js - 1) * ldc], ldc);
+                        Rger(is - 1, nb, -one, &d[(is - 1) * ldd], 1, &rhs[0], 1, &f[(js - 1) * ldf], ldf);
                     }
                     if (j < q) {
                         Raxpy(n - je, rhs[3 - 1], &b[(js - 1) + ((je + 1) - 1) * ldb], ldb, &c[(is - 1) + ((je + 1) - 1) * ldc], ldc);
@@ -312,7 +312,7 @@ statement_40:
                     //
                     // Set up right hand side(s)
                     //
-                    rhs[1 - 1] = c[(is - 1) + (js - 1) * ldc];
+                    rhs[0] = c[(is - 1) + (js - 1) * ldc];
                     rhs[2 - 1] = c[(isp1 - 1) + (js - 1) * ldc];
                     rhs[3 - 1] = f[(is - 1) + (js - 1) * ldf];
                     rhs[4 - 1] = f[(isp1 - 1) + (js - 1) * ldf];
@@ -338,7 +338,7 @@ statement_40:
                     //
                     // Unpack solution vector(s)
                     //
-                    c[(is - 1) + (js - 1) * ldc] = rhs[1 - 1];
+                    c[(is - 1) + (js - 1) * ldc] = rhs[0];
                     c[(isp1 - 1) + (js - 1) * ldc] = rhs[2 - 1];
                     f[(is - 1) + (js - 1) * ldf] = rhs[3 - 1];
                     f[(isp1 - 1) + (js - 1) * ldf] = rhs[4 - 1];
@@ -347,8 +347,8 @@ statement_40:
                     // equation.
                     //
                     if (i > 1) {
-                        Rgemv("N", is - 1, mb, -one, &a[(is - 1) * lda], lda, &rhs[1 - 1], 1, one, &c[(js - 1) * ldc], 1);
-                        Rgemv("N", is - 1, mb, -one, &d[(is - 1) * ldd], ldd, &rhs[1 - 1], 1, one, &f[(js - 1) * ldf], 1);
+                        Rgemv("N", is - 1, mb, -one, &a[(is - 1) * lda], lda, &rhs[0], 1, one, &c[(js - 1) * ldc], 1);
+                        Rgemv("N", is - 1, mb, -one, &d[(is - 1) * ldd], ldd, &rhs[0], 1, one, &f[(js - 1) * ldf], 1);
                     }
                     if (j < q) {
                         Rger(mb, n - je, one, &rhs[3 - 1], 1, &b[(js - 1) + ((je + 1) - 1) * ldb], ldb, &c[(is - 1) + ((je + 1) - 1) * ldc], ldc);
@@ -442,8 +442,8 @@ statement_40:
                     // equation.
                     //
                     if (i > 1) {
-                        Rgemm("N", "N", is - 1, nb, mb, -one, &a[(is - 1) * lda], lda, &rhs[1 - 1], mb, one, &c[(js - 1) * ldc], ldc);
-                        Rgemm("N", "N", is - 1, nb, mb, -one, &d[(is - 1) * ldd], ldd, &rhs[1 - 1], mb, one, &f[(js - 1) * ldf], ldf);
+                        Rgemm("N", "N", is - 1, nb, mb, -one, &a[(is - 1) * lda], lda, &rhs[0], mb, one, &c[(js - 1) * ldc], ldc);
+                        Rgemm("N", "N", is - 1, nb, mb, -one, &d[(is - 1) * ldd], ldd, &rhs[0], mb, one, &f[(js - 1) * ldf], ldf);
                     }
                     if (j < q) {
                         k = mb * nb + 1;
@@ -488,7 +488,7 @@ statement_40:
                     //
                     // Set up right hand side(s)
                     //
-                    rhs[1 - 1] = c[(is - 1) + (js - 1) * ldc];
+                    rhs[0] = c[(is - 1) + (js - 1) * ldc];
                     rhs[2 - 1] = f[(is - 1) + (js - 1) * ldf];
                     //
                     // Solve Z**T * x = RHS
@@ -509,20 +509,20 @@ statement_40:
                     //
                     // Unpack solution vector(s)
                     //
-                    c[(is - 1) + (js - 1) * ldc] = rhs[1 - 1];
+                    c[(is - 1) + (js - 1) * ldc] = rhs[0];
                     f[(is - 1) + (js - 1) * ldf] = rhs[2 - 1];
                     //
                     // Substitute R(I, J) and L(I, J) into remaining
                     // equation.
                     //
                     if (j > p + 2) {
-                        alpha = rhs[1 - 1];
+                        alpha = rhs[0];
                         Raxpy(js - 1, alpha, &b[(js - 1) * ldb], 1, &f[(is - 1)], ldf);
                         alpha = rhs[2 - 1];
                         Raxpy(js - 1, alpha, &e[(js - 1) * lde], 1, &f[(is - 1)], ldf);
                     }
                     if (i < p) {
-                        alpha = -rhs[1 - 1];
+                        alpha = -rhs[0];
                         Raxpy(m - ie, alpha, &a[(is - 1) + ((ie + 1) - 1) * lda], lda, &c[((ie + 1) - 1) + (js - 1) * ldc], 1);
                         alpha = -rhs[2 - 1];
                         Raxpy(m - ie, alpha, &d[(is - 1) + ((ie + 1) - 1) * ldd], ldd, &c[((ie + 1) - 1) + (js - 1) * ldc], 1);
@@ -554,7 +554,7 @@ statement_40:
                     //
                     // Set up right hand side(s)
                     //
-                    rhs[1 - 1] = c[(is - 1) + (js - 1) * ldc];
+                    rhs[0] = c[(is - 1) + (js - 1) * ldc];
                     rhs[2 - 1] = c[(is - 1) + (jsp1 - 1) * ldc];
                     rhs[3 - 1] = f[(is - 1) + (js - 1) * ldf];
                     rhs[4 - 1] = f[(is - 1) + (jsp1 - 1) * ldf];
@@ -576,7 +576,7 @@ statement_40:
                     //
                     // Unpack solution vector(s)
                     //
-                    c[(is - 1) + (js - 1) * ldc] = rhs[1 - 1];
+                    c[(is - 1) + (js - 1) * ldc] = rhs[0];
                     c[(is - 1) + (jsp1 - 1) * ldc] = rhs[2 - 1];
                     f[(is - 1) + (js - 1) * ldf] = rhs[3 - 1];
                     f[(is - 1) + (jsp1 - 1) * ldf] = rhs[4 - 1];
@@ -585,13 +585,13 @@ statement_40:
                     // equation.
                     //
                     if (j > p + 2) {
-                        Raxpy(js - 1, rhs[1 - 1], &b[(js - 1) * ldb], 1, &f[(is - 1)], ldf);
+                        Raxpy(js - 1, rhs[0], &b[(js - 1) * ldb], 1, &f[(is - 1)], ldf);
                         Raxpy(js - 1, rhs[2 - 1], &b[(jsp1 - 1) * ldb], 1, &f[(is - 1)], ldf);
                         Raxpy(js - 1, rhs[3 - 1], &e[(js - 1) * lde], 1, &f[(is - 1)], ldf);
                         Raxpy(js - 1, rhs[4 - 1], &e[(jsp1 - 1) * lde], 1, &f[(is - 1)], ldf);
                     }
                     if (i < p) {
-                        Rger(m - ie, nb, -one, &a[(is - 1) + ((ie + 1) - 1) * lda], lda, &rhs[1 - 1], 1, &c[((ie + 1) - 1) + (js - 1) * ldc], ldc);
+                        Rger(m - ie, nb, -one, &a[(is - 1) + ((ie + 1) - 1) * lda], lda, &rhs[0], 1, &c[((ie + 1) - 1) + (js - 1) * ldc], ldc);
                         Rger(m - ie, nb, -one, &d[(is - 1) + ((ie + 1) - 1) * ldd], ldd, &rhs[3 - 1], 1, &c[((ie + 1) - 1) + (js - 1) * ldc], ldc);
                     }
                     //
@@ -621,7 +621,7 @@ statement_40:
                     //
                     // Set up right hand side(s)
                     //
-                    rhs[1 - 1] = c[(is - 1) + (js - 1) * ldc];
+                    rhs[0] = c[(is - 1) + (js - 1) * ldc];
                     rhs[2 - 1] = c[(isp1 - 1) + (js - 1) * ldc];
                     rhs[3 - 1] = f[(is - 1) + (js - 1) * ldf];
                     rhs[4 - 1] = f[(isp1 - 1) + (js - 1) * ldf];
@@ -644,7 +644,7 @@ statement_40:
                     //
                     // Unpack solution vector(s)
                     //
-                    c[(is - 1) + (js - 1) * ldc] = rhs[1 - 1];
+                    c[(is - 1) + (js - 1) * ldc] = rhs[0];
                     c[(isp1 - 1) + (js - 1) * ldc] = rhs[2 - 1];
                     f[(is - 1) + (js - 1) * ldf] = rhs[3 - 1];
                     f[(isp1 - 1) + (js - 1) * ldf] = rhs[4 - 1];
@@ -653,11 +653,11 @@ statement_40:
                     // equation.
                     //
                     if (j > p + 2) {
-                        Rger(mb, js - 1, one, &rhs[1 - 1], 1, &b[(js - 1) * ldb], 1, &f[(is - 1)], ldf);
+                        Rger(mb, js - 1, one, &rhs[0], 1, &b[(js - 1) * ldb], 1, &f[(is - 1)], ldf);
                         Rger(mb, js - 1, one, &rhs[3 - 1], 1, &e[(js - 1) * lde], 1, &f[(is - 1)], ldf);
                     }
                     if (i < p) {
-                        Rgemv("T", mb, m - ie, -one, &a[(is - 1) + ((ie + 1) - 1) * lda], lda, &rhs[1 - 1], 1, one, &c[((ie + 1) - 1) + (js - 1) * ldc], 1);
+                        Rgemv("T", mb, m - ie, -one, &a[(is - 1) + ((ie + 1) - 1) * lda], lda, &rhs[0], 1, one, &c[((ie + 1) - 1) + (js - 1) * ldc], 1);
                         Rgemv("T", mb, m - ie, -one, &d[(is - 1) + ((ie + 1) - 1) * ldd], ldd, &rhs[3 - 1], 1, one, &c[((ie + 1) - 1) + (js - 1) * ldc], 1);
                     }
                     //

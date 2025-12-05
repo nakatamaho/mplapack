@@ -110,7 +110,7 @@ void Rlasq2(INTEGER const n, REAL *z, INTEGER &info) {
         //
         // 1-by-1 case.
         //
-        if (z[1 - 1] < zero) {
+        if (z[0] < zero) {
             info = -201;
             Mxerbla("Rlasq2", 2);
         }
@@ -119,7 +119,7 @@ void Rlasq2(INTEGER const n, REAL *z, INTEGER &info) {
         //
         // 2-by-2 case.
         //
-        if (z[1 - 1] < zero) {
+        if (z[0] < zero) {
             info = -201;
             Mxerbla("Rlasq2", 2);
             return;
@@ -131,26 +131,26 @@ void Rlasq2(INTEGER const n, REAL *z, INTEGER &info) {
             info = -203;
             Mxerbla("Rlasq2", 2);
             return;
-        } else if (z[3 - 1] > z[1 - 1]) {
+        } else if (z[3 - 1] > z[0]) {
             d = z[3 - 1];
-            z[3 - 1] = z[1 - 1];
-            z[1 - 1] = d;
+            z[3 - 1] = z[0];
+            z[0] = d;
         }
-        z[5 - 1] = z[1 - 1] + z[2 - 1] + z[3 - 1];
+        z[5 - 1] = z[0] + z[2 - 1] + z[3 - 1];
         if (z[2 - 1] > z[3 - 1] * tol2) {
-            t = half * ((z[1 - 1] - z[3 - 1]) + z[2 - 1]);
+            t = half * ((z[0] - z[3 - 1]) + z[2 - 1]);
             s = z[3 - 1] * (z[2 - 1] / t);
             if (s <= t) {
                 s = z[3 - 1] * (z[2 - 1] / (t * (one + sqrt(one + s / t))));
             } else {
                 s = z[3 - 1] * (z[2 - 1] / (t + sqrt(t) * sqrt(t + s)));
             }
-            t = z[1 - 1] + (s + z[2 - 1]);
-            z[3 - 1] = z[3 - 1] * (z[1 - 1] / t);
-            z[1 - 1] = t;
+            t = z[0] + (s + z[2 - 1]);
+            z[3 - 1] = z[3 - 1] * (z[0] / t);
+            z[0] = t;
         }
         z[2 - 1] = z[3 - 1];
-        z[6 - 1] = z[2 - 1] + z[1 - 1];
+        z[6 - 1] = z[2 - 1] + z[0];
         return;
     }
     //

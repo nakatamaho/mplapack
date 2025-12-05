@@ -61,7 +61,7 @@ void Rsytrd_sy2sb(const char *uplo, INTEGER const n, INTEGER const kd, REAL *a, 
         Mxerbla("Rsytrd_sy2sb", -info);
         return;
     } else if (lquery) {
-        work[1 - 1] = lwmin;
+        work[0] = lwmin;
         return;
     }
     //
@@ -82,7 +82,7 @@ void Rsytrd_sy2sb(const char *uplo, INTEGER const n, INTEGER const kd, REAL *a, 
                 Rcopy(lk, &a[(i - 1) + (i - 1) * lda], 1, &ab[(i - 1) * ldab], 1);
             }
         }
-        work[1 - 1] = 1;
+        work[0] = 1;
         return;
     }
     //
@@ -222,7 +222,7 @@ void Rsytrd_sy2sb(const char *uplo, INTEGER const n, INTEGER const kd, REAL *a, 
         //
     }
     //
-    work[1 - 1] = lwmin;
+    work[0] = lwmin;
     //
     // End of Rsytrd_sy2sb
     //

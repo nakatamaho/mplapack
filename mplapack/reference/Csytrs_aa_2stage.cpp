@@ -63,7 +63,7 @@ void Csytrs_aa_2stage(const char *uplo, INTEGER const n, INTEGER const nrhs, COM
     //
     // Read NB and compute LDTB
     //
-    INTEGER nb = castINTEGER(tb[1 - 1].real());
+    INTEGER nb = castINTEGER(tb[0].real());
     INTEGER ldtb = ltb / n;
     //
     const COMPLEX one = COMPLEX(1.0f, 0.0f);

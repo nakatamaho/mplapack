@@ -78,15 +78,15 @@ void Rlaqr3(bool const wantt, bool const wantz, INTEGER const n, INTEGER const k
         //
         //
         Rgehrd(jw, 1, jw - 1, t, ldt, work, work, -1, info);
-        lwk1 = castINTEGER(work[1 - 1]);
+        lwk1 = castINTEGER(work[0]);
         //
         //
         Rormhr("R", "N", jw, jw, 1, jw - 1, t, ldt, work, v, ldv, work, -1, info);
-        lwk2 = castINTEGER(work[1 - 1]);
+        lwk2 = castINTEGER(work[0]);
         //
         //
         Rlaqr4(true, true, jw, 1, jw, t, ldt, sr, si, 1, jw, v, ldv, work, -1, infqr);
-        lwk3 = castINTEGER(work[1 - 1]);
+        lwk3 = castINTEGER(work[0]);
         //
         //
         lwkopt = max(jw + max(lwk1, lwk2), lwk3);
@@ -94,13 +94,13 @@ void Rlaqr3(bool const wantt, bool const wantz, INTEGER const n, INTEGER const k
     //
     //
     if (lwork == -1) {
-        work[1 - 1] = castREAL(lwkopt);
+        work[0] = castREAL(lwkopt);
         return;
     }
     //
     ns = 0;
     nd = 0;
-    work[1 - 1] = one;
+    work[0] = one;
     if (ktop > kbot) {
         return;
     }
@@ -137,7 +137,7 @@ void Rlaqr3(bool const wantt, bool const wantz, INTEGER const n, INTEGER const k
                 h[(kwtop - 1) + ((kwtop - 1) - 1) * ldh] = zero;
             }
         }
-        work[1 - 1] = one;
+        work[0] = one;
         return;
     }
     //
@@ -316,9 +316,9 @@ statement_60:
             //
             //
             Rcopy(ns, v, ldv, work, 1);
-            beta = work[1 - 1];
+            beta = work[0];
             Rlarfg(ns, beta, &work[2 - 1], 1, tau);
-            work[1 - 1] = one;
+            work[0] = one;
             //
             Rlaset("L", jw - 2, jw - 2, zero, zero, &t[(3 - 1)], ldt);
             //
@@ -382,7 +382,7 @@ statement_60:
     ns = ns - infqr;
     //
     //
-    work[1 - 1] = castREAL(lwkopt);
+    work[0] = castREAL(lwkopt);
     //
     //
 }

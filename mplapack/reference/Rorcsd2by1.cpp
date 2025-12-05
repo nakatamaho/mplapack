@@ -135,88 +135,88 @@ void Rorcsd2by1(const char *jobu1, const char *jobu2, const char *jobv1t, INTEGE
         lorglqopt = 1;
         if (r == q) {
             Rorbdb1(m, p, q, x11, ldx11, x21, ldx21, theta, dum1, dum1, dum1, dum1, work, -1, childinfo);
-            lorbdb = castINTEGER(work[1 - 1]);
+            lorbdb = castINTEGER(work[0]);
             if (wantu1 && p > 0) {
-                Rorgqr(p, p, q, u1, ldu1, dum1, &work[1 - 1], -1, childinfo);
+                Rorgqr(p, p, q, u1, ldu1, dum1, &work[0], -1, childinfo);
                 lorgqrmin = max(lorgqrmin, p);
-                lorgqropt = max(lorgqropt, castINTEGER(work[1 - 1]));
+                lorgqropt = max(lorgqropt, castINTEGER(work[0]));
             }
             if (wantu2 && m - p > 0) {
-                Rorgqr(m - p, m - p, q, u2, ldu2, dum1, &work[1 - 1], -1, childinfo);
+                Rorgqr(m - p, m - p, q, u2, ldu2, dum1, &work[0], -1, childinfo);
                 lorgqrmin = max(lorgqrmin, m - p);
-                lorgqropt = max(lorgqropt, castINTEGER(work[1 - 1]));
+                lorgqropt = max(lorgqropt, castINTEGER(work[0]));
             }
             if (wantv1t && q > 0) {
-                Rorglq(q - 1, q - 1, q - 1, v1t, ldv1t, dum1, &work[1 - 1], -1, childinfo);
+                Rorglq(q - 1, q - 1, q - 1, v1t, ldv1t, dum1, &work[0], -1, childinfo);
                 lorglqmin = max(lorglqmin, q - 1);
-                lorglqopt = max(lorglqopt, castINTEGER(work[1 - 1]));
+                lorglqopt = max(lorglqopt, castINTEGER(work[0]));
             }
-            Rbbcsd(jobu1, jobu2, jobv1t, "N", "N", m, p, q, theta, dum1, u1, ldu1, u2, ldu2, v1t, ldv1t, dum2, 1, dum1, dum1, dum1, dum1, dum1, dum1, dum1, dum1, &work[1 - 1], -1, childinfo);
-            lbbcsd = castINTEGER(work[1 - 1]);
+            Rbbcsd(jobu1, jobu2, jobv1t, "N", "N", m, p, q, theta, dum1, u1, ldu1, u2, ldu2, v1t, ldv1t, dum2, 1, dum1, dum1, dum1, dum1, dum1, dum1, dum1, dum1, &work[0], -1, childinfo);
+            lbbcsd = castINTEGER(work[0]);
         } else if (r == p) {
-            Rorbdb2(m, p, q, x11, ldx11, x21, ldx21, theta, dum1, dum1, dum1, dum1, &work[1 - 1], -1, childinfo);
-            lorbdb = castINTEGER(work[1 - 1]);
+            Rorbdb2(m, p, q, x11, ldx11, x21, ldx21, theta, dum1, dum1, dum1, dum1, &work[0], -1, childinfo);
+            lorbdb = castINTEGER(work[0]);
             if (wantu1 && p > 0) {
-                Rorgqr(p - 1, p - 1, p - 1, &u1[(2 - 1) + (2 - 1) * ldu1], ldu1, dum1, &work[1 - 1], -1, childinfo);
+                Rorgqr(p - 1, p - 1, p - 1, &u1[(2 - 1) + (2 - 1) * ldu1], ldu1, dum1, &work[0], -1, childinfo);
                 lorgqrmin = max(lorgqrmin, p - 1);
-                lorgqropt = max(lorgqropt, castINTEGER(work[1 - 1]));
+                lorgqropt = max(lorgqropt, castINTEGER(work[0]));
             }
             if (wantu2 && m - p > 0) {
-                Rorgqr(m - p, m - p, q, u2, ldu2, dum1, &work[1 - 1], -1, childinfo);
+                Rorgqr(m - p, m - p, q, u2, ldu2, dum1, &work[0], -1, childinfo);
                 lorgqrmin = max(lorgqrmin, m - p);
-                lorgqropt = max(lorgqropt, castINTEGER(work[1 - 1]));
+                lorgqropt = max(lorgqropt, castINTEGER(work[0]));
             }
             if (wantv1t && q > 0) {
-                Rorglq(q, q, r, v1t, ldv1t, dum1, &work[1 - 1], -1, childinfo);
+                Rorglq(q, q, r, v1t, ldv1t, dum1, &work[0], -1, childinfo);
                 lorglqmin = max(lorglqmin, q);
-                lorglqopt = max(lorglqopt, castINTEGER(work[1 - 1]));
+                lorglqopt = max(lorglqopt, castINTEGER(work[0]));
             }
-            Rbbcsd(jobv1t, "N", jobu1, jobu2, "T", m, q, p, theta, dum1, v1t, ldv1t, dum2, 1, u1, ldu1, u2, ldu2, dum1, dum1, dum1, dum1, dum1, dum1, dum1, dum1, &work[1 - 1], -1, childinfo);
-            lbbcsd = castINTEGER(work[1 - 1]);
+            Rbbcsd(jobv1t, "N", jobu1, jobu2, "T", m, q, p, theta, dum1, v1t, ldv1t, dum2, 1, u1, ldu1, u2, ldu2, dum1, dum1, dum1, dum1, dum1, dum1, dum1, dum1, &work[0], -1, childinfo);
+            lbbcsd = castINTEGER(work[0]);
         } else if (r == m - p) {
-            Rorbdb3(m, p, q, x11, ldx11, x21, ldx21, theta, dum1, dum1, dum1, dum1, &work[1 - 1], -1, childinfo);
-            lorbdb = castINTEGER(work[1 - 1]);
+            Rorbdb3(m, p, q, x11, ldx11, x21, ldx21, theta, dum1, dum1, dum1, dum1, &work[0], -1, childinfo);
+            lorbdb = castINTEGER(work[0]);
             if (wantu1 && p > 0) {
-                Rorgqr(p, p, q, u1, ldu1, dum1, &work[1 - 1], -1, childinfo);
+                Rorgqr(p, p, q, u1, ldu1, dum1, &work[0], -1, childinfo);
                 lorgqrmin = max(lorgqrmin, p);
-                lorgqropt = max(lorgqropt, castINTEGER(work[1 - 1]));
+                lorgqropt = max(lorgqropt, castINTEGER(work[0]));
             }
             if (wantu2 && m - p > 0) {
-                Rorgqr(m - p - 1, m - p - 1, m - p - 1, &u2[(2 - 1) + (2 - 1) * ldu2], ldu2, dum1, &work[1 - 1], -1, childinfo);
+                Rorgqr(m - p - 1, m - p - 1, m - p - 1, &u2[(2 - 1) + (2 - 1) * ldu2], ldu2, dum1, &work[0], -1, childinfo);
                 lorgqrmin = max(lorgqrmin, m - p - 1);
-                lorgqropt = max(lorgqropt, castINTEGER(work[1 - 1]));
+                lorgqropt = max(lorgqropt, castINTEGER(work[0]));
             }
             if (wantv1t && q > 0) {
-                Rorglq(q, q, r, v1t, ldv1t, dum1, &work[1 - 1], -1, childinfo);
+                Rorglq(q, q, r, v1t, ldv1t, dum1, &work[0], -1, childinfo);
                 lorglqmin = max(lorglqmin, q);
-                lorglqopt = max(lorglqopt, castINTEGER(work[1 - 1]));
+                lorglqopt = max(lorglqopt, castINTEGER(work[0]));
             }
-            Rbbcsd("N", jobv1t, jobu2, jobu1, "T", m, m - q, m - p, theta, dum1, dum2, 1, v1t, ldv1t, u2, ldu2, u1, ldu1, dum1, dum1, dum1, dum1, dum1, dum1, dum1, dum1, &work[1 - 1], -1, childinfo);
-            lbbcsd = castINTEGER(work[1 - 1]);
+            Rbbcsd("N", jobv1t, jobu2, jobu1, "T", m, m - q, m - p, theta, dum1, dum2, 1, v1t, ldv1t, u2, ldu2, u1, ldu1, dum1, dum1, dum1, dum1, dum1, dum1, dum1, dum1, &work[0], -1, childinfo);
+            lbbcsd = castINTEGER(work[0]);
         } else {
-            Rorbdb4(m, p, q, x11, ldx11, x21, ldx21, theta, dum1, dum1, dum1, dum1, dum1, &work[1 - 1], -1, childinfo);
-            lorbdb = m + castINTEGER(work[1 - 1]);
+            Rorbdb4(m, p, q, x11, ldx11, x21, ldx21, theta, dum1, dum1, dum1, dum1, dum1, &work[0], -1, childinfo);
+            lorbdb = m + castINTEGER(work[0]);
             if (wantu1 && p > 0) {
-                Rorgqr(p, p, m - q, u1, ldu1, dum1, &work[1 - 1], -1, childinfo);
+                Rorgqr(p, p, m - q, u1, ldu1, dum1, &work[0], -1, childinfo);
                 lorgqrmin = max(lorgqrmin, p);
-                lorgqropt = max(lorgqropt, castINTEGER(work[1 - 1]));
+                lorgqropt = max(lorgqropt, castINTEGER(work[0]));
             }
             if (wantu2 && m - p > 0) {
-                Rorgqr(m - p, m - p, m - q, u2, ldu2, dum1, &work[1 - 1], -1, childinfo);
+                Rorgqr(m - p, m - p, m - q, u2, ldu2, dum1, &work[0], -1, childinfo);
                 lorgqrmin = max(lorgqrmin, m - p);
-                lorgqropt = max(lorgqropt, castINTEGER(work[1 - 1]));
+                lorgqropt = max(lorgqropt, castINTEGER(work[0]));
             }
             if (wantv1t && q > 0) {
-                Rorglq(q, q, q, v1t, ldv1t, dum1, &work[1 - 1], -1, childinfo);
+                Rorglq(q, q, q, v1t, ldv1t, dum1, &work[0], -1, childinfo);
                 lorglqmin = max(lorglqmin, q);
-                lorglqopt = max(lorglqopt, castINTEGER(work[1 - 1]));
+                lorglqopt = max(lorglqopt, castINTEGER(work[0]));
             }
-            Rbbcsd(jobu2, jobu1, "N", jobv1t, "N", m, m - p, m - q, theta, dum1, u2, ldu2, u1, ldu1, dum2, 1, v1t, ldv1t, dum1, dum1, dum1, dum1, dum1, dum1, dum1, dum1, &work[1 - 1], -1, childinfo);
-            lbbcsd = castINTEGER(work[1 - 1]);
+            Rbbcsd(jobu2, jobu1, "N", jobv1t, "N", m, m - p, m - q, theta, dum1, u2, ldu2, u1, ldu1, dum2, 1, v1t, ldv1t, dum1, dum1, dum1, dum1, dum1, dum1, dum1, dum1, &work[0], -1, childinfo);
+            lbbcsd = castINTEGER(work[0]);
         }
         lworkmin = max(iorbdb + lorbdb - 1, iorgqr + lorgqrmin - 1, iorglq + lorglqmin - 1, ibbcsd + lbbcsd - 1);
         lworkopt = max(iorbdb + lorbdb - 1, iorgqr + lorgqropt - 1, iorglq + lorglqopt - 1, ibbcsd + lbbcsd - 1);
-        work[1 - 1] = lworkopt;
+        work[0] = lworkopt;
         if (lwork < lworkmin && !lquery) {
             info = -19;
         }

@@ -103,7 +103,7 @@ void Rgelsy(INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEG
             lwkmin = mn + max(2 * mn, n + 1, mn + nrhs);
             lwkopt = max(lwkmin, mn + 2 * n + nb * (n + 1), 2 * mn + nb * nrhs);
         }
-        work[1 - 1] = lwkopt;
+        work[0] = lwkopt;
         //
         if (lwork < lwkmin && !lquery) {
             info = -12;
@@ -173,7 +173,7 @@ void Rgelsy(INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEG
     // Compute QR factorization with column pivoting of A:
     // A * P = Q * R
     //
-    Rgeqp3(m, n, a, lda, jpvt, &work[1 - 1], &work[(mn + 1) - 1], lwork - mn, info);
+    Rgeqp3(m, n, a, lda, jpvt, &work[0], &work[(mn + 1) - 1], lwork - mn, info);
     wsize = mn + work[(mn + 1) - 1];
     //
     // workspace: MN+2*N+NB*(N+1).
@@ -230,7 +230,7 @@ statement_10:
     //
     // B(1:M,1:NRHS) := Q**T * B(1:M,1:NRHS)
     //
-    Rormqr("Left", "Transpose", m, nrhs, mn, a, lda, &work[1 - 1], b, ldb, &work[(2 * mn + 1) - 1], lwork - 2 * mn, info);
+    Rormqr("Left", "Transpose", m, nrhs, mn, a, lda, &work[0], b, ldb, &work[(2 * mn + 1) - 1], lwork - 2 * mn, info);
     wsize = max(wsize, REAL(2 * mn + work[(2 * mn + 1) - 1]));
     //
     // workspace: 2*MN+NB*NRHS.
@@ -259,7 +259,7 @@ statement_10:
         for (i = 1; i <= n; i = i + 1) {
             work[jpvt[i - 1] - 1] = b[(i - 1) + (j - 1) * ldb];
         }
-        Rcopy(n, &work[1 - 1], 1, &b[(j - 1) * ldb], 1);
+        Rcopy(n, &work[0], 1, &b[(j - 1) * ldb], 1);
     }
     //
     // workspace: N.
@@ -280,7 +280,7 @@ statement_10:
     }
 //
 statement_70:
-    work[1 - 1] = lwkopt;
+    work[0] = lwkopt;
     //
     // End of Rgelsy
     //

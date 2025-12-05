@@ -110,7 +110,7 @@ void Clals0(INTEGER const icompq, INTEGER const nl, INTEGER const nr, INTEGER co
         //
         if (k == 1) {
             Ccopy(nrhs, bx, ldbx, b, ldb);
-            if (z[1 - 1] < zero) {
+            if (z[0] < zero) {
                 CRscal(nrhs, negone, b, ldb);
             }
         } else {
@@ -141,7 +141,7 @@ void Clals0(INTEGER const icompq, INTEGER const nl, INTEGER const nr, INTEGER co
                         rwork[i - 1] = poles[(i - 1) + (2 - 1) * ldpoles] * z[i - 1] / (Rlamc3(poles[(i - 1) + (2 - 1) * ldpoles], dsigjp) + difrj) / (poles[(i - 1) + (2 - 1) * ldpoles] + dj);
                     }
                 }
-                rwork[1 - 1] = negone;
+                rwork[0] = negone;
                 temp = Rnrm2(k, rwork, 1);
                 //
                 // Since B and BX are complex, the following call to Rgemv
@@ -157,7 +157,7 @@ void Clals0(INTEGER const icompq, INTEGER const nl, INTEGER const nr, INTEGER co
                         rwork[i - 1] = bx[(jrow - 1) + (jcol - 1) * ldbx].real();
                     }
                 }
-                Rgemv("T", k, nrhs, one, &rwork[(1 + k + nrhs * 2) - 1], k, &rwork[1 - 1], 1, zero, &rwork[(1 + k) - 1], 1);
+                Rgemv("T", k, nrhs, one, &rwork[(1 + k + nrhs * 2) - 1], k, &rwork[0], 1, zero, &rwork[(1 + k) - 1], 1);
                 i = k + nrhs * 2;
                 for (jcol = 1; jcol <= nrhs; jcol = jcol + 1) {
                     for (jrow = 1; jrow <= k; jrow = jrow + 1) {
@@ -165,7 +165,7 @@ void Clals0(INTEGER const icompq, INTEGER const nl, INTEGER const nr, INTEGER co
                         rwork[i - 1] = bx[(jrow - 1) + (jcol - 1) * ldbx].imag();
                     }
                 }
-                Rgemv("T", k, nrhs, one, &rwork[(1 + k + nrhs * 2) - 1], k, &rwork[1 - 1], 1, zero, &rwork[(1 + k + nrhs) - 1], 1);
+                Rgemv("T", k, nrhs, one, &rwork[(1 + k + nrhs * 2) - 1], k, &rwork[0], 1, zero, &rwork[(1 + k + nrhs) - 1], 1);
                 for (jcol = 1; jcol <= nrhs; jcol = jcol + 1) {
                     b[(j - 1) + (jcol - 1) * ldb] = COMPLEX(rwork[(jcol + k) - 1], rwork[(jcol + k + nrhs) - 1]);
                 }
@@ -223,7 +223,7 @@ void Clals0(INTEGER const icompq, INTEGER const nl, INTEGER const nr, INTEGER co
                         rwork[i - 1] = b[(jrow - 1) + (jcol - 1) * ldb].real();
                     }
                 }
-                Rgemv("T", k, nrhs, one, &rwork[(1 + k + nrhs * 2) - 1], k, &rwork[1 - 1], 1, zero, &rwork[(1 + k) - 1], 1);
+                Rgemv("T", k, nrhs, one, &rwork[(1 + k + nrhs * 2) - 1], k, &rwork[0], 1, zero, &rwork[(1 + k) - 1], 1);
                 i = k + nrhs * 2;
                 for (jcol = 1; jcol <= nrhs; jcol = jcol + 1) {
                     for (jrow = 1; jrow <= k; jrow = jrow + 1) {
@@ -231,7 +231,7 @@ void Clals0(INTEGER const icompq, INTEGER const nl, INTEGER const nr, INTEGER co
                         rwork[i - 1] = b[(jrow - 1) + (jcol - 1) * ldb].imag();
                     }
                 }
-                Rgemv("T", k, nrhs, one, &rwork[(1 + k + nrhs * 2) - 1], k, &rwork[1 - 1], 1, zero, &rwork[(1 + k + nrhs) - 1], 1);
+                Rgemv("T", k, nrhs, one, &rwork[(1 + k + nrhs * 2) - 1], k, &rwork[0], 1, zero, &rwork[(1 + k + nrhs) - 1], 1);
                 for (jcol = 1; jcol <= nrhs; jcol = jcol + 1) {
                     bx[(j - 1) + (jcol - 1) * ldbx] = COMPLEX(rwork[(jcol + k) - 1], rwork[(jcol + k + nrhs) - 1]);
                 }

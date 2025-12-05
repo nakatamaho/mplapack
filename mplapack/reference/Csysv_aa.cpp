@@ -54,11 +54,11 @@ void Csysv_aa(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a,
     INTEGER lwkopt = 0;
     if (info == 0) {
         Csytrf_aa(uplo, n, a, lda, ipiv, work, -1, info);
-        lwkopt_sytrf = castINTEGER(work[1 - 1].real());
+        lwkopt_sytrf = castINTEGER(work[0].real());
         Csytrs_aa(uplo, n, nrhs, a, lda, ipiv, b, ldb, work, -1, info);
-        lwkopt_sytrs = castINTEGER(work[1 - 1].real());
+        lwkopt_sytrs = castINTEGER(work[0].real());
         lwkopt = max(lwkopt_sytrf, lwkopt_sytrs);
-        work[1 - 1] = lwkopt;
+        work[0] = lwkopt;
     }
     //
     if (info != 0) {
@@ -79,7 +79,7 @@ void Csysv_aa(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a,
         //
     }
     //
-    work[1 - 1] = lwkopt;
+    work[0] = lwkopt;
     //
     // End of Csysv_aa
     //

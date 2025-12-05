@@ -91,7 +91,7 @@ void Cunmrz(const char *side, const char *trans, INTEGER const m, INTEGER const 
             nb = min(nbmax, iMlaenv(1, "Cunmrq", side_trans, m, n, k, -1));
             lwkopt = nw * nb + tsize;
         }
-        work[1 - 1] = lwkopt;
+        work[0] = lwkopt;
     }
     //
     if (info != 0) {
@@ -198,7 +198,7 @@ void Cunmrz(const char *side, const char *trans, INTEGER const m, INTEGER const 
         //
     }
     //
-    work[1 - 1] = lwkopt;
+    work[0] = lwkopt;
     //
     // End of Cunmrz
     //

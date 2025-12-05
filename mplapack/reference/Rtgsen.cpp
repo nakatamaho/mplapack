@@ -134,8 +134,8 @@ void Rtgsen(INTEGER const ijob, bool const wantq, bool const wantz, bool *select
         liwmin = 1;
     }
     //
-    work[1 - 1] = lwmin;
-    iwork[1 - 1] = liwmin;
+    work[0] = lwmin;
+    iwork[0] = liwmin;
     //
     if (lwork < lwmin && !lquery) {
         info = -22;
@@ -164,8 +164,8 @@ void Rtgsen(INTEGER const ijob, bool const wantq, bool const wantz, bool *select
                 Rlassq(n, &a[(i - 1) * lda], 1, Rscale, dsum);
                 Rlassq(n, &b[(i - 1) * ldb], 1, Rscale, dsum);
             }
-            dif[1 - 1] = Rscale * sqrt(dsum);
-            dif[2 - 1] = dif[1 - 1];
+            dif[0] = Rscale * sqrt(dsum);
+            dif[2 - 1] = dif[0];
         }
         goto statement_60;
     }
@@ -210,7 +210,7 @@ void Rtgsen(INTEGER const ijob, bool const wantq, bool const wantz, bool *select
                         pr = zero;
                     }
                     if (wantd) {
-                        dif[1 - 1] = zero;
+                        dif[0] = zero;
                         dif[2 - 1] = zero;
                     }
                     goto statement_60;
@@ -233,7 +233,7 @@ void Rtgsen(INTEGER const ijob, bool const wantq, bool const wantz, bool *select
         ijb = 0;
         Rlacpy("Full", n1, n2, &a[(i - 1) * lda], lda, work, n1);
         Rlacpy("Full", n1, n2, &b[(i - 1) * ldb], ldb, &work[(n1 * n2 + 1) - 1], n1);
-        Rtgsyl("N", ijb, n1, n2, a, lda, &a[(i - 1) + (i - 1) * lda], lda, work, n1, b, ldb, &b[(i - 1) + (i - 1) * ldb], ldb, &work[(n1 * n2 + 1) - 1], n1, Rscale, dif[1 - 1], &work[(n1 * n2 * 2 + 1) - 1], lwork - 2 * n1 * n2, iwork, ierr);
+        Rtgsyl("N", ijb, n1, n2, a, lda, &a[(i - 1) + (i - 1) * lda], lda, work, n1, b, ldb, &b[(i - 1) + (i - 1) * ldb], ldb, &work[(n1 * n2 + 1) - 1], n1, Rscale, dif[0], &work[(n1 * n2 * 2 + 1) - 1], lwork - 2 * n1 * n2, iwork, ierr);
         //
         // Estimate the reciprocal of norms of "projections" onto left
         // and right eigenspaces.
@@ -270,7 +270,7 @@ void Rtgsen(INTEGER const ijob, bool const wantq, bool const wantz, bool *select
             //
             // Frobenius norm-based Difu-estimate.
             //
-            Rtgsyl("N", ijb, n1, n2, a, lda, &a[(i - 1) + (i - 1) * lda], lda, work, n1, b, ldb, &b[(i - 1) + (i - 1) * ldb], ldb, &work[(n1 * n2 + 1) - 1], n1, Rscale, dif[1 - 1], &work[(2 * n1 * n2 + 1) - 1], lwork - 2 * n1 * n2, iwork, ierr);
+            Rtgsyl("N", ijb, n1, n2, a, lda, &a[(i - 1) + (i - 1) * lda], lda, work, n1, b, ldb, &b[(i - 1) + (i - 1) * ldb], ldb, &work[(n1 * n2 + 1) - 1], n1, Rscale, dif[0], &work[(2 * n1 * n2 + 1) - 1], lwork - 2 * n1 * n2, iwork, ierr);
             //
             // Frobenius norm-based Difl-estimate.
             //
@@ -292,22 +292,22 @@ void Rtgsen(INTEGER const ijob, bool const wantq, bool const wantz, bool *select
         // 1-norm-based estimate of Difu.
         //
         statement_40:
-            Rlacn2(mn2, &work[(mn2 + 1) - 1], work, iwork, dif[1 - 1], kase, isave);
+            Rlacn2(mn2, &work[(mn2 + 1) - 1], work, iwork, dif[0], kase, isave);
             if (kase != 0) {
                 if (kase == 1) {
                     //
                     // Solve generalized Sylvester equation.
                     //
-                    Rtgsyl("N", ijb, n1, n2, a, lda, &a[(i - 1) + (i - 1) * lda], lda, work, n1, b, ldb, &b[(i - 1) + (i - 1) * ldb], ldb, &work[(n1 * n2 + 1) - 1], n1, Rscale, dif[1 - 1], &work[(2 * n1 * n2 + 1) - 1], lwork - 2 * n1 * n2, iwork, ierr);
+                    Rtgsyl("N", ijb, n1, n2, a, lda, &a[(i - 1) + (i - 1) * lda], lda, work, n1, b, ldb, &b[(i - 1) + (i - 1) * ldb], ldb, &work[(n1 * n2 + 1) - 1], n1, Rscale, dif[0], &work[(2 * n1 * n2 + 1) - 1], lwork - 2 * n1 * n2, iwork, ierr);
                 } else {
                     //
                     // Solve the transposed variant.
                     //
-                    Rtgsyl("T", ijb, n1, n2, a, lda, &a[(i - 1) + (i - 1) * lda], lda, work, n1, b, ldb, &b[(i - 1) + (i - 1) * ldb], ldb, &work[(n1 * n2 + 1) - 1], n1, Rscale, dif[1 - 1], &work[(2 * n1 * n2 + 1) - 1], lwork - 2 * n1 * n2, iwork, ierr);
+                    Rtgsyl("T", ijb, n1, n2, a, lda, &a[(i - 1) + (i - 1) * lda], lda, work, n1, b, ldb, &b[(i - 1) + (i - 1) * ldb], ldb, &work[(n1 * n2 + 1) - 1], n1, Rscale, dif[0], &work[(2 * n1 * n2 + 1) - 1], lwork - 2 * n1 * n2, iwork, ierr);
                 }
                 goto statement_40;
             }
-            dif[1 - 1] = Rscale / dif[1 - 1];
+            dif[0] = Rscale / dif[0];
         //
         // 1-norm-based estimate of Difl.
         //
@@ -353,7 +353,7 @@ statement_60:
                 //
                 // Compute the eigenvalue(s) at position K.
                 //
-                work[1 - 1] = a[(k - 1) + (k - 1) * lda];
+                work[0] = a[(k - 1) + (k - 1) * lda];
                 work[2 - 1] = a[((k + 1) - 1) + (k - 1) * lda];
                 work[3 - 1] = a[(k - 1) + ((k + 1) - 1) * lda];
                 work[4 - 1] = a[((k + 1) - 1) + ((k + 1) - 1) * lda];
@@ -387,8 +387,8 @@ statement_60:
         }
     }
     //
-    work[1 - 1] = lwmin;
-    iwork[1 - 1] = liwmin;
+    work[0] = lwmin;
+    iwork[0] = liwmin;
     //
     // End of Rtgsen
     //

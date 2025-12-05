@@ -53,7 +53,7 @@ void Rsyev(const char *jobz, const char *uplo, INTEGER const n, REAL *a, INTEGER
     if (info == 0) {
         nb = iMlaenv(1, "Rsytrd", uplo, n, -1, -1, -1);
         lwkopt = max((INTEGER)1, (nb + 2) * n);
-        work[1 - 1] = lwkopt;
+        work[0] = lwkopt;
         //
         if (lwork < max((INTEGER)1, 3 * n - 1) && !lquery) {
             info = -8;
@@ -75,8 +75,8 @@ void Rsyev(const char *jobz, const char *uplo, INTEGER const n, REAL *a, INTEGER
     //
     const REAL one = 1.0;
     if (n == 1) {
-        w[1 - 1] = a[0];
-        work[1 - 1] = 2;
+        w[0] = a[0];
+        work[0] = 2;
         if (wantz) {
             a[0] = one;
         }
@@ -142,7 +142,7 @@ void Rsyev(const char *jobz, const char *uplo, INTEGER const n, REAL *a, INTEGER
     //
     // Set WORK(1) to optimal workspace size.
     //
-    work[1 - 1] = lwkopt;
+    work[0] = lwkopt;
     //
     // End of Rsyev
     //

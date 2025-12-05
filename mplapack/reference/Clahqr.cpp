@@ -270,7 +270,7 @@ statement_30:
             s = cabs1(h11s) + abs(h21);
             h11s = h11s / s;
             h21 = h21 / s;
-            v[1 - 1] = h11s;
+            v[0] = h11s;
             v[2 - 1] = h21;
             h10 = h[(m - 1) + ((m - 1) - 1) * ldh].real();
             if (abs(h10) * abs(h21) <= ulp * (cabs1(h11s) * (cabs1(h11) + cabs1(h22)))) {
@@ -284,7 +284,7 @@ statement_30:
         s = cabs1(h11s) + abs(h21);
         h11s = h11s / s;
         h21 = h21 / s;
-        v[1 - 1] = h11s;
+        v[0] = h11s;
         v[2 - 1] = h21;
     statement_70:
         //
@@ -307,9 +307,9 @@ statement_30:
             if (k > m) {
                 Ccopy(2, &h[(k - 1) + ((k - 1) - 1) * ldh], 1, v, 1);
             }
-            Clarfg(2, v[1 - 1], &v[2 - 1], 1, t1);
+            Clarfg(2, v[0], &v[2 - 1], 1, t1);
             if (k > m) {
-                h[(k - 1) + ((k - 1) - 1) * ldh] = v[1 - 1];
+                h[(k - 1) + ((k - 1) - 1) * ldh] = v[0];
                 h[((k + 1) - 1) + ((k - 1) - 1) * ldh] = zero;
             }
             v2 = v[2 - 1];

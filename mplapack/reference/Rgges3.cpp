@@ -123,22 +123,22 @@ void Rgges3(const char *jobvsl, const char *jobvsr, const char *sort, bool (*sel
     //
     if (info == 0) {
         Rgeqrf(n, n, b, ldb, work, work, -1, ierr);
-        lwkopt = max(6 * n + 16, 3 * n + castINTEGER(work[1 - 1]));
+        lwkopt = max(6 * n + 16, 3 * n + castINTEGER(work[0]));
         Rormqr("L", "T", n, n, n, b, ldb, work, a, lda, work, -1, ierr);
-        lwkopt = max(lwkopt, 3 * n + castINTEGER(work[1 - 1]));
+        lwkopt = max(lwkopt, 3 * n + castINTEGER(work[0]));
         if (ilvsl) {
             Rorgqr(n, n, n, vsl, ldvsl, work, work, -1, ierr);
-            lwkopt = max(lwkopt, 3 * n + castINTEGER(work[1 - 1]));
+            lwkopt = max(lwkopt, 3 * n + castINTEGER(work[0]));
         }
         Rgghd3(jobvsl, jobvsr, n, 1, n, a, lda, b, ldb, vsl, ldvsl, vsr, ldvsr, work, -1, ierr);
-        lwkopt = max(lwkopt, 3 * n + castINTEGER(work[1 - 1]));
+        lwkopt = max(lwkopt, 3 * n + castINTEGER(work[0]));
         Rhgeqz("S", jobvsl, jobvsr, n, 1, n, a, lda, b, ldb, alphar, alphai, beta, vsl, ldvsl, vsr, ldvsr, work, -1, ierr);
-        lwkopt = max(lwkopt, 2 * n + castINTEGER(work[1 - 1]));
+        lwkopt = max(lwkopt, 2 * n + castINTEGER(work[0]));
         if (wantst) {
             Rtgsen(0, ilvsl, ilvsr, bwork, n, a, lda, b, ldb, alphar, alphai, beta, vsl, ldvsl, vsr, ldvsr, sdim, pvsl, pvsr, dif, work, -1, idum, 1, ierr);
-            lwkopt = max(lwkopt, 2 * n + castINTEGER(work[1 - 1]));
+            lwkopt = max(lwkopt, 2 * n + castINTEGER(work[0]));
         }
-        work[1 - 1] = lwkopt;
+        work[0] = lwkopt;
     }
     //
     if (info != 0) {
@@ -293,15 +293,15 @@ void Rgges3(const char *jobvsl, const char *jobvsr, const char *sort, bool (*sel
         for (i = 1; i <= n; i = i + 1) {
             if (alphai[i - 1] != zero) {
                 if ((alphar[i - 1] / safmax) > (anrmto / anrm) || (safmin / alphar[i - 1]) > (anrm / anrmto)) {
-                    work[1 - 1] = abs(a[(i - 1) + (i - 1) * lda] / alphar[i - 1]);
-                    beta[i - 1] = beta[i - 1] * work[1 - 1];
-                    alphar[i - 1] = alphar[i - 1] * work[1 - 1];
-                    alphai[i - 1] = alphai[i - 1] * work[1 - 1];
+                    work[0] = abs(a[(i - 1) + (i - 1) * lda] / alphar[i - 1]);
+                    beta[i - 1] = beta[i - 1] * work[0];
+                    alphar[i - 1] = alphar[i - 1] * work[0];
+                    alphai[i - 1] = alphai[i - 1] * work[0];
                 } else if ((alphai[i - 1] / safmax) > (anrmto / anrm) || (safmin / alphai[i - 1]) > (anrm / anrmto)) {
-                    work[1 - 1] = abs(a[(i - 1) + ((i + 1) - 1) * lda] / alphai[i - 1]);
-                    beta[i - 1] = beta[i - 1] * work[1 - 1];
-                    alphar[i - 1] = alphar[i - 1] * work[1 - 1];
-                    alphai[i - 1] = alphai[i - 1] * work[1 - 1];
+                    work[0] = abs(a[(i - 1) + ((i + 1) - 1) * lda] / alphai[i - 1]);
+                    beta[i - 1] = beta[i - 1] * work[0];
+                    alphar[i - 1] = alphar[i - 1] * work[0];
+                    alphai[i - 1] = alphai[i - 1] * work[0];
                 }
             }
         }
@@ -311,10 +311,10 @@ void Rgges3(const char *jobvsl, const char *jobvsr, const char *sort, bool (*sel
         for (i = 1; i <= n; i = i + 1) {
             if (alphai[i - 1] != zero) {
                 if ((beta[i - 1] / safmax) > (bnrmto / bnrm) || (safmin / beta[i - 1]) > (bnrm / bnrmto)) {
-                    work[1 - 1] = abs(b[(i - 1) + (i - 1) * ldb] / beta[i - 1]);
-                    beta[i - 1] = beta[i - 1] * work[1 - 1];
-                    alphar[i - 1] = alphar[i - 1] * work[1 - 1];
-                    alphai[i - 1] = alphai[i - 1] * work[1 - 1];
+                    work[0] = abs(b[(i - 1) + (i - 1) * ldb] / beta[i - 1]);
+                    beta[i - 1] = beta[i - 1] * work[0];
+                    alphar[i - 1] = alphar[i - 1] * work[0];
+                    alphai[i - 1] = alphai[i - 1] * work[0];
                 }
             }
         }
@@ -380,7 +380,7 @@ void Rgges3(const char *jobvsl, const char *jobvsr, const char *sort, bool (*sel
 //
 statement_50:
     //
-    work[1 - 1] = lwkopt;
+    work[0] = lwkopt;
     //
     // End of Rgges3
     //

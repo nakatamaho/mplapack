@@ -96,28 +96,28 @@ void Cgetsls(const char *trans, INTEGER const m, INTEGER const n, INTEGER const 
         //
         if (m >= n) {
             Cgeqr(m, n, a, lda, tq, -1, workq, -1, info2);
-            tszo = castINTEGER(tq[1 - 1].real());
-            lwo = castINTEGER(workq[1 - 1].real());
+            tszo = castINTEGER(tq[0].real());
+            lwo = castINTEGER(workq[0].real());
             Cgemqr("L", trans, m, nrhs, n, a, lda, tq, tszo, b, ldb, workq, -1, info2);
-            lwo = max(lwo, castINTEGER(workq[1 - 1].real()));
+            lwo = max(lwo, castINTEGER(workq[0].real()));
             Cgeqr(m, n, a, lda, tq, -2, workq, -2, info2);
-            tszm = castINTEGER(tq[1 - 1].real());
-            lwm = castINTEGER(workq[1 - 1].real());
+            tszm = castINTEGER(tq[0].real());
+            lwm = castINTEGER(workq[0].real());
             Cgemqr("L", trans, m, nrhs, n, a, lda, tq, tszm, b, ldb, workq, -1, info2);
-            lwm = max(lwm, castINTEGER(workq[1 - 1].real()));
+            lwm = max(lwm, castINTEGER(workq[0].real()));
             wsizeo = tszo + lwo;
             wsizem = tszm + lwm;
         } else {
             Cgelq(m, n, a, lda, tq, -1, workq, -1, info2);
-            tszo = castINTEGER(tq[1 - 1].real());
-            lwo = castINTEGER(workq[1 - 1].real());
+            tszo = castINTEGER(tq[0].real());
+            lwo = castINTEGER(workq[0].real());
             Cgemlq("L", trans, n, nrhs, m, a, lda, tq, tszo, b, ldb, workq, -1, info2);
-            lwo = max(lwo, castINTEGER(workq[1 - 1].real()));
+            lwo = max(lwo, castINTEGER(workq[0].real()));
             Cgelq(m, n, a, lda, tq, -2, workq, -2, info2);
-            tszm = castINTEGER(tq[1 - 1].real());
-            lwm = castINTEGER(workq[1 - 1].real());
+            tszm = castINTEGER(tq[0].real());
+            lwm = castINTEGER(workq[0].real());
             Cgemlq("L", trans, n, nrhs, m, a, lda, tq, tszm, b, ldb, workq, -1, info2);
-            lwm = max(lwm, castINTEGER(workq[1 - 1].real()));
+            lwm = max(lwm, castINTEGER(workq[0].real()));
             wsizeo = tszo + lwo;
             wsizem = tszm + lwm;
         }
@@ -130,15 +130,15 @@ void Cgetsls(const char *trans, INTEGER const m, INTEGER const n, INTEGER const 
     //
     if (info != 0) {
         Mxerbla("Cgetsls", -info);
-        work[1 - 1] = castREAL(wsizeo);
+        work[0] = castREAL(wsizeo);
         return;
     }
     if (lquery) {
         if (lwork == -1) {
-            work[1 - 1] = castREAL(wsizeo);
+            work[0] = castREAL(wsizeo);
         }
         if (lwork == -2) {
-            work[1 - 1] = castREAL(wsizem);
+            work[0] = castREAL(wsizem);
         }
         return;
     }
@@ -210,14 +210,14 @@ void Cgetsls(const char *trans, INTEGER const m, INTEGER const n, INTEGER const 
         //
         // compute QR factorization of A
         //
-        Cgeqr(m, n, a, lda, &work[(lw2 + 1) - 1], lw1, &work[1 - 1], lw2, info);
+        Cgeqr(m, n, a, lda, &work[(lw2 + 1) - 1], lw1, &work[0], lw2, info);
         if (!tran) {
             //
             // Least-Squares Problem min || A * X - B ||
             //
             // B(1:M,1:NRHS) := Q**T * B(1:M,1:NRHS)
             //
-            Cgemqr("L", "C", m, nrhs, n, a, lda, &work[(lw2 + 1) - 1], lw1, b, ldb, &work[1 - 1], lw2, info);
+            Cgemqr("L", "C", m, nrhs, n, a, lda, &work[(lw2 + 1) - 1], lw1, b, ldb, &work[0], lw2, info);
             //
             // B(1:N,1:NRHS) := inv(R) * B(1:N,1:NRHS)
             //
@@ -248,7 +248,7 @@ void Cgetsls(const char *trans, INTEGER const m, INTEGER const n, INTEGER const 
             //
             // B(1:M,1:NRHS) := Q(1:N,:) * B(1:N,1:NRHS)
             //
-            Cgemqr("L", "N", m, nrhs, n, a, lda, &work[(lw2 + 1) - 1], lw1, b, ldb, &work[1 - 1], lw2, info);
+            Cgemqr("L", "N", m, nrhs, n, a, lda, &work[(lw2 + 1) - 1], lw1, b, ldb, &work[0], lw2, info);
             //
             scllen = m;
             //
@@ -258,7 +258,7 @@ void Cgetsls(const char *trans, INTEGER const m, INTEGER const n, INTEGER const 
         //
         // Compute LQ factorization of A
         //
-        Cgelq(m, n, a, lda, &work[(lw2 + 1) - 1], lw1, &work[1 - 1], lw2, info);
+        Cgelq(m, n, a, lda, &work[(lw2 + 1) - 1], lw1, &work[0], lw2, info);
         //
         // workspace at least M, optimally M*NB.
         //
@@ -284,7 +284,7 @@ void Cgetsls(const char *trans, INTEGER const m, INTEGER const n, INTEGER const 
             //
             // B(1:N,1:NRHS) := Q(1:N,:)**T * B(1:M,1:NRHS)
             //
-            Cgemlq("L", "C", n, nrhs, m, a, lda, &work[(lw2 + 1) - 1], lw1, b, ldb, &work[1 - 1], lw2, info);
+            Cgemlq("L", "C", n, nrhs, m, a, lda, &work[(lw2 + 1) - 1], lw1, b, ldb, &work[0], lw2, info);
             //
             // workspace at least NRHS, optimally NRHS*NB
             //
@@ -296,7 +296,7 @@ void Cgetsls(const char *trans, INTEGER const m, INTEGER const n, INTEGER const 
             //
             // B(1:N,1:NRHS) := Q * B(1:N,1:NRHS)
             //
-            Cgemlq("L", "N", n, nrhs, m, a, lda, &work[(lw2 + 1) - 1], lw1, b, ldb, &work[1 - 1], lw2, info);
+            Cgemlq("L", "N", n, nrhs, m, a, lda, &work[(lw2 + 1) - 1], lw1, b, ldb, &work[0], lw2, info);
             //
             // workspace at least NRHS, optimally NRHS*NB
             //
@@ -328,7 +328,7 @@ void Cgetsls(const char *trans, INTEGER const m, INTEGER const n, INTEGER const 
     }
 //
 statement_50:
-    work[1 - 1] = castREAL(tszo + lwo);
+    work[0] = castREAL(tszo + lwo);
     //
     // End of Cgetsls
     //

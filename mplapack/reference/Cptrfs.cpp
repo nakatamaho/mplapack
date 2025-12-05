@@ -115,15 +115,15 @@ void Cptrfs(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *d, COMP
         if (upper) {
             if (n == 1) {
                 bi = b[(j - 1) * ldb];
-                dx = d[1 - 1] * x[(j - 1) * ldx];
-                work[1 - 1] = bi - dx;
-                rwork[1 - 1] = cabs1(bi) + cabs1(dx);
+                dx = d[0] * x[(j - 1) * ldx];
+                work[0] = bi - dx;
+                rwork[0] = cabs1(bi) + cabs1(dx);
             } else {
                 bi = b[(j - 1) * ldb];
-                dx = d[1 - 1] * x[(j - 1) * ldx];
-                ex = e[1 - 1] * x[(2 - 1) + (j - 1) * ldx];
-                work[1 - 1] = bi - dx - ex;
-                rwork[1 - 1] = cabs1(bi) + cabs1(dx) + cabs1(e[1 - 1]) * cabs1(x[(2 - 1) + (j - 1) * ldx]);
+                dx = d[0] * x[(j - 1) * ldx];
+                ex = e[0] * x[(2 - 1) + (j - 1) * ldx];
+                work[0] = bi - dx - ex;
+                rwork[0] = cabs1(bi) + cabs1(dx) + cabs1(e[0]) * cabs1(x[(2 - 1) + (j - 1) * ldx]);
                 for (i = 2; i <= n - 1; i = i + 1) {
                     bi = b[(i - 1) + (j - 1) * ldb];
                     cx = conj(e[(i - 1) - 1]) * x[((i - 1) - 1) + (j - 1) * ldx];
@@ -141,15 +141,15 @@ void Cptrfs(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *d, COMP
         } else {
             if (n == 1) {
                 bi = b[(j - 1) * ldb];
-                dx = d[1 - 1] * x[(j - 1) * ldx];
-                work[1 - 1] = bi - dx;
-                rwork[1 - 1] = cabs1(bi) + cabs1(dx);
+                dx = d[0] * x[(j - 1) * ldx];
+                work[0] = bi - dx;
+                rwork[0] = cabs1(bi) + cabs1(dx);
             } else {
                 bi = b[(j - 1) * ldb];
-                dx = d[1 - 1] * x[(j - 1) * ldx];
-                ex = conj(e[1 - 1]) * x[(2 - 1) + (j - 1) * ldx];
-                work[1 - 1] = bi - dx - ex;
-                rwork[1 - 1] = cabs1(bi) + cabs1(dx) + cabs1(e[1 - 1]) * cabs1(x[(2 - 1) + (j - 1) * ldx]);
+                dx = d[0] * x[(j - 1) * ldx];
+                ex = conj(e[0]) * x[(2 - 1) + (j - 1) * ldx];
+                work[0] = bi - dx - ex;
+                rwork[0] = cabs1(bi) + cabs1(dx) + cabs1(e[0]) * cabs1(x[(2 - 1) + (j - 1) * ldx]);
                 for (i = 2; i <= n - 1; i = i + 1) {
                     bi = b[(i - 1) + (j - 1) * ldb];
                     cx = e[(i - 1) - 1] * x[((i - 1) - 1) + (j - 1) * ldx];
@@ -241,7 +241,7 @@ void Cptrfs(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *d, COMP
         //
         // Solve M(L) * x = e.
         //
-        rwork[1 - 1] = one;
+        rwork[0] = one;
         for (i = 2; i <= n; i = i + 1) {
             rwork[i - 1] = one + rwork[(i - 1) - 1] * abs(ef[(i - 1) - 1]);
         }

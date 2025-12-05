@@ -98,7 +98,7 @@ void Rlasd2(INTEGER const nl, INTEGER const nr, INTEGER const sqre, INTEGER &k, 
     // values in the first part of D one position backward.
     //
     z1 = alpha * vt[(nlp1 - 1) + (nlp1 - 1) * ldvt];
-    z[1 - 1] = z1;
+    z[0] = z1;
     for (i = nl; i >= 1; i = i - 1) {
         z[(i + 1) - 1] = alpha * vt[(i - 1) + (nlp1 - 1) * ldvt];
         d[(i + 1) - 1] = d[i - 1];
@@ -276,8 +276,8 @@ statement_120:
     //
     // PSM(*) = Position in SubMatrix (of types 1 through 4)
     //
-    psm[1 - 1] = 2;
-    psm[2 - 1] = 2 + ctot[1 - 1];
+    psm[0] = 2;
+    psm[2 - 1] = 2 + ctot[0];
     psm[3 - 1] = psm[2 - 1] + ctot[2 - 1];
     psm[4 - 1] = psm[3 - 1] + ctot[3 - 1];
     //
@@ -313,26 +313,26 @@ statement_120:
     //
     // Determine DSIGMA(1), DSIGMA(2) and Z(1)
     //
-    dsigma[1 - 1] = zero;
+    dsigma[0] = zero;
     hlftol = tol / two;
     if (abs(dsigma[2 - 1]) <= hlftol) {
         dsigma[2 - 1] = hlftol;
     }
     if (m > n) {
-        z[1 - 1] = Rlapy2(z1, z[m - 1]);
-        if (z[1 - 1] <= tol) {
+        z[0] = Rlapy2(z1, z[m - 1]);
+        if (z[0] <= tol) {
             c = one;
             s = zero;
-            z[1 - 1] = tol;
+            z[0] = tol;
         } else {
-            c = z1 / z[1 - 1];
-            s = z[m - 1] / z[1 - 1];
+            c = z1 / z[0];
+            s = z[m - 1] / z[0];
         }
     } else {
         if (abs(z1) <= tol) {
-            z[1 - 1] = tol;
+            z[0] = tol;
         } else {
-            z[1 - 1] = z1;
+            z[0] = z1;
         }
     }
     //

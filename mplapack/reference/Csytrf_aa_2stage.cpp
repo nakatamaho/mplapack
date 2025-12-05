@@ -63,10 +63,10 @@ void Csytrf_aa_2stage(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER con
     INTEGER nb = iMlaenv(1, "Csytrf_aa_2stage", uplo, n, -1, -1, -1);
     if (info == 0) {
         if (tquery) {
-            tb[1 - 1] = (3 * nb + 1) * n;
+            tb[0] = (3 * nb + 1) * n;
         }
         if (wquery) {
-            work[1 - 1] = n * nb;
+            work[0] = n * nb;
         }
     }
     if (tquery || wquery) {
@@ -104,7 +104,7 @@ void Csytrf_aa_2stage(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER con
     //
     // Save NB
     //
-    tb[1 - 1] = nb;
+    tb[0] = nb;
     //
     INTEGER i = 0;
     INTEGER jb = 0;
@@ -153,8 +153,8 @@ void Csytrf_aa_2stage(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER con
                 // T(J,J) = U(1:J,J)'*H(1:J)
                 Cgemm("Transpose", "NoTranspose", kb, kb, (j - 1) * nb, -cone, &a[((j * nb + 1) - 1) * lda], lda, &work[(nb + 1) - 1], n, cone, &tb[(td + 1 + (j * nb) * ldtb) - 1], ldtb - 1);
                 // T(J,J) += U(J,J)'*T(J,J-1)*U(J-1,J)
-                Cgemm("Transpose", "NoTranspose", kb, nb, kb, cone, &a[(((j - 1) * nb + 1) - 1) + ((j * nb + 1) - 1) * lda], lda, &tb[(td + nb + 1 + ((j - 1) * nb) * ldtb) - 1], ldtb - 1, czero, &work[1 - 1], n);
-                Cgemm("NoTranspose", "NoTranspose", kb, kb, nb, -cone, &work[1 - 1], n, &a[(((j - 2) * nb + 1) - 1) + ((j * nb + 1) - 1) * lda], lda, cone, &tb[(td + 1 + (j * nb) * ldtb) - 1], ldtb - 1);
+                Cgemm("Transpose", "NoTranspose", kb, nb, kb, cone, &a[(((j - 1) * nb + 1) - 1) + ((j * nb + 1) - 1) * lda], lda, &tb[(td + nb + 1 + ((j - 1) * nb) * ldtb) - 1], ldtb - 1, czero, &work[0], n);
+                Cgemm("NoTranspose", "NoTranspose", kb, kb, nb, -cone, &work[0], n, &a[(((j - 2) * nb + 1) - 1) + ((j * nb + 1) - 1) * lda], lda, cone, &tb[(td + 1 + (j * nb) * ldtb) - 1], ldtb - 1);
             }
             //
             // Expand T(J,J) into full format
@@ -295,8 +295,8 @@ void Csytrf_aa_2stage(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER con
                 // T(J,J) = L(J,1:J)*H(1:J)
                 Cgemm("NoTranspose", "NoTranspose", kb, kb, (j - 1) * nb, -cone, &a[((j * nb + 1) - 1)], lda, &work[(nb + 1) - 1], n, cone, &tb[(td + 1 + (j * nb) * ldtb) - 1], ldtb - 1);
                 // T(J,J) += L(J,J)*T(J,J-1)*L(J,J-1)'
-                Cgemm("NoTranspose", "NoTranspose", kb, nb, kb, cone, &a[((j * nb + 1) - 1) + (((j - 1) * nb + 1) - 1) * lda], lda, &tb[(td + nb + 1 + ((j - 1) * nb) * ldtb) - 1], ldtb - 1, czero, &work[1 - 1], n);
-                Cgemm("NoTranspose", "Transpose", kb, kb, nb, -cone, &work[1 - 1], n, &a[((j * nb + 1) - 1) + (((j - 2) * nb + 1) - 1) * lda], lda, cone, &tb[(td + 1 + (j * nb) * ldtb) - 1], ldtb - 1);
+                Cgemm("NoTranspose", "NoTranspose", kb, nb, kb, cone, &a[((j * nb + 1) - 1) + (((j - 1) * nb + 1) - 1) * lda], lda, &tb[(td + nb + 1 + ((j - 1) * nb) * ldtb) - 1], ldtb - 1, czero, &work[0], n);
+                Cgemm("NoTranspose", "Transpose", kb, kb, nb, -cone, &work[0], n, &a[((j * nb + 1) - 1) + (((j - 2) * nb + 1) - 1) * lda], lda, cone, &tb[(td + 1 + (j * nb) * ldtb) - 1], ldtb - 1);
             }
             //
             // Expand T(J,J) into full format
