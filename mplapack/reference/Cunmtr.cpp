@@ -31,10 +31,6 @@
 
 void Cunmtr(const char *side, const char *uplo, const char *trans, INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *tau, COMPLEX *c, INTEGER const ldc, COMPLEX *work, INTEGER const lwork, INTEGER &info) {
     //
-    //
-    //
-    //
-    //
     // Test the input arguments
     //
     info = 0;
@@ -139,7 +135,7 @@ void Cunmtr(const char *side, const char *uplo, const char *trans, INTEGER const
         }
         Cunmqr(side, trans, mi, ni, nq - 1, &a[(2 - 1)], lda, tau, &c[(i1 - 1) + (i2 - 1) * ldc], ldc, work, lwork, iinfo);
     }
-    work[1 - 1] = lwkopt;
+    work[0] = lwkopt;
     //
     // End of Cunmtr
     //
