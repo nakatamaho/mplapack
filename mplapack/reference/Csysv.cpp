@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -61,7 +61,7 @@ void Csysv(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a, IN
     }
     //
     if (info != 0) {
-        Mxerbla("Csysv", -info);
+        Mxerbla("Csysv ", -info);
         return;
     } else if (lquery) {
         return;
