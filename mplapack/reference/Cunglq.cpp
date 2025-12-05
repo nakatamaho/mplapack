@@ -31,16 +31,12 @@
 
 void Cunglq(INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX *a, INTEGER const lda, COMPLEX *tau, COMPLEX *work, INTEGER const lwork, INTEGER &info) {
     //
-    //
-    //
-    //
-    //
     // Test the input arguments
     //
     info = 0;
     INTEGER nb = iMlaenv(1, "Cunglq", " ", m, n, k, -1);
     INTEGER lwkopt = max((INTEGER)1, m) * nb;
-    work[1 - 1] = lwkopt;
+    work[0] = lwkopt;
     bool lquery = (lwork == -1);
     if (m < 0) {
         info = -1;
@@ -63,7 +59,7 @@ void Cunglq(INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX *a, INTEG
     // Quick return if possible
     //
     if (m <= 0) {
-        work[1 - 1] = 1;
+        work[0] = 1;
         return;
     }
     //
@@ -158,7 +154,7 @@ void Cunglq(INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX *a, INTEG
         }
     }
     //
-    work[1 - 1] = iws;
+    work[0] = iws;
     //
     // End of Cunglq
     //
