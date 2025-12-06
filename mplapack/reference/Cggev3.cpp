@@ -29,8 +29,6 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-inline REAL abs1(COMPLEX x) { return abs(x.real()) + abs(x.imag()); }
-
 void Cggev3(const char *jobvl, const char *jobvr, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, COMPLEX *alpha, COMPLEX *beta, COMPLEX *vl, INTEGER const ldvl, COMPLEX *vr, INTEGER const ldvr, COMPLEX *work, INTEGER const lwork, REAL *rwork, INTEGER &info) {
     COMPLEX x = 0.0;
     INTEGER ijobvl = 0;
@@ -69,14 +67,6 @@ void Cggev3(const char *jobvl, const char *jobvr, INTEGER const n, COMPLEX *a, I
     INTEGER jc = 0;
     REAL temp = 0.0;
     INTEGER jr = 0;
-    //
-    // -- LAPACK driver routine --
-    //
-    //
-    //
-    // .. Local Arrays ..
-    // .. Statement Functions ..
-    // .. Statement Function definitions ..
     //
     // Decode the input arguments
     //
@@ -151,7 +141,7 @@ void Cggev3(const char *jobvl, const char *jobvr, INTEGER const n, COMPLEX *a, I
     }
     //
     if (info != 0) {
-        Mxerbla("Cggev3", -info);
+        Mxerbla("Cggev3 ", -info);
         return;
     } else if (lquery) {
         return;
@@ -168,6 +158,7 @@ void Cggev3(const char *jobvl, const char *jobvr, INTEGER const n, COMPLEX *a, I
     eps = Rlamch("E") * Rlamch("B");
     smlnum = Rlamch("S");
     bignum = one / smlnum;
+    Rlabad(smlnum, bignum);
     smlnum = sqrt(smlnum) / eps;
     bignum = one / smlnum;
     //

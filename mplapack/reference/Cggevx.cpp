@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022
+ * Copyright (c) 2008-2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -29,9 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-inline REAL abs1(COMPLEX x) { return abs(x.real()) + abs(x.imag()); }
-
-void Cggevx(const char *balanc, const char *jobvl, const char *jobvr, const char *sense, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, COMPLEX *alpha, COMPLEX *beta, COMPLEX *vl, INTEGER const ldvl, COMPLEX *vr, INTEGER const ldvr, INTEGER &ilo, INTEGER &ihi, REAL *lscale, REAL *rscale, REAL &abnrm, REAL &bbnrm, REAL *rconde, REAL *rcondv, COMPLEX *work, INTEGER const lwork, REAL *rwork, INTEGER *iwork, bool *bwork, INTEGER &info) {
+void Cggevx(const char *balanc, const char *jobvl, const char *jobvr, const char *sense, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, COMPLEX *alpha, COMPLEX *beta, COMPLEX *vl, INTEGER const ldvl, COMPLEX *vr, INTEGER const ldvr, INTEGER const ilo, INTEGER const ihi, REAL *lscale, REAL *rscale, REAL &abnrm, REAL &bbnrm, REAL *rconde, REAL *rcondv, COMPLEX *work, INTEGER const lwork, REAL *rwork, INTEGER *iwork, bool *bwork, INTEGER &info) {
     COMPLEX x = 0.0;
     INTEGER ijobvl = 0;
     bool ilvl = false;
@@ -135,7 +133,7 @@ void Cggevx(const char *balanc, const char *jobvl, const char *jobvr, const char
     // minimal amount of workspace needed at that point in the code,
     // as well as the preferred amount for good performance.
     // NB refers to the optimal block size for the immediately
-    // following subroutine, as returned by ILAENV. The workspace is
+    // following subroutine, as returned by iMlaenv. The workspace is
     // computed assuming ILO = 1 and IHI = N, the worst case.)
     //
     if (info == 0) {
@@ -181,6 +179,7 @@ void Cggevx(const char *balanc, const char *jobvl, const char *jobvr, const char
     eps = Rlamch("P");
     smlnum = Rlamch("S");
     bignum = one / smlnum;
+    Rlabad(smlnum, bignum);
     smlnum = sqrt(smlnum) / eps;
     bignum = one / smlnum;
     //
@@ -305,9 +304,9 @@ void Cggevx(const char *balanc, const char *jobvl, const char *jobvr, const char
     }
     //
     // Compute Eigenvectors and estimate condition numbers if desired
-    // ZTGEVC: (Complex Workspace: need 2*N )
+    // Ctgevc: (Complex Workspace: need 2*N )
     // (Real Workspace:    need 2*N )
-    // ZTGSNA: (Complex Workspace: need 2*N*N if SENSE='V' or 'B')
+    // Ctgsna: (Complex Workspace: need 2*N*N if SENSE='V' or 'B')
     // (Integer Workspace: need N+2 )
     //
     if (ilv || !wantsn) {
@@ -331,8 +330,8 @@ void Cggevx(const char *balanc, const char *jobvl, const char *jobvr, const char
         //
         if (!wantsn) {
             //
-            // compute eigenvectors (DTGEVC) and estimate condition
-            // numbers (DTGSNA). Note that the definition of the condition
+            // compute eigenvectors (Rtgevc) and estimate condition
+            // numbers (Rtgsna). Note that the definition of the condition
             // number is not invariant under transformation (u,v) to
             // (Q*u, Z*v), where (u,v) are eigenvectors of the generalized
             // Schur form (S,T), Q and Z are orthogonal matrices. In order
