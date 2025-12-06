@@ -29,7 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Clarf(const char *side, INTEGER const m, INTEGER const n, COMPLEX *v, INTEGER const incv, COMPLEX const tau, COMPLEX *c, INTEGER const ldc, COMPLEX *work) {
+void Clarf(const char *side, INTEGER const m, INTEGER const n, COMPLEX *v, INTEGER const incv, COMPLEX const &tau, COMPLEX *c, INTEGER const ldc, COMPLEX *work) {
     //
     bool applyleft = Mlsame(side, "L");
     INTEGER lastv = 0;
