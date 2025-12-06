@@ -29,7 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rgelss(INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL *s, REAL const rcond, INTEGER &rank, REAL *work, INTEGER const lwork, INTEGER &info) {
+void Rgelss(INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL *s, REAL const &rcond, INTEGER &rank, REAL *work, INTEGER const lwork, INTEGER &info) {
     INTEGER minmn = 0;
     INTEGER maxmn = 0;
     bool lquery = false;
@@ -67,12 +67,6 @@ void Rgelss(INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEG
     INTEGER bl = 0;
     INTEGER ldwork = 0;
     INTEGER il = 0;
-    //
-    // -- LAPACK driver routine --
-    //
-    //
-    //
-    // .. Local Arrays ..
     //
     // Test the input arguments
     //
@@ -232,6 +226,7 @@ void Rgelss(INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEG
     sfmin = Rlamch("S");
     smlnum = sfmin / eps;
     bignum = one / smlnum;
+    Rlabad(smlnum, bignum);
     //
     // Scale A if max element outside range [SMLNUM,BIGNUM]
     //
@@ -342,9 +337,9 @@ void Rgelss(INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEG
         //
         // Multiply B by reciprocals of singular values
         //
-        thr = max(REAL(rcond * s[0]), sfmin);
+        thr = max(rcond * s[0], sfmin);
         if (rcond < zero) {
-            thr = max(REAL(eps * s[0]), sfmin);
+            thr = max(eps * s[0], sfmin);
         }
         rank = 0;
         for (i = 1; i <= n; i = i + 1) {
@@ -380,7 +375,7 @@ void Rgelss(INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEG
         // and sufficient workspace for an efficient algorithm
         //
         ldwork = m;
-        if (lwork >= max({4 * m + m * lda + max(m, 2 * m - 4, nrhs, n - 3 * m), m * lda + m + m * nrhs})) {
+        if (lwork >= max(4 * m + m * lda + max(m, 2 * m - 4, nrhs, n - 3 * m), m * lda + m + m * nrhs)) {
             ldwork = lda;
         }
         itau = 1;
@@ -429,9 +424,9 @@ void Rgelss(INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEG
         //
         // Multiply B by reciprocals of singular values
         //
-        thr = max(REAL(rcond * s[0]), sfmin);
+        thr = max(rcond * s[0], sfmin);
         if (rcond < zero) {
-            thr = max(REAL(eps * s[0]), sfmin);
+            thr = max(eps * s[0], sfmin);
         }
         rank = 0;
         for (i = 1; i <= m; i = i + 1) {
@@ -509,9 +504,9 @@ void Rgelss(INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEG
         //
         // Multiply B by reciprocals of singular values
         //
-        thr = max(REAL(rcond * s[0]), sfmin);
+        thr = max(rcond * s[0], sfmin);
         if (rcond < zero) {
-            thr = max(REAL(eps * s[0]), sfmin);
+            thr = max(eps * s[0], sfmin);
         }
         rank = 0;
         for (i = 1; i <= m; i = i + 1) {

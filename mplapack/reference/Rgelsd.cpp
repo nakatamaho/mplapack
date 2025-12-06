@@ -29,7 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rgelsd(INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL *s, REAL const rcond, INTEGER &rank, REAL *work, INTEGER const lwork, INTEGER *iwork, INTEGER &info) {
+void Rgelsd(INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL *s, REAL const &rcond, INTEGER &rank, REAL *work, INTEGER const lwork, INTEGER *iwork, INTEGER &info) {
     INTEGER minmn = 0;
     INTEGER maxmn = 0;
     INTEGER mnthr = 0;
@@ -112,12 +112,12 @@ void Rgelsd(INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEG
             maxwrk = max(maxwrk, 3 * n + (mm + n) * iMlaenv(1, "Rgebrd", " ", mm, n, -1, -1));
             maxwrk = max(maxwrk, 3 * n + nrhs * iMlaenv(1, "Rormbr", "QLT", mm, nrhs, n, -1));
             maxwrk = max(maxwrk, 3 * n + (n - 1) * iMlaenv(1, "Rormbr", "PLN", n, nrhs, n, -1));
-            wlalsd = 9 * n + 2 * n * smlsiz + 8 * n * nlvl + n * nrhs + (smlsiz + 1) * (smlsiz + 1);
+            wlalsd = 9 * n + 2 * n * smlsiz + 8 * n * nlvl + n * nrhs + pow2((smlsiz + 1));
             maxwrk = max(maxwrk, 3 * n + wlalsd);
             minwrk = max(3 * n + mm, 3 * n + nrhs, 3 * n + wlalsd);
         }
         if (n > m) {
-            wlalsd = 9 * m + 2 * m * smlsiz + 8 * m * nlvl + m * nrhs + (smlsiz + 1) * (smlsiz + 1);
+            wlalsd = 9 * m + 2 * m * smlsiz + 8 * m * nlvl + m * nrhs + pow2((smlsiz + 1));
             if (n >= mnthr) {
                 //
                 // Path 2a - underdetermined, with many more columns
@@ -177,6 +177,7 @@ void Rgelsd(INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEG
     sfmin = Rlamch("S");
     smlnum = sfmin / eps;
     bignum = one / smlnum;
+    Rlabad(smlnum, bignum);
     //
     // Scale A if max entry outside range [SMLNUM,BIGNUM].
     //
@@ -292,7 +293,7 @@ void Rgelsd(INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEG
         // and sufficient workspace for an efficient algorithm.
         //
         ldwork = m;
-        if (lwork >= max({4 * m + m * lda + max(m, 2 * m - 4, nrhs, n - 3 * m), m * lda + m + m * nrhs, 4 * m + m * lda + wlalsd})) {
+        if (lwork >= max(4 * m + m * lda + max(m, 2 * m - 4, nrhs, n - 3 * m), m * lda + m + m * nrhs, 4 * m + m * lda + wlalsd)) {
             ldwork = lda;
         }
         itau = 1;
