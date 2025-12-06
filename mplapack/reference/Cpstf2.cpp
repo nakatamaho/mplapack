@@ -29,7 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Cpstf2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, INTEGER *piv, INTEGER &rank, REAL const tol, REAL *work, INTEGER &info) {
+void Cpstf2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, INTEGER *piv, INTEGER &rank, REAL const &tol, REAL *work, INTEGER &info) {
     bool upper = false;
     INTEGER i = 0;
     INTEGER pvt = 0;
@@ -42,10 +42,6 @@ void Cpstf2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
     REAL dtemp = 0.0;
     const COMPLEX cone = COMPLEX(1.0, 0.0);
     const REAL one = 1.0;
-    //
-    //
-    //
-    //
     //
     // Test the input parameters
     //
@@ -122,7 +118,7 @@ void Cpstf2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
             }
             //
             if (j > 1) {
-                itemp = Mmaxloc(work, n + j, 2 * n, 1);
+                itemp = Mmaxloc(work, (n + j), (2 * n), 1);
                 pvt = itemp + j - 1;
                 ajj = work[(n + pvt) - 1];
                 if (ajj <= dstop || Risnan(ajj)) {
@@ -191,7 +187,7 @@ void Cpstf2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
             }
             //
             if (j > 1) {
-                itemp = Mmaxloc(work, n + j, 2 * n, 1);
+                itemp = Mmaxloc(work, (n + j), (2 * n), 1);
                 pvt = itemp + j - 1;
                 ajj = work[(n + pvt) - 1];
                 if (ajj <= dstop || Risnan(ajj)) {
