@@ -86,7 +86,6 @@ void Chgeqz(const char *job, const char *compq, const char *compz, INTEGER const
     COMPLEX ctemp3 = 0.0;
     INTEGER jc = 0;
     INTEGER jr = 0;
-    abs1(x) = abs(x.real()) + abs(x.imag());
     //
     // Decode JOB, COMPQ, COMPZ
     //
