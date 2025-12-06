@@ -29,7 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Cstemr(const char *jobz, const char *range, INTEGER const n, REAL *d, REAL *e, REAL const vl, REAL const vu, INTEGER const il, INTEGER const iu, INTEGER &m, REAL *w, COMPLEX *z, INTEGER const ldz, INTEGER const nzc, INTEGER *isuppz, bool &tryrac, REAL *work, INTEGER const lwork, INTEGER *iwork, INTEGER const liwork, INTEGER &info) {
+void Cstemr(const char *jobz, const char *range, INTEGER const n, REAL *d, REAL *e, REAL const &vl, REAL const &vu, INTEGER const il, INTEGER const iu, INTEGER &m, REAL *w, COMPLEX *z, INTEGER const ldz, INTEGER const nzc, INTEGER *isuppz, bool &tryrac, REAL *work, INTEGER const lwork, INTEGER *iwork, INTEGER const liwork, INTEGER &info) {
     bool wantz = false;
     bool alleig = false;
     bool valeig = false;
@@ -77,7 +77,7 @@ void Cstemr(const char *jobz, const char *range, INTEGER const n, REAL *d, REAL 
     REAL rtol1 = 0.0;
     REAL rtol2 = 0.0;
     REAL pivmin = 0.0;
-    const REAL minrgp = 1.0e-3;
+    const REAL minrgp = 0.001;
     INTEGER ibegin = 0;
     INTEGER wbegin = 0;
     INTEGER jblk = 0;
@@ -90,11 +90,6 @@ void Cstemr(const char *jobz, const char *range, INTEGER const n, REAL *d, REAL 
     INTEGER i = 0;
     REAL tmp = 0.0;
     INTEGER jj = 0;
-    //
-    //
-    //
-    //
-    //
     //
     // Test the input parameters.
     //
@@ -164,7 +159,7 @@ void Cstemr(const char *jobz, const char *range, INTEGER const n, REAL *d, REAL 
     smlnum = safmin / eps;
     bignum = one / smlnum;
     rmin = sqrt(smlnum);
-    rmax = min(REAL(sqrt(bignum)), REAL(one / sqrt(sqrt(safmin))));
+    rmax = min(sqrt(bignum), one / sqrt(sqrt(safmin)));
     //
     if (info == 0) {
         work[0] = lwmin;
@@ -216,16 +211,16 @@ void Cstemr(const char *jobz, const char *range, INTEGER const n, REAL *d, REAL 
         if (wantz && (!zquery)) {
             z[0] = one;
             isuppz[0] = 1;
-            isuppz[2 - 1] = 1;
+            isuppz[1] = 1;
         }
         return;
     }
     //
     if (n == 2) {
         if (!wantz) {
-            Rlae2(d[0], e[0], d[2 - 1], r1, r2);
+            Rlae2(d[0], e[0], d[1], r1, r2);
         } else if (wantz && (!zquery)) {
-            Rlaev2(d[0], e[0], d[2 - 1], r1, r2, cs, sn);
+            Rlaev2(d[0], e[0], d[1], r1, r2, cs, sn);
         }
         if (alleig || (valeig && (r2 > wl) && (r2 <= wu)) || (indeig && (iil == 1))) {
             m++;
@@ -354,7 +349,7 @@ void Cstemr(const char *jobz, const char *range, INTEGER const n, REAL *d, REAL 
             // need less accurate initial bisection in Rlarre.
             // Note: these settings do only affect the subset case and Rlarre
             rtol1 = sqrt(eps);
-            rtol2 = max(REAL(sqrt(eps) * 5.0e-3), REAL(four * eps));
+            rtol2 = max(sqrt(eps) * 0.005, four * eps);
         }
         Rlarre(range, n, wl, wu, iil, iiu, d, e, &work[inde2 - 1], rtol1, rtol2, thresh, nsplit, &iwork[iinspl - 1], m, w, &work[inderr - 1], &work[indgp - 1], &iwork[iindbl - 1], &iwork[iindw - 1], &work[indgrs - 1], pivmin, &work[indwrk - 1], &iwork[iindwk - 1], iinfo);
         if (iinfo != 0) {
@@ -383,7 +378,7 @@ void Cstemr(const char *jobz, const char *range, INTEGER const n, REAL *d, REAL 
             // eigenvalues of the original matrix.
             for (j = 1; j <= m; j = j + 1) {
                 itmp = iwork[(iindbl + j - 1) - 1];
-                w[j - 1] += e[(iwork[(iinspl + itmp - 1) - 1]) - 1];
+                w[j - 1] += e[iwork[(iinspl + itmp - 1) - 1] - 1];
             }
         }
         //
