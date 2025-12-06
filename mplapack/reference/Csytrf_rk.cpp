@@ -43,10 +43,6 @@ void Csytrf_rk(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda,
     INTEGER i = 0;
     INTEGER ip = 0;
     //
-    //
-    //
-    //
-    //
     // Test the input parameters.
     //
     info = 0;

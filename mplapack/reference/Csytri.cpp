@@ -43,10 +43,6 @@ void Csytri(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
     INTEGER kp = 0;
     COMPLEX temp = 0.0;
     //
-    //
-    //
-    //
-    //
     // Test the input parameters.
     //
     info = 0;
