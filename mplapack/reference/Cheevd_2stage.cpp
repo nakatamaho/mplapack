@@ -31,11 +31,6 @@
 
 void Cheevd_2stage(const char *jobz, const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, REAL *w, COMPLEX *work, INTEGER const lwork, REAL *rwork, INTEGER const lrwork, INTEGER *iwork, INTEGER const liwork, INTEGER &info) {
     //
-    // -- LAPACK driver routine --
-    //
-    //
-    //
-    //
     //
     // Test the input parameters.
     //
@@ -73,7 +68,7 @@ void Cheevd_2stage(const char *jobz, const char *uplo, INTEGER const n, COMPLEX 
             lwtrd = iMlaenv2stage(4, "Chetrd_2stage", jobz, n, kd, ib, -1);
             if (wantz) {
                 lwmin = 2 * n + n * n;
-                lrwmin = 1 + 5 * n + 2 * n * n;
+                lrwmin = 1 + 5 * n + 2 * pow2(n);
                 liwmin = 3 + 5 * n;
             } else {
                 lwmin = n + 1 + lhtrd + lwtrd;

@@ -31,11 +31,6 @@
 
 void Chbevd(const char *jobz, const char *uplo, INTEGER const n, INTEGER const kd, COMPLEX *ab, INTEGER const ldab, REAL *w, COMPLEX *z, INTEGER const ldz, COMPLEX *work, INTEGER const lwork, REAL *rwork, INTEGER const lrwork, INTEGER *iwork, INTEGER const liwork, INTEGER &info) {
     //
-    // -- LAPACK driver routine --
-    //
-    //
-    //
-    //
     // Test the input parameters.
     //
     bool wantz = Mlsame(jobz, "V");
@@ -52,8 +47,8 @@ void Chbevd(const char *jobz, const char *uplo, INTEGER const n, INTEGER const k
         liwmin = 1;
     } else {
         if (wantz) {
-            lwmin = 2 * n * n;
-            lrwmin = 1 + 5 * n + 2 * n * n;
+            lwmin = 2 * pow2(n);
+            lrwmin = 1 + 5 * n + 2 * pow2(n);
             liwmin = 3 + 5 * n;
         } else {
             lwmin = n;
