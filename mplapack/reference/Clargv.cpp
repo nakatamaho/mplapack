@@ -68,18 +68,6 @@ void Clargv(INTEGER const n, COMPLEX *x, INTEGER const incx, COMPLEX *y, INTEGER
     REAL di = 0.0;
     INTEGER j = 0;
     //
-    //
-    //
-    //
-    // LOGICAL            FIRST
-    //
-    // .. Statement Functions ..
-    // .. Save statement ..
-    // SAVE               FIRST, SAFMX2, SAFMIN, SAFMN2
-    // .. Data statements ..
-    // DATA               FIRST / .TRUE. /
-    // .. Statement Function definitions ..
-    //
     // IF( FIRST ) THEN
     // FIRST = .FALSE.
     safmin = Rlamch("S");
