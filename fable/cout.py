@@ -3384,24 +3384,6 @@ def convert_executable(
                         "complex", "doublecomplex")
                     rhs_is_real = rhs_dt_code in ("real", "doubleprecision")
 
-                # Handle complex expressions (e.g., a[i] / d, a[i] * x + b[j])
-                # where rhs_base_id is None but RHS contains COMPLEX variables
-                if (lhs_is_real or lhs_is_integer) and rhs_base_id is None and rhs_id_tokens:
-                    # Scan all identifiers in RHS to check if any is COMPLEX
-                    for tok in rhs_id_tokens:
-                        tok_fdecl = conv_info.fproc.get_fdecl(id_tok=tok)
-                        if tok_fdecl is not None and tok_fdecl.data_type is not None:
-                            tok_dt = tok_fdecl.data_type
-                            if isinstance(tok_dt, str):
-                                tok_dt_code = tok_dt
-                            else:
-                                tok_dt_code = getattr(tok_dt, "value", None)
-                            if tok_dt_code is not None:
-                                tok_dt_code = tok_dt_code.lower()
-                                if tok_dt_code in ("complex", "doublecomplex"):
-                                    rhs_is_complex = True
-                                    break
-
                 if lhs_is_real and rhs_is_complex:
                     rhs_expr = crhs.strip()
                     # Avoid double-wrapping if someone already wrote .real()
