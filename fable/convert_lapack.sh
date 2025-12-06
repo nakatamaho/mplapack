@@ -289,6 +289,7 @@ lines = [_rewrite_norm_eq_one(line) for line in lines]
 
 # ---------------------------------------------------------------------------
 # 4) Drop bogus "cabs1(v) = abs(v.real()) + abs(v.imag());" line
+#    and similarly "abs1(v) = abs(v.real()) + abs(v.imag());"
 # ---------------------------------------------------------------------------
 
 CABS1_STMT_RE = re.compile(
@@ -296,6 +297,19 @@ CABS1_STMT_RE = re.compile(
     r"abs\s*\(\s*\1\s*\.\s*real\s*\(\s*\)\s*\)\s*\+\s*"
     r"abs\s*\(\s*\1\s*\.\s*imag\s*\(\s*\)\s*\)\s*;\s*$"
 )
+
+ABS1_STMT_RE = re.compile(
+    r"^\s*abs1\s*\(\s*([A-Za-z_][A-Za-z0-9_]*)\s*\)\s*=\s*"
+    r"abs\s*\(\s*\1\s*\.\s*real\s*\(\s*\)\s*\)\s*\+\s*"
+    r"abs\s*\(\s*\1\s*\.\s*imag\s*\(\s*\)\s*\)\s*;\s*$"
+)
+
+lines = [
+    line
+    for line in lines
+    if not CABS1_STMT_RE.match(line)
+    and not ABS1_STMT_RE.match(line)
+]
 
 lines = [line for line in lines if not CABS1_STMT_RE.match(line)]
 
