@@ -29,13 +29,11 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-inline REAL cabs1(COMPLEX z) { return (abs(z.real()) + abs(z.imag())); }
-
 void Clahef(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &kb, COMPLEX *a, INTEGER const lda, INTEGER *ipiv, COMPLEX *w, INTEGER const ldw, INTEGER &info) {
     COMPLEX z = 0.0;
     const REAL one = 1.0;
-    const REAL sevten = 17.0e+0;
-    const REAL eight = 8.0e+0;
+    const REAL sevten = 17.0;
+    const REAL eight = 8.0;
     REAL alpha = 0.0;
     INTEGER k = 0;
     INTEGER kw = 0;
@@ -60,11 +58,6 @@ void Clahef(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &kb, CO
     INTEGER jj = 0;
     INTEGER jp = 0;
     //
-    //
-    //
-    //
-    // .. Statement Functions ..
-    //
     info = 0;
     //
     // Initialize ALPHA for use in choosing pivot block size.
@@ -75,7 +68,7 @@ void Clahef(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &kb, CO
         //
         // Factorize the trailing columns of A using the upper triangle
         // of A and working backwards, and compute the matrix W = U12*D
-        // for use in updating A11 (note that conj(W) is actually stored)
+        // for use in updating A11 (note that conjg(W) is actually stored)
         //
         // K is the main loop index, decreasing from N in steps of 1 or 2
         //
@@ -128,8 +121,6 @@ void Clahef(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &kb, CO
             kp = k;
             a[(k - 1) + (k - 1) * lda] = a[(k - 1) + (k - 1) * lda].real();
         } else {
-            //
-            //
             // BEGIN pivot search
             //
             // Case(1)
@@ -198,8 +189,6 @@ void Clahef(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &kb, CO
             }
             //
             // END pivot search
-            //
-            //
             // KK is the column of A where pivoting step stopped
             //
             kk = k - kstep + 1;
@@ -381,7 +370,7 @@ void Clahef(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &kb, CO
         //
         // A11 := A11 - U12*D*U12**H = A11 - U12*W**H
         //
-        // computing blocks of NB columns at a time (note that conj(W) is
+        // computing blocks of NB columns at a time (note that conjg(W) is
         // actually stored)
         //
         for (j = ((k - 1) / nb) * nb + 1; j >= 1; j = j - nb) {
@@ -435,7 +424,7 @@ void Clahef(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &kb, CO
         //
         // Factorize the leading columns of A using the lower triangle
         // of A and working forwards, and compute the matrix W = L21*D
-        // for use in updating A22 (note that conj(W) is actually stored)
+        // for use in updating A22 (note that conjg(W) is actually stored)
         //
         // K is the main loop index, increasing from 1 in steps of 1 or 2
         //
@@ -485,8 +474,6 @@ void Clahef(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &kb, CO
             kp = k;
             a[(k - 1) + (k - 1) * lda] = a[(k - 1) + (k - 1) * lda].real();
         } else {
-            //
-            //
             // BEGIN pivot search
             //
             // Case(1)
@@ -555,8 +542,6 @@ void Clahef(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &kb, CO
             }
             //
             // END pivot search
-            //
-            //
             // KK is the column of A where pivoting step stopped
             //
             kk = k + kstep - 1;
@@ -734,7 +719,7 @@ void Clahef(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &kb, CO
         //
         // A22 := A22 - L21*D*L21**H = A22 - L21*W**H
         //
-        // computing blocks of NB columns at a time (note that conj(W) is
+        // computing blocks of NB columns at a time (note that conjg(W) is
         // actually stored)
         //
         for (j = k; j <= n; j = j + nb) {
