@@ -1357,6 +1357,31 @@ def _collect_complex_variable_names(text: str):
     return complex_vars, complex_ptrs
 
 
+def _looks_complex_expression(arg: str) -> bool:
+    """Heuristic: return True if 'arg' syntactically looks COMPLEX-valued.
+
+    Used only for explicit REAL/DBLE/INT handling, when no known COMPLEX
+    variable name appears in the expression.
+    """
+    s = arg.strip()
+
+    # Explicit COMPLEX constructor: COMPLEX(...)
+    if re.search(r'\bCOMPLEX\s*\(', s):
+        return True
+
+    # std::complex<T>(...) temporaries
+    if "std::complex<" in s:
+        return True
+
+    # Conjugation intrinsics: conj(...), conjg(...)
+    if re.search(r'\bconj\s*\(', s):
+        return True
+    if re.search(r'\bconjg\s*\(', s):
+        return True
+
+    return False
+
+
 def _real_cast_or_component(arg: str, complex_vars, complex_ptrs) -> str:
     """Replacement for DBLE/REAL with COMPLEX-aware behavior."""
     arg = arg.strip()
@@ -1408,8 +1433,14 @@ def _real_cast_or_component(arg: str, complex_vars, complex_ptrs) -> str:
             break
 
     if owner is None:
+        # No tracked COMPLEX variable in the expression. If it still
+        # looks like a COMPLEX-valued temporary (e.g. COMPLEX(...),
+        # conj(...)), take the real part explicitly.
+        if _looks_complex_expression(arg):
+            return f"({arg}).real()"
         return f"castREAL({arg})"
 
+    # Expression contains at least one COMPLEX variable -> take real part.
     return f"({arg}).real()"
 
 
@@ -1740,7 +1771,8 @@ def convert_tokens(conv_info, tokens, commas=False, had_str_concat=None):
                     end_expr = parts[1].strip()
                     col_expr = parts[2].strip()
                     ldname = "ld" + prev_tok.value.lower()
-                    rapp(f"[__SLICE2D__({start_expr}, {end_expr}, {col_expr}, {ldname})]")
+                    rapp(
+                        f"[__SLICE2D__({start_expr}, {end_expr}, {col_expr}, {ldname})]")
                 elif len(parts) == 1:
                     i_expr = parts[0].strip()
                     if re.fullmatch(r"[0-9]+", i_expr):
@@ -5521,29 +5553,29 @@ def _postprocess_slice_assignment(lines):
                 result.append(expr[m.start():m.end()])
                 pos = m.end()
                 continue
-            
+
             args_str = expr[paren_start + 1:paren_end]
             args = split_args(args_str)
             if len(args) != 4:
                 result.append(expr[m.start():m.end()])
                 pos = m.end()
                 continue
-            
+
             # args: start, end, col, ldname
             col_expr = args[2]
             ldname = args[3]
             index_expr = make_index_expr(col_expr, ldname)
-            
+
             # Skip past ")]"
             rest_pos = paren_end + 1
             while rest_pos < len(expr) and expr[rest_pos] in ' \t':
                 rest_pos += 1
             if rest_pos < len(expr) and expr[rest_pos] == ']':
                 rest_pos += 1
-            
+
             result.append(f"{array_name}[{index_expr}]")
             pos = rest_pos
-        
+
         result.append(expr[pos:])
         return ''.join(result)
 

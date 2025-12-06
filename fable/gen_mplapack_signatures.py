@@ -7,12 +7,13 @@ from typing import List, Dict, Tuple
 # Prototype parsing helpers
 # ---------------------------------------------------------------------------
 
+
 def collect_prototypes(text: str) -> List[str]:
     """
     Collect C++ prototypes terminated by ';' from the given header text.
     Handles prototypes that span multiple lines.
     """
-    protos = []
+    protos: List[str] = []
     buf = ""
     for line in text.splitlines():
         stripped = line.strip()
@@ -34,8 +35,8 @@ def split_args(arg_str: str) -> List[str]:
     Split an argument list string into individual arguments,
     respecting parentheses (for function pointers).
     """
-    args = []
-    cur = []
+    args: List[str] = []
+    cur: List[str] = []
     depth = 0
     for ch in arg_str:
         if ch == "(":
@@ -56,6 +57,49 @@ def split_args(arg_str: str) -> List[str]:
         if arg:
             args.append(arg)
     return args
+
+
+def classify_return_type(rtype: str) -> str:
+    """
+    Classify the return type into one of:
+      - "void"
+      - "real"
+      - "complex"
+      - "integer"
+      - "other"
+
+    This is intentionally coarse and tailored to mpblas/mplapack style
+    prototypes (REAL, COMPLEX, INTEGER, void, etc.).
+    """
+    s = rtype.strip()
+    if not s:
+        return "void"
+
+    # Remove common qualifiers / reference / pointer markers
+    base = s.replace("const", " ")
+    base = base.replace("&", " ")
+    base = base.replace("*", " ")
+    base = re.sub(r"\s+", " ", base).strip()
+    lower = base.lower()
+    upper = base.upper()
+
+    # void (including things like "static inline void")
+    if re.search(r"\bvoid\b", lower):
+        return "void"
+
+    # COMPLEX* types
+    if "COMPLEX" in upper:
+        return "complex"
+
+    # REAL / DOUBLE PRECISION / double / float → treat as "real"
+    if "REAL" in upper or "double" in lower or "float" in lower:
+        return "real"
+
+    # INTEGER / int
+    if "INTEGER" in upper or re.search(r"\bint\b", lower):
+        return "integer"
+
+    return "other"
 
 
 def classify_arg(arg: str) -> str:
@@ -129,10 +173,13 @@ def process_header(text: str) -> Dict[str, Tuple[str, List[str]]]:
 # Main entry point
 # ---------------------------------------------------------------------------
 
+
 def main(argv: List[str]) -> None:
     if len(argv) < 2:
-        print("Usage: gen_mplapack_signatures.py mpblas_generic.h mplapack_generic.h [...]",
-              file=sys.stderr)
+        print(
+            "Usage: gen_mplapack_signatures.py mpblas_generic.h mplapack_generic.h [...]",
+            file=sys.stderr,
+        )
         sys.exit(1)
 
     all_returns: Dict[str, str] = {}
@@ -168,6 +215,7 @@ def main(argv: List[str]) -> None:
         print(f"    {name!r}: [{kinds_list}],")
     print("}")
     print()
+
 
 if __name__ == "__main__":
     main(sys.argv)
