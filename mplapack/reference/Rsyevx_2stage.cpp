@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -29,7 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rsyevx_2stage(const char *jobz, const char *range, const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL const vl, REAL const vu, INTEGER const il, INTEGER const iu, REAL const abstol, INTEGER &m, REAL *w, REAL *z, INTEGER const ldz, REAL *work, INTEGER const lwork, INTEGER *iwork, INTEGER *ifail, INTEGER &info) {
+void Rsyevx_2stage(const char *jobz, const char *range, const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL const &vl, REAL const &vu, INTEGER const il, INTEGER const iu, REAL const &abstol, INTEGER &m, REAL *w, REAL *z, INTEGER const ldz, REAL *work, INTEGER const lwork, INTEGER *iwork, INTEGER *ifail, INTEGER &info) {
     bool lower = false;
     bool wantz = false;
     bool alleig = false;
@@ -77,6 +77,7 @@ void Rsyevx_2stage(const char *jobz, const char *range, const char *uplo, INTEGE
     REAL tmp1 = 0.0;
     INTEGER jj = 0;
     INTEGER itmp1 = 0;
+    //
     //
     // Test the input parameters.
     //
@@ -172,7 +173,7 @@ void Rsyevx_2stage(const char *jobz, const char *range, const char *uplo, INTEGE
     smlnum = safmin / eps;
     bignum = one / smlnum;
     rmin = sqrt(smlnum);
-    rmax = min(REAL(sqrt(bignum)), REAL(one / sqrt(sqrt(safmin))));
+    rmax = min(sqrt(bignum), one / sqrt(sqrt(safmin)));
     //
     // Scale matrix to allowable range, if necessary.
     //
@@ -221,7 +222,7 @@ void Rsyevx_2stage(const char *jobz, const char *range, const char *uplo, INTEGE
     Rsytrd_2stage(jobz, uplo, n, a, lda, &work[indd - 1], &work[inde - 1], &work[indtau - 1], &work[indhous - 1], lhtrd, &work[indwrk - 1], llwork, iinfo);
     //
     // If all eigenvalues are desired and ABSTOL is less than or equal to
-    // zero, then call Rsterf or Rorgtr and Rsteqr.  If this fails for
+    // zero, then call Rsterf or Rorgtr and SSTEQR.  If this fails for
     // some eigenvalue, then try Rstebz.
     //
     test = false;
@@ -254,7 +255,7 @@ void Rsyevx_2stage(const char *jobz, const char *range, const char *uplo, INTEGE
         info = 0;
     }
     //
-    // Otherwise, call Rstebz and, if eigenvectors are desired, Rstein.
+    // Otherwise, call Rstebz and, if eigenvectors are desired, SSTEIN.
     //
     if (wantz) {
         order = 'B';
