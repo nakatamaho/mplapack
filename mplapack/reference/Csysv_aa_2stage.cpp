@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -30,10 +30,6 @@
 #include <mplapack.h>
 
 void Csysv_aa_2stage(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a, INTEGER const lda, COMPLEX *tb, INTEGER const ltb, INTEGER *ipiv, INTEGER *ipiv2, COMPLEX *b, INTEGER const ldb, COMPLEX *work, INTEGER const lwork, INTEGER &info) {
-    //
-    //
-    //
-    //
     //
     // Test the input parameters.
     //

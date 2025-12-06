@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -45,7 +45,7 @@ void Csysv_aa(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a,
         info = -5;
     } else if (ldb < max((INTEGER)1, n)) {
         info = -8;
-    } else if (lwork < max((INTEGER)2 * n, 3 * n - 2) && !lquery) {
+    } else if (lwork < max(2 * n, 3 * n - 2) && !lquery) {
         info = -10;
     }
     //
@@ -62,7 +62,7 @@ void Csysv_aa(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a,
     }
     //
     if (info != 0) {
-        Mxerbla("Csysv_aa", -info);
+        Mxerbla("Csysv_aa ", -info);
         return;
     } else if (lquery) {
         return;

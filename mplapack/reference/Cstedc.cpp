@@ -53,10 +53,6 @@ void Cstedc(const char *compz, INTEGER const n, REAL *d, REAL *e, COMPLEX *z, IN
     INTEGER k = 0;
     REAL p = 0.0;
     //
-    //
-    //
-    //
-    //
     // Test the input parameters.
     //
     info = 0;
@@ -94,18 +90,18 @@ void Cstedc(const char *compz, INTEGER const n, REAL *d, REAL *e, COMPLEX *z, IN
             lrwmin = 2 * (n - 1);
         } else if (icompz == 1) {
             lgn = castINTEGER(log(castREAL(n)) / log(two));
-            if ((INTEGER)pow((double)2, (double)lgn) < n) {
+            if (pow(2, lgn) < n) {
                 lgn++;
             }
-            if ((INTEGER)pow((double)2, (double)lgn) < n) {
+            if (pow(2, lgn) < n) {
                 lgn++;
             }
             lwmin = n * n;
-            lrwmin = 1 + 3 * n + 2 * n * lgn + 4 * n * n;
+            lrwmin = 1 + 3 * n + 2 * n * lgn + 4 * pow2(n);
             liwmin = 6 + 6 * n + 5 * n * lgn;
         } else if (icompz == 2) {
             lwmin = 1;
-            lrwmin = 1 + 4 * n + 2 * n * n;
+            lrwmin = 1 + 4 * n + 2 * pow2(n);
             liwmin = 3 + 5 * n;
         }
         work[0] = lwmin;

@@ -29,13 +29,11 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-inline REAL cabs1(COMPLEX z) { return abs(z.real()) + abs(z.imag()); }
-
 void Clasyf_rook(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &kb, COMPLEX *a, INTEGER const lda, INTEGER *ipiv, COMPLEX *w, INTEGER const ldw, INTEGER &info) {
     COMPLEX z = 0.0;
     const REAL one = 1.0;
-    const REAL sevten = 17.0e+0;
-    const REAL eight = 8.0e+0;
+    const REAL sevten = 17.0;
+    const REAL eight = 8.0;
     REAL alpha = 0.0;
     REAL sfmin = 0.0;
     INTEGER k = 0;
@@ -136,8 +134,6 @@ void Clasyf_rook(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &k
             kp = k;
             Ccopy(k, &w[(kw - 1) * ldw], 1, &a[(k - 1) * lda], 1);
         } else {
-            //
-            //
             // Test for interchange
             //
             // Equivalent to testing for ABSAKK.GE.ALPHA*COLMAX
@@ -189,7 +185,7 @@ void Clasyf_rook(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &k
                 }
                 //
                 // Equivalent to testing for
-                // CCABS1( W( IMAX, KW-1 ) ).GE.ALPHA*ROWMAX
+                // CABS1( W( IMAX, KW-1 ) ).GE.ALPHA*ROWMAX
                 // (used to handle NaN and Inf)
                 //
                 if (!(cabs1(w[(imax - 1) + ((kw - 1) - 1) * ldw]) < alpha * rowmax)) {
@@ -237,8 +233,6 @@ void Clasyf_rook(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &k
                 }
                 //
             }
-            //
-            //
             kk = k - kstep + 1;
             //
             // KKW is the column of W which corresponds to column KK of A
@@ -454,8 +448,6 @@ void Clasyf_rook(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &k
             kp = k;
             Ccopy(n - k + 1, &w[(k - 1) + (k - 1) * ldw], 1, &a[(k - 1) + (k - 1) * lda], 1);
         } else {
-            //
-            //
             // Test for interchange
             //
             // Equivalent to testing for ABSAKK.GE.ALPHA*COLMAX
@@ -506,10 +498,10 @@ void Clasyf_rook(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &k
                 }
                 //
                 // Equivalent to testing for
-                // CCABS1( W( IMAX, K+1 ) ).GE.ALPHA*ROWMAX
+                // CABS1( W( IMAX, K+1 ) ).GE.ALPHA*ROWMAX
                 // (used to handle NaN and Inf)
                 //
-                if (!(cabs1((w[(imax - 1) + ((k + 1) - 1) * ldw])) < alpha * rowmax)) {
+                if (!(cabs1(w[(imax - 1) + ((k + 1) - 1) * ldw]) < alpha * rowmax)) {
                     //
                     // interchange rows and columns K and IMAX,
                     // use 1-by-1 pivot block
@@ -554,8 +546,6 @@ void Clasyf_rook(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &k
                 }
                 //
             }
-            //
-            //
             kk = k + kstep - 1;
             //
             if ((kstep == 2) && (p != k)) {

@@ -31,11 +31,6 @@
 
 void Csysvx(const char *fact, const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a, INTEGER const lda, COMPLEX *af, INTEGER const ldaf, INTEGER *ipiv, COMPLEX *b, INTEGER const ldb, COMPLEX *x, INTEGER const ldx, REAL &rcond, REAL *ferr, REAL *berr, COMPLEX *work, INTEGER const lwork, REAL *rwork, INTEGER &info) {
     //
-    // -- LAPACK driver routine --
-    //
-    //
-    //
-    //
     // Test the input parameters.
     //
     info = 0;
