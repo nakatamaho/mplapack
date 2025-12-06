@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -40,7 +40,7 @@ void Rgebal(const char *job, INTEGER const n, REAL *a, INTEGER const lda, INTEGE
     const REAL zero = 0.0;
     REAL sfmin1 = 0.0;
     REAL sfmax1 = 0.0;
-    const REAL sclfac = 2.0e+0;
+    const REAL sclfac = 2.0;
     REAL sfmin2 = 0.0;
     REAL sfmax2 = 0.0;
     bool noconv = false;
@@ -53,7 +53,7 @@ void Rgebal(const char *job, INTEGER const n, REAL *a, INTEGER const lda, INTEGE
     REAL g = 0.0;
     REAL f = 0.0;
     REAL s = 0.0;
-    const REAL factor = 0.95e+0;
+    const REAL factor = 0.95;
     //
     // Test the input parameters
     //
@@ -180,8 +180,6 @@ statement_120:
     // Iterative loop for norm reduction
     //
     sfmin1 = Rlamch("S") / Rlamch("P");
-    // uncomment the following to pass 13rd test of dbal.in.
-    // sfmin1 = 2.2250738585072014E-308 / 2.2204460492503131E-016; // (double)
     sfmax1 = one / sfmin1;
     sfmin2 = sfmin1 * sclfac;
     sfmax2 = one / sfmin2;
