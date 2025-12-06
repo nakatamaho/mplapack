@@ -90,7 +90,7 @@ void Cgesvj(const char *joba, const char *jobu, const char *jobv, INTEGER const 
     COMPLEX ompq = 0.0;
     REAL aqoap = 0.0;
     REAL apoaq = 0.0;
-    const REAL half = 0.5e0;
+    const REAL half = 0.5;
     REAL theta = 0.0;
     REAL t = 0.0;
     REAL cs = 0.0;
@@ -1022,22 +1022,22 @@ statement_1995:
     // then some of the singular values may overflow or underflow and
     // the spectrum is given in this factored representation.
     //
-    rwork[2 - 1] = castREAL(n4);
+    rwork[1] = castREAL(n4);
     // N4 is the number of computed nonzero singular values of A.
     //
-    rwork[3 - 1] = castREAL(n2);
+    rwork[2] = castREAL(n2);
     // N2 is the number of singular values of A greater than SFMIN.
     // If N2<N, SVA(N2:N) contains ZEROS and/or denormalized numbers
     // that may carry some information.
     //
-    rwork[4 - 1] = castREAL(i);
+    rwork[3] = castREAL(i);
     // i is the index of the last sweep before declaring convergence.
     //
-    rwork[5 - 1] = mxaapq;
+    rwork[4] = mxaapq;
     // MXAAPQ is the largest absolute value of scaled pivots in the
     // last sweep
     //
-    rwork[6 - 1] = mxsinj;
+    rwork[5] = mxsinj;
     // MXSINJ is the largest absolute value of the sines of Jacobi angles
     // in the last sweep
     //
