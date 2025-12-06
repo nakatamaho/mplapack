@@ -320,11 +320,11 @@ void Cgesvj(const char *joba, const char *jobu, const char *jobv, INTEGER const 
             Claset("G", m, n, czero, cone, a, lda);
         }
         rwork[0] = one;
-        rwork[2 - 1] = zero;
-        rwork[3 - 1] = zero;
-        rwork[4 - 1] = zero;
-        rwork[5 - 1] = zero;
-        rwork[6 - 1] = zero;
+        rwork[1] = zero;
+        rwork[2] = zero;
+        rwork[3] = zero;
+        rwork[4] = zero;
+        rwork[5] = zero;
         return;
     }
     //
@@ -336,14 +336,14 @@ void Cgesvj(const char *joba, const char *jobu, const char *jobv, INTEGER const 
         }
         rwork[0] = one / skl;
         if (sva[0] >= sfmin) {
-            rwork[2 - 1] = one;
+            rwork[1] = one;
         } else {
-            rwork[2 - 1] = zero;
+            rwork[1] = zero;
         }
-        rwork[3 - 1] = zero;
-        rwork[4 - 1] = zero;
-        rwork[5 - 1] = zero;
-        rwork[6 - 1] = zero;
+        rwork[2] = zero;
+        rwork[3] = zero;
+        rwork[4] = zero;
+        rwork[5] = zero;
         return;
     }
     //
