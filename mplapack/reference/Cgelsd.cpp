@@ -29,7 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Cgelsd(INTEGER const m, INTEGER const n, INTEGER const nrhs, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, REAL *s, REAL const rcond, INTEGER &rank, COMPLEX *work, INTEGER const lwork, REAL *rwork, INTEGER *iwork, INTEGER &info) {
+void Cgelsd(INTEGER const m, INTEGER const n, INTEGER const nrhs, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, REAL *s, REAL const &rcond, INTEGER &rank, COMPLEX *work, INTEGER const lwork, REAL *rwork, INTEGER *iwork, INTEGER &info) {
     INTEGER minmn = 0;
     INTEGER maxmn = 0;
     bool lquery = false;
@@ -39,7 +39,7 @@ void Cgelsd(INTEGER const m, INTEGER const n, INTEGER const nrhs, COMPLEX *a, IN
     INTEGER lrwork = 0;
     INTEGER smlsiz = 0;
     INTEGER mnthr = 0;
-    const REAL two = 2.0e+0;
+    const REAL two = 2.0;
     INTEGER nlvl = 0;
     INTEGER mm = 0;
     REAL eps = 0.0;
@@ -61,11 +61,6 @@ void Cgelsd(INTEGER const m, INTEGER const n, INTEGER const nrhs, COMPLEX *a, IN
     INTEGER nrwork = 0;
     INTEGER ldwork = 0;
     INTEGER il = 0;
-    //
-    // -- LAPACK driver routine --
-    //
-    //
-    //
     //
     // Test the input arguments.
     //
@@ -116,15 +111,15 @@ void Cgelsd(INTEGER const m, INTEGER const n, INTEGER const nrhs, COMPLEX *a, IN
                 //
                 // Path 1 - overdetermined or exactly determined.
                 //
-                lrwork = 10 * n + 2 * n * smlsiz + 8 * n * nlvl + 3 * smlsiz * nrhs + max((smlsiz + 1) * (smlsiz + 1), n * (1 + nrhs) + 2 * nrhs);
+                lrwork = 10 * n + 2 * n * smlsiz + 8 * n * nlvl + 3 * smlsiz * nrhs + max(pow2((smlsiz + 1)), n * (1 + nrhs) + 2 * nrhs);
                 maxwrk = max(maxwrk, 2 * n + (mm + n) * iMlaenv(1, "Cgebrd", " ", mm, n, -1, -1));
                 maxwrk = max(maxwrk, 2 * n + nrhs * iMlaenv(1, "Cunmbr", "QLC", mm, nrhs, n, -1));
                 maxwrk = max(maxwrk, 2 * n + (n - 1) * iMlaenv(1, "Cunmbr", "PLN", n, nrhs, n, -1));
                 maxwrk = max(maxwrk, 2 * n + n * nrhs);
-                minwrk = max((INTEGER)2 * n + mm, 2 * n + n * nrhs);
+                minwrk = max(2 * n + mm, 2 * n + n * nrhs);
             }
             if (n > m) {
-                lrwork = 10 * m + 2 * m * smlsiz + 8 * m * nlvl + 3 * smlsiz * nrhs + max((smlsiz + 1) * (smlsiz + 1), INTEGER(n * (1 + nrhs) + 2 * nrhs));
+                lrwork = 10 * m + 2 * m * smlsiz + 8 * m * nlvl + 3 * smlsiz * nrhs + max(pow2((smlsiz + 1)), n * (1 + nrhs) + 2 * nrhs);
                 if (n >= mnthr) {
                     //
                     // Path 2a - underdetermined, with many more columns
@@ -142,7 +137,7 @@ void Cgelsd(INTEGER const m, INTEGER const n, INTEGER const nrhs, COMPLEX *a, IN
                     maxwrk = max(maxwrk, m * m + 4 * m + m * nrhs);
                     // XXX: Ensure the Path 2a case below is triggered.  The workspace
                     // calculation should use queries for all routines eventually.
-                    maxwrk = max({maxwrk, 4 * m + m * m + max(m, 2 * m - 4, nrhs, n - 3 * m)});
+                    maxwrk = max(maxwrk, 4 * m + m * m + max(m, 2 * m - 4, nrhs, n - 3 * m));
                 } else {
                     //
                     // Path 2 - underdetermined.
@@ -152,7 +147,7 @@ void Cgelsd(INTEGER const m, INTEGER const n, INTEGER const nrhs, COMPLEX *a, IN
                     maxwrk = max(maxwrk, 2 * m + m * iMlaenv(1, "Cunmbr", "PLN", n, nrhs, m, -1));
                     maxwrk = max(maxwrk, 2 * m + m * nrhs);
                 }
-                minwrk = max((INTEGER)2 * m + n, 2 * m + m * nrhs);
+                minwrk = max(2 * m + n, 2 * m + m * nrhs);
             }
         }
         minwrk = min(minwrk, maxwrk);
@@ -185,6 +180,7 @@ void Cgelsd(INTEGER const m, INTEGER const n, INTEGER const nrhs, COMPLEX *a, IN
     sfmin = Rlamch("S");
     smlnum = sfmin / eps;
     bignum = one / smlnum;
+    Rlabad(smlnum, bignum);
     //
     // Scale A if max entry outside range [SMLNUM,BIGNUM].
     //
@@ -304,7 +300,7 @@ void Cgelsd(INTEGER const m, INTEGER const n, INTEGER const nrhs, COMPLEX *a, IN
         // and sufficient workspace for an efficient algorithm.
         //
         ldwork = m;
-        if (lwork >= max({4 * m + m * lda + max(m, 2 * m - 4, nrhs, n - 3 * m), m * lda + m + m * nrhs})) {
+        if (lwork >= max(4 * m + m * lda + max(m, 2 * m - 4, nrhs, n - 3 * m), m * lda + m + m * nrhs)) {
             ldwork = lda;
         }
         itau = 1;

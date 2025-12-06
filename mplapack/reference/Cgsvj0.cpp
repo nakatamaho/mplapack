@@ -29,7 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Cgsvj0(const char *jobv, INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *d, REAL *sva, INTEGER const mv, COMPLEX *v, INTEGER const ldv, REAL const eps, REAL const sfmin, REAL const tol, INTEGER const nsweep, COMPLEX *work, INTEGER const lwork, INTEGER &info) {
+void Cgsvj0(const char *jobv, INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *d, REAL *sva, INTEGER const mv, COMPLEX *v, INTEGER const ldv, REAL const &eps, REAL const &sfmin, REAL const &tol, INTEGER const nsweep, COMPLEX *work, INTEGER const lwork, INTEGER &info) {
     bool applv = false;
     bool rsvec = false;
     INTEGER mvl = 0;
@@ -71,7 +71,7 @@ void Cgsvj0(const char *jobv, INTEGER const m, INTEGER const n, COMPLEX *a, INTE
     COMPLEX ompq = 0.0;
     REAL aqoap = 0.0;
     REAL apoaq = 0.0;
-    const REAL half = 0.5e0;
+    const REAL half = 0.5;
     REAL theta = 0.0;
     REAL t = 0.0;
     REAL cs = 0.0;
@@ -80,13 +80,6 @@ void Cgsvj0(const char *jobv, INTEGER const m, INTEGER const n, COMPLEX *a, INTE
     INTEGER jbc = 0;
     INTEGER jgl = 0;
     INTEGER ijblsk = 0;
-    //
-    //
-    //
-    //
-    // .. Local Parameters ..
-    // from BLAS
-    // from LAPACK
     //
     // Test the input parameters.
     //
@@ -153,6 +146,7 @@ void Cgsvj0(const char *jobv, INTEGER const m, INTEGER const n, COMPLEX *a, INTE
     kbl = min((INTEGER)8, n);
     // [TP] KBL is a tuning parameter that defines the tile size in the
     // tiling of the p-q loops of pivot pairs. In general, an optimal
+    // value of KBL depends on the matrix dimensions and on the
     // parameters of the computer's memory.
     //
     nbl = n / kbl;
@@ -160,7 +154,7 @@ void Cgsvj0(const char *jobv, INTEGER const m, INTEGER const n, COMPLEX *a, INTE
         nbl++;
     }
     //
-    blskip = kbl * kbl;
+    blskip = pow2(kbl);
     // [TP] BLKSKIP is a tuning parameter that depends on SWBAND and KBL.
     //
     rowskip = min((INTEGER)5, kbl);
@@ -172,6 +166,7 @@ void Cgsvj0(const char *jobv, INTEGER const m, INTEGER const n, COMPLEX *a, INTE
     // Quasi block transformations, using the lower (upper) triangular
     // structure of the input matrix. The quasi-block-cycling usually
     // invokes cubic convergence. Big part of this cycle is done inside
+    // canonical subspaces of dimensions less than M.
     //
     // .. Row-cyclic pivot strategy with de Rijk's pivoting ..
     //
@@ -277,7 +272,7 @@ void Cgsvj0(const char *jobv, INTEGER const m, INTEGER const n, COMPLEX *a, INTE
                                 //
                                 // AAPQ = AAPQ * CONJG( CWORK(p) ) * CWORK(q)
                                 aapq1 = -abs(aapq);
-                                mxaapq = max(mxaapq, REAL(-aapq1));
+                                mxaapq = max(mxaapq, -aapq1);
                                 //
                                 // TO rotate or NOT to rotate, THAT is the question ...
                                 //
@@ -309,9 +304,9 @@ void Cgsvj0(const char *jobv, INTEGER const m, INTEGER const n, COMPLEX *a, INTE
                                                 Crot(mvl, &v[(p - 1) * ldv], 1, &v[(q - 1) * ldv], 1, cs, conj(ompq) * t);
                                             }
                                             //
-                                            sva[q - 1] = aaqq * sqrt(max(zero, REAL(one + t * apoaq * aapq1)));
-                                            aapp = aapp * sqrt(max(zero, REAL(one - t * aqoap * aapq1)));
-                                            mxsinj = max(mxsinj, REAL(abs(t)));
+                                            sva[q - 1] = aaqq * sqrt(max(zero, one + t * apoaq * aapq1));
+                                            aapp = aapp * sqrt(max(zero, one - t * aqoap * aapq1));
+                                            mxsinj = max(mxsinj, abs(t));
                                             //
                                         } else {
                                             //
@@ -322,9 +317,9 @@ void Cgsvj0(const char *jobv, INTEGER const m, INTEGER const n, COMPLEX *a, INTE
                                             cs = sqrt(one / (one + t * t));
                                             sn = t * cs;
                                             //
-                                            mxsinj = max(mxsinj, REAL(abs(sn)));
-                                            sva[q - 1] = aaqq * sqrt(max(zero, REAL(one + t * apoaq * aapq1)));
-                                            aapp = aapp * sqrt(max(zero, REAL(one - t * aqoap * aapq1)));
+                                            mxsinj = max(mxsinj, abs(sn));
+                                            sva[q - 1] = aaqq * sqrt(max(zero, one + t * apoaq * aapq1));
+                                            aapp = aapp * sqrt(max(zero, one - t * aqoap * aapq1));
                                             //
                                             Crot(m, &a[(p - 1) * lda], 1, &a[(q - 1) * lda], 1, cs, conj(ompq) * sn);
                                             if (rsvec) {
@@ -340,7 +335,7 @@ void Cgsvj0(const char *jobv, INTEGER const m, INTEGER const n, COMPLEX *a, INTE
                                         Clascl("G", 0, 0, aaqq, one, m, 1, &a[(q - 1) * lda], lda, ierr);
                                         Caxpy(m, -aapq, work, 1, &a[(q - 1) * lda], 1);
                                         Clascl("G", 0, 0, one, aaqq, m, 1, &a[(q - 1) * lda], lda, ierr);
-                                        sva[q - 1] = aaqq * sqrt(max(zero, REAL(one - aapq1 * aapq1)));
+                                        sva[q - 1] = aaqq * sqrt(max(zero, one - aapq1 * aapq1));
                                         mxsinj = max(mxsinj, sfmin);
                                     }
                                     // END IF ROTOK THEN ... ELSE
@@ -473,7 +468,7 @@ void Cgsvj0(const char *jobv, INTEGER const m, INTEGER const n, COMPLEX *a, INTE
                                 //
                                 // AAPQ = AAPQ * CONJG(CWORK(p))*CWORK(q)
                                 aapq1 = -abs(aapq);
-                                mxaapq = max(mxaapq, REAL(-aapq1));
+                                mxaapq = max(mxaapq, -aapq1);
                                 //
                                 // TO rotate or NOT to rotate, THAT is the question ...
                                 //
@@ -500,9 +495,9 @@ void Cgsvj0(const char *jobv, INTEGER const m, INTEGER const n, COMPLEX *a, INTE
                                             if (rsvec) {
                                                 Crot(mvl, &v[(p - 1) * ldv], 1, &v[(q - 1) * ldv], 1, cs, conj(ompq) * t);
                                             }
-                                            sva[q - 1] = aaqq * sqrt(max(zero, REAL(one + t * apoaq * aapq1)));
-                                            aapp = aapp * sqrt(max(zero, REAL(one - t * aqoap * aapq1)));
-                                            mxsinj = max(mxsinj, REAL(abs(t)));
+                                            sva[q - 1] = aaqq * sqrt(max(zero, one + t * apoaq * aapq1));
+                                            aapp = aapp * sqrt(max(zero, one - t * aqoap * aapq1));
+                                            mxsinj = max(mxsinj, abs(t));
                                         } else {
                                             //
                                             // .. choose correct signum for THETA and rotate
@@ -514,9 +509,9 @@ void Cgsvj0(const char *jobv, INTEGER const m, INTEGER const n, COMPLEX *a, INTE
                                             t = one / (theta + thsign * sqrt(one + theta * theta));
                                             cs = sqrt(one / (one + t * t));
                                             sn = t * cs;
-                                            mxsinj = max(mxsinj, REAL(abs(sn)));
-                                            sva[q - 1] = aaqq * sqrt(max(zero, REAL(one + t * apoaq * aapq1)));
-                                            aapp = aapp * sqrt(max(zero, REAL(one - t * aqoap * aapq1)));
+                                            mxsinj = max(mxsinj, abs(sn));
+                                            sva[q - 1] = aaqq * sqrt(max(zero, one + t * apoaq * aapq1));
+                                            aapp = aapp * sqrt(max(zero, one - t * aqoap * aapq1));
                                             //
                                             Crot(m, &a[(p - 1) * lda], 1, &a[(q - 1) * lda], 1, cs, conj(ompq) * sn);
                                             if (rsvec) {
@@ -533,7 +528,7 @@ void Cgsvj0(const char *jobv, INTEGER const m, INTEGER const n, COMPLEX *a, INTE
                                             Clascl("G", 0, 0, aaqq, one, m, 1, &a[(q - 1) * lda], lda, ierr);
                                             Caxpy(m, -aapq, work, 1, &a[(q - 1) * lda], 1);
                                             Clascl("G", 0, 0, one, aaqq, m, 1, &a[(q - 1) * lda], lda, ierr);
-                                            sva[q - 1] = aaqq * sqrt(max(zero, REAL(one - aapq1 * aapq1)));
+                                            sva[q - 1] = aaqq * sqrt(max(zero, one - aapq1 * aapq1));
                                             mxsinj = max(mxsinj, sfmin);
                                         } else {
                                             Ccopy(m, &a[(q - 1) * lda], 1, work, 1);
@@ -541,7 +536,7 @@ void Cgsvj0(const char *jobv, INTEGER const m, INTEGER const n, COMPLEX *a, INTE
                                             Clascl("G", 0, 0, aapp, one, m, 1, &a[(p - 1) * lda], lda, ierr);
                                             Caxpy(m, -conj(aapq), work, 1, &a[(p - 1) * lda], 1);
                                             Clascl("G", 0, 0, one, aapp, m, 1, &a[(p - 1) * lda], lda, ierr);
-                                            sva[p - 1] = aapp * sqrt(max(zero, REAL(one - aapq1 * aapq1)));
+                                            sva[p - 1] = aapp * sqrt(max(zero, one - aapq1 * aapq1));
                                             mxsinj = max(mxsinj, sfmin);
                                         }
                                     }
@@ -640,7 +635,7 @@ void Cgsvj0(const char *jobv, INTEGER const m, INTEGER const n, COMPLEX *a, INTE
             swband = i;
         }
         //
-        if ((i > swband + 1) && (mxaapq < sqrt(castREAL(n) * tol)) && (castREAL(n) * mxaapq * mxsinj < tol)) {
+        if ((i > swband + 1) && (mxaapq < sqrt(castREAL(n)) * tol) && (castREAL(n) * mxaapq * mxsinj < tol)) {
             goto statement_1994;
         }
         //
@@ -680,5 +675,4 @@ statement_1995:
         }
     }
     //
-    // .. END OF Cgsvj0
 }

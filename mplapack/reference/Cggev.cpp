@@ -68,7 +68,6 @@ void Cggev(const char *jobvl, const char *jobvr, INTEGER const n, COMPLEX *a, IN
     INTEGER jc = 0;
     REAL temp = 0.0;
     INTEGER jr = 0;
-    abs1(x) = abs(x.real()) + abs(x.imag());
     //
     // Decode the input arguments
     //
