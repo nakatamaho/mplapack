@@ -31,12 +31,6 @@
 
 void Rsyevd(const char *jobz, const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL *w, REAL *work, INTEGER const lwork, INTEGER *iwork, INTEGER const liwork, INTEGER &info) {
     //
-    // -- LAPACK driver routine --
-    //
-    //
-    //
-    //
-    //
     // Test the input parameters.
     //
     bool wantz = Mlsame(jobz, "V");
@@ -67,7 +61,7 @@ void Rsyevd(const char *jobz, const char *uplo, INTEGER const n, REAL *a, INTEGE
         } else {
             if (wantz) {
                 liwmin = 3 + 5 * n;
-                lwmin = 1 + 6 * n + 2 * castINTEGER(pow2(castREAL(n)));
+                lwmin = 1 + 6 * n + 2 * pow2(n);
             } else {
                 liwmin = 1;
                 lwmin = 2 * n + 1;

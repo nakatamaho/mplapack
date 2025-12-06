@@ -31,6 +31,7 @@
 
 void Rsyev_2stage(const char *jobz, const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL *w, REAL *work, INTEGER const lwork, INTEGER &info) {
     //
+    //
     // Test the input parameters.
     //
     bool wantz = Mlsame(jobz, "V");
@@ -67,7 +68,7 @@ void Rsyev_2stage(const char *jobz, const char *uplo, INTEGER const n, REAL *a, 
     }
     //
     if (info != 0) {
-        Mxerbla("Rsyev_2stage", -info);
+        Mxerbla("Rsyev_2stage ", -info);
         return;
     } else if (lquery) {
         return;
@@ -82,7 +83,7 @@ void Rsyev_2stage(const char *jobz, const char *uplo, INTEGER const n, REAL *a, 
     const REAL one = 1.0;
     if (n == 1) {
         w[0] = a[0];
-        work[0] = 2;
+        work[0] = 2.0;
         if (wantz) {
             a[0] = one;
         }

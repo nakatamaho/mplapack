@@ -29,7 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rsyevr(const char *jobz, const char *range, const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL const vl, REAL const vu, INTEGER const il, INTEGER const iu, REAL const abstol, INTEGER &m, REAL *w, REAL *z, INTEGER const ldz, INTEGER *isuppz, REAL *work, INTEGER const lwork, INTEGER *iwork, INTEGER const liwork, INTEGER &info) {
+void Rsyevr(const char *jobz, const char *range, const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL const &vl, REAL const &vu, INTEGER const il, INTEGER const iu, REAL const &abstol, INTEGER &m, REAL *w, REAL *z, INTEGER const ldz, INTEGER *isuppz, REAL *work, INTEGER const lwork, INTEGER *iwork, INTEGER const liwork, INTEGER &info) {
     INTEGER ieeeok = 0;
     bool lower = false;
     bool wantz = false;
@@ -68,7 +68,7 @@ void Rsyevr(const char *jobz, const char *range, const char *uplo, INTEGER const
     INTEGER indifl = 0;
     INTEGER indiwo = 0;
     INTEGER iinfo = 0;
-    const REAL two = 2.0e+0;
+    const REAL two = 2.0;
     bool tryrac = false;
     INTEGER indwkn = 0;
     INTEGER llwrkn = 0;
@@ -78,11 +78,6 @@ void Rsyevr(const char *jobz, const char *range, const char *uplo, INTEGER const
     INTEGER i = 0;
     REAL tmp1 = 0.0;
     INTEGER jj = 0;
-    //
-    // -- LAPACK driver routine --
-    //
-    //
-    //
     //
     // Test the input parameters.
     //
@@ -152,12 +147,12 @@ void Rsyevr(const char *jobz, const char *range, const char *uplo, INTEGER const
     //
     m = 0;
     if (n == 0) {
-        work[0] = 1;
+        work[0] = 1.0;
         return;
     }
     //
     if (n == 1) {
-        work[0] = 7;
+        work[0] = 7.0;
         if (alleig || indeig) {
             m = 1;
             w[0] = a[0];
@@ -170,7 +165,7 @@ void Rsyevr(const char *jobz, const char *range, const char *uplo, INTEGER const
         if (wantz) {
             z[0] = one;
             isuppz[0] = 1;
-            isuppz[2 - 1] = 1;
+            isuppz[1] = 1;
         }
         return;
     }
@@ -182,7 +177,7 @@ void Rsyevr(const char *jobz, const char *range, const char *uplo, INTEGER const
     smlnum = safmin / eps;
     bignum = one / smlnum;
     rmin = sqrt(smlnum);
-    rmax = min(REAL(sqrt(bignum)), REAL(one / sqrt(sqrt(safmin))));
+    rmax = min(sqrt(bignum), one / sqrt(sqrt(safmin)));
     //
     // Scale matrix to allowable range, if necessary.
     //

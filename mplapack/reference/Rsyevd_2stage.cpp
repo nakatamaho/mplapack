@@ -31,11 +31,6 @@
 
 void Rsyevd_2stage(const char *jobz, const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL *w, REAL *work, INTEGER const lwork, INTEGER *iwork, INTEGER const liwork, INTEGER &info) {
     //
-    // -- LAPACK driver routine --
-    //
-    //
-    //
-    //
     //
     // Test the input parameters.
     //
@@ -71,7 +66,7 @@ void Rsyevd_2stage(const char *jobz, const char *uplo, INTEGER const n, REAL *a,
             lwtrd = iMlaenv2stage(4, "Rsytrd_2stage", jobz, n, kd, ib, -1);
             if (wantz) {
                 liwmin = 3 + 5 * n;
-                lwmin = 1 + 6 * n + 2 * n * n;
+                lwmin = 1 + 6 * n + 2 * pow2(n);
             } else {
                 liwmin = 1;
                 lwmin = 2 * n + 1 + lhtrd + lwtrd;
