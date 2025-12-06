@@ -29,7 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rlasd2(INTEGER const nl, INTEGER const nr, INTEGER const sqre, INTEGER &k, REAL *d, REAL *z, REAL const alpha, REAL const beta, REAL *u, INTEGER const ldu, REAL *vt, INTEGER const ldvt, REAL *dsigma, REAL *u2, INTEGER const ldu2, REAL *vt2, INTEGER const ldvt2, INTEGER *idxp, INTEGER *idx, INTEGER *idxc, INTEGER *idxq, INTEGER *coltyp, INTEGER &info) {
+void Rlasd2(INTEGER const nl, INTEGER const nr, INTEGER const sqre, INTEGER &k, REAL *d, REAL *z, REAL const &alpha, REAL const &beta, REAL *u, INTEGER const ldu, REAL *vt, INTEGER const ldvt, REAL *dsigma, REAL *u2, INTEGER const ldu2, REAL *vt2, INTEGER const ldvt2, INTEGER *idxp, INTEGER *idx, INTEGER *idxc, INTEGER *idxq, INTEGER *coltyp, INTEGER &info) {
     INTEGER n = 0;
     INTEGER m = 0;
     INTEGER nlp1 = 0;
@@ -39,7 +39,7 @@ void Rlasd2(INTEGER const nl, INTEGER const nr, INTEGER const sqre, INTEGER &k, 
     INTEGER idxi = 0;
     REAL eps = 0.0;
     REAL tol = 0.0;
-    const REAL eight = 8.0e+0;
+    const REAL eight = 8.0;
     INTEGER k2 = 0;
     INTEGER j = 0;
     INTEGER jprev = 0;
@@ -53,14 +53,9 @@ void Rlasd2(INTEGER const nl, INTEGER const nr, INTEGER const sqre, INTEGER &k, 
     INTEGER ct = 0;
     INTEGER psm[4];
     INTEGER jp = 0;
-    const REAL two = 2.0e+0;
+    const REAL two = 2.0;
     REAL hlftol = 0.0;
     const REAL one = 1.0;
-    //
-    //
-    //
-    //
-    // .. Local Arrays ..
     //
     // Test the input parameters.
     //
@@ -135,7 +130,7 @@ void Rlasd2(INTEGER const nl, INTEGER const nr, INTEGER const sqre, INTEGER &k, 
         idxc[i - 1] = coltyp[idxq[i - 1] - 1];
     }
     //
-    Rlamrg(nl, nr, &dsigma[2 - 1], 1, 1, &idx[2 - 1]);
+    Rlamrg(nl, nr, &dsigma[1], 1, 1, &idx[1]);
     //
     for (i = 2; i <= n; i = i + 1) {
         idxi = 1 + idx[i - 1];
@@ -148,7 +143,7 @@ void Rlasd2(INTEGER const nl, INTEGER const nr, INTEGER const sqre, INTEGER &k, 
     //
     eps = Rlamch("Epsilon");
     tol = max(abs(alpha), abs(beta));
-    tol = eight * eps * max(REAL(abs(d[n - 1])), tol);
+    tol = eight * eps * max(abs(d[n - 1]), tol);
     //
     // There are 2 kinds of deflation -- first a value in the z-vector
     // is small, second two (or more) singular values are very close
@@ -277,9 +272,9 @@ statement_120:
     // PSM(*) = Position in SubMatrix (of types 1 through 4)
     //
     psm[0] = 2;
-    psm[2 - 1] = 2 + ctot[0];
-    psm[3 - 1] = psm[2 - 1] + ctot[2 - 1];
-    psm[4 - 1] = psm[3 - 1] + ctot[3 - 1];
+    psm[1] = 2 + ctot[0];
+    psm[2] = psm[1] + ctot[1];
+    psm[3] = psm[2] + ctot[2];
     //
     // Fill out the IDXC array so that the permutation which it induces
     // will place all type-1 columns first, all type-2 columns next,
@@ -303,7 +298,7 @@ statement_120:
     for (j = 2; j <= n; j = j + 1) {
         jp = idxp[j - 1];
         dsigma[j - 1] = d[jp - 1];
-        idxj = idxq[(idx[idxp[idxc[j - 1] - 1] - 1] + 1) - 1];
+        idxj = idxq[(idx[(idxp[idxc[j - 1] - 1]) - 1] + 1) - 1];
         if (idxj <= nlp1) {
             idxj = idxj - 1;
         }
@@ -315,8 +310,8 @@ statement_120:
     //
     dsigma[0] = zero;
     hlftol = tol / two;
-    if (abs(dsigma[2 - 1]) <= hlftol) {
-        dsigma[2 - 1] = hlftol;
+    if (abs(dsigma[1]) <= hlftol) {
+        dsigma[1] = hlftol;
     }
     if (m > n) {
         z[0] = Rlapy2(z1, z[m - 1]);
@@ -338,7 +333,7 @@ statement_120:
     //
     // Move the rest of the updating row to Z.
     //
-    Rcopy(k - 1, &u2[(2 - 1)], 1, &z[2 - 1], 1);
+    Rcopy(k - 1, &u2[(2 - 1)], 1, &z[1], 1);
     //
     // Determine the first column of U2, the first row of VT2 and the
     // last row of VT.

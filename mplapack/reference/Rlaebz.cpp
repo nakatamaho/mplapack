@@ -29,7 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rlaebz(INTEGER const ijob, INTEGER const nitmax, INTEGER const n, INTEGER const mmax, INTEGER const minp, INTEGER const nbmin, REAL const abstol, REAL const reltol, REAL const pivmin, REAL *d, REAL *e, REAL *e2, INTEGER *nval, REAL *ab, REAL *c, INTEGER &mout, INTEGER *nab, REAL *work, INTEGER *iwork, INTEGER &info) {
+void Rlaebz(INTEGER const ijob, INTEGER const nitmax, INTEGER const n, INTEGER const mmax, INTEGER const minp, INTEGER const nbmin, REAL const &abstol, REAL const &reltol, REAL const &pivmin, REAL *d, REAL * /* e */, REAL *e2, INTEGER *nval, REAL *ab, REAL *c, INTEGER &mout, INTEGER *nab, REAL *work, INTEGER *iwork, INTEGER &info) {
     INTEGER ji = 0;
     INTEGER jp = 0;
     REAL tmp1 = 0.0;
@@ -45,8 +45,6 @@ void Rlaebz(INTEGER const ijob, INTEGER const nitmax, INTEGER const n, INTEGER c
     INTEGER itmp1 = 0;
     INTEGER kfnew = 0;
     INTEGER itmp2 = 0;
-    INTEGER ldab = mmax;
-    INTEGER ldnab = mmax;
     //
     // Check for Errors
     //
@@ -125,14 +123,14 @@ void Rlaebz(INTEGER const ijob, INTEGER const nitmax, INTEGER const n, INTEGER c
                 iwork[ji - 1] = 0;
                 if (work[ji - 1] <= pivmin) {
                     iwork[ji - 1] = 1;
-                    work[ji - 1] = min(work[ji - 1], REAL(-pivmin));
+                    work[ji - 1] = min(work[ji - 1], -pivmin);
                 }
                 //
                 for (j = 2; j <= n; j = j + 1) {
                     work[ji - 1] = d[j - 1] - e2[(j - 1) - 1] / work[ji - 1] - c[ji - 1];
                     if (work[ji - 1] <= pivmin) {
                         iwork[ji - 1]++;
-                        work[ji - 1] = min(work[ji - 1], REAL(-pivmin));
+                        work[ji - 1] = min(work[ji - 1], -pivmin);
                     }
                 }
             }
@@ -219,14 +217,14 @@ void Rlaebz(INTEGER const ijob, INTEGER const nitmax, INTEGER const n, INTEGER c
                 itmp1 = 0;
                 if (tmp2 <= pivmin) {
                     itmp1 = 1;
-                    tmp2 = min(tmp2, REAL(-pivmin));
+                    tmp2 = min(tmp2, -pivmin);
                 }
                 //
                 for (j = 2; j <= n; j = j + 1) {
                     tmp2 = d[j - 1] - e2[(j - 1) - 1] / tmp2 - tmp1;
                     if (tmp2 <= pivmin) {
                         itmp1++;
-                        tmp2 = min(tmp2, REAL(-pivmin));
+                        tmp2 = min(tmp2, -pivmin);
                     }
                 }
                 //
@@ -294,7 +292,7 @@ void Rlaebz(INTEGER const ijob, INTEGER const nitmax, INTEGER const n, INTEGER c
         for (ji = kf; ji <= kl; ji = ji + 1) {
             tmp1 = abs(ab[(ji - 1) + (2 - 1) * ldab] - ab[(ji - 1)]);
             tmp2 = max(abs(ab[(ji - 1) + (2 - 1) * ldab]), abs(ab[(ji - 1)]));
-            if (tmp1 < max(abstol, pivmin, REAL(reltol * tmp2)) || nab[(ji - 1)] >= nab[(ji - 1) + (2 - 1) * ldnab]) {
+            if (tmp1 < max(abstol, pivmin, reltol * tmp2) || nab[(ji - 1)] >= nab[(ji - 1) + (2 - 1) * ldnab]) {
                 //
                 // Converged -- Swap with position KFNEW,
                 // then increment KFNEW

@@ -37,7 +37,7 @@ void Rlasq2(INTEGER const n, REAL *z, INTEGER &info) {
     REAL tol2 = 0.0;
     const REAL zero = 0.0;
     REAL d = 0.0;
-    const REAL half = 0.5e0;
+    const REAL half = 0.5;
     REAL t = 0.0;
     REAL s = 0.0;
     const REAL one = 1.0;
@@ -51,7 +51,7 @@ void Rlasq2(INTEGER const n, REAL *z, INTEGER &info) {
     bool ieee = false;
     INTEGER i0 = 0;
     INTEGER n0 = 0;
-    const REAL cbias = 1.50e0;
+    const REAL cbias = 1.5;
     INTEGER ipn4 = 0;
     INTEGER i4 = 0;
     REAL temp = 0.0;
@@ -87,10 +87,6 @@ void Rlasq2(INTEGER const n, REAL *z, INTEGER &info) {
     REAL tempq = 0.0;
     REAL tempe = 0.0;
     //
-    //
-    //
-    //
-    //
     // Test the input arguments.
     // (in case Rlasq2 is not called by Rlasq1)
     //
@@ -123,41 +119,41 @@ void Rlasq2(INTEGER const n, REAL *z, INTEGER &info) {
             info = -201;
             Mxerbla("Rlasq2", 2);
             return;
-        } else if (z[2 - 1] < zero) {
+        } else if (z[1] < zero) {
             info = -202;
             Mxerbla("Rlasq2", 2);
             return;
-        } else if (z[3 - 1] < zero) {
+        } else if (z[2] < zero) {
             info = -203;
             Mxerbla("Rlasq2", 2);
             return;
-        } else if (z[3 - 1] > z[0]) {
-            d = z[3 - 1];
-            z[3 - 1] = z[0];
+        } else if (z[2] > z[0]) {
+            d = z[2];
+            z[2] = z[0];
             z[0] = d;
         }
-        z[5 - 1] = z[0] + z[2 - 1] + z[3 - 1];
-        if (z[2 - 1] > z[3 - 1] * tol2) {
-            t = half * ((z[0] - z[3 - 1]) + z[2 - 1]);
-            s = z[3 - 1] * (z[2 - 1] / t);
+        z[4] = z[0] + z[1] + z[2];
+        if (z[1] > z[2] * tol2) {
+            t = half * ((z[0] - z[2]) + z[1]);
+            s = z[2] * (z[1] / t);
             if (s <= t) {
-                s = z[3 - 1] * (z[2 - 1] / (t * (one + sqrt(one + s / t))));
+                s = z[2] * (z[1] / (t * (one + sqrt(one + s / t))));
             } else {
-                s = z[3 - 1] * (z[2 - 1] / (t + sqrt(t) * sqrt(t + s)));
+                s = z[2] * (z[1] / (t + sqrt(t) * sqrt(t + s)));
             }
-            t = z[0] + (s + z[2 - 1]);
-            z[3 - 1] = z[3 - 1] * (z[0] / t);
+            t = z[0] + (s + z[1]);
+            z[2] = z[2] * (z[0] / t);
             z[0] = t;
         }
-        z[2 - 1] = z[3 - 1];
-        z[6 - 1] = z[2 - 1] + z[0];
+        z[1] = z[2];
+        z[5] = z[1] + z[0];
         return;
     }
     //
     // Check for negative data and compute sums of q's and e's.
     //
     z[(2 * n) - 1] = zero;
-    emin = z[2 - 1];
+    emin = z[1];
     qmax = zero;
     zmax = zero;
     d = zero;
@@ -344,7 +340,7 @@ void Rlasq2(INTEGER const n, REAL *z, INTEGER &info) {
                 qmin = min(qmin, z[(i4 - 3) - 1]);
                 emax = max(emax, z[(i4 - 5) - 1]);
             }
-            qmax = max(qmax, REAL(z[(i4 - 7) - 1] + z[(i4 - 5) - 1]));
+            qmax = max(qmax, z[(i4 - 7) - 1] + z[(i4 - 5) - 1]);
             emin = min(emin, z[(i4 - 5) - 1]);
         }
         i4 = 4;
@@ -386,7 +382,7 @@ void Rlasq2(INTEGER const n, REAL *z, INTEGER &info) {
         //
         // Put -(initial shift) into DMIN.
         //
-        dmin = -max(zero, REAL(qmin - two * sqrt(qmin) * sqrt(emax)));
+        dmin = -max(zero, qmin - two * sqrt(qmin) * sqrt(emax));
         //
         // Now I0:N0 is unreduced.
         // PP = 0 for ping, PP = 1 for pong.
@@ -511,8 +507,8 @@ statement_170:
     //
     z[(2 * n + 1) - 1] = trace;
     z[(2 * n + 2) - 1] = e;
-    z[(2 * n + 3) - 1] = iter;
-    z[(2 * n + 4) - 1] = castREAL(ndiv) / castREAL(n * n);
+    z[(2 * n + 3) - 1] = castREAL(iter);
+    z[(2 * n + 4) - 1] = castREAL(ndiv) / castREAL(pow2(n));
     z[(2 * n + 5) - 1] = hundrd * nfail / castREAL(iter);
     //
     // End of Rlasq2

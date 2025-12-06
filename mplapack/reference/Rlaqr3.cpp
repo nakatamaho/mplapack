@@ -69,30 +69,18 @@ void Rlaqr3(bool const wantt, bool const wantz, INTEGER const n, INTEGER const k
     INTEGER krow = 0;
     INTEGER kln = 0;
     INTEGER kcol = 0;
-    //
-    //
     jw = min(nw, kbot - ktop + 1);
     if (jw <= 2) {
         lwkopt = 1;
     } else {
-        //
-        //
         Rgehrd(jw, 1, jw - 1, t, ldt, work, work, -1, info);
         lwk1 = castINTEGER(work[0]);
-        //
-        //
         Rormhr("R", "N", jw, jw, 1, jw - 1, t, ldt, work, v, ldv, work, -1, info);
         lwk2 = castINTEGER(work[0]);
-        //
-        //
         Rlaqr4(true, true, jw, 1, jw, t, ldt, sr, si, 1, jw, v, ldv, work, -1, infqr);
         lwk3 = castINTEGER(work[0]);
-        //
-        //
         lwkopt = max(jw + max(lwk1, lwk2), lwk3);
     }
-    //
-    //
     if (lwork == -1) {
         work[0] = castREAL(lwkopt);
         return;
@@ -107,14 +95,11 @@ void Rlaqr3(bool const wantt, bool const wantz, INTEGER const n, INTEGER const k
     if (nw < 1) {
         return;
     }
-    //
-    //
     safmin = Rlamch("SAFE MINIMUM");
     safmax = one / safmin;
+    Rlabad(safmin, safmax);
     ulp = Rlamch("PRECISION");
     smlnum = safmin * (castREAL(n) / ulp);
-    //
-    //
     jw = min(nw, kbot - ktop + 1);
     kwtop = kbot - jw + 1;
     if (kwtop == ktop) {
@@ -124,13 +109,11 @@ void Rlaqr3(bool const wantt, bool const wantz, INTEGER const n, INTEGER const k
     }
     //
     if (kbot == kwtop) {
-        //
-        //
         sr[kwtop - 1] = h[(kwtop - 1) + (kwtop - 1) * ldh];
         si[kwtop - 1] = zero;
         ns = 1;
         nd = 0;
-        if (abs(s) <= max(smlnum, REAL(ulp * abs(h[(kwtop - 1) + (kwtop - 1) * ldh])))) {
+        if (abs(s) <= max(smlnum, ulp * abs(h[(kwtop - 1) + (kwtop - 1) * ldh]))) {
             ns = 0;
             nd = 1;
             if (kwtop > ktop) {
@@ -140,7 +123,6 @@ void Rlaqr3(bool const wantt, bool const wantz, INTEGER const n, INTEGER const k
         work[0] = one;
         return;
     }
-    //
     // .    rare QR failure, this routine continues to do
     // .    aggressive early deflation using that part of
     // .    the deflation window that converged using INFQR
@@ -155,8 +137,6 @@ void Rlaqr3(bool const wantt, bool const wantz, INTEGER const n, INTEGER const k
     } else {
         Rlahqr(true, true, jw, 1, jw, t, ldt, &sr[kwtop - 1], &si[kwtop - 1], 1, jw, v, ldv, infqr);
     }
-    //
-    //
     for (j = 1; j <= jw - 3; j = j + 1) {
         t[((j + 2) - 1) + (j - 1) * ldt] = zero;
         t[((j + 3) - 1) + (j - 1) * ldt] = zero;
@@ -164,8 +144,6 @@ void Rlaqr3(bool const wantt, bool const wantz, INTEGER const n, INTEGER const k
     if (jw > 2) {
         t[(jw - 1) + ((jw - 2) - 1) * ldt] = zero;
     }
-    //
-    //
     ns = jw;
     ilst = infqr + 1;
 statement_20:
@@ -175,39 +153,26 @@ statement_20:
         } else {
             bulge = t[(ns - 1) + ((ns - 1) - 1) * ldt] != zero;
         }
-        //
-        //
         if (!bulge) {
-            //
-            //
             foo = abs(t[(ns - 1) + (ns - 1) * ldt]);
             if (foo == zero) {
                 foo = abs(s);
             }
-            if (abs(s * v[(ns - 1) * ldv]) <= max(smlnum, REAL(ulp * foo))) {
-                //
-                //
+            if (abs(s * v[(ns - 1) * ldv]) <= max(smlnum, ulp * foo)) {
                 ns = ns - 1;
             } else {
-                //
-                //
                 ifst = ns;
                 Rtrexc("V", jw, t, ldt, v, ldv, ifst, ilst, work, info);
                 ilst++;
             }
         } else {
-            //
-            //
             foo = abs(t[(ns - 1) + (ns - 1) * ldt]) + sqrt(abs(t[(ns - 1) + ((ns - 1) - 1) * ldt])) * sqrt(abs(t[((ns - 1) - 1) + (ns - 1) * ldt]));
             if (foo == zero) {
                 foo = abs(s);
             }
-            if (max(abs(s * v[(ns - 1) * ldv]), abs(s * v[((ns - 1) - 1) * ldv])) <= max(smlnum, REAL(ulp * foo))) {
-                //
-                //
+            if (max(abs(s * v[(ns - 1) * ldv]), abs(s * v[((ns - 1) - 1) * ldv])) <= max(smlnum, ulp * foo)) {
                 ns = ns - 2;
             } else {
-                //
                 // .    Fortunately, Rtrexc does the right thing with
                 //
                 ifst = ns;
@@ -215,18 +180,12 @@ statement_20:
                 ilst += 2;
             }
         }
-        //
-        //
         goto statement_20;
     }
-    //
-    //
     if (ns == 0) {
         s = zero;
     }
-    //
     if (ns < jw) {
-        //
         // .    graded matrices.  Bubble sort deals well with
         //
         sorted = false;
@@ -287,8 +246,6 @@ statement_20:
         goto statement_30;
     statement_50:;
     }
-    //
-    //
     i = jw;
 statement_60:
     if (i >= infqr + 1) {
@@ -313,11 +270,9 @@ statement_60:
     //
     if (ns < jw || s == zero) {
         if (ns > 1 && s != zero) {
-            //
-            //
             Rcopy(ns, v, ldv, work, 1);
             beta = work[0];
-            Rlarfg(ns, beta, &work[2 - 1], 1, tau);
+            Rlarfg(ns, beta, &work[1], 1, tau);
             work[0] = one;
             //
             Rlaset("L", jw - 2, jw - 2, zero, zero, &t[(3 - 1)], ldt);
@@ -328,20 +283,14 @@ statement_60:
             //
             Rgehrd(jw, 1, ns, t, ldt, work, &work[(jw + 1) - 1], lwork - jw, info);
         }
-        //
-        //
         if (kwtop > 1) {
             h[(kwtop - 1) + ((kwtop - 1) - 1) * ldh] = s * v[0];
         }
         Rlacpy("U", jw, jw, t, ldt, &h[(kwtop - 1) + (kwtop - 1) * ldh], ldh);
         Rcopy(jw - 1, &t[(2 - 1)], ldt + 1, &h[((kwtop + 1) - 1) + (kwtop - 1) * ldh], ldh + 1);
-        //
-        //
         if (ns > 1 && s != zero) {
             Rormhr("R", "N", jw, ns, 1, ns, t, ldt, work, v, ldv, &work[(jw + 1) - 1], lwork - jw, info);
         }
-        //
-        //
         if (wantt) {
             ltop = 1;
         } else {
@@ -352,8 +301,6 @@ statement_60:
             Rgemm("N", "N", kln, jw, jw, one, &h[(krow - 1) + (kwtop - 1) * ldh], ldh, v, ldv, zero, wv, ldwv);
             Rlacpy("A", kln, jw, wv, ldwv, &h[(krow - 1) + (kwtop - 1) * ldh], ldh);
         }
-        //
-        //
         if (wantt) {
             for (kcol = kbot + 1; kcol <= n; kcol = kcol + nh) {
                 kln = min(nh, n - kcol + 1);
@@ -361,8 +308,6 @@ statement_60:
                 Rlacpy("A", jw, kln, t, ldt, &h[(kwtop - 1) + (kcol - 1) * ldh], ldh);
             }
         }
-        //
-        //
         if (wantz) {
             for (krow = iloz; krow <= ihiz; krow = krow + nv) {
                 kln = min(nv, ihiz - krow + 1);
@@ -371,18 +316,7 @@ statement_60:
             }
         }
     }
-    //
-    //
     nd = jw - ns;
-    //
-    // .    INFQR from the spike length takes care
-    // .    of the case of a rare QR failure while
-    // .    calculating eigenvalues of the deflation
-    //
     ns = ns - infqr;
-    //
-    //
     work[0] = castREAL(lwkopt);
-    //
-    //
 }

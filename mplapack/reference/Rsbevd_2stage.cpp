@@ -31,10 +31,6 @@
 
 void Rsbevd_2stage(const char *jobz, const char *uplo, INTEGER const n, INTEGER const kd, REAL *ab, INTEGER const ldab, REAL *w, REAL *z, INTEGER const ldz, REAL *work, INTEGER const lwork, INTEGER *iwork, INTEGER const liwork, INTEGER &info) {
     //
-    // -- LAPACK driver routine --
-    //
-    //
-    //
     //
     // Test the input parameters.
     //
@@ -57,10 +53,10 @@ void Rsbevd_2stage(const char *jobz, const char *uplo, INTEGER const n, INTEGER 
         lwtrd = iMlaenv2stage(4, "Rsytrd_sb2st", jobz, n, kd, ib, -1);
         if (wantz) {
             liwmin = 3 + 5 * n;
-            lwmin = 1 + 5 * n + 2 * n * n;
+            lwmin = 1 + 5 * n + 2 * pow2(n);
         } else {
             liwmin = 1;
-            lwmin = max((INTEGER)2 * n, n + lhtrd + lwtrd);
+            lwmin = max(2 * n, n + lhtrd + lwtrd);
         }
     }
     if (!(Mlsame(jobz, "N"))) {
@@ -140,7 +136,7 @@ void Rsbevd_2stage(const char *jobz, const char *uplo, INTEGER const n, INTEGER 
         }
     }
     //
-    // Call Rsytrd_sb2st to reduce band symmetric matrix to tridiagonal form.
+    // Call DSYTRD_SB2ST to reduce band symmetric matrix to tridiagonal form.
     //
     INTEGER inde = 1;
     INTEGER indhous = inde + n;
