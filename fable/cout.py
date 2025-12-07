@@ -1524,6 +1524,7 @@ def _rewrite_unary_intrinsic(text: str, func_name: str, repl_func):
 
     return "".join(out)
 
+
 def _rewrite_max_min_calls(text: str) -> str:
     """Rewrite fem::max/min calls: drop fem:: and cast integer literal arguments.
 
@@ -1577,11 +1578,16 @@ _single_char_string_ne_re = re.compile(
 
 
 def rewrite_single_char_string_literals(line: str) -> str:
-    """Rewrite x = "A"; / x == "A" / x != "A" into char literals x = 'A'; etc."""
+    """Rewrite x = "A"; into x = 'A'; for single-character variables.
+
+    Comparisons (x == "A", x != "A") are left as-is, because in the
+    translated code such variables are often const char* coming from
+    Fortran CHARACTER*1 and should be handled via Mlsame or explicit
+    dereference rather than a naive char literal compare.
+    """
     line = _single_char_string_assign_re.sub(r"\1 = '\2';", line)
-    line = _single_char_string_eq_re.sub(r"\1 == '\2'", line)
-    line = _single_char_string_ne_re.sub(r"\1 != '\2'", line)
     return line
+
 
 def get_lower_bound(conv_info, fdecl, dim_index):
     """Return the lower bound expression (as C++ string) for a given array dimension.
@@ -1816,13 +1822,17 @@ def convert_tokens(conv_info, tokens, commas=False, had_str_concat=None):
                     )
 
                     def canonical_simple_index(s):
-                        """Return canonical simple index (identifier/int/array element) or None.
+                        """Return canonical simple index (identifier/int/array/func) or None.
 
-                        This strips outer parentheses that enclose the whole expression, e.g.
-                        "(perm[i - 1])" -> "perm[i - 1]".
+                        Simple indices include:
+                        - plain identifiers: i, j, idx
+                        - integer literals: 0, 1, 10
+                        - single array elements: name[...]
+                        - single function calls: name(...)
+                        Outer parentheses around the whole expression are stripped.
                         """
                         s = s.strip()
-                        # Strip outer layers of parentheses if they enclose the whole expression.
+                        # Strip outer layers of parentheses if they enclose the whole expr.
                         while s.startswith("(") and s.endswith(")"):
                             depth = 0
                             balanced_outer = True
@@ -1837,14 +1847,57 @@ def convert_tokens(conv_info, tokens, commas=False, had_str_concat=None):
                             if not balanced_outer:
                                 break
                             s = s[1:-1].strip()
-                        # Now check core pattern
+
+                        # Plain identifier or integer literal
                         if name_re.fullmatch(s):
                             return s
                         if int_re.fullmatch(s):
                             return s
+                        # Simple array element (non-nested) handled via regex
                         if array_elem_re.fullmatch(s):
                             return s
-                        return None
+
+                        # Try to recognize NAME( ... ) with balanced parentheses,
+                        # allowing nested parentheses inside the argument list.
+                        if not s:
+                            return None
+                        if not (s[0].isalpha() or s[0] == "_"):
+                            return None
+                        pos = 0
+                        while pos < len(s) and (s[pos].isalnum() or s[pos] == "_"):
+                            pos += 1
+                        name = s[:pos]
+                        # Skip whitespace.
+                        while pos < len(s) and s[pos].isspace():
+                            pos += 1
+                        if pos >= len(s) or s[pos] != "(":
+                            return None
+
+                        # Find matching closing parenthesis.
+                        start_paren = pos
+                        depth = 0
+                        end_paren = None
+                        for i in range(start_paren, len(s)):
+                            ch = s[i]
+                            if ch == "(":
+                                depth += 1
+                            elif ch == ")":
+                                depth -= 1
+                                if depth == 0:
+                                    end_paren = i
+                                    break
+                        if end_paren is None:
+                            return None
+
+                        # After ')', only whitespace is allowed.
+                        pos = end_paren + 1
+                        while pos < len(s) and s[pos].isspace():
+                            pos += 1
+                        if pos != len(s):
+                            return None
+
+                        inner = s[start_paren + 1: end_paren]
+                        return f"{name}({inner})"
 
                     i_is_int = bool(int_re.fullmatch(i_expr))
                     lb_is_int = bool(int_re.fullmatch(lb_expr))
@@ -1857,28 +1910,28 @@ def convert_tokens(conv_info, tokens, commas=False, had_str_concat=None):
                         index_expr = str(i_val - lb_val)
                         rapp("[" + index_expr + "]")
                     else:
-                        core = canonical_simple_index(i_expr)
+                        canon_i = canonical_simple_index(i_expr)
 
                         # If lower bound is exactly 0, avoid generating "i - 0".
                         if lb_expr == "0":
-                            if core is not None:
+                            if canon_i is not None:
                                 # a(i) with lb=0 -> a[i]
-                                index_expr = core
+                                index_expr = canon_i
                             else:
                                 # Complex index: group once: a(f(i)) -> a[(f(i))]
                                 index_expr = f"({i_expr})"
                         else:
                             # Non-zero lower bound: generate "index - lb"
                             lb_simple = bool(
-                                name_re.fullmatch(lb_expr) or int_re.fullmatch(lb_expr)
+                                name_re.fullmatch(
+                                    lb_expr) or int_re.fullmatch(lb_expr)
                             )
-                            idx_simple = core is not None
+                            idx_simple = canon_i is not None
 
                             if idx_simple and lb_simple:
-                                # Use canonical core to drop redundant parentheses
-                                index_expr = f"{core} - {lb_expr}"
+                                index_expr = f"{canon_i} - {lb_expr}"
                             elif idx_simple and not lb_simple:
-                                index_expr = f"{core} - ({lb_expr})"
+                                index_expr = f"{canon_i} - ({lb_expr})"
                             elif not idx_simple and lb_simple:
                                 index_expr = f"({i_expr}) - {lb_expr}"
                             else:
@@ -1979,9 +2032,8 @@ def convert_tokens(conv_info, tokens, commas=False, had_str_concat=None):
                             return None
 
                         # Canonical form: NAME[inner]
-                        inner = s[start_bracket + 1 : end_bracket]
+                        inner = s[start_bracket + 1: end_bracket]
                         return f"{name}[{inner}]"
-
 
                     # --- Fast path: both lower bounds are 1 (LAPACK-style arrays) ---
                     if lb1 == "1" and lb2 == "1":
@@ -2051,7 +2103,6 @@ def convert_tokens(conv_info, tokens, commas=False, had_str_concat=None):
                         # Multiply the (possibly parenthesized) column offset by ldname.
                         index_expr = f"{row_off} + {col_off}*{ldname}"
                         rapp("[" + index_expr + "]")
-
 
                 else:
                     # Fallback: treat like a normal call/parenthesized expression
