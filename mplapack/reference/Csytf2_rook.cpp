@@ -29,14 +29,12 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-inline REAL cabs1(COMPLEX z) { return abs(z.real()) + abs(z.imag()); }
-
 void Csytf2_rook(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, INTEGER *ipiv, INTEGER &info) {
     COMPLEX z = 0.0;
     bool upper = false;
     const REAL one = 1.0;
-    const REAL sevten = 17.0e+0;
-    const REAL eight = 8.0e+0;
+    const REAL sevten = 17.0;
+    const REAL eight = 8.0;
     REAL alpha = 0.0;
     REAL sfmin = 0.0;
     INTEGER k = 0;
@@ -65,12 +63,6 @@ void Csytf2_rook(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const ld
     INTEGER i = 0;
     COMPLEX d21 = 0.0;
     COMPLEX wkp1 = 0.0;
-    //
-    //
-    //
-    //
-    // .. Statement Functions ..
-    // .. Statement Function definitions ..
     //
     // Test the input parameters.
     //
@@ -182,7 +174,7 @@ void Csytf2_rook(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const ld
                 }
                 //
                 // Equivalent to testing for (used to handle NaN and Inf)
-                // CCABS1( A( IMAX, IMAX ) ).GE.ALPHA*ROWMAX
+                // CABS1( A( IMAX, IMAX ) ).GE.ALPHA*ROWMAX
                 //
                 if (!(cabs1(a[(imax - 1) + (imax - 1) * lda]) < alpha * rowmax)) {
                     //
@@ -452,7 +444,7 @@ void Csytf2_rook(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const ld
                 }
                 //
                 // Equivalent to testing for (used to handle NaN and Inf)
-                // CCABS1( A( IMAX, IMAX ) ).GE.ALPHA*ROWMAX
+                // CABS1( A( IMAX, IMAX ) ).GE.ALPHA*ROWMAX
                 //
                 if (!(cabs1(a[(imax - 1) + (imax - 1) * lda]) < alpha * rowmax)) {
                     //
