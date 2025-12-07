@@ -277,10 +277,11 @@ pattern_minmax = re.compile(
 text = pattern_minmax.sub(r"(\1 - 1)", text)
 
 # ---------------------------------------------------------------------------
-# 3) Replace "norm == '1'" with Mlsame(norm, "1") in code (not in comments)
+# 3) Replace norm == "1"/'1' with Mlsame(norm, "1") in code (not in comments)
 # ---------------------------------------------------------------------------
 
-NORM_EQ_ONE_RE = re.compile(r"\bnorm\s*==\s*'1'")
+# Match norm == "1" or norm == '1' (before comment //)
+NORM_EQ_ONE_RE = re.compile(r'\bnorm\s*==\s*(?:"1"|\'1\')')
 
 def _rewrite_norm_eq_one(line: str) -> str:
     # Do not touch C++ line comments.
@@ -289,11 +290,13 @@ def _rewrite_norm_eq_one(line: str) -> str:
         code, comment = line[:idx], line[idx:]
     else:
         code, comment = line, ""
+    # Replace the comparison with Mlsame(norm, "1")
     code = NORM_EQ_ONE_RE.sub('Mlsame(norm, "1")', code)
     return code + comment
 
 lines = text.splitlines(keepends=True)
 lines = [_rewrite_norm_eq_one(line) for line in lines]
+
 
 # ---------------------------------------------------------------------------
 # 4) Drop bogus "cabs1(v) = abs(v.real()) + abs(v.imag());" line
