@@ -29,11 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Clalsd(const char *uplo, INTEGER const smlsiz, INTEGER const n, INTEGER const nrhs, REAL *d, REAL *e, COMPLEX *b, INTEGER const ldb, REAL const rcond, INTEGER &rank, COMPLEX *work, REAL *rwork, INTEGER *iwork, INTEGER &info) {
-    //
-    //
-    //
-    //
+void Clalsd(const char *uplo, INTEGER const smlsiz, INTEGER const n, INTEGER const nrhs, REAL *d, REAL *e, COMPLEX *b, INTEGER const ldb, REAL const &rcond, INTEGER &rank, COMPLEX *work, REAL *rwork, INTEGER *iwork, INTEGER &info) {
     //
     // Test the input parameters.
     //
@@ -89,7 +85,7 @@ void Clalsd(const char *uplo, INTEGER const smlsiz, INTEGER const n, INTEGER con
     REAL sn = 0.0;
     REAL r = 0.0;
     INTEGER j = 0;
-    if (uplo == "L") {
+    if (Mlsame(uplo, "L")) {
         for (i = 1; i <= n - 1; i = i + 1) {
             Rlartg(d[i - 1], e[i - 1], cs, sn, r);
             d[i - 1] = r;
