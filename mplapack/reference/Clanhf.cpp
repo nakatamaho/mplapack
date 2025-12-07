@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022
+ * Copyright (c) 2008-2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -247,7 +247,7 @@ REAL Clanhf(const char *norm, const char *transr, const char *uplo, INTEGER cons
                     }
                     j = k - 1;
                     // -> U(j,j) is at A(0,j)
-                    temp = abs(a[( j * lda)].real());
+                    temp = abs(a[(j * lda)].real());
                     if (value < temp || Risnan(temp)) {
                         value = temp;
                     }
@@ -455,7 +455,7 @@ REAL Clanhf(const char *norm, const char *transr, const char *uplo, INTEGER cons
                     }
                     j = k;
                     // -> U(j,j) is at A(0,j)
-                    temp = abs(a[( j * lda)].real());
+                    temp = abs(a[(j * lda)].real());
                     if (value < temp || Risnan(temp)) {
                         value = temp;
                     }
@@ -706,7 +706,7 @@ REAL Clanhf(const char *norm, const char *transr, const char *uplo, INTEGER cons
                         work[j] = s;
                     }
                     // j=n1=k-1 is special
-                    s = abs(a[( j * lda)].real());
+                    s = abs(a[(j * lda)].real());
                     // A(k-1,k-1)
                     for (i = 1; i <= k - 1; i = i + 1) {
                         aa = abs(a[(i + j * lda)]);
@@ -832,7 +832,7 @@ REAL Clanhf(const char *norm, const char *transr, const char *uplo, INTEGER cons
                         work[j] = s;
                     }
                     // j=k
-                    aa = abs(a[( j * lda)].real());
+                    aa = abs(a[(j * lda)].real());
                     // A(k,k)
                     s = aa;
                     for (i = 1; i <= k - 1; i = i + 1) {
@@ -985,11 +985,11 @@ REAL Clanhf(const char *norm, const char *transr, const char *uplo, INTEGER cons
                         // L at A(k,0)
                     }
                     for (j = 0; j <= k - 1; j = j + 1) {
-                        Classq(k + j - 1, &a[( j * lda)], 1, scale, s);
+                        Classq(k + j - 1, &a[(j * lda)], 1, scale, s);
                         // trap U at A(0,0)
                     }
                     s += s;
-                    // REAL s for the off diagonal elements
+                    // double s for the off diagonal elements
                     l = k - 1;
                     // -> U(k,k) at A(k-1,0)
                     for (i = 0; i <= k - 2; i = i + 1) {
@@ -1032,11 +1032,11 @@ REAL Clanhf(const char *norm, const char *transr, const char *uplo, INTEGER cons
                         // trap L at A(0,0)
                     }
                     for (j = 1; j <= k - 2; j = j + 1) {
-                        Classq(j, &a[( (1 + j) * lda)], 1, scale, s);
+                        Classq(j, &a[((1 + j) * lda)], 1, scale, s);
                         // U at A(0,1)
                     }
                     s += s;
-                    // REAL s for the off diagonal elements
+                    // double s for the off diagonal elements
                     aa = a[0].real();
                     // L(0,0) at A(0,0)
                     if (aa != zero) {
@@ -1078,11 +1078,11 @@ REAL Clanhf(const char *norm, const char *transr, const char *uplo, INTEGER cons
                 if (ilu == 0) {
                     // A**H is upper
                     for (j = 1; j <= k - 2; j = j + 1) {
-                        Classq(j, &a[( (k + j) * lda)], 1, scale, s);
+                        Classq(j, &a[((k + j) * lda)], 1, scale, s);
                         // U at A(0,k)
                     }
                     for (j = 0; j <= k - 2; j = j + 1) {
-                        Classq(k, &a[( j * lda)], 1, scale, s);
+                        Classq(k, &a[(j * lda)], 1, scale, s);
                         // k by k-1 rect. at A(0,0)
                     }
                     for (j = 0; j <= k - 2; j = j + 1) {
@@ -1090,7 +1090,7 @@ REAL Clanhf(const char *norm, const char *transr, const char *uplo, INTEGER cons
                         // L at A(0,k-1)
                     }
                     s += s;
-                    // REAL s for the off diagonal elements
+                    // double s for the off diagonal elements
                     l = 0 + k * lda - lda;
                     // -> U(k-1,k-1) at A(0,k-1)
                     aa = a[l].real();
@@ -1131,11 +1131,11 @@ REAL Clanhf(const char *norm, const char *transr, const char *uplo, INTEGER cons
                 } else {
                     // A**H is lower
                     for (j = 1; j <= k - 1; j = j + 1) {
-                        Classq(j, &a[( j * lda)], 1, scale, s);
+                        Classq(j, &a[(j * lda)], 1, scale, s);
                         // U at A(0,0)
                     }
                     for (j = k; j <= n - 1; j = j + 1) {
-                        Classq(k, &a[( j * lda)], 1, scale, s);
+                        Classq(k, &a[(j * lda)], 1, scale, s);
                         // k by k-1 rect. at A(0,k)
                     }
                     for (j = 0; j <= k - 3; j = j + 1) {
@@ -1143,7 +1143,7 @@ REAL Clanhf(const char *norm, const char *transr, const char *uplo, INTEGER cons
                         // L at A(1,0)
                     }
                     s += s;
-                    // REAL s for the off diagonal elements
+                    // double s for the off diagonal elements
                     l = 0;
                     // -> L(0,0) at A(0,0)
                     for (i = 0; i <= k - 2; i = i + 1) {
@@ -1193,11 +1193,11 @@ REAL Clanhf(const char *norm, const char *transr, const char *uplo, INTEGER cons
                         // L at A(k+1,0)
                     }
                     for (j = 0; j <= k - 1; j = j + 1) {
-                        Classq(k + j, &a[( j * lda)], 1, scale, s);
+                        Classq(k + j, &a[(j * lda)], 1, scale, s);
                         // trap U at A(0,0)
                     }
                     s += s;
-                    // REAL s for the off diagonal elements
+                    // double s for the off diagonal elements
                     l = k;
                     // -> U(k,k) at A(k,0)
                     for (i = 0; i <= k - 1; i = i + 1) {
@@ -1230,11 +1230,11 @@ REAL Clanhf(const char *norm, const char *transr, const char *uplo, INTEGER cons
                         // trap L at A(1,0)
                     }
                     for (j = 1; j <= k - 1; j = j + 1) {
-                        Classq(j, &a[( j * lda)], 1, scale, s);
+                        Classq(j, &a[(j * lda)], 1, scale, s);
                         // U at A(0,0)
                     }
                     s += s;
-                    // REAL s for the off diagonal elements
+                    // double s for the off diagonal elements
                     l = 0;
                     // -> L(k,k) at A(0,0)
                     for (i = 0; i <= k - 1; i = i + 1) {
@@ -1266,11 +1266,11 @@ REAL Clanhf(const char *norm, const char *transr, const char *uplo, INTEGER cons
                 if (ilu == 0) {
                     // A**H is upper
                     for (j = 1; j <= k - 1; j = j + 1) {
-                        Classq(j, &a[( (k + 1 + j) * lda)], 1, scale, s);
+                        Classq(j, &a[((k + 1 + j) * lda)], 1, scale, s);
                         // U at A(0,k+1)
                     }
                     for (j = 0; j <= k - 1; j = j + 1) {
-                        Classq(k, &a[( j * lda)], 1, scale, s);
+                        Classq(k, &a[(j * lda)], 1, scale, s);
                         // k by k rect. at A(0,0)
                     }
                     for (j = 0; j <= k - 2; j = j + 1) {
@@ -1278,7 +1278,7 @@ REAL Clanhf(const char *norm, const char *transr, const char *uplo, INTEGER cons
                         // L at A(0,k)
                     }
                     s += s;
-                    // REAL s for the off diagonal elements
+                    // double s for the off diagonal elements
                     l = 0 + k * lda;
                     // -> U(k,k) at A(0,k)
                     aa = a[l].real();
@@ -1331,11 +1331,11 @@ REAL Clanhf(const char *norm, const char *transr, const char *uplo, INTEGER cons
                 } else {
                     // A**H is lower
                     for (j = 1; j <= k - 1; j = j + 1) {
-                        Classq(j, &a[( (j + 1) * lda)], 1, scale, s);
+                        Classq(j, &a[((j + 1) * lda)], 1, scale, s);
                         // U at A(0,1)
                     }
                     for (j = k + 1; j <= n; j = j + 1) {
-                        Classq(k, &a[( j * lda)], 1, scale, s);
+                        Classq(k, &a[(j * lda)], 1, scale, s);
                         // k by k rect. at A(0,k+1)
                     }
                     for (j = 0; j <= k - 2; j = j + 1) {
@@ -1343,7 +1343,7 @@ REAL Clanhf(const char *norm, const char *transr, const char *uplo, INTEGER cons
                         // L at A(0,0)
                     }
                     s += s;
-                    // REAL s for the off diagonal elements
+                    // double s for the off diagonal elements
                     l = 0;
                     // -> L(k,k) at A(0,0)
                     aa = a[l].real();
