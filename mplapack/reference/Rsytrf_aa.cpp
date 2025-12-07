@@ -133,7 +133,7 @@ void Rsytrf_aa(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, IN
         for (j2 = j + 2; j2 <= min(n, j + jb + 1); j2 = j2 + 1) {
             ipiv[j2 - 1] += j;
             if ((j2 != ipiv[j2 - 1]) && ((j1 - k1) > 2)) {
-                Rswap(j1 - k1 - 2, &a[(j2 - 1) * lda], 1, &a[((ipiv[j2 - 1]) - 1) * lda], 1);
+                Rswap(j1 - k1 - 2, &a[(j2 - 1) * lda], 1, &a[(ipiv[j2 - 1] - 1) * lda], 1);
             }
         }
         j += jb;
@@ -242,7 +242,7 @@ void Rsytrf_aa(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, IN
         for (j2 = j + 2; j2 <= min(n, j + jb + 1); j2 = j2 + 1) {
             ipiv[j2 - 1] += j;
             if ((j2 != ipiv[j2 - 1]) && ((j1 - k1) > 2)) {
-                Rswap(j1 - k1 - 2, &a[(j2 - 1)], lda, &a[((ipiv[j2 - 1]) - 1)], lda);
+                Rswap(j1 - k1 - 2, &a[(j2 - 1)], lda, &a[(ipiv[j2 - 1] - 1)], lda);
             }
         }
         j += jb;

@@ -29,7 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rsyevx(const char *jobz, const char *range, const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL const vl, REAL const vu, INTEGER const il, INTEGER const iu, REAL const abstol, INTEGER &m, REAL *w, REAL *z, INTEGER const ldz, REAL *work, INTEGER const lwork, INTEGER *iwork, INTEGER *ifail, INTEGER &info) {
+void Rsyevx(const char *jobz, const char *range, const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL const &vl, REAL const &vu, INTEGER const il, INTEGER const iu, REAL const &abstol, INTEGER &m, REAL *w, REAL *z, INTEGER const ldz, REAL *work, INTEGER const lwork, INTEGER *iwork, INTEGER *ifail, INTEGER &info) {
     bool lower = false;
     bool wantz = false;
     bool alleig = false;
@@ -168,7 +168,7 @@ void Rsyevx(const char *jobz, const char *range, const char *uplo, INTEGER const
     smlnum = safmin / eps;
     bignum = one / smlnum;
     rmin = sqrt(smlnum);
-    rmax = min(REAL(sqrt(bignum)), REAL(one / sqrt(sqrt(safmin))));
+    rmax = min(sqrt(bignum), one / sqrt(sqrt(safmin)));
     //
     // Scale matrix to allowable range, if necessary.
     //
@@ -215,7 +215,7 @@ void Rsyevx(const char *jobz, const char *range, const char *uplo, INTEGER const
     Rsytrd(uplo, n, a, lda, &work[indd - 1], &work[inde - 1], &work[indtau - 1], &work[indwrk - 1], llwork, iinfo);
     //
     // If all eigenvalues are desired and ABSTOL is less than or equal to
-    // zero, then call Rsterf or Rorgtr and Rsteqr.  If this fails for
+    // zero, then call Rsterf or Rorgtr and SSTEQR.  If this fails for
     // some eigenvalue, then try Rstebz.
     //
     test = false;
