@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022
+ * Copyright (c) 2008-2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -29,7 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rtfsm(const char *transr, const char *side, const char *uplo, const char *trans, const char *diag, INTEGER const m, INTEGER const n, REAL const alpha, REAL *a, REAL *b, INTEGER const ldb) {
+void Rtfsm(const char *transr, const char *side, const char *uplo, const char *trans, const char *diag, INTEGER const m, INTEGER const n, REAL const &alpha, REAL *a, REAL *b, INTEGER const ldb) {
     //
     // Test the input parameters.
     //
@@ -56,7 +56,7 @@ void Rtfsm(const char *transr, const char *side, const char *uplo, const char *t
         info = -11;
     }
     if (info != 0) {
-        Mxerbla("Rtfsm", -info);
+        Mxerbla("Rtfsm ", -info);
         return;
     }
     //
