@@ -29,7 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rla_gbamv(INTEGER const trans, INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku, REAL const alpha, REAL *ab, INTEGER const ldab, REAL *x, INTEGER const incx, REAL const beta, REAL *y, INTEGER const incy) {
+void Rla_gbamv(INTEGER const trans, INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku, REAL const &alpha, REAL *ab, INTEGER const ldab, REAL *x, INTEGER const incx, REAL const &beta, REAL *y, INTEGER const incy) {
     //
     // Test the input parameters.
     //
@@ -52,7 +52,7 @@ void Rla_gbamv(INTEGER const trans, INTEGER const m, INTEGER const n, INTEGER co
         info = 11;
     }
     if (info != 0) {
-        Mxerbla("Rla_gbamv", info);
+        Mxerbla("Rla_gbamv ", info);
         return;
     }
     //
@@ -122,7 +122,7 @@ void Rla_gbamv(INTEGER const trans, INTEGER const m, INTEGER const n, INTEGER co
                     y[iy - 1] = beta * abs(y[iy - 1]);
                 }
                 if (alpha != zero) {
-                    for (j = max(i - kl, 1); j <= min(i + ku, lenx); j = j + 1) {
+                    for (j = max(i - kl, (INTEGER)1); j <= min(i + ku, lenx); j = j + 1) {
                         temp = abs(ab[((kd + i - j) - 1) + (j - 1) * ldab]);
                         symb_zero = symb_zero && (x[j - 1] == zero || temp == zero);
                         //
@@ -147,7 +147,7 @@ void Rla_gbamv(INTEGER const trans, INTEGER const m, INTEGER const n, INTEGER co
                     y[iy - 1] = beta * abs(y[iy - 1]);
                 }
                 if (alpha != zero) {
-                    for (j = max(i - kl, 1); j <= min(i + ku, lenx); j = j + 1) {
+                    for (j = max(i - kl, (INTEGER)1); j <= min(i + ku, lenx); j = j + 1) {
                         temp = abs(ab[((ke - i + j) - 1) + (i - 1) * ldab]);
                         symb_zero = symb_zero && (x[j - 1] == zero || temp == zero);
                         //
@@ -175,7 +175,7 @@ void Rla_gbamv(INTEGER const trans, INTEGER const m, INTEGER const n, INTEGER co
                 }
                 if (alpha != zero) {
                     jx = kx;
-                    for (j = max(i - kl, 1); j <= min(i + ku, lenx); j = j + 1) {
+                    for (j = max(i - kl, (INTEGER)1); j <= min(i + ku, lenx); j = j + 1) {
                         temp = abs(ab[((kd + i - j) - 1) + (j - 1) * ldab]);
                         symb_zero = symb_zero && (x[jx - 1] == zero || temp == zero);
                         //
@@ -203,7 +203,7 @@ void Rla_gbamv(INTEGER const trans, INTEGER const m, INTEGER const n, INTEGER co
                 }
                 if (alpha != zero) {
                     jx = kx;
-                    for (j = max(i - kl, 1); j <= min(i + ku, lenx); j = j + 1) {
+                    for (j = max(i - kl, (INTEGER)1); j <= min(i + ku, lenx); j = j + 1) {
                         temp = abs(ab[((ke - i + j) - 1) + (i - 1) * ldab]);
                         symb_zero = symb_zero && (x[jx - 1] == zero || temp == zero);
                         //
