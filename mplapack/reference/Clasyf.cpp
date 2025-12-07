@@ -29,13 +29,11 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-inline REAL cabs1(COMPLEX z) { return (abs(z.real()) + abs(z.imag())); }
-
 void Clasyf(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &kb, COMPLEX *a, INTEGER const lda, INTEGER *ipiv, COMPLEX *w, INTEGER const ldw, INTEGER &info) {
     COMPLEX z = 0.0;
     const REAL one = 1.0;
-    const REAL sevten = 17.0e+0;
-    const REAL eight = 8.0e+0;
+    const REAL sevten = 17.0;
+    const REAL eight = 8.0;
     REAL alpha = 0.0;
     INTEGER k = 0;
     INTEGER kw = 0;
@@ -59,11 +57,6 @@ void Clasyf(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &kb, CO
     INTEGER jb = 0;
     INTEGER jj = 0;
     INTEGER jp = 0;
-    //
-    //
-    //
-    //
-    // .. Statement Functions ..
     //
     info = 0;
     //
@@ -142,7 +135,7 @@ void Clasyf(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &kb, CO
                 // element in row IMAX, and ROWMAX is its absolute value
                 //
                 jmax = imax + iCamax(k - imax, &w[((imax + 1) - 1) + ((kw - 1) - 1) * ldw], 1);
-                rowmax = cabs1((w[(jmax - 1) + ((kw - 1) - 1) * ldw]));
+                rowmax = cabs1(w[(jmax - 1) + ((kw - 1) - 1) * ldw]);
                 if (imax > 1) {
                     jmax = iCamax(imax - 1, &w[((kw - 1) - 1) * ldw], 1);
                     rowmax = max(rowmax, cabs1(w[(jmax - 1) + ((kw - 1) - 1) * ldw]));
@@ -172,8 +165,6 @@ void Clasyf(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &kb, CO
                     kstep = 2;
                 }
             }
-            //
-            //
             // KK is the column of A where pivoting step stopped
             //
             kk = k - kstep + 1;
@@ -459,8 +450,6 @@ void Clasyf(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &kb, CO
                     kstep = 2;
                 }
             }
-            //
-            //
             // KK is the column of A where pivoting step stopped
             //
             kk = k + kstep - 1;
