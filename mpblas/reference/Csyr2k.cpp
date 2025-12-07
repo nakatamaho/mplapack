@@ -45,7 +45,7 @@ void Csyr2k(const char *uplo, const char *trans, INTEGER const n, INTEGER const 
     } else {
         nrowa = k;
     }
-    LOGICAL upper = Mlsame(uplo, "U");
+    bool upper = Mlsame(uplo, "U");
     //
     INTEGER info = 0;
     if ((!upper) && (!Mlsame(uplo, "L"))) {

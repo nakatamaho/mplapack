@@ -39,16 +39,16 @@ void Ctrsm(const char *side, const char *uplo, const char *transa, const char *d
     //
     // Test the input parameters.
     //
-    LOGICAL lside = Mlsame(side, "L");
+    bool lside = Mlsame(side, "L");
     INTEGER nrowa = 0;
     if (lside) {
         nrowa = m;
     } else {
         nrowa = n;
     }
-    LOGICAL noconj = Mlsame(transa, "T");
-    LOGICAL nounit = Mlsame(diag, "N");
-    LOGICAL upper = Mlsame(uplo, "U");
+    bool noconj = Mlsame(transa, "T");
+    bool nounit = Mlsame(diag, "N");
+    bool upper = Mlsame(uplo, "U");
     //
     INTEGER info = 0;
     if ((!lside) && (!Mlsame(side, "R"))) {

@@ -41,8 +41,8 @@ void Rgemm(const char *transa, const char *transb, INTEGER const m, INTEGER cons
     // transposed and set  NROWA and NROWB  as the number of rows of  A
     // and  B  respectively.
     //
-    LOGICAL nota = Mlsame(transa, "N");
-    LOGICAL notb = Mlsame(transb, "N");
+    bool nota = Mlsame(transa, "N");
+    bool notb = Mlsame(transb, "N");
     INTEGER nrowa = 0;
     if (nota) {
         nrowa = m;

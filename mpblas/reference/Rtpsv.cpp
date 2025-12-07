@@ -62,7 +62,7 @@ void Rtpsv(const char *uplo, const char *trans, const char *diag, INTEGER const 
         return;
     }
     //
-    LOGICAL nounit = Mlsame(diag, "N");
+    bool nounit = Mlsame(diag, "N");
     //
     // Set up the start point in X if the increment is not unity. This
     // will be  ( N - 1 )*INCX  too small for descending loops.

@@ -45,7 +45,7 @@ void Csymm(const char *side, const char *uplo, INTEGER const m, INTEGER const n,
     } else {
         nrowa = n;
     }
-    LOGICAL upper = Mlsame(uplo, "U");
+    bool upper = Mlsame(uplo, "U");
     //
     // Test the input parameters.
     //

@@ -66,7 +66,7 @@ void Cgemv(const char *trans, INTEGER const m, INTEGER const n, COMPLEX const &a
         return;
     }
     //
-    LOGICAL noconj = Mlsame(trans, "T");
+    bool noconj = Mlsame(trans, "T");
     //
     // Set  LENX  and  LENY, the lengths of the vectors x and y, and set
     // up the start points in  X  and  Y.

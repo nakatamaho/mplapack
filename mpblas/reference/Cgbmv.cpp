@@ -70,7 +70,7 @@ void Cgbmv(const char *trans, INTEGER const m, INTEGER const n, INTEGER const kl
         return;
     }
     //
-    LOGICAL noconj = Mlsame(trans, "T");
+    bool noconj = Mlsame(trans, "T");
     //
     // Set  LENX  and  LENY, the lengths of the vectors x and y, and set
     // up the start points in  X  and  Y.
