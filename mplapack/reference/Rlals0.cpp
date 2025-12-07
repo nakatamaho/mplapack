@@ -29,7 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rlals0(INTEGER const icompq, INTEGER const nl, INTEGER const nr, INTEGER const sqre, INTEGER const nrhs, REAL *b, INTEGER const ldb, REAL *bx, INTEGER const ldbx, INTEGER *perm, INTEGER const givptr, INTEGER *givcol, INTEGER const ldgcol, REAL *givnum, INTEGER const ldgnum, REAL *poles, REAL *difl, REAL *difr, REAL *z, INTEGER const k, REAL const c, REAL const s, REAL *work, INTEGER &info) {
+void Rlals0(INTEGER const icompq, INTEGER const nl, INTEGER const nr, INTEGER const sqre, INTEGER const nrhs, REAL *b, INTEGER const ldb, REAL *bx, INTEGER const ldbx, INTEGER *perm, INTEGER const givptr, INTEGER *givcol, INTEGER const ldgcol, REAL *givnum, INTEGER const ldgnum, REAL *poles, REAL *difl, REAL *difr, REAL *z, INTEGER const k, REAL const &c, REAL const &s, REAL *work, INTEGER &info) {
     //
     // Test the input parameters.
     //
@@ -85,7 +85,7 @@ void Rlals0(INTEGER const icompq, INTEGER const nl, INTEGER const nr, INTEGER co
         // Step (1L): apply back the Givens rotations performed.
         //
         for (i = 1; i <= givptr; i = i + 1) {
-            Rrot(nrhs, &b[(givcol[(i - 1) + (2 - 1) * ldgcol] - 1)], ldb, &b[(givcol[(i - 1)] - 1)], ldb, givnum[(i - 1) + (2 - 1) * ldgnum], givnum[(i - 1)]);
+            Rrot(nrhs, &b[(givcol[(i - 1) + (2 - 1) * ldgivcol] - 1)], ldb, &b[(givcol[(i - 1)] - 1)], ldb, givnum[(i - 1) + (2 - 1) * ldgivnum], givnum[(i - 1)]);
         }
         //
         // Step (2L): permute rows of B.
@@ -107,28 +107,28 @@ void Rlals0(INTEGER const icompq, INTEGER const nl, INTEGER const nr, INTEGER co
             for (j = 1; j <= k; j = j + 1) {
                 diflj = difl[j - 1];
                 dj = poles[(j - 1)];
-                dsigj = -poles[(j - 1) + (2 - 1) * ldgnum];
+                dsigj = -poles[(j - 1) + (2 - 1) * ldpoles];
                 if (j < k) {
                     difrj = -difr[(j - 1)];
-                    dsigjp = -poles[((j + 1) - 1) + (2 - 1) * ldgnum];
+                    dsigjp = -poles[((j + 1) - 1) + (2 - 1) * ldpoles];
                 }
-                if ((z[j - 1] == zero) || (poles[(j - 1) + (2 - 1) * ldgnum] == zero)) {
+                if ((z[j - 1] == zero) || (poles[(j - 1) + (2 - 1) * ldpoles] == zero)) {
                     work[j - 1] = zero;
                 } else {
-                    work[j - 1] = -poles[(j - 1) + (2 - 1) * ldgnum] * z[j - 1] / diflj / (poles[(j - 1) + (2 - 1) * ldgnum] + dj);
+                    work[j - 1] = -poles[(j - 1) + (2 - 1) * ldpoles] * z[j - 1] / diflj / (poles[(j - 1) + (2 - 1) * ldpoles] + dj);
                 }
                 for (i = 1; i <= j - 1; i = i + 1) {
-                    if ((z[i - 1] == zero) || (poles[(i - 1) + (2 - 1) * ldgnum] == zero)) {
+                    if ((z[i - 1] == zero) || (poles[(i - 1) + (2 - 1) * ldpoles] == zero)) {
                         work[i - 1] = zero;
                     } else {
-                        work[i - 1] = poles[(i - 1) + (2 - 1) * ldgnum] * z[i - 1] / (Rlamc3(poles[(i - 1) + (2 - 1) * ldgnum], dsigj) - diflj) / (poles[(i - 1) + (2 - 1) * ldgnum] + dj);
+                        work[i - 1] = poles[(i - 1) + (2 - 1) * ldpoles] * z[i - 1] / (Rlamc3(poles[(i - 1) + (2 - 1) * ldpoles], dsigj) - diflj) / (poles[(i - 1) + (2 - 1) * ldpoles] + dj);
                     }
                 }
                 for (i = j + 1; i <= k; i = i + 1) {
-                    if ((z[i - 1] == zero) || (poles[(i - 1) + (2 - 1) * ldgnum] == zero)) {
+                    if ((z[i - 1] == zero) || (poles[(i - 1) + (2 - 1) * ldpoles] == zero)) {
                         work[i - 1] = zero;
                     } else {
-                        work[i - 1] = poles[(i - 1) + (2 - 1) * ldgnum] * z[i - 1] / (Rlamc3(poles[(i - 1) + (2 - 1) * ldgnum], dsigjp) + difrj) / (poles[(i - 1) + (2 - 1) * ldgnum] + dj);
+                        work[i - 1] = poles[(i - 1) + (2 - 1) * ldpoles] * z[i - 1] / (Rlamc3(poles[(i - 1) + (2 - 1) * ldpoles], dsigjp) + difrj) / (poles[(i - 1) + (2 - 1) * ldpoles] + dj);
                     }
                 }
                 work[0] = negone;
@@ -154,24 +154,24 @@ void Rlals0(INTEGER const icompq, INTEGER const nl, INTEGER const nr, INTEGER co
             Rcopy(nrhs, b, ldb, bx, ldbx);
         } else {
             for (j = 1; j <= k; j = j + 1) {
-                dsigj = poles[(j - 1) + (2 - 1) * ldgnum];
+                dsigj = poles[(j - 1) + (2 - 1) * ldpoles];
                 if (z[j - 1] == zero) {
                     work[j - 1] = zero;
                 } else {
-                    work[j - 1] = -z[j - 1] / difl[j - 1] / (dsigj + poles[(j - 1)]) / difr[(j - 1) + (2 - 1) * ldgnum];
+                    work[j - 1] = -z[j - 1] / difl[j - 1] / (dsigj + poles[(j - 1)]) / difr[(j - 1) + (2 - 1) * lddifr];
                 }
                 for (i = 1; i <= j - 1; i = i + 1) {
                     if (z[j - 1] == zero) {
                         work[i - 1] = zero;
                     } else {
-                        work[i - 1] = z[j - 1] / (Rlamc3(dsigj, -poles[((i + 1) - 1) + (2 - 1) * ldgnum]) - difr[(i - 1)]) / (dsigj + poles[(i - 1)]) / difr[(i - 1) + (2 - 1) * ldgnum];
+                        work[i - 1] = z[j - 1] / (Rlamc3(dsigj, -poles[((i + 1) - 1) + (2 - 1) * ldpoles]) - difr[(i - 1)]) / (dsigj + poles[(i - 1)]) / difr[(i - 1) + (2 - 1) * lddifr];
                     }
                 }
                 for (i = j + 1; i <= k; i = i + 1) {
                     if (z[j - 1] == zero) {
                         work[i - 1] = zero;
                     } else {
-                        work[i - 1] = z[j - 1] / (Rlamc3(dsigj, -poles[(i - 1) + (2 - 1) * ldgnum]) - difl[i - 1]) / (dsigj + poles[(i - 1)]) / difr[(i - 1) + (2 - 1) * ldgnum];
+                        work[i - 1] = z[j - 1] / (Rlamc3(dsigj, -poles[(i - 1) + (2 - 1) * ldpoles]) - difl[i - 1]) / (dsigj + poles[(i - 1)]) / difr[(i - 1) + (2 - 1) * lddifr];
                     }
                 }
                 Rgemv("T", k, nrhs, one, b, ldb, work, 1, zero, &bx[(j - 1)], ldbx);
@@ -202,7 +202,7 @@ void Rlals0(INTEGER const icompq, INTEGER const nl, INTEGER const nr, INTEGER co
         // Step (4R): apply back the Givens rotations performed.
         //
         for (i = givptr; i >= 1; i = i - 1) {
-            Rrot(nrhs, &b[(givcol[(i - 1) + (2 - 1) * ldgcol] - 1)], ldb, &b[(givcol[(i - 1)] - 1)], ldb, givnum[(i - 1) + (2 - 1) * ldgnum], -givnum[(i - 1)]);
+            Rrot(nrhs, &b[(givcol[(i - 1) + (2 - 1) * ldgivcol] - 1)], ldb, &b[(givcol[(i - 1)] - 1)], ldb, givnum[(i - 1) + (2 - 1) * ldgivnum], -givnum[(i - 1)]);
         }
     }
     //
