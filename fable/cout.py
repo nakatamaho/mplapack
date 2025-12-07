@@ -1902,13 +1902,16 @@ def convert_tokens(conv_info, tokens, commas=False, had_str_concat=None):
                         r"^[A-Za-z_][A-Za-z0-9_]*\s*\[[^\[\]]+\]\s*$"
                     )
 
-                    def canonical_simple_2(s: str):
+                    def canonical_simple_2(s):
                         """Return canonical simple index (identifier/int/array element) or None.
 
                         This strips outer parentheses that enclose the whole expression, e.g.
-                        "(perm[i - 1])" -> "perm[i - 1]".
+                        "(perm[i - 1])" -> "perm[i - 1]". It also recognizes array
+                        elements of the form NAME[ ... ] even if the index expression
+                        itself contains nested brackets.
                         """
                         s = s.strip()
+
                         # Strip outer layers of parentheses if they enclose the whole expr.
                         while s.startswith("(") and s.endswith(")"):
                             depth = 0
@@ -1918,19 +1921,67 @@ def convert_tokens(conv_info, tokens, commas=False, had_str_concat=None):
                                     depth += 1
                                 elif ch == ")":
                                     depth -= 1
+                                # If we close the outermost paren before the end,
+                                # then these are not purely outer parentheses.
                                 if depth == 0 and pos != len(s) - 1:
                                     balanced_outer = False
                                     break
                             if not balanced_outer:
                                 break
+                            # Drop the outermost pair.
                             s = s[1:-1].strip()
+
+                        # Plain identifier or integer literal
                         if simple_name.fullmatch(s):
                             return s
                         if simple_int.fullmatch(s):
                             return s
-                        if array_elem_re.fullmatch(s):
-                            return s
-                        return None
+
+                        # Try to recognize NAME[ ... ] with a balanced bracketed index,
+                        # allowing nested brackets inside the index expression.
+                        if not s:
+                            return None
+                        # Parse the leading NAME.
+                        if not (s[0].isalpha() or s[0] == "_"):
+                            return None
+                        pos = 0
+                        while pos < len(s) and (s[pos].isalnum() or s[pos] == "_"):
+                            pos += 1
+                        name = s[:pos]
+                        # Skip whitespace.
+                        while pos < len(s) and s[pos].isspace():
+                            pos += 1
+                        if pos >= len(s) or s[pos] != "[":
+                            return None
+
+                        # Find the matching closing bracket, tracking nested brackets.
+                        start_bracket = pos
+                        depth = 0
+                        end_bracket = None
+                        for i in range(start_bracket, len(s)):
+                            ch = s[i]
+                            if ch == "[":
+                                depth += 1
+                            elif ch == "]":
+                                depth -= 1
+                                if depth == 0:
+                                    end_bracket = i
+                                    break
+                        if end_bracket is None:
+                            return None
+
+                        # After the matching ']', only whitespace is allowed.
+                        pos = end_bracket + 1
+                        while pos < len(s) and s[pos].isspace():
+                            pos += 1
+                        if pos != len(s):
+                            # Trailing junk -> not a simple array element
+                            return None
+
+                        # Canonical form: NAME[inner]
+                        inner = s[start_bracket + 1 : end_bracket]
+                        return f"{name}[{inner}]"
+
 
                     # --- Fast path: both lower bounds are 1 (LAPACK-style arrays) ---
                     if lb1 == "1" and lb2 == "1":
