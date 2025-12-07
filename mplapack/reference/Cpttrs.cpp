@@ -31,15 +31,11 @@
 
 void Cpttrs(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *d, COMPLEX *e, COMPLEX *b, INTEGER const ldb, INTEGER &info) {
     //
-    //
-    //
-    //
-    //
     // Test the input arguments.
     //
     info = 0;
-    bool upper = (Mlsame(uplo, "U") || Mlsame(uplo, "u"));
-    if (!upper && !(Mlsame(uplo, "L") || Mlsame(uplo, "l"))) {
+    bool upper = (uplo == 'U' || uplo == 'u');
+    if (!upper && !(uplo == 'L' || uplo == 'l')) {
         info = -1;
     } else if (n < 0) {
         info = -2;
