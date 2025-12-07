@@ -29,47 +29,29 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-inline REAL cabs1(COMPLEX cdum) { return (abs(cdum.real()) + abs(cdum.imag())); }
-
 void Claqr5(bool const wantt, bool const wantz, INTEGER const kacc22, INTEGER const n, INTEGER const ktop, INTEGER const kbot, INTEGER const nshfts, COMPLEX *s, COMPLEX *h, INTEGER const ldh, INTEGER const iloz, INTEGER const ihiz, COMPLEX *z, INTEGER const ldz, COMPLEX *v, INTEGER const ldv, COMPLEX *u, INTEGER const ldu, INTEGER const nv, COMPLEX *wv, INTEGER const ldwv, INTEGER const nh, COMPLEX *wh, INTEGER const ldwh) {
+    //
     COMPLEX cdum = 0.0;
-    //
-    //
     if (nshfts < 2) {
         return;
     }
-    //
-    //
     if (ktop >= kbot) {
         return;
     }
-    //
-    //
     INTEGER ns = nshfts - mod(nshfts, 2);
-    //
-    //
     REAL safmin = Rlamch("SAFE MINIMUM");
     const REAL rone = 1.0;
     REAL safmax = rone / safmin;
+    Rlabad(safmin, safmax);
     REAL ulp = Rlamch("PRECISION");
     REAL smlnum = safmin * (castREAL(n) / ulp);
-    //
-    //
     bool accum = (kacc22 == 1) || (kacc22 == 2);
-    //
-    //
     const COMPLEX zero = COMPLEX(0.0, 0.0);
     if (ktop + 2 <= kbot) {
         h[((ktop + 2) - 1) + (ktop - 1) * ldh] = zero;
     }
-    //
-    //
     INTEGER nbmps = ns / 2;
-    //
-    //
     INTEGER kdu = 4 * nbmps;
-    //
-    //
     INTEGER incol = 0;
     INTEGER jtop = 0;
     INTEGER ndcol = 0;
@@ -119,7 +101,6 @@ void Claqr5(bool const wantt, bool const wantz, INTEGER const kacc22, INTEGER co
         if (accum) {
             Claset("ALL", kdu, kdu, zero, one, u, ldu);
         }
-        //
         // .    performs the near-the-diagonal part of a small bulge
         // .    multi-shift QR sweep.  Each 4*NBMPS column diagonal
         // .    chunk extends from column INCOL to column NDCOL
@@ -131,7 +112,6 @@ void Claqr5(bool const wantt, bool const wantz, INTEGER const kacc22, INTEGER co
         // .    bulges before they are actually introduced or to which
         //
         for (krcol = incol; krcol <= min(incol + 2 * nbmps - 1, kbot - 2); krcol = krcol + 1) {
-            //
             // .    shift bulges.  There may or may not also be small
             // .    2-by-2 bulge, if there is room.  The inactive bulges
             // .    (if any) must wait until the active bulges have moved
@@ -141,10 +121,7 @@ void Claqr5(bool const wantt, bool const wantz, INTEGER const kacc22, INTEGER co
             mbot = min(nbmps, (kbot - krcol - 1) / 2);
             m22 = mbot + 1;
             bmp22 = (mbot < nbmps) && (krcol + 2 * (m22 - 1)) == (kbot - 2);
-            //
-            //
             if (bmp22) {
-                //
                 //
                 k = krcol + 2 * (m22 - 1);
                 if (k == ktop - 1) {
@@ -159,13 +136,11 @@ void Claqr5(bool const wantt, bool const wantz, INTEGER const kacc22, INTEGER co
                     h[((k + 2) - 1) + (k - 1) * ldh] = zero;
                 }
                 //
-                //
                 for (j = jtop; j <= min(kbot, k + 3); j = j + 1) {
                     refsum = v[(m22 - 1) * ldv] * (h[(j - 1) + ((k + 1) - 1) * ldh] + v[(2 - 1) + (m22 - 1) * ldv] * h[(j - 1) + ((k + 2) - 1) * ldh]);
                     h[(j - 1) + ((k + 1) - 1) * ldh] = h[(j - 1) + ((k + 1) - 1) * ldh] - refsum;
                     h[(j - 1) + ((k + 2) - 1) * ldh] = h[(j - 1) + ((k + 2) - 1) * ldh] - refsum * conj(v[(2 - 1) + (m22 - 1) * ldv]);
                 }
-                //
                 //
                 if (accum) {
                     jbot = min(ndcol, kbot);
@@ -179,7 +154,6 @@ void Claqr5(bool const wantt, bool const wantz, INTEGER const kacc22, INTEGER co
                     h[((k + 1) - 1) + (j - 1) * ldh] = h[((k + 1) - 1) + (j - 1) * ldh] - refsum;
                     h[((k + 2) - 1) + (j - 1) * ldh] = h[((k + 2) - 1) + (j - 1) * ldh] - refsum * v[(2 - 1) + (m22 - 1) * ldv];
                 }
-                //
                 // .    the tradition small-compared-to-nearby-diagonals
                 // .    criterion and the Ahues & Tisseur (LAWN 122, 1997)
                 // .    criteria both be satisfied.  The latter improves
@@ -210,7 +184,7 @@ void Claqr5(bool const wantt, bool const wantz, INTEGER const kacc22, INTEGER co
                                 tst1 += cabs1(h[((k + 4) - 1) + ((k + 1) - 1) * ldh]);
                             }
                         }
-                        if (cabs1(h[((k + 1) - 1) + (k - 1) * ldh]) <= max(smlnum, REAL(ulp * tst1))) {
+                        if (cabs1(h[((k + 1) - 1) + (k - 1) * ldh]) <= max(smlnum, ulp * tst1)) {
                             h12 = max(cabs1(h[((k + 1) - 1) + (k - 1) * ldh]), cabs1(h[(k - 1) + ((k + 1) - 1) * ldh]));
                             h21 = min(cabs1(h[((k + 1) - 1) + (k - 1) * ldh]), cabs1(h[(k - 1) + ((k + 1) - 1) * ldh]));
                             h11 = max(cabs1(h[((k + 1) - 1) + ((k + 1) - 1) * ldh]), cabs1(h[(k - 1) + (k - 1) * ldh] - h[((k + 1) - 1) + ((k + 1) - 1) * ldh]));
@@ -218,14 +192,12 @@ void Claqr5(bool const wantt, bool const wantz, INTEGER const kacc22, INTEGER co
                             scl = h11 + h12;
                             tst2 = h22 * (h11 / scl);
                             //
-                            if (tst2 == rzero || h21 * (h12 / scl) <= max(smlnum, REAL(ulp * tst2))) {
+                            if (tst2 == rzero || h21 * (h12 / scl) <= max(smlnum, ulp * tst2)) {
                                 h[((k + 1) - 1) + (k - 1) * ldh] = zero;
                             }
                         }
                     }
                 }
-                //
-                //
                 if (accum) {
                     kms = k - incol;
                     for (j = max((INTEGER)1, ktop - incol); j <= kdu; j = j + 1) {
@@ -241,8 +213,6 @@ void Claqr5(bool const wantt, bool const wantz, INTEGER const kacc22, INTEGER co
                     }
                 }
             }
-            //
-            //
             for (m = mbot; m >= mtop; m = m - 1) {
                 k = krcol + 2 * (m - 1);
                 if (k == ktop - 1) {
@@ -250,49 +220,33 @@ void Claqr5(bool const wantt, bool const wantz, INTEGER const kacc22, INTEGER co
                     alpha = v[(m - 1) * ldv];
                     Clarfg(3, alpha, &v[(2 - 1) + (m - 1) * ldv], 1, v[(m - 1) * ldv]);
                 } else {
-                    //
-                    // .    Mth bulge. Exploit fact that first two elements
-                    //
                     refsum = v[(m - 1) * ldv] * v[(3 - 1) + (m - 1) * ldv] * h[((k + 3) - 1) + ((k + 2) - 1) * ldh];
                     h[((k + 3) - 1) + (k - 1) * ldh] = -refsum;
                     h[((k + 3) - 1) + ((k + 1) - 1) * ldh] = -refsum * conj(v[(2 - 1) + (m - 1) * ldv]);
                     h[((k + 3) - 1) + ((k + 2) - 1) * ldh] = h[((k + 3) - 1) + ((k + 2) - 1) * ldh] - refsum * conj(v[(3 - 1) + (m - 1) * ldv]);
-                    //
-                    //
                     beta = h[((k + 1) - 1) + (k - 1) * ldh];
                     v[(2 - 1) + (m - 1) * ldv] = h[((k + 2) - 1) + (k - 1) * ldh];
                     v[(3 - 1) + (m - 1) * ldv] = h[((k + 3) - 1) + (k - 1) * ldh];
                     Clarfg(3, beta, &v[(2 - 1) + (m - 1) * ldv], 1, v[(m - 1) * ldv]);
-                    //
-                    // .    deflation or destructive underflow.  In the
-                    // .    underflow case, try the two-small-subdiagonals
-                    //
                     if (h[((k + 3) - 1) + (k - 1) * ldh] != zero || h[((k + 3) - 1) + ((k + 1) - 1) * ldh] != zero || h[((k + 3) - 1) + ((k + 2) - 1) * ldh] == zero) {
-                        //
-                        //
                         h[((k + 1) - 1) + (k - 1) * ldh] = beta;
                         h[((k + 2) - 1) + (k - 1) * ldh] = zero;
                         h[((k + 3) - 1) + (k - 1) * ldh] = zero;
                     } else {
-                        //
                         // .    reintroduce ignoring H(K+1,K) and H(K+2,K).
                         // .    If the fill resulting from the new
                         // .    reflector is too large, then abandon it.
                         //
                         Claqr1(3, &h[((k + 1) - 1) + ((k + 1) - 1) * ldh], ldh, s[(2 * m - 1) - 1], s[(2 * m) - 1], vt);
                         alpha = vt[0];
-                        Clarfg(3, alpha, &vt[2 - 1], 1, vt[0]);
-                        refsum = conj(vt[0]) * (h[((k + 1) - 1) + (k - 1) * ldh] + conj(vt[2 - 1]) * h[((k + 2) - 1) + (k - 1) * ldh]);
+                        Clarfg(3, alpha, &vt[1], 1, vt[0]);
+                        refsum = conj(vt[0]) * (h[((k + 1) - 1) + (k - 1) * ldh] + conj(vt[1]) * h[((k + 2) - 1) + (k - 1) * ldh]);
                         //
-                        if (cabs1(h[((k + 2) - 1) + (k - 1) * ldh] - refsum * vt[2 - 1]) + cabs1(refsum * vt[3 - 1]) > ulp * (cabs1(h[(k - 1) + (k - 1) * ldh]) + cabs1(h[((k + 1) - 1) + ((k + 1) - 1) * ldh]) + cabs1(h[((k + 2) - 1) + ((k + 2) - 1) * ldh]))) {
-                            //
-                            // .    create non-negligible fill.  Use
-                            //
+                        if (cabs1(h[((k + 2) - 1) + (k - 1) * ldh] - refsum * vt[1]) + cabs1(refsum * vt[2]) > ulp * (cabs1(h[(k - 1) + (k - 1) * ldh]) + cabs1(h[((k + 1) - 1) + ((k + 1) - 1) * ldh]) + cabs1(h[((k + 2) - 1) + ((k + 2) - 1) * ldh]))) {
                             h[((k + 1) - 1) + (k - 1) * ldh] = beta;
                             h[((k + 2) - 1) + (k - 1) * ldh] = zero;
                             h[((k + 3) - 1) + (k - 1) * ldh] = zero;
                         } else {
-                            //
                             // .    create only negligible fill.
                             // .    Replace the old reflector with
                             //
@@ -300,12 +254,11 @@ void Claqr5(bool const wantt, bool const wantz, INTEGER const kacc22, INTEGER co
                             h[((k + 2) - 1) + (k - 1) * ldh] = zero;
                             h[((k + 3) - 1) + (k - 1) * ldh] = zero;
                             v[(m - 1) * ldv] = vt[0];
-                            v[(2 - 1) + (m - 1) * ldv] = vt[2 - 1];
-                            v[(3 - 1) + (m - 1) * ldv] = vt[3 - 1];
+                            v[(2 - 1) + (m - 1) * ldv] = vt[1];
+                            v[(3 - 1) + (m - 1) * ldv] = vt[2];
                         }
                     }
                 }
-                //
                 // .     the first column of update from the left.
                 // .     These updates are required for the vigilant
                 // .     deflation check. We still delay most of the
@@ -316,13 +269,10 @@ void Claqr5(bool const wantt, bool const wantz, INTEGER const kacc22, INTEGER co
                     h[(j - 1) + ((k + 2) - 1) * ldh] = h[(j - 1) + ((k + 2) - 1) * ldh] - refsum * conj(v[(2 - 1) + (m - 1) * ldv]);
                     h[(j - 1) + ((k + 3) - 1) * ldh] = h[(j - 1) + ((k + 3) - 1) * ldh] - refsum * conj(v[(3 - 1) + (m - 1) * ldv]);
                 }
-                //
-                //
                 refsum = conj(v[(m - 1) * ldv]) * (h[((k + 1) - 1) + ((k + 1) - 1) * ldh] + conj(v[(2 - 1) + (m - 1) * ldv]) * h[((k + 2) - 1) + ((k + 1) - 1) * ldh] + conj(v[(3 - 1) + (m - 1) * ldv]) * h[((k + 3) - 1) + ((k + 1) - 1) * ldh]);
                 h[((k + 1) - 1) + ((k + 1) - 1) * ldh] = h[((k + 1) - 1) + ((k + 1) - 1) * ldh] - refsum;
                 h[((k + 2) - 1) + ((k + 1) - 1) * ldh] = h[((k + 2) - 1) + ((k + 1) - 1) * ldh] - refsum * v[(2 - 1) + (m - 1) * ldv];
                 h[((k + 3) - 1) + ((k + 1) - 1) * ldh] = h[((k + 3) - 1) + ((k + 1) - 1) * ldh] - refsum * v[(3 - 1) + (m - 1) * ldv];
-                //
                 // .    the tradition small-compared-to-nearby-diagonals
                 // .    criterion and the Ahues & Tisseur (LAWN 122, 1997)
                 // .    criteria both be satisfied.  The latter improves
@@ -355,7 +305,7 @@ void Claqr5(bool const wantt, bool const wantz, INTEGER const kacc22, INTEGER co
                             tst1 += cabs1(h[((k + 4) - 1) + ((k + 1) - 1) * ldh]);
                         }
                     }
-                    if (cabs1(h[((k + 1) - 1) + (k - 1) * ldh]) <= max(smlnum, REAL(ulp * tst1))) {
+                    if (cabs1(h[((k + 1) - 1) + (k - 1) * ldh]) <= max(smlnum, ulp * tst1)) {
                         h12 = max(cabs1(h[((k + 1) - 1) + (k - 1) * ldh]), cabs1(h[(k - 1) + ((k + 1) - 1) * ldh]));
                         h21 = min(cabs1(h[((k + 1) - 1) + (k - 1) * ldh]), cabs1(h[(k - 1) + ((k + 1) - 1) * ldh]));
                         h11 = max(cabs1(h[((k + 1) - 1) + ((k + 1) - 1) * ldh]), cabs1(h[(k - 1) + (k - 1) * ldh] - h[((k + 1) - 1) + ((k + 1) - 1) * ldh]));
@@ -363,14 +313,12 @@ void Claqr5(bool const wantt, bool const wantz, INTEGER const kacc22, INTEGER co
                         scl = h11 + h12;
                         tst2 = h22 * (h11 / scl);
                         //
-                        if (tst2 == rzero || h21 * (h12 / scl) <= max(smlnum, REAL(ulp * tst2))) {
+                        if (tst2 == rzero || h21 * (h12 / scl) <= max(smlnum, ulp * tst2)) {
                             h[((k + 1) - 1) + (k - 1) * ldh] = zero;
                         }
                     }
                 }
             }
-            //
-            //
             if (accum) {
                 jbot = min(ndcol, kbot);
             } else if (wantt) {
@@ -388,10 +336,7 @@ void Claqr5(bool const wantt, bool const wantz, INTEGER const kacc22, INTEGER co
                     h[((k + 3) - 1) + (j - 1) * ldh] = h[((k + 3) - 1) + (j - 1) * ldh] - refsum * v[(3 - 1) + (m - 1) * ldv];
                 }
             }
-            //
-            //
             if (accum) {
-                //
                 // .    with an efficient matrix-matrix
                 //
                 for (m = mbot; m >= mtop; m = m - 1) {
@@ -408,7 +353,6 @@ void Claqr5(bool const wantt, bool const wantz, INTEGER const kacc22, INTEGER co
                     }
                 }
             } else if (wantz) {
-                //
                 // .    now by multiplying by reflections
                 //
                 for (m = mbot; m >= mtop; m = m - 1) {
@@ -421,10 +365,7 @@ void Claqr5(bool const wantt, bool const wantz, INTEGER const kacc22, INTEGER co
                     }
                 }
             }
-            //
-            //
         }
-        //
         // .    entries in H.  If required, use U to update Z as
         //
         if (accum) {
@@ -437,22 +378,16 @@ void Claqr5(bool const wantt, bool const wantz, INTEGER const kacc22, INTEGER co
             }
             k1 = max((INTEGER)1, ktop - incol);
             nu = (kdu - max((INTEGER)0, ndcol - kbot)) - k1 + 1;
-            //
-            //
             for (jcol = min(ndcol, kbot) + 1; jcol <= jbot; jcol = jcol + nh) {
                 jlen = min(nh, jbot - jcol + 1);
                 Cgemm("C", "N", nu, jlen, nu, one, &u[(k1 - 1) + (k1 - 1) * ldu], ldu, &h[((incol + k1) - 1) + (jcol - 1) * ldh], ldh, zero, wh, ldwh);
                 Clacpy("ALL", nu, jlen, wh, ldwh, &h[((incol + k1) - 1) + (jcol - 1) * ldh], ldh);
             }
-            //
-            //
             for (jrow = jtop; jrow <= max(ktop, incol) - 1; jrow = jrow + nv) {
                 jlen = min(nv, max(ktop, incol) - jrow);
                 Cgemm("N", "N", jlen, nu, nu, one, &h[(jrow - 1) + ((incol + k1) - 1) * ldh], ldh, &u[(k1 - 1) + (k1 - 1) * ldu], ldu, zero, wv, ldwv);
                 Clacpy("ALL", jlen, nu, wv, ldwv, &h[(jrow - 1) + ((incol + k1) - 1) * ldh], ldh);
             }
-            //
-            //
             if (wantz) {
                 for (jrow = iloz; jrow <= ihiz; jrow = jrow + nv) {
                     jlen = min(nv, ihiz - jrow + 1);
@@ -462,6 +397,4 @@ void Claqr5(bool const wantt, bool const wantz, INTEGER const kacc22, INTEGER co
             }
         }
     }
-    //
-    //
 }
