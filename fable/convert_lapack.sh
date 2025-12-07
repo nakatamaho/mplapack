@@ -294,7 +294,8 @@ TRANS_EQ_PATTERNS = [
         'Mlsame(norm, "1")'
     ),
 
-    # Trans: (trans == 'N' || trans == 'n'), etc.
+    # Trans: parenthesized forms, e.g.:
+    #   bool notran = (trans == 'N' || trans == 'n');
     (
         re.compile(r'\(\s*trans\s*==\s*[\'"]N[\'"]\s*\|\|\s*trans\s*==\s*[\'"]n[\'"]\s*\)'),
         'Mlsame(trans, "N")'
@@ -307,6 +308,9 @@ TRANS_EQ_PATTERNS = [
         re.compile(r'\(\s*trans\s*==\s*[\'"]C[\'"]\s*\|\|\s*trans\s*==\s*[\'"]c[\'"]\s*\)'),
         'Mlsame(trans, "C")'
     ),
+
+    # Trans: plain forms, e.g.:
+    #   } else if (trans == "T" || trans == "t") {
     (
         re.compile(r'trans\s*==\s*[\'"]N[\'"]\s*\|\|\s*trans\s*==\s*[\'"]n[\'"]'),
         'Mlsame(trans, "N")'
@@ -320,7 +324,29 @@ TRANS_EQ_PATTERNS = [
         'Mlsame(trans, "C")'
     ),
 
-    # Uplo: simple comparisons, e.g. "if (uplo == "L")"
+    # Uplo: parenthesized OR forms, e.g.:
+    #   bool upper = (uplo == 'U' || uplo == 'u');
+    (
+        re.compile(r'\(\s*uplo\s*==\s*[\'"]U[\'"]\s*\|\|\s*uplo\s*==\s*[\'"]u[\'"]\s*\)'),
+        'Mlsame(uplo, "U")'
+    ),
+    (
+        re.compile(r'\(\s*uplo\s*==\s*[\'"]L[\'"]\s*\|\|\s*uplo\s*==\s*[\'"]l[\'"]\s*\)'),
+        'Mlsame(uplo, "L")'
+    ),
+
+    # Uplo: plain OR forms, just in case:
+    #   if (uplo == "U" || uplo == "u")
+    (
+        re.compile(r'uplo\s*==\s*[\'"]U[\'"]\s*\|\|\s*uplo\s*==\s*[\'"]u[\'"]'),
+        'Mlsame(uplo, "U")'
+    ),
+    (
+        re.compile(r'uplo\s*==\s*[\'"]L[\'"]\s*\|\|\s*uplo\s*==\s*[\'"]l[\'"]'),
+        'Mlsame(uplo, "L")'
+    ),
+
+    # Uplo: simple fallback comparisons
     (
         re.compile(r'\buplo\s*==\s*[\'"]U[\'"]'),
         'Mlsame(uplo, "U")'
