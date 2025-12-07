@@ -211,7 +211,7 @@ statement_80:
             givnum[(givptr - 1) * ldgivnum] = c;
             givnum[(2 - 1) + (givptr - 1) * ldgivnum] = s;
             if (icompq == 1) {
-                Rrot(qsiz, &q[((indxq[indx[jlam - 1] - 1]) - 1) * ldq], 1, &q[((indxq[indx[j - 1] - 1]) - 1) * ldq], 1, c, s);
+                Rrot(qsiz, &q[(indxq[indx[jlam - 1] - 1] - 1) * ldq], 1, &q[(indxq[indx[j - 1] - 1] - 1) * ldq], 1, c, s);
             }
             t = d[jlam - 1] * c * c + d[j - 1] * s * s;
             d[j - 1] = d[jlam - 1] * s * s + d[j - 1] * c * c;
