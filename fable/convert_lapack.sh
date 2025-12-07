@@ -289,15 +289,12 @@ text = pattern_minmax.sub(r"(\1 - 1)", text)
 
 TRANS_EQ_PATTERNS = [
     # Norm: norm == "1" or norm == '1'
-    # This also works inside expressions like:
-    #   onenrm = norm == "1" || Mlsame(norm, "O");
     (
         re.compile(r'\bnorm\s*==\s*(?:"1"|\'1\')'),
         'Mlsame(norm, "1")'
     ),
 
-    # Parenthesized trans forms, e.g.:
-    #   bool notran = (trans == 'N' || trans == 'n');
+    # Trans: (trans == 'N' || trans == 'n'), etc.
     (
         re.compile(r'\(\s*trans\s*==\s*[\'"]N[\'"]\s*\|\|\s*trans\s*==\s*[\'"]n[\'"]\s*\)'),
         'Mlsame(trans, "N")'
@@ -310,9 +307,6 @@ TRANS_EQ_PATTERNS = [
         re.compile(r'\(\s*trans\s*==\s*[\'"]C[\'"]\s*\|\|\s*trans\s*==\s*[\'"]c[\'"]\s*\)'),
         'Mlsame(trans, "C")'
     ),
-
-    # Plain trans forms, e.g.:
-    #   } else if (trans == "T" || trans == "t") {
     (
         re.compile(r'trans\s*==\s*[\'"]N[\'"]\s*\|\|\s*trans\s*==\s*[\'"]n[\'"]'),
         'Mlsame(trans, "N")'
@@ -325,8 +319,17 @@ TRANS_EQ_PATTERNS = [
         re.compile(r'trans\s*==\s*[\'"]C[\'"]\s*\|\|\s*trans\s*==\s*[\'"]c[\'"]'),
         'Mlsame(trans, "C")'
     ),
-]
 
+    # Uplo: simple comparisons, e.g. "if (uplo == "L")"
+    (
+        re.compile(r'\buplo\s*==\s*[\'"]U[\'"]'),
+        'Mlsame(uplo, "U")'
+    ),
+    (
+        re.compile(r'\buplo\s*==\s*[\'"]L[\'"]'),
+        'Mlsame(uplo, "L")'
+    ),
+]
 
 def _rewrite_trans_eq(line: str) -> str:
     # Do not touch C++ line comments.

@@ -7,10 +7,10 @@ import tempfile
 import typing
 
 try:
-    from mplapack_signatures import FUNCTION_SIGNATURES
+    from mplapack_signatures import FUNCTION_SIGNATURES, FUNCTION_RETURNS
 except ImportError:
     FUNCTION_SIGNATURES = {}
-
+    FUNCTION_RETURNS = {}
 
 def _split_actuals(arg_string: str):
     """Split a C++ argument list string on commas, ignoring commas inside parentheses."""
@@ -1253,14 +1253,54 @@ def convert_power(conv_info, tokens):
         conv_info=conv_info, tokens=tokens, commas=True) + ")"
 
 
-def _is_real_valued_function_call(expr: str) -> bool:
-    """Return True if expr looks like a call to a known real-valued helper.
+def _get_return_kind_from_signatures(base_cpp_name: str) -> typing.Optional[str]:
+    """Return coarse return-type category using FUNCTION_RETURNS.
 
-    This is used to avoid adding .real() on top of expressions that are
-    already REAL-valued, such as RCabs1(zx[i]) or ABS(x.imag()).
+    base_cpp_name: bare C++ identifier (no namespace), any case.
+    Result is one of: "real", "complex", "integer", "logical", "void", or None.
     """
-    expr = expr.strip()
-    m = re.match(r'^([A-Za-z_][A-Za-z0-9_:]*)\s*\(', expr)
+    if not FUNCTION_RETURNS:
+        return None
+
+    name = base_cpp_name.lower()
+    # Map C++ name back to Fortran name if possible.
+    f_name = _MPLAPACK_CPP_TO_FORTRAN.get(name, name)
+
+    ret = FUNCTION_RETURNS.get(f_name)
+    if ret is None:
+        ret = FUNCTION_RETURNS.get(f_name.lower())
+        if ret is None:
+            return None
+
+    ret = ret.lower()
+    if "complex" in ret:
+        return "complex"
+    if "doubleprecision" in ret or "double precision" in ret:
+        return "real"
+    if "double" in ret or "real" in ret:
+        return "real"
+    if "integer" in ret:
+        return "integer"
+    if "logical" in ret:
+        return "logical"
+    if "void" in ret:
+        return "void"
+    return None
+
+def _is_real_valued_function_call(expr: str) -> bool:
+    """Return True if expr syntactically looks like a call to a REAL-valued function.
+
+    This is a conservative heuristic used only in coercion logic
+    (REAL/DBLE/INT and REAL-LHS assignment fixes). It must never
+    claim that a COMPLEX-valued function is REAL.
+    """
+    s = expr.strip()
+    if "(" not in s:
+        return False
+
+    # Match leading function name (optionally namespaced), e.g.:
+    #   fem::dble(...), Clangb(...), max(...), cabs1(...)
+    m = re.match(r"([A-Za-z_][A-Za-z0-9_:]*)\s*\(", s)
     if not m:
         return False
 
@@ -1275,15 +1315,28 @@ def _is_real_valued_function_call(expr: str) -> bool:
         # AIMAG/IMAG return REAL even if their argument is COMPLEX
         return True
 
-    # Try to map back to the original Fortran-style name
+    # Known real-valued helpers that take COMPLEX arguments
+    # but return REAL (matrix norms, 1-norm, etc.).
+    if base in ("cabs1", "rcabs1", "rlapy2", "rlapy3"):
+        return True
+
+    # Use FUNCTION_RETURNS first if available.
+    ret_kind = _get_return_kind_from_signatures(base) if FUNCTION_RETURNS else None
+    if ret_kind == "real":
+        return True
+    if ret_kind == "complex":
+        return False
+
+    # Fallback: try to map back to the original Fortran-style name
+    # and use the usual BLAS/LAPACK prefix heuristic only if we have it.
     f_name = _MPLAPACK_CPP_TO_FORTRAN.get(base, base)
     if not f_name:
         return False
 
-    # BLAS/LAPACK convention for function names:
+    # BLAS/LAPACK convention (very rough):
     #   s* / d*  → real-valued
     #   c* / z*  → complex-valued
-    first = f_name[0]
+    first = f_name[0].lower()
     if first in ("s", "d"):
         return True
     if first in ("c", "z"):
@@ -1291,7 +1344,6 @@ def _is_real_valued_function_call(expr: str) -> bool:
 
     # Unknown prefix: do not assume real-valued
     return False
-
 
 def _is_simple_lvalue(expr: str) -> bool:
     """Return True if expr is a simple variable or an array element.
@@ -1307,6 +1359,35 @@ def _is_simple_lvalue(expr: str) -> bool:
     # This is intentionally permissive: any NAME followed by bracketed expressions.
     return re.match(r'^[A-Za-z_][A-Za-z0-9_]*(\[[^\]]*\])*$', expr) is not None
 
+def _has_top_level_arith_op(expr: str) -> bool:
+    """Return True if expr has a top-level +, -, * or / outside parentheses.
+
+    This is used to conservatively decide when an expression is a "real"
+    arithmetic combination that may need REAL = COMPLEX coercion.
+    """
+    s = expr
+    depth = 0
+    in_squote = False
+    in_dquote = False
+    i = 0
+    while i < len(s):
+        ch = s[i]
+        if ch == "'" and not in_dquote:
+            in_squote = not in_squote
+        elif ch == '"' and not in_squote:
+            in_dquote = not in_dquote
+        elif not in_squote and not in_dquote:
+            if ch == '(':
+                depth += 1
+            elif ch == ')':
+                if depth > 0:
+                    depth -= 1
+            elif depth == 0 and ch in "+-*/":
+                # We do not try to distinguish unary vs binary here.
+                # Any top-level arithmetic suggests a numeric expression.
+                return True
+        i += 1
+    return False
 
 def _extract_base_identifier_from_unary(expr: str):
     """Extract base identifier from unary expression like '-alpha' or '-x[i]'.
@@ -1356,6 +1437,52 @@ def _collect_complex_variable_names(text: str):
         complex_vars.add(name)
 
     return complex_vars, complex_ptrs
+
+def _mask_real_valued_subcalls(expr: str) -> str:
+    """Replace real-valued function calls in expr with a neutral placeholder.
+
+    This is only used when deciding whether an expression should be treated
+    as COMPLEX-valued for REAL/DBLE/INT coercions.
+    """
+    s = expr
+    out = []
+    i = 0
+    n = len(s)
+    while i < n:
+        ch = s[i]
+        if ch.isalpha() or ch == "_":
+            j = i + 1
+            while j < n and (s[j].isalnum() or s[j] in ("_", ":")):
+                j += 1
+            name = s[i:j]
+            k = j
+            while k < n and s[k].isspace():
+                k += 1
+            if k < n and s[k] == "(":
+                depth = 0
+                end = k
+                while end < n:
+                    c = s[end]
+                    if c == "(":
+                        depth += 1
+                    elif c == ")":
+                        depth -= 1
+                        if depth == 0:
+                            end += 1
+                            break
+                    end += 1
+                call_str = s[i:end]
+                if _is_real_valued_function_call(call_str):
+                    # Mask the whole call as a scalar REAL.
+                    out.append("0")
+                    i = end
+                    continue
+            out.append(ch)
+            i += 1
+        else:
+            out.append(ch)
+            i += 1
+    return "".join(out)
 
 
 def _looks_complex_expression(arg: str) -> bool:
@@ -3713,12 +3840,13 @@ def convert_executable(
 
                 if lhs_is_real and rhs_is_complex:
                     rhs_expr = crhs.strip()
-                    # Avoid double-wrapping if someone already wrote .real()
+                    # Avoid double-wrapping if someone already wrote .real() / .imag()
                     if ".real()" not in rhs_expr and ".imag()" not in rhs_expr:
                         if _is_simple_lvalue(rhs_expr):
                             crhs = f"{rhs_expr}.real()"
                         else:
                             crhs = f"({rhs_expr}).real()"
+
                 elif lhs_is_integer and rhs_is_complex:
                     rhs_expr = crhs.strip()
                     # INTEGER = COMPLEX -> INTEGER = castINTEGER(real(COMPLEX))
@@ -3742,6 +3870,35 @@ def convert_executable(
                             crhs = f"castINTEGER({rhs_expr})"
                         else:
                             crhs = f"castINTEGER({rhs_expr})"
+
+                if lhs_is_real:
+                    rhs_expr = crhs.strip()
+                    if rhs_expr:
+                        rhs_obviously_real = (
+                            _is_real_valued_function_call(rhs_expr)
+                            or ".real()" in rhs_expr
+                            or ".imag()" in rhs_expr
+                            or "castREAL(" in rhs_expr
+                        )
+                        if (not rhs_obviously_real
+                                and _has_top_level_arith_op(rhs_expr)):
+                            # Mask out subcalls that are already known to return REAL,
+                            # so COMPLEX arguments under cabs1/Clangb/Clantb do not
+                            # force the whole expression to be treated as COMPLEX.
+                            scan_expr = _mask_real_valued_subcalls(rhs_expr)
+
+                            owner = None
+                            for name in complex_identifiers:
+                                if re.search(r"\b" + re.escape(name) + r"\b", scan_expr):
+                                    owner = name
+                                    break
+
+                            if owner is not None:
+                                crhs = _real_cast_or_component(
+                                    rhs_expr,
+                                    complex_identifiers,
+                                    complex_pointer_identifiers,
+                                )
 
                 # Promote pure integer literals to real literals when assigning
                 # to REAL/DOUBLEPRECISION variables, so that t[...] = 0; becomes
