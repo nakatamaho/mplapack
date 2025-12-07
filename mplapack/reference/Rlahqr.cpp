@@ -56,7 +56,7 @@ void Rlahqr(bool const wantt, bool const wantz, INTEGER const n, INTEGER const i
     const INTEGER kexsh = 10;
     const REAL dat1 = 3.0 / 4.0;
     REAL h11 = 0.0;
-    const REAL dat2 = -0.4375e0;
+    const REAL dat2 = -0.4375;
     REAL h12 = 0.0;
     REAL h21 = 0.0;
     REAL h22 = 0.0;
@@ -93,7 +93,6 @@ void Rlahqr(bool const wantt, bool const wantz, INTEGER const n, INTEGER const i
         wi[ilo - 1] = zero;
         return;
     }
-    //
     for (j = ilo; j <= ihi - 3; j = j + 1) {
         h[((j + 2) - 1) + (j - 1) * ldh] = zero;
         h[((j + 3) - 1) + (j - 1) * ldh] = zero;
@@ -109,6 +108,7 @@ void Rlahqr(bool const wantt, bool const wantz, INTEGER const n, INTEGER const i
     //
     safmin = Rlamch("SAFE MINIMUM");
     safmax = one / safmin;
+    Rlabad(safmin, safmax);
     ulp = Rlamch("PRECISION");
     smlnum = safmin * (castREAL(nh) / ulp);
     //
@@ -168,10 +168,10 @@ statement_20:
             if (abs(h[(k - 1) + ((k - 1) - 1) * ldh]) <= ulp * tst) {
                 ab = max(abs(h[(k - 1) + ((k - 1) - 1) * ldh]), abs(h[((k - 1) - 1) + (k - 1) * ldh]));
                 ba = min(abs(h[(k - 1) + ((k - 1) - 1) * ldh]), abs(h[((k - 1) - 1) + (k - 1) * ldh]));
-                aa = max(REAL(abs(h[(k - 1) + (k - 1) * ldh])), REAL(abs(h[((k - 1) - 1) + ((k - 1) - 1) * ldh] - h[(k - 1) + (k - 1) * ldh])));
-                bb = min(REAL(abs(h[(k - 1) + (k - 1) * ldh])), REAL(abs(h[((k - 1) - 1) + ((k - 1) - 1) * ldh] - h[(k - 1) + (k - 1) * ldh])));
+                aa = max(abs(h[(k - 1) + (k - 1) * ldh]), abs(h[((k - 1) - 1) + ((k - 1) - 1) * ldh] - h[(k - 1) + (k - 1) * ldh]));
+                bb = min(abs(h[(k - 1) + (k - 1) * ldh]), abs(h[((k - 1) - 1) + ((k - 1) - 1) * ldh] - h[(k - 1) + (k - 1) * ldh]));
                 s = aa + ab;
-                if (ba * (ab / s) <= max(smlnum, REAL(ulp * (bb * (aa / s))))) {
+                if (ba * (ab / s) <= max(smlnum, ulp * (bb * (aa / s)))) {
                     goto statement_40;
                 }
             }
@@ -221,7 +221,7 @@ statement_20:
             h22 = h11;
         } else {
             //
-            // Prepare to use Francis' REAL shift
+            // Prepare to use Francis' double shift
             // (i.e. 2nd degree generalized Rayleigh quotient)
             //
             h11 = h[((i - 1) - 1) + ((i - 1) - 1) * ldh];
@@ -244,15 +244,11 @@ statement_20:
             det = (h11 - tr) * (h22 - tr) - h12 * h21;
             rtdisc = sqrt(abs(det));
             if (det >= zero) {
-                //
-                //
                 rt1r = tr * s;
                 rt2r = rt1r;
                 rt1i = rtdisc * s;
                 rt2i = -rt1i;
             } else {
-                //
-                //
                 rt1r = tr + rtdisc;
                 rt2r = tr - rtdisc;
                 if (abs(rt1r - h22) <= abs(rt2r - h22)) {
@@ -270,7 +266,7 @@ statement_20:
         // Look for two consecutive small subdiagonal elements.
         //
         for (m = i - 2; m >= l; m = m - 1) {
-            // Determine the effect of starting the REAL-shift QR
+            // Determine the effect of starting the double-shift QR
             // iteration at row M, and see if this would make H(M,M-1)
             // negligible.  (The following uses scaling to avoid
             // overflows and most underflows.)
@@ -279,16 +275,16 @@ statement_20:
             s = abs(h[(m - 1) + (m - 1) * ldh] - rt2r) + abs(rt2i) + abs(h21s);
             h21s = h[((m + 1) - 1) + (m - 1) * ldh] / s;
             v[0] = h21s * h[(m - 1) + ((m + 1) - 1) * ldh] + (h[(m - 1) + (m - 1) * ldh] - rt1r) * ((h[(m - 1) + (m - 1) * ldh] - rt2r) / s) - rt1i * (rt2i / s);
-            v[2 - 1] = h21s * (h[(m - 1) + (m - 1) * ldh] + h[((m + 1) - 1) + ((m + 1) - 1) * ldh] - rt1r - rt2r);
-            v[3 - 1] = h21s * h[((m + 2) - 1) + ((m + 1) - 1) * ldh];
-            s = abs(v[0]) + abs(v[2 - 1]) + abs(v[3 - 1]);
+            v[1] = h21s * (h[(m - 1) + (m - 1) * ldh] + h[((m + 1) - 1) + ((m + 1) - 1) * ldh] - rt1r - rt2r);
+            v[2] = h21s * h[((m + 2) - 1) + ((m + 1) - 1) * ldh];
+            s = abs(v[0]) + abs(v[1]) + abs(v[2]);
             v[0] = v[0] / s;
-            v[2 - 1] = v[2 - 1] / s;
-            v[3 - 1] = v[3 - 1] / s;
+            v[1] = v[1] / s;
+            v[2] = v[2] / s;
             if (m == l) {
                 goto statement_60;
             }
-            if (abs(h[(m - 1) + ((m - 1) - 1) * ldh]) * (abs(v[2 - 1]) + abs(v[3 - 1])) <= ulp * abs(v[0]) * (abs(h[((m - 1) - 1) + ((m - 1) - 1) * ldh]) + abs(h[(m - 1) + (m - 1) * ldh]) + abs(h[((m + 1) - 1) + ((m + 1) - 1) * ldh]))) {
+            if (abs(h[(m - 1) + ((m - 1) - 1) * ldh]) * (abs(v[1]) + abs(v[2])) <= ulp * abs(v[0]) * (abs(h[((m - 1) - 1) + ((m - 1) - 1) * ldh]) + abs(h[(m - 1) + (m - 1) * ldh]) + abs(h[((m + 1) - 1) + ((m + 1) - 1) * ldh]))) {
                 goto statement_60;
             }
         }
@@ -311,7 +307,7 @@ statement_20:
             if (k > m) {
                 Rcopy(nr, &h[(k - 1) + ((k - 1) - 1) * ldh], 1, v, 1);
             }
-            Rlarfg(nr, v[0], &v[2 - 1], 1, t1);
+            Rlarfg(nr, v[0], &v[1], 1, t1);
             if (k > m) {
                 h[(k - 1) + ((k - 1) - 1) * ldh] = v[0];
                 h[((k + 1) - 1) + ((k - 1) - 1) * ldh] = zero;
@@ -323,10 +319,10 @@ statement_20:
                 // .    avoid a bug when v(2) and v(3)
                 h[(k - 1) + ((k - 1) - 1) * ldh] = h[(k - 1) + ((k - 1) - 1) * ldh] * (one - t1);
             }
-            v2 = v[2 - 1];
+            v2 = v[1];
             t2 = t1 * v2;
             if (nr == 3) {
-                v3 = v[3 - 1];
+                v3 = v[2];
                 t3 = t1 * v3;
                 //
                 // Apply G from the left to transform the rows of the matrix
