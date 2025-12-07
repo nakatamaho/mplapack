@@ -58,18 +58,6 @@ void Clalsa(INTEGER const icompq, INTEGER const smlsiz, INTEGER const n, INTEGER
     INTEGER im1 = 0;
     INTEGER nlp1 = 0;
     INTEGER nrp1 = 0;
-    INTEGER ldgivcol = ldgcol;
-    INTEGER ldperm = ldgcol;
-    INTEGER lddifl = ldu;
-    INTEGER lddifr = ldu;
-    INTEGER ldgivnum = ldu;
-    INTEGER ldpoles = ldu;
-    INTEGER ldvt = ldu;
-    INTEGER ldz = ldu;
-    //
-    //
-    //
-    //
     //
     // Test the input parameters.
     //
@@ -113,7 +101,7 @@ void Clalsa(INTEGER const icompq, INTEGER const smlsiz, INTEGER const n, INTEGER
     }
     //
     // The nodes on the bottom level of the tree were solved
-    // by DLASDQ. The corresponding left and right singular vector
+    // by Rlasdq. The corresponding left and right singular vector
     // matrices are in explicit form. First apply back the left
     // singular vector matrices.
     //
@@ -210,7 +198,7 @@ void Clalsa(INTEGER const icompq, INTEGER const smlsiz, INTEGER const n, INTEGER
     // Finally go through the left singular vector matrices of all
     // the other subproblems bottom-up on the tree.
     //
-    j = pow((double)2, (double)nlvl);
+    j = pow(2, nlvl);
     sqre = 0;
     //
     for (lvl = nlvl; lvl >= 1; lvl = lvl - 1) {
@@ -223,7 +211,7 @@ void Clalsa(INTEGER const icompq, INTEGER const smlsiz, INTEGER const n, INTEGER
             lf = 1;
             ll = 1;
         } else {
-            lf = (INTEGER)pow((double)2, (double)(lvl - 1));
+            lf = pow(2, (lvl - 1));
             ll = 2 * lf - 1;
         }
         for (i = lf; i <= ll; i = i + 1) {
@@ -257,7 +245,7 @@ statement_170:
             lf = 1;
             ll = 1;
         } else {
-            lf = (INTEGER)pow((double)2, (double)(lvl - 1));
+            lf = pow(2, (lvl - 1));
             ll = 2 * lf - 1;
         }
         for (i = ll; i >= lf; i = i - 1) {
@@ -278,7 +266,7 @@ statement_170:
     }
     //
     // The nodes on the bottom level of the tree were solved
-    // by DLASDQ. The corresponding right singular vector
+    // by Rlasdq. The corresponding right singular vector
     // matrices are in explicit form. Apply them back.
     //
     ndb1 = (nd + 1) / 2;
