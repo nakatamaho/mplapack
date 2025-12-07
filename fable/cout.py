@@ -1523,7 +1523,6 @@ def _rewrite_unary_intrinsic(text: str, func_name: str, repl_func):
 
     return "".join(out)
 
-
 def _rewrite_max_min_calls(text: str) -> str:
     """Rewrite fem::max/min calls: drop fem:: and cast integer literal arguments.
 
@@ -1582,6 +1581,37 @@ def rewrite_single_char_string_literals(line: str) -> str:
     line = _single_char_string_eq_re.sub(r"\1 == '\2'", line)
     line = _single_char_string_ne_re.sub(r"\1 != '\2'", line)
     return line
+
+def get_lower_bound(conv_info, fdecl, dim_index):
+    """Return the lower bound expression (as C++ string) for a given array dimension.
+
+    For a declaration like A(L:U), this returns convert_tokens(L).
+    If no explicit lower bound is present (e.g. A(N) or A(U)), this returns "1"
+    which corresponds to the usual Fortran 1-based convention.
+    """
+    # If there is no dimension information, fall back to 1-based.
+    dt = getattr(fdecl, "dim_tokens", None)
+    if dt is None:
+        return "1"
+    # Out-of-range dimension index -> also fall back to 1.
+    if dim_index < 0 or dim_index >= len(dt):
+        return "1"
+
+    dim_tok = dt[dim_index]
+    tokens = dim_tok.value
+
+    # Look for an explicit ":" in the dimension spec: L:U
+    for i, tok in enumerate(tokens):
+        if tok.is_op_with(value=":"):
+            # No lower bound written (":U") -> treat as 1 for safety.
+            if i == 0:
+                return "1"
+            # Convert the lower-bound tokens using the normal token converter.
+            lb_code = convert_tokens(conv_info=conv_info, tokens=tokens[:i])
+            return lb_code.strip()
+
+    # No explicit ":" -> implicit 1-based lower bound.
+    return "1"
 
 
 def rewrite_intrinsics(text: str) -> str:
@@ -1773,42 +1803,84 @@ def convert_tokens(conv_info, tokens, commas=False, had_str_concat=None):
                     ldname = "ld" + prev_tok.value.lower()
                     rapp(
                         f"[__SLICE2D__({start_expr}, {end_expr}, {col_expr}, {ldname})]")
+
                 elif len(parts) == 1:
+                    # One-dimensional array: a(i)
                     i_expr = parts[0].strip()
-                    if re.fullmatch(r"[0-9]+", i_expr):
-                        # Constant index: a(1) -> a[0]
+                    lb_expr = get_lower_bound(conv_info, fdecl, 0).strip()
+
+                    int_re = re.compile(r"^[0-9]+$")
+                    name_re = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
+
+                    i_is_int = bool(int_re.fullmatch(i_expr))
+                    lb_is_int = bool(int_re.fullmatch(lb_expr))
+
+                    # Case 1: both index and lower bound are integer literals
+                    # -> constant folding, e.g. a(1) with lb=1 -> a[0]
+                    if i_is_int and lb_is_int:
                         i_val = int(i_expr)
-                        index_expr = str(i_val - 1)
-                        rapp("[" + index_expr + "]")
-                    elif re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", i_expr):
-                        # Simple variable: a(i) -> a[i - 1]
-                        index_expr = f"{i_expr} - 1"
+                        lb_val = int(lb_expr)
+                        index_expr = str(i_val - lb_val)
                         rapp("[" + index_expr + "]")
                     else:
-                        # General expression: a(f(i)) -> a[(f(i)) - 1]
-                        inner = f"({i_expr}) - 1"
-                        rapp("[" + inner + "]")
+                        # Decide whether lower bound itself is "simple"
+                        lb_simple = bool(
+                            name_re.fullmatch(lb_expr) or int_re.fullmatch(lb_expr)
+                        )
+
+                        # Simple index: single identifier or integer
+                        if name_re.fullmatch(i_expr) or int_re.fullmatch(i_expr):
+                            if lb_simple:
+                                # a(i) -> a[i - lb]
+                                index_expr = f"{i_expr} - {lb_expr}"
+                            else:
+                                # a(i) -> a[i - (lb_complex)]
+                                index_expr = f"{i_expr} - ({lb_expr})"
+                        else:
+                            # Complex index: a(f(i)) etc.
+                            if lb_simple:
+                                # a(f(i)) -> a[(f(i)) - lb]
+                                index_expr = f"({i_expr}) - {lb_expr}"
+                            else:
+                                # a(f(i)) -> a[(f(i)) - (lb_complex)]
+                                index_expr = f"({i_expr}) - ({lb_expr})"
+
+                        rapp("[" + index_expr + "]")
+
 
                 elif len(parts) == 2:
                     # Two-dimensional array: a(i, j)
                     i_expr, j_expr = parts
+                    i_expr = i_expr.strip()
+                    j_expr = j_expr.strip()
                     ldname = "ld" + prev_tok.value.lower()
+
+                    lb1 = get_lower_bound(conv_info, fdecl, 0).strip()
+                    lb2 = get_lower_bound(conv_info, fdecl, 1).strip()
 
                     simple_name = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
                     simple_int = re.compile(r"^[0-9]+$")
 
+                    # Row index term (first dimension)
                     if simple_name.match(i_expr) or simple_int.match(i_expr):
-                        i_term = f"{i_expr} - 1"
+                        # Keep the original shape: i - lb1
+                        i_term = f"{i_expr} - {lb1}"
                     else:
-                        i_term = f"({i_expr}) - 1"
+                        # Complex expression: (i_expr) - lb1
+                        i_term = f"({i_expr}) - {lb1}"
 
+                    # Column index term (second dimension)
                     if simple_name.match(j_expr) or simple_int.match(j_expr):
-                        j_term = f"({j_expr} - 1)"
+                        # Keep the original shape: (j - lb2)
+                        j_term = f"({j_expr} - {lb2})"
                     else:
-                        j_term = f"(({j_expr}) - 1)"
+                        # Complex expression: ((j_expr) - lb2)
+                        j_term = f"(({j_expr}) - {lb2})"
 
+                    # Final linear index: (i_term) + j_term * ldname
                     index_expr = f"({i_term}) + {j_term}*{ldname}"
                     rapp("[" + index_expr + "]")
+
                 else:
                     # Fallback: treat like a normal call/parenthesized expression
                     if (cmn_needs_to_be_inserted(
