@@ -4,6 +4,7 @@ from io import StringIO
 import os.path
 import math
 import tempfile
+import typing
 
 try:
     from mplapack_signatures import FUNCTION_SIGNATURES
@@ -1804,11 +1805,46 @@ def convert_tokens(conv_info, tokens, commas=False, had_str_concat=None):
                         f"[__SLICE2D__({start_expr}, {end_expr}, {col_expr}, {ldname})]")
 
                 elif len(parts) == 1:
+                    # One-dimensional array: a(i)
                     i_expr = parts[0].strip()
                     lb_expr = get_lower_bound(conv_info, fdecl, 0).strip()
 
                     int_re = re.compile(r"^[0-9]+$")
                     name_re = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
+                    array_elem_re = re.compile(
+                        r"^[A-Za-z_][A-Za-z0-9_]*\s*\[[^\[\]]+\]\s*$"
+                    )
+
+                    def canonical_simple_index(s):
+                        """Return canonical simple index (identifier/int/array element) or None.
+
+                        This strips outer parentheses that enclose the whole expression, e.g.
+                        "(perm[i - 1])" -> "perm[i - 1]".
+                        """
+                        s = s.strip()
+                        # Strip outer layers of parentheses if they enclose the whole expression.
+                        while s.startswith("(") and s.endswith(")"):
+                            depth = 0
+                            balanced_outer = True
+                            for pos, ch in enumerate(s):
+                                if ch == "(":
+                                    depth += 1
+                                elif ch == ")":
+                                    depth -= 1
+                                if depth == 0 and pos != len(s) - 1:
+                                    balanced_outer = False
+                                    break
+                            if not balanced_outer:
+                                break
+                            s = s[1:-1].strip()
+                        # Now check core pattern
+                        if name_re.fullmatch(s):
+                            return s
+                        if int_re.fullmatch(s):
+                            return s
+                        if array_elem_re.fullmatch(s):
+                            return s
+                        return None
 
                     i_is_int = bool(int_re.fullmatch(i_expr))
                     lb_is_int = bool(int_re.fullmatch(lb_expr))
@@ -1821,30 +1857,32 @@ def convert_tokens(conv_info, tokens, commas=False, had_str_concat=None):
                         index_expr = str(i_val - lb_val)
                         rapp("[" + index_expr + "]")
                     else:
+                        core = canonical_simple_index(i_expr)
+
                         # If lower bound is exactly 0, avoid generating "i - 0".
                         if lb_expr == "0":
-                            # Simple index: identifier or integer literal
-                            if name_re.fullmatch(i_expr) or int_re.fullmatch(i_expr):
-                                index_expr = i_expr
+                            if core is not None:
+                                # a(i) with lb=0 -> a[i]
+                                index_expr = core
                             else:
-                                # Complex index expression: wrap once to preserve grouping
+                                # Complex index: group once: a(f(i)) -> a[(f(i))]
                                 index_expr = f"({i_expr})"
                         else:
+                            # Non-zero lower bound: generate "index - lb"
                             lb_simple = bool(
                                 name_re.fullmatch(lb_expr) or int_re.fullmatch(lb_expr)
                             )
-                            # Simple index: identifier or integer literal
-                            if name_re.fullmatch(i_expr) or int_re.fullmatch(i_expr):
-                                if lb_simple:
-                                    index_expr = f"{i_expr} - {lb_expr}"
-                                else:
-                                    index_expr = f"{i_expr} - ({lb_expr})"
+                            idx_simple = core is not None
+
+                            if idx_simple and lb_simple:
+                                # Use canonical core to drop redundant parentheses
+                                index_expr = f"{core} - {lb_expr}"
+                            elif idx_simple and not lb_simple:
+                                index_expr = f"{core} - ({lb_expr})"
+                            elif not idx_simple and lb_simple:
+                                index_expr = f"({i_expr}) - {lb_expr}"
                             else:
-                                # Complex index expression
-                                if lb_simple:
-                                    index_expr = f"({i_expr}) - {lb_expr}"
-                                else:
-                                    index_expr = f"({i_expr}) - ({lb_expr})"
+                                index_expr = f"({i_expr}) - ({lb_expr})"
 
                         rapp("[" + index_expr + "]")
 
@@ -1860,56 +1898,109 @@ def convert_tokens(conv_info, tokens, commas=False, had_str_concat=None):
 
                     simple_name = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
                     simple_int = re.compile(r"^[0-9]+$")
+                    array_elem_re = re.compile(
+                        r"^[A-Za-z_][A-Za-z0-9_]*\s*\[[^\[\]]+\]\s*$"
+                    )
 
-                    # Fast path: both dimensions are 1-based -> preserve the original pattern
+                    def canonical_simple_2(s: str):
+                        """Return canonical simple index (identifier/int/array element) or None.
+
+                        This strips outer parentheses that enclose the whole expression, e.g.
+                        "(perm[i - 1])" -> "perm[i - 1]".
+                        """
+                        s = s.strip()
+                        # Strip outer layers of parentheses if they enclose the whole expr.
+                        while s.startswith("(") and s.endswith(")"):
+                            depth = 0
+                            balanced_outer = True
+                            for pos, ch in enumerate(s):
+                                if ch == "(":
+                                    depth += 1
+                                elif ch == ")":
+                                    depth -= 1
+                                if depth == 0 and pos != len(s) - 1:
+                                    balanced_outer = False
+                                    break
+                            if not balanced_outer:
+                                break
+                            s = s[1:-1].strip()
+                        if simple_name.fullmatch(s):
+                            return s
+                        if simple_int.fullmatch(s):
+                            return s
+                        if array_elem_re.fullmatch(s):
+                            return s
+                        return None
+
+                    # --- Fast path: both lower bounds are 1 (LAPACK-style arrays) ---
                     if lb1 == "1" and lb2 == "1":
-                        if simple_name.match(i_expr) or simple_int.match(i_expr):
-                            i_term = f"{i_expr} - 1"
+                        # Row index term (first dimension)
+                        core_i = canonical_simple_2(i_expr)
+                        if core_i is not None:
+                            # Simple core: i, m, perm[i-1], givcol[...]
+                            i_term = f"{core_i} - 1"
                         else:
-                            i_term = f"({i_expr}) - 1"
+                            # Fallback to legacy behavior
+                            if simple_name.match(i_expr) or simple_int.match(i_expr):
+                                i_term = f"{i_expr} - 1"
+                            else:
+                                i_term = f"({i_expr}) - 1"
 
-                        if simple_name.match(j_expr) or simple_int.match(j_expr):
-                            j_term = f"({j_expr} - 1)"
+                        # Column index term (second dimension)
+                        core_j = canonical_simple_2(j_expr)
+                        if core_j is not None:
+                            j_term = f"({core_j} - 1)"
                         else:
-                            j_term = f"(({j_expr}) - 1)"
+                            if simple_name.match(j_expr) or simple_int.match(j_expr):
+                                j_term = f"({j_expr} - 1)"
+                            else:
+                                j_term = f"(({j_expr}) - 1)"
 
+                        # Flattened index: (i_term) + (j_term)*ldname
                         index_expr = f"({i_term}) + {j_term}*{ldname}"
                         rapp("[" + index_expr + "]")
+
                     else:
-                        # General lower-bound handling, including 0-origin arrays.
-                        int_re = simple_int
+                        # --- General lower-bound aware path (0-based or arbitrary L1,L2) ---
 
-                        def _is_simple(s: str) -> bool:
-                            return bool(simple_name.fullmatch(s) or int_re.fullmatch(s))
-
-                        def _make_term(idx_expr: str, lb_expr: str) -> str:
+                        def make_offset(idx_expr: str, lb_expr: str) -> str:
                             """Build a single-dimension offset term (row or column)."""
                             idx_expr = idx_expr.strip()
                             lb_expr = lb_expr.strip()
+                            core = canonical_simple_2(idx_expr)
+
+                            # Lower bound exactly 0: do not emit "- 0".
                             if lb_expr == "0":
-                                # Lower bound is 0: do not emit "- 0".
-                                if _is_simple(idx_expr):
-                                    return idx_expr
-                                else:
-                                    return f"({idx_expr})"
+                                if core is not None:
+                                    return core
+                                return f"({idx_expr})"
+
                             # Non-zero lower bound
-                            lb_simple = _is_simple(lb_expr)
-                            idx_simple = _is_simple(idx_expr)
-                            if idx_simple and lb_simple:
-                                return f"{idx_expr} - {lb_expr}"
-                            if idx_simple and not lb_simple:
-                                return f"{idx_expr} - ({lb_expr})"
-                            if not idx_simple and lb_simple:
+                            lb_simple = bool(
+                                simple_name.fullmatch(lb_expr)
+                                or simple_int.fullmatch(lb_expr)
+                            )
+
+                            if core is not None:
+                                # Simple core: use "core - lb"
+                                if lb_simple:
+                                    return f"{core} - {lb_expr}"
+                                else:
+                                    return f"{core} - ({lb_expr})"
+
+                            # Complex index with no simple core
+                            if lb_simple:
                                 return f"({idx_expr}) - {lb_expr}"
                             return f"({idx_expr}) - ({lb_expr})"
 
-                        # Row (first dimension) and column (second dimension) terms
-                        i_term = _make_term(i_expr, lb1)
-                        j_term = _make_term(j_expr, lb2)
+                        # Row (first dimension) and column (second dimension) offsets
+                        row_off = make_offset(i_expr, lb1)
+                        col_off = make_offset(j_expr, lb2)
 
-                        # For general lower bounds, avoid adding extra parentheses around i_term.
-                        index_expr = f"{i_term} + {j_term}*{ldname}"
+                        # Multiply the (possibly parenthesized) column offset by ldname.
+                        index_expr = f"{row_off} + {col_off}*{ldname}"
                         rapp("[" + index_expr + "]")
+
 
                 else:
                     # Fallback: treat like a normal call/parenthesized expression
