@@ -158,6 +158,14 @@ BRACKET_RE = re.compile(r"\[(.*?)\]")
 def simplify_expr(expr: str) -> str:
     """Simplify an index expression that may contain (1 - 1), *0, +0, etc."""
     e = expr
+
+    # (i) -> i, (0) -> 0 when the whole index is just a single
+    # parenthesized identifier or integer literal.
+    m_simple = re.fullmatch(
+              r"\(\s*([A-Za-z_][A-Za-z0-9_]*|\d+)\s*\)", e)
+    if m_simple:
+        e = m_simple.group(1)
+
     
     # -------------------------------------------------------------------------
     # STEP 1: Handle multiplications FIRST (before touching + (1-1) patterns)

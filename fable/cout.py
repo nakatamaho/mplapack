@@ -5367,6 +5367,13 @@ def _postprocess_index_zero_simplify(text):
 
         def simplify_expr(expr: str) -> str:
             e = expr
+            # (i) -> i, (0) -> 0 when the whole index is just a single
+            # parenthesized identifier or integer literal.
+            m_simple = re.fullmatch(
+                r"\(\s*([A-Za-z_][A-Za-z0-9_]*|\d+)\s*\)", e
+            )
+            if m_simple:
+                e = m_simple.group(1)
             # (1 - 1) -> 0
             e = re.sub(r"\(\s*1\s*-\s*1\s*\)", "0", e)
             # 0 * NAME -> 0
