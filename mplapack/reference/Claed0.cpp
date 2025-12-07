@@ -39,7 +39,7 @@ void Claed0(INTEGER const qsiz, INTEGER const n, REAL *d, REAL *e, COMPLEX *q, I
     INTEGER submat = 0;
     INTEGER smm1 = 0;
     INTEGER indxq = 0;
-    const REAL two = 2.e+0;
+    const REAL two = 2.0;
     REAL temp = 0.0;
     INTEGER lgn = 0;
     INTEGER iprmpt = 0;
@@ -58,7 +58,6 @@ void Claed0(INTEGER const qsiz, INTEGER const n, REAL *d, REAL *e, COMPLEX *q, I
     INTEGER spm2 = 0;
     INTEGER msd2 = 0;
     INTEGER curprb = 0;
-    INTEGER ldqstore = ldqs;
     //
     // Test the input parameters.
     //
@@ -128,10 +127,10 @@ statement_10:
     //
     temp = log(castREAL(n)) / log(two);
     lgn = castINTEGER(temp);
-    if (pow((double)2, (double)lgn) < n) {
+    if (pow(2, lgn) < n) {
         lgn++;
     }
-    if (pow((double)2, (double)lgn) < n) {
+    if (pow(2, lgn) < n) {
         lgn++;
     }
     iprmpt = indxq + n + 1;
@@ -142,7 +141,7 @@ statement_10:
     //
     igivnm = 1;
     iq = igivnm + 2 * n * lgn;
-    iwrem = iq + n * n + 1;
+    iwrem = iq + pow2(n) + 1;
     // Initialize pointers
     for (i = 0; i <= subpbs; i = i + 1) {
         iwork[(iprmpt + i) - 1] = 1;
@@ -165,7 +164,7 @@ statement_10:
         ll = iq - 1 + iwork[(iqptr + curr) - 1];
         Rsteqr("I", matsiz, &d[submat - 1], &e[submat - 1], &rwork[ll - 1], matsiz, rwork, info);
         Clacrm(qsiz, matsiz, &q[(submat - 1) * ldq], ldq, &rwork[ll - 1], matsiz, &qstore[(submat - 1) * ldqstore], ldqs, &rwork[iwrem - 1]);
-        iwork[(iqptr + curr + 1) - 1] = iwork[(iqptr + curr) - 1] + matsiz * matsiz;
+        iwork[(iqptr + curr + 1) - 1] = iwork[(iqptr + curr) - 1] + pow2(matsiz);
         curr++;
         if (info > 0) {
             info = submat * (n + 1) + submat + matsiz - 1;
@@ -190,7 +189,7 @@ statement_80:
         for (i = 0; i <= spm2; i = i + 2) {
             if (i == 0) {
                 submat = 1;
-                matsiz = iwork[2 - 1];
+                matsiz = iwork[1];
                 msd2 = iwork[0];
                 curprb = 0;
             } else {
