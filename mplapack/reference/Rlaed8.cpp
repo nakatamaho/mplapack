@@ -141,7 +141,7 @@ void Rlaed8(INTEGER const icompq, INTEGER &k, INTEGER const n, INTEGER const qsi
         } else {
             for (j = 1; j <= n; j = j + 1) {
                 perm[j - 1] = indxq[indx[j - 1] - 1];
-                Rcopy(qsiz, &q[((perm[j - 1]) - 1) * ldq], 1, &q2[(j - 1) * ldq2], 1);
+                Rcopy(qsiz, &q[(perm[j - 1] - 1) * ldq], 1, &q2[(j - 1) * ldq2], 1);
             }
             Rlacpy("A", qsiz, n, &q2[0], ldq2, &q[0], ldq);
         }
@@ -268,7 +268,7 @@ statement_110:
             jp = indxp[j - 1];
             dlamda[j - 1] = d[jp - 1];
             perm[j - 1] = indxq[indx[jp - 1] - 1];
-            Rcopy(qsiz, &q[((perm[j - 1]) - 1) * ldq], 1, &q2[(j - 1) * ldq2], 1);
+            Rcopy(qsiz, &q[(perm[j - 1] - 1) * ldq], 1, &q2[(j - 1) * ldq2], 1);
         }
     }
     //
