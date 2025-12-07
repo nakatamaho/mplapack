@@ -277,26 +277,71 @@ pattern_minmax = re.compile(
 text = pattern_minmax.sub(r"(\1 - 1)", text)
 
 # ---------------------------------------------------------------------------
-# 3) Replace norm == "1"/'1' with Mlsame(norm, "1") in code (not in comments)
+# 3) Replace trans/norm comparisons with Mlsame(...)
+#
+# Target patterns (before // comment):
+#   (trans == 'N' || trans == 'n')
+#   (trans == "T" || trans == "t")
+#   trans == 'C' || trans == 'c'
+#   norm == "1" or norm == '1'
+# and the same with single or double quotes.
 # ---------------------------------------------------------------------------
 
-# Match norm == "1" or norm == '1' (before comment //)
-NORM_EQ_ONE_RE = re.compile(r'\bnorm\s*==\s*(?:"1"|\'1\')')
+TRANS_EQ_PATTERNS = [
+    # Norm: norm == "1" or norm == '1'
+    # This also works inside expressions like:
+    #   onenrm = norm == "1" || Mlsame(norm, "O");
+    (
+        re.compile(r'\bnorm\s*==\s*(?:"1"|\'1\')'),
+        'Mlsame(norm, "1")'
+    ),
 
-def _rewrite_norm_eq_one(line: str) -> str:
+    # Parenthesized trans forms, e.g.:
+    #   bool notran = (trans == 'N' || trans == 'n');
+    (
+        re.compile(r'\(\s*trans\s*==\s*[\'"]N[\'"]\s*\|\|\s*trans\s*==\s*[\'"]n[\'"]\s*\)'),
+        'Mlsame(trans, "N")'
+    ),
+    (
+        re.compile(r'\(\s*trans\s*==\s*[\'"]T[\'"]\s*\|\|\s*trans\s*==\s*[\'"]t[\'"]\s*\)'),
+        'Mlsame(trans, "T")'
+    ),
+    (
+        re.compile(r'\(\s*trans\s*==\s*[\'"]C[\'"]\s*\|\|\s*trans\s*==\s*[\'"]c[\'"]\s*\)'),
+        'Mlsame(trans, "C")'
+    ),
+
+    # Plain trans forms, e.g.:
+    #   } else if (trans == "T" || trans == "t") {
+    (
+        re.compile(r'trans\s*==\s*[\'"]N[\'"]\s*\|\|\s*trans\s*==\s*[\'"]n[\'"]'),
+        'Mlsame(trans, "N")'
+    ),
+    (
+        re.compile(r'trans\s*==\s*[\'"]T[\'"]\s*\|\|\s*trans\s*==\s*[\'"]t[\'"]'),
+        'Mlsame(trans, "T")'
+    ),
+    (
+        re.compile(r'trans\s*==\s*[\'"]C[\'"]\s*\|\|\s*trans\s*==\s*[\'"]c[\'"]'),
+        'Mlsame(trans, "C")'
+    ),
+]
+
+
+def _rewrite_trans_eq(line: str) -> str:
     # Do not touch C++ line comments.
     idx = line.find("//")
     if idx >= 0:
         code, comment = line[:idx], line[idx:]
     else:
         code, comment = line, ""
-    # Replace the comparison with Mlsame(norm, "1")
-    code = NORM_EQ_ONE_RE.sub('Mlsame(norm, "1")', code)
+    for pattern, replacement in TRANS_EQ_PATTERNS:
+        code = pattern.sub(replacement, code)
     return code + comment
 
-lines = text.splitlines(keepends=True)
-lines = [_rewrite_norm_eq_one(line) for line in lines]
 
+lines = text.splitlines(keepends=True)
+lines = [_rewrite_trans_eq(line) for line in lines]
 
 # ---------------------------------------------------------------------------
 # 4) Drop bogus "cabs1(v) = abs(v.real()) + abs(v.imag());" line
