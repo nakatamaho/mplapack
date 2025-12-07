@@ -54,14 +54,6 @@ void Rlalsa(INTEGER const icompq, INTEGER const smlsiz, INTEGER const n, INTEGER
     INTEGER im1 = 0;
     INTEGER nlp1 = 0;
     INTEGER nrp1 = 0;
-    INTEGER ldvt = ldu;
-    INTEGER lddifl = ldu;
-    INTEGER lddifr = ldu;
-    INTEGER ldz = ldu;
-    INTEGER ldpoles = ldu;
-    INTEGER ldgivcol = ldgcol;
-    INTEGER ldperm = ldgcol;
-    INTEGER ldgivnum = ldu;
     //
     // Test the input parameters.
     //
@@ -139,7 +131,7 @@ void Rlalsa(INTEGER const icompq, INTEGER const smlsiz, INTEGER const n, INTEGER
     // Finally go through the left singular vector matrices of all
     // the other subproblems bottom-up on the tree.
     //
-    j = pow((double)2, (double)nlvl);
+    j = pow(2, nlvl);
     sqre = 0;
     //
     for (lvl = nlvl; lvl >= 1; lvl = lvl - 1) {
@@ -152,7 +144,7 @@ void Rlalsa(INTEGER const icompq, INTEGER const smlsiz, INTEGER const n, INTEGER
             lf = 1;
             ll = 1;
         } else {
-            lf = pow((double)2, (double)(lvl - 1));
+            lf = pow(2, (lvl - 1));
             ll = 2 * lf - 1;
         }
         for (i = lf; i <= ll; i = i + 1) {
@@ -186,7 +178,7 @@ statement_50:
             lf = 1;
             ll = 1;
         } else {
-            lf = pow((double)2, (double)(lvl - 1));
+            lf = pow(2, (lvl - 1));
             ll = 2 * lf - 1;
         }
         for (i = ll; i >= lf; i = i - 1) {
