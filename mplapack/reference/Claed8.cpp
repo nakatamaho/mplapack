@@ -51,12 +51,6 @@ void Claed8(INTEGER &k, INTEGER const n, INTEGER const qsiz, COMPLEX *q, INTEGER
     REAL c = 0.0;
     REAL tau = 0.0;
     INTEGER jp = 0;
-    INTEGER ldgivnum = 2;
-    INTEGER ldgivcol = 2;
-    //
-    //
-    //
-    //
     //
     // Test the input parameters.
     //
@@ -216,7 +210,7 @@ statement_70:
             i = 1;
         statement_80:
             if (k2 + i <= n) {
-                if (d[jlam - 1] < d[(indxp[(k2 + i) - 1]) - 1]) {
+                if (d[jlam - 1] < d[indxp[(k2 + i) - 1] - 1]) {
                     indxp[(k2 + i - 1) - 1] = indxp[(k2 + i) - 1];
                     indxp[(k2 + i) - 1] = jlam;
                     i++;
