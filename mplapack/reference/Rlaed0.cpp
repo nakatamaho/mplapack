@@ -60,10 +60,6 @@ void Rlaed0(INTEGER const icompq, INTEGER const qsiz, INTEGER const n, REAL *d, 
     INTEGER msd2 = 0;
     INTEGER curprb = 0;
     //
-    //
-    //
-    //
-    //
     // Test the input parameters.
     //
     info = 0;
@@ -131,10 +127,10 @@ statement_10:
         //
         temp = log(castREAL(n)) / log(two);
         lgn = castINTEGER(temp);
-        if ((INTEGER)pow((double)2, (double)lgn) < n) {
+        if (pow(2, lgn) < n) {
             lgn++;
         }
-        if ((INTEGER)pow((double)2, (double)lgn) < n) {
+        if (pow(2, lgn) < n) {
             lgn++;
         }
         iprmpt = indxq + n + 1;
@@ -145,7 +141,7 @@ statement_10:
         //
         igivnm = 1;
         iq = igivnm + 2 * n * lgn;
-        iwrem = iq + n * n + 1;
+        iwrem = iq + pow2(n) + 1;
         //
         // Initialize pointers
         //
@@ -179,9 +175,9 @@ statement_10:
                 goto statement_130;
             }
             if (icompq == 1) {
-                Rgemm("N", "N", qsiz, matsiz, matsiz, one, &q[(submat - 1) * ldq], ldq, &work[(iq - 1 + iwork[(iqptr + curr) - 1]) - 1], matsiz, zero, &qstore[(submat - 1) * ldqs], ldqs);
+                Rgemm("N", "N", qsiz, matsiz, matsiz, one, &q[(submat - 1) * ldq], ldq, &work[(iq - 1 + iwork[(iqptr + curr) - 1]) - 1], matsiz, zero, &qstore[(submat - 1) * ldqstore], ldqs);
             }
-            iwork[(iqptr + curr + 1) - 1] = iwork[(iqptr + curr) - 1] + matsiz * matsiz;
+            iwork[(iqptr + curr + 1) - 1] = iwork[(iqptr + curr) - 1] + pow2(matsiz);
             curr++;
         }
         k = 1;
@@ -203,7 +199,7 @@ statement_80:
         for (i = 0; i <= spm2; i = i + 2) {
             if (i == 0) {
                 submat = 1;
-                matsiz = iwork[2 - 1];
+                matsiz = iwork[1];
                 msd2 = iwork[0];
                 curprb = 0;
             } else {
@@ -224,7 +220,7 @@ statement_80:
             if (icompq == 2) {
                 Rlaed1(matsiz, &d[submat - 1], &q[(submat - 1) + (submat - 1) * ldq], ldq, &iwork[(indxq + submat) - 1], e[(submat + msd2 - 1) - 1], msd2, work, &iwork[(subpbs + 1) - 1], info);
             } else {
-                Rlaed7(icompq, matsiz, qsiz, tlvls, curlvl, curprb, &d[submat - 1], &qstore[(submat - 1) * ldqs], ldqs, &iwork[(indxq + submat) - 1], e[(submat + msd2 - 1) - 1], msd2, &work[iq - 1], &iwork[iqptr - 1], &iwork[iprmpt - 1], &iwork[iperm - 1], &iwork[igivpt - 1], &iwork[igivcl - 1], &work[igivnm - 1], &work[iwrem - 1], &iwork[(subpbs + 1) - 1], info);
+                Rlaed7(icompq, matsiz, qsiz, tlvls, curlvl, curprb, &d[submat - 1], &qstore[(submat - 1) * ldqstore], ldqs, &iwork[(indxq + submat) - 1], e[(submat + msd2 - 1) - 1], msd2, &work[iq - 1], &iwork[iqptr - 1], &iwork[iprmpt - 1], &iwork[iperm - 1], &iwork[igivpt - 1], &iwork[igivcl - 1], &work[igivnm - 1], &work[iwrem - 1], &iwork[(subpbs + 1) - 1], info);
             }
             if (info != 0) {
                 goto statement_130;
@@ -245,7 +241,7 @@ statement_80:
         for (i = 1; i <= n; i = i + 1) {
             j = iwork[(indxq + i) - 1];
             work[i - 1] = d[j - 1];
-            Rcopy(qsiz, &qstore[(j - 1) * ldqs], 1, &q[(i - 1) * ldq], 1);
+            Rcopy(qsiz, &qstore[(j - 1) * ldqstore], 1, &q[(i - 1) * ldq], 1);
         }
         Rcopy(n, work, 1, d, 1);
     } else if (icompq == 2) {
