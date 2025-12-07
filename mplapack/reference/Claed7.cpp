@@ -29,11 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Claed7(INTEGER const n, INTEGER const cutpnt, INTEGER const qsiz, INTEGER const tlvls, INTEGER const curlvl, INTEGER const curpbm, REAL *d, COMPLEX *q, INTEGER const ldq, REAL rho, INTEGER *indxq, REAL *qstore, INTEGER *qptr, INTEGER *prmptr, INTEGER *perm, INTEGER *givptr, INTEGER *givcol, REAL *givnum, COMPLEX *work, REAL *rwork, INTEGER *iwork, INTEGER &info) {
-    //
-    //
-    //
-    //
+void Claed7(INTEGER const n, INTEGER const cutpnt, INTEGER const qsiz, INTEGER const tlvls, INTEGER const curlvl, INTEGER const curpbm, REAL *d, COMPLEX *q, INTEGER const ldq, REAL const &rho, INTEGER *indxq, REAL *qstore, INTEGER *qptr, INTEGER *prmptr, INTEGER *perm, INTEGER *givptr, INTEGER *givcol, REAL *givnum, COMPLEX *work, REAL *rwork, INTEGER *iwork, INTEGER &info) {
     //
     // Test the input parameters.
     //
@@ -79,14 +75,12 @@ void Claed7(INTEGER const n, INTEGER const cutpnt, INTEGER const qsiz, INTEGER c
     // Form the z-vector which consists of the last row of Q_1 and the
     // first row of Q_2.
     //
-    INTEGER ptr = 1 + pow((double)2, (double)tlvls);
+    INTEGER ptr = 1 + pow(2, tlvls);
     INTEGER i = 0;
     for (i = 1; i <= curlvl - 1; i = i + 1) {
-        ptr += pow((double)2, (double)(tlvls - i));
+        ptr += pow(2, (tlvls - i));
     }
     INTEGER curr = ptr + curpbm;
-    INTEGER ldgivcol = 2;
-    INTEGER ldgivnum = 2;
     Rlaeda(n, tlvls, curlvl, curpbm, prmptr, perm, givptr, givcol, givnum, qstore, qptr, &rwork[iz - 1], &rwork[(iz + n) - 1], info);
     //
     // When solving the final problem, we no longer need the stored data,
@@ -113,7 +107,7 @@ void Claed7(INTEGER const n, INTEGER const cutpnt, INTEGER const qsiz, INTEGER c
     if (k != 0) {
         Rlaed9(k, 1, k, n, d, &rwork[iq - 1], k, rho, &rwork[idlmda - 1], &rwork[iw - 1], &qstore[qptr[curr - 1] - 1], k, info);
         Clacrm(qsiz, k, work, qsiz, &qstore[qptr[curr - 1] - 1], k, q, ldq, &rwork[iq - 1]);
-        qptr[(curr + 1) - 1] = qptr[curr - 1] + k * k;
+        qptr[(curr + 1) - 1] = qptr[curr - 1] + pow2(k);
         if (info != 0) {
             return;
         }
