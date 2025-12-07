@@ -41,7 +41,7 @@ void Ctgsyl(const char *trans, INTEGER const ijob, INTEGER const m, INTEGER cons
     INTEGER iround = 0;
     const REAL one = 1.0;
     const REAL zero = 0.0;
-    REAL Rscale = 0.0;
+    REAL dscale = 0.0;
     REAL dsum = 0.0;
     INTEGER pq = 0;
     REAL scale2 = 0.0;
@@ -117,7 +117,7 @@ void Ctgsyl(const char *trans, INTEGER const ijob, INTEGER const m, INTEGER cons
     // Quick return if possible
     //
     if (m == 0 || n == 0) {
-        scale = 1;
+        scale = 1.0;
         if (notran) {
             if (ijob != 0) {
                 dif = 0.0;
@@ -150,15 +150,15 @@ void Ctgsyl(const char *trans, INTEGER const ijob, INTEGER const m, INTEGER cons
         for (iround = 1; iround <= isolve; iround = iround + 1) {
             //
             scale = one;
-            Rscale = zero;
+            dscale = zero;
             dsum = one;
             pq = m * n;
-            Ctgsy2(trans, ifunc, m, n, a, lda, b, ldb, c, ldc, d, ldd, e, lde, f, ldf, scale, dsum, Rscale, info);
-            if (Rscale != zero) {
+            Ctgsy2(trans, ifunc, m, n, a, lda, b, ldb, c, ldc, d, ldd, e, lde, f, ldf, scale, dsum, dscale, info);
+            if (dscale != zero) {
                 if (ijob == 1 || ijob == 3) {
-                    dif = sqrt(castREAL(2 * m * n)) / (Rscale * sqrt(dsum));
+                    dif = sqrt(castREAL(2 * m * n)) / (dscale * sqrt(dsum));
                 } else {
-                    dif = sqrt(castREAL(pq)) / (Rscale * sqrt(dsum));
+                    dif = sqrt(castREAL(pq)) / (dscale * sqrt(dsum));
                 }
             }
             if (isolve == 2 && iround == 1) {
@@ -235,7 +235,7 @@ statement_70:
             //
             pq = 0;
             scale = one;
-            Rscale = zero;
+            dscale = zero;
             dsum = one;
             for (j = p + 2; j <= q; j = j + 1) {
                 js = iwork[j - 1];
@@ -245,7 +245,7 @@ statement_70:
                     is = iwork[i - 1];
                     ie = iwork[(i + 1) - 1] - 1;
                     mb = ie - is + 1;
-                    Ctgsy2(trans, ifunc, mb, nb, &a[(is - 1) + (is - 1) * lda], lda, &b[(js - 1) + (js - 1) * ldb], ldb, &c[(is - 1) + (js - 1) * ldc], ldc, &d[(is - 1) + (is - 1) * ldd], ldd, &e[(js - 1) + (js - 1) * lde], lde, &f[(is - 1) + (js - 1) * ldf], ldf, scaloc, dsum, Rscale, linfo);
+                    Ctgsy2(trans, ifunc, mb, nb, &a[(is - 1) + (is - 1) * lda], lda, &b[(js - 1) + (js - 1) * ldb], ldb, &c[(is - 1) + (js - 1) * ldc], ldc, &d[(is - 1) + (is - 1) * ldd], ldd, &e[(js - 1) + (js - 1) * lde], lde, &f[(is - 1) + (js - 1) * ldf], ldf, scaloc, dsum, dscale, linfo);
                     if (linfo > 0) {
                         info = linfo;
                     }
@@ -282,11 +282,11 @@ statement_70:
                     }
                 }
             }
-            if (Rscale != zero) {
+            if (dscale != zero) {
                 if (ijob == 1 || ijob == 3) {
-                    dif = sqrt(castREAL(2 * m * n)) / (Rscale * sqrt(dsum));
+                    dif = sqrt(castREAL(2 * m * n)) / (dscale * sqrt(dsum));
                 } else {
-                    dif = sqrt(castREAL(pq)) / (Rscale * sqrt(dsum));
+                    dif = sqrt(castREAL(pq)) / (dscale * sqrt(dsum));
                 }
             }
             if (isolve == 2 && iround == 1) {
@@ -320,7 +320,7 @@ statement_70:
                 js = iwork[j - 1];
                 je = iwork[(j + 1) - 1] - 1;
                 nb = je - js + 1;
-                Ctgsy2(trans, ifunc, mb, nb, &a[(is - 1) + (is - 1) * lda], lda, &b[(js - 1) + (js - 1) * ldb], ldb, &c[(is - 1) + (js - 1) * ldc], ldc, &d[(is - 1) + (is - 1) * ldd], ldd, &e[(js - 1) + (js - 1) * lde], lde, &f[(is - 1) + (js - 1) * ldf], ldf, scaloc, dsum, Rscale, linfo);
+                Ctgsy2(trans, ifunc, mb, nb, &a[(is - 1) + (is - 1) * lda], lda, &b[(js - 1) + (js - 1) * ldb], ldb, &c[(is - 1) + (js - 1) * ldc], ldc, &d[(is - 1) + (is - 1) * ldd], ldd, &e[(js - 1) + (js - 1) * lde], lde, &f[(is - 1) + (js - 1) * ldf], ldf, scaloc, dsum, dscale, linfo);
                 if (linfo > 0) {
                     info = linfo;
                 }
