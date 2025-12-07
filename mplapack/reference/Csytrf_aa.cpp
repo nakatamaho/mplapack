@@ -46,10 +46,6 @@ void Csytrf_aa(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda,
     INTEGER j3 = 0;
     INTEGER mj = 0;
     //
-    //
-    //
-    //
-    //
     // Determine the block size
     //
     nb = iMlaenv(1, "Csytrf_aa", uplo, n, -1, -1, -1);

@@ -31,10 +31,6 @@
 
 void Csytrs_aa_2stage(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a, INTEGER const lda, COMPLEX *tb, INTEGER const ltb, INTEGER *ipiv, INTEGER *ipiv2, COMPLEX *b, INTEGER const ldb, INTEGER &info) {
     //
-    //
-    //
-    //
-    //
     info = 0;
     bool upper = Mlsame(uplo, "U");
     if (!upper && !Mlsame(uplo, "L")) {
@@ -66,7 +62,7 @@ void Csytrs_aa_2stage(const char *uplo, INTEGER const n, INTEGER const nrhs, COM
     INTEGER nb = castINTEGER(tb[0].real());
     INTEGER ldtb = ltb / n;
     //
-    const COMPLEX one = COMPLEX(1.0f, 0.0f);
+    const COMPLEX one = COMPLEX(1.0e+0, 0.0e+0);
     if (upper) {
         //
         // Solve A*X = B, where A = U**T*T*U.
