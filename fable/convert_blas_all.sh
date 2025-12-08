@@ -74,3 +74,5 @@ for src in "${files[@]}"; do
     echo "Converting $src"
     bash "$FABLE_CONVERT" "$src"
 done
+
+patch < ~/mplapack/fable/patch-3.9.1

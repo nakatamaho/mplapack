@@ -75,3 +75,5 @@ parallel -j "${JOBS:-$(nproc)}" '
      echo "Converting {}"
      bash "$FABLE_CONVERT" "{}"
  ' ::: "${files[@]}"
+
+patch < 
