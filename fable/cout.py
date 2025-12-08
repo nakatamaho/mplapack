@@ -3842,9 +3842,7 @@ def convert_executable(
                 lhs_is_real = lhs_dt_code in ("real", "doubleprecision")
                 lhs_is_integer = lhs_dt_code == "integer"
                 lhs_is_character = lhs_dt_code == "character"
-
                 rhs_is_simple = _is_simple_lvalue(crhs)
-                rhs_dt_code = None
                 rhs_is_complex = False
                 rhs_is_real = False
 
@@ -3856,8 +3854,7 @@ def convert_executable(
                 elif rhs_id_tokens:
                     # Try to extract base identifier from unary expression
                     # e.g., "-savealpha" -> "savealpha"
-                    sign, base_name, base_expr = _extract_base_identifier_from_unary(
-                        crhs)
+                    sign, base_name, base_expr = _extract_base_identifier_from_unary(crhs)
                     if base_name is not None:
                         # Find the corresponding id_token
                         for tok in rhs_id_tokens:
@@ -3865,8 +3862,10 @@ def convert_executable(
                                 rhs_base_id = tok
                                 break
 
+                # Use fdecl information when available to classify RHS type
                 if (lhs_is_real or lhs_is_integer) and rhs_base_id is not None:
                     rhs_fdecl = conv_info.fproc.get_fdecl(id_tok=rhs_base_id)
+                    rhs_dt_code = None
                     if rhs_fdecl is not None and rhs_fdecl.data_type is not None:
                         dt = rhs_fdecl.data_type
                         if isinstance(dt, str):
@@ -3875,10 +3874,26 @@ def convert_executable(
                             rhs_dt_code = getattr(dt, "value", None)
                         if rhs_dt_code is not None:
                             rhs_dt_code = rhs_dt_code.lower()
-                    rhs_is_complex = rhs_dt_code in (
-                        "complex", "doublecomplex")
-                    rhs_is_real = rhs_dt_code in ("real", "doubleprecision")
+                            rhs_is_complex = rhs_dt_code in ("complex", "doublecomplex")
+                            rhs_is_real = rhs_dt_code in ("real", "doubleprecision")
 
+                # Additional heuristic: detect simple complex-valued expressions of the form
+                #   a[...] op ...
+                # where 'a' is a COMPLEX variable and op is one of +,-,*,/.
+                # This is needed for patterns such as:
+                #   d11 = a[(k - 1) + (k - 1)*lda] / d;
+                # where d11 is REAL and a is COMPLEX.
+                if (lhs_is_real or lhs_is_integer) and not rhs_is_complex:
+                    rhs_expr = crhs.strip()
+                    m_leading = re.match(
+                        r"([A-Za-z_][A-Za-z0-9_]*)\s*(\[[^\]]*\])?\s*([-+*/])",
+                        rhs_expr,
+                    )
+                    if m_leading:
+                        base_name = m_leading.group(1)
+                        if (base_name in complex_identifiers
+                                or base_name in complex_pointer_identifiers):
+                            rhs_is_complex = True
                 if lhs_is_real and rhs_is_complex:
                     rhs_expr = crhs.strip()
                     # Avoid double-wrapping if someone already wrote .real() / .imag()
@@ -3900,6 +3915,7 @@ def convert_executable(
                         # Already has .real()/.imag(), just reuse
                         real_expr = rhs_expr
                     crhs = f"castINTEGER({real_expr})"
+
                 elif lhs_is_integer and rhs_is_real:
                     rhs_expr = crhs.strip()
                     # INTEGER = REAL -> INTEGER = castINTEGER(REAL)
@@ -3911,42 +3927,11 @@ def convert_executable(
                             crhs = f"castINTEGER({rhs_expr})"
                         else:
                             crhs = f"castINTEGER({rhs_expr})"
-                # Extra fix: REAL LHS with a non-trivial expression that
-                # contains COMPLEX variables but no explicit real projection.
-                #
-                # We target expressions like:
-                #   d11 = a[(k - 1) + (k - 1)*lda] / d;
-                # where 'a' is COMPLEX and 'd11' is REAL, and emulate
-                # Fortran's implicit REAL = COMPLEX coercion by taking
-                # the real part of the expression.
-                #
-                # We deliberately skip:
-                #   - expressions already using .real() / .imag() / castREAL(...)
-                #   - expressions whose top-level looks like a real-valued
-                #     function call, e.g. Clangb(...), cabs1(...), Rlapy2(...)
-                #   - any expression that contains an explicit function call
-                #     NAME(...), so that cabs1(ap[i]) * xk is left untouched.
-                if lhs_is_real:
-                    rhs_expr = crhs.strip()
-                    if rhs_expr:
-                        if (".real()" not in rhs_expr
-                                and ".imag()" not in rhs_expr
-                                and "castREAL(" not in rhs_expr
-                                and not _is_real_valued_function_call(rhs_expr)
-                                and not re.search(r"[A-Za-z_][A-Za-z0-9_]*\s*\(",
-                                                  rhs_expr)):
-                            owner = None
-                            for name in complex_identifiers:
-                                if re.search(r"\b" + re.escape(name) + r"\b",
-                                             rhs_expr):
-                                    owner = name
-                                    break
-                            if owner is not None:
-                                crhs = _real_cast_or_component(
-                                    rhs_expr,
-                                    complex_identifiers,
-                                    complex_pointer_identifiers,
-                                )
+
+                # Do not apply any additional coercion for REAL left-hand sides here.
+                # All REAL/DBLE handling should be driven by:
+                #   - explicit REAL/DBLE intrinsics (handled in rewrite_intrinsics)
+                #   - simple REAL = COMPLEX assignments handled above.
 
                     if rhs_expr:
                         # Expressions that are clearly real-valued already:
