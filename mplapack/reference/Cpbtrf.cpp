@@ -36,6 +36,7 @@ void Cpbtrf(const char *uplo, INTEGER const n, INTEGER const kd, COMPLEX *ab, IN
     INTEGER i = 0;
     const REAL zero = 0.0;
     const INTEGER ldwork = nbmax + 1;
+    COMPLEX work[ldwork * nbmax];
     INTEGER ib = 0;
     INTEGER ii = 0;
     INTEGER i2 = 0;
@@ -43,12 +44,6 @@ void Cpbtrf(const char *uplo, INTEGER const n, INTEGER const kd, COMPLEX *ab, IN
     const COMPLEX cone = COMPLEX(1.0, 0.0);
     const REAL one = 1.0;
     INTEGER jj = 0;
-    COMPLEX work[ldwork * nbmax];
-    //
-    //
-    //
-    //
-    // .. Local Arrays ..
     //
     // Test the input parameters.
     //
