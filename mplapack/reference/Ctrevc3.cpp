@@ -29,8 +29,6 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-inline REAL cabs1(COMPLEX cdum) { return abs(cdum.real()) + abs(cdum.imag()); }
-
 void Ctrevc3(const char *side, const char *howmny, bool *select, INTEGER const n, COMPLEX *t, INTEGER const ldt, COMPLEX *vl, INTEGER const ldvl, COMPLEX *vr, INTEGER const ldvr, INTEGER const mm, INTEGER &m, COMPLEX *work, INTEGER const lwork, REAL *rwork, INTEGER const lrwork, INTEGER &info) {
     COMPLEX cdum = 0.0;
     bool bothv = false;
@@ -63,12 +61,6 @@ void Ctrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
     INTEGER ii = 0;
     REAL remax = 0.0;
     //
-    //
-    //
-    //
-    // .. Statement Functions ..
-    // .. Statement Function definitions ..
-    //
     // Decode and test the input parameters
     //
     bothv = Mlsame(side, "B");
@@ -94,11 +86,7 @@ void Ctrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
     }
     //
     info = 0;
-    char side_howmny[3];
-    side_howmny[0] = side[0];
-    side_howmny[1] = howmny[0];
-    side_howmny[2] = '\0';
-    nb = iMlaenv(1, "Ctrevc", side_howmny, n, -1, -1, -1);
+    nb = iMlaenv(1, "Ctrevc", CHAR2(side, howmny), n, -1, -1, -1);
     maxwrk = n + 2 * n * nb;
     work[0] = maxwrk;
     rwork[0] = n;
@@ -150,6 +138,7 @@ void Ctrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
     //
     unfl = Rlamch("Safe minimum");
     ovfl = one / unfl;
+    Rlabad(unfl, ovfl);
     ulp = Rlamch("Precision");
     smlnum = unfl * (n / ulp);
     //
@@ -168,7 +157,6 @@ void Ctrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
     }
     //
     if (rightv) {
-        //
         // Compute right eigenvectors.
         //
         // IV is index of column in current block.
@@ -183,9 +171,7 @@ void Ctrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                     goto statement_80;
                 }
             }
-            smin = max(REAL(ulp * (cabs1(t[(ki - 1) + (ki - 1) * ldt]))), smlnum);
-            //
-            // --------------------------------------------------------
+            smin = max(ulp * (cabs1(t[(ki - 1) + (ki - 1) * ldt])), smlnum);
             // Complex right eigenvector
             //
             work[(ki + iv * n) - 1] = cone;
@@ -214,7 +200,6 @@ void Ctrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
             // Copy the vector x or Q*x to VR and normalize.
             //
             if (!over) {
-                // ------------------------------
                 // no back-transform: copy x to VR and normalize.
                 Ccopy(ki, &work[(1 + iv * n) - 1], 1, &vr[(is - 1) * ldvr], 1);
                 //
@@ -227,7 +212,6 @@ void Ctrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                 }
                 //
             } else if (nb == 1) {
-                // ------------------------------
                 // version 1: back-transform each vector with GEMV, Q*x.
                 if (ki > 1) {
                     Cgemv("N", n, ki - 1, cone, vr, ldvr, &work[(1 + iv * n) - 1], 1, COMPLEX(scale), &vr[(ki - 1) * ldvr], 1);
@@ -238,7 +222,6 @@ void Ctrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                 CRscal(n, remax, &vr[(ki - 1) * ldvr], 1);
                 //
             } else {
-                // ------------------------------
                 // version 2: back-transform block of vectors with GEMM
                 // zero out below vector
                 for (k = ki + 1; k <= n; k = k + 1) {
@@ -253,7 +236,7 @@ void Ctrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                     // normalize vectors
                     for (k = iv; k <= nb; k = k + 1) {
                         ii = iCamax(n, &work[(1 + (nb + k) * n) - 1], 1);
-                        remax = one / cabs1((work[(ii + (nb + k) * n) - 1]));
+                        remax = one / cabs1(work[(ii + (nb + k) * n) - 1]);
                         CRscal(n, remax, &work[(1 + (nb + k) * n) - 1], 1);
                     }
                     Clacpy("F", n, nb - iv + 1, &work[(1 + (nb + iv) * n) - 1], n, &vr[(ki - 1) * ldvr], ldvr);
@@ -275,7 +258,6 @@ void Ctrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
     }
     //
     if (leftv) {
-        //
         // Compute left eigenvectors.
         //
         // IV is index of column in current block.
@@ -291,9 +273,7 @@ void Ctrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                     goto statement_130;
                 }
             }
-            smin = max(REAL(ulp * (cabs1(t[(ki - 1) + (ki - 1) * ldt]))), smlnum);
-            //
-            // --------------------------------------------------------
+            smin = max(ulp * (cabs1(t[(ki - 1) + (ki - 1) * ldt])), smlnum);
             // Complex left eigenvector
             //
             work[(ki + iv * n) - 1] = cone;
@@ -322,7 +302,6 @@ void Ctrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
             // Copy the vector x or Q*x to VL and normalize.
             //
             if (!over) {
-                // ------------------------------
                 // no back-transform: copy x to VL and normalize.
                 Ccopy(n - ki + 1, &work[(ki + iv * n) - 1], 1, &vl[(ki - 1) + (is - 1) * ldvl], 1);
                 //
@@ -335,7 +314,6 @@ void Ctrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                 }
                 //
             } else if (nb == 1) {
-                // ------------------------------
                 // version 1: back-transform each vector with GEMV, Q*x.
                 if (ki < n) {
                     Cgemv("N", n, n - ki, cone, &vl[((ki + 1) - 1) * ldvl], ldvl, &work[(ki + 1 + iv * n) - 1], 1, COMPLEX(scale), &vl[(ki - 1) * ldvl], 1);
@@ -346,7 +324,6 @@ void Ctrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                 CRscal(n, remax, &vl[(ki - 1) * ldvl], 1);
                 //
             } else {
-                // ------------------------------
                 // version 2: back-transform block of vectors with GEMM
                 // zero out above vector
                 // could go from KI-NV+1 to KI-1
