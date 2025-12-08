@@ -1560,71 +1560,101 @@ def _looks_complex_expression(arg: str) -> bool:
 
     return False
 
+def _real_cast_or_component(arg, complex_identifiers, complex_pointer_identifiers):
+    """Implement REAL/DBLE on an arbitrary expression.
 
-def _real_cast_or_component(arg: str, complex_vars, complex_ptrs) -> str:
-    """Replacement for DBLE/REAL with COMPLEX-aware behavior."""
+    - If the expression is COMPLEX-valued (contains COMPLEX vars or
+      COMPLEX-valued function calls), take its real part.
+    - Otherwise, treat it as a REAL expression and wrap in castREAL(...).
+    """
     arg = arg.strip()
     if not arg:
         return "castREAL(0)"
 
-    # Handle unary minus on a simple COMPLEX lvalue:
-    #   REAL(-alpha) -> -alpha.real()
-    #   REAL(-a(i))  -> -a(i).real()
+    # ------------------------------------------------------------------
+    # 1) Unary minus on a simple COMPLEX lvalue:
+    #    REAL(-alpha) -> -alpha.real()
+    #    REAL(-a(i))  -> -a(i).real()
+    # ------------------------------------------------------------------
     m_unary = re.match(r'^-\s*([A-Za-z_][A-Za-z0-9_]*(?:\[[^\]]*\])*)$', arg)
     if m_unary:
         base_expr = m_unary.group(1)
         m_name = re.match(r'([A-Za-z_][A-Za-z0-9_]*)', base_expr)
         base = m_name.group(1) if m_name else None
-        if base is not None and base in complex_vars:
+        if base is not None and base in complex_identifiers:
             # COMPLEX* dummy used bare: -a -> -a[0].real()
-            if base in complex_ptrs and "[" not in base_expr:
+            if base in complex_pointer_identifiers and "[" not in base_expr:
                 return f"-{base}[0].real()"
             # General COMPLEX variable / element: -a(i) -> -a(i).real()
             return f"-{base_expr}.real()"
 
-    # Expressions that are obviously REAL already
-    if _is_real_valued_function_call(arg):
-        return f"castREAL({arg})"
-    if ".real()" in arg or ".imag()" in arg:
-        return f"castREAL({arg})"
-
-    # Simple lvalue: NAME or NAME[...]...
-    if _is_simple_lvalue(arg):
-        m = re.match(r'([A-Za-z_][A-Za-z0-9_]*)', arg)
-        base = m.group(1) if m else None
-
-        # COMPLEX scalar or array element: take real part
-        if base is not None and base in complex_vars:
-            if base in complex_ptrs and "[" not in arg:
-                return f"{base}[0].real()"
+    # ------------------------------------------------------------------
+    # 2) Single function call: use FUNCTION_RETURNS if available.
+    #    This covers patterns like DBLE(ZDOTC(...)).
+    # ------------------------------------------------------------------
+    m_call = re.match(r'^([A-Za-z_][A-Za-z0-9_:]*)\s*\(.*\)\s*$', arg)
+    if m_call:
+        fname_cpp = m_call.group(1)
+        base = fname_cpp.split("::")[-1].lower()
+        ret_kind = _get_return_kind_from_signatures(base)
+        if ret_kind == "complex":
+            # COMPLEX-valued function -> take real part
+            #   DBLE(ZDOTC(...)) -> Cdotc(...).real()
             return f"{arg}.real()"
+        if ret_kind == "real":
+            # REAL-valued function -> keep as real
+            return f"castREAL({arg})"
+        # If we cannot classify the function, fall through to generic logic.
 
+    # ------------------------------------------------------------------
+    # 3) Expressions that are obviously REAL already
+    # ------------------------------------------------------------------
+    if _is_real_valued_function_call(arg):
+        # e.g. DBLE(Rlapy2(...)), cabs1(z), Clangb(...)
         return f"castREAL({arg})"
 
-    # Non-simple expression: determine if any COMPLEX variable appears
+    # If the expression already uses .real()/.imag() or castREAL,
+    # just treat it as real-valued.
+    if ".real()" in arg or ".imag()" in arg or "castREAL(" in arg:
+        return f"castREAL({arg})"
+
+    # ------------------------------------------------------------------
+    # 4) Does the expression contain any known COMPLEX variables?
+    # ------------------------------------------------------------------
+    complex_vars = set(complex_identifiers) | set(complex_pointer_identifiers)
     owner = None
     for name in complex_vars:
         if arg == name or arg.startswith(name + "[") or arg.startswith(name + "."):
             owner = name
             break
-        if re.search(r'\b' + re.escape(name) + r'\b', arg):
+        if re.search(r"\b" + re.escape(name) + r"\b", arg):
             owner = name
             break
+
+    # ------------------------------------------------------------------
+    # 5) No known COMPLEX vars: maybe still a COMPLEX expression?
+    #    (e.g. COMPLEX(...), conj(z), etc.)
+    # ------------------------------------------------------------------
     if owner is None:
-        # No tracked COMPLEX variable in the expression. If it still
-        # looks like a COMPLEX-valued temporary (e.g. COMPLEX(...),
-        # conj(...)), take the real part explicitly.
         if _looks_complex_expression(arg):
-            # If this is a single function call, avoid extra parentheses:
-            #   func(...).real() instead of (func(...)).real()
-            if re.match(r'^[A-Za-z_][A-Za-z0-9_:]*\s*\(.*\)\s*$', arg):
+            # If this is a single function call or a simple lvalue,
+            # avoid extra parentheses:
+            #   func(...).real()       instead of (func(...)).real()
+            #   work[i-1].real()       instead of (work[i-1]).real()
+            if (re.match(r'^[A-Za-z_][A-Za-z0-9_:]*\s*\(.*\)\s*$', arg)
+                    or _is_simple_lvalue(arg)):
                 return f"{arg}.real()"
             return f"({arg}).real()"
+        # Otherwise: treat as real and cast if needed.
         return f"castREAL({arg})"
 
-    # Expression contains at least one COMPLEX variable -> take real part.
-    # For pure function calls like Cdotc(...), avoid redundant parentheses.
-    if re.match(r'^[A-Za-z_][A-Za-z0-9_:]*\s*\(.*\)\s*$', arg):
+    # ------------------------------------------------------------------
+    # 6) Expression contains at least one COMPLEX variable
+    #    -> take its real part.
+    # ------------------------------------------------------------------
+    # For pure function calls or simple lvalues, avoid redundant parentheses.
+    if (re.match(r'^[A-Za-z_][A-Za-z0-9_:]*\s*\(.*\)\s*$', arg)
+            or _is_simple_lvalue(arg)):
         return f"{arg}.real()"
     return f"({arg}).real()"
 
