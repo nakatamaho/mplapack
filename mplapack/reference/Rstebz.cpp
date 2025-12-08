@@ -29,7 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rstebz(const char *range, const char *order, INTEGER const n, REAL const vl, REAL const vu, INTEGER const il, INTEGER const iu, REAL const abstol, REAL *d, REAL *e, INTEGER &m, INTEGER &nsplit, REAL *w, INTEGER *iblock, INTEGER *isplit, REAL *work, INTEGER *iwork, INTEGER &info) {
+void Rstebz(const char *range, const char *order, INTEGER const n, REAL const &vl, REAL const &vu, INTEGER const il, INTEGER const iu, REAL const &abstol, REAL *d, REAL *e, INTEGER &m, INTEGER &nsplit, REAL *w, INTEGER *iblock, INTEGER *isplit, REAL *work, INTEGER *iwork, INTEGER &info) {
     INTEGER irange = 0;
     INTEGER iorder = 0;
     bool ncnvrg = false;
@@ -48,7 +48,7 @@ void Rstebz(const char *range, const char *order, INTEGER const n, REAL const vl
     REAL gl = 0.0;
     REAL tmp2 = 0.0;
     REAL tnorm = 0.0;
-    const REAL fudge = 2.1e0;
+    const REAL fudge = 2.1;
     const REAL two = 2.0;
     INTEGER itmax = 0;
     REAL atoli = 0.0;
@@ -209,13 +209,13 @@ void Rstebz(const char *range, const char *order, INTEGER const n, REAL const vl
         //
         for (j = 1; j <= n - 1; j = j + 1) {
             tmp2 = sqrt(work[j - 1]);
-            gu = max(gu, REAL(d[j - 1] + tmp1 + tmp2));
-            gl = min(gl, REAL(d[j - 1] - tmp1 - tmp2));
+            gu = max(gu, d[j - 1] + tmp1 + tmp2);
+            gl = min(gl, d[j - 1] - tmp1 - tmp2);
             tmp1 = tmp2;
         }
         //
-        gu = max(gu, REAL(d[n - 1] + tmp1));
-        gl = min(gl, REAL(d[n - 1] - tmp1));
+        gu = max(gu, d[n - 1] + tmp1);
+        gl = min(gl, d[n - 1] - tmp1);
         tnorm = max(abs(gl), abs(gu));
         gl = gl - fudge * tnorm * ulp * n - fudge * two * pivmin;
         gu += fudge * tnorm * ulp * n + fudge * pivmin;
@@ -240,28 +240,28 @@ void Rstebz(const char *range, const char *order, INTEGER const n, REAL const vl
         work[(n + 5) - 1] = gl;
         work[(n + 6) - 1] = gu;
         iwork[0] = -1;
-        iwork[2 - 1] = -1;
-        iwork[3 - 1] = n + 1;
-        iwork[4 - 1] = n + 1;
-        iwork[5 - 1] = il - 1;
-        iwork[6 - 1] = iu;
+        iwork[1] = -1;
+        iwork[2] = n + 1;
+        iwork[3] = n + 1;
+        iwork[4] = il - 1;
+        iwork[5] = iu;
         //
-        Rlaebz(3, itmax, n, 2, 2, nb, atoli, rtoli, pivmin, d, e, work, &iwork[5 - 1], &work[(n + 1) - 1], &work[(n + 5) - 1], iout, iwork, w, iblock, iinfo);
+        Rlaebz(3, itmax, n, 2, 2, nb, atoli, rtoli, pivmin, d, e, work, &iwork[4], &work[(n + 1) - 1], &work[(n + 5) - 1], iout, iwork, w, iblock, iinfo);
         //
-        if (iwork[6 - 1] == iu) {
+        if (iwork[5] == iu) {
             wl = work[(n + 1) - 1];
             wlu = work[(n + 3) - 1];
             nwl = iwork[0];
             wu = work[(n + 4) - 1];
             wul = work[(n + 2) - 1];
-            nwu = iwork[4 - 1];
+            nwu = iwork[3];
         } else {
             wl = work[(n + 2) - 1];
             wlu = work[(n + 4) - 1];
-            nwl = iwork[2 - 1];
+            nwl = iwork[1];
             wu = work[(n + 3) - 1];
             wul = work[(n + 1) - 1];
-            nwu = iwork[3 - 1];
+            nwu = iwork[2];
         }
         //
         if (nwl < 0 || nwl >= n || nwu < 1 || nwu > n) {
@@ -275,7 +275,7 @@ void Rstebz(const char *range, const char *order, INTEGER const n, REAL const vl
         tnorm = max(abs(d[0]) + abs(e[0]), abs(d[n - 1]) + abs(e[(n - 1) - 1]));
         //
         for (j = 2; j <= n - 1; j = j + 1) {
-            tnorm = max(tnorm, REAL(abs(d[j - 1]) + abs(e[(j - 1) - 1]) + abs(e[j - 1])));
+            tnorm = max(tnorm, abs(d[j - 1]) + abs(e[(j - 1) - 1]) + abs(e[j - 1]));
         }
         //
         if (abstol <= zero) {
@@ -337,13 +337,13 @@ void Rstebz(const char *range, const char *order, INTEGER const n, REAL const vl
             //
             for (j = ibegin; j <= iend - 1; j = j + 1) {
                 tmp2 = abs(e[j - 1]);
-                gu = max(gu, REAL(d[j - 1] + tmp1 + tmp2));
-                gl = min(gl, REAL(d[j - 1] - tmp1 - tmp2));
+                gu = max(gu, d[j - 1] + tmp1 + tmp2);
+                gl = min(gl, d[j - 1] - tmp1 - tmp2);
                 tmp1 = tmp2;
             }
             //
-            gu = max(gu, REAL(d[iend - 1] + tmp1));
-            gl = min(gl, REAL(d[iend - 1] - tmp1));
+            gu = max(gu, d[iend - 1] + tmp1);
+            gl = min(gl, d[iend - 1] - tmp1);
             bnorm = max(abs(gl), abs(gu));
             gl = gl - fudge * bnorm * ulp * in - fudge * pivmin;
             gu += fudge * bnorm * ulp * in + fudge * pivmin;
