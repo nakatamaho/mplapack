@@ -63,7 +63,6 @@ void Rtrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
     INTEGER j1 = 0;
     INTEGER j2 = 0;
     REAL x[2 * 2];
-    INTEGER ldx = 2;
     REAL scale = 0.0;
     REAL xnorm = 0.0;
     INTEGER ierr = 0;
@@ -77,11 +76,6 @@ void Rtrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
     REAL vmax = 0.0;
     REAL vcrit = 0.0;
     //
-    //
-    //
-    //
-    // .. Local Arrays ..
-    //
     // Decode and test the input parameters
     //
     bothv = Mlsame(side, "B");
@@ -93,12 +87,7 @@ void Rtrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
     somev = Mlsame(howmny, "S");
     //
     info = 0;
-
-    char side_howmny[3];
-    side_howmny[0] = side[0];
-    side_howmny[1] = howmny[0];
-    side_howmny[2] = '\0';
-    nb = iMlaenv(1, "Rtrevc", side_howmny, n, -1, -1, -1);
+    nb = iMlaenv(1, "Rtrevc", CHAR2(side, howmny), n, -1, -1, -1);
     maxwrk = n + 2 * n * nb;
     work[0] = maxwrk;
     lquery = (lwork == -1);
@@ -138,7 +127,7 @@ void Rtrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                         } else {
                             pair = true;
                             if (select[j - 1] || select[(j + 1) - 1]) {
-                                select[j] = true;
+                                select[j - 1] = true;
                                 m += 2;
                             }
                         }
@@ -185,8 +174,9 @@ void Rtrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
     //
     unfl = Rlamch("Safe minimum");
     ovfl = one / unfl;
+    Rlabad(unfl, ovfl);
     ulp = Rlamch("Precision");
-    smlnum = unfl * (castREAL(n) / ulp);
+    smlnum = unfl * (n / ulp);
     bignum = (one - ulp) / smlnum;
     //
     // Compute 1-norm of each column of strictly upper triangular
@@ -207,7 +197,6 @@ void Rtrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
     // ISCOMPLEX array stores IP for each column in current block.
     //
     if (rightv) {
-        //
         // Compute right eigenvectors.
         //
         // IV is index of column in current block.
@@ -258,11 +247,9 @@ void Rtrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
             if (ip != 0) {
                 wi = sqrt(abs(t[(ki - 1) + ((ki - 1) - 1) * ldt])) * sqrt(abs(t[((ki - 1) - 1) + (ki - 1) * ldt]));
             }
-            smin = max(REAL(ulp * (abs(wr) + abs(wi))), smlnum);
+            smin = max(ulp * (abs(wr) + abs(wi)), smlnum);
             //
             if (ip == 0) {
-                //
-                // --------------------------------------------------------
                 // Real right eigenvector
                 //
                 work[(ki + iv * n) - 1] = one;
@@ -355,7 +342,6 @@ void Rtrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                 // Copy the vector x or Q*x to VR and normalize.
                 //
                 if (!over) {
-                    // ------------------------------
                     // no back-transform: copy x to VR and normalize.
                     Rcopy(ki, &work[(1 + iv * n) - 1], 1, &vr[(is - 1) * ldvr], 1);
                     //
@@ -368,7 +354,6 @@ void Rtrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                     }
                     //
                 } else if (nb == 1) {
-                    // ------------------------------
                     // version 1: back-transform each vector with GEMV, Q*x.
                     if (ki > 1) {
                         Rgemv("N", n, ki - 1, one, vr, ldvr, &work[(1 + iv * n) - 1], 1, work[(ki + iv * n) - 1], &vr[(ki - 1) * ldvr], 1);
@@ -379,7 +364,6 @@ void Rtrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                     Rscal(n, remax, &vr[(ki - 1) * ldvr], 1);
                     //
                 } else {
-                    // ------------------------------
                     // version 2: back-transform block of vectors with GEMM
                     // zero out below vector
                     for (k = ki + 1; k <= n; k = k + 1) {
@@ -389,8 +373,6 @@ void Rtrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                     // back-transform and normalization is done below
                 }
             } else {
-                //
-                // --------------------------------------------------------
                 // Complex right eigenvector.
                 //
                 // Initial solve
@@ -508,14 +490,13 @@ void Rtrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                 // Copy the vector x or Q*x to VR and normalize.
                 //
                 if (!over) {
-                    // ------------------------------
                     // no back-transform: copy x to VR and normalize.
                     Rcopy(ki, &work[(1 + (iv - 1) * n) - 1], 1, &vr[((is - 1) - 1) * ldvr], 1);
                     Rcopy(ki, &work[(1 + (iv)*n) - 1], 1, &vr[(is - 1) * ldvr], 1);
                     //
                     emax = zero;
                     for (k = 1; k <= ki; k = k + 1) {
-                        emax = max(emax, REAL(abs(vr[(k - 1) + ((is - 1) - 1) * ldvr]) + abs(vr[(k - 1) + (is - 1) * ldvr])));
+                        emax = max(emax, abs(vr[(k - 1) + ((is - 1) - 1) * ldvr]) + abs(vr[(k - 1) + (is - 1) * ldvr]));
                     }
                     remax = one / emax;
                     Rscal(ki, remax, &vr[((is - 1) - 1) * ldvr], 1);
@@ -527,7 +508,6 @@ void Rtrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                     }
                     //
                 } else if (nb == 1) {
-                    // ------------------------------
                     // version 1: back-transform each vector with GEMV, Q*x.
                     if (ki > 2) {
                         Rgemv("N", n, ki - 2, one, vr, ldvr, &work[(1 + (iv - 1) * n) - 1], 1, work[(ki - 1 + (iv - 1) * n) - 1], &vr[((ki - 1) - 1) * ldvr], 1);
@@ -539,14 +519,13 @@ void Rtrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                     //
                     emax = zero;
                     for (k = 1; k <= n; k = k + 1) {
-                        emax = max(emax, REAL(abs(vr[(k - 1) + ((ki - 1) - 1) * ldvr]) + abs(vr[(k - 1) + (ki - 1) * ldvr])));
+                        emax = max(emax, abs(vr[(k - 1) + ((ki - 1) - 1) * ldvr]) + abs(vr[(k - 1) + (ki - 1) * ldvr]));
                     }
                     remax = one / emax;
                     Rscal(n, remax, &vr[((ki - 1) - 1) * ldvr], 1);
                     Rscal(n, remax, &vr[(ki - 1) * ldvr], 1);
                     //
                 } else {
-                    // ------------------------------
                     // version 2: back-transform block of vectors with GEMM
                     // zero out below vector
                     for (k = ki + 1; k <= n; k = k + 1) {
@@ -561,7 +540,6 @@ void Rtrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
             }
             //
             if (nb > 1) {
-                // --------------------------------------------------------
                 // Blocked version of back-transform
                 // For complex case, KI2 includes both vectors (KI-1 and KI)
                 if (ip == 0) {
@@ -585,7 +563,7 @@ void Rtrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                             // first eigenvector of conjugate pair
                             emax = zero;
                             for (ii = 1; ii <= n; ii = ii + 1) {
-                                emax = max(emax, REAL(abs(work[(ii + (nb + k) * n) - 1]) + abs(work[(ii + (nb + k + 1) * n) - 1])));
+                                emax = max(emax, abs(work[(ii + (nb + k) * n) - 1]) + abs(work[(ii + (nb + k + 1) * n) - 1]));
                             }
                             remax = one / emax;
                             // else if ISCOMPLEX(K).EQ.-1
@@ -611,7 +589,6 @@ void Rtrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
     }
     //
     if (leftv) {
-        //
         // Compute left eigenvectors.
         //
         // IV is index of column in current block.
@@ -652,11 +629,9 @@ void Rtrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
             if (ip != 0) {
                 wi = sqrt(abs(t[(ki - 1) + ((ki + 1) - 1) * ldt])) * sqrt(abs(t[((ki + 1) - 1) + (ki - 1) * ldt]));
             }
-            smin = max(REAL(ulp * (abs(wr) + abs(wi))), smlnum);
+            smin = max(ulp * (abs(wr) + abs(wi)), smlnum);
             //
             if (ip == 0) {
-                //
-                // --------------------------------------------------------
                 // Real left eigenvector
                 //
                 work[(ki + iv * n) - 1] = one;
@@ -714,7 +689,7 @@ void Rtrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                             Rscal(n - ki + 1, scale, &work[(ki + iv * n) - 1], 1);
                         }
                         work[(j + iv * n) - 1] = x[0];
-                        vmax = max(REAL(abs(work[(j + iv * n) - 1])), vmax);
+                        vmax = max(abs(work[(j + iv * n) - 1]), vmax);
                         vcrit = bignum / vmax;
                         //
                     } else {
@@ -750,7 +725,7 @@ void Rtrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                         work[(j + iv * n) - 1] = x[0];
                         work[(j + 1 + iv * n) - 1] = x[(2 - 1)];
                         //
-                        vmax = max(REAL(abs(work[(j + iv * n) - 1])), REAL(abs(work[(j + 1 + iv * n) - 1])), vmax);
+                        vmax = max(abs(work[(j + iv * n) - 1]), abs(work[(j + 1 + iv * n) - 1]), vmax);
                         vcrit = bignum / vmax;
                         //
                     }
@@ -760,7 +735,6 @@ void Rtrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                 // Copy the vector x or Q*x to VL and normalize.
                 //
                 if (!over) {
-                    // ------------------------------
                     // no back-transform: copy x to VL and normalize.
                     Rcopy(n - ki + 1, &work[(ki + iv * n) - 1], 1, &vl[(ki - 1) + (is - 1) * ldvl], 1);
                     //
@@ -773,7 +747,6 @@ void Rtrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                     }
                     //
                 } else if (nb == 1) {
-                    // ------------------------------
                     // version 1: back-transform each vector with GEMV, Q*x.
                     if (ki < n) {
                         Rgemv("N", n, n - ki, one, &vl[((ki + 1) - 1) * ldvl], ldvl, &work[(ki + 1 + iv * n) - 1], 1, work[(ki + iv * n) - 1], &vl[(ki - 1) * ldvl], 1);
@@ -784,7 +757,6 @@ void Rtrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                     Rscal(n, remax, &vl[(ki - 1) * ldvl], 1);
                     //
                 } else {
-                    // ------------------------------
                     // version 2: back-transform block of vectors with GEMM
                     // zero out above vector
                     // could go from KI-NV+1 to KI-1
@@ -795,8 +767,6 @@ void Rtrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                     // back-transform and normalization is done below
                 }
             } else {
-                //
-                // --------------------------------------------------------
                 // Complex left eigenvector.
                 //
                 // Initial solve:
@@ -871,7 +841,7 @@ void Rtrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                         }
                         work[(j + (iv)*n) - 1] = x[0];
                         work[(j + (iv + 1) * n) - 1] = x[(2 - 1) * ldx];
-                        vmax = max(REAL(abs(work[(j + (iv)*n) - 1])), REAL(abs(work[(j + (iv + 1) * n) - 1])), vmax);
+                        vmax = max(abs(work[(j + (iv)*n) - 1]), abs(work[(j + (iv + 1) * n) - 1]), vmax);
                         vcrit = bignum / vmax;
                         //
                     } else {
@@ -914,7 +884,7 @@ void Rtrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                         work[(j + (iv + 1) * n) - 1] = x[(2 - 1) * ldx];
                         work[(j + 1 + (iv)*n) - 1] = x[(2 - 1)];
                         work[(j + 1 + (iv + 1) * n) - 1] = x[(2 - 1) + (2 - 1) * ldx];
-                        vmax = max(REAL(abs(x[0])), REAL(abs(x[(2 - 1) * ldx])), REAL(abs(x[(2 - 1)])), REAL(abs(x[(2 - 1) + (2 - 1) * ldx])), vmax);
+                        vmax = max(abs(x[0]), abs(x[(2 - 1) * ldx]), abs(x[(2 - 1)]), abs(x[(2 - 1) + (2 - 1) * ldx]), vmax);
                         vcrit = bignum / vmax;
                         //
                     }
@@ -924,14 +894,13 @@ void Rtrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                 // Copy the vector x or Q*x to VL and normalize.
                 //
                 if (!over) {
-                    // ------------------------------
                     // no back-transform: copy x to VL and normalize.
                     Rcopy(n - ki + 1, &work[(ki + (iv)*n) - 1], 1, &vl[(ki - 1) + (is - 1) * ldvl], 1);
                     Rcopy(n - ki + 1, &work[(ki + (iv + 1) * n) - 1], 1, &vl[(ki - 1) + ((is + 1) - 1) * ldvl], 1);
                     //
                     emax = zero;
                     for (k = ki; k <= n; k = k + 1) {
-                        emax = max(emax, REAL(abs(vl[(k - 1) + (is - 1) * ldvl]) + abs(vl[(k - 1) + ((is + 1) - 1) * ldvl])));
+                        emax = max(emax, abs(vl[(k - 1) + (is - 1) * ldvl]) + abs(vl[(k - 1) + ((is + 1) - 1) * ldvl]));
                     }
                     remax = one / emax;
                     Rscal(n - ki + 1, remax, &vl[(ki - 1) + (is - 1) * ldvl], 1);
@@ -943,7 +912,6 @@ void Rtrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                     }
                     //
                 } else if (nb == 1) {
-                    // ------------------------------
                     // version 1: back-transform each vector with GEMV, Q*x.
                     if (ki < n - 1) {
                         Rgemv("N", n, n - ki - 1, one, &vl[((ki + 2) - 1) * ldvl], ldvl, &work[(ki + 2 + (iv)*n) - 1], 1, work[(ki + (iv)*n) - 1], &vl[(ki - 1) * ldvl], 1);
@@ -955,14 +923,13 @@ void Rtrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                     //
                     emax = zero;
                     for (k = 1; k <= n; k = k + 1) {
-                        emax = max(emax, REAL(abs(vl[(k - 1) + (ki - 1) * ldvl]) + abs(vl[(k - 1) + ((ki + 1) - 1) * ldvl])));
+                        emax = max(emax, abs(vl[(k - 1) + (ki - 1) * ldvl]) + abs(vl[(k - 1) + ((ki + 1) - 1) * ldvl]));
                     }
                     remax = one / emax;
                     Rscal(n, remax, &vl[(ki - 1) * ldvl], 1);
                     Rscal(n, remax, &vl[((ki + 1) - 1) * ldvl], 1);
                     //
                 } else {
-                    // ------------------------------
                     // version 2: back-transform block of vectors with GEMM
                     // zero out above vector
                     // could go from KI-NV+1 to KI-1
@@ -978,7 +945,6 @@ void Rtrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
             }
             //
             if (nb > 1) {
-                // --------------------------------------------------------
                 // Blocked version of back-transform
                 // For complex case, KI2 includes both vectors (KI and KI+1)
                 if (ip == 0) {
@@ -1002,7 +968,7 @@ void Rtrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                             // first eigenvector of conjugate pair
                             emax = zero;
                             for (ii = 1; ii <= n; ii = ii + 1) {
-                                emax = max(emax, REAL(abs(work[(ii + (nb + k) * n) - 1]) + abs(work[(ii + (nb + k + 1) * n) - 1])));
+                                emax = max(emax, abs(work[(ii + (nb + k) * n) - 1]) + abs(work[(ii + (nb + k + 1) * n) - 1]));
                             }
                             remax = one / emax;
                             // else if ISCOMPLEX(K).EQ.-1
