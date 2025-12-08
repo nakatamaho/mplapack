@@ -34,8 +34,8 @@ void Cpttrs(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *d, COMP
     // Test the input arguments.
     //
     info = 0;
-    bool upper = (uplo == 'U' || uplo == 'u');
-    if (!upper && !(uplo == 'L' || uplo == 'l')) {
+    bool upper = Mlsame(uplo, "U");
+    if (!upper && !Mlsame(uplo, "L")) {
         info = -1;
     } else if (n < 0) {
         info = -2;
