@@ -166,7 +166,7 @@ void Rorgtsqr_row(INTEGER const m, INTEGER const n, INTEGER const mb, INTEGER co
     // KB is the column index of the current block reflector in
     // the matrices T and V.
     //
-    REAL dummy[1];
+    REAL dummy[1 * 1];
     for (kb = kb_last; kb >= 1; kb = kb - nblocal) {
         //
         // Determine the size of the current column block KNB in
