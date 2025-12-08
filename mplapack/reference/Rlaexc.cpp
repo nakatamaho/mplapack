@@ -44,7 +44,7 @@ void Rlaexc(bool const wantq, INTEGER const n, REAL *t, INTEGER const ldt, REAL 
     REAL dnorm = 0.0;
     REAL eps = 0.0;
     REAL smlnum = 0.0;
-    const REAL ten = 1.0e+1;
+    const REAL ten = 10.0;
     REAL thresh = 0.0;
     REAL scale = 0.0;
     const INTEGER ldx = 2;
@@ -65,11 +65,6 @@ void Rlaexc(bool const wantq, INTEGER const n, REAL *t, INTEGER const ldt, REAL 
     REAL wi1 = 0.0;
     REAL wr2 = 0.0;
     REAL wi2 = 0.0;
-    //
-    //
-    //
-    //
-    // .. Local Arrays ..
     //
     info = 0;
     //
@@ -130,7 +125,7 @@ void Rlaexc(bool const wantq, INTEGER const n, REAL *t, INTEGER const ldt, REAL 
         //
         eps = Rlamch("P");
         smlnum = Rlamch("S") / eps;
-        thresh = max(REAL(ten * eps * dnorm), smlnum);
+        thresh = max(ten * eps * dnorm, smlnum);
         //
         // Solve T11*X - X*T22 = scale*T12 for X.
         //
@@ -157,10 +152,10 @@ void Rlaexc(bool const wantq, INTEGER const n, REAL *t, INTEGER const ldt, REAL 
         // ( scale, X11, X12 ) H = ( 0, 0, * )
         //
         u[0] = scale;
-        u[2 - 1] = x[0];
-        u[3 - 1] = x[(2 - 1) * ldx];
-        Rlarfg(3, u[3 - 1], u, 1, tau);
-        u[3 - 1] = one;
+        u[1] = x[0];
+        u[2] = x[(2 - 1) * ldx];
+        Rlarfg(3, u[2], u, 1, tau);
+        u[2] = one;
         t11 = t[(j1 - 1) + (j1 - 1) * ldt];
         //
         // Perform swap provisionally on diagonal block in D.
@@ -170,7 +165,7 @@ void Rlaexc(bool const wantq, INTEGER const n, REAL *t, INTEGER const ldt, REAL 
         //
         // Test whether to reject swap.
         //
-        if (max(REAL(abs(d[(3 - 1)])), REAL(abs(d[(3 - 1) + (2 - 1) * ldd])), REAL(abs(d[(3 - 1) + (3 - 1) * ldd] - t11))) > thresh) {
+        if (max(abs(d[(3 - 1)]), abs(d[(3 - 1) + (2 - 1) * ldd]), abs(d[(3 - 1) + (3 - 1) * ldd] - t11)) > thresh) {
             goto statement_50;
         }
         //
@@ -200,9 +195,9 @@ void Rlaexc(bool const wantq, INTEGER const n, REAL *t, INTEGER const ldt, REAL 
         // ( scale ) = ( 0 )
         //
         u[0] = -x[0];
-        u[2 - 1] = -x[(2 - 1)];
-        u[3 - 1] = scale;
-        Rlarfg(3, u[0], &u[2 - 1], 1, tau);
+        u[1] = -x[(2 - 1)];
+        u[2] = scale;
+        Rlarfg(3, u[0], &u[1], 1, tau);
         u[0] = one;
         t33 = t[(j3 - 1) + (j3 - 1) * ldt];
         //
@@ -213,7 +208,7 @@ void Rlaexc(bool const wantq, INTEGER const n, REAL *t, INTEGER const ldt, REAL 
         //
         // Test whether to reject swap.
         //
-        if (max(REAL(abs(d[(2 - 1)])), REAL(abs(d[(3 - 1)])), REAL(abs(d[0] - t33))) > thresh) {
+        if (max(abs(d[(2 - 1)]), abs(d[(3 - 1)]), abs(d[0] - t33)) > thresh) {
             goto statement_50;
         }
         //
@@ -245,16 +240,16 @@ void Rlaexc(bool const wantq, INTEGER const n, REAL *t, INTEGER const ldt, REAL 
         // (    0  scale )   (  0  0 )
         //
         u1[0] = -x[0];
-        u1[2 - 1] = -x[(2 - 1)];
-        u1[3 - 1] = scale;
-        Rlarfg(3, u1[0], &u1[2 - 1], 1, tau1);
+        u1[1] = -x[(2 - 1)];
+        u1[2] = scale;
+        Rlarfg(3, u1[0], &u1[1], 1, tau1);
         u1[0] = one;
         //
-        temp = -tau1 * (x[(2 - 1) * ldx] + u1[2 - 1] * x[(2 - 1) + (2 - 1) * ldx]);
-        u2[0] = -temp * u1[2 - 1] - x[(2 - 1) + (2 - 1) * ldx];
-        u2[2 - 1] = -temp * u1[3 - 1];
-        u2[3 - 1] = scale;
-        Rlarfg(3, u2[0], &u2[2 - 1], 1, tau2);
+        temp = -tau1 * (x[(2 - 1) * ldx] + u1[1] * x[(2 - 1) + (2 - 1) * ldx]);
+        u2[0] = -temp * u1[1] - x[(2 - 1) + (2 - 1) * ldx];
+        u2[1] = -temp * u1[2];
+        u2[2] = scale;
+        Rlarfg(3, u2[0], &u2[1], 1, tau2);
         u2[0] = one;
         //
         // Perform swap provisionally on diagonal block in D.
