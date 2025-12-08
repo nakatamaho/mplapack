@@ -47,10 +47,6 @@ void Rlasrt(const char *id, INTEGER const n, REAL *d, INTEGER &info) {
     REAL tmp = 0.0;
     //
     //
-    //
-    //
-    // .. Local Arrays ..
-    //
     // Test the input parameters.
     //
     info = 0;
