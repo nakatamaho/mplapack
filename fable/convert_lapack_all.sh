@@ -89,4 +89,4 @@ patch -p3 -R < ~/mplapack/fable/lapack-patches/patch-Rstebz.cpp
 patch -p3 -R < ~/mplapack/fable/lapack-patches/patch-Rlarrk.cpp
 patch -p3 -R < ~/mplapack/fable/lapack-patches/patch-Claic1.cpp
 patch -p3 -R < ~/mplapack/fable/lapack-patches/patch-Cgesvj.cpp
-
+patch -p3    < ~/mplapack/fable/lapack-patches/patch-Rgesvj.cpp
