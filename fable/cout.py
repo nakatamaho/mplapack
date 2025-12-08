@@ -1600,16 +1600,22 @@ def _real_cast_or_component(arg: str, complex_vars, complex_ptrs) -> str:
         if re.search(r'\b' + re.escape(name) + r'\b', arg):
             owner = name
             break
-
     if owner is None:
         # No tracked COMPLEX variable in the expression. If it still
         # looks like a COMPLEX-valued temporary (e.g. COMPLEX(...),
         # conj(...)), take the real part explicitly.
         if _looks_complex_expression(arg):
+            # If this is a single function call, avoid extra parentheses:
+            #   func(...).real() instead of (func(...)).real()
+            if re.match(r'^[A-Za-z_][A-Za-z0-9_:]*\s*\(.*\)\s*$', arg):
+                return f"{arg}.real()"
             return f"({arg}).real()"
         return f"castREAL({arg})"
 
     # Expression contains at least one COMPLEX variable -> take real part.
+    # For pure function calls like Cdotc(...), avoid redundant parentheses.
+    if re.match(r'^[A-Za-z_][A-Za-z0-9_:]*\s*\(.*\)\s*$', arg):
+        return f"{arg}.real()"
     return f"({arg}).real()"
 
 
