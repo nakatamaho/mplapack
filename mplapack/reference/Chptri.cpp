@@ -128,7 +128,7 @@ void Chptri(const char *uplo, INTEGER const n, COMPLEX *ap, INTEGER *ipiv, COMPL
             if (k > 1) {
                 Ccopy(k - 1, &ap[kc - 1], 1, work, 1);
                 Chpmv(uplo, k - 1, -cone, ap, work, 1, zero, &ap[kc - 1], 1);
-                ap[(kc + k - 1) - 1] = ap[(kc + k - 1) - 1] - (Cdotc(k - 1, work, 1, &ap[kc - 1], 1)).real();
+                ap[(kc + k - 1) - 1] = ap[(kc + k - 1) - 1] - Cdotc(k - 1, work, 1, &ap[kc - 1], 1).real();
             }
             kstep = 1;
         } else {
@@ -151,11 +151,11 @@ void Chptri(const char *uplo, INTEGER const n, COMPLEX *ap, INTEGER *ipiv, COMPL
             if (k > 1) {
                 Ccopy(k - 1, &ap[kc - 1], 1, work, 1);
                 Chpmv(uplo, k - 1, -cone, ap, work, 1, zero, &ap[kc - 1], 1);
-                ap[(kc + k - 1) - 1] = ap[(kc + k - 1) - 1] - (Cdotc(k - 1, work, 1, &ap[kc - 1], 1)).real();
+                ap[(kc + k - 1) - 1] = ap[(kc + k - 1) - 1] - Cdotc(k - 1, work, 1, &ap[kc - 1], 1).real();
                 ap[(kcnext + k - 1) - 1] = ap[(kcnext + k - 1) - 1] - Cdotc(k - 1, &ap[kc - 1], 1, &ap[kcnext - 1], 1);
                 Ccopy(k - 1, &ap[kcnext - 1], 1, work, 1);
                 Chpmv(uplo, k - 1, -cone, ap, work, 1, zero, &ap[kcnext - 1], 1);
-                ap[(kcnext + k) - 1] = ap[(kcnext + k) - 1] - (Cdotc(k - 1, work, 1, &ap[kcnext - 1], 1)).real();
+                ap[(kcnext + k) - 1] = ap[(kcnext + k) - 1] - Cdotc(k - 1, work, 1, &ap[kcnext - 1], 1).real();
             }
             kstep = 2;
             kcnext += k + 1;
@@ -224,7 +224,7 @@ void Chptri(const char *uplo, INTEGER const n, COMPLEX *ap, INTEGER *ipiv, COMPL
             if (k < n) {
                 Ccopy(n - k, &ap[(kc + 1) - 1], 1, work, 1);
                 Chpmv(uplo, n - k, -cone, &ap[(kc + n - k + 1) - 1], work, 1, zero, &ap[(kc + 1) - 1], 1);
-                ap[kc - 1] = ap[kc - 1] - (Cdotc(n - k, work, 1, &ap[(kc + 1) - 1], 1)).real();
+                ap[kc - 1] = ap[kc - 1] - Cdotc(n - k, work, 1, &ap[(kc + 1) - 1], 1).real();
             }
             kstep = 1;
         } else {
@@ -247,11 +247,11 @@ void Chptri(const char *uplo, INTEGER const n, COMPLEX *ap, INTEGER *ipiv, COMPL
             if (k < n) {
                 Ccopy(n - k, &ap[(kc + 1) - 1], 1, work, 1);
                 Chpmv(uplo, n - k, -cone, &ap[(kc + (n - k + 1)) - 1], work, 1, zero, &ap[(kc + 1) - 1], 1);
-                ap[kc - 1] = ap[kc - 1] - (Cdotc(n - k, work, 1, &ap[(kc + 1) - 1], 1)).real();
+                ap[kc - 1] = ap[kc - 1] - Cdotc(n - k, work, 1, &ap[(kc + 1) - 1], 1).real();
                 ap[(kcnext + 1) - 1] = ap[(kcnext + 1) - 1] - Cdotc(n - k, &ap[(kc + 1) - 1], 1, &ap[(kcnext + 2) - 1], 1);
                 Ccopy(n - k, &ap[(kcnext + 2) - 1], 1, work, 1);
                 Chpmv(uplo, n - k, -cone, &ap[(kc + (n - k + 1)) - 1], work, 1, zero, &ap[(kcnext + 2) - 1], 1);
-                ap[kcnext - 1] = ap[kcnext - 1] - (Cdotc(n - k, work, 1, &ap[(kcnext + 2) - 1], 1)).real();
+                ap[kcnext - 1] = ap[kcnext - 1] - Cdotc(n - k, work, 1, &ap[(kcnext + 2) - 1], 1).real();
             }
             kstep = 2;
             kcnext = kcnext - (n - k + 3);
