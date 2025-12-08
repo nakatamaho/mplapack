@@ -35,7 +35,7 @@ void Rlaqtr(bool const ltran, bool const lreal, INTEGER const n, REAL *t, INTEGE
     REAL smlnum = 0.0;
     const REAL one = 1.0;
     REAL bignum = 0.0;
-    REAL d[4];
+    REAL d[2 * 2];
     REAL xnorm = 0.0;
     REAL smin = 0.0;
     const REAL zero = 0.0;
@@ -52,7 +52,7 @@ void Rlaqtr(bool const ltran, bool const lreal, INTEGER const n, REAL *t, INTEGE
     REAL tjj = 0.0;
     REAL tmp = 0.0;
     REAL rec = 0.0;
-    REAL v[4];
+    REAL v[2 * 2];
     REAL scaloc = 0.0;
     INTEGER ierr = 0;
     REAL sminw = 0.0;
