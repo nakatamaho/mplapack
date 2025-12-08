@@ -86,3 +86,4 @@ patch -p3    < ~/mplapack/fable/lapack-patches/patch-Rbbcsd.cpp
 patch -p3 -R < ~/mplapack/fable/lapack-patches/patch-Rlarrb.cpp
 patch -p3 -R < ~/mplapack/fable/lapack-patches/patch-Rlarnv.cpp
 patch -p3 -R < ~/mplapack/fable/lapack-patches/patch-Rstebz.cpp
+patch -p3 -R < ~/mplapack/fable/lapack-patches/patch-Rlarrk.cpp
