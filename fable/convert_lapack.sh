@@ -389,11 +389,21 @@ ABS1_STMT_RE = re.compile(
     r"abs\s*\(\s*\1\s*\.\s*imag\s*\(\s*\)\s*\)\s*;\s*$"
 )
 
+ABSSQ_STMT_RE = re.compile(
+    r'^\s*abssq\s*\([^)]*\)\s*='
+)
+
+CABS2_STMT_RE = re.compile(
+    r'^\s*cabs2\s*\([^)]*\)\s*='
+)
+
 lines = [
     line
     for line in lines
     if not CABS1_STMT_RE.match(line)
+    and not CABS2_STMT_RE.match(line)
     and not ABS1_STMT_RE.match(line)
+    and not ABSSQ_STMT_RE.match(line)
 ]
 
 lines = [line for line in lines if not CABS1_STMT_RE.match(line)]

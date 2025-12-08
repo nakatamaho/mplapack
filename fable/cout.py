@@ -3911,6 +3911,42 @@ def convert_executable(
                             crhs = f"castINTEGER({rhs_expr})"
                         else:
                             crhs = f"castINTEGER({rhs_expr})"
+                # Extra fix: REAL LHS with a non-trivial expression that
+                # contains COMPLEX variables but no explicit real projection.
+                #
+                # We target expressions like:
+                #   d11 = a[(k - 1) + (k - 1)*lda] / d;
+                # where 'a' is COMPLEX and 'd11' is REAL, and emulate
+                # Fortran's implicit REAL = COMPLEX coercion by taking
+                # the real part of the expression.
+                #
+                # We deliberately skip:
+                #   - expressions already using .real() / .imag() / castREAL(...)
+                #   - expressions whose top-level looks like a real-valued
+                #     function call, e.g. Clangb(...), cabs1(...), Rlapy2(...)
+                #   - any expression that contains an explicit function call
+                #     NAME(...), so that cabs1(ap[i]) * xk is left untouched.
+                if lhs_is_real:
+                    rhs_expr = crhs.strip()
+                    if rhs_expr:
+                        if (".real()" not in rhs_expr
+                                and ".imag()" not in rhs_expr
+                                and "castREAL(" not in rhs_expr
+                                and not _is_real_valued_function_call(rhs_expr)
+                                and not re.search(r"[A-Za-z_][A-Za-z0-9_]*\s*\(",
+                                                  rhs_expr)):
+                            owner = None
+                            for name in complex_identifiers:
+                                if re.search(r"\b" + re.escape(name) + r"\b",
+                                             rhs_expr):
+                                    owner = name
+                                    break
+                            if owner is not None:
+                                crhs = _real_cast_or_component(
+                                    rhs_expr,
+                                    complex_identifiers,
+                                    complex_pointer_identifiers,
+                                )
 
                     if rhs_expr:
                         # Expressions that are clearly real-valued already:
