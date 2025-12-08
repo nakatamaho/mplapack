@@ -82,4 +82,4 @@ patch -p3 -R < ~/mplapack/fable/lapack-patches/patch-Cpotf2.cpp
 patch -p3 -R < ~/mplapack/fable/lapack-patches/patch-Clarnv.cpp
 patch -p3 -R < ~/mplapack/fable/lapack-patches/patch-Ctrexc.cpp
 patch -p3 -R < ~/mplapack/fable/lapack-patches/patch-Clartg.cpp
-patch -p3 -R < ~/mplapack/fable/lapack-patches/patch-Rbbcsd.cpp
+patch -p3    < ~/mplapack/fable/lapack-patches/patch-Rbbcsd.cpp
