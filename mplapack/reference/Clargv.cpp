@@ -29,18 +29,11 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-inline REAL abs1(COMPLEX ff) { return max(abs(ff.real()), abs(ff.imag())); }
-inline REAL abssq(COMPLEX ff) {
-    REAL temp;
-    temp = (ff.real() * ff.real()) + (ff.imag() * ff.imag());
-    return temp;
-}
-
 void Clargv(INTEGER const n, COMPLEX *x, INTEGER const incx, COMPLEX *y, INTEGER const incy, REAL *c, INTEGER const incc) {
     COMPLEX ff = 0.0;
     REAL safmin = 0.0;
     REAL eps = 0.0;
-    const REAL two = 2.0e+0;
+    const REAL two = 2.0;
     REAL safmn2 = 0.0;
     const REAL one = 1.0;
     REAL safmx2 = 0.0;
@@ -67,6 +60,7 @@ void Clargv(INTEGER const n, COMPLEX *x, INTEGER const incx, COMPLEX *y, INTEGER
     REAL dr = 0.0;
     REAL di = 0.0;
     INTEGER j = 0;
+    abs1(ff) = max(abs(ff.real()), abs(ff.imag()));
     //
     // IF( FIRST ) THEN
     // FIRST = .FALSE.
