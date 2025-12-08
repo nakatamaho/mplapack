@@ -29,8 +29,6 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-inline REAL abs1(COMPLEX x) { return abs(x.real()) + abs(x.imag()); }
-
 void Ctgevc(const char *side, const char *howmny, bool *select, INTEGER const n, COMPLEX *s, INTEGER const lds, COMPLEX *p, INTEGER const ldp, COMPLEX *vl, INTEGER const ldvl, COMPLEX *vr, INTEGER const ldvr, INTEGER const mm, INTEGER &m, COMPLEX *work, REAL *rwork, INTEGER &info) {
     COMPLEX x = 0.0;
     INTEGER ihwmny = 0;
@@ -180,6 +178,7 @@ void Ctgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
     //
     safmin = Rlamch("Safe minimum");
     big = one / safmin;
+    Rlabad(safmin, big);
     ulp = Rlamch("Epsilon") * Rlamch("Base");
     small = safmin * n / ulp;
     big = one / small;
@@ -200,8 +199,8 @@ void Ctgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
             rwork[j - 1] += abs1(s[(i - 1) + (j - 1) * lds]);
             rwork[(n + j) - 1] += abs1(p[(i - 1) + (j - 1) * ldp]);
         }
-        anorm = max(anorm, REAL(rwork[j - 1] + abs1(s[(j - 1) + (j - 1) * lds])));
-        bnorm = max(bnorm, REAL(rwork[(n + j) - 1] + abs1(p[(j - 1) + (j - 1) * ldp])));
+        anorm = max(anorm, rwork[j - 1] + abs1(s[(j - 1) + (j - 1) * lds]));
+        bnorm = max(bnorm, rwork[(n + j) - 1] + abs1(p[(j - 1) + (j - 1) * ldp]));
     }
     //
     ascale = one / max(anorm, safmin);
@@ -239,7 +238,7 @@ void Ctgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
                 // H
                 // y  ( a A - b B ) = 0
                 //
-                temp = one / max(REAL(abs1(s[(je - 1) + (je - 1) * lds]) * ascale), REAL(abs(p[(je - 1) + (je - 1) * ldp].real()) * bscale), safmin);
+                temp = one / max(abs1(s[(je - 1) + (je - 1) * lds]) * ascale, abs(p[(je - 1) + (je - 1) * ldp].real()) * bscale, safmin);
                 salpha = (temp * s[(je - 1) + (je - 1) * lds]) * ascale;
                 sbeta = (temp * p[(je - 1) + (je - 1) * ldp].real()) * bscale;
                 acoeff = sbeta * ascale;
@@ -255,10 +254,10 @@ void Ctgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
                     scale = (small / abs(sbeta)) * min(anorm, big);
                 }
                 if (lsb) {
-                    scale = max(scale, REAL((small / abs1(salpha)) * min(bnorm, big)));
+                    scale = max(scale, (small / abs1(salpha)) * min(bnorm, big));
                 }
                 if (lsa || lsb) {
-                    scale = min(scale, REAL(one / REAL(safmin * max(one, REAL(abs(acoeff)), REAL(abs1(bcoeff))))));
+                    scale = min(scale, one / (safmin * max(one, abs(acoeff), abs1(bcoeff))));
                     if (lsa) {
                         acoeff = ascale * (scale * sbeta);
                     } else {
@@ -278,7 +277,7 @@ void Ctgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
                     work[jr - 1] = czero;
                 }
                 work[je - 1] = cone;
-                dmin = max(REAL(ulp * acoefa * anorm), REAL(ulp * bcoefa * bnorm), safmin);
+                dmin = max(ulp * acoefa * anorm, ulp * bcoefa * bnorm, safmin);
                 //
                 // H
                 // Triangular solve of  (a A - b B)  y = 0
@@ -290,7 +289,7 @@ void Ctgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
                     //
                     // Compute
                     // j-1
-                    // SUM = sum  conj( a*S(k,j) - b*P(k,j) )*x(k)
+                    // SUM = sum  conjg( a*S(k,j) - b*P(k,j) )*x(k)
                     // k=je
                     // (Scale if necessary)
                     //
@@ -310,7 +309,7 @@ void Ctgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
                     }
                     sum = acoeff * suma - conj(bcoeff) * sumb;
                     //
-                    // Form x(j) = - SUM / conj( a*S(j,j) - b*P(j,j) )
+                    // Form x(j) = - SUM / conjg( a*S(j,j) - b*P(j,j) )
                     //
                     // with scaling and perturbation of the denominator
                     //
@@ -401,7 +400,7 @@ void Ctgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
                 //
                 // ( a A - b B ) x  = 0
                 //
-                temp = one / max(REAL(abs1(s[(je - 1) + (je - 1) * lds]) * ascale), REAL(abs(p[(je - 1) + (je - 1) * ldp].real()) * bscale), safmin);
+                temp = one / max(abs1(s[(je - 1) + (je - 1) * lds]) * ascale, abs(p[(je - 1) + (je - 1) * ldp].real()) * bscale, safmin);
                 salpha = (temp * s[(je - 1) + (je - 1) * lds]) * ascale;
                 sbeta = (temp * p[(je - 1) + (je - 1) * ldp].real()) * bscale;
                 acoeff = sbeta * ascale;
@@ -417,10 +416,10 @@ void Ctgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
                     scale = (small / abs(sbeta)) * min(anorm, big);
                 }
                 if (lsb) {
-                    scale = max(scale, REAL((small / abs1(salpha)) * min(bnorm, big)));
+                    scale = max(scale, (small / abs1(salpha)) * min(bnorm, big));
                 }
                 if (lsa || lsb) {
-                    scale = min(scale, REAL(one / (safmin * max(one, REAL(abs(acoeff)), REAL(abs1(bcoeff))))));
+                    scale = min(scale, one / (safmin * max(one, abs(acoeff), abs1(bcoeff))));
                     if (lsa) {
                         acoeff = ascale * (scale * sbeta);
                     } else {
@@ -440,7 +439,7 @@ void Ctgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
                     work[jr - 1] = czero;
                 }
                 work[je - 1] = cone;
-                dmin = max(REAL(ulp * acoefa * anorm), REAL(ulp * bcoefa * bnorm), safmin);
+                dmin = max(ulp * acoefa * anorm, ulp * bcoefa * bnorm, safmin);
                 //
                 // Triangular solve of  (a A - b B) x = 0  (columnwise)
                 //
