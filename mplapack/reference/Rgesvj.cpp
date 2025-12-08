@@ -45,6 +45,7 @@ void Rgesvj(const char *joba, const char *jobu, const char *jobv, INTEGER const 
     REAL small = 0.0;
     REAL big = 0.0;
     REAL rootbig = 0.0;
+    REAL large = 0.0;
     REAL bigtheta = 0.0;
     REAL tol = 0.0;
     REAL roottol = 0.0;
@@ -86,7 +87,7 @@ void Rgesvj(const char *joba, const char *jobu, const char *jobv, INTEGER const 
     REAL aapq = 0.0;
     REAL aqoap = 0.0;
     REAL apoaq = 0.0;
-    const REAL half = 0.5e0;
+    const REAL half = 0.5;
     REAL theta = 0.0;
     REAL t = 0.0;
     REAL thsign = 0.0;
@@ -95,6 +96,8 @@ void Rgesvj(const char *joba, const char *jobu, const char *jobv, INTEGER const 
     INTEGER jgl = 0;
     INTEGER ijblsk = 0;
     //
+    // from BLAS
+    // from LAPACK
     // Test the input arguments
     //
     lsvec = Mlsame(jobu, "U");
@@ -159,20 +162,17 @@ void Rgesvj(const char *joba, const char *jobu, const char *jobv, INTEGER const 
         }
     }
     // ... and the machine dependent parameters are
-    // [!]  (Make sure that DLAMCH() works properly on the target machine.)
+    // [!]  (Make sure that Rlamch() works properly on the target machine.)
     //
     epsln = Rlamch("Epsilon");
     rooteps = sqrt(epsln);
     sfmin = Rlamch("SafeMinimum");
     rootsfmin = sqrt(sfmin);
     small = sfmin / epsln;
-#if defined ___MPLAPACK_BUILD_WITH_DD___ || defined ___MPLAPACK_BUILD_WITH_QD___
-    big = one / sfmin;
-#else
     big = Rlamch("Overflow");
-#endif
     // BIG         = ONE    / SFMIN
     rootbig = one / rootsfmin;
+    large = big / sqrt(castREAL(m * n));
     bigtheta = one / rooteps;
     //
     tol = ctol * epsln;
@@ -203,7 +203,7 @@ void Rgesvj(const char *joba, const char *jobu, const char *jobv, INTEGER const 
     // DSQRT(N)*max_i SVA(i) does not overflow. If INFinite entries
     // in A are detected, the procedure returns with INFO=-6.
     //
-    skl = one / sqrt(castREAL(m * n));
+    skl = one / sqrt(castREAL(m) * castREAL(n));
     noscale = true;
     goscale = true;
     //
@@ -308,11 +308,11 @@ void Rgesvj(const char *joba, const char *jobu, const char *jobv, INTEGER const 
             Rlaset("G", m, n, zero, one, a, lda);
         }
         work[0] = one;
-        work[2 - 1] = zero;
-        work[3 - 1] = zero;
-        work[4 - 1] = zero;
-        work[5 - 1] = zero;
-        work[6 - 1] = zero;
+        work[1] = zero;
+        work[2] = zero;
+        work[3] = zero;
+        work[4] = zero;
+        work[5] = zero;
         return;
     }
     //
@@ -324,14 +324,14 @@ void Rgesvj(const char *joba, const char *jobu, const char *jobv, INTEGER const 
         }
         work[0] = one / skl;
         if (sva[0] >= sfmin) {
-            work[2 - 1] = one;
+            work[1] = one;
         } else {
-            work[2 - 1] = zero;
+            work[1] = zero;
         }
-        work[3 - 1] = zero;
-        work[4 - 1] = zero;
-        work[5 - 1] = zero;
-        work[6 - 1] = zero;
+        work[2] = zero;
+        work[3] = zero;
+        work[4] = zero;
+        work[5] = zero;
         return;
     }
     //
@@ -341,11 +341,11 @@ void Rgesvj(const char *joba, const char *jobu, const char *jobv, INTEGER const 
     sn = sqrt(sfmin / epsln);
     temp1 = sqrt(big / castREAL(n));
     if ((aapp <= sn) || (aaqq >= temp1) || ((sn <= aaqq) && (aapp <= temp1))) {
-        temp1 = min(big, REAL(temp1 / aapp));
+        temp1 = min(big, temp1 / aapp);
         // AAQQ  = AAQQ*TEMP1
         // AAPP  = AAPP*TEMP1
     } else if ((aaqq <= sn) && (aapp <= temp1)) {
-        temp1 = min(REAL(sn / aaqq), REAL(big / (aapp * sqrt(castREAL(n)))));
+        temp1 = min(sn / aaqq, big / (aapp * sqrt(castREAL(n))));
         // AAQQ  = AAQQ*TEMP1
         // AAPP  = AAPP*TEMP1
     } else if ((aaqq >= sn) && (aapp >= temp1)) {
@@ -353,7 +353,7 @@ void Rgesvj(const char *joba, const char *jobu, const char *jobv, INTEGER const 
         // AAQQ  = AAQQ*TEMP1
         // AAPP  = AAPP*TEMP1
     } else if ((aaqq <= sn) && (aapp >= temp1)) {
-        temp1 = min(REAL(sn / aaqq), REAL(big / (sqrt(castREAL(n)) * aapp)));
+        temp1 = min(sn / aaqq, big / (sqrt(castREAL(n)) * aapp));
         // AAQQ  = AAQQ*TEMP1
         // AAPP  = AAPP*TEMP1
     } else {
@@ -396,6 +396,7 @@ void Rgesvj(const char *joba, const char *jobu, const char *jobv, INTEGER const 
     kbl = min((INTEGER)8, n);
     // [TP] KBL is a tuning parameter that defines the tile size in the
     // tiling of the p-q loops of pivot pairs. In general, an optimal
+    // value of KBL depends on the matrix dimensions and on the
     // parameters of the computer's memory.
     //
     nbl = n / kbl;
@@ -403,7 +404,7 @@ void Rgesvj(const char *joba, const char *jobu, const char *jobv, INTEGER const 
         nbl++;
     }
     //
-    blskip = kbl * kbl;
+    blskip = pow2(kbl);
     // [TP] BLKSKIP is a tuning parameter that depends on SWBAND and KBL.
     //
     rowskip = min((INTEGER)5, kbl);
@@ -415,6 +416,7 @@ void Rgesvj(const char *joba, const char *jobu, const char *jobv, INTEGER const 
     // Quasi block transformations, using the lower (upper) triangular
     // structure of the input matrix. The quasi-block-cycling usually
     // invokes cubic convergence. Big part of this cycle is done inside
+    // canonical subspaces of dimensions less than M.
     //
     if ((lower || upper) && (n > max((INTEGER)64, 4 * kbl))) {
         // [TP] The number of partition levels and the actual partition are
@@ -566,7 +568,7 @@ void Rgesvj(const char *joba, const char *jobu, const char *jobv, INTEGER const 
                                     }
                                 }
                                 //
-                                mxaapq = max(mxaapq, REAL(abs(aapq)));
+                                mxaapq = max(mxaapq, abs(aapq));
                                 //
                                 // TO rotate or NOT to rotate, THAT is the question ...
                                 //
@@ -590,15 +592,15 @@ void Rgesvj(const char *joba, const char *jobu, const char *jobv, INTEGER const 
                                         if (abs(theta) > bigtheta) {
                                             //
                                             t = half / theta;
-                                            fastr[3 - 1] = t * work[p - 1] / work[q - 1];
-                                            fastr[4 - 1] = -t * work[q - 1] / work[p - 1];
+                                            fastr[2] = t * work[p - 1] / work[q - 1];
+                                            fastr[3] = -t * work[q - 1] / work[p - 1];
                                             Rrotm(m, &a[(p - 1) * lda], 1, &a[(q - 1) * lda], 1, fastr);
                                             if (rsvec) {
                                                 Rrotm(mvl, &v[(p - 1) * ldv], 1, &v[(q - 1) * ldv], 1, fastr);
                                             }
-                                            sva[q - 1] = aaqq * sqrt(max(zero, REAL(one + t * apoaq * aapq)));
-                                            aapp = aapp * sqrt(max(zero, REAL(one - t * aqoap * aapq)));
-                                            mxsinj = max(mxsinj, REAL(abs(t)));
+                                            sva[q - 1] = aaqq * sqrt(max(zero, one + t * apoaq * aapq));
+                                            aapp = aapp * sqrt(max(zero, one - t * aqoap * aapq));
+                                            mxsinj = max(mxsinj, abs(t));
                                             //
                                         } else {
                                             //
@@ -609,16 +611,16 @@ void Rgesvj(const char *joba, const char *jobu, const char *jobv, INTEGER const 
                                             cs = sqrt(one / (one + t * t));
                                             sn = t * cs;
                                             //
-                                            mxsinj = max(mxsinj, REAL(abs(sn)));
-                                            sva[q - 1] = aaqq * sqrt(max(zero, REAL(one + t * apoaq * aapq)));
-                                            aapp = aapp * sqrt(max(zero, REAL(one - t * aqoap * aapq)));
+                                            mxsinj = max(mxsinj, abs(sn));
+                                            sva[q - 1] = aaqq * sqrt(max(zero, one + t * apoaq * aapq));
+                                            aapp = aapp * sqrt(max(zero, one - t * aqoap * aapq));
                                             //
                                             apoaq = work[p - 1] / work[q - 1];
                                             aqoap = work[q - 1] / work[p - 1];
                                             if (work[p - 1] >= one) {
                                                 if (work[q - 1] >= one) {
-                                                    fastr[3 - 1] = t * apoaq;
-                                                    fastr[4 - 1] = -t * aqoap;
+                                                    fastr[2] = t * apoaq;
+                                                    fastr[3] = -t * aqoap;
                                                     work[p - 1] = work[p - 1] * cs;
                                                     work[q - 1] = work[q - 1] * cs;
                                                     Rrotm(m, &a[(p - 1) * lda], 1, &a[(q - 1) * lda], 1, fastr);
@@ -677,7 +679,7 @@ void Rgesvj(const char *joba, const char *jobu, const char *jobv, INTEGER const 
                                         temp1 = -aapq * work[p - 1] / work[q - 1];
                                         Raxpy(m, temp1, &work[(n + 1) - 1], 1, &a[(q - 1) * lda], 1);
                                         Rlascl("G", 0, 0, one, aaqq, m, 1, &a[(q - 1) * lda], lda, ierr);
-                                        sva[q - 1] = aaqq * sqrt(max(zero, REAL(one - aapq * aapq)));
+                                        sva[q - 1] = aaqq * sqrt(max(zero, one - aapq * aapq));
                                         mxsinj = max(mxsinj, sfmin);
                                     }
                                     // END IF ROTOK THEN ... ELSE
@@ -808,7 +810,7 @@ void Rgesvj(const char *joba, const char *jobu, const char *jobv, INTEGER const 
                                     }
                                 }
                                 //
-                                mxaapq = max(mxaapq, REAL(abs(aapq)));
+                                mxaapq = max(mxaapq, abs(aapq));
                                 //
                                 // TO rotate or NOT to rotate, THAT is the question ...
                                 //
@@ -829,15 +831,15 @@ void Rgesvj(const char *joba, const char *jobu, const char *jobv, INTEGER const 
                                         //
                                         if (abs(theta) > bigtheta) {
                                             t = half / theta;
-                                            fastr[3 - 1] = t * work[p - 1] / work[q - 1];
-                                            fastr[4 - 1] = -t * work[q - 1] / work[p - 1];
+                                            fastr[2] = t * work[p - 1] / work[q - 1];
+                                            fastr[3] = -t * work[q - 1] / work[p - 1];
                                             Rrotm(m, &a[(p - 1) * lda], 1, &a[(q - 1) * lda], 1, fastr);
                                             if (rsvec) {
                                                 Rrotm(mvl, &v[(p - 1) * ldv], 1, &v[(q - 1) * ldv], 1, fastr);
                                             }
-                                            sva[q - 1] = aaqq * sqrt(max(zero, REAL(one + t * apoaq * aapq)));
-                                            aapp = aapp * sqrt(max(zero, REAL(one - t * aqoap * aapq)));
-                                            mxsinj = max(mxsinj, REAL(abs(t)));
+                                            sva[q - 1] = aaqq * sqrt(max(zero, one + t * apoaq * aapq));
+                                            aapp = aapp * sqrt(max(zero, one - t * aqoap * aapq));
+                                            mxsinj = max(mxsinj, abs(t));
                                         } else {
                                             //
                                             // .. choose correct signum for THETA and rotate
@@ -849,17 +851,17 @@ void Rgesvj(const char *joba, const char *jobu, const char *jobv, INTEGER const 
                                             t = one / (theta + thsign * sqrt(one + theta * theta));
                                             cs = sqrt(one / (one + t * t));
                                             sn = t * cs;
-                                            mxsinj = max(mxsinj, REAL(abs(sn)));
-                                            sva[q - 1] = aaqq * sqrt(max(zero, REAL(one + t * apoaq * aapq)));
-                                            aapp = aapp * sqrt(max(zero, REAL(one - t * aqoap * aapq)));
+                                            mxsinj = max(mxsinj, abs(sn));
+                                            sva[q - 1] = aaqq * sqrt(max(zero, one + t * apoaq * aapq));
+                                            aapp = aapp * sqrt(max(zero, one - t * aqoap * aapq));
                                             //
                                             apoaq = work[p - 1] / work[q - 1];
                                             aqoap = work[q - 1] / work[p - 1];
                                             if (work[p - 1] >= one) {
                                                 //
                                                 if (work[q - 1] >= one) {
-                                                    fastr[3 - 1] = t * apoaq;
-                                                    fastr[4 - 1] = -t * aqoap;
+                                                    fastr[2] = t * apoaq;
+                                                    fastr[3] = -t * aqoap;
                                                     work[p - 1] = work[p - 1] * cs;
                                                     work[q - 1] = work[q - 1] * cs;
                                                     Rrotm(m, &a[(p - 1) * lda], 1, &a[(q - 1) * lda], 1, fastr);
@@ -918,7 +920,7 @@ void Rgesvj(const char *joba, const char *jobu, const char *jobv, INTEGER const 
                                             temp1 = -aapq * work[p - 1] / work[q - 1];
                                             Raxpy(m, temp1, &work[(n + 1) - 1], 1, &a[(q - 1) * lda], 1);
                                             Rlascl("G", 0, 0, one, aaqq, m, 1, &a[(q - 1) * lda], lda, ierr);
-                                            sva[q - 1] = aaqq * sqrt(max(zero, REAL(one - aapq * aapq)));
+                                            sva[q - 1] = aaqq * sqrt(max(zero, one - aapq * aapq));
                                             mxsinj = max(mxsinj, sfmin);
                                         } else {
                                             Rcopy(m, &a[(q - 1) * lda], 1, &work[(n + 1) - 1], 1);
@@ -927,7 +929,7 @@ void Rgesvj(const char *joba, const char *jobu, const char *jobv, INTEGER const 
                                             temp1 = -aapq * work[q - 1] / work[p - 1];
                                             Raxpy(m, temp1, &work[(n + 1) - 1], 1, &a[(p - 1) * lda], 1);
                                             Rlascl("G", 0, 0, one, aapp, m, 1, &a[(p - 1) * lda], lda, ierr);
-                                            sva[p - 1] = aapp * sqrt(max(zero, REAL(one - aapq * aapq)));
+                                            sva[p - 1] = aapp * sqrt(max(zero, one - aapq * aapq));
                                             mxsinj = max(mxsinj, sfmin);
                                         }
                                     }
@@ -1026,7 +1028,7 @@ void Rgesvj(const char *joba, const char *jobu, const char *jobv, INTEGER const 
             swband = i;
         }
         //
-        if ((i > swband + 1) && (mxaapq < sqrt(castREAL(n) * tol)) && (castREAL(n) * mxaapq * mxsinj < tol)) {
+        if ((i > swband + 1) && (mxaapq < sqrt(castREAL(n)) * tol) && (castREAL(n) * mxaapq * mxsinj < tol)) {
             goto statement_1994;
         }
         //
@@ -1106,7 +1108,7 @@ statement_1995:
     }
     //
     // Undo scaling, if necessary (and possible).
-    if (((skl > one) && (sva[0] < (big / skl))) || ((skl < one) && (sva[(max(n2, (INTEGER)1) - 1)] > (sfmin / skl)))) {
+    if (((skl > one) && (sva[0] < (big / skl))) || ((skl < one) && (sva[max(n2, (INTEGER)1) - 1] > (sfmin / skl)))) {
         for (p = 1; p <= n; p = p + 1) {
             sva[p - 1] = skl * sva[p - 1];
         }
@@ -1118,24 +1120,23 @@ statement_1995:
     // then some of the singular values may overflow or underflow and
     // the spectrum is given in this factored representation.
     //
-    work[2 - 1] = castREAL(n4);
+    work[1] = castREAL(n4);
     // N4 is the number of computed nonzero singular values of A.
     //
-    work[3 - 1] = castREAL(n2);
+    work[2] = castREAL(n2);
     // N2 is the number of singular values of A greater than SFMIN.
     // If N2<N, SVA(N2:N) contains ZEROS and/or denormalized numbers
     // that may carry some information.
     //
-    work[4 - 1] = castREAL(i);
+    work[3] = castREAL(i);
     // i is the index of the last sweep before declaring convergence.
     //
-    work[5 - 1] = mxaapq;
+    work[4] = mxaapq;
     // MXAAPQ is the largest absolute value of scaled pivots in the
     // last sweep
     //
-    work[6 - 1] = mxsinj;
+    work[5] = mxsinj;
     // MXSINJ is the largest absolute value of the sines of Jacobi angles
     // in the last sweep
     //
-    // .. END OF Rgesvj
 }
