@@ -50,12 +50,12 @@ void Rtrsyl(const char *trana, const char *tranb, INTEGER const isgn, INTEGER co
     INTEGER k2 = 0;
     REAL suml = 0.0;
     REAL sumr = 0.0;
-    REAL vec[4];
+    REAL vec[2 * 2];
     REAL scaloc = 0.0;
     REAL a11 = 0.0;
     REAL da11 = 0.0;
     REAL db = 0.0;
-    REAL x[4];
+    REAL x[2 * 2];
     INTEGER j = 0;
     REAL xnorm = 0.0;
     INTEGER ierr = 0;
