@@ -31,11 +31,6 @@
 
 void Rstevd(const char *jobz, INTEGER const n, REAL *d, REAL *e, REAL *z, INTEGER const ldz, REAL *work, INTEGER const lwork, INTEGER *iwork, INTEGER const liwork, INTEGER &info) {
     //
-    // -- LAPACK driver routine --
-    //
-    //
-    //
-    //
     // Test the input parameters.
     //
     bool wantz = Mlsame(jobz, "V");
@@ -45,7 +40,7 @@ void Rstevd(const char *jobz, INTEGER const n, REAL *d, REAL *e, REAL *z, INTEGE
     INTEGER liwmin = 1;
     INTEGER lwmin = 1;
     if (n > 1 && wantz) {
-        lwmin = 1 + 4 * n + castINTEGER(pow2(castREAL(n)));
+        lwmin = 1 + 4 * n + pow2(n);
         liwmin = 3 + 5 * n;
     }
     //
