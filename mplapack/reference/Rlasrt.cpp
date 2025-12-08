@@ -32,9 +32,7 @@
 void Rlasrt(const char *id, INTEGER const n, REAL *d, INTEGER &info) {
     INTEGER dir = 0;
     INTEGER stkpnt = 0;
-    INTEGER stacklen = 32;
-    INTEGER stack[2 * stacklen];
-    INTEGER ldstack = 2;
+    INTEGER stack[2 * 32];
     INTEGER start = 0;
     INTEGER endd = 0;
     const INTEGER select = 20;
@@ -45,7 +43,6 @@ void Rlasrt(const char *id, INTEGER const n, REAL *d, INTEGER &info) {
     REAL d2 = 0.0;
     REAL d3 = 0.0;
     REAL tmp = 0.0;
-    //
     //
     // Test the input parameters.
     //
