@@ -85,7 +85,7 @@ void Cpptri(const char *uplo, INTEGER const n, COMPLEX *ap, INTEGER &info) {
         jj = 1;
         for (j = 1; j <= n; j = j + 1) {
             jjn = jj + n - j + 1;
-            ap[jj - 1] = (Cdotc(n - j + 1, &ap[jj - 1], 1, &ap[jj - 1], 1)).real();
+            ap[jj - 1] = Cdotc(n - j + 1, &ap[jj - 1], 1, &ap[jj - 1], 1).real();
             if (j < n) {
                 Ctpmv("Lower", "Conjugate transpose", "Non-unit", n - j, &ap[jjn - 1], &ap[(jj + 1) - 1], 1);
             }
