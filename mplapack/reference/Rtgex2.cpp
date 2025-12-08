@@ -46,7 +46,7 @@ void Rtgex2(bool const wantq, bool const wantz, INTEGER const n, REAL *a, INTEGE
     REAL dsum = 0.0;
     REAL dnorma = 0.0;
     REAL dnormb = 0.0;
-    const REAL twenty = 2.0e+01;
+    const REAL twenty = 20.0;
     REAL thresha = 0.0;
     REAL threshb = 0.0;
     REAL f = 0.0;
@@ -71,22 +71,6 @@ void Rtgex2(bool const wantq, bool const wantz, INTEGER const n, REAL *a, INTEGE
     REAL ar[2];
     REAL ai[2];
     REAL be[2];
-    INTEGER ldir = ldst;
-    INTEGER ldircop = ldst;
-    INTEGER ldli = ldst;
-    INTEGER ldlicop = ldst;
-    INTEGER lds = ldst;
-    INTEGER ldscpy = ldst;
-    INTEGER ldt = ldst;
-    INTEGER ldtaul = ldst;
-    INTEGER ldtcpy = ldst;
-    //
-    //
-    //
-    // Replaced various illegal calls to Rcopy by calls to Rlaset, or by DO
-    // loops. Sven Hammarling, 1/5/02.
-    //
-    // .. Local Arrays ..
     //
     info = 0;
     //
@@ -138,8 +122,8 @@ void Rtgex2(bool const wantq, bool const wantz, INTEGER const n, REAL *a, INTEGE
     // "Bug" reported by Ondra Kamenik, confirmed by Julie Langou, fixed by
     // Jim Demmel and Guillaume Revy. See forum post 1783.
     //
-    thresha = max(REAL(twenty * eps * dnorma), smlnum);
-    threshb = max(REAL(twenty * eps * dnormb), smlnum);
+    thresha = max(twenty * eps * dnorma, smlnum);
+    threshb = max(twenty * eps * dnormb, smlnum);
     //
     if (m == 2) {
         //
@@ -407,8 +391,8 @@ void Rtgex2(bool const wantq, bool const wantz, INTEGER const n, REAL *a, INTEGE
         t[0] = one;
         idum = lwork - m * m - 2;
         if (n2 > 1) {
-            Rlagv2(&a[(j1 - 1) + (j1 - 1) * lda], lda, &b[(j1 - 1) + (j1 - 1) * ldb], ldb, ar, ai, be, work[0], work[2 - 1], t[0], t[(2 - 1)]);
-            work[(m + 1) - 1] = -work[2 - 1];
+            Rlagv2(&a[(j1 - 1) + (j1 - 1) * lda], lda, &b[(j1 - 1) + (j1 - 1) * ldb], ldb, ar, ai, be, work[0], work[1], t[0], t[(2 - 1)]);
+            work[(m + 1) - 1] = -work[1];
             work[(m + 2) - 1] = work[0];
             t[(n2 - 1) + (n2 - 1) * ldt] = t[0];
             t[(2 - 1) * ldt] = -t[(2 - 1)];
