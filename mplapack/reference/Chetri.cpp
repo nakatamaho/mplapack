@@ -119,7 +119,7 @@ void Chetri(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
             if (k > 1) {
                 Ccopy(k - 1, &a[(k - 1) * lda], 1, work, 1);
                 Chemv(uplo, k - 1, -cone, a, lda, work, 1, zero, &a[(k - 1) * lda], 1);
-                a[(k - 1) + (k - 1) * lda] = a[(k - 1) + (k - 1) * lda] - (Cdotc(k - 1, work, 1, &a[(k - 1) * lda], 1)).real();
+                a[(k - 1) + (k - 1) * lda] = a[(k - 1) + (k - 1) * lda] - Cdotc(k - 1, work, 1, &a[(k - 1) * lda], 1).real();
             }
             kstep = 1;
         } else {
@@ -142,11 +142,11 @@ void Chetri(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
             if (k > 1) {
                 Ccopy(k - 1, &a[(k - 1) * lda], 1, work, 1);
                 Chemv(uplo, k - 1, -cone, a, lda, work, 1, zero, &a[(k - 1) * lda], 1);
-                a[(k - 1) + (k - 1) * lda] = a[(k - 1) + (k - 1) * lda] - (Cdotc(k - 1, work, 1, &a[(k - 1) * lda], 1)).real();
+                a[(k - 1) + (k - 1) * lda] = a[(k - 1) + (k - 1) * lda] - Cdotc(k - 1, work, 1, &a[(k - 1) * lda], 1).real();
                 a[(k - 1) + ((k + 1) - 1) * lda] = a[(k - 1) + ((k + 1) - 1) * lda] - Cdotc(k - 1, &a[(k - 1) * lda], 1, &a[((k + 1) - 1) * lda], 1);
                 Ccopy(k - 1, &a[((k + 1) - 1) * lda], 1, work, 1);
                 Chemv(uplo, k - 1, -cone, a, lda, work, 1, zero, &a[((k + 1) - 1) * lda], 1);
-                a[((k + 1) - 1) + ((k + 1) - 1) * lda] = a[((k + 1) - 1) + ((k + 1) - 1) * lda] - (Cdotc(k - 1, work, 1, &a[((k + 1) - 1) * lda], 1)).real();
+                a[((k + 1) - 1) + ((k + 1) - 1) * lda] = a[((k + 1) - 1) + ((k + 1) - 1) * lda] - Cdotc(k - 1, work, 1, &a[((k + 1) - 1) * lda], 1).real();
             }
             kstep = 2;
         }
@@ -207,7 +207,7 @@ void Chetri(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
             if (k < n) {
                 Ccopy(n - k, &a[((k + 1) - 1) + (k - 1) * lda], 1, work, 1);
                 Chemv(uplo, n - k, -cone, &a[((k + 1) - 1) + ((k + 1) - 1) * lda], lda, work, 1, zero, &a[((k + 1) - 1) + (k - 1) * lda], 1);
-                a[(k - 1) + (k - 1) * lda] = a[(k - 1) + (k - 1) * lda] - (Cdotc(n - k, work, 1, &a[((k + 1) - 1) + (k - 1) * lda], 1)).real();
+                a[(k - 1) + (k - 1) * lda] = a[(k - 1) + (k - 1) * lda] - Cdotc(n - k, work, 1, &a[((k + 1) - 1) + (k - 1) * lda], 1).real();
             }
             kstep = 1;
         } else {
@@ -230,11 +230,11 @@ void Chetri(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
             if (k < n) {
                 Ccopy(n - k, &a[((k + 1) - 1) + (k - 1) * lda], 1, work, 1);
                 Chemv(uplo, n - k, -cone, &a[((k + 1) - 1) + ((k + 1) - 1) * lda], lda, work, 1, zero, &a[((k + 1) - 1) + (k - 1) * lda], 1);
-                a[(k - 1) + (k - 1) * lda] = a[(k - 1) + (k - 1) * lda] - (Cdotc(n - k, work, 1, &a[((k + 1) - 1) + (k - 1) * lda], 1)).real();
+                a[(k - 1) + (k - 1) * lda] = a[(k - 1) + (k - 1) * lda] - Cdotc(n - k, work, 1, &a[((k + 1) - 1) + (k - 1) * lda], 1).real();
                 a[(k - 1) + ((k - 1) - 1) * lda] = a[(k - 1) + ((k - 1) - 1) * lda] - Cdotc(n - k, &a[((k + 1) - 1) + (k - 1) * lda], 1, &a[((k + 1) - 1) + ((k - 1) - 1) * lda], 1);
                 Ccopy(n - k, &a[((k + 1) - 1) + ((k - 1) - 1) * lda], 1, work, 1);
                 Chemv(uplo, n - k, -cone, &a[((k + 1) - 1) + ((k + 1) - 1) * lda], lda, work, 1, zero, &a[((k + 1) - 1) + ((k - 1) - 1) * lda], 1);
-                a[((k - 1) - 1) + ((k - 1) - 1) * lda] = a[((k - 1) - 1) + ((k - 1) - 1) * lda] - (Cdotc(n - k, work, 1, &a[((k + 1) - 1) + ((k - 1) - 1) * lda], 1)).real();
+                a[((k - 1) - 1) + ((k - 1) - 1) * lda] = a[((k - 1) - 1) + ((k - 1) - 1) * lda] - Cdotc(n - k, work, 1, &a[((k + 1) - 1) + ((k - 1) - 1) * lda], 1).real();
             }
             kstep = 2;
         }
