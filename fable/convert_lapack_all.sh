@@ -76,5 +76,5 @@ parallel -j "${JOBS:-$(nproc)}" '
      bash "$FABLE_CONVERT" "{}"
  ' ::: "${files[@]}"
 
-patch -R < ~/mplapack/fable/lapack-patches/patch-Cbbcsd.cpp
-patch -R < ~/mplapack/fable/lapack-patches/patch-Cpptrf.cpp
+patch -p3 -R < ~/mplapack/fable/lapack-patches/patch-Cbbcsd.cpp
+patch -p3 -R < ~/mplapack/fable/lapack-patches/patch-Cpptrf.cpp
