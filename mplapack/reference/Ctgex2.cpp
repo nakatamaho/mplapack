@@ -45,7 +45,7 @@ void Ctgex2(bool const wantq, bool const wantz, INTEGER const n, COMPLEX *a, INT
     COMPLEX work[8];
     REAL sa = 0.0;
     REAL sb = 0.0;
-    const REAL twenty = 2.0e+1;
+    const REAL twenty = 20.0;
     REAL thresha = 0.0;
     REAL threshb = 0.0;
     COMPLEX f = 0.0;
@@ -57,11 +57,6 @@ void Ctgex2(bool const wantq, bool const wantz, INTEGER const n, COMPLEX *a, INT
     COMPLEX sq = 0.0;
     const bool wands = true;
     INTEGER i = 0;
-    //
-    //
-    //
-    //
-    // .. Local Arrays ..
     //
     info = 0;
     //
@@ -103,20 +98,20 @@ void Ctgex2(bool const wantq, bool const wantz, INTEGER const n, COMPLEX *a, INT
     // "Bug" reported by Ondra Kamenik, confirmed by Julie Langou, fixed by
     // Jim Demmel and Guillaume Revy. See forum post 1783.
     //
-    thresha = max(REAL(twenty * eps * sa), smlnum);
-    threshb = max(REAL(twenty * eps * sb), smlnum);
+    thresha = max(twenty * eps * sa, smlnum);
+    threshb = max(twenty * eps * sb, smlnum);
     //
     // Compute unitary QL and RQ that swap 1-by-1 and 1-by-1 blocks
     // using Givens rotations and perform the swap tentatively.
     //
-    f = s[(2 - 1) + (2 - 1) * ldst] * t[0] - t[(2 - 1) + (2 - 1) * ldst] * s[0];
-    g = s[(2 - 1) + (2 - 1) * ldst] * t[(2 - 1) * ldst] - t[(2 - 1) + (2 - 1) * ldst] * s[(2 - 1) * ldst];
-    sa = abs(s[(2 - 1) + (2 - 1) * ldst]) * abs(t[0]);
-    sb = abs(s[0]) * abs(t[(2 - 1) + (2 - 1) * ldst]);
+    f = s[(2 - 1) + (2 - 1) * lds] * t[0] - t[(2 - 1) + (2 - 1) * ldt] * s[0];
+    g = s[(2 - 1) + (2 - 1) * lds] * t[(2 - 1) * ldt] - t[(2 - 1) + (2 - 1) * ldt] * s[(2 - 1) * lds];
+    sa = abs(s[(2 - 1) + (2 - 1) * lds]) * abs(t[0]);
+    sb = abs(s[0]) * abs(t[(2 - 1) + (2 - 1) * ldt]);
     Clartg(g, f, cz, sz, cdum);
     sz = -sz;
-    Crot(2, &s[0], 1, &s[(2 - 1) * ldst], 1, cz, conj(sz));
-    Crot(2, &t[0], 1, &t[(2 - 1) * ldst], 1, cz, conj(sz));
+    Crot(2, &s[0], 1, &s[(2 - 1) * lds], 1, cz, conj(sz));
+    Crot(2, &t[0], 1, &t[(2 - 1) * ldt], 1, cz, conj(sz));
     if (sa >= sb) {
         Clartg(s[0], s[(2 - 1)], cq, sq, cdum);
     } else {
@@ -142,10 +137,10 @@ void Ctgex2(bool const wantq, bool const wantz, INTEGER const n, COMPLEX *a, INT
         //
         Clacpy("Full", m, m, s, ldst, work, m);
         Clacpy("Full", m, m, t, ldst, &work[(m * m + 1) - 1], m);
-        Crot(2, work, 1, &work[3 - 1], 1, cz, -conj(sz));
-        Crot(2, &work[5 - 1], 1, &work[7 - 1], 1, cz, -conj(sz));
-        Crot(2, work, 2, &work[2 - 1], 2, cq, -sq);
-        Crot(2, &work[5 - 1], 2, &work[6 - 1], 2, cq, -sq);
+        Crot(2, work, 1, &work[2], 1, cz, -conj(sz));
+        Crot(2, &work[4], 1, &work[6], 1, cz, -conj(sz));
+        Crot(2, work, 2, &work[1], 2, cq, -sq);
+        Crot(2, &work[4], 2, &work[5], 2, cq, -sq);
         for (i = 1; i <= 2; i = i + 1) {
             work[i - 1] = work[i - 1] - a[((j1 + i - 1) - 1) + (j1 - 1) * lda];
             work[(i + 2) - 1] = work[(i + 2) - 1] - a[((j1 + i - 1) - 1) + ((j1 + 1) - 1) * lda];
