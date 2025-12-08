@@ -161,7 +161,7 @@ void Csyequb(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, R
             si = s[i - 1];
             c2 = castREAL(n - 1) * t;
             c1 = castREAL(n - 2) * (work[i - 1].real() - t * si);
-            c0 = -(t * si) * si + 2.0 * work[i - 1].real() * si - n * avg;
+            c0 = -(t * si) * si + 2.0 * work[i - 1].real() * si - castREAL(n) * avg;
             d = c1 * c1 - 4 * c0 * c2;
             //
             if (d <= 0) {
@@ -196,7 +196,7 @@ void Csyequb(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, R
                 }
             }
             //
-            avg += (u + work[i - 1].real()) * d / n;
+            avg += (u + work[i - 1].real()) * d / castREA(n);
             s[i - 1] = si;
         }
     }
@@ -211,7 +211,7 @@ statement_999:
     base = Rlamch("B");
     u = one / log(base);
     for (i = 1; i <= n; i = i + 1) {
-        s[i - 1] = pow(base, REAL(u * log(s[i - 1] * t)));
+        s[i - 1] = pow(base, castINTEGER(u * log(s[i - 1] * t)));
         smin = min(smin, s[i - 1]);
         smax = max(smax, s[i - 1]);
     }
