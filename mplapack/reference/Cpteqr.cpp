@@ -98,8 +98,8 @@ void Cpteqr(const char *compz, INTEGER const n, REAL *d, REAL *e, COMPLEX *z, IN
     } else {
         nru = 0;
     }
-    COMPLEX vt[1];
-    COMPLEX c[1];
+    COMPLEX vt[1 * 1];
+    COMPLEX c[1 * 1];
     Cbdsqr("Lower", n, 0, nru, 0, d, e, vt, 1, z, ldz, c, 1, work, info);
     //
     // Square the singular values.
