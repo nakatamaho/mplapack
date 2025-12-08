@@ -29,7 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rtgsy2(const char *trans, INTEGER const ijob, INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL *c, INTEGER const ldc, REAL *d, INTEGER const ldd, REAL *e, INTEGER const lde, REAL *f, INTEGER const ldf, REAL &scale, REAL &rdsum, REAL &rdscal, INTEGER *iwork, INTEGER &pq, INTEGER &info) {
+void Rtgsy2(const char *trans, INTEGER const ijob, INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL *c, INTEGER const ldc, REAL *d, INTEGER const ldd, REAL *e, INTEGER const lde, REAL *f, INTEGER const ldf, REAL &scale, REAL const &rdsum, REAL const &rdscal, INTEGER *iwork, INTEGER &pq, INTEGER &info) {
     INTEGER ierr = 0;
     bool notran = false;
     INTEGER p = 0;
@@ -174,7 +174,7 @@ statement_40:
                     // Set up right hand side(s)
                     //
                     rhs[0] = c[(is - 1) + (js - 1) * ldc];
-                    rhs[2 - 1] = f[(is - 1) + (js - 1) * ldf];
+                    rhs[1] = f[(is - 1) + (js - 1) * ldf];
                     //
                     // Solve Z * x = RHS
                     //
@@ -199,7 +199,7 @@ statement_40:
                     // Unpack solution vector(s)
                     //
                     c[(is - 1) + (js - 1) * ldc] = rhs[0];
-                    f[(is - 1) + (js - 1) * ldf] = rhs[2 - 1];
+                    f[(is - 1) + (js - 1) * ldf] = rhs[1];
                     //
                     // Substitute R(I, J) and L(I, J) into remaining
                     // equation.
@@ -210,8 +210,8 @@ statement_40:
                         Raxpy(is - 1, alpha, &d[(is - 1) * ldd], 1, &f[(js - 1) * ldf], 1);
                     }
                     if (j < q) {
-                        Raxpy(n - je, rhs[2 - 1], &b[(js - 1) + ((je + 1) - 1) * ldb], ldb, &c[(is - 1) + ((je + 1) - 1) * ldc], ldc);
-                        Raxpy(n - je, rhs[2 - 1], &e[(js - 1) + ((je + 1) - 1) * lde], lde, &f[(is - 1) + ((je + 1) - 1) * ldf], ldf);
+                        Raxpy(n - je, rhs[1], &b[(js - 1) + ((je + 1) - 1) * ldb], ldb, &c[(is - 1) + ((je + 1) - 1) * ldc], ldc);
+                        Raxpy(n - je, rhs[1], &e[(js - 1) + ((je + 1) - 1) * lde], lde, &f[(is - 1) + ((je + 1) - 1) * ldf], ldf);
                     }
                     //
                 } else if ((mb == 1) && (nb == 2)) {
@@ -241,9 +241,9 @@ statement_40:
                     // Set up right hand side(s)
                     //
                     rhs[0] = c[(is - 1) + (js - 1) * ldc];
-                    rhs[2 - 1] = c[(is - 1) + (jsp1 - 1) * ldc];
-                    rhs[3 - 1] = f[(is - 1) + (js - 1) * ldf];
-                    rhs[4 - 1] = f[(is - 1) + (jsp1 - 1) * ldf];
+                    rhs[1] = c[(is - 1) + (jsp1 - 1) * ldc];
+                    rhs[2] = f[(is - 1) + (js - 1) * ldf];
+                    rhs[3] = f[(is - 1) + (jsp1 - 1) * ldf];
                     //
                     // Solve Z * x = RHS
                     //
@@ -268,9 +268,9 @@ statement_40:
                     // Unpack solution vector(s)
                     //
                     c[(is - 1) + (js - 1) * ldc] = rhs[0];
-                    c[(is - 1) + (jsp1 - 1) * ldc] = rhs[2 - 1];
-                    f[(is - 1) + (js - 1) * ldf] = rhs[3 - 1];
-                    f[(is - 1) + (jsp1 - 1) * ldf] = rhs[4 - 1];
+                    c[(is - 1) + (jsp1 - 1) * ldc] = rhs[1];
+                    f[(is - 1) + (js - 1) * ldf] = rhs[2];
+                    f[(is - 1) + (jsp1 - 1) * ldf] = rhs[3];
                     //
                     // Substitute R(I, J) and L(I, J) into remaining
                     // equation.
@@ -280,10 +280,10 @@ statement_40:
                         Rger(is - 1, nb, -one, &d[(is - 1) * ldd], 1, &rhs[0], 1, &f[(js - 1) * ldf], ldf);
                     }
                     if (j < q) {
-                        Raxpy(n - je, rhs[3 - 1], &b[(js - 1) + ((je + 1) - 1) * ldb], ldb, &c[(is - 1) + ((je + 1) - 1) * ldc], ldc);
-                        Raxpy(n - je, rhs[3 - 1], &e[(js - 1) + ((je + 1) - 1) * lde], lde, &f[(is - 1) + ((je + 1) - 1) * ldf], ldf);
-                        Raxpy(n - je, rhs[4 - 1], &b[(jsp1 - 1) + ((je + 1) - 1) * ldb], ldb, &c[(is - 1) + ((je + 1) - 1) * ldc], ldc);
-                        Raxpy(n - je, rhs[4 - 1], &e[(jsp1 - 1) + ((je + 1) - 1) * lde], lde, &f[(is - 1) + ((je + 1) - 1) * ldf], ldf);
+                        Raxpy(n - je, rhs[2], &b[(js - 1) + ((je + 1) - 1) * ldb], ldb, &c[(is - 1) + ((je + 1) - 1) * ldc], ldc);
+                        Raxpy(n - je, rhs[2], &e[(js - 1) + ((je + 1) - 1) * lde], lde, &f[(is - 1) + ((je + 1) - 1) * ldf], ldf);
+                        Raxpy(n - je, rhs[3], &b[(jsp1 - 1) + ((je + 1) - 1) * ldb], ldb, &c[(is - 1) + ((je + 1) - 1) * ldc], ldc);
+                        Raxpy(n - je, rhs[3], &e[(jsp1 - 1) + ((je + 1) - 1) * lde], lde, &f[(is - 1) + ((je + 1) - 1) * ldf], ldf);
                     }
                     //
                 } else if ((mb == 2) && (nb == 1)) {
@@ -313,9 +313,9 @@ statement_40:
                     // Set up right hand side(s)
                     //
                     rhs[0] = c[(is - 1) + (js - 1) * ldc];
-                    rhs[2 - 1] = c[(isp1 - 1) + (js - 1) * ldc];
-                    rhs[3 - 1] = f[(is - 1) + (js - 1) * ldf];
-                    rhs[4 - 1] = f[(isp1 - 1) + (js - 1) * ldf];
+                    rhs[1] = c[(isp1 - 1) + (js - 1) * ldc];
+                    rhs[2] = f[(is - 1) + (js - 1) * ldf];
+                    rhs[3] = f[(isp1 - 1) + (js - 1) * ldf];
                     //
                     // Solve Z * x = RHS
                     //
@@ -339,9 +339,9 @@ statement_40:
                     // Unpack solution vector(s)
                     //
                     c[(is - 1) + (js - 1) * ldc] = rhs[0];
-                    c[(isp1 - 1) + (js - 1) * ldc] = rhs[2 - 1];
-                    f[(is - 1) + (js - 1) * ldf] = rhs[3 - 1];
-                    f[(isp1 - 1) + (js - 1) * ldf] = rhs[4 - 1];
+                    c[(isp1 - 1) + (js - 1) * ldc] = rhs[1];
+                    f[(is - 1) + (js - 1) * ldf] = rhs[2];
+                    f[(isp1 - 1) + (js - 1) * ldf] = rhs[3];
                     //
                     // Substitute R(I, J) and L(I, J) into remaining
                     // equation.
@@ -351,8 +351,8 @@ statement_40:
                         Rgemv("N", is - 1, mb, -one, &d[(is - 1) * ldd], ldd, &rhs[0], 1, one, &f[(js - 1) * ldf], 1);
                     }
                     if (j < q) {
-                        Rger(mb, n - je, one, &rhs[3 - 1], 1, &b[(js - 1) + ((je + 1) - 1) * ldb], ldb, &c[(is - 1) + ((je + 1) - 1) * ldc], ldc);
-                        Rger(mb, n - je, one, &rhs[3 - 1], 1, &e[(js - 1) + ((je + 1) - 1) * lde], lde, &f[(is - 1) + ((je + 1) - 1) * ldf], ldf);
+                        Rger(mb, n - je, one, &rhs[2], 1, &b[(js - 1) + ((je + 1) - 1) * ldb], ldb, &c[(is - 1) + ((je + 1) - 1) * ldc], ldc);
+                        Rger(mb, n - je, one, &rhs[2], 1, &e[(js - 1) + ((je + 1) - 1) * lde], lde, &f[(is - 1) + ((je + 1) - 1) * ldf], ldf);
                     }
                     //
                 } else if ((mb == 2) && (nb == 2)) {
@@ -489,7 +489,7 @@ statement_40:
                     // Set up right hand side(s)
                     //
                     rhs[0] = c[(is - 1) + (js - 1) * ldc];
-                    rhs[2 - 1] = f[(is - 1) + (js - 1) * ldf];
+                    rhs[1] = f[(is - 1) + (js - 1) * ldf];
                     //
                     // Solve Z**T * x = RHS
                     //
@@ -510,7 +510,7 @@ statement_40:
                     // Unpack solution vector(s)
                     //
                     c[(is - 1) + (js - 1) * ldc] = rhs[0];
-                    f[(is - 1) + (js - 1) * ldf] = rhs[2 - 1];
+                    f[(is - 1) + (js - 1) * ldf] = rhs[1];
                     //
                     // Substitute R(I, J) and L(I, J) into remaining
                     // equation.
@@ -518,13 +518,13 @@ statement_40:
                     if (j > p + 2) {
                         alpha = rhs[0];
                         Raxpy(js - 1, alpha, &b[(js - 1) * ldb], 1, &f[(is - 1)], ldf);
-                        alpha = rhs[2 - 1];
+                        alpha = rhs[1];
                         Raxpy(js - 1, alpha, &e[(js - 1) * lde], 1, &f[(is - 1)], ldf);
                     }
                     if (i < p) {
                         alpha = -rhs[0];
                         Raxpy(m - ie, alpha, &a[(is - 1) + ((ie + 1) - 1) * lda], lda, &c[((ie + 1) - 1) + (js - 1) * ldc], 1);
-                        alpha = -rhs[2 - 1];
+                        alpha = -rhs[1];
                         Raxpy(m - ie, alpha, &d[(is - 1) + ((ie + 1) - 1) * ldd], ldd, &c[((ie + 1) - 1) + (js - 1) * ldc], 1);
                     }
                     //
@@ -555,9 +555,9 @@ statement_40:
                     // Set up right hand side(s)
                     //
                     rhs[0] = c[(is - 1) + (js - 1) * ldc];
-                    rhs[2 - 1] = c[(is - 1) + (jsp1 - 1) * ldc];
-                    rhs[3 - 1] = f[(is - 1) + (js - 1) * ldf];
-                    rhs[4 - 1] = f[(is - 1) + (jsp1 - 1) * ldf];
+                    rhs[1] = c[(is - 1) + (jsp1 - 1) * ldc];
+                    rhs[2] = f[(is - 1) + (js - 1) * ldf];
+                    rhs[3] = f[(is - 1) + (jsp1 - 1) * ldf];
                     //
                     // Solve Z**T * x = RHS
                     //
@@ -577,22 +577,22 @@ statement_40:
                     // Unpack solution vector(s)
                     //
                     c[(is - 1) + (js - 1) * ldc] = rhs[0];
-                    c[(is - 1) + (jsp1 - 1) * ldc] = rhs[2 - 1];
-                    f[(is - 1) + (js - 1) * ldf] = rhs[3 - 1];
-                    f[(is - 1) + (jsp1 - 1) * ldf] = rhs[4 - 1];
+                    c[(is - 1) + (jsp1 - 1) * ldc] = rhs[1];
+                    f[(is - 1) + (js - 1) * ldf] = rhs[2];
+                    f[(is - 1) + (jsp1 - 1) * ldf] = rhs[3];
                     //
                     // Substitute R(I, J) and L(I, J) into remaining
                     // equation.
                     //
                     if (j > p + 2) {
                         Raxpy(js - 1, rhs[0], &b[(js - 1) * ldb], 1, &f[(is - 1)], ldf);
-                        Raxpy(js - 1, rhs[2 - 1], &b[(jsp1 - 1) * ldb], 1, &f[(is - 1)], ldf);
-                        Raxpy(js - 1, rhs[3 - 1], &e[(js - 1) * lde], 1, &f[(is - 1)], ldf);
-                        Raxpy(js - 1, rhs[4 - 1], &e[(jsp1 - 1) * lde], 1, &f[(is - 1)], ldf);
+                        Raxpy(js - 1, rhs[1], &b[(jsp1 - 1) * ldb], 1, &f[(is - 1)], ldf);
+                        Raxpy(js - 1, rhs[2], &e[(js - 1) * lde], 1, &f[(is - 1)], ldf);
+                        Raxpy(js - 1, rhs[3], &e[(jsp1 - 1) * lde], 1, &f[(is - 1)], ldf);
                     }
                     if (i < p) {
                         Rger(m - ie, nb, -one, &a[(is - 1) + ((ie + 1) - 1) * lda], lda, &rhs[0], 1, &c[((ie + 1) - 1) + (js - 1) * ldc], ldc);
-                        Rger(m - ie, nb, -one, &d[(is - 1) + ((ie + 1) - 1) * ldd], ldd, &rhs[3 - 1], 1, &c[((ie + 1) - 1) + (js - 1) * ldc], ldc);
+                        Rger(m - ie, nb, -one, &d[(is - 1) + ((ie + 1) - 1) * ldd], ldd, &rhs[2], 1, &c[((ie + 1) - 1) + (js - 1) * ldc], ldc);
                     }
                     //
                 } else if ((mb == 2) && (nb == 1)) {
@@ -622,9 +622,9 @@ statement_40:
                     // Set up right hand side(s)
                     //
                     rhs[0] = c[(is - 1) + (js - 1) * ldc];
-                    rhs[2 - 1] = c[(isp1 - 1) + (js - 1) * ldc];
-                    rhs[3 - 1] = f[(is - 1) + (js - 1) * ldf];
-                    rhs[4 - 1] = f[(isp1 - 1) + (js - 1) * ldf];
+                    rhs[1] = c[(isp1 - 1) + (js - 1) * ldc];
+                    rhs[2] = f[(is - 1) + (js - 1) * ldf];
+                    rhs[3] = f[(isp1 - 1) + (js - 1) * ldf];
                     //
                     // Solve Z**T * x = RHS
                     //
@@ -645,20 +645,20 @@ statement_40:
                     // Unpack solution vector(s)
                     //
                     c[(is - 1) + (js - 1) * ldc] = rhs[0];
-                    c[(isp1 - 1) + (js - 1) * ldc] = rhs[2 - 1];
-                    f[(is - 1) + (js - 1) * ldf] = rhs[3 - 1];
-                    f[(isp1 - 1) + (js - 1) * ldf] = rhs[4 - 1];
+                    c[(isp1 - 1) + (js - 1) * ldc] = rhs[1];
+                    f[(is - 1) + (js - 1) * ldf] = rhs[2];
+                    f[(isp1 - 1) + (js - 1) * ldf] = rhs[3];
                     //
                     // Substitute R(I, J) and L(I, J) into remaining
                     // equation.
                     //
                     if (j > p + 2) {
                         Rger(mb, js - 1, one, &rhs[0], 1, &b[(js - 1) * ldb], 1, &f[(is - 1)], ldf);
-                        Rger(mb, js - 1, one, &rhs[3 - 1], 1, &e[(js - 1) * lde], 1, &f[(is - 1)], ldf);
+                        Rger(mb, js - 1, one, &rhs[2], 1, &e[(js - 1) * lde], 1, &f[(is - 1)], ldf);
                     }
                     if (i < p) {
                         Rgemv("T", mb, m - ie, -one, &a[(is - 1) + ((ie + 1) - 1) * lda], lda, &rhs[0], 1, one, &c[((ie + 1) - 1) + (js - 1) * ldc], 1);
-                        Rgemv("T", mb, m - ie, -one, &d[(is - 1) + ((ie + 1) - 1) * ldd], ldd, &rhs[3 - 1], 1, one, &c[((ie + 1) - 1) + (js - 1) * ldc], 1);
+                        Rgemv("T", mb, m - ie, -one, &d[(is - 1) + ((ie + 1) - 1) * ldd], ldd, &rhs[2], 1, one, &c[((ie + 1) - 1) + (js - 1) * ldc], 1);
                     }
                     //
                 } else if ((mb == 2) && (nb == 2)) {
