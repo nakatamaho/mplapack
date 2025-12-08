@@ -110,7 +110,7 @@ void Cuncsd2by1(const char *jobu1, const char *jobu2, const char *jobv1t, INTEGE
     INTEGER lorglqmin = 0;
     INTEGER lorglqopt = 0;
     REAL dum[1];
-    COMPLEX cdum[1];
+    COMPLEX cdum[1 * 1];
     INTEGER childinfo = 0;
     INTEGER lorbdb = 0;
     INTEGER lbbcsd = 0;
