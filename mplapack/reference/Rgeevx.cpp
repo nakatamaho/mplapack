@@ -29,7 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rgeevx(const char *balanc, const char *jobvl, const char *jobvr, const char *sense, INTEGER const n, REAL *a, INTEGER const lda, REAL *wr, REAL *wi, REAL *vl, INTEGER const ldvl, REAL *vr, INTEGER const ldvr, INTEGER ilo, INTEGER ihi, REAL *scale, REAL &abnrm, REAL *rconde, REAL *rcondv, REAL *work, INTEGER const lwork, INTEGER *iwork, INTEGER &info) {
+void Rgeevx(const char *balanc, const char *jobvl, const char *jobvr, const char *sense, INTEGER const n, REAL *a, INTEGER const lda, REAL *wr, REAL *wi, REAL *vl, INTEGER const ldvl, REAL *vr, INTEGER const ldvr, INTEGER const ilo, INTEGER const ihi, REAL *scale, REAL &abnrm, REAL *rconde, REAL *rcondv, REAL *work, INTEGER const lwork, INTEGER *iwork, INTEGER &info) {
     bool lquery = false;
     bool wantvl = false;
     bool wantvr = false;
@@ -39,7 +39,7 @@ void Rgeevx(const char *balanc, const char *jobvl, const char *jobvr, const char
     bool wntsnb = false;
     INTEGER minwrk = 0;
     INTEGER maxwrk = 0;
-    bool select;
+    bool select[1];
     INTEGER nout = 0;
     INTEGER ierr = 0;
     INTEGER lwork_trevc = 0;
@@ -64,12 +64,6 @@ void Rgeevx(const char *balanc, const char *jobvl, const char *jobvr, const char
     REAL cs = 0.0;
     REAL sn = 0.0;
     REAL r = 0.0;
-    //
-    // -- LAPACK driver routine --
-    //
-    //
-    //
-    // .. Local Arrays ..
     //
     // Test the input arguments
     //
@@ -117,12 +111,12 @@ void Rgeevx(const char *balanc, const char *jobvl, const char *jobvr, const char
             maxwrk = n + n * iMlaenv(1, "Rgehrd", " ", n, 1, n, 0);
             //
             if (wantvl) {
-                Rtrevc3("L", "B", &select, n, a, lda, vl, ldvl, vr, ldvr, n, nout, work, -1, ierr);
+                Rtrevc3("L", "B", select, n, a, lda, vl, ldvl, vr, ldvr, n, nout, work, -1, ierr);
                 lwork_trevc = castINTEGER(work[0]);
                 maxwrk = max(maxwrk, n + lwork_trevc);
                 Rhseqr("S", "V", n, 1, n, a, lda, wr, wi, vl, ldvl, work, -1, info);
             } else if (wantvr) {
-                Rtrevc3("R", "B", &select, n, a, lda, vl, ldvl, vr, ldvr, n, nout, work, -1, ierr);
+                Rtrevc3("R", "B", select, n, a, lda, vl, ldvl, vr, ldvr, n, nout, work, -1, ierr);
                 lwork_trevc = castINTEGER(work[0]);
                 maxwrk = max(maxwrk, n + lwork_trevc);
                 Rhseqr("S", "V", n, 1, n, a, lda, wr, wi, vr, ldvr, work, -1, info);
@@ -183,6 +177,7 @@ void Rgeevx(const char *balanc, const char *jobvl, const char *jobvr, const char
     eps = Rlamch("P");
     smlnum = Rlamch("S");
     bignum = one / smlnum;
+    Rlabad(smlnum, bignum);
     smlnum = sqrt(smlnum) / eps;
     bignum = one / smlnum;
     //
@@ -294,14 +289,14 @@ void Rgeevx(const char *balanc, const char *jobvl, const char *jobvr, const char
         // Compute left and/or right eigenvectors
         // (Workspace: need 3*N, prefer N + 2*N*NB)
         //
-        Rtrevc3(&side, "B", &select, n, a, lda, vl, ldvl, vr, ldvr, n, nout, &work[iwrk - 1], lwork - iwrk + 1, ierr);
+        Rtrevc3(&side, "B", select, n, a, lda, vl, ldvl, vr, ldvr, n, nout, &work[iwrk - 1], lwork - iwrk + 1, ierr);
     }
     //
     // Compute condition numbers if desired
     // (Workspace: need N*N+6*N unless SENSE = 'E')
     //
     if (!wntsnn) {
-        Rtrsna(sense, "A", &select, n, a, lda, vl, ldvl, vr, ldvr, rconde, rcondv, n, nout, &work[iwrk - 1], n, iwork, icond);
+        Rtrsna(sense, "A", select, n, a, lda, vl, ldvl, vr, ldvr, rconde, rcondv, n, nout, &work[iwrk - 1], n, iwork, icond);
     }
     //
     if (wantvl) {
