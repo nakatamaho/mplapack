@@ -29,7 +29,8 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Claic1(INTEGER const job, INTEGER const j, COMPLEX *x, REAL const sest, COMPLEX *w, COMPLEX const gamma, REAL &sestpr, COMPLEX &s, COMPLEX &c) {
+void Claic1(INTEGER const job, INTEGER const j, COMPLEX *x, REAL const &sest, COMPLEX *w, COMPLEX const &gamma, REAL &sestpr, COMPLEX &s, COMPLEX &c) {
+    //
     REAL eps = Rlamch("Epsilon");
     COMPLEX alpha = Cdotc(j, x, 1, w, 1);
     //
@@ -123,7 +124,7 @@ void Claic1(INTEGER const job, INTEGER const j, COMPLEX *x, REAL const sest, COM
             b = (one - zeta1 * zeta1 - zeta2 * zeta2) * half;
             c = zeta1 * zeta1;
             if (b > zero) {
-                t = (c / (b + sqrt(b * b) + c)).real();
+                t = (c / (b + sqrt(b * b + c))).real();
             } else {
                 t = (sqrt(b * b + c) - b).real();
             }
@@ -201,7 +202,7 @@ void Claic1(INTEGER const job, INTEGER const j, COMPLEX *x, REAL const sest, COM
             zeta1 = absalp / absest;
             zeta2 = absgam / absest;
             //
-            norma = max(REAL(one + zeta1 * zeta1 + zeta1 * zeta2), REAL(zeta1 * zeta2 + zeta2 * zeta2));
+            norma = max(one + zeta1 * zeta1 + zeta1 * zeta2, zeta1 * zeta2 + zeta2 * zeta2);
             //
             // See if root is closer to zero or to ONE
             //
