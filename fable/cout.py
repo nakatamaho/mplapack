@@ -12,6 +12,7 @@ except ImportError:
     FUNCTION_SIGNATURES = {}
     FUNCTION_RETURNS = {}
 
+
 def _split_actuals(arg_string: str):
     """Split a C++ argument list string on commas, ignoring commas inside parentheses."""
     parts = []
@@ -1287,6 +1288,7 @@ def _get_return_kind_from_signatures(base_cpp_name: str) -> typing.Optional[str]
         return "void"
     return None
 
+
 def _is_real_valued_function_call(expr: str) -> bool:
     """Return True if expr syntactically looks like a call to a REAL-valued function.
 
@@ -1321,7 +1323,8 @@ def _is_real_valued_function_call(expr: str) -> bool:
         return True
 
     # Use FUNCTION_RETURNS first if available.
-    ret_kind = _get_return_kind_from_signatures(base) if FUNCTION_RETURNS else None
+    ret_kind = _get_return_kind_from_signatures(
+        base) if FUNCTION_RETURNS else None
     if ret_kind == "real":
         return True
     if ret_kind == "complex":
@@ -1345,6 +1348,7 @@ def _is_real_valued_function_call(expr: str) -> bool:
     # Unknown prefix: do not assume real-valued
     return False
 
+
 def _is_simple_lvalue(expr: str) -> bool:
     """Return True if expr is a simple variable or an array element.
 
@@ -1358,6 +1362,7 @@ def _is_simple_lvalue(expr: str) -> bool:
     # NAME or NAME[...] or NAME[...]...
     # This is intentionally permissive: any NAME followed by bracketed expressions.
     return re.match(r'^[A-Za-z_][A-Za-z0-9_]*(\[[^\]]*\])*$', expr) is not None
+
 
 def _has_top_level_arith_op(expr: str) -> bool:
     """Return True if expr has a top-level +, -, * or / outside parentheses.
@@ -1388,6 +1393,7 @@ def _has_top_level_arith_op(expr: str) -> bool:
                 return True
         i += 1
     return False
+
 
 def _extract_base_identifier_from_unary(expr: str):
     """Extract base identifier from unary expression like '-alpha' or '-x[i]'.
@@ -1438,6 +1444,7 @@ def _collect_complex_variable_names(text: str):
 
     return complex_vars, complex_ptrs
 
+
 def _mask_real_valued_subcalls(expr: str) -> str:
     """Replace real-valued function calls in expr with a neutral placeholder.
 
@@ -1484,6 +1491,7 @@ def _mask_real_valued_subcalls(expr: str) -> str:
             i += 1
     return "".join(out)
 
+
 def _contains_complex_valued_function_call(expr: str) -> bool:
     """Return True if expr contains a function call known to return COMPLEX.
 
@@ -1518,13 +1526,15 @@ def _contains_complex_valued_function_call(expr: str) -> bool:
                             break
                     end += 1
                 base = name.split("::")[-1].lower()
-                kind = _get_return_kind_from_signatures(base) if FUNCTION_RETURNS else None
+                kind = _get_return_kind_from_signatures(
+                    base) if FUNCTION_RETURNS else None
                 if kind == "complex":
                     return True
                 i = end
                 continue
         i += 1
     return False
+
 
 def _looks_complex_expression(arg: str) -> bool:
     """Heuristic: return True if 'arg' syntactically looks COMPLEX-valued.
@@ -2655,23 +2665,31 @@ def convert_declaration(rapp, conv_info, fdecl, crhs, const):
         # Fail fast instead of silently dropping the declaration.
         fdecl.id_tok.raise_not_supported()
 
-    # Prefer a symbolic size expression for 1D arrays (e.g. "maxdim",
-    # "4 * maxdim") instead of always flattening to a numeric literal.
-    # For higher-rank arrays, keep using the numeric total size.
+    # Prefer symbolic size expressions for local work arrays.
+    # For 1D arrays like RWORK(MAXDIM) or WORK(4*MAXDIM) we want:
+    #   REAL rwork[maxdim];
+    #   COMPLEX work[4 * maxdim];
+    # For higher-rank arrays like WORK13(LDWORK,NBMAX) we flatten but keep
+    # the product of extents symbolically:
+    #   COMPLEX work13[ldwork * nbmax];
+    from fable.cout import convert_tokens  # already available in this module
+    dim_expr = convert_tokens(
+        conv_info=conv_info,
+        tokens=fdecl.dim_tokens,
+        commas=True,
+    ).strip()
+
     if len(vals) == 1:
-        # fdecl.dim_tokens still carries the original Fortran dimension
-        # expression; reuse it as a C++ expression.
-        from fable.cout import convert_tokens  # already imported at top in this file
-        size_expr = convert_tokens(
-            conv_info=conv_info,
-            tokens=fdecl.dim_tokens,
-            commas=False,
-        ).strip()
-        if not size_expr:
-            # Fallback to numeric size if conversion somehow failed.
-            size_expr = str(math.prod(vals))
+        # Single dimension: reuse the converted dimension expression directly.
+        size_expr = dim_expr
     else:
-        size_expr = str(math.prod(vals))
+        # Multiple dimensions: split on commas at top level and form a product.
+        parts = _split_actuals(dim_expr)
+        if parts and len(parts) == len(vals):
+            size_expr = " * ".join(parts)
+        else:
+            # Fallback: use the numeric total size.
+            size_expr = str(math.prod(vals))
 
     rapp("%s%s %s[%s];" % (
         const_qualifier(), mplapack_elem_ctype, vname, size_expr))
@@ -3876,7 +3894,8 @@ def convert_executable(
                 elif rhs_id_tokens:
                     # Try to extract base identifier from unary expression
                     # e.g., "-savealpha" -> "savealpha"
-                    sign, base_name, base_expr = _extract_base_identifier_from_unary(crhs)
+                    sign, base_name, base_expr = _extract_base_identifier_from_unary(
+                        crhs)
                     if base_name is not None:
                         # Find the corresponding id_token
                         for tok in rhs_id_tokens:
@@ -3896,8 +3915,10 @@ def convert_executable(
                             rhs_dt_code = getattr(dt, "value", None)
                         if rhs_dt_code is not None:
                             rhs_dt_code = rhs_dt_code.lower()
-                            rhs_is_complex = rhs_dt_code in ("complex", "doublecomplex")
-                            rhs_is_real = rhs_dt_code in ("real", "doubleprecision")
+                            rhs_is_complex = rhs_dt_code in (
+                                "complex", "doublecomplex")
+                            rhs_is_real = rhs_dt_code in (
+                                "real", "doubleprecision")
 
                 # Additional heuristic: detect simple complex-valued expressions of the form
                 #   a[...] op ...
