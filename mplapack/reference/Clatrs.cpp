@@ -29,9 +29,6 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-inline REAL cabs1(COMPLEX zdum) { return abs(zdum.real()) + abs(zdum.imag()); }
-inline REAL cabs2(COMPLEX zdum) { return abs(zdum.real() / 2.0) + abs(zdum.imag() / 2.0); }
-
 void Clatrs(const char *uplo, const char *trans, const char *diag, const char *normin, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *x, REAL &scale, REAL *cnorm, INTEGER &info) {
     COMPLEX zdum = 0.0;
     bool upper = false;
@@ -44,7 +41,7 @@ void Clatrs(const char *uplo, const char *trans, const char *diag, const char *n
     const REAL zero = 0.0;
     INTEGER imax = 0;
     REAL tmax = 0.0;
-    const REAL half = 0.5e+0;
+    const REAL half = 0.5;
     REAL tscal = 0.0;
     REAL xmax = 0.0;
     REAL xbnd = 0.0;
@@ -55,17 +52,11 @@ void Clatrs(const char *uplo, const char *trans, const char *diag, const char *n
     COMPLEX tjjs = 0.0;
     REAL tjj = 0.0;
     REAL xj = 0.0;
-    const REAL two = 2.0e+0;
+    const REAL two = 2.0;
     REAL rec = 0.0;
     INTEGER i = 0;
     COMPLEX uscal = 0.0;
     COMPLEX csumj = 0.0;
-    //
-    //
-    //
-    //
-    // .. Statement Functions ..
-    // .. Statement Function definitions ..
     //
     info = 0;
     upper = Mlsame(uplo, "U");
@@ -102,6 +93,7 @@ void Clatrs(const char *uplo, const char *trans, const char *diag, const char *n
     //
     smlnum = Rlamch("Safe minimum");
     bignum = one / smlnum;
+    Rlabad(smlnum, bignum);
     smlnum = smlnum / Rlamch("Precision");
     bignum = one / smlnum;
     scale = one;
@@ -177,7 +169,7 @@ void Clatrs(const char *uplo, const char *trans, const char *diag, const char *n
             //
             grow = half / max(xbnd, smlnum);
             xbnd = grow;
-            for (j = jfirst; jinc < 0 ? j >= jlast : j <= jlast; j = j + jinc) {
+            for (j = jfirst; jinc > 0 ? j <= jlast : j >= jlast; j = j + jinc) {
                 //
                 // Exit the loop if the growth factor is too small.
                 //
@@ -192,7 +184,7 @@ void Clatrs(const char *uplo, const char *trans, const char *diag, const char *n
                     //
                     // M(j) = G(j-1) / abs(A(j,j))
                     //
-                    xbnd = min(xbnd, REAL(min(one, tjj) * grow));
+                    xbnd = min(xbnd, min(one, tjj) * grow);
                 } else {
                     //
                     // M(j) could overflow, set XBND to 0.
@@ -219,8 +211,8 @@ void Clatrs(const char *uplo, const char *trans, const char *diag, const char *n
             //
             // Compute GROW = 1/G(j), where G(0) = max{x(i), i=1,...,n}.
             //
-            grow = min(one, REAL(half / max(xbnd, smlnum)));
-            for (j = jfirst; jinc < 0 ? j >= jlast : j <= jlast; j = j + jinc) {
+            grow = min(one, half / max(xbnd, smlnum));
+            for (j = jfirst; jinc > 0 ? j <= jlast : j >= jlast; j = j + jinc) {
                 //
                 // Exit the loop if the growth factor is too small.
                 //
@@ -263,7 +255,7 @@ void Clatrs(const char *uplo, const char *trans, const char *diag, const char *n
             //
             grow = half / max(xbnd, smlnum);
             xbnd = grow;
-            for (j = jfirst; jinc < 0 ? j >= jlast : j <= jlast; j = j + jinc) {
+            for (j = jfirst; jinc > 0 ? j <= jlast : j >= jlast; j = j + jinc) {
                 //
                 // Exit the loop if the growth factor is too small.
                 //
@@ -274,7 +266,7 @@ void Clatrs(const char *uplo, const char *trans, const char *diag, const char *n
                 // G(j) = max( G(j-1), M(j-1)*( 1 + CNORM(j) ) )
                 //
                 xj = one + cnorm[j - 1];
-                grow = min(grow, REAL(xbnd / xj));
+                grow = min(grow, xbnd / xj);
                 //
                 tjjs = a[(j - 1) + (j - 1) * lda];
                 tjj = cabs1(tjjs);
@@ -300,8 +292,8 @@ void Clatrs(const char *uplo, const char *trans, const char *diag, const char *n
             //
             // Compute GROW = 1/G(j), where G(0) = max{x(i), i=1,...,n}.
             //
-            grow = min(one, REAL(half / max(xbnd, smlnum)));
-            for (j = jfirst; jinc < 0 ? j >= jlast : j <= jlast; j = j + jinc) {
+            grow = min(one, half / max(xbnd, smlnum));
+            for (j = jfirst; jinc > 0 ? j <= jlast : j >= jlast; j = j + jinc) {
                 //
                 // Exit the loop if the growth factor is too small.
                 //
@@ -344,7 +336,7 @@ void Clatrs(const char *uplo, const char *trans, const char *diag, const char *n
             //
             // Solve A * x = b
             //
-            for (j = jfirst; jinc < 0 ? j >= jlast : j <= jlast; j = j + jinc) {
+            for (j = jfirst; jinc > 0 ? j <= jlast : j >= jlast; j = j + jinc) {
                 //
                 // Compute x(j) = b(j) / A(j,j), scaling x if necessary.
                 //
@@ -461,7 +453,7 @@ void Clatrs(const char *uplo, const char *trans, const char *diag, const char *n
             //
             // Solve A**T * x = b
             //
-            for (j = jfirst; jinc < 0 ? j >= jlast : j <= jlast; j = j + jinc) {
+            for (j = jfirst; jinc > 0 ? j <= jlast : j >= jlast; j = j + jinc) {
                 //
                 // Compute x(j) = b(j) - sum A(k,j)*x(k).
                 // k<>j
@@ -484,7 +476,7 @@ void Clatrs(const char *uplo, const char *trans, const char *diag, const char *n
                         //
                         // Divide by A(j,j) when scaling x if A(j,j) > 1.
                         //
-                        rec = min(one, REAL(rec * tjj));
+                        rec = min(one, rec * tjj);
                         uscal = Cladiv(uscal, tjjs);
                     }
                     if (rec < one) {
@@ -596,7 +588,7 @@ void Clatrs(const char *uplo, const char *trans, const char *diag, const char *n
             //
             // Solve A**H * x = b
             //
-            for (j = jfirst; jinc < 0 ? j >= jlast : j <= jlast; j = j + jinc) {
+            for (j = jfirst; jinc > 0 ? j <= jlast : j >= jlast; j = j + jinc) {
                 //
                 // Compute x(j) = b(j) - sum A(k,j)*x(k).
                 // k<>j
@@ -619,7 +611,7 @@ void Clatrs(const char *uplo, const char *trans, const char *diag, const char *n
                         //
                         // Divide by A(j,j) when scaling x if A(j,j) > 1.
                         //
-                        rec = min(one, REAL(rec * tjj));
+                        rec = min(one, rec * tjj);
                         uscal = Cladiv(uscal, tjjs);
                     }
                     if (rec < one) {
