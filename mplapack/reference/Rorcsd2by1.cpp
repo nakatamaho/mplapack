@@ -101,7 +101,7 @@ void Rorcsd2by1(const char *jobu1, const char *jobu2, const char *jobv1t, INTEGE
     REAL dum1[1];
     INTEGER childinfo = 0;
     INTEGER lorbdb = 0;
-    REAL dum2[1];
+    REAL dum2[1 * 1];
     INTEGER lbbcsd = 0;
     INTEGER lworkmin = 0;
     INTEGER lworkopt = 0;
