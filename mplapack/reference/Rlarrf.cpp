@@ -29,7 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rlarrf(INTEGER const n, REAL *d, REAL *l, REAL *ld, INTEGER const clstrt, INTEGER const clend, REAL *w, REAL *wgap, REAL *werr, REAL const spdiam, REAL const clgapl, REAL const clgapr, REAL const pivmin, REAL &sigma, REAL *dplus, REAL *lplus, REAL *work, INTEGER &info) {
+void Rlarrf(INTEGER const n, REAL *d, REAL *l, REAL *ld, INTEGER const clstrt, INTEGER const clend, REAL *w, REAL *wgap, REAL *werr, REAL const &spdiam, REAL const &clgapl, REAL const &clgapr, REAL const &pivmin, REAL &sigma, REAL *dplus, REAL *lplus, REAL *work, INTEGER &info) {
     const INTEGER ktrymax = 1;
     REAL fact = 0.0;
     REAL eps = 0.0;
@@ -42,7 +42,7 @@ void Rlarrf(INTEGER const n, REAL *d, REAL *l, REAL *ld, INTEGER const clstrt, I
     REAL lsigma = 0.0;
     REAL rsigma = 0.0;
     const REAL four = 4.0;
-    const REAL quart = 0.25e0;
+    const REAL quart = 0.25;
     const REAL two = 2.0;
     REAL ldmax = 0.0;
     REAL rdmax = 0.0;
@@ -55,7 +55,7 @@ void Rlarrf(INTEGER const n, REAL *d, REAL *l, REAL *ld, INTEGER const clstrt, I
     REAL fail2 = 0.0;
     REAL bestshift = 0.0;
     INTEGER ktry = 0;
-    const REAL maxgrowth1 = 8.e0;
+    const REAL maxgrowth1 = 8.0;
     REAL growthbound = 0.0;
     bool sawnan1 = false;
     bool sawnan2 = false;
@@ -72,12 +72,8 @@ void Rlarrf(INTEGER const n, REAL *d, REAL *l, REAL *ld, INTEGER const clstrt, I
     REAL prod = 0.0;
     REAL oldp = 0.0;
     REAL rrr1 = 0.0;
-    const REAL maxgrowth2 = 8.e0;
+    const REAL maxgrowth2 = 8.0;
     REAL rrr2 = 0.0;
-    //
-    //
-    //
-    //
     //
     info = 0;
     //
@@ -87,7 +83,7 @@ void Rlarrf(INTEGER const n, REAL *d, REAL *l, REAL *ld, INTEGER const clstrt, I
         return;
     }
     //
-    fact = REAL(pow((double)2, (double)ktrymax));
+    fact = castREAL(pow(2, ktrymax));
     eps = Rlamch("Precision");
     shift = 0;
     forcer = false;
@@ -168,7 +164,7 @@ statement_5:
             // in this case
             sawnan1 = true;
         }
-        max1 = max(max1, REAL(abs(dplus[(i + 1) - 1])));
+        max1 = max(max1, abs(dplus[(i + 1) - 1]));
     }
     sawnan1 = sawnan1 || Risnan(max1);
     //
@@ -198,7 +194,7 @@ statement_5:
             // in this case
             sawnan2 = true;
         }
-        max2 = max(max2, REAL(abs(work[(i + 1) - 1])));
+        max2 = max(max2, abs(work[(i + 1) - 1]));
     }
     sawnan2 = sawnan2 || Risnan(max2);
     //
@@ -237,7 +233,7 @@ statement_5:
     // we may still accept the representation, if it passes a
     // refined test for RRR. This test supposes that no NaN occurred.
     // Moreover, we use the refined RRR test only for isolated clusters.
-    if ((clwdth < mingap / 128.0) && (min(max1, max2) < fail2) && (!sawnan1) && (!sawnan2)) {
+    if ((clwdth < mingap / castREAL(128)) && (min(max1, max2) < fail2) && (!sawnan1) && (!sawnan2)) {
         dorrr1 = true;
     } else {
         dorrr1 = false;
@@ -257,7 +253,7 @@ statement_5:
                 }
                 oldp = prod;
                 znm2 += pow2(prod);
-                tmp = max(tmp, REAL(abs(dplus[i - 1] * prod)));
+                tmp = max(tmp, abs(dplus[i - 1] * prod));
             }
             rrr1 = tmp / (spdiam * sqrt(znm2));
             if (rrr1 <= maxgrowth2) {
@@ -278,7 +274,7 @@ statement_5:
                 }
                 oldp = prod;
                 znm2 += pow2(prod);
-                tmp = max(tmp, REAL(abs(work[i - 1] * prod)));
+                tmp = max(tmp, abs(work[i - 1] * prod));
             }
             rrr2 = tmp / (spdiam * sqrt(znm2));
             if (rrr2 <= maxgrowth2) {
