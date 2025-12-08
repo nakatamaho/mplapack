@@ -109,17 +109,18 @@ void Rbbcsd(const char *jobu1, const char *jobu2, const char *jobv1t, const char
     REAL unfl = Rlamch("Safe minimum");
     const REAL ten = 10.0;
     const REAL hundred = 100.0;
-    const REAL meighth = -0.125;
+    const REAL meighth = -0.125e0;
     REAL tolmul = max(ten, min(hundred, pow(eps, meighth)));
     REAL tol = tolmul * eps;
     const INTEGER maxitr = 6;
-    REAL thresh = max(tol, maxitr * q * q * unfl);
+    REAL thresh = max(tol, REAL(castREAL(maxitr * q * q) * unfl));
+    REAL rtmp1, rtmp2;
     //
     // Test for negligible sines or cosines
     //
     INTEGER i = 0;
     const REAL zero = 0.0;
-    const REAL piover2 = 1.570796326794897;
+    const REAL piover2 = pi(zero);
     for (i = 1; i <= q; i = i + 1) {
         if (theta[i - 1] < thresh) {
             theta[i - 1] = zero;
@@ -215,7 +216,7 @@ void Rbbcsd(const char *jobu1, const char *jobu2, const char *jobv1t, const char
             return;
         }
         //
-        iter += imax - imin;
+        iter = iter + imax - imin;
         //
         // Compute shifts
         //
