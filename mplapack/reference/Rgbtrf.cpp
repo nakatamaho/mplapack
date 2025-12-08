@@ -31,11 +31,6 @@
 
 void Rgbtrf(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku, REAL *ab, INTEGER const ldab, INTEGER *ipiv, INTEGER &info) {
     //
-    //
-    //
-    //
-    // .. Local Arrays ..
-    //
     // KV is the number of superdiagonals in the factor U, allowing for
     // fill-in
     //
@@ -81,9 +76,7 @@ void Rgbtrf(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku
     const REAL zero = 0.0;
     const INTEGER ldwork = nbmax + 1;
     REAL work13[ldwork * nbmax];
-    INTEGER ldwork13 = ldwork;
     REAL work31[ldwork * nbmax];
-    INTEGER ldwork31 = ldwork;
     INTEGER ju = 0;
     INTEGER jb = 0;
     INTEGER i2 = 0;
