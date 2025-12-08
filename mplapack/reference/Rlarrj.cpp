@@ -29,7 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rlarrj(INTEGER const n, REAL *d, REAL *e2, INTEGER const ifirst, INTEGER const ilast, REAL const rtol, INTEGER const offset, REAL *w, REAL *werr, REAL *work, INTEGER *iwork, REAL const pivmin, REAL const spdiam, INTEGER &info) {
+void Rlarrj(INTEGER const n, REAL *d, REAL *e2, INTEGER const ifirst, INTEGER const ilast, REAL const &rtol, INTEGER const offset, REAL *w, REAL *werr, REAL *work, INTEGER *iwork, REAL const &pivmin, REAL const &spdiam, INTEGER &info) {
     const REAL two = 2.0;
     INTEGER maxitr = 0;
     INTEGER i1 = 0;
@@ -56,7 +56,7 @@ void Rlarrj(INTEGER const n, REAL *d, REAL *e2, INTEGER const ifirst, INTEGER co
     INTEGER olnint = 0;
     INTEGER p = 0;
     INTEGER next = 0;
-    const REAL half = 0.5e0;
+    const REAL half = 0.5;
     //
     info = 0;
     //
@@ -66,9 +66,7 @@ void Rlarrj(INTEGER const n, REAL *d, REAL *e2, INTEGER const ifirst, INTEGER co
         return;
     }
     //
-    maxitr = castINTEGER((log(spdiam + pivmin) - log(pivmin)) / log(two)) + (INTEGER)2;
-    if (maxitr >= 1024)
-        maxitr = 1024; // XXX maxitr can be too large for MPFR (=10^8)
+    maxitr = castINTEGER((log(spdiam + pivmin) - log(pivmin)) / log(two)) + 2;
     //
     // Initialize unconverged intervals in [ WORK(2*I-1), WORK(2*I) ].
     // The Sturm Count, Count( WORK(2*I-1) ) is arranged to be I-1, while
