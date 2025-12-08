@@ -37,10 +37,6 @@ void Cpotf2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
     const COMPLEX cone = COMPLEX(1.0, 0.0);
     const REAL one = 1.0;
     //
-    //
-    //
-    //
-    //
     // Test the input parameters.
     //
     info = 0;
