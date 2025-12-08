@@ -29,14 +29,12 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-inline REAL cabs1(COMPLEX z) { return abs(z.real()) + abs(z.imag()); }
-
 void Chetf2_rk(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *e, INTEGER *ipiv, INTEGER &info) {
     COMPLEX z = 0.0;
     bool upper = false;
     const REAL one = 1.0;
-    const REAL sevten = 17.0e+0;
-    const REAL eight = 8.0e+0;
+    const REAL sevten = 17.0;
+    const REAL eight = 8.0;
     REAL alpha = 0.0;
     REAL sfmin = 0.0;
     const COMPLEX czero = COMPLEX(0.0, 0.0);
@@ -68,12 +66,6 @@ void Chetf2_rk(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda,
     INTEGER i = 0;
     COMPLEX d21 = 0.0;
     COMPLEX wkp1 = 0.0;
-    //
-    //
-    //
-    //
-    //
-    // .. Statement Functions ..
     //
     // Test the input parameters.
     //
@@ -155,8 +147,6 @@ void Chetf2_rk(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda,
             }
             //
         } else {
-            //
-            //
             // BEGIN pivot search
             //
             // Case(1)
@@ -244,8 +234,6 @@ void Chetf2_rk(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda,
             }
             //
             // END pivot search
-            //
-            //
             // KK is the column of A where pivoting step stopped
             //
             kk = k - kstep + 1;
@@ -507,8 +495,6 @@ void Chetf2_rk(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda,
             }
             //
         } else {
-            //
-            //
             // BEGIN pivot search
             //
             // Case(1)
@@ -596,8 +582,6 @@ void Chetf2_rk(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda,
             }
             //
             // END pivot search
-            //
-            //
             // KK is the column of A where pivoting step stopped
             //
             kk = k + kstep - 1;
