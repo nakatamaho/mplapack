@@ -473,11 +473,27 @@ lines = [_rewrite_lwork_typed(line) for line in lines]
 #   for (i = i1; i <= i2; i = i + i3)
 # should be
 #   for (i = i1; i3 > 0 ? i <= i2 : i >= i2; i = i + i3)
+#
+# Also fix:
+#   for (j = jfirst; j <= jlast; j = j + jinc)
+# -> for (j = jfirst; jinc > 0 ? j <= jlast : j >= jlast; j = j + jinc)
+#
+#   for (i = i1; i <= i2; i = i + inc)
+# -> for (i = i1; inc > 0 ? i <= i2 : i >= i2; i = i + inc)
 # ---------------------------------------------------------------------------
 
 FOR_I_I1_I2_I3_RE = re.compile(
     r'\bfor\s*\(\s*i\s*=\s*i1\s*;\s*i\s*<=\s*i2\s*;\s*i\s*=\s*i\s*\+\s*i3\s*\)'
 )
+
+FOR_J_JFIRST_JLAST_JINC_RE = re.compile(
+    r'\bfor\s*\(\s*j\s*=\s*jfirst\s*;\s*j\s*<=\s*jlast\s*;\s*j\s*=\s*j\s*\+\s*jinc\s*\)'
+)
+
+FOR_I_I1_I2_INC_RE = re.compile(
+    r'\bfor\s*\(\s*i\s*=\s*i1\s*;\s*i\s*<=\s*i2\s*;\s*i\s*=\s*i\s*\+\s*inc\s*\)'
+)
+
 
 def _fix_do_i1_i2_i3(line: str) -> str:
     # Do not touch C++ line comments
@@ -491,7 +507,16 @@ def _fix_do_i1_i2_i3(line: str) -> str:
         'for (i = i1; i3 > 0 ? i <= i2 : i >= i2; i = i + i3)',
         code,
     )
+    code = FOR_J_JFIRST_JLAST_JINC_RE.sub(
+        'for (j = jfirst; jinc > 0 ? j <= jlast : j >= jlast; j = j + jinc)',
+        code,
+    )
+    code = FOR_I_I1_I2_INC_RE.sub(
+        'for (i = i1; inc > 0 ? i <= i2 : i >= i2; i = i + inc)',
+        code,
+    )
     return code + comment
+
 
 lines = [_fix_do_i1_i2_i3(line) for line in lines]
 

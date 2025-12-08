@@ -1484,6 +1484,47 @@ def _mask_real_valued_subcalls(expr: str) -> str:
             i += 1
     return "".join(out)
 
+def _contains_complex_valued_function_call(expr: str) -> bool:
+    """Return True if expr contains a function call known to return COMPLEX.
+
+    This is used to avoid treating expressions as 'obviously real' when they
+    still depend on complex-valued subcalls such as CDOTC/ZDOTC.
+    """
+    s = expr
+    i = 0
+    n = len(s)
+    while i < n:
+        ch = s[i]
+        if ch.isalpha() or ch == "_":
+            j = i + 1
+            while j < n and (s[j].isalnum() or s[j] in ("_", ":")):
+                j += 1
+            name = s[i:j]
+            k = j
+            while k < n and s[k].isspace():
+                k += 1
+            if k < n and s[k] == "(":
+                # We found a call; find its end to skip over it.
+                depth = 0
+                end = k
+                while end < n:
+                    c = s[end]
+                    if c == "(":
+                        depth += 1
+                    elif c == ")":
+                        depth -= 1
+                        if depth == 0:
+                            end += 1
+                            break
+                    end += 1
+                base = name.split("::")[-1].lower()
+                kind = _get_return_kind_from_signatures(base) if FUNCTION_RETURNS else None
+                if kind == "complex":
+                    return True
+                i = end
+                continue
+        i += 1
+    return False
 
 def _looks_complex_expression(arg: str) -> bool:
     """Heuristic: return True if 'arg' syntactically looks COMPLEX-valued.
@@ -3871,35 +3912,29 @@ def convert_executable(
                         else:
                             crhs = f"castINTEGER({rhs_expr})"
 
-                if lhs_is_real:
-                    rhs_expr = crhs.strip()
                     if rhs_expr:
+                        # Expressions that are clearly real-valued already:
+                        #   - known real-valued function calls
+                        #   - explicit castREAL(...)
+                        #   - explicit .real() / .imag() projections
                         rhs_obviously_real = (
                             _is_real_valued_function_call(rhs_expr)
+                            or "castREAL(" in rhs_expr
                             or ".real()" in rhs_expr
                             or ".imag()" in rhs_expr
-                            or "castREAL(" in rhs_expr
                         )
+
+                        # If the RHS still is not obviously REAL and it contains
+                        # at least one COMPLEX-valued function call (e.g. CDOTC,
+                        # ZDOTC), emulate Fortran's implicit REAL = COMPLEX
+                        # coercion by taking the real part of the entire RHS.
                         if (not rhs_obviously_real
-                                and _has_top_level_arith_op(rhs_expr)):
-                            # Mask out subcalls that are already known to return REAL,
-                            # so COMPLEX arguments under cabs1/Clangb/Clantb do not
-                            # force the whole expression to be treated as COMPLEX.
-                            scan_expr = _mask_real_valued_subcalls(rhs_expr)
-
-                            owner = None
-                            for name in complex_identifiers:
-                                if re.search(r"\b" + re.escape(name) + r"\b", scan_expr):
-                                    owner = name
-                                    break
-
-                            if owner is not None:
-                                crhs = _real_cast_or_component(
-                                    rhs_expr,
-                                    complex_identifiers,
-                                    complex_pointer_identifiers,
-                                )
-
+                                and _contains_complex_valued_function_call(rhs_expr)):
+                            crhs = _real_cast_or_component(
+                                rhs_expr,
+                                complex_identifiers,
+                                complex_pointer_identifiers,
+                            )
                 # Promote pure integer literals to real literals when assigning
                 # to REAL/DOUBLEPRECISION variables, so that t[...] = 0; becomes
                 # t[...] = 0.0; in the generated C++.
