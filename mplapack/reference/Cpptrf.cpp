@@ -38,10 +38,6 @@ void Cpptrf(const char *uplo, INTEGER const n, COMPLEX *ap, INTEGER &info) {
     const REAL zero = 0.0;
     const REAL one = 1.0;
     //
-    //
-    //
-    //
-    //
     // Test the input parameters.
     //
     info = 0;
