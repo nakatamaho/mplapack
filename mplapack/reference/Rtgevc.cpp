@@ -82,9 +82,9 @@ void Rtgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
     REAL xscale = 0.0;
     INTEGER jw = 0;
     INTEGER ja = 0;
-    REAL sums[4];
-    REAL sump[4];
-    REAL sum[4];
+    REAL sums[2 * 2];
+    REAL sump[2 * 2];
+    REAL sum[2 * 2];
     INTEGER iinfo = 0;
     INTEGER ibeg = 0;
     REAL creala = 0.0;
