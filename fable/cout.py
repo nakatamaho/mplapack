@@ -2646,7 +2646,6 @@ def convert_declaration(rapp, conv_info, fdecl, crhs, const):
     elem_ctype = convert_data_type(
         conv_info=conv_info, fdecl=fdecl, crhs=None)[0]
     mplapack_elem_ctype = convert_to_mplapack_type(elem_ctype)
-
     # Only support compile-time constant extents here.
     # (Non-constant local arrays would require heap allocation or std::vector
     # plus call-site adjustments.)
@@ -2656,9 +2655,26 @@ def convert_declaration(rapp, conv_info, fdecl, crhs, const):
         # Fail fast instead of silently dropping the declaration.
         fdecl.id_tok.raise_not_supported()
 
-    static_size = str(math.prod(vals))
+    # Prefer a symbolic size expression for 1D arrays (e.g. "maxdim",
+    # "4 * maxdim") instead of always flattening to a numeric literal.
+    # For higher-rank arrays, keep using the numeric total size.
+    if len(vals) == 1:
+        # fdecl.dim_tokens still carries the original Fortran dimension
+        # expression; reuse it as a C++ expression.
+        from fable.cout import convert_tokens  # already imported at top in this file
+        size_expr = convert_tokens(
+            conv_info=conv_info,
+            tokens=fdecl.dim_tokens,
+            commas=False,
+        ).strip()
+        if not size_expr:
+            # Fallback to numeric size if conversion somehow failed.
+            size_expr = str(math.prod(vals))
+    else:
+        size_expr = str(math.prod(vals))
+
     rapp("%s%s %s[%s];" % (
-        const_qualifier(), mplapack_elem_ctype, vname, static_size))
+        const_qualifier(), mplapack_elem_ctype, vname, size_expr))
     return False
 
 
