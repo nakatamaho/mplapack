@@ -30,11 +30,6 @@
 #include <mplapack.h>
 
 void Claic1(INTEGER const job, INTEGER const j, COMPLEX *x, REAL const sest, COMPLEX *w, COMPLEX const gamma, REAL &sestpr, COMPLEX &s, COMPLEX &c) {
-    //
-    //
-    //
-    //
-    //
     REAL eps = Rlamch("Epsilon");
     COMPLEX alpha = Cdotc(j, x, 1, w, 1);
     //
@@ -50,7 +45,7 @@ void Claic1(INTEGER const job, INTEGER const j, COMPLEX *x, REAL const sest, COM
     REAL scl = 0.0;
     REAL zeta1 = 0.0;
     REAL zeta2 = 0.0;
-    const REAL half = 0.5e0;
+    const REAL half = 0.5;
     REAL b = 0.0;
     REAL t = 0.0;
     COMPLEX sine = 0.0;
