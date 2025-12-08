@@ -31,20 +31,15 @@
 
 void Rlarnv(INTEGER const idist, INTEGER *iseed, INTEGER const n, REAL *x) {
     //
-    //
-    //
-    //
-    // .. Local Arrays ..
-    //
     INTEGER iv = 0;
     const INTEGER lv = 128;
     INTEGER il = 0;
     INTEGER il2 = 0;
     REAL u[lv];
     INTEGER i = 0;
-    const REAL two = 2.0e+0;
+    const REAL two = 2.0;
     const REAL one = 1.0;
-    const REAL twopi = 6.28318530717958647692528676655900576839e+0;
+    const REAL twopi = two * pi(one);
     for (iv = 1; iv <= n; iv = iv + lv / 2) {
         il = min(lv / 2, n - iv + 1);
         if (idist == 3) {
