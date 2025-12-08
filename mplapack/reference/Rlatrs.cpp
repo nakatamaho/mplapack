@@ -52,13 +52,9 @@ void Rlatrs(const char *uplo, const char *trans, const char *diag, const char *n
     REAL tjjs = 0.0;
     REAL rec = 0.0;
     INTEGER i = 0;
-    const REAL half = 0.5e+0;
+    const REAL half = 0.5;
     REAL uscal = 0.0;
     REAL sumj = 0.0;
-    //
-    //
-    //
-    //
     //
     info = 0;
     upper = Mlsame(uplo, "U");
@@ -165,7 +161,7 @@ void Rlatrs(const char *uplo, const char *trans, const char *diag, const char *n
             //
             grow = one / max(xbnd, smlnum);
             xbnd = grow;
-            for (j = jfirst; jinc < 0 ? j >= jlast : j <= jlast; j = j + jinc) {
+            for (j = jfirst; jinc > 0 ? j <= jlast : j >= jlast; j = j + jinc) {
                 //
                 // Exit the loop if the growth factor is too small.
                 //
@@ -176,7 +172,7 @@ void Rlatrs(const char *uplo, const char *trans, const char *diag, const char *n
                 // M(j) = G(j-1) / abs(A(j,j))
                 //
                 tjj = abs(a[(j - 1) + (j - 1) * lda]);
-                xbnd = min(xbnd, REAL(min(one, tjj) * grow));
+                xbnd = min(xbnd, min(one, tjj) * grow);
                 if (tjj + cnorm[j - 1] >= smlnum) {
                     //
                     // G(j) = G(j-1)*( 1 + CNORM(j) / abs(A(j,j)) )
@@ -196,8 +192,8 @@ void Rlatrs(const char *uplo, const char *trans, const char *diag, const char *n
             //
             // Compute GROW = 1/G(j), where G(0) = max{x(i), i=1,...,n}.
             //
-            grow = min(one, REAL(one / max(xbnd, smlnum)));
-            for (j = jfirst; jinc < 0 ? j >= jlast : j <= jlast; j = j + jinc) {
+            grow = min(one, one / max(xbnd, smlnum));
+            for (j = jfirst; jinc > 0 ? j <= jlast : j >= jlast; j = j + jinc) {
                 //
                 // Exit the loop if the growth factor is too small.
                 //
@@ -240,7 +236,7 @@ void Rlatrs(const char *uplo, const char *trans, const char *diag, const char *n
             //
             grow = one / max(xbnd, smlnum);
             xbnd = grow;
-            for (j = jfirst; jinc < 0 ? j >= jlast : j <= jlast; j = j + jinc) {
+            for (j = jfirst; jinc > 0 ? j <= jlast : j >= jlast; j = j + jinc) {
                 //
                 // Exit the loop if the growth factor is too small.
                 //
@@ -251,7 +247,7 @@ void Rlatrs(const char *uplo, const char *trans, const char *diag, const char *n
                 // G(j) = max( G(j-1), M(j-1)*( 1 + CNORM(j) ) )
                 //
                 xj = one + cnorm[j - 1];
-                grow = min(grow, REAL(xbnd / xj));
+                grow = min(grow, xbnd / xj);
                 //
                 // M(j) = M(j-1)*( 1 + CNORM(j) ) / abs(A(j,j))
                 //
@@ -267,8 +263,8 @@ void Rlatrs(const char *uplo, const char *trans, const char *diag, const char *n
             //
             // Compute GROW = 1/G(j), where G(0) = max{x(i), i=1,...,n}.
             //
-            grow = min(one, REAL(one / max(xbnd, smlnum)));
-            for (j = jfirst; jinc < 0 ? j >= jlast : j <= jlast; j = j + jinc) {
+            grow = min(one, one / max(xbnd, smlnum));
+            for (j = jfirst; jinc > 0 ? j <= jlast : j >= jlast; j = j + jinc) {
                 //
                 // Exit the loop if the growth factor is too small.
                 //
@@ -309,7 +305,7 @@ void Rlatrs(const char *uplo, const char *trans, const char *diag, const char *n
             //
             // Solve A * x = b
             //
-            for (j = jfirst; jinc < 0 ? j >= jlast : j <= jlast; j = j + jinc) {
+            for (j = jfirst; jinc > 0 ? j <= jlast : j >= jlast; j = j + jinc) {
                 //
                 // Compute x(j) = b(j) / A(j,j), scaling x if necessary.
                 //
@@ -426,7 +422,7 @@ void Rlatrs(const char *uplo, const char *trans, const char *diag, const char *n
             //
             // Solve A**T * x = b
             //
-            for (j = jfirst; jinc < 0 ? j >= jlast : j <= jlast; j = j + jinc) {
+            for (j = jfirst; jinc > 0 ? j <= jlast : j >= jlast; j = j + jinc) {
                 //
                 // Compute x(j) = b(j) - sum A(k,j)*x(k).
                 // k<>j
@@ -449,7 +445,7 @@ void Rlatrs(const char *uplo, const char *trans, const char *diag, const char *n
                         //
                         // Divide by A(j,j) when scaling x if A(j,j) > 1.
                         //
-                        rec = min(one, REAL(rec * tjj));
+                        rec = min(one, rec * tjj);
                         uscal = uscal / tjjs;
                     }
                     if (rec < one) {
@@ -554,7 +550,7 @@ void Rlatrs(const char *uplo, const char *trans, const char *diag, const char *n
                     //
                     x[j - 1] = x[j - 1] / tjjs - sumj;
                 }
-                xmax = max(xmax, REAL(abs(x[j - 1])));
+                xmax = max(xmax, abs(x[j - 1]));
             }
         }
         scale = scale / tscal;
