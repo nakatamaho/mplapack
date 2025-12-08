@@ -69,11 +69,11 @@ void Rhgeqz(const char *job, const char *compq, const char *compz, INTEGER const
     INTEGER ifirst = 0;
     REAL s1 = 0.0;
     REAL wr = 0.0;
-    const REAL safety = 1.0e+2;
+    const REAL safety = 100.0;
     REAL s2 = 0.0;
     REAL wr2 = 0.0;
     REAL wi = 0.0;
-    const REAL half = 0.5e+0;
+    const REAL half = 0.5;
     REAL scale = 0.0;
     INTEGER istart = 0;
     INTEGER jc = 0;
@@ -213,7 +213,7 @@ void Rhgeqz(const char *job, const char *compq, const char *compz, INTEGER const
     // Quick return if possible
     //
     if (n <= 0) {
-        work[0] = 1.0;
+        work[0] = castREAL(1);
         return;
     }
     //
@@ -234,8 +234,8 @@ void Rhgeqz(const char *job, const char *compq, const char *compz, INTEGER const
     ulp = Rlamch("E") * Rlamch("B");
     anorm = Rlanhs("F", in, &h[(ilo - 1) + (ilo - 1) * ldh], ldh, work);
     bnorm = Rlanhs("F", in, &t[(ilo - 1) + (ilo - 1) * ldt], ldt, work);
-    atol = max(safmin, REAL(ulp * anorm));
-    btol = max(safmin, REAL(ulp * bnorm));
+    atol = max(safmin, ulp * anorm);
+    btol = max(safmin, ulp * bnorm);
     ascale = one / max(safmin, anorm);
     bscale = one / max(safmin, bnorm);
     //
@@ -310,13 +310,13 @@ void Rhgeqz(const char *job, const char *compq, const char *compz, INTEGER const
             //
             goto statement_80;
         } else {
-            if (abs(h[(ilast - 1) + ((ilast - 1) - 1) * ldh]) <= max(safmin, REAL(ulp * (abs(h[(ilast - 1) + (ilast - 1) * ldh]) + abs(h[((ilast - 1) - 1) + ((ilast - 1) - 1) * ldh]))))) {
+            if (abs(h[(ilast - 1) + ((ilast - 1) - 1) * ldh]) <= max(safmin, ulp * (abs(h[(ilast - 1) + (ilast - 1) * ldh]) + abs(h[((ilast - 1) - 1) + ((ilast - 1) - 1) * ldh])))) {
                 h[(ilast - 1) + ((ilast - 1) - 1) * ldh] = zero;
                 goto statement_80;
             }
         }
         //
-        if (abs(t[(ilast - 1) + (ilast - 1) * ldt]) <= max(safmin, REAL(ulp * (abs(t[((ilast - 1) - 1) + (ilast - 1) * ldt]) + abs(t[((ilast - 1) - 1) + ((ilast - 1) - 1) * ldt]))))) {
+        if (abs(t[(ilast - 1) + (ilast - 1) * ldt]) <= max(safmin, ulp * (abs(t[((ilast - 1) - 1) + (ilast - 1) * ldt]) + abs(t[((ilast - 1) - 1) + ((ilast - 1) - 1) * ldt])))) {
             t[(ilast - 1) + (ilast - 1) * ldt] = zero;
             goto statement_70;
         }
@@ -330,7 +330,7 @@ void Rhgeqz(const char *job, const char *compq, const char *compz, INTEGER const
             if (j == ilo) {
                 ilazro = true;
             } else {
-                if (abs(h[(j - 1) + ((j - 1) - 1) * ldh]) <= max(safmin, REAL(ulp * (abs(h[(j - 1) + (j - 1) * ldh]) + abs(h[((j - 1) - 1) + ((j - 1) - 1) * ldh]))))) {
+                if (abs(h[(j - 1) + ((j - 1) - 1) * ldh]) <= max(safmin, ulp * (abs(h[(j - 1) + (j - 1) * ldh]) + abs(h[((j - 1) - 1) + ((j - 1) - 1) * ldh])))) {
                     h[(j - 1) + ((j - 1) - 1) * ldh] = zero;
                     ilazro = true;
                 } else {
@@ -344,7 +344,7 @@ void Rhgeqz(const char *job, const char *compq, const char *compz, INTEGER const
             if (j > ilo) {
                 temp += abs(t[((j - 1) - 1) + (j - 1) * ldt]);
             }
-            if (abs(t[(j - 1) + (j - 1) * ldt]) < max(safmin, REAL(ulp * temp))) {
+            if (abs(t[(j - 1) + (j - 1) * ldt]) < max(safmin, ulp * temp)) {
                 t[(j - 1) + (j - 1) * ldt] = zero;
                 //
                 // Test 1a: Check for 2 consecutive small subdiagonals in A
@@ -540,7 +540,7 @@ void Rhgeqz(const char *job, const char *compq, const char *compz, INTEGER const
                 s1 = s2;
                 s2 = temp;
             }
-            temp = max(s1, REAL(safmin * max(one, REAL(abs(wr)), REAL(abs(wi)))));
+            temp = max(s1, safmin * max(one, abs(wr), abs(wi)));
             if (wi != zero) {
                 goto statement_200;
             }
@@ -557,7 +557,7 @@ void Rhgeqz(const char *job, const char *compq, const char *compz, INTEGER const
         //
         temp = min(bscale, one) * (half * safmax);
         if (abs(wr) > temp) {
-            scale = min(scale, REAL(temp / abs(wr)));
+            scale = min(scale, temp / abs(wr));
         }
         s1 = scale * s1;
         wr = scale * wr;
@@ -639,9 +639,9 @@ void Rhgeqz(const char *job, const char *compq, const char *compz, INTEGER const
         //
         goto statement_350;
     //
-    // Use Francis REAL-shift
+    // Use Francis double-shift
     //
-    // Note: the Francis REAL-shift should work with real shifts,
+    // Note: the Francis double-shift should work with real shifts,
     // but only if the block is at least 3x3.
     // This code may break if this point is reached with
     // a 2x2 block with real eigenvalues.
@@ -835,7 +835,7 @@ void Rhgeqz(const char *job, const char *compq, const char *compz, INTEGER const
         } else {
             //
             // Usual case: 3x3 or larger block, using Francis implicit
-            // REAL-shift
+            // double-shift
             //
             // 2
             // Eigenvalue equation is  w  - c w + d = 0,
@@ -859,12 +859,12 @@ void Rhgeqz(const char *job, const char *compq, const char *compz, INTEGER const
             u12l = t[(ifirst - 1) + ((ifirst + 1) - 1) * ldt] / t[((ifirst + 1) - 1) + ((ifirst + 1) - 1) * ldt];
             //
             v[0] = (ad11 - ad11l) * (ad22 - ad11l) - ad12 * ad21 + ad21 * u12 * ad11l + (ad12l - ad11l * u12l) * ad21l;
-            v[2 - 1] = ((ad22l - ad11l) - ad21l * u12l - (ad11 - ad11l) - (ad22 - ad11l) + ad21 * u12) * ad21l;
-            v[3 - 1] = ad32l * ad21l;
+            v[1] = ((ad22l - ad11l) - ad21l * u12l - (ad11 - ad11l) - (ad22 - ad11l) + ad21 * u12) * ad21l;
+            v[2] = ad32l * ad21l;
             //
             istart = ifirst;
             //
-            Rlarfg(3, v[0], &v[2 - 1], 1, tau);
+            Rlarfg(3, v[0], &v[1], 1, tau);
             v[0] = one;
             //
             // Sweep
@@ -877,31 +877,31 @@ void Rhgeqz(const char *job, const char *compq, const char *compz, INTEGER const
                 //
                 if (j > istart) {
                     v[0] = h[(j - 1) + ((j - 1) - 1) * ldh];
-                    v[2 - 1] = h[((j + 1) - 1) + ((j - 1) - 1) * ldh];
-                    v[3 - 1] = h[((j + 2) - 1) + ((j - 1) - 1) * ldh];
+                    v[1] = h[((j + 1) - 1) + ((j - 1) - 1) * ldh];
+                    v[2] = h[((j + 2) - 1) + ((j - 1) - 1) * ldh];
                     //
-                    Rlarfg(3, h[(j - 1) + ((j - 1) - 1) * ldh], &v[2 - 1], 1, tau);
+                    Rlarfg(3, h[(j - 1) + ((j - 1) - 1) * ldh], &v[1], 1, tau);
                     v[0] = one;
                     h[((j + 1) - 1) + ((j - 1) - 1) * ldh] = zero;
                     h[((j + 2) - 1) + ((j - 1) - 1) * ldh] = zero;
                 }
                 //
                 for (jc = j; jc <= ilastm; jc = jc + 1) {
-                    temp = tau * (h[(j - 1) + (jc - 1) * ldh] + v[2 - 1] * h[((j + 1) - 1) + (jc - 1) * ldh] + v[3 - 1] * h[((j + 2) - 1) + (jc - 1) * ldh]);
+                    temp = tau * (h[(j - 1) + (jc - 1) * ldh] + v[1] * h[((j + 1) - 1) + (jc - 1) * ldh] + v[2] * h[((j + 2) - 1) + (jc - 1) * ldh]);
                     h[(j - 1) + (jc - 1) * ldh] = h[(j - 1) + (jc - 1) * ldh] - temp;
-                    h[((j + 1) - 1) + (jc - 1) * ldh] = h[((j + 1) - 1) + (jc - 1) * ldh] - temp * v[2 - 1];
-                    h[((j + 2) - 1) + (jc - 1) * ldh] = h[((j + 2) - 1) + (jc - 1) * ldh] - temp * v[3 - 1];
-                    temp2 = tau * (t[(j - 1) + (jc - 1) * ldt] + v[2 - 1] * t[((j + 1) - 1) + (jc - 1) * ldt] + v[3 - 1] * t[((j + 2) - 1) + (jc - 1) * ldt]);
+                    h[((j + 1) - 1) + (jc - 1) * ldh] = h[((j + 1) - 1) + (jc - 1) * ldh] - temp * v[1];
+                    h[((j + 2) - 1) + (jc - 1) * ldh] = h[((j + 2) - 1) + (jc - 1) * ldh] - temp * v[2];
+                    temp2 = tau * (t[(j - 1) + (jc - 1) * ldt] + v[1] * t[((j + 1) - 1) + (jc - 1) * ldt] + v[2] * t[((j + 2) - 1) + (jc - 1) * ldt]);
                     t[(j - 1) + (jc - 1) * ldt] = t[(j - 1) + (jc - 1) * ldt] - temp2;
-                    t[((j + 1) - 1) + (jc - 1) * ldt] = t[((j + 1) - 1) + (jc - 1) * ldt] - temp2 * v[2 - 1];
-                    t[((j + 2) - 1) + (jc - 1) * ldt] = t[((j + 2) - 1) + (jc - 1) * ldt] - temp2 * v[3 - 1];
+                    t[((j + 1) - 1) + (jc - 1) * ldt] = t[((j + 1) - 1) + (jc - 1) * ldt] - temp2 * v[1];
+                    t[((j + 2) - 1) + (jc - 1) * ldt] = t[((j + 2) - 1) + (jc - 1) * ldt] - temp2 * v[2];
                 }
                 if (ilq) {
                     for (jr = 1; jr <= n; jr = jr + 1) {
-                        temp = tau * (q[(jr - 1) + (j - 1) * ldq] + v[2 - 1] * q[(jr - 1) + ((j + 1) - 1) * ldq] + v[3 - 1] * q[(jr - 1) + ((j + 2) - 1) * ldq]);
+                        temp = tau * (q[(jr - 1) + (j - 1) * ldq] + v[1] * q[(jr - 1) + ((j + 1) - 1) * ldq] + v[2] * q[(jr - 1) + ((j + 2) - 1) * ldq]);
                         q[(jr - 1) + (j - 1) * ldq] = q[(jr - 1) + (j - 1) * ldq] - temp;
-                        q[(jr - 1) + ((j + 1) - 1) * ldq] = q[(jr - 1) + ((j + 1) - 1) * ldq] - temp * v[2 - 1];
-                        q[(jr - 1) + ((j + 2) - 1) * ldq] = q[(jr - 1) + ((j + 2) - 1) * ldq] - temp * v[3 - 1];
+                        q[(jr - 1) + ((j + 1) - 1) * ldq] = q[(jr - 1) + ((j + 1) - 1) * ldq] - temp * v[1];
+                        q[(jr - 1) + ((j + 2) - 1) * ldq] = q[(jr - 1) + ((j + 2) - 1) * ldq] - temp * v[2];
                     }
                 }
                 //
@@ -965,7 +965,7 @@ void Rhgeqz(const char *job, const char *compq, const char *compz, INTEGER const
                     scale = abs(w22 / u2);
                 }
                 if (abs(w11) < abs(u1)) {
-                    scale = min(scale, REAL(abs(w11 / u1)));
+                    scale = min(scale, abs(w11 / u1));
                 }
                 //
                 // Solve
@@ -986,29 +986,29 @@ void Rhgeqz(const char *job, const char *compq, const char *compz, INTEGER const
                 tau = one + scale / t1;
                 vs = -one / (scale + t1);
                 v[0] = one;
-                v[2 - 1] = vs * u1;
-                v[3 - 1] = vs * u2;
+                v[1] = vs * u1;
+                v[2] = vs * u2;
                 //
                 // Apply transformations from the right.
                 //
                 for (jr = ifrstm; jr <= min(j + 3, ilast); jr = jr + 1) {
-                    temp = tau * (h[(jr - 1) + (j - 1) * ldh] + v[2 - 1] * h[(jr - 1) + ((j + 1) - 1) * ldh] + v[3 - 1] * h[(jr - 1) + ((j + 2) - 1) * ldh]);
+                    temp = tau * (h[(jr - 1) + (j - 1) * ldh] + v[1] * h[(jr - 1) + ((j + 1) - 1) * ldh] + v[2] * h[(jr - 1) + ((j + 2) - 1) * ldh]);
                     h[(jr - 1) + (j - 1) * ldh] = h[(jr - 1) + (j - 1) * ldh] - temp;
-                    h[(jr - 1) + ((j + 1) - 1) * ldh] = h[(jr - 1) + ((j + 1) - 1) * ldh] - temp * v[2 - 1];
-                    h[(jr - 1) + ((j + 2) - 1) * ldh] = h[(jr - 1) + ((j + 2) - 1) * ldh] - temp * v[3 - 1];
+                    h[(jr - 1) + ((j + 1) - 1) * ldh] = h[(jr - 1) + ((j + 1) - 1) * ldh] - temp * v[1];
+                    h[(jr - 1) + ((j + 2) - 1) * ldh] = h[(jr - 1) + ((j + 2) - 1) * ldh] - temp * v[2];
                 }
                 for (jr = ifrstm; jr <= j + 2; jr = jr + 1) {
-                    temp = tau * (t[(jr - 1) + (j - 1) * ldt] + v[2 - 1] * t[(jr - 1) + ((j + 1) - 1) * ldt] + v[3 - 1] * t[(jr - 1) + ((j + 2) - 1) * ldt]);
+                    temp = tau * (t[(jr - 1) + (j - 1) * ldt] + v[1] * t[(jr - 1) + ((j + 1) - 1) * ldt] + v[2] * t[(jr - 1) + ((j + 2) - 1) * ldt]);
                     t[(jr - 1) + (j - 1) * ldt] = t[(jr - 1) + (j - 1) * ldt] - temp;
-                    t[(jr - 1) + ((j + 1) - 1) * ldt] = t[(jr - 1) + ((j + 1) - 1) * ldt] - temp * v[2 - 1];
-                    t[(jr - 1) + ((j + 2) - 1) * ldt] = t[(jr - 1) + ((j + 2) - 1) * ldt] - temp * v[3 - 1];
+                    t[(jr - 1) + ((j + 1) - 1) * ldt] = t[(jr - 1) + ((j + 1) - 1) * ldt] - temp * v[1];
+                    t[(jr - 1) + ((j + 2) - 1) * ldt] = t[(jr - 1) + ((j + 2) - 1) * ldt] - temp * v[2];
                 }
                 if (ilz) {
                     for (jr = 1; jr <= n; jr = jr + 1) {
-                        temp = tau * (z[(jr - 1) + (j - 1) * ldz] + v[2 - 1] * z[(jr - 1) + ((j + 1) - 1) * ldz] + v[3 - 1] * z[(jr - 1) + ((j + 2) - 1) * ldz]);
+                        temp = tau * (z[(jr - 1) + (j - 1) * ldz] + v[1] * z[(jr - 1) + ((j + 1) - 1) * ldz] + v[2] * z[(jr - 1) + ((j + 2) - 1) * ldz]);
                         z[(jr - 1) + (j - 1) * ldz] = z[(jr - 1) + (j - 1) * ldz] - temp;
-                        z[(jr - 1) + ((j + 1) - 1) * ldz] = z[(jr - 1) + ((j + 1) - 1) * ldz] - temp * v[2 - 1];
-                        z[(jr - 1) + ((j + 2) - 1) * ldz] = z[(jr - 1) + ((j + 2) - 1) * ldz] - temp * v[3 - 1];
+                        z[(jr - 1) + ((j + 1) - 1) * ldz] = z[(jr - 1) + ((j + 1) - 1) * ldz] - temp * v[1];
+                        z[(jr - 1) + ((j + 2) - 1) * ldz] = z[(jr - 1) + ((j + 2) - 1) * ldz] - temp * v[2];
                     }
                 }
                 t[((j + 1) - 1) + (j - 1) * ldt] = zero;
@@ -1064,7 +1064,7 @@ void Rhgeqz(const char *job, const char *compq, const char *compz, INTEGER const
                 }
             }
             //
-            // End of Double-Shift code
+            // End of Rouble-Shift code
             //
         }
         //
