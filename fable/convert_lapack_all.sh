@@ -21,7 +21,7 @@ EXCLUDE_BASENAMES_MANUAL=( )
 EXCLUDE_BASENAMES_UNUSED=( )
 
 # Other helper/utility routines to be excluded from this pass
-EXCLUDE_BASENAMES_MISC=( dgetsqrhrt dsyswapr zgetsqrhrt zheswapr zsyswapr )
+EXCLUDE_BASENAMES_MISC=( dgetsqrhrt dsyswapr zgetsqrhrt zheswapr zsyswapr dlaruv )
 
 # Combined basename exception list (for iteration)
 EXCLUDE_BASENAMES=(
