@@ -31,10 +31,6 @@
 
 void Rlaswp(INTEGER const n, REAL *a, INTEGER const lda, INTEGER const k1, INTEGER const k2, INTEGER *ipiv, INTEGER const incx) {
     //
-    //
-    //
-    //
-    //
     // Interchange row I with row IPIV(K1+(I-K1)*abs(INCX)) for each of rows
     // K1 through K2.
     //
