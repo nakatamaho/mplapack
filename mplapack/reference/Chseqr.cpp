@@ -31,16 +31,15 @@
 
 void Chseqr(const char *job, const char *compz, INTEGER const n, INTEGER const ilo, INTEGER const ihi, COMPLEX *h, INTEGER const ldh, COMPLEX *w, COMPLEX *z, INTEGER const ldz, COMPLEX *work, INTEGER const lwork, INTEGER &info) {
     //
-    //
+    // .    through a rare Clahqr failure.  NL > NTINY = 15 is
+    // .    required and NL <= NMIN = iMlaenv(ISPEC=12,...) is recom-
+    // .    mended.  (The default value of NMIN is 75.)  Using NL = 49
+    // .    allows up to six simultaneous shifts and a 16-by-16
     bool wantt = Mlsame(job, "S");
     bool initz = Mlsame(compz, "I");
     bool wantz = initz || Mlsame(compz, "V");
-    char job_compz[3];
-    job_compz[0] = job[0];
-    job_compz[1] = compz[0];
-    job_compz[2] = '\0';
     const REAL rzero = 0.0;
-    work[0] = COMPLEX(castREAL((max((INTEGER)1, n))), rzero);
+    work[0] = COMPLEX(castREAL(max((INTEGER)1, n)), rzero);
     bool lquery = lwork == -1;
     //
     info = 0;
@@ -68,73 +67,42 @@ void Chseqr(const char *job, const char *compz, INTEGER const n, INTEGER const i
     const INTEGER ntiny = 15;
     INTEGER kbot = 0;
     const INTEGER nl = 49;
+    COMPLEX hl[nl * nl];
     COMPLEX workl[nl];
-    COMPLEX hl[nl];
-    INTEGER ldhl = nl;
-
     if (info != 0) {
-        //
-        //
         Mxerbla("Chseqr", -info);
         return;
-        //
     } else if (n == 0) {
-        //
-        //
         return;
-        //
     } else if (lquery) {
-        //
-        //
         Claqr0(wantt, wantz, n, ilo, ihi, h, ldh, w, ilo, ihi, z, ldz, work, lwork, info);
-        work[0] = COMPLEX(castREAL(max(castINTEGER(work[0].real()), (max((INTEGER)1, n)))), rzero);
+        work[0] = COMPLEX(max(work[0].real(), castREAL(max((INTEGER)1, n))), rzero);
         return;
-        //
     } else {
-        //
-        //
         if (ilo > 1) {
             Ccopy(ilo - 1, h, ldh + 1, w, 1);
         }
         if (ihi < n) {
             Ccopy(n - ihi, &h[((ihi + 1) - 1) + ((ihi + 1) - 1) * ldh], ldh + 1, &w[(ihi + 1) - 1], 1);
         }
-        //
-        //
         if (initz) {
             Claset("A", n, n, zero, one, z, ldz);
         }
-        //
-        //
         if (ilo == ihi) {
             w[ilo - 1] = h[(ilo - 1) + (ilo - 1) * ldh];
             return;
         }
-        //
-        //
-        nmin = iMlaenv(12, "Chseqr", job_compz, n, ilo, ihi, lwork);
+        nmin = iMlaenv(12, "Chseqr", CHAR2(job, compz), n, ilo, ihi, lwork);
         nmin = max(ntiny, nmin);
-        //
-        //
         if (n > nmin) {
             Claqr0(wantt, wantz, n, ilo, ihi, h, ldh, w, ilo, ihi, z, ldz, work, lwork, info);
         } else {
-            //
-            //
             Clahqr(wantt, wantz, n, ilo, ihi, h, ldh, w, ilo, ihi, z, ldz, info);
-            //
             if (info > 0) {
-                //
-                //
                 kbot = info;
-                //
                 if (n >= nl) {
-                    //
-                    //
                     Claqr0(wantt, wantz, n, ilo, kbot, h, ldh, w, ilo, ihi, z, ldz, work, lwork, info);
-                    //
                 } else {
-                    //
                     // .    scratch space to benefit from Claqr0.  Hence,
                     // .    tiny matrices must be copied into a larger
                     //
@@ -148,15 +116,9 @@ void Chseqr(const char *job, const char *compz, INTEGER const n, INTEGER const i
                 }
             }
         }
-        //
-        //
         if ((wantt || info != 0) && n > 2) {
             Claset("L", n - 2, n - 2, zero, zero, &h[(3 - 1)], ldh);
         }
-        //
-        //
         work[0] = COMPLEX(max(castREAL(max((INTEGER)1, n)), work[0].real()), rzero);
     }
-    //
-    //
 }
