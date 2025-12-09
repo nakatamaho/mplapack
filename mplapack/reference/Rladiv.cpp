@@ -34,9 +34,6 @@ REAL Rladiv2(REAL const &a, REAL const &b, REAL const &c, REAL const &d, REAL co
     //
     //
     //
-    //
-    //
-    //
     const REAL zero = 0.0;
     REAL br = 0.0;
     if (r != zero) {
@@ -60,9 +57,6 @@ void Rladiv1(REAL &a, REAL const &b, REAL const &c, REAL const &d, REAL &p, REAL
     //
     //
     //
-    //
-    //
-    //
     REAL r = d / c;
     const REAL one = 1.0;
     REAL t = one / (c + d * r);
@@ -75,9 +69,6 @@ void Rladiv1(REAL &a, REAL const &b, REAL const &c, REAL const &d, REAL &p, REAL
 }
 
 void Rladiv(REAL const &a, REAL const &b, REAL const &c, REAL const &d, REAL &p, REAL &q) {
-    //
-    //
-    //
     //
     //
     //
