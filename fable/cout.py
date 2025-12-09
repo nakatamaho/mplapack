@@ -5719,13 +5719,21 @@ def _postprocess_ilaenv_char_concat(lines):
         if current:
             parts.append(''.join(current).strip())
         return parts
-
+  
     def is_char_concat(arg):
-        """Check if argument looks like 'var1 + var2' or 'var1 + var2 + var3'."""
-        # Pattern: identifier + identifier (+ identifier)?
-        # Must not contain other operators or complex expressions
+        """Check if argument looks like 'var1 + var2' or 'var1 + var2 + var3'.
+
+        We support simple concatenations of (possibly substringed) CHARACTER
+        variables, e.g.
+            JOB(1:1)   // COMPZ(1:1)
+            JOB(:1)    // COMPZ(:1)
+            JOBU       // JOBVT
+        and normalize them to base identifiers:
+            ['job', 'compz'], ['jobu', 'jobvt'], etc.
+        """
         stripped = arg.strip()
-        # Split by '+' at top level
+
+        # Split by '+' at top level (no nesting across parentheses)
         parts = []
         current = []
         depth = 0
@@ -5744,14 +5752,32 @@ def _postprocess_ilaenv_char_concat(lines):
         if current:
             parts.append(''.join(current).strip())
 
-        # Check if all parts are simple identifiers
-        ident_pat = re.compile(r'^[A-Za-z_][A-Za-z0-9_]*$')
+        # We only care about 2 or 3-term concatenations.
         if len(parts) < 2 or len(parts) > 3:
             return None
+
+        # Normalize each part:
+        #   JOB(1,1)  -> "job"
+        #   JOB(:1)   -> "job"
+        #   JOB(1:1)  -> "job"
+        #   JOB       -> "job"
+        ident_pat   = re.compile(r'^[A-Za-z_][A-Za-z0-9_]*$')
+        substr_pat1 = re.compile(r'^([A-Za-z_][A-Za-z0-9_]*)\s*\(\s*1\s*,\s*1\s*\)$')
+        substr_pat2 = re.compile(r'^([A-Za-z_][A-Za-z0-9_]*)\s*\(\s*:?\s*1\s*\)$')
+        substr_pat3 = re.compile(r'^([A-Za-z_][A-Za-z0-9_]*)\s*\(\s*1\s*:\s*1\s*\)$')
+
+        norm_parts = []
         for p in parts:
-            if not ident_pat.match(p):
+            m = substr_pat1.match(p) or substr_pat2.match(p) or substr_pat3.match(p)
+            if m:
+                base = m.group(1)
+            else:
+                base = p
+            if not ident_pat.match(base):
                 return None
-        return parts
+            norm_parts.append(base.lower())
+
+        return norm_parts
 
     def rewrite_line(line):
         # Find iMlaenv( calls
