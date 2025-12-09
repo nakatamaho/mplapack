@@ -6530,7 +6530,7 @@ def process(
         "zlacon",  # add more names here if needed
         "drotm",
         "drotmg",
-        # "clacon",
+        "dlacon",
         # "slacon",
     }
 
