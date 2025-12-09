@@ -129,8 +129,12 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
     // Quick return for void matrix (Y3K safe)
     // #:)
     if ((m == 0) || (n == 0)) {
-        iwork[0] = iwork[1] = iwork[2] = 0;
-        work[0] = work[1] = work[2] = work[3] = work[4] = work[5] = work[6] = 0.0;
+        for (INTEGER i = 1; i <= 3; i++) {
+            iwork[i - 1] = 0;
+        }
+        for (INTEGER i = 1; i <= 7; i++) {
+            work[i - 1] = 0.0;
+        }
         return;
     }
     //
@@ -145,16 +149,12 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
     //
     // Set numerical parameters
     //
-    // !    NOTE: Make sure DLAMCH() does not fail on the target architecture.
+    // !    NOTE: Make sure Rlamch() does not fail on the target architecture.
     //
     epsln = Rlamch("Epsilon");
     sfmin = Rlamch("SafeMinimum");
     small = sfmin / epsln;
-#if defined ___MPLAPACK_BUILD_WITH_DD___ || defined ___MPLAPACK_BUILD_WITH_QD___
-    big = one / sfmin;
-#else
-    big = Rlamch("Overflow");
-#endif
+    big = Rlamch("O");
     // BIG   = ONE / SFMIN
     //
     // Initialize SVA(1:N) = diag( ||A e_i||_2 )_1^N
@@ -163,7 +163,7 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
     // overflow. It is possible that this scaling pushes the smallest
     // column norm left from the underflow threshold (extreme case).
     //
-    scalem = one / sqrt(castREAL(m * n));
+    scalem = one / sqrt(castREAL(m) * castREAL(n));
     noscal = true;
     goscal = true;
     for (p = 1; p <= n; p = p + 1) {
@@ -211,21 +211,21 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
             Rlaset("G", n, n, zero, one, v, ldv);
         }
         work[0] = one;
-        work[2 - 1] = one;
+        work[1] = one;
         if (errest) {
-            work[3 - 1] = one;
+            work[2] = one;
         }
         if (lsvec && rsvec) {
-            work[4 - 1] = one;
-            work[5 - 1] = one;
+            work[3] = one;
+            work[4] = one;
         }
         if (l2tran) {
-            work[6 - 1] = zero;
-            work[7 - 1] = zero;
+            work[5] = zero;
+            work[6] = zero;
         }
         iwork[0] = 0;
-        iwork[2 - 1] = 0;
-        iwork[3 - 1] = 0;
+        iwork[1] = 0;
+        iwork[2] = 0;
         return;
     }
     //
@@ -262,29 +262,29 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
             scalem = one;
         }
         work[0] = one / scalem;
-        work[2 - 1] = one;
+        work[1] = one;
         if (sva[0] != zero) {
             iwork[0] = 1;
             if ((sva[0] / scalem) >= sfmin) {
-                iwork[2 - 1] = 1;
+                iwork[1] = 1;
             } else {
-                iwork[2 - 1] = 0;
+                iwork[1] = 0;
             }
         } else {
             iwork[0] = 0;
-            iwork[2 - 1] = 0;
+            iwork[1] = 0;
         }
-        iwork[3 - 1] = 0;
+        iwork[2] = 0;
         if (errest) {
-            work[3 - 1] = one;
+            work[2] = one;
         }
         if (lsvec && rsvec) {
-            work[4 - 1] = one;
-            work[5 - 1] = one;
+            work[3] = one;
+            work[4] = one;
         }
         if (l2tran) {
-            work[6 - 1] = zero;
-            work[7 - 1] = zero;
+            work[5] = zero;
+            work[6] = zero;
         }
         return;
         //
@@ -318,7 +318,7 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
             }
         } else {
             for (p = 1; p <= m; p = p + 1) {
-                work[(m + n + p) - 1] = scalem * abs(a[(p - 1) + (iRamax(n, &a[(p - 1)], lda))]);
+                work[(m + n + p) - 1] = scalem * abs(a[(p - 1) + ((iRamax(n, &a[(p - 1)], lda)) - 1) * lda]);
                 aatmax = max(aatmax, work[(m + n + p) - 1]);
                 aatmin = min(aatmin, work[(m + n + p) - 1]);
             }
@@ -346,10 +346,10 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
         for (p = 1; p <= n; p = p + 1) {
             big1 = (pow2((sva[p - 1] / xsc))) * temp1;
             if (big1 != zero) {
-                entra += big1 * log(big);
+                entra += big1 * log(big1);
             }
         }
-        entra = -entra / log(castREAL(n - 1));
+        entra = -entra / log(castREAL(n));
         //
         // Now, SVA().^2/Trace(A^t * A) is a point in the probability simplex.
         // It is derived from the diagonal of  A^t * A.  Do the same with the
@@ -364,7 +364,7 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
                 entrat += big1 * log(big1);
             }
         }
-        entrat = -entrat / log(castREAL(m - 1));
+        entrat = -entrat / log(castREAL(m));
         //
         // Analyze the entropies and decide A or A^t. Smaller entropy
         // usually means better input for the algorithm.
@@ -691,7 +691,7 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
         Rgesvj("L", "NoU", "NoV", nr, nr, a, lda, sva, n, v, ldv, work, lwork, info);
         //
         scalem = work[0];
-        numrank = nint(work[2 - 1]);
+        numrank = nint(work[1]);
         //
     } else if (rsvec && (!lsvec)) {
         //
@@ -707,7 +707,7 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
             //
             Rgesvj("L", "U", "N", n, nr, v, ldv, sva, nr, a, lda, work, lwork, info);
             scalem = work[0];
-            numrank = castINTEGER(work[2 - 1]);
+            numrank = nint(work[1]);
             //
         } else {
             //
@@ -1307,22 +1307,21 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
     }
     //
     work[0] = uscal2 * scalem;
-    work[2 - 1] = uscal1;
+    work[1] = uscal1;
     if (errest) {
-        work[3 - 1] = sconda;
+        work[2] = sconda;
     }
     if (lsvec && rsvec) {
-        work[4 - 1] = condr1;
-        work[5 - 1] = condr2;
+        work[3] = condr1;
+        work[4] = condr2;
     }
     if (l2tran) {
-        work[6 - 1] = entra;
-        work[7 - 1] = entrat;
+        work[5] = entra;
+        work[6] = entrat;
     }
     //
     iwork[0] = nr;
-    iwork[2 - 1] = numrank;
-    iwork[3 - 1] = warning;
+    iwork[1] = numrank;
+    iwork[2] = warning;
     //
-    // .. END OF Rgejsv
 }
