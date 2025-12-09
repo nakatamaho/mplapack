@@ -6532,6 +6532,7 @@ def process(
         "drotmg",
         "dlacon",
         "dlasy2",
+        "dlaln2",
         # "slacon",
     }
 
