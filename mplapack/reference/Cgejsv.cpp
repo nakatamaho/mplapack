@@ -110,6 +110,7 @@ void Cgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
     INTEGER numrank = 0;
     REAL cond_ok = 0.0;
     //
+    //
     // Test the input arguments
     //
     lsvec = Mlsame(jobu, "U") || Mlsame(jobu, "F");
@@ -174,8 +175,8 @@ void Cgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
         lwcon = 2 * n;
         // .. minimal workspace length for Cgesvj of an N x N matrix,
         // without and with explicit accumulation of Jacobi rotations
-        lwsvdj = max((INTEGER)2 * n, (INTEGER)1);
-        lwsvdjv = max((INTEGER)2 * n, (INTEGER)1);
+        lwsvdj = max(2 * n, (INTEGER)1);
+        lwsvdjv = max(2 * n, (INTEGER)1);
         // .. minimal REAL workspace length for Cgeqp3, Cpocon, Cgesvj
         lrwqp3 = 2 * n;
         lrwcon = n;
@@ -195,7 +196,7 @@ void Cgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
             // .. minimal and optimal sizes of the complex workspace if
             // only the singular values are requested
             if (errest) {
-                minwrk = max(n + lwqp3, n * n + lwcon, n + lwqrf, lwsvdj);
+                minwrk = max(n + lwqp3, pow2(n) + lwcon, n + lwqrf, lwsvdj);
             } else {
                 minwrk = max(n + lwqp3, n + lwqrf, lwsvdj);
             }
@@ -203,7 +204,7 @@ void Cgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
                 Cgesvj("L", "N", "N", n, n, a, lda, sva, n, v, ldv, cdummy, -1, rdummy, -1, ierr);
                 lwrk_Cgesvj = castINTEGER(cdummy[0].real());
                 if (errest) {
-                    optwrk = max(n + lwrk_Cgeqp3, n * n + lwcon, n + lwrk_Cgeqrf, lwrk_Cgesvj);
+                    optwrk = max(n + lwrk_Cgeqp3, pow2(n) + lwcon, n + lwrk_Cgeqrf, lwrk_Cgesvj);
                 } else {
                     optwrk = max(n + lwrk_Cgeqp3, n + lwrk_Cgeqrf, lwrk_Cgesvj);
                 }
@@ -299,9 +300,9 @@ void Cgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
             // full SVD is requested
             if (!jracc) {
                 if (errest) {
-                    minwrk = max(n + lwqp3, n + lwcon, 2 * n + n * n + lwcon, 2 * n + lwqrf, 2 * n + lwqp3, 2 * n + n * n + n + lwlqf, 2 * n + n * n + n + n * n + lwcon, 2 * n + n * n + n + lwsvdj, 2 * n + n * n + n + lwsvdjv, 2 * n + n * n + n + lwunmqr, 2 * n + n * n + n + lwunmlq, n + n * n + lwsvdj, n + lwunmqrm);
+                    minwrk = max(n + lwqp3, n + lwcon, 2 * n + pow2(n) + lwcon, 2 * n + lwqrf, 2 * n + lwqp3, 2 * n + pow2(n) + n + lwlqf, 2 * n + pow2(n) + n + pow2(n) + lwcon, 2 * n + pow2(n) + n + lwsvdj, 2 * n + pow2(n) + n + lwsvdjv, 2 * n + pow2(n) + n + lwunmqr, 2 * n + pow2(n) + n + lwunmlq, n + pow2(n) + lwsvdj, n + lwunmqrm);
                 } else {
-                    minwrk = max(n + lwqp3, 2 * n + n * n + lwcon, 2 * n + lwqrf, 2 * n + lwqp3, 2 * n + n * n + n + lwlqf, 2 * n + n * n + n + n * n + lwcon, 2 * n + n * n + n + lwsvdj, 2 * n + n * n + n + lwsvdjv, 2 * n + n * n + n + lwunmqr, 2 * n + n * n + n + lwunmlq, n + n * n + lwsvdj, n + lwunmqrm);
+                    minwrk = max(n + lwqp3, 2 * n + pow2(n) + lwcon, 2 * n + lwqrf, 2 * n + lwqp3, 2 * n + pow2(n) + n + lwlqf, 2 * n + pow2(n) + n + pow2(n) + lwcon, 2 * n + pow2(n) + n + lwsvdj, 2 * n + pow2(n) + n + lwsvdjv, 2 * n + pow2(n) + n + lwunmqr, 2 * n + pow2(n) + n + lwunmlq, n + pow2(n) + lwsvdj, n + lwunmqrm);
                 }
                 miniwrk += n;
                 if (rowpiv || l2tran) {
@@ -309,9 +310,9 @@ void Cgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
                 }
             } else {
                 if (errest) {
-                    minwrk = max(n + lwqp3, n + lwcon, 2 * n + lwqrf, 2 * n + n * n + lwsvdjv, 2 * n + n * n + n + lwunmqr, n + lwunmqrm);
+                    minwrk = max(n + lwqp3, n + lwcon, 2 * n + lwqrf, 2 * n + pow2(n) + lwsvdjv, 2 * n + pow2(n) + n + lwunmqr, n + lwunmqrm);
                 } else {
-                    minwrk = max(n + lwqp3, 2 * n + lwqrf, 2 * n + n * n + lwsvdjv, 2 * n + n * n + n + lwunmqr, n + lwunmqrm);
+                    minwrk = max(n + lwqp3, 2 * n + lwqrf, 2 * n + pow2(n) + lwsvdjv, 2 * n + pow2(n) + n + lwunmqr, n + lwunmqrm);
                 }
                 if (rowpiv || l2tran) {
                     miniwrk += m;
@@ -334,9 +335,9 @@ void Cgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
                     Cunmlq("L", "C", n, n, n, a, lda, cdummy, v, ldv, cdummy, -1, ierr);
                     lwrk_Cunmlq = castINTEGER(cdummy[0].real());
                     if (errest) {
-                        optwrk = max(n + lwrk_Cgeqp3, n + lwcon, 2 * n + n * n + lwcon, 2 * n + lwrk_Cgeqrf, 2 * n + lwrk_Cgeqp3n, 2 * n + n * n + n + lwrk_Cgelqf, 2 * n + n * n + n + n * n + lwcon, 2 * n + n * n + n + lwrk_Cgesvj, 2 * n + n * n + n + lwrk_Cgesvjv, 2 * n + n * n + n + lwrk_Cunmqr, 2 * n + n * n + n + lwrk_Cunmlq, n + n * n + lwrk_Cgesvju, n + lwrk_Cunmqrm);
+                        optwrk = max(n + lwrk_Cgeqp3, n + lwcon, 2 * n + pow2(n) + lwcon, 2 * n + lwrk_Cgeqrf, 2 * n + lwrk_Cgeqp3n, 2 * n + pow2(n) + n + lwrk_Cgelqf, 2 * n + pow2(n) + n + pow2(n) + lwcon, 2 * n + pow2(n) + n + lwrk_Cgesvj, 2 * n + pow2(n) + n + lwrk_Cgesvjv, 2 * n + pow2(n) + n + lwrk_Cunmqr, 2 * n + pow2(n) + n + lwrk_Cunmlq, n + pow2(n) + lwrk_Cgesvju, n + lwrk_Cunmqrm);
                     } else {
-                        optwrk = max(n + lwrk_Cgeqp3, 2 * n + n * n + lwcon, 2 * n + lwrk_Cgeqrf, 2 * n + lwrk_Cgeqp3n, 2 * n + n * n + n + lwrk_Cgelqf, 2 * n + n * n + n + n * n + lwcon, 2 * n + n * n + n + lwrk_Cgesvj, 2 * n + n * n + n + lwrk_Cgesvjv, 2 * n + n * n + n + lwrk_Cunmqr, 2 * n + n * n + n + lwrk_Cunmlq, n + n * n + lwrk_Cgesvju, n + lwrk_Cunmqrm);
+                        optwrk = max(n + lwrk_Cgeqp3, 2 * n + pow2(n) + lwcon, 2 * n + lwrk_Cgeqrf, 2 * n + lwrk_Cgeqp3n, 2 * n + pow2(n) + n + lwrk_Cgelqf, 2 * n + pow2(n) + n + pow2(n) + lwcon, 2 * n + pow2(n) + n + lwrk_Cgesvj, 2 * n + pow2(n) + n + lwrk_Cgesvjv, 2 * n + pow2(n) + n + lwrk_Cunmqr, 2 * n + pow2(n) + n + lwrk_Cunmlq, n + pow2(n) + lwrk_Cgesvju, n + lwrk_Cunmqrm);
                     }
                 } else {
                     Cgesvj("L", "U", "V", n, n, u, ldu, sva, n, v, ldv, cdummy, -1, rdummy, -1, ierr);
@@ -346,9 +347,9 @@ void Cgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
                     Cunmqr("L", "N", m, n, n, a, lda, cdummy, u, ldu, cdummy, -1, ierr);
                     lwrk_Cunmqrm = castINTEGER(cdummy[0].real());
                     if (errest) {
-                        optwrk = max(n + lwrk_Cgeqp3, n + lwcon, 2 * n + lwrk_Cgeqrf, 2 * n + n * n, 2 * n + n * n + lwrk_Cgesvjv, 2 * n + n * n + n + lwrk_Cunmqr, n + lwrk_Cunmqrm);
+                        optwrk = max(n + lwrk_Cgeqp3, n + lwcon, 2 * n + lwrk_Cgeqrf, 2 * n + pow2(n), 2 * n + pow2(n) + lwrk_Cgesvjv, 2 * n + pow2(n) + n + lwrk_Cunmqr, n + lwrk_Cunmqrm);
                     } else {
-                        optwrk = max(n + lwrk_Cgeqp3, 2 * n + lwrk_Cgeqrf, 2 * n + n * n, 2 * n + n * n + lwrk_Cgesvjv, 2 * n + n * n + n + lwrk_Cunmqr, n + lwrk_Cunmqrm);
+                        optwrk = max(n + lwrk_Cgeqp3, 2 * n + lwrk_Cgeqrf, 2 * n + pow2(n), 2 * n + pow2(n) + lwrk_Cgesvjv, 2 * n + pow2(n) + n + lwrk_Cunmqr, n + lwrk_Cunmqrm);
                     }
                 }
             }
@@ -374,7 +375,7 @@ void Cgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
         return;
     } else if (lquery) {
         cwork[0] = optwrk;
-        cwork[2 - 1] = minwrk;
+        cwork[1] = minwrk;
         rwork[0] = minrwrk;
         iwork[0] = max((INTEGER)4, miniwrk);
         return;
@@ -383,10 +384,12 @@ void Cgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
     // Quick return for void matrix (Y3K safe)
     // #:)
     if ((m == 0) || (n == 0)) {
-        for (p = 0; p < 4; p++)
-            iwork[p] = 0;
-        for (p = 0; p < 7; p++)
-            rwork[p] = 0.0;
+        for (INTEGER i = 1; i <= 4; i++) {
+            iwork[i - 1] = 0;
+        }
+        for (INTEGER i = 1; i <= 7; i++) {
+            rwork[i - 1] = 0.0;
+        }
         return;
     }
     //
@@ -401,16 +404,12 @@ void Cgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
     //
     // Set numerical parameters
     //
-    // !    NOTE: Make sure DLAMCH() does not fail on the target architecture.
+    // !    NOTE: Make sure Rlamch() does not fail on the target architecture.
     //
     epsln = Rlamch("Epsilon");
     sfmin = Rlamch("SafeMinimum");
-#if defined ___MPLAPACK_BUILD_WITH_DD___ || defined ___MPLAPACK_BUILD_WITH_QD___
-    big = one / sfmin;
-#else
-    big = Rlamch("Overflow");
-#endif
     small = sfmin / epsln;
+    big = Rlamch("O");
     // BIG   = ONE / SFMIN
     //
     // Initialize SVA(1:N) = diag( ||A e_i||_2 )_1^N
@@ -467,22 +466,22 @@ void Cgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
             Claset("G", n, n, czero, cone, v, ldv);
         }
         rwork[0] = one;
-        rwork[2 - 1] = one;
+        rwork[1] = one;
         if (errest) {
-            rwork[3 - 1] = one;
+            rwork[2] = one;
         }
         if (lsvec && rsvec) {
-            rwork[4 - 1] = one;
-            rwork[5 - 1] = one;
+            rwork[3] = one;
+            rwork[4] = one;
         }
         if (l2tran) {
-            rwork[6 - 1] = zero;
-            rwork[7 - 1] = zero;
+            rwork[5] = zero;
+            rwork[6] = zero;
         }
         iwork[0] = 0;
-        iwork[2 - 1] = 0;
-        iwork[3 - 1] = 0;
-        iwork[4 - 1] = -1;
+        iwork[1] = 0;
+        iwork[2] = 0;
+        iwork[3] = -1;
         return;
     }
     //
@@ -519,30 +518,30 @@ void Cgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
             scalem = one;
         }
         rwork[0] = one / scalem;
-        rwork[2 - 1] = one;
+        rwork[1] = one;
         if (sva[0] != zero) {
             iwork[0] = 1;
             if ((sva[0] / scalem) >= sfmin) {
-                iwork[2 - 1] = 1;
+                iwork[1] = 1;
             } else {
-                iwork[2 - 1] = 0;
+                iwork[1] = 0;
             }
         } else {
             iwork[0] = 0;
-            iwork[2 - 1] = 0;
+            iwork[1] = 0;
         }
-        iwork[3 - 1] = 0;
-        iwork[4 - 1] = -1;
+        iwork[2] = 0;
+        iwork[3] = -1;
         if (errest) {
-            rwork[3 - 1] = one;
+            rwork[2] = one;
         }
         if (lsvec && rsvec) {
-            rwork[4 - 1] = one;
-            rwork[5 - 1] = one;
+            rwork[3] = one;
+            rwork[4] = one;
         }
         if (l2tran) {
-            rwork[6 - 1] = zero;
-            rwork[7 - 1] = zero;
+            rwork[5] = zero;
+            rwork[6] = zero;
         }
         return;
         //
@@ -575,7 +574,7 @@ void Cgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
             }
         } else {
             for (p = 1; p <= m; p = p + 1) {
-                rwork[(m + p) - 1] = scalem * abs(a[(p - 1) + (iCamax(n, &a[(p - 1)], lda) - 1) * lda]);
+                rwork[(m + p) - 1] = scalem * abs(a[(p - 1) + ((iCamax(n, &a[(p - 1)], lda)) - 1) * lda]);
                 aatmax = max(aatmax, rwork[(m + p) - 1]);
                 aatmin = min(aatmin, rwork[(m + p) - 1]);
             }
@@ -628,7 +627,7 @@ void Cgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
         //
         transp = (entrat < entra);
         //
-        // If A^* is better than A, take the adjoINTEGER of A. This is allowed
+        // If A^* is better than A, take the adjoint of A. This is allowed
         // only for square matrices, M=N.
         if (transp) {
             // In an optimal implementation, this trivial transpose
@@ -982,7 +981,7 @@ void Cgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
         Cgesvj("L", "N", "N", nr, nr, a, lda, sva, n, v, ldv, cwork, lwork, rwork, lrwork, info);
         //
         scalem = rwork[0];
-        numrank = nint(rwork[2 - 1]);
+        numrank = nint(rwork[1]);
         //
     } else if ((rsvec && (!lsvec) && (!jracc)) || (jracc && (!lsvec) && (nr != n))) {
         //
@@ -999,7 +998,7 @@ void Cgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
             //
             Cgesvj("L", "U", "N", n, nr, v, ldv, sva, nr, a, lda, cwork, lwork, rwork, lrwork, info);
             scalem = rwork[0];
-            numrank = nint(rwork[2 - 1]);
+            numrank = nint(rwork[1]);
             //
         } else {
             //
@@ -1019,7 +1018,7 @@ void Cgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
             //
             Cgesvj("L", "U", "N", nr, nr, v, ldv, sva, nr, u, ldu, &cwork[(n + 1) - 1], lwork - n, rwork, lrwork, info);
             scalem = rwork[0];
-            numrank = nint(rwork[2 - 1]);
+            numrank = nint(rwork[1]);
             if (nr < n) {
                 Claset("A", n - nr, nr, czero, czero, &v[((nr + 1) - 1)], ldv);
                 Claset("A", nr, n - nr, czero, czero, &v[((nr + 1) - 1) * ldv], ldv);
@@ -1046,7 +1045,7 @@ void Cgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
         //
         Cgesvj("U", "N", "V", n, n, a, lda, sva, n, v, ldv, cwork, lwork, rwork, lrwork, info);
         scalem = rwork[0];
-        numrank = nint(rwork[2 - 1]);
+        numrank = nint(rwork[1]);
         Clapmr(false, n, n, v, ldv, iwork);
         //
     } else if (lsvec && (!rsvec)) {
@@ -1071,7 +1070,7 @@ void Cgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
         //
         Cgesvj("L", "U", "N", nr, nr, u, ldu, sva, nr, a, lda, &cwork[(n + 1) - 1], lwork - n, rwork, lrwork, info);
         scalem = rwork[0];
-        numrank = nint(rwork[2 - 1]);
+        numrank = nint(rwork[1]);
         //
         if (nr < m) {
             Claset("A", m - nr, nr, czero, czero, &u[((nr + 1) - 1)], ldu);
@@ -1288,7 +1287,7 @@ void Cgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
                     //
                     Cgesvj("L", "U", "N", nr, nr, v, ldv, sva, nr, u, ldu, &cwork[(2 * n + n * nr + nr + 1) - 1], lwork - 2 * n - n * nr - nr, rwork, lrwork, info);
                     scalem = rwork[0];
-                    numrank = nint(rwork[2 - 1]);
+                    numrank = nint(rwork[1]);
                     for (p = 1; p <= nr; p = p + 1) {
                         Ccopy(nr, &v[(p - 1) * ldv], 1, &u[(p - 1) * ldu], 1);
                         CRscal(nr, sva[p - 1], &v[(p - 1) * ldv], 1);
@@ -1303,7 +1302,7 @@ void Cgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
                         // from the second QR factorization.
                         Ctrsm("L", "U", "N", "N", nr, nr, cone, a, lda, v, ldv);
                     } else {
-                        // .. R1 is well conditioned, but non-square. AdjoINTEGER of R2
+                        // .. R1 is well conditioned, but non-square. Adjoint of R2
                         // is inverted to get the product of the Jacobi rotations
                         // used in Cgesvj. The Q-factor from the second QR
                         // factorization is then built in explicitly.
@@ -1324,7 +1323,7 @@ void Cgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
                     // R2=L3*Q3), pre-multiplied with the transposed Q3.
                     Cgesvj("L", "U", "N", nr, nr, v, ldv, sva, nr, u, ldu, &cwork[(2 * n + n * nr + nr + 1) - 1], lwork - 2 * n - n * nr - nr, rwork, lrwork, info);
                     scalem = rwork[0];
-                    numrank = nint(rwork[2 - 1]);
+                    numrank = nint(rwork[1]);
                     for (p = 1; p <= nr; p = p + 1) {
                         Ccopy(nr, &v[(p - 1) * ldv], 1, &u[(p - 1) * ldu], 1);
                         CRscal(nr, sva[p - 1], &u[(p - 1) * ldu], 1);
@@ -1359,7 +1358,7 @@ void Cgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
                     // accumulation of Jacobi rotations.
                     Cgesvj("L", "U", "V", nr, nr, v, ldv, sva, nr, u, ldu, &cwork[(2 * n + n * nr + nr + 1) - 1], lwork - 2 * n - n * nr - nr, rwork, lrwork, info);
                     scalem = rwork[0];
-                    numrank = nint(rwork[2 - 1]);
+                    numrank = nint(rwork[1]);
                     if (nr < n) {
                         Claset("A", n - nr, nr, czero, czero, &v[((nr + 1) - 1)], ldv);
                         Claset("A", nr, n - nr, czero, czero, &v[((nr + 1) - 1) * ldv], ldv);
@@ -1450,7 +1449,7 @@ void Cgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
                 Cgesvj("U", "U", "N", n, n, &cwork[(n + 1) - 1], n, sva, n, u, ldu, &cwork[(n + n * n + 1) - 1], lwork - n - n * n, rwork, lrwork, info);
                 //
                 scalem = rwork[0];
-                numrank = nint(rwork[2 - 1]);
+                numrank = nint(rwork[1]);
                 for (p = 1; p <= n; p = p + 1) {
                     Ccopy(n, &cwork[(n + (p - 1) * n + 1) - 1], 1, &u[(p - 1) * ldu], 1);
                     CRscal(n, sva[p - 1], &cwork[(n + (p - 1) * n + 1) - 1], 1);
@@ -1458,7 +1457,7 @@ void Cgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
                 //
                 Ctrsm("L", "U", "N", "N", n, n, cone, a, lda, &cwork[(n + 1) - 1], n);
                 for (p = 1; p <= n; p = p + 1) {
-                    Ccopy(n, &cwork[(n + p) - 1], n, &v[(iwork[p - 1] - 1)], ldv);
+                    Ccopy(n, &cwork[(n + p) - 1], n, &v[(iwork[p - 1] - 1) + (1 - 1) * ldv], ldv);
                 }
                 temp1 = sqrt(castREAL(n)) * epsln;
                 for (p = 1; p <= n; p = p + 1) {
@@ -1553,7 +1552,7 @@ void Cgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
             //
             Cgesvj("L", "U", "V", nr, nr, u, ldu, sva, n, v, ldv, &cwork[(2 * n + n * nr + 1) - 1], lwork - 2 * n - n * nr, rwork, lrwork, info);
             scalem = rwork[0];
-            numrank = nint(rwork[2 - 1]);
+            numrank = nint(rwork[1]);
             //
             if (nr < n) {
                 Claset("A", n - nr, nr, czero, czero, &v[((nr + 1) - 1)], ldv);
@@ -1624,27 +1623,26 @@ void Cgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
     }
     //
     rwork[0] = uscal2 * scalem;
-    rwork[2 - 1] = uscal1;
+    rwork[1] = uscal1;
     if (errest) {
-        rwork[3 - 1] = sconda;
+        rwork[2] = sconda;
     }
     if (lsvec && rsvec) {
-        rwork[4 - 1] = condr1;
-        rwork[5 - 1] = condr2;
+        rwork[3] = condr1;
+        rwork[4] = condr2;
     }
     if (l2tran) {
-        rwork[6 - 1] = entra;
-        rwork[7 - 1] = entrat;
+        rwork[5] = entra;
+        rwork[6] = entrat;
     }
     //
     iwork[0] = nr;
-    iwork[2 - 1] = numrank;
-    iwork[3 - 1] = warning;
+    iwork[1] = numrank;
+    iwork[2] = warning;
     if (transp) {
-        iwork[4 - 1] = 1;
+        iwork[3] = 1;
     } else {
-        iwork[4 - 1] = -1;
+        iwork[3] = -1;
     }
     //
-    // .. END OF Cgejsv
 }
