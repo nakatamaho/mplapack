@@ -234,7 +234,7 @@ void Rlaln2(bool const ltrans, INTEGER const na, INTEGER const nw, REAL const sm
                 br2 = b[(2 - 1)];
             }
             br2 = br2 - lr21 * br1;
-            bbnd = max(REAL(abs(br1 * (ur22 * ur11r))), REAL(abs(br2)));
+            bbnd = max(abs(br1 * (ur22 * ur11r)), abs(br2));
             if (bbnd > one && abs(ur22) < one) {
                 if (bbnd >= bignum * abs(ur22)) {
                     scale = one / bbnd;
@@ -243,7 +243,7 @@ void Rlaln2(bool const ltrans, INTEGER const na, INTEGER const nw, REAL const sm
             //
             xr2 = (br2 * scale) / ur22;
             xr1 = (scale * br1) * ur11r - xr2 * (ur11r * ur12);
-            if (zswap[icmax - 1]) {
+            if (Cswap[icmax - 1]) {
                 x[0] = xr2;
                 x[(2 - 1)] = xr1;
             } else {
@@ -366,7 +366,7 @@ void Rlaln2(bool const ltrans, INTEGER const na, INTEGER const nw, REAL const sm
             }
             br2 = br2 - lr21 * br1 + li21 * bi1;
             bi2 = bi2 - li21 * br1 - lr21 * bi1;
-            bbnd = max(REAL((abs(br1) + abs(bi1)) * (u22abs * (abs(ur11r) + abs(ui11r)))), REAL(abs(br2) + abs(bi2)));
+            bbnd = max((abs(br1) + abs(bi1)) * (u22abs * (abs(ur11r) + abs(ui11r))), abs(br2) + abs(bi2));
             if (bbnd > one && u22abs < one) {
                 if (bbnd >= bignum * u22abs) {
                     scale = one / bbnd;
@@ -380,7 +380,7 @@ void Rlaln2(bool const ltrans, INTEGER const na, INTEGER const nw, REAL const sm
             Rladiv(br2, bi2, ur22, ui22, xr2, xi2);
             xr1 = ur11r * br1 - ui11r * bi1 - ur12s * xr2 + ui12s * xi2;
             xi1 = ui11r * br1 + ur11r * bi1 - ui12s * xr2 - ur12s * xi2;
-            if (zswap[icmax - 1]) {
+            if (Cswap[icmax - 1]) {
                 x[0] = xr2;
                 x[(2 - 1)] = xr1;
                 x[(2 - 1) * ldx] = xi2;
