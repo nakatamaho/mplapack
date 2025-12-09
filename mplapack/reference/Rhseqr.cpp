@@ -31,7 +31,6 @@
 
 void Rhseqr(const char *job, const char *compz, INTEGER const n, INTEGER const ilo, INTEGER const ihi, REAL *h, INTEGER const ldh, REAL *wr, REAL *wi, REAL *z, INTEGER const ldz, REAL *work, INTEGER const lwork, INTEGER &info) {
     //
-    //
     bool wantt = Mlsame(job, "S");
     bool initz = Mlsame(compz, "I");
     bool wantz = initz || Mlsame(compz, "V");
@@ -64,30 +63,18 @@ void Rhseqr(const char *job, const char *compz, INTEGER const n, INTEGER const i
     const INTEGER ntiny = 15;
     INTEGER kbot = 0;
     const INTEGER nl = 49;
-    REAL workl[nl];
     REAL hl[nl * nl];
-    INTEGER ldhl = nl;
+    REAL workl[nl];
     if (info != 0) {
-        //
-        //
         Mxerbla("Rhseqr", -info);
         return;
-        //
     } else if (n == 0) {
-        //
-        //
         return;
-        //
     } else if (lquery) {
-        //
-        //
         Rlaqr0(wantt, wantz, n, ilo, ihi, h, ldh, wr, wi, ilo, ihi, z, ldz, work, lwork, info);
         work[0] = max(castREAL(max((INTEGER)1, n)), work[0]);
         return;
-        //
     } else {
-        //
-        //
         for (i = 1; i <= ilo - 1; i = i + 1) {
             wr[i - 1] = h[(i - 1) + (i - 1) * ldh];
             wi[i - 1] = zero;
@@ -96,47 +83,25 @@ void Rhseqr(const char *job, const char *compz, INTEGER const n, INTEGER const i
             wr[i - 1] = h[(i - 1) + (i - 1) * ldh];
             wi[i - 1] = zero;
         }
-        //
-        //
         if (initz) {
             Rlaset("A", n, n, zero, one, z, ldz);
         }
-        //
-        //
         if (ilo == ihi) {
             wr[ilo - 1] = h[(ilo - 1) + (ilo - 1) * ldh];
             wi[ilo - 1] = zero;
             return;
         }
-        //
-        //
-        char job_compz[3];
-        job_compz[0] = job[0];
-        job_compz[1] = compz[0];
-        job_compz[2] = '\0';
-        nmin = iMlaenv(12, "Rhseqr", job_compz, n, ilo, ihi, lwork);
+        nmin = iMlaenv(12, "Rhseqr", CHAR2(job, compz), n, ilo, ihi, lwork);
         nmin = max(ntiny, nmin);
-        //
-        //
         if (n > nmin) {
             Rlaqr0(wantt, wantz, n, ilo, ihi, h, ldh, wr, wi, ilo, ihi, z, ldz, work, lwork, info);
         } else {
-            //
-            //
             Rlahqr(wantt, wantz, n, ilo, ihi, h, ldh, wr, wi, ilo, ihi, z, ldz, info);
-            //
             if (info > 0) {
-                //
-                //
                 kbot = info;
-                //
                 if (n >= nl) {
-                    //
-                    //
                     Rlaqr0(wantt, wantz, n, ilo, kbot, h, ldh, wr, wi, ilo, ihi, z, ldz, work, lwork, info);
-                    //
                 } else {
-                    //
                     // .    scratch space to benefit from Rlaqr0.  Hence,
                     // .    tiny matrices must be copied into a larger
                     //
@@ -150,15 +115,9 @@ void Rhseqr(const char *job, const char *compz, INTEGER const n, INTEGER const i
                 }
             }
         }
-        //
-        //
         if ((wantt || info != 0) && n > 2) {
             Rlaset("L", n - 2, n - 2, zero, zero, &h[(3 - 1)], ldh);
         }
-        //
-        //
         work[0] = max(castREAL(max((INTEGER)1, n)), work[0]);
     }
-    //
-    //
 }
