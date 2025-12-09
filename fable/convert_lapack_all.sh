@@ -96,4 +96,3 @@ patch -p3    < ~/mplapack/fable/lapack-patches/patch-Clacon.cpp
 patch -p3 -R < ~/mplapack/fable/lapack-patches/patch-Rlasy2.cpp
 patch -p3 -R < ~/mplapack/fable/lapack-patches/patch-Cgejsv.cpp
 patch -p3    < ~/mplapack/fable/lapack-patches/patch-Rgejsv.cpp
-

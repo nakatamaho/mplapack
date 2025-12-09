@@ -1363,6 +1363,24 @@ def _is_simple_lvalue(expr: str) -> bool:
     # This is intentionally permissive: any NAME followed by bracketed expressions.
     return re.match(r'^[A-Za-z_][A-Za-z0-9_]*(\[[^\]]*\])*$', expr) is not None
 
+def _rewrite_small_char_substrings(text: str) -> str:
+    """Rewrite substring-like calls on small CHARACTER scalars:
+
+       jbcmpz(1, 1) -> jbcmpz[0]
+       jbcmpz(2, 2) -> jbcmpz[1]
+       for names that were mapped to small char arrays.
+    """
+    if not small_char_identifiers:
+        return text
+
+    for name in small_char_identifiers:
+        # support indices 1..4
+        for idx in range(1, 5):
+            pattern = r"\b%s\s*\(\s*%d\s*,\s*%d\s*\)" % (re.escape(name), idx, idx)
+            repl = f"{name}[{idx - 1}]"
+            text = re.sub(pattern, repl, text)
+    return text
+
 
 def _has_top_level_arith_op(expr: str) -> bool:
     """Return True if expr has a top-level +, -, * or / outside parentheses.
@@ -2633,6 +2651,40 @@ def convert_declaration(rapp, conv_info, fdecl, crhs, const):
 
     if (cdims is None):
         # Scalar declaration.
+
+        # Small CHARACTER*n scalars (n > 1) -> plain char arrays.
+        # Example:
+        #   CHARACTER*2 NAME
+        # becomes
+        #   char name[2];
+        #
+        # We only apply this to short fixed-length scalars (length 24).
+        if dt_code == "character" and fdecl.size_tokens is not None:
+            size_expr = convert_tokens(
+                conv_info=conv_info,
+                tokens=fdecl.size_tokens,
+                commas=False,
+            ).strip()
+            length_is_small = False
+            try:
+                length_val = int(size_expr)
+                if 1 < length_val <= 4:
+                    length_is_small = True
+            except ValueError:
+                # Non-numeric length expression -> fall back to fem::str<...>
+                length_is_small = False
+
+            if length_is_small:
+                def const_qualifier():
+                    if const:
+                        return "const "
+                    return ""
+                # For CHARACTER we map to plain 'char' on the C++ side.
+                mplapack_ctype = convert_to_mplapack_type("char")
+                rapp("%s%s %s[%s];" % (
+                    const_qualifier(), mplapack_ctype, vname, size_expr))
+                return False
+
         # For plain CHARACTER*1 (mapped to C++ 'char') without an explicit
         # Fortran initializer, do not inject an artificial '= 0;'.
         # This keeps:
@@ -2642,7 +2694,7 @@ def convert_declaration(rapp, conv_info, fdecl, crhs, const):
         # and relies on the subsequent assignments in the Fortran logic.
         if crhs is None and ctype == "char":
             def const_qualifier():
-                if (const):
+                if const:
                     return "const "
                 return ""
             # Use MPLAPACK-style scalar types (INTEGER, REAL, etc.)
@@ -2650,7 +2702,7 @@ def convert_declaration(rapp, conv_info, fdecl, crhs, const):
             rapp("%s%s %s;" % (const_qualifier(), mplapack_ctype, vname))
             return False
 
-        if (crhs is None):
+        if crhs is None:
             # Try DATA-based initializer for simple scalar DATA
             if hasattr(conv_info, "data_initializers"):
                 if conv_info.data_initializers is None:
@@ -2666,7 +2718,7 @@ def convert_declaration(rapp, conv_info, fdecl, crhs, const):
                 crhs = zero_shortcut_if_possible(ctype=ctype)
 
         def const_qualifier():
-            if (const):
+            if const:
                 return "const "
             return ""
         # Use MPLAPACK-style scalar types (INTEGER, REAL, etc.)
@@ -2702,7 +2754,6 @@ def convert_declaration(rapp, conv_info, fdecl, crhs, const):
     # For higher-rank arrays like WORK13(LDWORK,NBMAX) we flatten but keep
     # the product of extents symbolically:
     #   COMPLEX work13[ldwork * nbmax];
-    from fable.cout import convert_tokens  # already available in this module
     dim_expr = convert_tokens(
         conv_info=conv_info,
         tokens=fdecl.dim_tokens,
