@@ -654,10 +654,13 @@ def is_blas_boilerplate_comment(t):
 
     # Strip leading/trailing whitespace for comparison
     t_stripped = t.strip()
+    lower = t_stripped.lower()
 
-    # Never treat "Test the input parameters" lines as boilerplate.
-    # We want to keep these comments in the generated C++.
-    if "Test the input parameters" in t_stripped:
+    # Never treat "Test the input parameters/arguments" or "Quick return ..."
+    # lines as boilerplate. We want to keep these comments in the generated C++.
+    if ("test the input parameters" in lower
+            or "test the input arguments" in lower
+            or "quick return" in lower):
         return False
 
     # Check for single ".." or empty lines - these ARE boilerplate when standalone
@@ -765,9 +768,23 @@ def produce_comment_given_ssl(callback, ssl):
     # Identify boilerplate blocks
     skip_lines = [False] * len(comment_lines)
 
-    # First pass: find definite boilerplate lines
+    # Identify boilerplate blocks
+    skip_lines = [False] * len(comment_lines)
+
+    # Sentinel: once we see "Test the input arguments", we stop treating
+    # any later lines as boilerplate. We still allow boilerplate removal
+    # for lines *before* this sentinel.
+    sentinel_idx = None
+    for i, (line, text) in enumerate(comment_lines):
+        if text and "test the input arguments" in text.strip().lower():
+            sentinel_idx = i
+            break
+
+    # First pass: find definite boilerplate lines in the prefix only
     boilerplate_indices = []
     for i, (line, text) in enumerate(comment_lines):
+        if sentinel_idx is not None and i >= sentinel_idx:
+            continue
         if is_blas_boilerplate_comment(text):
             skip_lines[i] = True
             boilerplate_indices.append(i)
@@ -821,91 +838,26 @@ def produce_comment_given_ssl(callback, ssl):
 
 
 def produce_comments(callback, ssl_list):
-    """
-    Process comments, filtering out BLAS boilerplate blocks including surrounding empty lines.
-    """
-    # First, collect all comment lines
-    comment_lines = []
+    """Emit all comments without filtering BLAS/LAPACK boilerplate.
 
+    Boilerplate removal is now handled by a separate post-processing script,
+    so this function simply converts Fortran comments to C++ line comments.
+    """
     for ssl in ssl_list:
-        if ssl is not None:
-            for sl in ssl.source_line_cluster:
-                # Extract comment text
-                if (sl.stmt_offs is None):
-                    t = sl.text[1:]
-                elif (sl.index_of_exclamation_mark is not None):
-                    t = sl.stmt[sl.index_of_exclamation_mark+1:]
-                else:
-                    t = None
-
-                if t is not None:
-                    comment_line = "//C%s" % t.expandtabs().rstrip()
-                    comment_lines.append((comment_line, t))
-
-    # If no comments, return
-    if not comment_lines:
-        return
-
-    # Identify boilerplate blocks
-    # A boilerplate block includes:
-    # 1. Lines that match boilerplate patterns
-    # 2. Empty lines and ".." lines between boilerplate lines
-    # 3. Empty lines immediately before and after the block
-
-    skip_lines = [False] * len(comment_lines)
-
-    # First pass: find definite boilerplate lines
-    boilerplate_indices = []
-    for i, (line, text) in enumerate(comment_lines):
-        if is_blas_boilerplate_comment(text):
-            skip_lines[i] = True
-            boilerplate_indices.append(i)
-
-    # If we found boilerplate, expand to include entire blocks
-    if boilerplate_indices:
-        # Find contiguous blocks of boilerplate
-        blocks = []
-        current_block = [boilerplate_indices[0]]
-
-        for i in range(1, len(boilerplate_indices)):
-            # If indices are close (within 10 lines), consider them part of same block
-            if boilerplate_indices[i] - boilerplate_indices[i-1] <= 10:
-                current_block.append(boilerplate_indices[i])
+        if ssl is None:
+            continue
+        for sl in ssl.source_line_cluster:
+            if sl.stmt_offs is None:
+                # Full-line comment: take text after the leading "*"
+                t = sl.text[1:]
+            elif sl.index_of_exclamation_mark is not None:
+                # In-line comment: take text after "!"
+                t = sl.stmt[sl.index_of_exclamation_mark + 1:]
             else:
-                blocks.append((min(current_block), max(current_block)))
-                current_block = [boilerplate_indices[i]]
-        blocks.append((min(current_block), max(current_block)))
+                t = None
 
-        # For each block, mark everything between start and end, plus surrounding empties
-        for start, end in blocks:
-            # Mark everything in the block
-            for i in range(start, end + 1):
-                skip_lines[i] = True
-
-            # Mark preceding empty or ".." lines
-            j = start - 1
-            while j >= 0:
-                line_text = comment_lines[j][1].strip()
-                if line_text == "" or line_text == ".." or line_text.startswith("..") and line_text.endswith(".."):
-                    skip_lines[j] = True
-                    j -= 1
-                else:
-                    break
-
-            # Mark following empty or ".." lines
-            j = end + 1
-            while j < len(comment_lines):
-                line_text = comment_lines[j][1].strip()
-                if line_text == "" or line_text == ".." or line_text.startswith("..") and line_text.endswith(".."):
-                    skip_lines[j] = True
-                    j += 1
-                else:
-                    break
-
-    # Output non-skipped lines
-    for i, (line, _) in enumerate(comment_lines):
-        if not skip_lines[i]:
-            callback(line)
+            if t is not None:
+                callback("//C%s" % t.expandtabs().rstrip())
 
 
 def flush_comments_if_non_trivial(callback, buffer):
@@ -946,9 +898,8 @@ class comment_manager(object):
         O.index = 0
         O.first_comment_output = False
 
-        # Identify boilerplate blocks and mark indices to skip
+        # Do not identify boilerplate blocks here. Keep all comments.
         O.skip_indices = set()
-        O._identify_boilerplate_blocks()
 
     def _identify_boilerplate_blocks(O):
         """Identify and mark BLAS boilerplate blocks and surrounding empty lines."""
