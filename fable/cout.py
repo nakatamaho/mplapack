@@ -147,14 +147,21 @@ def _adjust_actuals_using_signature(arg_string: str, signature, conv_info=None) 
                 continue
 
             # Bare identifier (e.g. normin) -> &normin,
-            # unless it is a CHARACTER dummy argument (already a pointer).
+            # unless it is a CHARACTER dummy argument (already a pointer),
+            # or a small CHARACTER*n scalar we mapped to char[].
             if re.match(r"[A-Za-z_][A-Za-z0-9_]*$", s):
+                # CHARACTER dummy arguments are already const char*.
                 if conv_info is not None and _is_dummy_character_arg(conv_info, s):
-                    # CHARACTER dummy arguments are already const char*.
+                    new_parts.append(part)
+                    continue
+                # Small CHARACTER*n scalars mapped to char[] decay to char*,
+                # so do NOT add '&' here (jbcmpz -> const char*).
+                if s in small_char_identifiers:
                     new_parts.append(part)
                     continue
                 leading = part[:len(part) - len(s)]
                 part = leading + "&" + s
+
 
         new_parts.append(part)
 
@@ -205,7 +212,7 @@ _MPLAPACK_CPP_TO_FORTRAN = {
 # Names are C++ identifiers after vmapping (e.g. "alpha", "a", "cmn.z").
 complex_identifiers = set()
 complex_pointer_identifiers = set()
-
+small_char_identifiers = set()  # small fixed-length CHARACTER scalars mapped to char[]
 
 def _mplapack_default_name(name: str) -> str:
     """Fallback rule: s/d -> R, c/z -> C, others unchanged."""
@@ -1366,20 +1373,34 @@ def _is_simple_lvalue(expr: str) -> bool:
 def _rewrite_small_char_substrings(text: str) -> str:
     """Rewrite substring-like calls on small CHARACTER scalars:
 
-       jbcmpz(1, 1) -> jbcmpz[0]
-       jbcmpz(2, 2) -> jbcmpz[1]
-       for names that were mapped to small char arrays.
+       jbcmpz(1, 1) = 'S'  ->  jbcmpz[0] = 'S';
+       jbcmpz(2, 2) = 'V'  ->  jbcmpz[1] = 'V';
     """
     if not small_char_identifiers:
         return text
 
+    out = text
+
+    # 1) JBCMPZ(1,1) -> jbcmpz[0]
     for name in small_char_identifiers:
-        # support indices 1..4
         for idx in range(1, 5):
             pattern = r"\b%s\s*\(\s*%d\s*,\s*%d\s*\)" % (re.escape(name), idx, idx)
             repl = f"{name}[{idx - 1}]"
-            text = re.sub(pattern, repl, text)
-    return text
+            out = re.sub(pattern, repl, out)
+
+    # 2) jbcmpz[0] = "S" -> jbcmpz[0] = 'S'
+    if small_char_identifiers:
+        names_alt = "|".join(re.escape(n) for n in small_char_identifiers)
+        pattern = r"(\b(?:%s)\s*\[\d+\]\s*=\s*)\"(.)\"" % names_alt
+
+        def _to_char_literal(m):
+            left = m.group(1)
+            ch = m.group(2)
+            return f"{left}'{ch}'"
+
+        out = re.sub(pattern, _to_char_literal, out)
+
+    return out
 
 
 def _has_top_level_arith_op(expr: str) -> bool:
@@ -1799,7 +1820,7 @@ def _rewrite_max_min_calls(text: str) -> str:
 
 
 _single_char_string_assign_re = re.compile(
-    r'(\b[A-Za-z_][A-Za-z0-9_]*\b)\s*=\s*"([^"\\])"\s*;'
+    r'(\b[A-Za-z_][A-Za-z0-9_]*\b(?:\s*\[\s*\d+\s*\])?)\s*=\s*"([^"\\])"\s*;'
 )
 _single_char_string_eq_re = re.compile(
     r'(\b[A-Za-z_][A-Za-z0-9_]*\b)\s*==\s*"([^"\\])"'
@@ -2683,6 +2704,8 @@ def convert_declaration(rapp, conv_info, fdecl, crhs, const):
                 mplapack_ctype = convert_to_mplapack_type("char")
                 rapp("%s%s %s[%s];" % (
                     const_qualifier(), mplapack_ctype, vname, size_expr))
+                # Remember that this scalar CHARACTER*n was mapped to a small char[].
+                small_char_identifiers.add(vname)
                 return False
 
         # For plain CHARACTER*1 (mapped to C++ 'char') without an explicit
@@ -4179,7 +4202,13 @@ def convert_executable(
                                               (clhs, op, crhs[:i]))
                         return True
                     if (not in_place_op_left() and not in_place_op_right()):
-                        curr_scope.append("%s = %s;" % (clhs, crhs))
+                        # Rewrite substring-style calls on small CHARACTER*n scalars
+                        # that were mapped to char arrays, e.g.:
+                        #   jbcmpz(1,1) = 'S'  ->  jbcmpz[0] = 'S';
+                        clhs_fixed = _rewrite_small_char_substrings(clhs)
+                        crhs_fixed = _rewrite_small_char_substrings(crhs)
+                        curr_scope.append("%s = %s;" % (clhs_fixed, crhs_fixed))
+
             elif (ei.key == "inquire"):
                 search_for_id_tokens_and_declare_identifiers()
                 iuflist = ei.iuflist
