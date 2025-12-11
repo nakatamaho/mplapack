@@ -6015,20 +6015,24 @@ def _postprocess_array_slice_intrinsics(lines):
                 depth -= 1
                 current.append(ch)
             elif ch == ',' and depth == 0:
-                parts.append(''.join(current).strip())
+                part = ''.join(current).strip()
+                if part:
+                    parts.append(part)
                 current = []
             else:
                 current.append(ch)
         if current:
-            parts.append(''.join(current).strip())
+            part = ''.join(current).strip()
+            if part:
+                parts.append(part)
         return parts
 
     # Pattern to match: FuncName(identifier[__SLICE__(args)]...)
-    # FuncName is one of: Mmaxloc, Mmaxval, Mminval
+    # FuncName is one of: (Mmaxloc|maxloc), (Mmaxval|maxval), (Mminval|minval)
     pattern = re.compile(
-        r'\b(Mmaxloc|Mmaxval|Mminval)\s*\(\s*'  # function name (group 1)
-        r'([A-Za-z_][A-Za-z0-9_]*)'              # array name (group 2)
-        r'\s*\[\s*__SLICE__\s*\('                # [__SLICE__(
+        r'\b(Mmaxloc|maxloc|Mmaxval|maxval|Mminval|minval)\s*\(\s*'
+        r'([A-Za-z_][A-Za-z0-9_]*)'
+        r'\s*\[\s*__SLICE__\s*\('
     )
 
     def rewrite_line(line):
@@ -6040,10 +6044,22 @@ def _postprocess_array_slice_intrinsics(lines):
             func_name = m.group(1)
             array_name = m.group(2)
 
+            # Normalize function name to MPLAPACK helper name.
+            base = func_name.lower()
+            if base in ("mmaxloc", "maxloc"):
+                out_name = "Mmaxloc"
+            elif base in ("mmaxval", "maxval"):
+                out_name = "Mmaxval"
+            elif base in ("mminval", "minval"):
+                out_name = "Mminval"
+            else:
+                out_name = func_name
+
             # Find the end of __SLICE__(...)
             slice_paren_start = m.end() - 1  # position of '(' after __SLICE__
             slice_paren_end = find_matching_paren(line, slice_paren_start)
             if slice_paren_end < 0:
+                # Fallback: keep original text
                 result.append(line[m.start():m.end()])
                 pos = m.end()
                 continue
@@ -6083,7 +6099,7 @@ def _postprocess_array_slice_intrinsics(lines):
             # Check what comes next: ',' (has extra args) or ')' (no extra args)
             if line[rest_pos] == ')':
                 # No extra arguments (Mmaxval, Mminval style)
-                new_call = f"{func_name}({array_name}, {start_arg}, {end_arg})"
+                new_call = f"{out_name}({array_name}, {start_arg}, {end_arg})"
                 result.append(new_call)
                 pos = rest_pos + 1
             elif line[rest_pos] == ',':
@@ -6109,7 +6125,7 @@ def _postprocess_array_slice_intrinsics(lines):
                     continue
 
                 extra_args = line[extra_args_start:close_paren_pos].strip()
-                new_call = f"{func_name}({array_name}, {start_arg}, {end_arg}, {extra_args})"
+                new_call = f"{out_name}({array_name}, {start_arg}, {end_arg}, {extra_args})"
                 result.append(new_call)
                 pos = close_paren_pos + 1
             else:
@@ -6125,7 +6141,6 @@ def _postprocess_array_slice_intrinsics(lines):
     elif isinstance(lines, str):
         return '\n'.join(rewrite_line(l) for l in lines.split('\n'))
     return lines
-
 
 # Keep old name as alias for compatibility
 _postprocess_mmaxloc = _postprocess_array_slice_intrinsics
@@ -6171,29 +6186,32 @@ def _postprocess_slice_assignment(lines):
                 depth -= 1
                 current.append(ch)
             elif ch == ',' and depth == 0:
-                parts.append(''.join(current).strip())
+                part = ''.join(current).strip()
+                if part:
+                    parts.append(part)
                 current = []
             else:
                 current.append(ch)
         if current:
-            parts.append(''.join(current).strip())
+            part = ''.join(current).strip()
+            if part:
+                parts.append(part)
         return parts
 
-    def make_index_expr(col_expr, ldname):
-        """Generate index expression: (i - 1) + (col - 1) * ldname"""
-        simple_name = re.compile(r'^[A-Za-z_][A-Za-z0-9_]*$')
-        simple_int = re.compile(r'^[0-9]+$')
-        if simple_name.match(col_expr) or simple_int.match(col_expr):
-            col_term = f"({col_expr} - 1)"
+    # Helper to build (loop_var - 1) + (col - 1) * ldname index
+    def make_index_expr(col_expr, ldname, loop_var='i'):
+        col_expr = col_expr.strip()
+        if col_expr == '1':
+            col_term = '(1 - 1)'
         else:
-            col_term = f"(({col_expr}) - 1)"
-        return f"(i - 1) + {col_term} * {ldname}"
+            col_term = f"({col_expr} - 1)"
+        return f"({loop_var} - 1) + {col_term} * {ldname}"
 
     def replace_slice2d_with_index(expr, loop_var='i'):
         """Replace __SLICE2D__(start, end, col, ld) in expr with array index using loop_var."""
         pattern = re.compile(
-            r'([A-Za-z_][A-Za-z0-9_]*)'     # array name
-            r'\s*\[\s*__SLICE2D__\s*\('     # [__SLICE2D__(
+            r'([A-Za-z_][A-Za-z0-9_]*)'
+            r'\s*\[\s*__SLICE2D__\s*\('
         )
         result = []
         pos = 0
@@ -6217,7 +6235,7 @@ def _postprocess_slice_assignment(lines):
             # args: start, end, col, ldname
             col_expr = args[2]
             ldname = args[3]
-            index_expr = make_index_expr(col_expr, ldname)
+            index_expr = make_index_expr(col_expr, ldname, loop_var=loop_var)
 
             # Skip past ")]"
             rest_pos = paren_end + 1
@@ -6234,19 +6252,59 @@ def _postprocess_slice_assignment(lines):
 
     # Pattern for 1D slice: identifier[__SLICE__(...)]
     pattern_1d = re.compile(
-        r'(\s*)'                           # leading whitespace (group 1)
-        r'([A-Za-z_][A-Za-z0-9_]*)'         # array name (group 2)
-        r'\s*\[\s*__SLICE__\s*\('           # [__SLICE__(
+        r'(\s*)'
+        r'([A-Za-z_][A-Za-z0-9_]*)'
+        r'\s*\[\s*__SLICE__\s*\('
     )
 
     # Pattern for 2D slice: identifier[__SLICE2D__(...)]
     pattern_2d = re.compile(
-        r'(\s*)'                           # leading whitespace (group 1)
-        r'([A-Za-z_][A-Za-z0-9_]*)'         # array name (group 2)
-        r'\s*\[\s*__SLICE2D__\s*\('         # [__SLICE2D__(
+        r'(\s*)'
+        r'([A-Za-z_][A-Za-z0-9_]*)'
+        r'\s*\[\s*__SLICE2D__\s*\('
     )
 
     def rewrite_line(line):
+        # Handle pseudo slice zero-fill shorthand:
+        #   A(i1, i2)             = zero;  # 1D
+        #   A(i1, i2, j1, j2)     = zero;  # 2D (first-dim slice, ldA inferred)
+        m_zero = re.match(
+            r'(\s*)([A-Za-z_][A-Za-z0-9_]*)\s*\(([^)]*)\)\s*=\s*zero\s*;',
+            line,
+        )
+        if m_zero:
+            leading_ws = m_zero.group(1)
+            array_name = m_zero.group(2)
+            args_str = m_zero.group(3)
+            args = split_args(args_str)
+
+            # 1D: A(i_start, i_end) = zero;
+            if len(args) == 2:
+                row_start, row_end = [a.strip() for a in args]
+                for_loop = (
+                    f"{leading_ws}for (INTEGER i = {row_start}; "
+                    f"i <= {row_end}; i++) {{\n"
+                    f"{leading_ws}    {array_name}[(i - 1)] = zero;\n"
+                    f"{leading_ws}}}"
+                )
+                return for_loop
+
+            # 2D: A(i_start, i_end, j_start, j_end) = zero;
+            if len(args) == 4:
+                row_start, row_end, col_start, col_end = [a.strip() for a in args]
+                ldname = "ld" + array_name.lower()
+                for_loop = (
+                    f"{leading_ws}for (INTEGER l = {row_start}; "
+                    f"l <= {row_end}; l++) {{\n"
+                    f"{leading_ws}    for (INTEGER m = {col_start}; "
+                    f"m <= {col_end}; m++) {{\n"
+                    f"{leading_ws}        {array_name}[(l - 1) + "
+                    f"(m - 1) * {ldname}] = zero;\n"
+                    f"{leading_ws}    }}\n"
+                    f"{leading_ws}}}"
+                )
+                return for_loop
+
         # First try 2D slice
         m = pattern_2d.search(line)
         if m:
@@ -6277,7 +6335,7 @@ def _postprocess_slice_assignment(lines):
             assign_op = assign_match.group(1)
             value_start = rest_start + assign_match.end()
 
-            # Find the semicolon
+            # Find the end of the right-hand side expression; assume semicolon at top level
             depth_paren = 0
             depth_bracket = 0
             semicolon_pos = -1
@@ -6299,17 +6357,13 @@ def _postprocess_slice_assignment(lines):
                 return line
 
             value_expr = line[value_start:semicolon_pos].strip()
+            value_expr = replace_slice2d_with_index(value_expr, loop_var='i')
 
-            # Replace any __SLICE2D__ in value_expr with array indexing
-            value_expr_converted = replace_slice2d_with_index(value_expr)
+            index_expr = make_index_expr(col_expr, ldname, loop_var='i')
 
-            # Build left side index
-            lhs_index = make_index_expr(col_expr, ldname)
-
-            # Build for loop
             for_loop = (
                 f"{leading_ws}for (INTEGER i = {start_expr}; i <= {end_expr}; i++) {{ "
-                f"{array_name}[{lhs_index}] {assign_op} {value_expr_converted}; }}"
+                f"{array_name}[{index_expr}] {assign_op} {value_expr}; }}"
             )
 
             return line[:m.start()] + for_loop + line[semicolon_pos + 1:]
