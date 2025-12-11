@@ -92,6 +92,8 @@ void Clahqr(bool const wantt, bool const wantz, INTEGER const n, INTEGER const i
         w[ilo - 1] = h[(ilo - 1) + (ilo - 1) * ldh];
         return;
     }
+    //
+    // ==== clear out the trash ====
     for (j = ilo; j <= ihi - 3; j = j + 1) {
         h[((j + 2) - 1) + (j - 1) * ldh] = zero;
         h[((j + 3) - 1) + (j - 1) * ldh] = zero;
@@ -99,6 +101,7 @@ void Clahqr(bool const wantt, bool const wantz, INTEGER const n, INTEGER const i
     if (ilo <= ihi - 2) {
         h[(ihi - 1) + ((ihi - 2) - 1) * ldh] = zero;
     }
+    // ==== ensure that subdiagonal entries are real ====
     if (wantt) {
         jlo = 1;
         jhi = n;
@@ -108,7 +111,9 @@ void Clahqr(bool const wantt, bool const wantz, INTEGER const n, INTEGER const i
     }
     for (i = ilo + 1; i <= ihi; i = i + 1) {
         if (h[(i - 1) + ((i - 1) - 1) * ldh].imag() != rzero) {
+            // ==== The following redundant normalization
             // .    avoids problems with both gradual and
+            // .    sudden underflow in ABS(H(I,I-1)) ====
             sc = h[(i - 1) + ((i - 1) - 1) * ldh] / cabs1(h[(i - 1) + ((i - 1) - 1) * ldh]);
             sc = conj(sc) / abs(sc);
             h[(i - 1) + ((i - 1) - 1) * ldh] = abs(h[(i - 1) + ((i - 1) - 1) * ldh]);
@@ -182,8 +187,10 @@ statement_30:
                     tst += abs(h[((k + 1) - 1) + (k - 1) * ldh].real());
                 }
             }
+            // ==== The following is a conservative small subdiagonal
             // .    deflation criterion due to Ahues & Tisseur (LAWN 122,
             // .    1997). It has better mathematical foundation and
+            // .    improves accuracy in some examples.  ====
             if (abs(h[(k - 1) + ((k - 1) - 1) * ldh].real()) <= ulp * tst) {
                 ab = max(cabs1(h[(k - 1) + ((k - 1) - 1) * ldh]), cabs1(h[((k - 1) - 1) + (k - 1) * ldh]));
                 ba = min(cabs1(h[(k - 1) + ((k - 1) - 1) * ldh]), cabs1(h[((k - 1) - 1) + (k - 1) * ldh]));
