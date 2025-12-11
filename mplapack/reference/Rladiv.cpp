@@ -31,9 +31,6 @@
 
 REAL Rladiv2(REAL const &a, REAL const &b, REAL const &c, REAL const &d, REAL const &r, REAL const &t) {
     REAL return_value = 0.0;
-    //
-    //
-    //
     const REAL zero = 0.0;
     REAL br = 0.0;
     if (r != zero) {
@@ -49,14 +46,11 @@ REAL Rladiv2(REAL const &a, REAL const &b, REAL const &c, REAL const &d, REAL co
     //
     return return_value;
     //
-    // End of RLADIV12
+    // End of Rladiv12
     //
 }
 
 void Rladiv1(REAL &a, REAL const &b, REAL const &c, REAL const &d, REAL &p, REAL &q) {
-    //
-    //
-    //
     REAL r = d / c;
     const REAL one = 1.0;
     REAL t = one / (c + d * r);
@@ -64,14 +58,11 @@ void Rladiv1(REAL &a, REAL const &b, REAL const &c, REAL const &d, REAL &p, REAL
     a = -a;
     q = Rladiv2(b, a, c, d, r, t);
     //
-    // End of RLADIV1
+    // End of Rladiv1
     //
 }
 
 void Rladiv(REAL const &a, REAL const &b, REAL const &c, REAL const &d, REAL &p, REAL &q) {
-    //
-    //
-    //
     REAL aa = a;
     REAL bb = b;
     REAL cc = c;
@@ -86,7 +77,7 @@ void Rladiv(REAL const &a, REAL const &b, REAL const &c, REAL const &d, REAL &p,
     const REAL bs = 2.0;
     REAL be = bs / (eps * eps);
     //
-    const REAL half = 0.5e0;
+    const REAL half = 0.5;
     const REAL two = 2.0;
     if (ab >= half * ov) {
         aa = half * aa;
@@ -117,6 +108,6 @@ void Rladiv(REAL const &a, REAL const &b, REAL const &c, REAL const &d, REAL &p,
     p = p * s;
     q = q * s;
     //
-    // End of RLADIV
+    // End of Rladiv
     //
 }
