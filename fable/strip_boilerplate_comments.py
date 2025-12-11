@@ -23,29 +23,46 @@ def is_comment_line(line: str) -> bool:
 
 def compute_lapack_header_blocks(lines):
     """
-    Find LAPACK/BLAS header comment blocks anywhere in the file and return
-    the set of source indices to skip.
+    Remove LAPACK/BLAS boilerplate header blocks, while preserving
+    ordinary in-function comments (e.g., "Set NROWA as the number of rows of A.")
+    that must NOT be deleted.
 
-    Header block pattern (in source line space):
-
-        // -- LAPACK auxiliary routine --
-        // -- LAPACK computational routine --
-        // LAPACK is a software package provided by ...
-        // -- Reference BLAS level1 routine --
-        // Reference BLAS is a software package provided by ...
-        // .. Scalar Arguments ..
-        // ..
-        ...
-        // .. Executable Statements ..
-
-    We remove all contiguous comment lines from the first header marker
-    down to the ".. Executable Statements .." line (inclusive). If there
-    is no Executable Statements marker, we remove the contiguous comment
-    block starting at the header marker.
+    This function identifies LAPACK/BLAS header markers and removes the
+    surrounding contiguous comment block, but stops if a comment appears
+    to be normal code documentation rather than boilerplate.
     """
+
     n = len(lines)
     skip = set()
     i = 0
+
+    # Comments starting with these keywords are considered normal code comments
+    # and must never be removed.
+    SAFE_PHRASES = [
+        "set",            # Set NROWA as the number of rows of A.
+        "compute",        # Compute workspace size...
+        "check",          # Check input arguments...
+        "test",           # Test the input arguments...
+        "quick return",   # Quick return if ...
+    ]
+
+    def is_safe_comment(text: str) -> bool:
+        """Return True if this comment must be preserved."""
+        lower = text.lower().strip()
+        if not lower:
+            return False
+        return any(lower.startswith(word) for word in SAFE_PHRASES)
+
+    def is_header_start(text: str) -> bool:
+        """Detect LAPACK/BLAS boilerplate header markers."""
+        lower = text.lower()
+        return (
+            "-- lapack auxiliary routine" in lower or
+            "-- lapack computational routine" in lower or
+            "lapack is a software package provided by" in lower or
+            "reference blas" in lower or
+            "blas is a software package provided by" in lower
+        )
 
     while i < n:
         line = lines[i]
@@ -54,47 +71,55 @@ def compute_lapack_header_blocks(lines):
             continue
 
         text = extract_comment_text(line) or ""
-        lower = text.lower()
+        stripped = text.strip()
 
-        # header start?
-        if ("-- lapack auxiliary routine" in lower or
-            "-- lapack computational routine" in lower or
-            "lapack is a software package provided by" in lower or
-            "reference blas" in lower or
-                "blas is a software package provided by" in lower):
+        # Do not remove comments that are part of normal code documentation.
+        if is_safe_comment(stripped):
+            i += 1
+            continue
 
-            # Also drop preceding empty '//' spacer lines, if any.
+        # Detect boilerplate header block start.
+        if is_header_start(text):
+
+            # Remove preceding empty comment lines (visual spacers).
             k = i - 1
             while k >= 0 and is_comment_line(lines[k]):
-                prev_text = extract_comment_text(lines[k]) or ""
-                if prev_text.strip() != "":
+                prev = extract_comment_text(lines[k]) or ""
+                if prev.strip() != "":
                     break
                 skip.add(k)
                 k -= 1
 
-            # Walk forward within this contiguous comment block
+            # Remove the contiguous comment block,
+            # but stop if we encounter a SAFE comment.
             j = i
             end = None
             while j < n and is_comment_line(lines[j]):
-                skip.add(j)
                 t = extract_comment_text(lines[j]) or ""
+
+                if is_safe_comment(t):
+                    # Normal documentation comment → do NOT delete it
+                    break
+
+                skip.add(j)
+
                 if t.strip().lower() == ".. executable statements ..":
                     end = j
                     break
+
                 j += 1
 
-            # If we did not see ".. Executable Statements ..", just
-            # keep what we marked so far and continue.
+            # Move to end of block
             if end is None:
                 i = j
             else:
                 i = end + 1
+
             continue
 
         i += 1
 
     return skip
-
 
 def protect_test_comments(lines, skip_indices):
     """
@@ -131,6 +156,36 @@ def protect_test_comments(lines, skip_indices):
                 if next_text == "":
                     skip_indices.discard(idx + 1)
 
+def protect_set_comments(lines, skip_indices):
+    """
+    If a comment line begins with 'Set', also preserve the immediately
+    preceding empty '//' comment line (if any).
+
+    Example:
+        //
+        // Set NROWA as the number of rows of A.
+    The leading '//' should not be removed.
+    """
+
+    n = len(lines)
+
+    for idx, line in enumerate(lines):
+        if not is_comment_line(line):
+            continue
+
+        text = extract_comment_text(line) or ""
+        lower = text.lower().strip()
+
+        # Detect "Set ..." comment lines
+        if lower.startswith("set "):
+            # Protect this line
+            skip_indices.discard(idx)
+
+            # Protect preceding empty comment line (if any)
+            if idx - 1 >= 0 and is_comment_line(lines[idx - 1]):
+                prev_text = extract_comment_text(lines[idx - 1]) or ""
+                if prev_text.strip() == "":
+                    skip_indices.discard(idx - 1)
 
 def extract_comment_text(line: str) -> Optional[str]:
     """
@@ -233,78 +288,98 @@ SECTION_START_MARKERS = [
 
 def compute_inbody_header_indices(lines: List[str]) -> Set[int]:
     """
-    Detect LAPACK header blocks inside a routine body and return the
-    corresponding source indices of comment lines to remove.
-
-    Header start (in comment-text space):
-        - text contains "-- LAPACK"
-        - or text matches a SECTION_START_MARKERS entry
-
-    Header end:
-        - first comment whose text is exactly ".. Executable Statements .."
-          (case-insensitive), OR
-        - the comment just before the first "Test the input" comment
-          ("Test the input parameters", "Test the input arguments") if
-          no Executable Statements marker exists.
+    Detect and remove in-body LAPACK header blocks, but preserve
+    normal code comments such as:
+        // Set NROWA as the number of rows of A.
+        // Check arguments...
+        // Quick return...
     """
-    comment_indices: List[int] = []
-    comment_texts: List[str] = []
 
+    # Normal comments that must never be deleted
+    SAFE_PREFIXES = [
+        "set",
+        "compute",
+        "check",
+        "test",
+        "quick return",
+    ]
+
+    def is_safe_comment(text: str) -> bool:
+        t = text.lower().strip()
+        if not t:
+            return False
+        return any(t.startswith(pref) for pref in SAFE_PREFIXES)
+
+    # Collect all comment lines
+    comment_indices = []
+    comment_texts = []
     for idx, line in enumerate(lines):
-        if not is_comment_line(line):
-            continue
-        text = extract_comment_text(line)
-        if text is None:
-            text = ""
-        comment_indices.append(idx)
-        comment_texts.append(text)
+        if is_comment_line(line):
+            t = extract_comment_text(line) or ""
+            comment_indices.append(idx)
+            comment_texts.append(t)
 
     if not comment_indices:
         return set()
 
-    # Find first header start.
-    start_ci: Optional[int] = None
-    for ci, text in enumerate(comment_texts):
-        lower = text.lower().strip()
-        # Skip comments that are clearly documentation blocks; those are
-        # handled separately.
+    nci = len(comment_indices)
+
+    # Find start of LAPACK header
+    start_ci = None
+    for ci, t in enumerate(comment_texts):
+        lower = t.lower().strip()
+
+        # Skip documentation blocks (handled elsewhere)
         if any(mark in lower for mark in DOC_MARKERS):
             continue
 
-        if HEADER_START_MARKERS[0] in lower:
-            start_ci = ci
-            break
-        if lower in SECTION_START_MARKERS:
+        # LAPACK header markers
+        if "-- lapack" in lower or lower in SECTION_START_MARKERS:
             start_ci = ci
             break
 
     if start_ci is None:
         return set()
 
-    # Find header end.
-    end_ci: Optional[int] = None
-    test_comment_ci: Optional[int] = None
-    for ci in range(start_ci, len(comment_texts)):
-        lower = comment_texts[ci].lower().strip()
-        if lower == ".. executable statements ..":
+    # Find end of header block
+    end_ci = None
+    first_test_ci = None
+
+    for ci in range(start_ci, nci):
+        t = comment_texts[ci].lower().strip()
+
+        # If we hit a SAFE comment, stop immediately
+        if is_safe_comment(t):
+            end_ci = ci - 1
+            break
+
+        # Proper end marker
+        if t == ".. executable statements ..":
             end_ci = ci
             break
-        if "test the input parameters" in lower or "test the input arguments" in lower:
-            test_comment_ci = ci
-            # Do not break; Executable Statements, if present, is a better end marker.
 
-    if end_ci is None and test_comment_ci is not None:
-        end_ci = test_comment_ci - 1  # up to the line before "Test the input"
+        # Fallback marker
+        if "test the input parameters" in t or "test the input arguments" in t:
+            first_test_ci = ci
+            break
 
-    if end_ci is None or end_ci < start_ci:
+    if end_ci is None:
+        if first_test_ci is not None:
+            end_ci = first_test_ci - 1
+        else:
+            return set()
+
+    if end_ci < start_ci:
         return set()
 
-    skip: Set[int] = set()
+    # Mark lines to skip
+    skip = set()
     for ci in range(start_ci, end_ci + 1):
-        src_idx = comment_indices[ci]
-        skip.add(src_idx)
+        idx = comment_indices[ci]
+        skip.add(idx)
 
     return skip
+
 
 
 # ---------------------------------------------------------------------
@@ -423,6 +498,7 @@ def strip_lapack_comments(path: Path) -> None:
     to_skip |= compute_orphan_empty_comment_indices(lines)
     to_skip |= compute_lapack_header_blocks(lines)
     to_skip |= compute_orphan_empty_comment_indices(lines)
+    protect_set_comments(lines, to_skip)
     protect_test_comments(lines, to_skip)
 
     if not to_skip:
