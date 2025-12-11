@@ -72,7 +72,7 @@ MANUAL_MAPPINGS=(
   "dzsum1 RCsum1"
   "izmax1 iCmax1"
   "iparmq iMparmq"
-  "ieeeck iMeeeck"
+  "ieeeck iMieeeck"
   "ilauplo iMlauplo"
   "dlamc3 Rlamc3"
   "ilaenv2stage iMlaenv2stage"
