@@ -2640,7 +2640,7 @@ def convert_declaration(rapp, conv_info, fdecl, crhs, const):
             length_is_small = False
             try:
                 length_val = int(size_expr)
-                if 1 < length_val <= 4:
+                if 1 < length_val <= 10:
                     length_is_small = True
             except ValueError:
                 # Non-numeric length expression -> fall back to fem::str<...>

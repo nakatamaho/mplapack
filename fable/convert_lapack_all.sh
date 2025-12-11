@@ -76,6 +76,10 @@ parallel -j "${JOBS:-$(nproc)}" '
      bash "$FABLE_CONVERT" "{}"
  ' ::: "${files[@]}"
 
+
+echo "Post-processing mplapack/reference/iMlaenv.cpp with fix_iMlaenv.py"
+python $HOME/mplapack/fable/fix_iMlaenv.py iMlaenv.cpp
+
 patch -p3 -R < ~/mplapack/fable/lapack-patches/patch-Cbbcsd.cpp
 patch -p3 -R < ~/mplapack/fable/lapack-patches/patch-Cpptrf.cpp
 patch -p3 -R < ~/mplapack/fable/lapack-patches/patch-Cpotf2.cpp
@@ -98,4 +102,3 @@ patch -p3 -R < ~/mplapack/fable/lapack-patches/patch-Cgejsv.cpp
 patch -p3    < ~/mplapack/fable/lapack-patches/patch-Rgejsv.cpp
 patch -p3 -R < ~/mplapack/fable/lapack-patches/patch-Rlaln2.cpp
 patch -p3 -R < ~/mplapack/fable/lapack-patches/patch-Rladiv.cpp
-
