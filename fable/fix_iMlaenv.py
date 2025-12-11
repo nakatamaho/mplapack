@@ -47,6 +47,25 @@ def _rewrite_eq_to_strncmp(code: str, var: str, length: int) -> str:
     return pattern.sub(repl, code)
 
 
+def _rewrite_subnam_slice_eq(code: str) -> str:
+    """
+    Rewrite 'subnam(2, 6) == "LAORH"' style comparisons to
+    'strncmp(subnam + 1, "LAORH", 5) == 0'.
+
+    This matches the Fortran expression SUBNAM(2:6) .EQ. 'LAORH' when
+    SUBNAM is treated as a plain C char array.
+    """
+    pattern = re.compile(
+        r'subnam\s*\(\s*2\s*,\s*6\s*\)\s*==\s*"([^"]{5})"'
+    )
+
+    def repl(m: re.Match) -> str:
+        lit = m.group(1)
+        return f'strncmp(subnam + 1, "{lit}", 5) == 0'
+
+    return pattern.sub(repl, code)
+
+
 def fix_text(text: str) -> str:
     """Apply all iMlaenv-specific fixes to the given source text."""
     # Safety guard: only touch files that clearly look like iMlaenv.cpp
@@ -65,7 +84,10 @@ def fix_text(text: str) -> str:
         # 2) Fix c1 == "S" → c1 == 'S'.
         code = _rewrite_c1_eq_char(code)
 
-        # 3) Rewrite c2/c3/c4 == "ABC" → strncmp(cX, "ABC", n) == 0.
+        # 3) Rewrite SUBNAM(2:6) == "xxxxx" → strncmp(subnam + 1, "xxxxx", 5) == 0.
+        code = _rewrite_subnam_slice_eq(code)
+
+        # 4) Rewrite c2/c3/c4 == "ABC" → strncmp(cX, "ABC", n) == 0.
         #    c2 and c4 are length-2; c3 is length-3 in iMlaenv.
         code = _rewrite_eq_to_strncmp(code, "c2", 2)
         code = _rewrite_eq_to_strncmp(code, "c4", 2)

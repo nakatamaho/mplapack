@@ -79,6 +79,7 @@ parallel -j "${JOBS:-$(nproc)}" '
 
 echo "Post-processing mplapack/reference/iMlaenv.cpp with fix_iMlaenv.py"
 python $HOME/mplapack/fable/fix_iMlaenv.py iMlaenv.cpp
+python $HOME/mplapack/fable/fix_iMlaenv.py iMparmq.cpp
 
 patch -p3 -R < ~/mplapack/fable/lapack-patches/patch-Cbbcsd.cpp
 patch -p3 -R < ~/mplapack/fable/lapack-patches/patch-Cpptrf.cpp
@@ -103,3 +104,4 @@ patch -p3    < ~/mplapack/fable/lapack-patches/patch-Rgejsv.cpp
 patch -p3 -R < ~/mplapack/fable/lapack-patches/patch-Rlaln2.cpp
 patch -p3 -R < ~/mplapack/fable/lapack-patches/patch-iMieeeck.cpp
 patch -p3 -R < ~/mplapack/fable/lapack-patches/patch-Rladiv.cpp
+patch -p3 -R < ~/mplapack/fable/lapack-patches/patch-iMlaenv.cpp
