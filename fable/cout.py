@@ -274,97 +274,119 @@ class mutable:
         return f"mutable({args})"
 
 
+fmt_comma_placeholder = chr(255)
+
+
 def break_line_if_necessary(callback, line, max_len=80, min_len=70):
-    def cb_finalize(line):
-        callback(line.replace(fmt_comma_placeholder, ","))
-    nc = len(line)
-    if (nc <= max_len):
+    """Break a long C++ line into shorter ones, but never split slice macros.
+
+    Lines containing __SLICE__ or __SLICE2D__ are left untouched so that
+    later postprocessing (_postprocess_slice_assignment) can still see
+    the full statement on a single physical line.
+    """
+    def cb_finalize(s):
+        callback(s.replace(fmt_comma_placeholder, ","))
+
+    # Do not break lines that contain slice markers.
+    # These must stay on a single physical line for pattern matching.
+    if "__SLICE2D__" in line or "__SLICE__" in line:
         cb_finalize(line)
         return
+
+    nc = len(line)
+    if nc <= max_len:
+        cb_finalize(line)
+        return
+
+    # Find first non-space character to determine indent.
     for i_start in range(nc):
-        if (line[i_start] != " "):
+        if line[i_start] != " ":
             break
     else:
         raise AssertionError
+
     lsw = line.startswith
-    if (lsw("//", i_start)):
+    # Do not break full-line comments.
+    if lsw("//", i_start):
         cb_finalize(line)
         return
+
     potential_break_points = []
     ic = i_start
-    while (ic < nc):
+    while ic < nc:
         c = line[ic]
-        if ("\"'".find(c) >= 0):
+        if "\"'".find(c) >= 0:
+            # Skip over string/char literal.
             q = c
-            ic_q = ic
             ic += 1
-            while (ic < nc):
+            while ic < nc:
                 prev_c = c
                 c = line[ic]
                 ic += 1
-                if (c == q and prev_c != "\\"):
+                if c == q and prev_c != "\\":
                     break
             else:
                 raise AssertionError
-        elif (c == "("):
+        elif c == "(":
             ic += 1
             potential_break_points.append((0, ic))
-        elif (lsw(", ", ic)):
+        elif lsw(", ", ic):
             ic += 2
             potential_break_points.append((1, ic))
-        elif (lsw(" = ", ic)
-              or lsw("), ", ic)):
+        elif lsw(" = ", ic) or lsw("), ", ic):
             ic += 3
             potential_break_points.append((1, ic))
-        elif (lsw(" + ", ic)
-              or lsw(" - ", ic)
-              or lsw(" * ", ic)
-              or lsw(" / ", ic)):
+        elif (lsw(" + ", ic) or lsw(" - ", ic) or
+              lsw(" * ", ic) or lsw(" / ", ic)):
             ic += 3
             potential_break_points.append((0, ic))
-        elif (lsw(" && ", ic)
-              or lsw(" || ", ic)):
+        elif lsw(" && ", ic) or lsw(" || ", ic):
             ic += 4
             potential_break_points.append((0, ic))
-        elif (lsw("//", ic)):
+        elif lsw("//", ic):
+            # Do not split before a comment.
             break
         else:
             ic += 1
     potential_break_points.append((0, nc))
+
     n = nc - i_start
     denom = max_len - i_start - 2
-
     if n <= 0 or denom <= 0:
         l = max_len
     else:
+        import math
         blocks = math.ceil(float(n) / float(denom))
         l_est = float(n) / float(blocks)
         l = max(min_len, int(round(l_est)))
 
     b = 0
-    f = 0
+    f = 0  # indent for continuation lines
 
     def break_more_if_necessary(s):
-        while (f+len(s) > max_len and s.startswith('"')):
-            i = max_len-2-f
+        # This is mostly for very long string literals; keep as-is.
+        while f + len(s) > max_len and s.startswith('"'):
+            i = max_len - 2 - f
             j = s.rfind(fmt_comma_placeholder, 0, i)
-            if (j > 4):  # ad-hoc value
-                i = j+1
+            if j > 4:
+                i = j + 1
             else:
-                for j in range(i-1, -1, -1):
-                    if (s[j] != "\\"):
-                        if ((i - j) % 2 == 0):
+                for j in range(i - 1, -1, -1):
+                    if s[j] != "\\":
+                        if (i - j) % 2 == 0:
                             i -= 1
                         break
                 else:
                     raise AssertionError
-            cb_finalize(" "*f + s[:i] + '"')
+            cb_finalize(" " * f + s[:i] + '"')
             s = '"' + s[i:]
-        cb_finalize(" "*f + s)
-    if (lsw("if (", i_start)):
+        cb_finalize(" " * f + s)
+
+    if lsw("if (", i_start):
         indent_width = 4
     else:
         indent_width = 2
+
     pprio = 0
     pp = 0
     for ip in range(len(potential_break_points)):
@@ -372,15 +394,15 @@ def break_line_if_necessary(callback, line, max_len=80, min_len=70):
 
         def following_point_is_better():
             for jp in range(ip, len(potential_break_points)):
-                prio, p = potential_break_points[jp]
-                if (prio == 1 and p-b+f <= max_len):
+                prio2, p2 = potential_break_points[jp]
+                if prio2 == 1 and p2 - b + f <= max_len:
                     return True
             return False
-        if (p-b+f > l
-                and b != pp
-                and (pprio == 1 or not following_point_is_better())):
+
+        if (p - b + f > l and b != pp and
+                (pprio == 1 or not following_point_is_better())):
             s = line[b:pp].rstrip()
-            if (f == 0):
+            if f == 0:
                 cb_finalize(s)
                 f = i_start + indent_width
             else:
@@ -388,7 +410,7 @@ def break_line_if_necessary(callback, line, max_len=80, min_len=70):
             b = pp
         pprio = prio
         pp = p
-    if (b < nc):
+    if b < nc:
         break_more_if_necessary(s=line[b:])
 
 
@@ -6142,6 +6164,7 @@ def _postprocess_array_slice_intrinsics(lines):
         return '\n'.join(rewrite_line(l) for l in lines.split('\n'))
     return lines
 
+
 # Keep old name as alias for compatibility
 _postprocess_mmaxloc = _postprocess_array_slice_intrinsics
 
@@ -6149,15 +6172,26 @@ _postprocess_mmaxloc = _postprocess_array_slice_intrinsics
 def _postprocess_slice_assignment(lines):
     """Convert array slice assignment to for loop.
 
-    1D slice:
-    FORTRAN: work(idtgk:idtgk + 2*n - 1) = zero
-    After FABLE: work[__SLICE__(idtgk, idtgk + 2 * n - 1)] = zero;
-    Expected:    for (INTEGER i = idtgk; i <= idtgk + 2 * n - 1; i++) { work[i - 1] = zero; }
+    Supported patterns:
 
-    2D slice (first dimension):
-    FORTRAN: z(idbeg:idend, isbeg) = z(idbeg:idend, isbeg) + z(idbeg:idend, n+1)
-    After FABLE: z[__SLICE2D__(idbeg, idend, isbeg, ldz)] += z[__SLICE2D__(idbeg, idend, n + 1, ldz)];
-    Expected: for (INTEGER i = idbeg; i <= idend; i++) { z[(i - 1) + (isbeg - 1) * ldz] += z[(i - 1) + ((n + 1) - 1) * ldz]; }
+      1D slice with __SLICE__ macro:
+        A[__SLICE__(i_start, i_end)] op= expr;
+        -> for (INTEGER i = i_start; i <= i_end; i++) { A[i - 1] op expr; }
+
+      2D slice with __SLICE2D__ macro (first dimension only):
+        A[__SLICE2D__(i_start, i_end, j, ldA)] op= expr;
+        -> for (INTEGER i = i_start; i <= i_end; i++) {
+               A[(i - 1) + (j - 1) * ldA] op expr';
+           }
+        where expr' has its own __SLICE2D__(...) expanded in the same way.
+
+      Pseudo-slice shorthand (no macros):
+
+        A(i_start, i_end) = zero;
+        -> 1D zero-fill loop
+
+        A(i_start, i_end, j_start, j_end) = zero;
+        -> 2D zero-fill loop with ldA inferred as "ld" + array_name.lower().
     """
     import re
 
@@ -6165,71 +6199,79 @@ def _postprocess_slice_assignment(lines):
         """Find the index of the closing paren matching the one at 'start'."""
         depth = 0
         for i in range(start, len(s)):
-            if s[i] == '(':
+            if s[i] == "(":
                 depth += 1
-            elif s[i] == ')':
+            elif s[i] == ")":
                 depth -= 1
                 if depth == 0:
                     return i
         return -1
 
     def split_args(s):
-        """Split by top-level comma."""
+        """Split a comma-separated argument string at top level."""
         parts = []
         current = []
         depth = 0
         for ch in s:
-            if ch == '(':
+            if ch == "(":
                 depth += 1
                 current.append(ch)
-            elif ch == ')':
+            elif ch == ")":
                 depth -= 1
                 current.append(ch)
-            elif ch == ',' and depth == 0:
-                part = ''.join(current).strip()
+            elif ch == "," and depth == 0:
+                part = "".join(current).strip()
                 if part:
                     parts.append(part)
                 current = []
             else:
                 current.append(ch)
         if current:
-            part = ''.join(current).strip()
+            part = "".join(current).strip()
             if part:
                 parts.append(part)
         return parts
 
-    # Helper to build (loop_var - 1) + (col - 1) * ldname index
-    def make_index_expr(col_expr, ldname, loop_var='i'):
+    # Helper to build "(i - 1) + (col - 1) * ldname"
+    def make_index_expr(col_expr, ldname, loop_var="i"):
         col_expr = col_expr.strip()
-        if col_expr == '1':
-            col_term = '(1 - 1)'
+        if col_expr == "1":
+            col_term = "(1 - 1)"
         else:
             col_term = f"({col_expr} - 1)"
         return f"({loop_var} - 1) + {col_term} * {ldname}"
 
-    def replace_slice2d_with_index(expr, loop_var='i'):
-        """Replace __SLICE2D__(start, end, col, ld) in expr with array index using loop_var."""
+    def replace_slice2d_with_index(expr, loop_var="i"):
+        """Replace A[__SLICE2D__(start, end, col, ld)] with A[(loop_var - 1) + (col - 1) * ld]."""
         pattern = re.compile(
-            r'([A-Za-z_][A-Za-z0-9_]*)'
-            r'\s*\[\s*__SLICE2D__\s*\('
+            r"([A-Za-z_][A-Za-z0-9_]*)"
+            r"\s*\[\s*__SLICE2D__\s*\("
         )
         result = []
         pos = 0
-        for m in pattern.finditer(expr):
+
+        while True:
+            m = pattern.search(expr, pos)
+            if not m:
+                result.append(expr[pos:])
+                break
+
             result.append(expr[pos:m.start()])
             array_name = m.group(1)
+
             paren_start = m.end() - 1
             paren_end = find_matching_paren(expr, paren_start)
             if paren_end < 0:
-                result.append(expr[m.start():m.end()])
-                pos = m.end()
-                continue
+                # Give up if parentheses are unbalanced
+                result.append(expr[m.start():])
+                break
 
             args_str = expr[paren_start + 1:paren_end]
             args = split_args(args_str)
             if len(args) != 4:
-                result.append(expr[m.start():m.end()])
-                pos = m.end()
+                # Not the expected form: leave as-is
+                result.append(expr[m.start():paren_end + 1])
+                pos = paren_end + 1
                 continue
 
             # args: start, end, col, ldname
@@ -6237,39 +6279,38 @@ def _postprocess_slice_assignment(lines):
             ldname = args[3]
             index_expr = make_index_expr(col_expr, ldname, loop_var=loop_var)
 
-            # Skip past ")]"
+            # Skip past closing ")]"
             rest_pos = paren_end + 1
-            while rest_pos < len(expr) and expr[rest_pos] in ' \t':
+            while rest_pos < len(expr) and expr[rest_pos] in " \t":
                 rest_pos += 1
-            if rest_pos < len(expr) and expr[rest_pos] == ']':
+            if rest_pos < len(expr) and expr[rest_pos] == "]":
                 rest_pos += 1
 
             result.append(f"{array_name}[{index_expr}]")
             pos = rest_pos
 
-        result.append(expr[pos:])
-        return ''.join(result)
+        return "".join(result)
 
-    # Pattern for 1D slice: identifier[__SLICE__(...)]
+    # Pattern for 1D slice:   A[__SLICE__(...)]
     pattern_1d = re.compile(
-        r'(\s*)'
-        r'([A-Za-z_][A-Za-z0-9_]*)'
-        r'\s*\[\s*__SLICE__\s*\('
+        r"(\s*)"
+        r"([A-Za-z_][A-Za-z0-9_]*)"
+        r"\s*\[\s*__SLICE__\s*\("
     )
 
-    # Pattern for 2D slice: identifier[__SLICE2D__(...)]
+    # Pattern for 2D slice:   A[__SLICE2D__(...)]
     pattern_2d = re.compile(
-        r'(\s*)'
-        r'([A-Za-z_][A-Za-z0-9_]*)'
-        r'\s*\[\s*__SLICE2D__\s*\('
+        r"(\s*)"
+        r"([A-Za-z_][A-Za-z0-9_]*)"
+        r"\s*\[\s*__SLICE2D__\s*\("
     )
 
-    def rewrite_line(line):
-        # Handle pseudo slice zero-fill shorthand:
-        #   A(i1, i2)             = zero;  # 1D
-        #   A(i1, i2, j1, j2)     = zero;  # 2D (first-dim slice, ldA inferred)
+    def rewrite_line(line: str) -> str:
+        # --------------------------------------------------------------
+        # 0) Pseudo-slice shorthand:  A(i1, i2) = zero;  or  A(i1,i2,j1,j2) = zero;
+        # --------------------------------------------------------------
         m_zero = re.match(
-            r'(\s*)([A-Za-z_][A-Za-z0-9_]*)\s*\(([^)]*)\)\s*=\s*zero\s*;',
+            r"(\s*)([A-Za-z_][A-Za-z0-9_]*)\s*\(([^)]*)\)\s*=\s*zero\s*;",
             line,
         )
         if m_zero:
@@ -6278,34 +6319,37 @@ def _postprocess_slice_assignment(lines):
             args_str = m_zero.group(3)
             args = split_args(args_str)
 
-            # 1D: A(i_start, i_end) = zero;
+            # 1D pseudo slice: A(i_start, i_end) = zero;
             if len(args) == 2:
                 row_start, row_end = [a.strip() for a in args]
                 for_loop = (
-                    f"{leading_ws}for (INTEGER i = {row_start}; "
-                    f"i <= {row_end}; i++) {{\n"
-                    f"{leading_ws}    {array_name}[(i - 1)] = zero;\n"
+                    f"{leading_ws}for (INTEGER i_ = {row_start}; "
+                    f"i_ <= {row_end}; i_++) {{\n"
+                    f"{leading_ws}    {array_name}[(i_ - 1)] = zero;\n"
                     f"{leading_ws}}}"
                 )
                 return for_loop
 
-            # 2D: A(i_start, i_end, j_start, j_end) = zero;
+            # 2D pseudo slice: A(i_start, i_end, j_start, j_end) = zero;
             if len(args) == 4:
-                row_start, row_end, col_start, col_end = [a.strip() for a in args]
+                row_start, row_end, col_start, col_end = [
+                    a.strip() for a in args]
                 ldname = "ld" + array_name.lower()
                 for_loop = (
-                    f"{leading_ws}for (INTEGER l = {row_start}; "
-                    f"l <= {row_end}; l++) {{\n"
-                    f"{leading_ws}    for (INTEGER m = {col_start}; "
-                    f"m <= {col_end}; m++) {{\n"
-                    f"{leading_ws}        {array_name}[(l - 1) + "
-                    f"(m - 1) * {ldname}] = zero;\n"
+                    f"{leading_ws}for (INTEGER l_ = {row_start}; "
+                    f"l_ <= {row_end}; l_++) {{\n"
+                    f"{leading_ws}    for (INTEGER m_ = {col_start}; "
+                    f"m_ <= {col_end}; m_++) {{\n"
+                    f"{leading_ws}        {array_name}[(l_ - 1) + "
+                    f"(m_ - 1) * {ldname}] = zero;\n"
                     f"{leading_ws}    }}\n"
                     f"{leading_ws}}}"
                 )
                 return for_loop
 
-        # First try 2D slice
+        # --------------------------------------------------------------
+        # 1) 2D slice with __SLICE2D__(...)
+        # --------------------------------------------------------------
         m = pattern_2d.search(line)
         if m:
             leading_ws = m.group(1)
@@ -6323,33 +6367,32 @@ def _postprocess_slice_assignment(lines):
 
             start_expr, end_expr, col_expr, ldname = args
 
-            # After __SLICE2D__(...) should be "] op= value;" where op is optional (=, +=, -=, etc.)
+            # After __SLICE2D__(...) we expect: "] op= value ;"
             rest_start = slice_paren_end + 1
             rest = line[rest_start:]
 
-            # Match "] op= ..." where op can be empty, +, -, *, /
-            assign_match = re.match(r'\s*\]\s*([+\-*/]?=)\s*', rest)
+            assign_match = re.match(r"\s*\]\s*([+\-*/]?=)\s*", rest)
             if not assign_match:
                 return line
 
             assign_op = assign_match.group(1)
             value_start = rest_start + assign_match.end()
 
-            # Find the end of the right-hand side expression; assume semicolon at top level
+            # Find semicolon at top level to terminate RHS.
             depth_paren = 0
             depth_bracket = 0
             semicolon_pos = -1
             for i in range(value_start, len(line)):
                 ch = line[i]
-                if ch == '(':
+                if ch == "(":
                     depth_paren += 1
-                elif ch == ')':
+                elif ch == ")":
                     depth_paren -= 1
-                elif ch == '[':
+                elif ch == "[":
                     depth_bracket += 1
-                elif ch == ']':
+                elif ch == "]":
                     depth_bracket -= 1
-                elif ch == ';' and depth_paren == 0 and depth_bracket == 0:
+                elif ch == ";" and depth_paren == 0 and depth_bracket == 0:
                     semicolon_pos = i
                     break
 
@@ -6357,18 +6400,21 @@ def _postprocess_slice_assignment(lines):
                 return line
 
             value_expr = line[value_start:semicolon_pos].strip()
-            value_expr = replace_slice2d_with_index(value_expr, loop_var='i')
+            value_expr = replace_slice2d_with_index(value_expr, loop_var="i_")
 
-            index_expr = make_index_expr(col_expr, ldname, loop_var='i')
+            index_expr = make_index_expr(col_expr, ldname, loop_var="i_")
 
             for_loop = (
-                f"{leading_ws}for (INTEGER i = {start_expr}; i <= {end_expr}; i++) {{ "
+                f"{leading_ws}for (INTEGER i_ = {start_expr}; "
+                f"i_ <= {end_expr}; i_++) {{ "
                 f"{array_name}[{index_expr}] {assign_op} {value_expr}; }}"
             )
 
             return line[:m.start()] + for_loop + line[semicolon_pos + 1:]
 
-        # Then try 1D slice
+        # --------------------------------------------------------------
+        # 2) 1D slice with __SLICE__(...)
+        # --------------------------------------------------------------
         m = pattern_1d.search(line)
         if m:
             leading_ws = m.group(1)
@@ -6389,7 +6435,7 @@ def _postprocess_slice_assignment(lines):
             rest_start = slice_paren_end + 1
             rest = line[rest_start:]
 
-            assign_match = re.match(r'\s*\]\s*([+\-*/]?=)\s*', rest)
+            assign_match = re.match(r"\s*\]\s*([+\-*/]?=)\s*", rest)
             if not assign_match:
                 return line
 
@@ -6401,15 +6447,15 @@ def _postprocess_slice_assignment(lines):
             semicolon_pos = -1
             for i in range(value_start, len(line)):
                 ch = line[i]
-                if ch == '(':
+                if ch == "(":
                     depth_paren += 1
-                elif ch == ')':
+                elif ch == ")":
                     depth_paren -= 1
-                elif ch == '[':
+                elif ch == "[":
                     depth_bracket += 1
-                elif ch == ']':
+                elif ch == "]":
                     depth_bracket -= 1
-                elif ch == ';' and depth_paren == 0 and depth_bracket == 0:
+                elif ch == ";" and depth_paren == 0 and depth_bracket == 0:
                     semicolon_pos = i
                     break
 
@@ -6419,18 +6465,20 @@ def _postprocess_slice_assignment(lines):
             value_expr = line[value_start:semicolon_pos].strip()
 
             for_loop = (
-                f"{leading_ws}for (INTEGER i = {start_expr}; i <= {end_expr}; i++) {{ "
-                f"{array_name}[i - 1] {assign_op} {value_expr}; }}"
+                f"{leading_ws}for (INTEGER i_ = {start_expr}; "
+                f"i_ <= {end_expr}; i_++) {{ "
+                f"{array_name}[i_ - 1] {assign_op} {value_expr}; }}"
             )
 
             return line[:m.start()] + for_loop + line[semicolon_pos + 1:]
 
+        # No slice pattern matched: return line unchanged.
         return line
 
     if isinstance(lines, list):
         return [rewrite_line(line) for line in lines]
     elif isinstance(lines, str):
-        return '\n'.join(rewrite_line(l) for l in lines.split('\n'))
+        return "\n".join(rewrite_line(l) for l in lines.split("\n"))
     return lines
 
 

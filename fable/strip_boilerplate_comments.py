@@ -121,6 +121,7 @@ def compute_lapack_header_blocks(lines):
 
     return skip
 
+
 def protect_test_comments(lines, skip_indices):
     """
     Ensure that comments like
@@ -156,6 +157,7 @@ def protect_test_comments(lines, skip_indices):
                 if next_text == "":
                     skip_indices.discard(idx + 1)
 
+
 def protect_set_comments(lines, skip_indices):
     """
     If a comment line begins with 'Set', also preserve the immediately
@@ -186,6 +188,7 @@ def protect_set_comments(lines, skip_indices):
                 prev_text = extract_comment_text(lines[idx - 1]) or ""
                 if prev_text.strip() == "":
                     skip_indices.discard(idx - 1)
+
 
 def extract_comment_text(line: str) -> Optional[str]:
     """
@@ -379,7 +382,6 @@ def compute_inbody_header_indices(lines: List[str]) -> Set[int]:
         skip.add(idx)
 
     return skip
-
 
 
 # ---------------------------------------------------------------------
