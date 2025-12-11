@@ -165,6 +165,9 @@ void Clasyf(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &kb, CO
                     kstep = 2;
                 }
             }
+            //
+            // ============================================================
+            //
             // KK is the column of A where pivoting step stopped
             //
             kk = k - kstep + 1;
@@ -450,6 +453,9 @@ void Clasyf(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &kb, CO
                     kstep = 2;
                 }
             }
+            //
+            // ============================================================
+            //
             // KK is the column of A where pivoting step stopped
             //
             kk = k + kstep - 1;
