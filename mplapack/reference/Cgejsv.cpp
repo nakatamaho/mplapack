@@ -383,11 +383,11 @@ void Cgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
     // Quick return for void matrix (Y3K safe)
     // #:)
     if ((m == 0) || (n == 0)) {
-        for (INTEGER i = 1; i <= 4; i++) {
-            iwork[i - 1] = 0;
+        for (INTEGER i_ = 1; i_ <= 4; i_++) {
+            iwork[i_ - 1] = 0;
         }
-        for (INTEGER i = 1; i <= 7; i++) {
-            rwork[i - 1] = 0.0;
+        for (INTEGER i_ = 1; i_ <= 7; i_++) {
+            rwork[i_ - 1] = 0.0;
         }
         return;
     }

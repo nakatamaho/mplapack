@@ -129,11 +129,11 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
     // Quick return for void matrix (Y3K safe)
     // #:)
     if ((m == 0) || (n == 0)) {
-        for (INTEGER i = 1; i <= 3; i++) {
-            iwork[i - 1] = 0;
+        for (INTEGER i_ = 1; i_ <= 3; i_++) {
+            iwork[i_ - 1] = 0;
         }
-        for (INTEGER i = 1; i <= 7; i++) {
-            work[i - 1] = 0.0;
+        for (INTEGER i_ = 1; i_ <= 7; i_++) {
+            work[i_ - 1] = 0.0;
         }
         return;
     }
