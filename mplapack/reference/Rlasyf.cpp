@@ -165,6 +165,9 @@ void Rlasyf(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &kb, RE
                     kstep = 2;
                 }
             }
+            //
+            // ============================================================
+            //
             // KK is the column of A where pivoting step stopped
             //
             kk = k - kstep + 1;
@@ -452,6 +455,9 @@ void Rlasyf(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &kb, RE
                     kstep = 2;
                 }
             }
+            //
+            // ============================================================
+            //
             // KK is the column of A where pivoting step stopped
             //
             kk = k + kstep - 1;
