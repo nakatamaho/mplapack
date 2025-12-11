@@ -32,7 +32,8 @@
 
 #define subnamlen 32
 
-INTEGER iMparmq(INTEGER const ispec, const char *name, const char *opts, INTEGER const n, INTEGER const ilo, INTEGER const ihi, INTEGER const lwork) {
+INTEGER
+iMparmq(INTEGER const ispec, const char *name, const char * /* opts */, INTEGER const /* n */, INTEGER const ilo, INTEGER const ihi, INTEGER const /* lwork */) {
     INTEGER return_value = 0;
     //
     const INTEGER ishfts = 15;
@@ -87,12 +88,15 @@ INTEGER iMparmq(INTEGER const ispec, const char *name, const char *opts, INTEGER
         //
     } else if (ispec == inibl) {
         //
+        // ==== INIBL: skip a multi-shift qr iteration and
         // .    whenever aggressive early deflation finds
+        // .    at least (NIBBLE*(window size)/100) deflations. ====
         //
         return_value = nibble;
         //
     } else if (ispec == ishfts) {
         //
+        // ==== NSHFTS: The number of simultaneous shifts =====
         //
         return_value = ns;
         //
@@ -107,11 +111,9 @@ INTEGER iMparmq(INTEGER const ispec, const char *name, const char *opts, INTEGER
         //
     } else if (ispec == iacc22) {
         //
-        // .     before updating the far-from-diagonal elements
-        // .     and whether to use 2-by-2 block structure while
-        // .     doing it.  A small amount of work could be saved
-        // .     by making this choice dependent also upon the
-        // .     NH=IHI-ILO+1.
+        // ===== Matrices of order smaller than NMIN get sent
+        // .     to xLAHQR, the classic double shift algorithm.
+        // .     This must be at least 11. ====
         //
         // Convert NAME to upper case if the first character is lower case.
         //
@@ -161,5 +163,6 @@ INTEGER iMparmq(INTEGER const ispec, const char *name, const char *opts, INTEGER
     }
     return return_value;
     //
+    // ==== End of iMparmq ====
     //
 }
