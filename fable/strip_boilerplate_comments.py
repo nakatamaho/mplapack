@@ -215,7 +215,9 @@ def compute_doxygen_indices(lines: List[str]) -> Set[int]:
             continue
         text = extract_comment_text(line) or ""
         t = text.lstrip()
-        if t.startswith("> "):
+        # Only treat true Doxygen comments as boilerplate:
+        #   > \brief, > \param, > \par, etc.
+        if t.startswith("> \\"):
             skip.add(idx)
 
     return skip
