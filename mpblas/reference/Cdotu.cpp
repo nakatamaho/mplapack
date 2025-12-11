@@ -38,7 +38,6 @@
 COMPLEX
 Cdotu(INTEGER const n, COMPLEX *zx, INTEGER const incx, COMPLEX *zy, INTEGER const incy) {
     COMPLEX return_value = COMPLEX(0.0, 0.0);
-    //
     COMPLEX ztemp = COMPLEX(0.0, 0.0);
     return_value = COMPLEX(0.0, 0.0);
     if (n <= 0) {

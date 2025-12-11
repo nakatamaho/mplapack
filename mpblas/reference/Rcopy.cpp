@@ -36,7 +36,6 @@
 #include <mpblas.h>
 
 void Rcopy(INTEGER const n, REAL *dx, INTEGER const incx, REAL *dy, INTEGER const incy) {
-    //
     if (n <= 0) {
         return;
     }

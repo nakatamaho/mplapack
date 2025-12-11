@@ -37,7 +37,6 @@
 
 REAL Rasum(INTEGER const n, REAL *dx, INTEGER const incx) {
     REAL return_value = 0.0;
-    //
     return_value = 0.0;
     REAL dtemp = 0.0;
     if (n <= 0 || incx <= 0) {

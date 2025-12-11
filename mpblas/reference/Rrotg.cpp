@@ -36,7 +36,6 @@
 #include <mpblas.h>
 
 void Rrotg(REAL &da, REAL &db, REAL &c, REAL &s) {
-    //
     REAL scale = abs(da) + abs(db);
     REAL r = 0.0;
     REAL z = 0.0;

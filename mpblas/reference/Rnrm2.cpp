@@ -37,7 +37,6 @@
 
 REAL Rnrm2(INTEGER const n, REAL *x, INTEGER const incx) {
     REAL return_value = 0.0;
-    //
     const REAL zero = 0.0;
     REAL norm = 0.0;
     REAL scale = 0.0;

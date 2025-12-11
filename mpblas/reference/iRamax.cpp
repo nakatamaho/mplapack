@@ -38,7 +38,6 @@
 INTEGER
 iRamax(INTEGER const n, REAL *dx, INTEGER const incx) {
     INTEGER return_value = 0;
-    //
     return_value = 0;
     if (n < 1 || incx <= 0) {
         return return_value;

@@ -37,7 +37,6 @@
 
 REAL RCnrm2(INTEGER const n, COMPLEX *x, INTEGER const incx) {
     REAL return_value = 0.0;
-    //
     const REAL zero = 0.0;
     REAL norm = 0.0;
     REAL scale = 0.0;

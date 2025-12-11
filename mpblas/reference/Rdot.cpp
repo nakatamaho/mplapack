@@ -37,7 +37,6 @@
 
 REAL Rdot(INTEGER const n, REAL *dx, INTEGER const incx, REAL *dy, INTEGER const incy) {
     REAL return_value = 0.0;
-    //
     return_value = 0.0;
     REAL dtemp = 0.0;
     if (n <= 0) {

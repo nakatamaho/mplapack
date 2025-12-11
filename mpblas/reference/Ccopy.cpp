@@ -36,7 +36,6 @@
 #include <mpblas.h>
 
 void Ccopy(INTEGER const n, COMPLEX *zx, INTEGER const incx, COMPLEX *zy, INTEGER const incy) {
-    //
     if (n <= 0) {
         return;
     }

@@ -38,7 +38,6 @@
 INTEGER
 iCamax(INTEGER const n, COMPLEX *zx, INTEGER const incx) {
     INTEGER return_value = 0;
-    //
     return_value = 0;
     if (n < 1 || incx <= 0) {
         return return_value;

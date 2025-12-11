@@ -37,7 +37,6 @@
 
 REAL RCasum(INTEGER const n, COMPLEX *zx, INTEGER const incx) {
     REAL return_value = 0.0;
-    //
     return_value = 0.0;
     REAL stemp = 0.0;
     if (n <= 0 || incx <= 0) {
