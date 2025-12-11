@@ -62,7 +62,7 @@ INTEGER iMlaenv(INTEGER const ispec, const char *name, const char *opts, INTEGER
     case 5:
         goto statement_90;
     case 6:
-        goto Statement_100;
+        goto statement_100;
     case 7:
         goto statement_110;
     case 8:
@@ -83,6 +83,8 @@ INTEGER iMlaenv(INTEGER const ispec, const char *name, const char *opts, INTEGER
         goto statement_160;
     case 16:
         goto statement_160;
+    default:
+        break;
     }
     //
     // Invalid value for ISPEC
