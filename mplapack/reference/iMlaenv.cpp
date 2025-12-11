@@ -118,13 +118,13 @@ statement_10:
 
     switch (ispec) {
     case 1:
-        goto L50;
+        goto statement_50;
     case 2:
-        goto L60;
+        goto statement_60;
     case 3:
-        goto L70;
+        goto statement_70;
     }
-L50:
+statement_50:
     //
     // ISPEC = 1:  block size
     //
@@ -352,7 +352,7 @@ L50:
     return_value = nb;
     return return_value;
 //
-L60:
+statement_60:
     //
     // ISPEC = 2:  minimum block size
     //
@@ -426,7 +426,7 @@ L60:
     return_value = nbmin;
     return return_value;
 //
-L70:
+statement_70:
     //
     // ISPEC = 3:  crossover point
     //
