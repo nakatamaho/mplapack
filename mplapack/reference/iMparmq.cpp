@@ -55,7 +55,7 @@ iMparmq(INTEGER const ispec, const char *name, const char * /* opts */, INTEGER 
             ns = 10;
         }
         if (nh >= 150) {
-            ns = max((INTEGER)10, nh / nint((log(castREAL(nh - 1)) / log(two)) - 1));
+            ns = max((INTEGER)10, nh / nint(log(castREAL(nh)) / log(two)));
         }
         if (nh >= 590) {
             ns = 64;
