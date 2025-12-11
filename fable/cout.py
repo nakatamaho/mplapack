@@ -6234,11 +6234,31 @@ def _postprocess_slice_assignment(lines):
 
     # Helper to build "(i - 1) + (col - 1) * ldname"
     def make_index_expr(col_expr, ldname, loop_var="i"):
+        """Build index expression: (loop_var - 1) + (col_expr - 1) * ldname.
+
+        If col_expr has top-level arithmetic operators (+, -, *, /),
+        wrap it in an extra pair of parentheses before subtracting 1.
+
+        Examples:
+          col_expr = "j"
+            -> (j - 1)
+          col_expr = "n + 1"
+            -> ((n + 1) - 1)
+          col_expr = "icolz + nsl - 2"
+            -> ((icolz + nsl - 2) - 1)
+        """
         col_expr = col_expr.strip()
         if col_expr == "1":
+            # Special case: column 1 -> (1 - 1)
             col_term = "(1 - 1)"
         else:
-            col_term = f"({col_expr} - 1)"
+            core = col_expr
+            # If the column expression has top-level +, -, * or /,
+            # protect it with an extra level of parentheses so that
+            # we get ((expr) - 1) instead of expr - 1 gluing together.
+            if _has_top_level_arith_op(core):
+                core = f"({core})"
+            col_term = f"({core} - 1)"
         return f"({loop_var} - 1) + {col_term} * {ldname}"
 
     def replace_slice2d_with_index(expr, loop_var="i"):
