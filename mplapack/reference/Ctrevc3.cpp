@@ -157,6 +157,8 @@ void Ctrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
     }
     //
     if (rightv) {
+        //
+        // ============================================================
         // Compute right eigenvectors.
         //
         // IV is index of column in current block.
@@ -172,6 +174,8 @@ void Ctrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                 }
             }
             smin = max(ulp * (cabs1(t[(ki - 1) + (ki - 1) * ldt])), smlnum);
+            //
+            // --------------------------------------------------------
             // Complex right eigenvector
             //
             work[(ki + iv * n) - 1] = cone;
@@ -200,6 +204,7 @@ void Ctrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
             // Copy the vector x or Q*x to VR and normalize.
             //
             if (!over) {
+                // ------------------------------
                 // no back-transform: copy x to VR and normalize.
                 Ccopy(ki, &work[(1 + iv * n) - 1], 1, &vr[(is - 1) * ldvr], 1);
                 //
@@ -212,6 +217,7 @@ void Ctrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                 }
                 //
             } else if (nb == 1) {
+                // ------------------------------
                 // version 1: back-transform each vector with GEMV, Q*x.
                 if (ki > 1) {
                     Cgemv("N", n, ki - 1, cone, vr, ldvr, &work[(1 + iv * n) - 1], 1, COMPLEX(scale), &vr[(ki - 1) * ldvr], 1);
@@ -222,6 +228,7 @@ void Ctrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                 CRscal(n, remax, &vr[(ki - 1) * ldvr], 1);
                 //
             } else {
+                // ------------------------------
                 // version 2: back-transform block of vectors with GEMM
                 // zero out below vector
                 for (k = ki + 1; k <= n; k = k + 1) {
@@ -258,6 +265,8 @@ void Ctrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
     }
     //
     if (leftv) {
+        //
+        // ============================================================
         // Compute left eigenvectors.
         //
         // IV is index of column in current block.
@@ -274,6 +283,8 @@ void Ctrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                 }
             }
             smin = max(ulp * (cabs1(t[(ki - 1) + (ki - 1) * ldt])), smlnum);
+            //
+            // --------------------------------------------------------
             // Complex left eigenvector
             //
             work[(ki + iv * n) - 1] = cone;
@@ -302,6 +313,7 @@ void Ctrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
             // Copy the vector x or Q*x to VL and normalize.
             //
             if (!over) {
+                // ------------------------------
                 // no back-transform: copy x to VL and normalize.
                 Ccopy(n - ki + 1, &work[(ki + iv * n) - 1], 1, &vl[(ki - 1) + (is - 1) * ldvl], 1);
                 //
@@ -314,6 +326,7 @@ void Ctrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                 }
                 //
             } else if (nb == 1) {
+                // ------------------------------
                 // version 1: back-transform each vector with GEMV, Q*x.
                 if (ki < n) {
                     Cgemv("N", n, n - ki, cone, &vl[((ki + 1) - 1) * ldvl], ldvl, &work[(ki + 1 + iv * n) - 1], 1, COMPLEX(scale), &vl[(ki - 1) * ldvl], 1);
@@ -324,6 +337,7 @@ void Ctrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                 CRscal(n, remax, &vl[(ki - 1) * ldvl], 1);
                 //
             } else {
+                // ------------------------------
                 // version 2: back-transform block of vectors with GEMM
                 // zero out above vector
                 // could go from KI-NV+1 to KI-1
