@@ -76,7 +76,6 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
     REAL condr2 = 0.0;
     INTEGER numrank = 0;
     REAL cond_ok = 0.0;
-    //
     // Test the input arguments
     //
     lsvec = Mlsame(jobu, "U") || Mlsame(jobu, "F");
@@ -1328,4 +1327,7 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
     iwork[1] = numrank;
     iwork[2] = warning;
     //
+    // ..
+    // .. END OF Rgejsv
+    // ..
 }

@@ -54,7 +54,6 @@ void Rgebal(const char *job, INTEGER const n, REAL *a, INTEGER const lda, INTEGE
     REAL f = 0.0;
     REAL s = 0.0;
     const REAL factor = 0.95;
-    //
     // Test the input parameters
     //
     info = 0;
