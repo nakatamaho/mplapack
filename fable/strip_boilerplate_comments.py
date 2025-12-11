@@ -22,7 +22,7 @@ def is_comment_line(line: str) -> bool:
 
 def compute_lapack_header_blocks(lines):
     """
-    Find LAPACK header comment blocks anywhere in the file and return
+    Find LAPACK/BLAS header comment blocks anywhere in the file and return
     the set of source indices to skip.
 
     Header block pattern (in source line space):
@@ -30,13 +30,17 @@ def compute_lapack_header_blocks(lines):
         // -- LAPACK auxiliary routine --
         // -- LAPACK computational routine --
         // LAPACK is a software package provided by ...
+        // -- Reference BLAS level1 routine --
+        // Reference BLAS is a software package provided by ...
         // .. Scalar Arguments ..
         // ..
         ...
         // .. Executable Statements ..
 
     We remove all contiguous comment lines from the first header marker
-    down to the ".. Executable Statements .." line (inclusive).
+    down to the ".. Executable Statements .." line (inclusive). If there
+    is no Executable Statements marker, we remove the contiguous comment
+    block starting at the header marker.
     """
     n = len(lines)
     skip = set()
@@ -54,7 +58,18 @@ def compute_lapack_header_blocks(lines):
         # header start?
         if ("-- lapack auxiliary routine" in lower or
             "-- lapack computational routine" in lower or
-            "lapack is a software package provided by" in lower):
+            "lapack is a software package provided by" in lower or
+            "reference blas" in lower or
+            "blas is a software package provided by" in lower):
+
+            # Also drop preceding empty '//' spacer lines, if any.
+            k = i - 1
+            while k >= 0 and is_comment_line(lines[k]):
+                prev_text = extract_comment_text(lines[k]) or ""
+                if prev_text.strip() != "":
+                    break
+                skip.add(k)
+                k -= 1
 
             # Walk forward within this contiguous comment block
             j = i
@@ -78,7 +93,6 @@ def compute_lapack_header_blocks(lines):
         i += 1
 
     return skip
-
 
 def protect_test_comments(lines, skip_indices):
     """
