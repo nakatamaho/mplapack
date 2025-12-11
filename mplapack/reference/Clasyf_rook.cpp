@@ -134,6 +134,9 @@ void Clasyf_rook(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &k
             kp = k;
             Ccopy(k, &w[(kw - 1) * ldw], 1, &a[(k - 1) * lda], 1);
         } else {
+            //
+            // ============================================================
+            //
             // Test for interchange
             //
             // Equivalent to testing for ABSAKK.GE.ALPHA*COLMAX
@@ -233,6 +236,9 @@ void Clasyf_rook(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &k
                 }
                 //
             }
+            //
+            // ============================================================
+            //
             kk = k - kstep + 1;
             //
             // KKW is the column of W which corresponds to column KK of A
@@ -448,6 +454,9 @@ void Clasyf_rook(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &k
             kp = k;
             Ccopy(n - k + 1, &w[(k - 1) + (k - 1) * ldw], 1, &a[(k - 1) + (k - 1) * lda], 1);
         } else {
+            //
+            // ============================================================
+            //
             // Test for interchange
             //
             // Equivalent to testing for ABSAKK.GE.ALPHA*COLMAX
@@ -546,6 +555,9 @@ void Clasyf_rook(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &k
                 }
                 //
             }
+            //
+            // ============================================================
+            //
             kk = k + kstep - 1;
             //
             if ((kstep == 2) && (p != k)) {
