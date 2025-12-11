@@ -116,7 +116,7 @@ statement_10:
     strncpy(c3, subnam + 3, 3);
     strncpy(c4, c3 + 1, 2);
     twostage = strlen(subnam) >= 11 && subnam[10] == '2';
-
+    //
     switch (ispec) {
     case 1:
         goto statement_50;
@@ -497,7 +497,7 @@ statement_90:
     //
     return_value = 2;
     return return_value;
-
+//
 statement_100:
     //
     // ISPEC = 6:  crossover point for SVD (used by xGELSS and xGESVD)
