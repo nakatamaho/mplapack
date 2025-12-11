@@ -82,7 +82,6 @@ void Rsyevr_2stage(const char *jobz, const char *range, const char *uplo, INTEGE
     REAL tmp1 = 0.0;
     INTEGER jj = 0;
     //
-    //
     // Test the input parameters.
     //
     ieeeok = iMlaenv(10, "Rsyevr", "N", 1, 2, 3, 4);

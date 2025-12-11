@@ -31,7 +31,6 @@
 
 void Rsygv_2stage(INTEGER const itype, const char *jobz, const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL *w, REAL *work, INTEGER const lwork, INTEGER &info) {
     //
-    //
     // Test the input parameters.
     //
     bool wantz = Mlsame(jobz, "V");

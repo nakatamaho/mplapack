@@ -31,7 +31,6 @@
 
 void Rsytrd_2stage(const char *vect, const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL *d, REAL *e, REAL *tau, REAL *hous2, INTEGER const lhous2, REAL *work, INTEGER const lwork, INTEGER &info) {
     //
-    //
     // Test the input parameters
     //
     info = 0;
