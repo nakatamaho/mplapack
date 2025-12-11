@@ -31,10 +31,23 @@
 
 void Rlarfb_gett(const char *ident, INTEGER const m, INTEGER const n, INTEGER const k, REAL *t, INTEGER const ldt, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL *work, INTEGER const ldwork) {
     //
+    // Quick return if possible
+    //
     if (m < 0 || n <= 0 || k == 0 || k > n) {
         return;
     }
+    //
     bool lnotident = !Mlsame(ident, "I");
+    //
+    // ------------------------------------------------------------------
+    //
+    // First Step. Computation of the Column Block 2:
+    //
+    // ( A2 ) := H * ( A2 )
+    // ( B2 )        ( B2 )
+    //
+    // ------------------------------------------------------------------
+    //
     INTEGER j = 0;
     const REAL one = 1.0;
     INTEGER i = 0;
@@ -95,6 +108,16 @@ void Rlarfb_gett(const char *ident, INTEGER const m, INTEGER const n, INTEGER co
         }
         //
     }
+    //
+    // ------------------------------------------------------------------
+    //
+    // Second Step. Computation of the Column Block 1:
+    //
+    // ( A1 ) := H * ( A1 )
+    // ( B1 )        (  0 )
+    //
+    // ------------------------------------------------------------------
+    //
     // col1_(1) Compute W1: = A1. Copy the upper-triangular
     // A1 = A(1:K, 1:K) into the upper-triangular
     // W1 = WORK(1:K, 1:K) column-by-column.

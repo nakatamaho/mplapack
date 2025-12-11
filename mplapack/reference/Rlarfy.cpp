@@ -31,8 +31,6 @@
 
 void Rlarfy(const char *uplo, INTEGER const n, REAL *v, INTEGER const incv, REAL const &tau, REAL *c, INTEGER const ldc, REAL *work) {
     //
-    //
-    // -- LAPACK test routine --
     const REAL zero = 0.0;
     if (tau == zero) {
         return;
