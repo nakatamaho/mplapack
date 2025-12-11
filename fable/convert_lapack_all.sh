@@ -101,4 +101,5 @@ patch -p3 -R < ~/mplapack/fable/lapack-patches/patch-Rlasy2.cpp
 patch -p3 -R < ~/mplapack/fable/lapack-patches/patch-Cgejsv.cpp
 patch -p3    < ~/mplapack/fable/lapack-patches/patch-Rgejsv.cpp
 patch -p3 -R < ~/mplapack/fable/lapack-patches/patch-Rlaln2.cpp
-patch -p3 -R < ~/mplapack/fable/lapack-patches/patch-Rladiv.cpp
+patch -p3 -R < ~/mplapack/fable/lapack-patches/patch-iMieeeck.cpp
+#patch -p3 -R < ~/mplapack/fable/lapack-patches/patch-Rladiv.cpp
