@@ -148,14 +148,14 @@ iMparmq(INTEGER const ispec, const char *name, const char * /* opts */, INTEGER 
                 return_value = 2;
             }
         } else if (strncmp(subnam + 3, "EXC", 3) == 0) {
-            if (nh >= k22min) {
+            if (nh >= kacmin) {
                 return_value = 1;
             }
             if (nh >= k22min) {
                 return_value = 2;
             }
         } else if (strncmp(subnam + 1, "HSEQR", 5) == 0 || strncmp(subnam + 1, "LAQR", 4) == 0) {
-            if (ns >= k22min) {
+            if (ns >= kacmin) {
                 return_value = 1;
             }
             if (ns >= k22min) {
