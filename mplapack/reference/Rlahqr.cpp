@@ -93,6 +93,8 @@ void Rlahqr(bool const wantt, bool const wantz, INTEGER const n, INTEGER const i
         wi[ilo - 1] = zero;
         return;
     }
+    //
+    // ==== clear out the trash ====
     for (j = ilo; j <= ihi - 3; j = j + 1) {
         h[((j + 2) - 1) + (j - 1) * ldh] = zero;
         h[((j + 3) - 1) + (j - 1) * ldh] = zero;
@@ -163,8 +165,10 @@ statement_20:
                     tst += abs(h[((k + 1) - 1) + (k - 1) * ldh]);
                 }
             }
+            // ==== The following is a conservative small subdiagonal
             // .    deflation  criterion due to Ahues & Tisseur (LAWN 122,
             // .    1997). It has better mathematical foundation and
+            // .    improves accuracy in some cases.  ====
             if (abs(h[(k - 1) + ((k - 1) - 1) * ldh]) <= ulp * tst) {
                 ab = max(abs(h[(k - 1) + ((k - 1) - 1) * ldh]), abs(h[((k - 1) - 1) + (k - 1) * ldh]));
                 ba = min(abs(h[(k - 1) + ((k - 1) - 1) * ldh]), abs(h[((k - 1) - 1) + (k - 1) * ldh]));
@@ -244,11 +248,17 @@ statement_20:
             det = (h11 - tr) * (h22 - tr) - h12 * h21;
             rtdisc = sqrt(abs(det));
             if (det >= zero) {
+                //
+                // ==== complex conjugate shifts ====
+                //
                 rt1r = tr * s;
                 rt2r = rt1r;
                 rt1i = rtdisc * s;
                 rt2i = -rt1i;
             } else {
+                //
+                // ==== real shifts (use only one of them)  ====
+                //
                 rt1r = tr + rtdisc;
                 rt2r = tr - rtdisc;
                 if (abs(rt1r - h22) <= abs(rt2r - h22)) {
@@ -315,8 +325,10 @@ statement_20:
                     h[((k + 2) - 1) + ((k - 1) - 1) * ldh] = zero;
                 }
             } else if (m > l) {
+                // ==== Use the following instead of
                 // .    H( K, K-1 ) = -H( K, K-1 ) to
                 // .    avoid a bug when v(2) and v(3)
+                // .    underflow. ====
                 h[(k - 1) + ((k - 1) - 1) * ldh] = h[(k - 1) + ((k - 1) - 1) * ldh] * (one - t1);
             }
             v2 = v[1];
