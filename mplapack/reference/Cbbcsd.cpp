@@ -31,7 +31,6 @@
 
 void Cbbcsd(const char *jobu1, const char *jobu2, const char *jobv1t, const char *jobv2t, const char *trans, INTEGER const m, INTEGER const p, INTEGER const q, REAL *theta, REAL *phi, COMPLEX *u1, INTEGER const ldu1, COMPLEX *u2, INTEGER const ldu2, COMPLEX *v1t, INTEGER const ldv1t, COMPLEX *v2t, INTEGER const ldv2t, REAL *b11d, REAL *b11e, REAL *b12d, REAL *b12e, REAL *b21d, REAL *b21e, REAL *b22d, REAL *b22e, REAL *rwork, INTEGER const lrwork, INTEGER &info) {
     //
-    //
     // Test input arguments
     //
     info = 0;

@@ -109,8 +109,6 @@ void Cgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
     REAL condr2 = 0.0;
     INTEGER numrank = 0;
     REAL cond_ok = 0.0;
-    //
-    //
     // Test the input arguments
     //
     lsvec = Mlsame(jobu, "U") || Mlsame(jobu, "F");
@@ -1649,4 +1647,7 @@ void Cgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
         iwork[3] = -1;
     }
     //
+    // ..
+    // .. END OF Cgejsv
+    // ..
 }
