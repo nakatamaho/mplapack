@@ -87,8 +87,6 @@ void Rgesvdq(const char *joba, const char *jobp, const char *jobr, const char *j
     REAL sconda = 0.0;
     INTEGER n1 = 0;
     INTEGER optratio = 0;
-    //
-    //
     // Test the input arguments
     //
     wntus = Mlsame(jobu, "S") || Mlsame(jobu, "U");

@@ -51,6 +51,9 @@ void Rgeqp3(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, INTEGE
     INTEGER jb = 0;
     INTEGER fjb = 0;
     //
+    // Test input arguments
+    // ====================
+    //
     info = 0;
     lquery = (lwork == -1);
     if (m < 0) {
@@ -105,6 +108,8 @@ void Rgeqp3(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, INTEGE
     nfxd = nfxd - 1;
     //
     // Factorize fixed columns
+    // =======================
+    //
     // Compute the QR factorization of fixed columns and update
     // remaining columns.
     //
@@ -122,6 +127,8 @@ void Rgeqp3(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, INTEGE
     }
     //
     // Factorize free columns
+    // ======================
+    //
     if (nfxd < minmn) {
         //
         sm = m - nfxd;
