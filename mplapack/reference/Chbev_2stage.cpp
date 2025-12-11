@@ -31,7 +31,6 @@
 
 void Chbev_2stage(const char *jobz, const char *uplo, INTEGER const n, INTEGER const kd, COMPLEX *ab, INTEGER const ldab, REAL *w, COMPLEX *z, INTEGER const ldz, COMPLEX *work, INTEGER const lwork, REAL *rwork, INTEGER &info) {
     //
-    //
     // Test the input parameters.
     //
     bool wantz = Mlsame(jobz, "V");
