@@ -403,6 +403,7 @@ def strip_lapack_comments(path: Path) -> None:
     to_skip |= compute_orphan_empty_comment_indices(lines)
     to_skip |= compute_lapack_header_blocks(lines)
     to_skip |= compute_orphan_empty_comment_indices(lines)
+    protect_test_comments(lines, to_skip)
 
     if not to_skip:
         return
