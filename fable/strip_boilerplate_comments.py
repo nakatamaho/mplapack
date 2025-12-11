@@ -20,6 +20,7 @@ def is_comment_line(line: str) -> bool:
     """Return True if the line is a C++ comment starting with '//'."""
     return line.lstrip().startswith("//")
 
+
 def compute_lapack_header_blocks(lines):
     """
     Find LAPACK/BLAS header comment blocks anywhere in the file and return
@@ -60,7 +61,7 @@ def compute_lapack_header_blocks(lines):
             "-- lapack computational routine" in lower or
             "lapack is a software package provided by" in lower or
             "reference blas" in lower or
-            "blas is a software package provided by" in lower):
+                "blas is a software package provided by" in lower):
 
             # Also drop preceding empty '//' spacer lines, if any.
             k = i - 1
@@ -94,6 +95,7 @@ def compute_lapack_header_blocks(lines):
 
     return skip
 
+
 def protect_test_comments(lines, skip_indices):
     """
     Ensure that comments like
@@ -117,15 +119,18 @@ def protect_test_comments(lines, skip_indices):
 
             # Also keep preceding empty '//' spacer, if any
             if idx - 1 >= 0 and is_comment_line(lines[idx - 1]):
-                prev_text = (extract_comment_text(lines[idx - 1]) or "").strip()
+                prev_text = (extract_comment_text(
+                    lines[idx - 1]) or "").strip()
                 if prev_text == "":
                     skip_indices.discard(idx - 1)
 
             # And following empty '//' spacer, if any
             if idx + 1 < n and is_comment_line(lines[idx + 1]):
-                next_text = (extract_comment_text(lines[idx + 1]) or "").strip()
+                next_text = (extract_comment_text(
+                    lines[idx + 1]) or "").strip()
                 if next_text == "":
                     skip_indices.discard(idx + 1)
+
 
 def extract_comment_text(line: str) -> Optional[str]:
     """
@@ -405,7 +410,8 @@ def strip_lapack_comments(path: Path) -> None:
     try:
         src = path.read_text(encoding="utf-8", errors="ignore")
     except OSError as e:
-        print(f"strip_lapack_comments: failed to read {path}: {e}", file=sys.stderr)
+        print(
+            f"strip_lapack_comments: failed to read {path}: {e}", file=sys.stderr)
         return
 
     lines = src.splitlines(keepends=True)
@@ -430,18 +436,21 @@ def strip_lapack_comments(path: Path) -> None:
     try:
         path.write_text("".join(out_lines), encoding="utf-8")
     except OSError as e:
-        print(f"strip_lapack_comments: failed to write {path}: {e}", file=sys.stderr)
+        print(
+            f"strip_lapack_comments: failed to write {path}: {e}", file=sys.stderr)
 
 
 def main(argv: List[str]) -> None:
     if len(argv) < 2:
-        print("Usage: strip_boilerplate_comments.py FILE [FILE...]", file=sys.stderr)
+        print(
+            "Usage: strip_boilerplate_comments.py FILE [FILE...]", file=sys.stderr)
         sys.exit(1)
 
     for arg in argv[1:]:
         p = Path(arg)
         if not p.is_file():
-            print(f"strip_lapack_comments: {p} is not a file, skipping", file=sys.stderr)
+            print(
+                f"strip_lapack_comments: {p} is not a file, skipping", file=sys.stderr)
             continue
         strip_lapack_comments(p)
 

@@ -8,12 +8,14 @@ from pathlib import Path
 
 pattern = re.compile(r'\b(max|min)\s*\(\s*\{([^{}]*?)\}\s*\)', re.DOTALL)
 
+
 def fix_text(text: str) -> str:
     def repl(m: re.Match) -> str:
         func = m.group(1)      # "max" or "min"
         args = m.group(2)      # "a, b, c"
         return f"{func}({args})"
     return pattern.sub(repl, text)
+
 
 def main() -> None:
     # No arguments: read from stdin, write to stdout
@@ -27,6 +29,7 @@ def main() -> None:
         src = path.read_text(encoding="utf-8")
         fixed = fix_text(src)
         path.write_text(fixed, encoding="utf-8")
+
 
 if __name__ == "__main__":
     main()

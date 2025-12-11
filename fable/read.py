@@ -9,6 +9,7 @@ from fable import equivalence
 from fable import utils
 import sys
 
+
 def expandtabs_track_columns(s, tabsize=8):
     """
     Expand tabs in s and track visual column positions.
@@ -43,14 +44,18 @@ def expandtabs_track_columns(s, tabsize=8):
                 col += 1
     return "".join(expanded_chars), cols
 
+
 class dict_with_default_0(dict):
     """dict that returns 0 for missing keys."""
+
     def __missing__(self, key):
         return 0
+
 
 class Sorry(Exception):
     """Minimal replacement for libtbx.utils.Sorry."""
     pass
+
 
 class _TopoSort:
     """
@@ -145,6 +150,7 @@ class _TopoSort:
 
 
 topological_sort = _TopoSort()
+
 
 class Error(Exception):
     pass

@@ -148,4 +148,3 @@ find_closing_parenthesis = py_find_closing_parenthesis
 class SemanticError(Exception):
     """Semantic error raised by FABLE front-end."""
     pass
-

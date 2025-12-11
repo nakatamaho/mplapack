@@ -78,7 +78,8 @@ def simplify_line(line: str, in_block_comment: bool) -> (str, bool):
 
 def process_file(path: Path) -> None:
     """Read a file, simplify index expressions, and write back in-place."""
-    lines = path.read_text(encoding="utf-8", errors="ignore").splitlines(keepends=True)
+    lines = path.read_text(
+        encoding="utf-8", errors="ignore").splitlines(keepends=True)
     out: List[str] = []
 
     in_block_comment = False
@@ -101,7 +102,8 @@ def main(argv: List[str]) -> None:
 
     for p in files:
         if not p.is_file():
-            print(f"simplify_index_expr: {p} is not a file, skipping", file=sys.stderr)
+            print(
+                f"simplify_index_expr: {p} is not a file, skipping", file=sys.stderr)
             continue
         process_file(p)
 

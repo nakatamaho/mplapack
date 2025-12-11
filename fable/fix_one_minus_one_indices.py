@@ -3,6 +3,7 @@ import sys
 import re
 from pathlib import Path
 
+
 def simplify_index_expr(expr: str) -> str:
     """Simplify an index expression that may contain (1 - 1)."""
     e = expr
@@ -23,6 +24,7 @@ def simplify_index_expr(expr: str) -> str:
     # Collapse multiple spaces
     e = re.sub(r"\s+", " ", e).strip()
     return e
+
 
 def fix_file(path: Path) -> None:
     text = path.read_text()
@@ -47,9 +49,11 @@ def fix_file(path: Path) -> None:
 
     path.write_text(new_text)
 
+
 def main(argv):
     if len(argv) < 2:
-        print("Usage: fix_one_minus_one_indices.py file1.cpp [file2.cpp ...]", file=sys.stderr)
+        print(
+            "Usage: fix_one_minus_one_indices.py file1.cpp [file2.cpp ...]", file=sys.stderr)
         sys.exit(1)
 
     for name in argv[1:]:
@@ -58,6 +62,7 @@ def main(argv):
             print(f"Skipping {name} (not a file)", file=sys.stderr)
             continue
         fix_file(p)
+
 
 if __name__ == "__main__":
     main(sys.argv)

@@ -162,7 +162,6 @@ def _adjust_actuals_using_signature(arg_string: str, signature, conv_info=None) 
                 leading = part[:len(part) - len(s)]
                 part = leading + "&" + s
 
-
         new_parts.append(part)
 
     return ", ".join(p.strip() for p in new_parts)
@@ -212,7 +211,9 @@ _MPLAPACK_CPP_TO_FORTRAN = {
 # Names are C++ identifiers after vmapping (e.g. "alpha", "a", "cmn.z").
 complex_identifiers = set()
 complex_pointer_identifiers = set()
-small_char_identifiers = set()  # small fixed-length CHARACTER scalars mapped to char[]
+# small fixed-length CHARACTER scalars mapped to char[]
+small_char_identifiers = set()
+
 
 def _mplapack_default_name(name: str) -> str:
     """Fallback rule: s/d -> R, c/z -> C, others unchanged."""
@@ -1321,6 +1322,7 @@ def _is_simple_lvalue(expr: str) -> bool:
     # This is intentionally permissive: any NAME followed by bracketed expressions.
     return re.match(r'^[A-Za-z_][A-Za-z0-9_]*(\[[^\]]*\])*$', expr) is not None
 
+
 def _rewrite_small_char_substrings(text: str) -> str:
     """Rewrite substring-like calls on small CHARACTER scalars:
 
@@ -1549,6 +1551,7 @@ def _looks_complex_expression(arg: str) -> bool:
         return True
 
     return False
+
 
 def _real_cast_or_component(arg, complex_identifiers, complex_pointer_identifiers):
     """Implement REAL/DBLE on an arbitrary expression.
@@ -4158,7 +4161,8 @@ def convert_executable(
                         #   jbcmpz(1,1) = 'S'  ->  jbcmpz[0] = 'S';
                         clhs_fixed = _rewrite_small_char_substrings(clhs)
                         crhs_fixed = _rewrite_small_char_substrings(crhs)
-                        curr_scope.append("%s = %s;" % (clhs_fixed, crhs_fixed))
+                        curr_scope.append("%s = %s;" %
+                                          (clhs_fixed, crhs_fixed))
 
             elif (ei.key == "inquire"):
                 search_for_id_tokens_and_declare_identifiers()
@@ -5750,7 +5754,7 @@ def _postprocess_ilaenv_char_concat(lines):
         if current:
             parts.append(''.join(current).strip())
         return parts
-  
+
     def is_char_concat(arg):
         """Check if argument looks like 'var1 + var2' or 'var1 + var2 + var3'.
 
@@ -5792,14 +5796,18 @@ def _postprocess_ilaenv_char_concat(lines):
         #   JOB(:1)   -> "job"
         #   JOB(1:1)  -> "job"
         #   JOB       -> "job"
-        ident_pat   = re.compile(r'^[A-Za-z_][A-Za-z0-9_]*$')
-        substr_pat1 = re.compile(r'^([A-Za-z_][A-Za-z0-9_]*)\s*\(\s*1\s*,\s*1\s*\)$')
-        substr_pat2 = re.compile(r'^([A-Za-z_][A-Za-z0-9_]*)\s*\(\s*:?\s*1\s*\)$')
-        substr_pat3 = re.compile(r'^([A-Za-z_][A-Za-z0-9_]*)\s*\(\s*1\s*:\s*1\s*\)$')
+        ident_pat = re.compile(r'^[A-Za-z_][A-Za-z0-9_]*$')
+        substr_pat1 = re.compile(
+            r'^([A-Za-z_][A-Za-z0-9_]*)\s*\(\s*1\s*,\s*1\s*\)$')
+        substr_pat2 = re.compile(
+            r'^([A-Za-z_][A-Za-z0-9_]*)\s*\(\s*:?\s*1\s*\)$')
+        substr_pat3 = re.compile(
+            r'^([A-Za-z_][A-Za-z0-9_]*)\s*\(\s*1\s*:\s*1\s*\)$')
 
         norm_parts = []
         for p in parts:
-            m = substr_pat1.match(p) or substr_pat2.match(p) or substr_pat3.match(p)
+            m = substr_pat1.match(p) or substr_pat2.match(
+                p) or substr_pat3.match(p)
             if m:
                 base = m.group(1)
             else:

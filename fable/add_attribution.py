@@ -170,7 +170,8 @@ def insert_header_if_missing(
             i += 1
 
     insert_at = i
-    header_lines = build_canonical_header(routine, lib_name, authors, indent="")
+    header_lines = build_canonical_header(
+        routine, lib_name, authors, indent="")
 
     return src[:insert_at] + header_lines + src[insert_at:]
 
@@ -205,7 +206,8 @@ def replace_existing_header(
                 break
 
         if not replaced_block:
-            out.extend(build_canonical_header(routine, lib_name, authors, indent=leading))
+            out.extend(build_canonical_header(
+                routine, lib_name, authors, indent=leading))
             replaced_block = True
         # Old block is dropped entirely.
 
@@ -214,7 +216,8 @@ def replace_existing_header(
 
 def normalize_file(cpp_path: Path, fortran_path: Path) -> None:
     """Normalize attribution header in a single C++ file."""
-    src_lines = cpp_path.read_text(encoding="utf-8", errors="ignore").splitlines(keepends=True)
+    src_lines = cpp_path.read_text(
+        encoding="utf-8", errors="ignore").splitlines(keepends=True)
 
     # Routine name: prefer the Fortran stem, uppercased (e.g. zsymm.f -> ZSYMM).
     if fortran_path.is_file():
@@ -236,9 +239,11 @@ def normalize_file(cpp_path: Path, fortran_path: Path) -> None:
     )
 
     if has_attr:
-        new_src = replace_existing_header(src_lines, routine, lib_name, authors)
+        new_src = replace_existing_header(
+            src_lines, routine, lib_name, authors)
     else:
-        new_src = insert_header_if_missing(src_lines, routine, lib_name, authors)
+        new_src = insert_header_if_missing(
+            src_lines, routine, lib_name, authors)
 
     cpp_path.write_text("".join(new_src), encoding="utf-8")
 
@@ -255,7 +260,8 @@ def main(argv):
         print(f"add_attribution: {cpp_path} is not a file", file=sys.stderr)
         sys.exit(1)
     if not ft_path.is_file():
-        print(f"add_attribution: WARNING: {ft_path} is not a file, authors will be empty", file=sys.stderr)
+        print(
+            f"add_attribution: WARNING: {ft_path} is not a file, authors will be empty", file=sys.stderr)
 
     normalize_file(cpp_path, ft_path)
 
