@@ -31,8 +31,6 @@
 
 void Clarfy(const char *uplo, INTEGER const n, COMPLEX *v, INTEGER const incv, COMPLEX const &tau, COMPLEX *c, INTEGER const ldc, COMPLEX *work) {
     //
-    //
-    // -- LAPACK test routine --
     const COMPLEX zero = COMPLEX(0.0, 0.0);
     if (tau == zero) {
         return;
