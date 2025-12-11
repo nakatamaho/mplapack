@@ -31,6 +31,8 @@
 
 void Rtpmlqt(const char *side, const char *trans, INTEGER const m, INTEGER const n, INTEGER const k, INTEGER const l, INTEGER const mb, REAL *v, INTEGER const ldv, REAL *t, INTEGER const ldt, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL *work, INTEGER &info) {
     //
+    // .. Test the input arguments ..
+    //
     info = 0;
     bool left = Mlsame(side, "L");
     bool right = Mlsame(side, "R");

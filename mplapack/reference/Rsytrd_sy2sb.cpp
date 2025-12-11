@@ -31,7 +31,6 @@
 
 void Rsytrd_sy2sb(const char *uplo, INTEGER const n, INTEGER const kd, REAL *a, INTEGER const lda, REAL *ab, INTEGER const ldab, REAL *tau, REAL *work, INTEGER const lwork, INTEGER &info) {
     //
-    //
     // Determine the minimal workspace size required
     // and test the input parameters
     //
@@ -203,6 +202,13 @@ void Rsytrd_sy2sb(const char *uplo, INTEGER const n, INTEGER const kd, REAL *a, 
             // an update of the form:  A := A - V*W' - W*V'
             //
             Rsyr2k(uplo, "No transpose", pn, pk, -one, &a[((i + kd) - 1) + (i - 1) * lda], lda, &work[wpos - 1], ldw, rone, &a[((i + kd) - 1) + ((i + kd) - 1) * lda], lda);
+            // ==================================================================
+            // RESTORE A FOR COMPARISON AND CHECKING TO BE REMOVED
+            // DO 45 J = I, I+PK-1
+            // LK = MIN( KD, N-J ) + 1
+            // CALL Rcopy( LK, AB( 1, J ), 1, A( J, J ), 1 )
+            // 45        CONTINUE
+            // ==================================================================
         }
         //
         // Copy the lower band to AB which is the band storage matrix
