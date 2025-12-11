@@ -31,7 +31,6 @@
 
 void Chegv_2stage(INTEGER const itype, const char *jobz, const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, REAL *w, COMPLEX *work, INTEGER const lwork, REAL *rwork, INTEGER &info) {
     //
-    //
     // Test the input parameters.
     //
     bool wantz = Mlsame(jobz, "V");

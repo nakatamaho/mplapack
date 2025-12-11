@@ -147,6 +147,9 @@ void Chetf2_rk(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda,
             }
             //
         } else {
+            //
+            // ============================================================
+            //
             // BEGIN pivot search
             //
             // Case(1)
@@ -234,6 +237,9 @@ void Chetf2_rk(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda,
             }
             //
             // END pivot search
+            //
+            // ============================================================
+            //
             // KK is the column of A where pivoting step stopped
             //
             kk = k - kstep + 1;
@@ -495,6 +501,9 @@ void Chetf2_rk(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda,
             }
             //
         } else {
+            //
+            // ============================================================
+            //
             // BEGIN pivot search
             //
             // Case(1)
@@ -582,6 +591,9 @@ void Chetf2_rk(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda,
             }
             //
             // END pivot search
+            //
+            // ============================================================
+            //
             // KK is the column of A where pivoting step stopped
             //
             kk = k + kstep - 1;

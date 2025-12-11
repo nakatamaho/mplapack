@@ -124,6 +124,9 @@ void Chetf2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
             kp = k;
             a[(k - 1) + (k - 1) * lda] = a[(k - 1) + (k - 1) * lda].real();
         } else {
+            //
+            // ============================================================
+            //
             // Test for interchange
             //
             if (absakk >= alpha * colmax) {
@@ -166,6 +169,9 @@ void Chetf2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
                 }
                 //
             }
+            //
+            // ============================================================
+            //
             kk = k - kstep + 1;
             if (kp != kk) {
                 //
@@ -312,6 +318,9 @@ void Chetf2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
             kp = k;
             a[(k - 1) + (k - 1) * lda] = a[(k - 1) + (k - 1) * lda].real();
         } else {
+            //
+            // ============================================================
+            //
             // Test for interchange
             //
             if (absakk >= alpha * colmax) {
@@ -354,6 +363,9 @@ void Chetf2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
                 }
                 //
             }
+            //
+            // ============================================================
+            //
             kk = k + kstep - 1;
             if (kp != kk) {
                 //
