@@ -134,6 +134,9 @@ void Chetf2_rook(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const ld
             kp = k;
             a[(k - 1) + (k - 1) * lda] = a[(k - 1) + (k - 1) * lda].real();
         } else {
+            //
+            // ============================================================
+            //
             // BEGIN pivot search
             //
             // Case(1)
@@ -221,6 +224,9 @@ void Chetf2_rook(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const ld
             }
             //
             // END pivot search
+            //
+            // ============================================================
+            //
             // KK is the column of A where pivoting step stopped
             //
             kk = k - kstep + 1;
@@ -439,6 +445,9 @@ void Chetf2_rook(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const ld
             kp = k;
             a[(k - 1) + (k - 1) * lda] = a[(k - 1) + (k - 1) * lda].real();
         } else {
+            //
+            // ============================================================
+            //
             // BEGIN pivot search
             //
             // Case(1)
@@ -526,6 +535,9 @@ void Chetf2_rook(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const ld
             }
             //
             // END pivot search
+            //
+            // ============================================================
+            //
             // KK is the column of A where pivoting step stopped
             //
             kk = k + kstep - 1;

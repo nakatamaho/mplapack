@@ -31,7 +31,6 @@
 
 void Chetrd_2stage(const char *vect, const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, REAL *d, REAL *e, COMPLEX *tau, COMPLEX *hous2, INTEGER const lhous2, COMPLEX *work, INTEGER const lwork, INTEGER &info) {
     //
-    //
     // Test the input parameters
     //
     info = 0;
