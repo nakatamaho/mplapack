@@ -32,7 +32,8 @@
 
 #define subnamlen 17
 
-INTEGER iMlaenv(INTEGER const ispec, const char *name, const char *opts, INTEGER const n1, INTEGER const n2, INTEGER const n3, INTEGER const n4) {
+INTEGER
+iMlaenv(INTEGER const ispec, const char *name, const char *opts, INTEGER const n1, INTEGER const n2, INTEGER const n3, INTEGER const n4) {
     INTEGER return_value = 0;
     char subnam[subnamlen];
     memset(subnam, '\0', sizeof(subnam));
@@ -91,7 +92,7 @@ INTEGER iMlaenv(INTEGER const ispec, const char *name, const char *opts, INTEGER
     //
     return_value = -1;
     return return_value;
-    //
+//
 statement_10:
     //
     // Convert NAME to upper case if the first character is lower case.
@@ -123,14 +124,17 @@ statement_10:
         goto statement_60;
     case 3:
         goto statement_70;
+    default:
+        break;
     }
+//
 statement_50:
     //
     // ISPEC = 1:  block size
     //
     // In these examples, separate code is provided for setting NB for
     // real and complex.  We assume that NB will take the same value in
-    // single or REAL precision.
+    // single or double precision.
     //
     nb = 1;
     //
@@ -183,13 +187,13 @@ statement_50:
             if (n3 == 2) {
                 if (sname) {
                     // M*N
-                    if (n1 * n2 <= 131072 || n1 <= 8192) {
+                    if ((n1 * n2 <= 131072) || (n1 <= 8192)) {
                         nb = n1;
                     } else {
                         nb = 32768 / n2;
                     }
                 } else {
-                    if (n1 * n2 <= 131072 || n1 <= 8192) {
+                    if ((n1 * n2 <= 131072) || (n1 <= 8192)) {
                         nb = n1;
                     } else {
                         nb = 32768 / n2;
