@@ -61,8 +61,6 @@ void Clahef_aa(const char *uplo, INTEGER const j1, INTEGER const m, INTEGER cons
         //
         // K is the column to be factorized
         // when being called from Chetrf_aa,
-        // > for the first block column, J1 is 1, hence J1+J-1 is J,
-        // > for the rest of the columns, J1 is 2, and J1+J-1 is J+1,
         //
         k = j1 + j - 1;
         if (j == m) {
@@ -80,9 +78,7 @@ void Clahef_aa(const char *uplo, INTEGER const j1, INTEGER const m, INTEGER cons
         if (k > 2) {
             //
             // K is the column to be factorized
-            // > for the first block column, K is J, skipping the first two
             // columns
-            // > for the rest of the columns, K is J+1, skipping only the
             // first column
             //
             Clacgv(j - k1, &a[(j - 1) * lda], 1);
@@ -209,8 +205,6 @@ void Clahef_aa(const char *uplo, INTEGER const j1, INTEGER const m, INTEGER cons
         //
         // K is the column to be factorized
         // when being called from Chetrf_aa,
-        // > for the first block column, J1 is 1, hence J1+J-1 is J,
-        // > for the rest of the columns, J1 is 2, and J1+J-1 is J+1,
         //
         k = j1 + j - 1;
         if (j == m) {
@@ -228,9 +222,7 @@ void Clahef_aa(const char *uplo, INTEGER const j1, INTEGER const m, INTEGER cons
         if (k > 2) {
             //
             // K is the column to be factorized
-            // > for the first block column, K is J, skipping the first two
             // columns
-            // > for the rest of the columns, K is J+1, skipping only the
             // first column
             //
             Clacgv(j - k1, &a[(j - 1)], lda);

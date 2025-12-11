@@ -121,6 +121,9 @@ void Clahef(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &kb, CO
             kp = k;
             a[(k - 1) + (k - 1) * lda] = a[(k - 1) + (k - 1) * lda].real();
         } else {
+            //
+            // ============================================================
+            //
             // BEGIN pivot search
             //
             // Case(1)
@@ -189,6 +192,9 @@ void Clahef(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &kb, CO
             }
             //
             // END pivot search
+            //
+            // ============================================================
+            //
             // KK is the column of A where pivoting step stopped
             //
             kk = k - kstep + 1;
@@ -474,6 +480,9 @@ void Clahef(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &kb, CO
             kp = k;
             a[(k - 1) + (k - 1) * lda] = a[(k - 1) + (k - 1) * lda].real();
         } else {
+            //
+            // ============================================================
+            //
             // BEGIN pivot search
             //
             // Case(1)
@@ -542,6 +551,9 @@ void Clahef(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &kb, CO
             }
             //
             // END pivot search
+            //
+            // ============================================================
+            //
             // KK is the column of A where pivoting step stopped
             //
             kk = k + kstep - 1;
