@@ -32,7 +32,6 @@
 INTEGER
 iMlauplo(const char *uplo) {
     INTEGER return_value = 0;
-    //
     const INTEGER blas_upper = 121;
     const INTEGER blas_lower = 122;
     if (Mlsame(uplo, "U")) {
