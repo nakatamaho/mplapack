@@ -164,13 +164,13 @@ statement_50:
             if (n3 == 1) {
                 if (sname) {
                     // M*N
-                    if (n1 * n2 <= 131072 || n1 <= 8192) {
+                    if ((n1 * n2 <= 131072) || (n1 <= 8192)) {
                         nb = n1;
                     } else {
                         nb = 32768 / n2;
                     }
                 } else {
-                    if (n1 * n2 <= 131072 || n1 <= 8192) {
+                    if ((n1 * n2 <= 131072) || (n1 <= 8192)) {
                         nb = n1;
                     } else {
                         nb = 32768 / n2;
@@ -492,6 +492,9 @@ statement_80:
     return return_value;
 //
 statement_90:
+    //
+    // ISPEC = 5:  minimum column dimension (not used)
+    //
     return_value = 2;
     return return_value;
 
@@ -499,9 +502,9 @@ statement_100:
     //
     // ISPEC = 6:  crossover point for SVD (used by xGELSS and xGESVD)
     //
-    return_value = castINTEGER(castREAL(min(n1, n2)) * 1.6);
+    return_value = castINTEGER(castREAL(min(n1, n2)) * 1.6e0);
     return return_value;
-    //
+//
 statement_110:
     //
     // ISPEC = 7:  number of processors (not used)
@@ -535,7 +538,7 @@ statement_140:
         return_value = iMieeeck(1, 0.0, 1.0);
     }
     return return_value;
-    //
+//
 statement_150:
     //
     // ISPEC = 11: ieee infinity arithmetic can be trusted not to trap
