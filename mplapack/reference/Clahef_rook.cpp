@@ -139,6 +139,9 @@ void Clahef_rook(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &k
                 Ccopy(k - 1, &w[(kw - 1) * ldw], 1, &a[(k - 1) * lda], 1);
             }
         } else {
+            //
+            // ============================================================
+            //
             // BEGIN pivot search
             //
             // Case(1)
@@ -250,6 +253,9 @@ void Clahef_rook(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &k
             }
             //
             // END pivot search
+            //
+            // ============================================================
+            //
             // KK is the column of A where pivoting step stopped
             //
             kk = k - kstep + 1;
@@ -590,6 +596,9 @@ void Clahef_rook(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &k
                 Ccopy(n - k, &w[((k + 1) - 1) + (k - 1) * ldw], 1, &a[((k + 1) - 1) + (k - 1) * lda], 1);
             }
         } else {
+            //
+            // ============================================================
+            //
             // BEGIN pivot search
             //
             // Case(1)
@@ -702,6 +711,9 @@ void Clahef_rook(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &k
             }
             //
             // END pivot search
+            //
+            // ============================================================
+            //
             // KK is the column of A where pivoting step stopped
             //
             kk = k + kstep - 1;
