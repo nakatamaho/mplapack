@@ -82,6 +82,7 @@ MANUAL_MAPPINGS=(
   "ilazlr iMlazlr"
   "ilatrans iMlatrans"
   "iparam2stage iMparam2stage"
+  "dladiv2 Rladiv2"
 )
 
 # ------------------------------------------------------------

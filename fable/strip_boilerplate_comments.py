@@ -20,6 +20,98 @@ def is_comment_line(line: str) -> bool:
     """Return True if the line is a C++ comment starting with '//'."""
     return line.lstrip().startswith("//")
 
+def compute_lapack_header_blocks(lines):
+    """
+    Find LAPACK header comment blocks anywhere in the file and return
+    the set of source indices to skip.
+
+    Header block pattern (in source line space):
+
+        // -- LAPACK auxiliary routine --
+        // -- LAPACK computational routine --
+        // LAPACK is a software package provided by ...
+        // .. Scalar Arguments ..
+        // ..
+        ...
+        // .. Executable Statements ..
+
+    We remove all contiguous comment lines from the first header marker
+    down to the ".. Executable Statements .." line (inclusive).
+    """
+    n = len(lines)
+    skip = set()
+    i = 0
+
+    while i < n:
+        line = lines[i]
+        if not is_comment_line(line):
+            i += 1
+            continue
+
+        text = extract_comment_text(line) or ""
+        lower = text.lower()
+
+        # header start?
+        if ("-- lapack auxiliary routine" in lower or
+            "-- lapack computational routine" in lower or
+            "lapack is a software package provided by" in lower):
+
+            # Walk forward within this contiguous comment block
+            j = i
+            end = None
+            while j < n and is_comment_line(lines[j]):
+                skip.add(j)
+                t = extract_comment_text(lines[j]) or ""
+                if t.strip().lower() == ".. executable statements ..":
+                    end = j
+                    break
+                j += 1
+
+            # If we did not see ".. Executable Statements ..", just
+            # keep what we marked so far and continue.
+            if end is None:
+                i = j
+            else:
+                i = end + 1
+            continue
+
+        i += 1
+
+    return skip
+
+
+def protect_test_comments(lines, skip_indices):
+    """
+    Ensure that comments like
+        // Test the input parameters
+        // Test the input arguments
+    are never deleted, and keep their surrounding empty '//' spacers.
+    """
+    protected_phrases = [
+        "test the input parameters",
+        "test the input arguments",
+    ]
+    n = len(lines)
+
+    for idx, line in enumerate(lines):
+        if not is_comment_line(line):
+            continue
+        text = (extract_comment_text(line) or "").lower()
+        if any(phrase in text for phrase in protected_phrases):
+            # Never delete this line
+            skip_indices.discard(idx)
+
+            # Also keep preceding empty '//' spacer, if any
+            if idx - 1 >= 0 and is_comment_line(lines[idx - 1]):
+                prev_text = (extract_comment_text(lines[idx - 1]) or "").strip()
+                if prev_text == "":
+                    skip_indices.discard(idx - 1)
+
+            # And following empty '//' spacer, if any
+            if idx + 1 < n and is_comment_line(lines[idx + 1]):
+                next_text = (extract_comment_text(lines[idx + 1]) or "").strip()
+                if next_text == "":
+                    skip_indices.discard(idx + 1)
 
 def extract_comment_text(line: str) -> Optional[str]:
     """
@@ -308,6 +400,8 @@ def strip_lapack_comments(path: Path) -> None:
     to_skip |= compute_doc_block_indices(lines)
     to_skip |= compute_inbody_header_indices(lines)
     to_skip |= compute_doxygen_indices(lines)
+    to_skip |= compute_orphan_empty_comment_indices(lines)
+    to_skip |= compute_lapack_header_blocks(lines)
     to_skip |= compute_orphan_empty_comment_indices(lines)
 
     if not to_skip:
