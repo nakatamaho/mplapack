@@ -54,6 +54,7 @@ void Cgebal(const char *job, INTEGER const n, COMPLEX *a, INTEGER const lda, INT
     REAL f = 0.0;
     REAL s = 0.0;
     const REAL factor = 0.95;
+    //
     // Test the input parameters
     //
     info = 0;
