@@ -30,8 +30,8 @@
 #include <mplapack.h>
 
 void Claunhr_col_getrfnp2(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *d, INTEGER &info) {
-    //
     COMPLEX z = 0.0;
+    //
     // Test the input parameters
     //
     info = 0;
