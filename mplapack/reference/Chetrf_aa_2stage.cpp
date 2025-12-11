@@ -229,29 +229,23 @@ void Chetrf_aa_2stage(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER con
                 // Apply pivots to trailing submatrix of A
                 //
                 for (k = 1; k <= kb; k = k + 1) {
-                    // > Adjust ipiv
                     ipiv[((j + 1) * nb + k) - 1] += (j + 1) * nb;
                     //
                     i1 = (j + 1) * nb + k;
                     i2 = ipiv[((j + 1) * nb + k) - 1];
                     if (i1 != i2) {
-                        // > Apply pivots to previous columns of L
                         Cswap(k - 1, &a[(((j + 1) * nb + 1) - 1) + (i1 - 1) * lda], 1, &a[(((j + 1) * nb + 1) - 1) + (i2 - 1) * lda], 1);
-                        // > Swap A(I1+1:M, I1) with A(I2, I1+1:M)
                         if (i2 > (i1 + 1)) {
                             Cswap(i2 - i1 - 1, &a[(i1 - 1) + ((i1 + 1) - 1) * lda], lda, &a[((i1 + 1) - 1) + (i2 - 1) * lda], 1);
                             Clacgv(i2 - i1 - 1, &a[((i1 + 1) - 1) + (i2 - 1) * lda], 1);
                         }
                         Clacgv(i2 - i1, &a[(i1 - 1) + ((i1 + 1) - 1) * lda], lda);
-                        // > Swap A(I2+1:M, I1) with A(I2+1:M, I2)
                         if (i2 < n) {
                             Cswap(n - i2, &a[(i1 - 1) + ((i2 + 1) - 1) * lda], lda, &a[(i2 - 1) + ((i2 + 1) - 1) * lda], lda);
                         }
-                        // > Swap A(I1, I1) with A(I2, I2)
                         piv = a[(i1 - 1) + (i1 - 1) * lda];
                         a[(i1 - 1) + (i1 - 1) * lda] = a[(i2 - 1) + (i2 - 1) * lda];
                         a[(i2 - 1) + (i2 - 1) * lda] = piv;
-                        // > Apply pivots to previous columns of L
                         if (j > 0) {
                             Cswap(j * nb, &a[(i1 - 1) * lda], 1, &a[(i2 - 1) * lda], 1);
                         }
@@ -358,29 +352,23 @@ void Chetrf_aa_2stage(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER con
                 // Apply pivots to trailing submatrix of A
                 //
                 for (k = 1; k <= kb; k = k + 1) {
-                    // > Adjust ipiv
                     ipiv[((j + 1) * nb + k) - 1] += (j + 1) * nb;
                     //
                     i1 = (j + 1) * nb + k;
                     i2 = ipiv[((j + 1) * nb + k) - 1];
                     if (i1 != i2) {
-                        // > Apply pivots to previous columns of L
                         Cswap(k - 1, &a[(i1 - 1) + (((j + 1) * nb + 1) - 1) * lda], lda, &a[(i2 - 1) + (((j + 1) * nb + 1) - 1) * lda], lda);
-                        // > Swap A(I1+1:M, I1) with A(I2, I1+1:M)
                         if (i2 > (i1 + 1)) {
                             Cswap(i2 - i1 - 1, &a[((i1 + 1) - 1) + (i1 - 1) * lda], 1, &a[(i2 - 1) + ((i1 + 1) - 1) * lda], lda);
                             Clacgv(i2 - i1 - 1, &a[(i2 - 1) + ((i1 + 1) - 1) * lda], lda);
                         }
                         Clacgv(i2 - i1, &a[((i1 + 1) - 1) + (i1 - 1) * lda], 1);
-                        // > Swap A(I2+1:M, I1) with A(I2+1:M, I2)
                         if (i2 < n) {
                             Cswap(n - i2, &a[((i2 + 1) - 1) + (i1 - 1) * lda], 1, &a[((i2 + 1) - 1) + (i2 - 1) * lda], 1);
                         }
-                        // > Swap A(I1, I1) with A(I2, I2)
                         piv = a[(i1 - 1) + (i1 - 1) * lda];
                         a[(i1 - 1) + (i1 - 1) * lda] = a[(i2 - 1) + (i2 - 1) * lda];
                         a[(i2 - 1) + (i2 - 1) * lda] = piv;
-                        // > Apply pivots to previous columns of L
                         if (j > 0) {
                             Cswap(j * nb, &a[(i1 - 1)], lda, &a[(i2 - 1)], lda);
                         }
