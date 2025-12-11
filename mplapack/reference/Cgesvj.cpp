@@ -99,8 +99,6 @@ void Cgesvj(const char *joba, const char *jobu, const char *jobv, INTEGER const 
     INTEGER jgl = 0;
     INTEGER ijblsk = 0;
     //
-    // from BLAS
-    // from LAPACK
     // Test the input arguments
     //
     lsvec = Mlsame(jobu, "U") || Mlsame(jobu, "F");
@@ -1045,4 +1043,7 @@ statement_1995:
     // MXSINJ is the largest absolute value of the sines of Jacobi angles
     // in the last sweep
     //
+    // ..
+    // .. END OF Cgesvj
+    // ..
 }

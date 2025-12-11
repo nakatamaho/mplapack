@@ -31,6 +31,8 @@
 
 void Cgemqrt(const char *side, const char *trans, INTEGER const m, INTEGER const n, INTEGER const k, INTEGER const nb, COMPLEX *v, INTEGER const ldv, COMPLEX *t, INTEGER const ldt, COMPLEX *c, INTEGER const ldc, COMPLEX *work, INTEGER &info) {
     //
+    // .. Test the input arguments ..
+    //
     info = 0;
     bool left = Mlsame(side, "L");
     bool right = Mlsame(side, "R");
