@@ -110,7 +110,7 @@ void Rbdsvdx(const char *uplo, const char *jobz, const char *range, INTEGER cons
     // Criterion for splitting is taken from Rbdsqr when singular
     // values are computed to relative accuracy TOL. (See J. Demmel and
     // W. Kahan, Accurate singular values of bidiagonal matrices, SIAM
-    // J. Sci. and Stat. Comput., 11:873912, 1990.)
+    // J. Sci. and Stat. Comput., 11:873?912, 1990.)
     //
     const REAL ten = 10.0;
     const REAL hndrd = 100.0;
