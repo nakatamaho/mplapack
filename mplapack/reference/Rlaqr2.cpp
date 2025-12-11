@@ -67,35 +67,59 @@ void Rlaqr2(bool const wantt, bool const wantz, INTEGER const n, INTEGER const k
     INTEGER krow = 0;
     INTEGER kln = 0;
     INTEGER kcol = 0;
+    //
+    // ==== Estimate optimal workspace. ====
+    //
     jw = min(nw, kbot - ktop + 1);
     if (jw <= 2) {
         lwkopt = 1;
     } else {
+        //
+        // ==== Workspace query call to Rgehrd ====
+        //
         Rgehrd(jw, 1, jw - 1, t, ldt, work, work, -1, info);
         lwk1 = castINTEGER(work[0]);
+        //
+        // ==== Workspace query call to Rormhr ====
+        //
         Rormhr("R", "N", jw, jw, 1, jw - 1, t, ldt, work, v, ldv, work, -1, info);
         lwk2 = castINTEGER(work[0]);
+        //
+        // ==== Optimal workspace ====
+        //
         lwkopt = jw + max(lwk1, lwk2);
     }
+    //
+    // ==== Quick return in case of workspace query. ====
+    //
     if (lwork == -1) {
         work[0] = castREAL(lwkopt);
         return;
     }
     //
+    // ==== Nothing to do ...
+    // ... for an empty active block ... ====
     ns = 0;
     nd = 0;
     work[0] = one;
     if (ktop > kbot) {
         return;
     }
+    // ... nor for an empty deflation window. ====
     if (nw < 1) {
         return;
     }
+    //
+    // ==== Machine constants ====
+    //
     safmin = Rlamch("SAFE MINIMUM");
     safmax = one / safmin;
     Rlabad(safmin, safmax);
     ulp = Rlamch("PRECISION");
     smlnum = safmin * (castREAL(n) / ulp);
+    //
+    // ==== Setup deflation window ====
+    //
     jw = min(nw, kbot - ktop + 1);
     kwtop = kbot - jw + 1;
     if (kwtop == ktop) {
@@ -105,6 +129,9 @@ void Rlaqr2(bool const wantt, bool const wantz, INTEGER const n, INTEGER const k
     }
     //
     if (kbot == kwtop) {
+        //
+        // ==== 1-by-1 deflation window: not much to do ====
+        //
         sr[kwtop - 1] = h[(kwtop - 1) + (kwtop - 1) * ldh];
         si[kwtop - 1] = zero;
         ns = 1;
@@ -119,15 +146,21 @@ void Rlaqr2(bool const wantt, bool const wantz, INTEGER const n, INTEGER const k
         work[0] = one;
         return;
     }
+    //
+    // ==== Convert to spike-triangular form.  (In case of a
     // .    rare QR failure, this routine continues to do
     // .    aggressive early deflation using that part of
     // .    the deflation window that converged using INFQR
+    // .    here and there to keep track.) ====
     //
     Rlacpy("U", jw, jw, &h[(kwtop - 1) + (kwtop - 1) * ldh], ldh, t, ldt);
     Rcopy(jw - 1, &h[((kwtop + 1) - 1) + (kwtop - 1) * ldh], ldh + 1, &t[(2 - 1)], ldt + 1);
     //
     Rlaset("A", jw, jw, zero, one, v, ldv);
     Rlahqr(true, true, jw, 1, jw, t, ldt, &sr[kwtop - 1], &si[kwtop - 1], 1, jw, v, ldv, infqr);
+    //
+    // ==== Rtrexc needs a clean margin near the diagonal ====
+    //
     for (j = 1; j <= jw - 3; j = j + 1) {
         t[((j + 2) - 1) + (j - 1) * ldt] = zero;
         t[((j + 3) - 1) + (j - 1) * ldt] = zero;
@@ -135,6 +168,9 @@ void Rlaqr2(bool const wantt, bool const wantz, INTEGER const n, INTEGER const k
     if (jw > 2) {
         t[(jw - 1) + ((jw - 2) - 1) * ldt] = zero;
     }
+    //
+    // ==== Deflation detection loop ====
+    //
     ns = jw;
     ilst = infqr + 1;
 statement_20:
@@ -144,40 +180,72 @@ statement_20:
         } else {
             bulge = t[(ns - 1) + ((ns - 1) - 1) * ldt] != zero;
         }
+        //
+        // ==== Small spike tip test for deflation ====
+        //
         if (!bulge) {
+            //
+            // ==== Real eigenvalue ====
+            //
             foo = abs(t[(ns - 1) + (ns - 1) * ldt]);
             if (foo == zero) {
                 foo = abs(s);
             }
             if (abs(s * v[(ns - 1) * ldv]) <= max(smlnum, ulp * foo)) {
+                //
+                // ==== Deflatable ====
+                //
                 ns = ns - 1;
             } else {
+                //
+                // ==== Undeflatable.   Move it up out of the way.
+                // .    (Rtrexc can not fail in this case.) ====
+                //
                 ifst = ns;
                 Rtrexc("V", jw, t, ldt, v, ldv, ifst, ilst, work, info);
                 ilst++;
             }
         } else {
+            //
+            // ==== Complex conjugate pair ====
+            //
             foo = abs(t[(ns - 1) + (ns - 1) * ldt]) + sqrt(abs(t[(ns - 1) + ((ns - 1) - 1) * ldt])) * sqrt(abs(t[((ns - 1) - 1) + (ns - 1) * ldt]));
             if (foo == zero) {
                 foo = abs(s);
             }
             if (max(abs(s * v[(ns - 1) * ldv]), abs(s * v[((ns - 1) - 1) * ldv])) <= max(smlnum, ulp * foo)) {
+                //
+                // ==== Deflatable ====
+                //
                 ns = ns - 2;
             } else {
+                //
+                // ==== Undeflatable. Move them up out of the way.
                 // .    Fortunately, Rtrexc does the right thing with
+                // .    ILST in case of a rare exchange failure. ====
                 //
                 ifst = ns;
                 Rtrexc("V", jw, t, ldt, v, ldv, ifst, ilst, work, info);
                 ilst += 2;
             }
         }
+        //
+        // ==== End deflation detection loop ====
+        //
         goto statement_20;
     }
+    //
+    // ==== Return to Hessenberg form ====
+    //
     if (ns == 0) {
         s = zero;
     }
+    //
     if (ns < jw) {
+        //
+        // ==== sorting diagonal blocks of T improves accuracy for
         // .    graded matrices.  Bubble sort deals well with
+        // .    exchange failures. ====
         //
         sorted = false;
         i = ns + 1;
@@ -237,6 +305,9 @@ statement_20:
         goto statement_30;
     statement_50:;
     }
+    //
+    // ==== Restore shift/eigenvalue array from T ====
+    //
     i = jw;
 statement_60:
     if (i >= infqr + 1) {
@@ -261,6 +332,9 @@ statement_60:
     //
     if (ns < jw || s == zero) {
         if (ns > 1 && s != zero) {
+            //
+            // ==== Reflect spike back into lower triangle ====
+            //
             Rcopy(ns, v, ldv, work, 1);
             beta = work[0];
             Rlarfg(ns, beta, &work[1], 1, tau);
@@ -274,14 +348,24 @@ statement_60:
             //
             Rgehrd(jw, 1, ns, t, ldt, work, &work[(jw + 1) - 1], lwork - jw, info);
         }
+        //
+        // ==== Copy updated reduced window into place ====
+        //
         if (kwtop > 1) {
             h[(kwtop - 1) + ((kwtop - 1) - 1) * ldh] = s * v[0];
         }
         Rlacpy("U", jw, jw, t, ldt, &h[(kwtop - 1) + (kwtop - 1) * ldh], ldh);
         Rcopy(jw - 1, &t[(2 - 1)], ldt + 1, &h[((kwtop + 1) - 1) + (kwtop - 1) * ldh], ldh + 1);
+        //
+        // ==== Accumulate orthogonal matrix in order update
+        // .    H and Z, if requested.  ====
+        //
         if (ns > 1 && s != zero) {
             Rormhr("R", "N", jw, ns, 1, ns, t, ldt, work, v, ldv, &work[(jw + 1) - 1], lwork - jw, info);
         }
+        //
+        // ==== Update vertical slab in H ====
+        //
         if (wantt) {
             ltop = 1;
         } else {
@@ -292,6 +376,9 @@ statement_60:
             Rgemm("N", "N", kln, jw, jw, one, &h[(krow - 1) + (kwtop - 1) * ldh], ldh, v, ldv, zero, wv, ldwv);
             Rlacpy("A", kln, jw, wv, ldwv, &h[(krow - 1) + (kwtop - 1) * ldh], ldh);
         }
+        //
+        // ==== Update horizontal slab in H ====
+        //
         if (wantt) {
             for (kcol = kbot + 1; kcol <= n; kcol = kcol + nh) {
                 kln = min(nh, n - kcol + 1);
@@ -299,6 +386,9 @@ statement_60:
                 Rlacpy("A", jw, kln, t, ldt, &h[(kwtop - 1) + (kcol - 1) * ldh], ldh);
             }
         }
+        //
+        // ==== Update vertical slab in Z ====
+        //
         if (wantz) {
             for (krow = iloz; krow <= ihiz; krow = krow + nv) {
                 kln = min(nv, ihiz - krow + 1);
@@ -307,7 +397,23 @@ statement_60:
             }
         }
     }
+    //
+    // ==== Return the number of deflations ... ====
+    //
     nd = jw - ns;
+    //
+    // ==== ... and the number of shifts. (Subtracting
+    // .    INFQR from the spike length takes care
+    // .    of the case of a rare QR failure while
+    // .    calculating eigenvalues of the deflation
+    // .    window.)  ====
+    //
     ns = ns - infqr;
+    //
+    // ==== Return optimal workspace. ====
+    //
     work[0] = castREAL(lwkopt);
+    //
+    // ==== End of Rlaqr2 ====
+    //
 }
