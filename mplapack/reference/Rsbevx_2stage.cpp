@@ -74,7 +74,6 @@ void Rsbevx_2stage(const char *jobz, const char *range, const char *uplo, INTEGE
     INTEGER jj = 0;
     INTEGER itmp1 = 0;
     //
-    //
     // Test the input parameters.
     //
     wantz = Mlsame(jobz, "V");

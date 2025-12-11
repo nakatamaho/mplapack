@@ -31,7 +31,6 @@
 
 void Rsbevd_2stage(const char *jobz, const char *uplo, INTEGER const n, INTEGER const kd, REAL *ab, INTEGER const ldab, REAL *w, REAL *z, INTEGER const ldz, REAL *work, INTEGER const lwork, INTEGER *iwork, INTEGER const liwork, INTEGER &info) {
     //
-    //
     // Test the input parameters.
     //
     bool wantz = Mlsame(jobz, "V");
