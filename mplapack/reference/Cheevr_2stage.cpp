@@ -87,7 +87,6 @@ void Cheevr_2stage(const char *jobz, const char *range, const char *uplo, INTEGE
     INTEGER jj = 0;
     INTEGER itmp1 = 0;
     //
-    //
     // Test the input parameters.
     //
     ieeeok = iMlaenv(10, "Cheevr", "N", 1, 2, 3, 4);
