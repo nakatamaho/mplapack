@@ -1,5 +1,5 @@
 diff --git a/mplapack/reference/iMlaenv.cpp b/mplapack/reference/iMlaenv.cpp
-index f363fa01..3ef39a3d 100644
+index f363fa01..5ff67569 100644
 --- a/mplapack/reference/iMlaenv.cpp
 +++ b/mplapack/reference/iMlaenv.cpp
 @@ -28,20 +28,17 @@
@@ -107,7 +107,7 @@ index f363fa01..3ef39a3d 100644
 +    c2 = subnam(2, 3);
 +    c3 = subnam(4, 6);
 +    c4 = c3(2, 3);
-+    twostage = fem::len(subnam) >= 11 && subnam(11, 11) == "2";
++    twostage = fem::len(subnam) >= 11 && strncmp(subnam + 10, "2", 1) == 0;
      //
      switch (ispec) {
      case 1:

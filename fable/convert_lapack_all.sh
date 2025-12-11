@@ -105,3 +105,4 @@ patch -p3 -R < ~/mplapack/fable/lapack-patches/patch-Rlaln2.cpp
 patch -p3 -R < ~/mplapack/fable/lapack-patches/patch-iMieeeck.cpp
 patch -p3 -R < ~/mplapack/fable/lapack-patches/patch-Rladiv.cpp
 patch -p3 -R < ~/mplapack/fable/lapack-patches/patch-iMlaenv.cpp
+patch -p3 -R < ~/mplapack/fable/lapack-patches/patch-iMparmq.cpp

@@ -5,7 +5,7 @@ import re
 
 
 def _split_code_comment(line: str) -> tuple[str, str]:
-    """Split a C++ line into (code, comment) by '//'. Very simple heuristic."""
+    """Split a C++ line into (code, comment) by '//'."""
     idx = line.find("//")
     if idx < 0:
         return line, ""
@@ -15,6 +15,7 @@ def _split_code_comment(line: str) -> tuple[str, str]:
 def _rewrite_c3_slice(code: str) -> str:
     """
     Rewrite 'c3(1, 1) == "G"' style comparisons to '*c3 == 'G''.
+    This fixes broken CHARACTER(3) slicing translation.
     """
     pattern = re.compile(
         r'c3\s*\(\s*1\s*,\s*1\s*\)\s*==\s*"([^"])"'
@@ -33,6 +34,7 @@ def _rewrite_c1_eq_char(code: str) -> str:
 def _rewrite_eq_to_strncmp(code: str, var: str, length: int) -> str:
     """
     Rewrite comparisons like 'c2 == "GE"' to 'strncmp(c2, "GE", 2) == 0'.
+
     This version allows any non-quote characters inside the literal,
     so strings like "QR " are also handled correctly.
     """
@@ -49,28 +51,46 @@ def _rewrite_eq_to_strncmp(code: str, var: str, length: int) -> str:
 
 def _rewrite_subnam_slice_eq(code: str) -> str:
     """
-    Rewrite 'subnam(2, 6) == "LAORH"' style comparisons to
-    'strncmp(subnam + 1, "LAORH", 5) == 0'.
+    Rewrite expressions like
+        subnam(2, 6) == "GGHRD"
+    into
+        strncmp(subnam + 1, "GGHRD", 5) == 0
 
-    This matches the Fortran expression SUBNAM(2:6) .EQ. 'LAORH' when
-    SUBNAM is treated as a plain C char array.
+    General rule:
+        subnam(i, j) == "XXXX"
+    becomes
+        strncmp(subnam + (i - 1), "XXXX", j - i + 1) == 0
+    as long as the literal length matches (j - i + 1).
     """
     pattern = re.compile(
-        r'subnam\s*\(\s*2\s*,\s*6\s*\)\s*==\s*"([^"]{5})"'
+        r'subnam\s*\(\s*(\d+)\s*,\s*(\d+)\s*\)\s*==\s*"([^"]+)"'
     )
 
     def repl(m: re.Match) -> str:
-        lit = m.group(1)
-        return f'strncmp(subnam + 1, "{lit}", 5) == 0'
+        i = int(m.group(1))
+        j = int(m.group(2))
+        lit = m.group(3)
+
+        length = j - i + 1
+        # If the literal length does not match the slice length,
+        # do not touch this occurrence.
+        if length <= 0 or len(lit) != length:
+            return m.group(0)
+
+        offset = i - 1
+        if offset == 0:
+            return f'strncmp(subnam, "{lit}", {length}) == 0'
+        else:
+            return f'strncmp(subnam + {offset}, "{lit}", {length}) == 0'
 
     return pattern.sub(repl, code)
 
 
 def fix_text(text: str) -> str:
     """Apply all iMlaenv-specific fixes to the given source text."""
-    # Safety guard: only touch files that clearly look like iMlaenv.cpp
-    if "iMlaenv(" not in text:
-        return text
+    # Optional guard: disable if you want to use this on iMparmq.cpp too.
+    # if "iMlaenv(" not in text and "iMparmq(" not in text:
+    #     return text
 
     lines = text.splitlines(keepends=True)
     fixed_lines: list[str] = []
@@ -84,7 +104,7 @@ def fix_text(text: str) -> str:
         # 2) Fix c1 == "S" → c1 == 'S'.
         code = _rewrite_c1_eq_char(code)
 
-        # 3) Rewrite SUBNAM(2:6) == "xxxxx" → strncmp(subnam + 1, "xxxxx", 5) == 0.
+        # 3) Rewrite subnam(i, j) == "LIT" → strncmp(subnam + (i-1), "LIT", len).
         code = _rewrite_subnam_slice_eq(code)
 
         # 4) Rewrite c2/c3/c4 == "ABC" → strncmp(cX, "ABC", n) == 0.
