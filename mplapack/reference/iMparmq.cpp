@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022
+ * Copyright (c) 2008-2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -28,22 +28,19 @@
 
 #include <mpblas.h>
 #include <mplapack.h>
-#include <string.h>
 
-#define subnamlen 32
-
-INTEGER iMparmq(INTEGER const ispec, const char *name, const char *opts, INTEGER const n, INTEGER const ilo, INTEGER const ihi, INTEGER const lwork) {
+INTEGER
+iMparmq(INTEGER const ispec, const char *name, const char * /* opts */, INTEGER const /* n */, INTEGER const ilo, INTEGER const ihi, INTEGER const /* lwork */) {
     INTEGER return_value = 0;
-    //
     const INTEGER ishfts = 15;
     const INTEGER inwin = 13;
     const INTEGER iacc22 = 16;
     INTEGER nh = 0;
     INTEGER ns = 0;
-    INTEGER name_len;
     const REAL two = 2.0;
     if ((ispec == ishfts) || (ispec == inwin) || (ispec == iacc22)) {
         //
+        // ==== Set the number simultaneous shifts ====
         //
         nh = ihi - ilo + 1;
         ns = 2;
@@ -54,7 +51,7 @@ INTEGER iMparmq(INTEGER const ispec, const char *name, const char *opts, INTEGER
             ns = 10;
         }
         if (nh >= 150) {
-            ns = max((INTEGER)10, nh / nint((log(castREAL(nh - 1)) / log(two)) - 1));
+            ns = max((INTEGER)10, nh / nint(log(castREAL(nh)) / log(two)));
         }
         if (nh >= 590) {
             ns = 64;
@@ -73,7 +70,7 @@ INTEGER iMparmq(INTEGER const ispec, const char *name, const char *opts, INTEGER
     const INTEGER inibl = 14;
     const INTEGER nibble = 14;
     const INTEGER knwswp = 500;
-    char subnam[subnamlen];
+    char subnam[6];
     INTEGER ic = 0;
     INTEGER iz = 0;
     INTEGER i = 0;
@@ -81,23 +78,29 @@ INTEGER iMparmq(INTEGER const ispec, const char *name, const char *opts, INTEGER
     const INTEGER kacmin = 14;
     if (ispec == inmin) {
         //
-        // .     to xLAHQR, the classic REAL shift algorithm.
+        // ===== Matrices of order smaller than NMIN get sent
+        // .     to xLAHQR, the classic double shift algorithm.
+        // .     This must be at least 11. ====
         //
         return_value = nmin;
         //
     } else if (ispec == inibl) {
         //
+        // ==== INIBL: skip a multi-shift qr iteration and
         // .    whenever aggressive early deflation finds
+        // .    at least (NIBBLE*(window size)/100) deflations. ====
         //
         return_value = nibble;
         //
     } else if (ispec == ishfts) {
         //
+        // ==== NSHFTS: The number of simultaneous shifts =====
         //
         return_value = ns;
         //
     } else if (ispec == inwin) {
         //
+        // ==== NW: deflation window size.  ====
         //
         if (nh <= knwswp) {
             return_value = ns;
@@ -107,6 +110,7 @@ INTEGER iMparmq(INTEGER const ispec, const char *name, const char *opts, INTEGER
         //
     } else if (ispec == iacc22) {
         //
+        // ==== IACC22: Whether to accumulate reflections
         // .     before updating the far-from-diagonal elements
         // .     and whether to use 2-by-2 block structure while
         // .     doing it.  A small amount of work could be saved
@@ -116,50 +120,80 @@ INTEGER iMparmq(INTEGER const ispec, const char *name, const char *opts, INTEGER
         // Convert NAME to upper case if the first character is lower case.
         //
         return_value = 0;
-        strncpy(subnam, name, subnamlen - 1);
-        ic = *subnam;
-        iz = 'Z';
+        subnam = name;
+        ic = fem::ichar(subnam[0]);
+        iz = fem::ichar("Z");
         if (iz == 90 || iz == 122) {
             //
             // ASCII character set
             //
             if (ic >= 97 && ic <= 122) {
-                *subnam = (char)(ic - 32);
-                for (i = 2; i <= 6; i++) {
-                    ic = subnam[i - 1];
+                subnam[0] = fem::fchar(ic - 32);
+                for (i = 2; i <= 6; i = i + 1) {
+                    ic = fem::ichar(subnam(i, i));
                     if (ic >= 97 && ic <= 122) {
-                        subnam[i - 1] = (char)(ic - 32);
+                        subnam(i, i) = fem::fchar(ic - 32);
+                    }
+                }
+            }
+            //
+        } else if (iz == 233 || iz == 169) {
+            //
+            // EBCDIC character set
+            //
+            if ((ic >= 129 && ic <= 137) || (ic >= 145 && ic <= 153) || (ic >= 162 && ic <= 169)) {
+                subnam[0] = fem::fchar(ic + 64);
+                for (i = 2; i <= 6; i = i + 1) {
+                    ic = fem::ichar(subnam(i, i));
+                    if ((ic >= 129 && ic <= 137) || (ic >= 145 && ic <= 153) || (ic >= 162 && ic <= 169)) {
+                        subnam(i, i) = fem::fchar(ic + 64);
+                    }
+                }
+            }
+            //
+        } else if (iz == 218 || iz == 250) {
+            //
+            // Prime machines:  ASCII+128
+            //
+            if (ic >= 225 && ic <= 250) {
+                subnam[0] = fem::fchar(ic - 32);
+                for (i = 2; i <= 6; i = i + 1) {
+                    ic = fem::ichar(subnam(i, i));
+                    if (ic >= 225 && ic <= 250) {
+                        subnam(i, i) = fem::fchar(ic - 32);
                     }
                 }
             }
         }
         //
-        if (strncmp(subnam + 1, "GGHRD", 5) == 0 || strncmp(subnam + 1, "GGHD3", 5) == 0) {
+        if (subnam(2, 6) == "GGHRD" || subnam(2, 6) == "GGHD3") {
             return_value = 1;
-            if (nh >= 14) {
+            if (nh >= k22min) {
                 return_value = 2;
             }
-        } else if (strncmp(subnam + 3, "EXC", 3) == 0) {
-            if (nh >= 14) {
+        } else if (subnam(4, 6) == "EXC") {
+            if (nh >= kacmin) {
                 return_value = 1;
             }
-            if (nh >= 14) {
+            if (nh >= k22min) {
                 return_value = 2;
             }
-        } else if (strncmp(subnam + 1, "HSEQR", 5) == 0 || strncmp(subnam + 1, "LAQR", 4) == 0) {
-            if (ns >= 14) {
+        } else if (subnam(2, 6) == "HSEQR" || subnam(2, 5) == "LAQR") {
+            if (ns >= kacmin) {
                 return_value = 1;
             }
-            if (ns >= 14) {
+            if (ns >= k22min) {
                 return_value = 2;
             }
         }
         //
     } else {
+        // ===== invalid value of ispec =====
         return_value = -1;
         //
     }
     return return_value;
     //
+    // ==== End of iMparmq ====
     //
 }

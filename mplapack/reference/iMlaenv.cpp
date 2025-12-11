@@ -52,37 +52,37 @@ INTEGER iMlaenv(INTEGER const ispec, const char *name, const char *opts, INTEGER
     //
     switch (ispec) {
     case 1:
-        goto L10;
+        goto statement_10;
     case 2:
-        goto L10;
+        goto statement_10;
     case 3:
-        goto L10;
+        goto statement_10;
     case 4:
-        goto L80;
+        goto statement_80;
     case 5:
-        goto L90;
+        goto statement_90;
     case 6:
-        goto L100;
+        goto Statement_100;
     case 7:
-        goto L110;
+        goto statement_110;
     case 8:
-        goto L120;
+        goto statement_120;
     case 9:
-        goto L130;
+        goto statement_130;
     case 10:
-        goto L140;
+        goto statement_140;
     case 11:
-        goto L150;
+        goto statement_150;
     case 12:
-        goto L160;
+        goto statement_160;
     case 13:
-        goto L160;
+        goto statement_160;
     case 14:
-        goto L160;
+        goto statement_160;
     case 15:
-        goto L160;
+        goto statement_160;
     case 16:
-        goto L160;
+        goto statement_160;
     }
     //
     // Invalid value for ISPEC
@@ -90,7 +90,7 @@ INTEGER iMlaenv(INTEGER const ispec, const char *name, const char *opts, INTEGER
     return_value = -1;
     return return_value;
     //
-L10:
+statement_10:
     //
     // Convert NAME to upper case if the first character is lower case.
     //
@@ -478,39 +478,39 @@ L70:
     return_value = nx;
     return return_value;
 //
-L80:
+statement_80:
     //
     // ISPEC = 4:  number of shifts (used by xHSEQR)
     //
     return_value = 6;
     return return_value;
 //
-L90:
+statement_90:
     return_value = 2;
     return return_value;
 
-L100:
+statement_100:
     //
     // ISPEC = 6:  crossover point for SVD (used by xGELSS and xGESVD)
     //
     return_value = castINTEGER(castREAL(min(n1, n2)) * 1.6);
     return return_value;
     //
-L110:
+statement_110:
     //
     // ISPEC = 7:  number of processors (not used)
     //
     return_value = 1;
     return return_value;
 //
-L120:
+statement_120:
     //
     // ISPEC = 8:  crossover point for multishift (used by xHSEQR)
     //
     return_value = 50;
     return return_value;
 //
-L130:
+statement_130:
     //
     // ISPEC = 9:  maximum size of the subproblems at the bottom of the
     // computation tree in the divide-and-conquer algorithm
@@ -519,7 +519,7 @@ L130:
     return_value = 25;
     return return_value;
 //
-L140:
+statement_140:
     //
     // ISPEC = 10: ieee and infinity NaN arithmetic can be trusted not to trap
     //
@@ -530,7 +530,7 @@ L140:
     }
     return return_value;
     //
-L150:
+statement_150:
     //
     // ISPEC = 11: ieee infinity arithmetic can be trusted not to trap
     //
@@ -541,7 +541,7 @@ L150:
     }
     return return_value;
 //
-L160:
+statement_160:
     //
     // 12 <= ISPEC <= 16: xHSEQR or related subroutines.
     //
