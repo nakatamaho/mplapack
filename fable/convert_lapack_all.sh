@@ -80,23 +80,23 @@ parallel -j "${JOBS:-$(nproc)}" '
      bash "$FABLE_CONVERT" "{}"
  ' ::: "${files[@]}"
 
-#patch -p3 -R < ~/mplapack/fable/lapack-patches/patch-Cbbcsd.cpp
-#patch -p3 -R < ~/mplapack/fable/lapack-patches/patch-Cpptrf.cpp
-#patch -p3 -R < ~/mplapack/fable/lapack-patches/patch-Cpotf2.cpp
-#patch -p3 -R < ~/mplapack/fable/lapack-patches/patch-Clarnv.cpp
-#patch -p3 -R < ~/mplapack/fable/lapack-patches/patch-Ctrexc.cpp
-#patch -p3 -R < ~/mplapack/fable/lapack-patches/patch-Clartg.cpp
-#patch -p3    < ~/mplapack/fable/lapack-patches/patch-Rbbcsd.cpp
-#patch -p3 -R < ~/mplapack/fable/lapack-patches/patch-Rlarrb.cpp
-#patch -p3 -R < ~/mplapack/fable/lapack-patches/patch-Rlarnv.cpp
-#patch -p3 -R < ~/mplapack/fable/lapack-patches/patch-Rstebz.cpp
-#patch -p3 -R < ~/mplapack/fable/lapack-patches/patch-Rlarrk.cpp
-#patch -p3 -R < ~/mplapack/fable/lapack-patches/patch-Claic1.cpp
-#patch -p3 -R < ~/mplapack/fable/lapack-patches/patch-Csyequb.cpp
-#patch -p3 -R < ~/mplapack/fable/lapack-patches/patch-Cgesvj.cpp
-#patch -p3    < ~/mplapack/fable/lapack-patches/patch-Rgesvj.cpp
-#patch -p3    < ~/mplapack/fable/lapack-patches/patch-Rlacon.cpp
-#patch -p3    < ~/mplapack/fable/lapack-patches/patch-Clacon.cpp
-#patch -p3 -R < ~/mplapack/fable/lapack-patches/patch-Rlasy2.cpp
-#patch -p3 -R < ~/mplapack/fable/lapack-patches/patch-Cgejsv.cpp
-#patch -p3    < ~/mplapack/fable/lapack-patches/patch-Rgejsv.cpp
+patch -p3 -R < ~/mplapack/fable/lapack-patches/patch-Cbbcsd.cpp
+patch -p3 -R < ~/mplapack/fable/lapack-patches/patch-Cpptrf.cpp
+patch -p3 -R < ~/mplapack/fable/lapack-patches/patch-Cpotf2.cpp
+patch -p3 -R < ~/mplapack/fable/lapack-patches/patch-Clarnv.cpp
+patch -p3 -R < ~/mplapack/fable/lapack-patches/patch-Ctrexc.cpp
+patch -p3 -R < ~/mplapack/fable/lapack-patches/patch-Clartg.cpp
+patch -p3    < ~/mplapack/fable/lapack-patches/patch-Rbbcsd.cpp
+patch -p3 -R < ~/mplapack/fable/lapack-patches/patch-Rlarrb.cpp
+patch -p3 -R < ~/mplapack/fable/lapack-patches/patch-Rlarnv.cpp
+patch -p3 -R < ~/mplapack/fable/lapack-patches/patch-Rstebz.cpp
+patch -p3 -R < ~/mplapack/fable/lapack-patches/patch-Rlarrk.cpp
+patch -p3 -R < ~/mplapack/fable/lapack-patches/patch-Claic1.cpp
+patch -p3 -R < ~/mplapack/fable/lapack-patches/patch-Csyequb.cpp
+patch -p3 -R < ~/mplapack/fable/lapack-patches/patch-Cgesvj.cpp
+patch -p3    < ~/mplapack/fable/lapack-patches/patch-Rgesvj.cpp
+patch -p3    < ~/mplapack/fable/lapack-patches/patch-Rlacon.cpp
+patch -p3    < ~/mplapack/fable/lapack-patches/patch-Clacon.cpp
+patch -p3 -R < ~/mplapack/fable/lapack-patches/patch-Rlasy2.cpp
+patch -p3 -R < ~/mplapack/fable/lapack-patches/patch-Cgejsv.cpp
+patch -p3    < ~/mplapack/fable/lapack-patches/patch-Rgejsv.cpp
