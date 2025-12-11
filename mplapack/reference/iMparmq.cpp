@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022
+ * Copyright (c) 2008-2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -35,7 +35,6 @@
 INTEGER
 iMparmq(INTEGER const ispec, const char *name, const char * /* opts */, INTEGER const /* n */, INTEGER const ilo, INTEGER const ihi, INTEGER const /* lwork */) {
     INTEGER return_value = 0;
-    //
     const INTEGER ishfts = 15;
     const INTEGER inwin = 13;
     const INTEGER iacc22 = 16;
@@ -45,6 +44,7 @@ iMparmq(INTEGER const ispec, const char *name, const char * /* opts */, INTEGER 
     const REAL two = 2.0;
     if ((ispec == ishfts) || (ispec == inwin) || (ispec == iacc22)) {
         //
+        // ==== Set the number simultaneous shifts ====
         //
         nh = ihi - ilo + 1;
         ns = 2;
@@ -82,7 +82,9 @@ iMparmq(INTEGER const ispec, const char *name, const char * /* opts */, INTEGER 
     const INTEGER kacmin = 14;
     if (ispec == inmin) {
         //
-        // .     to xLAHQR, the classic REAL shift algorithm.
+        // ===== Matrices of order smaller than NMIN get sent
+        // .     to xLAHQR, the classic double shift algorithm.
+        // .     This must be at least 11. ====
         //
         return_value = nmin;
         //
@@ -102,6 +104,7 @@ iMparmq(INTEGER const ispec, const char *name, const char * /* opts */, INTEGER 
         //
     } else if (ispec == inwin) {
         //
+        // ==== NW: deflation window size.  ====
         //
         if (nh <= knwswp) {
             return_value = ns;
@@ -111,9 +114,12 @@ iMparmq(INTEGER const ispec, const char *name, const char * /* opts */, INTEGER 
         //
     } else if (ispec == iacc22) {
         //
-        // ===== Matrices of order smaller than NMIN get sent
-        // .     to xLAHQR, the classic double shift algorithm.
-        // .     This must be at least 11. ====
+        // ==== IACC22: Whether to accumulate reflections
+        // .     before updating the far-from-diagonal elements
+        // .     and whether to use 2-by-2 block structure while
+        // .     doing it.  A small amount of work could be saved
+        // .     by making this choice dependent also upon the
+        // .     NH=IHI-ILO+1.
         //
         // Convert NAME to upper case if the first character is lower case.
         //
@@ -158,6 +164,7 @@ iMparmq(INTEGER const ispec, const char *name, const char * /* opts */, INTEGER 
         }
         //
     } else {
+        // ===== invalid value of ispec =====
         return_value = -1;
         //
     }
