@@ -141,6 +141,9 @@ void Rlasyf_rk(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &kb,
             }
             //
         } else {
+            //
+            // ============================================================
+            //
             // Test for interchange
             //
             // Equivalent to testing for ABSAKK.GE.ALPHA*COLMAX
@@ -240,6 +243,9 @@ void Rlasyf_rk(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &kb,
                 }
                 //
             }
+            //
+            // ============================================================
+            //
             kk = k - kstep + 1;
             //
             // KKW is the column of W which corresponds to column KK of A
@@ -450,6 +456,9 @@ void Rlasyf_rk(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &kb,
             }
             //
         } else {
+            //
+            // ============================================================
+            //
             // Test for interchange
             //
             // Equivalent to testing for ABSAKK.GE.ALPHA*COLMAX
@@ -548,6 +557,9 @@ void Rlasyf_rk(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &kb,
                 }
                 //
             }
+            //
+            // ============================================================
+            //
             kk = k + kstep - 1;
             //
             if ((kstep == 2) && (p != k)) {
