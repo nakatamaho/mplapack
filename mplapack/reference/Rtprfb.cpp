@@ -75,6 +75,9 @@ void Rtprfb(const char *side, const char *trans, const char *direct, const char 
         forward = false;
         backward = false;
     }
+    //
+    // ---------------------------------------------------------------------------
+    //
     INTEGER mp = 0;
     INTEGER kp = 0;
     INTEGER j = 0;
@@ -83,6 +86,9 @@ void Rtprfb(const char *side, const char *trans, const char *direct, const char 
     const REAL zero = 0.0;
     INTEGER np = 0;
     if (column && forward && left) {
+        //
+        // ---------------------------------------------------------------------------
+        //
         // Let  W =  [ I ]    (K-by-K)
         // [ V ]    (M-by-K)
         //
@@ -93,6 +99,9 @@ void Rtprfb(const char *side, const char *trans, const char *direct, const char 
         //
         // A = A -   T (A + V**T B)  or  A = A -   T**T (A + V**T B)
         // B = B - V T (A + V**T B)  or  B = B - V T**T (A + V**T B)
+        //
+        // ---------------------------------------------------------------------------
+        //
         mp = min(m - l + 1, m);
         kp = min(l + 1, k);
         //
@@ -127,7 +136,13 @@ void Rtprfb(const char *side, const char *trans, const char *direct, const char 
                 b[((m - l + i) - 1) + (j - 1) * ldb] = b[((m - l + i) - 1) + (j - 1) * ldb] - work[(i - 1) + (j - 1) * ldwork];
             }
         }
+        //
+        // ---------------------------------------------------------------------------
+        //
     } else if (column && forward && right) {
+        //
+        // ---------------------------------------------------------------------------
+        //
         // Let  W =  [ I ]    (K-by-K)
         // [ V ]    (N-by-K)
         //
@@ -137,6 +152,9 @@ void Rtprfb(const char *side, const char *trans, const char *direct, const char 
         //
         // A = A - (A + B V) T      or  A = A - (A + B V) T**T
         // B = B - (A + B V) T V**T  or  B = B - (A + B V) T**T V**T
+        //
+        // ---------------------------------------------------------------------------
+        //
         np = min(n - l + 1, n);
         kp = min(l + 1, k);
         //
@@ -171,7 +189,13 @@ void Rtprfb(const char *side, const char *trans, const char *direct, const char 
                 b[(i - 1) + ((n - l + j) - 1) * ldb] = b[(i - 1) + ((n - l + j) - 1) * ldb] - work[(i - 1) + (j - 1) * ldwork];
             }
         }
+        //
+        // ---------------------------------------------------------------------------
+        //
     } else if (column && backward && left) {
+        //
+        // ---------------------------------------------------------------------------
+        //
         // Let  W =  [ V ]    (M-by-K)
         // [ I ]    (K-by-K)
         //
@@ -182,6 +206,9 @@ void Rtprfb(const char *side, const char *trans, const char *direct, const char 
         //
         // A = A -   T (A + V**T B)  or  A = A -   T**T (A + V**T B)
         // B = B - V T (A + V**T B)  or  B = B - V T**T (A + V**T B)
+        //
+        // ---------------------------------------------------------------------------
+        //
         mp = min(l + 1, m);
         kp = min(k - l + 1, k);
         //
@@ -217,7 +244,13 @@ void Rtprfb(const char *side, const char *trans, const char *direct, const char 
                 b[(i - 1) + (j - 1) * ldb] = b[(i - 1) + (j - 1) * ldb] - work[((k - l + i) - 1) + (j - 1) * ldwork];
             }
         }
+        //
+        // ---------------------------------------------------------------------------
+        //
     } else if (column && backward && right) {
+        //
+        // ---------------------------------------------------------------------------
+        //
         // Let  W =  [ V ]    (N-by-K)
         // [ I ]    (K-by-K)
         //
@@ -227,6 +260,9 @@ void Rtprfb(const char *side, const char *trans, const char *direct, const char 
         //
         // A = A - (A + B V) T      or  A = A - (A + B V) T**T
         // B = B - (A + B V) T V**T  or  B = B - (A + B V) T**T V**T
+        //
+        // ---------------------------------------------------------------------------
+        //
         np = min(l + 1, n);
         kp = min(k - l + 1, k);
         //
@@ -261,7 +297,13 @@ void Rtprfb(const char *side, const char *trans, const char *direct, const char 
                 b[(i - 1) + (j - 1) * ldb] = b[(i - 1) + (j - 1) * ldb] - work[(i - 1) + ((k - l + j) - 1) * ldwork];
             }
         }
+        //
+        // ---------------------------------------------------------------------------
+        //
     } else if (row && forward && left) {
+        //
+        // ---------------------------------------------------------------------------
+        //
         // Let  W =  [ I V ] ( I is K-by-K, V is K-by-M )
         //
         // Form  H C  or  H**T C  where  C = [ A ]  (K-by-N)
@@ -271,6 +313,9 @@ void Rtprfb(const char *side, const char *trans, const char *direct, const char 
         //
         // A = A -     T (A + V B)  or  A = A -     T**T (A + V B)
         // B = B - V**T T (A + V B)  or  B = B - V**T T**T (A + V B)
+        //
+        // ---------------------------------------------------------------------------
+        //
         mp = min(m - l + 1, m);
         kp = min(l + 1, k);
         //
@@ -305,7 +350,13 @@ void Rtprfb(const char *side, const char *trans, const char *direct, const char 
                 b[((m - l + i) - 1) + (j - 1) * ldb] = b[((m - l + i) - 1) + (j - 1) * ldb] - work[(i - 1) + (j - 1) * ldwork];
             }
         }
+        //
+        // ---------------------------------------------------------------------------
+        //
     } else if (row && forward && right) {
+        //
+        // ---------------------------------------------------------------------------
+        //
         // Let  W =  [ I V ] ( I is K-by-K, V is K-by-N )
         //
         // Form  C H  or  C H**T  where  C = [ A B ] (A is M-by-K, B is M-by-N)
@@ -314,6 +365,9 @@ void Rtprfb(const char *side, const char *trans, const char *direct, const char 
         //
         // A = A - (A + B V**T) T      or  A = A - (A + B V**T) T**T
         // B = B - (A + B V**T) T V    or  B = B - (A + B V**T) T**T V
+        //
+        // ---------------------------------------------------------------------------
+        //
         np = min(n - l + 1, n);
         kp = min(l + 1, k);
         //
@@ -348,7 +402,13 @@ void Rtprfb(const char *side, const char *trans, const char *direct, const char 
                 b[(i - 1) + ((n - l + j) - 1) * ldb] = b[(i - 1) + ((n - l + j) - 1) * ldb] - work[(i - 1) + (j - 1) * ldwork];
             }
         }
+        //
+        // ---------------------------------------------------------------------------
+        //
     } else if (row && backward && left) {
+        //
+        // ---------------------------------------------------------------------------
+        //
         // Let  W =  [ V I ] ( I is K-by-K, V is K-by-M )
         //
         // Form  H C  or  H**T C  where  C = [ B ]  (M-by-N)
@@ -358,6 +418,9 @@ void Rtprfb(const char *side, const char *trans, const char *direct, const char 
         //
         // A = A -     T (A + V B)  or  A = A -     T**T (A + V B)
         // B = B - V**T T (A + V B)  or  B = B - V**T T**T (A + V B)
+        //
+        // ---------------------------------------------------------------------------
+        //
         mp = min(l + 1, m);
         kp = min(k - l + 1, k);
         //
@@ -392,7 +455,13 @@ void Rtprfb(const char *side, const char *trans, const char *direct, const char 
                 b[(i - 1) + (j - 1) * ldb] = b[(i - 1) + (j - 1) * ldb] - work[((k - l + i) - 1) + (j - 1) * ldwork];
             }
         }
+        //
+        // ---------------------------------------------------------------------------
+        //
     } else if (row && backward && right) {
+        //
+        // ---------------------------------------------------------------------------
+        //
         // Let  W =  [ V I ] ( I is K-by-K, V is K-by-N )
         //
         // Form  C H  or  C H**T  where  C = [ B A ] (A is M-by-K, B is M-by-N)
@@ -401,6 +470,9 @@ void Rtprfb(const char *side, const char *trans, const char *direct, const char 
         //
         // A = A - (A + B V**T) T      or  A = A - (A + B V**T) T**T
         // B = B - (A + B V**T) T V    or  B = B - (A + B V**T) T**T V
+        //
+        // ---------------------------------------------------------------------------
+        //
         np = min(l + 1, n);
         kp = min(k - l + 1, k);
         //
