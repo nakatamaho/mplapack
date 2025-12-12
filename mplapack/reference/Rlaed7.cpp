@@ -48,6 +48,8 @@ void Rlaed7(INTEGER const icompq, INTEGER const n, INTEGER const qsiz, INTEGER c
     const REAL zero = 0.0;
     INTEGER n1 = 0;
     INTEGER n2 = 0;
+    INTEGER ldgivcol = 2;
+    INTEGER ldgivnum = 2;
     //
     // Test the input parameters.
     //

@@ -51,6 +51,8 @@ void Rlaed8(INTEGER const icompq, INTEGER &k, INTEGER const n, INTEGER const qsi
     REAL c = 0.0;
     REAL tau = 0.0;
     INTEGER jp = 0;
+    INTEGER ldgivcol = 2;
+    INTEGER ldgivnum = 2;
     //
     // Test the input parameters.
     //

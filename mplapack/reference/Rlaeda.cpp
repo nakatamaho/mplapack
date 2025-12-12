@@ -30,6 +30,8 @@
 #include <mplapack.h>
 
 void Rlaeda(INTEGER const n, INTEGER const tlvls, INTEGER const curlvl, INTEGER const curpbm, INTEGER *prmptr, INTEGER *perm, INTEGER *givptr, INTEGER *givcol, REAL *givnum, REAL *q, INTEGER *qptr, REAL *z, REAL *ztemp, INTEGER &info) {
+    INTEGER ldgivcol = 2;
+    INTEGER ldgivnum = 2;
     //
     // Test the input parameters.
     //
