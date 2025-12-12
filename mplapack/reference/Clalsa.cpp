@@ -222,7 +222,7 @@ void Clalsa(INTEGER const icompq, INTEGER const smlsiz, INTEGER const n, INTEGER
             nlf = ic - nl;
             nrf = ic + 1;
             j = j - 1;
-            Clals0(icompq, nl, nr, sqre, nrhs, &bx[(nlf - 1)], ldbx, &b[(nlf - 1)], ldb, &perm[(nlf - 1) + (lvl - 1) * ldperm], givptr[j - 1], &givcol[(nlf - 1) + (lvl2 - 1) * ldgivcol], ldgcol, &givnum[(nlf - 1) + (lvl2 - 1) * ldgivnum], ldu, &poles[(nlf - 1) + (lvl2 - 1) * ldpoles], &difl[(nlf - 1) + (lvl - 1) * lddifl], &difr[(nlf - 1) + (lvl2 - 1) * lddifr], &z[(nlf - 1) + (lvl - 1) * ldz], k[j - 1], c[j - 1], s[j - 1], rwork, info);
+            Clals0(icompq, nl, nr, sqre, nrhs, &bx[(nlf - 1)], ldbx, &b[(nlf - 1)], ldb, &perm[(nlf - 1) + (lvl - 1) * ldgcol], givptr[j - 1], &givcol[(nlf - 1) + (lvl2 - 1) * ldgcol], ldgcol, &givnum[(nlf - 1) + (lvl2 - 1) * ldu], ldu, &poles[(nlf - 1) + (lvl2 - 1) * ldu], &difl[(nlf - 1) + (lvl - 1) * ldu], &difr[(nlf - 1) + (lvl2 - 1) * ldu], &z[(nlf - 1) + (lvl - 1) * ldu], k[j - 1], c[j - 1], s[j - 1], rwork, info);
         }
     }
     goto statement_330;
@@ -261,7 +261,7 @@ statement_170:
                 sqre = 1;
             }
             j++;
-            Clals0(icompq, nl, nr, sqre, nrhs, &b[(nlf - 1)], ldb, &bx[(nlf - 1)], ldbx, &perm[(nlf - 1) + (lvl - 1) * ldperm], givptr[j - 1], &givcol[(nlf - 1) + (lvl2 - 1) * ldgivcol], ldgcol, &givnum[(nlf - 1) + (lvl2 - 1) * ldgivnum], ldu, &poles[(nlf - 1) + (lvl2 - 1) * ldpoles], &difl[(nlf - 1) + (lvl - 1) * lddifl], &difr[(nlf - 1) + (lvl2 - 1) * lddifr], &z[(nlf - 1) + (lvl - 1) * ldz], k[j - 1], c[j - 1], s[j - 1], rwork, info);
+            Clals0(icompq, nl, nr, sqre, nrhs, &b[(nlf - 1)], ldb, &bx[(nlf - 1)], ldbx, &perm[(nlf - 1) + (lvl - 1) * ldgcol], givptr[j - 1], &givcol[(nlf - 1) + (lvl2 - 1) * ldgcol], ldgcol, &givnum[(nlf - 1) + (lvl2 - 1) * ldu], ldu, &poles[(nlf - 1) + (lvl2 - 1) * ldu], &difl[(nlf - 1) + (lvl - 1) * ldu], &difr[(nlf - 1) + (lvl2 - 1) * ldu], &z[(nlf - 1) + (lvl - 1) * ldu], k[j - 1], c[j - 1], s[j - 1], rwork, info);
         }
     }
     //
