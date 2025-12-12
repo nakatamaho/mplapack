@@ -132,15 +132,15 @@ void Rtgex2(bool const wantq, bool const wantz, INTEGER const n, REAL *a, INTEGE
         // Compute orthogonal QL and RQ that swap 1-by-1 and 1-by-1 blocks
         // using Givens rotations and perform the swap tentatively.
         //
-        f = s[(2 - 1) + (2 - 1) * lds] * t[0] - t[(2 - 1) + (2 - 1) * ldt] * s[0];
-        g = s[(2 - 1) + (2 - 1) * lds] * t[(2 - 1) * ldt] - t[(2 - 1) + (2 - 1) * ldt] * s[(2 - 1) * lds];
-        sa = abs(s[(2 - 1) + (2 - 1) * lds]) * abs(t[0]);
-        sb = abs(s[0]) * abs(t[(2 - 1) + (2 - 1) * ldt]);
-        Rlartg(f, g, ir[(2 - 1) * ldir], ir[0], ddum);
-        ir[(2 - 1)] = -ir[(2 - 1) * ldir];
-        ir[(2 - 1) + (2 - 1) * ldir] = ir[0];
-        Rrot(2, &s[0], 1, &s[(2 - 1) * lds], 1, ir[0], ir[(2 - 1)]);
-        Rrot(2, &t[0], 1, &t[(2 - 1) * ldt], 1, ir[0], ir[(2 - 1)]);
+        f = s[(2 - 1) + (2 - 1) * ldst] * t[0] - t[(2 - 1) + (2 - 1) * ldst] * s[0];
+        g = s[(2 - 1) + (2 - 1) * ldst] * t[(2 - 1) * ldst] - t[(2 - 1) + (2 - 1) * ldst] * s[(2 - 1) * ldst];
+        sa = abs(s[(2 - 1) + (2 - 1) * ldst]) * abs(t[0]);
+        sb = abs(s[0]) * abs(t[(2 - 1) + (2 - 1) * ldst]);
+        Rlartg(f, g, ir[(2 - 1) * ldst], ir[0], ddum);
+        ir[(2 - 1)] = -ir[(2 - 1) * ldst];
+        ir[(2 - 1) + (2 - 1) * ldst] = ir[0];
+        Rrot(2, &s[0], 1, &s[(2 - 1) * ldst], 1, ir[0], ir[(2 - 1)]);
+        Rrot(2, &t[0], 1, &t[(2 - 1) * ldst], 1, ir[0], ir[(2 - 1)]);
         if (sa >= sb) {
             Rlartg(s[0], s[(2 - 1)], li[0], li[(2 - 1)], ddum);
         } else {
@@ -148,8 +148,8 @@ void Rtgex2(bool const wantq, bool const wantz, INTEGER const n, REAL *a, INTEGE
         }
         Rrot(2, &s[0], ldst, &s[(2 - 1)], ldst, li[0], li[(2 - 1)]);
         Rrot(2, &t[0], ldst, &t[(2 - 1)], ldst, li[0], li[(2 - 1)]);
-        li[(2 - 1) + (2 - 1) * ldli] = li[0];
-        li[(2 - 1) * ldli] = -li[(2 - 1)];
+        li[(2 - 1) + (2 - 1) * ldst] = li[0];
+        li[(2 - 1) * ldst] = -li[(2 - 1)];
         //
         // Weak stability test: |S21| <= O(EPS F-norm((A)))
         // and  |T21| <= O(EPS F-norm((B)))
@@ -223,9 +223,9 @@ void Rtgex2(bool const wantq, bool const wantz, INTEGER const n, REAL *a, INTEGE
         // T11 * R - L * T22 = SCALE * T12
         // for R and L. Solutions in LI and IR.
         //
-        Rlacpy("Full", n1, n2, &t[((n1 + 1) - 1) * ldt], ldst, li, ldst);
-        Rlacpy("Full", n1, n2, &s[((n1 + 1) - 1) * lds], ldst, &ir[((n2 + 1) - 1) + ((n1 + 1) - 1) * ldir], ldst);
-        Rtgsy2("N", 0, n1, n2, s, ldst, &s[((n1 + 1) - 1) + ((n1 + 1) - 1) * lds], ldst, &ir[((n2 + 1) - 1) + ((n1 + 1) - 1) * ldir], ldst, t, ldst, &t[((n1 + 1) - 1) + ((n1 + 1) - 1) * ldt], ldst, li, ldst, scale, dsum, dscale, iwork, idum, linfo);
+        Rlacpy("Full", n1, n2, &t[((n1 + 1) - 1) * ldst], ldst, li, ldst);
+        Rlacpy("Full", n1, n2, &s[((n1 + 1) - 1) * ldst], ldst, &ir[((n2 + 1) - 1) + ((n1 + 1) - 1) * ldst], ldst);
+        Rtgsy2("N", 0, n1, n2, s, ldst, &s[((n1 + 1) - 1) + ((n1 + 1) - 1) * ldst], ldst, &ir[((n2 + 1) - 1) + ((n1 + 1) - 1) * ldst], ldst, t, ldst, &t[((n1 + 1) - 1) + ((n1 + 1) - 1) * ldst], ldst, li, ldst, scale, dsum, dscale, iwork, idum, linfo);
         if (linfo != 0) {
             goto statement_70;
         }
@@ -239,8 +239,8 @@ void Rtgex2(bool const wantq, bool const wantz, INTEGER const n, REAL *a, INTEGE
         // [ SCALE * identity(N2) ]
         //
         for (i = 1; i <= n2; i = i + 1) {
-            Rscal(n1, -one, &li[(i - 1) * ldli], 1);
-            li[((n1 + i) - 1) + (i - 1) * ldli] = scale;
+            Rscal(n1, -one, &li[(i - 1) * ldst], 1);
+            li[((n1 + i) - 1) + (i - 1) * ldst] = scale;
         }
         Rgeqr2(m, n2, li, ldst, taul, work, linfo);
         if (linfo != 0) {
@@ -258,7 +258,7 @@ void Rtgex2(bool const wantq, bool const wantz, INTEGER const n, REAL *a, INTEGE
         // where IR = [ SCALE * identity(N1), R ]
         //
         for (i = 1; i <= n1; i = i + 1) {
-            ir[((n2 + i) - 1) + (i - 1) * ldir] = scale;
+            ir[((n2 + i) - 1) + (i - 1) * ldst] = scale;
         }
         Rgerq2(n1, m, &ir[((n2 + 1) - 1)], ldst, taur, work, linfo);
         if (linfo != 0) {
@@ -301,7 +301,7 @@ void Rtgex2(bool const wantq, bool const wantz, INTEGER const n, REAL *a, INTEGE
         dscale = zero;
         dsum = one;
         for (i = 1; i <= n2; i = i + 1) {
-            Rlassq(n1, &s[((n2 + 1) - 1) + (i - 1) * lds], 1, dscale, dsum);
+            Rlassq(n1, &s[((n2 + 1) - 1) + (i - 1) * ldst], 1, dscale, dsum);
         }
         brqa21 = dscale * sqrt(dsum);
         //
@@ -323,7 +323,7 @@ void Rtgex2(bool const wantq, bool const wantz, INTEGER const n, REAL *a, INTEGE
         dscale = zero;
         dsum = one;
         for (i = 1; i <= n2; i = i + 1) {
-            Rlassq(n1, &scpy[((n2 + 1) - 1) + (i - 1) * ldscpy], 1, dscale, dsum);
+            Rlassq(n1, &scpy[((n2 + 1) - 1) + (i - 1) * ldst], 1, dscale, dsum);
         }
         bqra21 = dscale * sqrt(dsum);
         //
@@ -394,18 +394,18 @@ void Rtgex2(bool const wantq, bool const wantz, INTEGER const n, REAL *a, INTEGE
             Rlagv2(&a[(j1 - 1) + (j1 - 1) * lda], lda, &b[(j1 - 1) + (j1 - 1) * ldb], ldb, ar, ai, be, work[0], work[1], t[0], t[(2 - 1)]);
             work[(m + 1) - 1] = -work[1];
             work[(m + 2) - 1] = work[0];
-            t[(n2 - 1) + (n2 - 1) * ldt] = t[0];
-            t[(2 - 1) * ldt] = -t[(2 - 1)];
+            t[(n2 - 1) + (n2 - 1) * ldst] = t[0];
+            t[(2 - 1) * ldst] = -t[(2 - 1)];
         }
         work[(m * m) - 1] = one;
-        t[(m - 1) + (m - 1) * ldt] = one;
+        t[(m - 1) + (m - 1) * ldst] = one;
         //
         if (n1 > 1) {
-            Rlagv2(&a[((j1 + n2) - 1) + ((j1 + n2) - 1) * lda], lda, &b[((j1 + n2) - 1) + ((j1 + n2) - 1) * ldb], ldb, taur, taul, &work[(m * m + 1) - 1], work[(n2 * m + n2 + 1) - 1], work[(n2 * m + n2 + 2) - 1], t[((n2 + 1) - 1) + ((n2 + 1) - 1) * ldt], t[(m - 1) + ((m - 1) - 1) * ldt]);
+            Rlagv2(&a[((j1 + n2) - 1) + ((j1 + n2) - 1) * lda], lda, &b[((j1 + n2) - 1) + ((j1 + n2) - 1) * ldb], ldb, taur, taul, &work[(m * m + 1) - 1], work[(n2 * m + n2 + 1) - 1], work[(n2 * m + n2 + 2) - 1], t[((n2 + 1) - 1) + ((n2 + 1) - 1) * ldst], t[(m - 1) + ((m - 1) - 1) * ldst]);
             work[(m * m) - 1] = work[(n2 * m + n2 + 1) - 1];
             work[(m * m - 1) - 1] = -work[(n2 * m + n2 + 2) - 1];
-            t[(m - 1) + (m - 1) * ldt] = t[((n2 + 1) - 1) + ((n2 + 1) - 1) * ldt];
-            t[((m - 1) - 1) + (m - 1) * ldt] = -t[(m - 1) + ((m - 1) - 1) * ldt];
+            t[(m - 1) + (m - 1) * ldst] = t[((n2 + 1) - 1) + ((n2 + 1) - 1) * ldst];
+            t[((m - 1) - 1) + (m - 1) * ldst] = -t[(m - 1) + ((m - 1) - 1) * ldst];
         }
         Rgemm("T", "N", n2, n1, n2, one, work, m, &a[(j1 - 1) + ((j1 + n2) - 1) * lda], lda, zero, &work[(m * m + 1) - 1], n2);
         Rlacpy("Full", n2, n1, &work[(m * m + 1) - 1], n2, &a[(j1 - 1) + ((j1 + n2) - 1) * lda], lda);
@@ -413,9 +413,9 @@ void Rtgex2(bool const wantq, bool const wantz, INTEGER const n, REAL *a, INTEGE
         Rlacpy("Full", n2, n1, &work[(m * m + 1) - 1], n2, &b[(j1 - 1) + ((j1 + n2) - 1) * ldb], ldb);
         Rgemm("N", "N", m, m, m, one, li, ldst, work, m, zero, &work[(m * m + 1) - 1], m);
         Rlacpy("Full", m, m, &work[(m * m + 1) - 1], m, li, ldst);
-        Rgemm("N", "N", n2, n1, n1, one, &a[(j1 - 1) + ((j1 + n2) - 1) * lda], lda, &t[((n2 + 1) - 1) + ((n2 + 1) - 1) * ldt], ldst, zero, work, n2);
+        Rgemm("N", "N", n2, n1, n1, one, &a[(j1 - 1) + ((j1 + n2) - 1) * lda], lda, &t[((n2 + 1) - 1) + ((n2 + 1) - 1) * ldst], ldst, zero, work, n2);
         Rlacpy("Full", n2, n1, work, n2, &a[(j1 - 1) + ((j1 + n2) - 1) * lda], lda);
-        Rgemm("N", "N", n2, n1, n1, one, &b[(j1 - 1) + ((j1 + n2) - 1) * ldb], ldb, &t[((n2 + 1) - 1) + ((n2 + 1) - 1) * ldt], ldst, zero, work, n2);
+        Rgemm("N", "N", n2, n1, n1, one, &b[(j1 - 1) + ((j1 + n2) - 1) * ldb], ldb, &t[((n2 + 1) - 1) + ((n2 + 1) - 1) * ldst], ldst, zero, work, n2);
         Rlacpy("Full", n2, n1, work, n2, &b[(j1 - 1) + ((j1 + n2) - 1) * ldb], ldb);
         Rgemm("T", "N", m, m, m, one, ir, ldst, t, ldst, zero, work, m);
         Rlacpy("Full", m, m, work, m, ir, ldst);

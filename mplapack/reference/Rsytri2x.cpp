@@ -30,6 +30,7 @@
 #include <mplapack.h>
 
 void Rsytri2x(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INTEGER *ipiv, REAL *work, INTEGER const nb, INTEGER &info) {
+    INTEGER ldwork = n + nb + 1;
     //
     // Test the input parameters.
     //
