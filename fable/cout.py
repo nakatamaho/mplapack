@@ -2995,6 +2995,13 @@ class scope(object):
 
     def top_append(O, obj):
         assert O.insert_point is not None
+        # Inserting into O.data shifts indices; keep trailing label index consistent.
+        if (O.trailing_statement_label_index is not None):
+            if (O.insert_point <= O.trailing_statement_label_index):
+                O.trailing_statement_label_index += 1
+            else:
+                # Insert after the label: it is no longer trailing.
+                O.trailing_statement_label_index = None
         O.data.insert(O.insert_point, obj)
         O.insert_point += 1
 
