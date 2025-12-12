@@ -30,6 +30,7 @@
 #include <mplapack.h>
 
 void Cungtsqr_row(INTEGER const m, INTEGER const n, INTEGER const mb, INTEGER const nb, COMPLEX *a, INTEGER const lda, COMPLEX *t, INTEGER const ldt, COMPLEX *work, INTEGER const lwork, INTEGER &info) {
+    INTEGER lddummy = 1;
     //
     // Test the input parameters
     //
