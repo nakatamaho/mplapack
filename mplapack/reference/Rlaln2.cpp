@@ -38,6 +38,13 @@ void Rlaln2(bool const ltrans, INTEGER const na, INTEGER const nw, REAL const sm
     static bool zswap[] = {false, false, true, true};
     static bool rswap[] = {false, true, false, true};
     static INTEGER ipivot[] = {1, 2, 3, 4, 2, 1, 4, 3, 3, 4, 1, 2, 4, 3, 2, 1};
+    INTEGER ipivot[4 * 4];
+    INTEGER ldcr = 2;
+    INTEGER ldipivot = 4;
+    INTEGER ldci = 2;
+    //
+    // Compute BIGNUM
+    //
     const REAL two = 2.0;
     REAL smlnum = two * Rlamch("Safe minimum");
     // REAL smlnum = two * 2.2250738585072014E-308;
@@ -90,9 +97,6 @@ void Rlaln2(bool const ltrans, INTEGER const na, INTEGER const nw, REAL const sm
     REAL xi1 = 0.0;
     REAL equiv_0[4];
     REAL equiv_1[4];
-    INTEGER ldci = 2;
-    INTEGER ldcr = 2;
-    INTEGER ldipivot = 4;
     if (na == 1) {
         //
         // 1 x 1  (i.e., scalar) system   C X = B
