@@ -7063,6 +7063,101 @@ def _fix_fortran_end_statements(src: str) -> str:
             out.append(f"{indent}END{eol}")
     return "".join(out)
 
+def _fix_fortran_iso_fortran_env_real64(src: str) -> str:
+    """Make some F90 'iso_fortran_env real64' constructs digestible for FABLE.
+
+    FABLE's declaration parser may treat USE statements as if they were type
+    declarations and fail with "Syntax error" at lines like:
+        USE, INTRINSIC :: iso_fortran_env, only: real64
+
+    In LAPACK drivers (e.g. DGEDMD), this is typically used only to define:
+        INTEGER, PARAMETER :: WP = real64
+    and then REAL(KIND=WP) ... / 1.0_wp literals.
+
+    Strategy:
+      1) Drop (comment out) the USE line (parser compatibility).
+      2) If WP=real64 is present, rewrite REAL(KIND=WP) -> DOUBLE PRECISION
+         and rewrite *_wp literals -> *d0 so the inferred types stay correct.
+    """
+    import re
+
+    def split_eol(line: str):
+        if line.endswith("\r\n"):
+            return line[:-2], "\r\n"
+        if line.endswith("\n"):
+            return line[:-1], "\n"
+        if line.endswith("\r"):
+            return line[:-1], "\r"
+        return line, ""
+
+    USE_REAL64_RE = re.compile(
+        r'^\s*use\s*,\s*intrinsic\s*::\s*iso_fortran_env\s*,\s*only\s*:\s*real64\s*$',
+        flags=re.IGNORECASE,
+    )
+    WP_REAL64_RE = re.compile(
+        r'^\s*integer\s*,\s*parameter\s*::\s*wp\s*=\s*real64\s*$',
+        flags=re.IGNORECASE,
+    )
+
+    lines = src.splitlines(True)
+    out = []
+    has_wp_real64 = False
+
+    for line in lines:
+        raw, eol = split_eol(line)
+
+        if USE_REAL64_RE.match(raw):
+            # Fixed-form safe comment (column 1)
+            out.append("C " + raw.lstrip() + eol)
+            continue
+
+        if WP_REAL64_RE.match(raw):
+            has_wp_real64 = True
+            # Remove WP definition; we'll normalize types below.
+            out.append("C " + raw.lstrip() + eol)
+            continue
+
+        out.append(raw + eol)
+
+    src2 = "".join(out)
+    if not has_wp_real64:
+        return src2
+
+    # Normalize REAL(KIND=WP/wp) -> DOUBLE PRECISION
+    REAL_KIND_WP_RE = re.compile(r'\breal\s*\(\s*kind\s*=\s*wp\s*\)', flags=re.IGNORECASE)
+
+    def rewrite_code_only(line: str) -> str:
+        # Keep inline '!' comments untouched.
+        idx = line.find("!")
+        if idx >= 0:
+            code, comment = line[:idx], line[idx:]
+        else:
+            code, comment = line, ""
+
+        code = REAL_KIND_WP_RE.sub("DOUBLE PRECISION", code)
+
+        # Rewrite numeric literals with _wp suffix to double literals.
+        # Examples: 1.0_wp -> 1.0d0, 0.95_wp -> 0.95d0, 1e-3_wp -> 1d-3
+        def _lit(m: re.Match) -> str:
+            num = m.group("num")
+            # convert E exponent to D exponent for double literals
+            num = re.sub(r'[eE]([+\-]?\d+)', r'D\1', num)
+            # if no exponent, append d0
+            if "D" in num or "d" in num:
+                return num
+            return num + "d0"
+
+        WP_LIT_RE = re.compile(
+            r'(?P<num>(?:\d+\.\d*|\d*\.\d+|\d+)(?:[eE][+\-]?\d+)?)\s*_(?:wp)\b',
+            flags=re.IGNORECASE,
+        )
+        code = WP_LIT_RE.sub(_lit, code)
+        return code + comment
+
+    src2_lines = src2.splitlines(True)
+    src2_lines = [rewrite_code_only(ln) for ln in src2_lines]
+    return "".join(src2_lines)
+
 def _fix_fortran_free_form_ampersand_continuations(src: str) -> str:
     """Convert free-form '&' continuations into fixed-form continuation lines.
 
@@ -7161,6 +7256,7 @@ def _preprocess_fortran_files(file_names):
         new_src = _fix_fortran_externals(src)
         new_src = _fix_fortran_end_statements(new_src)
         new_src = _fix_fortran_free_form_ampersand_continuations(new_src)
+        new_src = _fix_fortran_iso_fortran_env_real64(new_src)
         if new_src == src:
             # No change needed.
             patched.append(fn)
