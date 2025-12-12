@@ -12,6 +12,10 @@ except ImportError:
     FUNCTION_SIGNATURES = {}
     FUNCTION_RETURNS = {}
 
+# Cache inferred signatures for EXTERNAL callable dummy arguments.
+# Key: id(fproc)  Value: dict[name_lower] -> (ret_type, [arg_type0, ...])
+_INFERRED_CALLABLE_SIGNATURES = {}
+
 
 def _split_actuals(arg_string: str):
     """Split a C++ argument list string on commas, ignoring commas inside parentheses."""
@@ -4847,6 +4851,192 @@ def _mark_call_actuals_used(conv_info):
                     f"[CALL_USED] bump use_count for {id_tok.value}", file=sys.stderr)
                 fdecl.use_count = 1
 
+def _infer_user_defined_callable_signatures(conv_info):
+    """Infer signatures for user-defined EXTERNAL callable dummy arguments.
+
+    This pass is intentionally conservative:
+
+      - It only infers a signature when the callable is actually invoked inside
+        the current procedure (e.g. IF (SELECT(W)) or LOG = SELCTG(...)).
+      - It requires the return type and all argument types to be inferred
+        consistently. If anything is ambiguous or conflicting, the callable
+        remains unresolved and will keep the existing UNHANDLED fallback.
+
+    This function does NOT parse comments.
+    """
+    fproc = getattr(conv_info, "fproc", None)
+    if fproc is None:
+        return
+
+    # Cache per procedure. fproc may use __slots__, so we cannot attach new attributes.
+    key = id(fproc)
+    if key in _INFERRED_CALLABLE_SIGNATURES:
+        return
+
+    # Collect dummy arguments declared as user-defined callables (EXTERNAL).
+    targets = set()
+    for id_tok in (getattr(fproc, "args", None) or []):
+        if getattr(id_tok, "value", None) == "*":
+            continue
+        try:
+            fdecl = fproc.get_fdecl(id_tok=id_tok)
+        except Exception:
+            fdecl = None
+        if fdecl is not None and fdecl.is_user_defined_callable():
+            targets.add(id_tok.value.lower())
+
+    if not targets:
+        _INFERRED_CALLABLE_SIGNATURES[key] = {}
+        return
+
+    from fable.tokenization import group_power, extract_identifiers
+
+    def _mpl_type_from_fdecl(fdecl):
+        try:
+            ctype = convert_data_type(conv_info=conv_info, fdecl=fdecl, crhs=None)[0]
+        except Exception:
+            return None
+        return convert_to_mplapack_type(ctype)
+
+    # Best-effort type inference from a C++ expression string.
+    num_re = re.compile(r"^[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?$")
+    int_re = re.compile(r"^[+-]?\d+$")
+    id_head_re = re.compile(r"^([A-Za-z_][A-Za-z0-9_:]*)(?:\b|\[|\.|\()")
+
+    def _mpl_type_from_expr(expr: str):
+        if expr is None:
+            return None
+        s = expr.strip()
+        if not s:
+            return None
+        if s.startswith("&"):
+            s = s[1:].strip()
+        s = _strip_outer_parens_balanced(s)
+
+        if s in ("true", "false"):
+            return "bool"
+
+        if s.startswith("COMPLEX(") or "std::complex" in s:
+            return "COMPLEX"
+
+        if int_re.fullmatch(s):
+            return "INTEGER"
+        if num_re.fullmatch(s) and (("." in s) or ("e" in s) or ("E" in s)):
+            return "REAL"
+
+        # Explicit real/imag projections imply REAL.
+        if ".real()" in s or ".imag()" in s or "castREAL(" in s:
+            return "REAL"
+
+        m = id_head_re.match(s)
+        if not m:
+            return None
+        name = m.group(1).replace(" ", "")
+        name = name.split("::")[-1]
+        name = name.split(".")[-1]
+
+        fd = fproc.fdecl_by_identifier.get(name.lower())
+        if fd is None:
+            fd = fproc.fdecl_by_identifier.get(name)
+        if fd is None:
+            return None
+        return _mpl_type_from_fdecl(fd)
+
+    def _find_invocations(tokens):
+        """Return [(callee_lower, [arg_expr0, ...]), ...] for calls to targets."""
+        found = []
+        if tokens is None:
+            return found
+        prev = None
+        for tok in group_power(tokens=tokens):
+            if tok.is_seq():
+                found.extend(_find_invocations(tok.value))
+            elif tok.is_parentheses():
+                # Scan nested expressions too.
+                found.extend(_find_invocations(tok.value))
+                if prev is not None and prev.is_identifier():
+                    name = prev.value.lower()
+                    if name in targets:
+                        arg_str = convert_tokens(
+                            conv_info=conv_info,
+                            tokens=tok.value,
+                            commas=True,
+                        )
+                        arg_exprs = _split_actuals(arg_str)
+                        found.append((name, arg_exprs))
+            prev = tok
+        return found
+
+    def _update(state, name, arg_types, ret_type):
+        st = state.get(name)
+        if st is None:
+            state[name] = {"ret": ret_type, "args": list(arg_types) if arg_types is not None else None, "conflict": False}
+            return
+
+        if ret_type is not None:
+            if st["ret"] is None:
+                st["ret"] = ret_type
+            elif st["ret"] != ret_type:
+                st["conflict"] = True
+
+        if arg_types is not None:
+            if st["args"] is None:
+                st["args"] = list(arg_types)
+            else:
+                if len(st["args"]) != len(arg_types):
+                    st["conflict"] = True
+                else:
+                    for i, (old, new) in enumerate(zip(st["args"], arg_types)):
+                        if new is None:
+                            continue
+                        if old is None:
+                            st["args"][i] = new
+                        elif old != new:
+                            st["conflict"] = True
+
+    state = {}
+
+    execs = getattr(fproc, "executable", None) or []
+    for ei in execs:
+        # Condition contexts (IF/ELSEIF/DO WHILE/...) imply LOGICAL return.
+        cond_tokens = getattr(ei, "cond_tokens", None)
+        if cond_tokens is not None:
+            for name, arg_exprs in _find_invocations(cond_tokens):
+                arg_types = [_mpl_type_from_expr(a) for a in arg_exprs]
+                _update(state, name, arg_types, "bool")
+
+        # Assignments can pin the return type to the LHS variable type.
+        if getattr(ei, "key", None) == "assignment":
+            lhs_ids = extract_identifiers(tokens=ei.lhs_tokens)
+            lhs_type = None
+            if lhs_ids:
+                lhs_fd = fproc.get_fdecl(id_tok=lhs_ids[0])
+                if lhs_fd is not None:
+                    lhs_type = _mpl_type_from_fdecl(lhs_fd)
+            rhs_tokens = getattr(ei, "rhs_tokens", None)
+            for name, arg_exprs in _find_invocations(rhs_tokens):
+                arg_types = [_mpl_type_from_expr(a) for a in arg_exprs]
+                _update(state, name, arg_types, lhs_type)
+
+        # Scan nested invocations inside CALL actual arguments.
+        if getattr(ei, "key", None) == "call":
+            arg_tok = getattr(ei, "arg_token", None)
+            if arg_tok is not None and getattr(arg_tok, "value", None) is not None:
+                for name, arg_exprs in _find_invocations(arg_tok.value):
+                    arg_types = [_mpl_type_from_expr(a) for a in arg_exprs]
+                    _update(state, name, arg_types, None)
+
+    final = {}
+    for name, st in state.items():
+        if st.get("conflict"):
+            continue
+        if st.get("ret") is None:
+            continue
+        args = st.get("args")
+        if args is None or any(a is None for a in args):
+            continue
+        final[name] = (st["ret"], args)
+        _INFERRED_CALLABLE_SIGNATURES[key] = final
 
 def convert_to_cpp_function(
         cpp_callback,
@@ -4862,6 +5052,7 @@ def convert_to_cpp_function(
     # Ensure that any variable used as a CALL actual argument is treated
     # as "used" at least once, so its declaration is not dropped.
     _mark_call_actuals_used(conv_info)
+    _infer_user_defined_callable_signatures(conv_info)
 
     if (not declaration_only):
         export_save_struct(callback=cpp_callback, conv_info=conv_info)
@@ -4971,11 +5162,30 @@ def convert_to_cpp_function(
                 fdecl.id_tok.value)
             if (passed is None or len(passed) == 0):
                 ctype = "UNHANDLED"
+            sigs = _INFERRED_CALLABLE_SIGNATURES.get(id(conv_info.fproc), {}) or {}
+            sig = sigs.get(fdecl.id_tok.value.lower())
+            if sig is None:
+                sig = sigs.get(fdecl.id_tok.value)
+            if sig is not None:
+                ret_type, arg_types = sig
+                args = ", ".join(arg_types)
+                # Type-only form used for forward declarations.
+                fptr.append(f"{ret_type} (*)({args})")
+                # Full parameter form (omit name if it was commented out).
+                if str(arg_name).lstrip().startswith("/*"):
+                    cargs.append(f"{ret_type} (*)({args}) {arg_name}")
+                else:
+                    cargs.append(f"{ret_type} (*{arg_name})({args})")
             else:
-                ctype = sorted(passed)[0]
-            cargs_append(
-                ctype=ctype+"_function_pointer",
-                name=arg_name)
+                passed = conv_info.fproc.externals_passed_by_arg_identifier.get(
+                    fdecl.id_tok.value)
+                if (passed is None or len(passed) == 0):
+                    ctype = "UNHANDLED"
+                else:
+                    ctype = sorted(passed)[0]
+                cargs_append(
+                    ctype=ctype + "_function_pointer",
+                    name=arg_name)
         if (fdecl.dim_tokens is not None and fdecl.use_count != 0):
             # args_fdecl_with_dim.append(fdecl)
             pass
