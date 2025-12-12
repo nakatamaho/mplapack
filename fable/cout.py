@@ -7063,6 +7063,105 @@ def _fix_fortran_end_statements(src: str) -> str:
             out.append(f"{indent}END{eol}")
     return "".join(out)
 
+def _split_top_level_commas(s: str):
+    """Split by commas, ignoring commas inside parentheses."""
+    items = []
+    buf = []
+    depth = 0
+    for ch in s:
+        if ch == "(":
+            depth += 1
+        elif ch == ")":
+            depth = max(0, depth - 1)
+        if ch == "," and depth == 0:
+            items.append("".join(buf).strip())
+            buf = []
+        else:
+            buf.append(ch)
+    tail = "".join(buf).strip()
+    if tail:
+        items.append(tail)
+    return items
+
+def _fix_fortran_f90_decl_syntax(src: str) -> str:
+    """Rewrite a subset of F90 declarations into F77-style declarations.
+
+    Targets (common in LAPACK .f90):
+      - "<TYPE>, PARAMETER :: A = expr" -> "<TYPE> A" + "PARAMETER (A = expr)"
+      - "<TYPE>, INTENT(IN) :: ..."     -> "<TYPE> ..."
+      - "<TYPE> :: ..."                 -> "<TYPE> ..."
+    This keeps semantics for PARAMETER, and drops INTENT (interface-only).
+    """
+    import re
+
+    def split_eol(line: str):
+        if line.endswith("\r\n"):
+            return line[:-2], "\r\n"
+        if line.endswith("\n"):
+            return line[:-1], "\n"
+        if line.endswith("\r"):
+            return line[:-1], "\r"
+        return line, ""
+
+    # Detect declaration lines starting with a known intrinsic type.
+    # (Keep this narrow to avoid rewriting non-declarations.)
+    TYPE_RE = re.compile(
+        r'^\s*(DOUBLE\s+PRECISION|REAL|INTEGER|LOGICAL|CHARACTER|COMPLEX)\b',
+        flags=re.IGNORECASE
+    )
+
+    out = []
+    for line in src.splitlines(True):
+        raw, eol = split_eol(line)
+
+        # Keep fixed-form comment lines intact.
+        if raw and raw[0] in ("c", "C", "*", "!"):
+            out.append(raw + eol)
+            continue
+
+        if "::" not in raw:
+            out.append(raw + eol)
+            continue
+
+        if not TYPE_RE.match(raw):
+            out.append(raw + eol)
+            continue
+
+        indent = re.match(r'^(\s*)', raw).group(1)
+        left, right = raw.split("::", 1)
+        left = left.strip()
+        right = right.strip()
+
+        # Base type is the part before the first comma.
+        base_type = left.split(",", 1)[0].strip()
+        # Normalize "DOUBLE PRECISION" spacing/case.
+        if re.match(r'^double\s+precision$', base_type, flags=re.IGNORECASE):
+            base_type = "DOUBLE PRECISION"
+        else:
+            base_type = base_type.upper()
+
+        attrs = []
+        if "," in left:
+            attrs = [a.strip().lower() for a in left.split(",")[1:]]
+
+        is_parameter = any(a.startswith("parameter") for a in attrs)
+        # INTENT(...) is dropped (interface-only)
+
+        if is_parameter:
+            decl_items = _split_top_level_commas(right)
+            names = []
+            for it in decl_items:
+                if "=" in it:
+                    names.append(it.split("=", 1)[0].strip())
+                else:
+                    names.append(it.strip())
+            out.append(f"{indent}{base_type} {', '.join(names)}{eol}")
+            out.append(f"{indent}PARAMETER ({', '.join(decl_items)}){eol}")
+        else:
+            out.append(f"{indent}{base_type} {right}{eol}")
+
+    return "".join(out)
+
 def _fix_fortran_iso_fortran_env_real64(src: str) -> str:
     """Make some F90 'iso_fortran_env real64' constructs digestible for FABLE.
 
@@ -7257,6 +7356,7 @@ def _preprocess_fortran_files(file_names):
         new_src = _fix_fortran_end_statements(new_src)
         new_src = _fix_fortran_free_form_ampersand_continuations(new_src)
         new_src = _fix_fortran_iso_fortran_env_real64(new_src)
+        new_src = _fix_fortran_f90_decl_syntax(new_src)
         if new_src == src:
             # No change needed.
             patched.append(fn)
