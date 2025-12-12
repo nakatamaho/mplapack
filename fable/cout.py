@@ -1103,6 +1103,7 @@ class conversion_info(global_conversion_info):
         "comment_manager",
         "vmap",
         "data_initializers",
+        "ld_constant_decls",
     ]
 
     def __init__(O,
@@ -1126,6 +1127,10 @@ class conversion_info(global_conversion_info):
 
         # IMPORTANT: initialize DATA initializer map
         O.data_initializers = None
+
+        # Map: auto-generated leading-dimension variable -> integer literal.
+        # This is used to avoid hardcoding constants in flattened 2D indexing.
+        O.ld_constant_decls = {}
 
     def set_vmap_force_local(O, fdecl):
         identifier = fdecl.id_tok.value
@@ -1935,6 +1940,83 @@ def get_leading_dimension_expr(conv_info, fdecl, default=None):
     except Exception:
         return default
 
+def _strip_outer_parens_balanced(expr: str) -> str:
+    """Strip outer parentheses if they wrap the entire expression."""
+    s = expr.strip()
+    while s.startswith("(") and s.endswith(")"):
+        depth = 0
+        balanced_outer = True
+        for pos, ch in enumerate(s):
+            if ch == "(":
+                depth += 1
+            elif ch == ")":
+                depth -= 1
+                if depth == 0 and pos != len(s) - 1:
+                    balanced_outer = False
+                    break
+        if not balanced_outer or depth != 0:
+            break
+        s = s[1:-1].strip()
+    return s
+
+
+_int_lit_re = re.compile(r"^[0-9]+$")
+
+
+def _maybe_use_ld_variable(conv_info, ldexpr: str, default_ldname: str) -> str:
+    """Prefer a symbolic leading-dimension variable over a hardcoded integer.
+
+    If ldexpr is a pure integer literal (e.g. "2"), use default_ldname
+    (e.g. "ldstack") and remember a declaration "INTEGER ldstack = 2;"
+    to be emitted near the top of the generated function.
+
+    If default_ldname collides with an existing Fortran identifier, keep ldexpr
+    to avoid changing semantics.
+    """
+    if conv_info is None or default_ldname is None:
+        return ldexpr
+
+    # Avoid collisions with existing identifiers in the source procedure.
+    fproc = getattr(conv_info, "fproc", None)
+    fdecl_map = getattr(fproc, "fdecl_by_identifier", None) if fproc is not None else None
+    if fdecl_map is not None:
+        if default_ldname.lower() in fdecl_map or default_ldname in fdecl_map:
+            return ldexpr
+
+    core = _strip_outer_parens_balanced(ldexpr)
+    if _int_lit_re.fullmatch(core):
+        if getattr(conv_info, "ld_constant_decls", None) is None:
+            conv_info.ld_constant_decls = {}
+        conv_info.ld_constant_decls.setdefault(default_ldname, core)
+        return default_ldname
+
+    return ldexpr
+
+
+def _emit_constant_ld_decls(top_scope, conv_info) -> None:
+    """Emit constant leading-dimension declarations recorded during conversion."""
+    if conv_info is None or top_scope is None:
+        return
+    ld_map = getattr(conv_info, "ld_constant_decls", None)
+    if not ld_map:
+        return
+    # Ensure we have a valid insertion point.
+    if getattr(top_scope, "insert_point", None) is None:
+        top_scope.remember_insert_point()
+
+    for ldname, val in ld_map.items():
+        # Skip if already declared.
+        already = False
+        for obj in getattr(top_scope, "data", []):
+            if not isinstance(obj, str):
+                continue
+            if re.match(rf"\s*(?:const\s+)?INTEGER\s+(?:const\s+)?{re.escape(ldname)}\b", obj):
+                already = True
+                break
+        if already:
+            continue
+        top_scope.top_append(f"INTEGER {ldname} = {val};")
+
 def rewrite_intrinsics(text: str) -> str:
     """Rewrite fem:: intrinsics to C++-friendly forms."""
     def _real_dispatch(arg: str) -> str:
@@ -2121,8 +2203,10 @@ def convert_tokens(conv_info, tokens, commas=False, had_str_concat=None):
                     start_expr = parts[0].strip()
                     end_expr = parts[1].strip()
                     col_expr = parts[2].strip()
+                    default_ldname = "ld" + prev_tok.value.lower()
                     ldexpr = get_leading_dimension_expr(
-                        conv_info, fdecl, default=("ld" + prev_tok.value.lower()))
+                        conv_info, fdecl, default=default_ldname)
+                    ldexpr = _maybe_use_ld_variable(conv_info, ldexpr, default_ldname)
                     rapp(
                         f"[__SLICE2D__({start_expr}, {end_expr}, {col_expr}, {ldexpr})]")
 
@@ -2260,8 +2344,10 @@ def convert_tokens(conv_info, tokens, commas=False, had_str_concat=None):
                     i_expr, j_expr = parts
                     i_expr = i_expr.strip()
                     j_expr = j_expr.strip()
+                    default_ldname = "ld" + prev_tok.value.lower()
                     ldexpr = get_leading_dimension_expr(
-                        conv_info, fdecl, default=("ld" + prev_tok.value.lower()))
+                        conv_info, fdecl, default=default_ldname)
+                    ldexpr = _maybe_use_ld_variable(conv_info, ldexpr, default_ldname)
 
                     lb1 = get_lower_bound(conv_info, fdecl, 0).strip()
                     lb2 = get_lower_bound(conv_info, fdecl, 1).strip()
@@ -4642,6 +4728,8 @@ def convert_executable(
             print()
             raise
     assert curr_scope.parent is None
+    # Emit any constant leading-dimension variables requested during conversion.
+    _emit_constant_ld_decls(top_scope, conv_info)
     if (conv_info.fproc.fproc_type == "function"
             and len(conv_info.fproc.executable) != 0
             and conv_info.fproc.executable[-1].key != "return"):
