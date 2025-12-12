@@ -96,6 +96,9 @@ void Rtgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
     REAL cre2b = 0.0;
     REAL cim2b = 0.0;
     INTEGER jc = 0;
+    INTEGER ldsums = 2;
+    INTEGER ldsump = 2;
+    INTEGER ldsum = 2;
     //
     // Decode and Test the input parameters
     //
