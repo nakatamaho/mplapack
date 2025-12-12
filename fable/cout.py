@@ -1848,6 +1848,92 @@ def get_lower_bound(conv_info, fdecl, dim_index):
     # No ":" found -> implicit 1-based lower bound.
     return "1"
 
+def _try_extract_first_dim_extent_identifier(conv_info, dim0_tokens):
+    """Try to return a simple identifier for the extent of the first dimension.
+
+    This avoids emitting verbose extents like '((ldb - 1) - 0 + 1)' when it is
+    obviously equal to 'ldb' for common Fortran bounds such as '0:ldb-1' or '1:ldb'.
+    This helper is intentionally conservative.
+    """
+    # Find "lower:upper" split.
+    colon_idx = None
+    for i, tok in enumerate(dim0_tokens):
+        if hasattr(tok, "is_op_with") and tok.is_op_with(value=":"):
+            colon_idx = i
+            break
+    if colon_idx is None:
+        return None
+
+    lb_tokens = dim0_tokens[:colon_idx]
+    ub_tokens = dim0_tokens[colon_idx + 1:]
+    if not ub_tokens:
+        return None
+
+    def _is_int_literal(toks, v):
+        return (len(toks) == 1 and hasattr(toks[0], "is_integer")
+                and toks[0].is_integer() and toks[0].value == str(v))
+
+    def _is_identifier(toks):
+        return (len(toks) == 1 and hasattr(toks[0], "is_identifier")
+                and toks[0].is_identifier())
+
+    # Fortran default lower bound is 1 if omitted.
+    if not lb_tokens:
+        lb = 1
+    elif _is_int_literal(lb_tokens, 0):
+        lb = 0
+    elif _is_int_literal(lb_tokens, 1):
+        lb = 1
+    else:
+        return None
+
+    # Pattern: 1:ID  -> extent = ID
+    if lb == 1 and _is_identifier(ub_tokens):
+        return convert_tokens(conv_info=conv_info, tokens=ub_tokens).strip()
+
+    # Pattern: 0:(ID-1) -> extent = ID
+    if (lb == 0 and len(ub_tokens) == 3
+            and ub_tokens[0].is_identifier()
+            and ub_tokens[1].is_op_with(value="-")
+            and ub_tokens[2].is_integer()
+            and ub_tokens[2].value == "1"):
+        return convert_tokens(conv_info=conv_info, tokens=[ub_tokens[0]]).strip()
+
+    return None
+
+
+def get_leading_dimension_expr(conv_info, fdecl, default=None):
+    """Return leading dimension (extent of the first dimension) for a 2D array.
+
+    Prefer the declaration's first dimension, e.g.:
+        DOUBLE PRECISION A(LDA, * )      -> "lda"
+        COMPLEX*16 WORK13(LDWORK, NBMAX) -> "ldwork"
+
+    If the first dimension is explicit-bounds (L:U), return (U - L + 1).
+    For common bounds (0:ld-1, 1:ld), return just "ld" to keep code clean.
+
+    If anything is missing/unknown, fall back to 'default'.
+    """
+    dt = getattr(fdecl, "dim_tokens", None)
+    if dt is None or len(dt) == 0:
+        return default
+
+    try:
+        dim0 = dt[0].value
+
+        # Try to reduce common "lower:upper" bounds to a simple identifier.
+        simple = _try_extract_first_dim_extent_identifier(conv_info, dim0)
+        if simple:
+            return simple
+
+        # Generic: extent of the first dimension (not the bound itself).
+        ld = convert_dim_to_static_size(conv_info, tokens=dim0).strip()
+        if not ld:
+            return default
+        return parenthesize_if_necessary(ld)
+
+    except Exception:
+        return default
 
 def rewrite_intrinsics(text: str) -> str:
     """Rewrite fem:: intrinsics to C++-friendly forms."""
@@ -2035,9 +2121,10 @@ def convert_tokens(conv_info, tokens, commas=False, had_str_concat=None):
                     start_expr = parts[0].strip()
                     end_expr = parts[1].strip()
                     col_expr = parts[2].strip()
-                    ldname = "ld" + prev_tok.value.lower()
+                    ldexpr = get_leading_dimension_expr(
+                        conv_info, fdecl, default=("ld" + prev_tok.value.lower()))
                     rapp(
-                        f"[__SLICE2D__({start_expr}, {end_expr}, {col_expr}, {ldname})]")
+                        f"[__SLICE2D__({start_expr}, {end_expr}, {col_expr}, {ldexpr})]")
 
                 elif len(parts) == 1:
                     # One-dimensional array: a(i)
@@ -2173,7 +2260,8 @@ def convert_tokens(conv_info, tokens, commas=False, had_str_concat=None):
                     i_expr, j_expr = parts
                     i_expr = i_expr.strip()
                     j_expr = j_expr.strip()
-                    ldname = "ld" + prev_tok.value.lower()
+                    ldexpr = get_leading_dimension_expr(
+                        conv_info, fdecl, default=("ld" + prev_tok.value.lower()))
 
                     lb1 = get_lower_bound(conv_info, fdecl, 0).strip()
                     lb2 = get_lower_bound(conv_info, fdecl, 1).strip()
@@ -2289,7 +2377,7 @@ def convert_tokens(conv_info, tokens, commas=False, had_str_concat=None):
                                 j_term = f"(({j_expr}) - 1)"
 
                         # Flattened index: (i_term) + (j_term)*ldname
-                        index_expr = f"({i_term}) + {j_term}*{ldname}"
+                        index_expr = f"({i_term}) + {j_term}*{ldexpr}"
                         rapp("[" + index_expr + "]")
 
                     else:
@@ -2330,7 +2418,7 @@ def convert_tokens(conv_info, tokens, commas=False, had_str_concat=None):
                         col_off = make_offset(j_expr, lb2)
 
                         # Multiply the (possibly parenthesized) column offset by ldname.
-                        index_expr = f"{row_off} + {col_off}*{ldname}"
+                        index_expr = f"{row_off} + {col_off}*{ldexpr}"
                         rapp("[" + index_expr + "]")
 
                 else:
@@ -5907,50 +5995,77 @@ def _postprocess_index_zero_simplify(text):
     subscripts, such as (1 - 1), +0, *0, and double parentheses around
     MIN/MAX(...)-1.
 
-    This function is deliberately conservative:
-    - It MUST NOT rewrite `name[0]` into `name`.
-      That would change scalar arguments (REAL&) into pointers (REAL*),
-      which breaks many LAPACK calls.
-    - It accepts either a single string or a list of strings.
-      In the latter case it returns a list of processed lines.
-    - It does not touch comments starting from '//' on each line.
+    IMPORTANT:
+    - Must not rewrite `name[0]` into `name`.
+    - Only simplify inside [...] and do not touch '//' comments.
+    - Be conservative: never change expression meaning.
     """
     import re
 
-    # Simplify only the code part (before //), leave comments untouched.
+    def _simplify_zero_mul_parenthesized(e: str) -> str:
+        """Rewrite '0 * ( ... )' into '0' for balanced parenthesis groups."""
+        pat = re.compile(r"\b0\s*\*\s*\(")
+        while True:
+            m = pat.search(e)
+            if not m:
+                break
+            paren_start = m.end() - 1  # points to '('
+            depth = 0
+            i = paren_start
+            while i < len(e):
+                ch = e[i]
+                if ch == "(":
+                    depth += 1
+                elif ch == ")":
+                    depth -= 1
+                    if depth == 0:
+                        break
+                i += 1
+            if depth != 0:
+                # Unbalanced: give up.
+                break
+            # Replace from the beginning of "0 * (" up to the matching ')'
+            e = e[:m.start()] + "0" + e[i + 1:]
+        return e
+
     def simplify_code(code: str) -> str:
         # 0) Remove redundant parentheses for an array element immediately after '['.
-        #    Example:
-        #       sva[(iwork[p - 1]) - 1]  ->  sva[iwork[p - 1] - 1]
         code = re.sub(
             r"\[\s*\(\s*([A-Za-z_][A-Za-z0-9_]*\s*\[[^\[\]]*\])\s*\)",
             r"[\1",
             code,
         )
 
-        # 1) Simplify expressions inside [...]
         bracket_re = re.compile(r"\[(.*?)\]")
 
         def simplify_expr(expr: str) -> str:
             e = expr
-            # (i) -> i, (0) -> 0 when the whole index is just a single
-            # parenthesized identifier or integer literal.
-            m_simple = re.fullmatch(
-                r"\(\s*([A-Za-z_][A-Za-z0-9_]*|\d+)\s*\)", e
-            )
+
+            # (i) -> i, (0) -> 0 when the whole index is a single parenthesized atom.
+            m_simple = re.fullmatch(r"\(\s*([A-Za-z_][A-Za-z0-9_]*|\d+)\s*\)", e)
             if m_simple:
                 e = m_simple.group(1)
+
             # (1 - 1) -> 0
             e = re.sub(r"\(\s*1\s*-\s*1\s*\)", "0", e)
-            # 0 * NAME -> 0
-            e = re.sub(r"\b0\s*\*\s*[A-Za-z_][A-Za-z0-9_]*", "0", e)
-            # NAME * 0 -> 0
-            e = re.sub(r"[A-Za-z_][A-Za-z0-9_]*\s*\*\s*0\b", "0", e)
-            # "+ 0", "0 +", "- 0" -> remove
-            e = re.sub(r"\+\s*0\b", "", e)
-            e = re.sub(r"\b0\s*\+", "", e)
-            e = re.sub(r"\-\s*0\b", "", e)
-            # Collapse whitespace inside the index expression
+
+            # 0 * ( ... ) -> 0  (balanced parentheses)
+            e = _simplify_zero_mul_parenthesized(e)
+
+            # 0 * IDENT -> 0
+            e = re.sub(r"\b0\s*\*\s*[A-Za-z_][A-Za-z0-9_]*\b", "0", e)
+            # IDENT * 0 -> 0
+            e = re.sub(r"\b[A-Za-z_][A-Za-z0-9_]*\s*\*\s*0\b", "0", e)
+
+            # Remove leading "0 + ..." safely (only at start).
+            e = re.sub(r"^\s*0\s*\+\s*", "", e)
+
+            # Remove "+ 0" and "- 0" only when the 0 is a standalone term.
+            # Do NOT remove when it is part of "+ 0 * X" or "- 0 * X".
+            e = re.sub(r"\+\s*0\b(?!\s*[*\/])", "", e)
+            e = re.sub(r"\-\s*0\b(?!\s*[*\/])", "", e)
+
+            # Collapse whitespace inside the index expression.
             e = re.sub(r"\s+", " ", e).strip()
             return e
 
@@ -5960,12 +6075,11 @@ def _postprocess_index_zero_simplify(text):
 
         code2 = bracket_re.sub(repl_brackets, code)
 
-        # 2) Simplify double-parenthesized MIN/MAX(...)-1 in the code part
+        # 2) Simplify double-parenthesized MIN/MAX(...)-1 in the code part.
         pattern_minmax = re.compile(
             r"\(\s*\(\s*("
-            r"(?:[Mm][Ii][Nn]|[Mm][Aa][Xx])"   # MIN or MAX, case-insensitive
+            r"(?:[Mm][Ii][Nn]|[Mm][Aa][Xx])"
             r"\("
-            # allow one level of nested parentheses
             r"(?:[^()]*|\([^()]*\))*"
             r"\)"
             r")\s*\)\s*-\s*1\s*\)",
@@ -5976,27 +6090,19 @@ def _postprocess_index_zero_simplify(text):
         return code2
 
     def simplify_line(line: str) -> str:
-        # Split into code and comment (//). We assume // starts a comment.
         idx = line.find("//")
         if idx < 0:
-            # No line comment, treat whole line as code
             return simplify_code(line)
         code = line[:idx]
         comment = line[idx:]
         return simplify_code(code) + comment
 
-    # If we get a list of lines, process each line and return a list again.
     if isinstance(text, list):
         return [simplify_line(line) for line in text]
-
-    # Normal case: a single string containing the whole file.
     if isinstance(text, str):
-        lines = text.split("\n")
-        new_lines = [simplify_line(line) for line in lines]
-        return "\n".join(new_lines)
-
-    # Fallback: unknown type, do not try to be clever.
+        return "\n".join(simplify_line(line) for line in text.split("\n"))
     return text
+
 
 
 def _postprocess_array_slice_intrinsics(lines):
