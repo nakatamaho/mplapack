@@ -68,6 +68,7 @@ void Rtrevc(const char *side, const char *howmny, bool *select, INTEGER const n,
     REAL emax = 0.0;
     REAL vmax = 0.0;
     REAL vcrit = 0.0;
+    INTEGER ldx = 2;
     //
     // Decode and test the input parameters
     //

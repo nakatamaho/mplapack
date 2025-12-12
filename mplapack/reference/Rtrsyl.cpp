@@ -59,6 +59,8 @@ void Rtrsyl(const char *trana, const char *tranb, INTEGER const isgn, INTEGER co
     INTEGER j = 0;
     REAL xnorm = 0.0;
     INTEGER ierr = 0;
+    INTEGER ldvec = 2;
+    INTEGER ldx = 2;
     //
     // Decode and Test input parameters
     //
