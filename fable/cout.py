@@ -2135,6 +2135,34 @@ def rewrite_intrinsics(text: str) -> str:
 
     return text
 
+UNARY_BRACKET_PARENS_RE = re.compile(
+    r"\[\s*\(\s*(?:0\s*\+\s*)?([A-Za-z_][A-Za-z0-9_]*|[0-9]+)(?:\s*\+\s*0)?\s*\)\s*\]"
+)
+
+
+def rewrite_unary_bracket_parens(text: str) -> str:
+    """Remove redundant parentheses for unary subscripts only.
+
+    Examples:
+      a[(k)]   -> a[k]
+      a[(lda)] -> a[lda]
+      a[(0)]   -> a[0]
+
+    Non-unary expressions are preserved:
+      a[(i+j)]   (unchanged)
+      a[(k-1)]   (unchanged)
+    """
+    lines = text.splitlines(keepends=True)
+    out = []
+    for line in lines:
+        idx = line.find("//")
+        if idx >= 0:
+            code, comment = line[:idx], line[idx:]
+        else:
+            code, comment = line, ""
+        code = UNARY_BRACKET_PARENS_RE.sub(r"[\1]", code)
+        out.append(code + comment)
+    return "".join(out)
 
 def convert_tokens(conv_info, tokens, commas=False, had_str_concat=None):
     result = []
@@ -2584,7 +2612,8 @@ def convert_tokens(conv_info, tokens, commas=False, had_str_concat=None):
 
     # Rewrite intrinsic calls such as fem::dble(), fem::conjg(), etc.
     s = rewrite_intrinsics(s)
-
+    # Clean redundant parentheses for unary subscripts only, e.g. a[(k)] -> a[k]
+    s = rewrite_unary_bracket_parens(s)
     return s
 
 
