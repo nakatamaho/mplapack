@@ -216,9 +216,9 @@ statement_80:
                 if (idxj <= nlp1) {
                     idxj = idxj - 1;
                 }
-                givcol[(givptr - 1) + (2 - 1) * ldgivcol] = idxjp;
+                givcol[(givptr - 1) + (2 - 1) * ldgcol] = idxjp;
                 givcol[(givptr - 1)] = idxj;
-                givnum[(givptr - 1) + (2 - 1) * ldgivnum] = c;
+                givnum[(givptr - 1) + (2 - 1) * ldgnum] = c;
                 givnum[(givptr - 1)] = s;
             }
             Rrot(1, &vf[jprev - 1], 1, &vf[j - 1], 1, c, s);

@@ -30,6 +30,7 @@
 #include <mplapack.h>
 
 void Rorgtsqr_row(INTEGER const m, INTEGER const n, INTEGER const mb, INTEGER const nb, REAL *a, INTEGER const lda, REAL *t, INTEGER const ldt, REAL *work, INTEGER const lwork, INTEGER &info) {
+    INTEGER lddummy = 1;
     //
     // Test the input parameters
     //
