@@ -59,6 +59,8 @@ void Rlaqtr(bool const ltran, bool const lreal, INTEGER const n, REAL *t, INTEGE
     REAL z = 0.0;
     REAL sr = 0.0;
     REAL si = 0.0;
+    INTEGER ldd = 2;
+    INTEGER ldv = 2;
     //
     // Do not test the input parameters for errors
     //
