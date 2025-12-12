@@ -30,6 +30,7 @@
 #include <mplapack.h>
 
 void Csytri2x(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, INTEGER *ipiv, COMPLEX *work, INTEGER const nb, INTEGER &info) {
+    INTEGER ldwork = n + nb + 1;
     //
     // Test the input parameters.
     //
