@@ -43,6 +43,7 @@ void Rlasrt(const char *id, INTEGER const n, REAL *d, INTEGER &info) {
     REAL d2 = 0.0;
     REAL d3 = 0.0;
     REAL tmp = 0.0;
+    INTEGER ldstack = 2;
     //
     // Test the input parameters.
     //

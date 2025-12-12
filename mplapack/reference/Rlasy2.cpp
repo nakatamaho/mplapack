@@ -68,6 +68,7 @@ void Rlasy2(bool const ltranl, bool const ltranr, INTEGER const isgn, INTEGER co
     INTEGER jpiv[4];
     INTEGER j = 0;
     const REAL eight = 8.0;
+    INTEGER ldt16 = 4;
     //
     // Do not check the input parameters for errors
     //
