@@ -1168,6 +1168,8 @@ class conversion_info(global_conversion_info):
                 O.vmap[identifier] = "fem::f" + identifier
             elif (identifier == "iargc"):
                 O.vmap[identifier] = "cmn.iargc"
+            elif (identifier == "ceiling"):
+                O.vmap[identifier] = "iceil"
             else:
                 O.vmap[identifier] = "fem::" + identifier
         elif (not O.set_vmap_for_callable(identifier=fdecl.id_tok.value)):
