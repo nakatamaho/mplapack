@@ -1128,8 +1128,8 @@ class conversion_info(global_conversion_info):
         # IMPORTANT: initialize DATA initializer map
         O.data_initializers = None
 
-        # Map: auto-generated leading-dimension variable -> integer literal.
-        # This is used to avoid hardcoding constants in flattened 2D indexing.
+        # Map: auto-generated leading-dimension variable -> initializer expression.
+        # This avoids hardcoding constants and repeating expressions in flattened 2D indexing.
         O.ld_constant_decls = {}
 
     def set_vmap_force_local(O, fdecl):
@@ -1961,40 +1961,48 @@ def _strip_outer_parens_balanced(expr: str) -> str:
 
 
 _int_lit_re = re.compile(r"^[0-9]+$")
+_ident_re = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
+
 
 
 def _maybe_use_ld_variable(conv_info, ldexpr: str, default_ldname: str) -> str:
-    """Prefer a symbolic leading-dimension variable over a hardcoded integer.
+    """Prefer a symbolic leading-dimension variable over an inlined expression.
 
-    If ldexpr is a pure integer literal (e.g. "2"), use default_ldname
-    (e.g. "ldstack") and remember a declaration "INTEGER ldstack = 2;"
-    to be emitted near the top of the generated function.
+    Rules:
+      - If ldexpr is a simple identifier (e.g. "lda", "ldwork"), keep it.
+      - Otherwise, use default_ldname (e.g. "ldwork") and remember a declaration
+        "INTEGER ldwork = <ldexpr>;" to be emitted near the top of the generated function.
 
-    If default_ldname collides with an existing Fortran identifier, keep ldexpr
-    to avoid changing semantics.
+    This avoids hardcoding constants (e.g. "2") and also avoids repeating
+    expressions (e.g. "n + nb + 1") in flattened 2D indexing.
     """
     if conv_info is None or default_ldname is None:
         return ldexpr
 
-    # Avoid collisions with existing identifiers in the source procedure.
+    core = _strip_outer_parens_balanced(ldexpr)
+
+    # Already symbolic (single token): keep as-is.
+    if _ident_re.fullmatch(core):
+        return core
+
+    # If the default name already exists as a Fortran identifier, prefer it
+    # (we assume the original code assigns it appropriately).
     fproc = getattr(conv_info, "fproc", None)
     fdecl_map = getattr(fproc, "fdecl_by_identifier", None) if fproc is not None else None
     if fdecl_map is not None:
         if default_ldname.lower() in fdecl_map or default_ldname in fdecl_map:
-            return ldexpr
+            return default_ldname
 
-    core = _strip_outer_parens_balanced(ldexpr)
-    if _int_lit_re.fullmatch(core):
-        if getattr(conv_info, "ld_constant_decls", None) is None:
-            conv_info.ld_constant_decls = {}
-        conv_info.ld_constant_decls.setdefault(default_ldname, core)
-        return default_ldname
+    # Otherwise, create a local ld variable initialized with the expression.
+    if getattr(conv_info, "ld_constant_decls", None) is None:
+        conv_info.ld_constant_decls = {}
 
-    return ldexpr
-
+    # Keep the first initializer we saw (should be stable for a given array).
+    conv_info.ld_constant_decls.setdefault(default_ldname, core)
+    return default_ldname
 
 def _emit_constant_ld_decls(top_scope, conv_info) -> None:
-    """Emit constant leading-dimension declarations recorded during conversion."""
+    """Emit leading-dimension declarations recorded during conversion."""
     if conv_info is None or top_scope is None:
         return
     ld_map = getattr(conv_info, "ld_constant_decls", None)
@@ -2016,6 +2024,7 @@ def _emit_constant_ld_decls(top_scope, conv_info) -> None:
         if already:
             continue
         top_scope.top_append(f"INTEGER {ldname} = {val};")
+
 
 def rewrite_intrinsics(text: str) -> str:
     """Rewrite fem:: intrinsics to C++-friendly forms."""
@@ -4727,9 +4736,10 @@ def convert_executable(
             print("*"*80)
             print()
             raise
-    assert curr_scope.parent is None
     # Emit any constant leading-dimension variables requested during conversion.
     _emit_constant_ld_decls(top_scope, conv_info)
+
+    assert curr_scope.parent is None
     if (conv_info.fproc.fproc_type == "function"
             and len(conv_info.fproc.executable) != 0
             and conv_info.fproc.executable[-1].key != "return"):
