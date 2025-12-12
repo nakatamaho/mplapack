@@ -31,11 +31,6 @@
 
 void Rsyswapr(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INTEGER const i1, INTEGER const i2) {
     //
-    //
-    //
-    //
-    //
-    //
     bool upper = Mlsame(uplo, "U");
     REAL tmp = 0.0;
     INTEGER i = 0;

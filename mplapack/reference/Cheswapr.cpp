@@ -31,11 +31,6 @@
 
 void Cheswapr(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, INTEGER const i1, INTEGER const i2) {
     //
-    //
-    //
-    //
-    //
-    //
     bool upper = Mlsame(uplo, "U");
     COMPLEX tmp = 0.0;
     INTEGER i = 0;

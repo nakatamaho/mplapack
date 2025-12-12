@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -31,10 +31,6 @@
 
 void Cgetsqrhrt(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER const nb1, INTEGER const nb2, COMPLEX *a, INTEGER const lda, COMPLEX *t, INTEGER const ldt, COMPLEX *work, INTEGER const lwork, INTEGER &info) {
     //
-    //
-    //
-    //
-    //
     // Test the input arguments
     //
     info = 0;
@@ -62,6 +58,7 @@ void Cgetsqrhrt(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER con
         info = -9;
     } else {
         //
+        // Test the input LWORK for the dimension of the array WORK.
         // This workspace is used to store array:
         // a) Matrix T and WORK for Clatsqr;
         // b) N-by-N upper-triangular factor R_tsqr;
@@ -76,8 +73,9 @@ void Cgetsqrhrt(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER con
             //
             nb1local = min(nb1, n);
             //
-            num_all_row_blocks = max((INTEGER)1, castINTEGER(ceil(castREAL(m - n) / castREAL(mb1 - n))));
+            num_all_row_blocks = max((INTEGER)1, iceil(castREAL(m - n) / castREAL(mb1 - n)));
             //
+            // Length and leading dimension of WORK array to place
             // T array in TSQR.
             //
             lwt = num_all_row_blocks * n * nb1local;
