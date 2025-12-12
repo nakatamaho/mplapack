@@ -6806,6 +6806,51 @@ def _fix_fortran_externals(src):
         out.append(line2)
     return ''.join(out)
 
+def _fix_fortran_end_statements(src: str) -> str:
+    """Downgrade F90-style typed END statements to a bare END.
+
+    Some fixed-form parsers accept only 'END' to terminate a program unit.
+    Example:
+        END SUBROUTINE DSYSWAPR  ->  END
+    """
+    import re
+    lines = src.splitlines(True)
+    out = []
+    end_pat = re.compile(
+        r'^(?P<indent>\s*)end\s+'
+        r'(?P<kind>subroutine|function|program|module|block\s+data)\b.*$',
+        flags=re.IGNORECASE,
+    )
+    for line in lines:
+        if not line:
+            out.append(line)
+            continue
+
+        # Skip fixed-form comment lines (column-1 'c'/'C'/'*')
+        if line[0] in ("c", "C", "*"):
+            out.append(line)
+            continue
+
+        # Preserve inline comments started by '!' (common in LAPACK)
+        bang = line.find("!")
+        if bang >= 0:
+            code, comment = line[:bang], line[bang:]
+        else:
+            code, comment = line, ""
+
+        m = end_pat.match(code.rstrip("\r\n"))
+        if not m:
+            out.append(line)
+            continue
+
+        indent = m.group("indent")
+        if comment:
+            out.append(f"{indent}END{comment}")
+        else:
+            eol = "\r\n" if line.endswith("\r\n") else ("\n" if line.endswith("\n") else "")
+            out.append(f"{indent}END{eol}")
+    return "".join(out)
+
 
 def _preprocess_fortran_files(file_names):
     """Return (patched_file_names, temp_files) for FABLE parsing.
@@ -6825,6 +6870,7 @@ def _preprocess_fortran_files(file_names):
             continue
 
         new_src = _fix_fortran_externals(src)
+        new_src = _fix_fortran_end_statements(new_src)
         if new_src == src:
             # No change needed.
             patched.append(fn)
