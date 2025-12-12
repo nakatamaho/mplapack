@@ -5995,15 +5995,18 @@ def _postprocess_index_zero_simplify(text):
     subscripts, such as (1 - 1), +0, *0, and double parentheses around
     MIN/MAX(...)-1.
 
-    IMPORTANT:
-    - Must not rewrite `name[0]` into `name`.
-    - Only simplify inside [...] and do not touch '//' comments.
-    - Be conservative: never change expression meaning.
+    This function is deliberately conservative:
+    - It MUST NOT rewrite `name[0]` into `name`.
+      That would change scalar arguments (REAL&) into pointers (REAL*),
+      which breaks many LAPACK calls.
+    - It accepts either a single string or a list of strings.
+      In the latter case it returns a list of processed lines.
+    - It does not touch comments starting from '//' on each line.
     """
     import re
 
     def _simplify_zero_mul_parenthesized(e: str) -> str:
-        """Rewrite '0 * ( ... )' into '0' for balanced parenthesis groups."""
+        """Replace '0 * ( ... )' with '0' for a balanced parenthesis group."""
         pat = re.compile(r"\b0\s*\*\s*\(")
         while True:
             m = pat.search(e)
@@ -6022,26 +6025,30 @@ def _postprocess_index_zero_simplify(text):
                         break
                 i += 1
             if depth != 0:
-                # Unbalanced: give up.
+                # Unbalanced parentheses: stop trying to simplify.
                 break
-            # Replace from the beginning of "0 * (" up to the matching ')'
             e = e[:m.start()] + "0" + e[i + 1:]
         return e
 
+    # Simplify only the code part (before //), leave comments untouched.
     def simplify_code(code: str) -> str:
         # 0) Remove redundant parentheses for an array element immediately after '['.
+        #    Example:
+        #       sva[(iwork[p - 1]) - 1]  ->  sva[iwork[p - 1] - 1]
         code = re.sub(
             r"\[\s*\(\s*([A-Za-z_][A-Za-z0-9_]*\s*\[[^\[\]]*\])\s*\)",
             r"[\1",
             code,
         )
 
+        # 1) Simplify expressions inside [...]
         bracket_re = re.compile(r"\[(.*?)\]")
 
         def simplify_expr(expr: str) -> str:
             e = expr
 
-            # (i) -> i, (0) -> 0 when the whole index is a single parenthesized atom.
+            # (i) -> i, (0) -> 0 when the whole index is just a single
+            # parenthesized identifier or integer literal.
             m_simple = re.fullmatch(r"\(\s*([A-Za-z_][A-Za-z0-9_]*|\d+)\s*\)", e)
             if m_simple:
                 e = m_simple.group(1)
@@ -6052,20 +6059,20 @@ def _postprocess_index_zero_simplify(text):
             # 0 * ( ... ) -> 0  (balanced parentheses)
             e = _simplify_zero_mul_parenthesized(e)
 
-            # 0 * IDENT -> 0
-            e = re.sub(r"\b0\s*\*\s*[A-Za-z_][A-Za-z0-9_]*\b", "0", e)
-            # IDENT * 0 -> 0
-            e = re.sub(r"\b[A-Za-z_][A-Za-z0-9_]*\s*\*\s*0\b", "0", e)
+            # 0 * ATOM -> 0   (ATOM: identifier or integer literal)
+            e = re.sub(r"\b0\s*\*\s*(?:[A-Za-z_][A-Za-z0-9_]*|\d+)\b", "0", e)
+            # ATOM * 0 -> 0
+            e = re.sub(r"\b(?:[A-Za-z_][A-Za-z0-9_]*|\d+)\s*\*\s*0\b", "0", e)
 
             # Remove leading "0 + ..." safely (only at start).
             e = re.sub(r"^\s*0\s*\+\s*", "", e)
 
             # Remove "+ 0" and "- 0" only when the 0 is a standalone term.
-            # Do NOT remove when it is part of "+ 0 * X" or "- 0 * X".
+            # Do NOT remove when it is followed by '*' or '/' (e.g., '+ 0 * ldb').
             e = re.sub(r"\+\s*0\b(?!\s*[*\/])", "", e)
             e = re.sub(r"\-\s*0\b(?!\s*[*\/])", "", e)
 
-            # Collapse whitespace inside the index expression.
+            # Collapse whitespace inside the index expression
             e = re.sub(r"\s+", " ", e).strip()
             return e
 
@@ -6075,11 +6082,12 @@ def _postprocess_index_zero_simplify(text):
 
         code2 = bracket_re.sub(repl_brackets, code)
 
-        # 2) Simplify double-parenthesized MIN/MAX(...)-1 in the code part.
+        # 2) Simplify double-parenthesized MIN/MAX(...)-1 in the code part
         pattern_minmax = re.compile(
             r"\(\s*\(\s*("
-            r"(?:[Mm][Ii][Nn]|[Mm][Aa][Xx])"
+            r"(?:[Mm][Ii][Nn]|[Mm][Aa][Xx])"   # MIN or MAX, case-insensitive
             r"\("
+            # allow one level of nested parentheses
             r"(?:[^()]*|\([^()]*\))*"
             r"\)"
             r")\s*\)\s*-\s*1\s*\)",
@@ -6097,12 +6105,18 @@ def _postprocess_index_zero_simplify(text):
         comment = line[idx:]
         return simplify_code(code) + comment
 
+    # If we get a list of lines, process each line and return a list again.
     if isinstance(text, list):
         return [simplify_line(line) for line in text]
-    if isinstance(text, str):
-        return "\n".join(simplify_line(line) for line in text.split("\n"))
-    return text
 
+    # Normal case: a single string containing the whole file.
+    if isinstance(text, str):
+        lines = text.split("\n")
+        new_lines = [simplify_line(line) for line in lines]
+        return "\n".join(new_lines)
+
+    # Fallback: unknown type, do not try to be clever.
+    return text
 
 
 def _postprocess_array_slice_intrinsics(lines):
