@@ -30,6 +30,7 @@
 #include <mplapack.h>
 
 void Chetri_3x(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *e, INTEGER *ipiv, COMPLEX *work, INTEGER const nb, INTEGER &info) {
+    INTEGER ldwork = n + nb + 1;
     //
     // Test the input parameters.
     //
