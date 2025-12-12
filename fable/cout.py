@@ -7063,6 +7063,83 @@ def _fix_fortran_end_statements(src: str) -> str:
             out.append(f"{indent}END{eol}")
     return "".join(out)
 
+def _fix_fortran_free_form_ampersand_continuations(src: str) -> str:
+    """Convert free-form '&' continuations into fixed-form continuation lines.
+
+    We sometimes write patched temporary sources with suffix '.f' to force
+    the fixed-form parser. Free-form continuation (a trailing '&') is not
+    recognized in fixed form, so we rewrite it to a column-6 continuation.
+
+    Rule of thumb implemented here:
+      - If a non-comment line ends with '&' (before any inline '! comment'),
+        drop that '&' and mark the next non-comment/non-blank line as a
+        continuation line by putting '&' in column 6: '     &...'.
+      - If the continuation line starts with a leading '&' (free-form style),
+        remove it.
+    This is intentionally conservative and does not attempt full Fortran parsing.
+    """
+    def split_eol(line: str):
+        if line.endswith("\r\n"):
+            return line[:-2], "\r\n"
+        if line.endswith("\n"):
+            return line[:-1], "\n"
+        if line.endswith("\r"):
+            return line[:-1], "\r"
+        return line, ""
+
+    def is_comment_or_blank(raw: str) -> bool:
+        if raw.strip() == "":
+            return True
+        s = raw.lstrip()
+        # Free-form whole-line comment
+        if s.startswith("!"):
+            return True
+        # Fixed-form whole-line comment in column 1
+        if raw and raw[0] in ("c", "C", "*", "!"):
+            return True
+        return False
+
+    out = []
+    pending_cont = False
+
+    for line in src.splitlines(True):
+        raw, eol = split_eol(line)
+
+        # If previous line had trailing '&', rewrite this line as a fixed-form continuation.
+        if pending_cont:
+            if is_comment_or_blank(raw):
+                out.append(raw + eol)
+                continue
+
+            s = raw.lstrip()
+            if s.startswith("&"):
+                s = s[1:].lstrip()
+            # Column-6 continuation marker
+            raw = "     &" + s
+            pending_cont = False
+
+        # Do not treat pure comment lines as candidates for trailing '&'
+        if is_comment_or_blank(raw):
+            out.append(raw + eol)
+            continue
+
+        # Strip trailing '&' only in the code part (before inline '!' comment)
+        bang = raw.find("!")
+        if bang >= 0:
+            code = raw[:bang]
+            comment = raw[bang:]
+        else:
+            code = raw
+            comment = ""
+
+        code_r = code.rstrip()
+        if code_r.endswith("&"):
+            code_r = code_r[:-1].rstrip()
+            pending_cont = True
+
+        out.append(code_r + comment + eol)
+
+    return "".join(out)
 
 def _preprocess_fortran_files(file_names):
     """Return (patched_file_names, temp_files) for FABLE parsing.
@@ -7083,6 +7160,7 @@ def _preprocess_fortran_files(file_names):
 
         new_src = _fix_fortran_externals(src)
         new_src = _fix_fortran_end_statements(new_src)
+        new_src = _fix_fortran_free_form_ampersand_continuations(new_src)
         if new_src == src:
             # No change needed.
             patched.append(fn)
