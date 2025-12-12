@@ -154,8 +154,8 @@ void Rhseqr(const char *job, const char *compz, INTEGER const n, INTEGER const i
                     // .    array before calling Rlaqr0. ====
                     //
                     Rlacpy("A", n, n, h, ldh, hl, nl);
-                    hl[((n + 1) - 1) + (n - 1) * ldhl] = zero;
-                    Rlaset("A", nl, nl - n, zero, zero, &hl[((n + 1) - 1) * ldhl], nl);
+                    hl[((n + 1) - 1) + (n - 1) * nl] = zero;
+                    Rlaset("A", nl, nl - n, zero, zero, &hl[((n + 1) - 1) * nl], nl);
                     Rlaqr0(wantt, wantz, nl, ilo, kbot, hl, nl, wr, wi, ilo, ihi, z, ldz, workl, nl, info);
                     if (wantt || info != 0) {
                         Rlacpy("A", n, n, hl, nl, h, ldh);
