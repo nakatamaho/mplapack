@@ -29,7 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rgees(const char *jobvs, const char *sort, UNHANDLED_function_pointer select, INTEGER const n, REAL *a, INTEGER const lda, INTEGER &sdim, REAL *wr, REAL *wi, REAL *vs, INTEGER const ldvs, REAL *work, INTEGER const lwork, bool *bwork, INTEGER &info) {
+void Rgees(const char *jobvs, const char *sort, bool (*select)(REAL, REAL), INTEGER const n, REAL *a, INTEGER const lda, INTEGER &sdim, REAL *wr, REAL *wi, REAL *vs, INTEGER const ldvs, REAL *work, INTEGER const lwork, bool *bwork, INTEGER &info) {
     bool lquery = false;
     bool wantvs = false;
     bool wantst = false;

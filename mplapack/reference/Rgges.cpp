@@ -29,7 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rgges(const char *jobvsl, const char *jobvsr, const char *sort, UNHANDLED_function_pointer selctg, INTEGER const n, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, INTEGER &sdim, REAL *alphar, REAL *alphai, REAL *beta, REAL *vsl, INTEGER const ldvsl, REAL *vsr, INTEGER const ldvsr, REAL *work, INTEGER const lwork, bool *bwork, INTEGER &info) {
+void Rgges(const char *jobvsl, const char *jobvsr, const char *sort, bool (*selctg)(REAL, REAL, REAL), INTEGER const n, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, INTEGER &sdim, REAL *alphar, REAL *alphai, REAL *beta, REAL *vsl, INTEGER const ldvsl, REAL *vsr, INTEGER const ldvsr, REAL *work, INTEGER const lwork, bool *bwork, INTEGER &info) {
     INTEGER ijobvl = 0;
     bool ilvsl = false;
     INTEGER ijobvr = 0;

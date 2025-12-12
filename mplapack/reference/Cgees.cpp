@@ -29,7 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Cgees(const char *jobvs, const char *sort, UNHANDLED_function_pointer select, INTEGER const n, COMPLEX *a, INTEGER const lda, INTEGER &sdim, COMPLEX *w, COMPLEX *vs, INTEGER const ldvs, COMPLEX *work, INTEGER const lwork, REAL *rwork, bool *bwork, INTEGER &info) {
+void Cgees(const char *jobvs, const char *sort, bool (*select)(COMPLEX), INTEGER const n, COMPLEX *a, INTEGER const lda, INTEGER &sdim, COMPLEX *w, COMPLEX *vs, INTEGER const ldvs, COMPLEX *work, INTEGER const lwork, REAL *rwork, bool *bwork, INTEGER &info) {
     //
     // Test the input arguments
     //

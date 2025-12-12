@@ -29,7 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Cgges(const char *jobvsl, const char *jobvsr, const char *sort, UNHANDLED_function_pointer selctg, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, INTEGER &sdim, COMPLEX *alpha, COMPLEX *beta, COMPLEX *vsl, INTEGER const ldvsl, COMPLEX *vsr, INTEGER const ldvsr, COMPLEX *work, INTEGER const lwork, REAL *rwork, bool *bwork, INTEGER &info) {
+void Cgges(const char *jobvsl, const char *jobvsr, const char *sort, bool (*selctg)(COMPLEX, COMPLEX), INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, INTEGER &sdim, COMPLEX *alpha, COMPLEX *beta, COMPLEX *vsl, INTEGER const ldvsl, COMPLEX *vsr, INTEGER const ldvsr, COMPLEX *work, INTEGER const lwork, REAL *rwork, bool *bwork, INTEGER &info) {
     INTEGER ijobvl = 0;
     bool ilvsl = false;
     INTEGER ijobvr = 0;
