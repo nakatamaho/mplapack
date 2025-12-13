@@ -2997,14 +2997,13 @@ def convert_declaration(rapp, conv_info, fdecl, crhs, const):
     elem_ctype = convert_data_type(
         conv_info=conv_info, fdecl=fdecl, crhs=None)[0]
     mplapack_elem_ctype = convert_to_mplapack_type(elem_ctype)
-    # Only support compile-time constant extents here.
-    # (Non-constant local arrays would require heap allocation or std::vector
-    # plus call-site adjustments.)
+    # Prefer plain C arrays when all extents are compile-time constants.
+    # If any extent depends on runtime values (e.g. MAX(M,N)), fall back to a
+    # heap allocation managed by std::unique_ptr<T[]> and expose a raw pointer
+    # with the original variable name for downstream indexing.
     vals = conv_info.fproc.eval_dimensions_simple(
         dim_tokens=fdecl.dim_tokens, allow_power=False)
-    if (vals is None or vals.count(None) != 0):
-        # Fail fast instead of silently dropping the declaration.
-        fdecl.id_tok.raise_not_supported()
+    is_dynamic = (vals is None or vals.count(None) != 0)
 
     # Prefer symbolic size expressions for local work arrays.
     # For 1D arrays like RWORK(MAXDIM) or WORK(4*MAXDIM) we want:
@@ -3019,18 +3018,35 @@ def convert_declaration(rapp, conv_info, fdecl, crhs, const):
         commas=True,
     ).strip()
 
-    if len(vals) == 1:
-        # Single dimension: reuse the converted dimension expression directly.
+    # Build a single "number of elements" expression.
+    dt_rank = len(fdecl.dim_tokens) if fdecl.dim_tokens is not None else 0
+    if dt_rank == 1:
         size_expr = dim_expr
     else:
-        # Multiple dimensions: split on commas at top level and form a product.
         parts = _split_actuals(dim_expr)
-        if parts and len(parts) == len(vals):
+        if parts and len(parts) == dt_rank:
             size_expr = " * ".join(parts)
         else:
-            # Fallback: use the numeric total size.
-            size_expr = str(math.prod(vals))
+            # Conservative fallback: compute a symbolic product of extents.
+            size_expr = convert_dims_to_static_size(
+                conv_info=conv_info, dim_tokens=fdecl.dim_tokens)
 
+    if is_dynamic:
+        # Runtime-sized local array: allocate on the heap and expose a raw pointer.
+        # Example:
+        #   DOUBLE PRECISION WNRM(MAX(M,N))
+        # ->
+        #   std::unique_ptr<REAL[]> fable_wnrm_storage(new REAL[max(m, n)]);
+        #   REAL *wnrm = __wnrm_storage.get();
+        storage_name = f"__{vname}_storage"
+        rapp("%sstd::unique_ptr<%s[]> %s(new %s[%s]);" % (
+            const_qualifier(), mplapack_elem_ctype, storage_name,
+            mplapack_elem_ctype, size_expr))
+        rapp("%s *%s = %s.get();" % (
+            mplapack_elem_ctype, vname, storage_name))
+        return False
+
+    # Constant-size local array: keep as a plain C array.
     rapp("%s%s %s[%s];" % (
         const_qualifier(), mplapack_elem_ctype, vname, size_expr))
     return False
