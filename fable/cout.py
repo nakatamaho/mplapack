@@ -518,6 +518,11 @@ def convert_token(vmap, leading, tok, had_str_concat=None):
         raw = vmap.get(tv, tv)
         # Case-insensitive lookup in MPLAPACK name map (routine and helper names).
         lname = raw.lower()
+        # Special-case LAPACK F90 helper (from LA_XISNAN module).
+        # We translate LA_ISNAN(x) into a C++ helper Mla_isnan(x).
+        # The caller must provide Mla_isnan for the active REAL type.
+        if lname == "la_isnan":
+            return "Mla_isnan"
         mapped = _MPLAPACK_NAME_MAP.get(lname)
         if mapped is not None:
             return mapped
@@ -1229,14 +1234,21 @@ def cmn_needs_to_be_inserted(conv_info, prev_tok):
     lname = prev_tok.value.lower()
     if (lname in intrinsics.set_lower
         or lname in intrinsics.extra_set_lower
-        or lname in intrinsics.io_set_lower):
+            or lname in intrinsics.io_set_lower):
         return False
 
     if (prev_tok is not None
             and prev_tok.is_identifier()
             and conv_info.fprocs_by_name is not None
             and conv_info.fproc is not None):
-        fdecl = conv_info.fproc.get_fdecl(id_tok=prev_tok)
+        # Some F90 sources call helper procedures brought in via USE
+        # statements (e.g. LA_ISNAN) that we may strip during preprocessing.
+        # Do not crash if the identifier has no declaration record.
+        try:
+            fdecl = conv_info.fproc.get_fdecl(id_tok=prev_tok)
+        except KeyError:
+            return False
+
         if (fdecl.is_user_defined_callable()):
             if (called_fproc_needs_cmn(
                 conv_info=conv_info,
@@ -1711,6 +1723,7 @@ def _conj_repl(arg: str) -> str:
     arg = arg.strip()
     return f"conj({arg})"
 
+
 def _is_intrinsic_name(name: str) -> bool:
     """Return True if 'name' should be treated as a Fortran intrinsic."""
     from fable import intrinsics
@@ -1720,6 +1733,7 @@ def _is_intrinsic_name(name: str) -> bool:
         or lname in intrinsics.extra_set_lower
         or lname in intrinsics.io_set_lower
     )
+
 
 def _map_intrinsic_vmap(conv_info, name: str) -> None:
     """Map an intrinsic identifier into conv_info.vmap as fem::<name>."""
@@ -1732,6 +1746,7 @@ def _huge_repl(_arg: str) -> str:
     """Replacement for HUGE(x): use LAPACK-style overflow constant via Rlamch."""
     # We intentionally ignore the argument and use the machine overflow constant.
     return 'Rlamch("O")'
+
 
 _dummy_character_args = set()
 
@@ -3813,7 +3828,8 @@ def declare_identifiers_parameter_recursion(
             continue
         # Tentatively mark as seen to avoid recursion loops.
         # IMPORTANT: Do not store None here; convert_token() may call .lower() on vmap results.
-        conv_info.vmap[id_tok.value] = prepend_identifier_if_necessary(id_tok.value)
+        conv_info.vmap[id_tok.value] = prepend_identifier_if_necessary(
+            id_tok.value)
         try:
             fdecl = conv_info.fproc.get_fdecl(id_tok=id_tok)
         except KeyError:
@@ -4733,12 +4749,73 @@ def convert_executable(
                 declare_identifiers(
                     id_tokens=extract_identifiers(tokens=ei.cond_tokens))
                 c = convert_tokens(conv_info=conv_info, tokens=ei.cond_tokens)
-                curr_scope = curr_scope.attach_tail(
-                    opening_text=["else if (%s) {" % c])
+
+                # Robust handling: the upstream reader can occasionally misclassify
+                # an IF(... ) THEN block as a single-statement IF, so ELSEIF may
+                # appear without an open IF scope here. Do not crash; recover and
+                # continue generating output.
+                def _scope_is_if_or_elseif(sc):
+                    if sc is None or sc.opening_text is None or len(sc.opening_text) == 0:
+                        return False
+                    head = sc.opening_text[0].lstrip()
+                    return head.startswith("if (") or head.startswith("else if (")
+
+                attach_scope = curr_scope
+                while (attach_scope is not None
+                       and (not _scope_is_if_or_elseif(attach_scope)
+                            or attach_scope.closing_text is not None
+                            or attach_scope.tail is not None)):
+                    attach_scope = attach_scope.parent
+
+                if attach_scope is None:
+                    curr_scope.append(
+                        "// UNHANDLED: ELSEIF without matching IF; treating as IF")
+                    curr_scope = curr_scope.open_nested_scope(
+                        opening_text=["if (%s) {" % c])
+                else:
+                    while (curr_scope is not attach_scope
+                           and curr_scope.parent is not None
+                           and curr_scope.opening_text is not None):
+                        curr_scope = curr_scope.close_nested_scope()
+                    curr_scope = attach_scope.attach_tail(
+                        opening_text=["else if (%s) {" % c])
+
             elif (ei.key == "else"):
-                curr_scope = curr_scope.attach_tail(opening_text=["else {"])
+                # ELSE must attach to a currently-open IF/ELSEIF scope.
+                def _scope_is_if_or_elseif(sc):
+                    if sc is None or sc.opening_text is None or len(sc.opening_text) == 0:
+                        return False
+                    head = sc.opening_text[0].lstrip()
+                    return head.startswith("if (") or head.startswith("else if (")
+
+                attach_scope = curr_scope
+                while (attach_scope is not None
+                       and (not _scope_is_if_or_elseif(attach_scope)
+                            or attach_scope.closing_text is not None
+                            or attach_scope.tail is not None)):
+                    attach_scope = attach_scope.parent
+
+                if attach_scope is None:
+                    curr_scope.append(
+                        "// UNHANDLED: ELSE without matching IF; emitting as a standalone block")
+                    curr_scope = curr_scope.open_nested_scope(
+                        opening_text=["{"])
+                else:
+                    while (curr_scope is not attach_scope
+                           and curr_scope.parent is not None
+                           and curr_scope.opening_text is not None):
+                        curr_scope = curr_scope.close_nested_scope()
+                    curr_scope = attach_scope.attach_tail(
+                        opening_text=["else {"])
+
             elif (ei.key == "endif"):
-                curr_scope = curr_scope.close_nested_scope()
+                # Be tolerant of malformed IF/ENDIF structure.
+                if (curr_scope.parent is None):
+                    curr_scope.append(
+                        "// UNHANDLED: ENDIF without matching IF")
+                else:
+                    curr_scope = curr_scope.close_nested_scope()
+
             elif (ei.key == "if_arithmetic"):
                 declare_identifiers(
                     id_tokens=extract_identifiers(tokens=ei.cond_tokens))
@@ -7423,15 +7500,15 @@ def _fix_fortran_use_la_constants(src: str) -> str:
             out.append("PARAMETER (half = 0.5D0)\n")
             out.append("PARAMETER (one  = 1.0D0)\n")
             # Use intrinsics to avoid external/specification functions in PARAMETER.
-            out.append("PARAMETER (safmin = one)\n")
-            out.append("PARAMETER (safmax = one)\n")
+            out.append("PARAMETER (safmin = one //UNHANDLED )\n")
+            out.append("PARAMETER (safmax = one //UNHANDLED)\n")
         else:
             out.append("REAL zero, half, one, safmin, safmax\n")
             out.append("PARAMETER (zero = 0.0E0)\n")
             out.append("PARAMETER (half = 0.5E0)\n")
             out.append("PARAMETER (one  = 1.0E0)\n")
-            out.append("PARAMETER (safmin = one)\n")
-            out.append("PARAMETER (safmax = one)\n")
+            out.append("PARAMETER (safmin = one //UNHANDLED)\n")
+            out.append("PARAMETER (safmax = one //UNHANDLED)\n")
 
     src2 = "".join(out)
     if not found:
@@ -7467,6 +7544,76 @@ def _fix_fortran_use_la_constants(src: str) -> str:
     return src2
 
 
+def _fix_fortran_use_la_xisnan(src: str) -> str:
+    """Drop/Comment-out 'USE LA_XISNAN' statements.
+
+    Some LAPACK/BLAS F90 sources contain lines like:
+        USE LA_XISNAN, ONLY: LA_ISNAN
+
+    FABLE's fixed-form reader does not understand 'USE' statements, so we
+    comment them out during preprocessing. The actual NaN check is handled
+    later in C++ by mapping LA_ISNAN(...) into Mla_isnan(...).
+    """
+    import re
+
+    def split_eol(line: str):
+        if line.endswith("\r\n"):
+            return line[:-2], "\r\n"
+        if line.endswith("\n"):
+            return line[:-1], "\n"
+        if line.endswith("\r"):
+            return line[:-1], "\r"
+        return line, ""
+
+    def code_part(raw: str) -> str:
+        return raw.split("!", 1)[0]
+
+    USE_HEAD_RE = re.compile(
+        r"^\s*use\s*(?:,\s*intrinsic\s*::\s*)?la_xisnan\b",
+        flags=re.IGNORECASE,
+    )
+
+    lines = src.splitlines(True)
+    out = []
+    i = 0
+
+    while i < len(lines):
+        raw, eol = split_eol(lines[i])
+
+        # Keep fixed-form whole-line comments intact.
+        if raw and raw[0] in ("c", "C", "*", "!"):
+            out.append(raw + eol)
+            i += 1
+            continue
+
+        if not USE_HEAD_RE.match(code_part(raw).strip()):
+            out.append(raw + eol)
+            i += 1
+            continue
+
+        # Collect the whole USE statement (free-form '&' continuations).
+        block = []
+        while i < len(lines):
+            r, e = split_eol(lines[i])
+            block.append(r)
+            cp = code_part(r).rstrip()
+            i += 1
+            if cp.endswith("&"):
+                continue
+            if i < len(lines):
+                nxt = code_part(lines[i]).lstrip()
+                if nxt.startswith("&") or nxt.lower().startswith("only:"):
+                    continue
+            break
+
+        out.append(
+            "! ### MUST BE FIXED: removed USE LA_XISNAN (NaN check is handled in C++)\n")
+        for b in block:
+            out.append("! original: " + b.strip() + "\n")
+
+    return "".join(out)
+
+
 def _should_lower_free_to_fixed(src: str) -> bool:
     """Heuristic: decide whether to lower free-form source into fixed-form."""
     low = src.lower()
@@ -7489,6 +7636,7 @@ def _should_lower_free_to_fixed(src: str) -> bool:
             return True
 
     return False
+
 
 def _fix_fortran_intrinsic_kind_keyword_arguments(src: str) -> str:
     """Drop F90 keyword arguments like KIND=... in intrinsic calls.
@@ -7597,6 +7745,7 @@ def _fix_fortran_intrinsic_kind_keyword_arguments(src: str) -> str:
 
     return "".join(out_lines)
 
+
 def _preprocess_fortran_fixed_form(src: str) -> typing.Tuple[str, str]:
     """Preprocess a fixed-form Fortran source.
 
@@ -7606,11 +7755,12 @@ def _preprocess_fortran_fixed_form(src: str) -> typing.Tuple[str, str]:
     new_src = src
     new_src = _fix_fortran_externals(new_src)
     new_src = _fix_fortran_use_la_constants(new_src)
+    new_src = _fix_fortran_use_la_xisnan(new_src)
     new_src = _drop_fortran_intrinsic_statements(
         new_src)  # drop unconditionally
     new_src = _fix_fortran_iso_fortran_env_real64(
         new_src)  # harmless even if not present
-    new_src = _fix_fortran_intrinsic_kind_keyword_arguments(new_src)    
+    new_src = _fix_fortran_intrinsic_kind_keyword_arguments(new_src)
     new_src = _fix_fortran_f90_decl_syntax(new_src)
     new_src = _fix_fortran_select_case_to_if(new_src)
     new_src = _fix_fortran_end_statements(new_src)
@@ -7626,6 +7776,7 @@ def _preprocess_fortran_free_form(src: str) -> typing.Tuple[str, str]:
     new_src = src
     new_src = _fix_fortran_externals(new_src)
     new_src = _fix_fortran_use_la_constants(new_src)
+    new_src = _fix_fortran_use_la_xisnan(new_src)
     new_src = _drop_fortran_intrinsic_statements(
         new_src)  # drop unconditionally
     new_src = _fix_fortran_intrinsic_kind_keyword_arguments(new_src)
