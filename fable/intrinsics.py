@@ -45,6 +45,7 @@ dsqrt
 dtan
 exp
 float
+huge
 iabs
 iargc
 iand
