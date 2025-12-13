@@ -1859,6 +1859,7 @@ def get_lower_bound(conv_info, fdecl, dim_index):
     # No ":" found -> implicit 1-based lower bound.
     return "1"
 
+
 def _try_extract_first_dim_extent_identifier(conv_info, dim0_tokens):
     """Try to return a simple identifier for the extent of the first dimension.
 
@@ -1946,6 +1947,7 @@ def get_leading_dimension_expr(conv_info, fdecl, default=None):
     except Exception:
         return default
 
+
 def _strip_outer_parens_balanced(expr: str) -> str:
     """Strip outer parentheses if they wrap the entire expression."""
     s = expr.strip()
@@ -1968,7 +1970,6 @@ def _strip_outer_parens_balanced(expr: str) -> str:
 
 _int_lit_re = re.compile(r"^[0-9]+$")
 _ident_re = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
-
 
 
 def _maybe_use_ld_variable(conv_info, ldexpr: str, default_ldname: str) -> str:
@@ -1994,7 +1995,8 @@ def _maybe_use_ld_variable(conv_info, ldexpr: str, default_ldname: str) -> str:
     # If the default name already exists as a Fortran identifier, prefer it
     # (we assume the original code assigns it appropriately).
     fproc = getattr(conv_info, "fproc", None)
-    fdecl_map = getattr(fproc, "fdecl_by_identifier", None) if fproc is not None else None
+    fdecl_map = getattr(fproc, "fdecl_by_identifier",
+                        None) if fproc is not None else None
     if fdecl_map is not None:
         if default_ldname.lower() in fdecl_map or default_ldname in fdecl_map:
             return default_ldname
@@ -2006,6 +2008,7 @@ def _maybe_use_ld_variable(conv_info, ldexpr: str, default_ldname: str) -> str:
     # Keep the first initializer we saw (should be stable for a given array).
     conv_info.ld_constant_decls.setdefault(default_ldname, core)
     return default_ldname
+
 
 def _emit_constant_ld_decls(top_scope, conv_info) -> None:
     """Emit leading-dimension declarations recorded during conversion."""
@@ -2141,6 +2144,7 @@ def rewrite_intrinsics(text: str) -> str:
 
     return text
 
+
 UNARY_BRACKET_PARENS_RE = re.compile(
     r"\[\s*\(\s*(?:0\s*\+\s*)?([A-Za-z_][A-Za-z0-9_]*|[0-9]+)(?:\s*\+\s*0)?\s*\)\s*\]"
 )
@@ -2169,6 +2173,7 @@ def rewrite_unary_bracket_parens(text: str) -> str:
         code = UNARY_BRACKET_PARENS_RE.sub(r"[\1]", code)
         out.append(code + comment)
     return "".join(out)
+
 
 def convert_tokens(conv_info, tokens, commas=False, had_str_concat=None):
     result = []
@@ -2249,7 +2254,8 @@ def convert_tokens(conv_info, tokens, commas=False, had_str_concat=None):
                     default_ldname = "ld" + prev_tok.value.lower()
                     ldexpr = get_leading_dimension_expr(
                         conv_info, fdecl, default=default_ldname)
-                    ldexpr = _maybe_use_ld_variable(conv_info, ldexpr, default_ldname)
+                    ldexpr = _maybe_use_ld_variable(
+                        conv_info, ldexpr, default_ldname)
                     rapp(
                         f"[__SLICE2D__({start_expr}, {end_expr}, {col_expr}, {ldexpr})]")
 
@@ -2390,7 +2396,8 @@ def convert_tokens(conv_info, tokens, commas=False, had_str_concat=None):
                     default_ldname = "ld" + prev_tok.value.lower()
                     ldexpr = get_leading_dimension_expr(
                         conv_info, fdecl, default=default_ldname)
-                    ldexpr = _maybe_use_ld_variable(conv_info, ldexpr, default_ldname)
+                    ldexpr = _maybe_use_ld_variable(
+                        conv_info, ldexpr, default_ldname)
 
                     lb1 = get_lower_bound(conv_info, fdecl, 0).strip()
                     lb2 = get_lower_bound(conv_info, fdecl, 1).strip()
@@ -4851,6 +4858,7 @@ def _mark_call_actuals_used(conv_info):
                     f"[CALL_USED] bump use_count for {id_tok.value}", file=sys.stderr)
                 fdecl.use_count = 1
 
+
 def _infer_user_defined_callable_signatures(conv_info):
     """Infer signatures for user-defined EXTERNAL callable dummy arguments.
 
@@ -4893,7 +4901,8 @@ def _infer_user_defined_callable_signatures(conv_info):
 
     def _mpl_type_from_fdecl(fdecl):
         try:
-            ctype = convert_data_type(conv_info=conv_info, fdecl=fdecl, crhs=None)[0]
+            ctype = convert_data_type(
+                conv_info=conv_info, fdecl=fdecl, crhs=None)[0]
         except Exception:
             return None
         return convert_to_mplapack_type(ctype)
@@ -4970,7 +4979,8 @@ def _infer_user_defined_callable_signatures(conv_info):
     def _update(state, name, arg_types, ret_type):
         st = state.get(name)
         if st is None:
-            state[name] = {"ret": ret_type, "args": list(arg_types) if arg_types is not None else None, "conflict": False}
+            state[name] = {"ret": ret_type, "args": list(
+                arg_types) if arg_types is not None else None, "conflict": False}
             return
 
         if ret_type is not None:
@@ -5037,6 +5047,7 @@ def _infer_user_defined_callable_signatures(conv_info):
             continue
         final[name] = (st["ret"], args)
         _INFERRED_CALLABLE_SIGNATURES[key] = final
+
 
 def convert_to_cpp_function(
         cpp_callback,
@@ -5162,7 +5173,8 @@ def convert_to_cpp_function(
                 fdecl.id_tok.value)
             if (passed is None or len(passed) == 0):
                 ctype = "UNHANDLED"
-            sigs = _INFERRED_CALLABLE_SIGNATURES.get(id(conv_info.fproc), {}) or {}
+            sigs = _INFERRED_CALLABLE_SIGNATURES.get(
+                id(conv_info.fproc), {}) or {}
             sig = sigs.get(fdecl.id_tok.value.lower())
             if sig is None:
                 sig = sigs.get(fdecl.id_tok.value)
@@ -6395,7 +6407,8 @@ def _postprocess_index_zero_simplify(text):
 
             # (i) -> i, (0) -> 0 when the whole index is just a single
             # parenthesized identifier or integer literal.
-            m_simple = re.fullmatch(r"\(\s*([A-Za-z_][A-Za-z0-9_]*|\d+)\s*\)", e)
+            m_simple = re.fullmatch(
+                r"\(\s*([A-Za-z_][A-Za-z0-9_]*|\d+)\s*\)", e)
             if m_simple:
                 e = m_simple.group(1)
 
@@ -7018,6 +7031,7 @@ def _fix_fortran_externals(src):
         out.append(line2)
     return ''.join(out)
 
+
 def _fix_fortran_end_statements(src: str) -> str:
     """Downgrade F90-style typed END statements to a bare END.
 
@@ -7059,9 +7073,106 @@ def _fix_fortran_end_statements(src: str) -> str:
         if comment:
             out.append(f"{indent}END{comment}")
         else:
-            eol = "\r\n" if line.endswith("\r\n") else ("\n" if line.endswith("\n") else "")
+            eol = "\r\n" if line.endswith("\r\n") else (
+                "\n" if line.endswith("\n") else "")
             out.append(f"{indent}END{eol}")
     return "".join(out)
+
+
+def _drop_fortran_intrinsic_statements(src: str) -> str:
+    """Drop Fortran INTRINSIC statements (and their continuation lines).
+
+    Example that breaks some parsers:
+        INTRINSIC :: abs, sign, sqrt
+
+    For C++ translation we do not need INTRINSIC markers, so we remove them.
+    """
+    intrinsic_re = re.compile(r"^\s*intrinsic\b", flags=re.IGNORECASE)
+
+    def split_eol(line: str):
+        if line.endswith("\r\n"):
+            return line[:-2], "\r\n"
+        if line.endswith("\n"):
+            return line[:-1], "\n"
+        if line.endswith("\r"):
+            return line[:-1], "\r"
+        return line, ""
+
+    def is_full_line_comment_or_blank(raw: str) -> bool:
+        if raw.strip() == "":
+            return True
+        s = raw.lstrip()
+        if s.startswith("!"):
+            return True
+        # Fixed-form comment in column 1
+        if raw and raw[0] in ("c", "C", "*", "!"):
+            return True
+        return False
+
+    def split_code_comment(raw: str):
+        idx = raw.find("!")
+        if idx >= 0:
+            return raw[:idx], raw[idx:]
+        return raw, ""
+
+    def is_fixed_form_continuation(raw: str) -> bool:
+        # Fixed-form continuation marker is any non-blank in column 6.
+        if len(raw) < 6:
+            return False
+        if raw and raw[0] in ("c", "C", "*", "!"):
+            return False
+        return raw[5] not in (" ", "\t")
+
+    lines = src.splitlines(True)
+    out = []
+    i = 0
+    skipping = False
+    prev_trailing_amp = False
+
+    while i < len(lines):
+        raw, eol = split_eol(lines[i])
+
+        if skipping:
+            # Keep unrelated comment/blank lines as-is.
+            if is_full_line_comment_or_blank(raw):
+                out.append(raw + eol)
+                i += 1
+                continue
+
+            lstr = raw.lstrip()
+            is_free_cont = lstr.startswith("&")
+            is_cont = prev_trailing_amp or is_free_cont or is_fixed_form_continuation(
+                raw)
+
+            if is_cont:
+                code, _comment = split_code_comment(raw)
+                prev_trailing_amp = code.rstrip().endswith("&")
+                i += 1
+                continue
+
+            # First non-continuation line: stop skipping and re-process it normally.
+            skipping = False
+            prev_trailing_amp = False
+            continue
+
+        # Normal mode
+        if is_full_line_comment_or_blank(raw):
+            out.append(raw + eol)
+            i += 1
+            continue
+
+        code, _comment = split_code_comment(raw)
+        if intrinsic_re.match(code):
+            prev_trailing_amp = code.rstrip().endswith("&")
+            skipping = True
+            i += 1
+            continue
+
+        out.append(raw + eol)
+        i += 1
+
+    return "".join(out)
+
 
 def _detect_fortran_source_form(file_name: str, src: str) -> str:
     """Detect Fortran source form: 'free' (F90+) or 'fixed' (F77-style).
@@ -7134,6 +7245,7 @@ def _detect_fortran_source_form(file_name: str, src: str) -> str:
     if free_hits > fixed_hits:
         return "free"
     return "fixed"
+
 
 def _fix_fortran_use_la_constants(src: str) -> str:
     """Replace 'use LA_CONSTANTS, only: ...' with local declarations.
@@ -7210,14 +7322,16 @@ def _fix_fortran_use_la_constants(src: str) -> str:
         # Emit replacement block.
         # Use free-form comments ('!'); if later lowered to fixed-form,
         # your layout normalizer can convert them to 'C' comments.
-        out.append("! ### MUST BE FIXED: replaced 'use LA_CONSTANTS, only: ...' with local stubs\n")
+        out.append(
+            "! ### MUST BE FIXED: replaced 'use LA_CONSTANTS, only: ...' with local stubs\n")
         for b in block:
             out.append("! original: " + b.strip() + "\n")
 
         # Decide precision if not found explicitly.
         if wp_kind is None:
             # Fallback heuristic: if we imported dp-like names, assume dp.
-            wp_kind = "dp" if ("dp" in flat.lower() or "dzero" in flat.lower() or "done" in flat.lower()) else "sp"
+            wp_kind = "dp" if ("dp" in flat.lower(
+            ) or "dzero" in flat.lower() or "done" in flat.lower()) else "sp"
 
         if wp_kind == "dp":
             out.append("DOUBLE PRECISION zero, half, one, safmin, safmax\n")
@@ -7225,7 +7339,8 @@ def _fix_fortran_use_la_constants(src: str) -> str:
             out.append("PARAMETER (half = 0.5D0)\n")
             out.append("PARAMETER (one  = 1.0D0)\n")
             # IEEE-754 double approximations (good enough as a stub).
-            out.append("! ### MUST BE FIXED: safmin/safmax are provided via Rlamch\n")
+            out.append(
+                "! ### MUST BE FIXED: safmin/safmax are provided via Rlamch\n")
             out.append("PARAMETER (safmin = Rlamch('Safe minimum'))\n")
             out.append("PARAMETER (safmax = Rlamch('Safe Maximum'))\n")
         else:
@@ -7233,8 +7348,10 @@ def _fix_fortran_use_la_constants(src: str) -> str:
             out.append("PARAMETER (zero = 0.0E0)\n")
             out.append("PARAMETER (half = 0.5E0)\n")
             out.append("PARAMETER (one  = 1.0E0)\n")
-            out.append("! ### MUST BE FIXED: safmin/safmax should match LA_CONSTANTS (typically slamch)\n")
-            out.append("! ### MUST BE FIXED: safmin/safmax are provided via Rlamch\n")
+            out.append(
+                "! ### MUST BE FIXED: safmin/safmax should match LA_CONSTANTS (typically slamch)\n")
+            out.append(
+                "! ### MUST BE FIXED: safmin/safmax are provided via Rlamch\n")
             out.append("PARAMETER (safmin = Rlamch('Safe minimum'))\n")
             out.append("PARAMETER (safmax = Rlamch('Safe Maximum'))\n")
 
@@ -7244,9 +7361,12 @@ def _fix_fortran_use_la_constants(src: str) -> str:
 
     # Rewrite REAL(KIND=wp) / REAL(wp) and numeric literals with _wp suffix.
     if wp_kind == "dp":
-        src2 = re.sub(r"\breal\s*\(\s*kind\s*=\s*wp\s*\)", "DOUBLE PRECISION", src2, flags=re.IGNORECASE)
-        src2 = re.sub(r"\breal\s*\(\s*wp\s*\)", "DOUBLE PRECISION", src2, flags=re.IGNORECASE)
+        src2 = re.sub(r"\breal\s*\(\s*kind\s*=\s*wp\s*\)",
+                      "DOUBLE PRECISION", src2, flags=re.IGNORECASE)
+        src2 = re.sub(r"\breal\s*\(\s*wp\s*\)",
+                      "DOUBLE PRECISION", src2, flags=re.IGNORECASE)
         # 1.0_wp -> 1.0D0, 1e-3_wp -> 1D-3
+
         def _wp_lit(m):
             num = m.group("num")
             num = re.sub(r"[eE]([+\-]?\d+)", r"D\1", num)
@@ -7254,8 +7374,11 @@ def _fix_fortran_use_la_constants(src: str) -> str:
         src2 = re.sub(r"(?P<num>(?:\d+\.\d*|\d*\.\d+|\d+)(?:[eE][+\-]?\d+)?)\s*_wp\b",
                       _wp_lit, src2, flags=re.IGNORECASE)
     else:
-        src2 = re.sub(r"\breal\s*\(\s*kind\s*=\s*wp\s*\)", "REAL", src2, flags=re.IGNORECASE)
-        src2 = re.sub(r"\breal\s*\(\s*wp\s*\)", "REAL", src2, flags=re.IGNORECASE)
+        src2 = re.sub(r"\breal\s*\(\s*kind\s*=\s*wp\s*\)",
+                      "REAL", src2, flags=re.IGNORECASE)
+        src2 = re.sub(r"\breal\s*\(\s*wp\s*\)", "REAL",
+                      src2, flags=re.IGNORECASE)
+
         def _wp_lit_sp(m):
             num = m.group("num")
             num = re.sub(r"[dD]([+\-]?\d+)", r"E\1", num)
@@ -7265,70 +7388,78 @@ def _fix_fortran_use_la_constants(src: str) -> str:
 
     return src2
 
+
+def _should_lower_free_to_fixed(src: str) -> bool:
+    """Heuristic: decide whether to lower free-form source into fixed-form."""
+    low = src.lower()
+
+    # Strong F90 markers
+    if "::" in low:
+        return True
+    if re.search(r"(?m)^\s*use\b", low):
+        return True
+    if re.search(r"(?m)^\s*select\s+case\b", low):
+        return True
+
+    # Free-form continuation: trailing '&' before any '!' comment
+    for line in src.splitlines():
+        s = line.lstrip()
+        if not s or s.startswith("!"):
+            continue
+        code = line.split("!", 1)[0]
+        if code.rstrip().endswith("&"):
+            return True
+
+    return False
+
+
 def _preprocess_fortran_fixed_form(src: str) -> typing.Tuple[str, str]:
     """Preprocess a fixed-form Fortran source.
 
     Returns: (new_src, emit_form)
       emit_form is 'fixed' or 'free' and controls the temp file suffix.
     """
-    new_src = _fix_fortran_externals(src)
-    new_src = _fix_fortran_use_la_constants(new_src)    
-    new_src = _fix_fortran_end_statements(new_src)
-    # Downlevel common F90 constructs that sometimes appear even in fixed-form files.
-    new_src = _fix_fortran_iso_fortran_env_real64(new_src)
+    new_src = src
+    new_src = _fix_fortran_externals(new_src)
+    new_src = _fix_fortran_use_la_constants(new_src)
+    new_src = _drop_fortran_intrinsic_statements(
+        new_src)  # drop unconditionally
+    new_src = _fix_fortran_iso_fortran_env_real64(
+        new_src)  # harmless even if not present
     new_src = _fix_fortran_f90_decl_syntax(new_src)
     new_src = _fix_fortran_select_case_to_if(new_src)
+    new_src = _fix_fortran_end_statements(new_src)
     return new_src, "fixed"
+
 
 def _preprocess_fortran_free_form(src: str) -> typing.Tuple[str, str]:
     """Preprocess a free-form Fortran source.
 
     Returns: (new_src, emit_form)
       emit_form is 'fixed' or 'free' and controls the temp file suffix.
-
-    NOTE:
-      If you add a lowering pass that converts free-form into fixed-form
-      (e.g. rewriting '&' continuations into column-6 continuations, or
-      rewriting SELECT CASE into IF/ELSE IF), return emit_form='fixed'.
     """
-    new_src = _fix_fortran_externals(src)
+    new_src = src
+    new_src = _fix_fortran_externals(new_src)
     new_src = _fix_fortran_use_la_constants(new_src)
-    new_src = _fix_fortran_end_statements(new_src)
+    new_src = _drop_fortran_intrinsic_statements(
+        new_src)  # drop unconditionally
 
-    # Heuristic: if the source uses typical F90-only syntax that FABLE's reader
-    # can't digest reliably (especially free-form '&' continuations), lower it
-    # into fixed-form and emit a ".f" temporary.
-    lower_to_fixed = False
-    low = new_src.lower()
-    if "::" in low:
-        lower_to_fixed = True
-    if re.search(r"(?m)^\s*use\b", low):
-        lower_to_fixed = True
-    if re.search(r"(?m)^\s*select\s+case\b", low):
-        lower_to_fixed = True
-
-    if not lower_to_fixed:
-        # Detect a trailing '&' in the code part (before any '!' comment).
-        for line in new_src.splitlines():
-            s = line.lstrip()
-            if not s or s.startswith("!"):
-                continue
-            code = line.split("!", 1)[0]
-            if code.rstrip().endswith("&"):
-                lower_to_fixed = True
-                break
+    lower_to_fixed = _should_lower_free_to_fixed(new_src)
 
     if lower_to_fixed:
-        # These helpers emit fixed-form comments ('C' in column 1), so only apply
-        # them when we are going to emit fixed-form.
+        # Lowering pipeline: free-form -> fixed-form
         new_src = _fix_fortran_iso_fortran_env_real64(new_src)
         new_src = _fix_fortran_f90_decl_syntax(new_src)
         new_src = _fix_fortran_select_case_to_if(new_src)
         new_src = _fix_fortran_free_form_ampersand_continuations(new_src)
         new_src = _normalize_free_form_to_fixed_form_layout(new_src)
+        new_src = _fix_fortran_end_statements(new_src)
         return new_src, "fixed"
 
+    # If we keep it free-form, do only safe transforms and emit ".f90"
+    new_src = _fix_fortran_end_statements(new_src)
     return new_src, "free"
+
 
 def _split_top_level_commas(s: str):
     """Split by commas, ignoring commas inside parentheses."""
@@ -7349,6 +7480,7 @@ def _split_top_level_commas(s: str):
     if tail:
         items.append(tail)
     return items
+
 
 def _fix_fortran_f90_decl_syntax(src: str) -> str:
     """Rewrite a subset of F90 declarations into F77-style declarations.
@@ -7429,6 +7561,7 @@ def _fix_fortran_f90_decl_syntax(src: str) -> str:
 
     return "".join(out)
 
+
 def _fix_fortran_select_case_to_if(src: str) -> str:
     """Rewrite SELECT CASE into IF/ELSE IF/END IF (F77-friendly).
 
@@ -7447,8 +7580,10 @@ def _fix_fortran_select_case_to_if(src: str) -> str:
     """
     import re
 
-    SELECT_RE = re.compile(r'^\s*select\s+case\s*\(\s*(?P<expr>[^)]+?)\s*\)\s*$', flags=re.IGNORECASE)
-    CASE_RE = re.compile(r'^\s*case\s*(?:(?P<default>default)|\(\s*(?P<sel>.+?)\s*\))\s*$', flags=re.IGNORECASE)
+    SELECT_RE = re.compile(
+        r'^\s*select\s+case\s*\(\s*(?P<expr>[^)]+?)\s*\)\s*$', flags=re.IGNORECASE)
+    CASE_RE = re.compile(
+        r'^\s*case\s*(?:(?P<default>default)|\(\s*(?P<sel>.+?)\s*\))\s*$', flags=re.IGNORECASE)
     ENDSEL_RE = re.compile(r'^\s*end\s*select\b.*$', flags=re.IGNORECASE)
 
     def split_eol(line: str):
@@ -7614,6 +7749,7 @@ def _fix_fortran_select_case_to_if(src: str) -> str:
 
     return "".join(out_all)
 
+
 def _normalize_free_form_to_fixed_form_layout(src: str) -> str:
     """Normalize free-form indentation so fixed-form continuation detection won't misfire.
 
@@ -7742,7 +7878,8 @@ def _fix_fortran_iso_fortran_env_real64(src: str) -> str:
         return src2
 
     # Normalize REAL(KIND=WP/wp) -> DOUBLE PRECISION
-    REAL_KIND_WP_RE = re.compile(r'\breal\s*\(\s*kind\s*=\s*wp\s*\)', flags=re.IGNORECASE)
+    REAL_KIND_WP_RE = re.compile(
+        r'\breal\s*\(\s*kind\s*=\s*wp\s*\)', flags=re.IGNORECASE)
 
     def rewrite_code_only(line: str) -> str:
         # Keep inline '!' comments untouched.
@@ -7775,6 +7912,7 @@ def _fix_fortran_iso_fortran_env_real64(src: str) -> str:
     src2_lines = src2.splitlines(True)
     src2_lines = [rewrite_code_only(ln) for ln in src2_lines]
     return "".join(src2_lines)
+
 
 def _fix_fortran_free_form_ampersand_continuations(src: str) -> str:
     """Convert free-form '&' continuations into fixed-form continuation lines.
@@ -7854,6 +7992,7 @@ def _fix_fortran_free_form_ampersand_continuations(src: str) -> str:
 
     return "".join(out)
 
+
 def _preprocess_fortran_files(file_names):
     """Return (patched_file_names, temp_files) for FABLE parsing.
 
@@ -7910,6 +8049,7 @@ def _preprocess_fortran_files(file_names):
         temp_files.append(tmp)
 
     return patched, temp_files
+
 
 def process(
         file_names=None,
