@@ -1173,8 +1173,10 @@ class conversion_info(global_conversion_info):
             O.vmap[identifier] = "sve." + \
                 prepend_identifier_if_necessary(identifier)
         elif (fdecl.is_intrinsic()):
-            if (identifier in ["float", "int", "char"]):
-                O.vmap[identifier] = "fem::f" + identifier
+            low = identifier.lower()
+            if (low in ["float", "int", "char"]):
+                # Normalize case to avoid fem::int vs fem::fint divergence.
+                O.vmap[identifier] = "fem::f" + low
             elif (identifier == "iargc"):
                 O.vmap[identifier] = "cmn.iargc"
             elif (identifier == "ceiling"):
@@ -2135,6 +2137,10 @@ def rewrite_intrinsics(text: str) -> str:
         ("fem::dble",   _real_dispatch),
         ("fem::real",   _real_dispatch),
         ("fem::fint",   _int_dispatch),
+        # Some paths emit fem::int instead of fem::fint.
+        # Keep behavior consistent: always castINTEGER(...).
+        ("fem::int",    _int_dispatch),
+        ("fem::INT",    _int_dispatch),
         ("fem::aimag",  _imag_repl),
         ("fem::imag",   _imag_repl),
         ("fem::dimag",  _imag_repl),
@@ -3822,10 +3828,19 @@ def declare_identifiers_parameter_recursion(
         if (id_tok.value in conv_info.vmap):
             continue
         # Intrinsics used in PARAMETER expressions must NOT trigger declaration lookup.
-        # Otherwise we crash on e.g. HUGE(ZERO) with KeyError('huge').
+        # However, Fortran allows local variables/parameters to shadow intrinsic names
+        # (e.g. INTEGER NINT, INTEGER LEN, REAL DMIN1).
+        # Only treat the token as an intrinsic if there is NO declaration record
+        # for it in the current procedure.
         if _is_intrinsic_name(id_tok.value):
-            _map_intrinsic_vmap(conv_info, id_tok.value)
-            continue
+            fdecl_map = getattr(conv_info.fproc, "fdecl_by_identifier", None)
+            if fdecl_map is None:
+                _map_intrinsic_vmap(conv_info, id_tok.value)
+                continue
+            if (id_tok.value.lower() not in fdecl_map
+                    and id_tok.value not in fdecl_map):
+                _map_intrinsic_vmap(conv_info, id_tok.value)
+                continue
         # Tentatively mark as seen to avoid recursion loops.
         # IMPORTANT: Do not store None here; convert_token() may call .lower() on vmap results.
         conv_info.vmap[id_tok.value] = prepend_identifier_if_necessary(
@@ -3954,12 +3969,24 @@ def simple_equivalence(
 
 
 def declare_identifier(conv_info, top_scope, curr_scope, id_tok, crhs=None):
-    # Intrinsics are not declared variables; just map and return.
-    if _is_intrinsic_name(id_tok.value):
+    # Intrinsic names can be shadowed by local variables/parameters.
+    # Only treat this identifier as an intrinsic if there is NO declaration
+    # record for it in the current procedure.
+    try:
+        fdecl = conv_info.fproc.get_fdecl(id_tok=id_tok)
+    except KeyError:
+        fdecl = None
+
+    if fdecl is None and _is_intrinsic_name(id_tok.value):
         _map_intrinsic_vmap(conv_info, id_tok.value)
         return crhs is not None
 
-    fdecl = conv_info.fproc.get_fdecl(id_tok=id_tok)
+    if fdecl is None:
+        # Unknown identifier: do not crash. Keep it as a plain identifier.
+        # (This may still lead to a compile error downstream, but conversion continues.)
+        conv_info.vmap[id_tok.value] = prepend_identifier_if_necessary(id_tok.value)
+        return crhs is not None
+
     conv_info.set_vmap_from_fdecl(fdecl=fdecl)
     have_goto = (len(conv_info.fproc.target_statement_labels()) != 0)
 
