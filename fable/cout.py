@@ -7162,6 +7162,258 @@ def _fix_fortran_f90_decl_syntax(src: str) -> str:
 
     return "".join(out)
 
+def _fix_fortran_select_case_to_if(src: str) -> str:
+    """Rewrite SELECT CASE into IF/ELSE IF/END IF (F77-friendly).
+
+    Supports patterns like:
+      SELECT CASE (expr)
+        CASE (1)
+          ...
+        CASE (2,3)
+          ...
+        CASE (1:5)
+          ...
+        CASE DEFAULT
+          ...
+      END SELECT
+    Nested SELECT CASE is handled recursively.
+    """
+    import re
+
+    SELECT_RE = re.compile(r'^\s*select\s+case\s*\(\s*(?P<expr>[^)]+?)\s*\)\s*$', flags=re.IGNORECASE)
+    CASE_RE = re.compile(r'^\s*case\s*(?:(?P<default>default)|\(\s*(?P<sel>.+?)\s*\))\s*$', flags=re.IGNORECASE)
+    ENDSEL_RE = re.compile(r'^\s*end\s*select\b.*$', flags=re.IGNORECASE)
+
+    def split_eol(line: str):
+        if line.endswith("\r\n"):
+            return line[:-2], "\r\n"
+        if line.endswith("\n"):
+            return line[:-1], "\n"
+        if line.endswith("\r"):
+            return line[:-1], "\r"
+        return line, ""
+
+    def split_code_comment(raw: str):
+        idx = raw.find("!")
+        if idx >= 0:
+            return raw[:idx], raw[idx:]
+        return raw, ""
+
+    def is_comment_or_blank(raw: str) -> bool:
+        if raw.strip() == "":
+            return True
+        s = raw.lstrip()
+        if s.startswith("!"):
+            return True
+        if raw and raw[0] in ("c", "C", "*", "!"):
+            return True
+        return False
+
+    def split_top_level_commas(s: str):
+        items = []
+        buf = []
+        depth = 0
+        for ch in s:
+            if ch == "(":
+                depth += 1
+            elif ch == ")":
+                depth = max(0, depth - 1)
+            if ch == "," and depth == 0:
+                items.append("".join(buf).strip())
+                buf = []
+            else:
+                buf.append(ch)
+        tail = "".join(buf).strip()
+        if tail:
+            items.append(tail)
+        return items
+
+    def case_selector_to_cond(expr: str, sel: str) -> str:
+        sel = sel.strip()
+        # sel is already inside (...) by regex
+        parts = split_top_level_commas(sel)
+        conds = []
+        for p in parts:
+            p = p.strip()
+            if ":" in p:
+                lo, hi = p.split(":", 1)
+                lo = lo.strip()
+                hi = hi.strip()
+                if lo == "" and hi != "":
+                    conds.append(f"({expr} <= {hi})")
+                elif hi == "" and lo != "":
+                    conds.append(f"({expr} >= {lo})")
+                else:
+                    conds.append(f"({expr} >= {lo} .AND. {expr} <= {hi})")
+            else:
+                conds.append(f"({expr} == {p})")
+        if len(conds) == 1:
+            return conds[0]
+        return "(" + " .OR. ".join(conds) + ")"
+
+    lines = src.splitlines(True)
+
+    def rewrite_from(i: int):
+        raw0, eol0 = split_eol(lines[i])
+        code0, _c0 = split_code_comment(raw0)
+        msel = SELECT_RE.match(code0.strip())
+        if not msel:
+            return [lines[i]], i + 1
+
+        indent = re.match(r'^(\s*)', raw0).group(1)
+        expr = msel.group("expr").strip()
+        nl = eol0 if eol0 else "\n"
+
+        i += 1
+        cases = []
+        current_sel = None  # None means "not started yet"
+        current_body = []
+
+        while i < len(lines):
+            raw, eol = split_eol(lines[i])
+            code, _comment = split_code_comment(raw)
+            s = code.strip()
+
+            if is_comment_or_blank(raw):
+                # Keep comments/blanks in the current body.
+                current_body.append(raw + eol)
+                i += 1
+                continue
+
+            # Nested SELECT CASE
+            if SELECT_RE.match(s):
+                nested_out, i = rewrite_from(i)
+                current_body.extend(nested_out)
+                continue
+
+            mcase = CASE_RE.match(s)
+            if mcase:
+                # Flush previous case
+                if current_sel is not None:
+                    cases.append((current_sel, current_body))
+                current_body = []
+                if mcase.group("default"):
+                    current_sel = "DEFAULT"
+                else:
+                    current_sel = mcase.group("sel").strip()
+                i += 1
+                continue
+
+            if ENDSEL_RE.match(s):
+                if current_sel is not None:
+                    cases.append((current_sel, current_body))
+                i += 1
+                break
+
+            current_body.append(raw + eol)
+            i += 1
+
+        # Build IF/ELSE IF chain
+        out = []
+        first = True
+        for sel, body in cases:
+            if sel == "DEFAULT":
+                cond = None
+            else:
+                cond = case_selector_to_cond(expr, sel)
+
+            if first:
+                if cond is None:
+                    out.append(f"{indent}IF (.TRUE.) THEN{nl}")
+                else:
+                    out.append(f"{indent}IF ({cond}) THEN{nl}")
+                first = False
+            else:
+                if cond is None:
+                    out.append(f"{indent}ELSE{nl}")
+                else:
+                    out.append(f"{indent}ELSE IF ({cond}) THEN{nl}")
+            out.extend(body)
+
+        out.append(f"{indent}END IF{nl}")
+        return out, i
+
+    out_all = []
+    i = 0
+    while i < len(lines):
+        raw, _eol = split_eol(lines[i])
+        code, _comment = split_code_comment(raw)
+        if SELECT_RE.match(code.strip()):
+            chunk, i = rewrite_from(i)
+            out_all.extend(chunk)
+        else:
+            out_all.append(lines[i])
+            i += 1
+
+    return "".join(out_all)
+
+def _normalize_free_form_to_fixed_form_layout(src: str) -> str:
+    """Normalize free-form indentation so fixed-form continuation detection won't misfire.
+
+    FABLE currently writes temporary sources with suffix '.f', so the reader
+    applies fixed-form rules. For free-form sources (.f90 etc.), a normal
+    indentation can accidentally put a non-space character in column 6, which
+    fixed-form interprets as a continuation line. That triggers an assertion
+    in the continuation combiner.
+
+    We rewrite each non-comment line into a safe fixed-form layout:
+      - label (if present) is right-justified in columns 1-5
+      - column 6 is blank for normal lines
+      - statement starts at column 7
+      - a leading '&' (free-form continuation marker) becomes a fixed-form
+        continuation line: '     &...'
+    """
+    import re
+
+    def split_eol(line: str):
+        if line.endswith("\r\n"):
+            return line[:-2], "\r\n"
+        if line.endswith("\n"):
+            return line[:-1], "\n"
+        if line.endswith("\r"):
+            return line[:-1], "\r"
+        return line, ""
+
+    LABEL_RE = re.compile(r"^\s*(\d{1,5})\s+(.*)$")
+
+    out = []
+    for line in src.splitlines(True):
+        raw, eol = split_eol(line)
+        raw = raw.expandtabs(8)
+
+        if raw.strip() == "":
+            out.append(raw + eol)
+            continue
+
+        lstr = raw.lstrip()
+
+        # Free-form comment line -> fixed-form comment line
+        if lstr.startswith("!"):
+            out.append("C " + lstr[1:] + eol)
+            continue
+
+        # Already a fixed-form comment line
+        if raw and raw[0] in ("c", "C", "*", "!"):
+            out.append(raw + eol)
+            continue
+
+        m = LABEL_RE.match(raw)
+        if m:
+            label = m.group(1)
+            stmt = m.group(2).lstrip()
+            out.append(label.rjust(5) + " " + stmt + eol)
+            continue
+
+        # Continuation line in free form often starts with '&'
+        if lstr.startswith("&"):
+            stmt = lstr[1:].lstrip()
+            out.append("     &" + stmt + eol)
+        else:
+            out.append("      " + lstr + eol)
+
+    return "".join(out)
+
+
 def _fix_fortran_iso_fortran_env_real64(src: str) -> str:
     """Make some F90 'iso_fortran_env real64' constructs digestible for FABLE.
 
@@ -7357,6 +7609,12 @@ def _preprocess_fortran_files(file_names):
         new_src = _fix_fortran_free_form_ampersand_continuations(new_src)
         new_src = _fix_fortran_iso_fortran_env_real64(new_src)
         new_src = _fix_fortran_f90_decl_syntax(new_src)
+        new_src = _fix_fortran_select_case_to_if(new_src)
+
+        # Prevent fixed-form continuation mis-detection for free-form inputs.
+        if fn.lower().endswith((".f90", ".f95", ".f03", ".f08", ".f18")):
+            new_src = _normalize_free_form_to_fixed_form_layout(new_src)
+
         if new_src == src:
             # No change needed.
             patched.append(fn)
