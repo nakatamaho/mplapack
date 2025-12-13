@@ -7412,6 +7412,112 @@ def _should_lower_free_to_fixed(src: str) -> bool:
 
     return False
 
+def _fix_fortran_intrinsic_kind_keyword_arguments(src: str) -> str:
+    """Drop F90 keyword arguments like KIND=... in intrinsic calls.
+
+    FABLE's legacy expression tokenizer does not accept keyword arguments
+    inside calls, e.g.:
+        CMPLX(x, y, KIND=WP)
+        REAL(z, KIND=WP)
+        INT(i, KIND=KIND(i))
+
+    For the C++ translation we do not need the KIND selector at the call site,
+    because target types are fixed by the translated declarations.
+
+    This pass removes top-level arguments matching /^KIND\s*=/ (case-insensitive)
+    from a conservative set of intrinsics that commonly appear in LAPACK F90.
+    Nested calls are handled recursively within a single physical line.
+    """
+    import re
+
+    intrinsic_with_kind = {
+        "cmplx",
+        "real",
+        "int",
+        "nint",
+        "aint",
+        "anint",
+        "floor",
+        "ceiling",
+    }
+
+    kind_arg_re = re.compile(r"^kind\s*=", flags=re.IGNORECASE)
+
+    def find_matching_paren(s: str, start: int) -> int:
+        depth = 0
+        for i in range(start, len(s)):
+            ch = s[i]
+            if ch == "(":
+                depth += 1
+            elif ch == ")":
+                depth -= 1
+                if depth == 0:
+                    return i
+        return -1
+
+    call_re = re.compile(r"\b([A-Za-z_][A-Za-z0-9_]*)\s*\(")
+
+    def rewrite_segment(code: str) -> str:
+        out = []
+        i = 0
+        while i < len(code):
+            m = call_re.search(code, i)
+            if not m:
+                out.append(code[i:])
+                break
+
+            name = m.group(1)
+            paren_start = m.end() - 1
+            paren_end = find_matching_paren(code, paren_start)
+            if paren_end < 0:
+                out.append(code[i:])
+                break
+
+            out.append(code[i:m.start(1)])
+            head = code[m.start(1):paren_start]
+
+            inner = code[paren_start + 1:paren_end]
+            inner = rewrite_segment(inner)
+
+            if name.lower() in intrinsic_with_kind and "kind" in inner.lower():
+                args = _split_top_level_commas(inner)
+                args = [a for a in args if not kind_arg_re.match(a.strip())]
+                inner = ", ".join(args)
+
+            out.append(f"{head}({inner})")
+            i = paren_end + 1
+
+        return "".join(out)
+
+    def is_full_line_comment(raw: str) -> bool:
+        if not raw:
+            return False
+        # Fixed-form whole-line comment (column 1)
+        if raw[0] in ("c", "C", "*", "!"):
+            return True
+        # Free-form whole-line comment
+        if raw.lstrip().startswith("!"):
+            return True
+        return False
+
+    out_lines = []
+    for line in src.splitlines(True):
+        if is_full_line_comment(line):
+            out_lines.append(line)
+            continue
+
+        # Preserve inline comments started by '!'
+        bang = line.find("!")
+        if bang >= 0:
+            code_part = line[:bang]
+            comment_part = line[bang:]
+        else:
+            code_part = line
+            comment_part = ""
+
+        out_lines.append(rewrite_segment(code_part) + comment_part)
+
+    return "".join(out_lines)
 
 def _preprocess_fortran_fixed_form(src: str) -> typing.Tuple[str, str]:
     """Preprocess a fixed-form Fortran source.
@@ -7426,6 +7532,7 @@ def _preprocess_fortran_fixed_form(src: str) -> typing.Tuple[str, str]:
         new_src)  # drop unconditionally
     new_src = _fix_fortran_iso_fortran_env_real64(
         new_src)  # harmless even if not present
+    new_src = _fix_fortran_intrinsic_kind_keyword_arguments(new_src)    
     new_src = _fix_fortran_f90_decl_syntax(new_src)
     new_src = _fix_fortran_select_case_to_if(new_src)
     new_src = _fix_fortran_end_statements(new_src)
@@ -7443,7 +7550,7 @@ def _preprocess_fortran_free_form(src: str) -> typing.Tuple[str, str]:
     new_src = _fix_fortran_use_la_constants(new_src)
     new_src = _drop_fortran_intrinsic_statements(
         new_src)  # drop unconditionally
-
+    new_src = _fix_fortran_intrinsic_kind_keyword_arguments(new_src)
     lower_to_fixed = _should_lower_free_to_fixed(new_src)
 
     if lower_to_fixed:
