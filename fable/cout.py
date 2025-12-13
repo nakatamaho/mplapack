@@ -7063,6 +7063,273 @@ def _fix_fortran_end_statements(src: str) -> str:
             out.append(f"{indent}END{eol}")
     return "".join(out)
 
+def _detect_fortran_source_form(file_name: str, src: str) -> str:
+    """Detect Fortran source form: 'free' (F90+) or 'fixed' (F77-style).
+
+    Priority:
+      1) File extension (strong hint)
+      2) Lightweight content heuristics (tie-break / unknown extensions)
+
+    This is intentionally conservative: when unsure, prefer 'fixed' because
+    the historical FABLE reader behavior is typically fixed-form oriented.
+    """
+    ext = os.path.splitext(file_name)[1].lower()
+
+    free_exts = {".f90", ".f95", ".f03", ".f08", ".f18"}
+    fixed_exts = {".f", ".for", ".ftn", ".f77"}
+
+    form_hint = None
+    if ext in free_exts:
+        form_hint = "free"
+    elif ext in fixed_exts:
+        form_hint = "fixed"
+
+    # Scan only the head of the file; we want this to be cheap.
+    head_lines = src.splitlines()[:200]
+
+    free_hits = 0
+    fixed_hits = 0
+
+    for line in head_lines:
+        if not line:
+            continue
+
+        # Fixed-form comment in column 1
+        if line[0] in ("c", "C", "*"):
+            fixed_hits += 2
+
+        # Fixed-form label pattern (1-5 digits, then whitespace)
+        # Example: " 123  CONTINUE" or "10    FORMAT(...)"
+        if re.match(r"^\s{0,5}\d{1,5}\s+", line):
+            fixed_hits += 1
+
+        s = line.strip().lower()
+        if not s:
+            continue
+
+        # Strong free-form tokens
+        if "::" in s:
+            free_hits += 2
+        if s.startswith("use ") or s.startswith("use,"):
+            free_hits += 2
+        if s.startswith("module ") or s.startswith("contains"):
+            free_hits += 2
+        if s.startswith("select case"):
+            free_hits += 2
+        if s.startswith("end subroutine") or s.startswith("end function") or s.startswith("end module"):
+            free_hits += 2
+
+    # Decision logic:
+    # - Extension wins unless the content strongly contradicts it.
+    # - For unknown extensions, pick the higher score; default to fixed.
+    if form_hint == "free":
+        if fixed_hits >= free_hits + 6 and fixed_hits >= 6:
+            return "fixed"
+        return "free"
+    if form_hint == "fixed":
+        if free_hits >= fixed_hits + 3 and free_hits >= 3:
+            return "free"
+        return "fixed"
+
+    if free_hits > fixed_hits:
+        return "free"
+    return "fixed"
+
+def _fix_fortran_use_la_constants(src: str) -> str:
+    """Replace 'use LA_CONSTANTS, only: ...' with local declarations.
+
+    This is a pragmatic shim for FABLE's limited F90 parsing.
+    We keep the original USE lines as comments and inject local constants.
+    A marker comment '### MUST BE FIXED' is added intentionally.
+    """
+    import re
+
+    def split_eol(line: str):
+        if line.endswith("\r\n"):
+            return line[:-2], "\r\n"
+        if line.endswith("\n"):
+            return line[:-1], "\n"
+        if line.endswith("\r"):
+            return line[:-1], "\r"
+        return line, ""
+
+    def code_part(raw: str) -> str:
+        return raw.split("!", 1)[0]
+
+    USE_HEAD_RE = re.compile(r"^\s*use\s+la_constants\b", flags=re.IGNORECASE)
+
+    lines = src.splitlines(True)
+    out = []
+    i = 0
+    found = False
+    wp_kind = None  # "dp" or "sp"
+    imported = set()
+
+    while i < len(lines):
+        raw, eol = split_eol(lines[i])
+        if not USE_HEAD_RE.match(code_part(raw).strip()):
+            out.append(raw + eol)
+            i += 1
+            continue
+
+        # Collect the whole USE statement (free-form & continuations).
+        found = True
+        block = []
+        while i < len(lines):
+            r, e = split_eol(lines[i])
+            block.append(r)
+            cp = code_part(r).rstrip()
+            i += 1
+            if cp.endswith("&"):
+                continue
+            # Next line can be a continuation starting with '&' or 'only:'
+            if i < len(lines):
+                nxt = code_part(lines[i]).lstrip()
+                if nxt.startswith("&") or nxt.lower().startswith("only:"):
+                    continue
+            break
+
+        # Parse "only:" list if present.
+        flat = " ".join([code_part(b).replace("&", " ") for b in block])
+        m_only = re.search(r"\bonly\s*:\s*(.*)$", flat, flags=re.IGNORECASE)
+        if m_only:
+            only_list = m_only.group(1)
+            # Split by commas (good enough here).
+            items = [x.strip() for x in only_list.split(",") if x.strip()]
+            for it in items:
+                # Support renaming: lhs=>rhs
+                if "=>" in it:
+                    lhs, rhs = [x.strip().lower() for x in it.split("=>", 1)]
+                    imported.add(lhs)
+                    if lhs == "wp":
+                        if rhs in ("dp", "sp"):
+                            wp_kind = rhs
+                else:
+                    imported.add(it.strip().lower())
+
+        # Emit replacement block.
+        # Use free-form comments ('!'); if later lowered to fixed-form,
+        # your layout normalizer can convert them to 'C' comments.
+        out.append("! ### MUST BE FIXED: replaced 'use LA_CONSTANTS, only: ...' with local stubs\n")
+        for b in block:
+            out.append("! original: " + b.strip() + "\n")
+
+        # Decide precision if not found explicitly.
+        if wp_kind is None:
+            # Fallback heuristic: if we imported dp-like names, assume dp.
+            wp_kind = "dp" if ("dp" in flat.lower() or "dzero" in flat.lower() or "done" in flat.lower()) else "sp"
+
+        if wp_kind == "dp":
+            out.append("DOUBLE PRECISION zero, half, one, safmin, safmax\n")
+            out.append("PARAMETER (zero = 0.0D0)\n")
+            out.append("PARAMETER (half = 0.5D0)\n")
+            out.append("PARAMETER (one  = 1.0D0)\n")
+            # IEEE-754 double approximations (good enough as a stub).
+            out.append("! ### MUST BE FIXED: safmin/safmax are provided via Rlamch\n")
+            out.append("PARAMETER (safmin = Rlamch('Safe minimum'))\n")
+            out.append("PARAMETER (safmax = Rlamch('Safe Maximum'))\n")
+        else:
+            out.append("REAL zero, half, one, safmin, safmax\n")
+            out.append("PARAMETER (zero = 0.0E0)\n")
+            out.append("PARAMETER (half = 0.5E0)\n")
+            out.append("PARAMETER (one  = 1.0E0)\n")
+            out.append("! ### MUST BE FIXED: safmin/safmax should match LA_CONSTANTS (typically slamch)\n")
+            out.append("! ### MUST BE FIXED: safmin/safmax are provided via Rlamch\n")
+            out.append("PARAMETER (safmin = Rlamch('Safe minimum'))\n")
+            out.append("PARAMETER (safmax = Rlamch('Safe Maximum'))\n")
+
+    src2 = "".join(out)
+    if not found:
+        return src2
+
+    # Rewrite REAL(KIND=wp) / REAL(wp) and numeric literals with _wp suffix.
+    if wp_kind == "dp":
+        src2 = re.sub(r"\breal\s*\(\s*kind\s*=\s*wp\s*\)", "DOUBLE PRECISION", src2, flags=re.IGNORECASE)
+        src2 = re.sub(r"\breal\s*\(\s*wp\s*\)", "DOUBLE PRECISION", src2, flags=re.IGNORECASE)
+        # 1.0_wp -> 1.0D0, 1e-3_wp -> 1D-3
+        def _wp_lit(m):
+            num = m.group("num")
+            num = re.sub(r"[eE]([+\-]?\d+)", r"D\1", num)
+            return num if ("D" in num or "d" in num) else (num + "D0")
+        src2 = re.sub(r"(?P<num>(?:\d+\.\d*|\d*\.\d+|\d+)(?:[eE][+\-]?\d+)?)\s*_wp\b",
+                      _wp_lit, src2, flags=re.IGNORECASE)
+    else:
+        src2 = re.sub(r"\breal\s*\(\s*kind\s*=\s*wp\s*\)", "REAL", src2, flags=re.IGNORECASE)
+        src2 = re.sub(r"\breal\s*\(\s*wp\s*\)", "REAL", src2, flags=re.IGNORECASE)
+        def _wp_lit_sp(m):
+            num = m.group("num")
+            num = re.sub(r"[dD]([+\-]?\d+)", r"E\1", num)
+            return num if ("E" in num or "e" in num) else (num + "E0")
+        src2 = re.sub(r"(?P<num>(?:\d+\.\d*|\d*\.\d+|\d+)(?:[dD][+\-]?\d+)?)\s*_wp\b",
+                      _wp_lit_sp, src2, flags=re.IGNORECASE)
+
+    return src2
+
+def _preprocess_fortran_fixed_form(src: str) -> typing.Tuple[str, str]:
+    """Preprocess a fixed-form Fortran source.
+
+    Returns: (new_src, emit_form)
+      emit_form is 'fixed' or 'free' and controls the temp file suffix.
+    """
+    new_src = _fix_fortran_externals(src)
+    new_src = _fix_fortran_use_la_constants(new_src)    
+    new_src = _fix_fortran_end_statements(new_src)
+    # Downlevel common F90 constructs that sometimes appear even in fixed-form files.
+    new_src = _fix_fortran_iso_fortran_env_real64(new_src)
+    new_src = _fix_fortran_f90_decl_syntax(new_src)
+    new_src = _fix_fortran_select_case_to_if(new_src)
+    return new_src, "fixed"
+
+def _preprocess_fortran_free_form(src: str) -> typing.Tuple[str, str]:
+    """Preprocess a free-form Fortran source.
+
+    Returns: (new_src, emit_form)
+      emit_form is 'fixed' or 'free' and controls the temp file suffix.
+
+    NOTE:
+      If you add a lowering pass that converts free-form into fixed-form
+      (e.g. rewriting '&' continuations into column-6 continuations, or
+      rewriting SELECT CASE into IF/ELSE IF), return emit_form='fixed'.
+    """
+    new_src = _fix_fortran_externals(src)
+    new_src = _fix_fortran_use_la_constants(new_src)
+    new_src = _fix_fortran_end_statements(new_src)
+
+    # Heuristic: if the source uses typical F90-only syntax that FABLE's reader
+    # can't digest reliably (especially free-form '&' continuations), lower it
+    # into fixed-form and emit a ".f" temporary.
+    lower_to_fixed = False
+    low = new_src.lower()
+    if "::" in low:
+        lower_to_fixed = True
+    if re.search(r"(?m)^\s*use\b", low):
+        lower_to_fixed = True
+    if re.search(r"(?m)^\s*select\s+case\b", low):
+        lower_to_fixed = True
+
+    if not lower_to_fixed:
+        # Detect a trailing '&' in the code part (before any '!' comment).
+        for line in new_src.splitlines():
+            s = line.lstrip()
+            if not s or s.startswith("!"):
+                continue
+            code = line.split("!", 1)[0]
+            if code.rstrip().endswith("&"):
+                lower_to_fixed = True
+                break
+
+    if lower_to_fixed:
+        # These helpers emit fixed-form comments ('C' in column 1), so only apply
+        # them when we are going to emit fixed-form.
+        new_src = _fix_fortran_iso_fortran_env_real64(new_src)
+        new_src = _fix_fortran_f90_decl_syntax(new_src)
+        new_src = _fix_fortran_select_case_to_if(new_src)
+        new_src = _fix_fortran_free_form_ampersand_continuations(new_src)
+        new_src = _normalize_free_form_to_fixed_form_layout(new_src)
+        return new_src, "fixed"
+
+    return new_src, "free"
+
 def _split_top_level_commas(s: str):
     """Split by commas, ignoring commas inside parentheses."""
     items = []
@@ -7590,8 +7857,15 @@ def _fix_fortran_free_form_ampersand_continuations(src: str) -> str:
 def _preprocess_fortran_files(file_names):
     """Return (patched_file_names, temp_files) for FABLE parsing.
 
-    Each input file is scanned and, if it contains F90-style EXTERNAL
-    declarations, a temporary patched copy is written and used instead.
+    The input source form (free/fixed) is detected using the file extension
+    plus a lightweight content heuristic. The preprocessing pipeline and the
+    temporary file suffix are chosen accordingly.
+
+    - fixed-form input  -> emit suffix ".f" (fixed)
+    - free-form input   -> emit suffix ".f90" (free) by default
+
+    If preprocessing does not change the source, the original filename is
+    returned unless we need to force the suffix to match the detected form.
     """
     patched = []
     temp_files = []
@@ -7600,28 +7874,35 @@ def _preprocess_fortran_files(file_names):
             with open(fn, "r") as f:
                 src = f.read()
         except OSError:
-            # If we can't read it, fall back to the original name.
             patched.append(fn)
             continue
 
-        new_src = _fix_fortran_externals(src)
-        new_src = _fix_fortran_end_statements(new_src)
-        new_src = _fix_fortran_free_form_ampersand_continuations(new_src)
-        new_src = _fix_fortran_iso_fortran_env_real64(new_src)
-        new_src = _fix_fortran_f90_decl_syntax(new_src)
-        new_src = _fix_fortran_select_case_to_if(new_src)
+        src_form = _detect_fortran_source_form(fn, src)
+        if src_form == "free":
+            new_src, emit_form = _preprocess_fortran_free_form(src)
+        else:
+            new_src, emit_form = _preprocess_fortran_fixed_form(src)
 
-        # Prevent fixed-form continuation mis-detection for free-form inputs.
-        if fn.lower().endswith((".f90", ".f95", ".f03", ".f08", ".f18")):
-            new_src = _normalize_free_form_to_fixed_form_layout(new_src)
+        ext = os.path.splitext(fn)[1].lower()
+        free_exts = {".f90", ".f95", ".f03", ".f08", ".f18"}
+        fixed_exts = {".f", ".for", ".ftn", ".f77"}
 
-        if new_src == src:
-            # No change needed.
+        # If the content is unchanged but the extension does not match the
+        # detected/desired form, still write a temporary copy with a matching
+        # suffix so the downstream reader can pick the correct mode.
+        need_temp = (new_src != src)
+        if emit_form == "free" and ext not in free_exts:
+            need_temp = True
+        if emit_form == "fixed" and ext not in fixed_exts:
+            need_temp = True
+
+        if not need_temp:
             patched.append(fn)
             continue
 
-        # Write a temporary patched copy.
-        fd, tmp = tempfile.mkstemp(prefix="fable_tmp_", suffix=".f")
+        suffix = ".f90" if emit_form == "free" else ".f"
+
+        fd, tmp = tempfile.mkstemp(prefix="fable_tmp_", suffix=suffix)
         os.close(fd)
         with open(tmp, "w") as g:
             g.write(new_src)
@@ -7629,7 +7910,6 @@ def _preprocess_fortran_files(file_names):
         temp_files.append(tmp)
 
     return patched, temp_files
-
 
 def process(
         file_names=None,
