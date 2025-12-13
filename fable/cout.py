@@ -1219,6 +1219,19 @@ def called_fproc_needs_cmn(conv_info, called_name):
 
 
 def cmn_needs_to_be_inserted(conv_info, prev_tok):
+    # prev_tok may legitimately be None
+    if prev_tok is None:
+        return False
+
+    # Intrinsic functions (e.g. HUGE) are NOT variables and must not be
+    # queried via get_fdecl().
+    from fable import intrinsics
+    lname = prev_tok.value.lower()
+    if (lname in intrinsics.set_lower
+        or lname in intrinsics.extra_set_lower
+        or lname in intrinsics.io_set_lower):
+        return False
+
     if (prev_tok is not None
             and prev_tok.is_identifier()
             and conv_info.fprocs_by_name is not None
@@ -1698,6 +1711,27 @@ def _conj_repl(arg: str) -> str:
     arg = arg.strip()
     return f"conj({arg})"
 
+def _is_intrinsic_name(name: str) -> bool:
+    """Return True if 'name' should be treated as a Fortran intrinsic."""
+    from fable import intrinsics
+    lname = name.lower()
+    return (
+        lname in intrinsics.set_lower
+        or lname in intrinsics.extra_set_lower
+        or lname in intrinsics.io_set_lower
+    )
+
+def _map_intrinsic_vmap(conv_info, name: str) -> None:
+    """Map an intrinsic identifier into conv_info.vmap as fem::<name>."""
+    lname = name.lower()
+    conv_info.vmap[name] = "fem::" + lname
+    conv_info.vmap[lname] = "fem::" + lname
+
+
+def _huge_repl(_arg: str) -> str:
+    """Replacement for HUGE(x): use LAPACK-style overflow constant via Rlamch."""
+    # We intentionally ignore the argument and use the machine overflow constant.
+    return 'Rlamch("O")'
 
 _dummy_character_args = set()
 
@@ -2092,6 +2126,7 @@ def rewrite_intrinsics(text: str) -> str:
         ("fem::conjg",  _conj_repl),
         ("fem::conj",   _conj_repl),
         ("fem::dconjg", _conj_repl),
+        ("fem::huge",   _huge_repl),
     ]
 
     # Apply unary intrinsics first (they keep parentheses balance themselves)
@@ -3755,6 +3790,11 @@ def declare_identifiers_parameter_recursion(
     for id_tok in extract_identifiers(tokens=tokens):
         if (id_tok.value in conv_info.vmap):
             continue
+        # Intrinsics used in PARAMETER expressions must NOT trigger declaration lookup.
+        # Otherwise we crash on e.g. HUGE(ZERO) with KeyError('huge').
+        if _is_intrinsic_name(id_tok.value):
+            _map_intrinsic_vmap(conv_info, id_tok.value)
+            continue
         conv_info.vmap[id_tok.value] = None
         fdecl = conv_info.fproc.get_fdecl(id_tok=id_tok)
         declare_identifiers_parameter_recursion(
@@ -3867,6 +3907,11 @@ def simple_equivalence(
 
 
 def declare_identifier(conv_info, top_scope, curr_scope, id_tok, crhs=None):
+    # Intrinsics are not declared variables; just map and return.
+    if _is_intrinsic_name(id_tok.value):
+        _map_intrinsic_vmap(conv_info, id_tok.value)
+        return crhs is not None
+
     fdecl = conv_info.fproc.get_fdecl(id_tok=id_tok)
     conv_info.set_vmap_from_fdecl(fdecl=fdecl)
     have_goto = (len(conv_info.fproc.target_statement_labels()) != 0)
