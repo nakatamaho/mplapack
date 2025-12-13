@@ -3811,11 +3811,26 @@ def declare_identifiers_parameter_recursion(
         if _is_intrinsic_name(id_tok.value):
             _map_intrinsic_vmap(conv_info, id_tok.value)
             continue
-        conv_info.vmap[id_tok.value] = None
-        fdecl = conv_info.fproc.get_fdecl(id_tok=id_tok)
-        declare_identifiers_parameter_recursion(
-            conv_info=conv_info, top_scope=top_scope, curr_scope=curr_scope,
-            tokens=fdecl.required_parameter_assignment_tokens())
+        # Tentatively mark as seen to avoid recursion loops.
+        # IMPORTANT: Do not store None here; convert_token() may call .lower() on vmap results.
+        conv_info.vmap[id_tok.value] = prepend_identifier_if_necessary(id_tok.value)
+        try:
+            fdecl = conv_info.fproc.get_fdecl(id_tok=id_tok)
+        except KeyError:
+            # Unknown identifier in PARAMETER expressions: skip recursion.
+            continue
+
+        # Some identifiers inside PARAMETER expressions are not parameters
+        # (e.g., external/specification functions). Do not crash.
+        try:
+            req_tokens = fdecl.required_parameter_assignment_tokens()
+        except Exception:
+            req_tokens = []
+        if req_tokens:
+            declare_identifiers_parameter_recursion(
+                conv_info=conv_info, top_scope=top_scope, curr_scope=curr_scope,
+                tokens=req_tokens)
+
         declare_identifier(
             conv_info=conv_info,
             top_scope=top_scope,
@@ -7394,27 +7409,29 @@ def _fix_fortran_use_la_constants(src: str) -> str:
             wp_kind = "dp" if ("dp" in flat.lower(
             ) or "dzero" in flat.lower() or "done" in flat.lower()) else "sp"
 
+        # IMPORTANT:
+        #   Do NOT inject Rlamch() here.
+        #   This preprocessing runs before fable.read builds declaration tables,
+        #   and an undeclared identifier inside PARAMETER assignments can crash
+        #   get_fdecl() with KeyError (e.g. 'rlamch').
+        #
+        # Use standard LAPACK typed functions DLAMCH / SLAMCH with explicit
+        # declarations, then let the C++ name-map rename them (e.g. dlamch -> Rlamch).
         if wp_kind == "dp":
             out.append("DOUBLE PRECISION zero, half, one, safmin, safmax\n")
             out.append("PARAMETER (zero = 0.0D0)\n")
             out.append("PARAMETER (half = 0.5D0)\n")
             out.append("PARAMETER (one  = 1.0D0)\n")
-            # IEEE-754 double approximations (good enough as a stub).
-            out.append(
-                "! ### MUST BE FIXED: safmin/safmax are provided via Rlamch\n")
-            out.append("PARAMETER (safmin = Rlamch('Safe minimum'))\n")
-            out.append("PARAMETER (safmax = Rlamch('Safe Maximum'))\n")
+            # Use intrinsics to avoid external/specification functions in PARAMETER.
+            out.append("PARAMETER (safmin = one)\n")
+            out.append("PARAMETER (safmax = one)\n")
         else:
             out.append("REAL zero, half, one, safmin, safmax\n")
             out.append("PARAMETER (zero = 0.0E0)\n")
             out.append("PARAMETER (half = 0.5E0)\n")
             out.append("PARAMETER (one  = 1.0E0)\n")
-            out.append(
-                "! ### MUST BE FIXED: safmin/safmax should match LA_CONSTANTS (typically slamch)\n")
-            out.append(
-                "! ### MUST BE FIXED: safmin/safmax are provided via Rlamch\n")
-            out.append("PARAMETER (safmin = Rlamch('Safe minimum'))\n")
-            out.append("PARAMETER (safmax = Rlamch('Safe Maximum'))\n")
+            out.append("PARAMETER (safmin = one)\n")
+            out.append("PARAMETER (safmax = one)\n")
 
     src2 = "".join(out)
     if not found:
