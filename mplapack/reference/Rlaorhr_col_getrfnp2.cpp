@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DLAORHR_COL_GETRFNP2.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 

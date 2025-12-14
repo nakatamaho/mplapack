@@ -26,6 +26,14 @@
  *
  */
 
+// Derived from LAPACK routine ILAENV2STAGE.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+//   Nick R. Papior
+
 #include <mpblas.h>
 #include <mplapack.h>
 

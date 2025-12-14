@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DLAR1V.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
