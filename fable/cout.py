@@ -6526,6 +6526,36 @@ def _postprocess_strip_float_suffix(lines):
         out.append(pat.sub(r'\1', line))
     return out
 
+def _postprocess_strip_wp_kind_suffix(lines):
+    """Remove leftover Fortran kind suffixes like '_wp' from numeric literals.
+
+    The tokenizer can split `0.0_wp` into `0.0` + `_wp`, and the C++ printer
+    may additionally append a float suffix, producing `0.0f_wp`. These are
+    not valid C++ literals. Normalize them to plain numeric literals.
+
+    Examples:
+      0.0f_wp  -> 0.0
+      1.0_wp   -> 1.0
+      1_wp     -> 1
+      1.e-3_wp -> 1.e-3
+    """
+    pat = re.compile(
+        r'(?<![A-Za-z0-9_])'
+        r'(?P<num>(?:\d+\.\d*|\d*\.\d+|\d+)(?:[eE][+\-]?\d+)?)'
+        r'(?:[fF])?'
+        r'_wp\b',
+        flags=re.IGNORECASE,
+    )
+    out = []
+    for line in lines:
+        idx = line.find("//")
+        if idx >= 0:
+            code, comment = line[:idx], line[idx:]
+        else:
+            code, comment = line, ""
+        code = pat.sub(r'\g<num>', code)
+        out.append(code + comment)
+    return out
 
 def _postprocess_index_zero_simplify(text):
     """
@@ -8907,6 +8937,9 @@ def process(
 
     # Strip C-style float suffixes from literals (1.0f -> 1.0, etc.).
     result = _postprocess_strip_float_suffix(result)
+
+    # Strip leftover Fortran kind suffixes on literals (e.g. 0.0f_wp -> 0.0).
+    result = _postprocess_strip_wp_kind_suffix(result)
 
     #
     result = _postprocess_index_zero_simplify(result)
