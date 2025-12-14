@@ -8,7 +8,7 @@ from fable import intrinsics
 from fable import equivalence
 from fable import utils
 import sys
-
+import re
 
 def expandtabs_track_columns(s, tabsize=8):
     """
@@ -632,6 +632,109 @@ def combine_continuation_lines_and_strip_spaces(source_lines):
             i_sl = k_sl + 1
     return result
 
+# -----------------------------------------------------------------------------
+# Free-form (&) continuation support
+#
+# This parser is fixed-form oriented: continuation is recognized by column 6.
+# LAPACK .f90 sources use free-form continuation with trailing '&' and optional
+# leading '&' on the next line. If we feed such files as-is, IF/ELSEIF blocks
+# can be split incorrectly and later stages may crash.
+#
+# Strategy: rewrite free-form '&' continuation into fixed-form continuation
+# markers (column 6). IMPORTANT: do NOT physically join lines into one long
+# line, because source_line() truncates statement text to columns 7-72.
+# -----------------------------------------------------------------------------
+
+_FREE_FORM_EXTS_LOWER = (".f90", ".f95", ".f03", ".f08", ".f18", ".fpp")
+
+
+def _ff_find_comment_index(line):
+    """Return index of '!' outside quotes, or -1."""
+    in_sq = False
+    in_dq = False
+    for i, ch in enumerate(line):
+        if ch == "'" and not in_dq:
+            in_sq = not in_sq
+        elif ch == '"' and not in_sq:
+            in_dq = not in_dq
+        elif ch == "!" and not in_sq and not in_dq:
+            return i
+    return -1
+
+
+def _ff_split_code_and_comment(line):
+    i = _ff_find_comment_index(line)
+    if i < 0:
+        return line, ""
+    return line[:i], line[i:]
+
+
+def _ff_strip_trailing_amp(code):
+    """
+    If the last non-space character of code is '&', remove it and return
+    (new_code, True). Otherwise return (code, False).
+    """
+    s = code.rstrip()
+    if s.endswith("&"):
+        return s[:-1].rstrip(), True
+    return code, False
+
+
+def _rewrite_free_form_to_fixed_form_lines(file_name, lines):
+    """
+    Convert free-form '&' continuations into fixed-form continuation markers:
+      - first line of a statement: col6=' '
+      - continuation line:         col6='1' (any non-space works)
+    Also preserves optional numeric statement labels by placing them in cols 1-5.
+    Comment-only lines are turned into empty lines so they are treated as comments.
+    """
+    name = str(file_name)
+    lower = name.lower()
+    if not lower.endswith(_FREE_FORM_EXTS_LOWER):
+        return lines
+
+    out = []
+    pending_cont = False  # previous code line ended with '&'
+    label_re = re.compile(r"^\s*(\d{1,5})\s+(.*)$")
+
+    for raw in lines:
+        stripped = raw.lstrip()
+
+        # Keep line count but make comment-only/blank lines "comments" for this parser.
+        # If we keep '!' text in columns 7-72, it becomes a non-comment empty-code line
+        # and will trip assertions later.
+        if stripped == "" or stripped.startswith("!"):
+            out.append("")
+            continue
+
+        code, comment = _ff_split_code_and_comment(raw)
+        code2, ends_amp = _ff_strip_trailing_amp(code)
+
+        is_cont_line = pending_cont
+        pending_cont = ends_amp
+
+        label = None
+        body = code2
+
+        # Statement labels are only valid on non-continuation lines.
+        if not is_cont_line:
+            m = label_re.match(body)
+            if m:
+                label = m.group(1)
+                body = m.group(2)
+
+        body = body.lstrip()
+
+        # Optional leading '&' on free-form continuation lines.
+        if is_cont_line and body.startswith("&"):
+            body = body[1:].lstrip()
+
+        col1_5 = (label.rjust(5) if label is not None else " " * 5)
+        col6 = ("1" if is_cont_line else " ")
+        out.append(col1_5 + col6 + body + comment)
+
+    return out
+
 
 def load_includes(global_line_index_generator, stripped_source_lines):
     import os.path as op
@@ -660,6 +763,9 @@ def load(global_line_index_generator, file_name, skip_load_includes=False):
     source_lines = []
     with open(file_name) as f:
         lines = f.read().splitlines()
+    # Rewrite free-form '&' continuation into fixed-form continuation markers.
+    # This must happen before constructing source_line objects.
+    lines = _rewrite_free_form_to_fixed_form_lines(file_name=file_name, lines=lines)
     for i_line, line in enumerate(lines):
         source_lines.append(source_line(
             global_line_index_generator=global_line_index_generator,

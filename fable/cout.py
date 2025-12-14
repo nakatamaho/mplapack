@@ -7301,6 +7301,14 @@ def _drop_fortran_intrinsic_statements(src: str) -> str:
             return False
         if raw and raw[0] in ("c", "C", "*", "!"):
             return False
+        # Guard: treat as fixed-form only if columns 1-5 are a label field
+        # (spaces/digits/tabs). This prevents false positives on free-form lines like
+        # "   if(...)" where raw[5] may be '(' and would otherwise be misread as a
+        # fixed-form continuation.
+        prefix = raw[:5]
+        for ch in prefix:
+            if ch not in " \t0123456789":
+                return False
         return raw[5] not in (" ", "\t")
 
     lines = src.splitlines(True)
