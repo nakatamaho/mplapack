@@ -10,6 +10,7 @@ from fable import utils
 import sys
 import re
 
+
 def expandtabs_track_columns(s, tabsize=8):
     """
     Expand tabs in s and track visual column positions.
@@ -645,6 +646,7 @@ def combine_continuation_lines_and_strip_spaces(source_lines):
 # line, because source_line() truncates statement text to columns 7-72.
 # -----------------------------------------------------------------------------
 
+
 _FREE_FORM_EXTS_LOWER = (".f90", ".f95", ".f03", ".f08", ".f18", ".fpp")
 
 
@@ -765,7 +767,8 @@ def load(global_line_index_generator, file_name, skip_load_includes=False):
         lines = f.read().splitlines()
     # Rewrite free-form '&' continuation into fixed-form continuation markers.
     # This must happen before constructing source_line objects.
-    lines = _rewrite_free_form_to_fixed_form_lines(file_name=file_name, lines=lines)
+    lines = _rewrite_free_form_to_fixed_form_lines(
+        file_name=file_name, lines=lines)
     for i_line, line in enumerate(lines):
         source_lines.append(source_line(
             global_line_index_generator=global_line_index_generator,
