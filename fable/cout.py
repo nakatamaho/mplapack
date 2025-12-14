@@ -7259,7 +7259,7 @@ def _fix_fortran_end_statements(src: str) -> str:
     return "".join(out)
 
 
-def _drop_fortran_intrinsic_statements(src: str) -> str:
+def _drop_fortran_intrinsic_statements(src: str, *, source_form: str = "fixed") -> str:
     """Drop Fortran INTRINSIC statements (and their continuation lines).
 
     Example that breaks some parsers:
@@ -7329,8 +7329,9 @@ def _drop_fortran_intrinsic_statements(src: str) -> str:
 
             lstr = raw.lstrip()
             is_free_cont = lstr.startswith("&")
-            is_cont = prev_trailing_amp or is_free_cont or is_fixed_form_continuation(
-                raw)
+            sf = (source_form or "fixed").lower()
+            use_fixed = (sf != "free")
+            is_cont = prev_trailing_amp or is_free_cont or (use_fixed and is_fixed_form_continuation(raw))
 
             if is_cont:
                 code, _comment = split_code_comment(raw)
@@ -7792,7 +7793,7 @@ def _preprocess_fortran_fixed_form(src: str) -> typing.Tuple[str, str]:
     new_src = _fix_fortran_use_la_constants(new_src)
     new_src = _fix_fortran_use_la_xisnan(new_src)
     new_src = _drop_fortran_intrinsic_statements(
-        new_src)  # drop unconditionally
+        new_src, source_form="fixed")  # drop unconditionally
     new_src = _fix_fortran_iso_fortran_env_real64(
         new_src)  # harmless even if not present
     new_src = _fix_fortran_intrinsic_kind_keyword_arguments(new_src)
@@ -7813,7 +7814,7 @@ def _preprocess_fortran_free_form(src: str) -> typing.Tuple[str, str]:
     new_src = _fix_fortran_use_la_constants(new_src)
     new_src = _fix_fortran_use_la_xisnan(new_src)
     new_src = _drop_fortran_intrinsic_statements(
-        new_src)  # drop unconditionally
+        new_src, source_form="free")  # drop unconditionally
     new_src = _fix_fortran_intrinsic_kind_keyword_arguments(new_src)
     lower_to_fixed = _should_lower_free_to_fixed(new_src)
 
@@ -7880,9 +7881,46 @@ def _fix_fortran_f90_decl_syntax(src: str) -> str:
         flags=re.IGNORECASE
     )
 
+    # FABLE_SKIP_PARAMETER_CONTINUATION:
+    # If an F90 PARAMETER declaration is continued with free-form '&',
+    # converting it line-by-line into "PARAMETER(...)" can introduce a
+    # premature closing ')' that prevents our continuation rewriter from
+    # working. In that case we emit a simple stub parameter and comment
+    # out the original continued expression for manual fix.
+    def _code_part_no_comment(s: str) -> str:
+        return s.split("!", 1)[0]
+
+    def _endswith_ampersand(s: str) -> bool:
+        return _code_part_no_comment(s).rstrip().endswith("&")
+
+    def _default_param_literal(base_type_upper: str) -> str:
+        bt = (base_type_upper or "").strip().upper()
+        if bt.startswith("LOGICAL"):
+            return ".FALSE."
+        if bt.startswith("DOUBLE PRECISION"):
+            return "0D0"
+        if bt.startswith("REAL"):
+            return "0.0"
+        if bt.startswith("COMPLEX"):
+            return "(0.0,0.0)"
+        return "0"
+
     out = []
+    skipping_param_cont = False
+    pending_param_cont = False
     for line in src.splitlines(True):
         raw, eol = split_eol(line)
+        if skipping_param_cont:
+            # Keep pure comment/blank lines unchanged while skipping.
+            if raw.strip() == "" or raw.lstrip().startswith("!"):
+                out.append(raw + eol)
+                continue
+            out.append("! FABLE: skipped PARAMETER continuation: " + raw.strip() + eol)
+            pending_param_cont = _endswith_ampersand(raw)
+            if not pending_param_cont:
+                skipping_param_cont = False
+            continue
+
 
         # Keep fixed-form comment lines intact.
         if raw and raw[0] in ("c", "C", "*", "!"):
@@ -7926,7 +7964,18 @@ def _fix_fortran_f90_decl_syntax(src: str) -> str:
                 else:
                     names.append(it.strip())
             out.append(f"{indent}{base_type} {', '.join(names)}{eol}")
-            out.append(f"{indent}PARAMETER ({', '.join(decl_items)}){eol}")
+
+            # If this PARAMETER declaration is continued with free-form '&',
+            # emit a simple stub and comment out the original continued expression.
+            if _endswith_ampersand(raw):
+                lit = _default_param_literal(base_type)
+                out.append(f"{indent}PARAMETER ({', '.join([n + ' = ' + lit for n in names])}){eol}")
+                out.append("! FABLE: original continued PARAMETER expression omitted; fix manually." + eol)
+                out.append("! FABLE_ORIG: " + raw.strip() + eol)
+                skipping_param_cont = True
+                pending_param_cont = True
+            else:
+                out.append(f"{indent}PARAMETER ({', '.join(decl_items)}){eol}")
         else:
             out.append(f"{indent}{base_type} {right}{eol}")
 
