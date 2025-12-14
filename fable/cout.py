@@ -218,6 +218,33 @@ complex_pointer_identifiers = set()
 # small fixed-length CHARACTER scalars mapped to char[]
 small_char_identifiers = set()
 
+# -----------------------------------------------------------------------------
+# Machine-constant-style intrinsics in F90 PARAMETER expressions
+#
+# Some LAPACK F90 sources define scaling constants via RADIX/MINEXPONENT/
+# MAXEXPONENT. Our preprocessing sometimes has to drop multi-line PARAMETER
+# expressions to keep the legacy parser alive, which previously resulted in
+# silent bogus initializers (e.g. 0.0).
+#
+# Policy: if we detect these intrinsics in a PARAMETER initializer (either
+# directly in the converted expression, or via a dropped continuation), emit
+# "UNHANDLED" in the generated C++ so the build fails loudly and the human can
+# replace it with a correct MPLAPACK-level implementation.
+# -----------------------------------------------------------------------------
+
+_MACHINE_CONST_INTRINSICS = ("radix", "minexponent", "maxexponent")
+
+# Lowercased parameter identifiers that must be forced to UNHANDLED.
+_FORCE_UNHANDLED_PARAMETER_NAMES = set()
+
+
+def _contains_machine_const_intrinsics(text: str) -> bool:
+    """Return True if 'text' mentions RADIX/MINEXPONENT/MAXEXPONENT."""
+    if not text:
+        return False
+    low = text.lower()
+    return any(k in low for k in _MACHINE_CONST_INTRINSICS)
+
 
 def _mplapack_default_name(name: str) -> str:
     """Fallback rule: s/d -> R, c/z -> C, others unchanged."""
@@ -3984,7 +4011,8 @@ def declare_identifier(conv_info, top_scope, curr_scope, id_tok, crhs=None):
     if fdecl is None:
         # Unknown identifier: do not crash. Keep it as a plain identifier.
         # (This may still lead to a compile error downstream, but conversion continues.)
-        conv_info.vmap[id_tok.value] = prepend_identifier_if_necessary(id_tok.value)
+        conv_info.vmap[id_tok.value] = prepend_identifier_if_necessary(
+            id_tok.value)
         return crhs is not None
 
     conv_info.set_vmap_from_fdecl(fdecl=fdecl)
@@ -4039,6 +4067,14 @@ def declare_identifier(conv_info, top_scope, curr_scope, id_tok, crhs=None):
                     crhs = convert_tokens(
                         conv_info=conv_info, tokens=fdecl.parameter_assignment_tokens)
                 const = True
+                # If the PARAMETER initializer involves machine-constant intrinsics
+                # (RADIX/MINEXPONENT/MAXEXPONENT) or was dropped during preprocessing,
+                # do not silently emit a bogus numeric value. Force an explicit
+                # UNHANDLED initializer so the C++ build fails loudly.
+                if (fdecl.is_parameter()
+                        and (fdecl.id_tok.value.lower() in _FORCE_UNHANDLED_PARAMETER_NAMES
+                             or _contains_machine_const_intrinsics(crhs))):
+                    crhs = "UNHANDLED"
         elif (fdecl.parameter_assignment_tokens is not None):
             id_tok.raise_semantic_error(
                 msg="Assignment to PARAMETER %s" % id_tok.value)
@@ -6526,6 +6562,7 @@ def _postprocess_strip_float_suffix(lines):
         out.append(pat.sub(r'\1', line))
     return out
 
+
 def _postprocess_strip_wp_kind_suffix(lines):
     """Remove leftover Fortran kind suffixes like '_wp' from numeric literals.
 
@@ -6556,6 +6593,7 @@ def _postprocess_strip_wp_kind_suffix(lines):
         code = pat.sub(r'\g<num>', code)
         out.append(code + comment)
     return out
+
 
 def _postprocess_index_zero_simplify(text):
     """
@@ -7361,7 +7399,8 @@ def _drop_fortran_intrinsic_statements(src: str, *, source_form: str = "fixed") 
             is_free_cont = lstr.startswith("&")
             sf = (source_form or "fixed").lower()
             use_fixed = (sf != "free")
-            is_cont = prev_trailing_amp or is_free_cont or (use_fixed and is_fixed_form_continuation(raw))
+            is_cont = prev_trailing_amp or is_free_cont or (
+                use_fixed and is_fixed_form_continuation(raw))
 
             if is_cont:
                 code, _comment = split_code_comment(raw)
@@ -7938,6 +7977,11 @@ def _fix_fortran_f90_decl_syntax(src: str) -> str:
     out = []
     skipping_param_cont = False
     pending_param_cont = False
+    # Track which PARAMETER names were emitted with a stub initializer because
+    # we had to drop a multi-line free-form continuation expression.
+    pending_param_names = []
+    pending_param_needs_unhandled = False
+
     for line in src.splitlines(True):
         raw, eol = split_eol(line)
         if skipping_param_cont:
@@ -7945,12 +7989,25 @@ def _fix_fortran_f90_decl_syntax(src: str) -> str:
             if raw.strip() == "" or raw.lstrip().startswith("!"):
                 out.append(raw + eol)
                 continue
-            out.append("! FABLE: skipped PARAMETER continuation: " + raw.strip() + eol)
+            out.append(
+                "! FABLE: skipped PARAMETER continuation: " + raw.strip() + eol)
+
+            # Accumulate machine-constant intrinsic usage across continuation lines.
+            if _contains_machine_const_intrinsics(_code_part_no_comment(raw)):
+                pending_param_needs_unhandled = True
+
             pending_param_cont = _endswith_ampersand(raw)
             if not pending_param_cont:
                 skipping_param_cont = False
-            continue
 
+                # If the dropped PARAMETER expression mentioned machine-constant
+                # intrinsics, force the generated C++ initializer to UNHANDLED.
+                if pending_param_needs_unhandled:
+                    for nm in pending_param_names:
+                        _FORCE_UNHANDLED_PARAMETER_NAMES.add(nm.lower())
+                pending_param_names = []
+                pending_param_needs_unhandled = False
+            continue
 
         # Keep fixed-form comment lines intact.
         if raw and raw[0] in ("c", "C", "*", "!"):
@@ -7995,13 +8052,28 @@ def _fix_fortran_f90_decl_syntax(src: str) -> str:
                     names.append(it.strip())
             out.append(f"{indent}{base_type} {', '.join(names)}{eol}")
 
+            # Even for non-continued PARAMETER declarations, mark machine-constant
+            # intrinsic usage so we can force UNHANDLED in the C++ output.
+            if _contains_machine_const_intrinsics(_code_part_no_comment(raw)):
+                for nm in names:
+                    _FORCE_UNHANDLED_PARAMETER_NAMES.add(nm.lower())
+
             # If this PARAMETER declaration is continued with free-form '&',
             # emit a simple stub and comment out the original continued expression.
             if _endswith_ampersand(raw):
                 lit = _default_param_literal(base_type)
-                out.append(f"{indent}PARAMETER ({', '.join([n + ' = ' + lit for n in names])}){eol}")
-                out.append("! FABLE: original continued PARAMETER expression omitted; fix manually." + eol)
+                out.append(
+                    f"{indent}PARAMETER ({', '.join([n + ' = ' + lit for n in names])}){eol}")
+                out.append(
+                    "! FABLE: original continued PARAMETER expression omitted; fix manually." + eol)
                 out.append("! FABLE_ORIG: " + raw.strip() + eol)
+
+                # Remember names in this continuation block; we will decide at the
+                # end of the block whether they need to be forced to UNHANDLED.
+                pending_param_names = list(names)
+                pending_param_needs_unhandled = _contains_machine_const_intrinsics(
+                    _code_part_no_comment(raw)
+                )
                 skipping_param_cont = True
                 pending_param_cont = True
             else:
@@ -8533,6 +8605,11 @@ def process(
         data_specializations=True,
         debug=False):
     assert [file_names, all_fprocs].count(None) == 1
+
+    # Reset per-run marker set (used to force UNHANDLED initializers for
+    # machine-constant-style PARAMETER expressions).
+    _FORCE_UNHANDLED_PARAMETER_NAMES.clear()
+
     if (namespace is None or namespace == "please_specify"):
         namespace = ""  # Disabled: was "placeholder_please_replace"
 
