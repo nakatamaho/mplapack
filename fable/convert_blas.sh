@@ -65,21 +65,8 @@ while IFS= read -r line; do
     fi
 done < "$name_map"
 
-# If not found in the map, apply the default MPLAPACK rule: s/d -> R, c/z -> C.
 if [ -z "$mapped_name" ]; then
-    first_char="${lower_fortran:0:1}"
-    tail="${lower_fortran:1}"
-    case "$first_char" in
-        s|d)
-            mapped_name="R${tail}"
-            ;;
-        c|z)
-            mapped_name="C${tail}"
-            ;;
-        *)
-            mapped_name="$fortran_name"
-            ;;
-    esac
+   echo "Error: not in the $mapped_name" 
 fi
 
 cpp_generated="${src_dir}/${mapped_name}.cpp"

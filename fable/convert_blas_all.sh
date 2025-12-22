@@ -77,9 +77,4 @@ parallel -j "${JOBS:-$(nproc)}" '
      bash "$FABLE_CONVERT" "{}"
  ' ::: "${files[@]}"
 
-for src in "${files[@]}"; do
-    echo "Converting $src"
-    bash "$FABLE_CONVERT" "$src"
-done
-
 patch < "$HOME/mplapack/fable/3.9.1/patch-blas"
