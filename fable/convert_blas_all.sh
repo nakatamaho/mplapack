@@ -70,11 +70,6 @@ done
 # (convert_blas.sh / cout.py decide the .cpp name and do all postprocessing)
 # ------------------------------------------------------------
 
-#for src in "${files[@]}"; do
-#    echo "Converting $src"
-#    bash "$FABLE_CONVERT" "$src"
-#done
-
 FABLE_CONVERT="$HOME/mplapack/fable/convert_blas.sh"
 export FABLE_CONVERT
 parallel -j "${JOBS:-$(nproc)}" '
@@ -87,4 +82,4 @@ for src in "${files[@]}"; do
     bash "$FABLE_CONVERT" "$src"
 done
 
-patch < ~/mplapack/fable/patch-3.9.1
+patch < "$HOME/mplapack/fable/3.9.1/patch-blas"
