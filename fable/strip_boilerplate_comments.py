@@ -13,7 +13,7 @@ We remove only comment lines, never code lines. Targets:
 
 import sys
 from pathlib import Path
-from typing import List, Optional, Set
+from typing import List, Optional, Set, Tuple
 
 
 def is_comment_line(line: str) -> bool:
@@ -482,55 +482,102 @@ def compute_orphan_empty_comment_indices(lines: List[str]) -> Set[int]:
 # ---------------------------------------------------------------------
 
 
-def strip_lapack_comments(path: Path) -> None:
-    """Remove LAPACK boilerplate comment lines from a single file, if present."""
-    try:
-        src = path.read_text(encoding="utf-8", errors="ignore")
-    except OSError as e:
-        print(
-            f"strip_lapack_comments: failed to read {path}: {e}", file=sys.stderr)
-        return
-
+def strip_lapack_comments_text(src: str) -> Tuple[str, bool]:
+    """Return (output_text, changed) after removing boilerplate comments."""
     lines = src.splitlines(keepends=True)
 
-    to_skip = set()
+    to_skip: Set[int] = set()
     to_skip |= compute_doc_block_indices(lines)
     to_skip |= compute_inbody_header_indices(lines)
     to_skip |= compute_doxygen_indices(lines)
     to_skip |= compute_orphan_empty_comment_indices(lines)
     to_skip |= compute_lapack_header_blocks(lines)
+    # Intentionally run twice: after big-block removal, new include/function
+    # adjacencies can appear.
     to_skip |= compute_orphan_empty_comment_indices(lines)
+
     protect_set_comments(lines, to_skip)
     protect_test_comments(lines, to_skip)
 
     if not to_skip:
-        return
+        return src, False
 
-    out_lines = [
-        line for idx, line in enumerate(lines)
-        if idx not in to_skip
-    ]
+    out_lines = [line for idx, line in enumerate(lines) if idx not in to_skip]
+    out = "".join(out_lines)
+    return out, (out != src)
+
+
+def strip_lapack_comments_inplace(path: Path) -> bool:
+    """Edit a file in-place. Returns True if the file changed."""
+    try:
+        src = path.read_text(encoding="utf-8", errors="ignore")
+    except OSError as e:
+        print(f"strip_lapack_comments: failed to read {path}: {e}", file=sys.stderr)
+        return False
+
+    out, changed = strip_lapack_comments_text(src)
+    if not changed:
+        return False
 
     try:
-        path.write_text("".join(out_lines), encoding="utf-8")
+        path.write_text(out, encoding="utf-8")
     except OSError as e:
-        print(
-            f"strip_lapack_comments: failed to write {path}: {e}", file=sys.stderr)
+        print(f"strip_lapack_comments: failed to write {path}: {e}", file=sys.stderr)
+        return False
+
+    return True
 
 
 def main(argv: List[str]) -> None:
-    if len(argv) < 2:
-        print(
-            "Usage: strip_boilerplate_comments.py FILE [FILE...]", file=sys.stderr)
+    # Modes:
+    #   (default) stdout: print processed content; if no change, print original.
+    #   --inplace: edit files in-place, print nothing.
+    inplace = False
+    args: List[str] = []
+
+    for a in argv[1:]:
+        if a == "--inplace":
+            inplace = True
+        else:
+            args.append(a)
+
+    if not args:
+        print("Usage: strip_boilerplate_comments.py [--inplace] FILE [FILE...]",
+              file=sys.stderr)
         sys.exit(1)
 
-    for arg in argv[1:]:
-        p = Path(arg)
-        if not p.is_file():
-            print(
-                f"strip_lapack_comments: {p} is not a file, skipping", file=sys.stderr)
-            continue
-        strip_lapack_comments(p)
+    if not inplace and len(args) != 1:
+        print(
+            "strip_lapack_comments: stdout mode supports exactly one FILE. "
+            "Use --inplace for multiple files.",
+            file=sys.stderr,
+        )
+        sys.exit(2)
+
+    if inplace:
+        for arg in args:
+            p = Path(arg)
+            if not p.is_file():
+                print(f"strip_lapack_comments: {p} is not a file, skipping",
+                      file=sys.stderr)
+                continue
+            strip_lapack_comments_inplace(p)
+        return
+
+    # stdout mode
+    p = Path(args[0])
+    if not p.is_file():
+        print(f"strip_lapack_comments: {p} is not a file", file=sys.stderr)
+        sys.exit(3)
+
+    try:
+        src = p.read_text(encoding="utf-8", errors="ignore")
+    except OSError as e:
+        print(f"strip_lapack_comments: failed to read {p}: {e}", file=sys.stderr)
+        sys.exit(4)
+
+    out, _changed = strip_lapack_comments_text(src)
+    sys.stdout.write(out)
 
 
 if __name__ == "__main__":
