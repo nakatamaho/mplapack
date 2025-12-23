@@ -35,7 +35,7 @@
 
 #include <mpblas.h>
 
-void Rsyr(const char *uplo, INTEGER const n, REAL const &alpha, REAL *x, INTEGER const incx, REAL *a, INTEGER const lda) {
+void Rsyr(const char *uplo, INTEGER const n, REAL const alpha, REAL *x, INTEGER const incx, REAL *a, INTEGER const lda) {
     //
     // Test the input parameters.
     //

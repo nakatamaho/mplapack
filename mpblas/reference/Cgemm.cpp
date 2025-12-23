@@ -35,7 +35,7 @@
 
 #include <mpblas.h>
 
-void Cgemm(const char *transa, const char *transb, INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX const &alpha, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, COMPLEX const &beta, COMPLEX *c, INTEGER const ldc) {
+void Cgemm(const char *transa, const char *transb, INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX const alpha, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, COMPLEX const beta, COMPLEX *c, INTEGER const ldc) {
     //
     // Set  NOTA  and  NOTB  as  true if  A  and  B  respectively are not
     // conjugated or transposed, set  CONJA and CONJB  as true if  A  and

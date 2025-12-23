@@ -35,7 +35,7 @@
 
 #include <mpblas.h>
 
-void Rscal(INTEGER const n, REAL const &da, REAL *dx, INTEGER const incx) {
+void Rscal(INTEGER const n, REAL const da, REAL *dx, INTEGER const incx) {
     if (n <= 0 || incx <= 0) {
         return;
     }

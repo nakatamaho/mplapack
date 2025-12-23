@@ -35,7 +35,7 @@
 
 #include <mpblas.h>
 
-void Rsymv(const char *uplo, INTEGER const n, REAL const &alpha, REAL *a, INTEGER const lda, REAL *x, INTEGER const incx, REAL const &beta, REAL *y, INTEGER const incy) {
+void Rsymv(const char *uplo, INTEGER const n, REAL const alpha, REAL *a, INTEGER const lda, REAL *x, INTEGER const incx, REAL const beta, REAL *y, INTEGER const incy) {
     //
     // Test the input parameters.
     //

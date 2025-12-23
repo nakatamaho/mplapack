@@ -35,7 +35,7 @@
 
 #include <mpblas.h>
 
-void Cscal(INTEGER const n, COMPLEX const &za, COMPLEX *zx, INTEGER const incx) {
+void Cscal(INTEGER const n, COMPLEX const za, COMPLEX *zx, INTEGER const incx) {
     if (n <= 0 || incx <= 0) {
         return;
     }

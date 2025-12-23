@@ -35,7 +35,7 @@
 
 #include <mpblas.h>
 
-void Rsyr2k(const char *uplo, const char *trans, INTEGER const n, INTEGER const k, REAL const &alpha, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL const &beta, REAL *c, INTEGER const ldc) {
+void Rsyr2k(const char *uplo, const char *trans, INTEGER const n, INTEGER const k, REAL const alpha, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL const beta, REAL *c, INTEGER const ldc) {
     //
     // Test the input parameters.
     //

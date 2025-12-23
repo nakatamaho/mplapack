@@ -35,7 +35,7 @@
 
 #include <mpblas.h>
 
-void CRscal(INTEGER const n, REAL const &da, COMPLEX *zx, INTEGER const incx) {
+void CRscal(INTEGER const n, REAL const da, COMPLEX *zx, INTEGER const incx) {
     if (n <= 0 || incx <= 0) {
         return;
     }

@@ -35,7 +35,7 @@
 
 #include <mpblas.h>
 
-void Cgerc(INTEGER const m, INTEGER const n, COMPLEX const &alpha, COMPLEX *x, INTEGER const incx, COMPLEX *y, INTEGER const incy, COMPLEX *a, INTEGER const lda) {
+void Cgerc(INTEGER const m, INTEGER const n, COMPLEX const alpha, COMPLEX *x, INTEGER const incx, COMPLEX *y, INTEGER const incy, COMPLEX *a, INTEGER const lda) {
     //
     // Test the input parameters.
     //

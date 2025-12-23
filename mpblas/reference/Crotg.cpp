@@ -35,7 +35,7 @@
 
 #include <mpblas.h>
 
-void Crotg(COMPLEX &ca, COMPLEX const &cb, REAL &c, COMPLEX &s) {
+void Crotg(COMPLEX &ca, COMPLEX const cb, REAL &c, COMPLEX &s) {
     REAL scale = 0.0;
     REAL norm = 0.0;
     COMPLEX alpha = 0.0;

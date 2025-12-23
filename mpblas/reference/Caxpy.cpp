@@ -35,7 +35,7 @@
 
 #include <mpblas.h>
 
-void Caxpy(INTEGER const n, COMPLEX const &za, COMPLEX *zx, INTEGER const incx, COMPLEX *zy, INTEGER const incy) {
+void Caxpy(INTEGER const n, COMPLEX const za, COMPLEX *zx, INTEGER const incx, COMPLEX *zy, INTEGER const incy) {
     if (n <= 0) {
         return;
     }

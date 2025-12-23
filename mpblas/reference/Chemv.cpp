@@ -35,7 +35,7 @@
 
 #include <mpblas.h>
 
-void Chemv(const char *uplo, INTEGER const n, COMPLEX const &alpha, COMPLEX *a, INTEGER const lda, COMPLEX *x, INTEGER const incx, COMPLEX const &beta, COMPLEX *y, INTEGER const incy) {
+void Chemv(const char *uplo, INTEGER const n, COMPLEX const alpha, COMPLEX *a, INTEGER const lda, COMPLEX *x, INTEGER const incx, COMPLEX const beta, COMPLEX *y, INTEGER const incy) {
     //
     // Test the input parameters.
     //

@@ -35,7 +35,7 @@
 
 #include <mpblas.h>
 
-void Rtrmm(const char *side, const char *uplo, const char *transa, const char *diag, INTEGER const m, INTEGER const n, REAL const &alpha, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb) {
+void Rtrmm(const char *side, const char *uplo, const char *transa, const char *diag, INTEGER const m, INTEGER const n, REAL const alpha, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb) {
     //
     // Test the input parameters.
     //

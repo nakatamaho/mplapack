@@ -35,7 +35,7 @@
 
 #include <mpblas.h>
 
-void CRrot(INTEGER const n, COMPLEX *zx, INTEGER const incx, COMPLEX *zy, INTEGER const incy, REAL const &c, REAL const &s) {
+void CRrot(INTEGER const n, COMPLEX *zx, INTEGER const incx, COMPLEX *zy, INTEGER const incy, REAL const c, REAL const s) {
     //
     if (n <= 0) {
         return;

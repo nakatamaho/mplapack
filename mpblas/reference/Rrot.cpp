@@ -35,7 +35,7 @@
 
 #include <mpblas.h>
 
-void Rrot(INTEGER const n, REAL *dx, INTEGER const incx, REAL *dy, INTEGER const incy, REAL const &c, REAL const &s) {
+void Rrot(INTEGER const n, REAL *dx, INTEGER const incx, REAL *dy, INTEGER const incy, REAL const c, REAL const s) {
     if (n <= 0) {
         return;
     }

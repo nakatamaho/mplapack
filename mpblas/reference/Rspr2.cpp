@@ -35,7 +35,7 @@
 
 #include <mpblas.h>
 
-void Rspr2(const char *uplo, INTEGER const n, REAL const &alpha, REAL *x, INTEGER const incx, REAL *y, INTEGER const incy, REAL *ap) {
+void Rspr2(const char *uplo, INTEGER const n, REAL const alpha, REAL *x, INTEGER const incx, REAL *y, INTEGER const incy, REAL *ap) {
     //
     // Test the input parameters.
     //

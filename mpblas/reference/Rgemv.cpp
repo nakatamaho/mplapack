@@ -35,7 +35,7 @@
 
 #include <mpblas.h>
 
-void Rgemv(const char *trans, INTEGER const m, INTEGER const n, REAL const &alpha, REAL *a, INTEGER const lda, REAL *x, INTEGER const incx, REAL const &beta, REAL *y, INTEGER const incy) {
+void Rgemv(const char *trans, INTEGER const m, INTEGER const n, REAL const alpha, REAL *a, INTEGER const lda, REAL *x, INTEGER const incx, REAL const beta, REAL *y, INTEGER const incy) {
     //
     // Test the input parameters.
     //

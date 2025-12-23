@@ -35,7 +35,7 @@
 
 #include <mpblas.h>
 
-void Rrotmg(REAL &dd1, REAL &dd2, REAL &dx1, REAL const &dy1, REAL *dparam) {
+void Rrotmg(REAL &dd1, REAL &dd2, REAL &dx1, REAL const dy1, REAL *dparam) {
     // SAVE
     REAL gam = 4096.0;
     REAL gamsq = 16777216.0;
