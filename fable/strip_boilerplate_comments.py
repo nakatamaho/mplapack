@@ -477,6 +477,25 @@ def compute_orphan_empty_comment_indices(lines: List[str]) -> Set[int]:
     return skip
 
 
+def compute_leading_blank_and_comment_indices(lines: List[str]) -> Set[int]:
+    """Return indices of leading blank lines and leading '//' comments.
+
+    This matches the previous pipeline step that removed the initial
+    blank and '//'-comment prefix emitted by fable/cout before the first
+    non-comment, non-blank line.
+    """
+    skip: Set[int] = set()
+    for idx, line in enumerate(lines):
+        if line.strip() == "":
+            skip.add(idx)
+            continue
+        if line.lstrip().startswith("//"):
+            skip.add(idx)
+            continue
+        break
+    return skip
+
+
 # ---------------------------------------------------------------------
 #  Main
 # ---------------------------------------------------------------------
@@ -487,6 +506,7 @@ def strip_lapack_comments_text(src: str) -> Tuple[str, bool]:
     lines = src.splitlines(keepends=True)
 
     to_skip: Set[int] = set()
+    to_skip |= compute_leading_blank_and_comment_indices(lines)
     to_skip |= compute_doc_block_indices(lines)
     to_skip |= compute_inbody_header_indices(lines)
     to_skip |= compute_doxygen_indices(lines)
