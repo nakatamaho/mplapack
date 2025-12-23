@@ -532,7 +532,8 @@ def strip_lapack_comments_inplace(path: Path) -> bool:
     try:
         src = path.read_text(encoding="utf-8", errors="ignore")
     except OSError as e:
-        print(f"strip_lapack_comments: failed to read {path}: {e}", file=sys.stderr)
+        print(
+            f"strip_lapack_comments: failed to read {path}: {e}", file=sys.stderr)
         return False
 
     out, changed = strip_lapack_comments_text(src)
@@ -542,10 +543,26 @@ def strip_lapack_comments_inplace(path: Path) -> bool:
     try:
         path.write_text(out, encoding="utf-8")
     except OSError as e:
-        print(f"strip_lapack_comments: failed to write {path}: {e}", file=sys.stderr)
+        print(
+            f"strip_lapack_comments: failed to write {path}: {e}", file=sys.stderr)
         return False
 
     return True
+
+
+def _print_usage(prog: str) -> None:
+    print(
+        f"Usage: {prog} [--inplace|-i] FILE [FILE...]",
+        file=sys.stderr,
+    )
+    print(
+        f"  Default (stdout): {prog} FILE > OUT",
+        file=sys.stderr,
+    )
+    print(
+        f"  In-place:         {prog} --inplace FILE [FILE...]",
+        file=sys.stderr,
+    )
 
 
 def main(argv: List[str]) -> None:
@@ -555,15 +572,21 @@ def main(argv: List[str]) -> None:
     inplace = False
     args: List[str] = []
 
-    for a in argv[1:]:
-        if a == "--inplace":
+    it = iter(argv[1:])
+    for a in it:
+        if a in ("--inplace", "-i"):
             inplace = True
+        elif a in ("--help", "-h"):
+            _print_usage(argv[0])
+            return
+        elif a == "--":
+            args.extend(list(it))
+            break
         else:
             args.append(a)
 
     if not args:
-        print("Usage: strip_boilerplate_comments.py [--inplace] FILE [FILE...]",
-              file=sys.stderr)
+        _print_usage(argv[0])
         sys.exit(1)
 
     if not inplace and len(args) != 1:
@@ -593,7 +616,8 @@ def main(argv: List[str]) -> None:
     try:
         src = p.read_text(encoding="utf-8", errors="ignore")
     except OSError as e:
-        print(f"strip_lapack_comments: failed to read {p}: {e}", file=sys.stderr)
+        print(
+            f"strip_lapack_comments: failed to read {p}: {e}", file=sys.stderr)
         sys.exit(4)
 
     out, _changed = strip_lapack_comments_text(src)

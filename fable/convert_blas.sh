@@ -88,26 +88,9 @@ if [ ! -f "$cpp_generated" ]; then
     exit 1
 fi
 
-# Strip leading blank lines and leading // comments from the generated C++ file.
-python -c 'import sys
-started = False
-for line in sys.stdin:
-    if not started:
-        # Skip leading blank lines
-        if line.strip() == "":
-            continue
-        # Skip leading comment lines (// ...)
-        if line.lstrip().startswith("//"):
-            continue
-        # First non-comment, non-blank line: start output from here
-        started = True
-    sys.stdout.write(line)
-' < "$cpp_generated" > "$tmp_body"
-
-# Prepend MPLAPACK BLAS header
-cat "$header" "$tmp_body" > "$tmp_cpp"
-
-python3 "${script_dir}/strip_boilerplate_comments.py" "$tmp_cpp"
+python3 "${script_dir}/strip_boilerplate_comments.py" --inplace "$cpp_generated"
+cat "$header" "$cpp_generated" > "$tmp_cpp"
+cat $tmp_cpp
 python3 "${script_dir}/add_attribution.py" "$tmp_cpp" "$src"
 
 # Format with clang-format (C++ indentation and style)
