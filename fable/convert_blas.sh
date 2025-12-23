@@ -90,7 +90,6 @@ fi
 
 python3 "${script_dir}/strip_boilerplate_comments.py" --inplace "$cpp_generated"
 cat "$header" "$cpp_generated" > "$tmp_cpp"
-cat $tmp_cpp
 python3 "${script_dir}/add_attribution.py" "$tmp_cpp" "$src"
 
 # Format with clang-format (C++ indentation and style)
