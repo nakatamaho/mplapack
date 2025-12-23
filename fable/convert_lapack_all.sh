@@ -86,7 +86,7 @@ patch -p3 -R < ~/mplapack/fable/3.9.1/lapack/patch-Cpptrf.cpp
 patch -p3 -R < ~/mplapack/fable/3.9.1/lapack/patch-Cpotf2.cpp
 patch -p3 -R < ~/mplapack/fable/3.9.1/lapack/patch-Clarnv.cpp
 patch -p3 -R < ~/mplapack/fable/3.9.1/lapack/patch-Ctrexc.cpp
-patch -p3 -R < ~/mplapack/fable/3.9.1/lapack/patch-Clartg.cpp
+#patch -p3 -R < ~/mplapack/fable/3.9.1/lapack/patch-Clartg.cpp
 patch -p3    < ~/mplapack/fable/3.9.1/lapack/patch-Rbbcsd.cpp
 patch -p3 -R < ~/mplapack/fable/3.9.1/lapack/patch-Rlarrb.cpp
 patch -p3 -R < ~/mplapack/fable/3.9.1/lapack/patch-Rlarnv.cpp
@@ -101,8 +101,8 @@ patch -p3    < ~/mplapack/fable/3.9.1/lapack/patch-Clacon.cpp
 patch -p3 -R < ~/mplapack/fable/3.9.1/lapack/patch-Rlasy2.cpp
 patch -p3    < ~/mplapack/fable/3.9.1/lapack/patch-Cgejsv.cpp
 patch -p3    < ~/mplapack/fable/3.9.1/lapack/patch-Rgejsv.cpp
-patch -p3 -R < ~/mplapack/fable/3.9.1/lapack/patch-Rlaln2.cpp
-patch -p3 -R < ~/mplapack/fable/3.9.1/lapack/patch-iMieeeck.cpp
-patch -p3 -R < ~/mplapack/fable/3.9.1/lapack/patch-Rladiv.cpp
-patch -p3 -R < ~/mplapack/fable/3.9.1/lapack/patch-iMlaenv.cpp
+#patch -p3 -R < ~/mplapack/fable/3.9.1/lapack/patch-Rlaln2.cpp
+#patch -p3 -R < ~/mplapack/fable/3.9.1/lapack/patch-iMieeeck.cpp
+#patch -p3 -R < ~/mplapack/fable/3.9.1/lapack/patch-Rladiv.cpp
+#patch -p3 -R < ~/mplapack/fable/3.9.1/lapack/patch-iMlaenv.cpp
 patch -p3 -R < ~/mplapack/fable/3.9.1/lapack/patch-iMparmq.cpp
