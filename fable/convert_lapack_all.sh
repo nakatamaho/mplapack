@@ -18,7 +18,14 @@ EXCLUDE_PREFIXES=( s c )
 EXCLUDE_BASENAMES_MANUAL=( )
 
 # Basenames that are not needed on the C++ side
-EXCLUDE_BASENAMES_UNUSED=( la_constants dsgesv zcgesv dsposv zcposv dla_gerfsx_extended dla_gbrfsx_extended dla_porfsx_extended dla_syrfsx_extended zla_gerfsx_extended zla_gbrfsx_extended zla_porfsx_extended zla_syrfsx_extended zla_herfsx_extended lsamen ilaslr )
+EXCLUDE_BASENAMES_UNUSED=( la_constants dsgesv zcgesv dsposv zcposv dla_gerfsx_extended dla_gbrfsx_extended dla_porfsx_extended dla_syrfsx_extended zla_gerfsx_extended zla_gbrfsx_extended zla_porfsx_extended zla_syrfsx_extended zla_herfsx_extended lsamen ilaslr ilaslc ilaclc ilaclr iladiag icmax1)
+
+# lsamen is not used?
+# ilaslr is only used in slarf.
+# iladiag is not used?
+# ilaslc is not used?
+# ilaclc is only used in clarf.
+# ilaclr is only used in clarf.
 
 # Other helper/utility routines to be excluded from this pass
 EXCLUDE_BASENAMES_MISC=( dlaruv )
