@@ -36,7 +36,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Claqsy(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, REAL *s, REAL const &scond, REAL const &amax, char *equed) {
+void Claqsy(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, REAL *s, REAL const scond, REAL const amax, char *equed) {
     //
     // Quick return if possible
     //

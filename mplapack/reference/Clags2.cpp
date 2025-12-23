@@ -36,7 +36,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Clags2(bool const upper, REAL const &a1, COMPLEX const &a2, REAL const &a3, REAL const &b1, COMPLEX const &b2, REAL const &b3, REAL &csu, COMPLEX &snu, REAL &csv, COMPLEX &snv, REAL const &csq, COMPLEX const &snq) {
+void Clags2(bool const upper, REAL const a1, COMPLEX const a2, REAL const a3, REAL const b1, COMPLEX const b2, REAL const b3, REAL &csu, COMPLEX &snu, REAL &csv, COMPLEX &snv, REAL const csq, COMPLEX const snq) {
     COMPLEX t = 0.0;
     //
     REAL a = 0.0;

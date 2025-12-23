@@ -36,7 +36,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Clalsd(const char *uplo, INTEGER const smlsiz, INTEGER const n, INTEGER const nrhs, REAL *d, REAL *e, COMPLEX *b, INTEGER const ldb, REAL const &rcond, INTEGER &rank, COMPLEX *work, REAL *rwork, INTEGER *iwork, INTEGER &info) {
+void Clalsd(const char *uplo, INTEGER const smlsiz, INTEGER const n, INTEGER const nrhs, REAL *d, REAL *e, COMPLEX *b, INTEGER const ldb, REAL const rcond, INTEGER &rank, COMPLEX *work, REAL *rwork, INTEGER *iwork, INTEGER &info) {
     //
     // Test the input parameters.
     //

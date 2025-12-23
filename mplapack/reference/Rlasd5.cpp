@@ -36,7 +36,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rlasd5(INTEGER const i, REAL *d, REAL *z, REAL *delta, REAL const &rho, REAL &dsigma, REAL *work) {
+void Rlasd5(INTEGER const i, REAL *d, REAL *z, REAL *delta, REAL const rho, REAL &dsigma, REAL *work) {
     //
     REAL del = d[1] - d[0];
     REAL delsq = del * (d[1] + d[0]);

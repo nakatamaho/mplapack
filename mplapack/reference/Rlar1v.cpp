@@ -36,7 +36,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rlar1v(INTEGER const n, INTEGER const b1, INTEGER const bn, REAL const &lambda, REAL *d, REAL *l, REAL *ld, REAL *lld, REAL const &pivmin, REAL const &gaptol, REAL *z, bool const wantnc, INTEGER &negcnt, REAL &ztz, REAL &mingma, INTEGER &r, INTEGER *isuppz, REAL &nrminv, REAL &resid, REAL &rqcorr, REAL *work) {
+void Rlar1v(INTEGER const n, INTEGER const b1, INTEGER const bn, REAL const lambda, REAL *d, REAL *l, REAL *ld, REAL *lld, REAL const pivmin, REAL const gaptol, REAL *z, bool const wantnc, INTEGER &negcnt, REAL &ztz, REAL &mingma, INTEGER &r, INTEGER *isuppz, REAL &nrminv, REAL &resid, REAL &rqcorr, REAL *work) {
     REAL eps = 0.0;
     INTEGER r1 = 0;
     INTEGER r2 = 0;

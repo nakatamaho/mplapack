@@ -36,7 +36,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rggsvp3(const char *jobu, const char *jobv, const char *jobq, INTEGER const m, INTEGER const p, INTEGER const n, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL const &tola, REAL const &tolb, INTEGER &k, INTEGER &l, REAL *u, INTEGER const ldu, REAL *v, INTEGER const ldv, REAL *q, INTEGER const ldq, INTEGER *iwork, REAL *tau, REAL *work, INTEGER const lwork, INTEGER &info) {
+void Rggsvp3(const char *jobu, const char *jobv, const char *jobq, INTEGER const m, INTEGER const p, INTEGER const n, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL const tola, REAL const tolb, INTEGER &k, INTEGER &l, REAL *u, INTEGER const ldu, REAL *v, INTEGER const ldv, REAL *q, INTEGER const ldq, INTEGER *iwork, REAL *tau, REAL *work, INTEGER const lwork, INTEGER &info) {
     //
     // Test the input parameters
     //

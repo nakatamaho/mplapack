@@ -36,7 +36,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Clatdf(INTEGER const ijob, INTEGER const n, COMPLEX *z, INTEGER const ldz, COMPLEX *rhs, REAL const &rdsum, REAL const &rdscal, INTEGER *ipiv, INTEGER *jpiv) {
+void Clatdf(INTEGER const ijob, INTEGER const n, COMPLEX *z, INTEGER const ldz, COMPLEX *rhs, REAL const rdsum, REAL const rdscal, INTEGER *ipiv, INTEGER *jpiv) {
     //
     const COMPLEX cone = COMPLEX(1.0, 0.0);
     COMPLEX pmone = 0.0;

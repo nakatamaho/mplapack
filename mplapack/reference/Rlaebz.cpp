@@ -36,7 +36,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rlaebz(INTEGER const ijob, INTEGER const nitmax, INTEGER const n, INTEGER const mmax, INTEGER const minp, INTEGER const nbmin, REAL const &abstol, REAL const &reltol, REAL const &pivmin, REAL *d, REAL * /* e */, REAL *e2, INTEGER *nval, REAL *ab, REAL *c, INTEGER &mout, INTEGER *nab, REAL *work, INTEGER *iwork, INTEGER &info) {
+void Rlaebz(INTEGER const ijob, INTEGER const nitmax, INTEGER const n, INTEGER const mmax, INTEGER const minp, INTEGER const nbmin, REAL const abstol, REAL const reltol, REAL const pivmin, REAL *d, REAL * /* e */, REAL *e2, INTEGER *nval, REAL *ab, REAL *c, INTEGER &mout, INTEGER *nab, REAL *work, INTEGER *iwork, INTEGER &info) {
     INTEGER ji = 0;
     INTEGER jp = 0;
     REAL tmp1 = 0.0;

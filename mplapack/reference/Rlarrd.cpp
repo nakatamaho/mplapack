@@ -36,7 +36,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rlarrd(const char *range, const char *order, INTEGER const n, REAL const &vl, REAL const &vu, INTEGER const il, INTEGER const iu, REAL *gers, REAL const &reltol, REAL *d, REAL *e, REAL *e2, REAL const &pivmin, INTEGER const nsplit, INTEGER *isplit, INTEGER &m, REAL *w, REAL *werr, REAL &wl, REAL &wu, INTEGER *iblock, INTEGER *indexw, REAL *work, INTEGER *iwork, INTEGER &info) {
+void Rlarrd(const char *range, const char *order, INTEGER const n, REAL const vl, REAL const vu, INTEGER const il, INTEGER const iu, REAL *gers, REAL const reltol, REAL *d, REAL *e, REAL *e2, REAL const pivmin, INTEGER const nsplit, INTEGER *isplit, INTEGER &m, REAL *w, REAL *werr, REAL &wl, REAL &wu, INTEGER *iblock, INTEGER *indexw, REAL *work, INTEGER *iwork, INTEGER &info) {
     const INTEGER allrng = 1;
     INTEGER irange = 0;
     const INTEGER valrng = 2;

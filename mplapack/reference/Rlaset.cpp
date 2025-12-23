@@ -36,7 +36,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rlaset(const char *uplo, INTEGER const m, INTEGER const n, REAL const &alpha, REAL const &beta, REAL *a, INTEGER const lda) {
+void Rlaset(const char *uplo, INTEGER const m, INTEGER const n, REAL const alpha, REAL const beta, REAL *a, INTEGER const lda) {
     //
     INTEGER j = 0;
     INTEGER i = 0;

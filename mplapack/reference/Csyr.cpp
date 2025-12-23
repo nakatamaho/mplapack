@@ -36,7 +36,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Csyr(const char *uplo, INTEGER const n, COMPLEX const &alpha, COMPLEX *x, INTEGER const incx, COMPLEX *a, INTEGER const lda) {
+void Csyr(const char *uplo, INTEGER const n, COMPLEX const alpha, COMPLEX *x, INTEGER const incx, COMPLEX *a, INTEGER const lda) {
     //
     // Test the input parameters.
     //

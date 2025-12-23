@@ -36,7 +36,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rgbcon(const char *norm, INTEGER const n, INTEGER const kl, INTEGER const ku, REAL *ab, INTEGER const ldab, INTEGER *ipiv, REAL const &anorm, REAL &rcond, REAL *work, INTEGER *iwork, INTEGER &info) {
+void Rgbcon(const char *norm, INTEGER const n, INTEGER const kl, INTEGER const ku, REAL *ab, INTEGER const ldab, INTEGER *ipiv, REAL const anorm, REAL &rcond, REAL *work, INTEGER *iwork, INTEGER &info) {
     bool onenrm = false;
     const REAL zero = 0.0;
     const REAL one = 1.0;

@@ -36,7 +36,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rlarrb(INTEGER const n, REAL *d, REAL *lld, INTEGER const ifirst, INTEGER const ilast, REAL const &rtol1, REAL const &rtol2, INTEGER const offset, REAL *w, REAL *wgap, REAL *werr, REAL *work, INTEGER *iwork, REAL const &pivmin, REAL const &spdiam, INTEGER const twist, INTEGER &info) {
+void Rlarrb(INTEGER const n, REAL *d, REAL *lld, INTEGER const ifirst, INTEGER const ilast, REAL const rtol1, REAL const rtol2, INTEGER const offset, REAL *w, REAL *wgap, REAL *werr, REAL *work, INTEGER *iwork, REAL const pivmin, REAL const spdiam, INTEGER const twist, INTEGER &info) {
     const REAL two = 2.0;
     INTEGER maxitr = 0;
     REAL mnwdth = 0.0;

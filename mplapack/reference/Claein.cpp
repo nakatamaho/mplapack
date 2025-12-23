@@ -36,7 +36,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Claein(bool const rightv, bool const noinit, INTEGER const n, COMPLEX *h, INTEGER const ldh, COMPLEX const &w, COMPLEX *v, COMPLEX *b, INTEGER const ldb, REAL *rwork, REAL const &eps3, REAL const &smlnum, INTEGER &info) {
+void Claein(bool const rightv, bool const noinit, INTEGER const n, COMPLEX *h, INTEGER const ldh, COMPLEX const w, COMPLEX *v, COMPLEX *b, INTEGER const ldb, REAL *rwork, REAL const eps3, REAL const smlnum, INTEGER &info) {
     COMPLEX cdum = 0.0;
     REAL rootn = 0.0;
     const REAL tenth = 0.1;

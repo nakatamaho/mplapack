@@ -36,7 +36,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Chfrk(const char *transr, const char *uplo, const char *trans, INTEGER const n, INTEGER const k, REAL const &alpha, COMPLEX *a, INTEGER const lda, REAL const &beta, COMPLEX *c) {
+void Chfrk(const char *transr, const char *uplo, const char *trans, INTEGER const n, INTEGER const k, REAL const alpha, COMPLEX *a, INTEGER const lda, REAL const beta, COMPLEX *c) {
     //
     // Test the input parameters.
     //

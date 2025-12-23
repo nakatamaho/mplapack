@@ -36,7 +36,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Cgelss(INTEGER const m, INTEGER const n, INTEGER const nrhs, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, REAL *s, REAL const &rcond, INTEGER &rank, COMPLEX *work, INTEGER const lwork, REAL *rwork, INTEGER &info) {
+void Cgelss(INTEGER const m, INTEGER const n, INTEGER const nrhs, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, REAL *s, REAL const rcond, INTEGER &rank, COMPLEX *work, INTEGER const lwork, REAL *rwork, INTEGER &info) {
     INTEGER minmn = 0;
     INTEGER maxmn = 0;
     bool lquery = false;

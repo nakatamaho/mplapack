@@ -36,7 +36,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rlarrf(INTEGER const n, REAL *d, REAL *l, REAL *ld, INTEGER const clstrt, INTEGER const clend, REAL *w, REAL *wgap, REAL *werr, REAL const &spdiam, REAL const &clgapl, REAL const &clgapr, REAL const &pivmin, REAL &sigma, REAL *dplus, REAL *lplus, REAL *work, INTEGER &info) {
+void Rlarrf(INTEGER const n, REAL *d, REAL *l, REAL *ld, INTEGER const clstrt, INTEGER const clend, REAL *w, REAL *wgap, REAL *werr, REAL const spdiam, REAL const clgapl, REAL const clgapr, REAL const pivmin, REAL &sigma, REAL *dplus, REAL *lplus, REAL *work, INTEGER &info) {
     const INTEGER ktrymax = 1;
     REAL fact = 0.0;
     REAL eps = 0.0;

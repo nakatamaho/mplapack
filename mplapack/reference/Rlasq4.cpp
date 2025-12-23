@@ -36,7 +36,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rlasq4(INTEGER const i0, INTEGER const n0, REAL *z, INTEGER const pp, INTEGER const n0in, REAL const &dmin, REAL const &dmin1, REAL const &dmin2, REAL const &dn, REAL const &dn1, REAL const &dn2, REAL &tau, INTEGER &ttype, REAL &g) {
+void Rlasq4(INTEGER const i0, INTEGER const n0, REAL *z, INTEGER const pp, INTEGER const n0in, REAL const dmin, REAL const dmin1, REAL const dmin2, REAL const dn, REAL const dn1, REAL const dn2, REAL &tau, INTEGER &ttype, REAL &g) {
     const REAL zero = 0.0;
     INTEGER nn = 0;
     REAL b1 = 0.0;

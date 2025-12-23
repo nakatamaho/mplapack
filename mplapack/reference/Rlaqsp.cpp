@@ -36,7 +36,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rlaqsp(const char *uplo, INTEGER const n, REAL *ap, REAL *s, REAL const &scond, REAL const &amax, char *equed) {
+void Rlaqsp(const char *uplo, INTEGER const n, REAL *ap, REAL *s, REAL const scond, REAL const amax, char *equed) {
     //
     // Quick return if possible
     //

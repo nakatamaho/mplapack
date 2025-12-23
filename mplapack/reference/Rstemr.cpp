@@ -36,7 +36,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rstemr(const char *jobz, const char *range, INTEGER const n, REAL *d, REAL *e, REAL const &vl, REAL const &vu, INTEGER const il, INTEGER const iu, INTEGER &m, REAL *w, REAL *z, INTEGER const ldz, INTEGER const nzc, INTEGER *isuppz, bool &tryrac, REAL *work, INTEGER const lwork, INTEGER *iwork, INTEGER const liwork, INTEGER &info) {
+void Rstemr(const char *jobz, const char *range, INTEGER const n, REAL *d, REAL *e, REAL const vl, REAL const vu, INTEGER const il, INTEGER const iu, INTEGER &m, REAL *w, REAL *z, INTEGER const ldz, INTEGER const nzc, INTEGER *isuppz, bool &tryrac, REAL *work, INTEGER const lwork, INTEGER *iwork, INTEGER const liwork, INTEGER &info) {
     bool wantz = false;
     bool alleig = false;
     bool valeig = false;

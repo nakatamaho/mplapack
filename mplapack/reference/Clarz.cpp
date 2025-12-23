@@ -36,7 +36,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Clarz(const char *side, INTEGER const m, INTEGER const n, INTEGER const l, COMPLEX *v, INTEGER const incv, COMPLEX const &tau, COMPLEX *c, INTEGER const ldc, COMPLEX *work) {
+void Clarz(const char *side, INTEGER const m, INTEGER const n, INTEGER const l, COMPLEX *v, INTEGER const incv, COMPLEX const tau, COMPLEX *c, INTEGER const ldc, COMPLEX *work) {
     //
     const COMPLEX zero = COMPLEX(0.0, 0.0);
     const COMPLEX one = COMPLEX(1.0, 0.0);

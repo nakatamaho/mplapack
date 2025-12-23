@@ -36,7 +36,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Cptcon(INTEGER const n, REAL *d, COMPLEX *e, REAL const &anorm, REAL &rcond, REAL *rwork, INTEGER &info) {
+void Cptcon(INTEGER const n, REAL *d, COMPLEX *e, REAL const anorm, REAL &rcond, REAL *rwork, INTEGER &info) {
     //
     // Test the input arguments.
     //

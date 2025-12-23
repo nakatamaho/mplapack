@@ -36,7 +36,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rlarre(const char *range, INTEGER const n, REAL &vl, REAL &vu, INTEGER const il, INTEGER const iu, REAL *d, REAL *e, REAL *e2, REAL const &rtol1, REAL const &rtol2, REAL const &spltol, INTEGER const nsplit, INTEGER *isplit, INTEGER &m, REAL *w, REAL *werr, REAL *wgap, INTEGER *iblock, INTEGER *indexw, REAL *gers, REAL &pivmin, REAL *work, INTEGER *iwork, INTEGER &info) {
+void Rlarre(const char *range, INTEGER const n, REAL &vl, REAL &vu, INTEGER const il, INTEGER const iu, REAL *d, REAL *e, REAL *e2, REAL const rtol1, REAL const rtol2, REAL const spltol, INTEGER const nsplit, INTEGER *isplit, INTEGER &m, REAL *w, REAL *werr, REAL *wgap, INTEGER *iblock, INTEGER *indexw, REAL *gers, REAL &pivmin, REAL *work, INTEGER *iwork, INTEGER &info) {
     const INTEGER allrng = 1;
     INTEGER irange = 0;
     const INTEGER valrng = 3;

@@ -36,7 +36,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rlascl(const char *type, INTEGER const kl, INTEGER const ku, REAL const &cfrom, REAL const &cto, INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, INTEGER &info) {
+void Rlascl(const char *type, INTEGER const kl, INTEGER const ku, REAL const cfrom, REAL const cto, INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, INTEGER &info) {
     INTEGER itype = 0;
     const REAL zero = 0.0;
     REAL smlnum = 0.0;

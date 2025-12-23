@@ -36,7 +36,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rlarfy(const char *uplo, INTEGER const n, REAL *v, INTEGER const incv, REAL const &tau, REAL *c, INTEGER const ldc, REAL *work) {
+void Rlarfy(const char *uplo, INTEGER const n, REAL *v, INTEGER const incv, REAL const tau, REAL *c, INTEGER const ldc, REAL *work) {
     //
     const REAL zero = 0.0;
     if (tau == zero) {

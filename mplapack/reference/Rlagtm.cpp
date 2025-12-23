@@ -36,7 +36,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rlagtm(const char *trans, INTEGER const n, INTEGER const nrhs, REAL const &alpha, REAL *dl, REAL *d, REAL *du, REAL *x, INTEGER const ldx, REAL const &beta, REAL *b, INTEGER const ldb) {
+void Rlagtm(const char *trans, INTEGER const n, INTEGER const nrhs, REAL const alpha, REAL *dl, REAL *d, REAL *du, REAL *x, INTEGER const ldx, REAL const beta, REAL *b, INTEGER const ldb) {
     //
     if (n == 0) {
         return;

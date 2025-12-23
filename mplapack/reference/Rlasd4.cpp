@@ -36,7 +36,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rlasd4(INTEGER const n, INTEGER const i, REAL *d, REAL *z, REAL *delta, REAL const &rho, REAL &sigma, REAL *work, INTEGER &info) {
+void Rlasd4(INTEGER const n, INTEGER const i, REAL *d, REAL *z, REAL *delta, REAL const rho, REAL &sigma, REAL *work, INTEGER &info) {
     const REAL one = 1.0;
     REAL eps = 0.0;
     REAL rhoinv = 0.0;

@@ -36,7 +36,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Cgelsy(INTEGER const m, INTEGER const n, INTEGER const nrhs, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, INTEGER *jpvt, REAL const &rcond, INTEGER &rank, COMPLEX *work, INTEGER const lwork, REAL *rwork, INTEGER &info) {
+void Cgelsy(INTEGER const m, INTEGER const n, INTEGER const nrhs, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, INTEGER *jpvt, REAL const rcond, INTEGER &rank, COMPLEX *work, INTEGER const lwork, REAL *rwork, INTEGER &info) {
     INTEGER mn = 0;
     INTEGER ismin = 0;
     INTEGER ismax = 0;

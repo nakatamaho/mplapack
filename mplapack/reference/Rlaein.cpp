@@ -36,7 +36,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rlaein(bool const rightv, bool const noinit, INTEGER const n, REAL *h, INTEGER const ldh, REAL const &wr, REAL const &wi, REAL *vr, REAL *vi, REAL *b, INTEGER const ldb, REAL *work, REAL const &eps3, REAL const &smlnum, REAL const &bignum, INTEGER &info) {
+void Rlaein(bool const rightv, bool const noinit, INTEGER const n, REAL *h, INTEGER const ldh, REAL const wr, REAL const wi, REAL *vr, REAL *vi, REAL *b, INTEGER const ldb, REAL *work, REAL const eps3, REAL const smlnum, REAL const bignum, INTEGER &info) {
     REAL rootn = 0.0;
     const REAL tenth = 0.1;
     REAL growto = 0.0;

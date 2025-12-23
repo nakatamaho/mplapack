@@ -36,7 +36,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rlartgs(REAL const &x, REAL const &y, REAL const &sigma, REAL const &cs, REAL const &sn) {
+void Rlartgs(REAL const x, REAL const y, REAL const sigma, REAL const cs, REAL const sn) {
     //
     REAL thresh = Rlamch("E");
     //

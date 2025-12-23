@@ -36,7 +36,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rstebz(const char *range, const char *order, INTEGER const n, REAL const &vl, REAL const &vu, INTEGER const il, INTEGER const iu, REAL const &abstol, REAL *d, REAL *e, INTEGER &m, INTEGER &nsplit, REAL *w, INTEGER *iblock, INTEGER *isplit, REAL *work, INTEGER *iwork, INTEGER &info) {
+void Rstebz(const char *range, const char *order, INTEGER const n, REAL const vl, REAL const vu, INTEGER const il, INTEGER const iu, REAL const abstol, REAL *d, REAL *e, INTEGER &m, INTEGER &nsplit, REAL *w, INTEGER *iblock, INTEGER *isplit, REAL *work, INTEGER *iwork, INTEGER &info) {
     INTEGER irange = 0;
     INTEGER iorder = 0;
     bool ncnvrg = false;

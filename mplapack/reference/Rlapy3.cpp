@@ -36,7 +36,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-REAL Rlapy3(REAL const &x, REAL const &y, REAL const &z) {
+REAL Rlapy3(REAL const x, REAL const y, REAL const z) {
     REAL return_value = 0.0;
     //
     REAL xabs = abs(x);

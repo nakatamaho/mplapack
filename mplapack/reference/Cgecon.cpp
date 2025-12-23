@@ -36,7 +36,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Cgecon(const char *norm, INTEGER const n, COMPLEX *a, INTEGER const lda, REAL const &anorm, REAL &rcond, COMPLEX *work, REAL *rwork, INTEGER &info) {
+void Cgecon(const char *norm, INTEGER const n, COMPLEX *a, INTEGER const lda, REAL const anorm, REAL &rcond, COMPLEX *work, REAL *rwork, INTEGER &info) {
     COMPLEX zdum = 0.0;
     bool onenrm = false;
     const REAL zero = 0.0;

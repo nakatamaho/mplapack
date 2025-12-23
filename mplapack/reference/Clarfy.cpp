@@ -36,7 +36,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Clarfy(const char *uplo, INTEGER const n, COMPLEX *v, INTEGER const incv, COMPLEX const &tau, COMPLEX *c, INTEGER const ldc, COMPLEX *work) {
+void Clarfy(const char *uplo, INTEGER const n, COMPLEX *v, INTEGER const incv, COMPLEX const tau, COMPLEX *c, INTEGER const ldc, COMPLEX *work) {
     //
     const COMPLEX zero = COMPLEX(0.0, 0.0);
     if (tau == zero) {

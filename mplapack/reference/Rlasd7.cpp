@@ -36,7 +36,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rlasd7(INTEGER const icompq, INTEGER const nl, INTEGER const nr, INTEGER const sqre, INTEGER &k, REAL *d, REAL *z, REAL *zw, REAL *vf, REAL *vfw, REAL *vl, REAL *vlw, REAL const &alpha, REAL const &beta, REAL *dsigma, INTEGER *idx, INTEGER *idxp, INTEGER *idxq, INTEGER *perm, INTEGER &givptr, INTEGER *givcol, INTEGER const ldgcol, REAL *givnum, INTEGER const ldgnum, REAL &c, REAL &s, INTEGER &info) {
+void Rlasd7(INTEGER const icompq, INTEGER const nl, INTEGER const nr, INTEGER const sqre, INTEGER &k, REAL *d, REAL *z, REAL *zw, REAL *vf, REAL *vfw, REAL *vl, REAL *vlw, REAL const alpha, REAL const beta, REAL *dsigma, INTEGER *idx, INTEGER *idxp, INTEGER *idxq, INTEGER *perm, INTEGER &givptr, INTEGER *givcol, INTEGER const ldgcol, REAL *givnum, INTEGER const ldgnum, REAL &c, REAL &s, INTEGER &info) {
     INTEGER n = 0;
     INTEGER m = 0;
     INTEGER nlp1 = 0;

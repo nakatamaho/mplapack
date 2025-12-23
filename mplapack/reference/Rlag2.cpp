@@ -36,7 +36,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rlag2(REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL const &safmin, REAL &scale1, REAL &scale2, REAL &wr1, REAL &wr2, REAL &wi) {
+void Rlag2(REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL const safmin, REAL &scale1, REAL &scale2, REAL &wr1, REAL &wr2, REAL &wi) {
     //
     REAL rtmin = sqrt(safmin);
     const REAL one = 1.0;

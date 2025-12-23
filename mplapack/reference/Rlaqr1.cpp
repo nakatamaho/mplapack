@@ -36,7 +36,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rlaqr1(INTEGER const n, REAL *h, INTEGER const ldh, REAL const &sr1, REAL const &si1, REAL const &sr2, REAL const &si2, REAL *v) {
+void Rlaqr1(INTEGER const n, REAL *h, INTEGER const ldh, REAL const sr1, REAL const si1, REAL const sr2, REAL const si2, REAL *v) {
     //
     // Quick return if possible
     //

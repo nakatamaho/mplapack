@@ -36,7 +36,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rbdsvdx(const char *uplo, const char *jobz, const char *range, INTEGER const n, REAL *d, REAL *e, REAL const &vl, REAL const &vu, INTEGER const il, INTEGER const iu, INTEGER &ns, REAL *s, REAL *z, INTEGER const ldz, REAL *work, INTEGER *iwork, INTEGER &info) {
+void Rbdsvdx(const char *uplo, const char *jobz, const char *range, INTEGER const n, REAL *d, REAL *e, REAL const vl, REAL const vu, INTEGER const il, INTEGER const iu, INTEGER &ns, REAL *s, REAL *z, INTEGER const ldz, REAL *work, INTEGER *iwork, INTEGER &info) {
     //
     // Test the input parameters.
     //

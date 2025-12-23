@@ -36,7 +36,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rrscl(INTEGER const n, REAL const &sa, REAL *sx, INTEGER const incx) {
+void Rrscl(INTEGER const n, REAL const sa, REAL *sx, INTEGER const incx) {
     REAL smlnum = 0.0;
     const REAL one = 1.0;
     REAL bignum = 0.0;

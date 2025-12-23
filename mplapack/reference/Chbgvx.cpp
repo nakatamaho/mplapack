@@ -36,7 +36,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Chbgvx(const char *jobz, const char *range, const char *uplo, INTEGER const n, INTEGER const ka, INTEGER const kb, COMPLEX *ab, INTEGER const ldab, COMPLEX *bb, INTEGER const ldbb, COMPLEX *q, INTEGER const ldq, REAL const &vl, REAL const &vu, INTEGER const il, INTEGER const iu, REAL const &abstol, INTEGER &m, REAL *w, COMPLEX *z, INTEGER const ldz, COMPLEX *work, REAL *rwork, INTEGER *iwork, INTEGER *ifail, INTEGER &info) {
+void Chbgvx(const char *jobz, const char *range, const char *uplo, INTEGER const n, INTEGER const ka, INTEGER const kb, COMPLEX *ab, INTEGER const ldab, COMPLEX *bb, INTEGER const ldbb, COMPLEX *q, INTEGER const ldq, REAL const vl, REAL const vu, INTEGER const il, INTEGER const iu, REAL const abstol, INTEGER &m, REAL *w, COMPLEX *z, INTEGER const ldz, COMPLEX *work, REAL *rwork, INTEGER *iwork, INTEGER *ifail, INTEGER &info) {
     bool wantz = false;
     bool upper = false;
     bool alleig = false;

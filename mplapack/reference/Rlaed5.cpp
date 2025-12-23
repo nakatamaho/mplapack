@@ -36,7 +36,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rlaed5(INTEGER const i, REAL *d, REAL *z, REAL *delta, REAL const &rho, REAL &dlam) {
+void Rlaed5(INTEGER const i, REAL *d, REAL *z, REAL *delta, REAL const rho, REAL &dlam) {
     //
     REAL del = d[1] - d[0];
     const REAL one = 1.0;

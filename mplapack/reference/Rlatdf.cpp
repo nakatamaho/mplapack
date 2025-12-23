@@ -36,7 +36,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rlatdf(INTEGER const ijob, INTEGER const n, REAL *z, INTEGER const ldz, REAL *rhs, REAL const &rdsum, REAL const &rdscal, INTEGER *ipiv, INTEGER *jpiv) {
+void Rlatdf(INTEGER const ijob, INTEGER const n, REAL *z, INTEGER const ldz, REAL *rhs, REAL const rdsum, REAL const rdscal, INTEGER *ipiv, INTEGER *jpiv) {
     //
     const REAL one = 1.0;
     REAL pmone = 0.0;

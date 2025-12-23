@@ -36,7 +36,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rsfrk(const char *transr, const char *uplo, const char *trans, INTEGER const n, INTEGER const k, REAL const &alpha, REAL *a, INTEGER const lda, REAL const &beta, REAL *c) {
+void Rsfrk(const char *transr, const char *uplo, const char *trans, INTEGER const n, INTEGER const k, REAL const alpha, REAL *a, INTEGER const lda, REAL const beta, REAL *c) {
     //
     // Test the input parameters.
     //

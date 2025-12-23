@@ -36,7 +36,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rlaed6(INTEGER const kniter, bool const orgati, REAL const &rho, REAL *d, REAL *z, REAL const &finit, REAL &tau, INTEGER &info) {
+void Rlaed6(INTEGER const kniter, bool const orgati, REAL const rho, REAL *d, REAL *z, REAL const finit, REAL &tau, INTEGER &info) {
     REAL lbd = 0.0;
     REAL ubd = 0.0;
     const REAL zero = 0.0;

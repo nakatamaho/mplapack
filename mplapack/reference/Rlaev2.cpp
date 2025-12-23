@@ -36,7 +36,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rlaev2(REAL const &a, REAL const &b, REAL const &c, REAL &rt1, REAL &rt2, REAL &cs1, REAL &sn1) {
+void Rlaev2(REAL const a, REAL const b, REAL const c, REAL &rt1, REAL &rt2, REAL &cs1, REAL &sn1) {
     //
     // Compute the eigenvalues
     //

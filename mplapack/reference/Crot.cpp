@@ -36,7 +36,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Crot(INTEGER const n, COMPLEX *cx, INTEGER const incx, COMPLEX *cy, INTEGER const incy, REAL const &c, COMPLEX const &s) {
+void Crot(INTEGER const n, COMPLEX *cx, INTEGER const incx, COMPLEX *cy, INTEGER const incy, REAL const c, COMPLEX const s) {
     INTEGER ix = 0;
     INTEGER iy = 0;
     INTEGER i = 0;

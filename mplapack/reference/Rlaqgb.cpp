@@ -36,7 +36,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rlaqgb(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku, REAL *ab, INTEGER const ldab, REAL *r, REAL *c, REAL const &rowcnd, REAL const &colcnd, REAL const &amax, char *equed) {
+void Rlaqgb(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku, REAL *ab, INTEGER const ldab, REAL *r, REAL *c, REAL const rowcnd, REAL const colcnd, REAL const amax, char *equed) {
     //
     // Quick return if possible
     //

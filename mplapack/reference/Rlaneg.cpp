@@ -37,7 +37,7 @@
 #include <mplapack.h>
 
 INTEGER
-Rlaneg(INTEGER const n, REAL *d, REAL *lld, REAL const &sigma, REAL const & /* pivmin */, INTEGER const r) {
+Rlaneg(INTEGER const n, REAL *d, REAL *lld, REAL const sigma, REAL const /* pivmin */, INTEGER const r) {
     INTEGER return_value = 0;
     //
     INTEGER negcnt = 0;

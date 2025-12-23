@@ -36,7 +36,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Claesy(COMPLEX const &a, COMPLEX const &b, COMPLEX const &c, COMPLEX &rt1, COMPLEX &rt2, COMPLEX &evscal, COMPLEX &cs1, COMPLEX &sn1) {
+void Claesy(COMPLEX const a, COMPLEX const b, COMPLEX const c, COMPLEX &rt1, COMPLEX &rt2, COMPLEX &evscal, COMPLEX &cs1, COMPLEX &sn1) {
     //
     // Special case:  The matrix is actually diagonal.
     // To avoid divide by zero later, we treat this case separately.

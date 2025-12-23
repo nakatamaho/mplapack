@@ -36,7 +36,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Cgbcon(const char *norm, INTEGER const n, INTEGER const kl, INTEGER const ku, COMPLEX *ab, INTEGER const ldab, INTEGER *ipiv, REAL const &anorm, REAL &rcond, COMPLEX *work, REAL *rwork, INTEGER &info) {
+void Cgbcon(const char *norm, INTEGER const n, INTEGER const kl, INTEGER const ku, COMPLEX *ab, INTEGER const ldab, INTEGER *ipiv, REAL const anorm, REAL &rcond, COMPLEX *work, REAL *rwork, INTEGER &info) {
     COMPLEX zdum = 0.0;
     bool onenrm = false;
     const REAL zero = 0.0;

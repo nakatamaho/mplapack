@@ -36,7 +36,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rlaed1(INTEGER const n, REAL *d, REAL *q, INTEGER const ldq, INTEGER *indxq, REAL const &rho, INTEGER const cutpnt, REAL *work, INTEGER *iwork, INTEGER &info) {
+void Rlaed1(INTEGER const n, REAL *d, REAL *q, INTEGER const ldq, INTEGER *indxq, REAL const rho, INTEGER const cutpnt, REAL *work, INTEGER *iwork, INTEGER &info) {
     INTEGER iz = 0;
     INTEGER idlmda = 0;
     INTEGER iw = 0;

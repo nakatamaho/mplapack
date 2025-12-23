@@ -36,7 +36,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Clartg(COMPLEX const &f, COMPLEX const &g, REAL &cs, COMPLEX &sn, COMPLEX &r) {
+void Clartg(COMPLEX const f, COMPLEX const g, REAL &cs, COMPLEX &sn, COMPLEX &r) {
     COMPLEX ff = 0.0;
     REAL safmin = 0.0;
     REAL eps = 0.0;

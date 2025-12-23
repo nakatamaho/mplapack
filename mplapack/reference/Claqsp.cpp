@@ -36,7 +36,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Claqsp(const char *uplo, INTEGER const n, COMPLEX *ap, REAL *s, REAL const &scond, REAL const &amax, char *equed) {
+void Claqsp(const char *uplo, INTEGER const n, COMPLEX *ap, REAL *s, REAL const scond, REAL const amax, char *equed) {
     //
     // Quick return if possible
     //

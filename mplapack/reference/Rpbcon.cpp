@@ -36,7 +36,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rpbcon(const char *uplo, INTEGER const n, INTEGER const kd, REAL *ab, INTEGER const ldab, REAL const &anorm, REAL &rcond, REAL *work, INTEGER *iwork, INTEGER &info) {
+void Rpbcon(const char *uplo, INTEGER const n, INTEGER const kd, REAL *ab, INTEGER const ldab, REAL const anorm, REAL &rcond, REAL *work, INTEGER *iwork, INTEGER &info) {
     bool upper = false;
     const REAL zero = 0.0;
     const REAL one = 1.0;

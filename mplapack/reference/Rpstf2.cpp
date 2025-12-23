@@ -36,7 +36,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rpstf2(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INTEGER *piv, INTEGER &rank, REAL const &tol, REAL *work, INTEGER &info) {
+void Rpstf2(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INTEGER *piv, INTEGER &rank, REAL const tol, REAL *work, INTEGER &info) {
     bool upper = false;
     INTEGER i = 0;
     INTEGER pvt = 0;

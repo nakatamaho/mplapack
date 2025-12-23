@@ -36,7 +36,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rlarz(const char *side, INTEGER const m, INTEGER const n, INTEGER const l, REAL *v, INTEGER const incv, REAL const &tau, REAL *c, INTEGER const ldc, REAL *work) {
+void Rlarz(const char *side, INTEGER const m, INTEGER const n, INTEGER const l, REAL *v, INTEGER const incv, REAL const tau, REAL *c, INTEGER const ldc, REAL *work) {
     //
     const REAL zero = 0.0;
     const REAL one = 1.0;

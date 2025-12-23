@@ -36,7 +36,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void CRrscl(INTEGER const n, REAL const &sa, COMPLEX *sx, INTEGER const incx) {
+void CRrscl(INTEGER const n, REAL const sa, COMPLEX *sx, INTEGER const incx) {
     REAL smlnum = 0.0;
     const REAL one = 1.0;
     REAL bignum = 0.0;

@@ -36,7 +36,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Cspr(const char *uplo, INTEGER const n, COMPLEX const &alpha, COMPLEX *x, INTEGER const incx, COMPLEX *ap) {
+void Cspr(const char *uplo, INTEGER const n, COMPLEX const alpha, COMPLEX *x, INTEGER const incx, COMPLEX *ap) {
     //
     // Test the input parameters.
     //

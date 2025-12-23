@@ -36,7 +36,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rlasv2(REAL const &f, REAL const &g, REAL const &h, REAL &ssmin, REAL &ssmax, REAL &snr, REAL &csr, REAL &snl, REAL &csl) {
+void Rlasv2(REAL const f, REAL const g, REAL const h, REAL &ssmin, REAL &ssmax, REAL &snr, REAL &csr, REAL &snl, REAL &csl) {
     //
     REAL ft = f;
     REAL fa = abs(ft);

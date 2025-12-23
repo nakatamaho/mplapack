@@ -36,7 +36,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rlaqtr(bool const ltran, bool const lreal, INTEGER const n, REAL *t, INTEGER const ldt, REAL *b, REAL const &w, REAL &scale, REAL *x, REAL *work, INTEGER &info) {
+void Rlaqtr(bool const ltran, bool const lreal, INTEGER const n, REAL *t, INTEGER const ldt, REAL *b, REAL const w, REAL &scale, REAL *x, REAL *work, INTEGER &info) {
     bool notran = false;
     REAL eps = 0.0;
     REAL smlnum = 0.0;

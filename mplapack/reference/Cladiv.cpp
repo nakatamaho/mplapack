@@ -37,7 +37,7 @@
 #include <mplapack.h>
 
 COMPLEX
-Cladiv(COMPLEX const &x, COMPLEX const &y) {
+Cladiv(COMPLEX const x, COMPLEX const y) {
     COMPLEX return_value = COMPLEX(0.0, 0.0);
     //
     REAL zr = 0.0;

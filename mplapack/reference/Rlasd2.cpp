@@ -36,7 +36,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rlasd2(INTEGER const nl, INTEGER const nr, INTEGER const sqre, INTEGER &k, REAL *d, REAL *z, REAL const &alpha, REAL const &beta, REAL *u, INTEGER const ldu, REAL *vt, INTEGER const ldvt, REAL *dsigma, REAL *u2, INTEGER const ldu2, REAL *vt2, INTEGER const ldvt2, INTEGER *idxp, INTEGER *idx, INTEGER *idxc, INTEGER *idxq, INTEGER *coltyp, INTEGER &info) {
+void Rlasd2(INTEGER const nl, INTEGER const nr, INTEGER const sqre, INTEGER &k, REAL *d, REAL *z, REAL const alpha, REAL const beta, REAL *u, INTEGER const ldu, REAL *vt, INTEGER const ldvt, REAL *dsigma, REAL *u2, INTEGER const ldu2, REAL *vt2, INTEGER const ldvt2, INTEGER *idxp, INTEGER *idx, INTEGER *idxc, INTEGER *idxq, INTEGER *coltyp, INTEGER &info) {
     INTEGER n = 0;
     INTEGER m = 0;
     INTEGER nlp1 = 0;

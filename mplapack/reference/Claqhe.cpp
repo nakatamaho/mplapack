@@ -36,7 +36,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Claqhe(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, REAL *s, REAL const &scond, REAL const &amax, char *equed) {
+void Claqhe(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, REAL *s, REAL const scond, REAL const amax, char *equed) {
     //
     // Quick return if possible
     //

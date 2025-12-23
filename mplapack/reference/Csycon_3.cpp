@@ -36,7 +36,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Csycon_3(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *e, INTEGER *ipiv, REAL const &anorm, REAL &rcond, COMPLEX *work, INTEGER &info) {
+void Csycon_3(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *e, INTEGER *ipiv, REAL const anorm, REAL &rcond, COMPLEX *work, INTEGER &info) {
     bool upper = false;
     const REAL zero = 0.0;
     const REAL one = 1.0;

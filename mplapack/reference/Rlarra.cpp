@@ -36,7 +36,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rlarra(INTEGER const n, REAL *d, REAL *e, REAL *e2, REAL const &spltol, REAL const &tnrm, INTEGER &nsplit, INTEGER *isplit, INTEGER &info) {
+void Rlarra(INTEGER const n, REAL *d, REAL *e, REAL *e2, REAL const spltol, REAL const tnrm, INTEGER &nsplit, INTEGER *isplit, INTEGER &info) {
     //
     info = 0;
     //

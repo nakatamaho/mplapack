@@ -36,7 +36,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rgsvj0(const char *jobv, INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *d, REAL *sva, INTEGER const mv, REAL *v, INTEGER const ldv, REAL const &eps, REAL const &sfmin, REAL const &tol, INTEGER const nsweep, REAL *work, INTEGER const lwork, INTEGER &info) {
+void Rgsvj0(const char *jobv, INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *d, REAL *sva, INTEGER const mv, REAL *v, INTEGER const ldv, REAL const eps, REAL const sfmin, REAL const tol, INTEGER const nsweep, REAL *work, INTEGER const lwork, INTEGER &info) {
     bool applv = false;
     bool rsvec = false;
     INTEGER mvl = 0;

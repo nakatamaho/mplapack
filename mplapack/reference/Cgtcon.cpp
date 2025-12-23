@@ -36,7 +36,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Cgtcon(const char *norm, INTEGER const n, COMPLEX *dl, COMPLEX *d, COMPLEX *du, COMPLEX *du2, INTEGER *ipiv, REAL const &anorm, REAL &rcond, COMPLEX *work, INTEGER &info) {
+void Cgtcon(const char *norm, INTEGER const n, COMPLEX *dl, COMPLEX *d, COMPLEX *du, COMPLEX *du2, INTEGER *ipiv, REAL const anorm, REAL &rcond, COMPLEX *work, INTEGER &info) {
     bool onenrm = false;
     const REAL zero = 0.0;
     const REAL one = 1.0;

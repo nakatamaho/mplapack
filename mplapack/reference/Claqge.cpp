@@ -36,7 +36,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Claqge(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, REAL *r, REAL *c, REAL const &rowcnd, REAL const &colcnd, REAL const &amax, char *equed) {
+void Claqge(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, REAL *r, REAL *c, REAL const rowcnd, REAL const colcnd, REAL const amax, char *equed) {
     //
     // Quick return if possible
     //

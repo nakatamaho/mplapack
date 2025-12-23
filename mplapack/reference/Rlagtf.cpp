@@ -36,7 +36,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rlagtf(INTEGER const n, REAL *a, REAL const &lambda, REAL *b, REAL *c, REAL const &tol, REAL *d, INTEGER *in, INTEGER &info) {
+void Rlagtf(INTEGER const n, REAL *a, REAL const lambda, REAL *b, REAL *c, REAL const tol, REAL *d, INTEGER *in, INTEGER &info) {
     //
     info = 0;
     if (n < 0) {

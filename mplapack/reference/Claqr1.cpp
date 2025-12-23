@@ -36,7 +36,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Claqr1(INTEGER const n, COMPLEX *h, INTEGER const ldh, COMPLEX const &s1, COMPLEX const &s2, COMPLEX *v) {
+void Claqr1(INTEGER const n, COMPLEX *h, INTEGER const ldh, COMPLEX const s1, COMPLEX const s2, COMPLEX *v) {
     COMPLEX cdum = 0.0;
     //
     // Quick return if possible

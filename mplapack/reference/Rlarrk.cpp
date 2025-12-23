@@ -36,7 +36,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rlarrk(INTEGER const n, INTEGER const iw, REAL const &gl, REAL const &gu, REAL *d, REAL *e2, REAL const &pivmin, REAL const &reltol, REAL &w, REAL &werr, INTEGER &info) {
+void Rlarrk(INTEGER const n, INTEGER const iw, REAL const gl, REAL const gu, REAL *d, REAL *e2, REAL const pivmin, REAL const reltol, REAL &w, REAL &werr, INTEGER &info) {
     REAL eps = 0.0;
     REAL tnorm = 0.0;
     REAL rtoli = 0.0;

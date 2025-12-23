@@ -36,7 +36,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Ctfsm(const char *transr, const char *side, const char *uplo, const char *trans, const char *diag, INTEGER const m, INTEGER const n, COMPLEX const &alpha, COMPLEX *a, COMPLEX *b, INTEGER const ldb) {
+void Ctfsm(const char *transr, const char *side, const char *uplo, const char *trans, const char *diag, INTEGER const m, INTEGER const n, COMPLEX const alpha, COMPLEX *a, COMPLEX *b, INTEGER const ldb) {
     //
     // Test the input parameters.
     //

@@ -36,7 +36,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Claic1(INTEGER const job, INTEGER const j, COMPLEX *x, REAL const &sest, COMPLEX *w, COMPLEX const &gamma, REAL &sestpr, COMPLEX &s, COMPLEX &c) {
+void Claic1(INTEGER const job, INTEGER const j, COMPLEX *x, REAL const sest, COMPLEX *w, COMPLEX const gamma, REAL &sestpr, COMPLEX &s, COMPLEX &c) {
     //
     REAL eps = Rlamch("Epsilon");
     COMPLEX alpha = Cdotc(j, x, 1, w, 1);

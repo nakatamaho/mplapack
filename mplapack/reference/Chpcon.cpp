@@ -36,7 +36,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Chpcon(const char *uplo, INTEGER const n, COMPLEX *ap, INTEGER *ipiv, REAL const &anorm, REAL &rcond, COMPLEX *work, INTEGER &info) {
+void Chpcon(const char *uplo, INTEGER const n, COMPLEX *ap, INTEGER *ipiv, REAL const anorm, REAL &rcond, COMPLEX *work, INTEGER &info) {
     bool upper = false;
     const REAL zero = 0.0;
     const REAL one = 1.0;

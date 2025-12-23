@@ -36,7 +36,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-REAL Rlapy2(REAL const &x, REAL const &y) {
+REAL Rlapy2(REAL const x, REAL const y) {
     REAL return_value = 0.0;
     //
     bool x_is_nan = Risnan(x);

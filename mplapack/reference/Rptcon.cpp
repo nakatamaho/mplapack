@@ -36,7 +36,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rptcon(INTEGER const n, REAL *d, REAL *e, REAL const &anorm, REAL &rcond, REAL *work, INTEGER &info) {
+void Rptcon(INTEGER const n, REAL *d, REAL *e, REAL const anorm, REAL &rcond, REAL *work, INTEGER &info) {
     //
     // Test the input arguments.
     //

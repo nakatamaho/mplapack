@@ -36,7 +36,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Clarfx(const char *side, INTEGER const m, INTEGER const n, COMPLEX *v, COMPLEX const &tau, COMPLEX *c, INTEGER const ldc, COMPLEX *work) {
+void Clarfx(const char *side, INTEGER const m, INTEGER const n, COMPLEX *v, COMPLEX const tau, COMPLEX *c, INTEGER const ldc, COMPLEX *work) {
     const COMPLEX zero = COMPLEX(0.0, 0.0);
     const COMPLEX one = COMPLEX(1.0, 0.0);
     COMPLEX t1 = 0.0;

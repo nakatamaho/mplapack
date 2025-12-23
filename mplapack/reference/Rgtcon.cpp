@@ -36,7 +36,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rgtcon(const char *norm, INTEGER const n, REAL *dl, REAL *d, REAL *du, REAL *du2, INTEGER *ipiv, REAL const &anorm, REAL &rcond, REAL *work, INTEGER *iwork, INTEGER &info) {
+void Rgtcon(const char *norm, INTEGER const n, REAL *dl, REAL *d, REAL *du, REAL *du2, INTEGER *ipiv, REAL const anorm, REAL &rcond, REAL *work, INTEGER *iwork, INTEGER &info) {
     bool onenrm = false;
     const REAL zero = 0.0;
     const REAL one = 1.0;

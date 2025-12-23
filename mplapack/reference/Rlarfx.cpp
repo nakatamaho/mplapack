@@ -36,7 +36,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rlarfx(const char *side, INTEGER const m, INTEGER const n, REAL *v, REAL const &tau, REAL *c, INTEGER const ldc, REAL *work) {
+void Rlarfx(const char *side, INTEGER const m, INTEGER const n, REAL *v, REAL const tau, REAL *c, INTEGER const ldc, REAL *work) {
     const REAL zero = 0.0;
     const REAL one = 1.0;
     REAL t1 = 0.0;

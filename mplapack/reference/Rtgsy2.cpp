@@ -36,7 +36,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rtgsy2(const char *trans, INTEGER const ijob, INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL *c, INTEGER const ldc, REAL *d, INTEGER const ldd, REAL *e, INTEGER const lde, REAL *f, INTEGER const ldf, REAL &scale, REAL const &rdsum, REAL const &rdscal, INTEGER *iwork, INTEGER &pq, INTEGER &info) {
+void Rtgsy2(const char *trans, INTEGER const ijob, INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL *c, INTEGER const ldc, REAL *d, INTEGER const ldd, REAL *e, INTEGER const lde, REAL *f, INTEGER const ldf, REAL &scale, REAL const rdsum, REAL const rdscal, INTEGER *iwork, INTEGER &pq, INTEGER &info) {
     INTEGER ierr = 0;
     bool notran = false;
     INTEGER p = 0;

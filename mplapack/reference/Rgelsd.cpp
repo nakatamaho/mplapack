@@ -36,7 +36,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rgelsd(INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL *s, REAL const &rcond, INTEGER &rank, REAL *work, INTEGER const lwork, INTEGER *iwork, INTEGER &info) {
+void Rgelsd(INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL *s, REAL const rcond, INTEGER &rank, REAL *work, INTEGER const lwork, INTEGER *iwork, INTEGER &info) {
     INTEGER minmn = 0;
     INTEGER maxmn = 0;
     INTEGER mnthr = 0;

@@ -36,7 +36,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Cpbcon(const char *uplo, INTEGER const n, INTEGER const kd, COMPLEX *ab, INTEGER const ldab, REAL const &anorm, REAL &rcond, COMPLEX *work, REAL *rwork, INTEGER &info) {
+void Cpbcon(const char *uplo, INTEGER const n, INTEGER const kd, COMPLEX *ab, INTEGER const ldab, REAL const anorm, REAL &rcond, COMPLEX *work, REAL *rwork, INTEGER &info) {
     COMPLEX zdum = 0.0;
     bool upper = false;
     const REAL zero = 0.0;

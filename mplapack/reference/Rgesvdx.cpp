@@ -36,7 +36,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rgesvdx(const char *jobu, const char *jobvt, const char *range, INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL const &vl, REAL const &vu, INTEGER const il, INTEGER const iu, INTEGER &ns, REAL *s, REAL *u, INTEGER const ldu, REAL *vt, INTEGER const ldvt, REAL *work, INTEGER const lwork, INTEGER *iwork, INTEGER &info) {
+void Rgesvdx(const char *jobu, const char *jobvt, const char *range, INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL const vl, REAL const vu, INTEGER const il, INTEGER const iu, INTEGER &ns, REAL *s, REAL *u, INTEGER const ldu, REAL *vt, INTEGER const ldvt, REAL *work, INTEGER const lwork, INTEGER *iwork, INTEGER &info) {
     //
     // Test the input arguments.
     //

@@ -36,7 +36,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rlarrj(INTEGER const n, REAL *d, REAL *e2, INTEGER const ifirst, INTEGER const ilast, REAL const &rtol, INTEGER const offset, REAL *w, REAL *werr, REAL *work, INTEGER *iwork, REAL const &pivmin, REAL const &spdiam, INTEGER &info) {
+void Rlarrj(INTEGER const n, REAL *d, REAL *e2, INTEGER const ifirst, INTEGER const ilast, REAL const rtol, INTEGER const offset, REAL *w, REAL *werr, REAL *work, INTEGER *iwork, REAL const pivmin, REAL const spdiam, INTEGER &info) {
     const REAL two = 2.0;
     INTEGER maxitr = 0;
     INTEGER i1 = 0;

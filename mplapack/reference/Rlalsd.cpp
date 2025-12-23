@@ -36,7 +36,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rlalsd(const char *uplo, INTEGER const smlsiz, INTEGER const n, INTEGER const nrhs, REAL *d, REAL *e, REAL *b, INTEGER const ldb, REAL const &rcond, INTEGER &rank, REAL *work, INTEGER *iwork, INTEGER &info) {
+void Rlalsd(const char *uplo, INTEGER const smlsiz, INTEGER const n, INTEGER const nrhs, REAL *d, REAL *e, REAL *b, INTEGER const ldb, REAL const rcond, INTEGER &rank, REAL *work, INTEGER *iwork, INTEGER &info) {
     //
     // Test the input parameters.
     //

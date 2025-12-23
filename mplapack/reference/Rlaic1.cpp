@@ -36,7 +36,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rlaic1(INTEGER const job, INTEGER const j, REAL *x, REAL const &sest, REAL *w, REAL const &gamma, REAL &sestpr, REAL &s, REAL &c) {
+void Rlaic1(INTEGER const job, INTEGER const j, REAL *x, REAL const sest, REAL *w, REAL const gamma, REAL &sestpr, REAL &s, REAL &c) {
     //
     REAL eps = Rlamch("Epsilon");
     REAL alpha = Rdot(j, x, 1, w, 1);

@@ -36,7 +36,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rlartg(REAL const &f, REAL const &g, REAL &cs, REAL &sn, REAL &r) {
+void Rlartg(REAL const f, REAL const g, REAL &cs, REAL &sn, REAL &r) {
     REAL safmin = 0.0;
     REAL eps = 0.0;
     const REAL two = 2.0;

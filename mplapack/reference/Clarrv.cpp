@@ -36,7 +36,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Clarrv(INTEGER const n, REAL const &vl, REAL const & /* vu */, REAL *d, REAL *l, REAL const &pivmin, INTEGER *isplit, INTEGER const m, INTEGER const dol, INTEGER const dou, REAL const &minrgp, REAL &rtol1, REAL &rtol2, REAL *w, REAL *werr, REAL *wgap, INTEGER *iblock, INTEGER *indexw, REAL *gers, COMPLEX *z, INTEGER const ldz, INTEGER *isuppz, REAL *work, INTEGER *iwork, INTEGER &info) {
+void Clarrv(INTEGER const n, REAL const vl, REAL const /* vu */, REAL *d, REAL *l, REAL const pivmin, INTEGER *isplit, INTEGER const m, INTEGER const dol, INTEGER const dou, REAL const minrgp, REAL &rtol1, REAL &rtol2, REAL *w, REAL *werr, REAL *wgap, INTEGER *iblock, INTEGER *indexw, REAL *gers, COMPLEX *z, INTEGER const ldz, INTEGER *isuppz, REAL *work, INTEGER *iwork, INTEGER &info) {
     INTEGER indld = 0;
     INTEGER indlld = 0;
     INTEGER indin1 = 0;
