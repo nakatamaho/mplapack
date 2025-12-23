@@ -1,11 +1,23 @@
 #!/usr/bin/env python3
-"""
-Add or normalize BLAS/LAPACK attribution header comments in MPLAPACK sources.
+"""Add or normalize BLAS/LAPACK attribution header comments in MPLAPACK sources.
+
+This script can either:
+
+  * output the normalized content to stdout ("stdout mode"), or
+  * edit files in-place ("in-place mode").
+
+In-place mode will *not* rewrite a file when the content is unchanged.
 
 Usage:
-    add_attribution.py CPP_FILE FORTRAN_FILE
+  add_attribution.py [--inplace|-i] CPP_FILE FORTRAN_FILE [CPP_FILE FORTRAN_FILE ...]
+  add_attribution.py --stdout CPP_FILE FORTRAN_FILE
 
-For the given C++ file, this script will either:
+Notes:
+  * If neither --inplace nor --stdout is given, the default is in-place mode
+    (backward compatible with older versions of this script).
+  * In stdout mode, exactly one CPP/Fortran pair is supported.
+
+For each C++ file, this script will either:
 
   * replace an existing BLAS/LAPACK attribution block (lines containing
     'Derived from ... routine', 'Original ... authors', or known author
@@ -16,11 +28,11 @@ For the given C++ file, this script will either:
 
 The canonical form is:
 
-// Derived from <LIB> routine <ROUTINE>.
-// Original <LIB> authors:
-//   <author1>
-//   <author2>
-//   ...
+  // Derived from <LIB> routine <ROUTINE>.
+  // Original <LIB> authors:
+  //   <author1>
+  //   <author2>
+  //   ...
 
 where <LIB> is "BLAS" or "LAPACK" depending on the Fortran file path, and
 <ROUTINE> is taken from the Fortran file stem (e.g. zsymm.f -> ZSYMM).
@@ -28,18 +40,21 @@ where <LIB> is "BLAS" or "LAPACK" depending on the Fortran file path, and
 Authors are extracted from the given Fortran source file, by parsing the
 "Authors" section:
 
-*  Authors:
-*  ========
-*
-*> \\author Univ. of Tennessee
-*> \\author Univ. of California Berkeley
-*> \\author Univ. of Colorado Denver
-*> \\author NAG Ltd.
+  *  Authors:
+  *  ========
+  *
+  *> \\author Univ. of Tennessee
+  *> \\author Univ. of California Berkeley
+  *> \\author Univ. of Colorado Denver
+  *> \\author NAG Ltd.
 """
+
+from __future__ import annotations
 
 import sys
 from pathlib import Path
-from typing import List
+from typing import List, Tuple
+
 
 # Markers that indicate we are inside an old attribution block.
 ATTR_MARKERS = [
@@ -55,8 +70,21 @@ ATTR_MARKERS = [
 ]
 
 
+def _print_usage(out) -> None:
+    prog = Path(sys.argv[0]).name
+    print(
+        "Usage:\n"
+        f"  {prog} [--inplace|-i] CPP_FILE FORTRAN_FILE [CPP_FILE FORTRAN_FILE ...]\n"
+        f"  {prog} --stdout CPP_FILE FORTRAN_FILE\n\n"
+        "Modes:\n"
+        "  --inplace, -i   Edit file(s) in-place (default).\n"
+        "  --stdout        Print normalized content to stdout.\n",
+        file=out,
+    )
+
+
 def is_comment_line(line: str) -> bool:
-    """Return True if the line is a C++ line comment starting with '//'."""
+    """Return True if the line is a C++ line comment starting with '//'"""
     stripped = line.lstrip()
     return stripped.startswith("//")
 
@@ -172,7 +200,6 @@ def insert_header_if_missing(
     insert_at = i
     header_lines = build_canonical_header(
         routine, lib_name, authors, indent="")
-
     return src[:insert_at] + header_lines + src[insert_at:]
 
 
@@ -205,6 +232,12 @@ def replace_existing_header(
             else:
                 break
 
+        # Drop any real blank lines immediately following the attribution
+        # block so the transformation is idempotent (the canonical header
+        # already ends with a single blank line).
+        while i < n and src[i].strip() == "":
+            i += 1
+
         if not replaced_block:
             out.extend(build_canonical_header(
                 routine, lib_name, authors, indent=leading))
@@ -214,10 +247,9 @@ def replace_existing_header(
     return out if replaced_block else src
 
 
-def normalize_file(cpp_path: Path, fortran_path: Path) -> None:
-    """Normalize attribution header in a single C++ file."""
-    src_lines = cpp_path.read_text(
-        encoding="utf-8", errors="ignore").splitlines(keepends=True)
+def normalize_text(cpp_path: Path, fortran_path: Path, src_text: str) -> str:
+    """Return normalized C++ content as text."""
+    src_lines = src_text.splitlines(keepends=True)
 
     # Routine name: prefer the Fortran stem, uppercased (e.g. zsymm.f -> ZSYMM).
     if fortran_path.is_file():
@@ -245,26 +277,89 @@ def normalize_file(cpp_path: Path, fortran_path: Path) -> None:
         new_src = insert_header_if_missing(
             src_lines, routine, lib_name, authors)
 
-    cpp_path.write_text("".join(new_src), encoding="utf-8")
+    return "".join(new_src)
 
 
-def main(argv):
-    if len(argv) != 3:
-        print("Usage: add_attribution.py CPP_FILE FORTRAN_FILE", file=sys.stderr)
-        sys.exit(1)
+def normalize_file(cpp_path: Path, fortran_path: Path) -> Tuple[str, bool]:
+    """Normalize attribution header in a single C++ file.
 
-    cpp_path = Path(argv[1])
-    ft_path = Path(argv[2])
+    Returns (output_text, changed).
+    """
+    src_text = cpp_path.read_text(encoding="utf-8", errors="ignore")
+    out_text = normalize_text(cpp_path, fortran_path, src_text)
+    return out_text, (out_text != src_text)
 
-    if not cpp_path.is_file():
-        print(f"add_attribution: {cpp_path} is not a file", file=sys.stderr)
-        sys.exit(1)
-    if not ft_path.is_file():
-        print(
-            f"add_attribution: WARNING: {ft_path} is not a file, authors will be empty", file=sys.stderr)
 
-    normalize_file(cpp_path, ft_path)
+def main(argv: List[str]) -> int:
+    inplace = False
+    stdout_mode = False
+    args: List[str] = []
+
+    it = iter(argv[1:])
+    for a in it:
+        if a in ("-h", "--help"):
+            _print_usage(sys.stdout)
+            return 0
+        if a in ("--inplace", "-i"):
+            inplace = True
+            continue
+        if a == "--stdout":
+            stdout_mode = True
+            continue
+        if a == "--":
+            args.extend(list(it))
+            break
+        args.append(a)
+
+    if inplace and stdout_mode:
+        print("add_attribution: choose either --inplace or --stdout", file=sys.stderr)
+        return 2
+
+    # Backward compatible default: in-place if no explicit mode is given.
+    if not inplace and not stdout_mode:
+        inplace = True
+
+    if stdout_mode:
+        if len(args) != 2:
+            _print_usage(sys.stderr)
+            return 1
+        pairs = [(args[0], args[1])]
+    else:
+        if len(args) < 2 or (len(args) % 2) != 0:
+            _print_usage(sys.stderr)
+            return 1
+        pairs = [(args[i], args[i + 1]) for i in range(0, len(args), 2)]
+
+    for idx, (cpp_arg, ft_arg) in enumerate(pairs):
+        cpp_path = Path(cpp_arg)
+        ft_path = Path(ft_arg)
+
+        if not cpp_path.is_file():
+            print(
+                f"add_attribution: {cpp_path} is not a file", file=sys.stderr)
+            return 3
+        if not ft_path.is_file():
+            print(
+                f"add_attribution: WARNING: {ft_path} is not a file, authors will be empty",
+                file=sys.stderr,
+            )
+
+        out_text, changed = normalize_file(cpp_path, ft_path)
+
+        if stdout_mode:
+            sys.stdout.write(out_text)
+            return 0
+
+        # In-place mode
+        if changed:
+            cpp_path.write_text(out_text, encoding="utf-8")
+
+        # If unchanged: do not rewrite.
+        # Continue to next pair.
+        _ = idx
+
+    return 0
 
 
 if __name__ == "__main__":
-    main(sys.argv)
+    raise SystemExit(main(sys.argv))
