@@ -29,15 +29,10 @@
 #ifndef _MPBLAS_GMP_H_
 #define _MPBLAS_GMP_H_
 
+#define ___MPLAPACK_GMP_DEFAULT_PRECISION___ 512
+
 #include "gmpxx.h"
 #include "mpc_class.h"
 #include "mplapack_config.h"
 #include "mplapack_utils_gmp.h"
-
-#if !defined __MPLAPACK_ERRNO__
-#define _MPLAPACK_EXTERN_ extern
-#else
-#define _MPLAPACK_EXTERN_
-#endif
-_MPLAPACK_EXTERN_ int mplapack_errno;
 

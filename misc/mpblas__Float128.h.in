@@ -32,10 +32,3 @@
 #include "mplapack_config.h"
 #include "mplapack_utils__Float128.h"
 
-#if !defined __MPLAPACK_ERRNO__
-#define _MPLAPACK_EXTERN_ extern
-#else
-#define _MPLAPACK_EXTERN_
-#endif
-_MPLAPACK_EXTERN_ int mplapack_errno;
-
