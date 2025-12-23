@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,23 +26,27 @@
  *
  */
 
+// Derived from LAPACK routine ILAPREC.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
-INTEGER iMlaprec(const char *prec) {
+INTEGER
+iMlaprec(const char *prec) {
     INTEGER return_value = 0;
-    //
-    //
-    //
-    //
     const INTEGER blas_prec_single = 211;
-    const INTEGER blas_prec_REAL = 212;
+    const INTEGER blas_prec_double = 212;
     const INTEGER blas_prec_indigenous = 213;
     const INTEGER blas_prec_extra = 214;
     if (Mlsame(prec, "S")) {
         return_value = blas_prec_single;
     } else if (Mlsame(prec, "D")) {
-        return_value = blas_prec_REAL;
+        return_value = blas_prec_double;
     } else if (Mlsame(prec, "I")) {
         return_value = blas_prec_indigenous;
     } else if (Mlsame(prec, "X") || Mlsame(prec, "E")) {
