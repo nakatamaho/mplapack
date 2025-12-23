@@ -67,19 +67,7 @@ done < "$name_map"
 
 # If not found in the map, apply the default MPLAPACK rule: s/d -> R, c/z -> C.
 if [ -z "$mapped_name" ]; then
-    first_char="${lower_fortran:0:1}"
-    tail="${lower_fortran:1}"
-    case "$first_char" in
-        s|d)
-            mapped_name="R${tail}"
-            ;;
-        c|z)
-            mapped_name="C${tail}"
-            ;;
-        *)
-            mapped_name="$fortran_name"
-            ;;
-    esac
+   echo "Error: not in the $mapped_name"
 fi
 
 cpp_generated="${src_dir}/${mapped_name}.cpp"
@@ -92,7 +80,7 @@ tmp_cpp="$(mktemp)"
 # mplapack_name_map.txt from the same directory as this script.
 (
     cd "$script_dir"
-    python -m fable.command_line.cout "$src_abs" #> /dev/null
+    python -m fable.command_line.cout "$src_abs" > /dev/null
 )
 
 # Ensure the expected generated C++ file exists.
@@ -101,13 +89,10 @@ if [ ! -f "$cpp_generated" ]; then
     exit 1
 fi
 
-# Strip leading blank lines only (keep all comments from cout.py).
-sed '/./,$!d' "$cpp_generated" > "$tmp_body"
-
 # Prepend MPLAPACK LAPACK header
-cat "$header" "$tmp_body" > "$tmp_cpp"
+cat "$header" "$cpp_generated" > "$tmp_cpp"
 
-python3 "${script_dir}/strip_boilerplate_comments.py" "$tmp_cpp"
+python3 "${script_dir}/strip_boilerplate_comments.py" --inplace "$cpp_generated"
 python3 "${script_dir}/add_attribution.py" "$tmp_cpp" "$src"
 
 # Format with clang-format (C++ indentation and style)
