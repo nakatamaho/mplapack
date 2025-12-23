@@ -84,6 +84,7 @@ MANUAL_MAPPINGS=(
   "iparam2stage iMparam2stage"
   "dladiv2 Rladiv2"
   "la_isnan Mla_isnan"
+  "ilaprec iMlaprec"
 )
 
 # ------------------------------------------------------------

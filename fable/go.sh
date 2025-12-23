@@ -55,6 +55,7 @@ run_one_pass() {
   echo "PASS ${pass} done. signatures: ${SIG_PY}"
 }
 
+bash "${FABLE}/gen_mplapack_name_map.sh"
 for pass in $(seq 1 "${PASSES}"); do
   run_one_pass "${pass}"
 done
