@@ -5356,20 +5356,15 @@ def convert_to_cpp_function(
             if (fdecl.dim_tokens is None):
                 # Scalar argument.
                 #   - OUT / INOUT (is_modified=True)      -> <TYPE>&
-                #   - IN  INTEGER/LOGICAL                 -> <TYPE> const   (by value)
-                #   - IN  REAL/DOUBLE/COMPLEX/...         -> <TYPE> const&  (by const reference)
+                #   - IN  scalar (any numeric kind)       -> <TYPE> const   (by value)
                 name = prepend_identifier_if_necessary(arg_name)
 
                 if fdecl.is_modified:
                     # OUT / INOUT scalar
                     cargs_append("%s &" % mplapack_type, name)
                 else:
-                    if dt_code in ("integer", "logical"):
-                        # Small IN scalar: pass by value but keep it const
-                        cargs_append("%s const" % mplapack_type, name)
-                    else:
-                        # REAL / DOUBLE PRECISION / COMPLEX etc.: const reference
-                        cargs_append("%s const &" % mplapack_type, name)
+                    # IN scalar: pass by value for MPLAPACK/BLAS-style interfaces
+                    cargs_append("%s const" % mplapack_type, name)
 
                 # Track COMPLEX scalars
                 if dt_code in ("complex", "doublecomplex"):

@@ -103,8 +103,8 @@ patch -p3 -R < ~/mplapack/fable/3.9.1/lapack/patch-Claic1.cpp
 patch -p3 -R < ~/mplapack/fable/3.9.1/lapack/patch-Csyequb.cpp
 patch -p3 -R < ~/mplapack/fable/3.9.1/lapack/patch-Cgesvj.cpp
 patch -p3    < ~/mplapack/fable/3.9.1/lapack/patch-Rgesvj.cpp
-patch -p3    < ~/mplapack/fable/3.9.1/lapack/patch-Rlacon.cpp
-patch -p3    < ~/mplapack/fable/3.9.1/lapack/patch-Clacon.cpp
+patch -p3 -R < ~/mplapack/fable/3.9.1/lapack/patch-Rlacon.cpp
+patch -p3 -R < ~/mplapack/fable/3.9.1/lapack/patch-Clacon.cpp
 patch -p3 -R < ~/mplapack/fable/3.9.1/lapack/patch-Rlasy2.cpp
 patch -p3    < ~/mplapack/fable/3.9.1/lapack/patch-Cgejsv.cpp
 patch -p3    < ~/mplapack/fable/3.9.1/lapack/patch-Rgejsv.cpp
