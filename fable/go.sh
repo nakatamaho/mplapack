@@ -1,38 +1,62 @@
-#!/bin/sh
+#!/usr/bin/env bash
+# two_pass_convert.sh
+set -euo pipefail
+shopt -s nullglob
 
-#remove everything
-rm -f /home/docker/mplapack/include/mplapack_{mpfr,gmp,qd,dd,_Float128,_Float64x,double}.h
-rm -f /home/docker/mplapack/mpblas/mpblas_generic.h
-rm -f /home/docker/mplapack/mplapack/mplapack_generic.h
-rm -f home/docker/mplapack/fable/mplapack_signatures.py
-rm -rf /home/docker/mplapack/external/lapack/work
+PASSES="${1:-2}"
 
-# convert BLAS, LAPACK subroutine names to MPLAPACK function name
-# typically dgemm -> Rgemm, zgemm -> Cgemm
-# manual mappings can be found in MANUAL_MAPPINGS of gen_mplapack_name_map.sh
-cd /home/docker/mplapack/external/lapack/ ; make extract
-bash /home/docker/mplapack/fable/gen_mplapack_name_map.sh
+ROOT="/home/docker/mplapack"
+LAPACK_ROOT="${ROOT}/external/lapack/work/internal/lapack-3.9.1"
+BLAS_SRC="${LAPACK_ROOT}/BLAS/SRC"
+LAPACK_SRC="${LAPACK_ROOT}/SRC"
 
-# convert BLAS and LAPACK: 1st pass
-cd /home/docker/mplapack/external/lapack/work/internal/lapack-3.9.1/BLAS/SRC
-bash /home/docker/mplapack/fable/convert_blas_all.sh ; mv *cpp /home/docker/mplapack/mpblas/reference/
+FABLE="${ROOT}/fable"
+MPBLAS_REF="${ROOT}/mpblas/reference"
+MPLAPACK_REF="${ROOT}/mplapack/reference"
 
-cd /home/docker/mplapack/external/lapack/work/internal/lapack-3.9.1/SRC
-bash /home/docker/mplapack/fable/convert_lapack_all.sh ; mv *cpp /home/docker/mplapack/mplapack/reference/
+MPBLAS_HDR="${MPBLAS_REF}/mpblas_generic.h"
+MPLAPACK_HDR="${MPLAPACK_REF}/mplapack_generic.h"
+SIG_PY="${FABLE}/mplapack_signatures.py"
 
-### make prototype headers
-bash /home/docker/mplapack/fable/gen_include_blas.sh
-bash /home/docker/mplapack/fable/gen_include_lapack.sh
-python ~/mplapack/fable/gen_mplapack_signatures.py ~/mplapack/mpblas/reference/mpblas_generic.h ~/mplapack/mplapack/reference/mplapack_generic.h > ~/mplapack/fable/mplapack_signatures.py
+move_cpp_or_die() {
+  local src_dir="$1"
+  local dst_dir="$2"
+  local files=("${src_dir}"/*.cpp)
 
-#2nd pass; now we can handle how we pass arrays correctly. (e.g., &a[0] or a[0])
-### make prototype headers again.
-bash /home/docker/mplapack/fable/gen_include_blas.sh
-bash /home/docker/mplapack/fable/gen_include_lapack.sh
-python ~/mplapack/fable/gen_mplapack_signatures.py ~/mplapack/mpblas/reference/mpblas_generic.h ~/mplapack/mplapack/reference/mplapack_generic.h > ~/mplapack/fable/mplapack_signatures.py
+  # Fail fast if conversion produced no .cpp outputs.
+  if (( ${#files[@]} == 0 )); then
+    echo "ERROR: No .cpp files produced in: ${src_dir}" >&2
+    exit 1
+  fi
 
-cd /home/docker/mplapack/external/lapack/work/internal/lapack-3.9.1/BLAS/SRC
-bash /home/docker/mplapack/fable/convert_blas_all.sh ; mv *cpp /home/docker/mplapack/mpblas/reference/
+  /bin/mv -f "${files[@]}" "${dst_dir}/"
+}
 
-cd /home/docker/mplapack/external/lapack/work/internal/lapack-3.9.1/LAPACK
-bash /home/docker/mplapack/fable/convert_lapack_all.sh ; mv *cpp /home/docker/mplapack/mplapack/reference/
+run_one_pass() {
+  local pass="$1"
+  echo "=== PASS ${pass}/${PASSES} ==="
+
+  # Remove leftovers from a previous aborted run to avoid mixing outputs.
+  /bin/rm -f "${BLAS_SRC}"/*.cpp "${LAPACK_SRC}"/*.cpp
+
+  ( cd "${BLAS_SRC}"  && bash "${FABLE}/convert_blas_all.sh" )
+  move_cpp_or_die "${BLAS_SRC}" "${MPBLAS_REF}"
+
+  ( cd "${LAPACK_SRC}" && bash "${FABLE}/convert_lapack_all.sh" )
+  move_cpp_or_die "${LAPACK_SRC}" "${MPLAPACK_REF}"
+
+  # Generate prototype headers.
+  bash "${FABLE}/gen_include_mpblas.sh"
+  bash "${FABLE}/gen_include_mplapack.sh"
+
+  # Generate signatures so the next pass can use them if the pipeline supports it.
+  python3 "${FABLE}/gen_mplapack_signatures.py" "${MPBLAS_HDR}" "${MPLAPACK_HDR}" > "${SIG_PY}"
+
+  echo "PASS ${pass} done. signatures: ${SIG_PY}"
+}
+
+for pass in $(seq 1 "${PASSES}"); do
+  run_one_pass "${pass}"
+done
+
+echo "ALL DONE"

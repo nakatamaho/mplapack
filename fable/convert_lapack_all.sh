@@ -18,7 +18,7 @@ EXCLUDE_PREFIXES=( s c )
 EXCLUDE_BASENAMES_MANUAL=( )
 
 # Basenames that are not needed on the C++ side
-EXCLUDE_BASENAMES_UNUSED=( la_constants )
+EXCLUDE_BASENAMES_UNUSED=( la_constants dsgesv zcgesv dsposv zcposv dla_gerfsx_extended dla_gbrfsx_extended dla_porfsx_extended dla_syrfsx_extended zla_gerfsx_extended zla_gbrfsx_extended zla_porfsx_extended zla_syrfsx_extended zla_herfsx_extended )
 
 # Other helper/utility routines to be excluded from this pass
 EXCLUDE_BASENAMES_MISC=( dlaruv )
