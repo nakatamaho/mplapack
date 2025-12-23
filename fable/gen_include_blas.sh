@@ -16,8 +16,9 @@ done
 /usr/local/bin/ctags -x --c++-kinds=pf --language-force=c++ --_xformat='%{typeref} %{name} %{signature};' Mlsame.cpp |  tr ':' ' ' | sed -e 's/^typename //' > Mlsame.hpp
 
 cat *hpp > header_all
+rm *hpp
 
-#MPLIBS="gmp mpfr _Float128 dd qd double _Float64x"
+MPLIBS="gmp mpfr _Float128 dd qd double _Float64x"
 for mplib in $MPLIBS; do
     if [ x"$mplib" = x"gmp" ]; then
         cp header_all mpblas_${mplib}.h 
@@ -105,5 +106,3 @@ clang-format-19 -i -style '{
     BreakBeforeConceptDeclarations: Never,
   }' "$f"
 done
-
-rm header_all *hpp

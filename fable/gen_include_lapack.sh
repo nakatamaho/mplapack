@@ -17,7 +17,7 @@ cat *hpp | sort | grep -v abs1 | grep -v abs2 | grep -v Rlam | grep -v ___mplapa
 
 rm *hpp
 
-#MPLIBS="gmp mpfr _Float128 dd qd double _Float64x"
+MPLIBS="gmp mpfr _Float128 dd qd double _Float64x"
 for mplib in $MPLIBS; do
     if [ x"$mplib" = x"gmp" ]; then
         cat header_all | grep -v mpfr > mplapack_${mplib}.h 
