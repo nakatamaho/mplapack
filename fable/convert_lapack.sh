@@ -92,8 +92,8 @@ fi
 # Prepend MPLAPACK LAPACK header
 cat "$header" "$cpp_generated" > "$tmp_cpp"
 
-python3 "${script_dir}/strip_boilerplate_comments.py" --inplace "$cpp_generated"
-python3 "${script_dir}/add_attribution.py" "$tmp_cpp" "$src"
+python3 "${script_dir}/strip_boilerplate_comments.py" --inplace "$tmp_cpp"
+python3 "${script_dir}/add_attribution.py" --inplace "$tmp_cpp"
 
 # Format with clang-format (C++ indentation and style)
 clang-format-19 -i -style '{
