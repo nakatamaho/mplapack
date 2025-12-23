@@ -18,21 +18,17 @@ bash /home/docker/mplapack/fable/gen_mplapack_name_map.sh
 cd /home/docker/mplapack/external/lapack/work/internal/lapack-3.9.1/BLAS/SRC
 bash /home/docker/mplapack/fable/convert_blas_all.sh ; mv *cpp /home/docker/mplapack/mpblas/reference/
 
-cd /home/docker/mplapack/external/lapack/work/internal/lapack-3.9.1/LAPACK/SRC
+cd /home/docker/mplapack/external/lapack/work/internal/lapack-3.9.1/SRC
 bash /home/docker/mplapack/fable/convert_lapack_all.sh ; mv *cpp /home/docker/mplapack/mplapack/mpblas/reference/
 
-### make prototype header
+### make prototype headers
 bash /home/docker/mplapack/fable/make_include_blas.sh
 bash /home/docker/mplapack/fable/make_include_lapack.sh
 python ~/mplapack/fable/gen_mplapack_signatures.py ~/mplapack/mpblas/reference/mpblas_generic.h ~/mplapack/mplapack/reference/mplapack_generic.h > ~/mplapack/fable/mplapack_signatures.py
 
-#2nd pass
+#2nd pass; now we can handle how we pass arrays correctly. (e.g., &a[0] or not)
 cd /home/docker/mplapack/external/lapack/work/internal/lapack-3.9.1/BLAS/SRC
 bash /home/docker/mplapack/fable/convert_blas_all.sh ; mv *cpp /home/docker/mplapack/mpblas/reference/
 
-cd /home/docker/mplapack/external/lapack/work/internal/lapack-3.9.1/LAPACK/SRC
+cd /home/docker/mplapack/external/lapack/work/internal/lapack-3.9.1/LAPACK
 bash /home/docker/mplapack/fable/convert_lapack_all.sh ; mv *cpp /home/docker/mplapack/mplapack/mpblas/reference/
-
-### make prototype header
-bash /home/docker/mplapack/fable/make_include_blas.sh
-bash /home/docker/mplapack/fable/make_include_lapack.sh
