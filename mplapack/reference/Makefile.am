@@ -114,28 +114,18 @@ endif
 endif
 
 MPLAPACK_SOURCES = \
-Cgtsvx.cpp \
-Chesv_aa.cpp \
-Chesv_aa_2stage.cpp \
-Chesv_rk.cpp \
-Cpptri.cpp \
-Csysv.cpp \
-Csysv_aa_2stage.cpp \
-Csysv_rk.cpp \
-Csysv_rook.cpp \
-Rgtsvx.cpp \
-Cgtcon.cpp \
-Cgttrf.cpp \
+CRrscl.cpp \
 Cbbcsd.cpp \
 Cbdsqr.cpp \
-CRrscl.cpp \
 Cgbbrd.cpp \
 Cgbcon.cpp \
 Cgbequ.cpp \
 Cgbequb.cpp \
 Cgbrfs.cpp \
+Cgbrfsx.cpp \
 Cgbsv.cpp \
 Cgbsvx.cpp \
+Cgbsvxx.cpp \
 Cgbtf2.cpp \
 Cgbtrf.cpp \
 Cgbtrs.cpp \
@@ -178,6 +168,7 @@ Cgeqrt.cpp \
 Cgeqrt2.cpp \
 Cgeqrt3.cpp \
 Cgerfs.cpp \
+Cgerfsx.cpp \
 Cgerq2.cpp \
 Cgerqf.cpp \
 Cgesc2.cpp \
@@ -188,6 +179,7 @@ Cgesvdq.cpp \
 Cgesvdx.cpp \
 Cgesvj.cpp \
 Cgesvx.cpp \
+Cgesvxx.cpp \
 Cgetc2.cpp \
 Cgetf2.cpp \
 Cgetrf.cpp \
@@ -214,8 +206,11 @@ Cggsvd3.cpp \
 Cggsvp3.cpp \
 Cgsvj0.cpp \
 Cgsvj1.cpp \
+Cgtcon.cpp \
 Cgtrfs.cpp \
 Cgtsv.cpp \
+Cgtsvx.cpp \
+Cgttrf.cpp \
 Cgttrs.cpp \
 Cgtts2.cpp \
 Chb2st_kernels.cpp \
@@ -249,9 +244,14 @@ Chegv_2stage.cpp \
 Chegvd.cpp \
 Chegvx.cpp \
 Cherfs.cpp \
+Cherfsx.cpp \
 Chesv.cpp \
+Chesv_aa.cpp \
+Chesv_aa_2stage.cpp \
+Chesv_rk.cpp \
 Chesv_rook.cpp \
 Chesvx.cpp \
+Chesvxx.cpp \
 Cheswapr.cpp \
 Chetd2.cpp \
 Chetf2.cpp \
@@ -297,6 +297,27 @@ Chptri.cpp \
 Chptrs.cpp \
 Chsein.cpp \
 Chseqr.cpp \
+Cla_gbamv.cpp \
+Cla_gbrcond_c.cpp \
+Cla_gbrcond_x.cpp \
+Cla_gbrpvgrw.cpp \
+Cla_geamv.cpp \
+Cla_gercond_c.cpp \
+Cla_gercond_x.cpp \
+Cla_gerpvgrw.cpp \
+Cla_heamv.cpp \
+Cla_hercond_c.cpp \
+Cla_hercond_x.cpp \
+Cla_herpvgrw.cpp \
+Cla_lin_berr.cpp \
+Cla_porcond_c.cpp \
+Cla_porcond_x.cpp \
+Cla_porpvgrw.cpp \
+Cla_syamv.cpp \
+Cla_syrcond_c.cpp \
+Cla_syrcond_x.cpp \
+Cla_syrpvgrw.cpp \
+Cla_wwaddw.cpp \
 Clabrd.cpp \
 Clacgv.cpp \
 Clacn2.cpp \
@@ -312,6 +333,7 @@ Claed8.cpp \
 Claein.cpp \
 Claesy.cpp \
 Claev2.cpp \
+Clag2c.cpp \
 Clags2.cpp \
 Clagtm.cpp \
 Clahef.cpp \
@@ -391,6 +413,7 @@ Clasyf.cpp \
 Clasyf_aa.cpp \
 Clasyf_rk.cpp \
 Clasyf_rook.cpp \
+Clat2c.cpp \
 Clatbs.cpp \
 Clatdf.cpp \
 Clatps.cpp \
@@ -418,8 +441,10 @@ Cpocon.cpp \
 Cpoequ.cpp \
 Cpoequb.cpp \
 Cporfs.cpp \
+Cporfsx.cpp \
 Cposv.cpp \
 Cposvx.cpp \
+Cposvxx.cpp \
 Cpotf2.cpp \
 Cpotrf.cpp \
 Cpotrf2.cpp \
@@ -431,6 +456,7 @@ Cpprfs.cpp \
 Cppsv.cpp \
 Cppsvx.cpp \
 Cpptrf.cpp \
+Cpptri.cpp \
 Cpptrs.cpp \
 Cpstf2.cpp \
 Cpstrf.cpp \
@@ -453,6 +479,7 @@ Csptrf.cpp \
 Csptri.cpp \
 Csptrs.cpp \
 Cstedc.cpp \
+Cstegr.cpp \
 Cstein.cpp \
 Cstemr.cpp \
 Csteqr.cpp \
@@ -466,8 +493,14 @@ Csyequb.cpp \
 Csymv.cpp \
 Csyr.cpp \
 Csyrfs.cpp \
+Csyrfsx.cpp \
+Csysv.cpp \
 Csysv_aa.cpp \
+Csysv_aa_2stage.cpp \
+Csysv_rk.cpp \
+Csysv_rook.cpp \
 Csysvx.cpp \
+Csysvxx.cpp \
 Csyswapr.cpp \
 Csytf2.cpp \
 Csytf2_rk.cpp \
@@ -585,8 +618,10 @@ Rgbcon.cpp \
 Rgbequ.cpp \
 Rgbequb.cpp \
 Rgbrfs.cpp \
+Rgbrfsx.cpp \
 Rgbsv.cpp \
 Rgbsvx.cpp \
+Rgbsvxx.cpp \
 Rgbtf2.cpp \
 Rgbtrf.cpp \
 Rgbtrs.cpp \
@@ -629,6 +664,7 @@ Rgeqrt.cpp \
 Rgeqrt2.cpp \
 Rgeqrt3.cpp \
 Rgerfs.cpp \
+Rgerfsx.cpp \
 Rgerq2.cpp \
 Rgerqf.cpp \
 Rgesc2.cpp \
@@ -639,6 +675,7 @@ Rgesvdq.cpp \
 Rgesvdx.cpp \
 Rgesvj.cpp \
 Rgesvx.cpp \
+Rgesvxx.cpp \
 Rgetc2.cpp \
 Rgetf2.cpp \
 Rgetrf.cpp \
@@ -668,6 +705,7 @@ Rgsvj1.cpp \
 Rgtcon.cpp \
 Rgtrfs.cpp \
 Rgtsv.cpp \
+Rgtsvx.cpp \
 Rgttrf.cpp \
 Rgttrs.cpp \
 Rgtts2.cpp \
@@ -675,6 +713,19 @@ Rhgeqz.cpp \
 Rhsein.cpp \
 Rhseqr.cpp \
 Risnan.cpp \
+Rla_gbamv.cpp \
+Rla_gbrcond.cpp \
+Rla_gbrpvgrw.cpp \
+Rla_geamv.cpp \
+Rla_gercond.cpp \
+Rla_gerpvgrw.cpp \
+Rla_lin_berr.cpp \
+Rla_porcond.cpp \
+Rla_porpvgrw.cpp \
+Rla_syamv.cpp \
+Rla_syrcond.cpp \
+Rla_syrpvgrw.cpp \
+Rla_wwaddw.cpp \
 Rlabad.cpp \
 Rlabrd.cpp \
 Rlacn2.cpp \
@@ -698,6 +749,7 @@ Rlaein.cpp \
 Rlaev2.cpp \
 Rlaexc.cpp \
 Rlag2.cpp \
+Rlag2s.cpp \
 Rlags2.cpp \
 Rlagtf.cpp \
 Rlagtm.cpp \
@@ -814,6 +866,7 @@ Rlasyf.cpp \
 Rlasyf_aa.cpp \
 Rlasyf_rk.cpp \
 Rlasyf_rook.cpp \
+Rlat2s.cpp \
 Rlatbs.cpp \
 Rlatdf.cpp \
 Rlatps.cpp \
@@ -878,8 +931,10 @@ Rpocon.cpp \
 Rpoequ.cpp \
 Rpoequb.cpp \
 Rporfs.cpp \
+Rporfsx.cpp \
 Rposv.cpp \
 Rposvx.cpp \
+Rposvxx.cpp \
 Rpotf2.cpp \
 Rpotrf.cpp \
 Rpotrf2.cpp \
@@ -934,6 +989,7 @@ Rsptri.cpp \
 Rsptrs.cpp \
 Rstebz.cpp \
 Rstedc.cpp \
+Rstegr.cpp \
 Rstein.cpp \
 Rstemr.cpp \
 Rsteqr.cpp \
@@ -964,12 +1020,14 @@ Rsygv_2stage.cpp \
 Rsygvd.cpp \
 Rsygvx.cpp \
 Rsyrfs.cpp \
+Rsyrfsx.cpp \
 Rsysv.cpp \
 Rsysv_aa.cpp \
 Rsysv_aa_2stage.cpp \
 Rsysv_rk.cpp \
 Rsysv_rook.cpp \
 Rsysvx.cpp \
+Rsysvxx.cpp \
 Rsyswapr.cpp \
 Rsytd2.cpp \
 Rsytf2.cpp \
@@ -1051,7 +1109,7 @@ iMlauplo.cpp \
 iMlaver.cpp \
 iMlazlc.cpp \
 iMlazlr.cpp \
-iMparmq.cpp \
-iMparam2stage.cpp
+iMparam2stage.cpp \
+iMparmq.cpp
 
 EXTRA_DIST = iMlaver.cpp.in
