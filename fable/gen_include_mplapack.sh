@@ -15,7 +15,7 @@ done
 
 echo "REAL Rlamch(const char *cmach);" > Rlamch.hpp
 
-cat *hpp | sort | grep -v abs1 | grep -v abs2 | grep -v ___mplapack_ | grep -v abssq | grep -v ___random_mplapack_gmp > header_all
+cat *hpp | sort | grep -v Mxerbla | grep -v abs1 | grep -v abs2 | grep -v ___mplapack_ | grep -v abssq | grep -v ___random_mplapack_gmp > header_all
 
 rm *hpp
 
