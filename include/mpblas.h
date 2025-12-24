@@ -118,10 +118,6 @@ typedef std::complex<_Float128> COMPLEX;
 #include <algorithm>
 #include <cmath>
 
-/* TO BE REMOVED */
-using std::max;
-using std::min;
-
 inline INTEGER mod(INTEGER a, INTEGER b) { return a % b; }
 
 // Integer MOD (Fortran-style MOD for INTEGER arguments)
