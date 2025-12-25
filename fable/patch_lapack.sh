@@ -35,3 +35,5 @@ patch -p3    < ~/mplapack/fable/3.9.1/lapack/patch-Cgttrs.cpp
 patch -p3    < ~/mplapack/fable/3.9.1/lapack/patch-Cggev3.cpp
 patch -p3    < ~/mplapack/fable/3.9.1/lapack/patch-Cheequb.cpp
 patch -p3    < ~/mplapack/fable/3.9.1/lapack/patch-Cggev.cpp
+patch -p3    < ~/mplapack/fable/3.9.1/lapack/patch-Cggevx.cpp
+patch -p3    < ~/mplapack/fable/3.9.1/lapack/patch-Clags2.cpp

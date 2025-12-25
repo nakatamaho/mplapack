@@ -37,7 +37,7 @@ index eabaf97d..27361432 100644
                  }
              }
              //
--            avg += (u + work[i - 1].real()) * d / castREA(n);
+-            avg += (u + work[i - 1].real()) * d / castREAL(n);
 +            avg += (u + work[i - 1]) * d / n;
              s[i - 1] = si;
          }
