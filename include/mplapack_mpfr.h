@@ -100,6 +100,7 @@ mpreal Rla_porpvgrw(const char *uplo, mplapackint const ncols, mpreal *a, mplapa
 mpreal Rla_syrcond(const char *uplo, mplapackint const n, mpreal *a, mplapackint const lda, mpreal *af, mplapackint const ldaf, mplapackint *ipiv, mplapackint const cmode, mpreal *c, mplapackint &info, mpreal *work, mplapackint *iwork);
 mpreal Rla_syrpvgrw(const char *uplo, mplapackint const n, mplapackint const info, mpreal *a, mplapackint const lda, mpreal *af, mplapackint const ldaf, mplapackint *ipiv, mpreal *work);
 mpreal Rladiv2(mpreal const a, mpreal const b, mpreal const c, mpreal const d, mpreal const r, mpreal const t);
+mpreal Rlamc3(mpreal a, mpreal b);
 mpreal Rlamch_mpfr(const char *cmach);
 mpreal Rlangb(const char *norm, mplapackint const n, mplapackint const kl, mplapackint const ku, mpreal *ab, mplapackint const ldab, mpreal *work);
 mpreal Rlange(const char *norm, mplapackint const m, mplapackint const n, mpreal *a, mplapackint const lda, mpreal *work);

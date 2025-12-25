@@ -96,6 +96,7 @@ qd_real Rla_porpvgrw(const char *uplo, mplapackint const ncols, qd_real *a, mpla
 qd_real Rla_syrcond(const char *uplo, mplapackint const n, qd_real *a, mplapackint const lda, qd_real *af, mplapackint const ldaf, mplapackint *ipiv, mplapackint const cmode, qd_real *c, mplapackint &info, qd_real *work, mplapackint *iwork);
 qd_real Rla_syrpvgrw(const char *uplo, mplapackint const n, mplapackint const info, qd_real *a, mplapackint const lda, qd_real *af, mplapackint const ldaf, mplapackint *ipiv, qd_real *work);
 qd_real Rladiv2(qd_real const a, qd_real const b, qd_real const c, qd_real const d, qd_real const r, qd_real const t);
+qd_real Rlamc3(qd_real a, qd_real b);
 qd_real Rlamch_qd(const char *cmach);
 qd_real Rlangb(const char *norm, mplapackint const n, mplapackint const kl, mplapackint const ku, qd_real *ab, mplapackint const ldab, qd_real *work);
 qd_real Rlange(const char *norm, mplapackint const m, mplapackint const n, qd_real *a, mplapackint const lda, qd_real *work);

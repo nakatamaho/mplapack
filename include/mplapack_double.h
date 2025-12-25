@@ -77,6 +77,7 @@ double Rla_porpvgrw(const char *uplo, mplapackint const ncols, double *a, mplapa
 double Rla_syrcond(const char *uplo, mplapackint const n, double *a, mplapackint const lda, double *af, mplapackint const ldaf, mplapackint *ipiv, mplapackint const cmode, double *c, mplapackint &info, double *work, mplapackint *iwork);
 double Rla_syrpvgrw(const char *uplo, mplapackint const n, mplapackint const info, double *a, mplapackint const lda, double *af, mplapackint const ldaf, mplapackint *ipiv, double *work);
 double Rladiv2(double const a, double const b, double const c, double const d, double const r, double const t);
+double Rlamc3(double a, double b);
 double Rlamch_double(const char *cmach);
 double Rlangb(const char *norm, mplapackint const n, mplapackint const kl, mplapackint const ku, double *ab, mplapackint const ldab, double *work);
 double Rlange(const char *norm, mplapackint const m, mplapackint const n, double *a, mplapackint const lda, double *work);

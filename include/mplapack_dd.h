@@ -80,6 +80,7 @@ dd_real Rla_porpvgrw(const char *uplo, mplapackint const ncols, dd_real *a, mpla
 dd_real Rla_syrcond(const char *uplo, mplapackint const n, dd_real *a, mplapackint const lda, dd_real *af, mplapackint const ldaf, mplapackint *ipiv, mplapackint const cmode, dd_real *c, mplapackint &info, dd_real *work, mplapackint *iwork);
 dd_real Rla_syrpvgrw(const char *uplo, mplapackint const n, mplapackint const info, dd_real *a, mplapackint const lda, dd_real *af, mplapackint const ldaf, mplapackint *ipiv, dd_real *work);
 dd_real Rladiv2(dd_real const a, dd_real const b, dd_real const c, dd_real const d, dd_real const r, dd_real const t);
+dd_real Rlamc3(dd_real a, dd_real b);
 dd_real Rlamch_dd(const char *cmach);
 dd_real Rlangb(const char *norm, mplapackint const n, mplapackint const kl, mplapackint const ku, dd_real *ab, mplapackint const ldab, dd_real *work);
 dd_real Rlange(const char *norm, mplapackint const m, mplapackint const n, dd_real *a, mplapackint const lda, dd_real *work);

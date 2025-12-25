@@ -78,6 +78,7 @@ _Float128 Rla_porpvgrw(const char *uplo, mplapackint const ncols, _Float128 *a, 
 _Float128 Rla_syrcond(const char *uplo, mplapackint const n, _Float128 *a, mplapackint const lda, _Float128 *af, mplapackint const ldaf, mplapackint *ipiv, mplapackint const cmode, _Float128 *c, mplapackint &info, _Float128 *work, mplapackint *iwork);
 _Float128 Rla_syrpvgrw(const char *uplo, mplapackint const n, mplapackint const info, _Float128 *a, mplapackint const lda, _Float128 *af, mplapackint const ldaf, mplapackint *ipiv, _Float128 *work);
 _Float128 Rladiv2(_Float128 const a, _Float128 const b, _Float128 const c, _Float128 const d, _Float128 const r, _Float128 const t);
+_Float128 Rlamc3(_Float128 a, _Float128 b);
 _Float128 Rlamch__Float128(const char *cmach);
 _Float128 Rlangb(const char *norm, mplapackint const n, mplapackint const kl, mplapackint const ku, _Float128 *ab, mplapackint const ldab, _Float128 *work);
 _Float128 Rlange(const char *norm, mplapackint const m, mplapackint const n, _Float128 *a, mplapackint const lda, _Float128 *work);

@@ -80,6 +80,7 @@ mpf_class Rla_porpvgrw(const char *uplo, mplapackint const ncols, mpf_class *a, 
 mpf_class Rla_syrcond(const char *uplo, mplapackint const n, mpf_class *a, mplapackint const lda, mpf_class *af, mplapackint const ldaf, mplapackint *ipiv, mplapackint const cmode, mpf_class *c, mplapackint &info, mpf_class *work, mplapackint *iwork);
 mpf_class Rla_syrpvgrw(const char *uplo, mplapackint const n, mplapackint const info, mpf_class *a, mplapackint const lda, mpf_class *af, mplapackint const ldaf, mplapackint *ipiv, mpf_class *work);
 mpf_class Rladiv2(mpf_class const a, mpf_class const b, mpf_class const c, mpf_class const d, mpf_class const r, mpf_class const t);
+mpf_class Rlamc3(mpf_class a, mpf_class b);
 mpf_class Rlamch_gmp(const char *cmach);
 mpf_class Rlangb(const char *norm, mplapackint const n, mplapackint const kl, mplapackint const ku, mpf_class *ab, mplapackint const ldab, mpf_class *work);
 mpf_class Rlange(const char *norm, mplapackint const m, mplapackint const n, mpf_class *a, mplapackint const lda, mpf_class *work);
