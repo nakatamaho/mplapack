@@ -4434,6 +4434,16 @@ def convert_executable(
                             if tok.value.lower() == base_name.lower():
                                 rhs_base_id = tok
                                 break
+                # If LHS is a scalar CHARACTER (mapped to 'char') and RHS is a
+                # scalar CHARACTER dummy argument (mapped to (const) char*),
+                # dereference RHS so that:
+                #   char compq2 = compq;  ->  char compq2 = *compq;
+                if lhs_is_character and rhs_base_id is not None:
+                    if _is_dummy_character_arg(conv_info, rhs_base_id.value):
+                        rhs_expr = crhs.strip()
+                        # Only rewrite a bare identifier; do not touch substrings/expressions.
+                        if re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", rhs_expr):
+                            crhs = "*" + rhs_expr
 
                 # Use fdecl information when available to classify RHS type
                 if (lhs_is_real or lhs_is_integer) and rhs_base_id is not None:
