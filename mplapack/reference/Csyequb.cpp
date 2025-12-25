@@ -203,7 +203,7 @@ void Csyequb(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, R
                 }
             }
             //
-            avg += (u + work[i - 1].real()) * d / castREA(n);
+            avg += (u + work[i - 1].real()) * d / castREAL(n);
             s[i - 1] = si;
         }
     }
