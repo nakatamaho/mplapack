@@ -599,8 +599,8 @@ void Rgghd3(const char *compq, const char *compz, INTEGER const n, INTEGER const
     // Use unblocked code to reduce the rest of the matrix
     // Avoid re-initialization of modified Q and Z.
     //
-    char compq2 = compq;
-    char compz2 = compz;
+    char compq2 = *compq;
+    char compz2 = *compz;
     if (jcol != ilo) {
         if (wantq) {
             compq2 = 'V';
