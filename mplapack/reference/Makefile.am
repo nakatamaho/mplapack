@@ -113,8 +113,16 @@ libmplapack__Float128_la_LDFLAGS += -no-undefined -L$(top_builddir)/mpblas/refer
 endif
 endif
 
+#The following ones use xBLAS so we do not support them.
 #Cgbrfsx.cpp
 #Cgerfsx.cpp
+#Cherfsx.cpp
+#Cporfsx.cpp
+#Csyrfsx.cpp
+#Rgerfsx.cpp
+#Rgbrfsx.cpp
+#Rporfsx.cpp
+#Rsyrfsx.cpp
 
 MPLAPACK_SOURCES = \
 CRrscl.cpp \
@@ -245,7 +253,6 @@ Chegv_2stage.cpp \
 Chegvd.cpp \
 Chegvx.cpp \
 Cherfs.cpp \
-Cherfsx.cpp \
 Chesv.cpp \
 Chesv_aa.cpp \
 Chesv_aa_2stage.cpp \
@@ -442,7 +449,6 @@ Cpocon.cpp \
 Cpoequ.cpp \
 Cpoequb.cpp \
 Cporfs.cpp \
-Cporfsx.cpp \
 Cposv.cpp \
 Cposvx.cpp \
 Cposvxx.cpp \
@@ -494,7 +500,6 @@ Csyequb.cpp \
 Csymv.cpp \
 Csyr.cpp \
 Csyrfs.cpp \
-Csyrfsx.cpp \
 Csysv.cpp \
 Csysv_aa.cpp \
 Csysv_aa_2stage.cpp \
@@ -619,7 +624,6 @@ Rgbcon.cpp \
 Rgbequ.cpp \
 Rgbequb.cpp \
 Rgbrfs.cpp \
-Rgbrfsx.cpp \
 Rgbsv.cpp \
 Rgbsvx.cpp \
 Rgbsvxx.cpp \
@@ -665,7 +669,6 @@ Rgeqrt.cpp \
 Rgeqrt2.cpp \
 Rgeqrt3.cpp \
 Rgerfs.cpp \
-Rgerfsx.cpp \
 Rgerq2.cpp \
 Rgerqf.cpp \
 Rgesc2.cpp \
@@ -932,7 +935,6 @@ Rpocon.cpp \
 Rpoequ.cpp \
 Rpoequb.cpp \
 Rporfs.cpp \
-Rporfsx.cpp \
 Rposv.cpp \
 Rposvx.cpp \
 Rposvxx.cpp \
@@ -1021,7 +1023,6 @@ Rsygv_2stage.cpp \
 Rsygvd.cpp \
 Rsygvx.cpp \
 Rsyrfs.cpp \
-Rsyrfsx.cpp \
 Rsysv.cpp \
 Rsysv_aa.cpp \
 Rsysv_aa_2stage.cpp \
