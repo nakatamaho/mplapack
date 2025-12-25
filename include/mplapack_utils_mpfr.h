@@ -136,8 +136,75 @@ inline mpreal pi(mpreal dummy) {
     return _PI;
 }
 
-static inline mpreal cabs1(const mpcomplex &z) {
-    return abs(z.real()) + abs(z.imag());
+static inline mpreal cabs1(const mpcomplex &z) { return abs(z.real()) + abs(z.imag()); }
+
+#include <type_traits>
+
+// NOTE:
+// Do NOT 'using std::min/max' here.
+// std::min/max have a 3-arg overload where the 3rd argument is a comparator,
+// which hijacks Fortran-style min(a,b,c)/max(a,b,c) calls.
+
+#ifndef MPLAPACK_MINMAX_MPLAPACKINT_DEFINED
+#define MPLAPACK_MINMAX_MPLAPACKINT_DEFINED
+
+// min/max for mplapackint (Fortran INTEGER)
+inline mplapackint min(mplapackint a, mplapackint b) { return (a > b) ? b : a; }
+inline mplapackint max(mplapackint a, mplapackint b) { return (a < b) ? b : a; }
+
+// 3-arg overloads block std::min/max(a,b,comp) hijack.
+inline mplapackint min(mplapackint a, mplapackint b, mplapackint c) {
+    mplapackint r = min(a, b);
+    return min(r, c);
 }
+inline mplapackint max(mplapackint a, mplapackint b, mplapackint c) {
+    mplapackint r = max(a, b);
+    return max(r, c);
+}
+
+// 4+ args: fold expression, mplapackint only.
+template <typename... Args, typename = std::enable_if_t<(std::is_same_v<mplapackint, std::decay_t<Args>> && ...)>> inline mplapackint min(mplapackint a, mplapackint b, mplapackint c, Args... rest) {
+    mplapackint r = min(a, b, c);
+    ((r = min(r, rest)), ...);
+    return r;
+}
+
+template <typename... Args, typename = std::enable_if_t<(std::is_same_v<mplapackint, std::decay_t<Args>> && ...)>> inline mplapackint max(mplapackint a, mplapackint b, mplapackint c, Args... rest) {
+    mplapackint r = max(a, b, c);
+    ((r = max(r, rest)), ...);
+    return r;
+}
+
+#endif // MPLAPACK_MINMAX_MPLAPACKINT_DEFINED
+
+#include <type_traits>
+
+#ifndef MPLAPACK_MINMAX_MPREAL_VARIADIC_DEFINED
+#define MPLAPACK_MINMAX_MPREAL_VARIADIC_DEFINED
+
+// 3-arg overloads: blocks std::min/max(a,b,comp) hijack.
+inline mpreal min(const mpreal &a, const mpreal &b, const mpreal &c) {
+    mpreal r = (b < a) ? b : a;
+    return (c < r) ? c : r;
+}
+inline mpreal max(const mpreal &a, const mpreal &b, const mpreal &c) {
+    mpreal r = (a < b) ? b : a;
+    return (r < c) ? c : r;
+}
+
+// 4+ args: fold expression, mpreal only.
+template <typename... Args, typename = std::enable_if_t<(std::is_same_v<mpreal, std::decay_t<Args>> && ...)>> inline mpreal min(const mpreal &a, const mpreal &b, const mpreal &c, const Args &...rest) {
+    mpreal r = min(a, b, c);
+    ((r = (rest < r) ? rest : r), ...);
+    return r;
+}
+
+template <typename... Args, typename = std::enable_if_t<(std::is_same_v<mpreal, std::decay_t<Args>> && ...)>> inline mpreal max(const mpreal &a, const mpreal &b, const mpreal &c, const Args &...rest) {
+    mpreal r = max(a, b, c);
+    ((r = (r < rest) ? rest : r), ...);
+    return r;
+}
+
+#endif // MPLAPACK_MINMAX_MPREAL_VARIADIC_DEFINED
 
 #endif

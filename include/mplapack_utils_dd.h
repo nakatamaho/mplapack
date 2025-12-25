@@ -182,8 +182,76 @@ inline dd_complex exp(dd_complex x) {
 
 inline dd_real pi(dd_real dummy) { return dd_real::_pi; }
 
-static inline dd_real cabs1(const dd_complex &z) {
-    return abs(z.real()) + abs(z.imag());
+static inline dd_real cabs1(const dd_complex &z) { return abs(z.real()) + abs(z.imag()); }
+
+#include <type_traits>
+
+// NOTE:
+// Do NOT 'using std::min/max' here.
+// std::min/max have a 3-arg overload where the 3rd argument is a comparator,
+// which hijacks Fortran-style min(a,b,c)/max(a,b,c) calls.
+
+#ifndef MPLAPACK_MINMAX_MPLAPACKINT_DEFINED
+#define MPLAPACK_MINMAX_MPLAPACKINT_DEFINED
+
+// min/max for mplapackint (Fortran INTEGER)
+inline mplapackint min(mplapackint a, mplapackint b) { return (a > b) ? b : a; }
+inline mplapackint max(mplapackint a, mplapackint b) { return (a < b) ? b : a; }
+
+// 3-arg overloads block std::min/max(a,b,comp) hijack.
+inline mplapackint min(mplapackint a, mplapackint b, mplapackint c) {
+    mplapackint r = min(a, b);
+    return min(r, c);
 }
+inline mplapackint max(mplapackint a, mplapackint b, mplapackint c) {
+    mplapackint r = max(a, b);
+    return max(r, c);
+}
+
+// 4+ args: fold expression, mplapackint only.
+template <typename... Args, typename = std::enable_if_t<(std::is_same_v<mplapackint, std::decay_t<Args>> && ...)>> inline mplapackint min(mplapackint a, mplapackint b, mplapackint c, Args... rest) {
+    mplapackint r = min(a, b, c);
+    ((r = min(r, rest)), ...);
+    return r;
+}
+
+template <typename... Args, typename = std::enable_if_t<(std::is_same_v<mplapackint, std::decay_t<Args>> && ...)>> inline mplapackint max(mplapackint a, mplapackint b, mplapackint c, Args... rest) {
+    mplapackint r = max(a, b, c);
+    ((r = max(r, rest)), ...);
+    return r;
+}
+
+#endif // MPLAPACK_MINMAX_MPLAPACKINT_DEFINED
+
+#include <type_traits>
+
+#ifndef MPLAPACK_MINMAX_DD_REAL_DEFINED
+#define MPLAPACK_MINMAX_DD_REAL_DEFINED
+
+inline dd_real min(const dd_real &a, const dd_real &b) { return (a > b) ? b : a; }
+inline dd_real max(const dd_real &a, const dd_real &b) { return (a < b) ? b : a; }
+
+inline dd_real min(const dd_real &a, const dd_real &b, const dd_real &c) {
+    dd_real r = min(a, b);
+    return min(r, c);
+}
+inline dd_real max(const dd_real &a, const dd_real &b, const dd_real &c) {
+    dd_real r = max(a, b);
+    return max(r, c);
+}
+
+template <typename... Args, typename = std::enable_if_t<(std::is_same_v<dd_real, std::decay_t<Args>> && ...)>> inline dd_real min(const dd_real &a, const dd_real &b, const dd_real &c, const Args &...rest) {
+    dd_real r = min(a, b, c);
+    ((r = min(r, rest)), ...);
+    return r;
+}
+
+template <typename... Args, typename = std::enable_if_t<(std::is_same_v<dd_real, std::decay_t<Args>> && ...)>> inline dd_real max(const dd_real &a, const dd_real &b, const dd_real &c, const Args &...rest) {
+    dd_real r = max(a, b, c);
+    ((r = max(r, rest)), ...);
+    return r;
+}
+
+#endif // MPLAPACK_MINMAX_DD_REAL_DEFINED
 
 #endif

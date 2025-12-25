@@ -186,8 +186,71 @@ inline qd_complex exp(qd_complex x) {
 
 inline qd_real pi(qd_real dummy) { return qd_real::_pi; }
 
-static inline qd_real cabs1(const qd_complex &z) {
-    return abs(z.real()) + abs(z.imag());
+static inline qd_real cabs1(const qd_complex &z) { return abs(z.real()) + abs(z.imag()); }
+
+#include <type_traits>
+
+// NOTE:
+// Do NOT 'using std::min/max' here.
+// std::min/max have a 3-arg overload where the 3rd argument is a comparator,
+// which hijacks Fortran-style min(a,b,c)/max(a,b,c) calls.
+
+#ifndef MPLAPACK_MINMAX_MPLAPACKINT_DEFINED
+#define MPLAPACK_MINMAX_MPLAPACKINT_DEFINED
+
+// min/max for mplapackint (Fortran INTEGER)
+inline mplapackint min(mplapackint a, mplapackint b) { return (a > b) ? b : a; }
+inline mplapackint max(mplapackint a, mplapackint b) { return (a < b) ? b : a; }
+
+// 3-arg overloads block std::min/max(a,b,comp) hijack.
+inline mplapackint min(mplapackint a, mplapackint b, mplapackint c) {
+    mplapackint r = min(a, b);
+    return min(r, c);
 }
+inline mplapackint max(mplapackint a, mplapackint b, mplapackint c) {
+    mplapackint r = max(a, b);
+    return max(r, c);
+}
+
+// 4+ args: fold expression, mplapackint only.
+template <typename... Args, typename = std::enable_if_t<(std::is_same_v<mplapackint, std::decay_t<Args>> && ...)>> inline mplapackint min(mplapackint a, mplapackint b, mplapackint c, Args... rest) {
+    mplapackint r = min(a, b, c);
+    ((r = min(r, rest)), ...);
+    return r;
+}
+
+template <typename... Args, typename = std::enable_if_t<(std::is_same_v<mplapackint, std::decay_t<Args>> && ...)>> inline mplapackint max(mplapackint a, mplapackint b, mplapackint c, Args... rest) {
+    mplapackint r = max(a, b, c);
+    ((r = max(r, rest)), ...);
+    return r;
+}
+
+#endif // MPLAPACK_MINMAX_MPLAPACKINT_DEFINED
+
+#include <type_traits>
+
+#ifndef MPLAPACK_MINMAX_QD_REAL_VARIADIC_DEFINED
+#define MPLAPACK_MINMAX_QD_REAL_VARIADIC_DEFINED
+
+// NOTE:
+// qd_inline.h already defines 2-arg and 3-arg min/max for qd_real.
+// We only add 4+ argument overloads here.
+// Do NOT 'using std::min/max' to avoid std::max(a,b,comp) hijacking.
+
+template <typename... Args, typename = std::enable_if_t<(std::is_same_v<qd_real, std::decay_t<Args>> && ...)>> inline qd_real max(const qd_real &a, const qd_real &b, const qd_real &c, const qd_real &d, const Args &...rest) {
+    qd_real r = max(a, b, c);  // qd's 3-arg max
+    r = max(r, d);             // qd's 2-arg max
+    ((r = max(r, rest)), ...); // fold, still uses qd's 2-arg max
+    return r;
+}
+
+template <typename... Args, typename = std::enable_if_t<(std::is_same_v<qd_real, std::decay_t<Args>> && ...)>> inline qd_real min(const qd_real &a, const qd_real &b, const qd_real &c, const qd_real &d, const Args &...rest) {
+    qd_real r = min(a, b, c);  // qd's 3-arg min
+    r = min(r, d);             // qd's 2-arg min
+    ((r = min(r, rest)), ...); // fold
+    return r;
+}
+
+#endif // MPLAPACK_MINMAX_QD_REAL_VARIADIC_DEFINED
 
 #endif

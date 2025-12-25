@@ -238,8 +238,79 @@ inline mpc_class exp(mpc_class x) {
     return ans;
 }
 
-static inline mpf_class cabs1(const mpc_class &z) {
-    return abs(z.real()) + abs(z.imag());
+static inline mpf_class cabs1(const mpc_class &z) { return abs(z.real()) + abs(z.imag()); }
+
+#include <type_traits>
+
+// NOTE:
+// Do NOT 'using std::min/max' here.
+// std::min/max have a 3-arg overload where the 3rd argument is a comparator,
+// which hijacks Fortran-style min(a,b,c)/max(a,b,c) calls.
+
+#ifndef MPLAPACK_MINMAX_MPLAPACKINT_DEFINED
+#define MPLAPACK_MINMAX_MPLAPACKINT_DEFINED
+
+// min/max for mplapackint (Fortran INTEGER)
+inline mplapackint min(mplapackint a, mplapackint b) { return (a > b) ? b : a; }
+inline mplapackint max(mplapackint a, mplapackint b) { return (a < b) ? b : a; }
+
+// 3-arg overloads block std::min/max(a,b,comp) hijack.
+inline mplapackint min(mplapackint a, mplapackint b, mplapackint c) {
+    mplapackint r = min(a, b);
+    return min(r, c);
 }
+inline mplapackint max(mplapackint a, mplapackint b, mplapackint c) {
+    mplapackint r = max(a, b);
+    return max(r, c);
+}
+
+// 4+ args: fold expression, mplapackint only.
+template <typename... Args, typename = std::enable_if_t<(std::is_same_v<mplapackint, std::decay_t<Args>> && ...)>> inline mplapackint min(mplapackint a, mplapackint b, mplapackint c, Args... rest) {
+    mplapackint r = min(a, b, c);
+    ((r = min(r, rest)), ...);
+    return r;
+}
+
+template <typename... Args, typename = std::enable_if_t<(std::is_same_v<mplapackint, std::decay_t<Args>> && ...)>> inline mplapackint max(mplapackint a, mplapackint b, mplapackint c, Args... rest) {
+    mplapackint r = max(a, b, c);
+    ((r = max(r, rest)), ...);
+    return r;
+}
+
+#endif // MPLAPACK_MINMAX_MPLAPACKINT_DEFINED
+
+#include <type_traits>
+
+#ifndef MPLAPACK_MINMAX_MPF_CLASS_DEFINED
+#define MPLAPACK_MINMAX_MPF_CLASS_DEFINED
+
+// min/max for mpf_class (GMP multiprecision float)
+inline mpf_class min(const mpf_class &a, const mpf_class &b) { return (a > b) ? b : a; }
+inline mpf_class max(const mpf_class &a, const mpf_class &b) { return (a < b) ? b : a; }
+
+// 3-arg overloads block std::min/max(a,b,comp) hijack.
+inline mpf_class min(const mpf_class &a, const mpf_class &b, const mpf_class &c) {
+    mpf_class r = min(a, b);
+    return min(r, c);
+}
+inline mpf_class max(const mpf_class &a, const mpf_class &b, const mpf_class &c) {
+    mpf_class r = max(a, b);
+    return max(r, c);
+}
+
+// 4+ args: fold expression, mpf_class only.
+template <typename... Args, typename = std::enable_if_t<(std::is_same_v<mpf_class, std::decay_t<Args>> && ...)>> inline mpf_class min(const mpf_class &a, const mpf_class &b, const mpf_class &c, const Args &...rest) {
+    mpf_class r = min(a, b, c);
+    ((r = min(r, rest)), ...);
+    return r;
+}
+
+template <typename... Args, typename = std::enable_if_t<(std::is_same_v<mpf_class, std::decay_t<Args>> && ...)>> inline mpf_class max(const mpf_class &a, const mpf_class &b, const mpf_class &c, const Args &...rest) {
+    mpf_class r = max(a, b, c);
+    ((r = max(r, rest)), ...);
+    return r;
+}
+
+#endif // MPLAPACK_MINMAX_MPF_CLASS_DEFINED
 
 #endif
