@@ -108,7 +108,7 @@ void Rbdsvdx(const char *uplo, const char *jobz, const char *range, INTEGER cons
         return;
     }
     //
-    REAL abstol = 2 * Rlamch("Safe Minimum");
+    REAL abstol = two * Rlamch("Safe Minimum");
     REAL ulp = Rlamch("Precision");
     REAL eps = Rlamch("Epsilon");
     REAL sqrt2 = sqrt(two);
