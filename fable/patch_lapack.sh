@@ -47,3 +47,4 @@ patch -p3    < ~/mplapack/fable/3.9.1/lapack/patch-Clatps.cpp
 patch -p3    < ~/mplapack/fable/3.9.1/lapack/patch-Ctgevc.cpp
 patch -p3    < ~/mplapack/fable/3.9.1/lapack/patch-Rsyequb.cpp
 patch -p3    < ~/mplapack/fable/3.9.1/lapack/patch-Rbdsvdx.cpp
+patch -p3    < ~/mplapack/fable/3.9.1/lapack/patch-Chpgvd.cpp
