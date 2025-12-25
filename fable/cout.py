@@ -1286,35 +1286,75 @@ def cmn_needs_to_be_inserted(conv_info, prev_tok):
     return False
 
 
-def convert_power(conv_info, tokens):
-    # Special-case integer power of two:
-    #   2 ** k  (k is INTEGER)  ->  (INTEGER(1) << k)
-    # This avoids floating-point pow() and matches Fortran INTEGER exponentiation.
-    if (len(tokens) == 2):
+ef convert_power(conv_info, tokens):
+    # Special-case INTEGER power-of-two:
+    #   2 ** k  -> (INTEGER(1) << k)
+    # This matches Fortran INTEGER exponentiation and avoids floating pow().
+    if len(tokens) == 2:
         base_tok = tokens[0]
         exp_tok = tokens[1]
+        if (base_tok is not None and base_tok.is_integer()
+                and base_tok.value == "2"):
+            exp_str = convert_tokens(
+                conv_info=conv_info, tokens=[exp_tok], commas=False).strip()
 
-        def _tok_is_integer_scalar(tok) -> bool:
-            if tok is None or not tok.is_identifier():
-                return False
-            if conv_info is None or getattr(conv_info, "fproc", None) is None:
-                return False
-            try:
-                fdecl = conv_info.fproc.get_fdecl(id_tok=tok)
-            except Exception:
-                return False
-            dt = getattr(fdecl, "data_type", None)
-            if dt is None:
-                return False
-            dt_code = dt if isinstance(dt, str) else getattr(dt, "value", None)
-            return (dt_code or "").lower() == "integer"
+            def _decl_is_integer(name: str) -> bool:
+                if conv_info is None or getattr(conv_info, "fproc", None) is None:
+                    return False
+                fdecl_map = getattr(conv_info.fproc, "fdecl_by_identifier", None)
+                if not fdecl_map:
+                    return False
+                fd = fdecl_map.get(name.lower()) or fdecl_map.get(name)
+                if fd is None:
+                    return False
+                dt = getattr(fd, "data_type", None)
+                code = dt if isinstance(dt, str) else getattr(dt, "value", None)
+                return (code or "").lower() == "integer"
 
-        if (base_tok is not None and base_tok.is_integer() and base_tok.value == "2"
-                and (exp_tok.is_integer() or _tok_is_integer_scalar(exp_tok))):
-            exp = convert_tokens(conv_info=conv_info, tokens=[exp_tok], commas=False).strip()
-            if re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", exp) or re.fullmatch(r"[+-]?[0-9]+", exp):
-                return f"(INTEGER(1) << {exp})"
-            return f"(INTEGER(1) << ({exp}))"
+            def _decl_exists(name: str) -> bool:
+                if conv_info is None or getattr(conv_info, "fproc", None) is None:
+                    return False
+                fdecl_map = getattr(conv_info.fproc, "fdecl_by_identifier", None) or {}
+                return (name.lower() in fdecl_map) or (name in fdecl_map)
+
+            is_integer_exp = False
+            if exp_tok.is_integer():
+                is_integer_exp = True
+            elif exp_tok.is_identifier():
+                is_integer_exp = _decl_is_integer(exp_tok.value)
+            else:
+                # Heuristic: if the exponent expression references only INTEGER
+                # declared variables (ignore unknown identifiers/functions),
+                # treat it as INTEGER.
+                ids = set(re.findall(r"[A-Za-z_][A-Za-z0-9_]*", exp_str))
+                any_decl = False
+                ok = True
+                for name in ids:
+                    if _decl_is_integer(name):
+                        any_decl = True
+                    elif _decl_exists(name):
+                        # Declared but not INTEGER -> reject
+                        ok = False
+                        break
+                # Avoid UB for obvious negative shift like "-k"
+                if ok and (any_decl or exp_str.isdigit()) and exp_str and not exp_str.lstrip().startswith("-"):
+                    is_integer_exp = True
+
+            if is_integer_exp:
+                return f"(INTEGER(1) << ({exp_str}))"
+
+     fun = "fem::pow"
+     pow_tok = tokens[1]
+     if (pow_tok.is_integer()):
+         if (pow_tok.value == "1"):
+             fun = ""
+             tokens = tokens[:1]
+         elif (pow_tok.value in ["2", "3", "4"]):
+             fun = "fem::pow%s" % pow_tok.value
+             tokens = tokens[:1]
+     return fun + "(" + convert_tokens(
+         conv_info=conv_info, tokens=tokens, commas=True) + ")"
+
 
     fun = "fem::pow"
     pow_tok = tokens[1]
