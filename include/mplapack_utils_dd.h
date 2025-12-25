@@ -262,4 +262,52 @@ template <typename... Args, typename = std::enable_if_t<(std::is_same_v<dd_real,
 
 #endif // MPLAPACK_MINMAX_DD_REAL_DEFINED
 
+#ifndef MPLAPACK_CHAR_UTILS_H
+#define MPLAPACK_CHAR_UTILS_H
+
+// Small helpers to build short option strings for ILAENV / IMlaenv calls.
+//
+// Typical usage:
+//   const char *jbcmpz = CHAR2(job, compz);
+//   nmin = iMlaenv(12, "Chseqr", jbcmpz, n, ilo, ihi, lwork);
+//
+// job, compz, side, howmny, sense, ... are almost always const char* pointing
+// to single-character flags ("N", "V", "S", "E", etc.).
+
+// 2-character helper -------------------------------------------------------
+inline const char *CHAR2(char c1, char c2) {
+    // Thread-local to avoid cross-call races.
+    static thread_local char buf[3];
+    buf[0] = c1;
+    buf[1] = c2;
+    buf[2] = '\0';
+    return buf;
+}
+
+inline const char *CHAR2(const char *c1, const char *c2) {
+    // Accept "N", "V", etc. as const char* and take their first characters.
+    const char a = (c1 && *c1) ? *c1 : '\0';
+    const char b = (c2 && *c2) ? *c2 : '\0';
+    return CHAR2(a, b);
+}
+
+// 3-character helper -------------------------------------------------------
+inline const char *CHAR3(char c1, char c2, char c3) {
+    static thread_local char buf[4];
+    buf[0] = c1;
+    buf[1] = c2;
+    buf[2] = c3;
+    buf[3] = '\0';
+    return buf;
+}
+
+inline const char *CHAR3(const char *c1, const char *c2, const char *c3) {
+    const char a = (c1 && *c1) ? *c1 : '\0';
+    const char b = (c2 && *c2) ? *c2 : '\0';
+    const char c = (c3 && *c3) ? *c3 : '\0';
+    return CHAR3(a, b, c);
+}
+
+#endif // MPLAPACK_CHAR_UTILS_H
+
 #endif
