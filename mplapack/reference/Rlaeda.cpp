@@ -69,7 +69,7 @@ void Rlaeda(INTEGER const n, INTEGER const tlvls, INTEGER const curlvl, INTEGER 
     // Determine location of lowest level subproblem in the full storage
     // scheme
     //
-    INTEGER curr = ptr + curpbm * pow(2, curlvl) + pow(2, (curlvl - 1)) - 1;
+    INTEGER curr = ptr + curpbm * (INTEGER(1) << curlvl) + pow(2, (curlvl - 1)) - 1;
     //
     // Determine size of these matrices.  We add HALF to the value of
     // the SQRT in case the machine underestimates one of these square
@@ -93,7 +93,7 @@ void Rlaeda(INTEGER const n, INTEGER const tlvls, INTEGER const curlvl, INTEGER 
     // rotations and permutation and then multiplying the center matrices
     // against the current Z.
     //
-    ptr = pow(2, tlvls) + 1;
+    ptr = (INTEGER(1) << tlvls) + 1;
     INTEGER psiz1 = 0;
     INTEGER psiz2 = 0;
     INTEGER zptr1 = 0;

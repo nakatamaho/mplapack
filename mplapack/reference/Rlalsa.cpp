@@ -138,7 +138,7 @@ void Rlalsa(INTEGER const icompq, INTEGER const smlsiz, INTEGER const n, INTEGER
     // Finally go through the left singular vector matrices of all
     // the other subproblems bottom-up on the tree.
     //
-    j = pow(2, nlvl);
+    j = (INTEGER(1) << nlvl);
     sqre = 0;
     //
     for (lvl = nlvl; lvl >= 1; lvl = lvl - 1) {

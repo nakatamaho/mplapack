@@ -108,7 +108,7 @@ void Rlaed7(INTEGER const icompq, INTEGER const n, INTEGER const qsiz, INTEGER c
     // Form the z-vector which consists of the last row of Q_1 and the
     // first row of Q_2.
     //
-    ptr = 1 + pow(2, tlvls);
+    ptr = 1 + (INTEGER(1) << tlvls);
     for (i = 1; i <= curlvl - 1; i = i + 1) {
         ptr += pow(2, (tlvls - i));
     }

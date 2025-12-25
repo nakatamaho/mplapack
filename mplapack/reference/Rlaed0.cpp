@@ -134,10 +134,10 @@ statement_10:
         //
         temp = log(castREAL(n)) / log(two);
         lgn = castINTEGER(temp);
-        if (pow(2, lgn) < n) {
+        if ((INTEGER(1) << lgn) < n) {
             lgn++;
         }
-        if (pow(2, lgn) < n) {
+        if ((INTEGER(1) << lgn) < n) {
             lgn++;
         }
         iprmpt = indxq + n + 1;
