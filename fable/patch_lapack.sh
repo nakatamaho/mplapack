@@ -46,3 +46,4 @@ patch -p3    < ~/mplapack/fable/3.9.1/lapack/patch-Csytri2x.cpp
 patch -p3 -R < ~/mplapack/fable/3.9.1/lapack/patch-Cheequb.cpp
 patch -p3    < ~/mplapack/fable/3.9.1/lapack/patch-Clatps.cpp
 patch -p3    < ~/mplapack/fable/3.9.1/lapack/patch-Ctgevc.cpp
+patch -p3    < ~/mplapack/fable/3.9.1/lapack/patch-Rsyequb.cpp
