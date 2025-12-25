@@ -64,6 +64,7 @@ inline void sprintnum_short(char *buf, std::complex<_Float64x> ctmp) { snprintf(
 #endif
 
 inline _Float64x pow2(const _Float64x &a) { return a * a; }
+inline std::complex<_Float64x> pow2(const std::complex<_Float64x> &a) { return a * a; }
 
 #ifdef __cplusplus
 extern "C" {
@@ -372,5 +373,18 @@ inline const char *CHAR3(const char *c1, const char *c2, const char *c3) {
 }
 
 #endif // MPLAPACK_CHAR_UTILS_H
+
+/ Integer ceil for _Float64x.
+// Returns ceil(x) as mplapackint.
+#ifndef MPLAPACK_ICEIL_FLOAT64X_DEFINED
+#define MPLAPACK_ICEIL_FLOAT64X_DEFINED
+inline mplapackint iceil(_Float64x x) {
+    mplapackint t = static_cast<mplapackint>(x); // trunc toward zero
+    if (x > static_cast<_Float64x>(t)) {
+        ++t;
+    }
+    return t;
+}
+#endif // MPLAPACK_ICEIL_FLOAT64X_DEFINED
 
 #endif

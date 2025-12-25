@@ -45,6 +45,12 @@ inline double pow2(double a) {
     return mtmp;
 }
 
+inline std::complex<double> pow2(std::complex<double> a) {
+    std::complex<double> mtmp;
+    mtmp = a * a;
+    return mtmp;
+}
+
 #include <type_traits>
 
 // Square for INTEGER (workspace sizes, indices).
@@ -218,5 +224,18 @@ inline const char *CHAR3(const char *c1, const char *c2, const char *c3) {
 }
 
 #endif // MPLAPACK_CHAR_UTILS_H
+
+// Integer ceil for double.
+// Returns ceil(x) as mplapackint.
+#ifndef MPLAPACK_ICEIL_DOUBLE_DEFINED
+#define MPLAPACK_ICEIL_DOUBLE_DEFINED
+inline mplapackint iceil(double x) {
+    mplapackint t = static_cast<mplapackint>(x); // trunc toward zero
+  if (x > static_cast<double>(t)) {
+        ++t;
+  }
+    return t;
+}
+#endif // MPLAPACK_ICEIL_DOUBLE_DEFINED
 
 #endif

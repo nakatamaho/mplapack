@@ -117,6 +117,11 @@ inline dd_real pow2(dd_real a) {
     return mtmp;
 }
 
+inline dd_complex pow2(dd_complex a) {
+    dd_complex mtmp = a * a;
+    return mtmp;
+}
+
 #include <type_traits>
 
 // Square for INTEGER (workspace sizes, indices).
@@ -309,5 +314,18 @@ inline const char *CHAR3(const char *c1, const char *c2, const char *c3) {
 }
 
 #endif // MPLAPACK_CHAR_UTILS_H
+
+// Integer ceil for dd_real.
+// Returns ceil(x) as mplapackint.
+#ifndef MPLAPACK_ICEIL_DD_REAL_DEFINED
+#define MPLAPACK_ICEIL_DD_REAL_DEFINED
+inline mplapackint iceil(const dd_real &x) {
+    mplapackint t = static_cast<mplapackint>(x); // trunc toward zero (via conversion)
+  if (x > dd_real(t)) {
+        ++t;
+  }
+    return t;
+}
+#endif // MPLAPACK_ICEIL_DD_REAL_DEFINED
 
 #endif

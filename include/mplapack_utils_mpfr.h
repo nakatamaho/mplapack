@@ -100,6 +100,11 @@ inline mpreal pow2(mpreal a) {
     return mtmp;
 }
 
+inline mpcomplex pow2(mpcomplex a) {
+    mpcomplex mtmp = a * a;
+    return mtmp;
+}
+
 #include <type_traits>
 
 // Square for INTEGER (workspace sizes, indices).
@@ -262,5 +267,19 @@ inline const char *CHAR3(const char *c1, const char *c2, const char *c3) {
 }
 
 #endif // MPLAPACK_CHAR_UTILS_H
+
+// Integer ceil for MPFR mpreal.
+// Returns ceil(x) as mplapackint.
+#ifndef MPLAPACK_ICEIL_MPREAL_DEFINED
+#define MPLAPACK_ICEIL_MPREAL_DEFINED
+inline mplapackint iceil(const mpreal &x) {
+    // mpreal -> integer cast truncates toward zero.
+    mplapackint t = static_cast<mplapackint>(x);
+  if (x > mpreal(t)) {
+        ++t;
+  }
+    return t;
+}
+#endif // MPLAPACK_ICEIL_MPREAL_DEFINED
 
 #endif

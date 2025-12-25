@@ -137,6 +137,7 @@ inline void sprintnum_short(char *buf, std::complex<_Float128> rtmp) {
 #endif
 
 inline _Float128 pow2(const _Float128 &a) { return a * a; }
+inline std::complex<_Float128> pow2(const std::complex<_Float128> &a) { return a * a; }
 
 // when _Float128 == long double, followings are already defined.
 
@@ -733,5 +734,18 @@ inline const char *CHAR3(const char *c1, const char *c2, const char *c3) {
 }
 
 #endif // MPLAPACK_CHAR_UTILS_H
+
+// Integer ceil for _Float128.
+// Returns ceil(x) as mplapackint.
+#ifndef MPLAPACK_ICEIL_FLOAT128_DEFINED
+#define MPLAPACK_ICEIL_FLOAT128_DEFINED
+inline mplapackint iceil(_Float128 x) {
+    mplapackint t = static_cast<mplapackint>(x); // trunc toward zero
+    if (x > static_cast<_Float128>(t)) {
+        ++t;
+    }
+    return t;
+}
+#endif // MPLAPACK_ICEIL_FLOAT128_DEFINED
 
 #endif

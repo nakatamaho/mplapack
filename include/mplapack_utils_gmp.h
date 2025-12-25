@@ -87,6 +87,11 @@ inline mpf_class pow2(mpf_class a) {
     return mtmp;
 }
 
+inline mpc_class pow2(mpc_class a) {
+    mpc_class mtmp = a * a;
+    return mtmp;
+}
+
 #include <type_traits>
 
 // Square for INTEGER (workspace sizes, indices).
@@ -368,5 +373,20 @@ inline const char *CHAR3(const char *c1, const char *c2, const char *c3) {
 }
 
 #endif // MPLAPACK_CHAR_UTILS_H
+
+// Integer ceil for GMP mpf_class.
+// Returns ceil(x) as mplapackint.
+#ifndef MPLAPACK_ICEIL_MPF_CLASS_DEFINED
+#define MPLAPACK_ICEIL_MPF_CLASS_DEFINED
+inline mplapackint iceil(const mpf_class &x) {
+    // mpf_class -> long is trunc toward zero (via mpf_get_si).
+    mplapackint t = static_cast<mplapackint>(x.get_si());
+    mpf_class tt = t;
+  if (x > tt) {
+        ++t;
+  }
+    return t;
+}
+#endif // MPLAPACK_ICEIL_MPF_CLASS_DEFINED
 
 #endif
