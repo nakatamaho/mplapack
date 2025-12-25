@@ -45,7 +45,7 @@ index f363fa01..5ff67569 100644
 -
 -    for (int i = 0; i < strlen(subnam); i++) {
 -        subnam[i] = toupper(subnam[i]);
-+    subnam = name;
++    subnam = *name;
 +    ic = fem::ichar(subnam(1, 1));
 +    iz = fem::ichar("Z");
 +    if (iz == 90 || iz == 122) {
