@@ -1287,6 +1287,35 @@ def cmn_needs_to_be_inserted(conv_info, prev_tok):
 
 
 def convert_power(conv_info, tokens):
+    # Special-case integer power of two:
+    #   2 ** k  (k is INTEGER)  ->  (INTEGER(1) << k)
+    # This avoids floating-point pow() and matches Fortran INTEGER exponentiation.
+    if (len(tokens) == 2):
+        base_tok = tokens[0]
+        exp_tok = tokens[1]
+
+        def _tok_is_integer_scalar(tok) -> bool:
+            if tok is None or not tok.is_identifier():
+                return False
+            if conv_info is None or getattr(conv_info, "fproc", None) is None:
+                return False
+            try:
+                fdecl = conv_info.fproc.get_fdecl(id_tok=tok)
+            except Exception:
+                return False
+            dt = getattr(fdecl, "data_type", None)
+            if dt is None:
+                return False
+            dt_code = dt if isinstance(dt, str) else getattr(dt, "value", None)
+            return (dt_code or "").lower() == "integer"
+
+        if (base_tok is not None and base_tok.is_integer() and base_tok.value == "2"
+                and (exp_tok.is_integer() or _tok_is_integer_scalar(exp_tok))):
+            exp = convert_tokens(conv_info=conv_info, tokens=[exp_tok], commas=False).strip()
+            if re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", exp) or re.fullmatch(r"[+-]?[0-9]+", exp):
+                return f"(INTEGER(1) << {exp})"
+            return f"(INTEGER(1) << ({exp}))"
+
     fun = "fem::pow"
     pow_tok = tokens[1]
     if (pow_tok.is_integer()):
