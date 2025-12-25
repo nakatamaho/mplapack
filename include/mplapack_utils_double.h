@@ -45,6 +45,14 @@ inline double pow2(double a) {
     return mtmp;
 }
 
+#include <type_traits>
+
+// Square for INTEGER (workspace sizes, indices).
+#ifndef MPLAPACK_POW2_MPLAPACKINT_DEFINED
+#define MPLAPACK_POW2_MPLAPACKINT_DEFINED
+inline mplapackint pow2(mplapackint a) { return a * a; }
+#endif // MPLAPACK_POW2_MPLAPACKINT_DEFINED
+
 // implementation of sign transfer function.
 inline double sign(double a, double b) {
     double mtmp;

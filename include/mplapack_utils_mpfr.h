@@ -100,6 +100,14 @@ inline mpreal pow2(mpreal a) {
     return mtmp;
 }
 
+#include <type_traits>
+
+// Square for INTEGER (workspace sizes, indices).
+#ifndef MPLAPACK_POW2_MPLAPACKINT_DEFINED
+#define MPLAPACK_POW2_MPLAPACKINT_DEFINED
+inline mplapackint pow2(mplapackint a) { return a * a; }
+#endif // MPLAPACK_POW2_MPLAPACKINT_DEFINED
+
 // implementation of sign transfer function.
 inline mpreal sign(mpreal a, mpreal b) {
     mpreal mtmp;

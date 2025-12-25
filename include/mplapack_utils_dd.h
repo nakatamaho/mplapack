@@ -117,6 +117,14 @@ inline dd_real pow2(dd_real a) {
     return mtmp;
 }
 
+#include <type_traits>
+
+// Square for INTEGER (workspace sizes, indices).
+#ifndef MPLAPACK_POW2_MPLAPACKINT_DEFINED
+#define MPLAPACK_POW2_MPLAPACKINT_DEFINED
+inline mplapackint pow2(mplapackint a) { return a * a; }
+#endif // MPLAPACK_POW2_MPLAPACKINT_DEFINED
+
 // implementation of sign transfer function.
 inline dd_real sign(dd_real a, dd_real b) {
     dd_real mtmp;
