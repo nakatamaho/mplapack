@@ -110,7 +110,7 @@ void Rbdsvdx(const char *uplo, const char *jobz, const char *range, INTEGER cons
     REAL abstol = 2 * Rlamch("Safe Minimum");
     REAL ulp = Rlamch("Precision");
     REAL eps = Rlamch("Epsilon");
-    REAL sqrt2 = sqrt(2.0);
+    REAL sqrt2 = sqrt(two);
     REAL ortol = sqrt(ulp);
     //
     // Criterion for splitting is taken from Rbdsqr when singular
