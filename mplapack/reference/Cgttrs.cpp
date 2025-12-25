@@ -65,7 +65,7 @@ void Cgttrs(const char *trans, INTEGER const n, INTEGER const nrhs, COMPLEX *dl,
     INTEGER itrans = 0;
     if (notran) {
         itrans = 0;
-    } else if Mlsame(trans, "T") {
+    } else if (Mlsame(trans, "T")) {
         itrans = 1;
     } else {
         itrans = 2;
