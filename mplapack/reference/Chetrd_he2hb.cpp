@@ -85,7 +85,7 @@ void Chetrd_he2hb(const char *uplo, INTEGER const n, INTEGER const kd, COMPLEX *
                 Ccopy(lk, &a[(i - 1) + (i - 1) * lda], 1, &ab[(i - 1) * ldab], 1);
             }
         }
-        work[0] = 1;
+        work[0] = 1.0;
         return;
     }
     //

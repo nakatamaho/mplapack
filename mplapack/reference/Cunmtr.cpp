@@ -104,7 +104,7 @@ void Cunmtr(const char *side, const char *uplo, const char *trans, INTEGER const
     // Quick return if possible
     //
     if (m == 0 || n == 0 || nq == 1) {
-        work[0] = 1;
+        work[0] = 1.0;
         return;
     }
     //

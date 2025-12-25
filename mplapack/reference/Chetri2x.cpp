@@ -132,7 +132,7 @@ void Chetri2x(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, 
             if (ipiv[k - 1] > 0) {
                 // 1 x 1 diagonal NNB
                 work[(k - 1) + (invd - 1) * ldwork] = one / a[(k - 1) + (k - 1) * lda].real();
-                work[(k - 1) + ((invd + 1) - 1) * ldwork] = 0;
+                work[(k - 1) + ((invd + 1) - 1) * ldwork] = 0.0;
                 k++;
             } else {
                 // 2 x 2 diagonal NNB
@@ -311,7 +311,7 @@ void Chetri2x(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, 
             if (ipiv[k - 1] > 0) {
                 // 1 x 1 diagonal NNB
                 work[(k - 1) + (invd - 1) * ldwork] = one / a[(k - 1) + (k - 1) * lda].real();
-                work[(k - 1) + ((invd + 1) - 1) * ldwork] = 0;
+                work[(k - 1) + ((invd + 1) - 1) * ldwork] = 0.0;
                 k = k - 1;
             } else {
                 // 2 x 2 diagonal NNB

@@ -68,7 +68,7 @@ void Claqr2(bool const wantt, bool const wantz, INTEGER const n, INTEGER const k
     // ==== Quick return in case of workspace query. ====
     //
     if (lwork == -1) {
-        work[0] = COMPLEX(lwkopt, 0);
+        work[0] = COMPLEX(lwkopt, 0.0);
         return;
     }
     //
@@ -294,7 +294,7 @@ void Claqr2(bool const wantt, bool const wantz, INTEGER const n, INTEGER const k
     //
     // ==== Return optimal workspace. ====
     //
-    work[0] = COMPLEX(lwkopt, 0);
+    work[0] = COMPLEX(lwkopt, 0.0);
     //
     // ==== End of Claqr2 ====
     //

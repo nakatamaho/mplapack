@@ -90,7 +90,7 @@ void Cgehrd(INTEGER const n, INTEGER const ilo, INTEGER const ihi, COMPLEX *a, I
     //
     INTEGER nh = ihi - ilo + 1;
     if (nh <= 1) {
-        work[0] = 1;
+        work[0] = 1.0;
         return;
     }
     //

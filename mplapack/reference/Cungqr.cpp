@@ -66,7 +66,7 @@ void Cungqr(INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX *a, INTEG
     // Quick return if possible
     //
     if (n <= 0) {
-        work[0] = 1;
+        work[0] = 1.0;
         return;
     }
     //

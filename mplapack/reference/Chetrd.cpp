@@ -74,7 +74,7 @@ void Chetrd(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, RE
     // Quick return if possible
     //
     if (n == 0) {
-        work[0] = 1;
+        work[0] = 1.0;
         return;
     }
     //

@@ -165,12 +165,12 @@ void Cheevr(const char *jobz, const char *range, const char *uplo, INTEGER const
     //
     m = 0;
     if (n == 0) {
-        work[0] = 1;
+        work[0] = 1.0;
         return;
     }
     //
     if (n == 1) {
-        work[0] = 2;
+        work[0] = 2.0;
         if (alleig || indeig) {
             m = 1;
             w[0] = a[0].real();

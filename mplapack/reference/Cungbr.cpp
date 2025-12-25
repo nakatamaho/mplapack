@@ -61,7 +61,7 @@ void Cungbr(const char *vect, INTEGER const m, INTEGER const n, INTEGER const k,
     INTEGER iinfo = 0;
     INTEGER lwkopt = 0;
     if (info == 0) {
-        work[0] = 1;
+        work[0] = 1.0;
         if (wantq) {
             if (m >= k) {
                 Cungqr(m, n, k, a, lda, tau, work, -1, iinfo);
@@ -94,7 +94,7 @@ void Cungbr(const char *vect, INTEGER const m, INTEGER const n, INTEGER const k,
     // Quick return if possible
     //
     if (m == 0 || n == 0) {
-        work[0] = 1;
+        work[0] = 1.0;
         return;
     }
     //

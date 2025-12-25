@@ -75,7 +75,7 @@ void Cungtr(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, CO
     // Quick return if possible
     //
     if (n == 0) {
-        work[0] = 1;
+        work[0] = 1.0;
         return;
     }
     //

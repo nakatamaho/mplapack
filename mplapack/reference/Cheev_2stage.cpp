@@ -89,7 +89,7 @@ void Cheev_2stage(const char *jobz, const char *uplo, INTEGER const n, COMPLEX *
     const COMPLEX cone = COMPLEX(1.0, 0.0);
     if (n == 1) {
         w[0] = a[0].real();
-        work[0] = 1;
+        work[0] = 1.0;
         if (wantz) {
             a[0] = cone;
         }

@@ -65,7 +65,7 @@ void Cgebrd(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, REA
     //
     INTEGER minmn = min(m, n);
     if (minmn == 0) {
-        work[0] = 1;
+        work[0] = 1.0;
         return;
     }
     //

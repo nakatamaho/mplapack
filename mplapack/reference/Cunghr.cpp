@@ -73,7 +73,7 @@ void Cunghr(INTEGER const n, INTEGER const ilo, INTEGER const ihi, COMPLEX *a, I
     // Quick return if possible
     //
     if (n == 0) {
-        work[0] = 1;
+        work[0] = 1.0;
         return;
     }
     //
