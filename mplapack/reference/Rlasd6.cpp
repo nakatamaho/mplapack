@@ -36,7 +36,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rlasd6(INTEGER const icompq, INTEGER const nl, INTEGER const nr, INTEGER const sqre, REAL *d, REAL *vf, REAL *vl, REAL &alpha, REAL &beta, INTEGER *idxq, INTEGER *perm, INTEGER const givptr, INTEGER *givcol, INTEGER const ldgcol, REAL *givnum, INTEGER const ldgnum, REAL *poles, REAL *difl, REAL *difr, REAL *z, INTEGER const k, REAL const c, REAL const s, REAL *work, INTEGER *iwork, INTEGER &info) {
+void Rlasd6(INTEGER const icompq, INTEGER const nl, INTEGER const nr, INTEGER const sqre, REAL *d, REAL *vf, REAL *vl, REAL &alpha, REAL &beta, INTEGER *idxq, INTEGER *perm, INTEGER &givptr, INTEGER *givcol, INTEGER const ldgcol, REAL *givnum, INTEGER const ldgnum, REAL *poles, REAL *difl, REAL *difr, REAL *z, INTEGER &k, REAL &c, REAL &s, REAL *work, INTEGER *iwork, INTEGER &info) {
     //
     // Test the input parameters.
     //

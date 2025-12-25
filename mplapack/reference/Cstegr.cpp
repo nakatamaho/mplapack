@@ -36,7 +36,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Cstegr(const char *jobz, const char *range, INTEGER const n, REAL *d, REAL *e, REAL const vl, REAL const vu, INTEGER const il, INTEGER const iu, REAL const /* abstol */, INTEGER const m, REAL *w, COMPLEX *z, INTEGER const ldz, INTEGER *isuppz, REAL *work, INTEGER const lwork, INTEGER *iwork, INTEGER const liwork, INTEGER &info) {
+void Cstegr(const char *jobz, const char *range, INTEGER const n, REAL *d, REAL *e, REAL const vl, REAL const vu, INTEGER const il, INTEGER const iu, REAL const /* abstol */, INTEGER &m, REAL *w, COMPLEX *z, INTEGER const ldz, INTEGER *isuppz, REAL *work, INTEGER const lwork, INTEGER *iwork, INTEGER const liwork, INTEGER &info) {
     info = 0;
     bool tryrac = false;
     //

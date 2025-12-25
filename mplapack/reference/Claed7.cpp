@@ -36,7 +36,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Claed7(INTEGER const n, INTEGER const cutpnt, INTEGER const qsiz, INTEGER const tlvls, INTEGER const curlvl, INTEGER const curpbm, REAL *d, COMPLEX *q, INTEGER const ldq, REAL const rho, INTEGER *indxq, REAL *qstore, INTEGER *qptr, INTEGER *prmptr, INTEGER *perm, INTEGER *givptr, INTEGER *givcol, REAL *givnum, COMPLEX *work, REAL *rwork, INTEGER *iwork, INTEGER &info) {
+void Claed7(INTEGER const n, INTEGER const cutpnt, INTEGER const qsiz, INTEGER const tlvls, INTEGER const curlvl, INTEGER const curpbm, REAL *d, COMPLEX *q, INTEGER const ldq, REAL &rho, INTEGER *indxq, REAL *qstore, INTEGER *qptr, INTEGER *prmptr, INTEGER *perm, INTEGER *givptr, INTEGER *givcol, REAL *givnum, COMPLEX *work, REAL *rwork, INTEGER *iwork, INTEGER &info) {
     INTEGER ldgivcol = 2;
     INTEGER ldgivnum = 2;
     //

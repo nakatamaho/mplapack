@@ -36,7 +36,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rgeevx(const char *balanc, const char *jobvl, const char *jobvr, const char *sense, INTEGER const n, REAL *a, INTEGER const lda, REAL *wr, REAL *wi, REAL *vl, INTEGER const ldvl, REAL *vr, INTEGER const ldvr, INTEGER const ilo, INTEGER const ihi, REAL *scale, REAL &abnrm, REAL *rconde, REAL *rcondv, REAL *work, INTEGER const lwork, INTEGER *iwork, INTEGER &info) {
+void Rgeevx(const char *balanc, const char *jobvl, const char *jobvr, const char *sense, INTEGER const n, REAL *a, INTEGER const lda, REAL *wr, REAL *wi, REAL *vl, INTEGER const ldvl, REAL *vr, INTEGER const ldvr, INTEGER &ilo, INTEGER &ihi, REAL *scale, REAL &abnrm, REAL *rconde, REAL *rcondv, REAL *work, INTEGER const lwork, INTEGER *iwork, INTEGER &info) {
     bool lquery = false;
     bool wantvl = false;
     bool wantvr = false;

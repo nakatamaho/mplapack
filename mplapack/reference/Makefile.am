@@ -113,6 +113,8 @@ libmplapack__Float128_la_LDFLAGS += -no-undefined -L$(top_builddir)/mpblas/refer
 endif
 endif
 
+#Cgbrfsx.cpp
+
 MPLAPACK_SOURCES = \
 CRrscl.cpp \
 Cbbcsd.cpp \
@@ -122,7 +124,6 @@ Cgbcon.cpp \
 Cgbequ.cpp \
 Cgbequb.cpp \
 Cgbrfs.cpp \
-Cgbrfsx.cpp \
 Cgbsv.cpp \
 Cgbsvx.cpp \
 Cgbsvxx.cpp \

@@ -36,7 +36,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rlaed7(INTEGER const icompq, INTEGER const n, INTEGER const qsiz, INTEGER const tlvls, INTEGER const curlvl, INTEGER const curpbm, REAL *d, REAL *q, INTEGER const ldq, INTEGER *indxq, REAL const rho, INTEGER const cutpnt, REAL *qstore, INTEGER *qptr, INTEGER *prmptr, INTEGER *perm, INTEGER *givptr, INTEGER *givcol, REAL *givnum, REAL *work, INTEGER *iwork, INTEGER &info) {
+void Rlaed7(INTEGER const icompq, INTEGER const n, INTEGER const qsiz, INTEGER const tlvls, INTEGER const curlvl, INTEGER const curpbm, REAL *d, REAL *q, INTEGER const ldq, INTEGER *indxq, REAL &rho, INTEGER const cutpnt, REAL *qstore, INTEGER *qptr, INTEGER *prmptr, INTEGER *perm, INTEGER *givptr, INTEGER *givcol, REAL *givnum, REAL *work, INTEGER *iwork, INTEGER &info) {
     INTEGER ldq2 = 0;
     INTEGER iz = 0;
     INTEGER idlmda = 0;

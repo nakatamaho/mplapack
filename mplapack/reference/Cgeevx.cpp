@@ -36,7 +36,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Cgeevx(const char *balanc, const char *jobvl, const char *jobvr, const char *sense, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *w, COMPLEX *vl, INTEGER const ldvl, COMPLEX *vr, INTEGER const ldvr, INTEGER const ilo, INTEGER const ihi, REAL *scale, REAL &abnrm, REAL *rconde, REAL *rcondv, COMPLEX *work, INTEGER const lwork, REAL *rwork, INTEGER &info) {
+void Cgeevx(const char *balanc, const char *jobvl, const char *jobvr, const char *sense, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *w, COMPLEX *vl, INTEGER const ldvl, COMPLEX *vr, INTEGER const ldvr, INTEGER &ilo, INTEGER &ihi, REAL *scale, REAL &abnrm, REAL *rconde, REAL *rcondv, COMPLEX *work, INTEGER const lwork, REAL *rwork, INTEGER &info) {
     bool lquery = false;
     bool wantvl = false;
     bool wantvr = false;
