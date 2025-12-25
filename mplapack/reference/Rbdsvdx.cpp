@@ -48,6 +48,7 @@ void Rbdsvdx(const char *uplo, const char *jobz, const char *range, INTEGER cons
     //
     info = 0;
     const REAL zero = 0.0;
+    const REAL two = 2.0;
     if (!Mlsame(uplo, "U") && !lower) {
         info = -1;
     } else if (!(wantz || Mlsame(jobz, "N"))) {
