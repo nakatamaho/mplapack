@@ -90,7 +90,7 @@ void Rlarrf(INTEGER const n, REAL *d, REAL *l, REAL *ld, INTEGER const clstrt, I
         return;
     }
     //
-    fact = castREAL((INTEGER(1) << ktrymax));
+    fact = castREAL((INTEGER(1) << (ktrymax)));
     eps = Rlamch("Precision");
     shift = 0;
     forcer = false;

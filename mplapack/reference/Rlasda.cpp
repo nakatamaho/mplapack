@@ -185,7 +185,7 @@ void Rlasda(INTEGER const icompq, INTEGER const smlsiz, INTEGER const n, INTEGER
     //
     // Now conquer each subproblem bottom-up.
     //
-    j = (INTEGER(1) << nlvl);
+    j = (INTEGER(1) << (nlvl));
     INTEGER lvl = 0;
     INTEGER lvl2 = 0;
     INTEGER lf = 0;
@@ -203,7 +203,7 @@ void Rlasda(INTEGER const icompq, INTEGER const smlsiz, INTEGER const n, INTEGER
             lf = 1;
             ll = 1;
         } else {
-            lf = pow(2, (lvl - 1));
+            lf = (INTEGER(1) << ((lvl - 1)));
             ll = 2 * lf - 1;
         }
         for (i = lf; i <= ll; i = i + 1) {

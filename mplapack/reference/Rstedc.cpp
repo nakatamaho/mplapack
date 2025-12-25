@@ -95,10 +95,10 @@ void Rstedc(const char *compz, INTEGER const n, REAL *d, REAL *e, REAL *z, INTEG
             lwmin = 2 * (n - 1);
         } else {
             lgn = castINTEGER(log(castREAL(n)) / log(two));
-            if ((INTEGER(1) << lgn) < n) {
+            if ((INTEGER(1) << (lgn)) < n) {
                 lgn++;
             }
-            if ((INTEGER(1) << lgn) < n) {
+            if ((INTEGER(1) << (lgn)) < n) {
                 lgn++;
             }
             if (icompz == 1) {
