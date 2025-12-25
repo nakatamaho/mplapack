@@ -76,7 +76,7 @@ def _adjust_actuals_using_signature(arg_string: str, signature, conv_info=None) 
     - If input is 'name[...]', keep as is
     - If input is bare 'name' AND it's an array, convert to 'name[0]'
 
-    For PTR_CHAR arguments, if the expression is a bare identifier
+    For PTR_CHAR_IN / PTR_CHAR_OUT arguments, if the expression is a bare identifier
     (e.g. normin) and not already passed by address, insert '&' in
     front of it. String literals are left unchanged.
 
@@ -139,7 +139,7 @@ def _adjust_actuals_using_signature(arg_string: str, signature, conv_info=None) 
                 leading = part[:len(part) - len(s)]
                 part = leading + "&" + s
 
-        elif kind == "PTR_CHAR":
+        elif kind in ("PTR_CHAR", "PTR_CHAR_IN", "PTR_CHAR_OUT"):
             # Already passing by address.
             if s.startswith("&"):
                 new_parts.append(part)
@@ -5039,6 +5039,7 @@ def _mark_call_actuals_used(conv_info):
     at least once so that its declaration is not dropped.
     """
     from fable.tokenization import extract_identifiers
+    import sys
 
     # conv_info.fproc is the current Fortran procedure
     fproc = getattr(conv_info, "fproc", None)
@@ -5074,6 +5075,258 @@ def _mark_call_actuals_used(conv_info):
                     f"[CALL_USED] bump use_count for {id_tok.value}", file=sys.stderr)
                 fdecl.use_count = 1
 
+
+
+def _sig_kind_requires_mutable_actual(kind: str) -> bool:
+    """Return True if a callee parameter kind requires a mutable (non-const) actual.
+
+    This is used to propagate OUT/INOUT-ness across calls so we don't
+    generate "const" or by-value dummy arguments that cannot be forwarded.
+
+    The signature kinds come from mplapack_signatures.FUNCTION_SIGNATURES.
+    We keep this intentionally conservative: any non-const pointer or
+    non-const reference requires a mutable actual.
+    """
+    if kind is None:
+        return False
+    k = str(kind).strip().upper()
+
+    # Scalar passed by non-const reference.
+    if k == "REF_SCALAR":
+        return True
+
+    # Character pointers: distinguish input vs output/inout explicitly.
+    # - PTR_CHAR_IN  : const char*  (input-only) -> does NOT require mutable actual
+    # - PTR_CHAR_OUT : char*        (output/inout) -> requires mutable actual
+    if k == "PTR_CHAR_IN":
+        return False
+    if k == "PTR_CHAR_OUT":
+        return True
+
+    # Legacy/ambiguous char pointer kind: do NOT force mutability.
+    # This avoids incorrectly promoting input-only flags like TRANS.
+    if k == "PTR_CHAR":
+        return False
+
+    # Numeric pointers are always treated as mutable in our generated interfaces.
+    if k == "PTR_NUMERIC":
+        return True
+
+    # Other pointer-like kinds: keep conservative behavior, honoring explicit CONST markers.
+    if k.startswith("PTR_"):
+        if "CONST" in k:
+            return False
+        return True
+
+    return False
+
+
+def _split_call_actuals_tokens(arg_tokens):
+    """Split a CALL actual-argument token list into per-argument token lists."""
+    if arg_tokens is None:
+        return []
+
+    # In fable's token stream, comma-separated lists are represented as
+    # 'seq' tokens. This mirrors convert_tokens(..., commas=True).
+    try:
+        from fable.tokenization import group_power
+    except Exception:
+        return [arg_tokens] if arg_tokens else []
+
+    actuals = []
+    for tok in group_power(tokens=arg_tokens):
+        if tok.is_seq():
+            actuals.append(tok.value)
+
+    # Fallback: if we did not see any seq token, treat the whole list as one.
+    if not actuals and arg_tokens:
+        actuals = [arg_tokens]
+
+    return actuals
+
+
+def _actual_base_identifier_if_definable(fproc, actual_tokens):
+    """Return base identifier name if the actual is a definable variable.
+
+    We recognize:
+      - a plain identifier: X
+      - an array element or substring-like reference: A(i), A(i,j), C(1:1)
+        (only if A/C is an array/CHARACTER variable, not a function call)
+
+    For propagation we only need the base variable name.
+    """
+    if fproc is None or not actual_tokens:
+        return None
+
+    # Plain identifier
+    if len(actual_tokens) == 1 and actual_tokens[0].is_identifier():
+        return actual_tokens[0].value
+
+    # Identifier followed by parentheses -> array element / substring.
+    if (len(actual_tokens) >= 2
+            and actual_tokens[0].is_identifier()
+            and actual_tokens[1].is_parentheses()):
+        id_tok = actual_tokens[0]
+        try:
+            fdecl = fproc.get_fdecl(id_tok=id_tok)
+        except Exception:
+            fdecl = None
+        if fdecl is None:
+            return None
+        # Reject callable identifiers: foo(x) is not a definable variable.
+        if getattr(fdecl, "is_user_defined_callable", lambda: False)():
+            return None
+        if getattr(fdecl, "dim_tokens", None) is not None:
+            return id_tok.value
+        # CHARACTER substring on a scalar CHARACTER is also definable.
+        dt = getattr(fdecl, "data_type", None)
+        if dt is not None and getattr(dt, "value", None) == "character":
+            return id_tok.value
+
+    return None
+
+
+def _callee_mutable_mask_from_fproc(callee_fproc):
+    """Return a list[bool] saying whether each callee argument needs a mutable actual."""
+    mask = []
+    if callee_fproc is None:
+        return mask
+
+    for id_tok in getattr(callee_fproc, "args", []) or []:
+        if getattr(id_tok, "value", None) == "*":
+            # Alternate return marker in old Fortran. Not an OUT/INOUT variable.
+            mask.append(False)
+            continue
+
+        try:
+            fdecl = callee_fproc.get_fdecl(id_tok=id_tok)
+        except Exception:
+            fdecl = None
+        if fdecl is None:
+            mask.append(False)
+            continue
+
+        # EXTERNAL callable dummies are function pointers.
+        if getattr(fdecl, "is_user_defined_callable", lambda: False)():
+            mask.append(False)
+            continue
+
+        dt = getattr(fdecl, "data_type", None)
+        dt_code = getattr(dt, "value", None) if dt is not None else None
+        is_char = (dt_code == "character")
+        is_array = (getattr(fdecl, "dim_tokens", None) is not None)
+
+        # --- Arrays ---
+        if is_array:
+            # Non-character arrays are emitted as raw pointers (TYPE*), i.e. non-const.
+            # To keep the generated C++ compilable, treat them as requiring mutable
+            # actuals (even if the Fortran INTENT would be IN).
+            if not is_char:
+                mask.append(True)
+            else:
+                # CHARACTER arrays are emitted as str_arr_cref/ref depending on is_modified.
+                mask.append(bool(getattr(fdecl, "is_modified", False)))
+            continue
+
+        # --- Scalars ---
+        # Numeric/logical scalars: non-const reference iff modified.
+        # CHARACTER scalars: char* iff modified.
+        mask.append(bool(getattr(fdecl, "is_modified", False)))
+
+    return mask
+
+
+def _propagate_out_inout_through_calls(topological_fprocs, *, max_rounds: int = 1000) -> None:
+    """Propagate OUT/INOUT-ness from callees to callers.
+
+    Rule:
+      If a CALL passes an actual variable into a callee parameter that
+      requires a mutable (non-const) lvalue in the generated C++ signature,
+      then that actual variable must be treated as modified in the caller.
+
+    This is crucial because we intentionally generate IN scalar dummies as
+    pass-by-value 'TYPE const' to match MPLAPACK style; but once such a dummy
+    is forwarded to an OUT/INOUT position, it must become non-const and
+    non-value (i.e. '&' or pointer) at the caller boundary.
+
+    This pass is monotone (False -> True only) and converges.
+    """
+    if topological_fprocs is None:
+        return
+
+    # Map callee name -> fproc (case-insensitive)
+    fprocs_by_name = getattr(getattr(topological_fprocs, "all_fprocs", None), "fprocs_by_name", None)
+    if callable(fprocs_by_name):
+        fproc_map = fprocs_by_name()
+    else:
+        fproc_map = {}
+    fproc_map_lower = {k.lower(): v for (k, v) in (fproc_map or {}).items()}
+
+    rounds = 0
+    changed = True
+
+    while changed:
+        rounds += 1
+        if rounds > max_rounds:
+            # Defensive: should never happen because we only flip bits to True.
+            break
+
+        changed = False
+
+        for caller in getattr(topological_fprocs, "bottom_up_list", []) or []:
+            execs = getattr(caller, "executable", None) or []
+            for ei in execs:
+                if getattr(ei, "key", None) != "call":
+                    continue
+
+                callee_name = getattr(getattr(ei, "subroutine_name", None), "value", None)
+                if not callee_name:
+                    continue
+
+                # Determine which callee argument positions require mutable actuals.
+                callee_fproc = fproc_map_lower.get(str(callee_name).lower())
+
+                if callee_fproc is not None:
+                    mutable_mask = _callee_mutable_mask_from_fproc(callee_fproc)
+                else:
+                    # External routine: consult mplapack_signatures if available.
+                    mpl_name = convert_function_name_to_mplapack(str(callee_name))
+                    sig = FUNCTION_SIGNATURES.get(mpl_name.lower())
+                    if sig is None:
+                        sig = FUNCTION_SIGNATURES.get(str(callee_name).lower())
+                    if sig is None:
+                        continue
+                    mutable_mask = [_sig_kind_requires_mutable_actual(k) for k in sig]
+
+                # Collect actual argument token lists.
+                arg_tok = getattr(ei, "arg_token", None)
+                if arg_tok is None:
+                    actuals = []
+                else:
+                    actuals = _split_call_actuals_tokens(getattr(arg_tok, "value", None))
+
+                if len(actuals) != len(mutable_mask):
+                    # Be conservative: don't guess when counts mismatch.
+                    continue
+
+                # Mark caller-side variables as modified where needed.
+                for idx, needs_mutable in enumerate(mutable_mask):
+                    if not needs_mutable:
+                        continue
+                    base = _actual_base_identifier_if_definable(caller, actuals[idx])
+                    if base is None:
+                        continue
+
+                    # Look up the declaration in the caller.
+                    fdecl = getattr(caller, "fdecl_by_identifier", {}).get(base.lower())
+                    if fdecl is None:
+                        fdecl = getattr(caller, "fdecl_by_identifier", {}).get(base)
+                    if fdecl is None:
+                        continue
+
+                    if not getattr(fdecl, "is_modified", False):
+                        fdecl.is_modified = True
+                        changed = True
 
 def _infer_user_defined_callable_signatures(conv_info):
     """Infer signatures for user-defined EXTERNAL callable dummy arguments.
@@ -8774,7 +9027,14 @@ def process(
                         namespace=namespace, hpp_guard=True)
         with open("cmn.hpp", "w") as f:
             print("\n".join(break_lines(cpp_text=cmn_buffer)), file=f)
-    #
+    # Propagate OUT/INOUT-ness through calls.
+    # If a variable is forwarded into a callee parameter that requires a mutable
+    # actual (non-const ref/pointer), treat it as modified in the caller too.
+    _propagate_out_inout_through_calls(topological_fprocs)
+
+    # Defensive: needs_cmn may depend on call graph properties. Recompute after
+    # we changed is_modified flags.
+    topological_fprocs.each_fproc_update_needs_cmn()
     separate_function_buffers = []
     separate_function_buffer_by_function_name = {}
     for name, identifiers in separate_files_main_namespace.items():

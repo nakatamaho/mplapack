@@ -55,9 +55,15 @@ run_one_pass() {
   echo "PASS ${pass} done. signatures: ${SIG_PY}"
 }
 
+rm -f "${FABLE}/mplapack_name_map.txt"
 bash "${FABLE}/gen_mplapack_name_map.sh"
+rm -f "${SIG_PY}"
+rm -f "${MPBLAS_REF}/mpblas_generic.h"
+rm -f "${MPLAPACK_REF}/mplapack_generic.h"
 for pass in $(seq 1 "${PASSES}"); do
   run_one_pass "${pass}"
 done
+
+bash "${FABLE}/patch_lapack.sh"
 
 echo "ALL DONE"

@@ -107,7 +107,8 @@ def classify_arg(arg: str) -> str:
     Classify a single argument into one of:
       - "VAL":        value (integer/real/logical by value)
       - "REF_SCALAR": reference to scalar (REAL&, COMPLEX&, INTEGER&)
-      - "PTR_CHAR":   pointer to character data (const char*, char*)
+      - "PTR_CHAR_IN":  pointer to const character data (const char*, char const*)
+      - "PTR_CHAR_OUT": pointer to mutable character data (char*)
       - "PTR_NUMERIC":pointer to numeric data (REAL*, COMPLEX*, INTEGER*)
       - "PTR_OTHER":  other pointer types (function pointers, etc.)
     """
@@ -121,10 +122,16 @@ def classify_arg(arg: str) -> str:
 
     # Pointer types (check before reference since we look for '*')
     if "*" in arg:
-        # Character pointers
-        if "char" in arg:
-            return "PTR_CHAR"
-
+        # Character pointers: distinguish constness of the pointee.
+        #
+        # We detect "const char*" and "char const*" as input-only.
+        # Note: "char * const" is a const pointer to mutable data; treat it as OUT.
+        if re.search(r"\bchar\b", arg):
+            low = arg.lower()
+            if (re.search(r"\bconst\s+char\b", low)
+                    or re.search(r"\bchar\s+const\b", low)):
+                return "PTR_CHAR_IN"
+            return "PTR_CHAR_OUT"
         # Numeric pointers (REAL / COMPLEX / INTEGER)
         base = arg.replace("const", " ").replace("&", " ")
         if "REAL" in base or "COMPLEX" in base or "INTEGER" in base:
