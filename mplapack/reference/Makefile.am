@@ -114,6 +114,7 @@ endif
 endif
 
 #Cgbrfsx.cpp
+#Cgerfsx.cpp
 
 MPLAPACK_SOURCES = \
 CRrscl.cpp \
@@ -169,7 +170,6 @@ Cgeqrt.cpp \
 Cgeqrt2.cpp \
 Cgeqrt3.cpp \
 Cgerfs.cpp \
-Cgerfsx.cpp \
 Cgerq2.cpp \
 Cgerqf.cpp \
 Cgesc2.cpp \
