@@ -131,7 +131,7 @@ void Clahef_aa(const char *uplo, INTEGER const j1, INTEGER const m, INTEGER cons
             //
             // Apply hermitian pivot
             //
-            if ((i2 != 2) && (piv != 0)) {
+            if ((i2 != 2) && (piv != zero)) {
                 //
                 // Swap WORK(I1) and WORK(I2)
                 //
@@ -279,7 +279,7 @@ void Clahef_aa(const char *uplo, INTEGER const j1, INTEGER const m, INTEGER cons
             //
             // Apply hermitian pivot
             //
-            if ((i2 != 2) && (piv != 0)) {
+            if ((i2 != 2) && (piv != zero)) {
                 //
                 // Swap WORK(I1) and WORK(I2)
                 //
