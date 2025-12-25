@@ -298,14 +298,14 @@ inline mpf_class max(const mpf_class &a, const mpf_class &b, const mpf_class &c)
     return max(r, c);
 }
 
-// 4+ args: fold expression, mpf_class only.
-template <typename... Args, typename = std::enable_if_t<(std::is_same_v<mpf_class, std::decay_t<Args>> && ...)>> inline mpf_class min(const mpf_class &a, const mpf_class &b, const mpf_class &c, const Args &...rest) {
+// Accept GMP expression templates (e.g. abs(x) returns __gmp_expr<..., __gmp_unary_expr<...>>).
+template <typename... Args, typename = std::enable_if_t<(std::is_convertible_v<Args, mpf_class> && ...)>> inline mpf_class max(const mpf_class &a, const mpf_class &b, const mpf_class &c, const Args &...rest) {
     mpf_class r = min(a, b, c);
     ((r = min(r, rest)), ...);
     return r;
 }
 
-template <typename... Args, typename = std::enable_if_t<(std::is_same_v<mpf_class, std::decay_t<Args>> && ...)>> inline mpf_class max(const mpf_class &a, const mpf_class &b, const mpf_class &c, const Args &...rest) {
+template <typename... Args, typename = std::enable_if_t<(std::is_convertible_v<Args, mpf_class> && ...)>> inline mpf_class min(const mpf_class &a, const mpf_class &b, const mpf_class &c, const Args &...rest) {
     mpf_class r = max(a, b, c);
     ((r = max(r, rest)), ...);
     return r;
