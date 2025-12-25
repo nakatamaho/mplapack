@@ -2115,6 +2115,67 @@ def _emit_constant_ld_decls(top_scope, conv_info) -> None:
 
 def rewrite_intrinsics(text: str) -> str:
     """Rewrite fem:: intrinsics to C++-friendly forms."""
+    def _rewrite_complex_ctor_literals(s: str) -> str:
+        """Normalize COMPLEX(real, imag) constructor arguments.
+
+        Policy:
+          - If an argument is a pure integer literal (e.g. 0, -1, +2),
+            promote it to a real literal (0.0, -1.0, +2.0).
+          - Non-literal expressions are left unchanged.
+
+        This fixes patterns such as:
+          COMPLEX(lwkopt, 0) -> COMPLEX(lwkopt, 0.0)
+        """
+        pat = re.compile(r"\bCOMPLEX\s*\(")
+        out = []
+        i = 0
+        n = len(s)
+        while True:
+            m = pat.search(s, i)
+            if not m:
+                out.append(s[i:])
+                break
+
+            out.append(s[i:m.start()])
+            paren_open = m.end() - 1  # points to '('
+
+            # Find matching ')'
+            depth = 0
+            p = paren_open
+            while p < n:
+                ch = s[p]
+                if ch == "(":
+                    depth += 1
+                elif ch == ")":
+                    depth -= 1
+                    if depth == 0:
+                        break
+                p += 1
+            if depth != 0:
+                # Unbalanced: give up and append rest verbatim
+                out.append(s[m.start():])
+                break
+
+            inner = s[paren_open + 1:p]
+            args = _split_actuals(inner)
+            if len(args) == 2:
+                new_args = []
+                for a in args:
+                    a0 = a.strip()
+                    if re.fullmatch(r"[+-]?[0-9]+", a0):
+                        if a0 in ("0", "+0", "-0"):
+                            a0 = "0.0"
+                        else:
+                            a0 = a0 + ".0"
+                    new_args.append(a0)
+                out.append("COMPLEX(" + ", ".join(new_args) + ")")
+            else:
+                # Not a 2-arg ctor: keep as-is
+                out.append(s[m.start():p + 1])
+
+            i = p + 1
+        return "".join(out)
+
     def _real_dispatch(arg: str) -> str:
         # Use COMPLEX information collected for the current procedure
         return _real_cast_or_component(
@@ -2225,6 +2286,9 @@ def rewrite_intrinsics(text: str) -> str:
     # --------------------------------------------------------------
     text = _rewrite_max_min_calls(text)
 
+    # 4) COMPLEX(...) constructor: promote integer literals to real literals.
+    text = _rewrite_complex_ctor_literals(text)
+    
     return text
 
 
@@ -4349,6 +4413,7 @@ def convert_executable(
                 lhs_is_real = lhs_dt_code in ("real", "doubleprecision")
                 lhs_is_integer = lhs_dt_code == "integer"
                 lhs_is_character = lhs_dt_code == "character"
+                lhs_is_complex = lhs_dt_code in ("complex", "doublecomplex")                
                 rhs_is_simple = _is_simple_lvalue(crhs)
                 rhs_is_complex = False
                 rhs_is_real = False
@@ -4467,9 +4532,10 @@ def convert_executable(
                                 complex_pointer_identifiers,
                             )
                 # Promote pure integer literals to real literals when assigning
-                # to REAL/DOUBLEPRECISION variables, so that t[...] = 0; becomes
-                # t[...] = 0.0; in the generated C++.
-                if lhs_is_real:
+                # to REAL/DOUBLEPRECISION *or* COMPLEX variables, so that:
+                #   t[...] = 0; becomes t[...] = 0.0;
+                # This helps overload resolution for MPLAPACK scalar types.
+                if lhs_is_real or lhs_is_complex:
                     rhs_expr = crhs.strip()
                     # Match a pure integer literal (e.g. 0, -1, +2)
                     if re.fullmatch(r"[+-]?[0-9]+", rhs_expr):
