@@ -123,6 +123,11 @@ endif
 #Rgbrfsx.cpp
 #Rporfsx.cpp
 #Rsyrfsx.cpp
+#The following ones converts to a lower precision, so we dont need them.
+#Clag2c.cpp
+#Clat2c.cpp
+#Rlag2s.cpp
+#Rlat2s.cpp
 
 MPLAPACK_SOURCES = \
 CRrscl.cpp \
@@ -341,7 +346,6 @@ Claed8.cpp \
 Claein.cpp \
 Claesy.cpp \
 Claev2.cpp \
-Clag2c.cpp \
 Clags2.cpp \
 Clagtm.cpp \
 Clahef.cpp \
@@ -421,7 +425,6 @@ Clasyf.cpp \
 Clasyf_aa.cpp \
 Clasyf_rk.cpp \
 Clasyf_rook.cpp \
-Clat2c.cpp \
 Clatbs.cpp \
 Clatdf.cpp \
 Clatps.cpp \
@@ -753,7 +756,6 @@ Rlaein.cpp \
 Rlaev2.cpp \
 Rlaexc.cpp \
 Rlag2.cpp \
-Rlag2s.cpp \
 Rlags2.cpp \
 Rlagtf.cpp \
 Rlagtm.cpp \
@@ -870,7 +872,6 @@ Rlasyf.cpp \
 Rlasyf_aa.cpp \
 Rlasyf_rk.cpp \
 Rlasyf_rook.cpp \
-Rlat2s.cpp \
 Rlatbs.cpp \
 Rlatdf.cpp \
 Rlatps.cpp \
