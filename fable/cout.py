@@ -1286,7 +1286,7 @@ def cmn_needs_to_be_inserted(conv_info, prev_tok):
     return False
 
 
-ef convert_power(conv_info, tokens):
+def convert_power(conv_info, tokens):
     # Special-case INTEGER power-of-two:
     #   2 ** k  -> (INTEGER(1) << k)
     # This matches Fortran INTEGER exponentiation and avoids floating pow().
