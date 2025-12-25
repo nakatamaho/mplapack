@@ -1,8 +1,8 @@
 diff --git a/mplapack/reference/iMparmq.cpp b/mplapack/reference/iMparmq.cpp
-index 63917d6e..981f20b2 100644
+index 31c324ea..16ab69b1 100644
 --- a/mplapack/reference/iMparmq.cpp
 +++ b/mplapack/reference/iMparmq.cpp
-@@ -28,9 +28,6 @@
+@@ -35,9 +35,6 @@
  
  #include <mpblas.h>
  #include <mplapack.h>
@@ -12,7 +12,7 @@ index 63917d6e..981f20b2 100644
  
  INTEGER
  iMparmq(INTEGER const ispec, const char *name, const char * /* opts */, INTEGER const /* n */, INTEGER const ilo, INTEGER const ihi, INTEGER const /* lwork */) {
-@@ -40,7 +37,6 @@ iMparmq(INTEGER const ispec, const char *name, const char * /* opts */, INTEGER
+@@ -47,7 +44,6 @@ iMparmq(INTEGER const ispec, const char *name, const char * /* opts */, INTEGER
      const INTEGER iacc22 = 16;
      INTEGER nh = 0;
      INTEGER ns = 0;
@@ -20,7 +20,7 @@ index 63917d6e..981f20b2 100644
      const REAL two = 2.0;
      if ((ispec == ishfts) || (ispec == inwin) || (ispec == iacc22)) {
          //
-@@ -74,7 +70,7 @@ iMparmq(INTEGER const ispec, const char *name, const char * /* opts */, INTEGER
+@@ -81,7 +77,7 @@ iMparmq(INTEGER const ispec, const char *name, const char * /* opts */, INTEGER
      const INTEGER inibl = 14;
      const INTEGER nibble = 14;
      const INTEGER knwswp = 500;
@@ -29,14 +29,14 @@ index 63917d6e..981f20b2 100644
      INTEGER ic = 0;
      INTEGER iz = 0;
      INTEGER i = 0;
-@@ -124,19 +120,47 @@ iMparmq(INTEGER const ispec, const char *name, const char * /* opts */, INTEGER
+@@ -131,19 +127,47 @@ iMparmq(INTEGER const ispec, const char *name, const char * /* opts */, INTEGER
          // Convert NAME to upper case if the first character is lower case.
          //
          return_value = 0;
 -        strncpy(subnam, name, subnamlen - 1);
 -        ic = *subnam;
 -        iz = 'Z';
-+        subnam = name;
++        subnam = *name;
 +        ic = fem::ichar(subnam[0]);
 +        iz = fem::ichar("Z");
          if (iz == 90 || iz == 122) {
