@@ -45,7 +45,6 @@ void Rlaln2(bool const ltrans, INTEGER const na, INTEGER const nw, REAL const sm
     static bool zswap[] = {false, false, true, true};
     static bool rswap[] = {false, true, false, true};
     static INTEGER ipivot[] = {1, 2, 3, 4, 2, 1, 4, 3, 3, 4, 1, 2, 4, 3, 2, 1};
-    INTEGER ipivot[4 * 4];
     INTEGER ldcr = 2;
     INTEGER ldipivot = 4;
     INTEGER ldci = 2;
@@ -254,7 +253,7 @@ void Rlaln2(bool const ltrans, INTEGER const na, INTEGER const nw, REAL const sm
             //
             xr2 = (br2 * scale) / ur22;
             xr1 = (scale * br1) * ur11r - xr2 * (ur11r * ur12);
-            if (Cswap[icmax - 1]) {
+            if (zswap[icmax - 1]) {
                 x[0] = xr2;
                 x[(2 - 1)] = xr1;
             } else {
@@ -391,7 +390,7 @@ void Rlaln2(bool const ltrans, INTEGER const na, INTEGER const nw, REAL const sm
             Rladiv(br2, bi2, ur22, ui22, xr2, xi2);
             xr1 = ur11r * br1 - ui11r * bi1 - ur12s * xr2 + ui12s * xi2;
             xi1 = ui11r * br1 + ur11r * bi1 - ui12s * xr2 - ur12s * xi2;
-            if (Cswap[icmax - 1]) {
+            if (zswap[icmax - 1]) {
                 x[0] = xr2;
                 x[(2 - 1)] = xr1;
                 x[(2 - 1) * ldx] = xi2;
