@@ -31,3 +31,4 @@ patch -p3 -R < ~/mplapack/fable/3.9.1/lapack/patch-iMieeeck.cpp
 patch -p3 -R < ~/mplapack/fable/3.9.1/lapack/patch-Rladiv.cpp
 patch -p3 -R < ~/mplapack/fable/3.9.1/lapack/patch-iMlaenv.cpp
 patch -p3 -R < ~/mplapack/fable/3.9.1/lapack/patch-iMparmq.cpp
+patch -p3 -R < ~/mplapack/fable/3.9.1/lapack/patch-Cgttrs.cpp
