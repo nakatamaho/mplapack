@@ -395,7 +395,7 @@ void Rbdsvdx(const char *uplo, const char *jobz, const char *range, INTEGER cons
                         // Exit with the error code from Rstevx.
                         return;
                     }
-                    emin = abs(Mmaxval(s, isbeg, isbeg + nsl - 1));
+                    emin = abs(Mmaxval(s, isbeg, isbeg + nsl - 1, 1));
                     //
                     if (nsl > 0 && wantz) {
                         //
