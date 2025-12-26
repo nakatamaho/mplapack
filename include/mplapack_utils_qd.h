@@ -319,10 +319,13 @@ inline const char *CHAR3(const char *c1, const char *c2, const char *c3) {
 #ifndef MPLAPACK_ICEIL_QD_REAL_DEFINED
 #define MPLAPACK_ICEIL_QD_REAL_DEFINED
 inline mplapackint iceil(const qd_real &x) {
-    mplapackint t = static_cast<mplapackint>(x); // trunc toward zero (via conversion)
-  if (x > qd_real(t)) {
+    // Truncate toward zero using the leading component.
+    mplapackint t = static_cast<mplapackint>(x[0]);
+
+    // Avoid ambiguous overload between qd_real(int) and qd_real(double).
+    if (x > qd_real(static_cast<double>(t))) {
         ++t;
-  }
+    }
     return t;
 }
 #endif // MPLAPACK_ICEIL_QD_REAL_DEFINED

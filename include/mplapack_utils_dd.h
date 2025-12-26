@@ -320,10 +320,13 @@ inline const char *CHAR3(const char *c1, const char *c2, const char *c3) {
 #ifndef MPLAPACK_ICEIL_DD_REAL_DEFINED
 #define MPLAPACK_ICEIL_DD_REAL_DEFINED
 inline mplapackint iceil(const dd_real &x) {
-    mplapackint t = static_cast<mplapackint>(x); // trunc toward zero (via conversion)
-  if (x > dd_real(t)) {
+    // Truncate toward zero using the leading component.
+    mplapackint t = static_cast<mplapackint>(x.x[0]);
+
+    // Avoid ambiguous overload between dd_real(int) and dd_real(double).
+    if (x > dd_real(static_cast<double>(t))) {
         ++t;
-  }
+    }
     return t;
 }
 #endif // MPLAPACK_ICEIL_DD_REAL_DEFINED
