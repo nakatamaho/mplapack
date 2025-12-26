@@ -43,7 +43,7 @@ bool Mlsamen_mpfr(mplapackint n, const char *a, const char *b);
 bool Risnan(mpreal const din);
 bool Rlaisnan(mpreal const din1, mpreal const din2);
 mpcomplex Cladiv(mpcomplex const x, mpcomplex const y);
-mplapackint Mmaxloc(mpreal *dx, mplapackint const start, mplapackint const end, mplapackint const incx);
+mplapackint Mmaxloc(mpreal const *dx, mplapackint const start, mplapackint const end, mplapackint const incx);
 mplapackint Rlaneg(mplapackint const n, mpreal *d, mpreal *lld, mpreal const sigma, mpreal const, mplapackint const r);
 mplapackint iCmax1(mplapackint const n, mpcomplex *zx, mplapackint const incx);
 mplapackint iMieeeck_mpfr(mplapackint const ispec, mpreal const zero, mpreal const one);

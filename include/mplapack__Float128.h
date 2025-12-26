@@ -97,7 +97,7 @@ _Float128 Rlapy3(_Float128 const x, _Float128 const y, _Float128 const z);
 bool Mlsamen__Float128(mplapackint n, const char *a, const char *b);
 bool Risnan(_Float128 const din);
 bool Rlaisnan(_Float128 const din1, _Float128 const din2);
-mplapackint Mmaxloc(_Float128 *dx, mplapackint const start, mplapackint const end, mplapackint const incx);
+mplapackint Mmaxloc(_Float128 const *dx, mplapackint const start, mplapackint const end, mplapackint const incx);
 mplapackint Rlaneg(mplapackint const n, _Float128 *d, _Float128 *lld, _Float128 const sigma, _Float128 const, mplapackint const r);
 mplapackint iCmax1(mplapackint const n, std::complex<_Float128> *zx, mplapackint const incx);
 mplapackint iMieeeck__Float128(mplapackint const ispec, _Float128 const zero, _Float128 const one);

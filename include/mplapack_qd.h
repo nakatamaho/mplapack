@@ -38,7 +38,7 @@
 bool Mlsamen_qd(mplapackint n, const char *a, const char *b);
 bool Risnan(qd_real const din);
 bool Rlaisnan(qd_real const din1, qd_real const din2);
-mplapackint Mmaxloc(qd_real *dx, mplapackint const start, mplapackint const end, mplapackint const incx);
+mplapackint Mmaxloc(qd_real const *dx, mplapackint const start, mplapackint const end, mplapackint const incx);
 mplapackint Rlaneg(mplapackint const n, qd_real *d, qd_real *lld, qd_real const sigma, qd_real const, mplapackint const r);
 mplapackint iCmax1(mplapackint const n, qd_complex *zx, mplapackint const incx);
 mplapackint iMieeeck_qd(mplapackint const ispec, qd_real const zero, qd_real const one);

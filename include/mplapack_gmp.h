@@ -96,7 +96,7 @@ mpf_class Rlantp(const char *norm, const char *uplo, const char *diag, mplapacki
 mpf_class Rlantr(const char *norm, const char *uplo, const char *diag, mplapackint const m, mplapackint const n, mpf_class *a, mplapackint const lda, mpf_class *work);
 mpf_class Rlapy2(mpf_class const x, mpf_class const y);
 mpf_class Rlapy3(mpf_class const x, mpf_class const y, mpf_class const z);
-mplapackint Mmaxloc(mpf_class *dx, mplapackint const start, mplapackint const end, mplapackint const incx);
+mplapackint Mmaxloc(mpf_class const *dx, mplapackint const start, mplapackint const end, mplapackint const incx);
 mplapackint Rlaneg(mplapackint const n, mpf_class *d, mpf_class *lld, mpf_class const sigma, mpf_class const, mplapackint const r);
 mplapackint iCmax1(mplapackint const n, mpc_class *zx, mplapackint const incx);
 mplapackint iMieeeck_gmp(mplapackint const ispec, mpf_class const zero, mpf_class const one);

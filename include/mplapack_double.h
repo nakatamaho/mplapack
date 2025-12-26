@@ -93,7 +93,7 @@ double Rlantp(const char *norm, const char *uplo, const char *diag, mplapackint 
 double Rlantr(const char *norm, const char *uplo, const char *diag, mplapackint const m, mplapackint const n, double *a, mplapackint const lda, double *work);
 double Rlapy2(double const x, double const y);
 double Rlapy3(double const x, double const y, double const z);
-mplapackint Mmaxloc(double *dx, mplapackint const start, mplapackint const end, mplapackint const incx);
+mplapackint Mmaxloc(double const *dx, mplapackint const start, mplapackint const end, mplapackint const incx);
 mplapackint Rlaneg(mplapackint const n, double *d, double *lld, double const sigma, double const, mplapackint const r);
 mplapackint iCmax1(mplapackint const n, std::complex<double> *zx, mplapackint const incx);
 mplapackint iMieeeck_double(mplapackint const ispec, double const zero, double const one);
