@@ -2546,19 +2546,40 @@ def convert_tokens(conv_info, tokens, commas=False, had_str_concat=None):
                     end_expr = parts[1].strip()
                     rapp(f"[__SLICE__({start_expr}, {end_expr})]")
                 elif is_array_slice and len(parts) == 3:
-                    # 2D Array slice on first dimension: z(start:end, col)
-                    # was converted to "start, end, col"
-                    # Format: [__SLICE2D__(start, end, col, ldname)]
-                    start_expr = parts[0].strip()
-                    end_expr = parts[1].strip()
-                    col_expr = parts[2].strip()
-                    default_ldname = "ld" + prev_tok.value.lower()
-                    ldexpr = get_leading_dimension_expr(
-                        conv_info, fdecl, default=default_ldname)
-                    ldexpr = _maybe_use_ld_variable(
-                        conv_info, ldexpr, default_ldname)
-                    rapp(
-                        f"[__SLICE2D__({start_expr}, {end_expr}, {col_expr}, {ldexpr})]")
+                    # Two possible meanings:
+                    #   (A) 1D slice with stride: a(start:end:step)
+                    #   (B) 2D slice on first dimension: z(start:end, col)
+                    #
+                    # Disambiguate using the declared rank of the array.
+                    # Rank==1 -> treat as (A), otherwise treat as (B).
+                    rank = 0
+                    try:
+                        rank = len(getattr(fdecl, "dim_tokens", None) or [])
+                    except Exception:
+                        rank = 0
+
+                    if rank == 1:
+                        # 1D slice with stride: a(start:end:step)
+                        start_expr = parts[0].strip()
+                        end_expr = parts[1].strip()
+                        step_expr = parts[2].strip()
+                        # Encode the stride explicitly in __SLICE__ so postprocessing
+                        # can emit Mmaxval/Mminval(..., incx) correctly.
+                        rapp(f"[__SLICE__({start_expr}, {end_expr}, {step_expr})]")
+                    else:
+                        # 2D Array slice on first dimension: z(start:end, col)
+                        # was converted to "start, end, col"
+                        # Format: [__SLICE2D__(start, end, col, ldname)]
+                        start_expr = parts[0].strip()
+                        end_expr = parts[1].strip()
+                        col_expr = parts[2].strip()
+                        default_ldname = "ld" + prev_tok.value.lower()
+                        ldexpr = get_leading_dimension_expr(
+                            conv_info, fdecl, default=default_ldname)
+                        ldexpr = _maybe_use_ld_variable(
+                            conv_info, ldexpr, default_ldname)
+                        rapp(
+                            f"[__SLICE2D__({start_expr}, {end_expr}, {col_expr}, {ldexpr})]")
 
                 elif len(parts) == 1:
                     # One-dimensional array: a(i)
@@ -7201,15 +7222,18 @@ def _postprocess_index_zero_simplify(text):
 
 
 def _postprocess_array_slice_intrinsics(lines):
-    """Rewrite array slice intrinsics (Mmaxloc, Mmaxval, Mminval).
+    """Rewrite array slice intrinsics (Mmaxloc, Mmaxval, Mminval), including stride.
 
     Mmaxloc: Mmaxloc(array[__SLICE__(start, end)], dim) -> Mmaxloc(array, start, end, dim)
-    Mmaxval: Mmaxval(array[__SLICE__(start, end)]) -> Mmaxval(array, start, end)
-    Mminval: Mminval(array[__SLICE__(start, end)]) -> Mminval(array, start, end)
+    Mmaxval: Mmaxval(array[__SLICE__(start, end)])          -> Mmaxval(array, start, end, 1)
+    Mminval: Mminval(array[__SLICE__(start, end)])          -> Mminval(array, start, end, 1)
+    Mmaxval: Mmaxval(array[__SLICE__(start, end, step)])    -> Mmaxval(array, start, end, step)
+    Mminval: Mminval(array[__SLICE__(start, end, step)])    -> Mminval(array, start, end, step)
+    Mmaxloc: Mmaxloc(array[__SLICE__(start, end, step)], d) -> Mmaxloc(array, start, end, step, d)
 
     FORTRAN examples:
         itemp = maxloc( work( (n+j):(2*n) ), 1 )  -> Mmaxloc(work, (n+j), (2*n), 1)
-        emin = abs(maxval(s(isbeg:isbeg+nsl-1)))  -> abs(Mmaxval(s, isbeg, isbeg+nsl-1))
+        emin = abs(maxval(s(isbeg:isbeg+nsl-1)))  -> abs(Mmaxval(s, isbeg, isbeg+nsl-1, 1))
     """
     import re
 
@@ -7287,17 +7311,20 @@ def _postprocess_array_slice_intrinsics(lines):
                 pos = m.end()
                 continue
 
-            # Extract slice args (start, end)
+            # Extract slice args: (start, end) or (start, end, step)
             slice_args_str = line[slice_paren_start + 1:slice_paren_end]
             slice_arg_list = split_args(slice_args_str)
 
-            if len(slice_arg_list) != 2:
+            if len(slice_arg_list) not in (2, 3):
                 result.append(line[m.start():m.end()])
                 pos = m.end()
                 continue
 
-            start_arg = slice_arg_list[0]
-            end_arg = slice_arg_list[1]
+            start_arg = slice_arg_list[0].strip()
+            end_arg = slice_arg_list[1].strip()
+            incx_arg = "1"
+            if len(slice_arg_list) == 3:
+                incx_arg = slice_arg_list[2].strip()
 
             # After __SLICE__(...) should be "]" followed by optional ", dim" then ")"
             rest_start = slice_paren_end + 1
@@ -7322,7 +7349,11 @@ def _postprocess_array_slice_intrinsics(lines):
             # Check what comes next: ',' (has extra args) or ')' (no extra args)
             if line[rest_pos] == ')':
                 # No extra arguments (Mmaxval, Mminval style)
-                new_call = f"{out_name}({array_name}, {start_arg}, {end_arg})"
+                if out_name in ("Mmaxval", "Mminval"):
+                    new_call = f"{out_name}({array_name}, {start_arg}, {end_arg}, {incx_arg})"
+                else:
+                    # Fallback (shouldn't happen for the targeted intrinsics)
+                    new_call = f"{out_name}({array_name}, {start_arg}, {end_arg})"
                 result.append(new_call)
                 pos = rest_pos + 1
             elif line[rest_pos] == ',':
@@ -7348,7 +7379,13 @@ def _postprocess_array_slice_intrinsics(lines):
                     continue
 
                 extra_args = line[extra_args_start:close_paren_pos].strip()
-                new_call = f"{out_name}({array_name}, {start_arg}, {end_arg}, {extra_args})"
+                if out_name == "Mmaxloc" and len(slice_arg_list) == 3:
+                    # Strided slice: keep dim as the last argument.
+                    #   maxloc(a(i:j:k), dim) -> Mmaxloc(a, i, j, k, dim)
+                    new_call = f"{out_name}({array_name}, {start_arg}, {end_arg}, {incx_arg}, {extra_args})"
+                else:
+                    # Backward-compatible: keep the existing 4-arg form.
+                    new_call = f"{out_name}({array_name}, {start_arg}, {end_arg}, {extra_args})"
                 result.append(new_call)
                 pos = close_paren_pos + 1
             else:
@@ -7377,7 +7414,9 @@ def _postprocess_slice_assignment(lines):
 
       1D slice with __SLICE__ macro:
         A[__SLICE__(i_start, i_end)] op= expr;
-        -> for (INTEGER i = i_start; i <= i_end; i++) { A[i - 1] op expr; }
+        A[__SLICE__(i_start, i_end, i_step)] op= expr;
+        -> step=1:  for (INTEGER i = i_start; i <= i_end; i++) { A[i - 1] op expr; }
+        -> step!=1: for (INTEGER i = i_start; ...; i += i_step) { A[i - 1] op expr; }
 
       2D slice with __SLICE2D__ macro (first dimension only):
         A[__SLICE2D__(i_start, i_end, j, ldA)] op= expr;
@@ -7648,10 +7687,14 @@ def _postprocess_slice_assignment(lines):
 
             args_str = line[slice_paren_start + 1:slice_paren_end]
             args = split_args(args_str)
-            if len(args) != 2:
+            if len(args) not in (2, 3):
                 return line
 
-            start_expr, end_expr = args
+            start_expr = args[0].strip()
+            end_expr = args[1].strip()
+            step_expr = "1"
+            if len(args) == 3:
+                step_expr = args[2].strip()
 
             rest_start = slice_paren_end + 1
             rest = line[rest_start:]
@@ -7685,12 +7728,31 @@ def _postprocess_slice_assignment(lines):
 
             value_expr = line[value_start:semicolon_pos].strip()
 
+            loop_header = None
+            if len(args) == 2:
+                loop_header = f"for (INTEGER i_ = {start_expr}; i_ <= {end_expr}; i_++)"
+            else:
+                # Strided slice: a(i:j:k) assignment. Handle constant and unknown step signs.
+                m_int = re.fullmatch(r"[+-]?\d+", step_expr)
+                if m_int:
+                    step_val = int(step_expr)
+                    if step_val == 0:
+                        return line
+                    if step_val > 0:
+                        loop_header = f"for (INTEGER i_ = {start_expr}; i_ <= {end_expr}; i_ += {step_expr})"
+                    else:
+                        loop_header = f"for (INTEGER i_ = {start_expr}; i_ >= {end_expr}; i_ += {step_expr})"
+                else:
+                    loop_header = (
+                        f"for (INTEGER i_ = {start_expr}; "
+                        f"(({step_expr}) > 0 ? (i_ <= {end_expr}) : (i_ >= {end_expr})); "
+                        f"i_ += {step_expr})"
+                    )
+
             for_loop = (
-                f"{leading_ws}for (INTEGER i_ = {start_expr}; "
-                f"i_ <= {end_expr}; i_++) {{ "
+                f"{leading_ws}{loop_header} {{ "
                 f"{array_name}[i_ - 1] {assign_op} {value_expr}; }}"
             )
-
             return line[:m.start()] + for_loop + line[semicolon_pos + 1:]
 
         # No slice pattern matched: return line unchanged.
