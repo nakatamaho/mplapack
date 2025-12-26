@@ -36,7 +36,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Ctgsy2(const char *trans, INTEGER const ijob, INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, COMPLEX *c, INTEGER const ldc, COMPLEX *d, INTEGER const ldd, COMPLEX *e, INTEGER const lde, COMPLEX *f, INTEGER const ldf, REAL &scale, REAL const rdsum, REAL const rdscal, INTEGER &info) {
+void Ctgsy2(const char *trans, INTEGER const ijob, INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, COMPLEX *c, INTEGER const ldc, COMPLEX *d, INTEGER const ldd, COMPLEX *e, INTEGER const lde, COMPLEX *f, INTEGER const ldf, REAL &scale, REAL &rdsum, REAL &rdscal, INTEGER &info) {
     //
     // Decode and test input parameters
     //

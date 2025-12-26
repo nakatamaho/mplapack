@@ -6,16 +6,86 @@ import math
 import tempfile
 import typing
 
-try:
-    from mplapack_signatures import FUNCTION_SIGNATURES, FUNCTION_RETURNS
-except ImportError:
-    FUNCTION_SIGNATURES = {}
-    FUNCTION_RETURNS = {}
+def _load_mplapack_signatures():
+    """Load mplapack_signatures.py in a robust way.
+
+    The generated signatures module may live in different locations depending
+    on the pipeline (e.g. project root vs fable/ directory). Importing it as a
+    top-level module is fragile because sys.path may not include the directory
+    that contains the generated file.
+
+    Supported discovery order:
+      1) Standard import (sys.path)
+      2) $MPLAPACK_SIGNATURES_PY (explicit file path)
+      3) ./mplapack_signatures.py (cwd)
+      4) <this_dir>/mplapack_signatures.py
+      5) <parent_dir>/mplapack_signatures.py
+
+    Returns:
+      (FUNCTION_SIGNATURES, FUNCTION_RETURNS) as dicts keyed by lowercase name.
+    """
+    # 1) Standard import.
+    try:
+        from mplapack_signatures import FUNCTION_SIGNATURES as _FS, FUNCTION_RETURNS as _FR
+        fs = dict(_FS) if _FS else {}
+        fr = dict(_FR) if _FR else {}
+        return {k.lower(): v for k, v in fs.items()}, {k.lower(): v for k, v in fr.items()}
+    except Exception:
+        pass
+
+    import importlib.util
+    import sys
+
+    candidates = []
+    env_path = os.environ.get("MPLAPACK_SIGNATURES_PY")
+    if env_path:
+        candidates.append(env_path)
+    candidates.append(os.path.join(os.getcwd(), "mplapack_signatures.py"))
+    this_dir = os.path.dirname(__file__)
+    candidates.append(os.path.join(this_dir, "mplapack_signatures.py"))
+    candidates.append(os.path.join(os.path.dirname(this_dir), "mplapack_signatures.py"))
+
+    for p in candidates:
+        if not p:
+            continue
+        p = os.path.abspath(p)
+        if not os.path.isfile(p):
+            continue
+        try:
+            spec = importlib.util.spec_from_file_location("mplapack_signatures", p)
+            if spec is None or spec.loader is None:
+                continue
+            mod = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(mod)
+            # Make subsequent imports consistent within this Python process.
+            sys.modules["mplapack_signatures"] = mod
+
+            fs = getattr(mod, "FUNCTION_SIGNATURES", {}) or {}
+            fr = getattr(mod, "FUNCTION_RETURNS", {}) or {}
+            fs = {str(k).lower(): v for (k, v) in dict(fs).items()}
+            fr = {str(k).lower(): v for (k, v) in dict(fr).items()}
+
+            if os.environ.get("FABLE_DEBUG_SIGNATURES"):
+                import sys as _sys
+                print(f"[FABLE] Loaded mplapack_signatures from: {p}", file=_sys.stderr)
+                print(f"[FABLE] FUNCTION_SIGNATURES={len(fs)} FUNCTION_RETURNS={len(fr)}", file=_sys.stderr)
+
+            return fs, fr
+        except Exception:
+            continue
+
+    # Not found: disable signature-based adjustments.
+    if os.environ.get("FABLE_DEBUG_SIGNATURES"):
+        import sys as _sys
+        print("[FABLE] mplapack_signatures not found; signatures disabled.", file=_sys.stderr)
+    return {}, {}
+
+
+FUNCTION_SIGNATURES, FUNCTION_RETURNS = _load_mplapack_signatures()
 
 # Cache inferred signatures for EXTERNAL callable dummy arguments.
-# Key: id(fproc)  Value: dict[name_lower] -> (ret_type, [arg_type0, ...])
+# Key: id(fproc) -> dict[callable_name_lower] = (ret_type, [arg_type0, ...])
 _INFERRED_CALLABLE_SIGNATURES = {}
-
 
 def _split_actuals(arg_string: str):
     """Split a C++ argument list string on commas, ignoring commas inside parentheses."""
@@ -267,6 +337,29 @@ def convert_function_name_to_mplapack(name):
         return mapped
     return _mplapack_default_name(name)
 
+def _lookup_routine_signature(name: str):
+    """Lookup FUNCTION_SIGNATURES with name normalization.
+
+    The signatures file is generated from MPLAPACK headers, so keys are
+    typically the C++-side routine names in lowercase (e.g. 'rgemm', 'ctgsy2').
+    We also accept Fortran-ish names and apply convert_function_name_to_mplapack().
+    """
+    if not FUNCTION_SIGNATURES:
+        return None
+    if name is None:
+        return None
+
+    base = str(name).split("::")[-1].strip()
+    key1 = base.lower()
+    sig = FUNCTION_SIGNATURES.get(key1)
+    if sig is not None:
+        return sig
+
+    # Try MPLAPACK-mapped name (e.g. dgemm -> Rgemm, xerbla -> Mxerbla).
+    mapped = convert_function_name_to_mplapack(base)
+    if mapped:
+        return FUNCTION_SIGNATURES.get(str(mapped).lower())
+    return None
 
 fmt_comma_placeholder = chr(255)
 
@@ -1366,14 +1459,19 @@ def _get_return_kind_from_signatures(base_cpp_name: str) -> typing.Optional[str]
         return None
 
     name = base_cpp_name.lower()
-    # Map C++ name back to Fortran name if possible.
-    f_name = _MPLAPACK_CPP_TO_FORTRAN.get(name, name)
-
-    ret = FUNCTION_RETURNS.get(f_name)
+    # Prefer direct lookup by the C++-side key (what gen_mplapack_signatures.py emits).
+    ret = FUNCTION_RETURNS.get(name)
     if ret is None:
-        ret = FUNCTION_RETURNS.get(f_name.lower())
-        if ret is None:
-            return None
+        # Fallback: try mapped MPLAPACK name.
+        mapped = convert_function_name_to_mplapack(name)
+        if mapped:
+            ret = FUNCTION_RETURNS.get(str(mapped).lower())
+    if ret is None:
+        # Last resort: try reverse-mapped Fortran name.
+        f_name = _MPLAPACK_CPP_TO_FORTRAN.get(name, name)
+        ret = FUNCTION_RETURNS.get(f_name) or FUNCTION_RETURNS.get(str(f_name).lower())
+    if ret is None:
+        return None
 
     ret = ret.lower()
     if "complex" in ret:
@@ -2790,9 +2888,8 @@ def convert_tokens(conv_info, tokens, commas=False, had_str_concat=None):
                 # arguments according to the pointer/value information.
                 if (prev_tok is not None
                         and prev_tok.is_identifier()):
-                    mpl_name = convert_function_name_to_mplapack(
-                        prev_tok.value)
-                    sig = FUNCTION_SIGNATURES.get(mpl_name.lower())
+                    sig = _lookup_routine_signature(prev_tok.value)
+                    
                     if sig is not None:
                         inner = _adjust_actuals_using_signature(
                             inner, sig, conv_info)
@@ -5067,8 +5164,8 @@ def convert_executable(
 
                     # Use the callee name (without namespace) as the lookup key.
                     # For example, "Rlasr" -> "rlasr".
-                    callee_key = called.split("::")[-1].lower()
-                    sig = FUNCTION_SIGNATURES.get(callee_key)
+                    callee_key = called.split("::")[-1]
+                    sig = _lookup_routine_signature(callee_key)
                     if sig is not None:
                         a = _adjust_actuals_using_signature(a, sig, conv_info)
 
@@ -5422,10 +5519,7 @@ def _propagate_out_inout_through_calls(topological_fprocs, *, max_rounds: int = 
                     mutable_mask = _callee_mutable_mask_from_fproc(callee_fproc)
                 else:
                     # External routine: consult mplapack_signatures if available.
-                    mpl_name = convert_function_name_to_mplapack(str(callee_name))
-                    sig = FUNCTION_SIGNATURES.get(mpl_name.lower())
-                    if sig is None:
-                        sig = FUNCTION_SIGNATURES.get(str(callee_name).lower())
+                    sig = _lookup_routine_signature(str(callee_name))
                     if sig is None:
                         continue
                     mutable_mask = [_sig_kind_requires_mutable_actual(k) for k in sig]
