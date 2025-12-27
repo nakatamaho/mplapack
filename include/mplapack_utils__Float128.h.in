@@ -609,6 +609,8 @@ template <> template <> inline std::complex<_Float128> &std::complex<_Float128>:
 }
 #endif
 
+static inline _Float128 cabs1(const std::complex<_Float128> &z) { return abs(z.real()) + abs(z.imag()); }
+
 #include <type_traits>
 
 // NOTE:

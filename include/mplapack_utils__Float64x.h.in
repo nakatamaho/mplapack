@@ -287,6 +287,8 @@ inline std::complex<_Float64x> log(const std::complex<_Float64x> &a) {
 }
 #endif //___MPLAPACK__FLOAT64X_BROKEN___
 
+static inline _Float64x cabs1(const std::complex<_Float64x> &z) { return abs(z.real()) + abs(z.imag()); }
+
 #include <type_traits>
 
 // Square for INTEGER (workspace sizes, indices).
@@ -374,7 +376,7 @@ inline const char *CHAR3(const char *c1, const char *c2, const char *c3) {
 
 #endif // MPLAPACK_CHAR_UTILS_H
 
-/ Integer ceil for _Float64x.
+// Integer ceil for _Float64x.
 // Returns ceil(x) as mplapackint.
 #ifndef MPLAPACK_ICEIL_FLOAT64X_DEFINED
 #define MPLAPACK_ICEIL_FLOAT64X_DEFINED
