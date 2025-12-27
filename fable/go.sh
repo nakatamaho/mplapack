@@ -177,7 +177,6 @@ run_one_pass() {
 
   # Remove leftovers from a previous aborted run to avoid mixing outputs.
   /bin/rm -f "${BLAS_SRC}"/*.cpp "${LAPACK_SRC}"/*.cpp
-  /bin/rm -f "${MPBLAS_REF}"/*.cpp "${MPLAPACK_REF}"/*.cpp
 
   ( cd "${BLAS_SRC}"  && bash "${FABLE}/convert_blas_all.sh" )
   move_cpp_or_die "${BLAS_SRC}" "${MPBLAS_REF}"

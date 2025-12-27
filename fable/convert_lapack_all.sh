@@ -18,7 +18,7 @@ EXCLUDE_PREFIXES=( s c )
 EXCLUDE_BASENAMES_MANUAL=( )
 
 # Basenames that are not needed on the C++ side
-EXCLUDE_BASENAMES_UNUSED=( la_constants dsgesv zcgesv dsposv zcposv dla_gerfsx_extended dla_gbrfsx_extended dla_porfsx_extended dla_syrfsx_extended zla_gerfsx_extended zla_gbrfsx_extended zla_porfsx_extended zla_syrfsx_extended zla_herfsx_extended lsamen ilaslr ilaslc ilaclc ilaclr iladiag icmax1 xerbla xerbla_array zgbrfsx zgerfsx zherfsx zporfsx zsyrfsx dgerfsx dgbrfsx dporfsx dsyrfsx clag2c clat2c dlag2s dlat2s)
+EXCLUDE_BASENAMES_UNUSED=( la_constants dsgesv zcgesv dsposv zcposv dla_gerfsx_extended dla_gbrfsx_extended dla_porfsx_extended dla_syrfsx_extended zla_gerfsx_extended zla_gbrfsx_extended zla_porfsx_extended zla_syrfsx_extended zla_herfsx_extended lsamen ilaslr ilaslc ilaclc ilaclr iladiag icmax1 xerbla xerbla_array zgbrfsx zgbsvxx zgerfsx zherfsx zporfsx zsyrfsx dgerfsx dgbrfsx dporfsx dsyrfsx clag2c clat2c dlag2s dlat2s zgesvxx zhesvxx zposvxx zsysvxx dgbsvxx dgesvxx dposvxx dsysvxx)
 # lsamen is not used?
 # ilaslr is only used in slarf.
 # iladiag is not used?
@@ -26,6 +26,7 @@ EXCLUDE_BASENAMES_UNUSED=( la_constants dsgesv zcgesv dsposv zcposv dla_gerfsx_e
 # ilaclc is only used in clarf.
 # ilaclr is only used in clarf.
 # The following ones use xBLAS so we do not support them.
+# zgbsvxx
 # zgbrfsx
 # zgerfsx
 # zherfsx
@@ -35,6 +36,14 @@ EXCLUDE_BASENAMES_UNUSED=( la_constants dsgesv zcgesv dsposv zcposv dla_gerfsx_e
 # dgbrfsx
 # dporfsx
 # dsyrfsx
+# zgesvxx
+# zhesvxx
+# zposvxx
+# zsysvxx
+# dgbsvxx
+# dgesvxx
+# dposvxx
+# dsysvxx
 # The following ones converts to a lower precision, so we dont need them.
 # clag2c
 # clat2c
