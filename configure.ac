@@ -9,8 +9,8 @@ m4_define([MPLAPACK_VERSION], [MPLAPACK_VER_MAJOR.MPLAPACK_VER_MINOR.MPLAPACK_VE
 AC_INIT(mplapack, [MPLAPACK_VERSION])
 
 AC_SUBST([PACKAGE_DESCRIPTION], "A multiple precision version of BLAS and LAPACK")
-AC_CONFIG_HEADER(include/config.h) 
 
+AC_CONFIG_HEADERS([include/config.h])
 LAPACK_VER_MAJOR="3"
 LAPACK_VER_MINOR="9"
 LAPACK_VER_PATCH="1"
@@ -29,8 +29,6 @@ AC_CONFIG_FILES([ Makefile mplapack.pc ])
 AC_CONFIG_FILES([packaging/PKGBUILD packaging/mplapack.spec])
 
 AC_CANONICAL_TARGET
-
-LT_INIT([win32-dll])
 
 : ${CFLAGS=""}
 : ${CXXFLAGS=""}
@@ -72,7 +70,7 @@ if test x"$is_intelcxx" = x"1"; then
     AC_MSG_RESULT([Intel One API (icpc) detected])
 fi
 
-AC_PROG_LIBTOOL
+LT_INIT([win32-dll])
 AM_INIT_AUTOMAKE([subdir-objects])
 AC_CONFIG_MACRO_DIR([m4])
 
