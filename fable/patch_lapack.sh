@@ -51,3 +51,5 @@ patch -p3    < ~/mplapack/fable/3.9.1/lapack/patch-Rsygvd.cpp
 patch -p3    < ~/mplapack/fable/3.9.1/lapack/patch-Rspgvd.cpp
 patch -p3    < ~/mplapack/fable/3.9.1/lapack/patch-Chegvd.cpp
 patch -p3    < ~/mplapack/fable/3.9.1/lapack/patch-Chpgvd.cpp
+patch -p3    < ~/mplapack/fable/3.9.1/lapack/patch-Ctrsyl.cpp
+
