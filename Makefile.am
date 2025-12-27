@@ -10,7 +10,6 @@ ACLOCAL_AMFLAGS= -I m4
 
 mplapack_includedir = $(includedir)/mplapack
 mplapack_include_HEADERS = \
-    include/mplapack_config.h \
     include/blas.h \
     include/lapack.h \
     include/blaswrapper.h
@@ -67,7 +66,7 @@ mplapack_include_HEADERS += \
     include/mplapack__Float128.h
 endif
 
-nodist_mplapack_include_HEADERS = mplapack_config.h
+nodist_mplapack_include_HEADERS = include/mplapack_config.h
 if ENABLE__FLOAT64X
 nodist_mplapack_include_HEADERS += include/mplapack_utils__Float64x.h
 endif
@@ -203,4 +202,3 @@ mplapack/test/lin/Rtest.in \
 mplapack/test/lin/Rtest_rfp.in \
 mplapack/test/lin/test_lin_all.sh \
 mplapack/test/lin/test_lin_all_mingw.sh
-

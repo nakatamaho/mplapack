@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012-2021
+ * Copyright (c) 2012-2025
  *	Nakata, Maho
  * 	All rights reserved.
  *
@@ -29,6 +29,7 @@
 #ifndef _MPBLAS__FLOAT128_H_
 #define _MPBLAS__FLOAT128_H_
 
+#include <complex>
 #include "mplapack_config.h"
 #include "mplapack_utils__Float128.h"
 
