@@ -124,7 +124,6 @@ Cgbequb.cpp \
 Cgbrfs.cpp \
 Cgbsv.cpp \
 Cgbsvx.cpp \
-Cgbsvxx.cpp \
 Cgbtf2.cpp \
 Cgbtrf.cpp \
 Cgbtrs.cpp \
@@ -177,7 +176,6 @@ Cgesvdq.cpp \
 Cgesvdx.cpp \
 Cgesvj.cpp \
 Cgesvx.cpp \
-Cgesvxx.cpp \
 Cgetc2.cpp \
 Cgetf2.cpp \
 Cgetrf.cpp \
@@ -248,7 +246,6 @@ Chesv_aa_2stage.cpp \
 Chesv_rk.cpp \
 Chesv_rook.cpp \
 Chesvx.cpp \
-Chesvxx.cpp \
 Cheswapr.cpp \
 Chetd2.cpp \
 Chetf2.cpp \
@@ -438,7 +435,6 @@ Cpoequb.cpp \
 Cporfs.cpp \
 Cposv.cpp \
 Cposvx.cpp \
-Cposvxx.cpp \
 Cpotf2.cpp \
 Cpotrf.cpp \
 Cpotrf2.cpp \
@@ -493,7 +489,6 @@ Csysv_aa_2stage.cpp \
 Csysv_rk.cpp \
 Csysv_rook.cpp \
 Csysvx.cpp \
-Csysvxx.cpp \
 Csyswapr.cpp \
 Csytf2.cpp \
 Csytf2_rk.cpp \
@@ -613,7 +608,6 @@ Rgbequb.cpp \
 Rgbrfs.cpp \
 Rgbsv.cpp \
 Rgbsvx.cpp \
-Rgbsvxx.cpp \
 Rgbtf2.cpp \
 Rgbtrf.cpp \
 Rgbtrs.cpp \
@@ -666,7 +660,6 @@ Rgesvdq.cpp \
 Rgesvdx.cpp \
 Rgesvj.cpp \
 Rgesvx.cpp \
-Rgesvxx.cpp \
 Rgetc2.cpp \
 Rgetf2.cpp \
 Rgetrf.cpp \
@@ -922,7 +915,6 @@ Rpoequb.cpp \
 Rporfs.cpp \
 Rposv.cpp \
 Rposvx.cpp \
-Rposvxx.cpp \
 Rpotf2.cpp \
 Rpotrf.cpp \
 Rpotrf2.cpp \
@@ -1014,7 +1006,6 @@ Rsysv_aa_2stage.cpp \
 Rsysv_rk.cpp \
 Rsysv_rook.cpp \
 Rsysvx.cpp \
-Rsysvxx.cpp \
 Rsyswapr.cpp \
 Rsytd2.cpp \
 Rsytf2.cpp \
