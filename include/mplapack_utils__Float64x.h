@@ -30,7 +30,12 @@
 #ifndef _MPLAPACK_UTILS__FLOAT64X_H_
 #define _MPLAPACK_UTILS__FLOAT64X_H_
 
-%%MPLAPACK__FLOAT64X___FLOAT80%%
+#include "mplapack_config.h"
+
+#if defined ___MPLAPACK_USE___FLOAT80___
+// _Float64x is not available as a native type on this compiler; use __float80.
+typedef __float80 _Float64x;
+#endif
 
 #include <math.h>
 

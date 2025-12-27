@@ -10,7 +10,7 @@ AC_INIT(mplapack, [MPLAPACK_VERSION])
 
 AC_SUBST([PACKAGE_DESCRIPTION], "A multiple precision version of BLAS and LAPACK")
 
-AC_CONFIG_HEADERS([include/config.h])
+AC_CONFIG_HEADERS([include/mplapack_config.h])
 LAPACK_VER_MAJOR="3"
 LAPACK_VER_MINOR="9"
 LAPACK_VER_PATCH="1"
@@ -337,16 +337,16 @@ if test x$enable__Float128 = x"yes"; then
 
     if test "$have___float128" = "yes" && test x"$want_libquadmath" = x"yes" ; then
         AC_MSG_RESULT([_Float128 is supported via __float128 and libquadmath])
-        sed 's/%%MPLAPACK_BINARY128%%/#define ___MPLAPACK_WANT_LIBQUADMATH___/g' include/mplapack_utils__Float128.h.in > include/mplapack_utils__Float128.h
+        AC_DEFINE([___MPLAPACK_WANT_LIBQUADMATH___], [1], [Define if _Float128 uses __float128 + libquadmath.])
     elif test "$have__Float128" = "yes" && test x"$want_libquadmath" = x"no" && test x"$_Float128islongdouble" = x"yes"; then
         AC_MSG_RESULT([_Float128 is supported via native libc and _Float128 and long double are the same])
-        sed 's/%%MPLAPACK_BINARY128%%/#define ___MPLAPACK__FLOAT128_IS_LONGDOUBLE___/g' include/mplapack_utils__Float128.h.in > include/mplapack_utils__Float128.h
+        AC_DEFINE([___MPLAPACK__FLOAT128_IS_LONGDOUBLE___], [1], [Define if _Float128 is available and equals long double.])
     elif test "$have__Float128" = "yes" && test x"$want_libquadmath" = x"no" && test x"$_Float128islongdouble" != x"yes"; then
         AC_MSG_RESULT([_Float128 is supported via native libc and only binary128 in this system])
-        sed 's/%%MPLAPACK_BINARY128%%/#define ___MPLAPACK__FLOAT128_ONLY___/g' include/mplapack_utils__Float128.h.in > include/mplapack_utils__Float128.h
+        AC_DEFINE([___MPLAPACK__FLOAT128_ONLY___], [1], [Define if _Float128 is available (and not long double).])
     elif test "$have__Float128" = "no" && test x"$longdoubleisbinary128" = x"yes"; then
         AC_MSG_RESULT([long double is binary128, but neither _Float128 nor __float128 are supported])
-        sed 's/%%MPLAPACK_BINARY128%%/#define ___MPLAPACK_LONGDOUBLE_IS_BINARY128___/g' include/mplapack_utils__Float128.h.in > include/mplapack_utils__Float128.h
+        AC_DEFINE([___MPLAPACK_LONGDOUBLE_IS_BINARY128___], [1], [Define if long double is binary128 and _Float128 is unavailable.])
     else 
         AC_MSG_ERROR([binary128 is not supported on this system])
     fi
@@ -457,16 +457,17 @@ if test x$enable__Float64x = x"yes"; then
          AC_MSG_RESULT([_Float64x is not long double])
     fi
     if test "$want___float80" = "yes" && test "$float64xislongdouble" = "yes" ; then
-        sed 's/%%MPLAPACK__FLOAT64X___FLOAT80%%/typedef __float80 _Float64x;\n#define ___MPLAPACK__FLOAT64X_IS_LONGDOUBLE___/g' include/mplapack_utils__Float64x.h.in > include/mplapack_utils__Float64x.h
+        AC_DEFINE([___MPLAPACK_USE___FLOAT80___], [1], [Define if _Float64x is emulated using __float80.])
+        AC_DEFINE([___MPLAPACK__FLOAT64X_IS_LONGDOUBLE___], [1], [Define if _Float64x (or its emulation) is compatible with long double.])
     fi
     if test "$want___float80" = "yes" && test "$float64xislongdouble" = "no" ; then
-        sed 's/%%MPLAPACK__FLOAT64X___FLOAT80%%/typedef __float80 _Float64x;/g' include/mplapack_utils__Float64x.h.in > include/mplapack_utils__Float64x.h
+        AC_DEFINE([___MPLAPACK_USE___FLOAT80___], [1], [Define if _Float64x is emulated using __float80.])
     fi
     if test "$want___float80" = "no" && test "$float64xislongdouble" = "yes" ; then
-        sed 's/%%MPLAPACK__FLOAT64X___FLOAT80%%/#define ___MPLAPACK__FLOAT64X_IS_LONGDOUBLE___/g' include/mplapack_utils__Float64x.h.in > include/mplapack_utils__Float64x.h
+        AC_DEFINE([___MPLAPACK__FLOAT64X_IS_LONGDOUBLE___], [1], [Define if _Float64x is compatible with long double.])
     fi
     if test "$want___float80" = "no" && test "$float64xislongdouble" = "no" ; then
-        sed 's/%%MPLAPACK__FLOAT64X___FLOAT80%%/#define ___MPLAPACK_HAVE_NATIVE__FLOAT64X___/g' include/mplapack_utils__Float64x.h.in > include/mplapack_utils__Float64x.h
+        AC_DEFINE([___MPLAPACK_HAVE_NATIVE__FLOAT64X___], [1], [Define if native _Float64x is available.])
     fi
 fi
 CXXFLAGS="$SAVE_CXXFLAGS"

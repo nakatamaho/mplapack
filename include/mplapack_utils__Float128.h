@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012-2022
+ * Copyright (c) 2012-2025
  *	Nakata, Maho
  * 	All rights reserved.
  *
@@ -29,7 +29,7 @@
 #ifndef _MUTILS__FLOAT128_H_
 #define _MUTILS__FLOAT128_H_
 
-%%MPLAPACK_BINARY128%%
+#include "mplapack_config.h"
 
 #if (defined ___MPLAPACK__FLOAT128_ONLY___ || defined ___MPLAPACK__FLOAT128_IS_LONGDOUBLE___)
 

@@ -1,74 +1,99 @@
-/*
- * Copyright (c) 2008-2021
- *	Nakata, Maho
- * 	All rights reserved.
- *
- * $Id: mplapack_config.h,v 1.15 2010/08/07 03:15:46 nakatamaho Exp $
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
- * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
- * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
- * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
- * SUCH DAMAGE.
- *
- */
+/* include/mplapack_config.h.  Generated from mplapack_config.h.in by configure.  */
+/* include/mplapack_config.h.in.  Generated from configure.ac by autoheader.  */
 
-/* work in progress */
-/* put some definitons on mplapack */
+/* Define to dummy `main' function (if any) required to link to the Fortran
+   libraries. */
+/* #undef FC_DUMMY_MAIN */
 
-/* should depend on C compiler and environment
-   our intention is that use 64bit int when USE64BITINT is set.
-   This should be the default on 64bit environment.
-*/
+/* Define if F77 and FC dummy `main' functions are identical. */
+/* #undef FC_DUMMY_MAIN_EQ_F77 */
 
-#ifndef _MPLAPACK_CONFIG_H_
-#define _MPLAPACK_CONFIG_H_
+/* Define to a macro mangling the given C identifier (in lower and upper
+   case), which must not contain underscores, for linking with Fortran. */
+#define FC_FUNC(name,NAME) name ## _
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
+/* As FC_FUNC, but for C identifiers containing underscores. */
+#define FC_FUNC_(name,NAME) name ## _
 
-#include <complex>
-#include <inttypes.h>
-#include <stdlib.h>
+/* Define to 1 if you have the <dlfcn.h> header file. */
+#define HAVE_DLFCN_H 1
 
-#undef F77_FUNC
-#undef F77_FUNC_
-#undef F77_FUNC_EQUIV
+/* Define to 1 if you have the <inttypes.h> header file. */
+#define HAVE_INTTYPES_H 1
 
-#define USE64BITINT
+/* Define to 1 if you have the <stdint.h> header file. */
+#define HAVE_STDINT_H 1
 
-#ifdef USE64BITINT
-#if defined _WIN32 // workaround for Windows. long int is 32bit and int64_t is long long. Supporting GMP version is not straightfoward.
-typedef long int mplapackint;
-#elif defined __APPLE__ // on apple int64_t doesn't work, but it long works and it is 8 bytes.
-typedef long mplapackint;
-#else
-typedef int64_t mplapackint;
-#endif
-#endif
+/* Define to 1 if you have the <stdio.h> header file. */
+#define HAVE_STDIO_H 1
 
-typedef mplapackint mplapacklogical;
+/* Define to 1 if you have the <stdlib.h> header file. */
+#define HAVE_STDLIB_H 1
 
-#ifdef __cplusplus
-typedef mplapacklogical (*LFP)(...);
-#else
-typedef mplapacklogical(*LFP);
-#endif
+/* Define to 1 if you have the <strings.h> header file. */
+#define HAVE_STRINGS_H 1
 
-#endif
+/* Define to 1 if you have the <string.h> header file. */
+#define HAVE_STRING_H 1
+
+/* Define to 1 if you have the <sys/stat.h> header file. */
+#define HAVE_SYS_STAT_H 1
+
+/* Define to 1 if you have the <sys/types.h> header file. */
+#define HAVE_SYS_TYPES_H 1
+
+/* Define to 1 if you have the <unistd.h> header file. */
+#define HAVE_UNISTD_H 1
+
+/* Define to the sub-directory where libtool stores uninstalled libraries. */
+#define LT_OBJDIR ".libs/"
+
+/* Name of package */
+#define PACKAGE "mplapack"
+
+/* Define to the address where bug reports for this package should be sent. */
+#define PACKAGE_BUGREPORT ""
+
+/* Define to the full name of this package. */
+#define PACKAGE_NAME "mplapack"
+
+/* Define to the full name and version of this package. */
+#define PACKAGE_STRING "mplapack 2.0.1"
+
+/* Define to the one symbol short name of this package. */
+#define PACKAGE_TARNAME "mplapack"
+
+/* Define to the home page for this package. */
+#define PACKAGE_URL ""
+
+/* Define to the version of this package. */
+#define PACKAGE_VERSION "2.0.1"
+
+/* Define to 1 if all of the C90 standard headers exist (not just the ones
+   required in a freestanding environment). This macro is provided for
+   backward compatibility; new code need not use it. */
+#define STDC_HEADERS 1
+
+/* Version number of package */
+#define VERSION "2.0.1"
+
+/* Define if native _Float64x is available. */
+/* #undef ___MPLAPACK_HAVE_NATIVE__FLOAT64X___ */
+
+/* Define if long double is binary128 and _Float128 is unavailable. */
+/* #undef ___MPLAPACK_LONGDOUBLE_IS_BINARY128___ */
+
+/* Define if _Float64x is emulated using __float80. */
+/* #undef ___MPLAPACK_USE___FLOAT80___ */
+
+/* Define if _Float128 uses __float128 + libquadmath. */
+/* #undef ___MPLAPACK_WANT_LIBQUADMATH___ */
+
+/* Define if _Float128 is available and equals long double. */
+/* #undef ___MPLAPACK__FLOAT128_IS_LONGDOUBLE___ */
+
+/* Define if _Float128 is available (and not long double). */
+#define ___MPLAPACK__FLOAT128_ONLY___ 1
+
+/* Define if _Float64x is compatible with long double. */
+#define ___MPLAPACK__FLOAT64X_IS_LONGDOUBLE___ 1
