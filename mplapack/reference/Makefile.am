@@ -113,22 +113,6 @@ libmplapack__Float128_la_LDFLAGS += -no-undefined -L$(top_builddir)/mpblas/refer
 endif
 endif
 
-#The following ones use xBLAS so we do not support them.
-#Cgbrfsx.cpp
-#Cgerfsx.cpp
-#Cherfsx.cpp
-#Cporfsx.cpp
-#Csyrfsx.cpp
-#Rgerfsx.cpp
-#Rgbrfsx.cpp
-#Rporfsx.cpp
-#Rsyrfsx.cpp
-#The following ones converts to a lower precision, so we dont need them.
-#Clag2c.cpp
-#Clat2c.cpp
-#Rlag2s.cpp
-#Rlat2s.cpp
-
 MPLAPACK_SOURCES = \
 CRrscl.cpp \
 Cbbcsd.cpp \
