@@ -11,6 +11,44 @@ AC_INIT(mplapack, [MPLAPACK_VERSION])
 AC_SUBST([PACKAGE_DESCRIPTION], "A multiple precision version of BLAS and LAPACK")
 
 AC_CONFIG_HEADERS([include/mplapack_config.h])
+dnl Append MPLAPACK public types into the generated config header.
+AH_BOTTOM([[
+/* ===== MPLAPACK public types (added by configure.ac; do not edit generated header) ===== */
+#ifndef _MPLAPACK_PUBLIC_TYPES_DEFINED_
+#define _MPLAPACK_PUBLIC_TYPES_DEFINED_
+
+#ifdef __cplusplus
+#include <complex>
+#endif
+#include <inttypes.h>
+#include <stdlib.h>
+
+/* Prefer 64-bit integer by default (same behavior as the historical mplapack_config.h). */
+#ifndef USE64BITINT
+#define USE64BITINT 1
+#endif
+
+#ifdef USE64BITINT
+#if defined _WIN32
+typedef long int mplapackint;
+#elif defined __APPLE__
+typedef long mplapackint;
+#else
+typedef int64_t mplapackint;
+#endif
+#endif
+
+typedef mplapackint mplapacklogical;
+
+#ifdef __cplusplus
+typedef mplapacklogical (*LFP)(...);
+#else
+typedef mplapacklogical (*LFP)();
+#endif
+
+#endif /* _MPLAPACK_PUBLIC_TYPES_DEFINED_ */
+]])
+
 LAPACK_VER_MAJOR="3"
 LAPACK_VER_MINOR="9"
 LAPACK_VER_PATCH="1"

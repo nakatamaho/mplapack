@@ -97,3 +97,40 @@
 
 /* Define if _Float64x is compatible with long double. */
 #define ___MPLAPACK__FLOAT64X_IS_LONGDOUBLE___ 1
+
+[
+/* ===== MPLAPACK public types (added by configure.ac; do not edit generated header) ===== */
+#ifndef _MPLAPACK_PUBLIC_TYPES_DEFINED_
+#define _MPLAPACK_PUBLIC_TYPES_DEFINED_
+
+#ifdef __cplusplus
+#include <complex>
+#endif
+#include <inttypes.h>
+#include <stdlib.h>
+
+/* Prefer 64-bit integer by default (same behavior as the historical mplapack_config.h). */
+#ifndef USE64BITINT
+#define USE64BITINT 1
+#endif
+
+#ifdef USE64BITINT
+#if defined _WIN32
+typedef long int mplapackint;
+#elif defined __APPLE__
+typedef long mplapackint;
+#else
+typedef int64_t mplapackint;
+#endif
+#endif
+
+typedef mplapackint mplapacklogical;
+
+#ifdef __cplusplus
+typedef mplapacklogical (*LFP)(...);
+#else
+typedef mplapacklogical (*LFP)();
+#endif
+
+#endif /* _MPLAPACK_PUBLIC_TYPES_DEFINED_ */
+]
