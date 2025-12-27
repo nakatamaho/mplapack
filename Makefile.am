@@ -67,7 +67,7 @@ mplapack_include_HEADERS += \
     include/mplapack__Float128.h
 endif
 
-nodist_mplapack_include_HEADERS =
+nodist_mplapack_include_HEADERS = mplapack_config.h
 if ENABLE__FLOAT64X
 nodist_mplapack_include_HEADERS += include/mplapack_utils__Float64x.h
 endif
@@ -81,6 +81,7 @@ pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = mplapack.pc
 
 EXTRA_DIST = \
+include/mplapack_config.h.in \
 benchmark/benchall.sh \
 benchmark/mpblas/Raxpy1.plt.in \
 benchmark/mpblas/Raxpy2.plt.in \
@@ -202,3 +203,4 @@ mplapack/test/lin/Rtest.in \
 mplapack/test/lin/Rtest_rfp.in \
 mplapack/test/lin/test_lin_all.sh \
 mplapack/test/lin/test_lin_all_mingw.sh
+
