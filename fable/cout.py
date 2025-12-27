@@ -6,6 +6,7 @@ import math
 import tempfile
 import typing
 
+
 def _load_mplapack_signatures():
     """Load mplapack_signatures.py in a robust way.
 
@@ -43,7 +44,8 @@ def _load_mplapack_signatures():
     candidates.append(os.path.join(os.getcwd(), "mplapack_signatures.py"))
     this_dir = os.path.dirname(__file__)
     candidates.append(os.path.join(this_dir, "mplapack_signatures.py"))
-    candidates.append(os.path.join(os.path.dirname(this_dir), "mplapack_signatures.py"))
+    candidates.append(os.path.join(
+        os.path.dirname(this_dir), "mplapack_signatures.py"))
 
     for p in candidates:
         if not p:
@@ -52,7 +54,8 @@ def _load_mplapack_signatures():
         if not os.path.isfile(p):
             continue
         try:
-            spec = importlib.util.spec_from_file_location("mplapack_signatures", p)
+            spec = importlib.util.spec_from_file_location(
+                "mplapack_signatures", p)
             if spec is None or spec.loader is None:
                 continue
             mod = importlib.util.module_from_spec(spec)
@@ -67,8 +70,10 @@ def _load_mplapack_signatures():
 
             if os.environ.get("FABLE_DEBUG_SIGNATURES"):
                 import sys as _sys
-                print(f"[FABLE] Loaded mplapack_signatures from: {p}", file=_sys.stderr)
-                print(f"[FABLE] FUNCTION_SIGNATURES={len(fs)} FUNCTION_RETURNS={len(fr)}", file=_sys.stderr)
+                print(
+                    f"[FABLE] Loaded mplapack_signatures from: {p}", file=_sys.stderr)
+                print(
+                    f"[FABLE] FUNCTION_SIGNATURES={len(fs)} FUNCTION_RETURNS={len(fr)}", file=_sys.stderr)
 
             return fs, fr
         except Exception:
@@ -77,7 +82,8 @@ def _load_mplapack_signatures():
     # Not found: disable signature-based adjustments.
     if os.environ.get("FABLE_DEBUG_SIGNATURES"):
         import sys as _sys
-        print("[FABLE] mplapack_signatures not found; signatures disabled.", file=_sys.stderr)
+        print(
+            "[FABLE] mplapack_signatures not found; signatures disabled.", file=_sys.stderr)
     return {}, {}
 
 
@@ -86,6 +92,7 @@ FUNCTION_SIGNATURES, FUNCTION_RETURNS = _load_mplapack_signatures()
 # Cache inferred signatures for EXTERNAL callable dummy arguments.
 # Key: id(fproc) -> dict[callable_name_lower] = (ret_type, [arg_type0, ...])
 _INFERRED_CALLABLE_SIGNATURES = {}
+
 
 def _split_actuals(arg_string: str):
     """Split a C++ argument list string on commas, ignoring commas inside parentheses."""
@@ -337,6 +344,7 @@ def convert_function_name_to_mplapack(name):
         return mapped
     return _mplapack_default_name(name)
 
+
 def _lookup_routine_signature(name: str):
     """Lookup FUNCTION_SIGNATURES with name normalization.
 
@@ -360,6 +368,7 @@ def _lookup_routine_signature(name: str):
     if mapped:
         return FUNCTION_SIGNATURES.get(str(mapped).lower())
     return None
+
 
 fmt_comma_placeholder = chr(255)
 
@@ -1394,20 +1403,23 @@ def convert_power(conv_info, tokens):
             def _decl_is_integer(name: str) -> bool:
                 if conv_info is None or getattr(conv_info, "fproc", None) is None:
                     return False
-                fdecl_map = getattr(conv_info.fproc, "fdecl_by_identifier", None)
+                fdecl_map = getattr(
+                    conv_info.fproc, "fdecl_by_identifier", None)
                 if not fdecl_map:
                     return False
                 fd = fdecl_map.get(name.lower()) or fdecl_map.get(name)
                 if fd is None:
                     return False
                 dt = getattr(fd, "data_type", None)
-                code = dt if isinstance(dt, str) else getattr(dt, "value", None)
+                code = dt if isinstance(
+                    dt, str) else getattr(dt, "value", None)
                 return (code or "").lower() == "integer"
 
             def _decl_exists(name: str) -> bool:
                 if conv_info is None or getattr(conv_info, "fproc", None) is None:
                     return False
-                fdecl_map = getattr(conv_info.fproc, "fdecl_by_identifier", None) or {}
+                fdecl_map = getattr(
+                    conv_info.fproc, "fdecl_by_identifier", None) or {}
                 return (name.lower() in fdecl_map) or (name in fdecl_map)
 
             is_integer_exp = False
@@ -1469,7 +1481,8 @@ def _get_return_kind_from_signatures(base_cpp_name: str) -> typing.Optional[str]
     if ret is None:
         # Last resort: try reverse-mapped Fortran name.
         f_name = _MPLAPACK_CPP_TO_FORTRAN.get(name, name)
-        ret = FUNCTION_RETURNS.get(f_name) or FUNCTION_RETURNS.get(str(f_name).lower())
+        ret = FUNCTION_RETURNS.get(
+            f_name) or FUNCTION_RETURNS.get(str(f_name).lower())
     if ret is None:
         return None
 
@@ -2442,7 +2455,7 @@ def rewrite_intrinsics(text: str) -> str:
 
     # 4) COMPLEX(...) constructor: promote integer literals to real literals.
     text = _rewrite_complex_ctor_literals(text)
-    
+
     return text
 
 
@@ -2565,7 +2578,8 @@ def convert_tokens(conv_info, tokens, commas=False, had_str_concat=None):
                         step_expr = parts[2].strip()
                         # Encode the stride explicitly in __SLICE__ so postprocessing
                         # can emit Mmaxval/Mminval(..., incx) correctly.
-                        rapp(f"[__SLICE__({start_expr}, {end_expr}, {step_expr})]")
+                        rapp(
+                            f"[__SLICE__({start_expr}, {end_expr}, {step_expr})]")
                     else:
                         # 2D Array slice on first dimension: z(start:end, col)
                         # was converted to "start, end, col"
@@ -2910,7 +2924,7 @@ def convert_tokens(conv_info, tokens, commas=False, had_str_concat=None):
                 if (prev_tok is not None
                         and prev_tok.is_identifier()):
                     sig = _lookup_routine_signature(prev_tok.value)
-                    
+
                     if sig is not None:
                         inner = _adjust_actuals_using_signature(
                             inner, sig, conv_info)
@@ -4587,7 +4601,7 @@ def convert_executable(
                 lhs_is_real = lhs_dt_code in ("real", "doubleprecision")
                 lhs_is_integer = lhs_dt_code == "integer"
                 lhs_is_character = lhs_dt_code == "character"
-                lhs_is_complex = lhs_dt_code in ("complex", "doublecomplex")                
+                lhs_is_complex = lhs_dt_code in ("complex", "doublecomplex")
                 rhs_is_simple = _is_simple_lvalue(crhs)
                 rhs_is_complex = False
                 rhs_is_real = False
@@ -5326,7 +5340,6 @@ def _mark_call_actuals_used(conv_info):
                 fdecl.use_count = 1
 
 
-
 def _sig_kind_requires_mutable_actual(kind: str) -> bool:
     """Return True if a callee parameter kind requires a mutable (non-const) actual.
 
@@ -5505,7 +5518,8 @@ def _propagate_out_inout_through_calls(topological_fprocs, *, max_rounds: int = 
         return
 
     # Map callee name -> fproc (case-insensitive)
-    fprocs_by_name = getattr(getattr(topological_fprocs, "all_fprocs", None), "fprocs_by_name", None)
+    fprocs_by_name = getattr(
+        getattr(topological_fprocs, "all_fprocs", None), "fprocs_by_name", None)
     if callable(fprocs_by_name):
         fproc_map = fprocs_by_name()
     else:
@@ -5529,7 +5543,8 @@ def _propagate_out_inout_through_calls(topological_fprocs, *, max_rounds: int = 
                 if getattr(ei, "key", None) != "call":
                     continue
 
-                callee_name = getattr(getattr(ei, "subroutine_name", None), "value", None)
+                callee_name = getattr(
+                    getattr(ei, "subroutine_name", None), "value", None)
                 if not callee_name:
                     continue
 
@@ -5537,20 +5552,23 @@ def _propagate_out_inout_through_calls(topological_fprocs, *, max_rounds: int = 
                 callee_fproc = fproc_map_lower.get(str(callee_name).lower())
 
                 if callee_fproc is not None:
-                    mutable_mask = _callee_mutable_mask_from_fproc(callee_fproc)
+                    mutable_mask = _callee_mutable_mask_from_fproc(
+                        callee_fproc)
                 else:
                     # External routine: consult mplapack_signatures if available.
                     sig = _lookup_routine_signature(str(callee_name))
                     if sig is None:
                         continue
-                    mutable_mask = [_sig_kind_requires_mutable_actual(k) for k in sig]
+                    mutable_mask = [
+                        _sig_kind_requires_mutable_actual(k) for k in sig]
 
                 # Collect actual argument token lists.
                 arg_tok = getattr(ei, "arg_token", None)
                 if arg_tok is None:
                     actuals = []
                 else:
-                    actuals = _split_call_actuals_tokens(getattr(arg_tok, "value", None))
+                    actuals = _split_call_actuals_tokens(
+                        getattr(arg_tok, "value", None))
 
                 if len(actuals) != len(mutable_mask):
                     # Be conservative: don't guess when counts mismatch.
@@ -5560,20 +5578,24 @@ def _propagate_out_inout_through_calls(topological_fprocs, *, max_rounds: int = 
                 for idx, needs_mutable in enumerate(mutable_mask):
                     if not needs_mutable:
                         continue
-                    base = _actual_base_identifier_if_definable(caller, actuals[idx])
+                    base = _actual_base_identifier_if_definable(
+                        caller, actuals[idx])
                     if base is None:
                         continue
 
                     # Look up the declaration in the caller.
-                    fdecl = getattr(caller, "fdecl_by_identifier", {}).get(base.lower())
+                    fdecl = getattr(caller, "fdecl_by_identifier", {}).get(
+                        base.lower())
                     if fdecl is None:
-                        fdecl = getattr(caller, "fdecl_by_identifier", {}).get(base)
+                        fdecl = getattr(
+                            caller, "fdecl_by_identifier", {}).get(base)
                     if fdecl is None:
                         continue
 
                     if not getattr(fdecl, "is_modified", False):
                         fdecl.is_modified = True
                         changed = True
+
 
 def _infer_user_defined_callable_signatures(conv_info):
     """Infer signatures for user-defined EXTERNAL callable dummy arguments.
