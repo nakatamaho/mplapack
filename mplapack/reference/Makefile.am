@@ -594,6 +594,7 @@ Cupmtr.cpp \
 Mlsamen.cpp \
 Mmaxloc.cpp \
 Mmaxval.cpp \
+Mminval.cpp \
 RCsum1.cpp \
 Rbbcsd.cpp \
 Rbdsdc.cpp \
