@@ -31,11 +31,24 @@ Based on http://www.netlib.org/blas/lsame.f
 Mlsame returns 1 if CA is the same letter as CB regardless of case.
 */
 
-#include <ctype.h>
 #include <mpblas.h>
+#include <mplapack.h>
 
 bool Mlsame(const char *a, const char *b) {
-    if (toupper(*a) == toupper(*b))
-        return true;
-    return false;
+    // Compare single characters case-insensitively (ASCII only).
+    if (a == nullptr || b == nullptr)
+        return false;
+
+    unsigned char ca = static_cast<unsigned char>(a[0]);
+    unsigned char cb = static_cast<unsigned char>(b[0]);
+
+    // Inline ASCII upper: 'a'..'z' -> 'A'..'Z'
+    if (ca >= static_cast<unsigned char>('a') && ca <= static_cast<unsigned char>('z')) {
+        ca = static_cast<unsigned char>(ca - (static_cast<unsigned char>('a') - static_cast<unsigned char>('A')));
+    }
+    if (cb >= static_cast<unsigned char>('a') && cb <= static_cast<unsigned char>('z')) {
+        cb = static_cast<unsigned char>(cb - (static_cast<unsigned char>('a') - static_cast<unsigned char>('A')));
+    }
+
+    return ca == cb;
 }
