@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025
+ * Copyright (c) 2008-2012
  *	Nakata, Maho
  * 	All rights reserved.
  *
@@ -55,12 +55,31 @@
 /* Basic deterministic test cases: avoid "edge of overflow/underflow".
  * These values are chosen to exercise signs, zeros, unity, and typical magnitudes.
  */
-static const double kRealTestVals[] = {0.0, 1.0, -1.0, 2.5, -3.75, 10.0, -10.0, 0.125, 3.141592653589793, 2.718281828459045};
+static const double kRealTestVals[] = {
+    0.0,
+    1.0,
+    -1.0,
+    2.5,
+    -3.75,
+    10.0,
+    -10.0,
+    0.125,
+    3.141592653589793,
+    2.718281828459045
+};
 
 static const int kNumRealTestVals = (int)(sizeof(kRealTestVals) / sizeof(kRealTestVals[0]));
 
 /* Complex test values are given as (real, imag) pairs. */
-static const double kComplexTestVals[][2] = {{0.0, 0.0}, {1.0, 0.0}, {0.0, 1.0}, {-1.0, 2.0}, {2.5, -3.75}, {3.141592653589793, 2.718281828459045}, {0.125, 8.0}};
+static const double kComplexTestVals[][2] = {
+    {0.0, 0.0},
+    {1.0, 0.0},
+    {0.0, 1.0},
+    {-1.0, 2.0},
+    {2.5, -3.75},
+    {3.141592653589793, 2.718281828459045},
+    {0.125, 8.0}
+};
 
 static const int kNumComplexTestVals = (int)(sizeof(kComplexTestVals) / sizeof(kComplexTestVals[0]));
 
@@ -138,41 +157,88 @@ void subst_test1() {
     memset(buf1, 0, __MPLAPACK_BUFLEN__);
     memset(buf2, 0, __MPLAPACK_BUFLEN__);
     memset(buf3, 0, __MPLAPACK_BUFLEN__);
+    REAL tmp1;
+    REAL_REF tmp2;
 
-    REAL_REF temp1r, temp2r, temp3r;
-    REAL temp1, temp2, temp3;
-    REAL_REF diff;
+    printf("*** Substitution test 1 ***\n");
+    strcpy(buf1, "-1.234567890123456789012345678901234567890123456789012345678901234567890E1");
+// tmp1 = buf1;
+#if defined ___MPLAPACK_BUILD_WITH__FLOAT128___
+#if defined ___MPLAPACK_WANT_LIBQUADMATH___
+    tmp1 = strtoflt128(buf1, NULL);
+#elif !defined ___MPLAPACK__FLOAT128_IS_LONGDOUBLE___ && !defined ___MPLAPACK_LONGDOUBLE_IS_BINARY128___
+    tmp1 = strtof128(buf1, NULL);
+#else
+    sscanf(buf1, "%Le", &tmp1);
+#endif
+#elif defined ___MPLAPACK_BUILD_WITH_DOUBLE___
+    sscanf(buf1, "%le", &tmp1);
+#elif defined ___MPLAPACK_BUILD_WITH__FLOAT64X___
+    sscanf(buf1, "%Le", &tmp1);
+#else
+    tmp1 = buf1;
+#endif
 
-    printf("*** Substitution test1 ***\n");
-    temp1r = 0.0;
-    temp1 = temp1r;
-    temp2r = 2.0;
-    temp2 = temp2r;
+    tmp2 = tmp1;
 
-    temp3r = temp1r + temp2r;
-    temp3 = temp1 + temp2;
+    sprintnum(buf2, tmp1);
+    sprintnum(buf3, tmp2);
 
-    sprintnum(buf1, temp1r);
-    sprintnum(buf2, temp1);
-    sprintnum(buf3, temp3);
-    printf("temp1r: %s\n", buf1);
-    printf("temp1 : %s\n", buf2);
-    printf("temp3 : %s\n", buf3);
+    printf("original  :%s\n", buf1);
+    printf("mplib     :%s\n", buf2);
+    printf("subst2refm:%s\n", buf3);
 
-    printnum(temp1r);
-    printf("\n");
-    printnum(temp1);
-    printf("\n");
-
-    diff = abs(temp1r - temp1);
-    printf("diff = ");
-    printnum(diff);
-    printf("\n");
-    if (abs(diff) > EPSILON) {
-        printf("*** Substitution test1 failed ***\n");
+#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+    if (strncmp(buf1, buf2, 19) == 0 && strncmp(buf2, buf3, 19) == 0)
+        printf("ok!\n");
+    else {
+        printf("failed!\n");
         exit(1);
     }
-    printf("*** Substitution test1 successful ***\n");
+#elif defined ___MPLAPACK_BUILD_WITH_GMP___
+    if (strncmp(buf1, buf2, 65) == 0 && strncmp(buf2, buf3, __MPLAPACK_BUFLEN__) == 0)
+        printf("ok!\n");
+    else {
+        printf("failed!\n");
+        exit(1);
+    }
+#elif defined ___MPLAPACK_BUILD_WITH_DD___
+    if (strncmp(buf1, buf2, 34) == 0 && strncmp(buf2, buf3, 34) == 0)
+        printf("ok!\n");
+    else {
+        printf("failed!\n");
+        exit(1);
+    }
+#elif defined ___MPLAPACK_BUILD_WITH_QD___
+    if (strncmp(buf1, buf2, 66) == 0 && strncmp(buf2, buf3, 66) == 0)
+        printf("ok!\n");
+    else {
+        printf("failed!\n");
+        exit(1);
+    }
+#elif defined ___MPLAPACK_BUILD_WITH_DOUBLE___
+    if (strncmp(buf1, buf2, 19) == 0 && strncmp(buf2, buf3, 19) == 0)
+        printf("ok!\n");
+    else {
+        printf("failed!\n");
+        exit(1);
+    }
+#elif defined ___MPLAPACK_BUILD_WITH__FLOAT128___
+    if (strncmp(buf1, buf2, 37) == 0 && strncmp(buf2, buf3, 37) == 0)
+        printf("ok!\n");
+    else {
+        printf("failed!\n");
+        exit(1);
+    }
+#elif defined ___MPLAPACK_BUILD_WITH__FLOAT64X___
+    if (strncmp(buf1, buf2, 21) == 0 && strncmp(buf2, buf3, 21) == 0)
+        printf("ok!\n");
+    else {
+        printf("failed!\n");
+        exit(1);
+    }
+#endif
+    printf("*** Substitution test 1 successful ***\n");
 }
 
 void subst_test2() {
@@ -187,9 +253,9 @@ void subst_test2() {
 
     printf("*** Substitution test2 ***\n");
     temp1r = COMPLEX_REF(0.0, 0.0);
-    temp1 = temp1r;
+    temp1 = COMPLEX(0.0, 0.0);
     temp2r = COMPLEX_REF(2.0, 0.0);
-    temp2 = temp2r;
+    temp2 = COMPLEX(2.0, 0.0);
 
     temp3r = temp1r + temp2r;
     temp3 = temp1 + temp2;
@@ -427,8 +493,10 @@ void multiplication_real_test() {
 
 void division_real_test() {
     printf("*** REAL Division test ***\n");
-    const REAL_REF denom_min = 0.25;
-    const REAL_REF denom_safe = 1.25;
+    const REAL_REF denom_min_ref = 0.25;
+    const REAL_REF denom_safe_ref = 1.25;
+    const REAL denom_min = 0.25;
+    const REAL denom_safe = 1.25;    
 
     for (int i = 0; i < kNumRealTestVals; ++i) {
         for (int j = 0; j < kNumRealTestVals; ++j) {
@@ -438,8 +506,8 @@ void division_real_test() {
             REAL b = kRealTestVals[j];
 
             // Avoid division by 0 (and near-0) in "basic arithmetic" tests.
-            if (abs(b_ref) <= denom_min) {
-                b_ref = denom_safe;
+            if (abs(b_ref) <= denom_min_ref) {
+                b_ref = denom_safe_ref;
                 b = denom_safe;
             }
 
@@ -462,7 +530,7 @@ void division_real_test() {
         set_random_number(a_ref, a);
         set_random_number(b_ref, b);
 
-        if (abs(b_ref) <= denom_min) {
+        if (abs(b_ref) <= denom_min_ref) {
             b_ref = denom_safe;
             b = denom_safe;
         }
