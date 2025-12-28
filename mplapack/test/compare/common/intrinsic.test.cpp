@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *	Nakata, Maho
  * 	All rights reserved.
  *
@@ -168,26 +168,9 @@ static void print_section(REAL *dx, INTEGER n, INTEGER start, INTEGER end, INTEG
     printf("]\n");
 }
 
-// Detect whether Mmaxloc(REAL*, start, end, incx, dim) exists (C++17 SFINAE).
-template <typename T> struct has_Mmaxloc_5 {
-    template <typename U> static auto test(int) -> decltype(Mmaxloc((U *)nullptr, (INTEGER)1, (INTEGER)1, (INTEGER)1, (INTEGER)1), std::true_type{});
-    template <typename> static auto test(...) -> std::false_type;
-    static constexpr bool value = decltype(test<T>(0))::value;
-};
-
-static INTEGER call_Mmaxloc(REAL *dx, INTEGER start, INTEGER end, INTEGER incx, INTEGER dim, bool &skipped) {
-    skipped = false;
-    if constexpr (has_Mmaxloc_5<REAL>::value) {
-        return Mmaxloc(dx, start, end, incx, dim);
-    } else {
-        // Fallback: only test incx == 1 for the 4-arg signature.
-        if (incx != 1) {
-            skipped = true;
-            return 0;
-        }
-        return Mmaxloc(dx, start, end, dim);
-    }
-}
+// MPLAPACK provides rank-1 maxloc helper:
+//   Mmaxloc(dx, start, end, incx)
+static INTEGER call_Mmaxloc(REAL *dx, INTEGER start, INTEGER end, INTEGER incx) { return Mmaxloc(dx, start, end, incx); }
 
 static void deterministic_tests() {
     int errorflag = FALSE;
@@ -211,10 +194,8 @@ static void deterministic_tests() {
         REAL gmax = Mmaxval(x, 1, 5, 1);
         REAL gmin = Mminval(x, 1, 5, 1);
 
-        bool skipped = false;
-        INTEGER gloc = call_Mmaxloc(x, 1, 5, 1, 1, skipped);
-
-        if (!(gmax == emax) || !(gmin == emin) || (!skipped && gloc != eloc)) {
+        INTEGER gloc = call_Mmaxloc(x, 1, 5, 1);
+        if (!(gmax == emax) || !(gmin == emin) || (gloc != eloc)) {
             printf("error: deterministic case 1 failed\n");
             printf("  start=1 end=5 incx=1\n");
             printf("  expected max=");
@@ -227,9 +208,7 @@ static void deterministic_tests() {
             printf(" got=");
             printnum(gmin);
             printf("\n");
-            if (!skipped) {
-                printf("  expected loc=%d got=%d\n", (int)eloc, (int)gloc);
-            }
+            printf("  expected loc=%d got=%d\n", (int)eloc, (int)gloc);
             errorflag = TRUE;
         }
     }
@@ -237,9 +216,8 @@ static void deterministic_tests() {
     // Case 2: tie-breaking (max=3 occurs at positions 1 and 3, expect loc=1)
     {
         INTEGER eloc = ref_Mmaxloc(x, 1, 5, 1);
-        bool skipped = false;
-        INTEGER gloc = call_Mmaxloc(x, 1, 5, 1, 1, skipped);
-        if (!skipped && gloc != eloc) {
+        INTEGER gloc = call_Mmaxloc(x, 1, 5, 1);
+        if (gloc != eloc) {
             printf("error: deterministic tie-break failed\n");
             printf("  expected loc=%d got=%d\n", (int)eloc, (int)gloc);
             errorflag = TRUE;
@@ -255,10 +233,9 @@ static void deterministic_tests() {
         REAL gmax = Mmaxval(x, 1, 5, 2);
         REAL gmin = Mminval(x, 1, 5, 2);
 
-        bool skipped = false;
-        INTEGER gloc = call_Mmaxloc(x, 1, 5, 2, 1, skipped);
+        INTEGER gloc = call_Mmaxloc(x, 1, 5, 2);
 
-        if (!(gmax == emax) || !(gmin == emin) || (!skipped && gloc != eloc)) {
+        if (!(gmax == emax) || !(gmin == emin) || (gloc != eloc)) {
             printf("error: deterministic stride case failed\n");
             printf("  start=1 end=5 incx=2\n");
             printf("  expected max=");
@@ -271,11 +248,7 @@ static void deterministic_tests() {
             printf(" got=");
             printnum(gmin);
             printf("\n");
-            if (!skipped) {
-                printf("  expected loc=%d got=%d\n", (int)eloc, (int)gloc);
-            } else {
-                printf("  note: Mmaxloc(incx,dim) not available; loc test skipped for incx!=1\n");
-            }
+            printf("  expected loc=%d got=%d\n", (int)eloc, (int)gloc);
             errorflag = TRUE;
         }
     }
@@ -289,10 +262,9 @@ static void deterministic_tests() {
 
         REAL gmax = Mmaxval(x, 4, 2, 1);
         REAL gmin = Mminval(x, 4, 2, 1);
-        bool skipped = false;
-        INTEGER gloc = call_Mmaxloc(x, 4, 2, 1, 1, skipped);
 
-        if (!(gmax == emax) || !(gmin == emin) || (!skipped && gloc != eloc)) {
+        INTEGER gloc = call_Mmaxloc(x, 4, 2, 1);
+        if (!(gmax == emax) || !(gmin == emin) || (gloc != eloc)) {
             printf("error: deterministic empty case failed\n");
             printf("  start=4 end=2 incx=1\n");
             printf("  expected max=");
@@ -305,9 +277,7 @@ static void deterministic_tests() {
             printf(" got=");
             printnum(gmin);
             printf("\n");
-            if (!skipped) {
-                printf("  expected loc=%d got=%d\n", (int)eloc, (int)gloc);
-            }
+            printf("  expected loc=%d got=%d\n", (int)eloc, (int)gloc);
             errorflag = TRUE;
         }
     }
@@ -323,11 +293,12 @@ static void randomized_tests() {
     INTEGER n, iter;
 
     for (n = MIN_N; n <= MAX_N; n++) {
+        REAL_REF *x_ref = new REAL_REF[n];
         REAL *x = new REAL[n];
 
         for (iter = 0; iter < MAX_ITER; iter++) {
             // Fill with random values (same helper style as other tests).
-            set_random_vector(x, x, n);
+            set_random_vector(x_ref, x, (int)n);
 
             for (INTEGER incx = -MAX_ABS_INCX; incx <= MAX_ABS_INCX; incx++) {
                 if (incx == 0)
@@ -342,12 +313,8 @@ static void randomized_tests() {
                         REAL gmax = Mmaxval(x, start, end, incx);
                         REAL gmin = Mminval(x, start, end, incx);
 
-                        bool loc_skipped = false;
-                        INTEGER gloc = call_Mmaxloc(x, start, end, incx, 1, loc_skipped);
-
-                        bool ok = (gmax == emax) && (gmin == emin);
-                        if (!loc_skipped)
-                            ok = ok && (gloc == eloc);
+                        INTEGER gloc = call_Mmaxloc(x, start, end, incx);
+                        bool ok = (gmax == emax) && (gmin == emin) && (gloc == eloc);
 
                         if (!ok) {
                             printf("error: randomized test failed\n");
@@ -363,12 +330,7 @@ static void randomized_tests() {
                             printf(" got=");
                             printnum(gmin);
                             printf("\n");
-
-                            if (!loc_skipped) {
-                                printf("  expected loc=%d got=%d\n", (int)eloc, (int)gloc);
-                            } else {
-                                printf("  note: Mmaxloc(incx,dim) not available; loc test skipped for incx!=1\n");
-                            }
+                            printf("  note: Mmaxloc(incx,dim) not available; loc test skipped for incx!=1\n");
 
                             print_section(x, n, start, end, incx);
                             errorflag = TRUE;
@@ -385,6 +347,7 @@ static void randomized_tests() {
                 break;
         }
 
+        delete[] x_ref;
         delete[] x;
 
         if (errorflag)

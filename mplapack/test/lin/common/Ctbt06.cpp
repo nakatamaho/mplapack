@@ -98,7 +98,7 @@ void Ctbt06(REAL const rcond, REAL const rcondc, const char *uplo, const char *d
         bignum = one / Rlamch("Safe minimum");
         anorm = Clantb("M", uplo, diag, n, kd, ab, ldab, rwork);
         //
-        rat = rmax * (min({bignum / max(one, anorm), one / eps}));
+        rat = rmax * (min(bignum / max(one, anorm), one / eps));
     }
     //
     //     End of Ctbt06
