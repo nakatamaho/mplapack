@@ -34,23 +34,26 @@ Mlsame returns 1 if CA is the same letter as CB regardless of case.
 #include <mpblas.h>
 #include <mplapack.h>
 
-static inline unsigned char ascii_upper(unsigned char c) {
-    // Convert only ASCII a-z to A-Z. Locale-independent.
-    if (c >= static_cast<unsigned char>('a') && c <= static_cast<unsigned char>('z')) {
-        return static_cast<unsigned char>(c - (static_cast<unsigned char>('a') - static_cast<unsigned char>('A')));
-    }
-    return c;
-}
-
 bool Mlsamen(INTEGER n, const char *a, const char *b) {
+    // Compare first n characters case-insensitively (ASCII only).
+    // This matches BLAS/LAPACK intent better than locale-dependent toupper().
     if (n <= 0)
         return true;
     if (a == nullptr || b == nullptr)
         return false;
 
     for (INTEGER i = 0; i < n; ++i) {
-        unsigned char ca = ascii_upper(static_cast<unsigned char>(a[i]));
-        unsigned char cb = ascii_upper(static_cast<unsigned char>(b[i]));
+        unsigned char ca = static_cast<unsigned char>(a[i]);
+        unsigned char cb = static_cast<unsigned char>(b[i]);
+
+        // Inline ASCII upper: convert only 'a'..'z' to 'A'..'Z'
+        if (ca >= static_cast<unsigned char>('a') && ca <= static_cast<unsigned char>('z')) {
+            ca = static_cast<unsigned char>(ca - (static_cast<unsigned char>('a') - static_cast<unsigned char>('A')));
+        }
+        if (cb >= static_cast<unsigned char>('a') && cb <= static_cast<unsigned char>('z')) {
+            cb = static_cast<unsigned char>(cb - (static_cast<unsigned char>('a') - static_cast<unsigned char>('A')));
+        }
+
         if (ca != cb)
             return false;
     }
