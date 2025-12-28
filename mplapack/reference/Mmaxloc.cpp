@@ -37,9 +37,11 @@ INTEGER Mmaxloc(REAL const *dx, INTEGER const start, INTEGER const end, INTEGER 
     //   - incx is the stride in that same index space
     // For an empty section or invalid stride (incx == 0), return 0 (Fortran semantics).
     if (dx == nullptr) {
+        Mxerbla("Mmaxloc", 1);
         return 0;
     }
     if (incx == 0) {
+        Mxerbla("Mmaxloc", 4);
         return 0;
     }
 

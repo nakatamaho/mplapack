@@ -29,7 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-REAL Mminval(REAL *dx, INTEGER const start, INTEGER const end, INTEGER incx) {
+REAL Mminval(REAL *dx, INTEGER const start, INTEGER const end, INTEGER const incx) {
     // Fortran MINVAL for a rank-1 section:
     //   minval( dx(start:end:incx) )
     // Assumptions:

@@ -29,7 +29,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-REAL Mmaxval(REAL *dx, INTEGER const start, INTEGER const end, INTEGER incx) {
+REAL Mmaxval(REAL *dx, INTEGER const start, INTEGER const end, INTEGER const incx) {
     // Fortran MAXVAL for a rank-1 section:
     //   maxval( dx(start:end:incx) )
     // Assumptions:
