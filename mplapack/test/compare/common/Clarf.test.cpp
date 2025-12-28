@@ -65,7 +65,7 @@ void Clarf_test2(const char *side) {
             continue;
         for (n = MIN_N; n <= MAX_N; n++) {
             for (m = MIN_M; m <= MAX_M; m++) {
-                for (ldc = max((INTEGER_REF)1, m); ldc <= MAX_LDC; ldc++) {
+                for (ldc = max_int((INTEGER_REF)1, m); ldc <= MAX_LDC; ldc++) {
 
                     if (Mlsame(side, "L"))
                         dimv = (1 + (m - 1) * abs(incv));

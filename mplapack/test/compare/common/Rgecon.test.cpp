@@ -57,18 +57,18 @@ void Rgecon_test2(const char *norm) {
     INTEGER info;
 
     for (int n = MIN_N; n < MAX_N; n++) {
-        for (int lda = max(n, 1); lda < MAX_LDA; lda++) {
+        for (int lda = max_int(n, 1); lda < MAX_LDA; lda++) {
 #if defined VERBOSE_TEST
             printf("n:%d lda %d, norm %s\n", n, lda, norm);
 #endif
             REAL_REF *A_ref = new REAL_REF[matlen(lda, n)];
-            REAL_REF *work_ref = new REAL_REF[max(1, n * 4)];
-            INTEGER_REF *iwork_ref = new INTEGER_REF[max(1, n)];
+            REAL_REF *work_ref = new REAL_REF[max_int(1, n * 4)];
+            INTEGER_REF *iwork_ref = new INTEGER_REF[max_int(1, n)];
             INTEGER_REF *ipiv_ref = new INTEGER_REF[veclen(n, 1)];
 
             REAL *A = new REAL[matlen(lda, n)];
-            REAL *work = new REAL[max(1, n * 4)];
-            INTEGER *iwork = new INTEGER[max(1, n)];
+            REAL *work = new REAL[max_int(1, n * 4)];
+            INTEGER *iwork = new INTEGER[max_int(1, n)];
             INTEGER *ipiv = new INTEGER[veclen(n, 1)];
 
             j = 0;

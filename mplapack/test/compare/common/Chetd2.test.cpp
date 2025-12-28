@@ -51,7 +51,7 @@ void Chetd2_test2(const char *uplo) {
     INTEGER info;
 
     for (int n = MIN_N; n < MAX_N; n++) {
-        for (int lda = max(n, 1); lda < MAX_LDA; lda++) {
+        for (int lda = max_int(n, 1); lda < MAX_LDA; lda++) {
             COMPLEX_REF *A_ref = new COMPLEX_REF[matlen(lda, n)];
             REAL_REF *d_ref = new REAL_REF[veclen(n, 1)];
             REAL_REF *e_ref = new REAL_REF[veclen(n - 1, 1)];

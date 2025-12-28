@@ -53,7 +53,7 @@ void Rpotri_test2(const char *uplo) {
     INTEGER info;
 
     for (int n = MIN_N; n < MAX_N; n++) {
-        for (int lda = max(n, 1); lda < MAX_LDA; lda++) {
+        for (int lda = max_int(n, 1); lda < MAX_LDA; lda++) {
             REAL_REF *A_ref = new REAL_REF[matlen(lda, n)];
             REAL *A = new REAL[matlen(lda, n)];
 

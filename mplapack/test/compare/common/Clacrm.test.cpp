@@ -55,9 +55,9 @@ void Clacrm_test() {
 
     for (int n = MIN_N; n < MAX_N; n++) {
         for (int m = MIN_M; m < MAX_M; m++) {
-            for (int lda = max(1, m); lda < MAX_LDA; lda++) {
-                for (int ldb = max(1, n); ldb < MAX_LDB; ldb++) {
-                    for (int ldc = max(1, m); ldc < MAX_LDC; ldc++) {
+            for (int lda = max_int(1, m); lda < MAX_LDA; lda++) {
+                for (int ldb = max_int(1, n); ldb < MAX_LDB; ldb++) {
+                    for (int ldc = max_int(1, m); ldc < MAX_LDC; ldc++) {
 #if defined VERBOSE_TEST
                         printf("# n %d m %d lda %d ldb %d ldc %d\n", n, m, lda, ldb, ldc);
 #endif

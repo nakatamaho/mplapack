@@ -58,8 +58,8 @@ void Rtrtrs_test2(const char *uplo, const char *trans, const char *diag) {
     INTEGER info;
 
     for (n = MIN_N; n <= MAX_N; n++) {
-        for (lda = max(1, (int)n); lda <= MAX_LDA; lda++) {
-            for (ldb = max(1, (int)n); ldb <= MAX_LDB; ldb++) {
+        for (lda = max_int(1, (int)n); lda <= MAX_LDA; lda++) {
+            for (ldb = max_int(1, (int)n); ldb <= MAX_LDB; ldb++) {
                 for (nrhs = 1; nrhs <= MAX_NRHS; nrhs++) {
 #if defined VERBOSE_TEST
                     printf("# uplo %s, trans %s, diag %s, n %d, lda %d, ldb %d, nrhs %d\n", uplo, trans, diag, (int)n, (int)lda, (int)ldb, (int)nrhs);

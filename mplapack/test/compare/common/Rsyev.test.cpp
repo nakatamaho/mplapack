@@ -120,7 +120,7 @@ void Rsyev_test2(const char *jobz, const char *uplo) {
     REAL_REF diff = 0.0;
 
     for (int n = MIN_N; n < MAX_N; n++) {
-        for (int lda = max(n, 1); lda < MAX_LDA; lda++) {
+        for (int lda = max_int(n, 1); lda < MAX_LDA; lda++) {
             REAL_REF *Aorg_ref = new REAL_REF[matlen(lda, n)];
             REAL_REF *A_ref = new REAL_REF[matlen(lda, n)];
             REAL_REF *w_ref = new REAL_REF[veclen(n, 1)];
@@ -154,8 +154,8 @@ void Rsyev_test2(const char *jobz, const char *uplo) {
 #endif
             delete[] work_ref;
             delete[] work;
-            work_ref = new REAL_REF[max(1, (int)lwork_ref)];
-            work = new REAL[max(1, (int)lwork)];
+            work_ref = new REAL_REF[max_int(1, (int)lwork_ref)];
+            work = new REAL[max_int(1, (int)lwork)];
 
             j = 0;
             while (j < MAX_ITER) {

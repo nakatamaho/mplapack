@@ -55,7 +55,7 @@ void Clasr_test2(const char *side, const char *pivot, const char *direct) {
 
     for (int n = MIN_N; n < MAX_N; n++) {
         for (int m = MIN_M; m < MAX_M; m++) {
-            for (int lda = max(m, 1); lda < MAX_LDA; lda++) {
+            for (int lda = max_int(m, 1); lda < MAX_LDA; lda++) {
 #if defined VERBOSE_TEST
                 printf("# n:%d m:%d lda:%d, side %s, pivot %s direct %s\n", n, m, lda, side, pivot, direct);
 #endif
@@ -65,17 +65,17 @@ void Clasr_test2(const char *side, const char *pivot, const char *direct) {
                     cdim = n - 1;
 
                 COMPLEX_REF *A_ref = new COMPLEX_REF[matlen(lda, n)];
-                REAL_REF *c_ref = new REAL_REF[max(cdim, 1)];
-                REAL_REF *s_ref = new REAL_REF[max(cdim, 1)];
+                REAL_REF *c_ref = new REAL_REF[max_int(cdim, 1)];
+                REAL_REF *s_ref = new REAL_REF[max_int(cdim, 1)];
                 COMPLEX *A = new COMPLEX[matlen(lda, n)];
-                REAL *c = new REAL[max(cdim, 1)];
-                REAL *s = new REAL[max(cdim, 1)];
+                REAL *c = new REAL[max_int(cdim, 1)];
+                REAL *s = new REAL[max_int(cdim, 1)];
 
                 j = 0;
                 while (j < MAX_ITER) {
                     set_random_vector(A_ref, A, matlen(lda, n));
-                    set_random_vector(c_ref, c, max(cdim, 1));
-                    set_random_vector(s_ref, s, max(cdim, 1));
+                    set_random_vector(c_ref, c, max_int(cdim, 1));
+                    set_random_vector(s_ref, s, max_int(cdim, 1));
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
                     zlasr_f77(side, pivot, direct, &m, &n, c_ref, s_ref, A_ref, &lda);
 #else

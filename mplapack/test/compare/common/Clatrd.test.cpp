@@ -58,9 +58,9 @@ void Clatrd_test2(const char *uplo) {
     REAL_REF diff;
 
     for (n = MIN_N; n <= MAX_N; n++) {
-        for (lda = max(1, n); lda <= MAX_LDA; lda++) {
+        for (lda = max_int(1, n); lda <= MAX_LDA; lda++) {
             for (nb = MIN_NB; nb <= lda && nb <= n; nb++) {
-                for (ldw = max(1, n); ldw <= MAX_LDW; ldw++) {
+                for (ldw = max_int(1, n); ldw <= MAX_LDW; ldw++) {
 #if defined VERBOSE_TEST
                     printf("# uplo %s, n %d, lda %d, nb %d\n", uplo, n, (int)lda, nb);
 #endif

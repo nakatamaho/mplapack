@@ -52,14 +52,14 @@ void Rlansy_test2(const char *norm, const char *uplo) {
     REAL Rlansy_ret;
 
     for (int n = MIN_N; n < MAX_N; n++) {
-        for (int lda = max(n, 1); lda < MAX_LDA; lda++) {
+        for (int lda = max_int(n, 1); lda < MAX_LDA; lda++) {
 #if defined VERBOSE_TEST
             printf("n:%d lda %d, uplo %s, norm %s\n", n, lda, uplo, norm);
 #endif
             REAL_REF *A_ref = new REAL_REF[matlen(lda, n)];
-            REAL_REF *work_ref = new REAL_REF[max(1, n)];
+            REAL_REF *work_ref = new REAL_REF[max_int(1, n)];
             REAL *A = new REAL[matlen(lda, n)];
-            REAL *work = new REAL[max(1, n)];
+            REAL *work = new REAL[max_int(1, n)];
             j = 0;
             while (j < MAX_ITER) {
                 set_random_vector(A_ref, A, matlen(lda, n));

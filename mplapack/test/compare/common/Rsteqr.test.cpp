@@ -107,18 +107,18 @@ void Rsteqr_test2(const char *compz) {
     REAL_REF diff = 0.0;
 
     for (INTEGER n = MIN_N; n < MAX_N; n++) {
-        for (INTEGER ldz = max(n, (INTEGER)1); ldz < MAX_LDZ; ldz++) {
+        for (INTEGER ldz = max_int(n, (INTEGER)1); ldz < MAX_LDZ; ldz++) {
             REAL_REF *Z_ref = new REAL_REF[matlen(ldz, n)];
             REAL_REF *D_ref = new REAL_REF[veclen(n, 1)];
             REAL_REF *E_ref = new REAL_REF[veclen(n - 1, 1)];
-            REAL_REF *work_ref = new REAL_REF[max((INTEGER)1, 2 * n - 2)];
+            REAL_REF *work_ref = new REAL_REF[max_int((INTEGER)1, 2 * n - 2)];
             REAL_REF *Dorg_ref = new REAL_REF[veclen(n, 1)];
             REAL_REF *Eorg_ref = new REAL_REF[veclen(n, 1)];
 
             REAL *Z = new REAL[matlen(ldz, n)];
             REAL *D = new REAL[veclen(n, 1)];
             REAL *E = new REAL[veclen(n - 1, 1)];
-            REAL *work = new REAL[max((INTEGER)1, 2 * n - 2)];
+            REAL *work = new REAL[max_int((INTEGER)1, 2 * n - 2)];
             REAL *Dorg = new REAL[veclen(n, 1)];
             REAL *Eorg = new REAL[veclen(n - 1, 1)];
 #if defined VERBOSE_TEST
@@ -131,7 +131,7 @@ void Rsteqr_test2(const char *compz) {
                 set_random_vector(Z_ref, Z, matlen(ldz, n));
                 set_random_vector(Dorg_ref, Dorg, veclen(n, 1));
                 set_random_vector(Eorg_ref, Eorg, veclen(n - 1, 1));
-                set_random_vector(work_ref, work, max((INTEGER)1, 2 * n - 2));
+                set_random_vector(work_ref, work, max_int((INTEGER)1, 2 * n - 2));
 // keep backups of D and E.
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
                 int iOne = 1, _n, __n;

@@ -57,7 +57,7 @@ void Rlarft_test2(const char *direct, const char *storev) {
     for (k = MIN_K; k <= MAX_K; k++) {
         for (n = k; n <= MAX_N; n++) {
             if (Mlsame(storev, "C"))
-                ldvmin = max(1, n);
+                ldvmin = max_int(1, n);
             else // storev ="R"
                 ldvmin = k;
             for (ldv = ldvmin; ldv <= MAX_LDV; ldv++) {

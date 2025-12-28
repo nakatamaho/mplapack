@@ -55,7 +55,7 @@ void Ctrtri_test2(const char *uplo, const char *diag) {
     REAL_REF diff;
 
     for (n = MIN_N; n <= MAX_N; n++) {
-        for (lda = max(1, n); lda <= MAX_LDA; lda++) {
+        for (lda = max_int(1, n); lda <= MAX_LDA; lda++) {
 #if defined VERBOSE_TEST
             printf("# uplo %s, diag %s, n %d, lda %d\n", uplo, diag, n, lda);
 #endif

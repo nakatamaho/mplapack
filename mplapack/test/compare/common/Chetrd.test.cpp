@@ -53,7 +53,7 @@ void Chetrd_test2(const char *uplo) {
     REAL_REF diff;
 
     for (int n = MIN_N; n < MAX_N; n++) {
-        for (int lda = max(n, 1); lda < MAX_LDA; lda++) {
+        for (int lda = max_int(n, 1); lda < MAX_LDA; lda++) {
 
             COMPLEX_REF *A_ref = new COMPLEX_REF[matlen(lda, n)];
             REAL_REF *d_ref = new REAL_REF[veclen(n, 1)];
@@ -90,8 +90,8 @@ void Chetrd_test2(const char *uplo) {
 #endif
             delete[] work;
             delete[] work_ref;
-            work_ref = new COMPLEX_REF[max(1, (int)lwork_ref)];
-            work = new COMPLEX[max(1, (int)lwork)];
+            work_ref = new COMPLEX_REF[max_int(1, (int)lwork_ref)];
+            work = new COMPLEX[max_int(1, (int)lwork)];
             j = 0;
             while (j < MAX_ITER) {
                 set_random_vector(A_ref, A, matlen(lda, n));

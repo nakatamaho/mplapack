@@ -53,7 +53,7 @@ void Rgetri_test() {
     INTEGER info, lwork;
 
     for (int n = MIN_N; n < MAX_N; n++) {
-        for (int lda = max(n, 1); lda < MAX_LDA; lda++) {
+        for (int lda = max_int(n, 1); lda < MAX_LDA; lda++) {
             REAL_REF *A_ref = new REAL_REF[matlen(lda, n)];
             INTEGER_REF *ipiv_ref = new INTEGER_REF[veclen(n, 1)];
 
@@ -86,8 +86,8 @@ void Rgetri_test() {
 #endif
             delete[] work;
             delete[] work_ref;
-            work_ref = new REAL_REF[max(1, (int)lwork_ref)];
-            work = new REAL[max(1, (int)lwork)];
+            work_ref = new REAL_REF[max_int(1, (int)lwork_ref)];
+            work = new REAL[max_int(1, (int)lwork)];
             j = 0;
             while (j < MAX_ITER) {
                 set_random_vector(A_ref, A, matlen(lda, n));

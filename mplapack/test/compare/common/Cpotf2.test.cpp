@@ -53,7 +53,7 @@ void Cpotf2_test2(const char *uplo) {
     REAL_REF diff;
 
     for (int n = MIN_N; n < MAX_N; n++) {
-        for (int lda = max(n, 1); lda < MAX_LDA; lda++) {
+        for (int lda = max_int(n, 1); lda < MAX_LDA; lda++) {
             COMPLEX_REF *A_ref = new COMPLEX_REF[matlen(lda, n)];
             COMPLEX *A = new COMPLEX[matlen(lda, n)];
 #if defined VERBOSE_TEST

@@ -125,16 +125,16 @@ void Cheev_test2(const char *jobz, const char *uplo) {
     REAL_REF diff = 0.0;
 
     for (int n = MIN_N; n < MAX_N; n++) {
-        for (int lda = max(n, 1); lda < MAX_LDA; lda++) {
+        for (int lda = max_int(n, 1); lda < MAX_LDA; lda++) {
             COMPLEX_REF *Aorg_ref = new COMPLEX_REF[matlen(lda, n)];
             COMPLEX_REF *A_ref = new COMPLEX_REF[matlen(lda, n)];
             REAL_REF *w_ref = new REAL_REF[veclen(n, 1)];
-            REAL_REF *rwork_ref = new REAL_REF[max(1, 3 * n - 2)];
+            REAL_REF *rwork_ref = new REAL_REF[max_int(1, 3 * n - 2)];
 
             COMPLEX *Aorg = new COMPLEX[matlen(lda, n)];
             COMPLEX *A = new COMPLEX[matlen(lda, n)];
             REAL *w = new REAL[veclen(n, 1)];
-            REAL *rwork = new REAL[max(1, 3 * n - 2)];
+            REAL *rwork = new REAL[max_int(1, 3 * n - 2)];
 #if defined VERBOSE_TEST
             printf("# jobz %s, uplo %s,  n:%d lda %d\n", jobz, uplo, n, lda);
 #endif
@@ -164,8 +164,8 @@ void Cheev_test2(const char *jobz, const char *uplo) {
             delete[] work_ref;
             delete[] work;
 
-            work_ref = new COMPLEX_REF[max(1, (int)lwork_ref)];
-            work = new COMPLEX[max(1, (int)lwork)];
+            work_ref = new COMPLEX_REF[max_int(1, (int)lwork_ref)];
+            work = new COMPLEX[max_int(1, (int)lwork)];
             j = 0;
             while (j < MAX_ITER) {
                 set_random_vector(A_ref, A, matlen(lda, n));

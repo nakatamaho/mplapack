@@ -77,8 +77,8 @@ void Rlasyf_test2(const char *uplo) {
                     }
                 }
 
-                for (int lda = max(n, 1); lda <= MAX_LDA; lda++) {
-                    for (int ldw = max(n, 1); ldw <= MAX_LDW; ldw++) {
+                for (int lda = max_int(n, 1); lda <= MAX_LDA; lda++) {
+                    for (int ldw = max_int(n, 1); ldw <= MAX_LDW; ldw++) {
 
                         REAL_REF *A_ref = new REAL_REF[matlen(lda, n)];
                         REAL_REF *W_ref = new REAL_REF[matlen(ldw, nb)];

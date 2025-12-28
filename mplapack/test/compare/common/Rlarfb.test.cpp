@@ -68,20 +68,20 @@ void Rlarfb_test2(const char *side, const char *trans, const char *direct, const
             for (k = MIN_K; k <= kmax; k++) {
 
                 for (ldt = k; ldt <= MAX_LDT; ldt++) {
-                    for (ldc = max(1, m); ldc <= MAX_LDC; ldc++) {
+                    for (ldc = max_int(1, m); ldc <= MAX_LDC; ldc++) {
                         if (Mlsame(storev, "C") && Mlsame(side, "L"))
-                            ldvmin = max(1, m);
+                            ldvmin = max_int(1, m);
                         if (Mlsame(storev, "C") && Mlsame(side, "R"))
-                            ldvmin = max(1, n);
+                            ldvmin = max_int(1, n);
                         if (Mlsame(storev, "R"))
                             ldvmin = k;
 
                         for (ldv = ldvmin; ldv <= MAX_LDV; ldv++) {
 
                             if (Mlsame(side, "L"))
-                                ldwork = max(1, n);
+                                ldwork = max_int(1, n);
                             if (Mlsame(side, "R"))
-                                ldwork = max(1, m);
+                                ldwork = max_int(1, m);
                             if (Mlsame(storev, "C"))
                                 v_column = k;
                             if (Mlsame(storev, "R") && Mlsame(side, "L"))

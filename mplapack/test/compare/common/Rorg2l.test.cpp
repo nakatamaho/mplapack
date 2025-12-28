@@ -61,7 +61,7 @@ void Rorg2l_test() {
     for (m = MIN_M; m <= MAX_M; m++) {
         for (n = MIN_N; n <= m; n++) {
             for (k = MIN_K; k <= n; k++) {
-                for (lda = max(1, m); lda <= MAX_LDA; lda++) {
+                for (lda = max_int(1, m); lda <= MAX_LDA; lda++) {
 #if defined VERBOSE_TEST
                     printf("# m %d n %d k %d lda %d\n", (int)m, (int)n, (int)k, (int)lda);
 #endif

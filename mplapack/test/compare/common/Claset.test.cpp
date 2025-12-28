@@ -54,7 +54,7 @@ void Claset_test2(const char *uplo) {
 
     for (int n = MIN_N; n < MAX_N; n++) {
         for (int m = MIN_M; m < MAX_M; m++) {
-            for (int lda = max(1, m); lda < MAX_LDA; lda++) {
+            for (int lda = max_int(1, m); lda < MAX_LDA; lda++) {
                 COMPLEX_REF *A_ref = new COMPLEX_REF[matlen(lda, n)];
                 COMPLEX_REF alpha_ref, beta_ref;
                 COMPLEX *A = new COMPLEX[matlen(lda, n)];

@@ -59,7 +59,7 @@ void Rorgtr_test2(const char *uplo) {
     INTEGER info, worksize;
 
     for (n = MIN_N; n <= MAX_N; n++) {
-        for (lda = max(1, n); lda <= MAX_LDA; lda++) {
+        for (lda = max_int(1, n); lda <= MAX_LDA; lda++) {
 #if defined VERBOSE_TEST
             printf("# uplo %s, n %d, lda %d\n", uplo, n, lda);
 #endif

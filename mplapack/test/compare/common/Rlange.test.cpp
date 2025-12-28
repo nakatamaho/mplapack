@@ -56,7 +56,7 @@ void Rlange_test2(const char *norm) {
 
     for (int n = MIN_N; n < MAX_N; n++) {
         for (int m = MIN_M; m < MAX_M; m++) {
-            for (int lda = max(1, m); lda < MAX_LDA; lda++) {
+            for (int lda = max_int(1, m); lda < MAX_LDA; lda++) {
                 REAL_REF *A_ref = new REAL_REF[matlen(lda, n)];
                 REAL_REF *work_ref = new REAL_REF[veclen(m, 1)];
                 REAL *A = new REAL[matlen(lda, n)];

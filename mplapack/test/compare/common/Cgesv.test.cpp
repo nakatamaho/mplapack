@@ -57,8 +57,8 @@ void Cgesv_test() {
 
     for (int n = MIN_N; n <= MAX_N; n++) {
         for (int nrhs = MIN_NRHS; nrhs <= n; nrhs++) {
-            for (int lda = max(n, 1); lda <= MAX_LDA; lda++) {
-                for (int ldb = max(n, 1); ldb <= MAX_LDB; ldb++) {
+            for (int lda = max_int(n, 1); lda <= MAX_LDA; lda++) {
+                for (int ldb = max_int(n, 1); ldb <= MAX_LDB; ldb++) {
 
                     COMPLEX_REF *A_ref = new COMPLEX_REF[matlen(lda, n)];
                     COMPLEX_REF *B_ref = new COMPLEX_REF[matlen(ldb, nrhs)];

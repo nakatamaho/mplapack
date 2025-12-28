@@ -77,8 +77,8 @@ void Clahef_test2(const char *uplo) {
                     }
                 }
 
-                for (int lda = max(n, 1); lda <= MAX_LDA; lda++) {
-                    for (int ldw = max(n, 1); ldw <= MAX_LDW; ldw++) {
+                for (int lda = max_int(n, 1); lda <= MAX_LDA; lda++) {
+                    for (int ldw = max_int(n, 1); ldw <= MAX_LDW; ldw++) {
 
                         COMPLEX_REF *A_ref = new COMPLEX_REF[matlen(lda, n)];
                         COMPLEX_REF *W_ref = new COMPLEX_REF[matlen(ldw, nb)];

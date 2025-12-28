@@ -59,7 +59,7 @@ void Rlatrs_test2(const char *uplo, const char *trans, const char *diag, const c
     REAL_REF rtmp_ref;
 
     for (n = MIN_N; n <= MAX_N; n++) {
-        for (lda = max(1, (int)n); lda <= MAX_LDA; lda++) {
+        for (lda = max_int(1, (int)n); lda <= MAX_LDA; lda++) {
 #if defined VERBOSE_TEST
             printf("# n %d, lda %d, uplo %s, trans %s, diag %s, normin %s\n", (int)n, (int)lda, uplo, trans, diag, normin);
 #endif

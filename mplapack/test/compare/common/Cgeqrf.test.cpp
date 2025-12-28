@@ -60,23 +60,23 @@ void Cgeqrf_test() {
 
     for (m = MIN_M; m <= MAX_M; m++) {
         for (n = MIN_N; n <= m; n++) {
-            for (lda = max(1, m); lda <= MAX_LDA; lda++) {
+            for (lda = max_int(1, m); lda <= MAX_LDA; lda++) {
 #if defined VERBOSE_TEST
                 printf("# m %d n %d lda %d\n", (int)m, (int)n, (int)lda);
 #endif
                 INTEGER lwork = n * 64;
                 COMPLEX *A = new COMPLEX[matlen(lda, n)];
-                COMPLEX *tau = new COMPLEX[veclen(min(m, n), 1)];
+                COMPLEX *tau = new COMPLEX[veclen(min_int(m, n), 1)];
                 COMPLEX *work = new COMPLEX[veclen(lwork, 1)];
 
                 INTEGER_REF lwork_ref = n * 64;
                 COMPLEX_REF *A_ref = new COMPLEX_REF[matlen(lda, n)];
-                COMPLEX_REF *tau_ref = new COMPLEX_REF[veclen(min(m, n), 1)];
+                COMPLEX_REF *tau_ref = new COMPLEX_REF[veclen(min_int(m, n), 1)];
                 COMPLEX_REF *work_ref = new COMPLEX_REF[veclen(lwork_ref, 1)];
 
                 for (iter = 0; iter < MAX_ITER; iter++) {
                     set_random_vector(A_ref, A, matlen(lda, n));
-                    set_random_vector(tau_ref, tau, veclen(min(m, n), 1));
+                    set_random_vector(tau_ref, tau, veclen(min_int(m, n), 1));
                     set_random_vector(work_ref, work, veclen(n * 64, 1));
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
                     zgeqrf_f77(&m, &n, A_ref, &lda, tau_ref, work_ref, &lwork_ref, &info_ref);
@@ -100,7 +100,7 @@ void Cgeqrf_test() {
                     }
                     if (maxdiff < diff)
                         maxdiff = diff;
-                    diff = infnorm(tau_ref, tau, veclen(min(m, n), 1), 1);
+                    diff = infnorm(tau_ref, tau, veclen(min_int(m, n), 1), 1);
                     if (diff > EPSILON2) {
                         printf("error in t: ");
                         printnum(diff);

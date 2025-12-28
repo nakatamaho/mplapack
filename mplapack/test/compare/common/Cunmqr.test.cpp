@@ -62,10 +62,10 @@ void Cunmqr_test2(const char *side, const char *trans) {
     for (m = MIN_M; m <= MAX_M; m++) {
         for (n = MIN_N; n <= m; n++) {
             for (k = MIN_K; k <= n; k++) {
-                if (Mlsame(side, "R")) minlda = max(1, n);
-                if (Mlsame(side, "L")) minlda = max(1, m);
+                if (Mlsame(side, "R")) minlda = max_int(1, n);
+                if (Mlsame(side, "L")) minlda = max_int(1, m);
                 for (lda = minlda; lda <= MAX_LDA; lda++) {
-                    for (ldc = max(1, m); ldc <= MAX_LDC; ldc++) {
+                    for (ldc = max_int(1, m); ldc <= MAX_LDC; ldc++) {
 #if defined VERBOSE_TEST
                         printf("# m %d n %d k %d lda %d\n", m, n, k, lda);
 #endif

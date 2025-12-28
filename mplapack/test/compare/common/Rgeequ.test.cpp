@@ -60,7 +60,7 @@ void Rgeequ_test(void) {
 
     for (int n = MIN_N; n < MAX_N; n++) {
         for (int m = MIN_M; m < MAX_M; m++) {
-            for (int lda = max(m, 1); lda < MAX_LDA; lda++) {
+            for (int lda = max_int(m, 1); lda < MAX_LDA; lda++) {
                 REAL_REF *A_ref = new REAL_REF[matlen(lda, n)];
                 REAL_REF *R_ref = new REAL_REF[veclen(m, 1)];
                 REAL_REF *C_ref = new REAL_REF[veclen(n, 1)];

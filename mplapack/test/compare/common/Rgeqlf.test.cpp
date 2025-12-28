@@ -56,13 +56,13 @@ void Rgeqlf_test() {
 
     for (int n = MIN_N; n < MAX_N; n++) {
         for (int m = MIN_M; m < MAX_M; m++) {
-            for (int lda = max(m, 1); lda < MAX_LDA; lda++) {
+            for (int lda = max_int(m, 1); lda < MAX_LDA; lda++) {
 
                 REAL_REF *A_ref = new REAL_REF[matlen(lda, n)];
-                REAL_REF *tau_ref = new REAL_REF[veclen(min(m, n), 1)];
+                REAL_REF *tau_ref = new REAL_REF[veclen(min_int(m, n), 1)];
 
                 REAL *A = new REAL[matlen(lda, n)];
-                REAL *tau = new REAL[veclen(min(m, n), 1)];
+                REAL *tau = new REAL[veclen(min_int(m, n), 1)];
 
 #if defined VERBOSE_TEST
                 printf("n:%d m:%d lda %d\n", n, m, lda);
@@ -84,14 +84,14 @@ void Rgeqlf_test() {
 #endif
                 delete[] work;
                 delete[] work_ref;
-                lwork_ref = max(lwork_ref, (INTEGER_REF)1);
-                lwork = max(lwork, (INTEGER)1);
+                lwork_ref = max_int(lwork_ref, (INTEGER_REF)1);
+                lwork = max_int(lwork, (INTEGER)1);
                 work_ref = new REAL_REF[lwork_ref];
                 work = new REAL[lwork];
                 j = 0;
                 while (j < MAX_ITER) {
                     set_random_vector(A_ref, A, matlen(lda, n));
-                    set_random_vector(tau_ref, tau, veclen(min(m, n), 1));
+                    set_random_vector(tau_ref, tau, veclen(min_int(m, n), 1));
                     set_random_vector(work_ref, work, veclen(lwork, 1));
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
                     dgeqlf_f77(&m, &n, A_ref, &lda, tau_ref, work_ref, &lwork_ref, &info_ref);
@@ -121,7 +121,7 @@ void Rgeqlf_test() {
                     if (maxdiff < diff)
                         maxdiff = diff;
 
-                    diff = infnorm(tau_ref, tau, veclen(min(n, m), 1), 1);
+                    diff = infnorm(tau_ref, tau, veclen(min_int(n, m), 1), 1);
                     if (diff > EPSILON2) {
                         printf("error in tau: ");
                         printnum(diff);

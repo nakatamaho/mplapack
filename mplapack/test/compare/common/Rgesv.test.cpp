@@ -57,8 +57,8 @@ void Rgesv_test() {
 
     for (int n = MIN_N; n <= MAX_N; n++) {
         for (int nrhs = MIN_NRHS; nrhs <= n; nrhs++) {
-            for (int lda = max(n, 1); lda <= MAX_LDA; lda++) {
-                for (int ldb = max(n, 1); ldb <= MAX_LDB; ldb++) {
+            for (int lda = max_int(n, 1); lda <= MAX_LDA; lda++) {
+                for (int ldb = max_int(n, 1); ldb <= MAX_LDB; ldb++) {
 
                     REAL_REF *A_ref = new REAL_REF[matlen(lda, n)];
                     REAL_REF *B_ref = new REAL_REF[matlen(ldb, nrhs)];

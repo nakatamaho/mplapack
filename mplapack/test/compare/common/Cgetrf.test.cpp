@@ -56,22 +56,22 @@ void Cgetrf_test() {
 
     for (int n = MIN_N; n < MAX_N; n++) {
         for (int m = MIN_M; m < MAX_M; m++) {
-            for (int lda = max(m, 1); lda < MAX_LDA; lda++) {
+            for (int lda = max_int(m, 1); lda < MAX_LDA; lda++) {
 #if defined VERBOSE_TEST
                 printf("# n:%d m:%d lda:%d\n", n, m, lda);
 #endif
                 COMPLEX_REF *A_ref = new COMPLEX_REF[matlen(lda, n)];
-                INTEGER_REF *ipiv_ref = new INTEGER_REF[veclen(min(m, n), 1)];
+                INTEGER_REF *ipiv_ref = new INTEGER_REF[veclen(min_int(m, n), 1)];
 
                 COMPLEX *A = new COMPLEX[matlen(lda, n)];
-                INTEGER *ipiv = new INTEGER[veclen(min(m, n), 1)];
+                INTEGER *ipiv = new INTEGER[veclen(min_int(m, n), 1)];
 
                 j = 0;
                 while (j < MAX_ITER) {
                     set_random_vector(A_ref, A, matlen(lda, n));
                     ipiv_ref[0] = 0;
                     ipiv[0] = 0;
-                    for (i = 0; i < min(m, n); i++) {
+                    for (i = 0; i < min_int(m, n); i++) {
                         ipiv_ref[i] = 0;
                         ipiv[i] = 0;
                     }
@@ -96,8 +96,8 @@ void Cgetrf_test() {
                     printnum(maxdiff);
                     printf("\n");
 #endif
-                    int idiff = infnorm(ipiv_ref, ipiv, veclen(min(m, n), 1), 1);
-                    //          for(i=0;i<min(m,n);i++){ printf("%d %d\n",ipiv[i],ipivd[i]);}
+                    int idiff = infnorm(ipiv_ref, ipiv, veclen(min_int(m, n), 1), 1);
+                    //          for(i=0;i<min_int(m,n);i++){ printf("%d %d\n",ipiv[i],ipivd[i]);}
                     if (idiff > 0) {
                         printf("error pivoting %d!!\n", (int)idiff);
                         errorflag = TRUE;

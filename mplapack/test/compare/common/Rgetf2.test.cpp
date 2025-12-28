@@ -58,21 +58,21 @@ void Rgetf2_test() {
 
     for (int n = MIN_N; n < MAX_N; n++) {
         for (int m = MIN_M; m < MAX_M; m++) {
-            for (int lda = max(m, 1); lda < MAX_LDA; lda++) {
+            for (int lda = max_int(m, 1); lda < MAX_LDA; lda++) {
 #if defined VERBOSE_TEST
                 printf("# n:%d m:%d lda:%d\n", n, m, lda);
 #endif
                 REAL_REF *A_ref = new REAL_REF[matlen(lda, n)];
-                INTEGER_REF *ipiv_ref = new INTEGER_REF[veclen(min(m, n), 1)];
+                INTEGER_REF *ipiv_ref = new INTEGER_REF[veclen(min_int(m, n), 1)];
 
                 REAL *A = new REAL[matlen(lda, n)];
-                INTEGER *ipiv = new INTEGER[veclen(min(m, n), 1)];
+                INTEGER *ipiv = new INTEGER[veclen(min_int(m, n), 1)];
 
                 j = 0;
                 while (j < MAX_ITER) {
                     set_random_vector(A_ref, A, matlen(lda, n));
                     // initialize ipiv, ipivd.
-                    for (i = 0; i < veclen(min(m, n), 1); i++) {
+                    for (i = 0; i < veclen(min_int(m, n), 1); i++) {
                         ipiv_ref[i] = 0;
                         ipiv[i] = 0;
                     }
@@ -92,8 +92,8 @@ void Rgetf2_test() {
                     }
                     if (maxdiff < diff)
                         maxdiff = diff;
-                    idiff = infnorm(ipiv_ref, ipiv, veclen(min(m, n), 1), 1);
-                    //          for(i=0;i<min(m,n);i++){ printf("%d %d\n",ipiv[i],ipivd[i]);}
+                    idiff = infnorm(ipiv_ref, ipiv, veclen(min_int(m, n), 1), 1);
+                    //          for(i=0;i<min_int(m,n);i++){ printf("%d %d\n",ipiv[i],ipivd[i]);}
                     if (idiff > 0) {
                         printf("error pivoting %d!!\n", (int)idiff);
                         errorflag = TRUE;
