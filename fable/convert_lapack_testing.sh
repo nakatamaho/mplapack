@@ -1,11 +1,37 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Path to the FABLE Fortran->C++ converter
-FABLE_CONVERT="$HOME/mplapack/fable/convert_lapack.sh"
+# ------------------------------------------------------------
+# Locate MPLAPACK root and LAPACK TESTING directories
+# ------------------------------------------------------------
 
-# Enable nullglob to avoid literal "*.f*" when no files exist
-shopt -s nullglob
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+mplapack_root="$(cd "${script_dir}/.." && pwd)"
+lapack_version="${LAPACK_VERSION:-3.9.1}"
+
+# Path to the FABLE Fortran->C++ converter (override via env if needed)
+FABLE_CONVERT="${FABLE_CONVERT:-${mplapack_root}/fable/convert_lapack.sh}"
+
+testing_root="${mplapack_root}/external/lapack/work/internal/lapack-${lapack_version}/TESTING"
+default_dirs=(
+  "${testing_root}/EIG"
+  "${testing_root}/LIN"
+  "${testing_root}/MATGEN"
+)
+
+# Allow overriding target directories by command-line arguments
+if [[ "$#" -gt 0 ]]; then
+  target_dirs=( "$@" )
+else
+  target_dirs=( "${default_dirs[@]}" )
+fi
+
+for d in "${target_dirs[@]}"; do
+  if [[ ! -d "$d" ]]; then
+    echo "Error: directory not found: $d" >&2
+    exit 1
+  fi
+done
 
 # ------------------------------------------------------------
 # Exception lists: files that should NOT be converted
@@ -31,20 +57,26 @@ EXCLUDE_BASENAMES=(
 )
 
 # ------------------------------------------------------------
-# Collect all Fortran files (*.f, *.f90) except those in exceptions
+# Collect all Fortran files (*.f, *.F, *.f90, *.F90) except those in exceptions
 # ------------------------------------------------------------
 
 files=()
 
-for src in *.f*; do
-    base="${src##*/}"       # e.g., zgemv.f
-    stem="${base%%.*}"      # e.g., zgemv
+mapfile -t candidates < <(
+  find "${target_dirs[@]}" -maxdepth 1 -type f \( -iname '*.f' -o -iname '*.f90' \) | sort
+)
+
+for src in "${candidates[@]}"; do
+    base="$(basename "$src")"     # e.g., zlatmr.f or ZLATMR.F
+    stem="${base%%.*}"            # e.g., zlatmr or ZLATMR
+    stem_lc="${stem,,}"           # normalize for comparisons
 
     skip=false
 
     # Check prefix exceptions (e.g., s*, c*)
     for pfx in "${EXCLUDE_PREFIXES[@]}"; do
-        if [[ "$stem" == "$pfx"* ]]; then
+        pfx_lc="${pfx,,}"
+        if [[ "$stem_lc" == "$pfx_lc"* ]]; then
             skip=true
             break
         fi
@@ -53,7 +85,8 @@ for src in *.f*; do
     # Check exact-basename exceptions
     if ! $skip; then
         for ex in "${EXCLUDE_BASENAMES[@]}"; do
-            if [[ "$stem" == "$ex" ]]; then
+            ex_lc="${ex,,}"
+            if [[ "$stem_lc" == "$ex_lc" ]]; then
                 skip=true
                 break
             fi

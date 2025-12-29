@@ -10,6 +10,9 @@ mplapack_root="$(cd "${script_dir}/.." && pwd)"
 lapack_version="${LAPACK_VERSION:-3.9.1}"
 blas_src="${mplapack_root}/external/lapack/work/internal/lapack-${lapack_version}/BLAS/SRC"
 lapack_src="${mplapack_root}/external/lapack/work/internal/lapack-${lapack_version}/SRC"
+eig_src="${mplapack_root}/external/lapack/work/internal/lapack-${lapack_version}/TESTING/EIG"
+lin_src="${mplapack_root}/external/lapack/work/internal/lapack-${lapack_version}/TESTING/LIN"
+matgen_src="${mplapack_root}/external/lapack/work/internal/lapack-${lapack_version}/TESTING/MATGEN"
 out="${script_dir}/mplapack_name_map.txt"
 
 if [[ ! -d "$blas_src" ]]; then
@@ -18,6 +21,18 @@ if [[ ! -d "$blas_src" ]]; then
 fi
 if [[ ! -d "$lapack_src" ]]; then
     echo "Error: LAPACK source directory not found: $lapack_src" >&2
+    exit 1
+fi
+if [[ ! -d "$eig_src" ]]; then
+    echo "Error: LAPACK TESTING/EIG directory not found: $eig_src" >&2
+    exit 1
+fi
+if [[ ! -d "$lin_src" ]]; then
+    echo "Error: LAPACK TESTING/LIN directory not found: $lin_src" >&2
+    exit 1
+fi
+if [[ ! -d "$matgen_src" ]]; then
+    echo "Error: LAPACK TESTING/MATGEN directory not found: $matgen_src" >&2
     exit 1
 fi
 
@@ -124,6 +139,7 @@ make_cpp_name_from_prefix() {
     case "$first" in
         d|s) echo "R${rest}" ;;
         z|c) echo "C${rest}" ;;
+        a|A) echo "A${rest}" ;;
         *)   echo "${base}"  ;;
     esac
 }
@@ -134,15 +150,18 @@ make_cpp_name_from_prefix() {
 
 # Input file list:
 #   1) use command-line arguments if given
-#   2) otherwise, use "*.f" and "*.f90" in the BLAS and LAPACK source directories
+#   2) otherwise, use Fortran sources (*.f/*.F/*.f90/*.F90) in the BLAS and LAPACK source directories
 files=()
 if [[ "$#" -gt 0 ]]; then
     files=("$@")
 else
     mapfile -t files < <(
         {
-            find "$blas_src"   -maxdepth 1 -type f \( -name '*.f' -o -name '*.f90' \)
-            find "$lapack_src" -maxdepth 1 -type f \( -name '*.f' -o -name '*.f90' \)
+            find "$blas_src"   -maxdepth 1 -type f \( -name '*.f' -o -name '*.F' -o -name '*.f90' -o -name '*.F90' \)
+            find "$lapack_src" -maxdepth 1 -type f \( -name '*.f' -o -name '*.F' -o -name '*.f90' -o -name '*.F90' \)
+            find "$eig_src"    -maxdepth 1 -type f \( -name '*.f' -o -name '*.F' -o -name '*.f90' -o -name '*.F90' \)
+            find "$lin_src"    -maxdepth 1 -type f \( -name '*.f' -o -name '*.F' -o -name '*.f90' -o -name '*.F90' \)
+            find "$matgen_src" -maxdepth 1 -type f \( -name '*.f' -o -name '*.F' -o -name '*.f90' -o -name '*.F90' \)
         } | sort
     )
 fi
@@ -162,7 +181,7 @@ done
 # Now auto-generate mappings from filenames
 for src in "${files[@]}"; do
     base="${src##*/}"
-    base="${base%.*}"  # strip .f/.f90
+    base="${base%.*}"  # strip extension (.f/.F/.f90/.F90)
 
     # Skip if already handled by MANUAL_MAPPINGS
     if [[ -n "${SEEN_BASES["$base"]+x}" ]]; then

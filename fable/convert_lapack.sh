@@ -65,9 +65,21 @@ while IFS= read -r line; do
     fi
 done < "$name_map"
 
-# If not found in the map, apply the default MPLAPACK rule: s/d -> R, c/z -> C.
+# If not found in the map, apply the default MPLAPACK rule:
+#   s/d -> R, c/z -> C, a -> A
+# Other leading letters must be listed in mplapack_name_map.txt.
 if [ -z "$mapped_name" ]; then
-   echo "Error: not in the $mapped_name"
+    first_char="${lower_fortran:0:1}"
+    rest_name="${lower_fortran:1}"
+    case "$first_char" in
+        s|d) mapped_name="R${rest_name}" ;;
+        c|z) mapped_name="C${rest_name}" ;;
+        a)   mapped_name="A${rest_name}" ;;
+        *)
+            echo "Error: routine '${fortran_name}' is not in ${name_map} and has no default mapping rule" >&2
+            exit 1
+            ;;
+    esac
 fi
 
 cpp_generated="${src_dir}/${mapped_name}.cpp"
