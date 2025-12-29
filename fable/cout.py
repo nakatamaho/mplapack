@@ -1,3 +1,4 @@
+import os
 import re
 from itertools import product
 from io import StringIO
@@ -8620,166 +8621,380 @@ def _split_top_level_commas(s: str):
         items.append(tail)
     return items
 
-
 def _fix_fortran_f90_decl_syntax(src: str) -> str:
-    """Rewrite a subset of F90 declarations into F77-style declarations.
+    """
+    Rewrite a subset of Fortran 90 declaration syntax into a form that fable's
+    reader handles reliably.
 
-    Targets (common in LAPACK .f90):
-      - "<TYPE>, PARAMETER :: A = expr" -> "<TYPE> A" + "PARAMETER (A = expr)"
-      - "<TYPE>, INTENT(IN) :: ..."     -> "<TYPE> ..."
-      - "<TYPE> :: ..."                 -> "<TYPE> ..."
-    This keeps semantics for PARAMETER, and drops INTENT (interface-only).
+    Policy:
+      - Convert "TYPE, attr :: a, b" into "TYPE a, b" plus optional DIMENSION/SAVE.
+      - Convert "TYPE, PARAMETER :: x = expr" into "TYPE x" + "PARAMETER (x = expr)".
+      - For ALLOCATABLE deferred-shape arrays (:) or (:,:), try to substitute the
+        explicit shape from a later ALLOCATE(...) statement (RAII-friendly).
+      - If an ALLOCATE becomes redundant due to explicit-shape substitution, comment it out
+        and set STAT= variable to 0 (so error checks do not trip).
+      - DEALLOCATE statements are left untouched (expected to remain UNHANDLED).
     """
     import re
+
+    # Detect declaration lines starting with a known intrinsic type.
+    # Keep narrow to avoid rewriting non-declarations.
+    TYPE_RE = re.compile(
+        r'^\s*(DOUBLE\s+PRECISION|DOUBLE\s+COMPLEX|REAL|INTEGER|LOGICAL|CHARACTER|COMPLEX)\b',
+        flags=re.IGNORECASE
+    )
 
     def split_eol(line: str):
         if line.endswith("\r\n"):
             return line[:-2], "\r\n"
         if line.endswith("\n"):
             return line[:-1], "\n"
-        if line.endswith("\r"):
-            return line[:-1], "\r"
         return line, ""
 
-    # Detect declaration lines starting with a known intrinsic type.
-    # (Keep this narrow to avoid rewriting non-declarations.)
-    TYPE_RE = re.compile(
-        r'^\s*(DOUBLE\s+PRECISION|REAL|INTEGER|LOGICAL|CHARACTER|COMPLEX)\b',
-        flags=re.IGNORECASE
-    )
+    def split_inline_comment(raw: str):
+        """Split raw line into (code, comment) at first '!' outside quotes."""
+        in_str = False
+        quote = None
+        for i, ch in enumerate(raw):
+            if ch in ("'", '"'):
+                if not in_str:
+                    in_str = True
+                    quote = ch
+                elif quote == ch:
+                    in_str = False
+                    quote = None
+            if (not in_str) and ch == "!":
+                return raw[:i], raw[i:]
+        return raw, ""
 
-    # FABLE_SKIP_PARAMETER_CONTINUATION:
-    # If an F90 PARAMETER declaration is continued with free-form '&',
-    # converting it line-by-line into "PARAMETER(...)" can introduce a
-    # premature closing ')' that prevents our continuation rewriter from
-    # working. In that case we emit a simple stub parameter and comment
-    # out the original continued expression for manual fix.
-    def _code_part_no_comment(s: str) -> str:
-        return s.split("!", 1)[0]
+    def endswith_ampersand(raw: str) -> bool:
+        code, _ = split_inline_comment(raw)
+        return code.rstrip().endswith("&")
 
-    def _endswith_ampersand(s: str) -> bool:
-        return _code_part_no_comment(s).rstrip().endswith("&")
+    def find_top_level_eq(text: str) -> int:
+        """
+        Return index of first '=' at nesting level 0 (ignores strings and '=>').
+        Used to detect initializers in declarators and keywords like STAT=.
+        """
+        depth = 0
+        in_str = False
+        quote = None
+        i = 0
+        while i < len(text):
+            ch = text[i]
+            if ch in ("'", '"'):
+                if not in_str:
+                    in_str = True
+                    quote = ch
+                elif quote == ch:
+                    in_str = False
+                    quote = None
+                i += 1
+                continue
+            if not in_str:
+                if ch == "(":
+                    depth += 1
+                elif ch == ")":
+                    depth = max(0, depth - 1)
+                elif ch == "=" and depth == 0:
+                    if i + 1 < len(text) and text[i + 1] == ">":
+                        i += 2
+                        continue
+                    return i
+            i += 1
+        return -1
 
-    def _default_param_literal(base_type_upper: str) -> str:
-        bt = (base_type_upper or "").strip().upper()
-        if bt.startswith("LOGICAL"):
-            return ".FALSE."
-        if bt.startswith("DOUBLE PRECISION"):
-            return "0D0"
-        if bt.startswith("REAL"):
-            return "0.0"
-        if bt.startswith("COMPLEX"):
-            return "(0.0,0.0)"
-        return "0"
+    def extract_paren_content(text: str, lpar: int):
+        """Given text[lpar]=='(', return (content, rpar_index)."""
+        depth = 0
+        for i in range(lpar, len(text)):
+            if text[i] == "(":
+                depth += 1
+            elif text[i] == ")":
+                depth -= 1
+                if depth == 0:
+                    return text[lpar + 1:i], i
+        return text[lpar + 1:], len(text) - 1
 
-    out = []
-    skipping_param_cont = False
+    def normalize_base_type(bt: str) -> str:
+        low = " ".join(bt.strip().split()).lower()
+        if low == "double precision":
+            return "DOUBLE PRECISION"
+        if low == "double complex":
+            return "DOUBLE COMPLEX"
+        return bt.strip().upper()
+
+    def normalize_dim_spec(dim: str):
+        """
+        Convert deferred-shape components ':' into parseable placeholders.
+        This function intentionally replaces ':' with '1' (not '*') to avoid
+        producing illegal local assumed-size arrays.
+        """
+        if dim is None:
+            return None
+        dim = dim.strip()
+        if not dim:
+            return None
+        parts = _split_top_level_commas(dim)
+        if not parts:
+            return None
+        out_parts = []
+        changed = False
+        for p in parts:
+            ps = p.strip()
+            if ps == ":":
+                out_parts.append("1")
+                changed = True
+            else:
+                out_parts.append(ps)
+        return ", ".join(out_parts) if changed else dim
+
+    def parse_allocate_statement(code: str):
+        """
+        Parse ALLOCATE(...) statement; return ([(name, shape)], stat_var) or None.
+
+        Accept optional numeric statement labels like:
+          '  100 ALLOCATE(...)'
+        """
+        low = code.lower()
+        m = re.match(r"^\s*(\d+\s+)?allocate\b", low)
+        if not m:
+            return None
+        kw = low.find("allocate")
+        lpar = code.find("(", kw)
+        if lpar < 0:
+            return None
+        inside, _ = extract_paren_content(code, lpar)
+        items = _split_top_level_commas(inside)
+        objs = []
+        stat_var = None
+        for it in items:
+            it = it.strip()
+            if not it:
+                continue
+            eq = find_top_level_eq(it)
+            if eq != -1:
+                key = it[:eq].strip().lower()
+                val = it[eq + 1:].strip()
+                if key == "stat":
+                    stat_var = val
+                continue
+            lpar2 = it.find("(")
+            if lpar2 != -1:
+                shape, _ = extract_paren_content(it, lpar2)
+                name = it[:lpar2].strip()
+                if name:
+                    objs.append((name, shape.strip()))
+            else:
+                name = it.strip()
+                if name:
+                    objs.append((name, None))
+        return objs, stat_var
+
+    # Pass 1: collect shapes from ALLOCATE statements.
+    allocate_shapes = {}
+    for line in src.splitlines(True):
+        raw, _ = split_eol(line)
+        code, _ = split_inline_comment(raw)
+        parsed = parse_allocate_statement(code)
+        if not parsed:
+            continue
+        objs, _ = parsed
+        for name, shape in objs:
+            if shape:
+                allocate_shapes.setdefault(name.lower(), shape)
+
+    # Pass 2: rewrite declarations and optionally eliminate redundant ALLOCATE.
+    out_lines = []
+    converted_allocatable = set()  # names where we substituted shape from ALLOCATE
+
     pending_param_cont = False
-    # Track which PARAMETER names were emitted with a stub initializer because
-    # we had to drop a multi-line free-form continuation expression.
-    pending_param_names = []
-    pending_param_needs_unhandled = False
+    pending_indent = ""
 
     for line in src.splitlines(True):
         raw, eol = split_eol(line)
-        if skipping_param_cont:
-            # Keep pure comment/blank lines unchanged while skipping.
-            if raw.strip() == "" or raw.lstrip().startswith("!"):
-                out.append(raw + eol)
-                continue
-            out.append(
-                "! FABLE: skipped PARAMETER continuation: " + raw.strip() + eol)
 
-            # Accumulate machine-constant intrinsic usage across continuation lines.
-            if _contains_machine_const_intrinsics(_code_part_no_comment(raw)):
-                pending_param_needs_unhandled = True
-
-            pending_param_cont = _endswith_ampersand(raw)
-            if not pending_param_cont:
-                skipping_param_cont = False
-
-                # If the dropped PARAMETER expression mentioned machine-constant
-                # intrinsics, force the generated C++ initializer to UNHANDLED.
-                if pending_param_needs_unhandled:
-                    for nm in pending_param_names:
-                        _FORCE_UNHANDLED_PARAMETER_NAMES.add(nm.lower())
-                pending_param_names = []
-                pending_param_needs_unhandled = False
-            continue
-
-        # Keep fixed-form comment lines intact.
+        # Preserve fixed-form full-line comments as-is.
         if raw and raw[0] in ("c", "C", "*", "!"):
-            out.append(raw + eol)
+            out_lines.append(raw + eol)
             continue
 
-        if "::" not in raw:
-            out.append(raw + eol)
+        # Conservative handling of continued free-form PARAMETER blocks.
+        if pending_param_cont:
+            out_lines.append(f"{pending_indent}!FABLE: dropped continued PARAMETER line: {raw.strip()}{eol}")
+            if not endswith_ampersand(raw):
+                pending_param_cont = False
+                pending_indent = ""
             continue
 
-        if not TYPE_RE.match(raw):
-            out.append(raw + eol)
+        code, comment = split_inline_comment(raw)
+
+        # Eliminate ALLOCATE if it targets only arrays we already made explicit-shape.
+        parsed_alloc = parse_allocate_statement(code)
+        if parsed_alloc:
+            objs, stat_var = parsed_alloc
+            if objs and all((name.lower() in converted_allocatable) for name, _ in objs):
+                indent = re.match(r"^(\s*)", raw).group(1)
+                out_lines.append(f"{indent}!FABLE: ALLOCATE removed (RAII in C++){eol}")
+                if stat_var:
+                    out_lines.append(f"{indent}{stat_var} = 0{eol}")
+                continue
+            out_lines.append(raw + eol)
             continue
 
-        indent = re.match(r'^(\s*)', raw).group(1)
-        left, right = raw.split("::", 1)
-        left = left.strip()
-        right = right.strip()
+        # Only rewrite typed declarations with '::'.
+        if "::" not in code:
+            out_lines.append(raw + eol)
+            continue
+        if not TYPE_RE.match(code):
+            out_lines.append(raw + eol)
+            continue
 
-        # Base type is the part before the first comma.
-        base_type = left.split(",", 1)[0].strip()
-        # Normalize "DOUBLE PRECISION" spacing/case.
-        if re.match(r'^double\s+precision$', base_type, flags=re.IGNORECASE):
-            base_type = "DOUBLE PRECISION"
-        else:
-            base_type = base_type.upper()
+        indent = re.match(r"^(\s*)", raw).group(1)
+        left, right = code.split("::", 1)
+        left_parts = _split_top_level_commas(left.strip())
+        if not left_parts:
+            out_lines.append(raw + eol)
+            continue
 
-        attrs = []
-        if "," in left:
-            attrs = [a.strip().lower() for a in left.split(",")[1:]]
+        base_type = normalize_base_type(left_parts[0])
+        attrs_raw = [p.strip() for p in left_parts[1:] if p.strip()]
 
-        is_parameter = any(a.startswith("parameter") for a in attrs)
-        # INTENT(...) is dropped (interface-only)
+        dim_attr = None
+        is_parameter = False
+        is_allocatable = False
+        is_save = False
+
+        for attr in attrs_raw:
+            low = attr.lower().strip()
+            if low.startswith("dimension"):
+                lpar = attr.find("(")
+                if lpar != -1:
+                    inside, _ = extract_paren_content(attr, lpar)
+                    dim_attr = inside.strip()
+            elif low.startswith("parameter"):
+                is_parameter = True
+            elif low.startswith("allocatable"):
+                is_allocatable = True
+            elif low.startswith("save"):
+                is_save = True
+            else:
+                # Drop INTENT/OPTIONAL/VALUE/etc.
+                pass
+
+        dim_attr = normalize_dim_spec(dim_attr) if dim_attr else None
+        decl_items = _split_top_level_commas(right.strip())
 
         if is_parameter:
-            decl_items = _split_top_level_commas(right)
+            # "TYPE, PARAMETER :: a=..., b=..." -> decl + PARAMETER().
             names = []
             for it in decl_items:
-                if "=" in it:
-                    names.append(it.split("=", 1)[0].strip())
-                else:
-                    names.append(it.strip())
-            out.append(f"{indent}{base_type} {', '.join(names)}{eol}")
+                eq = find_top_level_eq(it)
+                lhs = it.strip() if eq == -1 else it[:eq].strip()
+                if not lhs:
+                    continue
+                lpar = lhs.find("(")
+                if lpar != -1:
+                    lhs = lhs[:lpar].strip()
+                if lhs:
+                    names.append(lhs)
 
-            # Even for non-continued PARAMETER declarations, mark machine-constant
-            # intrinsic usage so we can force UNHANDLED in the C++ output.
-            if _contains_machine_const_intrinsics(_code_part_no_comment(raw)):
+            if names:
+                out_lines.append(f"{indent}{base_type} {', '.join(names)}{eol}")
+
+            # Keep existing behavior: if machine-constant intrinsics are used, force UNHANDLED.
+            if _contains_machine_const_intrinsics(code):
                 for nm in names:
                     _FORCE_UNHANDLED_PARAMETER_NAMES.add(nm.lower())
 
-            # If this PARAMETER declaration is continued with free-form '&',
-            # emit a simple stub and comment out the original continued expression.
-            if _endswith_ampersand(raw):
-                lit = _default_param_literal(base_type)
-                out.append(
-                    f"{indent}PARAMETER ({', '.join([n + ' = ' + lit for n in names])}){eol}")
-                out.append(
-                    "! FABLE: original continued PARAMETER expression omitted; fix manually." + eol)
-                out.append("! FABLE_ORIG: " + raw.strip() + eol)
-
-                # Remember names in this continuation block; we will decide at the
-                # end of the block whether they need to be forced to UNHANDLED.
-                pending_param_names = list(names)
-                pending_param_needs_unhandled = _contains_machine_const_intrinsics(
-                    _code_part_no_comment(raw)
-                )
-                skipping_param_cont = True
+            if endswith_ampersand(raw):
+                # Emit dummy PARAMETER and drop the rest conservatively.
+                bt_low = base_type.lower()
+                if "logical" in bt_low:
+                    lit = ".FALSE."
+                elif "character" in bt_low:
+                    lit = "''"
+                elif "complex" in bt_low:
+                    lit = "(0.0, 0.0)"
+                elif "real" in bt_low or "double" in bt_low:
+                    lit = "0.0"
+                else:
+                    lit = "0"
+                if names:
+                    out_lines.append(f"{indent}PARAMETER ({names[0]} = {lit}){eol}")
+                out_lines.append(f"{indent}!FABLE: original continued PARAMETER: {raw.strip()}{eol}")
                 pending_param_cont = True
+                pending_indent = indent
             else:
-                out.append(f"{indent}PARAMETER ({', '.join(decl_items)}){eol}")
-        else:
-            out.append(f"{indent}{base_type} {right}{eol}")
+                out_lines.append(f"{indent}PARAMETER ({', '.join([it.strip() for it in decl_items if it.strip()])}){eol}")
+            continue
 
-    return "".join(out)
+        # Non-PARAMETER declarations.
+        per_name_dim = {}
+        names = []
+        has_init = False
+
+        for it in decl_items:
+            it = it.strip()
+            if not it:
+                continue
+            eq = find_top_level_eq(it)
+            lhs = it if eq == -1 else it[:eq].strip()
+            if eq != -1:
+                has_init = True
+
+            dim = None
+            lpar = lhs.find("(")
+            if lpar != -1:
+                inside, _ = extract_paren_content(lhs, lpar)
+                dim = normalize_dim_spec(inside)
+                name = lhs[:lpar].strip()
+            else:
+                name = lhs.strip()
+
+            if not name:
+                continue
+
+            if dim is None and dim_attr is not None:
+                dim = dim_attr
+
+            # For ALLOCATABLE: bind explicit shape from ALLOCATE mapping if possible (RAII-friendly).
+            if is_allocatable:
+                shape = allocate_shapes.get(name.lower())
+                if shape:
+                    dim = shape.strip()
+                    converted_allocatable.add(name.lower())
+
+            names.append(name)
+
+            # If still no dimension for an ALLOCATABLE, force a minimal explicit shape
+            # so later uses "name(...)" will be treated as array, not function.
+            if dim is None and is_allocatable:
+                dim = "1"
+                out_lines.append(f"{indent}!FABLE: unresolved allocatable shape for {name}; using DIMENSION({dim}) placeholder{eol}")
+
+            if dim:
+                per_name_dim[name] = dim
+
+        # If initializers exist, do not desugar dims to DIMENSION statements.
+        if has_init:
+            out_lines.append(f"{indent}{base_type} {right.strip()}{comment}{eol}")
+            if is_save and names:
+                out_lines.append(f"{indent}SAVE {', '.join(names)}{eol}")
+            continue
+
+        if names:
+            out_lines.append(f"{indent}{base_type} {', '.join(names)}{comment}{eol}")
+            for nm in names:
+                dim = per_name_dim.get(nm)
+                if dim:
+                    out_lines.append(f"{indent}DIMENSION {nm}({dim}){eol}")
+            if is_save:
+                out_lines.append(f"{indent}SAVE {', '.join(names)}{eol}")
+        else:
+            out_lines.append(raw + eol)
+
+    return "".join(out_lines)
 
 
 def _fix_fortran_select_case_to_if(src: str) -> str:
@@ -9327,9 +9542,24 @@ def process(
         all_fprocs = fable.read.process(file_names=patched_file_names)
 
     if top_cpp_file_name is None and orig_file_names is not None and len(orig_file_names) == 1:
-        main_fproc = all_fprocs.all_in_input_order[0]
-        base_name = convert_function_name_to_mplapack(main_fproc.name.value)
+        # Derive output file name from the input file stem (basename without extension),
+        # not from the first fproc name.
+        #
+        # Reason:
+        #   For PROGRAM units, the internal procedure name is often prefixed with
+        #   "program_" (e.g. PROGRAM DCHKAB -> program_dchkab). Using that name would
+        #   produce program_dchkab.cpp, which is not desired here.
         src_path = orig_file_names[0]
+        base_name = os.path.splitext(os.path.basename(src_path))[0]
+        if not base_name:
+            main_fproc = all_fprocs.all_in_input_order[0]
+            base_name = main_fproc.name.value
+        src_path = orig_file_names[0]
+        stem = os.path.splitext(os.path.basename(src_path))[0]
+        base_name = convert_function_name_to_mplapack(stem) if stem else None
+        if not base_name:
+            main_fproc = all_fprocs.all_in_input_order[0]
+            base_name = convert_function_name_to_mplapack(main_fproc.name.value)
         src_dir = os.path.dirname(src_path)
         if src_dir:
             top_cpp_file_name = os.path.join(src_dir, base_name + ".cpp")

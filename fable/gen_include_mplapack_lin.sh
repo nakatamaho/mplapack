@@ -8,7 +8,7 @@ else
     SED=gsed
 fi
 
-FILES=`ls *cpp | grep -v Rlamch | grep -v Mlaenv | grep -v Mutils`
+FILES=`ls *cpp`
 for filename in $FILES; do
 /usr/local/bin/ctags -x --c++-kinds=pf --language-force=c++ --_xformat='%{typeref} %{name} %{signature};' ${filename} |  tr ':' ' ' | sed -e 's/^typename //' >  ${filename%.*}.hpp
 done
