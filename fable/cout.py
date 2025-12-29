@@ -7989,6 +7989,136 @@ def _drop_fortran_intrinsic_statements(src: str, *, source_form: str = "fixed") 
 
     return "".join(out)
 
+def _strip_openmp_blocks(src: str) -> str:
+    """Strip OpenMP-only code guarded by preprocessor directives.
+
+    LAPACK test sources sometimes contain FPP directives like:
+
+        #if defined(_OPENMP)
+          use omp_lib
+          ...
+        #endif
+
+    The FABLE reader is not a full Fortran preprocessor, and fixed-form parsing
+    cannot handle free-form "USE" statements. For MPLAPACK conversion we treat
+    OpenMP as disabled and keep the non-OpenMP branch (if any).
+
+    This is a lightweight OpenMP-focused filter; it is not a general C preprocessor.
+    """
+
+    pp_re = re.compile(r"^\s*#\s*(if|ifdef|ifndef|elif|else|endif)\b(.*)$", re.IGNORECASE)
+    use_omp_re = re.compile(r"^\s*use\s+(?:,\s*intrinsic\s*::\s*)?omp_lib\b", re.IGNORECASE)
+    omp_call_re = re.compile(r"\bomp_(get|set)_[a-z0-9_]+\b", re.IGNORECASE)
+
+    def eval_openmp_cond(kind: str, rest: str) -> bool:
+        """Evaluate a preprocessor condition that mentions _OPENMP.
+
+        Policy: treat _OPENMP as NOT defined.
+        """
+        txt = (rest or "").strip()
+        low = txt.lower()
+
+        if kind == "ifdef":
+            return False
+        if kind == "ifndef":
+            return True
+
+        # #if / #elif cases
+        if re.search(r"!\s*defined\s*\(\s*_openmp\s*\)", low) or re.search(r"!\s*defined\s+_openmp\b", low):
+            return True
+        if re.search(r"defined\s*\(\s*_openmp\s*\)", low) or re.search(r"defined\s+_openmp\b", low):
+            return False
+        if re.search(r"!\s*_openmp\b", low):
+            return True
+
+        # Fallback: any remaining expression that mentions _OPENMP is treated as false.
+        return False
+
+    lines = src.splitlines(True)
+    out = []
+
+    # Stack of OpenMP conditional blocks.
+    # Each frame: {"depth": int, "keep": bool, "selected": bool}
+    stack = []
+
+    def currently_keeping() -> bool:
+        return all(fr["keep"] for fr in stack)
+
+    for line in lines:
+        # Always drop USE omp_lib; it breaks fixed-form parsing.
+        if use_omp_re.match(line):
+            continue
+
+        m = pp_re.match(line)
+        if m:
+            kw = m.group(1).lower()
+            rest = (m.group(2) or "").strip()
+            mentions_openmp = ("_openmp" in rest.lower())
+
+            # Enter an OpenMP conditional block.
+            if kw in ("if", "ifdef", "ifndef") and mentions_openmp:
+                cond = eval_openmp_cond(kw, rest)
+                stack.append({"depth": 1, "keep": bool(cond), "selected": bool(cond)})
+                continue
+
+            if stack:
+                fr = stack[-1]
+
+                # Track nested conditionals inside an OpenMP block.
+                if kw in ("if", "ifdef", "ifndef"):
+                    fr["depth"] += 1
+                    # Keep nested directives only if we keep this branch.
+                    if currently_keeping():
+                        out.append(line)
+                    continue
+
+                if kw == "endif":
+                    fr["depth"] -= 1
+                    if fr["depth"] == 0:
+                        stack.pop()
+                    continue
+
+                # Switch branches for the top level of the OpenMP conditional.
+                if fr["depth"] == 1 and kw in ("elif", "else"):
+                    if kw == "else":
+                        if not fr["selected"]:
+                            fr["keep"] = True
+                            fr["selected"] = True
+                        else:
+                            fr["keep"] = False
+                    else:
+                        if not fr["selected"]:
+                            # If the elif condition still mentions _OPENMP, evaluate it.
+                            # Otherwise assume it is the intended non-OpenMP fallback.
+                            take = eval_openmp_cond("elif", rest) if ("_openmp" in rest.lower()) else True
+                            fr["keep"] = bool(take)
+                            if take:
+                                fr["selected"] = True
+                        else:
+                            fr["keep"] = False
+                    continue
+
+                # Other directives inside OpenMP blocks: keep only if active.
+                if currently_keeping():
+                    out.append(line)
+                continue
+
+            # Not in an OpenMP block: keep directives as-is.
+            out.append(line)
+            continue
+
+        # Regular Fortran line
+        if stack and not currently_keeping():
+            continue
+
+        # Optionally drop direct omp_* calls even if not guarded.
+        if omp_call_re.search(line):
+            continue
+
+        out.append(line)
+
+    return "".join(out)
+
 
 def _detect_fortran_source_form(file_name: str, src: str) -> str:
     """Detect Fortran source form: 'free' (F90+) or 'fixed' (F77-style).
@@ -9092,6 +9222,8 @@ def _preprocess_fortran_files(file_names):
         try:
             with open(fn, "r") as f:
                 src = f.read()
+            original_src = src
+            src = _strip_openmp_blocks(src)
         except OSError:
             patched.append(fn)
             continue
@@ -9109,7 +9241,7 @@ def _preprocess_fortran_files(file_names):
         # If the content is unchanged but the extension does not match the
         # detected/desired form, still write a temporary copy with a matching
         # suffix so the downstream reader can pick the correct mode.
-        need_temp = (new_src != src)
+        need_temp = (new_src != original_src)
         if emit_form == "free" and ext not in free_exts:
             need_temp = True
         if emit_form == "fixed" and ext not in fixed_exts:
