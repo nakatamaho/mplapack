@@ -12,6 +12,15 @@
 set -euo pipefail
 shopt -s nullglob
 
+# ------------------------------------------------------------
+# Exception lists: sources that should NOT be converted in TESTING pass
+# ------------------------------------------------------------
+# Exclude any file whose basename starts with these prefixes (case-insensitive).
+# We skip single precision real/complex families: s* and c*.
+EXCLUDE_PREFIXES=( s c )
+# Exclude specific files by name (case-insensitive).
+EXCLUDE_FILES=( )
+
 PASSES="${1:-2}"
 
 ROOT="${ROOT:-/home/docker/mplapack}"
@@ -168,11 +177,48 @@ convert_dir() {
 
   (
     cd "${src_dir}"
-    local files=( *.f *.F *.f90 )
-    if (( ${#files[@]} == 0 )); then
+    # Collect Fortran sources, then filter out unnecessary precisions.
+    local all=( *.f *.F *.f90 )
+    if (( ${#all[@]} == 0 )); then
       die "No Fortran sources found in: ${src_dir}"
     fi
 
+    local files=()
+    local src base base_lower stem stem_lower skip pfx ex ex_lower ex_stem
+    for src in "${all[@]}"; do
+      base="${src##*/}"      # e.g., cbdt01.f
+      base_lower="${base,,}"
+      stem="${base%%.*}"     # e.g., cbdt01
+      stem_lower="${stem,,}" # case-insensitive compare
+
+      skip=false
+      for pfx in "${EXCLUDE_PREFIXES[@]}"; do
+        if [[ "${stem_lower}" == "${pfx}"* ]]; then
+          skip=true
+          break
+        fi
+      done
+
+      # Check exact-file exceptions
+      if ! $skip && (( ${#EXCLUDE_FILES[@]} > 0 )); then
+        for ex in "${EXCLUDE_FILES[@]}"; do
+          ex_lower="${ex,,}"
+          ex_stem="${ex_lower%%.*}"  # allow both "foo.f" and "foo"
+          if [[ "${base_lower}" == "${ex_lower}" || "${stem_lower}" == "${ex_stem}" ]]; then
+            skip=true
+            break
+          fi
+        done
+      fi
+
+      $skip && continue
+
+      files+=( "${src}" )
+    done
+
+    if (( ${#files[@]} == 0 )); then
+      die "After filtering prefixes (${EXCLUDE_PREFIXES[*]}), no Fortran sources remain in: ${src_dir}"
+    fi
     if command -v parallel >/dev/null 2>&1; then
       parallel -j "${JOBS}" --halt soon,fail=1 \
         'echo "Converting {}"; bash "'"${FABLE}/convert_lapack.sh"'" "{}"' \
