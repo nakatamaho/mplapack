@@ -28,8 +28,8 @@
  *
  */
 
-#ifndef _MPLAPACK_MATGEN_DD_H_
-#define _MPLAPACK_MATGEN_DD_H_
+#ifndef _MPLAPACK_LIN_DD_H_
+#define _MPLAPACK_LIN_DD_H_
 
 #include "mplapack_config.h"
 #include "qd/dd_real.h"
