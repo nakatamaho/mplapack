@@ -287,9 +287,9 @@ run_one_pass() {
   local pass="$1"
   echo "=== PASS ${pass}/${PASSES} ==="
 
-  convert_dir "${EIG_SRC}" "${EIG_DST}"
-  convert_dir "${LIN_SRC}" "${LIN_DST}"
   convert_dir "${MATGEN_SRC}" "${MATGEN_DST}"
+  convert_dir "${LIN_SRC}" "${LIN_DST}"
+  convert_dir "${EIG_SRC}" "${EIG_DST}"
 
   generate_includes
   generate_signatures
