@@ -85,7 +85,7 @@ for mplib in $MPLIBS; do
     fi
 
     clang-format -style="{BasedOnStyle: llvm, IndentWidth: 4, ColumnLimit: 10000 }" mpblas_${mplib}.h | sort > l ; mv l mpblas_${mplib}.h 
-    cat ~/mplapack/misc/mpblas_${mplib}.h.in mpblas_${mplib}.h > ~/mplapack/include/mpblas_${mplib}.h
+    cat ~/mplapack/fable/mpblas_${mplib}.h.in mpblas_${mplib}.h > ~/mplapack/include/mpblas_${mplib}.h
     rm mpblas_${mplib}.h
     echo "#endif" >> ~/mplapack/include/mpblas_${mplib}.h
 
