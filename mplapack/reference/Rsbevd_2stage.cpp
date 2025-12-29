@@ -142,7 +142,7 @@ void Rsbevd_2stage(const char *jobz, const char *uplo, INTEGER const n, INTEGER 
         }
     }
     //
-    // Call DSYTRD_SB2ST to reduce band symmetric matrix to tridiagonal form.
+    // Call Rsytrd_sb2st to reduce band symmetric matrix to tridiagonal form.
     //
     INTEGER inde = 1;
     INTEGER indhous = inde + n;
