@@ -1359,6 +1359,18 @@ def cmn_needs_to_be_inserted(conv_info, prev_tok):
     if prev_tok is None:
         return False
 
+    # Only an identifier token can be a procedure name eligible for cmn injection.
+    # Be defensive: some token kinds carry list-valued .value, which must not
+    # be passed to .lower().
+    try:
+        if not prev_tok.is_identifier():
+            return False
+    except Exception:
+        return False
+
+    if not isinstance(getattr(prev_tok, "value", None), str):
+        return False
+
     # Intrinsic functions (e.g. HUGE) are NOT variables and must not be
     # queried via get_fdecl().
     from fable import intrinsics
@@ -1368,9 +1380,7 @@ def cmn_needs_to_be_inserted(conv_info, prev_tok):
             or lname in intrinsics.io_set_lower):
         return False
 
-    if (prev_tok is not None
-            and prev_tok.is_identifier()
-            and conv_info.fprocs_by_name is not None
+    if (conv_info.fprocs_by_name is not None
             and conv_info.fproc is not None):
         # Some F90 sources call helper procedures brought in via USE
         # statements (e.g. LA_ISNAN) that we may strip during preprocessing.

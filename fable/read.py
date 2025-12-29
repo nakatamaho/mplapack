@@ -3090,6 +3090,9 @@ class fproc(fproc_p_methods):
             tokens=tokens, allow_power=allow_power)
         if (code is None):
             return False
+        code = code.strip()
+        if (len(code) == 0):
+            return False
         expr = "%s = %s" % (identifier, code)
         buffer.append(expr)
         return O._eval_const_expression_simple_tokens(
@@ -3114,6 +3117,9 @@ class fproc(fproc_p_methods):
                 tokens=tokens, allow_power=allow_power)
             if (code is None):
                 return None
+            code = code.strip()
+            if (len(code) == 0):
+                return False
             buffer.append("_ = %s" % code)
             if (not O._eval_const_expression_simple_tokens(
                     tokens=tokens, buffer=buffer, allow_power=allow_power)):
@@ -3138,26 +3144,42 @@ class fproc(fproc_p_methods):
     def eval_dimensions_simple(O, dim_tokens, allow_power=True):
         vals = []
         for tok_seq in dim_tokens:
-            if (tokenization.tok_seq_is_star(tok_seq=tok_seq)):
+            if tokenization.tok_seq_is_star(tok_seq=tok_seq):
                 vals.append(None)
-            else:
-                for i, tok in enumerate(tok_seq.value):
-                    if (tok.is_op_with(value=":")):
-                        fl = []
-                        for tokens in (tok_seq.value[:i], tok_seq.value[i+1:]):
-                            fl.append(O.eval_const_expression_simple(
-                                tokens=tokens, allow_power=allow_power))
-                        f, l = fl
-                        if (f is None or l is None):
-                            vals.append(None)
-                        else:
-                            vals.append(l-f+1)
-                        break
-                else:
-                    vals.append(O.eval_const_expression_simple(
-                        tokens=tok_seq.value, allow_power=allow_power))
-        return vals
+                continue
 
+            for i, tok in enumerate(tok_seq.value):
+                if tok.is_op_with(value=":"):
+                    left_tokens = tok_seq.value[:i]
+                    right_tokens = tok_seq.value[i + 1:]
+
+                    if len(left_tokens) == 0:
+                        f = 1
+                    else:
+                        f = O.eval_const_expression_simple(
+                            tokens=left_tokens, allow_power=allow_power
+                        )
+
+                    if len(right_tokens) == 0:
+                        l = None
+                    else:
+                        l = O.eval_const_expression_simple(
+                            tokens=right_tokens, allow_power=allow_power
+                        )
+
+                    if f is None or l is None:
+                        vals.append(None)
+                    else:
+                        vals.append(l - f + 1)
+                    break
+            else:
+                vals.append(
+                    O.eval_const_expression_simple(
+                        tokens=tok_seq.value, allow_power=allow_power
+                    )
+                )
+
+        return vals
 
 class equivalence_info(object):
 
