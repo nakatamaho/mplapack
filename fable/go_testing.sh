@@ -254,9 +254,9 @@ find_latest_header() {
 }
 
 generate_includes() {
-  bash "${FABLE}/gen_include_mplapack_eig.sh"
-  bash "${FABLE}/gen_include_mplapack_lin.sh"
   bash "${FABLE}/gen_include_mplapack_matgen.sh"
+  bash "${FABLE}/gen_include_mplapack_lin.sh"
+  bash "${FABLE}/gen_include_mplapack_eig.sh"
 }
 
 generate_signatures() {
