@@ -309,6 +309,7 @@ complex_identifiers = set()
 complex_pointer_identifiers = set()
 # small fixed-length CHARACTER scalars mapped to char[]
 small_char_identifiers = set()
+small_char_identifier_lengths = {}  # name -> int length for small char[]
 
 # -----------------------------------------------------------------------------
 # Machine-constant-style intrinsics in F90 PARAMETER expressions
@@ -1351,23 +1352,11 @@ class conversion_info(global_conversion_info):
 
 
 def called_fproc_needs_cmn(conv_info, called_name):
-    called_names = conv_info.fproc.externals_passed_by_arg_identifier.get(
-        called_name)
-    if (called_names is None):
-        called_names = [called_name]
-    for called_name in called_names:
-        sub_fproc = conv_info.fprocs_by_name.get(called_name)
-        if sub_fproc is None:
-            continue
-        # Ensure conv_hook is always initialized
-        ch = getattr(sub_fproc, "conv_hook", None)
-        if ch is None:
-            ch = conv_hook_info()
-            sub_fproc.conv_hook = ch
-        if sub_fproc.needs_cmn and not ch.ignore_common_and_save:
-            return True
+    # MPLAPACK customization:
+    # Do NOT thread `common& cmn` through generated function signatures.
+    # The project rewrites COMMON/SAVE handling, so we also suppress the
+    # auto-injection of `cmn` as the first actual argument at call sites.
     return False
-
 
 def cmn_needs_to_be_inserted(conv_info, prev_tok):
     # prev_tok may legitimately be None
@@ -1633,6 +1622,87 @@ def _rewrite_small_char_substrings(text: str) -> str:
         out = re.sub(pattern, _to_char_literal, out)
 
     return out
+
+def _emit_small_char_string_assignment(curr_scope, clhs: str, crhs: str) -> bool:
+    """Emit element-wise assignments for small CHARACTER*n scalars mapped to char[].
+
+    This is needed because plain C arrays cannot be assigned in C++:
+        char c2[2];
+        c2 = path(2,3);   // invalid
+
+    We recognize the converted fixed-form substring pattern:
+        dst = src(start, end)
+    where both dst/src are in small_char_identifier_lengths / small_char_identifiers.
+
+    For constant start/end (integer literals), we emit the exact indices:
+        c2[0] = path[(2 - 1)];
+        c2[1] = path[(3 - 1)];
+
+    Returns True if we emitted code and the caller should NOT emit "dst = rhs;".
+    """
+    dst = clhs.strip()
+    if not re.match(r"^[A-Za-z_][A-Za-z0-9_]*$", dst):
+        return False
+
+    dst_len = small_char_identifier_lengths.get(dst)
+    if not isinstance(dst_len, int) or dst_len <= 0:
+        return False
+
+    rhs = crhs.strip()
+
+    # Parse "src(...)" at the top level.
+    m = re.match(r"^([A-Za-z_][A-Za-z0-9_]*)\s*\(\s*(.*)\s*\)\s*$", rhs)
+    if m is None:
+        return False
+
+    src = m.group(1)
+    if src not in small_char_identifiers:
+        return False
+
+    inner = m.group(2)
+    args = _split_top_level_commas(inner)
+    if len(args) != 2:
+        return False
+
+    start_expr = args[0].strip()
+    end_expr = args[1].strip()
+
+    def _try_parse_int_literal(expr: str):
+        mm = re.match(r"^\(?\s*(\d+)\s*\)?$", expr)
+        if not mm:
+            return None
+        try:
+            return int(mm.group(1))
+        except ValueError:
+            return None
+
+    start_i = _try_parse_int_literal(start_expr)
+    end_i = _try_parse_int_literal(end_expr)
+
+    # Constant range: preserve the original indices (good for readability and diffs).
+    if start_i is not None and end_i is not None and end_i >= start_i:
+        avail = end_i - start_i + 1
+        ncopy = min(dst_len, avail)
+        for i in range(ncopy):
+            pos = start_i + i  # Fortran 1-based
+            curr_scope.append(f"{dst}[{i}] = {src}[({pos} - 1)];")
+        # Fortran semantics: pad with spaces if rhs is shorter than lhs.
+        for i in range(ncopy, dst_len):
+            curr_scope.append(f"{dst}[{i}] = ' ';")
+        return True
+
+    # Generic range: copy up to dst_len characters, padding with spaces
+    # when the substring is shorter (end < start + i).
+    for i in range(dst_len):
+        if i == 0:
+            pos = f"({start_expr})"
+        else:
+            pos = f"(({start_expr}) + {i})"
+        cond = f"({pos}) <= ({end_expr})"
+        idx0 = f"(({pos}) - 1)"
+        curr_scope.append(f"{dst}[{i}] = ({cond}) ? {src}[{idx0}] : ' ';")
+    return True
+
 
 
 def _has_top_level_arith_op(expr: str) -> bool:
@@ -3307,6 +3377,7 @@ def convert_declaration(rapp, conv_info, fdecl, crhs, const):
                     const_qualifier(), mplapack_ctype, vname, size_expr))
                 # Remember that this scalar CHARACTER*n was mapped to a small char[].
                 small_char_identifiers.add(vname)
+                small_char_identifier_lengths[vname] = length_val
                 return False
 
         # For plain CHARACTER*1 (mapped to C++ 'char') without an explicit
@@ -4896,13 +4967,17 @@ def convert_executable(
                                               (clhs, op, crhs[:i]))
                         return True
                     if (not in_place_op_left() and not in_place_op_right()):
-                        # Rewrite substring-style calls on small CHARACTER*n scalars
-                        # that were mapped to char arrays, e.g.:
-                        #   jbcmpz(1,1) = 'S'  ->  jbcmpz[0] = 'S';
-                        clhs_fixed = _rewrite_small_char_substrings(clhs)
-                        crhs_fixed = _rewrite_small_char_substrings(crhs)
-                        curr_scope.append("%s = %s;" %
-                                          (clhs_fixed, crhs_fixed))
+                        if _emit_small_char_string_assignment(
+                                curr_scope=curr_scope, clhs=clhs, crhs=crhs):
+                            pass
+                        else:
+                            # Rewrite substring-style calls on small CHARACTER*n scalars
+                            # that were mapped to char arrays, e.g.:
+                            #   jbcmpz(1,1) = 'S'  ->  jbcmpz[0] = 'S';
+                            clhs_fixed = _rewrite_small_char_substrings(clhs)
+                            crhs_fixed = _rewrite_small_char_substrings(crhs)
+                            curr_scope.append("%s = %s;" %
+                                              (clhs_fixed, crhs_fixed))
 
             elif (ei.key == "inquire"):
                 search_for_id_tokens_and_declare_identifiers()
@@ -5878,9 +5953,6 @@ def convert_to_cpp_function(
     def cargs_append(ctype, name):
         fptr.append(ctype)
         cargs.append(ctype + " " + name)
-    if (conv_info.fproc.needs_cmn
-            and not conv_info.fproc.conv_hook.ignore_common_and_save):
-        cargs_append("common&", "cmn")
     args_fdecl_with_dim = []
     for id_tok in conv_info.fproc.args:
         if (id_tok.value == "*"):

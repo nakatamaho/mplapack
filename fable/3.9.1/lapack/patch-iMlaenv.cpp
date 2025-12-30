@@ -34,7 +34,7 @@ index f363fa01..5ff67569 100644
      //
      switch (ispec) {
      case 1:
-@@ -98,24 +94,62 @@ statement_10:
+@@ -98,24 +94,63 @@ statement_10:
      // Convert NAME to upper case if the first character is lower case.
      //
      return_value = 1;
@@ -106,7 +106,8 @@ index f363fa01..5ff67569 100644
 -    twostage = strlen(subnam) >= 11 && subnam[10] == '2';
 +    c2 = subnam(2, 3);
 +    c3 = subnam(4, 6);
-+    c4 = c3(2, 3);
++    c4[0] = c3[(2 - 1)];
++    c4[1] = c3[(3 - 1)];
 +    twostage = fem::len(subnam) >= 11 && strncmp(subnam + 10, "2", 1) == 0;
      //
      switch (ispec) {
