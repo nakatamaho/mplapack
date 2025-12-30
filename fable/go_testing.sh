@@ -37,8 +37,8 @@ MATGEN_SRC="${TESTING_ROOT}/MATGEN"
 # Where converted C++ files should be placed in the MPLAPACK tree.
 # Adjust these if your repository uses a different layout.
 MPLAPACK_TEST_ROOT="${MPLAPACK_TEST_ROOT:-${ROOT}/mplapack/test}"
-EIG_DST="${MPLAPACK_TEST_ROOT}/eig/"
-LIN_DST="${MPLAPACK_TEST_ROOT}/lin/"
+EIG_DST="${MPLAPACK_TEST_ROOT}/eig/common/"
+LIN_DST="${MPLAPACK_TEST_ROOT}/lin/common/"
 MATGEN_DST="${MPLAPACK_TEST_ROOT}/matgen/"
 
 # Optional: existing headers from your main BLAS/LAPACK conversion.
