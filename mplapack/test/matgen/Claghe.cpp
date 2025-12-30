@@ -29,6 +29,8 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
+#include <mplapack_matgen.h>
+
 void Claghe(INTEGER const n, INTEGER const k, REAL *d, COMPLEX *a, INTEGER const lda, INTEGER *iseed, COMPLEX *work, INTEGER &info) {
     //
     //  -- LAPACK auxiliary routine --
@@ -90,7 +92,7 @@ void Claghe(INTEGER const n, INTEGER const k, REAL *d, COMPLEX *a, INTEGER const
     COMPLEX tau = 0.0;
     COMPLEX wb = 0.0;
     const COMPLEX one = COMPLEX(1.0, 0.0);
-    const COMPLEX half = COMPLEX(0.5e+0, 0.0);
+    const COMPLEX half = COMPLEX(0.5, 0.0);
     COMPLEX alpha = 0.0;
     for (i = n - 1; i >= 1; i = i - 1) {
         //
