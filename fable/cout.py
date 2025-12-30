@@ -228,6 +228,20 @@ def _adjust_actuals_using_signature(arg_string: str, signature, conv_info=None) 
                 new_parts.append(part)
                 continue
 
+            # Array element expression: name[...] -> &name[...]
+            # IMPORTANT: only do this when the base identifier is a CHARACTER dummy
+            # argument emitted as a plain (const) char* (scalar or CHARACTER*1 array),
+            # or a small CHARACTER*n scalar mapped to char[].
+            m = re.match(r"^([A-Za-z_][A-Za-z0-9_]*)\s*\[", s)
+            if m:
+                base = m.group(1)
+                if (base in small_char_identifiers
+                        or (conv_info is not None and _is_plain_character_pointer_dummy(conv_info, base))):
+                    leading = part[:len(part) - len(s)]
+                    part = leading + "&" + s
+                    new_parts.append(part)
+                    continue
+
             # Bare identifier (e.g. normin) -> &normin,
             # unless it is a CHARACTER dummy argument (already a pointer),
             # or a small CHARACTER*n scalar we mapped to char[].
@@ -1968,6 +1982,46 @@ def _is_dummy_character_arg(conv_info, name: str) -> bool:
     """Return True if (current fproc, name) is a CHARACTER dummy argument."""
     key = (id(conv_info.fproc), name.lower())
     return key in _dummy_character_args
+
+
+def _is_plain_character_pointer_dummy(conv_info, name: str) -> bool:
+    """Return True if 'name' is a CHARACTER dummy argument emitted as (const) char*.
+
+    We treat these as plain pointers:
+      - scalar CHARACTER dummies (no dim_tokens)
+      - CHARACTER arrays with element length 1 (CHARACTER*1 X(*))
+
+    We exclude CHARACTER arrays that are emitted as str_arr_*ref (length > 1).
+    """
+    if conv_info is None or getattr(conv_info, "fproc", None) is None:
+        return False
+    if not _is_dummy_character_arg(conv_info, name):
+        return False
+    try:
+        fdecl = conv_info.fproc.fdecl_by_identifier.get(name.lower())
+        if fdecl is None:
+            fdecl = conv_info.fproc.fdecl_by_identifier.get(name)
+    except Exception:
+        return False
+    if fdecl is None:
+        return False
+    dt = getattr(fdecl, "data_type", None)
+    dt_code = getattr(dt, "value", None) if dt is not None else None
+    if dt_code != "character":
+       return False
+    # Scalar CHARACTER dummy: emitted as (const) char*
+    if getattr(fdecl, "dim_tokens", None) is None:
+        return True
+    # Array CHARACTER dummy: only CHARACTER*1 arrays are treated as plain pointer.
+    st = getattr(fdecl, "size_tokens", None)
+    if st is None:
+        return True
+    try:
+        if len(st) == 1 and st[0].is_integer() and st[0].value == "1":
+            return True
+    except Exception:
+        pass
+    return False
 
 
 def _rewrite_unary_intrinsic(text: str, func_name: str, repl_func):
@@ -4292,8 +4346,10 @@ def declare_identifier(conv_info, top_scope, curr_scope, id_tok, crhs=None):
         return top_scope.append
 
     if (not fdecl.is_common()):
-        equiv_tok_cluster = conv_info.fproc.equivalence_info() \
+        equiv_tok_cluster = (
+            conv_info.fproc.equivalence_info()
             .equiv_tok_cluster_by_identifier.get(id_tok.value)
+        )
         if (equiv_tok_cluster is not None):
             rapp = get_rapp()
             rapp(simple_equivalence(
@@ -5854,16 +5910,31 @@ def convert_to_cpp_function(
                 else:
                     cargs_append("const char *", arg_name)
             else:
-                if (len(fdecl.dim_tokens) == 1):
-                    cdim = ""
-                else:
-                    cdim = "%d" % len(fdecl.dim_tokens)
-                cargs_append(
-                    "str_arr_%sref<%s>" % (
-                        cconst(fdecl=fdecl, short=True), cdim),
-                    arg_name,
+                # CHARACTER arrays:
+                #   - CHARACTER*1 arrays are modeled as a plain char pointer (char*/const char*)
+                #     to match classic LAPACK interfaces (e.g. EI(*) in DLATME).
+                #   - Arrays of longer strings keep str_arr_*ref.
+                is_len1 = (
+                    fdecl.size_tokens is None
+                    or (len(fdecl.size_tokens) == 1
+                        and fdecl.size_tokens[0].is_integer()
+                        and fdecl.size_tokens[0].value == "1")
                 )
-
+                if is_len1:
+                    if fdecl.is_modified:
+                        cargs_append("char *", arg_name)
+                    else:
+                        cargs_append("const char *", arg_name)
+                else:
+                    if (len(fdecl.dim_tokens) == 1):
+                        cdim = ""
+                    else:
+                        cdim = "%d" % len(fdecl.dim_tokens)
+                    cargs_append(
+                        "str_arr_%sref<%s>" % (
+                            cconst(fdecl=fdecl, short=True), cdim),
+                        arg_name,
+                    )
         elif (not fdecl.is_user_defined_callable()):
             # Non-character, non-user-defined argument (typical BLAS/LAPACK args)
             ctype = convert_data_type(
@@ -5936,18 +6007,19 @@ def convert_to_cpp_function(
                 cargs_append(
                     ctype=ctype + "_function_pointer",
                     name=arg_name)
+
         if (fdecl.dim_tokens is not None and fdecl.use_count != 0):
             # args_fdecl_with_dim.append(fdecl)
             pass
-    cdecl = "void"
+    cdecl="void"
     if (conv_info.fproc.name is not None):
-        fdecl = conv_info.fproc.get_fdecl(id_tok=conv_info.fproc.name)
+        fdecl=conv_info.fproc.get_fdecl(id_tok=conv_info.fproc.name)
         if (fdecl.data_type is not None):
-            cdecl = convert_data_type(
+            cdecl=convert_data_type(
                 conv_info=conv_info, fdecl=fdecl, crhs=None)[0]
             # Convert return type to MPLAPACK style
-            cdecl = convert_to_mplapack_type(cdecl)
-            conv_info.vmap[conv_info.fproc.name.value] = "return_value"
+            cdecl=convert_to_mplapack_type(cdecl)
+            conv_info.vmap[conv_info.fproc.name.value]="return_value"
     if (declaration_only):
         cpp_callback("")
         cpp_callback("// forward declaration (dependency cycle)")
@@ -5960,9 +6032,9 @@ def convert_to_cpp_function(
         return
     if (conv_info.fproc.is_passed_as_external):
         if (hpp_callback is None):
-            cb = cpp_callback
+            cb=cpp_callback
         else:
-            cb = hpp_callback
+            cb=hpp_callback
         cb("")
         cb("typedef %s (*%s_function_pointer)(%s);" % (
             cdecl,
@@ -5980,10 +6052,10 @@ def convert_to_cpp_function(
             callback("inline")
         callback(cdecl)
         if (callback is hpp_callback):
-            last = ";"
+            last=";"
         else:
-            last = ""
-        cname = convert_function_name_to_mplapack(conv_info.fproc.name.value)
+            last=""
+        cname=convert_function_name_to_mplapack(conv_info.fproc.name.value)
         if (len(cargs) == 0):
             callback(cname+"()" + last)
         else:
@@ -6014,59 +6086,59 @@ def convert_to_struct(
         equivalence_simple,
         id_tok_list):
     assert struct_type in ["common", "save"]
-    need_dynamic_parameters = False
-    conv_info = conversion_info(fproc=fproc)
+    need_dynamic_parameters=False
+    conv_info=conversion_info(fproc=fproc)
     callback("")
     callback("struct %s" % struct_name)
     callback("{")
-    sve_equivalences = {}
-    cmn_equivalences = {}
-    have_variant_block = False
+    sve_equivalences={}
+    cmn_equivalences={}
+    have_variant_block=False
     if (struct_type == "save"
             and conv_info.fproc.conv_hook.needs_is_called_first_time):
         for common_name in sorted(conv_info.fproc.conv_hook.variant_common_names):
             callback("  fem::variant_bindings %s_bindings;" % common_name)
-            have_variant_block = True
+            have_variant_block=True
         #
-        cei = conv_info.fproc.classified_equivalence_info()
-        sve_equivalences = cei.save.equiv_tok_cluster_by_identifier
+        cei=conv_info.fproc.classified_equivalence_info()
+        sve_equivalences=cei.save.equiv_tok_cluster_by_identifier
         if (len(sve_equivalences) != 0):
             callback("  fem::variant_core_and_bindings save_equivalences;")
-            have_variant_block = True
-        cmn_equivalences = cei.common.equiv_tok_cluster_by_identifier
+            have_variant_block=True
+        cmn_equivalences=cei.common.equiv_tok_cluster_by_identifier
     #
     from fable.tokenization import extract_identifiers
-    const_identifiers = {}
-    const_id_toks = []
-    remaining_id_tok_list = []
+    const_identifiers={}
+    const_id_toks=[]
+    remaining_id_tok_list=[]
     for id_tok in id_tok_list:
         if (id_tok.value in sve_equivalences):
             continue
         if (id_tok.value in cmn_equivalences):
             continue
         remaining_id_tok_list.append(id_tok)
-        fdecl = conv_info.fproc.get_fdecl(id_tok=id_tok)
+        fdecl=conv_info.fproc.get_fdecl(id_tok=id_tok)
         for tokens in [fdecl.size_tokens, fdecl.dim_tokens]:
             if (tokens is None):
                 continue
 
             def parameter_recursion(tokens):
-                have_dynamic_dependency = False
+                have_dynamic_dependency=False
                 for id_tok in extract_identifiers(tokens=tokens):
                     if (id_tok.value in const_identifiers):
                         continue
-                    const_identifiers[id_tok.value] = None
-                    fdecl = conv_info.fproc.get_fdecl(id_tok=id_tok)
-                    hdp = parameter_recursion(
+                    const_identifiers[id_tok.value]=None
+                    fdecl=conv_info.fproc.get_fdecl(id_tok=id_tok)
+                    hdp=parameter_recursion(
                         tokens=fdecl.required_parameter_assignment_tokens())
                     if (hdp or id_tok.value in conv_info.fproc.dynamic_parameters):
-                        have_dynamic_dependency = True
-                    const_identifiers[id_tok.value] = have_dynamic_dependency
+                        have_dynamic_dependency=True
+                    const_identifiers[id_tok.value]=have_dynamic_dependency
                     const_id_toks.append(id_tok)
                 return have_dynamic_dependency
             parameter_recursion(tokens=tokens)
-    initializers = []
-    const_definitions = []
+    initializers=[]
+    const_definitions=[]
     # ISO C++ 9.4.2-4:
     #   "The member shall still be defined in a namespace scope if it is used
     #   in the program and the namespace scope definition shall not contain
@@ -6074,56 +6146,56 @@ def convert_to_struct(
     if (len(const_id_toks) != 0):
         if (have_variant_block):
             callback("")
-        append_empty_line = False
+        append_empty_line=False
         for id_tok in const_id_toks:
-            fdecl = conv_info.fproc.get_fdecl(id_tok=id_tok)
-            ctype = convert_data_type(
+            fdecl=conv_info.fproc.get_fdecl(id_tok=id_tok)
+            ctype=convert_data_type(
                 conv_info=conv_info, fdecl=fdecl, crhs=None)[0]
             if (const_identifiers[id_tok.value]):
-                need_dynamic_parameters = True
+                need_dynamic_parameters=True
                 callback("  const %s %s;" % (
                     ctype, prepend_identifier_if_necessary(id_tok.value)))
                 if (id_tok.value in conv_info.fproc.dynamic_parameters):
-                    crhs = "dynamic_params." + prepend_identifier_if_necessary(
+                    crhs="dynamic_params." + prepend_identifier_if_necessary(
                         id_tok.value)
                 else:
-                    crhs = convert_tokens(
+                    crhs=convert_tokens(
                         conv_info=conv_info, tokens=fdecl.parameter_assignment_tokens)
                 initializers.append((id_tok.value, crhs))
             else:
-                crhs = convert_tokens(
+                crhs=convert_tokens(
                     conv_info=conv_info, tokens=fdecl.parameter_assignment_tokens)
                 callback("  static const %s %s = %s;" % (
                     ctype, prepend_identifier_if_necessary(id_tok.value), crhs))
                 const_definitions.append(
                     "const %s %s::%s;" % (
                         ctype, struct_name, prepend_identifier_if_necessary(id_tok.value)))
-                append_empty_line = True
+                append_empty_line=True
         if (append_empty_line):
             callback("")
     #
-    deferred_arr_members = []
-    deferred_arr_initializers = []
+    deferred_arr_members=[]
+    deferred_arr_initializers=[]
     for id_tok in remaining_id_tok_list:
-        fdecl = conv_info.fproc.get_fdecl(id_tok=id_tok)
+        fdecl=conv_info.fproc.get_fdecl(id_tok=id_tok)
         if (fdecl.id_tok.value in const_identifiers):
             continue
-        ctype, cdims, crhs = convert_data_type_and_dims(
+        ctype, cdims, crhs=convert_data_type_and_dims(
             conv_info=conv_info, fdecl=fdecl, crhs=None, force_arr=True)[:3]
         if (cdims is None):
             callback("  %s %s;" % (
                 ctype, prepend_identifier_if_necessary(id_tok.value)))
             if (crhs is None):
-                crhs = zero_shortcut_if_possible(ctype=ctype)
+                crhs=zero_shortcut_if_possible(ctype=ctype)
             initializers.append((id_tok.value, crhs))
         elif (not equivalence_simple or need_dynamic_parameters):
             callback("  %s %s;" % (
                 ctype, prepend_identifier_if_necessary(id_tok.value)))
             initializers.append((id_tok.value, "%s, fem::fill0" % cdims))
         else:
-            ctype_core = convert_data_type(
+            ctype_core=convert_data_type(
                 conv_info=conv_info, fdecl=fdecl, crhs=None)[0]
-            cstatic_size = convert_dims_to_static_size(
+            cstatic_size=convert_dims_to_static_size(
                 conv_info=conv_info, dim_tokens=fdecl.dim_tokens)
             callback("  %s %s_memory[%s];" % (
                 ctype_core,
@@ -6146,7 +6218,7 @@ def convert_to_struct(
         for line in deferred_arr_members:
             callback(line)
         initializers.extend(deferred_arr_initializers)
-    n = len(initializers)
+    n=len(initializers)
     if (n != 0):
         callback("")
         if (not need_dynamic_parameters):
@@ -6156,11 +6228,11 @@ def convert_to_struct(
             callback("    dynamic_parameters const& dynamic_params)")
             callback("  :")
         for i in range(n):
-            ii = initializers[i]
+            ii=initializers[i]
             if (i+1 == n):
-                comma = ""
+                comma=""
             else:
-                comma = ","
+                comma=","
             callback("    %s(%s)%s" % (
                 prepend_identifier_if_necessary(ii[0]), ii[1], comma))
         callback("  {}")
@@ -6168,7 +6240,7 @@ def convert_to_struct(
     #
     if (len(const_definitions) != 0):
         callback("")
-        need_ifdef = (separate_cmn_hpp and struct_type == "common")
+        need_ifdef=(separate_cmn_hpp and struct_type == "common")
         if (need_ifdef):
             callback("#ifdef FEM_TRANSLATION_UNIT_WITH_MAIN")
         for cd in const_definitions:
@@ -6187,29 +6259,29 @@ def generate_common_report(
         member_registry,
         variant_due_to_equivalence_common_names,
         stringio):
-    variant_common_names = set()
+    variant_common_names=set()
     if (stringio is None):
-        report = StringIO()
+        report=StringIO()
     else:
-        report = stringio
+        report=stringio
     for common_name, fproc_cpp_pairs in ccode_registry.items():
-        fprocs_by_cpp = {}
+        fprocs_by_cpp={}
         for fproc, cpp in fproc_cpp_pairs:
             fprocs_by_cpp.setdefault("\n".join(cpp), []).append(fproc)
         if (len(fprocs_by_cpp) != 1):
             variant_common_names.add(common_name)
-            fprocs_by_cpp_items = list(fprocs_by_cpp.items())
+            fprocs_by_cpp_items=list(fprocs_by_cpp.items())
 
             def size_key(a):
                 return len(a[0])
             fprocs_by_cpp_items.sort(key=size_key, reverse=True)
             import difflib
-            diff_function = getattr(difflib, "unified_diff", difflib.ndiff)
+            diff_function=getattr(difflib, "unified_diff", difflib.ndiff)
 
             def show_fprocs(label, cpp_fprocs):
                 print("procedures %s:" % label,
                       " ".join(sorted([fproc.name.value for fproc in cpp_fprocs[1]])), file=report)
-            main_cpp_fprocs = fprocs_by_cpp_items[0]
+            main_cpp_fprocs=fprocs_by_cpp_items[0]
             print("common name:", common_name, file=report)
             print("number of variants:", len(fprocs_by_cpp_items), file=report)
             print("total number of procedures using the common block:",
@@ -6221,22 +6293,22 @@ def generate_common_report(
                               (main_cpp_fprocs[0]+"\n").splitlines(1),
                               (other_cpp_fprocs[0]+"\n").splitlines(1))]), file=report)
     #
-    need_empty_line = False
+    need_empty_line=False
     for identifier in sorted(member_registry.keys()):
-        common_names = member_registry[identifier]
+        common_names=member_registry[identifier]
         if (len(common_names) != 1):
             print("Name clash: %s in COMMONs: %s" % (
                 identifier, ", ".join(sorted(common_names))), file=report)
-            need_empty_line = True
+            need_empty_line=True
     if (need_empty_line):
         print(file=report)
     #
-    vv = list(variant_due_to_equivalence_common_names - variant_common_names)
+    vv=list(variant_due_to_equivalence_common_names - variant_common_names)
     if (len(vv) != 0):
         print("common variants due to equivalence:", len(vv), file=report)
-        size_sums = {}
+        size_sums={}
         for common_name, sizes in common_fdecl_list_sizes.items():
-            size_sums[common_name] = sum(sizes)
+            size_sums[common_name]=sum(sizes)
 
         vv.sort(key=lambda element: (-size_sums[element], element))
         print("  %-20s   procedures    sum of members" %
@@ -6248,35 +6320,35 @@ def generate_common_report(
                 size_sums[common_name]), file=report)
         print(file=report)
         print("Locations of equivalence statements:", file=report)
-        reported_already = set()
+        reported_already=set()
         for common_name in vv:
             print("  %s" % common_name, file=report)
-            prev_loc = ""
-            tab = []
-            max_len_col1 = 6
+            prev_loc=""
+            tab=[]
+            max_len_col1=6
             for tok_seq in common_equiv_tok_seqs[common_name]:
-                sl, i = tok_seq.stmt_location()
-                tag = (sl.file_name, sl.line_number, i)
+                sl, i=tok_seq.stmt_location()
+                tag=(sl.file_name, sl.line_number, i)
                 if (tag in reported_already):
                     break
                 reported_already.add(tag)
-                vn = tok_seq.value[0].value
-                dn, bn = os.path.split(sl.file_name)
-                loc = ("%s(%s) %s" % (bn, sl.line_number, dn)).rstrip()
+                vn=tok_seq.value[0].value
+                dn, bn=os.path.split(sl.file_name)
+                loc=("%s(%s) %s" % (bn, sl.line_number, dn)).rstrip()
                 if (loc == prev_loc):
-                    loc = ""
+                    loc=""
                 else:
-                    prev_loc = loc
+                    prev_loc=loc
                 tab.append((vn, loc))
-                max_len_col1 = max(max_len_col1, len(vn))
+                max_len_col1=max(max_len_col1, len(vn))
             if (len(tab) != 0):
-                fmt = "    %%-%ds %%s" % max_len_col1
+                fmt="    %%-%ds %%s" % max_len_col1
                 for row in tab:
                     print(fmt % row, file=report)
     #
     if (len(report.getvalue()) != 0 and stringio is None):
         import sys
-        report_file_name = "fable_cout_common_report"
+        report_file_name="fable_cout_common_report"
         from libtbx.str_utils import show_string
         print("Writing file:", show_string(report_file_name), file=sys.stderr)
         open(report_file_name, "w").write(report.getvalue())
@@ -6303,9 +6375,9 @@ def convert_commons(
   :""")
         for dp_props in dynamic_parameters:
             if (dp_props is not dynamic_parameters[-1]):
-                c = ","
+                c=","
             else:
-                c = ""
+                c=""
             callback("    %s(%s)%s" % (
                 prepend_identifier_if_necessary(dp_props.name),
                 str(dp_props.default),
@@ -6325,48 +6397,50 @@ def convert_commons(
         callback("  fem::dynamic_parameters_capsule<dynamic_parameters>")
         callback("    dynamic_parameters_capsule;")
     #
-    common_fdecl_list_sizes = {}
-    common_equiv_tok_seqs = {}
-    common_ccode_registry = {}
-    member_registry = {}
+    common_fdecl_list_sizes={}
+    common_equiv_tok_seqs={}
+    common_ccode_registry={}
+    member_registry={}
 
-    variant_common_names = set()
-    bottom_up_filtered = []
+    variant_common_names=set()
+    bottom_up_filtered=[]
     for fproc in topological_fprocs.bottom_up_list:
         # Ensure conv_hook exists for all fprocs seen here
-        ch = getattr(fproc, "conv_hook", None)
+        ch=getattr(fproc, "conv_hook", None)
         if ch is None:
-            ch = conv_hook_info()
-            ch.ignore_common_and_save = False
-            fproc.conv_hook = ch
+            ch=conv_hook_info()
+            ch.ignore_common_and_save=False
+            fproc.conv_hook=ch
         if not ch.ignore_common_and_save:
             bottom_up_filtered.append(fproc)
 
-    struct_commons_need_dynamic_parameters = set()
+    struct_commons_need_dynamic_parameters=set()
     for fproc in bottom_up_filtered:
-        fproc.conv_hook.needs_variant_bind = False
+        fproc.conv_hook.needs_variant_bind=False
         for common_name, common_fdecl_list in fproc.common.items():
             common_fdecl_list_sizes.setdefault(common_name, []).append(
                 len(common_fdecl_list))
-            id_tok_list = []
+            id_tok_list=[]
             for common_fdecl in common_fdecl_list:
                 assert common_fdecl.size_tokens is None
                 id_tok_list.append(common_fdecl.id_tok)
                 member_registry.setdefault(
                     common_fdecl.id_tok.value, set()).add(common_name)
                 if (common_name not in common_equivalence_simple):
-                    equiv_tok_cluster = fproc.equivalence_info() \
+                    equiv_tok_cluster = (
+                        fproc.equivalence_info()
                         .equiv_tok_cluster_by_identifier.get(common_fdecl.id_tok.value)
+                    )
                     if (equiv_tok_cluster is not None):
-                        fproc.conv_hook.needs_variant_bind = True
+                        fproc.conv_hook.needs_variant_bind=True
                         variant_common_names.add(common_name)
                         for equiv_tok in equiv_tok_cluster:
                             for tok_seq in equiv_tok.value:
                                 common_equiv_tok_seqs.setdefault(common_name, []).append(
                                     tok_seq)
-            struct_name = "common_" + common_name
-            buffer = []
-            info = convert_to_struct(
+            struct_name="common_" + common_name
+            buffer=[]
+            info=convert_to_struct(
                 callback=buffer.append,
                 separate_cmn_hpp=separate_cmn_hpp,
                 fproc=fproc,
@@ -6385,11 +6459,11 @@ def convert_commons(
         member_registry=member_registry,
         variant_due_to_equivalence_common_names=variant_common_names,
         stringio=common_report_stringio))
-    commons_defined_already = set()
-    struct_commons = []
-    variant_commons = []
+    commons_defined_already=set()
+    struct_commons=[]
+    variant_commons=[]
     for fproc in bottom_up_filtered:
-        fproc.conv_hook.variant_common_names = set()
+        fproc.conv_hook.variant_common_names=set()
         for common_name, common_fdecl_list in fproc.common.items():
             if (common_name in variant_common_names):
                 fproc.conv_hook.variant_common_names.add(common_name)
@@ -6405,24 +6479,24 @@ def convert_commons(
     #
     for fproc in bottom_up_filtered:
         if (not fproc.conv_hook.needs_variant_bind):
-            fproc.conv_hook.needs_variant_bind = (
+            fproc.conv_hook.needs_variant_bind=(
                 len(fproc.conv_hook.variant_common_names) != 0
                 or fproc.classified_equivalence_info().has_save())
-        fproc.conv_hook.needs_is_called_first_time = (
+        fproc.conv_hook.needs_is_called_first_time=(
             fproc.conv_hook.needs_variant_bind
             or len(fproc.data) != 0)
-        fproc.conv_hook.data_init_after_variant_bind = (
+        fproc.conv_hook.data_init_after_variant_bind=(
             fproc.conv_hook.needs_variant_bind
             and len(fproc.data) != 0)
         if (fproc.conv_hook.needs_is_called_first_time):
-            fproc.uses_save = True
+            fproc.uses_save=True
     topological_fprocs.each_fproc_update_is_modified()
     topological_fprocs.each_fproc_update_needs_cmn()
     #
-    save_struct_buffers = {}
-    save_struct_names = []
+    save_struct_buffers={}
+    save_struct_names=[]
     for fproc in bottom_up_filtered:
-        id_tok_list = []
+        id_tok_list=[]
         for fdecl in fproc.fdecl_by_identifier.values():
             if (fdecl.is_save()):
                 id_tok_list.append(fdecl.id_tok)
@@ -6430,9 +6504,9 @@ def convert_commons(
                 and not fproc.conv_hook.needs_is_called_first_time):
             continue
         id_tok_list.sort(key=lambda token: token.value)
-        struct_name = "%s_save" % fproc.name.value
-        buffer = []
-        info = convert_to_struct(
+        struct_name="%s_save" % fproc.name.value
+        buffer=[]
+        info=convert_to_struct(
             callback=buffer.append,
             separate_cmn_hpp=separate_cmn_hpp,
             fproc=fproc,
@@ -6440,9 +6514,9 @@ def convert_commons(
             struct_name=struct_name,
             equivalence_simple=False,
             id_tok_list=id_tok_list)
-        save_struct_buffers[fproc.name.value] = buffer
+        save_struct_buffers[fproc.name.value]=buffer
         if (info.need_dynamic_parameters):
-            fproc.conv_hook.needs_sve_dynamic_parameters = True
+            fproc.conv_hook.needs_sve_dynamic_parameters=True
         save_struct_names.append(struct_name)
     if (len(commons_defined_already) == 0
             and len(save_struct_names) == 0
@@ -6452,23 +6526,23 @@ def convert_commons(
         return
     callback("")
     callback("struct common :")
-    leading_bases = ["fem::common"]
+    leading_bases=["fem::common"]
     if (dynamic_parameters is not None):
         leading_bases.append("dynamic_parameters_capsule")
     callback("  " + ",\n  ".join(leading_bases + struct_commons))
     callback("{")
-    need_empty_line = False
+    need_empty_line=False
     for common_name in variant_commons:
         callback("  fem::variant_core common_%s;" % common_name)
-        need_empty_line = True
+        need_empty_line=True
 
     def save_as_sve(struct_name): return struct_name[:-3]+"ve"
     for struct_name in save_struct_names:
         callback("  fem::cmn_sve %s;" % save_as_sve(struct_name))
-        need_empty_line = True
+        need_empty_line=True
     if (need_empty_line):
         callback("")
-    initializations = ["fem::common(argc, argv)"]
+    initializations=["fem::common(argc, argv)"]
     if (dynamic_parameters is not None):
         initializations.append(
             "dynamic_parameters_capsule(command_line_args)")
@@ -6489,14 +6563,14 @@ def convert_commons(
         save_struct_buffers=save_struct_buffers)
 
 
-include_fem_hpp = ""
+include_fem_hpp=""
 
 
 def include_guard(callback, namespace, suffix):
     if namespace:
-        s = namespace.upper().replace("::", "_") + suffix
+        s=namespace.upper().replace("::", "_") + suffix
     else:
-        s = "GUARD" + suffix
+        s="GUARD" + suffix
     callback("#ifndef %s" % s)
     callback("#define %s" % s)
     callback("")
@@ -6511,9 +6585,9 @@ def open_namespace(callback, namespace, using_namespace_major_types=True):
     #     callback("""
     # using namespace fem::major_types;""")
     if namespace:
-        ns = namespace.split("::")
+        ns=namespace.split("::")
     else:
-        ns = []
+        ns=[]
     return ns
 
 
@@ -6526,29 +6600,29 @@ def close_namespace(callback, namespace, hpp_guard):
         callback("")
         callback("#endif // GUARD")
     if namespace:
-        ns = namespace.split("::")
+        ns=namespace.split("::")
     else:
-        ns = []
+        ns=[]
     return ns
 
 
 class hpp_cpp_buffers(object):
 
-    __slots__ = ["hpp", "cpp"]
+    __slots__=["hpp", "cpp"]
 
     def __init__(O):
-        O.hpp = []
-        O.cpp = []
+        O.hpp=[]
+        O.cpp=[]
 
 
 def convert_program(callback, global_conv_info, namespace, hpp_guard, debug):
-    main_calls = []
+    main_calls=[]
     for fproc in global_conv_info.topological_fprocs.bottom_up_list:
         if (not fproc.is_program()):
             continue
-        conv_info = global_conv_info.specialized(fproc=fproc)
+        conv_info=global_conv_info.specialized(fproc=fproc)
         export_save_struct(callback=callback, conv_info=conv_info)
-        cname = fproc.name.value
+        cname=fproc.name.value
         main_calls.append(cname)
         callback("")
         produce_leading_comments(callback=callback, fproc=fproc)
@@ -6564,7 +6638,7 @@ void
   if (argc != 1) {
     throw std::runtime_error("Unexpected command-line arguments.");
   }""")
-        result_buffer = []
+        result_buffer=[]
         try:
             convert_executable(
                 callback=result_buffer.append,
@@ -6582,7 +6656,7 @@ void
             callback("}")
         produce_trailing_comments(callback=callback, fproc=fproc)
     #
-    ns = close_namespace(
+    ns=close_namespace(
         callback=callback, namespace=namespace, hpp_guard=hpp_guard)
     #
     if (len(main_calls) != 0):
@@ -6607,52 +6681,52 @@ def get_missing_external_return_type(fdecls):
     return "void"
 
 
-default_arr_nd_size_max = 256
+default_arr_nd_size_max=256
 
 
 def _postprocess_mplapack_labels_and_comments(lines):
     """MPLAPACK-specific postprocessing for labels, comments, and trivial zero offsets."""
     import re
 
-    new_lines = []
+    new_lines=[]
     for line in lines:
         # 1) Fix Mxerbla("XXXX ", info) labels using the MPLAPACK name map
-        m = re.search(r'Mxerbla\("([^"]+)"', line)
+        m=re.search(r'Mxerbla\("([^"]+)"', line)
         if m:
-            label = m.group(1)      # e.g. "ZTRSV "
-            core = label.strip()    # "ZTRSV"
-            lower = core.lower()    # "ztrsv"
-            mapped = _MPLAPACK_NAME_MAP.get(lower)
+            label=m.group(1)      # e.g. "ZTRSV "
+            core=label.strip()    # "ZTRSV"
+            lower=core.lower()    # "ztrsv"
+            mapped=_MPLAPACK_NAME_MAP.get(lower)
             if mapped is None:
-                mapped = _mplapack_default_name(core)
+                mapped=_mplapack_default_name(core)
             # preserve trailing spaces
-            suffix = label[len(core):]
-            repl = f'Mxerbla("{mapped}{suffix}"'
-            line = line[:m.start()] + repl + line[m.end():]
+            suffix=label[len(core):]
+            repl=f'Mxerbla("{mapped}{suffix}"'
+            line=line[:m.start()] + repl + line[m.end():]
 
         # 2) Fix "//     End of XXXX" comments using the MPLAPACK name map
-        m = re.search(r'(End of )([A-Za-z][A-Za-z0-9_]*)', line)
+        m=re.search(r'(End of )([A-Za-z][A-Za-z0-9_]*)', line)
         if m:
-            core = m.group(2)
-            lower = core.lower()
-            mapped = _MPLAPACK_NAME_MAP.get(lower)
+            core=m.group(2)
+            lower=core.lower()
+            mapped=_MPLAPACK_NAME_MAP.get(lower)
             if mapped is None:
-                mapped = _mplapack_default_name(core)
-            line = line[:m.start(2)] + mapped + line[m.end(2):]
+                mapped=_mplapack_default_name(core)
+            line=line[:m.start(2)] + mapped + line[m.end(2):]
 
         # 3) Remove trivial zero row offset: (1 - 1) + ...
         #    Example: a[(1 - 1) + (j - 1) * lda] -> a[(j - 1) * lda]
-        line = re.sub(r'\(\s*1\s*-\s*1\s*\)\s*\+\s*', '', line)
+        line=re.sub(r'\(\s*1\s*-\s*1\s*\)\s*\+\s*', '', line)
 
         # 4) Remove trivial zero column offset: + (1 - 1) * lda
         #    Example: a[(i - 1) + (1 - 1) * lda] -> a[(i - 1)]
-        line = re.sub(
+        line=re.sub(
             r'\+\s*\(\s*1\s*-\s*1\s*\)\s*\*\s*[A-Za-z_][A-Za-z0-9_]*',
             '',
             line,
         )
         #    Example: a[(1 - 1) * lda + (i - 1)] -> a[(i - 1)]
-        line = re.sub(
+        line=re.sub(
             r'\(\s*1\s*-\s*1\s*\)\s*\*\s*[A-Za-z_][A-Za-z0-9_]*\s*\+\s*',
             '',
             line,
@@ -6667,21 +6741,21 @@ def _postprocess_mplapack_labels_and_comments(lines):
 
 def _normalize_fortran_comment_prefix(lines):
     """Normalize Fortran-derived comments: //C... -> // ..."""
-    normalized = []
+    normalized=[]
     for line in lines:
-        stripped = line.lstrip()
+        stripped=line.lstrip()
         if stripped.startswith("//C"):
             # Leading whitespace before //C
-            leading = line[:len(line) - len(stripped)]
+            leading=line[:len(line) - len(stripped)]
             # Drop the 'C'
-            rest = stripped[3:]  # after "//C"
+            rest=stripped[3:]  # after "//C"
             # Ensure there is exactly one space after //
             # rest may be "" or like "     foo"
-            rest = rest.lstrip()
+            rest=rest.lstrip()
             if rest:
-                new_line = f"{leading}// {rest}"
+                new_line=f"{leading}// {rest}"
             else:
-                new_line = f"{leading}//"
+                new_line=f"{leading}//"
             normalized.append(new_line)
         else:
             normalized.append(line)
@@ -6695,16 +6769,16 @@ def _postprocess_complex_initializers(lines):
       COMPLEX z = (a, b);        -> COMPLEX z = COMPLEX(a, b);
       const COMPLEX z = (a, b);  -> const COMPLEX z = COMPLEX(a, b);
     """
-    pat_var = re.compile(
+    pat_var=re.compile(
         r'^(\s*COMPLEX\s+[A-Za-z_][A-Za-z0-9_]*\s*=\s*)\(\s*([^,]+?)\s*,\s*([^,]+?)\s*\);'
     )
-    pat_const = re.compile(
+    pat_const=re.compile(
         r'^(\s*const\s+COMPLEX\s+[A-Za-z_][A-Za-z0-9_]*\s*=\s*)\(\s*([^,]+?)\s*,\s*([^,]+?)\s*\);'
     )
-    out = []
+    out=[]
     for line in lines:
-        line = pat_const.sub(r'\1COMPLEX(\2, \3);', line)
-        line = pat_var.sub(r'\1COMPLEX(\2, \3);', line)
+        line=pat_const.sub(r'\1COMPLEX(\2, \3);', line)
+        line=pat_var.sub(r'\1COMPLEX(\2, \3);', line)
         out.append(line)
     return out
 
@@ -6717,13 +6791,13 @@ def _postprocess_complex_constant_assignments(lines):
       return_value = (1.0, 2.377);  ->  return_value = COMPLEX(1.0, 2.377);
     """
     # Real literal: optional sign, digits with optional decimal point, optional exponent
-    real_lit = r'[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[Ee][+-]?\d+)?'
-    pat = re.compile(
+    real_lit=r'[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[Ee][+-]?\d+)?'
+    pat=re.compile(
         rf'(\=\s*)\(\s*({real_lit})\s*,\s*({real_lit})\s*\);'
     )
-    out = []
+    out=[]
     for line in lines:
-        line = pat.sub(r'\1COMPLEX(\2, \3);', line)
+        line=pat.sub(r'\1COMPLEX(\2, \3);', line)
         out.append(line)
     return out
 
@@ -6734,15 +6808,15 @@ def _postprocess_intrinsic_aliases(lines):
     Ensure that fem::abs, fem::dabs, fem::cdabs, fem::pow2
     are printed without the fem:: namespace.
     """
-    out = []
+    out=[]
     for line in lines:
         # abs family
-        line = line.replace("fem::cdabs", "abs")
-        line = line.replace("fem::dabs", "abs")
-        line = line.replace("fem::abs", "abs")
+        line=line.replace("fem::cdabs", "abs")
+        line=line.replace("fem::dabs", "abs")
+        line=line.replace("fem::abs", "abs")
 
         # pow2 helper
-        line = line.replace("fem::pow2", "pow2")
+        line=line.replace("fem::pow2", "pow2")
 
         out.append(line)
     return out
@@ -6755,22 +6829,22 @@ def _postprocess_comment_name_map(lines):
     replace occurrences of uppercased Fortran routine names with
     their mapped C++ names from _MPLAPACK_NAME_MAP.
     """
-    out = []
+    out=[]
     for line in lines:
-        stripped = line.lstrip()
+        stripped=line.lstrip()
         if stripped.startswith("//"):
             for f77_name, cpp_name in _MPLAPACK_NAME_MAP.items():
-                u = f77_name.upper()
+                u=f77_name.upper()
                 if u in line:
-                    pattern = r"\b" + re.escape(u) + r"\b"
-                    line = re.sub(pattern, cpp_name, line)
+                    pattern=r"\b" + re.escape(u) + r"\b"
+                    line=re.sub(pattern, cpp_name, line)
         out.append(line)
     return out
 
 
 def _postprocess_math_intrinsics_upper(lines):
     """Rewrite math intrinsic calls (atan2, cos, sin, tan, log, exp, max, min, abs) to uppercase names."""
-    out = []
+    out=[]
     for line in lines:
         # ----------------------------------------------------------
         # 1) Canonicalize fem:: and double-precision variants
@@ -6778,85 +6852,85 @@ def _postprocess_math_intrinsics_upper(lines):
         # ----------------------------------------------------------
 
         # log / log10 (fem::LOG, fem::DLOG, LOG, DLOG, dlog, dlog10, etc.)
-        line = re.sub(r'\bfem::d?log10\s*\(',
+        line=re.sub(r'\bfem::d?log10\s*\(',
                       'log10(', line, flags=re.IGNORECASE)
-        line = re.sub(r'\bfem::d?log\s*\(',
+        line=re.sub(r'\bfem::d?log\s*\(',
                       'log(',   line, flags=re.IGNORECASE)
-        line = re.sub(r'\bdlog10\s*\(',
+        line=re.sub(r'\bdlog10\s*\(',
                       'log10(', line, flags=re.IGNORECASE)
-        line = re.sub(r'\bdlog\s*\(',
+        line=re.sub(r'\bdlog\s*\(',
                       'log(',   line, flags=re.IGNORECASE)
 
         # exp / pow / mod (fem::EXP, fem::exp)
-        line = re.sub(r'\bfem::exp\s*\(',
+        line=re.sub(r'\bfem::exp\s*\(',
                       'exp(',   line, flags=re.IGNORECASE)
-        line = re.sub(r'\bfem::pow\s*\(',
+        line=re.sub(r'\bfem::pow\s*\(',
                       'pow(',   line, flags=re.IGNORECASE)
-        line = re.sub(r'\bfem::mod\s*\(',
+        line=re.sub(r'\bfem::mod\s*\(',
                       'mod(',   line, flags=re.IGNORECASE)
 
         # NINT-like intrinsics (fem::nint, fem::idnint)
-        line = re.sub(r'\bfem::nint\s*\(',
+        line=re.sub(r'\bfem::nint\s*\(',
                       'nint(',  line, flags=re.IGNORECASE)
-        line = re.sub(r'\bfem::idnint\s*\(',
+        line=re.sub(r'\bfem::idnint\s*\(',
                       'nint(',  line, flags=re.IGNORECASE)
 
         # ----------------------------------------------------------
         # 2) Trigonometric intrinsics
         # ----------------------------------------------------------
-        line = re.sub(r'\bstd::atan2\s*\(', 'atan2(', line)
-        line = re.sub(r'\batan2\s*\(',      'atan2(', line)
-        line = re.sub(r'\bstd::cos\s*\(',   'cos(',   line)
-        line = re.sub(r'\bcos\s*\(',        'cos(',   line)
-        line = re.sub(r'\bstd::sin\s*\(',   'sin(',   line)
-        line = re.sub(r'\bsin\s*\(',        'sin(',   line)
-        line = re.sub(r'\bstd::tan\s*\(',   'tan(',   line)
-        line = re.sub(r'\btan\s*\(',        'tan(',   line)
+        line=re.sub(r'\bstd::atan2\s*\(', 'atan2(', line)
+        line=re.sub(r'\batan2\s*\(',      'atan2(', line)
+        line=re.sub(r'\bstd::cos\s*\(',   'cos(',   line)
+        line=re.sub(r'\bcos\s*\(',        'cos(',   line)
+        line=re.sub(r'\bstd::sin\s*\(',   'sin(',   line)
+        line=re.sub(r'\bsin\s*\(',        'sin(',   line)
+        line=re.sub(r'\bstd::tan\s*\(',   'tan(',   line)
+        line=re.sub(r'\btan\s*\(',        'tan(',   line)
 
         # ----------------------------------------------------------
         # 3) Logarithm and exponential intrinsics (std:: + plain)
         # ----------------------------------------------------------
-        line = re.sub(r'\bstd::log10\s*\(', 'log10(', line)
-        line = re.sub(r'\blog10\s*\(',      'log10(', line)
-        line = re.sub(r'\bstd::log\s*\(',   'log(',   line)
-        line = re.sub(r'\blog\s*\(',        'log(',   line)
-        line = re.sub(r'\bstd::exp\s*\(',   'exp(',   line)
-        line = re.sub(r'\bexp\s*\(',        'exp(',   line)
+        line=re.sub(r'\bstd::log10\s*\(', 'log10(', line)
+        line=re.sub(r'\blog10\s*\(',      'log10(', line)
+        line=re.sub(r'\bstd::log\s*\(',   'log(',   line)
+        line=re.sub(r'\blog\s*\(',        'log(',   line)
+        line=re.sub(r'\bstd::exp\s*\(',   'exp(',   line)
+        line=re.sub(r'\bexp\s*\(',        'exp(',   line)
 
         # ----------------------------------------------------------
         # 4) Extremum intrinsics
         # ----------------------------------------------------------
-        line = re.sub(r'\bstd::max\s*\(',   'max(',   line)
-        line = re.sub(r'\bmax\s*\(',        'max(',   line)
-        line = re.sub(r'\bstd::min\s*\(',   'min(',   line)
-        line = re.sub(r'\bmin\s*\(',        'min(',   line)
+        line=re.sub(r'\bstd::max\s*\(',   'max(',   line)
+        line=re.sub(r'\bmax\s*\(',        'max(',   line)
+        line=re.sub(r'\bstd::min\s*\(',   'min(',   line)
+        line=re.sub(r'\bmin\s*\(',        'min(',   line)
 
         # ----------------------------------------------------------
         # 5) Absolute value intrinsics
         # ----------------------------------------------------------
-        line = re.sub(r'\bstd::abs\s*\(',   'abs(',   line)
-        line = re.sub(r'\babs\s*\(',        'abs(',   line)
+        line=re.sub(r'\bstd::abs\s*\(',   'abs(',   line)
+        line=re.sub(r'\babs\s*\(',        'abs(',   line)
 
         # ----------------------------------------------------------
         # 6) Other intrinsics
         # ----------------------------------------------------------
-        line = re.sub(r'\bstd::mod\s*\(',   'mod(',   line)
-        line = re.sub(r'\bmod\s*\(',        'mod(',   line)
-        line = re.sub(r'\bstd::sqrt\s*\(',  'sqrt(',  line)
-        line = re.sub(r'\bsqrt\s*\(',       'sqrt(',  line)
-        line = re.sub(r'\bpow2\s*\(',       'pow2(',  line)
-        line = re.sub(r'\bstd::pow\s*\(',   'pow(',   line)
-        line = re.sub(r'\bpow\s*\(',        'pow(',   line)
+        line=re.sub(r'\bstd::mod\s*\(',   'mod(',   line)
+        line=re.sub(r'\bmod\s*\(',        'mod(',   line)
+        line=re.sub(r'\bstd::sqrt\s*\(',  'sqrt(',  line)
+        line=re.sub(r'\bsqrt\s*\(',       'sqrt(',  line)
+        line=re.sub(r'\bpow2\s*\(',       'pow2(',  line)
+        line=re.sub(r'\bstd::pow\s*\(',   'pow(',   line)
+        line=re.sub(r'\bpow\s*\(',        'pow(',   line)
 
         # ----------------------------------------------------------
         # 7) NINT-like rounding intrinsics (already canonicalized)
         # ----------------------------------------------------------
-        line = re.sub(r'\bnint\s*\(',       'nint(',  line)
+        line=re.sub(r'\bnint\s*\(',       'nint(',  line)
 
         # ----------------------------------------------------------
         # 8) conjg
         # ----------------------------------------------------------
-        line = re.sub(r'\bfem::dconjg\s*\(', 'conj(',   line)
+        line=re.sub(r'\bfem::dconjg\s*\(', 'conj(',   line)
 
         out.append(line)
     return out
@@ -6869,12 +6943,12 @@ def _postprocess_minmax_parens(lines):
       ((MIN(k1 + 1, m)) - 1) -> (MIN(k1 + 1, m) - 1)
       ((MAX(i, j)) - 1)      -> (MAX(i, j) - 1)
     """
-    pat_min = re.compile(r'\(\((min\([^()]*\))\)\s*-\s*1\)')
-    pat_max = re.compile(r'\(\((max\([^()]*\))\)\s*-\s*1\)')
-    out = []
+    pat_min=re.compile(r'\(\((min\([^()]*\))\)\s*-\s*1\)')
+    pat_max=re.compile(r'\(\((max\([^()]*\))\)\s*-\s*1\)')
+    out=[]
     for line in lines:
-        line = pat_min.sub(r'(\1 - 1)', line)
-        line = pat_max.sub(r'(\1 - 1)', line)
+        line=pat_min.sub(r'(\1 - 1)', line)
+        line=pat_max.sub(r'(\1 - 1)', line)
         out.append(line)
     return out
 
@@ -6887,7 +6961,7 @@ def _postprocess_ilaenv_name_map(lines):
         -> iMlaenv(3, "Rgerqf", " ", m, n, -1, -1)
     """
     # Match: iMlaenv(..., "NAME", ...)
-    pat = re.compile(
+    pat=re.compile(
         r'(\biMlaenv\s*\(\s*[^,]*,\s*")([A-Za-z0-9_]+)("\s*,)'
     )
 
@@ -6898,14 +6972,14 @@ def _postprocess_ilaenv_name_map(lines):
                 return cpp_name
         return name
 
-    out = []
+    out=[]
     for line in lines:
         if "iMlaenv" in line:
             def _repl(m):
-                old = m.group(2)
-                new = replace_name(old)
+                old=m.group(2)
+                new=replace_name(old)
                 return m.group(1) + new + m.group(3)
-            line = pat.sub(_repl, line)
+            line=pat.sub(_repl, line)
         out.append(line)
     return out
 
@@ -6930,7 +7004,7 @@ def _postprocess_ilaenv_char_concat(lines):
 
     def find_matching_paren(s, start):
         """Find index of closing paren matching the one at 'start'."""
-        depth = 0
+        depth=0
         for i in range(start, len(s)):
             if s[i] == '(':
                 depth += 1
@@ -6942,9 +7016,9 @@ def _postprocess_ilaenv_char_concat(lines):
 
     def split_args(s):
         """Split argument string by top-level commas."""
-        parts = []
-        current = []
-        depth = 0
+        parts=[]
+        current=[]
+        depth=0
         for ch in s:
             if ch == '(':
                 depth += 1
@@ -6954,7 +7028,7 @@ def _postprocess_ilaenv_char_concat(lines):
                 current.append(ch)
             elif ch == ',' and depth == 0:
                 parts.append(''.join(current).strip())
-                current = []
+                current=[]
             else:
                 current.append(ch)
         if current:
@@ -6972,12 +7046,12 @@ def _postprocess_ilaenv_char_concat(lines):
         and normalize them to base identifiers:
             ['job', 'compz'], ['jobu', 'jobvt'], etc.
         """
-        stripped = arg.strip()
+        stripped=arg.strip()
 
         # Split by '+' at top level (no nesting across parentheses)
-        parts = []
-        current = []
-        depth = 0
+        parts=[]
+        current=[]
+        depth=0
         for ch in stripped:
             if ch == '(':
                 depth += 1
@@ -6987,7 +7061,7 @@ def _postprocess_ilaenv_char_concat(lines):
                 current.append(ch)
             elif ch == '+' and depth == 0:
                 parts.append(''.join(current).strip())
-                current = []
+                current=[]
             else:
                 current.append(ch)
         if current:
@@ -7002,22 +7076,22 @@ def _postprocess_ilaenv_char_concat(lines):
         #   JOB(:1)   -> "job"
         #   JOB(1:1)  -> "job"
         #   JOB       -> "job"
-        ident_pat = re.compile(r'^[A-Za-z_][A-Za-z0-9_]*$')
-        substr_pat1 = re.compile(
+        ident_pat=re.compile(r'^[A-Za-z_][A-Za-z0-9_]*$')
+        substr_pat1=re.compile(
             r'^([A-Za-z_][A-Za-z0-9_]*)\s*\(\s*1\s*,\s*1\s*\)$')
-        substr_pat2 = re.compile(
+        substr_pat2=re.compile(
             r'^([A-Za-z_][A-Za-z0-9_]*)\s*\(\s*:?\s*1\s*\)$')
-        substr_pat3 = re.compile(
+        substr_pat3=re.compile(
             r'^([A-Za-z_][A-Za-z0-9_]*)\s*\(\s*1\s*:\s*1\s*\)$')
 
-        norm_parts = []
+        norm_parts=[]
         for p in parts:
-            m = substr_pat1.match(p) or substr_pat2.match(
+            m=substr_pat1.match(p) or substr_pat2.match(
                 p) or substr_pat3.match(p)
             if m:
-                base = m.group(1)
+                base=m.group(1)
             else:
-                base = p
+                base=p
             if not ident_pat.match(base):
                 return None
             norm_parts.append(base.lower())
@@ -7026,43 +7100,43 @@ def _postprocess_ilaenv_char_concat(lines):
 
     def rewrite_line(line):
         # Find iMlaenv( calls
-        pattern = r'\biMlaenv\s*\('
-        result = []
-        pos = 0
+        pattern=r'\biMlaenv\s*\('
+        result=[]
+        pos=0
 
         for m in re.finditer(pattern, line):
             result.append(line[pos:m.start()])
-            call_start = m.start()
-            paren_start = m.end() - 1
+            call_start=m.start()
+            paren_start=m.end() - 1
 
-            paren_end = find_matching_paren(line, paren_start)
+            paren_end=find_matching_paren(line, paren_start)
             if paren_end < 0:
                 result.append(line[call_start:m.end()])
-                pos = m.end()
+                pos=m.end()
                 continue
 
             # Extract arguments
-            args_str = line[paren_start + 1:paren_end]
-            args = split_args(args_str)
+            args_str=line[paren_start + 1:paren_end]
+            args=split_args(args_str)
 
             # iMlaenv has at least 7 arguments, 3rd is the character string
             if len(args) >= 3:
-                third_arg = args[2]
-                char_parts = is_char_concat(third_arg)
+                third_arg=args[2]
+                char_parts=is_char_concat(third_arg)
                 if char_parts:
                     # Replace with CHAR2 or CHAR3
                     if len(char_parts) == 2:
-                        args[2] = f"CHAR2({char_parts[0]}, {char_parts[1]})"
+                        args[2]=f"CHAR2({char_parts[0]}, {char_parts[1]})"
                     elif len(char_parts) == 3:
-                        args[2] = f"CHAR3({char_parts[0]}, {char_parts[1]}, {char_parts[2]})"
-                    new_call = f"iMlaenv({', '.join(args)})"
+                        args[2]=f"CHAR3({char_parts[0]}, {char_parts[1]}, {char_parts[2]})"
+                    new_call=f"iMlaenv({', '.join(args)})"
                     result.append(new_call)
-                    pos = paren_end + 1
+                    pos=paren_end + 1
                     continue
 
             # No transformation needed
             result.append(line[call_start:paren_end + 1])
-            pos = paren_end + 1
+            pos=paren_end + 1
 
         result.append(line[pos:])
         return ''.join(result)
@@ -7078,8 +7152,8 @@ def _postprocess_strip_float_suffix(lines):
     """Remove 'f' suffix from floating literals like 1.0f, 0.5f, 3.14e-1f."""
     # Match patterns like:
     #   1.0f, 0.5f, 3.14e-1f, 1.F, 1.e+0F, etc.
-    pat = re.compile(r'(\d+(?:\.\d*)?(?:[eE][+-]?\d+)?)[fF]\b')
-    out = []
+    pat=re.compile(r'(\d+(?:\.\d*)?(?:[eE][+-]?\d+)?)[fF]\b')
+    out=[]
     for line in lines:
         out.append(pat.sub(r'\1', line))
     return out
@@ -7098,21 +7172,21 @@ def _postprocess_strip_wp_kind_suffix(lines):
       1_wp     -> 1
       1.e-3_wp -> 1.e-3
     """
-    pat = re.compile(
+    pat=re.compile(
         r'(?<![A-Za-z0-9_])'
         r'(?P<num>(?:\d+\.\d*|\d*\.\d+|\d+)(?:[eE][+\-]?\d+)?)'
         r'(?:[fF])?'
         r'_wp\b',
         flags=re.IGNORECASE,
     )
-    out = []
+    out=[]
     for line in lines:
-        idx = line.find("//")
+        idx=line.find("//")
         if idx >= 0:
-            code, comment = line[:idx], line[idx:]
+            code, comment=line[:idx], line[idx:]
         else:
-            code, comment = line, ""
-        code = pat.sub(r'\g<num>', code)
+            code, comment=line, ""
+        code=pat.sub(r'\g<num>', code)
         out.append(code + comment)
     return out
 
@@ -7135,16 +7209,16 @@ def _postprocess_index_zero_simplify(text):
 
     def _simplify_zero_mul_parenthesized(e: str) -> str:
         """Replace '0 * ( ... )' with '0' for a balanced parenthesis group."""
-        pat = re.compile(r"\b0\s*\*\s*\(")
+        pat=re.compile(r"\b0\s*\*\s*\(")
         while True:
-            m = pat.search(e)
+            m=pat.search(e)
             if not m:
                 break
-            paren_start = m.end() - 1  # points to '('
-            depth = 0
-            i = paren_start
+            paren_start=m.end() - 1  # points to '('
+            depth=0
+            i=paren_start
             while i < len(e):
-                ch = e[i]
+                ch=e[i]
                 if ch == "(":
                     depth += 1
                 elif ch == ")":
@@ -7155,7 +7229,7 @@ def _postprocess_index_zero_simplify(text):
             if depth != 0:
                 # Unbalanced parentheses: stop trying to simplify.
                 break
-            e = e[:m.start()] + "0" + e[i + 1:]
+            e=e[:m.start()] + "0" + e[i + 1:]
         return e
 
     # Simplify only the code part (before //), leave comments untouched.
@@ -7163,56 +7237,56 @@ def _postprocess_index_zero_simplify(text):
         # 0) Remove redundant parentheses for an array element immediately after '['.
         #    Example:
         #       sva[(iwork[p - 1]) - 1]  ->  sva[iwork[p - 1] - 1]
-        code = re.sub(
+        code=re.sub(
             r"\[\s*\(\s*([A-Za-z_][A-Za-z0-9_]*\s*\[[^\[\]]*\])\s*\)",
             r"[\1",
             code,
         )
 
         # 1) Simplify expressions inside [...]
-        bracket_re = re.compile(r"\[(.*?)\]")
+        bracket_re=re.compile(r"\[(.*?)\]")
 
         def simplify_expr(expr: str) -> str:
-            e = expr
+            e=expr
 
             # (i) -> i, (0) -> 0 when the whole index is just a single
             # parenthesized identifier or integer literal.
-            m_simple = re.fullmatch(
+            m_simple=re.fullmatch(
                 r"\(\s*([A-Za-z_][A-Za-z0-9_]*|\d+)\s*\)", e)
             if m_simple:
-                e = m_simple.group(1)
+                e=m_simple.group(1)
 
             # (1 - 1) -> 0
-            e = re.sub(r"\(\s*1\s*-\s*1\s*\)", "0", e)
+            e=re.sub(r"\(\s*1\s*-\s*1\s*\)", "0", e)
 
             # 0 * ( ... ) -> 0  (balanced parentheses)
-            e = _simplify_zero_mul_parenthesized(e)
+            e=_simplify_zero_mul_parenthesized(e)
 
             # 0 * ATOM -> 0   (ATOM: identifier or integer literal)
-            e = re.sub(r"\b0\s*\*\s*(?:[A-Za-z_][A-Za-z0-9_]*|\d+)\b", "0", e)
+            e=re.sub(r"\b0\s*\*\s*(?:[A-Za-z_][A-Za-z0-9_]*|\d+)\b", "0", e)
             # ATOM * 0 -> 0
-            e = re.sub(r"\b(?:[A-Za-z_][A-Za-z0-9_]*|\d+)\s*\*\s*0\b", "0", e)
+            e=re.sub(r"\b(?:[A-Za-z_][A-Za-z0-9_]*|\d+)\s*\*\s*0\b", "0", e)
 
             # Remove leading "0 + ..." safely (only at start).
-            e = re.sub(r"^\s*0\s*\+\s*", "", e)
+            e=re.sub(r"^\s*0\s*\+\s*", "", e)
 
             # Remove "+ 0" and "- 0" only when the 0 is a standalone term.
             # Do NOT remove when it is followed by '*' or '/' (e.g., '+ 0 * ldb').
-            e = re.sub(r"\+\s*0\b(?!\s*[*\/])", "", e)
-            e = re.sub(r"\-\s*0\b(?!\s*[*\/])", "", e)
+            e=re.sub(r"\+\s*0\b(?!\s*[*\/])", "", e)
+            e=re.sub(r"\-\s*0\b(?!\s*[*\/])", "", e)
 
             # Collapse whitespace inside the index expression
-            e = re.sub(r"\s+", " ", e).strip()
+            e=re.sub(r"\s+", " ", e).strip()
             return e
 
         def repl_brackets(m: re.Match) -> str:
-            inner = m.group(1)
+            inner=m.group(1)
             return "[" + simplify_expr(inner) + "]"
 
-        code2 = bracket_re.sub(repl_brackets, code)
+        code2=bracket_re.sub(repl_brackets, code)
 
         # 2) Simplify double-parenthesized MIN/MAX(...)-1 in the code part
-        pattern_minmax = re.compile(
+        pattern_minmax=re.compile(
             r"\(\s*\(\s*("
             r"(?:[Mm][Ii][Nn]|[Mm][Aa][Xx])"   # MIN or MAX, case-insensitive
             r"\("
@@ -7222,16 +7296,16 @@ def _postprocess_index_zero_simplify(text):
             r")\s*\)\s*-\s*1\s*\)",
             re.DOTALL,
         )
-        code2 = pattern_minmax.sub(r"(\1 - 1)", code2)
+        code2=pattern_minmax.sub(r"(\1 - 1)", code2)
 
         return code2
 
     def simplify_line(line: str) -> str:
-        idx = line.find("//")
+        idx=line.find("//")
         if idx < 0:
             return simplify_code(line)
-        code = line[:idx]
-        comment = line[idx:]
+        code=line[:idx]
+        comment=line[idx:]
         return simplify_code(code) + comment
 
     # If we get a list of lines, process each line and return a list again.
@@ -7240,8 +7314,8 @@ def _postprocess_index_zero_simplify(text):
 
     # Normal case: a single string containing the whole file.
     if isinstance(text, str):
-        lines = text.split("\n")
-        new_lines = [simplify_line(line) for line in lines]
+        lines=text.split("\n")
+        new_lines=[simplify_line(line) for line in lines]
         return "\n".join(new_lines)
 
     # Fallback: unknown type, do not try to be clever.
@@ -7266,7 +7340,7 @@ def _postprocess_array_slice_intrinsics(lines):
 
     def find_matching_paren(s, start):
         """Find the index of the closing paren matching the one at 'start'."""
-        depth = 0
+        depth=0
         for i in range(start, len(s)):
             if s[i] == '(':
                 depth += 1
@@ -7278,9 +7352,9 @@ def _postprocess_array_slice_intrinsics(lines):
 
     def split_args(s):
         """Split by top-level comma."""
-        parts = []
-        current = []
-        depth = 0
+        parts=[]
+        current=[]
+        depth=0
         for ch in s:
             if ch == '(':
                 depth += 1
@@ -7289,78 +7363,78 @@ def _postprocess_array_slice_intrinsics(lines):
                 depth -= 1
                 current.append(ch)
             elif ch == ',' and depth == 0:
-                part = ''.join(current).strip()
+                part=''.join(current).strip()
                 if part:
                     parts.append(part)
-                current = []
+                current=[]
             else:
                 current.append(ch)
         if current:
-            part = ''.join(current).strip()
+            part=''.join(current).strip()
             if part:
                 parts.append(part)
         return parts
 
     # Pattern to match: FuncName(identifier[__SLICE__(args)]...)
     # FuncName is one of: (Mmaxloc|maxloc), (Mmaxval|maxval), (Mminval|minval)
-    pattern = re.compile(
+    pattern=re.compile(
         r'\b(Mmaxloc|maxloc|Mmaxval|maxval|Mminval|minval)\s*\(\s*'
         r'([A-Za-z_][A-Za-z0-9_]*)'
         r'\s*\[\s*__SLICE__\s*\('
     )
 
     def rewrite_line(line):
-        result = []
-        pos = 0
+        result=[]
+        pos=0
 
         for m in pattern.finditer(line):
             result.append(line[pos:m.start()])
-            func_name = m.group(1)
-            array_name = m.group(2)
+            func_name=m.group(1)
+            array_name=m.group(2)
 
             # Normalize function name to MPLAPACK helper name.
-            base = func_name.lower()
+            base=func_name.lower()
             if base in ("mmaxloc", "maxloc"):
-                out_name = "Mmaxloc"
+                out_name="Mmaxloc"
             elif base in ("mmaxval", "maxval"):
-                out_name = "Mmaxval"
+                out_name="Mmaxval"
             elif base in ("mminval", "minval"):
-                out_name = "Mminval"
+                out_name="Mminval"
             else:
-                out_name = func_name
+                out_name=func_name
 
             # Find the end of __SLICE__(...)
-            slice_paren_start = m.end() - 1  # position of '(' after __SLICE__
-            slice_paren_end = find_matching_paren(line, slice_paren_start)
+            slice_paren_start=m.end() - 1  # position of '(' after __SLICE__
+            slice_paren_end=find_matching_paren(line, slice_paren_start)
             if slice_paren_end < 0:
                 # Fallback: keep original text
                 result.append(line[m.start():m.end()])
-                pos = m.end()
+                pos=m.end()
                 continue
 
             # Extract slice args: (start, end) or (start, end, step)
-            slice_args_str = line[slice_paren_start + 1:slice_paren_end]
-            slice_arg_list = split_args(slice_args_str)
+            slice_args_str=line[slice_paren_start + 1:slice_paren_end]
+            slice_arg_list=split_args(slice_args_str)
 
             if len(slice_arg_list) not in (2, 3):
                 result.append(line[m.start():m.end()])
-                pos = m.end()
+                pos=m.end()
                 continue
 
-            start_arg = slice_arg_list[0].strip()
-            end_arg = slice_arg_list[1].strip()
-            incx_arg = "1"
+            start_arg=slice_arg_list[0].strip()
+            end_arg=slice_arg_list[1].strip()
+            incx_arg="1"
             if len(slice_arg_list) == 3:
-                incx_arg = slice_arg_list[2].strip()
+                incx_arg=slice_arg_list[2].strip()
 
             # After __SLICE__(...) should be "]" followed by optional ", dim" then ")"
-            rest_start = slice_paren_end + 1
-            rest_pos = rest_start
+            rest_start=slice_paren_end + 1
+            rest_pos=rest_start
             while rest_pos < len(line) and line[rest_pos] in ' \t':
                 rest_pos += 1
             if rest_pos >= len(line) or line[rest_pos] != ']':
                 result.append(line[m.start():m.end()])
-                pos = m.end()
+                pos=m.end()
                 continue
             rest_pos += 1  # skip ']'
 
@@ -7370,54 +7444,54 @@ def _postprocess_array_slice_intrinsics(lines):
 
             if rest_pos >= len(line):
                 result.append(line[m.start():m.end()])
-                pos = m.end()
+                pos=m.end()
                 continue
 
             # Check what comes next: ',' (has extra args) or ')' (no extra args)
             if line[rest_pos] == ')':
                 # No extra arguments (Mmaxval, Mminval style)
                 if out_name in ("Mmaxval", "Mminval"):
-                    new_call = f"{out_name}({array_name}, {start_arg}, {end_arg}, {incx_arg})"
+                    new_call=f"{out_name}({array_name}, {start_arg}, {end_arg}, {incx_arg})"
                 else:
                     # Fallback (shouldn't happen for the targeted intrinsics)
-                    new_call = f"{out_name}({array_name}, {start_arg}, {end_arg})"
+                    new_call=f"{out_name}({array_name}, {start_arg}, {end_arg})"
                 result.append(new_call)
-                pos = rest_pos + 1
+                pos=rest_pos + 1
             elif line[rest_pos] == ',':
                 # Has extra arguments (Mmaxloc style with dim)
                 rest_pos += 1  # skip ','
 
                 # Find the closing ')' of the function call
-                paren_depth = 1
-                extra_args_start = rest_pos
-                close_paren_pos = -1
+                paren_depth=1
+                extra_args_start=rest_pos
+                close_paren_pos=-1
                 for i in range(rest_pos, len(line)):
                     if line[i] == '(':
                         paren_depth += 1
                     elif line[i] == ')':
                         paren_depth -= 1
                         if paren_depth == 0:
-                            close_paren_pos = i
+                            close_paren_pos=i
                             break
 
                 if close_paren_pos < 0:
                     result.append(line[m.start():m.end()])
-                    pos = m.end()
+                    pos=m.end()
                     continue
 
-                extra_args = line[extra_args_start:close_paren_pos].strip()
+                extra_args=line[extra_args_start:close_paren_pos].strip()
                 if out_name == "Mmaxloc" and len(slice_arg_list) == 3:
                     # Strided slice: keep dim as the last argument.
                     #   maxloc(a(i:j:k), dim) -> Mmaxloc(a, i, j, k, dim)
-                    new_call = f"{out_name}({array_name}, {start_arg}, {end_arg}, {incx_arg}, {extra_args})"
+                    new_call=f"{out_name}({array_name}, {start_arg}, {end_arg}, {incx_arg}, {extra_args})"
                 else:
                     # Backward-compatible: keep the existing 4-arg form.
-                    new_call = f"{out_name}({array_name}, {start_arg}, {end_arg}, {extra_args})"
+                    new_call=f"{out_name}({array_name}, {start_arg}, {end_arg}, {extra_args})"
                 result.append(new_call)
-                pos = close_paren_pos + 1
+                pos=close_paren_pos + 1
             else:
                 result.append(line[m.start():m.end()])
-                pos = m.end()
+                pos=m.end()
                 continue
 
         result.append(line[pos:])
@@ -7431,7 +7505,7 @@ def _postprocess_array_slice_intrinsics(lines):
 
 
 # Keep old name as alias for compatibility
-_postprocess_mmaxloc = _postprocess_array_slice_intrinsics
+_postprocess_mmaxloc=_postprocess_array_slice_intrinsics
 
 
 def _postprocess_slice_assignment(lines):
@@ -7464,7 +7538,7 @@ def _postprocess_slice_assignment(lines):
 
     def find_matching_paren(s, start):
         """Find the index of the closing paren matching the one at 'start'."""
-        depth = 0
+        depth=0
         for i in range(start, len(s)):
             if s[i] == "(":
                 depth += 1
@@ -7476,9 +7550,9 @@ def _postprocess_slice_assignment(lines):
 
     def split_args(s):
         """Split a comma-separated argument string at top level."""
-        parts = []
-        current = []
-        depth = 0
+        parts=[]
+        current=[]
+        depth=0
         for ch in s:
             if ch == "(":
                 depth += 1
@@ -7487,14 +7561,14 @@ def _postprocess_slice_assignment(lines):
                 depth -= 1
                 current.append(ch)
             elif ch == "," and depth == 0:
-                part = "".join(current).strip()
+                part="".join(current).strip()
                 if part:
                     parts.append(part)
-                current = []
+                current=[]
             else:
                 current.append(ch)
         if current:
-            part = "".join(current).strip()
+            part="".join(current).strip()
             if part:
                 parts.append(part)
         return parts
@@ -7514,79 +7588,79 @@ def _postprocess_slice_assignment(lines):
           col_expr = "icolz + nsl - 2"
             -> ((icolz + nsl - 2) - 1)
         """
-        col_expr = col_expr.strip()
+        col_expr=col_expr.strip()
         if col_expr == "1":
             # Special case: column 1 -> (1 - 1)
-            col_term = "(1 - 1)"
+            col_term="(1 - 1)"
         else:
-            core = col_expr
+            core=col_expr
             # If the column expression has top-level +, -, * or /,
             # protect it with an extra level of parentheses so that
             # we get ((expr) - 1) instead of expr - 1 gluing together.
             if _has_top_level_arith_op(core):
-                core = f"({core})"
-            col_term = f"({core} - 1)"
+                core=f"({core})"
+            col_term=f"({core} - 1)"
         return f"({loop_var} - 1) + {col_term} * {ldname}"
 
     def replace_slice2d_with_index(expr, loop_var="i"):
         """Replace A[__SLICE2D__(start, end, col, ld)] with A[(loop_var - 1) + (col - 1) * ld]."""
-        pattern = re.compile(
+        pattern=re.compile(
             r"([A-Za-z_][A-Za-z0-9_]*)"
             r"\s*\[\s*__SLICE2D__\s*\("
         )
-        result = []
-        pos = 0
+        result=[]
+        pos=0
 
         while True:
-            m = pattern.search(expr, pos)
+            m=pattern.search(expr, pos)
             if not m:
                 result.append(expr[pos:])
                 break
 
             result.append(expr[pos:m.start()])
-            array_name = m.group(1)
+            array_name=m.group(1)
 
-            paren_start = m.end() - 1
-            paren_end = find_matching_paren(expr, paren_start)
+            paren_start=m.end() - 1
+            paren_end=find_matching_paren(expr, paren_start)
             if paren_end < 0:
                 # Give up if parentheses are unbalanced
                 result.append(expr[m.start():])
                 break
 
-            args_str = expr[paren_start + 1:paren_end]
-            args = split_args(args_str)
+            args_str=expr[paren_start + 1:paren_end]
+            args=split_args(args_str)
             if len(args) != 4:
                 # Not the expected form: leave as-is
                 result.append(expr[m.start():paren_end + 1])
-                pos = paren_end + 1
+                pos=paren_end + 1
                 continue
 
             # args: start, end, col, ldname
-            col_expr = args[2]
-            ldname = args[3]
-            index_expr = make_index_expr(col_expr, ldname, loop_var=loop_var)
+            col_expr=args[2]
+            ldname=args[3]
+            index_expr=make_index_expr(col_expr, ldname, loop_var=loop_var)
 
             # Skip past closing ")]"
-            rest_pos = paren_end + 1
+            rest_pos=paren_end + 1
             while rest_pos < len(expr) and expr[rest_pos] in " \t":
                 rest_pos += 1
             if rest_pos < len(expr) and expr[rest_pos] == "]":
                 rest_pos += 1
 
             result.append(f"{array_name}[{index_expr}]")
-            pos = rest_pos
+            pos=rest_pos
 
         return "".join(result)
 
     # Pattern for 1D slice:   A[__SLICE__(...)]
-    pattern_1d = re.compile(
+    pattern_1d=re.compile(
         r"(\s*)"
         r"([A-Za-z_][A-Za-z0-9_]*)"
         r"\s*\[\s*__SLICE__\s*\("
     )
 
     # Pattern for 2D slice:   A[__SLICE2D__(...)]
-    pattern_2d = re.compile(
+    pattern_2d=re.compile(
         r"(\s*)"
         r"([A-Za-z_][A-Za-z0-9_]*)"
         r"\s*\[\s*__SLICE2D__\s*\("
@@ -7596,20 +7670,20 @@ def _postprocess_slice_assignment(lines):
         # --------------------------------------------------------------
         # 0) Pseudo-slice shorthand:  A(i1, i2) = zero;  or  A(i1,i2,j1,j2) = zero;
         # --------------------------------------------------------------
-        m_zero = re.match(
+        m_zero=re.match(
             r"(\s*)([A-Za-z_][A-Za-z0-9_]*)\s*\(([^)]*)\)\s*=\s*zero\s*;",
             line,
         )
         if m_zero:
-            leading_ws = m_zero.group(1)
-            array_name = m_zero.group(2)
-            args_str = m_zero.group(3)
-            args = split_args(args_str)
+            leading_ws=m_zero.group(1)
+            array_name=m_zero.group(2)
+            args_str=m_zero.group(3)
+            args=split_args(args_str)
 
             # 1D pseudo slice: A(i_start, i_end) = zero;
             if len(args) == 2:
-                row_start, row_end = [a.strip() for a in args]
-                for_loop = (
+                row_start, row_end=[a.strip() for a in args]
+                for_loop=(
                     f"{leading_ws}for (INTEGER i_ = {row_start}; "
                     f"i_ <= {row_end}; i_++) {{\n"
                     f"{leading_ws}    {array_name}[(i_ - 1)] = zero;\n"
@@ -7619,10 +7693,10 @@ def _postprocess_slice_assignment(lines):
 
             # 2D pseudo slice: A(i_start, i_end, j_start, j_end) = zero;
             if len(args) == 4:
-                row_start, row_end, col_start, col_end = [
+                row_start, row_end, col_start, col_end=[
                     a.strip() for a in args]
-                ldname = "ld" + array_name.lower()
-                for_loop = (
+                ldname="ld" + array_name.lower()
+                for_loop=(
                     f"{leading_ws}for (INTEGER l_ = {row_start}; "
                     f"l_ <= {row_end}; l_++) {{\n"
                     f"{leading_ws}    for (INTEGER m_ = {col_start}; "
@@ -7637,40 +7711,40 @@ def _postprocess_slice_assignment(lines):
         # --------------------------------------------------------------
         # 1) 2D slice with __SLICE2D__(...)
         # --------------------------------------------------------------
-        m = pattern_2d.search(line)
+        m=pattern_2d.search(line)
         if m:
-            leading_ws = m.group(1)
-            array_name = m.group(2)
+            leading_ws=m.group(1)
+            array_name=m.group(2)
 
-            slice_paren_start = m.end() - 1
-            slice_paren_end = find_matching_paren(line, slice_paren_start)
+            slice_paren_start=m.end() - 1
+            slice_paren_end=find_matching_paren(line, slice_paren_start)
             if slice_paren_end < 0:
                 return line
 
-            args_str = line[slice_paren_start + 1:slice_paren_end]
-            args = split_args(args_str)
+            args_str=line[slice_paren_start + 1:slice_paren_end]
+            args=split_args(args_str)
             if len(args) != 4:
                 return line
 
-            start_expr, end_expr, col_expr, ldname = args
+            start_expr, end_expr, col_expr, ldname=args
 
             # After __SLICE2D__(...) we expect: "] op= value ;"
-            rest_start = slice_paren_end + 1
-            rest = line[rest_start:]
+            rest_start=slice_paren_end + 1
+            rest=line[rest_start:]
 
-            assign_match = re.match(r"\s*\]\s*([+\-*/]?=)\s*", rest)
+            assign_match=re.match(r"\s*\]\s*([+\-*/]?=)\s*", rest)
             if not assign_match:
                 return line
 
-            assign_op = assign_match.group(1)
-            value_start = rest_start + assign_match.end()
+            assign_op=assign_match.group(1)
+            value_start=rest_start + assign_match.end()
 
             # Find semicolon at top level to terminate RHS.
-            depth_paren = 0
-            depth_bracket = 0
-            semicolon_pos = -1
+            depth_paren=0
+            depth_bracket=0
+            semicolon_pos=-1
             for i in range(value_start, len(line)):
-                ch = line[i]
+                ch=line[i]
                 if ch == "(":
                     depth_paren += 1
                 elif ch == ")":
@@ -7680,18 +7754,18 @@ def _postprocess_slice_assignment(lines):
                 elif ch == "]":
                     depth_bracket -= 1
                 elif ch == ";" and depth_paren == 0 and depth_bracket == 0:
-                    semicolon_pos = i
+                    semicolon_pos=i
                     break
 
             if semicolon_pos < 0:
                 return line
 
-            value_expr = line[value_start:semicolon_pos].strip()
-            value_expr = replace_slice2d_with_index(value_expr, loop_var="i_")
+            value_expr=line[value_start:semicolon_pos].strip()
+            value_expr=replace_slice2d_with_index(value_expr, loop_var="i_")
 
-            index_expr = make_index_expr(col_expr, ldname, loop_var="i_")
+            index_expr=make_index_expr(col_expr, ldname, loop_var="i_")
 
-            for_loop = (
+            for_loop=(
                 f"{leading_ws}for (INTEGER i_ = {start_expr}; "
                 f"i_ <= {end_expr}; i_++) {{ "
                 f"{array_name}[{index_expr}] {assign_op} {value_expr}; }}"
@@ -7702,42 +7776,42 @@ def _postprocess_slice_assignment(lines):
         # --------------------------------------------------------------
         # 2) 1D slice with __SLICE__(...)
         # --------------------------------------------------------------
-        m = pattern_1d.search(line)
+        m=pattern_1d.search(line)
         if m:
-            leading_ws = m.group(1)
-            array_name = m.group(2)
+            leading_ws=m.group(1)
+            array_name=m.group(2)
 
-            slice_paren_start = m.end() - 1
-            slice_paren_end = find_matching_paren(line, slice_paren_start)
+            slice_paren_start=m.end() - 1
+            slice_paren_end=find_matching_paren(line, slice_paren_start)
             if slice_paren_end < 0:
                 return line
 
-            args_str = line[slice_paren_start + 1:slice_paren_end]
-            args = split_args(args_str)
+            args_str=line[slice_paren_start + 1:slice_paren_end]
+            args=split_args(args_str)
             if len(args) not in (2, 3):
                 return line
 
-            start_expr = args[0].strip()
-            end_expr = args[1].strip()
-            step_expr = "1"
+            start_expr=args[0].strip()
+            end_expr=args[1].strip()
+            step_expr="1"
             if len(args) == 3:
-                step_expr = args[2].strip()
+                step_expr=args[2].strip()
 
-            rest_start = slice_paren_end + 1
-            rest = line[rest_start:]
+            rest_start=slice_paren_end + 1
+            rest=line[rest_start:]
 
-            assign_match = re.match(r"\s*\]\s*([+\-*/]?=)\s*", rest)
+            assign_match=re.match(r"\s*\]\s*([+\-*/]?=)\s*", rest)
             if not assign_match:
                 return line
 
-            assign_op = assign_match.group(1)
-            value_start = rest_start + assign_match.end()
+            assign_op=assign_match.group(1)
+            value_start=rest_start + assign_match.end()
 
-            depth_paren = 0
-            depth_bracket = 0
-            semicolon_pos = -1
+            depth_paren=0
+            depth_bracket=0
+            semicolon_pos=-1
             for i in range(value_start, len(line)):
-                ch = line[i]
+                ch=line[i]
                 if ch == "(":
                     depth_paren += 1
                 elif ch == ")":
@@ -7747,36 +7821,36 @@ def _postprocess_slice_assignment(lines):
                 elif ch == "]":
                     depth_bracket -= 1
                 elif ch == ";" and depth_paren == 0 and depth_bracket == 0:
-                    semicolon_pos = i
+                    semicolon_pos=i
                     break
 
             if semicolon_pos < 0:
                 return line
 
-            value_expr = line[value_start:semicolon_pos].strip()
+            value_expr=line[value_start:semicolon_pos].strip()
 
-            loop_header = None
+            loop_header=None
             if len(args) == 2:
-                loop_header = f"for (INTEGER i_ = {start_expr}; i_ <= {end_expr}; i_++)"
+                loop_header=f"for (INTEGER i_ = {start_expr}; i_ <= {end_expr}; i_++)"
             else:
                 # Strided slice: a(i:j:k) assignment. Handle constant and unknown step signs.
-                m_int = re.fullmatch(r"[+-]?\d+", step_expr)
+                m_int=re.fullmatch(r"[+-]?\d+", step_expr)
                 if m_int:
-                    step_val = int(step_expr)
+                    step_val=int(step_expr)
                     if step_val == 0:
                         return line
                     if step_val > 0:
-                        loop_header = f"for (INTEGER i_ = {start_expr}; i_ <= {end_expr}; i_ += {step_expr})"
+                        loop_header=f"for (INTEGER i_ = {start_expr}; i_ <= {end_expr}; i_ += {step_expr})"
                     else:
-                        loop_header = f"for (INTEGER i_ = {start_expr}; i_ >= {end_expr}; i_ += {step_expr})"
+                        loop_header=f"for (INTEGER i_ = {start_expr}; i_ >= {end_expr}; i_ += {step_expr})"
                 else:
-                    loop_header = (
+                    loop_header=(
                         f"for (INTEGER i_ = {start_expr}; "
                         f"(({step_expr}) > 0 ? (i_ <= {end_expr}) : (i_ >= {end_expr})); "
                         f"i_ += {step_expr})"
                     )
 
-            for_loop = (
+            for_loop=(
                 f"{leading_ws}{loop_header} {{ "
                 f"{array_name}[i_ - 1] {assign_op} {value_expr}; }}"
             )
@@ -7799,16 +7873,16 @@ def _postprocess_complex_zero_initializers(lines):
       COMPLEX ztemp = (0.0, 0.0);       -> COMPLEX ztemp = COMPLEX(0.0, 0.0);
       const COMPLEX zero = (0.0, 0.0);  -> const COMPLEX zero = COMPLEX(0.0, 0.0);
     """
-    pat_var = re.compile(
+    pat_var=re.compile(
         r'^(\s*COMPLEX\s+[A-Za-z_][A-Za-z0-9_]*\s*=\s*)\(\s*0\.0\s*,\s*0\.0\s*\);'
     )
-    pat_const = re.compile(
+    pat_const=re.compile(
         r'^(\s*const\s+COMPLEX\s+[A-Za-z_][A-Za-z0-9_]*\s*=\s*)\(\s*0\.0\s*,\s*0\.0\s*\);'
     )
-    out = []
+    out=[]
     for line in lines:
-        line = pat_var.sub(r'\1COMPLEX(0.0, 0.0);', line)
-        line = pat_const.sub(r'\1COMPLEX(0.0, 0.0);', line)
+        line=pat_var.sub(r'\1COMPLEX(0.0, 0.0);', line)
+        line=pat_const.sub(r'\1COMPLEX(0.0, 0.0);', line)
         out.append(line)
     return out
 
@@ -7823,18 +7897,18 @@ def _fix_fortran_externals(src):
         -> DOUBLE PRECISION DLAMCH, DLANHS
     """
     import re
-    lines = src.splitlines(True)
-    out = []
+    lines=src.splitlines(True)
+    out=[]
     for line in lines:
         # 1) EXTERNAL :: ...  ->  EXTERNAL ...
-        line2 = re.sub(r'(?i)\bEXTERNAL\s*::', 'EXTERNAL', line)
+        line2=re.sub(r'(?i)\bEXTERNAL\s*::', 'EXTERNAL', line)
 
         # 2) <type>, EXTERNAL ...  ->  <type> ...
         #    Handles typical LAPACK patterns:
         #      DOUBLE PRECISION, EXTERNAL :: DLAMCH
         #      LOGICAL, EXTERNAL :: LSAME
         #      INTEGER, EXTERNAL :: ILAENV
-        line2 = re.sub(
+        line2=re.sub(
             r'(?i)(\bDOUBLE\s+PRECISION|\bINTEGER|\bLOGICAL|\bREAL|\bCOMPLEX|\bCHARACTER)\s*,\s*EXTERNAL\b',
             r'\1',
             line2,
@@ -7851,9 +7925,9 @@ def _fix_fortran_end_statements(src: str) -> str:
         END SUBROUTINE DSYSWAPR  ->  END
     """
     import re
-    lines = src.splitlines(True)
-    out = []
-    end_pat = re.compile(
+    lines=src.splitlines(True)
+    out=[]
+    end_pat=re.compile(
         r'^(?P<indent>\s*)end\s+'
         r'(?P<kind>subroutine|function|program|module|block\s+data)\b.*$',
         flags=re.IGNORECASE,
@@ -7869,28 +7943,28 @@ def _fix_fortran_end_statements(src: str) -> str:
             continue
 
         # Preserve inline comments started by '!' (common in LAPACK)
-        bang = line.find("!")
+        bang=line.find("!")
         if bang >= 0:
-            code, comment = line[:bang], line[bang:]
+            code, comment=line[:bang], line[bang:]
         else:
-            code, comment = line, ""
+            code, comment=line, ""
 
-        m = end_pat.match(code.rstrip("\r\n"))
+        m=end_pat.match(code.rstrip("\r\n"))
         if not m:
             out.append(line)
             continue
 
-        indent = m.group("indent")
+        indent=m.group("indent")
         if comment:
             out.append(f"{indent}END{comment}")
         else:
-            eol = "\r\n" if line.endswith("\r\n") else (
+            eol="\r\n" if line.endswith("\r\n") else (
                 "\n" if line.endswith("\n") else "")
             out.append(f"{indent}END{eol}")
     return "".join(out)
 
 
-def _drop_fortran_intrinsic_statements(src: str, *, source_form: str = "fixed") -> str:
+def _drop_fortran_intrinsic_statements(src: str, *, source_form: str="fixed") -> str:
     """Drop Fortran INTRINSIC statements (and their continuation lines).
 
     Example that breaks some parsers:
@@ -7898,7 +7972,7 @@ def _drop_fortran_intrinsic_statements(src: str, *, source_form: str = "fixed") 
 
     For C++ translation we do not need INTRINSIC markers, so we remove them.
     """
-    intrinsic_re = re.compile(r"^\s*intrinsic\b", flags=re.IGNORECASE)
+    intrinsic_re=re.compile(r"^\s*intrinsic\b", flags=re.IGNORECASE)
 
     def split_eol(line: str):
         if line.endswith("\r\n"):
@@ -7912,7 +7986,7 @@ def _drop_fortran_intrinsic_statements(src: str, *, source_form: str = "fixed") 
     def is_full_line_comment_or_blank(raw: str) -> bool:
         if raw.strip() == "":
             return True
-        s = raw.lstrip()
+        s=raw.lstrip()
         if s.startswith("!"):
             return True
         # Fixed-form comment in column 1
@@ -7921,7 +7995,7 @@ def _drop_fortran_intrinsic_statements(src: str, *, source_form: str = "fixed") 
         return False
 
     def split_code_comment(raw: str):
-        idx = raw.find("!")
+        idx=raw.find("!")
         if idx >= 0:
             return raw[:idx], raw[idx:]
         return raw, ""
@@ -7936,20 +8010,20 @@ def _drop_fortran_intrinsic_statements(src: str, *, source_form: str = "fixed") 
         # (spaces/digits/tabs). This prevents false positives on free-form lines like
         # "   if(...)" where raw[5] may be '(' and would otherwise be misread as a
         # fixed-form continuation.
-        prefix = raw[:5]
+        prefix=raw[:5]
         for ch in prefix:
             if ch not in " \t0123456789":
                 return False
         return raw[5] not in (" ", "\t")
 
-    lines = src.splitlines(True)
-    out = []
-    i = 0
-    skipping = False
-    prev_trailing_amp = False
+    lines=src.splitlines(True)
+    out=[]
+    i=0
+    skipping=False
+    prev_trailing_amp=False
 
     while i < len(lines):
-        raw, eol = split_eol(lines[i])
+        raw, eol=split_eol(lines[i])
 
         if skipping:
             # Keep unrelated comment/blank lines as-is.
@@ -7958,22 +8032,22 @@ def _drop_fortran_intrinsic_statements(src: str, *, source_form: str = "fixed") 
                 i += 1
                 continue
 
-            lstr = raw.lstrip()
-            is_free_cont = lstr.startswith("&")
-            sf = (source_form or "fixed").lower()
-            use_fixed = (sf != "free")
-            is_cont = prev_trailing_amp or is_free_cont or (
+            lstr=raw.lstrip()
+            is_free_cont=lstr.startswith("&")
+            sf=(source_form or "fixed").lower()
+            use_fixed=(sf != "free")
+            is_cont=prev_trailing_amp or is_free_cont or (
                 use_fixed and is_fixed_form_continuation(raw))
 
             if is_cont:
-                code, _comment = split_code_comment(raw)
-                prev_trailing_amp = code.rstrip().endswith("&")
+                code, _comment=split_code_comment(raw)
+                prev_trailing_amp=code.rstrip().endswith("&")
                 i += 1
                 continue
 
             # First non-continuation line: stop skipping and re-process it normally.
-            skipping = False
-            prev_trailing_amp = False
+            skipping=False
+            prev_trailing_amp=False
             continue
 
         # Normal mode
@@ -7982,10 +8056,10 @@ def _drop_fortran_intrinsic_statements(src: str, *, source_form: str = "fixed") 
             i += 1
             continue
 
-        code, _comment = split_code_comment(raw)
+        code, _comment=split_code_comment(raw)
         if intrinsic_re.match(code):
-            prev_trailing_amp = code.rstrip().endswith("&")
-            skipping = True
+            prev_trailing_amp=code.rstrip().endswith("&")
+            skipping=True
             i += 1
             continue
 
@@ -8011,17 +8085,19 @@ def _strip_openmp_blocks(src: str) -> str:
     This is a lightweight OpenMP-focused filter; it is not a general C preprocessor.
     """
 
-    pp_re = re.compile(r"^\s*#\s*(if|ifdef|ifndef|elif|else|endif)\b(.*)$", re.IGNORECASE)
-    use_omp_re = re.compile(r"^\s*use\s+(?:,\s*intrinsic\s*::\s*)?omp_lib\b", re.IGNORECASE)
-    omp_call_re = re.compile(r"\bomp_(get|set)_[a-z0-9_]+\b", re.IGNORECASE)
+    pp_re=re.compile(
+        r"^\s*#\s*(if|ifdef|ifndef|elif|else|endif)\b(.*)$", re.IGNORECASE)
+    use_omp_re=re.compile(
+        r"^\s*use\s+(?:,\s*intrinsic\s*::\s*)?omp_lib\b", re.IGNORECASE)
+    omp_call_re=re.compile(r"\bomp_(get|set)_[a-z0-9_]+\b", re.IGNORECASE)
 
     def eval_openmp_cond(kind: str, rest: str) -> bool:
         """Evaluate a preprocessor condition that mentions _OPENMP.
 
         Policy: treat _OPENMP as NOT defined.
         """
-        txt = (rest or "").strip()
-        low = txt.lower()
+        txt=(rest or "").strip()
+        low=txt.lower()
 
         if kind == "ifdef":
             return False
@@ -8039,12 +8115,12 @@ def _strip_openmp_blocks(src: str) -> str:
         # Fallback: any remaining expression that mentions _OPENMP is treated as false.
         return False
 
-    lines = src.splitlines(True)
-    out = []
+    lines=src.splitlines(True)
+    out=[]
 
     # Stack of OpenMP conditional blocks.
     # Each frame: {"depth": int, "keep": bool, "selected": bool}
-    stack = []
+    stack=[]
 
     def currently_keeping() -> bool:
         return all(fr["keep"] for fr in stack)
@@ -8054,20 +8130,21 @@ def _strip_openmp_blocks(src: str) -> str:
         if use_omp_re.match(line):
             continue
 
-        m = pp_re.match(line)
+        m=pp_re.match(line)
         if m:
-            kw = m.group(1).lower()
-            rest = (m.group(2) or "").strip()
-            mentions_openmp = ("_openmp" in rest.lower())
+            kw=m.group(1).lower()
+            rest=(m.group(2) or "").strip()
+            mentions_openmp=("_openmp" in rest.lower())
 
             # Enter an OpenMP conditional block.
             if kw in ("if", "ifdef", "ifndef") and mentions_openmp:
-                cond = eval_openmp_cond(kw, rest)
-                stack.append({"depth": 1, "keep": bool(cond), "selected": bool(cond)})
+                cond=eval_openmp_cond(kw, rest)
+                stack.append({"depth": 1, "keep": bool(
+                    cond), "selected": bool(cond)})
                 continue
 
             if stack:
-                fr = stack[-1]
+                fr=stack[-1]
 
                 # Track nested conditionals inside an OpenMP block.
                 if kw in ("if", "ifdef", "ifndef"):
@@ -8087,20 +8164,21 @@ def _strip_openmp_blocks(src: str) -> str:
                 if fr["depth"] == 1 and kw in ("elif", "else"):
                     if kw == "else":
                         if not fr["selected"]:
-                            fr["keep"] = True
-                            fr["selected"] = True
+                            fr["keep"]=True
+                            fr["selected"]=True
                         else:
-                            fr["keep"] = False
+                            fr["keep"]=False
                     else:
                         if not fr["selected"]:
                             # If the elif condition still mentions _OPENMP, evaluate it.
                             # Otherwise assume it is the intended non-OpenMP fallback.
-                            take = eval_openmp_cond("elif", rest) if ("_openmp" in rest.lower()) else True
-                            fr["keep"] = bool(take)
+                            take=eval_openmp_cond("elif", rest) if (
+                                "_openmp" in rest.lower()) else True
+                            fr["keep"]=bool(take)
                             if take:
-                                fr["selected"] = True
+                                fr["selected"]=True
                         else:
-                            fr["keep"] = False
+                            fr["keep"]=False
                     continue
 
                 # Other directives inside OpenMP blocks: keep only if active.
@@ -8135,22 +8213,22 @@ def _detect_fortran_source_form(file_name: str, src: str) -> str:
     This is intentionally conservative: when unsure, prefer 'fixed' because
     the historical FABLE reader behavior is typically fixed-form oriented.
     """
-    ext = os.path.splitext(file_name)[1].lower()
+    ext=os.path.splitext(file_name)[1].lower()
 
-    free_exts = {".f90", ".f95", ".f03", ".f08", ".f18"}
-    fixed_exts = {".f", ".for", ".ftn", ".f77"}
+    free_exts={".f90", ".f95", ".f03", ".f08", ".f18"}
+    fixed_exts={".f", ".for", ".ftn", ".f77"}
 
-    form_hint = None
+    form_hint=None
     if ext in free_exts:
-        form_hint = "free"
+        form_hint="free"
     elif ext in fixed_exts:
-        form_hint = "fixed"
+        form_hint="fixed"
 
     # Scan only the head of the file; we want this to be cheap.
-    head_lines = src.splitlines()[:200]
+    head_lines=src.splitlines()[:200]
 
-    free_hits = 0
-    fixed_hits = 0
+    free_hits=0
+    fixed_hits=0
 
     for line in head_lines:
         if not line:
@@ -8165,7 +8243,7 @@ def _detect_fortran_source_form(file_name: str, src: str) -> str:
         if re.match(r"^\s{0,5}\d{1,5}\s+", line):
             fixed_hits += 1
 
-        s = line.strip().lower()
+        s=line.strip().lower()
         if not s:
             continue
 
@@ -8219,54 +8297,54 @@ def _fix_fortran_use_la_constants(src: str) -> str:
     def code_part(raw: str) -> str:
         return raw.split("!", 1)[0]
 
-    USE_HEAD_RE = re.compile(r"^\s*use\s+la_constants\b", flags=re.IGNORECASE)
+    USE_HEAD_RE=re.compile(r"^\s*use\s+la_constants\b", flags=re.IGNORECASE)
 
-    lines = src.splitlines(True)
-    out = []
-    i = 0
-    found = False
-    wp_kind = None  # "dp" or "sp"
-    imported = set()
+    lines=src.splitlines(True)
+    out=[]
+    i=0
+    found=False
+    wp_kind=None  # "dp" or "sp"
+    imported=set()
 
     while i < len(lines):
-        raw, eol = split_eol(lines[i])
+        raw, eol=split_eol(lines[i])
         if not USE_HEAD_RE.match(code_part(raw).strip()):
             out.append(raw + eol)
             i += 1
             continue
 
         # Collect the whole USE statement (free-form & continuations).
-        found = True
-        block = []
+        found=True
+        block=[]
         while i < len(lines):
-            r, e = split_eol(lines[i])
+            r, e=split_eol(lines[i])
             block.append(r)
-            cp = code_part(r).rstrip()
+            cp=code_part(r).rstrip()
             i += 1
             if cp.endswith("&"):
                 continue
             # Next line can be a continuation starting with '&' or 'only:'
             if i < len(lines):
-                nxt = code_part(lines[i]).lstrip()
+                nxt=code_part(lines[i]).lstrip()
                 if nxt.startswith("&") or nxt.lower().startswith("only:"):
                     continue
             break
 
         # Parse "only:" list if present.
-        flat = " ".join([code_part(b).replace("&", " ") for b in block])
-        m_only = re.search(r"\bonly\s*:\s*(.*)$", flat, flags=re.IGNORECASE)
+        flat=" ".join([code_part(b).replace("&", " ") for b in block])
+        m_only=re.search(r"\bonly\s*:\s*(.*)$", flat, flags=re.IGNORECASE)
         if m_only:
-            only_list = m_only.group(1)
+            only_list=m_only.group(1)
             # Split by commas (good enough here).
-            items = [x.strip() for x in only_list.split(",") if x.strip()]
+            items=[x.strip() for x in only_list.split(",") if x.strip()]
             for it in items:
                 # Support renaming: lhs=>rhs
                 if "=>" in it:
-                    lhs, rhs = [x.strip().lower() for x in it.split("=>", 1)]
+                    lhs, rhs=[x.strip().lower() for x in it.split("=>", 1)]
                     imported.add(lhs)
                     if lhs == "wp":
                         if rhs in ("dp", "sp"):
-                            wp_kind = rhs
+                            wp_kind=rhs
                 else:
                     imported.add(it.strip().lower())
 
@@ -8281,7 +8359,7 @@ def _fix_fortran_use_la_constants(src: str) -> str:
         # Decide precision if not found explicitly.
         if wp_kind is None:
             # Fallback heuristic: if we imported dp-like names, assume dp.
-            wp_kind = "dp" if ("dp" in flat.lower(
+            wp_kind="dp" if ("dp" in flat.lower(
             ) or "dzero" in flat.lower() or "done" in flat.lower()) else "sp"
 
         # IMPORTANT:
@@ -8308,35 +8386,35 @@ def _fix_fortran_use_la_constants(src: str) -> str:
             out.append("PARAMETER (safmin = one //UNHANDLED)\n")
             out.append("PARAMETER (safmax = one //UNHANDLED)\n")
 
-    src2 = "".join(out)
+    src2="".join(out)
     if not found:
         return src2
 
     # Rewrite REAL(KIND=wp) / REAL(wp) and numeric literals with _wp suffix.
     if wp_kind == "dp":
-        src2 = re.sub(r"\breal\s*\(\s*kind\s*=\s*wp\s*\)",
+        src2=re.sub(r"\breal\s*\(\s*kind\s*=\s*wp\s*\)",
                       "DOUBLE PRECISION", src2, flags=re.IGNORECASE)
-        src2 = re.sub(r"\breal\s*\(\s*wp\s*\)",
+        src2=re.sub(r"\breal\s*\(\s*wp\s*\)",
                       "DOUBLE PRECISION", src2, flags=re.IGNORECASE)
         # 1.0_wp -> 1.0D0, 1e-3_wp -> 1D-3
 
         def _wp_lit(m):
-            num = m.group("num")
-            num = re.sub(r"[eE]([+\-]?\d+)", r"D\1", num)
+            num=m.group("num")
+            num=re.sub(r"[eE]([+\-]?\d+)", r"D\1", num)
             return num if ("D" in num or "d" in num) else (num + "D0")
-        src2 = re.sub(r"(?P<num>(?:\d+\.\d*|\d*\.\d+|\d+)(?:[eE][+\-]?\d+)?)\s*_wp\b",
+        src2=re.sub(r"(?P<num>(?:\d+\.\d*|\d*\.\d+|\d+)(?:[eE][+\-]?\d+)?)\s*_wp\b",
                       _wp_lit, src2, flags=re.IGNORECASE)
     else:
-        src2 = re.sub(r"\breal\s*\(\s*kind\s*=\s*wp\s*\)",
+        src2=re.sub(r"\breal\s*\(\s*kind\s*=\s*wp\s*\)",
                       "REAL", src2, flags=re.IGNORECASE)
-        src2 = re.sub(r"\breal\s*\(\s*wp\s*\)", "REAL",
+        src2=re.sub(r"\breal\s*\(\s*wp\s*\)", "REAL",
                       src2, flags=re.IGNORECASE)
 
         def _wp_lit_sp(m):
-            num = m.group("num")
-            num = re.sub(r"[dD]([+\-]?\d+)", r"E\1", num)
+            num=m.group("num")
+            num=re.sub(r"[dD]([+\-]?\d+)", r"E\1", num)
             return num if ("E" in num or "e" in num) else (num + "E0")
-        src2 = re.sub(r"(?P<num>(?:\d+\.\d*|\d*\.\d+|\d+)(?:[dD][+\-]?\d+)?)\s*_wp\b",
+        src2=re.sub(r"(?P<num>(?:\d+\.\d*|\d*\.\d+|\d+)(?:[dD][+\-]?\d+)?)\s*_wp\b",
                       _wp_lit_sp, src2, flags=re.IGNORECASE)
 
     return src2
@@ -8366,17 +8444,17 @@ def _fix_fortran_use_la_xisnan(src: str) -> str:
     def code_part(raw: str) -> str:
         return raw.split("!", 1)[0]
 
-    USE_HEAD_RE = re.compile(
+    USE_HEAD_RE=re.compile(
         r"^\s*use\s*(?:,\s*intrinsic\s*::\s*)?la_xisnan\b",
         flags=re.IGNORECASE,
     )
 
-    lines = src.splitlines(True)
-    out = []
-    i = 0
+    lines=src.splitlines(True)
+    out=[]
+    i=0
 
     while i < len(lines):
-        raw, eol = split_eol(lines[i])
+        raw, eol=split_eol(lines[i])
 
         # Keep fixed-form whole-line comments intact.
         if raw and raw[0] in ("c", "C", "*", "!"):
@@ -8390,16 +8468,16 @@ def _fix_fortran_use_la_xisnan(src: str) -> str:
             continue
 
         # Collect the whole USE statement (free-form '&' continuations).
-        block = []
+        block=[]
         while i < len(lines):
-            r, e = split_eol(lines[i])
+            r, e=split_eol(lines[i])
             block.append(r)
-            cp = code_part(r).rstrip()
+            cp=code_part(r).rstrip()
             i += 1
             if cp.endswith("&"):
                 continue
             if i < len(lines):
-                nxt = code_part(lines[i]).lstrip()
+                nxt=code_part(lines[i]).lstrip()
                 if nxt.startswith("&") or nxt.lower().startswith("only:"):
                     continue
             break
@@ -8414,7 +8492,7 @@ def _fix_fortran_use_la_xisnan(src: str) -> str:
 
 def _should_lower_free_to_fixed(src: str) -> bool:
     """Heuristic: decide whether to lower free-form source into fixed-form."""
-    low = src.lower()
+    low=src.lower()
 
     # Strong F90 markers
     if "::" in low:
@@ -8426,10 +8504,10 @@ def _should_lower_free_to_fixed(src: str) -> bool:
 
     # Free-form continuation: trailing '&' before any '!' comment
     for line in src.splitlines():
-        s = line.lstrip()
+        s=line.lstrip()
         if not s or s.startswith("!"):
             continue
-        code = line.split("!", 1)[0]
+        code=line.split("!", 1)[0]
         if code.rstrip().endswith("&"):
             return True
 
@@ -8454,7 +8532,7 @@ def _fix_fortran_intrinsic_kind_keyword_arguments(src: str) -> str:
     """
     import re
 
-    intrinsic_with_kind = {
+    intrinsic_with_kind={
         "cmplx",
         "real",
         "int",
@@ -8465,12 +8543,12 @@ def _fix_fortran_intrinsic_kind_keyword_arguments(src: str) -> str:
         "ceiling",
     }
 
-    kind_arg_re = re.compile(r"^kind\s*=", flags=re.IGNORECASE)
+    kind_arg_re=re.compile(r"^kind\s*=", flags=re.IGNORECASE)
 
     def find_matching_paren(s: str, start: int) -> int:
-        depth = 0
+        depth=0
         for i in range(start, len(s)):
-            ch = s[i]
+            ch=s[i]
             if ch == "(":
                 depth += 1
             elif ch == ")":
@@ -8479,37 +8557,37 @@ def _fix_fortran_intrinsic_kind_keyword_arguments(src: str) -> str:
                     return i
         return -1
 
-    call_re = re.compile(r"\b([A-Za-z_][A-Za-z0-9_]*)\s*\(")
+    call_re=re.compile(r"\b([A-Za-z_][A-Za-z0-9_]*)\s*\(")
 
     def rewrite_segment(code: str) -> str:
-        out = []
-        i = 0
+        out=[]
+        i=0
         while i < len(code):
-            m = call_re.search(code, i)
+            m=call_re.search(code, i)
             if not m:
                 out.append(code[i:])
                 break
 
-            name = m.group(1)
-            paren_start = m.end() - 1
-            paren_end = find_matching_paren(code, paren_start)
+            name=m.group(1)
+            paren_start=m.end() - 1
+            paren_end=find_matching_paren(code, paren_start)
             if paren_end < 0:
                 out.append(code[i:])
                 break
 
             out.append(code[i:m.start(1)])
-            head = code[m.start(1):paren_start]
+            head=code[m.start(1):paren_start]
 
-            inner = code[paren_start + 1:paren_end]
-            inner = rewrite_segment(inner)
+            inner=code[paren_start + 1:paren_end]
+            inner=rewrite_segment(inner)
 
             if name.lower() in intrinsic_with_kind and "kind" in inner.lower():
-                args = _split_top_level_commas(inner)
-                args = [a for a in args if not kind_arg_re.match(a.strip())]
-                inner = ", ".join(args)
+                args=_split_top_level_commas(inner)
+                args=[a for a in args if not kind_arg_re.match(a.strip())]
+                inner=", ".join(args)
 
             out.append(f"{head}({inner})")
-            i = paren_end + 1
+            i=paren_end + 1
 
         return "".join(out)
 
@@ -8524,20 +8602,20 @@ def _fix_fortran_intrinsic_kind_keyword_arguments(src: str) -> str:
             return True
         return False
 
-    out_lines = []
+    out_lines=[]
     for line in src.splitlines(True):
         if is_full_line_comment(line):
             out_lines.append(line)
             continue
 
         # Preserve inline comments started by '!'
-        bang = line.find("!")
+        bang=line.find("!")
         if bang >= 0:
-            code_part = line[:bang]
-            comment_part = line[bang:]
+            code_part=line[:bang]
+            comment_part=line[bang:]
         else:
-            code_part = line
-            comment_part = ""
+            code_part=line
+            comment_part=""
 
         out_lines.append(rewrite_segment(code_part) + comment_part)
 
@@ -8550,18 +8628,18 @@ def _preprocess_fortran_fixed_form(src: str) -> typing.Tuple[str, str]:
     Returns: (new_src, emit_form)
       emit_form is 'fixed' or 'free' and controls the temp file suffix.
     """
-    new_src = src
-    new_src = _fix_fortran_externals(new_src)
-    new_src = _fix_fortran_use_la_constants(new_src)
-    new_src = _fix_fortran_use_la_xisnan(new_src)
-    new_src = _drop_fortran_intrinsic_statements(
+    new_src=src
+    new_src=_fix_fortran_externals(new_src)
+    new_src=_fix_fortran_use_la_constants(new_src)
+    new_src=_fix_fortran_use_la_xisnan(new_src)
+    new_src=_drop_fortran_intrinsic_statements(
         new_src, source_form="fixed")  # drop unconditionally
-    new_src = _fix_fortran_iso_fortran_env_real64(
+    new_src=_fix_fortran_iso_fortran_env_real64(
         new_src)  # harmless even if not present
-    new_src = _fix_fortran_intrinsic_kind_keyword_arguments(new_src)
-    new_src = _fix_fortran_f90_decl_syntax(new_src)
-    new_src = _fix_fortran_select_case_to_if(new_src)
-    new_src = _fix_fortran_end_statements(new_src)
+    new_src=_fix_fortran_intrinsic_kind_keyword_arguments(new_src)
+    new_src=_fix_fortran_f90_decl_syntax(new_src)
+    new_src=_fix_fortran_select_case_to_if(new_src)
+    new_src=_fix_fortran_end_statements(new_src)
     return new_src, "fixed"
 
 
@@ -8571,46 +8649,46 @@ def _preprocess_fortran_free_form(src: str) -> typing.Tuple[str, str]:
     Returns: (new_src, emit_form)
       emit_form is 'fixed' or 'free' and controls the temp file suffix.
     """
-    new_src = src
-    new_src = _fix_fortran_externals(new_src)
-    new_src = _fix_fortran_use_la_constants(new_src)
-    new_src = _fix_fortran_use_la_xisnan(new_src)
-    new_src = _drop_fortran_intrinsic_statements(
+    new_src=src
+    new_src=_fix_fortran_externals(new_src)
+    new_src=_fix_fortran_use_la_constants(new_src)
+    new_src=_fix_fortran_use_la_xisnan(new_src)
+    new_src=_drop_fortran_intrinsic_statements(
         new_src, source_form="free")  # drop unconditionally
-    new_src = _fix_fortran_intrinsic_kind_keyword_arguments(new_src)
-    lower_to_fixed = _should_lower_free_to_fixed(new_src)
+    new_src=_fix_fortran_intrinsic_kind_keyword_arguments(new_src)
+    lower_to_fixed=_should_lower_free_to_fixed(new_src)
 
     if lower_to_fixed:
         # Lowering pipeline: free-form -> fixed-form
-        new_src = _fix_fortran_iso_fortran_env_real64(new_src)
-        new_src = _fix_fortran_f90_decl_syntax(new_src)
-        new_src = _fix_fortran_select_case_to_if(new_src)
-        new_src = _fix_fortran_free_form_ampersand_continuations(new_src)
-        new_src = _normalize_free_form_to_fixed_form_layout(new_src)
-        new_src = _fix_fortran_end_statements(new_src)
+        new_src=_fix_fortran_iso_fortran_env_real64(new_src)
+        new_src=_fix_fortran_f90_decl_syntax(new_src)
+        new_src=_fix_fortran_select_case_to_if(new_src)
+        new_src=_fix_fortran_free_form_ampersand_continuations(new_src)
+        new_src=_normalize_free_form_to_fixed_form_layout(new_src)
+        new_src=_fix_fortran_end_statements(new_src)
         return new_src, "fixed"
 
     # If we keep it free-form, do only safe transforms and emit ".f90"
-    new_src = _fix_fortran_end_statements(new_src)
+    new_src=_fix_fortran_end_statements(new_src)
     return new_src, "free"
 
 
 def _split_top_level_commas(s: str):
     """Split by commas, ignoring commas inside parentheses."""
-    items = []
-    buf = []
-    depth = 0
+    items=[]
+    buf=[]
+    depth=0
     for ch in s:
         if ch == "(":
             depth += 1
         elif ch == ")":
-            depth = max(0, depth - 1)
+            depth=max(0, depth - 1)
         if ch == "," and depth == 0:
             items.append("".join(buf).strip())
-            buf = []
+            buf=[]
         else:
             buf.append(ch)
-    tail = "".join(buf).strip()
+    tail="".join(buf).strip()
     if tail:
         items.append(tail)
     return items
@@ -8632,7 +8710,7 @@ def _fix_fortran_f90_decl_syntax(src: str) -> str:
     """
     import re
 
-    TYPE_RE = re.compile(
+    TYPE_RE=re.compile(
         r'^\s*(DOUBLE\s+PRECISION|DOUBLE\s+COMPLEX|REAL|INTEGER|LOGICAL|CHARACTER|COMPLEX)\b',
         flags=re.IGNORECASE
     )
@@ -8654,21 +8732,21 @@ def _fix_fortran_f90_decl_syntax(src: str) -> str:
             return False
         if len(raw) < 6:
             return False
-        cc = raw[5]
+        cc=raw[5]
         return (cc != " ") and (cc != "0") and (cc != "\t")
 
     def split_inline_comment(raw: str):
         """Split raw line into (code, comment) at first '!' outside quotes."""
-        in_str = False
-        quote = None
+        in_str=False
+        quote=None
         for i, ch in enumerate(raw):
             if ch in ("'", '"'):
                 if not in_str:
-                    in_str = True
-                    quote = ch
+                    in_str=True
+                    quote=ch
                 elif quote == ch:
-                    in_str = False
-                    quote = None
+                    in_str=False
+                    quote=None
             if (not in_str) and ch == "!":
                 return raw[:i], raw[i:]
         return raw, ""
@@ -8685,17 +8763,17 @@ def _fix_fortran_f90_decl_syntax(src: str) -> str:
           (stmt_text, first_inline_comment, first_eol, j_next)
         where j_next is the first line index after the statement.
         """
-        raw0, eol0 = split_eol(lines[i])
-        code0, cmt0 = split_inline_comment(raw0)
-        stmt = code_field_fixed_form(code0).rstrip()
+        raw0, eol0=split_eol(lines[i])
+        code0, cmt0=split_inline_comment(raw0)
+        stmt=code_field_fixed_form(code0).rstrip()
 
-        j = i + 1
+        j=i + 1
         while j < len(lines):
-            rawj, _ = split_eol(lines[j])
+            rawj, _=split_eol(lines[j])
             if not is_fixed_form_continuation(rawj):
                 break
-            codej, _ = split_inline_comment(rawj)
-            part = code_field_fixed_form(codej).strip()
+            codej, _=split_inline_comment(rawj)
+            part=code_field_fixed_form(codej).strip()
             if part:
                 stmt += " " + part
             j += 1
@@ -8703,26 +8781,26 @@ def _fix_fortran_f90_decl_syntax(src: str) -> str:
 
     def find_top_level_eq(text: str) -> int:
         """Find '=' at nesting level 0 (ignore strings and '=>')."""
-        depth = 0
-        in_str = False
-        quote = None
-        i = 0
+        depth=0
+        in_str=False
+        quote=None
+        i=0
         while i < len(text):
-            ch = text[i]
+            ch=text[i]
             if ch in ("'", '"'):
                 if not in_str:
-                    in_str = True
-                    quote = ch
+                    in_str=True
+                    quote=ch
                 elif quote == ch:
-                    in_str = False
-                    quote = None
+                    in_str=False
+                    quote=None
                 i += 1
                 continue
             if not in_str:
                 if ch == "(":
                     depth += 1
                 elif ch == ")":
-                    depth = max(0, depth - 1)
+                    depth=max(0, depth - 1)
                 elif ch == "=" and depth == 0:
                     if i + 1 < len(text) and text[i + 1] == ">":
                         i += 2
@@ -8733,7 +8811,7 @@ def _fix_fortran_f90_decl_syntax(src: str) -> str:
 
     def extract_paren_content(text: str, lpar: int):
         """Given text[lpar]=='(', return (content, rpar_index)."""
-        depth = 0
+        depth=0
         for i in range(lpar, len(text)):
             if text[i] == "(":
                 depth += 1
@@ -8744,7 +8822,7 @@ def _fix_fortran_f90_decl_syntax(src: str) -> str:
         return text[lpar + 1:], len(text) - 1
 
     def normalize_base_type(bt: str) -> str:
-        low = " ".join(bt.strip().split()).lower()
+        low=" ".join(bt.strip().split()).lower()
         if low == "double precision":
             return "DOUBLE PRECISION"
         if low == "double complex":
@@ -8758,19 +8836,19 @@ def _fix_fortran_f90_decl_syntax(src: str) -> str:
         """
         if dim is None:
             return None
-        dim = dim.strip()
+        dim=dim.strip()
         if not dim:
             return None
-        parts = _split_top_level_commas(dim)
+        parts=_split_top_level_commas(dim)
         if not parts:
             return None
-        out_parts = []
-        changed = False
+        out_parts=[]
+        changed=False
         for p in parts:
-            ps = p.strip()
+            ps=p.strip()
             if ps == ":":
                 out_parts.append("1")
-                changed = True
+                changed=True
             else:
                 out_parts.append(ps)
         return ", ".join(out_parts) if changed else dim
@@ -8779,146 +8857,148 @@ def _fix_fortran_f90_decl_syntax(src: str) -> str:
         """
         Parse ALLOCATE(...) statement; return ([(name, shape)], stat_var) or None.
         """
-        low = stmt.lower().lstrip()
+        low=stmt.lower().lstrip()
         if not low.startswith("allocate"):
             return None
-        lpar = stmt.lower().find("allocate")
-        lpar = stmt.find("(", lpar)
+        lpar=stmt.lower().find("allocate")
+        lpar=stmt.find("(", lpar)
         if lpar < 0:
             return None
-        inside, _ = extract_paren_content(stmt, lpar)
-        items = _split_top_level_commas(inside)
-        objs = []
-        stat_var = None
+        inside, _=extract_paren_content(stmt, lpar)
+        items=_split_top_level_commas(inside)
+        objs=[]
+        stat_var=None
         for it in items:
-            it = it.strip()
+            it=it.strip()
             if not it:
                 continue
-            eq = find_top_level_eq(it)
+            eq=find_top_level_eq(it)
             if eq != -1:
-                key = it[:eq].strip().lower()
-                val = it[eq + 1:].strip()
+                key=it[:eq].strip().lower()
+                val=it[eq + 1:].strip()
                 if key == "stat":
-                    stat_var = val
+                    stat_var=val
                 continue
-            lpar2 = it.find("(")
+            lpar2=it.find("(")
             if lpar2 != -1:
-                shape, _ = extract_paren_content(it, lpar2)
-                name = it[:lpar2].strip()
+                shape, _=extract_paren_content(it, lpar2)
+                name=it[:lpar2].strip()
                 if name:
                     objs.append((name, shape.strip()))
             else:
-                name = it.strip()
+                name=it.strip()
                 if name:
                     objs.append((name, None))
         return objs, stat_var
 
-    lines = src.splitlines(True)
+    lines=src.splitlines(True)
 
     # Pass 1: collect shapes from continued ALLOCATE statements.
-    allocate_shapes = {}
-    i = 0
+    allocate_shapes={}
+    i=0
     while i < len(lines):
-        rawi, _ = split_eol(lines[i])
+        rawi, _=split_eol(lines[i])
         if is_full_line_comment(rawi):
             i += 1
             continue
-        stmt, _, _, j = gather_fixed_statement(lines, i)
-        parsed = parse_allocate_statement(stmt)
+        stmt, _, _, j=gather_fixed_statement(lines, i)
+        parsed=parse_allocate_statement(stmt)
         if parsed:
-            objs, _ = parsed
+            objs, _=parsed
             for name, shape in objs:
                 if shape:
                     allocate_shapes.setdefault(name.lower(), shape)
-        i = j
+        i=j
 
     # Pass 2: rewrite continued declarations and optionally remove continued ALLOCATE.
-    out_lines = []
-    raii_alloc_names = set()  # all ALLOCATABLE vars we rewrite into explicit-shape decls
-    indent = "      "
+    out_lines=[]
+    raii_alloc_names=set()  # all ALLOCATABLE vars we rewrite into explicit-shape decls
+    indent="      "
 
-    i = 0
+    i=0
     while i < len(lines):
-        rawi, eoli = split_eol(lines[i])
+        rawi, eoli=split_eol(lines[i])
 
         if is_full_line_comment(rawi):
             out_lines.append(rawi + eoli)
             i += 1
             continue
 
-        stmt, first_cmt, eol0, j = gather_fixed_statement(lines, i)
+        stmt, first_cmt, eol0, j=gather_fixed_statement(lines, i)
 
         # Remove ALLOCATE(...) if it only targets RAII variables.
-        parsed_alloc = parse_allocate_statement(stmt)
+        parsed_alloc=parse_allocate_statement(stmt)
         if parsed_alloc:
-            objs, stat_var = parsed_alloc
+            objs, stat_var=parsed_alloc
             if objs and all((name.lower() in raii_alloc_names) for name, _ in objs):
-                out_lines.append(f"!FABLE: ALLOCATE removed (RAII in C++){eol0}")
+                out_lines.append(
+                    f"!FABLE: ALLOCATE removed (RAII in C++){eol0}")
                 if stat_var:
                     out_lines.append(f"{indent}{stat_var} = 0{eol0}")
-                i = j
+                i=j
                 continue
             # Keep original lines unchanged.
             out_lines.extend(lines[i:j])
-            i = j
+            i=j
             continue
 
         # Rewrite only typed '::' declarations.
         if ("::" not in stmt) or (not TYPE_RE.match(stmt)):
             out_lines.extend(lines[i:j])
-            i = j
+            i=j
             continue
 
-        left, right = stmt.split("::", 1)
-        left_parts = _split_top_level_commas(left.strip())
+        left, right=stmt.split("::", 1)
+        left_parts=_split_top_level_commas(left.strip())
         if not left_parts:
             out_lines.extend(lines[i:j])
-            i = j
+            i=j
             continue
 
-        base_type = normalize_base_type(left_parts[0])
-        attrs_raw = [p.strip() for p in left_parts[1:] if p.strip()]
+        base_type=normalize_base_type(left_parts[0])
+        attrs_raw=[p.strip() for p in left_parts[1:] if p.strip()]
 
-        dim_attr = None
-        is_parameter = False
-        is_allocatable = False
+        dim_attr=None
+        is_parameter=False
+        is_allocatable=False
 
         for attr in attrs_raw:
-            low = attr.lower().strip()
+            low=attr.lower().strip()
             if low.startswith("dimension"):
-                lpar = attr.find("(")
+                lpar=attr.find("(")
                 if lpar != -1:
-                    inside, _ = extract_paren_content(attr, lpar)
-                    dim_attr = inside.strip()
+                    inside, _=extract_paren_content(attr, lpar)
+                    dim_attr=inside.strip()
             elif low.startswith("parameter"):
-                is_parameter = True
+                is_parameter=True
             elif low.startswith("allocatable"):
-                is_allocatable = True
+                is_allocatable=True
             else:
                 # Drop INTENT/OPTIONAL/VALUE/TARGET/etc.
                 pass
 
-        dim_attr_norm = normalize_dim_spec(dim_attr) if dim_attr else None
-        decl_items = _split_top_level_commas(right.strip())
+        dim_attr_norm=normalize_dim_spec(dim_attr) if dim_attr else None
+        decl_items=_split_top_level_commas(right.strip())
 
         if is_parameter:
             # Emit as:
             #   TYPE name1, name2
             #   PARAMETER (name1=..., name2=...)
-            names = []
+            names=[]
             for it in decl_items:
-                eq = find_top_level_eq(it)
-                lhs = it.strip() if eq == -1 else it[:eq].strip()
+                eq=find_top_level_eq(it)
+                lhs=it.strip() if eq == -1 else it[:eq].strip()
                 if not lhs:
                     continue
-                lpar = lhs.find("(")
+                lpar=lhs.find("(")
                 if lpar != -1:
-                    lhs = lhs[:lpar].strip()
+                    lhs=lhs[:lpar].strip()
                 if lhs:
                     names.append(lhs)
 
             if names:
-                out_lines.append(f"{indent}{base_type} {', '.join(names)}{eol0}")
+                out_lines.append(
+                    f"{indent}{base_type} {', '.join(names)}{eol0}")
 
             # Preserve existing behavior when available.
             if "_contains_machine_const_intrinsics" in globals() and "_FORCE_UNHANDLED_PARAMETER_NAMES" in globals():
@@ -8928,53 +9008,55 @@ def _fix_fortran_f90_decl_syntax(src: str) -> str:
 
             # If this PARAMETER statement was continued, we already gathered it into stmt,
             # so we can emit it in one line.
-            out_lines.append(f"{indent}PARAMETER ({', '.join([it.strip() for it in decl_items if it.strip()])}){eol0}")
-            i = j
+            out_lines.append(
+                f"{indent}PARAMETER ({', '.join([it.strip() for it in decl_items if it.strip()])}){eol0}")
+            i=j
             continue
 
         # Non-PARAMETER: embed dims in declarators; emit one decl per variable.
-        has_init = any((find_top_level_eq(it.strip()) != -1) for it in decl_items)
+        has_init=any((find_top_level_eq(it.strip()) != -1)
+                     for it in decl_items)
         if has_init:
             # Too risky to refactor initialized declarators; keep as-is but drop F90 attrs by removing '::'
             # The simplest safe action is to keep original statement unchanged.
             out_lines.extend(lines[i:j])
-            i = j
+            i=j
             continue
 
-        declarators = []
+        declarators=[]
         for it in decl_items:
-            it = it.strip()
+            it=it.strip()
             if not it:
                 continue
 
-            lhs = it
-            dim = None
+            lhs=it
+            dim=None
 
-            lpar = lhs.find("(")
+            lpar=lhs.find("(")
             if lpar != -1:
-                inside, _ = extract_paren_content(lhs, lpar)
-                dim = normalize_dim_spec(inside)
-                name = lhs[:lpar].strip()
+                inside, _=extract_paren_content(lhs, lpar)
+                dim=normalize_dim_spec(inside)
+                name=lhs[:lpar].strip()
             else:
-                name = lhs.strip()
+                name=lhs.strip()
 
             if not name:
                 continue
 
             # Apply DIMENSION(...) attribute if present.
             if dim is None and dim_attr_norm is not None:
-                dim = dim_attr_norm
+                dim=dim_attr_norm
 
             if is_allocatable:
                 # Prefer explicit shape from ALLOCATE mapping (RAII-friendly).
-                shape = allocate_shapes.get(name.lower())
+                shape=allocate_shapes.get(name.lower())
                 if shape:
-                    dim = shape.strip()
+                    dim=shape.strip()
                 # Mark as RAII-converted regardless.
                 raii_alloc_names.add(name.lower())
                 # If still unknown, force minimal placeholder.
                 if dim is None:
-                    dim = "1"
+                    dim="1"
 
             if dim:
                 declarators.append(f"{name}({dim})")
@@ -8982,10 +9064,10 @@ def _fix_fortran_f90_decl_syntax(src: str) -> str:
                 declarators.append(name)
 
         for k, decl in enumerate(declarators):
-            cmt = first_cmt if k == 0 else ""
+            cmt=first_cmt if k == 0 else ""
             out_lines.append(f"{indent}{base_type} {decl}{cmt}{eol0}")
 
-        i = j
+        i=j
 
     return "".join(out_lines)
 
@@ -9007,11 +9089,11 @@ def _fix_fortran_select_case_to_if(src: str) -> str:
     """
     import re
 
-    SELECT_RE = re.compile(
+    SELECT_RE=re.compile(
         r'^\s*select\s+case\s*\(\s*(?P<expr>[^)]+?)\s*\)\s*$', flags=re.IGNORECASE)
-    CASE_RE = re.compile(
+    CASE_RE=re.compile(
         r'^\s*case\s*(?:(?P<default>default)|\(\s*(?P<sel>.+?)\s*\))\s*$', flags=re.IGNORECASE)
-    ENDSEL_RE = re.compile(r'^\s*end\s*select\b.*$', flags=re.IGNORECASE)
+    ENDSEL_RE=re.compile(r'^\s*end\s*select\b.*$', flags=re.IGNORECASE)
 
     def split_eol(line: str):
         if line.endswith("\r\n"):
@@ -9023,7 +9105,7 @@ def _fix_fortran_select_case_to_if(src: str) -> str:
         return line, ""
 
     def split_code_comment(raw: str):
-        idx = raw.find("!")
+        idx=raw.find("!")
         if idx >= 0:
             return raw[:idx], raw[idx:]
         return raw, ""
@@ -9031,7 +9113,7 @@ def _fix_fortran_select_case_to_if(src: str) -> str:
     def is_comment_or_blank(raw: str) -> bool:
         if raw.strip() == "":
             return True
-        s = raw.lstrip()
+        s=raw.lstrip()
         if s.startswith("!"):
             return True
         if raw and raw[0] in ("c", "C", "*", "!"):
@@ -9039,35 +9121,35 @@ def _fix_fortran_select_case_to_if(src: str) -> str:
         return False
 
     def split_top_level_commas(s: str):
-        items = []
-        buf = []
-        depth = 0
+        items=[]
+        buf=[]
+        depth=0
         for ch in s:
             if ch == "(":
                 depth += 1
             elif ch == ")":
-                depth = max(0, depth - 1)
+                depth=max(0, depth - 1)
             if ch == "," and depth == 0:
                 items.append("".join(buf).strip())
-                buf = []
+                buf=[]
             else:
                 buf.append(ch)
-        tail = "".join(buf).strip()
+        tail="".join(buf).strip()
         if tail:
             items.append(tail)
         return items
 
     def case_selector_to_cond(expr: str, sel: str) -> str:
-        sel = sel.strip()
+        sel=sel.strip()
         # sel is already inside (...) by regex
-        parts = split_top_level_commas(sel)
-        conds = []
+        parts=split_top_level_commas(sel)
+        conds=[]
         for p in parts:
-            p = p.strip()
+            p=p.strip()
             if ":" in p:
-                lo, hi = p.split(":", 1)
-                lo = lo.strip()
-                hi = hi.strip()
+                lo, hi=p.split(":", 1)
+                lo=lo.strip()
+                hi=hi.strip()
                 if lo == "" and hi != "":
                     conds.append(f"({expr} <= {hi})")
                 elif hi == "" and lo != "":
@@ -9080,28 +9162,28 @@ def _fix_fortran_select_case_to_if(src: str) -> str:
             return conds[0]
         return "(" + " .OR. ".join(conds) + ")"
 
-    lines = src.splitlines(True)
+    lines=src.splitlines(True)
 
     def rewrite_from(i: int):
-        raw0, eol0 = split_eol(lines[i])
-        code0, _c0 = split_code_comment(raw0)
-        msel = SELECT_RE.match(code0.strip())
+        raw0, eol0=split_eol(lines[i])
+        code0, _c0=split_code_comment(raw0)
+        msel=SELECT_RE.match(code0.strip())
         if not msel:
             return [lines[i]], i + 1
 
-        indent = re.match(r'^(\s*)', raw0).group(1)
-        expr = msel.group("expr").strip()
-        nl = eol0 if eol0 else "\n"
+        indent=re.match(r'^(\s*)', raw0).group(1)
+        expr=msel.group("expr").strip()
+        nl=eol0 if eol0 else "\n"
 
         i += 1
-        cases = []
-        current_sel = None  # None means "not started yet"
-        current_body = []
+        cases=[]
+        current_sel=None  # None means "not started yet"
+        current_body=[]
 
         while i < len(lines):
-            raw, eol = split_eol(lines[i])
-            code, _comment = split_code_comment(raw)
-            s = code.strip()
+            raw, eol=split_eol(lines[i])
+            code, _comment=split_code_comment(raw)
+            s=code.strip()
 
             if is_comment_or_blank(raw):
                 # Keep comments/blanks in the current body.
@@ -9111,20 +9193,20 @@ def _fix_fortran_select_case_to_if(src: str) -> str:
 
             # Nested SELECT CASE
             if SELECT_RE.match(s):
-                nested_out, i = rewrite_from(i)
+                nested_out, i=rewrite_from(i)
                 current_body.extend(nested_out)
                 continue
 
-            mcase = CASE_RE.match(s)
+            mcase=CASE_RE.match(s)
             if mcase:
                 # Flush previous case
                 if current_sel is not None:
                     cases.append((current_sel, current_body))
-                current_body = []
+                current_body=[]
                 if mcase.group("default"):
-                    current_sel = "DEFAULT"
+                    current_sel="DEFAULT"
                 else:
-                    current_sel = mcase.group("sel").strip()
+                    current_sel=mcase.group("sel").strip()
                 i += 1
                 continue
 
@@ -9138,20 +9220,20 @@ def _fix_fortran_select_case_to_if(src: str) -> str:
             i += 1
 
         # Build IF/ELSE IF chain
-        out = []
-        first = True
+        out=[]
+        first=True
         for sel, body in cases:
             if sel == "DEFAULT":
-                cond = None
+                cond=None
             else:
-                cond = case_selector_to_cond(expr, sel)
+                cond=case_selector_to_cond(expr, sel)
 
             if first:
                 if cond is None:
                     out.append(f"{indent}IF (.TRUE.) THEN{nl}")
                 else:
                     out.append(f"{indent}IF ({cond}) THEN{nl}")
-                first = False
+                first=False
             else:
                 if cond is None:
                     out.append(f"{indent}ELSE{nl}")
@@ -9162,13 +9244,13 @@ def _fix_fortran_select_case_to_if(src: str) -> str:
         out.append(f"{indent}END IF{nl}")
         return out, i
 
-    out_all = []
-    i = 0
+    out_all=[]
+    i=0
     while i < len(lines):
-        raw, _eol = split_eol(lines[i])
-        code, _comment = split_code_comment(raw)
+        raw, _eol=split_eol(lines[i])
+        code, _comment=split_code_comment(raw)
         if SELECT_RE.match(code.strip()):
-            chunk, i = rewrite_from(i)
+            chunk, i=rewrite_from(i)
             out_all.extend(chunk)
         else:
             out_all.append(lines[i])
@@ -9204,18 +9286,18 @@ def _normalize_free_form_to_fixed_form_layout(src: str) -> str:
             return line[:-1], "\r"
         return line, ""
 
-    LABEL_RE = re.compile(r"^\s*(\d{1,5})\s+(.*)$")
+    LABEL_RE=re.compile(r"^\s*(\d{1,5})\s+(.*)$")
 
-    out = []
+    out=[]
     for line in src.splitlines(True):
-        raw, eol = split_eol(line)
-        raw = raw.expandtabs(8)
+        raw, eol=split_eol(line)
+        raw=raw.expandtabs(8)
 
         if raw.strip() == "":
             out.append(raw + eol)
             continue
 
-        lstr = raw.lstrip()
+        lstr=raw.lstrip()
 
         # Free-form comment line -> fixed-form comment line
         if lstr.startswith("!"):
@@ -9227,16 +9309,16 @@ def _normalize_free_form_to_fixed_form_layout(src: str) -> str:
             out.append(raw + eol)
             continue
 
-        m = LABEL_RE.match(raw)
+        m=LABEL_RE.match(raw)
         if m:
-            label = m.group(1)
-            stmt = m.group(2).lstrip()
+            label=m.group(1)
+            stmt=m.group(2).lstrip()
             out.append(label.rjust(5) + " " + stmt + eol)
             continue
 
         # Continuation line in free form often starts with '&'
         if lstr.startswith("&"):
-            stmt = lstr[1:].lstrip()
+            stmt=lstr[1:].lstrip()
             out.append("     &" + stmt + eol)
         else:
             out.append("      " + lstr + eol)
@@ -9271,21 +9353,21 @@ def _fix_fortran_iso_fortran_env_real64(src: str) -> str:
             return line[:-1], "\r"
         return line, ""
 
-    USE_REAL64_RE = re.compile(
+    USE_REAL64_RE=re.compile(
         r'^\s*use\s*,\s*intrinsic\s*::\s*iso_fortran_env\s*,\s*only\s*:\s*real64\s*$',
         flags=re.IGNORECASE,
     )
-    WP_REAL64_RE = re.compile(
+    WP_REAL64_RE=re.compile(
         r'^\s*integer\s*,\s*parameter\s*::\s*wp\s*=\s*real64\s*$',
         flags=re.IGNORECASE,
     )
 
-    lines = src.splitlines(True)
-    out = []
-    has_wp_real64 = False
+    lines=src.splitlines(True)
+    out=[]
+    has_wp_real64=False
 
     for line in lines:
-        raw, eol = split_eol(line)
+        raw, eol=split_eol(line)
 
         if USE_REAL64_RE.match(raw):
             # Fixed-form safe comment (column 1)
@@ -9293,51 +9375,51 @@ def _fix_fortran_iso_fortran_env_real64(src: str) -> str:
             continue
 
         if WP_REAL64_RE.match(raw):
-            has_wp_real64 = True
+            has_wp_real64=True
             # Remove WP definition; we'll normalize types below.
             out.append("C " + raw.lstrip() + eol)
             continue
 
         out.append(raw + eol)
 
-    src2 = "".join(out)
+    src2="".join(out)
     if not has_wp_real64:
         return src2
 
     # Normalize REAL(KIND=WP/wp) -> DOUBLE PRECISION
-    REAL_KIND_WP_RE = re.compile(
+    REAL_KIND_WP_RE=re.compile(
         r'\breal\s*\(\s*kind\s*=\s*wp\s*\)', flags=re.IGNORECASE)
 
     def rewrite_code_only(line: str) -> str:
         # Keep inline '!' comments untouched.
-        idx = line.find("!")
+        idx=line.find("!")
         if idx >= 0:
-            code, comment = line[:idx], line[idx:]
+            code, comment=line[:idx], line[idx:]
         else:
-            code, comment = line, ""
+            code, comment=line, ""
 
-        code = REAL_KIND_WP_RE.sub("DOUBLE PRECISION", code)
+        code=REAL_KIND_WP_RE.sub("DOUBLE PRECISION", code)
 
         # Rewrite numeric literals with _wp suffix to double literals.
         # Examples: 1.0_wp -> 1.0d0, 0.95_wp -> 0.95d0, 1e-3_wp -> 1d-3
         def _lit(m: re.Match) -> str:
-            num = m.group("num")
+            num=m.group("num")
             # convert E exponent to D exponent for double literals
-            num = re.sub(r'[eE]([+\-]?\d+)', r'D\1', num)
+            num=re.sub(r'[eE]([+\-]?\d+)', r'D\1', num)
             # if no exponent, append d0
             if "D" in num or "d" in num:
                 return num
             return num + "d0"
 
-        WP_LIT_RE = re.compile(
+        WP_LIT_RE=re.compile(
             r'(?P<num>(?:\d+\.\d*|\d*\.\d+|\d+)(?:[eE][+\-]?\d+)?)\s*_(?:wp)\b',
             flags=re.IGNORECASE,
         )
-        code = WP_LIT_RE.sub(_lit, code)
+        code=WP_LIT_RE.sub(_lit, code)
         return code + comment
 
-    src2_lines = src2.splitlines(True)
-    src2_lines = [rewrite_code_only(ln) for ln in src2_lines]
+    src2_lines=src2.splitlines(True)
+    src2_lines=[rewrite_code_only(ln) for ln in src2_lines]
     return "".join(src2_lines)
 
 
@@ -9368,7 +9450,7 @@ def _fix_fortran_free_form_ampersand_continuations(src: str) -> str:
     def is_comment_or_blank(raw: str) -> bool:
         if raw.strip() == "":
             return True
-        s = raw.lstrip()
+        s=raw.lstrip()
         # Free-form whole-line comment
         if s.startswith("!"):
             return True
@@ -9377,11 +9459,11 @@ def _fix_fortran_free_form_ampersand_continuations(src: str) -> str:
             return True
         return False
 
-    out = []
-    pending_cont = False
+    out=[]
+    pending_cont=False
 
     for line in src.splitlines(True):
-        raw, eol = split_eol(line)
+        raw, eol=split_eol(line)
 
         # If previous line had trailing '&', rewrite this line as a fixed-form continuation.
         if pending_cont:
@@ -9389,12 +9471,12 @@ def _fix_fortran_free_form_ampersand_continuations(src: str) -> str:
                 out.append(raw + eol)
                 continue
 
-            s = raw.lstrip()
+            s=raw.lstrip()
             if s.startswith("&"):
-                s = s[1:].lstrip()
+                s=s[1:].lstrip()
             # Column-6 continuation marker
-            raw = "     &" + s
-            pending_cont = False
+            raw="     &" + s
+            pending_cont=False
 
         # Do not treat pure comment lines as candidates for trailing '&'
         if is_comment_or_blank(raw):
@@ -9402,18 +9484,18 @@ def _fix_fortran_free_form_ampersand_continuations(src: str) -> str:
             continue
 
         # Strip trailing '&' only in the code part (before inline '!' comment)
-        bang = raw.find("!")
+        bang=raw.find("!")
         if bang >= 0:
-            code = raw[:bang]
-            comment = raw[bang:]
+            code=raw[:bang]
+            comment=raw[bang:]
         else:
-            code = raw
-            comment = ""
+            code=raw
+            comment=""
 
-        code_r = code.rstrip()
+        code_r=code.rstrip()
         if code_r.endswith("&"):
-            code_r = code_r[:-1].rstrip()
-            pending_cont = True
+            code_r=code_r[:-1].rstrip()
+            pending_cont=True
 
         out.append(code_r + comment + eol)
 
@@ -9433,44 +9515,44 @@ def _preprocess_fortran_files(file_names):
     If preprocessing does not change the source, the original filename is
     returned unless we need to force the suffix to match the detected form.
     """
-    patched = []
-    temp_files = []
+    patched=[]
+    temp_files=[]
     for fn in (file_names or []):
         try:
             with open(fn, "r") as f:
-                src = f.read()
-            original_src = src
-            src = _strip_openmp_blocks(src)
+                src=f.read()
+            original_src=src
+            src=_strip_openmp_blocks(src)
         except OSError:
             patched.append(fn)
             continue
 
-        src_form = _detect_fortran_source_form(fn, src)
+        src_form=_detect_fortran_source_form(fn, src)
         if src_form == "free":
-            new_src, emit_form = _preprocess_fortran_free_form(src)
+            new_src, emit_form=_preprocess_fortran_free_form(src)
         else:
-            new_src, emit_form = _preprocess_fortran_fixed_form(src)
+            new_src, emit_form=_preprocess_fortran_fixed_form(src)
 
-        ext = os.path.splitext(fn)[1].lower()
-        free_exts = {".f90", ".f95", ".f03", ".f08", ".f18"}
-        fixed_exts = {".f", ".for", ".ftn", ".f77"}
+        ext=os.path.splitext(fn)[1].lower()
+        free_exts={".f90", ".f95", ".f03", ".f08", ".f18"}
+        fixed_exts={".f", ".for", ".ftn", ".f77"}
 
         # If the content is unchanged but the extension does not match the
         # detected/desired form, still write a temporary copy with a matching
         # suffix so the downstream reader can pick the correct mode.
-        need_temp = (new_src != original_src)
+        need_temp=(new_src != original_src)
         if emit_form == "free" and ext not in free_exts:
-            need_temp = True
+            need_temp=True
         if emit_form == "fixed" and ext not in fixed_exts:
-            need_temp = True
+            need_temp=True
 
         if not need_temp:
             patched.append(fn)
             continue
 
-        suffix = ".f90" if emit_form == "free" else ".f"
+        suffix=".f90" if emit_form == "free" else ".f"
 
-        fd, tmp = tempfile.mkstemp(prefix="fable_tmp_", suffix=suffix)
+        fd, tmp=tempfile.mkstemp(prefix="fable_tmp_", suffix=suffix)
         os.close(fd)
         with open(tmp, "w") as g:
             g.write(new_src)
@@ -9518,20 +9600,20 @@ def process(
     _FORCE_UNHANDLED_PARAMETER_NAMES.clear()
 
     if (namespace is None or namespace == "please_specify"):
-        namespace = ""  # Disabled: was "placeholder_please_replace"
+        namespace=""  # Disabled: was "placeholder_please_replace"
 
     import fable.read
 
     # Keep a copy of the original file names for output paths.
-    orig_file_names = file_names
-    temp_files = []
+    orig_file_names=file_names
+    temp_files=[]
 
     if (all_fprocs is None):
-        patched_file_names = None
+        patched_file_names=None
         if file_names is not None:
-            patched_file_names, temp_files = _preprocess_fortran_files(
+            patched_file_names, temp_files=_preprocess_fortran_files(
                 file_names)
-        all_fprocs = fable.read.process(file_names=patched_file_names)
+        all_fprocs=fable.read.process(file_names=patched_file_names)
 
     if top_cpp_file_name is None and orig_file_names is not None and len(orig_file_names) == 1:
         # Derive output file name from the input file stem (basename without extension),
@@ -9541,44 +9623,44 @@ def process(
         #   For PROGRAM units, the internal procedure name is often prefixed with
         #   "program_" (e.g. PROGRAM DCHKAB -> program_dchkab). Using that name would
         #   produce program_dchkab.cpp, which is not desired here.
-        src_path = orig_file_names[0]
-        base_name = os.path.splitext(os.path.basename(src_path))[0]
+        src_path=orig_file_names[0]
+        base_name=os.path.splitext(os.path.basename(src_path))[0]
         if not base_name:
-            main_fproc = all_fprocs.all_in_input_order[0]
-            base_name = main_fproc.name.value
-        src_path = orig_file_names[0]
-        stem = os.path.splitext(os.path.basename(src_path))[0]
-        base_name = convert_function_name_to_mplapack(stem) if stem else None
+            main_fproc=all_fprocs.all_in_input_order[0]
+            base_name=main_fproc.name.value
+        src_path=orig_file_names[0]
+        stem=os.path.splitext(os.path.basename(src_path))[0]
+        base_name=convert_function_name_to_mplapack(stem) if stem else None
         if not base_name:
-            main_fproc = all_fprocs.all_in_input_order[0]
-            base_name = convert_function_name_to_mplapack(main_fproc.name.value)
-        src_dir = os.path.dirname(src_path)
+            main_fproc=all_fprocs.all_in_input_order[0]
+            base_name=convert_function_name_to_mplapack(main_fproc.name.value)
+        src_dir=os.path.dirname(src_path)
         if src_dir:
-            top_cpp_file_name = os.path.join(src_dir, base_name + ".cpp")
+            top_cpp_file_name=os.path.join(src_dir, base_name + ".cpp")
         else:
-            top_cpp_file_name = base_name + ".cpp"
+            top_cpp_file_name=base_name + ".cpp"
 
-    result = []
+    result=[]
 
     def callback(line):
         if (len(result) == 0):
-            prev_line = None
+            prev_line=None
         else:
-            prev_line = result[-1]
-        lines = break_lines(cpp_text=[line+"\n"], prev_line=prev_line)
+            prev_line=result[-1]
+        lines=break_lines(cpp_text=[line+"\n"], prev_line=prev_line)
         if (len(lines) != 0):
             if (debug):
                 print("\n".join(lines))
             result.extend(lines)
     #
-    need_function_hpp = False
+    need_function_hpp=False
     if (len(separate_files_main_namespace) != 0):
-        need_function_hpp = True
+        need_function_hpp=True
     if (number_of_function_files is not None):
         assert number_of_function_files > 0
-        need_function_hpp = True
+        need_function_hpp=True
     if (need_function_hpp):
-        separate_cmn_hpp = True
+        separate_cmn_hpp=True
     #
     if (include_guard_suffix is not None):
         include_guard(
@@ -9602,14 +9684,14 @@ def process(
             return '#include "%s.hpp"' % name
         return '#include <%s/%s.hpp>' % (include_prefix, name)
     #
-    need_using_major_types = False
+    need_using_major_types=False
     if (need_function_hpp):
         callback(include_with_prefix("functions"))
     elif (separate_cmn_hpp):
         callback(include_with_prefix("cmn"))
     else:
         callback(include_fem_hpp)
-        need_using_major_types = True
+        need_using_major_types=True
     callback("")
     if (not need_function_hpp):
         if (include_separate(callback=callback)):
@@ -9620,13 +9702,13 @@ def process(
         namespace=namespace,
         using_namespace_major_types=need_using_major_types)
     #
-    topological_fprocs = all_fprocs.build_bottom_up_fproc_list_following_calls(
+    topological_fprocs=all_fprocs.build_bottom_up_fproc_list_following_calls(
         top_procedures=top_procedures)
 
     # Mark procedures whose COMMON/SAVE handling should be ignored.
     # We will implement these routines manually (no auto-generated
     # *_save structs or cmn_sve members).
-    hard_ignore_common = {
+    hard_ignore_common={
         "zlacon",  # add more names here if needed
         "drotm",
         "drotmg",
@@ -9640,13 +9722,13 @@ def process(
         if fproc.name is None:
             continue
         if fproc.name.value.lower() in hard_ignore_common:
-            ch = getattr(fproc, "conv_hook", None)
+            ch=getattr(fproc, "conv_hook", None)
             if ch is None:
-                ch = conv_hook_info()
-                fproc.conv_hook = ch
-            ch.ignore_common_and_save = True
+                ch=conv_hook_info()
+                fproc.conv_hook=ch
+            ch.ignore_common_and_save=True
 
-    missing = topological_fprocs.missing_external_fdecls_by_identifier
+    missing=topological_fprocs.missing_external_fdecls_by_identifier
 
     # Do not emit stub implementations for missing external functions.
     # All such functions (lsame, xerbla, etc.) must be provided elsewhere.
@@ -9654,7 +9736,7 @@ def process(
     # but no code should be generated into the output.
 
     #
-    dep_cycles = topological_fprocs.dependency_cycles
+    dep_cycles=topological_fprocs.dependency_cycles
     if (len(dep_cycles) != 0):
         callback("")
         callback("/* Dependency cycles: %d" % len(dep_cycles))
@@ -9666,14 +9748,14 @@ def process(
         assert len(dynamic_parameters) != 0
         for fproc in topological_fprocs.bottom_up_list:
             for dp_props in dynamic_parameters:
-                fdecl = fproc.fdecl_by_identifier.get(dp_props.name)
+                fdecl=fproc.fdecl_by_identifier.get(dp_props.name)
                 if (fdecl is not None):
                     fproc.dynamic_parameters.add(dp_props.name)
     #
 
     if (separate_cmn_hpp):
-        cmn_buffer = []
-        cmn_callback = cmn_buffer.append
+        cmn_buffer=[]
+        cmn_callback=cmn_buffer.append
         include_guard(
             callback=cmn_callback, namespace=namespace, suffix="_CMN_HPP")
         cmn_callback(include_fem_hpp)
@@ -9682,9 +9764,9 @@ def process(
     elif (suppress_common):
         def cmn_callback(line): pass
     else:
-        cmn_callback = callback
+        cmn_callback=callback
     try:
-        converted_commons_info = convert_commons(
+        converted_commons_info=convert_commons(
             callback=cmn_callback,
             separate_cmn_hpp=separate_cmn_hpp,
             topological_fprocs=topological_fprocs,
@@ -9695,7 +9777,7 @@ def process(
         if (not debug):
             raise
         show_traceback()
-        converted_commons_info = None
+        converted_commons_info=None
     if (separate_cmn_hpp):
         close_namespace(callback=cmn_callback,
                         namespace=namespace, hpp_guard=True)
@@ -9709,13 +9791,13 @@ def process(
     # Defensive: needs_cmn may depend on call graph properties. Recompute after
     # we changed is_modified flags.
     topological_fprocs.each_fproc_update_needs_cmn()
-    separate_function_buffers = []
-    separate_function_buffer_by_function_name = {}
+    separate_function_buffers=[]
+    separate_function_buffer_by_function_name={}
     for name, identifiers in separate_files_main_namespace.items():
         if (len(identifiers) == 0):
             raise RuntimeError(
                 "separate_files_main_namespace: empty list: %s" % name)
-        buffer = []
+        buffer=[]
         buffer.append(include_with_prefix("functions"))
         buffer.append("")
         separate_function_buffers.append((name, buffer))
@@ -9725,17 +9807,17 @@ def process(
                 raise RuntimeError(
                     "separate_files_main_namespace:"
                     " ambiguous assignment: %s" % identifier)
-            separate_function_buffer_by_function_name[identifier] = buffer
+            separate_function_buffer_by_function_name[identifier]=buffer
     #
-    separate_namespaces = {}
-    separate_namespaces_buffers = {}
+    separate_namespaces={}
+    separate_namespaces_buffers={}
     for name, identifiers in separate_files_separate_namespace.items():
         if (len(identifiers) == 0):
             raise RuntimeError(
                 "separate_files_separate_namespace: empty list: %s" % name)
-        buffers = hpp_cpp_buffers()
+        buffers=hpp_cpp_buffers()
         for ext in ["hpp", "cpp"]:
-            buffer = getattr(buffers, ext)
+            buffer=getattr(buffers, ext)
             if (ext == "hpp"):
                 include_guard(callback=buffer.append,
                               namespace=name, suffix="_HPP")
@@ -9749,17 +9831,17 @@ def process(
                 raise RuntimeError(
                     "separate_files_separate_namespace:"
                     " ambiguous assignment: %s" % identifier)
-            separate_namespaces[identifier] = name
-            separate_namespaces_buffers[identifier] = buffers
+            separate_namespaces[identifier]=name
+            separate_namespaces_buffers[identifier]=buffers
     #
     if (not need_function_hpp):
-        function_declarations = None
-        function_definitions = None
+        function_declarations=None
+        function_definitions=None
     else:
-        function_declarations = []
-        function_definitions = []
+        function_declarations=[]
+        function_definitions=[]
     #
-    global_conv_info = global_conversion_info(
+    global_conv_info=global_conversion_info(
         topological_fprocs=topological_fprocs,
         dynamic_parameters=dynamic_parameters,
         fortran_file_comments=fortran_file_comments,
@@ -9776,45 +9858,45 @@ def process(
             continue
         if (fproc.name.value in suppress_functions):
             continue
-        hpp_callback = None
-        cpp_callback = None
-        suppress_cpp = (fproc.name.value in suppress_function_definitions)
-        buffers = separate_namespaces_buffers.get(fproc.name.value)
+        hpp_callback=None
+        cpp_callback=None
+        suppress_cpp=(fproc.name.value in suppress_function_definitions)
+        buffers=separate_namespaces_buffers.get(fproc.name.value)
         if (buffers is None):
             if (not need_function_hpp):
                 if (not suppress_cpp):
-                    cpp_callback = callback
+                    cpp_callback=callback
             else:
-                function_hpp_buffer = []
+                function_hpp_buffer=[]
                 function_declarations.append(function_hpp_buffer)
-                hpp_callback = function_hpp_buffer.append
+                hpp_callback=function_hpp_buffer.append
                 if (not suppress_cpp):
-                    buffer = separate_function_buffer_by_function_name.get(
+                    buffer=separate_function_buffer_by_function_name.get(
                         fproc.name.value)
                     if (buffer is None):
                         if (number_of_function_files is None):
-                            cpp_callback = callback
+                            cpp_callback=callback
                         else:
-                            function_cpp_buffer = []
+                            function_cpp_buffer=[]
                             function_definitions.append(function_cpp_buffer)
-                            cpp_callback = function_cpp_buffer.append
+                            cpp_callback=function_cpp_buffer.append
                     else:
-                        cpp_callback = buffer.append
+                        cpp_callback=buffer.append
         else:
-            hpp_callback = buffers.hpp.append
+            hpp_callback=buffers.hpp.append
             if (not suppress_cpp):
-                cpp_callback = buffers.cpp.append
+                cpp_callback=buffers.cpp.append
         if (cpp_callback is None):
-            cpp_diverted = []
-            cpp_callback = cpp_diverted.append
+            cpp_diverted=[]
+            cpp_callback=cpp_diverted.append
             if (hpp_callback is None):
-                hpp_callback = callback
+                hpp_callback=callback
         if (not need_function_hpp):
-            fwds = topological_fprocs.forward_uses_by_identifier.get(
+            fwds=topological_fprocs.forward_uses_by_identifier.get(
                 fproc.name.value)
             if (fwds is not None):
                 for fwd_identifier in fwds:
-                    fwd_fproc = all_fprocs.fprocs_by_name()[fwd_identifier]
+                    fwd_fproc=all_fprocs.fprocs_by_name()[fwd_identifier]
                     try:
                         convert_to_cpp_function(
                             hpp_callback=None,
@@ -9846,9 +9928,9 @@ def process(
                 print("\n".join(break_lines(cpp_text=buffer)), file=f)
     #
     for name, identifiers in separate_files_separate_namespace.items():
-        buffers = separate_namespaces_buffers[identifiers[0]]
+        buffers=separate_namespaces_buffers[identifiers[0]]
         for ext in ["hpp", "cpp"]:
-            buffer = getattr(buffers, ext)
+            buffer=getattr(buffers, ext)
             close_namespace(
                 callback=buffer.append, namespace=name, hpp_guard=(ext == "hpp"))
             if (write_separate_files_separate_namespace == "All"
@@ -9860,12 +9942,12 @@ def process(
         def write_functions(buffers, serial=None):
             if (buffers is function_declarations):
                 assert serial is None
-                fn = "functions.hpp"
+                fn="functions.hpp"
             elif (serial is None):
-                fn = "functions.cpp"
+                fn="functions.cpp"
             else:
-                fn = "functions_%03d.cpp" % serial
-            f = open(fn, "w")
+                fn="functions_%03d.cpp" % serial
+            f=open(fn, "w")
             def fcb(line): print(line, file=f)
             if (buffers is function_declarations):
                 include_guard(
@@ -9887,18 +9969,18 @@ def process(
             f.close()
         write_functions(function_declarations)
         if (function_definitions is not None and len(function_definitions) != 0):
-            buffer_blocks = create_buffer_blocks(
+            buffer_blocks=create_buffer_blocks(
                 target_number_of_blocks=number_of_function_files,
                 buffers=function_definitions)
             if (len(buffer_blocks) == 1):
                 write_functions(buffers=buffer_blocks[0])
             else:
-                serial = 0
+                serial=0
                 for buffers in buffer_blocks:
                     serial += 1
                     write_functions(buffers=buffers, serial=serial)
     #
-    hpp_guard = (include_guard_suffix is not None)
+    hpp_guard=(include_guard_suffix is not None)
     if (suppress_program):
         close_namespace(
             callback=callback, namespace=namespace, hpp_guard=hpp_guard)
@@ -9916,45 +9998,45 @@ def process(
             show_traceback()
 
     # Rewrite single-character string literals for CHARACTER*1 variables.
-    result = [rewrite_single_char_string_literals(line) for line in result]
+    result=[rewrite_single_char_string_literals(line) for line in result]
 
-    result = _postprocess_mplapack_labels_and_comments(result)
-    result = _normalize_fortran_comment_prefix(result)
-    result = _postprocess_complex_initializers(result)
-    result = _postprocess_complex_constant_assignments(result)
+    result=_postprocess_mplapack_labels_and_comments(result)
+    result=_normalize_fortran_comment_prefix(result)
+    result=_postprocess_complex_initializers(result)
+    result=_postprocess_complex_constant_assignments(result)
 
     # Final intrinsic cleanup (abs / pow2 aliases).
-    result = _postprocess_intrinsic_aliases(result)
+    result=_postprocess_intrinsic_aliases(result)
 
     # Uppercase selected math intrinsics (ATAN2, COS, SIN, TAN, LOG, EXP, MAX, MIN, ABS).
-    result = _postprocess_math_intrinsics_upper(result)
+    result=_postprocess_math_intrinsics_upper(result)
 
     # Drop redundant parentheses around MIN/MAX index shifts.
-    result = _postprocess_minmax_parens(result)
+    result=_postprocess_minmax_parens(result)
 
     # Apply MPLAPACK name mapping inside comment lines.
-    result = _postprocess_comment_name_map(result)
+    result=_postprocess_comment_name_map(result)
 
     # Apply MPLAPACK name mapping inside iMlaenv calls.
-    result = _postprocess_ilaenv_name_map(result)
+    result=_postprocess_ilaenv_name_map(result)
 
     # Convert character concatenation in iMlaenv to CHAR2/CHAR3.
-    result = _postprocess_ilaenv_char_concat(result)
+    result=_postprocess_ilaenv_char_concat(result)
 
     # Strip C-style float suffixes from literals (1.0f -> 1.0, etc.).
-    result = _postprocess_strip_float_suffix(result)
+    result=_postprocess_strip_float_suffix(result)
 
     # Strip leftover Fortran kind suffixes on literals (e.g. 0.0f_wp -> 0.0).
-    result = _postprocess_strip_wp_kind_suffix(result)
+    result=_postprocess_strip_wp_kind_suffix(result)
 
     #
-    result = _postprocess_index_zero_simplify(result)
+    result=_postprocess_index_zero_simplify(result)
 
     # Rewrite Mmaxloc(array(start, end), dim) to Mmaxloc(array, start, end, dim)
-    result = _postprocess_mmaxloc(result)
+    result=_postprocess_mmaxloc(result)
 
     # Convert array slice assignments to for loops
-    result = _postprocess_slice_assignment(result)
+    result=_postprocess_slice_assignment(result)
 
     # Clean up temporary Fortran files created for preprocessing.
     for tmp in temp_files:
