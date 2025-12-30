@@ -41,6 +41,12 @@ EIG_DST="${MPLAPACK_TEST_ROOT}/eig/common/"
 LIN_DST="${MPLAPACK_TEST_ROOT}/lin/common/"
 MATGEN_DST="${MPLAPACK_TEST_ROOT}/matgen/"
 
+# Generated TESTING headers (produced by gen_include_mplapack_{eig,lin,matgen}.sh).
+# Allow override via environment variables, but provide safe defaults.
+EIG_HDR="${EIG_HDR:-${EIG_DST%/}/mplapack_eig_generic.h}"
+LIN_HDR="${LIN_HDR:-${LIN_DST%/}/mplapack_lin_generic.h}"
+MATGEN_HDR="${MATGEN_HDR:-${MATGEN_DST%/}/mplapack_matgen_generic.h}"
+
 # Optional: existing headers from your main BLAS/LAPACK conversion.
 # These are used only to enrich the generated signatures for the next pass.
 MPBLAS_HDR_DEFAULT="${MPBLAS_HDR_DEFAULT:-${ROOT}/mpblas/reference/mpblas_generic.h}"
@@ -236,24 +242,6 @@ convert_dir() {
   move_cpp_or_die "${src_dir}" "${dst_dir}"
 }
 
-find_latest_header() {
-  # Find the newest header file matching a token under ROOT.
-  # This is intentionally heuristic to avoid hardcoding generator outputs.
-  local token="$1"  # e.g., "eig"
-  local found
-  found="$(
-    find "${ROOT}" -maxdepth 6 -type f -iname "mplapack*${token}*.h" -printf '%T@ %p\n' 2>/dev/null \
-      | sort -nr \
-      | head -n 1 \
-      | awk '{print $2}'
-  )"
-  if [[ -n "${found}" && -f "${found}" ]]; then
-    echo "${found}"
-    return 0
-  fi
-  return 1
-}
-
 generate_includes() {
   bash "${FABLE}/gen_include_mplapack_matgen.sh"
   bash "${FABLE}/gen_include_mplapack_lin.sh"
@@ -261,26 +249,43 @@ generate_includes() {
 }
 
 generate_signatures() {
-  local headers=()
+  # Nounset-safe defaults (EIG_HDR etc may be unset under "set -u").
+  local eig_hdr="${EIG_HDR:-${EIG_DST%/}/mplapack_eig_generic.h}"
+  local lin_hdr="${LIN_HDR:-${LIN_DST%/}/mplapack_lin_generic.h}"
+  local matgen_hdr="${MATGEN_HDR:-${MATGEN_DST%/}/mplapack_matgen_generic.h}"
 
-  if [[ -f "${MPBLAS_HDR_DEFAULT}" ]]; then
-    headers+=("${MPBLAS_HDR_DEFAULT}")
-  fi
-  if [[ -f "${MPLAPACK_HDR_DEFAULT}" ]]; then
-    headers+=("${MPLAPACK_HDR_DEFAULT}")
-  fi
+  # Precedence: earlier < later. Later headers override earlier ones on name collisions.
+  local -a inputs=(
+    "${MPBLAS_HDR_DEFAULT}"
+    "${MPLAPACK_HDR_DEFAULT}"
+    "${eig_hdr}"
+    "${lin_hdr}"
+    "${matgen_hdr}"
+  )
 
-  # Try to locate the generated TESTING headers.
+  # De-duplicate by path while preserving order.
+  local -A seen=()
+  local -a headers=()
   local h
-  if h="$(find_latest_header eig)"; then headers+=("${h}"); fi
-  if h="$(find_latest_header lin)"; then headers+=("${h}"); fi
-  if h="$(find_latest_header matgen)"; then headers+=("${h}"); fi
+  for h in "${inputs[@]}"; do
+    [[ -n "${h}" ]] || die "Header path is empty (check *_HDR variables)"
+    [[ -f "${h}" ]] || die "Missing header for signature generation: ${h}"
+    if [[ -z "${seen[${h}]+x}" ]]; then
+      seen["${h}"]=1
+      headers+=( "${h}" )
+    fi
+  done
 
-  if (( ${#headers[@]} == 0 )); then
-    die "No headers found for signature generation. Check MPBLAS_HDR_DEFAULT/MPLAPACK_HDR_DEFAULT and include generators."
+  local tmp
+  if command -v mktemp >/dev/null 2>&1; then
+    tmp="$(mktemp "${SIG_PY}.tmp.XXXXXX")"
+  else
+    tmp="${SIG_PY}.tmp.$$"
   fi
 
-  python3 "${FABLE}/gen_mplapack_signatures.py" "${headers[@]}" > "${SIG_PY}"
+  python3 "${FABLE}/gen_mplapack_signatures.py" "${headers[@]}" > "${tmp}"
+  /bin/mv -f "${tmp}" "${SIG_PY}"
+
   echo "[SIG] updated: ${SIG_PY} (inputs: ${#headers[@]} headers)"
 }
 

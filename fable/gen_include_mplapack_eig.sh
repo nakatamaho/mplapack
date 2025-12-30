@@ -13,17 +13,19 @@ for filename in $FILES; do
 /usr/local/bin/ctags -x --c++-kinds=pf --language-force=c++ --_xformat='%{typeref} %{name} %{signature};' ${filename} |  tr ':' ' ' | sed -e 's/^typename //' >  ${filename%.*}.hpp
 done
 
-printf "REAL Rlamch(const char *cmach);" > Rlamch.hpp
-printf "INTEGER iMlaenv2stage(INTEGER const ispec, const char *name, const char *opts, INTEGER const n1, INTEGER const n2, INTEGER const n3, INTEGER const n4);" > iMlaenv2stage.hpp
-printf "INTEGER iMlaenv(INTEGER const ispec, const char *name, const char *opts, INTEGER const n1, INTEGER const n2, INTEGER const n3, INTEGER const n4);" > iMlaenv.hpp
+printf "REAL Rlamch(const char *cmach);\n" > Rlamch.hpp
+printf "INTEGER iMlaenv2stage(INTEGER const ispec, const char *name, const char *opts, INTEGER const n1, INTEGER const n2, INTEGER const n3, INTEGER const n4);\n" > iMlaenv2stage.hpp
+printf "INTEGER iMlaenv(INTEGER const ispec, const char *name, const char *opts, INTEGER const n1, INTEGER const n2, INTEGER const n3, INTEGER const n4);\n" > iMlaenv.hpp
 
-cat *hpp \
+awk '1' ./*.hpp \
   | grep -v abs1 \
-  | grep -vE '^[[:space:]]*-[[:space:]]+' \
+  | grep -vE '^[[:space:]]*-' \
+  | grep -vF 'common(int argc, char const *argv[]);' \
+  | grep -vF 'common(int argc, const char *argv[]);' \
   | grep -v main \
-  | sort | uniq > header_all
+  | sort -u > header_all
 
-rm *hpp
+rm ./*.hpp
 
 MPLIBS="gmp mpfr _Float128 dd qd double _Float64x"
 for mplib in $MPLIBS; do
