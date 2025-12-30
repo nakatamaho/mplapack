@@ -1,17 +1,42 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-if [ $# -lt 1 ]; then
-    echo "Usage: $0 <fortran_file>" >&2
+if [ $# -lt 1 ] || [ $# -gt 2 ]; then
+    echo "Usage: $0 <fortran_file> [lin|eig|matgen]" >&2
     exit 1
 fi
 
 src="$1"
+mode="${2:-}"
 
 # Directory of this script (used to find header_blas.txt and mplapack_name_map.txt)
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-header="${script_dir}/header_lapack.txt"
 name_map="${script_dir}/mplapack_name_map.txt"
+
+case "$mode" in
+    "")
+        header="${script_dir}/header_lapack.txt"
+        ;;
+    lin)
+        header="${script_dir}/header_lapack_lin.txt"
+        ;;
+    eig)
+        header="${script_dir}/header_lapack_eig.txt"
+        ;;
+    matgen)
+        header="${script_dir}/header_lapack_matgen.txt"
+        ;;
+    *)
+        echo "Error: unknown mode '$mode' (allowed: lin, eig, matgen)" >&2
+        exit 2
+        ;;
+esac
+
+# Optional but recommended: fail early if the selected header is missing
+if [ ! -f "$header" ]; then
+    echo "Error: header not found: $header" >&2
+    exit 2
+fi
 
 # MPLAPACK repository root (one level above this script)
 mplapack_root="$(cd "${script_dir}/.." && pwd)"
