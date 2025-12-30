@@ -28,6 +28,7 @@ iparam2stage     iMparam2stage
 dladiv2          Rladiv2
 la_isnan         Mla_isnan
 ilaprec          iMlaprec
+lsamen           Mlsamen
 dasum            Rasum
 daxpy            Raxpy
 dcopy            Rcopy
@@ -594,7 +595,6 @@ ilaclr           ilaclr
 iladiag          iladiag
 ilaslc           ilaslc
 ilaslr           ilaslr
-lsamen           lsamen
 zbbcsd           Cbbcsd
 zbdsqr           Cbdsqr
 zcgesv           Ccgesv

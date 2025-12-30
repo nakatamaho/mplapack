@@ -100,6 +100,7 @@ MANUAL_MAPPINGS=(
   "dladiv2 Rladiv2"
   "la_isnan Mla_isnan"
   "ilaprec iMlaprec"
+  "lsamen Mlsamen"
 )
 
 # ------------------------------------------------------------
