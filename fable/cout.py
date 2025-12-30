@@ -8624,21 +8624,20 @@ def _split_top_level_commas(s: str):
 def _fix_fortran_f90_decl_syntax(src: str) -> str:
     """
     Rewrite a subset of Fortran 90 declaration syntax into a form that fable's
-    reader handles reliably.
+    fixed-form reader accepts.
 
-    Policy:
-      - Convert "TYPE, attr :: a, b" into "TYPE a, b" plus optional DIMENSION/SAVE.
-      - Convert "TYPE, PARAMETER :: x = expr" into "TYPE x" + "PARAMETER (x = expr)".
+    Constraints / policy:
+      - Do NOT emit standalone DIMENSION statements.
+        Always embed dimensions in the type declaration: "DOUBLE PRECISION Q(M,M)".
+      - Handle fixed-form continuation lines (col 6 non-blank, non-'0') as one statement.
       - For ALLOCATABLE deferred-shape arrays (:) or (:,:), try to substitute the
         explicit shape from a later ALLOCATE(...) statement (RAII-friendly).
-      - If an ALLOCATE becomes redundant due to explicit-shape substitution, comment it out
-        and set STAT= variable to 0 (so error checks do not trip).
-      - DEALLOCATE statements are left untouched (expected to remain UNHANDLED).
+      - If an ALLOCATE becomes redundant due to explicit-shape substitution, remove the
+        entire continued ALLOCATE statement and set STAT=0.
+      - Leave DEALLOCATE untouched (expected to remain UNHANDLED downstream).
     """
     import re
 
-    # Detect declaration lines starting with a known intrinsic type.
-    # Keep narrow to avoid rewriting non-declarations.
     TYPE_RE = re.compile(
         r'^\s*(DOUBLE\s+PRECISION|DOUBLE\s+COMPLEX|REAL|INTEGER|LOGICAL|CHARACTER|COMPLEX)\b',
         flags=re.IGNORECASE
@@ -8650,6 +8649,19 @@ def _fix_fortran_f90_decl_syntax(src: str) -> str:
         if line.endswith("\n"):
             return line[:-1], "\n"
         return line, ""
+
+    def is_full_line_comment(raw: str) -> bool:
+        return bool(raw) and raw[0] in ("c", "C", "*", "!")
+
+    def is_fixed_form_continuation(raw: str) -> bool:
+        # Fixed-form continuation if column 6 is non-blank and not '0'
+        # (col index 5 in 0-based).
+        if is_full_line_comment(raw):
+            return False
+        if len(raw) < 6:
+            return False
+        cc = raw[5]
+        return (cc != " ") and (cc != "0") and (cc != "\t")
 
     def split_inline_comment(raw: str):
         """Split raw line into (code, comment) at first '!' outside quotes."""
@@ -8667,15 +8679,36 @@ def _fix_fortran_f90_decl_syntax(src: str) -> str:
                 return raw[:i], raw[i:]
         return raw, ""
 
-    def endswith_ampersand(raw: str) -> bool:
-        code, _ = split_inline_comment(raw)
-        return code.rstrip().endswith("&")
+    def code_field_fixed_form(code: str) -> str:
+        # Columns 7-72 are statement field in fixed form (0-based index 6:).
+        # If the line is shorter, fall back to lstrip to avoid empty strings.
+        return code[6:] if len(code) >= 6 else code.lstrip()
+
+    def gather_fixed_statement(lines, i: int):
+        """
+        Gather a full fixed-form statement starting at line i, consuming continuation
+        lines (col 6 continuation). Returns:
+          (stmt_text, first_inline_comment, first_eol, j_next)
+        where j_next is the first line index after the statement.
+        """
+        raw0, eol0 = split_eol(lines[i])
+        code0, cmt0 = split_inline_comment(raw0)
+        stmt = code_field_fixed_form(code0).rstrip()
+
+        j = i + 1
+        while j < len(lines):
+            rawj, _ = split_eol(lines[j])
+            if not is_fixed_form_continuation(rawj):
+                break
+            codej, _ = split_inline_comment(rawj)
+            part = code_field_fixed_form(codej).strip()
+            if part:
+                stmt += " " + part
+            j += 1
+        return stmt, cmt0, eol0, j
 
     def find_top_level_eq(text: str) -> int:
-        """
-        Return index of first '=' at nesting level 0 (ignores strings and '=>').
-        Used to detect initializers in declarators and keywords like STAT=.
-        """
+        """Find '=' at nesting level 0 (ignore strings and '=>')."""
         depth = 0
         in_str = False
         quote = None
@@ -8726,9 +8759,8 @@ def _fix_fortran_f90_decl_syntax(src: str) -> str:
 
     def normalize_dim_spec(dim: str):
         """
-        Convert deferred-shape components ':' into parseable placeholders.
-        This function intentionally replaces ':' with '1' (not '*') to avoid
-        producing illegal local assumed-size arrays.
+        Replace deferred-shape ':' with a minimal placeholder '1'
+        so it becomes explicit-shape for the parser.
         """
         if dim is None:
             return None
@@ -8749,22 +8781,18 @@ def _fix_fortran_f90_decl_syntax(src: str) -> str:
                 out_parts.append(ps)
         return ", ".join(out_parts) if changed else dim
 
-    def parse_allocate_statement(code: str):
+    def parse_allocate_statement(stmt: str):
         """
         Parse ALLOCATE(...) statement; return ([(name, shape)], stat_var) or None.
-
-        Accept optional numeric statement labels like:
-          '  100 ALLOCATE(...)'
         """
-        low = code.lower()
-        m = re.match(r"^\s*(\d+\s+)?allocate\b", low)
-        if not m:
+        low = stmt.lower().lstrip()
+        if not low.startswith("allocate"):
             return None
-        kw = low.find("allocate")
-        lpar = code.find("(", kw)
+        lpar = stmt.lower().find("allocate")
+        lpar = stmt.find("(", lpar)
         if lpar < 0:
             return None
-        inside, _ = extract_paren_content(code, lpar)
+        inside, _ = extract_paren_content(stmt, lpar)
         items = _split_top_level_commas(inside)
         objs = []
         stat_var = None
@@ -8791,70 +8819,67 @@ def _fix_fortran_f90_decl_syntax(src: str) -> str:
                     objs.append((name, None))
         return objs, stat_var
 
-    # Pass 1: collect shapes from ALLOCATE statements.
+    lines = src.splitlines(True)
+
+    # Pass 1: collect shapes from continued ALLOCATE statements.
     allocate_shapes = {}
-    for line in src.splitlines(True):
-        raw, _ = split_eol(line)
-        code, _ = split_inline_comment(raw)
-        parsed = parse_allocate_statement(code)
-        if not parsed:
+    i = 0
+    while i < len(lines):
+        rawi, _ = split_eol(lines[i])
+        if is_full_line_comment(rawi):
+            i += 1
             continue
-        objs, _ = parsed
-        for name, shape in objs:
-            if shape:
-                allocate_shapes.setdefault(name.lower(), shape)
+        stmt, _, _, j = gather_fixed_statement(lines, i)
+        parsed = parse_allocate_statement(stmt)
+        if parsed:
+            objs, _ = parsed
+            for name, shape in objs:
+                if shape:
+                    allocate_shapes.setdefault(name.lower(), shape)
+        i = j
 
-    # Pass 2: rewrite declarations and optionally eliminate redundant ALLOCATE.
+    # Pass 2: rewrite continued declarations and optionally remove continued ALLOCATE.
     out_lines = []
-    converted_allocatable = set()  # names where we substituted shape from ALLOCATE
+    raii_alloc_names = set()  # all ALLOCATABLE vars we rewrite into explicit-shape decls
+    indent = "      "
 
-    pending_param_cont = False
-    pending_indent = ""
+    i = 0
+    while i < len(lines):
+        rawi, eoli = split_eol(lines[i])
 
-    for line in src.splitlines(True):
-        raw, eol = split_eol(line)
-
-        # Preserve fixed-form full-line comments as-is.
-        if raw and raw[0] in ("c", "C", "*", "!"):
-            out_lines.append(raw + eol)
+        if is_full_line_comment(rawi):
+            out_lines.append(rawi + eoli)
+            i += 1
             continue
 
-        # Conservative handling of continued free-form PARAMETER blocks.
-        if pending_param_cont:
-            out_lines.append(f"{pending_indent}!FABLE: dropped continued PARAMETER line: {raw.strip()}{eol}")
-            if not endswith_ampersand(raw):
-                pending_param_cont = False
-                pending_indent = ""
-            continue
+        stmt, first_cmt, eol0, j = gather_fixed_statement(lines, i)
 
-        code, comment = split_inline_comment(raw)
-
-        # Eliminate ALLOCATE if it targets only arrays we already made explicit-shape.
-        parsed_alloc = parse_allocate_statement(code)
+        # Remove ALLOCATE(...) if it only targets RAII variables.
+        parsed_alloc = parse_allocate_statement(stmt)
         if parsed_alloc:
             objs, stat_var = parsed_alloc
-            if objs and all((name.lower() in converted_allocatable) for name, _ in objs):
-                indent = re.match(r"^(\s*)", raw).group(1)
-                out_lines.append(f"{indent}!FABLE: ALLOCATE removed (RAII in C++){eol}")
+            if objs and all((name.lower() in raii_alloc_names) for name, _ in objs):
+                out_lines.append(f"!FABLE: ALLOCATE removed (RAII in C++){eol0}")
                 if stat_var:
-                    out_lines.append(f"{indent}{stat_var} = 0{eol}")
+                    out_lines.append(f"{indent}{stat_var} = 0{eol0}")
+                i = j
                 continue
-            out_lines.append(raw + eol)
+            # Keep original lines unchanged.
+            out_lines.extend(lines[i:j])
+            i = j
             continue
 
-        # Only rewrite typed declarations with '::'.
-        if "::" not in code:
-            out_lines.append(raw + eol)
-            continue
-        if not TYPE_RE.match(code):
-            out_lines.append(raw + eol)
+        # Rewrite only typed '::' declarations.
+        if ("::" not in stmt) or (not TYPE_RE.match(stmt)):
+            out_lines.extend(lines[i:j])
+            i = j
             continue
 
-        indent = re.match(r"^(\s*)", raw).group(1)
-        left, right = code.split("::", 1)
+        left, right = stmt.split("::", 1)
         left_parts = _split_top_level_commas(left.strip())
         if not left_parts:
-            out_lines.append(raw + eol)
+            out_lines.extend(lines[i:j])
+            i = j
             continue
 
         base_type = normalize_base_type(left_parts[0])
@@ -8863,7 +8888,6 @@ def _fix_fortran_f90_decl_syntax(src: str) -> str:
         dim_attr = None
         is_parameter = False
         is_allocatable = False
-        is_save = False
 
         for attr in attrs_raw:
             low = attr.lower().strip()
@@ -8876,17 +8900,17 @@ def _fix_fortran_f90_decl_syntax(src: str) -> str:
                 is_parameter = True
             elif low.startswith("allocatable"):
                 is_allocatable = True
-            elif low.startswith("save"):
-                is_save = True
             else:
-                # Drop INTENT/OPTIONAL/VALUE/etc.
+                # Drop INTENT/OPTIONAL/VALUE/TARGET/etc.
                 pass
 
-        dim_attr = normalize_dim_spec(dim_attr) if dim_attr else None
+        dim_attr_norm = normalize_dim_spec(dim_attr) if dim_attr else None
         decl_items = _split_top_level_commas(right.strip())
 
         if is_parameter:
-            # "TYPE, PARAMETER :: a=..., b=..." -> decl + PARAMETER().
+            # Emit as:
+            #   TYPE name1, name2
+            #   PARAMETER (name1=..., name2=...)
             names = []
             for it in decl_items:
                 eq = find_top_level_eq(it)
@@ -8900,50 +8924,38 @@ def _fix_fortran_f90_decl_syntax(src: str) -> str:
                     names.append(lhs)
 
             if names:
-                out_lines.append(f"{indent}{base_type} {', '.join(names)}{eol}")
+                out_lines.append(f"{indent}{base_type} {', '.join(names)}{eol0}")
 
-            # Keep existing behavior: if machine-constant intrinsics are used, force UNHANDLED.
-            if _contains_machine_const_intrinsics(code):
-                for nm in names:
-                    _FORCE_UNHANDLED_PARAMETER_NAMES.add(nm.lower())
+            # Preserve existing behavior when available.
+            if "_contains_machine_const_intrinsics" in globals() and "_FORCE_UNHANDLED_PARAMETER_NAMES" in globals():
+                if _contains_machine_const_intrinsics(stmt):
+                    for nm in names:
+                        _FORCE_UNHANDLED_PARAMETER_NAMES.add(nm.lower())
 
-            if endswith_ampersand(raw):
-                # Emit dummy PARAMETER and drop the rest conservatively.
-                bt_low = base_type.lower()
-                if "logical" in bt_low:
-                    lit = ".FALSE."
-                elif "character" in bt_low:
-                    lit = "''"
-                elif "complex" in bt_low:
-                    lit = "(0.0, 0.0)"
-                elif "real" in bt_low or "double" in bt_low:
-                    lit = "0.0"
-                else:
-                    lit = "0"
-                if names:
-                    out_lines.append(f"{indent}PARAMETER ({names[0]} = {lit}){eol}")
-                out_lines.append(f"{indent}!FABLE: original continued PARAMETER: {raw.strip()}{eol}")
-                pending_param_cont = True
-                pending_indent = indent
-            else:
-                out_lines.append(f"{indent}PARAMETER ({', '.join([it.strip() for it in decl_items if it.strip()])}){eol}")
+            # If this PARAMETER statement was continued, we already gathered it into stmt,
+            # so we can emit it in one line.
+            out_lines.append(f"{indent}PARAMETER ({', '.join([it.strip() for it in decl_items if it.strip()])}){eol0}")
+            i = j
             continue
 
-        # Non-PARAMETER declarations.
-        per_name_dim = {}
-        names = []
-        has_init = False
+        # Non-PARAMETER: embed dims in declarators; emit one decl per variable.
+        has_init = any((find_top_level_eq(it.strip()) != -1) for it in decl_items)
+        if has_init:
+            # Too risky to refactor initialized declarators; keep as-is but drop F90 attrs by removing '::'
+            # The simplest safe action is to keep original statement unchanged.
+            out_lines.extend(lines[i:j])
+            i = j
+            continue
 
+        declarators = []
         for it in decl_items:
             it = it.strip()
             if not it:
                 continue
-            eq = find_top_level_eq(it)
-            lhs = it if eq == -1 else it[:eq].strip()
-            if eq != -1:
-                has_init = True
 
+            lhs = it
             dim = None
+
             lpar = lhs.find("(")
             if lpar != -1:
                 inside, _ = extract_paren_content(lhs, lpar)
@@ -8955,47 +8967,33 @@ def _fix_fortran_f90_decl_syntax(src: str) -> str:
             if not name:
                 continue
 
-            if dim is None and dim_attr is not None:
-                dim = dim_attr
+            # Apply DIMENSION(...) attribute if present.
+            if dim is None and dim_attr_norm is not None:
+                dim = dim_attr_norm
 
-            # For ALLOCATABLE: bind explicit shape from ALLOCATE mapping if possible (RAII-friendly).
             if is_allocatable:
+                # Prefer explicit shape from ALLOCATE mapping (RAII-friendly).
                 shape = allocate_shapes.get(name.lower())
                 if shape:
                     dim = shape.strip()
-                    converted_allocatable.add(name.lower())
-
-            names.append(name)
-
-            # If still no dimension for an ALLOCATABLE, force a minimal explicit shape
-            # so later uses "name(...)" will be treated as array, not function.
-            if dim is None and is_allocatable:
-                dim = "1"
-                out_lines.append(f"{indent}!FABLE: unresolved allocatable shape for {name}; using DIMENSION({dim}) placeholder{eol}")
+                # Mark as RAII-converted regardless.
+                raii_alloc_names.add(name.lower())
+                # If still unknown, force minimal placeholder.
+                if dim is None:
+                    dim = "1"
 
             if dim:
-                per_name_dim[name] = dim
+                declarators.append(f"{name}({dim})")
+            else:
+                declarators.append(name)
 
-        # If initializers exist, do not desugar dims to DIMENSION statements.
-        if has_init:
-            out_lines.append(f"{indent}{base_type} {right.strip()}{comment}{eol}")
-            if is_save and names:
-                out_lines.append(f"{indent}SAVE {', '.join(names)}{eol}")
-            continue
+        for k, decl in enumerate(declarators):
+            cmt = first_cmt if k == 0 else ""
+            out_lines.append(f"{indent}{base_type} {decl}{cmt}{eol0}")
 
-        if names:
-            out_lines.append(f"{indent}{base_type} {', '.join(names)}{comment}{eol}")
-            for nm in names:
-                dim = per_name_dim.get(nm)
-                if dim:
-                    out_lines.append(f"{indent}DIMENSION {nm}({dim}){eol}")
-            if is_save:
-                out_lines.append(f"{indent}SAVE {', '.join(names)}{eol}")
-        else:
-            out_lines.append(raw + eol)
+        i = j
 
     return "".join(out_lines)
-
 
 def _fix_fortran_select_case_to_if(src: str) -> str:
     """Rewrite SELECT CASE into IF/ELSE IF/END IF (F77-friendly).
