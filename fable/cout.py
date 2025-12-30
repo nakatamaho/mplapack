@@ -5863,12 +5863,6 @@ def convert_to_cpp_function(
                         cconst(fdecl=fdecl, short=True), cdim),
                     arg_name,
                 )
-                if (len(fdecl.dim_tokens) == 1):
-                    cdim = ""
-                else:
-                    cdim = "%d" % len(fdecl.dim_tokens)
-                cargs_append("str_arr_%sref<%s>" % (
-                    cconst(fdecl=fdecl, short=True), cdim), arg_name)
 
         elif (not fdecl.is_user_defined_callable()):
             # Non-character, non-user-defined argument (typical BLAS/LAPACK args)

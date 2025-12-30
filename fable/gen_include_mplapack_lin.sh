@@ -13,6 +13,10 @@ for filename in $FILES; do
 /usr/local/bin/ctags -x --c++-kinds=pf --language-force=c++ --_xformat='%{typeref} %{name} %{signature};' ${filename} |  tr ':' ' ' | sed -e 's/^typename //' >  ${filename%.*}.hpp
 done
 
+printf "REAL Rlamch(const char *cmach);" > Rlamch.hpp
+printf "INTEGER iMlaenv2stage(INTEGER const ispec, const char *name, const char *opts, INTEGER const n1, INTEGER const n2, INTEGER const n3, INTEGER const n4);" > iMlaenv2stage.hpp
+printf "INTEGER iMlaenv(INTEGER const ispec, const char *name, const char *opts, INTEGER const n1, INTEGER const n2, INTEGER const n3, INTEGER const n4);" > iMlaenv.hpp
+
 cat *hpp \
   | grep -v abs1 \
   | grep -vE '^[[:space:]]*-[[:space:]]+' \
@@ -133,4 +137,21 @@ for mplib in $MPLIBS; do
     rm mplapack_lin_${mplib}.h
     echo "#endif" >> ~/mplapack/include/mplapack_lin_${mplib}.h
 
+done
+
+mv header_all mplapack_lin_generic.h
+
+for f in mplapack_lin_generic.h; do
+clang-format-19 -i -style '{
+    BasedOnStyle: llvm,
+    IndentWidth: 4,
+    ColumnLimit: 10000,
+    SortIncludes: false,
+    AlignEscapedNewlines: LeftWithLastLine,
+    SpaceBeforeRangeBasedForLoopColon: false,
+    PointerAlignment: Right,
+    NamespaceIndentation: Inner,
+    AlwaysBreakTemplateDeclarations: No,
+    BreakBeforeConceptDeclarations: Never,
+  }' "$f"
 done
