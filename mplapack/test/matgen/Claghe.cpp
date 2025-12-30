@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZLAGHE.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -33,30 +40,7 @@
 
 void Claghe(INTEGER const n, INTEGER const k, REAL *d, COMPLEX *a, INTEGER const lda, INTEGER *iseed, COMPLEX *work, INTEGER &info) {
     //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input arguments
+    // Test the input arguments
     //
     info = 0;
     if (n < 0) {
@@ -71,7 +55,7 @@ void Claghe(INTEGER const n, INTEGER const k, REAL *d, COMPLEX *a, INTEGER const
         return;
     }
     //
-    //     initialize lower triangle of A to diagonal matrix
+    // initialize lower triangle of A to diagonal matrix
     //
     INTEGER j = 0;
     INTEGER i = 0;
@@ -85,7 +69,7 @@ void Claghe(INTEGER const n, INTEGER const k, REAL *d, COMPLEX *a, INTEGER const
         a[(i - 1) + (i - 1) * lda] = d[i - 1];
     }
     //
-    //     Generate lower triangle of hermitian matrix
+    // Generate lower triangle of hermitian matrix
     //
     REAL wn = 0.0;
     COMPLEX wa = 0.0;
@@ -96,42 +80,42 @@ void Claghe(INTEGER const n, INTEGER const k, REAL *d, COMPLEX *a, INTEGER const
     COMPLEX alpha = 0.0;
     for (i = n - 1; i >= 1; i = i - 1) {
         //
-        //        generate random reflection
+        // generate random reflection
         //
         Clarnv(3, iseed, n - i + 1, work);
         wn = RCnrm2(n - i + 1, work, 1);
-        wa = (wn / abs(work[1 - 1])) * work[1 - 1];
+        wa = (wn / abs(work[0])) * work[0];
         if (wn == zero) {
             tau = zero;
         } else {
-            wb = work[1 - 1] + wa;
-            Cscal(n - i, one / wb, &work[2 - 1], 1);
-            work[1 - 1] = one;
+            wb = work[0] + wa;
+            Cscal(n - i, one / wb, &work[1], 1);
+            work[0] = one;
             tau = (wb / wa).real();
         }
         //
-        //        apply random reflection to A(i:n,i:n) from the left
-        //        and the right
+        // apply random reflection to A(i:n,i:n) from the left
+        // and the right
         //
-        //        compute  y := tau * A * u
+        // compute  y := tau * A * u
         //
         Chemv("Lower", n - i + 1, tau, &a[(i - 1) + (i - 1) * lda], lda, work, 1, zero, &work[(n + 1) - 1], 1);
         //
-        //        compute  v := y - 1/2 * tau * ( y, u ) * u
+        // compute  v := y - 1/2 * tau * ( y, u ) * u
         //
         alpha = -half * tau * Cdotc(n - i + 1, &work[(n + 1) - 1], 1, work, 1);
         Caxpy(n - i + 1, alpha, work, 1, &work[(n + 1) - 1], 1);
         //
-        //        apply the transformation as a rank-2 update to A(i:n,i:n)
+        // apply the transformation as a rank-2 update to A(i:n,i:n)
         //
         Cher2("Lower", n - i + 1, -one, work, 1, &work[(n + 1) - 1], 1, &a[(i - 1) + (i - 1) * lda], lda);
     }
     //
-    //     Reduce number of subdiagonals to K
+    // Reduce number of subdiagonals to K
     //
     for (i = 1; i <= n - 1 - k; i = i + 1) {
         //
-        //        generate reflection to annihilate A(k+i+1:n,i)
+        // generate reflection to annihilate A(k+i+1:n,i)
         //
         wn = RCnrm2(n - k - i + 1, &a[((k + i) - 1) + (i - 1) * lda], 1);
         wa = (wn / abs(a[((k + i) - 1) + (i - 1) * lda])) * a[((k + i) - 1) + (i - 1) * lda];
@@ -144,23 +128,23 @@ void Claghe(INTEGER const n, INTEGER const k, REAL *d, COMPLEX *a, INTEGER const
             tau = (wb / wa).real();
         }
         //
-        //        apply reflection to A(k+i:n,i+1:k+i-1) from the left
+        // apply reflection to A(k+i:n,i+1:k+i-1) from the left
         //
         Cgemv("Conjugate transpose", n - k - i + 1, k - 1, one, &a[((k + i) - 1) + ((i + 1) - 1) * lda], lda, &a[((k + i) - 1) + (i - 1) * lda], 1, zero, work, 1);
         Cgerc(n - k - i + 1, k - 1, -tau, &a[((k + i) - 1) + (i - 1) * lda], 1, work, 1, &a[((k + i) - 1) + ((i + 1) - 1) * lda], lda);
         //
-        //        apply reflection to A(k+i:n,k+i:n) from the left and the right
+        // apply reflection to A(k+i:n,k+i:n) from the left and the right
         //
-        //        compute  y := tau * A * u
+        // compute  y := tau * A * u
         //
         Chemv("Lower", n - k - i + 1, tau, &a[((k + i) - 1) + ((k + i) - 1) * lda], lda, &a[((k + i) - 1) + (i - 1) * lda], 1, zero, work, 1);
         //
-        //        compute  v := y - 1/2 * tau * ( y, u ) * u
+        // compute  v := y - 1/2 * tau * ( y, u ) * u
         //
         alpha = -half * tau * Cdotc(n - k - i + 1, work, 1, &a[((k + i) - 1) + (i - 1) * lda], 1);
         Caxpy(n - k - i + 1, alpha, &a[((k + i) - 1) + (i - 1) * lda], 1, work, 1);
         //
-        //        apply hermitian rank-2 update to A(k+i:n,k+i:n)
+        // apply hermitian rank-2 update to A(k+i:n,k+i:n)
         //
         Cher2("Lower", n - k - i + 1, -one, &a[((k + i) - 1) + (i - 1) * lda], 1, work, 1, &a[((k + i) - 1) + ((k + i) - 1) * lda], lda);
         //
@@ -170,7 +154,7 @@ void Claghe(INTEGER const n, INTEGER const k, REAL *d, COMPLEX *a, INTEGER const
         }
     }
     //
-    //     Store full hermitian matrix
+    // Store full hermitian matrix
     //
     for (j = 1; j <= n; j = j + 1) {
         for (i = j + 1; i <= n; i = i + 1) {
@@ -178,6 +162,6 @@ void Claghe(INTEGER const n, INTEGER const k, REAL *d, COMPLEX *a, INTEGER const
         }
     }
     //
-    //     End of Claghe
+    // End of Claghe
     //
 }
