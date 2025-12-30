@@ -171,6 +171,7 @@ PY
 convert_dir() {
   local src_dir="$1"
   local dst_dir="$2"
+  local mode="${3-}"
 
   ensure_dir "${dst_dir}"
   /bin/rm -f "${src_dir}"/*.cpp
@@ -221,13 +222,13 @@ convert_dir() {
     fi
     if command -v parallel >/dev/null 2>&1; then
       parallel -j "${JOBS}" --halt soon,fail=1 \
-        'echo "Converting {}"; bash "'"${FABLE}/convert_lapack.sh"'" "{}"' \
+        "echo 'Converting {}'; bash '${FABLE}/convert_lapack.sh' '{}' '${mode}'" \
         ::: "${files[@]}"
     else
       # Fallback without GNU parallel.
       for f in "${files[@]}"; do
         echo "Converting ${f}"
-        bash "${FABLE}/convert_lapack.sh" "${f}"
+        bash "${FABLE}/convert_lapack.sh" "${f}" "${mode}"
       done
     fi
   )
@@ -287,9 +288,9 @@ run_one_pass() {
   local pass="$1"
   echo "=== PASS ${pass}/${PASSES} ==="
 
-  convert_dir "${MATGEN_SRC}" "${MATGEN_DST}"
-  convert_dir "${LIN_SRC}" "${LIN_DST}"
-  convert_dir "${EIG_SRC}" "${EIG_DST}"
+  convert_dir "${MATGEN_SRC}" "${MATGEN_DST}" "matgen"
+  convert_dir "${LIN_SRC}" "${LIN_DST}" "lin"
+  convert_dir "${EIG_SRC}" "${EIG_DST}" "eig"
 
   generate_includes
   generate_signatures

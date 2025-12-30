@@ -7,6 +7,7 @@ if [ $# -lt 1 ] || [ $# -gt 2 ]; then
 fi
 
 src="$1"
+echo "DBG: src='$1' mode='${2-}' script_dir='${script_dir-}'" >&2
 mode="${2:-}"
 
 # Directory of this script (used to find header_blas.txt and mplapack_name_map.txt)

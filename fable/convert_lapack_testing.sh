@@ -106,7 +106,6 @@ done
 export FABLE_CONVERT
 parallel -j "${JOBS:-$(nproc)}" '
      echo "Converting {}"
-     # Decide mode from the parent directory name (EIG/LIN/MATGEN)
      parent_dir="$(basename "$(dirname "{}")")"
      mode=""
      case "${parent_dir,,}" in
