@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine ALAERH.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <fem.hpp> // Fortran EMulation library of fable module
@@ -117,13 +124,13 @@ void Alaerh(const char *path, const char *subnam, INTEGER const info, INTEGER co
     }
     nerrs++;
     //
-    //     Print the message detailing the error and form of recovery,
-    //     if any.
+    // Print the message detailing the error and form of recovery,
+    // if any.
     //
     char uplo[1];
     if (Mlsamen(2, p2, "GE")) {
         //
-        //        xGE:  General matrices
+        // xGE:  General matrices
         //
         if (Mlsamen(3, c3, "TRF")) {
             if (info != infoe && infoe != 0) {
@@ -180,7 +187,7 @@ void Alaerh(const char *path, const char *subnam, INTEGER const info, INTEGER co
         //
     } else if (Mlsamen(2, p2, "GB")) {
         //
-        //        xGB:  General band matrices
+        // xGB:  General band matrices
         //
         if (Mlsamen(3, c3, "TRF")) {
             if (info != infoe && infoe != 0) {
@@ -244,7 +251,7 @@ void Alaerh(const char *path, const char *subnam, INTEGER const info, INTEGER co
         //
     } else if (Mlsamen(2, p2, "GT")) {
         //
-        //        xGT:  General tridiagonal matrices
+        // xGT:  General tridiagonal matrices
         //
         if (Mlsamen(3, c3, "TRF")) {
             if (info != infoe && infoe != 0) {
@@ -283,7 +290,7 @@ void Alaerh(const char *path, const char *subnam, INTEGER const info, INTEGER co
         //
     } else if (Mlsamen(2, p2, "PO")) {
         //
-        //        xPO:  Symmetric or Hermitian positive definite matrices
+        // xPO:  Symmetric or Hermitian positive definite matrices
         //
         uplo[0] = opts[(1 - 1)];
         if (Mlsamen(3, c3, "TRF")) {
@@ -327,7 +334,7 @@ void Alaerh(const char *path, const char *subnam, INTEGER const info, INTEGER co
         //
     } else if (Mlsamen(2, p2, "PS")) {
         //
-        //        xPS:  Symmetric or Hermitian positive semi-definite matrices
+        // xPS:  Symmetric or Hermitian positive semi-definite matrices
         //
         uplo[0] = opts[(1 - 1)];
         if (Mlsamen(3, c3, "TRF")) {
@@ -371,22 +378,22 @@ void Alaerh(const char *path, const char *subnam, INTEGER const info, INTEGER co
         //
     } else if (Mlsamen(2, p2, "SY") || Mlsamen(2, p2, "SR") || Mlsamen(2, p2, "SK") || Mlsamen(2, p2, "HE") || Mlsamen(2, p2, "HR") || Mlsamen(2, p2, "HK") || Mlsamen(2, p2, "HA")) {
         //
-        //        xSY: symmetric indefinite matrices
-        //             with partial (Bunch-Kaufman) pivoting;
-        //        xSR: symmetric indefinite matrices
-        //             with rook (bounded Bunch-Kaufman) pivoting;
-        //        xSK: symmetric indefinite matrices
-        //             with rook (bounded Bunch-Kaufman) pivoting,
-        //             new storage format;
-        //        xHE: Hermitian indefinite matrices
-        //             with partial (Bunch-Kaufman) pivoting.
-        //        xHR: Hermitian indefinite matrices
-        //             with rook (bounded Bunch-Kaufman) pivoting;
-        //        xHK: Hermitian indefinite matrices
-        //             with rook (bounded Bunch-Kaufman) pivoting,
-        //             new storage format;
-        //        xHA: Hermitian matrices
-        //             Aasen Algorithm
+        // xSY: symmetric indefinite matrices
+        // with partial (Bunch-Kaufman) pivoting;
+        // xSR: symmetric indefinite matrices
+        // with rook (bounded Bunch-Kaufman) pivoting;
+        // xSK: symmetric indefinite matrices
+        // with rook (bounded Bunch-Kaufman) pivoting,
+        // new storage format;
+        // xHE: Hermitian indefinite matrices
+        // with partial (Bunch-Kaufman) pivoting.
+        // xHR: Hermitian indefinite matrices
+        // with rook (bounded Bunch-Kaufman) pivoting;
+        // xHK: Hermitian indefinite matrices
+        // with rook (bounded Bunch-Kaufman) pivoting,
+        // new storage format;
+        // xHA: Hermitian matrices
+        // Aasen Algorithm
         //
         uplo[0] = opts[(1 - 1)];
         if (Mlsamen(3, c3, "TRF")) {
@@ -426,7 +433,7 @@ void Alaerh(const char *path, const char *subnam, INTEGER const info, INTEGER co
         //
     } else if (Mlsamen(2, p2, "PP") || Mlsamen(2, p2, "SP") || Mlsamen(2, p2, "HP")) {
         //
-        //        xPP, xHP, or xSP:  Symmetric or Hermitian packed matrices
+        // xPP, xHP, or xSP:  Symmetric or Hermitian packed matrices
         //
         uplo[0] = opts[(1 - 1)];
         if (Mlsamen(3, c3, "TRF")) {
@@ -468,7 +475,7 @@ void Alaerh(const char *path, const char *subnam, INTEGER const info, INTEGER co
         //
     } else if (Mlsamen(2, p2, "PB")) {
         //
-        //        xPB:  Symmetric (Hermitian) positive definite band matrix
+        // xPB:  Symmetric (Hermitian) positive definite band matrix
         //
         uplo[0] = opts[(1 - 1)];
         if (Mlsamen(3, c3, "TRF")) {
@@ -523,7 +530,7 @@ void Alaerh(const char *path, const char *subnam, INTEGER const info, INTEGER co
         //
     } else if (Mlsamen(2, p2, "PT")) {
         //
-        //        xPT:  Positive definite tridiagonal matrices
+        // xPT:  Positive definite tridiagonal matrices
         //
         if (Mlsamen(3, c3, "TRF")) {
             if (info != infoe && infoe != 0) {
@@ -570,7 +577,7 @@ void Alaerh(const char *path, const char *subnam, INTEGER const info, INTEGER co
         //
     } else if (Mlsamen(2, p2, "TR")) {
         //
-        //        xTR:  Triangular matrix
+        // xTR:  Triangular matrix
         //
         if (Mlsamen(3, c3, "TRI")) {
             write(nout, "(' *** Error code from ',a,' =',i5,/,' ==> UPLO=''',a1,"
@@ -586,7 +593,7 @@ void Alaerh(const char *path, const char *subnam, INTEGER const info, INTEGER co
         //
     } else if (Mlsamen(2, p2, "TP")) {
         //
-        //        xTP:  Triangular packed matrix
+        // xTP:  Triangular packed matrix
         //
         if (Mlsamen(3, c3, "TRI")) {
             write(nout, "(' *** Error code from ',a,' =',i5,/,' ==> UPLO=''',a1,"
@@ -602,7 +609,7 @@ void Alaerh(const char *path, const char *subnam, INTEGER const info, INTEGER co
         //
     } else if (Mlsamen(2, p2, "TB")) {
         //
-        //        xTB:  Triangular band matrix
+        // xTB:  Triangular band matrix
         //
         if (Mlsamen(3, c3, "CON")) {
             write(nout, "(' *** Error code from ',a,' =',i5,/,' ==> NORM=''',a1,"
@@ -623,7 +630,7 @@ void Alaerh(const char *path, const char *subnam, INTEGER const info, INTEGER co
         //
     } else if (Mlsamen(2, p2, "QR")) {
         //
-        //        xQR:  QR factorization
+        // xQR:  QR factorization
         //
         if (Mlsamen(3, c3, "QRS")) {
             write(nout, format_9974), subnam_trimmed, info, m, n, kl, n5, imat;
@@ -633,7 +640,7 @@ void Alaerh(const char *path, const char *subnam, INTEGER const info, INTEGER co
         //
     } else if (Mlsamen(2, p2, "LQ")) {
         //
-        //        xLQ:  LQ factorization
+        // xLQ:  LQ factorization
         //
         if (Mlsamen(3, c3, "LQS")) {
             write(nout, format_9974), subnam_trimmed, info, m, n, kl, n5, imat;
@@ -643,7 +650,7 @@ void Alaerh(const char *path, const char *subnam, INTEGER const info, INTEGER co
         //
     } else if (Mlsamen(2, p2, "QL")) {
         //
-        //        xQL:  QL factorization
+        // xQL:  QL factorization
         //
         if (Mlsamen(3, c3, "QLS")) {
             write(nout, format_9974), subnam_trimmed, info, m, n, kl, n5, imat;
@@ -653,7 +660,7 @@ void Alaerh(const char *path, const char *subnam, INTEGER const info, INTEGER co
         //
     } else if (Mlsamen(2, p2, "RQ")) {
         //
-        //        xRQ:  RQ factorization
+        // xRQ:  RQ factorization
         //
         if (Mlsamen(3, c3, "RQS")) {
             write(nout, format_9974), subnam_trimmed, info, m, n, kl, n5, imat;
@@ -681,115 +688,115 @@ void Alaerh(const char *path, const char *subnam, INTEGER const info, INTEGER co
         //
     } else {
         //
-        //        Print a generic message if the path is unknown.
+        // Print a generic message if the path is unknown.
         //
         write(nout, "(' *** Error code from ',a,' =',i5)"), subnam_trimmed, info;
     }
     //
-    //     Description of error message (alphabetical, left to right)
+    // Description of error message (alphabetical, left to right)
     //
-    //     SUBNAM, INFO, FACT, N, NRHS, IMAT
+    // SUBNAM, INFO, FACT, N, NRHS, IMAT
     //
-    //     SUBNAM, INFO, FACT, TRANS, N, KL, KU, NRHS, IMAT
+    // SUBNAM, INFO, FACT, TRANS, N, KL, KU, NRHS, IMAT
     //
-    //     SUBNAM, INFO, FACT, TRANS, N, NRHS, IMAT
+    // SUBNAM, INFO, FACT, TRANS, N, NRHS, IMAT
     //
-    //     SUBNAM, INFO, FACT, UPLO, N, KD, NRHS, IMAT
+    // SUBNAM, INFO, FACT, UPLO, N, KD, NRHS, IMAT
     //
-    //     SUBNAM, INFO, FACT, UPLO, N, NRHS, IMAT
+    // SUBNAM, INFO, FACT, UPLO, N, NRHS, IMAT
     //
-    //     SUBNAM, INFO, INFOE, FACT, N, NRHS, IMAT
+    // SUBNAM, INFO, INFOE, FACT, N, NRHS, IMAT
     //
-    //     SUBNAM, INFO, INFOE, FACT, TRANS, N, KL, KU, NRHS, IMAT
+    // SUBNAM, INFO, INFOE, FACT, TRANS, N, KL, KU, NRHS, IMAT
     //
-    //     SUBNAM, INFO, INFOE, FACT, TRANS, N, NRHS, IMAT
+    // SUBNAM, INFO, INFOE, FACT, TRANS, N, NRHS, IMAT
     //
-    //     SUBNAM, INFO, INFOE, FACT, UPLO, N, KD, NRHS, IMAT
+    // SUBNAM, INFO, INFOE, FACT, UPLO, N, KD, NRHS, IMAT
     //
-    //     SUBNAM, INFO, INFOE, FACT, UPLO, N, NRHS, IMAT
+    // SUBNAM, INFO, INFOE, FACT, UPLO, N, NRHS, IMAT
     //
-    //     SUBNAM, INFO, INFOE, M, N, KL, KU, NB, IMAT
+    // SUBNAM, INFO, INFOE, M, N, KL, KU, NB, IMAT
     //
-    //     SUBNAM, INFO, INFOE, M, N, NB, IMAT
+    // SUBNAM, INFO, INFOE, M, N, NB, IMAT
     //
-    //     SUBNAM, INFO, INFOE, N, IMAT
+    // SUBNAM, INFO, INFOE, N, IMAT
     //
-    //     SUBNAM, INFO, INFOE, N, KL, KU, NRHS, IMAT
+    // SUBNAM, INFO, INFOE, N, KL, KU, NRHS, IMAT
     //
-    //     SUBNAM, INFO, INFOE, N, NB, IMAT
+    // SUBNAM, INFO, INFOE, N, NB, IMAT
     //
-    //     SUBNAM, INFO, INFOE, N, NRHS, IMAT
+    // SUBNAM, INFO, INFOE, N, NRHS, IMAT
     //
-    //     SUBNAM, INFO, INFOE, UPLO, N, IMAT
+    // SUBNAM, INFO, INFOE, UPLO, N, IMAT
     //
-    //     SUBNAM, INFO, INFOE, UPLO, N, KD, NB, IMAT
+    // SUBNAM, INFO, INFOE, UPLO, N, KD, NB, IMAT
     //
-    //     SUBNAM, INFO, INFOE, UPLO, N, KD, NRHS, IMAT
+    // SUBNAM, INFO, INFOE, UPLO, N, KD, NRHS, IMAT
     //
-    //     SUBNAM, INFO, INFOE, UPLO, N, NB, IMAT
+    // SUBNAM, INFO, INFOE, UPLO, N, NB, IMAT
     //
-    //     SUBNAM, INFO, INFOE, UPLO, N, NRHS, IMAT
+    // SUBNAM, INFO, INFOE, UPLO, N, NRHS, IMAT
     //
-    //     SUBNAM, INFO, M, N, IMAT
+    // SUBNAM, INFO, M, N, IMAT
     //
-    //     SUBNAM, INFO, M, N, KL, KU, IMAT
+    // SUBNAM, INFO, M, N, KL, KU, IMAT
     //
-    //     SUBNAM, INFO, M, N, KL, KU, NB, IMAT
+    // SUBNAM, INFO, M, N, KL, KU, NB, IMAT
     //
-    //     SUBNAM, INFO, M, N, NB, IMAT
+    // SUBNAM, INFO, M, N, NB, IMAT
     //
-    //     SUBNAM, INFO, M, N, NRHS, NB, IMAT
+    // SUBNAM, INFO, M, N, NRHS, NB, IMAT
     //
-    //     SUBNAM, INFO, N, IMAT
+    // SUBNAM, INFO, N, IMAT
     //
-    //     SUBNAM, INFO, N, KL, KU, NRHS, IMAT
+    // SUBNAM, INFO, N, KL, KU, NRHS, IMAT
     //
-    //     SUBNAM, INFO, N, NB, IMAT
+    // SUBNAM, INFO, N, NB, IMAT
     //
-    //     SUBNAM, INFO, N, NRHS, IMAT
+    // SUBNAM, INFO, N, NRHS, IMAT
     //
-    //     SUBNAM, INFO, NORM, N, IMAT
+    // SUBNAM, INFO, NORM, N, IMAT
     //
-    //     SUBNAM, INFO, NORM, N, KL, KU, IMAT
+    // SUBNAM, INFO, NORM, N, KL, KU, IMAT
     //
-    //     SUBNAM, INFO, NORM, UPLO, DIAG, N, IMAT
+    // SUBNAM, INFO, NORM, UPLO, DIAG, N, IMAT
     //
-    //     SUBNAM, INFO, NORM, UPLO, DIAG, N, KD, IMAT
+    // SUBNAM, INFO, NORM, UPLO, DIAG, N, KD, IMAT
     //
-    //     SUBNAM, INFO, TRANS, M, N, NRHS, NB, IMAT
+    // SUBNAM, INFO, TRANS, M, N, NRHS, NB, IMAT
     //
-    //     SUBNAM, INFO, TRANS, N, KL, KU, NRHS, IMAT
+    // SUBNAM, INFO, TRANS, N, KL, KU, NRHS, IMAT
     //
-    //     SUBNAM, INFO, TRANS, N, NRHS, IMAT
+    // SUBNAM, INFO, TRANS, N, NRHS, IMAT
     //
-    //     SUBNAM, INFO, UPLO, DIAG, N, IMAT
+    // SUBNAM, INFO, UPLO, DIAG, N, IMAT
     //
-    //     SUBNAM, INFO, UPLO, DIAG, N, NB, IMAT
+    // SUBNAM, INFO, UPLO, DIAG, N, NB, IMAT
     //
-    //     SUBNAM, INFO, UPLO, N, IMAT
+    // SUBNAM, INFO, UPLO, N, IMAT
     //
-    //     SUBNAM, INFO, UPLO, N, KD, IMAT
+    // SUBNAM, INFO, UPLO, N, KD, IMAT
     //
-    //     SUBNAM, INFO, UPLO, N, KD, NB, IMAT
+    // SUBNAM, INFO, UPLO, N, KD, NB, IMAT
     //
-    //     SUBNAM, INFO, UPLO, N, KD, NRHS, IMAT
+    // SUBNAM, INFO, UPLO, N, KD, NRHS, IMAT
     //
-    //     SUBNAM, INFO, UPLO, N, NB, IMAT
+    // SUBNAM, INFO, UPLO, N, NB, IMAT
     //
-    //     SUBNAM, INFO, UPLO, N, NRHS, IMAT
+    // SUBNAM, INFO, UPLO, N, NRHS, IMAT
     //
-    //     SUBNAM, INFO, UPLO, TRANS, DIAG, N, KD, NRHS, IMAT
+    // SUBNAM, INFO, UPLO, TRANS, DIAG, N, KD, NRHS, IMAT
     //
-    //     SUBNAM, INFO, UPLO, TRANS, DIAG, N, NRHS, IMAT
+    // SUBNAM, INFO, UPLO, TRANS, DIAG, N, NRHS, IMAT
     //
-    //     SUBNAM, INFO, UPLO, TRANS, DIAG, NORMIN, N, IMAT
+    // SUBNAM, INFO, UPLO, TRANS, DIAG, NORMIN, N, IMAT
     //
-    //     SUBNAM, INFO, UPLO, TRANS, DIAG, NORMIN, N, KD, IMAT
+    // SUBNAM, INFO, UPLO, TRANS, DIAG, NORMIN, N, KD, IMAT
     //
-    //     Unknown type
+    // Unknown type
     //
-    //     What we do next
+    // What we do next
     //
-    //     End of Alaerh
+    // End of Alaerh
     //
 }

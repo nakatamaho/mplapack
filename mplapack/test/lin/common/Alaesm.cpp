@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ALAESM.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
@@ -45,6 +52,6 @@ void Alaesm(const char *path, bool const ok, INTEGER const nout) {
         write(nout, "(' *** ',a3,' routines failed the tests of the error ','exits ***')"), _path;
     }
     //
-    //     End of Alaesm
+    // End of Alaesm
     //
 }
