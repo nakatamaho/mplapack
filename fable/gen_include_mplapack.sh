@@ -136,7 +136,7 @@ for mplib in $MPLIBS; do
 
 done
 
-mv header_all mplapack_generic.h
+mv header_all ~/mplapack/mplapack/reference/mplapack_generic.h
 
 for f in mplapack_generic.h; do
 clang-format-19 -i -style '{
