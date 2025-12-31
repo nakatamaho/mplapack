@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine ZLAHILB.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -92,8 +99,8 @@ void Clahilb(INTEGER const n, INTEGER const nrhs, COMPLEX *a, INTEGER const lda,
         info = 1;
     }
     //
-    //     Compute M = the LCM of the integers [1, 2*N-1].  The largest
-    //     reasonable N is small enough that integers suffice (up to N = 11).
+    // Compute M = the LCM of the integers [1, 2*N-1].  The largest
+    // reasonable N is small enough that integers suffice (up to N = 11).
     INTEGER m = 1;
     INTEGER i = 0;
     INTEGER tm = 0;
@@ -111,9 +118,9 @@ void Clahilb(INTEGER const n, INTEGER const nrhs, COMPLEX *a, INTEGER const lda,
         m = (m / ti) * i;
     }
     //
-    //     Generate the scaled Hilbert matrix in A
-    //     If we are testing SY routines,
-    //        take D1_i = D2_i, else, D1_i = D2_i*
+    // Generate the scaled Hilbert matrix in A
+    // If we are testing SY routines,
+    // take D1_i = D2_i, else, D1_i = D2_i*
     INTEGER j = 0;
     const INTEGER size_d = 8;
     if (Mlsamen(2, c2, "SY")) {
@@ -130,21 +137,21 @@ void Clahilb(INTEGER const n, INTEGER const nrhs, COMPLEX *a, INTEGER const lda,
         }
     }
     //
-    //     Generate matrix B as simply the first NRHS columns of M * the
-    //     identity.
+    // Generate matrix B as simply the first NRHS columns of M * the
+    // identity.
     COMPLEX tmp = castREAL(m);
     Claset("Full", n, nrhs, (0.0, 0.0), tmp, b, ldb);
     //
-    //     Generate the true solutions in X.  Because B = the first NRHS
-    //     columns of M*I, the true solutions are just the first NRHS columns
-    //     of the inverse Hilbert matrix.
+    // Generate the true solutions in X.  Because B = the first NRHS
+    // columns of M*I, the true solutions are just the first NRHS columns
+    // of the inverse Hilbert matrix.
     work[1 - 1] = n;
     for (j = 2; j <= n; j = j + 1) {
         work[j - 1] = (((work[(j - 1) - 1] / (j - 1)) * (j - 1 - n)) / (j - 1)) * (n + j - 1);
     }
     //
-    //     If we are testing SY routines,
-    //           take D1_i = D2_i, else, D1_i = D2_i*
+    // If we are testing SY routines,
+    // take D1_i = D2_i, else, D1_i = D2_i*
     if (Mlsamen(2, c2, "SY")) {
         for (j = 1; j <= nrhs; j = j + 1) {
             for (i = 1; i <= n; i = i + 1) {

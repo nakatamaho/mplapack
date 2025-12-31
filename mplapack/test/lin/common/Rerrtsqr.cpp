@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DERRTSQR.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -70,7 +77,7 @@ void Rerrtsqr(const char *path, INTEGER const nunit) {
     nout = nunit;
     write(nout, star);
     //
-    //     Set the variables to innocuous values.
+    // Set the variables to innocuous values.
     //
     INTEGER j = 0;
     const INTEGER nmax = 2;
@@ -157,7 +164,7 @@ void Rerrtsqr(const char *path, INTEGER const nunit) {
     Rgemqr("L", "N", 2, 2, 1, a, 2, tau, 6, c, 2, w, 0, info);
     chkxer("Rgemqr", infot, nout, lerr, ok);
     //
-    //     Rgelq
+    // Rgelq
     //
     infot = 1;
     strncpy(srnamt, "Rgelq", srnamt_len);
@@ -216,10 +223,10 @@ void Rerrtsqr(const char *path, INTEGER const nunit) {
     Rgemlq("L", "N", 2, 2, 1, a, 2, tau, 6, c, 2, w, 0, info);
     chkxer("Rgemlq", infot, nout, lerr, ok);
     //
-    //     Print a summary line.
+    // Print a summary line.
     //
     Alaesm(path, ok, nout);
     //
-    //     End of Rerrtsqr
+    // End of Rerrtsqr
     //
 }

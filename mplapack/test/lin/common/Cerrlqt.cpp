@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZERRLQT.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -43,7 +50,7 @@ void Cerrlqt(const char *path, INTEGER const nunit) {
     //
     nout = nunit;
     //
-    //     Set the variables to innocuous values.
+    // Set the variables to innocuous values.
     //
     INTEGER j = 0;
     const INTEGER nmax = 2;
@@ -65,9 +72,9 @@ void Cerrlqt(const char *path, INTEGER const nunit) {
     }
     ok = true;
     //
-    //     Error exits for LQT factorization
+    // Error exits for LQT factorization
     //
-    //     Cgelqt
+    // Cgelqt
     //
     strncpy(srnamt, "Cgelqt", srnamt_len);
     infot = 1;
@@ -87,7 +94,7 @@ void Cerrlqt(const char *path, INTEGER const nunit) {
     Cgelqt(2, 2, 2, a, 2, t, 1, w, info);
     chkxer("Cgelqt", infot, nout, lerr, ok);
     //
-    //     Cgelqt3
+    // Cgelqt3
     //
     strncpy(srnamt, "Cgelqt3", srnamt_len);
     infot = 1;
@@ -103,7 +110,7 @@ void Cerrlqt(const char *path, INTEGER const nunit) {
     Cgelqt3(2, 2, a, 2, t, 1, info);
     chkxer("Cgelqt3", infot, nout, lerr, ok);
     //
-    //     Cgemlqt
+    // Cgemlqt
     //
     strncpy(srnamt, "Cgemlqt", srnamt_len);
     infot = 1;
@@ -140,10 +147,10 @@ void Cerrlqt(const char *path, INTEGER const nunit) {
     Cgemlqt("L", "N", 1, 1, 1, 1, a, 1, t, 1, c, 0, w, info);
     chkxer("Cgemlqt", infot, nout, lerr, ok);
     //
-    //     Print a summary line.
+    // Print a summary line.
     //
     Alaesm(path, ok, nout);
     //
-    //     End of Cerrlqt
+    // End of Cerrlqt
     //
 }

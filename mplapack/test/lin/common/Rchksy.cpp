@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DCHKSY.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -131,7 +138,7 @@ void Rchksy(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
         iseed[i - 1] = iseedy[i - 1];
     }
     //
-    //     Test the error exits
+    // Test the error exits
     //
     if (tsterr) {
         Rerrsy(path, nout);
@@ -142,7 +149,7 @@ void Rchksy(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
     //
     xlaenv(2, 2);
     //
-    //     Do for each value of N in NVAL
+    // Do for each value of N in NVAL
     //
     for (in = 1; in <= nn; in = in + 1) {
         n = nval[in - 1];
@@ -155,32 +162,32 @@ void Rchksy(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
         //
         izero = 0;
         //
-        //        Do for each value of matrix type IMAT
+        // Do for each value of matrix type IMAT
         //
         for (imat = 1; imat <= nimat; imat = imat + 1) {
             //
-            //           Do the tests only if DOTYPE( IMAT ) is true.
+            // Do the tests only if DOTYPE( IMAT ) is true.
             //
             if (!dotype[imat - 1]) {
                 goto statement_170;
             }
             //
-            //           Skip types 3, 4, 5, or 6 if the matrix size is too small.
+            // Skip types 3, 4, 5, or 6 if the matrix size is too small.
             //
             zerot = imat >= 3 && imat <= 6;
             if (zerot && n < imat - 2) {
                 goto statement_170;
             }
             //
-            //           Do first for UPLO = 'U', then for UPLO = 'L'
+            // Do first for UPLO = 'U', then for UPLO = 'L'
             //
             for (iuplo = 1; iuplo <= 2; iuplo = iuplo + 1) {
                 uplo = uplos[iuplo - 1];
                 //
-                //              Begin generate the test matrix A.
+                // Begin generate the test matrix A.
                 //
-                //              Set up parameters with Rlatb4 for the matrix generator
-                //              based on the type of matrix to be generated.
+                // Set up parameters with Rlatb4 for the matrix generator
+                // based on the type of matrix to be generated.
                 //
                 Rlatb4(path, imat, n, n, &type, kl, ku, anorm, mode, cndnum, &dist);
                 //
@@ -188,19 +195,19 @@ void Rchksy(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                 //
                 Rlatms(n, n, &dist, iseed, &type, rwork, mode, cndnum, anorm, kl, ku, &uplo, a, lda, work, info);
                 //
-                //              Check error code from Rlatms and handle error.
+                // Check error code from Rlatms and handle error.
                 //
                 if (info != 0) {
                     Alaerh(path, "Rlatms", info, 0, &uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                     //
-                    //                    Skip all tests for this generated matrix
+                    // Skip all tests for this generated matrix
                     //
                     goto statement_160;
                 }
                 //
-                //              For matrix types 3-6, zero one or more rows and
-                //              columns of the matrix to test that INFO is returned
-                //              correctly.
+                // For matrix types 3-6, zero one or more rows and
+                // columns of the matrix to test that INFO is returned
+                // correctly.
                 //
                 if (zerot) {
                     if (imat == 3) {
@@ -213,7 +220,7 @@ void Rchksy(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                     //
                     if (imat < 6) {
                         //
-                        //                    Set row and column IZERO to zero.
+                        // Set row and column IZERO to zero.
                         //
                         if (iuplo == 1) {
                             ioff = (izero - 1) * lda;
@@ -239,7 +246,7 @@ void Rchksy(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                     } else {
                         if (iuplo == 1) {
                             //
-                            //                       Set the first IZERO rows and columns to zero.
+                            // Set the first IZERO rows and columns to zero.
                             //
                             ioff = 0;
                             for (j = 1; j <= n; j = j + 1) {
@@ -251,7 +258,7 @@ void Rchksy(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                             }
                         } else {
                             //
-                            //                       Set the last IZERO rows and columns to zero.
+                            // Set the last IZERO rows and columns to zero.
                             //
                             ioff = 0;
                             for (j = 1; j <= n; j = j + 1) {
@@ -267,34 +274,34 @@ void Rchksy(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                     izero = 0;
                 }
                 //
-                //              End generate the test matrix A.
+                // End generate the test matrix A.
                 //
-                //              Do for each value of NB in NBVAL
+                // Do for each value of NB in NBVAL
                 //
                 for (inb = 1; inb <= nnb; inb = inb + 1) {
                     //
-                    //                 Set the optimal blocksize, which will be later
-                    //                 returned by iMlaenv.
+                    // Set the optimal blocksize, which will be later
+                    // returned by iMlaenv.
                     //
                     nb = nbval[inb - 1];
                     xlaenv(1, nb);
                     //
-                    //                 Copy the test matrix A into matrix AFAC which
-                    //                 will be factorized in place. This is needed to
-                    //                 preserve the test matrix A for subsequent tests.
+                    // Copy the test matrix A into matrix AFAC which
+                    // will be factorized in place. This is needed to
+                    // preserve the test matrix A for subsequent tests.
                     //
                     Rlacpy(&uplo, n, n, a, lda, afac, lda);
                     //
-                    //                 Compute the L*D*L**T or U*D*U**T factorization of the
-                    //                 matrix. IWORK stores details of the interchanges and
-                    //                 the block structure of D. AINV is a work array for
-                    //                 block factorization, LWORK is the length of AINV.
+                    // Compute the L*D*L**T or U*D*U**T factorization of the
+                    // matrix. IWORK stores details of the interchanges and
+                    // the block structure of D. AINV is a work array for
+                    // block factorization, LWORK is the length of AINV.
                     //
                     lwork = max((INTEGER)2, nb) * lda;
                     Rsytrf(&uplo, n, afac, lda, iwork, ainv, lwork, info);
                     //
-                    //                 Adjust the expected value of INFO to account for
-                    //                 pivoting.
+                    // Adjust the expected value of INFO to account for
+                    // pivoting.
                     //
                     k = izero;
                     if (k > 0) {
@@ -310,13 +317,13 @@ void Rchksy(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                         }
                     }
                     //
-                    //                 Check error code from Rsytrf and handle error.
+                    // Check error code from Rsytrf and handle error.
                     //
                     if (info != k) {
                         Alaerh(path, "Rsytrf", info, k, &uplo, n, n, -1, -1, nb, imat, nfail, nerrs, nout);
                     }
                     //
-                    //                 Set the condition estimate flag if the INFO is not 0.
+                    // Set the condition estimate flag if the INFO is not 0.
                     //
                     if (info != 0) {
                         trfcon = true;
@@ -324,38 +331,38 @@ void Rchksy(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                         trfcon = false;
                     }
                     //
-                    //+    TEST 1
-                    //                 Reconstruct matrix from factors and compute residual.
+                    // +    TEST 1
+                    // Reconstruct matrix from factors and compute residual.
                     //
                     Rsyt01(&uplo, n, a, lda, afac, lda, iwork, ainv, lda, rwork, result[1 - 1]);
                     nt = 1;
                     //
-                    //+    TEST 2
-                    //                 Form the inverse and compute the residual,
-                    //                 if the factorization was competed without INFO > 0
-                    //                 (i.e. there is no zero rows and columns).
-                    //                 Do it only for the first block size.
+                    // +    TEST 2
+                    // Form the inverse and compute the residual,
+                    // if the factorization was competed without INFO > 0
+                    // (i.e. there is no zero rows and columns).
+                    // Do it only for the first block size.
                     //
                     if (inb == 1 && !trfcon) {
                         Rlacpy(&uplo, n, n, afac, lda, ainv, lda);
                         lwork = (n + nb + 1) * (nb + 3);
                         Rsytri2(&uplo, n, ainv, lda, iwork, work, lwork, info);
                         //
-                        //                    Check error code from Rsytri2 and handle error.
+                        // Check error code from Rsytri2 and handle error.
                         //
                         if (info != 0) {
                             Alaerh(path, "Rsytri2", info, -1, &uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                         }
                         //
-                        //                    Compute the residual for a symmetric matrix times
-                        //                    its inverse.
+                        // Compute the residual for a symmetric matrix times
+                        // its inverse.
                         //
                         Rpot03(&uplo, n, a, lda, ainv, lda, work, lda, rwork, rcondc, result[2 - 1]);
                         nt = 2;
                     }
                     //
-                    //                 Print information about the tests that did not pass
-                    //                 the threshold.
+                    // Print information about the tests that did not pass
+                    // the threshold.
                     //
                     for (k = 1; k <= nt; k = k + 1) {
                         if (result[k - 1] >= thresh) {
@@ -371,21 +378,21 @@ void Rchksy(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                     }
                     nrun += nt;
                     //
-                    //                 Skip the other tests if this is not the first block
-                    //                 size.
+                    // Skip the other tests if this is not the first block
+                    // size.
                     //
                     if (inb > 1) {
                         goto statement_150;
                     }
                     //
-                    //                 Do only the condition estimate if INFO is not 0.
+                    // Do only the condition estimate if INFO is not 0.
                     //
                     if (trfcon) {
                         rcondc = zero;
                         goto statement_140;
                     }
                     //
-                    //                 Do for each value of NRHS in NSVAL.
+                    // Do for each value of NRHS in NSVAL.
                     //
                     for (irhs = 1; irhs <= nns; irhs = irhs + 1) {
                         nrhs = nsval[irhs - 1];
@@ -401,7 +408,7 @@ void Rchksy(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                         //
                         Rsytrs(&uplo, n, nrhs, afac, lda, iwork, x, lda, info);
                         //
-                        //                    Check error code from Rsytrs and handle error.
+                        // Check error code from Rsytrs and handle error.
                         //
                         if (info != 0) {
                             Alaerh(path, "Rsytrs", info, 0, &uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
@@ -425,7 +432,7 @@ void Rchksy(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                         //
                         Rsytrs2(&uplo, n, nrhs, afac, lda, iwork, x, lda, work, info);
                         //
-                        //                    Check error code from Rsytrs2 and handle error.
+                        // Check error code from Rsytrs2 and handle error.
                         //
                         if (info != 0) {
                             Alaerh(path, "Rsytrs2", info, 0, &uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
@@ -447,7 +454,7 @@ void Rchksy(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                         //
                         Rsyrfs(&uplo, n, nrhs, a, lda, afac, lda, iwork, b, lda, x, lda, rwork, &rwork[(nrhs + 1) - 1], work, &iwork[(n + 1) - 1], info);
                         //
-                        //                    Check error code from Rsyrfs and handle error.
+                        // Check error code from Rsyrfs and handle error.
                         //
                         if (info != 0) {
                             Alaerh(path, "Rsyrfs", info, 0, &uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
@@ -456,8 +463,8 @@ void Rchksy(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                         Rget04(n, nrhs, x, lda, xact, lda, rcondc, result[6 - 1]);
                         Rpot05(&uplo, n, nrhs, a, lda, b, lda, x, lda, xact, lda, rwork, &rwork[(nrhs + 1) - 1], &result[7 - 1]);
                         //
-                        //                    Print information about the tests that did not pass
-                        //                    the threshold.
+                        // Print information about the tests that did not pass
+                        // the threshold.
                         //
                         for (k = 3; k <= 8; k = k + 1) {
                             if (result[k - 1] >= thresh) {
@@ -473,29 +480,29 @@ void Rchksy(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                         }
                         nrun += 6;
                         //
-                        //                 End do for each value of NRHS in NSVAL.
+                        // End do for each value of NRHS in NSVAL.
                         //
                     }
                 //
-                //+    TEST 9
-                //                 Get an estimate of RCOND = 1/CNDNUM.
+                // +    TEST 9
+                // Get an estimate of RCOND = 1/CNDNUM.
                 //
                 statement_140:
                     anorm = Rlansy("1", &uplo, n, a, lda, rwork);
                     Rsycon(&uplo, n, afac, lda, iwork, anorm, rcond, work, &iwork[(n + 1) - 1], info);
                     //
-                    //                 Check error code from Rsycon and handle error.
+                    // Check error code from Rsycon and handle error.
                     //
                     if (info != 0) {
                         Alaerh(path, "Rsycon", info, 0, &uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                     }
                     //
-                    //                 Compute the test ratio to compare values of RCOND
+                    // Compute the test ratio to compare values of RCOND
                     //
                     result[9 - 1] = Rget06(rcond, rcondc);
                     //
-                    //                 Print information about the tests that did not pass
-                    //                 the threshold.
+                    // Print information about the tests that did not pass
+                    // the threshold.
                     //
                     if (result[9 - 1] >= thresh) {
                         if (nfail == 0 && nerrs == 0) {
@@ -517,10 +524,10 @@ void Rchksy(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
         }
     }
     //
-    //     Print a summary of the results.
+    // Print a summary of the results.
     //
     Alasum(path, nout, nfail, nrun, nerrs);
     //
-    //     End of Rchksy
+    // End of Rchksy
     //
 }

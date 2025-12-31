@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DPTT01.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -38,28 +45,7 @@ using fem::common;
 
 void Rptt01(INTEGER const n, REAL *d, REAL *e, REAL *df, REAL *ef, REAL *work, REAL &resid) {
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Quick return if possible
+    // Quick return if possible
     //
     const REAL zero = 0.0;
     if (n <= 0) {
@@ -69,7 +55,7 @@ void Rptt01(INTEGER const n, REAL *d, REAL *e, REAL *df, REAL *ef, REAL *work, R
     //
     REAL eps = Rlamch("Epsilon");
     //
-    //     Construct the difference L*D*L' - A.
+    // Construct the difference L*D*L' - A.
     //
     work[1 - 1] = df[1 - 1] - d[1 - 1];
     INTEGER i = 0;
@@ -80,7 +66,7 @@ void Rptt01(INTEGER const n, REAL *d, REAL *e, REAL *df, REAL *ef, REAL *work, R
         work[(1 + i) - 1] = de * ef[i - 1] + df[(i + 1) - 1] - d[(i + 1) - 1];
     }
     //
-    //     Compute the 1-norms of the tridiagonal matrices A and WORK.
+    // Compute the 1-norms of the tridiagonal matrices A and WORK.
     //
     REAL anorm = 0.0;
     if (n == 1) {
@@ -95,7 +81,7 @@ void Rptt01(INTEGER const n, REAL *d, REAL *e, REAL *df, REAL *ef, REAL *work, R
         }
     }
     //
-    //     Compute norm(L*D*L' - A) / (n * norm(A) * EPS)
+    // Compute norm(L*D*L' - A) / (n * norm(A) * EPS)
     //
     const REAL one = 1.0;
     if (anorm <= zero) {
@@ -106,6 +92,6 @@ void Rptt01(INTEGER const n, REAL *d, REAL *e, REAL *df, REAL *ef, REAL *work, R
         resid = ((resid / castREAL(n)) / anorm) / eps;
     }
     //
-    //     End of Rptt01
+    // End of Rptt01
     //
 }

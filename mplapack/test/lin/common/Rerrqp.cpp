@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DERRQP.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -88,9 +95,9 @@ void Rerrqp(const char *path, INTEGER const nunit) {
     INTEGER info = 0;
     if (Mlsamen(2, c2, "QP")) {
         //
-        //        Test error exits for QR factorization with pivoting
+        // Test error exits for QR factorization with pivoting
         //
-        //        Rgeqp3
+        // Rgeqp3
         //
         infot = 1;
         strncpy(srnamt, "Rgeqp3", srnamt_len);
@@ -107,10 +114,10 @@ void Rerrqp(const char *path, INTEGER const nunit) {
         chkxer("Rgeqp3", infot, nout, lerr, ok);
     }
     //
-    //     Print a summary line.
+    // Print a summary line.
     //
     Alaesm(path, ok, nout);
     //
-    //     End of Rerrqp
+    // End of Rerrqp
     //
 }

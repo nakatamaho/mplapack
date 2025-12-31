@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DCHKTR.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -134,7 +141,7 @@ void Rchktr(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
         iseed[i - 1] = iseedy[i - 1];
     }
     //
-    //     Test the error exits
+    // Test the error exits
     //
     if (tsterr) {
         Rerrtr(path, nout);
@@ -143,7 +150,7 @@ void Rchktr(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
     //
     for (in = 1; in <= nn; in = in + 1) {
         //
-        //        Do for each value of N in NVAL
+        // Do for each value of N in NVAL
         //
         n = nval[in - 1];
         lda = max((INTEGER)1, n);
@@ -151,7 +158,7 @@ void Rchktr(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
         //
         for (imat = 1; imat <= ntype1; imat = imat + 1) {
             //
-            //           Do the tests only if DOTYPE( IMAT ) is true.
+            // Do the tests only if DOTYPE( IMAT ) is true.
             //
             if (!dotype[imat - 1]) {
                 goto statement_80;
@@ -159,7 +166,7 @@ void Rchktr(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
             //
             for (iuplo = 1; iuplo <= 2; iuplo = iuplo + 1) {
                 //
-                //              Do first for UPLO = 'U', then for UPLO = 'L'
+                // Do first for UPLO = 'U', then for UPLO = 'L'
                 //
                 uplo = uplos[iuplo - 1];
                 //
@@ -167,7 +174,7 @@ void Rchktr(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                 //
                 Rlattr(imat, &uplo, "No transpose", &diag, iseed, n, a, lda, x, work, info);
                 //
-                //              Set IDIAG = 1 for non-unit matrices, 2 for unit.
+                // Set IDIAG = 1 for non-unit matrices, 2 for unit.
                 //
                 if (Mlsame(&diag, "N")) {
                     idiag = 1;
@@ -177,18 +184,18 @@ void Rchktr(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                 //
                 for (inb = 1; inb <= nnb; inb = inb + 1) {
                     //
-                    //                 Do for each blocksize in NBVAL
+                    // Do for each blocksize in NBVAL
                     //
                     nb = nbval[inb - 1];
                     xlaenv(1, nb);
                     //
-                    //+    TEST 1
-                    //                 Form the inverse of A.
+                    // +    TEST 1
+                    // Form the inverse of A.
                     //
                     Rlacpy(&uplo, n, n, a, lda, ainv, lda);
                     Rtrtri(&uplo, &diag, n, ainv, lda, info);
                     //
-                    //                 Check error code from Rtrtri.
+                    // Check error code from Rtrtri.
                     //
                     if (info != 0) {
                         uplo_diag[0] = uplo;
@@ -207,13 +214,13 @@ void Rchktr(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                         rcondi = (one / anorm) / ainvnm;
                     }
                     //
-                    //                 Compute the residual for the triangular matrix times
-                    //                 its inverse.  Also compute the 1-norm condition number
-                    //                 of A.
+                    // Compute the residual for the triangular matrix times
+                    // its inverse.  Also compute the 1-norm condition number
+                    // of A.
                     //
                     Rtrt01(&uplo, &diag, n, a, lda, ainv, lda, rcondo, rwork, result[1 - 1]);
                     //
-                    //                 Print the test ratio if it is .GE. THRESH.
+                    // Print the test ratio if it is .GE. THRESH.
                     //
                     if (result[1 - 1] >= thresh) {
                         if (nfail == 0 && nerrs == 0) {
@@ -227,7 +234,7 @@ void Rchktr(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                     }
                     nrun++;
                     //
-                    //                 Skip remaining tests if not the first block size.
+                    // Skip remaining tests if not the first block size.
                     //
                     if (inb != 1) {
                         goto statement_60;
@@ -239,7 +246,7 @@ void Rchktr(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                         //
                         for (itran = 1; itran <= ntran; itran = itran + 1) {
                             //
-                            //                    Do for op(A) = A, A**T, or A**H.
+                            // Do for op(A) = A, A**T, or A**H.
                             //
                             trans = transs[itran - 1];
                             if (itran == 1) {
@@ -259,7 +266,7 @@ void Rchktr(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                             //
                             Rtrtrs(&uplo, &trans, &diag, n, nrhs, a, lda, x, lda, info);
                             //
-                            //                       Check error code from Rtrtrs.
+                            // Check error code from Rtrtrs.
                             //
                             if (info != 0) {
 
@@ -290,7 +297,7 @@ void Rchktr(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                             //
                             Rtrrfs(&uplo, &trans, &diag, n, nrhs, a, lda, b, lda, x, lda, rwork, &rwork[(nrhs + 1) - 1], work, iwork, info);
                             //
-                            //                       Check error code from Rtrrfs.
+                            // Check error code from Rtrrfs.
                             //
                             if (info != 0) {
                                 uplo_trans_diag[0] = uplo;
@@ -323,8 +330,8 @@ void Rchktr(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                         }
                     }
                     //
-                    //+    TEST 7
-                    //                       Get an estimate of RCOND = 1/CNDNUM.
+                    // +    TEST 7
+                    // Get an estimate of RCOND = 1/CNDNUM.
                     //
                     for (itran = 1; itran <= 2; itran = itran + 1) {
                         if (itran == 1) {
@@ -336,7 +343,7 @@ void Rchktr(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                         }
                         Rtrcon(&norm, &uplo, &diag, n, a, lda, rcond, work, iwork, info);
                         //
-                        //                       Check error code from Rtrcon.
+                        // Check error code from Rtrcon.
                         //
                         if (info != 0) {
                             norm_uplo_diag[0] = norm;
@@ -368,11 +375,11 @@ void Rchktr(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
         statement_80:;
         }
         //
-        //        Use pathological test matrices to test Rlatrs.
+        // Use pathological test matrices to test Rlatrs.
         //
         for (imat = ntype1 + 1; imat <= ntypes; imat = imat + 1) {
             //
-            //           Do the tests only if DOTYPE( IMAT ) is true.
+            // Do the tests only if DOTYPE( IMAT ) is true.
             //
             if (!dotype[imat - 1]) {
                 goto statement_110;
@@ -380,12 +387,12 @@ void Rchktr(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
             //
             for (iuplo = 1; iuplo <= 2; iuplo = iuplo + 1) {
                 //
-                //              Do first for UPLO = 'U', then for UPLO = 'L'
+                // Do first for UPLO = 'U', then for UPLO = 'L'
                 //
                 uplo = uplos[iuplo - 1];
                 for (itran = 1; itran <= ntran; itran = itran + 1) {
                     //
-                    //                 Do for op(A) = A, A**T, and A**H.
+                    // Do for op(A) = A, A**T, and A**H.
                     //
                     trans = transs[itran - 1];
                     //
@@ -399,7 +406,7 @@ void Rchktr(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                     Rcopy(n, x, 1, b, 1);
                     Rlatrs(&uplo, &trans, &diag, "N", n, a, lda, b, scale, rwork, info);
                     //
-                    //                 Check error code from Rlatrs.
+                    // Check error code from Rlatrs.
                     //
                     if (info != 0) {
                         uplo_trans_diag[0] = uplo;
@@ -417,7 +424,7 @@ void Rchktr(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                     Rcopy(n, x, 1, &b[(n + 1) - 1], 1);
                     Rlatrs(&uplo, &trans, &diag, "Y", n, a, lda, &b[(n + 1) - 1], scale, rwork, info);
                     //
-                    //                 Check error code from Rlatrs.
+                    // Check error code from Rlatrs.
                     //
                     if (info != 0) {
                         uplo_trans_diag[0] = uplo;
@@ -455,10 +462,10 @@ void Rchktr(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
         }
     }
     //
-    //     Print a summary of the results.
+    // Print a summary of the results.
     //
     Alasum(path, nout, nfail, nrun, nerrs);
     //
-    //     End of Rchktr
+    // End of Rchktr
     //
 }

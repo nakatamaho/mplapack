@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZERRQRTP.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -42,7 +49,7 @@ void Cerrqrtp(const char *path, INTEGER const nunit) {
     common_write write(cmn);
     nout = nunit;
     //
-    //     Set the variables to innocuous values.
+    // Set the variables to innocuous values.
     //
     INTEGER j = 0;
     const INTEGER nmax = 2;
@@ -64,9 +71,9 @@ void Cerrqrtp(const char *path, INTEGER const nunit) {
     }
     ok = true;
     //
-    //     Error exits for TPQRT factorization
+    // Error exits for TPQRT factorization
     //
-    //     Ctpqrt
+    // Ctpqrt
     //
     strncpy(srnamt, "Ctpqrt", srnamt_len);
     infot = 1;
@@ -99,7 +106,7 @@ void Cerrqrtp(const char *path, INTEGER const nunit) {
     Ctpqrt(2, 2, 1, 2, a, 2, b, 2, t, 1, w, info);
     chkxer("Ctpqrt", infot, nout, lerr, ok);
     //
-    //     Ctpqrt2
+    // Ctpqrt2
     //
     strncpy(srnamt, "Ctpqrt2", srnamt_len);
     infot = 1;
@@ -121,7 +128,7 @@ void Cerrqrtp(const char *path, INTEGER const nunit) {
     Ctpqrt2(2, 2, 0, a, 2, b, 2, t, 1, info);
     chkxer("Ctpqrt2", infot, nout, lerr, ok);
     //
-    //     Ctpmqrt
+    // Ctpmqrt
     //
     strncpy(srnamt, "Ctpmqrt", srnamt_len);
     infot = 1;
@@ -160,10 +167,10 @@ void Cerrqrtp(const char *path, INTEGER const nunit) {
     Ctpmqrt("L", "N", 1, 1, 1, 1, 1, a, 1, t, 1, b, 1, c, 0, w, info);
     chkxer("Ctpmqrt", infot, nout, lerr, ok);
     //
-    //     Print a summary line.
+    // Print a summary line.
     //
     Alaesm(path, ok, nout);
     //
-    //     End of Cerrqrt
+    // End of Cerrqrt
     //
 }

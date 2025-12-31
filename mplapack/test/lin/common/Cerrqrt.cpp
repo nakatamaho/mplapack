@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine ZERRQRT.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -61,9 +68,9 @@ void Cerrqrt(const char *path, INTEGER const nunit) {
     }
     ok = true;
     //
-    //     Error exits for QRT factorization
+    // Error exits for QRT factorization
     //
-    //     Cgeqrt
+    // Cgeqrt
     //
     strncpy(srnamt, "Cgeqrt", srnamt_len);
     infot = 1;
@@ -83,7 +90,7 @@ void Cerrqrt(const char *path, INTEGER const nunit) {
     Cgeqrt(2, 2, 2, a, 2, t, 1, w, info);
     chkxer("Cgeqrt", infot, nout, lerr, ok);
     //
-    //     Cgeqrt2
+    // Cgeqrt2
     //
     strncpy(srnamt, "Cgeqrt2", srnamt_len);
     infot = 1;
@@ -99,7 +106,7 @@ void Cerrqrt(const char *path, INTEGER const nunit) {
     Cgeqrt2(2, 2, a, 2, t, 1, info);
     chkxer("Cgeqrt2", infot, nout, lerr, ok);
     //
-    //     Cgeqrt3
+    // Cgeqrt3
     //
     strncpy(srnamt, "Cgeqrt3", srnamt_len);
     infot = 1;
@@ -115,7 +122,7 @@ void Cerrqrt(const char *path, INTEGER const nunit) {
     Cgeqrt3(2, 2, a, 2, t, 1, info);
     chkxer("Cgeqrt3", infot, nout, lerr, ok);
     //
-    //     Cgemqrt
+    // Cgemqrt
     //
     strncpy(srnamt, "Cgemqrt", srnamt_len);
     infot = 1;
@@ -152,10 +159,10 @@ void Cerrqrt(const char *path, INTEGER const nunit) {
     Cgemqrt("L", "N", 1, 1, 1, 1, a, 1, t, 1, c, 0, w, info);
     chkxer("Cgemqrt", infot, nout, lerr, ok);
     //
-    //     Print a summary line.
+    // Print a summary line.
     //
     Alaesm(path, ok, nout);
     //
-    //     End of Cerrqrt
+    // End of Cerrqrt
     //
 }

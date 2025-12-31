@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZGET01.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -38,20 +45,22 @@ using fem::common;
 
 void Cget01(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *afac, INTEGER const ldafac, INTEGER *ipiv, REAL *rwork, REAL &resid) {
     //
+    // Quick exit if M = 0 or N = 0.
+    //
     const REAL zero = 0.0;
     if (m <= 0 || n <= 0) {
         resid = zero;
         return;
     }
     //
-    //     Determine EPS and the norm of A.
+    // Determine EPS and the norm of A.
     //
     REAL eps = Rlamch("Epsilon");
     REAL anorm = Clange("1", m, n, a, lda, rwork);
     //
-    //     Compute the product L*U and overwrite AFAC with the result.
-    //     A column at a time of the product is obtained, starting with
-    //     column N.
+    // Compute the product L*U and overwrite AFAC with the result.
+    // A column at a time of the product is obtained, starting with
+    // column N.
     //
     INTEGER k = 0;
     COMPLEX t = 0.0;
@@ -61,7 +70,7 @@ void Cget01(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, COM
             Ctrmv("Lower", "No transpose", "Unit", m, afac, ldafac, &afac[(k - 1) * ldafac], 1);
         } else {
             //
-            //           Compute elements (K+1:M,K)
+            // Compute elements (K+1:M,K)
             //
             t = afac[(k - 1) + (k - 1) * ldafac];
             if (k + 1 <= m) {
@@ -69,18 +78,18 @@ void Cget01(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, COM
                 Cgemv("No transpose", m - k, k - 1, cone, &afac[((k + 1) - 1)], ldafac, &afac[(k - 1) * ldafac], 1, cone, &afac[((k + 1) - 1) + (k - 1) * ldafac], 1);
             }
             //
-            //           Compute the (K,K) element
+            // Compute the (K,K) element
             //
             afac[(k - 1) + (k - 1) * ldafac] = t + Cdotu(k - 1, &afac[(k - 1)], ldafac, &afac[(k - 1) * ldafac], 1);
             //
-            //           Compute elements (1:K-1,K)
+            // Compute elements (1:K-1,K)
             //
             Ctrmv("Lower", "No transpose", "Unit", k - 1, afac, ldafac, &afac[(k - 1) * ldafac], 1);
         }
     }
     Claswp(n, afac, ldafac, 1, min(m, n), ipiv, -1);
     //
-    //     Compute the difference  L*U - A  and store in AFAC.
+    // Compute the difference  L*U - A  and store in AFAC.
     //
     INTEGER j = 0;
     INTEGER i = 0;
@@ -90,7 +99,7 @@ void Cget01(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, COM
         }
     }
     //
-    //     Compute norm( L*U - A ) / ( N * norm(A) * EPS )
+    // Compute norm( L*U - A ) / ( N * norm(A) * EPS )
     //
     resid = Clange("1", m, n, afac, ldafac, rwork);
     //
@@ -103,6 +112,6 @@ void Cget01(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, COM
         resid = ((resid / castREAL(n)) / anorm) / eps;
     }
     //
-    //     End of Cget01
+    // End of Cget01
     //
 }

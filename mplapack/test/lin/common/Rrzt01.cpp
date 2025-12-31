@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DRZT01.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -39,31 +46,6 @@ using fem::common;
 REAL Rrzt01(INTEGER const m, INTEGER const n, REAL *a, REAL *af, INTEGER const lda, REAL *tau, REAL *work, INTEGER const lwork) {
     REAL return_value = 0.0;
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     const REAL zero = 0.0;
     INTEGER ldaf = lda;
     return_value = zero;
@@ -73,7 +55,7 @@ REAL Rrzt01(INTEGER const m, INTEGER const n, REAL *a, REAL *af, INTEGER const l
         return return_value;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (m <= 0 || n <= 0) {
         return return_value;
@@ -82,7 +64,7 @@ REAL Rrzt01(INTEGER const m, INTEGER const n, REAL *a, REAL *af, INTEGER const l
     REAL rwork[1];
     REAL norma = Rlange("One-norm", m, n, a, lda, rwork);
     //
-    //     Copy upper triangle R
+    // Copy upper triangle R
     //
     Rlaset("Full", m, n, zero, zero, work, m);
     INTEGER j = 0;
@@ -93,12 +75,12 @@ REAL Rrzt01(INTEGER const m, INTEGER const n, REAL *a, REAL *af, INTEGER const l
         }
     }
     //
-    //     R = R * P(1) * ... *P(m)
+    // R = R * P(1) * ... *P(m)
     //
     INTEGER info = 0;
     Rormrz("Right", "No tranpose", m, n, m, n - m, af, lda, tau, work, m, &work[(m * n + 1) - 1], lwork - m * n, info);
     //
-    //     R = R - A
+    // R = R - A
     //
     const REAL one = 1.0;
     for (i = 1; i <= n; i = i + 1) {
@@ -114,6 +96,6 @@ REAL Rrzt01(INTEGER const m, INTEGER const n, REAL *a, REAL *af, INTEGER const l
     //
     return return_value;
     //
-    //     End of Rrzt01
+    // End of Rrzt01
     //
 }

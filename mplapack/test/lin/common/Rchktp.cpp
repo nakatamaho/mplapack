@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DCHKTP.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -134,7 +141,7 @@ void Rchktp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
         iseed[i - 1] = iseedy[i - 1];
     }
     //
-    //     Test the error exits
+    // Test the error exits
     //
     if (tsterr) {
         Rerrtr(path, nout);
@@ -142,7 +149,7 @@ void Rchktp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
     //
     for (in = 1; in <= nn; in = in + 1) {
         //
-        //        Do for each value of N in NVAL
+        // Do for each value of N in NVAL
         //
         n = nval[in - 1];
         lda = max((INTEGER)1, n);
@@ -151,7 +158,7 @@ void Rchktp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
         //
         for (imat = 1; imat <= ntype1; imat = imat + 1) {
             //
-            //           Do the tests only if DOTYPE( IMAT ) is true.
+            // Do the tests only if DOTYPE( IMAT ) is true.
             //
             if (!dotype[imat - 1]) {
                 goto statement_70;
@@ -159,7 +166,7 @@ void Rchktp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
             //
             for (iuplo = 1; iuplo <= 2; iuplo = iuplo + 1) {
                 //
-                //              Do first for UPLO = 'U', then for UPLO = 'L'
+                // Do first for UPLO = 'U', then for UPLO = 'L'
                 //
                 uplo = uplos[iuplo - 1];
                 //
@@ -167,7 +174,7 @@ void Rchktp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                 //
                 Rlattp(imat, &uplo, "No transpose", &diag, iseed, n, ap, x, work, info);
                 //
-                //              Set IDIAG = 1 for non-unit matrices, 2 for unit.
+                // Set IDIAG = 1 for non-unit matrices, 2 for unit.
                 //
                 if (Mlsame(&diag, "N")) {
                     idiag = 1;
@@ -175,8 +182,8 @@ void Rchktp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                     idiag = 2;
                 }
                 //
-                //+    TEST 1
-                //              Form the inverse of A.
+                // +    TEST 1
+                // Form the inverse of A.
                 //
                 if (n > 0) {
                     Rcopy(lap, ap, 1, ainvp, 1);
@@ -192,7 +199,7 @@ void Rchktp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                     Alaerh(path, "Rtptri", info, 0, uplo_diag, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                 }
                 //
-                //              Compute the infinity-norm condition number of A.
+                // Compute the infinity-norm condition number of A.
                 //
                 anorm = Rlantp("I", &uplo, &diag, n, ap, rwork);
                 ainvnm = Rlantp("I", &uplo, &diag, n, ainvp, rwork);
@@ -202,12 +209,12 @@ void Rchktp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                     rcondi = (one / anorm) / ainvnm;
                 }
                 //
-                //              Compute the residual for the triangular matrix times its
-                //              inverse.  Also compute the 1-norm condition number of A.
+                // Compute the residual for the triangular matrix times its
+                // inverse.  Also compute the 1-norm condition number of A.
                 //
                 Rtpt01(&uplo, &diag, n, ap, ainvp, rcondo, rwork, result[1 - 1]);
                 //
-                //              Print the test ratio if it is .GE. THRESH.
+                // Print the test ratio if it is .GE. THRESH.
                 //
                 if (result[1 - 1] >= thresh) {
                     if (nfail == 0 && nerrs == 0) {
@@ -227,7 +234,7 @@ void Rchktp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                     //
                     for (itran = 1; itran <= ntran; itran = itran + 1) {
                         //
-                        //                 Do for op(A) = A, A**T, or A**H.
+                        // Do for op(A) = A, A**T, or A**H.
                         //
                         trans = transs[itran - 1];
                         if (itran == 1) {
@@ -247,7 +254,7 @@ void Rchktp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                         //
                         Rtptrs(&uplo, &trans, &diag, n, nrhs, ap, x, lda, info);
                         //
-                        //                 Check error code from Rtptrs.
+                        // Check error code from Rtptrs.
                         //
                         if (info != 0) {
                             uplo_trans_diag[0] = uplo;
@@ -270,7 +277,7 @@ void Rchktp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                         //
                         Rtprfs(&uplo, &trans, &diag, n, nrhs, ap, b, lda, x, lda, rwork, &rwork[(nrhs + 1) - 1], work, iwork, info);
                         //
-                        //                 Check error code from Rtprfs.
+                        // Check error code from Rtprfs.
                         //
                         if (info != 0) {
                             uplo_trans_diag[0] = uplo;
@@ -302,8 +309,8 @@ void Rchktp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                     }
                 }
                 //
-                //+    TEST 7
-                //                 Get an estimate of RCOND = 1/CNDNUM.
+                // +    TEST 7
+                // Get an estimate of RCOND = 1/CNDNUM.
                 //
                 for (itran = 1; itran <= 2; itran = itran + 1) {
                     if (itran == 1) {
@@ -316,7 +323,7 @@ void Rchktp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                     //
                     Rtpcon(&norm, &uplo, &diag, n, ap, rcond, work, iwork, info);
                     //
-                    //                 Check error code from Rtpcon.
+                    // Check error code from Rtpcon.
                     //
                     if (info != 0) {
                         norm_uplo_diag[0] = norm;
@@ -346,11 +353,11 @@ void Rchktp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
         statement_70:;
         }
         //
-        //        Use pathological test matrices to test Rlatps.
+        // Use pathological test matrices to test Rlatps.
         //
         for (imat = ntype1 + 1; imat <= ntypes; imat = imat + 1) {
             //
-            //           Do the tests only if DOTYPE( IMAT ) is true.
+            // Do the tests only if DOTYPE( IMAT ) is true.
             //
             if (!dotype[imat - 1]) {
                 goto statement_100;
@@ -358,12 +365,12 @@ void Rchktp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
             //
             for (iuplo = 1; iuplo <= 2; iuplo = iuplo + 1) {
                 //
-                //              Do first for UPLO = 'U', then for UPLO = 'L'
+                // Do first for UPLO = 'U', then for UPLO = 'L'
                 //
                 uplo = uplos[iuplo - 1];
                 for (itran = 1; itran <= ntran; itran = itran + 1) {
                     //
-                    //                 Do for op(A) = A, A**T, or A**H.
+                    // Do for op(A) = A, A**T, or A**H.
                     //
                     trans = transs[itran - 1];
                     //
@@ -377,7 +384,7 @@ void Rchktp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                     Rcopy(n, x, 1, b, 1);
                     Rlatps(&uplo, &trans, &diag, "N", n, ap, b, scale, rwork, info);
                     //
-                    //                 Check error code from Rlatps.
+                    // Check error code from Rlatps.
                     //
                     if (info != 0) {
                         uplo_trans_diag_yn[0] = uplo;
@@ -396,7 +403,7 @@ void Rchktp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                     Rcopy(n, x, 1, &b[(n + 1) - 1], 1);
                     Rlatps(&uplo, &trans, &diag, "Y", n, ap, &b[(n + 1) - 1], scale, rwork, info);
                     //
-                    //                 Check error code from Rlatps.
+                    // Check error code from Rlatps.
                     //
                     if (info != 0) {
                         uplo_trans_diag_yn[0] = uplo;
@@ -435,10 +442,10 @@ void Rchktp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
         }
     }
     //
-    //     Print a summary of the results.
+    // Print a summary of the results.
     //
     Alasum(path, nout, nfail, nrun, nerrs);
     //
-    //     End of Rchktp
+    // End of Rchktp
     //
 }

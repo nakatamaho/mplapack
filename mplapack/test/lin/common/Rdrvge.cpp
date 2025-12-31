@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DDRVGE.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -127,14 +134,14 @@ void Rdrvge(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     }
     infot = 0;
     //
-    //     Set the block size and minimum block size for testing.
+    // Set the block size and minimum block size for testing.
     //
     nb = 1;
     nbmin = 2;
     xlaenv(1, nb);
     xlaenv(2, nbmin);
     //
-    //     Do for each value of N in NVAL
+    // Do for each value of N in NVAL
     //
     for (in = 1; in <= nn; in = in + 1) {
         n = nval[in - 1];
@@ -147,21 +154,21 @@ void Rdrvge(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
         //
         for (imat = 1; imat <= nimat; imat = imat + 1) {
             //
-            //           Do the tests only if DOTYPE( IMAT ) is true.
+            // Do the tests only if DOTYPE( IMAT ) is true.
             //
             if (!dotype[imat - 1]) {
                 goto statement_80;
             }
             //
-            //           Skip types 5, 6, or 7 if the matrix size is too small.
+            // Skip types 5, 6, or 7 if the matrix size is too small.
             //
             zerot = imat >= 5 && imat <= 7;
             if (zerot && n < imat - 4) {
                 goto statement_80;
             }
             //
-            //           Set up parameters with Rlatb4 and generate a test matrix
-            //           with Rlatms.
+            // Set up parameters with Rlatb4 and generate a test matrix
+            // with Rlatms.
             //
             Rlatb4(path, imat, n, n, &type, kl, ku, anorm, mode, cndnum, &dist);
             rcondc = one / cndnum;
@@ -169,15 +176,15 @@ void Rdrvge(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
             strncpy(srnamt, "Rlatms", srnamt_len);
             Rlatms(n, n, &dist, iseed, &type, rwork, mode, cndnum, anorm, kl, ku, "No packing", a, lda, work, info);
             //
-            //           Check error code from Rlatms.
+            // Check error code from Rlatms.
             //
             if (info != 0) {
                 Alaerh(path, "Rlatms", info, 0, " ", n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                 goto statement_80;
             }
             //
-            //           For types 5-7, zero one or more columns of the matrix to
-            //           test that INFO is returned correctly.
+            // For types 5-7, zero one or more columns of the matrix to
+            // test that INFO is returned correctly.
             //
             if (zerot) {
                 if (imat == 5) {
@@ -199,7 +206,7 @@ void Rdrvge(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                 izero = 0;
             }
             //
-            //           Save a copy of the matrix A in ASAV.
+            // Save a copy of the matrix A in ASAV.
             //
             Rlacpy("Full", n, n, a, lda, asav, lda);
             //
@@ -226,16 +233,16 @@ void Rdrvge(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         //
                     } else if (!nofact) {
                         //
-                        //                    Compute the condition number for comparison with
-                        //                    the value returned by Rgesvx (FACT = 'N' reuses
-                        //                    the condition number from the previous iteration
-                        //                    with FACT = 'F').
+                        // Compute the condition number for comparison with
+                        // the value returned by Rgesvx (FACT = 'N' reuses
+                        // the condition number from the previous iteration
+                        // with FACT = 'F').
                         //
                         Rlacpy("Full", n, n, asav, lda, afac, lda);
                         if (equil || iequed > 1) {
                             //
-                            //                       Compute row and column scale factors to
-                            //                       equilibrate the matrix A.
+                            // Compute row and column scale factors to
+                            // equilibrate the matrix A.
                             //
                             Rgeequ(n, n, afac, lda, s, &s[(n + 1) - 1], rowcnd, colcnd, amax, info);
                             if (info == 0 && n > 0) {
@@ -250,38 +257,38 @@ void Rdrvge(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                     colcnd = zero;
                                 }
                                 //
-                                //                          Equilibrate the matrix.
+                                // Equilibrate the matrix.
                                 //
                                 Rlaqge(n, n, afac, lda, s, &s[(n + 1) - 1], rowcnd, colcnd, amax, equed);
                             }
                         }
                         //
-                        //                    Save the condition number of the non-equilibrated
-                        //                    system for use in Rget04.
+                        // Save the condition number of the non-equilibrated
+                        // system for use in Rget04.
                         //
                         if (equil) {
                             roldo = rcondo;
                             roldi = rcondi;
                         }
                         //
-                        //                    Compute the 1-norm and infinity-norm of A.
+                        // Compute the 1-norm and infinity-norm of A.
                         //
                         anormo = Rlange("1", n, n, afac, lda, rwork);
                         anormi = Rlange("I", n, n, afac, lda, rwork);
                         //
-                        //                    Factor the matrix A.
+                        // Factor the matrix A.
                         //
                         strncpy(srnamt, "Rgetrf", srnamt_len);
                         Rgetrf(n, n, afac, lda, iwork, info);
                         //
-                        //                    Form the inverse of A.
+                        // Form the inverse of A.
                         //
                         Rlacpy("Full", n, n, afac, lda, a, lda);
                         lwork = nmax * max((INTEGER)3, nrhs);
                         strncpy(srnamt, "Rgetri", srnamt_len);
                         Rgetri(n, a, lda, iwork, work, lwork, info);
                         //
-                        //                    Compute the 1-norm condition number of A.
+                        // Compute the 1-norm condition number of A.
                         //
                         ainvnm = Rlange("1", n, n, a, lda, rwork);
                         if (anormo <= zero || ainvnm <= zero) {
@@ -290,7 +297,7 @@ void Rdrvge(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                             rcondo = (one / anormo) / ainvnm;
                         }
                         //
-                        //                    Compute the infinity-norm condition number of A.
+                        // Compute the infinity-norm condition number of A.
                         //
                         ainvnm = Rlange("I", n, n, a, lda, rwork);
                         if (anormi <= zero || ainvnm <= zero) {
@@ -302,7 +309,7 @@ void Rdrvge(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                     //
                     for (itran = 1; itran <= ntran; itran = itran + 1) {
                         //
-                        //                    Do for each value of TRANS.
+                        // Do for each value of TRANS.
                         //
                         trans[0] = transs[itran - 1];
                         if (itran == 1) {
@@ -311,11 +318,11 @@ void Rdrvge(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                             rcondc = rcondi;
                         }
                         //
-                        //                    Restore the matrix A.
+                        // Restore the matrix A.
                         //
                         Rlacpy("Full", n, n, asav, lda, a, lda);
                         //
-                        //                    Form an exact solution and set the right hand side.
+                        // Form an exact solution and set the right hand side.
                         //
                         strncpy(srnamt, "Rlarhs", srnamt_len);
                         Rlarhs(path, &xtype, "Full", trans, n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
@@ -324,10 +331,10 @@ void Rdrvge(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         //
                         if (nofact && itran == 1) {
                             //
-                            //                       --- Test Rgesv  ---
+                            // --- Test Rgesv  ---
                             //
-                            //                       Compute the LU factorization of the matrix and
-                            //                       solve the system.
+                            // Compute the LU factorization of the matrix and
+                            // solve the system.
                             //
                             Rlacpy("Full", n, n, a, lda, afac, lda);
                             Rlacpy("Full", n, nrhs, b, lda, x, lda);
@@ -335,32 +342,32 @@ void Rdrvge(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                             strncpy(srnamt, "Rgesv", srnamt_len);
                             Rgesv(n, nrhs, afac, lda, iwork, x, lda, info);
                             //
-                            //                       Check error code from Rgesv .
+                            // Check error code from Rgesv .
                             //
                             if (info != izero) {
                                 Alaerh(path, "Rgesv", info, izero, " ", n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                             }
                             //
-                            //                       Reconstruct matrix from factors and compute
-                            //                       residual.
+                            // Reconstruct matrix from factors and compute
+                            // residual.
                             //
                             Rget01(n, n, a, lda, afac, lda, iwork, rwork, result[1 - 1]);
                             nt = 1;
                             if (izero == 0) {
                                 //
-                                //                          Compute residual of the computed solution.
+                                // Compute residual of the computed solution.
                                 //
                                 Rlacpy("Full", n, nrhs, b, lda, work, lda);
                                 Rget02("No transpose", n, n, nrhs, a, lda, x, lda, work, lda, rwork, result[2 - 1]);
                                 //
-                                //                          Check solution from generated exact solution.
+                                // Check solution from generated exact solution.
                                 //
                                 Rget04(n, nrhs, x, lda, xact, lda, rcondc, result[3 - 1]);
                                 nt = 3;
                             }
                             //
-                            //                       Print information about the tests that did not
-                            //                       pass the threshold.
+                            // Print information about the tests that did not
+                            // pass the threshold.
                             //
                             for (k = 1; k <= nt; k = k + 1) {
                                 if (result[k - 1] >= thresh) {
@@ -375,7 +382,7 @@ void Rdrvge(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                             nrun += nt;
                         }
                         //
-                        //                    --- Test Rgesvx ---
+                        // --- Test Rgesvx ---
                         //
                         if (!prefac) {
                             Rlaset("Full", n, n, zero, zero, afac, lda);
@@ -383,19 +390,19 @@ void Rdrvge(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         Rlaset("Full", n, nrhs, zero, zero, x, lda);
                         if (iequed > 1 && n > 0) {
                             //
-                            //                       Equilibrate the matrix if FACT = 'F' and
-                            //                       EQUED = 'R', 'C', or 'B'.
+                            // Equilibrate the matrix if FACT = 'F' and
+                            // EQUED = 'R', 'C', or 'B'.
                             //
                             Rlaqge(n, n, a, lda, s, &s[(n + 1) - 1], rowcnd, colcnd, amax, equed);
                         }
                         //
-                        //                    Solve the system and compute the condition number
-                        //                    and error bounds using Rgesvx.
+                        // Solve the system and compute the condition number
+                        // and error bounds using Rgesvx.
                         //
                         strncpy(srnamt, "Rgesvx", srnamt_len);
                         Rgesvx(fact, trans, n, nrhs, a, lda, afac, lda, iwork, equed, s, &s[(n + 1) - 1], b, lda, x, lda, rcond, rwork, &rwork[(nrhs + 1) - 1], work, &iwork[(n + 1) - 1], info);
                         //
-                        //                    Check the error code from Rgesvx.
+                        // Check the error code from Rgesvx.
                         //
                         if (info != izero) {
                             fact_trans[0] = fact[0];
@@ -426,8 +433,8 @@ void Rdrvge(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         //
                         if (!prefac) {
                             //
-                            //                       Reconstruct matrix from factors and compute
-                            //                       residual.
+                            // Reconstruct matrix from factors and compute
+                            // residual.
                             //
                             Rget01(n, n, a, lda, afac, lda, iwork, &rwork[(2 * nrhs + 1) - 1], result[1 - 1]);
                             k1 = 1;
@@ -438,12 +445,12 @@ void Rdrvge(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         if (info == 0) {
                             trfcon = false;
                             //
-                            //                       Compute residual of the computed solution.
+                            // Compute residual of the computed solution.
                             //
                             Rlacpy("Full", n, nrhs, bsav, lda, work, lda);
                             Rget02(trans, n, n, nrhs, asav, lda, x, lda, work, lda, &rwork[(2 * nrhs + 1) - 1], result[2 - 1]);
                             //
-                            //                       Check solution from generated exact solution.
+                            // Check solution from generated exact solution.
                             //
                             if (nofact || (prefac && Mlsame(equed, "N"))) {
                                 Rget04(n, nrhs, x, lda, xact, lda, rcondc, result[3 - 1]);
@@ -456,21 +463,21 @@ void Rdrvge(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                 Rget04(n, nrhs, x, lda, xact, lda, roldc, result[3 - 1]);
                             }
                             //
-                            //                       Check the error bounds from iterative
-                            //                       refinement.
+                            // Check the error bounds from iterative
+                            // refinement.
                             //
                             Rget07(trans, n, nrhs, asav, lda, b, lda, x, lda, xact, lda, rwork, true, &rwork[(nrhs + 1) - 1], &result[4 - 1]);
                         } else {
                             trfcon = true;
                         }
                         //
-                        //                    Compare RCOND from Rgesvx with the computed value
-                        //                    in RCONDC.
+                        // Compare RCOND from Rgesvx with the computed value
+                        // in RCONDC.
                         //
                         result[6 - 1] = Rget06(rcond, rcondc);
                         //
-                        //                    Print information about the tests that did not pass
-                        //                    the threshold.
+                        // Print information about the tests that did not pass
+                        // the threshold.
                         //
                         if (!trfcon) {
                             for (k = k1; k <= ntests; k = k + 1) {
@@ -543,10 +550,10 @@ void Rdrvge(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
         }
     }
     //
-    //     Print a summary of the results.
+    // Print a summary of the results.
     //
     Alasvm(path, nout, nfail, nrun, nerrs);
     //
-    //     End of Rdrvge
+    // End of Rdrvge
     //
 }

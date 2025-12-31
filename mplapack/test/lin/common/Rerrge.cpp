@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DERRGE.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -82,10 +89,10 @@ void Rerrge(const char *path, INTEGER const nunit) {
     REAL ccond = 0.0;
     if (Mlsamen(2, c2, "GE")) {
         //
-        //        Test error exits of the routines that use the LU decomposition
-        //        of a general matrix.
+        // Test error exits of the routines that use the LU decomposition
+        // of a general matrix.
         //
-        //        Rgetrf
+        // Rgetrf
         //
         strncpy(srnamt, "Rgetrf", srnamt_len);
         infot = 1;
@@ -98,7 +105,7 @@ void Rerrge(const char *path, INTEGER const nunit) {
         Rgetrf(2, 1, a, 1, ip, info);
         chkxer("Rgetrf", infot, nout, lerr, ok);
         //
-        //        Rgetf2
+        // Rgetf2
         //
         strncpy(srnamt, "Rgetf2", srnamt_len);
         infot = 1;
@@ -111,7 +118,7 @@ void Rerrge(const char *path, INTEGER const nunit) {
         Rgetf2(2, 1, a, 1, ip, info);
         chkxer("Rgetf2", infot, nout, lerr, ok);
         //
-        //        Rgetri
+        // Rgetri
         //
         strncpy(srnamt, "Rgetri", srnamt_len);
         infot = 1;
@@ -121,7 +128,7 @@ void Rerrge(const char *path, INTEGER const nunit) {
         Rgetri(2, a, 1, ip, w, lw, info);
         chkxer("Rgetri", infot, nout, lerr, ok);
         //
-        //        Rgetrs
+        // Rgetrs
         //
         strncpy(srnamt, "Rgetrs", srnamt_len);
         infot = 1;
@@ -140,7 +147,7 @@ void Rerrge(const char *path, INTEGER const nunit) {
         Rgetrs("N", 2, 1, a, 2, ip, b, 1, info);
         chkxer("Rgetrs", infot, nout, lerr, ok);
         //
-        //        Rgerfs
+        // Rgerfs
         //
         strncpy(srnamt, "Rgerfs", srnamt_len);
         infot = 1;
@@ -165,7 +172,7 @@ void Rerrge(const char *path, INTEGER const nunit) {
         Rgerfs("N", 2, 1, a, 2, af, 2, ip, b, 2, x, 1, r1, r2, w, iw, info);
         chkxer("Rgerfs", infot, nout, lerr, ok);
         //
-        //        Rgecon
+        // Rgecon
         //
         strncpy(srnamt, "Rgecon", srnamt_len);
         infot = 1;
@@ -178,7 +185,7 @@ void Rerrge(const char *path, INTEGER const nunit) {
         Rgecon("1", 2, a, 1, anrm, rcond, w, iw, info);
         chkxer("Rgecon", infot, nout, lerr, ok);
         //
-        //        Rgeequ
+        // Rgeequ
         //
         strncpy(srnamt, "Rgeequ", srnamt_len);
         infot = 1;
@@ -193,10 +200,10 @@ void Rerrge(const char *path, INTEGER const nunit) {
         //
     } else if (Mlsamen(2, c2, "GB")) {
         //
-        //        Test error exits of the routines that use the LU decomposition
-        //        of a general band matrix.
+        // Test error exits of the routines that use the LU decomposition
+        // of a general band matrix.
         //
-        //        Rgbtrf
+        // Rgbtrf
         //
         strncpy(srnamt, "Rgbtrf", srnamt_len);
         infot = 1;
@@ -215,7 +222,7 @@ void Rerrge(const char *path, INTEGER const nunit) {
         Rgbtrf(2, 2, 1, 1, a, 3, ip, info);
         chkxer("Rgbtrf", infot, nout, lerr, ok);
         //
-        //        Rgbtf2
+        // Rgbtf2
         //
         strncpy(srnamt, "Rgbtf2", srnamt_len);
         infot = 1;
@@ -234,7 +241,7 @@ void Rerrge(const char *path, INTEGER const nunit) {
         Rgbtf2(2, 2, 1, 1, a, 3, ip, info);
         chkxer("Rgbtf2", infot, nout, lerr, ok);
         //
-        //        Rgbtrs
+        // Rgbtrs
         //
         strncpy(srnamt, "Rgbtrs", srnamt_len);
         infot = 1;
@@ -259,7 +266,7 @@ void Rerrge(const char *path, INTEGER const nunit) {
         Rgbtrs("N", 2, 0, 0, 1, a, 1, ip, b, 1, info);
         chkxer("Rgbtrs", infot, nout, lerr, ok);
         //
-        //        Rgbrfs
+        // Rgbrfs
         //
         strncpy(srnamt, "Rgbrfs", srnamt_len);
         infot = 1;
@@ -290,7 +297,7 @@ void Rerrge(const char *path, INTEGER const nunit) {
         Rgbrfs("N", 2, 0, 0, 1, a, 1, af, 1, ip, b, 2, x, 1, r1, r2, w, iw, info);
         chkxer("Rgbrfs", infot, nout, lerr, ok);
         //
-        //        Rgbcon
+        // Rgbcon
         //
         strncpy(srnamt, "Rgbcon", srnamt_len);
         infot = 1;
@@ -309,7 +316,7 @@ void Rerrge(const char *path, INTEGER const nunit) {
         Rgbcon("1", 2, 1, 1, a, 3, ip, anrm, rcond, w, iw, info);
         chkxer("Rgbcon", infot, nout, lerr, ok);
         //
-        //        Rgbequ
+        // Rgbequ
         //
         strncpy(srnamt, "Rgbequ", srnamt_len);
         infot = 1;
@@ -329,10 +336,10 @@ void Rerrge(const char *path, INTEGER const nunit) {
         chkxer("Rgbequ", infot, nout, lerr, ok);
     }
     //
-    //     Print a summary line.
+    // Print a summary line.
     //
     Alaesm(path, ok, nout);
     //
-    //     End of Rerrge
+    // End of Rerrge
     //
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine ZERRTR.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -52,7 +59,7 @@ void Cerrtr(const char *path, INTEGER const nunit) {
     a[(2 - 1)] = 4.e0;
     ok = true;
     //
-    //     Test error exits for the general triangular routines.
+    // Test error exits for the general triangular routines.
     //
     INTEGER info = 0;
     COMPLEX x[nmax];
@@ -65,7 +72,7 @@ void Cerrtr(const char *path, INTEGER const nunit) {
     REAL scale = 0.0;
     if (Mlsamen(2, c2, "TR")) {
         //
-        //        Ctrtri
+        // Ctrtri
         //
         strncpy(srnamt, "Ctrtri", srnamt_len);
         infot = 1;
@@ -81,7 +88,7 @@ void Cerrtr(const char *path, INTEGER const nunit) {
         Ctrtri("U", "N", 2, a, 1, info);
         chkxer("Ctrtri", infot, nout, lerr, ok);
         //
-        //        Ctrti2
+        // Ctrti2
         //
         strncpy(srnamt, "Ctrti2", srnamt_len);
         infot = 1;
@@ -97,7 +104,7 @@ void Cerrtr(const char *path, INTEGER const nunit) {
         Ctrti2("U", "N", 2, a, 1, info);
         chkxer("Ctrti2", infot, nout, lerr, ok);
         //
-        //        Ctrtrs
+        // Ctrtrs
         //
         strncpy(srnamt, "Ctrtrs", srnamt_len);
         infot = 1;
@@ -117,7 +124,7 @@ void Cerrtr(const char *path, INTEGER const nunit) {
         chkxer("Ctrtrs", infot, nout, lerr, ok);
         infot = 7;
         //
-        //        Ctrrfs
+        // Ctrrfs
         //
         strncpy(srnamt, "Ctrrfs", srnamt_len);
         infot = 1;
@@ -145,7 +152,7 @@ void Cerrtr(const char *path, INTEGER const nunit) {
         Ctrrfs("U", "N", "N", 2, 1, a, 2, b, 2, x, 1, r1, r2, w, rw, info);
         chkxer("Ctrrfs", infot, nout, lerr, ok);
         //
-        //        Ctrcon
+        // Ctrcon
         //
         strncpy(srnamt, "Ctrcon", srnamt_len);
         infot = 1;
@@ -164,7 +171,7 @@ void Cerrtr(const char *path, INTEGER const nunit) {
         Ctrcon("1", "U", "N", 2, a, 1, rcond, w, rw, info);
         chkxer("Ctrcon", infot, nout, lerr, ok);
         //
-        //        Clatrs
+        // Clatrs
         //
         strncpy(srnamt, "Clatrs", srnamt_len);
         infot = 1;
@@ -186,11 +193,11 @@ void Cerrtr(const char *path, INTEGER const nunit) {
         Clatrs("U", "N", "N", "N", 2, a, 1, x, scale, rw, info);
         chkxer("Clatrs", infot, nout, lerr, ok);
         //
-        //     Test error exits for the packed triangular routines.
+        // Test error exits for the packed triangular routines.
         //
     } else if (Mlsamen(2, c2, "TP")) {
         //
-        //        Ctptri
+        // Ctptri
         //
         strncpy(srnamt, "Ctptri", srnamt_len);
         infot = 1;
@@ -203,7 +210,7 @@ void Cerrtr(const char *path, INTEGER const nunit) {
         Ctptri("U", "N", -1, a, info);
         chkxer("Ctptri", infot, nout, lerr, ok);
         //
-        //        Ctptrs
+        // Ctptrs
         //
         strncpy(srnamt, "Ctptrs", srnamt_len);
         infot = 1;
@@ -225,7 +232,7 @@ void Cerrtr(const char *path, INTEGER const nunit) {
         Ctptrs("U", "N", "N", 2, 1, a, x, 1, info);
         chkxer("Ctptrs", infot, nout, lerr, ok);
         //
-        //        Ctprfs
+        // Ctprfs
         //
         strncpy(srnamt, "Ctprfs", srnamt_len);
         infot = 1;
@@ -250,7 +257,7 @@ void Cerrtr(const char *path, INTEGER const nunit) {
         Ctprfs("U", "N", "N", 2, 1, a, b, 2, x, 1, r1, r2, w, rw, info);
         chkxer("Ctprfs", infot, nout, lerr, ok);
         //
-        //        Ctpcon
+        // Ctpcon
         //
         strncpy(srnamt, "Ctpcon", srnamt_len);
         infot = 1;
@@ -266,7 +273,7 @@ void Cerrtr(const char *path, INTEGER const nunit) {
         Ctpcon("1", "U", "N", -1, a, rcond, w, rw, info);
         chkxer("Ctpcon", infot, nout, lerr, ok);
         //
-        //        Clatps
+        // Clatps
         //
         strncpy(srnamt, "Clatps", srnamt_len);
         infot = 1;
@@ -285,11 +292,11 @@ void Cerrtr(const char *path, INTEGER const nunit) {
         Clatps("U", "N", "N", "N", -1, a, x, scale, rw, info);
         chkxer("Clatps", infot, nout, lerr, ok);
         //
-        //     Test error exits for the banded triangular routines.
+        // Test error exits for the banded triangular routines.
         //
     } else if (Mlsamen(2, c2, "TB")) {
         //
-        //        Ctbtrs
+        // Ctbtrs
         //
         strncpy(srnamt, "Ctbtrs", srnamt_len);
         infot = 1;
@@ -317,7 +324,7 @@ void Cerrtr(const char *path, INTEGER const nunit) {
         Ctbtrs("U", "N", "N", 2, 0, 1, a, 1, x, 1, info);
         chkxer("Ctbtrs", infot, nout, lerr, ok);
         //
-        //        Ctbrfs
+        // Ctbrfs
         //
         strncpy(srnamt, "Ctbrfs", srnamt_len);
         infot = 1;
@@ -348,7 +355,7 @@ void Cerrtr(const char *path, INTEGER const nunit) {
         Ctbrfs("U", "N", "N", 2, 1, 1, a, 2, b, 2, x, 1, r1, r2, w, rw, info);
         chkxer("Ctbrfs", infot, nout, lerr, ok);
         //
-        //        Ctbcon
+        // Ctbcon
         //
         strncpy(srnamt, "Ctbcon", srnamt_len);
         infot = 1;
@@ -370,7 +377,7 @@ void Cerrtr(const char *path, INTEGER const nunit) {
         Ctbcon("1", "U", "N", 2, 1, a, 1, rcond, w, rw, info);
         chkxer("Ctbcon", infot, nout, lerr, ok);
         //
-        //        Clatbs
+        // Clatbs
         //
         strncpy(srnamt, "Clatbs", srnamt_len);
         infot = 1;
@@ -396,10 +403,10 @@ void Cerrtr(const char *path, INTEGER const nunit) {
         chkxer("Clatbs", infot, nout, lerr, ok);
     }
     //
-    //     Print a summary line.
+    // Print a summary line.
     //
     Alaesm(path, ok, nout);
     //
-    //     End of Cerrtr
+    // End of Cerrtr
     //
 }

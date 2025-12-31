@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DQRT14.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -38,31 +45,6 @@ using fem::common;
 
 REAL Rqrt14(const char *trans, INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEGER const lda, REAL *x, INTEGER const ldx, REAL *work, INTEGER const lwork) {
     REAL return_value = 0.0;
-    //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
     const REAL zero = 0.0;
     return_value = zero;
@@ -91,7 +73,7 @@ REAL Rqrt14(const char *trans, INTEGER const m, INTEGER const n, INTEGER const n
         return return_value;
     }
     //
-    //     Copy and scale A
+    // Copy and scale A
     //
     Rlacpy("All", m, n, a, lda, work, ldwork);
     REAL rwork[1];
@@ -102,7 +84,7 @@ REAL Rqrt14(const char *trans, INTEGER const m, INTEGER const n, INTEGER const n
         Rlascl("G", 0, 0, anrm, one, m, n, work, ldwork, info);
     }
     //
-    //     Copy X or X' into the right place and scale it
+    // Copy X or X' into the right place and scale it
     //
     REAL xnrm = 0.0;
     REAL err = 0.0;
@@ -110,7 +92,7 @@ REAL Rqrt14(const char *trans, INTEGER const m, INTEGER const n, INTEGER const n
     INTEGER i = 0;
     if (tpsd) {
         //
-        //        Copy X into columns n+1:n+nrhs of work
+        // Copy X into columns n+1:n+nrhs of work
         //
         Rlacpy("All", m, nrhs, x, ldx, &work[(n * ldwork + 1) - 1], ldwork);
         xnrm = Rlange("M", m, nrhs, &work[(n * ldwork + 1) - 1], ldwork, rwork);
@@ -119,12 +101,12 @@ REAL Rqrt14(const char *trans, INTEGER const m, INTEGER const n, INTEGER const n
         }
         anrm = Rlange("One-norm", m, n + nrhs, work, ldwork, rwork);
         //
-        //        Compute QR factorization of X
+        // Compute QR factorization of X
         //
         Rgeqr2(m, n + nrhs, work, ldwork, &work[(ldwork * (n + nrhs) + 1) - 1], &work[(ldwork * (n + nrhs) + min(m, n + nrhs) + 1) - 1], info);
         //
-        //        Compute largest entry in upper triangle of
-        //        work(n+1:m,n+1:n+nrhs)
+        // Compute largest entry in upper triangle of
+        // work(n+1:m,n+1:n+nrhs)
         //
         err = zero;
         for (j = n + 1; j <= n + nrhs; j = j + 1) {
@@ -135,7 +117,7 @@ REAL Rqrt14(const char *trans, INTEGER const m, INTEGER const n, INTEGER const n
         //
     } else {
         //
-        //        Copy X' into rows m+1:m+nrhs of work
+        // Copy X' into rows m+1:m+nrhs of work
         //
         for (i = 1; i <= n; i = i + 1) {
             for (j = 1; j <= nrhs; j = j + 1) {
@@ -148,12 +130,12 @@ REAL Rqrt14(const char *trans, INTEGER const m, INTEGER const n, INTEGER const n
             Rlascl("G", 0, 0, xnrm, one, nrhs, n, &work[(m + 1) - 1], ldwork, info);
         }
         //
-        //        Compute LQ factorization of work
+        // Compute LQ factorization of work
         //
         Rgelq2(ldwork, n, work, ldwork, &work[(ldwork * n + 1) - 1], &work[(ldwork * (n + 1) + 1) - 1], info);
         //
-        //        Compute largest entry in lower triangle in
-        //        work(m+1:m+nrhs,m+1:n)
+        // Compute largest entry in lower triangle in
+        // work(m+1:m+nrhs,m+1:n)
         //
         err = zero;
         for (j = m + 1; j <= n; j = j + 1) {
@@ -168,6 +150,6 @@ REAL Rqrt14(const char *trans, INTEGER const m, INTEGER const n, INTEGER const n
     //
     return return_value;
     //
-    //     End of Rqrt14
+    // End of Rqrt14
     //
 }

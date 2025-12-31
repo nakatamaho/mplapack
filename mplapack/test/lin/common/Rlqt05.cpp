@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DLQT05.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -71,9 +78,6 @@ void Rlqt05(INTEGER const m, INTEGER const n, INTEGER const l, INTEGER const nb,
         np1 = 1;
     }
     INTEGER lwork = n2 * n2 * nb;
-    //
-    //     Put random stuff into A
-    //
     INTEGER ldt = nb;
     const REAL zero = 0.0f;
     REAL *a = new REAL[m * n2];
@@ -120,8 +124,7 @@ void Rlqt05(INTEGER const m, INTEGER const n, INTEGER const l, INTEGER const nb,
     REAL *r = new REAL[n2 * n2];
     Rlaset("Full", n2, n2, zero, zero, r, n2);
     Rlacpy("Lower", m, n2, af, m, r, n2);
-    //
-    //     Compute |L - A*Q*T| / |A| and store in RESULT(1)
+    // Compute |L - A*Q*T| / |A| and store in RESULT(1)
     //
     Rgemm("N", "T", m, n2, n2, -one, a, m, q, n2, one, r, n2);
     REAL *rwork = new REAL[n2];
@@ -133,14 +136,14 @@ void Rlqt05(INTEGER const m, INTEGER const n, INTEGER const l, INTEGER const nb,
         result[1 - 1] = zero;
     }
     //
-    //     Compute |I - Q*Q'| and store in RESULT(2)
+    // Compute |I - Q*Q'| and store in RESULT(2)
     //
     Rlaset("Full", n2, n2, zero, one, r, n2);
     Rsyrk("U", "N", n2, n2, -one, q, n2, one, r, n2);
     resid = Rlansy("1", "Upper", n2, r, n2, rwork);
     result[2 - 1] = resid / (eps * max((INTEGER)1, n2));
     //
-    //     Generate random m-by-n matrix C and a copy CF
+    // Generate random m-by-n matrix C and a copy CF
     //
     REAL *c = new REAL[n2 * m];
     INTEGER ldc = n2;
@@ -152,11 +155,11 @@ void Rlqt05(INTEGER const m, INTEGER const n, INTEGER const l, INTEGER const nb,
     REAL *cf = new REAL[n2 * m];
     Rlacpy("Full", n2, m, c, n2, cf, n2);
     //
-    //     Apply Q to C as Q*C
+    // Apply Q to C as Q*C
     //
     Rtpmlqt("L", "N", n, m, k, l, nb, &af[(np1 - 1) * ldaf], m, t, ldt, cf, n2, &cf[(np1 - 1)], n2, work, info);
     //
-    //     Compute |Q*C - Q*C| / |C|
+    // Compute |Q*C - Q*C| / |C|
     //
     Rgemm("N", "N", n2, m, n2, -one, q, n2, c, n2, one, cf, n2);
     resid = Rlange("1", n2, m, cf, n2, rwork);
@@ -166,15 +169,15 @@ void Rlqt05(INTEGER const m, INTEGER const n, INTEGER const l, INTEGER const nb,
         result[3 - 1] = zero;
     }
     //
-    //     Copy C into CF again
+    // Copy C into CF again
     //
     Rlacpy("Full", n2, m, c, n2, cf, n2);
     //
-    //     Apply Q to C as QT*C
+    // Apply Q to C as QT*C
     //
     Rtpmlqt("L", "T", n, m, k, l, nb, &af[(np1 - 1) * ldaf], m, t, ldt, cf, n2, &cf[(np1 - 1)], n2, work, info);
     //
-    //     Compute |QT*C - QT*C| / |C|
+    // Compute |QT*C - QT*C| / |C|
     //
     Rgemm("T", "N", n2, m, n2, -one, q, n2, c, n2, one, cf, n2);
     resid = Rlange("1", n2, m, cf, n2, rwork);
@@ -185,7 +188,7 @@ void Rlqt05(INTEGER const m, INTEGER const n, INTEGER const l, INTEGER const nb,
         result[4 - 1] = zero;
     }
     //
-    //     Generate random m-by-n matrix D and a copy DF
+    // Generate random m-by-n matrix D and a copy DF
     //
     REAL *d = new REAL[m * n2];
     INTEGER ldd = m;
@@ -197,11 +200,11 @@ void Rlqt05(INTEGER const m, INTEGER const n, INTEGER const l, INTEGER const nb,
     INTEGER lddf = m;
     Rlacpy("Full", m, n2, d, m, df, m);
     //
-    //     Apply Q to D as D*Q
+    // Apply Q to D as D*Q
     //
     Rtpmlqt("R", "N", m, n, k, l, nb, &af[(np1 - 1) * ldaf], m, t, ldt, df, m, &df[(np1 - 1) * lddf], m, work, info);
     //
-    //     Compute |D*Q - D*Q| / |D|
+    // Compute |D*Q - D*Q| / |D|
     //
     Rgemm("N", "N", m, n2, n2, -one, d, m, q, n2, one, df, m);
     resid = Rlange("1", m, n2, df, m, rwork);
@@ -211,15 +214,15 @@ void Rlqt05(INTEGER const m, INTEGER const n, INTEGER const l, INTEGER const nb,
         result[5 - 1] = zero;
     }
     //
-    //     Copy D into DF again
+    // Copy D into DF again
     //
     Rlacpy("Full", m, n2, d, m, df, m);
     //
-    //     Apply Q to D as D*QT
+    // Apply Q to D as D*QT
     //
     Rtpmlqt("R", "T", m, n, k, l, nb, &af[(np1 - 1) * ldaf], m, t, ldt, df, m, &df[(np1 - 1) * lddf], m, work, info);
     //
-    //     Compute |D*QT - D*QT| / |D|
+    // Compute |D*QT - D*QT| / |D|
     //
     Rgemm("N", "T", m, n2, n2, -one, d, m, q, n2, one, df, m);
     resid = Rlange("1", m, n2, df, m, rwork);

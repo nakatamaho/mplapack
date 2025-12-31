@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021, 2022
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine ZDRVGB.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -136,28 +143,28 @@ void Cdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
         iseed[i - 1] = iseedy[i - 1];
     }
     //
-    //     Test the error exits
+    // Test the error exits
     //
     if (tsterr) {
         Cerrvx(path, nout);
     }
     infot = 0;
     //
-    //     Set the block size and minimum block size for testing.
+    // Set the block size and minimum block size for testing.
     //
     nb = 1;
     nbmin = 2;
     xlaenv(1, nb);
     xlaenv(2, nbmin);
     //
-    //     Do for each value of N in NVAL
+    // Do for each value of N in NVAL
     //
     for (in = 1; in <= nn; in = in + 1) {
         n = nval[in - 1];
         ldb = max(n, (INTEGER)1);
         xtype[0] = 'N';
         //
-        //        Set limits on the number of loop iterations.
+        // Set limits on the number of loop iterations.
         //
         nkl = max((INTEGER)1, min(n, (INTEGER)4));
         if (n == 0) {
@@ -171,8 +178,8 @@ void Cdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
         //
         for (ikl = 1; ikl <= nkl; ikl = ikl + 1) {
             //
-            //           Do for KL = 0, N-1, (3N-1)/4, and (N+1)/4. This order makes
-            //           it easier to skip redundant values for small values of N.
+            // Do for KL = 0, N-1, (3N-1)/4, and (N+1)/4. This order makes
+            // it easier to skip redundant values for small values of N.
             //
             if (ikl == 1) {
                 kl = 0;
@@ -185,9 +192,9 @@ void Cdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
             }
             for (iku = 1; iku <= nku; iku = iku + 1) {
                 //
-                //              Do for KU = 0, N-1, (3N-1)/4, and (N+1)/4. This order
-                //              makes it easier to skip redundant values for small
-                //              values of N.
+                // Do for KU = 0, N-1, (3N-1)/4, and (N+1)/4. This order
+                // makes it easier to skip redundant values for small
+                // values of N.
                 //
                 if (iku == 1) {
                     ku = 0;
@@ -199,8 +206,8 @@ void Cdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                     ku = (n + 1) / 4;
                 }
                 //
-                //              Check that A and AFB are big enough to generate this
-                //              matrix.
+                // Check that A and AFB are big enough to generate this
+                // matrix.
                 //
                 lda = kl + ku + 1;
                 ldafb = 2 * kl + ku + 1;
@@ -225,36 +232,36 @@ void Cdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                 //
                 for (imat = 1; imat <= nimat; imat = imat + 1) {
                     //
-                    //                 Do the tests only if DOTYPE( IMAT ) is true.
+                    // Do the tests only if DOTYPE( IMAT ) is true.
                     //
                     if (!dotype[imat - 1]) {
                         goto statement_120;
                     }
                     //
-                    //                 Skip types 2, 3, or 4 if the matrix is too small.
+                    // Skip types 2, 3, or 4 if the matrix is too small.
                     //
                     zerot = imat >= 2 && imat <= 4;
                     if (zerot && n < imat - 1) {
                         goto statement_120;
                     }
                     //
-                    //                 Set up parameters with Clatb4 and generate a
-                    //                 test matrix with Clatms.
+                    // Set up parameters with Clatb4 and generate a
+                    // test matrix with Clatms.
                     //
                     Clatb4(path, imat, n, n, &type, kl, ku, anorm, mode, cndnum, &dist);
                     rcondc = one / cndnum;
                     //
                     Clatms(n, n, &dist, iseed, &type, rwork, mode, cndnum, anorm, kl, ku, "Z", a, lda, work, info);
                     //
-                    //                 Check the error code from Clatms.
+                    // Check the error code from Clatms.
                     //
                     if (info != 0) {
                         Alaerh(path, "Clatms", info, 0, " ", n, n, kl, ku, -1, imat, nfail, nerrs, nout);
                         goto statement_120;
                     }
                     //
-                    //                 For types 2, 3, and 4, zero one or more columns of
-                    //                 the matrix to test that INFO is returned correctly.
+                    // For types 2, 3, and 4, zero one or more columns of
+                    // the matrix to test that INFO is returned correctly.
                     //
                     izero = 0;
                     if (zerot) {
@@ -282,7 +289,7 @@ void Cdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         }
                     }
                     //
-                    //                 Save a copy of the matrix A in ASAV.
+                    // Save a copy of the matrix A in ASAV.
                     //
                     Clacpy("Full", kl + ku + 1, n, a, lda, asav, lda);
                     //
@@ -309,16 +316,16 @@ void Cdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                 //
                             } else if (!nofact) {
                                 //
-                                //                          Compute the condition number for comparison
-                                //                          with the value returned by Rgesvx (FACT =
-                                //                          'N' reuses the condition number from the
-                                //                          previous iteration with FACT = 'F').
+                                // Compute the condition number for comparison
+                                // with the value returned by Rgesvx (FACT =
+                                // 'N' reuses the condition number from the
+                                // previous iteration with FACT = 'F').
                                 //
                                 Clacpy("Full", kl + ku + 1, n, asav, lda, &afb[(kl + 1) - 1], ldafb);
                                 if (equil || iequed > 1) {
                                     //
-                                    //                             Compute row and column scale factors to
-                                    //                             equilibrate the matrix A.
+                                    // Compute row and column scale factors to
+                                    // equilibrate the matrix A.
                                     //
                                     Cgbequ(n, n, kl, ku, &afb[(kl + 1) - 1], ldafb, s, &s[(n + 1) - 1], rowcnd, colcnd, amax, info);
                                     if (info == 0 && n > 0) {
@@ -333,35 +340,35 @@ void Cdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                             colcnd = zero;
                                         }
                                         //
-                                        //                                Equilibrate the matrix.
+                                        // Equilibrate the matrix.
                                         //
                                         Claqgb(n, n, kl, ku, &afb[(kl + 1) - 1], ldafb, s, &s[(n + 1) - 1], rowcnd, colcnd, amax, equed);
                                     }
                                 }
                                 //
-                                //                          Save the condition number of the
-                                //                          non-equilibrated system for use in Cget04.
+                                // Save the condition number of the
+                                // non-equilibrated system for use in Cget04.
                                 //
                                 if (equil) {
                                     roldo = rcondo;
                                     roldi = rcondi;
                                 }
                                 //
-                                //                          Compute the 1-norm and infinity-norm of A.
+                                // Compute the 1-norm and infinity-norm of A.
                                 //
                                 anormo = Clangb("1", n, kl, ku, &afb[(kl + 1) - 1], ldafb, rwork);
                                 anormi = Clangb("I", n, kl, ku, &afb[(kl + 1) - 1], ldafb, rwork);
                                 //
-                                //                          Factor the matrix A.
+                                // Factor the matrix A.
                                 //
                                 Cgbtrf(n, n, kl, ku, afb, ldafb, iwork, info);
                                 //
-                                //                          Form the inverse of A.
+                                // Form the inverse of A.
                                 //
                                 Claset("Full", n, n, COMPLEX(zero), COMPLEX(one), work, ldb);
                                 Cgbtrs("No transpose", n, kl, ku, n, afb, ldafb, iwork, work, ldb, info);
                                 //
-                                //                          Compute the 1-norm condition number of A.
+                                // Compute the 1-norm condition number of A.
                                 //
                                 ainvnm = Clange("1", n, n, work, ldb, rwork);
                                 if (anormo <= zero || ainvnm <= zero) {
@@ -370,8 +377,8 @@ void Cdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                     rcondo = (one / anormo) / ainvnm;
                                 }
                                 //
-                                //                          Compute the infinity-norm condition number
-                                //                          of A.
+                                // Compute the infinity-norm condition number
+                                // of A.
                                 //
                                 ainvnm = Clange("I", n, n, work, ldb, rwork);
                                 if (anormi <= zero || ainvnm <= zero) {
@@ -383,7 +390,7 @@ void Cdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                             //
                             for (itran = 1; itran <= ntran; itran = itran + 1) {
                                 //
-                                //                          Do for each value of TRANS.
+                                // Do for each value of TRANS.
                                 //
                                 trans[0] = transs[itran - 1];
                                 if (itran == 1) {
@@ -392,7 +399,7 @@ void Cdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                     rcondc = rcondi;
                                 }
                                 //
-                                //                          Restore the matrix A.
+                                // Restore the matrix A.
                                 //
                                 Clacpy("Full", kl + ku + 1, n, asav, lda, a, lda);
                                 //
@@ -405,44 +412,44 @@ void Cdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                 //
                                 if (nofact && itran == 1) {
                                     //
-                                    //                             --- Test Cgbsv  ---
+                                    // --- Test Cgbsv  ---
                                     //
-                                    //                             Compute the LU factorization of the matrix
-                                    //                             and solve the system.
+                                    // Compute the LU factorization of the matrix
+                                    // and solve the system.
                                     //
                                     Clacpy("Full", kl + ku + 1, n, a, lda, &afb[(kl + 1) - 1], ldafb);
                                     Clacpy("Full", n, nrhs, b, ldb, x, ldb);
                                     //
                                     Cgbsv(n, kl, ku, nrhs, afb, ldafb, iwork, x, ldb, info);
                                     //
-                                    //                             Check error code from Cgbsv.
+                                    // Check error code from Cgbsv .
                                     //
                                     if (info != izero) {
                                         Alaerh(path, "Cgbsv", info, izero, " ", n, n, kl, ku, nrhs, imat, nfail, nerrs, nout);
                                     }
                                     //
-                                    //                             Reconstruct matrix from factors and
-                                    //                             compute residual.
+                                    // Reconstruct matrix from factors and
+                                    // compute residual.
                                     //
                                     Cgbt01(n, n, kl, ku, a, lda, afb, ldafb, iwork, work, result[1 - 1]);
                                     nt = 1;
                                     if (izero == 0) {
                                         //
-                                        //                                Compute residual of the computed
-                                        //                                solution.
+                                        // Compute residual of the computed
+                                        // solution.
                                         //
                                         Clacpy("Full", n, nrhs, b, ldb, work, ldb);
                                         Cgbt02("No transpose", n, n, kl, ku, nrhs, a, lda, x, ldb, work, ldb, result[2 - 1]);
                                         //
-                                        //                                Check solution from generated exact
-                                        //                                solution.
+                                        // Check solution from generated exact
+                                        // solution.
                                         //
                                         Cget04(n, nrhs, x, ldb, xact, ldb, rcondc, result[3 - 1]);
                                         nt = 3;
                                     }
                                     //
-                                    //                             Print information about the tests that did
-                                    //                             not pass the threshold.
+                                    // Print information about the tests that did
+                                    // not pass the threshold.
                                     //
                                     for (k = 1; k <= nt; k = k + 1) {
                                         if (result[k - 1] >= thresh) {
@@ -459,7 +466,7 @@ void Cdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                     nrun += nt;
                                 }
                                 //
-                                //                          --- Test Cgbsvx ---
+                                // --- Test Cgbsvx ---
                                 //
                                 if (!prefac) {
                                     Claset("Full", 2 * kl + ku + 1, n, COMPLEX(zero), COMPLEX(zero), afb, ldafb);
@@ -514,8 +521,8 @@ void Cdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                 //
                                 if (!prefac) {
                                     //
-                                    //                             Reconstruct matrix from factors and
-                                    //                             compute residual.
+                                    // Reconstruct matrix from factors and
+                                    // compute residual.
                                     //
                                     Cgbt01(n, n, kl, ku, a, lda, afb, ldafb, iwork, work, result[1 - 1]);
                                     k1 = 1;
@@ -526,13 +533,13 @@ void Cdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                 if (info == 0) {
                                     trfcon = false;
                                     //
-                                    //                             Compute residual of the computed solution.
+                                    // Compute residual of the computed solution.
                                     //
                                     Clacpy("Full", n, nrhs, bsav, ldb, work, ldb);
                                     Cgbt02(trans, n, n, kl, ku, nrhs, asav, lda, x, ldb, work, ldb, result[2 - 1]);
                                     //
-                                    //                             Check solution from generated exact
-                                    //                             solution.
+                                    // Check solution from generated exact
+                                    // solution.
                                     //
                                     if (nofact || (prefac && Mlsame(equed, "N"))) {
                                         Cget04(n, nrhs, x, ldb, xact, ldb, rcondc, result[3 - 1]);
@@ -545,21 +552,21 @@ void Cdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                         Cget04(n, nrhs, x, ldb, xact, ldb, roldc, result[3 - 1]);
                                     }
                                     //
-                                    //                             Check the error bounds from iterative
-                                    //                             refinement.
+                                    // Check the error bounds from iterative
+                                    // refinement.
                                     //
                                     Cgbt05(trans, n, kl, ku, nrhs, asav, lda, bsav, ldb, x, ldb, xact, ldb, rwork, &rwork[(nrhs + 1) - 1], &result[4 - 1]);
                                 } else {
                                     trfcon = true;
                                 }
                                 //
-                                //                          Compare RCOND from Cgbsvx with the computed
-                                //                          value in RCONDC.
+                                // Compare RCOND from Cgbsvx with the computed
+                                // value in RCONDC.
                                 //
                                 result[6 - 1] = Rget06(rcond, rcondc);
                                 //
-                                //                          Print information about the tests that did
-                                //                          not pass the threshold.
+                                // Print information about the tests that did
+                                // not pass the threshold.
                                 //
                                 if (!trfcon) {
                                     for (k = k1; k <= ntests; k = k + 1) {
@@ -633,10 +640,10 @@ void Cdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
         }
     }
     //
-    //     Print a summary of the results.
+    // Print a summary of the results.
     //
     Alasvm(path, nout, nfail, nrun, nerrs);
     //
-    //     End of Cdrvgb
+    // End of Cdrvgb
     //
 }

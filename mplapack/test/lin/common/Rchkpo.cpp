@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DCHKPO.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -126,14 +133,14 @@ void Rchkpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
         iseed[i - 1] = iseedy[i - 1];
     }
     //
-    //     Test the error exits
+    // Test the error exits
     //
     if (tsterr) {
         Rerrpo(path, nout);
     }
     xlaenv(2, 2);
     //
-    //     Do for each value of N in NVAL
+    // Do for each value of N in NVAL
     //
     for (in = 1; in <= nn; in = in + 1) {
         n = nval[in - 1];
@@ -147,41 +154,41 @@ void Rchkpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
         izero = 0;
         for (imat = 1; imat <= nimat; imat = imat + 1) {
             //
-            //           Do the tests only if DOTYPE( IMAT ) is true.
+            // Do the tests only if DOTYPE( IMAT ) is true.
             //
             if (!dotype[imat - 1]) {
                 goto statement_110;
             }
             //
-            //           Skip types 3, 4, or 5 if the matrix size is too small.
+            // Skip types 3, 4, or 5 if the matrix size is too small.
             //
             zerot = imat >= 3 && imat <= 5;
             if (zerot && n < imat - 2) {
                 goto statement_110;
             }
             //
-            //           Do first for UPLO = 'U', then for UPLO = 'L'
+            // Do first for UPLO = 'U', then for UPLO = 'L'
             //
             for (iuplo = 1; iuplo <= 2; iuplo = iuplo + 1) {
                 uplo = uplos[iuplo - 1];
                 //
-                //              Set up parameters with Rlatb4 and generate a test matrix
-                //              with Rlatms.
+                // Set up parameters with Rlatb4 and generate a test matrix
+                // with Rlatms.
                 //
                 Rlatb4(path, imat, n, n, &type, kl, ku, anorm, mode, cndnum, &dist);
                 //
                 strncpy(srnamt, "Rlatms", srnamt_len);
                 Rlatms(n, n, &dist, iseed, &type, rwork, mode, cndnum, anorm, kl, ku, &uplo, a, lda, work, info);
                 //
-                //              Check error code from Rlatms.
+                // Check error code from Rlatms.
                 //
                 if (info != 0) {
                     Alaerh(path, "Rlatms", info, 0, &uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                     goto statement_100;
                 }
                 //
-                //              For types 3-5, zero one row and column of the matrix to
-                //              test that INFO is returned correctly.
+                // For types 3-5, zero one row and column of the matrix to
+                // test that INFO is returned correctly.
                 //
                 if (zerot) {
                     if (imat == 3) {
@@ -193,7 +200,7 @@ void Rchkpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                     }
                     ioff = (izero - 1) * lda;
                     //
-                    //                 Set row and column IZERO of A to 0.
+                    // Set row and column IZERO of A to 0.
                     //
                     if (iuplo == 1) {
                         for (i = 1; i <= izero - 1; i = i + 1) {
@@ -219,45 +226,45 @@ void Rchkpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                     izero = 0;
                 }
                 //
-                //              Do for each value of NB in NBVAL
+                // Do for each value of NB in NBVAL
                 //
                 for (inb = 1; inb <= nnb; inb = inb + 1) {
                     nb = nbval[inb - 1];
                     xlaenv(1, nb);
                     //
-                    //                 Compute the L*L' or U'*U factorization of the matrix.
+                    // Compute the L*L' or U'*U factorization of the matrix.
                     //
                     Rlacpy(&uplo, n, n, a, lda, afac, lda);
                     strncpy(srnamt, "Rpotrf", srnamt_len);
                     Rpotrf(&uplo, n, afac, lda, info);
                     //
-                    //                 Check error code from Rpotrf.
+                    // Check error code from Rpotrf.
                     //
                     if (info != izero) {
                         Alaerh(path, "Rpotrf", info, izero, &uplo, n, n, -1, -1, nb, imat, nfail, nerrs, nout);
                         goto statement_90;
                     }
                     //
-                    //                 Skip the tests if INFO is not 0.
+                    // Skip the tests if INFO is not 0.
                     //
                     if (info != 0) {
                         goto statement_90;
                     }
                     //
-                    //+    TEST 1
-                    //                 Reconstruct matrix from factors and compute residual.
+                    // +    TEST 1
+                    // Reconstruct matrix from factors and compute residual.
                     //
                     Rlacpy(&uplo, n, n, afac, lda, ainv, lda);
                     Rpot01(&uplo, n, a, lda, ainv, lda, rwork, result[1 - 1]);
                     //
-                    //+    TEST 2
-                    //                 Form the inverse and compute the residual.
+                    // +    TEST 2
+                    // Form the inverse and compute the residual.
                     //
                     Rlacpy(&uplo, n, n, afac, lda, ainv, lda);
                     strncpy(srnamt, "Rpotri", srnamt_len);
                     Rpotri(&uplo, n, ainv, lda, info);
                     //
-                    //                 Check error code from Rpotri.
+                    // Check error code from Rpotri.
                     //
                     if (info != 0) {
                         Alaerh(path, "Rpotri", info, 0, &uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
@@ -265,8 +272,8 @@ void Rchkpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                     //
                     Rpot03(&uplo, n, a, lda, ainv, lda, work, lda, rwork, rcondc, result[2 - 1]);
                     //
-                    //                 Print information about the tests that did not pass
-                    //                 the threshold.
+                    // Print information about the tests that did not pass
+                    // the threshold.
                     //
                     for (k = 1; k <= 2; k = k + 1) {
                         if (result[k - 1] >= thresh) {
@@ -282,8 +289,8 @@ void Rchkpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                     }
                     nrun += 2;
                     //
-                    //                 Skip the rest of the tests unless this is the first
-                    //                 blocksize.
+                    // Skip the rest of the tests unless this is the first
+                    // blocksize.
                     //
                     if (inb != 1) {
                         goto statement_90;
@@ -302,7 +309,7 @@ void Rchkpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                         strncpy(srnamt, "Rpotrs", srnamt_len);
                         Rpotrs(&uplo, n, nrhs, afac, lda, x, lda, info);
                         //
-                        //                 Check error code from Rpotrs.
+                        // Check error code from Rpotrs.
                         //
                         if (info != 0) {
                             Alaerh(path, "Rpotrs", info, 0, &uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
@@ -311,18 +318,18 @@ void Rchkpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                         Rlacpy("Full", n, nrhs, b, lda, work, lda);
                         Rpot02(&uplo, n, nrhs, a, lda, x, lda, work, lda, rwork, result[3 - 1]);
                         //
-                        //+    TEST 4
-                        //                 Check solution from generated exact solution.
+                        // +    TEST 4
+                        // Check solution from generated exact solution.
                         //
                         Rget04(n, nrhs, x, lda, xact, lda, rcondc, result[4 - 1]);
                         //
-                        //+    TESTS 5, 6, and 7
-                        //                 Use iterative refinement to improve the solution.
+                        // +    TESTS 5, 6, and 7
+                        // Use iterative refinement to improve the solution.
                         //
                         strncpy(srnamt, "Rporfs", srnamt_len);
                         Rporfs(&uplo, n, nrhs, a, lda, afac, lda, b, lda, x, lda, rwork, &rwork[(nrhs + 1) - 1], work, iwork, info);
                         //
-                        //                 Check error code from Rporfs.
+                        // Check error code from Rporfs.
                         //
                         if (info != 0) {
                             Alaerh(path, "Rporfs", info, 0, &uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
@@ -331,8 +338,8 @@ void Rchkpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                         Rget04(n, nrhs, x, lda, xact, lda, rcondc, result[5 - 1]);
                         Rpot05(&uplo, n, nrhs, a, lda, b, lda, x, lda, xact, lda, rwork, &rwork[(nrhs + 1) - 1], &result[6 - 1]);
                         //
-                        //                    Print information about the tests that did not pass
-                        //                    the threshold.
+                        // Print information about the tests that did not pass
+                        // the threshold.
                         //
                         for (k = 3; k <= 7; k = k + 1) {
                             if (result[k - 1] >= thresh) {
@@ -349,14 +356,14 @@ void Rchkpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                         nrun += 5;
                     }
                     //
-                    //+    TEST 8
-                    //                 Get an estimate of RCOND = 1/CNDNUM.
+                    // +    TEST 8
+                    // Get an estimate of RCOND = 1/CNDNUM.
                     //
                     anorm = Rlansy("1", &uplo, n, a, lda, rwork);
                     strncpy(srnamt, "Rpocon", srnamt_len);
                     Rpocon(&uplo, n, afac, lda, anorm, rcond, work, iwork, info);
                     //
-                    //                 Check error code from Rpocon.
+                    // Check error code from Rpocon.
                     //
                     if (info != 0) {
                         Alaerh(path, "Rpocon", info, 0, &uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
@@ -364,7 +371,7 @@ void Rchkpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                     //
                     result[8 - 1] = Rget06(rcond, rcondc);
                     //
-                    //                 Print the test ratio if it is .GE. THRESH.
+                    // Print the test ratio if it is .GE. THRESH.
                     //
                     if (result[8 - 1] >= thresh) {
                         if (nfail == 0 && nerrs == 0) {
@@ -385,10 +392,10 @@ void Rchkpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
         }
     }
     //
-    //     Print a summary of the results.
+    // Print a summary of the results.
     //
     Alasum(path, nout, nfail, nrun, nerrs);
     //
-    //     End of Rchkpo
+    // End of Rchkpo
     //
 }

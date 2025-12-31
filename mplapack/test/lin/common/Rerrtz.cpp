@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DERRTZ.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -61,9 +68,9 @@ void Rerrtz(const char *path, INTEGER const nunit) {
     INTEGER info = 0;
     if (Mlsamen(2, c2, "TZ")) {
         //
-        //        Test error exits for the trapezoidal routines.
+        // Test error exits for the trapezoidal routines.
         //
-        //        Rtzrzf
+        // Rtzrzf
         //
         strncpy(srnamt, "Rtzrzf", srnamt_len);
         infot = 1;
@@ -84,10 +91,10 @@ void Rerrtz(const char *path, INTEGER const nunit) {
         chkxer("Rtzrzf", infot, nout, lerr, ok);
     }
     //
-    //     Print a summary line.
+    // Print a summary line.
     //
     Alaesm(path, ok, nout);
     //
-    //     End of Rerrtz
+    // End of Rerrtz
     //
 }

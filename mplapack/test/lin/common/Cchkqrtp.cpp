@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZCHKQRTP.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -42,7 +49,7 @@ void Cchkqrtp(REAL const thresh, bool const tsterr, INTEGER const nm, INTEGER *m
     common cmn;
     common_write write(cmn);
     //
-    //     Initialize constants
+    // Initialize constants
     //
     char path[4] = {};
     path[0] = 'C';
@@ -53,13 +60,13 @@ void Cchkqrtp(REAL const thresh, bool const tsterr, INTEGER const nm, INTEGER *m
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
     //
-    //     Test the error exits
+    // Test the error exits
     //
     if (tsterr) {
         Cerrqrtp(path, nout);
     }
     //
-    //     Do for each value of M
+    // Do for each value of M
     //
     INTEGER i = 0;
     INTEGER m = 0;
@@ -75,28 +82,28 @@ void Cchkqrtp(REAL const thresh, bool const tsterr, INTEGER const nm, INTEGER *m
     for (i = 1; i <= nm; i = i + 1) {
         m = mval[i - 1];
         //
-        //        Do for each value of N
+        // Do for each value of N
         //
         for (j = 1; j <= nn; j = j + 1) {
             n = nval[j - 1];
             //
-            //           Do for each value of L
+            // Do for each value of L
             //
             minmn = min(m, n);
             for (l = 0; l <= minmn; l = l + max(minmn, (INTEGER)1)) {
                 //
-                //              Do for each possible value of NB
+                // Do for each possible value of NB
                 //
                 for (k = 1; k <= nnb; k = k + 1) {
                     nb = nbval[k - 1];
                     //
-                    //                 Test Ctpqrt and Ctpmqrt
+                    // Test Ctpqrt and Ctpmqrt
                     //
                     if ((nb <= n) && (nb > 0)) {
                         Cqrt05(m, n, l, nb, result);
                         //
-                        //                    Print information about the tests that did not
-                        //                    pass the threshold.
+                        // Print information about the tests that did not
+                        // pass the threshold.
                         //
                         for (t = 1; t <= ntests; t = t + 1) {
                             if (result[t - 1] >= thresh) {
@@ -115,10 +122,10 @@ void Cchkqrtp(REAL const thresh, bool const tsterr, INTEGER const nm, INTEGER *m
         }
     }
     //
-    //     Print a summary of the results.
+    // Print a summary of the results.
     //
     Alasum(path, nout, nfail, nrun, nerrs);
     //
-    //     End of Cchkqrtp
+    // End of Cchkqrtp
     //
 }

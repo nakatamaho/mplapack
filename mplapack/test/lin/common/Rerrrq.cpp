@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DERRRQ.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -71,7 +78,7 @@ void Rerrrq(const char *path, INTEGER const nunit) {
     nout = nunit;
     write(nout, star);
     //
-    //     Set the variables to innocuous values.
+    // Set the variables to innocuous values.
     //
     INTEGER j = 0;
     const INTEGER nmax = 2;
@@ -113,7 +120,7 @@ void Rerrrq(const char *path, INTEGER const nunit) {
     Rgerqf(2, 1, a, 2, b, w, 1, info);
     chkxer("Rgerqf", infot, nout, lerr, ok);
     //
-    //     Rgerq2
+    // Rgerq2
     //
     infot = 1;
     strncpy(srnamt, "Rgerq2", srnamt_len);
@@ -126,7 +133,7 @@ void Rerrrq(const char *path, INTEGER const nunit) {
     Rgerq2(2, 1, a, 1, b, w, info);
     chkxer("Rgerq2", infot, nout, lerr, ok);
     //
-    //     Rgerqs
+    // Rgerqs
     //
     infot = 1;
     strncpy(srnamt, "Rgerqs", srnamt_len);
@@ -151,7 +158,7 @@ void Rerrrq(const char *path, INTEGER const nunit) {
     Rgerqs(1, 1, 2, a, 1, x, b, 1, w, 1, info);
     chkxer("Rgerqs", infot, nout, lerr, ok);
     //
-    //     Rorgrq
+    // Rorgrq
     //
     infot = 1;
     strncpy(srnamt, "Rorgrq", srnamt_len);
@@ -176,7 +183,7 @@ void Rerrrq(const char *path, INTEGER const nunit) {
     Rorgrq(2, 2, 0, a, 2, x, w, 1, info);
     chkxer("Rorgrq", infot, nout, lerr, ok);
     //
-    //     Rorgr2
+    // Rorgr2
     //
     infot = 1;
     strncpy(srnamt, "Rorgr2", srnamt_len);
@@ -198,7 +205,7 @@ void Rerrrq(const char *path, INTEGER const nunit) {
     Rorgr2(2, 2, 0, a, 1, x, w, info);
     chkxer("Rorgr2", infot, nout, lerr, ok);
     //
-    //     Rormrq
+    // Rormrq
     //
     infot = 1;
     strncpy(srnamt, "Rormrq", srnamt_len);
@@ -238,7 +245,7 @@ void Rerrrq(const char *path, INTEGER const nunit) {
     Rormrq("R", "N", 2, 1, 0, a, 1, x, af, 2, w, 1, info);
     chkxer("Rormrq", infot, nout, lerr, ok);
     //
-    //     Rormr2
+    // Rormr2
     //
     infot = 1;
     strncpy(srnamt, "Rormr2", srnamt_len);
@@ -272,10 +279,10 @@ void Rerrrq(const char *path, INTEGER const nunit) {
     Rormr2("L", "N", 2, 1, 0, a, 1, x, af, 1, w, info);
     chkxer("Rormr2", infot, nout, lerr, ok);
     //
-    //     Print a summary line.
+    // Print a summary line.
     //
     Alaesm(path, ok, nout);
     //
-    //     End of Rerrrq
+    // End of Rerrrq
     //
 }

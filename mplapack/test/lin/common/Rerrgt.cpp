@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DERRGT.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -102,16 +109,16 @@ void Rerrgt(const char *path, INTEGER const nunit) {
     REAL rcond = 0.0;
     if (Mlsamen(2, c2, "GT")) {
         //
-        //        Test error exits for the general tridiagonal routines.
+        // Test error exits for the general tridiagonal routines.
         //
-        //        Rgttrf
+        // Rgttrf
         //
         strncpy(srnamt, "Rgttrf", srnamt_len);
         infot = 1;
         Rgttrf(-1, c, d, e, f, ip, info);
         chkxer("Rgttrf", infot, nout, lerr, ok);
         //
-        //        Rgttrs
+        // Rgttrs
         //
         strncpy(srnamt, "Rgttrs", srnamt_len);
         infot = 1;
@@ -127,7 +134,7 @@ void Rerrgt(const char *path, INTEGER const nunit) {
         Rgttrs("N", 2, 1, c, d, e, f, ip, x, 1, info);
         chkxer("Rgttrs", infot, nout, lerr, ok);
         //
-        //        Rgtrfs
+        // Rgtrfs
         //
         strncpy(srnamt, "Rgtrfs", srnamt_len);
         infot = 1;
@@ -146,7 +153,7 @@ void Rerrgt(const char *path, INTEGER const nunit) {
         Rgtrfs("N", 2, 1, c, d, e, cf, df, ef, f, ip, b, 2, x, 1, r1, r2, w, iw, info);
         chkxer("Rgtrfs", infot, nout, lerr, ok);
         //
-        //        Rgtcon
+        // Rgtcon
         //
         strncpy(srnamt, "Rgtcon", srnamt_len);
         infot = 1;
@@ -161,17 +168,17 @@ void Rerrgt(const char *path, INTEGER const nunit) {
         //
     } else if (Mlsamen(2, c2, "PT")) {
         //
-        //        Test error exits for the positive definite tridiagonal
-        //        routines.
+        // Test error exits for the positive definite tridiagonal
+        // routines.
         //
-        //        Rpttrf
+        // Rpttrf
         //
         strncpy(srnamt, "Rpttrf", srnamt_len);
         infot = 1;
         Rpttrf(-1, d, e, info);
         chkxer("Rpttrf", infot, nout, lerr, ok);
         //
-        //        Rpttrs
+        // Rpttrs
         //
         strncpy(srnamt, "Rpttrs", srnamt_len);
         infot = 1;
@@ -184,7 +191,7 @@ void Rerrgt(const char *path, INTEGER const nunit) {
         Rpttrs(2, 1, d, e, x, 1, info);
         chkxer("Rpttrs", infot, nout, lerr, ok);
         //
-        //        Rptrfs
+        // Rptrfs
         //
         strncpy(srnamt, "Rptrfs", srnamt_len);
         infot = 1;
@@ -200,7 +207,7 @@ void Rerrgt(const char *path, INTEGER const nunit) {
         Rptrfs(2, 1, d, e, df, ef, b, 2, x, 1, r1, r2, w, info);
         chkxer("Rptrfs", infot, nout, lerr, ok);
         //
-        //        Rptcon
+        // Rptcon
         //
         strncpy(srnamt, "Rptcon", srnamt_len);
         infot = 1;
@@ -211,10 +218,10 @@ void Rerrgt(const char *path, INTEGER const nunit) {
         chkxer("Rptcon", infot, nout, lerr, ok);
     }
     //
-    //     Print a summary line.
+    // Print a summary line.
     //
     Alaesm(path, ok, nout);
     //
-    //     End of Rerrgt
+    // End of Rerrgt
     //
 }

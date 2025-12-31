@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine ZDRVPB.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -120,7 +127,7 @@ void Cdrvpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
         iseed[i - 1] = iseedy[i - 1];
     }
     //
-    //     Test the error exits
+    // Test the error exits
     //
     if (tsterr) {
         Cerrvx(path, nout);
@@ -128,21 +135,21 @@ void Cdrvpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     infot = 0;
     kdval[1 - 1] = 0;
     //
-    //     Set the block size and minimum block size for testing.
+    // Set the block size and minimum block size for testing.
     //
     nb = 1;
     nbmin = 2;
     xlaenv(1, nb);
     xlaenv(2, nbmin);
     //
-    //     Do for each value of N in NVAL
+    // Do for each value of N in NVAL
     //
     for (in = 1; in <= nn; in = in + 1) {
         n = nval[in - 1];
         lda = max(n, (INTEGER)1);
         xtype[0] = 'N';
         //
-        //        Set limits on the number of loop iterations.
+        // Set limits on the number of loop iterations.
         //
         nkd = max((INTEGER)1, min(n, (INTEGER)4));
         nimat = ntypes;
@@ -156,14 +163,14 @@ void Cdrvpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
         //
         for (ikd = 1; ikd <= nkd; ikd = ikd + 1) {
             //
-            //           Do for KD = 0, (5*N+1)/4, (3N-1)/4, and (N+1)/4. This order
-            //           makes it easier to skip redundant values for small values
-            //           of N.
+            // Do for KD = 0, (5*N+1)/4, (3N-1)/4, and (N+1)/4. This order
+            // makes it easier to skip redundant values for small values
+            // of N.
             //
             kd = kdval[ikd - 1];
             ldab = kd + 1;
             //
-            //           Do first for UPLO = 'U', then for UPLO = 'L'
+            // Do first for UPLO = 'U', then for UPLO = 'L'
             //
             for (iuplo = 1; iuplo <= 2; iuplo = iuplo + 1) {
                 koff = 1;
@@ -178,13 +185,13 @@ void Cdrvpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                 //
                 for (imat = 1; imat <= nimat; imat = imat + 1) {
                     //
-                    //                 Do the tests only if DOTYPE( IMAT ) is true.
+                    // Do the tests only if DOTYPE( IMAT ) is true.
                     //
                     if (!dotype[imat - 1]) {
                         goto statement_80;
                     }
                     //
-                    //                 Skip types 2, 3, or 4 if the matrix size is too small.
+                    // Skip types 2, 3, or 4 if the matrix size is too small.
                     //
                     zerot = imat >= 2 && imat <= 4;
                     if (zerot && n < imat - 1) {
@@ -208,8 +215,8 @@ void Cdrvpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         }
                     } else if (izero > 0) {
                         //
-                        //                    Use the same matrix for types 3 and 4 as for type
-                        //                    2 by copying back the zeroed out column,
+                        // Use the same matrix for types 3 and 4 as for type
+                        // 2 by copying back the zeroed out column,
                         //
                         iw = 2 * lda + 1;
                         if (iuplo == 1) {
@@ -226,8 +233,8 @@ void Cdrvpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         }
                     }
                     //
-                    //                 For types 2-4, zero one row and column of the matrix
-                    //                 to test that INFO is returned correctly.
+                    // For types 2-4, zero one row and column of the matrix
+                    // to test that INFO is returned correctly.
                     //
                     izero = 0;
                     if (zerot) {
@@ -239,7 +246,7 @@ void Cdrvpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                             izero = n / 2 + 1;
                         }
                         //
-                        //                    Save the zeroed out row and column in WORK(*,3)
+                        // Save the zeroed out row and column in WORK(*,3)
                         //
                         iw = 2 * lda;
                         for (i = 1; i <= min(2 * kd + 1, n); i = i + 1) {
@@ -263,7 +270,7 @@ void Cdrvpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         }
                     }
                     //
-                    //                 Set the imaginary part of the diagonals.
+                    // Set the imaginary part of the diagonals.
                     //
                     if (iuplo == 1) {
                         Claipd(n, &a[(kd + 1) - 1], ldab, 0);
@@ -271,7 +278,7 @@ void Cdrvpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         Claipd(n, &a[1 - 1], ldab, 0);
                     }
                     //
-                    //                 Save a copy of the matrix A in ASAV.
+                    // Save a copy of the matrix A in ASAV.
                     //
                     Clacpy("Full", kd + 1, n, a, ldab, asav, ldab);
                     //
@@ -297,16 +304,16 @@ void Cdrvpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                 //
                             } else if (!Mlsame(fact, "N")) {
                                 //
-                                //                          Compute the condition number for comparison
-                                //                          with the value returned by Cpbsvx (FACT =
-                                //                          'N' reuses the condition number from the
-                                //                          previous iteration with FACT = 'F').
+                                // Compute the condition number for comparison
+                                // with the value returned by Cpbsvx (FACT =
+                                // 'N' reuses the condition number from the
+                                // previous iteration with FACT = 'F').
                                 //
                                 Clacpy("Full", kd + 1, n, asav, ldab, afac, ldab);
                                 if (equil || iequed > 1) {
                                     //
-                                    //                             Compute row and column scale factors to
-                                    //                             equilibrate the matrix A.
+                                    // Compute row and column scale factors to
+                                    // equilibrate the matrix A.
                                     //
                                     Cpbequ(uplo, n, kd, afac, ldab, s, scond, amax, info);
                                     if (info == 0 && n > 0) {
@@ -314,28 +321,28 @@ void Cdrvpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                             scond = zero;
                                         }
                                         //
-                                        //                                Equilibrate the matrix.
+                                        // Equilibrate the matrix.
                                         //
                                         Claqhb(uplo, n, kd, afac, ldab, s, scond, amax, equed);
                                     }
                                 }
                                 //
-                                //                          Save the condition number of the
-                                //                          non-equilibrated system for use in Cget04.
+                                // Save the condition number of the
+                                // non-equilibrated system for use in Cget04.
                                 //
                                 if (equil) {
                                     roldc = rcondc;
                                 }
                                 //
-                                //                          Compute the 1-norm of A.
+                                // Compute the 1-norm of A.
                                 //
                                 anorm = Clanhb("1", uplo, n, kd, afac, ldab, rwork);
                                 //
-                                //                          Factor the matrix A.
+                                // Factor the matrix A.
                                 //
                                 Cpbtrf(uplo, n, kd, afac, ldab, info);
                                 //
-                                //                          Form the inverse of A.
+                                // Form the inverse of A.
                                 //
                                 Claset("Full", n, n, COMPLEX(zero), COMPLEX(one), a, lda);
                                 Cpbtrs(uplo, n, kd, n, afac, ldab, a, lda, info);
@@ -350,7 +357,7 @@ void Cdrvpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                 }
                             }
                             //
-                            //                       Restore the matrix A.
+                            // Restore the matrix A.
                             //
                             Clacpy("Full", kd + 1, n, asav, ldab, a, ldab);
                             //
@@ -363,10 +370,10 @@ void Cdrvpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                             //
                             if (nofact) {
                                 //
-                                //                          --- Test Cpbsv  ---
+                                // --- Test Cpbsv  ---
                                 //
-                                //                          Compute the L*L' or U'*U factorization of the
-                                //                          matrix and solve the system.
+                                // Compute the L*L' or U'*U factorization of the
+                                // matrix and solve the system.
                                 //
                                 Clacpy("Full", kd + 1, n, a, ldab, afac, ldab);
                                 Clacpy("Full", n, nrhs, b, lda, x, lda);
@@ -382,23 +389,23 @@ void Cdrvpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                     goto statement_40;
                                 }
                                 //
-                                //                          Reconstruct matrix from factors and compute
-                                //                          residual.
+                                // Reconstruct matrix from factors and compute
+                                // residual.
                                 //
                                 Cpbt01(uplo, n, kd, a, ldab, afac, ldab, rwork, result[1 - 1]);
                                 //
-                                //                          Compute residual of the computed solution.
+                                // Compute residual of the computed solution.
                                 //
                                 Clacpy("Full", n, nrhs, b, lda, work, lda);
                                 Cpbt02(uplo, n, kd, nrhs, a, ldab, x, lda, work, lda, rwork, result[2 - 1]);
                                 //
-                                //                          Check solution from generated exact solution.
+                                // Check solution from generated exact solution.
                                 //
                                 Cget04(n, nrhs, x, lda, xact, lda, rcondc, result[3 - 1]);
                                 nt = 3;
                                 //
-                                //                          Print information about the tests that did
-                                //                          not pass the threshold.
+                                // Print information about the tests that did
+                                // not pass the threshold.
                                 //
                                 for (k = 1; k <= nt; k = k + 1) {
                                     if (result[k - 1] >= thresh) {
@@ -416,7 +423,7 @@ void Cdrvpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                             statement_40:;
                             }
                             //
-                            //                       --- Test Cpbsvx ---
+                            // --- Test Cpbsvx ---
                             //
                             if (!prefac) {
                                 Claset("Full", kd + 1, n, COMPLEX(zero), COMPLEX(zero), afac, ldab);
@@ -448,8 +455,8 @@ void Cdrvpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                             if (info == 0) {
                                 if (!prefac) {
                                     //
-                                    //                             Reconstruct matrix from factors and
-
+                                    // Reconstruct matrix from factors and
+                                    // compute residual.
                                     //
                                     Cpbt01(uplo, n, kd, a, ldab, afac, ldab, &rwork[(2 * nrhs + 1) - 1], result[1 - 1]);
                                     k1 = 1;
@@ -457,12 +464,12 @@ void Cdrvpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                     k1 = 2;
                                 }
                                 //
-                                //                          Compute residual of the computed solution.
+                                // Compute residual of the computed solution.
                                 //
                                 Clacpy("Full", n, nrhs, bsav, lda, work, lda);
                                 Cpbt02(uplo, n, kd, nrhs, asav, ldab, x, lda, work, lda, &rwork[(2 * nrhs + 1) - 1], result[2 - 1]);
                                 //
-                                //                          Check solution from generated exact solution.
+                                // Check solution from generated exact solution.
                                 //
                                 if (nofact || (prefac && Mlsame(equed, "N"))) {
                                     Cget04(n, nrhs, x, lda, xact, lda, rcondc, result[3 - 1]);
@@ -470,21 +477,21 @@ void Cdrvpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                     Cget04(n, nrhs, x, lda, xact, lda, roldc, result[3 - 1]);
                                 }
                                 //
-                                //                          Check the error bounds from iterative
-                                //                          refinement.
+                                // Check the error bounds from iterative
+                                // refinement.
                                 //
                                 Cpbt05(uplo, n, kd, nrhs, asav, ldab, b, lda, x, lda, xact, lda, rwork, &rwork[(nrhs + 1) - 1], &result[4 - 1]);
                             } else {
                                 k1 = 6;
                             }
                             //
-                            //                       Compare RCOND from Cpbsvx with the computed
-                            //                       value in RCONDC.
+                            // Compare RCOND from Cpbsvx with the computed
+                            // value in RCONDC.
                             //
                             result[6 - 1] = Rget06(rcond, rcondc);
                             //
-                            //                       Print information about the tests that did not
-                            //                       pass the threshold.
+                            // Print information about the tests that did not
+                            // pass the threshold.
                             //
                             for (k = k1; k <= 6; k = k + 1) {
                                 if (result[k - 1] >= thresh) {
@@ -516,10 +523,10 @@ void Cdrvpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
         }
     }
     //
-    //     Print a summary of the results.
+    // Print a summary of the results.
     //
     Alasvm(path, nout, nfail, nrun, nerrs);
     //
-    //     End of Cdrvpb
+    // End of Cdrvpb
     //
 }

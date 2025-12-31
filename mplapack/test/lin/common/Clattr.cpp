@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine ZLATTR.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -54,13 +61,13 @@ void Clattr(INTEGER const imat, const char *uplo, const char *trans, char *diag,
     }
     info = 0;
     //
-    //     Quick return if N.LE.0.
+    // Quick return if N.LE.0.
     //
     if (n <= 0) {
         return;
     }
     //
-    //     Call Clatb4 to set parameters for CLATMS.
+    // Call Clatb4 to set parameters for CLATMS.
     //
     bool upper = Mlsame(uplo, "U");
     char type;
@@ -76,7 +83,7 @@ void Clattr(INTEGER const imat, const char *uplo, const char *trans, char *diag,
         Clatb4(path, -imat, n, n, &type, kl, ku, anorm, mode, cndnum, &dist);
     }
     //
-    //     IMAT <= 6:  Non-unit triangular matrix
+    // IMAT <= 6:  Non-unit triangular matrix
     //
     INTEGER j = 0;
     INTEGER i = 0;
@@ -104,10 +111,10 @@ void Clattr(INTEGER const imat, const char *uplo, const char *trans, char *diag,
     if (imat <= 6) {
         Clatms(n, n, &dist, iseed, &type, rwork, mode, cndnum, anorm, kl, ku, "No packing", a, lda, work, info);
         //
-        //     IMAT > 6:  Unit triangular matrix
-        //     The diagonal is deliberately set to something other than 1.
+        // IMAT > 6:  Unit triangular matrix
+        // The diagonal is deliberately set to something other than 1.
         //
-        //     IMAT = 7:  Matrix is the identity
+        // IMAT = 7:  Matrix is the identity
         //
     } else if (imat == 7) {
         if (upper) {
@@ -126,11 +133,11 @@ void Clattr(INTEGER const imat, const char *uplo, const char *trans, char *diag,
             }
         }
         //
-        //     IMAT > 7:  Non-trivial unit triangular matrix
+        // IMAT > 7:  Non-trivial unit triangular matrix
         //
-        //     Generate a unit triangular matrix T with condition CNDNUM by
-        //     forming a triangular matrix with known singular values and
-        //     filling in the zero entries with Givens rotations.
+        // Generate a unit triangular matrix T with condition CNDNUM by
+        // forming a triangular matrix with known singular values and
+        // filling in the zero entries with Givens rotations.
         //
     } else if (imat <= 10) {
         if (upper) {
@@ -263,7 +270,7 @@ void Clattr(INTEGER const imat, const char *uplo, const char *trans, char *diag,
             a[(n - 1)] = z;
         }
         //
-        //        Fill in the zeros using Givens rotations.
+        // Fill in the zeros using Givens rotations.
         //
         if (upper) {
             for (j = 1; j <= n - 1; j = j + 1) {
@@ -271,19 +278,19 @@ void Clattr(INTEGER const imat, const char *uplo, const char *trans, char *diag,
                 rb = 2.0;
                 Crotg(ra, rb, c, s);
                 //
-                //              Multiply by [ c  s; -conj(s)  c] on the left.
+                // Multiply by [ c  s; -conjg(s)  c] on the left.
                 //
                 if (n > j + 1) {
                     Crot(n - j - 1, &a[(j - 1) + ((j + 2) - 1) * lda], lda, &a[((j + 1) - 1) + ((j + 2) - 1) * lda], lda, c, s);
                 }
                 //
-                //              Multiply by [-c -s;  conj(s) -c] on the right.
+                // Multiply by [-c -s;  conjg(s) -c] on the right.
                 //
                 if (j > 1) {
                     Crot(j - 1, &a[((j + 1) - 1) * lda], 1, &a[(j - 1) * lda], 1, -c, -s);
                 }
                 //
-                //              Negate A(J,J+1).
+                // Negate A(J,J+1).
                 //
                 a[(j - 1) + ((j + 1) - 1) * lda] = -a[(j - 1) + ((j + 1) - 1) * lda];
             }
@@ -294,33 +301,33 @@ void Clattr(INTEGER const imat, const char *uplo, const char *trans, char *diag,
                 Crotg(ra, rb, c, s);
                 s = conj(s);
                 //
-                //              Multiply by [ c -s;  conj(s) c] on the right.
+                // Multiply by [ c -s;  conjg(s) c] on the right.
                 //
                 if (n > j + 1) {
                     Crot(n - j - 1, &a[((j + 2) - 1) + ((j + 1) - 1) * lda], 1, &a[((j + 2) - 1) + (j - 1) * lda], 1, c, -s);
                 }
                 //
-                //              Multiply by [-c  s; -conj(s) -c] on the left.
+                // Multiply by [-c  s; -conjg(s) -c] on the left.
                 //
                 if (j > 1) {
                     Crot(j - 1, &a[(j - 1)], lda, &a[((j + 1) - 1)], lda, -c, s);
                 }
                 //
-                //              Negate A(J+1,J).
+                // Negate A(J+1,J).
                 //
                 a[((j + 1) - 1) + (j - 1) * lda] = -a[((j + 1) - 1) + (j - 1) * lda];
             }
         }
         //
-        //     IMAT > 10:  Pathological test cases.  These triangular matrices
-        //     are badly scaled or badly conditioned, so when used in solving a
-        //     triangular system they may cause overflow in the solution vector.
+        // IMAT > 10:  Pathological test cases.  These triangular matrices
+        // are badly scaled or badly conditioned, so when used in solving a
+        // triangular system they may cause overflow in the solution vector.
         //
     } else if (imat == 11) {
         //
-        //        Type 11:  Generate a triangular matrix with elements between
-        //        -1 and 1. Give the diagonal norm 2 to make it well-conditioned.
-        //        Make the right hand side large so that it requires scaling.
+        // Type 11:  Generate a triangular matrix with elements between
+        // -1 and 1. Give the diagonal norm 2 to make it well-conditioned.
+        // Make the right hand side large so that it requires scaling.
         //
         if (upper) {
             for (j = 1; j <= n; j = j + 1) {
@@ -336,7 +343,7 @@ void Clattr(INTEGER const imat, const char *uplo, const char *trans, char *diag,
             }
         }
         //
-        //        Set the right hand side so that the largest value is BIGNUM.
+        // Set the right hand side so that the largest value is BIGNUM.
         //
         Clarnv(2, iseed, n, b);
         iy = iCamax(n, b, 1);
@@ -346,9 +353,9 @@ void Clattr(INTEGER const imat, const char *uplo, const char *trans, char *diag,
         //
     } else if (imat == 12) {
         //
-        //        Type 12:  Make the first diagonal element in the solve small to
-        //        cause immediate overflow when dividing by T(j,j).
-        //        In type 12, the offdiagonal elements are small (CNORM(j) < 1).
+        // Type 12:  Make the first diagonal element in the solve small to
+        // cause immediate overflow when dividing by T(j,j).
+        // In type 12, the offdiagonal elements are small (CNORM(j) < 1).
         //
         Clarnv(2, iseed, n, b);
         tscal = one / max(one, castREAL(n - 1));
@@ -372,9 +379,9 @@ void Clattr(INTEGER const imat, const char *uplo, const char *trans, char *diag,
         //
     } else if (imat == 13) {
         //
-        //        Type 13:  Make the first diagonal element in the solve small to
-        //        cause immediate overflow when dividing by T(j,j).
-        //        In type 13, the offdiagonal elements are O(1) (CNORM(j) > 1).
+        // Type 13:  Make the first diagonal element in the solve small to
+        // cause immediate overflow when dividing by T(j,j).
+        // In type 13, the offdiagonal elements are O(1) (CNORM(j) > 1).
         //
         Clarnv(2, iseed, n, b);
         if (upper) {
@@ -395,9 +402,9 @@ void Clattr(INTEGER const imat, const char *uplo, const char *trans, char *diag,
         //
     } else if (imat == 14) {
         //
-        //        Type 14:  T is diagonal with small numbers on the diagonal to
-        //        make the growth factor underflow, but a small right hand side
-        //        chosen so that the solution does not overflow.
+        // Type 14:  T is diagonal with small numbers on the diagonal to
+        // make the growth factor underflow, but a small right hand side
+        // chosen so that the solution does not overflow.
         //
         if (upper) {
             jcount = 1;
@@ -433,7 +440,7 @@ void Clattr(INTEGER const imat, const char *uplo, const char *trans, char *diag,
             }
         }
         //
-        //        Set the right hand side alternately zero and small.
+        // Set the right hand side alternately zero and small.
         //
         if (upper) {
             b[1 - 1] = zero;
@@ -451,9 +458,9 @@ void Clattr(INTEGER const imat, const char *uplo, const char *trans, char *diag,
         //
     } else if (imat == 15) {
         //
-        //        Type 15:  Make the diagonal elements small to cause gradual
-        //        overflow when dividing by T(j,j).  To control the amount of
-        //        scaling needed, the matrix is bidiagonal.
+        // Type 15:  Make the diagonal elements small to cause gradual
+        // overflow when dividing by T(j,j).  To control the amount of
+        // scaling needed, the matrix is bidiagonal.
         //
         texp = one / max(one, castREAL(n - 1));
         tscal = pow(smlnum, texp);
@@ -484,7 +491,7 @@ void Clattr(INTEGER const imat, const char *uplo, const char *trans, char *diag,
         //
     } else if (imat == 16) {
         //
-        //        Type 16:  One zero diagonal element.
+        // Type 16:  One zero diagonal element.
         //
         iy = n / 2 + 1;
         if (upper) {
@@ -513,10 +520,10 @@ void Clattr(INTEGER const imat, const char *uplo, const char *trans, char *diag,
         //
     } else if (imat == 17) {
         //
-        //        Type 17:  Make the offdiagonal elements large to cause overflow
-        //        when adding a column of T.  In the non-transposed case, the
-        //        matrix is constructed to cause overflow when adding a column in
-        //        every other step.
+        // Type 17:  Make the offdiagonal elements large to cause overflow
+        // when adding a column of T.  In the non-transposed case, the
+        // matrix is constructed to cause overflow when adding a column in
+        // every other step.
         //
         tscal = unfl / ulp;
         tscal = (one - ulp) / tscal;
@@ -552,9 +559,9 @@ void Clattr(INTEGER const imat, const char *uplo, const char *trans, char *diag,
         //
     } else if (imat == 18) {
         //
-        //        Type 18:  Generate a unit triangular matrix with elements
-        //        between -1 and 1, and make the right hand side large so that it
-        //        requires scaling.
+        // Type 18:  Generate a unit triangular matrix with elements
+        // between -1 and 1, and make the right hand side large so that it
+        // requires scaling.
         //
         if (upper) {
             for (j = 1; j <= n; j = j + 1) {
@@ -570,7 +577,7 @@ void Clattr(INTEGER const imat, const char *uplo, const char *trans, char *diag,
             }
         }
         //
-        //        Set the right hand side so that the largest value is BIGNUM.
+        // Set the right hand side so that the largest value is BIGNUM.
         //
         Clarnv(2, iseed, n, b);
         iy = iCamax(n, b, 1);
@@ -580,10 +587,10 @@ void Clattr(INTEGER const imat, const char *uplo, const char *trans, char *diag,
         //
     } else if (imat == 19) {
         //
-        //        Type 19:  Generate a triangular matrix with elements between
-        //        BIGNUM/(n-1) and BIGNUM so that at least one of the column
-        //        norms will exceed BIGNUM.
-        //        1/3/91:  Clatrs no longer can handle this case
+        // Type 19:  Generate a triangular matrix with elements between
+        // BIGNUM/(n-1) and BIGNUM so that at least one of the column
+        // norms will exceed BIGNUM.
+        // 1/3/91:  Clatrs no longer can handle this case
         //
         tleft = bignum / max(one, castREAL(n - 1));
         tscal = bignum * (castREAL(n - 1) / max(one, castREAL(n)));
@@ -608,7 +615,7 @@ void Clattr(INTEGER const imat, const char *uplo, const char *trans, char *diag,
         CRscal(n, two, b, 1);
     }
     //
-    //     Flip the matrix if the transpose will be used.
+    // Flip the matrix if the transpose will be used.
     //
     if (!Mlsame(trans, "N")) {
         if (upper) {
@@ -622,6 +629,6 @@ void Clattr(INTEGER const imat, const char *uplo, const char *trans, char *diag,
         }
     }
     //
-    //     End of Clattr
+    // End of Clattr
     //
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DQRT17.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -72,7 +79,7 @@ REAL Rqrt17(const char *trans, INTEGER const iresid, INTEGER const m, INTEGER co
     REAL bignum = one / smlnum;
     INTEGER iscl = 0;
     //
-    //     compute residual and scale it
+    // compute residual and scale it
     //
     Rlacpy("All", nrows, nrhs, b, ldb, c, ldb);
     Rgemm(trans, "No transpose", nrows, nrhs, ncols, -one, a, lda, x, ldx, one, c, ldb);
@@ -83,11 +90,11 @@ REAL Rqrt17(const char *trans, INTEGER const iresid, INTEGER const m, INTEGER co
         Rlascl("General", 0, 0, normrs, one, nrows, nrhs, c, ldb, info);
     }
     //
-    //     compute R'*A
+    // compute R'*A
     //
     Rgemm("Transpose", trans, nrhs, ncols, nrows, one, c, ldb, a, lda, zero, work, nrhs);
     //
-    //     compute and properly scale error
+    // compute and properly scale error
     //
     REAL err = Rlange("One-norm", nrhs, ncols, work, nrhs, rwork);
     if (norma != zero) {
@@ -113,6 +120,6 @@ REAL Rqrt17(const char *trans, INTEGER const iresid, INTEGER const m, INTEGER co
     return_value = err / (Rlamch("Epsilon") * castREAL(max({m, n, nrhs})));
     return return_value;
     //
-    //     End of Rqrt17
+    // End of Rqrt17
     //
 }

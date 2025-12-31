@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ICOPY.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -36,23 +43,6 @@ void icopy(INTEGER const &n, INTEGER *sx, INTEGER const &incx, INTEGER *sy, INTE
     INTEGER m = 0;
     INTEGER mp1 = 0;
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     if (n <= 0) {
         return;
     }
@@ -60,7 +50,7 @@ void icopy(INTEGER const &n, INTEGER *sx, INTEGER const &incx, INTEGER *sy, INTE
         goto statement_20;
     }
     //
-    //     Code for unequal increments or equal increments not equal to 1
+    // Code for unequal increments or equal increments not equal to 1
     //
     ix = 1;
     iy = 1;
@@ -77,9 +67,9 @@ void icopy(INTEGER const &n, INTEGER *sx, INTEGER const &incx, INTEGER *sy, INTE
     }
     return;
 //
-//     Code for both increments equal to 1
+// Code for both increments equal to 1
 //
-//     Clean-up loop
+// Clean-up loop
 //
 statement_20:
     m = mod(n, 7);
@@ -104,6 +94,6 @@ statement_40:
         sy[(i + 6) - 1] = sx[(i + 6) - 1];
     }
     //
-    //     End of ICOPY
+    // End of icopy
     //
 }

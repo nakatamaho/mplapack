@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine ZERRGE.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -73,8 +80,8 @@ void Cerrge(const char *path, INTEGER const nunit) {
     }
     ok = true;
     //
-    //     Test error exits of the routines that use the LU decomposition
-    //     of a general matrix.
+    // Test error exits of the routines that use the LU decomposition
+    // of a general matrix.
     //
     INTEGER info = 0;
     REAL r[nmax];
@@ -83,7 +90,7 @@ void Cerrge(const char *path, INTEGER const nunit) {
     REAL ccond = 0.0;
     if (Mlsamen(2, c2, "GE")) {
         //
-        //        Cgetrf
+        // Cgetrf
         //
         strncpy(srnamt, "Cgetrf", srnamt_len);
         infot = 1;
@@ -96,7 +103,7 @@ void Cerrge(const char *path, INTEGER const nunit) {
         Cgetrf(2, 1, a, 1, ip, info);
         chkxer("Cgetrf", infot, nout, lerr, ok);
         //
-        //        Cgetf2
+        // Cgetf2
         //
         strncpy(srnamt, "Cgetf2", srnamt_len);
         infot = 1;
@@ -109,7 +116,7 @@ void Cerrge(const char *path, INTEGER const nunit) {
         Cgetf2(2, 1, a, 1, ip, info);
         chkxer("Cgetf2", infot, nout, lerr, ok);
         //
-        //        Cgetri
+        // Cgetri
         //
         strncpy(srnamt, "Cgetri", srnamt_len);
         infot = 1;
@@ -122,7 +129,7 @@ void Cerrge(const char *path, INTEGER const nunit) {
         Cgetri(2, a, 2, ip, w, 1, info);
         chkxer("Cgetri", infot, nout, lerr, ok);
         //
-        //        Cgetrs
+        // Cgetrs
         //
         strncpy(srnamt, "Cgetrs", srnamt_len);
         infot = 1;
@@ -141,7 +148,7 @@ void Cerrge(const char *path, INTEGER const nunit) {
         Cgetrs("N", 2, 1, a, 2, ip, b, 1, info);
         chkxer("Cgetrs", infot, nout, lerr, ok);
         //
-        //        Cgerfs
+        // Cgerfs
         //
         strncpy(srnamt, "Cgerfs", srnamt_len);
         infot = 1;
@@ -166,7 +173,7 @@ void Cerrge(const char *path, INTEGER const nunit) {
         Cgerfs("N", 2, 1, a, 2, af, 2, ip, b, 2, x, 1, r1, r2, w, r, info);
         chkxer("Cgerfs", infot, nout, lerr, ok);
         //
-        //        Cgecon
+        // Cgecon
         //
         strncpy(srnamt, "Cgecon", srnamt_len);
         infot = 1;
@@ -179,7 +186,7 @@ void Cerrge(const char *path, INTEGER const nunit) {
         Cgecon("1", 2, a, 1, anrm, rcond, w, r, info);
         chkxer("Cgecon", infot, nout, lerr, ok);
         //
-        //        Cgeequ
+        // Cgeequ
         //
         strncpy(srnamt, "Cgeequ", srnamt_len);
         infot = 1;
@@ -192,12 +199,12 @@ void Cerrge(const char *path, INTEGER const nunit) {
         Cgeequ(2, 2, a, 1, r1, r2, rcond, ccond, anrm, info);
         chkxer("Cgeequ", infot, nout, lerr, ok);
         //
-        //     Test error exits of the routines that use the LU decomposition
-        //     of a general band matrix.
+        // Test error exits of the routines that use the LU decomposition
+        // of a general band matrix.
         //
     } else if (Mlsamen(2, c2, "GB")) {
         //
-        //        Cgbtrf
+        // Cgbtrf
         //
         strncpy(srnamt, "Cgbtrf", srnamt_len);
         infot = 1;
@@ -216,7 +223,7 @@ void Cerrge(const char *path, INTEGER const nunit) {
         Cgbtrf(2, 2, 1, 1, a, 3, ip, info);
         chkxer("Cgbtrf", infot, nout, lerr, ok);
         //
-        //        Cgbtf2
+        // Cgbtf2
         //
         strncpy(srnamt, "Cgbtf2", srnamt_len);
         infot = 1;
@@ -235,7 +242,7 @@ void Cerrge(const char *path, INTEGER const nunit) {
         Cgbtf2(2, 2, 1, 1, a, 3, ip, info);
         chkxer("Cgbtf2", infot, nout, lerr, ok);
         //
-        //        Cgbtrs
+        // Cgbtrs
         //
         strncpy(srnamt, "Cgbtrs", srnamt_len);
         infot = 1;
@@ -260,7 +267,7 @@ void Cerrge(const char *path, INTEGER const nunit) {
         Cgbtrs("N", 2, 0, 0, 1, a, 1, ip, b, 1, info);
         chkxer("Cgbtrs", infot, nout, lerr, ok);
         //
-        //        Cgbrfs
+        // Cgbrfs
         //
         strncpy(srnamt, "Cgbrfs", srnamt_len);
         infot = 1;
@@ -291,7 +298,7 @@ void Cerrge(const char *path, INTEGER const nunit) {
         Cgbrfs("N", 2, 0, 0, 1, a, 1, af, 1, ip, b, 2, x, 1, r1, r2, w, r, info);
         chkxer("Cgbrfs", infot, nout, lerr, ok);
         //
-        //        Cgbcon
+        // Cgbcon
         //
         strncpy(srnamt, "Cgbcon", srnamt_len);
         infot = 1;
@@ -310,7 +317,7 @@ void Cerrge(const char *path, INTEGER const nunit) {
         Cgbcon("1", 2, 1, 1, a, 3, ip, anrm, rcond, w, r, info);
         chkxer("Cgbcon", infot, nout, lerr, ok);
         //
-        //        Cgbequ
+        // Cgbequ
         //
         strncpy(srnamt, "Cgbequ", srnamt_len);
         infot = 1;
@@ -330,10 +337,10 @@ void Cerrge(const char *path, INTEGER const nunit) {
         chkxer("Cgbequ", infot, nout, lerr, ok);
     }
     //
-    //     Print a summary line.
+    // Print a summary line.
     //
     Alaesm(path, ok, nout);
     //
-    //     End of Cerrge
+    // End of Cerrge
     //
 }

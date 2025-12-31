@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DGERQS.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -38,26 +45,7 @@ using fem::common;
 
 void Rgerqs(INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEGER const lda, REAL *tau, REAL *b, INTEGER const ldb, REAL *work, INTEGER const lwork, INTEGER &info) {
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     if (m < 0) {
@@ -78,26 +66,26 @@ void Rgerqs(INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEG
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0 || nrhs == 0 || m == 0) {
         return;
     }
     //
-    //     Solve R*X = B(n-m+1:n,:)
+    // Solve R*X = B(n-m+1:n,:)
     //
     const REAL one = 1.0;
     Rtrsm("Left", "Upper", "No transpose", "Non-unit", m, nrhs, one, &a[((n - m + 1) - 1) * lda], lda, &b[((n - m + 1) - 1)], ldb);
     //
-    //     Set B(1:n-m,:) to zero
+    // Set B(1:n-m,:) to zero
     //
     const REAL zero = 0.0;
     Rlaset("Full", n - m, nrhs, zero, zero, b, ldb);
     //
-    //     B := Q' * B
+    // B := Q' * B
     //
     Rormrq("Left", "Transpose", n, nrhs, m, a, lda, tau, b, ldb, work, lwork, info);
     //
-    //     End of RgerQS
+    // End of Rgerqs
     //
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine ZDRVSY_AA_2STAGE.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -88,14 +95,14 @@ void Cdrvsy_aa_2stage(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER con
     REAL result[ntests];
     INTEGER nt = 0;
     //
-    //     Test path
+    // Initialize constants and the random number seed.
     //
     path[0] = 'C';
     path[1] = 'H';
     path[2] = '2';
     //
-    //     Path to generate matrices
     //
+    // Path to generate matrices
     matpath[0] = 'C';
     matpath[1] = 'S';
     matpath[2] = 'Y';
@@ -107,21 +114,21 @@ void Cdrvsy_aa_2stage(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER con
         iseed[i - 1] = iseedy[i - 1];
     }
     //
-    //     Test the error exits
+    // Test the error exits
     //
     if (tsterr) {
         Cerrvx(path, nout);
     }
     infot = 0;
     //
-    //     Set the block size and minimum block size for testing.
+    // Set the block size and minimum block size for testing.
     //
     nb = 1;
     nbmin = 2;
     xlaenv(1, nb);
     xlaenv(2, nbmin);
     //
-    //     Do for each value of N in NVAL
+    // Do for each value of N in NVAL
     //
     for (in = 1; in <= nn; in = in + 1) {
         n = nval[in - 1];
@@ -134,20 +141,20 @@ void Cdrvsy_aa_2stage(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER con
         //
         for (imat = 1; imat <= nimat; imat = imat + 1) {
             //
-            //           Do the tests only if DOTYPE( IMAT ) is true.
+            // Do the tests only if DOTYPE( IMAT ) is true.
             //
             if (!dotype[imat - 1]) {
                 goto statement_170;
             }
             //
-            //           Skip types 3, 4, 5, or 6 if the matrix size is too small.
+            // Skip types 3, 4, 5, or 6 if the matrix size is too small.
             //
             zerot = imat >= 3 && imat <= 6;
             if (zerot && n < imat - 2) {
                 goto statement_170;
             }
             //
-            //           Do first for UPLO = 'U', then for UPLO = 'L'
+            // Do first for UPLO = 'U', then for UPLO = 'L'
             //
             for (iuplo = 1; iuplo <= 2; iuplo = iuplo + 1) {
                 uplo[0] = uplos[iuplo - 1];
@@ -170,8 +177,8 @@ void Cdrvsy_aa_2stage(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER con
                     goto statement_160;
                 }
                 //
-                //                 For types 3-6, zero one or more rows and columns of
-                //                 the matrix to test that INFO is returned correctly.
+                // For types 3-6, zero one or more rows and columns of
+                // the matrix to test that INFO is returned correctly.
                 //
                 if (zerot) {
                     if (imat == 3) {
@@ -184,7 +191,7 @@ void Cdrvsy_aa_2stage(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER con
                     //
                     if (imat < 6) {
                         //
-                        //                       Set row and column IZERO to zero.
+                        // Set row and column IZERO to zero.
                         //
                         if (iuplo == 1) {
                             ioff = (izero - 1) * lda;
@@ -211,7 +218,7 @@ void Cdrvsy_aa_2stage(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER con
                         ioff = 0;
                         if (iuplo == 1) {
                             //
-                            //                       Set the first IZERO rows and columns to zero.
+                            // Set the first IZERO rows and columns to zero.
                             //
                             for (j = 1; j <= n; j = j + 1) {
                                 i2 = min(j, izero);
@@ -223,7 +230,7 @@ void Cdrvsy_aa_2stage(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER con
                             izero = 1;
                         } else {
                             //
-                            //                       Set the first IZERO rows and columns to zero.
+                            // Set the first IZERO rows and columns to zero.
                             //
                             ioff = 0;
                             for (j = 1; j <= n; j = j + 1) {
@@ -239,7 +246,7 @@ void Cdrvsy_aa_2stage(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER con
                     izero = 0;
                 }
                 //
-                //                 End generate the test matrix A.
+                // End generate the test matrix A.
                 //
                 for (ifact = 1; ifact <= nfact; ifact = ifact + 1) {
                     //
@@ -263,8 +270,8 @@ void Cdrvsy_aa_2stage(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER con
                         lwork = min(n * nb, 3 * nmax * nmax);
                         Csysv_aa_2stage(uplo, n, nrhs, afac, lda, ainv, (3 * nb + 1) * n, iwork, &iwork[(1 + n) - 1], x, lda, work, lwork, info);
                         //
-                        //                    Adjust the expected value of INFO to account for
-                        //                    pivoting.
+                        // Adjust the expected value of INFO to account for
+                        // pivoting.
                         //
                         if (izero > 0) {
                             j = 1;
@@ -283,7 +290,7 @@ void Cdrvsy_aa_2stage(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER con
                             k = 0;
                         }
                         //
-                        //                    Check error code from Csysv_aa_2stage .
+                        // Check error code from Csysv_aa_2stage .
                         //
                         if (info != k) {
                             Alaerh(path, "Csysv_aa_2stage", info, k, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
@@ -292,22 +299,22 @@ void Cdrvsy_aa_2stage(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER con
                             goto statement_120;
                         }
                         //
-                        //                    Compute residual of the computed solution.
+                        // Compute residual of the computed solution.
                         //
                         Clacpy("Full", n, nrhs, b, lda, work, lda);
                         Csyt02(uplo, n, nrhs, a, lda, x, lda, work, lda, rwork, result[1 - 1]);
                         //
-                        //                    Reconstruct matrix from factors and compute
-                        //                    residual.
+                        // Reconstruct matrix from factors and compute
+                        // residual.
                         //
-                        //                     CALL ZSY01_AA( UPLO, N, A, LDA, AFAC, LDA,
-                        //     $                                  IWORK, AINV, LDA, RWORK,
-                        //     $                                  RESULT( 2 ) )
-                        //                     NT = 2
+                        // CALL ZSY01_AA( UPLO, N, A, LDA, AFAC, LDA,
+                        // $                                  IWORK, AINV, LDA, RWORK,
+                        // $                                  RESULT( 2 ) )
+                        // NT = 2
                         nt = 1;
                         //
-                        //                    Print information about the tests that did not pass
-                        //                    the threshold.
+                        // Print information about the tests that did not pass
+                        // the threshold.
                         //
                         for (k = 1; k <= nt; k = k + 1) {
                             if (result[k - 1] >= thresh) {
@@ -333,10 +340,10 @@ void Cdrvsy_aa_2stage(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER con
         }
     }
     //
-    //     Print a summary of the results.
+    // Print a summary of the results.
     //
     Alasvm(path, nout, nfail, nrun, nerrs);
     //
-    //     End of Cdrvsy_aa_2stage
+    // End of Cdrvsy_aa_2stage
     //
 }

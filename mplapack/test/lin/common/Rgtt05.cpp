@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DGTT05.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -54,28 +61,7 @@ void Rgtt05(const char *trans, INTEGER const n, INTEGER const nrhs, REAL *dl, RE
     REAL axbi = 0.0;
     REAL tmp = 0.0;
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Quick exit if N = 0 or NRHS = 0.
+    // Quick exit if N = 0 or NRHS = 0.
     //
     if (n <= 0 || nrhs <= 0) {
         reslts[1 - 1] = zero;
@@ -89,9 +75,9 @@ void Rgtt05(const char *trans, INTEGER const n, INTEGER const nrhs, REAL *dl, RE
     notran = Mlsame(trans, "N");
     nz = 4;
     //
-    //     Test 1:  Compute the maximum of
-    //        norm(X - XACT) / ( norm(X) * FERR )
-    //     over all the vectors X and XACT using the infinity-norm.
+    // Test 1:  Compute the maximum of
+    // norm(X - XACT) / ( norm(X) * FERR )
+    // over all the vectors X and XACT using the infinity-norm.
     //
     errbnd = zero;
     for (j = 1; j <= nrhs; j = j + 1) {
@@ -121,8 +107,8 @@ void Rgtt05(const char *trans, INTEGER const n, INTEGER const nrhs, REAL *dl, RE
     }
     reslts[1 - 1] = errbnd;
     //
-    //     Test 2:  Compute the maximum of BERR / ( NZ*EPS + (*) ), where
-    //     (*) = NZ*UNFL / (min_i (abs(op(A))*abs(X) +abs(b))_i )
+    // Test 2:  Compute the maximum of BERR / ( NZ*EPS + (*) ), where
+    // (*) = NZ*UNFL / (min_i (abs(op(A))*abs(X) +abs(b))_i )
     //
     for (k = 1; k <= nrhs; k = k + 1) {
         if (notran) {
@@ -158,6 +144,6 @@ void Rgtt05(const char *trans, INTEGER const n, INTEGER const nrhs, REAL *dl, RE
         }
     }
     //
-    //     End of Rgtt05
+    // End of Rgtt05
     //
 }

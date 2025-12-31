@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine ZDRVRF1.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -73,7 +80,7 @@ void Cdrvrf1(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
     REAL result[ntests];
     static const char *format_9999 = "(1x,' *** Error(s) or Failure(s) while testing Clanhf         ***')";
     //
-    //     Initialize constants and the random number seed.
+    // Initialize constants and the random number seed.
     //
     nrun = 0;
     nfail = 0;
@@ -94,14 +101,14 @@ void Cdrvrf1(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
         n = nval[iin - 1];
         //
         for (iit = 1; iit <= 3; iit = iit + 1) {
-            //           Nothing to do for N=0
+            // Nothing to do for N=0
             if (n == 0) {
                 break;
             }
             //
-            //           IIT = 1 : random matrix
-            //           IIT = 2 : random matrix scaled near underflow
-            //           IIT = 3 : random matrix scaled near overflow
+            // IIT = 1 : random matrix
+            // IIT = 2 : random matrix scaled near underflow
+            // IIT = 3 : random matrix scaled near overflow
             //
             for (j = 1; j <= n; j = j + 1) {
                 for (i = 1; i <= n; i = i + 1) {
@@ -125,13 +132,13 @@ void Cdrvrf1(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
                 }
             }
             //
-            //           Do first for UPLO = 'U', then for UPLO = 'L'
+            // Do first for UPLO = 'U', then for UPLO = 'L'
             //
             for (iuplo = 1; iuplo <= 2; iuplo = iuplo + 1) {
                 //
                 uplo = uplos[iuplo - 1];
                 //
-                //              Do first for CFORM = 'N', then for CFORM = 'C'
+                // Do first for CFORM = 'N', then for CFORM = 'C'
                 //
                 for (iform = 1; iform <= 2; iform = iform + 1) {
                     //
@@ -139,7 +146,7 @@ void Cdrvrf1(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
                     //
                     Ctrttf(&cform, &uplo, n, a, lda, arf, info);
                     //
-                    //                 Check error code from Ctrttf
+                    // Check error code from Ctrttf
                     //
                     if (info != 0) {
                         if (nfail == 0 && nerrs == 0) {
@@ -155,7 +162,7 @@ void Cdrvrf1(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
                     //
                     for (inorm = 1; inorm <= 4; inorm = inorm + 1) {
                         //
-                        //                    Check all four norms: 'M', '1', 'I', 'F'
+                        // Check all four norms: 'M', '1', 'I', 'F'
                         //
                         norm = norms[inorm - 1];
                         normarf = Clanhf(&norm, &cform, &uplo, n, arf, work);
@@ -182,7 +189,7 @@ void Cdrvrf1(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
         }
     }
     //
-    //     Print a summary of the results.
+    // Print a summary of the results.
     //
     if (nfail == 0) {
         write(nout, "(1x,'All tests for ',a6,' auxiliary routine passed the ',"
@@ -197,6 +204,6 @@ void Cdrvrf1(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
         write(nout, "(26x,i5,' error message recorded (',a6,')')"), nerrs, "Clanhf";
     }
     //
-    //     End of Cdrvrf1
+    // End of Cdrvrf1
     //
 }

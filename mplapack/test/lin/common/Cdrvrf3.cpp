@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine ZDRVRF3.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -124,36 +131,36 @@ void Cdrvrf3(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
                                         alpha = Clarnd(4, iseed);
                                     }
                                     //
-                                    //                             All the parameters are set:
-                                    //                                CFORM, SIDE, UPLO, TRANS, DIAG, M, N,
-                                    //                                and ALPHA
-                                    //                             READY TO TEST!
+                                    // All the parameters are set:
+                                    // CFORM, SIDE, UPLO, TRANS, DIAG, M, N,
+                                    // and ALPHA
+                                    // READY TO TEST!
                                     //
                                     nrun++;
                                     //
                                     if (iside == 1) {
                                         //
-                                        //                                The case ISIDE.EQ.1 is when SIDE.EQ.'L'
-                                        //                                -> A is M-by-M ( B is M-by-N )
+                                        // The case ISIDE.EQ.1 is when SIDE.EQ.'L'
+                                        // -> A is M-by-M ( B is M-by-N )
                                         //
                                         na = m;
                                         //
                                     } else {
                                         //
-                                        //                                The case ISIDE.EQ.2 is when SIDE.EQ.'R'
-                                        //                                -> A is N-by-N ( B is M-by-N )
+                                        // The case ISIDE.EQ.2 is when SIDE.EQ.'R'
+                                        // -> A is N-by-N ( B is M-by-N )
                                         //
                                         na = n;
                                         //
                                     }
                                     //
-                                    //                             Generate A our NA--by--NA triangular
-                                    //                             matrix.
-                                    //                             Our test is based on forward error so we
-                                    //                             do want A to be well conditioned! To get
-                                    //                             a well-conditioned triangular matrix, we
-                                    //                             take the R factor of the QR/LQ factorization
-                                    //                             of a random matrix.
+                                    // Generate A our NA--by--NA triangular
+                                    // matrix.
+                                    // Our test is based on forward error so we
+                                    // do want A to be well conditioned! To get
+                                    // a well-conditioned triangular matrix, we
+                                    // take the R factor of the QR/LQ factorization
+                                    // of a random matrix.
                                     //
                                     for (j = 1; j <= na; j = j + 1) {
                                         for (i = 1; i <= na; i = i + 1) {
@@ -188,8 +195,8 @@ void Cdrvrf3(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
                                     //
                                     Ctrttf(&cform, &uplo, na, a, lda, arf, info);
                                     //
-                                    //                             Generate B1 our M--by--N right-hand side
-                                    //                             and store a copy in B2.
+                                    // Generate B1 our M--by--N right-hand side
+                                    // and store a copy in B2.
                                     //
                                     for (j = 1; j <= n; j = j + 1) {
                                         for (i = 1; i <= m; i = i + 1) {
@@ -208,7 +215,7 @@ void Cdrvrf3(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
                                     //
                                     Ctfsm(&cform, &side, &uplo, &trans, &diag, m, n, alpha, arf, b2, lda);
                                     //
-                                    //                             Check that the result agrees.
+                                    // Check that the result agrees.
                                     //
                                     for (j = 1; j <= n; j = j + 1) {
                                         for (i = 1; i <= m; i = i + 1) {
@@ -244,7 +251,7 @@ void Cdrvrf3(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
         }
     }
     //
-    //     Print a summary of the results.
+    // Print a summary of the results.
     //
     if (nfail == 0) {
         write(nout, "(1x,'All tests for ',a5,' auxiliary routine passed the ',"
@@ -256,6 +263,6 @@ void Cdrvrf3(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
             "Ctfsm", nfail, nrun;
     }
     //
-    //     End of Cdrvrf3
+    // End of Cdrvrf3
     //
 }

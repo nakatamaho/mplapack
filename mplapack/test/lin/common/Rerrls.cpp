@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DERRLS.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -63,9 +70,9 @@ void Rerrls(const char *path, INTEGER const nunit) {
     INTEGER ip[nmax];
     if (Mlsamen(2, c2, "LS")) {
         //
-        //        Test error exits for the least squares driver routines.
+        // Test error exits for the least squares driver routines.
         //
-        //        Rgels
+        // Rgels
         //
         strncpy(srnamt, "Rgels", srnamt_len);
         infot = 1;
@@ -90,7 +97,7 @@ void Rerrls(const char *path, INTEGER const nunit) {
         Rgels("N", 1, 1, 0, a, 1, b, 1, w, 1, info);
         chkxer("Rgels", infot, nout, lerr, ok);
         //
-        //        Rgelss
+        // Rgelss
         //
         strncpy(srnamt, "Rgelss", srnamt_len);
         infot = 1;
@@ -109,7 +116,7 @@ void Rerrls(const char *path, INTEGER const nunit) {
         Rgelss(2, 0, 0, a, 2, b, 1, s, rcond, irnk, w, 2, info);
         chkxer("Rgelss", infot, nout, lerr, ok);
         //
-        //        Rgelsy
+        // Rgelsy
         //
         strncpy(srnamt, "Rgelsy", srnamt_len);
         infot = 1;
@@ -131,7 +138,7 @@ void Rerrls(const char *path, INTEGER const nunit) {
         Rgelsy(2, 2, 1, a, 2, b, 2, ip, rcond, irnk, w, 1, info);
         chkxer("Rgelsy", infot, nout, lerr, ok);
         //
-        //        Rgelsd
+        // Rgelsd
         //
         strncpy(srnamt, "Rgelsd", srnamt_len);
         infot = 1;
@@ -154,10 +161,10 @@ void Rerrls(const char *path, INTEGER const nunit) {
         chkxer("Rgelsd", infot, nout, lerr, ok);
     }
     //
-    //     Print a summary line.
+    // Print a summary line.
     //
     Alaesm(path, ok, nout);
     //
-    //     End of Rerrls
+    // End of Rerrls
     //
 }

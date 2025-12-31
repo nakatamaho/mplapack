@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine ZDRVRFP.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -83,7 +90,7 @@ void Cdrvrfp(INTEGER const nout, INTEGER const nn, INTEGER *nval, INTEGER const 
     INTEGER nt = 0;
     INTEGER k = 0;
     //
-    //     Initialize constants and the random number seed.
+    // Initialize constants and the random number seed.
     //
     nrun = 0;
     nfail = 0;
@@ -106,13 +113,13 @@ void Cdrvrfp(INTEGER const nout, INTEGER const nn, INTEGER *nval, INTEGER const 
                 //
                 imat = ntval[iit - 1];
                 //
-                //              If N.EQ.0, only consider the first type
+                // If N.EQ.0, only consider the first type
                 //
                 if (n == 0 && iit >= 1) {
                     goto statement_120;
                 }
                 //
-                //              Skip types 3, 4, or 5 if the matrix size is too small.
+                // Skip types 3, 4, or 5 if the matrix size is too small.
                 //
                 if (imat == 4 && n <= 1) {
                     goto statement_120;
@@ -121,18 +128,18 @@ void Cdrvrfp(INTEGER const nout, INTEGER const nn, INTEGER *nval, INTEGER const 
                     goto statement_120;
                 }
                 //
-                //              Do first for UPLO = 'U', then for UPLO = 'L'
+                // Do first for UPLO = 'U', then for UPLO = 'L'
                 //
                 for (iuplo = 1; iuplo <= 2; iuplo = iuplo + 1) {
                     uplo = uplos[iuplo - 1];
                     //
-                    //                 Do first for CFORM = 'N', then for CFORM = 'C'
+                    // Do first for CFORM = 'N', then for CFORM = 'C'
                     //
                     for (iform = 1; iform <= 2; iform = iform + 1) {
                         cform = forms[iform - 1];
                         //
-                        //                    Set up parameters with Clatb4 and generate a test
-                        //                    matrix with Clatms.
+                        // Set up parameters with Clatb4 and generate a test
+                        // matrix with Clatms.
                         //
                         Clatb4("ZPO", imat, n, n, &ctype, kl, ku, anorm, mode, cndnum, &dist);
                         //
@@ -145,8 +152,8 @@ void Cdrvrfp(INTEGER const nout, INTEGER const nn, INTEGER *nval, INTEGER const 
                             goto statement_100;
                         }
                         //
-                        //                    For types 3-5, zero one row and column of the matrix to
-                        //                    test that INFO is returned correctly.
+                        // For types 3-5, zero one row and column of the matrix to
+                        // test that INFO is returned correctly.
                         //
                         zerot = imat >= 3 && imat <= 5;
                         if (zerot) {
@@ -159,7 +166,7 @@ void Cdrvrfp(INTEGER const nout, INTEGER const nn, INTEGER *nval, INTEGER const 
                             }
                             ioff = (izero - 1) * lda;
                             //
-                            //                       Set row and column IZERO of A to 0.
+                            // Set row and column IZERO of A to 0.
                             //
                             if (iuplo == 1) {
                                 for (i = 1; i <= izero - 1; i = i + 1) {
@@ -185,40 +192,40 @@ void Cdrvrfp(INTEGER const nout, INTEGER const nn, INTEGER *nval, INTEGER const 
                             izero = 0;
                         }
                         //
-                        //                    Set the imaginary part of the diagonals.
+                        // Set the imaginary part of the diagonals.
                         //
                         Claipd(n, a, lda + 1, 0);
                         //
-                        //                    Save a copy of the matrix A in ASAV.
+                        // Save a copy of the matrix A in ASAV.
                         //
                         Clacpy(&uplo, n, n, a, lda, asav, lda);
                         //
-                        //                    Compute the condition number of A (RCONDC).
+                        // Compute the condition number of A (RCONDC).
                         //
                         if (zerot) {
                             rcondc = zero;
                         } else {
                             //
-                            //                       Compute the 1-norm of A.
+                            // Compute the 1-norm of A.
                             //
                             anorm = Clanhe("1", &uplo, n, a, lda, d_work_Clanhe);
                             //
-                            //                       Factor the matrix A.
+                            // Factor the matrix A.
                             //
                             Cpotrf(&uplo, n, a, lda, info);
                             //
-                            //                       Form the inverse of A.
+                            // Form the inverse of A.
                             //
                             Cpotri(&uplo, n, a, lda, info);
                             //
                             if (n != 0) {
                                 //
-                                //                          Compute the 1-norm condition number of A.
+                                // Compute the 1-norm condition number of A.
                                 //
                                 ainvnm = Clanhe("1", &uplo, n, a, lda, d_work_Clanhe);
                                 rcondc = (one / anorm) / ainvnm;
                                 //
-                                //                          Restore the matrix A.
+                                // Restore the matrix A.
                                 //
                                 Clacpy(&uplo, n, n, asav, lda, a, lda);
                             }
@@ -230,8 +237,8 @@ void Cdrvrfp(INTEGER const nout, INTEGER const nn, INTEGER *nval, INTEGER const 
                         Clarhs("ZPO", "N", &uplo, " ", n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
                         Clacpy("Full", n, nrhs, b, lda, bsav, lda);
                         //
-                        //                    Compute the L*L' or U'*U factorization of the
-                        //                    matrix and solve the system.
+                        // Compute the L*L' or U'*U factorization of the
+                        // matrix and solve the system.
                         //
                         Clacpy(&uplo, n, n, a, lda, afac, lda);
                         Clacpy("Full", n, nrhs, b, ldb, x, ldb);
@@ -239,19 +246,19 @@ void Cdrvrfp(INTEGER const nout, INTEGER const nn, INTEGER *nval, INTEGER const 
                         Ctrttf(&cform, &uplo, n, afac, lda, arf, info);
                         Cpftrf(&cform, &uplo, n, arf, info);
                         //
-                        //                    Check error code from Cpftrf.
+                        // Check error code from Cpftrf.
                         //
                         if (info != izero) {
                             //
-                            //                       LANGOU: there is a small hick here: IZERO should
-                            //                       always be INFO however if INFO is ZERO, Alaerh does not
-                            //                       complain.
+                            // LANGOU: there is a small hick here: IZERO should
+                            // always be INFO however if INFO is ZERO, Alaerh does not
+                            // complain.
                             //
                             Alaerh("ZPF", "ZPFSV ", info, izero, &uplo, n, n, -1, -1, nrhs, iit, nfail, nerrs, nout);
                             goto statement_100;
                         }
                         //
-                        //                     Skip the tests if INFO is not 0.
+                        // Skip the tests if INFO is not 0.
                         //
                         if (info != 0) {
                             goto statement_100;
@@ -261,14 +268,14 @@ void Cdrvrfp(INTEGER const nout, INTEGER const nn, INTEGER *nval, INTEGER const 
                         //
                         Ctfttr(&cform, &uplo, n, arf, afac, lda, info);
                         //
-                        //                    Reconstruct matrix from factors and compute
-                        //                    residual.
+                        // Reconstruct matrix from factors and compute
+                        // residual.
                         //
                         Clacpy(&uplo, n, n, afac, lda, asav, lda);
                         Cpot01(&uplo, n, a, lda, afac, lda, d_work_Cpot01, result[1 - 1]);
                         Clacpy(&uplo, n, n, asav, lda, afac, lda);
                         //
-                        //                    Form the inverse and compute the residual.
+                        // Form the inverse and compute the residual.
                         //
                         if (mod(n, 2) == 0) {
                             Clacpy("A", n + 1, n / 2, arf, n + 1, arfinv, n + 1);
@@ -280,7 +287,7 @@ void Cdrvrfp(INTEGER const nout, INTEGER const nn, INTEGER *nval, INTEGER const 
                         //
                         Ctfttr(&cform, &uplo, n, arfinv, ainv, lda, info);
                         //
-                        //                    Check error code from Cpftri.
+                        // Check error code from Cpftri.
                         //
                         if (info != 0) {
                             Alaerh("ZPO", "Cpftri", info, 0, &uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
@@ -288,18 +295,18 @@ void Cdrvrfp(INTEGER const nout, INTEGER const nn, INTEGER *nval, INTEGER const 
                         //
                         Cpot03(&uplo, n, a, lda, ainv, lda, z_work_Cpot03, lda, d_work_Cpot03, rcondc, result[2 - 1]);
                         //
-                        //                    Compute residual of the computed solution.
+                        // Compute residual of the computed solution.
                         //
                         Clacpy("Full", n, nrhs, b, lda, z_work_Cpot02, lda);
                         Cpot02(&uplo, n, nrhs, a, lda, x, lda, z_work_Cpot02, lda, d_work_Cpot02, result[3 - 1]);
                         //
-                        //                    Check solution from generated exact solution.
+                        // Check solution from generated exact solution.
                         //
                         Cget04(n, nrhs, x, lda, xact, lda, rcondc, result[4 - 1]);
                         nt = 4;
                         //
-                        //                    Print information about the tests that did not
-                        //                    pass the threshold.
+                        // Print information about the tests that did not
+                        // pass the threshold.
                         //
                         for (k = 1; k <= nt; k = k + 1) {
                             if (result[k - 1] >= thresh) {
@@ -322,10 +329,10 @@ void Cdrvrfp(INTEGER const nout, INTEGER const nn, INTEGER *nval, INTEGER const 
         }
     }
     //
-    //     Print a summary of the results.
+    // Print a summary of the results.
     //
     Alasvm("ZPF", nout, nfail, nrun, nerrs);
     //
-    //     End of Cdrvrfp
+    // End of Cdrvrfp
     //
 }

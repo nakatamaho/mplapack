@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DCHKSP.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -98,14 +105,14 @@ void Rchksp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
         iseed[i - 1] = iseedy[i - 1];
     }
     //
-    //     Test the error exits
+    // Test the error exits
     //
     if (tsterr) {
         Rerrsy(path, nout);
     }
     infot = 0;
     //
-    //     Do for each value of N in NVAL
+    // Do for each value of N in NVAL
     //
     for (in = 1; in <= nn; in = in + 1) {
         n = nval[in - 1];
@@ -119,20 +126,20 @@ void Rchksp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
         izero = 0;
         for (imat = 1; imat <= nimat; imat = imat + 1) {
             //
-            //           Do the tests only if DOTYPE( IMAT ) is true.
+            // Do the tests only if DOTYPE( IMAT ) is true.
             //
             if (!dotype[imat - 1]) {
                 goto statement_160;
             }
             //
-            //           Skip types 3, 4, 5, or 6 if the matrix size is too small.
+            // Skip types 3, 4, 5, or 6 if the matrix size is too small.
             //
             zerot = imat >= 3 && imat <= 6;
             if (zerot && n < imat - 2) {
                 goto statement_160;
             }
             //
-            //           Do first for UPLO = 'U', then for UPLO = 'L'
+            // Do first for UPLO = 'U', then for UPLO = 'L'
             //
             for (iuplo = 1; iuplo <= 2; iuplo = iuplo + 1) {
                 uplo[0] = uplos[iuplo - 1];
@@ -142,23 +149,23 @@ void Rchksp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                     packit[0] = 'R';
                 }
                 //
-                //              Set up parameters with Rlatb4 and generate a test matrix
-                //              with Rlatms.
+                // Set up parameters with Rlatb4 and generate a test matrix
+                // with Rlatms.
                 //
                 Rlatb4(path, imat, n, n, type, kl, ku, anorm, mode, cndnum, dist);
                 //
                 strncpy(srnamt, "Rlatms", srnamt_len);
                 Rlatms(n, n, dist, iseed, type, rwork, mode, cndnum, anorm, kl, ku, packit, a, lda, work, info);
                 //
-                //              Check error code from Rlatms.
+                // Check error code from Rlatms.
                 //
                 if (info != 0) {
                     Alaerh(path, "Rlatms", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                     goto statement_150;
                 }
                 //
-                //              For types 3-6, zero one or more rows and columns of
-                //              the matrix to test that INFO is returned correctly.
+                // For types 3-6, zero one or more rows and columns of
+                // the matrix to test that INFO is returned correctly.
                 //
                 if (zerot) {
                     if (imat == 3) {
@@ -171,7 +178,7 @@ void Rchksp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                     //
                     if (imat < 6) {
                         //
-                        //                    Set row and column IZERO to zero.
+                        // Set row and column IZERO to zero.
                         //
                         if (iuplo == 1) {
                             ioff = (izero - 1) * izero / 2;
@@ -198,7 +205,7 @@ void Rchksp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                         ioff = 0;
                         if (iuplo == 1) {
                             //
-                            //                       Set the first IZERO rows and columns to zero.
+                            // Set the first IZERO rows and columns to zero.
                             //
                             for (j = 1; j <= n; j = j + 1) {
                                 i2 = min(j, izero);
@@ -209,7 +216,7 @@ void Rchksp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                             }
                         } else {
                             //
-                            //                       Set the last IZERO rows and columns to zero.
+                            // Set the last IZERO rows and columns to zero.
                             //
                             for (j = 1; j <= n; j = j + 1) {
                                 i1 = max(j, izero);
@@ -224,15 +231,15 @@ void Rchksp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                     izero = 0;
                 }
                 //
-                //              Compute the L*D*L' or U*D*U' factorization of the matrix.
+                // Compute the L*D*L' or U*D*U' factorization of the matrix.
                 //
                 npp = n * (n + 1) / 2;
                 Rcopy(npp, a, 1, afac, 1);
                 strncpy(srnamt, "Rsptrf", srnamt_len);
                 Rsptrf(uplo, n, afac, iwork, info);
                 //
-                //              Adjust the expected value of INFO to account for
-                //              pivoting.
+                // Adjust the expected value of INFO to account for
+                // pivoting.
                 //
                 k = izero;
                 if (k > 0) {
@@ -248,7 +255,7 @@ void Rchksp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                     }
                 }
                 //
-                //              Check error code from Rsptrf.
+                // Check error code from Rsptrf.
                 //
                 if (info != k) {
                     Alaerh(path, "Rsptrf", info, k, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
@@ -259,21 +266,21 @@ void Rchksp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                     trfcon = false;
                 }
                 //
-                //+    TEST 1
-                //              Reconstruct matrix from factors and compute residual.
+                // +    TEST 1
+                // Reconstruct matrix from factors and compute residual.
                 //
                 Rspt01(uplo, n, a, afac, iwork, ainv, lda, rwork, result[1 - 1]);
                 nt = 1;
                 //
-                //+    TEST 2
-                //              Form the inverse and compute the residual.
+                // +    TEST 2
+                // Form the inverse and compute the residual.
                 //
                 if (!trfcon) {
                     Rcopy(npp, afac, 1, ainv, 1);
                     strncpy(srnamt, "Rsptri", srnamt_len);
                     Rsptri(uplo, n, ainv, iwork, work, info);
                     //
-                    //              Check error code from Rsptri.
+                    // Check error code from Rsptri.
                     //
                     if (info != 0) {
                         Alaerh(path, "Rsptri", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
@@ -283,8 +290,8 @@ void Rchksp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                     nt = 2;
                 }
                 //
-                //              Print information about the tests that did not pass
-                //              the threshold.
+                // Print information about the tests that did not pass
+                // the threshold.
                 //
                 for (k = 1; k <= nt; k = k + 1) {
                     if (result[k - 1] >= thresh) {
@@ -298,7 +305,7 @@ void Rchksp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                 }
                 nrun += nt;
                 //
-                //              Do only the condition estimate if INFO is not 0.
+                // Do only the condition estimate if INFO is not 0.
                 //
                 if (trfcon) {
                     rcondc = zero;
@@ -308,8 +315,8 @@ void Rchksp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                 for (irhs = 1; irhs <= nns; irhs = irhs + 1) {
                     nrhs = nsval[irhs - 1];
                     //
-                    //+    TEST 3
-                    //              Solve and compute residual for  A * X = B.
+                    // +    TEST 3
+                    // Solve and compute residual for  A * X = B.
                     //
                     strncpy(srnamt, "Rlarhs", srnamt_len);
                     Rlarhs(path, xtype, uplo, " ", n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
@@ -318,7 +325,7 @@ void Rchksp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                     strncpy(srnamt, "Rsptrs", srnamt_len);
                     Rsptrs(uplo, n, nrhs, afac, iwork, x, lda, info);
                     //
-                    //              Check error code from Rsptrs.
+                    // Check error code from Rsptrs.
                     //
                     if (info != 0) {
                         Alaerh(path, "Rsptrs", info, 0, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
@@ -327,18 +334,18 @@ void Rchksp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                     Rlacpy("Full", n, nrhs, b, lda, work, lda);
                     Rppt02(uplo, n, nrhs, a, x, lda, work, lda, rwork, result[3 - 1]);
                     //
-                    //+    TEST 4
-                    //              Check solution from generated exact solution.
+                    // +    TEST 4
+                    // Check solution from generated exact solution.
                     //
                     Rget04(n, nrhs, x, lda, xact, lda, rcondc, result[4 - 1]);
                     //
-                    //+    TESTS 5, 6, and 7
-                    //              Use iterative refinement to improve the solution.
+                    // +    TESTS 5, 6, and 7
+                    // Use iterative refinement to improve the solution.
                     //
                     strncpy(srnamt, "Rsprfs", srnamt_len);
                     Rsprfs(uplo, n, nrhs, a, afac, iwork, b, lda, x, lda, rwork, &rwork[(nrhs + 1) - 1], work, &iwork[(n + 1) - 1], info);
                     //
-                    //              Check error code from RsprFS.
+                    // Check error code from Rsprfs.
                     //
                     if (info != 0) {
                         Alaerh(path, "Rsprfs", info, 0, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
@@ -347,8 +354,8 @@ void Rchksp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                     Rget04(n, nrhs, x, lda, xact, lda, rcondc, result[5 - 1]);
                     Rppt05(uplo, n, nrhs, a, b, lda, x, lda, xact, lda, rwork, &rwork[(nrhs + 1) - 1], &result[6 - 1]);
                     //
-                    //                 Print information about the tests that did not pass
-                    //                 the threshold.
+                    // Print information about the tests that did not pass
+                    // the threshold.
                     //
                     for (k = 3; k <= 7; k = k + 1) {
                         if (result[k - 1] >= thresh) {
@@ -365,15 +372,15 @@ void Rchksp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                     nrun += 5;
                 }
             //
-            //+    TEST 8
-            //              Get an estimate of RCOND = 1/CNDNUM.
+            // +    TEST 8
+            // Get an estimate of RCOND = 1/CNDNUM.
             //
             statement_140:
                 anorm = Rlansp("1", uplo, n, a, rwork);
                 strncpy(srnamt, "Rspcon", srnamt_len);
                 Rspcon(uplo, n, afac, iwork, anorm, rcond, work, &iwork[(n + 1) - 1], info);
                 //
-                //              Check error code from Rspcon.
+                // Check error code from Rspcon.
                 //
                 if (info != 0) {
                     Alaerh(path, "Rspcon", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
@@ -381,7 +388,7 @@ void Rchksp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                 //
                 result[8 - 1] = Rget06(rcond, rcondc);
                 //
-                //              Print the test ratio if it is .GE. THRESH.
+                // Print the test ratio if it is .GE. THRESH.
                 //
                 if (result[8 - 1] >= thresh) {
                     if (nfail == 0 && nerrs == 0) {
@@ -398,10 +405,10 @@ void Rchksp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
         }
     }
     //
-    //     Print a summary of the results.
+    // Print a summary of the results.
     //
     Alasum(path, nout, nfail, nrun, nerrs);
     //
-    //     End of Rchksp
+    // End of Rchksp
     //
 }

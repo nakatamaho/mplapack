@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZCHKTSQR.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -42,7 +49,7 @@ void Cchktsqr(REAL const thresh, bool const tsterr, INTEGER const nm, INTEGER *m
     common cmn;
     common_write write(cmn);
     //
-    //     Initialize constants
+    // Initialize constants
     //
     char path[4] = {};
     path[0] = 'C';
@@ -53,7 +60,7 @@ void Cchktsqr(REAL const thresh, bool const tsterr, INTEGER const nm, INTEGER *m
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
     //
-    //     Test the error exits
+    // Test the error exits
     //
     xlaenv(1, 0);
     xlaenv(2, 0);
@@ -61,7 +68,7 @@ void Cchktsqr(REAL const thresh, bool const tsterr, INTEGER const nm, INTEGER *m
         Cerrtsqr(path, nout);
     }
     //
-    //     Do for each value of M in MVAL.
+    // Do for each value of M in MVAL.
     //
     INTEGER i = 0;
     INTEGER m = 0;
@@ -77,7 +84,7 @@ void Cchktsqr(REAL const thresh, bool const tsterr, INTEGER const nm, INTEGER *m
     for (i = 1; i <= nm; i = i + 1) {
         m = mval[i - 1];
         //
-        //        Do for each value of N in NVAL.
+        // Do for each value of N in NVAL.
         //
         for (j = 1; j <= nn; j = j + 1) {
             n = nval[j - 1];
@@ -89,12 +96,12 @@ void Cchktsqr(REAL const thresh, bool const tsterr, INTEGER const nm, INTEGER *m
                         nb = nbval[imb - 1];
                         xlaenv(2, nb);
                         //
-                        //                 Test Cgeqr and Cgemqr
+                        // Test Cgeqr and Cgemqr
                         //
                         Ctsqr01("TS", m, n, mb, nb, result);
                         //
-                        //                 Print information about the tests that did not
-                        //                 pass the threshold.
+                        // Print information about the tests that did not
+                        // pass the threshold.
                         //
                         for (t = 1; t <= ntests; t = t + 1) {
                             if (result[t - 1] >= thresh) {
@@ -115,12 +122,12 @@ void Cchktsqr(REAL const thresh, bool const tsterr, INTEGER const nm, INTEGER *m
         }
     }
     //
-    //     Do for each value of M in MVAL.
+    // Do for each value of M in MVAL.
     //
     for (i = 1; i <= nm; i = i + 1) {
         m = mval[i - 1];
         //
-        //        Do for each value of N in NVAL.
+        // Do for each value of N in NVAL.
         //
         for (j = 1; j <= nn; j = j + 1) {
             n = nval[j - 1];
@@ -132,12 +139,12 @@ void Cchktsqr(REAL const thresh, bool const tsterr, INTEGER const nm, INTEGER *m
                         nb = nbval[imb - 1];
                         xlaenv(2, nb);
                         //
-                        //                 Test Cgelq and Cgemlq
+                        // Test Cgelq and Cgemlq
                         //
                         Ctsqr01("SW", m, n, mb, nb, result);
                         //
-                        //                 Print information about the tests that did not
-                        //                 pass the threshold.
+                        // Print information about the tests that did not
+                        // pass the threshold.
                         //
                         for (t = 1; t <= ntests; t = t + 1) {
                             if (result[t - 1] >= thresh) {
@@ -158,10 +165,10 @@ void Cchktsqr(REAL const thresh, bool const tsterr, INTEGER const nm, INTEGER *m
         }
     }
     //
-    //     Print a summary of the results.
+    // Print a summary of the results.
     //
     Alasum(path, nout, nfail, nrun, nerrs);
     //
-    //     End of Cchkqrt
+    // End of Cchkqrt
     //
 }

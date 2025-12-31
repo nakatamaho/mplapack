@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DCHKORHR_COL.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -80,14 +87,14 @@ void Rchkorhr_col(REAL const thresh, bool const tsterr, INTEGER const nm, INTEGE
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
     //
-    //     Test the error exits
+    // Test the error exits
     //
     if (tsterr) {
         Rerrorhr_col(path, nout);
     }
     infot = 0;
     //
-    //     Do for each value of M in MVAL.
+    // Do for each value of M in MVAL.
     //
     INTEGER i = 0;
     INTEGER m = 0;
@@ -105,42 +112,42 @@ void Rchkorhr_col(REAL const thresh, bool const tsterr, INTEGER const nm, INTEGE
     for (i = 1; i <= nm; i = i + 1) {
         m = mval[i - 1];
         //
-        //        Do for each value of N in NVAL.
+        // Do for each value of N in NVAL.
         //
         for (j = 1; j <= nn; j = j + 1) {
             n = nval[j - 1];
             //
-            //           Only for M >= N
+            // Only for M >= N
             //
             if (min(m, n) > 0 && m >= n) {
                 //
-                //              Do for each possible value of MB1
+                // Do for each possible value of MB1
                 //
                 for (imb1 = 1; imb1 <= nnb; imb1 = imb1 + 1) {
                     mb1 = nbval[imb1 - 1];
                     //
-                    //                 Only for MB1 > N
+                    // Only for MB1 > N
                     //
                     if (mb1 > n) {
                         //
-                        //                    Do for each possible value of NB1
+                        // Do for each possible value of NB1
                         //
                         for (inb1 = 1; inb1 <= nnb; inb1 = inb1 + 1) {
                             nb1 = nbval[inb1 - 1];
                             //
-                            //                       Do for each possible value of NB2
+                            // Do for each possible value of NB2
                             //
                             for (inb2 = 1; inb2 <= nnb; inb2 = inb2 + 1) {
                                 nb2 = nbval[inb2 - 1];
                                 //
                                 if (nb1 > 0 && nb2 > 0) {
                                     //
-                                    //                             Test Rorhr_col
+                                    // Test Rorhr_col
                                     //
                                     Rorhr_col01(m, n, mb1, nb1, nb2, result);
                                     //
-                                    //                             Print information about the tests that did
-                                    //                             not pass the threshold.
+                                    // Print information about the tests that did
+                                    // not pass the threshold.
                                     //
                                     for (t = 1; t <= ntests; t = t + 1) {
                                         if (result[t - 1] >= thresh) {
@@ -164,47 +171,47 @@ void Rchkorhr_col(REAL const thresh, bool const tsterr, INTEGER const nm, INTEGE
         }
     }
     //
-    //     Do for each value of M in MVAL.
+    // Do for each value of M in MVAL.
     //
     for (i = 1; i <= nm; i = i + 1) {
         m = mval[i - 1];
         //
-        //        Do for each value of N in NVAL.
+        // Do for each value of N in NVAL.
         //
         for (j = 1; j <= nn; j = j + 1) {
             n = nval[j - 1];
             //
-            //           Only for M >= N
+            // Only for M >= N
             //
             if (min(m, n) > 0 && m >= n) {
                 //
-                //              Do for each possible value of MB1
+                // Do for each possible value of MB1
                 //
                 for (imb1 = 1; imb1 <= nnb; imb1 = imb1 + 1) {
                     mb1 = nbval[imb1 - 1];
                     //
-                    //                 Only for MB1 > N
+                    // Only for MB1 > N
                     //
                     if (mb1 > n) {
                         //
-                        //                    Do for each possible value of NB1
+                        // Do for each possible value of NB1
                         //
                         for (inb1 = 1; inb1 <= nnb; inb1 = inb1 + 1) {
                             nb1 = nbval[inb1 - 1];
                             //
-                            //                       Do for each possible value of NB2
+                            // Do for each possible value of NB2
                             //
                             for (inb2 = 1; inb2 <= nnb; inb2 = inb2 + 1) {
                                 nb2 = nbval[inb2 - 1];
                                 //
                                 if (nb1 > 0 && nb2 > 0) {
                                     //
-                                    //                             Test Rorhr_col
+                                    // Test Rorhr_col
                                     //
                                     Rorhr_col02(m, n, mb1, nb1, nb2, result);
                                     //
-                                    //                             Print information about the tests that did
-                                    //                             not pass the threshold.
+                                    // Print information about the tests that did
+                                    // not pass the threshold.
                                     //
                                     for (t = 1; t <= ntests; t = t + 1) {
                                         if (result[t - 1] >= thresh) {
@@ -229,10 +236,10 @@ void Rchkorhr_col(REAL const thresh, bool const tsterr, INTEGER const nm, INTEGE
         }
     }
     //
-    //     Print a summary of the results.
+    // Print a summary of the results.
     //
     Alasum(path, nout, nfail, nrun, nerrs);
     //
-    //     End of Rchkorhr_col
+    // End of Rchkorhr_col
     //
 }

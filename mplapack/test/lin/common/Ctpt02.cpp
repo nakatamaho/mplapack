@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZTPT02.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -38,30 +45,7 @@ using fem::common;
 
 void Ctpt02(const char *uplo, const char *trans, const char *diag, INTEGER const n, INTEGER const nrhs, COMPLEX *ap, COMPLEX *x, INTEGER const ldx, COMPLEX *b, INTEGER const ldb, COMPLEX *work, REAL *rwork, REAL &resid) {
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Quick exit if N = 0 or NRHS = 0
+    // Quick exit if N = 0 or NRHS = 0
     //
     const REAL zero = 0.0;
     if (n <= 0 || nrhs <= 0) {
@@ -69,7 +53,7 @@ void Ctpt02(const char *uplo, const char *trans, const char *diag, INTEGER const
         return;
     }
     //
-    //     Compute the 1-norm of A or A**H.
+    // Compute the 1-norm of A or A**H.
     //
     REAL anorm = 0.0;
     if (Mlsame(trans, "N")) {
@@ -78,7 +62,7 @@ void Ctpt02(const char *uplo, const char *trans, const char *diag, INTEGER const
         anorm = Clantp("I", uplo, diag, n, ap, rwork);
     }
     //
-    //     Exit with RESID = 1/EPS if ANORM = 0.
+    // Exit with RESID = 1/EPS if ANORM = 0.
     //
     REAL eps = Rlamch("Epsilon");
     const REAL one = 1.0;
@@ -87,8 +71,8 @@ void Ctpt02(const char *uplo, const char *trans, const char *diag, INTEGER const
         return;
     }
     //
-    //     Compute the maximum over the number of right hand sides of
-    //        norm(op(A)*x - b) / ( norm(op(A)) * norm(x) * EPS ).
+    // Compute the maximum over the number of right hand sides of
+    // norm(op(A)*x - b) / ( norm(op(A)) * norm(x) * EPS ).
     //
     resid = zero;
     INTEGER j = 0;
@@ -107,6 +91,6 @@ void Ctpt02(const char *uplo, const char *trans, const char *diag, INTEGER const
         }
     }
     //
-    //     End of Ctpt02
+    // End of Ctpt02
     //
 }

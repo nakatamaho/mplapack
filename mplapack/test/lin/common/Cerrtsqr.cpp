@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine ZERRTSQR.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Zenver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -128,7 +135,7 @@ void Cerrtsqr(const char *path, INTEGER const nunit) {
     Cgemqr("L", "N", 2, 2, 1, a, 2, tau, 6, c, 2, w, 0, info);
     chkxer("Cgemqr", infot, nout, lerr, ok);
     //
-    //     Cgelq
+    // Cgelq
     //
     strncpy(srnamt, "Cgelq", srnamt_len);
     infot = 1;
@@ -187,10 +194,10 @@ void Cerrtsqr(const char *path, INTEGER const nunit) {
     Cgemlq("L", "N", 2, 2, 1, a, 2, tau, 6, c, 2, w, 0, info);
     chkxer("Cgemlq", infot, nout, lerr, ok);
     //
-    //     Print a summary line.
+    // Print a summary line.
     //
     Alaesm(path, ok, nout);
     //
-    //     End of Rerrtsqr
+    // End of Rerrtsqr
     //
 }

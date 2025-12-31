@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine ZUNHR_COL02.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -130,9 +137,9 @@ void Cunhr_col02(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
     COMPLEX *work = new COMPLEX[lwork];
     Cgetsqrhrt(m, n, mb1, nb1, nb2, af, m, t2, nb2, work, lwork, info);
     //
-    //     End Householder reconstruction routines.
+    // End Householder reconstruction routines.
     //
-    //     Generate the m-by-m matrix Q
+    // Generate the m-by-m matrix Q
     //
     const COMPLEX czero = COMPLEX(0.0, 0.0);
     const COMPLEX cone = COMPLEX(1.0, 0.0);
@@ -142,7 +149,7 @@ void Cunhr_col02(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
     //
     Cgemqrt("L", "N", m, m, k, nb2_ub, af, m, t2, nb2, q, m, work, info);
     //
-    //     Copy R
+    // Copy R
     //
     COMPLEX *r = new COMPLEX[m * l];
     INTEGER ldr = m;
@@ -150,8 +157,8 @@ void Cunhr_col02(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
     //
     Clacpy("Upper", m, n, af, m, r, m);
     //
-    //     TEST 1
-    //     Compute |R - (Q**T)*A| / ( eps * m * |A| ) and store in RESULT(1)
+    // TEST 1
+    // Compute |R - (Q**T)*A| / ( eps * m * |A| ) and store in RESULT(1)
     //
     Cgemm("C", "N", m, n, m, -cone, q, m, a, m, cone, r, m);
     //
@@ -165,15 +172,15 @@ void Cunhr_col02(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
         result[1 - 1] = zero;
     }
     //
-    //     TEST 2
-    //     Compute |I - (Q**T)*Q| / ( eps * m ) and store in RESULT(2)
+    // TEST 2
+    // Compute |I - (Q**T)*Q| / ( eps * m ) and store in RESULT(2)
     //
     Claset("Full", m, m, czero, cone, r, m);
     Cherk("U", "C", m, m, -cone.real(), q, m, cone.real(), r, m);
     resid = Clansy("1", "Upper", m, r, m, rwork);
     result[2 - 1] = resid / (eps * max((INTEGER)1, m));
     //
-    //     Generate random m-by-n matrix C
+    // Generate random m-by-n matrix C
     //
     COMPLEX *c = new COMPLEX[m * n];
     INTEGER ldc = m;
@@ -189,8 +196,8 @@ void Cunhr_col02(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
     //
     Cgemqrt("L", "N", m, n, k, nb2_ub, af, m, t2, nb2, cf, m, work, info);
     //
-    //     TEST 3
-    //     Compute |CF - Q*C| / ( eps *  m * |C| )
+    // TEST 3
+    // Compute |CF - Q*C| / ( eps *  m * |C| )
     //
     Cgemm("N", "N", m, n, m, -cone, q, m, c, m, cone, cf, m);
     resid = Clange("1", m, n, cf, m, rwork);
@@ -200,7 +207,7 @@ void Cunhr_col02(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
         result[3 - 1] = zero;
     }
     //
-    //     Copy C into CF again
+    // Copy C into CF again
     //
     Clacpy("Full", m, n, c, m, cf, m);
     //
@@ -208,8 +215,8 @@ void Cunhr_col02(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
     //
     Cgemqrt("L", "C", m, n, k, nb2_ub, af, m, t2, nb2, cf, m, work, info);
     //
-    //     TEST 4
-    //     Compute |CF - (Q**T)*C| / ( eps * m * |C|)
+    // TEST 4
+    // Compute |CF - (Q**T)*C| / ( eps * m * |C|)
     //
     Cgemm("C", "N", m, n, m, -cone, q, m, c, m, cone, cf, m);
     resid = Clange("1", m, n, cf, m, rwork);
@@ -219,7 +226,7 @@ void Cunhr_col02(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
         result[4 - 1] = zero;
     }
     //
-    //     Generate random n-by-m matrix D and a copy DF
+    // Generate random n-by-m matrix D and a copy DF
     //
     COMPLEX *d = new COMPLEX[n * m];
     INTEGER ldd = n;
@@ -234,8 +241,8 @@ void Cunhr_col02(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
     //
     Cgemqrt("R", "N", n, m, k, nb2_ub, af, m, t2, nb2, df, n, work, info);
     //
-    //     TEST 5
-    //     Compute |DF - D*Q| / ( eps * m * |D| )
+    // TEST 5
+    // Compute |DF - D*Q| / ( eps * m * |D| )
     //
     Cgemm("N", "N", n, m, m, -cone, d, n, q, m, cone, df, n);
     resid = Clange("1", n, m, df, n, rwork);
@@ -245,7 +252,7 @@ void Cunhr_col02(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
         result[5 - 1] = zero;
     }
     //
-    //     Copy D into DF again
+    // Copy D into DF again
     //
     Clacpy("Full", n, m, d, n, df, n);
     //
@@ -253,8 +260,8 @@ void Cunhr_col02(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
     //
     Cgemqrt("R", "C", n, m, k, nb2_ub, af, m, t2, nb2, df, n, work, info);
     //
-    //     TEST 6
-    //     Compute |DF - D*(Q**T)| / ( eps * m * |D| )
+    // TEST 6
+    // Compute |DF - D*(Q**T)| / ( eps * m * |D| )
     //
     Cgemm("N", "C", n, m, m, -cone, d, n, q, m, cone, df, n);
     resid = Clange("1", n, m, df, n, rwork);

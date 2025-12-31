@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DLAORD.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -43,29 +50,10 @@ void Rlaord(const char *job, INTEGER const n, REAL *x, INTEGER const incx) {
     INTEGER ixnext = 0;
     REAL temp = 0.0;
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     inc = abs(incx);
     if (Mlsame(job, "I")) {
         //
-        //        Sort in increasing order
+        // Sort in increasing order
         //
         for (i = 2; i <= n; i = i + 1) {
             ix = 1 + (i - 1) * inc;
@@ -88,7 +76,7 @@ void Rlaord(const char *job, INTEGER const n, REAL *x, INTEGER const incx) {
         //
     } else if (Mlsame(job, "D")) {
         //
-        //        Sort in decreasing order
+        // Sort in decreasing order
         //
         for (i = 2; i <= n; i = i + 1) {
             ix = 1 + (i - 1) * inc;
@@ -110,6 +98,6 @@ void Rlaord(const char *job, INTEGER const n, REAL *x, INTEGER const incx) {
         }
     }
     //
-    //     End of Rlaord
+    // End of Rlaord
     //
 }

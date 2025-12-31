@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DCHKPT.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -124,7 +131,7 @@ void Rchkpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
         iseed[i - 1] = iseedy[i - 1];
     }
     //
-    //     Test the error exits
+    // Test the error exits
     //
     if (tsterr) {
         Rerrgt(path, nout);
@@ -133,7 +140,7 @@ void Rchkpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
     //
     for (in = 1; in <= nn; in = in + 1) {
         //
-        //        Do for each value of N in NVAL.
+        // Do for each value of N in NVAL.
         //
         n = nval[in - 1];
         lda = max((INTEGER)1, n);
@@ -144,26 +151,26 @@ void Rchkpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
         //
         for (imat = 1; imat <= nimat; imat = imat + 1) {
             //
-            //           Do the tests only if DOTYPE( IMAT ) is true.
+            // Do the tests only if DOTYPE( IMAT ) is true.
             //
             if (n > 0 && !dotype[imat - 1]) {
                 goto statement_100;
             }
             //
-            //           Set up parameters with Rlatb4.
+            // Set up parameters with Rlatb4.
             //
             Rlatb4(path, imat, n, n, &type, kl, ku, anorm, mode, cond, &dist);
             //
             zerot = imat >= 8 && imat <= 10;
             if (imat <= 6) {
                 //
-                //              Type 1-6:  generate a symmetric tridiagonal matrix of
-                //              known condition number in lower triangular band storage.
+                // Type 1-6:  generate a symmetric tridiagonal matrix of
+                // known condition number in lower triangular band storage.
                 //
                 strncpy(srnamt, "Rlatms", srnamt_len);
                 Rlatms(n, n, &dist, iseed, &type, rwork, mode, cond, anorm, kl, ku, "B", a, 2, work, info);
                 //
-                //              Check the error code from Rlatms.
+                // Check the error code from Rlatms.
                 //
                 if (info != 0) {
                     Alaerh(path, "Rlatms", info, 0, " ", n, n, kl, ku, -1, imat, nfail, nerrs, nout);
@@ -171,7 +178,7 @@ void Rchkpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                 }
                 izero = 0;
                 //
-                //              Copy the matrix to D and E.
+                // Copy the matrix to D and E.
                 //
                 ia = 1;
                 for (i = 1; i <= n - 1; i = i + 1) {
@@ -184,17 +191,17 @@ void Rchkpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                 }
             } else {
                 //
-                //              Type 7-12:  generate a diagonally dominant matrix with
-                //              unknown condition number in the vectors D and E.
+                // Type 7-12:  generate a diagonally dominant matrix with
+                // unknown condition number in the vectors D and E.
                 //
                 if (!zerot || !dotype[7 - 1]) {
                     //
-                    //                 Let D and E have values from [-1,1].
+                    // Let D and E have values from [-1,1].
                     //
                     Rlarnv(2, iseed, n, d);
                     Rlarnv(2, iseed, n - 1, e);
                     //
-                    //                 Make the tridiagonal matrix diagonally dominant.
+                    // Make the tridiagonal matrix diagonally dominant.
                     //
                     if (n == 1) {
                         d[1 - 1] = abs(d[1 - 1]);
@@ -206,7 +213,7 @@ void Rchkpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                         }
                     }
                     //
-                    //                 Scale D and E so the maximum element is ANORM.
+                    // Scale D and E so the maximum element is ANORM.
                     //
                     ix = iRamax(n, d, 1);
                     dmax = d[ix - 1];
@@ -215,8 +222,8 @@ void Rchkpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                     //
                 } else if (izero > 0) {
                     //
-                    //                 Reuse the last matrix by copying back the zeroed out
-                    //                 elements.
+                    // Reuse the last matrix by copying back the zeroed out
+                    // elements.
                     //
                     if (izero == 1) {
                         d[1 - 1] = z[2 - 1];
@@ -233,8 +240,8 @@ void Rchkpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                     }
                 }
                 //
-                //              For types 8-10, set one row and column of the matrix to
-                //              zero.
+                // For types 8-10, set one row and column of the matrix to
+                // zero.
                 //
                 izero = 0;
                 if (imat == 8) {
@@ -271,13 +278,13 @@ void Rchkpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                 Rcopy(n - 1, e, 1, &e[(n + 1) - 1], 1);
             }
             //
-            //+    TEST 1
-            //           Factor A as L*D*L' and compute the ratio
-            //              norm(L*D*L' - A) / (n * norm(A) * EPS )
+            // +    TEST 1
+            // Factor A as L*D*L' and compute the ratio
+            // norm(L*D*L' - A) / (n * norm(A) * EPS )
             //
             Rpttrf(n, &d[(n + 1) - 1], &e[(n + 1) - 1], info);
             //
-            //           Check error code from Rpttrf.
+            // Check error code from Rpttrf.
             //
             if (info != izero) {
                 Alaerh(path, "Rpttrf", info, izero, " ", n, n, -1, -1, -1, imat, nfail, nerrs, nout);
@@ -291,7 +298,7 @@ void Rchkpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
             //
             Rptt01(n, d, e, &d[(n + 1) - 1], &e[(n + 1) - 1], work, result[1 - 1]);
             //
-            //           Print the test ratio if greater than or equal to THRESH.
+            // Print the test ratio if greater than or equal to THRESH.
             //
             if (result[1 - 1] >= thresh) {
                 if (nfail == 0 && nerrs == 0) {
@@ -303,14 +310,14 @@ void Rchkpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
             }
             nrun++;
             //
-            //           Compute RCONDC = 1 / (norm(A) * norm(inv(A))
+            // Compute RCONDC = 1 / (norm(A) * norm(inv(A))
             //
-            //           Compute norm(A).
+            // Compute norm(A).
             //
             anorm = Rlanst("1", n, d, e);
             //
-            //           Use Rpttrs to solve for one column at a time of inv(A),
-            //           computing the maximum column sum as we go.
+            // Use Rpttrs to solve for one column at a time of inv(A),
+            // computing the maximum column sum as we go.
             //
             ainvnm = zero;
             for (i = 1; i <= n; i = i + 1) {
@@ -326,7 +333,7 @@ void Rchkpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
             for (irhs = 1; irhs <= nns; irhs = irhs + 1) {
                 nrhs = nsval[irhs - 1];
                 //
-                //           Generate NRHS random solution vectors.
+                // Generate NRHS random solution vectors.
                 //
                 ix = 1;
                 for (j = 1; j <= nrhs; j = j + 1) {
@@ -334,17 +341,17 @@ void Rchkpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                     ix += lda;
                 }
                 //
-                //           Set the right hand side.
+                // Set the right hand side.
                 //
                 Rlaptm(n, nrhs, one, d, e, xact, lda, zero, b, lda);
                 //
-                //+    TEST 2
-                //           Solve A*x = b and compute the residual.
+                // +    TEST 2
+                // Solve A*x = b and compute the residual.
                 //
                 Rlacpy("Full", n, nrhs, b, lda, x, lda);
                 Rpttrs(n, nrhs, &d[(n + 1) - 1], &e[(n + 1) - 1], x, lda, info);
                 //
-                //           Check error code from Rpttrs.
+                // Check error code from Rpttrs.
                 //
                 if (info != 0) {
                     Alaerh(path, "Rpttrs", info, 0, " ", n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
@@ -353,18 +360,18 @@ void Rchkpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                 Rlacpy("Full", n, nrhs, b, lda, work, lda);
                 Rptt02(n, nrhs, d, e, x, lda, work, lda, result[2 - 1]);
                 //
-                //+    TEST 3
-                //           Check solution from generated exact solution.
+                // +    TEST 3
+                // Check solution from generated exact solution.
                 //
                 Rget04(n, nrhs, x, lda, xact, lda, rcondc, result[3 - 1]);
                 //
-                //+    TESTS 4, 5, and 6
-                //           Use iterative refinement to improve the solution.
+                // +    TESTS 4, 5, and 6
+                // Use iterative refinement to improve the solution.
                 //
                 strncpy(srnamt, "Rptrfs", srnamt_len);
                 Rptrfs(n, nrhs, d, e, &d[(n + 1) - 1], &e[(n + 1) - 1], b, lda, x, lda, rwork, &rwork[(nrhs + 1) - 1], work, info);
                 //
-                //           Check error code from Rptrfs.
+                // Check error code from Rptrfs.
                 //
                 if (info != 0) {
                     Alaerh(path, "Rptrfs", info, 0, " ", n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
@@ -373,8 +380,8 @@ void Rchkpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                 Rget04(n, nrhs, x, lda, xact, lda, rcondc, result[4 - 1]);
                 Rptt05(n, nrhs, d, e, b, lda, x, lda, xact, lda, rwork, &rwork[(nrhs + 1) - 1], &result[5 - 1]);
                 //
-                //           Print information about the tests that did not pass the
-                //           threshold.
+                // Print information about the tests that did not pass the
+                // threshold.
                 //
                 for (k = 2; k <= 6; k = k + 1) {
                     if (result[k - 1] >= thresh) {
@@ -391,15 +398,15 @@ void Rchkpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                 nrun += 5;
             }
         //
-        //+    TEST 7
-        //           Estimate the reciprocal of the condition number of the
-        //           matrix.
+        // +    TEST 7
+        // Estimate the reciprocal of the condition number of the
+        // matrix.
         //
         statement_90:
             strncpy(srnamt, "Rptcon", srnamt_len);
             Rptcon(n, &d[(n + 1) - 1], &e[(n + 1) - 1], anorm, rcond, rwork, info);
             //
-            //           Check error code from Rptcon.
+            // Check error code from Rptcon.
             //
             if (info != 0) {
                 Alaerh(path, "Rptcon", info, 0, " ", n, n, -1, -1, -1, imat, nfail, nerrs, nout);
@@ -407,7 +414,7 @@ void Rchkpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
             //
             result[7 - 1] = Rget06(rcond, rcondc);
             //
-            //           Print the test ratio if greater than or equal to THRESH.
+            // Print the test ratio if greater than or equal to THRESH.
             //
             if (result[7 - 1] >= thresh) {
                 if (nfail == 0 && nerrs == 0) {
@@ -422,10 +429,10 @@ void Rchkpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
         }
     }
     //
-    //     Print a summary of the results.
+    // Print a summary of the results.
     //
     Alasum(path, nout, nfail, nrun, nerrs);
     //
-    //     End of Rchkpt
+    // End of Rchkpt
     //
 }

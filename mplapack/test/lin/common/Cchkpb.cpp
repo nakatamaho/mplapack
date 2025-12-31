@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine ZCHKPB.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -106,7 +113,7 @@ void Cchkpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
         iseed[i - 1] = iseedy[i - 1];
     }
     //
-    //     Test the error exits
+    // Test the error exits
     //
     if (tsterr) {
         Cerrpo(path, nout);
@@ -114,14 +121,14 @@ void Cchkpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
     infot = 0;
     kdval[1 - 1] = 0;
     //
-    //     Do for each value of N in NVAL
+    // Do for each value of N in NVAL
     //
     for (in = 1; in <= nn; in = in + 1) {
         n = nval[in - 1];
         lda = max(n, (INTEGER)1);
         xtype[0] = 'N';
         //
-        //        Set limits on the number of loop iterations.
+        // Set limits on the number of loop iterations.
         //
         nkd = max((INTEGER)1, min(n, (INTEGER)4));
         nimat = ntypes;
@@ -135,14 +142,14 @@ void Cchkpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
         //
         for (ikd = 1; ikd <= nkd; ikd = ikd + 1) {
             //
-            //           Do for KD = 0, (5*N+1)/4, (3N-1)/4, and (N+1)/4. This order
-            //           makes it easier to skip redundant values for small values
-            //           of N.
+            // Do for KD = 0, (5*N+1)/4, (3N-1)/4, and (N+1)/4. This order
+            // makes it easier to skip redundant values for small values
+            // of N.
             //
             kd = kdval[ikd - 1];
             ldab = kd + 1;
             //
-            //           Do first for UPLO = 'U', then for UPLO = 'L'
+            // Do first for UPLO = 'U', then for UPLO = 'L'
             //
             for (iuplo = 1; iuplo <= 2; iuplo = iuplo + 1) {
                 koff = 1;
@@ -157,13 +164,13 @@ void Cchkpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                 //
                 for (imat = 1; imat <= nimat; imat = imat + 1) {
                     //
-                    //                 Do the tests only if DOTYPE( IMAT ) is true.
+                    // Do the tests only if DOTYPE( IMAT ) is true.
                     //
                     if (!dotype[imat - 1]) {
                         goto statement_60;
                     }
                     //
-                    //                 Skip types 2, 3, or 4 if the matrix size is too small.
+                    // Skip types 2, 3, or 4 if the matrix size is too small.
                     //
                     zerot = imat >= 2 && imat <= 4;
                     if (zerot && n < imat - 1) {
@@ -187,8 +194,8 @@ void Cchkpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                         }
                     } else if (izero > 0) {
                         //
-                        //                    Use the same matrix for types 3 and 4 as for type
-                        //                    2 by copying back the zeroed out column,
+                        // Use the same matrix for types 3 and 4 as for type
+                        // 2 by copying back the zeroed out column,
                         //
                         iw = 2 * lda + 1;
                         if (iuplo == 1) {
@@ -205,8 +212,8 @@ void Cchkpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                         }
                     }
                     //
-                    //                 For types 2-4, zero one row and column of the matrix
-                    //                 to test that INFO is returned correctly.
+                    // For types 2-4, zero one row and column of the matrix
+                    // to test that INFO is returned correctly.
                     //
                     izero = 0;
                     if (zerot) {
@@ -218,7 +225,7 @@ void Cchkpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                             izero = n / 2 + 1;
                         }
                         //
-                        //                    Save the zeroed out row and column in WORK(*,3)
+                        // Save the zeroed out row and column in WORK(*,3)
                         //
                         iw = 2 * lda;
                         for (i = 1; i <= min(2 * kd + 1, n); i = i + 1) {
@@ -242,7 +249,7 @@ void Cchkpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                         }
                     }
                     //
-                    //                 Set the imaginary part of the diagonals.
+                    // Set the imaginary part of the diagonals.
                     //
                     if (iuplo == 1) {
                         Claipd(n, &a[(kd + 1) - 1], ldab, 0);
@@ -250,14 +257,14 @@ void Cchkpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                         Claipd(n, &a[1 - 1], ldab, 0);
                     }
                     //
-                    //                 Do for each value of NB in NBVAL
+                    // Do for each value of NB in NBVAL
                     //
                     for (inb = 1; inb <= nnb; inb = inb + 1) {
                         nb = nbval[inb - 1];
                         xlaenv(1, nb);
                         //
-                        //                    Compute the L*L' or U'*U factorization of the band
-                        //                    matrix.
+                        // Compute the L*L' or U'*U factorization of the band
+                        // matrix.
                         //
                         Clacpy("Full", kd + 1, n, a, ldab, afac, ldab);
                         Cpbtrf(uplo, n, kd, afac, ldab, info);
@@ -269,20 +276,20 @@ void Cchkpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                             goto statement_50;
                         }
                         //
-                        //                    Skip the tests if INFO is not 0.
+                        // Skip the tests if INFO is not 0.
                         //
                         if (info != 0) {
                             goto statement_50;
                         }
                         //
-                        //+    TEST 1
-                        //                    Reconstruct matrix from factors and compute
-                        //                    residual.
+                        // +    TEST 1
+                        // Reconstruct matrix from factors and compute
+                        // residual.
                         //
                         Clacpy("Full", kd + 1, n, afac, ldab, ainv, ldab);
                         Cpbt01(uplo, n, kd, a, ldab, ainv, ldab, rwork, result[1 - 1]);
                         //
-                        //                    Print the test ratio if it is .GE. THRESH.
+                        // Print the test ratio if it is .GE. THRESH.
                         //
                         if (result[1 - 1] >= thresh) {
                             if (nfail == 0 && nerrs == 0) {
@@ -296,14 +303,14 @@ void Cchkpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                         }
                         nrun++;
                         //
-                        //                    Only do other tests if this is the first blocksize.
+                        // Only do other tests if this is the first blocksize.
                         //
                         if (inb > 1) {
                             goto statement_50;
                         }
                         //
-                        //                    Form the inverse of A so we can get a good estimate
-                        //                    of RCONDC = 1/(norm(A) * norm(inv(A))).
+                        // Form the inverse of A so we can get a good estimate
+                        // of RCONDC = 1/(norm(A) * norm(inv(A))).
                         //
                         Claset("Full", n, n, COMPLEX(zero), COMPLEX(one), ainv, lda);
                         Cpbtrs(uplo, n, kd, n, afac, ldab, ainv, lda, info);
@@ -357,8 +364,8 @@ void Cchkpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                             Cget04(n, nrhs, x, lda, xact, lda, rcondc, result[4 - 1]);
                             Cpbt05(uplo, n, kd, nrhs, a, ldab, b, lda, x, lda, xact, lda, rwork, &rwork[(nrhs + 1) - 1], &result[5 - 1]);
                             //
-                            //                       Print information about the tests that did not
-                            //                       pass the threshold.
+                            // Print information about the tests that did not
+                            // pass the threshold.
                             //
                             for (k = 2; k <= 6; k = k + 1) {
                                 if (result[k - 1] >= thresh) {
@@ -388,7 +395,7 @@ void Cchkpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                         //
                         result[7 - 1] = Rget06(rcond, rcondc);
                         //
-                        //                    Print the test ratio if it is .GE. THRESH.
+                        // Print the test ratio if it is .GE. THRESH.
                         //
                         if (result[7 - 1] >= thresh) {
                             if (nfail == 0 && nerrs == 0) {
@@ -409,10 +416,10 @@ void Cchkpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
         }
     }
     //
-    //     Print a summary of the results.
+    // Print a summary of the results.
     //
     Alasum(path, nout, nfail, nrun, nerrs);
     //
-    //     End of Cchkpb
+    // End of Cchkpb
     //
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DERRVX.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -87,7 +94,7 @@ void Rerrvx(const char *path, INTEGER const nunit) {
     INTEGER iw[nmax];
     if (Mlsamen(2, c2, "GE")) {
         //
-        //        Rgesv
+        // Rgesv
         //
         strncpy(srnamt, "Rgesv", srnamt_len);
         infot = 1;
@@ -103,7 +110,7 @@ void Rerrvx(const char *path, INTEGER const nunit) {
         Rgesv(2, 1, a, 2, ip, b, 1, info);
         chkxer("Rgesv", infot, nout, lerr, ok);
         //
-        //        Rgesvx
+        // Rgesvx
         //
         strncpy(srnamt, "Rgesvx", srnamt_len);
         infot = 1;
@@ -145,7 +152,7 @@ void Rerrvx(const char *path, INTEGER const nunit) {
         //
     } else if (Mlsamen(2, c2, "GB")) {
         //
-        //        Rgbsv
+        // Rgbsv
         //
         strncpy(srnamt, "Rgbsv", srnamt_len);
         infot = 1;
@@ -167,7 +174,7 @@ void Rerrvx(const char *path, INTEGER const nunit) {
         Rgbsv(2, 0, 0, 0, a, 1, ip, b, 1, info);
         chkxer("Rgbsv", infot, nout, lerr, ok);
         //
-        //        Rgbsvx
+        // Rgbsvx
         //
         strncpy(srnamt, "Rgbsvx", srnamt_len);
         infot = 1;
@@ -215,7 +222,7 @@ void Rerrvx(const char *path, INTEGER const nunit) {
         //
     } else if (Mlsamen(2, c2, "GT")) {
         //
-        //        Rgtsv
+        // Rgtsv
         //
         strncpy(srnamt, "Rgtsv", srnamt_len);
         infot = 1;
@@ -228,7 +235,7 @@ void Rerrvx(const char *path, INTEGER const nunit) {
         Rgtsv(2, 0, &a[(1 - 1) + (1 - 1) * lda], &a[(1 - 1) + (2 - 1) * lda], &a[(1 - 1) + (3 - 1) * lda], b, 1, info);
         chkxer("Rgtsv", infot, nout, lerr, ok);
         //
-        //        Rgtsvx
+        // Rgtsvx
         //
         infot = 1;
         strncpy(srnamt, "Rgtsvx", srnamt_len);
@@ -252,7 +259,7 @@ void Rerrvx(const char *path, INTEGER const nunit) {
         //
     } else if (Mlsamen(2, c2, "PO")) {
         //
-        //        Rposv
+        // Rposv
         //
         strncpy(srnamt, "Rposv", srnamt_len);
         infot = 1;
@@ -271,7 +278,7 @@ void Rerrvx(const char *path, INTEGER const nunit) {
         Rposv("U", 2, 0, a, 2, b, 1, info);
         chkxer("Rposv", infot, nout, lerr, ok);
         //
-        //        Rposvx
+        // Rposvx
         //
         strncpy(srnamt, "Rposvx", srnamt_len);
         infot = 1;
@@ -309,7 +316,7 @@ void Rerrvx(const char *path, INTEGER const nunit) {
         //
     } else if (Mlsamen(2, c2, "PP")) {
         //
-        //        Rppsv
+        // Rppsv
         //
         strncpy(srnamt, "Rppsv", srnamt_len);
         infot = 1;
@@ -325,7 +332,7 @@ void Rerrvx(const char *path, INTEGER const nunit) {
         Rppsv("U", 2, 0, a, b, 1, info);
         chkxer("Rppsv", infot, nout, lerr, ok);
         //
-        //        Rppsvx
+        // Rppsvx
         //
         strncpy(srnamt, "Rppsvx", srnamt_len);
         infot = 1;
@@ -357,7 +364,7 @@ void Rerrvx(const char *path, INTEGER const nunit) {
         //
     } else if (Mlsamen(2, c2, "PB")) {
         //
-        //        Rpbsv
+        // Rpbsv
         //
         strncpy(srnamt, "Rpbsv", srnamt_len);
         infot = 1;
@@ -379,7 +386,7 @@ void Rerrvx(const char *path, INTEGER const nunit) {
         Rpbsv("U", 2, 0, 0, a, 1, b, 1, info);
         chkxer("Rpbsv", infot, nout, lerr, ok);
         //
-        //        Rpbsvx
+        // Rpbsvx
         //
         strncpy(srnamt, "Rpbsvx", srnamt_len);
         infot = 1;
@@ -420,7 +427,7 @@ void Rerrvx(const char *path, INTEGER const nunit) {
         //
     } else if (Mlsamen(2, c2, "PT")) {
         //
-        //        Rptsv
+        // Rptsv
         //
         strncpy(srnamt, "Rptsv", srnamt_len);
         infot = 1;
@@ -433,7 +440,7 @@ void Rerrvx(const char *path, INTEGER const nunit) {
         Rptsv(2, 0, &a[(1 - 1) + (1 - 1) * lda], &a[(1 - 1) + (2 - 1) * lda], b, 1, info);
         chkxer("Rptsv", infot, nout, lerr, ok);
         //
-        //        Rptsvx
+        // Rptsvx
         //
         infot = 1;
         strncpy(srnamt, "Rptsvx", srnamt_len);
@@ -454,7 +461,7 @@ void Rerrvx(const char *path, INTEGER const nunit) {
         //
     } else if (Mlsamen(2, c2, "SY")) {
         //
-        //        Rsysv
+        // Rsysv
         //
         strncpy(srnamt, "Rsysv", srnamt_len);
         infot = 1;
@@ -479,7 +486,7 @@ void Rerrvx(const char *path, INTEGER const nunit) {
         Rsysv("U", 0, 0, a, 1, ip, b, 1, w, -2, info);
         chkxer("Rsysv", infot, nout, lerr, ok);
         //
-        //        Rsysvx
+        // Rsysvx
         //
         strncpy(srnamt, "Rsysvx", srnamt_len);
         infot = 1;
@@ -512,7 +519,7 @@ void Rerrvx(const char *path, INTEGER const nunit) {
         //
     } else if (Mlsamen(2, c2, "SR")) {
         //
-        //        Rsysv_rook
+        // Rsysv_rook
         //
         strncpy(srnamt, "Rsysv_rook", srnamt_len);
         infot = 1;
@@ -539,15 +546,15 @@ void Rerrvx(const char *path, INTEGER const nunit) {
         //
     } else if (Mlsamen(2, c2, "SK")) {
         //
-        //        Rsysv_rk
+        // Rsysv_rk
         //
-        //        Test error exits of the driver that uses factorization
-        //        of a symmetric indefinite matrix with rook
-        //        (bounded Bunch-Kaufman) pivoting with the new storage
-        //        format for factors L ( or U) and D.
+        // Test error exits of the driver that uses factorization
+        // of a symmetric indefinite matrix with rook
+        // (bounded Bunch-Kaufman) pivoting with the new storage
+        // format for factors L ( or U) and D.
         //
-        //        L (or U) is stored in A, diagonal of D is stored on the
-        //        diagonal of A, subdiagonal of D is stored in a separate array E.
+        // L (or U) is stored in A, diagonal of D is stored on the
+        // diagonal of A, subdiagonal of D is stored in a separate array E.
         //
         strncpy(srnamt, "Rsysv_rk", srnamt_len);
         infot = 1;
@@ -574,7 +581,7 @@ void Rerrvx(const char *path, INTEGER const nunit) {
         //
     } else if (Mlsamen(2, c2, "SA")) {
         //
-        //        Rsysv_aa
+        // Rsysv_aa
         //
         strncpy(srnamt, "Rsysv_aa", srnamt_len);
         infot = 1;
@@ -592,7 +599,7 @@ void Rerrvx(const char *path, INTEGER const nunit) {
         //
     } else if (Mlsamen(2, c2, "S2")) {
         //
-        //        Rsysv_aa_2stage
+        // DSYSV_AASEN_2STAGE
         //
         strncpy(srnamt, "Rsysv_aa_2stage", srnamt_len);
         infot = 1;
@@ -616,7 +623,7 @@ void Rerrvx(const char *path, INTEGER const nunit) {
         //
     } else if (Mlsamen(2, c2, "SP")) {
         //
-        //        Rspsv
+        // Rspsv
         //
         strncpy(srnamt, "Rspsv", srnamt_len);
         infot = 1;
@@ -632,7 +639,7 @@ void Rerrvx(const char *path, INTEGER const nunit) {
         Rspsv("U", 2, 0, a, ip, b, 1, info);
         chkxer("Rspsv", infot, nout, lerr, ok);
         //
-        //        Rspsvx
+        // Rspsvx
         //
         strncpy(srnamt, "Rspsvx", srnamt_len);
         infot = 1;
@@ -655,7 +662,7 @@ void Rerrvx(const char *path, INTEGER const nunit) {
         chkxer("Rspsvx", infot, nout, lerr, ok);
     }
     //
-    //     Print a summary line.
+    // Print a summary line.
     //
     if (ok) {
         write(nout, "(1x,a3,' drivers passed the tests of the error exits')"), path;
@@ -663,6 +670,6 @@ void Rerrvx(const char *path, INTEGER const nunit) {
         write(nout, "(' *** ',a3,' drivers failed the tests of the error ','exits ***')"), path;
     }
     //
-    //     End of Rerrvx
+    // End of Rerrvx
     //
 }

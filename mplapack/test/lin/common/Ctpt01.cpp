@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZTPT01.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -38,30 +45,7 @@ using fem::common;
 
 void Ctpt01(const char *uplo, const char *diag, INTEGER const n, COMPLEX *ap, COMPLEX *ainvp, REAL &rcond, REAL *rwork, REAL &resid) {
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Quick exit if N = 0.
+    // Quick exit if N = 0.
     //
     const REAL one = 1.0;
     const REAL zero = 0.0;
@@ -71,7 +55,7 @@ void Ctpt01(const char *uplo, const char *diag, INTEGER const n, COMPLEX *ap, CO
         return;
     }
     //
-    //     Exit with RESID = 1/EPS if ANORM = 0 or AINVNM = 0.
+    // Exit with RESID = 1/EPS if ANORM = 0 or AINVNM = 0.
     //
     REAL eps = Rlamch("Epsilon");
     REAL anorm = Clantp("1", uplo, diag, n, ap, rwork);
@@ -83,7 +67,7 @@ void Ctpt01(const char *uplo, const char *diag, INTEGER const n, COMPLEX *ap, CO
     }
     rcond = (one / anorm) / ainvnm;
     //
-    //     Compute A * AINV, overwriting AINV.
+    // Compute A * AINV, overwriting AINV.
     //
     bool unitd = Mlsame(diag, "U");
     INTEGER jc = 0;
@@ -95,11 +79,11 @@ void Ctpt01(const char *uplo, const char *diag, INTEGER const n, COMPLEX *ap, CO
                 ainvp[(jc + j - 1) - 1] = one;
             }
             //
-            //           Form the j-th column of A*AINV.
+            // Form the j-th column of A*AINV.
             //
             Ctpmv("Upper", "No transpose", diag, j, ap, &ainvp[jc - 1], 1);
             //
-            //           Subtract 1 from the diagonal to form A*AINV - I.
+            // Subtract 1 from the diagonal to form A*AINV - I.
             //
             ainvp[(jc + j - 1) - 1] = ainvp[(jc + j - 1) - 1] - one;
             jc += j;
@@ -111,23 +95,23 @@ void Ctpt01(const char *uplo, const char *diag, INTEGER const n, COMPLEX *ap, CO
                 ainvp[jc - 1] = one;
             }
             //
-            //           Form the j-th column of A*AINV.
+            // Form the j-th column of A*AINV.
             //
             Ctpmv("Lower", "No transpose", diag, n - j + 1, &ap[jc - 1], &ainvp[jc - 1], 1);
             //
-            //           Subtract 1 from the diagonal to form A*AINV - I.
+            // Subtract 1 from the diagonal to form A*AINV - I.
             //
             ainvp[jc - 1] = ainvp[jc - 1] - one;
             jc += n - j + 1;
         }
     }
     //
-    //     Compute norm(A*AINV - I) / (N * norm(A) * norm(AINV) * EPS)
+    // Compute norm(A*AINV - I) / (N * norm(A) * norm(AINV) * EPS)
     //
     resid = Clantp("1", uplo, "Non-unit", n, ainvp, rwork);
     //
     resid = ((resid * rcond) / castREAL(n)) / eps;
     //
-    //     End of Ctpt01
+    // End of Ctpt01
     //
 }

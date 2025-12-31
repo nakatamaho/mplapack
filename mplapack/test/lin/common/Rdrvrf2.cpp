@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DDRVRF2.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -69,7 +76,7 @@ void Rdrvrf2(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL *a, INTEG
         //
         n = nval[iin - 1];
         //
-        //        Do first for UPLO = 'U', then for UPLO = 'L'
+        // Do first for UPLO = 'U', then for UPLO = 'L'
         //
         for (iuplo = 1; iuplo <= 2; iuplo = iuplo + 1) {
             //
@@ -79,7 +86,7 @@ void Rdrvrf2(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL *a, INTEG
                 lower = false;
             }
             //
-            //           Do first for CFORM = 'N', then for CFORM = 'T'
+            // Do first for CFORM = 'N', then for CFORM = 'T'
             //
             for (iform = 1; iform <= 2; iform = iform + 1) {
                 //
@@ -161,7 +168,7 @@ void Rdrvrf2(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL *a, INTEG
         }
     }
     //
-    //     Print a summary of the results.
+    // Print a summary of the results.
     //
     if (nerrs == 0) {
         write(nout, "(1x,'All tests for the RFP conversion routines passed ( ',i5,"
@@ -173,6 +180,6 @@ void Rdrvrf2(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL *a, INTEG
             nerrs, nrun;
     }
     //
-    //     End of Rdrvrf2
+    // End of Rdrvrf2
     //
 }

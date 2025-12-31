@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DERRPO.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -106,10 +113,10 @@ void Rerrpo(const char *path, INTEGER const nunit) {
     REAL rcond = 0.0;
     if (Mlsamen(2, c2, "PO")) {
         //
-        //        Test error exits of the routines that use the Cholesky
-        //        decomposition of a symmetric positive definite matrix.
+        // Test error exits of the routines that use the Cholesky
+        // decomposition of a symmetric positive definite matrix.
         //
-        //        Rpotrf
+        // Rpotrf
         //
         strncpy(srnamt, "Rpotrf", srnamt_len);
         infot = 1;
@@ -122,7 +129,7 @@ void Rerrpo(const char *path, INTEGER const nunit) {
         Rpotrf("U", 2, a, 1, info);
         chkxer("Rpotrf", infot, nout, lerr, ok);
         //
-        //        Rpotf2
+        // Rpotf2
         //
         strncpy(srnamt, "Rpotf2", srnamt_len);
         infot = 1;
@@ -135,7 +142,7 @@ void Rerrpo(const char *path, INTEGER const nunit) {
         Rpotf2("U", 2, a, 1, info);
         chkxer("Rpotf2", infot, nout, lerr, ok);
         //
-        //        Rpotri
+        // Rpotri
         //
         strncpy(srnamt, "Rpotri", srnamt_len);
         infot = 1;
@@ -148,7 +155,7 @@ void Rerrpo(const char *path, INTEGER const nunit) {
         Rpotri("U", 2, a, 1, info);
         chkxer("Rpotri", infot, nout, lerr, ok);
         //
-        //        Rpotrs
+        // Rpotrs
         //
         strncpy(srnamt, "Rpotrs", srnamt_len);
         infot = 1;
@@ -167,7 +174,7 @@ void Rerrpo(const char *path, INTEGER const nunit) {
         Rpotrs("U", 2, 1, a, 2, b, 1, info);
         chkxer("Rpotrs", infot, nout, lerr, ok);
         //
-        //        Rporfs
+        // Rporfs
         //
         strncpy(srnamt, "Rporfs", srnamt_len);
         infot = 1;
@@ -192,7 +199,7 @@ void Rerrpo(const char *path, INTEGER const nunit) {
         Rporfs("U", 2, 1, a, 2, af, 2, b, 2, x, 1, r1, r2, w, iw, info);
         chkxer("Rporfs", infot, nout, lerr, ok);
         //
-        //        Rpocon
+        // Rpocon
         //
         strncpy(srnamt, "Rpocon", srnamt_len);
         infot = 1;
@@ -205,7 +212,7 @@ void Rerrpo(const char *path, INTEGER const nunit) {
         Rpocon("U", 2, a, 1, anrm, rcond, w, iw, info);
         chkxer("Rpocon", infot, nout, lerr, ok);
         //
-        //        Rpoequ
+        // Rpoequ
         //
         strncpy(srnamt, "Rpoequ", srnamt_len);
         infot = 1;
@@ -217,10 +224,10 @@ void Rerrpo(const char *path, INTEGER const nunit) {
         //
     } else if (Mlsamen(2, c2, "PP")) {
         //
-        //        Test error exits of the routines that use the Cholesky
-        //        decomposition of a symmetric positive definite packed matrix.
+        // Test error exits of the routines that use the Cholesky
+        // decomposition of a symmetric positive definite packed matrix.
         //
-        //        Rpptrf
+        // Rpptrf
         //
         strncpy(srnamt, "Rpptrf", srnamt_len);
         infot = 1;
@@ -230,7 +237,7 @@ void Rerrpo(const char *path, INTEGER const nunit) {
         Rpptrf("U", -1, a, info);
         chkxer("Rpptrf", infot, nout, lerr, ok);
         //
-        //        Rpptri
+        // Rpptri
         //
         strncpy(srnamt, "Rpptri", srnamt_len);
         infot = 1;
@@ -240,7 +247,7 @@ void Rerrpo(const char *path, INTEGER const nunit) {
         Rpptri("U", -1, a, info);
         chkxer("Rpptri", infot, nout, lerr, ok);
         //
-        //        Rpptrs
+        // Rpptrs
         //
         strncpy(srnamt, "Rpptrs", srnamt_len);
         infot = 1;
@@ -256,7 +263,7 @@ void Rerrpo(const char *path, INTEGER const nunit) {
         Rpptrs("U", 2, 1, a, b, 1, info);
         chkxer("Rpptrs", infot, nout, lerr, ok);
         //
-        //        Rpprfs
+        // Rpprfs
         //
         strncpy(srnamt, "Rpprfs", srnamt_len);
         infot = 1;
@@ -275,7 +282,7 @@ void Rerrpo(const char *path, INTEGER const nunit) {
         Rpprfs("U", 2, 1, a, af, b, 2, x, 1, r1, r2, w, iw, info);
         chkxer("Rpprfs", infot, nout, lerr, ok);
         //
-        //        Rppcon
+        // Rppcon
         //
         strncpy(srnamt, "Rppcon", srnamt_len);
         infot = 1;
@@ -285,7 +292,7 @@ void Rerrpo(const char *path, INTEGER const nunit) {
         Rppcon("U", -1, a, anrm, rcond, w, iw, info);
         chkxer("Rppcon", infot, nout, lerr, ok);
         //
-        //        Rppequ
+        // Rppequ
         //
         strncpy(srnamt, "Rppequ", srnamt_len);
         infot = 1;
@@ -297,10 +304,10 @@ void Rerrpo(const char *path, INTEGER const nunit) {
         //
     } else if (Mlsamen(2, c2, "PB")) {
         //
-        //        Test error exits of the routines that use the Cholesky
-        //        decomposition of a symmetric positive definite band matrix.
+        // Test error exits of the routines that use the Cholesky
+        // decomposition of a symmetric positive definite band matrix.
         //
-        //        Rpbtrf
+        // Rpbtrf
         //
         strncpy(srnamt, "Rpbtrf", srnamt_len);
         infot = 1;
@@ -316,7 +323,7 @@ void Rerrpo(const char *path, INTEGER const nunit) {
         Rpbtrf("U", 2, 1, a, 1, info);
         chkxer("Rpbtrf", infot, nout, lerr, ok);
         //
-        //        Rpbtf2
+        // Rpbtf2
         //
         strncpy(srnamt, "Rpbtf2", srnamt_len);
         infot = 1;
@@ -332,7 +339,7 @@ void Rerrpo(const char *path, INTEGER const nunit) {
         Rpbtf2("U", 2, 1, a, 1, info);
         chkxer("Rpbtf2", infot, nout, lerr, ok);
         //
-        //        Rpbtrs
+        // Rpbtrs
         //
         strncpy(srnamt, "Rpbtrs", srnamt_len);
         infot = 1;
@@ -354,7 +361,7 @@ void Rerrpo(const char *path, INTEGER const nunit) {
         Rpbtrs("U", 2, 0, 1, a, 1, b, 1, info);
         chkxer("Rpbtrs", infot, nout, lerr, ok);
         //
-        //        Rpbrfs
+        // Rpbrfs
         //
         strncpy(srnamt, "Rpbrfs", srnamt_len);
         infot = 1;
@@ -382,7 +389,7 @@ void Rerrpo(const char *path, INTEGER const nunit) {
         Rpbrfs("U", 2, 0, 1, a, 1, af, 1, b, 2, x, 1, r1, r2, w, iw, info);
         chkxer("Rpbrfs", infot, nout, lerr, ok);
         //
-        //        Rpbcon
+        // Rpbcon
         //
         strncpy(srnamt, "Rpbcon", srnamt_len);
         infot = 1;
@@ -398,7 +405,7 @@ void Rerrpo(const char *path, INTEGER const nunit) {
         Rpbcon("U", 2, 1, a, 1, anrm, rcond, w, iw, info);
         chkxer("Rpbcon", infot, nout, lerr, ok);
         //
-        //        Rpbequ
+        // Rpbequ
         //
         strncpy(srnamt, "Rpbequ", srnamt_len);
         infot = 1;
@@ -415,10 +422,10 @@ void Rerrpo(const char *path, INTEGER const nunit) {
         chkxer("Rpbequ", infot, nout, lerr, ok);
     }
     //
-    //     Print a summary line.
+    // Print a summary line.
     //
     Alaesm(path, ok, nout);
     //
-    //     End of Rerrpo
+    // End of Rerrpo
     //
 }

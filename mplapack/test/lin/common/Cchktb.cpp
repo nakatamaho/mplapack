@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine ZCHKTB.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -107,7 +114,7 @@ void Cchktb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
         iseed[i - 1] = iseedy[i - 1];
     }
     //
-    //     Test the error exits
+    // Test the error exits
     //
     if (tsterr) {
         Cerrtr(path, nout);
@@ -115,7 +122,7 @@ void Cchktb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
     //
     for (in = 1; in <= nn; in = in + 1) {
         //
-        //        Do for each value of N in NVAL
+        // Do for each value of N in NVAL
         //
         n = nval[in - 1];
         lda = max((INTEGER)1, n);
@@ -130,8 +137,8 @@ void Cchktb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
         nk = min(n + 1, (INTEGER)4);
         for (ik = 1; ik <= nk; ik = ik + 1) {
             //
-            //           Do for KD = 0, N, (3N-1)/4, and (N+1)/4. This order makes
-            //           it easier to skip redundant values for small values of N.
+            // Do for KD = 0, N, (3N-1)/4, and (N+1)/4. This order makes
+            // it easier to skip redundant values for small values of N.
             //
             if (ik == 1) {
                 kd = 0;
@@ -146,7 +153,7 @@ void Cchktb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
             //
             for (imat = 1; imat <= nimat; imat = imat + 1) {
                 //
-                //              Do the tests only if DOTYPE( IMAT ) is true.
+                // Do the tests only if DOTYPE( IMAT ) is true.
                 //
                 if (!dotype[imat - 1]) {
                     goto statement_90;
@@ -154,16 +161,16 @@ void Cchktb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                 //
                 for (iuplo = 1; iuplo <= 2; iuplo = iuplo + 1) {
                     //
-                    //                 Do first for UPLO = 'U', then for UPLO = 'L'
+                    // Do first for UPLO = 'U', then for UPLO = 'L'
                     //
                     uplo[0] = uplos[iuplo - 1];
                     //
-                    //                 Call Clattb to generate a triangular test matrix.
+                    // Call Clattb to generate a triangular test matrix.
                     //
                     strncpy(srnamt, "Clattb", srnamt_len);
                     Clattb(imat, uplo, "No transpose", diag, iseed, n, kd, ab, ldab, x, work, rwork, info);
                     //
-                    //                 Set IDIAG = 1 for non-unit matrices, 2 for unit.
+                    // Set IDIAG = 1 for non-unit matrices, 2 for unit.
                     //
                     if (Mlsame(diag, "N")) {
                         idiag = 1;
@@ -171,8 +178,8 @@ void Cchktb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                         idiag = 2;
                     }
                     //
-                    //                 Form the inverse of A so we can get a good estimate
-                    //                 of RCONDC = 1/(norm(A) * norm(inv(A))).
+                    // Form the inverse of A so we can get a good estimate
+                    // of RCONDC = 1/(norm(A) * norm(inv(A))).
                     //
                     Claset("Full", n, n, COMPLEX(zero), COMPLEX(one), ainv, lda);
                     if (Mlsame(uplo, "U")) {
@@ -185,7 +192,7 @@ void Cchktb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                         }
                     }
                     //
-                    //                 Compute the 1-norm condition number of A.
+                    // Compute the 1-norm condition number of A.
                     //
                     anorm = Clantb("1", uplo, diag, n, kd, ab, ldab, rwork);
                     ainvnm = Clantr("1", uplo, diag, n, n, ainv, lda, rwork);
@@ -195,7 +202,7 @@ void Cchktb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                         rcondo = (one / anorm) / ainvnm;
                     }
                     //
-                    //                 Compute the infinity-norm condition number of A.
+                    // Compute the infinity-norm condition number of A.
                     //
                     anorm = Clantb("I", uplo, diag, n, kd, ab, ldab, rwork);
                     ainvnm = Clantr("I", uplo, diag, n, n, ainv, lda, rwork);
@@ -211,7 +218,7 @@ void Cchktb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                         //
                         for (itran = 1; itran <= ntran; itran = itran + 1) {
                             //
-                            //                    Do for op(A) = A, A**T, or A**H.
+                            // Do for op(A) = A, A**T, or A**H.
                             //
                             trans[0] = transs[itran - 1];
                             if (itran == 1) {
@@ -222,8 +229,8 @@ void Cchktb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                                 rcondc = rcondi;
                             }
                             //
-                            //+    TEST 1
-                            //                    Solve and compute residual for op(A)*x = b.
+                            // +    TEST 1
+                            // Solve and compute residual for op(A)*x = b.
                             //
                             strncpy(srnamt, "Clarhs", srnamt_len);
                             Clarhs(path, &xtype, uplo, trans, n, n, kd, idiag, nrhs, ab, ldab, xact, lda, b, lda, iseed, info);
@@ -233,7 +240,7 @@ void Cchktb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                             strncpy(srnamt, "Ctbtrs", srnamt_len);
                             Ctbtrs(uplo, trans, diag, n, kd, nrhs, ab, ldab, x, lda, info);
                             //
-                            //                    Check error code from Ctbtrs.
+                            // Check error code from Ctbtrs.
                             //
                             if (info != 0) {
                                 uplo_trans_diag[0] = uplo[0];
@@ -291,8 +298,8 @@ void Cchktb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                         }
                     }
                     //
-                    //+    TEST 6
-                    //                    Get an estimate of RCOND = 1/CNDNUM.
+                    // +    TEST 6
+                    // Get an estimate of RCOND = 1/CNDNUM.
                     //
                     for (itran = 1; itran <= 2; itran = itran + 1) {
                         if (itran == 1) {
@@ -305,7 +312,7 @@ void Cchktb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                         strncpy(srnamt, "Ctbcon", srnamt_len);
                         Ctbcon(norm, uplo, diag, n, kd, ab, ldab, rcond, work, rwork, info);
                         //
-                        //                    Check error code from Ctbcon.
+                        // Check error code from Ctbcon.
                         //
                         if (info != 0) {
                             norm_uplo_diag[0] = norm[0];
@@ -335,11 +342,11 @@ void Cchktb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
             statement_90:;
             }
             //
-            //           Use pathological test matrices to test Clatbs.
+            // Use pathological test matrices to test Clatbs.
             //
             for (imat = ntype1 + 1; imat <= nimat2; imat = imat + 1) {
                 //
-                //              Do the tests only if DOTYPE( IMAT ) is true.
+                // Do the tests only if DOTYPE( IMAT ) is true.
                 //
                 if (!dotype[imat - 1]) {
                     goto statement_120;
@@ -347,28 +354,28 @@ void Cchktb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                 //
                 for (iuplo = 1; iuplo <= 2; iuplo = iuplo + 1) {
                     //
-                    //                 Do first for UPLO = 'U', then for UPLO = 'L'
+                    // Do first for UPLO = 'U', then for UPLO = 'L'
                     //
                     uplo[0] = uplos[iuplo - 1];
                     for (itran = 1; itran <= ntran; itran = itran + 1) {
                         //
-                        //                    Do for op(A) = A, A**T, and A**H.
+                        // Do for op(A) = A, A**T, and A**H.
                         //
                         trans[0] = transs[itran - 1];
                         //
-                        //                    Call Clattb to generate a triangular test matrix.
+                        // Call Clattb to generate a triangular test matrix.
                         //
                         strncpy(srnamt, "Clattb", srnamt_len);
                         Clattb(imat, uplo, trans, diag, iseed, n, kd, ab, ldab, x, work, rwork, info);
                         //
-                        //+    TEST 7
-                        //                    Solve the system op(A)*x = b
+                        // +    TEST 7
+                        // Solve the system op(A)*x = b
                         //
                         strncpy(srnamt, "Clatbs", srnamt_len);
                         Ccopy(n, x, 1, b, 1);
                         Clatbs(uplo, trans, diag, "N", n, kd, ab, ldab, b, scale, rwork, info);
                         //
-                        //                    Check error code from Clatbs.
+                        // Check error code from Clatbs.
                         //
                         if (info != 0) {
                             uplo_trans_diag[0] = uplo[0];
@@ -386,7 +393,7 @@ void Cchktb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                         Ccopy(n, x, 1, b, 1);
                         Clatbs(uplo, trans, diag, "Y", n, kd, ab, ldab, b, scale, rwork, info);
                         //
-                        //                    Check error code from Clatbs.
+                        // Check error code from Clatbs.
                         //
                         if (info != 0) {
                             uplo_trans_diag[0] = uplo[0];
@@ -425,10 +432,10 @@ void Cchktb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
         }
     }
     //
-    //     Print a summary of the results.
+    // Print a summary of the results.
     //
     Alasum(path, nout, nfail, nrun, nerrs);
     //
-    //     End of Cchktb
+    // End of Cchktb
     //
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine ZQRT17.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -97,7 +104,7 @@ REAL Cqrt17(const char *trans, INTEGER const iresid, INTEGER const m, INTEGER co
     REAL bignum = one / smlnum;
     INTEGER iscl = 0;
     //
-    //     compute residual and scale it
+    // compute residual and scale it
     //
     Clacpy("All", nrows, nrhs, b, ldb, c, ldb);
     Cgemm(trans, "No transpose", nrows, nrhs, ncols, COMPLEX(-one), a, lda, x, ldx, COMPLEX(one), c, ldb);
@@ -108,11 +115,11 @@ REAL Cqrt17(const char *trans, INTEGER const iresid, INTEGER const m, INTEGER co
         Clascl("General", 0, 0, normrs, one, nrows, nrhs, c, ldb, info);
     }
     //
-    //     compute R'*A
+    // compute R'*A
     //
     Cgemm("Conjugate transpose", trans, nrhs, ncols, nrows, COMPLEX(one), c, ldb, a, lda, COMPLEX(zero), work, nrhs);
     //
-    //     compute and properly scale error
+    // compute and properly scale error
     //
     REAL err = Clange("One-norm", nrhs, ncols, work, nrhs, rwork);
     if (norma != zero) {
@@ -138,6 +145,6 @@ REAL Cqrt17(const char *trans, INTEGER const iresid, INTEGER const m, INTEGER co
     return_value = err / (Rlamch("Epsilon") * castREAL(max({m, n, nrhs})));
     return return_value;
     //
-    //     End of Cqrt17
+    // End of Cqrt17
     //
 }

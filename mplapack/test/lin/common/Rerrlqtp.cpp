@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DERRLQTP.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -70,7 +77,7 @@ void Rerrlqtp(const char *path, INTEGER const nunit) {
     //
     nout = nunit;
     //
-    //     Set the variables to innocuous values.
+    // Set the variables to innocuous values.
     //
     INTEGER j = 0;
     const INTEGER nmax = 2;
@@ -92,9 +99,9 @@ void Rerrlqtp(const char *path, INTEGER const nunit) {
     }
     ok = true;
     //
-    //     Error exits for TPLQT factorization
+    // Error exits for TPLQT factorization
     //
-    //     Rtplqt
+    // Rtplqt
     //
     infot = 1;
     REAL b[nmax * nmax];
@@ -127,7 +134,7 @@ void Rerrlqtp(const char *path, INTEGER const nunit) {
     Rtplqt(2, 2, 1, 2, a, 2, b, 2, t, 1, w, info);
     chkxer("Rtplqt", infot, nout, lerr, ok);
     //
-    //     Rtplqt2
+    // Rtplqt2
     //
     infot = 1;
     strncpy(srnamt, "Rtplqt2", srnamt_len);
@@ -149,7 +156,7 @@ void Rerrlqtp(const char *path, INTEGER const nunit) {
     Rtplqt2(2, 2, 0, a, 2, b, 2, t, 1, info);
     chkxer("Rtplqt2", infot, nout, lerr, ok);
     //
-    //     Rtpmlqt
+    // Rtpmlqt
     //
     infot = 1;
     strncpy(srnamt, "Rtpmlqt", srnamt_len);
@@ -185,10 +192,10 @@ void Rerrlqtp(const char *path, INTEGER const nunit) {
     Rtpmlqt("L", "N", 1, 1, 1, 1, 1, a, 1, t, 1, b, 1, c, 0, w, info);
     chkxer("Rtpmlqt", infot, nout, lerr, ok);
     //
-    //     Print a summary line.
+    // Print a summary line.
     //
     Alaesm(path, ok, nout);
     //
-    //     End of Rerrlqt
+    // End of Rerrlqt
     //
 }

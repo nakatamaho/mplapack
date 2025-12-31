@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine ILAENV.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -67,7 +74,7 @@ INTEGER iMlaenv(INTEGER const ispec, const char *name, const char * /* opts */, 
     std::strcpy(subname, str.c_str());
     if (ispec >= 1 && ispec <= 5) {
         //
-        //        Return a value from the common block.
+        // Return a value from the common block.
         //
         if (strncmp(&subname[1], "geqr", 4) == 0) {
             if (n3 == 2) {
@@ -87,21 +94,21 @@ INTEGER iMlaenv(INTEGER const ispec, const char *name, const char * /* opts */, 
         //
     } else if (ispec == 6) {
         //
-        //        Compute SVD crossover point.
+        // Compute SVD crossover point.
         //
         return_value = castINTEGER(castREAL(min(n1, castINTEGER(castREAL(n2) * 1.6))));
         //
     } else if (ispec >= 7 && ispec <= 9) {
         //
-        //        Return a value from the common block.
+        // Return a value from the common block.
         //
         return_value = iparms[ispec - 1];
         //
     } else if (ispec == 10) {
         //
-        //        IEEE NaN arithmetic can be trusted not to trap
+        // IEEE NaN arithmetic can be trusted not to trap
         //
-        //        iMlaenv = 0
+        // iMlaenv = 0
         return_value = 1;
         if (return_value == 1) {
             return_value = iMieeeck(1, 0.0, 1.0);
@@ -109,9 +116,9 @@ INTEGER iMlaenv(INTEGER const ispec, const char *name, const char * /* opts */, 
         //
     } else if (ispec == 11) {
         //
-        //        Infinity arithmetic can be trusted not to trap
+        // Infinity arithmetic can be trusted not to trap
         //
-        //        iMlaenv = 0
+        // iMlaenv = 0
         return_value = 1;
         if (return_value == 1) {
             return_value = iMieeeck(1, 0.0, 1.0);
@@ -119,7 +126,7 @@ INTEGER iMlaenv(INTEGER const ispec, const char *name, const char * /* opts */, 
         //
     } else {
         //
-        //        Invalid value for ISPEC
+        // Invalid value for ISPEC
         //
         return_value = -1;
     }
@@ -127,33 +134,34 @@ INTEGER iMlaenv(INTEGER const ispec, const char *name, const char * /* opts */, 
     delete[] subname;
     return return_value;
     //
-    //     End of iMlaenv
+    // End of iMlaenv
     //
 }
 
 INTEGER iMlaenv2stage(INTEGER const ispec, const char *name, const char *opts, INTEGER const n1, INTEGER const n2, INTEGER const n3, INTEGER const n4) {
     INTEGER return_value = 0;
     //
-    //     .. Scalar Arguments ..
-    //     ..
     //
-    //  =====================================================================
+    // .. Scalar Arguments ..
+    // ..
     //
-    //     .. Local variables ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Arrays in Common ..
-    //     ..
-    //     .. Common blocks ..
-    //     ..
-    //     .. Save statement ..
-    //     ..
-    //     .. Executable Statements ..
+    // =====================================================================
+    //
+    // .. Local variables ..
+    // .. External Functions ..
+    // ..
+    // .. Arrays in Common ..
+    // ..
+    // .. Common blocks ..
+    // ..
+    // .. Save statement ..
+    // ..
+    // .. Executable Statements ..
     //
     INTEGER iispec = 0;
     if ((ispec >= 1) && (ispec <= 5)) {
         //
-        //     1 <= ISPEC <= 5: 2stage eigenvalues SVD routines.
+        // 1 <= ISPEC <= 5: 2stage eigenvalues SVD routines.
         //
         if (ispec == 1) {
             return_value = iparms[1 - 1];
@@ -164,7 +172,7 @@ INTEGER iMlaenv2stage(INTEGER const ispec, const char *name, const char *opts, I
         //
     } else {
         //
-        //        Invalid value for ISPEC
+        // Invalid value for ISPEC
         //
         return_value = -1;
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZHPT01.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -38,30 +45,7 @@ using fem::common;
 
 void Chpt01(const char *uplo, INTEGER const n, COMPLEX *a, COMPLEX *afac, INTEGER *ipiv, COMPLEX *c, INTEGER const ldc, REAL *rwork, REAL &resid) {
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Quick exit if N = 0.
+    // Quick exit if N = 0.
     //
     const REAL zero = 0.0;
     if (n <= 0) {
@@ -69,13 +53,13 @@ void Chpt01(const char *uplo, INTEGER const n, COMPLEX *a, COMPLEX *afac, INTEGE
         return;
     }
     //
-    //     Determine EPS and the norm of A.
+    // Determine EPS and the norm of A.
     //
     REAL eps = Rlamch("Epsilon");
     REAL anorm = Clanhp("1", uplo, n, a, rwork);
     //
-    //     Check the imaginary parts of the diagonal elements and return with
-    //     an error code if any are nonzero.
+    // Check the imaginary parts of the diagonal elements and return with
+    // an error code if any are nonzero.
     //
     INTEGER jc = 1;
     INTEGER j = 0;
@@ -98,22 +82,22 @@ void Chpt01(const char *uplo, INTEGER const n, COMPLEX *a, COMPLEX *afac, INTEGE
         }
     }
     //
-    //     Initialize C to the identity matrix.
+    // Initialize C to the identity matrix.
     //
     const COMPLEX czero = COMPLEX(0.0, 0.0);
     const COMPLEX cone = COMPLEX(1.0, 0.0);
     Claset("Full", n, n, czero, cone, c, ldc);
     //
-    //     Call Clavhp to form the product D * U' (or D * L' ).
+    // Call Clavhp to form the product D * U' (or D * L' ).
     //
     INTEGER info = 0;
     Clavhp(uplo, "Conjugate", "Non-unit", n, n, afac, ipiv, c, ldc, info);
     //
-    //     Call Clavhp again to multiply by U ( or L ).
+    // Call Clavhp again to multiply by U ( or L ).
     //
     Clavhp(uplo, "No transpose", "Unit", n, n, afac, ipiv, c, ldc, info);
     //
-    //     Compute the difference  C - A .
+    // Compute the difference  C - A .
     //
     INTEGER i = 0;
     if (Mlsame(uplo, "U")) {
@@ -136,7 +120,7 @@ void Chpt01(const char *uplo, INTEGER const n, COMPLEX *a, COMPLEX *afac, INTEGE
         }
     }
     //
-    //     Compute norm( C - A ) / ( N * norm(A) * EPS )
+    // Compute norm( C - A ) / ( N * norm(A) * EPS )
     //
     resid = Clanhe("1", uplo, n, c, ldc, rwork);
     //
@@ -148,6 +132,6 @@ void Chpt01(const char *uplo, INTEGER const n, COMPLEX *a, COMPLEX *afac, INTEGE
         resid = ((resid / castREAL(n)) / anorm) / eps;
     }
     //
-    //     End of Chpt01
+    // End of Chpt01
     //
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZPOT03.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -38,30 +45,7 @@ using fem::common;
 
 void Cpot03(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *ainv, INTEGER const ldainv, COMPLEX *work, INTEGER const ldwork, REAL *rwork, REAL &rcond, REAL &resid) {
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Quick exit if N = 0.
+    // Quick exit if N = 0.
     //
     const REAL one = 1.0;
     const REAL zero = 0.0;
@@ -71,7 +55,7 @@ void Cpot03(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, CO
         return;
     }
     //
-    //     Exit with RESID = 1/EPS if ANORM = 0 or AINVNM = 0.
+    // Exit with RESID = 1/EPS if ANORM = 0 or AINVNM = 0.
     //
     REAL eps = Rlamch("Epsilon");
     REAL anorm = Clanhe("1", uplo, n, a, lda, rwork);
@@ -83,8 +67,8 @@ void Cpot03(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, CO
     }
     rcond = (one / anorm) / ainvnm;
     //
-    //     Expand AINV into a full matrix and call Chemm to multiply
-    //     AINV on the left by A.
+    // Expand AINV into a full matrix and call Chemm to multiply
+    // AINV on the left by A.
     //
     INTEGER j = 0;
     INTEGER i = 0;
@@ -105,18 +89,18 @@ void Cpot03(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, CO
     const COMPLEX czero = COMPLEX(0.0, 0.0);
     Chemm("Left", uplo, n, n, -cone, a, lda, ainv, ldainv, czero, work, ldwork);
     //
-    //     Add the identity matrix to WORK .
+    // Add the identity matrix to WORK .
     //
     for (i = 1; i <= n; i = i + 1) {
         work[(i - 1) + (i - 1) * ldwork] += cone;
     }
     //
-    //     Compute norm(I - A*AINV) / (N * norm(A) * norm(AINV) * EPS)
+    // Compute norm(I - A*AINV) / (N * norm(A) * norm(AINV) * EPS)
     //
     resid = Clange("1", n, n, work, ldwork, rwork);
     //
     resid = ((resid * rcond) / eps) / castREAL(n);
     //
-    //     End of Cpot03
+    // End of Cpot03
     //
 }

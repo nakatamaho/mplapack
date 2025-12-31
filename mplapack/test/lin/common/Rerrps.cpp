@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DERRPS.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -70,7 +77,7 @@ void Rerrps(const char *path, INTEGER const nunit) {
     //
     nout = nunit;
     //
-    //     Set the variables to innocuous values.
+    // Set the variables to innocuous values.
     //
     INTEGER j = 0;
     const INTEGER nmax = 4;
@@ -91,10 +98,10 @@ void Rerrps(const char *path, INTEGER const nunit) {
     }
     ok = true;
     //
-    //        Test error exits of the routines that use the Cholesky
-    //        decomposition of a symmetric positive semidefinite matrix.
+    // Test error exits of the routines that use the Cholesky
+    // decomposition of a symmetric positive semidefinite matrix.
     //
-    //        Rpstrf
+    // Rpstrf
     //
     strncpy(srnamt, "Rpstrf", srnamt_len);
     infot = 1;
@@ -109,7 +116,7 @@ void Rerrps(const char *path, INTEGER const nunit) {
     Rpstrf("U", 2, a, 1, piv, rank, -1.0, work, info);
     chkxer("Rpstrf", infot, nout, lerr, ok);
     //
-    //        Rpstf2
+    // Rpstf2
     //
     strncpy(srnamt, "Rpstf2", srnamt_len);
     infot = 1;
@@ -122,10 +129,10 @@ void Rerrps(const char *path, INTEGER const nunit) {
     Rpstf2("U", 2, a, 1, piv, rank, -1.0, work, info);
     chkxer("Rpstf2", infot, nout, lerr, ok);
     //
-    //     Print a summary line.
+    // Print a summary line.
     //
     Alaesm(path, ok, nout);
     //
-    //     End of Rerrps
+    // End of Rerrps
     //
 }

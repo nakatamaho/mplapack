@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DTPT03.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -38,7 +45,7 @@ using fem::common;
 
 void Rtpt03(const char *uplo, const char *trans, const char *diag, INTEGER const n, INTEGER const nrhs, REAL *ap, REAL const scale, REAL *cnorm, REAL const tscal, REAL *x, INTEGER const ldx, REAL *b, INTEGER const ldb, REAL *work, REAL &resid) {
     //
-    //     Quick exit if N = 0.
+    // Quick exit if N = 0.
     //
     const REAL zero = 0.0;
     if (n <= 0 || nrhs <= 0) {
@@ -50,8 +57,8 @@ void Rtpt03(const char *uplo, const char *trans, const char *diag, INTEGER const
     const REAL one = 1.0;
     REAL bignum = one / smlnum;
     //
-    //     Compute the norm of the triangular matrix A using the column
-    //     norms already computed by Rlatps.
+    // Compute the norm of the triangular matrix A using the column
+    // norms already computed by Rlatps.
     //
     REAL tnorm = zero;
     INTEGER jj = 0;
@@ -76,8 +83,8 @@ void Rtpt03(const char *uplo, const char *trans, const char *diag, INTEGER const
         }
     }
     //
-    //     Compute the maximum over the number of right hand sides of
-    //        norm(op(A)*x - s*b) / ( norm(op(A)) * norm(x) * EPS ).
+    // Compute the maximum over the number of right hand sides of
+    // norm(op(A)*x - s*b) / ( norm(op(A)) * norm(x) * EPS ).
     //
     resid = zero;
     INTEGER ix = 0;
@@ -117,6 +124,6 @@ void Rtpt03(const char *uplo, const char *trans, const char *diag, INTEGER const
         resid = max(resid, err);
     }
     //
-    //     End of Rtpt03
+    // End of Rtpt03
     //
 }

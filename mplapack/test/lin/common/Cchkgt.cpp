@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine ZCHKGT.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -98,7 +105,7 @@ void Cchkgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
         iseed[i - 1] = iseedy[i - 1];
     }
     //
-    //     Test the error exits
+    // Test the error exits
     //
     if (tsterr) {
         Cerrge(path, nout);
@@ -107,7 +114,7 @@ void Cchkgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
     //
     for (in = 1; in <= nn; in = in + 1) {
         //
-        //        Do for each value of N in NVAL.
+        // Do for each value of N in NVAL.
         //
         n = nval[in - 1];
         m = max(n - 1, (INTEGER)0);
@@ -119,26 +126,26 @@ void Cchkgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
         //
         for (imat = 1; imat <= nimat; imat = imat + 1) {
             //
-            //           Do the tests only if DOTYPE( IMAT ) is true.
+            // Do the tests only if DOTYPE( IMAT ) is true.
             //
             if (!dotype[imat - 1]) {
                 goto statement_100;
             }
             //
-            //           Set up parameters with Clatb4.
+            // Set up parameters with Clatb4.
             //
             Clatb4(path, imat, n, n, type, kl, ku, anorm, mode, cond, dist);
             //
             zerot = imat >= 8 && imat <= 10;
             if (imat <= 6) {
                 //
-                //              Types 1-6:  generate matrices of known condition number.
+                // Types 1-6:  generate matrices of known condition number.
                 //
                 koff = max({(INTEGER)2 - ku, 3 - max((INTEGER)1, n)});
                 strncpy(srnamt, "Clatms", srnamt_len);
                 Clatms(n, n, dist, iseed, type, rwork, mode, cond, anorm, kl, ku, "Z", &af[koff - 1], 3, work, info);
                 //
-                //              Check the error code from Clatms.
+                // Check the error code from Clatms.
                 //
                 if (info != 0) {
                     Alaerh(path, "Clatms", info, 0, " ", n, n, kl, ku, -1, imat, nfail, nerrs, nout);
@@ -153,13 +160,13 @@ void Cchkgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                 Ccopy(n, &af[2 - 1], 3, &a[(m + 1) - 1], 1);
             } else {
                 //
-                //              Types 7-12:  generate tridiagonal matrices with
-                //              unknown condition numbers.
+                // Types 7-12:  generate tridiagonal matrices with
+                // unknown condition numbers.
                 //
                 if (!zerot || !dotype[7 - 1]) {
                     //
-                    //                 Generate a matrix with elements whose real and
-                    //                 imaginary parts are from [-1,1].
+                    // Generate a matrix with elements whose real and
+                    // imaginary parts are from [-1,1].
                     //
                     Clarnv(2, iseed, n + 2 * m, a);
                     if (anorm != one) {
@@ -167,8 +174,8 @@ void Cchkgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                     }
                 } else if (izero > 0) {
                     //
-                    //                 Reuse the last matrix by copying back the zeroed out
-                    //                 elements.
+                    // Reuse the last matrix by copying back the zeroed out
+                    // elements.
                     //
                     if (izero == 1) {
                         a[n - 1] = z[2 - 1];
@@ -185,7 +192,7 @@ void Cchkgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                     }
                 }
                 //
-                //              If IMAT > 7, set one column of the matrix to 0.
+                // If IMAT > 7, set one column of the matrix to 0.
                 //
                 if (!zerot) {
                     izero = 0;
@@ -215,15 +222,15 @@ void Cchkgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                 }
             }
             //
-            //+    TEST 1
-            //           Factor A as L*U and compute the ratio
-            //              norm(L*U - A) / (n * norm(A) * EPS )
+            // +    TEST 1
+            // Factor A as L*U and compute the ratio
+            // norm(L*U - A) / (n * norm(A) * EPS )
             //
             Ccopy(n + 2 * m, a, 1, af, 1);
             strncpy(srnamt, "Cgttrf", srnamt_len);
             Cgttrf(n, af, &af[(m + 1) - 1], &af[(n + m + 1) - 1], &af[(n + 2 * m + 1) - 1], iwork, info);
             //
-            //           Check error code from Cgttrf.
+            // Check error code from Cgttrf.
             //
             if (info != izero) {
                 Alaerh(path, "Cgttrf", info, izero, " ", n, n, 1, 1, -1, imat, nfail, nerrs, nout);
@@ -232,7 +239,7 @@ void Cchkgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
             //
             Cgtt01(n, a, &a[(m + 1) - 1], &a[(n + m + 1) - 1], af, &af[(m + 1) - 1], &af[(n + m + 1) - 1], &af[(n + 2 * m + 1) - 1], iwork, work, lda, rwork, result[1 - 1]);
             //
-            //           Print the test ratio if it is .GE. THRESH.
+            // Print the test ratio if it is .GE. THRESH.
             //
             if (result[1 - 1] >= thresh) {
                 if (nfail == 0 && nerrs == 0) {
@@ -255,8 +262,8 @@ void Cchkgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                 //
                 if (!trfcon) {
                     //
-                    //                 Use Cgttrs to solve for one column at a time of
-                    //                 inv(A), computing the maximum column sum as we go.
+                    // Use Cgttrs to solve for one column at a time of
+                    // inv(A), computing the maximum column sum as we go.
                     //
                     ainvnm = zero;
                     for (i = 1; i <= n; i = i + 1) {
@@ -268,7 +275,7 @@ void Cchkgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                         ainvnm = max({ainvnm, RCasum(n, x, 1)});
                     }
                     //
-                    //                 Compute RCONDC = 1 / (norm(A) * norm(inv(A))
+                    // Compute RCONDC = 1 / (norm(A) * norm(inv(A))
                     //
                     if (anorm <= zero || ainvnm <= zero) {
                         rcondc = one;
@@ -284,14 +291,14 @@ void Cchkgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                     rcondc = zero;
                 }
                 //
-                //+    TEST 7
-                //              Estimate the reciprocal of the condition number of the
-                //              matrix.
+                // +    TEST 7
+                // Estimate the reciprocal of the condition number of the
+                // matrix.
                 //
                 strncpy(srnamt, "Cgtcon", srnamt_len);
                 Cgtcon(norm, n, af, &af[(m + 1) - 1], &af[(n + m + 1) - 1], &af[(n + 2 * m + 1) - 1], iwork, anorm, rcond, work, info);
                 //
-                //              Check error code from Cgtcon.
+                // Check error code from Cgtcon.
                 //
                 if (info != 0) {
                     Alaerh(path, "Cgtcon", info, 0, norm, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
@@ -299,7 +306,7 @@ void Cchkgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                 //
                 result[7 - 1] = Rget06(rcond, rcondc);
                 //
-                //              Print the test ratio if it is .GE. THRESH.
+                // Print the test ratio if it is .GE. THRESH.
                 //
                 if (result[7 - 1] >= thresh) {
                     if (nfail == 0 && nerrs == 0) {
@@ -314,7 +321,7 @@ void Cchkgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                 nrun++;
             }
             //
-            //           Skip the remaining tests if the matrix is singular.
+            // Skip the remaining tests if the matrix is singular.
             //
             if (trfcon) {
                 goto statement_100;
@@ -323,7 +330,7 @@ void Cchkgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
             for (irhs = 1; irhs <= nns; irhs = irhs + 1) {
                 nrhs = nsval[irhs - 1];
                 //
-                //              Generate NRHS random solution vectors.
+                // Generate NRHS random solution vectors.
                 //
                 ix = 1;
                 for (j = 1; j <= nrhs; j = j + 1) {
@@ -339,18 +346,18 @@ void Cchkgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                         rcondc = rcondi;
                     }
                     //
-                    //                 Set the right hand side.
+                    // Set the right hand side.
                     //
                     Clagtm(trans, n, nrhs, one, a, &a[(m + 1) - 1], &a[(n + m + 1) - 1], xact, lda, zero, b, lda);
                     //
-                    //+    TEST 2
-                    //              Solve op(A) * X = B and compute the residual.
+                    // +    TEST 2
+                    // Solve op(A) * X = B and compute the residual.
                     //
                     Clacpy("Full", n, nrhs, b, lda, x, lda);
                     strncpy(srnamt, "Cgttrs", srnamt_len);
                     Cgttrs(trans, n, nrhs, af, &af[(m + 1) - 1], &af[(n + m + 1) - 1], &af[(n + 2 * m + 1) - 1], iwork, x, lda, info);
                     //
-                    //              Check error code from Cgttrs.
+                    // Check error code from Cgttrs.
                     //
                     if (info != 0) {
                         Alaerh(path, "Cgttrs", info, 0, trans, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
@@ -359,18 +366,18 @@ void Cchkgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                     Clacpy("Full", n, nrhs, b, lda, work, lda);
                     Cgtt02(trans, n, nrhs, a, &a[(m + 1) - 1], &a[(n + m + 1) - 1], x, lda, work, lda, result[2 - 1]);
                     //
-                    //+    TEST 3
-                    //              Check solution from generated exact solution.
+                    // +    TEST 3
+                    // Check solution from generated exact solution.
                     //
                     Cget04(n, nrhs, x, lda, xact, lda, rcondc, result[3 - 1]);
                     //
-                    //+    TESTS 4, 5, and 6
-                    //              Use iterative refinement to improve the solution.
+                    // +    TESTS 4, 5, and 6
+                    // Use iterative refinement to improve the solution.
                     //
                     strncpy(srnamt, "Cgtrfs", srnamt_len);
                     Cgtrfs(trans, n, nrhs, a, &a[(m + 1) - 1], &a[(n + m + 1) - 1], af, &af[(m + 1) - 1], &af[(n + m + 1) - 1], &af[(n + 2 * m + 1) - 1], iwork, b, lda, x, lda, rwork, &rwork[(nrhs + 1) - 1], work, &rwork[(2 * nrhs + 1) - 1], info);
                     //
-                    //              Check error code from Cgtrfs.
+                    // Check error code from Cgtrfs.
                     //
                     if (info != 0) {
                         Alaerh(path, "Cgtrfs", info, 0, trans, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
@@ -379,8 +386,8 @@ void Cchkgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                     Cget04(n, nrhs, x, lda, xact, lda, rcondc, result[4 - 1]);
                     Cgtt05(trans, n, nrhs, a, &a[(m + 1) - 1], &a[(n + m + 1) - 1], b, lda, x, lda, xact, lda, rwork, &rwork[(nrhs + 1) - 1], &result[5 - 1]);
                     //
-                    //              Print information about the tests that did not pass the
-                    //              threshold.
+                    // Print information about the tests that did not pass the
+                    // threshold.
                     //
                     for (k = 2; k <= 6; k = k + 1) {
                         if (result[k - 1] >= thresh) {
@@ -401,10 +408,10 @@ void Cchkgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
         }
     }
     //
-    //     Print a summary of the results.
+    // Print a summary of the results.
     //
     Alasum(path, nout, nfail, nrun, nerrs);
     //
-    //     End of Cchkgt
+    // End of Cchkgt
     //
 }

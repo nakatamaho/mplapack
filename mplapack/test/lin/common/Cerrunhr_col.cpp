@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZERRUNHR_COL.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -42,7 +49,7 @@ void Cerrunhr_col(const char *path, INTEGER const nunit) {
     common_write write(cmn);
     nout = nunit;
     //
-    //     Set the variables to innocuous values.
+    // Set the variables to innocuous values.
     //
     INTEGER j = 0;
     const INTEGER nmax = 2;
@@ -61,9 +68,9 @@ void Cerrunhr_col(const char *path, INTEGER const nunit) {
     }
     ok = true;
     //
-    //     Error exits for Householder reconstruction
+    // Error exits for Householder reconstruction
     //
-    //     Cunhr_col
+    // Cunhr_col
     //
     //
     strncpy(srnamt, "Cunhr_col", srnamt_len);
@@ -105,10 +112,10 @@ void Cerrunhr_col(const char *path, INTEGER const nunit) {
     Cunhr_col(4, 3, 2, a, 4, t, 1, d, info);
     chkxer("Cunhr_col", infot, nout, lerr, ok);
     //
-    //     Print a summary line.
+    // Print a summary line.
     //
     Alaesm(path, ok, nout);
     //
-    //     End of Cerrunhr_col
+    // End of Cerrunhr_col
     //
 }
