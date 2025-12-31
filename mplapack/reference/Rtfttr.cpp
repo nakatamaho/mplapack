@@ -290,7 +290,7 @@ void Rtfttr(const char *transr, const char *uplo, INTEGER const n, REAL *arf, RE
                         ij++;
                     }
                 }
-                //              Note that here, on exit of the loop, J = K-1
+                // Note that here, on exit of the loop, J = K-1
                 for (i = 0; i <= j; i = i + 1) {
                     a[i + j * lda] = arf[ij];
                     ij++;

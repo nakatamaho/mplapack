@@ -243,34 +243,34 @@ void Rsyevr(const char *jobz, const char *range, const char *uplo, INTEGER const
     //     WORK(INDTAU:INDTAU+N-1) stores the scalar factors of the
     //     elementary reflectors used in Rsytrd.
     indtau = 1;
-    //     WORK(INDD:INDD+N-1) stores the tridiagonal's diagonal entries.
+    // WORK(INDD:INDD+N-1) stores the tridiagonal's diagonal entries.
     indd = indtau + n;
-    //     WORK(INDE:INDE+N-1) stores the off-diagonal entries of the
-    //     tridiagonal matrix from Rsytrd.
+    // WORK(INDE:INDE+N-1) stores the off-diagonal entries of the
+    // tridiagonal matrix from Rsytrd.
     inde = indd + n;
-    //     WORK(INDDD:INDDD+N-1) is a copy of the diagonal entries over
-    //     -written by Rstemr (the Rsterf path copies the diagonal to W).
+    // WORK(INDDD:INDDD+N-1) is a copy of the diagonal entries over
+    // -written by Rstemr (the Rsterf path copies the diagonal to W).
     inddd = inde + n;
-    //     WORK(INDEE:INDEE+N-1) is a copy of the off-diagonal entries over
-    //     -written while computing the eigenvalues in Rsterf and Rstemr.
+    // WORK(INDEE:INDEE+N-1) is a copy of the off-diagonal entries over
+    // -written while computing the eigenvalues in Rsterf and Rstemr.
     indee = inddd + n;
-    //     INDWK is the starting offset of the left-over workspace, and
-    //     LLWORK is the remaining workspace size.
+    // INDWK is the starting offset of the left-over workspace, and
+    // LLWORK is the remaining workspace size.
     indwk = indee + n;
     llwork = lwork - indwk + 1;
     //
     //     IWORK(INDIBL:INDIBL+M-1) corresponds to IBLOCK in Rstebz and
     //     stores the block indices of each of the M<=N eigenvalues.
     indibl = 1;
-    //     IWORK(INDISP:INDISP+NSPLIT-1) corresponds to ISPLIT in Rstebz and
-    //     stores the starting and finishing indices of each block.
+    // IWORK(INDISP:INDISP+NSPLIT-1) corresponds to ISPLIT in Rstebz and
+    // stores the starting and finishing indices of each block.
     indisp = indibl + n;
-    //     IWORK(INDIFL:INDIFL+N-1) stores the indices of eigenvectors
-    //     that corresponding to eigenvectors that fail to converge in
-    //     Rstein.  This information is discarded; if any fail, the driver
-    //     returns INFO > 0.
+    // IWORK(INDIFL:INDIFL+N-1) stores the indices of eigenvectors
+    // that corresponding to eigenvectors that fail to converge in
+    // Rstein.  This information is discarded; if any fail, the driver
+    // returns INFO > 0.
     indifl = indisp + n;
-    //     INDIWO is the offset of the remaining integer workspace.
+    // INDIWO is the offset of the remaining integer workspace.
     indiwo = indifl + n;
     //
     //     Call Rsytrd to reduce symmetric matrix to tridiagonal form.
@@ -307,8 +307,8 @@ void Rsyevr(const char *jobz, const char *range, const char *uplo, INTEGER const
         }
         //
         if (info == 0) {
-            //           Everything worked.  Skip Rstebz/Rstein.  IWORK(:) are
-            //           undefined.
+            // Everything worked.  Skip Rstebz/Rstein.  IWORK(:) are
+            // undefined.
             m = n;
             goto statement_30;
         }

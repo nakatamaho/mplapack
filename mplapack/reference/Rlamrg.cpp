@@ -64,7 +64,7 @@ void Rlamrg(INTEGER const n1, INTEGER const n2, REAL *a, INTEGER const dtrd1, IN
         ind2 = n1 + n2;
     }
     i = 1;
-//     while ( (N1SV > 0) & (N2SV > 0) )
+// while ( (N1SV > 0) & (N2SV > 0) )
 statement_10:
     if (n1sv > 0 && n2sv > 0) {
         if (a[ind1 - 1] <= a[ind2 - 1]) {
@@ -80,7 +80,7 @@ statement_10:
         }
         goto statement_10;
     }
-    //     end while
+    // end while
     if (n1sv == 0) {
         for (n1sv = 1; n1sv <= n2sv; n1sv = n1sv + 1) {
             index[i - 1] = ind2;
@@ -88,7 +88,7 @@ statement_10:
             ind2 += dtrd2;
         }
     } else {
-        //     N2SV .EQ. 0
+        // N2SV .EQ. 0
         for (n2sv = 1; n2sv <= n1sv; n2sv = n2sv + 1) {
             index[i - 1] = ind1;
             i++;

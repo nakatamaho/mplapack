@@ -46,7 +46,7 @@ INTEGER iMparam2stage(INTEGER const ispec, const char *name, const char *opts, I
     //     Get the number of threads
     //
     INTEGER nthreads = 1;
-    //      WRITE(*,*) 'IPARAM VOICI NTHREADS ISPEC ',NTHREADS, ISPEC
+    // WRITE(*,*) 'IPARAM VOICI NTHREADS ISPEC ',NTHREADS, ISPEC
     //
     char subnam[SUBNAM_LEN];
     INTEGER ic = 0;
@@ -91,8 +91,8 @@ INTEGER iMparam2stage(INTEGER const ispec, const char *name, const char *opts, I
             return return_value;
         }
     }
-    //      WRITE(*,*),'RPREC,CPREC ',RPREC,CPREC,
-    //     $           '   ALGO ',ALGO,'    STAGE ',STAG
+    // WRITE(*,*),'RPREC,CPREC ',RPREC,CPREC,
+    // $           '   ALGO ',ALGO,'    STAGE ',STAG
     //
     INTEGER kd = 0;
     INTEGER ib = 0;
@@ -151,7 +151,7 @@ INTEGER iMparam2stage(INTEGER const ispec, const char *name, const char *opts, I
         if (vect == 'N') {
             lhous = max((INTEGER)1, 4 * ni);
         } else {
-            //           This is not correct, it need to call the ALGO and the stage2
+            // This is not correct, it need to call the ALGO and the stage2
             lhous = max((INTEGER)1, 4 * ni) + ibi;
         }
         if (lhous >= 0) {
@@ -190,7 +190,7 @@ INTEGER iMparam2stage(INTEGER const ispec, const char *name, const char *opts, I
         subnam[(5 - 1)] = 'Q';
         subnam[(6 - 1)] = 'F';
         lqoptnb = iMlaenv(1, subnam, " ", nbi, ni, -1, -1);
-        //        Could be QR or LQ for TRD and the max for BRD
+        // Could be QR or LQ for TRD and the max for BRD
         factoptnb = max(qroptnb, lqoptnb);
         if (strncmp(algo, "TRD", 3)) {
             if (strncmp(stag, "2STAG", 5)) {

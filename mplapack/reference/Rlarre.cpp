@@ -153,7 +153,7 @@ void Rlarre(const char *range, INTEGER const n, REAL &vl, REAL &vu, INTEGER cons
         if ((irange == allrng) || ((irange == valrng) && (d[1 - 1] > vl) && (d[1 - 1] <= vu)) || ((irange == indrng) && (il == 1) && (iu == 1))) {
             m = 1;
             w[1 - 1] = d[1 - 1];
-            //           The computation error of the eigenvalue is zero
+            // The computation error of the eigenvalue is zero
             werr[1 - 1] = zero;
             wgap[1 - 1] = zero;
             iblock[1 - 1] = 1;
@@ -161,7 +161,7 @@ void Rlarre(const char *range, INTEGER const n, REAL &vl, REAL &vu, INTEGER cons
             gers[1 - 1] = d[1 - 1];
             gers[2 - 1] = d[1 - 1];
         }
-        //        store the shift for the initial RRR, which is zero in this case
+        // store the shift for the initial RRR, which is zero in this case
         e[1 - 1] = zero;
         return;
     }
@@ -189,10 +189,10 @@ void Rlarre(const char *range, INTEGER const n, REAL &vl, REAL &vu, INTEGER cons
         gu = max(gu, gers[(2 * i) - 1]);
         eold = eabs;
     }
-    //     The minimum pivot allowed in the Sturm sequence for T
+    // The minimum pivot allowed in the Sturm sequence for T
     pivmin = safmin * max(one, pow2(emax));
-    //     Compute spectral diameter. The Gerschgorin bounds give an
-    //     estimate that is wrong by at most a factor of SQRT(2)
+    // Compute spectral diameter. The Gerschgorin bounds give an
+    // estimate that is wrong by at most a factor of SQRT(2)
     spdiam = gu - gl;
     //
     //     Compute splitting points
@@ -207,22 +207,22 @@ void Rlarre(const char *range, INTEGER const n, REAL &vl, REAL &vu, INTEGER cons
     usedqd = ((irange == allrng) && (!forceb));
     //
     if ((irange == allrng) && (!forceb)) {
-        //        Set interval [VL,VU] that contains all eigenvalues
+        // Set interval [VL,VU] that contains all eigenvalues
         vl = gl;
         vu = gu;
     } else {
-        //        We call Rlarrd to find crude approximations to the eigenvalues
-        //        in the desired range. In case IRANGE = INDRNG, we also obtain the
-        //        interval (VL,VU] that contains all the wanted eigenvalues.
-        //        An interval [LEFT,RIGHT] has converged if
-        //        RIGHT-LEFT.LT.RTOL*MAX(ABS(LEFT),ABS(RIGHT))
-        //        Rlarrd needs a WORK of size 4*N, IWORK of size 3*N
+        // We call Rlarrd to find crude approximations to the eigenvalues
+        // in the desired range. In case IRANGE = INDRNG, we also obtain the
+        // interval (VL,VU] that contains all the wanted eigenvalues.
+        // An interval [LEFT,RIGHT] has converged if
+        // RIGHT-LEFT.LT.RTOL*MAX(ABS(LEFT),ABS(RIGHT))
+        // Rlarrd needs a WORK of size 4*N, IWORK of size 3*N
         Rlarrd(range, "B", n, vl, vu, il, iu, gers, bsrtol, d, e, e2, pivmin, nsplit, isplit, mm, w, werr, vl, vu, iblock, indexw, work, iwork, iinfo);
         if (iinfo != 0) {
             info = -1;
             return;
         }
-        //        Make sure that the entries M+1 to N in W, WERR, IBLOCK, INDEXW are 0
+        // Make sure that the entries M+1 to N in W, WERR, IBLOCK, INDEXW are 0
         for (i = mm + 1; i <= n; i = i + 1) {
             w[i - 1] = zero;
             werr[i - 1] = zero;
@@ -245,14 +245,14 @@ void Rlarre(const char *range, INTEGER const n, REAL &vl, REAL &vu, INTEGER cons
                 m++;
                 w[m - 1] = d[ibegin - 1];
                 werr[m - 1] = zero;
-                //              The gap for a single block doesn't matter for the later
-                //              algorithm and is assigned an arbitrary large value
+                // The gap for a single block doesn't matter for the later
+                // algorithm and is assigned an arbitrary large value
                 wgap[m - 1] = zero;
                 iblock[m - 1] = jblk;
                 indexw[m - 1] = 1;
                 wbegin++;
             }
-            //           E( IEND ) holds the shift for the initial RRR
+            // E( IEND ) holds the shift for the initial RRR
             e[iend - 1] = zero;
             ibegin = iend + 1;
             goto statement_170;
@@ -273,7 +273,7 @@ void Rlarre(const char *range, INTEGER const n, REAL &vl, REAL &vu, INTEGER cons
         spdiam = gu - gl;
         //
         if (!((irange == allrng) && (!forceb))) {
-            //           Count the number of eigenvalues in the current block.
+            // Count the number of eigenvalues in the current block.
             mb = 0;
             for (i = wbegin; i <= mm; i = i + 1) {
                 if (iblock[i - 1] == jblk) {
@@ -285,8 +285,8 @@ void Rlarre(const char *range, INTEGER const n, REAL &vl, REAL &vu, INTEGER cons
         statement_21:
             //
             if (mb == 0) {
-                //              No eigenvalue in the current block lies in the desired range
-                //              E( IEND ) holds the shift for the initial RRR
+                // No eigenvalue in the current block lies in the desired range
+                // E( IEND ) holds the shift for the initial RRR
                 e[iend - 1] = zero;
                 ibegin = iend + 1;
                 goto statement_170;
@@ -295,22 +295,22 @@ void Rlarre(const char *range, INTEGER const n, REAL &vl, REAL &vu, INTEGER cons
                 //              Decide whether dqds or bisection is more efficient
                 usedqd = ((mb > fac * in) && (!forceb));
                 wend = wbegin + mb - 1;
-                //              Calculate gaps for the current block
-                //              In later stages, when representations for individual
-                //              eigenvalues are different, we use SIGMA = E( IEND ).
+                // Calculate gaps for the current block
+                // In later stages, when representations for individual
+                // eigenvalues are different, we use SIGMA = E( IEND ).
                 sigma = zero;
                 for (i = wbegin; i <= wend - 1; i = i + 1) {
                     wgap[i - 1] = max(zero, REAL(w[(i + 1) - 1] - werr[(i + 1) - 1] - (w[i - 1] + werr[i - 1])));
                 }
                 wgap[wend - 1] = max(zero, REAL(vu - sigma - (w[wend - 1] + werr[wend - 1])));
-                //              Find local index of the first and last desired evalue.
+                // Find local index of the first and last desired evalue.
                 indl = indexw[wbegin - 1];
                 indu = indexw[wend - 1];
             }
         }
         if (((irange == allrng) && (!forceb)) || usedqd) {
-            //           Case of DQDS
-            //           Find approximations to the extremal eigenvalues of the block
+            // Case of DQDS
+            // Find approximations to the extremal eigenvalues of the block
             Rlarrk(in, 1, gl, gu, &d[ibegin - 1], &e2[ibegin - 1], pivmin, rtl, tmp, tmp1, iinfo);
             if (iinfo != 0) {
                 info = -1;
@@ -324,11 +324,11 @@ void Rlarre(const char *range, INTEGER const n, REAL &vl, REAL &vu, INTEGER cons
                 return;
             }
             isrght = min(gu, REAL(tmp + tmp1 + hndrd * eps * abs(tmp + tmp1)));
-            //           Improve the estimate of the spectral diameter
+            // Improve the estimate of the spectral diameter
             spdiam = isrght - isleft;
         } else {
-            //           Case of bisection
-            //           Find approximations to the wanted extremal eigenvalues
+            // Case of bisection
+            // Find approximations to the wanted extremal eigenvalues
             isleft = max(gl, REAL(w[wbegin - 1] - werr[wbegin - 1] - hndrd * eps * abs(w[wbegin - 1] - werr[wbegin - 1])));
             isrght = min(gu, REAL(w[wend - 1] + werr[wend - 1] + hndrd * eps * abs(w[wend - 1] + werr[wend - 1])));
         }
@@ -342,21 +342,21 @@ void Rlarre(const char *range, INTEGER const n, REAL &vl, REAL &vu, INTEGER cons
         //        dqds is chosen if all eigenvalues are desired or the number of
         //        eigenvalues to be computed is large compared to the blocksize.
         if ((irange == allrng) && (!forceb)) {
-            //           If all the eigenvalues have to be computed, we use dqd
+            // If all the eigenvalues have to be computed, we use dqd
             usedqd = true;
-            //           INDL is the local index of the first eigenvalue to compute
+            // INDL is the local index of the first eigenvalue to compute
             indl = 1;
             indu = in;
-            //           MB =  number of eigenvalues to compute
+            // MB =  number of eigenvalues to compute
             mb = in;
             wend = wbegin + mb - 1;
-            //           Define 1/4 and 3/4 points of the spectrum
+            // Define 1/4 and 3/4 points of the spectrum
             s1 = isleft + fourth * spdiam;
             s2 = isrght - fourth * spdiam;
         } else {
-            //           Rlarrd has computed IBLOCK and INDEXW for each eigenvalue
-            //           approximation.
-            //           choose sigma
+            // Rlarrd has computed IBLOCK and INDEXW for each eigenvalue
+            // approximation.
+            // choose sigma
             if (usedqd) {
                 s1 = isleft + fourth * spdiam;
                 s2 = isrght - fourth * spdiam;
@@ -379,12 +379,12 @@ void Rlarre(const char *range, INTEGER const n, REAL &vl, REAL &vu, INTEGER cons
             if ((irange == allrng) && (!forceb)) {
                 sigma = max(isleft, gl);
             } else if (usedqd) {
-                //              use Gerschgorin bound as shift to get pos def matrix
-                //              for dqds
+                // use Gerschgorin bound as shift to get pos def matrix
+                // for dqds
                 sigma = isleft;
             } else {
-                //              use approximation of the first desired eigenvalue of the
-                //              block as shift
+                // use approximation of the first desired eigenvalue of the
+                // block as shift
                 sigma = max(isleft, vl);
             }
             sgndef = one;
@@ -392,12 +392,12 @@ void Rlarre(const char *range, INTEGER const n, REAL &vl, REAL &vu, INTEGER cons
             if ((irange == allrng) && (!forceb)) {
                 sigma = min(isrght, gu);
             } else if (usedqd) {
-                //              use Gerschgorin bound as shift to get neg def matrix
-                //              for dqds
+                // use Gerschgorin bound as shift to get neg def matrix
+                // for dqds
                 sigma = isrght;
             } else {
-                //              use approximation of the first desired eigenvalue of the
-                //              block as shift
+                // use approximation of the first desired eigenvalue of the
+                // block as shift
                 sigma = min(isrght, vu);
             }
             sgndef = -one;
@@ -409,8 +409,8 @@ void Rlarre(const char *range, INTEGER const n, REAL &vl, REAL &vu, INTEGER cons
         //        needs to be refined to obtain a factorization with not too much
         //        element growth.
         if (usedqd) {
-            //           The initial SIGMA was to the outer end of the spectrum
-            //           the matrix is definite and we need not retreat.
+            // The initial SIGMA was to the outer end of the spectrum
+            // the matrix is definite and we need not retreat.
             tau = spdiam * eps * n + two * pivmin;
             tau = max(tau, REAL(two * eps * abs(sigma)));
         } else {
@@ -430,9 +430,9 @@ void Rlarre(const char *range, INTEGER const n, REAL &vl, REAL &vu, INTEGER cons
         }
         //
         for (idum = 1; idum <= maxtry; idum = idum + 1) {
-            //           Compute L D L^T factorization of tridiagonal matrix T - sigma I.
-            //           Store D in WORK(1:IN), L in WORK(IN+1:2*IN), and reciprocals of
-            //           pivots in WORK(2*IN+1:3*IN)
+            // Compute L D L^T factorization of tridiagonal matrix T - sigma I.
+            // Store D in WORK(1:IN), L in WORK(IN+1:2*IN), and reciprocals of
+            // pivots in WORK(2*IN+1:3*IN)
             dpivot = d[ibegin - 1] - sigma;
             work[1 - 1] = dpivot;
             dmax = abs(work[1 - 1]);
@@ -446,15 +446,15 @@ void Rlarre(const char *range, INTEGER const n, REAL &vl, REAL &vu, INTEGER cons
                 dmax = max(dmax, REAL(abs(dpivot)));
                 j++;
             }
-            //           check for element growth
+            // check for element growth
             if (dmax > maxgrowth * spdiam) {
                 norep = true;
             } else {
                 norep = false;
             }
             if (usedqd && !norep) {
-                //              Ensure the definiteness of the representation
-                //              All entries of D (of L D L^T) must have the same sign
+                // Ensure the definiteness of the representation
+                // All entries of D (of L D L^T) must have the same sign
                 for (i = 1; i <= in; i = i + 1) {
                     tmp = sgndef * work[i - 1];
                     if (tmp < zero) {
@@ -463,12 +463,12 @@ void Rlarre(const char *range, INTEGER const n, REAL &vl, REAL &vu, INTEGER cons
                 }
             }
             if (norep) {
-                //              Note that in the case of IRANGE=ALLRNG, we use the Gerschgorin
-                //              shift which makes the matrix definite. So we should end up
-                //              here really only in the case of IRANGE = VALRNG or INDRNG.
+                // Note that in the case of IRANGE=ALLRNG, we use the Gerschgorin
+                // shift which makes the matrix definite. So we should end up
+                // here really only in the case of IRANGE = VALRNG or INDRNG.
                 if (idum == maxtry - 1) {
                     if (sgndef == one) {
-                        //                    The fudged Gerschgorin shift should succeed
+                        // The fudged Gerschgorin shift should succeed
                         sigma = gl - fudge * spdiam * eps * n - fudge * two * pivmin;
                     } else {
                         sigma = gu + fudge * spdiam * eps * n + fudge * two * pivmin;
@@ -478,21 +478,21 @@ void Rlarre(const char *range, INTEGER const n, REAL &vl, REAL &vu, INTEGER cons
                     tau = two * tau;
                 }
             } else {
-                //              an initial RRR is found
+                // an initial RRR is found
                 goto statement_83;
             }
         }
-        //        if the program reaches this point, no base representation could be
-        //        found in MAXTRY iterations.
+        // if the program reaches this point, no base representation could be
+        // found in MAXTRY iterations.
         info = 2;
         return;
     //
     statement_83:
-        //        At this point, we have found an initial base representation
-        //        T - SIGMA I = L D L^T with not too much element growth.
-        //        Store the shift.
+        // At this point, we have found an initial base representation
+        // T - SIGMA I = L D L^T with not too much element growth.
+        // Store the shift.
         e[iend - 1] = sigma;
-        //        Store D and L.
+        // Store D and L.
         Rcopy(in, work, 1, &d[ibegin - 1], 1);
         Rcopy(in - 1, &work[(in + 1) - 1], 1, &e[ibegin - 1], 1);
         //
@@ -522,28 +522,28 @@ void Rlarre(const char *range, INTEGER const n, REAL &vl, REAL &vu, INTEGER cons
         //
         //        Compute the required eigenvalues of L D L' by bisection or dqds
         if (!usedqd) {
-            //           If Rlarrd has been used, shift the eigenvalue approximations
-            //           according to their representation. This is necessary for
-            //           a uniform Rlarrv since dqds computes eigenvalues of the
-            //           shifted representation. In Rlarrv, W will always hold the
-            //           UNshifted eigenvalue approximation.
+            // If Rlarrd has been used, shift the eigenvalue approximations
+            // according to their representation. This is necessary for
+            // a uniform Rlarrv since dqds computes eigenvalues of the
+            // shifted representation. In Rlarrv, W will always hold the
+            // UNshifted eigenvalue approximation.
             for (j = wbegin; j <= wend; j = j + 1) {
                 w[j - 1] = w[j - 1] - sigma;
                 werr[j - 1] += abs(w[j - 1]) * eps;
             }
-            //           call Rlarrb to reduce eigenvalue error of the approximations
-            //           from Rlarrd
+            // call Rlarrb to reduce eigenvalue error of the approximations
+            // from Rlarrd
             for (i = ibegin; i <= iend - 1; i = i + 1) {
                 work[i - 1] = d[i - 1] * pow2(e[i - 1]);
             }
-            //           use bisection to find EV from INDL to INDU
+            // use bisection to find EV from INDL to INDU
             Rlarrb(in, &d[ibegin - 1], &work[ibegin - 1], indl, indu, rtol1, rtol2, indl - 1, &w[wbegin - 1], &wgap[wbegin - 1], &werr[wbegin - 1], &work[(2 * n + 1) - 1], iwork, pivmin, spdiam, in, iinfo);
             if (iinfo != 0) {
                 info = -4;
                 return;
             }
-            //           Rlarrb computes all gaps correctly except for the last one
-            //           Record distance to VU/GU
+            // Rlarrb computes all gaps correctly except for the last one
+            // Record distance to VU/GU
             wgap[wend - 1] = max(zero, REAL((vu - sigma) - (w[wend - 1] + werr[wend - 1])));
             for (i = indl; i <= indu; i = i + 1) {
                 m++;
@@ -551,17 +551,17 @@ void Rlarre(const char *range, INTEGER const n, REAL &vl, REAL &vu, INTEGER cons
                 indexw[m - 1] = i;
             }
         } else {
-            //           Call dqds to get all eigs (and then possibly delete unwanted
-            //           eigenvalues).
-            //           Note that dqds finds the eigenvalues of the L D L^T representation
-            //           of T to high relative accuracy. High relative accuracy
-            //           might be lost when the shift of the RRR is subtracted to obtain
-            //           the eigenvalues of T. However, T is not guaranteed to define its
-            //           eigenvalues to high relative accuracy anyway.
-            //           Set RTOL to the order of the tolerance used in Rlasq2
-            //           This is an ESTIMATED error, the worst case bound is 4*N*EPS
-            //           which is usually too large and requires unnecessary work to be
-            //           done by bisection when computing the eigenvectors
+            // Call dqds to get all eigs (and then possibly delete unwanted
+            // eigenvalues).
+            // Note that dqds finds the eigenvalues of the L D L^T representation
+            // of T to high relative accuracy. High relative accuracy
+            // might be lost when the shift of the RRR is subtracted to obtain
+            // the eigenvalues of T. However, T is not guaranteed to define its
+            // eigenvalues to high relative accuracy anyway.
+            // Set RTOL to the order of the tolerance used in Rlasq2
+            // This is an ESTIMATED error, the worst case bound is 4*N*EPS
+            // which is usually too large and requires unnecessary work to be
+            // done by bisection when computing the eigenvectors
             rtol = log(castREAL(in)) * four * eps;
             j = ibegin;
             for (i = 1; i <= in - 1; i = i + 1) {
@@ -573,13 +573,13 @@ void Rlarre(const char *range, INTEGER const n, REAL &vl, REAL &vu, INTEGER cons
             work[(2 * in) - 1] = zero;
             Rlasq2(in, work, iinfo);
             if (iinfo != 0) {
-                //              If IINFO = -5 then an index is part of a tight cluster
-                //              and should be changed. The index is in IWORK(1) and the
-                //              gap is in WORK(N+1)
+                // If IINFO = -5 then an index is part of a tight cluster
+                // and should be changed. The index is in IWORK(1) and the
+                // gap is in WORK(N+1)
                 info = -5;
                 return;
             } else {
-                //              Test that all eigenvalues are positive as expected
+                // Test that all eigenvalues are positive as expected
                 for (i = 1; i <= in; i = i + 1) {
                     if (work[i - 1] < zero) {
                         info = -6;
@@ -604,16 +604,16 @@ void Rlarre(const char *range, INTEGER const n, REAL &vl, REAL &vu, INTEGER cons
             }
             //
             for (i = m - mb + 1; i <= m; i = i + 1) {
-                //              the value of RTOL below should be the tolerance in Rlasq2
+                // the value of RTOL below should be the tolerance in Rlasq2
                 werr[i - 1] = rtol * abs(w[i - 1]);
             }
             for (i = m - mb + 1; i <= m - 1; i = i + 1) {
-                //              compute the right gap between the intervals
+                // compute the right gap between the intervals
                 wgap[i - 1] = max(zero, REAL(w[(i + 1) - 1] - werr[(i + 1) - 1] - (w[i - 1] + werr[i - 1])));
             }
             wgap[m - 1] = max(zero, REAL((vu - sigma) - (w[m - 1] + werr[m - 1])));
         }
-        //        proceed with next block
+        // proceed with next block
         ibegin = iend + 1;
         wbegin = wend + 1;
     statement_170:;

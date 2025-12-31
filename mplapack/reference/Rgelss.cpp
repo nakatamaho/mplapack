@@ -132,7 +132,7 @@ void Rgelss(INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEG
                 //              Compute space needed for Rgeqrf
                 Rgeqrf(m, n, a, lda, &dum[1 - 1], &dum[1 - 1], -1, info);
                 lwork_Rgeqrf = castINTEGER(dum[1 - 1]);
-                //              Compute space needed for Rormqr
+                // Compute space needed for Rormqr
                 Rormqr("L", "T", m, nrhs, n, a, lda, &dum[1 - 1], b, ldb, &dum[1 - 1], -1, info);
                 lwork_Rormqr = castINTEGER(dum[1 - 1]);
                 mm = n;
@@ -146,16 +146,16 @@ void Rgelss(INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEG
                 //              Compute workspace needed for Rbdsqr
                 //
                 bdspac = max((INTEGER)1, 5 * n);
-                //              Compute space needed for Rgebrd
+                // Compute space needed for Rgebrd
                 Rgebrd(mm, n, a, lda, s, &dum[1 - 1], &dum[1 - 1], &dum[1 - 1], &dum[1 - 1], -1, info);
                 lwork_Rgebrd = castINTEGER(dum[1 - 1]);
-                //              Compute space needed for Rormbr
+                // Compute space needed for Rormbr
                 Rormbr("Q", "L", "T", mm, nrhs, n, a, lda, &dum[1 - 1], b, ldb, &dum[1 - 1], -1, info);
                 lwork_Rormbr = castINTEGER(dum[1 - 1]);
-                //              Compute space needed for Rorgbr
+                // Compute space needed for Rorgbr
                 Rorgbr("P", n, n, n, a, lda, &dum[1 - 1], &dum[1 - 1], -1, info);
                 lwork_Rorgbr = castINTEGER(dum[1 - 1]);
-                //              Compute total workspace needed
+                // Compute total workspace needed
                 maxwrk = max(maxwrk, 3 * n + lwork_Rgebrd);
                 maxwrk = max(maxwrk, 3 * n + lwork_Rormbr);
                 maxwrk = max(maxwrk, 3 * n + lwork_Rorgbr);
@@ -178,19 +178,19 @@ void Rgelss(INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEG
                     //                 Compute space needed for Rgelqf
                     Rgelqf(m, n, a, lda, &dum[1 - 1], &dum[1 - 1], -1, info);
                     lwork_Rgelqf = castINTEGER(dum[1 - 1]);
-                    //                 Compute space needed for Rgebrd
+                    // Compute space needed for Rgebrd
                     Rgebrd(m, m, a, lda, s, &dum[1 - 1], &dum[1 - 1], &dum[1 - 1], &dum[1 - 1], -1, info);
                     lwork_Rgebrd = castINTEGER(dum[1 - 1]);
-                    //                 Compute space needed for Rormbr
+                    // Compute space needed for Rormbr
                     Rormbr("Q", "L", "T", m, nrhs, n, a, lda, &dum[1 - 1], b, ldb, &dum[1 - 1], -1, info);
                     lwork_Rormbr = castINTEGER(dum[1 - 1]);
-                    //                 Compute space needed for Rorgbr
+                    // Compute space needed for Rorgbr
                     Rorgbr("P", m, m, m, a, lda, &dum[1 - 1], &dum[1 - 1], -1, info);
                     lwork_Rorgbr = castINTEGER(dum[1 - 1]);
-                    //                 Compute space needed for Rormlq
+                    // Compute space needed for Rormlq
                     Rormlq("L", "T", n, nrhs, m, a, lda, &dum[1 - 1], b, ldb, &dum[1 - 1], -1, info);
                     lwork_Rormlq = castINTEGER(dum[1 - 1]);
-                    //                 Compute total workspace needed
+                    // Compute total workspace needed
                     maxwrk = m + lwork_Rgelqf;
                     maxwrk = max(maxwrk, m * m + 4 * m + lwork_Rgebrd);
                     maxwrk = max(maxwrk, m * m + 4 * m + lwork_Rormbr);
@@ -209,10 +209,10 @@ void Rgelss(INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEG
                     //                 Compute space needed for Rgebrd
                     Rgebrd(m, n, a, lda, s, &dum[1 - 1], &dum[1 - 1], &dum[1 - 1], &dum[1 - 1], -1, info);
                     lwork_Rgebrd = castINTEGER(dum[1 - 1]);
-                    //                 Compute space needed for Rormbr
+                    // Compute space needed for Rormbr
                     Rormbr("Q", "L", "T", m, nrhs, m, a, lda, &dum[1 - 1], b, ldb, &dum[1 - 1], -1, info);
                     lwork_Rormbr = castINTEGER(dum[1 - 1]);
-                    //                 Compute space needed for Rorgbr
+                    // Compute space needed for Rorgbr
                     Rorgbr("P", m, n, m, a, lda, &dum[1 - 1], &dum[1 - 1], -1, info);
                     lwork_Rorgbr = castINTEGER(dum[1 - 1]);
                     maxwrk = 3 * m + lwork_Rgebrd;

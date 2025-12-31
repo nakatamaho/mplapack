@@ -36,4 +36,3 @@
 #include "mpcomplex.h"
 
 using namespace mpfr;
-

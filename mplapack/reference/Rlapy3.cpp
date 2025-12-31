@@ -38,9 +38,9 @@ REAL Rlapy3(REAL const x, REAL const y, REAL const z) {
     REAL w = max({xabs, yabs, zabs});
     const REAL zero = 0.0;
     if (w == zero) {
-        //     W can be zero for max(0,nan,0)
-        //     adding all three entries together will make sure
-        //     NaN will not disappear.
+        // W can be zero for max(0,nan,0)
+        // adding all three entries together will make sure
+        // NaN will not disappear.
         return_value = xabs + yabs + zabs;
     } else {
         return_value = w * sqrt(pow2((xabs / w)) + pow2((yabs / w)) + pow2((zabs / w)));

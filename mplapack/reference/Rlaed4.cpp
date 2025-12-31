@@ -234,8 +234,8 @@ void Rlaed4(INTEGER const n, INTEGER const i, REAL *d, REAL *z, REAL *delta, REA
             c = abs(c);
         }
         if (c == zero) {
-            //          ETA = B/A
-            //           ETA = RHO - TAU
+            // ETA = B/A
+            //  ETA = RHO - TAU
             eta = dltub - tau;
         } else if (a >= zero) {
             eta = (a + sqrt(abs(a * a - four * b * c))) / (two * c);

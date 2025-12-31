@@ -149,34 +149,34 @@ void Cgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
     } else if (rsvec && (ldv < n)) {
         info = -15;
     } else {
-        //        #:)
+        // #:)
         info = 0;
     }
     //
     if (info == 0) {
-        //         .. compute the minimal and the optimal workspace lengths
-        //         [[The expressions for computing the minimal and the optimal
-        //         values of LCWORK, LRWORK are written with a lot of redundancy and
-        //         can be simplified. However, this verbose form is useful for
-        //         maintenance and modifications of the code.]]
+        // .. compute the minimal and the optimal workspace lengths
+        // [[The expressions for computing the minimal and the optimal
+        // values of LCWORK, LRWORK are written with a lot of redundancy and
+        // can be simplified. However, this verbose form is useful for
+        // maintenance and modifications of the code.]]
         //
-        //        .. minimal workspace length for Cgeqp3 of an M x N matrix,
-        //         Cgeqrf of an N x N matrix, Cgelqf of an N x N matrix,
-        //         Cunmlq for computing N x N matrix, Cunmqr for computing N x N
-        //         matrix, Cunmqr for computing M x N matrix, respectively.
+        // .. minimal workspace length for Cgeqp3 of an M x N matrix,
+        // Cgeqrf of an N x N matrix, Cgelqf of an N x N matrix,
+        // Cunmlq for computing N x N matrix, Cunmqr for computing N x N
+        // matrix, Cunmqr for computing M x N matrix, respectively.
         lwqp3 = n + 1;
         lwqrf = max((INTEGER)1, n);
         lwlqf = max((INTEGER)1, n);
         lwunmlq = max((INTEGER)1, n);
         lwunmqr = max((INTEGER)1, n);
         lwunmqrm = max((INTEGER)1, m);
-        //        .. minimal workspace length for Cpocon of an N x N matrix
+        // .. minimal workspace length for Cpocon of an N x N matrix
         lwcon = 2 * n;
-        //        .. minimal workspace length for Cgesvj of an N x N matrix,
-        //         without and with explicit accumulation of Jacobi rotations
+        // .. minimal workspace length for Cgesvj of an N x N matrix,
+        //  without and with explicit accumulation of Jacobi rotations
         lwsvdj = max((INTEGER)2 * n, (INTEGER)1);
         lwsvdjv = max((INTEGER)2 * n, (INTEGER)1);
-        //         .. minimal REAL workspace length for Cgeqp3, Cpocon, Cgesvj
+        // .. minimal REAL workspace length for Cgeqp3, Cpocon, Cgesvj
         lrwqp3 = 2 * n;
         lrwcon = n;
         lrwsvdj = n;
@@ -192,8 +192,8 @@ void Cgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
         optwrk = 2;
         miniwrk = n;
         if (!(lsvec || rsvec)) {
-            //             .. minimal and optimal sizes of the complex workspace if
-            //             only the singular values are requested
+            // .. minimal and optimal sizes of the complex workspace if
+            // only the singular values are requested
             if (errest) {
                 minwrk = max({n + lwqp3, n * n + lwcon, n + lwqrf, lwsvdj});
             } else {
@@ -225,8 +225,8 @@ void Cgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
                 miniwrk += m;
             }
         } else if (rsvec && (!lsvec)) {
-            //            .. minimal and optimal sizes of the complex workspace if the
-            //            singular values and the right singular vectors are requested
+            // .. minimal and optimal sizes of the complex workspace if the
+            // singular values and the right singular vectors are requested
             if (errest) {
                 minwrk = max({n + lwqp3, lwcon, lwsvdj, n + lwlqf, 2 * n + lwqrf, n + lwsvdj, n + lwunmlq});
             } else {
@@ -260,8 +260,8 @@ void Cgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
                 miniwrk += m;
             }
         } else if (lsvec && (!rsvec)) {
-            //            .. minimal and optimal sizes of the complex workspace if the
-            //            singular values and the left singular vectors are requested
+            // .. minimal and optimal sizes of the complex workspace if the
+            // singular values and the left singular vectors are requested
             if (errest) {
                 minwrk = n + max({lwqp3, lwcon, n + lwqrf, lwsvdj, lwunmqrm});
             } else {
@@ -295,8 +295,8 @@ void Cgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
                 miniwrk += m;
             }
         } else {
-            //            .. minimal and optimal sizes of the complex workspace if the
-            //            full SVD is requested
+            // .. minimal and optimal sizes of the complex workspace if the
+            // full SVD is requested
             if (!jracc) {
                 if (errest) {
                     minwrk = max({n + lwqp3, n + lwcon, 2 * n + n * n + lwcon, 2 * n + lwqrf, 2 * n + lwqp3, 2 * n + n * n + n + lwlqf, 2 * n + n * n + n + n * n + lwcon, 2 * n + n * n + n + lwsvdj, 2 * n + n * n + n + lwsvdjv, 2 * n + n * n + n + lwunmqr, 2 * n + n * n + n + lwunmlq, n + n * n + lwsvdj, n + lwunmqrm});
@@ -369,7 +369,7 @@ void Cgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
     }
     //
     if (info != 0) {
-        //       #:(
+        // #:(
         Mxerbla("Cgejsv", -info);
         return;
     } else if (lquery) {
@@ -401,23 +401,23 @@ void Cgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
     //
     //     Set numerical parameters
     //
-    //!    NOTE: Make sure DLAMCH() does not fail on the target architecture.
+    //! NOTE: Make sure DLAMCH() does not fail on the target architecture.
     //
     epsln = Rlamch("Epsilon");
     sfmin = Rlamch("SafeMinimum");
 #if defined ___MPLAPACK_BUILD_WITH_DD___ || defined ___MPLAPACK_BUILD_WITH_QD___
     big = one / sfmin;
 #else
-     big = Rlamch("Overflow");
+    big = Rlamch("Overflow");
 #endif
     small = sfmin / epsln;
-    //     BIG   = ONE / SFMIN
+    // BIG   = ONE / SFMIN
     //
-    //     Initialize SVA(1:N) = diag( ||A e_i||_2 )_1^N
+    // Initialize SVA(1:N) = diag( ||A e_i||_2 )_1^N
     //
     //(!)  If necessary, scale SVA() to protect the largest norm from
-    //     overflow. It is possible that this scaling pushes the smallest
-    //     column norm left from the underflow threshold (extreme case).
+    // overflow. It is possible that this scaling pushes the smallest
+    // column norm left from the underflow threshold (extreme case).
     //
     scalem = one / sqrt(castREAL(m) * castREAL(n));
     noscal = true;
@@ -504,7 +504,7 @@ void Cgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
         if (lsvec) {
             Clascl("G", 0, 0, sva[1 - 1], scalem, m, 1, &a[(1 - 1)], lda, ierr);
             Clacpy("A", m, 1, a, lda, u, ldu);
-            //           computing all M left singular vectors of the M x 1 matrix
+            // computing all M left singular vectors of the M x 1 matrix
             if (n1 != n) {
                 Cgeqrf(m, n, u, ldu, cwork, &cwork[(n + 1) - 1], lwork - n, ierr);
                 Cungqr(m, n1, 1, u, ldu, cwork, &cwork[(n + 1) - 1], lwork - n, ierr);
@@ -564,8 +564,8 @@ void Cgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
                 xsc = zero;
                 temp1 = one;
                 Classq(n, &a[(p - 1)], lda, xsc, temp1);
-                //              Classq gets both the ell_2 and the ell_infinity norm
-                //              in one pass through the vector
+                // Classq gets both the ell_2 and the ell_infinity norm
+                // in one pass through the vector
                 rwork[(m + p) - 1] = xsc * scalem;
                 rwork[p - 1] = xsc * (scalem * sqrt(temp1));
                 aatmax = max(aatmax, rwork[p - 1]);
@@ -631,8 +631,8 @@ void Cgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
         //        If A^* is better than A, take the adjoINTEGER of A. This is allowed
         //        only for square matrices, M=N.
         if (transp) {
-            //           In an optimal implementation, this trivial transpose
-            //           should be replaced with faster transpose.
+            // In an optimal implementation, this trivial transpose
+            // should be replaced with faster transpose.
             for (p = 1; p <= n - 1; p = p + 1) {
                 a[(p - 1) + (p - 1) * lda] = conj(a[(p - 1) + (p - 1) * lda]);
                 for (q = p + 1; q <= n; q = q + 1) {
@@ -645,8 +645,8 @@ void Cgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
             for (p = 1; p <= n; p = p + 1) {
                 rwork[(m + p) - 1] = sva[p - 1];
                 sva[p - 1] = rwork[p - 1];
-                //              previously computed row 2-norms are now column 2-norms
-                //              of the transposed matrix
+                // previously computed row 2-norms are now column 2-norms
+                // of the transposed matrix
             }
             temp1 = aapp;
             aapp = aatmax;
@@ -665,22 +665,22 @@ void Cgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
         }
         //
     }
-    //     END IF L2TRAN
+    // END IF L2TRAN
     //
-    //     Scale the matrix so that its maximal singular value remains less
-    //     than SQRT(BIG) -- the matrix is scaled so that its maximal column
-    //     has Euclidean norm equal to SQRT(BIG/N). The only reason to keep
-    //     SQRT(BIG) instead of BIG is the fact that Cgejsv uses LAPACK and
-    //     BLAS routines that, in some implementations, are not capable of
-    //     working in the full interval [SFMIN,BIG] and that they may provoke
-    //     overflows in the intermediate results. If the singular values spread
-    //     from SFMIN to BIG, then Cgesvj will compute them. So, in that case,
-    //     one should use Cgesvj instead of Cgejsv.
-    //     >> change in the April 2016 update: allow bigger range, i.e. the
-    //     largest column is allowed up to BIG/N and Cgesvj will do the rest.
+    // Scale the matrix so that its maximal singular value remains less
+    // than SQRT(BIG) -- the matrix is scaled so that its maximal column
+    // has Euclidean norm equal to SQRT(BIG/N). The only reason to keep
+    // SQRT(BIG) instead of BIG is the fact that Cgejsv uses LAPACK and
+    // BLAS routines that, in some implementations, are not capable of
+    // working in the full interval [SFMIN,BIG] and that they may provoke
+    // overflows in the intermediate results. If the singular values spread
+    // from SFMIN to BIG, then Cgesvj will compute them. So, in that case,
+    // one should use Cgesvj instead of Cgejsv.
+    // >> change in the April 2016 update: allow bigger range, i.e. the
+    // largest column is allowed up to BIG/N and Cgesvj will do the rest.
     big1 = sqrt(big);
     temp1 = sqrt(big / castREAL(n));
-    //      TEMP1  = BIG/DBLE(N)
+    // TEMP1  = BIG/DBLE(N)
     //
     Rlascl("G", 0, 0, aapp, temp1, n, 1, sva, n, ierr);
     if (aaqq > (aapp * sfmin)) {
@@ -698,9 +698,9 @@ void Cgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
     uscal2 = aapp;
     //
     if (l2kill) {
-        //        L2KILL enforces computation of nonzero singular values in
-        //        the restricted range of condition number of the initial A,
-        //        sigma_max(A) / sigma_min(A) approx. SQRT(BIG)/SQRT(SFMIN).
+        // L2KILL enforces computation of nonzero singular values in
+        // the restricted range of condition number of the initial A,
+        // sigma_max(A) / sigma_min(A) approx. SQRT(BIG)/SQRT(SFMIN).
         xsc = sqrt(sfmin);
     } else {
         xsc = small;
@@ -730,11 +730,11 @@ void Cgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
     //     Preconditioning using QR factorization with pivoting
     //
     if (rowpiv) {
-        //        Optional row permutation (Bjoerck row pivoting):
-        //        A result by Cox and Higham shows that the Bjoerck's
-        //        row pivoting combined with standard column pivoting
-        //        has similar effect as Powell-Reid complete pivoting.
-        //        The ell-infinity norms of A are made nonincreasing.
+        // Optional row permutation (Bjoerck row pivoting):
+        // A result by Cox and Higham shows that the Bjoerck's
+        // row pivoting combined with standard column pivoting
+        // has similar effect as Powell-Reid complete pivoting.
+        // The ell-infinity norms of A are made nonincreasing.
         if ((lsvec && rsvec) && !(jracc)) {
             iwoff = 2 * n;
         } else {
@@ -768,7 +768,7 @@ void Cgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
     //
     //     A * P1 = Q1 * [ R1^* 0]^*:
     for (p = 1; p <= n; p = p + 1) {
-        //        .. all columns are free columns
+        // .. all columns are free columns
         iwork[p - 1] = 0;
     }
     Cgeqp3(m, n, a, lda, iwork, cwork, &cwork[(n + 1) - 1], lwork - n, rwork, ierr);
@@ -783,10 +783,10 @@ void Cgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
     //
     nr = 1;
     if (l2aber) {
-        //        Standard absolute error bound suffices. All sigma_i with
-        //        sigma_i < N*EPSLN*||A|| are flushed to zero. This is an
-        //        aggressive enforcement of lower numerical rank by introducing a
-        //        backward error of the order of N*EPSLN*||A||.
+        // Standard absolute error bound suffices. All sigma_i with
+        // sigma_i < N*EPSLN*||A|| are flushed to zero. This is an
+        // aggressive enforcement of lower numerical rank by introducing a
+        // backward error of the order of N*EPSLN*||A||.
         temp1 = sqrt(castREAL(n)) * epsln;
         for (p = 2; p <= n; p = p + 1) {
             if (abs(a[(p - 1) + (p - 1) * lda]) >= (temp1 * abs(a[(1 - 1)]))) {
@@ -797,9 +797,9 @@ void Cgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
         }
     statement_3002:;
     } else if (l2rank) {
-        //        .. similarly as above, only slightly more gentle (less aggressive).
-        //        Sudden drop on the diagonal of R1 is used as the criterion for
-        //        close-to-rank-deficient.
+        // .. similarly as above, only slightly more gentle (less aggressive).
+        // Sudden drop on the diagonal of R1 is used as the criterion for
+        // close-to-rank-deficient.
         temp1 = sqrt(sfmin);
         for (p = 2; p <= n; p = p + 1) {
             if ((abs(a[(p - 1) + (p - 1) * lda]) < (epsln * abs(a[((p - 1) - 1) + ((p - 1) - 1) * lda]))) || (abs(a[(p - 1) + (p - 1) * lda]) < small) || (l2kill && (abs(a[(p - 1) + (p - 1) * lda]) < temp1))) {
@@ -810,13 +810,13 @@ void Cgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
     statement_3402:;
         //
     } else {
-        //        The goal is high relative accuracy. However, if the matrix
-        //        has high scaled condition number the relative accuracy is in
-        //        general not feasible. Later on, a condition number estimator
-        //        will be deployed to estimate the scaled condition number.
-        //        Here we just remove the underflowed part of the triangular
-        //        factor. This prevents the situation in which the code is
-        //        working hard to get the accuracy not warranted by the data.
+        // The goal is high relative accuracy. However, if the matrix
+        // has high scaled condition number the relative accuracy is in
+        // general not feasible. Later on, a condition number estimator
+        // will be deployed to estimate the scaled condition number.
+        // Here we just remove the underflowed part of the triangular
+        // factor. This prevents the situation in which the code is
+        // working hard to get the accuracy not warranted by the data.
         temp1 = sqrt(sfmin);
         for (p = 2; p <= n; p = p + 1) {
             if ((abs(a[(p - 1) + (p - 1) * lda]) < small) || (l2kill && (abs(a[(p - 1) + (p - 1) * lda]) < temp1))) {
@@ -847,7 +847,7 @@ void Cgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
     if (errest) {
         if (n == nr) {
             if (rsvec) {
-                //              .. V is available as workspace
+                // .. V is available as workspace
                 Clacpy("U", n, n, a, lda, v, ldv);
                 for (p = 1; p <= n; p = p + 1) {
                     temp1 = sva[iwork[p - 1] - 1];
@@ -860,7 +860,7 @@ void Cgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
                 }
                 //
             } else if (lsvec) {
-                //              .. U is available as workspace
+                // .. U is available as workspace
                 Clacpy("U", n, n, a, lda, u, ldu);
                 for (p = 1; p <= n; p = p + 1) {
                     temp1 = sva[iwork[p - 1] - 1];
@@ -877,7 +877,7 @@ void Cgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
                     //[]               CALL CRscal( p, ONE/TEMP1, CWORK(N+(p-1)*N+1), 1 )
                     CRscal(p, one / temp1, &cwork[((p - 1) * n + 1) - 1], 1);
                 }
-                //           .. the columns of R are scaled to have unit Euclidean lengths.
+                // .. the columns of R are scaled to have unit Euclidean lengths.
                 //[]               CALL Cpocon( 'U', N, CWORK(N+1), N, ONE, TEMP1,
                 //[]     $              CWORK(N+N*N+1), RWORK, IERR )
                 Cpocon("U", n, cwork, n, one, temp1, &cwork[(n * n + 1) - 1], rwork, ierr);
@@ -888,17 +888,17 @@ void Cgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
             } else {
                 sconda = -one;
             }
-            //           SCONDA is an estimate of SQRT(||(R^* * R)^(-1)||_1).
-            //           N^(-1/4) * SCONDA <= ||R^(-1)||_2 <= N^(1/4) * SCONDA
+            // SCONDA is an estimate of SQRT(||(R^* * R)^(-1)||_1).
+            // N^(-1/4) * SCONDA <= ||R^(-1)||_2 <= N^(1/4) * SCONDA
         } else {
             sconda = -one;
         }
     }
     //
     l2pert = l2pert && (abs(a[(1 - 1)] / a[(nr - 1) + (nr - 1) * lda]) > sqrt(big1));
-    //     If there is no violent scaling, artificial perturbation is not needed.
+    // If there is no violent scaling, artificial perturbation is not needed.
     //
-    //     Phase 3:
+    // Phase 3:
     //
     if (!(rsvec || lsvec)) {
         //
@@ -928,12 +928,12 @@ void Cgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
         if (!almort) {
             //
             if (l2pert) {
-                //              XSC = SQRT(SMALL)
+                // XSC = SQRT(SMALL)
                 xsc = epsln / castREAL(n);
                 for (q = 1; q <= nr; q = q + 1) {
                     ctemp = COMPLEX(xsc * abs(a[(q - 1) + (q - 1) * lda]), zero);
                     for (p = 1; p <= n; p = p + 1) {
-                        //     $                     A(p,q) = TEMP1 * ( A(p,q) / ABS(A(p,q)) )
+                        // $                     A(p,q) = TEMP1 * ( A(p,q) / ABS(A(p,q)) )
                         if (((p > q) && (abs(a[(p - 1) + (q - 1) * lda]) <= temp1)) || (p < q)) {
                             a[(p - 1) + (q - 1) * lda] = ctemp;
                         }
@@ -960,12 +960,12 @@ void Cgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
         //           .. again some perturbation (a "background noise") is added
         //           to drown denormals
         if (l2pert) {
-            //              XSC = SQRT(SMALL)
+            // XSC = SQRT(SMALL)
             xsc = epsln / castREAL(n);
             for (q = 1; q <= nr; q = q + 1) {
                 ctemp = COMPLEX(xsc * abs(a[(q - 1) + (q - 1) * lda]), zero);
                 for (p = 1; p <= nr; p = p + 1) {
-                    //     $                   A(p,q) = TEMP1 * ( A(p,q) / ABS(A(p,q)) )
+                    // $                   A(p,q) = TEMP1 * ( A(p,q) / ABS(A(p,q)) )
                     if (((p > q) && (abs(a[(p - 1) + (q - 1) * lda]) <= temp1)) || (p < q)) {
                         a[(p - 1) + (q - 1) * lda] = ctemp;
                     }
@@ -1029,11 +1029,11 @@ void Cgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
             Cunmlq("L", "C", n, n, nr, a, lda, cwork, v, ldv, &cwork[(n + 1) - 1], lwork - n, ierr);
             //
         }
-        //         .. permute the rows of V
-        //         DO 8991 p = 1, N
-        //            CALL Ccopy( N, V(p,1), LDV, A(IWORK(p),1), LDA )
+        // .. permute the rows of V
+        // DO 8991 p = 1, N
+        //    CALL Ccopy( N, V(p,1), LDV, A(IWORK(p),1), LDA )
         // 8991    CONTINUE
-        //         CALL Clacpy( 'All', N, N, A, LDA, V, LDV )
+        // CALL Clacpy( 'All', N, N, A, LDA, V, LDV )
         Clapmr(false, n, n, v, ldv, iwork);
         //
         if (transp) {
@@ -1133,7 +1133,7 @@ void Cgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
                     for (q = 1; q <= nr; q = q + 1) {
                         ctemp = COMPLEX(xsc * abs(v[(q - 1) + (q - 1) * ldv]), zero);
                         for (p = 1; p <= n; p = p + 1) {
-                            //     $                   V(p,q) = TEMP1 * ( V(p,q) / ABS(V(p,q)) )
+                            // $                   V(p,q) = TEMP1 * ( V(p,q) / ABS(V(p,q)) )
                             if ((p > q) && (abs(v[(p - 1) + (q - 1) * ldv]) <= temp1) || (p < q)) {
                                 v[(p - 1) + (q - 1) * ldv] = ctemp;
                             }
@@ -1157,19 +1157,19 @@ void Cgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
                 }
                 Cpocon("L", nr, &cwork[(2 * n + 1) - 1], nr, one, temp1, &cwork[(2 * n + nr * nr + 1) - 1], rwork, ierr);
                 condr1 = one / sqrt(temp1);
-                //           .. here need a second opinion on the condition number
-                //           .. then assume worst case scenario
-                //           R1 is OK for inverse <=> CONDR1 .LT. DBLE(N)
-                //           more conservative    <=> CONDR1 .LT. SQRT(DBLE(N))
+                // .. here need a second opinion on the condition number
+                // .. then assume worst case scenario
+                // R1 is OK for inverse <=> CONDR1 .LT. DBLE(N)
+                // more conservative    <=> CONDR1 .LT. SQRT(DBLE(N))
                 //
                 cond_ok = sqrt(sqrt(castREAL(nr)));
                 //[TP]       COND_OK is a tuning parameter.
                 //
                 if (condr1 < cond_ok) {
-                    //              .. the second QRF without pivoting. Note: in an optimized
-                    //              implementation, this QRF should be implemented as the QRF
-                    //              of a lower triangular matrix.
-                    //              R1^* = Q2 * R2
+                    // .. the second QRF without pivoting. Note: in an optimized
+                    // implementation, this QRF should be implemented as the QRF
+                    // of a lower triangular matrix.
+                    // R1^* = Q2 * R2
                     Cgeqrf(n, nr, v, ldv, &cwork[(n + 1) - 1], &cwork[(2 * n + 1) - 1], lwork - 2 * n, ierr);
                     //
                     if (l2pert) {
@@ -1177,7 +1177,7 @@ void Cgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
                         for (p = 2; p <= nr; p = p + 1) {
                             for (q = 1; q <= p - 1; q = q + 1) {
                                 ctemp = COMPLEX(xsc * min(abs(v[(p - 1) + (p - 1) * ldv]), abs(v[(q - 1) + (q - 1) * ldv])), zero);
-                                //     $                     V(q,p) = TEMP1 * ( V(q,p) / ABS(V(q,p)) )
+                                // $                     V(q,p) = TEMP1 * ( V(q,p) / ABS(V(q,p)) )
                                 if (abs(v[(q - 1) + (p - 1) * ldv]) <= temp1) {
                                     v[(q - 1) + (p - 1) * ldv] = ctemp;
                                 }
@@ -1188,9 +1188,9 @@ void Cgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
                     if (nr != n) {
                         Clacpy("A", n, nr, v, ldv, &cwork[(2 * n + 1) - 1], n);
                     }
-                    //              .. save ...
+                    // .. save ...
                     //
-                    //           .. this transposed copy should be better than naive
+                    // .. this transposed copy should be better than naive
                     for (p = 1; p <= nr - 1; p = p + 1) {
                         Ccopy(nr - p, &v[(p - 1) + ((p + 1) - 1) * ldv], ldv, &v[((p + 1) - 1) + (p - 1) * ldv], 1);
                         Clacgv(nr - p + 1, &v[(p - 1) + (p - 1) * ldv], 1);
@@ -1220,7 +1220,7 @@ void Cgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
                         for (p = 2; p <= nr; p = p + 1) {
                             for (q = 1; q <= p - 1; q = q + 1) {
                                 ctemp = COMPLEX(xsc * min(abs(v[(p - 1) + (p - 1) * ldv]), abs(v[(q - 1) + (q - 1) * ldv])), zero);
-                                //     $                     V(q,p) = TEMP1 * ( V(q,p) / ABS(V(q,p)) )
+                                // $                     V(q,p) = TEMP1 * ( V(q,p) / ABS(V(q,p)) )
                                 if (abs(v[(q - 1) + (p - 1) * ldv]) <= temp1) {
                                     v[(q - 1) + (p - 1) * ldv] = ctemp;
                                 }
@@ -1235,16 +1235,16 @@ void Cgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
                         for (p = 2; p <= nr; p = p + 1) {
                             for (q = 1; q <= p - 1; q = q + 1) {
                                 ctemp = COMPLEX(xsc * min(abs(v[(p - 1) + (p - 1) * ldv]), abs(v[(q - 1) + (q - 1) * ldv])), zero);
-                                //                        V(p,q) = - TEMP1*( V(q,p) / ABS(V(q,p)) )
+                                // V(p,q) = - TEMP1*( V(q,p) / ABS(V(q,p)) )
                                 v[(p - 1) + (q - 1) * ldv] = -ctemp;
                             }
                         }
                     } else {
                         Claset("L", nr - 1, nr - 1, czero, czero, &v[(2 - 1)], ldv);
                     }
-                    //              Now, compute R2 = L3 * Q3, the LQ factorization.
+                    // Now, compute R2 = L3 * Q3, the LQ factorization.
                     Cgelqf(nr, nr, v, ldv, &cwork[(2 * n + n * nr + 1) - 1], &cwork[(2 * n + n * nr + nr + 1) - 1], lwork - 2 * n - n * nr - nr, ierr);
-                    //              .. and estimate the condition number
+                    // .. and estimate the condition number
                     Clacpy("L", nr, nr, v, ldv, &cwork[(2 * n + n * nr + nr + 1) - 1], nr);
                     for (p = 1; p <= nr; p = p + 1) {
                         temp1 = RCnrm2(p, &cwork[(2 * n + n * nr + nr + p) - 1], nr);
@@ -1254,13 +1254,13 @@ void Cgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
                     condr2 = one / sqrt(temp1);
                     //
                     if (condr2 >= cond_ok) {
-                        //                 .. save the Householder vectors used for Q3
-                        //                 (this overwrites the copy of R2, as it will not be
-                        //                 needed in this branch, but it does not overwritte the
-                        //                 Huseholder vectors of Q2.).
+                        // .. save the Householder vectors used for Q3
+                        // (this overwrites the copy of R2, as it will not be
+                        // needed in this branch, but it does not overwritte the
+                        // Huseholder vectors of Q2.).
                         Clacpy("U", nr, nr, v, ldv, &cwork[(2 * n + 1) - 1], n);
-                        //                 .. and the rest of the information on Q3 is in
-                        //                 WORK(2*N+N*NR+1:2*N+N*NR+N)
+                        // .. and the rest of the information on Q3 is in
+                        // WORK(2*N+N*NR+1:2*N+N*NR+N)
                     }
                     //
                 }
@@ -1270,7 +1270,7 @@ void Cgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
                     for (q = 2; q <= nr; q = q + 1) {
                         ctemp = xsc * v[(q - 1) + (q - 1) * ldv];
                         for (p = 1; p <= q - 1; p = p + 1) {
-                            //                     V(p,q) = - TEMP1*( V(p,q) / ABS(V(p,q)) )
+                            // V(p,q) = - TEMP1*( V(p,q) / ABS(V(p,q)) )
                             v[(p - 1) + (q - 1) * ldv] = -ctemp;
                         }
                     }
@@ -1303,10 +1303,10 @@ void Cgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
                         //                 from the second QR factorization.
                         Ctrsm("L", "U", "N", "N", nr, nr, cone, a, lda, v, ldv);
                     } else {
-                        //                 .. R1 is well conditioned, but non-square. AdjoINTEGER of R2
-                        //                 is inverted to get the product of the Jacobi rotations
-                        //                 used in Cgesvj. The Q-factor from the second QR
-                        //                 factorization is then built in explicitly.
+                        // .. R1 is well conditioned, but non-square. AdjoINTEGER of R2
+                        // is inverted to get the product of the Jacobi rotations
+                        // used in Cgesvj. The Q-factor from the second QR
+                        // factorization is then built in explicitly.
                         Ctrsm("L", "U", "C", "N", nr, nr, cone, &cwork[(2 * n + 1) - 1], n, v, ldv);
                         if (nr < n) {
                             Claset("A", n - nr, nr, czero, czero, &v[((nr + 1) - 1)], ldv);
@@ -1330,7 +1330,7 @@ void Cgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
                         CRscal(nr, sva[p - 1], &u[(p - 1) * ldu], 1);
                     }
                     Ctrsm("L", "U", "N", "N", nr, nr, cone, &cwork[(2 * n + 1) - 1], n, u, ldu);
-                    //              .. apply the permutation from the second QR factorization
+                    // .. apply the permutation from the second QR factorization
                     for (q = 1; q <= nr; q = q + 1) {
                         for (p = 1; p <= nr; p = p + 1) {
                             cwork[(2 * n + n * nr + nr + iwork[(n + p) - 1]) - 1] = u[(p - 1) + (q - 1) * ldu];
@@ -1346,17 +1346,17 @@ void Cgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
                     }
                     Cunmqr("L", "N", n, n, nr, &cwork[(2 * n + 1) - 1], n, &cwork[(n + 1) - 1], v, ldv, &cwork[(2 * n + n * nr + nr + 1) - 1], lwork - 2 * n - n * nr - nr, ierr);
                 } else {
-                    //              Last line of defense.
+                    // Last line of defense.
                     // #:(          This is a rather pathological case: no scaled condition
-                    //              improvement after two pivoted QR factorizations. Other
-                    //              possibility is that the rank revealing QR factorization
-                    //              or the condition estimator has failed, or the COND_OK
-                    //              is set very close to ONE (which is unnecessary). Normally,
-                    //              this branch should never be executed, but in rare cases of
-                    //              failure of the RRQR or condition estimator, the last line of
-                    //              defense ensures that Cgejsv completes the task.
-                    //              Compute the full SVD of L3 using Cgesvj with explicit
-                    //              accumulation of Jacobi rotations.
+                    // improvement after two pivoted QR factorizations. Other
+                    // possibility is that the rank revealing QR factorization
+                    // or the condition estimator has failed, or the COND_OK
+                    // is set very close to ONE (which is unnecessary). Normally,
+                    // this branch should never be executed, but in rare cases of
+                    // failure of the RRQR or condition estimator, the last line of
+                    // defense ensures that Cgejsv completes the task.
+                    // Compute the full SVD of L3 using Cgesvj with explicit
+                    // accumulation of Jacobi rotations.
                     Cgesvj("L", "U", "V", nr, nr, v, ldv, sva, nr, u, ldu, &cwork[(2 * n + n * nr + nr + 1) - 1], lwork - 2 * n - n * nr - nr, rwork, lrwork, info);
                     scalem = rwork[1 - 1];
                     numrank = nint(rwork[2 - 1]);
@@ -1396,8 +1396,8 @@ void Cgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
                         CRscal(n, xsc, &v[(q - 1) * ldv], 1);
                     }
                 }
-                //           At this moment, V contains the right singular vectors of A.
-                //           Next, assemble the left singular vector matrix U (M x N).
+                // At this moment, V contains the right singular vectors of A.
+                // Next, assemble the left singular vector matrix U (M x N).
                 if (nr < m) {
                     Claset("A", m - nr, nr, czero, czero, &u[((nr + 1) - 1)], ldu);
                     if (nr < n1) {
@@ -1438,8 +1438,8 @@ void Cgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
                     for (p = 2; p <= n; p = p + 1) {
                         ctemp = xsc * cwork[(n + (p - 1) * n + p) - 1];
                         for (q = 1; q <= p - 1; q = q + 1) {
-                            //                     CWORK(N+(q-1)*N+p)=-TEMP1 * ( CWORK(N+(p-1)*N+q) /
-                            //     $                                        ABS(CWORK(N+(p-1)*N+q)) )
+                            // CWORK(N+(q-1)*N+p)=-TEMP1 * ( CWORK(N+(p-1)*N+q) /
+                            // $                                        ABS(CWORK(N+(p-1)*N+q)) )
                             cwork[(n + (q - 1) * n + p) - 1] = -ctemp;
                         }
                     }
@@ -1517,7 +1517,7 @@ void Cgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
                 for (q = 1; q <= nr; q = q + 1) {
                     ctemp = COMPLEX(xsc * abs(v[(q - 1) + (q - 1) * ldv]), zero);
                     for (p = 1; p <= n; p = p + 1) {
-                        //     $                V(p,q) = TEMP1 * ( V(p,q) / ABS(V(p,q)) )
+                        // $                V(p,q) = TEMP1 * ( V(p,q) / ABS(V(p,q)) )
                         if ((p > q) && (abs(v[(p - 1) + (q - 1) * ldv]) <= temp1) || (p < q)) {
                             v[(p - 1) + (q - 1) * ldv] = ctemp;
                         }
@@ -1543,7 +1543,7 @@ void Cgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
                 for (q = 2; q <= nr; q = q + 1) {
                     for (p = 1; p <= q - 1; p = p + 1) {
                         ctemp = COMPLEX(xsc * min(abs(u[(p - 1) + (p - 1) * ldu]), abs(u[(q - 1) + (q - 1) * ldu])), zero);
-                        //                  U(p,q) = - TEMP1 * ( U(q,p) / ABS(U(q,p)) )
+                        // U(p,q) = - TEMP1 * ( U(q,p) / ABS(U(q,p)) )
                         u[(p - 1) + (q - 1) * ldu] = -ctemp;
                     }
                 }
@@ -1600,16 +1600,16 @@ void Cgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
             //
         }
         if (transp) {
-            //           .. swap U and V because the procedure worked on A^*
+            // .. swap U and V because the procedure worked on A^*
             for (p = 1; p <= n; p = p + 1) {
                 Cswap(n, &u[(p - 1) * ldu], 1, &v[(p - 1) * ldv], 1);
             }
         }
         //
     }
-    //     end of the full SVD
+    // end of the full SVD
     //
-    //     Undo scaling, if necessary (and possible)
+    // Undo scaling, if necessary (and possible)
     //
     if (uscal2 <= (big / sva[1 - 1]) * uscal1) {
         Rlascl("G", 0, 0, uscal1, uscal2, nr, 1, sva, n, ierr);

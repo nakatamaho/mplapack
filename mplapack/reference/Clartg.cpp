@@ -101,25 +101,25 @@ void Clartg(COMPLEX const f, COMPLEX const g, REAL &cs, COMPLEX &sn, COMPLEX &r)
         if (f == czero) {
             cs = zero;
             r = Rlapy2(g.real(), g.imag());
-            //           Do complex/real division explicitly with two real divisions
+            // Do complex/real division explicitly with two real divisions
             d = Rlapy2(gs.real(), gs.imag());
             sn = COMPLEX(gs.real() / d, -gs.imag() / d);
             return;
         }
         f2s = Rlapy2(fs.real(), fs.imag());
-        //        G2 and G2S are accurate
-        //        G2 is at least SAFMIN, and G2S is at least SAFMN2
+        // G2 and G2S are accurate
+        // G2 is at least SAFMIN, and G2S is at least SAFMN2
         g2s = sqrt(g2);
-        //        Error in CS from underflow in F2S is at most
-        //        UNFL / SAFMN2 .lt. sqrt(UNFL*EPS) .lt. EPS
-        //        If MAX(G2,ONE)=G2, then F2 .lt. G2*SAFMIN,
-        //        and so CS .lt. sqrt(SAFMIN)
-        //        If MAX(G2,ONE)=ONE, then F2 .lt. SAFMIN
-        //        and so CS .lt. sqrt(SAFMIN)/SAFMN2 = sqrt(EPS)
-        //        Therefore, CS = F2S/G2S / sqrt( 1 + (F2S/G2S)**2 ) = F2S/G2S
+        // Error in CS from underflow in F2S is at most
+        // UNFL / SAFMN2 .lt. sqrt(UNFL*EPS) .lt. EPS
+        // If MAX(G2,ONE)=G2, then F2 .lt. G2*SAFMIN,
+        // and so CS .lt. sqrt(SAFMIN)
+        // If MAX(G2,ONE)=ONE, then F2 .lt. SAFMIN
+        // and so CS .lt. sqrt(SAFMIN)/SAFMN2 = sqrt(EPS)
+        // Therefore, CS = F2S/G2S / sqrt( 1 + (F2S/G2S)**2 ) = F2S/G2S
         cs = f2s / g2s;
-        //        Make sure abs(FF) = 1
-        //        Do complex/real division explicitly with 2 real divisions
+        // Make sure abs(FF) = 1
+        // Do complex/real division explicitly with 2 real divisions
         if (abs1(f) > one) {
             d = Rlapy2(f.real(), f.imag());
             ff = COMPLEX(f.real() / d, f.imag() / d);
@@ -138,11 +138,11 @@ void Clartg(COMPLEX const f, COMPLEX const g, REAL &cs, COMPLEX &sn, COMPLEX &r)
         //        F2S cannot overflow, and it is accurate
         //
         f2s = sqrt(one + g2 / f2);
-        //        Do the F2S(real)*FS(complex) multiply with two real multiplies
+        // Do the F2S(real)*FS(complex) multiply with two real multiplies
         r = COMPLEX(f2s * fs.real(), f2s * fs.imag());
         cs = one / f2s;
         d = f2 + g2;
-        //        Do complex/real division explicitly with two real divisions
+        // Do complex/real division explicitly with two real divisions
         sn = COMPLEX(r.real() / d, r.imag() / d);
         sn = sn * conj(gs);
         if (count != 0) {

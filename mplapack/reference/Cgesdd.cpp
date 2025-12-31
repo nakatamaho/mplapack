@@ -213,17 +213,17 @@ void Cgesdd(const char *jobz, INTEGER const m, INTEGER const n, COMPLEX *a, INTE
                 maxwrk = 2 * n + lwork_Cgebrd_mn;
                 minwrk = 2 * n + m;
                 if (wntqo) {
-                    //                 Path 5o (M >> N, JOBZ='O')
+                    // Path 5o (M >> N, JOBZ='O')
                     maxwrk = max(maxwrk, 2 * n + lwork_Cungbr_p_nn);
                     maxwrk = max(maxwrk, 2 * n + lwork_Cungbr_q_mn);
                     maxwrk += m * n;
                     minwrk += n * n;
                 } else if (wntqs) {
-                    //                 Path 5s (M >> N, JOBZ='S')
+                    // Path 5s (M >> N, JOBZ='S')
                     maxwrk = max(maxwrk, 2 * n + lwork_Cungbr_p_nn);
                     maxwrk = max(maxwrk, 2 * n + lwork_Cungbr_q_mn);
                 } else if (wntqa) {
-                    //                 Path 5a (M >> N, JOBZ='A')
+                    // Path 5a (M >> N, JOBZ='A')
                     maxwrk = max(maxwrk, 2 * n + lwork_Cungbr_p_nn);
                     maxwrk = max(maxwrk, 2 * n + lwork_Cungbr_q_mm);
                 }
@@ -234,17 +234,17 @@ void Cgesdd(const char *jobz, INTEGER const m, INTEGER const n, COMPLEX *a, INTE
                 maxwrk = 2 * n + lwork_Cgebrd_mn;
                 minwrk = 2 * n + m;
                 if (wntqo) {
-                    //                 Path 6o (M >= N, JOBZ='O')
+                    // Path 6o (M >= N, JOBZ='O')
                     maxwrk = max(maxwrk, 2 * n + lwork_Cunmbr_prc_nn);
                     maxwrk = max(maxwrk, 2 * n + lwork_Cunmbr_qln_mn);
                     maxwrk += m * n;
                     minwrk += n * n;
                 } else if (wntqs) {
-                    //                 Path 6s (M >= N, JOBZ='S')
+                    // Path 6s (M >= N, JOBZ='S')
                     maxwrk = max(maxwrk, 2 * n + lwork_Cunmbr_qln_mn);
                     maxwrk = max(maxwrk, 2 * n + lwork_Cunmbr_prc_nn);
                 } else if (wntqa) {
-                    //                 Path 6a (M >= N, JOBZ='A')
+                    // Path 6a (M >= N, JOBZ='A')
                     maxwrk = max(maxwrk, 2 * n + lwork_Cunmbr_qln_mm);
                     maxwrk = max(maxwrk, 2 * n + lwork_Cunmbr_prc_nn);
                 }
@@ -343,17 +343,17 @@ void Cgesdd(const char *jobz, INTEGER const m, INTEGER const n, COMPLEX *a, INTE
                 maxwrk = 2 * m + lwork_Cgebrd_mn;
                 minwrk = 2 * m + n;
                 if (wntqo) {
-                    //                 Path 5to (N >> M, JOBZ='O')
+                    // Path 5to (N >> M, JOBZ='O')
                     maxwrk = max(maxwrk, 2 * m + lwork_Cungbr_q_mm);
                     maxwrk = max(maxwrk, 2 * m + lwork_Cungbr_p_mn);
                     maxwrk += m * n;
                     minwrk += m * m;
                 } else if (wntqs) {
-                    //                 Path 5ts (N >> M, JOBZ='S')
+                    // Path 5ts (N >> M, JOBZ='S')
                     maxwrk = max(maxwrk, 2 * m + lwork_Cungbr_q_mm);
                     maxwrk = max(maxwrk, 2 * m + lwork_Cungbr_p_mn);
                 } else if (wntqa) {
-                    //                 Path 5ta (N >> M, JOBZ='A')
+                    // Path 5ta (N >> M, JOBZ='A')
                     maxwrk = max(maxwrk, 2 * m + lwork_Cungbr_q_mm);
                     maxwrk = max(maxwrk, 2 * m + lwork_Cungbr_p_nn);
                 }
@@ -364,17 +364,17 @@ void Cgesdd(const char *jobz, INTEGER const m, INTEGER const n, COMPLEX *a, INTE
                 maxwrk = 2 * m + lwork_Cgebrd_mn;
                 minwrk = 2 * m + n;
                 if (wntqo) {
-                    //                 Path 6to (N > M, JOBZ='O')
+                    // Path 6to (N > M, JOBZ='O')
                     maxwrk = max(maxwrk, 2 * m + lwork_Cunmbr_qln_mm);
                     maxwrk = max(maxwrk, 2 * m + lwork_Cunmbr_prc_mn);
                     maxwrk += m * n;
                     minwrk += m * m;
                 } else if (wntqs) {
-                    //                 Path 6ts (N > M, JOBZ='S')
+                    // Path 6ts (N > M, JOBZ='S')
                     maxwrk = max(maxwrk, 2 * m + lwork_Cunmbr_qln_mm);
                     maxwrk = max(maxwrk, 2 * m + lwork_Cunmbr_prc_mn);
                 } else if (wntqa) {
-                    //                 Path 6ta (N > M, JOBZ='A')
+                    // Path 6ta (N > M, JOBZ='A')
                     maxwrk = max(maxwrk, 2 * m + lwork_Cunmbr_qln_mm);
                     maxwrk = max(maxwrk, 2 * m + lwork_Cunmbr_prc_nn);
                 }
@@ -1647,7 +1647,7 @@ void Cgesdd(const char *jobz, INTEGER const m, INTEGER const n, COMPLEX *a, INTE
                 //
                 Rbdsdc("L", "N", m, s, &rwork[ie - 1], dum, 1, dum, 1, dum, idum, &rwork[nrwork - 1], iwork, info);
             } else if (wntqo) {
-                //              Path 6to (N > M, JOBZ='O')
+                // Path 6to (N > M, JOBZ='O')
                 ldwkvt = m;
                 ivt = nwork;
                 if (lwork >= m * n + 3 * m) {

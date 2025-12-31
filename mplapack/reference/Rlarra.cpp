@@ -66,7 +66,7 @@ void Rlarra(INTEGER const n, REAL *d, REAL *e, REAL *e2, REAL const spltol, REAL
     INTEGER i = 0;
     REAL eabs = 0.0;
     if (spltol < zero) {
-        //        Criterion based on absolute off-diagonal value
+        // Criterion based on absolute off-diagonal value
         tmp1 = abs(spltol) * tnrm;
         for (i = 1; i <= n - 1; i = i + 1) {
             eabs = abs(e[i - 1]);
@@ -78,7 +78,7 @@ void Rlarra(INTEGER const n, REAL *d, REAL *e, REAL *e2, REAL const spltol, REAL
             }
         }
     } else {
-        //        Criterion that guarantees relative accuracy
+        // Criterion that guarantees relative accuracy
         for (i = 1; i <= n - 1; i = i + 1) {
             eabs = abs(e[i - 1]);
             if (eabs <= spltol * sqrt(abs(d[i - 1])) * sqrt(abs(d[(i + 1) - 1]))) {

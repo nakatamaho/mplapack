@@ -181,9 +181,9 @@ void Rbdsdc(const char *uplo, const char *compq, INTEGER const n, REAL *d, REAL 
     //     If ICOMPQ = 0, use Rlasdq to compute the singular values.
     //
     if (icompq == 0) {
-        //        Ignore WSTART, instead using WORK( 1 ), since the two vectors
-        //        for CS and -SN above are added only if ICOMPQ == 2,
-        //        and adding them exceeds documented WORK size of 4*n.
+        // Ignore WSTART, instead using WORK( 1 ), since the two vectors
+        // for CS and -SN above are added only if ICOMPQ == 2,
+        // and adding them exceeds documented WORK size of 4*n.
         Rlasdq("U", 0, n, 0, 0, 0, d, e, vt, ldvt, u, ldu, u, ldu, &work[1 - 1], info);
         goto statement_40;
     }

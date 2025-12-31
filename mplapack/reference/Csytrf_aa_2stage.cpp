@@ -146,7 +146,7 @@ void Csytrf_aa_2stage(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER con
             kb = min(nb, n - j * nb);
             for (i = 1; i <= j - 1; i = i + 1) {
                 if (i == 1) {
-                    //                  H(I,J) = T(I,I)*U(I,J) + T(I+1,I)*U(I+1,J)
+                    // H(I,J) = T(I,I)*U(I,J) + T(I+1,I)*U(I+1,J)
                     if (i == (j - 1)) {
                         jb = nb + kb;
                     } else {
@@ -154,7 +154,7 @@ void Csytrf_aa_2stage(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER con
                     }
                     Cgemm("NoTranspose", "NoTranspose", nb, kb, jb, cone, &tb[(td + 1 + (i * nb) * ldtb) - 1], ldtb - 1, &a[(((i - 1) * nb + 1) - 1) + ((j * nb + 1) - 1) * lda], lda, czero, &work[(i * nb + 1) - 1], n);
                 } else {
-                    //                 H(I,J) = T(I,I-1)*U(I-1,J) + T(I,I)*U(I,J) + T(I,I+1)*U(I+1,J)
+                    // H(I,J) = T(I,I-1)*U(I-1,J) + T(I,I)*U(I,J) + T(I,I+1)*U(I+1,J)
                     if (i == (j - 1)) {
                         jb = 2 * nb + kb;
                     } else {
@@ -168,9 +168,9 @@ void Csytrf_aa_2stage(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER con
             //
             Clacpy("Upper", kb, kb, &a[((j * nb + 1) - 1) + ((j * nb + 1) - 1) * lda], lda, &tb[(td + 1 + (j * nb) * ldtb) - 1], ldtb - 1);
             if (j > 1) {
-                //              T(J,J) = U(1:J,J)'*H(1:J)
+                // T(J,J) = U(1:J,J)'*H(1:J)
                 Cgemm("Transpose", "NoTranspose", kb, kb, (j - 1) * nb, -cone, &a[((j * nb + 1) - 1) * lda], lda, &work[(nb + 1) - 1], n, cone, &tb[(td + 1 + (j * nb) * ldtb) - 1], ldtb - 1);
-                //              T(J,J) += U(J,J)'*T(J,J-1)*U(J-1,J)
+                // T(J,J) += U(J,J)'*T(J,J-1)*U(J-1,J)
                 Cgemm("Transpose", "NoTranspose", kb, nb, kb, cone, &a[(((j - 1) * nb + 1) - 1) + ((j * nb + 1) - 1) * lda], lda, &tb[(td + nb + 1 + ((j - 1) * nb) * ldtb) - 1], ldtb - 1, czero, &work[1 - 1], n);
                 Cgemm("NoTranspose", "NoTranspose", kb, kb, nb, -cone, &work[1 - 1], n, &a[(((j - 2) * nb + 1) - 1) + ((j * nb + 1) - 1) * lda], lda, cone, &tb[(td + 1 + (j * nb) * ldtb) - 1], ldtb - 1);
             }
@@ -183,9 +183,9 @@ void Csytrf_aa_2stage(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER con
                 }
             }
             if (j > 0) {
-                //               CALL CHEGST( 1, 'Upper', KB,
-                //     $                      TB( TD+1 + (J*NB)*LDTB ), LDTB-1,
-                //     $                      A( (J-1)*NB+1, J*NB+1 ), LDA, IINFO )
+                // CALL CHEGST( 1, 'Upper', KB,
+                // $                      TB( TD+1 + (J*NB)*LDTB ), LDTB-1,
+                // $                      A( (J-1)*NB+1, J*NB+1 ), LDA, IINFO )
                 Ctrsm("L", "U", "T", "N", kb, kb, cone, &a[(((j - 1) * nb + 1) - 1) + ((j * nb + 1) - 1) * lda], lda, &tb[(td + 1 + (j * nb) * ldtb) - 1], ldtb - 1);
                 Ctrsm("R", "U", "N", "N", kb, kb, cone, &a[(((j - 1) * nb + 1) - 1) + ((j * nb + 1) - 1) * lda], lda, &tb[(td + 1 + (j * nb) * ldtb) - 1], ldtb - 1);
             }
@@ -215,11 +215,11 @@ void Csytrf_aa_2stage(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER con
                 //              Factorize panel
                 //
                 Cgetrf(n - (j + 1) * nb, nb, work, n, &ipiv[((j + 1) * nb + 1) - 1], iinfo);
-                //               IF (IINFO.NE.0 .AND. INFO.EQ.0) THEN
-                //                  INFO = IINFO+(J+1)*NB
-                //               END IF
+                // IF (IINFO.NE.0 .AND. INFO.EQ.0) THEN
+                //    INFO = IINFO+(J+1)*NB
+                // END IF
                 //
-                //              Copy panel back
+                // Copy panel back
                 //
                 for (k = 1; k <= nb; k = k + 1) {
                     Ccopy(n - (j + 1) * nb, &work[(1 + (k - 1) * n) - 1], 1, &a[((j * nb + k) - 1) + (((j + 1) * nb + 1) - 1) * lda], lda);
@@ -247,27 +247,27 @@ void Csytrf_aa_2stage(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER con
                 //              Apply pivots to trailing submatrix of A
                 //
                 for (k = 1; k <= kb; k = k + 1) {
-                    //                 > Adjust ipiv
+                    // > Adjust ipiv
                     ipiv[((j + 1) * nb + k) - 1] += (j + 1) * nb;
                     //
                     i1 = (j + 1) * nb + k;
                     i2 = ipiv[((j + 1) * nb + k) - 1];
                     if (i1 != i2) {
-                        //                    > Apply pivots to previous columns of L
+                        // > Apply pivots to previous columns of L
                         Cswap(k - 1, &a[(((j + 1) * nb + 1) - 1) + (i1 - 1) * lda], 1, &a[(((j + 1) * nb + 1) - 1) + (i2 - 1) * lda], 1);
-                        //                    > Swap A(I1+1:M, I1) with A(I2, I1+1:M)
+                        // > Swap A(I1+1:M, I1) with A(I2, I1+1:M)
                         if (i2 > (i1 + 1)) {
                             Cswap(i2 - i1 - 1, &a[(i1 - 1) + ((i1 + 1) - 1) * lda], lda, &a[((i1 + 1) - 1) + (i2 - 1) * lda], 1);
                         }
-                        //                    > Swap A(I2+1:M, I1) with A(I2+1:M, I2)
+                        // > Swap A(I2+1:M, I1) with A(I2+1:M, I2)
                         if (i2 < n) {
                             Cswap(n - i2, &a[(i1 - 1) + ((i2 + 1) - 1) * lda], lda, &a[(i2 - 1) + ((i2 + 1) - 1) * lda], lda);
                         }
-                        //                    > Swap A(I1, I1) with A(I2, I2)
+                        // > Swap A(I1, I1) with A(I2, I2)
                         piv = a[(i1 - 1) + (i1 - 1) * lda];
                         a[(i1 - 1) + (i1 - 1) * lda] = a[(i2 - 1) + (i2 - 1) * lda];
                         a[(i2 - 1) + (i2 - 1) * lda] = piv;
-                        //                    > Apply pivots to previous columns of L
+                        // > Apply pivots to previous columns of L
                         if (j > 0) {
                             Cswap(j * nb, &a[(i1 - 1) * lda], 1, &a[(i2 - 1) * lda], 1);
                         }
@@ -288,7 +288,7 @@ void Csytrf_aa_2stage(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER con
             kb = min(nb, n - j * nb);
             for (i = 1; i <= j - 1; i = i + 1) {
                 if (i == 1) {
-                    //                  H(I,J) = T(I,I)*L(J,I)' + T(I+1,I)'*L(J,I+1)'
+                    // H(I,J) = T(I,I)*L(J,I)' + T(I+1,I)'*L(J,I+1)'
                     if (i == (j - 1)) {
                         jb = nb + kb;
                     } else {
@@ -296,7 +296,7 @@ void Csytrf_aa_2stage(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER con
                     }
                     Cgemm("NoTranspose", "Transpose", nb, kb, jb, cone, &tb[(td + 1 + (i * nb) * ldtb) - 1], ldtb - 1, &a[((j * nb + 1) - 1) + (((i - 1) * nb + 1) - 1) * lda], lda, czero, &work[(i * nb + 1) - 1], n);
                 } else {
-                    //                 H(I,J) = T(I,I-1)*L(J,I-1)' + T(I,I)*L(J,I)' + T(I,I+1)*L(J,I+1)'
+                    // H(I,J) = T(I,I-1)*L(J,I-1)' + T(I,I)*L(J,I)' + T(I,I+1)*L(J,I+1)'
                     if (i == (j - 1)) {
                         jb = 2 * nb + kb;
                     } else {
@@ -310,9 +310,9 @@ void Csytrf_aa_2stage(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER con
             //
             Clacpy("Lower", kb, kb, &a[((j * nb + 1) - 1) + ((j * nb + 1) - 1) * lda], lda, &tb[(td + 1 + (j * nb) * ldtb) - 1], ldtb - 1);
             if (j > 1) {
-                //              T(J,J) = L(J,1:J)*H(1:J)
+                // T(J,J) = L(J,1:J)*H(1:J)
                 Cgemm("NoTranspose", "NoTranspose", kb, kb, (j - 1) * nb, -cone, &a[((j * nb + 1) - 1)], lda, &work[(nb + 1) - 1], n, cone, &tb[(td + 1 + (j * nb) * ldtb) - 1], ldtb - 1);
-                //              T(J,J) += L(J,J)*T(J,J-1)*L(J,J-1)'
+                // T(J,J) += L(J,J)*T(J,J-1)*L(J,J-1)'
                 Cgemm("NoTranspose", "NoTranspose", kb, nb, kb, cone, &a[((j * nb + 1) - 1) + (((j - 1) * nb + 1) - 1) * lda], lda, &tb[(td + nb + 1 + ((j - 1) * nb) * ldtb) - 1], ldtb - 1, czero, &work[1 - 1], n);
                 Cgemm("NoTranspose", "Transpose", kb, kb, nb, -cone, &work[1 - 1], n, &a[((j * nb + 1) - 1) + (((j - 2) * nb + 1) - 1) * lda], lda, cone, &tb[(td + 1 + (j * nb) * ldtb) - 1], ldtb - 1);
             }
@@ -325,9 +325,9 @@ void Csytrf_aa_2stage(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER con
                 }
             }
             if (j > 0) {
-                //               CALL CHEGST( 1, 'Lower', KB,
-                //     $                      TB( TD+1 + (J*NB)*LDTB ), LDTB-1,
-                //     $                      A( J*NB+1, (J-1)*NB+1 ), LDA, IINFO )
+                // CALL CHEGST( 1, 'Lower', KB,
+                // $                      TB( TD+1 + (J*NB)*LDTB ), LDTB-1,
+                // $                      A( J*NB+1, (J-1)*NB+1 ), LDA, IINFO )
                 Ctrsm("L", "L", "N", "N", kb, kb, cone, &a[((j * nb + 1) - 1) + (((j - 1) * nb + 1) - 1) * lda], lda, &tb[(td + 1 + (j * nb) * ldtb) - 1], ldtb - 1);
                 Ctrsm("R", "L", "T", "N", kb, kb, cone, &a[((j * nb + 1) - 1) + (((j - 1) * nb + 1) - 1) * lda], lda, &tb[(td + 1 + (j * nb) * ldtb) - 1], ldtb - 1);
             }
@@ -359,11 +359,11 @@ void Csytrf_aa_2stage(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER con
                 //              Factorize panel
                 //
                 Cgetrf(n - (j + 1) * nb, nb, &a[(((j + 1) * nb + 1) - 1) + ((j * nb + 1) - 1) * lda], lda, &ipiv[((j + 1) * nb + 1) - 1], iinfo);
-                //               IF (IINFO.NE.0 .AND. INFO.EQ.0) THEN
-                //                  INFO = IINFO+(J+1)*NB
-                //               END IF
+                // IF (IINFO.NE.0 .AND. INFO.EQ.0) THEN
+                //    INFO = IINFO+(J+1)*NB
+                // END IF
                 //
-                //              Compute T(J+1, J), zero out for GEMM update
+                // Compute T(J+1, J), zero out for GEMM update
                 //
                 kb = min(nb, n - (j + 1) * nb);
                 Claset("Full", kb, nb, czero, czero, &tb[(td + nb + 1 + (j * nb) * ldtb) - 1], ldtb - 1);
@@ -385,27 +385,27 @@ void Csytrf_aa_2stage(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER con
                 //              Apply pivots to trailing submatrix of A
                 //
                 for (k = 1; k <= kb; k = k + 1) {
-                    //                 > Adjust ipiv
+                    // > Adjust ipiv
                     ipiv[((j + 1) * nb + k) - 1] += (j + 1) * nb;
                     //
                     i1 = (j + 1) * nb + k;
                     i2 = ipiv[((j + 1) * nb + k) - 1];
                     if (i1 != i2) {
-                        //                    > Apply pivots to previous columns of L
+                        // > Apply pivots to previous columns of L
                         Cswap(k - 1, &a[(i1 - 1) + (((j + 1) * nb + 1) - 1) * lda], lda, &a[(i2 - 1) + (((j + 1) * nb + 1) - 1) * lda], lda);
-                        //                    > Swap A(I1+1:M, I1) with A(I2, I1+1:M)
+                        // > Swap A(I1+1:M, I1) with A(I2, I1+1:M)
                         if (i2 > (i1 + 1)) {
                             Cswap(i2 - i1 - 1, &a[((i1 + 1) - 1) + (i1 - 1) * lda], 1, &a[(i2 - 1) + ((i1 + 1) - 1) * lda], lda);
                         }
-                        //                    > Swap A(I2+1:M, I1) with A(I2+1:M, I2)
+                        // > Swap A(I2+1:M, I1) with A(I2+1:M, I2)
                         if (i2 < n) {
                             Cswap(n - i2, &a[((i2 + 1) - 1) + (i1 - 1) * lda], 1, &a[((i2 + 1) - 1) + (i2 - 1) * lda], 1);
                         }
-                        //                    > Swap A(I1, I1) with A(I2, I2)
+                        // > Swap A(I1, I1) with A(I2, I2)
                         piv = a[(i1 - 1) + (i1 - 1) * lda];
                         a[(i1 - 1) + (i1 - 1) * lda] = a[(i2 - 1) + (i2 - 1) * lda];
                         a[(i2 - 1) + (i2 - 1) * lda] = piv;
-                        //                    > Apply pivots to previous columns of L
+                        // > Apply pivots to previous columns of L
                         if (j > 0) {
                             Cswap(j * nb, &a[(i1 - 1)], lda, &a[(i2 - 1)], lda);
                         }

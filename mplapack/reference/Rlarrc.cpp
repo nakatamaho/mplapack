@@ -73,7 +73,7 @@ void Rlarrc(const char *jobt, INTEGER const n, REAL const vl, REAL const vu, REA
     REAL su = 0.0;
     REAL tmp2 = 0.0;
     if (matt) {
-        //        Sturm sequence count on T
+        // Sturm sequence count on T
         lpivot = d[1 - 1] - vl;
         rpivot = d[1 - 1] - vu;
         if (lpivot <= zero) {
@@ -94,7 +94,7 @@ void Rlarrc(const char *jobt, INTEGER const n, REAL const vl, REAL const vu, REA
             }
         }
     } else {
-        //        Sturm sequence count on L D L^T
+        // Sturm sequence count on L D L^T
         sl = -vl;
         su = -vu;
         for (i = 1; i <= n - 1; i = i + 1) {

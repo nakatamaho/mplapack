@@ -84,10 +84,10 @@ INTEGER Rlaneg(INTEGER const n, REAL *d, REAL *lld, REAL const sigma, REAL const
             t = tmp * lld[j - 1] - sigma;
         }
         sawnan = Risnan(t);
-        //     Run a slower version of the above loop if a NaN is detected.
-        //     A NaN should occur only with a zero pivot after an infinite
-        //     pivot.  In that case, substituting 1 for T/DPLUS is the
-        //     correct limit.
+        // Run a slower version of the above loop if a NaN is detected.
+        // A NaN should occur only with a zero pivot after an infinite
+        // pivot.  In that case, substituting 1 for T/DPLUS is the
+        // correct limit.
         if (sawnan) {
             neg1 = 0;
             t = bsav;
@@ -122,7 +122,7 @@ INTEGER Rlaneg(INTEGER const n, REAL *d, REAL *lld, REAL const sigma, REAL const
             p = tmp * d[j - 1] - sigma;
         }
         sawnan = Risnan(p);
-        //     As above, run a slower version that substitutes 1 for Inf/Inf.
+        // As above, run a slower version that substitutes 1 for Inf/Inf.
         //
         if (sawnan) {
             neg2 = 0;

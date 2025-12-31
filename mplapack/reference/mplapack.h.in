@@ -28,4 +28,3 @@
 
 #include <mpblas.h>
 #include <mplapack.h>
-

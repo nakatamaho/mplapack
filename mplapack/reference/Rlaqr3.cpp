@@ -112,7 +112,7 @@ void Rlaqr3(bool const wantt, bool const wantz, INTEGER const n, INTEGER const k
     if (ktop > kbot) {
         return;
     }
-    //     ... nor for an empty deflation window. ====
+    // ... nor for an empty deflation window. ====
     if (nw < 1) {
         return;
     }

@@ -166,7 +166,7 @@ void Rgsvj1(const char *jobv, INTEGER const m, INTEGER const n, INTEGER const n1
     //     |[x] [x] [x] *   *   * |
     //
     for (i = 1; i <= nsweep; i = i + 1) {
-        //     .. go go go ...
+        // .. go go go ...
         //
         mxaapq = zero;
         mxsinj = zero;
@@ -244,7 +244,7 @@ void Rgsvj1(const char *jobv, INTEGER const m, INTEGER const n, INTEGER const n1
                                 //
                                 if (abs(aapq) > tol) {
                                     notrot = 0;
-                                    //           ROTATED  = ROTATED + 1
+                                    // ROTATED  = ROTATED + 1
                                     pskipped = 0;
                                     iswrot++;
                                     //
@@ -361,10 +361,10 @@ void Rgsvj1(const char *jobv, INTEGER const m, INTEGER const n, INTEGER const n1
                                             mxsinj = max(mxsinj, sfmin);
                                         }
                                     }
-                                    //           END IF ROTOK THEN ... ELSE
+                                    // END IF ROTOK THEN ... ELSE
                                     //
-                                    //           In the case of cancellation in updating SVA(q)
-                                    //           .. recompute SVA(q)
+                                    // In the case of cancellation in updating SVA(q)
+                                    // .. recompute SVA(q)
                                     if (pow2((sva[q - 1] / aaqq)) <= rooteps) {
                                         if ((aaqq < rootbig) && (aaqq > rootsfmin)) {
                                             sva[q - 1] = Rnrm2(m, &a[(q - 1) * lda], 1) * d[q - 1];
@@ -386,10 +386,10 @@ void Rgsvj1(const char *jobv, INTEGER const m, INTEGER const n, INTEGER const n1
                                         }
                                         sva[p - 1] = aapp;
                                     }
-                                    //              end of OK rotation
+                                    // end of OK rotation
                                 } else {
                                     notrot++;
-                                    //           SKIPPED  = SKIPPED  + 1
+                                    // SKIPPED  = SKIPPED  + 1
                                     pskipped++;
                                     ijblsk++;
                                 }
@@ -412,7 +412,7 @@ void Rgsvj1(const char *jobv, INTEGER const m, INTEGER const n, INTEGER const n1
                             }
                             //
                         }
-                    //        end of the q-loop
+                    // end of the q-loop
                     statement_2203:
                         //
                         sva[p - 1] = aapp;
@@ -428,9 +428,9 @@ void Rgsvj1(const char *jobv, INTEGER const m, INTEGER const n, INTEGER const n1
                     }
                     //
                 }
-                //     end of the p-loop
+                // end of the p-loop
             }
-        //     end of the jbc-loop
+        // end of the jbc-loop
         statement_2011:
             // 2011 bailed out of the jbc-loop
             for (p = igl; p <= min(igl + kbl - 1, n); p = p + 1) {
@@ -465,9 +465,9 @@ void Rgsvj1(const char *jobv, INTEGER const m, INTEGER const n, INTEGER const n1
         }
         //
     }
-    //     end i=1:NSWEEP loop
+    // end i=1:NSWEEP loop
     // #:) Reaching this point means that the procedure has completed the given
-    //     number of sweeps.
+    // number of sweeps.
     info = nsweep - 1;
     goto statement_1995;
 statement_1994:

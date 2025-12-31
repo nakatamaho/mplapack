@@ -146,7 +146,7 @@ void Rsytrf_aa_2stage(const char *uplo, INTEGER const n, REAL *a, INTEGER const 
             kb = min(nb, n - j * nb);
             for (i = 1; i <= j - 1; i = i + 1) {
                 if (i == 1) {
-                    //                 H(I,J) = T(I,I)*U(I,J) + T(I,I+1)*U(I+1,J)
+                    // H(I,J) = T(I,I)*U(I,J) + T(I,I+1)*U(I+1,J)
                     if (i == (j - 1)) {
                         jb = nb + kb;
                     } else {
@@ -154,7 +154,7 @@ void Rsytrf_aa_2stage(const char *uplo, INTEGER const n, REAL *a, INTEGER const 
                     }
                     Rgemm("NoTranspose", "NoTranspose", nb, kb, jb, one, &tb[(td + 1 + (i * nb) * ldtb) - 1], ldtb - 1, &a[(((i - 1) * nb + 1) - 1) + ((j * nb + 1) - 1) * lda], lda, zero, &work[(i * nb + 1) - 1], n);
                 } else {
-                    //                 H(I,J) = T(I,I-1)*U(I-1,J) + T(I,I)*U(I,J) + T(I,I+1)*U(I+1,J)
+                    // H(I,J) = T(I,I-1)*U(I-1,J) + T(I,I)*U(I,J) + T(I,I+1)*U(I+1,J)
                     if (i == j - 1) {
                         jb = 2 * nb + kb;
                     } else {
@@ -168,9 +168,9 @@ void Rsytrf_aa_2stage(const char *uplo, INTEGER const n, REAL *a, INTEGER const 
             //
             Rlacpy("Upper", kb, kb, &a[((j * nb + 1) - 1) + ((j * nb + 1) - 1) * lda], lda, &tb[(td + 1 + (j * nb) * ldtb) - 1], ldtb - 1);
             if (j > 1) {
-                //              T(J,J) = U(1:J,J)'*H(1:J)
+                // T(J,J) = U(1:J,J)'*H(1:J)
                 Rgemm("Transpose", "NoTranspose", kb, kb, (j - 1) * nb, -one, &a[((j * nb + 1) - 1) * lda], lda, &work[(nb + 1) - 1], n, one, &tb[(td + 1 + (j * nb) * ldtb) - 1], ldtb - 1);
-                //              T(J,J) += U(J,J)'*T(J,J-1)*U(J-1,J)
+                // T(J,J) += U(J,J)'*T(J,J-1)*U(J-1,J)
                 Rgemm("Transpose", "NoTranspose", kb, nb, kb, one, &a[(((j - 1) * nb + 1) - 1) + ((j * nb + 1) - 1) * lda], lda, &tb[(td + nb + 1 + ((j - 1) * nb) * ldtb) - 1], ldtb - 1, zero, &work[1 - 1], n);
                 Rgemm("NoTranspose", "NoTranspose", kb, kb, nb, -one, &work[1 - 1], n, &a[(((j - 2) * nb + 1) - 1) + ((j * nb + 1) - 1) * lda], lda, one, &tb[(td + 1 + (j * nb) * ldtb) - 1], ldtb - 1);
             }
@@ -211,11 +211,11 @@ void Rsytrf_aa_2stage(const char *uplo, INTEGER const n, REAL *a, INTEGER const 
                 //              Factorize panel
                 //
                 Rgetrf(n - (j + 1) * nb, nb, work, n, &ipiv[((j + 1) * nb + 1) - 1], iinfo);
-                //               IF (IINFO.NE.0 .AND. INFO.EQ.0) THEN
-                //                  INFO = IINFO+(J+1)*NB
-                //               END IF
+                // IF (IINFO.NE.0 .AND. INFO.EQ.0) THEN
+                //    INFO = IINFO+(J+1)*NB
+                // END IF
                 //
-                //              Copy panel back
+                // Copy panel back
                 //
                 for (k = 1; k <= nb; k = k + 1) {
                     Rcopy(n - (j + 1) * nb, &work[(1 + (k - 1) * n) - 1], 1, &a[((j * nb + k) - 1) + (((j + 1) * nb + 1) - 1) * lda], lda);
@@ -243,27 +243,27 @@ void Rsytrf_aa_2stage(const char *uplo, INTEGER const n, REAL *a, INTEGER const 
                 //              Apply pivots to trailing submatrix of A
                 //
                 for (k = 1; k <= kb; k = k + 1) {
-                    //                 > Adjust ipiv
+                    // > Adjust ipiv
                     ipiv[((j + 1) * nb + k) - 1] += (j + 1) * nb;
                     //
                     i1 = (j + 1) * nb + k;
                     i2 = ipiv[((j + 1) * nb + k) - 1];
                     if (i1 != i2) {
-                        //                    > Apply pivots to previous columns of L
+                        // > Apply pivots to previous columns of L
                         Rswap(k - 1, &a[(((j + 1) * nb + 1) - 1) + (i1 - 1) * lda], 1, &a[(((j + 1) * nb + 1) - 1) + (i2 - 1) * lda], 1);
-                        //                    > Swap A(I1+1:M, I1) with A(I2, I1+1:M)
+                        // > Swap A(I1+1:M, I1) with A(I2, I1+1:M)
                         if (i2 > (i1 + 1)) {
                             Rswap(i2 - i1 - 1, &a[(i1 - 1) + ((i1 + 1) - 1) * lda], lda, &a[((i1 + 1) - 1) + (i2 - 1) * lda], 1);
                         }
-                        //                    > Swap A(I2+1:M, I1) with A(I2+1:M, I2)
+                        // > Swap A(I2+1:M, I1) with A(I2+1:M, I2)
                         if (i2 < n) {
                             Rswap(n - i2, &a[(i1 - 1) + ((i2 + 1) - 1) * lda], lda, &a[(i2 - 1) + ((i2 + 1) - 1) * lda], lda);
                         }
-                        //                    > Swap A(I1, I1) with A(I2, I2)
+                        // > Swap A(I1, I1) with A(I2, I2)
                         piv = a[(i1 - 1) + (i1 - 1) * lda];
                         a[(i1 - 1) + (i1 - 1) * lda] = a[(i2 - 1) + (i2 - 1) * lda];
                         a[(i2 - 1) + (i2 - 1) * lda] = piv;
-                        //                    > Apply pivots to previous columns of L
+                        // > Apply pivots to previous columns of L
                         if (j > 0) {
                             Rswap(j * nb, &a[(i1 - 1) * lda], 1, &a[(i2 - 1) * lda], 1);
                         }
@@ -284,7 +284,7 @@ void Rsytrf_aa_2stage(const char *uplo, INTEGER const n, REAL *a, INTEGER const 
             kb = min(nb, n - j * nb);
             for (i = 1; i <= j - 1; i = i + 1) {
                 if (i == 1) {
-                    //                  H(I,J) = T(I,I)*L(J,I)' + T(I+1,I)'*L(J,I+1)'
+                    // H(I,J) = T(I,I)*L(J,I)' + T(I+1,I)'*L(J,I+1)'
                     if (i == j - 1) {
                         jb = nb + kb;
                     } else {
@@ -292,7 +292,7 @@ void Rsytrf_aa_2stage(const char *uplo, INTEGER const n, REAL *a, INTEGER const 
                     }
                     Rgemm("NoTranspose", "Transpose", nb, kb, jb, one, &tb[(td + 1 + (i * nb) * ldtb) - 1], ldtb - 1, &a[((j * nb + 1) - 1) + (((i - 1) * nb + 1) - 1) * lda], lda, zero, &work[(i * nb + 1) - 1], n);
                 } else {
-                    //                 H(I,J) = T(I,I-1)*L(J,I-1)' + T(I,I)*L(J,I)' + T(I,I+1)*L(J,I+1)'
+                    // H(I,J) = T(I,I-1)*L(J,I-1)' + T(I,I)*L(J,I)' + T(I,I+1)*L(J,I+1)'
                     if (i == j - 1) {
                         jb = 2 * nb + kb;
                     } else {
@@ -306,9 +306,9 @@ void Rsytrf_aa_2stage(const char *uplo, INTEGER const n, REAL *a, INTEGER const 
             //
             Rlacpy("Lower", kb, kb, &a[((j * nb + 1) - 1) + ((j * nb + 1) - 1) * lda], lda, &tb[(td + 1 + (j * nb) * ldtb) - 1], ldtb - 1);
             if (j > 1) {
-                //              T(J,J) = L(J,1:J)*H(1:J)
+                // T(J,J) = L(J,1:J)*H(1:J)
                 Rgemm("NoTranspose", "NoTranspose", kb, kb, (j - 1) * nb, -one, &a[((j * nb + 1) - 1)], lda, &work[(nb + 1) - 1], n, one, &tb[(td + 1 + (j * nb) * ldtb) - 1], ldtb - 1);
-                //              T(J,J) += L(J,J)*T(J,J-1)*L(J,J-1)'
+                // T(J,J) += L(J,J)*T(J,J-1)*L(J,J-1)'
                 Rgemm("NoTranspose", "NoTranspose", kb, nb, kb, one, &a[((j * nb + 1) - 1) + (((j - 1) * nb + 1) - 1) * lda], lda, &tb[(td + nb + 1 + ((j - 1) * nb) * ldtb) - 1], ldtb - 1, zero, &work[1 - 1], n);
                 Rgemm("NoTranspose", "Transpose", kb, kb, nb, -one, &work[1 - 1], n, &a[((j * nb + 1) - 1) + (((j - 2) * nb + 1) - 1) * lda], lda, one, &tb[(td + 1 + (j * nb) * ldtb) - 1], ldtb - 1);
             }
@@ -343,11 +343,11 @@ void Rsytrf_aa_2stage(const char *uplo, INTEGER const n, REAL *a, INTEGER const 
                 //              Factorize panel
                 //
                 Rgetrf(n - (j + 1) * nb, nb, &a[(((j + 1) * nb + 1) - 1) + ((j * nb + 1) - 1) * lda], lda, &ipiv[((j + 1) * nb + 1) - 1], iinfo);
-                //               IF (IINFO.NE.0 .AND. INFO.EQ.0) THEN
-                //                  INFO = IINFO+(J+1)*NB
-                //               END IF
+                // IF (IINFO.NE.0 .AND. INFO.EQ.0) THEN
+                //    INFO = IINFO+(J+1)*NB
+                // END IF
                 //
-                //              Compute T(J+1, J), zero out for GEMM update
+                // Compute T(J+1, J), zero out for GEMM update
                 //
                 kb = min(nb, n - (j + 1) * nb);
                 Rlaset("Full", kb, nb, zero, zero, &tb[(td + nb + 1 + (j * nb) * ldtb) - 1], ldtb - 1);
@@ -369,27 +369,27 @@ void Rsytrf_aa_2stage(const char *uplo, INTEGER const n, REAL *a, INTEGER const 
                 //              Apply pivots to trailing submatrix of A
                 //
                 for (k = 1; k <= kb; k = k + 1) {
-                    //                 > Adjust ipiv
+                    // > Adjust ipiv
                     ipiv[((j + 1) * nb + k) - 1] += (j + 1) * nb;
                     //
                     i1 = (j + 1) * nb + k;
                     i2 = ipiv[((j + 1) * nb + k) - 1];
                     if (i1 != i2) {
-                        //                    > Apply pivots to previous columns of L
+                        // > Apply pivots to previous columns of L
                         Rswap(k - 1, &a[(i1 - 1) + (((j + 1) * nb + 1) - 1) * lda], lda, &a[(i2 - 1) + (((j + 1) * nb + 1) - 1) * lda], lda);
-                        //                    > Swap A(I1+1:M, I1) with A(I2, I1+1:M)
+                        // > Swap A(I1+1:M, I1) with A(I2, I1+1:M)
                         if (i2 > (i1 + 1)) {
                             Rswap(i2 - i1 - 1, &a[((i1 + 1) - 1) + (i1 - 1) * lda], 1, &a[(i2 - 1) + ((i1 + 1) - 1) * lda], lda);
                         }
-                        //                    > Swap A(I2+1:M, I1) with A(I2+1:M, I2)
+                        // > Swap A(I2+1:M, I1) with A(I2+1:M, I2)
                         if (i2 < n) {
                             Rswap(n - i2, &a[((i2 + 1) - 1) + (i1 - 1) * lda], 1, &a[((i2 + 1) - 1) + (i2 - 1) * lda], 1);
                         }
-                        //                    > Swap A(I1, I1) with A(I2, I2)
+                        // > Swap A(I1, I1) with A(I2, I2)
                         piv = a[(i1 - 1) + (i1 - 1) * lda];
                         a[(i1 - 1) + (i1 - 1) * lda] = a[(i2 - 1) + (i2 - 1) * lda];
                         a[(i2 - 1) + (i2 - 1) * lda] = piv;
-                        //                    > Apply pivots to previous columns of L
+                        // > Apply pivots to previous columns of L
                         if (j > 0) {
                             Rswap(j * nb, &a[(i1 - 1)], lda, &a[(i2 - 1)], lda);
                         }

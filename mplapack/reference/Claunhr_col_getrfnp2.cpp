@@ -58,10 +58,10 @@ void Claunhr_col_getrfnp2(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER 
     //     ..
     //     .. Statement Function definitions ..
     COMPLEX z = 0.0;
-    //     ..
-    //     .. Executable Statements ..
+    // ..
+    // .. Executable Statements ..
     //
-    //     Test the input parameters
+    // Test the input parameters
     //
     info = 0;
     if (m < 0) {

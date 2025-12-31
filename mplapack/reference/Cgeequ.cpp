@@ -58,10 +58,10 @@ void Cgeequ(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, REA
     //     ..
     //     .. Statement Function definitions ..
     COMPLEX zdum = 0.0;
-    //     ..
-    //     .. Executable Statements ..
+    // ..
+    // .. Executable Statements ..
     //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     if (m < 0) {

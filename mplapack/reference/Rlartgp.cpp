@@ -50,8 +50,8 @@ void Rlartgp(REAL const f, REAL const g, REAL &cs, REAL &sn, REAL &r) {
     eps = Rlamch("E");
     safmn2 = pow(Rlamch("B"), castINTEGER(log(safmin / eps) / log(Rlamch("B")) / two));
     safmx2 = one / safmn2;
-    //        FIRST = .FALSE.
-    //     END IF
+    // FIRST = .FALSE.
+    // END IF
     if (g == zero) {
         cs = sign(one, f);
         sn = zero;

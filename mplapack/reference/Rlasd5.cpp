@@ -62,8 +62,8 @@ void Rlasd5(INTEGER const i, REAL *d, REAL *z, REAL *delta, REAL const rho, REAL
             delta[2 - 1] = del - tau;
             work[1 - 1] = two * d[1 - 1] + tau;
             work[2 - 1] = (d[1 - 1] + tau) + d[2 - 1];
-            //           DELTA( 1 ) = -Z( 1 ) / TAU
-            //           DELTA( 2 ) = Z( 2 ) / ( DEL-TAU )
+            // DELTA( 1 ) = -Z( 1 ) / TAU
+            // DELTA( 2 ) = Z( 2 ) / ( DEL-TAU )
         } else {
             b = -delsq + rho * (z[1 - 1] * z[1 - 1] + z[2 - 1] * z[2 - 1]);
             c = rho * z[2 - 1] * z[2 - 1] * delsq;
@@ -84,12 +84,12 @@ void Rlasd5(INTEGER const i, REAL *d, REAL *z, REAL *delta, REAL const rho, REAL
             delta[2 - 1] = -tau;
             work[1 - 1] = d[1 - 1] + tau + d[2 - 1];
             work[2 - 1] = two * d[2 - 1] + tau;
-            //           DELTA( 1 ) = -Z( 1 ) / ( DEL+TAU )
-            //           DELTA( 2 ) = -Z( 2 ) / TAU
+            // DELTA( 1 ) = -Z( 1 ) / ( DEL+TAU )
+            // DELTA( 2 ) = -Z( 2 ) / TAU
         }
-        //        TEMP = SQRT( DELTA( 1 )*DELTA( 1 )+DELTA( 2 )*DELTA( 2 ) )
-        //        DELTA( 1 ) = DELTA( 1 ) / TEMP
-        //        DELTA( 2 ) = DELTA( 2 ) / TEMP
+        // TEMP = SQRT( DELTA( 1 )*DELTA( 1 )+DELTA( 2 )*DELTA( 2 ) )
+        // DELTA( 1 ) = DELTA( 1 ) / TEMP
+        // DELTA( 2 ) = DELTA( 2 ) / TEMP
     } else {
         //
         //        Now I=2
@@ -113,11 +113,11 @@ void Rlasd5(INTEGER const i, REAL *d, REAL *z, REAL *delta, REAL const rho, REAL
         delta[2 - 1] = -tau;
         work[1 - 1] = d[1 - 1] + tau + d[2 - 1];
         work[2 - 1] = two * d[2 - 1] + tau;
-        //        DELTA( 1 ) = -Z( 1 ) / ( DEL+TAU )
-        //        DELTA( 2 ) = -Z( 2 ) / TAU
-        //        TEMP = SQRT( DELTA( 1 )*DELTA( 1 )+DELTA( 2 )*DELTA( 2 ) )
-        //        DELTA( 1 ) = DELTA( 1 ) / TEMP
-        //        DELTA( 2 ) = DELTA( 2 ) / TEMP
+        // DELTA( 1 ) = -Z( 1 ) / ( DEL+TAU )
+        // DELTA( 2 ) = -Z( 2 ) / TAU
+        // TEMP = SQRT( DELTA( 1 )*DELTA( 1 )+DELTA( 2 )*DELTA( 2 ) )
+        // DELTA( 1 ) = DELTA( 1 ) / TEMP
+        // DELTA( 2 ) = DELTA( 2 ) / TEMP
     }
     //
     //     End of Rlasd5

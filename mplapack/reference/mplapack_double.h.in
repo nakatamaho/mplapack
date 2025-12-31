@@ -30,4 +30,3 @@
 #define _MPLAPACK_DOUBLE_H_
 
 #include "mplapack_config.h"
-

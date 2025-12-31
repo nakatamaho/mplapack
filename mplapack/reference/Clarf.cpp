@@ -37,8 +37,8 @@ void Clarf(const char *side, INTEGER const m, INTEGER const n, COMPLEX *v, INTEG
     const COMPLEX zero = COMPLEX(0.0, 0.0);
     INTEGER i = 0;
     if (tau != zero) {
-        //     Set up variables for scanning V.  LASTV begins pointing to the end
-        //     of V.
+        // Set up variables for scanning V.  LASTV begins pointing to the end
+        // of V.
         if (applyleft) {
             lastv = m;
         } else {
@@ -49,21 +49,21 @@ void Clarf(const char *side, INTEGER const m, INTEGER const n, COMPLEX *v, INTEG
         } else {
             i = 1;
         }
-        //     Look for the last non-zero row in V.
+        // Look for the last non-zero row in V.
         while (lastv > 0 && v[i - 1] == zero) {
             lastv = lastv - 1;
             i = i - incv;
         }
         if (applyleft) {
-            //     Scan for the last non-zero column in C(1:lastv,:).
+            // Scan for the last non-zero column in C(1:lastv,:).
             lastc = iMlazlc(lastv, n, c, ldc);
         } else {
-            //     Scan for the last non-zero row in C(:,1:lastv).
+            // Scan for the last non-zero row in C(:,1:lastv).
             lastc = iMlazlr(m, lastv, c, ldc);
         }
     }
-    //     Note that lastc.eq.0 renders the BLAS operations null; no special
-    //     case is needed at this level.
+    // Note that lastc.eq.0 renders the BLAS operations null; no special
+    // case is needed at this level.
     const COMPLEX one = COMPLEX(1.0, 0.0);
     if (applyleft) {
         //

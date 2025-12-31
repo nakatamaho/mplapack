@@ -34,4 +34,3 @@
 #if defined ___MPLAPACK_WANT_LIBQUADMATH___
 #include "quadmath.h"
 #endif
-

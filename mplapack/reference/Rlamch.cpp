@@ -232,7 +232,7 @@ REAL RlamchS_gmp(void) {
     REAL sfmin;
     REAL one = 1.0;
     unsigned long exp2;
-#if defined _WIN32 //exponent investigated by MPFR
+#if defined _WIN32 // exponent investigated by MPFR
     exp2 = 0x3FFFFFFF;
 #else
     exp2 = 0x3FFFFFFFFFFFFFFFL;
@@ -312,10 +312,10 @@ REAL RlamchM_gmp(void) {
     unsigned long exp2;
     REAL tmp;
     REAL uflowmin, one = 1.0;
-#if defined _WIN32 //exponent investigated by MPFR
+#if defined _WIN32 // exponent investigated by MPFR
     exp2 = 0x3FFFFFFF;
 #else
-    exp2 = 0x3FFFFFFFFFFFFFFFL; //exponent investigated by MPFR
+    exp2 = 0x3FFFFFFFFFFFFFFFL; // exponent investigated by MPFR
 #endif
     tmp = exp2;
     return -tmp;

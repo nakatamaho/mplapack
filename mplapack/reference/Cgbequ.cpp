@@ -58,10 +58,10 @@ void Cgbequ(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku
     //     ..
     //     .. Statement Function definitions ..
     COMPLEX zdum = 0.0;
-    //     ..
-    //     .. Executable Statements ..
+    // ..
+    // .. Executable Statements ..
     //
-    //     Test the input parameters
+    // Test the input parameters
     //
     info = 0;
     if (m < 0) {

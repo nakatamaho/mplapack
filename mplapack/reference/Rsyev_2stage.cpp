@@ -132,8 +132,8 @@ void Rsyev_2stage(const char *jobz, const char *uplo, INTEGER const n, REAL *a, 
     if (!wantz) {
         Rsterf(n, w, &work[inde - 1], info);
     } else {
-        //        Not available in this release, and argument checking should not
-        //        let it getting here
+        // Not available in this release, and argument checking should not
+        // let it getting here
         return;
         Rorgtr(uplo, n, a, lda, &work[indtau - 1], &work[indwrk - 1], llwork, iinfo);
         Rsteqr(jobz, n, w, &work[inde - 1], a, lda, &work[indtau - 1], info);

@@ -113,7 +113,7 @@ void Rsytrd_sy2sb(const char *uplo, INTEGER const n, INTEGER const kd, REAL *a, 
     INTEGER lw = n * kd;
     INTEGER ls1 = lds1 * kd;
     INTEGER ls2 = lwmin - lt - lw - ls1;
-    //      LS2 = N*MAX(KD,FACTOPTNB)
+    // LS2 = N*MAX(KD,FACTOPTNB)
     INTEGER tpos = 1;
     INTEGER wpos = tpos + lt;
     INTEGER s1pos = wpos + lw;
@@ -225,13 +225,13 @@ void Rsytrd_sy2sb(const char *uplo, INTEGER const n, INTEGER const kd, REAL *a, 
             //            an update of the form:  A := A - V*W' - W*V'
             //
             Rsyr2k(uplo, "No transpose", pn, pk, -one, &a[((i + kd) - 1) + (i - 1) * lda], lda, &work[wpos - 1], ldw, rone, &a[((i + kd) - 1) + ((i + kd) - 1) * lda], lda);
-            //            ==================================================================
-            //            RESTORE A FOR COMPARISON AND CHECKING TO BE REMOVED
-            //             DO 45 J = I, I+PK-1
-            //                LK = MIN( KD, N-J ) + 1
-            //                CALL Rcopy( LK, AB( 1, J ), 1, A( J, J ), 1 )
-            //   45        CONTINUE
-            //            ==================================================================
+            // ==================================================================
+            // RESTORE A FOR COMPARISON AND CHECKING TO BE REMOVED
+            //  DO 45 J = I, I+PK-1
+            //     LK = MIN( KD, N-J ) + 1
+            //     CALL Rcopy( LK, AB( 1, J ), 1, A( J, J ), 1 )
+            // 45        CONTINUE
+            // ==================================================================
         }
         //
         //        Copy the lower band to AB which is the band storage matrix

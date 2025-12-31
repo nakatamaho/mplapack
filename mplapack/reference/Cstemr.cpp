@@ -132,7 +132,7 @@ void Cstemr(const char *jobz, const char *range, INTEGER const n, REAL *d, REAL 
         lwmin = 18 * n;
         liwmin = 10 * n;
     } else {
-        //        need less workspace if only the eigenvalues are wanted
+        // need less workspace if only the eigenvalues are wanted
         lwmin = 12 * n;
         liwmin = 8 * n;
     }
@@ -144,13 +144,13 @@ void Cstemr(const char *jobz, const char *range, INTEGER const n, REAL *d, REAL 
     nsplit = 0;
     //
     if (valeig) {
-        //        We do not reference VL, VU in the cases RANGE = 'I','A'
-        //        The interval (WL, WU] contains all the wanted eigenvalues.
-        //        It is either given by the user or computed in Rlarre.
+        // We do not reference VL, VU in the cases RANGE = 'I','A'
+        // The interval (WL, WU] contains all the wanted eigenvalues.
+        // It is either given by the user or computed in Rlarre.
         wl = vl;
         wu = vu;
     } else if (indeig) {
-        //        We do not reference IL, IU in the cases RANGE = 'V','A'
+        // We do not reference IL, IU in the cases RANGE = 'V','A'
         iil = il;
         iiu = iu;
     }
@@ -196,7 +196,7 @@ void Cstemr(const char *jobz, const char *range, INTEGER const n, REAL *d, REAL 
         } else if (wantz && indeig) {
             nzcmin = iiu - iil + 1;
         } else {
-            //           WANTZ .EQ. FALSE.
+            // WANTZ .EQ. FALSE.
             nzcmin = 0;
         }
         if (zquery && info == 0) {
@@ -252,7 +252,7 @@ void Cstemr(const char *jobz, const char *range, INTEGER const n, REAL *d, REAL 
             if (wantz && (!zquery)) {
                 z[(m - 1) * ldz] = -sn;
                 z[(2 - 1) + (m - 1) * ldz] = cs;
-                //              Note: At most one of SN and CS can be zero.
+                // Note: At most one of SN and CS can be zero.
                 if (sn != zero) {
                     if (cs != zero) {
                         isuppz[(2 * m - 1) - 1] = 1;
@@ -273,7 +273,7 @@ void Cstemr(const char *jobz, const char *range, INTEGER const n, REAL *d, REAL 
             if (wantz && (!zquery)) {
                 z[(m - 1) * ldz] = cs;
                 z[(2 - 1) + (m - 1) * ldz] = sn;
-                //              Note: At most one of SN and CS can be zero.
+                // Note: At most one of SN and CS can be zero.
                 if (sn != zero) {
                     if (cs != zero) {
                         isuppz[(2 * m - 1) - 1] = 1;
@@ -322,8 +322,8 @@ void Cstemr(const char *jobz, const char *range, INTEGER const n, REAL *d, REAL 
             Rscal(n - 1, scale, e, 1);
             tnrm = tnrm * scale;
             if (valeig) {
-                //              If eigenvalues in interval have to be found,
-                //              scale (WL, WU] accordingly
+                // If eigenvalues in interval have to be found,
+                // scale (WL, WU] accordingly
                 wl = wl * scale;
                 wu = wu * scale;
             }
@@ -338,40 +338,40 @@ void Cstemr(const char *jobz, const char *range, INTEGER const n, REAL *d, REAL 
         //        which preserves relative accuracy.
         //
         if (tryrac) {
-            //           Test whether the matrix warrants the more expensive relative approach.
+            // Test whether the matrix warrants the more expensive relative approach.
             Rlarrr(n, d, e, iinfo);
         } else {
-            //           The user does not care about relative accurately eigenvalues
+            // The user does not care about relative accurately eigenvalues
             iinfo = -1;
         }
-        //        Set the splitting criterion
+        // Set the splitting criterion
         if (iinfo == 0) {
             thresh = eps;
         } else {
             thresh = -eps;
-            //           relative accuracy is desired but T does not guarantee it
+            // relative accuracy is desired but T does not guarantee it
             tryrac = false;
         }
         //
         if (tryrac) {
-            //           Copy original diagonal, needed to guarantee relative accuracy
+            // Copy original diagonal, needed to guarantee relative accuracy
             Rcopy(n, d, 1, &work[indd - 1], 1);
         }
-        //        Store the squares of the offdiagonal values of T
+        // Store the squares of the offdiagonal values of T
         for (j = 1; j <= n - 1; j = j + 1) {
             work[(inde2 + j - 1) - 1] = pow2(e[j - 1]);
         }
         //
         //        Set the tolerance parameters for bisection
         if (!wantz) {
-            //           Rlarre computes the eigenvalues to full precision.
+            // Rlarre computes the eigenvalues to full precision.
             rtol1 = four * eps;
             rtol2 = four * eps;
         } else {
-            //           Rlarre computes the eigenvalues to less than full precision.
-            //           Clarrv will refine the eigenvalue approximations, and we only
-            //           need less accurate initial bisection in Rlarre.
-            //           Note: these settings do only affect the subset case and Rlarre
+            // Rlarre computes the eigenvalues to less than full precision.
+            // Clarrv will refine the eigenvalue approximations, and we only
+            // need less accurate initial bisection in Rlarre.
+            // Note: these settings do only affect the subset case and Rlarre
             rtol1 = sqrt(eps);
             rtol2 = max(REAL(sqrt(eps) * 5.0e-3), REAL(four * eps));
         }
@@ -380,9 +380,9 @@ void Cstemr(const char *jobz, const char *range, INTEGER const n, REAL *d, REAL 
             info = 10 + abs(iinfo);
             return;
         }
-        //        Note that if RANGE .NE. 'V', Rlarre computes bounds on the desired
-        //        part of the spectrum. All desired eigenvalues are contained in
-        //        (WL,WU]
+        // Note that if RANGE .NE. 'V', Rlarre computes bounds on the desired
+        // part of the spectrum. All desired eigenvalues are contained in
+        // (WL,WU]
         //
         if (wantz) {
             //
@@ -395,11 +395,11 @@ void Cstemr(const char *jobz, const char *range, INTEGER const n, REAL *d, REAL 
                 return;
             }
         } else {
-            //           Rlarre computes eigenvalues of the (shifted) root representation
-            //           Clarrv returns the eigenvalues of the unshifted matrix.
-            //           However, if the eigenvectors are not desired by the user, we need
-            //           to apply the corresponding shifts from Rlarre to obtain the
-            //           eigenvalues of the original matrix.
+            // Rlarre computes eigenvalues of the (shifted) root representation
+            // Clarrv returns the eigenvalues of the unshifted matrix.
+            // However, if the eigenvectors are not desired by the user, we need
+            // to apply the corresponding shifts from Rlarre to obtain the
+            // eigenvalues of the original matrix.
             for (j = 1; j <= m; j = j + 1) {
                 itmp = iwork[(iindbl + j - 1) - 1];
                 w[j - 1] += e[(iwork[(iinspl + itmp - 1) - 1]) - 1];
@@ -407,15 +407,15 @@ void Cstemr(const char *jobz, const char *range, INTEGER const n, REAL *d, REAL 
         }
         //
         if (tryrac) {
-            //           Refine computed eigenvalues so that they are relatively accurate
-            //           with respect to the original matrix T.
+            // Refine computed eigenvalues so that they are relatively accurate
+            // with respect to the original matrix T.
             ibegin = 1;
             wbegin = 1;
             for (jblk = 1; jblk <= iwork[(iindbl + m - 1) - 1]; jblk = jblk + 1) {
                 iend = iwork[(iinspl + jblk - 1) - 1];
                 in = iend - ibegin + 1;
                 wend = wbegin - 1;
-            //              check if any eigenvalues have to be refined in this block
+            // check if any eigenvalues have to be refined in this block
             statement_36:
                 if (wend < m) {
                     if (iwork[(iindbl + wend) - 1] == jblk) {

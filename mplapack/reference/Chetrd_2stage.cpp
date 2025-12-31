@@ -63,8 +63,8 @@ void Chetrd_2stage(const char *vect, const char *uplo, INTEGER const n, COMPLEX 
     INTEGER ib = iMlaenv2stage(2, "Chetrd_2stage", vect, n, kd, -1, -1);
     INTEGER lhmin = iMlaenv2stage(3, "Chetrd_2stage", vect, n, kd, ib, -1);
     INTEGER lwmin = iMlaenv2stage(4, "Chetrd_2stage", vect, n, kd, ib, -1);
-    //      WRITE(*,*),'Chetrd_2stage N KD UPLO LHMIN LWMIN ',N, KD, UPLO,
-    //     $            LHMIN, LWMIN
+    // WRITE(*,*),'Chetrd_2stage N KD UPLO LHMIN LWMIN ',N, KD, UPLO,
+    // $            LHMIN, LWMIN
     //
     if (!Mlsame(vect, "N")) {
         info = -1;

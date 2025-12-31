@@ -32,4 +32,3 @@
 #include "mplapack_config.h"
 #include "gmpxx.h"
 #include "mpc_class.h"
-

@@ -33,8 +33,8 @@ inline REAL cabs1(COMPLEX zdum) { return (abs(zdum.real()) + abs(zdum.imag())); 
 
 void Cgtsv(INTEGER const n, INTEGER const nrhs, COMPLEX *dl, COMPLEX *d, COMPLEX *du, COMPLEX *b, INTEGER const ldb, INTEGER &info) {
     COMPLEX zdum = 0.0;
-    //     ..
-    //     .. Executable Statements ..
+    // ..
+    // .. Executable Statements ..
     //
     info = 0;
     if (n < 0) {

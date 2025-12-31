@@ -58,13 +58,13 @@ void Clarfgp(INTEGER const n, COMPLEX &alpha, COMPLEX *x, INTEGER const incx, CO
         //
         if (alphi == zero) {
             if (alphr >= zero) {
-                //              When TAU.eq.ZERO, the vector is special-cased to be
-                //              all zeros in the application routines.  We do not need
-                //              to clear it.
+                // When TAU.eq.ZERO, the vector is special-cased to be
+                // all zeros in the application routines.  We do not need
+                // to clear it.
                 tau = zero;
             } else {
-                //              However, the application routines rely on explicit
-                //              zero checks when TAU.ne.ZERO, and we must clear X.
+                // However, the application routines rely on explicit
+                // zero checks when TAU.ne.ZERO, and we must clear X.
                 tau = two;
                 for (j = 1; j <= n - 1; j = j + 1) {
                     x[(1 + (j - 1) * incx) - 1] = zero;
@@ -72,7 +72,7 @@ void Clarfgp(INTEGER const n, COMPLEX &alpha, COMPLEX *x, INTEGER const incx, CO
                 alpha = -alpha;
             }
         } else {
-            //           Only "reflecting" the diagonal entry to be real and non-negative.
+            // Only "reflecting" the diagonal entry to be real and non-negative.
             xnorm = Rlapy2(alphr, alphi);
             tau = COMPLEX(one - alphr / xnorm, -alphi / xnorm);
             for (j = 1; j <= n - 1; j = j + 1) {

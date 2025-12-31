@@ -80,7 +80,7 @@ void Clarft(const char *direct, const char *storev, INTEGER const n, INTEGER con
                 //              general case
                 //
                 if (Mlsame(storev, "C")) {
-                    //                 Skip any trailing zeros.
+                    // Skip any trailing zeros.
                     for (lastv = n; lastv >= i + 1; lastv = lastv - 1) {
                         if (v[(lastv - 1) + (i - 1) * ldv] != zero) {
                             break;
@@ -95,7 +95,7 @@ void Clarft(const char *direct, const char *storev, INTEGER const n, INTEGER con
                     //
                     Cgemv("Conjugate transpose", j - i, i - 1, -tau[i - 1], &v[((i + 1) - 1)], ldv, &v[((i + 1) - 1) + (i - 1) * ldv], 1, one, &t[(i - 1) * ldt], 1);
                 } else {
-                    //                 Skip any trailing zeros.
+                    // Skip any trailing zeros.
                     for (lastv = n; lastv >= i + 1; lastv = lastv - 1) {
                         if (v[(i - 1) + (lastv - 1) * ldv] != zero) {
                             break;
@@ -138,7 +138,7 @@ void Clarft(const char *direct, const char *storev, INTEGER const n, INTEGER con
                 //
                 if (i < k) {
                     if (Mlsame(storev, "C")) {
-                        //                    Skip any leading zeros.
+                        // Skip any leading zeros.
                         for (lastv = 1; lastv <= i - 1; lastv = lastv + 1) {
                             if (v[(lastv - 1) + (i - 1) * ldv] != zero) {
                                 break;
@@ -153,7 +153,7 @@ void Clarft(const char *direct, const char *storev, INTEGER const n, INTEGER con
                         //
                         Cgemv("Conjugate transpose", n - k + i - j, k - i, -tau[i - 1], &v[(j - 1) + ((i + 1) - 1) * ldv], ldv, &v[(j - 1) + (i - 1) * ldv], 1, one, &t[((i + 1) - 1) + (i - 1) * ldt], 1);
                     } else {
-                        //                    Skip any leading zeros.
+                        // Skip any leading zeros.
                         for (lastv = 1; lastv <= i - 1; lastv = lastv + 1) {
                             if (v[(i - 1) + (lastv - 1) * ldv] != zero) {
                                 break;

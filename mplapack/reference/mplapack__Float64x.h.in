@@ -30,4 +30,3 @@
 #define _MPLAPACK__FLOAT64X_H_
 
 #include "mplapack_config.h"
-

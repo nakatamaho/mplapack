@@ -91,8 +91,8 @@ void Chseqr(const char *job, const char *compz, INTEGER const n, INTEGER const i
         //        ==== Quick return in case of a workspace query ====
         //
         Claqr0(wantt, wantz, n, ilo, ihi, h, ldh, w, ilo, ihi, z, ldz, work, lwork, info);
-        //        ==== Ensure reported workspace size is backward-compatible with
-        //        .    previous LAPACK versions. ====
+        // ==== Ensure reported workspace size is backward-compatible with
+        // .    previous LAPACK versions. ====
         work[1 - 1] = COMPLEX(castREAL(max(castINTEGER(work[1 - 1].real()), (max((INTEGER)1, n)))), rzero);
         return;
         //

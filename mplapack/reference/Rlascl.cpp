@@ -137,16 +137,16 @@ void Rlascl(const char *type, INTEGER const kl, INTEGER const ku, REAL const cfr
 statement_10:
     cfrom1 = cfromc * smlnum;
     if (cfrom1 == cfromc) {
-        //        CFROMC is an inf.  Multiply by a correctly signed zero for
-        //        finite CTOC, or a NaN if CTOC is infinite.
+        // CFROMC is an inf.  Multiply by a correctly signed zero for
+        // finite CTOC, or a NaN if CTOC is infinite.
         mul = ctoc / cfromc;
         done = true;
         cto1 = ctoc;
     } else {
         cto1 = ctoc / bignum;
         if (cto1 == ctoc) {
-            //           CTOC is either 0 or an inf.  In both cases, CTOC itself
-            //           serves as the correct multiplication factor.
+            // CTOC is either 0 or an inf.  In both cases, CTOC itself
+            // serves as the correct multiplication factor.
             mul = ctoc;
             done = true;
             cfromc = one;

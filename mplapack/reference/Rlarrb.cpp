@@ -84,9 +84,9 @@ void Rlarrb(INTEGER const n, REAL *d, REAL *lld, INTEGER const ifirst, INTEGER c
     //     list of unconverged intervals is set up.
     //
     i1 = ifirst;
-    //     The number of unconverged intervals
+    // The number of unconverged intervals
     nint = 0;
-    //     The last unconverged interval found
+    // The last unconverged interval found
     prev = 0;
     //
     rgap = wgap[(i1 - offset) - 1];
@@ -129,12 +129,12 @@ void Rlarrb(INTEGER const n, REAL *d, REAL *lld, INTEGER const ifirst, INTEGER c
         tmp = max(abs(left), abs(right));
         cvrgd = max(rtol1 * gap, rtol2 * tmp);
         if (width <= cvrgd || width <= mnwdth) {
-            //           This interval has already converged and does not need refinement.
-            //           (Note that the gaps might change through refining the
-            //            eigenvalues, however, they can only get bigger.)
-            //           Remove it from the list.
+            // This interval has already converged and does not need refinement.
+            // (Note that the gaps might change through refining the
+            //  eigenvalues, however, they can only get bigger.)
+            // Remove it from the list.
             iwork[(k - 1) - 1] = -1;
-            //           Make sure that I1 always points to the first unconverged interval
+            // Make sure that I1 always points to the first unconverged interval
             if ((i == i1) && (i < ilast)) {
                 i1 = i + 1;
             }
@@ -142,7 +142,7 @@ void Rlarrb(INTEGER const n, REAL *d, REAL *lld, INTEGER const ifirst, INTEGER c
                 iwork[(2 * prev - 1) - 1] = i + 1;
             }
         } else {
-            //           unconverged interval found
+            // unconverged interval found
             prev = i;
             nint++;
             iwork[(k - 1) - 1] = i + 1;
@@ -180,14 +180,14 @@ statement_80:
         tmp = max(abs(left), abs(right));
         cvrgd = max(rtol1 * gap, rtol2 * tmp);
         if ((width <= cvrgd) || (width <= mnwdth) || (iter == maxitr)) {
-            //           reduce number of unconverged intervals
+            // reduce number of unconverged intervals
             nint = nint - 1;
-            //           Mark interval as converged.
+            // Mark interval as converged.
             iwork[(k - 1) - 1] = 0;
             if (i1 == i) {
                 i1 = next;
             } else {
-                //              Prev holds the last unconverged interval previously examined
+                // Prev holds the last unconverged interval previously examined
                 if (prev >= i1) {
                     iwork[(2 * prev - 1) - 1] = next;
                 }
@@ -209,9 +209,9 @@ statement_80:
     statement_100:;
     }
     iter++;
-    //     do another loop if there are still unconverged intervals
-    //     However, in the last iteration, all intervals are accepted
-    //     since this is the best we can do.
+    // do another loop if there are still unconverged intervals
+    // However, in the last iteration, all intervals are accepted
+    // since this is the best we can do.
     if ((nint > 0) && (iter <= maxitr)) {
         goto statement_80;
     }
@@ -220,7 +220,7 @@ statement_80:
     for (i = ifirst; i <= ilast; i = i + 1) {
         k = 2 * i;
         ii = i - offset;
-        //        All intervals marked by '0' have been refined.
+        // All intervals marked by '0' have been refined.
         if (iwork[(k - 1) - 1] == 0) {
             w[ii - 1] = half * (work[(k - 1) - 1] + work[k - 1]);
             werr[ii - 1] = work[k - 1] - w[ii - 1];

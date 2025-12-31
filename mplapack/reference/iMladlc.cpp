@@ -58,7 +58,7 @@ iMladlc(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda) {
     } else if (a[(n - 1) * lda] != zero || a[(m - 1) + (n - 1) * lda] != zero) {
         return_value = n;
     } else {
-        //     Now scan each column from the end, returning with the first non-zero.
+        // Now scan each column from the end, returning with the first non-zero.
         for (return_value = n; return_value >= 1; return_value = return_value - 1) {
             for (i = 1; i <= m; i = i + 1) {
                 if (a[(i - 1) + (return_value - 1) * lda] != zero) {

@@ -164,10 +164,10 @@ statement_20:
                     tst += abs(h[((k + 1) - 1) + (k - 1) * ldh]);
                 }
             }
-            //           ==== The following is a conservative small subdiagonal
-            //           .    deflation  criterion due to Ahues & Tisseur (LAWN 122,
-            //           .    1997). It has better mathematical foundation and
-            //           .    improves accuracy in some cases.  ====
+            // ==== The following is a conservative small subdiagonal
+            // .    deflation  criterion due to Ahues & Tisseur (LAWN 122,
+            // .    1997). It has better mathematical foundation and
+            // .    improves accuracy in some cases.  ====
             if (abs(h[(k - 1) + ((k - 1) - 1) * ldh]) <= ulp * tst) {
                 ab = max(abs(h[(k - 1) + ((k - 1) - 1) * ldh]), abs(h[((k - 1) - 1) + (k - 1) * ldh]));
                 ba = min(abs(h[(k - 1) + ((k - 1) - 1) * ldh]), abs(h[((k - 1) - 1) + (k - 1) * ldh]));
@@ -275,10 +275,10 @@ statement_20:
         //        Look for two consecutive small subdiagonal elements.
         //
         for (m = i - 2; m >= l; m = m - 1) {
-            //           Determine the effect of starting the REAL-shift QR
-            //           iteration at row M, and see if this would make H(M,M-1)
-            //           negligible.  (The following uses scaling to avoid
-            //           overflows and most underflows.)
+            // Determine the effect of starting the REAL-shift QR
+            // iteration at row M, and see if this would make H(M,M-1)
+            // negligible.  (The following uses scaling to avoid
+            // overflows and most underflows.)
             //
             h21s = h[((m + 1) - 1) + (m - 1) * ldh];
             s = abs(h[(m - 1) + (m - 1) * ldh] - rt2r) + abs(rt2i) + abs(h21s);
@@ -324,10 +324,10 @@ statement_20:
                     h[((k + 2) - 1) + ((k - 1) - 1) * ldh] = zero;
                 }
             } else if (m > l) {
-                //               ==== Use the following instead of
-                //               .    H( K, K-1 ) = -H( K, K-1 ) to
-                //               .    avoid a bug when v(2) and v(3)
-                //               .    underflow. ====
+                // ==== Use the following instead of
+                // .    H( K, K-1 ) = -H( K, K-1 ) to
+                // .    avoid a bug when v(2) and v(3)
+                // .    underflow. ====
                 h[(k - 1) + ((k - 1) - 1) * ldh] = h[(k - 1) + ((k - 1) - 1) * ldh] * (one - t1);
             }
             v2 = v[2 - 1];
@@ -440,7 +440,7 @@ statement_150:
             Rrot(nz, &z[(iloz - 1) + ((i - 1) - 1) * ldz], 1, &z[(iloz - 1) + (i - 1) * ldz], 1, cs, sn);
         }
     }
-    //     reset deflation counter
+    // reset deflation counter
     kdefl = 0;
     //
     //     return to start of the main loop with new value of I.
