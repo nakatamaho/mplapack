@@ -62,9 +62,9 @@ REAL Rnrm2(INTEGER const n, REAL *x, INTEGER const incx) {
     } else {
         scale = zero;
         ssq = one;
-        //        The following loop is equivalent to this call to the LAPACK
-        //        auxiliary routine:
-        //        CALL DLASSQ( N, X, INCX, SCALE, SSQ )
+        // The following loop is equivalent to this call to the LAPACK
+        // auxiliary routine:
+        // CALL DLASSQ( N, X, INCX, SCALE, SSQ )
         //
         for (ix = 1; ix <= 1 + (n - 1) * incx; ix = ix + incx) {
             if (x[ix - 1] != zero) {

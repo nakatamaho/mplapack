@@ -60,9 +60,9 @@ REAL RCnrm2(INTEGER const n, COMPLEX *x, INTEGER const incx) {
     } else {
         scale = zero;
         ssq = one;
-        //        The following loop is equivalent to this call to the LAPACK
-        //        auxiliary routine:
-        //        CALL ZLASSQ( N, X, INCX, SCALE, SSQ )
+        // The following loop is equivalent to this call to the LAPACK
+        // auxiliary routine:
+        // CALL ZLASSQ( N, X, INCX, SCALE, SSQ )
         //
         for (ix = 1; ix <= 1 + (n - 1) * incx; ix = ix + incx) {
             if (x[ix - 1].real() != zero) {

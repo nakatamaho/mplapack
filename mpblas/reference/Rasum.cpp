@@ -56,9 +56,9 @@ REAL Rasum(INTEGER const n, REAL *dx, INTEGER const incx) {
     INTEGER mp1 = 0;
     INTEGER nincx = 0;
     if (incx == 1) {
-        //        code for increment equal to 1
+        // code for increment equal to 1
         //
-        //        clean-up loop
+        // clean-up loop
         //
         m = mod(n, 6);
         if (m != 0) {
