@@ -1,9 +1,7 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *	Nakata, Maho
  * 	All rights reserved.
- *
- * $Id: mplapack_dd.h,v 1.31 2010/08/07 03:15:46 nakatamaho Exp $
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -87,8 +85,8 @@ mplapackint iMieeeck_dd(mplapackint const &ispec, dd_real const &zero, dd_real c
 mplapackint iMladiag(const char *diag);
 mplapackint iMladlc(mplapackint const m, mplapackint const n, dd_real *a, mplapackint const lda);
 mplapackint iMladlr(mplapackint const m, mplapackint const n, dd_real *a, mplapackint const lda);
-mplapackint iMlaenv2stage_dd(mplapackint ispec, const char *name, const char *opts, mplapackint n1, mplapackint n2, mplapackint n3, mplapackint n4);
-mplapackint iMlaenv_dd(mplapackint ispec, const char *name, const char *opts, mplapackint n1, mplapackint n2, mplapackint n3, mplapackint n4);
+mplapackint iMlaenv2stage_dd(mplapackint const ispec, const char *name, const char *opts, mplapackint const n1, mplapackint const n2, mplapackint const n3, mplapackint const n4);
+mplapackint iMlaenv_dd(mplapackint const ispec, const char *name, const char *opts, mplapackint const n1, mplapackint const n2, mplapackint const n3, mplapackint const n4);
 mplapackint iMlaprec(const char *prec);
 mplapackint iMlatrans(const char *trans);
 mplapackint iMlauplo(const char *uplo);

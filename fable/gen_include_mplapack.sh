@@ -34,6 +34,7 @@ for mplib in $MPLIBS; do
         sed -i -e "s/iMieeeck/iMieeeck_${mplib}/g" mplapack_${mplib}.h 
         sed -i -e "s/iMparam2stage/iMparam2stage_${mplib}/g" mplapack_${mplib}.h 
         sed -i -e "s/iMparmq/iMparmq_${mplib}/g" mplapack_${mplib}.h 
+        printf "void mplapack_gmp_initialize(void);" >> mplapack_${mplib}.h
     fi
 
     if [ x"$mplib" = x"mpfr" ]; then
@@ -49,6 +50,8 @@ for mplib in $MPLIBS; do
         sed -i -e "s/iMieeeck/iMieeeck_${mplib}/g" mplapack_${mplib}.h 
         sed -i -e "s/iMparam2stage/iMparam2stage_${mplib}/g" mplapack_${mplib}.h 
         sed -i -e "s/iMparmq/iMparmq_${mplib}/g" mplapack_${mplib}.h 
+        printf "void ___mplapack_mpfr_initialize(void);" >> mplapack_${mplib}.h
+        printf "void mplapack_mpfr_finalize(void);" >> mplapack_${mplib}.h
     fi
 
     if [ x"$mplib" = x"double" ]; then
@@ -127,7 +130,7 @@ for mplib in $MPLIBS; do
     fi
 
     clang-format -style="{BasedOnStyle: llvm, IndentWidth: 4, ColumnLimit: 10000 }" mplapack_${mplib}.h | sort > l ; mv l mplapack_${mplib}.h 
-    cat ~/mplapack/fable/mplapack_${mplib}.h.in mplapack_${mplib}.h > ~/mplapack/include/mplapack_${mplib}.h
+    cat ~/mplapack/mplapack/reference/mplapack_${mplib}.h.in mplapack_${mplib}.h > ~/mplapack/include/mplapack_${mplib}.h
     rm mplapack_${mplib}.h
     echo "#endif" >> ~/mplapack/include/mplapack_${mplib}.h
 
