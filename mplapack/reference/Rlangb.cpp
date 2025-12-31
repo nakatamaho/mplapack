@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,36 +26,18 @@
  *
  */
 
+// Derived from LAPACK routine DLANGB.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 REAL Rlangb(const char *norm, INTEGER const n, INTEGER const kl, INTEGER const ku, REAL *ab, INTEGER const ldab, REAL *work) {
     REAL return_value = 0.0;
-    //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    // =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
     const REAL zero = 0.0;
     REAL value = 0.0;
@@ -72,7 +54,7 @@ REAL Rlangb(const char *norm, INTEGER const n, INTEGER const kl, INTEGER const k
         value = zero;
     } else if (Mlsame(norm, "M")) {
         //
-        //        Find max(abs(A(i,j))).
+        // Find max(abs(A(i,j))).
         //
         value = zero;
         for (j = 1; j <= n; j = j + 1) {
@@ -85,7 +67,7 @@ REAL Rlangb(const char *norm, INTEGER const n, INTEGER const kl, INTEGER const k
         }
     } else if ((Mlsame(norm, "O")) || ((Mlsame(norm, "1")))) {
         //
-        //        Find norm1(A).
+        // Find norm1(A).
         //
         value = zero;
         for (j = 1; j <= n; j = j + 1) {
@@ -99,7 +81,7 @@ REAL Rlangb(const char *norm, INTEGER const n, INTEGER const kl, INTEGER const k
         }
     } else if (Mlsame(norm, "I")) {
         //
-        //        Find normI(A).
+        // Find normI(A).
         //
         for (i = 1; i <= n; i = i + 1) {
             work[i - 1] = zero;
@@ -119,10 +101,10 @@ REAL Rlangb(const char *norm, INTEGER const n, INTEGER const kl, INTEGER const k
         }
     } else if ((Mlsame(norm, "F")) || (Mlsame(norm, "E"))) {
         //
-        //        Find normF(A).
-        //        SSQ(1) is scale
-        //        SSQ(2) is sum-of-squares
-        //        For better accuracy, sum each column separately.
+        // Find normF(A).
+        // SSQ(1) is scale
+        // SSQ(2) is sum-of-squares
+        // For better accuracy, sum each column separately.
         //
         ssq[1 - 1] = zero;
         ssq[2 - 1] = one;
@@ -140,6 +122,6 @@ REAL Rlangb(const char *norm, INTEGER const n, INTEGER const kl, INTEGER const k
     return_value = value;
     return return_value;
     //
-    //     End of Rlangb
+    // End of Rlangb
     //
 }

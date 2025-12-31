@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DSYEQUB.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -55,30 +62,7 @@ void Rsyequb(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL
     REAL smax = 0.0;
     REAL base = 0.0;
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     if (!(Mlsame(uplo, "U") || Mlsame(uplo, "L"))) {
@@ -96,7 +80,7 @@ void Rsyequb(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL
     up = Mlsame(uplo, "U");
     amax = zero;
     //
-    //     Quick return if possible.
+    // Quick return if possible.
     //
     if (n == 0) {
         scond = one;
@@ -160,7 +144,7 @@ void Rsyequb(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL
             }
         }
         //
-        //        avg = s^T beta / n
+        // avg = s^T beta / n
         avg = 0.0;
         for (i = 1; i <= n; i = i + 1) {
             avg += s[i - 1] * work[i - 1];

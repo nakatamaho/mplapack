@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine ZGGEVX.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -75,7 +82,7 @@ void Cggevx(const char *balanc, const char *jobvl, const char *jobvr, const char
     REAL temp = 0.0;
     INTEGER jr = 0;
     //
-    //     Decode the input arguments
+    // Decode the input arguments
     //
     if (Mlsame(jobvl, "N")) {
         ijobvl = 1;
@@ -106,7 +113,7 @@ void Cggevx(const char *balanc, const char *jobvl, const char *jobvr, const char
     wantsv = Mlsame(sense, "V");
     wantsb = Mlsame(sense, "B");
     //
-    //     Test the input arguments
+    // Test the input arguments
     //
     info = 0;
     lquery = (lwork == -1);
@@ -130,13 +137,13 @@ void Cggevx(const char *balanc, const char *jobvl, const char *jobvr, const char
         info = -15;
     }
     //
-    //     Compute workspace
-    //      (Note: Comments in the code beginning "Workspace:" describe the
-    //       minimal amount of workspace needed at that point in the code,
-    //       as well as the preferred amount for good performance.
-    //       NB refers to the optimal block size for the immediately
-    //       following subroutine, as returned by ILAENV. The workspace is
-    //       computed assuming ILO = 1 and IHI = N, the worst case.)
+    // Compute workspace
+    // (Note: Comments in the code beginning "Workspace:" describe the
+    // minimal amount of workspace needed at that point in the code,
+    // as well as the preferred amount for good performance.
+    // NB refers to the optimal block size for the immediately
+    // following subroutine, as returned by iMlaenv. The workspace is
+    // computed assuming ILO = 1 and IHI = N, the worst case.)
     //
     if (info == 0) {
         if (n == 0) {
@@ -170,13 +177,13 @@ void Cggevx(const char *balanc, const char *jobvl, const char *jobvr, const char
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0) {
         return;
     }
     //
-    //     Get machine constants
+    // Get machine constants
     //
     eps = Rlamch("P");
     smlnum = Rlamch("S");
@@ -184,7 +191,7 @@ void Cggevx(const char *balanc, const char *jobvl, const char *jobvr, const char
     smlnum = sqrt(smlnum) / eps;
     bignum = one / smlnum;
     //
-    //     Scale A if max element outside range [SMLNUM,BIGNUM]
+    // Scale A if max element outside range [SMLNUM,BIGNUM]
     //
     anrm = Clange("M", n, n, a, lda, rwork);
     ilascl = false;
@@ -199,7 +206,7 @@ void Cggevx(const char *balanc, const char *jobvl, const char *jobvr, const char
         Clascl("G", 0, 0, anrm, anrmto, n, n, a, lda, ierr);
     }
     //
-    //     Scale B if max element outside range [SMLNUM,BIGNUM]
+    // Scale B if max element outside range [SMLNUM,BIGNUM]
     //
     bnrm = Clange("M", n, n, b, ldb, rwork);
     ilbscl = false;
@@ -214,12 +221,12 @@ void Cggevx(const char *balanc, const char *jobvl, const char *jobvr, const char
         Clascl("G", 0, 0, bnrm, bnrmto, n, n, b, ldb, ierr);
     }
     //
-    //     Permute and/or balance the matrix pair (A,B)
-    //     (Real Workspace: need 6*N if BALANC = 'S' or 'B', 1 otherwise)
+    // Permute and/or balance the matrix pair (A,B)
+    // (Real Workspace: need 6*N if BALANC = 'S' or 'B', 1 otherwise)
     //
     Cggbal(balanc, n, a, lda, b, ldb, ilo, ihi, lscale, rscale, rwork, ierr);
     //
-    //     Compute ABNRM and BBNRM
+    // Compute ABNRM and BBNRM
     //
     abnrm = Clange("1", n, n, a, lda, &rwork[1 - 1]);
     if (ilascl) {
@@ -235,8 +242,8 @@ void Cggevx(const char *balanc, const char *jobvl, const char *jobvr, const char
         bbnrm = rwork[1 - 1];
     }
     //
-    //     Reduce B to triangular form (QR decomposition of B)
-    //     (Complex Workspace: need N, prefer N*NB )
+    // Reduce B to triangular form (QR decomposition of B)
+    // (Complex Workspace: need N, prefer N*NB )
     //
     irows = ihi + 1 - ilo;
     if (ilv || !wantsn) {
@@ -248,13 +255,13 @@ void Cggevx(const char *balanc, const char *jobvl, const char *jobvr, const char
     iwrk = itau + irows;
     Cgeqrf(irows, icols, &b[(ilo - 1) + (ilo - 1) * ldb], ldb, &work[itau - 1], &work[iwrk - 1], lwork + 1 - iwrk, ierr);
     //
-    //     Apply the unitary transformation to A
-    //     (Complex Workspace: need N, prefer N*NB)
+    // Apply the unitary transformation to A
+    // (Complex Workspace: need N, prefer N*NB)
     //
     Cunmqr("L", "C", irows, icols, irows, &b[(ilo - 1) + (ilo - 1) * ldb], ldb, &work[itau - 1], &a[(ilo - 1) + (ilo - 1) * lda], lda, &work[iwrk - 1], lwork + 1 - iwrk, ierr);
     //
-    //     Initialize VL and/or VR
-    //     (Workspace: need N, prefer N*NB)
+    // Initialize VL and/or VR
+    // (Workspace: need N, prefer N*NB)
     //
     if (ilvl) {
         Claset("Full", n, n, czero, cone, vl, ldvl);
@@ -268,22 +275,22 @@ void Cggevx(const char *balanc, const char *jobvl, const char *jobvr, const char
         Claset("Full", n, n, czero, cone, vr, ldvr);
     }
     //
-    //     Reduce to generalized Hessenberg form
-    //     (Workspace: none needed)
+    // Reduce to generalized Hessenberg form
+    // (Workspace: none needed)
     //
     if (ilv || !wantsn) {
         //
-        //        Eigenvectors requested -- work on whole matrix.
+        // Eigenvectors requested -- work on whole matrix.
         //
         Cgghrd(jobvl, jobvr, n, ilo, ihi, a, lda, b, ldb, vl, ldvl, vr, ldvr, ierr);
     } else {
         Cgghrd("N", "N", irows, 1, irows, &a[(ilo - 1) + (ilo - 1) * lda], lda, &b[(ilo - 1) + (ilo - 1) * ldb], ldb, vl, ldvl, vr, ldvr, ierr);
     }
     //
-    //     Perform QZ algorithm (Compute eigenvalues, and optionally, the
-    //     Schur forms and Schur vectors)
-    //     (Complex Workspace: need N)
-    //     (Real Workspace: need N)
+    // Perform QZ algorithm (Compute eigenvalues, and optionally, the
+    // Schur forms and Schur vectors)
+    // (Complex Workspace: need N)
+    // (Real Workspace: need N)
     //
     iwrk = itau;
     if (ilv || !wantsn) {
@@ -304,11 +311,11 @@ void Cggevx(const char *balanc, const char *jobvl, const char *jobvr, const char
         goto statement_90;
     }
     //
-    //     Compute Eigenvectors and estimate condition numbers if desired
-    //     ZTGEVC: (Complex Workspace: need 2*N )
-    //             (Real Workspace:    need 2*N )
-    //     ZTGSNA: (Complex Workspace: need 2*N*N if SENSE='V' or 'B')
-    //             (Integer Workspace: need N+2 )
+    // Compute Eigenvectors and estimate condition numbers if desired
+    // Ctgevc: (Complex Workspace: need 2*N )
+    // (Real Workspace:    need 2*N )
+    // Ctgsna: (Complex Workspace: need 2*N*N if SENSE='V' or 'B')
+    // (Integer Workspace: need N+2 )
     //
     if (ilv || !wantsn) {
         if (ilv) {
@@ -331,14 +338,14 @@ void Cggevx(const char *balanc, const char *jobvl, const char *jobvr, const char
         //
         if (!wantsn) {
             //
-            //           compute eigenvectors (DTGEVC) and estimate condition
-            //           numbers (DTGSNA). Note that the definition of the condition
-            //           number is not invariant under transformation (u,v) to
-            //           (Q*u, Z*v), where (u,v) are eigenvectors of the generalized
-            //           Schur form (S,T), Q and Z are orthogonal matrices. In order
-            //           to avoid using extra 2*N*N workspace, we have to
-            //           re-calculate eigenvectors and estimate the condition numbers
-            //           one at a time.
+            // compute eigenvectors (Rtgevc) and estimate condition
+            // numbers (Rtgsna). Note that the definition of the condition
+            // number is not invariant under transformation (u,v) to
+            // (Q*u, Z*v), where (u,v) are eigenvectors of the generalized
+            // Schur form (S,T), Q and Z are orthogonal matrices. In order
+            // to avoid using extra 2*N*N workspace, we have to
+            // re-calculate eigenvectors and estimate the condition numbers
+            // one at a time.
             //
             for (i = 1; i <= n; i = i + 1) {
                 //
@@ -364,8 +371,8 @@ void Cggevx(const char *balanc, const char *jobvl, const char *jobvr, const char
         }
     }
     //
-    //     Undo balancing on VL and VR and normalization
-    //     (Workspace: none needed)
+    // Undo balancing on VL and VR and normalization
+    // (Workspace: none needed)
     //
     if (ilvl) {
         Cggbak(balanc, "L", n, ilo, ihi, lscale, rscale, n, vl, ldvl, ierr);
@@ -404,7 +411,7 @@ void Cggevx(const char *balanc, const char *jobvl, const char *jobvr, const char
         }
     }
 //
-//     Undo scaling if necessary
+// Undo scaling if necessary
 //
 statement_90:
     //
@@ -418,6 +425,6 @@ statement_90:
     //
     work[1 - 1] = maxwrk;
     //
-    //     End of Cggevx
+    // End of Cggevx
     //
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DLARRK.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -48,14 +55,14 @@ void Rlarrk(INTEGER const n, INTEGER const iw, REAL const gl, REAL const gu, REA
     const REAL zero = 0.0;
     INTEGER i = 0;
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n <= 0) {
         info = 0;
         return;
     }
     //
-    //     Get machine constants
+    // Get machine constants
     eps = Rlamch("P");
     //
     tnorm = max(abs(gl), abs(gu));
@@ -74,7 +81,7 @@ void Rlarrk(INTEGER const n, INTEGER const iw, REAL const gl, REAL const gu, REA
 //
 statement_10:
     //
-    //     Check if interval converged or maximum number of iterations reached
+    // Check if interval converged or maximum number of iterations reached
     //
     tmp1 = abs(right - left);
     tmp2 = max(abs(right), abs(left));
@@ -86,7 +93,7 @@ statement_10:
         goto statement_30;
     }
     //
-    //     Count number of negative pivots for mid-point
+    // Count number of negative pivots for mid-point
     //
     it++;
     mid = half * (left + right);
@@ -118,11 +125,11 @@ statement_10:
 //
 statement_30:
     //
-    //     Converged or maximum number of iterations reached
+    // Converged or maximum number of iterations reached
     //
     w = half * (left + right);
     werr = half * abs(right - left);
     //
-    //     End of Rlarrk
+    // End of Rlarrk
     //
 }

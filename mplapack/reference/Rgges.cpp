@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DGGES.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -70,7 +77,7 @@ void Rgges(const char *jobvsl, const char *jobvsr, const char *sort, bool (*selc
     INTEGER ip = 0;
     bool cursl = false;
     //
-    //     Decode the input arguments
+    // Decode the input arguments
     //
     if (Mlsame(jobvsl, "N")) {
         ijobvl = 1;
@@ -96,7 +103,7 @@ void Rgges(const char *jobvsl, const char *jobvsr, const char *sort, bool (*selc
     //
     wantst = Mlsame(sort, "S");
     //
-    //     Test the input arguments
+    // Test the input arguments
     //
     info = 0;
     lquery = (lwork == -1);
@@ -118,12 +125,12 @@ void Rgges(const char *jobvsl, const char *jobvsr, const char *sort, bool (*selc
         info = -17;
     }
     //
-    //     Compute workspace
-    //      (Note: Comments in the code beginning "Workspace:" describe the
-    //       minimal amount of workspace needed at that point in the code,
-    //       as well as the preferred amount for good performance.
-    //       NB refers to the optimal block size for the immediately
-    //       following subroutine, as returned by iMlaenv.)
+    // Compute workspace
+    // (Note: Comments in the code beginning "Workspace:" describe the
+    // minimal amount of workspace needed at that point in the code,
+    // as well as the preferred amount for good performance.
+    // NB refers to the optimal block size for the immediately
+    // following subroutine, as returned by iMlaenv.)
     //
     if (info == 0) {
         if (n > 0) {
@@ -151,14 +158,14 @@ void Rgges(const char *jobvsl, const char *jobvsr, const char *sort, bool (*selc
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0) {
         sdim = 0;
         return;
     }
     //
-    //     Get machine constants
+    // Get machine constants
     //
     eps = Rlamch("P");
     safmin = Rlamch("S");
@@ -166,7 +173,7 @@ void Rgges(const char *jobvsl, const char *jobvsr, const char *sort, bool (*selc
     smlnum = sqrt(safmin) / eps;
     bignum = one / smlnum;
     //
-    //     Scale A if max element outside range [SMLNUM,BIGNUM]
+    // Scale A if max element outside range [SMLNUM,BIGNUM]
     //
     anrm = Rlange("M", n, n, a, lda, work);
     ilascl = false;
@@ -181,7 +188,7 @@ void Rgges(const char *jobvsl, const char *jobvsr, const char *sort, bool (*selc
         Rlascl("G", 0, 0, anrm, anrmto, n, n, a, lda, ierr);
     }
     //
-    //     Scale B if max element outside range [SMLNUM,BIGNUM]
+    // Scale B if max element outside range [SMLNUM,BIGNUM]
     //
     bnrm = Rlange("M", n, n, b, ldb, work);
     ilbscl = false;
@@ -196,16 +203,16 @@ void Rgges(const char *jobvsl, const char *jobvsr, const char *sort, bool (*selc
         Rlascl("G", 0, 0, bnrm, bnrmto, n, n, b, ldb, ierr);
     }
     //
-    //     Permute the matrix to make it more nearly triangular
-    //     (Workspace: need 6*N + 2*N space for storing balancing factors)
+    // Permute the matrix to make it more nearly triangular
+    // (Workspace: need 6*N + 2*N space for storing balancing factors)
     //
     ileft = 1;
     iright = n + 1;
     iwrk = iright + n;
     Rggbal("P", n, a, lda, b, ldb, ilo, ihi, &work[ileft - 1], &work[iright - 1], &work[iwrk - 1], ierr);
     //
-    //     Reduce B to triangular form (QR decomposition of B)
-    //     (Workspace: need N, prefer N*NB)
+    // Reduce B to triangular form (QR decomposition of B)
+    // (Workspace: need N, prefer N*NB)
     //
     irows = ihi + 1 - ilo;
     icols = n + 1 - ilo;
@@ -213,13 +220,13 @@ void Rgges(const char *jobvsl, const char *jobvsr, const char *sort, bool (*selc
     iwrk = itau + irows;
     Rgeqrf(irows, icols, &b[(ilo - 1) + (ilo - 1) * ldb], ldb, &work[itau - 1], &work[iwrk - 1], lwork + 1 - iwrk, ierr);
     //
-    //     Apply the orthogonal transformation to matrix A
-    //     (Workspace: need N, prefer N*NB)
+    // Apply the orthogonal transformation to matrix A
+    // (Workspace: need N, prefer N*NB)
     //
     Rormqr("L", "T", irows, icols, irows, &b[(ilo - 1) + (ilo - 1) * ldb], ldb, &work[itau - 1], &a[(ilo - 1) + (ilo - 1) * lda], lda, &work[iwrk - 1], lwork + 1 - iwrk, ierr);
     //
-    //     Initialize VSL
-    //     (Workspace: need N, prefer N*NB)
+    // Initialize VSL
+    // (Workspace: need N, prefer N*NB)
     //
     if (ilvsl) {
         Rlaset("Full", n, n, zero, one, vsl, ldvsl);
@@ -229,19 +236,19 @@ void Rgges(const char *jobvsl, const char *jobvsr, const char *sort, bool (*selc
         Rorgqr(irows, irows, irows, &vsl[(ilo - 1) + (ilo - 1) * ldvsl], ldvsl, &work[itau - 1], &work[iwrk - 1], lwork + 1 - iwrk, ierr);
     }
     //
-    //     Initialize VSR
+    // Initialize VSR
     //
     if (ilvsr) {
         Rlaset("Full", n, n, zero, one, vsr, ldvsr);
     }
     //
-    //     Reduce to generalized Hessenberg form
-    //     (Workspace: none needed)
+    // Reduce to generalized Hessenberg form
+    // (Workspace: none needed)
     //
     Rgghrd(jobvsl, jobvsr, n, ilo, ihi, a, lda, b, ldb, vsl, ldvsl, vsr, ldvsr, ierr);
     //
-    //     Perform QZ algorithm, computing Schur vectors if desired
-    //     (Workspace: need N)
+    // Perform QZ algorithm, computing Schur vectors if desired
+    // (Workspace: need N)
     //
     iwrk = itau;
     Rhgeqz("S", jobvsl, jobvsr, n, ilo, ihi, a, lda, b, ldb, alphar, alphai, beta, vsl, ldvsl, vsr, ldvsr, &work[iwrk - 1], lwork + 1 - iwrk, ierr);
@@ -256,13 +263,13 @@ void Rgges(const char *jobvsl, const char *jobvsr, const char *sort, bool (*selc
         goto statement_50;
     }
     //
-    //     Sort eigenvalues ALPHA/BETA if desired
-    //     (Workspace: need 4*N+16 )
+    // Sort eigenvalues ALPHA/BETA if desired
+    // (Workspace: need 4*N+16 )
     //
     sdim = 0;
     if (wantst) {
         //
-        //        Undo scaling on eigenvalues before SELCTGing
+        // Undo scaling on eigenvalues before SELCTGing
         //
         if (ilascl) {
             Rlascl("G", 0, 0, anrmto, anrm, n, 1, alphar, n, ierr);
@@ -272,7 +279,7 @@ void Rgges(const char *jobvsl, const char *jobvsr, const char *sort, bool (*selc
             Rlascl("G", 0, 0, bnrmto, bnrm, n, 1, beta, n, ierr);
         }
         //
-        //        Select eigenvalues
+        // Select eigenvalues
         //
         for (i = 1; i <= n; i = i + 1) {
             bwork[i - 1] = selctg(alphar[i - 1], alphai[i - 1], beta[i - 1]);
@@ -285,8 +292,8 @@ void Rgges(const char *jobvsl, const char *jobvsr, const char *sort, bool (*selc
         //
     }
     //
-    //     Apply back-permutation to VSL and VSR
-    //     (Workspace: none needed)
+    // Apply back-permutation to VSL and VSR
+    // (Workspace: none needed)
     //
     if (ilvsl) {
         Rggbak("P", "L", n, ilo, ihi, &work[ileft - 1], &work[iright - 1], n, vsl, ldvsl, ierr);
@@ -296,9 +303,9 @@ void Rgges(const char *jobvsl, const char *jobvsr, const char *sort, bool (*selc
         Rggbak("P", "R", n, ilo, ihi, &work[ileft - 1], &work[iright - 1], n, vsr, ldvsr, ierr);
     }
     //
-    //     Check if unscaling would cause over/underflow, if so, rescale
-    //     (ALPHAR(I),ALPHAI(I),BETA(I)) so BETA(I) is on the order of
-    //     B(I,I) and ALPHAR(I) and ALPHAI(I) are on the order of A(I,I)
+    // Check if unscaling would cause over/underflow, if so, rescale
+    // (ALPHAR(I),ALPHAI(I),BETA(I)) so BETA(I) is on the order of
+    // B(I,I) and ALPHAR(I) and ALPHAI(I) are on the order of A(I,I)
     //
     if (ilascl) {
         for (i = 1; i <= n; i = i + 1) {
@@ -331,7 +338,7 @@ void Rgges(const char *jobvsl, const char *jobvsr, const char *sort, bool (*selc
         }
     }
     //
-    //     Undo scaling
+    // Undo scaling
     //
     if (ilascl) {
         Rlascl("H", 0, 0, anrmto, anrm, n, n, a, lda, ierr);
@@ -346,7 +353,7 @@ void Rgges(const char *jobvsl, const char *jobvsr, const char *sort, bool (*selc
     //
     if (wantst) {
         //
-        //        Check if reordering is correct
+        // Check if reordering is correct
         //
         lastsl = true;
         lst2sl = true;
@@ -365,7 +372,7 @@ void Rgges(const char *jobvsl, const char *jobvsr, const char *sort, bool (*selc
             } else {
                 if (ip == 1) {
                     //
-                    //                 Last eigenvalue of conjugate pair
+                    // Last eigenvalue of conjugate pair
                     //
                     cursl = cursl || lastsl;
                     lastsl = cursl;
@@ -378,7 +385,7 @@ void Rgges(const char *jobvsl, const char *jobvsr, const char *sort, bool (*selc
                     }
                 } else {
                     //
-                    //                 First eigenvalue of conjugate pair
+                    // First eigenvalue of conjugate pair
                     //
                     ip = 1;
                 }
@@ -393,6 +400,6 @@ statement_50:
     //
     work[1 - 1] = maxwrk;
     //
-    //     End of Rgges
+    // End of Rgges
     //
 }

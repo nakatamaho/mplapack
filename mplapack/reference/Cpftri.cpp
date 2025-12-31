@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,12 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine ZPFTRI.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Cpftri(const char *transr, const char *uplo, INTEGER const n, COMPLEX *a, INTEGER &info) {
     //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     bool normaltransr = Mlsame(transr, "N");
@@ -48,21 +55,21 @@ void Cpftri(const char *transr, const char *uplo, INTEGER const n, COMPLEX *a, I
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0) {
         return;
     }
     //
-    //     Invert the triangular Cholesky factor U or L.
+    // Invert the triangular Cholesky factor U or L.
     //
     Ctftri(transr, uplo, "N", n, a, info);
     if (info > 0) {
         return;
     }
     //
-    //     If N is odd, set NISODD = .TRUE.
-    //     If N is even, set K = N/2 and NISODD = .FALSE.
+    // If N is odd, set NISODD = .TRUE.
+    // If N is even, set K = N/2 and NISODD = .FALSE.
     //
     INTEGER k = 0;
     bool nisodd = false;
@@ -73,7 +80,7 @@ void Cpftri(const char *transr, const char *uplo, INTEGER const n, COMPLEX *a, I
         nisodd = true;
     }
     //
-    //     Set N1 and N2 depending on LOWER
+    // Set N1 and N2 depending on LOWER
     //
     INTEGER n2 = 0;
     INTEGER n1 = 0;
@@ -85,24 +92,24 @@ void Cpftri(const char *transr, const char *uplo, INTEGER const n, COMPLEX *a, I
         n2 = n - n1;
     }
     //
-    //     Start execution of triangular matrix multiply: inv(U)*inv(U)^C or
-    //     inv(L)^C*inv(L). There are eight cases.
+    // Start execution of triangular matrix multiply: inv(U)*inv(U)^C or
+    // inv(L)^C*inv(L). There are eight cases.
     //
     const REAL one = 1.0;
     const COMPLEX cone = COMPLEX(1.0, 0.0);
     if (nisodd) {
         //
-        //        N is odd
+        // N is odd
         //
         if (normaltransr) {
             //
-            //           N is odd and TRANSR = 'N'
+            // N is odd and TRANSR = 'N'
             //
             if (lower) {
                 //
-                //              SRPA for LOWER, NORMAL and N is odd ( a(0:n-1,0:N1-1) )
-                //              T1 -> a(0,0), T2 -> a(0,1), S -> a(N1,0)
-                //              T1 -> a(0), T2 -> a(n), S -> a(N1)
+                // SRPA for LOWER, NORMAL and N is odd ( a(0:n-1,0:N1-1) )
+                // T1 -> a(0,0), T2 -> a(0,1), S -> a(N1,0)
+                // T1 -> a(0), T2 -> a(n), S -> a(N1)
                 //
                 Clauum("L", n1, &a[0], n, info);
                 Cherk("L", "C", n1, n2, one, &a[n1], n, one, &a[0], n);
@@ -111,9 +118,9 @@ void Cpftri(const char *transr, const char *uplo, INTEGER const n, COMPLEX *a, I
                 //
             } else {
                 //
-                //              SRPA for UPPER, NORMAL and N is odd ( a(0:n-1,0:N2-1)
-                //              T1 -> a(N1+1,0), T2 -> a(N1,0), S -> a(0,0)
-                //              T1 -> a(N2), T2 -> a(N1), S -> a(0)
+                // SRPA for UPPER, NORMAL and N is odd ( a(0:n-1,0:N2-1)
+                // T1 -> a(N1+1,0), T2 -> a(N1,0), S -> a(0,0)
+                // T1 -> a(N2), T2 -> a(N1), S -> a(0)
                 //
                 Clauum("L", n1, &a[n2], n, info);
                 Cherk("L", "N", n1, n2, one, &a[0], n, one, &a[n2], n);
@@ -124,12 +131,12 @@ void Cpftri(const char *transr, const char *uplo, INTEGER const n, COMPLEX *a, I
             //
         } else {
             //
-            //           N is odd and TRANSR = 'C'
+            // N is odd and TRANSR = 'C'
             //
             if (lower) {
                 //
-                //              SRPA for LOWER, TRANSPOSE, and N is odd
-                //              T1 -> a(0), T2 -> a(1), S -> a(0+N1*N1)
+                // SRPA for LOWER, TRANSPOSE, and N is odd
+                // T1 -> a(0), T2 -> a(1), S -> a(0+N1*N1)
                 //
                 Clauum("U", n1, &a[0], n1, info);
                 Cherk("U", "N", n1, n2, one, &a[(n1 * n1)], n1, one, &a[0], n1);
@@ -138,8 +145,8 @@ void Cpftri(const char *transr, const char *uplo, INTEGER const n, COMPLEX *a, I
                 //
             } else {
                 //
-                //              SRPA for UPPER, TRANSPOSE, and N is odd
-                //              T1 -> a(0+N2*N2), T2 -> a(0+N1*N2), S -> a(0)
+                // SRPA for UPPER, TRANSPOSE, and N is odd
+                // T1 -> a(0+N2*N2), T2 -> a(0+N1*N2), S -> a(0)
                 //
                 Clauum("U", n1, &a[(n2 * n2)], n2, info);
                 Cherk("U", "C", n1, n2, one, &a[0], n2, one, &a[(n2 * n2)], n2);
@@ -152,17 +159,17 @@ void Cpftri(const char *transr, const char *uplo, INTEGER const n, COMPLEX *a, I
         //
     } else {
         //
-        //        N is even
+        // N is even
         //
         if (normaltransr) {
             //
-            //           N is even and TRANSR = 'N'
+            // N is even and TRANSR = 'N'
             //
             if (lower) {
                 //
-                //              SRPA for LOWER, NORMAL, and N is even ( a(0:n,0:k-1) )
-                //              T1 -> a(1,0), T2 -> a(0,0), S -> a(k+1,0)
-                //              T1 -> a(1), T2 -> a(0), S -> a(k+1)
+                // SRPA for LOWER, NORMAL, and N is even ( a(0:n,0:k-1) )
+                // T1 -> a(1,0), T2 -> a(0,0), S -> a(k+1,0)
+                // T1 -> a(1), T2 -> a(0), S -> a(k+1)
                 //
                 Clauum("L", k, &a[1], n + 1, info);
                 Cherk("L", "C", k, k, one, &a[(k + 1)], n + 1, one, &a[1], n + 1);
@@ -171,9 +178,9 @@ void Cpftri(const char *transr, const char *uplo, INTEGER const n, COMPLEX *a, I
                 //
             } else {
                 //
-                //              SRPA for UPPER, NORMAL, and N is even ( a(0:n,0:k-1) )
-                //              T1 -> a(k+1,0) ,  T2 -> a(k,0),   S -> a(0,0)
-                //              T1 -> a(k+1), T2 -> a(k), S -> a(0)
+                // SRPA for UPPER, NORMAL, and N is even ( a(0:n,0:k-1) )
+                // T1 -> a(k+1,0) ,  T2 -> a(k,0),   S -> a(0,0)
+                // T1 -> a(k+1), T2 -> a(k), S -> a(0)
                 //
                 Clauum("L", k, &a[(k + 1)], n + 1, info);
                 Cherk("L", "N", k, k, one, &a[0], n + 1, one, &a[(k + 1)], n + 1);
@@ -184,13 +191,13 @@ void Cpftri(const char *transr, const char *uplo, INTEGER const n, COMPLEX *a, I
             //
         } else {
             //
-            //           N is even and TRANSR = 'C'
+            // N is even and TRANSR = 'C'
             //
             if (lower) {
                 //
-                //              SRPA for LOWER, TRANSPOSE, and N is even (see paper)
-                //              T1 -> B(0,1), T2 -> B(0,0), S -> B(0,k+1),
-                //              T1 -> a(0+k), T2 -> a(0+0), S -> a(0+k*(k+1)); lda=k
+                // SRPA for LOWER, TRANSPOSE, and N is even (see paper)
+                // T1 -> B(0,1), T2 -> B(0,0), S -> B(0,k+1),
+                // T1 -> a(0+k), T2 -> a(0+0), S -> a(0+k*(k+1)); lda=k
                 //
                 Clauum("U", k, &a[k], k, info);
                 Cherk("U", "N", k, k, one, &a[(k * (k + 1))], k, one, &a[k], k);
@@ -199,9 +206,9 @@ void Cpftri(const char *transr, const char *uplo, INTEGER const n, COMPLEX *a, I
                 //
             } else {
                 //
-                //              SRPA for UPPER, TRANSPOSE, and N is even (see paper)
-                //              T1 -> B(0,k+1),     T2 -> B(0,k),   S -> B(0,0),
-                //              T1 -> a(0+k*(k+1)), T2 -> a(0+k*k), S -> a(0+0)); lda=k
+                // SRPA for UPPER, TRANSPOSE, and N is even (see paper)
+                // T1 -> B(0,k+1),     T2 -> B(0,k),   S -> B(0,0),
+                // T1 -> a(0+k*(k+1)), T2 -> a(0+k*k), S -> a(0+0)); lda=k
                 //
                 Clauum("U", k, &a[(k * (k + 1))], k, info);
                 Cherk("U", "C", k, k, one, &a[0], k, one, &a[(k * (k + 1))], k);
@@ -214,6 +221,6 @@ void Cpftri(const char *transr, const char *uplo, INTEGER const n, COMPLEX *a, I
         //
     }
     //
-    //     End of Cpftri
+    // End of Cpftri
     //
 }

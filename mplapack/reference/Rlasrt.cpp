@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DLASRT.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -88,7 +95,7 @@ void Rlasrt(const char *id, INTEGER const n, REAL *d, INTEGER &info) {
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n <= 1) {
         return;
@@ -103,11 +110,11 @@ statement_10:
     stkpnt = stkpnt - 1;
     if (endd - start <= select && endd - start > 0) {
         //
-        //        Do Insertion sort on D( START:ENDD )
+        // Do Insertion sort on D( START:ENDD )
         //
         if (dir == 0) {
             //
-            //           Sort into decreasing order
+            // Sort into decreasing order
             //
             for (i = start + 1; i <= endd; i = i + 1) {
                 for (j = i; j >= start + 1; j = j - 1) {
@@ -124,7 +131,7 @@ statement_10:
             //
         } else {
             //
-            //           Sort into increasing order
+            // Sort into increasing order
             //
             for (i = start + 1; i <= endd; i = i + 1) {
                 for (j = i; j >= start + 1; j = j - 1) {
@@ -143,9 +150,9 @@ statement_10:
         //
     } else if (endd - start > select) {
         //
-        //        Partition D( START:ENDD ) and stack parts, largest one first
+        // Partition D( START:ENDD ) and stack parts, largest one first
         //
-        //        Choose partition entry as median of 3
+        // Choose partition entry as median of 3
         //
         d1 = d[start - 1];
         d2 = d[endd - 1];
@@ -171,7 +178,7 @@ statement_10:
         //
         if (dir == 0) {
             //
-            //           Sort into decreasing order
+            // Sort into decreasing order
             //
             i = start - 1;
             j = endd + 1;
@@ -209,7 +216,7 @@ statement_10:
             }
         } else {
             //
-            //           Sort into increasing order
+            // Sort into increasing order
             //
             i = start - 1;
             j = endd + 1;
@@ -251,6 +258,6 @@ statement_10:
         goto statement_10;
     }
     //
-    //     End of Rlasrt
+    // End of Rlasrt
     //
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZGECON.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -47,36 +54,7 @@ void Cgecon(const char *norm, INTEGER const n, COMPLEX *a, INTEGER const lda, RE
     REAL scale = 0.0;
     INTEGER ix = 0;
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Statement Functions ..
-    //     ..
-    //     .. Statement Function definitions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     onenrm = Mlsame(norm, "1") || Mlsame(norm, "O");
@@ -94,7 +72,7 @@ void Cgecon(const char *norm, INTEGER const n, COMPLEX *a, INTEGER const lda, RE
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     rcond = zero;
     if (n == 0) {
@@ -106,7 +84,7 @@ void Cgecon(const char *norm, INTEGER const n, COMPLEX *a, INTEGER const lda, RE
     //
     smlnum = Rlamch("Safe minimum");
     //
-    //     Estimate the norm of inv(A).
+    // Estimate the norm of inv(A).
     //
     ainvnm = zero;
     normin = 'N';
@@ -121,25 +99,25 @@ statement_10:
     if (kase != 0) {
         if (kase == kase1) {
             //
-            //           Multiply by inv(L).
+            // Multiply by inv(L).
             //
             Clatrs("Lower", "No transpose", "Unit", &normin, n, a, lda, work, sl, rwork, info);
             //
-            //           Multiply by inv(U).
+            // Multiply by inv(U).
             //
             Clatrs("Upper", "No transpose", "Non-unit", &normin, n, a, lda, work, su, &rwork[(n + 1) - 1], info);
         } else {
             //
-            //           Multiply by inv(U**H).
+            // Multiply by inv(U**H).
             //
             Clatrs("Upper", "Conjugate transpose", "Non-unit", &normin, n, a, lda, work, su, &rwork[(n + 1) - 1], info);
             //
-            //           Multiply by inv(L**H).
+            // Multiply by inv(L**H).
             //
             Clatrs("Lower", "Conjugate transpose", "Unit", &normin, n, a, lda, work, sl, rwork, info);
         }
         //
-        //        Divide X by 1/(SL*SU) if doing so will not cause overflow.
+        // Divide X by 1/(SL*SU) if doing so will not cause overflow.
         //
         scale = sl * su;
         normin = 'Y';
@@ -153,7 +131,7 @@ statement_10:
         goto statement_10;
     }
     //
-    //     Compute the estimate of the reciprocal condition number.
+    // Compute the estimate of the reciprocal condition number.
     //
     if (ainvnm != zero) {
         rcond = (one / ainvnm) / anorm;
@@ -161,6 +139,6 @@ statement_10:
 //
 statement_20:;
     //
-    //     End of Cgecon
+    // End of Cgecon
     //
 }

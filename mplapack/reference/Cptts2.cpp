@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZPTTS2.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -33,26 +40,7 @@ void Cptts2(INTEGER const iuplo, INTEGER const n, INTEGER const nrhs, REAL *d, C
     INTEGER j = 0;
     INTEGER i = 0;
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n <= 1) {
         if (n == 1) {
@@ -63,20 +51,20 @@ void Cptts2(INTEGER const iuplo, INTEGER const n, INTEGER const nrhs, REAL *d, C
     //
     if (iuplo == 1) {
         //
-        //        Solve A * X = B using the factorization A = U**H *D*U,
-        //        overwriting each right hand side vector with its solution.
+        // Solve A * X = B using the factorization A = U**H *D*U,
+        // overwriting each right hand side vector with its solution.
         //
         if (nrhs <= 2) {
             j = 1;
         statement_10:
             //
-            //           Solve U**H * x = b.
+            // Solve U**H * x = b.
             //
             for (i = 2; i <= n; i = i + 1) {
                 b[(i - 1) + (j - 1) * ldb] = b[(i - 1) + (j - 1) * ldb] - b[((i - 1) - 1) + (j - 1) * ldb] * conj(e[(i - 1) - 1]);
             }
             //
-            //           Solve D * U * x = b.
+            // Solve D * U * x = b.
             //
             for (i = 1; i <= n; i = i + 1) {
                 b[(i - 1) + (j - 1) * ldb] = b[(i - 1) + (j - 1) * ldb] / d[i - 1];
@@ -91,13 +79,13 @@ void Cptts2(INTEGER const iuplo, INTEGER const n, INTEGER const nrhs, REAL *d, C
         } else {
             for (j = 1; j <= nrhs; j = j + 1) {
                 //
-                //              Solve U**H * x = b.
+                // Solve U**H * x = b.
                 //
                 for (i = 2; i <= n; i = i + 1) {
                     b[(i - 1) + (j - 1) * ldb] = b[(i - 1) + (j - 1) * ldb] - b[((i - 1) - 1) + (j - 1) * ldb] * conj(e[(i - 1) - 1]);
                 }
                 //
-                //              Solve D * U * x = b.
+                // Solve D * U * x = b.
                 //
                 b[(n - 1) + (j - 1) * ldb] = b[(n - 1) + (j - 1) * ldb] / d[n - 1];
                 for (i = n - 1; i >= 1; i = i - 1) {
@@ -107,20 +95,20 @@ void Cptts2(INTEGER const iuplo, INTEGER const n, INTEGER const nrhs, REAL *d, C
         }
     } else {
         //
-        //        Solve A * X = B using the factorization A = L*D*L**H,
-        //        overwriting each right hand side vector with its solution.
+        // Solve A * X = B using the factorization A = L*D*L**H,
+        // overwriting each right hand side vector with its solution.
         //
         if (nrhs <= 2) {
             j = 1;
         statement_80:
             //
-            //           Solve L * x = b.
+            // Solve L * x = b.
             //
             for (i = 2; i <= n; i = i + 1) {
                 b[(i - 1) + (j - 1) * ldb] = b[(i - 1) + (j - 1) * ldb] - b[((i - 1) - 1) + (j - 1) * ldb] * e[(i - 1) - 1];
             }
             //
-            //           Solve D * L**H * x = b.
+            // Solve D * L**H * x = b.
             //
             for (i = 1; i <= n; i = i + 1) {
                 b[(i - 1) + (j - 1) * ldb] = b[(i - 1) + (j - 1) * ldb] / d[i - 1];
@@ -135,13 +123,13 @@ void Cptts2(INTEGER const iuplo, INTEGER const n, INTEGER const nrhs, REAL *d, C
         } else {
             for (j = 1; j <= nrhs; j = j + 1) {
                 //
-                //              Solve L * x = b.
+                // Solve L * x = b.
                 //
                 for (i = 2; i <= n; i = i + 1) {
                     b[(i - 1) + (j - 1) * ldb] = b[(i - 1) + (j - 1) * ldb] - b[((i - 1) - 1) + (j - 1) * ldb] * e[(i - 1) - 1];
                 }
                 //
-                //              Solve D * L**H * x = b.
+                // Solve D * L**H * x = b.
                 //
                 b[(n - 1) + (j - 1) * ldb] = b[(n - 1) + (j - 1) * ldb] / d[n - 1];
                 for (i = n - 1; i >= 1; i = i - 1) {
@@ -151,6 +139,6 @@ void Cptts2(INTEGER const iuplo, INTEGER const n, INTEGER const nrhs, REAL *d, C
         }
     }
     //
-    //     End of Cptts2
+    // End of Cptts2
     //
 }

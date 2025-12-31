@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DLARRF.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -75,32 +82,9 @@ void Rlarrf(INTEGER const n, REAL *d, REAL *l, REAL *ld, INTEGER const clstrt, I
     const REAL maxgrowth2 = 8.e0;
     REAL rrr2 = 0.0;
     //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     info = 0;
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n <= 0) {
         return;
@@ -111,22 +95,22 @@ void Rlarrf(INTEGER const n, REAL *d, REAL *l, REAL *ld, INTEGER const clstrt, I
     shift = 0;
     forcer = false;
     //
-    //     Note that we cannot guarantee that for any of the shifts tried,
-    //     the factorization has a small or even moderate element growth.
-    //     There could be Ritz values at both ends of the cluster and despite
-    //     backing off, there are examples where all factorizations tried
-    //     (in IEEE mode, allowing zero pivots & infinities) have INFINITE
-    //     element growth.
-    //     For this reason, we should use PIVMIN in this subroutine so that at
-    //     least the L D L^T factorization exists. It can be checked afterwards
-    //     whether the element growth caused bad residuals/orthogonality.
+    // Note that we cannot guarantee that for any of the shifts tried,
+    // the factorization has a small or even moderate element growth.
+    // There could be Ritz values at both ends of the cluster and despite
+    // backing off, there are examples where all factorizations tried
+    // (in IEEE mode, allowing zero pivots & infinities) have INFINITE
+    // element growth.
+    // For this reason, we should use PIVMIN in this subroutine so that at
+    // least the L D L^T factorization exists. It can be checked afterwards
+    // whether the element growth caused bad residuals/orthogonality.
     //
-    //     Decide whether the code should accept the best among all
-    //     representations despite large element growth or signal INFO=1
-    //     Setting NOFAIL to .FALSE. for quick fix for bug 113
+    // Decide whether the code should accept the best among all
+    // representations despite large element growth or signal INFO=1
+    // Setting NOFAIL to .FALSE. for quick fix for bug 113
     nofail = false;
     //
-    //     Compute the average gap length of the cluster
+    // Compute the average gap length of the cluster
     clwdth = abs(w[clend - 1] - w[clstrt - 1]) + werr[clend - 1] + werr[clstrt - 1];
     avgap = clwdth / castREAL(clend - clstrt);
     mingap = min(clgapl, clgapr);
@@ -134,18 +118,18 @@ void Rlarrf(INTEGER const n, REAL *d, REAL *l, REAL *ld, INTEGER const clstrt, I
     lsigma = min(w[clstrt - 1], w[clend - 1]) - werr[clstrt - 1];
     rsigma = max(w[clstrt - 1], w[clend - 1]) + werr[clend - 1];
     //
-    //     Use a small fudge to make sure that we really shift to the outside
+    // Use a small fudge to make sure that we really shift to the outside
     lsigma = lsigma - abs(lsigma) * four * eps;
     rsigma += abs(rsigma) * four * eps;
     //
-    //     Compute upper bounds for how much to back off the initial shifts
+    // Compute upper bounds for how much to back off the initial shifts
     ldmax = quart * mingap + two * pivmin;
     rdmax = quart * mingap + two * pivmin;
     //
     ldelta = max(avgap, wgap[clstrt - 1]) / fact;
     rdelta = max(avgap, wgap[(clend - 1) - 1]) / fact;
     //
-    //     Initialize the record of the best representation found
+    // Initialize the record of the best representation found
     //
     s = Rlamch("S");
     smlgrowth = one / s;
@@ -153,7 +137,7 @@ void Rlarrf(INTEGER const n, REAL *d, REAL *l, REAL *ld, INTEGER const clstrt, I
     fail2 = castREAL(n - 1) * mingap / (spdiam * sqrt(eps));
     bestshift = lsigma;
     //
-    //     while (KTRY <= KTRYMAX)
+    // while (KTRY <= KTRYMAX)
     ktry = 0;
     growthbound = maxgrowth1 * spdiam;
 //
@@ -164,10 +148,10 @@ statement_5:
     ldelta = min(ldmax, ldelta);
     rdelta = min(rdmax, rdelta);
     //
-    //     Compute the element growth when shifting to both ends of the cluster
-    //     accept the shift if there is no element growth at one of the two ends
+    // Compute the element growth when shifting to both ends of the cluster
+    // accept the shift if there is no element growth at one of the two ends
     //
-    //     Left end
+    // Left end
     s = -lsigma;
     dplus[1 - 1] = d[1 - 1] + s;
     if (abs(dplus[1 - 1]) < pivmin) {
@@ -197,7 +181,7 @@ statement_5:
         goto statement_100;
     }
     //
-    //     Right end
+    // Right end
     s = -rsigma;
     work[1 - 1] = d[1 - 1] + s;
     if (abs(work[1 - 1]) < pivmin) {
@@ -251,11 +235,11 @@ statement_5:
         }
     }
     //
-    //     If we are here, both the left and the right shift led to
-    //     element growth. If the element growth is moderate, then
-    //     we may still accept the representation, if it passes a
-    //     refined test for RRR. This test supposes that no NaN occurred.
-    //     Moreover, we use the refined RRR test only for isolated clusters.
+    // If we are here, both the left and the right shift led to
+    // element growth. If the element growth is moderate, then
+    // we may still accept the representation, if it passes a
+    // refined test for RRR. This test supposes that no NaN occurred.
+    // Moreover, we use the refined RRR test only for isolated clusters.
     if ((clwdth < mingap / 128.0) && (min(max1, max2) < fail2) && (!sawnan1) && (!sawnan2)) {
         dorrr1 = true;
     } else {
@@ -341,6 +325,6 @@ statement_100:
         Rcopy(n - 1, &work[(n + 1) - 1], 1, lplus, 1);
     }
     //
-    //     End of Rlarrf
+    // End of Rlarrf
     //
 }

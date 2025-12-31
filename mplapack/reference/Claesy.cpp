@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,30 +26,20 @@
  *
  */
 
+// Derived from LAPACK routine ZLAESY.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Claesy(COMPLEX const a, COMPLEX const b, COMPLEX const c, COMPLEX &rt1, COMPLEX &rt2, COMPLEX &evscal, COMPLEX &cs1, COMPLEX &sn1) {
     //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //
-    // =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Special case:  The matrix is actually diagonal.
-    //     To avoid divide by zero later, we treat this case separately.
+    // Special case:  The matrix is actually diagonal.
+    // To avoid divide by zero later, we treat this case separately.
     //
     const REAL zero = 0.0;
     COMPLEX tmp = 0.0;
@@ -78,15 +68,15 @@ void Claesy(COMPLEX const a, COMPLEX const b, COMPLEX const c, COMPLEX &rt1, COM
         }
     } else {
         //
-        //        Compute the eigenvalues and eigenvectors.
-        //        The characteristic equation is
-        //           lambda **2 - (A+C) lambda + (A*C - B*B)
-        //        and we solve it using the quadratic formula.
+        // Compute the eigenvalues and eigenvectors.
+        // The characteristic equation is
+        // lambda **2 - (A+C) lambda + (A*C - B*B)
+        // and we solve it using the quadratic formula.
         //
         s = (a + c) * half;
         t = (a - c) * half;
         //
-        //        Take the square root carefully to avoid over/under flow.
+        // Take the square root carefully to avoid over/under flow.
         //
         babs = abs(b);
         tabs = abs(t);
@@ -95,8 +85,8 @@ void Claesy(COMPLEX const a, COMPLEX const b, COMPLEX const c, COMPLEX &rt1, COM
             t = z * sqrt((t / z) * (t / z) + (b / z) * (b / z));
         }
         //
-        //        Compute the two eigenvalues.  RT1 and RT2 are exchanged
-        //        if necessary so that RT1 will have the greater magnitude.
+        // Compute the two eigenvalues.  RT1 and RT2 are exchanged
+        // if necessary so that RT1 will have the greater magnitude.
         //
         rt1 = s + t;
         rt2 = s - t;
@@ -106,10 +96,10 @@ void Claesy(COMPLEX const a, COMPLEX const b, COMPLEX const c, COMPLEX &rt1, COM
             rt2 = tmp;
         }
         //
-        //        Choose CS1 = 1 and SN1 to satisfy the first equation, then
-        //        scale the components of this eigenvector so that the matrix
-        //        of eigenvectors X satisfies  X * X**T = I .  (No scaling is
-        //        done if the norm of the eigenvalue matrix is less than THRESH.)
+        // Choose CS1 = 1 and SN1 to satisfy the first equation, then
+        // scale the components of this eigenvector so that the matrix
+        // of eigenvectors X satisfies  X * X**T = I .  (No scaling is
+        // done if the norm of the eigenvalue matrix is less than THRESH.)
         //
         sn1 = (rt1 - a) / b;
         tabs = abs(sn1);
@@ -128,6 +118,6 @@ void Claesy(COMPLEX const a, COMPLEX const b, COMPLEX const c, COMPLEX &rt1, COM
         }
     }
     //
-    //     End of Claesy
+    // End of Claesy
     //
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DLAGS2.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -65,26 +72,26 @@ void Rlags2(bool const upper, REAL const a1, REAL const a2, REAL const a3, REAL 
     REAL avb11 = 0.0;
     if (upper) {
         //
-        //        Input matrices A and B are upper triangular matrices
+        // Input matrices A and B are upper triangular matrices
         //
-        //        Form matrix C = A*adj(B) = ( a b )
-        //                                   ( 0 d )
+        // Form matrix C = A*adj(B) = ( a b )
+        // ( 0 d )
         //
         a = a1 * b3;
         d = a3 * b1;
         b = a2 * b1 - a1 * b2;
         //
-        //        The SVD of real 2-by-2 triangular C
+        // The SVD of real 2-by-2 triangular C
         //
-        //         ( CSL -SNL )*( A B )*(  CSR  SNR ) = ( R 0 )
-        //         ( SNL  CSL ) ( 0 D ) ( -SNR  CSR )   ( 0 T )
+        // ( CSL -SNL )*( A B )*(  CSR  SNR ) = ( R 0 )
+        // ( SNL  CSL ) ( 0 D ) ( -SNR  CSR )   ( 0 T )
         //
         Rlasv2(a, b, d, s1, s2, snr, csr, snl, csl);
         //
         if (abs(csl) >= abs(snl) || abs(csr) >= abs(snr)) {
             //
-            //           Compute the (1,1) and (1,2) elements of U**T *A and V**T *B,
-            //           and (1,2) element of |U|**T *|A| and |V|**T *|B|.
+            // Compute the (1,1) and (1,2) elements of U**T *A and V**T *B,
+            // and (1,2) element of |U|**T *|A| and |V|**T *|B|.
             //
             ua11r = csl * a1;
             ua12 = csl * a2 + snl * a3;
@@ -95,7 +102,7 @@ void Rlags2(bool const upper, REAL const a1, REAL const a2, REAL const a3, REAL 
             aua12 = abs(csl) * abs(a2) + abs(snl) * abs(a3);
             avb12 = abs(csr) * abs(b2) + abs(snr) * abs(b3);
             //
-            //           zero (1,2) elements of U**T *A and V**T *B
+            // zero (1,2) elements of U**T *A and V**T *B
             //
             if ((abs(ua11r) + abs(ua12)) != zero) {
                 if (aua12 / (abs(ua11r) + abs(ua12)) <= avb12 / (abs(vb11r) + abs(vb12))) {
@@ -114,8 +121,8 @@ void Rlags2(bool const upper, REAL const a1, REAL const a2, REAL const a3, REAL 
             //
         } else {
             //
-            //           Compute the (2,1) and (2,2) elements of U**T *A and V**T *B,
-            //           and (2,2) element of |U|**T *|A| and |V|**T *|B|.
+            // Compute the (2,1) and (2,2) elements of U**T *A and V**T *B,
+            // and (2,2) element of |U|**T *|A| and |V|**T *|B|.
             //
             ua21 = -snl * a1;
             ua22 = -snl * a2 + csl * a3;
@@ -126,7 +133,7 @@ void Rlags2(bool const upper, REAL const a1, REAL const a2, REAL const a3, REAL 
             aua22 = abs(snl) * abs(a2) + abs(csl) * abs(a3);
             avb22 = abs(snr) * abs(b2) + abs(csr) * abs(b3);
             //
-            //           zero (2,2) elements of U**T*A and V**T*B, and then swap.
+            // zero (2,2) elements of U**T*A and V**T*B, and then swap.
             //
             if ((abs(ua21) + abs(ua22)) != zero) {
                 if (aua22 / (abs(ua21) + abs(ua22)) <= avb22 / (abs(vb21) + abs(vb22))) {
@@ -147,26 +154,26 @@ void Rlags2(bool const upper, REAL const a1, REAL const a2, REAL const a3, REAL 
         //
     } else {
         //
-        //        Input matrices A and B are lower triangular matrices
+        // Input matrices A and B are lower triangular matrices
         //
-        //        Form matrix C = A*adj(B) = ( a 0 )
-        //                                   ( c d )
+        // Form matrix C = A*adj(B) = ( a 0 )
+        // ( c d )
         //
         a = a1 * b3;
         d = a3 * b1;
         c = a2 * b3 - a3 * b2;
         //
-        //        The SVD of real 2-by-2 triangular C
+        // The SVD of real 2-by-2 triangular C
         //
-        //         ( CSL -SNL )*( A 0 )*(  CSR  SNR ) = ( R 0 )
-        //         ( SNL  CSL ) ( C D ) ( -SNR  CSR )   ( 0 T )
+        // ( CSL -SNL )*( A 0 )*(  CSR  SNR ) = ( R 0 )
+        // ( SNL  CSL ) ( C D ) ( -SNR  CSR )   ( 0 T )
         //
         Rlasv2(a, c, d, s1, s2, snr, csr, snl, csl);
         //
         if (abs(csr) >= abs(snr) || abs(csl) >= abs(snl)) {
             //
-            //           Compute the (2,1) and (2,2) elements of U**T *A and V**T *B,
-            //           and (2,1) element of |U|**T *|A| and |V|**T *|B|.
+            // Compute the (2,1) and (2,2) elements of U**T *A and V**T *B,
+            // and (2,1) element of |U|**T *|A| and |V|**T *|B|.
             //
             ua21 = -snr * a1 + csr * a2;
             ua22r = csr * a3;
@@ -177,7 +184,7 @@ void Rlags2(bool const upper, REAL const a1, REAL const a2, REAL const a3, REAL 
             aua21 = abs(snr) * abs(a1) + abs(csr) * abs(a2);
             avb21 = abs(snl) * abs(b1) + abs(csl) * abs(b2);
             //
-            //           zero (2,1) elements of U**T *A and V**T *B.
+            // zero (2,1) elements of U**T *A and V**T *B.
             //
             if ((abs(ua21) + abs(ua22r)) != zero) {
                 if (aua21 / (abs(ua21) + abs(ua22r)) <= avb21 / (abs(vb21) + abs(vb22r))) {
@@ -196,8 +203,8 @@ void Rlags2(bool const upper, REAL const a1, REAL const a2, REAL const a3, REAL 
             //
         } else {
             //
-            //           Compute the (1,1) and (1,2) elements of U**T *A and V**T *B,
-            //           and (1,1) element of |U|**T *|A| and |V|**T *|B|.
+            // Compute the (1,1) and (1,2) elements of U**T *A and V**T *B,
+            // and (1,1) element of |U|**T *|A| and |V|**T *|B|.
             //
             ua11 = csr * a1 + snr * a2;
             ua12 = snr * a3;
@@ -208,7 +215,7 @@ void Rlags2(bool const upper, REAL const a1, REAL const a2, REAL const a3, REAL 
             aua11 = abs(csr) * abs(a1) + abs(snr) * abs(a2);
             avb11 = abs(csl) * abs(b1) + abs(snl) * abs(b2);
             //
-            //           zero (1,1) elements of U**T*A and V**T*B, and then swap.
+            // zero (1,1) elements of U**T*A and V**T*B, and then swap.
             //
             if ((abs(ua11) + abs(ua12)) != zero) {
                 if (aua11 / (abs(ua11) + abs(ua12)) <= avb11 / (abs(vb11) + abs(vb12))) {
@@ -229,6 +236,6 @@ void Rlags2(bool const upper, REAL const a1, REAL const a2, REAL const a3, REAL 
         //
     }
     //
-    //     End of Rlags2
+    // End of Rlags2
     //
 }

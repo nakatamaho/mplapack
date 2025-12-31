@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,33 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine DSYSV_RK.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Rsysv_rk(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *a, INTEGER const lda, REAL *e, INTEGER *ipiv, REAL *b, INTEGER const ldb, REAL *work, INTEGER const lwork, INTEGER &info) {
     //
-    //  -- LAPACK driver routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     bool lquery = (lwork == -1);
@@ -88,14 +74,14 @@ void Rsysv_rk(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *a, IN
         return;
     }
     //
-    //     Compute the factorization A = P*U*D*(U**T)*(P**T) or
-    //     A = P*U*D*(U**T)*(P**T).
+    // Compute the factorization A = P*U*D*(U**T)*(P**T) or
+    // A = P*U*D*(U**T)*(P**T).
     //
     Rsytrf_rk(uplo, n, a, lda, e, ipiv, work, lwork, info);
     //
     if (info == 0) {
         //
-        //        Solve the system A*X = B with BLAS3 solver, overwriting B with X.
+        // Solve the system A*X = B with BLAS3 solver, overwriting B with X.
         //
         Rsytrs_3(uplo, n, nrhs, a, lda, e, ipiv, b, ldb, info);
         //
@@ -103,6 +89,6 @@ void Rsysv_rk(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *a, IN
     //
     work[1 - 1] = lwkopt;
     //
-    //     End of Rsysv_rk
+    // End of Rsysv_rk
     //
 }

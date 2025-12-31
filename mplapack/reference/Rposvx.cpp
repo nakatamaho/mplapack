@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DPOSVX.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -47,7 +54,7 @@ void Rposvx(const char *fact, const char *uplo, INTEGER const n, INTEGER const n
         bignum = one / smlnum;
     }
     //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     REAL smin = 0.0;
     const REAL zero = 0.0;
@@ -102,19 +109,19 @@ void Rposvx(const char *fact, const char *uplo, INTEGER const n, INTEGER const n
     INTEGER infequ = 0;
     if (equil) {
         //
-        //        Compute row and column scalings to equilibrate the matrix A.
+        // Compute row and column scalings to equilibrate the matrix A.
         //
         Rpoequ(n, a, lda, s, scond, amax, infequ);
         if (infequ == 0) {
             //
-            //           Equilibrate the matrix.
+            // Equilibrate the matrix.
             //
             Rlaqsy(uplo, n, a, lda, s, scond, amax, equed);
             rcequ = Mlsame(equed, "Y");
         }
     }
     //
-    //     Scale the right hand side.
+    // Scale the right hand side.
     //
     INTEGER i = 0;
     if (rcequ) {
@@ -127,12 +134,12 @@ void Rposvx(const char *fact, const char *uplo, INTEGER const n, INTEGER const n
     //
     if (nofact || equil) {
         //
-        //        Compute the Cholesky factorization A = U**T *U or A = L*L**T.
+        // Compute the Cholesky factorization A = U**T *U or A = L*L**T.
         //
         Rlacpy(uplo, n, n, a, lda, af, ldaf);
         Rpotrf(uplo, n, af, ldaf, info);
         //
-        //        Return if INFO is non-zero.
+        // Return if INFO is non-zero.
         //
         if (info > 0) {
             rcond = zero;
@@ -140,26 +147,26 @@ void Rposvx(const char *fact, const char *uplo, INTEGER const n, INTEGER const n
         }
     }
     //
-    //     Compute the norm of the matrix A.
+    // Compute the norm of the matrix A.
     //
     REAL anorm = Rlansy("1", uplo, n, a, lda, work);
     //
-    //     Compute the reciprocal of the condition number of A.
+    // Compute the reciprocal of the condition number of A.
     //
     Rpocon(uplo, n, af, ldaf, anorm, rcond, work, iwork, info);
     //
-    //     Compute the solution matrix X.
+    // Compute the solution matrix X.
     //
     Rlacpy("Full", n, nrhs, b, ldb, x, ldx);
     Rpotrs(uplo, n, nrhs, af, ldaf, x, ldx, info);
     //
-    //     Use iterative refinement to improve the computed solution and
-    //     compute error bounds and backward error estimates for it.
+    // Use iterative refinement to improve the computed solution and
+    // compute error bounds and backward error estimates for it.
     //
     Rporfs(uplo, n, nrhs, a, lda, af, ldaf, b, ldb, x, ldx, ferr, berr, work, iwork, info);
     //
-    //     Transform the solution matrix X to a solution of the original
-    //     system.
+    // Transform the solution matrix X to a solution of the original
+    // system.
     //
     if (rcequ) {
         for (j = 1; j <= nrhs; j = j + 1) {
@@ -172,12 +179,12 @@ void Rposvx(const char *fact, const char *uplo, INTEGER const n, INTEGER const n
         }
     }
     //
-    //     Set INFO = N+1 if the matrix is singular to working precision.
+    // Set INFO = N+1 if the matrix is singular to working precision.
     //
     if (rcond < Rlamch("Epsilon")) {
         info = n + 1;
     }
     //
-    //     End of Rposvx
+    // End of Rposvx
     //
 }

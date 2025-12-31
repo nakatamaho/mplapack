@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZPPTRF.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -38,30 +45,7 @@ void Cpptrf(const char *uplo, INTEGER const n, COMPLEX *ap, INTEGER &info) {
     const REAL zero = 0.0;
     const REAL one = 1.0;
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     upper = Mlsame(uplo, "U");
@@ -75,7 +59,7 @@ void Cpptrf(const char *uplo, INTEGER const n, COMPLEX *ap, INTEGER &info) {
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0) {
         return;
@@ -83,20 +67,20 @@ void Cpptrf(const char *uplo, INTEGER const n, COMPLEX *ap, INTEGER &info) {
     //
     if (upper) {
         //
-        //        Compute the Cholesky factorization A = U**H * U.
+        // Compute the Cholesky factorization A = U**H * U.
         //
         jj = 0;
         for (j = 1; j <= n; j = j + 1) {
             jc = jj + 1;
             jj += j;
             //
-            //           Compute elements 1:J-1 of column J.
+            // Compute elements 1:J-1 of column J.
             //
             if (j > 1) {
                 Ctpsv("Upper", "Conjugate transpose", "Non-unit", j - 1, ap, &ap[jc - 1], 1);
             }
             //
-            //           Compute U(J,J) and test for non-positive-definiteness.
+            // Compute U(J,J) and test for non-positive-definiteness.
             //
             ajj = ap[jj - 1].real() - Cdotc(j - 1, &ap[jc - 1], 1, &ap[jc - 1], 1).real();
             if (ajj <= zero) {
@@ -107,12 +91,12 @@ void Cpptrf(const char *uplo, INTEGER const n, COMPLEX *ap, INTEGER &info) {
         }
     } else {
         //
-        //        Compute the Cholesky factorization A = L * L**H.
+        // Compute the Cholesky factorization A = L * L**H.
         //
         jj = 1;
         for (j = 1; j <= n; j = j + 1) {
             //
-            //           Compute L(J,J) and test for non-positive-definiteness.
+            // Compute L(J,J) and test for non-positive-definiteness.
             //
             ajj = ap[jj - 1].real();
             if (ajj <= zero) {
@@ -122,8 +106,8 @@ void Cpptrf(const char *uplo, INTEGER const n, COMPLEX *ap, INTEGER &info) {
             ajj = sqrt(ajj);
             ap[jj - 1] = ajj;
             //
-            //           Compute elements J+1:N of column J and update the trailing
-            //           submatrix.
+            // Compute elements J+1:N of column J and update the trailing
+            // submatrix.
             //
             if (j < n) {
                 CRscal(n - j, one / ajj, &ap[(jj + 1) - 1], 1);
@@ -139,6 +123,6 @@ statement_30:
 //
 statement_40:;
     //
-    //     End of Cpptrf
+    // End of Cpptrf
     //
 }

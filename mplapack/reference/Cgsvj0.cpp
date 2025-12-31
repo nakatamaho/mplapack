@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine ZGSVJ0.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -81,33 +88,7 @@ void Cgsvj0(const char *jobv, INTEGER const m, INTEGER const n, COMPLEX *a, INTE
     INTEGER jgl = 0;
     INTEGER ijblsk = 0;
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Local Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     from BLAS
-    //     from LAPACK
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     applv = Mlsame(jobv, "A");
     rsvec = Mlsame(jobv, "V");
@@ -133,7 +114,7 @@ void Cgsvj0(const char *jobv, INTEGER const m, INTEGER const n, COMPLEX *a, INTE
         info = 0;
     }
     //
-    //     #:(
+    // #:(
     if (info != 0) {
         Mxerbla("Cgsvj0", -info);
         return;
@@ -154,25 +135,26 @@ void Cgsvj0(const char *jobv, INTEGER const m, INTEGER const n, COMPLEX *a, INTE
     bigtheta = one / rooteps;
     roottol = sqrt(tol);
     //
-    //     .. Row-cyclic Jacobi SVD algorithm with column pivoting ..
+    // .. Row-cyclic Jacobi SVD algorithm with column pivoting ..
     //
     emptsw = (n * (n - 1)) / 2;
     notrot = 0;
     //
-    //     .. Row-cyclic pivot strategy with de Rijk's pivoting ..
+    // .. Row-cyclic pivot strategy with de Rijk's pivoting ..
     //
     swband = 0;
-    //[TP] SWBAND is a tuning parameter [TP]. It is meaningful and effective
-    //     if Cgesvj is used as a computational routine in the preconditioned
-    //     Jacobi SVD algorithm Cgejsv. For sweeps i=1:SWBAND the procedure
-    //     works on pivots inside a band-like region around the diagonal.
-    //     The boundaries are determined dynamically, based on the number of
-    //     pivots above a threshold.
+    // [TP] SWBAND is a tuning parameter [TP]. It is meaningful and effective
+    // if Cgesvj is used as a computational routine in the preconditioned
+    // Jacobi SVD algorithm Cgejsv. For sweeps i=1:SWBAND the procedure
+    // works on pivots inside a band-like region around the diagonal.
+    // The boundaries are determined dynamically, based on the number of
+    // pivots above a threshold.
     //
     kbl = min((INTEGER)8, n);
-    //[TP] KBL is a tuning parameter that defines the tile size in the
-    //     tiling of the p-q loops of pivot pairs. In general, an optimal
-    //     parameters of the computer's memory.
+    // [TP] KBL is a tuning parameter that defines the tile size in the
+    // tiling of the p-q loops of pivot pairs. In general, an optimal
+    // value of KBL depends on the matrix dimensions and on the
+    // parameters of the computer's memory.
     //
     nbl = n / kbl;
     if ((nbl * kbl) != n) {
@@ -180,23 +162,24 @@ void Cgsvj0(const char *jobv, INTEGER const m, INTEGER const n, COMPLEX *a, INTE
     }
     //
     blskip = kbl * kbl;
-    //[TP] BLKSKIP is a tuning parameter that depends on SWBAND and KBL.
+    // [TP] BLKSKIP is a tuning parameter that depends on SWBAND and KBL.
     //
     rowskip = min((INTEGER)5, kbl);
-    //[TP] ROWSKIP is a tuning parameter.
+    // [TP] ROWSKIP is a tuning parameter.
     //
     lkahead = 1;
-    //[TP] LKAHEAD is a tuning parameter.
+    // [TP] LKAHEAD is a tuning parameter.
     //
-    //     Quasi block transformations, using the lower (upper) triangular
-    //     structure of the input matrix. The quasi-block-cycling usually
-    //     invokes cubic convergence. Big part of this cycle is done inside
+    // Quasi block transformations, using the lower (upper) triangular
+    // structure of the input matrix. The quasi-block-cycling usually
+    // invokes cubic convergence. Big part of this cycle is done inside
+    // canonical subspaces of dimensions less than M.
     //
-    //     .. Row-cyclic pivot strategy with de Rijk's pivoting ..
+    // .. Row-cyclic pivot strategy with de Rijk's pivoting ..
     //
     for (i = 1; i <= nsweep; i = i + 1) {
         //
-        //     .. go go go ...
+        // .. go go go ...
         //
         mxaapq = zero;
         mxsinj = zero;
@@ -205,10 +188,10 @@ void Cgsvj0(const char *jobv, INTEGER const m, INTEGER const n, COMPLEX *a, INTE
         notrot = 0;
         pskipped = 0;
         //
-        //     Each sweep is unrolled using KBL-by-KBL tiles over the pivot pairs
-        //     1 <= p < q <= N. This is the first step toward a blocked implementation
-        //     of the rotations. New implementation, based on block transformations,
-        //     is under development.
+        // Each sweep is unrolled using KBL-by-KBL tiles over the pivot pairs
+        // 1 <= p < q <= N. This is the first step toward a blocked implementation
+        // of the rotations. New implementation, based on block transformations,
+        // is under development.
         //
         for (ibr = 1; ibr <= nbl; ibr = ibr + 1) {
             //
@@ -220,7 +203,7 @@ void Cgsvj0(const char *jobv, INTEGER const m, INTEGER const n, COMPLEX *a, INTE
                 //
                 for (p = igl; p <= min(igl + kbl - 1, n - 1); p = p + 1) {
                     //
-                    //     .. de Rijk's pivoting
+                    // .. de Rijk's pivoting
                     //
                     q = iRamax(n - p + 1, &sva[p - 1], 1) + p - 1;
                     if (p != q) {
@@ -238,17 +221,17 @@ void Cgsvj0(const char *jobv, INTEGER const m, INTEGER const n, COMPLEX *a, INTE
                     //
                     if (ir1 == 0) {
                         //
-                        //        Column norms are periodically updated by explicit
-                        //        norm computation.
-                        //        Caveat:
-                        //        Unfortunately, some BLAS implementations compute SNCRM2(M,A(1,p),1)
-                        //        as SQRT(S=Cdotc(M,A(1,p),1,A(1,p),1)), which may cause the result to
-                        //        overflow for ||A(:,p)||_2 > SQRT(overflow_threshold), and to
-                        //        underflow for ||A(:,p)||_2 < SQRT(underflow_threshold).
-                        //        Hence, RCnrm2 cannot be trusted, not even in the case when
-                        //        the true norm is far from the under(over)flow boundaries.
-                        //        If properly implemented RCnrm2 is available, the IF-THEN-ELSE-END IF
-                        //        below should be replaced with "AAPP = RCnrm2( M, A(1,p), 1 )".
+                        // Column norms are periodically updated by explicit
+                        // norm computation.
+                        // Caveat:
+                        // Unfortunately, some BLAS implementations compute SNCRM2(M,A(1,p),1)
+                        // as SQRT(S=Cdotc(M,A(1,p),1,A(1,p),1)), which may cause the result to
+                        // overflow for ||A(:,p)||_2 > SQRT(overflow_threshold), and to
+                        // underflow for ||A(:,p)||_2 < SQRT(underflow_threshold).
+                        // Hence, RCnrm2 cannot be trusted, not even in the case when
+                        // the true norm is far from the under(over)flow boundaries.
+                        // If properly implemented RCnrm2 is available, the IF-THEN-ELSE-END IF
+                        // below should be replaced with "AAPP = RCnrm2( M, A(1,p), 1 )".
                         //
                         if ((sva[p - 1] < rootbig) && (sva[p - 1] > rootsfmin)) {
                             sva[p - 1] = RCnrm2(m, &a[(p - 1) * lda], 1);
@@ -294,17 +277,17 @@ void Cgsvj0(const char *jobv, INTEGER const m, INTEGER const n, COMPLEX *a, INTE
                                     }
                                 }
                                 //
-                                //                           AAPQ = AAPQ * CONJG( CWORK(p) ) * CWORK(q)
+                                // AAPQ = AAPQ * CONJG( CWORK(p) ) * CWORK(q)
                                 aapq1 = -abs(aapq);
                                 mxaapq = max(mxaapq, REAL(-aapq1));
                                 //
-                                //        TO rotate or NOT to rotate, THAT is the question ...
+                                // TO rotate or NOT to rotate, THAT is the question ...
                                 //
                                 if (abs(aapq1) > tol) {
                                     ompq = aapq / abs(aapq);
                                     //
-                                    //           .. rotate
-                                    //[RTD]      ROTATED = ROTATED + ONE
+                                    // .. rotate
+                                    // [RTD]      ROTATED = ROTATED + ONE
                                     //
                                     if (ir1 == 0) {
                                         notrot = 0;
@@ -334,7 +317,7 @@ void Cgsvj0(const char *jobv, INTEGER const m, INTEGER const n, COMPLEX *a, INTE
                                             //
                                         } else {
                                             //
-                                            //                 .. choose correct signum for THETA and rotate
+                                            // .. choose correct signum for THETA and rotate
                                             //
                                             thsign = -sign(one, aapq1);
                                             t = one / (theta + thsign * sqrt(one + theta * theta));
@@ -394,7 +377,7 @@ void Cgsvj0(const char *jobv, INTEGER const m, INTEGER const n, COMPLEX *a, INTE
                                     if (ir1 == 0) {
                                         notrot++;
                                     }
-                                    //[RTD]      SKIPPED  = SKIPPED  + 1
+                                    // [RTD]      SKIPPED  = SKIPPED  + 1
                                     pskipped++;
                                 }
                             } else {
@@ -442,7 +425,7 @@ void Cgsvj0(const char *jobv, INTEGER const m, INTEGER const n, COMPLEX *a, INTE
                 //
                 jgl = (jbc - 1) * kbl + 1;
                 //
-                //        doing the block at ( ibr, jbc )
+                // doing the block at ( ibr, jbc )
                 //
                 ijblsk = 0;
                 for (p = igl; p <= min(igl + kbl - 1, n); p = p + 1) {
@@ -458,9 +441,9 @@ void Cgsvj0(const char *jobv, INTEGER const m, INTEGER const n, COMPLEX *a, INTE
                             if (aaqq > zero) {
                                 aapp0 = aapp;
                                 //
-                                //     .. M x 2 Jacobi SVD ..
+                                // .. M x 2 Jacobi SVD ..
                                 //
-                                //        Safe Gram matrix computation
+                                // Safe Gram matrix computation
                                 //
                                 if (aaqq >= one) {
                                     if (aapp >= aaqq) {
@@ -490,16 +473,16 @@ void Cgsvj0(const char *jobv, INTEGER const m, INTEGER const n, COMPLEX *a, INTE
                                     }
                                 }
                                 //
-                                //                           AAPQ = AAPQ * CONJG(CWORK(p))*CWORK(q)
+                                // AAPQ = AAPQ * CONJG(CWORK(p))*CWORK(q)
                                 aapq1 = -abs(aapq);
                                 mxaapq = max(mxaapq, REAL(-aapq1));
                                 //
-                                //        TO rotate or NOT to rotate, THAT is the question ...
+                                // TO rotate or NOT to rotate, THAT is the question ...
                                 //
                                 if (abs(aapq1) > tol) {
                                     ompq = aapq / abs(aapq);
                                     notrot = 0;
-                                    //[RTD]      ROTATED  = ROTATED + 1
+                                    // [RTD]      ROTATED  = ROTATED + 1
                                     pskipped = 0;
                                     iswrot++;
                                     //
@@ -524,7 +507,7 @@ void Cgsvj0(const char *jobv, INTEGER const m, INTEGER const n, COMPLEX *a, INTE
                                             mxsinj = max(mxsinj, REAL(abs(t)));
                                         } else {
                                             //
-                                            //                 .. choose correct signum for THETA and rotate
+                                            // .. choose correct signum for THETA and rotate
                                             //
                                             thsign = -sign(one, aapq1);
                                             if (aaqq > aapp0) {
@@ -592,7 +575,7 @@ void Cgsvj0(const char *jobv, INTEGER const m, INTEGER const n, COMPLEX *a, INTE
                                     // end of OK rotation
                                 } else {
                                     notrot++;
-                                    //[RTD]      SKIPPED  = SKIPPED  + 1
+                                    // [RTD]      SKIPPED  = SKIPPED  + 1
                                     pskipped++;
                                     ijblsk++;
                                 }
@@ -639,11 +622,11 @@ void Cgsvj0(const char *jobv, INTEGER const m, INTEGER const n, COMPLEX *a, INTE
             for (p = igl; p <= min(igl + kbl - 1, n); p = p + 1) {
                 sva[p - 1] = abs(sva[p - 1]);
             }
-            //**
+            // **
         }
         // 2000 :: end of the ibr-loop
         //
-        //     .. update SVA(N)
+        // .. update SVA(N)
         if ((sva[n - 1] < rootbig) && (sva[n - 1] > rootsfmin)) {
             sva[n - 1] = RCnrm2(m, &a[(n - 1) * lda], 1);
         } else {
@@ -653,7 +636,7 @@ void Cgsvj0(const char *jobv, INTEGER const m, INTEGER const n, COMPLEX *a, INTE
             sva[n - 1] = t * sqrt(aapp);
         }
         //
-        //     Additional steering devices
+        // Additional steering devices
         //
         if ((i < swband) && ((mxaapq <= roottol) || (iswrot <= n))) {
             swband = i;
@@ -676,13 +659,13 @@ void Cgsvj0(const char *jobv, INTEGER const m, INTEGER const n, COMPLEX *a, INTE
 //
 statement_1994:
     // #:) Reaching this point means numerical convergence after the i-th
-    //     sweep.
+    // sweep.
     //
     info = 0;
 // #:) INFO = 0 confirms successful iterations.
 statement_1995:
     //
-    //     Sort the vector SVA() of column norms.
+    // Sort the vector SVA() of column norms.
     for (p = 1; p <= n - 1; p = p + 1) {
         q = iRamax(n - p + 1, &sva[p - 1], 1) + p - 1;
         if (p != q) {
@@ -699,7 +682,7 @@ statement_1995:
         }
     }
     //
-    //     ..
-    //     .. END OF Cgsvj0
-    //     ..
+    // ..
+    // .. END OF Cgsvj0
+    // ..
 }

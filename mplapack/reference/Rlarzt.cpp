@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,33 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine DLARZT.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Rlarzt(const char *direct, const char *storev, INTEGER const n, INTEGER const k, REAL *v, INTEGER const ldv, REAL *tau, REAL *t, INTEGER const ldt) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Check for currently supported options
+    // Check for currently supported options
     //
     INTEGER info = 0;
     if (!Mlsame(direct, "B")) {
@@ -71,22 +57,22 @@ void Rlarzt(const char *direct, const char *storev, INTEGER const n, INTEGER con
     for (i = k; i >= 1; i = i - 1) {
         if (tau[i - 1] == zero) {
             //
-            //           H(i)  =  I
+            // H(i)  =  I
             //
             for (j = i; j <= k; j = j + 1) {
                 t[(j - 1) + (i - 1) * ldt] = zero;
             }
         } else {
             //
-            //           general case
+            // general case
             //
             if (i < k) {
                 //
-                //              T(i+1:k,i) = - tau(i) * V(i+1:k,1:n) * V(i,1:n)**T
+                // T(i+1:k,i) = - tau(i) * V(i+1:k,1:n) * V(i,1:n)**T
                 //
                 Rgemv("No transpose", k - i, n, -tau[i - 1], &v[((i + 1) - 1)], ldv, &v[(i - 1)], ldv, zero, &t[((i + 1) - 1) + (i - 1) * ldt], 1);
                 //
-                //              T(i+1:k,i) = T(i+1:k,i+1:k) * T(i+1:k,i)
+                // T(i+1:k,i) = T(i+1:k,i+1:k) * T(i+1:k,i)
                 //
                 Rtrmv("Lower", "No transpose", "Non-unit", k - i, &t[((i + 1) - 1) + ((i + 1) - 1) * ldt], ldt, &t[((i + 1) - 1) + (i - 1) * ldt], 1);
             }
@@ -94,6 +80,6 @@ void Rlarzt(const char *direct, const char *storev, INTEGER const n, INTEGER con
         }
     }
     //
-    //     End of Rlarzt
+    // End of Rlarzt
     //
 }

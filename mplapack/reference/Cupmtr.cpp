@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,42 +26,26 @@
  *
  */
 
+// Derived from LAPACK routine ZUPMTR.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Cupmtr(const char *side, const char *uplo, const char *trans, INTEGER const m, INTEGER const n, COMPLEX *ap, COMPLEX *tau, COMPLEX *c, INTEGER const ldc, COMPLEX *work, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input arguments
+    // Test the input arguments
     //
     info = 0;
     bool left = Mlsame(side, "L");
     bool notran = Mlsame(trans, "N");
     bool upper = Mlsame(uplo, "U");
     //
-    //     NQ is the order of Q
+    // NQ is the order of Q
     //
     INTEGER nq = 0;
     if (left) {
@@ -87,7 +71,7 @@ void Cupmtr(const char *side, const char *uplo, const char *trans, INTEGER const
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (m == 0 || n == 0) {
         return;
@@ -108,7 +92,7 @@ void Cupmtr(const char *side, const char *uplo, const char *trans, INTEGER const
     INTEGER ic = 0;
     if (upper) {
         //
-        //        Q was determined by a call to Chptrd with UPLO = 'U'
+        // Q was determined by a call to Chptrd with UPLO = 'U'
         //
         forwrd = (left && notran) || (!left && !notran);
         //
@@ -133,17 +117,17 @@ void Cupmtr(const char *side, const char *uplo, const char *trans, INTEGER const
         for (i = i1; i3 >= 0 ? i <= i2 : i >= i2; i = i + i3) {
             if (left) {
                 //
-                //              H(i) or H(i)**H is applied to C(1:i,1:n)
+                // H(i) or H(i)**H is applied to C(1:i,1:n)
                 //
                 mi = i;
             } else {
                 //
-                //              H(i) or H(i)**H is applied to C(1:m,1:i)
+                // H(i) or H(i)**H is applied to C(1:m,1:i)
                 //
                 ni = i;
             }
             //
-            //           Apply H(i) or H(i)**H
+            // Apply H(i) or H(i)**H
             //
             if (notran) {
                 taui = tau[i - 1];
@@ -163,7 +147,7 @@ void Cupmtr(const char *side, const char *uplo, const char *trans, INTEGER const
         }
     } else {
         //
-        //        Q was determined by a call to Chptrd with UPLO = 'L'.
+        // Q was determined by a call to Chptrd with UPLO = 'L'.
         //
         forwrd = (left && !notran) || (!left && notran);
         //
@@ -192,19 +176,19 @@ void Cupmtr(const char *side, const char *uplo, const char *trans, INTEGER const
             ap[ii - 1] = one;
             if (left) {
                 //
-                //              H(i) or H(i)**H is applied to C(i+1:m,1:n)
+                // H(i) or H(i)**H is applied to C(i+1:m,1:n)
                 //
                 mi = m - i;
                 ic = i + 1;
             } else {
                 //
-                //              H(i) or H(i)**H is applied to C(1:m,i+1:n)
+                // H(i) or H(i)**H is applied to C(1:m,i+1:n)
                 //
                 ni = n - i;
                 jc = i + 1;
             }
             //
-            //           Apply H(i) or H(i)**H
+            // Apply H(i) or H(i)**H
             //
             if (notran) {
                 taui = tau[i - 1];
@@ -222,6 +206,6 @@ void Cupmtr(const char *side, const char *uplo, const char *trans, INTEGER const
         }
     }
     //
-    //     End of Cupmtr
+    // End of Cupmtr
     //
 }

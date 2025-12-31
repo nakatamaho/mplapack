@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DTRSYL.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -90,14 +97,14 @@ void Rtrsyl(const char *trana, const char *tranb, INTEGER const isgn, INTEGER co
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     scale = one;
     if (m == 0 || n == 0) {
         return;
     }
     //
-    //     Set constants to control overflow
+    // Set constants to control overflow
     //
     eps = Rlamch("P");
     smlnum = Rlamch("S");
@@ -111,20 +118,20 @@ void Rtrsyl(const char *trana, const char *tranb, INTEGER const isgn, INTEGER co
     //
     if (notrna && notrnb) {
         //
-        //        Solve    A*X + ISGN*X*B = scale*C.
+        // Solve    A*X + ISGN*X*B = scale*C.
         //
-        //        The (K,L)th block of X is determined starting from
-        //        bottom-left corner column by column by
+        // The (K,L)th block of X is determined starting from
+        // bottom-left corner column by column by
         //
-        //         A(K,K)*X(K,L) + ISGN*X(K,L)*B(L,L) = C(K,L) - R(K,L)
+        // A(K,K)*X(K,L) + ISGN*X(K,L)*B(L,L) = C(K,L) - R(K,L)
         //
-        //        Where
-        //                  M                         L-1
-        //        R(K,L) = SUM [A(K,I)*X(I,L)] + ISGN*SUM [X(K,J)*B(J,L)].
-        //                I=K+1                       J=1
+        // Where
+        // M                         L-1
+        // R(K,L) = SUM [A(K,I)*X(I,L)] + ISGN*SUM [X(K,J)*B(J,L)].
+        // I=K+1                       J=1
         //
-        //        Start column loop (index = L)
-        //        L1 (L2) : column index of the first (first) row of X(K,L).
+        // Start column loop (index = L)
+        // L1 (L2) : column index of the first (first) row of X(K,L).
         //
         lnext = 1;
         for (l = 1; l <= n; l = l + 1) {
@@ -146,8 +153,8 @@ void Rtrsyl(const char *trana, const char *tranb, INTEGER const isgn, INTEGER co
                 }
             }
             //
-            //           Start row loop (index = K)
-            //           K1 (K2): row index of the first (last) row of X(K,L).
+            // Start row loop (index = K)
+            // K1 (K2): row index of the first (last) row of X(K,L).
             //
             knext = m;
             for (k = m; k >= 1; k = k - 1) {
@@ -289,20 +296,20 @@ void Rtrsyl(const char *trana, const char *tranb, INTEGER const isgn, INTEGER co
         //
     } else if (!notrna && notrnb) {
         //
-        //        Solve    A**T *X + ISGN*X*B = scale*C.
+        // Solve    A**T *X + ISGN*X*B = scale*C.
         //
-        //        The (K,L)th block of X is determined starting from
-        //        upper-left corner column by column by
+        // The (K,L)th block of X is determined starting from
+        // upper-left corner column by column by
         //
-        //          A(K,K)**T*X(K,L) + ISGN*X(K,L)*B(L,L) = C(K,L) - R(K,L)
+        // A(K,K)**T*X(K,L) + ISGN*X(K,L)*B(L,L) = C(K,L) - R(K,L)
         //
-        //        Where
-        //                   K-1        T                    L-1
-        //          R(K,L) = SUM [A(I,K)**T*X(I,L)] +ISGN*SUM [X(K,J)*B(J,L)]
-        //                   I=1                          J=1
+        // Where
+        // K-1        T                    L-1
+        // R(K,L) = SUM [A(I,K)**T*X(I,L)] +ISGN*SUM [X(K,J)*B(J,L)]
+        // I=1                          J=1
         //
-        //        Start column loop (index = L)
-        //        L1 (L2): column index of the first (last) row of X(K,L)
+        // Start column loop (index = L)
+        // L1 (L2): column index of the first (last) row of X(K,L)
         //
         lnext = 1;
         for (l = 1; l <= n; l = l + 1) {
@@ -324,8 +331,8 @@ void Rtrsyl(const char *trana, const char *tranb, INTEGER const isgn, INTEGER co
                 }
             }
             //
-            //           Start row loop (index = K)
-            //           K1 (K2): row index of the first (last) row of X(K,L)
+            // Start row loop (index = K)
+            // K1 (K2): row index of the first (last) row of X(K,L)
             //
             knext = 1;
             for (k = 1; k <= m; k = k + 1) {
@@ -466,20 +473,20 @@ void Rtrsyl(const char *trana, const char *tranb, INTEGER const isgn, INTEGER co
         //
     } else if (!notrna && !notrnb) {
         //
-        //        Solve    A**T*X + ISGN*X*B**T = scale*C.
+        // Solve    A**T*X + ISGN*X*B**T = scale*C.
         //
-        //        The (K,L)th block of X is determined starting from
-        //        top-right corner column by column by
+        // The (K,L)th block of X is determined starting from
+        // top-right corner column by column by
         //
-        //           A(K,K)**T*X(K,L) + ISGN*X(K,L)*B(L,L)**T = C(K,L) - R(K,L)
+        // A(K,K)**T*X(K,L) + ISGN*X(K,L)*B(L,L)**T = C(K,L) - R(K,L)
         //
-        //        Where
-        //                     K-1                            N
-        //            R(K,L) = SUM [A(I,K)**T*X(I,L)] + ISGN*SUM [X(K,J)*B(L,J)**T].
-        //                     I=1                          J=L+1
+        // Where
+        // K-1                            N
+        // R(K,L) = SUM [A(I,K)**T*X(I,L)] + ISGN*SUM [X(K,J)*B(L,J)**T].
+        // I=1                          J=L+1
         //
-        //        Start column loop (index = L)
-        //        L1 (L2): column index of the first (last) row of X(K,L)
+        // Start column loop (index = L)
+        // L1 (L2): column index of the first (last) row of X(K,L)
         //
         lnext = n;
         for (l = n; l >= 1; l = l - 1) {
@@ -501,8 +508,8 @@ void Rtrsyl(const char *trana, const char *tranb, INTEGER const isgn, INTEGER co
                 }
             }
             //
-            //           Start row loop (index = K)
-            //           K1 (K2): row index of the first (last) row of X(K,L)
+            // Start row loop (index = K)
+            // K1 (K2): row index of the first (last) row of X(K,L)
             //
             knext = 1;
             for (k = 1; k <= m; k = k + 1) {
@@ -643,20 +650,20 @@ void Rtrsyl(const char *trana, const char *tranb, INTEGER const isgn, INTEGER co
         //
     } else if (notrna && !notrnb) {
         //
-        //        Solve    A*X + ISGN*X*B**T = scale*C.
+        // Solve    A*X + ISGN*X*B**T = scale*C.
         //
-        //        The (K,L)th block of X is determined starting from
-        //        bottom-right corner column by column by
+        // The (K,L)th block of X is determined starting from
+        // bottom-right corner column by column by
         //
-        //            A(K,K)*X(K,L) + ISGN*X(K,L)*B(L,L)**T = C(K,L) - R(K,L)
+        // A(K,K)*X(K,L) + ISGN*X(K,L)*B(L,L)**T = C(K,L) - R(K,L)
         //
-        //        Where
-        //                      M                          N
-        //            R(K,L) = SUM [A(K,I)*X(I,L)] + ISGN*SUM [X(K,J)*B(L,J)**T].
-        //                    I=K+1                      J=L+1
+        // Where
+        // M                          N
+        // R(K,L) = SUM [A(K,I)*X(I,L)] + ISGN*SUM [X(K,J)*B(L,J)**T].
+        // I=K+1                      J=L+1
         //
-        //        Start column loop (index = L)
-        //        L1 (L2): column index of the first (last) row of X(K,L)
+        // Start column loop (index = L)
+        // L1 (L2): column index of the first (last) row of X(K,L)
         //
         lnext = n;
         for (l = n; l >= 1; l = l - 1) {
@@ -678,8 +685,8 @@ void Rtrsyl(const char *trana, const char *tranb, INTEGER const isgn, INTEGER co
                 }
             }
             //
-            //           Start row loop (index = K)
-            //           K1 (K2): row index of the first (last) row of X(K,L)
+            // Start row loop (index = K)
+            // K1 (K2): row index of the first (last) row of X(K,L)
             //
             knext = m;
             for (k = m; k >= 1; k = k - 1) {
@@ -820,6 +827,6 @@ void Rtrsyl(const char *trana, const char *tranb, INTEGER const isgn, INTEGER co
         //
     }
     //
-    //     End of Rtrsyl
+    // End of Rtrsyl
     //
 }

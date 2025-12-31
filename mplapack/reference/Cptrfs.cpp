@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine ZPTRFS.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -55,34 +62,7 @@ void Cptrfs(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *d, COMP
     const REAL one = 1.0;
     INTEGER ix = 0;
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Statement Functions ..
-    //     ..
-    //     .. Statement Function definitions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     upper = Mlsame(uplo, "U");
@@ -102,7 +82,7 @@ void Cptrfs(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *d, COMP
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0 || nrhs == 0) {
         for (j = 1; j <= nrhs; j = j + 1) {
@@ -112,7 +92,7 @@ void Cptrfs(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *d, COMP
         return;
     }
     //
-    //     NZ = maximum number of nonzero elements in each row of A, plus 1
+    // NZ = maximum number of nonzero elements in each row of A, plus 1
     //
     nz = 4;
     eps = Rlamch("Epsilon");
@@ -120,7 +100,7 @@ void Cptrfs(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *d, COMP
     safe1 = nz * safmin;
     safe2 = safe1 / eps;
     //
-    //     Do for each right hand side
+    // Do for each right hand side
     //
     for (j = 1; j <= nrhs; j = j + 1) {
         //
@@ -128,10 +108,10 @@ void Cptrfs(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *d, COMP
         lstres = three;
     statement_20:
         //
-        //        Loop until stopping criterion is satisfied.
+        // Loop until stopping criterion is satisfied.
         //
-        //        Compute residual R = B - A * X.  Also compute
-        //        abs(A)*abs(x) + abs(b) for use in the backward error bound.
+        // Compute residual R = B - A * X.  Also compute
+        // abs(A)*abs(x) + abs(b) for use in the backward error bound.
         //
         if (upper) {
             if (n == 1) {
@@ -187,14 +167,14 @@ void Cptrfs(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *d, COMP
             }
         }
         //
-        //        Compute componentwise relative backward error from formula
+        // Compute componentwise relative backward error from formula
         //
-        //        max(i) ( abs(R(i)) / ( abs(A)*abs(X) + abs(B) )(i) )
+        // max(i) ( abs(R(i)) / ( abs(A)*abs(X) + abs(B) )(i) )
         //
-        //        where abs(Z) is the componentwise absolute value of the matrix
-        //        or vector Z.  If the i-th component of the denominator is less
-        //        than SAFE2, then SAFE1 is added to the i-th components of the
-        //        numerator and denominator before dividing.
+        // where abs(Z) is the componentwise absolute value of the matrix
+        // or vector Z.  If the i-th component of the denominator is less
+        // than SAFE2, then SAFE1 is added to the i-th components of the
+        // numerator and denominator before dividing.
         //
         s = zero;
         for (i = 1; i <= n; i = i + 1) {
@@ -206,15 +186,15 @@ void Cptrfs(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *d, COMP
         }
         berr[j - 1] = s;
         //
-        //        Test stopping criterion. Continue iterating if
-        //           1) The residual BERR(J) is larger than machine epsilon, and
-        //           2) BERR(J) decreased by at least a factor of 2 during the
-        //              last iteration, and
-        //           3) At most ITMAX iterations tried.
+        // Test stopping criterion. Continue iterating if
+        // 1) The residual BERR(J) is larger than machine epsilon, and
+        // 2) BERR(J) decreased by at least a factor of 2 during the
+        // last iteration, and
+        // 3) At most ITMAX iterations tried.
         //
         if (berr[j - 1] > eps && two * berr[j - 1] <= lstres && count <= itmax) {
             //
-            //           Update solution and try again.
+            // Update solution and try again.
             //
             Cpttrs(uplo, n, 1, df, ef, work, n, info);
             Caxpy(n, COMPLEX(one), work, 1, &x[(j - 1) * ldx], 1);
@@ -223,23 +203,23 @@ void Cptrfs(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *d, COMP
             goto statement_20;
         }
         //
-        //        Bound error from formula
+        // Bound error from formula
         //
-        //        norm(X - XTRUE) / norm(X) .le. FERR =
-        //        norm( abs(inv(A))*
-        //           ( abs(R) + NZ*EPS*( abs(A)*abs(X)+abs(B) ))) / norm(X)
+        // norm(X - XTRUE) / norm(X) .le. FERR =
+        // norm( abs(inv(A))*
+        // ( abs(R) + NZ*EPS*( abs(A)*abs(X)+abs(B) ))) / norm(X)
         //
-        //        where
-        //          norm(Z) is the magnitude of the largest component of Z
-        //          inv(A) is the inverse of A
-        //          abs(Z) is the componentwise absolute value of the matrix or
-        //             vector Z
-        //          NZ is the maximum number of nonzeros in any row of A, plus 1
-        //          EPS is machine epsilon
+        // where
+        // norm(Z) is the magnitude of the largest component of Z
+        // inv(A) is the inverse of A
+        // abs(Z) is the componentwise absolute value of the matrix or
+        // vector Z
+        // NZ is the maximum number of nonzeros in any row of A, plus 1
+        // EPS is machine epsilon
         //
-        //        The i-th component of abs(R)+NZ*EPS*(abs(A)*abs(X)+abs(B))
-        //        is incremented by SAFE1 if the i-th component of
-        //        abs(A)*abs(X) + abs(B) is less than SAFE2.
+        // The i-th component of abs(R)+NZ*EPS*(abs(A)*abs(X)+abs(B))
+        // is incremented by SAFE1 if the i-th component of
+        // abs(A)*abs(X) + abs(B) is less than SAFE2.
         //
         for (i = 1; i <= n; i = i + 1) {
             if (rwork[i - 1] > safe2) {
@@ -251,35 +231,35 @@ void Cptrfs(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *d, COMP
         ix = iRamax(n, rwork, 1);
         ferr[j - 1] = rwork[ix - 1];
         //
-        //        Estimate the norm of inv(A).
+        // Estimate the norm of inv(A).
         //
-        //        Solve M(A) * x = e, where M(A) = (m(i,j)) is given by
+        // Solve M(A) * x = e, where M(A) = (m(i,j)) is given by
         //
-        //           m(i,j) =  abs(A(i,j)), i = j,
-        //           m(i,j) = -abs(A(i,j)), i .ne. j,
+        // m(i,j) =  abs(A(i,j)), i = j,
+        // m(i,j) = -abs(A(i,j)), i .ne. j,
         //
-        //        and e = [ 1, 1, ..., 1 ]**T.  Note M(A) = M(L)*D*M(L)**H.
+        // and e = [ 1, 1, ..., 1 ]**T.  Note M(A) = M(L)*D*M(L)**H.
         //
-        //        Solve M(L) * x = e.
+        // Solve M(L) * x = e.
         //
         rwork[1 - 1] = one;
         for (i = 2; i <= n; i = i + 1) {
             rwork[i - 1] = one + rwork[(i - 1) - 1] * abs(ef[(i - 1) - 1]);
         }
         //
-        //        Solve D * M(L)**H * x = b.
+        // Solve D * M(L)**H * x = b.
         //
         rwork[n - 1] = rwork[n - 1] / df[n - 1];
         for (i = n - 1; i >= 1; i = i - 1) {
             rwork[i - 1] = rwork[i - 1] / df[i - 1] + rwork[(i + 1) - 1] * abs(ef[i - 1]);
         }
         //
-        //        Compute norm(inv(A)) = max(x(i)), 1<=i<=n.
+        // Compute norm(inv(A)) = max(x(i)), 1<=i<=n.
         //
         ix = iRamax(n, rwork, 1);
         ferr[j - 1] = ferr[j - 1] * abs(rwork[ix - 1]);
         //
-        //        Normalize error.
+        // Normalize error.
         //
         lstres = zero;
         for (i = 1; i <= n; i = i + 1) {
@@ -291,6 +271,6 @@ void Cptrfs(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *d, COMP
         //
     }
     //
-    //     End of Cptrfs
+    // End of Cptrfs
     //
 }

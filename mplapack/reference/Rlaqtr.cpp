@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DLAQTR.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -92,13 +99,13 @@ void Rlaqtr(bool const ltran, bool const lreal, INTEGER const n, REAL *t, INTEGE
     notran = !ltran;
     info = 0;
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0) {
         return;
     }
     //
-    //     Set constants to control overflow
+    // Set constants to control overflow
     //
     eps = Rlamch("P");
     smlnum = Rlamch("S") / eps;
@@ -110,8 +117,8 @@ void Rlaqtr(bool const ltran, bool const lreal, INTEGER const n, REAL *t, INTEGE
     }
     smin = max(smlnum, REAL(eps * xnorm));
     //
-    //     Compute 1-norm of each column of strictly upper triangular
-    //     part of T to control overflow in triangular solver.
+    // Compute 1-norm of each column of strictly upper triangular
+    // part of T to control overflow in triangular solver.
     //
     work[1 - 1] = zero;
     for (j = 2; j <= n; j = j + 1) {
@@ -143,7 +150,7 @@ void Rlaqtr(bool const ltran, bool const lreal, INTEGER const n, REAL *t, INTEGE
         //
         if (notran) {
             //
-            //           Solve T*p = scale*c
+            // Solve T*p = scale*c
             //
             jnext = n;
             for (j = n; j >= 1; j = j - 1) {
@@ -162,10 +169,10 @@ void Rlaqtr(bool const ltran, bool const lreal, INTEGER const n, REAL *t, INTEGE
                 //
                 if (j1 == j2) {
                     //
-                    //                 Meet 1 by 1 diagonal block
+                    // Meet 1 by 1 diagonal block
                     //
-                    //                 Scale to avoid overflow when computing
-                    //                     x(j) = b(j)/T(j,j)
+                    // Scale to avoid overflow when computing
+                    // x(j) = b(j)/T(j,j)
                     //
                     xj = abs(x[j1 - 1]);
                     tjj = abs(t[(j1 - 1) + (j1 - 1) * ldt]);
@@ -191,8 +198,8 @@ void Rlaqtr(bool const ltran, bool const lreal, INTEGER const n, REAL *t, INTEGE
                     x[j1 - 1] = x[j1 - 1] / tmp;
                     xj = abs(x[j1 - 1]);
                     //
-                    //                 Scale x if necessary to avoid overflow when adding a
-                    //                 multiple of column j1 of T.
+                    // Scale x if necessary to avoid overflow when adding a
+                    // multiple of column j1 of T.
                     //
                     if (xj > one) {
                         rec = one / xj;
@@ -209,10 +216,10 @@ void Rlaqtr(bool const ltran, bool const lreal, INTEGER const n, REAL *t, INTEGE
                     //
                 } else {
                     //
-                    //                 Meet 2 by 2 diagonal block
+                    // Meet 2 by 2 diagonal block
                     //
-                    //                 Call 2 by 2 linear system solve, to take
-                    //                 care of possible overflow by scaling factor.
+                    // Call 2 by 2 linear system solve, to take
+                    // care of possible overflow by scaling factor.
                     //
                     d[(1 - 1)] = x[j1 - 1];
                     d[(2 - 1)] = x[j2 - 1];
@@ -228,8 +235,8 @@ void Rlaqtr(bool const ltran, bool const lreal, INTEGER const n, REAL *t, INTEGE
                     x[j1 - 1] = v[(1 - 1)];
                     x[j2 - 1] = v[(2 - 1)];
                     //
-                    //                 Scale V(1,1) (= X(J1)) and/or V(2,1) (=X(J2))
-                    //                 to avoid overflow in updating right-hand side.
+                    // Scale V(1,1) (= X(J1)) and/or V(2,1) (=X(J2))
+                    // to avoid overflow in updating right-hand side.
                     //
                     xj = max(abs(v[(1 - 1)]), abs(v[(2 - 1)]));
                     if (xj > one) {
@@ -240,7 +247,7 @@ void Rlaqtr(bool const ltran, bool const lreal, INTEGER const n, REAL *t, INTEGE
                         }
                     }
                     //
-                    //                 Update right-hand side
+                    // Update right-hand side
                     //
                     if (j1 > 1) {
                         Raxpy(j1 - 1, -x[j1 - 1], &t[(j1 - 1) * ldt], 1, x, 1);
@@ -256,7 +263,7 @@ void Rlaqtr(bool const ltran, bool const lreal, INTEGER const n, REAL *t, INTEGE
             //
         } else {
             //
-            //           Solve T**T*p = scale*c
+            // Solve T**T*p = scale*c
             //
             jnext = 1;
             for (j = 1; j <= n; j = j + 1) {
@@ -275,10 +282,10 @@ void Rlaqtr(bool const ltran, bool const lreal, INTEGER const n, REAL *t, INTEGE
                 //
                 if (j1 == j2) {
                     //
-                    //                 1 by 1 diagonal block
+                    // 1 by 1 diagonal block
                     //
-                    //                 Scale if necessary to avoid overflow in forming the
-                    //                 right-hand side element by inner product.
+                    // Scale if necessary to avoid overflow in forming the
+                    // right-hand side element by inner product.
                     //
                     xj = abs(x[j1 - 1]);
                     if (xmax > one) {
@@ -314,10 +321,10 @@ void Rlaqtr(bool const ltran, bool const lreal, INTEGER const n, REAL *t, INTEGE
                     //
                 } else {
                     //
-                    //                 2 by 2 diagonal block
+                    // 2 by 2 diagonal block
                     //
-                    //                 Scale if necessary to avoid overflow in forming the
-                    //                 right-hand side elements by inner product.
+                    // Scale if necessary to avoid overflow in forming the
+                    // right-hand side elements by inner product.
                     //
                     xj = max(abs(x[j1 - 1]), abs(x[j2 - 1]));
                     if (xmax > one) {
@@ -355,7 +362,7 @@ void Rlaqtr(bool const ltran, bool const lreal, INTEGER const n, REAL *t, INTEGE
         sminw = max(REAL(eps * abs(w)), smin);
         if (notran) {
             //
-            //           Solve (T + iB)*(p+iq) = c+id
+            // Solve (T + iB)*(p+iq) = c+id
             //
             jnext = n;
             for (j = n; j >= 1; j = j - 1) {
@@ -374,9 +381,9 @@ void Rlaqtr(bool const ltran, bool const lreal, INTEGER const n, REAL *t, INTEGE
                 //
                 if (j1 == j2) {
                     //
-                    //                 1 by 1 diagonal block
+                    // 1 by 1 diagonal block
                     //
-                    //                 Scale if necessary to avoid overflow in division
+                    // Scale if necessary to avoid overflow in division
                     //
                     z = w;
                     if (j1 == 1) {
@@ -408,8 +415,8 @@ void Rlaqtr(bool const ltran, bool const lreal, INTEGER const n, REAL *t, INTEGE
                     x[(n + j1) - 1] = si;
                     xj = abs(x[j1 - 1]) + abs(x[(n + j1) - 1]);
                     //
-                    //                 Scale x if necessary to avoid overflow when adding a
-                    //                 multiple of column j1 of T.
+                    // Scale x if necessary to avoid overflow when adding a
+                    // multiple of column j1 of T.
                     //
                     if (xj > one) {
                         rec = one / xj;
@@ -434,7 +441,7 @@ void Rlaqtr(bool const ltran, bool const lreal, INTEGER const n, REAL *t, INTEGE
                     //
                 } else {
                     //
-                    //                 Meet 2 by 2 diagonal block
+                    // Meet 2 by 2 diagonal block
                     //
                     d[(1 - 1)] = x[j1 - 1];
                     d[(2 - 1)] = x[j2 - 1];
@@ -454,8 +461,8 @@ void Rlaqtr(bool const ltran, bool const lreal, INTEGER const n, REAL *t, INTEGE
                     x[(n + j1) - 1] = v[(2 - 1) * ldv];
                     x[(n + j2) - 1] = v[(2 - 1) + (2 - 1) * ldv];
                     //
-                    //                 Scale X(J1), .... to avoid overflow in
-                    //                 updating right hand side.
+                    // Scale X(J1), .... to avoid overflow in
+                    // updating right hand side.
                     //
                     xj = max(abs(v[(1 - 1)]) + abs(v[(2 - 1) * ldv]), abs(v[(2 - 1)]) + abs(v[(2 - 1) + (2 - 1) * ldv]));
                     if (xj > one) {
@@ -466,7 +473,7 @@ void Rlaqtr(bool const ltran, bool const lreal, INTEGER const n, REAL *t, INTEGE
                         }
                     }
                     //
-                    //                 Update the right-hand side.
+                    // Update the right-hand side.
                     //
                     if (j1 > 1) {
                         Raxpy(j1 - 1, -x[j1 - 1], &t[(j1 - 1) * ldt], 1, x, 1);
@@ -490,7 +497,7 @@ void Rlaqtr(bool const ltran, bool const lreal, INTEGER const n, REAL *t, INTEGE
             //
         } else {
             //
-            //           Solve (T + iB)**T*(p+iq) = c+id
+            // Solve (T + iB)**T*(p+iq) = c+id
             //
             jnext = 1;
             for (j = 1; j <= n; j = j + 1) {
@@ -509,10 +516,10 @@ void Rlaqtr(bool const ltran, bool const lreal, INTEGER const n, REAL *t, INTEGE
                 //
                 if (j1 == j2) {
                     //
-                    //                 1 by 1 diagonal block
+                    // 1 by 1 diagonal block
                     //
-                    //                 Scale if necessary to avoid overflow in forming the
-                    //                 right-hand side element by inner product.
+                    // Scale if necessary to avoid overflow in forming the
+                    // right-hand side element by inner product.
                     //
                     xj = abs(x[j1 - 1]) + abs(x[(j1 + n) - 1]);
                     if (xmax > one) {
@@ -537,8 +544,8 @@ void Rlaqtr(bool const ltran, bool const lreal, INTEGER const n, REAL *t, INTEGE
                         z = b[1 - 1];
                     }
                     //
-                    //                 Scale if necessary to avoid overflow in
-                    //                 complex division
+                    // Scale if necessary to avoid overflow in
+                    // complex division
                     //
                     tjj = abs(t[(j1 - 1) + (j1 - 1) * ldt]) + abs(z);
                     tmp = t[(j1 - 1) + (j1 - 1) * ldt];
@@ -563,10 +570,10 @@ void Rlaqtr(bool const ltran, bool const lreal, INTEGER const n, REAL *t, INTEGE
                     //
                 } else {
                     //
-                    //                 2 by 2 diagonal block
+                    // 2 by 2 diagonal block
                     //
-                    //                 Scale if necessary to avoid overflow in forming the
-                    //                 right-hand side element by inner product.
+                    // Scale if necessary to avoid overflow in forming the
+                    // right-hand side element by inner product.
                     //
                     xj = max(abs(x[j1 - 1]) + abs(x[(n + j1) - 1]), abs(x[j2 - 1]) + abs(x[(n + j2) - 1]));
                     if (xmax > one) {
@@ -611,6 +618,6 @@ void Rlaqtr(bool const ltran, bool const lreal, INTEGER const n, REAL *t, INTEGE
         //
     }
     //
-    //     End of Rlaqtr
+    // End of Rlaqtr
     //
 }

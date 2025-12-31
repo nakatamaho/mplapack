@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,35 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine ZTRTI2.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Ctrti2(const char *uplo, const char *diag, INTEGER const n, COMPLEX *a, INTEGER const lda, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     bool upper = Mlsame(uplo, "U");
@@ -78,7 +62,7 @@ void Ctrti2(const char *uplo, const char *diag, INTEGER const n, COMPLEX *a, INT
     COMPLEX ajj = 0.0;
     if (upper) {
         //
-        //        Compute inverse of upper triangular matrix.
+        // Compute inverse of upper triangular matrix.
         //
         for (j = 1; j <= n; j = j + 1) {
             if (nounit) {
@@ -88,14 +72,14 @@ void Ctrti2(const char *uplo, const char *diag, INTEGER const n, COMPLEX *a, INT
                 ajj = -one;
             }
             //
-            //           Compute elements 1:j-1 of j-th column.
+            // Compute elements 1:j-1 of j-th column.
             //
             Ctrmv("Upper", "No transpose", diag, j - 1, a, lda, &a[(j - 1) * lda], 1);
             Cscal(j - 1, ajj, &a[(j - 1) * lda], 1);
         }
     } else {
         //
-        //        Compute inverse of lower triangular matrix.
+        // Compute inverse of lower triangular matrix.
         //
         for (j = n; j >= 1; j = j - 1) {
             if (nounit) {
@@ -106,7 +90,7 @@ void Ctrti2(const char *uplo, const char *diag, INTEGER const n, COMPLEX *a, INT
             }
             if (j < n) {
                 //
-                //              Compute elements j+1:n of j-th column.
+                // Compute elements j+1:n of j-th column.
                 //
                 Ctrmv("Lower", "No transpose", diag, n - j, &a[((j + 1) - 1) + ((j + 1) - 1) * lda], lda, &a[((j + 1) - 1) + (j - 1) * lda], 1);
                 Cscal(n - j, ajj, &a[((j + 1) - 1) + (j - 1) * lda], 1);
@@ -114,6 +98,6 @@ void Ctrti2(const char *uplo, const char *diag, INTEGER const n, COMPLEX *a, INT
         }
     }
     //
-    //     End of Ctrti2
+    // End of Ctrti2
     //
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DGEBAK.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -38,7 +45,7 @@ void Rgebak(const char *job, const char *side, INTEGER const n, INTEGER const il
     INTEGER ii = 0;
     INTEGER k = 0;
     //
-    //     Decode and Test the input parameters
+    // Decode and Test the input parameters
     //
     rightv = Mlsame(side, "R");
     leftv = Mlsame(side, "L");
@@ -64,7 +71,7 @@ void Rgebak(const char *job, const char *side, INTEGER const n, INTEGER const il
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0) {
         return;
@@ -80,7 +87,7 @@ void Rgebak(const char *job, const char *side, INTEGER const n, INTEGER const il
         goto statement_30;
     }
     //
-    //     Backward balance
+    // Backward balance
     //
     if (Mlsame(job, "S") || Mlsame(job, "B")) {
         //
@@ -100,10 +107,10 @@ void Rgebak(const char *job, const char *side, INTEGER const n, INTEGER const il
         //
     }
 //
-//     Backward permutation
+// Backward permutation
 //
-//     For  I = ILO-1 step -1 until 1,
-//              IHI+1 step 1 until N do --
+// For  I = ILO-1 step -1 until 1,
+// IHI+1 step 1 until N do --
 //
 statement_30:
     if (Mlsame(job, "P") || Mlsame(job, "B")) {
@@ -138,6 +145,6 @@ statement_30:
         }
     }
     //
-    //     End of Rgebak
+    // End of Rgebak
     //
 }

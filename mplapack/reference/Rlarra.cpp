@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,40 +26,27 @@
  *
  */
 
+// Derived from LAPACK routine DLARRA.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Rlarra(INTEGER const n, REAL *d, REAL *e, REAL *e2, REAL const spltol, REAL const tnrm, INTEGER &nsplit, INTEGER *isplit, INTEGER &info) {
     //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     info = 0;
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n <= 0) {
         return;
     }
     //
-    //     Compute splitting points
+    // Compute splitting points
     nsplit = 1;
     const REAL zero = 0.0;
     REAL tmp1 = 0.0;
@@ -91,6 +78,6 @@ void Rlarra(INTEGER const n, REAL *d, REAL *e, REAL *e2, REAL const spltol, REAL
     }
     isplit[nsplit - 1] = n;
     //
-    //     End of Rlarra
+    // End of Rlarra
     //
 }

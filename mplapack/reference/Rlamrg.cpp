@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DLAMRG.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -35,21 +42,6 @@ void Rlamrg(INTEGER const n1, INTEGER const n2, REAL *a, INTEGER const dtrd1, IN
     INTEGER ind1 = 0;
     INTEGER ind2 = 0;
     INTEGER i = 0;
-    //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Executable Statements ..
     //
     n1sv = n1;
     n2sv = n2;
@@ -96,6 +88,6 @@ statement_10:
         }
     }
     //
-    //     End of Rlamrg
+    // End of Rlamrg
     //
 }

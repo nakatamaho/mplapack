@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine ZLALSA.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -114,7 +121,7 @@ void Clalsa(INTEGER const icompq, INTEGER const smlsiz, INTEGER const n, INTEGER
         return;
     }
     //
-    //     Book-keeping and  setting up the computation tree.
+    // Book-keeping and  setting up the computation tree.
     //
     inode = 1;
     ndiml = inode + n;
@@ -122,26 +129,26 @@ void Clalsa(INTEGER const icompq, INTEGER const smlsiz, INTEGER const n, INTEGER
     //
     Rlasdt(n, nlvl, nd, &iwork[inode - 1], &iwork[ndiml - 1], &iwork[ndimr - 1], smlsiz);
     //
-    //     The following code applies back the left singular vector factors.
-    //     For applying back the right singular vector factors, go to 170.
+    // The following code applies back the left singular vector factors.
+    // For applying back the right singular vector factors, go to 170.
     //
     if (icompq == 1) {
         goto statement_170;
     }
     //
-    //     The nodes on the bottom level of the tree were solved
-    //     by DLASDQ. The corresponding left and right singular vector
-    //     matrices are in explicit form. First apply back the left
-    //     singular vector matrices.
+    // The nodes on the bottom level of the tree were solved
+    // by Rlasdq. The corresponding left and right singular vector
+    // matrices are in explicit form. First apply back the left
+    // singular vector matrices.
     //
     ndb1 = (nd + 1) / 2;
     for (i = ndb1; i <= nd; i = i + 1) {
         //
-        //        IC : center row of each node
-        //        NL : number of rows of left  subproblem
-        //        NR : number of rows of right subproblem
-        //        NLF: starting row of the left   subproblem
-        //        NRF: starting row of the right  subproblem
+        // IC : center row of each node
+        // NL : number of rows of left  subproblem
+        // NR : number of rows of right subproblem
+        // NLF: starting row of the left   subproblem
+        // NRF: starting row of the right  subproblem
         //
         i1 = i - 1;
         ic = iwork[(inode + i1) - 1];
@@ -150,11 +157,11 @@ void Clalsa(INTEGER const icompq, INTEGER const smlsiz, INTEGER const n, INTEGER
         nlf = ic - nl;
         nrf = ic + 1;
         //
-        //        Since B and BX are complex, the following call to Rgemm
-        //        is performed in two steps (real and imaginary parts).
+        // Since B and BX are complex, the following call to Rgemm
+        // is performed in two steps (real and imaginary parts).
         //
-        //        CALL Rgemm( 'T', 'N', NL, NRHS, NL, ONE, U( NLF, 1 ), LDU,
-        //     $               B( NLF, 1 ), LDB, ZERO, BX( NLF, 1 ), LDBX )
+        // CALL Rgemm( 'T', 'N', NL, NRHS, NL, ONE, U( NLF, 1 ), LDU,
+        // $               B( NLF, 1 ), LDB, ZERO, BX( NLF, 1 ), LDBX )
         //
         j = nl * nrhs * 2;
         for (jcol = 1; jcol <= nrhs; jcol = jcol + 1) {
@@ -182,11 +189,11 @@ void Clalsa(INTEGER const icompq, INTEGER const smlsiz, INTEGER const n, INTEGER
             }
         }
         //
-        //        Since B and BX are complex, the following call to Rgemm
-        //        is performed in two steps (real and imaginary parts).
+        // Since B and BX are complex, the following call to Rgemm
+        // is performed in two steps (real and imaginary parts).
         //
-        //        CALL Rgemm( 'T', 'N', NR, NRHS, NR, ONE, U( NRF, 1 ), LDU,
-        //    $               B( NRF, 1 ), LDB, ZERO, BX( NRF, 1 ), LDBX )
+        // CALL Rgemm( 'T', 'N', NR, NRHS, NR, ONE, U( NRF, 1 ), LDU,
+        // $               B( NRF, 1 ), LDB, ZERO, BX( NRF, 1 ), LDBX )
         //
         j = nr * nrhs * 2;
         for (jcol = 1; jcol <= nrhs; jcol = jcol + 1) {
@@ -216,16 +223,16 @@ void Clalsa(INTEGER const icompq, INTEGER const smlsiz, INTEGER const n, INTEGER
         //
     }
     //
-    //     Next copy the rows of B that correspond to unchanged rows
-    //     in the bidiagonal matrix to BX.
+    // Next copy the rows of B that correspond to unchanged rows
+    // in the bidiagonal matrix to BX.
     //
     for (i = 1; i <= nd; i = i + 1) {
         ic = iwork[(inode + i - 1) - 1];
         Ccopy(nrhs, &b[(ic - 1)], ldb, &bx[(ic - 1)], ldbx);
     }
     //
-    //     Finally go through the left singular vector matrices of all
-    //     the other subproblems bottom-up on the tree.
+    // Finally go through the left singular vector matrices of all
+    // the other subproblems bottom-up on the tree.
     //
     j = pow((double)2, (double)nlvl);
     sqre = 0;
@@ -233,8 +240,8 @@ void Clalsa(INTEGER const icompq, INTEGER const smlsiz, INTEGER const n, INTEGER
     for (lvl = nlvl; lvl >= 1; lvl = lvl - 1) {
         lvl2 = 2 * lvl - 1;
         //
-        //        find the first node LF and last node LL on
-        //        the current level LVL
+        // find the first node LF and last node LL on
+        // the current level LVL
         //
         if (lvl == 1) {
             lf = 1;
@@ -256,19 +263,19 @@ void Clalsa(INTEGER const icompq, INTEGER const smlsiz, INTEGER const n, INTEGER
     }
     goto statement_330;
 //
-//     ICOMPQ = 1: applying back the right singular vector factors.
+// ICOMPQ = 1: applying back the right singular vector factors.
 //
 statement_170:
     //
-    //     First now go through the right singular vector matrices of all
-    //     the tree nodes top-down.
+    // First now go through the right singular vector matrices of all
+    // the tree nodes top-down.
     //
     j = 0;
     for (lvl = 1; lvl <= nlvl; lvl = lvl + 1) {
         lvl2 = 2 * lvl - 1;
         //
-        //        Find the first node LF and last node LL on
-        //        the current level LVL.
+        // Find the first node LF and last node LL on
+        // the current level LVL.
         //
         if (lvl == 1) {
             lf = 1;
@@ -294,9 +301,9 @@ statement_170:
         }
     }
     //
-    //     The nodes on the bottom level of the tree were solved
-    //     by DLASDQ. The corresponding right singular vector
-    //     matrices are in explicit form. Apply them back.
+    // The nodes on the bottom level of the tree were solved
+    // by Rlasdq. The corresponding right singular vector
+    // matrices are in explicit form. Apply them back.
     //
     ndb1 = (nd + 1) / 2;
     for (i = ndb1; i <= nd; i = i + 1) {
@@ -313,11 +320,11 @@ statement_170:
         nlf = ic - nl;
         nrf = ic + 1;
         //
-        //        Since B and BX are complex, the following call to Rgemm is
-        //        performed in two steps (real and imaginary parts).
+        // Since B and BX are complex, the following call to Rgemm is
+        // performed in two steps (real and imaginary parts).
         //
-        //        CALL Rgemm( 'T', 'N', NLP1, NRHS, NLP1, ONE, VT( NLF, 1 ), LDU,
-        //    $               B( NLF, 1 ), LDB, ZERO, BX( NLF, 1 ), LDBX )
+        // CALL Rgemm( 'T', 'N', NLP1, NRHS, NLP1, ONE, VT( NLF, 1 ), LDU,
+        // $               B( NLF, 1 ), LDB, ZERO, BX( NLF, 1 ), LDBX )
         //
         j = nlp1 * nrhs * 2;
         for (jcol = 1; jcol <= nrhs; jcol = jcol + 1) {
@@ -345,11 +352,11 @@ statement_170:
             }
         }
         //
-        //        Since B and BX are complex, the following call to Rgemm is
-        //        performed in two steps (real and imaginary parts).
+        // Since B and BX are complex, the following call to Rgemm is
+        // performed in two steps (real and imaginary parts).
         //
-        //        CALL Rgemm( 'T', 'N', NRP1, NRHS, NRP1, ONE, VT( NRF, 1 ), LDU,
-        //    $               B( NRF, 1 ), LDB, ZERO, BX( NRF, 1 ), LDBX )
+        // CALL Rgemm( 'T', 'N', NRP1, NRHS, NRP1, ONE, VT( NRF, 1 ), LDU,
+        // $               B( NRF, 1 ), LDB, ZERO, BX( NRF, 1 ), LDBX )
         //
         j = nrp1 * nrhs * 2;
         for (jcol = 1; jcol <= nrhs; jcol = jcol + 1) {
@@ -381,6 +388,6 @@ statement_170:
 //
 statement_330:;
     //
-    //     End of Clalsa
+    // End of Clalsa
     //
 }

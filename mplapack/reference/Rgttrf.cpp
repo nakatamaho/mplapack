@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DGTTRF.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -35,27 +42,6 @@ void Rgttrf(INTEGER const n, REAL *dl, REAL *d, REAL *du, REAL *du2, INTEGER *ip
     REAL fact = 0.0;
     REAL temp = 0.0;
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     info = 0;
     if (n < 0) {
         info = -1;
@@ -63,13 +49,13 @@ void Rgttrf(INTEGER const n, REAL *dl, REAL *d, REAL *du, REAL *du2, INTEGER *ip
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0) {
         return;
     }
     //
-    //     Initialize IPIV(i) = i and DU2(I) = 0
+    // Initialize IPIV(i) = i and DU2(I) = 0
     //
     for (i = 1; i <= n; i = i + 1) {
         ipiv[i - 1] = i;
@@ -81,7 +67,7 @@ void Rgttrf(INTEGER const n, REAL *dl, REAL *d, REAL *du, REAL *du2, INTEGER *ip
     for (i = 1; i <= n - 2; i = i + 1) {
         if (abs(d[i - 1]) >= abs(dl[i - 1])) {
             //
-            //           No row interchange required, eliminate DL(I)
+            // No row interchange required, eliminate DL(I)
             //
             if (d[i - 1] != zero) {
                 fact = dl[i - 1] / d[i - 1];
@@ -90,7 +76,7 @@ void Rgttrf(INTEGER const n, REAL *dl, REAL *d, REAL *du, REAL *du2, INTEGER *ip
             }
         } else {
             //
-            //           Interchange rows I and I+1, eliminate DL(I)
+            // Interchange rows I and I+1, eliminate DL(I)
             //
             fact = d[i - 1] / dl[i - 1];
             d[i - 1] = dl[i - 1];
@@ -122,7 +108,7 @@ void Rgttrf(INTEGER const n, REAL *dl, REAL *d, REAL *du, REAL *du2, INTEGER *ip
         }
     }
     //
-    //     Check for a zero on the diagonal of U.
+    // Check for a zero on the diagonal of U.
     //
     for (i = 1; i <= n; i = i + 1) {
         if (d[i - 1] == zero) {
@@ -132,6 +118,6 @@ void Rgttrf(INTEGER const n, REAL *dl, REAL *d, REAL *du, REAL *du2, INTEGER *ip
     }
 statement_50:;
     //
-    //     End of Rgttrf
+    // End of Rgttrf
     //
 }

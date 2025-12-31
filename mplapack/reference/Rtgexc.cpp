@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DTGEXC.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -38,7 +45,7 @@ void Rtgexc(bool const wantq, bool const wantz, INTEGER const n, REAL *a, INTEGE
     INTEGER here = 0;
     INTEGER nbnext = 0;
     //
-    //     Decode and test input arguments.
+    // Decode and test input arguments.
     //
     info = 0;
     lquery = (lwork == -1);
@@ -78,14 +85,14 @@ void Rtgexc(bool const wantq, bool const wantz, INTEGER const n, REAL *a, INTEGE
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n <= 1) {
         return;
     }
     //
-    //     Determine the first row of the specified block and find out
-    //     if it is 1-by-1 or 2-by-2.
+    // Determine the first row of the specified block and find out
+    // if it is 1-by-1 or 2-by-2.
     //
     if (ifst > 1) {
         if (a[(ifst - 1) + ((ifst - 1) - 1) * lda] != zero) {
@@ -99,8 +106,8 @@ void Rtgexc(bool const wantq, bool const wantz, INTEGER const n, REAL *a, INTEGE
         }
     }
     //
-    //     Determine the first row of the final block
-    //     and find out if it is 1-by-1 or 2-by-2.
+    // Determine the first row of the final block
+    // and find out if it is 1-by-1 or 2-by-2.
     //
     if (ilst > 1) {
         if (a[(ilst - 1) + ((ilst - 1) - 1) * lda] != zero) {
@@ -119,7 +126,7 @@ void Rtgexc(bool const wantq, bool const wantz, INTEGER const n, REAL *a, INTEGE
     //
     if (ifst < ilst) {
         //
-        //        Update ILST.
+        // Update ILST.
         //
         if (nbf == 2 && nbl == 1) {
             ilst = ilst - 1;
@@ -132,11 +139,11 @@ void Rtgexc(bool const wantq, bool const wantz, INTEGER const n, REAL *a, INTEGE
     //
     statement_10:
         //
-        //        Swap with next one below.
+        // Swap with next one below.
         //
         if (nbf == 1 || nbf == 2) {
             //
-            //           Current block either 1-by-1 or 2-by-2.
+            // Current block either 1-by-1 or 2-by-2.
             //
             nbnext = 1;
             if (here + nbf + 1 <= n) {
@@ -151,7 +158,7 @@ void Rtgexc(bool const wantq, bool const wantz, INTEGER const n, REAL *a, INTEGE
             }
             here += nbnext;
             //
-            //           Test if 2-by-2 block breaks into two 1-by-1 blocks.
+            // Test if 2-by-2 block breaks into two 1-by-1 blocks.
             //
             if (nbf == 2) {
                 if (a[((here + 1) - 1) + (here - 1) * lda] == zero) {
@@ -161,8 +168,8 @@ void Rtgexc(bool const wantq, bool const wantz, INTEGER const n, REAL *a, INTEGE
             //
         } else {
             //
-            //           Current block consists of two 1-by-1 blocks, each of which
-            //           must be swapped individually.
+            // Current block consists of two 1-by-1 blocks, each of which
+            // must be swapped individually.
             //
             nbnext = 1;
             if (here + 3 <= n) {
@@ -177,7 +184,7 @@ void Rtgexc(bool const wantq, bool const wantz, INTEGER const n, REAL *a, INTEGE
             }
             if (nbnext == 1) {
                 //
-                //              Swap two 1-by-1 blocks.
+                // Swap two 1-by-1 blocks.
                 //
                 Rtgex2(wantq, wantz, n, a, lda, b, ldb, q, ldq, z, ldz, here, 1, 1, work, lwork, info);
                 if (info != 0) {
@@ -188,14 +195,14 @@ void Rtgexc(bool const wantq, bool const wantz, INTEGER const n, REAL *a, INTEGE
                 //
             } else {
                 //
-                //              Recompute NBNEXT in case of 2-by-2 split.
+                // Recompute NBNEXT in case of 2-by-2 split.
                 //
                 if (a[((here + 2) - 1) + ((here + 1) - 1) * lda] == zero) {
                     nbnext = 1;
                 }
                 if (nbnext == 2) {
                     //
-                    //                 2-by-2 block did not split.
+                    // 2-by-2 block did not split.
                     //
                     Rtgex2(wantq, wantz, n, a, lda, b, ldb, q, ldq, z, ldz, here, 1, nbnext, work, lwork, info);
                     if (info != 0) {
@@ -205,7 +212,7 @@ void Rtgexc(bool const wantq, bool const wantz, INTEGER const n, REAL *a, INTEGE
                     here += 2;
                 } else {
                     //
-                    //                 2-by-2 block did split.
+                    // 2-by-2 block did split.
                     //
                     Rtgex2(wantq, wantz, n, a, lda, b, ldb, q, ldq, z, ldz, here, 1, 1, work, lwork, info);
                     if (info != 0) {
@@ -231,11 +238,11 @@ void Rtgexc(bool const wantq, bool const wantz, INTEGER const n, REAL *a, INTEGE
     //
     statement_20:
         //
-        //        Swap with next one below.
+        // Swap with next one below.
         //
         if (nbf == 1 || nbf == 2) {
             //
-            //           Current block either 1-by-1 or 2-by-2.
+            // Current block either 1-by-1 or 2-by-2.
             //
             nbnext = 1;
             if (here >= 3) {
@@ -250,7 +257,7 @@ void Rtgexc(bool const wantq, bool const wantz, INTEGER const n, REAL *a, INTEGE
             }
             here = here - nbnext;
             //
-            //           Test if 2-by-2 block breaks into two 1-by-1 blocks.
+            // Test if 2-by-2 block breaks into two 1-by-1 blocks.
             //
             if (nbf == 2) {
                 if (a[((here + 1) - 1) + (here - 1) * lda] == zero) {
@@ -260,8 +267,8 @@ void Rtgexc(bool const wantq, bool const wantz, INTEGER const n, REAL *a, INTEGE
             //
         } else {
             //
-            //           Current block consists of two 1-by-1 blocks, each of which
-            //           must be swapped individually.
+            // Current block consists of two 1-by-1 blocks, each of which
+            // must be swapped individually.
             //
             nbnext = 1;
             if (here >= 3) {
@@ -276,7 +283,7 @@ void Rtgexc(bool const wantq, bool const wantz, INTEGER const n, REAL *a, INTEGE
             }
             if (nbnext == 1) {
                 //
-                //              Swap two 1-by-1 blocks.
+                // Swap two 1-by-1 blocks.
                 //
                 Rtgex2(wantq, wantz, n, a, lda, b, ldb, q, ldq, z, ldz, here, nbnext, 1, work, lwork, info);
                 if (info != 0) {
@@ -286,14 +293,14 @@ void Rtgexc(bool const wantq, bool const wantz, INTEGER const n, REAL *a, INTEGE
                 here = here - 1;
             } else {
                 //
-                //             Recompute NBNEXT in case of 2-by-2 split.
+                // Recompute NBNEXT in case of 2-by-2 split.
                 //
                 if (a[(here - 1) + ((here - 1) - 1) * lda] == zero) {
                     nbnext = 1;
                 }
                 if (nbnext == 2) {
                     //
-                    //                 2-by-2 block did not split.
+                    // 2-by-2 block did not split.
                     //
                     Rtgex2(wantq, wantz, n, a, lda, b, ldb, q, ldq, z, ldz, here - 1, 2, 1, work, lwork, info);
                     if (info != 0) {
@@ -303,7 +310,7 @@ void Rtgexc(bool const wantq, bool const wantz, INTEGER const n, REAL *a, INTEGE
                     here = here - 2;
                 } else {
                     //
-                    //                 2-by-2 block did split.
+                    // 2-by-2 block did split.
                     //
                     Rtgex2(wantq, wantz, n, a, lda, b, ldb, q, ldq, z, ldz, here, 1, 1, work, lwork, info);
                     if (info != 0) {
@@ -327,6 +334,6 @@ void Rtgexc(bool const wantq, bool const wantz, INTEGER const n, REAL *a, INTEGE
     ilst = here;
     work[1 - 1] = lwmin;
     //
-    //     End of Rtgexc
+    // End of Rtgexc
     //
 }

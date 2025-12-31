@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DLAMTSQR.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -85,7 +92,7 @@ void Rlamtsqr(const char *side, const char *trans, INTEGER const &m, INTEGER con
         info = -15;
     }
     //
-    //     Determine the block size if it is tall skinny or short and wide
+    // Determine the block size if it is tall skinny or short and wide
     //
     if (info == 0) {
         work[1 - 1] = lw;
@@ -98,7 +105,7 @@ void Rlamtsqr(const char *side, const char *trans, INTEGER const &m, INTEGER con
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (min({m, n, k}) == 0) {
         return;
@@ -115,7 +122,7 @@ void Rlamtsqr(const char *side, const char *trans, INTEGER const &m, INTEGER con
     INTEGER i = 0;
     if (left && notran) {
         //
-        //         Multiply Q to the last block of C
+        // Multiply Q to the last block of C
         //
         kk = mod((m - k), (mb - k));
         ctr = (m - k) / (mb - k);
@@ -128,20 +135,20 @@ void Rlamtsqr(const char *side, const char *trans, INTEGER const &m, INTEGER con
         //
         for (i = ii - (mb - k); i >= mb + 1; i = i - (mb - k)) {
             //
-            //         Multiply Q to the current block of C (I:I+MB,1:N)
+            // Multiply Q to the current block of C (I:I+MB,1:N)
             //
             ctr = ctr - 1;
             Rtpmqrt("L", "N", mb - k, n, k, 0, nb, &a[(i - 1)], lda, &t[((ctr * k + 1) - 1) * ldt], ldt, &c[(1 - 1)], ldc, &c[(i - 1)], ldc, work, info);
             //
         }
         //
-        //         Multiply Q to the first block of C (1:MB,1:N)
+        // Multiply Q to the first block of C (1:MB,1:N)
         //
         Rgemqrt("L", "N", mb, n, k, nb, &a[(1 - 1)], lda, t, ldt, &c[(1 - 1)], ldc, work, info);
         //
     } else if (left && tran) {
         //
-        //         Multiply Q to the first block of C
+        // Multiply Q to the first block of C
         //
         kk = mod((m - k), (mb - k));
         ii = m - kk + 1;
@@ -150,7 +157,7 @@ void Rlamtsqr(const char *side, const char *trans, INTEGER const &m, INTEGER con
         //
         for (i = mb + 1; i <= ii - mb + k; i = i + (mb - k)) {
             //
-            //         Multiply Q to the current block of C (I:I+MB,1:N)
+            // Multiply Q to the current block of C (I:I+MB,1:N)
             //
             Rtpmqrt("L", "T", mb - k, n, k, 0, nb, &a[(i - 1)], lda, &t[((ctr * k + 1) - 1) * ldt], ldt, &c[(1 - 1)], ldc, &c[(i - 1)], ldc, work, info);
             ctr++;
@@ -158,7 +165,7 @@ void Rlamtsqr(const char *side, const char *trans, INTEGER const &m, INTEGER con
         }
         if (ii <= m) {
             //
-            //         Multiply Q to the last block of C
+            // Multiply Q to the last block of C
             //
             Rtpmqrt("L", "T", kk, n, k, 0, nb, &a[(ii - 1)], lda, &t[((ctr * k + 1) - 1) * ldt], ldt, &c[(1 - 1)], ldc, &c[(ii - 1)], ldc, work, info);
             //
@@ -166,7 +173,7 @@ void Rlamtsqr(const char *side, const char *trans, INTEGER const &m, INTEGER con
         //
     } else if (right && tran) {
         //
-        //         Multiply Q to the last block of C
+        // Multiply Q to the last block of C
         //
         kk = mod((n - k), (mb - k));
         ctr = (n - k) / (mb - k);
@@ -179,20 +186,20 @@ void Rlamtsqr(const char *side, const char *trans, INTEGER const &m, INTEGER con
         //
         for (i = ii - (mb - k); i >= mb + 1; i = i - (mb - k)) {
             //
-            //         Multiply Q to the current block of C (1:M,I:I+MB)
+            // Multiply Q to the current block of C (1:M,I:I+MB)
             //
             ctr = ctr - 1;
             Rtpmqrt("R", "T", m, mb - k, k, 0, nb, &a[(i - 1)], lda, &t[((ctr * k + 1) - 1) * ldt], ldt, &c[(1 - 1)], ldc, &c[(i - 1) * ldc], ldc, work, info);
             //
         }
         //
-        //         Multiply Q to the first block of C (1:M,1:MB)
+        // Multiply Q to the first block of C (1:M,1:MB)
         //
         Rgemqrt("R", "T", m, mb, k, nb, &a[(1 - 1)], lda, t, ldt, &c[(1 - 1)], ldc, work, info);
         //
     } else if (right && notran) {
         //
-        //         Multiply Q to the first block of C
+        // Multiply Q to the first block of C
         //
         kk = mod((n - k), (mb - k));
         ii = n - kk + 1;
@@ -201,7 +208,7 @@ void Rlamtsqr(const char *side, const char *trans, INTEGER const &m, INTEGER con
         //
         for (i = mb + 1; i <= ii - mb + k; i = i + (mb - k)) {
             //
-            //         Multiply Q to the current block of C (1:M,I:I+MB)
+            // Multiply Q to the current block of C (1:M,I:I+MB)
             //
             Rtpmqrt("R", "N", m, mb - k, k, 0, nb, &a[(i - 1)], lda, &t[((ctr * k + 1) - 1) * ldt], ldt, &c[(1 - 1)], ldc, &c[(i - 1) * ldc], ldc, work, info);
             ctr++;
@@ -209,7 +216,7 @@ void Rlamtsqr(const char *side, const char *trans, INTEGER const &m, INTEGER con
         }
         if (ii <= n) {
             //
-            //         Multiply Q to the last block of C
+            // Multiply Q to the last block of C
             //
             Rtpmqrt("R", "N", m, kk, k, 0, nb, &a[(ii - 1)], lda, &t[((ctr * k + 1) - 1) * ldt], ldt, &c[(1 - 1)], ldc, &c[(ii - 1) * ldc], ldc, work, info);
             //
@@ -219,6 +226,6 @@ void Rlamtsqr(const char *side, const char *trans, INTEGER const &m, INTEGER con
     //
     work[1 - 1] = lw;
     //
-    //     End of RLAMTSQR
+    // End of Rlamtsqr
     //
 }

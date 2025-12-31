@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,35 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine DSPSVX.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Rspsvx(const char *fact, const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *ap, REAL *afp, INTEGER *ipiv, REAL *b, INTEGER const ldb, REAL *x, INTEGER const ldx, REAL &rcond, REAL *ferr, REAL *berr, REAL *work, INTEGER *iwork, INTEGER &info) {
     //
-    //  -- LAPACK driver routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     bool nofact = Mlsame(fact, "N");
@@ -79,12 +63,12 @@ void Rspsvx(const char *fact, const char *uplo, INTEGER const n, INTEGER const n
     const REAL zero = 0.0;
     if (nofact) {
         //
-        //        Compute the factorization A = U*D*U**T or A = L*D*L**T.
+        // Compute the factorization A = U*D*U**T or A = L*D*L**T.
         //
         Rcopy(n * (n + 1) / 2, ap, 1, afp, 1);
         Rsptrf(uplo, n, afp, ipiv, info);
         //
-        //        Return if INFO is non-zero.
+        // Return if INFO is non-zero.
         //
         if (info > 0) {
             rcond = zero;
@@ -92,30 +76,30 @@ void Rspsvx(const char *fact, const char *uplo, INTEGER const n, INTEGER const n
         }
     }
     //
-    //     Compute the norm of the matrix A.
+    // Compute the norm of the matrix A.
     //
     REAL anorm = Rlansp("I", uplo, n, ap, work);
     //
-    //     Compute the reciprocal of the condition number of A.
+    // Compute the reciprocal of the condition number of A.
     //
     Rspcon(uplo, n, afp, ipiv, anorm, rcond, work, iwork, info);
     //
-    //     Compute the solution vectors X.
+    // Compute the solution vectors X.
     //
     Rlacpy("Full", n, nrhs, b, ldb, x, ldx);
     Rsptrs(uplo, n, nrhs, afp, ipiv, x, ldx, info);
     //
-    //     Use iterative refinement to improve the computed solutions and
-    //     compute error bounds and backward error estimates for them.
+    // Use iterative refinement to improve the computed solutions and
+    // compute error bounds and backward error estimates for them.
     //
     Rsprfs(uplo, n, nrhs, ap, afp, ipiv, b, ldb, x, ldx, ferr, berr, work, iwork, info);
     //
-    //     Set INFO = N+1 if the matrix is singular to working precision.
+    // Set INFO = N+1 if the matrix is singular to working precision.
     //
     if (rcond < Rlamch("Epsilon")) {
         info = n + 1;
     }
     //
-    //     End of Rspsvx
+    // End of Rspsvx
     //
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine ZHBGST.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -60,30 +67,7 @@ void Chbgst(const char *vect, const char *uplo, INTEGER const n, INTEGER const k
     INTEGER nx = 0;
     INTEGER j1t = 0;
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input parameters
+    // Test the input parameters
     //
     wantx = Mlsame(vect, "V");
     upper = Mlsame(uplo, "U");
@@ -112,7 +96,7 @@ void Chbgst(const char *vect, const char *uplo, INTEGER const n, INTEGER const k
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0) {
         return;
@@ -120,75 +104,76 @@ void Chbgst(const char *vect, const char *uplo, INTEGER const n, INTEGER const k
     //
     inca = ldab * ka1;
     //
-    //     Initialize X to the unit matrix, if needed
+    // Initialize X to the unit matrix, if needed
     //
     if (wantx) {
         Claset("Full", n, n, czero, cone, x, ldx);
     }
     //
-    //     Set M to the splitting point m. It must be the same value as is
-    //     used in Cpbstf. The chosen value allows the arrays WORK and RWORK
+    // Set M to the splitting point m. It must be the same value as is
+    // used in Cpbstf. The chosen value allows the arrays WORK and RWORK
+    // to be of dimension (N).
     //
     m = (n + kb) / 2;
     //
-    //     The routine works in two phases, corresponding to the two halves
-    //     of the split Cholesky factorization of B as S**H*S where
+    // The routine works in two phases, corresponding to the two halves
+    // of the split Cholesky factorization of B as S**H*S where
     //
-    //     S = ( U    )
-    //         ( M  L )
+    // S = ( U    )
+    // ( M  L )
     //
-    //     with U upper triangular of order m, and L lower triangular of
-    //     order n-m. S has the same bandwidth as B.
+    // with U upper triangular of order m, and L lower triangular of
+    // order n-m. S has the same bandwidth as B.
     //
-    //     S is treated as a product of elementary matrices:
+    // S is treated as a product of elementary matrices:
     //
-    //     S = S(m)*S(m-1)*...*S(2)*S(1)*S(m+1)*S(m+2)*...*S(n-1)*S(n)
+    // S = S(m)*S(m-1)*...*S(2)*S(1)*S(m+1)*S(m+2)*...*S(n-1)*S(n)
     //
-    //     where S(i) is determined by the i-th row of S.
+    // where S(i) is determined by the i-th row of S.
     //
-    //     In phase 1, the index i takes the values n, n-1, ... , m+1;
-    //     in phase 2, it takes the values 1, 2, ... , m.
+    // In phase 1, the index i takes the values n, n-1, ... , m+1;
+    // in phase 2, it takes the values 1, 2, ... , m.
     //
-    //     For each value of i, the current matrix A is updated by forming
-    //     inv(S(i))**H*A*inv(S(i)). This creates a triangular bulge outside
-    //     the band of A. The bulge is then pushed down toward the bottom of
-    //     A in phase 1, and up toward the top of A in phase 2, by applying
-    //     plane rotations.
+    // For each value of i, the current matrix A is updated by forming
+    // inv(S(i))**H*A*inv(S(i)). This creates a triangular bulge outside
+    // the band of A. The bulge is then pushed down toward the bottom of
+    // A in phase 1, and up toward the top of A in phase 2, by applying
+    // plane rotations.
     //
-    //     There are kb*(kb+1)/2 elements in the bulge, but at most 2*kb-1
-    //     of them are linearly independent, so annihilating a bulge requires
-    //     only 2*kb-1 plane rotations. The rotations are divided into a 1st
-    //     set of kb-1 rotations, and a 2nd set of kb rotations.
+    // There are kb*(kb+1)/2 elements in the bulge, but at most 2*kb-1
+    // of them are linearly independent, so annihilating a bulge requires
+    // only 2*kb-1 plane rotations. The rotations are divided into a 1st
+    // set of kb-1 rotations, and a 2nd set of kb rotations.
     //
-    //     Wherever possible, rotations are generated and applied in vector
-    //     operations of length NR between the indices J1 and J2 (sometimes
-    //     replaced by modified values NRT, J1T or J2T).
+    // Wherever possible, rotations are generated and applied in vector
+    // operations of length NR between the indices J1 and J2 (sometimes
+    // replaced by modified values NRT, J1T or J2T).
     //
-    //     The real cosines and complex sines of the rotations are stored in
-    //     the arrays RWORK and WORK, those of the 1st set in elements
-    //     2:m-kb-1, and those of the 2nd set in elements m-kb+1:n.
+    // The real cosines and complex sines of the rotations are stored in
+    // the arrays RWORK and WORK, those of the 1st set in elements
+    // 2:m-kb-1, and those of the 2nd set in elements m-kb+1:n.
     //
-    //     The bulges are not formed explicitly; nonzero elements outside the
-    //     band are created only when they are required for generating new
-    //     rotations; they are stored in the array WORK, in positions where
-    //     they are later overwritten by the sines of the rotations which
-    //     annihilate them.
+    // The bulges are not formed explicitly; nonzero elements outside the
+    // band are created only when they are required for generating new
+    // rotations; they are stored in the array WORK, in positions where
+    // they are later overwritten by the sines of the rotations which
+    // annihilate them.
     //
-    //     **************************** Phase 1 *****************************
+    // **************************** Phase 1 *****************************
     //
-    //     The logical structure of this phase is:
+    // The logical structure of this phase is:
     //
-    //     UPDATE = .TRUE.
-    //     DO I = N, M + 1, -1
-    //        use S(i) to update A and create a new bulge
-    //        apply rotations to push all bulges KA positions downward
-    //     END DO
-    //     UPDATE = .FALSE.
-    //     DO I = M + KA + 1, N - 1
-    //        apply rotations to push all bulges KA positions downward
-    //     END DO
+    // UPDATE = .TRUE.
+    // DO I = N, M + 1, -1
+    // use S(i) to update A and create a new bulge
+    // apply rotations to push all bulges KA positions downward
+    // END DO
+    // UPDATE = .FALSE.
+    // DO I = M + KA + 1, N - 1
+    // apply rotations to push all bulges KA positions downward
+    // END DO
     //
-    //     To avoid duplicating code, the two loops are merged.
+    // To avoid duplicating code, the two loops are merged.
     //
     update = true;
     i = n + 1;
@@ -217,11 +202,11 @@ statement_10:
     //
     if (upper) {
         //
-        //        Transform A, working with the upper triangle
+        // Transform A, working with the upper triangle
         //
         if (update) {
             //
-            //           Form  inv(S(i))**H * A * inv(S(i))
+            // Form  inv(S(i))**H * A * inv(S(i))
             //
             bii = bb[(kb1 - 1) + (i - 1) * ldbb].real();
             ab[(ka1 - 1) + (i - 1) * ldab] = (ab[(ka1 - 1) + (i - 1) * ldab].real() / bii) / bii;
@@ -247,7 +232,7 @@ statement_10:
             //
             if (wantx) {
                 //
-                //              post-multiply X by inv(S(i))
+                // post-multiply X by inv(S(i))
                 //
                 CRscal(n - m, one / bii, &x[((m + 1) - 1) + (i - 1) * ldx], 1);
                 if (kbt > 0) {
@@ -255,29 +240,29 @@ statement_10:
                 }
             }
             //
-            //           store a(i,i1) in RA1 for use in next loop over K
+            // store a(i,i1) in RA1 for use in next loop over K
             //
             ra1 = ab[((i - i1 + ka1) - 1) + (i1 - 1) * ldab];
         }
         //
-        //        Generate and apply vectors of rotations to chase all the
-        //        existing bulges KA positions down toward the bottom of the
-        //        band
+        // Generate and apply vectors of rotations to chase all the
+        // existing bulges KA positions down toward the bottom of the
+        // band
         //
         for (k = 1; k <= kb - 1; k = k + 1) {
             if (update) {
                 //
-                //              Determine the rotations which would annihilate the bulge
-                //              which has in theory just been created
+                // Determine the rotations which would annihilate the bulge
+                // which has in theory just been created
                 //
                 if (i - k + ka < n && i - k > 1) {
                     //
-                    //                 generate rotation to annihilate a(i,i-k+ka+1)
+                    // generate rotation to annihilate a(i,i-k+ka+1)
                     //
                     Clartg(ab[((k + 1) - 1) + ((i - k + ka) - 1) * ldab], ra1, rwork[(i - k + ka - m) - 1], work[(i - k + ka - m) - 1], ra);
                     //
-                    //                 create nonzero element a(i-k,i-k+ka+1) outside the
-                    //                 band and store it in WORK(i-k)
+                    // create nonzero element a(i-k,i-k+ka+1) outside the
+                    // band and store it in WORK(i-k)
                     //
                     t = -bb[((kb1 - k) - 1) + (i - 1) * ldbb] * ra1;
                     work[(i - k) - 1] = rwork[(i - k + ka - m) - 1] * t - conj(work[(i - k + ka - m) - 1]) * ab[((i - k + ka) - 1) * ldab];
@@ -296,36 +281,36 @@ statement_10:
             nrt = (n - j2t + ka) / ka1;
             for (j = j2t; j <= j1; j = j + ka1) {
                 //
-                //              create nonzero element a(j-ka,j+1) outside the band
-                //              and store it in WORK(j-m)
+                // create nonzero element a(j-ka,j+1) outside the band
+                // and store it in WORK(j-m)
                 //
                 work[(j - m) - 1] = work[(j - m) - 1] * ab[((j + 1) - 1) * ldab];
                 ab[((j + 1) - 1) * ldab] = rwork[(j - m) - 1] * ab[((j + 1) - 1) * ldab];
             }
             //
-            //           generate rotations in 1st set to annihilate elements which
-            //           have been created outside the band
+            // generate rotations in 1st set to annihilate elements which
+            // have been created outside the band
             //
             if (nrt > 0) {
                 Clargv(nrt, &ab[(j2t - 1) * ldab], inca, &work[(j2t - m) - 1], ka1, &rwork[(j2t - m) - 1], ka1);
             }
             if (nr > 0) {
                 //
-                //              apply rotations in 1st set from the right
+                // apply rotations in 1st set from the right
                 //
                 for (l = 1; l <= ka - 1; l = l + 1) {
                     Clartv(nr, &ab[((ka1 - l) - 1) + (j2 - 1) * ldab], inca, &ab[((ka - l) - 1) + ((j2 + 1) - 1) * ldab], inca, &rwork[(j2 - m) - 1], &work[(j2 - m) - 1], ka1);
                 }
                 //
-                //              apply rotations in 1st set from both sides to diagonal
-                //              blocks
+                // apply rotations in 1st set from both sides to diagonal
+                // blocks
                 //
                 Clar2v(nr, &ab[(ka1 - 1) + (j2 - 1) * ldab], &ab[(ka1 - 1) + ((j2 + 1) - 1) * ldab], &ab[(ka - 1) + ((j2 + 1) - 1) * ldab], inca, &rwork[(j2 - m) - 1], &work[(j2 - m) - 1], ka1);
                 //
                 Clacgv(nr, &work[(j2 - m) - 1], ka1);
             }
             //
-            //           start applying rotations in 1st set from the left
+            // start applying rotations in 1st set from the left
             //
             for (l = ka - 1; l >= kb - k + 1; l = l - 1) {
                 nrt = (n - j2 + l) / ka1;
@@ -336,7 +321,7 @@ statement_10:
             //
             if (wantx) {
                 //
-                //              post-multiply X by product of rotations in 1st set
+                // post-multiply X by product of rotations in 1st set
                 //
                 for (j = j2; j <= j1; j = j + ka1) {
                     Crot(n - m, &x[((m + 1) - 1) + (j - 1) * ldx], 1, &x[((m + 1) - 1) + ((j + 1) - 1) * ldx], 1, rwork[(j - m) - 1], conj(work[(j - m) - 1]));
@@ -347,8 +332,8 @@ statement_10:
         if (update) {
             if (i2 <= n && kbt > 0) {
                 //
-                //              create nonzero element a(i-kbt,i-kbt+ka+1) outside the
-                //              band and store it in WORK(i-kbt)
+                // create nonzero element a(i-kbt,i-kbt+ka+1) outside the
+                // band and store it in WORK(i-kbt)
                 //
                 work[(i - kbt) - 1] = -bb[((kb1 - kbt) - 1) + (i - 1) * ldbb] * ra1;
             }
@@ -361,7 +346,7 @@ statement_10:
                 j2 = i - k - 1 + max((INTEGER)1, k - i0 + 1) * ka1;
             }
             //
-            //           finish applying rotations in 2nd set from the left
+            // finish applying rotations in 2nd set from the left
             //
             for (l = kb - k; l >= 1; l = l - 1) {
                 nrt = (n - j2 + ka + l) / ka1;
@@ -377,8 +362,8 @@ statement_10:
             }
             for (j = j2; j <= j1; j = j + ka1) {
                 //
-                //              create nonzero element a(j-ka,j+1) outside the band
-                //              and store it in WORK(j)
+                // create nonzero element a(j-ka,j+1) outside the band
+                // and store it in WORK(j)
                 //
                 work[j - 1] = work[j - 1] * ab[((j + 1) - 1) * ldab];
                 ab[((j + 1) - 1) * ldab] = rwork[j - 1] * ab[((j + 1) - 1) * ldab];
@@ -396,26 +381,26 @@ statement_10:
             j1 = j2 + (nr - 1) * ka1;
             if (nr > 0) {
                 //
-                //              generate rotations in 2nd set to annihilate elements
-                //              which have been created outside the band
+                // generate rotations in 2nd set to annihilate elements
+                // which have been created outside the band
                 //
                 Clargv(nr, &ab[(j2 - 1) * ldab], inca, &work[j2 - 1], ka1, &rwork[j2 - 1], ka1);
                 //
-                //              apply rotations in 2nd set from the right
+                // apply rotations in 2nd set from the right
                 //
                 for (l = 1; l <= ka - 1; l = l + 1) {
                     Clartv(nr, &ab[((ka1 - l) - 1) + (j2 - 1) * ldab], inca, &ab[((ka - l) - 1) + ((j2 + 1) - 1) * ldab], inca, &rwork[j2 - 1], &work[j2 - 1], ka1);
                 }
                 //
-                //              apply rotations in 2nd set from both sides to diagonal
-                //              blocks
+                // apply rotations in 2nd set from both sides to diagonal
+                // blocks
                 //
                 Clar2v(nr, &ab[(ka1 - 1) + (j2 - 1) * ldab], &ab[(ka1 - 1) + ((j2 + 1) - 1) * ldab], &ab[(ka - 1) + ((j2 + 1) - 1) * ldab], inca, &rwork[j2 - 1], &work[j2 - 1], ka1);
                 //
                 Clacgv(nr, &work[j2 - 1], ka1);
             }
             //
-            //           start applying rotations in 2nd set from the left
+            // start applying rotations in 2nd set from the left
             //
             for (l = ka - 1; l >= kb - k + 1; l = l - 1) {
                 nrt = (n - j2 + l) / ka1;
@@ -426,7 +411,7 @@ statement_10:
             //
             if (wantx) {
                 //
-                //              post-multiply X by product of rotations in 2nd set
+                // post-multiply X by product of rotations in 2nd set
                 //
                 for (j = j2; j <= j1; j = j + ka1) {
                     Crot(n - m, &x[((m + 1) - 1) + (j - 1) * ldx], 1, &x[((m + 1) - 1) + ((j + 1) - 1) * ldx], 1, rwork[j - 1], conj(work[j - 1]));
@@ -437,7 +422,7 @@ statement_10:
         for (k = 1; k <= kb - 1; k = k + 1) {
             j2 = i - k - 1 + max((INTEGER)1, k - i0 + 2) * ka1;
             //
-            //           finish applying rotations in 1st set from the left
+            // finish applying rotations in 1st set from the left
             //
             for (l = kb - k; l >= 1; l = l - 1) {
                 nrt = (n - j2 + l) / ka1;
@@ -456,11 +441,11 @@ statement_10:
         //
     } else {
         //
-        //        Transform A, working with the lower triangle
+        // Transform A, working with the lower triangle
         //
         if (update) {
             //
-            //           Form  inv(S(i))**H * A * inv(S(i))
+            // Form  inv(S(i))**H * A * inv(S(i))
             //
             bii = bb[(i - 1) * ldbb].real();
             ab[(i - 1) * ldab] = (ab[(i - 1) * ldab].real() / bii) / bii;
@@ -486,7 +471,7 @@ statement_10:
             //
             if (wantx) {
                 //
-                //              post-multiply X by inv(S(i))
+                // post-multiply X by inv(S(i))
                 //
                 CRscal(n - m, one / bii, &x[((m + 1) - 1) + (i - 1) * ldx], 1);
                 if (kbt > 0) {
@@ -494,29 +479,29 @@ statement_10:
                 }
             }
             //
-            //           store a(i1,i) in RA1 for use in next loop over K
+            // store a(i1,i) in RA1 for use in next loop over K
             //
             ra1 = ab[((i1 - i + 1) - 1) + (i - 1) * ldab];
         }
         //
-        //        Generate and apply vectors of rotations to chase all the
-        //        existing bulges KA positions down toward the bottom of the
-        //        band
+        // Generate and apply vectors of rotations to chase all the
+        // existing bulges KA positions down toward the bottom of the
+        // band
         //
         for (k = 1; k <= kb - 1; k = k + 1) {
             if (update) {
                 //
-                //              Determine the rotations which would annihilate the bulge
-                //              which has in theory just been created
+                // Determine the rotations which would annihilate the bulge
+                // which has in theory just been created
                 //
                 if (i - k + ka < n && i - k > 1) {
                     //
-                    //                 generate rotation to annihilate a(i-k+ka+1,i)
+                    // generate rotation to annihilate a(i-k+ka+1,i)
                     //
                     Clartg(ab[((ka1 - k) - 1) + (i - 1) * ldab], ra1, rwork[(i - k + ka - m) - 1], work[(i - k + ka - m) - 1], ra);
                     //
-                    //                 create nonzero element a(i-k+ka+1,i-k) outside the
-                    //                 band and store it in WORK(i-k)
+                    // create nonzero element a(i-k+ka+1,i-k) outside the
+                    // band and store it in WORK(i-k)
                     //
                     t = -bb[((k + 1) - 1) + ((i - k) - 1) * ldbb] * ra1;
                     work[(i - k) - 1] = rwork[(i - k + ka - m) - 1] * t - conj(work[(i - k + ka - m) - 1]) * ab[(ka1 - 1) + ((i - k) - 1) * ldab];
@@ -535,36 +520,36 @@ statement_10:
             nrt = (n - j2t + ka) / ka1;
             for (j = j2t; j <= j1; j = j + ka1) {
                 //
-                //              create nonzero element a(j+1,j-ka) outside the band
-                //              and store it in WORK(j-m)
+                // create nonzero element a(j+1,j-ka) outside the band
+                // and store it in WORK(j-m)
                 //
                 work[(j - m) - 1] = work[(j - m) - 1] * ab[(ka1 - 1) + ((j - ka + 1) - 1) * ldab];
                 ab[(ka1 - 1) + ((j - ka + 1) - 1) * ldab] = rwork[(j - m) - 1] * ab[(ka1 - 1) + ((j - ka + 1) - 1) * ldab];
             }
             //
-            //           generate rotations in 1st set to annihilate elements which
-            //           have been created outside the band
+            // generate rotations in 1st set to annihilate elements which
+            // have been created outside the band
             //
             if (nrt > 0) {
                 Clargv(nrt, &ab[(ka1 - 1) + ((j2t - ka) - 1) * ldab], inca, &work[(j2t - m) - 1], ka1, &rwork[(j2t - m) - 1], ka1);
             }
             if (nr > 0) {
                 //
-                //              apply rotations in 1st set from the left
+                // apply rotations in 1st set from the left
                 //
                 for (l = 1; l <= ka - 1; l = l + 1) {
                     Clartv(nr, &ab[((l + 1) - 1) + ((j2 - l) - 1) * ldab], inca, &ab[((l + 2) - 1) + ((j2 - l) - 1) * ldab], inca, &rwork[(j2 - m) - 1], &work[(j2 - m) - 1], ka1);
                 }
                 //
-                //              apply rotations in 1st set from both sides to diagonal
-                //              blocks
+                // apply rotations in 1st set from both sides to diagonal
+                // blocks
                 //
                 Clar2v(nr, &ab[(j2 - 1) * ldab], &ab[((j2 + 1) - 1) * ldab], &ab[(2 - 1) + (j2 - 1) * ldab], inca, &rwork[(j2 - m) - 1], &work[(j2 - m) - 1], ka1);
                 //
                 Clacgv(nr, &work[(j2 - m) - 1], ka1);
             }
             //
-            //           start applying rotations in 1st set from the right
+            // start applying rotations in 1st set from the right
             //
             for (l = ka - 1; l >= kb - k + 1; l = l - 1) {
                 nrt = (n - j2 + l) / ka1;
@@ -575,7 +560,7 @@ statement_10:
             //
             if (wantx) {
                 //
-                //              post-multiply X by product of rotations in 1st set
+                // post-multiply X by product of rotations in 1st set
                 //
                 for (j = j2; j <= j1; j = j + ka1) {
                     Crot(n - m, &x[((m + 1) - 1) + (j - 1) * ldx], 1, &x[((m + 1) - 1) + ((j + 1) - 1) * ldx], 1, rwork[(j - m) - 1], work[(j - m) - 1]);
@@ -586,8 +571,8 @@ statement_10:
         if (update) {
             if (i2 <= n && kbt > 0) {
                 //
-                //              create nonzero element a(i-kbt+ka+1,i-kbt) outside the
-                //              band and store it in WORK(i-kbt)
+                // create nonzero element a(i-kbt+ka+1,i-kbt) outside the
+                // band and store it in WORK(i-kbt)
                 //
                 work[(i - kbt) - 1] = -bb[((kbt + 1) - 1) + ((i - kbt) - 1) * ldbb] * ra1;
             }
@@ -600,7 +585,7 @@ statement_10:
                 j2 = i - k - 1 + max((INTEGER)1, k - i0 + 1) * ka1;
             }
             //
-            //           finish applying rotations in 2nd set from the right
+            // finish applying rotations in 2nd set from the right
             //
             for (l = kb - k; l >= 1; l = l - 1) {
                 nrt = (n - j2 + ka + l) / ka1;
@@ -616,8 +601,8 @@ statement_10:
             }
             for (j = j2; j <= j1; j = j + ka1) {
                 //
-                //              create nonzero element a(j+1,j-ka) outside the band
-                //              and store it in WORK(j)
+                // create nonzero element a(j+1,j-ka) outside the band
+                // and store it in WORK(j)
                 //
                 work[j - 1] = work[j - 1] * ab[(ka1 - 1) + ((j - ka + 1) - 1) * ldab];
                 ab[(ka1 - 1) + ((j - ka + 1) - 1) * ldab] = rwork[j - 1] * ab[(ka1 - 1) + ((j - ka + 1) - 1) * ldab];
@@ -635,26 +620,26 @@ statement_10:
             j1 = j2 + (nr - 1) * ka1;
             if (nr > 0) {
                 //
-                //              generate rotations in 2nd set to annihilate elements
-                //              which have been created outside the band
+                // generate rotations in 2nd set to annihilate elements
+                // which have been created outside the band
                 //
                 Clargv(nr, &ab[(ka1 - 1) + ((j2 - ka) - 1) * ldab], inca, &work[j2 - 1], ka1, &rwork[j2 - 1], ka1);
                 //
-                //              apply rotations in 2nd set from the left
+                // apply rotations in 2nd set from the left
                 //
                 for (l = 1; l <= ka - 1; l = l + 1) {
                     Clartv(nr, &ab[((l + 1) - 1) + ((j2 - l) - 1) * ldab], inca, &ab[((l + 2) - 1) + ((j2 - l) - 1) * ldab], inca, &rwork[j2 - 1], &work[j2 - 1], ka1);
                 }
                 //
-                //              apply rotations in 2nd set from both sides to diagonal
-                //              blocks
+                // apply rotations in 2nd set from both sides to diagonal
+                // blocks
                 //
                 Clar2v(nr, &ab[(j2 - 1) * ldab], &ab[((j2 + 1) - 1) * ldab], &ab[(2 - 1) + (j2 - 1) * ldab], inca, &rwork[j2 - 1], &work[j2 - 1], ka1);
                 //
                 Clacgv(nr, &work[j2 - 1], ka1);
             }
             //
-            //           start applying rotations in 2nd set from the right
+            // start applying rotations in 2nd set from the right
             //
             for (l = ka - 1; l >= kb - k + 1; l = l - 1) {
                 nrt = (n - j2 + l) / ka1;
@@ -665,7 +650,7 @@ statement_10:
             //
             if (wantx) {
                 //
-                //              post-multiply X by product of rotations in 2nd set
+                // post-multiply X by product of rotations in 2nd set
                 //
                 for (j = j2; j <= j1; j = j + ka1) {
                     Crot(n - m, &x[((m + 1) - 1) + (j - 1) * ldx], 1, &x[((m + 1) - 1) + ((j + 1) - 1) * ldx], 1, rwork[j - 1], work[j - 1]);
@@ -676,7 +661,7 @@ statement_10:
         for (k = 1; k <= kb - 1; k = k + 1) {
             j2 = i - k - 1 + max((INTEGER)1, k - i0 + 2) * ka1;
             //
-            //           finish applying rotations in 1st set from the right
+            // finish applying rotations in 1st set from the right
             //
             for (l = kb - k; l >= 1; l = l - 1) {
                 nrt = (n - j2 + l) / ka1;
@@ -699,21 +684,21 @@ statement_10:
 //
 statement_480:
     //
-    //     **************************** Phase 2 *****************************
+    // **************************** Phase 2 *****************************
     //
-    //     The logical structure of this phase is:
+    // The logical structure of this phase is:
     //
-    //     UPDATE = .TRUE.
-    //     DO I = 1, M
-    //        use S(i) to update A and create a new bulge
-    //        apply rotations to push all bulges KA positions upward
-    //     END DO
-    //     UPDATE = .FALSE.
-    //     DO I = M - KA - 1, 2, -1
-    //        apply rotations to push all bulges KA positions upward
-    //     END DO
+    // UPDATE = .TRUE.
+    // DO I = 1, M
+    // use S(i) to update A and create a new bulge
+    // apply rotations to push all bulges KA positions upward
+    // END DO
+    // UPDATE = .FALSE.
+    // DO I = M - KA - 1, 2, -1
+    // apply rotations to push all bulges KA positions upward
+    // END DO
     //
-    //     To avoid duplicating code, the two loops are merged.
+    // To avoid duplicating code, the two loops are merged.
     //
     update = true;
     i = 0;
@@ -748,11 +733,11 @@ statement_490:
     //
     if (upper) {
         //
-        //        Transform A, working with the upper triangle
+        // Transform A, working with the upper triangle
         //
         if (update) {
             //
-            //           Form  inv(S(i))**H * A * inv(S(i))
+            // Form  inv(S(i))**H * A * inv(S(i))
             //
             bii = bb[(kb1 - 1) + (i - 1) * ldbb].real();
             ab[(ka1 - 1) + (i - 1) * ldab] = (ab[(ka1 - 1) + (i - 1) * ldab].real() / bii) / bii;
@@ -778,7 +763,7 @@ statement_490:
             //
             if (wantx) {
                 //
-                //              post-multiply X by inv(S(i))
+                // post-multiply X by inv(S(i))
                 //
                 CRscal(nx, one / bii, &x[(i - 1) * ldx], 1);
                 if (kbt > 0) {
@@ -786,28 +771,28 @@ statement_490:
                 }
             }
             //
-            //           store a(i1,i) in RA1 for use in next loop over K
+            // store a(i1,i) in RA1 for use in next loop over K
             //
             ra1 = ab[((i1 - i + ka1) - 1) + (i - 1) * ldab];
         }
         //
-        //        Generate and apply vectors of rotations to chase all the
-        //        existing bulges KA positions up toward the top of the band
+        // Generate and apply vectors of rotations to chase all the
+        // existing bulges KA positions up toward the top of the band
         //
         for (k = 1; k <= kb - 1; k = k + 1) {
             if (update) {
                 //
-                //              Determine the rotations which would annihilate the bulge
-                //              which has in theory just been created
+                // Determine the rotations which would annihilate the bulge
+                // which has in theory just been created
                 //
                 if (i + k - ka1 > 0 && i + k < m) {
                     //
-                    //                 generate rotation to annihilate a(i+k-ka-1,i)
+                    // generate rotation to annihilate a(i+k-ka-1,i)
                     //
                     Clartg(ab[((k + 1) - 1) + (i - 1) * ldab], ra1, rwork[(i + k - ka) - 1], work[(i + k - ka) - 1], ra);
                     //
-                    //                 create nonzero element a(i+k-ka-1,i+k) outside the
-                    //                 band and store it in WORK(m-kb+i+k)
+                    // create nonzero element a(i+k-ka-1,i+k) outside the
+                    // band and store it in WORK(m-kb+i+k)
                     //
                     t = -bb[((kb1 - k) - 1) + ((i + k) - 1) * ldbb] * ra1;
                     work[(m - kb + i + k) - 1] = rwork[(i + k - ka) - 1] * t - conj(work[(i + k - ka) - 1]) * ab[((i + k) - 1) * ldab];
@@ -826,36 +811,36 @@ statement_490:
             nrt = (j2t + ka - 1) / ka1;
             for (j = j1; j <= j2t; j = j + ka1) {
                 //
-                //              create nonzero element a(j-1,j+ka) outside the band
-                //              and store it in WORK(j)
+                // create nonzero element a(j-1,j+ka) outside the band
+                // and store it in WORK(j)
                 //
                 work[j - 1] = work[j - 1] * ab[((j + ka - 1) - 1) * ldab];
                 ab[((j + ka - 1) - 1) * ldab] = rwork[j - 1] * ab[((j + ka - 1) - 1) * ldab];
             }
             //
-            //           generate rotations in 1st set to annihilate elements which
-            //           have been created outside the band
+            // generate rotations in 1st set to annihilate elements which
+            // have been created outside the band
             //
             if (nrt > 0) {
                 Clargv(nrt, &ab[((j1 + ka) - 1) * ldab], inca, &work[j1 - 1], ka1, &rwork[j1 - 1], ka1);
             }
             if (nr > 0) {
                 //
-                //              apply rotations in 1st set from the left
+                // apply rotations in 1st set from the left
                 //
                 for (l = 1; l <= ka - 1; l = l + 1) {
                     Clartv(nr, &ab[((ka1 - l) - 1) + ((j1 + l) - 1) * ldab], inca, &ab[((ka - l) - 1) + ((j1 + l) - 1) * ldab], inca, &rwork[j1 - 1], &work[j1 - 1], ka1);
                 }
                 //
-                //              apply rotations in 1st set from both sides to diagonal
-                //              blocks
+                // apply rotations in 1st set from both sides to diagonal
+                // blocks
                 //
                 Clar2v(nr, &ab[(ka1 - 1) + (j1 - 1) * ldab], &ab[(ka1 - 1) + ((j1 - 1) - 1) * ldab], &ab[(ka - 1) + (j1 - 1) * ldab], inca, &rwork[j1 - 1], &work[j1 - 1], ka1);
                 //
                 Clacgv(nr, &work[j1 - 1], ka1);
             }
             //
-            //           start applying rotations in 1st set from the right
+            // start applying rotations in 1st set from the right
             //
             for (l = ka - 1; l >= kb - k + 1; l = l - 1) {
                 nrt = (j2 + l - 1) / ka1;
@@ -867,7 +852,7 @@ statement_490:
             //
             if (wantx) {
                 //
-                //              post-multiply X by product of rotations in 1st set
+                // post-multiply X by product of rotations in 1st set
                 //
                 for (j = j1; j <= j2; j = j + ka1) {
                     Crot(nx, &x[(j - 1) * ldx], 1, &x[((j - 1) - 1) * ldx], 1, rwork[j - 1], work[j - 1]);
@@ -878,8 +863,8 @@ statement_490:
         if (update) {
             if (i2 > 0 && kbt > 0) {
                 //
-                //              create nonzero element a(i+kbt-ka-1,i+kbt) outside the
-                //              band and store it in WORK(m-kb+i+kbt)
+                // create nonzero element a(i+kbt-ka-1,i+kbt) outside the
+                // band and store it in WORK(m-kb+i+kbt)
                 //
                 work[(m - kb + i + kbt) - 1] = -bb[((kb1 - kbt) - 1) + ((i + kbt) - 1) * ldbb] * ra1;
             }
@@ -892,7 +877,7 @@ statement_490:
                 j2 = i + k + 1 - max((INTEGER)1, k + i0 - m) * ka1;
             }
             //
-            //           finish applying rotations in 2nd set from the right
+            // finish applying rotations in 2nd set from the right
             //
             for (l = kb - k; l >= 1; l = l - 1) {
                 nrt = (j2 + ka + l - 1) / ka1;
@@ -909,8 +894,8 @@ statement_490:
             }
             for (j = j1; j <= j2; j = j + ka1) {
                 //
-                //              create nonzero element a(j-1,j+ka) outside the band
-                //              and store it in WORK(m-kb+j)
+                // create nonzero element a(j-1,j+ka) outside the band
+                // and store it in WORK(m-kb+j)
                 //
                 work[(m - kb + j) - 1] = work[(m - kb + j) - 1] * ab[((j + ka - 1) - 1) * ldab];
                 ab[((j + ka - 1) - 1) * ldab] = rwork[(m - kb + j) - 1] * ab[((j + ka - 1) - 1) * ldab];
@@ -928,26 +913,26 @@ statement_490:
             j1 = j2 - (nr - 1) * ka1;
             if (nr > 0) {
                 //
-                //              generate rotations in 2nd set to annihilate elements
-                //              which have been created outside the band
+                // generate rotations in 2nd set to annihilate elements
+                // which have been created outside the band
                 //
                 Clargv(nr, &ab[((j1 + ka) - 1) * ldab], inca, &work[(m - kb + j1) - 1], ka1, &rwork[(m - kb + j1) - 1], ka1);
                 //
-                //              apply rotations in 2nd set from the left
+                // apply rotations in 2nd set from the left
                 //
                 for (l = 1; l <= ka - 1; l = l + 1) {
                     Clartv(nr, &ab[((ka1 - l) - 1) + ((j1 + l) - 1) * ldab], inca, &ab[((ka - l) - 1) + ((j1 + l) - 1) * ldab], inca, &rwork[(m - kb + j1) - 1], &work[(m - kb + j1) - 1], ka1);
                 }
                 //
-                //              apply rotations in 2nd set from both sides to diagonal
-                //              blocks
+                // apply rotations in 2nd set from both sides to diagonal
+                // blocks
                 //
                 Clar2v(nr, &ab[(ka1 - 1) + (j1 - 1) * ldab], &ab[(ka1 - 1) + ((j1 - 1) - 1) * ldab], &ab[(ka - 1) + (j1 - 1) * ldab], inca, &rwork[(m - kb + j1) - 1], &work[(m - kb + j1) - 1], ka1);
                 //
                 Clacgv(nr, &work[(m - kb + j1) - 1], ka1);
             }
             //
-            //           start applying rotations in 2nd set from the right
+            // start applying rotations in 2nd set from the right
             //
             for (l = ka - 1; l >= kb - k + 1; l = l - 1) {
                 nrt = (j2 + l - 1) / ka1;
@@ -959,7 +944,7 @@ statement_490:
             //
             if (wantx) {
                 //
-                //              post-multiply X by product of rotations in 2nd set
+                // post-multiply X by product of rotations in 2nd set
                 //
                 for (j = j1; j <= j2; j = j + ka1) {
                     Crot(nx, &x[(j - 1) * ldx], 1, &x[((j - 1) - 1) * ldx], 1, rwork[(m - kb + j) - 1], work[(m - kb + j) - 1]);
@@ -970,7 +955,7 @@ statement_490:
         for (k = 1; k <= kb - 1; k = k + 1) {
             j2 = i + k + 1 - max((INTEGER)1, k + i0 - m + 1) * ka1;
             //
-            //           finish applying rotations in 1st set from the right
+            // finish applying rotations in 1st set from the right
             //
             for (l = kb - k; l >= 1; l = l - 1) {
                 nrt = (j2 + l - 1) / ka1;
@@ -990,11 +975,11 @@ statement_490:
         //
     } else {
         //
-        //        Transform A, working with the lower triangle
+        // Transform A, working with the lower triangle
         //
         if (update) {
             //
-            //           Form  inv(S(i))**H * A * inv(S(i))
+            // Form  inv(S(i))**H * A * inv(S(i))
             //
             bii = bb[(i - 1) * ldbb].real();
             ab[(i - 1) * ldab] = (ab[(i - 1) * ldab].real() / bii) / bii;
@@ -1020,7 +1005,7 @@ statement_490:
             //
             if (wantx) {
                 //
-                //              post-multiply X by inv(S(i))
+                // post-multiply X by inv(S(i))
                 //
                 CRscal(nx, one / bii, &x[(i - 1) * ldx], 1);
                 if (kbt > 0) {
@@ -1028,28 +1013,28 @@ statement_490:
                 }
             }
             //
-            //           store a(i,i1) in RA1 for use in next loop over K
+            // store a(i,i1) in RA1 for use in next loop over K
             //
             ra1 = ab[((i - i1 + 1) - 1) + (i1 - 1) * ldab];
         }
         //
-        //        Generate and apply vectors of rotations to chase all the
-        //        existing bulges KA positions up toward the top of the band
+        // Generate and apply vectors of rotations to chase all the
+        // existing bulges KA positions up toward the top of the band
         //
         for (k = 1; k <= kb - 1; k = k + 1) {
             if (update) {
                 //
-                //              Determine the rotations which would annihilate the bulge
-                //              which has in theory just been created
+                // Determine the rotations which would annihilate the bulge
+                // which has in theory just been created
                 //
                 if (i + k - ka1 > 0 && i + k < m) {
                     //
-                    //                 generate rotation to annihilate a(i,i+k-ka-1)
+                    // generate rotation to annihilate a(i,i+k-ka-1)
                     //
                     Clartg(ab[((ka1 - k) - 1) + ((i + k - ka) - 1) * ldab], ra1, rwork[(i + k - ka) - 1], work[(i + k - ka) - 1], ra);
                     //
-                    //                 create nonzero element a(i+k,i+k-ka-1) outside the
-                    //                 band and store it in WORK(m-kb+i+k)
+                    // create nonzero element a(i+k,i+k-ka-1) outside the
+                    // band and store it in WORK(m-kb+i+k)
                     //
                     t = -bb[((k + 1) - 1) + (i - 1) * ldbb] * ra1;
                     work[(m - kb + i + k) - 1] = rwork[(i + k - ka) - 1] * t - conj(work[(i + k - ka) - 1]) * ab[(ka1 - 1) + ((i + k - ka) - 1) * ldab];
@@ -1068,36 +1053,36 @@ statement_490:
             nrt = (j2t + ka - 1) / ka1;
             for (j = j1; j <= j2t; j = j + ka1) {
                 //
-                //              create nonzero element a(j+ka,j-1) outside the band
-                //              and store it in WORK(j)
+                // create nonzero element a(j+ka,j-1) outside the band
+                // and store it in WORK(j)
                 //
                 work[j - 1] = work[j - 1] * ab[(ka1 - 1) + ((j - 1) - 1) * ldab];
                 ab[(ka1 - 1) + ((j - 1) - 1) * ldab] = rwork[j - 1] * ab[(ka1 - 1) + ((j - 1) - 1) * ldab];
             }
             //
-            //           generate rotations in 1st set to annihilate elements which
-            //           have been created outside the band
+            // generate rotations in 1st set to annihilate elements which
+            // have been created outside the band
             //
             if (nrt > 0) {
                 Clargv(nrt, &ab[(ka1 - 1) + (j1 - 1) * ldab], inca, &work[j1 - 1], ka1, &rwork[j1 - 1], ka1);
             }
             if (nr > 0) {
                 //
-                //              apply rotations in 1st set from the right
+                // apply rotations in 1st set from the right
                 //
                 for (l = 1; l <= ka - 1; l = l + 1) {
                     Clartv(nr, &ab[((l + 1) - 1) + (j1 - 1) * ldab], inca, &ab[((l + 2) - 1) + ((j1 - 1) - 1) * ldab], inca, &rwork[j1 - 1], &work[j1 - 1], ka1);
                 }
                 //
-                //              apply rotations in 1st set from both sides to diagonal
-                //              blocks
+                // apply rotations in 1st set from both sides to diagonal
+                // blocks
                 //
                 Clar2v(nr, &ab[(j1 - 1) * ldab], &ab[((j1 - 1) - 1) * ldab], &ab[(2 - 1) + ((j1 - 1) - 1) * ldab], inca, &rwork[j1 - 1], &work[j1 - 1], ka1);
                 //
                 Clacgv(nr, &work[j1 - 1], ka1);
             }
             //
-            //           start applying rotations in 1st set from the left
+            // start applying rotations in 1st set from the left
             //
             for (l = ka - 1; l >= kb - k + 1; l = l - 1) {
                 nrt = (j2 + l - 1) / ka1;
@@ -1109,7 +1094,7 @@ statement_490:
             //
             if (wantx) {
                 //
-                //              post-multiply X by product of rotations in 1st set
+                // post-multiply X by product of rotations in 1st set
                 //
                 for (j = j1; j <= j2; j = j + ka1) {
                     Crot(nx, &x[(j - 1) * ldx], 1, &x[((j - 1) - 1) * ldx], 1, rwork[j - 1], conj(work[j - 1]));
@@ -1120,8 +1105,8 @@ statement_490:
         if (update) {
             if (i2 > 0 && kbt > 0) {
                 //
-                //              create nonzero element a(i+kbt,i+kbt-ka-1) outside the
-                //              band and store it in WORK(m-kb+i+kbt)
+                // create nonzero element a(i+kbt,i+kbt-ka-1) outside the
+                // band and store it in WORK(m-kb+i+kbt)
                 //
                 work[(m - kb + i + kbt) - 1] = -bb[((kbt + 1) - 1) + (i - 1) * ldbb] * ra1;
             }
@@ -1134,7 +1119,7 @@ statement_490:
                 j2 = i + k + 1 - max((INTEGER)1, k + i0 - m) * ka1;
             }
             //
-            //           finish applying rotations in 2nd set from the left
+            // finish applying rotations in 2nd set from the left
             //
             for (l = kb - k; l >= 1; l = l - 1) {
                 nrt = (j2 + ka + l - 1) / ka1;
@@ -1151,8 +1136,8 @@ statement_490:
             }
             for (j = j1; j <= j2; j = j + ka1) {
                 //
-                //              create nonzero element a(j+ka,j-1) outside the band
-                //              and store it in WORK(m-kb+j)
+                // create nonzero element a(j+ka,j-1) outside the band
+                // and store it in WORK(m-kb+j)
                 //
                 work[(m - kb + j) - 1] = work[(m - kb + j) - 1] * ab[(ka1 - 1) + ((j - 1) - 1) * ldab];
                 ab[(ka1 - 1) + ((j - 1) - 1) * ldab] = rwork[(m - kb + j) - 1] * ab[(ka1 - 1) + ((j - 1) - 1) * ldab];
@@ -1170,26 +1155,26 @@ statement_490:
             j1 = j2 - (nr - 1) * ka1;
             if (nr > 0) {
                 //
-                //              generate rotations in 2nd set to annihilate elements
-                //              which have been created outside the band
+                // generate rotations in 2nd set to annihilate elements
+                // which have been created outside the band
                 //
                 Clargv(nr, &ab[(ka1 - 1) + (j1 - 1) * ldab], inca, &work[(m - kb + j1) - 1], ka1, &rwork[(m - kb + j1) - 1], ka1);
                 //
-                //              apply rotations in 2nd set from the right
+                // apply rotations in 2nd set from the right
                 //
                 for (l = 1; l <= ka - 1; l = l + 1) {
                     Clartv(nr, &ab[((l + 1) - 1) + (j1 - 1) * ldab], inca, &ab[((l + 2) - 1) + ((j1 - 1) - 1) * ldab], inca, &rwork[(m - kb + j1) - 1], &work[(m - kb + j1) - 1], ka1);
                 }
                 //
-                //              apply rotations in 2nd set from both sides to diagonal
-                //              blocks
+                // apply rotations in 2nd set from both sides to diagonal
+                // blocks
                 //
                 Clar2v(nr, &ab[(j1 - 1) * ldab], &ab[((j1 - 1) - 1) * ldab], &ab[(2 - 1) + ((j1 - 1) - 1) * ldab], inca, &rwork[(m - kb + j1) - 1], &work[(m - kb + j1) - 1], ka1);
                 //
                 Clacgv(nr, &work[(m - kb + j1) - 1], ka1);
             }
             //
-            //           start applying rotations in 2nd set from the left
+            // start applying rotations in 2nd set from the left
             //
             for (l = ka - 1; l >= kb - k + 1; l = l - 1) {
                 nrt = (j2 + l - 1) / ka1;
@@ -1201,7 +1186,7 @@ statement_490:
             //
             if (wantx) {
                 //
-                //              post-multiply X by product of rotations in 2nd set
+                // post-multiply X by product of rotations in 2nd set
                 //
                 for (j = j1; j <= j2; j = j + ka1) {
                     Crot(nx, &x[(j - 1) * ldx], 1, &x[((j - 1) - 1) * ldx], 1, rwork[(m - kb + j) - 1], conj(work[(m - kb + j) - 1]));
@@ -1212,7 +1197,7 @@ statement_490:
         for (k = 1; k <= kb - 1; k = k + 1) {
             j2 = i + k + 1 - max((INTEGER)1, k + i0 - m + 1) * ka1;
             //
-            //           finish applying rotations in 1st set from the left
+            // finish applying rotations in 1st set from the left
             //
             for (l = kb - k; l >= 1; l = l - 1) {
                 nrt = (j2 + l - 1) / ka1;
@@ -1234,6 +1219,6 @@ statement_490:
     //
     goto statement_490;
     //
-    //     End of Chbgst
+    // End of Chbgst
     //
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,12 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine ZPPSV.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Cppsv(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *ap, COMPLEX *b, INTEGER const ldb, INTEGER &info) {
     //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     if (!Mlsame(uplo, "U") && !Mlsame(uplo, "L")) {
@@ -48,17 +55,17 @@ void Cppsv(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *ap, C
         return;
     }
     //
-    //     Compute the Cholesky factorization A = U**H *U or A = L*L**H.
+    // Compute the Cholesky factorization A = U**H *U or A = L*L**H.
     //
     Cpptrf(uplo, n, ap, info);
     if (info == 0) {
         //
-        //        Solve the system A*X = B, overwriting B with X.
+        // Solve the system A*X = B, overwriting B with X.
         //
         Cpptrs(uplo, n, nrhs, ap, b, ldb, info);
         //
     }
     //
-    //     End of Cppsv
+    // End of Cppsv
     //
 }

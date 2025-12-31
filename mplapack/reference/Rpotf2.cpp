@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DPOTF2.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -36,30 +43,7 @@ void Rpotf2(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INTEG
     const REAL zero = 0.0;
     const REAL one = 1.0;
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     upper = Mlsame(uplo, "U");
@@ -75,7 +59,7 @@ void Rpotf2(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INTEG
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0) {
         return;
@@ -83,11 +67,11 @@ void Rpotf2(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INTEG
     //
     if (upper) {
         //
-        //        Compute the Cholesky factorization A = U**T *U.
+        // Compute the Cholesky factorization A = U**T *U.
         //
         for (j = 1; j <= n; j = j + 1) {
             //
-            //           Compute U(J,J) and test for non-positive-definiteness.
+            // Compute U(J,J) and test for non-positive-definiteness.
             //
             ajj = a[(j - 1) + (j - 1) * lda] - Rdot(j - 1, &a[(j - 1) * lda], 1, &a[(j - 1) * lda], 1);
             if (ajj <= zero || Risnan(ajj)) {
@@ -97,7 +81,7 @@ void Rpotf2(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INTEG
             ajj = sqrt(ajj);
             a[(j - 1) + (j - 1) * lda] = ajj;
             //
-            //           Compute elements J+1:N of row J.
+            // Compute elements J+1:N of row J.
             //
             if (j < n) {
                 Rgemv("Transpose", j - 1, n - j, -one, &a[((j + 1) - 1) * lda], lda, &a[(j - 1) * lda], 1, one, &a[(j - 1) + ((j + 1) - 1) * lda], lda);
@@ -106,11 +90,11 @@ void Rpotf2(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INTEG
         }
     } else {
         //
-        //        Compute the Cholesky factorization A = L*L**T.
+        // Compute the Cholesky factorization A = L*L**T.
         //
         for (j = 1; j <= n; j = j + 1) {
             //
-            //           Compute L(J,J) and test for non-positive-definiteness.
+            // Compute L(J,J) and test for non-positive-definiteness.
             //
             ajj = a[(j - 1) + (j - 1) * lda] - Rdot(j - 1, &a[(j - 1)], lda, &a[(j - 1)], lda);
             if (ajj <= zero || Risnan(ajj)) {
@@ -120,7 +104,7 @@ void Rpotf2(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INTEG
             ajj = sqrt(ajj);
             a[(j - 1) + (j - 1) * lda] = ajj;
             //
-            //           Compute elements J+1:N of column J.
+            // Compute elements J+1:N of column J.
             //
             if (j < n) {
                 Rgemv("No transpose", n - j, j - 1, -one, &a[((j + 1) - 1)], lda, &a[(j - 1)], lda, one, &a[((j + 1) - 1) + (j - 1) * lda], 1);
@@ -135,6 +119,6 @@ statement_30:
 //
 statement_40:;
     //
-    //     End of Rpotf2
+    // End of Rpotf2
     //
 }

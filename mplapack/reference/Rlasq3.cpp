@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DLASQ3.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -76,7 +83,7 @@ void Rlasq3(INTEGER const i0, INTEGER &n0, REAL *z, INTEGER &pp, REAL &dmin, REA
     tol = eps * hundrd;
     tol2 = pow2(tol);
 //
-//     Check for deflation.
+// Check for deflation.
 //
 statement_10:
     //
@@ -91,7 +98,7 @@ statement_10:
         goto statement_40;
     }
     //
-    //     Check whether E(N0-1) is negligible, 1 eigenvalue.
+    // Check whether E(N0-1) is negligible, 1 eigenvalue.
     //
     if (z[(nn - 5) - 1] > tol2 * (sigma + z[(nn - 3) - 1]) && z[(nn - 2 * pp - 4) - 1] > tol2 * z[(nn - 7) - 1]) {
         goto statement_30;
@@ -103,7 +110,7 @@ statement_20:
     n0 = n0 - 1;
     goto statement_10;
 //
-//     Check  whether E(N0-2) is negligible, 2 eigenvalues.
+// Check  whether E(N0-2) is negligible, 2 eigenvalues.
 //
 statement_30:
     //
@@ -140,7 +147,7 @@ statement_50:
         pp = 0;
     }
     //
-    //     Reverse the qd-array, if warranted.
+    // Reverse the qd-array, if warranted.
     //
     if (dmin <= zero || n0 < n0in) {
         if (cbias * z[(4 * i0 + pp - 3) - 1] < z[(4 * n0 + pp - 3) - 1]) {
@@ -171,11 +178,11 @@ statement_50:
         }
     }
     //
-    //     Choose a shift.
+    // Choose a shift.
     //
     Rlasq4(i0, n0, z, pp, n0in, dmin, dmin1, dmin2, dn, dn1, dn2, tau, ttype, g);
 //
-//     Call dqds until DMIN > 0.
+// Call dqds until DMIN > 0.
 //
 statement_70:
     //
@@ -184,40 +191,40 @@ statement_70:
     ndiv += (n0 - i0 + 2);
     iter++;
     //
-    //     Check status.
+    // Check status.
     //
     if (dmin >= zero && dmin1 >= zero) {
         //
-        //        Success.
+        // Success.
         //
         goto statement_90;
         //
     } else if (dmin < zero && dmin1 > zero && z[(4 * (n0 - 1) - pp) - 1] < tol * (sigma + dn1) && abs(dn) < tol * sigma) {
         //
-        //        Convergence hidden by negative DN.
+        // Convergence hidden by negative DN.
         //
         z[(4 * (n0 - 1) - pp + 2) - 1] = zero;
         dmin = zero;
         goto statement_90;
     } else if (dmin < zero) {
         //
-        //        TAU too big. Select new TAU and try again.
+        // TAU too big. Select new TAU and try again.
         //
         nfail++;
         if (ttype < -22) {
             //
-            //           Failed twice. Play it safe.
+            // Failed twice. Play it safe.
             //
             tau = zero;
         } else if (dmin1 > zero) {
             //
-            //           Late failure. Gives excellent shift.
+            // Late failure. Gives excellent shift.
             //
             tau = (tau + dmin) * (one - two * eps);
             ttype = ttype - 11;
         } else {
             //
-            //           Early failure. Divide by 4.
+            // Early failure. Divide by 4.
             //
             tau = qurtr * tau;
             ttype = ttype - 12;
@@ -225,7 +232,7 @@ statement_70:
         goto statement_70;
     } else if (Risnan(dmin)) {
         //
-        //        NaN.
+        // NaN.
         //
         if (tau == zero) {
             goto statement_80;
@@ -235,12 +242,12 @@ statement_70:
         }
     } else {
         //
-        //        Possible underflow. Play it safe.
+        // Possible underflow. Play it safe.
         //
         goto statement_80;
     }
 //
-//     Risk of underflow.
+// Risk of underflow.
 //
 statement_80:
     Rlasq6(i0, n0, z, pp, dmin, dmin1, dmin2, dn, dn1, dn2);
@@ -259,6 +266,6 @@ statement_90:
     }
     sigma = t;
     //
-    //     End of Rlasq3
+    // End of Rlasq3
     //
 }

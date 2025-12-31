@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZPTTRF.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -38,28 +45,7 @@ void Cpttrf(INTEGER const n, REAL *d, COMPLEX *e, INTEGER &info) {
     REAL f = 0.0;
     REAL g = 0.0;
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     if (n < 0) {
@@ -68,13 +54,13 @@ void Cpttrf(INTEGER const n, REAL *d, COMPLEX *e, INTEGER &info) {
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0) {
         return;
     }
     //
-    //     Compute the L*D*L**H (or U**H *D*U) factorization of A.
+    // Compute the L*D*L**H (or U**H *D*U) factorization of A.
     //
     i4 = mod(n - 1, 4);
     for (i = 1; i <= i4; i = i + 1) {
@@ -92,15 +78,15 @@ void Cpttrf(INTEGER const n, REAL *d, COMPLEX *e, INTEGER &info) {
     //
     for (i = i4 + 1; i <= n - 4; i = i + 4) {
         //
-        //        Drop out of the loop if d(i) <= 0: the matrix is not positive
-        //        definite.
+        // Drop out of the loop if d(i) <= 0: the matrix is not positive
+        // definite.
         //
         if (d[i - 1] <= zero) {
             info = i;
             goto statement_30;
         }
         //
-        //        Solve for e(i) and d(i+1).
+        // Solve for e(i) and d(i+1).
         //
         eir = e[i - 1].real();
         eii = e[i - 1].imag();
@@ -114,7 +100,7 @@ void Cpttrf(INTEGER const n, REAL *d, COMPLEX *e, INTEGER &info) {
             goto statement_30;
         }
         //
-        //        Solve for e(i+1) and d(i+2).
+        // Solve for e(i+1) and d(i+2).
         //
         eir = e[(i + 1) - 1].real();
         eii = e[(i + 1) - 1].imag();
@@ -128,7 +114,7 @@ void Cpttrf(INTEGER const n, REAL *d, COMPLEX *e, INTEGER &info) {
             goto statement_30;
         }
         //
-        //        Solve for e(i+2) and d(i+3).
+        // Solve for e(i+2) and d(i+3).
         //
         eir = e[(i + 2) - 1].real();
         eii = e[(i + 2) - 1].imag();
@@ -142,7 +128,7 @@ void Cpttrf(INTEGER const n, REAL *d, COMPLEX *e, INTEGER &info) {
             goto statement_30;
         }
         //
-        //        Solve for e(i+3) and d(i+4).
+        // Solve for e(i+3) and d(i+4).
         //
         eir = e[(i + 3) - 1].real();
         eii = e[(i + 3) - 1].imag();
@@ -152,7 +138,7 @@ void Cpttrf(INTEGER const n, REAL *d, COMPLEX *e, INTEGER &info) {
         d[(i + 4) - 1] = d[(i + 4) - 1] - f * eir - g * eii;
     }
     //
-    //     Check d(n) for positive definiteness.
+    // Check d(n) for positive definiteness.
     //
     if (d[n - 1] <= zero) {
         info = n;
@@ -160,6 +146,6 @@ void Cpttrf(INTEGER const n, REAL *d, COMPLEX *e, INTEGER &info) {
 //
 statement_30:;
     //
-    //     End of Cpttrf
+    // End of Cpttrf
     //
 }

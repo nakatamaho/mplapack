@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZPOTRF.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -37,30 +44,7 @@ void Cpotrf(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
     const REAL one = 1.0;
     const COMPLEX cone = COMPLEX(1.0, 0.0);
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     upper = Mlsame(uplo, "U");
@@ -76,32 +60,32 @@ void Cpotrf(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0) {
         return;
     }
     //
-    //     Determine the block size for this environment.
+    // Determine the block size for this environment.
     //
     nb = iMlaenv(1, "Cpotrf", uplo, n, -1, -1, -1);
     if (nb <= 1 || nb >= n) {
         //
-        //        Use unblocked code.
+        // Use unblocked code.
         //
         Cpotrf2(uplo, n, a, lda, info);
     } else {
         //
-        //        Use blocked code.
+        // Use blocked code.
         //
         if (upper) {
             //
-            //           Compute the Cholesky factorization A = U**H *U.
+            // Compute the Cholesky factorization A = U**H *U.
             //
             for (j = 1; j <= n; j = j + nb) {
                 //
-                //              Update and factorize the current diagonal block and test
-                //              for non-positive-definiteness.
+                // Update and factorize the current diagonal block and test
+                // for non-positive-definiteness.
                 //
                 jb = min(nb, n - j + 1);
                 Cherk("Upper", "Conjugate transpose", jb, j - 1, -one, &a[(j - 1) * lda], lda, one, &a[(j - 1) + (j - 1) * lda], lda);
@@ -111,7 +95,7 @@ void Cpotrf(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
                 }
                 if (j + jb <= n) {
                     //
-                    //                 Compute the current block row.
+                    // Compute the current block row.
                     //
                     Cgemm("Conjugate transpose", "No transpose", jb, n - j - jb + 1, j - 1, -cone, &a[(j - 1) * lda], lda, &a[((j + jb) - 1) * lda], lda, cone, &a[(j - 1) + ((j + jb) - 1) * lda], lda);
                     Ctrsm("Left", "Upper", "Conjugate transpose", "Non-unit", jb, n - j - jb + 1, cone, &a[(j - 1) + (j - 1) * lda], lda, &a[(j - 1) + ((j + jb) - 1) * lda], lda);
@@ -120,12 +104,12 @@ void Cpotrf(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
             //
         } else {
             //
-            //           Compute the Cholesky factorization A = L*L**H.
+            // Compute the Cholesky factorization A = L*L**H.
             //
             for (j = 1; j <= n; j = j + nb) {
                 //
-                //              Update and factorize the current diagonal block and test
-                //              for non-positive-definiteness.
+                // Update and factorize the current diagonal block and test
+                // for non-positive-definiteness.
                 //
                 jb = min(nb, n - j + 1);
                 Cherk("Lower", "No transpose", jb, j - 1, -one, &a[(j - 1)], lda, one, &a[(j - 1) + (j - 1) * lda], lda);
@@ -135,7 +119,7 @@ void Cpotrf(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
                 }
                 if (j + jb <= n) {
                     //
-                    //                 Compute the current block column.
+                    // Compute the current block column.
                     //
                     Cgemm("No transpose", "Conjugate transpose", n - j - jb + 1, jb, j - 1, -cone, &a[((j + jb) - 1)], lda, &a[(j - 1)], lda, cone, &a[((j + jb) - 1) + (j - 1) * lda], lda);
                     Ctrsm("Right", "Lower", "Conjugate transpose", "Non-unit", n - j - jb + 1, jb, cone, &a[(j - 1) + (j - 1) * lda], lda, &a[((j + jb) - 1) + (j - 1) * lda], lda);
@@ -150,6 +134,6 @@ statement_30:
 //
 statement_40:;
     //
-    //     End of Cpotrf
+    // End of Cpotrf
     //
 }

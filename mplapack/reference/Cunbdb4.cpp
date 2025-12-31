@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,12 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine ZUNBDB4.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Cunbdb4(INTEGER const m, INTEGER const p, INTEGER const q, COMPLEX *x11, INTEGER const ldx11, COMPLEX *x21, INTEGER const ldx21, REAL *theta, REAL *phi, COMPLEX *taup1, COMPLEX *taup2, COMPLEX *tauq1, COMPLEX *phantom, COMPLEX *work, INTEGER const lwork, INTEGER &info) {
     //
-    //     Test input arguments
+    // Test input arguments
     //
     info = 0;
     bool lquery = lwork == -1;
@@ -48,7 +55,7 @@ void Cunbdb4(INTEGER const m, INTEGER const p, INTEGER const q, COMPLEX *x11, IN
         info = -7;
     }
     //
-    //     Compute workspace
+    // Compute workspace
     //
     INTEGER ilarf = 0;
     INTEGER llarf = 0;
@@ -76,7 +83,7 @@ void Cunbdb4(INTEGER const m, INTEGER const p, INTEGER const q, COMPLEX *x11, IN
         return;
     }
     //
-    //     Reduce columns 1, ..., M-Q of X11 and X21
+    // Reduce columns 1, ..., M-Q of X11 and X21
     //
     INTEGER i = 0;
     INTEGER j = 0;
@@ -132,7 +139,7 @@ void Cunbdb4(INTEGER const m, INTEGER const p, INTEGER const q, COMPLEX *x11, IN
         //
     }
     //
-    //     Reduce the bottom-right portion of X11 to [ I 0 ]
+    // Reduce the bottom-right portion of X11 to [ I 0 ]
     //
     for (i = m - q + 1; i <= p; i = i + 1) {
         Clacgv(q - i + 1, &x11[(i - 1) + (i - 1) * ldx11], ldx11);
@@ -143,7 +150,7 @@ void Cunbdb4(INTEGER const m, INTEGER const p, INTEGER const q, COMPLEX *x11, IN
         Clacgv(q - i + 1, &x11[(i - 1) + (i - 1) * ldx11], ldx11);
     }
     //
-    //     Reduce the bottom-right portion of X21 to [ 0 I ]
+    // Reduce the bottom-right portion of X21 to [ 0 I ]
     //
     for (i = p + 1; i <= q; i = i + 1) {
         Clacgv(q - i + 1, &x21[((m - q + i - p) - 1) + (i - 1) * ldx21], ldx21);
@@ -153,6 +160,6 @@ void Cunbdb4(INTEGER const m, INTEGER const p, INTEGER const q, COMPLEX *x11, IN
         Clacgv(q - i + 1, &x21[((m - q + i - p) - 1) + (i - 1) * ldx21], ldx21);
     }
     //
-    //     End of Cunbdb4
+    // End of Cunbdb4
     //
 }

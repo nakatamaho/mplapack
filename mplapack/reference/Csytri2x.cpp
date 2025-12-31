@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine ZSYTRI2X.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -67,7 +74,7 @@ void Csytri2x(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, 
         info = -4;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (info != 0) {
         Mxerbla("Csytri2x", -info);
@@ -77,18 +84,18 @@ void Csytri2x(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, 
         return;
     }
     //
-    //     Convert A
-    //     Workspace got Non-diag elements of D
+    // Convert A
+    // Workspace got Non-diag elements of D
     //
     INTEGER iinfo = 0;
     Csyconv(uplo, "C", n, a, lda, ipiv, work, iinfo);
     //
-    //     Check that the diagonal matrix D is nonsingular.
+    // Check that the diagonal matrix D is nonsingular.
     //
     const COMPLEX zero = COMPLEX(0.0, 0.0);
     if (upper) {
         //
-        //        Upper triangular storage: examine D from bottom to top
+        // Upper triangular storage: examine D from bottom to top
         //
         for (info = n; info >= 1; info = info - 1) {
             if (ipiv[info - 1] > 0 && a[(info - 1) + (info - 1) * lda] == zero) {
@@ -97,7 +104,7 @@ void Csytri2x(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, 
         }
     } else {
         //
-        //        Lower triangular storage: examine D from top to bottom.
+        // Lower triangular storage: examine D from top to bottom.
         //
         for (info = 1; info <= n; info = info + 1) {
             if (ipiv[info - 1] > 0 && a[(info - 1) + (info - 1) * lda] == zero) {
@@ -107,11 +114,11 @@ void Csytri2x(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, 
     }
     info = 0;
     //
-    //  Splitting Workspace
-    //     U01 is a block (N,NB+1)
-    //     The first element of U01 is in WORK(1,1)
-    //     U11 is a block (NB+1,NB+1)
-    //     The first element of U11 is in WORK(N+1,1)
+    // Splitting Workspace
+    // U01 is a block (N,NB+1)
+    // The first element of U01 is in WORK(1,1)
+    // U11 is a block (NB+1,NB+1)
+    // The first element of U11 is in WORK(N+1,1)
     INTEGER u11 = n;
     // INVD is a block (N,2)
     // The first element of INVD is in WORK(1,INVD)
@@ -137,11 +144,11 @@ void Csytri2x(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, 
     INTEGER ldwork = n + nb + 1;
     if (upper) {
         //
-        //        invA = P * inv(U**T)*inv(D)*inv(U)*P**T.
+        // invA = P * inv(U**T)*inv(D)*inv(U)*P**T.
         //
         Ctrtri(uplo, "U", n, a, lda, info);
         //
-        //       inv(D) and inv(D)*inv(U)
+        // inv(D) and inv(D)*inv(U)
         //
         k = 1;
         while (k <= n) {
@@ -165,9 +172,9 @@ void Csytri2x(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, 
             }
         }
         //
-        //       inv(U**T) = (inv(U))**T
+        // inv(U**T) = (inv(U))**T
         //
-        //       inv(U**T)*inv(D)*inv(U)
+        // inv(U**T)*inv(D)*inv(U)
         //
         cut = n;
         while (cut > 0) {
@@ -190,7 +197,7 @@ void Csytri2x(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, 
             //
             cut = cut - nnb;
             //
-            //          U01 Block
+            // U01 Block
             //
             for (i = 1; i <= cut; i = i + 1) {
                 for (j = 1; j <= nnb; j = j + 1) {
@@ -198,7 +205,7 @@ void Csytri2x(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, 
                 }
             }
             //
-            //          U11 Block
+            // U11 Block
             //
             for (i = 1; i <= nnb; i = i + 1) {
                 work[((u11 + i) - 1) + (i - 1) * ldwork] = one;
@@ -210,7 +217,7 @@ void Csytri2x(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, 
                 }
             }
             //
-            //          invD*U01
+            // invD*U01
             //
             i = 1;
             while (i <= cut) {
@@ -230,7 +237,7 @@ void Csytri2x(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, 
                 }
             }
             //
-            //        invD1*U11
+            // invD1*U11
             //
             i = 1;
             while (i <= nnb) {
@@ -250,7 +257,7 @@ void Csytri2x(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, 
                 }
             }
             //
-            //       U11**T*invD1*U11->U11
+            // U11**T*invD1*U11->U11
             //
             Ctrmm("L", "U", "T", "U", nnb, nnb, one, &a[((cut + 1) - 1) + ((cut + 1) - 1) * lda], lda, &work[((u11 + 1) - 1)], n + nb + 1);
             //
@@ -260,11 +267,11 @@ void Csytri2x(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, 
                 }
             }
             //
-            //          U01**T*invD*U01->A(CUT+I,CUT+J)
+            // U01**T*invD*U01->A(CUT+I,CUT+J)
             //
             Cgemm("T", "N", nnb, nnb, cut, one, &a[((cut + 1) - 1) * lda], lda, work, n + nb + 1, zero, &work[((u11 + 1) - 1)], n + nb + 1);
             //
-            //        U11 =  U11**T*invD1*U11 + U01**T*invD*U01
+            // U11 =  U11**T*invD1*U11 + U01**T*invD*U01
             //
             for (i = 1; i <= nnb; i = i + 1) {
                 for (j = i; j <= nnb; j = j + 1) {
@@ -272,11 +279,11 @@ void Csytri2x(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, 
                 }
             }
             //
-            //        U01 =  U00**T*invD0*U01
+            // U01 =  U00**T*invD0*U01
             //
             Ctrmm("L", uplo, "T", "U", cut, nnb, one, a, lda, work, n + nb + 1);
             //
-            //        Update U01
+            // Update U01
             //
             for (i = 1; i <= cut; i = i + 1) {
                 for (j = 1; j <= nnb; j = j + 1) {
@@ -284,11 +291,11 @@ void Csytri2x(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, 
                 }
             }
             //
-            //      Next Block
+            // Next Block
             //
         }
         //
-        //        Apply PERMUTATIONS P and P**T: P * inv(U**T)*inv(D)*inv(U) *P**T
+        // Apply PERMUTATIONS P and P**T: P * inv(U**T)*inv(D)*inv(U) *P**T
         //
         i = 1;
         while (i <= n) {
@@ -314,13 +321,13 @@ void Csytri2x(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, 
         }
     } else {
         //
-        //        LOWER...
+        // LOWER...
         //
-        //        invA = P * inv(U**T)*inv(D)*inv(U)*P**T.
+        // invA = P * inv(U**T)*inv(D)*inv(U)*P**T.
         //
         Ctrtri(uplo, "U", n, a, lda, info);
         //
-        //       inv(D) and inv(D)*inv(U)
+        // inv(D) and inv(D)*inv(U)
         //
         k = n;
         while (k >= 1) {
@@ -344,9 +351,9 @@ void Csytri2x(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, 
             }
         }
         //
-        //       inv(U**T) = (inv(U))**T
+        // inv(U**T) = (inv(U))**T
         //
-        //       inv(U**T)*inv(D)*inv(U)
+        // inv(U**T)*inv(D)*inv(U)
         //
         cut = 0;
         while (cut < n) {
@@ -383,7 +390,7 @@ void Csytri2x(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, 
                 }
             }
             //
-            //          invD*L21
+            // invD*L21
             //
             i = n - cut - nnb;
             while (i >= 1) {
@@ -403,7 +410,7 @@ void Csytri2x(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, 
                 }
             }
             //
-            //        invD1*L11
+            // invD1*L11
             //
             i = nnb;
             while (i >= 1) {
@@ -423,7 +430,7 @@ void Csytri2x(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, 
                 }
             }
             //
-            //       L11**T*invD1*L11->L11
+            // L11**T*invD1*L11->L11
             //
             Ctrmm("L", uplo, "T", "U", nnb, nnb, one, &a[((cut + 1) - 1) + ((cut + 1) - 1) * lda], lda, &work[((u11 + 1) - 1)], n + nb + 1);
             //
@@ -435,11 +442,11 @@ void Csytri2x(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, 
             //
             if ((cut + nnb) < n) {
                 //
-                //          L21**T*invD2*L21->A(CUT+I,CUT+J)
+                // L21**T*invD2*L21->A(CUT+I,CUT+J)
                 //
                 Cgemm("T", "N", nnb, nnb, n - nnb - cut, one, &a[((cut + nnb + 1) - 1) + ((cut + 1) - 1) * lda], lda, work, n + nb + 1, zero, &work[((u11 + 1) - 1)], n + nb + 1);
                 //
-                //        L11 =  L11**T*invD1*L11 + U01**T*invD*U01
+                // L11 =  L11**T*invD1*L11 + U01**T*invD*U01
                 //
                 for (i = 1; i <= nnb; i = i + 1) {
                     for (j = 1; j <= i; j = j + 1) {
@@ -447,11 +454,11 @@ void Csytri2x(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, 
                     }
                 }
                 //
-                //        U01 =  L22**T*invD2*L21
+                // U01 =  L22**T*invD2*L21
                 //
                 Ctrmm("L", uplo, "T", "U", n - nnb - cut, nnb, one, &a[((cut + nnb + 1) - 1) + ((cut + nnb + 1) - 1) * lda], lda, work, n + nb + 1);
                 //
-                //      Update L21
+                // Update L21
                 for (i = 1; i <= n - cut - nnb; i = i + 1) {
                     for (j = 1; j <= nnb; j = j + 1) {
                         a[((cut + nnb + i) - 1) + ((cut + j) - 1) * lda] = work[(i - 1) + (j - 1) * ldwork];
@@ -459,7 +466,7 @@ void Csytri2x(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, 
                 }
             } else {
                 //
-                //        L11 =  L11**T*invD1*L11
+                // L11 =  L11**T*invD1*L11
                 //
                 for (i = 1; i <= nnb; i = i + 1) {
                     for (j = 1; j <= i; j = j + 1) {
@@ -468,12 +475,12 @@ void Csytri2x(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, 
                 }
             }
             //
-            //      Next Block
+            // Next Block
             //
             cut += nnb;
         }
         //
-        //        Apply PERMUTATIONS P and P**T: P * inv(U**T)*inv(D)*inv(U) *P**T
+        // Apply PERMUTATIONS P and P**T: P * inv(U**T)*inv(D)*inv(U) *P**T
         //
         i = n;
         while (i >= 1) {
@@ -499,6 +506,6 @@ void Csytri2x(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, 
         }
     }
     //
-    //     End of Csytri2x
+    // End of Csytri2x
     //
 }

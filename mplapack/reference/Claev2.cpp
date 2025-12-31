@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,29 +26,17 @@
  *
  */
 
+// Derived from LAPACK routine ZLAEV2.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Claev2(COMPLEX const a, COMPLEX const b, COMPLEX const c, REAL &rt1, REAL &rt2, REAL &cs1, COMPLEX &sn1) {
-    //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //
-    // =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
     const REAL zero = 0.0;
     const REAL one = 1.0;
@@ -62,6 +50,6 @@ void Claev2(COMPLEX const a, COMPLEX const b, COMPLEX const c, REAL &rt1, REAL &
     Rlaev2(a.real(), abs(b), c.real(), rt1, rt2, cs1, t);
     sn1 = w * t;
     //
-    //     End of Claev2
+    // End of Claev2
     //
 }

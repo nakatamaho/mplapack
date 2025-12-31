@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DGGBAL.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -78,7 +85,7 @@ void Rggbal(const char *job, INTEGER const n, REAL *a, INTEGER const lda, REAL *
     INTEGER lcab = 0;
     INTEGER jc = 0;
     //
-    //     Test the input parameters
+    // Test the input parameters
     //
     info = 0;
     if (!Mlsame(job, "N") && !Mlsame(job, "P") && !Mlsame(job, "S") && !Mlsame(job, "B")) {
@@ -95,7 +102,7 @@ void Rggbal(const char *job, INTEGER const n, REAL *a, INTEGER const lda, REAL *
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0) {
         ilo = 1;
@@ -129,9 +136,9 @@ void Rggbal(const char *job, INTEGER const n, REAL *a, INTEGER const lda, REAL *
     //
     goto statement_30;
 //
-//     Permute the matrices A and B to isolate the eigenvalues.
+// Permute the matrices A and B to isolate the eigenvalues.
 //
-//     Find row with one nonzero in columns 1 through L
+// Find row with one nonzero in columns 1 through L
 //
 statement_20:
     l = lm1;
@@ -171,7 +178,7 @@ statement_30:
     }
     goto statement_100;
 //
-//     Find column with one nonzero in rows K through N
+// Find column with one nonzero in rows K through N
 //
 statement_90:
     k++;
@@ -201,7 +208,7 @@ statement_100:
     }
     goto statement_190;
 //
-//     Permute rows M and I
+// Permute rows M and I
 //
 statement_160:
     lscale[m - 1] = i;
@@ -211,7 +218,7 @@ statement_160:
     Rswap(n - k + 1, &a[(i - 1) + (k - 1) * lda], lda, &a[(m - 1) + (k - 1) * lda], lda);
     Rswap(n - k + 1, &b[(i - 1) + (k - 1) * ldb], ldb, &b[(m - 1) + (k - 1) * ldb], ldb);
 //
-//     Permute columns M and J
+// Permute columns M and J
 //
 statement_170:
     rscale[m - 1] = j;
@@ -247,7 +254,7 @@ statement_190:
         return;
     }
     //
-    //     Balance the submatrix in rows ILO to IHI.
+    // Balance the submatrix in rows ILO to IHI.
     //
     nr = ihi - ilo + 1;
     for (i = ilo; i <= ihi; i = i + 1) {
@@ -262,7 +269,7 @@ statement_190:
         work[(i + 5 * n) - 1] = zero;
     }
     //
-    //     Compute right side vector in resulting linear equations
+    // Compute right side vector in resulting linear equations
     //
     basl = log10(sclfac);
     for (i = ilo; i <= ihi; i = i + 1) {
@@ -291,7 +298,7 @@ statement_190:
     beta = zero;
     it = 1;
 //
-//     Start generalized conjugate gradient iteration
+// Start generalized conjugate gradient iteration
 //
 statement_250:
     //
@@ -325,7 +332,7 @@ statement_250:
         work[(i + n) - 1] += t;
     }
     //
-    //     Apply matrix to vector
+    // Apply matrix to vector
     //
     for (i = ilo; i <= ihi; i = i + 1) {
         kount = 0;
@@ -370,7 +377,7 @@ statement_250:
     sum = Rdot(nr, &work[(ilo + n) - 1], 1, &work[(ilo + 2 * n) - 1], 1) + Rdot(nr, &work[ilo - 1], 1, &work[(ilo + 3 * n) - 1], 1);
     alpha = gamma / sum;
     //
-    //     Determine correction to current iteration
+    // Determine correction to current iteration
     //
     cmax = zero;
     for (i = ilo; i <= ihi; i = i + 1) {
@@ -397,9 +404,9 @@ statement_250:
     if (it <= nrp2) {
         goto statement_250;
     }
-    //
-    //     End generalized conjugate gradient iteration
-    //
+//
+// End generalized conjugate gradient iteration
+//
 statement_350:
     sfmin = Rlamch("S");
     sfmax = one / sfmin;
@@ -424,20 +431,20 @@ statement_350:
         rscale[i - 1] = pow(sclfac, jc);
     }
     //
-    //     Row scaling of matrices A and B
+    // Row scaling of matrices A and B
     //
     for (i = ilo; i <= ihi; i = i + 1) {
         Rscal(n - ilo + 1, lscale[i - 1], &a[(i - 1) + (ilo - 1) * lda], lda);
         Rscal(n - ilo + 1, lscale[i - 1], &b[(i - 1) + (ilo - 1) * ldb], ldb);
     }
     //
-    //     Column scaling of matrices A and B
+    // Column scaling of matrices A and B
     //
     for (j = ilo; j <= ihi; j = j + 1) {
         Rscal(ihi, rscale[j - 1], &a[(j - 1) * lda], 1);
         Rscal(ihi, rscale[j - 1], &b[(j - 1) * ldb], 1);
     }
     //
-    //     End of Rggbal
+    // End of Rggbal
     //
 }

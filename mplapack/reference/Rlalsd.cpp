@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,12 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine DLALSD.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Rlalsd(const char *uplo, INTEGER const smlsiz, INTEGER const n, INTEGER const nrhs, REAL *d, REAL *e, REAL *b, INTEGER const ldb, REAL const rcond, INTEGER &rank, REAL *work, INTEGER *iwork, INTEGER &info) {
     //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     //
@@ -49,7 +56,7 @@ void Rlalsd(const char *uplo, INTEGER const smlsiz, INTEGER const n, INTEGER con
     //
     REAL eps = Rlamch("Epsilon");
     //
-    //     Set up the tolerance.
+    // Set up the tolerance.
     //
     const REAL zero = 0.0;
     const REAL one = 1.0;
@@ -62,7 +69,7 @@ void Rlalsd(const char *uplo, INTEGER const smlsiz, INTEGER const n, INTEGER con
     //
     rank = 0;
     //
-    //     Quick return if possible.
+    // Quick return if possible.
     //
     if (n == 0) {
         return;
@@ -77,7 +84,7 @@ void Rlalsd(const char *uplo, INTEGER const smlsiz, INTEGER const n, INTEGER con
         return;
     }
     //
-    //     Rotate the matrix if it is lower bidiagonal.
+    // Rotate the matrix if it is lower bidiagonal.
     //
     INTEGER i = 0;
     REAL cs = 0.0;
@@ -108,7 +115,7 @@ void Rlalsd(const char *uplo, INTEGER const smlsiz, INTEGER const n, INTEGER con
         }
     }
     //
-    //     Scale.
+    // Scale.
     //
     INTEGER nm1 = n - 1;
     REAL orgnrm = Rlanst("M", n, d, e);
@@ -120,8 +127,8 @@ void Rlalsd(const char *uplo, INTEGER const smlsiz, INTEGER const n, INTEGER con
     Rlascl("G", 0, 0, orgnrm, one, n, 1, d, n, info);
     Rlascl("G", 0, 0, orgnrm, one, nm1, 1, e, nm1, info);
     //
-    //     If N is smaller than the minimum divide size SMLSIZ, then solve
-    //     the problem with another solver.
+    // If N is smaller than the minimum divide size SMLSIZ, then solve
+    // the problem with another solver.
     //
     INTEGER nwork = 0;
     REAL tol = 0.0;
@@ -144,7 +151,7 @@ void Rlalsd(const char *uplo, INTEGER const smlsiz, INTEGER const n, INTEGER con
         Rgemm("T", "N", n, nrhs, n, one, work, n, b, ldb, zero, &work[nwork - 1], n);
         Rlacpy("A", n, nrhs, &work[nwork - 1], n, b, ldb);
         //
-        //        Unscale.
+        // Unscale.
         //
         Rlascl("G", 0, 0, one, orgnrm, n, 1, d, n, info);
         Rlasrt("D", n, d, info);
@@ -153,7 +160,7 @@ void Rlalsd(const char *uplo, INTEGER const smlsiz, INTEGER const n, INTEGER con
         return;
     }
     //
-    //     Book-keeping and setting up some constants.
+    // Book-keeping and setting up some constants.
     //
     const REAL two = 2.0;
     INTEGER nlvl = castINTEGER(log(castREAL(n) / castREAL(smlsiz + 1)) / log(two)) + 1;
@@ -199,26 +206,26 @@ void Rlalsd(const char *uplo, INTEGER const smlsiz, INTEGER const n, INTEGER con
             nsub++;
             iwork[nsub - 1] = st;
             //
-            //           Subproblem found. First determine its size and then
-            //           apply divide and conquer on it.
+            // Subproblem found. First determine its size and then
+            // apply divide and conquer on it.
             //
             if (i < nm1) {
                 //
-                //              A subproblem with E(I) small for I < NM1.
+                // A subproblem with E(I) small for I < NM1.
                 //
                 nsize = i - st + 1;
                 iwork[(sizei + nsub - 1) - 1] = nsize;
             } else if (abs(e[i - 1]) >= eps) {
                 //
-                //              A subproblem with E(NM1) not too small but I = NM1.
+                // A subproblem with E(NM1) not too small but I = NM1.
                 //
                 nsize = n - st + 1;
                 iwork[(sizei + nsub - 1) - 1] = nsize;
             } else {
                 //
-                //              A subproblem with E(NM1) small. This implies an
-                //              1-by-1 subproblem at D(N), which is not solved
-                //              explicitly.
+                // A subproblem with E(NM1) small. This implies an
+                // 1-by-1 subproblem at D(N), which is not solved
+                // explicitly.
                 //
                 nsize = i - st + 1;
                 iwork[(sizei + nsub - 1) - 1] = nsize;
@@ -230,13 +237,13 @@ void Rlalsd(const char *uplo, INTEGER const smlsiz, INTEGER const n, INTEGER con
             st1 = st - 1;
             if (nsize == 1) {
                 //
-                //              This is a 1-by-1 subproblem and is not solved
-                //              explicitly.
+                // This is a 1-by-1 subproblem and is not solved
+                // explicitly.
                 //
                 Rcopy(nrhs, &b[(st - 1)], ldb, &work[(bx + st1) - 1], n);
             } else if (nsize <= smlsiz) {
                 //
-                //              This is a small subproblem and is solved by Rlasdq.
+                // This is a small subproblem and is solved by Rlasdq.
                 //
                 Rlaset("A", nsize, nsize, zero, one, &work[(vt + st1) - 1], n);
                 Rlasdq("U", 0, nsize, nsize, 0, nrhs, &d[st - 1], &e[st - 1], &work[(vt + st1) - 1], n, &work[nwork - 1], n, &b[(st - 1)], ldb, &work[nwork - 1], info);
@@ -246,7 +253,7 @@ void Rlalsd(const char *uplo, INTEGER const smlsiz, INTEGER const n, INTEGER con
                 Rlacpy("A", nsize, nrhs, &b[(st - 1)], ldb, &work[(bx + st1) - 1], n);
             } else {
                 //
-                //              A large problem. Solve it using divide and conquer.
+                // A large problem. Solve it using divide and conquer.
                 //
                 Rlasda(icmpq1, smlsiz, nsize, sqre, &d[st - 1], &e[st - 1], &work[(u + st1) - 1], n, &work[(vt + st1) - 1], &iwork[(k + st1) - 1], &work[(difl + st1) - 1], &work[(difr + st1) - 1], &work[(z + st1) - 1], &work[(poles + st1) - 1], &iwork[(givptr + st1) - 1], &iwork[(givcol + st1) - 1], n, &iwork[(perm + st1) - 1], &work[(givnum + st1) - 1], &work[(c + st1) - 1], &work[(s + st1) - 1], &work[nwork - 1], &iwork[iwk - 1], info);
                 if (info != 0) {
@@ -262,14 +269,14 @@ void Rlalsd(const char *uplo, INTEGER const smlsiz, INTEGER const n, INTEGER con
         }
     }
     //
-    //     Apply the singular values and treat the tiny ones as zero.
+    // Apply the singular values and treat the tiny ones as zero.
     //
     tol = rcnd * abs(d[iRamax(n, d, 1) - 1]);
     //
     for (i = 1; i <= n; i = i + 1) {
         //
-        //        Some of the elements in D can be negative because 1-by-1
-        //        subproblems were not solved explicitly.
+        // Some of the elements in D can be negative because 1-by-1
+        // subproblems were not solved explicitly.
         //
         if (abs(d[i - 1]) <= tol) {
             Rlaset("A", 1, nrhs, zero, zero, &work[(bx + i - 1) - 1], n);
@@ -280,7 +287,7 @@ void Rlalsd(const char *uplo, INTEGER const smlsiz, INTEGER const n, INTEGER con
         d[i - 1] = abs(d[i - 1]);
     }
     //
-    //     Now apply back the right singular vectors.
+    // Now apply back the right singular vectors.
     //
     icmpq2 = 1;
     for (i = 1; i <= nsub; i = i + 1) {
@@ -300,12 +307,12 @@ void Rlalsd(const char *uplo, INTEGER const smlsiz, INTEGER const n, INTEGER con
         }
     }
     //
-    //     Unscale and sort the singular values.
+    // Unscale and sort the singular values.
     //
     Rlascl("G", 0, 0, one, orgnrm, n, 1, d, n, info);
     Rlasrt("D", n, d, info);
     Rlascl("G", 0, 0, orgnrm, one, n, nrhs, b, ldb, info);
     //
-    //     End of Rlalsd
+    // End of Rlalsd
     //
 }

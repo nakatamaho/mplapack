@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine ZLAED0.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -64,10 +71,10 @@ void Claed0(INTEGER const qsiz, INTEGER const n, REAL *d, REAL *e, COMPLEX *q, I
     //
     info = 0;
     //
-    //     IF( ICOMPQ .LT. 0 .OR. ICOMPQ .GT. 2 ) THEN
-    //        INFO = -1
-    //     ELSE IF( ( ICOMPQ .EQ. 1 ) .AND. ( QSIZ .LT. MAX( 0, N ) ) )
-    //    $        THEN
+    // IF( ICOMPQ .LT. 0 .OR. ICOMPQ .GT. 2 ) THEN
+    // INFO = -1
+    // ELSE IF( ( ICOMPQ .EQ. 1 ) .AND. ( QSIZ .LT. MAX( 0, N ) ) )
+    // $        THEN
     if (qsiz < max((INTEGER)0, n)) {
         info = -1;
     } else if (n < 0) {
@@ -82,7 +89,7 @@ void Claed0(INTEGER const qsiz, INTEGER const n, REAL *d, REAL *e, COMPLEX *q, I
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0) {
         return;
@@ -90,8 +97,8 @@ void Claed0(INTEGER const qsiz, INTEGER const n, REAL *d, REAL *e, COMPLEX *q, I
     //
     smlsiz = iMlaenv(9, "Claed0", " ", 0, 0, 0, 0);
     //
-    //     Determine the size and placement of the submatrices, and save in
-    //     the leading elements of IWORK.
+    // Determine the size and placement of the submatrices, and save in
+    // the leading elements of IWORK.
     //
     iwork[1 - 1] = n;
     subpbs = 1;
@@ -110,8 +117,8 @@ statement_10:
         iwork[j - 1] += iwork[(j - 1) - 1];
     }
     //
-    //     Divide the matrix into SUBPBS submatrices of size at most SMLSIZ+1
-    //     using rank-1 modifications (cuts).
+    // Divide the matrix into SUBPBS submatrices of size at most SMLSIZ+1
+    // using rank-1 modifications (cuts).
     //
     spm1 = subpbs - 1;
     for (i = 1; i <= spm1; i = i + 1) {
@@ -123,8 +130,8 @@ statement_10:
     //
     indxq = 4 * n + 3;
     //
-    //     Set up workspaces for eigenvalues only/accumulate new vectors
-    //     routine
+    // Set up workspaces for eigenvalues only/accumulate new vectors
+    // routine
     //
     temp = log(castREAL(n)) / log(two);
     lgn = castINTEGER(temp);
@@ -150,8 +157,8 @@ statement_10:
     }
     iwork[iqptr - 1] = 1;
     //
-    //     Solve each submatrix eigenproblem at the bottom of the divide and
-    //     conquer tree.
+    // Solve each submatrix eigenproblem at the bottom of the divide and
+    // conquer tree.
     //
     curr = 0;
     for (i = 0; i <= spm1; i = i + 1) {
@@ -178,10 +185,10 @@ statement_10:
         }
     }
     //
-    //     Successively merge eigensystems of adjacent submatrices
-    //     into eigensystem for the corresponding larger matrix.
+    // Successively merge eigensystems of adjacent submatrices
+    // into eigensystem for the corresponding larger matrix.
     //
-    //     while ( SUBPBS > 1 )
+    // while ( SUBPBS > 1 )
     //
     curlvl = 1;
 statement_80:
@@ -200,12 +207,12 @@ statement_80:
                 curprb++;
             }
             //
-            //     Merge lower order eigensystems (of size MSD2 and MATSIZ - MSD2)
-            //     into an eigensystem of size MATSIZ.  Claed7 handles the case
-            //     when the eigenvectors of a full or band Hermitian matrix (which
-            //     was reduced to tridiagonal form) are desired.
+            // Merge lower order eigensystems (of size MSD2 and MATSIZ - MSD2)
+            // into an eigensystem of size MATSIZ.  Claed7 handles the case
+            // when the eigenvectors of a full or band Hermitian matrix (which
+            // was reduced to tridiagonal form) are desired.
             //
-            //     I am free to use Q as a valuable working space until Loop 150.
+            // I am free to use Q as a valuable working space until Loop 150.
             //
             Claed7(matsiz, msd2, qsiz, tlvls, curlvl, curprb, &d[submat - 1], &qstore[(submat - 1) * ldqstore], ldqs, e[(submat + msd2 - 1) - 1], &iwork[(indxq + submat) - 1], &rwork[iq - 1], &iwork[iqptr - 1], &iwork[iprmpt - 1], &iwork[iperm - 1], &iwork[igivpt - 1], &iwork[igivcl - 1], &rwork[igivnm - 1], &q[(submat - 1) * ldq], &rwork[iwrem - 1], &iwork[(subpbs + 1) - 1], info);
             if (info > 0) {
@@ -219,10 +226,10 @@ statement_80:
         goto statement_80;
     }
     //
-    //     end while
+    // end while
     //
-    //     Re-merge the eigenvalues/vectors which were deflated at the final
-    //     merge step.
+    // Re-merge the eigenvalues/vectors which were deflated at the final
+    // merge step.
     //
     for (i = 1; i <= n; i = i + 1) {
         j = iwork[(indxq + i) - 1];
@@ -231,6 +238,6 @@ statement_80:
     }
     Rcopy(n, rwork, 1, d, 1);
     //
-    //     End of Claed0
+    // End of Claed0
     //
 }

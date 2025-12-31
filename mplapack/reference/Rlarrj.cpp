@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DLARRJ.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -60,7 +67,7 @@ void Rlarrj(INTEGER const n, REAL *d, REAL *e2, INTEGER const ifirst, INTEGER co
     //
     info = 0;
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n <= 0) {
         return;
@@ -92,11 +99,11 @@ void Rlarrj(INTEGER const n, REAL *d, REAL *e2, INTEGER const ifirst, INTEGER co
         width = right - mid;
         tmp = max(abs(left), abs(right));
         //
-        //        The following test prevents the test of converged intervals
+        // The following test prevents the test of converged intervals
         if (width < rtol * tmp) {
             // This interval has already converged and does not need refinement.
             // (Note that the gaps might change through refining the
-            //  eigenvalues, however, they can only get bigger.)
+            // eigenvalues, however, they can only get bigger.)
             // Remove it from the list.
             iwork[(k - 1) - 1] = -1;
             // Make sure that I1 always points to the first unconverged interval
@@ -133,7 +140,7 @@ void Rlarrj(INTEGER const n, REAL *d, REAL *e2, INTEGER const ifirst, INTEGER co
                 goto statement_20;
             }
             //
-            //           Do while( CNT(RIGHT).LT.I )
+            // Do while( CNT(RIGHT).LT.I )
             //
             fac = one;
         statement_50:
@@ -164,8 +171,8 @@ void Rlarrj(INTEGER const n, REAL *d, REAL *e2, INTEGER const ifirst, INTEGER co
     //
     savi1 = i1;
     //
-    //     Do while( NINT.GT.0 ), i.e. there are still unconverged intervals
-    //     and while (ITER.LT.MAXITR)
+    // Do while( NINT.GT.0 ), i.e. there are still unconverged intervals
+    // and while (ITER.LT.MAXITR)
     //
     iter = 0;
 statement_80:
@@ -181,7 +188,7 @@ statement_80:
         right = work[k - 1];
         mid = half * (left + right);
         //
-        //        semiwidth of interval
+        // semiwidth of interval
         width = right - mid;
         tmp = max(abs(left), abs(right));
         //
@@ -203,7 +210,7 @@ statement_80:
         }
         prev = i;
         //
-        //        Perform one bisection step
+        // Perform one bisection step
         //
         cnt = 0;
         s = mid;
@@ -234,7 +241,7 @@ statement_80:
         goto statement_80;
     }
     //
-    //     At this point, all the intervals have converged
+    // At this point, all the intervals have converged
     for (i = savi1; i <= ilast; i = i + 1) {
         k = 2 * i;
         ii = i - offset;
@@ -245,6 +252,6 @@ statement_80:
         }
     }
     //
-    //     End of Rlarrj
+    // End of Rlarrj
     //
 }

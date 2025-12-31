@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,12 +26,18 @@
  *
  */
 
+// Derived from LAPACK routine IEEECK.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 INTEGER iMieeeck(INTEGER const &ispec, REAL const &zero, REAL const &one) {
     INTEGER return_value = 0;
-    //
 #if defined ___MPLAPACK_BUILD_WITH_GMP___
     // GMP is not a natural extention to IEEE 754.
     return 0;
@@ -44,7 +50,6 @@ INTEGER iMieeeck(INTEGER const &ispec, REAL const &zero, REAL const &one) {
     // DD does not comply IEEE 754.
     return 0;
 #endif
-
     return_value = 1;
     //
     REAL posinf = one / zero;
@@ -95,7 +100,7 @@ INTEGER iMieeeck(INTEGER const &ispec, REAL const &zero, REAL const &one) {
         return return_value;
     }
     //
-    //     Return if we were only asked to check infinity arithmetic
+    // Return if we were only asked to check infinity arithmetic
     //
     if (ispec == 0) {
         return return_value;

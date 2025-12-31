@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine ZLARTG.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -96,7 +103,7 @@ void Clartg(COMPLEX const f, COMPLEX const g, REAL &cs, COMPLEX &sn, COMPLEX &r)
     g2 = abssq(gs);
     if (f2 <= max(g2, one) * safmin) {
         //
-        //        This is a rare case: F is very small.
+        // This is a rare case: F is very small.
         //
         if (f == czero) {
             cs = zero;
@@ -133,9 +140,9 @@ void Clartg(COMPLEX const f, COMPLEX const g, REAL &cs, COMPLEX &sn, COMPLEX &r)
         r = cs * f + sn * g;
     } else {
         //
-        //        This is the most common case.
-        //        Neither F2 nor F2/G2 are less than SAFMIN
-        //        F2S cannot overflow, and it is accurate
+        // This is the most common case.
+        // Neither F2 nor F2/G2 are less than SAFMIN
+        // F2S cannot overflow, and it is accurate
         //
         f2s = sqrt(one + g2 / f2);
         // Do the F2S(real)*FS(complex) multiply with two real multiplies
@@ -158,6 +165,6 @@ void Clartg(COMPLEX const f, COMPLEX const g, REAL &cs, COMPLEX &sn, COMPLEX &r)
         }
     }
     //
-    //     End of Clartg
+    // End of Clartg
     //
 }

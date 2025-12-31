@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,31 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine ZLAMSWLQ.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Clamswlq(const char *side, const char *trans, INTEGER const m, INTEGER const n, INTEGER const k, INTEGER const mb, INTEGER const nb, COMPLEX *a, INTEGER const lda, COMPLEX *t, INTEGER const ldt, COMPLEX *c, INTEGER const ldc, COMPLEX *work, INTEGER const lwork, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    // =====================================================================
-    //
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input arguments
+    // Test the input arguments
     //
     bool lquery = lwork < 0;
     bool notran = Mlsame(trans, "N");
@@ -94,7 +82,7 @@ void Clamswlq(const char *side, const char *trans, INTEGER const m, INTEGER cons
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (min({m, n, k}) == 0) {
         return;
@@ -111,7 +99,7 @@ void Clamswlq(const char *side, const char *trans, INTEGER const m, INTEGER cons
     INTEGER i = 0;
     if (left && tran) {
         //
-        //         Multiply Q to the last block of C
+        // Multiply Q to the last block of C
         //
         kk = mod((m - k), (nb - k));
         ctr = (m - k) / (nb - k);
@@ -125,20 +113,20 @@ void Clamswlq(const char *side, const char *trans, INTEGER const m, INTEGER cons
         //
         for (i = ii - (nb - k); i >= nb + 1; i = i - (nb - k)) {
             //
-            //         Multiply Q to the current block of C (1:M,I:I+NB)
+            // Multiply Q to the current block of C (1:M,I:I+NB)
             //
             ctr = ctr - 1;
             Ctpmlqt("L", "C", nb - k, n, k, 0, mb, &a[(i - 1) * lda], lda, &t[((ctr * k + 1) - 1) * ldt], ldt, &c[(1 - 1)], ldc, &c[(i - 1)], ldc, work, info);
             //
         }
         //
-        //         Multiply Q to the first block of C (1:M,1:NB)
+        // Multiply Q to the first block of C (1:M,1:NB)
         //
         Cgemlqt("L", "C", nb, n, k, mb, &a[(1 - 1)], lda, t, ldt, &c[(1 - 1)], ldc, work, info);
         //
     } else if (left && notran) {
         //
-        //         Multiply Q to the first block of C
+        // Multiply Q to the first block of C
         //
         kk = mod((m - k), (nb - k));
         ii = m - kk + 1;
@@ -147,7 +135,7 @@ void Clamswlq(const char *side, const char *trans, INTEGER const m, INTEGER cons
         //
         for (i = nb + 1; i <= ii - nb + k; i = i + (nb - k)) {
             //
-            //         Multiply Q to the current block of C (I:I+NB,1:N)
+            // Multiply Q to the current block of C (I:I+NB,1:N)
             //
             Ctpmlqt("L", "N", nb - k, n, k, 0, mb, &a[(i - 1) * lda], lda, &t[((ctr * k + 1) - 1) * ldt], ldt, &c[(1 - 1)], ldc, &c[(i - 1)], ldc, work, info);
             ctr++;
@@ -155,7 +143,7 @@ void Clamswlq(const char *side, const char *trans, INTEGER const m, INTEGER cons
         }
         if (ii <= m) {
             //
-            //         Multiply Q to the last block of C
+            // Multiply Q to the last block of C
             //
             Ctpmlqt("L", "N", kk, n, k, 0, mb, &a[(ii - 1) * lda], lda, &t[((ctr * k + 1) - 1) * ldt], ldt, &c[(1 - 1)], ldc, &c[(ii - 1)], ldc, work, info);
             //
@@ -163,7 +151,7 @@ void Clamswlq(const char *side, const char *trans, INTEGER const m, INTEGER cons
         //
     } else if (right && notran) {
         //
-        //         Multiply Q to the last block of C
+        // Multiply Q to the last block of C
         //
         kk = mod((n - k), (nb - k));
         ctr = (n - k) / (nb - k);
@@ -176,20 +164,20 @@ void Clamswlq(const char *side, const char *trans, INTEGER const m, INTEGER cons
         //
         for (i = ii - (nb - k); i >= nb + 1; i = i - (nb - k)) {
             //
-            //         Multiply Q to the current block of C (1:M,I:I+MB)
+            // Multiply Q to the current block of C (1:M,I:I+MB)
             //
             ctr = ctr - 1;
             Ctpmlqt("R", "N", m, nb - k, k, 0, mb, &a[(i - 1) * lda], lda, &t[((ctr * k + 1) - 1) * ldt], ldt, &c[(1 - 1)], ldc, &c[(i - 1) * ldc], ldc, work, info);
             //
         }
         //
-        //         Multiply Q to the first block of C (1:M,1:MB)
+        // Multiply Q to the first block of C (1:M,1:MB)
         //
         Cgemlqt("R", "N", m, nb, k, mb, &a[(1 - 1)], lda, t, ldt, &c[(1 - 1)], ldc, work, info);
         //
     } else if (right && tran) {
         //
-        //       Multiply Q to the first block of C
+        // Multiply Q to the first block of C
         //
         kk = mod((n - k), (nb - k));
         ii = n - kk + 1;
@@ -198,7 +186,7 @@ void Clamswlq(const char *side, const char *trans, INTEGER const m, INTEGER cons
         //
         for (i = nb + 1; i <= ii - nb + k; i = i + (nb - k)) {
             //
-            //         Multiply Q to the current block of C (1:M,I:I+MB)
+            // Multiply Q to the current block of C (1:M,I:I+MB)
             //
             Ctpmlqt("R", "C", m, nb - k, k, 0, mb, &a[(i - 1) * lda], lda, &t[((ctr * k + 1) - 1) * ldt], ldt, &c[(1 - 1)], ldc, &c[(i - 1) * ldc], ldc, work, info);
             ctr++;
@@ -206,7 +194,7 @@ void Clamswlq(const char *side, const char *trans, INTEGER const m, INTEGER cons
         }
         if (ii <= n) {
             //
-            //       Multiply Q to the last block of C
+            // Multiply Q to the last block of C
             //
             Ctpmlqt("R", "C", m, kk, k, 0, mb, &a[(ii - 1) * lda], lda, &t[((ctr * k + 1) - 1) * ldt], ldt, &c[(1 - 1)], ldc, &c[(ii - 1) * ldc], ldc, work, info);
             //
@@ -216,6 +204,6 @@ void Clamswlq(const char *side, const char *trans, INTEGER const m, INTEGER cons
     //
     work[1 - 1] = lw;
     //
-    //     End of Clamswlq
+    // End of Clamswlq
     //
 }

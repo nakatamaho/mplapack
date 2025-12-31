@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,36 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine DGEQR.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Rgeqr(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *t, INTEGER const tsize, REAL *work, INTEGER const lwork, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd. --
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input arguments
+    // Test the input arguments
     //
     info = 0;
     //
@@ -72,7 +55,7 @@ void Rgeqr(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *t
         }
     }
     //
-    //     Determine the block size
+    // Determine the block size
     //
     INTEGER mb = 0;
     INTEGER nb = 0;
@@ -101,7 +84,7 @@ void Rgeqr(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *t
         nblcks = 1;
     }
     //
-    //     Determine if the workspace size satisfies minimal size
+    // Determine if the workspace size satisfies minimal size
     //
     bool lminws = false;
     if ((tsize < max((INTEGER)1, nb * n * nblcks + 5) || lwork < nb * n) && (lwork >= n) && (tsize >= mintsz) && (!lquery)) {
@@ -149,13 +132,13 @@ void Rgeqr(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *t
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (min(m, n) == 0) {
         return;
     }
     //
-    //     The QR Decomposition
+    // The QR Decomposition
     //
     if ((m <= n) || (mb <= n) || (mb >= m)) {
         Rgeqrt(m, n, nb, a, lda, &t[6 - 1], nb, work, info);
@@ -165,6 +148,6 @@ void Rgeqr(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *t
     //
     work[1 - 1] = max((INTEGER)1, nb * n);
     //
-    //     End of Rgeqr
+    // End of Rgeqr
     //
 }

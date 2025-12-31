@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DLASY2.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -101,13 +108,13 @@ void Rlasy2(bool const ltranl, bool const ltranr, INTEGER const isgn, INTEGER co
     //
     info = 0;
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n1 == 0 || n2 == 0) {
         return;
     }
     //
-    //     Set constants to control overflow
+    // Set constants to control overflow
     //
     eps = Rlamch("P");
     smlnum = Rlamch("S") / eps;
@@ -127,7 +134,7 @@ void Rlasy2(bool const ltranl, bool const ltranr, INTEGER const isgn, INTEGER co
         break;
     }
 //
-//     1 by 1: TL11*X + SGN*X*TR11 = B11
+// 1 by 1: TL11*X + SGN*X*TR11 = B11
 //
 statement_10:
     tau1 = tl[(1 - 1)] + sgn * tr[(1 - 1)];
@@ -148,9 +155,9 @@ statement_10:
     xnorm = abs(x[(1 - 1)]);
     return;
 //
-//     1 by 2:
-//     TL11*[X11 X12] + ISGN*[X11 X12]*op[TR11 TR12]  = [B11 B12]
-//                                       [TR21 TR22]
+// 1 by 2:
+// TL11*[X11 X12] + ISGN*[X11 X12]*op[TR11 TR12]  = [B11 B12]
+// [TR21 TR22]
 //
 statement_20:
     //
@@ -168,9 +175,9 @@ statement_20:
     btmp[2 - 1] = b[(2 - 1) * ldb];
     goto statement_40;
 //
-//     2 by 1:
-//          op[TL11 TL12]*[X11] + ISGN* [X11]*TR11  = [B11]
-//            [TL21 TL22] [X21]         [X21]         [B21]
+// 2 by 1:
+// op[TL11 TL12]*[X11] + ISGN* [X11]*TR11  = [B11]
+// [TL21 TL22] [X21]         [X21]         [B21]
 //
 statement_30:
     smin = max(REAL(eps * max({abs(tr[(1 - 1)]), abs(tl[(1 - 1)]), abs(tl[(2 - 1) * ldtl]), abs(tl[(2 - 1)]), abs(tl[(2 - 1) + (2 - 1) * ldtl])})), smlnum);
@@ -187,8 +194,8 @@ statement_30:
     btmp[2 - 1] = b[(2 - 1)];
 statement_40:
     //
-    //     Solve 2 by 2 system using complete pivoting.
-    //     Set pivots less than SMIN to SMIN.
+    // Solve 2 by 2 system using complete pivoting.
+    // Set pivots less than SMIN to SMIN.
     //
     ipiv = iRamax(4, tmp, 1);
     u11 = tmp[ipiv - 1];
@@ -235,12 +242,12 @@ statement_40:
     }
     return;
 //
-//     2 by 2:
-//     op[TL11 TL12]*[X11 X12] +ISGN* [X11 X12]*op[TR11 TR12] = [B11 B12]
-//       [TL21 TL22] [X21 X22]        [X21 X22]   [TR21 TR22]   [B21 B22]
+// 2 by 2:
+// op[TL11 TL12]*[X11 X12] +ISGN* [X11 X12]*op[TR11 TR12] = [B11 B12]
+// [TL21 TL22] [X21 X22]        [X21 X22]   [TR21 TR22]   [B21 B22]
 //
-//     Solve equivalent 4 by 4 system using complete pivoting.
-//     Set pivots less than SMIN to SMIN.
+// Solve equivalent 4 by 4 system using complete pivoting.
+// Set pivots less than SMIN to SMIN.
 //
 statement_50:
     smin = max({abs(tr[(1 - 1)]), abs(tr[(2 - 1) * ldtr]), abs(tr[(2 - 1)]), abs(tr[(2 - 1) + (2 - 1) * ldtr])});
@@ -279,7 +286,7 @@ statement_50:
     btmp[3 - 1] = b[(2 - 1) * ldb];
     btmp[4 - 1] = b[(2 - 1) + (2 - 1) * ldb];
     //
-    //     Perform elimination
+    // Perform elimination
     //
     for (i = 1; i <= 3; i = i + 1) {
         xmax = zero;
@@ -347,6 +354,6 @@ statement_50:
     x[(2 - 1) + (2 - 1) * ldx] = tmp[4 - 1];
     xnorm = max(abs(tmp[1 - 1]) + abs(tmp[3 - 1]), abs(tmp[2 - 1]) + abs(tmp[4 - 1]));
     //
-    //     End of Rlasy2
+    // End of Rlasy2
     //
 }

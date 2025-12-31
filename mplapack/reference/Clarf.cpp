@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine ZLARF.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -67,34 +74,34 @@ void Clarf(const char *side, INTEGER const m, INTEGER const n, COMPLEX *v, INTEG
     const COMPLEX one = COMPLEX(1.0, 0.0);
     if (applyleft) {
         //
-        //        Form  H * C
+        // Form  H * C
         //
         if (lastv > 0) {
             //
-            //           w(1:lastc,1) := C(1:lastv,1:lastc)**H * v(1:lastv,1)
+            // w(1:lastc,1) := C(1:lastv,1:lastc)**H * v(1:lastv,1)
             //
             Cgemv("Conjugate transpose", lastv, lastc, one, c, ldc, v, incv, zero, work, 1);
             //
-            //           C(1:lastv,1:lastc) := C(...) - v(1:lastv,1) * w(1:lastc,1)**H
+            // C(1:lastv,1:lastc) := C(...) - v(1:lastv,1) * w(1:lastc,1)**H
             //
             Cgerc(lastv, lastc, -tau, v, incv, work, 1, c, ldc);
         }
     } else {
         //
-        //        Form  C * H
+        // Form  C * H
         //
         if (lastv > 0) {
             //
-            //           w(1:lastc,1) := C(1:lastc,1:lastv) * v(1:lastv,1)
+            // w(1:lastc,1) := C(1:lastc,1:lastv) * v(1:lastv,1)
             //
             Cgemv("No transpose", lastc, lastv, one, c, ldc, v, incv, zero, work, 1);
             //
-            //           C(1:lastc,1:lastv) := C(...) - w(1:lastc,1) * v(1:lastv,1)**H
+            // C(1:lastc,1:lastv) := C(...) - w(1:lastc,1) * v(1:lastv,1)**H
             //
             Cgerc(lastc, lastv, -tau, work, 1, v, incv, c, ldc);
         }
     }
     //
-    //     End of Clarf
+    // End of Clarf
     //
 }

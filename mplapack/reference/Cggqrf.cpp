@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,33 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine ZGGQRF.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Cggqrf(INTEGER const n, INTEGER const m, INTEGER const p, COMPLEX *a, INTEGER const lda, COMPLEX *taua, COMPLEX *b, INTEGER const ldb, COMPLEX *taub, COMPLEX *work, INTEGER const lwork, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input parameters
+    // Test the input parameters
     //
     info = 0;
     INTEGER nb1 = iMlaenv(1, "Cgeqrf", " ", n, m, -1, -1);
@@ -82,21 +68,21 @@ void Cggqrf(INTEGER const n, INTEGER const m, INTEGER const p, COMPLEX *a, INTEG
         return;
     }
     //
-    //     QR factorization of N-by-M matrix A: A = Q*R
+    // QR factorization of N-by-M matrix A: A = Q*R
     //
     Cgeqrf(n, m, a, lda, taua, work, lwork, info);
     INTEGER lopt = castINTEGER(work[1 - 1].real());
     //
-    //     Update B := Q**H*B.
+    // Update B := Q**H*B.
     //
     Cunmqr("Left", "Conjugate Transpose", n, p, min(n, m), a, lda, taua, b, ldb, work, lwork, info);
     lopt = max(lopt, castINTEGER(work[1 - 1].real()));
     //
-    //     RQ factorization of N-by-P matrix B: B = T*Z.
+    // RQ factorization of N-by-P matrix B: B = T*Z.
     //
     Cgerqf(n, p, b, ldb, taub, work, lwork, info);
     work[1 - 1] = max(lopt, castINTEGER(work[1 - 1].real()));
     //
-    //     End of Cggqrf
+    // End of Cggqrf
     //
 }

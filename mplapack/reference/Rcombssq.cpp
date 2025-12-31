@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,24 +26,17 @@
  *
  */
 
+// Derived from LAPACK routine DCOMBSSQ.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Rcombssq(REAL *v1, REAL *v2) {
-    //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //     November 2018
-    //
-    //     .. Array Arguments ..
-    //     ..
-    //
-    // =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Executable Statements ..
     //
     const REAL zero = 0.0;
     if (v1[1 - 1] >= v2[1 - 1]) {
@@ -57,6 +50,6 @@ void Rcombssq(REAL *v1, REAL *v2) {
         v1[1 - 1] = v2[1 - 1];
     }
     //
-    //     End of Rcombssq
+    // End of Rcombssq
     //
 }

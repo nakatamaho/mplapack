@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine ZLACN2.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -68,8 +75,8 @@ void Clacn2(INTEGER const n, COMPLEX *v, COMPLEX *x, REAL &est, INTEGER &kase, I
         break;
     }
 //
-//     ................ ENTRY   (ISAVE( 1 ) = 1)
-//     FIRST ITERATION.  X HAS BEEN OVERWRITTEN BY A*X.
+// ................ ENTRY   (ISAVE( 1 ) = 1)
+// FIRST ITERATION.  X HAS BEEN OVERWRITTEN BY A*X.
 //
 statement_20:
     if (n == 1) {
@@ -92,14 +99,14 @@ statement_20:
     isave[1 - 1] = 2;
     return;
 //
-//     ................ ENTRY   (ISAVE( 1 ) = 2)
-//     FIRST ITERATION.  X HAS BEEN OVERWRITTEN BY CTRANS(A)*X.
+// ................ ENTRY   (ISAVE( 1 ) = 2)
+// FIRST ITERATION.  X HAS BEEN OVERWRITTEN BY CTRANS(A)*X.
 //
 statement_40:
     isave[2 - 1] = iCmax1(n, x, 1);
     isave[3 - 1] = 2;
 //
-//     MAIN LOOP - ITERATIONS 2,3,...,ITMAX.
+// MAIN LOOP - ITERATIONS 2,3,...,ITMAX.
 //
 statement_50:
     for (i = 1; i <= n; i = i + 1) {
@@ -110,15 +117,15 @@ statement_50:
     isave[1 - 1] = 3;
     return;
 //
-//     ................ ENTRY   (ISAVE( 1 ) = 3)
-//     X HAS BEEN OVERWRITTEN BY A*X.
+// ................ ENTRY   (ISAVE( 1 ) = 3)
+// X HAS BEEN OVERWRITTEN BY A*X.
 //
 statement_70:
     Ccopy(n, x, 1, v, 1);
     estold = est;
     est = RCsum1(n, v, 1);
     //
-    //     TEST FOR CYCLING.
+    // TEST FOR CYCLING.
     if (est <= estold) {
         goto statement_100;
     }
@@ -135,8 +142,8 @@ statement_70:
     isave[1 - 1] = 4;
     return;
 //
-//     ................ ENTRY   (ISAVE( 1 ) = 4)
-//     X HAS BEEN OVERWRITTEN BY CTRANS(A)*X.
+// ................ ENTRY   (ISAVE( 1 ) = 4)
+// X HAS BEEN OVERWRITTEN BY CTRANS(A)*X.
 //
 statement_90:
     jlast = isave[2 - 1];
@@ -146,7 +153,7 @@ statement_90:
         goto statement_50;
     }
 //
-//     ITERATION COMPLETE.  FINAL STAGE.
+// ITERATION COMPLETE.  FINAL STAGE.
 //
 statement_100:
     altsgn = one;
@@ -158,8 +165,8 @@ statement_100:
     isave[1 - 1] = 5;
     return;
 //
-//     ................ ENTRY   (ISAVE( 1 ) = 5)
-//     X HAS BEEN OVERWRITTEN BY A*X.
+// ................ ENTRY   (ISAVE( 1 ) = 5)
+// X HAS BEEN OVERWRITTEN BY A*X.
 //
 statement_120:
     temp = two * (RCsum1(n, x, 1) / castREAL(3 * n));
@@ -171,6 +178,6 @@ statement_120:
 statement_130:
     kase = 0;
     //
-    //     End of Clacn2
+    // End of Clacn2
     //
 }

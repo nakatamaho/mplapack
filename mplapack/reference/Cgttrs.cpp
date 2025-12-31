@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZGTTRS.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -47,13 +54,13 @@ void Cgttrs(const char *trans, INTEGER const n, INTEGER const nrhs, COMPLEX *dl,
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0 || nrhs == 0) {
         return;
     }
     //
-    //     Decode TRANS
+    // Decode TRANS
     //
     INTEGER itrans = 0;
     if (notran) {
@@ -64,7 +71,7 @@ void Cgttrs(const char *trans, INTEGER const n, INTEGER const nrhs, COMPLEX *dl,
         itrans = 2;
     }
     //
-    //     Determine the number of right-hand sides to solve at a time.
+    // Determine the number of right-hand sides to solve at a time.
     //
     INTEGER nb = 0;
     if (nrhs == 1) {
@@ -84,6 +91,6 @@ void Cgttrs(const char *trans, INTEGER const n, INTEGER const nrhs, COMPLEX *dl,
         }
     }
     //
-    //     End of Cgttrs
+    // End of Cgttrs
     //
 }

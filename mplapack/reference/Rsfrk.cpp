@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,12 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine DSFRK.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Rsfrk(const char *transr, const char *uplo, const char *trans, INTEGER const n, INTEGER const k, REAL const alpha, REAL *a, INTEGER const lda, REAL const beta, REAL *c) {
     //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     INTEGER info = 0;
     bool normaltransr = Mlsame(transr, "N");
@@ -63,10 +70,10 @@ void Rsfrk(const char *transr, const char *uplo, const char *trans, INTEGER cons
         return;
     }
     //
-    //     Quick return if possible.
+    // Quick return if possible.
     //
-    //     The quick return case: ((ALPHA.EQ.0).AND.(BETA.NE.ZERO)) is not
-    //     done (it is in Rsyrk for example) and left in the general case.
+    // The quick return case: ((ALPHA.EQ.0).AND.(BETA.NE.ZERO)) is not
+    // done (it is in Rsyrk for example) and left in the general case.
     //
     const REAL zero = 0.0;
     const REAL one = 1.0;
@@ -82,9 +89,9 @@ void Rsfrk(const char *transr, const char *uplo, const char *trans, INTEGER cons
         return;
     }
     //
-    //     C is N-by-N.
-    //     If N is odd, set NISODD = .TRUE., and N1 and N2.
-    //     If N is even, NISODD = .FALSE., and NK.
+    // C is N-by-N.
+    // If N is odd, set NISODD = .TRUE., and N1 and N2.
+    // If N is even, NISODD = .FALSE., and NK.
     //
     bool nisodd = false;
     INTEGER nk = 0;
@@ -106,19 +113,19 @@ void Rsfrk(const char *transr, const char *uplo, const char *trans, INTEGER cons
     //
     if (nisodd) {
         //
-        //        N is odd
+        // N is odd
         //
         if (normaltransr) {
             //
-            //           N is odd and TRANSR = 'N'
+            // N is odd and TRANSR = 'N'
             //
             if (lower) {
                 //
-                //              N is odd, TRANSR = 'N', and UPLO = 'L'
+                // N is odd, TRANSR = 'N', and UPLO = 'L'
                 //
                 if (notrans) {
                     //
-                    //                 N is odd, TRANSR = 'N', UPLO = 'L', and TRANS = 'N'
+                    // N is odd, TRANSR = 'N', UPLO = 'L', and TRANS = 'N'
                     //
                     Rsyrk("L", "N", n1, k, alpha, &a[(1 - 1)], lda, beta, &c[1 - 1], n);
                     Rsyrk("U", "N", n2, k, alpha, &a[((n1 + 1) - 1)], lda, beta, &c[(n + 1) - 1], n);
@@ -126,7 +133,7 @@ void Rsfrk(const char *transr, const char *uplo, const char *trans, INTEGER cons
                     //
                 } else {
                     //
-                    //                 N is odd, TRANSR = 'N', UPLO = 'L', and TRANS = 'T'
+                    // N is odd, TRANSR = 'N', UPLO = 'L', and TRANS = 'T'
                     //
                     Rsyrk("L", "T", n1, k, alpha, &a[(1 - 1)], lda, beta, &c[1 - 1], n);
                     Rsyrk("U", "T", n2, k, alpha, &a[((n1 + 1) - 1) * lda], lda, beta, &c[(n + 1) - 1], n);
@@ -136,11 +143,11 @@ void Rsfrk(const char *transr, const char *uplo, const char *trans, INTEGER cons
                 //
             } else {
                 //
-                //              N is odd, TRANSR = 'N', and UPLO = 'U'
+                // N is odd, TRANSR = 'N', and UPLO = 'U'
                 //
                 if (notrans) {
                     //
-                    //                 N is odd, TRANSR = 'N', UPLO = 'U', and TRANS = 'N'
+                    // N is odd, TRANSR = 'N', UPLO = 'U', and TRANS = 'N'
                     //
                     Rsyrk("L", "N", n1, k, alpha, &a[(1 - 1)], lda, beta, &c[(n2 + 1) - 1], n);
                     Rsyrk("U", "N", n2, k, alpha, &a[(n2 - 1)], lda, beta, &c[(n1 + 1) - 1], n);
@@ -148,7 +155,7 @@ void Rsfrk(const char *transr, const char *uplo, const char *trans, INTEGER cons
                     //
                 } else {
                     //
-                    //                 N is odd, TRANSR = 'N', UPLO = 'U', and TRANS = 'T'
+                    // N is odd, TRANSR = 'N', UPLO = 'U', and TRANS = 'T'
                     //
                     Rsyrk("L", "T", n1, k, alpha, &a[(1 - 1)], lda, beta, &c[(n2 + 1) - 1], n);
                     Rsyrk("U", "T", n2, k, alpha, &a[(n2 - 1) * lda], lda, beta, &c[(n1 + 1) - 1], n);
@@ -160,15 +167,15 @@ void Rsfrk(const char *transr, const char *uplo, const char *trans, INTEGER cons
             //
         } else {
             //
-            //           N is odd, and TRANSR = 'T'
+            // N is odd, and TRANSR = 'T'
             //
             if (lower) {
                 //
-                //              N is odd, TRANSR = 'T', and UPLO = 'L'
+                // N is odd, TRANSR = 'T', and UPLO = 'L'
                 //
                 if (notrans) {
                     //
-                    //                 N is odd, TRANSR = 'T', UPLO = 'L', and TRANS = 'N'
+                    // N is odd, TRANSR = 'T', UPLO = 'L', and TRANS = 'N'
                     //
                     Rsyrk("U", "N", n1, k, alpha, &a[(1 - 1)], lda, beta, &c[1 - 1], n1);
                     Rsyrk("L", "N", n2, k, alpha, &a[((n1 + 1) - 1)], lda, beta, &c[2 - 1], n1);
@@ -176,7 +183,7 @@ void Rsfrk(const char *transr, const char *uplo, const char *trans, INTEGER cons
                     //
                 } else {
                     //
-                    //                 N is odd, TRANSR = 'T', UPLO = 'L', and TRANS = 'T'
+                    // N is odd, TRANSR = 'T', UPLO = 'L', and TRANS = 'T'
                     //
                     Rsyrk("U", "T", n1, k, alpha, &a[(1 - 1)], lda, beta, &c[1 - 1], n1);
                     Rsyrk("L", "T", n2, k, alpha, &a[((n1 + 1) - 1) * lda], lda, beta, &c[2 - 1], n1);
@@ -186,11 +193,11 @@ void Rsfrk(const char *transr, const char *uplo, const char *trans, INTEGER cons
                 //
             } else {
                 //
-                //              N is odd, TRANSR = 'T', and UPLO = 'U'
+                // N is odd, TRANSR = 'T', and UPLO = 'U'
                 //
                 if (notrans) {
                     //
-                    //                 N is odd, TRANSR = 'T', UPLO = 'U', and TRANS = 'N'
+                    // N is odd, TRANSR = 'T', UPLO = 'U', and TRANS = 'N'
                     //
                     Rsyrk("U", "N", n1, k, alpha, &a[(1 - 1)], lda, beta, &c[(n2 * n2 + 1) - 1], n2);
                     Rsyrk("L", "N", n2, k, alpha, &a[((n1 + 1) - 1)], lda, beta, &c[(n1 * n2 + 1) - 1], n2);
@@ -198,7 +205,7 @@ void Rsfrk(const char *transr, const char *uplo, const char *trans, INTEGER cons
                     //
                 } else {
                     //
-                    //                 N is odd, TRANSR = 'T', UPLO = 'U', and TRANS = 'T'
+                    // N is odd, TRANSR = 'T', UPLO = 'U', and TRANS = 'T'
                     //
                     Rsyrk("U", "T", n1, k, alpha, &a[(1 - 1)], lda, beta, &c[(n2 * n2 + 1) - 1], n2);
                     Rsyrk("L", "T", n2, k, alpha, &a[((n1 + 1) - 1) * lda], lda, beta, &c[(n1 * n2 + 1) - 1], n2);
@@ -212,19 +219,19 @@ void Rsfrk(const char *transr, const char *uplo, const char *trans, INTEGER cons
         //
     } else {
         //
-        //        N is even
+        // N is even
         //
         if (normaltransr) {
             //
-            //           N is even and TRANSR = 'N'
+            // N is even and TRANSR = 'N'
             //
             if (lower) {
                 //
-                //              N is even, TRANSR = 'N', and UPLO = 'L'
+                // N is even, TRANSR = 'N', and UPLO = 'L'
                 //
                 if (notrans) {
                     //
-                    //                 N is even, TRANSR = 'N', UPLO = 'L', and TRANS = 'N'
+                    // N is even, TRANSR = 'N', UPLO = 'L', and TRANS = 'N'
                     //
                     Rsyrk("L", "N", nk, k, alpha, &a[(1 - 1)], lda, beta, &c[2 - 1], n + 1);
                     Rsyrk("U", "N", nk, k, alpha, &a[((nk + 1) - 1)], lda, beta, &c[1 - 1], n + 1);
@@ -232,7 +239,7 @@ void Rsfrk(const char *transr, const char *uplo, const char *trans, INTEGER cons
                     //
                 } else {
                     //
-                    //                 N is even, TRANSR = 'N', UPLO = 'L', and TRANS = 'T'
+                    // N is even, TRANSR = 'N', UPLO = 'L', and TRANS = 'T'
                     //
                     Rsyrk("L", "T", nk, k, alpha, &a[(1 - 1)], lda, beta, &c[2 - 1], n + 1);
                     Rsyrk("U", "T", nk, k, alpha, &a[((nk + 1) - 1) * lda], lda, beta, &c[1 - 1], n + 1);
@@ -242,11 +249,11 @@ void Rsfrk(const char *transr, const char *uplo, const char *trans, INTEGER cons
                 //
             } else {
                 //
-                //              N is even, TRANSR = 'N', and UPLO = 'U'
+                // N is even, TRANSR = 'N', and UPLO = 'U'
                 //
                 if (notrans) {
                     //
-                    //                 N is even, TRANSR = 'N', UPLO = 'U', and TRANS = 'N'
+                    // N is even, TRANSR = 'N', UPLO = 'U', and TRANS = 'N'
                     //
                     Rsyrk("L", "N", nk, k, alpha, &a[(1 - 1)], lda, beta, &c[(nk + 2) - 1], n + 1);
                     Rsyrk("U", "N", nk, k, alpha, &a[((nk + 1) - 1)], lda, beta, &c[(nk + 1) - 1], n + 1);
@@ -254,7 +261,7 @@ void Rsfrk(const char *transr, const char *uplo, const char *trans, INTEGER cons
                     //
                 } else {
                     //
-                    //                 N is even, TRANSR = 'N', UPLO = 'U', and TRANS = 'T'
+                    // N is even, TRANSR = 'N', UPLO = 'U', and TRANS = 'T'
                     //
                     Rsyrk("L", "T", nk, k, alpha, &a[(1 - 1)], lda, beta, &c[(nk + 2) - 1], n + 1);
                     Rsyrk("U", "T", nk, k, alpha, &a[((nk + 1) - 1) * lda], lda, beta, &c[(nk + 1) - 1], n + 1);
@@ -266,15 +273,15 @@ void Rsfrk(const char *transr, const char *uplo, const char *trans, INTEGER cons
             //
         } else {
             //
-            //           N is even, and TRANSR = 'T'
+            // N is even, and TRANSR = 'T'
             //
             if (lower) {
                 //
-                //              N is even, TRANSR = 'T', and UPLO = 'L'
+                // N is even, TRANSR = 'T', and UPLO = 'L'
                 //
                 if (notrans) {
                     //
-                    //                 N is even, TRANSR = 'T', UPLO = 'L', and TRANS = 'N'
+                    // N is even, TRANSR = 'T', UPLO = 'L', and TRANS = 'N'
                     //
                     Rsyrk("U", "N", nk, k, alpha, &a[(1 - 1)], lda, beta, &c[(nk + 1) - 1], nk);
                     Rsyrk("L", "N", nk, k, alpha, &a[((nk + 1) - 1)], lda, beta, &c[1 - 1], nk);
@@ -282,7 +289,7 @@ void Rsfrk(const char *transr, const char *uplo, const char *trans, INTEGER cons
                     //
                 } else {
                     //
-                    //                 N is even, TRANSR = 'T', UPLO = 'L', and TRANS = 'T'
+                    // N is even, TRANSR = 'T', UPLO = 'L', and TRANS = 'T'
                     //
                     Rsyrk("U", "T", nk, k, alpha, &a[(1 - 1)], lda, beta, &c[(nk + 1) - 1], nk);
                     Rsyrk("L", "T", nk, k, alpha, &a[((nk + 1) - 1) * lda], lda, beta, &c[1 - 1], nk);
@@ -292,11 +299,11 @@ void Rsfrk(const char *transr, const char *uplo, const char *trans, INTEGER cons
                 //
             } else {
                 //
-                //              N is even, TRANSR = 'T', and UPLO = 'U'
+                // N is even, TRANSR = 'T', and UPLO = 'U'
                 //
                 if (notrans) {
                     //
-                    //                 N is even, TRANSR = 'T', UPLO = 'U', and TRANS = 'N'
+                    // N is even, TRANSR = 'T', UPLO = 'U', and TRANS = 'N'
                     //
                     Rsyrk("U", "N", nk, k, alpha, &a[(1 - 1)], lda, beta, &c[(nk * (nk + 1) + 1) - 1], nk);
                     Rsyrk("L", "N", nk, k, alpha, &a[((nk + 1) - 1)], lda, beta, &c[(nk * nk + 1) - 1], nk);
@@ -304,7 +311,7 @@ void Rsfrk(const char *transr, const char *uplo, const char *trans, INTEGER cons
                     //
                 } else {
                     //
-                    //                 N is even, TRANSR = 'T', UPLO = 'U', and TRANS = 'T'
+                    // N is even, TRANSR = 'T', UPLO = 'U', and TRANS = 'T'
                     //
                     Rsyrk("U", "T", nk, k, alpha, &a[(1 - 1)], lda, beta, &c[(nk * (nk + 1) + 1) - 1], nk);
                     Rsyrk("L", "T", nk, k, alpha, &a[((nk + 1) - 1) * lda], lda, beta, &c[(nk * nk + 1) - 1], nk);
@@ -318,6 +325,6 @@ void Rsfrk(const char *transr, const char *uplo, const char *trans, INTEGER cons
         //
     }
     //
-    //     End of Rsfrk
+    // End of Rsfrk
     //
 }

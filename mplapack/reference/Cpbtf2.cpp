@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZPBTF2.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -38,30 +45,7 @@ void Cpbtf2(const char *uplo, INTEGER const n, INTEGER const kd, COMPLEX *ab, IN
     INTEGER kn = 0;
     const REAL one = 1.0;
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     upper = Mlsame(uplo, "U");
@@ -79,7 +63,7 @@ void Cpbtf2(const char *uplo, INTEGER const n, INTEGER const kd, COMPLEX *ab, IN
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0) {
         return;
@@ -89,11 +73,11 @@ void Cpbtf2(const char *uplo, INTEGER const n, INTEGER const kd, COMPLEX *ab, IN
     //
     if (upper) {
         //
-        //        Compute the Cholesky factorization A = U**H * U.
+        // Compute the Cholesky factorization A = U**H * U.
         //
         for (j = 1; j <= n; j = j + 1) {
             //
-            //           Compute U(J,J) and test for non-positive-definiteness.
+            // Compute U(J,J) and test for non-positive-definiteness.
             //
             ajj = ab[((kd + 1) - 1) + (j - 1) * ldab].real();
             if (ajj <= zero) {
@@ -103,8 +87,8 @@ void Cpbtf2(const char *uplo, INTEGER const n, INTEGER const kd, COMPLEX *ab, IN
             ajj = sqrt(ajj);
             ab[((kd + 1) - 1) + (j - 1) * ldab] = ajj;
             //
-            //           Compute elements J+1:J+KN of row J and update the
-            //           trailing submatrix within the band.
+            // Compute elements J+1:J+KN of row J and update the
+            // trailing submatrix within the band.
             //
             kn = min(kd, n - j);
             if (kn > 0) {
@@ -116,11 +100,11 @@ void Cpbtf2(const char *uplo, INTEGER const n, INTEGER const kd, COMPLEX *ab, IN
         }
     } else {
         //
-        //        Compute the Cholesky factorization A = L*L**H.
+        // Compute the Cholesky factorization A = L*L**H.
         //
         for (j = 1; j <= n; j = j + 1) {
             //
-            //           Compute L(J,J) and test for non-positive-definiteness.
+            // Compute L(J,J) and test for non-positive-definiteness.
             //
             ajj = ab[(j - 1) * ldab].real();
             if (ajj <= zero) {
@@ -130,8 +114,8 @@ void Cpbtf2(const char *uplo, INTEGER const n, INTEGER const kd, COMPLEX *ab, IN
             ajj = sqrt(ajj);
             ab[(j - 1) * ldab] = ajj;
             //
-            //           Compute elements J+1:J+KN of column J and update the
-            //           trailing submatrix within the band.
+            // Compute elements J+1:J+KN of column J and update the
+            // trailing submatrix within the band.
             //
             kn = min(kd, n - j);
             if (kn > 0) {
@@ -145,6 +129,6 @@ void Cpbtf2(const char *uplo, INTEGER const n, INTEGER const kd, COMPLEX *ab, IN
 statement_30:
     info = j;
     //
-    //     End of Cpbtf2
+    // End of Cpbtf2
     //
 }

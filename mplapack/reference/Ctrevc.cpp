@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine ZTREVC.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -57,7 +64,7 @@ void Ctrevc(const char *side, const char *howmny, bool *select, INTEGER const n,
     REAL remax = 0.0;
     const COMPLEX cmzero = COMPLEX(0.0, 0.0);
     //
-    //     Decode and test the input parameters
+    // Decode and test the input parameters
     //
     bothv = Mlsame(side, "B");
     rightv = Mlsame(side, "R") || bothv;
@@ -67,8 +74,8 @@ void Ctrevc(const char *side, const char *howmny, bool *select, INTEGER const n,
     over = Mlsame(howmny, "B");
     somev = Mlsame(howmny, "S");
     //
-    //     Set M to the number of columns required to store the selected
-    //     eigenvectors.
+    // Set M to the number of columns required to store the selected
+    // eigenvectors.
     //
     if (somev) {
         m = 0;
@@ -102,27 +109,27 @@ void Ctrevc(const char *side, const char *howmny, bool *select, INTEGER const n,
         return;
     }
     //
-    //     Quick return if possible.
+    // Quick return if possible.
     //
     if (n == 0) {
         return;
     }
     //
-    //     Set the constants to control overflow.
+    // Set the constants to control overflow.
     //
     unfl = Rlamch("Safe minimum");
     ovfl = one / unfl;
     ulp = Rlamch("Precision");
     smlnum = unfl * (n / ulp);
     //
-    //     Store the diagonal elements of T in working array WORK.
+    // Store the diagonal elements of T in working array WORK.
     //
     for (i = 1; i <= n; i = i + 1) {
         work[(i + n) - 1] = t[(i - 1) + (i - 1) * ldt];
     }
     //
-    //     Compute 1-norm of each column of strictly upper triangular
-    //     part of T to control overflow in triangular solver.
+    // Compute 1-norm of each column of strictly upper triangular
+    // part of T to control overflow in triangular solver.
     //
     rwork[1 - 1] = zero;
     for (j = 2; j <= n; j = j + 1) {
@@ -131,7 +138,7 @@ void Ctrevc(const char *side, const char *howmny, bool *select, INTEGER const n,
     //
     if (rightv) {
         //
-        //        Compute right eigenvectors.
+        // Compute right eigenvectors.
         //
         is = m;
         for (ki = n; ki >= 1; ki = ki - 1) {
@@ -145,14 +152,14 @@ void Ctrevc(const char *side, const char *howmny, bool *select, INTEGER const n,
             //
             work[1 - 1] = cmone;
             //
-            //           Form right-hand side.
+            // Form right-hand side.
             //
             for (k = 1; k <= ki - 1; k = k + 1) {
                 work[k - 1] = -t[(k - 1) + (ki - 1) * ldt];
             }
             //
-            //           Solve the triangular system:
-            //              (T(1:KI-1,1:KI-1) - T(KI,KI))*X = SCALE*WORK.
+            // Solve the triangular system:
+            // (T(1:KI-1,1:KI-1) - T(KI,KI))*X = SCALE*WORK.
             //
             for (k = 1; k <= ki - 1; k = k + 1) {
                 t[(k - 1) + (k - 1) * ldt] = t[(k - 1) + (k - 1) * ldt] - t[(ki - 1) + (ki - 1) * ldt];
@@ -166,7 +173,7 @@ void Ctrevc(const char *side, const char *howmny, bool *select, INTEGER const n,
                 work[ki - 1] = scale;
             }
             //
-            //           Copy the vector x or Q*x to VR and normalize.
+            // Copy the vector x or Q*x to VR and normalize.
             //
             if (!over) {
                 Ccopy(ki, &work[1 - 1], 1, &vr[(is - 1) * ldvr], 1);
@@ -188,7 +195,7 @@ void Ctrevc(const char *side, const char *howmny, bool *select, INTEGER const n,
                 CRscal(n, remax, &vr[(ki - 1) * ldvr], 1);
             }
             //
-            //           Set back the original diagonal elements of T.
+            // Set back the original diagonal elements of T.
             //
             for (k = 1; k <= ki - 1; k = k + 1) {
                 t[(k - 1) + (k - 1) * ldt] = work[(k + n) - 1];
@@ -201,7 +208,7 @@ void Ctrevc(const char *side, const char *howmny, bool *select, INTEGER const n,
     //
     if (leftv) {
         //
-        //        Compute left eigenvectors.
+        // Compute left eigenvectors.
         //
         is = 1;
         for (ki = 1; ki <= n; ki = ki + 1) {
@@ -215,14 +222,14 @@ void Ctrevc(const char *side, const char *howmny, bool *select, INTEGER const n,
             //
             work[n - 1] = cmone;
             //
-            //           Form right-hand side.
+            // Form right-hand side.
             //
             for (k = ki + 1; k <= n; k = k + 1) {
                 work[k - 1] = -conj(t[(ki - 1) + (k - 1) * ldt]);
             }
             //
-            //           Solve the triangular system:
-            //              (T(KI+1:N,KI+1:N) - T(KI,KI))**H * X = SCALE*WORK.
+            // Solve the triangular system:
+            // (T(KI+1:N,KI+1:N) - T(KI,KI))**H * X = SCALE*WORK.
             //
             for (k = ki + 1; k <= n; k = k + 1) {
                 t[(k - 1) + (k - 1) * ldt] = t[(k - 1) + (k - 1) * ldt] - t[(ki - 1) + (ki - 1) * ldt];
@@ -236,7 +243,7 @@ void Ctrevc(const char *side, const char *howmny, bool *select, INTEGER const n,
                 work[ki - 1] = scale;
             }
             //
-            //           Copy the vector x or Q*x to VL and normalize.
+            // Copy the vector x or Q*x to VL and normalize.
             //
             if (!over) {
                 Ccopy(n - ki + 1, &work[ki - 1], 1, &vl[(ki - 1) + (is - 1) * ldvl], 1);
@@ -258,7 +265,7 @@ void Ctrevc(const char *side, const char *howmny, bool *select, INTEGER const n,
                 CRscal(n, remax, &vl[(ki - 1) * ldvl], 1);
             }
             //
-            //           Set back the original diagonal elements of T.
+            // Set back the original diagonal elements of T.
             //
             for (k = ki + 1; k <= n; k = k + 1) {
                 t[(k - 1) + (k - 1) * ldt] = work[(k + n) - 1];
@@ -269,6 +276,6 @@ void Ctrevc(const char *side, const char *howmny, bool *select, INTEGER const n,
         }
     }
     //
-    //     End of Ctrevc
+    // End of Ctrevc
     //
 }

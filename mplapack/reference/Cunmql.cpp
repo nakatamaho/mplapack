@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,41 +26,26 @@
  *
  */
 
+// Derived from LAPACK routine ZUNMQL.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Cunmql(const char *side, const char *trans, INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX *a, INTEGER const lda, COMPLEX *tau, COMPLEX *c, INTEGER const ldc, COMPLEX *work, INTEGER const lwork, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input arguments
+    // Test the input arguments
     //
     info = 0;
     bool left = Mlsame(side, "L");
     bool notran = Mlsame(trans, "N");
     bool lquery = (lwork == -1);
     //
+    // NQ is the order of Q and NW is the minimum dimension of WORK
     //
     INTEGER nq = 0;
     INTEGER nw = 0;
@@ -100,7 +85,7 @@ void Cunmql(const char *side, const char *trans, INTEGER const m, INTEGER const 
     side_trans[2] = '\0';
     if (info == 0) {
         //
-        //        Compute the workspace requirements
+        // Compute the workspace requirements
         //
         if (m == 0 || n == 0) {
             lwkopt = 1;
@@ -118,7 +103,7 @@ void Cunmql(const char *side, const char *trans, INTEGER const m, INTEGER const 
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (m == 0 || n == 0) {
         return;
@@ -144,12 +129,12 @@ void Cunmql(const char *side, const char *trans, INTEGER const m, INTEGER const 
     INTEGER ib = 0;
     if (nb < nbmin || nb >= k) {
         //
-        //        Use unblocked code
+        // Use unblocked code
         //
         Cunm2l(side, trans, m, n, k, a, lda, tau, c, ldc, work, iinfo);
     } else {
         //
-        //        Use blocked code
+        // Use blocked code
         //
         iwt = 1 + nw * nb;
         if ((left && notran) || (!left && !notran)) {
@@ -171,29 +156,29 @@ void Cunmql(const char *side, const char *trans, INTEGER const m, INTEGER const 
         for (i = i1; i3 >= 0 ? i <= i2 : i >= i2; i = i + i3) {
             ib = min(nb, k - i + 1);
             //
-            //           Form the triangular factor of the block reflector
-            //           H = H(i+ib-1) . . . H(i+1) H(i)
+            // Form the triangular factor of the block reflector
+            // H = H(i+ib-1) . . . H(i+1) H(i)
             //
             Clarft("Backward", "Columnwise", nq - k + i + ib - 1, ib, &a[(i - 1) * lda], lda, &tau[i - 1], &work[iwt - 1], ldt);
             if (left) {
                 //
-                //              H or H**H is applied to C(1:m-k+i+ib-1,1:n)
+                // H or H**H is applied to C(1:m-k+i+ib-1,1:n)
                 //
                 mi = m - k + i + ib - 1;
             } else {
                 //
-                //              H or H**H is applied to C(1:m,1:n-k+i+ib-1)
+                // H or H**H is applied to C(1:m,1:n-k+i+ib-1)
                 //
                 ni = n - k + i + ib - 1;
             }
             //
-            //           Apply H or H**H
+            // Apply H or H**H
             //
             Clarfb(side, trans, "Backward", "Columnwise", mi, ni, ib, &a[(i - 1) * lda], lda, &work[iwt - 1], ldt, c, ldc, work, ldwork);
         }
     }
     work[1 - 1] = lwkopt;
     //
-    //     End of Cunmql
+    // End of Cunmql
     //
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZLARFG.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -41,29 +48,6 @@ void Clarfg(INTEGER const n, COMPLEX &alpha, COMPLEX *x, INTEGER const incx, COM
     INTEGER knt = 0;
     INTEGER j = 0;
     //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     if (n <= 0) {
         tau = zero;
         return;
@@ -75,12 +59,12 @@ void Clarfg(INTEGER const n, COMPLEX &alpha, COMPLEX *x, INTEGER const incx, COM
     //
     if (xnorm == zero && alphi == zero) {
         //
-        //        H  =  I
+        // H  =  I
         //
         tau = zero;
     } else {
         //
-        //        general case
+        // general case
         //
         beta = -sign(Rlapy3(alphr, alphi, xnorm), alphr);
         safmin = Rlamch("S") / Rlamch("E");
@@ -89,7 +73,7 @@ void Clarfg(INTEGER const n, COMPLEX &alpha, COMPLEX *x, INTEGER const incx, COM
         knt = 0;
         if (abs(beta) < safmin) {
         //
-        //           XNORM, BETA may be inaccurate; scale X and recompute them
+        // XNORM, BETA may be inaccurate; scale X and recompute them
         //
         statement_10:
             knt++;
@@ -101,7 +85,7 @@ void Clarfg(INTEGER const n, COMPLEX &alpha, COMPLEX *x, INTEGER const incx, COM
                 goto statement_10;
             }
             //
-            //           New BETA is at most 1, at least SAFMIN
+            // New BETA is at most 1, at least SAFMIN
             //
             xnorm = RCnrm2(n - 1, x, incx);
             alpha = COMPLEX(alphr, alphi);
@@ -111,7 +95,7 @@ void Clarfg(INTEGER const n, COMPLEX &alpha, COMPLEX *x, INTEGER const incx, COM
         alpha = Cladiv(COMPLEX(one), alpha - beta);
         Cscal(n - 1, alpha, x, incx);
         //
-        //        If ALPHA is subnormal, it may lose relative accuracy
+        // If ALPHA is subnormal, it may lose relative accuracy
         //
         for (j = 1; j <= knt; j = j + 1) {
             beta = beta * safmin;
@@ -119,6 +103,6 @@ void Clarfg(INTEGER const n, COMPLEX &alpha, COMPLEX *x, INTEGER const incx, COM
         alpha = beta;
     }
     //
-    //     End of Clarfg
+    // End of Clarfg
     //
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine ZTRSNA.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -59,7 +66,7 @@ void Ctrsna(const char *job, const char *howmny, bool *select, INTEGER const n, 
     INTEGER ix = 0;
     REAL xnorm = 0.0;
     //
-    //     Decode and test the input parameters
+    // Decode and test the input parameters
     //
     wantbh = Mlsame(job, "B");
     wants = Mlsame(job, "E") || wantbh;
@@ -67,8 +74,8 @@ void Ctrsna(const char *job, const char *howmny, bool *select, INTEGER const n, 
     //
     somcon = Mlsame(howmny, "S");
     //
-    //     Set M to the number of eigenpairs for which condition numbers are
-    //     to be computed.
+    // Set M to the number of eigenpairs for which condition numbers are
+    // to be computed.
     //
     if (somcon) {
         m = 0;
@@ -104,7 +111,7 @@ void Ctrsna(const char *job, const char *howmny, bool *select, INTEGER const n, 
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0) {
         return;
@@ -125,7 +132,7 @@ void Ctrsna(const char *job, const char *howmny, bool *select, INTEGER const n, 
         return;
     }
     //
-    //     Get machine constants
+    // Get machine constants
     //
     eps = Rlamch("P");
     smlnum = Rlamch("S") / eps;
@@ -142,8 +149,8 @@ void Ctrsna(const char *job, const char *howmny, bool *select, INTEGER const n, 
         //
         if (wants) {
             //
-            //           Compute the reciprocal condition number of the k-th
-            //           eigenvalue.
+            // Compute the reciprocal condition number of the k-th
+            // eigenvalue.
             //
             prod = Cdotc(n, &vr[(ks - 1) * ldvr], 1, &vl[(ks - 1) * ldvl], 1);
             rnrm = RCnrm2(n, &vr[(ks - 1) * ldvr], 1);
@@ -154,23 +161,23 @@ void Ctrsna(const char *job, const char *howmny, bool *select, INTEGER const n, 
         //
         if (wantsp) {
             //
-            //           Estimate the reciprocal condition number of the k-th
-            //           eigenvector.
+            // Estimate the reciprocal condition number of the k-th
+            // eigenvector.
             //
-            //           Copy the matrix T to the array WORK and swap the k-th
-            //           diagonal element to the (1,1) position.
+            // Copy the matrix T to the array WORK and swap the k-th
+            // diagonal element to the (1,1) position.
             //
             Clacpy("Full", n, n, t, ldt, work, ldwork);
             Ctrexc("No Q", n, work, ldwork, dummy, 1, k, 1, ierr);
             //
-            //           Form  C = T22 - lambda*I in WORK(2:N,2:N).
+            // Form  C = T22 - lambda*I in WORK(2:N,2:N).
             //
             for (i = 2; i <= n; i = i + 1) {
                 work[(i - 1) + (i - 1) * ldwork] = work[(i - 1) + (i - 1) * ldwork] - work[(1 - 1)];
             }
             //
-            //           Estimate a lower bound for the 1-norm of inv(C**H). The 1st
-            //           and (N+1)th columns of WORK are used to store work vectors.
+            // Estimate a lower bound for the 1-norm of inv(C**H). The 1st
+            // and (N+1)th columns of WORK are used to store work vectors.
             //
             sep[ks - 1] = zero;
             est = zero;
@@ -182,20 +189,20 @@ void Ctrsna(const char *job, const char *howmny, bool *select, INTEGER const n, 
             if (kase != 0) {
                 if (kase == 1) {
                     //
-                    //                 Solve C**H*x = scale*b
+                    // Solve C**H*x = scale*b
                     //
                     Clatrs("Upper", "Conjugate transpose", "Nonunit", &normin, n - 1, &work[(2 - 1) + (2 - 1) * ldwork], ldwork, work, scale, rwork, ierr);
                 } else {
                     //
-                    //                 Solve C*x = scale*b
+                    // Solve C*x = scale*b
                     //
                     Clatrs("Upper", "No transpose", "Nonunit", &normin, n - 1, &work[(2 - 1) + (2 - 1) * ldwork], ldwork, work, scale, rwork, ierr);
                 }
                 normin = 'Y';
                 if (scale != one) {
                     //
-                    //                 Multiply by 1/SCALE if doing so will not cause
-                    //                 overflow.
+                    // Multiply by 1/SCALE if doing so will not cause
+                    // overflow.
                     //
                     ix = iCamax(n - 1, work, 1);
                     xnorm = abs1(work[(ix - 1)]);
@@ -215,6 +222,6 @@ void Ctrsna(const char *job, const char *howmny, bool *select, INTEGER const n, 
     statement_50:;
     }
     //
-    //     End of Ctrsna
+    // End of Ctrsna
     //
 }

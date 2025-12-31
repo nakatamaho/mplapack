@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DLALN2.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -45,11 +52,11 @@ void Rlaln2(bool const ltrans, INTEGER const na, INTEGER const nw, REAL const sm
     REAL bignum = one / smlnum;
     REAL smini = max(smin, smlnum);
     //
-    //     Don't check for input errors
+    // Don't check for input errors
     //
     info = 0;
     //
-    //     Standard Initializations
+    // Standard Initializations
     //
     scale = one;
     //
@@ -95,18 +102,18 @@ void Rlaln2(bool const ltrans, INTEGER const na, INTEGER const nw, REAL const sm
     INTEGER ldipivot = 4;
     if (na == 1) {
         //
-        //        1 x 1  (i.e., scalar) system   C X = B
+        // 1 x 1  (i.e., scalar) system   C X = B
         //
         if (nw == 1) {
             //
-            //           Real 1x1 system.
+            // Real 1x1 system.
             //
-            //           C = ca A - w D
+            // C = ca A - w D
             //
             csr = ca * a[(1 - 1)] - wr * d1;
             cnorm = abs(csr);
             //
-            //           If | C | < SMINI, use C = SMINI
+            // If | C | < SMINI, use C = SMINI
             //
             if (cnorm < smini) {
                 csr = smini;
@@ -114,7 +121,7 @@ void Rlaln2(bool const ltrans, INTEGER const na, INTEGER const nw, REAL const sm
                 info = 1;
             }
             //
-            //           Check scaling for  X = B / C
+            // Check scaling for  X = B / C
             //
             bnorm = abs(b[(1 - 1)]);
             if (cnorm < one && bnorm > one) {
@@ -123,21 +130,21 @@ void Rlaln2(bool const ltrans, INTEGER const na, INTEGER const nw, REAL const sm
                 }
             }
             //
-            //           Compute X
+            // Compute X
             //
             x[(1 - 1)] = (b[(1 - 1)] * scale) / csr;
             xnorm = abs(x[(1 - 1)]);
         } else {
             //
-            //           Complex 1x1 system (w is complex)
+            // Complex 1x1 system (w is complex)
             //
-            //           C = ca A - w D
+            // C = ca A - w D
             //
             csr = ca * a[(1 - 1)] - wr * d1;
             csi = -wi * d1;
             cnorm = abs(csr) + abs(csi);
             //
-            //           If | C | < SMINI, use C = SMINI
+            // If | C | < SMINI, use C = SMINI
             //
             if (cnorm < smini) {
                 csr = smini;
@@ -146,7 +153,7 @@ void Rlaln2(bool const ltrans, INTEGER const na, INTEGER const nw, REAL const sm
                 info = 1;
             }
             //
-            //           Check scaling for  X = B / C
+            // Check scaling for  X = B / C
             //
             bnorm = abs(b[(1 - 1)]) + abs(b[(2 - 1) * ldb]);
             if (cnorm < one && bnorm > one) {
@@ -155,7 +162,7 @@ void Rlaln2(bool const ltrans, INTEGER const na, INTEGER const nw, REAL const sm
                 }
             }
             //
-            //           Compute X
+            // Compute X
             //
             Rladiv(scale * b[(1 - 1)], scale * b[(2 - 1) * ldb], csr, csi, x[(1 - 1)], x[(2 - 1) * ldx]);
             xnorm = abs(x[(1 - 1)]) + abs(x[(2 - 1) * ldx]);
@@ -163,9 +170,9 @@ void Rlaln2(bool const ltrans, INTEGER const na, INTEGER const nw, REAL const sm
         //
     } else {
         //
-        //        2x2 System
+        // 2x2 System
         //
-        //        Compute the real part of  C = ca A - w D  (or  ca A**T - w D )
+        // Compute the real part of  C = ca A - w D  (or  ca A**T - w D )
         //
         cr[(1 - 1)] = ca * a[(1 - 1)] - wr * d1;
         cr[(2 - 1) + (2 - 1) * ldcr] = ca * a[(2 - 1) + (2 - 1) * lda] - wr * d2;
@@ -179,9 +186,9 @@ void Rlaln2(bool const ltrans, INTEGER const na, INTEGER const nw, REAL const sm
         //
         if (nw == 1) {
             //
-            //           Real 2x2 system  (w is real)
+            // Real 2x2 system  (w is real)
             //
-            //           Find the largest element in C
+            // Find the largest element in C
             //
             cmax = zero;
             icmax = 0;
@@ -193,7 +200,7 @@ void Rlaln2(bool const ltrans, INTEGER const na, INTEGER const nw, REAL const sm
                 }
             }
             //
-            //           If norm(C) < SMINI, use SMINI*identity.
+            // If norm(C) < SMINI, use SMINI*identity.
             //
             if (cmax < smini) {
                 bnorm = max(abs(b[(1 - 1)]), abs(b[(2 - 1)]));
@@ -210,7 +217,7 @@ void Rlaln2(bool const ltrans, INTEGER const na, INTEGER const nw, REAL const sm
                 return;
             }
             //
-            //           Gaussian elimination with complete pivoting.
+            // Gaussian elimination with complete pivoting.
             //
             ur11 = crv[icmax - 1];
             cr21 = crv[ipivot[(2 - 1) + (icmax - 1) * ldipivot] - 1];
@@ -220,7 +227,7 @@ void Rlaln2(bool const ltrans, INTEGER const na, INTEGER const nw, REAL const sm
             lr21 = ur11r * cr21;
             ur22 = cr22 - ur12 * lr21;
             //
-            //           If smaller pivot < SMINI, use SMINI
+            // If smaller pivot < SMINI, use SMINI
             //
             if (abs(ur22) < smini) {
                 ur22 = smini;
@@ -252,7 +259,7 @@ void Rlaln2(bool const ltrans, INTEGER const na, INTEGER const nw, REAL const sm
             }
             xnorm = max(abs(xr1), abs(xr2));
             //
-            //           Further scaling if  norm(A) norm(X) > overflow
+            // Further scaling if  norm(A) norm(X) > overflow
             //
             if (xnorm > one && cmax > one) {
                 if (xnorm > bignum / cmax) {
@@ -265,9 +272,9 @@ void Rlaln2(bool const ltrans, INTEGER const na, INTEGER const nw, REAL const sm
             }
         } else {
             //
-            //           Complex 2x2 system  (w is complex)
+            // Complex 2x2 system  (w is complex)
             //
-            //           Find the largest element in C
+            // Find the largest element in C
             //
             ci[(1 - 1)] = -wi * d1;
             ci[(2 - 1)] = zero;
@@ -283,7 +290,7 @@ void Rlaln2(bool const ltrans, INTEGER const na, INTEGER const nw, REAL const sm
                 }
             }
             //
-            //           If norm(C) < SMINI, use SMINI*identity.
+            // If norm(C) < SMINI, use SMINI*identity.
             //
             if (cmax < smini) {
                 bnorm = max(abs(b[(1 - 1)]) + abs(b[(2 - 1) * ldb]), abs(b[(2 - 1)]) + abs(b[(2 - 1) + (2 - 1) * ldb]));
@@ -302,7 +309,7 @@ void Rlaln2(bool const ltrans, INTEGER const na, INTEGER const nw, REAL const sm
                 return;
             }
             //
-            //           Gaussian elimination with complete pivoting.
+            // Gaussian elimination with complete pivoting.
             //
             ur11 = crv[icmax - 1];
             ui11 = civ[icmax - 1];
@@ -314,7 +321,7 @@ void Rlaln2(bool const ltrans, INTEGER const na, INTEGER const nw, REAL const sm
             ci22 = civ[ipivot[(4 - 1) + (icmax - 1) * ldipivot] - 1];
             if (icmax == 1 || icmax == 4) {
                 //
-                //              Code when off-diagonals of pivoted C are real
+                // Code when off-diagonals of pivoted C are real
                 //
                 if (abs(ur11) > abs(ui11)) {
                     temp = ui11 / ur11;
@@ -333,7 +340,7 @@ void Rlaln2(bool const ltrans, INTEGER const na, INTEGER const nw, REAL const sm
                 ui22 = ci22 - ur12 * li21;
             } else {
                 //
-                //              Code when diagonals of pivoted C are real
+                // Code when diagonals of pivoted C are real
                 //
                 ur11r = one / ur11;
                 ui11r = zero;
@@ -346,7 +353,7 @@ void Rlaln2(bool const ltrans, INTEGER const na, INTEGER const nw, REAL const sm
             }
             u22abs = abs(ur22) + abs(ui22);
             //
-            //           If smaller pivot < SMINI, use SMINI
+            // If smaller pivot < SMINI, use SMINI
             //
             if (u22abs < smini) {
                 ur22 = smini;
@@ -393,7 +400,7 @@ void Rlaln2(bool const ltrans, INTEGER const na, INTEGER const nw, REAL const sm
             }
             xnorm = max(abs(xr1) + abs(xi1), abs(xr2) + abs(xi2));
             //
-            //           Further scaling if  norm(A) norm(X) > overflow
+            // Further scaling if  norm(A) norm(X) > overflow
             //
             if (xnorm > one && cmax > one) {
                 if (xnorm > bignum / cmax) {
@@ -409,6 +416,6 @@ void Rlaln2(bool const ltrans, INTEGER const na, INTEGER const nw, REAL const sm
         }
     }
     //
-    //     End of Rlaln2
+    // End of Rlaln2
     //
 }

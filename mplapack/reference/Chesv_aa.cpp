@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,12 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine ZHESV_AA.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Chesv_aa(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a, INTEGER const lda, INTEGER *ipiv, COMPLEX *b, INTEGER const ldb, COMPLEX *work, INTEGER const lwork, INTEGER &info) {
     //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     bool lquery = (lwork == -1);
@@ -68,12 +75,12 @@ void Chesv_aa(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a,
         return;
     }
     //
-    //     Compute the factorization A = U**H*T*U or A = L*T*L**H.
+    // Compute the factorization A = U**H*T*U or A = L*T*L**H.
     //
     Chetrf_aa(uplo, n, a, lda, ipiv, work, lwork, info);
     if (info == 0) {
         //
-        //        Solve the system A*X = B, overwriting B with X.
+        // Solve the system A*X = B, overwriting B with X.
         //
         Chetrs_aa(uplo, n, nrhs, a, lda, ipiv, b, ldb, work, lwork, info);
         //
@@ -81,6 +88,6 @@ void Chesv_aa(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a,
     //
     work[1 - 1] = lwkopt;
     //
-    //     End of Chesv_aa
+    // End of Chesv_aa
     //
 }

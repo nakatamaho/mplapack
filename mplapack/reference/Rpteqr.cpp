@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,37 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine DPTEQR.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Rpteqr(const char *compz, INTEGER const n, REAL *d, REAL *e, REAL *z, INTEGER const ldz, REAL *work, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     //
@@ -82,7 +64,7 @@ void Rpteqr(const char *compz, INTEGER const n, REAL *d, REAL *e, REAL *z, INTEG
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0) {
         return;
@@ -100,7 +82,7 @@ void Rpteqr(const char *compz, INTEGER const n, REAL *d, REAL *e, REAL *z, INTEG
         Rlaset("Full", n, n, zero, one, z, ldz);
     }
     //
-    //     Call Rpttrf to factor the matrix.
+    // Call Rpttrf to factor the matrix.
     //
     Rpttrf(n, d, e, info);
     if (info != 0) {
@@ -114,8 +96,8 @@ void Rpteqr(const char *compz, INTEGER const n, REAL *d, REAL *e, REAL *z, INTEG
         e[i - 1] = e[i - 1] * d[i - 1];
     }
     //
-    //     Call Rbdsqr to compute the singular values/vectors of the
-    //     bidiagonal factor.
+    // Call Rbdsqr to compute the singular values/vectors of the
+    // bidiagonal factor.
     //
     INTEGER nru = 0;
     if (icompz > 0) {
@@ -127,7 +109,7 @@ void Rpteqr(const char *compz, INTEGER const n, REAL *d, REAL *e, REAL *z, INTEG
     REAL c[1];
     Rbdsqr("Lower", n, 0, nru, 0, d, e, vt, 1, z, ldz, c, 1, work, info);
     //
-    //     Square the singular values.
+    // Square the singular values.
     //
     if (info == 0) {
         for (i = 1; i <= n; i = i + 1) {
@@ -137,6 +119,6 @@ void Rpteqr(const char *compz, INTEGER const n, REAL *d, REAL *e, REAL *z, INTEG
         info += n;
     }
     //
-    //     End of Rpteqr
+    // End of Rpteqr
     //
 }

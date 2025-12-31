@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,41 +26,22 @@
  *
  */
 
+// Derived from LAPACK routine DLANEG.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 INTEGER Rlaneg(INTEGER const n, REAL *d, REAL *lld, REAL const sigma, REAL const /* pivmin */, INTEGER const r) {
     INTEGER return_value = 0;
     //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     Some architectures propagate Infinities and NaNs very slowly, so
-    //     the code computes counts in BLKLEN chunks.  Then a NaN can
-    //     propagate at most BLKLEN columns before being detected.  This is
-    //     not a general tuning parameter; it needs only to be just large
-    //     enough that the overhead is tiny in common cases.
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     INTEGER negcnt = 0;
     //
-    //     I) upper part: L D L^T - SIGMA I = L+ D+ L+^T
+    // I) upper part: L D L^T - SIGMA I = L+ D+ L+^T
     REAL t = -sigma;
     INTEGER bj = 0;
     const INTEGER blklen = 128;
@@ -106,7 +87,7 @@ INTEGER Rlaneg(INTEGER const n, REAL *d, REAL *lld, REAL const sigma, REAL const
         negcnt += neg1;
     }
     //
-    //     II) lower part: L D L^T - SIGMA I = U- D- U-^T
+    // II) lower part: L D L^T - SIGMA I = U- D- U-^T
     REAL p = d[n - 1] - sigma;
     INTEGER neg2 = 0;
     REAL dminus = 0.0;
@@ -142,8 +123,8 @@ INTEGER Rlaneg(INTEGER const n, REAL *d, REAL *lld, REAL const sigma, REAL const
         negcnt += neg2;
     }
     //
-    //     III) Twist index
-    //       T was shifted by SIGMA initially.
+    // III) Twist index
+    // T was shifted by SIGMA initially.
     REAL gamma = (t + sigma) + p;
     if (gamma < zero) {
         negcnt++;

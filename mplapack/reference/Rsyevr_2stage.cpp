@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DSYEVR_2STAGE.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -82,7 +89,7 @@ void Rsyevr_2stage(const char *jobz, const char *range, const char *uplo, INTEGE
     REAL tmp1 = 0.0;
     INTEGER jj = 0;
     //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     ieeeok = iMlaenv(10, "Rsyevr", "N", 1, 2, 3, 4);
     //
@@ -150,7 +157,7 @@ void Rsyevr_2stage(const char *jobz, const char *range, const char *uplo, INTEGE
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     m = 0;
     if (n == 0) {
@@ -177,7 +184,7 @@ void Rsyevr_2stage(const char *jobz, const char *range, const char *uplo, INTEGE
         return;
     }
     //
-    //     Get machine constants.
+    // Get machine constants.
     //
     safmin = Rlamch("Safe minimum");
     eps = Rlamch("Precision");
@@ -186,7 +193,7 @@ void Rsyevr_2stage(const char *jobz, const char *range, const char *uplo, INTEGE
     rmin = sqrt(smlnum);
     rmax = min(REAL(sqrt(bignum)), REAL(one / sqrt(sqrt(safmin))));
     //
-    //     Scale matrix to allowable range, if necessary.
+    // Scale matrix to allowable range, if necessary.
     //
     iscale = 0;
     abstll = abstol;
@@ -221,11 +228,11 @@ void Rsyevr_2stage(const char *jobz, const char *range, const char *uplo, INTEGE
         }
     }
     //
-    //     Initialize indices into workspaces.  Note: The IWORK indices are
-    //     used only if Rsterf or Rstemr fail.
+    // Initialize indices into workspaces.  Note: The IWORK indices are
+    // used only if Rsterf or Rstemr fail.
     //
-    //     WORK(INDTAU:INDTAU+N-1) stores the scalar factors of the
-    //     elementary reflectors used in Rsytrd.
+    // WORK(INDTAU:INDTAU+N-1) stores the scalar factors of the
+    // elementary reflectors used in Rsytrd.
     indtau = 1;
     // WORK(INDD:INDD+N-1) stores the tridiagonal's diagonal entries.
     indd = indtau + n;
@@ -245,8 +252,8 @@ void Rsyevr_2stage(const char *jobz, const char *range, const char *uplo, INTEGE
     indwk = indhous + lhtrd;
     llwork = lwork - indwk + 1;
     //
-    //     IWORK(INDIBL:INDIBL+M-1) corresponds to IBLOCK in Rstebz and
-    //     stores the block indices of each of the M<=N eigenvalues.
+    // IWORK(INDIBL:INDIBL+M-1) corresponds to IBLOCK in Rstebz and
+    // stores the block indices of each of the M<=N eigenvalues.
     indibl = 1;
     // IWORK(INDISP:INDISP+NSPLIT-1) corresponds to ISPLIT in Rstebz and
     // stores the starting and finishing indices of each block.
@@ -259,12 +266,12 @@ void Rsyevr_2stage(const char *jobz, const char *range, const char *uplo, INTEGE
     // INDIWO is the offset of the remaining integer workspace.
     indiwo = indifl + n;
     //
-    //     Call Rsytrd_2stage to reduce symmetric matrix to tridiagonal form.
+    // Call Rsytrd_2stage to reduce symmetric matrix to tridiagonal form.
     //
     Rsytrd_2stage(jobz, uplo, n, a, lda, &work[indd - 1], &work[inde - 1], &work[indtau - 1], &work[indhous - 1], lhtrd, &work[indwk - 1], llwork, iinfo);
     //
-    //     If all eigenvalues are desired
-    //     then call Rsterf or Rstemr and Rormtr.
+    // If all eigenvalues are desired
+    // then call Rsterf or Rstemr and Rormtr.
     //
     if ((alleig || (indeig && il == 1 && iu == n)) && ieeeok == 1) {
         if (!wantz) {
@@ -282,8 +289,8 @@ void Rsyevr_2stage(const char *jobz, const char *range, const char *uplo, INTEGE
             }
             Rstemr(jobz, "A", n, &work[inddd - 1], &work[indee - 1], vl, vu, il, iu, m, w, z, ldz, n, isuppz, tryrac, &work[indwk - 1], lwork, iwork, liwork, info);
             //
-            //        Apply orthogonal matrix used in reduction to tridiagonal
-            //        form to eigenvectors returned by Rstemr.
+            // Apply orthogonal matrix used in reduction to tridiagonal
+            // form to eigenvectors returned by Rstemr.
             //
             if (wantz && info == 0) {
                 indwkn = inde;
@@ -301,8 +308,8 @@ void Rsyevr_2stage(const char *jobz, const char *range, const char *uplo, INTEGE
         info = 0;
     }
     //
-    //     Otherwise, call Rstebz and, if eigenvectors are desired, Rstein.
-    //     Also call Rstebz and Rstein if Rstemr fails.
+    // Otherwise, call Rstebz and, if eigenvectors are desired, Rstein.
+    // Also call Rstebz and Rstein if Rstemr fails.
     //
     if (wantz) {
         order = 'B';
@@ -315,17 +322,17 @@ void Rsyevr_2stage(const char *jobz, const char *range, const char *uplo, INTEGE
     if (wantz) {
         Rstein(n, &work[indd - 1], &work[inde - 1], m, w, &iwork[indibl - 1], &iwork[indisp - 1], z, ldz, &work[indwk - 1], &iwork[indiwo - 1], &iwork[indifl - 1], info);
         //
-        //        Apply orthogonal matrix used in reduction to tridiagonal
-        //        form to eigenvectors returned by Rstein.
+        // Apply orthogonal matrix used in reduction to tridiagonal
+        // form to eigenvectors returned by Rstein.
         //
         indwkn = inde;
         llwrkn = lwork - indwkn + 1;
         Rormtr("L", uplo, "N", n, m, a, lda, &work[indtau - 1], z, ldz, &work[indwkn - 1], llwrkn, iinfo);
     }
 //
-//     If matrix was scaled, then rescale eigenvalues appropriately.
+// If matrix was scaled, then rescale eigenvalues appropriately.
 //
-//  Jump here if Rstemr/Rstein succeeded.
+// Jump here if Rstemr/Rstein succeeded.
 statement_30:
     if (iscale == 1) {
         if (info == 0) {
@@ -336,10 +343,10 @@ statement_30:
         Rscal(imax, one / sigma, w, 1);
     }
     //
-    //     If eigenvalues are not in order, then sort them, along with
-    //     eigenvectors.  Note: We do not sort the IFAIL portion of IWORK.
-    //     It may not be initialized (if Rstemr/Rstein succeeded), and we do
-    //     not return this detailed information to the user.
+    // If eigenvalues are not in order, then sort them, along with
+    // eigenvectors.  Note: We do not sort the IFAIL portion of IWORK.
+    // It may not be initialized (if Rstemr/Rstein succeeded), and we do
+    // not return this detailed information to the user.
     //
     if (wantz) {
         for (j = 1; j <= m - 1; j = j + 1) {
@@ -360,11 +367,11 @@ statement_30:
         }
     }
     //
-    //     Set WORK(1) to optimal workspace size.
+    // Set WORK(1) to optimal workspace size.
     //
     work[1 - 1] = lwmin;
     iwork[1 - 1] = liwmin;
     //
-    //     End of Rsyevr_2stage
+    // End of Rsyevr_2stage
     //
 }

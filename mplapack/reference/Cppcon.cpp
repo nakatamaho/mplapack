@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZPPCON.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -46,36 +53,7 @@ void Cppcon(const char *uplo, INTEGER const n, COMPLEX *ap, REAL const anorm, RE
     REAL scale = 0.0;
     INTEGER ix = 0;
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Statement Functions ..
-    //     ..
-    //     .. Statement Function definitions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     upper = Mlsame(uplo, "U");
@@ -91,7 +69,7 @@ void Cppcon(const char *uplo, INTEGER const n, COMPLEX *ap, REAL const anorm, RE
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     rcond = zero;
     if (n == 0) {
@@ -103,7 +81,7 @@ void Cppcon(const char *uplo, INTEGER const n, COMPLEX *ap, REAL const anorm, RE
     //
     smlnum = Rlamch("Safe minimum");
     //
-    //     Estimate the 1-norm of the inverse.
+    // Estimate the 1-norm of the inverse.
     //
     kase = 0;
     normin = 'N';
@@ -112,27 +90,27 @@ statement_10:
     if (kase != 0) {
         if (upper) {
             //
-            //           Multiply by inv(U**H).
+            // Multiply by inv(U**H).
             //
             Clatps("Upper", "Conjugate transpose", "Non-unit", &normin, n, ap, work, scalel, rwork, info);
             normin = 'Y';
             //
-            //           Multiply by inv(U).
+            // Multiply by inv(U).
             //
             Clatps("Upper", "No transpose", "Non-unit", &normin, n, ap, work, scaleu, rwork, info);
         } else {
             //
-            //           Multiply by inv(L).
+            // Multiply by inv(L).
             //
             Clatps("Lower", "No transpose", "Non-unit", &normin, n, ap, work, scalel, rwork, info);
             normin = 'Y';
             //
-            //           Multiply by inv(L**H).
+            // Multiply by inv(L**H).
             //
             Clatps("Lower", "Conjugate transpose", "Non-unit", &normin, n, ap, work, scaleu, rwork, info);
         }
         //
-        //        Multiply by 1/SCALE if doing so will not cause overflow.
+        // Multiply by 1/SCALE if doing so will not cause overflow.
         //
         scale = scalel * scaleu;
         if (scale != one) {
@@ -145,7 +123,7 @@ statement_10:
         goto statement_10;
     }
     //
-    //     Compute the estimate of the reciprocal condition number.
+    // Compute the estimate of the reciprocal condition number.
     //
     if (ainvnm != zero) {
         rcond = (one / ainvnm) / anorm;
@@ -153,6 +131,6 @@ statement_10:
 //
 statement_20:;
     //
-    //     End of Cppcon
+    // End of Cppcon
     //
 }

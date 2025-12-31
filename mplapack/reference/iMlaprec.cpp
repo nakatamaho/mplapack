@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,26 +26,18 @@
  *
  */
 
+// Derived from LAPACK routine ILAPREC.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 INTEGER iMlaprec(const char *prec) {
     INTEGER return_value = 0;
-    //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Executable Statements ..
     const INTEGER blas_prec_single = 211;
     const INTEGER blas_prec_REAL = 212;
     const INTEGER blas_prec_indigenous = 213;
@@ -63,6 +55,6 @@ INTEGER iMlaprec(const char *prec) {
     }
     return return_value;
     //
-    //     End of iMlaprec
+    // End of iMlaprec
     //
 }

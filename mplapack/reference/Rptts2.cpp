@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,29 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine DPTTS2.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Rptts2(INTEGER const n, INTEGER const nrhs, REAL *d, REAL *e, REAL *b, INTEGER const ldb) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n <= 1) {
         if (n == 1) {
@@ -57,20 +47,20 @@ void Rptts2(INTEGER const n, INTEGER const nrhs, REAL *d, REAL *e, REAL *b, INTE
         return;
     }
     //
-    //     Solve A * X = B using the factorization A = L*D*L**T,
-    //     overwriting each right hand side vector with its solution.
+    // Solve A * X = B using the factorization A = L*D*L**T,
+    // overwriting each right hand side vector with its solution.
     //
     INTEGER j = 0;
     INTEGER i = 0;
     for (j = 1; j <= nrhs; j = j + 1) {
         //
-        //           Solve L * x = b.
+        // Solve L * x = b.
         //
         for (i = 2; i <= n; i = i + 1) {
             b[(i - 1) + (j - 1) * ldb] = b[(i - 1) + (j - 1) * ldb] - b[((i - 1) - 1) + (j - 1) * ldb] * e[(i - 1) - 1];
         }
         //
-        //           Solve D * L**T * x = b.
+        // Solve D * L**T * x = b.
         //
         b[(n - 1) + (j - 1) * ldb] = b[(n - 1) + (j - 1) * ldb] / d[n - 1];
         for (i = n - 1; i >= 1; i = i - 1) {
@@ -78,6 +68,6 @@ void Rptts2(INTEGER const n, INTEGER const nrhs, REAL *d, REAL *e, REAL *b, INTE
         }
     }
     //
-    //     End of Rptts2
+    // End of Rptts2
     //
 }

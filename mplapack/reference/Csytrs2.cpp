@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,33 +26,17 @@
  *
  */
 
+// Derived from LAPACK routine ZSYTRS2.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Csytrs2(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a, INTEGER const lda, INTEGER *ipiv, COMPLEX *b, INTEGER const ldb, COMPLEX *work, INTEGER &info) {
-    //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
     info = 0;
     bool upper = Mlsame(uplo, "U");
@@ -72,13 +56,13 @@ void Csytrs2(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a, 
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0 || nrhs == 0) {
         return;
     }
     //
-    //     Convert A
+    // Convert A
     //
     INTEGER iinfo = 0;
     Csyconv(uplo, "C", n, a, lda, ipiv, work, iinfo);
@@ -96,9 +80,9 @@ void Csytrs2(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a, 
     COMPLEX bk = 0.0;
     if (upper) {
         //
-        //        Solve A*X = B, where A = U*D*U**T.
+        // Solve A*X = B, where A = U*D*U**T.
         //
-        //       P**T * B
+        // P**T * B
         k = n;
         while (k >= 1) {
             if (ipiv[k - 1] > 0) {
@@ -120,11 +104,11 @@ void Csytrs2(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a, 
             }
         }
         //
-        //  Compute (U \P**T * B) -> B    [ (U \P**T * B) ]
+        // Compute (U \P**T * B) -> B    [ (U \P**T * B) ]
         //
         Ctrsm("L", "U", "N", "U", n, nrhs, one, a, lda, b, ldb);
         //
-        //  Compute D \ B -> B   [ D \ (U \P**T * B) ]
+        // Compute D \ B -> B   [ D \ (U \P**T * B) ]
         //
         i = n;
         while (i >= 1) {
@@ -148,11 +132,11 @@ void Csytrs2(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a, 
             i = i - 1;
         }
         //
-        //      Compute (U**T \ B) -> B   [ U**T \ (D \ (U \P**T * B) ) ]
+        // Compute (U**T \ B) -> B   [ U**T \ (D \ (U \P**T * B) ) ]
         //
         Ctrsm("L", "U", "T", "U", n, nrhs, one, a, lda, b, ldb);
         //
-        //       P * B  [ P * (U**T \ (D \ (U \P**T * B) )) ]
+        // P * B  [ P * (U**T \ (D \ (U \P**T * B) )) ]
         //
         k = 1;
         while (k <= n) {
@@ -177,9 +161,9 @@ void Csytrs2(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a, 
         //
     } else {
         //
-        //        Solve A*X = B, where A = L*D*L**T.
+        // Solve A*X = B, where A = L*D*L**T.
         //
-        //       P**T * B
+        // P**T * B
         k = 1;
         while (k <= n) {
             if (ipiv[k - 1] > 0) {
@@ -201,11 +185,11 @@ void Csytrs2(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a, 
             }
         }
         //
-        //  Compute (L \P**T * B) -> B    [ (L \P**T * B) ]
+        // Compute (L \P**T * B) -> B    [ (L \P**T * B) ]
         //
         Ctrsm("L", "L", "N", "U", n, nrhs, one, a, lda, b, ldb);
         //
-        //  Compute D \ B -> B   [ D \ (L \P**T * B) ]
+        // Compute D \ B -> B   [ D \ (L \P**T * B) ]
         //
         i = 1;
         while (i <= n) {
@@ -227,11 +211,11 @@ void Csytrs2(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a, 
             i++;
         }
         //
-        //  Compute (L**T \ B) -> B   [ L**T \ (D \ (L \P**T * B) ) ]
+        // Compute (L**T \ B) -> B   [ L**T \ (D \ (L \P**T * B) ) ]
         //
         Ctrsm("L", "L", "T", "U", n, nrhs, one, a, lda, b, ldb);
         //
-        //       P * B  [ P * (L**T \ (D \ (L \P**T * B) )) ]
+        // P * B  [ P * (L**T \ (D \ (L \P**T * B) )) ]
         //
         k = n;
         while (k >= 1) {
@@ -256,10 +240,10 @@ void Csytrs2(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a, 
         //
     }
     //
-    //     Revert A
+    // Revert A
     //
     Csyconv(uplo, "R", n, a, lda, ipiv, work, iinfo);
     //
-    //     End of Csytrs2
+    // End of Csytrs2
     //
 }

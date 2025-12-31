@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,33 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine DPPTRI.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Rpptri(const char *uplo, INTEGER const n, REAL *ap, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     bool upper = Mlsame(uplo, "U");
@@ -66,13 +52,13 @@ void Rpptri(const char *uplo, INTEGER const n, REAL *ap, INTEGER &info) {
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0) {
         return;
     }
     //
-    //     Invert the triangular Cholesky factor U or L.
+    // Invert the triangular Cholesky factor U or L.
     //
     Rtptri(uplo, "Non-unit", n, ap, info);
     if (info > 0) {
@@ -87,7 +73,7 @@ void Rpptri(const char *uplo, INTEGER const n, REAL *ap, INTEGER &info) {
     INTEGER jjn = 0;
     if (upper) {
         //
-        //        Compute the product inv(U) * inv(U)**T.
+        // Compute the product inv(U) * inv(U)**T.
         //
         jj = 0;
         for (j = 1; j <= n; j = j + 1) {
@@ -102,7 +88,7 @@ void Rpptri(const char *uplo, INTEGER const n, REAL *ap, INTEGER &info) {
         //
     } else {
         //
-        //        Compute the product inv(L)**T * inv(L).
+        // Compute the product inv(L)**T * inv(L).
         //
         jj = 1;
         for (j = 1; j <= n; j = j + 1) {
@@ -115,6 +101,6 @@ void Rpptri(const char *uplo, INTEGER const n, REAL *ap, INTEGER &info) {
         }
     }
     //
-    //     End of Rpptri
+    // End of Rpptri
     //
 }

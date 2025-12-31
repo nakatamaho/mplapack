@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,12 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine DHSEQR.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Rhseqr(const char *job, const char *compz, INTEGER const n, INTEGER const ilo, INTEGER const ihi, REAL *h, INTEGER const ldh, REAL *wr, REAL *wi, REAL *z, INTEGER const ldz, REAL *work, INTEGER const lwork, INTEGER &info) {
     //
-    //     ==== Decode and check the input parameters. ====
+    // ==== Decode and check the input parameters. ====
     //
     bool wantt = Mlsame(job, "S");
     bool initz = Mlsame(compz, "I");
@@ -70,20 +77,20 @@ void Rhseqr(const char *job, const char *compz, INTEGER const n, INTEGER const i
     INTEGER ldhl = nl;
     if (info != 0) {
         //
-        //        ==== Quick return in case of invalid argument. ====
+        // ==== Quick return in case of invalid argument. ====
         //
         Mxerbla("Rhseqr", -info);
         return;
         //
     } else if (n == 0) {
         //
-        //        ==== Quick return in case N = 0; nothing to do. ====
+        // ==== Quick return in case N = 0; nothing to do. ====
         //
         return;
         //
     } else if (lquery) {
         //
-        //        ==== Quick return in case of a workspace query ====
+        // ==== Quick return in case of a workspace query ====
         //
         Rlaqr0(wantt, wantz, n, ilo, ihi, h, ldh, wr, wi, ilo, ihi, z, ldz, work, lwork, info);
         // ==== Ensure reported workspace size is backward-compatible with
@@ -93,7 +100,7 @@ void Rhseqr(const char *job, const char *compz, INTEGER const n, INTEGER const i
         //
     } else {
         //
-        //        ==== copy eigenvalues isolated by Rgebal ====
+        // ==== copy eigenvalues isolated by Rgebal ====
         //
         for (i = 1; i <= ilo - 1; i = i + 1) {
             wr[i - 1] = h[(i - 1) + (i - 1) * ldh];
@@ -104,13 +111,13 @@ void Rhseqr(const char *job, const char *compz, INTEGER const n, INTEGER const i
             wi[i - 1] = zero;
         }
         //
-        //        ==== Initialize Z, if requested ====
+        // ==== Initialize Z, if requested ====
         //
         if (initz) {
             Rlaset("A", n, n, zero, one, z, ldz);
         }
         //
-        //        ==== Quick return if possible ====
+        // ==== Quick return if possible ====
         //
         if (ilo == ihi) {
             wr[ilo - 1] = h[(ilo - 1) + (ilo - 1) * ldh];
@@ -118,7 +125,7 @@ void Rhseqr(const char *job, const char *compz, INTEGER const n, INTEGER const i
             return;
         }
         //
-        //        ==== Rlahqr/Rlaqr0 crossover point ====
+        // ==== Rlahqr/Rlaqr0 crossover point ====
         //
         char job_compz[3];
         job_compz[0] = job[0];
@@ -127,36 +134,36 @@ void Rhseqr(const char *job, const char *compz, INTEGER const n, INTEGER const i
         nmin = iMlaenv(12, "Rhseqr", job_compz, n, ilo, ihi, lwork);
         nmin = max(ntiny, nmin);
         //
-        //        ==== Rlaqr0 for big matrices; Rlahqr for small ones ====
+        // ==== Rlaqr0 for big matrices; Rlahqr for small ones ====
         //
         if (n > nmin) {
             Rlaqr0(wantt, wantz, n, ilo, ihi, h, ldh, wr, wi, ilo, ihi, z, ldz, work, lwork, info);
         } else {
             //
-            //           ==== Small matrix ====
+            // ==== Small matrix ====
             //
             Rlahqr(wantt, wantz, n, ilo, ihi, h, ldh, wr, wi, ilo, ihi, z, ldz, info);
             //
             if (info > 0) {
                 //
-                //              ==== A rare Rlahqr failure!  Rlaqr0 sometimes succeeds
-                //              .    when Rlahqr fails. ====
+                // ==== A rare Rlahqr failure!  Rlaqr0 sometimes succeeds
+                // .    when Rlahqr fails. ====
                 //
                 kbot = info;
                 //
                 if (n >= nl) {
                     //
-                    //                 ==== Larger matrices have enough subdiagonal scratch
-                    //                 .    space to call Rlaqr0 directly. ====
+                    // ==== Larger matrices have enough subdiagonal scratch
+                    // .    space to call Rlaqr0 directly. ====
                     //
                     Rlaqr0(wantt, wantz, n, ilo, kbot, h, ldh, wr, wi, ilo, ihi, z, ldz, work, lwork, info);
                     //
                 } else {
                     //
-                    //                 ==== Tiny matrices don't have enough subdiagonal
-                    //                 .    scratch space to benefit from Rlaqr0.  Hence,
-                    //                 .    tiny matrices must be copied into a larger
-                    //                 .    array before calling Rlaqr0. ====
+                    // ==== Tiny matrices don't have enough subdiagonal
+                    // .    scratch space to benefit from Rlaqr0.  Hence,
+                    // .    tiny matrices must be copied into a larger
+                    // .    array before calling Rlaqr0. ====
                     //
                     Rlacpy("A", n, n, h, ldh, hl, nl);
                     hl[((n + 1) - 1) + (n - 1) * ldhl] = zero;
@@ -169,18 +176,18 @@ void Rhseqr(const char *job, const char *compz, INTEGER const n, INTEGER const i
             }
         }
         //
-        //        ==== Clear out the trash, if necessary. ====
+        // ==== Clear out the trash, if necessary. ====
         //
         if ((wantt || info != 0) && n > 2) {
             Rlaset("L", n - 2, n - 2, zero, zero, &h[(3 - 1)], ldh);
         }
         //
-        //        ==== Ensure reported workspace size is backward-compatible with
-        //        .    previous LAPACK versions. ====
+        // ==== Ensure reported workspace size is backward-compatible with
+        // .    previous LAPACK versions. ====
         //
         work[1 - 1] = max(castREAL(max((INTEGER)1, n)), work[1 - 1]);
     }
     //
-    //     ==== End of Rhseqr ====
+    // ==== End of Rhseqr ====
     //
 }

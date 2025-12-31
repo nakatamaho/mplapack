@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,12 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine ZSYSV_ROOK.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Csysv_rook(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a, INTEGER const lda, INTEGER *ipiv, COMPLEX *b, INTEGER const ldb, COMPLEX *work, INTEGER const lwork, INTEGER &info) {
     //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     bool lquery = (lwork == -1);
@@ -67,14 +74,14 @@ void Csysv_rook(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *
         return;
     }
     //
-    //     Compute the factorization A = U*D*U**T or A = L*D*L**T.
+    // Compute the factorization A = U*D*U**T or A = L*D*L**T.
     //
     Csytrf_rook(uplo, n, a, lda, ipiv, work, lwork, info);
     if (info == 0) {
         //
-        //        Solve the system A*X = B, overwriting B with X.
+        // Solve the system A*X = B, overwriting B with X.
         //
-        //        Solve with TRS_ROOK ( Use Level 2 BLAS)
+        // Solve with TRS_ROOK ( Use Level 2 BLAS)
         //
         Csytrs_rook(uplo, n, nrhs, a, lda, ipiv, b, ldb, info);
         //
@@ -82,6 +89,6 @@ void Csysv_rook(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *
     //
     work[1 - 1] = lwkopt;
     //
-    //     End of Csysv_rook
+    // End of Csysv_rook
     //
 }

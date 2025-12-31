@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DRSCL.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -41,41 +48,18 @@ void Rrscl(INTEGER const n, REAL const sa, REAL *sx, INTEGER const incx) {
     REAL mul = 0.0;
     bool done = false;
     //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    // =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n <= 0) {
         return;
     }
     //
-    //     Get machine parameters
+    // Get machine parameters
     //
     smlnum = Rlamch("S");
     bignum = one / smlnum;
     //
-    //     Initialize the denominator to SA and the numerator to 1.
+    // Initialize the denominator to SA and the numerator to 1.
     //
     cden = sa;
     cnum = one;
@@ -85,27 +69,27 @@ statement_10:
     cnum1 = cnum / bignum;
     if (abs(cden1) > abs(cnum) && cnum != zero) {
         //
-        //        Pre-multiply X by SMLNUM if CDEN is large compared to CNUM.
+        // Pre-multiply X by SMLNUM if CDEN is large compared to CNUM.
         //
         mul = smlnum;
         done = false;
         cden = cden1;
     } else if (abs(cnum1) > abs(cden)) {
         //
-        //        Pre-multiply X by BIGNUM if CDEN is small compared to CNUM.
+        // Pre-multiply X by BIGNUM if CDEN is small compared to CNUM.
         //
         mul = bignum;
         done = false;
         cnum = cnum1;
     } else {
         //
-        //        Multiply X by CNUM / CDEN and return.
+        // Multiply X by CNUM / CDEN and return.
         //
         mul = cnum / cden;
         done = true;
     }
     //
-    //     Scale the vector X by MUL
+    // Scale the vector X by MUL
     //
     Rscal(n, mul, sx, incx);
     //
@@ -113,6 +97,6 @@ statement_10:
         goto statement_10;
     }
     //
-    //     End of Rrscl
+    // End of Rrscl
     //
 }

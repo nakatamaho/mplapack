@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,12 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine DGBBRD.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Rgbbrd(const char *vect, INTEGER const m, INTEGER const n, INTEGER const ncc, INTEGER const kl, INTEGER const ku, REAL *ab, INTEGER const ldab, REAL *d, REAL *e, REAL *q, INTEGER const ldq, REAL *pt, INTEGER const ldpt, REAL *c, INTEGER const ldc, REAL *work, INTEGER &info) {
     //
-    //     Test the input parameters
+    // Test the input parameters
     //
     bool wantb = Mlsame(vect, "B");
     bool wantq = Mlsame(vect, "Q") || wantb;
@@ -65,7 +72,7 @@ void Rgbbrd(const char *vect, INTEGER const m, INTEGER const n, INTEGER const nc
         return;
     }
     //
-    //     Initialize Q and P**T to the unit matrix, if needed
+    // Initialize Q and P**T to the unit matrix, if needed
     //
     const REAL zero = 0.0;
     const REAL one = 1.0;
@@ -76,7 +83,7 @@ void Rgbbrd(const char *vect, INTEGER const m, INTEGER const n, INTEGER const nc
         Rlaset("Full", n, n, zero, one, pt, ldpt);
     }
     //
-    //     Quick return if possible.
+    // Quick return if possible.
     //
     if (m == 0 || n == 0) {
         return;
@@ -105,9 +112,9 @@ void Rgbbrd(const char *vect, INTEGER const m, INTEGER const n, INTEGER const nc
     INTEGER j = 0;
     if (kl + ku > 1) {
         //
-        //        Reduce to upper bidiagonal form if KU > 0; if KU = 0, reduce
-        //        first to lower bidiagonal form and then transform to upper
-        //        bidiagonal
+        // Reduce to upper bidiagonal form if KU > 0; if KU = 0, reduce
+        // first to lower bidiagonal form and then transform to upper
+        // bidiagonal
         //
         if (ku > 0) {
             ml0 = 1;
@@ -117,11 +124,11 @@ void Rgbbrd(const char *vect, INTEGER const m, INTEGER const n, INTEGER const nc
             mu0 = 1;
         }
         //
-        //        Wherever possible, plane rotations are generated and applied in
-        //        vector operations of length NR over the index set J1:J2:KLU1.
+        // Wherever possible, plane rotations are generated and applied in
+        // vector operations of length NR over the index set J1:J2:KLU1.
         //
-        //        The sines of the plane rotations are stored in WORK(1:max(m,n))
-        //        and the cosines in WORK(max(m,n)+1:2*max(m,n)).
+        // The sines of the plane rotations are stored in WORK(1:max(m,n))
+        // and the cosines in WORK(max(m,n)+1:2*max(m,n)).
         //
         mn = max(m, n);
         klm = min(m - 1, kl);
@@ -135,7 +142,7 @@ void Rgbbrd(const char *vect, INTEGER const m, INTEGER const n, INTEGER const nc
         //
         for (i = 1; i <= minmn; i = i + 1) {
             //
-            //           Reduce i-th column and i-th row of matrix to bidiagonal form
+            // Reduce i-th column and i-th row of matrix to bidiagonal form
             //
             ml = klm + 1;
             mu = kun + 1;
@@ -143,14 +150,14 @@ void Rgbbrd(const char *vect, INTEGER const m, INTEGER const n, INTEGER const nc
                 j1 += kb;
                 j2 += kb;
                 //
-                //              generate plane rotations to annihilate nonzero elements
-                //              which have been created below the band
+                // generate plane rotations to annihilate nonzero elements
+                // which have been created below the band
                 //
                 if (nr > 0) {
                     Rlargv(nr, &ab[(klu1 - 1) + ((j1 - klm - 1) - 1) * ldab], inca, &work[j1 - 1], kb1, &work[(mn + j1) - 1], kb1);
                 }
                 //
-                //              apply plane rotations from the left
+                // apply plane rotations from the left
                 //
                 for (l = 1; l <= kb; l = l + 1) {
                     if (j2 - klm + l - 1 > n) {
@@ -166,8 +173,8 @@ void Rgbbrd(const char *vect, INTEGER const m, INTEGER const n, INTEGER const nc
                 if (ml > ml0) {
                     if (ml <= m - i + 1) {
                         //
-                        //                    generate plane rotation to annihilate a(i+ml-1,i)
-                        //                    within the band, and apply rotation from the left
+                        // generate plane rotation to annihilate a(i+ml-1,i)
+                        // within the band, and apply rotation from the left
                         //
                         Rlartg(ab[((ku + ml - 1) - 1) + (i - 1) * ldab], ab[((ku + ml) - 1) + (i - 1) * ldab], work[(mn + i + ml - 1) - 1], work[(i + ml - 1) - 1], ra);
                         ab[((ku + ml - 1) - 1) + (i - 1) * ldab] = ra;
@@ -181,7 +188,7 @@ void Rgbbrd(const char *vect, INTEGER const m, INTEGER const n, INTEGER const nc
                 //
                 if (wantq) {
                     //
-                    //                 accumulate product of plane rotations in Q
+                    // accumulate product of plane rotations in Q
                     //
                     for (j = j1; j <= j2; j = j + kb1) {
                         Rrot(m, &q[((j - 1) - 1) * ldq], 1, &q[(j - 1) * ldq], 1, work[(mn + j) - 1], work[j - 1]);
@@ -190,7 +197,7 @@ void Rgbbrd(const char *vect, INTEGER const m, INTEGER const n, INTEGER const nc
                 //
                 if (wantc) {
                     //
-                    //                 apply plane rotations to C
+                    // apply plane rotations to C
                     //
                     for (j = j1; j <= j2; j = j + kb1) {
                         Rrot(ncc, &c[((j - 1) - 1)], ldc, &c[(j - 1)], ldc, work[(mn + j) - 1], work[j - 1]);
@@ -199,7 +206,7 @@ void Rgbbrd(const char *vect, INTEGER const m, INTEGER const n, INTEGER const nc
                 //
                 if (j2 + kun > n) {
                     //
-                    //                 adjust J2 to keep within the bounds of the matrix
+                    // adjust J2 to keep within the bounds of the matrix
                     //
                     nr = nr - 1;
                     j2 = j2 - kb1;
@@ -207,21 +214,21 @@ void Rgbbrd(const char *vect, INTEGER const m, INTEGER const n, INTEGER const nc
                 //
                 for (j = j1; j <= j2; j = j + kb1) {
                     //
-                    //                 create nonzero element a(j-1,j+ku) above the band
-                    //                 and store it in WORK(n+1:2*n)
+                    // create nonzero element a(j-1,j+ku) above the band
+                    // and store it in WORK(n+1:2*n)
                     //
                     work[(j + kun) - 1] = work[j - 1] * ab[((j + kun) - 1) * ldab];
                     ab[((j + kun) - 1) * ldab] = work[(mn + j) - 1] * ab[((j + kun) - 1) * ldab];
                 }
                 //
-                //              generate plane rotations to annihilate nonzero elements
-                //              which have been generated above the band
+                // generate plane rotations to annihilate nonzero elements
+                // which have been generated above the band
                 //
                 if (nr > 0) {
                     Rlargv(nr, &ab[((j1 + kun - 1) - 1) * ldab], inca, &work[(j1 + kun) - 1], kb1, &work[(mn + j1 + kun) - 1], kb1);
                 }
                 //
-                //              apply plane rotations from the right
+                // apply plane rotations from the right
                 //
                 for (l = 1; l <= kb; l = l + 1) {
                     if (j2 + l - 1 > m) {
@@ -237,8 +244,8 @@ void Rgbbrd(const char *vect, INTEGER const m, INTEGER const n, INTEGER const nc
                 if (ml == ml0 && mu > mu0) {
                     if (mu <= n - i + 1) {
                         //
-                        //                    generate plane rotation to annihilate a(i,i+mu-1)
-                        //                    within the band, and apply rotation from the right
+                        // generate plane rotation to annihilate a(i,i+mu-1)
+                        // within the band, and apply rotation from the right
                         //
                         Rlartg(ab[((ku - mu + 3) - 1) + ((i + mu - 2) - 1) * ldab], ab[((ku - mu + 2) - 1) + ((i + mu - 1) - 1) * ldab], work[(mn + i + mu - 1) - 1], work[(i + mu - 1) - 1], ra);
                         ab[((ku - mu + 3) - 1) + ((i + mu - 2) - 1) * ldab] = ra;
@@ -250,7 +257,7 @@ void Rgbbrd(const char *vect, INTEGER const m, INTEGER const n, INTEGER const nc
                 //
                 if (wantpt) {
                     //
-                    //                 accumulate product of plane rotations in P**T
+                    // accumulate product of plane rotations in P**T
                     //
                     for (j = j1; j <= j2; j = j + kb1) {
                         Rrot(n, &pt[((j + kun - 1) - 1)], ldpt, &pt[((j + kun) - 1)], ldpt, work[(mn + j + kun) - 1], work[(j + kun) - 1]);
@@ -259,7 +266,7 @@ void Rgbbrd(const char *vect, INTEGER const m, INTEGER const n, INTEGER const nc
                 //
                 if (j2 + kb > m) {
                     //
-                    //                 adjust J2 to keep within the bounds of the matrix
+                    // adjust J2 to keep within the bounds of the matrix
                     //
                     nr = nr - 1;
                     j2 = j2 - kb1;
@@ -267,8 +274,8 @@ void Rgbbrd(const char *vect, INTEGER const m, INTEGER const n, INTEGER const nc
                 //
                 for (j = j1; j <= j2; j = j + kb1) {
                     //
-                    //                 create nonzero element a(j+kl+ku,j+ku-1) below the
-                    //                 band and store it in WORK(1:n)
+                    // create nonzero element a(j+kl+ku,j+ku-1) below the
+                    // band and store it in WORK(1:n)
                     //
                     work[(j + kb) - 1] = work[(j + kun) - 1] * ab[(klu1 - 1) + ((j + kun) - 1) * ldab];
                     ab[(klu1 - 1) + ((j + kun) - 1) * ldab] = work[(mn + j + kun) - 1] * ab[(klu1 - 1) + ((j + kun) - 1) * ldab];
@@ -288,11 +295,11 @@ void Rgbbrd(const char *vect, INTEGER const m, INTEGER const n, INTEGER const nc
     REAL rb = 0.0;
     if (ku == 0 && kl > 0) {
         //
-        //        A has been reduced to lower bidiagonal form
+        // A has been reduced to lower bidiagonal form
         //
-        //        Transform lower bidiagonal form to upper bidiagonal by applying
-        //        plane rotations from the left, storing diagonal elements in D
-        //        and off-diagonal elements in E
+        // Transform lower bidiagonal form to upper bidiagonal by applying
+        // plane rotations from the left, storing diagonal elements in D
+        // and off-diagonal elements in E
         //
         for (i = 1; i <= min(m - 1, n); i = i + 1) {
             Rlartg(ab[(i - 1) * ldab], ab[(2 - 1) + (i - 1) * ldab], rc, rs, ra);
@@ -313,13 +320,13 @@ void Rgbbrd(const char *vect, INTEGER const m, INTEGER const n, INTEGER const nc
         }
     } else if (ku > 0) {
         //
-        //        A has been reduced to upper bidiagonal form
+        // A has been reduced to upper bidiagonal form
         //
         if (m < n) {
             //
-            //           Annihilate a(m,m+1) by applying plane rotations from the
-            //           right, storing diagonal elements in D and off-diagonal
-            //           elements in E
+            // Annihilate a(m,m+1) by applying plane rotations from the
+            // right, storing diagonal elements in D and off-diagonal
+            // elements in E
             //
             rb = ab[(ku - 1) + ((m + 1) - 1) * ldab];
             for (i = m; i >= 1; i = i - 1) {
@@ -335,7 +342,7 @@ void Rgbbrd(const char *vect, INTEGER const m, INTEGER const n, INTEGER const nc
             }
         } else {
             //
-            //           Copy off-diagonal elements to E and diagonal elements to D
+            // Copy off-diagonal elements to E and diagonal elements to D
             //
             for (i = 1; i <= minmn - 1; i = i + 1) {
                 e[i - 1] = ab[(ku - 1) + ((i + 1) - 1) * ldab];
@@ -346,8 +353,8 @@ void Rgbbrd(const char *vect, INTEGER const m, INTEGER const n, INTEGER const nc
         }
     } else {
         //
-        //        A is diagonal. Set elements of E to zero and copy diagonal
-        //        elements to D.
+        // A is diagonal. Set elements of E to zero and copy diagonal
+        // elements to D.
         //
         for (i = 1; i <= minmn - 1; i = i + 1) {
             e[i - 1] = zero;
@@ -357,6 +364,6 @@ void Rgbbrd(const char *vect, INTEGER const m, INTEGER const n, INTEGER const nc
         }
     }
     //
-    //     End of Rgbbrd
+    // End of Rgbbrd
     //
 }

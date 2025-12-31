@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,34 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine DGEMQR.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Rgemqr(const char *side, const char *trans, INTEGER const m, INTEGER const n, INTEGER const k, REAL *a, INTEGER const lda, REAL *t, INTEGER const tsize, REAL *c, INTEGER const ldc, REAL *work, INTEGER const lwork, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    // =====================================================================
-    //
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input arguments
+    // Test the input arguments
     //
     bool lquery = lwork == -1;
     bool notran = Mlsame(trans, "N");
@@ -116,7 +101,7 @@ void Rgemqr(const char *side, const char *trans, INTEGER const m, INTEGER const 
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (min({m, n, k}) == 0) {
         return;
@@ -130,6 +115,6 @@ void Rgemqr(const char *side, const char *trans, INTEGER const m, INTEGER const 
     //
     work[1 - 1] = lw;
     //
-    //     End of Rgemqr
+    // End of Rgemqr
     //
 }

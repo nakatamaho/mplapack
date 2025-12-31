@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DSPTRI.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -49,30 +56,7 @@ void Rsptri(const char *uplo, INTEGER const n, REAL *ap, INTEGER *ipiv, REAL *wo
     REAL temp = 0.0;
     INTEGER npp = 0;
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     upper = Mlsame(uplo, "U");
@@ -86,17 +70,17 @@ void Rsptri(const char *uplo, INTEGER const n, REAL *ap, INTEGER *ipiv, REAL *wo
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0) {
         return;
     }
     //
-    //     Check that the diagonal matrix D is nonsingular.
+    // Check that the diagonal matrix D is nonsingular.
     //
     if (upper) {
         //
-        //        Upper triangular storage: examine D from bottom to top
+        // Upper triangular storage: examine D from bottom to top
         //
         kp = n * (n + 1) / 2;
         for (info = n; info >= 1; info = info - 1) {
@@ -107,7 +91,7 @@ void Rsptri(const char *uplo, INTEGER const n, REAL *ap, INTEGER *ipiv, REAL *wo
         }
     } else {
         //
-        //        Lower triangular storage: examine D from top to bottom.
+        // Lower triangular storage: examine D from top to bottom.
         //
         kp = 1;
         for (info = 1; info <= n; info = info + 1) {
@@ -121,16 +105,16 @@ void Rsptri(const char *uplo, INTEGER const n, REAL *ap, INTEGER *ipiv, REAL *wo
     //
     if (upper) {
         //
-        //        Compute inv(A) from the factorization A = U*D*U**T.
+        // Compute inv(A) from the factorization A = U*D*U**T.
         //
-        //        K is the main loop index, increasing from 1 to N in steps of
-        //        1 or 2, depending on the size of the diagonal blocks.
+        // K is the main loop index, increasing from 1 to N in steps of
+        // 1 or 2, depending on the size of the diagonal blocks.
         //
         k = 1;
         kc = 1;
     statement_30:
         //
-        //        If K > N, exit from loop.
+        // If K > N, exit from loop.
         //
         if (k > n) {
             goto statement_50;
@@ -139,13 +123,13 @@ void Rsptri(const char *uplo, INTEGER const n, REAL *ap, INTEGER *ipiv, REAL *wo
         kcnext = kc + k;
         if (ipiv[k - 1] > 0) {
             //
-            //           1 x 1 diagonal block
+            // 1 x 1 diagonal block
             //
-            //           Invert the diagonal block.
+            // Invert the diagonal block.
             //
             ap[(kc + k - 1) - 1] = one / ap[(kc + k - 1) - 1];
             //
-            //           Compute column K of the inverse.
+            // Compute column K of the inverse.
             //
             if (k > 1) {
                 Rcopy(k - 1, &ap[kc - 1], 1, work, 1);
@@ -155,9 +139,9 @@ void Rsptri(const char *uplo, INTEGER const n, REAL *ap, INTEGER *ipiv, REAL *wo
             kstep = 1;
         } else {
             //
-            //           2 x 2 diagonal block
+            // 2 x 2 diagonal block
             //
-            //           Invert the diagonal block.
+            // Invert the diagonal block.
             //
             t = abs(ap[(kcnext + k - 1) - 1]);
             ak = ap[(kc + k - 1) - 1] / t;
@@ -168,7 +152,7 @@ void Rsptri(const char *uplo, INTEGER const n, REAL *ap, INTEGER *ipiv, REAL *wo
             ap[(kcnext + k) - 1] = ak / d;
             ap[(kcnext + k - 1) - 1] = -akkp1 / d;
             //
-            //           Compute columns K and K+1 of the inverse.
+            // Compute columns K and K+1 of the inverse.
             //
             if (k > 1) {
                 Rcopy(k - 1, &ap[kc - 1], 1, work, 1);
@@ -186,8 +170,8 @@ void Rsptri(const char *uplo, INTEGER const n, REAL *ap, INTEGER *ipiv, REAL *wo
         kp = abs(ipiv[k - 1]);
         if (kp != k) {
             //
-            //           Interchange rows and columns K and KP in the leading
-            //           submatrix A(1:k+1,1:k+1)
+            // Interchange rows and columns K and KP in the leading
+            // submatrix A(1:k+1,1:k+1)
             //
             kpc = (kp - 1) * kp / 2 + 1;
             Rswap(kp - 1, &ap[kc - 1], 1, &ap[kpc - 1], 1);
@@ -215,17 +199,17 @@ void Rsptri(const char *uplo, INTEGER const n, REAL *ap, INTEGER *ipiv, REAL *wo
         //
     } else {
         //
-        //        Compute inv(A) from the factorization A = L*D*L**T.
+        // Compute inv(A) from the factorization A = L*D*L**T.
         //
-        //        K is the main loop index, increasing from 1 to N in steps of
-        //        1 or 2, depending on the size of the diagonal blocks.
+        // K is the main loop index, increasing from 1 to N in steps of
+        // 1 or 2, depending on the size of the diagonal blocks.
         //
         npp = n * (n + 1) / 2;
         k = n;
         kc = npp;
     statement_60:
         //
-        //        If K < 1, exit from loop.
+        // If K < 1, exit from loop.
         //
         if (k < 1) {
             goto statement_80;
@@ -234,13 +218,13 @@ void Rsptri(const char *uplo, INTEGER const n, REAL *ap, INTEGER *ipiv, REAL *wo
         kcnext = kc - (n - k + 2);
         if (ipiv[k - 1] > 0) {
             //
-            //           1 x 1 diagonal block
+            // 1 x 1 diagonal block
             //
-            //           Invert the diagonal block.
+            // Invert the diagonal block.
             //
             ap[kc - 1] = one / ap[kc - 1];
             //
-            //           Compute column K of the inverse.
+            // Compute column K of the inverse.
             //
             if (k < n) {
                 Rcopy(n - k, &ap[(kc + 1) - 1], 1, work, 1);
@@ -250,9 +234,9 @@ void Rsptri(const char *uplo, INTEGER const n, REAL *ap, INTEGER *ipiv, REAL *wo
             kstep = 1;
         } else {
             //
-            //           2 x 2 diagonal block
+            // 2 x 2 diagonal block
             //
-            //           Invert the diagonal block.
+            // Invert the diagonal block.
             //
             t = abs(ap[(kcnext + 1) - 1]);
             ak = ap[kcnext - 1] / t;
@@ -263,7 +247,7 @@ void Rsptri(const char *uplo, INTEGER const n, REAL *ap, INTEGER *ipiv, REAL *wo
             ap[kc - 1] = ak / d;
             ap[(kcnext + 1) - 1] = -akkp1 / d;
             //
-            //           Compute columns K-1 and K of the inverse.
+            // Compute columns K-1 and K of the inverse.
             //
             if (k < n) {
                 Rcopy(n - k, &ap[(kc + 1) - 1], 1, work, 1);
@@ -281,8 +265,8 @@ void Rsptri(const char *uplo, INTEGER const n, REAL *ap, INTEGER *ipiv, REAL *wo
         kp = abs(ipiv[k - 1]);
         if (kp != k) {
             //
-            //           Interchange rows and columns K and KP in the trailing
-            //           submatrix A(k-1:n,k-1:n)
+            // Interchange rows and columns K and KP in the trailing
+            // submatrix A(k-1:n,k-1:n)
             //
             kpc = npp - (n - kp + 1) * (n - kp + 2) / 2 + 1;
             if (kp < n) {
@@ -311,6 +295,6 @@ void Rsptri(const char *uplo, INTEGER const n, REAL *ap, INTEGER *ipiv, REAL *wo
     statement_80:;
     }
     //
-    //     End of Rsptri
+    // End of Rsptri
     //
 }

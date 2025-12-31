@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DLAED5.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -66,7 +73,7 @@ void Rlaed5(INTEGER const i, REAL *d, REAL *z, REAL *delta, REAL const rho, REAL
             b = del + rho * (z[1 - 1] * z[1 - 1] + z[2 - 1] * z[2 - 1]);
             c = rho * z[1 - 1] * z[1 - 1] * del;
             //
-            //           B > ZERO, always
+            // B > ZERO, always
             //
             tau = two * c / (b + sqrt(abs(b * b - four * c)));
             dlam = d[1 - 1] + tau;
@@ -89,7 +96,7 @@ void Rlaed5(INTEGER const i, REAL *d, REAL *z, REAL *delta, REAL const rho, REAL
         delta[2 - 1] = delta[2 - 1] / temp;
     } else {
         //
-        //     Now I=2
+        // Now I=2
         //
         b = -del + rho * (z[1 - 1] * z[1 - 1] + z[2 - 1] * z[2 - 1]);
         c = rho * z[2 - 1] * z[2 - 1] * del;
@@ -106,6 +113,6 @@ void Rlaed5(INTEGER const i, REAL *d, REAL *z, REAL *delta, REAL const rho, REAL
         delta[2 - 1] = delta[2 - 1] / temp;
     }
     //
-    //     End OF Rlaed5
+    // End OF Rlaed5
     //
 }

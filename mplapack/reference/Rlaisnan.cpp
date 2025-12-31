@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,12 +26,18 @@
  *
  */
 
+// Derived from LAPACK routine DLAISNAN.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 bool Rlaisnan(REAL const din1, REAL const din2) {
     bool return_value = false;
-    //
     return_value = (din1 != din2);
     return return_value;
 }

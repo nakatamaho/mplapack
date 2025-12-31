@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine ZTGSYL.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -57,7 +64,7 @@ void Ctgsyl(const char *trans, INTEGER const ijob, INTEGER const m, INTEGER cons
     INTEGER linfo = 0;
     INTEGER k = 0;
     //
-    //     Decode and test input parameters
+    // Decode and test input parameters
     //
     info = 0;
     notran = Mlsame(trans, "N");
@@ -114,7 +121,7 @@ void Ctgsyl(const char *trans, INTEGER const ijob, INTEGER const m, INTEGER cons
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (m == 0 || n == 0) {
         scale = 1;
@@ -126,7 +133,7 @@ void Ctgsyl(const char *trans, INTEGER const ijob, INTEGER const m, INTEGER cons
         return;
     }
     //
-    //     Determine  optimal block sizes MB and NB
+    // Determine  optimal block sizes MB and NB
     //
     mb = iMlaenv(2, "Ctgsyl", trans, m, n, -1, -1);
     nb = iMlaenv(5, "Ctgsyl", trans, m, n, -1, -1);
@@ -145,7 +152,7 @@ void Ctgsyl(const char *trans, INTEGER const ijob, INTEGER const m, INTEGER cons
     //
     if ((mb <= 1 && nb <= 1) || (mb >= m && nb >= n)) {
         //
-        //        Use unblocked Level 2 solver
+        // Use unblocked Level 2 solver
         //
         for (iround = 1; iround <= isolve; iround = iround + 1) {
             //
@@ -181,7 +188,7 @@ void Ctgsyl(const char *trans, INTEGER const ijob, INTEGER const m, INTEGER cons
         //
     }
     //
-    //     Determine block structure of A
+    // Determine block structure of A
     //
     p = 0;
     i = 1;
@@ -202,7 +209,7 @@ statement_50:
         p = p - 1;
     }
     //
-    //     Determine block structure of B
+    // Determine block structure of B
     //
     q = p + 1;
     j = 1;
@@ -228,10 +235,10 @@ statement_70:
     if (notran) {
         for (iround = 1; iround <= isolve; iround = iround + 1) {
             //
-            //           Solve (I, J) - subsystem
-            //               A(I, I) * R(I, J) - L(I, J) * B(J, J) = C(I, J)
-            //               D(I, I) * R(I, J) - L(I, J) * E(J, J) = F(I, J)
-            //           for I = P, P - 1, ..., 1; J = 1, 2, ..., Q
+            // Solve (I, J) - subsystem
+            // A(I, I) * R(I, J) - L(I, J) * B(J, J) = C(I, J)
+            // D(I, I) * R(I, J) - L(I, J) * E(J, J) = F(I, J)
+            // for I = P, P - 1, ..., 1; J = 1, 2, ..., Q
             //
             pq = 0;
             scale = one;
@@ -270,7 +277,7 @@ statement_70:
                         scale = scale * scaloc;
                     }
                     //
-                    //                 Substitute R(I,J) and L(I,J) into remaining equation.
+                    // Substitute R(I,J) and L(I,J) into remaining equation.
                     //
                     if (i > 1) {
                         Cgemm("N", "N", is - 1, nb, mb, COMPLEX(-one, zero), &a[(is - 1) * lda], lda, &c[(is - 1) + (js - 1) * ldc], ldc, COMPLEX(one, zero), &c[(js - 1) * ldc], ldc);
@@ -306,10 +313,10 @@ statement_70:
         }
     } else {
         //
-        //        Solve transposed (I, J)-subsystem
-        //            A(I, I)**H * R(I, J) + D(I, I)**H * L(I, J) = C(I, J)
-        //            R(I, J) * B(J, J)  + L(I, J) * E(J, J) = -F(I, J)
-        //        for I = 1,2,..., P; J = Q, Q-1,..., 1
+        // Solve transposed (I, J)-subsystem
+        // A(I, I)**H * R(I, J) + D(I, I)**H * L(I, J) = C(I, J)
+        // R(I, J) * B(J, J)  + L(I, J) * E(J, J) = -F(I, J)
+        // for I = 1,2,..., P; J = Q, Q-1,..., 1
         //
         scale = one;
         for (i = 1; i <= p; i = i + 1) {
@@ -344,7 +351,7 @@ statement_70:
                     scale = scale * scaloc;
                 }
                 //
-                //              Substitute R(I,J) and L(I,J) into remaining equation.
+                // Substitute R(I,J) and L(I,J) into remaining equation.
                 //
                 if (j > p + 2) {
                     Cgemm("N", "C", mb, js - 1, nb, COMPLEX(one, zero), &c[(is - 1) + (js - 1) * ldc], ldc, &b[(js - 1) * ldb], ldb, COMPLEX(one, zero), &f[(is - 1)], ldf);
@@ -360,6 +367,6 @@ statement_70:
     //
     work[1 - 1] = lwmin;
     //
-    //     End of Ctgsyl
+    // End of Ctgsyl
     //
 }

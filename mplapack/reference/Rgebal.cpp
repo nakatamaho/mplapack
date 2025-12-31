@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DGEBAL.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -88,11 +95,11 @@ void Rgebal(const char *job, INTEGER const n, REAL *a, INTEGER const lda, INTEGE
         goto statement_120;
     }
     //
-    //     Permutation to isolate eigenvalues if possible
+    // Permutation to isolate eigenvalues if possible
     //
     goto statement_50;
 //
-//     Row and column exchange.
+// Row and column exchange.
 //
 statement_20:
     scale[m - 1] = j;
@@ -113,7 +120,7 @@ statement_30:
         break;
     }
 //
-//     Search for rows isolating an eigenvalue and push them down.
+// Search for rows isolating an eigenvalue and push them down.
 //
 statement_40:
     if (l == 1) {
@@ -142,7 +149,7 @@ statement_50:
     //
     goto statement_90;
 //
-//     Search for columns isolating an eigenvalue and push them left.
+// Search for columns isolating an eigenvalue and push them left.
 //
 statement_80:
     k++;
@@ -175,13 +182,11 @@ statement_120:
         goto statement_210;
     }
     //
-    //     Balance the submatrix in rows K to L.
+    // Balance the submatrix in rows K to L.
     //
-    //     Iterative loop for norm reduction
+    // Iterative loop for norm reduction
     //
     sfmin1 = Rlamch("S") / Rlamch("P");
-    // uncomment the following to pass 13rd test of dbal.in.
-    // sfmin1 = 2.2250738585072014E-308 / 2.2204460492503131E-016; // (double)
     sfmax1 = one / sfmin1;
     sfmin2 = sfmin1 * sclfac;
     sfmax2 = one / sfmin2;
@@ -198,7 +203,7 @@ statement_140:
         ira = iRamax(n - k + 1, &a[(i - 1) + (k - 1) * lda], lda);
         ra = abs(a[(i - 1) + ((ira + k - 1) - 1) * lda]);
         //
-        //        Guard against zero C or R due to underflow.
+        // Guard against zero C or R due to underflow.
         //
         if (c == zero || r == zero) {
             goto statement_200;
@@ -212,7 +217,7 @@ statement_140:
         }
         if (Risnan(c + f + ca + r + g + ra)) {
             //
-            //           Exit if NaN to avoid infinite loop
+            // Exit if NaN to avoid infinite loop
             //
             info = -3;
             Mxerbla("Rgebal", -info);
@@ -240,7 +245,7 @@ statement_140:
         ra = ra * sclfac;
         goto statement_180;
     //
-    //        Now balance.
+    // Now balance.
     //
     statement_190:
         if ((c + r) >= factor * s) {
@@ -274,6 +279,6 @@ statement_210:
     ilo = k;
     ihi = l;
     //
-    //     End of Rgebal
+    // End of Rgebal
     //
 }
