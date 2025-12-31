@@ -16,16 +16,16 @@ name_map="${script_dir}/mplapack_name_map.txt"
 
 case "$mode" in
     "")
-        header="${script_dir}/header_lapack.txt"
+        header="${script_dir}/../mplapack/reference/mplapack.h.in"
         ;;
     lin)
-        header="${script_dir}/header_lapack_lin.txt"
+        header="${script_dir}/../mplapack/test/lin/common/mplapack_lin.h.in"
         ;;
     eig)
-        header="${script_dir}/header_lapack_eig.txt"
+        header="${script_dir}/../mplapack/test/eig/common/mplapack_eig.h.in"
         ;;
     matgen)
-        header="${script_dir}/header_lapack_matgen.txt"
+        header="${script_dir}/../mplapack/test/matgen/mplapack_matgen.h.in"
         ;;
     *)
         echo "Error: unknown mode '$mode' (allowed: lin, eig, matgen)" >&2

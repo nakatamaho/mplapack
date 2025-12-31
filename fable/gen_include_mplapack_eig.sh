@@ -135,7 +135,7 @@ for mplib in $MPLIBS; do
     fi
 
     clang-format -style="{BasedOnStyle: llvm, IndentWidth: 4, ColumnLimit: 10000 }" mplapack_eig_${mplib}.h | sort > l ; mv l mplapack_eig_${mplib}.h 
-    cat ~/mplapack/fable/mplapack_eig_${mplib}.h.in mplapack_eig_${mplib}.h > ~/mplapack/include/mplapack_eig_${mplib}.h
+    cat ~/mplapack/mplapack/test/eig/common/mplapack_eig_${mplib}.h.in mplapack_eig_${mplib}.h > ~/mplapack/include/mplapack_eig_${mplib}.h
     rm mplapack_eig_${mplib}.h
     echo "#endif" >> ~/mplapack/include/mplapack_eig_${mplib}.h
 

@@ -133,7 +133,7 @@ for mplib in $MPLIBS; do
     fi
 
     clang-format -style="{BasedOnStyle: llvm, IndentWidth: 4, ColumnLimit: 10000 }" mplapack_lin_${mplib}.h | sort > l ; mv l mplapack_lin_${mplib}.h 
-    cat ~/mplapack/fable/mplapack_lin_${mplib}.h.in mplapack_lin_${mplib}.h > ~/mplapack/include/mplapack_lin_${mplib}.h
+    cat ~/mplapack/mplapack/test/lin/common/mplapack_lin_${mplib}.h.in mplapack_lin_${mplib}.h > ~/mplapack/include/mplapack_lin_${mplib}.h
     rm mplapack_lin_${mplib}.h
     echo "#endif" >> ~/mplapack/include/mplapack_lin_${mplib}.h
 

@@ -8,9 +8,9 @@ fi
 
 src="$1"
 
-# Directory of this script (used to find header_blas.txt and mplapack_name_map.txt)
+# Directory of this script (used to find mplapack/mpblas/reference/mpblas.h.in and mplapack_name_map.txt)
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-header="${script_dir}/header_blas.txt"
+header="${script_dir}/../mpblas/reference/mpblas.h.in"
 name_map="${script_dir}/mplapack_name_map.txt"
 
 # MPLAPACK repository root (one level above this script)
