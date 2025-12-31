@@ -1,4 +1,4 @@
-GMPVERSION=6.2.1
+GMPVERSION=6.3.0
 MAKEFLAGS =
 
 if IS_MACOS
@@ -29,8 +29,8 @@ all: extract config build check install_internal
 
 work/$(EXTRACT_STAMP):
 	rm -rf work ; mkdir -p work/internal ; mkdir -p work/install
-	cd $(abs_builddir)/work/internal; tar xvfj ../../download/gmp-$(GMPVERSION).tar.bz2
-	cd $(abs_builddir)/work/install; tar xvfj ../../download/gmp-$(GMPVERSION).tar.bz2
+	cd $(abs_builddir)/work/internal; tar xvf ../../download/gmp-$(GMPVERSION).tar.xz
+	cd $(abs_builddir)/work/install; tar xvf ../../download/gmp-$(GMPVERSION).tar.xz
 	touch $(abs_builddir)/work/$(EXTRACT_STAMP)
 
 work/$(PATCH_STAMP): work/$(EXTRACT_STAMP)
