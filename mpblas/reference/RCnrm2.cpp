@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,28 +26,17 @@
  *
  */
 
+// Derived from BLAS routine DZNRM2.
+// Original BLAS authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 
 REAL RCnrm2(INTEGER const n, COMPLEX *x, INTEGER const incx) {
     REAL return_value = 0.0;
-    //
-    //  -- Reference BLAS level1 routine --
-    //  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
     const REAL zero = 0.0;
     REAL norm = 0.0;
     REAL scale = 0.0;
@@ -62,7 +51,7 @@ REAL RCnrm2(INTEGER const n, COMPLEX *x, INTEGER const incx) {
         ssq = one;
         // The following loop is equivalent to this call to the LAPACK
         // auxiliary routine:
-        // CALL ZLASSQ( N, X, INCX, SCALE, SSQ )
+        // CALL Classq( N, X, INCX, SCALE, SSQ )
         //
         for (ix = 1; ix <= 1 + (n - 1) * incx; ix = ix + incx) {
             if (x[ix - 1].real() != zero) {
@@ -90,6 +79,6 @@ REAL RCnrm2(INTEGER const n, COMPLEX *x, INTEGER const incx) {
     return_value = norm;
     return return_value;
     //
-    //     End of RCnrm2.
+    // End of RCnrm2.
     //
 }

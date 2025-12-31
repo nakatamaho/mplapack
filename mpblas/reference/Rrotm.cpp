@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from BLAS routine DROTM.
+// Original BLAS authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 

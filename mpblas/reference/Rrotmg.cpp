@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from BLAS routine DROTMG.
+// Original BLAS authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 
@@ -139,7 +146,7 @@ void Rrotmg(REAL &dd1, REAL &dd2, REAL &dx1, REAL const dy1, REAL *dparam) {
             }
         }
         //
-        //     PROCEDURE..SCALE-CHECK
+        // PROCEDURE..SCALE-CHECK
         if (dd1 != zero) {
             while ((dd1 <= rgamsq) || (dd1 >= gamsq)) {
                 if (dflag == zero) {

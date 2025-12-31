@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from BLAS routine ZDOTC.
+// Original BLAS authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 
@@ -57,15 +64,15 @@ Cdotc(INTEGER const n, COMPLEX *zx, INTEGER const incx, COMPLEX *zy, INTEGER con
     INTEGER iy = 0;
     if (incx == 1 && incy == 1) {
         //
-        //        code for both increments equal to 1
+        // code for both increments equal to 1
         //
         for (i = 1; i <= n; i = i + 1) {
             ztemp += conj(zx[i - 1]) * zy[i - 1];
         }
     } else {
         //
-        //        code for unequal increments or equal increments
-        //          not equal to 1
+        // code for unequal increments or equal increments
+        // not equal to 1
         //
         ix = 1;
         iy = 1;

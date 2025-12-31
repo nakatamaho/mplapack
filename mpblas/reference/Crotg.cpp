@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,23 +26,16 @@
  *
  */
 
+// Derived from BLAS routine ZROTG.
+// Original BLAS authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 
 void Crotg(COMPLEX &ca, COMPLEX const cb, REAL &c, COMPLEX &s) {
-    //
-    //  -- Reference BLAS level1 routine --
-    //  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
     REAL scale = 0.0;
     REAL norm = 0.0;
     COMPLEX alpha = 0.0;
