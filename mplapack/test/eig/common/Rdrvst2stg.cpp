@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DDRVST2STG.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -108,12 +115,12 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
     static const char *format_9999 = "(' Rdrvst2stg: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,', JTYPE=',i6,"
                                      "', ISEED=(',3(i5,','),i5,')')";
     //
-    //     Keep ftrnchek happy
+    // Keep ftrnchek happy
     //
     vl = zero;
     vu = zero;
     //
-    //     1)      Check for errors
+    // 1)      Check for errors
     //
     ntestt = 0;
     info = 0;
@@ -127,7 +134,7 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
         }
     }
     //
-    //     Check for errors
+    // Check for errors
     //
     if (nsizes < 0) {
         info = -1;
@@ -148,13 +155,13 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
         return;
     }
     //
-    //     Quick return if nothing to do
+    // Quick return if nothing to do
     //
     if (nsizes == 0 || ntypes == 0) {
         return;
     }
     //
-    //     More Important constants
+    // More Important constants
     //
     unfl = Rlamch("Safe minimum");
     ovfl = Rlamch("Overflow");
@@ -163,7 +170,7 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
     rtunfl = sqrt(unfl);
     rtovfl = sqrt(ovfl);
     //
-    //     Loop over sizes, types
+    // Loop over sizes, types
     //
     for (i = 1; i <= 4; i = i + 1) {
         iseed2[i - 1] = iseed[i - 1];
@@ -184,11 +191,11 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 lgn++;
             }
             lwedc = 1 + 4 * n + 2 * n * lgn + 4 * n * n;
-            //           LIWEDC = 6 + 6*N + 5*N*LGN
+            // LIWEDC = 6 + 6*N + 5*N*LGN
             liwedc = 3 + 5 * n;
         } else {
             lwedc = 9;
-            //           LIWEDC = 12
+            // LIWEDC = 12
             liwedc = 8;
         }
         aninv = one / castREAL(max((INTEGER)1, n));
@@ -210,20 +217,20 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 ioldsd[j - 1] = 0; // XXX this is dummy not used. iseed[j - 1];
             }
             //
-            //           2)      Compute "A"
+            // 2)      Compute "A"
             //
-            //                   Control parameters:
+            // Control parameters:
             //
-            //               KMAGN  KMODE        KTYPE
-            //           =1  O(1)   clustered 1  zero
-            //           =2  large  clustered 2  identity
-            //           =3  small  exponential  (none)
-            //           =4         arithmetic   diagonal, (w/ eigenvalues)
-            //           =5         random log   symmetric, w/ eigenvalues
-            //           =6         random       (none)
-            //           =7                      random diagonal
-            //           =8                      random symmetric
-            //           =9                      band symmetric, w/ eigenvalues
+            // KMAGN  KMODE        KTYPE
+            // =1  O(1)   clustered 1  zero
+            // =2  large  clustered 2  identity
+            // =3  small  exponential  (none)
+            // =4         arithmetic   diagonal, (w/ eigenvalues)
+            // =5         random log   symmetric, w/ eigenvalues
+            // =6         random       (none)
+            // =7                      random diagonal
+            // =8                      random symmetric
+            // =9                      band symmetric, w/ eigenvalues
             //
             if (mtypes > maxtyp) {
                 goto statement_110;
@@ -232,7 +239,7 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
             itype = ktype[jtype - 1];
             imode = kmode[jtype - 1];
             //
-            //           Compute norm
+            // Compute norm
             //
             switch (kmagn[jtype - 1]) {
             case 1:
@@ -278,7 +285,7 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 //
             } else if (itype == 2) {
                 //
-                //              Identity
+                // Identity
                 //
                 for (jcol = 1; jcol <= n; jcol = jcol + 1) {
                     a[(jcol - 1) + (jcol - 1) * lda] = anorm;
@@ -286,38 +293,38 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 //
             } else if (itype == 4) {
                 //
-                //              Diagonal Matrix, [Eigen]values Specified
+                // Diagonal Matrix, [Eigen]values Specified
                 //
                 Rlatms(n, n, "S", iseed, "S", work, imode, cond, anorm, 0, 0, "N", a, lda, &work[(n + 1) - 1], iinfo);
                 //
             } else if (itype == 5) {
                 //
-                //              Symmetric, eigenvalues specified
+                // Symmetric, eigenvalues specified
                 //
                 Rlatms(n, n, "S", iseed, "S", work, imode, cond, anorm, n, n, "N", a, lda, &work[(n + 1) - 1], iinfo);
                 //
             } else if (itype == 7) {
                 //
-                //              Diagonal, random eigenvalues
+                // Diagonal, random eigenvalues
                 //
                 idumma[1 - 1] = 1;
                 Rlatmr(n, n, "S", iseed, "S", work, 6, one, one, "T", "N", &work[(n + 1) - 1], 1, one, &work[(2 * n + 1) - 1], 1, one, "N", idumma, 0, 0, zero, anorm, "NO", a, lda, iwork, iinfo);
                 //
             } else if (itype == 8) {
                 //
-                //              Symmetric, random eigenvalues
+                // Symmetric, random eigenvalues
                 //
                 idumma[1 - 1] = 1;
                 Rlatmr(n, n, "S", iseed, "S", work, 6, one, one, "T", "N", &work[(n + 1) - 1], 1, one, &work[(2 * n + 1) - 1], 1, one, "N", idumma, n, n, zero, anorm, "NO", a, lda, iwork, iinfo);
                 //
             } else if (itype == 9) {
                 //
-                //              Symmetric banded, eigenvalues specified
+                // Symmetric banded, eigenvalues specified
                 //
                 ihbw = castINTEGER((n - 1) * Rlarnd(1, iseed3));
                 Rlatms(n, n, "S", iseed, "S", work, imode, cond, anorm, ihbw, ihbw, "Z", u, ldu, &work[(n + 1) - 1], iinfo);
                 //
-                //              Store as dense matrix for most routines.
+                // Store as dense matrix for most routines.
                 //
                 Rlaset("Full", lda, n, zero, zero, a, lda);
                 for (idiag = -ihbw; idiag <= ihbw; idiag = idiag + 1) {
@@ -355,7 +362,7 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 }
             }
             //
-            //           3)      If matrix is tridiagonal, call Rstev and Rstevx.
+            // 3)      If matrix is tridiagonal, call Rstev and Rstevx.
             //
             if (jtype <= 7) {
                 ntest = 1;
@@ -379,7 +386,7 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     }
                 }
                 //
-                //              Do tests 1 and 2.
+                // Do tests 1 and 2.
                 //
                 for (i = 1; i <= n; i = i + 1) {
                     d3[i - 1] = a[(i - 1) + (i - 1) * lda];
@@ -405,7 +412,7 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     }
                 }
                 //
-                //              Do test 3.
+                // Do test 3.
                 //
                 temp1 = zero;
                 temp2 = zero;
@@ -444,7 +451,7 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     temp3 = zero;
                 }
                 //
-                //              Do tests 4 and 5.
+                // Do tests 4 and 5.
                 //
                 for (i = 1; i <= n; i = i + 1) {
                     d3[i - 1] = a[(i - 1) + (i - 1) * lda];
@@ -470,7 +477,7 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     }
                 }
                 //
-                //              Do test 6.
+                // Do test 6.
                 //
                 temp1 = zero;
                 temp2 = zero;
@@ -507,7 +514,7 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     temp3 = zero;
                 }
                 //
-                //              Do tests 7 and 8.
+                // Do tests 7 and 8.
                 //
                 for (i = 1; i <= n; i = i + 1) {
                     d3[i - 1] = a[(i - 1) + (i - 1) * lda];
@@ -533,7 +540,7 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     }
                 }
                 //
-                //              Do test 9.
+                // Do test 9.
                 //
                 temp1 = zero;
                 temp2 = zero;
@@ -566,7 +573,7 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     }
                 }
                 //
-                //              Do tests 10 and 11.
+                // Do tests 10 and 11.
                 //
                 for (i = 1; i <= n; i = i + 1) {
                     d3[i - 1] = a[(i - 1) + (i - 1) * lda];
@@ -592,7 +599,7 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     }
                 }
                 //
-                //              Do test 12.
+                // Do test 12.
                 //
                 temp1 = Rsxt1(1, wa2, m2, wa3, m3, abstol, ulp, unfl);
                 temp2 = Rsxt1(1, wa3, m3, wa2, m2, abstol, ulp, unfl);
@@ -644,7 +651,7 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     goto statement_440;
                 }
                 //
-                //              Do tests 13 and 14.
+                // Do tests 13 and 14.
                 //
                 for (i = 1; i <= n; i = i + 1) {
                     d3[i - 1] = a[(i - 1) + (i - 1) * lda];
@@ -670,7 +677,7 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     }
                 }
                 //
-                //              Do test 15.
+                // Do test 15.
                 //
                 temp1 = Rsxt1(1, wa2, m2, wa3, m3, abstol, ulp, unfl);
                 temp2 = Rsxt1(1, wa3, m3, wa2, m2, abstol, ulp, unfl);
@@ -699,7 +706,7 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     }
                 }
                 //
-                //              Do tests 16 and 17.
+                // Do tests 16 and 17.
                 //
                 for (i = 1; i <= n; i = i + 1) {
                     d3[i - 1] = a[(i - 1) + (i - 1) * lda];
@@ -725,7 +732,7 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     }
                 }
                 //
-                //              Do test 18.
+                // Do test 18.
                 //
                 temp1 = zero;
                 temp2 = zero;
@@ -758,7 +765,7 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     }
                 }
                 //
-                //              DO tests 19 and 20.
+                // DO tests 19 and 20.
                 //
                 for (i = 1; i <= n; i = i + 1) {
                     d3[i - 1] = a[(i - 1) + (i - 1) * lda];
@@ -784,7 +791,7 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     }
                 }
                 //
-                //              Do test 21.
+                // Do test 21.
                 //
                 temp1 = Rsxt1(1, wa2, m2, wa3, m3, abstol, ulp, unfl);
                 temp2 = Rsxt1(1, wa3, m3, wa2, m2, abstol, ulp, unfl);
@@ -836,7 +843,7 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     goto statement_630;
                 }
                 //
-                //              Do tests 22 and 23.
+                // Do tests 22 and 23.
                 //
                 for (i = 1; i <= n; i = i + 1) {
                     d3[i - 1] = a[(i - 1) + (i - 1) * lda];
@@ -862,7 +869,7 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     }
                 }
                 //
-                //              Do test 24.
+                // Do test 24.
                 //
                 temp1 = Rsxt1(1, wa2, m2, wa3, m3, abstol, ulp, unfl);
                 temp2 = Rsxt1(1, wa3, m3, wa2, m2, abstol, ulp, unfl);
@@ -878,8 +885,8 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 ntest = 24;
             }
             //
-            //           Perform remaining tests storing upper or lower triangular
-            //           part of matrix.
+            // Perform remaining tests storing upper or lower triangular
+            // part of matrix.
             //
             for (iuplo = 0; iuplo <= 1; iuplo = iuplo + 1) {
                 if (iuplo == 0) {
@@ -888,7 +895,7 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     uplo[0] = 'U';
                 }
                 //
-                //              4)      Call Rsyev and Rsyevx.
+                // 4)      Call Rsyev and Rsyevx.
                 //
                 Rlacpy(" ", n, n, a, lda, v, ldu);
                 //
@@ -910,7 +917,7 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     }
                 }
                 //
-                //              Do tests 25 and 26 (or +54)
+                // Do tests 25 and 26 (or +54)
                 //
                 Rsyt21(1, uplo, n, 0, v, ldu, d1, d2, a, ldu, z, ldu, tau, work, &result[ntest - 1]);
                 //
@@ -932,7 +939,7 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     }
                 }
                 //
-                //              Do test 27 (or +54)
+                // Do test 27 (or +54)
                 //
                 temp1 = zero;
                 temp2 = zero;
@@ -982,7 +989,7 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     }
                 }
                 //
-                //              Do tests 28 and 29 (or +54)
+                // Do tests 28 and 29 (or +54)
                 //
                 Rlacpy(" ", n, n, v, ldu, a, lda);
                 //
@@ -1004,7 +1011,7 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     }
                 }
                 //
-                //              Do test 30 (or +54)
+                // Do test 30 (or +54)
                 //
                 temp1 = zero;
                 temp2 = zero;
@@ -1035,7 +1042,7 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     }
                 }
                 //
-                //              Do tests 31 and 32 (or +54)
+                // Do tests 31 and 32 (or +54)
                 //
                 Rlacpy(" ", n, n, v, ldu, a, lda);
                 //
@@ -1058,7 +1065,7 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     }
                 }
                 //
-                //              Do test 33 (or +54)
+                // Do test 33 (or +54)
                 //
                 temp1 = Rsxt1(1, wa2, m2, wa3, m3, abstol, ulp, unfl);
                 temp2 = Rsxt1(1, wa3, m3, wa2, m2, abstol, ulp, unfl);
@@ -1084,7 +1091,7 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     }
                 }
                 //
-                //              Do tests 34 and 35 (or +54)
+                // Do tests 34 and 35 (or +54)
                 //
                 Rlacpy(" ", n, n, v, ldu, a, lda);
                 //
@@ -1112,7 +1119,7 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     goto statement_700;
                 }
                 //
-                //              Do test 36 (or +54)
+                // Do test 36 (or +54)
                 //
                 temp1 = Rsxt1(1, wa2, m2, wa3, m3, abstol, ulp, unfl);
                 temp2 = Rsxt1(1, wa3, m3, wa2, m2, abstol, ulp, unfl);
@@ -1125,12 +1132,12 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
             //
             statement_700:
                 //
-                //              5)      Call Rspev and Rspevx.
+                // 5)      Call Rspev and Rspevx.
                 //
                 Rlacpy(" ", n, n, v, ldu, a, lda);
                 //
-                //              Load array WORK with the upper or lower triangular
-                //              part of the matrix in packed form.
+                // Load array WORK with the upper or lower triangular
+                // part of the matrix in packed form.
                 //
                 if (iuplo == 1) {
                     indx = 1;
@@ -1168,7 +1175,7 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     }
                 }
                 //
-                //              Do tests 37 and 38 (or +54)
+                // Do tests 37 and 38 (or +54)
                 //
                 Rsyt21(1, uplo, n, 0, a, lda, d1, d2, z, ldu, v, ldu, tau, work, &result[ntest - 1]);
                 //
@@ -1206,7 +1213,7 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     }
                 }
                 //
-                //              Do test 39 (or +54)
+                // Do test 39 (or +54)
                 //
                 temp1 = zero;
                 temp2 = zero;
@@ -1216,8 +1223,8 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 }
                 result[ntest - 1] = temp2 / max(unfl, REAL(ulp * max(temp1, temp2)));
             //
-            //              Load array WORK with the upper or lower triangular part
-            //              of the matrix in packed form.
+            // Load array WORK with the upper or lower triangular part
+            // of the matrix in packed form.
             //
             statement_800:
                 if (iuplo == 1) {
@@ -1275,7 +1282,7 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     }
                 }
                 //
-                //              Do tests 40 and 41 (or +54)
+                // Do tests 40 and 41 (or +54)
                 //
                 Rsyt21(1, uplo, n, 0, a, ldu, wa1, d2, z, ldu, v, ldu, tau, work, &result[ntest - 1]);
                 //
@@ -1314,7 +1321,7 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     }
                 }
                 //
-                //              Do test 42 (or +54)
+                // Do test 42 (or +54)
                 //
                 temp1 = zero;
                 temp2 = zero;
@@ -1362,7 +1369,7 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     }
                 }
                 //
-                //              Do tests 43 and 44 (or +54)
+                // Do tests 43 and 44 (or +54)
                 //
                 Rsyt22(1, uplo, n, m2, 0, a, ldu, wa2, d2, z, ldu, v, ldu, tau, work, &result[ntest - 1]);
                 //
@@ -1406,7 +1413,7 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     goto statement_990;
                 }
                 //
-                //              Do test 45 (or +54)
+                // Do test 45 (or +54)
                 //
                 temp1 = Rsxt1(1, wa2, m2, wa3, m3, abstol, ulp, unfl);
                 temp2 = Rsxt1(1, wa3, m3, wa2, m2, abstol, ulp, unfl);
@@ -1455,7 +1462,7 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     }
                 }
                 //
-                //              Do tests 46 and 47 (or +54)
+                // Do tests 46 and 47 (or +54)
                 //
                 Rsyt22(1, uplo, n, m2, 0, a, ldu, wa2, d2, z, ldu, v, ldu, tau, work, &result[ntest - 1]);
                 //
@@ -1499,7 +1506,7 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     goto statement_1080;
                 }
                 //
-                //              Do test 48 (or +54)
+                // Do test 48 (or +54)
                 //
                 temp1 = Rsxt1(1, wa2, m2, wa3, m3, abstol, ulp, unfl);
                 temp2 = Rsxt1(1, wa3, m3, wa2, m2, abstol, ulp, unfl);
@@ -1512,7 +1519,7 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
             //
             statement_1080:
                 //
-                //              6)      Call Rsbev and Rsbevx.
+                // 6)      Call Rsbev and Rsbevx.
                 //
                 if (jtype <= 7) {
                     kd = 1;
@@ -1522,8 +1529,8 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     kd = ihbw;
                 }
                 //
-                //              Load array V with the upper or lower triangular part
-                //              of the matrix in band form.
+                // Load array V with the upper or lower triangular part
+                // of the matrix in band form.
                 //
                 if (iuplo == 1) {
                     for (j = 1; j <= n; j = j + 1) {
@@ -1557,7 +1564,7 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     }
                 }
                 //
-                //              Do tests 49 and 50 (or ... )
+                // Do tests 49 and 50 (or ... )
                 //
                 Rsyt21(1, uplo, n, 0, a, lda, d1, d2, z, ldu, v, ldu, tau, work, &result[ntest - 1]);
                 //
@@ -1591,7 +1598,7 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     }
                 }
                 //
-                //              Do test 51 (or +54)
+                // Do test 51 (or +54)
                 //
                 temp1 = zero;
                 temp2 = zero;
@@ -1601,8 +1608,8 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 }
                 result[ntest - 1] = temp2 / max(unfl, REAL(ulp * max(temp1, temp2)));
             //
-            //              Load array V with the upper or lower triangular part
-            //              of the matrix in band form.
+            // Load array V with the upper or lower triangular part
+            // of the matrix in band form.
             //
             statement_1180:
                 if (iuplo == 1) {
@@ -1637,7 +1644,7 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     }
                 }
                 //
-                //              Do tests 52 and 53 (or +54)
+                // Do tests 52 and 53 (or +54)
                 //
                 Rsyt21(1, uplo, n, 0, a, ldu, wa2, d2, z, ldu, v, ldu, tau, work, &result[ntest - 1]);
                 //
@@ -1672,7 +1679,7 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     }
                 }
                 //
-                //              Do test 54 (or +54)
+                // Do test 54 (or +54)
                 //
                 temp1 = zero;
                 temp2 = zero;
@@ -1715,7 +1722,7 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     }
                 }
                 //
-                //              Do tests 55 and 56 (or +54)
+                // Do tests 55 and 56 (or +54)
                 //
                 Rsyt22(1, uplo, n, m2, 0, a, ldu, wa2, d2, z, ldu, v, ldu, tau, work, &result[ntest - 1]);
                 //
@@ -1750,7 +1757,7 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     }
                 }
                 //
-                //              Do test 57 (or +54)
+                // Do test 57 (or +54)
                 //
                 temp1 = Rsxt1(1, wa2, m2, wa3, m3, abstol, ulp, unfl);
                 temp2 = Rsxt1(1, wa3, m3, wa2, m2, abstol, ulp, unfl);
@@ -1794,7 +1801,7 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     }
                 }
                 //
-                //              Do tests 58 and 59 (or +54)
+                // Do tests 58 and 59 (or +54)
                 //
                 Rsyt22(1, uplo, n, m2, 0, a, ldu, wa2, d2, z, ldu, v, ldu, tau, work, &result[ntest - 1]);
                 //
@@ -1834,7 +1841,7 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     goto statement_1460;
                 }
                 //
-                //              Do test 60 (or +54)
+                // Do test 60 (or +54)
                 //
                 temp1 = Rsxt1(1, wa2, m2, wa3, m3, abstol, ulp, unfl);
                 temp2 = Rsxt1(1, wa3, m3, wa2, m2, abstol, ulp, unfl);
@@ -1847,7 +1854,7 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
             //
             statement_1460:
                 //
-                //              7)      Call Rsyevd
+                // 7)      Call Rsyevd
                 //
                 Rlacpy(" ", n, n, a, lda, v, ldu);
                 //
@@ -1869,7 +1876,7 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     }
                 }
                 //
-                //              Do tests 61 and 62 (or +54)
+                // Do tests 61 and 62 (or +54)
                 //
                 Rsyt21(1, uplo, n, 0, v, ldu, d1, d2, a, ldu, z, ldu, tau, work, &result[ntest - 1]);
                 //
@@ -1891,7 +1898,7 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     }
                 }
                 //
-                //              Do test 63 (or +54)
+                // Do test 63 (or +54)
                 //
                 temp1 = zero;
                 temp2 = zero;
@@ -1903,12 +1910,12 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
             //
             statement_1480:
                 //
-                //              8)      Call Rspevd.
+                // 8)      Call Rspevd.
                 //
                 Rlacpy(" ", n, n, v, ldu, a, lda);
                 //
-                //              Load array WORK with the upper or lower triangular
-                //              part of the matrix in packed form.
+                // Load array WORK with the upper or lower triangular
+                // part of the matrix in packed form.
                 //
                 if (iuplo == 1) {
                     indx = 1;
@@ -1946,7 +1953,7 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     }
                 }
                 //
-                //              Do tests 64 and 65 (or +54)
+                // Do tests 64 and 65 (or +54)
                 //
                 Rsyt21(1, uplo, n, 0, a, lda, d1, d2, z, ldu, v, ldu, tau, work, &result[ntest - 1]);
                 //
@@ -1985,7 +1992,7 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     }
                 }
                 //
-                //              Do test 66 (or +54)
+                // Do test 66 (or +54)
                 //
                 temp1 = zero;
                 temp2 = zero;
@@ -1996,7 +2003,7 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 result[ntest - 1] = temp2 / max(unfl, REAL(ulp * max(temp1, temp2)));
             statement_1580:
                 //
-                //              9)      Call Rsbevd.
+                // 9)      Call Rsbevd.
                 //
                 if (jtype <= 7) {
                     kd = 1;
@@ -2006,8 +2013,8 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     kd = ihbw;
                 }
                 //
-                //              Load array V with the upper or lower triangular part
-                //              of the matrix in band form.
+                // Load array V with the upper or lower triangular part
+                // of the matrix in band form.
                 //
                 if (iuplo == 1) {
                     for (j = 1; j <= n; j = j + 1) {
@@ -2041,7 +2048,7 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     }
                 }
                 //
-                //              Do tests 67 and 68 (or +54)
+                // Do tests 67 and 68 (or +54)
                 //
                 Rsyt21(1, uplo, n, 0, a, lda, d1, d2, z, ldu, v, ldu, tau, work, &result[ntest - 1]);
                 //
@@ -2075,7 +2082,7 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     }
                 }
                 //
-                //              Do test 69 (or +54)
+                // Do test 69 (or +54)
                 //
                 temp1 = zero;
                 temp2 = zero;
@@ -2106,7 +2113,7 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     }
                 }
                 //
-                //              Do tests 70 and 71 (or ... )
+                // Do tests 70 and 71 (or ... )
                 //
                 Rlacpy(" ", n, n, v, ldu, a, lda);
                 //
@@ -2128,7 +2135,7 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     }
                 }
                 //
-                //              Do test 72 (or ... )
+                // Do test 72 (or ... )
                 //
                 temp1 = zero;
                 temp2 = zero;
@@ -2159,7 +2166,7 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     }
                 }
                 //
-                //              Do tests 73 and 74 (or +54)
+                // Do tests 73 and 74 (or +54)
                 //
                 Rlacpy(" ", n, n, v, ldu, a, lda);
                 //
@@ -2182,7 +2189,7 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     }
                 }
                 //
-                //              Do test 75 (or +54)
+                // Do test 75 (or +54)
                 //
                 temp1 = Rsxt1(1, wa2, m2, wa3, m3, abstol, ulp, unfl);
                 temp2 = Rsxt1(1, wa3, m3, wa2, m2, abstol, ulp, unfl);
@@ -2238,7 +2245,7 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     continue;
                 }
                 //
-                //              Do test 78 (or +54)
+                // Do test 78 (or +54)
                 //
                 temp1 = Rsxt1(1, wa2, m2, wa3, m3, abstol, ulp, unfl);
                 temp2 = Rsxt1(1, wa3, m3, wa2, m2, abstol, ulp, unfl);
@@ -2253,7 +2260,7 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 //
             }
             //
-            //           End of Loop -- Check for RESULT(j) > THRESH
+            // End of Loop -- Check for RESULT(j) > THRESH
             //
             ntestt += ntest;
             //
@@ -2262,10 +2269,10 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
         }
     }
     //
-    //     Summary
+    // Summary
     //
     Alasvm("RST", nounit, nerrs, ntestt, 0);
     //
-    //     End of Rdrvst2stg
+    // End of Rdrvst2stg
     //
 }

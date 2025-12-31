@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DGET40.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -91,7 +98,6 @@ void Rget40(REAL &rmax, INTEGER &lmax, INTEGER *ninfo, INTEGER &knt, INTEGER con
     REAL work[lwork];
     INTEGER info1 = 0;
     INTEGER info2 = 0;
-    //
     REAL result[4];
     string str;
     char line[1024];
@@ -106,7 +112,7 @@ void Rget40(REAL &rmax, INTEGER &lmax, INTEGER *ninfo, INTEGER &knt, INTEGER con
     ninfo[2 - 1] = 0;
     ninfo[3 - 1] = 0;
 //
-//     Read input data until N=0
+// Read input data until N=0
 //
 statement_10:
     getline(cin, str);
@@ -152,7 +158,7 @@ statement_10:
     ilst2 = ilst;
     res = zero;
     //
-    //     Test without accumulating Q and Z
+    // Test without accumulating Q and Z
     //
     Rlaset("Full", n, n, zero, one, q, ldt);
     Rlaset("Full", n, n, zero, one, z, ldt);
@@ -174,13 +180,13 @@ statement_10:
         }
     }
     //
-    //     Test with accumulating Q
+    // Test with accumulating Q
     //
     Rlaset("Full", n, n, zero, one, q, ldt);
     Rlaset("Full", n, n, zero, one, z, ldt);
     Rtgexc(true, true, n, t2, ldt, s2, ldt, q, ldt, z, ldt, ifst2, ilst2, work, lwork, info2);
     //
-    //     Compare T1 with T2 and S1 with S2
+    // Compare T1 with T2 and S1 with S2
     //
     for (i = 1; i <= n; i = i + 1) {
         for (j = 1; j <= n; j = j + 1) {
@@ -202,7 +208,7 @@ statement_10:
         res += one / eps;
     }
     //
-    //     Test orthogonality of Q and Z and backward error on T2 and S2
+    // Test orthogonality of Q and Z and backward error on T2 and S2
     //
     Rget51(1, n, t, ldt, t2, ldt, q, ldt, z, ldt, work, result[1 - 1]);
     Rget51(1, n, s, ldt, s2, ldt, q, ldt, z, ldt, work, result[2 - 1]);
@@ -210,10 +216,10 @@ statement_10:
     Rget51(3, n, t, ldt, t2, ldt, z, ldt, z, ldt, work, result[4 - 1]);
     res += result[1 - 1] + result[2 - 1] + result[3 - 1] + result[4 - 1];
     //
-    //     Read next matrix pair
+    // Read next matrix pair
     //
     goto statement_10;
     //
-    //     End of Rget40
+    // End of Rget40
     //
 }

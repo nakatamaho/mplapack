@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine ALARQG.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -56,30 +63,9 @@ void Alarqg(const char *path, INTEGER const nmats, bool *dotype, INTEGER const n
     static const char *format_9994 = "(' ==> Specify ',i4,' matrix types on this line or ',"
                                      "'adjust NTYPES on previous line')";
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    // ======================================================================
-    //
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Data statements ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     if (nmats >= ntypes) {
         //
-        //        Test everything if NMATS >= NTYPES.
+        // Test everything if NMATS >= NTYPES.
         //
         for (i = 1; i <= ntypes; i = i + 1) {
             dotype[i - 1] = true;
@@ -93,7 +79,7 @@ void Alarqg(const char *path, INTEGER const nmats, bool *dotype, INTEGER const n
         }
         firstt = true;
         //
-        //        Read a line of matrix types if 0 < NMATS < NTYPES.
+        // Read a line of matrix types if 0 < NMATS < NTYPES.
         //
         if (nmats > 0) {
             try {
@@ -121,7 +107,7 @@ void Alarqg(const char *path, INTEGER const nmats, bool *dotype, INTEGER const n
                     i1 = i;
                     c1 = line[(i1 - 1) + (i1 - 1) * ldline];
                     //
-                    //              Check that a valid integer was read
+                    // Check that a valid integer was read
                     //
                     for (k = 1; k <= 10; k = k + 1) {
                         if (c1 == intstr[(k - 1) + (k - 1) * ldintstr]) {
@@ -176,6 +162,6 @@ statement_90:
         path;
     write(nout, star);
     //
-    //     End of Alarqg
+    // End of Alarqg
     //
 }

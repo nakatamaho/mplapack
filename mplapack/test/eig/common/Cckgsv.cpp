@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine ZCKGSV.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -80,7 +87,7 @@ void Cckgsv(INTEGER const nm, INTEGER *mval, INTEGER *pval, INTEGER *nval, INTEG
     INTEGER i = 0;
     static const char *format_9999 = "(' ZLATMS in Cckgsv   INFO = ',i5)";
     //
-    //     Initialize constants and the random number seed.
+    // Initialize constants and the random number seed.
     //
     path[0] = 'G';
     path[1] = 'S';
@@ -99,7 +106,7 @@ void Cckgsv(INTEGER const nm, INTEGER *mval, INTEGER *pval, INTEGER *nval, INTEG
     ldr = nmax;
     lwork = nmax * nmax;
     //
-    //     Do for each value of M in MVAL.
+    // Do for each value of M in MVAL.
     //
     for (im = 1; im <= nm; im = im + 1) {
         m = mval[im - 1];
@@ -108,18 +115,18 @@ void Cckgsv(INTEGER const nm, INTEGER *mval, INTEGER *pval, INTEGER *nval, INTEG
         //
         for (imat = 1; imat <= ntypes; imat = imat + 1) {
             //
-            //           Do the tests only if DOTYPE( IMAT ) is true.
+            // Do the tests only if DOTYPE( IMAT ) is true.
             //
             if (!dotype[imat - 1]) {
                 goto statement_20;
             }
             //
-            //           Set up parameters with Rlatb9 and generate test
-            //           matrices A and B with ZLATMS.
+            // Set up parameters with Rlatb9 and generate test
+            // matrices A and B with Clatms.
             //
             Rlatb9(path, imat, m, p, n, &type, kla, kua, klb, kub, anorm, bnorm, modea, modeb, cndnma, cndnmb, &dista, &distb);
             //
-            //           Generate M by N matrix A
+            // Generate M by N matrix A
             //
             Clatms(m, n, &dista, iseed, &type, rwork, modea, cndnma, anorm, kla, kua, "No packing", a, lda, work, iinfo);
             if (iinfo != 0) {
@@ -128,7 +135,7 @@ void Cckgsv(INTEGER const nm, INTEGER *mval, INTEGER *pval, INTEGER *nval, INTEG
                 goto statement_20;
             }
             //
-            //           Generate P by N matrix B
+            // Generate P by N matrix B
             //
             Clatms(p, n, &distb, iseed, &type, rwork, modeb, cndnmb, bnorm, klb, kub, "No packing", b, ldb, work, iinfo);
             if (iinfo != 0) {
@@ -141,8 +148,8 @@ void Cckgsv(INTEGER const nm, INTEGER *mval, INTEGER *pval, INTEGER *nval, INTEG
             //
             Cgsvts3(m, p, n, a, af, lda, b, bf, ldb, u, ldu, v, ldv, q, ldq, alpha, beta, r, ldr, iwork, work, lwork, rwork, result);
             //
-            //           Print information about the tests that did not
-            //           pass the threshold.
+            // Print information about the tests that did not
+            // pass the threshold.
             //
             for (i = 1; i <= nt; i = i + 1) {
                 if (result[i - 1] >= thresh) {
@@ -163,10 +170,10 @@ void Cckgsv(INTEGER const nm, INTEGER *mval, INTEGER *pval, INTEGER *nval, INTEG
         }
     }
     //
-    //     Print a summary of the results.
+    // Print a summary of the results.
     //
     Alasum(path, nout, nfail, nrun, 0);
     //
-    //     End of Cckgsv
+    // End of Cckgsv
     //
 }

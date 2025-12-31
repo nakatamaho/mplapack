@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DGET53.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -40,28 +47,7 @@ using fem::common;
 
 void Rget53(REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL const scale, REAL const wr, REAL const wi, REAL &result, INTEGER &info) {
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Initialize
+    // Initialize
     //
     info = 0;
     const REAL zero = 0.0;
@@ -70,7 +56,7 @@ void Rget53(REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL const s
     REAL wrs = wr;
     REAL wis = wi;
     //
-    //     Machine constants and norms
+    // Machine constants and norms
     //
     REAL safmin = Rlamch("Safe minimum");
     REAL ulp = Rlamch("Epsilon") * Rlamch("Base");
@@ -78,13 +64,13 @@ void Rget53(REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL const s
     REAL anorm = max({REAL(abs(a[(1 - 1) + (1 - 1) * lda]) + abs(a[(2 - 1)])), REAL(abs(a[(1 - 1) + (2 - 1) * lda]) + abs(a[(2 - 1) + (2 - 1) * lda])), safmin});
     REAL bnorm = max({REAL(abs(b[(1 - 1) + (1 - 1) * ldb])), REAL(abs(b[(1 - 1) + (2 - 1) * ldb]) + abs(b[(2 - 1) + (2 - 1) * ldb])), safmin});
     //
-    //     Check for possible overflow.
+    // Check for possible overflow.
     //
     REAL temp = (safmin * bnorm) * absw + (safmin * anorm) * scales;
     const REAL one = 1.0;
     if (temp >= one) {
         //
-        //        Scale down to avoid overflow
+        // Scale down to avoid overflow
         //
         info = 1;
         temp = one / temp;
@@ -95,7 +81,7 @@ void Rget53(REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL const s
     }
     REAL s1 = max(REAL(ulp * max(scales * anorm, absw * bnorm)), REAL(safmin * max(scales, absw)));
     //
-    //     Check for W and SCALE essentially zero.
+    // Check for W and SCALE essentially zero.
     //
     if (s1 < safmin) {
         info = 2;
@@ -105,7 +91,7 @@ void Rget53(REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL const s
             return;
         }
         //
-        //        Scale up to avoid underflow
+        // Scale up to avoid underflow
         //
         temp = one / max(REAL(scales * anorm + absw * bnorm), safmin);
         scales = scales * temp;
@@ -120,7 +106,7 @@ void Rget53(REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL const s
         }
     }
     //
-    //     Compute C = s A - w B
+    // Compute C = s A - w B
     //
     REAL cr11 = scales * a[(1 - 1) + (1 - 1) * lda] - wrs * b[(1 - 1) + (1 - 1) * ldb];
     REAL ci11 = -wis * b[(1 - 1) + (1 - 1) * ldb];
@@ -130,11 +116,11 @@ void Rget53(REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL const s
     REAL cr22 = scales * a[(2 - 1) + (2 - 1) * lda] - wrs * b[(2 - 1) + (2 - 1) * ldb];
     REAL ci22 = -wis * b[(2 - 1) + (2 - 1) * ldb];
     //
-    //     Compute the smallest singular value of s A - w B:
+    // Compute the smallest singular value of s A - w B:
     //
-    //                 |det( s A - w B )|
-    //     sigma_min = ------------------
-    //                 norm( s A - w B )
+    // |det( s A - w B )|
+    // sigma_min = ------------------
+    // norm( s A - w B )
     //
     REAL cnorm = max({REAL(abs(cr11) + abs(ci11) + abs(cr21)), REAL(abs(cr12) + abs(ci12) + abs(cr22) + abs(ci22)), safmin});
     REAL cscale = one / sqrt(cnorm);
@@ -143,6 +129,6 @@ void Rget53(REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL const s
     REAL sigmin = abs(detr) + abs(deti);
     result = sigmin / s1;
     //
-    //     End of Rget53
+    // End of Rget53
     //
 }

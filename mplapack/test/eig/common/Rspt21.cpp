@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DSPT21.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -40,30 +47,7 @@ using fem::common;
 
 void Rspt21(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER const kband, REAL *ap, REAL *d, REAL *e, REAL *u, INTEGER const ldu, REAL *vp, REAL *tau, REAL *work, REAL *result) {
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     1)      Constants
+    // 1)      Constants
     //
     const REAL zero = 0.0;
     result[1 - 1] = zero;
@@ -89,7 +73,7 @@ void Rspt21(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER cons
     REAL unfl = Rlamch("Safe minimum");
     REAL ulp = Rlamch("Epsilon") * Rlamch("Base");
     //
-    //     Some Error Checks
+    // Some Error Checks
     //
     const REAL ten = 10.0;
     if (itype < 1 || itype > 3) {
@@ -97,9 +81,9 @@ void Rspt21(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER cons
         return;
     }
     //
-    //     Do Test 1
+    // Do Test 1
     //
-    //     Norm of A:
+    // Norm of A:
     //
     const REAL one = 1.0;
     REAL anorm = 0.0;
@@ -109,7 +93,7 @@ void Rspt21(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER cons
         anorm = max({Rlansp("1", &cuplo, n, ap, work), unfl});
     }
     //
-    //     Compute error matrix:
+    // Compute error matrix:
     //
     INTEGER j = 0;
     REAL wnorm = 0.0;
@@ -122,7 +106,7 @@ void Rspt21(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER cons
     INTEGER iinfo = 0;
     if (itype == 1) {
         //
-        //        ITYPE=1: error = A - U S U**T
+        // ITYPE=1: error = A - U S U**T
         //
         Rlaset("Full", n, n, zero, zero, work, n);
         Rcopy(lap, ap, 1, work, 1);
@@ -140,7 +124,7 @@ void Rspt21(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER cons
         //
     } else if (itype == 2) {
         //
-        //        ITYPE=2: error = V S V**T - A
+        // ITYPE=2: error = V S V**T - A
         //
         Rlaset("Full", n, n, zero, zero, work, n);
         //
@@ -199,7 +183,7 @@ void Rspt21(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER cons
         //
     } else if (itype == 3) {
         //
-        //        ITYPE=3: error = U V**T - I
+        // ITYPE=3: error = U V**T - I
         //
         if (n < 2) {
             return;
@@ -228,9 +212,9 @@ void Rspt21(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER cons
         }
     }
     //
-    //     Do Test 2
+    // Do Test 2
     //
-    //     Compute  U U**T - I
+    // Compute  U U**T - I
     //
     if (itype == 1) {
         Rgemm("N", "C", n, n, n, one, u, ldu, u, ldu, zero, work, n);
@@ -242,6 +226,6 @@ void Rspt21(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER cons
         result[2 - 1] = min({Rlange("1", n, n, work, n, &work[(n * n + 1) - 1]), castREAL(n)}) / (n * ulp);
     }
     //
-    //     End of Rspt21
+    // End of Rspt21
     //
 }

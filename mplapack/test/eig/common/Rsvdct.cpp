@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DSVDCT.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -40,34 +47,13 @@ using fem::common;
 
 void Rsvdct(INTEGER const n, REAL *s, REAL *e, REAL const shift, INTEGER &num) {
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Get machine constants
+    // Get machine constants
     //
     REAL unfl = 2 * Rlamch("Safe minimum");
     const REAL one = 1.0;
     REAL ovfl = one / unfl;
     //
-    //     Find largest entry
+    // Find largest entry
     //
     REAL mx = abs(s[1 - 1]);
     INTEGER i = 0;
@@ -85,7 +71,7 @@ void Rsvdct(INTEGER const n, REAL *s, REAL *e, REAL const shift, INTEGER &num) {
         return;
     }
     //
-    //     Compute scale factors as in Kahan's report
+    // Compute scale factors as in Kahan's report
     //
     REAL sun = sqrt(unfl);
     REAL ssun = sqrt(sun);
@@ -101,7 +87,7 @@ void Rsvdct(INTEGER const n, REAL *s, REAL *e, REAL const shift, INTEGER &num) {
         m2 = tom / mx;
     }
     //
-    //     Begin counting
+    // Begin counting
     //
     REAL u = one;
     num = 0;
@@ -156,6 +142,6 @@ void Rsvdct(INTEGER const n, REAL *s, REAL *e, REAL const shift, INTEGER &num) {
         }
     }
     //
-    //     End of Rsvdct
+    // End of Rsvdct
     //
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DORT01.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -43,7 +50,7 @@ void Rort01(const char *rowcol, INTEGER const m, INTEGER const n, REAL *u, INTEG
     const REAL zero = 0.0;
     resid = zero;
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (m <= 0 || n <= 0) {
         return;
@@ -73,18 +80,18 @@ void Rort01(const char *rowcol, INTEGER const m, INTEGER const n, REAL *u, INTEG
     REAL tmp = 0.0;
     if (ldwork > 0) {
         //
-        //        Compute I - U*U' or I - U'*U.
+        // Compute I - U*U' or I - U'*U.
         //
         Rlaset("Upper", mnmin, mnmin, zero, one, work, ldwork);
         Rsyrk("Upper", &transu, mnmin, k, -one, u, ldu, one, work, ldwork);
         //
-        //        Compute norm( I - U*U' ) / ( K * EPS ) .
+        // Compute norm( I - U*U' ) / ( K * EPS ) .
         //
         resid = Rlansy("1", "Upper", mnmin, work, ldwork, &work[(ldwork * mnmin + 1) - 1]);
         resid = (resid / castREAL(k)) / eps;
     } else if (transu == 'T') {
         //
-        //        Find the maximum element in abs( I - U'*U ) / ( m * EPS )
+        // Find the maximum element in abs( I - U'*U ) / ( m * EPS )
         //
         for (j = 1; j <= n; j = j + 1) {
             for (i = 1; i <= j; i = i + 1) {
@@ -100,7 +107,7 @@ void Rort01(const char *rowcol, INTEGER const m, INTEGER const n, REAL *u, INTEG
         resid = (resid / castREAL(m)) / eps;
     } else {
         //
-        //        Find the maximum element in abs( I - U*U' ) / ( n * EPS )
+        // Find the maximum element in abs( I - U*U' ) / ( n * EPS )
         //
         for (j = 1; j <= m; j = j + 1) {
             for (i = 1; i <= j; i = i + 1) {
@@ -116,6 +123,6 @@ void Rort01(const char *rowcol, INTEGER const m, INTEGER const n, REAL *u, INTEG
         resid = (resid / castREAL(n)) / eps;
     }
     //
-    //     End of Rort01
+    // End of Rort01
     //
 }

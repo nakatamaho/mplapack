@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DSYT22.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -50,15 +57,15 @@ void Rsyt22(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER cons
     REAL unfl = Rlamch("Safe minimum");
     REAL ulp = Rlamch("Precision");
     //
-    //     Do Test 1
+    // Do Test 1
     //
-    //     Norm of A:
+    // Norm of A:
     //
     REAL anorm = max(Rlansy("1", uplo, n, a, lda, work), unfl);
     //
-    //     Compute error matrix:
+    // Compute error matrix:
     //
-    //     ITYPE=1: error = U**T A U - S
+    // ITYPE=1: error = U**T A U - S
     //
     const REAL one = 1.0;
     Rsymm("L", uplo, n, m, one, a, lda, u, ldu, zero, work, n);
@@ -93,14 +100,14 @@ void Rsyt22(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER cons
         }
     }
     //
-    //     Do Test 2
+    // Do Test 2
     //
-    //     Compute  U**T U - I
+    // Compute  U**T U - I
     //
     if (itype == 1) {
         Rort01("Columns", n, m, u, ldu, work, 2 * n * n, result[2 - 1]);
     }
     //
-    //     End of Rsyt22
+    // End of Rsyt22
     //
 }

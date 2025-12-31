@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZUNT01.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -41,16 +48,12 @@ using fem::common;
 inline REAL abs1(COMPLEX zdum) { return abs(zdum.real()) + abs(zdum.imag()); }
 
 void Cunt01(const char *rowcol, INTEGER const m, INTEGER const n, COMPLEX *u, INTEGER const ldu, COMPLEX *work, INTEGER const lwork, REAL *rwork, REAL &resid) {
-    //
-    //     .. Statement Function definitions ..
     COMPLEX zdum = 0.0;
-    //     ..
-    //     .. Executable Statements ..
     //
     const REAL zero = 0.0;
     resid = zero;
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (m <= 0 || n <= 0) {
         return;
@@ -80,18 +83,18 @@ void Cunt01(const char *rowcol, INTEGER const m, INTEGER const n, COMPLEX *u, IN
     COMPLEX tmp = 0.0;
     if (ldwork > 0) {
         //
-        //        Compute I - U*U' or I - U'*U.
+        // Compute I - U*U' or I - U'*U.
         //
         Claset("Upper", mnmin, mnmin, COMPLEX(zero), COMPLEX(one), work, ldwork);
         Cherk("Upper", &transu, mnmin, k, -one, u, ldu, one, work, ldwork);
         //
-        //        Compute norm( I - U*U' ) / ( K * EPS ) .
+        // Compute norm( I - U*U' ) / ( K * EPS ) .
         //
         resid = Clansy("1", "Upper", mnmin, work, ldwork, rwork);
         resid = (resid / castREAL(k)) / eps;
     } else if (Mlsame(&transu, "C")) {
         //
-        //        Find the maximum element in abs( I - U'*U ) / ( m * EPS )
+        // Find the maximum element in abs( I - U'*U ) / ( m * EPS )
         //
         for (j = 1; j <= n; j = j + 1) {
             for (i = 1; i <= j; i = i + 1) {
@@ -107,7 +110,7 @@ void Cunt01(const char *rowcol, INTEGER const m, INTEGER const n, COMPLEX *u, IN
         resid = (resid / castREAL(m)) / eps;
     } else {
         //
-        //        Find the maximum element in abs( I - U*U' ) / ( n * EPS )
+        // Find the maximum element in abs( I - U*U' ) / ( n * EPS )
         //
         for (j = 1; j <= m; j = j + 1) {
             for (i = 1; i <= j; i = i + 1) {
@@ -123,6 +126,6 @@ void Cunt01(const char *rowcol, INTEGER const m, INTEGER const n, COMPLEX *u, IN
         resid = (resid / castREAL(n)) / eps;
     }
     //
-    //     End of Cunt01
+    // End of Cunt01
     //
 }

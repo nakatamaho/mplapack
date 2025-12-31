@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine ZDRGES3.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -107,7 +114,7 @@ void Cdrges3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
     static const char *format_9999 = "(' Cdrges3: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,', JTYPE=',i6,"
                                      "', ISEED=(',4(i4,','),i5,')')";
     //
-    //     Check for errors
+    // Check for errors
     //
     info = 0;
     //
@@ -134,12 +141,12 @@ void Cdrges3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
         info = -14;
     }
     //
-    //     Compute workspace
-    //      (Note: Comments in the code beginning "Workspace:" describe the
-    //       minimal amount of workspace needed at that point in the code,
-    //       as well as the preferred amount for good performance.
-    //       NB refers to the optimal block size for the immediately
-    //       following subroutine, as returned by iMlaenv.
+    // Compute workspace
+    // (Note: Comments in the code beginning "Workspace:" describe the
+    // minimal amount of workspace needed at that point in the code,
+    // as well as the preferred amount for good performance.
+    // NB refers to the optimal block size for the immediately
+    // following subroutine, as returned by iMlaenv.
     //
     minwrk = 1;
     if (info == 0 && lwork >= 1) {
@@ -158,7 +165,7 @@ void Cdrges3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (nsizes == 0 || ntypes == 0) {
         return;
@@ -170,12 +177,12 @@ void Cdrges3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
     safmax = one / safmin;
     ulpinv = one / ulp;
     //
-    //     The values RMAGN(2:3) depend on N, see below.
+    // The values RMAGN(2:3) depend on N, see below.
     //
     rmagn[0] = zero;
     rmagn[1] = one;
     //
-    //     Loop over matrix sizes
+    // Loop over matrix sizes
     //
     ntestt = 0;
     nerrs = 0;
@@ -193,7 +200,7 @@ void Cdrges3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
             mtypes = min(maxtyp + 1, ntypes);
         }
         //
-        //        Loop over matrix types
+        // Loop over matrix types
         //
         for (jtype = 1; jtype <= mtypes; jtype = jtype + 1) {
             if (!dotype[jtype - 1]) {
@@ -202,38 +209,38 @@ void Cdrges3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
             nmats++;
             ntest = 0;
             //
-            //           Save ISEED in case of an error.
+            // Save ISEED in case of an error.
             //
             for (j = 1; j <= 4; j = j + 1) {
                 ioldsd[j - 1] = iseed[j - 1];
             }
             //
-            //           Initialize RESULT
+            // Initialize RESULT
             //
             for (j = 1; j <= 13; j = j + 1) {
                 result[j - 1] = zero;
             }
             //
-            //           Generate test matrices A and B
+            // Generate test matrices A and B
             //
-            //           Description of control parameters:
+            // Description of control parameters:
             //
-            //           KZLASS: =1 means w/o rotation, =2 means w/ rotation,
-            //                   =3 means random.
-            //           KATYPE: the "type" to be passed to Clatm4 for computing A.
-            //           KAZERO: the pattern of zeros on the diagonal for A:
-            //                   =1: ( xxx ), =2: (0, xxx ) =3: ( 0, 0, xxx, 0 ),
-            //                   =4: ( 0, xxx, 0, 0 ), =5: ( 0, 0, 1, xxx, 0 ),
-            //                   =6: ( 0, 1, 0, xxx, 0 ).  (xxx means a string of
-            //                   non-zero entries.)
-            //           KAMAGN: the magnitude of the matrix: =0: zero, =1: O(1),
-            //                   =2: large, =3: small.
-            //           LASIGN: .TRUE. if the diagonal elements of A are to be
-            //                   multiplied by a random magnitude 1 number.
-            //           KBTYPE, KBZERO, KBMAGN, LBSIGN: the same, but for B.
-            //           KTRIAN: =0: don't fill in the upper triangle, =1: do.
-            //           KZ1, KZ2, KADD: used to implement KAZERO and KBZERO.
-            //           RMAGN: used to implement KAMAGN and KBMAGN.
+            // KZLASS: =1 means w/o rotation, =2 means w/ rotation,
+            // =3 means random.
+            // KATYPE: the "type" to be passed to Clatm4 for computing A.
+            // KAZERO: the pattern of zeros on the diagonal for A:
+            // =1: ( xxx ), =2: (0, xxx ) =3: ( 0, 0, xxx, 0 ),
+            // =4: ( 0, xxx, 0, 0 ), =5: ( 0, 0, 1, xxx, 0 ),
+            // =6: ( 0, 1, 0, xxx, 0 ).  (xxx means a string of
+            // non-zero entries.)
+            // KAMAGN: the magnitude of the matrix: =0: zero, =1: O(1),
+            // =2: large, =3: small.
+            // LASIGN: .TRUE. if the diagonal elements of A are to be
+            // multiplied by a random magnitude 1 number.
+            // KBTYPE, KBZERO, KBMAGN, LBSIGN: the same, but for B.
+            // KTRIAN: =0: don't fill in the upper triangle, =1: do.
+            // KZ1, KZ2, KADD: used to implement KAZERO and KBZERO.
+            // RMAGN: used to implement KAMAGN and KBMAGN.
             //
             if (mtypes > maxtyp) {
                 goto statement_110;
@@ -241,7 +248,7 @@ void Cdrges3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
             iinfo = 0;
             if (kclass[jtype - 1] < 3) {
                 //
-                //              Generate A (w/o rotation)
+                // Generate A (w/o rotation)
                 //
                 if (abs(katype[jtype - 1]) == 3) {
                     in = 2 * ((n - 1) / 2) + 1;
@@ -257,7 +264,7 @@ void Cdrges3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
                     a[(iadd - 1) + (iadd - 1) * lda] = rmagn[kamagn[jtype - 1]];
                 }
                 //
-                //              Generate B (w/o rotation)
+                // Generate B (w/o rotation)
                 //
                 if (abs(kbtype[jtype - 1]) == 3) {
                     in = 2 * ((n - 1) / 2) + 1;
@@ -275,10 +282,10 @@ void Cdrges3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
                 //
                 if (kclass[jtype - 1] == 2 && n > 0) {
                     //
-                    //                 Include rotations
+                    // Include rotations
                     //
-                    //                 Generate Q, Z as Householder transformations times
-                    //                 a diagonal matrix.
+                    // Generate Q, Z as Householder transformations times
+                    // a diagonal matrix.
                     //
                     for (jc = 1; jc <= n - 1; jc = jc + 1) {
                         for (jr = jc; jr <= n; jr = jr + 1) {
@@ -301,7 +308,7 @@ void Cdrges3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
                     work[(2 * n) - 1] = czero;
                     work[(4 * n) - 1] = ctemp / abs(ctemp);
                     //
-                    //                 Apply the diagonal matrices
+                    // Apply the diagonal matrices
                     //
                     for (jc = 1; jc <= n; jc = jc + 1) {
                         for (jr = 1; jr <= n; jr = jr + 1) {
@@ -328,7 +335,7 @@ void Cdrges3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
                 }
             } else {
                 //
-                //              Random matrices
+                // Random matrices
                 //
                 for (jc = 1; jc <= n; jc = jc + 1) {
                     for (jr = 1; jr <= n; jr = jr + 1) {
@@ -352,7 +359,7 @@ void Cdrges3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
                 result[i - 1] = -one;
             }
             //
-            //           Test with and without sorting of eigenvalues
+            // Test with and without sorting of eigenvalues
             //
             for (isort = 0; isort <= 1; isort = isort + 1) {
                 if (isort == 0) {
@@ -363,7 +370,7 @@ void Cdrges3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
                     rsub = 5;
                 }
                 //
-                //              Call Cgges3 to compute H, T, Q, Z, alpha, and beta.
+                // Call Cgges3 to compute H, T, Q, Z, alpha, and beta.
                 //
                 Clacpy("Full", n, n, a, lda, s, lda);
                 Clacpy("Full", n, n, b, lda, t, lda);
@@ -379,7 +386,7 @@ void Cdrges3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
                 //
                 ntest = 4 + rsub;
                 //
-                //              Do tests 1--4 (or tests 7--9 when reordering )
+                // Do tests 1--4 (or tests 7--9 when reordering )
                 //
                 if (isort == 0) {
                     Cget51(1, n, a, lda, s, lda, q, ldq, z, ldq, work, rwork, result[1 - 1]);
@@ -391,9 +398,9 @@ void Cdrges3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
                 Cget51(3, n, b, lda, t, lda, q, ldq, q, ldq, work, rwork, result[(3 + rsub) - 1]);
                 Cget51(3, n, b, lda, t, lda, z, ldq, z, ldq, work, rwork, result[(4 + rsub) - 1]);
                 //
-                //              Do test 5 and 6 (or Tests 10 and 11 when reordering):
-                //              check Schur form of A and compare eigenvalues with
-                //              diagonals.
+                // Do test 5 and 6 (or Tests 10 and 11 when reordering):
+                // check Schur form of A and compare eigenvalues with
+                // diagonals.
                 //
                 ntest = 6 + rsub;
                 temp1 = zero;
@@ -425,7 +432,7 @@ void Cdrges3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
                 //
                 if (isort >= 1) {
                     //
-                    //                 Do test 12
+                    // Do test 12
                     //
                     ntest = 12;
                     result[12 - 1] = zero;
@@ -442,26 +449,26 @@ void Cdrges3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
                 //
             }
         //
-        //           End of Loop -- Check for RESULT(j) > THRESH
+        // End of Loop -- Check for RESULT(j) > THRESH
         //
         statement_160:
             //
             ntestt += ntest;
             //
-            //           Print out tests which fail.
+            // Print out tests which fail.
             //
             for (jr = 1; jr <= ntest; jr = jr + 1) {
                 if (result[jr - 1] >= thresh) {
                     //
-                    //                 If this is the first test to fail,
-                    //                 print a header to the data file.
+                    // If this is the first test to fail,
+                    // print a header to the data file.
                     //
                     if (nerrs == 0) {
                         write(nounit, "(/,1x,a3,' -- Complex Generalized Schur from problem ',"
                                       "'driver')"),
                             "ZGS";
                         //
-                        //                    Matrix types
+                        // Matrix types
                         //
                         write(nounit, "(' Matrix types (see Cdrges3 for details): ')");
                         write(nounit, "(' Special Matrices:',23x,'(J''=transposed Jordan block)',/,"
@@ -481,7 +488,7 @@ void Cdrges3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
                                       "'  26=random O(1) matrices.')"),
                             "Unitary";
                         //
-                        //                    Tests performed
+                        // Tests performed
                         //
                         {
                             write_loop wloop(cmn, nounit,
@@ -529,12 +536,12 @@ void Cdrges3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
         }
     }
     //
-    //     Summary
+    // Summary
     //
     Alasvm("ZGS", nounit, nerrs, ntestt, 0);
     //
     work[1 - 1] = maxwrk;
     //
-    //     End of Cdrges3
+    // End of Cdrges3
     //
 }

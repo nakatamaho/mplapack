@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DERRGG.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -48,7 +55,7 @@ void Rerrgg(const char *path, INTEGER const nunit) {
     c2[0] = path[1];
     c2[1] = path[2];
     //
-    //     Set the variables to innocuous values.
+    // Set the variables to innocuous values.
     //
     INTEGER j = 0;
     const INTEGER nmax = 3;
@@ -79,7 +86,7 @@ void Rerrgg(const char *path, INTEGER const nunit) {
     INTEGER nt = 0;
     INTEGER lwork = 1;
     //
-    //     Test error exits for the GG path.
+    // Test error exits for the GG path.
     //
     REAL q[nmax * nmax];
     REAL z[nmax * nmax];
@@ -112,7 +119,7 @@ void Rerrgg(const char *path, INTEGER const nunit) {
     REAL dif = 0.0;
     if (Mlsamen(2, c2, "GG")) {
         //
-        //        Rgghrd
+        // Rgghrd
         //
         strncpy(srnamt, "Rgghrd", srnamt_len);
         infot = 1;
@@ -144,7 +151,7 @@ void Rerrgg(const char *path, INTEGER const nunit) {
         chkxer("Rgghrd", infot, nout, lerr, ok);
         nt += 9;
         //
-        //        Rgghd3
+        // Rgghd3
         //
         strncpy(srnamt, "Rgghd3", srnamt_len);
         infot = 1;
@@ -176,7 +183,7 @@ void Rerrgg(const char *path, INTEGER const nunit) {
         chkxer("Rgghd3", infot, nout, lerr, ok);
         nt += 9;
         //
-        //        Rhgeqz
+        // Rhgeqz
         //
         strncpy(srnamt, "Rhgeqz", srnamt_len);
         infot = 1;
@@ -211,7 +218,7 @@ void Rerrgg(const char *path, INTEGER const nunit) {
         chkxer("Rhgeqz", infot, nout, lerr, ok);
         nt += 10;
         //
-        //        Rtgevc
+        // Rtgevc
         //
         strncpy(srnamt, "Rtgevc", srnamt_len);
         infot = 1;
@@ -240,11 +247,11 @@ void Rerrgg(const char *path, INTEGER const nunit) {
         chkxer("Rtgevc", infot, nout, lerr, ok);
         nt += 8;
         //
-        //     Test error exits for the GSV path.
+        // Test error exits for the GSV path.
         //
     } else if (Mlsamen(3, path, "GSV")) {
         //
-        //        Rggsvd3
+        // Rggsvd3
         //
         strncpy(srnamt, "Rggsvd3", srnamt_len);
         infot = 1;
@@ -282,7 +289,7 @@ void Rerrgg(const char *path, INTEGER const nunit) {
         chkxer("Rggsvd3", infot, nout, lerr, ok);
         nt += 11;
         //
-        //        Rggsvp3
+        // Rggsvp3
         //
         strncpy(srnamt, "Rggsvp3", srnamt_len);
         infot = 1;
@@ -320,7 +327,7 @@ void Rerrgg(const char *path, INTEGER const nunit) {
         chkxer("Rggsvp3", infot, nout, lerr, ok);
         nt += 11;
         //
-        //        Rtgsja
+        // Rtgsja
         //
         strncpy(srnamt, "Rtgsja", srnamt_len);
         infot = 1;
@@ -358,11 +365,11 @@ void Rerrgg(const char *path, INTEGER const nunit) {
         chkxer("Rtgsja", infot, nout, lerr, ok);
         nt += 11;
         //
-        //     Test error exits for the GLM path.
+        // Test error exits for the GLM path.
         //
     } else if (Mlsamen(3, path, "GLM")) {
         //
-        //        Rggglm
+        // Rggglm
         //
         strncpy(srnamt, "Rggglm", srnamt_len);
         infot = 1;
@@ -391,11 +398,11 @@ void Rerrgg(const char *path, INTEGER const nunit) {
         chkxer("Rggglm", infot, nout, lerr, ok);
         nt += 8;
         //
-        //     Test error exits for the LSE path.
+        // Test error exits for the LSE path.
         //
     } else if (Mlsamen(3, path, "LSE")) {
         //
-        //        Rgglse
+        // Rgglse
         //
         strncpy(srnamt, "Rgglse", srnamt_len);
         infot = 1;
@@ -424,11 +431,11 @@ void Rerrgg(const char *path, INTEGER const nunit) {
         chkxer("Rgglse", infot, nout, lerr, ok);
         nt += 8;
         //
-        //     Test error exits for the CSD path.
+        // Test error exits for the CSD path.
         //
     } else if (Mlsamen(3, path, "CSD")) {
         //
-        //        Rorcsd
+        // Rorcsd
         //
         strncpy(srnamt, "Rorcsd", srnamt_len);
         infot = 7;
@@ -457,11 +464,11 @@ void Rerrgg(const char *path, INTEGER const nunit) {
         chkxer("Rorcsd", infot, nout, lerr, ok);
         nt += 8;
         //
-        //     Test error exits for the GQR path.
+        // Test error exits for the GQR path.
         //
     } else if (Mlsamen(3, path, "GQR")) {
         //
-        //        Rggqrf
+        // Rggqrf
         //
         strncpy(srnamt, "Rggqrf", srnamt_len);
         infot = 1;
@@ -484,7 +491,7 @@ void Rerrgg(const char *path, INTEGER const nunit) {
         chkxer("Rggqrf", infot, nout, lerr, ok);
         nt += 6;
         //
-        //        Rggrqf
+        // Rggrqf
         //
         strncpy(srnamt, "Rggrqf", srnamt_len);
         infot = 1;
@@ -507,11 +514,11 @@ void Rerrgg(const char *path, INTEGER const nunit) {
         chkxer("Rggrqf", infot, nout, lerr, ok);
         nt += 6;
         //
-        //     Test error exits for the DGS, DGV, DGX, and DXV paths.
+        // Test error exits for the DGS, DGV, DGX, and DXV paths.
         //
     } else if (Mlsamen(3, path, "DGS") || Mlsamen(3, path, "DGV") || Mlsamen(3, path, "DGX") || Mlsamen(3, path, "DXV")) {
         //
-        //        Rgges
+        // Rgges
         //
         strncpy(srnamt, "Rgges", srnamt_len);
         infot = 1;
@@ -549,7 +556,7 @@ void Rerrgg(const char *path, INTEGER const nunit) {
         chkxer("Rgges ", infot, nout, lerr, ok);
         nt += 11;
         //
-        //        Rgges3
+        // Rgges3
         //
         strncpy(srnamt, "Rgges3", srnamt_len);
         infot = 1;
@@ -587,7 +594,7 @@ void Rerrgg(const char *path, INTEGER const nunit) {
         chkxer("Rgges3 ", infot, nout, lerr, ok);
         nt += 11;
         //
-        //        Rggesx
+        // Rggesx
         //
         strncpy(srnamt, "Rggesx", srnamt_len);
         infot = 1;
@@ -631,7 +638,7 @@ void Rerrgg(const char *path, INTEGER const nunit) {
         chkxer("Rggesx", infot, nout, lerr, ok);
         nt += 13;
         //
-        //        Rggev
+        // Rggev
         //
         strncpy(srnamt, "Rggev", srnamt_len);
         infot = 1;
@@ -666,7 +673,7 @@ void Rerrgg(const char *path, INTEGER const nunit) {
         chkxer("Rggev ", infot, nout, lerr, ok);
         nt += 10;
         //
-        //        Rggev3
+        // Rggev3
         //
         strncpy(srnamt, "Rggev3", srnamt_len);
         infot = 1;
@@ -701,7 +708,7 @@ void Rerrgg(const char *path, INTEGER const nunit) {
         chkxer("Rggev3 ", infot, nout, lerr, ok);
         nt += 10;
         //
-        //        Rggevx
+        // Rggevx
         //
         strncpy(srnamt, "Rggevx", srnamt_len);
         infot = 1;
@@ -742,7 +749,7 @@ void Rerrgg(const char *path, INTEGER const nunit) {
         chkxer("Rggevx", infot, nout, lerr, ok);
         nt += 12;
         //
-        //        Rtgexc
+        // Rtgexc
         //
         strncpy(srnamt, "Rtgexc", srnamt_len);
         infot = 3;
@@ -771,7 +778,7 @@ void Rerrgg(const char *path, INTEGER const nunit) {
         chkxer("Rtgexc", infot, nout, lerr, ok);
         nt += 8;
         //
-        //        Rtgsen
+        // Rtgsen
         //
         strncpy(srnamt, "Rtgsen", srnamt_len);
         infot = 1;
@@ -812,7 +819,7 @@ void Rerrgg(const char *path, INTEGER const nunit) {
         chkxer("Rtgsen", infot, nout, lerr, ok);
         nt += 12;
         //
-        //        Rtgsna
+        // Rtgsna
         //
         strncpy(srnamt, "Rtgsna", srnamt_len);
         infot = 1;
@@ -844,7 +851,7 @@ void Rerrgg(const char *path, INTEGER const nunit) {
         chkxer("Rtgsna", infot, nout, lerr, ok);
         nt += 9;
         //
-        //        Rtgsyl
+        // Rtgsyl
         //
         strncpy(srnamt, "Rtgsyl", srnamt_len);
         infot = 1;
@@ -886,7 +893,7 @@ void Rerrgg(const char *path, INTEGER const nunit) {
         nt += 12;
     }
     //
-    //     Print a summary line.
+    // Print a summary line.
     //
     if (ok) {
         write(nout, "(1x,a3,' routines passed the tests of the error exits (',i3,"
@@ -896,6 +903,6 @@ void Rerrgg(const char *path, INTEGER const nunit) {
         write(nout, "(' *** ',a3,' routines failed the tests of the error ','exits ***')"), path;
     }
     //
-    //     End of Rerrgg
+    // End of Rerrgg
     //
 }

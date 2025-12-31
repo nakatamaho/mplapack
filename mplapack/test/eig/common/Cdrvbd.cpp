@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine ZDRVBD.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -111,11 +118,11 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
     static const char *format_9995 = "(' Cdrvbd: ',a,' returned INFO=',i6,'.',/,9x,'M=',i6,', N=',i6,"
                                      "', JTYPE=',i6,', LSWORK=',i6,/,9x,'ISEED=(',3(i5,','),i5,')')";
     //
-    //     Check for errors
+    // Check for errors
     //
     info = 0;
     //
-    //     Important constants
+    // Important constants
     //
     nerrs = 0;
     ntestt = 0;
@@ -139,7 +146,7 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
         minwrk = max({minwrk, max({3 * min(mm[j - 1], nn[j - 1]) + max(mm[j - 1], nn[j - 1]) * max(mm[j - 1], nn[j - 1]), 5 * min(mm[j - 1], nn[j - 1]), 3 * max(mm[j - 1], nn[j - 1])})});
     }
     //
-    //     Check for errors
+    // Check for errors
     //
     if (nsizes < 0) {
         info = -1;
@@ -164,13 +171,13 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
         return;
     }
     //
-    //     Quick return if nothing to do
+    // Quick return if nothing to do
     //
     if (nsizes == 0 || ntypes == 0) {
         return;
     }
     //
-    //     More Important constants
+    // More Important constants
     //
     unfl = Rlamch("S");
     ovfl = one / unfl;
@@ -178,7 +185,7 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
     ulpinv = one / ulp;
     rtunfl = sqrt(unfl);
     //
-    //     Loop over sizes, types
+    // Loop over sizes, types
     //
     nerrs = 0;
     //
@@ -203,7 +210,7 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                 ioldsd[j - 1] = iseed[j - 1];
             }
             //
-            //           Compute "A"
+            // Compute "A"
             //
             if (mtypes > maxtyp) {
                 goto statement_50;
@@ -211,7 +218,7 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
             //
             if (jtype == 1) {
                 //
-                //              Zero matrix
+                // Zero matrix
                 //
                 Claset("Full", m, n, czero, czero, a, lda);
                 for (i = 1; i <= min(m, n); i = i + 1) {
@@ -220,7 +227,7 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                 //
             } else if (jtype == 2) {
                 //
-                //              Identity matrix
+                // Identity matrix
                 //
                 Claset("Full", m, n, czero, cone, a, lda);
                 for (i = 1; i <= min(m, n); i = i + 1) {
@@ -229,7 +236,7 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                 //
             } else {
                 //
-                //              (Scaled) random matrix
+                // (Scaled) random matrix
                 //
                 if (jtype == 3) {
                     anorm = one;
@@ -253,11 +260,11 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
         statement_50:
             Clacpy("F", m, n, a, lda, asav, lda);
             //
-            //           Do for minimal and adequate (for blocking) workspace
+            // Do for minimal and adequate (for blocking) workspace
             //
             for (iwspc = 1; iwspc <= 4; iwspc = iwspc + 1) {
                 //
-                //              Test for Cgesvd
+                // Test for Cgesvd
                 //
                 iwtmp = 2 * min(m, n) + max(m, n);
                 lswork = iwtmp + (iwspc - 1) * (lwork - iwtmp) / 3;
@@ -271,7 +278,7 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                     result[j - 1] = -one;
                 }
                 //
-                //              Factorize A
+                // Factorize A
                 //
                 if (iwspc > 1) {
                     Clacpy("F", m, n, asav, lda, a, lda);
@@ -283,7 +290,7 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                     return;
                 }
                 //
-                //              Do tests 1--4
+                // Do tests 1--4
                 //
                 Cbdt01(m, n, 0, asav, lda, usav, ldu, ssav, e, vtsav, ldvt, work, rwork, result[1 - 1]);
                 if (m != 0 && n != 0) {
@@ -305,7 +312,7 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                     }
                 }
                 //
-                //              Do partial SVDs, comparing to SSAV, USAV, and VTSAV
+                // Do partial SVDs, comparing to SSAV, USAV, and VTSAV
                 //
                 result[5 - 1] = zero;
                 result[6 - 1] = zero;
@@ -320,7 +327,7 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                         Clacpy("F", m, n, asav, lda, a, lda);
                         Cgesvd(&jobu, &jobvt, m, n, a, lda, s, u, ldu, vt, ldvt, work, lswork, rwork, iinfo);
                         //
-                        //                    Compare U
+                        // Compare U
                         //
                         dif = zero;
                         if (m > 0 && n > 0) {
@@ -334,7 +341,7 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                         }
                         result[5 - 1] = max(result[5 - 1], dif);
                         //
-                        //                    Compare VT
+                        // Compare VT
                         //
                         dif = zero;
                         if (m > 0 && n > 0) {
@@ -348,7 +355,7 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                         }
                         result[6 - 1] = max(result[6 - 1], dif);
                         //
-                        //                    Compare S
+                        // Compare S
                         //
                         dif = zero;
                         div = max(REAL(castREAL(mnmin) * ulp * s[1 - 1]), Rlamch("Safe minimum"));
@@ -366,7 +373,7 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                     }
                 }
                 //
-                //              Test for Cgesdd
+                // Test for Cgesdd
                 //
                 iwtmp = 2 * mnmin * mnmin + 2 * mnmin + max(m, n);
                 lswork = iwtmp + (iwspc - 1) * (lwork - iwtmp) / 3;
@@ -376,7 +383,7 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                     lswork = lwork;
                 }
                 //
-                //              Factorize A
+                // Factorize A
                 //
                 Clacpy("F", m, n, asav, lda, a, lda);
                 Cgesdd("A", m, n, a, lda, ssav, usav, ldu, vtsav, ldvt, work, lswork, rwork, iwork, iinfo);
@@ -386,7 +393,7 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                     return;
                 }
                 //
-                //              Do tests 1--4
+                // Do tests 1--4
                 //
                 Cbdt01(m, n, 0, asav, lda, usav, ldu, ssav, e, vtsav, ldvt, work, rwork, result[8 - 1]);
                 if (m != 0 && n != 0) {
@@ -408,7 +415,7 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                     }
                 }
                 //
-                //              Do partial SVDs, comparing to SSAV, USAV, and VTSAV
+                // Do partial SVDs, comparing to SSAV, USAV, and VTSAV
                 //
                 result[12 - 1] = zero;
                 result[13 - 1] = zero;
@@ -418,7 +425,7 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                     Clacpy("F", m, n, asav, lda, a, lda);
                     Cgesdd(&jobq, m, n, a, lda, s, u, ldu, vt, ldvt, work, lswork, rwork, iwork, iinfo);
                     //
-                    //                 Compare U
+                    // Compare U
                     //
                     dif = zero;
                     if (m > 0 && n > 0) {
@@ -434,7 +441,7 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                     }
                     result[12 - 1] = max(result[12 - 1], dif);
                     //
-                    //                 Compare VT
+                    // Compare VT
                     //
                     dif = zero;
                     if (m > 0 && n > 0) {
@@ -450,7 +457,7 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                     }
                     result[13 - 1] = max(result[13 - 1], dif);
                     //
-                    //                 Compare S
+                    // Compare S
                     //
                     dif = zero;
                     div = max(REAL(castREAL(mnmin) * ulp * s[1 - 1]), Rlamch("Safe minimum"));
@@ -466,8 +473,8 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                     result[14 - 1] = max(result[14 - 1], dif);
                 }
                 //
-                //              Test Cgesvdq
-                //              Note: Cgesvdq only works for M >= N
+                // Test Cgesvdq
+                // Note: Cgesvdq only works for M >= N
                 //
                 result[36 - 1] = zero;
                 result[37 - 1] = zero;
@@ -495,7 +502,7 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                         return;
                     }
                     //
-                    //                 Do tests 36--39
+                    // Do tests 36--39
                     //
                     Cbdt01(m, n, 0, asav, lda, usav, ldu, ssav, e, vtsav, ldvt, work, rwork, result[36 - 1]);
                     if (m != 0 && n != 0) {
@@ -518,8 +525,8 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                     }
                 }
                 //
-                //              Test Cgesvj
-                //              Note: Cgesvj only works for M >= N
+                // Test Cgesvj
+                // Note: Cgesvj only works for M >= N
                 //
                 result[15 - 1] = zero;
                 result[16 - 1] = zero;
@@ -539,7 +546,7 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                     Clacpy("F", m, n, asav, lda, usav, lda);
                     Cgesvj("G", "U", "V", m, n, usav, lda, ssav, 0, a, ldvt, work, lwork, rwork, lrwork, iinfo);
                     //
-                    //                 Cgesvj returns V not VH
+                    // Cgesvj returns V not VH
                     //
                     for (j = 1; j <= n; j = j + 1) {
                         for (i = 1; i <= n; i = i + 1) {
@@ -553,7 +560,7 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                         return;
                     }
                     //
-                    //                 Do tests 15--18
+                    // Do tests 15--18
                     //
                     Cbdt01(m, n, 0, asav, lda, usav, ldu, ssav, e, vtsav, ldvt, work, rwork, result[15 - 1]);
                     if (m != 0 && n != 0) {
@@ -576,8 +583,8 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                     }
                 }
                 //
-                //              Test Cgejsv
-                //              Note: Cgejsv only works for M >= N
+                // Test Cgejsv
+                // Note: Cgejsv only works for M >= N
                 //
                 result[19 - 1] = zero;
                 result[20 - 1] = zero;
@@ -596,7 +603,7 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                     Clacpy("F", m, n, asav, lda, vtsav, lda);
                     Cgejsv("G", "U", "V", "R", "N", "N", m, n, vtsav, lda, ssav, usav, ldu, a, ldvt, work, lwork, rwork, lrwork, iwork, iinfo);
                     //
-                    //                 Cgejsv returns V not VH
+                    // Cgejsv returns V not VH
                     //
                     for (j = 1; j <= n; j = j + 1) {
                         for (i = 1; i <= n; i = i + 1) {
@@ -610,7 +617,7 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                         return;
                     }
                     //
-                    //                 Do tests 19--22
+                    // Do tests 19--22
                     //
                     Cbdt01(m, n, 0, asav, lda, usav, ldu, ssav, e, vtsav, ldvt, work, rwork, result[19 - 1]);
                     if (m != 0 && n != 0) {
@@ -633,9 +640,9 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                     }
                 }
                 //
-                //              Test Cgesvdx
+                // Test Cgesvdx
                 //
-                //              Factorize A
+                // Factorize A
                 //
                 Clacpy("F", m, n, asav, lda, a, lda);
                 Cgesvdx("V", "V", "A", m, n, a, lda, vl, vu, il, iu, ns, ssav, usav, ldu, vtsav, ldvt, work, lwork, rwork, iwork, iinfo);
@@ -645,7 +652,7 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                     return;
                 }
                 //
-                //              Do tests 1--4
+                // Do tests 1--4
                 //
                 result[23 - 1] = zero;
                 result[24 - 1] = zero;
@@ -670,7 +677,7 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                     }
                 }
                 //
-                //              Do partial SVDs, comparing to SSAV, USAV, and VTSAV
+                // Do partial SVDs, comparing to SSAV, USAV, and VTSAV
                 //
                 result[27 - 1] = zero;
                 result[28 - 1] = zero;
@@ -686,7 +693,7 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                         Clacpy("F", m, n, asav, lda, a, lda);
                         Cgesvdx(&jobu, &jobvt, "A", m, n, a, lda, vl, vu, il, iu, ns, ssav, u, ldu, vt, ldvt, work, lwork, rwork, iwork, iinfo);
                         //
-                        //                    Compare U
+                        // Compare U
                         //
                         dif = zero;
                         if (m > 0 && n > 0) {
@@ -696,7 +703,7 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                         }
                         result[27 - 1] = max(result[27 - 1], dif);
                         //
-                        //                    Compare VT
+                        // Compare VT
                         //
                         dif = zero;
                         if (m > 0 && n > 0) {
@@ -706,7 +713,7 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                         }
                         result[28 - 1] = max(result[28 - 1], dif);
                         //
-                        //                    Compare S
+                        // Compare S
                         //
                         dif = zero;
                         div = max(REAL(castREAL(mnmin) * ulp * s[1 - 1]), Rlamch("Safe minimum"));
@@ -724,7 +731,7 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                     }
                 }
                 //
-                //              Do tests 8--10
+                // Do tests 8--10
                 //
                 for (i = 1; i <= 4; i = i + 1) {
                     iseed2[i - 1] = iseed[i - 1];
@@ -758,7 +765,7 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                     Cunt01("Rows", nsi, n, vt, ldvt, work, lwork, rwork, result[32 - 1]);
                 }
                 //
-                //              Do tests 11--13
+                // Do tests 11--13
                 //
                 if (mnmin > 0 && nsi > 1) {
                     if (il != 1) {
@@ -797,7 +804,7 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                     Cunt01("Rows", nsv, n, vt, ldvt, work, lwork, rwork, result[35 - 1]);
                 }
                 //
-                //              End of Loop -- Check for RESULT(j) > THRESH
+                // End of Loop -- Check for RESULT(j) > THRESH
                 //
                 ntest = 0;
                 nfail = 0;
@@ -893,10 +900,10 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
         }
     }
     //
-    //     Summary
+    // Summary
     //
     Alasvm("ZBD", nounit, nerrs, ntestt, 0);
     //
-    //     End of Cdrvbd
+    // End of Cdrvbd
     //
 }

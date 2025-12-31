@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DERRBD.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -63,7 +70,7 @@ void Rerrbd(const char *path, INTEGER const nunit) {
     ok = true;
     INTEGER nt = 0;
     //
-    //     Test error exits of the SVD routines.
+    // Test error exits of the SVD routines.
     //
     REAL d[nmax];
     REAL e[nmax];
@@ -83,7 +90,7 @@ void Rerrbd(const char *path, INTEGER const nunit) {
     REAL s[nmax];
     if (Mlsamen(2, c2, "BD")) {
         //
-        //        Rgebrd
+        // Rgebrd
         //
         strncpy(srnamt, "Rgebrd", srnamt_len);
         infot = 1;
@@ -100,7 +107,7 @@ void Rerrbd(const char *path, INTEGER const nunit) {
         chkxer("Rgebrd", infot, nout, lerr, ok);
         nt += 4;
         //
-        //        Rgebd2
+        // Rgebd2
         //
         strncpy(srnamt, "Rgebd2", srnamt_len);
         infot = 1;
@@ -114,7 +121,7 @@ void Rerrbd(const char *path, INTEGER const nunit) {
         chkxer("Rgebd2", infot, nout, lerr, ok);
         nt += 3;
         //
-        //        Rorgbr
+        // Rorgbr
         //
         strncpy(srnamt, "Rorgbr", srnamt_len);
         infot = 1;
@@ -149,7 +156,7 @@ void Rerrbd(const char *path, INTEGER const nunit) {
         chkxer("Rorgbr", infot, nout, lerr, ok);
         nt += 10;
         //
-        //        Rormbr
+        // Rormbr
         //
         strncpy(srnamt, "Rormbr", srnamt_len);
         infot = 1;
@@ -193,7 +200,7 @@ void Rerrbd(const char *path, INTEGER const nunit) {
         chkxer("Rormbr", infot, nout, lerr, ok);
         nt += 13;
         //
-        //        Rbdsqr
+        // Rbdsqr
         //
         strncpy(srnamt, "Rbdsqr", srnamt_len);
         infot = 1;
@@ -222,7 +229,7 @@ void Rerrbd(const char *path, INTEGER const nunit) {
         chkxer("Rbdsqr", infot, nout, lerr, ok);
         nt += 8;
         //
-        //        Rbdsdc
+        // Rbdsdc
         //
         strncpy(srnamt, "Rbdsdc", srnamt_len);
         infot = 1;
@@ -242,7 +249,7 @@ void Rerrbd(const char *path, INTEGER const nunit) {
         chkxer("Rbdsdc", infot, nout, lerr, ok);
         nt += 5;
         //
-        //        Rbdsvdx
+        // Rbdsvdx
         //
         strncpy(srnamt, "Rbdsvdx", srnamt_len);
         infot = 1;
@@ -284,7 +291,7 @@ void Rerrbd(const char *path, INTEGER const nunit) {
         nt += 12;
     }
     //
-    //     Print a summary line.
+    // Print a summary line.
     //
     if (ok) {
         write(nout, "(1x,a3,' routines passed the tests of the error exits',' (',i3,"
@@ -294,6 +301,6 @@ void Rerrbd(const char *path, INTEGER const nunit) {
         write(nout, "(' *** ',a3,' routines failed the tests of the error ','exits ***')"), path;
     }
     //
-    //     End of Rerrbd
+    // End of Rerrbd
     //
 }

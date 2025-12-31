@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine ZERRHS.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -65,7 +72,7 @@ void Cerrhs(const char *path, INTEGER const nunit) {
     ok = true;
     INTEGER nt = 0;
     //
-    //     Test error exits of the nonsymmetric eigenvalue routines.
+    // Test error exits of the nonsymmetric eigenvalue routines.
     //
     INTEGER ilo = 0;
     INTEGER ihi = 0;
@@ -84,7 +91,7 @@ void Cerrhs(const char *path, INTEGER const nunit) {
     INTEGER ifailr[nmax];
     if (Mlsamen(2, c2, "HS")) {
         //
-        //        Cgebal
+        // Cgebal
         //
         strncpy(srnamt, "Cgebal", srnamt_len);
         infot = 1;
@@ -98,7 +105,7 @@ void Cerrhs(const char *path, INTEGER const nunit) {
         chkxer("Cgebal", infot, nout, lerr, ok);
         nt += 3;
         //
-        //        Cgebak
+        // Cgebak
         //
         strncpy(srnamt, "Cgebak", srnamt_len);
         infot = 1;
@@ -130,7 +137,7 @@ void Cerrhs(const char *path, INTEGER const nunit) {
         chkxer("Cgebak", infot, nout, lerr, ok);
         nt += 9;
         //
-        //        Cgehrd
+        // Cgehrd
         //
         strncpy(srnamt, "Cgehrd", srnamt_len);
         infot = 1;
@@ -156,7 +163,7 @@ void Cerrhs(const char *path, INTEGER const nunit) {
         chkxer("Cgehrd", infot, nout, lerr, ok);
         nt += 7;
         //
-        //        Cunghr
+        // Cunghr
         //
         strncpy(srnamt, "Cunghr", srnamt_len);
         infot = 1;
@@ -182,7 +189,7 @@ void Cerrhs(const char *path, INTEGER const nunit) {
         chkxer("Cunghr", infot, nout, lerr, ok);
         nt += 7;
         //
-        //        Cunmhr
+        // Cunmhr
         //
         strncpy(srnamt, "Cunmhr", srnamt_len);
         infot = 1;
@@ -235,7 +242,7 @@ void Cerrhs(const char *path, INTEGER const nunit) {
         chkxer("Cunmhr", infot, nout, lerr, ok);
         nt += 16;
         //
-        //        Chseqr
+        // Chseqr
         //
         strncpy(srnamt, "Chseqr", srnamt_len);
         infot = 1;
@@ -267,7 +274,7 @@ void Cerrhs(const char *path, INTEGER const nunit) {
         chkxer("Chseqr", infot, nout, lerr, ok);
         nt += 9;
         //
-        //        Chsein
+        // Chsein
         //
         strncpy(srnamt, "Chsein", srnamt_len);
         infot = 1;
@@ -296,7 +303,7 @@ void Cerrhs(const char *path, INTEGER const nunit) {
         chkxer("Chsein", infot, nout, lerr, ok);
         nt += 8;
         //
-        //        Ctrevc
+        // Ctrevc
         //
         strncpy(srnamt, "Ctrevc", srnamt_len);
         infot = 1;
@@ -323,7 +330,7 @@ void Cerrhs(const char *path, INTEGER const nunit) {
         nt += 7;
     }
     //
-    //     Print a summary line.
+    // Print a summary line.
     //
     if (ok) {
         write(nout, "(1x,a3,' routines passed the tests of the error exits',' (',i3,"
@@ -333,6 +340,6 @@ void Cerrhs(const char *path, INTEGER const nunit) {
         write(nout, "(' *** ',a3,' routines failed the tests of the error ','exits ***')"), path;
     }
     //
-    //     End of Cerrhs
+    // End of Cerrhs
     //
 }

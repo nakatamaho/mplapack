@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DCHKGG.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -106,7 +113,7 @@ void Rchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     static const char *format_9999 = "(' Rchkgg: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,', JTYPE=',i6,"
                                      "', ISEED=(',3(i5,','),i5,')')";
     //
-    //     Check for errors
+    // Check for errors
     //
     info = 0;
     //
@@ -119,12 +126,12 @@ void Rchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
         }
     }
     //
-    //     Maximum blocksize and shift -- we assume that blocksize and number
-    //     of shifts are monotone increasing functions of N.
+    // Maximum blocksize and shift -- we assume that blocksize and number
+    // of shifts are monotone increasing functions of N.
     //
     lwkopt = max({6 * nmax, 2 * nmax * nmax, (INTEGER)1});
     //
-    //     Check for errors
+    // Check for errors
     //
     if (nsizes < 0) {
         info = -1;
@@ -147,7 +154,7 @@ void Rchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (nsizes == 0 || ntypes == 0) {
         return;
@@ -165,7 +172,7 @@ void Rchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     rmagn[0] = zero;
     rmagn[1] = one;
     //
-    //     Loop over sizes, types
+    // Loop over sizes, types
     //
     ntestt = 0;
     nerrs = 0;
@@ -190,40 +197,40 @@ void Rchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             nmats++;
             ntest = 0;
             //
-            //           Save ISEED in case of an error.
+            // Save ISEED in case of an error.
             //
             for (j = 1; j <= 4; j = j + 1) {
                 ioldsd[j - 1] = iseed[j - 1];
             }
             //
-            //           Initialize RESULT
+            // Initialize RESULT
             //
             for (j = 1; j <= 15; j = j + 1) {
                 result[j - 1] = zero;
             }
             //
-            //           Compute A and B
+            // Compute A and B
             //
-            //           Description of control parameters:
+            // Description of control parameters:
             //
-            //           KZLASS: =1 means w/o rotation, =2 means w/ rotation,
-            //                   =3 means random.
-            //           KATYPE: the "type" to be passed to Rlatm4 for computing A.
-            //           KAZERO: the pattern of zeros on the diagonal for A:
-            //                   =1: ( xxx ), =2: (0, xxx ) =3: ( 0, 0, xxx, 0 ),
-            //                   =4: ( 0, xxx, 0, 0 ), =5: ( 0, 0, 1, xxx, 0 ),
-            //                   =6: ( 0, 1, 0, xxx, 0 ).  (xxx means a string of
-            //                   non-zero entries.)
-            //           KAMAGN: the magnitude of the matrix: =0: zero, =1: O(1),
-            //                   =2: large, =3: small.
-            //           IASIGN: 1 if the diagonal elements of A are to be
-            //                   multiplied by a random magnitude 1 number, =2 if
-            //                   randomly chosen diagonal blocks are to be rotated
-            //                   to form 2x2 blocks.
-            //           KBTYPE, KBZERO, KBMAGN, IBSIGN: the same, but for B.
-            //           KTRIAN: =0: don't fill in the upper triangle, =1: do.
-            //           KZ1, KZ2, KADD: used to implement KAZERO and KBZERO.
-            //           RMAGN: used to implement KAMAGN and KBMAGN.
+            // KZLASS: =1 means w/o rotation, =2 means w/ rotation,
+            // =3 means random.
+            // KATYPE: the "type" to be passed to Rlatm4 for computing A.
+            // KAZERO: the pattern of zeros on the diagonal for A:
+            // =1: ( xxx ), =2: (0, xxx ) =3: ( 0, 0, xxx, 0 ),
+            // =4: ( 0, xxx, 0, 0 ), =5: ( 0, 0, 1, xxx, 0 ),
+            // =6: ( 0, 1, 0, xxx, 0 ).  (xxx means a string of
+            // non-zero entries.)
+            // KAMAGN: the magnitude of the matrix: =0: zero, =1: O(1),
+            // =2: large, =3: small.
+            // IASIGN: 1 if the diagonal elements of A are to be
+            // multiplied by a random magnitude 1 number, =2 if
+            // randomly chosen diagonal blocks are to be rotated
+            // to form 2x2 blocks.
+            // KBTYPE, KBZERO, KBMAGN, IBSIGN: the same, but for B.
+            // KTRIAN: =0: don't fill in the upper triangle, =1: do.
+            // KZ1, KZ2, KADD: used to implement KAZERO and KBZERO.
+            // RMAGN: used to implement KAMAGN and KBMAGN.
             //
             if (mtypes > maxtyp) {
                 goto statement_110;
@@ -231,7 +238,7 @@ void Rchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             iinfo = 0;
             if (kclass[jtype - 1] < 3) {
                 //
-                //              Generate A (w/o rotation)
+                // Generate A (w/o rotation)
                 //
                 if (abs(katype[jtype - 1]) == 3) {
                     in = 2 * ((n - 1) / 2) + 1;
@@ -247,7 +254,7 @@ void Rchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     a[(iadd - 1) + (iadd - 1) * lda] = rmagn[kamagn[jtype - 1]];
                 }
                 //
-                //              Generate B (w/o rotation)
+                // Generate B (w/o rotation)
                 //
                 if (abs(kbtype[jtype - 1]) == 3) {
                     in = 2 * ((n - 1) / 2) + 1;
@@ -265,10 +272,10 @@ void Rchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 //
                 if (kclass[jtype - 1] == 2 && n > 0) {
                     //
-                    //                 Include rotations
+                    // Include rotations
                     //
-                    //                 Generate U, V as Householder transformations times
-                    //                 a diagonal matrix.
+                    // Generate U, V as Householder transformations times
+                    // a diagonal matrix.
                     //
                     for (jc = 1; jc <= n - 1; jc = jc + 1) {
                         for (jr = jc; jr <= n; jr = jr + 1) {
@@ -289,7 +296,7 @@ void Rchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     work[(2 * n) - 1] = zero;
                     work[(4 * n) - 1] = sign(one, Rlarnd(2, iseed));
                     //
-                    //                 Apply the diagonal matrices
+                    // Apply the diagonal matrices
                     //
                     for (jc = 1; jc <= n; jc = jc + 1) {
                         for (jr = 1; jr <= n; jr = jr + 1) {
@@ -316,7 +323,7 @@ void Rchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 }
             } else {
                 //
-                //              Random matrices
+                // Random matrices
                 //
                 for (jc = 1; jc <= n; jc = jc + 1) {
                     for (jr = 1; jr <= n; jr = jr + 1) {
@@ -339,7 +346,7 @@ void Rchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
         //
         statement_110:
             //
-            //           Call Rgeqr2, Rorm2r, and Rgghrd to compute H, T, U, and V
+            // Call Rgeqr2, Rorm2r, and Rgghrd to compute H, T, U, and V
             //
             Rlacpy(" ", n, n, a, lda, h, lda);
             Rlacpy(" ", n, n, b, lda, t, lda);
@@ -376,18 +383,18 @@ void Rchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             }
             ntest = 4;
             //
-            //           Do tests 1--4
+            // Do tests 1--4
             //
             Rget51(1, n, a, lda, h, lda, u, ldu, v, ldu, work, result[1 - 1]);
             Rget51(1, n, b, lda, t, lda, u, ldu, v, ldu, work, result[2 - 1]);
             Rget51(3, n, b, lda, t, lda, u, ldu, u, ldu, work, result[3 - 1]);
             Rget51(3, n, b, lda, t, lda, v, ldu, v, ldu, work, result[4 - 1]);
             //
-            //           Call Rhgeqz to compute S1, P1, S2, P2, Q, and Z, do tests.
+            // Call Rhgeqz to compute S1, P1, S2, P2, Q, and Z, do tests.
             //
-            //           Compute T1 and UZ
+            // Compute T1 and UZ
             //
-            //           Eigenvalues only
+            // Eigenvalues only
             //
             Rlacpy(" ", n, n, h, lda, s2, lda);
             Rlacpy(" ", n, n, t, lda, p2, lda);
@@ -400,7 +407,7 @@ void Rchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 goto statement_210;
             }
             //
-            //           Eigenvalues and Full Schur Form
+            // Eigenvalues and Full Schur Form
             //
             Rlacpy(" ", n, n, h, lda, s2, lda);
             Rlacpy(" ", n, n, t, lda, p2, lda);
@@ -412,7 +419,7 @@ void Rchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 goto statement_210;
             }
             //
-            //           Eigenvalues, Schur Form, and Schur Vectors
+            // Eigenvalues, Schur Form, and Schur Vectors
             //
             Rlacpy(" ", n, n, h, lda, s1, lda);
             Rlacpy(" ", n, n, t, lda, p1, lda);
@@ -426,23 +433,23 @@ void Rchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             //
             ntest = 8;
             //
-            //           Do Tests 5--8
+            // Do Tests 5--8
             //
             Rget51(1, n, h, lda, s1, lda, q, ldu, z, ldu, work, result[5 - 1]);
             Rget51(1, n, t, lda, p1, lda, q, ldu, z, ldu, work, result[6 - 1]);
             Rget51(3, n, t, lda, p1, lda, q, ldu, q, ldu, work, result[7 - 1]);
             Rget51(3, n, t, lda, p1, lda, z, ldu, z, ldu, work, result[8 - 1]);
             //
-            //           Compute the Left and Right Eigenvectors of (S1,P1)
+            // Compute the Left and Right Eigenvectors of (S1,P1)
             //
-            //           9: Compute the left eigenvector Matrix without
-            //              back transforming:
+            // 9: Compute the left eigenvector Matrix without
+            // back transforming:
             //
             ntest = 9;
             result[9 - 1] = ulpinv;
             //
-            //           To test "SELECT" option, compute half of the eigenvectors
-            //           in one call, and half in another
+            // To test "SELECT" option, compute half of the eigenvectors
+            // in one call, and half in another
             //
             i1 = n / 2;
             for (j = 1; j <= i1; j = j + 1) {
@@ -507,8 +514,8 @@ void Rchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             ntest = 11;
             result[11 - 1] = ulpinv;
             //
-            //           To test "SELECT" option, compute half of the eigenvectors
-            //           in one call, and half in another
+            // To test "SELECT" option, compute half of the eigenvectors
+            // in one call, and half in another
             //
             i1 = n / 2;
             for (j = 1; j <= i1; j = j + 1) {
@@ -571,12 +578,12 @@ void Rchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             //
             if (tstdif) {
                 //
-                //              Do Tests 13--14
+                // Do Tests 13--14
                 //
                 Rget51(2, n, s1, lda, s2, lda, q, ldu, z, ldu, work, result[13 - 1]);
                 Rget51(2, n, p1, lda, p2, lda, q, ldu, z, ldu, work, result[14 - 1]);
                 //
-                //              Do Test 15
+                // Do Test 15
                 //
                 temp1 = zero;
                 temp2 = zero;
@@ -596,24 +603,24 @@ void Rchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 ntest = 12;
             }
         //
-        //           End of Loop -- Check for RESULT(j) > THRESH
+        // End of Loop -- Check for RESULT(j) > THRESH
         //
         statement_210:
             //
             ntestt += ntest;
             //
-            //           Print out tests which fail.
+            // Print out tests which fail.
             //
             for (jr = 1; jr <= ntest; jr = jr + 1) {
                 if (result[jr - 1] >= thresh) {
                     //
-                    //                 If this is the first test to fail,
-                    //                 print a header to the data file.
+                    // If this is the first test to fail,
+                    // print a header to the data file.
                     //
                     if (nerrs == 0) {
                         write(nounit, "(/,1x,a3,' -- Real Generalized eigenvalue problem')"), "DGG";
                         //
-                        //                    Matrix types
+                        // Matrix types
                         //
                         write(nounit, "(' Matrix types (see Rchkgg for details): ')");
                         write(nounit, "(' Special Matrices:',23x,'(J''=transposed Jordan block)',/,"
@@ -633,7 +640,7 @@ void Rchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                                       "'  26=random O(1) matrices.')"),
                             "Orthogonal";
                         //
-                        //                    Tests performed
+                        // Tests performed
                         //
                         {
                             write_loop wloop(cmn, nounit,
@@ -679,10 +686,10 @@ void Rchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
         }
     }
     //
-    //     Summary
+    // Summary
     //
     Rlasum("DGG", nounit, nerrs, ntestt);
     //
-    //     End of Rchkgg
+    // End of Rchkgg
     //
 }

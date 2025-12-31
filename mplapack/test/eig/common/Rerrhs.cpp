@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DERRHS.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -67,7 +74,7 @@ void Rerrhs(const char *path, INTEGER const nunit) {
     ok = true;
     INTEGER nt = 0;
     //
-    //     Test error exits of the nonsymmetric eigenvalue routines.
+    // Test error exits of the nonsymmetric eigenvalue routines.
     //
     INTEGER ilo = 0;
     INTEGER ihi = 0;
@@ -85,7 +92,7 @@ void Rerrhs(const char *path, INTEGER const nunit) {
     INTEGER ifailr[nmax];
     if (Mlsamen(2, c2, "HS")) {
         //
-        //        Rgebal
+        // Rgebal
         //
         infot = 1;
         strncpy(srnamt, "Rgebal", srnamt_len);
@@ -99,7 +106,7 @@ void Rerrhs(const char *path, INTEGER const nunit) {
         chkxer("Rgebal", infot, nout, lerr, ok);
         nt += 3;
         //
-        //        Rgebak
+        // Rgebak
         //
         infot = 1;
         strncpy(srnamt, "Rgebak", srnamt_len);
@@ -131,7 +138,7 @@ void Rerrhs(const char *path, INTEGER const nunit) {
         chkxer("Rgebak", infot, nout, lerr, ok);
         nt += 9;
         //
-        //        Rgehrd
+        // Rgehrd
         //
         infot = 1;
         strncpy(srnamt, "Rgehrd", srnamt_len);
@@ -157,7 +164,7 @@ void Rerrhs(const char *path, INTEGER const nunit) {
         chkxer("Rgehrd", infot, nout, lerr, ok);
         nt += 7;
         //
-        //        Rorghr
+        // Rorghr
         //
         infot = 1;
         strncpy(srnamt, "Rorghr", srnamt_len);
@@ -183,7 +190,7 @@ void Rerrhs(const char *path, INTEGER const nunit) {
         chkxer("Rorghr", infot, nout, lerr, ok);
         nt += 7;
         //
-        //        Rormhr
+        // Rormhr
         //
         infot = 1;
         strncpy(srnamt, "Rormhr", srnamt_len);
@@ -236,7 +243,7 @@ void Rerrhs(const char *path, INTEGER const nunit) {
         chkxer("Rormhr", infot, nout, lerr, ok);
         nt += 16;
         //
-        //        Rhseqr
+        // Rhseqr
         //
         infot = 1;
         strncpy(srnamt, "Rhseqr", srnamt_len);
@@ -268,7 +275,7 @@ void Rerrhs(const char *path, INTEGER const nunit) {
         chkxer("Rhseqr", infot, nout, lerr, ok);
         nt += 9;
         //
-        //        Rhsein
+        // Rhsein
         //
         infot = 1;
         strncpy(srnamt, "Rhsein", srnamt_len);
@@ -297,7 +304,7 @@ void Rerrhs(const char *path, INTEGER const nunit) {
         chkxer("Rhsein", infot, nout, lerr, ok);
         nt += 8;
         //
-        //        Rtrevc
+        // Rtrevc
         //
         infot = 1;
         strncpy(srnamt, "Rtrevc", srnamt_len);
@@ -324,7 +331,7 @@ void Rerrhs(const char *path, INTEGER const nunit) {
         nt += 7;
     }
     //
-    //     Print a summary line.
+    // Print a summary line.
     //
     if (ok) {
         write(nout, "(1x,a3,' routines passed the tests of the error exits',' (',i3,"
@@ -334,6 +341,6 @@ void Rerrhs(const char *path, INTEGER const nunit) {
         write(nout, "(' *** ',a3,' routines failed the tests of the error ','exits ***')"), path;
     }
     //
-    //     End of Rerrhs
+    // End of Rerrhs
     //
 }

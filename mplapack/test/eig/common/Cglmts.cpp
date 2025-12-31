@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine ZGLMTS.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -71,23 +78,23 @@ void Cglmts(INTEGER const n, INTEGER const m, INTEGER const p, COMPLEX *a, COMPL
     REAL anorm = max({Clange("1", n, m, a, lda, rwork), unfl});
     REAL bnorm = max({Clange("1", n, p, b, ldb, rwork), unfl});
     //
-    //     Copy the matrices A and B to the arrays AF and BF,
-    //     and the vector D the array DF.
+    // Copy the matrices A and B to the arrays AF and BF,
+    // and the vector D the array DF.
     //
     Clacpy("Full", n, m, a, lda, af, lda);
     Clacpy("Full", n, p, b, ldb, bf, ldb);
     Ccopy(n, d, 1, df, 1);
     //
-    //     Solve GLM problem
+    // Solve GLM problem
     //
     INTEGER info = 0;
     Cggglm(n, m, p, af, lda, bf, ldb, df, x, u, work, lwork, info);
     //
-    //     Test the residual for the solution of LSE
+    // Test the residual for the solution of LSE
     //
-    //                       norm( d - A*x - B*u )
-    //       RESULT = -----------------------------------------
-    //                (norm(A)+norm(B))*(norm(x)+norm(u))*EPS
+    // norm( d - A*x - B*u )
+    // RESULT = -----------------------------------------
+    // (norm(A)+norm(B))*(norm(x)+norm(u))*EPS
     //
     Ccopy(n, d, 1, df, 1);
     const COMPLEX cone = 1.0;
@@ -106,6 +113,6 @@ void Cglmts(INTEGER const n, INTEGER const m, INTEGER const p, COMPLEX *a, COMPL
         result = ((dnorm / ynorm) / xnorm) / eps;
     }
     //
-    //     End of Cglmts
+    // End of Cglmts
     //
 }

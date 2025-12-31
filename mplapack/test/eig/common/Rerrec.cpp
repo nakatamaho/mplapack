@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DERREC.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -46,7 +53,7 @@ void Rerrec(const char *path, INTEGER const nunit) {
     ok = true;
     INTEGER nt = 0;
     //
-    //     Initialize A, B and SEL
+    // Initialize A, B and SEL
     //
     INTEGER j = 0;
     const INTEGER nmax = 4;
@@ -214,7 +221,7 @@ void Rerrec(const char *path, INTEGER const nunit) {
     chkxer("Rtrsen", infot, nout, lerr, ok);
     nt += 10;
     //
-    //     Print a summary line.
+    // Print a summary line.
     //
     if (ok) {
         write(nout, "(1x,a3,' routines passed the tests of the error exits (',i3,"
@@ -224,6 +231,6 @@ void Rerrec(const char *path, INTEGER const nunit) {
         write(nout, "(' *** ',a3,' routines failed the tests of the error ex','its ***')"), path;
     }
     //
-    //     End of Rerrec
+    // End of Rerrec
     //
 }

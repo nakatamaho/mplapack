@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DLATB9.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -98,15 +105,15 @@ void Rlatb9(const char *path, INTEGER const imat, INTEGER const m, INTEGER const
     modea = 3;
     modeb = 4;
     //
-    //     Set the lower and upper bandwidths.
+    // Set the lower and upper bandwidths.
     //
     if (Mlsamen(3, path, "GRQ") || Mlsamen(3, path, "LSE") || Mlsamen(3, path, "GSV")) {
         //
-        //        A: M by N, B: P by N
+        // A: M by N, B: P by N
         //
         if (imat == 1) {
             //
-            //           A: diagonal, B: upper triangular
+            // A: diagonal, B: upper triangular
             //
             kla = 0;
             kua = 0;
@@ -115,7 +122,7 @@ void Rlatb9(const char *path, INTEGER const imat, INTEGER const m, INTEGER const
             //
         } else if (imat == 2) {
             //
-            //           A: upper triangular, B: upper triangular
+            // A: upper triangular, B: upper triangular
             //
             kla = 0;
             kua = max(n - 1, (INTEGER)0);
@@ -124,7 +131,7 @@ void Rlatb9(const char *path, INTEGER const imat, INTEGER const m, INTEGER const
             //
         } else if (imat == 3) {
             //
-            //           A: lower triangular, B: upper triangular
+            // A: lower triangular, B: upper triangular
             //
             kla = max(m - 1, (INTEGER)0);
             kua = 0;
@@ -133,7 +140,7 @@ void Rlatb9(const char *path, INTEGER const imat, INTEGER const m, INTEGER const
             //
         } else {
             //
-            //           A: general dense, B: general dense
+            // A: general dense, B: general dense
             //
             kla = max(m - 1, (INTEGER)0);
             kua = max(n - 1, (INTEGER)0);
@@ -144,11 +151,11 @@ void Rlatb9(const char *path, INTEGER const imat, INTEGER const m, INTEGER const
         //
     } else if (Mlsamen(3, path, "GQR") || Mlsamen(3, path, "GLM")) {
         //
-        //        A: N by M, B: N by P
+        // A: N by M, B: N by P
         //
         if (imat == 1) {
             //
-            //           A: diagonal, B: lower triangular
+            // A: diagonal, B: lower triangular
             //
             kla = 0;
             kua = 0;
@@ -156,7 +163,7 @@ void Rlatb9(const char *path, INTEGER const imat, INTEGER const m, INTEGER const
             kub = 0;
         } else if (imat == 2) {
             //
-            //           A: lower triangular, B: diagonal
+            // A: lower triangular, B: diagonal
             //
             kla = max(n - 1, (INTEGER)0);
             kua = 0;
@@ -165,7 +172,7 @@ void Rlatb9(const char *path, INTEGER const imat, INTEGER const m, INTEGER const
             //
         } else if (imat == 3) {
             //
-            //           A: lower triangular, B: upper triangular
+            // A: lower triangular, B: upper triangular
             //
             kla = max(n - 1, (INTEGER)0);
             kua = 0;
@@ -174,7 +181,7 @@ void Rlatb9(const char *path, INTEGER const imat, INTEGER const m, INTEGER const
             //
         } else {
             //
-            //           A: general dense, B: general dense
+            // A: general dense, B: general dense
             //
             kla = max(n - 1, (INTEGER)0);
             kua = max(m - 1, (INTEGER)0);
@@ -184,7 +191,7 @@ void Rlatb9(const char *path, INTEGER const imat, INTEGER const m, INTEGER const
         //
     }
     //
-    //     Set the condition number and norm.
+    // Set the condition number and norm.
     //
     const REAL ten = 1.0e+1;
     cndnma = ten * ten;
@@ -222,6 +229,6 @@ void Rlatb9(const char *path, INTEGER const imat, INTEGER const m, INTEGER const
         cndnmb = one;
     }
     //
-    //     End of Rlatb9
+    // End of Rlatb9
     //
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine ZCHKST2STG.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -153,7 +160,7 @@ void Cchkst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
     ntestt = 0;
     info = 0;
     //
-    //     Important constants
+    // Important constants
     //
     badnn = false;
     tryrac = true;
@@ -168,7 +175,7 @@ void Cchkst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
     nblock = iMlaenv(1, "Chetrd", "L", nmax, -1, -1, -1);
     nblock = min({nmax, max((INTEGER)1, nblock)});
     //
-    //     Check for errors
+    // Check for errors
     //
     if (nsizes < 0) {
         info = -1;
@@ -189,13 +196,13 @@ void Cchkst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (nsizes == 0 || ntypes == 0) {
         return;
     }
     //
-    //     More Important constants
+    // More Important constants
     //
     unfl = Rlamch("Safe minimum");
     ovfl = one / unfl;
@@ -206,7 +213,7 @@ void Cchkst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
     rtunfl = sqrt(unfl);
     rtovfl = sqrt(ovfl);
     //
-    //     Loop over sizes, types
+    // Loop over sizes, types
     //
     for (i = 1; i <= 4; i = i + 1) {
         iseed2[i - 1] = iseed[i - 1];
@@ -252,21 +259,21 @@ void Cchkst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 ioldsd[j - 1] = iseed[j - 1];
             }
             //
-            //           Compute "A"
+            // Compute "A"
             //
-            //           Control parameters:
+            // Control parameters:
             //
-            //               KMAGN  KMODE        KTYPE
-            //           =1  O(1)   clustered 1  zero
-            //           =2  large  clustered 2  identity
-            //           =3  small  exponential  (none)
-            //           =4         arithmetic   diagonal, (w/ eigenvalues)
-            //           =5         random log   Hermitian, w/ eigenvalues
-            //           =6         random       (none)
-            //           =7                      random diagonal
-            //           =8                      random Hermitian
-            //           =9                      positive definite
-            //           =10                     diagonally dominant tridiagonal
+            // KMAGN  KMODE        KTYPE
+            // =1  O(1)   clustered 1  zero
+            // =2  large  clustered 2  identity
+            // =3  small  exponential  (none)
+            // =4         arithmetic   diagonal, (w/ eigenvalues)
+            // =5         random log   Hermitian, w/ eigenvalues
+            // =6         random       (none)
+            // =7                      random diagonal
+            // =8                      random Hermitian
+            // =9                      positive definite
+            // =10                     diagonally dominant tridiagonal
             //
             if (mtypes > maxtyp) {
                 goto statement_100;
@@ -275,7 +282,7 @@ void Cchkst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
             itype = ktype[jtype - 1];
             imode = kmode[jtype - 1];
             //
-            //           Compute norm
+            // Compute norm
             //
             switch (kmagn[jtype - 1]) {
             case 1:
@@ -310,16 +317,16 @@ void Cchkst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 cond = ulpinv * aninv / ten;
             }
             //
-            //           Special Matrices -- Identity & Jordan block
+            // Special Matrices -- Identity & Jordan block
             //
-            //              Zero
+            // Zero
             //
             if (itype == 1) {
                 iinfo = 0;
                 //
             } else if (itype == 2) {
                 //
-                //              Identity
+                // Identity
                 //
                 for (jc = 1; jc <= n; jc = jc + 1) {
                     a[(jc - 1) + (jc - 1) * lda] = anorm;
@@ -327,37 +334,37 @@ void Cchkst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 //
             } else if (itype == 4) {
                 //
-                //              Diagonal Matrix, [Eigen]values Specified
+                // Diagonal Matrix, [Eigen]values Specified
                 //
                 Clatms(n, n, "S", iseed, "H", rwork, imode, cond, anorm, 0, 0, "N", a, lda, work, iinfo);
                 //
             } else if (itype == 5) {
                 //
-                //              Hermitian, eigenvalues specified
+                // Hermitian, eigenvalues specified
                 //
                 Clatms(n, n, "S", iseed, "H", rwork, imode, cond, anorm, n, n, "N", a, lda, work, iinfo);
                 //
             } else if (itype == 7) {
                 //
-                //              Diagonal, random eigenvalues
+                // Diagonal, random eigenvalues
                 //
                 Clatmr(n, n, "S", iseed, "H", work, 6, one, cone, "T", "N", &work[(n + 1) - 1], 1, one, &work[(2 * n + 1) - 1], 1, one, "N", idumma, 0, 0, zero, anorm, "NO", a, lda, iwork, iinfo);
                 //
             } else if (itype == 8) {
                 //
-                //              Hermitian, random eigenvalues
+                // Hermitian, random eigenvalues
                 //
                 Clatmr(n, n, "S", iseed, "H", work, 6, one, cone, "T", "N", &work[(n + 1) - 1], 1, one, &work[(2 * n + 1) - 1], 1, one, "N", idumma, n, n, zero, anorm, "NO", a, lda, iwork, iinfo);
                 //
             } else if (itype == 9) {
                 //
-                //              Positive definite, eigenvalues specified.
+                // Positive definite, eigenvalues specified.
                 //
                 Clatms(n, n, "S", iseed, "P", rwork, imode, cond, anorm, n, n, "N", a, lda, work, iinfo);
                 //
             } else if (itype == 10) {
                 //
-                //              Positive definite tridiagonal, eigenvalues specified.
+                // Positive definite tridiagonal, eigenvalues specified.
                 //
                 Clatms(n, n, "S", iseed, "P", rwork, imode, cond, anorm, 1, 1, "N", a, lda, work, iinfo);
                 for (i = 2; i <= n; i = i + 1) {
@@ -382,8 +389,8 @@ void Cchkst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
         //
         statement_100:
             //
-            //           Call Chetrd and Cungtr to compute S and U from
-            //           upper triangle.
+            // Call Chetrd and Cungtr to compute S and U from
+            // upper triangle.
             //
             Clacpy("U", n, n, a, lda, v, ldu);
             //
@@ -416,17 +423,17 @@ void Cchkst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 }
             }
             //
-            //           Do tests 1 and 2
+            // Do tests 1 and 2
             //
             Chet21(2, "Upper", n, 1, a, lda, sd, se, u, ldu, v, ldu, tau, work, rwork, &result[1 - 1]);
             Chet21(3, "Upper", n, 1, a, lda, sd, se, u, ldu, v, ldu, tau, work, rwork, &result[2 - 1]);
             //
-            //           Compute D1 the eigenvalues resulting from the tridiagonal
-            //           form using the standard 1-stage algorithm and use it as a
-            //           reference to compare with the 2-stage technique
+            // Compute D1 the eigenvalues resulting from the tridiagonal
+            // form using the standard 1-stage algorithm and use it as a
+            // reference to compare with the 2-stage technique
             //
-            //           Compute D1 from the 1-stage and used as reference for the
-            //           2-stage
+            // Compute D1 from the 1-stage and used as reference for the
+            // 2-stage
             //
             Rcopy(n, sd, 1, d1, 1);
             if (n > 0) {
@@ -445,10 +452,10 @@ void Cchkst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 }
             }
             //
-            //           2-STAGE TRD Upper case is used to compute D2.
-            //           Note to set SD and SE to zero to be sure not reusing
-            //           the one from above. Compare it with D1 computed
-            //           using the 1-stage.
+            // 2-STAGE TRD Upper case is used to compute D2.
+            // Note to set SD and SE to zero to be sure not reusing
+            // the one from above. Compare it with D1 computed
+            // using the 1-stage.
             //
             Rlaset("Full", n, 1, zero, zero, sd, n);
             Rlaset("Full", n, 1, zero, zero, se, n);
@@ -457,7 +464,7 @@ void Cchkst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
             lw = lwork - lh;
             Chetrd_2stage("N", "U", n, v, ldu, sd, se, tau, work, lh, &work[(lh + 1) - 1], lw, iinfo);
             //
-            //           Compute D2 from the 2-stage Upper case
+            // Compute D2 from the 2-stage Upper case
             //
             Rcopy(n, sd, 1, d2, 1);
             if (n > 0) {
@@ -477,17 +484,17 @@ void Cchkst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 }
             }
             //
-            //           2-STAGE TRD Lower case is used to compute D3.
-            //           Note to set SD and SE to zero to be sure not reusing
-            //           the one from above. Compare it with D1 computed
-            //           using the 1-stage.
+            // 2-STAGE TRD Lower case is used to compute D3.
+            // Note to set SD and SE to zero to be sure not reusing
+            // the one from above. Compare it with D1 computed
+            // using the 1-stage.
             //
             Rlaset("Full", n, 1, zero, zero, sd, n);
             Rlaset("Full", n, 1, zero, zero, se, n);
             Clacpy("L", n, n, a, lda, v, ldu);
             Chetrd_2stage("N", "L", n, v, ldu, sd, se, tau, work, lh, &work[(lh + 1) - 1], lw, iinfo);
             //
-            //           Compute D3 from the 2-stage Upper case
+            // Compute D3 from the 2-stage Upper case
             //
             Rcopy(n, sd, 1, d3, 1);
             if (n > 0) {
@@ -507,8 +514,8 @@ void Cchkst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 }
             }
             //
-            //           Do Tests 3 and 4 which are similar to 11 and 12 but with the
-            //           D1 computed using the standard 1-stage reduction as reference
+            // Do Tests 3 and 4 which are similar to 11 and 12 but with the
+            // D1 computed using the standard 1-stage reduction as reference
             //
             ntest = 4;
             temp1 = zero;
@@ -526,7 +533,7 @@ void Cchkst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
             result[3 - 1] = temp2 / max(unfl, REAL(ulp * max(temp1, temp2)));
             result[4 - 1] = temp4 / max(unfl, REAL(ulp * max(temp3, temp4)));
             //
-            //           Store the upper triangle of A in AP
+            // Store the upper triangle of A in AP
             //
             i = 0;
             for (jc = 1; jc <= n; jc = jc + 1) {
@@ -536,7 +543,7 @@ void Cchkst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 }
             }
             //
-            //           Call Chptrd and Cupgtr to compute S and U from AP
+            // Call Chptrd and Cupgtr to compute S and U from AP
             //
             Ccopy(nap, ap, 1, vp, 1);
             //
@@ -567,12 +574,12 @@ void Cchkst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 }
             }
             //
-            //           Do tests 5 and 6
+            // Do tests 5 and 6
             //
             Chpt21(2, "Upper", n, 1, ap, sd, se, u, ldu, vp, tau, work, rwork, &result[5 - 1]);
             Chpt21(3, "Upper", n, 1, ap, sd, se, u, ldu, vp, tau, work, rwork, &result[6 - 1]);
             //
-            //           Store the lower triangle of A in AP
+            // Store the lower triangle of A in AP
             //
             i = 0;
             for (jc = 1; jc <= n; jc = jc + 1) {
@@ -582,7 +589,7 @@ void Cchkst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 }
             }
             //
-            //           Call Chptrd and Cupgtr to compute S and U from AP
+            // Call Chptrd and Cupgtr to compute S and U from AP
             //
             Ccopy(nap, ap, 1, vp, 1);
             //
@@ -616,9 +623,9 @@ void Cchkst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
             Chpt21(2, "Lower", n, 1, ap, sd, se, u, ldu, vp, tau, work, rwork, &result[7 - 1]);
             Chpt21(3, "Lower", n, 1, ap, sd, se, u, ldu, vp, tau, work, rwork, &result[8 - 1]);
             //
-            //           Call Csteqr to compute D1, D2, and Z, do tests.
+            // Call Csteqr to compute D1, D2, and Z, do tests.
             //
-            //           Compute D1 and Z
+            // Compute D1 and Z
             //
             Rcopy(n, sd, 1, d1, 1);
             if (n > 0) {
@@ -639,7 +646,7 @@ void Cchkst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 }
             }
             //
-            //           Compute D2
+            // Compute D2
             //
             Rcopy(n, sd, 1, d2, 1);
             if (n > 0) {
@@ -659,7 +666,7 @@ void Cchkst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 }
             }
             //
-            //           Compute D3 (using PWK method)
+            // Compute D3 (using PWK method)
             //
             Rcopy(n, sd, 1, d3, 1);
             if (n > 0) {
@@ -679,11 +686,11 @@ void Cchkst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 }
             }
             //
-            //           Do Tests 9 and 10
+            // Do Tests 9 and 10
             //
             Cstt21(n, 0, sd, se, d1, dumma, z, ldu, work, rwork, &result[9 - 1]);
             //
-            //           Do Tests 11 and 12
+            // Do Tests 11 and 12
             //
             temp1 = zero;
             temp2 = zero;
@@ -700,8 +707,8 @@ void Cchkst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
             result[11 - 1] = temp2 / max(unfl, REAL(ulp * max(temp1, temp2)));
             result[12 - 1] = temp4 / max(unfl, REAL(ulp * max(temp3, temp4)));
             //
-            //           Do Test 13 -- Sturm Sequence Test of Eigenvalues
-            //                         Go up by factors of two until it succeeds
+            // Do Test 13 -- Sturm Sequence Test of Eigenvalues
+            // Go up by factors of two until it succeeds
             //
             ntest = 13;
             temp1 = thresh * (half - ulp);
@@ -717,12 +724,12 @@ void Cchkst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
         statement_170:
             result[13 - 1] = temp1;
             //
-            //           For positive definite matrices ( JTYPE.GT.15 ) call Cpteqr
-            //           and do tests 14, 15, and 16 .
+            // For positive definite matrices ( JTYPE.GT.15 ) call Cpteqr
+            // and do tests 14, 15, and 16 .
             //
             if (jtype > 15) {
                 //
-                //              Compute D4 and Z4
+                // Compute D4 and Z4
                 //
                 Rcopy(n, sd, 1, d4, 1);
                 if (n > 0) {
@@ -743,11 +750,11 @@ void Cchkst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     }
                 }
                 //
-                //              Do Tests 14 and 15
+                // Do Tests 14 and 15
                 //
                 Cstt21(n, 0, sd, se, d4, dumma, z, ldu, work, rwork, &result[14 - 1]);
                 //
-                //              Compute D5
+                // Compute D5
                 //
                 Rcopy(n, sd, 1, d5, 1);
                 if (n > 0) {
@@ -767,7 +774,7 @@ void Cchkst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     }
                 }
                 //
-                //              Do Test 16
+                // Do Test 16
                 //
                 temp1 = zero;
                 temp2 = zero;
@@ -783,10 +790,10 @@ void Cchkst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 result[16 - 1] = zero;
             }
             //
-            //           Call Rstebz with different options and do tests 17-18.
+            // Call Rstebz with different options and do tests 17-18.
             //
-            //              If S is positive definite and diagonally dominant,
-            //              ask for all eigenvalues with high relative accuracy.
+            // If S is positive definite and diagonally dominant,
+            // ask for all eigenvalues with high relative accuracy.
             //
             vl = zero;
             vu = zero;
@@ -807,7 +814,7 @@ void Cchkst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     }
                 }
                 //
-                //              Do test 17
+                // Do test 17
                 //
                 temp2 = two * (two * n - one) * ulp * (one + eight * half * half) / ((one - half) * (one - half) * (one - half) * (one - half));
                 //
@@ -821,7 +828,7 @@ void Cchkst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 result[17 - 1] = zero;
             }
             //
-            //           Now ask for all eigenvalues with high absolute accuracy.
+            // Now ask for all eigenvalues with high absolute accuracy.
             //
             ntest = 18;
             abstol = unfl + unfl;
@@ -837,7 +844,7 @@ void Cchkst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 }
             }
             //
-            //           Do test 18
+            // Do test 18
             //
             temp1 = zero;
             temp2 = zero;
@@ -848,8 +855,8 @@ void Cchkst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
             //
             result[18 - 1] = temp2 / max(unfl, REAL(ulp * max(temp1, temp2)));
             //
-            //           Choose random values for IL and IU, and ask for the
-            //           IL-th through IU-th eigenvalues.
+            // Choose random values for IL and IU, and ask for the
+            // IL-th through IU-th eigenvalues.
             //
             ntest = 19;
             if (n <= 1) {
@@ -877,8 +884,8 @@ void Cchkst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 }
             }
             //
-            //           Determine the values VL and VU of the IL-th and IU-th
-            //           eigenvalues and ask for all eigenvalues in this range.
+            // Determine the values VL and VU of the IL-th and IU-th
+            // eigenvalues and ask for all eigenvalues in this range.
             //
             if (n > 0) {
                 if (il != 1) {
@@ -913,7 +920,7 @@ void Cchkst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 goto statement_280;
             }
             //
-            //           Do test 19
+            // Do test 19
             //
             temp1 = Rsxt1(1, wa2, m2, wa3, m3, abstol, ulp, unfl);
             temp2 = Rsxt1(1, wa3, m3, wa2, m2, abstol, ulp, unfl);
@@ -925,9 +932,9 @@ void Cchkst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
             //
             result[19 - 1] = (temp1 + temp2) / max(unfl, REAL(temp3 * ulp));
             //
-            //           Call Cstein to compute eigenvectors corresponding to
-            //           eigenvalues in WA1.  (First call Rstebz again, to make sure
-            //           it returns these eigenvalues in the correct order.)
+            // Call Cstein to compute eigenvectors corresponding to
+            // eigenvalues in WA1.  (First call Rstebz again, to make sure
+            // it returns these eigenvalues in the correct order.)
             //
             ntest = 21;
             Rstebz("A", "B", n, vl, vu, il, iu, abstol, sd, se, m, nsplit, wa1, &iwork[1 - 1], &iwork[(n + 1) - 1], rwork, &iwork[(2 * n + 1) - 1], iinfo);
@@ -956,13 +963,13 @@ void Cchkst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 }
             }
             //
-            //           Do tests 20 and 21
+            // Do tests 20 and 21
             //
             Cstt21(n, 0, sd, se, wa1, dumma, z, ldu, work, rwork, &result[20 - 1]);
             //
-            //           Call Cstedc(I) to compute D1 and Z, do tests.
+            // Call Cstedc(I) to compute D1 and Z, do tests.
             //
-            //           Compute D1 and Z
+            // Compute D1 and Z
             //
             inde = 1;
             indrwk = inde + n;
@@ -985,13 +992,13 @@ void Cchkst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 }
             }
             //
-            //           Do Tests 22 and 23
+            // Do Tests 22 and 23
             //
             Cstt21(n, 0, sd, se, d1, dumma, z, ldu, work, rwork, &result[22 - 1]);
             //
-            //           Call Cstedc(V) to compute D1 and Z, do tests.
+            // Call Cstedc(V) to compute D1 and Z, do tests.
             //
-            //           Compute D1 and Z
+            // Compute D1 and Z
             //
             Rcopy(n, sd, 1, d1, 1);
             if (n > 0) {
@@ -1012,13 +1019,13 @@ void Cchkst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 }
             }
             //
-            //           Do Tests 24 and 25
+            // Do Tests 24 and 25
             //
             Cstt21(n, 0, sd, se, d1, dumma, z, ldu, work, rwork, &result[24 - 1]);
             //
-            //           Call Cstedc(N) to compute D2, do tests.
+            // Call Cstedc(N) to compute D2, do tests.
             //
-            //           Compute D2
+            // Compute D2
             //
             Rcopy(n, sd, 1, d2, 1);
             if (n > 0) {
@@ -1039,7 +1046,7 @@ void Cchkst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 }
             }
             //
-            //           Do Test 26
+            // Do Test 26
             //
             temp1 = zero;
             temp2 = zero;
@@ -1051,14 +1058,14 @@ void Cchkst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
             //
             result[26 - 1] = temp2 / max(unfl, REAL(ulp * max(temp1, temp2)));
             //
-            //           Only test Cstemr if IEEE compliant
+            // Only test Cstemr if IEEE compliant
             //
             if (iMlaenv(10, "Cstemr", "VA", 1, 0, 0, 0) == 1 && iMlaenv(11, "Cstemr", "VA", 1, 0, 0, 0) == 1) {
                 //
-                //           Call Cstemr, do test 27 (relative eigenvalue accuracy)
+                // Call Cstemr, do test 27 (relative eigenvalue accuracy)
                 //
-                //              If S is positive definite and diagonally dominant,
-                //              ask for all eigenvalues with high relative accuracy.
+                // If S is positive definite and diagonally dominant,
+                // ask for all eigenvalues with high relative accuracy.
                 //
                 vl = zero;
                 vu = zero;
@@ -1079,7 +1086,7 @@ void Cchkst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                         }
                     }
                     //
-                    //              Do test 27
+                    // Do test 27
                     //
                     temp2 = two * (two * n - one) * ulp * (one + eight * half * half) / ((one - half) * (one - half) * (one - half) * (one - half));
                     //
@@ -1114,7 +1121,7 @@ void Cchkst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                             }
                         }
                         //
-                        //                 Do test 28
+                        // Do test 28
                         //
                         temp2 = two * (two * n - one) * ulp * (one + eight * half * half) / ((one - half) * (one - half) * (one - half) * (one - half));
                         //
@@ -1132,9 +1139,9 @@ void Cchkst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     result[28 - 1] = zero;
                 }
                 //
-                //           Call Cstemr(V,I) to compute D1 and Z, do tests.
+                // Call Cstemr(V,I) to compute D1 and Z, do tests.
                 //
-                //           Compute D1 and Z
+                // Compute D1 and Z
                 //
                 Rcopy(n, sd, 1, d5, 1);
                 if (n > 0) {
@@ -1163,11 +1170,11 @@ void Cchkst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                         }
                     }
                     //
-                    //           Do Tests 29 and 30
+                    // Do Tests 29 and 30
                     //
-                    //           Call Cstemr to compute D2, do tests.
+                    // Call Cstemr to compute D2, do tests.
                     //
-                    //           Compute D2
+                    // Compute D2
                     //
                     Rcopy(n, sd, 1, d5, 1);
                     if (n > 0) {
@@ -1187,7 +1194,7 @@ void Cchkst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                         }
                     }
                     //
-                    //           Do Test 31
+                    // Do Test 31
                     //
                     temp1 = zero;
                     temp2 = zero;
@@ -1199,9 +1206,9 @@ void Cchkst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     //
                     result[31 - 1] = temp2 / max(unfl, REAL(ulp * max(temp1, temp2)));
                     //
-                    //           Call Cstemr(V,V) to compute D1 and Z, do tests.
+                    // Call Cstemr(V,V) to compute D1 and Z, do tests.
                     //
-                    //           Compute D1 and Z
+                    // Compute D1 and Z
                     //
                     Rcopy(n, sd, 1, d5, 1);
                     if (n > 0) {
@@ -1239,13 +1246,13 @@ void Cchkst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                         }
                     }
                     //
-                    //           Do Tests 32 and 33
+                    // Do Tests 32 and 33
                     //
                     Cstt22(n, m, 0, sd, se, d1, dumma, z, ldu, work, m, rwork, &result[32 - 1]);
                     //
-                    //           Call Cstemr to compute D2, do tests.
+                    // Call Cstemr to compute D2, do tests.
                     //
-                    //           Compute D2
+                    // Compute D2
                     //
                     Rcopy(n, sd, 1, d5, 1);
                     if (n > 0) {
@@ -1265,7 +1272,7 @@ void Cchkst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                         }
                     }
                     //
-                    //           Do Test 34
+                    // Do Test 34
                     //
                     temp1 = zero;
                     temp2 = zero;
@@ -1285,9 +1292,9 @@ void Cchkst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     result[34 - 1] = zero;
                 }
                 //
-                //           Call Cstemr(V,A) to compute D1 and Z, do tests.
+                // Call Cstemr(V,A) to compute D1 and Z, do tests.
                 //
-                //           Compute D1 and Z
+                // Compute D1 and Z
                 //
                 Rcopy(n, sd, 1, d5, 1);
                 if (n > 0) {
@@ -1308,13 +1315,13 @@ void Cchkst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     }
                 }
                 //
-                //           Do Tests 35 and 36
+                // Do Tests 35 and 36
                 //
                 Cstt22(n, m, 0, sd, se, d1, dumma, z, ldu, work, m, rwork, &result[35 - 1]);
                 //
-                //           Call Cstemr to compute D2, do tests.
+                // Call Cstemr to compute D2, do tests.
                 //
-                //           Compute D2
+                // Compute D2
                 //
                 Rcopy(n, sd, 1, d5, 1);
                 if (n > 0) {
@@ -1334,7 +1341,7 @@ void Cchkst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     }
                 }
                 //
-                //           Do Test 34
+                // Do Test 34
                 //
                 temp1 = zero;
                 temp2 = zero;
@@ -1350,15 +1357,15 @@ void Cchkst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
         statement_280:
             ntestt += ntest;
             //
-            //           End of Loop -- Check for RESULT(j) > THRESH
+            // End of Loop -- Check for RESULT(j) > THRESH
             //
-            //           Print out tests which fail.
+            // Print out tests which fail.
             //
             for (jr = 1; jr <= ntest; jr = jr + 1) {
                 if (result[jr - 1] >= thresh) {
                     //
-                    //                 If this is the first test to fail,
-                    //                 print a header to the data file.
+                    // If this is the first test to fail,
+                    // print a header to the data file.
                     //
                     if (nerrs == 0) {
                         write(nounit, "(/,1x,a3,' -- Complex Hermitian eigenvalue problem')"), "ZST";
@@ -1389,7 +1396,7 @@ void Cchkst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                                       "' 21=Diagonally dominant tridiagonal, geometrically',"
                                       "' spaced eigenvalues')");
                         //
-                        //                    Tests performed
+                        // Tests performed
                         //
                         write(nounit, "(/,'Test performed:  see Cchkst2stg for details.',/)");
                     }
@@ -1411,10 +1418,10 @@ void Cchkst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
         }
     }
     //
-    //     Summary
+    // Summary
     //
     Rlasum("ZST", nounit, nerrs, ntestt);
     //
-    //     End of Cchkst2stg
+    // End of Cchkst2stg
     //
 }

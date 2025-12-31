@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZSTT22.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -40,29 +47,6 @@ using fem::common;
 
 void Cstt22(INTEGER const n, INTEGER const m, INTEGER const kband, REAL *ad, REAL *ae, REAL *sd, REAL *se, COMPLEX *u, INTEGER const ldu, COMPLEX *work, INTEGER const ldwork, REAL *rwork, REAL *result) {
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     const REAL zero = 0.0;
     result[1 - 1] = zero;
     result[2 - 1] = zero;
@@ -73,9 +57,9 @@ void Cstt22(INTEGER const n, INTEGER const m, INTEGER const kband, REAL *ad, REA
     REAL unfl = Rlamch("Safe minimum");
     REAL ulp = Rlamch("Epsilon");
     //
-    //     Do Test 1
+    // Do Test 1
     //
-    //     Compute the 1-norm of A.
+    // Compute the 1-norm of A.
     //
     REAL anorm = 0.0;
     INTEGER j = 0;
@@ -90,7 +74,7 @@ void Cstt22(INTEGER const n, INTEGER const m, INTEGER const kband, REAL *ad, REA
     }
     anorm = max(anorm, unfl);
     //
-    //     Norm of U*AU - S
+    // Norm of U*AU - S
     //
     INTEGER i = 0;
     const COMPLEX czero = COMPLEX(0.0, 0.0);
@@ -134,9 +118,9 @@ void Cstt22(INTEGER const n, INTEGER const m, INTEGER const kband, REAL *ad, REA
         }
     }
     //
-    //     Do Test 2
+    // Do Test 2
     //
-    //     Compute  U*U - I
+    // Compute  U*U - I
     //
     const COMPLEX cone = COMPLEX(1.0, 0.0);
     Cgemm("T", "N", m, m, n, cone, u, ldu, u, ldu, czero, work, m);
@@ -147,6 +131,6 @@ void Cstt22(INTEGER const n, INTEGER const m, INTEGER const kband, REAL *ad, REA
     //
     result[2 - 1] = min(castREAL(m), Clange("1", m, m, work, m, rwork)) / (m * ulp);
     //
-    //     End of Cstt22
+    // End of Cstt22
     //
 }

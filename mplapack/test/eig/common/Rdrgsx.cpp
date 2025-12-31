@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DDRGSX.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -119,7 +126,7 @@ void Rdrgsx(INTEGER const nsize, INTEGER const ncmax, REAL const thresh, INTEGER
     static const char *format_9997 = "(' Rdrgsx: Rget53 returned INFO=',i1,' for eigenvalue ',i6,'.',/,9x,'N=',"
                                      "i6,', JTYPE=',i6,')')";
     //
-    //     Check for errors
+    // Check for errors
     //
     if (nsize < 0) {
         info = -1;
@@ -137,23 +144,23 @@ void Rdrgsx(INTEGER const nsize, INTEGER const ncmax, REAL const thresh, INTEGER
         info = -21;
     }
     //
-    //     Compute workspace
-    //      (Note: Comments in the code beginning "Workspace:" describe the
-    //       minimal amount of workspace needed at that point in the code,
-    //       as well as the preferred amount for good performance.
-    //       NB refers to the optimal block size for the immediately
-    //       following subroutine, as returned by iMlaenv.)
+    // Compute workspace
+    // (Note: Comments in the code beginning "Workspace:" describe the
+    // minimal amount of workspace needed at that point in the code,
+    // as well as the preferred amount for good performance.
+    // NB refers to the optimal block size for the immediately
+    // following subroutine, as returned by iMlaenv.)
     //
     minwrk = 1;
     if (info == 0 && lwork >= 1) {
         minwrk = max((INTEGER)10 * (nsize + 1), 5 * nsize * nsize / 2);
         //
-        //        workspace for sggesx
+        // workspace for sggesx
         //
         maxwrk = 9 * (nsize + 1) + nsize * iMlaenv(1, "Rgeqrf", " ", nsize, 1, nsize, 0);
         maxwrk = max({maxwrk, 9 * (nsize + 1) + nsize * iMlaenv(1, "Rorgqr", " ", nsize, 1, nsize, -1)});
         //
-        //        workspace for Rgesvd
+        // workspace for dgesvd
         //
         bdspac = 5 * nsize * nsize / 2;
         maxwrk = max({maxwrk, 3 * nsize * nsize / 2 + nsize * nsize * iMlaenv(1, "Rgebrd", " ", nsize * nsize / 2, nsize * nsize / 2, -1, -1)});
@@ -173,7 +180,7 @@ void Rdrgsx(INTEGER const nsize, INTEGER const ncmax, REAL const thresh, INTEGER
         return;
     }
     //
-    //     Important constants
+    // Important constants
     //
     ulp = Rlamch("P");
     ulpinv = one / ulp;
@@ -183,16 +190,16 @@ void Rdrgsx(INTEGER const nsize, INTEGER const ncmax, REAL const thresh, INTEGER
     ntestt = 0;
     nerrs = 0;
     //
-    //     Go to the tests for read-in matrix pairs
+    // Go to the tests for read-in matrix pairs
     //
     ifunc = 0;
     if (nsize == 0) {
         goto statement_70;
     }
     //
-    //     Test the built-in matrix pairs.
-    //     Loop over different functions (IFUNC) of Rggesx, types (PRTYPE)
-    //     of test matrices, different size (M+N)
+    // Test the built-in matrix pairs.
+    // Loop over different functions (IFUNC) of Rggesx, types (PRTYPE)
+    // of test matrices, different size (M+N)
     //
     prtype = 0;
     qba = 3;
@@ -207,7 +214,7 @@ void Rdrgsx(INTEGER const nsize, INTEGER const ncmax, REAL const thresh, INTEGER
                     weight = one / weight;
                     mplusn = m + n;
                     //
-                    //                 Generate test matrices
+                    // Generate test matrices
                     //
                     fs = true;
                     k = 0;
@@ -217,10 +224,10 @@ void Rdrgsx(INTEGER const nsize, INTEGER const ncmax, REAL const thresh, INTEGER
                     //
                     Rlatm5(prtype, m, n, ai, lda, &ai[((m + 1) - 1) + ((m + 1) - 1) * ldai], lda, &ai[((m + 1) - 1) * ldai], lda, bi, lda, &bi[((m + 1) - 1) + ((m + 1) - 1) * ldbi], lda, &bi[((m + 1) - 1) * ldbi], lda, q, lda, z, lda, weight, qba, qbb);
                     //
-                    //                 Compute the Schur factorization and swapping the
-                    //                 m-by-m (1,1)-blocks with n-by-n (2,2)-blocks.
-                    //                 Swapping is accomplished via the function Rlctsx
-                    //                 which is supplied below.
+                    // Compute the Schur factorization and swapping the
+                    // m-by-m (1,1)-blocks with n-by-n (2,2)-blocks.
+                    // Swapping is accomplished via the function Rlctsx
+                    // which is supplied below.
                     //
                     if (ifunc == 0) {
                         sense = 'N';
@@ -246,13 +253,13 @@ void Rdrgsx(INTEGER const nsize, INTEGER const ncmax, REAL const thresh, INTEGER
                         goto statement_30;
                     }
                     //
-                    //                 Compute the norm(A, B)
+                    // Compute the norm(A, B)
                     //
                     Rlacpy("Full", mplusn, mplusn, ai, lda, work, mplusn);
                     Rlacpy("Full", mplusn, mplusn, bi, lda, &work[(mplusn * mplusn + 1) - 1], mplusn);
                     abnrm = Rlange("Fro", mplusn, 2 * mplusn, work, mplusn, work);
                     //
-                    //                 Do tests (1) to (4)
+                    // Do tests (1) to (4)
                     //
                     Rget51(1, mplusn, a, lda, ai, lda, q, lda, z, lda, work, result[1 - 1]);
                     Rget51(1, mplusn, b, lda, bi, lda, q, lda, z, lda, work, result[2 - 1]);
@@ -260,8 +267,8 @@ void Rdrgsx(INTEGER const nsize, INTEGER const ncmax, REAL const thresh, INTEGER
                     Rget51(3, mplusn, b, lda, bi, lda, z, lda, z, lda, work, result[4 - 1]);
                     ntest = 4;
                     //
-                    //                 Do tests (5) and (6): check Schur form of A and
-                    //                 compare eigenvalues with diagonals.
+                    // Do tests (5) and (6): check Schur form of A and
+                    // compare eigenvalues with diagonals.
                     //
                     temp1 = zero;
                     result[5 - 1] = zero;
@@ -320,7 +327,7 @@ void Rdrgsx(INTEGER const nsize, INTEGER const ncmax, REAL const thresh, INTEGER
                     result[6 - 1] = temp1;
                     ntest += 2;
                     //
-                    //                 Test (7) (if sorting worked)
+                    // Test (7) (if sorting worked)
                     //
                     result[7 - 1] = zero;
                     if (linfo == mplusn + 3) {
@@ -330,15 +337,15 @@ void Rdrgsx(INTEGER const nsize, INTEGER const ncmax, REAL const thresh, INTEGER
                     }
                     ntest++;
                     //
-                    //                 Test (8): compare the estimated value DIF and its
-                    //                 value. first, compute the exact DIF.
+                    // Test (8): compare the estimated value DIF and its
+                    // value. first, compute the exact DIF.
                     //
                     result[8 - 1] = zero;
                     mn2 = mm * (mplusn - mm) * 2;
                     if (ifunc >= 2 && mn2 <= ncmax * ncmax) {
                         //
-                        //                    Note: for either following two causes, there are
-                        //                    almost same number of test cases fail the test.
+                        // Note: for either following two causes, there are
+                        // almost same number of test cases fail the test.
                         //
                         Rlakf2(mm, mplusn - mm, ai, lda, &ai[((mm + 1) - 1) + ((mm + 1) - 1) * ldai], bi, &bi[((mm + 1) - 1) + ((mm + 1) - 1) * ldbi], c, ldc);
                         //
@@ -359,7 +366,7 @@ void Rdrgsx(INTEGER const nsize, INTEGER const ncmax, REAL const thresh, INTEGER
                         ntest++;
                     }
                     //
-                    //                 Test (9)
+                    // Test (9)
                     //
                     result[9 - 1] = zero;
                     if (linfo == (mplusn + 2)) {
@@ -377,18 +384,18 @@ void Rdrgsx(INTEGER const nsize, INTEGER const ncmax, REAL const thresh, INTEGER
                     //
                     ntestt += ntest;
                     //
-                    //                 Print out tests which fail.
+                    // Print out tests which fail.
                     //
                     for (j = 1; j <= 9; j = j + 1) {
                         if (result[j - 1] >= thresh) {
                             //
-                            //                       If this is the first test to fail,
-                            //                       print a header to the data file.
+                            // If this is the first test to fail,
+                            // print a header to the data file.
                             //
                             if (nerrs == 0) {
                                 write(nout, format_9995), "DGX";
                                 //
-                                //                          Matrix types
+                                // Matrix types
                                 //
                                 write(nout, "(' Matrix types: ',/,"
                                             "'  1:  A is a block diagonal matrix of Jordan blocks ',"
@@ -401,7 +408,7 @@ void Rdrgsx(INTEGER const nsize, INTEGER const ncmax, REAL const thresh, INTEGER
                                             "'  5:  (A,B) has potentially close or common ',"
                                             "'eigenvalues.',/)");
                                 //
-                                //                          Tests performed
+                                // Tests performed
                                 //
                                 {
                                     write_loop wloop(cmn, nout, format_9992);
@@ -431,8 +438,8 @@ void Rdrgsx(INTEGER const nsize, INTEGER const ncmax, REAL const thresh, INTEGER
 //
 statement_70:
     //
-    //     Read in data from file to check accuracy of condition estimation
-    //     Read input data until N=0
+    // Read in data from file to check accuracy of condition estimation
+    // Read input data until N=0
     //
     nptknt = 0;
     //
@@ -678,12 +685,12 @@ statement_70:
     }
 statement_150:
     //
-    //     Summary
+    // Summary
     //
     Alasvm("DGX", nout, nerrs, ntestt, 0);
     //
     work[1 - 1] = maxwrk;
     //
-    //     End of Rdrgsx
+    // End of Rdrgsx
     //
 }

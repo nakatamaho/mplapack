@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DGET51.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -40,20 +47,18 @@ using fem::common;
 
 void Rget51(INTEGER const itype, INTEGER const n, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL *u, INTEGER const ldu, REAL *v, INTEGER const ldv, REAL *work, REAL &result) {
     //
-    //     .. Executable Statements ..
-    //
     const REAL zero = 0.0;
     result = zero;
     if (n <= 0) {
         return;
     }
     //
-    //     Constants
+    // Constants
     //
     REAL unfl = Rlamch("Safe minimum");
     REAL ulp = Rlamch("Epsilon") * Rlamch("Base");
     //
-    //     Some Error Checks
+    // Some Error Checks
     //
     const REAL ten = 10.0;
     if (itype < 1 || itype > 3) {
@@ -69,13 +74,13 @@ void Rget51(INTEGER const itype, INTEGER const n, REAL *a, INTEGER const lda, RE
     INTEGER jdiag = 0;
     if (itype <= 2) {
         //
-        //        Tests scaled by the norm(A)
+        // Tests scaled by the norm(A)
         //
         anorm = max({Rlange("1", n, n, a, lda, work), unfl});
         //
         if (itype == 1) {
             //
-            //           ITYPE=1: Compute W = A - UBV'
+            // ITYPE=1: Compute W = A - UBV'
             //
             Rlacpy(" ", n, n, a, lda, work, n);
             Rgemm("N", "N", n, n, n, one, u, ldu, b, ldb, zero, &work[(n * n + 1) - 1], n);
@@ -84,7 +89,7 @@ void Rget51(INTEGER const itype, INTEGER const n, REAL *a, INTEGER const lda, RE
             //
         } else {
             //
-            //           ITYPE=2: Compute W = A - B
+            // ITYPE=2: Compute W = A - B
             //
             Rlacpy(" ", n, n, b, ldb, work, n);
             //
@@ -95,7 +100,7 @@ void Rget51(INTEGER const itype, INTEGER const n, REAL *a, INTEGER const lda, RE
             }
         }
         //
-        //        Compute norm(W)/ ( ulp*norm(A) )
+        // Compute norm(W)/ ( ulp*norm(A) )
         //
         wnorm = Rlange("1", n, n, work, n, &work[(n * n + 1) - 1]);
         //
@@ -111,9 +116,9 @@ void Rget51(INTEGER const itype, INTEGER const n, REAL *a, INTEGER const lda, RE
         //
     } else {
         //
-        //        Tests not scaled by norm(A)
+        // Tests not scaled by norm(A)
         //
-        //        ITYPE=3: Compute  UU' - I
+        // ITYPE=3: Compute  UU' - I
         //
         Rgemm("N", "C", n, n, n, one, u, ldu, u, ldu, zero, work, n);
         //
@@ -124,6 +129,6 @@ void Rget51(INTEGER const itype, INTEGER const n, REAL *a, INTEGER const lda, RE
         result = min({Rlange("1", n, n, work, n, &work[(n * n + 1) - 1]), castREAL(n)}) / (n * ulp);
     }
     //
-    //     End of Rget51
+    // End of Rget51
     //
 }

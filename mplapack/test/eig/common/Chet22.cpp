@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZHET22.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -50,15 +57,15 @@ void Chet22(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER cons
     REAL unfl = Rlamch("Safe minimum");
     REAL ulp = Rlamch("Precision");
     //
-    //     Do Test 1
+    // Do Test 1
     //
-    //     Norm of A:
+    // Norm of A:
     //
     REAL anorm = max({Clanhe("1", uplo, n, a, lda, rwork), unfl});
     //
-    //     Compute error matrix:
+    // Compute error matrix:
     //
-    //     ITYPE=1: error = U**H A U - S
+    // ITYPE=1: error = U**H A U - S
     //
     const COMPLEX cone = COMPLEX(1.0, 0.0);
     const COMPLEX czero = COMPLEX(0.0, 0.0);
@@ -95,14 +102,14 @@ void Chet22(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER cons
         }
     }
     //
-    //     Do Test 2
+    // Do Test 2
     //
-    //     Compute  U**H U - I
+    // Compute  U**H U - I
     //
     if (itype == 1) {
         Cunt01("Columns", n, m, u, ldu, work, 2 * n * n, rwork, result[2 - 1]);
     }
     //
-    //     End of Chet22
+    // End of Chet22
     //
 }

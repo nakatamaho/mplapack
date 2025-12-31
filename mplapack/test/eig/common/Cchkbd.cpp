@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine ZCHKBD.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -103,7 +110,7 @@ void Cchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
     static const char *format_9998 = "(' Cchkbd: ',a,' returned INFO=',i6,'.',/,9x,'M=',i6,', N=',i6,"
                                      "', JTYPE=',i6,', ISEED=(',3(i5,','),i5,')')";
     //
-    //     Check for errors
+    // Check for errors
     //
     info = 0;
     //
@@ -126,7 +133,7 @@ void Cchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
         minwrk = max({minwrk, 3 * (mval[j - 1] + nval[j - 1]), mval[j - 1] * (mval[j - 1] + max({mval[j - 1], nval[j - 1], nrhs}) + 1) + nval[j - 1] * min(nval[j - 1], mval[j - 1])});
     }
     //
-    //     Check for errors
+    // Check for errors
     //
     if (nsizes < 0) {
         info = -1;
@@ -203,21 +210,21 @@ void Cchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
             //
             uplo = ' ';
             //
-            //           Compute "A"
+            // Compute "A"
             //
-            //           Control parameters:
+            // Control parameters:
             //
-            //           KMAGN  KMODE        KTYPE
-            //       =1  O(1)   clustered 1  zero
-            //       =2  large  clustered 2  identity
-            //       =3  small  exponential  (none)
-            //       =4         arithmetic   diagonal, (w/ eigenvalues)
-            //       =5         random       symmetric, w/ eigenvalues
-            //       =6                      nonsymmetric, w/ singular values
-            //       =7                      random diagonal
-            //       =8                      random symmetric
-            //       =9                      random nonsymmetric
-            //       =10                     random bidiagonal (log. distrib.)
+            // KMAGN  KMODE        KTYPE
+            // =1  O(1)   clustered 1  zero
+            // =2  large  clustered 2  identity
+            // =3  small  exponential  (none)
+            // =4         arithmetic   diagonal, (w/ eigenvalues)
+            // =5         random       symmetric, w/ eigenvalues
+            // =6                      nonsymmetric, w/ singular values
+            // =7                      random diagonal
+            // =8                      random symmetric
+            // =9                      random nonsymmetric
+            // =10                     random bidiagonal (log. distrib.)
             //
             if (mtypes > maxtyp) {
                 goto statement_100;
@@ -226,7 +233,7 @@ void Cchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
             itype = ktype[jtype - 1];
             imode = kmode[jtype - 1];
             //
-            //           Compute norm
+            // Compute norm
             //
             switch (kmagn[jtype - 1]) {
             case 1:
@@ -260,13 +267,13 @@ void Cchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
             bidiag = false;
             if (itype == 1) {
                 //
-                //              Zero matrix
+                // Zero matrix
                 //
                 iinfo = 0;
                 //
             } else if (itype == 2) {
                 //
-                //              Identity
+                // Identity
                 //
                 for (jcol = 1; jcol <= mnmin; jcol = jcol + 1) {
                     a[(jcol - 1) + (jcol - 1) * lda] = anorm;
@@ -274,43 +281,43 @@ void Cchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
                 //
             } else if (itype == 4) {
                 //
-                //              Diagonal Matrix, [Eigen]values Specified
+                // Diagonal Matrix, [Eigen]values Specified
                 //
                 Clatms(mnmin, mnmin, "S", iseed, "N", rwork, imode, cond, anorm, 0, 0, "N", a, lda, work, iinfo);
                 //
             } else if (itype == 5) {
                 //
-                //              Symmetric, eigenvalues specified
+                // Symmetric, eigenvalues specified
                 //
                 Clatms(mnmin, mnmin, "S", iseed, "S", rwork, imode, cond, anorm, m, n, "N", a, lda, work, iinfo);
                 //
             } else if (itype == 6) {
                 //
-                //              Nonsymmetric, singular values specified
+                // Nonsymmetric, singular values specified
                 //
                 Clatms(m, n, "S", iseed, "N", rwork, imode, cond, anorm, m, n, "N", a, lda, work, iinfo);
                 //
             } else if (itype == 7) {
                 //
-                //              Diagonal, random entries
+                // Diagonal, random entries
                 //
                 Clatmr(mnmin, mnmin, "S", iseed, "N", work, 6, one, cone, "T", "N", &work[(mnmin + 1) - 1], 1, one, &work[(2 * mnmin + 1) - 1], 1, one, "N", iwork, 0, 0, zero, anorm, "NO", a, lda, iwork, iinfo);
                 //
             } else if (itype == 8) {
                 //
-                //              Symmetric, random entries
+                // Symmetric, random entries
                 //
                 Clatmr(mnmin, mnmin, "S", iseed, "S", work, 6, one, cone, "T", "N", &work[(mnmin + 1) - 1], 1, one, &work[(m + mnmin + 1) - 1], 1, one, "N", iwork, m, n, zero, anorm, "NO", a, lda, iwork, iinfo);
                 //
             } else if (itype == 9) {
                 //
-                //              Nonsymmetric, random entries
+                // Nonsymmetric, random entries
                 //
                 Clatmr(m, n, "S", iseed, "N", work, 6, one, cone, "T", "N", &work[(mnmin + 1) - 1], 1, one, &work[(m + mnmin + 1) - 1], 1, one, "N", iwork, m, n, zero, anorm, "NO", a, lda, iwork, iinfo);
                 //
             } else if (itype == 10) {
                 //
-                //              Bidiagonal, random entries
+                // Bidiagonal, random entries
                 //
                 temp1 = -two * log(ulp);
                 for (j = 1; j <= mnmin; j = j + 1) {
@@ -333,7 +340,7 @@ void Cchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
             //
             if (iinfo == 0) {
                 //
-                //              Generate Right-Hand Side
+                // Generate Right-Hand Side
                 //
                 if (bidiag) {
                     Clatmr(mnmin, nrhs, "S", iseed, "N", work, 6, one, cone, "T", "N", &work[(mnmin + 1) - 1], 1, one, &work[(2 * mnmin + 1) - 1], 1, one, "N", iwork, mnmin, nrhs, zero, one, "NO", y, ldx, iwork, iinfo);
@@ -342,7 +349,7 @@ void Cchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
                 }
             }
             //
-            //           Error Exit
+            // Error Exit
             //
             if (iinfo != 0) {
                 write(nout, format_9998), "Generator", iinfo, m, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
@@ -352,15 +359,14 @@ void Cchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
         //
         statement_100:
             //
-            //           Call Cgebrd and Cungbr to compute B, Q, and P, do tests.
+            // Call Cgebrd and Cungbr to compute B, Q, and P, do tests.
             //
             if (!bidiag) {
                 //
-                //              Compute transformations to reduce A to bidiagonal form:
-                //              B := Q' * A * P.
+                // Compute transformations to reduce A to bidiagonal form:
+                // B := Q' * A * P.
                 //
                 Clacpy(" ", m, n, a, lda, q, ldq);
-                //                printf("a="); printmat(m, n, a, lda); printf("\n");
                 Cgebrd(m, n, q, ldq, bd, be, work, &work[(mnmin + 1) - 1], &work[(2 * mnmin + 1) - 1], lwork - 2 * mnmin, iinfo);
                 //                printf("bd="); printvec(bd, mnmin); printf("\n");
                 //                printf("be="); printvec(be, mnmin - 1); printf("\n");
@@ -408,7 +414,7 @@ void Cchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
                     uplo = 'L';
                 }
                 //
-                //              Generate Q
+                // Generate Q
                 //
                 mq = m;
                 if (nrhs <= 0) {
@@ -416,7 +422,7 @@ void Cchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
                 }
                 Cungbr("Q", m, mq, n, q, ldq, work, &work[(2 * mnmin + 1) - 1], lwork - 2 * mnmin, iinfo);
                 //
-                //              Check error code from Cungbr.
+                // Check error code from Cungbr.
                 //
                 if (iinfo != 0) {
                     write(nout, format_9998), "Cungbr(Q)", iinfo, m, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
@@ -424,11 +430,11 @@ void Cchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
                     return;
                 }
                 //
-                //              Generate P'
+                // Generate P'
                 //
                 Cungbr("P", mnmin, n, m, pt, ldpt, &work[(mnmin + 1) - 1], &work[(2 * mnmin + 1) - 1], lwork - 2 * mnmin, iinfo);
                 //
-                //              Check error code from Cungbr.
+                // Check error code from Cungbr.
                 //
                 if (iinfo != 0) {
                     write(nout, format_9998), "Cungbr(P)", iinfo, m, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
@@ -436,21 +442,21 @@ void Cchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
                     return;
                 }
                 //
-                //              Apply Q' to an M by NRHS matrix X:  Y := Q' * X.
+                // Apply Q' to an M by NRHS matrix X:  Y := Q' * X.
                 //
                 Cgemm("Conjugate transpose", "No transpose", m, nrhs, m, cone, q, ldq, x, ldx, czero, y, ldx);
                 //
-                //              Test 1:  Check the decomposition A := Q * B * PT
-                //                   2:  Check the orthogonality of Q
-                //                   3:  Check the orthogonality of PT
+                // Test 1:  Check the decomposition A := Q * B * PT
+                // 2:  Check the orthogonality of Q
+                // 3:  Check the orthogonality of PT
                 //
                 Cbdt01(m, n, 1, a, lda, q, ldq, bd, be, pt, ldpt, work, rwork, result[1 - 1]);
                 Cunt01("Columns", m, mq, q, ldq, work, lwork, rwork, result[2 - 1]);
                 Cunt01("Rows", mnmin, n, pt, ldpt, work, lwork, rwork, result[3 - 1]);
             }
             //
-            //           Use Cbdsqr to form the SVD of the bidiagonal matrix B:
-            //           B := U * S1 * VT, and compute Z = U' * Y.
+            // Use Cbdsqr to form the SVD of the bidiagonal matrix B:
+            // B := U * S1 * VT, and compute Z = U' * Y.
             //
             Rcopy(mnmin, bd, 1, s1, 1);
             if (mnmin > 0) {
@@ -462,7 +468,7 @@ void Cchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
             //
             Cbdsqr(&uplo, mnmin, mnmin, mnmin, nrhs, s1, rwork, vt, ldpt, u, ldpt, z, ldx, &rwork[(mnmin + 1) - 1], iinfo);
             //
-            //           Check error code from Cbdsqr.
+            // Check error code from Cbdsqr.
             //
             if (iinfo != 0) {
                 write(nout, format_9998), "Cbdsqr(vects)", iinfo, m, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
@@ -475,8 +481,8 @@ void Cchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
                 }
             }
             //
-            //           Use Cbdsqr to compute only the singular values of the
-            //           bidiagonal matrix B;  U, VT, and Z should not be modified.
+            // Use Cbdsqr to compute only the singular values of the
+            // bidiagonal matrix B;  U, VT, and Z should not be modified.
             //
             Rcopy(mnmin, bd, 1, s2, 1);
             if (mnmin > 0) {
@@ -485,7 +491,7 @@ void Cchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
             //
             Cbdsqr(&uplo, mnmin, 0, 0, 0, s2, rwork, vt, ldpt, u, ldpt, z, ldx, &rwork[(mnmin + 1) - 1], iinfo);
             //
-            //           Check error code from Cbdsqr.
+            // Check error code from Cbdsqr.
             //
             if (iinfo != 0) {
                 write(nout, format_9998), "Cbdsqr(values)", iinfo, m, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
@@ -498,18 +504,18 @@ void Cchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
                 }
             }
             //
-            //           Test 4:  Check the decomposition B := U * S1 * VT
-            //                5:  Check the computation Z := U' * Y
-            //                6:  Check the orthogonality of U
-            //                7:  Check the orthogonality of VT
+            // Test 4:  Check the decomposition B := U * S1 * VT
+            // 5:  Check the computation Z := U' * Y
+            // 6:  Check the orthogonality of U
+            // 7:  Check the orthogonality of VT
             //
             Cbdt03(&uplo, mnmin, 1, bd, be, u, ldpt, s1, vt, ldpt, work, result[4 - 1]);
             Cbdt02(mnmin, nrhs, y, ldx, z, ldx, u, ldpt, work, rwork, result[5 - 1]);
             Cunt01("Columns", mnmin, mnmin, u, ldpt, work, lwork, rwork, result[6 - 1]);
             Cunt01("Rows", mnmin, mnmin, vt, ldpt, work, lwork, rwork, result[7 - 1]);
             //
-            //           Test 8:  Check that the singular values are sorted in
-            //                    non-increasing order and are non-negative
+            // Test 8:  Check that the singular values are sorted in
+            // non-increasing order and are non-negative
             //
             result[8 - 1] = zero;
             for (i = 1; i <= mnmin - 1; i = i + 1) {
@@ -526,7 +532,7 @@ void Cchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
                 }
             }
             //
-            //           Test 9:  Compare Cbdsqr with and without singular vectors
+            // Test 9:  Compare Cbdsqr with and without singular vectors
             //
             temp2 = zero;
             //
@@ -537,8 +543,8 @@ void Cchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
             //
             result[9 - 1] = temp2;
             //
-            //           Test 10:  Sturm sequence test of singular values
-            //                     Go up by factors of two until it succeeds
+            // Test 10:  Sturm sequence test of singular values
+            // Go up by factors of two until it succeeds
             //
             temp1 = thresh * (half - ulp);
             //
@@ -553,8 +559,8 @@ void Cchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
         statement_140:
             result[10 - 1] = temp1;
             //
-            //           Use Cbdsqr to form the decomposition A := (QU) S (VT PT)
-            //           from the bidiagonal form A := Q B PT.
+            // Use Cbdsqr to form the decomposition A := (QU) S (VT PT)
+            // from the bidiagonal form A := Q B PT.
             //
             if (!bidiag) {
                 Rcopy(mnmin, bd, 1, s2, 1);
@@ -564,10 +570,10 @@ void Cchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
                 //
                 Cbdsqr(&uplo, mnmin, n, m, nrhs, s2, rwork, pt, ldpt, q, ldq, y, ldx, &rwork[(mnmin + 1) - 1], iinfo);
                 //
-                //              Test 11:  Check the decomposition A := Q*U * S2 * VT*PT
-                //                   12:  Check the computation Z := U' * Q' * X
-                //                   13:  Check the orthogonality of Q*U
-                //                   14:  Check the orthogonality of VT*PT
+                // Test 11:  Check the decomposition A := Q*U * S2 * VT*PT
+                // 12:  Check the computation Z := U' * Q' * X
+                // 13:  Check the orthogonality of Q*U
+                // 14:  Check the orthogonality of VT*PT
                 //
                 Cbdt01(m, n, 0, a, lda, q, ldq, s2, dumma, pt, ldpt, work, rwork, result[11 - 1]);
                 Cbdt02(m, nrhs, x, ldx, y, ldx, q, ldq, work, rwork, result[12 - 1]);
@@ -575,7 +581,7 @@ void Cchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
                 Cunt01("Rows", mnmin, n, pt, ldpt, work, lwork, rwork, result[14 - 1]);
             }
         //
-        //           End of Loop -- Check for RESULT(j) > THRESH
+        // End of Loop -- Check for RESULT(j) > THRESH
         //
         statement_150:
             for (j = 1; j <= 14; j = j + 1) {
@@ -600,10 +606,10 @@ void Cchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
         }
     }
     //
-    //     Summary
+    // Summary
     //
     Alasum(path, nout, nfail, ntest, 0);
     //
-    //     End of Cchkbd
+    // End of Cchkbd
     //
 }

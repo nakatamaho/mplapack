@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine ZGET37.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -111,7 +118,7 @@ void Cget37(REAL *rmax, INTEGER *lmax, INTEGER *ninfo, INTEGER &knt, INTEGER con
     smlnum = Rlamch("S") / eps;
     bignum = one / smlnum;
     //
-    //     EPSIN = 2**(-24) = precision to which input data computed
+    // EPSIN = 2**(-24) = precision to which input data computed
     //
     eps = max(eps, epsin);
     rmax[1 - 1] = zero;
@@ -132,9 +139,9 @@ void Cget37(REAL *rmax, INTEGER *lmax, INTEGER *ninfo, INTEGER &knt, INTEGER con
     double dtmp_r;
     double dtmp_i;
 //
-//     Read input data until N=0.  Assume input eigenvalues are sorted
-//     lexicographically (increasing by real part if ISRT = 0,
-//     increasing by imaginary part if ISRT = 1)
+// Read input data until N=0.  Assume input eigenvalues are sorted
+// lexicographically (increasing by real part if ISRT = 0,
+// increasing by imaginary part if ISRT = 1)
 //
 statement_10:
     getline(cin, str);
@@ -160,7 +167,6 @@ statement_10:
             tmp[(i - 1) + (j - 1) * ldtmp] = COMPLEX(dtmp_r, dtmp_i);
         }
     }
-    // printf("tmp =");printmat(n,n,tmp,ldtmp);printf("\n");
     for (i = 1; i <= n; i = i + 1) {
         getline(cin, str);
         string ___r = regex_replace(str, regex(","), " ");
@@ -177,14 +183,10 @@ statement_10:
         iss >> dtmp;
         sepin[i - 1] = dtmp;
     }
-    //    printf("wrin ="); printvec(wrin, n); printf("\n");
-    //    printf("wiin ="); printvec(wrin, n); printf("\n");
-    //    printf("sin ="); printvec(sin, n); printf("\n");
-    //    printf("sepin ="); printvec(sepin, n); printf("\n");
     tnrm = Clange("M", n, n, tmp, ldt, rwork);
     for (iscl = 1; iscl <= 3; iscl = iscl + 1) {
         //
-        //        Scale input matrix
+        // Scale input matrix
         //
         knt++;
         Clacpy("F", n, n, tmp, ldt, t, ldt);
@@ -196,7 +198,7 @@ statement_10:
             vmul = one;
         }
         //
-        //        Compute eigenvalues and eigenvectors
+        // Compute eigenvalues and eigenvectors
         //
         Cgehrd(n, 1, n, t, ldt, &work[1 - 1], &work[(n + 1) - 1], lwork - n, info);
         if (info != 0) {
@@ -210,7 +212,7 @@ statement_10:
             }
         }
         //
-        //        Compute Schur form
+        // Compute Schur form
         //
         Chseqr("S", "N", n, 1, n, t, ldt, w, cdum, 1, work, lwork, info);
         if (info != 0) {
@@ -219,14 +221,14 @@ statement_10:
             goto statement_260;
         }
         //
-        //        Compute eigenvectors
+        // Compute eigenvectors
         //
         for (i = 1; i <= n; i = i + 1) {
             select[i - 1] = true;
         }
         Ctrevc("B", "A", select, n, t, ldt, le, ldt, re, ldt, n, m, work, rwork, info);
         //
-        //        Compute condition numbers
+        // Compute condition numbers
         //
         Ctrsna("B", "A", select, n, t, ldt, le, ldt, re, ldt, s, sep, n, m, work, n, rwork, info);
         if (info != 0) {
@@ -235,20 +237,20 @@ statement_10:
             goto statement_260;
         }
         //
-        //        Sort eigenvalues and condition numbers lexicographically
-        //        to compare with inputs
+        // Sort eigenvalues and condition numbers lexicographically
+        // to compare with inputs
         //
         Ccopy(n, w, 1, wtmp, 1);
         if (isrt == 0) {
             //
-            //           Sort by increasing real part
+            // Sort by increasing real part
             //
             for (i = 1; i <= n; i = i + 1) {
                 wsrt[i - 1] = w[i - 1].real();
             }
         } else {
             //
-            //           Sort by increasing imaginary part
+            // Sort by increasing imaginary part
             //
             for (i = 1; i <= n; i = i + 1) {
                 wsrt[i - 1] = w[i - 1].imag();
@@ -279,8 +281,8 @@ statement_10:
             septmp[i - 1] = vmin;
         }
         //
-        //        Compare condition numbers for eigenvalues
-        //        taking their condition numbers into account
+        // Compare condition numbers for eigenvalues
+        // taking their condition numbers into account
         //
         v = max(REAL(two * castREAL(n) * eps * tnrm), smlnum);
         if (tnrm == zero) {
@@ -318,8 +320,8 @@ statement_10:
             }
         }
         //
-        //        Compare condition numbers for eigenvectors
-        //        taking their condition numbers into account
+        // Compare condition numbers for eigenvectors
+        // taking their condition numbers into account
         //
         for (i = 1; i <= n; i = i + 1) {
             if (v > septmp[i - 1] * stmp[i - 1]) {
@@ -353,8 +355,8 @@ statement_10:
             }
         }
         //
-        //        Compare condition numbers for eigenvalues
-        //        without taking their condition numbers into account
+        // Compare condition numbers for eigenvalues
+        // without taking their condition numbers into account
         //
         for (i = 1; i <= n; i = i + 1) {
             if (sin[i - 1] <= castREAL(2 * n) * eps && stmp[i - 1] <= castREAL(2 * n) * eps) {
@@ -378,8 +380,8 @@ statement_10:
             }
         }
         //
-        //        Compare condition numbers for eigenvectors
-        //        without taking their condition numbers into account
+        // Compare condition numbers for eigenvectors
+        // without taking their condition numbers into account
         //
         for (i = 1; i <= n; i = i + 1) {
             if (sepin[i - 1] <= v && septmp[i - 1] <= v) {
@@ -403,7 +405,7 @@ statement_10:
             }
         }
         //
-        //        Compute eigenvalue condition numbers only and compare
+        // Compute eigenvalue condition numbers only and compare
         //
         vmax = zero;
         dum[1 - 1] = -one;
@@ -424,7 +426,7 @@ statement_10:
             }
         }
         //
-        //        Compute eigenvector condition numbers only and compare
+        // Compute eigenvector condition numbers only and compare
         //
         Rcopy(n, dum, 0, stmp, 1);
         Rcopy(n, dum, 0, septmp, 1);
@@ -443,7 +445,7 @@ statement_10:
             }
         }
         //
-        //        Compute all condition numbers using SELECT and compare
+        // Compute all condition numbers using SELECT and compare
         //
         for (i = 1; i <= n; i = i + 1) {
             select[i - 1] = true;
@@ -465,7 +467,7 @@ statement_10:
             }
         }
         //
-        //        Compute eigenvalue condition numbers using SELECT and compare
+        // Compute eigenvalue condition numbers using SELECT and compare
         //
         Rcopy(n, dum, 0, stmp, 1);
         Rcopy(n, dum, 0, septmp, 1);
@@ -484,7 +486,7 @@ statement_10:
             }
         }
         //
-        //        Compute eigenvector condition numbers using SELECT and compare
+        // Compute eigenvector condition numbers using SELECT and compare
         //
         Rcopy(n, dum, 0, stmp, 1);
         Rcopy(n, dum, 0, septmp, 1);
@@ -509,7 +511,7 @@ statement_10:
             }
         }
         //
-        //        Select second and next to last eigenvalues
+        // Select second and next to last eigenvalues
         //
         for (i = 1; i <= n; i = i + 1) {
             select[i - 1] = false;
@@ -530,7 +532,7 @@ statement_10:
             Ccopy(n, &le[((n - 1) - 1) * ldle], 1, &le[(2 - 1) * ldle], 1);
         }
         //
-        //        Compute all selected condition numbers
+        // Compute all selected condition numbers
         //
         Rcopy(icmp, dum, 0, stmp, 1);
         Rcopy(icmp, dum, 0, septmp, 1);
@@ -550,7 +552,7 @@ statement_10:
             }
         }
         //
-        //        Compute selected eigenvalue condition numbers
+        // Compute selected eigenvalue condition numbers
         //
         Rcopy(icmp, dum, 0, stmp, 1);
         Rcopy(icmp, dum, 0, septmp, 1);
@@ -570,7 +572,7 @@ statement_10:
             }
         }
         //
-        //        Compute selected eigenvector condition numbers
+        // Compute selected eigenvector condition numbers
         //
         Rcopy(icmp, dum, 0, stmp, 1);
         Rcopy(icmp, dum, 0, septmp, 1);
@@ -599,6 +601,6 @@ statement_10:
     }
     goto statement_10;
     //
-    //     End of Cget37
+    // End of Cget37
     //
 }

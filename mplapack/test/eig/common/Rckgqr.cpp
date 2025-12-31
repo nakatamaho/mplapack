@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DCKGQR.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -116,37 +123,37 @@ void Rckgqr(INTEGER const nm, INTEGER *mval, INTEGER const np, INTEGER *pval, IN
     ldb = nmax;
     lwork = nmax * nmax;
     //
-    //     Do for each value of M in MVAL.
+    // Do for each value of M in MVAL.
     //
     for (im = 1; im <= nm; im = im + 1) {
         m = mval[im - 1];
         //
-        //        Do for each value of P in PVAL.
+        // Do for each value of P in PVAL.
         //
         for (ip = 1; ip <= np; ip = ip + 1) {
             p = pval[ip - 1];
             //
-            //           Do for each value of N in NVAL.
+            // Do for each value of N in NVAL.
             //
             for (in = 1; in <= nn; in = in + 1) {
                 n = nval[in - 1];
                 //
                 for (imat = 1; imat <= ntypes; imat = imat + 1) {
                     //
-                    //                 Do the tests only if DOTYPE( IMAT ) is true.
+                    // Do the tests only if DOTYPE( IMAT ) is true.
                     //
                     if (!dotype[imat - 1]) {
                         goto statement_30;
                     }
                     //
-                    //                 Test Rggrqf
+                    // Test Rggrqf
                     //
-                    //                 Set up parameters with Rlatb9 and generate test
-                    //                 matrices A and B with DLATMS.
+                    // Set up parameters with Rlatb9 and generate test
+                    // matrices A and B with Rlatms.
                     //
                     Rlatb9("GRQ", imat, m, p, n, &type, kla, kua, klb, kub, anorm, bnorm, modea, modeb, cndnma, cndnmb, &dista, &distb);
                     //
-                    //                 Generate M by N matrix A
+                    // Generate M by N matrix A
                     //
                     Rlatms(m, n, &dista, iseed, &type, rwork, modea, cndnma, anorm, kla, kua, "No packing", a, lda, work, iinfo);
                     if (iinfo != 0) {
@@ -155,7 +162,7 @@ void Rckgqr(INTEGER const nm, INTEGER *mval, INTEGER const np, INTEGER *pval, IN
                         goto statement_30;
                     }
                     //
-                    //                 Generate P by N matrix B
+                    // Generate P by N matrix B
                     //
                     Rlatms(p, n, &distb, iseed, &type, rwork, modeb, cndnmb, bnorm, klb, kub, "No packing", b, ldb, work, iinfo);
                     if (iinfo != 0) {
@@ -168,8 +175,8 @@ void Rckgqr(INTEGER const nm, INTEGER *mval, INTEGER const np, INTEGER *pval, IN
                     //
                     Rgrqts(m, p, n, a, af, aq, ar, lda, taua, b, bf, bz, bt, bwk, ldb, taub, work, lwork, rwork, result);
                     //
-                    //                 Print information about the tests that did not
-                    //                 pass the threshold.
+                    // Print information about the tests that did not
+                    // pass the threshold.
                     //
                     for (i = 1; i <= nt; i = i + 1) {
                         if (result[i - 1] >= thresh) {
@@ -186,14 +193,14 @@ void Rckgqr(INTEGER const nm, INTEGER *mval, INTEGER const np, INTEGER *pval, IN
                     }
                     nrun += nt;
                     //
-                    //                 Test Rggqrf
+                    // Test Rggqrf
                     //
-                    //                 Set up parameters with Rlatb9 and generate test
-                    //                 matrices A and B with RLATMS.
+                    // Set up parameters with Rlatb9 and generate test
+                    // matrices A and B with Rlatms.
                     //
                     Rlatb9("GQR", imat, m, p, n, &type, kla, kua, klb, kub, anorm, bnorm, modea, modeb, cndnma, cndnmb, &dista, &distb);
                     //
-                    //                 Generate N-by-M matrix  A
+                    // Generate N-by-M matrix  A
                     //
                     Rlatms(n, m, &dista, iseed, &type, rwork, modea, cndnma, anorm, kla, kua, "No packing", a, lda, work, iinfo);
                     if (iinfo != 0) {
@@ -202,7 +209,7 @@ void Rckgqr(INTEGER const nm, INTEGER *mval, INTEGER const np, INTEGER *pval, IN
                         goto statement_30;
                     }
                     //
-                    //                 Generate N-by-P matrix  B
+                    // Generate N-by-P matrix  B
                     //
                     Rlatms(n, p, &distb, iseed, &type, rwork, modea, cndnma, bnorm, klb, kub, "No packing", b, ldb, work, iinfo);
                     if (iinfo != 0) {
@@ -215,8 +222,8 @@ void Rckgqr(INTEGER const nm, INTEGER *mval, INTEGER const np, INTEGER *pval, IN
                     //
                     Rgqrts(n, m, p, a, af, aq, ar, lda, taua, b, bf, bz, bt, bwk, ldb, taub, work, lwork, rwork, result);
                     //
-                    //                 Print information about the tests that did not
-                    //                 pass the threshold.
+                    // Print information about the tests that did not
+                    // pass the threshold.
                     //
                     for (i = 1; i <= nt; i = i + 1) {
                         if (result[i - 1] >= thresh) {
@@ -239,10 +246,10 @@ void Rckgqr(INTEGER const nm, INTEGER *mval, INTEGER const np, INTEGER *pval, IN
         }
     }
     //
-    //     Print a summary of the results.
+    // Print a summary of the results.
     //
     Alasum(path, nout, nfail, nrun, 0);
     //
-    //     End of Rckgqr
+    // End of Rckgqr
     //
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DGET52.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -39,29 +46,6 @@ using fem::common;
 #include <mplapack_debug.h>
 
 void Rget52(bool const left, INTEGER const n, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL *e, INTEGER const lde, REAL *alphar, REAL *alphai, REAL *beta, REAL *work, REAL *result) {
-    //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
     const REAL zero = 0.0;
     result[1 - 1] = zero;
@@ -85,7 +69,7 @@ void Rget52(bool const left, INTEGER const n, REAL *a, INTEGER const lda, REAL *
         normab = 'O';
     }
     //
-    //     Norm of A, B, and E:
+    // Norm of A, B, and E:
     //
     REAL anorm = max({Rlange(&normab, n, n, a, lda, work), safmin});
     REAL bnorm = max({Rlange(&normab, n, n, b, ldb, work), safmin});
@@ -93,8 +77,8 @@ void Rget52(bool const left, INTEGER const n, REAL *a, INTEGER const lda, REAL *
     REAL alfmax = safmax / max(one, bnorm);
     REAL betmax = safmax / max(one, anorm);
     //
-    //     Compute error matrix.
-    //     Column i = ( b(i) A - a(i) B ) E(i) / max( |a(i) B| |b(i) A| )
+    // Compute error matrix.
+    // Column i = ( b(i) A - a(i) B ) E(i) / max( |a(i) B| |b(i) A| )
     //
     bool ilcplx = false;
     INTEGER jvec = 0;
@@ -110,7 +94,7 @@ void Rget52(bool const left, INTEGER const n, REAL *a, INTEGER const lda, REAL *
     for (jvec = 1; jvec <= n; jvec = jvec + 1) {
         if (ilcplx) {
             //
-            //           2nd Eigenvalue/-vector of pair -- do nothing
+            // 2nd Eigenvalue/-vector of pair -- do nothing
             //
             ilcplx = false;
         } else {
@@ -119,7 +103,7 @@ void Rget52(bool const left, INTEGER const n, REAL *a, INTEGER const lda, REAL *
             sbeta = beta[jvec - 1];
             if (salfi == zero) {
                 //
-                //              Real eigenvalue and -vector
+                // Real eigenvalue and -vector
                 //
                 abmax = max(abs(salfr), abs(sbeta));
                 if (abs(salfr) > alfmax || abs(sbeta) > betmax || abmax < one) {
@@ -134,7 +118,7 @@ void Rget52(bool const left, INTEGER const n, REAL *a, INTEGER const lda, REAL *
                 Rgemv(&trans, n, n, -bcoefr, b, lda, &e[(jvec - 1) * lde], 1, one, &work[(n * (jvec - 1) + 1) - 1], 1);
             } else {
                 //
-                //              Complex conjugate pair
+                // Complex conjugate pair
                 //
                 ilcplx = true;
                 if (jvec == n) {
@@ -169,11 +153,11 @@ void Rget52(bool const left, INTEGER const n, REAL *a, INTEGER const lda, REAL *
     //
     REAL errnrm = Rlange("One", n, n, work, n, &work[(n * n + 1) - 1]) / enorm;
     //
-    //     Compute RESULT(1)
+    // Compute RESULT(1)
     //
     result[1 - 1] = errnrm / ulp;
     //
-    //     Normalization of E:
+    // Normalization of E:
     //
     REAL enrmer = zero;
     ilcplx = false;
@@ -199,10 +183,10 @@ void Rget52(bool const left, INTEGER const n, REAL *a, INTEGER const lda, REAL *
         }
     }
     //
-    //     Compute RESULT(2) : the normalization error in E.
+    // Compute RESULT(2) : the normalization error in E.
     //
     result[2 - 1] = enrmer / (castREAL(n) * ulp);
     //
-    //     End of Rget52
+    // End of Rget52
     //
 }

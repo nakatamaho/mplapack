@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine XLAENV.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -63,6 +70,6 @@ void xlaenv(INTEGER const &ispec, INTEGER const &nvalue) {
         iparms[ispec - 1] = nvalue;
     }
     //
-    //     End of XLAENV
+    // End of xlaenv
     //
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine ZDRVVX.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -150,11 +157,12 @@ void Cdrvvx(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     ntestf = 0;
     info = 0;
     //
-    //     Important constants
+    // Important constants
     //
     badnn = false;
     //
-    //     problems
+    // 7 is the largest dimension in the input file of precomputed
+    // problems
     //
     nmax = 7;
     for (j = 1; j <= nsizes; j = j + 1) {
@@ -164,7 +172,7 @@ void Cdrvvx(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
         }
     }
     //
-    //     Check for errors
+    // Check for errors
     //
     if (nsizes < 0) {
         info = -1;
@@ -191,13 +199,13 @@ void Cdrvvx(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
         return;
     }
     //
-    //     If nothing to do check on NIUNIT
+    // If nothing to do check on NIUNIT
     //
     if (nsizes == 0 || ntypes == 0) {
         goto statement_160;
     }
     //
-    //     More Important constants
+    // More Important constants
     //
     unfl = Rlamch("Safe minimum");
     ovfl = one / unfl;
@@ -206,7 +214,7 @@ void Cdrvvx(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     rtulp = sqrt(ulp);
     rtulpi = one / rtulp;
     //
-    //     Loop over sizes, types
+    // Loop over sizes, types
     //
     nerrs = 0;
     //
@@ -223,27 +231,27 @@ void Cdrvvx(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 goto statement_140;
             }
             //
-            //           Save ISEED in case of an error.
+            // Save ISEED in case of an error.
             //
             for (j = 1; j <= 4; j = j + 1) {
                 ioldsd[j - 1] = iseed[j - 1];
             }
             //
-            //           Compute "A"
+            // Compute "A"
             //
-            //           Control parameters:
+            // Control parameters:
             //
-            //           KMAGN  KCONDS  KMODE        KTYPE
-            //       =1  O(1)   1       clustered 1  zero
-            //       =2  large  large   clustered 2  identity
-            //       =3  small          exponential  Jordan
-            //       =4                 arithmetic   diagonal, (w/ eigenvalues)
-            //       =5                 random log   symmetric, w/ eigenvalues
-            //       =6                 random       general, w/ eigenvalues
-            //       =7                              random diagonal
-            //       =8                              random symmetric
-            //       =9                              random general
-            //       =10                             random triangular
+            // KMAGN  KCONDS  KMODE        KTYPE
+            // =1  O(1)   1       clustered 1  zero
+            // =2  large  large   clustered 2  identity
+            // =3  small          exponential  Jordan
+            // =4                 arithmetic   diagonal, (w/ eigenvalues)
+            // =5                 random log   symmetric, w/ eigenvalues
+            // =6                 random       general, w/ eigenvalues
+            // =7                              random diagonal
+            // =8                              random symmetric
+            // =9                              random general
+            // =10                             random triangular
             //
             if (mtypes > maxtyp) {
                 goto statement_90;
@@ -252,7 +260,7 @@ void Cdrvvx(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             itype = ktype[jtype - 1];
             imode = kmode[jtype - 1];
             //
-            //           Compute norm
+            // Compute norm
             //
             switch (kmagn[jtype - 1]) {
             case 1:
@@ -283,16 +291,16 @@ void Cdrvvx(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             iinfo = 0;
             cond = ulpinv;
             //
-            //           Special Matrices -- Identity & Jordan block
+            // Special Matrices -- Identity & Jordan block
             //
-            //              Zero
+            // Zero
             //
             if (itype == 1) {
                 iinfo = 0;
                 //
             } else if (itype == 2) {
                 //
-                //              Identity
+                // Identity
                 //
                 for (jcol = 1; jcol <= n; jcol = jcol + 1) {
                     a[(jcol - 1) + (jcol - 1) * lda] = anorm;
@@ -300,7 +308,7 @@ void Cdrvvx(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 //
             } else if (itype == 3) {
                 //
-                //              Jordan Block
+                // Jordan Block
                 //
                 for (jcol = 1; jcol <= n; jcol = jcol + 1) {
                     a[(jcol - 1) + (jcol - 1) * lda] = anorm;
@@ -311,19 +319,19 @@ void Cdrvvx(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 //
             } else if (itype == 4) {
                 //
-                //              Diagonal Matrix, [Eigen]values Specified
+                // Diagonal Matrix, [Eigen]values Specified
                 //
                 Clatms(n, n, "S", iseed, "H", rwork, imode, cond, anorm, 0, 0, "N", a, lda, &work[(n + 1) - 1], iinfo);
                 //
             } else if (itype == 5) {
                 //
-                //              Symmetric, eigenvalues specified
+                // Symmetric, eigenvalues specified
                 //
                 Clatms(n, n, "S", iseed, "H", rwork, imode, cond, anorm, n, n, "N", a, lda, &work[(n + 1) - 1], iinfo);
                 //
             } else if (itype == 6) {
                 //
-                //              General, eigenvalues specified
+                // General, eigenvalues specified
                 //
                 if (kconds[jtype - 1] == 1) {
                     conds = one;
@@ -337,19 +345,19 @@ void Cdrvvx(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 //
             } else if (itype == 7) {
                 //
-                //              Diagonal, random eigenvalues
+                // Diagonal, random eigenvalues
                 //
                 Clatmr(n, n, "D", iseed, "S", work, 6, one, cone, "T", "N", &work[(n + 1) - 1], 1, one, &work[(2 * n + 1) - 1], 1, one, "N", idumma, 0, 0, zero, anorm, "NO", a, lda, idumma, iinfo);
                 //
             } else if (itype == 8) {
                 //
-                //              Symmetric, random eigenvalues
+                // Symmetric, random eigenvalues
                 //
                 Clatmr(n, n, "D", iseed, "H", work, 6, one, cone, "T", "N", &work[(n + 1) - 1], 1, one, &work[(2 * n + 1) - 1], 1, one, "N", idumma, n, n, zero, anorm, "NO", a, lda, idumma, iinfo);
                 //
             } else if (itype == 9) {
                 //
-                //              General, random eigenvalues
+                // General, random eigenvalues
                 //
                 Clatmr(n, n, "D", iseed, "N", work, 6, one, cone, "T", "N", &work[(n + 1) - 1], 1, one, &work[(2 * n + 1) - 1], 1, one, "N", idumma, n, n, zero, anorm, "NO", a, lda, idumma, iinfo);
                 if (n >= 4) {
@@ -361,7 +369,7 @@ void Cdrvvx(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 //
             } else if (itype == 10) {
                 //
-                //              Triangular, random eigenvalues
+                // Triangular, random eigenvalues
                 //
                 Clatmr(n, n, "D", iseed, "N", work, 6, one, cone, "T", "N", &work[(n + 1) - 1], 1, one, &work[(2 * n + 1) - 1], 1, one, "N", idumma, n, 0, zero, anorm, "NO", a, lda, idumma, iinfo);
                 //
@@ -380,7 +388,7 @@ void Cdrvvx(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
         //
         statement_90:
             //
-            //           Test for minimal and generous workspace
+            // Test for minimal and generous workspace
             //
             for (iwk = 1; iwk <= 3; iwk = iwk + 1) {
                 if (iwk == 1) {
@@ -392,16 +400,16 @@ void Cdrvvx(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 }
                 nnwork = max(nnwork, (INTEGER)1);
                 //
-                //              Test for all balancing options
+                // Test for all balancing options
                 //
                 for (ibal = 1; ibal <= 4; ibal = ibal + 1) {
                     balanc = bal[ibal - 1];
                     //
-                    //                 Perform tests
+                    // Perform tests
                     //
                     Cget23(false, 0, &balanc, jtype, thresh, ioldsd, nounit, n, a, lda, h, w, w1, vl, ldvl, vr, ldvr, lre, ldlre, rcondv, rcndv1, rcdvin, rconde, rcnde1, rcdein, scale, scale1, result, work, nnwork, rwork, info);
                     //
-                    //                 Check for RESULT(j) > THRESH
+                    // Check for RESULT(j) > THRESH
                     //
                     ntest = 0;
                     nfail = 0;
@@ -447,9 +455,9 @@ void Cdrvvx(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
 //
 statement_160:
     //
-    //     Read in data from file to check accuracy of condition estimation.
-    //     Assume input eigenvalues are sorted lexicographically (increasing
-    //     by real part, then decreasing by imaginary part)
+    // Read in data from file to check accuracy of condition estimation.
+    // Assume input eigenvalues are sorted lexicographically (increasing
+    // by real part, then decreasing by imaginary part)
     //
     jtype = 0;
     string str;
@@ -460,7 +468,7 @@ statement_160:
         iss.str(str);
         iss >> n;
         iss >> isrt;
-        // printf("# n = %d, isrt = %d\n", (int)n, int(isrt));
+    //
         //
         //     Read input data until N=0
         //
@@ -542,6 +550,6 @@ statement_160:
     //
     Rlasum(path, nounit, nerrs, ntestt);
     //
-    //     End of Cdrvvx
+    // End of Cdrvvx
     //
 }

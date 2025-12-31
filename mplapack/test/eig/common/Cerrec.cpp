@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZERREC.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -48,7 +55,7 @@ void Cerrec(const char *path, INTEGER const nunit) {
     ok = true;
     INTEGER nt = 0;
     //
-    //     Initialize A, B and SEL
+    // Initialize A, B and SEL
     //
     INTEGER j = 0;
     const INTEGER nmax = 4;
@@ -210,7 +217,7 @@ void Cerrec(const char *path, INTEGER const nunit) {
     chkxer("Ctrsen", infot, nout, lerr, ok);
     nt += 8;
     //
-    //     Print a summary line.
+    // Print a summary line.
     //
     if (ok) {
         write(nout, "(1x,a3,' routines passed the tests of the error exits (',i3,"
@@ -220,6 +227,6 @@ void Cerrec(const char *path, INTEGER const nunit) {
         write(nout, "(' *** ',a3,' routines failed the tests of the error ','exits ***')"), path;
     }
     //
-    //     End of Cerrec
+    // End of Cerrec
     //
 }

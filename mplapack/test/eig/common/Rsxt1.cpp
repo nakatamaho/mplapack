@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DSXT1.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -45,25 +52,6 @@ REAL Rsxt1(INTEGER const ijob, REAL *d1, INTEGER const n1, REAL *d2, INTEGER con
     INTEGER j = 0;
     INTEGER i = 0;
     REAL temp2 = 0.0;
-    //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
     temp1 = zero;
     //
@@ -91,6 +79,6 @@ REAL Rsxt1(INTEGER const ijob, REAL *d1, INTEGER const n1, REAL *d2, INTEGER con
     return_value = temp1;
     return return_value;
     //
-    //     End of Rsxt1
+    // End of Rsxt1
     //
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DDRVBD.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -107,7 +114,7 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
     static const char *format_9995 = "(' Rdrvbd: ',a,' returned INFO=',i6,'.',/,9x,'M=',i6,', N=',i6,"
                                      "', JTYPE=',i6,', LSWORK=',i6,/,9x,'ISEED=(',3(i5,','),i5,')')";
     //
-    //     Check for errors
+    // Check for errors
     //
     info = 0;
     badmm = false;
@@ -129,7 +136,7 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
         minwrk = max(minwrk, max({3 * min(mm[j - 1], nn[j - 1]) + max(mm[j - 1], nn[j - 1]), 5 * min(mm[j - 1], nn[j - 1] - 4)}) + 2 * min(mm[j - 1], nn[j - 1]) * min(mm[j - 1], nn[j - 1]));
     }
     //
-    //     Check for errors
+    // Check for errors
     //
     if (nsizes < 0) {
         info = -1;
@@ -169,7 +176,7 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
     ulpinv = one / ulp;
     infot = 0;
     //
-    //     Loop over sizes, types
+    // Loop over sizes, types
     //
     for (jsize = 1; jsize <= nsizes; jsize = jsize + 1) {
         m = mm[jsize - 1];
@@ -191,7 +198,7 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                 ioldsd[j - 1] = iseed[j - 1];
             }
             //
-            //           Compute "A"
+            // Compute "A"
             //
             if (mtypes > maxtyp) {
                 goto statement_30;
@@ -199,19 +206,19 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
             //
             if (jtype == 1) {
                 //
-                //              Zero matrix
+                // Zero matrix
                 //
                 Rlaset("Full", m, n, zero, zero, a, lda);
                 //
             } else if (jtype == 2) {
                 //
-                //              Identity matrix
+                // Identity matrix
                 //
                 Rlaset("Full", m, n, zero, one, a, lda);
                 //
             } else {
                 //
-                //              (Scaled) random matrix
+                // (Scaled) random matrix
                 //
                 if (jtype == 3) {
                     anorm = one;
@@ -235,7 +242,7 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
         statement_30:
             Rlacpy("F", m, n, a, lda, asav, lda);
             //
-            //           Do for minimal and adequate (for blocking) workspace
+            // Do for minimal and adequate (for blocking) workspace
             //
             for (iws = 1; iws <= 4; iws = iws + 1) {
                 //
@@ -243,7 +250,7 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                     result[j - 1] = -one;
                 }
                 //
-                //              Test Rgesvd: Factorize A
+                // Test Rgesvd: Factorize A
                 //
                 iwtmp = max({3 * min(m, n) + max(m, n), 5 * min(m, n)});
                 lswork = iwtmp + (iws - 1) * (lwork - iwtmp) / 3;
@@ -264,7 +271,7 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                     return;
                 }
                 //
-                //              Do tests 1--4
+                // Do tests 1--4
                 //
                 Rbdt01(m, n, 0, asav, lda, usav, ldu, ssav, e, vtsav, ldvt, work, result[1 - 1]);
                 if (m != 0 && n != 0) {
@@ -286,7 +293,7 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                     }
                 }
                 //
-                //              Do partial SVDs, comparing to SSAV, USAV, and VTSAV
+                // Do partial SVDs, comparing to SSAV, USAV, and VTSAV
                 //
                 result[5 - 1] = zero;
                 result[6 - 1] = zero;
@@ -302,7 +309,7 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                         strncpy(srnamt, "Rgesvd", srnamt_len);
                         Rgesvd(&jobu, &jobvt, m, n, a, lda, s, u, ldu, vt, ldvt, work, lswork, iinfo);
                         //
-                        //                    Compare U
+                        // Compare U
                         //
                         dif = zero;
                         if (m > 0 && n > 0) {
@@ -316,7 +323,7 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                         }
                         result[5 - 1] = max(result[5 - 1], dif);
                         //
-                        //                    Compare VT
+                        // Compare VT
                         //
                         dif = zero;
                         if (m > 0 && n > 0) {
@@ -330,7 +337,7 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                         }
                         result[6 - 1] = max(result[6 - 1], dif);
                         //
-                        //                    Compare S
+                        // Compare S
                         //
                         dif = zero;
                         div = max(REAL(mnmin * ulp * s[1 - 1]), unfl);
@@ -348,7 +355,7 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                     }
                 }
                 //
-                //              Test Rgesdd: Factorize A
+                // Test Rgesdd: Factorize A
                 //
                 iwtmp = 5 * mnmin * mnmin + 9 * mnmin + max(m, n);
                 lswork = iwtmp + (iws - 1) * (lwork - iwtmp) / 3;
@@ -367,7 +374,7 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                     return;
                 }
                 //
-                //              Do tests 8--11
+                // Do tests 8--11
                 //
                 Rbdt01(m, n, 0, asav, lda, usav, ldu, ssav, e, vtsav, ldvt, work, result[8 - 1]);
                 if (m != 0 && n != 0) {
@@ -389,7 +396,7 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                     }
                 }
                 //
-                //              Do partial SVDs, comparing to SSAV, USAV, and VTSAV
+                // Do partial SVDs, comparing to SSAV, USAV, and VTSAV
                 //
                 result[12 - 1] = zero;
                 result[13 - 1] = zero;
@@ -400,7 +407,7 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                     strncpy(srnamt, "Rgesdd", srnamt_len);
                     Rgesdd(&jobq, m, n, a, lda, s, u, ldu, vt, ldvt, work, lswork, iwork, iinfo);
                     //
-                    //                 Compare U
+                    // Compare U
                     //
                     dif = zero;
                     if (m > 0 && n > 0) {
@@ -416,7 +423,7 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                     }
                     result[12 - 1] = max(result[12 - 1], dif);
                     //
-                    //                 Compare VT
+                    // Compare VT
                     //
                     dif = zero;
                     if (m > 0 && n > 0) {
@@ -432,7 +439,7 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                     }
                     result[13 - 1] = max(result[13 - 1], dif);
                     //
-                    //                 Compare S
+                    // Compare S
                     //
                     dif = zero;
                     div = max(REAL(mnmin * ulp * s[1 - 1]), unfl);
@@ -448,8 +455,8 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                     result[14 - 1] = max(result[14 - 1], dif);
                 }
                 //
-                //              Test Rgesvdq
-                //              Note: Rgesvdq only works for M >= N
+                // Test Rgesvdq
+                // Note: Rgesvdq only works for M >= N
                 //
                 result[36 - 1] = zero;
                 result[37 - 1] = zero;
@@ -478,7 +485,7 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                         return;
                     }
                     //
-                    //                 Do tests 36--39
+                    // Do tests 36--39
                     //
                     Rbdt01(m, n, 0, asav, lda, usav, ldu, ssav, e, vtsav, ldvt, work, result[36 - 1]);
                     if (m != 0 && n != 0) {
@@ -501,8 +508,8 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                     }
                 }
                 //
-                //              Test Rgesvj
-                //              Note: Rgesvj only works for M >= N
+                // Test Rgesvj
+                // Note: Rgesvj only works for M >= N
                 //
                 result[15 - 1] = zero;
                 result[16 - 1] = zero;
@@ -522,7 +529,7 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                     strncpy(srnamt, "Rgesvj", srnamt_len);
                     Rgesvj("G", "U", "V", m, n, usav, lda, ssav, 0, a, ldvt, work, lwork, info);
                     //
-                    //                 Rgesvj returns V not VT
+                    // Rgesvj returns V not VT
                     //
                     for (j = 1; j <= n; j = j + 1) {
                         for (i = 1; i <= n; i = i + 1) {
@@ -536,7 +543,7 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                         return;
                     }
                     //
-                    //                 Do tests 15--18
+                    // Do tests 15--18
                     //
                     Rbdt01(m, n, 0, asav, lda, usav, ldu, ssav, e, vtsav, ldvt, work, result[15 - 1]);
                     if (m != 0 && n != 0) {
@@ -559,8 +566,8 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                     }
                 }
                 //
-                //              Test Rgejsv
-                //              Note: Rgejsv only works for M >= N
+                // Test Rgejsv
+                // Note: Rgejsv only works for M >= N
                 //
                 result[19 - 1] = zero;
                 result[20 - 1] = zero;
@@ -578,7 +585,7 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                     Rlacpy("F", m, n, asav, lda, vtsav, lda);
                     Rgejsv("G", "U", "V", "R", "N", "N", m, n, vtsav, lda, ssav, usav, ldu, a, ldvt, work, lwork, iwork, info);
                     //
-                    //                 Rgejsv returns V not VT
+                    // Rgejsv returns V not VT
                     //
                     for (j = 1; j <= n; j = j + 1) {
                         for (i = 1; i <= n; i = i + 1) {
@@ -592,7 +599,7 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                         return;
                     }
                     //
-                    //                 Do tests 19--22
+                    // Do tests 19--22
                     //
                     Rbdt01(m, n, 0, asav, lda, usav, ldu, ssav, e, vtsav, ldvt, work, result[19 - 1]);
                     if (m != 0 && n != 0) {
@@ -615,7 +622,7 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                     }
                 }
                 //
-                //              Test Rgesvdx
+                // Test Rgesvdx
                 //
                 Rlacpy("F", m, n, asav, lda, a, lda);
                 Rgesvdx("V", "V", "A", m, n, a, lda, vl, vu, il, iu, ns, ssav, usav, ldu, vtsav, ldvt, work, lwork, iwork, iinfo);
@@ -625,7 +632,7 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                     return;
                 }
                 //
-                //              Do tests 23--29
+                // Do tests 23--29
                 //
                 result[23 - 1] = zero;
                 result[24 - 1] = zero;
@@ -650,7 +657,7 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                     }
                 }
                 //
-                //              Do partial SVDs, comparing to SSAV, USAV, and VTSAV
+                // Do partial SVDs, comparing to SSAV, USAV, and VTSAV
                 //
                 result[27 - 1] = zero;
                 result[28 - 1] = zero;
@@ -666,7 +673,7 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                         Rlacpy("F", m, n, asav, lda, a, lda);
                         Rgesvdx(&jobu, &jobvt, &range, m, n, a, lda, vl, vu, il, iu, ns, s, u, ldu, vt, ldvt, work, lwork, iwork, iinfo);
                         //
-                        //                    Compare U
+                        // Compare U
                         //
                         dif = zero;
                         if (m > 0 && n > 0) {
@@ -676,7 +683,7 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                         }
                         result[27 - 1] = max(result[27 - 1], dif);
                         //
-                        //                    Compare VT
+                        // Compare VT
                         //
                         dif = zero;
                         if (m > 0 && n > 0) {
@@ -686,7 +693,7 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                         }
                         result[28 - 1] = max(result[28 - 1], dif);
                         //
-                        //                    Compare S
+                        // Compare S
                         //
                         dif = zero;
                         div = max(REAL(mnmin * ulp * s[1 - 1]), unfl);
@@ -704,7 +711,7 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                     }
                 }
                 //
-                //              Do tests 30--32: Rgesvdx( 'V', 'V', 'I' )
+                // Do tests 30--32: Rgesvdx( 'V', 'V', 'I' )
                 //
                 for (i = 1; i <= 4; i = i + 1) {
                     iseed2[i - 1] = iseed[i - 1];
@@ -736,7 +743,7 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                 Rort01("Columns", m, nsi, u, ldu, work, lwork, result[31 - 1]);
                 Rort01("Rows", nsi, n, vt, ldvt, work, lwork, result[32 - 1]);
                 //
-                //              Do tests 33--35: Rgesvdx( 'V', 'V', 'V' )
+                // Do tests 33--35: Rgesvdx( 'V', 'V', 'V' )
                 //
                 if (mnmin > 0 && nsi > 1) {
                     if (il != 1) {
@@ -773,7 +780,7 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                 Rort01("Columns", m, nsv, u, ldu, work, lwork, result[34 - 1]);
                 Rort01("Rows", nsv, n, vt, ldvt, work, lwork, result[35 - 1]);
                 //
-                //              End of Loop -- Check for RESULT(j) > THRESH
+                // End of Loop -- Check for RESULT(j) > THRESH
                 //
                 for (j = 1; j <= 39; j = j + 1) {
                     if (result[j - 1] >= thresh) {
@@ -846,10 +853,10 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
         }
     }
     //
-    //     Summary
+    // Summary
     //
     Alasvm(path, nout, nfail, ntest, 0);
     //
-    //     End of Rdrvbd
+    // End of Rdrvbd
     //
 }

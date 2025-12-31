@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZGET22.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -40,7 +47,7 @@ using fem::common;
 
 void Cget22(const char *transa, const char *transe, const char *transw, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *e, INTEGER const lde, COMPLEX *w, COMPLEX *work, REAL *rwork, REAL *result) {
     //
-    //     Initialize RESULT (in case N=0)
+    // Initialize RESULT (in case N=0)
     //
     const REAL zero = 0.0;
     result[1 - 1] = zero;
@@ -75,7 +82,7 @@ void Cget22(const char *transa, const char *transe, const char *transw, INTEGER 
         itrnsw = 1;
     }
     //
-    //     Normalization of E:
+    // Normalization of E:
     //
     const REAL one = 1.0;
     REAL enrmin = one / ulp;
@@ -109,17 +116,17 @@ void Cget22(const char *transa, const char *transe, const char *transw, INTEGER 
         }
     }
     //
-    //     Norm of A:
+    // Norm of A:
     //
     REAL anorm = max({Clange(&norma, n, n, a, lda, rwork), unfl});
     //
-    //     Norm of E:
+    // Norm of E:
     //
     REAL enorm = max({Clange(&norme, n, n, e, lde, rwork), ulp});
     //
-    //     Norm of error:
+    // Norm of error:
     //
-    //     Error =  AE - EW
+    // Error =  AE - EW
     //
     const COMPLEX czero = COMPLEX(0.0, 0.0);
     Claset("Full", n, n, czero, czero, work, n);
@@ -156,7 +163,7 @@ void Cget22(const char *transa, const char *transe, const char *transw, INTEGER 
     //
     REAL errnrm = Clange("One", n, n, work, n, rwork) / enorm;
     //
-    //     Compute RESULT(1) (avoiding under/overflow)
+    // Compute RESULT(1) (avoiding under/overflow)
     //
     if (anorm > errnrm) {
         result[1 - 1] = (errnrm / anorm) / ulp;
@@ -168,10 +175,10 @@ void Cget22(const char *transa, const char *transe, const char *transw, INTEGER 
         }
     }
     //
-    //     Compute RESULT(2) : the normalization error in E.
+    // Compute RESULT(2) : the normalization error in E.
     //
     result[2 - 1] = max(abs(enrmax - one), abs(enrmin - one)) / (castREAL(n) * ulp);
     //
-    //     End of Cget22
+    // End of Cget22
     //
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine ZDRVST2STG.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -114,7 +121,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
     static const char *format_9999 = "(' Cdrvst2stg: ',a,' returned INFO=',i6,/,9x,'N=',i6,', JTYPE=',i6,"
                                      "', ISEED=(',3(i5,','),i5,')')";
     //
-    //     1)      Check for errors
+    // 1)      Check for errors
     //
     ntestt = 0;
     info = 0;
@@ -128,7 +135,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
         }
     }
     //
-    //     Check for errors
+    // Check for errors
     //
     if (nsizes < 0) {
         info = -1;
@@ -149,13 +156,13 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
         return;
     }
     //
-    //     Quick return if nothing to do
+    // Quick return if nothing to do
     //
     if (nsizes == 0 || ntypes == 0) {
         return;
     }
     //
-    //     More Important constants
+    // More Important constants
     //
     unfl = Rlamch("Safe minimum");
     ovfl = Rlamch("Overflow");
@@ -165,7 +172,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
     rtunfl = sqrt(unfl);
     rtovfl = sqrt(ovfl);
     //
-    //     Loop over sizes, types
+    // Loop over sizes, types
     //
     for (i = 1; i <= 4; i = i + 1) {
         iseed2[i - 1] = iseed[i - 1];
@@ -212,20 +219,20 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 ioldsd[j - 1] = iseed[j - 1];
             }
             //
-            //           2)      Compute "A"
+            // 2)      Compute "A"
             //
-            //                   Control parameters:
+            // Control parameters:
             //
-            //               KMAGN  KMODE        KTYPE
-            //           =1  O(1)   clustered 1  zero
-            //           =2  large  clustered 2  identity
-            //           =3  small  exponential  (none)
-            //           =4         arithmetic   diagonal, (w/ eigenvalues)
-            //           =5         random log   Hermitian, w/ eigenvalues
-            //           =6         random       (none)
-            //           =7                      random diagonal
-            //           =8                      random Hermitian
-            //           =9                      band Hermitian, w/ eigenvalues
+            // KMAGN  KMODE        KTYPE
+            // =1  O(1)   clustered 1  zero
+            // =2  large  clustered 2  identity
+            // =3  small  exponential  (none)
+            // =4         arithmetic   diagonal, (w/ eigenvalues)
+            // =5         random log   Hermitian, w/ eigenvalues
+            // =6         random       (none)
+            // =7                      random diagonal
+            // =8                      random Hermitian
+            // =9                      band Hermitian, w/ eigenvalues
             //
             if (mtypes > maxtyp) {
                 goto statement_110;
@@ -234,7 +241,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
             itype = ktype[jtype - 1];
             imode = kmode[jtype - 1];
             //
-            //           Compute norm
+            // Compute norm
             //
             switch (kmagn[jtype - 1]) {
             case 1:
@@ -280,7 +287,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 //
             } else if (itype == 2) {
                 //
-                //              Identity
+                // Identity
                 //
                 for (jcol = 1; jcol <= n; jcol = jcol + 1) {
                     a[(jcol - 1) + (jcol - 1) * lda] = anorm;
@@ -288,36 +295,36 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 //
             } else if (itype == 4) {
                 //
-                //              Diagonal Matrix, [Eigen]values Specified
+                // Diagonal Matrix, [Eigen]values Specified
                 //
                 Clatms(n, n, "S", iseed, "H", rwork, imode, cond, anorm, 0, 0, "N", a, lda, work, iinfo);
                 //
             } else if (itype == 5) {
                 //
-                //              Hermitian, eigenvalues specified
+                // Hermitian, eigenvalues specified
                 //
                 Clatms(n, n, "S", iseed, "H", rwork, imode, cond, anorm, n, n, "N", a, lda, work, iinfo);
                 //
             } else if (itype == 7) {
                 //
-                //              Diagonal, random eigenvalues
+                // Diagonal, random eigenvalues
                 //
                 Clatmr(n, n, "S", iseed, "H", work, 6, one, cone, "T", "N", &work[(n + 1) - 1], 1, one, &work[(2 * n + 1) - 1], 1, one, "N", idumma, 0, 0, zero, anorm, "NO", a, lda, iwork, iinfo);
                 //
             } else if (itype == 8) {
                 //
-                //              Hermitian, random eigenvalues
+                // Hermitian, random eigenvalues
                 //
                 Clatmr(n, n, "S", iseed, "H", work, 6, one, cone, "T", "N", &work[(n + 1) - 1], 1, one, &work[(2 * n + 1) - 1], 1, one, "N", idumma, n, n, zero, anorm, "NO", a, lda, iwork, iinfo);
                 //
             } else if (itype == 9) {
                 //
-                //              Hermitian banded, eigenvalues specified
+                // Hermitian banded, eigenvalues specified
                 //
                 ihbw = castINTEGER((n - 1) * Rlarnd(1, iseed3));
                 Clatms(n, n, "S", iseed, "H", rwork, imode, cond, anorm, ihbw, ihbw, "Z", u, ldu, work, iinfo);
                 //
-                //              Store as dense matrix for most routines.
+                // Store as dense matrix for most routines.
                 //
                 Claset("Full", lda, n, czero, czero, a, lda);
                 for (idiag = -ihbw; idiag <= ihbw; idiag = idiag + 1) {
@@ -355,8 +362,8 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 }
             }
             //
-            //           Perform tests storing upper or lower triangular
-            //           part of matrix.
+            // Perform tests storing upper or lower triangular
+            // part of matrix.
             //
             for (iuplo = 0; iuplo <= 1; iuplo = iuplo + 1) {
                 if (iuplo == 0) {
@@ -365,7 +372,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     uplo = 'U';
                 }
                 //
-                //              Call Cheevd and CHEEVX.
+                // Call Cheevd and CHEEVX.
                 //
                 Clacpy(" ", n, n, a, lda, v, ldu);
                 //
@@ -387,7 +394,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     }
                 }
                 //
-                //              Do tests 1 and 2.
+                // Do tests 1 and 2.
                 //
                 Chet21(1, &uplo, n, 0, v, ldu, d1, d2, a, ldu, z, ldu, tau, work, rwork, &result[ntest - 1]);
                 //
@@ -409,7 +416,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     }
                 }
                 //
-                //              Do test 3.
+                // Do test 3.
                 //
                 temp1 = zero;
                 temp2 = zero;
@@ -459,7 +466,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     }
                 }
                 //
-                //              Do tests 4 and 5.
+                // Do tests 4 and 5.
                 //
                 Clacpy(" ", n, n, v, ldu, a, lda);
                 //
@@ -481,7 +488,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     }
                 }
                 //
-                //              Do test 6.
+                // Do test 6.
                 //
                 temp1 = zero;
                 temp2 = zero;
@@ -511,7 +518,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     }
                 }
                 //
-                //              Do tests 7 and 8.
+                // Do tests 7 and 8.
                 //
                 Clacpy(" ", n, n, v, ldu, a, lda);
                 //
@@ -534,7 +541,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     }
                 }
                 //
-                //              Do test 9.
+                // Do test 9.
                 //
                 temp1 = Rsxt1(1, wa2, m2, wa3, m3, abstol, ulp, unfl);
                 temp2 = Rsxt1(1, wa3, m3, wa2, m2, abstol, ulp, unfl);
@@ -565,7 +572,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     }
                 }
                 //
-                //              Do tests 10 and 11.
+                // Do tests 10 and 11.
                 //
                 Clacpy(" ", n, n, v, ldu, a, lda);
                 //
@@ -593,7 +600,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     goto statement_170;
                 }
                 //
-                //              Do test 12.
+                // Do test 12.
                 //
                 temp1 = Rsxt1(1, wa2, m2, wa3, m3, abstol, ulp, unfl);
                 temp2 = Rsxt1(1, wa3, m3, wa2, m2, abstol, ulp, unfl);
@@ -606,12 +613,12 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
             //
             statement_170:
                 //
-                //              Call Chpevd and CHPEVX.
+                // Call Chpevd and CHPEVX.
                 //
                 Clacpy(" ", n, n, v, ldu, a, lda);
                 //
-                //              Load array WORK with the upper or lower triangular
-                //              part of the matrix in packed form.
+                // Load array WORK with the upper or lower triangular
+                // part of the matrix in packed form.
                 //
                 if (iuplo == 1) {
                     indx = 1;
@@ -650,7 +657,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     }
                 }
                 //
-                //              Do tests 13 and 14.
+                // Do tests 13 and 14.
                 //
                 Chet21(1, &uplo, n, 0, a, lda, d1, d2, z, ldu, v, ldu, tau, work, rwork, &result[ntest - 1]);
                 //
@@ -689,7 +696,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     }
                 }
                 //
-                //              Do test 15.
+                // Do test 15.
                 //
                 temp1 = zero;
                 temp2 = zero;
@@ -699,8 +706,8 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 }
                 result[ntest - 1] = temp2 / max(unfl, REAL(ulp * max(temp1, temp2)));
             //
-            //              Load array WORK with the upper or lower triangular part
-            //              of the matrix in packed form.
+            // Load array WORK with the upper or lower triangular part
+            // of the matrix in packed form.
             //
             statement_270:
                 if (iuplo == 1) {
@@ -758,7 +765,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     }
                 }
                 //
-                //              Do tests 16 and 17.
+                // Do tests 16 and 17.
                 //
                 Chet21(1, &uplo, n, 0, a, ldu, wa1, d2, z, ldu, v, ldu, tau, work, rwork, &result[ntest - 1]);
                 //
@@ -797,7 +804,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     }
                 }
                 //
-                //              Do test 18.
+                // Do test 18.
                 //
                 temp1 = zero;
                 temp2 = zero;
@@ -844,7 +851,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     }
                 }
                 //
-                //              Do tests 19 and 20.
+                // Do tests 19 and 20.
                 //
                 Chet22(1, &uplo, n, m2, 0, a, ldu, wa2, d2, z, ldu, v, ldu, tau, work, rwork, &result[ntest - 1]);
                 //
@@ -883,7 +890,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     }
                 }
                 //
-                //              Do test 21.
+                // Do test 21.
                 //
                 temp1 = Rsxt1(1, wa2, m2, wa3, m3, abstol, ulp, unfl);
                 temp2 = Rsxt1(1, wa3, m3, wa2, m2, abstol, ulp, unfl);
@@ -931,7 +938,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     }
                 }
                 //
-                //              Do tests 22 and 23.
+                // Do tests 22 and 23.
                 //
                 Chet22(1, &uplo, n, m2, 0, a, ldu, wa2, d2, z, ldu, v, ldu, tau, work, rwork, &result[ntest - 1]);
                 //
@@ -975,7 +982,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     goto statement_550;
                 }
                 //
-                //              Do test 24.
+                // Do test 24.
                 //
                 temp1 = Rsxt1(1, wa2, m2, wa3, m3, abstol, ulp, unfl);
                 temp2 = Rsxt1(1, wa3, m3, wa2, m2, abstol, ulp, unfl);
@@ -988,7 +995,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
             //
             statement_550:
                 //
-                //              Call Chbevd and CHBEVX.
+                // Call Chbevd and CHBEVX.
                 //
                 if (jtype <= 7) {
                     kd = 0;
@@ -998,8 +1005,8 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     kd = ihbw;
                 }
                 //
-                //              Load array V with the upper or lower triangular part
-                //              of the matrix in band form.
+                // Load array V with the upper or lower triangular part
+                // of the matrix in band form.
                 //
                 if (iuplo == 1) {
                     for (j = 1; j <= n; j = j + 1) {
@@ -1033,7 +1040,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     }
                 }
                 //
-                //              Do tests 25 and 26.
+                // Do tests 25 and 26.
                 //
                 Chet21(1, &uplo, n, 0, a, lda, d1, d2, z, ldu, v, ldu, tau, work, rwork, &result[ntest - 1]);
                 //
@@ -1067,7 +1074,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     }
                 }
                 //
-                //              Do test 27.
+                // Do test 27.
                 //
                 temp1 = zero;
                 temp2 = zero;
@@ -1077,8 +1084,8 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 }
                 result[ntest - 1] = temp2 / max(unfl, REAL(ulp * max(temp1, temp2)));
             //
-            //              Load array V with the upper or lower triangular part
-            //              of the matrix in band form.
+            // Load array V with the upper or lower triangular part
+            // of the matrix in band form.
             //
             statement_650:
                 if (iuplo == 1) {
@@ -1113,7 +1120,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     }
                 }
                 //
-                //              Do tests 28 and 29.
+                // Do tests 28 and 29.
                 //
                 Chet21(1, &uplo, n, 0, a, ldu, wa1, d2, z, ldu, v, ldu, tau, work, rwork, &result[ntest - 1]);
                 //
@@ -1148,7 +1155,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     }
                 }
                 //
-                //              Do test 30.
+                // Do test 30.
                 //
                 temp1 = zero;
                 temp2 = zero;
@@ -1158,8 +1165,8 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 }
                 result[ntest - 1] = temp2 / max(unfl, REAL(ulp * max(temp1, temp2)));
             //
-            //              Load array V with the upper or lower triangular part
-            //              of the matrix in band form.
+            // Load array V with the upper or lower triangular part
+            // of the matrix in band form.
             //
             statement_750:
                 ntest++;
@@ -1194,7 +1201,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     }
                 }
                 //
-                //              Do tests 31 and 32.
+                // Do tests 31 and 32.
                 //
                 Chet22(1, &uplo, n, m2, 0, a, ldu, wa2, d2, z, ldu, v, ldu, tau, work, rwork, &result[ntest - 1]);
                 //
@@ -1228,7 +1235,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     }
                 }
                 //
-                //              Do test 33.
+                // Do test 33.
                 //
                 temp1 = Rsxt1(1, wa2, m2, wa3, m3, abstol, ulp, unfl);
                 temp2 = Rsxt1(1, wa3, m3, wa2, m2, abstol, ulp, unfl);
@@ -1239,8 +1246,8 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 }
                 result[ntest - 1] = (temp1 + temp2) / max(unfl, REAL(temp3 * ulp));
             //
-            //              Load array V with the upper or lower triangular part
-            //              of the matrix in band form.
+            // Load array V with the upper or lower triangular part
+            // of the matrix in band form.
             //
             statement_840:
                 ntest++;
@@ -1274,7 +1281,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     }
                 }
                 //
-                //              Do tests 34 and 35.
+                // Do tests 34 and 35.
                 //
                 Chet22(1, &uplo, n, m2, 0, a, ldu, wa2, d2, z, ldu, v, ldu, tau, work, rwork, &result[ntest - 1]);
                 //
@@ -1313,7 +1320,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     goto statement_930;
                 }
                 //
-                //              Do test 36.
+                // Do test 36.
                 //
                 temp1 = Rsxt1(1, wa2, m2, wa3, m3, abstol, ulp, unfl);
                 temp2 = Rsxt1(1, wa3, m3, wa2, m2, abstol, ulp, unfl);
@@ -1326,7 +1333,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
             //
             statement_930:
                 //
-                //              Call Cheev
+                // Call Cheev
                 //
                 Clacpy(" ", n, n, a, lda, v, ldu);
                 //
@@ -1348,7 +1355,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     }
                 }
                 //
-                //              Do tests 37 and 38
+                // Do tests 37 and 38
                 //
                 Chet21(1, &uplo, n, 0, v, ldu, d1, d2, a, ldu, z, ldu, tau, work, rwork, &result[ntest - 1]);
                 //
@@ -1370,7 +1377,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     }
                 }
                 //
-                //              Do test 39
+                // Do test 39
                 //
                 temp1 = zero;
                 temp2 = zero;
@@ -1384,10 +1391,10 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 //
                 Clacpy(" ", n, n, v, ldu, a, lda);
                 //
-                //              Call Chpev
+                // Call Chpev
                 //
-                //              Load array WORK with the upper or lower triangular
-                //              part of the matrix in packed form.
+                // Load array WORK with the upper or lower triangular
+                // part of the matrix in packed form.
                 //
                 if (iuplo == 1) {
                     indx = 1;
@@ -1426,7 +1433,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     }
                 }
                 //
-                //              Do tests 40 and 41.
+                // Do tests 40 and 41.
                 //
                 Chet21(1, &uplo, n, 0, a, lda, d1, d2, z, ldu, v, ldu, tau, work, rwork, &result[ntest - 1]);
                 //
@@ -1465,7 +1472,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     }
                 }
                 //
-                //              Do test 42
+                // Do test 42
                 //
                 temp1 = zero;
                 temp2 = zero;
@@ -1477,7 +1484,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
             //
             statement_1050:
                 //
-                //              Call Chbev
+                // Call Chbev
                 //
                 if (jtype <= 7) {
                     kd = 0;
@@ -1487,8 +1494,8 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     kd = ihbw;
                 }
                 //
-                //              Load array V with the upper or lower triangular part
-                //              of the matrix in band form.
+                // Load array V with the upper or lower triangular part
+                // of the matrix in band form.
                 //
                 if (iuplo == 1) {
                     for (j = 1; j <= n; j = j + 1) {
@@ -1522,7 +1529,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     }
                 }
                 //
-                //              Do tests 43 and 44.
+                // Do tests 43 and 44.
                 //
                 Chet21(1, &uplo, n, 0, a, lda, d1, d2, z, ldu, v, ldu, tau, work, rwork, &result[ntest - 1]);
                 //
@@ -1558,7 +1565,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
             //
             statement_1140:
                 //
-                //              Do test 45.
+                // Do test 45.
                 //
                 temp1 = zero;
                 temp2 = zero;
@@ -1587,7 +1594,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     }
                 }
                 //
-                //              Do tests 45 and 46 (or ... )
+                // Do tests 45 and 46 (or ... )
                 //
                 Clacpy(" ", n, n, v, ldu, a, lda);
                 //
@@ -1609,7 +1616,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     }
                 }
                 //
-                //              Do test 47 (or ... )
+                // Do test 47 (or ... )
                 //
                 temp1 = zero;
                 temp2 = zero;
@@ -1640,7 +1647,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     }
                 }
                 //
-                //              Do tests 48 and 49 (or +??)
+                // Do tests 48 and 49 (or +??)
                 //
                 Clacpy(" ", n, n, v, ldu, a, lda);
                 //
@@ -1663,7 +1670,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     }
                 }
                 //
-                //              Do test 50 (or +??)
+                // Do test 50 (or +??)
                 //
                 temp1 = Rsxt1(1, wa2, m2, wa3, m3, abstol, ulp, unfl);
                 temp2 = Rsxt1(1, wa3, m3, wa2, m2, abstol, ulp, unfl);
@@ -1689,7 +1696,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     }
                 }
                 //
-                //              Do tests 51 and 52 (or +??)
+                // Do tests 51 and 52 (or +??)
                 //
                 Clacpy(" ", n, n, v, ldu, a, lda);
                 //
@@ -1717,7 +1724,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     goto statement_1190;
                 }
                 //
-                //              Do test 52 (or +??)
+                // Do test 52 (or +??)
                 //
                 temp1 = Rsxt1(1, wa2, m2, wa3, m3, abstol, ulp, unfl);
                 temp2 = Rsxt1(1, wa3, m3, wa2, m2, abstol, ulp, unfl);
@@ -1730,14 +1737,14 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 //
                 Clacpy(" ", n, n, v, ldu, a, lda);
             //
-            //              Load array V with the upper or lower triangular part
-            //              of the matrix in band form.
+            // Load array V with the upper or lower triangular part
+            // of the matrix in band form.
             //
             statement_1190:;
                 //
             }
             //
-            //           End of Loop -- Check for RESULT(j) > THRESH
+            // End of Loop -- Check for RESULT(j) > THRESH
             //
             ntestt += ntest;
             Rlafts("ZST", n, n, jtype, ntest, result, ioldsd, thresh, nounit, nerrs);
@@ -1746,10 +1753,10 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
         }
     }
     //
-    //     Summary
+    // Summary
     //
     Alasvm("ZST", nounit, nerrs, ntestt, 0);
     //
-    //     End of Cdrvst2stg
+    // End of Cdrvst2stg
     //
 }

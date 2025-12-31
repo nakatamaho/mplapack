@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DCHKBK.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -169,6 +176,6 @@ void Rchkbk(INTEGER const nin, INTEGER const nout) {
     write(nout, "(1x,'number of examples where info is not 0  = ',i4)"), ninfo;
     write(nout, "(1x,'total number of examples tested         = ',i4)"), knt;
     //
-    //     End of Rchkbk
+    // End of Rchkbk
     //
 }

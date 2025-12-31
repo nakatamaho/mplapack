@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DSTECH.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -56,30 +63,7 @@ void Rstech(INTEGER const n, REAL *a, REAL *b, REAL *eig, REAL const tol, REAL *
     INTEGER numu = 0;
     INTEGER count = 0;
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Check input parameters
+    // Check input parameters
     //
     info = 0;
     if (n == 0) {
@@ -94,13 +78,13 @@ void Rstech(INTEGER const n, REAL *a, REAL *b, REAL *eig, REAL const tol, REAL *
         return;
     }
     //
-    //     Get machine constants
+    // Get machine constants
     //
     eps = Rlamch("Epsilon") * Rlamch("Base");
     unflep = Rlamch("Safe minimum") / eps;
     eps = tol * eps;
     //
-    //     Compute maximum absolute eigenvalue, error tolerance
+    // Compute maximum absolute eigenvalue, error tolerance
     //
     mx = abs(eig[1 - 1]);
     for (i = 2; i <= n; i = i + 1) {
@@ -108,7 +92,7 @@ void Rstech(INTEGER const n, REAL *a, REAL *b, REAL *eig, REAL const tol, REAL *
     }
     eps = max(REAL(eps * mx), unflep);
     //
-    //     Sort eigenvalues from EIG into WORK
+    // Sort eigenvalues from EIG into WORK
     //
     for (i = 1; i <= n; i = i + 1) {
         work[i - 1] = eig[i - 1];
@@ -128,19 +112,19 @@ void Rstech(INTEGER const n, REAL *a, REAL *b, REAL *eig, REAL const tol, REAL *
         }
     }
     //
-    //     TPNT points to singular value at right endpoint of interval
-    //     BPNT points to singular value at left  endpoint of interval
+    // TPNT points to singular value at right endpoint of interval
+    // BPNT points to singular value at left  endpoint of interval
     //
     tpnt = 1;
     bpnt = 1;
 //
-//     Begin loop over all intervals
+// Begin loop over all intervals
 //
 statement_50:
     upper = work[tpnt - 1] + eps;
     lower = work[bpnt - 1] - eps;
 //
-//     Begin loop merging overlapping intervals
+// Begin loop merging overlapping intervals
 //
 statement_60:
     if (bpnt == n) {
@@ -151,21 +135,21 @@ statement_60:
         goto statement_70;
     }
     //
-    //     Merge
+    // Merge
     //
     bpnt++;
     lower = work[bpnt - 1] - eps;
     goto statement_60;
 statement_70:
     //
-    //     Count singular values in interval [ LOWER, UPPER ]
+    // Count singular values in interval [ LOWER, UPPER ]
     //
     Rstect(n, a, b, lower, numl);
     Rstect(n, a, b, upper, numu);
     count = numu - numl;
     if (count != bpnt - tpnt + 1) {
         //
-        //        Wrong number of singular values in interval
+        // Wrong number of singular values in interval
         //
         info = tpnt;
         goto statement_80;
@@ -177,6 +161,6 @@ statement_70:
     }
 statement_80:;
     //
-    //     End of Rstech
+    // End of Rstech
     //
 }

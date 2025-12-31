@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZGET10.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -40,7 +47,7 @@ using fem::common;
 
 void Cget10(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, COMPLEX *work, REAL *rwork, REAL &result) {
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     const REAL zero = 0.0;
     if (m <= 0 || n <= 0) {
@@ -72,6 +79,6 @@ void Cget10(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, COM
         }
     }
     //
-    //     End of Cget10
+    // End of Cget10
     //
 }

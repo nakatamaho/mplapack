@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DSGT01.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -40,27 +47,6 @@ using fem::common;
 
 void Rsgt01(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER const m, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL *z, INTEGER const ldz, REAL *d, REAL *work, REAL *result) {
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     const REAL zero = 0.0;
     result[1 - 1] = zero;
     if (n <= 0) {
@@ -69,7 +55,7 @@ void Rsgt01(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER cons
     //
     REAL ulp = Rlamch("Epsilon");
     //
-    //     Compute product of 1-norms of A and Z.
+    // Compute product of 1-norms of A and Z.
     //
     REAL anorm = Rlansy("1", uplo, n, a, lda, work) * Rlange("1", n, m, z, ldz, work);
     const REAL one = 1.0;
@@ -80,7 +66,7 @@ void Rsgt01(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER cons
     INTEGER i = 0;
     if (itype == 1) {
         //
-        //        Norm of AZ - BZD
+        // Norm of AZ - BZD
         //
         Rsymm("Left", uplo, n, m, one, a, lda, z, ldz, zero, work, n);
         for (i = 1; i <= m; i = i + 1) {
@@ -92,7 +78,7 @@ void Rsgt01(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER cons
         //
     } else if (itype == 2) {
         //
-        //        Norm of ABZ - ZD
+        // Norm of ABZ - ZD
         //
         Rsymm("Left", uplo, n, m, one, b, ldb, z, ldz, zero, work, n);
         for (i = 1; i <= m; i = i + 1) {
@@ -104,7 +90,7 @@ void Rsgt01(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER cons
         //
     } else if (itype == 3) {
         //
-        //        Norm of BAZ - ZD
+        // Norm of BAZ - ZD
         //
         Rsymm("Left", uplo, n, m, one, a, lda, z, ldz, zero, work, n);
         for (i = 1; i <= m; i = i + 1) {
@@ -115,6 +101,6 @@ void Rsgt01(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER cons
         result[1 - 1] = (Rlange("1", n, m, z, ldz, work) / anorm) / (n * ulp);
     }
     //
-    //     End of DDGT01
+    // End of Rdgt01
     //
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine ZCKCSD.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -93,7 +100,7 @@ void Cckcsd(INTEGER const nm, INTEGER *mval, INTEGER *pval, INTEGER *qval, INTEG
     ldv2t = mmax;
     lwork = mmax * mmax;
     //
-    //     Do for each value of M in MVAL.
+    // Do for each value of M in MVAL.
     //
     for (im = 1; im <= nm; im = im + 1) {
         m = mval[im - 1];
@@ -102,13 +109,13 @@ void Cckcsd(INTEGER const nm, INTEGER *mval, INTEGER *pval, INTEGER *qval, INTEG
         //
         for (imat = 1; imat <= ntypes; imat = imat + 1) {
             //
-            //           Do the tests only if DOTYPE( IMAT ) is true.
+            // Do the tests only if DOTYPE( IMAT ) is true.
             //
             if (!dotype[imat - 1]) {
                 goto statement_20;
             }
             //
-            //           Generate X
+            // Generate X
             //
             if (imat == 1) {
                 Claror("L", "I", m, m, x, ldx, iseed, work, iinfo);
@@ -154,8 +161,8 @@ void Cckcsd(INTEGER const nm, INTEGER *mval, INTEGER *pval, INTEGER *qval, INTEG
             //
             Ccsdts(m, p, q, x, xf, ldx, u1, ldu1, u2, ldu2, v1t, ldv1t, v2t, ldv2t, theta, iwork, work, lwork, rwork, result);
             //
-            //           Print information about the tests that did not
-            //           pass the threshold.
+            // Print information about the tests that did not
+            // pass the threshold.
             //
             for (i = 1; i <= nt; i = i + 1) {
                 if (result[i - 1] >= thresh) {
@@ -175,10 +182,10 @@ void Cckcsd(INTEGER const nm, INTEGER *mval, INTEGER *pval, INTEGER *qval, INTEG
         }
     }
     //
-    //     Print a summary of the results.
+    // Print a summary of the results.
     //
     Alasum(path, nout, nfail, nrun, 0);
     //
-    //     End of Cckcsd
+    // End of Cckcsd
     //
 }

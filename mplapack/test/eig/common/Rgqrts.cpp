@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DGQRTS.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -73,7 +80,7 @@ void Rgqrts(INTEGER const n, INTEGER const m, INTEGER const p, REAL *a, REAL *af
     REAL ulp = Rlamch("Precision");
     REAL unfl = Rlamch("Safe minimum");
     //
-    //     Copy the matrix A to the array AF.
+    // Copy the matrix A to the array AF.
     //
     Rlacpy("Full", n, m, a, lda, af, lda);
     Rlacpy("Full", n, p, b, ldb, bf, ldb);
@@ -81,19 +88,19 @@ void Rgqrts(INTEGER const n, INTEGER const m, INTEGER const p, REAL *a, REAL *af
     REAL anorm = max({Rlange("1", n, m, a, lda, rwork), unfl});
     REAL bnorm = max({Rlange("1", n, p, b, ldb, rwork), unfl});
     //
-    //     Factorize the matrices A and B in the arrays AF and BF.
+    // Factorize the matrices A and B in the arrays AF and BF.
     //
     INTEGER info = 0;
     Rggqrf(n, m, p, af, lda, taua, bf, ldb, taub, work, lwork, info);
     //
-    //     Generate the N-by-N matrix Q
+    // Generate the N-by-N matrix Q
     //
     const REAL rogue = -1.0e+10;
     Rlaset("Full", n, n, rogue, rogue, q, lda);
     Rlacpy("Lower", n - 1, m, &af[(2 - 1)], lda, &q[(2 - 1)], lda);
     Rorgqr(n, n, min(n, m), q, lda, taua, work, lwork, info);
     //
-    //     Generate the P-by-P matrix Z
+    // Generate the P-by-P matrix Z
     //
     Rlaset("Full", p, p, rogue, rogue, z, ldb);
     if (n <= p) {
@@ -110,13 +117,13 @@ void Rgqrts(INTEGER const n, INTEGER const m, INTEGER const p, REAL *a, REAL *af
     }
     Rorgrq(p, p, min(n, p), z, ldb, taub, work, lwork, info);
     //
-    //     Copy R
+    // Copy R
     //
     const REAL zero = 0.0;
     Rlaset("Full", n, m, zero, zero, r, lda);
     Rlacpy("Upper", n, m, af, lda, r, lda);
     //
-    //     Copy T
+    // Copy T
     //
     Rlaset("Full", n, p, zero, zero, t, ldb);
     if (n <= p) {
@@ -126,12 +133,12 @@ void Rgqrts(INTEGER const n, INTEGER const m, INTEGER const p, REAL *a, REAL *af
         Rlacpy("Upper", p, p, &bf[((n - p + 1) - 1)], ldb, &t[((n - p + 1) - 1)], ldb);
     }
     //
-    //     Compute R - Q'*A
+    // Compute R - Q'*A
     //
     const REAL one = 1.0;
     Rgemm("Transpose", "No transpose", n, m, n, -one, q, lda, a, lda, one, r, lda);
     //
-    //     Compute norm( R - Q'*A ) / ( MAX(M,N)*norm(A)*ULP ) .
+    // Compute norm( R - Q'*A ) / ( MAX(M,N)*norm(A)*ULP ) .
     //
     REAL resid = Rlange("1", n, m, r, lda, rwork);
     if (anorm > zero) {
@@ -140,12 +147,12 @@ void Rgqrts(INTEGER const n, INTEGER const m, INTEGER const p, REAL *a, REAL *af
         result[1 - 1] = zero;
     }
     //
-    //     Compute T*Z - Q'*B
+    // Compute T*Z - Q'*B
     //
     Rgemm("No Transpose", "No transpose", n, p, p, one, t, ldb, z, ldb, zero, bwk, ldb);
     Rgemm("Transpose", "No transpose", n, p, n, -one, q, lda, b, ldb, one, bwk, ldb);
     //
-    //     Compute norm( T*Z - Q'*B ) / ( MAX(P,N)*norm(A)*ULP ) .
+    // Compute norm( T*Z - Q'*B ) / ( MAX(P,N)*norm(A)*ULP ) .
     //
     resid = Rlange("1", n, p, bwk, ldb, rwork);
     if (bnorm > zero) {
@@ -154,26 +161,26 @@ void Rgqrts(INTEGER const n, INTEGER const m, INTEGER const p, REAL *a, REAL *af
         result[2 - 1] = zero;
     }
     //
-    //     Compute I - Q'*Q
+    // Compute I - Q'*Q
     //
     Rlaset("Full", n, n, zero, one, r, lda);
     Rsyrk("Upper", "Transpose", n, n, -one, q, lda, one, r, lda);
     //
-    //     Compute norm( I - Q'*Q ) / ( N * ULP ) .
+    // Compute norm( I - Q'*Q ) / ( N * ULP ) .
     //
     resid = Rlansy("1", "Upper", n, r, lda, rwork);
     result[3 - 1] = (resid / castREAL(max((INTEGER)1, n))) / ulp;
     //
-    //     Compute I - Z'*Z
+    // Compute I - Z'*Z
     //
     Rlaset("Full", p, p, zero, one, t, ldb);
     Rsyrk("Upper", "Transpose", p, p, -one, z, ldb, one, t, ldb);
     //
-    //     Compute norm( I - Z'*Z ) / ( P*ULP ) .
+    // Compute norm( I - Z'*Z ) / ( P*ULP ) .
     //
     resid = Rlansy("1", "Upper", p, t, ldb, rwork);
     result[4 - 1] = (resid / castREAL(max((INTEGER)1, p))) / ulp;
     //
-    //     End of Rgqrts
+    // End of Rgqrts
     //
 }
