@@ -1,3 +1,6 @@
+# how to build
+# /usr/bin/time docker build -t mplapack:ubuntu1804 -f Dockerfile_ubuntu18.04 .
+#
 FROM ubuntu:18.04
 
 ARG MPLAPACK_VER="2.0.1"
