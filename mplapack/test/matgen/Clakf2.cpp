@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,31 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine ZLAKF2.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Clakf2(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *b, COMPLEX *d, COMPLEX *e, COMPLEX *z, INTEGER const ldz) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  ====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Initialize Z
+    // Initialize Z
     //
     INTEGER mn = m * n;
     INTEGER mn2 = 2 * mn;
@@ -66,7 +54,7 @@ void Clakf2(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, COM
     INTEGER j = 0;
     for (l = 1; l <= n; l = l + 1) {
         //
-        //        form kron(In, A)
+        // form kron(In, A)
         //
         for (i = 1; i <= m; i = i + 1) {
             for (j = 1; j <= m; j = j + 1) {
@@ -74,7 +62,7 @@ void Clakf2(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, COM
             }
         }
         //
-        //        form kron(In, D)
+        // form kron(In, D)
         //
         for (i = 1; i <= m; i = i + 1) {
             for (j = 1; j <= m; j = j + 1) {
@@ -92,13 +80,13 @@ void Clakf2(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, COM
         //
         for (j = 1; j <= n; j = j + 1) {
             //
-            //           form -kron(B', Im)
+            // form -kron(B', Im)
             //
             for (i = 1; i <= m; i = i + 1) {
                 z[((ik + i - 1) - 1) + ((jk + i - 1) - 1) * ldz] = -b[(j - 1) + (l - 1) * ldb];
             }
             //
-            //           form -kron(E', Im)
+            // form -kron(E', Im)
             //
             for (i = 1; i <= m; i = i + 1) {
                 z[((ik + mn + i - 1) - 1) + ((jk + i - 1) - 1) * ldz] = -e[(j - 1) + (l - 1) * lde];
@@ -110,6 +98,6 @@ void Clakf2(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, COM
         ik += m;
     }
     //
-    //     End of Clakf2
+    // End of Clakf2
     //
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DLATMS.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -33,18 +40,18 @@
 
 void Rlatms(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, const char *sym, REAL *d, INTEGER const mode, REAL const cond, REAL const dmax, INTEGER const kl, INTEGER const ku, const char *pack, REAL *a, INTEGER const lda, REAL *work, INTEGER &info) {
     //
-    //     1)      Decode and Test the input parameters.
-    //             Initialize flags & seed.
+    // 1)      Decode and Test the input parameters.
+    // Initialize flags & seed.
     //
     info = 0;
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (m == 0 || n == 0) {
         return;
     }
     //
-    //     Decode DIST
+    // Decode DIST
     //
     INTEGER idist = 0;
     if (Mlsame(dist, "U")) {
@@ -57,7 +64,7 @@ void Rlatms(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
         idist = -1;
     }
     //
-    //     Decode SYM
+    // Decode SYM
     //
     INTEGER isym = 0;
     INTEGER irsign = 0;
@@ -77,7 +84,7 @@ void Rlatms(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
         isym = -1;
     }
     //
-    //     Decode PACK
+    // Decode PACK
     //
     INTEGER isympk = 0;
     INTEGER ipack = 0;
@@ -107,7 +114,7 @@ void Rlatms(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
         ipack = -1;
     }
     //
-    //     Set certain internal parameters
+    // Set certain internal parameters
     //
     INTEGER mnmin = min(m, n);
     INTEGER llb = min(kl, m - 1);
@@ -124,8 +131,8 @@ void Rlatms(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
         minlda = m;
     }
     //
-    //     Use Givens rotation method if bandwidth small enough,
-    //     or if LDA is too small to store the matrix unpacked.
+    // Use Givens rotation method if bandwidth small enough,
+    // or if LDA is too small to store the matrix unpacked.
     //
     bool givens = false;
     if (isym == 1) {
@@ -141,7 +148,7 @@ void Rlatms(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
         givens = true;
     }
     //
-    //     Set INFO if an error
+    // Set INFO if an error
     //
     const REAL one = 1.0;
     if (m < 0) {
@@ -173,7 +180,7 @@ void Rlatms(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
         return;
     }
     //
-    //     Initialize random number generator
+    // Initialize random number generator
     //
     INTEGER i = 0;
     for (i = 1; i <= 4; i = i + 1) {
@@ -191,8 +198,8 @@ void Rlatms(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
         return;
     }
     //
-    //     Choose Top-Down if D is (apparently) increasing,
-    //     Bottom-Up if D is (apparently) decreasing.
+    // Choose Top-Down if D is (apparently) increasing,
+    // Bottom-Up if D is (apparently) decreasing.
     //
     bool topdwn = false;
     if (abs(d[1 - 1]) <= abs(d[mnmin - 1])) {
@@ -206,7 +213,7 @@ void Rlatms(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
     REAL alpha = 0.0;
     if (mode != 0 && abs(mode) != 6) {
         //
-        //        Scale by DMAX
+        // Scale by DMAX
         //
         temp = abs(d[1 - 1]);
         for (i = 2; i <= mnmin; i = i + 1) {
@@ -224,14 +231,14 @@ void Rlatms(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
         //
     }
     //
-    //     3)      Generate Banded Matrix using Givens rotations.
-    //             Also the special case of UUB=LLB=0
+    // 3)      Generate Banded Matrix using Givens rotations.
+    // Also the special case of UUB=LLB=0
     //
-    //               Compute Addressing constants to cover all
-    //               storage formats.  Whether GE, SY, GB, or SB,
-    //               upper or lower triangle or both,
-    //               the (i,j)-th element is in
-    //               A( i - ISKEW*j + IOFFST, j )
+    // Compute Addressing constants to cover all
+    // storage formats.  Whether GE, SY, GB, or SB,
+    // upper or lower triangle or both,
+    // the (i,j)-th element is in
+    // A( i - ISKEW*j + IOFFST, j )
     //
     INTEGER ilda = 0;
     INTEGER iskew = 0;
@@ -250,15 +257,15 @@ void Rlatms(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
         ioffst = 0;
     }
     //
-    //     IPACKG is the format that the matrix is generated in. If this is
-    //     different from IPACK, then the matrix must be repacked at the
-    //     end.  It also signals how to compute the norm, for scaling.
+    // IPACKG is the format that the matrix is generated in. If this is
+    // different from IPACK, then the matrix must be repacked at the
+    // end.  It also signals how to compute the norm, for scaling.
     //
     INTEGER ipackg = 0;
     Rlaset("Full", lda, n, zero, zero, a, lda);
     //
-    //     Diagonal Matrix -- We are done, unless it
-    //     is to be stored SP/PP/TP (PACK='R' or 'C')
+    // Diagonal Matrix -- We are done, unless it
+    // is to be stored SP/PP/TP (PACK='R' or 'C')
     //
     INTEGER jkl = 0;
     INTEGER jku = 0;
@@ -289,12 +296,12 @@ void Rlatms(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
         //
     } else if (givens) {
         //
-        //        Check whether to use Givens rotations,
-        //        Householder transformations, or nothing.
+        // Check whether to use Givens rotations,
+        // Householder transformations, or nothing.
         //
         if (isym == 1) {
             //
-            //           Non-symmetric -- A = U D V
+            // Non-symmetric -- A = U D V
             //
             if (ipack > 4) {
                 ipackg = ipack;
@@ -308,10 +315,10 @@ void Rlatms(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
                 jkl = 0;
                 for (jku = 1; jku <= uub; jku = jku + 1) {
                     //
-                    //                 Transform from bandwidth JKL, JKU-1 to JKL, JKU
+                    // Transform from bandwidth JKL, JKU-1 to JKL, JKU
                     //
-                    //                 Last row actually rotated is M
-                    //                 Last column actually rotated is MIN( M+JKU, N )
+                    // Last row actually rotated is M
+                    // Last column actually rotated is MIN( M+JKU, N )
                     //
                     for (jr = 1; jr <= min(m + jku, n) + jkl - 1; jr = jr + 1) {
                         extra = zero;
@@ -324,7 +331,7 @@ void Rlatms(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
                             Rlarot(true, jr > jkl, false, il, c, s, &a[((jr - iskew * icol + ioffst) - 1) + (icol - 1) * lda], ilda, extra, dummy);
                         }
                         //
-                        //                    Chase "EXTRA" back up
+                        // Chase "EXTRA" back up
                         //
                         ir = jr;
                         ic = icol;
@@ -353,7 +360,7 @@ void Rlatms(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
                 jku = uub;
                 for (jkl = 1; jkl <= llb; jkl = jkl + 1) {
                     //
-                    //                 Transform from bandwidth JKL-1, JKU to JKL, JKU
+                    // Transform from bandwidth JKL-1, JKU to JKL, JKU
                     //
                     for (jc = 1; jc <= min(n + jkl, m) + jku - 1; jc = jc + 1) {
                         extra = zero;
@@ -366,7 +373,7 @@ void Rlatms(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
                             Rlarot(false, jc > jku, false, il, c, s, &a[((irow - iskew * jc + ioffst) - 1) + (jc - 1) * lda], ilda, extra, dummy);
                         }
                         //
-                        //                    Chase "EXTRA" back up
+                        // Chase "EXTRA" back up
                         //
                         ic = jc;
                         ir = irow;
@@ -394,15 +401,15 @@ void Rlatms(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
                 //
             } else {
                 //
-                //              Bottom-Up -- Start at the bottom right.
+                // Bottom-Up -- Start at the bottom right.
                 //
                 jkl = 0;
                 for (jku = 1; jku <= uub; jku = jku + 1) {
                     //
-                    //                 Transform from bandwidth JKL, JKU-1 to JKL, JKU
+                    // Transform from bandwidth JKL, JKU-1 to JKL, JKU
                     //
-                    //                 First row actually rotated is M
-                    //                 First column actually rotated is MIN( M+JKU, N )
+                    // First row actually rotated is M
+                    // First column actually rotated is MIN( M+JKU, N )
                     //
                     iendch = min(m, n + jkl) - 1;
                     for (jc = min(m + jku, n) - 1; jc >= 1 - jkl; jc = jc - 1) {
@@ -416,7 +423,7 @@ void Rlatms(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
                             Rlarot(false, false, jc + jkl < m, il, c, s, &a[((irow - iskew * jc + ioffst) - 1) + (jc - 1) * lda], ilda, dummy, extra);
                         }
                         //
-                        //                    Chase "EXTRA" back down
+                        // Chase "EXTRA" back down
                         //
                         ic = jc;
                         for (jch = jc + jkl; jch <= iendch; jch = jch + jkl + jku) {
@@ -443,10 +450,10 @@ void Rlatms(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
                 jku = uub;
                 for (jkl = 1; jkl <= llb; jkl = jkl + 1) {
                     //
-                    //                 Transform from bandwidth JKL-1, JKU to JKL, JKU
+                    // Transform from bandwidth JKL-1, JKU to JKL, JKU
                     //
-                    //                 First row actually rotated is MIN( N+JKL, M )
-                    //                 First column actually rotated is N
+                    // First row actually rotated is MIN( N+JKL, M )
+                    // First column actually rotated is N
                     //
                     iendch = min(n, m + jku) - 1;
                     for (jr = min(n + jkl, m) - 1; jr >= 1 - jku; jr = jr - 1) {
@@ -460,7 +467,7 @@ void Rlatms(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
                             Rlarot(true, false, jr + jku < n, il, c, s, &a[((jr - iskew * icol + ioffst) - 1) + (icol - 1) * lda], ilda, dummy, extra);
                         }
                         //
-                        //                    Chase "EXTRA" back down
+                        // Chase "EXTRA" back down
                         //
                         ir = jr;
                         for (jch = jr + jku; jch <= iendch; jch = jch + jkl + jku) {
@@ -487,14 +494,14 @@ void Rlatms(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
             //
         } else {
             //
-            //           Symmetric -- A = U D U'
+            // Symmetric -- A = U D U'
             //
             ipackg = ipack;
             ioffg = ioffst;
             //
             if (topdwn) {
                 //
-                //              Top-Down -- Generate Upper triangle only
+                // Top-Down -- Generate Upper triangle only
                 //
                 if (ipack >= 5) {
                     ipackg = 6;
@@ -516,7 +523,7 @@ void Rlatms(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
                         Rlarot(false, jc > k, true, il, c, s, &a[((irow - iskew * jc + ioffg) - 1) + (jc - 1) * lda], ilda, extra, temp);
                         Rlarot(true, true, false, min(k, n - jc) + 1, c, s, &a[(((1 - iskew) * jc + ioffg) - 1) + (jc - 1) * lda], ilda, temp, dummy);
                         //
-                        //                    Chase EXTRA back up the matrix
+                        // Chase EXTRA back up the matrix
                         //
                         icol = jc;
                         for (jch = jc - k; jch >= 1; jch = jch - k) {
@@ -532,8 +539,8 @@ void Rlatms(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
                     }
                 }
                 //
-                //              If we need lower triangle, copy from upper. Note that
-                //              the order of copying is chosen to work for 'q' -> 'b'
+                // If we need lower triangle, copy from upper. Note that
+                // the order of copying is chosen to work for 'q' -> 'b'
                 //
                 if (ipack != ipackg && ipack != 3) {
                     for (jc = 1; jc <= n; jc = jc + 1) {
@@ -557,7 +564,7 @@ void Rlatms(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
                 }
             } else {
                 //
-                //              Bottom-Up -- Generate Lower triangle only
+                // Bottom-Up -- Generate Lower triangle only
                 //
                 if (ipack >= 5) {
                     ipackg = 5;
@@ -581,7 +588,7 @@ void Rlatms(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
                         icol = max((INTEGER)1, jc - k + 1);
                         Rlarot(true, false, true, jc + 2 - icol, c, s, &a[((jc - iskew * icol + ioffg) - 1) + (icol - 1) * lda], ilda, dummy, temp);
                         //
-                        //                    Chase EXTRA back down the matrix
+                        // Chase EXTRA back down the matrix
                         //
                         icol = jc;
                         for (jch = jc + k; jch <= n - 1; jch = jch + k) {
@@ -596,8 +603,8 @@ void Rlatms(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
                     }
                 }
                 //
-                //              If we need upper triangle, copy from lower. Note that
-                //              the order of copying is chosen to work for 'b' -> 'q'
+                // If we need upper triangle, copy from lower. Note that
+                // the order of copying is chosen to work for 'b' -> 'q'
                 //
                 if (ipack != ipackg && ipack != 4) {
                     for (jc = n; jc >= 1; jc = jc - 1) {
@@ -624,21 +631,21 @@ void Rlatms(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
         //
     } else {
         //
-        //        4)      Generate Banded Matrix by first
-        //                Rotating by random Unitary matrices,
-        //                then reducing the bandwidth using Householder
-        //                transformations.
+        // 4)      Generate Banded Matrix by first
+        // Rotating by random Unitary matrices,
+        // then reducing the bandwidth using Householder
+        // transformations.
         //
-        //                Note: we should get here only if LDA .ge. N
+        // Note: we should get here only if LDA .ge. N
         //
         if (isym == 1) {
             //
-            //           Non-symmetric -- A = U D V
+            // Non-symmetric -- A = U D V
             //
             Rlagge(mr, nc, llb, uub, d, a, lda, iseed, work, iinfo);
         } else {
             //
-            //           Symmetric -- A = U D U'
+            // Symmetric -- A = U D U'
             //
             Rlagsy(m, llb, d, a, lda, iseed, work, iinfo);
             //
@@ -649,7 +656,7 @@ void Rlatms(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
         }
     }
     //
-    //     5)      Pack the matrix
+    // 5)      Pack the matrix
     //
     INTEGER j = 0;
     INTEGER ir1 = 0;
@@ -657,7 +664,7 @@ void Rlatms(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
     if (ipack != ipackg) {
         if (ipack == 1) {
             //
-            //           'U' -- Upper triangular, not packed
+            // 'U' -- Upper triangular, not packed
             //
             for (j = 1; j <= m; j = j + 1) {
                 for (i = j + 1; i <= m; i = i + 1) {
@@ -667,7 +674,7 @@ void Rlatms(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
             //
         } else if (ipack == 2) {
             //
-            //           'L' -- Lower triangular, not packed
+            // 'L' -- Lower triangular, not packed
             //
             for (j = 2; j <= m; j = j + 1) {
                 for (i = 1; i <= j - 1; i = i + 1) {
@@ -677,7 +684,7 @@ void Rlatms(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
             //
         } else if (ipack == 3) {
             //
-            //           'C' -- Upper triangle packed Columnwise.
+            // 'C' -- Upper triangle packed Columnwise.
             //
             icol = 1;
             irow = 0;
@@ -694,7 +701,7 @@ void Rlatms(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
             //
         } else if (ipack == 4) {
             //
-            //           'R' -- Lower triangle packed Columnwise.
+            // 'R' -- Lower triangle packed Columnwise.
             //
             icol = 1;
             irow = 0;
@@ -711,9 +718,9 @@ void Rlatms(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
             //
         } else if (ipack >= 5) {
             //
-            //           'B' -- The lower triangle is packed as a band matrix.
-            //           'Q' -- The upper triangle is packed as a band matrix.
-            //           'Z' -- The whole matrix is packed as a band matrix.
+            // 'B' -- The lower triangle is packed as a band matrix.
+            // 'Q' -- The upper triangle is packed as a band matrix.
+            // 'Z' -- The whole matrix is packed as a band matrix.
             //
             if (ipack == 5) {
                 uub = 0;
@@ -735,10 +742,10 @@ void Rlatms(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
             }
         }
         //
-        //        If packed, zero out extraneous elements.
+        // If packed, zero out extraneous elements.
         //
-        //        Symmetric/Triangular Packed --
-        //        zero out everything after A(IROW,ICOL)
+        // Symmetric/Triangular Packed --
+        // zero out everything after A(IROW,ICOL)
         //
         if (ipack == 3 || ipack == 4) {
             for (jc = icol; jc <= m; jc = jc + 1) {
@@ -750,11 +757,11 @@ void Rlatms(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
             //
         } else if (ipack >= 5) {
             //
-            //           Packed Band --
-            //              1st row is now in A( UUB+2-j, j), zero above it
-            //              m-th row is now in A( M+UUB-j,j), zero below it
-            //              last non-zero diagonal is now in A( UUB+LLB+1,j ),
-            //                 zero below it, too.
+            // Packed Band --
+            // 1st row is now in A( UUB+2-j, j), zero above it
+            // m-th row is now in A( M+UUB-j,j), zero below it
+            // last non-zero diagonal is now in A( UUB+LLB+1,j ),
+            // zero below it, too.
             //
             ir1 = uub + llb + 2;
             ir2 = uub + m + 2;
@@ -769,6 +776,6 @@ void Rlatms(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
         }
     }
     //
-    //     End of Rlatms
+    // End of Rlatms
     //
 }

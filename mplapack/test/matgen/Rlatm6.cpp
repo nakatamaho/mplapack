@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DLATM6.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -33,31 +40,8 @@
 
 void Rlatm6(INTEGER const type, INTEGER const n, REAL *a, INTEGER const lda, REAL *b, REAL *x, INTEGER const ldx, REAL *y, INTEGER const ldy, REAL const alpha, REAL const beta, REAL const wx, REAL const wy, REAL *s, REAL *dif) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Generate test problem ...
-    //     (Da, Db) ...
+    // Generate test problem ...
+    // (Da, Db) ...
     //
     INTEGER i = 0;
     INTEGER j = 0;
@@ -78,7 +62,7 @@ void Rlatm6(INTEGER const type, INTEGER const n, REAL *a, INTEGER const lda, REA
         }
     }
     //
-    //     Form X and Y
+    // Form X and Y
     //
     Rlacpy("F", n, n, b, lda, y, ldy);
     y[(3 - 1)] = -wy;
@@ -96,7 +80,7 @@ void Rlatm6(INTEGER const type, INTEGER const n, REAL *a, INTEGER const lda, REA
     x[(2 - 1) + (4 - 1) * ldx] = -wx;
     x[(2 - 1) + (5 - 1) * ldx] = -wx;
     //
-    //     Form (A, B)
+    // Form (A, B)
     //
     b[(3 - 1) * ldb] = wx + wy;
     b[(2 - 1) + (3 - 1) * ldb] = -wx + wy;
@@ -130,7 +114,7 @@ void Rlatm6(INTEGER const type, INTEGER const n, REAL *a, INTEGER const lda, REA
         a[(5 - 1) + (5 - 1) * lda] = a[(4 - 1) + (4 - 1) * lda];
     }
     //
-    //     Compute condition numbers
+    // Compute condition numbers
     //
     const REAL three = 3.0e+0;
     REAL z[12 * 12];
@@ -170,6 +154,6 @@ void Rlatm6(INTEGER const type, INTEGER const n, REAL *a, INTEGER const lda, REA
         //
     }
     //
-    //     End of Rlatm6
+    // End of Rlatm6
     //
 }

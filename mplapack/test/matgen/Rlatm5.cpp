@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,31 +26,17 @@
  *
  */
 
+// Derived from LAPACK routine DLATM5.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Rlatm5(INTEGER const prtype, INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL *c, INTEGER const ldc, REAL *d, INTEGER const ldd, REAL *e, INTEGER const lde, REAL *f, INTEGER const ldf, REAL *r, INTEGER const ldr, REAL *l, INTEGER const ldl, REAL const alpha, INTEGER &qblcka, INTEGER &qblckb) {
-    //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Executable Statements ..
     //
     INTEGER i = 0;
     INTEGER j = 0;
@@ -252,13 +238,13 @@ void Rlatm5(INTEGER const prtype, INTEGER const m, INTEGER const n, REAL *a, INT
         }
     }
     //
-    //     Compute rhs (C, F)
+    // Compute rhs (C, F)
     //
     Rgemm("N", "N", m, n, m, one, a, lda, r, ldr, zero, c, ldc);
     Rgemm("N", "N", m, n, n, -one, l, ldl, b, ldb, one, c, ldc);
     Rgemm("N", "N", m, n, m, one, d, ldd, r, ldr, zero, f, ldf);
     Rgemm("N", "N", m, n, n, -one, l, ldl, e, lde, one, f, ldf);
     //
-    //     End of Rlatm5
+    // End of Rlatm5
     //
 }
