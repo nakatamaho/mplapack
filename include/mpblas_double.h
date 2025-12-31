@@ -1,9 +1,7 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *	Nakata, Maho
  * 	All rights reserved.
- *
- * $Id: mpblas_double.h,v 1.3 2010/08/07 03:15:46 nakatamaho Exp $
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -31,6 +29,7 @@
 #ifndef _MPBLAS_DOUBLE_H_
 #define _MPBLAS_DOUBLE_H_
 
+#include <complex>
 #include "mplapack_config.h"
 #include "mplapack_utils_double.h"
 
