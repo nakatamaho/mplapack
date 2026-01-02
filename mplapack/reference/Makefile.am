@@ -114,21 +114,9 @@ endif
 endif
 
 MPLAPACK_SOURCES = \
-Cgtsvx.cpp \
-Chesv_aa.cpp \
-Chesv_aa_2stage.cpp \
-Chesv_rk.cpp \
-Cpptri.cpp \
-Csysv.cpp \
-Csysv_aa_2stage.cpp \
-Csysv_rk.cpp \
-Csysv_rook.cpp \
-Rgtsvx.cpp \
-Cgtcon.cpp \
-Cgttrf.cpp \
+CRrscl.cpp \
 Cbbcsd.cpp \
 Cbdsqr.cpp \
-Cdrscl.cpp \
 Cgbbrd.cpp \
 Cgbcon.cpp \
 Cgbequ.cpp \
@@ -214,8 +202,11 @@ Cggsvd3.cpp \
 Cggsvp3.cpp \
 Cgsvj0.cpp \
 Cgsvj1.cpp \
+Cgtcon.cpp \
 Cgtrfs.cpp \
 Cgtsv.cpp \
+Cgtsvx.cpp \
+Cgttrf.cpp \
 Cgttrs.cpp \
 Cgtts2.cpp \
 Chb2st_kernels.cpp \
@@ -250,6 +241,9 @@ Chegvd.cpp \
 Chegvx.cpp \
 Cherfs.cpp \
 Chesv.cpp \
+Chesv_aa.cpp \
+Chesv_aa_2stage.cpp \
+Chesv_rk.cpp \
 Chesv_rook.cpp \
 Chesvx.cpp \
 Cheswapr.cpp \
@@ -431,6 +425,7 @@ Cpprfs.cpp \
 Cppsv.cpp \
 Cppsvx.cpp \
 Cpptrf.cpp \
+Cpptri.cpp \
 Cpptrs.cpp \
 Cpstf2.cpp \
 Cpstrf.cpp \
@@ -453,6 +448,7 @@ Csptrf.cpp \
 Csptri.cpp \
 Csptrs.cpp \
 Cstedc.cpp \
+Cstegr.cpp \
 Cstein.cpp \
 Cstemr.cpp \
 Csteqr.cpp \
@@ -466,7 +462,11 @@ Csyequb.cpp \
 Csymv.cpp \
 Csyr.cpp \
 Csyrfs.cpp \
+Csysv.cpp \
 Csysv_aa.cpp \
+Csysv_aa_2stage.cpp \
+Csysv_rk.cpp \
+Csysv_rook.cpp \
 Csysvx.cpp \
 Csyswapr.cpp \
 Csytf2.cpp \
@@ -573,6 +573,7 @@ Cupmtr.cpp \
 Mlsamen.cpp \
 Mmaxloc.cpp \
 Mmaxval.cpp \
+Mminval.cpp \
 RCsum1.cpp \
 Rbbcsd.cpp \
 Rbdsdc.cpp \
@@ -668,6 +669,7 @@ Rgsvj1.cpp \
 Rgtcon.cpp \
 Rgtrfs.cpp \
 Rgtsv.cpp \
+Rgtsvx.cpp \
 Rgttrf.cpp \
 Rgttrs.cpp \
 Rgtts2.cpp \
@@ -934,6 +936,7 @@ Rsptri.cpp \
 Rsptrs.cpp \
 Rstebz.cpp \
 Rstedc.cpp \
+Rstegr.cpp \
 Rstein.cpp \
 Rstemr.cpp \
 Rsteqr.cpp \
@@ -1051,7 +1054,7 @@ iMlauplo.cpp \
 iMlaver.cpp \
 iMlazlc.cpp \
 iMlazlr.cpp \
-iMparmq.cpp \
-iMparam2stage.cpp
+iMparam2stage.cpp \
+iMparmq.cpp
 
 EXTRA_DIST = iMlaver.cpp.in
