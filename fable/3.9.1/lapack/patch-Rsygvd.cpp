@@ -6,7 +6,7 @@
      Rsyevd(jobz, uplo, n, a, lda, w, work, lwork, iwork, liwork, info);
 -    lopt = max(castREAL(lopt), castREAL(work[1 - 1]));
 -    liopt = max(castREAL(liopt), castREAL(iwork[1 - 1]));
-+    lopt = max(lopt, castINTEGER(work[1 - 1]);
++    lopt = max(lopt, castINTEGER(work[1 - 1]));
 +    liopt = max(liopt, iwork[1 - 1]);
      //
      char trans;
