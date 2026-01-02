@@ -38,6 +38,7 @@
 
 REAL Rladiv2(REAL const &a, REAL const &b, REAL const &c, REAL const &d, REAL const &r, REAL const &t) {
     REAL return_value = 0.0;
+    //
     const REAL zero = 0.0;
     REAL br = 0.0;
     if (r != zero) {
