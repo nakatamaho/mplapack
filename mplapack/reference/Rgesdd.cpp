@@ -98,7 +98,7 @@ void Rgesdd(const char *jobz, INTEGER const m, INTEGER const n, REAL *a, INTEGER
         minwrk = 1;
         maxwrk = 1;
         bdspac = 0;
-        mnthr = int(minmn * 11.0 / 6.0);
+        mnthr = castINTEGER(minmn * 11.0 / 6.0);
         if (m >= n && minmn > 0) {
             //
             // Compute space needed for Rbdsdc

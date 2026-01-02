@@ -57,7 +57,7 @@ void Rorgtsqr(INTEGER const m, INTEGER const n, INTEGER const mb, INTEGER const 
         info = -4;
     } else if (lda < max((INTEGER)1, m)) {
         info = -6;
-    } else if (ldt < max({(INTEGER)1, min(nb, n)})) {
+    } else if (ldt < max((INTEGER)1, min(nb, n))) {
         info = -8;
     } else {
         //

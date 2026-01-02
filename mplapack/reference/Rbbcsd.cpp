@@ -71,7 +71,7 @@ void Rbbcsd(const char *jobu1, const char *jobu2, const char *jobv1t, const char
     INTEGER lworkmin = 0;
     if (info == 0 && q == 0) {
         lworkmin = 1;
-        work[1 - 1] = castREAL(lworkmin);
+        work[1 - 1] = lworkmin;
         return;
     }
     //
@@ -97,7 +97,7 @@ void Rbbcsd(const char *jobu1, const char *jobu2, const char *jobv1t, const char
         iv2tsn = iv2tcs + q;
         lworkopt = iv2tsn + q - 1;
         lworkmin = lworkopt;
-        work[1 - 1] = castREAL(lworkopt);
+        work[1 - 1] = lworkopt;
         if (lwork < lworkmin && !lquery) {
             info = -28;
         }
@@ -116,14 +116,13 @@ void Rbbcsd(const char *jobu1, const char *jobu2, const char *jobv1t, const char
     REAL unfl = Rlamch("Safe minimum");
     const REAL ten = 10.0;
     const REAL hundred = 100.0;
-    const REAL meighth = -0.125e0;
+    const REAL meighth = -0.125;
     REAL tolmul = max(ten, min(hundred, pow(eps, meighth)));
     REAL tol = tolmul * eps;
     const INTEGER maxitr = 6;
-    REAL thresh = max(tol, REAL(castREAL(maxitr * q * q) * unfl));
-    REAL rtmp1, rtmp2;
+    REAL thresh = max(tol, maxitr * q * q * unfl);
     //
-    //     Test for negligible sines or cosines
+    // Test for negligible sines or cosines
     //
     INTEGER i = 0;
     const REAL zero = 0.0;
@@ -223,7 +222,7 @@ void Rbbcsd(const char *jobu1, const char *jobu2, const char *jobv1t, const char
             return;
         }
         //
-        iter = iter + imax - imin;
+        iter += imax - imin;
         //
         // Compute shifts
         //
@@ -297,13 +296,11 @@ void Rbbcsd(const char *jobu1, const char *jobu2, const char *jobv1t, const char
         b21bulge = work[(iv1tsn + imin - 1) - 1] * b21d[(imin + 1) - 1];
         b21d[(imin + 1) - 1] = work[(iv1tcs + imin - 1) - 1] * b21d[(imin + 1) - 1];
         //
-        //        Compute THETA(IMIN)
+        // Compute THETA(IMIN)
         //
-        rtmp1 = sqrt(pow2(b21d[imin - 1]) + pow2(b21bulge));
-        rtmp2 = sqrt(pow2(b11d[imin - 1]) + pow2(b11bulge));
-        theta[imin - 1] = atan2(rtmp1, rtmp2);
+        theta[imin - 1] = atan2(sqrt(pow2(b21d[imin - 1]) + pow2(b21bulge)), sqrt(pow2(b11d[imin - 1]) + pow2(b11bulge)));
         //
-        //        Chase the bulges in B11(IMIN+1,IMIN) and B21(IMIN+1,IMIN)
+        // Chase the bulges in B11(IMIN+1,IMIN) and B21(IMIN+1,IMIN)
         //
         if (pow2(b11d[imin - 1]) + pow2(b11bulge) > pow2(thresh)) {
             Rlartgp(b11bulge, b11d[imin - 1], work[(iu1sn + imin - 1) - 1], work[(iu1cs + imin - 1) - 1], r);
@@ -360,12 +357,10 @@ void Rbbcsd(const char *jobu1, const char *jobu2, const char *jobv1t, const char
             y1 = sin(theta[(i - 1) - 1]) * b12d[(i - 1) - 1] + cos(theta[(i - 1) - 1]) * b22d[(i - 1) - 1];
             y2 = sin(theta[(i - 1) - 1]) * b12bulge + cos(theta[(i - 1) - 1]) * b22bulge;
             //
-            rtmp1 = sqrt(pow2(x1) + pow2(x2));
-            rtmp2 = sqrt(pow2(y1) + pow2(y2));
-            phi[(i - 1) - 1] = atan2(rtmp1, rtmp2);
+            phi[(i - 1) - 1] = atan2(sqrt(pow2(x1) + pow2(x2)), sqrt(pow2(y1) + pow2(y2)));
             //
-            //           Determine if there are bulges to chase or if a new direct
-            //           summand has been reached
+            // Determine if there are bulges to chase or if a new direct
+            // summand has been reached
             //
             restart11 = pow2(b11e[(i - 1) - 1]) + pow2(b11bulge) <= pow2(thresh);
             restart21 = pow2(b21e[(i - 1) - 1]) + pow2(b21bulge) <= pow2(thresh);
@@ -429,12 +424,10 @@ void Rbbcsd(const char *jobu1, const char *jobu2, const char *jobv1t, const char
             y1 = cos(phi[(i - 1) - 1]) * b21d[i - 1] + sin(phi[(i - 1) - 1]) * b22e[(i - 1) - 1];
             y2 = cos(phi[(i - 1) - 1]) * b21bulge + sin(phi[(i - 1) - 1]) * b22bulge;
             //
-            rtmp1 = sqrt(pow2(y1) + pow2(y2));
-            rtmp2 = sqrt(pow2(x1) + pow2(x2));
-            theta[i - 1] = atan2(rtmp1, rtmp2);
+            theta[i - 1] = atan2(sqrt(pow2(y1) + pow2(y2)), sqrt(pow2(x1) + pow2(x2)));
             //
-            //           Determine if there are bulges to chase or if a new direct
-            //           summand has been reached
+            // Determine if there are bulges to chase or if a new direct
+            // summand has been reached
             //
             restart11 = pow2(b11d[i - 1]) + pow2(b11bulge) <= pow2(thresh);
             restart12 = pow2(b12e[(i - 1) - 1]) + pow2(b12bulge) <= pow2(thresh);
@@ -503,11 +496,9 @@ void Rbbcsd(const char *jobu1, const char *jobu2, const char *jobv1t, const char
         y1 = sin(theta[(imax - 1) - 1]) * b12d[(imax - 1) - 1] + cos(theta[(imax - 1) - 1]) * b22d[(imax - 1) - 1];
         y2 = sin(theta[(imax - 1) - 1]) * b12bulge + cos(theta[(imax - 1) - 1]) * b22bulge;
         //
-        rtmp1 = abs(x1);
-        rtmp2 = sqrt(pow2(y1) + pow2(y2));
-        phi[(imax - 1) - 1] = atan2(rtmp1, rtmp2);
+        phi[(imax - 1) - 1] = atan2(abs(x1), sqrt(pow2(y1) + pow2(y2)));
         //
-        //        Chase bulges from B12(IMAX-1,IMAX) and B22(IMAX-1,IMAX)
+        // Chase bulges from B12(IMAX-1,IMAX) and B22(IMAX-1,IMAX)
         //
         restart12 = pow2(b12d[(imax - 1) - 1]) + pow2(b12bulge) <= pow2(thresh);
         restart22 = pow2(b22d[(imax - 1) - 1]) + pow2(b22bulge) <= pow2(thresh);
@@ -581,12 +572,10 @@ void Rbbcsd(const char *jobu1, const char *jobu2, const char *jobv1t, const char
         x1 = cos(phi[(imax - 1) - 1]) * b11d[imax - 1] + sin(phi[(imax - 1) - 1]) * b12e[(imax - 1) - 1];
         y1 = cos(phi[(imax - 1) - 1]) * b21d[imax - 1] + sin(phi[(imax - 1) - 1]) * b22e[(imax - 1) - 1];
         //
-        rtmp1 = abs(y1);
-        rtmp2 = abs(x1);
-        theta[imax - 1] = atan2(rtmp1, rtmp2);
+        theta[imax - 1] = atan2(abs(y1), abs(x1));
         //
-        //        Fix signs on B11(IMAX,IMAX), B12(IMAX,IMAX-1), B21(IMAX,IMAX),
-        //        and B22(IMAX,IMAX-1)
+        // Fix signs on B11(IMAX,IMAX), B12(IMAX,IMAX-1), B21(IMAX,IMAX),
+        // and B22(IMAX,IMAX-1)
         //
         if (b11d[imax - 1] + b12e[(imax - 1) - 1] < 0) {
             b12d[imax - 1] = -b12d[imax - 1];

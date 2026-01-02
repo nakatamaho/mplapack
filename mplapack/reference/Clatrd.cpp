@@ -49,7 +49,7 @@ void Clatrd(const char *uplo, INTEGER const n, INTEGER const nb, COMPLEX *a, INT
     const COMPLEX one = COMPLEX(1.0, 0.0);
     COMPLEX alpha = 0.0;
     const COMPLEX zero = COMPLEX(0.0, 0.0);
-    const COMPLEX half = COMPLEX(0.5e+0, 0.0);
+    const COMPLEX half = COMPLEX(0.5, 0.0);
     if (Mlsame(uplo, "U")) {
         //
         // Reduce last NB columns of upper triangle

@@ -156,9 +156,9 @@ void Cggesx(const char *jobvsl, const char *jobvsr, const char *sort, bool (*sel
         if (n > 0) {
             minwrk = 2 * n;
             maxwrk = n * (1 + iMlaenv(1, "Cgeqrf", " ", n, 1, n, 0));
-            maxwrk = max({maxwrk, n * (1 + iMlaenv(1, "Cunmqr", " ", n, 1, n, -1))});
+            maxwrk = max(maxwrk, n * (1 + iMlaenv(1, "Cunmqr", " ", n, 1, n, -1)));
             if (ilvsl) {
-                maxwrk = max({maxwrk, n * (1 + iMlaenv(1, "Cungqr", " ", n, 1, n, -1))});
+                maxwrk = max(maxwrk, n * (1 + iMlaenv(1, "Cungqr", " ", n, 1, n, -1)));
             }
             lwrk = maxwrk;
             if (ijob >= 1) {
@@ -203,6 +203,7 @@ void Cggesx(const char *jobvsl, const char *jobvsr, const char *sort, bool (*sel
     eps = Rlamch("P");
     smlnum = Rlamch("S");
     bignum = one / smlnum;
+    Rlabad(smlnum, bignum);
     smlnum = sqrt(smlnum) / eps;
     bignum = one / smlnum;
     //

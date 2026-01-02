@@ -83,7 +83,7 @@ void Chetrd_2stage(const char *vect, const char *uplo, INTEGER const n, COMPLEX 
     // Quick return if possible
     //
     if (n == 0) {
-        work[1 - 1] = 1;
+        work[1 - 1] = 1.0;
         return;
     }
     //

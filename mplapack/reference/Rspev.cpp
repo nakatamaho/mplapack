@@ -54,7 +54,7 @@ void Rspev(const char *jobz, const char *uplo, INTEGER const n, REAL *ap, REAL *
     }
     //
     if (info != 0) {
-        Mxerbla("Rspev", -info);
+        Mxerbla("Rspev ", -info);
         return;
     }
     //
@@ -68,7 +68,7 @@ void Rspev(const char *jobz, const char *uplo, INTEGER const n, REAL *ap, REAL *
     if (n == 1) {
         w[1 - 1] = ap[1 - 1];
         if (wantz) {
-            z[(1 - 1)] = one;
+            z[0] = one;
         }
         return;
     }

@@ -39,9 +39,7 @@
 void Rlasrt(const char *id, INTEGER const n, REAL *d, INTEGER &info) {
     INTEGER dir = 0;
     INTEGER stkpnt = 0;
-    INTEGER stacklen = 32;
-    INTEGER stack[2 * stacklen];
-    INTEGER ldstack = 2;
+    INTEGER stack[2 * 32];
     INTEGER start = 0;
     INTEGER endd = 0;
     const INTEGER select = 20;
@@ -52,31 +50,9 @@ void Rlasrt(const char *id, INTEGER const n, REAL *d, INTEGER &info) {
     REAL d2 = 0.0;
     REAL d3 = 0.0;
     REAL tmp = 0.0;
+    INTEGER ldstack = 2;
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     dir = -1;
@@ -102,10 +78,10 @@ void Rlasrt(const char *id, INTEGER const n, REAL *d, INTEGER &info) {
     }
     //
     stkpnt = 1;
-    stack[(1 - 1) + (1 - 1) * ldstack] = 1;
-    stack[(2 - 1) + (1 - 1) * ldstack] = n;
+    stack[0] = 1;
+    stack[(2 - 1)] = n;
 statement_10:
-    start = stack[(1 - 1) + (stkpnt - 1) * ldstack];
+    start = stack[(stkpnt - 1) * ldstack];
     endd = stack[(2 - 1) + (stkpnt - 1) * ldstack];
     stkpnt = stkpnt - 1;
     if (endd - start <= select && endd - start > 0) {
@@ -201,17 +177,17 @@ statement_10:
             }
             if (j - start > endd - j - 1) {
                 stkpnt++;
-                stack[(1 - 1) + (stkpnt - 1) * ldstack] = start;
+                stack[(stkpnt - 1) * ldstack] = start;
                 stack[(2 - 1) + (stkpnt - 1) * ldstack] = j;
                 stkpnt++;
-                stack[(1 - 1) + (stkpnt - 1) * ldstack] = j + 1;
+                stack[(stkpnt - 1) * ldstack] = j + 1;
                 stack[(2 - 1) + (stkpnt - 1) * ldstack] = endd;
             } else {
                 stkpnt++;
-                stack[(1 - 1) + (stkpnt - 1) * ldstack] = j + 1;
+                stack[(stkpnt - 1) * ldstack] = j + 1;
                 stack[(2 - 1) + (stkpnt - 1) * ldstack] = endd;
                 stkpnt++;
-                stack[(1 - 1) + (stkpnt - 1) * ldstack] = start;
+                stack[(stkpnt - 1) * ldstack] = start;
                 stack[(2 - 1) + (stkpnt - 1) * ldstack] = j;
             }
         } else {
@@ -239,17 +215,17 @@ statement_10:
             }
             if (j - start > endd - j - 1) {
                 stkpnt++;
-                stack[(1 - 1) + (stkpnt - 1) * ldstack] = start;
+                stack[(stkpnt - 1) * ldstack] = start;
                 stack[(2 - 1) + (stkpnt - 1) * ldstack] = j;
                 stkpnt++;
-                stack[(1 - 1) + (stkpnt - 1) * ldstack] = j + 1;
+                stack[(stkpnt - 1) * ldstack] = j + 1;
                 stack[(2 - 1) + (stkpnt - 1) * ldstack] = endd;
             } else {
                 stkpnt++;
-                stack[(1 - 1) + (stkpnt - 1) * ldstack] = j + 1;
+                stack[(stkpnt - 1) * ldstack] = j + 1;
                 stack[(2 - 1) + (stkpnt - 1) * ldstack] = endd;
                 stkpnt++;
-                stack[(1 - 1) + (stkpnt - 1) * ldstack] = start;
+                stack[(stkpnt - 1) * ldstack] = start;
                 stack[(2 - 1) + (stkpnt - 1) * ldstack] = j;
             }
         }

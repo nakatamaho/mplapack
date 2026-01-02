@@ -47,7 +47,7 @@ void Cgebal(const char *job, INTEGER const n, COMPLEX *a, INTEGER const lda, INT
     const REAL zero = 0.0;
     REAL sfmin1 = 0.0;
     REAL sfmax1 = 0.0;
-    const REAL sclfac = 2.0e+0;
+    const REAL sclfac = 2.0;
     REAL sfmin2 = 0.0;
     REAL sfmax2 = 0.0;
     bool noconv = false;
@@ -60,7 +60,7 @@ void Cgebal(const char *job, INTEGER const n, COMPLEX *a, INTEGER const lda, INT
     REAL g = 0.0;
     REAL f = 0.0;
     REAL s = 0.0;
-    const REAL factor = 0.95e+0;
+    const REAL factor = 0.95;
     //
     // Test the input parameters
     //
@@ -211,7 +211,7 @@ statement_140:
         f = one;
         s = c + r;
     statement_160:
-        if (c >= g || max({f, c, ca}) >= sfmax2 || min({r, g, ra}) <= sfmin2) {
+        if (c >= g || max(f, c, ca) >= sfmax2 || min(r, g, ra) <= sfmin2) {
             goto statement_170;
         }
         if (Risnan(c + f + ca + r + g + ra)) {
@@ -233,7 +233,7 @@ statement_140:
     statement_170:
         g = c / sclfac;
     statement_180:
-        if (g < r || max(r, ra) >= sfmax2 || min({f, c, g, ca}) <= sfmin2) {
+        if (g < r || max(r, ra) >= sfmax2 || min(f, c, g, ca) <= sfmin2) {
             goto statement_190;
         }
         f = f / sclfac;

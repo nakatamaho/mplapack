@@ -85,6 +85,7 @@ void Rlaqr5(bool const wantt, bool const wantz, INTEGER const kacc22, INTEGER co
     REAL safmin = Rlamch("SAFE MINIMUM");
     const REAL one = 1.0;
     REAL safmax = one / safmin;
+    Rlabad(safmin, safmax);
     REAL ulp = Rlamch("PRECISION");
     REAL smlnum = safmin * (castREAL(n) / ulp);
     //
@@ -262,15 +263,15 @@ void Rlaqr5(bool const wantt, bool const wantz, INTEGER const kacc22, INTEGER co
                                 tst1 += abs(h[((k + 4) - 1) + ((k + 1) - 1) * ldh]);
                             }
                         }
-                        if (abs(h[((k + 1) - 1) + (k - 1) * ldh]) <= max(smlnum, REAL(ulp * tst1))) {
+                        if (abs(h[((k + 1) - 1) + (k - 1) * ldh]) <= max(smlnum, ulp * tst1)) {
                             h12 = max(abs(h[((k + 1) - 1) + (k - 1) * ldh]), abs(h[(k - 1) + ((k + 1) - 1) * ldh]));
                             h21 = min(abs(h[((k + 1) - 1) + (k - 1) * ldh]), abs(h[(k - 1) + ((k + 1) - 1) * ldh]));
-                            h11 = max(REAL(abs(h[((k + 1) - 1) + ((k + 1) - 1) * ldh])), REAL(abs(h[(k - 1) + (k - 1) * ldh] - h[((k + 1) - 1) + ((k + 1) - 1) * ldh])));
-                            h22 = min(REAL(abs(h[((k + 1) - 1) + ((k + 1) - 1) * ldh])), REAL(abs(h[(k - 1) + (k - 1) * ldh] - h[((k + 1) - 1) + ((k + 1) - 1) * ldh])));
+                            h11 = max(abs(h[((k + 1) - 1) + ((k + 1) - 1) * ldh]), abs(h[(k - 1) + (k - 1) * ldh] - h[((k + 1) - 1) + ((k + 1) - 1) * ldh]));
+                            h22 = min(abs(h[((k + 1) - 1) + ((k + 1) - 1) * ldh]), abs(h[(k - 1) + (k - 1) * ldh] - h[((k + 1) - 1) + ((k + 1) - 1) * ldh]));
                             scl = h11 + h12;
                             tst2 = h22 * (h11 / scl);
                             //
-                            if (tst2 == zero || h21 * (h12 / scl) <= max(smlnum, REAL(ulp * tst2))) {
+                            if (tst2 == zero || h21 * (h12 / scl) <= max(smlnum, ulp * tst2)) {
                                 h[((k + 1) - 1) + (k - 1) * ldh] = zero;
                             }
                         }
@@ -428,15 +429,15 @@ void Rlaqr5(bool const wantt, bool const wantz, INTEGER const kacc22, INTEGER co
                             tst1 += abs(h[((k + 4) - 1) + ((k + 1) - 1) * ldh]);
                         }
                     }
-                    if (abs(h[((k + 1) - 1) + (k - 1) * ldh]) <= max(smlnum, REAL(ulp * tst1))) {
+                    if (abs(h[((k + 1) - 1) + (k - 1) * ldh]) <= max(smlnum, ulp * tst1)) {
                         h12 = max(abs(h[((k + 1) - 1) + (k - 1) * ldh]), abs(h[(k - 1) + ((k + 1) - 1) * ldh]));
                         h21 = min(abs(h[((k + 1) - 1) + (k - 1) * ldh]), abs(h[(k - 1) + ((k + 1) - 1) * ldh]));
-                        h11 = max(REAL(abs(h[((k + 1) - 1) + ((k + 1) - 1) * ldh])), REAL(abs(h[(k - 1) + (k - 1) * ldh] - h[((k + 1) - 1) + ((k + 1) - 1) * ldh])));
-                        h22 = min(REAL(abs(h[((k + 1) - 1) + ((k + 1) - 1) * ldh])), REAL(abs(h[(k - 1) + (k - 1) * ldh] - h[((k + 1) - 1) + ((k + 1) - 1) * ldh])));
+                        h11 = max(abs(h[((k + 1) - 1) + ((k + 1) - 1) * ldh]), abs(h[(k - 1) + (k - 1) * ldh] - h[((k + 1) - 1) + ((k + 1) - 1) * ldh]));
+                        h22 = min(abs(h[((k + 1) - 1) + ((k + 1) - 1) * ldh]), abs(h[(k - 1) + (k - 1) * ldh] - h[((k + 1) - 1) + ((k + 1) - 1) * ldh]));
                         scl = h11 + h12;
                         tst2 = h22 * (h11 / scl);
                         //
-                        if (tst2 == zero || h21 * (h12 / scl) <= max(smlnum, REAL(ulp * tst2))) {
+                        if (tst2 == zero || h21 * (h12 / scl) <= max(smlnum, ulp * tst2)) {
                             h[((k + 1) - 1) + (k - 1) * ldh] = zero;
                         }
                     }

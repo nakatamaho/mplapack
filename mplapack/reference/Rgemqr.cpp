@@ -103,11 +103,11 @@ void Rgemqr(const char *side, const char *trans, INTEGER const m, INTEGER const 
     //
     // Quick return if possible
     //
-    if (min({m, n, k}) == 0) {
+    if (min(m, n, k) == 0) {
         return;
     }
     //
-    if ((left && m <= k) || (right && n <= k) || (mb <= k) || (mb >= max({m, n, k}))) {
+    if ((left && m <= k) || (right && n <= k) || (mb <= k) || (mb >= max(m, n, k))) {
         Rgemqrt(side, trans, m, n, k, nb, a, lda, &t[6 - 1], nb, c, ldc, work, info);
     } else {
         Rlamtsqr(side, trans, m, n, k, mb, nb, a, lda, &t[6 - 1], nb, c, ldc, work, lwork, info);

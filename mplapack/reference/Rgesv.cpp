@@ -51,7 +51,7 @@ void Rgesv(INTEGER const n, INTEGER const nrhs, REAL *a, INTEGER const lda, INTE
         info = -7;
     }
     if (info != 0) {
-        Mxerbla("Rgesv", -info);
+        Mxerbla("Rgesv ", -info);
         return;
     }
     //

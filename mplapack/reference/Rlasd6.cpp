@@ -108,7 +108,7 @@ void Rlasd6(INTEGER const icompq, INTEGER const nl, INTEGER const nr, INTEGER co
     // Save the poles if ICOMPQ = 1.
     //
     if (icompq == 1) {
-        Rcopy(k, d, 1, &poles[(1 - 1)], 1);
+        Rcopy(k, d, 1, &poles[0], 1);
         Rcopy(k, &work[isigma - 1], 1, &poles[(2 - 1) * ldgnum], 1);
     }
     //

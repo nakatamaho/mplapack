@@ -1,7 +1,9 @@
 COMPLEX Cladiv(COMPLEX const x, COMPLEX const y);
+INTEGER Mmaxloc(REAL const *dx, INTEGER const start, INTEGER const end, INTEGER const incx);
 INTEGER Rlaneg(INTEGER const n, REAL *d, REAL *lld, REAL const sigma, REAL const, INTEGER const r);
 INTEGER iCmax1(INTEGER const n, COMPLEX *zx, INTEGER const incx);
 INTEGER iMieeeck(INTEGER const ispec, REAL const zero, REAL const one);
+INTEGER iMladiag(const char *diag);
 INTEGER iMladlc(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda);
 INTEGER iMladlr(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda);
 INTEGER iMlaenv(INTEGER const ispec, const char *name, const char *opts, INTEGER const n1, INTEGER const n2, INTEGER const n3, INTEGER const n4);
@@ -11,6 +13,7 @@ INTEGER iMlatrans(const char *trans);
 INTEGER iMlauplo(const char *uplo);
 INTEGER iMlazlc(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda);
 INTEGER iMlazlr(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda);
+INTEGER iMparam2stage(INTEGER const ispec, const char *name, const char *opts, INTEGER const ni, INTEGER const nbi, INTEGER const ibi, INTEGER const nxi);
 INTEGER iMparmq(INTEGER const ispec, const char *name, const char *, INTEGER const, INTEGER const ilo, INTEGER const ihi, INTEGER const);
 REAL Clangb(const char *norm, INTEGER const n, INTEGER const kl, INTEGER const ku, COMPLEX *ab, INTEGER const ldab, REAL *work);
 REAL Clange(const char *norm, INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, REAL *work);
@@ -27,6 +30,8 @@ REAL Clansy(const char *norm, const char *uplo, INTEGER const n, COMPLEX *a, INT
 REAL Clantb(const char *norm, const char *uplo, const char *diag, INTEGER const n, INTEGER const k, COMPLEX *ab, INTEGER const ldab, REAL *work);
 REAL Clantp(const char *norm, const char *uplo, const char *diag, INTEGER const n, COMPLEX *ap, REAL *work);
 REAL Clantr(const char *norm, const char *uplo, const char *diag, INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, REAL *work);
+REAL Mmaxval(REAL *dx, INTEGER const start, INTEGER const end, INTEGER const incx);
+REAL Mminval(REAL *dx, INTEGER const start, INTEGER const end, INTEGER const incx);
 REAL RCsum1(INTEGER const n, COMPLEX *cx, INTEGER const incx);
 REAL Rladiv2(REAL const a, REAL const b, REAL const c, REAL const d, REAL const r, REAL const t);
 REAL Rlamc3(REAL a, REAL b);
@@ -45,6 +50,7 @@ REAL Rlantp(const char *norm, const char *uplo, const char *diag, INTEGER const 
 REAL Rlantr(const char *norm, const char *uplo, const char *diag, INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *work);
 REAL Rlapy2(REAL const x, REAL const y);
 REAL Rlapy3(REAL const x, REAL const y, REAL const z);
+bool Mlsamen(INTEGER n, const char *a, const char *b);
 bool Risnan(REAL const din);
 bool Rlaisnan(REAL const din1, REAL const din2);
 void CRrscl(INTEGER const n, REAL const sa, COMPLEX *sx, INTEGER const incx);
@@ -186,6 +192,7 @@ void Chetf2_rk(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda,
 void Chetf2_rook(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, INTEGER *ipiv, INTEGER &info);
 void Chetrd(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, REAL *d, REAL *e, COMPLEX *tau, COMPLEX *work, INTEGER const lwork, INTEGER &info);
 void Chetrd_2stage(const char *vect, const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, REAL *d, REAL *e, COMPLEX *tau, COMPLEX *hous2, INTEGER const lhous2, COMPLEX *work, INTEGER const lwork, INTEGER &info);
+void Chetrd_hb2st(const char *stage1, const char *vect, const char *uplo, INTEGER const n, INTEGER const kd, COMPLEX *ab, INTEGER const ldab, REAL *d, REAL *e, COMPLEX *hous, INTEGER const lhous, COMPLEX *work, INTEGER const lwork, INTEGER &info);
 void Chetrd_he2hb(const char *uplo, INTEGER const n, INTEGER const kd, COMPLEX *a, INTEGER const lda, COMPLEX *ab, INTEGER const ldab, COMPLEX *tau, COMPLEX *work, INTEGER const lwork, INTEGER &info);
 void Chetrf(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, INTEGER *ipiv, COMPLEX *work, INTEGER const lwork, INTEGER &info);
 void Chetrf_aa(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, INTEGER *ipiv, COMPLEX *work, INTEGER const lwork, INTEGER &info);
@@ -673,6 +680,7 @@ void Rlartg(REAL const f, REAL const g, REAL &cs, REAL &sn, REAL &r);
 void Rlartgp(REAL const f, REAL const g, REAL &cs, REAL &sn, REAL &r);
 void Rlartgs(REAL const x, REAL const y, REAL const sigma, REAL &cs, REAL &sn);
 void Rlartv(INTEGER const n, REAL *x, INTEGER const incx, REAL *y, INTEGER const incy, REAL *c, REAL *s, INTEGER const incc);
+void Rlaruv(INTEGER *iseed, INTEGER const n, REAL *x);
 void Rlarz(const char *side, INTEGER const m, INTEGER const n, INTEGER const l, REAL *v, INTEGER const incv, REAL const tau, REAL *c, INTEGER const ldc, REAL *work);
 void Rlarzb(const char *side, const char *trans, const char *direct, const char *storev, INTEGER const m, INTEGER const n, INTEGER const k, INTEGER const l, REAL *v, INTEGER const ldv, REAL *t, INTEGER const ldt, REAL *c, INTEGER const ldc, REAL *work, INTEGER const ldwork);
 void Rlarzt(const char *direct, const char *storev, INTEGER const n, INTEGER const k, REAL *v, INTEGER const ldv, REAL *tau, REAL *t, INTEGER const ldt);
@@ -873,6 +881,7 @@ void Rsytf2_rk(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, RE
 void Rsytf2_rook(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INTEGER *ipiv, INTEGER &info);
 void Rsytrd(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL *d, REAL *e, REAL *tau, REAL *work, INTEGER const lwork, INTEGER &info);
 void Rsytrd_2stage(const char *vect, const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL *d, REAL *e, REAL *tau, REAL *hous2, INTEGER const lhous2, REAL *work, INTEGER const lwork, INTEGER &info);
+void Rsytrd_sb2st(const char *stage1, const char *vect, const char *uplo, INTEGER const n, INTEGER const kd, REAL *ab, INTEGER const ldab, REAL *d, REAL *e, REAL *hous, INTEGER const lhous, REAL *work, INTEGER const lwork, INTEGER &info);
 void Rsytrd_sy2sb(const char *uplo, INTEGER const n, INTEGER const kd, REAL *a, INTEGER const lda, REAL *ab, INTEGER const ldab, REAL *tau, REAL *work, INTEGER const lwork, INTEGER &info);
 void Rsytrf(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INTEGER *ipiv, REAL *work, INTEGER const lwork, INTEGER &info);
 void Rsytrf_aa(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INTEGER *ipiv, REAL *work, INTEGER const lwork, INTEGER &info);
@@ -933,3 +942,4 @@ void Rtrtrs(const char *uplo, const char *trans, const char *diag, INTEGER const
 void Rtrttf(const char *transr, const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL *arf, INTEGER &info);
 void Rtrttp(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL *ap, INTEGER &info);
 void Rtzrzf(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *tau, REAL *work, INTEGER const lwork, INTEGER &info);
+void iMlaver(INTEGER &mplapack_ver_major, INTEGER &mplapack_ver_minor, INTEGER &mplapack_ver_patch, INTEGER &lapack_ver_major, INTEGER &lapack_ver_minor, INTEGER &lapack_ver_patch);

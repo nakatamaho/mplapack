@@ -111,7 +111,7 @@ void Cgghd3(const char *compq, const char *compz, INTEGER const n, INTEGER const
         //
         // Determine when to use unblocked instead of blocked code.
         //
-        nx = max({nb, iMlaenv(3, "Cgghd3", " ", n, ilo, ihi, -1)});
+        nx = max(nb, iMlaenv(3, "Cgghd3", " ", n, ilo, ihi, -1));
         if (nx < nh) {
             //
             // Determine if workspace is large enough for blocked code.
@@ -122,7 +122,7 @@ void Cgghd3(const char *compq, const char *compz, INTEGER const n, INTEGER const
                 // minimum value of NB, and reduce NB or force use of
                 // unblocked code.
                 //
-                nbmin = max({(INTEGER)2, iMlaenv(2, "Cgghd3", " ", n, ilo, ihi, -1)});
+                nbmin = max((INTEGER)2, iMlaenv(2, "Cgghd3", " ", n, ilo, ihi, -1));
                 if (lwork >= 6 * n * nbmin) {
                     nb = lwork / (6 * n);
                 } else {

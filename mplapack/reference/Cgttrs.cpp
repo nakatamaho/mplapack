@@ -39,8 +39,8 @@
 void Cgttrs(const char *trans, INTEGER const n, INTEGER const nrhs, COMPLEX *dl, COMPLEX *d, COMPLEX *du, COMPLEX *du2, INTEGER *ipiv, COMPLEX *b, INTEGER const ldb, INTEGER &info) {
     //
     info = 0;
-    bool notran = (Mlsame(trans, "N"));
-    if (!notran && !(Mlsame(trans, "T")) && !(Mlsame(trans, "C"))) {
+    bool notran = Mlsame(trans, "N");
+    if (!notran && !Mlsame(trans, "T") && !Mlsame(trans, "C")) {
         info = -1;
     } else if (n < 0) {
         info = -2;
@@ -77,7 +77,7 @@ void Cgttrs(const char *trans, INTEGER const n, INTEGER const nrhs, COMPLEX *dl,
     if (nrhs == 1) {
         nb = 1;
     } else {
-        nb = max({(INTEGER)1, iMlaenv(1, "Cgttrs", trans, n, nrhs, -1, -1)});
+        nb = max((INTEGER)1, iMlaenv(1, "Cgttrs", trans, n, nrhs, -1, -1));
     }
     //
     INTEGER j = 0;

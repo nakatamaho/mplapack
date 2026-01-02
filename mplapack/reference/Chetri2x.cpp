@@ -37,35 +37,11 @@
 #include <mplapack.h>
 
 void Chetri2x(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, INTEGER *ipiv, COMPLEX *work, INTEGER const nb, INTEGER &info) {
+    INTEGER ldwork = n + nb + 1;
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
-    INTEGER ldwork = n + nb + 1;
     bool upper = Mlsame(uplo, "U");
     if (!upper && !Mlsame(uplo, "L")) {
         info = -1;
@@ -155,14 +131,14 @@ void Chetri2x(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, 
         while (k <= n) {
             if (ipiv[k - 1] > 0) {
                 // 1 x 1 diagonal NNB
-                work[(k - 1) + (invd - 1) * ldwork] = one / (a[(k - 1) + (k - 1) * lda]).real();
+                work[(k - 1) + (invd - 1) * ldwork] = one / a[(k - 1) + (k - 1) * lda].real();
                 work[(k - 1) + ((invd + 1) - 1) * ldwork] = 0.0;
                 k++;
             } else {
                 // 2 x 2 diagonal NNB
                 t = abs(work[((k + 1) - 1)]);
-                ak = (a[(k - 1) + (k - 1) * lda]).real() / t;
-                akp1 = (a[((k + 1) - 1) + ((k + 1) - 1) * lda]).real() / t;
+                ak = a[(k - 1) + (k - 1) * lda].real() / t;
+                akp1 = a[((k + 1) - 1) + ((k + 1) - 1) * lda].real() / t;
                 akkp1 = work[((k + 1) - 1)] / t;
                 d = t * (ak * akp1 - one);
                 work[(k - 1) + (invd - 1) * ldwork] = akp1 / d;
@@ -340,8 +316,8 @@ void Chetri2x(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, 
             } else {
                 // 2 x 2 diagonal NNB
                 t = abs(work[((k - 1) - 1)]);
-                ak = (a[((k - 1) - 1) + ((k - 1) - 1) * lda]).real() / t;
-                akp1 = (a[(k - 1) + (k - 1) * lda]).real() / t;
+                ak = a[((k - 1) - 1) + ((k - 1) - 1) * lda].real() / t;
+                akp1 = a[(k - 1) + (k - 1) * lda].real() / t;
                 akkp1 = work[((k - 1) - 1)] / t;
                 d = t * (ak * akp1 - one);
                 work[((k - 1) - 1) + (invd - 1) * ldwork] = akp1 / d;

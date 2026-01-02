@@ -87,7 +87,7 @@ void Rlatsqr(INTEGER const m, INTEGER const n, INTEGER const mb, INTEGER const n
     //
     // Compute the QR factorization of the first block A(1:MB,1:N)
     //
-    Rgeqrt(mb, n, nb, &a[(1 - 1)], lda, t, ldt, work, info);
+    Rgeqrt(mb, n, nb, &a[0], lda, t, ldt, work, info);
     //
     INTEGER ctr = 1;
     INTEGER i = 0;
@@ -95,14 +95,14 @@ void Rlatsqr(INTEGER const m, INTEGER const n, INTEGER const mb, INTEGER const n
         //
         // Compute the QR factorization of the current block A(I:I+MB-N,1:N)
         //
-        Rtpqrt(mb - n, n, 0, nb, &a[(1 - 1)], lda, &a[(i - 1)], lda, &t[((ctr * n + 1) - 1) * ldt], ldt, work, info);
+        Rtpqrt(mb - n, n, 0, nb, &a[0], lda, &a[(i - 1)], lda, &t[((ctr * n + 1) - 1) * ldt], ldt, work, info);
         ctr++;
     }
     //
     // Compute the QR factorization of the last block A(II:M,1:N)
     //
     if (ii <= m) {
-        Rtpqrt(kk, n, 0, nb, &a[(1 - 1)], lda, &a[(ii - 1)], lda, &t[((ctr * n + 1) - 1) * ldt], ldt, work, info);
+        Rtpqrt(kk, n, 0, nb, &a[0], lda, &a[(ii - 1)], lda, &t[((ctr * n + 1) - 1) * ldt], ldt, work, info);
     }
     //
     work[1 - 1] = n * nb;

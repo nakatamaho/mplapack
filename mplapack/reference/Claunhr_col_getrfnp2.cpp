@@ -36,8 +36,6 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-inline REAL abs1(COMPLEX ff) { return max(abs(ff.real()), abs(ff.imag())); }
-
 void Claunhr_col_getrfnp2(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *d, INTEGER &info) {
     COMPLEX z = 0.0;
     //
@@ -76,11 +74,11 @@ void Claunhr_col_getrfnp2(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER 
         //
         // Transfer the sign
         //
-        d[1 - 1] = COMPLEX(-sign(one, a[(1 - 1)].real()), 0.0);
+        d[1 - 1] = COMPLEX(-sign(one, a[0].real()));
         //
         // Construct the row of U
         //
-        a[(1 - 1)] = a[(1 - 1)] - d[1 - 1];
+        a[0] = a[0] - d[1 - 1];
         //
     } else if (n == 1) {
         //
@@ -89,11 +87,11 @@ void Claunhr_col_getrfnp2(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER 
         //
         // Transfer the sign
         //
-        d[1 - 1] = COMPLEX(-sign(one, a[(1 - 1)].real()), 0.0);
+        d[1 - 1] = COMPLEX(-sign(one, a[0].real()));
         //
         // Construct the row of U
         //
-        a[(1 - 1)] = a[(1 - 1)] - d[1 - 1];
+        a[0] = a[0] - d[1 - 1];
         //
         // Scale the elements 2:M of the column
         //
@@ -103,11 +101,11 @@ void Claunhr_col_getrfnp2(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER 
         //
         // Construct the subdiagonal elements of L
         //
-        if (abs1(a[(1 - 1)]) >= sfmin) {
-            Cscal(m - 1, cone / a[(1 - 1)], &a[(2 - 1)], 1);
+        if (cabs1(a[0]) >= sfmin) {
+            Cscal(m - 1, cone / a[0], &a[(2 - 1)], 1);
         } else {
             for (i = 2; i <= m; i = i + 1) {
-                a[(i - 1)] = a[(i - 1)] / a[(1 - 1)];
+                a[(i - 1)] = a[(i - 1)] / a[0];
             }
         }
         //

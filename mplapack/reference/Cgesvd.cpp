@@ -94,10 +94,6 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
     INTEGER lwork_Cgelqf = 0;
     INTEGER lwork_Cunglq_n = 0;
     INTEGER lwork_Cunglq_m = 0;
-    char jobu_jobvt[3];
-    jobu_jobvt[0] = jobu[0];
-    jobu_jobvt[1] = jobvt[0];
-    jobu_jobvt[2] = '\0';
     if (info == 0) {
         minwrk = 1;
         maxwrk = 1;
@@ -105,7 +101,7 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
             //
             // Space needed for Cbdsqr is BDSPAC = 5*N
             //
-            mnthr = iMlaenv(6, "Cgesvd", jobu_jobvt, m, n, 0, 0);
+            mnthr = iMlaenv(6, "Cgesvd", CHAR2(jobu, jobvt), m, n, 0, 0);
             // Compute space needed for Cgeqrf
             Cgeqrf(m, n, a, lda, &cdum[1 - 1], &cdum[1 - 1], -1, ierr);
             lwork_Cgeqrf = castINTEGER(cdum[1 - 1].real());
@@ -249,7 +245,7 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
             //
             // Space needed for Cbdsqr is BDSPAC = 5*M
             //
-            mnthr = iMlaenv(6, "Cgesvd", jobu_jobvt, m, n, 0, 0);
+            mnthr = iMlaenv(6, "Cgesvd", CHAR2(jobu, jobvt), m, n, 0, 0);
             // Compute space needed for Cgelqf
             Cgelqf(m, n, a, lda, &cdum[1 - 1], &cdum[1 - 1], -1, ierr);
             lwork_Cgelqf = castINTEGER(cdum[1 - 1].real());

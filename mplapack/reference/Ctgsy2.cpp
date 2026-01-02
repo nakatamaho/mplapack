@@ -100,7 +100,7 @@ void Ctgsy2(const char *trans, INTEGER const ijob, INTEGER const m, INTEGER cons
                 //
                 // Build 2 by 2 system
                 //
-                z[(1 - 1)] = a[(i - 1) + (i - 1) * lda];
+                z[0] = a[(i - 1) + (i - 1) * lda];
                 z[(2 - 1)] = d[(i - 1) + (i - 1) * ldd];
                 z[(2 - 1) * ldz] = -b[(j - 1) + (j - 1) * ldb];
                 z[(2 - 1) + (2 - 1) * ldz] = -e[(j - 1) + (j - 1) * lde];
@@ -162,7 +162,7 @@ void Ctgsy2(const char *trans, INTEGER const ijob, INTEGER const m, INTEGER cons
                 //
                 // Build 2 by 2 system Z**H
                 //
-                z[(1 - 1)] = conj(a[(i - 1) + (i - 1) * lda]);
+                z[0] = conj(a[(i - 1) + (i - 1) * lda]);
                 z[(2 - 1)] = -conj(b[(j - 1) + (j - 1) * ldb]);
                 z[(2 - 1) * ldz] = conj(d[(i - 1) + (i - 1) * ldd]);
                 z[(2 - 1) + (2 - 1) * ldz] = -conj(e[(j - 1) + (j - 1) * lde]);

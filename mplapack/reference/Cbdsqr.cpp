@@ -51,7 +51,7 @@ void Cbdsqr(const char *uplo, INTEGER const n, INTEGER const ncvt, INTEGER const
     REAL r = 0.0;
     const REAL ten = 10.0;
     const REAL hndrd = 100.0;
-    const REAL meigth = -0.125e0;
+    const REAL meigth = -0.125;
     REAL tolmul = 0.0;
     REAL tol = 0.0;
     const REAL zero = 0.0;
@@ -77,7 +77,7 @@ void Cbdsqr(const char *uplo, INTEGER const n, INTEGER const ncvt, INTEGER const
     REAL cosr = 0.0;
     REAL sinl = 0.0;
     REAL cosl = 0.0;
-    const REAL hndrth = 0.01e0;
+    const REAL hndrth = 0.01;
     REAL shift = 0.0;
     REAL sll = 0.0;
     const REAL one = 1.0;
@@ -183,10 +183,10 @@ void Cbdsqr(const char *uplo, INTEGER const n, INTEGER const ncvt, INTEGER const
     //
     smax = zero;
     for (i = 1; i <= n; i = i + 1) {
-        smax = max(smax, REAL(abs(d[i - 1])));
+        smax = max(smax, abs(d[i - 1]));
     }
     for (i = 1; i <= n - 1; i = i + 1) {
-        smax = max(smax, REAL(abs(e[i - 1])));
+        smax = max(smax, abs(e[i - 1]));
     }
     sminl = zero;
     if (tol >= zero) {
@@ -207,12 +207,12 @@ void Cbdsqr(const char *uplo, INTEGER const n, INTEGER const ncvt, INTEGER const
         }
     statement_50:
         sminoa = sminoa / sqrt(castREAL(n));
-        thresh = max(REAL(tol * sminoa), REAL(maxitr * n * n * unfl));
+        thresh = max(tol * sminoa, maxitr * n * n * unfl);
     } else {
         //
         // Absolute accuracy desired
         //
-        thresh = max(REAL(abs(tol) * smax), REAL(maxitr * n * n * unfl));
+        thresh = max(abs(tol) * smax, maxitr * n * n * unfl);
     }
     //
     // Prepare for main iteration loop for the singular values
@@ -259,7 +259,7 @@ statement_60:
             goto statement_80;
         }
         smin = min(smin, abss);
-        smax = max({smax, abss, abse});
+        smax = max(smax, abss, abse);
     }
     ll = 0;
     goto statement_90;
@@ -383,7 +383,7 @@ statement_90:
     // Compute shift.  First, test if shifting would ruin relative
     // accuracy, and if so set the shift to zero.
     //
-    if (tol >= zero && n * tol * (sminl / smax) <= max(eps, REAL(hndrth * tol))) {
+    if (tol >= zero && n * tol * (sminl / smax) <= max(eps, hndrth * tol)) {
         //
         // Use a zero shift to avoid loss of relative accuracy
         //

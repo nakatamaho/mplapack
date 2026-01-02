@@ -59,7 +59,7 @@ void Rsbev(const char *jobz, const char *uplo, INTEGER const n, INTEGER const kd
     }
     //
     if (info != 0) {
-        Mxerbla("Rsbev", -info);
+        Mxerbla("Rsbev ", -info);
         return;
     }
     //
@@ -72,12 +72,12 @@ void Rsbev(const char *jobz, const char *uplo, INTEGER const n, INTEGER const kd
     const REAL one = 1.0;
     if (n == 1) {
         if (lower) {
-            w[1 - 1] = ab[(1 - 1)];
+            w[1 - 1] = ab[0];
         } else {
             w[1 - 1] = ab[((kd + 1) - 1)];
         }
         if (wantz) {
-            z[(1 - 1)] = one;
+            z[0] = one;
         }
         return;
     }

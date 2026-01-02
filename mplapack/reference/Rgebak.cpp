@@ -117,30 +117,36 @@ statement_30:
         if (rightv) {
             for (ii = 1; ii <= n; ii = ii + 1) {
                 i = ii;
-                if (i >= ilo && i <= ihi)
-                    continue;
+                if (i >= ilo && i <= ihi) {
+                    goto statement_40;
+                }
                 if (i < ilo) {
                     i = ilo - ii;
                 }
                 k = castINTEGER(scale[i - 1]);
-                if (k == i)
-                    continue;
+                if (k == i) {
+                    goto statement_40;
+                }
                 Rswap(m, &v[(i - 1)], ldv, &v[(k - 1)], ldv);
+            statement_40:;
             }
         }
         //
         if (leftv) {
             for (ii = 1; ii <= n; ii = ii + 1) {
                 i = ii;
-                if (i >= ilo && i <= ihi)
-                    continue;
+                if (i >= ilo && i <= ihi) {
+                    goto statement_50;
+                }
                 if (i < ilo) {
                     i = ilo - ii;
                 }
                 k = castINTEGER(scale[i - 1]);
-                if (k == i)
-                    continue;
+                if (k == i) {
+                    goto statement_50;
+                }
                 Rswap(m, &v[(i - 1)], ldv, &v[(k - 1)], ldv);
+            statement_50:;
             }
         }
     }

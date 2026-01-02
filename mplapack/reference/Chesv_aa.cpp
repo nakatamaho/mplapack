@@ -52,7 +52,7 @@ void Chesv_aa(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a,
         info = -5;
     } else if (ldb < max((INTEGER)1, n)) {
         info = -8;
-    } else if (lwork < max((INTEGER)2 * n, 3 * n - 2) && !lquery) {
+    } else if (lwork < max(2 * n, 3 * n - 2) && !lquery) {
         info = -10;
     }
     //
@@ -69,7 +69,7 @@ void Chesv_aa(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a,
     }
     //
     if (info != 0) {
-        Mxerbla("Chesv_aa", -info);
+        Mxerbla("Chesv_aa ", -info);
         return;
     } else if (lquery) {
         return;

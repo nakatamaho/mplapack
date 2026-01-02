@@ -84,11 +84,11 @@ void Rlamswlq(const char *side, const char *trans, INTEGER const m, INTEGER cons
     //
     // Quick return if possible
     //
-    if (min({m, n, k}) == 0) {
+    if (min(m, n, k) == 0) {
         return;
     }
     //
-    if ((nb <= k) || (nb >= max({m, n, k}))) {
+    if ((nb <= k) || (nb >= max(m, n, k))) {
         Rgemlqt(side, trans, m, n, k, mb, a, lda, t, ldt, c, ldc, work, info);
         return;
     }
@@ -105,7 +105,7 @@ void Rlamswlq(const char *side, const char *trans, INTEGER const m, INTEGER cons
         ctr = (m - k) / (nb - k);
         if (kk > 0) {
             ii = m - kk + 1;
-            Rtpmlqt("L", "T", kk, n, k, 0, mb, &a[(ii - 1) * lda], lda, &t[((ctr * k + 1) - 1) * ldt], ldt, &c[(1 - 1)], ldc, &c[(ii - 1)], ldc, work, info);
+            Rtpmlqt("L", "T", kk, n, k, 0, mb, &a[(ii - 1) * lda], lda, &t[((ctr * k + 1) - 1) * ldt], ldt, &c[0], ldc, &c[(ii - 1)], ldc, work, info);
         } else {
             ii = m + 1;
         }
@@ -115,13 +115,13 @@ void Rlamswlq(const char *side, const char *trans, INTEGER const m, INTEGER cons
             // Multiply Q to the current block of C (1:M,I:I+NB)
             //
             ctr = ctr - 1;
-            Rtpmlqt("L", "T", nb - k, n, k, 0, mb, &a[(i - 1) * lda], lda, &t[((ctr * k + 1) - 1) * ldt], ldt, &c[(1 - 1)], ldc, &c[(i - 1)], ldc, work, info);
+            Rtpmlqt("L", "T", nb - k, n, k, 0, mb, &a[(i - 1) * lda], lda, &t[((ctr * k + 1) - 1) * ldt], ldt, &c[0], ldc, &c[(i - 1)], ldc, work, info);
             //
         }
         //
         // Multiply Q to the first block of C (1:M,1:NB)
         //
-        Rgemlqt("L", "T", nb, n, k, mb, &a[(1 - 1)], lda, t, ldt, &c[(1 - 1)], ldc, work, info);
+        Rgemlqt("L", "T", nb, n, k, mb, &a[0], lda, t, ldt, &c[0], ldc, work, info);
         //
     } else if (left && notran) {
         //
@@ -130,13 +130,13 @@ void Rlamswlq(const char *side, const char *trans, INTEGER const m, INTEGER cons
         kk = mod((m - k), (nb - k));
         ii = m - kk + 1;
         ctr = 1;
-        Rgemlqt("L", "N", nb, n, k, mb, &a[(1 - 1)], lda, t, ldt, &c[(1 - 1)], ldc, work, info);
+        Rgemlqt("L", "N", nb, n, k, mb, &a[0], lda, t, ldt, &c[0], ldc, work, info);
         //
         for (i = nb + 1; i <= ii - nb + k; i = i + (nb - k)) {
             //
             // Multiply Q to the current block of C (I:I+NB,1:N)
             //
-            Rtpmlqt("L", "N", nb - k, n, k, 0, mb, &a[(i - 1) * lda], lda, &t[((ctr * k + 1) - 1) * ldt], ldt, &c[(1 - 1)], ldc, &c[(i - 1)], ldc, work, info);
+            Rtpmlqt("L", "N", nb - k, n, k, 0, mb, &a[(i - 1) * lda], lda, &t[((ctr * k + 1) - 1) * ldt], ldt, &c[0], ldc, &c[(i - 1)], ldc, work, info);
             ctr++;
             //
         }
@@ -144,7 +144,7 @@ void Rlamswlq(const char *side, const char *trans, INTEGER const m, INTEGER cons
             //
             // Multiply Q to the last block of C
             //
-            Rtpmlqt("L", "N", kk, n, k, 0, mb, &a[(ii - 1) * lda], lda, &t[((ctr * k + 1) - 1) * ldt], ldt, &c[(1 - 1)], ldc, &c[(ii - 1)], ldc, work, info);
+            Rtpmlqt("L", "N", kk, n, k, 0, mb, &a[(ii - 1) * lda], lda, &t[((ctr * k + 1) - 1) * ldt], ldt, &c[0], ldc, &c[(ii - 1)], ldc, work, info);
             //
         }
         //
@@ -156,7 +156,7 @@ void Rlamswlq(const char *side, const char *trans, INTEGER const m, INTEGER cons
         ctr = (n - k) / (nb - k);
         if (kk > 0) {
             ii = n - kk + 1;
-            Rtpmlqt("R", "N", m, kk, k, 0, mb, &a[(ii - 1) * lda], lda, &t[((ctr * k + 1) - 1) * ldt], ldt, &c[(1 - 1)], ldc, &c[(ii - 1) * ldc], ldc, work, info);
+            Rtpmlqt("R", "N", m, kk, k, 0, mb, &a[(ii - 1) * lda], lda, &t[((ctr * k + 1) - 1) * ldt], ldt, &c[0], ldc, &c[(ii - 1) * ldc], ldc, work, info);
         } else {
             ii = n + 1;
         }
@@ -166,13 +166,13 @@ void Rlamswlq(const char *side, const char *trans, INTEGER const m, INTEGER cons
             // Multiply Q to the current block of C (1:M,I:I+MB)
             //
             ctr = ctr - 1;
-            Rtpmlqt("R", "N", m, nb - k, k, 0, mb, &a[(i - 1) * lda], lda, &t[((ctr * k + 1) - 1) * ldt], ldt, &c[(1 - 1)], ldc, &c[(i - 1) * ldc], ldc, work, info);
+            Rtpmlqt("R", "N", m, nb - k, k, 0, mb, &a[(i - 1) * lda], lda, &t[((ctr * k + 1) - 1) * ldt], ldt, &c[0], ldc, &c[(i - 1) * ldc], ldc, work, info);
             //
         }
         //
         // Multiply Q to the first block of C (1:M,1:MB)
         //
-        Rgemlqt("R", "N", m, nb, k, mb, &a[(1 - 1)], lda, t, ldt, &c[(1 - 1)], ldc, work, info);
+        Rgemlqt("R", "N", m, nb, k, mb, &a[0], lda, t, ldt, &c[0], ldc, work, info);
         //
     } else if (right && tran) {
         //
@@ -181,13 +181,13 @@ void Rlamswlq(const char *side, const char *trans, INTEGER const m, INTEGER cons
         kk = mod((n - k), (nb - k));
         ctr = 1;
         ii = n - kk + 1;
-        Rgemlqt("R", "T", m, nb, k, mb, &a[(1 - 1)], lda, t, ldt, &c[(1 - 1)], ldc, work, info);
+        Rgemlqt("R", "T", m, nb, k, mb, &a[0], lda, t, ldt, &c[0], ldc, work, info);
         //
         for (i = nb + 1; i <= ii - nb + k; i = i + (nb - k)) {
             //
             // Multiply Q to the current block of C (1:M,I:I+MB)
             //
-            Rtpmlqt("R", "T", m, nb - k, k, 0, mb, &a[(i - 1) * lda], lda, &t[((ctr * k + 1) - 1) * ldt], ldt, &c[(1 - 1)], ldc, &c[(i - 1) * ldc], ldc, work, info);
+            Rtpmlqt("R", "T", m, nb - k, k, 0, mb, &a[(i - 1) * lda], lda, &t[((ctr * k + 1) - 1) * ldt], ldt, &c[0], ldc, &c[(i - 1) * ldc], ldc, work, info);
             ctr++;
             //
         }
@@ -195,7 +195,7 @@ void Rlamswlq(const char *side, const char *trans, INTEGER const m, INTEGER cons
             //
             // Multiply Q to the last block of C
             //
-            Rtpmlqt("R", "T", m, kk, k, 0, mb, &a[(ii - 1) * lda], lda, &t[((ctr * k + 1) - 1) * ldt], ldt, &c[(1 - 1)], ldc, &c[(ii - 1) * ldc], ldc, work, info);
+            Rtpmlqt("R", "T", m, kk, k, 0, mb, &a[(ii - 1) * lda], lda, &t[((ctr * k + 1) - 1) * ldt], ldt, &c[0], ldc, &c[(ii - 1) * ldc], ldc, work, info);
             //
         }
         //

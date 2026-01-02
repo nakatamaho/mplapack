@@ -36,8 +36,6 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-inline REAL cabs1(COMPLEX cdum) { return (abs(cdum.real()) + abs(cdum.imag())); }
-
 void Claqr2(bool const wantt, bool const wantz, INTEGER const n, INTEGER const ktop, INTEGER const kbot, INTEGER const nw, COMPLEX *h, INTEGER const ldh, INTEGER const iloz, INTEGER const ihiz, COMPLEX *z, INTEGER const ldz, INTEGER &ns, INTEGER &nd, COMPLEX *sh, COMPLEX *v, INTEGER const ldv, INTEGER const nh, COMPLEX *t, INTEGER const ldt, INTEGER const nv, COMPLEX *wv, INTEGER const ldwv, COMPLEX *work, INTEGER const lwork) {
     COMPLEX cdum = 0.0;
     //
@@ -93,6 +91,7 @@ void Claqr2(bool const wantt, bool const wantz, INTEGER const n, INTEGER const k
     REAL safmin = Rlamch("SAFE MINIMUM");
     const REAL rone = 1.0;
     REAL safmax = rone / safmin;
+    Rlabad(safmin, safmax);
     REAL ulp = Rlamch("PRECISION");
     REAL smlnum = safmin * (castREAL(n) / ulp);
     //
@@ -115,7 +114,7 @@ void Claqr2(bool const wantt, bool const wantz, INTEGER const n, INTEGER const k
         sh[kwtop - 1] = h[(kwtop - 1) + (kwtop - 1) * ldh];
         ns = 1;
         nd = 0;
-        if (cabs1(s) <= max(smlnum, REAL(ulp * cabs1(h[(kwtop - 1) + (kwtop - 1) * ldh])))) {
+        if (cabs1(s) <= max(smlnum, ulp * cabs1(h[(kwtop - 1) + (kwtop - 1) * ldh]))) {
             ns = 0;
             nd = 1;
             if (kwtop > ktop) {
@@ -155,7 +154,7 @@ void Claqr2(bool const wantt, bool const wantz, INTEGER const n, INTEGER const k
         if (foo == rzero) {
             foo = cabs1(s);
         }
-        if (cabs1(s) * cabs1(v[(ns - 1) * ldv]) <= max(smlnum, REAL(ulp * foo))) {
+        if (cabs1(s) * cabs1(v[(ns - 1) * ldv]) <= max(smlnum, ulp * foo)) {
             //
             // ==== One more converged eigenvalue ====
             //
@@ -235,7 +234,7 @@ void Claqr2(bool const wantt, bool const wantz, INTEGER const n, INTEGER const k
         // ==== Copy updated reduced window into place ====
         //
         if (kwtop > 1) {
-            h[(kwtop - 1) + ((kwtop - 1) - 1) * ldh] = s * conj(v[(1 - 1)]);
+            h[(kwtop - 1) + ((kwtop - 1) - 1) * ldh] = s * conj(v[0]);
         }
         Clacpy("U", jw, jw, t, ldt, &h[(kwtop - 1) + (kwtop - 1) * ldh], ldh);
         Ccopy(jw - 1, &t[(2 - 1)], ldt + 1, &h[((kwtop + 1) - 1) + (kwtop - 1) * ldh], ldh + 1);

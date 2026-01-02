@@ -64,7 +64,7 @@ void Rspgst(INTEGER const itype, const char *uplo, INTEGER const n, REAL *ap, RE
     INTEGER k1k1 = 0;
     REAL akk = 0.0;
     REAL bkk = 0.0;
-    const REAL half = 0.5e0;
+    const REAL half = 0.5;
     REAL ct = 0.0;
     INTEGER k1 = 0;
     INTEGER j1j1 = 0;

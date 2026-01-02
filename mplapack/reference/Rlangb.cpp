@@ -65,7 +65,7 @@ REAL Rlangb(const char *norm, INTEGER const n, INTEGER const kl, INTEGER const k
                 }
             }
         }
-    } else if ((Mlsame(norm, "O")) || ((Mlsame(norm, "1")))) {
+    } else if ((Mlsame(norm, "O")) || (Mlsame(norm, "1"))) {
         //
         // Find norm1(A).
         //

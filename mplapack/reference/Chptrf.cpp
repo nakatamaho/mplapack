@@ -36,14 +36,12 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-inline REAL cabs1(COMPLEX zdum) { return (abs(zdum.real()) + abs(zdum.imag())); }
-
 void Chptrf(const char *uplo, INTEGER const n, COMPLEX *ap, INTEGER *ipiv, INTEGER &info) {
     COMPLEX zdum = 0.0;
     bool upper = false;
     const REAL one = 1.0;
-    const REAL sevten = 17.0e+0;
-    const REAL eight = 8.0e+0;
+    const REAL sevten = 17.0;
+    const REAL eight = 8.0;
     REAL alpha = 0.0;
     INTEGER k = 0;
     INTEGER kc = 0;
@@ -120,7 +118,7 @@ void Chptrf(const char *uplo, INTEGER const n, COMPLEX *ap, INTEGER *ipiv, INTEG
         // column K, and COLMAX is its absolute value
         //
         if (k > 1) {
-            imax = iCamax(k - 1, &ap[kc - 1], (INTEGER)1);
+            imax = iCamax(k - 1, &ap[kc - 1], 1);
             colmax = cabs1(ap[(kc + imax - 1) - 1]);
         } else {
             colmax = zero;
@@ -158,9 +156,10 @@ void Chptrf(const char *uplo, INTEGER const n, COMPLEX *ap, INTEGER *ipiv, INTEG
                 }
                 kpc = (imax - 1) * imax / 2 + 1;
                 if (imax > 1) {
-                    jmax = iCamax(imax - 1, &ap[kpc - 1], (INTEGER)1);
+                    jmax = iCamax(imax - 1, &ap[kpc - 1], 1);
                     rowmax = max(rowmax, cabs1(ap[(kpc + jmax - 1) - 1]));
-                } //
+                }
+                //
                 if (absakk >= alpha * colmax * (colmax / rowmax)) {
                     //
                     // no interchange, use 1-by-1 pivot block
@@ -319,7 +318,7 @@ void Chptrf(const char *uplo, INTEGER const n, COMPLEX *ap, INTEGER *ipiv, INTEG
         // column K, and COLMAX is its absolute value
         //
         if (k < n) {
-            imax = k + iCamax(n - k, &ap[(kc + 1) - 1], (INTEGER)1);
+            imax = k + iCamax(n - k, &ap[(kc + 1) - 1], 1);
             colmax = cabs1(ap[(kc + imax - k) - 1]);
         } else {
             colmax = zero;
@@ -438,7 +437,7 @@ void Chptrf(const char *uplo, INTEGER const n, COMPLEX *ap, INTEGER *ipiv, INTEG
                     //
                     // Store L(k) in column K
                     //
-                    CRscal(n - k, r1, &ap[(kc + 1) - 1], (INTEGER)1);
+                    CRscal(n - k, r1, &ap[(kc + 1) - 1], 1);
                 }
             } else {
                 //

@@ -125,7 +125,7 @@ void Cpstf2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
             }
             //
             if (j > 1) {
-                itemp = Mmaxloc(work, n + j, 2 * n, 1);
+                itemp = Mmaxloc(work, (n + j), (2 * n), 1);
                 pvt = itemp + j - 1;
                 ajj = work[(n + pvt) - 1];
                 if (ajj <= dstop || Risnan(ajj)) {
@@ -194,7 +194,7 @@ void Cpstf2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
             }
             //
             if (j > 1) {
-                itemp = Mmaxloc(work, n + j, 2 * n, 1);
+                itemp = Mmaxloc(work, (n + j), (2 * n), 1);
                 pvt = itemp + j - 1;
                 ajj = work[(n + pvt) - 1];
                 if (ajj <= dstop || Risnan(ajj)) {

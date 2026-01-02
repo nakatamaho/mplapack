@@ -44,7 +44,7 @@ void Rlasq2(INTEGER const n, REAL *z, INTEGER &info) {
     REAL tol2 = 0.0;
     const REAL zero = 0.0;
     REAL d = 0.0;
-    const REAL half = 0.5e0;
+    const REAL half = 0.5;
     REAL t = 0.0;
     REAL s = 0.0;
     const REAL one = 1.0;
@@ -58,7 +58,7 @@ void Rlasq2(INTEGER const n, REAL *z, INTEGER &info) {
     bool ieee = false;
     INTEGER i0 = 0;
     INTEGER n0 = 0;
-    const REAL cbias = 1.50e0;
+    const REAL cbias = 1.5;
     INTEGER ipn4 = 0;
     INTEGER i4 = 0;
     REAL temp = 0.0;
@@ -180,7 +180,7 @@ void Rlasq2(INTEGER const n, REAL *z, INTEGER &info) {
         e += z[(k + 1) - 1];
         qmax = max(qmax, z[k - 1]);
         emin = min(emin, z[(k + 1) - 1]);
-        zmax = max({qmax, zmax, z[(k + 1) - 1]});
+        zmax = max(qmax, zmax, z[(k + 1) - 1]);
     }
     if (z[(2 * n - 1) - 1] < zero) {
         info = -(200 + 2 * n - 1);
@@ -347,7 +347,7 @@ void Rlasq2(INTEGER const n, REAL *z, INTEGER &info) {
                 qmin = min(qmin, z[(i4 - 3) - 1]);
                 emax = max(emax, z[(i4 - 5) - 1]);
             }
-            qmax = max(qmax, REAL(z[(i4 - 7) - 1] + z[(i4 - 5) - 1]));
+            qmax = max(qmax, z[(i4 - 7) - 1] + z[(i4 - 5) - 1]);
             emin = min(emin, z[(i4 - 5) - 1]);
         }
         i4 = 4;
@@ -389,7 +389,7 @@ void Rlasq2(INTEGER const n, REAL *z, INTEGER &info) {
         //
         // Put -(initial shift) into DMIN.
         //
-        dmin = -max(zero, REAL(qmin - two * sqrt(qmin) * sqrt(emax)));
+        dmin = -max(zero, qmin - two * sqrt(qmin) * sqrt(emax));
         //
         // Now I0:N0 is unreduced.
         // PP = 0 for ping, PP = 1 for pong.
@@ -514,8 +514,8 @@ statement_170:
     //
     z[(2 * n + 1) - 1] = trace;
     z[(2 * n + 2) - 1] = e;
-    z[(2 * n + 3) - 1] = iter;
-    z[(2 * n + 4) - 1] = castREAL(ndiv) / castREAL(n * n);
+    z[(2 * n + 3) - 1] = castREAL(iter);
+    z[(2 * n + 4) - 1] = castREAL(ndiv) / castREAL(pow2(n));
     z[(2 * n + 5) - 1] = hundrd * nfail / castREAL(iter);
     //
     // End of Rlasq2

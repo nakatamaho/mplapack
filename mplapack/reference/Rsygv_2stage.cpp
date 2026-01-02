@@ -78,7 +78,7 @@ void Rsygv_2stage(INTEGER const itype, const char *jobz, const char *uplo, INTEG
     }
     //
     if (info != 0) {
-        Mxerbla("Rsygv_2stage", -info);
+        Mxerbla("Rsygv_2stage ", -info);
         return;
     } else if (lquery) {
         return;

@@ -66,7 +66,7 @@ void Cunglq(INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX *a, INTEG
     // Quick return if possible
     //
     if (m <= 0) {
-        work[1 - 1] = 1;
+        work[1 - 1] = 1.0;
         return;
     }
     //

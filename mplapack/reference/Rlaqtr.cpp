@@ -42,8 +42,7 @@ void Rlaqtr(bool const ltran, bool const lreal, INTEGER const n, REAL *t, INTEGE
     REAL smlnum = 0.0;
     const REAL one = 1.0;
     REAL bignum = 0.0;
-    REAL d[4];
-    INTEGER ldd = 2;
+    REAL d[2 * 2];
     REAL xnorm = 0.0;
     REAL smin = 0.0;
     const REAL zero = 0.0;
@@ -60,41 +59,17 @@ void Rlaqtr(bool const ltran, bool const lreal, INTEGER const n, REAL *t, INTEGE
     REAL tjj = 0.0;
     REAL tmp = 0.0;
     REAL rec = 0.0;
-    REAL v[4];
-    INTEGER ldv = 2;
+    REAL v[2 * 2];
     REAL scaloc = 0.0;
     INTEGER ierr = 0;
     REAL sminw = 0.0;
     REAL z = 0.0;
     REAL sr = 0.0;
     REAL si = 0.0;
+    INTEGER ldd = 2;
+    INTEGER ldv = 2;
     //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    // =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Do not test the input parameters for errors
+    // Do not test the input parameters for errors
     //
     notran = !ltran;
     info = 0;
@@ -113,9 +88,9 @@ void Rlaqtr(bool const ltran, bool const lreal, INTEGER const n, REAL *t, INTEGE
     //
     xnorm = Rlange("M", n, n, t, ldt, d);
     if (!lreal) {
-        xnorm = max({xnorm, REAL(abs(w)), REAL(Rlange("M", n, 1, b, n, d))});
+        xnorm = max(xnorm, abs(w), Rlange("M", n, 1, b, n, d));
     }
-    smin = max(smlnum, REAL(eps * xnorm));
+    smin = max(smlnum, eps * xnorm);
     //
     // Compute 1-norm of each column of strictly upper triangular
     // part of T to control overflow in triangular solver.
@@ -221,7 +196,7 @@ void Rlaqtr(bool const ltran, bool const lreal, INTEGER const n, REAL *t, INTEGE
                     // Call 2 by 2 linear system solve, to take
                     // care of possible overflow by scaling factor.
                     //
-                    d[(1 - 1)] = x[j1 - 1];
+                    d[0] = x[j1 - 1];
                     d[(2 - 1)] = x[j2 - 1];
                     Rlaln2(false, 2, 1, smin, one, &t[(j1 - 1) + (j1 - 1) * ldt], ldt, one, one, d, 2, zero, zero, v, 2, scaloc, xnorm, ierr);
                     if (ierr != 0) {
@@ -232,13 +207,13 @@ void Rlaqtr(bool const ltran, bool const lreal, INTEGER const n, REAL *t, INTEGE
                         Rscal(n, scaloc, x, 1);
                         scale = scale * scaloc;
                     }
-                    x[j1 - 1] = v[(1 - 1)];
+                    x[j1 - 1] = v[0];
                     x[j2 - 1] = v[(2 - 1)];
                     //
                     // Scale V(1,1) (= X(J1)) and/or V(2,1) (=X(J2))
                     // to avoid overflow in updating right-hand side.
                     //
-                    xj = max(abs(v[(1 - 1)]), abs(v[(2 - 1)]));
+                    xj = max(abs(v[0]), abs(v[(2 - 1)]));
                     if (xj > one) {
                         rec = one / xj;
                         if (max(work[j1 - 1], work[j2 - 1]) > (bignum - xmax) * rec) {
@@ -317,7 +292,7 @@ void Rlaqtr(bool const ltran, bool const lreal, INTEGER const n, REAL *t, INTEGE
                         }
                     }
                     x[j1 - 1] = x[j1 - 1] / tmp;
-                    xmax = max(xmax, REAL(abs(x[j1 - 1])));
+                    xmax = max(xmax, abs(x[j1 - 1]));
                     //
                 } else {
                     //
@@ -336,7 +311,7 @@ void Rlaqtr(bool const ltran, bool const lreal, INTEGER const n, REAL *t, INTEGE
                         }
                     }
                     //
-                    d[(1 - 1)] = x[j1 - 1] - Rdot(j1 - 1, &t[(j1 - 1) * ldt], 1, x, 1);
+                    d[0] = x[j1 - 1] - Rdot(j1 - 1, &t[(j1 - 1) * ldt], 1, x, 1);
                     d[(2 - 1)] = x[j2 - 1] - Rdot(j1 - 1, &t[(j2 - 1) * ldt], 1, x, 1);
                     //
                     Rlaln2(true, 2, 1, smin, one, &t[(j1 - 1) + (j1 - 1) * ldt], ldt, one, one, d, 2, zero, zero, v, 2, scaloc, xnorm, ierr);
@@ -348,9 +323,9 @@ void Rlaqtr(bool const ltran, bool const lreal, INTEGER const n, REAL *t, INTEGE
                         Rscal(n, scaloc, x, 1);
                         scale = scale * scaloc;
                     }
-                    x[j1 - 1] = v[(1 - 1)];
+                    x[j1 - 1] = v[0];
                     x[j2 - 1] = v[(2 - 1)];
-                    xmax = max({REAL(abs(x[j1 - 1])), REAL(abs(x[j2 - 1])), xmax});
+                    xmax = max(abs(x[j1 - 1]), abs(x[j2 - 1]), xmax);
                     //
                 }
             statement_40:;
@@ -359,7 +334,7 @@ void Rlaqtr(bool const ltran, bool const lreal, INTEGER const n, REAL *t, INTEGE
         //
     } else {
         //
-        sminw = max(REAL(eps * abs(w)), smin);
+        sminw = max(eps * abs(w), smin);
         if (notran) {
             //
             // Solve (T + iB)*(p+iq) = c+id
@@ -435,7 +410,7 @@ void Rlaqtr(bool const ltran, bool const lreal, INTEGER const n, REAL *t, INTEGE
                         //
                         xmax = zero;
                         for (k = 1; k <= j1 - 1; k = k + 1) {
-                            xmax = max(xmax, REAL(abs(x[k - 1]) + abs(x[(k + n) - 1])));
+                            xmax = max(xmax, abs(x[k - 1]) + abs(x[(k + n) - 1]));
                         }
                     }
                     //
@@ -443,7 +418,7 @@ void Rlaqtr(bool const ltran, bool const lreal, INTEGER const n, REAL *t, INTEGE
                     //
                     // Meet 2 by 2 diagonal block
                     //
-                    d[(1 - 1)] = x[j1 - 1];
+                    d[0] = x[j1 - 1];
                     d[(2 - 1)] = x[j2 - 1];
                     d[(2 - 1) * ldd] = x[(n + j1) - 1];
                     d[(2 - 1) + (2 - 1) * ldd] = x[(n + j2) - 1];
@@ -456,7 +431,7 @@ void Rlaqtr(bool const ltran, bool const lreal, INTEGER const n, REAL *t, INTEGE
                         Rscal(2 * n, scaloc, x, 1);
                         scale = scaloc * scale;
                     }
-                    x[j1 - 1] = v[(1 - 1)];
+                    x[j1 - 1] = v[0];
                     x[j2 - 1] = v[(2 - 1)];
                     x[(n + j1) - 1] = v[(2 - 1) * ldv];
                     x[(n + j2) - 1] = v[(2 - 1) + (2 - 1) * ldv];
@@ -464,7 +439,7 @@ void Rlaqtr(bool const ltran, bool const lreal, INTEGER const n, REAL *t, INTEGE
                     // Scale X(J1), .... to avoid overflow in
                     // updating right hand side.
                     //
-                    xj = max(abs(v[(1 - 1)]) + abs(v[(2 - 1) * ldv]), abs(v[(2 - 1)]) + abs(v[(2 - 1) + (2 - 1) * ldv]));
+                    xj = max(abs(v[0]) + abs(v[(2 - 1) * ldv]), abs(v[(2 - 1)]) + abs(v[(2 - 1) + (2 - 1) * ldv]));
                     if (xj > one) {
                         rec = one / xj;
                         if (max(work[j1 - 1], work[j2 - 1]) > (bignum - xmax) * rec) {
@@ -487,7 +462,7 @@ void Rlaqtr(bool const ltran, bool const lreal, INTEGER const n, REAL *t, INTEGE
                         //
                         xmax = zero;
                         for (k = 1; k <= j1 - 1; k = k + 1) {
-                            xmax = max(REAL(abs(x[k - 1]) + abs(x[(k + n) - 1])), xmax);
+                            xmax = max(abs(x[k - 1]) + abs(x[(k + n) - 1]), xmax);
                         }
                     }
                     //
@@ -566,7 +541,7 @@ void Rlaqtr(bool const ltran, bool const lreal, INTEGER const n, REAL *t, INTEGE
                     Rladiv(x[j1 - 1], x[(n + j1) - 1], tmp, -z, sr, si);
                     x[j1 - 1] = sr;
                     x[(j1 + n) - 1] = si;
-                    xmax = max(REAL(abs(x[j1 - 1]) + abs(x[(j1 + n) - 1])), xmax);
+                    xmax = max(abs(x[j1 - 1]) + abs(x[(j1 + n) - 1]), xmax);
                     //
                 } else {
                     //
@@ -585,11 +560,11 @@ void Rlaqtr(bool const ltran, bool const lreal, INTEGER const n, REAL *t, INTEGE
                         }
                     }
                     //
-                    d[(1 - 1)] = x[j1 - 1] - Rdot(j1 - 1, &t[(j1 - 1) * ldt], 1, x, 1);
+                    d[0] = x[j1 - 1] - Rdot(j1 - 1, &t[(j1 - 1) * ldt], 1, x, 1);
                     d[(2 - 1)] = x[j2 - 1] - Rdot(j1 - 1, &t[(j2 - 1) * ldt], 1, x, 1);
                     d[(2 - 1) * ldd] = x[(n + j1) - 1] - Rdot(j1 - 1, &t[(j1 - 1) * ldt], 1, &x[(n + 1) - 1], 1);
                     d[(2 - 1) + (2 - 1) * ldd] = x[(n + j2) - 1] - Rdot(j1 - 1, &t[(j2 - 1) * ldt], 1, &x[(n + 1) - 1], 1);
-                    d[(1 - 1)] = d[(1 - 1)] - b[j1 - 1] * x[(n + 1) - 1];
+                    d[0] = d[0] - b[j1 - 1] * x[(n + 1) - 1];
                     d[(2 - 1)] = d[(2 - 1)] - b[j2 - 1] * x[(n + 1) - 1];
                     d[(2 - 1) * ldd] += b[j1 - 1] * x[1 - 1];
                     d[(2 - 1) + (2 - 1) * ldd] += b[j2 - 1] * x[1 - 1];
@@ -603,11 +578,11 @@ void Rlaqtr(bool const ltran, bool const lreal, INTEGER const n, REAL *t, INTEGE
                         Rscal(n2, scaloc, x, 1);
                         scale = scaloc * scale;
                     }
-                    x[j1 - 1] = v[(1 - 1)];
+                    x[j1 - 1] = v[0];
                     x[j2 - 1] = v[(2 - 1)];
                     x[(n + j1) - 1] = v[(2 - 1) * ldv];
                     x[(n + j2) - 1] = v[(2 - 1) + (2 - 1) * ldv];
-                    xmax = max({REAL(abs(x[j1 - 1]) + abs(x[(n + j1) - 1])), REAL(abs(x[j2 - 1]) + abs(x[(n + j2) - 1])), xmax});
+                    xmax = max(abs(x[j1 - 1]) + abs(x[(n + j1) - 1]), abs(x[j2 - 1]) + abs(x[(n + j2) - 1]), xmax);
                     //
                 }
             //

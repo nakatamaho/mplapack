@@ -68,7 +68,7 @@ void Csysv_rk(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a,
     }
     //
     if (info != 0) {
-        Mxerbla("Csysv_rk", -info);
+        Mxerbla("Csysv_rk ", -info);
         return;
     } else if (lquery) {
         return;

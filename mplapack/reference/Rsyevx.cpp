@@ -128,7 +128,7 @@ void Rsyevx(const char *jobz, const char *range, const char *uplo, INTEGER const
         } else {
             lwkmin = 8 * n;
             nb = iMlaenv(1, "Rsytrd", uplo, n, -1, -1, -1);
-            nb = max({nb, iMlaenv(1, "Rormtr", uplo, n, -1, -1, -1)});
+            nb = max(nb, iMlaenv(1, "Rormtr", uplo, n, -1, -1, -1));
             lwkopt = max(lwkmin, (nb + 3) * n);
             work[1 - 1] = lwkopt;
         }
@@ -155,15 +155,15 @@ void Rsyevx(const char *jobz, const char *range, const char *uplo, INTEGER const
     if (n == 1) {
         if (alleig || indeig) {
             m = 1;
-            w[1 - 1] = a[(1 - 1)];
+            w[1 - 1] = a[0];
         } else {
-            if (vl < a[(1 - 1)] && vu >= a[(1 - 1)]) {
+            if (vl < a[0] && vu >= a[0]) {
                 m = 1;
-                w[1 - 1] = a[(1 - 1)];
+                w[1 - 1] = a[0];
             }
         }
         if (wantz) {
-            z[(1 - 1)] = one;
+            z[0] = one;
         }
         return;
     }
@@ -175,7 +175,7 @@ void Rsyevx(const char *jobz, const char *range, const char *uplo, INTEGER const
     smlnum = safmin / eps;
     bignum = one / smlnum;
     rmin = sqrt(smlnum);
-    rmax = min(REAL(sqrt(bignum)), REAL(one / sqrt(sqrt(safmin))));
+    rmax = min(sqrt(bignum), one / sqrt(sqrt(safmin)));
     //
     // Scale matrix to allowable range, if necessary.
     //

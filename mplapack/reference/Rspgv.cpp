@@ -56,7 +56,7 @@ void Rspgv(INTEGER const itype, const char *jobz, const char *uplo, INTEGER cons
         info = -9;
     }
     if (info != 0) {
-        Mxerbla("Rspgv", -info);
+        Mxerbla("Rspgv ", -info);
         return;
     }
     //

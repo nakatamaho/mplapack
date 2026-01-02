@@ -54,7 +54,7 @@ void Rlarrb(INTEGER const n, REAL *d, REAL *lld, INTEGER const ifirst, INTEGER c
     REAL gap = 0.0;
     REAL back = 0.0;
     INTEGER negcnt = 0;
-    const REAL half = 0.5e0;
+    const REAL half = 0.5;
     REAL width = 0.0;
     REAL tmp = 0.0;
     REAL cvrgd = 0.0;
@@ -237,7 +237,7 @@ statement_80:
     for (i = ifirst + 1; i <= ilast; i = i + 1) {
         k = 2 * i;
         ii = i - offset;
-        wgap[(ii - 1) - 1] = max(zero, REAL(w[ii - 1] - werr[ii - 1] - w[(ii - 1) - 1] - werr[(ii - 1) - 1]));
+        wgap[(ii - 1) - 1] = max(zero, w[ii - 1] - werr[ii - 1] - w[(ii - 1) - 1] - werr[(ii - 1) - 1]);
     }
     //
     // End of Rlarrb

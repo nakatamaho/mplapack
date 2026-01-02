@@ -68,7 +68,7 @@ void Rtplqt2(INTEGER const m, INTEGER const n, INTEGER const l, REAL *a, INTEGER
     INTEGER i = 0;
     INTEGER p = 0;
     INTEGER j = 0;
-    const REAL one = 1.0f;
+    const REAL one = 1.0;
     REAL alpha = 0.0;
     for (i = 1; i <= m; i = i + 1) {
         //
@@ -95,7 +95,7 @@ void Rtplqt2(INTEGER const m, INTEGER const n, INTEGER const l, REAL *a, INTEGER
         }
     }
     //
-    const REAL zero = 0.0f;
+    const REAL zero = 0.0;
     INTEGER np = 0;
     INTEGER mp = 0;
     for (i = 2; i <= m; i = i + 1) {

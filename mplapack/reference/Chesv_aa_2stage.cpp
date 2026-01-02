@@ -84,7 +84,7 @@ void Chesv_aa_2stage(const char *uplo, INTEGER const n, INTEGER const nrhs, COMP
         //
     }
     //
-    work[1 - 1] = castREAL(lwkopt);
+    work[1 - 1] = lwkopt;
     //
     // End of Chesv_aa_2stage
     //

@@ -73,7 +73,7 @@ void Rgglse(INTEGER const m, INTEGER const n, INTEGER const p, REAL *a, INTEGER 
             nb2 = iMlaenv(1, "Rgerqf", " ", m, n, -1, -1);
             nb3 = iMlaenv(1, "Rormqr", " ", m, n, p, -1);
             nb4 = iMlaenv(1, "Rormrq", " ", m, n, p, -1);
-            nb = max({nb1, nb2, nb3, nb4});
+            nb = max(nb1, nb2, nb3, nb4);
             lwkmin = m + n + p;
             lwkopt = p + mn + max(m, n) * nb;
         }

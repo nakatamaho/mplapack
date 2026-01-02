@@ -72,9 +72,9 @@ void Cgels(const char *trans, INTEGER const m, INTEGER const n, INTEGER const nr
         info = -4;
     } else if (lda < max((INTEGER)1, m)) {
         info = -6;
-    } else if (ldb < max({(INTEGER)1, m, n})) {
+    } else if (ldb < max((INTEGER)1, m, n)) {
         info = -8;
-    } else if (lwork < max({(INTEGER)1, mn + max(mn, nrhs)}) && !lquery) {
+    } else if (lwork < max((INTEGER)1, mn + max(mn, nrhs)) && !lquery) {
         info = -10;
     }
     //
@@ -90,26 +90,26 @@ void Cgels(const char *trans, INTEGER const m, INTEGER const n, INTEGER const nr
         if (m >= n) {
             nb = iMlaenv(1, "Cgeqrf", " ", m, n, -1, -1);
             if (tpsd) {
-                nb = max({nb, iMlaenv(1, "Cunmqr", "LN", m, nrhs, n, -1)});
+                nb = max(nb, iMlaenv(1, "Cunmqr", "LN", m, nrhs, n, -1));
             } else {
-                nb = max({nb, iMlaenv(1, "Cunmqr", "LC", m, nrhs, n, -1)});
+                nb = max(nb, iMlaenv(1, "Cunmqr", "LC", m, nrhs, n, -1));
             }
         } else {
             nb = iMlaenv(1, "Cgelqf", " ", m, n, -1, -1);
             if (tpsd) {
-                nb = max({nb, iMlaenv(1, "Cunmlq", "LC", n, nrhs, m, -1)});
+                nb = max(nb, iMlaenv(1, "Cunmlq", "LC", n, nrhs, m, -1));
             } else {
-                nb = max({nb, iMlaenv(1, "Cunmlq", "LN", n, nrhs, m, -1)});
+                nb = max(nb, iMlaenv(1, "Cunmlq", "LN", n, nrhs, m, -1));
             }
         }
         //
-        wsize = max({(INTEGER)1, mn + max(mn, nrhs) * nb});
+        wsize = max((INTEGER)1, mn + max(mn, nrhs) * nb);
         work[1 - 1] = castREAL(wsize);
         //
     }
     //
     if (info != 0) {
-        Mxerbla("Cgels", -info);
+        Mxerbla("Cgels ", -info);
         return;
     } else if (lquery) {
         return;
@@ -117,7 +117,7 @@ void Cgels(const char *trans, INTEGER const m, INTEGER const n, INTEGER const nr
     //
     // Quick return if possible
     //
-    if (min({m, n, nrhs}) == 0) {
+    if (min(m, n, nrhs) == 0) {
         Claset("Full", max(m, n), nrhs, czero, czero, b, ldb);
         return;
     }
@@ -126,8 +126,9 @@ void Cgels(const char *trans, INTEGER const m, INTEGER const n, INTEGER const nr
     //
     smlnum = Rlamch("S") / Rlamch("P");
     bignum = one / smlnum;
+    Rlabad(smlnum, bignum);
     //
-    //     Scale A, B if max element outside range [SMLNUM,BIGNUM]
+    // Scale A, B if max element outside range [SMLNUM,BIGNUM]
     //
     anrm = Clange("M", m, n, a, lda, rwork);
     iascl = 0;

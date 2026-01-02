@@ -51,7 +51,7 @@ void Cgesv(INTEGER const n, INTEGER const nrhs, COMPLEX *a, INTEGER const lda, I
         info = -7;
     }
     if (info != 0) {
-        Mxerbla("Cgesv", -info);
+        Mxerbla("Cgesv ", -info);
         return;
     }
     //

@@ -37,32 +37,9 @@
 #include <mplapack.h>
 
 void Csytri2x(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, INTEGER *ipiv, COMPLEX *work, INTEGER const nb, INTEGER &info) {
+    INTEGER ldwork = n + nb + 1;
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     bool upper = Mlsame(uplo, "U");
@@ -141,7 +118,6 @@ void Csytri2x(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, 
     COMPLEX u11_i_j = 0.0;
     COMPLEX u11_ip1_j = 0.0;
     INTEGER ip = 0;
-    INTEGER ldwork = n + nb + 1;
     if (upper) {
         //
         // invA = P * inv(U**T)*inv(D)*inv(U)*P**T.
@@ -154,7 +130,7 @@ void Csytri2x(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, 
         while (k <= n) {
             if (ipiv[k - 1] > 0) {
                 // 1 x 1 diagonal NNB
-                work[(k - 1) + (invd - 1) * ldwork] = castREAL(1) / a[(k - 1) + (k - 1) * lda];
+                work[(k - 1) + (invd - 1) * ldwork] = one / a[(k - 1) + (k - 1) * lda];
                 work[(k - 1) + ((invd + 1) - 1) * ldwork] = 0.0;
                 k++;
             } else {
@@ -333,7 +309,7 @@ void Csytri2x(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, 
         while (k >= 1) {
             if (ipiv[k - 1] > 0) {
                 // 1 x 1 diagonal NNB
-                work[(k - 1) + (invd - 1) * ldwork] = castREAL(1) / a[(k - 1) + (k - 1) * lda];
+                work[(k - 1) + (invd - 1) * ldwork] = one / a[(k - 1) + (k - 1) * lda];
                 work[(k - 1) + ((invd + 1) - 1) * ldwork] = 0.0;
                 k = k - 1;
             } else {

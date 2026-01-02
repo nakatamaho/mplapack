@@ -181,8 +181,8 @@ void Cgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
         lwcon = 2 * n;
         // .. minimal workspace length for Cgesvj of an N x N matrix,
         // without and with explicit accumulation of Jacobi rotations
-        lwsvdj = max((INTEGER)2 * n, (INTEGER)1);
-        lwsvdjv = max((INTEGER)2 * n, (INTEGER)1);
+        lwsvdj = max(2 * n, (INTEGER)1);
+        lwsvdjv = max(2 * n, (INTEGER)1);
         // .. minimal REAL workspace length for Cgeqp3, Cpocon, Cgesvj
         lrwqp3 = 2 * n;
         lrwcon = n;
@@ -202,30 +202,30 @@ void Cgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
             // .. minimal and optimal sizes of the complex workspace if
             // only the singular values are requested
             if (errest) {
-                minwrk = max({n + lwqp3, n * n + lwcon, n + lwqrf, lwsvdj});
+                minwrk = max(n + lwqp3, pow2(n) + lwcon, n + lwqrf, lwsvdj);
             } else {
-                minwrk = max({n + lwqp3, n + lwqrf, lwsvdj});
+                minwrk = max(n + lwqp3, n + lwqrf, lwsvdj);
             }
             if (lquery) {
                 Cgesvj("L", "N", "N", n, n, a, lda, sva, n, v, ldv, cdummy, -1, rdummy, -1, ierr);
                 lwrk_Cgesvj = castINTEGER(cdummy[1 - 1].real());
                 if (errest) {
-                    optwrk = max({n + lwrk_Cgeqp3, n * n + lwcon, n + lwrk_Cgeqrf, lwrk_Cgesvj});
+                    optwrk = max(n + lwrk_Cgeqp3, pow2(n) + lwcon, n + lwrk_Cgeqrf, lwrk_Cgesvj);
                 } else {
-                    optwrk = max({n + lwrk_Cgeqp3, n + lwrk_Cgeqrf, lwrk_Cgesvj});
+                    optwrk = max(n + lwrk_Cgeqp3, n + lwrk_Cgeqrf, lwrk_Cgesvj);
                 }
             }
             if (l2tran || rowpiv) {
                 if (errest) {
-                    minrwrk = max({(INTEGER)7, 2 * m, lrwqp3, lrwcon, lrwsvdj});
+                    minrwrk = max((INTEGER)7, 2 * m, lrwqp3, lrwcon, lrwsvdj);
                 } else {
-                    minrwrk = max({(INTEGER)7, 2 * m, lrwqp3, lrwsvdj});
+                    minrwrk = max((INTEGER)7, 2 * m, lrwqp3, lrwsvdj);
                 }
             } else {
                 if (errest) {
-                    minrwrk = max({(INTEGER)7, lrwqp3, lrwcon, lrwsvdj});
+                    minrwrk = max((INTEGER)7, lrwqp3, lrwcon, lrwsvdj);
                 } else {
-                    minrwrk = max({(INTEGER)7, lrwqp3, lrwsvdj});
+                    minrwrk = max((INTEGER)7, lrwqp3, lrwsvdj);
                 }
             }
             if (rowpiv || l2tran) {
@@ -235,9 +235,9 @@ void Cgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
             // .. minimal and optimal sizes of the complex workspace if the
             // singular values and the right singular vectors are requested
             if (errest) {
-                minwrk = max({n + lwqp3, lwcon, lwsvdj, n + lwlqf, 2 * n + lwqrf, n + lwsvdj, n + lwunmlq});
+                minwrk = max(n + lwqp3, lwcon, lwsvdj, n + lwlqf, 2 * n + lwqrf, n + lwsvdj, n + lwunmlq);
             } else {
-                minwrk = max({n + lwqp3, lwsvdj, n + lwlqf, 2 * n + lwqrf, n + lwsvdj, n + lwunmlq});
+                minwrk = max(n + lwqp3, lwsvdj, n + lwlqf, 2 * n + lwqrf, n + lwsvdj, n + lwunmlq);
             }
             if (lquery) {
                 Cgesvj("L", "U", "N", n, n, u, ldu, sva, n, a, lda, cdummy, -1, rdummy, -1, ierr);
@@ -245,22 +245,22 @@ void Cgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
                 Cunmlq("L", "C", n, n, n, a, lda, cdummy, v, ldv, cdummy, -1, ierr);
                 lwrk_Cunmlq = castINTEGER(cdummy[1 - 1].real());
                 if (errest) {
-                    optwrk = max({n + lwrk_Cgeqp3, lwcon, lwrk_Cgesvj, n + lwrk_Cgelqf, 2 * n + lwrk_Cgeqrf, n + lwrk_Cgesvj, n + lwrk_Cunmlq});
+                    optwrk = max(n + lwrk_Cgeqp3, lwcon, lwrk_Cgesvj, n + lwrk_Cgelqf, 2 * n + lwrk_Cgeqrf, n + lwrk_Cgesvj, n + lwrk_Cunmlq);
                 } else {
-                    optwrk = max({n + lwrk_Cgeqp3, lwrk_Cgesvj, n + lwrk_Cgelqf, 2 * n + lwrk_Cgeqrf, n + lwrk_Cgesvj, n + lwrk_Cunmlq});
+                    optwrk = max(n + lwrk_Cgeqp3, lwrk_Cgesvj, n + lwrk_Cgelqf, 2 * n + lwrk_Cgeqrf, n + lwrk_Cgesvj, n + lwrk_Cunmlq);
                 }
             }
             if (l2tran || rowpiv) {
                 if (errest) {
-                    minrwrk = max({(INTEGER)7, 2 * m, lrwqp3, lrwsvdj, lrwcon});
+                    minrwrk = max((INTEGER)7, 2 * m, lrwqp3, lrwsvdj, lrwcon);
                 } else {
-                    minrwrk = max({(INTEGER)7, 2 * m, lrwqp3, lrwsvdj});
+                    minrwrk = max((INTEGER)7, 2 * m, lrwqp3, lrwsvdj);
                 }
             } else {
                 if (errest) {
-                    minrwrk = max({(INTEGER)7, lrwqp3, lrwsvdj, lrwcon});
+                    minrwrk = max((INTEGER)7, lrwqp3, lrwsvdj, lrwcon);
                 } else {
-                    minrwrk = max({(INTEGER)7, lrwqp3, lrwsvdj});
+                    minrwrk = max((INTEGER)7, lrwqp3, lrwsvdj);
                 }
             }
             if (rowpiv || l2tran) {
@@ -270,9 +270,9 @@ void Cgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
             // .. minimal and optimal sizes of the complex workspace if the
             // singular values and the left singular vectors are requested
             if (errest) {
-                minwrk = n + max({lwqp3, lwcon, n + lwqrf, lwsvdj, lwunmqrm});
+                minwrk = n + max(lwqp3, lwcon, n + lwqrf, lwsvdj, lwunmqrm);
             } else {
-                minwrk = n + max({lwqp3, n + lwqrf, lwsvdj, lwunmqrm});
+                minwrk = n + max(lwqp3, n + lwqrf, lwsvdj, lwunmqrm);
             }
             if (lquery) {
                 Cgesvj("L", "U", "N", n, n, u, ldu, sva, n, a, lda, cdummy, -1, rdummy, -1, ierr);
@@ -280,22 +280,22 @@ void Cgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
                 Cunmqr("L", "N", m, n, n, a, lda, cdummy, u, ldu, cdummy, -1, ierr);
                 lwrk_Cunmqrm = castINTEGER(cdummy[1 - 1].real());
                 if (errest) {
-                    optwrk = n + max({lwrk_Cgeqp3, lwcon, n + lwrk_Cgeqrf, lwrk_Cgesvj, lwrk_Cunmqrm});
+                    optwrk = n + max(lwrk_Cgeqp3, lwcon, n + lwrk_Cgeqrf, lwrk_Cgesvj, lwrk_Cunmqrm);
                 } else {
-                    optwrk = n + max({lwrk_Cgeqp3, n + lwrk_Cgeqrf, lwrk_Cgesvj, lwrk_Cunmqrm});
+                    optwrk = n + max(lwrk_Cgeqp3, n + lwrk_Cgeqrf, lwrk_Cgesvj, lwrk_Cunmqrm);
                 }
             }
             if (l2tran || rowpiv) {
                 if (errest) {
-                    minrwrk = max({(INTEGER)7, 2 * m, lrwqp3, lrwsvdj, lrwcon});
+                    minrwrk = max((INTEGER)7, 2 * m, lrwqp3, lrwsvdj, lrwcon);
                 } else {
-                    minrwrk = max({(INTEGER)7, 2 * m, lrwqp3, lrwsvdj});
+                    minrwrk = max((INTEGER)7, 2 * m, lrwqp3, lrwsvdj);
                 }
             } else {
                 if (errest) {
-                    minrwrk = max({(INTEGER)7, lrwqp3, lrwsvdj, lrwcon});
+                    minrwrk = max((INTEGER)7, lrwqp3, lrwsvdj, lrwcon);
                 } else {
-                    minrwrk = max({(INTEGER)7, lrwqp3, lrwsvdj});
+                    minrwrk = max((INTEGER)7, lrwqp3, lrwsvdj);
                 }
             }
             if (rowpiv || l2tran) {
@@ -306,9 +306,9 @@ void Cgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
             // full SVD is requested
             if (!jracc) {
                 if (errest) {
-                    minwrk = max({n + lwqp3, n + lwcon, 2 * n + n * n + lwcon, 2 * n + lwqrf, 2 * n + lwqp3, 2 * n + n * n + n + lwlqf, 2 * n + n * n + n + n * n + lwcon, 2 * n + n * n + n + lwsvdj, 2 * n + n * n + n + lwsvdjv, 2 * n + n * n + n + lwunmqr, 2 * n + n * n + n + lwunmlq, n + n * n + lwsvdj, n + lwunmqrm});
+                    minwrk = max(n + lwqp3, n + lwcon, 2 * n + pow2(n) + lwcon, 2 * n + lwqrf, 2 * n + lwqp3, 2 * n + pow2(n) + n + lwlqf, 2 * n + pow2(n) + n + pow2(n) + lwcon, 2 * n + pow2(n) + n + lwsvdj, 2 * n + pow2(n) + n + lwsvdjv, 2 * n + pow2(n) + n + lwunmqr, 2 * n + pow2(n) + n + lwunmlq, n + pow2(n) + lwsvdj, n + lwunmqrm);
                 } else {
-                    minwrk = max({n + lwqp3, 2 * n + n * n + lwcon, 2 * n + lwqrf, 2 * n + lwqp3, 2 * n + n * n + n + lwlqf, 2 * n + n * n + n + n * n + lwcon, 2 * n + n * n + n + lwsvdj, 2 * n + n * n + n + lwsvdjv, 2 * n + n * n + n + lwunmqr, 2 * n + n * n + n + lwunmlq, n + n * n + lwsvdj, n + lwunmqrm});
+                    minwrk = max(n + lwqp3, 2 * n + pow2(n) + lwcon, 2 * n + lwqrf, 2 * n + lwqp3, 2 * n + pow2(n) + n + lwlqf, 2 * n + pow2(n) + n + pow2(n) + lwcon, 2 * n + pow2(n) + n + lwsvdj, 2 * n + pow2(n) + n + lwsvdjv, 2 * n + pow2(n) + n + lwunmqr, 2 * n + pow2(n) + n + lwunmlq, n + pow2(n) + lwsvdj, n + lwunmqrm);
                 }
                 miniwrk += n;
                 if (rowpiv || l2tran) {
@@ -316,9 +316,9 @@ void Cgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
                 }
             } else {
                 if (errest) {
-                    minwrk = max({n + lwqp3, n + lwcon, 2 * n + lwqrf, 2 * n + n * n + lwsvdjv, 2 * n + n * n + n + lwunmqr, n + lwunmqrm});
+                    minwrk = max(n + lwqp3, n + lwcon, 2 * n + lwqrf, 2 * n + pow2(n) + lwsvdjv, 2 * n + pow2(n) + n + lwunmqr, n + lwunmqrm);
                 } else {
-                    minwrk = max({n + lwqp3, 2 * n + lwqrf, 2 * n + n * n + lwsvdjv, 2 * n + n * n + n + lwunmqr, n + lwunmqrm});
+                    minwrk = max(n + lwqp3, 2 * n + lwqrf, 2 * n + pow2(n) + lwsvdjv, 2 * n + pow2(n) + n + lwunmqr, n + lwunmqrm);
                 }
                 if (rowpiv || l2tran) {
                     miniwrk += m;
@@ -341,9 +341,9 @@ void Cgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
                     Cunmlq("L", "C", n, n, n, a, lda, cdummy, v, ldv, cdummy, -1, ierr);
                     lwrk_Cunmlq = castINTEGER(cdummy[1 - 1].real());
                     if (errest) {
-                        optwrk = max({n + lwrk_Cgeqp3, n + lwcon, 2 * n + n * n + lwcon, 2 * n + lwrk_Cgeqrf, 2 * n + lwrk_Cgeqp3n, 2 * n + n * n + n + lwrk_Cgelqf, 2 * n + n * n + n + n * n + lwcon, 2 * n + n * n + n + lwrk_Cgesvj, 2 * n + n * n + n + lwrk_Cgesvjv, 2 * n + n * n + n + lwrk_Cunmqr, 2 * n + n * n + n + lwrk_Cunmlq, n + n * n + lwrk_Cgesvju, n + lwrk_Cunmqrm});
+                        optwrk = max(n + lwrk_Cgeqp3, n + lwcon, 2 * n + pow2(n) + lwcon, 2 * n + lwrk_Cgeqrf, 2 * n + lwrk_Cgeqp3n, 2 * n + pow2(n) + n + lwrk_Cgelqf, 2 * n + pow2(n) + n + pow2(n) + lwcon, 2 * n + pow2(n) + n + lwrk_Cgesvj, 2 * n + pow2(n) + n + lwrk_Cgesvjv, 2 * n + pow2(n) + n + lwrk_Cunmqr, 2 * n + pow2(n) + n + lwrk_Cunmlq, n + pow2(n) + lwrk_Cgesvju, n + lwrk_Cunmqrm);
                     } else {
-                        optwrk = max({n + lwrk_Cgeqp3, 2 * n + n * n + lwcon, 2 * n + lwrk_Cgeqrf, 2 * n + lwrk_Cgeqp3n, 2 * n + n * n + n + lwrk_Cgelqf, 2 * n + n * n + n + n * n + lwcon, 2 * n + n * n + n + lwrk_Cgesvj, 2 * n + n * n + n + lwrk_Cgesvjv, 2 * n + n * n + n + lwrk_Cunmqr, 2 * n + n * n + n + lwrk_Cunmlq, n + n * n + lwrk_Cgesvju, n + lwrk_Cunmqrm});
+                        optwrk = max(n + lwrk_Cgeqp3, 2 * n + pow2(n) + lwcon, 2 * n + lwrk_Cgeqrf, 2 * n + lwrk_Cgeqp3n, 2 * n + pow2(n) + n + lwrk_Cgelqf, 2 * n + pow2(n) + n + pow2(n) + lwcon, 2 * n + pow2(n) + n + lwrk_Cgesvj, 2 * n + pow2(n) + n + lwrk_Cgesvjv, 2 * n + pow2(n) + n + lwrk_Cunmqr, 2 * n + pow2(n) + n + lwrk_Cunmlq, n + pow2(n) + lwrk_Cgesvju, n + lwrk_Cunmqrm);
                     }
                 } else {
                     Cgesvj("L", "U", "V", n, n, u, ldu, sva, n, v, ldv, cdummy, -1, rdummy, -1, ierr);
@@ -353,16 +353,16 @@ void Cgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
                     Cunmqr("L", "N", m, n, n, a, lda, cdummy, u, ldu, cdummy, -1, ierr);
                     lwrk_Cunmqrm = castINTEGER(cdummy[1 - 1].real());
                     if (errest) {
-                        optwrk = max({n + lwrk_Cgeqp3, n + lwcon, 2 * n + lwrk_Cgeqrf, 2 * n + n * n, 2 * n + n * n + lwrk_Cgesvjv, 2 * n + n * n + n + lwrk_Cunmqr, n + lwrk_Cunmqrm});
+                        optwrk = max(n + lwrk_Cgeqp3, n + lwcon, 2 * n + lwrk_Cgeqrf, 2 * n + pow2(n), 2 * n + pow2(n) + lwrk_Cgesvjv, 2 * n + pow2(n) + n + lwrk_Cunmqr, n + lwrk_Cunmqrm);
                     } else {
-                        optwrk = max({n + lwrk_Cgeqp3, 2 * n + lwrk_Cgeqrf, 2 * n + n * n, 2 * n + n * n + lwrk_Cgesvjv, 2 * n + n * n + n + lwrk_Cunmqr, n + lwrk_Cunmqrm});
+                        optwrk = max(n + lwrk_Cgeqp3, 2 * n + lwrk_Cgeqrf, 2 * n + pow2(n), 2 * n + pow2(n) + lwrk_Cgesvjv, 2 * n + pow2(n) + n + lwrk_Cunmqr, n + lwrk_Cunmqrm);
                     }
                 }
             }
             if (l2tran || rowpiv) {
-                minrwrk = max({(INTEGER)7, 2 * m, lrwqp3, lrwsvdj, lrwcon});
+                minrwrk = max((INTEGER)7, 2 * m, lrwqp3, lrwsvdj, lrwcon);
             } else {
-                minrwrk = max({(INTEGER)7, lrwqp3, lrwsvdj, lrwcon});
+                minrwrk = max((INTEGER)7, lrwqp3, lrwsvdj, lrwcon);
             }
         }
         minwrk = max((INTEGER)2, minwrk);
@@ -390,10 +390,12 @@ void Cgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
     // Quick return for void matrix (Y3K safe)
     // #:)
     if ((m == 0) || (n == 0)) {
-        for (p = 0; p < 4; p++)
-            iwork[p] = 0;
-        for (p = 0; p < 7; p++)
-            rwork[p] = 0.0;
+        for (INTEGER i_ = 1; i_ <= 4; i_++) {
+            iwork[i_ - 1] = 0;
+        }
+        for (INTEGER i_ = 1; i_ <= 7; i_++) {
+            rwork[i_ - 1] = 0.0;
+        }
         return;
     }
     //
@@ -412,12 +414,12 @@ void Cgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
     //
     epsln = Rlamch("Epsilon");
     sfmin = Rlamch("SafeMinimum");
+    small = sfmin / epsln;
 #if defined ___MPLAPACK_BUILD_WITH_DD___ || defined ___MPLAPACK_BUILD_WITH_QD___
     big = one / sfmin;
 #else
-    big = Rlamch("Overflow");
+    big = Rlamch("O");
 #endif
-    small = sfmin / epsln;
     // BIG   = ONE / SFMIN
     //
     // Initialize SVA(1:N) = diag( ||A e_i||_2 )_1^N
@@ -509,17 +511,17 @@ void Cgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
     if (n == 1) {
         //
         if (lsvec) {
-            Clascl("G", 0, 0, sva[1 - 1], scalem, m, 1, &a[(1 - 1)], lda, ierr);
+            Clascl("G", 0, 0, sva[1 - 1], scalem, m, 1, &a[0], lda, ierr);
             Clacpy("A", m, 1, a, lda, u, ldu);
             // computing all M left singular vectors of the M x 1 matrix
             if (n1 != n) {
                 Cgeqrf(m, n, u, ldu, cwork, &cwork[(n + 1) - 1], lwork - n, ierr);
                 Cungqr(m, n1, 1, u, ldu, cwork, &cwork[(n + 1) - 1], lwork - n, ierr);
-                Ccopy(m, &a[(1 - 1)], 1, &u[(1 - 1)], 1);
+                Ccopy(m, &a[0], 1, &u[0], 1);
             }
         }
         if (rsvec) {
-            v[(1 - 1)] = cone;
+            v[0] = cone;
         }
         if (sva[1 - 1] < (big * scalem)) {
             sva[1 - 1] = sva[1 - 1] / scalem;
@@ -582,7 +584,7 @@ void Cgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
             }
         } else {
             for (p = 1; p <= m; p = p + 1) {
-                rwork[(m + p) - 1] = scalem * abs(a[(p - 1) + (iCamax(n, &a[(p - 1)], lda) - 1) * lda]);
+                rwork[(m + p) - 1] = scalem * abs(a[(p - 1) + ((iCamax(n, &a[(p - 1)], lda)) - 1) * lda]);
                 aatmax = max(aatmax, rwork[(m + p) - 1]);
                 aatmin = min(aatmin, rwork[(m + p) - 1]);
             }
@@ -796,7 +798,7 @@ void Cgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
         // backward error of the order of N*EPSLN*||A||.
         temp1 = sqrt(castREAL(n)) * epsln;
         for (p = 2; p <= n; p = p + 1) {
-            if (abs(a[(p - 1) + (p - 1) * lda]) >= (temp1 * abs(a[(1 - 1)]))) {
+            if (abs(a[(p - 1) + (p - 1) * lda]) >= (temp1 * abs(a[0]))) {
                 nr++;
             } else {
                 goto statement_3002;
@@ -902,7 +904,7 @@ void Cgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
         }
     }
     //
-    l2pert = l2pert && (abs(a[(1 - 1)] / a[(nr - 1) + (nr - 1) * lda]) > sqrt(big1));
+    l2pert = l2pert && (abs(a[0] / a[(nr - 1) + (nr - 1) * lda]) > sqrt(big1));
     // If there is no violent scaling, artificial perturbation is not needed.
     //
     // Phase 3:
@@ -1465,7 +1467,7 @@ void Cgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
                 //
                 Ctrsm("L", "U", "N", "N", n, n, cone, a, lda, &cwork[(n + 1) - 1], n);
                 for (p = 1; p <= n; p = p + 1) {
-                    Ccopy(n, &cwork[(n + p) - 1], n, &v[(iwork[p - 1] - 1)], ldv);
+                    Ccopy(n, &cwork[(n + p) - 1], n, &v[(iwork[p - 1] - 1) + (1 - 1) * ldv], ldv);
                 }
                 temp1 = sqrt(castREAL(n)) * epsln;
                 for (p = 1; p <= n; p = p + 1) {

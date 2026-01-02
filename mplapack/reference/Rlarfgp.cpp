@@ -39,7 +39,7 @@
 void Rlarfgp(INTEGER const n, REAL &alpha, REAL *x, INTEGER const incx, REAL &tau) {
     const REAL zero = 0.0;
     REAL xnorm = 0.0;
-    const REAL two = 2.0e+0;
+    const REAL two = 2.0;
     INTEGER j = 0;
     REAL beta = 0.0;
     REAL smlnum = 0.0;

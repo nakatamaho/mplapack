@@ -64,11 +64,11 @@ void Rpoequb(INTEGER const n, REAL *a, INTEGER const lda, REAL *s, REAL &scond, 
     }
     //
     REAL base = Rlamch("B");
-    REAL tmp = -0.5e+0 / log(base);
+    REAL tmp = -0.5 / log(base);
     //
     // Find the minimum and maximum diagonal elements.
     //
-    s[1 - 1] = a[(1 - 1)];
+    s[1 - 1] = a[0];
     REAL smin = s[1 - 1];
     amax = s[1 - 1];
     INTEGER i = 0;

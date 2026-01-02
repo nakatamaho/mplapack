@@ -45,7 +45,7 @@ void Rlacn2(INTEGER const n, REAL *v, REAL *x, INTEGER *isgn, REAL &est, INTEGER
     INTEGER jlast = 0;
     const INTEGER itmax = 5;
     REAL altsgn = 0.0;
-    const REAL two = 2.0e+0;
+    const REAL two = 2.0;
     REAL temp = 0.0;
     //
     if (kase == 0) {

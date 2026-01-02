@@ -67,9 +67,9 @@ void Rtgsna(const char *job, const char *howmny, bool *select, INTEGER const n, 
     REAL dummy[1];
     REAL alphai = 0.0;
     REAL alprqt = 0.0;
-    const REAL two = 2.0e+0;
+    const REAL two = 2.0;
     REAL c1 = 0.0;
-    const REAL four = 4.0e+0;
+    const REAL four = 4.0;
     REAL c2 = 0.0;
     REAL root1 = 0.0;
     REAL root2 = 0.0;
@@ -262,7 +262,7 @@ void Rtgsna(const char *job, const char *howmny, bool *select, INTEGER const n, 
         //
         if (wantdf) {
             if (n == 1) {
-                dif[ks - 1] = Rlapy2(a[(1 - 1)], b[(1 - 1)]);
+                dif[ks - 1] = Rlapy2(a[0], b[0]);
                 goto statement_20;
             }
             //
@@ -327,7 +327,7 @@ void Rtgsna(const char *job, const char *howmny, bool *select, INTEGER const n, 
                     Rtgsyl("N", difdri, n2, n1, &work[(n * n1 + n1 + 1) - 1], n, work, n, &work[(n1 + 1) - 1], n, &work[(n * n1 + n1 + i) - 1], n, &work[i - 1], n, &work[(n1 + i) - 1], n, scale, dif[ks - 1], &work[(iz + 1) - 1], lwork - 2 * n * n, iwork, ierr);
                     //
                     if (pair) {
-                        dif[ks - 1] = min(REAL(max(one, alprqt) * dif[ks - 1]), cond);
+                        dif[ks - 1] = min(max(one, alprqt) * dif[ks - 1], cond);
                     }
                 }
             }

@@ -158,7 +158,7 @@ statement_90:
 statement_100:
     altsgn = one;
     for (i = 1; i <= n; i = i + 1) {
-        x[i - 1] = COMPLEX(altsgn * (one + castREAL(i - 1) / castREAL(n - 1)), 0.0);
+        x[i - 1] = COMPLEX(altsgn * (one + castREAL(i - 1) / castREAL(n - 1)));
         altsgn = -altsgn;
     }
     kase = 1;

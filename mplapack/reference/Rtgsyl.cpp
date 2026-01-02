@@ -124,7 +124,7 @@ void Rtgsyl(const char *trans, INTEGER const ijob, INTEGER const m, INTEGER cons
     // Quick return if possible
     //
     if (m == 0 || n == 0) {
-        scale = 1;
+        scale = 1.0;
         if (notran) {
             if (ijob != 0) {
                 dif = 0.0;

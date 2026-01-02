@@ -73,15 +73,15 @@ void Rlaqr0(bool const wantt, bool const wantz, INTEGER const n, INTEGER const i
     INTEGER ns = 0;
     INTEGER i = 0;
     REAL ss = 0.0;
-    const REAL wilk1 = 0.75e0;
+    const REAL wilk1 = 0.75;
     REAL aa = 0.0;
     REAL bb = 0.0;
-    const REAL wilk2 = -0.4375e0;
+    const REAL wilk2 = -0.4375;
     REAL cc = 0.0;
     REAL dd = 0.0;
     REAL cs = 0.0;
     REAL sn = 0.0;
-    REAL zdum[1];
+    REAL zdum[1 * 1];
     INTEGER inf = 0;
     bool sorted = false;
     REAL swap = 0.0;
@@ -135,7 +135,7 @@ void Rlaqr0(bool const wantt, bool const wantz, INTEGER const n, INTEGER const i
         //
         nwr = iMlaenv(13, "Rlaqr0", jbcmpz, n, ilo, ihi, lwork);
         nwr = max((INTEGER)2, nwr);
-        nwr = min({ihi - ilo + 1, (n - 1) / 3, nwr});
+        nwr = min(ihi - ilo + 1, (n - 1) / 3, nwr);
         //
         // ==== NSR = recommended number of simultaneous shifts.
         // .    At this point N .GT. NTINY = 15, so there is at
@@ -143,7 +143,7 @@ void Rlaqr0(bool const wantt, bool const wantz, INTEGER const n, INTEGER const i
         // .    and greater than or equal to two as required. ====
         //
         nsr = iMlaenv(15, "Rlaqr0", jbcmpz, n, ilo, ihi, lwork);
-        nsr = min({nsr, (n - 3) / 6, ihi - ilo});
+        nsr = min(nsr, (n - 3) / 6, ihi - ilo);
         nsr = max((INTEGER)2, nsr - mod(nsr, 2));
         //
         // ==== Estimate optimal workspace ====
@@ -210,10 +210,11 @@ void Rlaqr0(bool const wantt, bool const wantz, INTEGER const n, INTEGER const i
             //
             // ==== Done when KBOT falls below ILO ====
             //
-            if (kbot < ilo)
+            if (kbot < ilo) {
                 goto statement_90;
+            }
             //
-            //           ==== Locate active block ====
+            // ==== Locate active block ====
             //
             for (k = kbot; k >= ilo + 1; k = k - 1) {
                 if (h[(k - 1) + ((k - 1) - 1) * ldh] == zero) {
@@ -308,7 +309,7 @@ void Rlaqr0(bool const wantt, bool const wantz, INTEGER const n, INTEGER const i
                 // .    This may be lowered (slightly) if Rlaqr3
                 // .    did not provide that many shifts. ====
                 //
-                ns = min({nsmax, nsr, max((INTEGER)2, kbot - ktop)});
+                ns = min(nsmax, nsr, max((INTEGER)2, kbot - ktop));
                 ns = ns - mod(ns, 2);
                 //
                 // ==== If there have been no deflations

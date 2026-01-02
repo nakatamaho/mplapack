@@ -37,31 +37,9 @@
 #include <mplapack.h>
 
 void Cungtsqr_row(INTEGER const m, INTEGER const n, INTEGER const mb, INTEGER const nb, COMPLEX *a, INTEGER const lda, COMPLEX *t, INTEGER const ldt, COMPLEX *work, INTEGER const lwork, INTEGER &info) {
+    INTEGER lddummy = 1;
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input parameters
+    // Test the input parameters
     //
     info = 0;
     bool lquery = lwork == -1;
@@ -75,7 +53,7 @@ void Cungtsqr_row(INTEGER const m, INTEGER const n, INTEGER const mb, INTEGER co
         info = -4;
     } else if (lda < max((INTEGER)1, m)) {
         info = -6;
-    } else if (ldt < max({(INTEGER)1, min(nb, n)})) {
+    } else if (ldt < max((INTEGER)1, min(nb, n))) {
         info = -8;
     } else if (lwork < 1 && !lquery) {
         info = -10;
@@ -196,7 +174,7 @@ void Cungtsqr_row(INTEGER const m, INTEGER const n, INTEGER const mb, INTEGER co
     // KB is the column index of the current block reflector in
     // the matrices T and V.
     //
-    COMPLEX dummy[1];
+    COMPLEX dummy[1 * 1];
     for (kb = kb_last; kb >= 1; kb = kb - nblocal) {
         //
         // Determine the size of the current column block KNB in
@@ -210,7 +188,7 @@ void Cungtsqr_row(INTEGER const m, INTEGER const n, INTEGER const mb, INTEGER co
             // does not exist, hence we need to pass a dummy array
             // reference DUMMY(1,1) to B with LDDUMMY=1.
             //
-            Clarfb_gett("N", 0, n - kb + 1, knb, &t[(kb - 1) * ldt], ldt, &a[(kb - 1) + (kb - 1) * lda], lda, dummy, 1, work, knb);
+            Clarfb_gett("N", 0, n - kb + 1, knb, &t[(kb - 1) * ldt], ldt, &a[(kb - 1) + (kb - 1) * lda], lda, &dummy[0], 1, work, knb);
         } else {
             Clarfb_gett("N", mb1 - kb - knb + 1, n - kb + 1, knb, &t[(kb - 1) * ldt], ldt, &a[(kb - 1) + (kb - 1) * lda], lda, &a[((kb + knb) - 1) + (kb - 1) * lda], lda, work, knb);
             //

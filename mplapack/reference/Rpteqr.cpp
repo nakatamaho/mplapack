@@ -73,7 +73,7 @@ void Rpteqr(const char *compz, INTEGER const n, REAL *d, REAL *e, REAL *z, INTEG
     const REAL one = 1.0;
     if (n == 1) {
         if (icompz > 0) {
-            z[(1 - 1)] = one;
+            z[0] = one;
         }
         return;
     }
@@ -105,8 +105,8 @@ void Rpteqr(const char *compz, INTEGER const n, REAL *d, REAL *e, REAL *z, INTEG
     } else {
         nru = 0;
     }
-    REAL vt[1];
-    REAL c[1];
+    REAL vt[1 * 1];
+    REAL c[1 * 1];
     Rbdsqr("Lower", n, 0, nru, 0, d, e, vt, 1, z, ldz, c, 1, work, info);
     //
     // Square the singular values.

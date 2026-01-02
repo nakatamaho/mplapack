@@ -36,8 +36,6 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-inline REAL cabs1(COMPLEX cdum) { return abs(cdum.real()) + abs(cdum.imag()); }
-
 void Ctrevc(const char *side, const char *howmny, bool *select, INTEGER const n, COMPLEX *t, INTEGER const ldt, COMPLEX *vl, INTEGER const ldvl, COMPLEX *vr, INTEGER const ldvr, INTEGER const mm, INTEGER &m, COMPLEX *work, REAL *rwork, INTEGER &info) {
     COMPLEX cdum = 0.0;
     bool bothv = false;
@@ -119,6 +117,7 @@ void Ctrevc(const char *side, const char *howmny, bool *select, INTEGER const n,
     //
     unfl = Rlamch("Safe minimum");
     ovfl = one / unfl;
+    Rlabad(unfl, ovfl);
     ulp = Rlamch("Precision");
     smlnum = unfl * (n / ulp);
     //
@@ -148,7 +147,7 @@ void Ctrevc(const char *side, const char *howmny, bool *select, INTEGER const n,
                     goto statement_80;
                 }
             }
-            smin = max(REAL(ulp * (cabs1(t[(ki - 1) + (ki - 1) * ldt]))), smlnum);
+            smin = max(ulp * (cabs1(t[(ki - 1) + (ki - 1) * ldt])), smlnum);
             //
             work[1 - 1] = cmone;
             //
@@ -218,7 +217,7 @@ void Ctrevc(const char *side, const char *howmny, bool *select, INTEGER const n,
                     goto statement_130;
                 }
             }
-            smin = max(REAL(ulp * (cabs1(t[(ki - 1) + (ki - 1) * ldt]))), smlnum);
+            smin = max(ulp * (cabs1(t[(ki - 1) + (ki - 1) * ldt])), smlnum);
             //
             work[n - 1] = cmone;
             //

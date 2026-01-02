@@ -123,7 +123,7 @@ statement_10:
         if (k > 1) {
             Cgemv("Conjugate transpose", m - rk + 1, k - 1, -tau[k - 1], &a[(rk - 1)], lda, &a[(rk - 1) + (k - 1) * lda], 1, czero, &auxv[1 - 1], 1);
             //
-            Cgemv("No transpose", n, k - 1, cone, &f[(1 - 1)], ldf, &auxv[1 - 1], 1, cone, &f[(k - 1) * ldf], 1);
+            Cgemv("No transpose", n, k - 1, cone, &f[0], ldf, &auxv[1 - 1], 1, cone, &f[(k - 1) * ldf], 1);
         }
         //
         // Update the current row of A:
@@ -143,7 +143,7 @@ statement_10:
                     // Lapack Working Note 176.
                     //
                     temp = abs(a[(rk - 1) + (j - 1) * lda]) / vn1[j - 1];
-                    temp = max(zero, REAL((one + temp) * (one - temp)));
+                    temp = max(zero, (one + temp) * (one - temp));
                     temp2 = temp * pow2((vn1[j - 1] / vn2[j - 1]));
                     if (temp2 <= tol3z) {
                         vn2[j - 1] = castREAL(lsticc);

@@ -68,7 +68,7 @@ void Rsysv(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *a, INTEG
     }
     //
     if (info != 0) {
-        Mxerbla("Rsysv", -info);
+        Mxerbla("Rsysv ", -info);
         return;
     } else if (lquery) {
         return;

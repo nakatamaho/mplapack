@@ -86,7 +86,7 @@ void Rgelsy(INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEG
         info = -3;
     } else if (lda < max((INTEGER)1, m)) {
         info = -5;
-    } else if (ldb < max({(INTEGER)1, m, n})) {
+    } else if (ldb < max((INTEGER)1, m, n)) {
         info = -7;
     }
     //
@@ -101,9 +101,9 @@ void Rgelsy(INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEG
             nb2 = iMlaenv(1, "Rgerqf", " ", m, n, -1, -1);
             nb3 = iMlaenv(1, "Rormqr", " ", m, n, nrhs, -1);
             nb4 = iMlaenv(1, "Rormrq", " ", m, n, nrhs, -1);
-            nb = max({nb1, nb2, nb3, nb4});
-            lwkmin = mn + max({2 * mn, n + 1, mn + nrhs});
-            lwkopt = max({lwkmin, mn + 2 * n + nb * (n + 1), 2 * mn + nb * nrhs});
+            nb = max(nb1, nb2, nb3, nb4);
+            lwkmin = mn + max(2 * mn, n + 1, mn + nrhs);
+            lwkopt = max(lwkmin, mn + 2 * n + nb * (n + 1), 2 * mn + nb * nrhs);
         }
         work[1 - 1] = lwkopt;
         //
@@ -130,8 +130,9 @@ void Rgelsy(INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEG
     //
     smlnum = Rlamch("S") / Rlamch("P");
     bignum = one / smlnum;
+    Rlabad(smlnum, bignum);
     //
-    //     Scale A, B if max entries outside range [SMLNUM,BIGNUM]
+    // Scale A, B if max entries outside range [SMLNUM,BIGNUM]
     //
     anrm = Rlange("M", m, n, a, lda, work);
     iascl = 0;
@@ -185,9 +186,9 @@ void Rgelsy(INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEG
     //
     work[ismin - 1] = one;
     work[ismax - 1] = one;
-    smax = abs(a[(1 - 1)]);
+    smax = abs(a[0]);
     smin = smax;
-    if (abs(a[(1 - 1)]) == zero) {
+    if (abs(a[0]) == zero) {
         rank = 0;
         Rlaset("F", max(m, n), nrhs, zero, zero, b, ldb);
         goto statement_70;
@@ -233,7 +234,7 @@ statement_10:
     // B(1:M,1:NRHS) := Q**T * B(1:M,1:NRHS)
     //
     Rormqr("Left", "Transpose", m, nrhs, mn, a, lda, &work[1 - 1], b, ldb, &work[(2 * mn + 1) - 1], lwork - 2 * mn, info);
-    wsize = max(wsize, REAL(2 * mn + work[(2 * mn + 1) - 1]));
+    wsize = max(wsize, 2 * mn + work[(2 * mn + 1) - 1]);
     //
     // workspace: 2*MN+NB*NRHS.
     //

@@ -65,7 +65,7 @@ void Rorbdb2(INTEGER const m, INTEGER const p, INTEGER const q, REAL *x11, INTEG
     INTEGER lworkmin = 0;
     if (info == 0) {
         ilarf = 2;
-        llarf = max({p - 1, m - p, q - 1});
+        llarf = max(p - 1, m - p, q - 1);
         iorbdb5 = 2;
         lorbdb5 = q - 1;
         lworkopt = max(ilarf + llarf - 1, iorbdb5 + lorbdb5 - 1);

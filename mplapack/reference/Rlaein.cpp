@@ -38,7 +38,7 @@
 
 void Rlaein(bool const rightv, bool const noinit, INTEGER const n, REAL *h, INTEGER const ldh, REAL const wr, REAL const wi, REAL *vr, REAL *vi, REAL *b, INTEGER const ldb, REAL *work, REAL const eps3, REAL const smlnum, REAL const bignum, INTEGER &info) {
     REAL rootn = 0.0;
-    const REAL tenth = 1.0e-1;
+    const REAL tenth = 0.1;
     REAL growto = 0.0;
     const REAL one = 1.0;
     REAL nrmsml = 0.0;
@@ -77,7 +77,7 @@ void Rlaein(bool const rightv, bool const noinit, INTEGER const n, REAL *h, INTE
     //
     rootn = sqrt(castREAL(n));
     growto = tenth / rootn;
-    nrmsml = max(one, REAL(eps3 * rootn)) * smlnum;
+    nrmsml = max(one, eps3 * rootn) * smlnum;
     //
     // Form B = H - (WR,WI)*I (except that the subdiagonal elements and
     // the imaginary parts of the diagonal elements are not stored).
@@ -180,8 +180,8 @@ void Rlaein(bool const rightv, bool const noinit, INTEGER const n, REAL *h, INTE
                     }
                 }
             }
-            if (b[(1 - 1)] == zero) {
-                b[(1 - 1)] = eps3;
+            if (b[0] == zero) {
+                b[0] = eps3;
             }
             //
             trans = 'T';
@@ -369,8 +369,8 @@ void Rlaein(bool const rightv, bool const noinit, INTEGER const n, REAL *h, INTE
                 //
                 work[j - 1] = Rasum(j - 1, &b[(j - 1) * ldb], 1) + Rasum(j - 1, &b[((j + 1) - 1)], ldb);
             }
-            if (b[(1 - 1)] == zero && b[(2 - 1)] == zero) {
-                b[(1 - 1)] = eps3;
+            if (b[0] == zero && b[(2 - 1)] == zero) {
+                b[0] = eps3;
             }
             work[1 - 1] = zero;
             //
@@ -388,7 +388,7 @@ void Rlaein(bool const rightv, bool const noinit, INTEGER const n, REAL *h, INTE
             // or U**T*(xr,xi) = scale*(vr,vi) for a left eigenvector,
             // overwriting (xr,xi) on (vr,vi).
             //
-            for (i = i1; i3 >= 0 ? i <= i2 : i >= i2; i = i + i3) {
+            for (i = i1; i3 > 0 ? i <= i2 : i >= i2; i = i + i3) {
                 //
                 if (work[i - 1] > vcrit) {
                     rec = one / vmax;
@@ -431,7 +431,7 @@ void Rlaein(bool const rightv, bool const noinit, INTEGER const n, REAL *h, INTE
                     // Divide by diagonal element of B.
                     //
                     Rladiv(xr, xi, b[(i - 1) + (i - 1) * ldb], b[((i + 1) - 1) + (i - 1) * ldb], vr[i - 1], vi[i - 1]);
-                    vmax = max(REAL(abs(vr[i - 1]) + abs(vi[i - 1])), vmax);
+                    vmax = max(abs(vr[i - 1]) + abs(vi[i - 1]), vmax);
                     vcrit = bignum / vmax;
                 } else {
                     for (j = 1; j <= n; j = j + 1) {
@@ -476,7 +476,7 @@ void Rlaein(bool const rightv, bool const noinit, INTEGER const n, REAL *h, INTE
         //
         vnorm = zero;
         for (i = 1; i <= n; i = i + 1) {
-            vnorm = max(vnorm, REAL(abs(vr[i - 1]) + abs(vi[i - 1])));
+            vnorm = max(vnorm, abs(vr[i - 1]) + abs(vi[i - 1]));
         }
         Rscal(n, one / vnorm, vr, 1);
         Rscal(n, one / vnorm, vi, 1);

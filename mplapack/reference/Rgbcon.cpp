@@ -58,7 +58,7 @@ void Rgbcon(const char *norm, INTEGER const n, INTEGER const kl, INTEGER const k
     // Test the input parameters.
     //
     info = 0;
-    onenrm = (Mlsame(norm, "1")) || Mlsame(norm, "O");
+    onenrm = Mlsame(norm, "1") || Mlsame(norm, "O");
     if (!onenrm && !Mlsame(norm, "I")) {
         info = -1;
     } else if (n < 0) {

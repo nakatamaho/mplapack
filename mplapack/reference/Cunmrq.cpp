@@ -79,10 +79,6 @@ void Cunmrq(const char *side, const char *trans, INTEGER const m, INTEGER const 
     INTEGER nb = 0;
     const INTEGER ldt = nbmax + 1;
     const INTEGER tsize = ldt * nbmax;
-    char side_trans[3];
-    side_trans[0] = side[0];
-    side_trans[1] = trans[0];
-    side_trans[2] = '\0';
     if (info == 0) {
         //
         // Compute the workspace requirements
@@ -90,7 +86,7 @@ void Cunmrq(const char *side, const char *trans, INTEGER const m, INTEGER const 
         if (m == 0 || n == 0) {
             lwkopt = 1;
         } else {
-            nb = min({nbmax, iMlaenv(1, "Cunmrq", side_trans, m, n, k, -1)});
+            nb = min(nbmax, iMlaenv(1, "Cunmrq", CHAR2(side, trans), m, n, k, -1));
             lwkopt = nw * nb + tsize;
         }
         work[1 - 1] = lwkopt;
@@ -114,7 +110,7 @@ void Cunmrq(const char *side, const char *trans, INTEGER const m, INTEGER const 
     if (nb > 1 && nb < k) {
         if (lwork < nw * nb + tsize) {
             nb = (lwork - tsize) / ldwork;
-            nbmin = max({(INTEGER)2, iMlaenv(2, "Cunmrq", side_trans, m, n, k, -1)});
+            nbmin = max((INTEGER)2, iMlaenv(2, "Cunmrq", CHAR2(side, trans), m, n, k, -1));
         }
     }
     //
@@ -160,7 +156,7 @@ void Cunmrq(const char *side, const char *trans, INTEGER const m, INTEGER const 
             transt = 'N';
         }
         //
-        for (i = i1; i3 >= 0 ? i <= i2 : i >= i2; i = i + i3) {
+        for (i = i1; i3 > 0 ? i <= i2 : i >= i2; i = i + i3) {
             ib = min(nb, k - i + 1);
             //
             // Form the triangular factor of the block reflector

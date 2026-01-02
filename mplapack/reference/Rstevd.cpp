@@ -47,7 +47,7 @@ void Rstevd(const char *jobz, INTEGER const n, REAL *d, REAL *e, REAL *z, INTEGE
     INTEGER liwmin = 1;
     INTEGER lwmin = 1;
     if (n > 1 && wantz) {
-        lwmin = 1 + 4 * n + castINTEGER(pow2(castREAL(n)));
+        lwmin = 1 + 4 * n + pow2(n);
         liwmin = 3 + 5 * n;
     }
     //
@@ -86,7 +86,7 @@ void Rstevd(const char *jobz, INTEGER const n, REAL *d, REAL *e, REAL *z, INTEGE
     const REAL one = 1.0;
     if (n == 1) {
         if (wantz) {
-            z[(1 - 1)] = one;
+            z[0] = one;
         }
         return;
     }

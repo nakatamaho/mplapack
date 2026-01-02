@@ -115,7 +115,7 @@ statement_10:
         if (k > 1) {
             Rgemv("Transpose", m - rk + 1, k - 1, -tau[k - 1], &a[(rk - 1)], lda, &a[(rk - 1) + (k - 1) * lda], 1, zero, &auxv[1 - 1], 1);
             //
-            Rgemv("No transpose", n, k - 1, one, &f[(1 - 1)], ldf, &auxv[1 - 1], 1, one, &f[(k - 1) * ldf], 1);
+            Rgemv("No transpose", n, k - 1, one, &f[0], ldf, &auxv[1 - 1], 1, one, &f[(k - 1) * ldf], 1);
         }
         //
         // Update the current row of A:
@@ -135,7 +135,7 @@ statement_10:
                     // Lapack Working Note 176.
                     //
                     temp = abs(a[(rk - 1) + (j - 1) * lda]) / vn1[j - 1];
-                    temp = max(zero, REAL((one + temp) * (one - temp)));
+                    temp = max(zero, (one + temp) * (one - temp));
                     temp2 = temp * pow2((vn1[j - 1] / vn2[j - 1]));
                     if (temp2 <= tol3z) {
                         vn2[j - 1] = castREAL(lsticc);

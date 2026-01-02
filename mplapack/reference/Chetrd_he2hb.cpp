@@ -85,7 +85,7 @@ void Chetrd_he2hb(const char *uplo, INTEGER const n, INTEGER const kd, COMPLEX *
                 Ccopy(lk, &a[(i - 1) + (i - 1) * lda], 1, &ab[(i - 1) * ldab], 1);
             }
         }
-        work[1 - 1] = 1;
+        work[1 - 1] = 1.0;
         return;
     }
     //
@@ -123,7 +123,7 @@ void Chetrd_he2hb(const char *uplo, INTEGER const n, INTEGER const kd, COMPLEX *
     INTEGER iinfo = 0;
     INTEGER j = 0;
     const COMPLEX one = COMPLEX(1.0, 0.0);
-    const COMPLEX half = COMPLEX(0.5e+0, 0.0);
+    const COMPLEX half = COMPLEX(0.5, 0.0);
     const REAL rone = 1.0;
     if (upper) {
         for (i = 1; i <= n - kd; i = i + kd) {

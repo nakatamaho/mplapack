@@ -56,7 +56,7 @@ void Chpgv(INTEGER const itype, const char *jobz, const char *uplo, INTEGER cons
         info = -9;
     }
     if (info != 0) {
-        Mxerbla("Chpgv", -info);
+        Mxerbla("Chpgv ", -info);
         return;
     }
     //

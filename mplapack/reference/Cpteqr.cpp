@@ -73,7 +73,7 @@ void Cpteqr(const char *compz, INTEGER const n, REAL *d, REAL *e, COMPLEX *z, IN
     const COMPLEX cone = COMPLEX(1.0, 0.0);
     if (n == 1) {
         if (icompz > 0) {
-            z[(1 - 1)] = cone;
+            z[0] = cone;
         }
         return;
     }

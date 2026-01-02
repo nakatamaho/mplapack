@@ -44,7 +44,7 @@ void Rlasd4(INTEGER const n, INTEGER const i, REAL *d, REAL *z, REAL *delta, REA
     REAL tau2 = 0.0;
     INTEGER ii = 0;
     INTEGER niter = 0;
-    const REAL two = 2.0e+0;
+    const REAL two = 2.0;
     REAL temp = 0.0;
     REAL temp1 = 0.0;
     INTEGER j = 0;
@@ -55,12 +55,12 @@ void Rlasd4(INTEGER const n, INTEGER const i, REAL *d, REAL *z, REAL *delta, REA
     REAL delsq = 0.0;
     REAL a = 0.0;
     REAL b = 0.0;
-    const REAL four = 4.0e+0;
+    const REAL four = 4.0;
     REAL dpsi = 0.0;
     REAL erretm = 0.0;
     REAL phi = 0.0;
     REAL dphi = 0.0;
-    const REAL eight = 8.0e+0;
+    const REAL eight = 8.0;
     REAL dtnsq1 = 0.0;
     REAL dtnsq = 0.0;
     REAL eta = 0.0;
@@ -78,7 +78,7 @@ void Rlasd4(INTEGER const n, INTEGER const i, REAL *d, REAL *z, REAL *delta, REA
     INTEGER iip1 = 0;
     bool swtch3 = false;
     REAL dw = 0.0;
-    const REAL three = 3.0e+0;
+    const REAL three = 3.0;
     REAL dtipsq = 0.0;
     REAL dtisq = 0.0;
     REAL dtiim = 0.0;
@@ -430,7 +430,7 @@ void Rlasd4(INTEGER const n, INTEGER const i, REAL *d, REAL *z, REAL *delta, REA
             tau = tau2 / (d[i - 1] + sqrt(d[i - 1] * d[i - 1] + tau2));
             temp = sqrt(eps);
             if ((d[i - 1] <= temp * d[ip1 - 1]) && (abs(z[i - 1]) <= temp) && (d[i - 1] > zero)) {
-                tau = min(REAL(ten * d[i - 1]), sgub);
+                tau = min(ten * d[i - 1], sgub);
                 geomavg = true;
             }
         } else {

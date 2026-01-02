@@ -63,7 +63,7 @@ void Rspevd(const char *jobz, const char *uplo, INTEGER const n, REAL *ap, REAL 
         } else {
             if (wantz) {
                 liwmin = 3 + 5 * n;
-                lwmin = 1 + 6 * n + n * n;
+                lwmin = 1 + 6 * n + pow2(n);
             } else {
                 liwmin = 1;
                 lwmin = 2 * n;
@@ -96,7 +96,7 @@ void Rspevd(const char *jobz, const char *uplo, INTEGER const n, REAL *ap, REAL 
     if (n == 1) {
         w[1 - 1] = ap[1 - 1];
         if (wantz) {
-            z[(1 - 1)] = one;
+            z[0] = one;
         }
         return;
     }

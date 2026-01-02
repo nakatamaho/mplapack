@@ -85,7 +85,7 @@ void Rsytrd_sy2sb(const char *uplo, INTEGER const n, INTEGER const kd, REAL *a, 
                 Rcopy(lk, &a[(i - 1) + (i - 1) * lda], 1, &ab[(i - 1) * ldab], 1);
             }
         }
-        work[1 - 1] = 1;
+        work[1 - 1] = 1.0;
         return;
     }
     //
@@ -123,7 +123,7 @@ void Rsytrd_sy2sb(const char *uplo, INTEGER const n, INTEGER const kd, REAL *a, 
     INTEGER iinfo = 0;
     INTEGER j = 0;
     const REAL one = 1.0;
-    const REAL half = 0.5e+0;
+    const REAL half = 0.5;
     const REAL rone = 1.0;
     if (upper) {
         for (i = 1; i <= n - kd; i = i + kd) {

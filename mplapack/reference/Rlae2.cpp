@@ -68,7 +68,7 @@ void Rlae2(REAL const a, REAL const b, REAL const c, REAL &rt1, REAL &rt2) {
         rt = ab * sqrt(two);
     }
     const REAL zero = 0.0;
-    const REAL half = 0.5e0;
+    const REAL half = 0.5;
     if (sm < zero) {
         rt1 = half * (sm - rt);
         //

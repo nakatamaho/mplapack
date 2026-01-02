@@ -53,7 +53,7 @@ void Rsbevd(const char *jobz, const char *uplo, INTEGER const n, INTEGER const k
     } else {
         if (wantz) {
             liwmin = 3 + 5 * n;
-            lwmin = 1 + 5 * n + 2 * n * n;
+            lwmin = 1 + 5 * n + 2 * pow2(n);
         } else {
             liwmin = 1;
             lwmin = 2 * n;
@@ -99,9 +99,9 @@ void Rsbevd(const char *jobz, const char *uplo, INTEGER const n, INTEGER const k
     //
     const REAL one = 1.0;
     if (n == 1) {
-        w[1 - 1] = ab[(1 - 1)];
+        w[1 - 1] = ab[0];
         if (wantz) {
-            z[(1 - 1)] = one;
+            z[0] = one;
         }
         return;
     }

@@ -36,8 +36,6 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-inline REAL cabs1(COMPLEX cdum) { return (abs(cdum.real()) + abs(cdum.imag())); }
-
 void Claqr5(bool const wantt, bool const wantz, INTEGER const kacc22, INTEGER const n, INTEGER const ktop, INTEGER const kbot, INTEGER const nshfts, COMPLEX *s, COMPLEX *h, INTEGER const ldh, INTEGER const iloz, INTEGER const ihiz, COMPLEX *z, INTEGER const ldz, COMPLEX *v, INTEGER const ldv, COMPLEX *u, INTEGER const ldu, INTEGER const nv, COMPLEX *wv, INTEGER const ldwv, INTEGER const nh, COMPLEX *wh, INTEGER const ldwh) {
     COMPLEX cdum = 0.0;
     //
@@ -64,6 +62,7 @@ void Claqr5(bool const wantt, bool const wantz, INTEGER const kacc22, INTEGER co
     REAL safmin = Rlamch("SAFE MINIMUM");
     const REAL rone = 1.0;
     REAL safmax = rone / safmin;
+    Rlabad(safmin, safmax);
     REAL ulp = Rlamch("PRECISION");
     REAL smlnum = safmin * (castREAL(n) / ulp);
     //
@@ -243,7 +242,7 @@ void Claqr5(bool const wantt, bool const wantz, INTEGER const kacc22, INTEGER co
                                 tst1 += cabs1(h[((k + 4) - 1) + ((k + 1) - 1) * ldh]);
                             }
                         }
-                        if (cabs1(h[((k + 1) - 1) + (k - 1) * ldh]) <= max(smlnum, REAL(ulp * tst1))) {
+                        if (cabs1(h[((k + 1) - 1) + (k - 1) * ldh]) <= max(smlnum, ulp * tst1)) {
                             h12 = max(cabs1(h[((k + 1) - 1) + (k - 1) * ldh]), cabs1(h[(k - 1) + ((k + 1) - 1) * ldh]));
                             h21 = min(cabs1(h[((k + 1) - 1) + (k - 1) * ldh]), cabs1(h[(k - 1) + ((k + 1) - 1) * ldh]));
                             h11 = max(cabs1(h[((k + 1) - 1) + ((k + 1) - 1) * ldh]), cabs1(h[(k - 1) + (k - 1) * ldh] - h[((k + 1) - 1) + ((k + 1) - 1) * ldh]));
@@ -251,7 +250,7 @@ void Claqr5(bool const wantt, bool const wantz, INTEGER const kacc22, INTEGER co
                             scl = h11 + h12;
                             tst2 = h22 * (h11 / scl);
                             //
-                            if (tst2 == rzero || h21 * (h12 / scl) <= max(smlnum, REAL(ulp * tst2))) {
+                            if (tst2 == rzero || h21 * (h12 / scl) <= max(smlnum, ulp * tst2)) {
                                 h[((k + 1) - 1) + (k - 1) * ldh] = zero;
                             }
                         }
@@ -409,7 +408,7 @@ void Claqr5(bool const wantt, bool const wantz, INTEGER const kacc22, INTEGER co
                             tst1 += cabs1(h[((k + 4) - 1) + ((k + 1) - 1) * ldh]);
                         }
                     }
-                    if (cabs1(h[((k + 1) - 1) + (k - 1) * ldh]) <= max(smlnum, REAL(ulp * tst1))) {
+                    if (cabs1(h[((k + 1) - 1) + (k - 1) * ldh]) <= max(smlnum, ulp * tst1)) {
                         h12 = max(cabs1(h[((k + 1) - 1) + (k - 1) * ldh]), cabs1(h[(k - 1) + ((k + 1) - 1) * ldh]));
                         h21 = min(cabs1(h[((k + 1) - 1) + (k - 1) * ldh]), cabs1(h[(k - 1) + ((k + 1) - 1) * ldh]));
                         h11 = max(cabs1(h[((k + 1) - 1) + ((k + 1) - 1) * ldh]), cabs1(h[(k - 1) + (k - 1) * ldh] - h[((k + 1) - 1) + ((k + 1) - 1) * ldh]));
@@ -417,7 +416,7 @@ void Claqr5(bool const wantt, bool const wantz, INTEGER const kacc22, INTEGER co
                         scl = h11 + h12;
                         tst2 = h22 * (h11 / scl);
                         //
-                        if (tst2 == rzero || h21 * (h12 / scl) <= max(smlnum, REAL(ulp * tst2))) {
+                        if (tst2 == rzero || h21 * (h12 / scl) <= max(smlnum, ulp * tst2)) {
                             h[((k + 1) - 1) + (k - 1) * ldh] = zero;
                         }
                     }

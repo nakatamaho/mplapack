@@ -51,7 +51,7 @@ void Rgebrd(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *
         info = -2;
     } else if (lda < max((INTEGER)1, m)) {
         info = -4;
-    } else if (lwork < max({(INTEGER)1, m, n}) && !lquery) {
+    } else if (lwork < max((INTEGER)1, m, n) && !lquery) {
         info = -10;
     }
     if (info < 0) {
@@ -65,7 +65,7 @@ void Rgebrd(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *
     //
     INTEGER minmn = min(m, n);
     if (minmn == 0) {
-        work[1 - 1] = 1;
+        work[1 - 1] = 1.0;
         return;
     }
     //

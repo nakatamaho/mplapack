@@ -168,7 +168,7 @@ statement_110:
     if (n12 != 0) {
         Rgemm("N", "N", n1, k, n12, one, q2, n1, s, n12, zero, q, ldq);
     } else {
-        Rlaset("A", n1, k, zero, zero, &q[(1 - 1)], ldq);
+        Rlaset("A", n1, k, zero, zero, &q[0], ldq);
     }
 //
 statement_120:;

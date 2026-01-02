@@ -152,7 +152,7 @@ void Rgges(const char *jobvsl, const char *jobvsr, const char *sort, bool (*selc
     }
     //
     if (info != 0) {
-        Mxerbla("Rgges", -info);
+        Mxerbla("Rgges ", -info);
         return;
     } else if (lquery) {
         return;
@@ -170,6 +170,7 @@ void Rgges(const char *jobvsl, const char *jobvsr, const char *sort, bool (*selc
     eps = Rlamch("P");
     safmin = Rlamch("S");
     safmax = one / safmin;
+    Rlabad(safmin, safmax);
     smlnum = sqrt(safmin) / eps;
     bignum = one / smlnum;
     //

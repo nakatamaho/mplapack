@@ -81,7 +81,7 @@ void Rlasv2(REAL const f, REAL const g, REAL const h, REAL &ssmin, REAL &ssmax, 
     REAL tt = 0.0;
     REAL s = 0.0;
     REAL r = 0.0;
-    const REAL half = 0.5e0;
+    const REAL half = 0.5;
     REAL a = 0.0;
     const REAL four = 4.0;
     if (ga == zero) {

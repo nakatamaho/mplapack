@@ -111,25 +111,21 @@ void Cgesvdx(const char *jobu, const char *jobvt, const char *range, INTEGER con
     INTEGER minwrk = 0;
     INTEGER maxwrk = 0;
     INTEGER mnthr = 0;
-    char jobu_jobvt[3];
-    jobu_jobvt[0] = jobu[0];
-    jobu_jobvt[1] = jobvt[0];
-    jobu_jobvt[2] = '\0';
     if (info == 0) {
         minwrk = 1;
         maxwrk = 1;
         if (minmn > 0) {
             if (m >= n) {
-                mnthr = iMlaenv(6, "Cgesvd", jobu_jobvt, m, n, 0, 0);
+                mnthr = iMlaenv(6, "Cgesvd", CHAR2(jobu, jobvt), m, n, 0, 0);
                 if (m >= mnthr) {
                     //
                     // Path 1 (M much larger than N)
                     //
                     minwrk = n * (n + 5);
                     maxwrk = n + n * iMlaenv(1, "Cgeqrf", " ", m, n, -1, -1);
-                    maxwrk = max({maxwrk, n * n + 2 * n + 2 * n * iMlaenv(1, "Cgebrd", " ", n, n, -1, -1)});
+                    maxwrk = max(maxwrk, n * n + 2 * n + 2 * n * iMlaenv(1, "Cgebrd", " ", n, n, -1, -1));
                     if (wantu || wantvt) {
-                        maxwrk = max({maxwrk, n * n + 2 * n + n * iMlaenv(1, "Cunmqr", "LN", n, n, n, -1)});
+                        maxwrk = max(maxwrk, n * n + 2 * n + n * iMlaenv(1, "Cunmqr", "LN", n, n, n, -1));
                     }
                 } else {
                     //
@@ -138,20 +134,20 @@ void Cgesvdx(const char *jobu, const char *jobvt, const char *range, INTEGER con
                     minwrk = 3 * n + m;
                     maxwrk = 2 * n + (m + n) * iMlaenv(1, "Cgebrd", " ", m, n, -1, -1);
                     if (wantu || wantvt) {
-                        maxwrk = max({maxwrk, 2 * n + n * iMlaenv(1, "Cunmqr", "LN", n, n, n, -1)});
+                        maxwrk = max(maxwrk, 2 * n + n * iMlaenv(1, "Cunmqr", "LN", n, n, n, -1));
                     }
                 }
             } else {
-                mnthr = iMlaenv(6, "Cgesvd", jobu_jobvt, m, n, 0, 0);
+                mnthr = iMlaenv(6, "Cgesvd", CHAR2(jobu, jobvt), m, n, 0, 0);
                 if (n >= mnthr) {
                     //
                     // Path 1t (N much larger than M)
                     //
                     minwrk = m * (m + 5);
                     maxwrk = m + m * iMlaenv(1, "Cgelqf", " ", m, n, -1, -1);
-                    maxwrk = max({maxwrk, m * m + 2 * m + 2 * m * iMlaenv(1, "Cgebrd", " ", m, m, -1, -1)});
+                    maxwrk = max(maxwrk, m * m + 2 * m + 2 * m * iMlaenv(1, "Cgebrd", " ", m, m, -1, -1));
                     if (wantu || wantvt) {
-                        maxwrk = max({maxwrk, m * m + 2 * m + m * iMlaenv(1, "Cunmqr", "LN", m, m, m, -1)});
+                        maxwrk = max(maxwrk, m * m + 2 * m + m * iMlaenv(1, "Cunmqr", "LN", m, m, m, -1));
                     }
                 } else {
                     //
@@ -160,7 +156,7 @@ void Cgesvdx(const char *jobu, const char *jobvt, const char *range, INTEGER con
                     minwrk = 3 * m + n;
                     maxwrk = 2 * m + (m + n) * iMlaenv(1, "Cgebrd", " ", m, n, -1, -1);
                     if (wantu || wantvt) {
-                        maxwrk = max({maxwrk, 2 * m + m * iMlaenv(1, "Cunmqr", "LN", m, m, m, -1)});
+                        maxwrk = max(maxwrk, 2 * m + m * iMlaenv(1, "Cunmqr", "LN", m, m, m, -1));
                     }
                 }
             }

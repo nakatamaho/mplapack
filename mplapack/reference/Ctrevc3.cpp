@@ -36,8 +36,6 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-inline REAL cabs1(COMPLEX cdum) { return abs(cdum.real()) + abs(cdum.imag()); }
-
 void Ctrevc3(const char *side, const char *howmny, bool *select, INTEGER const n, COMPLEX *t, INTEGER const ldt, COMPLEX *vl, INTEGER const ldvl, COMPLEX *vr, INTEGER const ldvr, INTEGER const mm, INTEGER &m, COMPLEX *work, INTEGER const lwork, REAL *rwork, INTEGER const lrwork, INTEGER &info) {
     COMPLEX cdum = 0.0;
     bool bothv = false;
@@ -95,11 +93,7 @@ void Ctrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
     }
     //
     info = 0;
-    char side_howmny[3];
-    side_howmny[0] = side[0];
-    side_howmny[1] = howmny[0];
-    side_howmny[2] = '\0';
-    nb = iMlaenv(1, "Ctrevc", side_howmny, n, -1, -1, -1);
+    nb = iMlaenv(1, "Ctrevc", CHAR2(side, howmny), n, -1, -1, -1);
     maxwrk = n + 2 * n * nb;
     work[1 - 1] = maxwrk;
     rwork[1 - 1] = n;
@@ -151,6 +145,7 @@ void Ctrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
     //
     unfl = Rlamch("Safe minimum");
     ovfl = one / unfl;
+    Rlabad(unfl, ovfl);
     ulp = Rlamch("Precision");
     smlnum = unfl * (n / ulp);
     //
@@ -185,7 +180,7 @@ void Ctrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                     goto statement_80;
                 }
             }
-            smin = max(REAL(ulp * (cabs1(t[(ki - 1) + (ki - 1) * ldt]))), smlnum);
+            smin = max(ulp * (cabs1(t[(ki - 1) + (ki - 1) * ldt])), smlnum);
             //
             // --------------------------------------------------------
             // Complex right eigenvector
@@ -255,7 +250,7 @@ void Ctrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                     // normalize vectors
                     for (k = iv; k <= nb; k = k + 1) {
                         ii = iCamax(n, &work[(1 + (nb + k) * n) - 1], 1);
-                        remax = one / cabs1((work[(ii + (nb + k) * n) - 1]));
+                        remax = one / cabs1(work[(ii + (nb + k) * n) - 1]);
                         CRscal(n, remax, &work[(1 + (nb + k) * n) - 1], 1);
                     }
                     Clacpy("F", n, nb - iv + 1, &work[(1 + (nb + iv) * n) - 1], n, &vr[(ki - 1) * ldvr], ldvr);
@@ -294,7 +289,7 @@ void Ctrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
                     goto statement_130;
                 }
             }
-            smin = max(REAL(ulp * (cabs1(t[(ki - 1) + (ki - 1) * ldt]))), smlnum);
+            smin = max(ulp * (cabs1(t[(ki - 1) + (ki - 1) * ldt])), smlnum);
             //
             // --------------------------------------------------------
             // Complex left eigenvector

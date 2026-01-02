@@ -133,10 +133,10 @@ void Cgges(const char *jobvsl, const char *jobvsr, const char *sort, bool (*selc
     //
     if (info == 0) {
         lwkmin = max((INTEGER)1, 2 * n);
-        lwkopt = max({(INTEGER)1, n + n * iMlaenv(1, "Cgeqrf", " ", n, 1, n, 0)});
-        lwkopt = max({lwkopt, n + n * iMlaenv(1, "Cunmqr", " ", n, 1, n, -1)});
+        lwkopt = max((INTEGER)1, n + n * iMlaenv(1, "Cgeqrf", " ", n, 1, n, 0));
+        lwkopt = max(lwkopt, n + n * iMlaenv(1, "Cunmqr", " ", n, 1, n, -1));
         if (ilvsl) {
-            lwkopt = max({lwkopt, n + n * iMlaenv(1, "Cungqr", " ", n, 1, n, -1)});
+            lwkopt = max(lwkopt, n + n * iMlaenv(1, "Cungqr", " ", n, 1, n, -1));
         }
         work[1 - 1] = lwkopt;
         //
@@ -146,7 +146,7 @@ void Cgges(const char *jobvsl, const char *jobvsr, const char *sort, bool (*selc
     }
     //
     if (info != 0) {
-        Mxerbla("Cgges", -info);
+        Mxerbla("Cgges ", -info);
         return;
     } else if (lquery) {
         return;
@@ -164,6 +164,7 @@ void Cgges(const char *jobvsl, const char *jobvsr, const char *sort, bool (*selc
     eps = Rlamch("P");
     smlnum = Rlamch("S");
     bignum = one / smlnum;
+    Rlabad(smlnum, bignum);
     smlnum = sqrt(smlnum) / eps;
     bignum = one / smlnum;
     //

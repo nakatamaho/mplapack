@@ -68,7 +68,7 @@ void Cheev(const char *jobz, const char *uplo, INTEGER const n, COMPLEX *a, INTE
     }
     //
     if (info != 0) {
-        Mxerbla("Cheev", -info);
+        Mxerbla("Cheev ", -info);
         return;
     } else if (lquery) {
         return;
@@ -82,10 +82,10 @@ void Cheev(const char *jobz, const char *uplo, INTEGER const n, COMPLEX *a, INTE
     //
     const COMPLEX cone = COMPLEX(1.0, 0.0);
     if (n == 1) {
-        w[1 - 1] = a[(1 - 1)].real();
-        work[1 - 1] = 1;
+        w[1 - 1] = a[0].real();
+        work[1 - 1] = 1.0;
         if (wantz) {
-            a[(1 - 1)] = cone;
+            a[0] = cone;
         }
         return;
     }

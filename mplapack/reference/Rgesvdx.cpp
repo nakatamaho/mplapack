@@ -111,27 +111,23 @@ void Rgesvdx(const char *jobu, const char *jobvt, const char *range, INTEGER con
     INTEGER minwrk = 0;
     INTEGER maxwrk = 0;
     INTEGER mnthr = 0;
-    char jobu_jobvt[3];
-    jobu_jobvt[0] = jobu[0];
-    jobu_jobvt[1] = jobvt[0];
-    jobu_jobvt[2] = '\0';
     if (info == 0) {
         minwrk = 1;
         maxwrk = 1;
         if (minmn > 0) {
             if (m >= n) {
-                mnthr = iMlaenv(6, "Rgesvd", jobu_jobvt, m, n, 0, 0);
+                mnthr = iMlaenv(6, "Rgesvd", CHAR2(jobu, jobvt), m, n, 0, 0);
                 if (m >= mnthr) {
                     //
                     // Path 1 (M much larger than N)
                     //
                     maxwrk = n + n * iMlaenv(1, "Rgeqrf", " ", m, n, -1, -1);
-                    maxwrk = max({maxwrk, n * (n + 5) + 2 * n * iMlaenv(1, "Rgebrd", " ", n, n, -1, -1)});
+                    maxwrk = max(maxwrk, n * (n + 5) + 2 * n * iMlaenv(1, "Rgebrd", " ", n, n, -1, -1));
                     if (wantu) {
-                        maxwrk = max({maxwrk, n * (n * 3 + 6) + n * iMlaenv(1, "Rormqr", " ", n, n, -1, -1)});
+                        maxwrk = max(maxwrk, n * (n * 3 + 6) + n * iMlaenv(1, "Rormqr", " ", n, n, -1, -1));
                     }
                     if (wantvt) {
-                        maxwrk = max({maxwrk, n * (n * 3 + 6) + n * iMlaenv(1, "Rormlq", " ", n, n, -1, -1)});
+                        maxwrk = max(maxwrk, n * (n * 3 + 6) + n * iMlaenv(1, "Rormlq", " ", n, n, -1, -1));
                     }
                     minwrk = n * (n * 3 + 20);
                 } else {
@@ -140,26 +136,26 @@ void Rgesvdx(const char *jobu, const char *jobvt, const char *range, INTEGER con
                     //
                     maxwrk = 4 * n + (m + n) * iMlaenv(1, "Rgebrd", " ", m, n, -1, -1);
                     if (wantu) {
-                        maxwrk = max({maxwrk, n * (n * 2 + 5) + n * iMlaenv(1, "Rormqr", " ", n, n, -1, -1)});
+                        maxwrk = max(maxwrk, n * (n * 2 + 5) + n * iMlaenv(1, "Rormqr", " ", n, n, -1, -1));
                     }
                     if (wantvt) {
-                        maxwrk = max({maxwrk, n * (n * 2 + 5) + n * iMlaenv(1, "Rormlq", " ", n, n, -1, -1)});
+                        maxwrk = max(maxwrk, n * (n * 2 + 5) + n * iMlaenv(1, "Rormlq", " ", n, n, -1, -1));
                     }
                     minwrk = max(n * (n * 2 + 19), 4 * n + m);
                 }
             } else {
-                mnthr = iMlaenv(6, "Rgesvd", jobu_jobvt, m, n, 0, 0);
+                mnthr = iMlaenv(6, "Rgesvd", CHAR2(jobu, jobvt), m, n, 0, 0);
                 if (n >= mnthr) {
                     //
                     // Path 1t (N much larger than M)
                     //
                     maxwrk = m + m * iMlaenv(1, "Rgelqf", " ", m, n, -1, -1);
-                    maxwrk = max({maxwrk, m * (m + 5) + 2 * m * iMlaenv(1, "Rgebrd", " ", m, m, -1, -1)});
+                    maxwrk = max(maxwrk, m * (m + 5) + 2 * m * iMlaenv(1, "Rgebrd", " ", m, m, -1, -1));
                     if (wantu) {
-                        maxwrk = max({maxwrk, m * (m * 3 + 6) + m * iMlaenv(1, "Rormqr", " ", m, m, -1, -1)});
+                        maxwrk = max(maxwrk, m * (m * 3 + 6) + m * iMlaenv(1, "Rormqr", " ", m, m, -1, -1));
                     }
                     if (wantvt) {
-                        maxwrk = max({maxwrk, m * (m * 3 + 6) + m * iMlaenv(1, "Rormlq", " ", m, m, -1, -1)});
+                        maxwrk = max(maxwrk, m * (m * 3 + 6) + m * iMlaenv(1, "Rormlq", " ", m, m, -1, -1));
                     }
                     minwrk = m * (m * 3 + 20);
                 } else {
@@ -168,10 +164,10 @@ void Rgesvdx(const char *jobu, const char *jobvt, const char *range, INTEGER con
                     //
                     maxwrk = 4 * m + (m + n) * iMlaenv(1, "Rgebrd", " ", m, n, -1, -1);
                     if (wantu) {
-                        maxwrk = max({maxwrk, m * (m * 2 + 5) + m * iMlaenv(1, "Rormqr", " ", m, m, -1, -1)});
+                        maxwrk = max(maxwrk, m * (m * 2 + 5) + m * iMlaenv(1, "Rormqr", " ", m, m, -1, -1));
                     }
                     if (wantvt) {
-                        maxwrk = max({maxwrk, m * (m * 2 + 5) + m * iMlaenv(1, "Rormlq", " ", m, m, -1, -1)});
+                        maxwrk = max(maxwrk, m * (m * 2 + 5) + m * iMlaenv(1, "Rormlq", " ", m, m, -1, -1));
                     }
                     minwrk = max(m * (m * 2 + 19), 4 * m + n);
                 }

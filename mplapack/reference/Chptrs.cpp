@@ -107,7 +107,7 @@ void Chptrs(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *ap, 
             // Multiply by inv(U(K)), where U(K) is the transformation
             // stored in column K of A.
             //
-            Cgeru(k - 1, nrhs, -one, &ap[kc - 1], 1, &b[(k - 1)], ldb, &b[(1 - 1)], ldb);
+            Cgeru(k - 1, nrhs, -one, &ap[kc - 1], 1, &b[(k - 1)], ldb, &b[0], ldb);
             //
             // Multiply by the inverse of the diagonal block.
             //
@@ -128,8 +128,8 @@ void Chptrs(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *ap, 
             // Multiply by inv(U(K)), where U(K) is the transformation
             // stored in columns K-1 and K of A.
             //
-            Cgeru(k - 2, nrhs, -one, &ap[kc - 1], 1, &b[(k - 1)], ldb, &b[(1 - 1)], ldb);
-            Cgeru(k - 2, nrhs, -one, &ap[(kc - (k - 1)) - 1], 1, &b[((k - 1) - 1)], ldb, &b[(1 - 1)], ldb);
+            Cgeru(k - 2, nrhs, -one, &ap[kc - 1], 1, &b[(k - 1)], ldb, &b[0], ldb);
+            Cgeru(k - 2, nrhs, -one, &ap[(kc - (k - 1)) - 1], 1, &b[((k - 1) - 1)], ldb, &b[0], ldb);
             //
             // Multiply by the inverse of the diagonal block.
             //

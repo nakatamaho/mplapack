@@ -44,6 +44,7 @@ void Rgesc2(INTEGER const n, REAL *a, INTEGER const lda, REAL *rhs, INTEGER *ipi
     REAL smlnum = Rlamch("S") / eps;
     const REAL one = 1.0;
     REAL bignum = one / smlnum;
+    Rlabad(smlnum, bignum);
     //
     // Apply permutations IPIV to RHS
     //
@@ -66,7 +67,7 @@ void Rgesc2(INTEGER const n, REAL *a, INTEGER const lda, REAL *rhs, INTEGER *ipi
     // Check for scaling
     //
     i = iRamax(n, rhs, 1);
-    const REAL two = 2.0e+0;
+    const REAL two = 2.0;
     REAL temp = 0.0;
     if (two * smlnum * abs(rhs[i - 1]) > abs(a[(n - 1) + (n - 1) * lda])) {
         temp = (one / two) / abs(rhs[i - 1]);

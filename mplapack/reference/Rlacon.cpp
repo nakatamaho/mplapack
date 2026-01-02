@@ -37,43 +37,18 @@
 #include <mplapack.h>
 
 void Rlacon(INTEGER const n, REAL *v, REAL *x, INTEGER *isgn, REAL &est, INTEGER &kase) {
-    REAL altsgn;
-    REAL estold;
-    INTEGER i;
-    INTEGER iter;
-    INTEGER j;
-    INTEGER jlast;
-    INTEGER jump;
-    REAL temp;
+    static REAL altsgn = 0.0;
+    static REAL estold = 0.0;
+    static INTEGER i = 0;
+    static INTEGER iter = 0;
+    static INTEGER j = 0;
+    static INTEGER jlast = 0;
+    static INTEGER jump = 0;
+    static REAL temp = 0.0;
     const REAL one = 1.0;
     const REAL zero = 0.0;
     const INTEGER itmax = 5;
-    const REAL two = 2.0e+0;
-    //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Save statement ..
-    //     ..
-    //     .. Executable Statements ..
+    const REAL two = 2.0;
     //
     if (kase == 0) {
         for (i = 1; i <= n; i = i + 1) {

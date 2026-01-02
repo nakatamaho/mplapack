@@ -36,8 +36,6 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-inline REAL abs1(COMPLEX x) { return abs(x.real()) + abs(x.imag()); }
-
 void Cggev3(const char *jobvl, const char *jobvr, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, COMPLEX *alpha, COMPLEX *beta, COMPLEX *vl, INTEGER const ldvl, COMPLEX *vr, INTEGER const ldvr, COMPLEX *work, INTEGER const lwork, REAL *rwork, INTEGER &info) {
     COMPLEX x = 0.0;
     INTEGER ijobvl = 0;
@@ -150,7 +148,7 @@ void Cggev3(const char *jobvl, const char *jobvr, INTEGER const n, COMPLEX *a, I
     }
     //
     if (info != 0) {
-        Mxerbla("Cggev3", -info);
+        Mxerbla("Cggev3 ", -info);
         return;
     } else if (lquery) {
         return;
@@ -167,6 +165,7 @@ void Cggev3(const char *jobvl, const char *jobvr, INTEGER const n, COMPLEX *a, I
     eps = Rlamch("E") * Rlamch("B");
     smlnum = Rlamch("S");
     bignum = one / smlnum;
+    Rlabad(smlnum, bignum);
     smlnum = sqrt(smlnum) / eps;
     bignum = one / smlnum;
     //
@@ -297,7 +296,7 @@ void Cggev3(const char *jobvl, const char *jobvr, INTEGER const n, COMPLEX *a, I
             for (jc = 1; jc <= n; jc = jc + 1) {
                 temp = zero;
                 for (jr = 1; jr <= n; jr = jr + 1) {
-                    temp = max(temp, abs1(vl[(jr - 1) + (jc - 1) * ldvl]));
+                    temp = max(temp, cabs1(vl[(jr - 1) + (jc - 1) * ldvl]));
                 }
                 if (temp < smlnum) {
                     goto statement_30;
@@ -314,7 +313,7 @@ void Cggev3(const char *jobvl, const char *jobvr, INTEGER const n, COMPLEX *a, I
             for (jc = 1; jc <= n; jc = jc + 1) {
                 temp = zero;
                 for (jr = 1; jr <= n; jr = jr + 1) {
-                    temp = max(temp, abs1(vr[(jr - 1) + (jc - 1) * ldvr]));
+                    temp = max(temp, cabs1(vr[(jr - 1) + (jc - 1) * ldvr]));
                 }
                 if (temp < smlnum) {
                     goto statement_60;

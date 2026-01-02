@@ -128,7 +128,7 @@ void Cheevx(const char *jobz, const char *range, const char *uplo, INTEGER const
         } else {
             lwkmin = 2 * n;
             nb = iMlaenv(1, "Chetrd", uplo, n, -1, -1, -1);
-            nb = max({nb, iMlaenv(1, "Cunmtr", uplo, n, -1, -1, -1)});
+            nb = max(nb, iMlaenv(1, "Cunmtr", uplo, n, -1, -1, -1));
             lwkopt = max((INTEGER)1, (nb + 1) * n);
             work[1 - 1] = lwkopt;
         }
@@ -155,15 +155,15 @@ void Cheevx(const char *jobz, const char *range, const char *uplo, INTEGER const
     if (n == 1) {
         if (alleig || indeig) {
             m = 1;
-            w[1 - 1] = a[(1 - 1)].real();
+            w[1 - 1] = a[0].real();
         } else if (valeig) {
-            if (vl < a[(1 - 1)].real() && vu >= a[(1 - 1)].real()) {
+            if (vl < a[0].real() && vu >= a[0].real()) {
                 m = 1;
-                w[1 - 1] = a[(1 - 1)].real();
+                w[1 - 1] = a[0].real();
             }
         }
         if (wantz) {
-            z[(1 - 1)] = cone;
+            z[0] = cone;
         }
         return;
     }
@@ -175,7 +175,7 @@ void Cheevx(const char *jobz, const char *range, const char *uplo, INTEGER const
     smlnum = safmin / eps;
     bignum = one / smlnum;
     rmin = sqrt(smlnum);
-    rmax = min(REAL(sqrt(bignum)), REAL(one / sqrt(sqrt(safmin))));
+    rmax = min(sqrt(bignum), one / sqrt(sqrt(safmin)));
     //
     // Scale matrix to allowable range, if necessary.
     //

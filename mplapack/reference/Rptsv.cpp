@@ -49,7 +49,7 @@ void Rptsv(INTEGER const n, INTEGER const nrhs, REAL *d, REAL *e, REAL *b, INTEG
         info = -6;
     }
     if (info != 0) {
-        Mxerbla("Rptsv", -info);
+        Mxerbla("Rptsv ", -info);
         return;
     }
     //

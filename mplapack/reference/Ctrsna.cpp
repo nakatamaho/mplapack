@@ -36,8 +36,6 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-inline REAL abs1(COMPLEX zdum) { return abs(zdum.real()) + abs(zdum.imag()); }
-
 void Ctrsna(const char *job, const char *howmny, bool *select, INTEGER const n, COMPLEX *t, INTEGER const ldt, COMPLEX *vl, INTEGER const ldvl, COMPLEX *vr, INTEGER const ldvr, REAL *s, REAL *sep, INTEGER const mm, INTEGER &m, COMPLEX *work, INTEGER const ldwork, REAL *rwork, INTEGER &info) {
     COMPLEX cdum = 0.0;
     bool wantbh = false;
@@ -127,7 +125,7 @@ void Ctrsna(const char *job, const char *howmny, bool *select, INTEGER const n, 
             s[1 - 1] = one;
         }
         if (wantsp) {
-            sep[1 - 1] = abs(t[(1 - 1)]);
+            sep[1 - 1] = abs(t[0]);
         }
         return;
     }
@@ -137,6 +135,7 @@ void Ctrsna(const char *job, const char *howmny, bool *select, INTEGER const n, 
     eps = Rlamch("P");
     smlnum = Rlamch("S") / eps;
     bignum = one / smlnum;
+    Rlabad(smlnum, bignum);
     //
     ks = 1;
     for (k = 1; k <= n; k = k + 1) {
@@ -173,7 +172,7 @@ void Ctrsna(const char *job, const char *howmny, bool *select, INTEGER const n, 
             // Form  C = T22 - lambda*I in WORK(2:N,2:N).
             //
             for (i = 2; i <= n; i = i + 1) {
-                work[(i - 1) + (i - 1) * ldwork] = work[(i - 1) + (i - 1) * ldwork] - work[(1 - 1)];
+                work[(i - 1) + (i - 1) * ldwork] = work[(i - 1) + (i - 1) * ldwork] - work[0];
             }
             //
             // Estimate a lower bound for the 1-norm of inv(C**H). The 1st
@@ -205,7 +204,7 @@ void Ctrsna(const char *job, const char *howmny, bool *select, INTEGER const n, 
                     // overflow.
                     //
                     ix = iCamax(n - 1, work, 1);
-                    xnorm = abs1(work[(ix - 1)]);
+                    xnorm = cabs1(work[(ix - 1)]);
                     if (scale < xnorm * smlnum || scale == zero) {
                         goto statement_40;
                     }

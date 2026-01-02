@@ -55,7 +55,7 @@ void Cgbsv(INTEGER const n, INTEGER const kl, INTEGER const ku, INTEGER const nr
         info = -9;
     }
     if (info != 0) {
-        Mxerbla("Cgbsv", -info);
+        Mxerbla("Cgbsv ", -info);
         return;
     }
     //

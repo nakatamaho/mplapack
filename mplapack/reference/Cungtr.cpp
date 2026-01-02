@@ -75,7 +75,7 @@ void Cungtr(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, CO
     // Quick return if possible
     //
     if (n == 0) {
-        work[1 - 1] = 1;
+        work[1 - 1] = 1.0;
         return;
     }
     //
@@ -121,7 +121,7 @@ void Cungtr(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, CO
                 a[(i - 1) + (j - 1) * lda] = a[(i - 1) + ((j - 1) - 1) * lda];
             }
         }
-        a[(1 - 1)] = one;
+        a[0] = one;
         for (i = 2; i <= n; i = i + 1) {
             a[(i - 1)] = zero;
         }

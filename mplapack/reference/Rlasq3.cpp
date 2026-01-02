@@ -36,7 +36,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rlasq3(INTEGER const i0, INTEGER &n0, REAL *z, INTEGER &pp, REAL &dmin, REAL &sigma, REAL &desig, REAL &qmax, INTEGER &nfail, INTEGER &iter, INTEGER &ndiv, bool const ieee, INTEGER &ttype, REAL dmin1, REAL &dmin2, REAL dn, REAL dn1, REAL dn2, REAL g, REAL &tau) {
+void Rlasq3(INTEGER const i0, INTEGER &n0, REAL *z, INTEGER &pp, REAL &dmin, REAL &sigma, REAL &desig, REAL &qmax, INTEGER &nfail, INTEGER &iter, INTEGER &ndiv, bool const ieee, INTEGER &ttype, REAL &dmin1, REAL &dmin2, REAL &dn, REAL &dn1, REAL &dn2, REAL &g, REAL &tau) {
     INTEGER n0in = 0;
     REAL eps = 0.0;
     const REAL hundrd = 100.0;
@@ -44,39 +44,16 @@ void Rlasq3(INTEGER const i0, INTEGER &n0, REAL *z, INTEGER &pp, REAL &dmin, REA
     REAL tol2 = 0.0;
     INTEGER nn = 0;
     REAL s = 0.0;
-    const REAL half = 0.5e0;
+    const REAL half = 0.5;
     REAL t = 0.0;
     const REAL zero = 0.0;
     const REAL one = 1.0;
-    const REAL cbias = 1.50e0;
+    const REAL cbias = 1.5;
     INTEGER ipn4 = 0;
     INTEGER j4 = 0;
     REAL temp = 0.0;
     const REAL two = 2.0;
-    const REAL qurtr = 0.250e0;
-    //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. External Function ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
+    const REAL qurtr = 0.25;
     //
     n0in = n0;
     eps = Rlamch("Precision");
@@ -171,9 +148,9 @@ statement_50:
                 z[(4 * n0 - pp) - 1] = z[(4 * i0 - pp) - 1];
             }
             dmin2 = min(dmin2, z[(4 * n0 + pp - 1) - 1]);
-            z[(4 * n0 + pp - 1) - 1] = min({z[(4 * n0 + pp - 1) - 1], z[(4 * i0 + pp - 1) - 1], z[(4 * i0 + pp + 3) - 1]});
-            z[(4 * n0 - pp) - 1] = min({z[(4 * n0 - pp) - 1], z[(4 * i0 - pp) - 1], z[(4 * i0 - pp + 4) - 1]});
-            qmax = max({qmax, z[(4 * i0 + pp - 3) - 1], z[(4 * i0 + pp + 1) - 1]});
+            z[(4 * n0 + pp - 1) - 1] = min(z[(4 * n0 + pp - 1) - 1], z[(4 * i0 + pp - 1) - 1], z[(4 * i0 + pp + 3) - 1]);
+            z[(4 * n0 - pp) - 1] = min(z[(4 * n0 - pp) - 1], z[(4 * i0 - pp) - 1], z[(4 * i0 - pp + 4) - 1]);
+            qmax = max(qmax, z[(4 * i0 + pp - 3) - 1], z[(4 * i0 + pp + 1) - 1]);
             dmin = -zero;
         }
     }

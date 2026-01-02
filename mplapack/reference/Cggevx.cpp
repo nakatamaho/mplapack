@@ -36,8 +36,6 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-inline REAL abs1(COMPLEX x) { return abs(x.real()) + abs(x.imag()); }
-
 void Cggevx(const char *balanc, const char *jobvl, const char *jobvr, const char *sense, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, COMPLEX *alpha, COMPLEX *beta, COMPLEX *vl, INTEGER const ldvl, COMPLEX *vr, INTEGER const ldvr, INTEGER &ilo, INTEGER &ihi, REAL *lscale, REAL *rscale, REAL &abnrm, REAL &bbnrm, REAL *rconde, REAL *rcondv, COMPLEX *work, INTEGER const lwork, REAL *rwork, INTEGER *iwork, bool *bwork, INTEGER &info) {
     COMPLEX x = 0.0;
     INTEGER ijobvl = 0;
@@ -157,10 +155,10 @@ void Cggevx(const char *balanc, const char *jobvl, const char *jobvr, const char
                 minwrk = 2 * n * (n + 1);
             }
             maxwrk = minwrk;
-            maxwrk = max({maxwrk, n + n * iMlaenv(1, "Cgeqrf", " ", n, 1, n, 0)});
-            maxwrk = max({maxwrk, n + n * iMlaenv(1, "Cunmqr", " ", n, 1, n, 0)});
+            maxwrk = max(maxwrk, n + n * iMlaenv(1, "Cgeqrf", " ", n, 1, n, 0));
+            maxwrk = max(maxwrk, n + n * iMlaenv(1, "Cunmqr", " ", n, 1, n, 0));
             if (ilvl) {
-                maxwrk = max({maxwrk, n + n * iMlaenv(1, "Cungqr", " ", n, 1, n, 0)});
+                maxwrk = max(maxwrk, n + n * iMlaenv(1, "Cungqr", " ", n, 1, n, 0));
             }
         }
         work[1 - 1] = maxwrk;
@@ -188,6 +186,7 @@ void Cggevx(const char *balanc, const char *jobvl, const char *jobvr, const char
     eps = Rlamch("P");
     smlnum = Rlamch("S");
     bignum = one / smlnum;
+    Rlabad(smlnum, bignum);
     smlnum = sqrt(smlnum) / eps;
     bignum = one / smlnum;
     //
@@ -380,7 +379,7 @@ void Cggevx(const char *balanc, const char *jobvl, const char *jobvr, const char
         for (jc = 1; jc <= n; jc = jc + 1) {
             temp = zero;
             for (jr = 1; jr <= n; jr = jr + 1) {
-                temp = max(temp, abs1(vl[(jr - 1) + (jc - 1) * ldvl]));
+                temp = max(temp, cabs1(vl[(jr - 1) + (jc - 1) * ldvl]));
             }
             if (temp < smlnum) {
                 goto statement_50;
@@ -398,7 +397,7 @@ void Cggevx(const char *balanc, const char *jobvl, const char *jobvr, const char
         for (jc = 1; jc <= n; jc = jc + 1) {
             temp = zero;
             for (jr = 1; jr <= n; jr = jr + 1) {
-                temp = max(temp, abs1(vr[(jr - 1) + (jc - 1) * ldvr]));
+                temp = max(temp, cabs1(vr[(jr - 1) + (jc - 1) * ldvr]));
             }
             if (temp < smlnum) {
                 goto statement_80;

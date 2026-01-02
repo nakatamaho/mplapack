@@ -36,8 +36,6 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-inline REAL cabs1(COMPLEX cdum) { return (abs(cdum.real()) + abs(cdum.imag())); }
-
 void Clahqr(bool const wantt, bool const wantz, INTEGER const n, INTEGER const ilo, INTEGER const ihi, COMPLEX *h, INTEGER const ldh, COMPLEX *w, INTEGER const iloz, INTEGER const ihiz, COMPLEX *z, INTEGER const ldz, INTEGER &info) {
     COMPLEX cdum = 0.0;
     INTEGER j = 0;
@@ -71,7 +69,7 @@ void Clahqr(bool const wantt, bool const wantz, INTEGER const n, INTEGER const i
     const REAL dat1 = 3.0 / 4.0;
     COMPLEX t = 0.0;
     COMPLEX u = 0.0;
-    const REAL half = 0.5e0;
+    const REAL half = 0.5;
     COMPLEX x = 0.0;
     REAL sx = 0.0;
     COMPLEX y = 0.0;
@@ -141,6 +139,7 @@ void Clahqr(bool const wantt, bool const wantz, INTEGER const n, INTEGER const i
     //
     safmin = Rlamch("SAFE MINIMUM");
     safmax = rone / safmin;
+    Rlabad(safmin, safmax);
     ulp = Rlamch("PRECISION");
     smlnum = safmin * (castREAL(nh) / ulp);
     //
@@ -205,7 +204,7 @@ statement_30:
                 aa = max(cabs1(h[(k - 1) + (k - 1) * ldh]), cabs1(h[((k - 1) - 1) + ((k - 1) - 1) * ldh] - h[(k - 1) + (k - 1) * ldh]));
                 bb = min(cabs1(h[(k - 1) + (k - 1) * ldh]), cabs1(h[((k - 1) - 1) + ((k - 1) - 1) * ldh] - h[(k - 1) + (k - 1) * ldh]));
                 s = aa + ab;
-                if (ba * (ab / s) <= max(smlnum, REAL(ulp * (bb * (aa / s))))) {
+                if (ba * (ab / s) <= max(smlnum, ulp * (bb * (aa / s)))) {
                     goto statement_50;
                 }
             }
@@ -258,7 +257,7 @@ statement_30:
                 x = half * (h[((i - 1) - 1) + ((i - 1) - 1) * ldh] - t);
                 sx = cabs1(x);
                 s = max(s, cabs1(x));
-                y = s * sqrt((x / s) * (x / s) + (u / s) * (u / s));
+                y = s * sqrt(pow2((x / s)) + pow2((u / s)));
                 if (sx > rzero) {
                     if ((x / sx).real() * y.real() + (x / sx).imag() * y.imag() < rzero) {
                         y = -y;

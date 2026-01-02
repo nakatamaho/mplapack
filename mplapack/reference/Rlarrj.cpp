@@ -63,7 +63,7 @@ void Rlarrj(INTEGER const n, REAL *d, REAL *e2, INTEGER const ifirst, INTEGER co
     INTEGER olnint = 0;
     INTEGER p = 0;
     INTEGER next = 0;
-    const REAL half = 0.5e0;
+    const REAL half = 0.5;
     //
     info = 0;
     //
@@ -73,16 +73,14 @@ void Rlarrj(INTEGER const n, REAL *d, REAL *e2, INTEGER const ifirst, INTEGER co
         return;
     }
     //
-    maxitr = castINTEGER((log(spdiam + pivmin) - log(pivmin)) / log(two)) + (INTEGER)2;
-    if (maxitr >= 1024)
-        maxitr = 1024; // XXX maxitr can be too large for MPFR (=10^8)
+    maxitr = castINTEGER((log(spdiam + pivmin) - log(pivmin)) / log(two)) + 2;
     //
-    //     Initialize unconverged intervals in [ WORK(2*I-1), WORK(2*I) ].
-    //     The Sturm Count, Count( WORK(2*I-1) ) is arranged to be I-1, while
-    //     Count( WORK(2*I) ) is stored in IWORK( 2*I ). The integer IWORK( 2*I-1 )
-    //     for an unconverged interval is set to the index of the next unconverged
-    //     interval, and is -1 or 0 for a converged interval. Thus a linked
-    //     list of unconverged intervals is set up.
+    // Initialize unconverged intervals in [ WORK(2*I-1), WORK(2*I) ].
+    // The Sturm Count, Count( WORK(2*I-1) ) is arranged to be I-1, while
+    // Count( WORK(2*I) ) is stored in IWORK( 2*I ). The integer IWORK( 2*I-1 )
+    // for an unconverged interval is set to the index of the next unconverged
+    // interval, and is -1 or 0 for a converged interval. Thus a linked
+    // list of unconverged intervals is set up.
     //
     i1 = ifirst;
     i2 = ilast;

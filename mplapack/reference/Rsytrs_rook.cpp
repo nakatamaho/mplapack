@@ -105,7 +105,7 @@ void Rsytrs_rook(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *a,
             // Multiply by inv(U(K)), where U(K) is the transformation
             // stored in column K of A.
             //
-            Rger(k - 1, nrhs, -one, &a[(k - 1) * lda], 1, &b[(k - 1)], ldb, &b[(1 - 1)], ldb);
+            Rger(k - 1, nrhs, -one, &a[(k - 1) * lda], 1, &b[(k - 1)], ldb, &b[0], ldb);
             //
             // Multiply by the inverse of the diagonal block.
             //
@@ -131,8 +131,8 @@ void Rsytrs_rook(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *a,
             // stored in columns K-1 and K of A.
             //
             if (k > 2) {
-                Rger(k - 2, nrhs, -one, &a[(k - 1) * lda], 1, &b[(k - 1)], ldb, &b[(1 - 1)], ldb);
-                Rger(k - 2, nrhs, -one, &a[((k - 1) - 1) * lda], 1, &b[((k - 1) - 1)], ldb, &b[(1 - 1)], ldb);
+                Rger(k - 2, nrhs, -one, &a[(k - 1) * lda], 1, &b[(k - 1)], ldb, &b[0], ldb);
+                Rger(k - 2, nrhs, -one, &a[((k - 1) - 1) * lda], 1, &b[((k - 1) - 1)], ldb, &b[0], ldb);
             }
             //
             // Multiply by the inverse of the diagonal block.

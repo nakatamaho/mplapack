@@ -82,23 +82,19 @@ void Cunmbr(const char *vect, const char *side, const char *trans, INTEGER const
     //
     INTEGER nb = 0;
     INTEGER lwkopt = 0;
-    char side_trans[3];
-    side_trans[0] = side[0];
-    side_trans[1] = trans[0];
-    side_trans[2] = '\0';
     if (info == 0) {
         if (nw > 0) {
             if (applyq) {
                 if (left) {
-                    nb = iMlaenv(1, "Cunmqr", side_trans, m - 1, n, m - 1, -1);
+                    nb = iMlaenv(1, "Cunmqr", CHAR2(side, trans), m - 1, n, m - 1, -1);
                 } else {
-                    nb = iMlaenv(1, "Cunmqr", side_trans, m, n - 1, n - 1, -1);
+                    nb = iMlaenv(1, "Cunmqr", CHAR2(side, trans), m, n - 1, n - 1, -1);
                 }
             } else {
                 if (left) {
-                    nb = iMlaenv(1, "Cunmlq", side_trans, m - 1, n, m - 1, -1);
+                    nb = iMlaenv(1, "Cunmlq", CHAR2(side, trans), m - 1, n, m - 1, -1);
                 } else {
-                    nb = iMlaenv(1, "Cunmlq", side_trans, m, n - 1, n - 1, -1);
+                    nb = iMlaenv(1, "Cunmlq", CHAR2(side, trans), m, n - 1, n - 1, -1);
                 }
             }
             lwkopt = max((INTEGER)1, nw * nb);

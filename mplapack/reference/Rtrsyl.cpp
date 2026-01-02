@@ -58,18 +58,18 @@ void Rtrsyl(const char *trana, const char *tranb, INTEGER const isgn, INTEGER co
     REAL suml = 0.0;
     REAL sumr = 0.0;
     REAL vec[2 * 2];
-    INTEGER ldvec = 2;
     REAL scaloc = 0.0;
     REAL a11 = 0.0;
     REAL da11 = 0.0;
     REAL db = 0.0;
-    REAL x[4];
-    INTEGER ldx = 2;
+    REAL x[2 * 2];
     INTEGER j = 0;
     REAL xnorm = 0.0;
     INTEGER ierr = 0;
+    INTEGER ldvec = 2;
+    INTEGER ldx = 2;
     //
-    //     Decode and Test input parameters
+    // Decode and Test input parameters
     //
     notrna = Mlsame(trana, "N");
     notrnb = Mlsame(tranb, "N");
@@ -109,10 +109,11 @@ void Rtrsyl(const char *trana, const char *tranb, INTEGER const isgn, INTEGER co
     eps = Rlamch("P");
     smlnum = Rlamch("S");
     bignum = one / smlnum;
+    Rlabad(smlnum, bignum);
     smlnum = smlnum * castREAL(m * n) / eps;
     bignum = one / smlnum;
     //
-    smin = max({smlnum, REAL(eps * Rlange("M", m, m, a, lda, dum)), REAL(eps * Rlange("M", n, n, b, ldb, dum))});
+    smin = max(smlnum, eps * Rlange("M", m, m, a, lda, dum), eps * Rlange("M", n, n, b, ldb, dum));
     //
     sgn = isgn;
     //
@@ -189,13 +190,13 @@ void Rtrsyl(const char *trana, const char *tranb, INTEGER const isgn, INTEGER co
                         da11 = smin;
                         info = 1;
                     }
-                    db = abs(vec[(1 - 1)]);
+                    db = abs(vec[0]);
                     if (da11 < one && db > one) {
                         if (db > bignum * da11) {
                             scaloc = one / db;
                         }
                     }
-                    x[(1 - 1)] = (vec[(1 - 1)] * scaloc) / a11;
+                    x[0] = (vec[0] * scaloc) / a11;
                     //
                     if (scaloc != one) {
                         for (j = 1; j <= n; j = j + 1) {
@@ -203,13 +204,13 @@ void Rtrsyl(const char *trana, const char *tranb, INTEGER const isgn, INTEGER co
                         }
                         scale = scale * scaloc;
                     }
-                    c[(k1 - 1) + (l1 - 1) * ldc] = x[(1 - 1)];
+                    c[(k1 - 1) + (l1 - 1) * ldc] = x[0];
                     //
                 } else if (l1 == l2 && k1 != k2) {
                     //
                     suml = Rdot(m - k2, &a[(k1 - 1) + (min(k2 + 1, m) - 1) * lda], lda, &c[(min(k2 + 1, m) - 1) + (l1 - 1) * ldc], 1);
                     sumr = Rdot(l1 - 1, &c[(k1 - 1)], ldc, &b[(l1 - 1) * ldb], 1);
-                    vec[(1 - 1)] = c[(k1 - 1) + (l1 - 1) * ldc] - (suml + sgn * sumr);
+                    vec[0] = c[(k1 - 1) + (l1 - 1) * ldc] - (suml + sgn * sumr);
                     //
                     suml = Rdot(m - k2, &a[(k2 - 1) + (min(k2 + 1, m) - 1) * lda], lda, &c[(min(k2 + 1, m) - 1) + (l1 - 1) * ldc], 1);
                     sumr = Rdot(l1 - 1, &c[(k2 - 1)], ldc, &b[(l1 - 1) * ldb], 1);
@@ -226,14 +227,14 @@ void Rtrsyl(const char *trana, const char *tranb, INTEGER const isgn, INTEGER co
                         }
                         scale = scale * scaloc;
                     }
-                    c[(k1 - 1) + (l1 - 1) * ldc] = x[(1 - 1)];
+                    c[(k1 - 1) + (l1 - 1) * ldc] = x[0];
                     c[(k2 - 1) + (l1 - 1) * ldc] = x[(2 - 1)];
                     //
                 } else if (l1 != l2 && k1 == k2) {
                     //
                     suml = Rdot(m - k1, &a[(k1 - 1) + (min(k1 + 1, m) - 1) * lda], lda, &c[(min(k1 + 1, m) - 1) + (l1 - 1) * ldc], 1);
                     sumr = Rdot(l1 - 1, &c[(k1 - 1)], ldc, &b[(l1 - 1) * ldb], 1);
-                    vec[(1 - 1)] = sgn * (c[(k1 - 1) + (l1 - 1) * ldc] - (suml + sgn * sumr));
+                    vec[0] = sgn * (c[(k1 - 1) + (l1 - 1) * ldc] - (suml + sgn * sumr));
                     //
                     suml = Rdot(m - k1, &a[(k1 - 1) + (min(k1 + 1, m) - 1) * lda], lda, &c[(min(k1 + 1, m) - 1) + (l2 - 1) * ldc], 1);
                     sumr = Rdot(l1 - 1, &c[(k1 - 1)], ldc, &b[(l2 - 1) * ldb], 1);
@@ -250,14 +251,14 @@ void Rtrsyl(const char *trana, const char *tranb, INTEGER const isgn, INTEGER co
                         }
                         scale = scale * scaloc;
                     }
-                    c[(k1 - 1) + (l1 - 1) * ldc] = x[(1 - 1)];
+                    c[(k1 - 1) + (l1 - 1) * ldc] = x[0];
                     c[(k1 - 1) + (l2 - 1) * ldc] = x[(2 - 1)];
                     //
                 } else if (l1 != l2 && k1 != k2) {
                     //
                     suml = Rdot(m - k2, &a[(k1 - 1) + (min(k2 + 1, m) - 1) * lda], lda, &c[(min(k2 + 1, m) - 1) + (l1 - 1) * ldc], 1);
                     sumr = Rdot(l1 - 1, &c[(k1 - 1)], ldc, &b[(l1 - 1) * ldb], 1);
-                    vec[(1 - 1)] = c[(k1 - 1) + (l1 - 1) * ldc] - (suml + sgn * sumr);
+                    vec[0] = c[(k1 - 1) + (l1 - 1) * ldc] - (suml + sgn * sumr);
                     //
                     suml = Rdot(m - k2, &a[(k1 - 1) + (min(k2 + 1, m) - 1) * lda], lda, &c[(min(k2 + 1, m) - 1) + (l2 - 1) * ldc], 1);
                     sumr = Rdot(l1 - 1, &c[(k1 - 1)], ldc, &b[(l2 - 1) * ldb], 1);
@@ -282,7 +283,7 @@ void Rtrsyl(const char *trana, const char *tranb, INTEGER const isgn, INTEGER co
                         }
                         scale = scale * scaloc;
                     }
-                    c[(k1 - 1) + (l1 - 1) * ldc] = x[(1 - 1)];
+                    c[(k1 - 1) + (l1 - 1) * ldc] = x[0];
                     c[(k1 - 1) + (l2 - 1) * ldc] = x[(2 - 1) * ldx];
                     c[(k2 - 1) + (l1 - 1) * ldc] = x[(2 - 1)];
                     c[(k2 - 1) + (l2 - 1) * ldc] = x[(2 - 1) + (2 - 1) * ldx];
@@ -357,7 +358,7 @@ void Rtrsyl(const char *trana, const char *tranb, INTEGER const isgn, INTEGER co
                 if (l1 == l2 && k1 == k2) {
                     suml = Rdot(k1 - 1, &a[(k1 - 1) * lda], 1, &c[(l1 - 1) * ldc], 1);
                     sumr = Rdot(l1 - 1, &c[(k1 - 1)], ldc, &b[(l1 - 1) * ldb], 1);
-                    vec[(1 - 1)] = c[(k1 - 1) + (l1 - 1) * ldc] - (suml + sgn * sumr);
+                    vec[0] = c[(k1 - 1) + (l1 - 1) * ldc] - (suml + sgn * sumr);
                     scaloc = one;
                     //
                     a11 = a[(k1 - 1) + (k1 - 1) * lda] + sgn * b[(l1 - 1) + (l1 - 1) * ldb];
@@ -367,13 +368,13 @@ void Rtrsyl(const char *trana, const char *tranb, INTEGER const isgn, INTEGER co
                         da11 = smin;
                         info = 1;
                     }
-                    db = abs(vec[(1 - 1)]);
+                    db = abs(vec[0]);
                     if (da11 < one && db > one) {
                         if (db > bignum * da11) {
                             scaloc = one / db;
                         }
                     }
-                    x[(1 - 1)] = (vec[(1 - 1)] * scaloc) / a11;
+                    x[0] = (vec[0] * scaloc) / a11;
                     //
                     if (scaloc != one) {
                         for (j = 1; j <= n; j = j + 1) {
@@ -381,13 +382,13 @@ void Rtrsyl(const char *trana, const char *tranb, INTEGER const isgn, INTEGER co
                         }
                         scale = scale * scaloc;
                     }
-                    c[(k1 - 1) + (l1 - 1) * ldc] = x[(1 - 1)];
+                    c[(k1 - 1) + (l1 - 1) * ldc] = x[0];
                     //
                 } else if (l1 == l2 && k1 != k2) {
                     //
                     suml = Rdot(k1 - 1, &a[(k1 - 1) * lda], 1, &c[(l1 - 1) * ldc], 1);
                     sumr = Rdot(l1 - 1, &c[(k1 - 1)], ldc, &b[(l1 - 1) * ldb], 1);
-                    vec[(1 - 1)] = c[(k1 - 1) + (l1 - 1) * ldc] - (suml + sgn * sumr);
+                    vec[0] = c[(k1 - 1) + (l1 - 1) * ldc] - (suml + sgn * sumr);
                     //
                     suml = Rdot(k1 - 1, &a[(k2 - 1) * lda], 1, &c[(l1 - 1) * ldc], 1);
                     sumr = Rdot(l1 - 1, &c[(k2 - 1)], ldc, &b[(l1 - 1) * ldb], 1);
@@ -404,14 +405,14 @@ void Rtrsyl(const char *trana, const char *tranb, INTEGER const isgn, INTEGER co
                         }
                         scale = scale * scaloc;
                     }
-                    c[(k1 - 1) + (l1 - 1) * ldc] = x[(1 - 1)];
+                    c[(k1 - 1) + (l1 - 1) * ldc] = x[0];
                     c[(k2 - 1) + (l1 - 1) * ldc] = x[(2 - 1)];
                     //
                 } else if (l1 != l2 && k1 == k2) {
                     //
                     suml = Rdot(k1 - 1, &a[(k1 - 1) * lda], 1, &c[(l1 - 1) * ldc], 1);
                     sumr = Rdot(l1 - 1, &c[(k1 - 1)], ldc, &b[(l1 - 1) * ldb], 1);
-                    vec[(1 - 1)] = sgn * (c[(k1 - 1) + (l1 - 1) * ldc] - (suml + sgn * sumr));
+                    vec[0] = sgn * (c[(k1 - 1) + (l1 - 1) * ldc] - (suml + sgn * sumr));
                     //
                     suml = Rdot(k1 - 1, &a[(k1 - 1) * lda], 1, &c[(l2 - 1) * ldc], 1);
                     sumr = Rdot(l1 - 1, &c[(k1 - 1)], ldc, &b[(l2 - 1) * ldb], 1);
@@ -428,14 +429,14 @@ void Rtrsyl(const char *trana, const char *tranb, INTEGER const isgn, INTEGER co
                         }
                         scale = scale * scaloc;
                     }
-                    c[(k1 - 1) + (l1 - 1) * ldc] = x[(1 - 1)];
+                    c[(k1 - 1) + (l1 - 1) * ldc] = x[0];
                     c[(k1 - 1) + (l2 - 1) * ldc] = x[(2 - 1)];
                     //
                 } else if (l1 != l2 && k1 != k2) {
                     //
                     suml = Rdot(k1 - 1, &a[(k1 - 1) * lda], 1, &c[(l1 - 1) * ldc], 1);
                     sumr = Rdot(l1 - 1, &c[(k1 - 1)], ldc, &b[(l1 - 1) * ldb], 1);
-                    vec[(1 - 1)] = c[(k1 - 1) + (l1 - 1) * ldc] - (suml + sgn * sumr);
+                    vec[0] = c[(k1 - 1) + (l1 - 1) * ldc] - (suml + sgn * sumr);
                     //
                     suml = Rdot(k1 - 1, &a[(k1 - 1) * lda], 1, &c[(l2 - 1) * ldc], 1);
                     sumr = Rdot(l1 - 1, &c[(k1 - 1)], ldc, &b[(l2 - 1) * ldb], 1);
@@ -460,7 +461,7 @@ void Rtrsyl(const char *trana, const char *tranb, INTEGER const isgn, INTEGER co
                         }
                         scale = scale * scaloc;
                     }
-                    c[(k1 - 1) + (l1 - 1) * ldc] = x[(1 - 1)];
+                    c[(k1 - 1) + (l1 - 1) * ldc] = x[0];
                     c[(k1 - 1) + (l2 - 1) * ldc] = x[(2 - 1) * ldx];
                     c[(k2 - 1) + (l1 - 1) * ldc] = x[(2 - 1)];
                     c[(k2 - 1) + (l2 - 1) * ldc] = x[(2 - 1) + (2 - 1) * ldx];
@@ -534,7 +535,7 @@ void Rtrsyl(const char *trana, const char *tranb, INTEGER const isgn, INTEGER co
                 if (l1 == l2 && k1 == k2) {
                     suml = Rdot(k1 - 1, &a[(k1 - 1) * lda], 1, &c[(l1 - 1) * ldc], 1);
                     sumr = Rdot(n - l1, &c[(k1 - 1) + (min(l1 + 1, n) - 1) * ldc], ldc, &b[(l1 - 1) + (min(l1 + 1, n) - 1) * ldb], ldb);
-                    vec[(1 - 1)] = c[(k1 - 1) + (l1 - 1) * ldc] - (suml + sgn * sumr);
+                    vec[0] = c[(k1 - 1) + (l1 - 1) * ldc] - (suml + sgn * sumr);
                     scaloc = one;
                     //
                     a11 = a[(k1 - 1) + (k1 - 1) * lda] + sgn * b[(l1 - 1) + (l1 - 1) * ldb];
@@ -544,13 +545,13 @@ void Rtrsyl(const char *trana, const char *tranb, INTEGER const isgn, INTEGER co
                         da11 = smin;
                         info = 1;
                     }
-                    db = abs(vec[(1 - 1)]);
+                    db = abs(vec[0]);
                     if (da11 < one && db > one) {
                         if (db > bignum * da11) {
                             scaloc = one / db;
                         }
                     }
-                    x[(1 - 1)] = (vec[(1 - 1)] * scaloc) / a11;
+                    x[0] = (vec[0] * scaloc) / a11;
                     //
                     if (scaloc != one) {
                         for (j = 1; j <= n; j = j + 1) {
@@ -558,13 +559,13 @@ void Rtrsyl(const char *trana, const char *tranb, INTEGER const isgn, INTEGER co
                         }
                         scale = scale * scaloc;
                     }
-                    c[(k1 - 1) + (l1 - 1) * ldc] = x[(1 - 1)];
+                    c[(k1 - 1) + (l1 - 1) * ldc] = x[0];
                     //
                 } else if (l1 == l2 && k1 != k2) {
                     //
                     suml = Rdot(k1 - 1, &a[(k1 - 1) * lda], 1, &c[(l1 - 1) * ldc], 1);
                     sumr = Rdot(n - l2, &c[(k1 - 1) + (min(l2 + 1, n) - 1) * ldc], ldc, &b[(l1 - 1) + (min(l2 + 1, n) - 1) * ldb], ldb);
-                    vec[(1 - 1)] = c[(k1 - 1) + (l1 - 1) * ldc] - (suml + sgn * sumr);
+                    vec[0] = c[(k1 - 1) + (l1 - 1) * ldc] - (suml + sgn * sumr);
                     //
                     suml = Rdot(k1 - 1, &a[(k2 - 1) * lda], 1, &c[(l1 - 1) * ldc], 1);
                     sumr = Rdot(n - l2, &c[(k2 - 1) + (min(l2 + 1, n) - 1) * ldc], ldc, &b[(l1 - 1) + (min(l2 + 1, n) - 1) * ldb], ldb);
@@ -581,14 +582,14 @@ void Rtrsyl(const char *trana, const char *tranb, INTEGER const isgn, INTEGER co
                         }
                         scale = scale * scaloc;
                     }
-                    c[(k1 - 1) + (l1 - 1) * ldc] = x[(1 - 1)];
+                    c[(k1 - 1) + (l1 - 1) * ldc] = x[0];
                     c[(k2 - 1) + (l1 - 1) * ldc] = x[(2 - 1)];
                     //
                 } else if (l1 != l2 && k1 == k2) {
                     //
                     suml = Rdot(k1 - 1, &a[(k1 - 1) * lda], 1, &c[(l1 - 1) * ldc], 1);
                     sumr = Rdot(n - l2, &c[(k1 - 1) + (min(l2 + 1, n) - 1) * ldc], ldc, &b[(l1 - 1) + (min(l2 + 1, n) - 1) * ldb], ldb);
-                    vec[(1 - 1)] = sgn * (c[(k1 - 1) + (l1 - 1) * ldc] - (suml + sgn * sumr));
+                    vec[0] = sgn * (c[(k1 - 1) + (l1 - 1) * ldc] - (suml + sgn * sumr));
                     //
                     suml = Rdot(k1 - 1, &a[(k1 - 1) * lda], 1, &c[(l2 - 1) * ldc], 1);
                     sumr = Rdot(n - l2, &c[(k1 - 1) + (min(l2 + 1, n) - 1) * ldc], ldc, &b[(l2 - 1) + (min(l2 + 1, n) - 1) * ldb], ldb);
@@ -605,14 +606,14 @@ void Rtrsyl(const char *trana, const char *tranb, INTEGER const isgn, INTEGER co
                         }
                         scale = scale * scaloc;
                     }
-                    c[(k1 - 1) + (l1 - 1) * ldc] = x[(1 - 1)];
+                    c[(k1 - 1) + (l1 - 1) * ldc] = x[0];
                     c[(k1 - 1) + (l2 - 1) * ldc] = x[(2 - 1)];
                     //
                 } else if (l1 != l2 && k1 != k2) {
                     //
                     suml = Rdot(k1 - 1, &a[(k1 - 1) * lda], 1, &c[(l1 - 1) * ldc], 1);
                     sumr = Rdot(n - l2, &c[(k1 - 1) + (min(l2 + 1, n) - 1) * ldc], ldc, &b[(l1 - 1) + (min(l2 + 1, n) - 1) * ldb], ldb);
-                    vec[(1 - 1)] = c[(k1 - 1) + (l1 - 1) * ldc] - (suml + sgn * sumr);
+                    vec[0] = c[(k1 - 1) + (l1 - 1) * ldc] - (suml + sgn * sumr);
                     //
                     suml = Rdot(k1 - 1, &a[(k1 - 1) * lda], 1, &c[(l2 - 1) * ldc], 1);
                     sumr = Rdot(n - l2, &c[(k1 - 1) + (min(l2 + 1, n) - 1) * ldc], ldc, &b[(l2 - 1) + (min(l2 + 1, n) - 1) * ldb], ldb);
@@ -637,7 +638,7 @@ void Rtrsyl(const char *trana, const char *tranb, INTEGER const isgn, INTEGER co
                         }
                         scale = scale * scaloc;
                     }
-                    c[(k1 - 1) + (l1 - 1) * ldc] = x[(1 - 1)];
+                    c[(k1 - 1) + (l1 - 1) * ldc] = x[0];
                     c[(k1 - 1) + (l2 - 1) * ldc] = x[(2 - 1) * ldx];
                     c[(k2 - 1) + (l1 - 1) * ldc] = x[(2 - 1)];
                     c[(k2 - 1) + (l2 - 1) * ldc] = x[(2 - 1) + (2 - 1) * ldx];
@@ -711,7 +712,7 @@ void Rtrsyl(const char *trana, const char *tranb, INTEGER const isgn, INTEGER co
                 if (l1 == l2 && k1 == k2) {
                     suml = Rdot(m - k1, &a[(k1 - 1) + (min(k1 + 1, m) - 1) * lda], lda, &c[(min(k1 + 1, m) - 1) + (l1 - 1) * ldc], 1);
                     sumr = Rdot(n - l1, &c[(k1 - 1) + (min(l1 + 1, n) - 1) * ldc], ldc, &b[(l1 - 1) + (min(l1 + 1, n) - 1) * ldb], ldb);
-                    vec[(1 - 1)] = c[(k1 - 1) + (l1 - 1) * ldc] - (suml + sgn * sumr);
+                    vec[0] = c[(k1 - 1) + (l1 - 1) * ldc] - (suml + sgn * sumr);
                     scaloc = one;
                     //
                     a11 = a[(k1 - 1) + (k1 - 1) * lda] + sgn * b[(l1 - 1) + (l1 - 1) * ldb];
@@ -721,13 +722,13 @@ void Rtrsyl(const char *trana, const char *tranb, INTEGER const isgn, INTEGER co
                         da11 = smin;
                         info = 1;
                     }
-                    db = abs(vec[(1 - 1)]);
+                    db = abs(vec[0]);
                     if (da11 < one && db > one) {
                         if (db > bignum * da11) {
                             scaloc = one / db;
                         }
                     }
-                    x[(1 - 1)] = (vec[(1 - 1)] * scaloc) / a11;
+                    x[0] = (vec[0] * scaloc) / a11;
                     //
                     if (scaloc != one) {
                         for (j = 1; j <= n; j = j + 1) {
@@ -735,13 +736,13 @@ void Rtrsyl(const char *trana, const char *tranb, INTEGER const isgn, INTEGER co
                         }
                         scale = scale * scaloc;
                     }
-                    c[(k1 - 1) + (l1 - 1) * ldc] = x[(1 - 1)];
+                    c[(k1 - 1) + (l1 - 1) * ldc] = x[0];
                     //
                 } else if (l1 == l2 && k1 != k2) {
                     //
                     suml = Rdot(m - k2, &a[(k1 - 1) + (min(k2 + 1, m) - 1) * lda], lda, &c[(min(k2 + 1, m) - 1) + (l1 - 1) * ldc], 1);
                     sumr = Rdot(n - l2, &c[(k1 - 1) + (min(l2 + 1, n) - 1) * ldc], ldc, &b[(l1 - 1) + (min(l2 + 1, n) - 1) * ldb], ldb);
-                    vec[(1 - 1)] = c[(k1 - 1) + (l1 - 1) * ldc] - (suml + sgn * sumr);
+                    vec[0] = c[(k1 - 1) + (l1 - 1) * ldc] - (suml + sgn * sumr);
                     //
                     suml = Rdot(m - k2, &a[(k2 - 1) + (min(k2 + 1, m) - 1) * lda], lda, &c[(min(k2 + 1, m) - 1) + (l1 - 1) * ldc], 1);
                     sumr = Rdot(n - l2, &c[(k2 - 1) + (min(l2 + 1, n) - 1) * ldc], ldc, &b[(l1 - 1) + (min(l2 + 1, n) - 1) * ldb], ldb);
@@ -758,14 +759,14 @@ void Rtrsyl(const char *trana, const char *tranb, INTEGER const isgn, INTEGER co
                         }
                         scale = scale * scaloc;
                     }
-                    c[(k1 - 1) + (l1 - 1) * ldc] = x[(1 - 1)];
+                    c[(k1 - 1) + (l1 - 1) * ldc] = x[0];
                     c[(k2 - 1) + (l1 - 1) * ldc] = x[(2 - 1)];
                     //
                 } else if (l1 != l2 && k1 == k2) {
                     //
                     suml = Rdot(m - k1, &a[(k1 - 1) + (min(k1 + 1, m) - 1) * lda], lda, &c[(min(k1 + 1, m) - 1) + (l1 - 1) * ldc], 1);
                     sumr = Rdot(n - l2, &c[(k1 - 1) + (min(l2 + 1, n) - 1) * ldc], ldc, &b[(l1 - 1) + (min(l2 + 1, n) - 1) * ldb], ldb);
-                    vec[(1 - 1)] = sgn * (c[(k1 - 1) + (l1 - 1) * ldc] - (suml + sgn * sumr));
+                    vec[0] = sgn * (c[(k1 - 1) + (l1 - 1) * ldc] - (suml + sgn * sumr));
                     //
                     suml = Rdot(m - k1, &a[(k1 - 1) + (min(k1 + 1, m) - 1) * lda], lda, &c[(min(k1 + 1, m) - 1) + (l2 - 1) * ldc], 1);
                     sumr = Rdot(n - l2, &c[(k1 - 1) + (min(l2 + 1, n) - 1) * ldc], ldc, &b[(l2 - 1) + (min(l2 + 1, n) - 1) * ldb], ldb);
@@ -782,14 +783,14 @@ void Rtrsyl(const char *trana, const char *tranb, INTEGER const isgn, INTEGER co
                         }
                         scale = scale * scaloc;
                     }
-                    c[(k1 - 1) + (l1 - 1) * ldc] = x[(1 - 1)];
+                    c[(k1 - 1) + (l1 - 1) * ldc] = x[0];
                     c[(k1 - 1) + (l2 - 1) * ldc] = x[(2 - 1)];
                     //
                 } else if (l1 != l2 && k1 != k2) {
                     //
                     suml = Rdot(m - k2, &a[(k1 - 1) + (min(k2 + 1, m) - 1) * lda], lda, &c[(min(k2 + 1, m) - 1) + (l1 - 1) * ldc], 1);
                     sumr = Rdot(n - l2, &c[(k1 - 1) + (min(l2 + 1, n) - 1) * ldc], ldc, &b[(l1 - 1) + (min(l2 + 1, n) - 1) * ldb], ldb);
-                    vec[(1 - 1)] = c[(k1 - 1) + (l1 - 1) * ldc] - (suml + sgn * sumr);
+                    vec[0] = c[(k1 - 1) + (l1 - 1) * ldc] - (suml + sgn * sumr);
                     //
                     suml = Rdot(m - k2, &a[(k1 - 1) + (min(k2 + 1, m) - 1) * lda], lda, &c[(min(k2 + 1, m) - 1) + (l2 - 1) * ldc], 1);
                     sumr = Rdot(n - l2, &c[(k1 - 1) + (min(l2 + 1, n) - 1) * ldc], ldc, &b[(l2 - 1) + (min(l2 + 1, n) - 1) * ldb], ldb);
@@ -814,7 +815,7 @@ void Rtrsyl(const char *trana, const char *tranb, INTEGER const isgn, INTEGER co
                         }
                         scale = scale * scaloc;
                     }
-                    c[(k1 - 1) + (l1 - 1) * ldc] = x[(1 - 1)];
+                    c[(k1 - 1) + (l1 - 1) * ldc] = x[0];
                     c[(k1 - 1) + (l2 - 1) * ldc] = x[(2 - 1) * ldx];
                     c[(k2 - 1) + (l1 - 1) * ldc] = x[(2 - 1)];
                     c[(k2 - 1) + (l2 - 1) * ldc] = x[(2 - 1) + (2 - 1) * ldx];

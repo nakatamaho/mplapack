@@ -116,11 +116,11 @@ void Cbbcsd(const char *jobu1, const char *jobu2, const char *jobv1t, const char
     REAL unfl = Rlamch("Safe minimum");
     const REAL ten = 10.0;
     const REAL hundred = 100.0;
-    const REAL meighth = -0.125e0;
+    const REAL meighth = -0.125;
     REAL tolmul = max(ten, min(hundred, pow(eps, meighth)));
     REAL tol = tolmul * eps;
     const INTEGER maxitr = 6;
-    REAL thresh = max(tol, REAL(maxitr * q * q * unfl));
+    REAL thresh = max(tol, maxitr * q * q * unfl);
     //
     // Test for negligible sines or cosines
     //
@@ -269,7 +269,7 @@ void Cbbcsd(const char *jobu1, const char *jobu2, const char *jobv1t, const char
                 }
             } else {
                 nu = sigma21;
-                mu = sqrt(one - nu * nu);
+                mu = sqrt(one - pow2(nu));
                 if (nu < thresh) {
                     mu = one;
                     nu = zero;

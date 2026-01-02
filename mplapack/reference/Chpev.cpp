@@ -54,7 +54,7 @@ void Chpev(const char *jobz, const char *uplo, INTEGER const n, COMPLEX *ap, REA
     }
     //
     if (info != 0) {
-        Mxerbla("Chpev", -info);
+        Mxerbla("Chpev ", -info);
         return;
     }
     //
@@ -67,9 +67,9 @@ void Chpev(const char *jobz, const char *uplo, INTEGER const n, COMPLEX *ap, REA
     const REAL one = 1.0;
     if (n == 1) {
         w[1 - 1] = ap[1 - 1].real();
-        rwork[1 - 1] = 1;
+        rwork[1 - 1] = 1.0;
         if (wantz) {
-            z[(1 - 1)] = one;
+            z[0] = one;
         }
         return;
     }

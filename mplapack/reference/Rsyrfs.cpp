@@ -46,14 +46,14 @@ void Rsyrfs(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *a, INTE
     REAL safe1 = 0.0;
     REAL safe2 = 0.0;
     INTEGER count = 0;
-    const REAL three = 3.0e+0;
+    const REAL three = 3.0;
     REAL lstres = 0.0;
     const REAL one = 1.0;
     INTEGER i = 0;
     INTEGER k = 0;
     REAL s = 0.0;
     REAL xk = 0.0;
-    const REAL two = 2.0e+0;
+    const REAL two = 2.0;
     const INTEGER itmax = 5;
     INTEGER kase = 0;
     INTEGER isave[3];
@@ -155,9 +155,9 @@ void Rsyrfs(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *a, INTE
         s = zero;
         for (i = 1; i <= n; i = i + 1) {
             if (work[i - 1] > safe2) {
-                s = max(s, REAL(abs(work[(n + i) - 1]) / work[i - 1]));
+                s = max(s, abs(work[(n + i) - 1]) / work[i - 1]);
             } else {
-                s = max(s, REAL((abs(work[(n + i) - 1]) + safe1) / (work[i - 1] + safe1)));
+                s = max(s, (abs(work[(n + i) - 1]) + safe1) / (work[i - 1] + safe1));
             }
         }
         berr[j - 1] = s;
@@ -237,7 +237,7 @@ void Rsyrfs(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *a, INTE
         //
         lstres = zero;
         for (i = 1; i <= n; i = i + 1) {
-            lstres = max(lstres, REAL(abs(x[(i - 1) + (j - 1) * ldx])));
+            lstres = max(lstres, abs(x[(i - 1) + (j - 1) * ldx]));
         }
         if (lstres != zero) {
             ferr[j - 1] = ferr[j - 1] / lstres;

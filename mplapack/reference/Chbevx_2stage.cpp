@@ -162,7 +162,7 @@ void Chbevx_2stage(const char *jobz, const char *range, const char *uplo, INTEGE
     if (n == 1) {
         m = 1;
         if (lower) {
-            ctmp1 = ab[(1 - 1)];
+            ctmp1 = ab[0];
         } else {
             ctmp1 = ab[((kd + 1) - 1)];
         }
@@ -175,7 +175,7 @@ void Chbevx_2stage(const char *jobz, const char *range, const char *uplo, INTEGE
         if (m == 1) {
             w[1 - 1] = ctmp1.real();
             if (wantz) {
-                z[(1 - 1)] = cone;
+                z[0] = cone;
             }
         }
         return;
@@ -188,7 +188,7 @@ void Chbevx_2stage(const char *jobz, const char *range, const char *uplo, INTEGE
     smlnum = safmin / eps;
     bignum = one / smlnum;
     rmin = sqrt(smlnum);
-    rmax = min(REAL(sqrt(bignum)), REAL(one / sqrt(sqrt(safmin))));
+    rmax = min(sqrt(bignum), one / sqrt(sqrt(safmin)));
     //
     // Scale matrix to allowable range, if necessary.
     //

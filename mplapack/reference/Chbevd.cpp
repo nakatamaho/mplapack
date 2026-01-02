@@ -54,8 +54,8 @@ void Chbevd(const char *jobz, const char *uplo, INTEGER const n, INTEGER const k
         liwmin = 1;
     } else {
         if (wantz) {
-            lwmin = 2 * n * n;
-            lrwmin = 1 + 5 * n + 2 * n * n;
+            lwmin = 2 * pow2(n);
+            lrwmin = 1 + 5 * n + 2 * pow2(n);
             liwmin = 3 + 5 * n;
         } else {
             lwmin = n;
@@ -106,9 +106,9 @@ void Chbevd(const char *jobz, const char *uplo, INTEGER const n, INTEGER const k
     //
     const COMPLEX cone = COMPLEX(1.0, 0.0);
     if (n == 1) {
-        w[1 - 1] = ab[(1 - 1)].real();
+        w[1 - 1] = ab[0].real();
         if (wantz) {
-            z[(1 - 1)] = cone;
+            z[0] = cone;
         }
         return;
     }

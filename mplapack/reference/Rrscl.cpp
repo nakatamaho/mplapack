@@ -58,6 +58,7 @@ void Rrscl(INTEGER const n, REAL const sa, REAL *sx, INTEGER const incx) {
     //
     smlnum = Rlamch("S");
     bignum = one / smlnum;
+    Rlabad(smlnum, bignum);
     //
     // Initialize the denominator to SA and the numerator to 1.
     //

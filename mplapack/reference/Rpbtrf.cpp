@@ -43,40 +43,15 @@ void Rpbtrf(const char *uplo, INTEGER const n, INTEGER const kd, REAL *ab, INTEG
     INTEGER i = 0;
     const REAL zero = 0.0;
     const INTEGER ldwork = nbmax + 1;
+    REAL work[ldwork * nbmax];
     INTEGER ib = 0;
     INTEGER ii = 0;
     INTEGER i2 = 0;
     INTEGER i3 = 0;
     const REAL one = 1.0;
     INTEGER jj = 0;
-    REAL work[ldwork * nbmax];
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     if ((!Mlsame(uplo, "U")) && (!Mlsame(uplo, "L"))) {

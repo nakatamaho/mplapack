@@ -61,7 +61,7 @@ void Rorgbr(const char *vect, INTEGER const m, INTEGER const n, INTEGER const k,
     INTEGER iinfo = 0;
     INTEGER lwkopt = 0;
     if (info == 0) {
-        work[1 - 1] = 1;
+        work[1 - 1] = 1.0;
         if (wantq) {
             if (m >= k) {
                 Rorgqr(m, n, k, a, lda, tau, work, -1, iinfo);
@@ -94,7 +94,7 @@ void Rorgbr(const char *vect, INTEGER const m, INTEGER const n, INTEGER const k,
     // Quick return if possible
     //
     if (m == 0 || n == 0) {
-        work[1 - 1] = 1;
+        work[1 - 1] = 1.0;
         return;
     }
     //
@@ -127,7 +127,7 @@ void Rorgbr(const char *vect, INTEGER const m, INTEGER const n, INTEGER const k,
                     a[(i - 1) + (j - 1) * lda] = a[(i - 1) + ((j - 1) - 1) * lda];
                 }
             }
-            a[(1 - 1)] = one;
+            a[0] = one;
             for (i = 2; i <= m; i = i + 1) {
                 a[(i - 1)] = zero;
             }
@@ -157,7 +157,7 @@ void Rorgbr(const char *vect, INTEGER const m, INTEGER const n, INTEGER const k,
             // row downward, and set the first row and column of P**T to
             // those of the unit matrix
             //
-            a[(1 - 1)] = one;
+            a[0] = one;
             for (i = 2; i <= n; i = i + 1) {
                 a[(i - 1)] = zero;
             }

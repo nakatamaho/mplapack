@@ -124,7 +124,7 @@ void Rstevx(const char *jobz, const char *range, INTEGER const n, REAL *d, REAL 
             }
         }
         if (wantz) {
-            z[(1 - 1)] = one;
+            z[0] = one;
         }
         return;
     }
@@ -136,7 +136,7 @@ void Rstevx(const char *jobz, const char *range, INTEGER const n, REAL *d, REAL 
     smlnum = safmin / eps;
     bignum = one / smlnum;
     rmin = sqrt(smlnum);
-    rmax = min(REAL(sqrt(bignum)), REAL(one / sqrt(sqrt(safmin))));
+    rmax = min(sqrt(bignum), one / sqrt(sqrt(safmin)));
     //
     // Scale matrix to allowable range, if necessary.
     //

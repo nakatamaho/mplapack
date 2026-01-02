@@ -72,9 +72,8 @@ void Rhseqr(const char *job, const char *compz, INTEGER const n, INTEGER const i
     const INTEGER ntiny = 15;
     INTEGER kbot = 0;
     const INTEGER nl = 49;
-    REAL workl[nl];
     REAL hl[nl * nl];
-    INTEGER ldhl = nl;
+    REAL workl[nl];
     if (info != 0) {
         //
         // ==== Quick return in case of invalid argument. ====
@@ -127,11 +126,7 @@ void Rhseqr(const char *job, const char *compz, INTEGER const n, INTEGER const i
         //
         // ==== Rlahqr/Rlaqr0 crossover point ====
         //
-        char job_compz[3];
-        job_compz[0] = job[0];
-        job_compz[1] = compz[0];
-        job_compz[2] = '\0';
-        nmin = iMlaenv(12, "Rhseqr", job_compz, n, ilo, ihi, lwork);
+        nmin = iMlaenv(12, "Rhseqr", CHAR2(job, compz), n, ilo, ihi, lwork);
         nmin = max(ntiny, nmin);
         //
         // ==== Rlaqr0 for big matrices; Rlahqr for small ones ====
@@ -166,8 +161,8 @@ void Rhseqr(const char *job, const char *compz, INTEGER const n, INTEGER const i
                     // .    array before calling Rlaqr0. ====
                     //
                     Rlacpy("A", n, n, h, ldh, hl, nl);
-                    hl[((n + 1) - 1) + (n - 1) * ldhl] = zero;
-                    Rlaset("A", nl, nl - n, zero, zero, &hl[((n + 1) - 1) * ldhl], nl);
+                    hl[((n + 1) - 1) + (n - 1) * nl] = zero;
+                    Rlaset("A", nl, nl - n, zero, zero, &hl[((n + 1) - 1) * nl], nl);
                     Rlaqr0(wantt, wantz, nl, ilo, kbot, hl, nl, wr, wi, ilo, ihi, z, ldz, workl, nl, info);
                     if (wantt || info != 0) {
                         Rlacpy("A", n, n, hl, nl, h, ldh);

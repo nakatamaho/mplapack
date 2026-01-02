@@ -36,8 +36,6 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-inline REAL abs1(COMPLEX zdum) { return abs(zdum.real()) + abs(zdum.imag()); }
-
 void Cgeequ(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, REAL *r, REAL *c, REAL &rowcnd, REAL &colcnd, REAL &amax, INTEGER &info) {
     COMPLEX zdum = 0.0;
     //
@@ -84,7 +82,7 @@ void Cgeequ(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, REA
     INTEGER j = 0;
     for (j = 1; j <= n; j = j + 1) {
         for (i = 1; i <= m; i = i + 1) {
-            r[i - 1] = max(r[i - 1], abs1(a[(i - 1) + (j - 1) * lda]));
+            r[i - 1] = max(r[i - 1], cabs1(a[(i - 1) + (j - 1) * lda]));
         }
     }
     //
@@ -132,7 +130,7 @@ void Cgeequ(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, REA
     //
     for (j = 1; j <= n; j = j + 1) {
         for (i = 1; i <= m; i = i + 1) {
-            c[j - 1] = max(c[j - 1], REAL(abs1(a[(i - 1) + (j - 1) * lda]) * r[i - 1]));
+            c[j - 1] = max(c[j - 1], cabs1(a[(i - 1) + (j - 1) * lda]) * r[i - 1]);
         }
     }
     //

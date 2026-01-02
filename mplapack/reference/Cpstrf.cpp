@@ -82,7 +82,7 @@ void Cpstrf(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
         //
         // Use unblocked code
         //
-        Cpstf2(uplo, n, &a[(1 - 1)], lda, piv, rank, tol, work, info);
+        Cpstf2(uplo, n, &a[0], lda, piv, rank, tol, work, info);
         goto statement_230;
         //
     } else {
@@ -147,7 +147,7 @@ void Cpstrf(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
                     }
                     //
                     if (j > 1) {
-                        itemp = Mmaxloc(work, n + j, 2 * n, 1);
+                        itemp = Mmaxloc(work, (n + j), (2 * n), 1);
                         pvt = itemp + j - 1;
                         ajj = work[(n + pvt) - 1];
                         if (ajj <= dstop || Risnan(ajj)) {
@@ -237,7 +237,7 @@ void Cpstrf(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
                     }
                     //
                     if (j > 1) {
-                        itemp = Mmaxloc(work, n + j, 2 * n, 1);
+                        itemp = Mmaxloc(work, (n + j), (2 * n), 1);
                         pvt = itemp + j - 1;
                         ajj = work[(n + pvt) - 1];
                         if (ajj <= dstop || Risnan(ajj)) {

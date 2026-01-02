@@ -51,7 +51,7 @@ void Rlaqgb(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku
     const REAL one = 1.0;
     REAL large = one / small;
     //
-    const REAL thresh = 0.1e+0;
+    const REAL thresh = 0.1;
     INTEGER j = 0;
     REAL cj = 0.0;
     INTEGER i = 0;

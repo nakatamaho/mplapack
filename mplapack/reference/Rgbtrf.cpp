@@ -83,9 +83,7 @@ void Rgbtrf(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku
     const REAL zero = 0.0;
     const INTEGER ldwork = nbmax + 1;
     REAL work13[ldwork * nbmax];
-    INTEGER ldwork13 = ldwork;
     REAL work31[ldwork * nbmax];
-    INTEGER ldwork31 = ldwork;
     INTEGER ju = 0;
     INTEGER jb = 0;
     INTEGER i2 = 0;
@@ -115,7 +113,7 @@ void Rgbtrf(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku
         //
         for (j = 1; j <= nb; j = j + 1) {
             for (i = 1; i <= j - 1; i = i + 1) {
-                work13[(i - 1) + (j - 1) * ldwork13] = zero;
+                work13[(i - 1) + (j - 1) * ldwork] = zero;
             }
         }
         //
@@ -123,7 +121,7 @@ void Rgbtrf(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku
         //
         for (j = 1; j <= nb; j = j + 1) {
             for (i = j + 1; i <= nb; i = i + 1) {
-                work31[(i - 1) + (j - 1) * ldwork31] = zero;
+                work31[(i - 1) + (j - 1) * ldwork] = zero;
             }
         }
         //
@@ -225,7 +223,7 @@ void Rgbtrf(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku
                 //
                 nw = min(jj - j + 1, i3);
                 if (nw > 0) {
-                    Rcopy(nw, &ab[((kv + kl + 1 - jj + j) - 1) + (jj - 1) * ldab], 1, &work31[((jj - j + 1) - 1) * ldwork31], 1);
+                    Rcopy(nw, &ab[((kv + kl + 1 - jj + j) - 1) + (jj - 1) * ldab], 1, &work31[((jj - j + 1) - 1) * ldwork], 1);
                 }
             }
             if (j + jb <= n) {
@@ -292,7 +290,7 @@ void Rgbtrf(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku
                     //
                     for (jj = 1; jj <= j3; jj = jj + 1) {
                         for (ii = jj; ii <= jb; ii = ii + 1) {
-                            work13[(ii - 1) + (jj - 1) * ldwork13] = ab[((ii - jj + 1) - 1) + ((jj + j + kv - 1) - 1) * ldab];
+                            work13[(ii - 1) + (jj - 1) * ldwork] = ab[((ii - jj + 1) - 1) + ((jj + j + kv - 1) - 1) * ldab];
                         }
                     }
                     //
@@ -318,7 +316,7 @@ void Rgbtrf(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku
                     //
                     for (jj = 1; jj <= j3; jj = jj + 1) {
                         for (ii = jj; ii <= jb; ii = ii + 1) {
-                            ab[((ii - jj + 1) - 1) + ((jj + j + kv - 1) - 1) * ldab] = work13[(ii - 1) + (jj - 1) * ldwork13];
+                            ab[((ii - jj + 1) - 1) + ((jj + j + kv - 1) - 1) * ldab] = work13[(ii - 1) + (jj - 1) * ldwork];
                         }
                     }
                 }
@@ -358,7 +356,7 @@ void Rgbtrf(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku
                 //
                 nw = min(i3, jj - j + 1);
                 if (nw > 0) {
-                    Rcopy(nw, &work31[((jj - j + 1) - 1) * ldwork31], 1, &ab[((kv + kl + 1 - jj + j) - 1) + (jj - 1) * ldab], 1);
+                    Rcopy(nw, &work31[((jj - j + 1) - 1) * ldwork], 1, &ab[((kv + kl + 1 - jj + j) - 1) + (jj - 1) * ldab], 1);
                 }
             }
         }

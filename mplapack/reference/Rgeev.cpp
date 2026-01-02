@@ -110,7 +110,7 @@ void Rgeev(const char *jobvl, const char *jobvr, INTEGER const n, REAL *a, INTEG
                 maxwrk = max(maxwrk, 2 * n + (n - 1) * iMlaenv(1, "Rorghr", " ", n, 1, n, -1));
                 Rhseqr("S", "V", n, 1, n, a, lda, wr, wi, vl, ldvl, work, -1, info);
                 hswork = castINTEGER(work[1 - 1]);
-                maxwrk = max({maxwrk, n + 1, n + hswork});
+                maxwrk = max(maxwrk, n + 1, n + hswork);
                 Rtrevc3("L", "B", select, n, a, lda, vl, ldvl, vr, ldvr, n, nout, work, -1, ierr);
                 lwork_trevc = castINTEGER(work[1 - 1]);
                 maxwrk = max(maxwrk, n + lwork_trevc);
@@ -120,7 +120,7 @@ void Rgeev(const char *jobvl, const char *jobvr, INTEGER const n, REAL *a, INTEG
                 maxwrk = max(maxwrk, 2 * n + (n - 1) * iMlaenv(1, "Rorghr", " ", n, 1, n, -1));
                 Rhseqr("S", "V", n, 1, n, a, lda, wr, wi, vr, ldvr, work, -1, info);
                 hswork = castINTEGER(work[1 - 1]);
-                maxwrk = max({maxwrk, n + 1, n + hswork});
+                maxwrk = max(maxwrk, n + 1, n + hswork);
                 Rtrevc3("R", "B", select, n, a, lda, vl, ldvl, vr, ldvr, n, nout, work, -1, ierr);
                 lwork_trevc = castINTEGER(work[1 - 1]);
                 maxwrk = max(maxwrk, n + lwork_trevc);
@@ -129,7 +129,7 @@ void Rgeev(const char *jobvl, const char *jobvr, INTEGER const n, REAL *a, INTEG
                 minwrk = 3 * n;
                 Rhseqr("E", "N", n, 1, n, a, lda, wr, wi, vr, ldvr, work, -1, info);
                 hswork = castINTEGER(work[1 - 1]);
-                maxwrk = max({maxwrk, n + 1, n + hswork});
+                maxwrk = max(maxwrk, n + 1, n + hswork);
             }
             maxwrk = max(maxwrk, minwrk);
         }
@@ -141,7 +141,7 @@ void Rgeev(const char *jobvl, const char *jobvr, INTEGER const n, REAL *a, INTEG
     }
     //
     if (info != 0) {
-        Mxerbla("Rgeev", -info);
+        Mxerbla("Rgeev ", -info);
         return;
     } else if (lquery) {
         return;
@@ -158,6 +158,7 @@ void Rgeev(const char *jobvl, const char *jobvr, INTEGER const n, REAL *a, INTEG
     eps = Rlamch("P");
     smlnum = Rlamch("S");
     bignum = one / smlnum;
+    Rlabad(smlnum, bignum);
     smlnum = sqrt(smlnum) / eps;
     bignum = one / smlnum;
     //

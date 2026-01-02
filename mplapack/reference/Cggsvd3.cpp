@@ -82,7 +82,7 @@ void Cggsvd3(const char *jobu, const char *jobv, const char *jobq, INTEGER const
     if (info == 0) {
         Cggsvp3(jobu, jobv, jobq, m, p, n, a, lda, b, ldb, tola, tolb, k, l, u, ldu, v, ldv, q, ldq, iwork, rwork, work, work, -1, info);
         lwkopt = n + castINTEGER(work[1 - 1].real());
-        lwkopt = max((INTEGER)2 * n, lwkopt);
+        lwkopt = max(2 * n, lwkopt);
         lwkopt = max((INTEGER)1, lwkopt);
         work[1 - 1] = COMPLEX(lwkopt);
     }
@@ -105,8 +105,8 @@ void Cggsvd3(const char *jobu, const char *jobv, const char *jobq, INTEGER const
     //
     REAL ulp = Rlamch("Precision");
     REAL unfl = Rlamch("Safe Minimum");
-    tola = castREAL(max(m, n)) * max(anorm, unfl) * ulp;
-    tolb = castREAL(max(p, n)) * max(bnorm, unfl) * ulp;
+    tola = max(m, n) * max(anorm, unfl) * ulp;
+    tolb = max(p, n) * max(bnorm, unfl) * ulp;
     //
     Cggsvp3(jobu, jobv, jobq, m, p, n, a, lda, b, ldb, tola, tolb, k, l, u, ldu, v, ldv, q, ldq, iwork, rwork, work, &work[(n + 1) - 1], lwork - n, info);
     //

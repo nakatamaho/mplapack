@@ -48,14 +48,14 @@ void Rlasd7(INTEGER const icompq, INTEGER const nl, INTEGER const nr, INTEGER co
     INTEGER idxi = 0;
     REAL eps = 0.0;
     REAL tol = 0.0;
-    const REAL eight = 8.0e+0;
+    const REAL eight = 8.0;
     INTEGER k2 = 0;
     INTEGER j = 0;
     INTEGER jprev = 0;
     INTEGER idxjp = 0;
     INTEGER idxj = 0;
     INTEGER jp = 0;
-    const REAL two = 2.0e+0;
+    const REAL two = 2.0;
     REAL hlftol = 0.0;
     const REAL one = 1.0;
     //
@@ -140,7 +140,7 @@ void Rlasd7(INTEGER const icompq, INTEGER const nl, INTEGER const nr, INTEGER co
     //
     eps = Rlamch("Epsilon");
     tol = max(abs(alpha), abs(beta));
-    tol = eight * eight * eps * max(REAL(abs(d[n - 1])), tol);
+    tol = eight * eight * eps * max(abs(d[n - 1]), tol);
     //
     // There are 2 kinds of deflation -- first a value in the z-vector
     // is small, second two (or more) singular values are very close

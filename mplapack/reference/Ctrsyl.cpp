@@ -79,10 +79,11 @@ void Ctrsyl(const char *trana, const char *tranb, INTEGER const isgn, INTEGER co
     REAL eps = Rlamch("P");
     REAL smlnum = Rlamch("S");
     REAL bignum = one / smlnum;
+    Rlabad(smlnum, bignum);
     smlnum = smlnum * castREAL(m * n) / eps;
     bignum = one / smlnum;
     REAL dum[1];
-    REAL smin = max({smlnum, REAL(eps * Clange("M", m, m, a, lda, dum)), REAL(eps * Clange("M", n, n, b, ldb, dum))});
+    REAL smin = max(smlnum, eps * Clange("M", m, m, a, lda, dum), eps * Clange("M", n, n, b, ldb, dum));
     REAL sgn = castREAL(isgn);
     //
     INTEGER l = 0;

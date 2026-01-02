@@ -77,7 +77,7 @@ void Rgsvj0(const char *jobv, INTEGER const m, INTEGER const n, REAL *a, INTEGER
     INTEGER ierr = 0;
     REAL aqoap = 0.0;
     REAL apoaq = 0.0;
-    const REAL half = 0.5e0;
+    const REAL half = 0.5;
     REAL theta = 0.0;
     REAL t = 0.0;
     REAL thsign = 0.0;
@@ -159,7 +159,7 @@ void Rgsvj0(const char *jobv, INTEGER const m, INTEGER const n, REAL *a, INTEGER
         nbl++;
     }
     //
-    blskip = kbl * kbl + (INTEGER)1;
+    blskip = (pow2(kbl)) + 1;
     // [TP] BLKSKIP is a tuning parameter that depends on SWBAND and KBL.
     //
     rowskip = min((INTEGER)5, kbl);
@@ -263,7 +263,7 @@ void Rgsvj0(const char *jobv, INTEGER const m, INTEGER const n, REAL *a, INTEGER
                                     }
                                 }
                                 //
-                                mxaapq = max(mxaapq, REAL(abs(aapq)));
+                                mxaapq = max(mxaapq, abs(aapq));
                                 //
                                 // TO rotate or NOT to rotate, THAT is the question ...
                                 //
@@ -293,9 +293,9 @@ void Rgsvj0(const char *jobv, INTEGER const m, INTEGER const n, REAL *a, INTEGER
                                             if (rsvec) {
                                                 Rrotm(mvl, &v[(p - 1) * ldv], 1, &v[(q - 1) * ldv], 1, fastr);
                                             }
-                                            sva[q - 1] = aaqq * sqrt(max(zero, REAL(one + t * apoaq * aapq)));
-                                            aapp = aapp * sqrt(max(zero, REAL(one - t * aqoap * aapq)));
-                                            mxsinj = max(mxsinj, REAL(abs(t)));
+                                            sva[q - 1] = aaqq * sqrt(max(zero, one + t * apoaq * aapq));
+                                            aapp = aapp * sqrt(max(zero, one - t * aqoap * aapq));
+                                            mxsinj = max(mxsinj, abs(t));
                                             //
                                         } else {
                                             //
@@ -306,9 +306,9 @@ void Rgsvj0(const char *jobv, INTEGER const m, INTEGER const n, REAL *a, INTEGER
                                             cs = sqrt(one / (one + t * t));
                                             sn = t * cs;
                                             //
-                                            mxsinj = max(mxsinj, REAL(abs(sn)));
-                                            sva[q - 1] = aaqq * sqrt(max(zero, REAL(one + t * apoaq * aapq)));
-                                            aapp = aapp * sqrt(max(zero, REAL(one - t * aqoap * aapq)));
+                                            mxsinj = max(mxsinj, abs(sn));
+                                            sva[q - 1] = aaqq * sqrt(max(zero, one + t * apoaq * aapq));
+                                            aapp = aapp * sqrt(max(zero, one - t * aqoap * aapq));
                                             //
                                             apoaq = d[p - 1] / d[q - 1];
                                             aqoap = d[q - 1] / d[p - 1];
@@ -374,7 +374,7 @@ void Rgsvj0(const char *jobv, INTEGER const m, INTEGER const n, REAL *a, INTEGER
                                         temp1 = -aapq * d[p - 1] / d[q - 1];
                                         Raxpy(m, temp1, work, 1, &a[(q - 1) * lda], 1);
                                         Rlascl("G", 0, 0, one, aaqq, m, 1, &a[(q - 1) * lda], lda, ierr);
-                                        sva[q - 1] = aaqq * sqrt(max(zero, REAL(one - aapq * aapq)));
+                                        sva[q - 1] = aaqq * sqrt(max(zero, one - aapq * aapq));
                                         mxsinj = max(mxsinj, sfmin);
                                     }
                                     // END IF ROTOK THEN ... ELSE
@@ -506,7 +506,7 @@ void Rgsvj0(const char *jobv, INTEGER const m, INTEGER const n, REAL *a, INTEGER
                                     }
                                 }
                                 //
-                                mxaapq = max(mxaapq, REAL(abs(aapq)));
+                                mxaapq = max(mxaapq, abs(aapq));
                                 //
                                 // TO rotate or NOT to rotate, THAT is the question ...
                                 //
@@ -533,9 +533,9 @@ void Rgsvj0(const char *jobv, INTEGER const m, INTEGER const n, REAL *a, INTEGER
                                             if (rsvec) {
                                                 Rrotm(mvl, &v[(p - 1) * ldv], 1, &v[(q - 1) * ldv], 1, fastr);
                                             }
-                                            sva[q - 1] = aaqq * sqrt(max(zero, REAL(one + t * apoaq * aapq)));
-                                            aapp = aapp * sqrt(max(zero, REAL(one - t * aqoap * aapq)));
-                                            mxsinj = max(mxsinj, REAL(abs(t)));
+                                            sva[q - 1] = aaqq * sqrt(max(zero, one + t * apoaq * aapq));
+                                            aapp = aapp * sqrt(max(zero, one - t * aqoap * aapq));
+                                            mxsinj = max(mxsinj, abs(t));
                                         } else {
                                             //
                                             // .. choose correct signum for THETA and rotate
@@ -547,9 +547,9 @@ void Rgsvj0(const char *jobv, INTEGER const m, INTEGER const n, REAL *a, INTEGER
                                             t = one / (theta + thsign * sqrt(one + theta * theta));
                                             cs = sqrt(one / (one + t * t));
                                             sn = t * cs;
-                                            mxsinj = max(mxsinj, REAL(abs(sn)));
-                                            sva[q - 1] = aaqq * sqrt(max(zero, REAL(one + t * apoaq * aapq)));
-                                            aapp = aapp * sqrt(max(zero, REAL(one - t * aqoap * aapq)));
+                                            mxsinj = max(mxsinj, abs(sn));
+                                            sva[q - 1] = aaqq * sqrt(max(zero, one + t * apoaq * aapq));
+                                            aapp = aapp * sqrt(max(zero, one - t * aqoap * aapq));
                                             //
                                             apoaq = d[p - 1] / d[q - 1];
                                             aqoap = d[q - 1] / d[p - 1];
@@ -616,7 +616,7 @@ void Rgsvj0(const char *jobv, INTEGER const m, INTEGER const n, REAL *a, INTEGER
                                             temp1 = -aapq * d[p - 1] / d[q - 1];
                                             Raxpy(m, temp1, work, 1, &a[(q - 1) * lda], 1);
                                             Rlascl("G", 0, 0, one, aaqq, m, 1, &a[(q - 1) * lda], lda, ierr);
-                                            sva[q - 1] = aaqq * sqrt(max(zero, REAL(one - aapq * aapq)));
+                                            sva[q - 1] = aaqq * sqrt(max(zero, one - aapq * aapq));
                                             mxsinj = max(mxsinj, sfmin);
                                         } else {
                                             Rcopy(m, &a[(q - 1) * lda], 1, work, 1);
@@ -625,7 +625,7 @@ void Rgsvj0(const char *jobv, INTEGER const m, INTEGER const n, REAL *a, INTEGER
                                             temp1 = -aapq * d[q - 1] / d[p - 1];
                                             Raxpy(m, temp1, work, 1, &a[(p - 1) * lda], 1);
                                             Rlascl("G", 0, 0, one, aapp, m, 1, &a[(p - 1) * lda], lda, ierr);
-                                            sva[p - 1] = aapp * sqrt(max(zero, REAL(one - aapq * aapq)));
+                                            sva[p - 1] = aapp * sqrt(max(zero, one - aapq * aapq));
                                             mxsinj = max(mxsinj, sfmin);
                                         }
                                     }

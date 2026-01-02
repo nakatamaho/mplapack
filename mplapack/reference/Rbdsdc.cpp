@@ -54,7 +54,7 @@ void Rbdsdc(const char *uplo, const char *compq, INTEGER const n, REAL *d, REAL 
     REAL orgnrm = 0.0;
     INTEGER ierr = 0;
     REAL eps = 0.0;
-    const REAL two = 2.0e+0;
+    const REAL two = 2.0;
     INTEGER mlvl = 0;
     INTEGER smlszp = 0;
     INTEGER difl = 0;
@@ -123,8 +123,8 @@ void Rbdsdc(const char *uplo, const char *compq, INTEGER const n, REAL *d, REAL 
             q[1 - 1] = sign(one, d[1 - 1]);
             q[(1 + smlsiz * n) - 1] = one;
         } else if (icompq == 2) {
-            u[(1 - 1)] = sign(one, d[1 - 1]);
-            vt[(1 - 1)] = one;
+            u[0] = sign(one, d[1 - 1]);
+            vt[0] = one;
         }
         d[1 - 1] = abs(d[1 - 1]);
         return;
@@ -202,7 +202,7 @@ void Rbdsdc(const char *uplo, const char *compq, INTEGER const n, REAL *d, REAL 
     Rlascl("G", 0, 0, orgnrm, one, n, 1, d, n, ierr);
     Rlascl("G", 0, 0, orgnrm, one, nm1, 1, e, nm1, ierr);
     //
-    eps = (0.9e+0) * Rlamch("Epsilon");
+    eps = (0.9) * Rlamch("Epsilon");
     //
     mlvl = castINTEGER(log(castREAL(n) / castREAL(smlsiz + 1)) / log(two)) + 1;
     smlszp = smlsiz + 1;

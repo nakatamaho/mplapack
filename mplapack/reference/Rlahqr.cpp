@@ -63,7 +63,7 @@ void Rlahqr(bool const wantt, bool const wantz, INTEGER const n, INTEGER const i
     const INTEGER kexsh = 10;
     const REAL dat1 = 3.0 / 4.0;
     REAL h11 = 0.0;
-    const REAL dat2 = -0.4375e0;
+    const REAL dat2 = -0.4375;
     REAL h12 = 0.0;
     REAL h21 = 0.0;
     REAL h22 = 0.0;
@@ -117,6 +117,7 @@ void Rlahqr(bool const wantt, bool const wantz, INTEGER const n, INTEGER const i
     //
     safmin = Rlamch("SAFE MINIMUM");
     safmax = one / safmin;
+    Rlabad(safmin, safmax);
     ulp = Rlamch("PRECISION");
     smlnum = safmin * (castREAL(nh) / ulp);
     //
@@ -178,10 +179,10 @@ statement_20:
             if (abs(h[(k - 1) + ((k - 1) - 1) * ldh]) <= ulp * tst) {
                 ab = max(abs(h[(k - 1) + ((k - 1) - 1) * ldh]), abs(h[((k - 1) - 1) + (k - 1) * ldh]));
                 ba = min(abs(h[(k - 1) + ((k - 1) - 1) * ldh]), abs(h[((k - 1) - 1) + (k - 1) * ldh]));
-                aa = max(REAL(abs(h[(k - 1) + (k - 1) * ldh])), REAL(abs(h[((k - 1) - 1) + ((k - 1) - 1) * ldh] - h[(k - 1) + (k - 1) * ldh])));
-                bb = min(REAL(abs(h[(k - 1) + (k - 1) * ldh])), REAL(abs(h[((k - 1) - 1) + ((k - 1) - 1) * ldh] - h[(k - 1) + (k - 1) * ldh])));
+                aa = max(abs(h[(k - 1) + (k - 1) * ldh]), abs(h[((k - 1) - 1) + ((k - 1) - 1) * ldh] - h[(k - 1) + (k - 1) * ldh]));
+                bb = min(abs(h[(k - 1) + (k - 1) * ldh]), abs(h[((k - 1) - 1) + ((k - 1) - 1) * ldh] - h[(k - 1) + (k - 1) * ldh]));
                 s = aa + ab;
-                if (ba * (ab / s) <= max(smlnum, REAL(ulp * (bb * (aa / s))))) {
+                if (ba * (ab / s) <= max(smlnum, ulp * (bb * (aa / s)))) {
                     goto statement_40;
                 }
             }

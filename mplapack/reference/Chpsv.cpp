@@ -51,7 +51,7 @@ void Chpsv(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *ap, I
         info = -7;
     }
     if (info != 0) {
-        Mxerbla("Chpsv", -info);
+        Mxerbla("Chpsv ", -info);
         return;
     }
     //

@@ -65,7 +65,7 @@ void Chpevd(const char *jobz, const char *uplo, INTEGER const n, COMPLEX *ap, RE
         } else {
             if (wantz) {
                 lwmin = 2 * n;
-                lrwmin = 1 + 5 * n + 2 * n * n;
+                lrwmin = 1 + 5 * n + 2 * pow2(n);
                 liwmin = 3 + 5 * n;
             } else {
                 lwmin = n;
@@ -103,7 +103,7 @@ void Chpevd(const char *jobz, const char *uplo, INTEGER const n, COMPLEX *ap, RE
     if (n == 1) {
         w[1 - 1] = ap[1 - 1].real();
         if (wantz) {
-            z[(1 - 1)] = cone;
+            z[0] = cone;
         }
         return;
     }

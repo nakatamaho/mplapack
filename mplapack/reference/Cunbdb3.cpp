@@ -65,12 +65,12 @@ void Cunbdb3(INTEGER const m, INTEGER const p, INTEGER const q, COMPLEX *x11, IN
     INTEGER lworkmin = 0;
     if (info == 0) {
         ilarf = 2;
-        llarf = max({p, m - p - 1, q - 1});
+        llarf = max(p, m - p - 1, q - 1);
         iorbdb5 = 2;
         lorbdb5 = q - 1;
         lworkopt = max(ilarf + llarf - 1, iorbdb5 + lorbdb5 - 1);
         lworkmin = lworkopt;
-        work[1 - 1] = castREAL(lworkopt);
+        work[1 - 1] = lworkopt;
         if (lwork < lworkmin && !lquery) {
             info = -14;
         }

@@ -53,7 +53,7 @@ void Rposv(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *a, INTEG
         info = -7;
     }
     if (info != 0) {
-        Mxerbla("Rposv", -info);
+        Mxerbla("Rposv ", -info);
         return;
     }
     //

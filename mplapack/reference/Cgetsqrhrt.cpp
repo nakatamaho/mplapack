@@ -61,7 +61,7 @@ void Cgetsqrhrt(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER con
         info = -5;
     } else if (lda < max((INTEGER)1, m)) {
         info = -7;
-    } else if (ldt < max({(INTEGER)1, min(nb2, n)})) {
+    } else if (ldt < max((INTEGER)1, min(nb2, n))) {
         info = -9;
     } else {
         //
@@ -80,7 +80,7 @@ void Cgetsqrhrt(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER con
             //
             nb1local = min(nb1, n);
             //
-            num_all_row_blocks = max((INTEGER)1, castINTEGER(ceil(castREAL(m - n) / castREAL(mb1 - n))));
+            num_all_row_blocks = max((INTEGER)1, iceil(castREAL(m - n) / castREAL(mb1 - n)));
             //
             // Length and leading dimension of WORK array to place
             // T array in TSQR.
@@ -97,7 +97,7 @@ void Cgetsqrhrt(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER con
             //
             lw2 = nb1local * max(nb1local, (n - nb1local));
             //
-            lworkopt = max({lwt + lw1, max(lwt + n * n + lw2, lwt + n * n + n)});
+            lworkopt = max(lwt + lw1, max(lwt + n * n + lw2, lwt + n * n + n));
             //
             if ((lwork < max((INTEGER)1, lworkopt)) && (!lquery)) {
                 info = -11;

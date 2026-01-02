@@ -44,8 +44,8 @@ void Cggrqf(INTEGER const m, INTEGER const p, INTEGER const n, COMPLEX *a, INTEG
     INTEGER nb1 = iMlaenv(1, "Cgerqf", " ", m, n, -1, -1);
     INTEGER nb2 = iMlaenv(1, "Cgeqrf", " ", p, n, -1, -1);
     INTEGER nb3 = iMlaenv(1, "Cunmrq", " ", m, n, p, -1);
-    INTEGER nb = max({nb1, nb2, nb3});
-    INTEGER lwkopt = max({n, m, p}) * nb;
+    INTEGER nb = max(nb1, nb2, nb3);
+    INTEGER lwkopt = max(n, m, p) * nb;
     work[1 - 1] = lwkopt;
     bool lquery = (lwork == -1);
     if (m < 0) {
@@ -58,7 +58,7 @@ void Cggrqf(INTEGER const m, INTEGER const p, INTEGER const n, COMPLEX *a, INTEG
         info = -5;
     } else if (ldb < max((INTEGER)1, p)) {
         info = -8;
-    } else if (lwork < max({(INTEGER)1, m, p, n}) && !lquery) {
+    } else if (lwork < max((INTEGER)1, m, p, n) && !lquery) {
         info = -11;
     }
     if (info != 0) {

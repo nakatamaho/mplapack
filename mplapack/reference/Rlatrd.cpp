@@ -48,7 +48,7 @@ void Rlatrd(const char *uplo, INTEGER const n, INTEGER const nb, REAL *a, INTEGE
     INTEGER iw = 0;
     const REAL one = 1.0;
     const REAL zero = 0.0;
-    const REAL half = 0.5e+0;
+    const REAL half = 0.5;
     REAL alpha = 0.0;
     if (Mlsame(uplo, "U")) {
         //

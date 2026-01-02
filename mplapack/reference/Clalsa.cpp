@@ -65,37 +65,8 @@ void Clalsa(INTEGER const icompq, INTEGER const smlsiz, INTEGER const n, INTEGER
     INTEGER im1 = 0;
     INTEGER nlp1 = 0;
     INTEGER nrp1 = 0;
-    INTEGER ldgivcol = ldgcol;
-    INTEGER ldperm = ldgcol;
-    INTEGER lddifl = ldu;
-    INTEGER lddifr = ldu;
-    INTEGER ldgivnum = ldu;
-    INTEGER ldpoles = ldu;
-    INTEGER ldvt = ldu;
-    INTEGER ldz = ldu;
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     //
@@ -234,7 +205,7 @@ void Clalsa(INTEGER const icompq, INTEGER const smlsiz, INTEGER const n, INTEGER
     // Finally go through the left singular vector matrices of all
     // the other subproblems bottom-up on the tree.
     //
-    j = pow((double)2, (double)nlvl);
+    j = (INTEGER(1) << (nlvl));
     sqre = 0;
     //
     for (lvl = nlvl; lvl >= 1; lvl = lvl - 1) {
@@ -247,7 +218,7 @@ void Clalsa(INTEGER const icompq, INTEGER const smlsiz, INTEGER const n, INTEGER
             lf = 1;
             ll = 1;
         } else {
-            lf = (INTEGER)pow((double)2, (double)(lvl - 1));
+            lf = (INTEGER(1) << ((lvl - 1)));
             ll = 2 * lf - 1;
         }
         for (i = lf; i <= ll; i = i + 1) {
@@ -258,7 +229,7 @@ void Clalsa(INTEGER const icompq, INTEGER const smlsiz, INTEGER const n, INTEGER
             nlf = ic - nl;
             nrf = ic + 1;
             j = j - 1;
-            Clals0(icompq, nl, nr, sqre, nrhs, &bx[(nlf - 1)], ldbx, &b[(nlf - 1)], ldb, &perm[(nlf - 1) + (lvl - 1) * ldperm], givptr[j - 1], &givcol[(nlf - 1) + (lvl2 - 1) * ldgivcol], ldgcol, &givnum[(nlf - 1) + (lvl2 - 1) * ldgivnum], ldu, &poles[(nlf - 1) + (lvl2 - 1) * ldpoles], &difl[(nlf - 1) + (lvl - 1) * lddifl], &difr[(nlf - 1) + (lvl2 - 1) * lddifr], &z[(nlf - 1) + (lvl - 1) * ldz], k[j - 1], c[j - 1], s[j - 1], rwork, info);
+            Clals0(icompq, nl, nr, sqre, nrhs, &bx[(nlf - 1)], ldbx, &b[(nlf - 1)], ldb, &perm[(nlf - 1) + (lvl - 1) * ldgcol], givptr[j - 1], &givcol[(nlf - 1) + (lvl2 - 1) * ldgcol], ldgcol, &givnum[(nlf - 1) + (lvl2 - 1) * ldu], ldu, &poles[(nlf - 1) + (lvl2 - 1) * ldu], &difl[(nlf - 1) + (lvl - 1) * ldu], &difr[(nlf - 1) + (lvl2 - 1) * ldu], &z[(nlf - 1) + (lvl - 1) * ldu], k[j - 1], c[j - 1], s[j - 1], rwork, info);
         }
     }
     goto statement_330;
@@ -281,7 +252,7 @@ statement_170:
             lf = 1;
             ll = 1;
         } else {
-            lf = (INTEGER)pow((double)2, (double)(lvl - 1));
+            lf = (INTEGER(1) << ((lvl - 1)));
             ll = 2 * lf - 1;
         }
         for (i = ll; i >= lf; i = i - 1) {
@@ -297,7 +268,7 @@ statement_170:
                 sqre = 1;
             }
             j++;
-            Clals0(icompq, nl, nr, sqre, nrhs, &b[(nlf - 1)], ldb, &bx[(nlf - 1)], ldbx, &perm[(nlf - 1) + (lvl - 1) * ldperm], givptr[j - 1], &givcol[(nlf - 1) + (lvl2 - 1) * ldgivcol], ldgcol, &givnum[(nlf - 1) + (lvl2 - 1) * ldgivnum], ldu, &poles[(nlf - 1) + (lvl2 - 1) * ldpoles], &difl[(nlf - 1) + (lvl - 1) * lddifl], &difr[(nlf - 1) + (lvl2 - 1) * lddifr], &z[(nlf - 1) + (lvl - 1) * ldz], k[j - 1], c[j - 1], s[j - 1], rwork, info);
+            Clals0(icompq, nl, nr, sqre, nrhs, &b[(nlf - 1)], ldb, &bx[(nlf - 1)], ldbx, &perm[(nlf - 1) + (lvl - 1) * ldgcol], givptr[j - 1], &givcol[(nlf - 1) + (lvl2 - 1) * ldgcol], ldgcol, &givnum[(nlf - 1) + (lvl2 - 1) * ldu], ldu, &poles[(nlf - 1) + (lvl2 - 1) * ldu], &difl[(nlf - 1) + (lvl - 1) * ldu], &difr[(nlf - 1) + (lvl2 - 1) * ldu], &z[(nlf - 1) + (lvl - 1) * ldu], k[j - 1], c[j - 1], s[j - 1], rwork, info);
         }
     }
     //

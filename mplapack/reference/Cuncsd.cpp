@@ -188,8 +188,8 @@ void Cuncsd(const char *jobu1, const char *jobu2, const char *jobv1t, const char
         Cunbdb(trans, signs, m, p, q, x11, ldx11, x12, ldx12, x21, ldx21, x22, ldx22, theta, theta, u1, u2, v1t, v2t, work, -1, childinfo);
         lorbdbworkopt = castINTEGER(work[1 - 1].real());
         lorbdbworkmin = lorbdbworkopt;
-        lworkopt = max({iorgqr + lorgqrworkopt, iorglq + lorglqworkopt, iorbdb + lorbdbworkopt}) - 1;
-        lworkmin = max({iorgqr + lorgqrworkmin, iorglq + lorglqworkmin, iorbdb + lorbdbworkmin}) - 1;
+        lworkopt = max(iorgqr + lorgqrworkopt, iorglq + lorglqworkopt, iorbdb + lorbdbworkopt) - 1;
+        lworkmin = max(iorgqr + lorgqrworkmin, iorglq + lorglqworkmin, iorbdb + lorbdbworkmin) - 1;
         work[1 - 1] = max(lworkopt, lworkmin);
         //
         if (lwork < lworkmin && !(lquery || lrquery)) {
@@ -235,7 +235,7 @@ void Cuncsd(const char *jobu1, const char *jobu2, const char *jobv1t, const char
         }
         if (wantv1t && q > 0) {
             Clacpy("U", q - 1, q - 1, &x11[(2 - 1) * ldx11], ldx11, &v1t[(2 - 1) + (2 - 1) * ldv1t], ldv1t);
-            v1t[(1 - 1)] = one;
+            v1t[0] = one;
             for (j = 2; j <= q; j = j + 1) {
                 v1t[(j - 1) * ldv1t] = zero;
                 v1t[(j - 1)] = zero;
@@ -262,7 +262,7 @@ void Cuncsd(const char *jobu1, const char *jobu2, const char *jobv1t, const char
         }
         if (wantv1t && q > 0) {
             Clacpy("L", q - 1, q - 1, &x11[(2 - 1)], ldx11, &v1t[(2 - 1) + (2 - 1) * ldv1t], ldv1t);
-            v1t[(1 - 1)] = one;
+            v1t[0] = one;
             for (j = 2; j <= q; j = j + 1) {
                 v1t[(j - 1) * ldv1t] = zero;
                 v1t[(j - 1)] = zero;

@@ -60,12 +60,12 @@ void Rgelqt3(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL 
     INTEGER iinfo = 0;
     INTEGER i = 0;
     INTEGER j = 0;
-    const REAL one = 1.00;
+    const REAL one = 1.0;
     if (m == 1) {
         //
         // Compute Householder transform when N=1
         //
-        Rlarfg(n, a[0], &a[(1 - 1) + (min((INTEGER)2, n) - 1) * lda], lda, t[0]);
+        Rlarfg(n, a[0], &a[(min((INTEGER)2, n) - 1) * lda], lda, t[0]);
         //
     } else {
         //

@@ -72,7 +72,7 @@ void Rsyevd_2stage(const char *jobz, const char *uplo, INTEGER const n, REAL *a,
             lwtrd = iMlaenv2stage(4, "Rsytrd_2stage", jobz, n, kd, ib, -1);
             if (wantz) {
                 liwmin = 3 + 5 * n;
-                lwmin = 1 + 6 * n + 2 * n * n;
+                lwmin = 1 + 6 * n + 2 * pow2(n);
             } else {
                 liwmin = 1;
                 lwmin = 2 * n + 1 + lhtrd + lwtrd;
@@ -103,9 +103,9 @@ void Rsyevd_2stage(const char *jobz, const char *uplo, INTEGER const n, REAL *a,
     //
     const REAL one = 1.0;
     if (n == 1) {
-        w[1 - 1] = a[(1 - 1)];
+        w[1 - 1] = a[0];
         if (wantz) {
-            a[(1 - 1)] = one;
+            a[0] = one;
         }
         return;
     }

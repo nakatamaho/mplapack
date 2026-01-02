@@ -78,7 +78,7 @@ void Chegv_2stage(INTEGER const itype, const char *jobz, const char *uplo, INTEG
     }
     //
     if (info != 0) {
-        Mxerbla("Chegv_2stage", -info);
+        Mxerbla("Chegv_2stage ", -info);
         return;
     } else if (lquery) {
         return;

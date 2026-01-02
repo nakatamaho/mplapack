@@ -53,8 +53,8 @@ void Chbgvd(const char *jobz, const char *uplo, INTEGER const n, INTEGER const k
         lrwmin = 1 + n;
         liwmin = 1;
     } else if (wantz) {
-        lwmin = 2 * n * n;
-        lrwmin = 1 + 5 * n + 2 * n * n;
+        lwmin = 2 * pow2(n);
+        lrwmin = 1 + 5 * n + 2 * pow2(n);
         liwmin = 3 + 5 * n;
     } else {
         lwmin = n;

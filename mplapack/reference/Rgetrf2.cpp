@@ -73,7 +73,7 @@ void Rgetrf2(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, INTEG
         // Just need to handle IPIV and INFO
         //
         ipiv[1 - 1] = 1;
-        if (a[(1 - 1)] == zero) {
+        if (a[0] == zero) {
             info = 1;
         }
         //
@@ -87,25 +87,25 @@ void Rgetrf2(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, INTEG
         //
         // Find pivot and test for singularity
         //
-        i = iRamax(m, &a[(1 - 1)], 1);
+        i = iRamax(m, &a[0], 1);
         ipiv[1 - 1] = i;
         if (a[(i - 1)] != zero) {
             //
             // Apply the interchange
             //
             if (i != 1) {
-                temp = a[(1 - 1)];
-                a[(1 - 1)] = a[(i - 1)];
+                temp = a[0];
+                a[0] = a[(i - 1)];
                 a[(i - 1)] = temp;
             }
             //
             // Compute elements 2:M of the column
             //
-            if (abs(a[(1 - 1)]) >= sfmin) {
-                Rscal(m - 1, one / a[(1 - 1)], &a[(2 - 1)], 1);
+            if (abs(a[0]) >= sfmin) {
+                Rscal(m - 1, one / a[0], &a[(2 - 1)], 1);
             } else {
                 for (i = 1; i <= m - 1; i = i + 1) {
-                    a[((1 + i) - 1)] = a[((1 + i) - 1)] / a[(1 - 1)];
+                    a[((1 + i) - 1)] = a[((1 + i) - 1)] / a[0];
                 }
             }
             //
@@ -159,7 +159,7 @@ void Rgetrf2(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, INTEG
         //
         // Apply interchanges to A21
         //
-        Rlaswp(n1, &a[(1 - 1)], lda, n1 + 1, min(m, n), ipiv, 1);
+        Rlaswp(n1, &a[0], lda, n1 + 1, min(m, n), ipiv, 1);
         //
     }
     //

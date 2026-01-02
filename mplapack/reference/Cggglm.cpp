@@ -73,7 +73,7 @@ void Cggglm(INTEGER const n, INTEGER const m, INTEGER const p, COMPLEX *a, INTEG
             nb2 = iMlaenv(1, "Cgerqf", " ", n, m, -1, -1);
             nb3 = iMlaenv(1, "Cunmqr", " ", n, m, p, -1);
             nb4 = iMlaenv(1, "Cunmrq", " ", n, m, p, -1);
-            nb = max({nb1, nb2, nb3, nb4});
+            nb = max(nb1, nb2, nb3, nb4);
             lwkmin = m + n + p;
             lwkopt = m + np + max(n, p) * nb;
         }

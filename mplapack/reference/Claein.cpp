@@ -36,12 +36,10 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-inline REAL abs1(COMPLEX cdum) { return abs(cdum.real()) + abs(cdum.imag()); }
-
 void Claein(bool const rightv, bool const noinit, INTEGER const n, COMPLEX *h, INTEGER const ldh, COMPLEX const w, COMPLEX *v, COMPLEX *b, INTEGER const ldb, REAL *rwork, REAL const eps3, REAL const smlnum, INTEGER &info) {
     COMPLEX cdum = 0.0;
     REAL rootn = 0.0;
-    const REAL tenth = 1.0e-1;
+    const REAL tenth = 0.1;
     REAL growto = 0.0;
     const REAL one = 1.0;
     REAL nrmsml = 0.0;
@@ -67,7 +65,7 @@ void Claein(bool const rightv, bool const noinit, INTEGER const n, COMPLEX *h, I
     //
     rootn = sqrt(castREAL(n));
     growto = tenth / rootn;
-    nrmsml = max(one, REAL(eps3 * rootn)) * smlnum;
+    nrmsml = max(one, eps3 * rootn) * smlnum;
     //
     // Form B = H - W*I (except that the subdiagonal elements are not
     // stored).
@@ -101,7 +99,7 @@ void Claein(bool const rightv, bool const noinit, INTEGER const n, COMPLEX *h, I
         //
         for (i = 1; i <= n - 1; i = i + 1) {
             ei = h[((i + 1) - 1) + (i - 1) * ldh];
-            if (abs1(b[(i - 1) + (i - 1) * ldb]) < abs1(ei)) {
+            if (cabs1(b[(i - 1) + (i - 1) * ldb]) < cabs1(ei)) {
                 //
                 // Interchange rows and eliminate.
                 //
@@ -140,7 +138,7 @@ void Claein(bool const rightv, bool const noinit, INTEGER const n, COMPLEX *h, I
         //
         for (j = n; j >= 2; j = j - 1) {
             ej = h[(j - 1) + ((j - 1) - 1) * ldh];
-            if (abs1(b[(j - 1) + (j - 1) * ldb]) < abs1(ej)) {
+            if (cabs1(b[(j - 1) + (j - 1) * ldb]) < cabs1(ej)) {
                 //
                 // Interchange columns and eliminate.
                 //
@@ -166,8 +164,8 @@ void Claein(bool const rightv, bool const noinit, INTEGER const n, COMPLEX *h, I
                 }
             }
         }
-        if (b[(1 - 1)] == zero) {
-            b[(1 - 1)] = eps3;
+        if (b[0] == zero) {
+            b[0] = eps3;
         }
         //
         trans = 'C';
@@ -210,7 +208,7 @@ statement_120:
     // Normalize eigenvector.
     //
     i = iCamax(n, v, 1);
-    CRscal(n, one / abs1(v[i - 1]), v, 1);
+    CRscal(n, one / cabs1(v[i - 1]), v, 1);
     //
     // End of Claein
     //

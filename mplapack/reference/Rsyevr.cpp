@@ -75,7 +75,7 @@ void Rsyevr(const char *jobz, const char *range, const char *uplo, INTEGER const
     INTEGER indifl = 0;
     INTEGER indiwo = 0;
     INTEGER iinfo = 0;
-    const REAL two = 2.0e+0;
+    const REAL two = 2.0;
     bool tryrac = false;
     INTEGER indwkn = 0;
     INTEGER llwrkn = 0;
@@ -137,7 +137,7 @@ void Rsyevr(const char *jobz, const char *range, const char *uplo, INTEGER const
     //
     if (info == 0) {
         nb = iMlaenv(1, "Rsytrd", uplo, n, -1, -1, -1);
-        nb = max({nb, iMlaenv(1, "Rormtr", uplo, n, -1, -1, -1)});
+        nb = max(nb, iMlaenv(1, "Rormtr", uplo, n, -1, -1, -1));
         lwkopt = max((nb + 1) * n, lwmin);
         work[1 - 1] = lwkopt;
         iwork[1 - 1] = liwmin;
@@ -154,23 +154,23 @@ void Rsyevr(const char *jobz, const char *range, const char *uplo, INTEGER const
     //
     m = 0;
     if (n == 0) {
-        work[1 - 1] = 1;
+        work[1 - 1] = 1.0;
         return;
     }
     //
     if (n == 1) {
-        work[1 - 1] = 7;
+        work[1 - 1] = 7.0;
         if (alleig || indeig) {
             m = 1;
-            w[1 - 1] = a[(1 - 1)];
+            w[1 - 1] = a[0];
         } else {
-            if (vl < a[(1 - 1)] && vu >= a[(1 - 1)]) {
+            if (vl < a[0] && vu >= a[0]) {
                 m = 1;
-                w[1 - 1] = a[(1 - 1)];
+                w[1 - 1] = a[0];
             }
         }
         if (wantz) {
-            z[(1 - 1)] = one;
+            z[0] = one;
             isuppz[1 - 1] = 1;
             isuppz[2 - 1] = 1;
         }
@@ -184,7 +184,7 @@ void Rsyevr(const char *jobz, const char *range, const char *uplo, INTEGER const
     smlnum = safmin / eps;
     bignum = one / smlnum;
     rmin = sqrt(smlnum);
-    rmax = min(REAL(sqrt(bignum)), REAL(one / sqrt(sqrt(safmin))));
+    rmax = min(sqrt(bignum), one / sqrt(sqrt(safmin)));
     //
     // Scale matrix to allowable range, if necessary.
     //

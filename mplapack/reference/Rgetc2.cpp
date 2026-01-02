@@ -52,15 +52,16 @@ void Rgetc2(INTEGER const n, REAL *a, INTEGER const lda, INTEGER *ipiv, INTEGER 
     REAL smlnum = Rlamch("S") / eps;
     const REAL one = 1.0;
     REAL bignum = one / smlnum;
+    Rlabad(smlnum, bignum);
     //
     // Handle the case N=1 by itself
     //
     if (n == 1) {
         ipiv[1 - 1] = 1;
         jpiv[1 - 1] = 1;
-        if (abs(a[(1 - 1)]) < smlnum) {
+        if (abs(a[0]) < smlnum) {
             info = 1;
-            a[(1 - 1)] = smlnum;
+            a[0] = smlnum;
         }
         return;
     }
@@ -92,7 +93,7 @@ void Rgetc2(INTEGER const n, REAL *a, INTEGER const lda, INTEGER *ipiv, INTEGER 
             }
         }
         if (i == 1) {
-            smin = max(REAL(eps * xmax), smlnum);
+            smin = max(eps * xmax, smlnum);
         }
         //
         // Swap rows

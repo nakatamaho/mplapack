@@ -36,8 +36,6 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-inline REAL abs1(COMPLEX zdum) { return abs(zdum.real()) + abs(zdum.imag()); }
-
 void Cgttrf(INTEGER const n, COMPLEX *dl, COMPLEX *d, COMPLEX *du, COMPLEX *du2, INTEGER *ipiv, INTEGER &info) {
     COMPLEX zdum = 0.0;
     INTEGER i = 0;
@@ -68,11 +66,11 @@ void Cgttrf(INTEGER const n, COMPLEX *dl, COMPLEX *d, COMPLEX *du, COMPLEX *du2,
     }
     //
     for (i = 1; i <= n - 2; i = i + 1) {
-        if (abs1(d[i - 1]) >= abs1(dl[i - 1])) {
+        if (cabs1(d[i - 1]) >= cabs1(dl[i - 1])) {
             //
             // No row interchange required, eliminate DL(I)
             //
-            if (abs1(d[i - 1]) != zero) {
+            if (cabs1(d[i - 1]) != zero) {
                 fact = dl[i - 1] / d[i - 1];
                 dl[i - 1] = fact;
                 d[(i + 1) - 1] = d[(i + 1) - 1] - fact * du[i - 1];
@@ -94,8 +92,8 @@ void Cgttrf(INTEGER const n, COMPLEX *dl, COMPLEX *d, COMPLEX *du, COMPLEX *du2,
     }
     if (n > 1) {
         i = n - 1;
-        if (abs1(d[i - 1]) >= abs1(dl[i - 1])) {
-            if (abs1(d[i - 1]) != zero) {
+        if (cabs1(d[i - 1]) >= cabs1(dl[i - 1])) {
+            if (cabs1(d[i - 1]) != zero) {
                 fact = dl[i - 1] / d[i - 1];
                 dl[i - 1] = fact;
                 d[(i + 1) - 1] = d[(i + 1) - 1] - fact * du[i - 1];
@@ -114,7 +112,7 @@ void Cgttrf(INTEGER const n, COMPLEX *dl, COMPLEX *d, COMPLEX *du, COMPLEX *du2,
     // Check for a zero on the diagonal of U.
     //
     for (i = 1; i <= n; i = i + 1) {
-        if (abs1(d[i - 1]) == zero) {
+        if (cabs1(d[i - 1]) == zero) {
             info = i;
             goto statement_50;
         }

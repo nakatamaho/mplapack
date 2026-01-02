@@ -113,7 +113,7 @@ void Rsteqr(const char *compz, INTEGER const n, REAL *d, REAL *e, REAL *z, INTEG
     //
     if (n == 1) {
         if (icompz == 2) {
-            z[(1 - 1)] = one;
+            z[0] = one;
         }
         return;
     }

@@ -52,7 +52,7 @@ void Rsygvd(INTEGER const itype, const char *jobz, const char *uplo, INTEGER con
         lwmin = 1;
     } else if (wantz) {
         liwmin = 3 + 5 * n;
-        lwmin = 1 + 6 * n + 2 * n * n;
+        lwmin = 1 + 6 * n + 2 * pow2(n);
     } else {
         liwmin = 1;
         lwmin = 2 * n + 1;
@@ -109,7 +109,7 @@ void Rsygvd(INTEGER const itype, const char *jobz, const char *uplo, INTEGER con
     //
     Rsygst(itype, uplo, n, a, lda, b, ldb, info);
     Rsyevd(jobz, uplo, n, a, lda, w, work, lwork, iwork, liwork, info);
-    lopt = castINTEGER(max(castREAL(lopt), work[1 - 1]));
+    lopt = max(lopt, castINTEGER(work[1 - 1]));
     liopt = max(liopt, iwork[1 - 1]);
     //
     char trans;

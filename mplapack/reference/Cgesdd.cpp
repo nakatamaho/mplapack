@@ -42,8 +42,8 @@ void Cgesdd(const char *jobz, INTEGER const m, INTEGER const n, COMPLEX *a, INTE
     //
     info = 0;
     INTEGER minmn = min(m, n);
-    INTEGER mnthr1 = int(minmn * 17.0 / 9.0);
-    INTEGER mnthr2 = int(minmn * 5.0 / 3.0);
+    INTEGER mnthr1 = castINTEGER(minmn * 17.0 / 9.0);
+    INTEGER mnthr2 = castINTEGER(minmn * 5.0 / 3.0);
     bool wntqa = Mlsame(jobz, "A");
     bool wntqs = Mlsame(jobz, "S");
     bool wntqas = wntqa || wntqs;

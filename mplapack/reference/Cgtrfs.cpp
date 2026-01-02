@@ -36,8 +36,6 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-inline REAL abs1(COMPLEX zdum) { return abs(zdum.real()) + abs(zdum.imag()); }
-
 void Cgtrfs(const char *trans, INTEGER const n, INTEGER const nrhs, COMPLEX *dl, COMPLEX *d, COMPLEX *du, COMPLEX *dlf, COMPLEX *df, COMPLEX *duf, COMPLEX *du2, INTEGER *ipiv, COMPLEX *b, INTEGER const ldb, COMPLEX *x, INTEGER const ldx, REAL *ferr, REAL *berr, COMPLEX *work, REAL *rwork, INTEGER &info) {
     COMPLEX zdum = 0.0;
     bool notran = false;
@@ -51,12 +49,12 @@ void Cgtrfs(const char *trans, INTEGER const n, INTEGER const nrhs, COMPLEX *dl,
     REAL safe1 = 0.0;
     REAL safe2 = 0.0;
     INTEGER count = 0;
-    const REAL three = 3.0e+0;
+    const REAL three = 3.0;
     REAL lstres = 0.0;
     const REAL one = 1.0;
     INTEGER i = 0;
     REAL s = 0.0;
-    const REAL two = 2.0e+0;
+    const REAL two = 2.0;
     const INTEGER itmax = 5;
     INTEGER kase = 0;
     INTEGER isave[3];
@@ -128,23 +126,23 @@ void Cgtrfs(const char *trans, INTEGER const n, INTEGER const nrhs, COMPLEX *dl,
         //
         if (notran) {
             if (n == 1) {
-                rwork[1 - 1] = abs1(b[(j - 1) * ldb]) + abs1(d[1 - 1]) * abs1(x[(j - 1) * ldx]);
+                rwork[1 - 1] = cabs1(b[(j - 1) * ldb]) + cabs1(d[1 - 1]) * cabs1(x[(j - 1) * ldx]);
             } else {
-                rwork[1 - 1] = abs1(b[(j - 1) * ldb]) + abs1(d[1 - 1]) * abs1(x[(j - 1) * ldx]) + abs1(du[1 - 1]) * abs1(x[(2 - 1) + (j - 1) * ldx]);
+                rwork[1 - 1] = cabs1(b[(j - 1) * ldb]) + cabs1(d[1 - 1]) * cabs1(x[(j - 1) * ldx]) + cabs1(du[1 - 1]) * cabs1(x[(2 - 1) + (j - 1) * ldx]);
                 for (i = 2; i <= n - 1; i = i + 1) {
-                    rwork[i - 1] = abs1(b[(i - 1) + (j - 1) * ldb]) + abs1(dl[(i - 1) - 1]) * abs1(x[((i - 1) - 1) + (j - 1) * ldx]) + abs1(d[i - 1]) * abs1(x[(i - 1) + (j - 1) * ldx]) + abs1(du[i - 1]) * abs1(x[((i + 1) - 1) + (j - 1) * ldx]);
+                    rwork[i - 1] = cabs1(b[(i - 1) + (j - 1) * ldb]) + cabs1(dl[(i - 1) - 1]) * cabs1(x[((i - 1) - 1) + (j - 1) * ldx]) + cabs1(d[i - 1]) * cabs1(x[(i - 1) + (j - 1) * ldx]) + cabs1(du[i - 1]) * cabs1(x[((i + 1) - 1) + (j - 1) * ldx]);
                 }
-                rwork[n - 1] = abs1(b[(n - 1) + (j - 1) * ldb]) + abs1(dl[(n - 1) - 1]) * abs1(x[((n - 1) - 1) + (j - 1) * ldx]) + abs1(d[n - 1]) * abs1(x[(n - 1) + (j - 1) * ldx]);
+                rwork[n - 1] = cabs1(b[(n - 1) + (j - 1) * ldb]) + cabs1(dl[(n - 1) - 1]) * cabs1(x[((n - 1) - 1) + (j - 1) * ldx]) + cabs1(d[n - 1]) * cabs1(x[(n - 1) + (j - 1) * ldx]);
             }
         } else {
             if (n == 1) {
-                rwork[1 - 1] = abs1(b[(j - 1) * ldb]) + abs1(d[1 - 1]) * abs1(x[(j - 1) * ldx]);
+                rwork[1 - 1] = cabs1(b[(j - 1) * ldb]) + cabs1(d[1 - 1]) * cabs1(x[(j - 1) * ldx]);
             } else {
-                rwork[1 - 1] = abs1(b[(j - 1) * ldb]) + abs1(d[1 - 1]) * abs1(x[(j - 1) * ldx]) + abs1(dl[1 - 1]) * abs1(x[(2 - 1) + (j - 1) * ldx]);
+                rwork[1 - 1] = cabs1(b[(j - 1) * ldb]) + cabs1(d[1 - 1]) * cabs1(x[(j - 1) * ldx]) + cabs1(dl[1 - 1]) * cabs1(x[(2 - 1) + (j - 1) * ldx]);
                 for (i = 2; i <= n - 1; i = i + 1) {
-                    rwork[i - 1] = abs1(b[(i - 1) + (j - 1) * ldb]) + abs1(du[(i - 1) - 1]) * abs1(x[((i - 1) - 1) + (j - 1) * ldx]) + abs1(d[i - 1]) * abs1(x[(i - 1) + (j - 1) * ldx]) + abs1(dl[i - 1]) * abs1(x[((i + 1) - 1) + (j - 1) * ldx]);
+                    rwork[i - 1] = cabs1(b[(i - 1) + (j - 1) * ldb]) + cabs1(du[(i - 1) - 1]) * cabs1(x[((i - 1) - 1) + (j - 1) * ldx]) + cabs1(d[i - 1]) * cabs1(x[(i - 1) + (j - 1) * ldx]) + cabs1(dl[i - 1]) * cabs1(x[((i + 1) - 1) + (j - 1) * ldx]);
                 }
-                rwork[n - 1] = abs1(b[(n - 1) + (j - 1) * ldb]) + abs1(du[(n - 1) - 1]) * abs1(x[((n - 1) - 1) + (j - 1) * ldx]) + abs1(d[n - 1]) * abs1(x[(n - 1) + (j - 1) * ldx]);
+                rwork[n - 1] = cabs1(b[(n - 1) + (j - 1) * ldb]) + cabs1(du[(n - 1) - 1]) * cabs1(x[((n - 1) - 1) + (j - 1) * ldx]) + cabs1(d[n - 1]) * cabs1(x[(n - 1) + (j - 1) * ldx]);
             }
         }
         //
@@ -160,9 +158,9 @@ void Cgtrfs(const char *trans, INTEGER const n, INTEGER const nrhs, COMPLEX *dl,
         s = zero;
         for (i = 1; i <= n; i = i + 1) {
             if (rwork[i - 1] > safe2) {
-                s = max(s, REAL(abs1(work[i - 1]) / rwork[i - 1]));
+                s = max(s, cabs1(work[i - 1]) / rwork[i - 1]);
             } else {
-                s = max(s, REAL((abs1(work[i - 1]) + safe1) / (rwork[i - 1] + safe1)));
+                s = max(s, (cabs1(work[i - 1]) + safe1) / (rwork[i - 1] + safe1));
             }
         }
         berr[j - 1] = s;
@@ -208,9 +206,9 @@ void Cgtrfs(const char *trans, INTEGER const n, INTEGER const nrhs, COMPLEX *dl,
         //
         for (i = 1; i <= n; i = i + 1) {
             if (rwork[i - 1] > safe2) {
-                rwork[i - 1] = abs1(work[i - 1]) + nz * eps * rwork[i - 1];
+                rwork[i - 1] = cabs1(work[i - 1]) + nz * eps * rwork[i - 1];
             } else {
-                rwork[i - 1] = abs1(work[i - 1]) + nz * eps * rwork[i - 1] + safe1;
+                rwork[i - 1] = cabs1(work[i - 1]) + nz * eps * rwork[i - 1] + safe1;
             }
         }
         //
@@ -242,7 +240,7 @@ void Cgtrfs(const char *trans, INTEGER const n, INTEGER const nrhs, COMPLEX *dl,
         //
         lstres = zero;
         for (i = 1; i <= n; i = i + 1) {
-            lstres = max(lstres, REAL(abs1(x[(i - 1) + (j - 1) * ldx])));
+            lstres = max(lstres, cabs1(x[(i - 1) + (j - 1) * ldx]));
         }
         if (lstres != zero) {
             ferr[j - 1] = ferr[j - 1] / lstres;

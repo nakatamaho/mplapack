@@ -229,7 +229,7 @@ void Cpftrf(const char *transr, const char *uplo, INTEGER const n, COMPLEX *a, I
                 // T1 -> B(0,1), T2 -> B(0,0), S -> B(0,k+1)
                 // T1 -> a(0+k), T2 -> a(0+0), S -> a(0+k*(k+1)); lda=k
                 //
-                Cpotrf("U", k, &a[(0 + k)], k, info);
+                Cpotrf("U", k, &a[k], k, info);
                 if (info > 0) {
                     return;
                 }

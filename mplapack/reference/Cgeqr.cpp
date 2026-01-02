@@ -60,8 +60,8 @@ void Cgeqr(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, COMP
     INTEGER mb = 0;
     INTEGER nb = 0;
     if (min(m, n) > 0) {
-        mb = iMlaenv(1, "Cgeqr", " ", m, n, 1, -1);
-        nb = iMlaenv(1, "Cgeqr", " ", m, n, 2, -1);
+        mb = iMlaenv(1, "Cgeqr ", " ", m, n, 1, -1);
+        nb = iMlaenv(1, "Cgeqr ", " ", m, n, 2, -1);
     } else {
         mb = m;
         nb = 1;

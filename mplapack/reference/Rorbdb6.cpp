@@ -106,7 +106,7 @@ void Rorbdb6(INTEGER const m1, INTEGER const m2, INTEGER const n, REAL *x1, INTE
     // If projection is zero, then stop.
     // Otherwise, project again.
     //
-    const REAL alphasq = 0.01e0;
+    const REAL alphasq = 0.01;
     if (normsq2 >= alphasq * normsq1) {
         return;
     }

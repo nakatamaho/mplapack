@@ -191,10 +191,10 @@ void Rgbsvx(const char *fact, const char *trans, INTEGER const n, INTEGER const 
             anorm = zero;
             for (j = 1; j <= info; j = j + 1) {
                 for (i = max(ku + 2 - j, (INTEGER)1); i <= min(n + ku + 1 - j, kl + ku + 1); i = i + 1) {
-                    anorm = max(anorm, REAL(abs(ab[(i - 1) + (j - 1) * ldab])));
+                    anorm = max(anorm, abs(ab[(i - 1) + (j - 1) * ldab]));
                 }
             }
-            rpvgrw = Rlantb("M", "U", "N", info, min(info - 1, kl + ku), &afb[(max((INTEGER)1, kl + ku + 2 - info) - 1) + (1 - 1) * ldafb], ldafb, work);
+            rpvgrw = Rlantb("M", "U", "N", info, min(info - 1, kl + ku), &afb[(max((INTEGER)1, kl + ku + 2 - info) - 1)], ldafb, work);
             if (rpvgrw == zero) {
                 rpvgrw = one;
             } else {

@@ -95,17 +95,17 @@ void Rstedc(const char *compz, INTEGER const n, REAL *d, REAL *e, REAL *z, INTEG
             lwmin = 2 * (n - 1);
         } else {
             lgn = castINTEGER(log(castREAL(n)) / log(two));
-            if ((INTEGER)pow((double)2, (double)lgn) < n) {
+            if ((INTEGER(1) << (lgn)) < n) {
                 lgn++;
             }
-            if ((INTEGER)pow((double)2, (double)lgn) < n) {
+            if ((INTEGER(1) << (lgn)) < n) {
                 lgn++;
             }
             if (icompz == 1) {
-                lwmin = 1 + 3 * n + 2 * n * lgn + 4 * n * n;
+                lwmin = 1 + 3 * n + 2 * n * lgn + 4 * pow2(n);
                 liwmin = 6 + 6 * n + 5 * n * lgn;
             } else if (icompz == 2) {
-                lwmin = 1 + 4 * n + n * n;
+                lwmin = 1 + 4 * n + pow2(n);
                 liwmin = 3 + 5 * n;
             }
         }
@@ -133,7 +133,7 @@ void Rstedc(const char *compz, INTEGER const n, REAL *d, REAL *e, REAL *z, INTEG
     }
     if (n == 1) {
         if (icompz != 0) {
-            z[(1 - 1)] = one;
+            z[0] = one;
         }
         return;
     }

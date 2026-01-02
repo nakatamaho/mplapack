@@ -121,8 +121,8 @@ void Cgelss(INTEGER const m, INTEGER const n, INTEGER const nrhs, COMPLEX *a, IN
                 Cunmqr("L", "C", m, nrhs, n, a, lda, &dum[1 - 1], b, ldb, &dum[1 - 1], -1, info);
                 lwork_Cunmqr = castINTEGER(dum[1 - 1].real());
                 mm = n;
-                maxwrk = max({maxwrk, n + n * iMlaenv(1, "Cgeqrf", " ", m, n, -1, -1)});
-                maxwrk = max({maxwrk, n + nrhs * iMlaenv(1, "Cunmqr", "LC", m, nrhs, n, -1)});
+                maxwrk = max(maxwrk, n + n * iMlaenv(1, "Cgeqrf", " ", m, n, -1, -1));
+                maxwrk = max(maxwrk, n + nrhs * iMlaenv(1, "Cunmqr", "LC", m, nrhs, n, -1));
             }
             if (m >= n) {
                 //
@@ -225,8 +225,9 @@ void Cgelss(INTEGER const m, INTEGER const n, INTEGER const nrhs, COMPLEX *a, IN
     sfmin = Rlamch("S");
     smlnum = sfmin / eps;
     bignum = one / smlnum;
+    Rlabad(smlnum, bignum);
     //
-    //     Scale A if max element outside range [SMLNUM,BIGNUM]
+    // Scale A if max element outside range [SMLNUM,BIGNUM]
     //
     anrm = Clange("M", m, n, a, lda, rwork);
     iascl = 0;
@@ -341,9 +342,9 @@ void Cgelss(INTEGER const m, INTEGER const n, INTEGER const nrhs, COMPLEX *a, IN
         //
         // Multiply B by reciprocals of singular values
         //
-        thr = max(REAL(rcond * s[1 - 1]), sfmin);
+        thr = max(rcond * s[1 - 1], sfmin);
         if (rcond < zero) {
-            thr = max(REAL(eps * s[1 - 1]), sfmin);
+            thr = max(eps * s[1 - 1], sfmin);
         }
         rank = 0;
         for (i = 1; i <= n; i = i + 1) {
@@ -374,7 +375,7 @@ void Cgelss(INTEGER const m, INTEGER const n, INTEGER const nrhs, COMPLEX *a, IN
             Ccopy(n, work, 1, b, 1);
         }
         //
-    } else if (n >= mnthr && lwork >= 3 * m + m * m + max({m, nrhs, n - 2 * m})) {
+    } else if (n >= mnthr && lwork >= 3 * m + m * m + max(m, nrhs, n - 2 * m)) {
         //
         // Underdetermined case, M much less than N
         //
@@ -382,7 +383,7 @@ void Cgelss(INTEGER const m, INTEGER const n, INTEGER const nrhs, COMPLEX *a, IN
         // and sufficient workspace for an efficient algorithm
         //
         ldwork = m;
-        if (lwork >= 3 * m + m * lda + max({m, nrhs, n - 2 * m})) {
+        if (lwork >= 3 * m + m * lda + max(m, nrhs, n - 2 * m)) {
             ldwork = lda;
         }
         itau = 1;
@@ -436,9 +437,9 @@ void Cgelss(INTEGER const m, INTEGER const n, INTEGER const nrhs, COMPLEX *a, IN
         //
         // Multiply B by reciprocals of singular values
         //
-        thr = max(REAL(rcond * s[1 - 1]), sfmin);
+        thr = max(rcond * s[1 - 1], sfmin);
         if (rcond < zero) {
-            thr = max(REAL(eps * s[1 - 1]), sfmin);
+            thr = max(eps * s[1 - 1], sfmin);
         }
         rank = 0;
         for (i = 1; i <= m; i = i + 1) {
@@ -466,8 +467,8 @@ void Cgelss(INTEGER const m, INTEGER const n, INTEGER const nrhs, COMPLEX *a, IN
                 Clacpy("G", m, bl, &work[iwork - 1], m, &b[(i - 1) * ldb], ldb);
             }
         } else {
-            Cgemv("C", m, m, cone, &work[il - 1], ldwork, &b[(1 - 1)], 1, czero, &work[iwork - 1], 1);
-            Ccopy(m, &work[iwork - 1], 1, &b[(1 - 1)], 1);
+            Cgemv("C", m, m, cone, &work[il - 1], ldwork, &b[0], 1, czero, &work[iwork - 1], 1);
+            Ccopy(m, &work[iwork - 1], 1, &b[0], 1);
         }
         //
         // Zero out below first M rows of B
@@ -522,9 +523,9 @@ void Cgelss(INTEGER const m, INTEGER const n, INTEGER const nrhs, COMPLEX *a, IN
         //
         // Multiply B by reciprocals of singular values
         //
-        thr = max(REAL(rcond * s[1 - 1]), sfmin);
+        thr = max(rcond * s[1 - 1], sfmin);
         if (rcond < zero) {
-            thr = max(REAL(eps * s[1 - 1]), sfmin);
+            thr = max(eps * s[1 - 1], sfmin);
         }
         rank = 0;
         for (i = 1; i <= m; i = i + 1) {

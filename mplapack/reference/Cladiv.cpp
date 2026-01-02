@@ -38,24 +38,7 @@
 
 COMPLEX
 Cladiv(COMPLEX const x, COMPLEX const y) {
-    COMPLEX return_value = 0.0;
-    //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
+    COMPLEX return_value = COMPLEX(0.0, 0.0);
     //
     REAL zr = 0.0;
     REAL zi = 0.0;

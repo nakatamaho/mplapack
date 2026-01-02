@@ -221,7 +221,7 @@ statement_80:
             i = 1;
         statement_90:
             if (k2 + i <= n) {
-                if (d[pj - 1] < d[(indxp[(k2 + i) - 1]) - 1]) {
+                if (d[pj - 1] < d[indxp[(k2 + i) - 1] - 1]) {
                     indxp[(k2 + i - 1) - 1] = indxp[(k2 + i) - 1];
                     indxp[(k2 + i) - 1] = pj;
                     i++;

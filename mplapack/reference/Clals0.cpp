@@ -87,10 +87,6 @@ void Clals0(INTEGER const icompq, INTEGER const nl, INTEGER const nr, INTEGER co
     INTEGER jcol = 0;
     INTEGER jrow = 0;
     const REAL one = 1.0;
-    INTEGER ldpoles = ldgnum;
-    INTEGER ldgivnum = ldgnum;
-    INTEGER lddifr = ldgnum;
-    INTEGER ldgivcol = ldgcol;
     if (icompq == 0) {
         //
         // Apply back orthogonal transformations from the left.
@@ -98,12 +94,12 @@ void Clals0(INTEGER const icompq, INTEGER const nl, INTEGER const nr, INTEGER co
         // Step (1L): apply back the Givens rotations performed.
         //
         for (i = 1; i <= givptr; i = i + 1) {
-            CRrot(nrhs, &b[(givcol[(i - 1) + (2 - 1) * ldgivcol] - 1)], ldb, &b[(givcol[(i - 1)] - 1)], ldb, givnum[(i - 1) + (2 - 1) * ldgivnum], givnum[(i - 1)]);
+            CRrot(nrhs, &b[(givcol[(i - 1) + (2 - 1) * ldgcol] - 1)], ldb, &b[(givcol[(i - 1)] - 1)], ldb, givnum[(i - 1) + (2 - 1) * ldgnum], givnum[(i - 1)]);
         }
         //
         // Step (2L): permute rows of B.
         //
-        Ccopy(nrhs, &b[(nlp1 - 1)], ldb, &bx[(1 - 1)], ldbx);
+        Ccopy(nrhs, &b[(nlp1 - 1)], ldb, &bx[0], ldbx);
         for (i = 2; i <= n; i = i + 1) {
             Ccopy(nrhs, &b[(perm[i - 1] - 1)], ldb, &bx[(i - 1)], ldbx);
         }
@@ -120,28 +116,28 @@ void Clals0(INTEGER const icompq, INTEGER const nl, INTEGER const nr, INTEGER co
             for (j = 1; j <= k; j = j + 1) {
                 diflj = difl[j - 1];
                 dj = poles[(j - 1)];
-                dsigj = -poles[(j - 1) + (2 - 1) * ldpoles];
+                dsigj = -poles[(j - 1) + (2 - 1) * ldgnum];
                 if (j < k) {
                     difrj = -difr[(j - 1)];
-                    dsigjp = -poles[((j + 1) - 1) + (2 - 1) * ldpoles];
+                    dsigjp = -poles[((j + 1) - 1) + (2 - 1) * ldgnum];
                 }
-                if ((z[j - 1] == zero) || (poles[(j - 1) + (2 - 1) * ldpoles] == zero)) {
+                if ((z[j - 1] == zero) || (poles[(j - 1) + (2 - 1) * ldgnum] == zero)) {
                     rwork[j - 1] = zero;
                 } else {
-                    rwork[j - 1] = -poles[(j - 1) + (2 - 1) * ldpoles] * z[j - 1] / diflj / (poles[(j - 1) + (2 - 1) * ldpoles] + dj);
+                    rwork[j - 1] = -poles[(j - 1) + (2 - 1) * ldgnum] * z[j - 1] / diflj / (poles[(j - 1) + (2 - 1) * ldgnum] + dj);
                 }
                 for (i = 1; i <= j - 1; i = i + 1) {
-                    if ((z[i - 1] == zero) || (poles[(i - 1) + (2 - 1) * ldpoles] == zero)) {
+                    if ((z[i - 1] == zero) || (poles[(i - 1) + (2 - 1) * ldgnum] == zero)) {
                         rwork[i - 1] = zero;
                     } else {
-                        rwork[i - 1] = poles[(i - 1) + (2 - 1) * ldpoles] * z[i - 1] / (Rlamc3(poles[(i - 1) + (2 - 1) * ldpoles], dsigj) - diflj) / (poles[(i - 1) + (2 - 1) * ldpoles] + dj);
+                        rwork[i - 1] = poles[(i - 1) + (2 - 1) * ldgnum] * z[i - 1] / (Rlamc3(poles[(i - 1) + (2 - 1) * ldgnum], dsigj) - diflj) / (poles[(i - 1) + (2 - 1) * ldgnum] + dj);
                     }
                 }
                 for (i = j + 1; i <= k; i = i + 1) {
-                    if ((z[i - 1] == zero) || (poles[(i - 1) + (2 - 1) * ldpoles] == zero)) {
+                    if ((z[i - 1] == zero) || (poles[(i - 1) + (2 - 1) * ldgnum] == zero)) {
                         rwork[i - 1] = zero;
                     } else {
-                        rwork[i - 1] = poles[(i - 1) + (2 - 1) * ldpoles] * z[i - 1] / (Rlamc3(poles[(i - 1) + (2 - 1) * ldpoles], dsigjp) + difrj) / (poles[(i - 1) + (2 - 1) * ldpoles] + dj);
+                        rwork[i - 1] = poles[(i - 1) + (2 - 1) * ldgnum] * z[i - 1] / (Rlamc3(poles[(i - 1) + (2 - 1) * ldgnum], dsigjp) + difrj) / (poles[(i - 1) + (2 - 1) * ldgnum] + dj);
                     }
                 }
                 rwork[1 - 1] = negone;
@@ -192,24 +188,24 @@ void Clals0(INTEGER const icompq, INTEGER const nl, INTEGER const nr, INTEGER co
             Ccopy(nrhs, b, ldb, bx, ldbx);
         } else {
             for (j = 1; j <= k; j = j + 1) {
-                dsigj = poles[(j - 1) + (2 - 1) * ldpoles];
+                dsigj = poles[(j - 1) + (2 - 1) * ldgnum];
                 if (z[j - 1] == zero) {
                     rwork[j - 1] = zero;
                 } else {
-                    rwork[j - 1] = -z[j - 1] / difl[j - 1] / (dsigj + poles[(j - 1)]) / difr[(j - 1) + (2 - 1) * lddifr];
+                    rwork[j - 1] = -z[j - 1] / difl[j - 1] / (dsigj + poles[(j - 1)]) / difr[(j - 1) + (2 - 1) * ldgnum];
                 }
                 for (i = 1; i <= j - 1; i = i + 1) {
                     if (z[j - 1] == zero) {
                         rwork[i - 1] = zero;
                     } else {
-                        rwork[i - 1] = z[j - 1] / (Rlamc3(dsigj, -poles[((i + 1) - 1) + (2 - 1) * ldpoles]) - difr[(i - 1)]) / (dsigj + poles[(i - 1)]) / difr[(i - 1) + (2 - 1) * lddifr];
+                        rwork[i - 1] = z[j - 1] / (Rlamc3(dsigj, -poles[((i + 1) - 1) + (2 - 1) * ldgnum]) - difr[(i - 1)]) / (dsigj + poles[(i - 1)]) / difr[(i - 1) + (2 - 1) * ldgnum];
                     }
                 }
                 for (i = j + 1; i <= k; i = i + 1) {
                     if (z[j - 1] == zero) {
                         rwork[i - 1] = zero;
                     } else {
-                        rwork[i - 1] = z[j - 1] / (Rlamc3(dsigj, -poles[(i - 1) + (2 - 1) * ldpoles]) - difl[i - 1]) / (dsigj + poles[(i - 1)]) / difr[(i - 1) + (2 - 1) * lddifr];
+                        rwork[i - 1] = z[j - 1] / (Rlamc3(dsigj, -poles[(i - 1) + (2 - 1) * ldgnum]) - difl[i - 1]) / (dsigj + poles[(i - 1)]) / difr[(i - 1) + (2 - 1) * ldgnum];
                     }
                 }
                 //
@@ -246,7 +242,7 @@ void Clals0(INTEGER const icompq, INTEGER const nl, INTEGER const nr, INTEGER co
         //
         if (sqre == 1) {
             Ccopy(nrhs, &b[(m - 1)], ldb, &bx[(m - 1)], ldbx);
-            CRrot(nrhs, &bx[(1 - 1)], ldbx, &bx[(m - 1)], ldbx, c, s);
+            CRrot(nrhs, &bx[0], ldbx, &bx[(m - 1)], ldbx, c, s);
         }
         if (k < max(m, n)) {
             Clacpy("A", n - k, nrhs, &b[((k + 1) - 1)], ldb, &bx[((k + 1) - 1)], ldbx);
@@ -254,7 +250,7 @@ void Clals0(INTEGER const icompq, INTEGER const nl, INTEGER const nr, INTEGER co
         //
         // Step (3R): permute rows of B.
         //
-        Ccopy(nrhs, &bx[(1 - 1)], ldbx, &b[(nlp1 - 1)], ldb);
+        Ccopy(nrhs, &bx[0], ldbx, &b[(nlp1 - 1)], ldb);
         if (sqre == 1) {
             Ccopy(nrhs, &bx[(m - 1)], ldbx, &b[(m - 1)], ldb);
         }
@@ -265,7 +261,7 @@ void Clals0(INTEGER const icompq, INTEGER const nl, INTEGER const nr, INTEGER co
         // Step (4R): apply back the Givens rotations performed.
         //
         for (i = givptr; i >= 1; i = i - 1) {
-            CRrot(nrhs, &b[(givcol[(i - 1) + (2 - 1) * ldgivcol] - 1)], ldb, &b[(givcol[(i - 1)] - 1)], ldb, givnum[(i - 1) + (2 - 1) * ldgivnum], -givnum[(i - 1)]);
+            CRrot(nrhs, &b[(givcol[(i - 1) + (2 - 1) * ldgcol] - 1)], ldb, &b[(givcol[(i - 1)] - 1)], ldb, givnum[(i - 1) + (2 - 1) * ldgnum], -givnum[(i - 1)]);
         }
     }
     //

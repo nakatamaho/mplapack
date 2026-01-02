@@ -43,7 +43,7 @@ void Rlasq5(INTEGER const i0, INTEGER const n0, REAL *z, INTEGER const pp, REAL 
     }
     //
     REAL dthresh = eps * (sigma + tau);
-    const REAL half = 0.5f;
+    const REAL half = 0.5;
     const REAL zero = 0.0;
     if (tau < dthresh * half) {
         tau = zero;
@@ -129,7 +129,7 @@ void Rlasq5(INTEGER const i0, INTEGER const n0, REAL *z, INTEGER const pp, REAL 
                         d = z[(j4 + 2) - 1] * (d / z[(j4 - 3) - 1]) - tau;
                     }
                     dmin = min(dmin, d);
-                    emin = min(emin, z[(j4 - 1)]);
+                    emin = min(emin, z[(j4 - 1) - 1]);
                 }
             }
             //

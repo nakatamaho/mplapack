@@ -126,7 +126,7 @@ void Rgees(const char *jobvs, const char *sort, bool (*select)(REAL, REAL), INTE
     }
     //
     if (info != 0) {
-        Mxerbla("Rgees", -info);
+        Mxerbla("Rgees ", -info);
         return;
     } else if (lquery) {
         return;
@@ -144,6 +144,7 @@ void Rgees(const char *jobvs, const char *sort, bool (*select)(REAL, REAL), INTE
     eps = Rlamch("P");
     smlnum = Rlamch("S");
     bignum = one / smlnum;
+    Rlabad(smlnum, bignum);
     smlnum = sqrt(smlnum) / eps;
     bignum = one / smlnum;
     //

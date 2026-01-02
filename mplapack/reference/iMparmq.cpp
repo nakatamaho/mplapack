@@ -39,7 +39,8 @@
 
 #define subnamlen 32
 
-INTEGER iMparmq(INTEGER const ispec, const char *name, const char *opts, INTEGER const n, INTEGER const ilo, INTEGER const ihi, INTEGER const lwork) {
+INTEGER
+iMparmq(INTEGER const ispec, const char *name, const char * /* opts */, INTEGER const /* n */, INTEGER const ilo, INTEGER const ihi, INTEGER const /* lwork */) {
     INTEGER return_value = 0;
     const INTEGER ishfts = 15;
     const INTEGER inwin = 13;
@@ -61,7 +62,7 @@ INTEGER iMparmq(INTEGER const ispec, const char *name, const char *opts, INTEGER
             ns = 10;
         }
         if (nh >= 150) {
-            ns = max((INTEGER)10, nh / nint((log(castREAL(nh - 1)) / log(two)) - 1));
+            ns = max((INTEGER)10, nh / nint(log(castREAL(nh)) / log(two)));
         }
         if (nh >= 590) {
             ns = 64;
@@ -150,21 +151,21 @@ INTEGER iMparmq(INTEGER const ispec, const char *name, const char *opts, INTEGER
         //
         if (strncmp(subnam + 1, "GGHRD", 5) == 0 || strncmp(subnam + 1, "GGHD3", 5) == 0) {
             return_value = 1;
-            if (nh >= 14) {
+            if (nh >= k22min) {
                 return_value = 2;
             }
         } else if (strncmp(subnam + 3, "EXC", 3) == 0) {
-            if (nh >= 14) {
+            if (nh >= kacmin) {
                 return_value = 1;
             }
-            if (nh >= 14) {
+            if (nh >= k22min) {
                 return_value = 2;
             }
         } else if (strncmp(subnam + 1, "HSEQR", 5) == 0 || strncmp(subnam + 1, "LAQR", 4) == 0) {
-            if (ns >= 14) {
+            if (ns >= kacmin) {
                 return_value = 1;
             }
-            if (ns >= 14) {
+            if (ns >= k22min) {
                 return_value = 2;
             }
         }

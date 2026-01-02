@@ -60,14 +60,14 @@ void Cgelqt3(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, CO
     INTEGER iinfo = 0;
     INTEGER i = 0;
     INTEGER j = 0;
-    const COMPLEX one = COMPLEX(1.00, 0.00);
-    const COMPLEX zero = COMPLEX(0.00, 0.00);
+    const COMPLEX one = COMPLEX(1.0, 0.0);
+    const COMPLEX zero = COMPLEX(0.0, 0.0);
     if (m == 1) {
         //
         // Compute Householder transform when N=1
         //
-        Clarfg(n, a[0], &a[(1 - 1) + (min((INTEGER)2, n) - 1) * lda], lda, t[0]);
-        t[(1 - 1)] = conj(t[(1 - 1)]);
+        Clarfg(n, a[0], &a[(min((INTEGER)2, n) - 1) * lda], lda, t[0]);
+        t[0] = conj(t[0]);
         //
     } else {
         //

@@ -105,8 +105,8 @@ void Rggsvd3(const char *jobu, const char *jobv, const char *jobq, INTEGER const
     //
     REAL ulp = Rlamch("Precision");
     REAL unfl = Rlamch("Safe Minimum");
-    tola = castREAL(max(m, n)) * max(anorm, unfl) * ulp;
-    tolb = castREAL(max(p, n)) * max(bnorm, unfl) * ulp;
+    tola = max(m, n) * max(anorm, unfl) * ulp;
+    tolb = max(p, n) * max(bnorm, unfl) * ulp;
     //
     // Preprocessing
     //

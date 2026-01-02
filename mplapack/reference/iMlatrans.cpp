@@ -36,7 +36,8 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-INTEGER iMlatrans(const char *trans) {
+INTEGER
+iMlatrans(const char *trans) {
     INTEGER return_value = 0;
     const INTEGER blas_no_trans = 111;
     const INTEGER blas_trans = 112;

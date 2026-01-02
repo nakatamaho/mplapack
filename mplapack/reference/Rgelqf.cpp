@@ -65,7 +65,7 @@ void Rgelqf(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *
     //
     INTEGER k = min(m, n);
     if (k == 0) {
-        work[1 - 1] = 1;
+        work[1 - 1] = 1.0;
         return;
     }
     //

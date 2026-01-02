@@ -60,12 +60,12 @@ void Cgeqrt3(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, CO
     INTEGER iinfo = 0;
     INTEGER j = 0;
     INTEGER i = 0;
-    const COMPLEX one = COMPLEX(1.00, 0.00);
+    const COMPLEX one = COMPLEX(1.0, 0.0);
     if (n == 1) {
         //
         // Compute Householder transform when N=1
         //
-        Clarfg(m, a[(1 - 1)], &a[(min((INTEGER)2, m) - 1) + (1 - 1) * lda], 1, t[(1 - 1)]);
+        Clarfg(m, a[0], &a[(min((INTEGER)2, m) - 1)], 1, t[0]);
         //
     } else {
         //

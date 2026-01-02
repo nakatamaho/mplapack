@@ -66,7 +66,7 @@ void Rsfrk(const char *transr, const char *uplo, const char *trans, INTEGER cons
         info = -8;
     }
     if (info != 0) {
-        Mxerbla("Rsfrk", -info);
+        Mxerbla("Rsfrk ", -info);
         return;
     }
     //
@@ -127,17 +127,17 @@ void Rsfrk(const char *transr, const char *uplo, const char *trans, INTEGER cons
                     //
                     // N is odd, TRANSR = 'N', UPLO = 'L', and TRANS = 'N'
                     //
-                    Rsyrk("L", "N", n1, k, alpha, &a[(1 - 1)], lda, beta, &c[1 - 1], n);
+                    Rsyrk("L", "N", n1, k, alpha, &a[0], lda, beta, &c[1 - 1], n);
                     Rsyrk("U", "N", n2, k, alpha, &a[((n1 + 1) - 1)], lda, beta, &c[(n + 1) - 1], n);
-                    Rgemm("N", "T", n2, n1, k, alpha, &a[((n1 + 1) - 1)], lda, &a[(1 - 1)], lda, beta, &c[(n1 + 1) - 1], n);
+                    Rgemm("N", "T", n2, n1, k, alpha, &a[((n1 + 1) - 1)], lda, &a[0], lda, beta, &c[(n1 + 1) - 1], n);
                     //
                 } else {
                     //
                     // N is odd, TRANSR = 'N', UPLO = 'L', and TRANS = 'T'
                     //
-                    Rsyrk("L", "T", n1, k, alpha, &a[(1 - 1)], lda, beta, &c[1 - 1], n);
+                    Rsyrk("L", "T", n1, k, alpha, &a[0], lda, beta, &c[1 - 1], n);
                     Rsyrk("U", "T", n2, k, alpha, &a[((n1 + 1) - 1) * lda], lda, beta, &c[(n + 1) - 1], n);
-                    Rgemm("T", "N", n2, n1, k, alpha, &a[((n1 + 1) - 1) * lda], lda, &a[(1 - 1)], lda, beta, &c[(n1 + 1) - 1], n);
+                    Rgemm("T", "N", n2, n1, k, alpha, &a[((n1 + 1) - 1) * lda], lda, &a[0], lda, beta, &c[(n1 + 1) - 1], n);
                     //
                 }
                 //
@@ -149,17 +149,17 @@ void Rsfrk(const char *transr, const char *uplo, const char *trans, INTEGER cons
                     //
                     // N is odd, TRANSR = 'N', UPLO = 'U', and TRANS = 'N'
                     //
-                    Rsyrk("L", "N", n1, k, alpha, &a[(1 - 1)], lda, beta, &c[(n2 + 1) - 1], n);
+                    Rsyrk("L", "N", n1, k, alpha, &a[0], lda, beta, &c[(n2 + 1) - 1], n);
                     Rsyrk("U", "N", n2, k, alpha, &a[(n2 - 1)], lda, beta, &c[(n1 + 1) - 1], n);
-                    Rgemm("N", "T", n1, n2, k, alpha, &a[(1 - 1)], lda, &a[(n2 - 1)], lda, beta, &c[1 - 1], n);
+                    Rgemm("N", "T", n1, n2, k, alpha, &a[0], lda, &a[(n2 - 1)], lda, beta, &c[1 - 1], n);
                     //
                 } else {
                     //
                     // N is odd, TRANSR = 'N', UPLO = 'U', and TRANS = 'T'
                     //
-                    Rsyrk("L", "T", n1, k, alpha, &a[(1 - 1)], lda, beta, &c[(n2 + 1) - 1], n);
+                    Rsyrk("L", "T", n1, k, alpha, &a[0], lda, beta, &c[(n2 + 1) - 1], n);
                     Rsyrk("U", "T", n2, k, alpha, &a[(n2 - 1) * lda], lda, beta, &c[(n1 + 1) - 1], n);
-                    Rgemm("T", "N", n1, n2, k, alpha, &a[(1 - 1)], lda, &a[(n2 - 1) * lda], lda, beta, &c[1 - 1], n);
+                    Rgemm("T", "N", n1, n2, k, alpha, &a[0], lda, &a[(n2 - 1) * lda], lda, beta, &c[1 - 1], n);
                     //
                 }
                 //
@@ -177,17 +177,17 @@ void Rsfrk(const char *transr, const char *uplo, const char *trans, INTEGER cons
                     //
                     // N is odd, TRANSR = 'T', UPLO = 'L', and TRANS = 'N'
                     //
-                    Rsyrk("U", "N", n1, k, alpha, &a[(1 - 1)], lda, beta, &c[1 - 1], n1);
+                    Rsyrk("U", "N", n1, k, alpha, &a[0], lda, beta, &c[1 - 1], n1);
                     Rsyrk("L", "N", n2, k, alpha, &a[((n1 + 1) - 1)], lda, beta, &c[2 - 1], n1);
-                    Rgemm("N", "T", n1, n2, k, alpha, &a[(1 - 1)], lda, &a[((n1 + 1) - 1)], lda, beta, &c[(n1 * n1 + 1) - 1], n1);
+                    Rgemm("N", "T", n1, n2, k, alpha, &a[0], lda, &a[((n1 + 1) - 1)], lda, beta, &c[(n1 * n1 + 1) - 1], n1);
                     //
                 } else {
                     //
                     // N is odd, TRANSR = 'T', UPLO = 'L', and TRANS = 'T'
                     //
-                    Rsyrk("U", "T", n1, k, alpha, &a[(1 - 1)], lda, beta, &c[1 - 1], n1);
+                    Rsyrk("U", "T", n1, k, alpha, &a[0], lda, beta, &c[1 - 1], n1);
                     Rsyrk("L", "T", n2, k, alpha, &a[((n1 + 1) - 1) * lda], lda, beta, &c[2 - 1], n1);
-                    Rgemm("T", "N", n1, n2, k, alpha, &a[(1 - 1)], lda, &a[((n1 + 1) - 1) * lda], lda, beta, &c[(n1 * n1 + 1) - 1], n1);
+                    Rgemm("T", "N", n1, n2, k, alpha, &a[0], lda, &a[((n1 + 1) - 1) * lda], lda, beta, &c[(n1 * n1 + 1) - 1], n1);
                     //
                 }
                 //
@@ -199,17 +199,17 @@ void Rsfrk(const char *transr, const char *uplo, const char *trans, INTEGER cons
                     //
                     // N is odd, TRANSR = 'T', UPLO = 'U', and TRANS = 'N'
                     //
-                    Rsyrk("U", "N", n1, k, alpha, &a[(1 - 1)], lda, beta, &c[(n2 * n2 + 1) - 1], n2);
+                    Rsyrk("U", "N", n1, k, alpha, &a[0], lda, beta, &c[(n2 * n2 + 1) - 1], n2);
                     Rsyrk("L", "N", n2, k, alpha, &a[((n1 + 1) - 1)], lda, beta, &c[(n1 * n2 + 1) - 1], n2);
-                    Rgemm("N", "T", n2, n1, k, alpha, &a[((n1 + 1) - 1)], lda, &a[(1 - 1)], lda, beta, &c[1 - 1], n2);
+                    Rgemm("N", "T", n2, n1, k, alpha, &a[((n1 + 1) - 1)], lda, &a[0], lda, beta, &c[1 - 1], n2);
                     //
                 } else {
                     //
                     // N is odd, TRANSR = 'T', UPLO = 'U', and TRANS = 'T'
                     //
-                    Rsyrk("U", "T", n1, k, alpha, &a[(1 - 1)], lda, beta, &c[(n2 * n2 + 1) - 1], n2);
+                    Rsyrk("U", "T", n1, k, alpha, &a[0], lda, beta, &c[(n2 * n2 + 1) - 1], n2);
                     Rsyrk("L", "T", n2, k, alpha, &a[((n1 + 1) - 1) * lda], lda, beta, &c[(n1 * n2 + 1) - 1], n2);
-                    Rgemm("T", "N", n2, n1, k, alpha, &a[((n1 + 1) - 1) * lda], lda, &a[(1 - 1)], lda, beta, &c[1 - 1], n2);
+                    Rgemm("T", "N", n2, n1, k, alpha, &a[((n1 + 1) - 1) * lda], lda, &a[0], lda, beta, &c[1 - 1], n2);
                     //
                 }
                 //
@@ -233,17 +233,17 @@ void Rsfrk(const char *transr, const char *uplo, const char *trans, INTEGER cons
                     //
                     // N is even, TRANSR = 'N', UPLO = 'L', and TRANS = 'N'
                     //
-                    Rsyrk("L", "N", nk, k, alpha, &a[(1 - 1)], lda, beta, &c[2 - 1], n + 1);
+                    Rsyrk("L", "N", nk, k, alpha, &a[0], lda, beta, &c[2 - 1], n + 1);
                     Rsyrk("U", "N", nk, k, alpha, &a[((nk + 1) - 1)], lda, beta, &c[1 - 1], n + 1);
-                    Rgemm("N", "T", nk, nk, k, alpha, &a[((nk + 1) - 1)], lda, &a[(1 - 1)], lda, beta, &c[(nk + 2) - 1], n + 1);
+                    Rgemm("N", "T", nk, nk, k, alpha, &a[((nk + 1) - 1)], lda, &a[0], lda, beta, &c[(nk + 2) - 1], n + 1);
                     //
                 } else {
                     //
                     // N is even, TRANSR = 'N', UPLO = 'L', and TRANS = 'T'
                     //
-                    Rsyrk("L", "T", nk, k, alpha, &a[(1 - 1)], lda, beta, &c[2 - 1], n + 1);
+                    Rsyrk("L", "T", nk, k, alpha, &a[0], lda, beta, &c[2 - 1], n + 1);
                     Rsyrk("U", "T", nk, k, alpha, &a[((nk + 1) - 1) * lda], lda, beta, &c[1 - 1], n + 1);
-                    Rgemm("T", "N", nk, nk, k, alpha, &a[((nk + 1) - 1) * lda], lda, &a[(1 - 1)], lda, beta, &c[(nk + 2) - 1], n + 1);
+                    Rgemm("T", "N", nk, nk, k, alpha, &a[((nk + 1) - 1) * lda], lda, &a[0], lda, beta, &c[(nk + 2) - 1], n + 1);
                     //
                 }
                 //
@@ -255,17 +255,17 @@ void Rsfrk(const char *transr, const char *uplo, const char *trans, INTEGER cons
                     //
                     // N is even, TRANSR = 'N', UPLO = 'U', and TRANS = 'N'
                     //
-                    Rsyrk("L", "N", nk, k, alpha, &a[(1 - 1)], lda, beta, &c[(nk + 2) - 1], n + 1);
+                    Rsyrk("L", "N", nk, k, alpha, &a[0], lda, beta, &c[(nk + 2) - 1], n + 1);
                     Rsyrk("U", "N", nk, k, alpha, &a[((nk + 1) - 1)], lda, beta, &c[(nk + 1) - 1], n + 1);
-                    Rgemm("N", "T", nk, nk, k, alpha, &a[(1 - 1)], lda, &a[((nk + 1) - 1)], lda, beta, &c[1 - 1], n + 1);
+                    Rgemm("N", "T", nk, nk, k, alpha, &a[0], lda, &a[((nk + 1) - 1)], lda, beta, &c[1 - 1], n + 1);
                     //
                 } else {
                     //
                     // N is even, TRANSR = 'N', UPLO = 'U', and TRANS = 'T'
                     //
-                    Rsyrk("L", "T", nk, k, alpha, &a[(1 - 1)], lda, beta, &c[(nk + 2) - 1], n + 1);
+                    Rsyrk("L", "T", nk, k, alpha, &a[0], lda, beta, &c[(nk + 2) - 1], n + 1);
                     Rsyrk("U", "T", nk, k, alpha, &a[((nk + 1) - 1) * lda], lda, beta, &c[(nk + 1) - 1], n + 1);
-                    Rgemm("T", "N", nk, nk, k, alpha, &a[(1 - 1)], lda, &a[((nk + 1) - 1) * lda], lda, beta, &c[1 - 1], n + 1);
+                    Rgemm("T", "N", nk, nk, k, alpha, &a[0], lda, &a[((nk + 1) - 1) * lda], lda, beta, &c[1 - 1], n + 1);
                     //
                 }
                 //
@@ -283,17 +283,17 @@ void Rsfrk(const char *transr, const char *uplo, const char *trans, INTEGER cons
                     //
                     // N is even, TRANSR = 'T', UPLO = 'L', and TRANS = 'N'
                     //
-                    Rsyrk("U", "N", nk, k, alpha, &a[(1 - 1)], lda, beta, &c[(nk + 1) - 1], nk);
+                    Rsyrk("U", "N", nk, k, alpha, &a[0], lda, beta, &c[(nk + 1) - 1], nk);
                     Rsyrk("L", "N", nk, k, alpha, &a[((nk + 1) - 1)], lda, beta, &c[1 - 1], nk);
-                    Rgemm("N", "T", nk, nk, k, alpha, &a[(1 - 1)], lda, &a[((nk + 1) - 1)], lda, beta, &c[(((nk + 1) * nk) + 1) - 1], nk);
+                    Rgemm("N", "T", nk, nk, k, alpha, &a[0], lda, &a[((nk + 1) - 1)], lda, beta, &c[(((nk + 1) * nk) + 1) - 1], nk);
                     //
                 } else {
                     //
                     // N is even, TRANSR = 'T', UPLO = 'L', and TRANS = 'T'
                     //
-                    Rsyrk("U", "T", nk, k, alpha, &a[(1 - 1)], lda, beta, &c[(nk + 1) - 1], nk);
+                    Rsyrk("U", "T", nk, k, alpha, &a[0], lda, beta, &c[(nk + 1) - 1], nk);
                     Rsyrk("L", "T", nk, k, alpha, &a[((nk + 1) - 1) * lda], lda, beta, &c[1 - 1], nk);
-                    Rgemm("T", "N", nk, nk, k, alpha, &a[(1 - 1)], lda, &a[((nk + 1) - 1) * lda], lda, beta, &c[(((nk + 1) * nk) + 1) - 1], nk);
+                    Rgemm("T", "N", nk, nk, k, alpha, &a[0], lda, &a[((nk + 1) - 1) * lda], lda, beta, &c[(((nk + 1) * nk) + 1) - 1], nk);
                     //
                 }
                 //
@@ -305,17 +305,17 @@ void Rsfrk(const char *transr, const char *uplo, const char *trans, INTEGER cons
                     //
                     // N is even, TRANSR = 'T', UPLO = 'U', and TRANS = 'N'
                     //
-                    Rsyrk("U", "N", nk, k, alpha, &a[(1 - 1)], lda, beta, &c[(nk * (nk + 1) + 1) - 1], nk);
+                    Rsyrk("U", "N", nk, k, alpha, &a[0], lda, beta, &c[(nk * (nk + 1) + 1) - 1], nk);
                     Rsyrk("L", "N", nk, k, alpha, &a[((nk + 1) - 1)], lda, beta, &c[(nk * nk + 1) - 1], nk);
-                    Rgemm("N", "T", nk, nk, k, alpha, &a[((nk + 1) - 1)], lda, &a[(1 - 1)], lda, beta, &c[1 - 1], nk);
+                    Rgemm("N", "T", nk, nk, k, alpha, &a[((nk + 1) - 1)], lda, &a[0], lda, beta, &c[1 - 1], nk);
                     //
                 } else {
                     //
                     // N is even, TRANSR = 'T', UPLO = 'U', and TRANS = 'T'
                     //
-                    Rsyrk("U", "T", nk, k, alpha, &a[(1 - 1)], lda, beta, &c[(nk * (nk + 1) + 1) - 1], nk);
+                    Rsyrk("U", "T", nk, k, alpha, &a[0], lda, beta, &c[(nk * (nk + 1) + 1) - 1], nk);
                     Rsyrk("L", "T", nk, k, alpha, &a[((nk + 1) - 1) * lda], lda, beta, &c[(nk * nk + 1) - 1], nk);
-                    Rgemm("T", "N", nk, nk, k, alpha, &a[((nk + 1) - 1) * lda], lda, &a[(1 - 1)], lda, beta, &c[1 - 1], nk);
+                    Rgemm("T", "N", nk, nk, k, alpha, &a[((nk + 1) - 1) * lda], lda, &a[0], lda, beta, &c[1 - 1], nk);
                     //
                 }
                 //

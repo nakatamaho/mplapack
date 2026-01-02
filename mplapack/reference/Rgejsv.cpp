@@ -120,7 +120,7 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
         info = -13;
     } else if (rsvec && (ldv < n)) {
         info = -15;
-    } else if ((!(lsvec || rsvec || errest) && (lwork < max({(INTEGER)7, 4 * n + 1, 2 * m + n}))) || (!(lsvec || rsvec) && errest && (lwork < max({(INTEGER)7, 4 * n + n * n, 2 * m + n}))) || (lsvec && (!rsvec) && (lwork < max({(INTEGER)7, 2 * m + n, 4 * n + 1}))) || (rsvec && (!lsvec) && (lwork < max({(INTEGER)7, 2 * m + n, 4 * n + 1}))) || (lsvec && rsvec && (!jracc) && (lwork < max({2 * m + n, 6 * n + 2 * n * n}))) || (lsvec && rsvec && jracc && lwork < max({2 * m + n, 4 * n + n * n, 2 * n + n * n + 6}))) {
+    } else if ((!(lsvec || rsvec || errest) && (lwork < max((INTEGER)7, 4 * n + 1, 2 * m + n))) || (!(lsvec || rsvec) && errest && (lwork < max((INTEGER)7, 4 * n + n * n, 2 * m + n))) || (lsvec && (!rsvec) && (lwork < max((INTEGER)7, 2 * m + n, 4 * n + 1))) || (rsvec && (!lsvec) && (lwork < max((INTEGER)7, 2 * m + n, 4 * n + 1))) || (lsvec && rsvec && (!jracc) && (lwork < max(2 * m + n, 6 * n + 2 * n * n))) || (lsvec && rsvec && jracc && lwork < max(2 * m + n, 4 * n + n * n, 2 * n + n * n + 6))) {
         info = -17;
     } else {
         // #:)
@@ -136,8 +136,12 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
     // Quick return for void matrix (Y3K safe)
     // #:)
     if ((m == 0) || (n == 0)) {
-        iwork[0] = iwork[1] = iwork[2] = 0;
-        work[0] = work[1] = work[2] = work[3] = work[4] = work[5] = work[6] = 0.0;
+        for (INTEGER i_ = 1; i_ <= 3; i_++) {
+            iwork[i_ - 1] = 0;
+        }
+        for (INTEGER i_ = 1; i_ <= 7; i_++) {
+            work[i_ - 1] = 0.0;
+        }
         return;
     }
     //
@@ -160,7 +164,7 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
 #if defined ___MPLAPACK_BUILD_WITH_DD___ || defined ___MPLAPACK_BUILD_WITH_QD___
     big = one / sfmin;
 #else
-    big = Rlamch("Overflow");
+    big = Rlamch("O");
 #endif
     // BIG   = ONE / SFMIN
     //
@@ -170,7 +174,7 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
     // overflow. It is possible that this scaling pushes the smallest
     // column norm left from the underflow threshold (extreme case).
     //
-    scalem = one / sqrt(castREAL(m * n));
+    scalem = one / sqrt(castREAL(m) * castREAL(n));
     noscal = true;
     goscal = true;
     for (p = 1; p <= n; p = p + 1) {
@@ -252,17 +256,17 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
     if (n == 1) {
         //
         if (lsvec) {
-            Rlascl("G", 0, 0, sva[1 - 1], scalem, m, 1, &a[(1 - 1)], lda, ierr);
+            Rlascl("G", 0, 0, sva[1 - 1], scalem, m, 1, &a[0], lda, ierr);
             Rlacpy("A", m, 1, a, lda, u, ldu);
             // computing all M left singular vectors of the M x 1 matrix
             if (n1 != n) {
                 Rgeqrf(m, n, u, ldu, work, &work[(n + 1) - 1], lwork - n, ierr);
                 Rorgqr(m, n1, 1, u, ldu, work, &work[(n + 1) - 1], lwork - n, ierr);
-                Rcopy(m, &a[(1 - 1)], 1, &u[(1 - 1)], 1);
+                Rcopy(m, &a[0], 1, &u[0], 1);
             }
         }
         if (rsvec) {
-            v[(1 - 1)] = one;
+            v[0] = one;
         }
         if (sva[1 - 1] < (big * scalem)) {
             sva[1 - 1] = sva[1 - 1] / scalem;
@@ -325,7 +329,7 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
             }
         } else {
             for (p = 1; p <= m; p = p + 1) {
-                work[(m + n + p) - 1] = scalem * abs(a[(p - 1) + (iRamax(n, &a[(p - 1)], lda))]);
+                work[(m + n + p) - 1] = scalem * abs(a[(p - 1) + ((iRamax(n, &a[(p - 1)], lda)) - 1) * lda]);
                 aatmax = max(aatmax, work[(m + n + p) - 1]);
                 aatmin = min(aatmin, work[(m + n + p) - 1]);
             }
@@ -353,10 +357,10 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
         for (p = 1; p <= n; p = p + 1) {
             big1 = (pow2((sva[p - 1] / xsc))) * temp1;
             if (big1 != zero) {
-                entra += big1 * log(big);
+                entra += big1 * log(big1);
             }
         }
-        entra = -entra / log(castREAL(n - 1));
+        entra = -entra / log(castREAL(n));
         //
         // Now, SVA().^2/Trace(A^t * A) is a point in the probability simplex.
         // It is derived from the diagonal of  A^t * A.  Do the same with the
@@ -371,7 +375,7 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
                 entrat += big1 * log(big1);
             }
         }
-        entrat = -entrat / log(castREAL(m - 1));
+        entrat = -entrat / log(castREAL(m));
         //
         // Analyze the entropies and decide A or A^t. Smaller entropy
         // usually means better input for the algorithm.
@@ -528,7 +532,7 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
         // backward error of the order of N*EPSLN*||A||.
         temp1 = sqrt(castREAL(n)) * epsln;
         for (p = 2; p <= n; p = p + 1) {
-            if (abs(a[(p - 1) + (p - 1) * lda]) >= (temp1 * abs(a[(1 - 1)]))) {
+            if (abs(a[(p - 1) + (p - 1) * lda]) >= (temp1 * abs(a[0]))) {
                 nr++;
             } else {
                 goto statement_3002;
@@ -618,7 +622,7 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
         }
     }
     //
-    l2pert = l2pert && (abs(a[(1 - 1)] / a[(nr - 1) + (nr - 1) * lda]) > sqrt(big1));
+    l2pert = l2pert && (abs(a[0] / a[(nr - 1) + (nr - 1) * lda]) > sqrt(big1));
     // If there is no violent scaling, artificial perturbation is not needed.
     //
     // Phase 3:
@@ -714,7 +718,7 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
             //
             Rgesvj("L", "U", "N", n, nr, v, ldv, sva, nr, a, lda, work, lwork, info);
             scalem = work[1 - 1];
-            numrank = castINTEGER(work[2 - 1]);
+            numrank = nint(work[2 - 1]);
             //
         } else {
             //

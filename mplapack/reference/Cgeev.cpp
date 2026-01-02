@@ -122,7 +122,7 @@ void Cgeev(const char *jobvl, const char *jobvr, INTEGER const n, COMPLEX *a, IN
                 Chseqr("E", "N", n, 1, n, a, lda, w, vr, ldvr, work, -1, info);
             }
             hswork = castINTEGER(work[1 - 1].real());
-            maxwrk = max({maxwrk, hswork, minwrk});
+            maxwrk = max(maxwrk, hswork, minwrk);
         }
         work[1 - 1] = maxwrk;
         //
@@ -132,7 +132,7 @@ void Cgeev(const char *jobvl, const char *jobvr, INTEGER const n, COMPLEX *a, IN
     }
     //
     if (info != 0) {
-        Mxerbla("Cgeev", -info);
+        Mxerbla("Cgeev ", -info);
         return;
     } else if (lquery) {
         return;
@@ -149,6 +149,7 @@ void Cgeev(const char *jobvl, const char *jobvr, INTEGER const n, COMPLEX *a, IN
     eps = Rlamch("P");
     smlnum = Rlamch("S");
     bignum = one / smlnum;
+    Rlabad(smlnum, bignum);
     smlnum = sqrt(smlnum) / eps;
     bignum = one / smlnum;
     //

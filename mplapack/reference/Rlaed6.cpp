@@ -59,8 +59,8 @@ void Rlaed6(INTEGER const kniter, bool const orgati, REAL const rho, REAL *d, RE
     REAL sclfac = 0.0;
     REAL sclinv = 0.0;
     INTEGER i = 0;
-    REAL rscale[3];
-    REAL cscale[3];
+    REAL dscale[3];
+    REAL zscale[3];
     REAL fc = 0.0;
     REAL df = 0.0;
     REAL ddf = 0.0;
@@ -104,7 +104,7 @@ void Rlaed6(INTEGER const kniter, bool const orgati, REAL const rho, REAL *d, RE
             a = c * (d[1 - 1] + d[2 - 1]) + z[1 - 1] + z[2 - 1];
             b = c * d[1 - 1] * d[2 - 1] + z[1 - 1] * d[2 - 1] + z[2 - 1] * d[1 - 1];
         }
-        temp = max({abs(a), abs(b), abs(c)});
+        temp = max(abs(a), abs(b), abs(c));
         a = a / temp;
         b = b / temp;
         c = c / temp;
@@ -174,8 +174,8 @@ void Rlaed6(INTEGER const kniter, bool const orgati, REAL const rho, REAL *d, RE
         // Scaling up safe because D, Z, TAU scaled elsewhere to be O(1)
         //
         for (i = 1; i <= 3; i = i + 1) {
-            rscale[i - 1] = d[i - 1] * sclfac;
-            cscale[i - 1] = z[i - 1] * sclfac;
+            dscale[i - 1] = d[i - 1] * sclfac;
+            zscale[i - 1] = z[i - 1] * sclfac;
         }
         tau = tau * sclfac;
         lbd = lbd * sclfac;
@@ -185,8 +185,8 @@ void Rlaed6(INTEGER const kniter, bool const orgati, REAL const rho, REAL *d, RE
         // Copy D and Z to DSCALE and ZSCALE
         //
         for (i = 1; i <= 3; i = i + 1) {
-            rscale[i - 1] = d[i - 1];
-            cscale[i - 1] = z[i - 1];
+            dscale[i - 1] = d[i - 1];
+            zscale[i - 1] = z[i - 1];
         }
     }
     //
@@ -194,11 +194,11 @@ void Rlaed6(INTEGER const kniter, bool const orgati, REAL const rho, REAL *d, RE
     df = zero;
     ddf = zero;
     for (i = 1; i <= 3; i = i + 1) {
-        temp = one / (rscale[i - 1] - tau);
-        temp1 = cscale[i - 1] * temp;
+        temp = one / (dscale[i - 1] - tau);
+        temp1 = zscale[i - 1] * temp;
         temp2 = temp1 * temp;
         temp3 = temp2 * temp;
-        fc += temp1 / rscale[i - 1];
+        fc += temp1 / dscale[i - 1];
         df += temp2;
         ddf += temp3;
     }
@@ -229,16 +229,16 @@ void Rlaed6(INTEGER const kniter, bool const orgati, REAL const rho, REAL *d, RE
     for (niter = iter; niter <= maxit; niter = niter + 1) {
         //
         if (orgati) {
-            temp1 = rscale[2 - 1] - tau;
-            temp2 = rscale[3 - 1] - tau;
+            temp1 = dscale[2 - 1] - tau;
+            temp2 = dscale[3 - 1] - tau;
         } else {
-            temp1 = rscale[1 - 1] - tau;
-            temp2 = rscale[2 - 1] - tau;
+            temp1 = dscale[1 - 1] - tau;
+            temp2 = dscale[2 - 1] - tau;
         }
         a = (temp1 + temp2) * f - temp1 * temp2 * df;
         b = temp1 * temp2 * f;
         c = f - (temp1 + temp2) * df + temp1 * temp2 * ddf;
-        temp = max({abs(a), abs(b), abs(c)});
+        temp = max(abs(a), abs(b), abs(c));
         a = a / temp;
         b = b / temp;
         c = c / temp;
@@ -263,12 +263,12 @@ void Rlaed6(INTEGER const kniter, bool const orgati, REAL const rho, REAL *d, RE
         df = zero;
         ddf = zero;
         for (i = 1; i <= 3; i = i + 1) {
-            if ((rscale[i - 1] - tau) != zero) {
-                temp = one / (rscale[i - 1] - tau);
-                temp1 = cscale[i - 1] * temp;
+            if ((dscale[i - 1] - tau) != zero) {
+                temp = one / (dscale[i - 1] - tau);
+                temp1 = zscale[i - 1] * temp;
                 temp2 = temp1 * temp;
                 temp3 = temp2 * temp;
-                temp4 = temp1 / rscale[i - 1];
+                temp4 = temp1 / dscale[i - 1];
                 fc += temp4;
                 erretm += abs(temp4);
                 df += temp2;

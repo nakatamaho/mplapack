@@ -38,12 +38,8 @@
 
 void Rorbdb(const char *trans, const char *signs, INTEGER const m, INTEGER const p, INTEGER const q, REAL *x11, INTEGER const ldx11, REAL *x12, INTEGER const ldx12, REAL *x21, INTEGER const ldx21, REAL *x22, INTEGER const ldx22, REAL *theta, REAL *phi, REAL *taup1, REAL *taup2, REAL *tauq1, REAL *tauq2, REAL *work, INTEGER const lwork, INTEGER &info) {
     //
-    //     Test input arguments
+    // Test input arguments
     //
-#if defined ___MPLAPACK_BUILD_WITH_GMP___
-    printf("MPLAPACK ERROR Rorbdb.cpp is not supported for GMP\n");
-    exit(1);
-#endif
     info = 0;
     bool colmajor = !Mlsame(trans, "T");
     const REAL realone = 1.0;

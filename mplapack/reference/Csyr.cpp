@@ -51,7 +51,7 @@ void Csyr(const char *uplo, INTEGER const n, COMPLEX const alpha, COMPLEX *x, IN
         info = 7;
     }
     if (info != 0) {
-        Mxerbla("Csyr", info);
+        Mxerbla("Csyr  ", info);
         return;
     }
     //

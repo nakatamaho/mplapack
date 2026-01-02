@@ -84,7 +84,7 @@ void Cggsvp3(const char *jobu, const char *jobv, const char *jobq, INTEGER const
         if (wantv) {
             lwkopt = max(lwkopt, p);
         }
-        lwkopt = max({lwkopt, min(n, p)});
+        lwkopt = max(lwkopt, min(n, p));
         lwkopt = max(lwkopt, m);
         if (wantq) {
             lwkopt = max(lwkopt, n);
@@ -92,7 +92,7 @@ void Cggsvp3(const char *jobu, const char *jobv, const char *jobq, INTEGER const
         Cgeqp3(m, n, a, lda, iwork, tau, work, -1, rwork, info);
         lwkopt = max(lwkopt, castINTEGER(work[1 - 1].real()));
         lwkopt = max((INTEGER)1, lwkopt);
-        work[1 - 1] = castREAL(lwkopt);
+        work[1 - 1] = COMPLEX(lwkopt);
     }
     //
     if (info != 0) {
@@ -288,7 +288,7 @@ void Cggsvp3(const char *jobu, const char *jobv, const char *jobq, INTEGER const
         //
     }
     //
-    work[1 - 1] = castREAL(lwkopt);
+    work[1 - 1] = COMPLEX(lwkopt);
     //
     // End of Cggsvp3
     //

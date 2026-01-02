@@ -53,7 +53,7 @@ void Csymv(const char *uplo, INTEGER const n, COMPLEX const alpha, COMPLEX *a, I
         info = 10;
     }
     if (info != 0) {
-        Mxerbla("Csymv", info);
+        Mxerbla("Csymv ", info);
         return;
     }
     //

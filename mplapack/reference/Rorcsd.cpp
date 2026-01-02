@@ -177,9 +177,9 @@ void Rorcsd(const char *jobu1, const char *jobu2, const char *jobv1t, const char
         Rbbcsd(jobu1, jobu2, jobv1t, jobv2t, trans, m, p, q, theta, theta, u1, ldu1, u2, ldu2, v1t, ldv1t, v2t, ldv2t, u1, u1, u1, u1, u1, u1, u1, u1, work, -1, childinfo);
         lbbcsdworkopt = castINTEGER(work[1 - 1]);
         lbbcsdworkmin = lbbcsdworkopt;
-        lworkopt = max({iorgqr + lorgqrworkopt, iorglq + lorglqworkopt, iorbdb + lorbdbworkopt, ibbcsd + lbbcsdworkopt}) - 1;
-        lworkmin = max({iorgqr + lorgqrworkmin, iorglq + lorglqworkmin, iorbdb + lorbdbworkopt, ibbcsd + lbbcsdworkmin}) - 1;
-        work[1 - 1] = castREAL(max(lworkopt, lworkmin));
+        lworkopt = max(iorgqr + lorgqrworkopt, iorglq + lorglqworkopt, iorbdb + lorbdbworkopt, ibbcsd + lbbcsdworkopt) - 1;
+        lworkmin = max(iorgqr + lorgqrworkmin, iorglq + lorglqworkmin, iorbdb + lorbdbworkopt, ibbcsd + lbbcsdworkmin) - 1;
+        work[1 - 1] = max(lworkopt, lworkmin);
         //
         if (lwork < lworkmin && !lquery) {
             info = -22;
@@ -220,7 +220,7 @@ void Rorcsd(const char *jobu1, const char *jobu2, const char *jobv1t, const char
         }
         if (wantv1t && q > 0) {
             Rlacpy("U", q - 1, q - 1, &x11[(2 - 1) * ldx11], ldx11, &v1t[(2 - 1) + (2 - 1) * ldv1t], ldv1t);
-            v1t[(1 - 1)] = one;
+            v1t[0] = one;
             for (j = 2; j <= q; j = j + 1) {
                 v1t[(j - 1) * ldv1t] = zero;
                 v1t[(j - 1)] = zero;
@@ -247,7 +247,7 @@ void Rorcsd(const char *jobu1, const char *jobu2, const char *jobv1t, const char
         }
         if (wantv1t && q > 0) {
             Rlacpy("L", q - 1, q - 1, &x11[(2 - 1)], ldx11, &v1t[(2 - 1) + (2 - 1) * ldv1t], ldv1t);
-            v1t[(1 - 1)] = one;
+            v1t[0] = one;
             for (j = 2; j <= q; j = j + 1) {
                 v1t[(j - 1) * ldv1t] = zero;
                 v1t[(j - 1)] = zero;

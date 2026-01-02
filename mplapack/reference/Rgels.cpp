@@ -71,7 +71,7 @@ void Rgels(const char *trans, INTEGER const m, INTEGER const n, INTEGER const nr
         info = -4;
     } else if (lda < max((INTEGER)1, m)) {
         info = -6;
-    } else if (ldb < max({(INTEGER)1, m, n})) {
+    } else if (ldb < max((INTEGER)1, m, n)) {
         info = -8;
     } else if (lwork < max((INTEGER)1, mn + max(mn, nrhs)) && !lquery) {
         info = -10;
@@ -108,7 +108,7 @@ void Rgels(const char *trans, INTEGER const m, INTEGER const n, INTEGER const nr
     }
     //
     if (info != 0) {
-        Mxerbla("Rgels", -info);
+        Mxerbla("Rgels ", -info);
         return;
     } else if (lquery) {
         return;
@@ -116,7 +116,7 @@ void Rgels(const char *trans, INTEGER const m, INTEGER const n, INTEGER const nr
     //
     // Quick return if possible
     //
-    if (min({m, n, nrhs}) == 0) {
+    if (min(m, n, nrhs) == 0) {
         Rlaset("Full", max(m, n), nrhs, zero, zero, b, ldb);
         return;
     }
@@ -125,8 +125,9 @@ void Rgels(const char *trans, INTEGER const m, INTEGER const n, INTEGER const nr
     //
     smlnum = Rlamch("S") / Rlamch("P");
     bignum = one / smlnum;
+    Rlabad(smlnum, bignum);
     //
-    //     Scale A, B if max element outside range [SMLNUM,BIGNUM]
+    // Scale A, B if max element outside range [SMLNUM,BIGNUM]
     //
     anrm = Rlange("M", m, n, a, lda, rwork);
     iascl = 0;

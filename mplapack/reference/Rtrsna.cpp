@@ -69,7 +69,7 @@ void Rtrsna(const char *job, const char *howmny, bool *select, INTEGER const n, 
     REAL cs = 0.0;
     REAL sn = 0.0;
     INTEGER j = 0;
-    const REAL two = 2.0e+0;
+    const REAL two = 2.0;
     INTEGER kase = 0;
     INTEGER isave[3];
     REAL dumm = 0.0;
@@ -156,7 +156,7 @@ void Rtrsna(const char *job, const char *howmny, bool *select, INTEGER const n, 
             s[1 - 1] = one;
         }
         if (wantsp) {
-            sep[1 - 1] = abs(t[(1 - 1)]);
+            sep[1 - 1] = abs(t[0]);
         }
         return;
     }
@@ -166,6 +166,7 @@ void Rtrsna(const char *job, const char *howmny, bool *select, INTEGER const n, 
     eps = Rlamch("P");
     smlnum = Rlamch("S") / eps;
     bignum = one / smlnum;
+    Rlabad(smlnum, bignum);
     //
     ks = 0;
     pair = false;
@@ -256,7 +257,7 @@ void Rtrsna(const char *job, const char *howmny, bool *select, INTEGER const n, 
                     // Form C = T22 - lambda*I in WORK(2:N,2:N).
                     //
                     for (i = 2; i <= n; i = i + 1) {
-                        work[(i - 1) + (i - 1) * ldwork] = work[(i - 1) + (i - 1) * ldwork] - work[(1 - 1)];
+                        work[(i - 1) + (i - 1) * ldwork] = work[(i - 1) + (i - 1) * ldwork] - work[0];
                     }
                     n2 = 1;
                     nn = n - 1;
@@ -288,7 +289,7 @@ void Rtrsna(const char *job, const char *howmny, bool *select, INTEGER const n, 
                     //
                     for (j = 3; j <= n; j = j + 1) {
                         work[(2 - 1) + (j - 1) * ldwork] = cs * work[(2 - 1) + (j - 1) * ldwork];
-                        work[(j - 1) + (j - 1) * ldwork] = work[(j - 1) + (j - 1) * ldwork] - work[(1 - 1)];
+                        work[(j - 1) + (j - 1) * ldwork] = work[(j - 1) + (j - 1) * ldwork] - work[0];
                     }
                     work[(2 - 1) + (2 - 1) * ldwork] = zero;
                     //

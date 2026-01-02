@@ -72,7 +72,7 @@ void Chegv(INTEGER const itype, const char *jobz, const char *uplo, INTEGER cons
     }
     //
     if (info != 0) {
-        Mxerbla("Chegv", -info);
+        Mxerbla("Chegv ", -info);
         return;
     } else if (lquery) {
         return;

@@ -52,7 +52,7 @@ void Rstev(const char *jobz, INTEGER const n, REAL *d, REAL *e, REAL *z, INTEGER
     }
     //
     if (info != 0) {
-        Mxerbla("Rstev", -info);
+        Mxerbla("Rstev ", -info);
         return;
     }
     //
@@ -65,7 +65,7 @@ void Rstev(const char *jobz, INTEGER const n, REAL *d, REAL *e, REAL *z, INTEGER
     const REAL one = 1.0;
     if (n == 1) {
         if (wantz) {
-            z[(1 - 1)] = one;
+            z[0] = one;
         }
         return;
     }

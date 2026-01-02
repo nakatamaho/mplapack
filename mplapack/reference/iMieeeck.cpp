@@ -36,7 +36,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-INTEGER iMieeeck(INTEGER const &ispec, REAL const &zero, REAL const &one) {
+INTEGER iMieeeck(INTEGER const ispec, REAL const zero, REAL const one) {
     INTEGER return_value = 0;
 #if defined ___MPLAPACK_BUILD_WITH_GMP___
     // GMP is not a natural extention to IEEE 754.

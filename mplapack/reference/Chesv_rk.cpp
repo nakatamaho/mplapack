@@ -64,11 +64,11 @@ void Chesv_rk(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a,
             Chetrf_rk(uplo, n, a, lda, e, ipiv, work, -1, info);
             lwkopt = castINTEGER(work[1 - 1].real());
         }
-        work[1 - 1] = castREAL(lwkopt);
+        work[1 - 1] = lwkopt;
     }
     //
     if (info != 0) {
-        Mxerbla("Chesv_rk", -info);
+        Mxerbla("Chesv_rk ", -info);
         return;
     } else if (lquery) {
         return;
@@ -87,7 +87,7 @@ void Chesv_rk(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a,
         //
     }
     //
-    work[1 - 1] = castREAL(lwkopt);
+    work[1 - 1] = lwkopt;
     //
     // End of Chesv_rk
     //

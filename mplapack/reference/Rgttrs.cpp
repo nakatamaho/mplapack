@@ -39,8 +39,8 @@
 void Rgttrs(const char *trans, INTEGER const n, INTEGER const nrhs, REAL *dl, REAL *d, REAL *du, REAL *du2, INTEGER *ipiv, REAL *b, INTEGER const ldb, INTEGER &info) {
     //
     info = 0;
-    bool notran = (Mlsame(trans, "N") || Mlsame(trans, "n"));
-    if (!notran && !(Mlsame(trans, "T") || Mlsame(trans, "t")) && !(Mlsame(trans, "C") || Mlsame(trans, "c"))) {
+    bool notran = Mlsame(trans, "N");
+    if (!notran && !Mlsame(trans, "T") && !Mlsame(trans, "C")) {
         info = -1;
     } else if (n < 0) {
         info = -2;

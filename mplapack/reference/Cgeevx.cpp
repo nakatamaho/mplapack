@@ -36,7 +36,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Cgeevx(const char *balanc, const char *jobvl, const char *jobvr, const char *sense, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *w, COMPLEX *vl, INTEGER const ldvl, COMPLEX *vr, INTEGER const ldvr, INTEGER ilo, INTEGER ihi, REAL *scale, REAL &abnrm, REAL *rconde, REAL *rcondv, COMPLEX *work, INTEGER const lwork, REAL *rwork, INTEGER &info) {
+void Cgeevx(const char *balanc, const char *jobvl, const char *jobvr, const char *sense, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *w, COMPLEX *vl, INTEGER const ldvl, COMPLEX *vr, INTEGER const ldvr, INTEGER &ilo, INTEGER &ihi, REAL *scale, REAL &abnrm, REAL *rconde, REAL *rcondv, COMPLEX *work, INTEGER const lwork, REAL *rwork, INTEGER &info) {
     bool lquery = false;
     bool wantvl = false;
     bool wantvr = false;
@@ -46,7 +46,7 @@ void Cgeevx(const char *balanc, const char *jobvl, const char *jobvr, const char
     bool wntsnb = false;
     INTEGER minwrk = 0;
     INTEGER maxwrk = 0;
-    bool select[4];
+    bool select[1];
     INTEGER nout = 0;
     INTEGER ierr = 0;
     INTEGER lwork_trevc = 0;
@@ -183,6 +183,7 @@ void Cgeevx(const char *balanc, const char *jobvl, const char *jobvr, const char
     eps = Rlamch("P");
     smlnum = Rlamch("S");
     bignum = one / smlnum;
+    Rlabad(smlnum, bignum);
     smlnum = sqrt(smlnum) / eps;
     bignum = one / smlnum;
     //

@@ -84,7 +84,7 @@ void Rstemr(const char *jobz, const char *range, INTEGER const n, REAL *d, REAL 
     REAL rtol1 = 0.0;
     REAL rtol2 = 0.0;
     REAL pivmin = 0.0;
-    const REAL minrgp = 1.0e-3;
+    const REAL minrgp = 0.001;
     INTEGER ibegin = 0;
     INTEGER wbegin = 0;
     INTEGER jblk = 0;
@@ -166,7 +166,7 @@ void Rstemr(const char *jobz, const char *range, INTEGER const n, REAL *d, REAL 
     smlnum = safmin / eps;
     bignum = one / smlnum;
     rmin = sqrt(smlnum);
-    rmax = min(REAL(sqrt(bignum)), REAL(one / sqrt(sqrt(safmin))));
+    rmax = min(sqrt(bignum), one / sqrt(sqrt(safmin)));
     //
     if (info == 0) {
         work[1 - 1] = lwmin;
@@ -183,7 +183,7 @@ void Rstemr(const char *jobz, const char *range, INTEGER const n, REAL *d, REAL 
             nzcmin = 0;
         }
         if (zquery && info == 0) {
-            z[(1 - 1)] = nzcmin;
+            z[0] = nzcmin;
         } else if (nzc < nzcmin && !zquery) {
             info = -14;
         }
@@ -216,7 +216,7 @@ void Rstemr(const char *jobz, const char *range, INTEGER const n, REAL *d, REAL 
             }
         }
         if (wantz && (!zquery)) {
-            z[(1 - 1)] = one;
+            z[0] = one;
             isuppz[1 - 1] = 1;
             isuppz[2 - 1] = 1;
         }
@@ -357,7 +357,7 @@ void Rstemr(const char *jobz, const char *range, INTEGER const n, REAL *d, REAL 
             // need less accurate initial bisection in Rlarre.
             // Note: these settings do only affect the subset case and Rlarre
             rtol1 = sqrt(eps);
-            rtol2 = max(REAL(sqrt(eps) * 5.0e-3), REAL(four * eps));
+            rtol2 = max(sqrt(eps) * 0.005, four * eps);
         }
         Rlarre(range, n, wl, wu, iil, iiu, d, e, &work[inde2 - 1], rtol1, rtol2, thresh, nsplit, &iwork[iinspl - 1], m, w, &work[inderr - 1], &work[indgp - 1], &iwork[iindbl - 1], &iwork[iindw - 1], &work[indgrs - 1], pivmin, &work[indwrk - 1], &iwork[iindwk - 1], iinfo);
         if (iinfo != 0) {
@@ -386,7 +386,7 @@ void Rstemr(const char *jobz, const char *range, INTEGER const n, REAL *d, REAL 
             // eigenvalues of the original matrix.
             for (j = 1; j <= m; j = j + 1) {
                 itmp = iwork[(iindbl + j - 1) - 1];
-                w[j - 1] += e[(iwork[(iinspl + itmp - 1) - 1]) - 1];
+                w[j - 1] += e[iwork[(iinspl + itmp - 1) - 1] - 1];
             }
         }
         //

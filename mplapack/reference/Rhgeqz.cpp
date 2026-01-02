@@ -76,11 +76,11 @@ void Rhgeqz(const char *job, const char *compq, const char *compz, INTEGER const
     INTEGER ifirst = 0;
     REAL s1 = 0.0;
     REAL wr = 0.0;
-    const REAL safety = 1.0e+2;
+    const REAL safety = 100.0;
     REAL s2 = 0.0;
     REAL wr2 = 0.0;
     REAL wi = 0.0;
-    const REAL half = 0.5e+0;
+    const REAL half = 0.5;
     REAL scale = 0.0;
     INTEGER istart = 0;
     INTEGER jc = 0;
@@ -220,7 +220,7 @@ void Rhgeqz(const char *job, const char *compq, const char *compz, INTEGER const
     // Quick return if possible
     //
     if (n <= 0) {
-        work[1 - 1] = 1.0;
+        work[1 - 1] = castREAL(1);
         return;
     }
     //
@@ -241,8 +241,8 @@ void Rhgeqz(const char *job, const char *compq, const char *compz, INTEGER const
     ulp = Rlamch("E") * Rlamch("B");
     anorm = Rlanhs("F", in, &h[(ilo - 1) + (ilo - 1) * ldh], ldh, work);
     bnorm = Rlanhs("F", in, &t[(ilo - 1) + (ilo - 1) * ldt], ldt, work);
-    atol = max(safmin, REAL(ulp * anorm));
-    btol = max(safmin, REAL(ulp * bnorm));
+    atol = max(safmin, ulp * anorm);
+    btol = max(safmin, ulp * bnorm);
     ascale = one / max(safmin, anorm);
     bscale = one / max(safmin, bnorm);
     //
@@ -317,13 +317,13 @@ void Rhgeqz(const char *job, const char *compq, const char *compz, INTEGER const
             //
             goto statement_80;
         } else {
-            if (abs(h[(ilast - 1) + ((ilast - 1) - 1) * ldh]) <= max(safmin, REAL(ulp * (abs(h[(ilast - 1) + (ilast - 1) * ldh]) + abs(h[((ilast - 1) - 1) + ((ilast - 1) - 1) * ldh]))))) {
+            if (abs(h[(ilast - 1) + ((ilast - 1) - 1) * ldh]) <= max(safmin, ulp * (abs(h[(ilast - 1) + (ilast - 1) * ldh]) + abs(h[((ilast - 1) - 1) + ((ilast - 1) - 1) * ldh])))) {
                 h[(ilast - 1) + ((ilast - 1) - 1) * ldh] = zero;
                 goto statement_80;
             }
         }
         //
-        if (abs(t[(ilast - 1) + (ilast - 1) * ldt]) <= max(safmin, REAL(ulp * (abs(t[((ilast - 1) - 1) + (ilast - 1) * ldt]) + abs(t[((ilast - 1) - 1) + ((ilast - 1) - 1) * ldt]))))) {
+        if (abs(t[(ilast - 1) + (ilast - 1) * ldt]) <= max(safmin, ulp * (abs(t[((ilast - 1) - 1) + (ilast - 1) * ldt]) + abs(t[((ilast - 1) - 1) + ((ilast - 1) - 1) * ldt])))) {
             t[(ilast - 1) + (ilast - 1) * ldt] = zero;
             goto statement_70;
         }
@@ -337,7 +337,7 @@ void Rhgeqz(const char *job, const char *compq, const char *compz, INTEGER const
             if (j == ilo) {
                 ilazro = true;
             } else {
-                if (abs(h[(j - 1) + ((j - 1) - 1) * ldh]) <= max(safmin, REAL(ulp * (abs(h[(j - 1) + (j - 1) * ldh]) + abs(h[((j - 1) - 1) + ((j - 1) - 1) * ldh]))))) {
+                if (abs(h[(j - 1) + ((j - 1) - 1) * ldh]) <= max(safmin, ulp * (abs(h[(j - 1) + (j - 1) * ldh]) + abs(h[((j - 1) - 1) + ((j - 1) - 1) * ldh])))) {
                     h[(j - 1) + ((j - 1) - 1) * ldh] = zero;
                     ilazro = true;
                 } else {
@@ -351,7 +351,7 @@ void Rhgeqz(const char *job, const char *compq, const char *compz, INTEGER const
             if (j > ilo) {
                 temp += abs(t[((j - 1) - 1) + (j - 1) * ldt]);
             }
-            if (abs(t[(j - 1) + (j - 1) * ldt]) < max(safmin, REAL(ulp * temp))) {
+            if (abs(t[(j - 1) + (j - 1) * ldt]) < max(safmin, ulp * temp)) {
                 t[(j - 1) + (j - 1) * ldt] = zero;
                 //
                 // Test 1a: Check for 2 consecutive small subdiagonals in A
@@ -547,7 +547,7 @@ void Rhgeqz(const char *job, const char *compq, const char *compz, INTEGER const
                 s1 = s2;
                 s2 = temp;
             }
-            temp = max(s1, REAL(safmin * max({one, REAL(abs(wr)), REAL(abs(wi))})));
+            temp = max(s1, safmin * max(one, abs(wr), abs(wi)));
             if (wi != zero) {
                 goto statement_200;
             }
@@ -564,7 +564,7 @@ void Rhgeqz(const char *job, const char *compq, const char *compz, INTEGER const
         //
         temp = min(bscale, one) * (half * safmax);
         if (abs(wr) > temp) {
-            scale = min(scale, REAL(temp / abs(wr)));
+            scale = min(scale, temp / abs(wr));
         }
         s1 = scale * s1;
         wr = scale * wr;
@@ -972,7 +972,7 @@ void Rhgeqz(const char *job, const char *compq, const char *compz, INTEGER const
                     scale = abs(w22 / u2);
                 }
                 if (abs(w11) < abs(u1)) {
-                    scale = min(scale, REAL(abs(w11 / u1)));
+                    scale = min(scale, abs(w11 / u1));
                 }
                 //
                 // Solve

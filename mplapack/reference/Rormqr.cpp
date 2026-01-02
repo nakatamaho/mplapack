@@ -83,11 +83,7 @@ void Rormqr(const char *side, const char *trans, INTEGER const m, INTEGER const 
         //
         // Compute the workspace requirements
         //
-        char side_trans[3];
-        side_trans[0] = side[0];
-        side_trans[1] = trans[0];
-        side_trans[2] = '\0';
-        nb = min(nbmax, iMlaenv(1, "Rormqr", side_trans, m, n, k, -1));
+        nb = min(nbmax, iMlaenv(1, "Rormqr", CHAR2(side, trans), m, n, k, -1));
         lwkopt = max((INTEGER)1, nw) * nb + tsize;
         work[1 - 1] = lwkopt;
     }
@@ -102,7 +98,7 @@ void Rormqr(const char *side, const char *trans, INTEGER const m, INTEGER const 
     // Quick return if possible
     //
     if (m == 0 || n == 0 || k == 0) {
-        work[1 - 1] = 1;
+        work[1 - 1] = 1.0;
         return;
     }
     //
@@ -110,12 +106,8 @@ void Rormqr(const char *side, const char *trans, INTEGER const m, INTEGER const 
     INTEGER ldwork = nw;
     if (nb > 1 && nb < k) {
         if (lwork < nw * nb + tsize) {
-            char side_trans[3];
-            side_trans[0] = side[0];
-            side_trans[1] = trans[0];
-            side_trans[2] = '\0';
             nb = (lwork - tsize) / ldwork;
-            nbmin = max((INTEGER)2, iMlaenv(2, "Rormqr", side_trans, m, n, k, -1));
+            nbmin = max((INTEGER)2, iMlaenv(2, "Rormqr", CHAR2(side, trans), m, n, k, -1));
         }
     }
     //
@@ -158,7 +150,7 @@ void Rormqr(const char *side, const char *trans, INTEGER const m, INTEGER const 
             ic = 1;
         }
         //
-        for (i = i1; i3 >= 0 ? i <= i2 : i >= i2; i = i + i3) {
+        for (i = i1; i3 > 0 ? i <= i2 : i >= i2; i = i + i3) {
             ib = min(nb, k - i + 1);
             //
             // Form the triangular factor of the block reflector

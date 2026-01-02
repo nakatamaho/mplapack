@@ -36,7 +36,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rggevx(const char *balanc, const char *jobvl, const char *jobvr, const char *sense, INTEGER const n, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL *alphar, REAL *alphai, REAL *beta, REAL *vl, INTEGER const ldvl, REAL *vr, INTEGER const ldvr, INTEGER ilo, INTEGER ihi, REAL *lscale, REAL *rscale, REAL &abnrm, REAL &bbnrm, REAL *rconde, REAL *rcondv, REAL *work, INTEGER const lwork, INTEGER *iwork, bool *bwork, INTEGER &info) {
+void Rggevx(const char *balanc, const char *jobvl, const char *jobvr, const char *sense, INTEGER const n, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL *alphar, REAL *alphai, REAL *beta, REAL *vl, INTEGER const ldvl, REAL *vr, INTEGER const ldvr, INTEGER &ilo, INTEGER &ihi, REAL *lscale, REAL *rscale, REAL &abnrm, REAL &bbnrm, REAL *rconde, REAL *rcondv, REAL *work, INTEGER const lwork, INTEGER *iwork, bool *bwork, INTEGER &info) {
     INTEGER ijobvl = 0;
     bool ilvl = false;
     INTEGER ijobvr = 0;
@@ -159,10 +159,10 @@ void Rggevx(const char *balanc, const char *jobvl, const char *jobvr, const char
                 minwrk = max(minwrk, 2 * n * (n + 4) + 16);
             }
             maxwrk = minwrk;
-            maxwrk = max({maxwrk, n + n * iMlaenv(1, "Rgeqrf", " ", n, 1, n, 0)});
-            maxwrk = max({maxwrk, n + n * iMlaenv(1, "Rormqr", " ", n, 1, n, 0)});
+            maxwrk = max(maxwrk, n + n * iMlaenv(1, "Rgeqrf", " ", n, 1, n, 0));
+            maxwrk = max(maxwrk, n + n * iMlaenv(1, "Rormqr", " ", n, 1, n, 0));
             if (ilvl) {
-                maxwrk = max({maxwrk, n + n * iMlaenv(1, "Rorgqr", " ", n, 1, n, 0)});
+                maxwrk = max(maxwrk, n + n * iMlaenv(1, "Rorgqr", " ", n, 1, n, 0));
             }
         }
         work[1 - 1] = maxwrk;
@@ -190,6 +190,7 @@ void Rggevx(const char *balanc, const char *jobvl, const char *jobvr, const char
     eps = Rlamch("P");
     smlnum = Rlamch("S");
     bignum = one / smlnum;
+    Rlabad(smlnum, bignum);
     smlnum = sqrt(smlnum) / eps;
     bignum = one / smlnum;
     //
@@ -404,11 +405,11 @@ void Rggevx(const char *balanc, const char *jobvl, const char *jobvr, const char
             temp = zero;
             if (alphai[jc - 1] == zero) {
                 for (jr = 1; jr <= n; jr = jr + 1) {
-                    temp = max(temp, REAL(abs(vl[(jr - 1) + (jc - 1) * ldvl])));
+                    temp = max(temp, abs(vl[(jr - 1) + (jc - 1) * ldvl]));
                 }
             } else {
                 for (jr = 1; jr <= n; jr = jr + 1) {
-                    temp = max(temp, REAL(abs(vl[(jr - 1) + (jc - 1) * ldvl]) + abs(vl[(jr - 1) + ((jc + 1) - 1) * ldvl])));
+                    temp = max(temp, abs(vl[(jr - 1) + (jc - 1) * ldvl]) + abs(vl[(jr - 1) + ((jc + 1) - 1) * ldvl]));
                 }
             }
             if (temp < smlnum) {
@@ -437,11 +438,11 @@ void Rggevx(const char *balanc, const char *jobvl, const char *jobvr, const char
             temp = zero;
             if (alphai[jc - 1] == zero) {
                 for (jr = 1; jr <= n; jr = jr + 1) {
-                    temp = max(temp, REAL(abs(vr[(jr - 1) + (jc - 1) * ldvr])));
+                    temp = max(temp, abs(vr[(jr - 1) + (jc - 1) * ldvr]));
                 }
             } else {
                 for (jr = 1; jr <= n; jr = jr + 1) {
-                    temp = max(temp, REAL(abs(vr[(jr - 1) + (jc - 1) * ldvr]) + abs(vr[(jr - 1) + ((jc + 1) - 1) * ldvr])));
+                    temp = max(temp, abs(vr[(jr - 1) + (jc - 1) * ldvr]) + abs(vr[(jr - 1) + ((jc + 1) - 1) * ldvr]));
                 }
             }
             if (temp < smlnum) {

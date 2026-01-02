@@ -93,10 +93,6 @@ void Rgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
     INTEGER lwork_Rgelqf = 0;
     INTEGER lwork_Rorglq_n = 0;
     INTEGER lwork_Rorglq_m = 0;
-    char jobu_jobvt[3];
-    jobu_jobvt[0] = jobu[0];
-    jobu_jobvt[1] = jobvt[0];
-    jobu_jobvt[2] = '\0';
     if (info == 0) {
         minwrk = 1;
         maxwrk = 1;
@@ -104,7 +100,7 @@ void Rgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
             //
             // Compute space needed for Rbdsqr
             //
-            mnthr = iMlaenv(6, "Rgesvd", jobu_jobvt, m, n, 0, 0);
+            mnthr = iMlaenv(6, "Rgesvd", CHAR2(jobu, jobvt), m, n, 0, 0);
             bdspac = 5 * n;
             // Compute space needed for Rgeqrf
             Rgeqrf(m, n, a, lda, &dum[1 - 1], &dum[1 - 1], -1, ierr);
@@ -260,11 +256,7 @@ void Rgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
             //
             // Compute space needed for Rbdsqr
             //
-            char jobu_jobvt[3];
-            jobu_jobvt[0] = jobu[0];
-            jobu_jobvt[1] = jobvt[0];
-            jobu_jobvt[2] = '\0';
-            mnthr = iMlaenv(6, "Rgesvd", jobu_jobvt, m, n, 0, 0);
+            mnthr = iMlaenv(6, "Rgesvd", CHAR2(jobu, jobvt), m, n, 0, 0);
             bdspac = 5 * m;
             // Compute space needed for Rgelqf
             Rgelqf(m, n, a, lda, &dum[1 - 1], &dum[1 - 1], -1, ierr);
@@ -1185,7 +1177,7 @@ void Rgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
                     // M left singular vectors to be computed in U and
                     // no right singular vectors to be computed
                     //
-                    if (lwork >= n * n + max({n + m, 4 * n, bdspac})) {
+                    if (lwork >= n * n + max(n + m, 4 * n, bdspac)) {
                         //
                         // Sufficient workspace for a fast algorithm
                         //
@@ -1305,7 +1297,7 @@ void Rgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
                     // M left singular vectors to be computed in U and
                     // N right singular vectors to be overwritten on A
                     //
-                    if (lwork >= 2 * n * n + max({n + m, 4 * n, bdspac})) {
+                    if (lwork >= 2 * n * n + max(n + m, 4 * n, bdspac)) {
                         //
                         // Sufficient workspace for a fast algorithm
                         //
@@ -1457,7 +1449,7 @@ void Rgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
                     // M left singular vectors to be computed in U and
                     // N right singular vectors to be computed in VT
                     //
-                    if (lwork >= n * n + max({n + m, 4 * n, bdspac})) {
+                    if (lwork >= n * n + max(n + m, 4 * n, bdspac)) {
                         //
                         // Sufficient workspace for a fast algorithm
                         //
@@ -2398,7 +2390,7 @@ void Rgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
                     // N right singular vectors to be computed in VT and
                     // no left singular vectors to be computed
                     //
-                    if (lwork >= m * m + max({n + m, 4 * m, bdspac})) {
+                    if (lwork >= m * m + max(n + m, 4 * m, bdspac)) {
                         //
                         // Sufficient workspace for a fast algorithm
                         //
@@ -2517,7 +2509,7 @@ void Rgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
                     // N right singular vectors to be computed in VT and
                     // M left singular vectors to be overwritten on A
                     //
-                    if (lwork >= 2 * m * m + max({n + m, 4 * m, bdspac})) {
+                    if (lwork >= 2 * m * m + max(n + m, 4 * m, bdspac)) {
                         //
                         // Sufficient workspace for a fast algorithm
                         //
@@ -2667,7 +2659,7 @@ void Rgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
                     // N right singular vectors to be computed in VT and
                     // M left singular vectors to be computed in U
                     //
-                    if (lwork >= m * m + max({n + m, 4 * m, bdspac})) {
+                    if (lwork >= m * m + max(n + m, 4 * m, bdspac)) {
                         //
                         // Sufficient workspace for a fast algorithm
                         //

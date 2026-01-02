@@ -41,7 +41,7 @@ void Clarfgp(INTEGER const n, COMPLEX &alpha, COMPLEX *x, INTEGER const incx, CO
     REAL xnorm = 0.0;
     REAL alphr = 0.0;
     REAL alphi = 0.0;
-    const REAL two = 2.0e+0;
+    const REAL two = 2.0;
     INTEGER j = 0;
     const REAL one = 1.0;
     REAL beta = 0.0;
@@ -148,7 +148,7 @@ void Clarfgp(INTEGER const n, COMPLEX &alpha, COMPLEX *x, INTEGER const incx, CO
                     for (j = 1; j <= n - 1; j = j + 1) {
                         x[(1 + (j - 1) * incx) - 1] = zero;
                     }
-                    beta = beta - savealpha.real();
+                    beta = (-savealpha).real();
                 }
             } else {
                 xnorm = Rlapy2(alphr, alphi);

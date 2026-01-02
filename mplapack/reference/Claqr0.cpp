@@ -36,8 +36,6 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-inline REAL cabs1(COMPLEX cdum) { return (abs(cdum.real()) + abs(cdum.imag())); }
-
 void Claqr0(bool const wantt, bool const wantz, INTEGER const n, INTEGER const ilo, INTEGER const ihi, COMPLEX *h, INTEGER const ldh, COMPLEX *w, INTEGER const iloz, INTEGER const ihiz, COMPLEX *z, INTEGER const ldz, COMPLEX *work, INTEGER const lwork, INTEGER &info) {
     COMPLEX cdum = 0.0;
     const COMPLEX one = COMPLEX(1.0, 0.0);
@@ -75,8 +73,8 @@ void Claqr0(bool const wantt, bool const wantz, INTEGER const n, INTEGER const i
     INTEGER ks = 0;
     INTEGER ns = 0;
     INTEGER i = 0;
-    const REAL wilk1 = 0.75e0;
-    COMPLEX zdum[1];
+    const REAL wilk1 = 0.75;
+    COMPLEX zdum[1 * 1];
     INTEGER inf = 0;
     REAL s = 0.0;
     COMPLEX aa = 0.0;
@@ -139,7 +137,7 @@ void Claqr0(bool const wantt, bool const wantz, INTEGER const n, INTEGER const i
         //
         nwr = iMlaenv(13, "Claqr0", jbcmpz, n, ilo, ihi, lwork);
         nwr = max((INTEGER)2, nwr);
-        nwr = min({ihi - ilo + 1, (n - 1) / 3, nwr});
+        nwr = min(ihi - ilo + 1, (n - 1) / 3, nwr);
         //
         // ==== NSR = recommended number of simultaneous shifts.
         // .    At this point N .GT. NTINY = 15, so there is at
@@ -147,7 +145,7 @@ void Claqr0(bool const wantt, bool const wantz, INTEGER const n, INTEGER const i
         // .    and greater than or equal to two as required. ====
         //
         nsr = iMlaenv(15, "Claqr0", jbcmpz, n, ilo, ihi, lwork);
-        nsr = min({nsr, (n - 3) / 6, ihi - ilo});
+        nsr = min(nsr, (n - 3) / 6, ihi - ilo);
         nsr = max((INTEGER)2, nsr - mod(nsr, 2));
         //
         // ==== Estimate optimal workspace ====
@@ -309,12 +307,11 @@ void Claqr0(bool const wantt, bool const wantz, INTEGER const n, INTEGER const i
             //
             if ((ld == 0) || ((100 * ld <= nw * nibble) && (kbot - ktop + 1 > min(nmin, nwmax)))) {
                 //
-                //              ==== NS = nominal number of simultaneous shifts.
-                //              .    This may be lowered (slightly) if Claqr3
-                //              .    did not provide that many shifts. ====
+                // ==== NS = nominal number of simultaneous shifts.
+                // .    This may be lowered (slightly) if Claqr3
+                // .    did not provide that many shifts. ====
                 //
-                INTEGER itmp = max((INTEGER)2, kbot - ktop);
-                ns = min({nsmax, nsr, itmp});
+                ns = min(nsmax, nsr, max((INTEGER)2, kbot - ktop));
                 ns = ns - mod(ns, 2);
                 //
                 // ==== If there have been no deflations

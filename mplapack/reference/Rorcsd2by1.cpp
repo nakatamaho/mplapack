@@ -64,7 +64,7 @@ void Rorcsd2by1(const char *jobu1, const char *jobu2, const char *jobv1t, INTEGE
         info = -17;
     }
     //
-    INTEGER r = min({p, m - p, q, m - q});
+    INTEGER r = min(p, m - p, q, m - q);
     //
     // Compute workspace
     //
@@ -108,7 +108,7 @@ void Rorcsd2by1(const char *jobu1, const char *jobu2, const char *jobv1t, INTEGE
     REAL dum1[1];
     INTEGER childinfo = 0;
     INTEGER lorbdb = 0;
-    REAL dum2[1];
+    REAL dum2[1 * 1];
     INTEGER lbbcsd = 0;
     INTEGER lworkmin = 0;
     INTEGER lworkopt = 0;
@@ -214,8 +214,8 @@ void Rorcsd2by1(const char *jobu1, const char *jobu2, const char *jobv1t, INTEGE
             Rbbcsd(jobu2, jobu1, "N", jobv1t, "N", m, m - p, m - q, theta, dum1, u2, ldu2, u1, ldu1, dum2, 1, v1t, ldv1t, dum1, dum1, dum1, dum1, dum1, dum1, dum1, dum1, &work[1 - 1], -1, childinfo);
             lbbcsd = castINTEGER(work[1 - 1]);
         }
-        lworkmin = max({iorbdb + lorbdb - 1, iorgqr + lorgqrmin - 1, iorglq + lorglqmin - 1, ibbcsd + lbbcsd - 1});
-        lworkopt = max({iorbdb + lorbdb - 1, iorgqr + lorgqropt - 1, iorglq + lorglqopt - 1, ibbcsd + lbbcsd - 1});
+        lworkmin = max(iorbdb + lorbdb - 1, iorgqr + lorgqrmin - 1, iorglq + lorglqmin - 1, ibbcsd + lbbcsd - 1);
+        lworkopt = max(iorbdb + lorbdb - 1, iorgqr + lorgqropt - 1, iorglq + lorglqopt - 1, ibbcsd + lbbcsd - 1);
         work[1 - 1] = lworkopt;
         if (lwork < lworkmin && !lquery) {
             info = -19;
@@ -256,7 +256,7 @@ void Rorcsd2by1(const char *jobu1, const char *jobu2, const char *jobv1t, INTEGE
             Rorgqr(m - p, m - p, q, u2, ldu2, &work[itaup2 - 1], &work[iorgqr - 1], lorgqr, childinfo);
         }
         if (wantv1t && q > 0) {
-            v1t[(1 - 1)] = one;
+            v1t[0] = one;
             for (j = 2; j <= q; j = j + 1) {
                 v1t[(j - 1) * ldv1t] = zero;
                 v1t[(j - 1)] = zero;
@@ -292,7 +292,7 @@ void Rorcsd2by1(const char *jobu1, const char *jobu2, const char *jobv1t, INTEGE
         // Accumulate Householder reflectors
         //
         if (wantu1 && p > 0) {
-            u1[(1 - 1)] = one;
+            u1[0] = one;
             for (j = 2; j <= p; j = j + 1) {
                 u1[(j - 1) * ldu1] = zero;
                 u1[(j - 1)] = zero;
@@ -340,7 +340,7 @@ void Rorcsd2by1(const char *jobu1, const char *jobu2, const char *jobv1t, INTEGE
             Rorgqr(p, p, q, u1, ldu1, &work[itaup1 - 1], &work[iorgqr - 1], lorgqr, childinfo);
         }
         if (wantu2 && m - p > 0) {
-            u2[(1 - 1)] = one;
+            u2[0] = one;
             for (j = 2; j <= m - p; j = j + 1) {
                 u2[(j - 1) * ldu2] = zero;
                 u2[(j - 1)] = zero;

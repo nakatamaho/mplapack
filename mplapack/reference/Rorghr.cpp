@@ -73,7 +73,7 @@ void Rorghr(INTEGER const n, INTEGER const ilo, INTEGER const ihi, REAL *a, INTE
     // Quick return if possible
     //
     if (n == 0) {
-        work[1 - 1] = 1;
+        work[1 - 1] = 1.0;
         return;
     }
     //

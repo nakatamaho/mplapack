@@ -100,7 +100,7 @@ void Cupgtr(const char *uplo, INTEGER const n, COMPLEX *ap, COMPLEX *tau, COMPLE
         // set the first row and column of Q equal to those of the unit
         // matrix
         //
-        q[(1 - 1)] = cone;
+        q[0] = cone;
         for (i = 2; i <= n; i = i + 1) {
             q[(i - 1)] = czero;
         }

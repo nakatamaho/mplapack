@@ -58,33 +58,10 @@ void Claed8(INTEGER &k, INTEGER const n, INTEGER const qsiz, COMPLEX *q, INTEGER
     REAL c = 0.0;
     REAL tau = 0.0;
     INTEGER jp = 0;
-    INTEGER ldgivnum = 2;
     INTEGER ldgivcol = 2;
+    INTEGER ldgivnum = 2;
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     //
@@ -168,7 +145,7 @@ void Claed8(INTEGER &k, INTEGER const n, INTEGER const qsiz, COMPLEX *q, INTEGER
             perm[j - 1] = indxq[indx[j - 1] - 1];
             Ccopy(qsiz, &q[(perm[j - 1] - 1) * ldq], 1, &q2[(j - 1) * ldq2], 1);
         }
-        Clacpy("A", qsiz, n, &q2[(1 - 1)], ldq2, &q[(1 - 1)], ldq);
+        Clacpy("A", qsiz, n, &q2[0], ldq2, &q[0], ldq);
         return;
     }
     //
@@ -242,7 +219,7 @@ statement_70:
             i = 1;
         statement_80:
             if (k2 + i <= n) {
-                if (d[jlam - 1] < d[(indxp[(k2 + i) - 1]) - 1]) {
+                if (d[jlam - 1] < d[indxp[(k2 + i) - 1] - 1]) {
                     indxp[(k2 + i - 1) - 1] = indxp[(k2 + i) - 1];
                     indxp[(k2 + i) - 1] = jlam;
                     i++;

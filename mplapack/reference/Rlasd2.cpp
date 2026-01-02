@@ -46,7 +46,7 @@ void Rlasd2(INTEGER const nl, INTEGER const nr, INTEGER const sqre, INTEGER &k, 
     INTEGER idxi = 0;
     REAL eps = 0.0;
     REAL tol = 0.0;
-    const REAL eight = 8.0e+0;
+    const REAL eight = 8.0;
     INTEGER k2 = 0;
     INTEGER j = 0;
     INTEGER jprev = 0;
@@ -60,7 +60,7 @@ void Rlasd2(INTEGER const nl, INTEGER const nr, INTEGER const sqre, INTEGER &k, 
     INTEGER ct = 0;
     INTEGER psm[4];
     INTEGER jp = 0;
-    const REAL two = 2.0e+0;
+    const REAL two = 2.0;
     REAL hlftol = 0.0;
     const REAL one = 1.0;
     //
@@ -150,7 +150,7 @@ void Rlasd2(INTEGER const nl, INTEGER const nr, INTEGER const sqre, INTEGER &k, 
     //
     eps = Rlamch("Epsilon");
     tol = max(abs(alpha), abs(beta));
-    tol = eight * eps * max(REAL(abs(d[n - 1])), tol);
+    tol = eight * eps * max(abs(d[n - 1]), tol);
     //
     // There are 2 kinds of deflation -- first a value in the z-vector
     // is small, second two (or more) singular values are very close
@@ -305,7 +305,7 @@ statement_120:
     for (j = 2; j <= n; j = j + 1) {
         jp = idxp[j - 1];
         dsigma[j - 1] = d[jp - 1];
-        idxj = idxq[(idx[idxp[idxc[j - 1] - 1] - 1] + 1) - 1];
+        idxj = idxq[(idx[(idxp[idxc[j - 1] - 1]) - 1] + 1) - 1];
         if (idxj <= nlp1) {
             idxj = idxj - 1;
         }
@@ -357,7 +357,7 @@ statement_120:
             vt[(m - 1) + (i - 1) * ldvt] = c * vt[(m - 1) + (i - 1) * ldvt];
         }
     } else {
-        Rcopy(m, &vt[(nlp1 - 1)], ldvt, &vt2[(1 - 1)], ldvt2);
+        Rcopy(m, &vt[(nlp1 - 1)], ldvt, &vt2[0], ldvt2);
     }
     if (m > n) {
         Rcopy(m, &vt[(m - 1)], ldvt, &vt2[(m - 1)], ldvt2);

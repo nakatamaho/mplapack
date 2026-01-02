@@ -66,7 +66,7 @@ void Chfrk(const char *transr, const char *uplo, const char *trans, INTEGER cons
         info = -8;
     }
     if (info != 0) {
-        Mxerbla("Chfrk", -info);
+        Mxerbla("Chfrk ", -info);
         return;
     }
     //
@@ -131,7 +131,7 @@ void Chfrk(const char *transr, const char *uplo, const char *trans, INTEGER cons
                     //
                     // N is odd, TRANSR = 'N', UPLO = 'L', and TRANS = 'N'
                     //
-                    Cherk("L", "N", n1, k, alpha, &a[0], lda, beta, &c[0], n);
+                    Cherk("L", "N", n1, k, alpha, &a[0], lda, beta, &c[1 - 1], n);
                     Cherk("U", "N", n2, k, alpha, &a[((n1 + 1) - 1)], lda, beta, &c[(n + 1) - 1], n);
                     Cgemm("N", "C", n2, n1, k, calpha, &a[((n1 + 1) - 1)], lda, &a[0], lda, cbeta, &c[(n1 + 1) - 1], n);
                     //
@@ -139,7 +139,7 @@ void Chfrk(const char *transr, const char *uplo, const char *trans, INTEGER cons
                     //
                     // N is odd, TRANSR = 'N', UPLO = 'L', and TRANS = 'C'
                     //
-                    Cherk("L", "C", n1, k, alpha, &a[0], lda, beta, &c[0], n);
+                    Cherk("L", "C", n1, k, alpha, &a[0], lda, beta, &c[1 - 1], n);
                     Cherk("U", "C", n2, k, alpha, &a[((n1 + 1) - 1) * lda], lda, beta, &c[(n + 1) - 1], n);
                     Cgemm("C", "N", n2, n1, k, calpha, &a[((n1 + 1) - 1) * lda], lda, &a[0], lda, cbeta, &c[(n1 + 1) - 1], n);
                     //
@@ -155,7 +155,7 @@ void Chfrk(const char *transr, const char *uplo, const char *trans, INTEGER cons
                     //
                     Cherk("L", "N", n1, k, alpha, &a[0], lda, beta, &c[(n2 + 1) - 1], n);
                     Cherk("U", "N", n2, k, alpha, &a[(n2 - 1)], lda, beta, &c[(n1 + 1) - 1], n);
-                    Cgemm("N", "C", n1, n2, k, calpha, &a[0], lda, &a[(n2 - 1)], lda, cbeta, &c[0], n);
+                    Cgemm("N", "C", n1, n2, k, calpha, &a[0], lda, &a[(n2 - 1)], lda, cbeta, &c[1 - 1], n);
                     //
                 } else {
                     //
@@ -163,7 +163,7 @@ void Chfrk(const char *transr, const char *uplo, const char *trans, INTEGER cons
                     //
                     Cherk("L", "C", n1, k, alpha, &a[0], lda, beta, &c[(n2 + 1) - 1], n);
                     Cherk("U", "C", n2, k, alpha, &a[(n2 - 1) * lda], lda, beta, &c[(n1 + 1) - 1], n);
-                    Cgemm("C", "N", n1, n2, k, calpha, &a[0], lda, &a[(n2 - 1) * lda], lda, cbeta, &c[0], n);
+                    Cgemm("C", "N", n1, n2, k, calpha, &a[0], lda, &a[(n2 - 1) * lda], lda, cbeta, &c[1 - 1], n);
                     //
                 }
                 //
@@ -181,7 +181,7 @@ void Chfrk(const char *transr, const char *uplo, const char *trans, INTEGER cons
                     //
                     // N is odd, TRANSR = 'C', UPLO = 'L', and TRANS = 'N'
                     //
-                    Cherk("U", "N", n1, k, alpha, &a[0], lda, beta, &c[0], n1);
+                    Cherk("U", "N", n1, k, alpha, &a[0], lda, beta, &c[1 - 1], n1);
                     Cherk("L", "N", n2, k, alpha, &a[((n1 + 1) - 1)], lda, beta, &c[2 - 1], n1);
                     Cgemm("N", "C", n1, n2, k, calpha, &a[0], lda, &a[((n1 + 1) - 1)], lda, cbeta, &c[(n1 * n1 + 1) - 1], n1);
                     //
@@ -189,7 +189,7 @@ void Chfrk(const char *transr, const char *uplo, const char *trans, INTEGER cons
                     //
                     // N is odd, TRANSR = 'C', UPLO = 'L', and TRANS = 'C'
                     //
-                    Cherk("U", "C", n1, k, alpha, &a[0], lda, beta, &c[0], n1);
+                    Cherk("U", "C", n1, k, alpha, &a[0], lda, beta, &c[1 - 1], n1);
                     Cherk("L", "C", n2, k, alpha, &a[((n1 + 1) - 1) * lda], lda, beta, &c[2 - 1], n1);
                     Cgemm("C", "N", n1, n2, k, calpha, &a[0], lda, &a[((n1 + 1) - 1) * lda], lda, cbeta, &c[(n1 * n1 + 1) - 1], n1);
                     //
@@ -205,7 +205,7 @@ void Chfrk(const char *transr, const char *uplo, const char *trans, INTEGER cons
                     //
                     Cherk("U", "N", n1, k, alpha, &a[0], lda, beta, &c[(n2 * n2 + 1) - 1], n2);
                     Cherk("L", "N", n2, k, alpha, &a[((n1 + 1) - 1)], lda, beta, &c[(n1 * n2 + 1) - 1], n2);
-                    Cgemm("N", "C", n2, n1, k, calpha, &a[((n1 + 1) - 1)], lda, &a[0], lda, cbeta, &c[0], n2);
+                    Cgemm("N", "C", n2, n1, k, calpha, &a[((n1 + 1) - 1)], lda, &a[0], lda, cbeta, &c[1 - 1], n2);
                     //
                 } else {
                     //
@@ -213,7 +213,7 @@ void Chfrk(const char *transr, const char *uplo, const char *trans, INTEGER cons
                     //
                     Cherk("U", "C", n1, k, alpha, &a[0], lda, beta, &c[(n2 * n2 + 1) - 1], n2);
                     Cherk("L", "C", n2, k, alpha, &a[((n1 + 1) - 1) * lda], lda, beta, &c[(n1 * n2 + 1) - 1], n2);
-                    Cgemm("C", "N", n2, n1, k, calpha, &a[((n1 + 1) - 1) * lda], lda, &a[0], lda, cbeta, &c[0], n2);
+                    Cgemm("C", "N", n2, n1, k, calpha, &a[((n1 + 1) - 1) * lda], lda, &a[0], lda, cbeta, &c[1 - 1], n2);
                     //
                 }
                 //
@@ -238,7 +238,7 @@ void Chfrk(const char *transr, const char *uplo, const char *trans, INTEGER cons
                     // N is even, TRANSR = 'N', UPLO = 'L', and TRANS = 'N'
                     //
                     Cherk("L", "N", nk, k, alpha, &a[0], lda, beta, &c[2 - 1], n + 1);
-                    Cherk("U", "N", nk, k, alpha, &a[((nk + 1) - 1)], lda, beta, &c[0], n + 1);
+                    Cherk("U", "N", nk, k, alpha, &a[((nk + 1) - 1)], lda, beta, &c[1 - 1], n + 1);
                     Cgemm("N", "C", nk, nk, k, calpha, &a[((nk + 1) - 1)], lda, &a[0], lda, cbeta, &c[(nk + 2) - 1], n + 1);
                     //
                 } else {
@@ -246,7 +246,7 @@ void Chfrk(const char *transr, const char *uplo, const char *trans, INTEGER cons
                     // N is even, TRANSR = 'N', UPLO = 'L', and TRANS = 'C'
                     //
                     Cherk("L", "C", nk, k, alpha, &a[0], lda, beta, &c[2 - 1], n + 1);
-                    Cherk("U", "C", nk, k, alpha, &a[((nk + 1) - 1) * lda], lda, beta, &c[0], n + 1);
+                    Cherk("U", "C", nk, k, alpha, &a[((nk + 1) - 1) * lda], lda, beta, &c[1 - 1], n + 1);
                     Cgemm("C", "N", nk, nk, k, calpha, &a[((nk + 1) - 1) * lda], lda, &a[0], lda, cbeta, &c[(nk + 2) - 1], n + 1);
                     //
                 }
@@ -261,7 +261,7 @@ void Chfrk(const char *transr, const char *uplo, const char *trans, INTEGER cons
                     //
                     Cherk("L", "N", nk, k, alpha, &a[0], lda, beta, &c[(nk + 2) - 1], n + 1);
                     Cherk("U", "N", nk, k, alpha, &a[((nk + 1) - 1)], lda, beta, &c[(nk + 1) - 1], n + 1);
-                    Cgemm("N", "C", nk, nk, k, calpha, &a[0], lda, &a[((nk + 1) - 1)], lda, cbeta, &c[0], n + 1);
+                    Cgemm("N", "C", nk, nk, k, calpha, &a[0], lda, &a[((nk + 1) - 1)], lda, cbeta, &c[1 - 1], n + 1);
                     //
                 } else {
                     //
@@ -269,7 +269,7 @@ void Chfrk(const char *transr, const char *uplo, const char *trans, INTEGER cons
                     //
                     Cherk("L", "C", nk, k, alpha, &a[0], lda, beta, &c[(nk + 2) - 1], n + 1);
                     Cherk("U", "C", nk, k, alpha, &a[((nk + 1) - 1) * lda], lda, beta, &c[(nk + 1) - 1], n + 1);
-                    Cgemm("C", "N", nk, nk, k, calpha, &a[0], lda, &a[((nk + 1) - 1) * lda], lda, cbeta, &c[0], n + 1);
+                    Cgemm("C", "N", nk, nk, k, calpha, &a[0], lda, &a[((nk + 1) - 1) * lda], lda, cbeta, &c[1 - 1], n + 1);
                     //
                 }
                 //
@@ -288,7 +288,7 @@ void Chfrk(const char *transr, const char *uplo, const char *trans, INTEGER cons
                     // N is even, TRANSR = 'C', UPLO = 'L', and TRANS = 'N'
                     //
                     Cherk("U", "N", nk, k, alpha, &a[0], lda, beta, &c[(nk + 1) - 1], nk);
-                    Cherk("L", "N", nk, k, alpha, &a[((nk + 1) - 1)], lda, beta, &c[0], nk);
+                    Cherk("L", "N", nk, k, alpha, &a[((nk + 1) - 1)], lda, beta, &c[1 - 1], nk);
                     Cgemm("N", "C", nk, nk, k, calpha, &a[0], lda, &a[((nk + 1) - 1)], lda, cbeta, &c[(((nk + 1) * nk) + 1) - 1], nk);
                     //
                 } else {
@@ -296,7 +296,7 @@ void Chfrk(const char *transr, const char *uplo, const char *trans, INTEGER cons
                     // N is even, TRANSR = 'C', UPLO = 'L', and TRANS = 'C'
                     //
                     Cherk("U", "C", nk, k, alpha, &a[0], lda, beta, &c[(nk + 1) - 1], nk);
-                    Cherk("L", "C", nk, k, alpha, &a[((nk + 1) - 1) * lda], lda, beta, &c[0], nk);
+                    Cherk("L", "C", nk, k, alpha, &a[((nk + 1) - 1) * lda], lda, beta, &c[1 - 1], nk);
                     Cgemm("C", "N", nk, nk, k, calpha, &a[0], lda, &a[((nk + 1) - 1) * lda], lda, cbeta, &c[(((nk + 1) * nk) + 1) - 1], nk);
                     //
                 }
@@ -311,7 +311,7 @@ void Chfrk(const char *transr, const char *uplo, const char *trans, INTEGER cons
                     //
                     Cherk("U", "N", nk, k, alpha, &a[0], lda, beta, &c[(nk * (nk + 1) + 1) - 1], nk);
                     Cherk("L", "N", nk, k, alpha, &a[((nk + 1) - 1)], lda, beta, &c[(nk * nk + 1) - 1], nk);
-                    Cgemm("N", "C", nk, nk, k, calpha, &a[((nk + 1) - 1)], lda, &a[0], lda, cbeta, &c[0], nk);
+                    Cgemm("N", "C", nk, nk, k, calpha, &a[((nk + 1) - 1)], lda, &a[0], lda, cbeta, &c[1 - 1], nk);
                     //
                 } else {
                     //
@@ -319,7 +319,7 @@ void Chfrk(const char *transr, const char *uplo, const char *trans, INTEGER cons
                     //
                     Cherk("U", "C", nk, k, alpha, &a[0], lda, beta, &c[(nk * (nk + 1) + 1) - 1], nk);
                     Cherk("L", "C", nk, k, alpha, &a[((nk + 1) - 1) * lda], lda, beta, &c[(nk * nk + 1) - 1], nk);
-                    Cgemm("C", "N", nk, nk, k, calpha, &a[((nk + 1) - 1) * lda], lda, &a[0], lda, cbeta, &c[0], nk);
+                    Cgemm("C", "N", nk, nk, k, calpha, &a[((nk + 1) - 1) * lda], lda, &a[0], lda, cbeta, &c[1 - 1], nk);
                     //
                 }
                 //

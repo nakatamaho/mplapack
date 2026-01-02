@@ -38,8 +38,8 @@
 
 void Rlasyf_rook(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &kb, REAL *a, INTEGER const lda, INTEGER *ipiv, REAL *w, INTEGER const ldw, INTEGER &info) {
     const REAL one = 1.0;
-    const REAL sevten = 17.0e+0;
-    const REAL eight = 8.0e+0;
+    const REAL sevten = 17.0;
+    const REAL eight = 8.0;
     REAL alpha = 0.0;
     REAL sfmin = 0.0;
     INTEGER k = 0;

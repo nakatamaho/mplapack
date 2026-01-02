@@ -60,8 +60,8 @@ void Chbevd_2stage(const char *jobz, const char *uplo, INTEGER const n, INTEGER 
         lhtrd = iMlaenv2stage(3, "Chetrd_hb2st", jobz, n, kd, ib, -1);
         lwtrd = iMlaenv2stage(4, "Chetrd_hb2st", jobz, n, kd, ib, -1);
         if (wantz) {
-            lwmin = 2 * n * n;
-            lrwmin = 1 + 5 * n + 2 * n * n;
+            lwmin = 2 * pow2(n);
+            lrwmin = 1 + 5 * n + 2 * pow2(n);
             liwmin = 3 + 5 * n;
         } else {
             lwmin = max(n, lhtrd + lwtrd);
@@ -112,9 +112,9 @@ void Chbevd_2stage(const char *jobz, const char *uplo, INTEGER const n, INTEGER 
     //
     const COMPLEX cone = COMPLEX(1.0, 0.0);
     if (n == 1) {
-        w[1 - 1] = ab[(1 - 1)].real();
+        w[1 - 1] = ab[0].real();
         if (wantz) {
-            z[(1 - 1)] = cone;
+            z[0] = cone;
         }
         return;
     }

@@ -41,13 +41,13 @@ void Rlasd5(INTEGER const i, REAL *d, REAL *z, REAL *delta, REAL const rho, REAL
     REAL del = d[2 - 1] - d[1 - 1];
     REAL delsq = del * (d[2 - 1] + d[1 - 1]);
     const REAL one = 1.0;
-    const REAL four = 4.0e+0;
-    const REAL three = 3.0e+0;
+    const REAL four = 4.0;
+    const REAL three = 3.0;
     REAL w = 0.0;
     const REAL zero = 0.0;
     REAL b = 0.0;
     REAL c = 0.0;
-    const REAL two = 2.0e+0;
+    const REAL two = 2.0;
     REAL tau = 0.0;
     if (i == 1) {
         w = one + four * rho * (z[2 - 1] * z[2 - 1] / (d[1 - 1] + three * d[2 - 1]) - z[1 - 1] * z[1 - 1] / (three * d[1 - 1] + d[2 - 1])) / del;

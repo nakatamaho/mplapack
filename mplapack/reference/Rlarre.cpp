@@ -36,7 +36,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rlarre(const char *range, INTEGER const n, REAL &vl, REAL &vu, INTEGER const il, INTEGER const iu, REAL *d, REAL *e, REAL *e2, REAL const rtol1, REAL const rtol2, REAL const spltol, INTEGER nsplit, INTEGER *isplit, INTEGER &m, REAL *w, REAL *werr, REAL *wgap, INTEGER *iblock, INTEGER *indexw, REAL *gers, REAL &pivmin, REAL *work, INTEGER *iwork, INTEGER &info) {
+void Rlarre(const char *range, INTEGER const n, REAL &vl, REAL &vu, INTEGER const il, INTEGER const iu, REAL *d, REAL *e, REAL *e2, REAL const rtol1, REAL const rtol2, REAL const spltol, INTEGER &nsplit, INTEGER *isplit, INTEGER &m, REAL *w, REAL *werr, REAL *wgap, INTEGER *iblock, INTEGER *indexw, REAL *gers, REAL &pivmin, REAL *work, INTEGER *iwork, INTEGER &info) {
     const INTEGER allrng = 1;
     INTEGER irange = 0;
     const INTEGER valrng = 3;
@@ -279,9 +279,9 @@ void Rlarre(const char *range, INTEGER const n, REAL &vl, REAL &vu, INTEGER cons
                 // eigenvalues are different, we use SIGMA = E( IEND ).
                 sigma = zero;
                 for (i = wbegin; i <= wend - 1; i = i + 1) {
-                    wgap[i - 1] = max(zero, REAL(w[(i + 1) - 1] - werr[(i + 1) - 1] - (w[i - 1] + werr[i - 1])));
+                    wgap[i - 1] = max(zero, w[(i + 1) - 1] - werr[(i + 1) - 1] - (w[i - 1] + werr[i - 1]));
                 }
-                wgap[wend - 1] = max(zero, REAL(vu - sigma - (w[wend - 1] + werr[wend - 1])));
+                wgap[wend - 1] = max(zero, vu - sigma - (w[wend - 1] + werr[wend - 1]));
                 // Find local index of the first and last desired evalue.
                 indl = indexw[wbegin - 1];
                 indu = indexw[wend - 1];
@@ -295,21 +295,21 @@ void Rlarre(const char *range, INTEGER const n, REAL &vl, REAL &vu, INTEGER cons
                 info = -1;
                 return;
             }
-            isleft = max(gl, REAL(tmp - tmp1 - hndrd * eps * abs(tmp - tmp1)));
+            isleft = max(gl, tmp - tmp1 - hndrd * eps * abs(tmp - tmp1));
             //
             Rlarrk(in, in, gl, gu, &d[ibegin - 1], &e2[ibegin - 1], pivmin, rtl, tmp, tmp1, iinfo);
             if (iinfo != 0) {
                 info = -1;
                 return;
             }
-            isrght = min(gu, REAL(tmp + tmp1 + hndrd * eps * abs(tmp + tmp1)));
+            isrght = min(gu, tmp + tmp1 + hndrd * eps * abs(tmp + tmp1));
             // Improve the estimate of the spectral diameter
             spdiam = isrght - isleft;
         } else {
             // Case of bisection
             // Find approximations to the wanted extremal eigenvalues
-            isleft = max(gl, REAL(w[wbegin - 1] - werr[wbegin - 1] - hndrd * eps * abs(w[wbegin - 1] - werr[wbegin - 1])));
-            isrght = min(gu, REAL(w[wend - 1] + werr[wend - 1] + hndrd * eps * abs(w[wend - 1] + werr[wend - 1])));
+            isleft = max(gl, w[wbegin - 1] - werr[wbegin - 1] - hndrd * eps * abs(w[wbegin - 1] - werr[wbegin - 1]));
+            isrght = min(gu, w[wend - 1] + werr[wend - 1] + hndrd * eps * abs(w[wend - 1] + werr[wend - 1]));
         }
         //
         // Decide whether the base representation for the current block
@@ -391,7 +391,7 @@ void Rlarre(const char *range, INTEGER const n, REAL &vl, REAL &vu, INTEGER cons
             // The initial SIGMA was to the outer end of the spectrum
             // the matrix is definite and we need not retreat.
             tau = spdiam * eps * n + two * pivmin;
-            tau = max(tau, REAL(two * eps * abs(sigma)));
+            tau = max(tau, two * eps * abs(sigma));
         } else {
             if (mb > 1) {
                 clwdth = w[wend - 1] + werr[wend - 1] - w[wbegin - 1] - werr[wbegin - 1];
@@ -422,7 +422,7 @@ void Rlarre(const char *range, INTEGER const n, REAL &vl, REAL &vu, INTEGER cons
                 work[(in + i) - 1] = tmp;
                 dpivot = (d[(j + 1) - 1] - sigma) - tmp * e[j - 1];
                 work[(i + 1) - 1] = dpivot;
-                dmax = max(dmax, REAL(abs(dpivot)));
+                dmax = max(dmax, abs(dpivot));
                 j++;
             }
             // check for element growth
@@ -523,7 +523,7 @@ void Rlarre(const char *range, INTEGER const n, REAL &vl, REAL &vu, INTEGER cons
             }
             // Rlarrb computes all gaps correctly except for the last one
             // Record distance to VU/GU
-            wgap[wend - 1] = max(zero, REAL((vu - sigma) - (w[wend - 1] + werr[wend - 1])));
+            wgap[wend - 1] = max(zero, (vu - sigma) - (w[wend - 1] + werr[wend - 1]));
             for (i = indl; i <= indu; i = i + 1) {
                 m++;
                 iblock[m - 1] = jblk;
@@ -588,9 +588,9 @@ void Rlarre(const char *range, INTEGER const n, REAL &vl, REAL &vu, INTEGER cons
             }
             for (i = m - mb + 1; i <= m - 1; i = i + 1) {
                 // compute the right gap between the intervals
-                wgap[i - 1] = max(zero, REAL(w[(i + 1) - 1] - werr[(i + 1) - 1] - (w[i - 1] + werr[i - 1])));
+                wgap[i - 1] = max(zero, w[(i + 1) - 1] - werr[(i + 1) - 1] - (w[i - 1] + werr[i - 1]));
             }
-            wgap[m - 1] = max(zero, REAL((vu - sigma) - (w[m - 1] + werr[m - 1])));
+            wgap[m - 1] = max(zero, (vu - sigma) - (w[m - 1] + werr[m - 1]));
         }
         // proceed with next block
         ibegin = iend + 1;
