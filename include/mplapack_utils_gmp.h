@@ -292,35 +292,102 @@ template <typename... Args, typename = std::enable_if_t<(std::is_same_v<mplapack
 
 #endif // MPLAPACK_MINMAX_MPLAPACKINT_DEFINED
 
-#include <type_traits>
-
 #ifndef MPLAPACK_MINMAX_MPF_CLASS_DEFINED
 #define MPLAPACK_MINMAX_MPF_CLASS_DEFINED
 
-// min/max for mpf_class (GMP multiprecision float)
+#include <type_traits>
+
+// Non-template overloads for mpf_class to beat std::min/std::max templates
+// when both arguments are exactly mpf_class.
 inline mpf_class min(const mpf_class &a, const mpf_class &b) { return (a > b) ? b : a; }
 inline mpf_class max(const mpf_class &a, const mpf_class &b) { return (a < b) ? b : a; }
 
-// 3-arg overloads block std::min/max(a,b,comp) hijack.
 inline mpf_class min(const mpf_class &a, const mpf_class &b, const mpf_class &c) {
-    mpf_class r = min(a, b);
-    return min(r, c);
+    mpf_class r = ::min(a, b);
+    return ::min(r, c);
 }
 inline mpf_class max(const mpf_class &a, const mpf_class &b, const mpf_class &c) {
-    mpf_class r = max(a, b);
-    return max(r, c);
+    mpf_class r = ::max(a, b);
+    return ::max(r, c);
 }
 
-// Accept GMP expression templates (e.g. abs(x) returns __gmp_expr<..., __gmp_unary_expr<...>>).
-template <typename... Args, typename = std::enable_if_t<(std::is_convertible_v<Args, mpf_class> && ...)>> inline mpf_class max(const mpf_class &a, const mpf_class &b, const mpf_class &c, const Args &...rest) {
-    mpf_class r = min(a, b, c);
-    ((r = min(r, rest)), ...);
+// -------------------------
+// 2-arg: GMP expressions
+//   - Same E: this overload should win over std::max/std::min.
+//   - Different E: enabled only when E1 != E2.
+// -------------------------
+
+template <class E> inline mpf_class min(const __gmp_expr<mpf_t, E> &a, const __gmp_expr<mpf_t, E> &b) {
+    mpf_class aa(a), bb(b);
+    return (aa > bb) ? bb : aa;
+}
+
+template <class E> inline mpf_class max(const __gmp_expr<mpf_t, E> &a, const __gmp_expr<mpf_t, E> &b) {
+    mpf_class aa(a), bb(b);
+    return (aa < bb) ? bb : aa;
+}
+
+template <class E1, class E2, typename = std::enable_if_t<!std::is_same_v<E1, E2>>> inline mpf_class min(const __gmp_expr<mpf_t, E1> &a, const __gmp_expr<mpf_t, E2> &b) {
+    mpf_class aa(a), bb(b);
+    return (aa > bb) ? bb : aa;
+}
+
+template <class E1, class E2, typename = std::enable_if_t<!std::is_same_v<E1, E2>>> inline mpf_class max(const __gmp_expr<mpf_t, E1> &a, const __gmp_expr<mpf_t, E2> &b) {
+    mpf_class aa(a), bb(b);
+    return (aa < bb) ? bb : aa;
+}
+
+// -------------------------
+// 3-arg: Fortran semantics (NOT comparator)
+//   - Third argument is any type constructible to mpf_class,
+//     to prevent std::max(a,b,comp) hijack.
+// -------------------------
+
+template <class E, class C, typename = std::enable_if_t<std::is_constructible_v<mpf_class, C>>> inline mpf_class min(const __gmp_expr<mpf_t, E> &a, const __gmp_expr<mpf_t, E> &b, const C &c) {
+    mpf_class r = ::min(a, b);
+    return ::min(r, mpf_class(c));
+}
+
+template <class E, class C, typename = std::enable_if_t<std::is_constructible_v<mpf_class, C>>> inline mpf_class max(const __gmp_expr<mpf_t, E> &a, const __gmp_expr<mpf_t, E> &b, const C &c) {
+    mpf_class r = ::max(a, b);
+    return ::max(r, mpf_class(c));
+}
+
+template <class E1, class E2, class C, typename = std::enable_if_t<!std::is_same_v<E1, E2> && std::is_constructible_v<mpf_class, C>>> inline mpf_class min(const __gmp_expr<mpf_t, E1> &a, const __gmp_expr<mpf_t, E2> &b, const C &c) {
+    mpf_class r = ::min(a, b);
+    return ::min(r, mpf_class(c));
+}
+
+template <class E1, class E2, class C, typename = std::enable_if_t<!std::is_same_v<E1, E2> && std::is_constructible_v<mpf_class, C>>> inline mpf_class max(const __gmp_expr<mpf_t, E1> &a, const __gmp_expr<mpf_t, E2> &b, const C &c) {
+    mpf_class r = ::max(a, b);
+    return ::max(r, mpf_class(c));
+}
+
+// -------------------------
+// 4+ args: fold (Rest must be constructible to mpf_class)
+// -------------------------
+
+template <class E, class C, class... Rest, typename = std::enable_if_t<std::is_constructible_v<mpf_class, C> && (std::is_constructible_v<mpf_class, Rest> && ...)>> inline mpf_class min(const __gmp_expr<mpf_t, E> &a, const __gmp_expr<mpf_t, E> &b, const C &c, const Rest &...rest) {
+    mpf_class r = ::min(a, b, c);
+    ((r = ::min(r, mpf_class(rest))), ...);
     return r;
 }
 
-template <typename... Args, typename = std::enable_if_t<(std::is_convertible_v<Args, mpf_class> && ...)>> inline mpf_class min(const mpf_class &a, const mpf_class &b, const mpf_class &c, const Args &...rest) {
-    mpf_class r = max(a, b, c);
-    ((r = max(r, rest)), ...);
+template <class E, class C, class... Rest, typename = std::enable_if_t<std::is_constructible_v<mpf_class, C> && (std::is_constructible_v<mpf_class, Rest> && ...)>> inline mpf_class max(const __gmp_expr<mpf_t, E> &a, const __gmp_expr<mpf_t, E> &b, const C &c, const Rest &...rest) {
+    mpf_class r = ::max(a, b, c);
+    ((r = ::max(r, mpf_class(rest))), ...);
+    return r;
+}
+
+template <class E1, class E2, class C, class... Rest, typename = std::enable_if_t<!std::is_same_v<E1, E2> && std::is_constructible_v<mpf_class, C> && (std::is_constructible_v<mpf_class, Rest> && ...)>> inline mpf_class min(const __gmp_expr<mpf_t, E1> &a, const __gmp_expr<mpf_t, E2> &b, const C &c, const Rest &...rest) {
+    mpf_class r = ::min(a, b, c);
+    ((r = ::min(r, mpf_class(rest))), ...);
+    return r;
+}
+
+template <class E1, class E2, class C, class... Rest, typename = std::enable_if_t<!std::is_same_v<E1, E2> && std::is_constructible_v<mpf_class, C> && (std::is_constructible_v<mpf_class, Rest> && ...)>> inline mpf_class max(const __gmp_expr<mpf_t, E1> &a, const __gmp_expr<mpf_t, E2> &b, const C &c, const Rest &...rest) {
+    mpf_class r = ::max(a, b, c);
+    ((r = ::max(r, mpf_class(rest))), ...);
     return r;
 }
 
@@ -382,9 +449,9 @@ inline mplapackint iceil(const mpf_class &x) {
     // mpf_class -> long is trunc toward zero (via mpf_get_si).
     mplapackint t = static_cast<mplapackint>(x.get_si());
     mpf_class tt = t;
-  if (x > tt) {
+    if (x > tt) {
         ++t;
-  }
+    }
     return t;
 }
 #endif // MPLAPACK_ICEIL_MPF_CLASS_DEFINED
