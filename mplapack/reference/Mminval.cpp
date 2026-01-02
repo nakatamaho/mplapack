@@ -29,58 +29,58 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-REAL Mmaxval(REAL *dx, INTEGER const start, INTEGER const end, INTEGER const incx) {
-    // Fortran MAXVAL for a rank-1 section:
-    //   maxval( dx(start:end:incx) )
+REAL Mminval(REAL *dx, INTEGER const start, INTEGER const end, INTEGER const incx) {
+    // Fortran MINVAL for a rank-1 section:
+    //   minval( dx(start:end:incx) )
     // Assumptions:
     //   - start/end are 1-based indices into dx
     //   - incx is the section stride (may be negative)
     // Semantics for an empty section:
-    // - return -HUGE (implemented as -Rlamch("O") in LAPACK/MPLAPACK style)
+    // - return +HUGE (implemented as +Rlamch("O") in LAPACK/MPLAPACK style)
 
     if (dx == nullptr) {
-        Mxerbla("Mmaxval", 1);
-        return -Rlamch("O");
+        Mxerbla("Mminval", 1);
+        return Rlamch("O");
     }
 
     if (incx == 0) {
         // Invalid stride: treat as empty section (Fortran array section with stride 0 is illegal)
-        Mxerbla("Mmaxval", 4);
-        return -Rlamch("O");
+        Mxerbla("Mminval", 4);
+        return Rlamch("O");
     }
 
     // Empty section check
     if ((incx > 0 && start > end) || (incx < 0 && start < end)) {
-        return -Rlamch("O");
+        return Rlamch("O");
     }
 
-    REAL dmax = dx[start - 1];
+    REAL dmin = dx[start - 1];
 
     // Fast path: contiguous forward
     if (incx == 1) {
         for (INTEGER i = start + 1; i <= end; ++i) {
-            if (dx[i - 1] > dmax) {
-                dmax = dx[i - 1];
+            if (dx[i - 1] < dmin) {
+                dmin = dx[i - 1];
             }
         }
-        return dmax;
+        return dmin;
     }
 
     // General path: arbitrary stride (positive or negative)
     INTEGER ix = start + incx;
     if (incx > 0) {
         for (; ix <= end; ix += incx) {
-            if (dx[ix - 1] > dmax) {
-                dmax = dx[ix - 1];
+            if (dx[ix - 1] < dmin) {
+                dmin = dx[ix - 1];
             }
         }
     } else { // incx < 0
         for (; ix >= end; ix += incx) {
-            if (dx[ix - 1] > dmax) {
-                dmax = dx[ix - 1];
+            if (dx[ix - 1] < dmin) {
+                dmin = dx[ix - 1];
             }
         }
     }
 
-    return dmax;
+    return dmin;
 }
