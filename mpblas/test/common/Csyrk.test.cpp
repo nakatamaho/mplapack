@@ -54,12 +54,12 @@ void Csyrk_test3(const char *uplo, const char *trans, COMPLEX_REF alpha_ref, COM
             int minlda;
 
             if (Mlsame(trans, "N"))
-                minlda = max(1, n);
+                minlda = max_int(1, n);
             else
-                minlda = max(1, k);
+                minlda = max_int(1, k);
 
             for (int lda = minlda; lda < MAX_LDA; lda++) {
-                for (int ldc = max(1, n); ldc < MAX_LDC; ldc++) {
+                for (int ldc = max_int(1, n); ldc < MAX_LDC; ldc++) {
 #if defined VERBOSE_TEST
                     printf("#n is %d, k is %d, lda is %d, ldc is %d\n", n, k, lda, ldc);
                     printf("#uplo is %s, trans is %s\n", uplo, trans);
