@@ -1,8 +1,6 @@
-diff --git a/mplapack/reference/Cgttrs.cpp b/mplapack/reference/Cgttrs.cpp
-index 78edcf62..adbb6f3b 100644
 --- a/mplapack/reference/Cgttrs.cpp
 +++ b/mplapack/reference/Cgttrs.cpp
-@@ -65,7 +65,7 @@ void Cgttrs(const char *trans, INTEGER const n, INTEGER const nrhs, COMPLEX *dl,
+@@ -65,7 +65,7 @@
      INTEGER itrans = 0;
      if (notran) {
          itrans = 0;

@@ -1,8 +1,6 @@
-diff --git a/mplapack/reference/Rsyequb.cpp b/mplapack/reference/Rsyequb.cpp
-index ac24bbab..e6bd55a7 100644
 --- a/mplapack/reference/Rsyequb.cpp
 +++ b/mplapack/reference/Rsyequb.cpp
-@@ -40,6 +40,7 @@ void Rsyequb(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL
+@@ -40,6 +40,7 @@
      bool up = false;
      const REAL zero = 0.0;
      const REAL one = 1.0;
@@ -10,7 +8,7 @@ index ac24bbab..e6bd55a7 100644
      INTEGER i = 0;
      INTEGER j = 0;
      REAL tol = 0.0;
-@@ -117,7 +118,7 @@ void Rsyequb(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL
+@@ -117,7 +118,7 @@
          s[j - 1] = 1.0 / s[j - 1];
      }
      //

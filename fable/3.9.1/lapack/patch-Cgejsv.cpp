@@ -1,8 +1,6 @@
-diff --git a/mplapack/reference/Cgejsv.cpp b/mplapack/reference/Cgejsv.cpp
-index e1dc6043..74575006 100644
 --- a/mplapack/reference/Cgejsv.cpp
 +++ b/mplapack/reference/Cgejsv.cpp
-@@ -408,7 +408,11 @@
+@@ -415,7 +415,11 @@
      epsln = Rlamch("Epsilon");
      sfmin = Rlamch("SafeMinimum");
      small = sfmin / epsln;

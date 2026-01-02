@@ -1,7 +1,5 @@
-diff --git b/mplapack/reference/Rlaln2.cpp a/mplapack/reference/Rlaln2.cpp
-index d258ce91..9b7819b7 100644
---- b/mplapack/reference/Rlaln2.cpp
-+++ a/mplapack/reference/Rlaln2.cpp
+--- a/mplapack/reference/Rlaln2.cpp
++++ b/mplapack/reference/Rlaln2.cpp
 @@ -36,23 +36,15 @@
  #include <mpblas.h>
  #include <mplapack.h>
@@ -34,7 +32,7 @@ index d258ce91..9b7819b7 100644
      INTEGER ldcr = 2;
      INTEGER ldipivot = 4;
      INTEGER ldci = 2;
-@@ -61,6 +53,7 @@ void Rlaln2(bool const ltrans, INTEGER const na, INTEGER const nw, REAL const sm
+@@ -61,6 +53,7 @@
      //
      const REAL two = 2.0;
      REAL smlnum = two * Rlamch("Safe minimum");
@@ -42,7 +40,7 @@ index d258ce91..9b7819b7 100644
      const REAL one = 1.0;
      REAL bignum = one / smlnum;
      REAL smini = max(smin, smlnum);
-@@ -108,6 +101,8 @@ void Rlaln2(bool const ltrans, INTEGER const na, INTEGER const nw, REAL const sm
+@@ -108,6 +101,8 @@
      REAL bi1 = 0.0;
      REAL xi2 = 0.0;
      REAL xi1 = 0.0;
@@ -51,7 +49,7 @@ index d258ce91..9b7819b7 100644
      if (na == 1) {
          //
          // 1 x 1  (i.e., scalar) system   C X = B
-@@ -258,7 +253,7 @@ void Rlaln2(bool const ltrans, INTEGER const na, INTEGER const nw, REAL const sm
+@@ -258,7 +253,7 @@
              //
              xr2 = (br2 * scale) / ur22;
              xr1 = (scale * br1) * ur11r - xr2 * (ur11r * ur12);
@@ -60,7 +58,7 @@ index d258ce91..9b7819b7 100644
                  x[0] = xr2;
                  x[(2 - 1)] = xr1;
              } else {
-@@ -395,7 +390,7 @@ void Rlaln2(bool const ltrans, INTEGER const na, INTEGER const nw, REAL const sm
+@@ -395,7 +390,7 @@
              Rladiv(br2, bi2, ur22, ui22, xr2, xi2);
              xr1 = ur11r * br1 - ui11r * bi1 - ur12s * xr2 + ui12s * xi2;
              xi1 = ui11r * br1 + ur11r * bi1 - ui12s * xr2 - ur12s * xi2;

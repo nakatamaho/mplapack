@@ -1,8 +1,6 @@
-diff --git a/mplapack/reference/Rgejsv.cpp b/mplapack/reference/Rgejsv.cpp
-index 89dca753..1e95a19d 100644
 --- a/mplapack/reference/Rgejsv.cpp
 +++ b/mplapack/reference/Rgejsv.cpp
-@@ -154,7 +154,11 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
+@@ -161,7 +161,11 @@
      epsln = Rlamch("Epsilon");
      sfmin = Rlamch("SafeMinimum");
      small = sfmin / epsln;

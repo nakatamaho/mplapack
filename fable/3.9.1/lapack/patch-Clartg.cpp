@@ -1,5 +1,3 @@
-diff --git a/mplapack/reference/Clartg.cpp b/mplapack/reference/Clartg.cpp
-index d432546e..b8e875a0 100644
 --- a/mplapack/reference/Clartg.cpp
 +++ b/mplapack/reference/Clartg.cpp
 @@ -36,6 +36,13 @@
@@ -16,7 +14,7 @@ index d432546e..b8e875a0 100644
  void Clartg(COMPLEX const f, COMPLEX const g, REAL &cs, COMPLEX &sn, COMPLEX &r) {
      COMPLEX ff = 0.0;
      REAL safmin = 0.0;
-@@ -58,13 +65,12 @@ void Clartg(COMPLEX const f, COMPLEX const g, REAL &cs, COMPLEX &sn, COMPLEX &r)
+@@ -58,13 +65,12 @@
      REAL dr = 0.0;
      REAL di = 0.0;
      INTEGER i = 0;
@@ -31,7 +29,7 @@ index d432546e..b8e875a0 100644
      fs = f;
      gs = g;
      count = 0;
-@@ -93,8 +99,8 @@ void Clartg(COMPLEX const f, COMPLEX const g, REAL &cs, COMPLEX &sn, COMPLEX &r)
+@@ -93,8 +99,8 @@
              goto statement_20;
          }
      }
@@ -42,7 +40,7 @@ index d432546e..b8e875a0 100644
      if (f2 <= max(g2, one) * safmin) {
          //
          // This is a rare case: F is very small.
-@@ -121,7 +127,7 @@ void Clartg(COMPLEX const f, COMPLEX const g, REAL &cs, COMPLEX &sn, COMPLEX &r)
+@@ -121,7 +127,7 @@
          cs = f2s / g2s;
          // Make sure abs(FF) = 1
          // Do complex/real division explicitly with 2 real divisions

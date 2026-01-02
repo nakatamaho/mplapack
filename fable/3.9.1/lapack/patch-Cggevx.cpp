@@ -1,8 +1,6 @@
-diff --git a/mplapack/reference/Cggevx.cpp b/mplapack/reference/Cggevx.cpp
-index 097fd1bc..2427f403 100644
 --- a/mplapack/reference/Cggevx.cpp
 +++ b/mplapack/reference/Cggevx.cpp
-@@ -379,7 +379,7 @@ void Cggevx(const char *balanc, const char *jobvl, const char *jobvr, const char
+@@ -379,7 +379,7 @@
          for (jc = 1; jc <= n; jc = jc + 1) {
              temp = zero;
              for (jr = 1; jr <= n; jr = jr + 1) {
@@ -11,7 +9,7 @@ index 097fd1bc..2427f403 100644
              }
              if (temp < smlnum) {
                  goto statement_50;
-@@ -397,7 +397,7 @@ void Cggevx(const char *balanc, const char *jobvl, const char *jobvr, const char
+@@ -397,7 +397,7 @@
          for (jc = 1; jc <= n; jc = jc + 1) {
              temp = zero;
              for (jr = 1; jr <= n; jr = jr + 1) {

@@ -1,8 +1,6 @@
-diff --git a/mplapack/reference/Cggev.cpp b/mplapack/reference/Cggev.cpp
-index 211283a4..2657a2f9 100644
 --- a/mplapack/reference/Cggev.cpp
 +++ b/mplapack/reference/Cggev.cpp
-@@ -301,7 +301,7 @@ void Cggev(const char *jobvl, const char *jobvr, INTEGER const n, COMPLEX *a, IN
+@@ -301,7 +301,7 @@
              for (jc = 1; jc <= n; jc = jc + 1) {
                  temp = zero;
                  for (jr = 1; jr <= n; jr = jr + 1) {
@@ -11,7 +9,7 @@ index 211283a4..2657a2f9 100644
                  }
                  if (temp < smlnum) {
                      goto statement_30;
-@@ -318,7 +318,7 @@ void Cggev(const char *jobvl, const char *jobvr, INTEGER const n, COMPLEX *a, IN
+@@ -318,7 +318,7 @@
              for (jc = 1; jc <= n; jc = jc + 1) {
                  temp = zero;
                  for (jr = 1; jr <= n; jr = jr + 1) {

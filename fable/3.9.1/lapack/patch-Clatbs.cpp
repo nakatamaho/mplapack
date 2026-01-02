@@ -1,5 +1,3 @@
-diff --git a/mplapack/reference/Clatbs.cpp b/mplapack/reference/Clatbs.cpp
-index cb4d6119..0327e189 100644
 --- a/mplapack/reference/Clatbs.cpp
 +++ b/mplapack/reference/Clatbs.cpp
 @@ -36,6 +36,8 @@

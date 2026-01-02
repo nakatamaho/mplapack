@@ -1,8 +1,6 @@
-diff --git a/mplapack/reference/Csytri2x.cpp b/mplapack/reference/Csytri2x.cpp
-index c45099b1..f9241e0f 100644
 --- a/mplapack/reference/Csytri2x.cpp
 +++ b/mplapack/reference/Csytri2x.cpp
-@@ -130,7 +130,7 @@ void Csytri2x(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda,
+@@ -130,7 +130,7 @@
          while (k <= n) {
              if (ipiv[k - 1] > 0) {
                  // 1 x 1 diagonal NNB
@@ -11,7 +9,7 @@ index c45099b1..f9241e0f 100644
                  work[(k - 1) + ((invd + 1) - 1) * ldwork] = 0.0;
                  k++;
              } else {
-@@ -309,7 +309,7 @@ void Csytri2x(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda,
+@@ -309,7 +309,7 @@
          while (k >= 1) {
              if (ipiv[k - 1] > 0) {
                  // 1 x 1 diagonal NNB

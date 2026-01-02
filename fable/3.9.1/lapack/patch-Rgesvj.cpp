@@ -1,8 +1,6 @@
-diff --git a/mplapack/reference/Rgesvj.cpp b/mplapack/reference/Rgesvj.cpp
-index 493a4877..70758e80 100644
 --- a/mplapack/reference/Rgesvj.cpp
 +++ b/mplapack/reference/Rgesvj.cpp
-@@ -169,7 +169,11 @@ void Rgesvj(const char *joba, const char *jobu, const char *jobv, INTEGER const
+@@ -174,7 +174,11 @@
      sfmin = Rlamch("SafeMinimum");
      rootsfmin = sqrt(sfmin);
      small = sfmin / epsln;

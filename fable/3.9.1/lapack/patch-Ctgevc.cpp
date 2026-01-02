@@ -1,8 +1,6 @@
-diff --git a/mplapack/reference/Ctgevc.cpp b/mplapack/reference/Ctgevc.cpp
-index 66a434d6..9e0c2998 100644
 --- a/mplapack/reference/Ctgevc.cpp
 +++ b/mplapack/reference/Ctgevc.cpp
-@@ -195,19 +195,19 @@ void Ctgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
+@@ -195,19 +195,19 @@
      // part of A and B to check for possible overflow in the triangular
      // solver.
      //
@@ -10,7 +8,7 @@ index 66a434d6..9e0c2998 100644
 -    bnorm = abs1(p[0]);
 +    anorm = cabs1(s[0]);
 +    bnorm = cabs1(p[0]);
-     rwork[0] = zero;
+     rwork[1 - 1] = zero;
      rwork[(n + 1) - 1] = zero;
      for (j = 2; j <= n; j = j + 1) {
          rwork[j - 1] = zero;
@@ -28,7 +26,7 @@ index 66a434d6..9e0c2998 100644
      }
      //
      ascale = one / max(anorm, safmin);
-@@ -229,7 +229,7 @@ void Ctgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
+@@ -229,7 +229,7 @@
              if (ilcomp) {
                  ieig++;
                  //
@@ -37,7 +35,7 @@ index 66a434d6..9e0c2998 100644
                      //
                      // Singular matrix pencil -- return unit eigenvector
                      //
-@@ -245,7 +245,7 @@ void Ctgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
+@@ -245,7 +245,7 @@
                  // H
                  // y  ( a A - b B ) = 0
                  //
@@ -46,7 +44,7 @@ index 66a434d6..9e0c2998 100644
                  salpha = (temp * s[(je - 1) + (je - 1) * lds]) * ascale;
                  sbeta = (temp * p[(je - 1) + (je - 1) * ldp].real()) * bscale;
                  acoeff = sbeta * ascale;
-@@ -254,17 +254,17 @@ void Ctgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
+@@ -254,17 +254,17 @@
                  // Scale to avoid underflow
                  //
                  lsa = abs(sbeta) >= safmin && abs(acoeff) < small;
@@ -67,7 +65,7 @@ index 66a434d6..9e0c2998 100644
                      if (lsa) {
                          acoeff = ascale * (scale * sbeta);
                      } else {
-@@ -278,7 +278,7 @@ void Ctgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
+@@ -278,7 +278,7 @@
                  }
                  //
                  acoefa = abs(acoeff);
@@ -76,7 +74,7 @@ index 66a434d6..9e0c2998 100644
                  xmax = one;
                  for (jr = 1; jr <= n; jr = jr + 1) {
                      work[jr - 1] = czero;
-@@ -321,13 +321,13 @@ void Ctgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
+@@ -321,13 +321,13 @@
                      // with scaling and perturbation of the denominator
                      //
                      d = conj(acoeff * s[(j - 1) + (j - 1) * lds] - bcoeff * p[(j - 1) + (j - 1) * ldp]);
@@ -94,7 +92,7 @@ index 66a434d6..9e0c2998 100644
                              for (jr = je; jr <= j - 1; jr = jr + 1) {
                                  work[jr - 1] = temp * work[jr - 1];
                              }
-@@ -336,7 +336,7 @@ void Ctgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
+@@ -336,7 +336,7 @@
                          }
                      }
                      work[j - 1] = Cladiv(-sum, d);
@@ -103,7 +101,7 @@ index 66a434d6..9e0c2998 100644
                  }
                  //
                  // Back transform eigenvector if HOWMNY='B'.
-@@ -354,7 +354,7 @@ void Ctgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
+@@ -354,7 +354,7 @@
                  //
                  xmax = zero;
                  for (jr = ibeg; jr <= n; jr = jr + 1) {
@@ -112,7 +110,7 @@ index 66a434d6..9e0c2998 100644
                  }
                  //
                  if (xmax > safmin) {
-@@ -391,7 +391,7 @@ void Ctgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
+@@ -391,7 +391,7 @@
              if (ilcomp) {
                  ieig = ieig - 1;
                  //
@@ -121,7 +119,7 @@ index 66a434d6..9e0c2998 100644
                      //
                      // Singular matrix pencil -- return unit eigenvector
                      //
-@@ -407,7 +407,7 @@ void Ctgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
+@@ -407,7 +407,7 @@
                  //
                  // ( a A - b B ) x  = 0
                  //
@@ -130,7 +128,7 @@ index 66a434d6..9e0c2998 100644
                  salpha = (temp * s[(je - 1) + (je - 1) * lds]) * ascale;
                  sbeta = (temp * p[(je - 1) + (je - 1) * ldp].real()) * bscale;
                  acoeff = sbeta * ascale;
-@@ -416,17 +416,17 @@ void Ctgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
+@@ -416,17 +416,17 @@
                  // Scale to avoid underflow
                  //
                  lsa = abs(sbeta) >= safmin && abs(acoeff) < small;
@@ -151,7 +149,7 @@ index 66a434d6..9e0c2998 100644
                      if (lsa) {
                          acoeff = ascale * (scale * sbeta);
                      } else {
-@@ -440,7 +440,7 @@ void Ctgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
+@@ -440,7 +440,7 @@
                  }
                  //
                  acoefa = abs(acoeff);
@@ -160,7 +158,7 @@ index 66a434d6..9e0c2998 100644
                  xmax = one;
                  for (jr = 1; jr <= n; jr = jr + 1) {
                      work[jr - 1] = czero;
-@@ -464,13 +464,13 @@ void Ctgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
+@@ -464,13 +464,13 @@
                      // with scaling and perturbation of the denominator
                      //
                      d = acoeff * s[(j - 1) + (j - 1) * lds] - bcoeff * p[(j - 1) + (j - 1) * ldp];
@@ -178,7 +176,7 @@ index 66a434d6..9e0c2998 100644
                              for (jr = 1; jr <= je; jr = jr + 1) {
                                  work[jr - 1] = temp * work[jr - 1];
                              }
-@@ -483,8 +483,8 @@ void Ctgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
+@@ -483,8 +483,8 @@
                          //
                          // w = w + x(j)*(a S(*,j) - b P(*,j) ) with scaling
                          //
@@ -189,7 +187,7 @@ index 66a434d6..9e0c2998 100644
                              if (acoefa * rwork[j - 1] + bcoefa * rwork[(n + j) - 1] >= bignum * temp) {
                                  for (jr = 1; jr <= je; jr = jr + 1) {
                                      work[jr - 1] = temp * work[jr - 1];
-@@ -515,7 +515,7 @@ void Ctgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
+@@ -515,7 +515,7 @@
                  //
                  xmax = zero;
                  for (jr = 1; jr <= iend; jr = jr + 1) {
