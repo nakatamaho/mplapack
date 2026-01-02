@@ -41,7 +41,7 @@ void Crotg(COMPLEX &ca, COMPLEX const cb, REAL &c, COMPLEX &s) {
     COMPLEX alpha = 0.0;
     if (abs(ca) == 0.0) {
         c = 0.0;
-        s = (1.0, 0.0);
+        s = COMPLEX(1.0, 0.0);
         ca = cb;
     } else {
         scale = abs(ca) + abs(cb);
