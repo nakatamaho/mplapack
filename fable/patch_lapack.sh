@@ -53,4 +53,5 @@ patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Rsyequb.cpp
 patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Rsygvd.cpp
 patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-iMieeeck.cpp
 patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-iMlaenv.cpp
+patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-iMparam2stage.cpp
 patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-iMparmq.cpp
