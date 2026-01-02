@@ -2557,45 +2557,35 @@ def convert_tokens(conv_info, tokens, commas=False, had_str_concat=None):
                         inner = s[start_paren + 1: end_paren]
                         return f"{name}({inner})"
 
-                    i_is_int = bool(int_re.fullmatch(i_expr))
-                    lb_is_int = bool(int_re.fullmatch(lb_expr))
+                    # NOTE: Do not constant-fold "1 - 1" into "0" for 1D indexing.
+                    # Keeping "a[1 - 1]" helps auditing generated code vs. Fortran sources.
+                    canon_i = canonical_simple_index(i_expr)
 
-                    # Case 1: both index and lower bound are integer literals
-                    # -> constant folding, e.g. a(1) with lb=1 -> a[0]
-                    if i_is_int and lb_is_int:
-                        i_val = int(i_expr)
-                        lb_val = int(lb_expr)
-                        index_expr = str(i_val - lb_val)
-                        rapp("[" + index_expr + "]")
-                    else:
-                        canon_i = canonical_simple_index(i_expr)
-
-                        # If lower bound is exactly 0, avoid generating "i - 0".
-                        if lb_expr == "0":
-                            if canon_i is not None:
-                                # a(i) with lb=0 -> a[i]
-                                index_expr = canon_i
-                            else:
-                                # Complex index: group once: a(f(i)) -> a[(f(i))]
-                                index_expr = f"({i_expr})"
+                    # If lower bound is exactly 0, avoid generating "i - 0".
+                    if lb_expr == "0":
+                        if canon_i is not None:
+                            # a(i) with lb=0 -> a[i]
+                            index_expr = canon_i
                         else:
-                            # Non-zero lower bound: generate "index - lb"
-                            lb_simple = bool(
-                                name_re.fullmatch(
-                                    lb_expr) or int_re.fullmatch(lb_expr)
-                            )
-                            idx_simple = canon_i is not None
+                            # Complex index: group once: a(f(i)) -> a[(f(i))]
+                            index_expr = f"({i_expr})"
+                    else:
+                        # Non-zero lower bound: generate "index - lb"
+                        lb_simple = bool(
+                            name_re.fullmatch(lb_expr) or int_re.fullmatch(lb_expr)
+                        )
+                        idx_simple = canon_i is not None
 
-                            if idx_simple and lb_simple:
-                                index_expr = f"{canon_i} - {lb_expr}"
-                            elif idx_simple and not lb_simple:
-                                index_expr = f"{canon_i} - ({lb_expr})"
-                            elif not idx_simple and lb_simple:
-                                index_expr = f"({i_expr}) - {lb_expr}"
-                            else:
-                                index_expr = f"({i_expr}) - ({lb_expr})"
+                        if idx_simple and lb_simple:
+                            index_expr = f"{canon_i} - {lb_expr}"
+                        elif idx_simple and not lb_simple:
+                            index_expr = f"{canon_i} - ({lb_expr})"
+                        elif not idx_simple and lb_simple:
+                            index_expr = f"({i_expr}) - {lb_expr}"
+                        else:
+                            index_expr = f"({i_expr}) - ({lb_expr})"
 
-                        rapp("[" + index_expr + "]")
+                    rapp("[" + index_expr + "]")
 
                 elif len(parts) == 2:
                     # Two-dimensional array: a(i, j)
