@@ -55,7 +55,7 @@ using namespace std;
 using std::regex;
 using std::regex_replace;
 
-void Rdrgvx(INTEGER const nsize, REAL const thresh, INTEGER const nin, INTEGER const nout, REAL *a, INTEGER const lda, REAL *b, REAL *ai, REAL *bi, REAL *alphar, REAL *alphai, REAL *beta, REAL *vl, REAL *vr, INTEGER const ilo, INTEGER const ihi, REAL *lscale, REAL *rscale, REAL *s, REAL *dtru, REAL *dif, REAL *diftru, REAL *work, INTEGER const lwork, INTEGER *iwork, INTEGER const liwork, REAL *result, bool *bwork, INTEGER &info) {
+void Rdrgvx(INTEGER const nsize, REAL const thresh, INTEGER const nin, INTEGER const nout, REAL *a, INTEGER const lda, REAL *b, REAL *ai, REAL *bi, REAL *alphar, REAL *alphai, REAL *beta, REAL *vl, REAL *vr, INTEGER ilo, INTEGER ihi, REAL *lscale, REAL *rscale, REAL *s, REAL *dtru, REAL *dif, REAL *diftru, REAL *work, INTEGER const lwork, INTEGER *iwork, INTEGER const liwork, REAL *result, bool *bwork, INTEGER &info) {
     common cmn;
     common_read read(cmn);
     common_write write(cmn);
