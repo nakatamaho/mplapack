@@ -55,8 +55,6 @@ using namespace std;
 using std::regex;
 using std::regex_replace;
 
-inline REAL cabs1(COMPLEX cdum) { return abs(cdum.real()) + abs(cdum.imag()); }
-
 void Cchkgk(INTEGER const nin, INTEGER const nout) {
     common cmn;
     common_read read(cmn);
