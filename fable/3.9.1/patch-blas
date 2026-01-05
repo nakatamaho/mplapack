@@ -2,15 +2,6 @@ diff --git a/mpblas/reference/Cherk.cpp b/mpblas/reference/Cherk.cpp
 index 131d0477..af32c226 100644
 --- a/mpblas/reference/Cherk.cpp
 +++ b/mpblas/reference/Cherk.cpp
-@@ -173,7 +173,7 @@ void Cherk(const char *uplo, const char *trans, INTEGER const n, INTEGER const k
-                 for (i = 1; i <= j - 1; i = i + 1) {
-                     temp = zero;
-                     for (l = 1; l <= k; l = l + 1) {
--                        temp += conj(a[(l - 1) + (i - 1) * lda]) * a[(l - 1) + (j - 1) * lda];
-+                        temp += (conj(a[(l - 1) + (i - 1) * lda]) * a[(l - 1) + (j - 1) * lda]).real();
-                     }
-                     if (beta == zero) {
-                         c[(i - 1) + (j - 1) * ldc] = alpha * temp;
 @@ -183,7 +183,7 @@ void Cherk(const char *uplo, const char *trans, INTEGER const n, INTEGER const k
                  }
                  rtemp = zero;
@@ -29,15 +20,6 @@ index 131d0477..af32c226 100644
                  }
                  if (beta == zero) {
                      c[(j - 1) + (j - 1) * ldc] = alpha * rtemp;
-@@ -205,7 +205,7 @@ void Cherk(const char *uplo, const char *trans, INTEGER const n, INTEGER const k
-                 for (i = j + 1; i <= n; i = i + 1) {
-                     temp = zero;
-                     for (l = 1; l <= k; l = l + 1) {
--                        temp += conj(a[(l - 1) + (i - 1) * lda]) * a[(l - 1) + (j - 1) * lda];
-+                        temp += (conj(a[(l - 1) + (i - 1) * lda]) * a[(l - 1) + (j - 1) * lda]).real();
-                     }
-                     if (beta == zero) {
-                         c[(i - 1) + (j - 1) * ldc] = alpha * temp;
 diff --git a/mpblas/reference/Rrotmg.cpp b/mpblas/reference/Rrotmg.cpp
 index 7b500ffc..3ad9e90a 100644
 --- a/mpblas/reference/Rrotmg.cpp

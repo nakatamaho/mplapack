@@ -180,7 +180,7 @@ void Cherk(const char *uplo, const char *trans, INTEGER const n, INTEGER const k
                 for (i = 1; i <= j - 1; i = i + 1) {
                     temp = zero;
                     for (l = 1; l <= k; l = l + 1) {
-                        temp += (conj(a[(l - 1) + (i - 1) * lda]) * a[(l - 1) + (j - 1) * lda]).real();
+                        temp += conj(a[(l - 1) + (i - 1) * lda]) * a[(l - 1) + (j - 1) * lda];
                     }
                     if (beta == zero) {
                         c[(i - 1) + (j - 1) * ldc] = alpha * temp;
@@ -212,7 +212,7 @@ void Cherk(const char *uplo, const char *trans, INTEGER const n, INTEGER const k
                 for (i = j + 1; i <= n; i = i + 1) {
                     temp = zero;
                     for (l = 1; l <= k; l = l + 1) {
-                        temp += (conj(a[(l - 1) + (i - 1) * lda]) * a[(l - 1) + (j - 1) * lda]).real();
+                        temp += conj(a[(l - 1) + (i - 1) * lda]) * a[(l - 1) + (j - 1) * lda];
                     }
                     if (beta == zero) {
                         c[(i - 1) + (j - 1) * ldc] = alpha * temp;
