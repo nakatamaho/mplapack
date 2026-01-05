@@ -55,7 +55,7 @@ void Clasr(const char *side, const char *pivot, const char *direct, INTEGER cons
         info = 9;
     }
     if (info != 0) {
-        Mxerbla("Clasr ", info);
+        Mxerbla("Clasr", info);
         return;
     }
     //

@@ -54,7 +54,7 @@ void Rtrmv(const char *uplo, const char *trans, const char *diag, INTEGER const 
         info = 8;
     }
     if (info != 0) {
-        Mxerbla("Rtrmv ", info);
+        Mxerbla("Rtrmv", info);
         return;
     }
     //

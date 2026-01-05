@@ -66,7 +66,7 @@ void Rsymm(const char *side, const char *uplo, INTEGER const m, INTEGER const n,
         info = 12;
     }
     if (info != 0) {
-        Mxerbla("Rsymm ", info);
+        Mxerbla("Rsymm", info);
         return;
     }
     //

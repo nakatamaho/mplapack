@@ -48,7 +48,7 @@ void Cgtsv(INTEGER const n, INTEGER const nrhs, COMPLEX *dl, COMPLEX *d, COMPLEX
         info = -7;
     }
     if (info != 0) {
-        Mxerbla("Cgtsv ", -info);
+        Mxerbla("Cgtsv", -info);
         return;
     }
     //

@@ -52,7 +52,7 @@ void Ctpmv(const char *uplo, const char *trans, const char *diag, INTEGER const 
         info = 7;
     }
     if (info != 0) {
-        Mxerbla("Ctpmv ", info);
+        Mxerbla("Ctpmv", info);
         return;
     }
     //

@@ -81,7 +81,7 @@ void Chbev_2stage(const char *jobz, const char *uplo, INTEGER const n, INTEGER c
     }
     //
     if (info != 0) {
-        Mxerbla("Chbev_2stage ", -info);
+        Mxerbla("Chbev_2stage", -info);
         return;
     } else if (lquery) {
         return;

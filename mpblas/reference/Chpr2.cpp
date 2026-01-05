@@ -50,7 +50,7 @@ void Chpr2(const char *uplo, INTEGER const n, COMPLEX const alpha, COMPLEX *x, I
         info = 7;
     }
     if (info != 0) {
-        Mxerbla("Chpr2 ", info);
+        Mxerbla("Chpr2", info);
         return;
     }
     //

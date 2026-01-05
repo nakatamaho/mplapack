@@ -74,7 +74,7 @@ void Rsyev_2stage(const char *jobz, const char *uplo, INTEGER const n, REAL *a, 
     }
     //
     if (info != 0) {
-        Mxerbla("Rsyev_2stage ", -info);
+        Mxerbla("Rsyev_2stage", -info);
         return;
     } else if (lquery) {
         return;

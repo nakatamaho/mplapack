@@ -63,7 +63,7 @@ void Ctfsm(const char *transr, const char *side, const char *uplo, const char *t
         info = -11;
     }
     if (info != 0) {
-        Mxerbla("Ctfsm ", -info);
+        Mxerbla("Ctfsm", -info);
         return;
     }
     //

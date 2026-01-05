@@ -50,7 +50,7 @@ void Rspr2(const char *uplo, INTEGER const n, REAL const alpha, REAL *x, INTEGER
         info = 7;
     }
     if (info != 0) {
-        Mxerbla("Rspr2 ", info);
+        Mxerbla("Rspr2", info);
         return;
     }
     //

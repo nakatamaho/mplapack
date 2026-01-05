@@ -69,7 +69,7 @@ void Ctrsm(const char *side, const char *uplo, const char *transa, const char *d
         info = 11;
     }
     if (info != 0) {
-        Mxerbla("Ctrsm ", info);
+        Mxerbla("Ctrsm", info);
         return;
     }
     //

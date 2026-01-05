@@ -50,7 +50,7 @@ void Cher(const char *uplo, INTEGER const n, REAL const alpha, COMPLEX *x, INTEG
         info = 7;
     }
     if (info != 0) {
-        Mxerbla("Cher  ", info);
+        Mxerbla("Cher", info);
         return;
     }
     //

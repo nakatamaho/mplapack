@@ -74,7 +74,7 @@ void Rsygv(INTEGER const itype, const char *jobz, const char *uplo, INTEGER cons
     }
     //
     if (info != 0) {
-        Mxerbla("Rsygv ", -info);
+        Mxerbla("Rsygv", -info);
         return;
     } else if (lquery) {
         return;

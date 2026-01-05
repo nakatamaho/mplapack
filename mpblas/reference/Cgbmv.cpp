@@ -58,7 +58,7 @@ void Cgbmv(const char *trans, INTEGER const m, INTEGER const n, INTEGER const kl
         info = 13;
     }
     if (info != 0) {
-        Mxerbla("Cgbmv ", info);
+        Mxerbla("Cgbmv", info);
         return;
     }
     //

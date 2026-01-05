@@ -54,7 +54,7 @@ void Chpev(const char *jobz, const char *uplo, INTEGER const n, COMPLEX *ap, REA
     }
     //
     if (info != 0) {
-        Mxerbla("Chpev ", -info);
+        Mxerbla("Chpev", -info);
         return;
     }
     //

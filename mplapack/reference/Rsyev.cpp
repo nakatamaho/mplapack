@@ -68,7 +68,7 @@ void Rsyev(const char *jobz, const char *uplo, INTEGER const n, REAL *a, INTEGER
     }
     //
     if (info != 0) {
-        Mxerbla("Rsyev ", -info);
+        Mxerbla("Rsyev", -info);
         return;
     } else if (lquery) {
         return;

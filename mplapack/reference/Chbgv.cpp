@@ -62,7 +62,7 @@ void Chbgv(const char *jobz, const char *uplo, INTEGER const n, INTEGER const ka
         info = -12;
     }
     if (info != 0) {
-        Mxerbla("Chbgv ", -info);
+        Mxerbla("Chbgv", -info);
         return;
     }
     //

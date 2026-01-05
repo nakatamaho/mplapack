@@ -55,7 +55,7 @@ void Rgbsv(INTEGER const n, INTEGER const kl, INTEGER const ku, INTEGER const nr
         info = -9;
     }
     if (info != 0) {
-        Mxerbla("Rgbsv ", -info);
+        Mxerbla("Rgbsv", -info);
         return;
     }
     //

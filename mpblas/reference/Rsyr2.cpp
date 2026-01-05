@@ -52,7 +52,7 @@ void Rsyr2(const char *uplo, INTEGER const n, REAL const alpha, REAL *x, INTEGER
         info = 9;
     }
     if (info != 0) {
-        Mxerbla("Rsyr2 ", info);
+        Mxerbla("Rsyr2", info);
         return;
     }
     //

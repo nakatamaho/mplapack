@@ -55,7 +55,7 @@ void Rlasr(const char *side, const char *pivot, const char *direct, INTEGER cons
         info = 9;
     }
     if (info != 0) {
-        Mxerbla("Rlasr ", info);
+        Mxerbla("Rlasr", info);
         return;
     }
     //

@@ -52,7 +52,7 @@ void Rtpmv(const char *uplo, const char *trans, const char *diag, INTEGER const 
         info = 7;
     }
     if (info != 0) {
-        Mxerbla("Rtpmv ", info);
+        Mxerbla("Rtpmv", info);
         return;
     }
     //

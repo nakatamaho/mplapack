@@ -80,7 +80,7 @@ void Cgemm(const char *transa, const char *transb, INTEGER const m, INTEGER cons
         info = 13;
     }
     if (info != 0) {
-        Mxerbla("Cgemm ", info);
+        Mxerbla("Cgemm", info);
         return;
     }
     //

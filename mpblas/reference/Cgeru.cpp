@@ -52,7 +52,7 @@ void Cgeru(INTEGER const m, INTEGER const n, COMPLEX const alpha, COMPLEX *x, IN
         info = 9;
     }
     if (info != 0) {
-        Mxerbla("Cgeru ", info);
+        Mxerbla("Cgeru", info);
         return;
     }
     //

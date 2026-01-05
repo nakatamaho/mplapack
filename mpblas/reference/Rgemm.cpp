@@ -77,7 +77,7 @@ void Rgemm(const char *transa, const char *transb, INTEGER const m, INTEGER cons
         info = 13;
     }
     if (info != 0) {
-        Mxerbla("Rgemm ", info);
+        Mxerbla("Rgemm", info);
         return;
     }
     //

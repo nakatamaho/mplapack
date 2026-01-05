@@ -49,7 +49,7 @@ void Cptsv(INTEGER const n, INTEGER const nrhs, REAL *d, COMPLEX *e, COMPLEX *b,
         info = -6;
     }
     if (info != 0) {
-        Mxerbla("Cptsv ", -info);
+        Mxerbla("Cptsv", -info);
         return;
     }
     //

@@ -69,7 +69,7 @@ void Chesv(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a, IN
     }
     //
     if (info != 0) {
-        Mxerbla("Chesv ", -info);
+        Mxerbla("Chesv", -info);
         return;
     } else if (lquery) {
         return;

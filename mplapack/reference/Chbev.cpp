@@ -59,7 +59,7 @@ void Chbev(const char *jobz, const char *uplo, INTEGER const n, INTEGER const kd
     }
     //
     if (info != 0) {
-        Mxerbla("Chbev ", -info);
+        Mxerbla("Chbev", -info);
         return;
     }
     //

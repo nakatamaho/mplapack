@@ -52,7 +52,7 @@ void Rsymv(const char *uplo, INTEGER const n, REAL const alpha, REAL *a, INTEGER
         info = 10;
     }
     if (info != 0) {
-        Mxerbla("Rsymv ", info);
+        Mxerbla("Rsymv", info);
         return;
     }
     //

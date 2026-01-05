@@ -543,5 +543,25 @@ lines = [_fix_do_i1_i2_i3(line) for line in lines]
 path.write_text("".join(lines))
 EOF
 
+# Trim Fortran-style right-padded routine names in Mxerbla("NAME ", ...).
+python3 - "$tmp_cpp" << 'EOF_MXERBLA'
+import re
+import sys
+from pathlib import Path
+
+path = Path(sys.argv[1])
+text = path.read_text()
+
+MXERBLA_RE = re.compile(r'(Mxerbla\(\s*")([^"]*)("\s*,)')
+
+def repl(m: re.Match) -> str:
+    prefix, name, suffix = m.groups()
+    return prefix + name.rstrip() + suffix
+
+text2 = MXERBLA_RE.sub(repl, text)
+if text2 != text:
+    path.write_text(text2)
+EOF_MXERBLA
+
 # Overwrite the generated C++ file with the formatted and postprocessed version
 cp "$tmp_cpp" "$cpp_generated"

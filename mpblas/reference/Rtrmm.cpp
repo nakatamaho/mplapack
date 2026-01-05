@@ -68,7 +68,7 @@ void Rtrmm(const char *side, const char *uplo, const char *transa, const char *d
         info = 11;
     }
     if (info != 0) {
-        Mxerbla("Rtrmm ", info);
+        Mxerbla("Rtrmm", info);
         return;
     }
     //

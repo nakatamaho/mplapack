@@ -132,7 +132,7 @@ void Cgeev(const char *jobvl, const char *jobvr, INTEGER const n, COMPLEX *a, IN
     }
     //
     if (info != 0) {
-        Mxerbla("Cgeev ", -info);
+        Mxerbla("Cgeev", -info);
         return;
     } else if (lquery) {
         return;

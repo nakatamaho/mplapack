@@ -51,7 +51,7 @@ void Rspsv(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *ap, INTE
         info = -7;
     }
     if (info != 0) {
-        Mxerbla("Rspsv ", -info);
+        Mxerbla("Rspsv", -info);
         return;
     }
     //

@@ -48,7 +48,7 @@ void Rspr(const char *uplo, INTEGER const n, REAL const alpha, REAL *x, INTEGER 
         info = 5;
     }
     if (info != 0) {
-        Mxerbla("Rspr  ", info);
+        Mxerbla("Rspr", info);
         return;
     }
     //

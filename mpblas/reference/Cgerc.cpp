@@ -52,7 +52,7 @@ void Cgerc(INTEGER const m, INTEGER const n, COMPLEX const alpha, COMPLEX *x, IN
         info = 9;
     }
     if (info != 0) {
-        Mxerbla("Cgerc ", info);
+        Mxerbla("Cgerc", info);
         return;
     }
     //

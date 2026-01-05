@@ -50,7 +50,7 @@ void Rsyr(const char *uplo, INTEGER const n, REAL const alpha, REAL *x, INTEGER 
         info = 7;
     }
     if (info != 0) {
-        Mxerbla("Rsyr  ", info);
+        Mxerbla("Rsyr", info);
         return;
     }
     //

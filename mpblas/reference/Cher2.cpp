@@ -52,7 +52,7 @@ void Cher2(const char *uplo, INTEGER const n, COMPLEX const alpha, COMPLEX *x, I
         info = 9;
     }
     if (info != 0) {
-        Mxerbla("Cher2 ", info);
+        Mxerbla("Cher2", info);
         return;
     }
     //

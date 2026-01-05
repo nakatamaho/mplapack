@@ -54,7 +54,7 @@ void Rgemv(const char *trans, INTEGER const m, INTEGER const n, REAL const alpha
         info = 11;
     }
     if (info != 0) {
-        Mxerbla("Rgemv ", info);
+        Mxerbla("Rgemv", info);
         return;
     }
     //

@@ -54,7 +54,7 @@ void Cgemv(const char *trans, INTEGER const m, INTEGER const n, COMPLEX const al
         info = 11;
     }
     if (info != 0) {
-        Mxerbla("Cgemv ", info);
+        Mxerbla("Cgemv", info);
         return;
     }
     //

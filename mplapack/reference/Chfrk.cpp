@@ -66,7 +66,7 @@ void Chfrk(const char *transr, const char *uplo, const char *trans, INTEGER cons
         info = -8;
     }
     if (info != 0) {
-        Mxerbla("Chfrk ", -info);
+        Mxerbla("Chfrk", -info);
         return;
     }
     //

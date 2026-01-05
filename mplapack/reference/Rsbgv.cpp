@@ -62,7 +62,7 @@ void Rsbgv(const char *jobz, const char *uplo, INTEGER const n, INTEGER const ka
         info = -12;
     }
     if (info != 0) {
-        Mxerbla("Rsbgv ", -info);
+        Mxerbla("Rsbgv", -info);
         return;
     }
     //

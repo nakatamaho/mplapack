@@ -69,7 +69,7 @@ void Csysv_aa(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a,
     }
     //
     if (info != 0) {
-        Mxerbla("Csysv_aa ", -info);
+        Mxerbla("Csysv_aa", -info);
         return;
     } else if (lquery) {
         return;

@@ -74,7 +74,7 @@ void Cheev_2stage(const char *jobz, const char *uplo, INTEGER const n, COMPLEX *
     }
     //
     if (info != 0) {
-        Mxerbla("Cheev_2stage ", -info);
+        Mxerbla("Cheev_2stage", -info);
         return;
     } else if (lquery) {
         return;

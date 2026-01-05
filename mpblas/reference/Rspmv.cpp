@@ -50,7 +50,7 @@ void Rspmv(const char *uplo, INTEGER const n, REAL const alpha, REAL *ap, REAL *
         info = 9;
     }
     if (info != 0) {
-        Mxerbla("Rspmv ", info);
+        Mxerbla("Rspmv", info);
         return;
     }
     //

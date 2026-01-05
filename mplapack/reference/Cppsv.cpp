@@ -51,7 +51,7 @@ void Cppsv(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *ap, C
         info = -6;
     }
     if (info != 0) {
-        Mxerbla("Cppsv ", -info);
+        Mxerbla("Cppsv", -info);
         return;
     }
     //

@@ -54,7 +54,7 @@ void Chbmv(const char *uplo, INTEGER const n, INTEGER const k, COMPLEX const alp
         info = 11;
     }
     if (info != 0) {
-        Mxerbla("Chbmv ", info);
+        Mxerbla("Chbmv", info);
         return;
     }
     //

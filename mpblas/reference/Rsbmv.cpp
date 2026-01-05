@@ -54,7 +54,7 @@ void Rsbmv(const char *uplo, INTEGER const n, INTEGER const k, REAL const alpha,
         info = 11;
     }
     if (info != 0) {
-        Mxerbla("Rsbmv ", info);
+        Mxerbla("Rsbmv", info);
         return;
     }
     //

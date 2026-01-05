@@ -48,7 +48,7 @@ void Chpr(const char *uplo, INTEGER const n, REAL const alpha, COMPLEX *x, INTEG
         info = 5;
     }
     if (info != 0) {
-        Mxerbla("Chpr  ", info);
+        Mxerbla("Chpr", info);
         return;
     }
     //

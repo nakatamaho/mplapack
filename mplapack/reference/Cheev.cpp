@@ -68,7 +68,7 @@ void Cheev(const char *jobz, const char *uplo, INTEGER const n, COMPLEX *a, INTE
     }
     //
     if (info != 0) {
-        Mxerbla("Cheev ", -info);
+        Mxerbla("Cheev", -info);
         return;
     } else if (lquery) {
         return;

@@ -49,7 +49,7 @@ void Cspr(const char *uplo, INTEGER const n, COMPLEX const alpha, COMPLEX *x, IN
         info = 5;
     }
     if (info != 0) {
-        Mxerbla("Cspr  ", info);
+        Mxerbla("Cspr", info);
         return;
     }
     //

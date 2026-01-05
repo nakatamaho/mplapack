@@ -52,7 +52,7 @@ void Rger(INTEGER const m, INTEGER const n, REAL const alpha, REAL *x, INTEGER c
         info = 9;
     }
     if (info != 0) {
-        Mxerbla("Rger  ", info);
+        Mxerbla("Rger", info);
         return;
     }
     //

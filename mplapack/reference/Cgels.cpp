@@ -109,7 +109,7 @@ void Cgels(const char *trans, INTEGER const m, INTEGER const n, INTEGER const nr
     }
     //
     if (info != 0) {
-        Mxerbla("Cgels ", -info);
+        Mxerbla("Cgels", -info);
         return;
     } else if (lquery) {
         return;

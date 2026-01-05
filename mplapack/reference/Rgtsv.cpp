@@ -52,7 +52,7 @@ void Rgtsv(INTEGER const n, INTEGER const nrhs, REAL *dl, REAL *d, REAL *du, REA
         info = -7;
     }
     if (info != 0) {
-        Mxerbla("Rgtsv ", -info);
+        Mxerbla("Rgtsv", -info);
         return;
     }
     //

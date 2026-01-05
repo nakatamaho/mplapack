@@ -54,7 +54,7 @@ void Rspev(const char *jobz, const char *uplo, INTEGER const n, REAL *ap, REAL *
     }
     //
     if (info != 0) {
-        Mxerbla("Rspev ", -info);
+        Mxerbla("Rspev", -info);
         return;
     }
     //

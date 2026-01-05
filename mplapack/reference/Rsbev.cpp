@@ -59,7 +59,7 @@ void Rsbev(const char *jobz, const char *uplo, INTEGER const n, INTEGER const kd
     }
     //
     if (info != 0) {
-        Mxerbla("Rsbev ", -info);
+        Mxerbla("Rsbev", -info);
         return;
     }
     //

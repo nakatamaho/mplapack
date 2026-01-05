@@ -145,7 +145,7 @@ void Rggev3(const char *jobvl, const char *jobvr, INTEGER const n, REAL *a, INTE
     }
     //
     if (info != 0) {
-        Mxerbla("Rggev3 ", -info);
+        Mxerbla("Rggev3", -info);
         return;
     } else if (lquery) {
         return;

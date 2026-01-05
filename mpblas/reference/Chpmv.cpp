@@ -50,7 +50,7 @@ void Chpmv(const char *uplo, INTEGER const n, COMPLEX const alpha, COMPLEX *ap, 
         info = 9;
     }
     if (info != 0) {
-        Mxerbla("Chpmv ", info);
+        Mxerbla("Chpmv", info);
         return;
     }
     //

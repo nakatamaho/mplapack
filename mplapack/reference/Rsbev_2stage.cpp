@@ -81,7 +81,7 @@ void Rsbev_2stage(const char *jobz, const char *uplo, INTEGER const n, INTEGER c
     }
     //
     if (info != 0) {
-        Mxerbla("Rsbev_2stage ", -info);
+        Mxerbla("Rsbev_2stage", -info);
         return;
     } else if (lquery) {
         return;

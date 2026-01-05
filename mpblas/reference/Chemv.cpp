@@ -52,7 +52,7 @@ void Chemv(const char *uplo, INTEGER const n, COMPLEX const alpha, COMPLEX *a, I
         info = 10;
     }
     if (info != 0) {
-        Mxerbla("Chemv ", info);
+        Mxerbla("Chemv", info);
         return;
     }
     //

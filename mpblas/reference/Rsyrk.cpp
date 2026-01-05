@@ -62,7 +62,7 @@ void Rsyrk(const char *uplo, const char *trans, INTEGER const n, INTEGER const k
         info = 10;
     }
     if (info != 0) {
-        Mxerbla("Rsyrk ", info);
+        Mxerbla("Rsyrk", info);
         return;
     }
     //

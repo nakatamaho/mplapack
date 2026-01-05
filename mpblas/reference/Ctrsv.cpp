@@ -54,7 +54,7 @@ void Ctrsv(const char *uplo, const char *trans, const char *diag, INTEGER const 
         info = 8;
     }
     if (info != 0) {
-        Mxerbla("Ctrsv ", info);
+        Mxerbla("Ctrsv", info);
         return;
     }
     //

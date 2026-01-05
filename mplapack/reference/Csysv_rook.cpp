@@ -68,7 +68,7 @@ void Csysv_rook(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *
     }
     //
     if (info != 0) {
-        Mxerbla("Csysv_rook ", -info);
+        Mxerbla("Csysv_rook", -info);
         return;
     } else if (lquery) {
         return;

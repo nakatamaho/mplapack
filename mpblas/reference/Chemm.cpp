@@ -66,7 +66,7 @@ void Chemm(const char *side, const char *uplo, INTEGER const m, INTEGER const n,
         info = 12;
     }
     if (info != 0) {
-        Mxerbla("Chemm ", info);
+        Mxerbla("Chemm", info);
         return;
     }
     //
