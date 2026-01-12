@@ -7,8 +7,6 @@ python $HOME/mplapack/fable/fix_iMlaenv.py iMlaenv.cpp
 python $HOME/mplapack/fable/fix_iMlaenv.py iMparmq.cpp
 
 patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Cbbcsd.cpp
-patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Cgejsv.cpp
-patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Cgesvj.cpp
 patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Cggev.cpp
 patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Cggev3.cpp
 patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Cggevx.cpp
@@ -37,8 +35,6 @@ patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Ctrexc.cpp
 patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Ctrsyl.cpp
 patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Rbbcsd.cpp
 patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Rbdsvdx.cpp
-patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Rgejsv.cpp
-patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Rgesvj.cpp
 patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Rlacon.cpp
 patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Rladiv.cpp
 patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Rlaln2.cpp
