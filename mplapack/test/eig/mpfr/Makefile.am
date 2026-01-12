@@ -72,7 +72,7 @@ MPFR_ALL_TESTS = $(MPFR_REAL_TESTS) $(MPFR_COMPLEX_TESTS)
 check: mpfr-check
 
 mpfr-check: $(MPFR_PROFILES:%=mpfr-check-%)
-	@echo "MPFR lin tests done for profiles: $(MPFR_PROFILES)"
+	@echo "MPFR eig tests done for profiles: $(MPFR_PROFILES)"
 
 # Pattern target: builds all <test>.<profile>.out for the given profile.
 mpfr-check-%: $(addsuffix .%.out,$(MPFR_ALL_TESTS))
@@ -109,7 +109,7 @@ $(eval $(call GEN_MPFR_EIG_TEST,Rsvd,../svd.in,xeigtstR_mpfr,SVD,Testing Singula
 $(eval $(call GEN_MPFR_EIG_TEST,Rec,../Rec.in,xeigtstR_mpfr,DEC,Testing Eigen Condition Routines))
 $(eval $(call GEN_MPFR_EIG_TEST,Red,../Red.in,xeigtstR_mpfr,DEV,Testing Nonsymmetric Eigenvalue Driver))
 $(eval $(call GEN_MPFR_EIG_TEST,Rgg,../Rgg.in,xeigtstR_mpfr,GGS,Testing Generalized Nonsymmetric Eigenvalue Problem routines))
-$(eval $(call GEN_MPFR_EIG_TEST,Rgd,../Rgd.in,xeigtstR_mpfr,GDD,Testing Nonsymmetric Generalized Eigenvalue Problem driver routine))
+$(eval $(call GEN_MPFR_EIG_TEST,Rgd,../Rgd.in,xeigtstR_mpfr,DGD,Testing Nonsymmetric Generalized Eigenvalue Problem driver routine))
 $(eval $(call GEN_MPFR_EIG_TEST,Rsb,../Rsb.in,xeigtstR_mpfr,SBB,Testing banded Schur decomposition routines))
 $(eval $(call GEN_MPFR_EIG_TEST,Rsg,../Rsg.in,xeigtstR_mpfr,SGG,Testing Generalized Symmetric Eigenvalue Problem routines))
 $(eval $(call GEN_MPFR_EIG_TEST,Rbal,../Rbal.in,xeigtstR_mpfr,DGEBAL,Testing the balancing of a real general matrix))
@@ -134,7 +134,7 @@ $(eval $(call GEN_MPFR_EIG_TEST,Csvd,../svd.in,xeigtstC_mpfr,SVD,Testing Singula
 $(eval $(call GEN_MPFR_EIG_TEST,Cec,../Cec.in,xeigtstC_mpfr,DEC,Testing Eigen Condition Routines))
 $(eval $(call GEN_MPFR_EIG_TEST,Ced,../Ced.in,xeigtstC_mpfr,DEV,Testing Nonsymmetric Eigenvalue Driver))
 $(eval $(call GEN_MPFR_EIG_TEST,Cgg,../Cgg.in,xeigtstC_mpfr,GGS,Testing Generalized Nonsymmetric Eigenvalue Problem routines))
-$(eval $(call GEN_MPFR_EIG_TEST,Cgd,../Cgd.in,xeigtstC_mpfr,GDD,Testing Nonsymmetric Generalized Eigenvalue Problem driver routine))
+$(eval $(call GEN_MPFR_EIG_TEST,Cgd,../Cgd.in,xeigtstC_mpfr,CGD,Testing Nonsymmetric Generalized Eigenvalue Problem driver routine))
 $(eval $(call GEN_MPFR_EIG_TEST,Csb,../Csb.in,xeigtstC_mpfr,SBB,Testing banded Schur decomposition routines))
 $(eval $(call GEN_MPFR_EIG_TEST,Csg,../Csg.in,xeigtstC_mpfr,SGG,Testing Generalized Symmetric Eigenvalue Problem routines))
 $(eval $(call GEN_MPFR_EIG_TEST,Cbal,../Cbal.in,xeigtstC_mpfr,CGEBAL,Testing the balancing of a COMPLEX general matrix))
