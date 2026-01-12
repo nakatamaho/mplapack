@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine ZCHKRFP.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -53,7 +60,9 @@ void Cchkrfp(void) {
     time_t s1;
     time_t s2;
     bool fatal = false;
-
+    //
+    // Read a dummy line.
+    //
     const INTEGER nin = 5;
     const INTEGER nout = 6;
     const INTEGER maxin = 12;
@@ -300,7 +309,7 @@ void Cchkrfp(void) {
     write(nout, "(/,' End of tests')");
     write(nout, "(' Total time used = ',f12.2,' seconds',/)"), int(s2 - s1);
     //
-    //     End of Cchkrfp
+    // End of Cchkrfp
     //
 }
 

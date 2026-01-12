@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine ZCHKPS.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -88,14 +95,14 @@ void Cchkps(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
         iseed[i - 1] = iseedy[i - 1];
     }
     //
-    //     Test the error exits
+    // Test the error exits
     //
     if (tsterr) {
         Cerrps(path, nout);
     }
     infot = 0;
     //
-    //     Do for each value of N in NVAL
+    // Do for each value of N in NVAL
     //
     for (in = 1; in <= nn; in = in + 1) {
         n = nval[in - 1];
@@ -108,18 +115,18 @@ void Cchkps(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
         izero = 0;
         for (imat = 1; imat <= nimat; imat = imat + 1) {
             //
-            //           Do the tests only if DOTYPE( IMAT ) is true.
+            // Do the tests only if DOTYPE( IMAT ) is true.
             //
             if (!dotype[imat - 1]) {
                 goto statement_140;
             }
             //
-            //              Do for each value of RANK in RANKVAL
+            // Do for each value of RANK in RANKVAL
             //
             for (irank = 1; irank <= nrank; irank = irank + 1) {
                 //
-                //              Only repeat test 3 to 5 for different ranks
-                //              Other tests use full rank
+                // Only repeat test 3 to 5 for different ranks
+                // Other tests use full rank
                 //
                 if ((imat < 3 || imat > 5) && irank > 1) {
                     goto statement_130;
@@ -127,64 +134,64 @@ void Cchkps(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                 //
                 rank = castINTEGER(ceil((castREAL(n) * castREAL(rankval[irank - 1])) / 100.0));
                 //
-                //           Do first for UPLO = 'U', then for UPLO = 'L'
+                // Do first for UPLO = 'U', then for UPLO = 'L'
                 //
                 for (iuplo = 1; iuplo <= 2; iuplo = iuplo + 1) {
                     uplo[0] = uplos[iuplo - 1];
                     //
-                    //              Set up parameters with Clatb5 and generate a test matrix
-                    //              with Clatmt.
+                    // Set up parameters with Clatb5 and generate a test matrix
+                    // with Clatmt.
                     //
                     Clatb5(path, imat, n, type, kl, ku, anorm, mode, cndnum, dist);
                     //
                     strncpy(srnamt, "Clatmt", srnamt_len);
                     Clatmt(n, n, dist, iseed, type, rwork, mode, cndnum, anorm, rank, kl, ku, uplo, a, lda, work, info);
                     //
-                    //              Check error code from Clatmt.
+                    // Check error code from Clatmt.
                     //
                     if (info != 0) {
                         Alaerh(path, "Clatmt", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                         goto statement_120;
                     }
                     //
-                    //              Do for each value of NB in NBVAL
+                    // Do for each value of NB in NBVAL
                     //
                     for (inb = 1; inb <= nnb; inb = inb + 1) {
                         nb = nbval[inb - 1];
                         xlaenv(1, nb);
                         //
-                        //                 Compute the pivoted L*L' or U'*U factorization
-                        //                 of the matrix.
+                        // Compute the pivoted L*L' or U'*U factorization
+                        // of the matrix.
                         //
                         Clacpy(uplo, n, n, a, lda, afac, lda);
                         strncpy(srnamt, "Cpstrf", srnamt_len);
                         //
-                        //                 Use default tolerance
+                        // Use default tolerance
                         //
                         tol = -one;
                         Cpstrf(uplo, n, afac, lda, piv, comprank, tol, rwork, info);
                         //
-                        //                 Check error code from Cpstrf.
+                        // Check error code from Cpstrf.
                         //
                         if ((info < izero) || (info != izero && rank == n) || (info <= izero && rank < n)) {
                             Alaerh(path, "Cpstrf", info, izero, uplo, n, n, -1, -1, nb, imat, nfail, nerrs, nout);
                             goto statement_110;
                         }
                         //
-                        //                 Skip the test if INFO is not 0.
+                        // Skip the test if INFO is not 0.
                         //
                         if (info != 0) {
                             goto statement_110;
                         }
                         //
-                        //                 Reconstruct matrix from factors and compute residual.
+                        // Reconstruct matrix from factors and compute residual.
                         //
-                        //                 PERM holds permuted L*L^T or U^T*U
+                        // PERM holds permuted L*L^T or U^T*U
                         //
                         Cpst01(uplo, n, a, lda, afac, lda, perm, lda, piv, rwork, result, comprank);
                         //
-                        //                 Print information about the tests that did not pass
-                        //                 the threshold or where computed rank was not RANK.
+                        // Print information about the tests that did not pass
+                        // the threshold or where computed rank was not RANK.
                         //
                         if (n == 0) {
                             comprank = 0;
@@ -212,10 +219,10 @@ void Cchkps(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
         }
     }
     //
-    //     Print a summary of the results.
+    // Print a summary of the results.
     //
     Alasum(path, nout, nfail, nrun, nerrs);
     //
-    //     End of Cchkps
+    // End of Cchkps
     //
 }

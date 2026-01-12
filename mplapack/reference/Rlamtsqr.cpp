@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,31 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine DLAMTSQR.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rlamtsqr(const char *side, const char *trans, INTEGER const &m, INTEGER const &n, INTEGER const &k, INTEGER const &mb, INTEGER const &nb, REAL *a, INTEGER const &lda, REAL *t, INTEGER const &ldt, REAL *c, INTEGER const &ldc, REAL *work, INTEGER const &lwork, INTEGER &info) {
+void Rlamtsqr(const char *side, const char *trans, INTEGER const m, INTEGER const n, INTEGER const k, INTEGER const mb, INTEGER const nb, REAL *a, INTEGER const lda, REAL *t, INTEGER const ldt, REAL *c, INTEGER const ldc, REAL *work, INTEGER const lwork, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    // =====================================================================
-    //
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input arguments
+    // Test the input arguments
     //
     bool lquery = lwork < 0;
     bool notran = Mlsame(trans, "N");
@@ -85,26 +73,26 @@ void Rlamtsqr(const char *side, const char *trans, INTEGER const &m, INTEGER con
         info = -15;
     }
     //
-    //     Determine the block size if it is tall skinny or short and wide
+    // Determine the block size if it is tall skinny or short and wide
     //
     if (info == 0) {
         work[1 - 1] = lw;
     }
     //
     if (info != 0) {
-        Mxerbla("RLAMTSQR", -info);
+        Mxerbla("Rlamtsqr", -info);
         return;
     } else if (lquery) {
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
-    if (min({m, n, k}) == 0) {
+    if (min(m, n, k) == 0) {
         return;
     }
     //
-    if ((mb <= k) || (mb >= max({m, n, k}))) {
+    if ((mb <= k) || (mb >= max(m, n, k))) {
         Rgemqrt(side, trans, m, n, k, nb, a, lda, t, ldt, c, ldc, work, info);
         return;
     }
@@ -115,103 +103,103 @@ void Rlamtsqr(const char *side, const char *trans, INTEGER const &m, INTEGER con
     INTEGER i = 0;
     if (left && notran) {
         //
-        //         Multiply Q to the last block of C
+        // Multiply Q to the last block of C
         //
         kk = mod((m - k), (mb - k));
         ctr = (m - k) / (mb - k);
         if (kk > 0) {
             ii = m - kk + 1;
-            Rtpmqrt("L", "N", kk, n, k, 0, nb, &a[(ii - 1)], lda, &t[((ctr * k + 1) - 1) * ldt], ldt, &c[(1 - 1)], ldc, &c[(ii - 1)], ldc, work, info);
+            Rtpmqrt("L", "N", kk, n, k, 0, nb, &a[(ii - 1)], lda, &t[((ctr * k + 1) - 1) * ldt], ldt, &c[0], ldc, &c[(ii - 1)], ldc, work, info);
         } else {
             ii = m + 1;
         }
         //
         for (i = ii - (mb - k); i >= mb + 1; i = i - (mb - k)) {
             //
-            //         Multiply Q to the current block of C (I:I+MB,1:N)
+            // Multiply Q to the current block of C (I:I+MB,1:N)
             //
             ctr = ctr - 1;
-            Rtpmqrt("L", "N", mb - k, n, k, 0, nb, &a[(i - 1)], lda, &t[((ctr * k + 1) - 1) * ldt], ldt, &c[(1 - 1)], ldc, &c[(i - 1)], ldc, work, info);
+            Rtpmqrt("L", "N", mb - k, n, k, 0, nb, &a[(i - 1)], lda, &t[((ctr * k + 1) - 1) * ldt], ldt, &c[0], ldc, &c[(i - 1)], ldc, work, info);
             //
         }
         //
-        //         Multiply Q to the first block of C (1:MB,1:N)
+        // Multiply Q to the first block of C (1:MB,1:N)
         //
-        Rgemqrt("L", "N", mb, n, k, nb, &a[(1 - 1)], lda, t, ldt, &c[(1 - 1)], ldc, work, info);
+        Rgemqrt("L", "N", mb, n, k, nb, &a[0], lda, t, ldt, &c[0], ldc, work, info);
         //
     } else if (left && tran) {
         //
-        //         Multiply Q to the first block of C
+        // Multiply Q to the first block of C
         //
         kk = mod((m - k), (mb - k));
         ii = m - kk + 1;
         ctr = 1;
-        Rgemqrt("L", "T", mb, n, k, nb, &a[(1 - 1)], lda, t, ldt, &c[(1 - 1)], ldc, work, info);
+        Rgemqrt("L", "T", mb, n, k, nb, &a[0], lda, t, ldt, &c[0], ldc, work, info);
         //
         for (i = mb + 1; i <= ii - mb + k; i = i + (mb - k)) {
             //
-            //         Multiply Q to the current block of C (I:I+MB,1:N)
+            // Multiply Q to the current block of C (I:I+MB,1:N)
             //
-            Rtpmqrt("L", "T", mb - k, n, k, 0, nb, &a[(i - 1)], lda, &t[((ctr * k + 1) - 1) * ldt], ldt, &c[(1 - 1)], ldc, &c[(i - 1)], ldc, work, info);
+            Rtpmqrt("L", "T", mb - k, n, k, 0, nb, &a[(i - 1)], lda, &t[((ctr * k + 1) - 1) * ldt], ldt, &c[0], ldc, &c[(i - 1)], ldc, work, info);
             ctr++;
             //
         }
         if (ii <= m) {
             //
-            //         Multiply Q to the last block of C
+            // Multiply Q to the last block of C
             //
-            Rtpmqrt("L", "T", kk, n, k, 0, nb, &a[(ii - 1)], lda, &t[((ctr * k + 1) - 1) * ldt], ldt, &c[(1 - 1)], ldc, &c[(ii - 1)], ldc, work, info);
+            Rtpmqrt("L", "T", kk, n, k, 0, nb, &a[(ii - 1)], lda, &t[((ctr * k + 1) - 1) * ldt], ldt, &c[0], ldc, &c[(ii - 1)], ldc, work, info);
             //
         }
         //
     } else if (right && tran) {
         //
-        //         Multiply Q to the last block of C
+        // Multiply Q to the last block of C
         //
         kk = mod((n - k), (mb - k));
         ctr = (n - k) / (mb - k);
         if (kk > 0) {
             ii = n - kk + 1;
-            Rtpmqrt("R", "T", m, kk, k, 0, nb, &a[(ii - 1)], lda, &t[((ctr * k + 1) - 1) * ldt], ldt, &c[(1 - 1)], ldc, &c[(ii - 1) * ldc], ldc, work, info);
+            Rtpmqrt("R", "T", m, kk, k, 0, nb, &a[(ii - 1)], lda, &t[((ctr * k + 1) - 1) * ldt], ldt, &c[0], ldc, &c[(ii - 1) * ldc], ldc, work, info);
         } else {
             ii = n + 1;
         }
         //
         for (i = ii - (mb - k); i >= mb + 1; i = i - (mb - k)) {
             //
-            //         Multiply Q to the current block of C (1:M,I:I+MB)
+            // Multiply Q to the current block of C (1:M,I:I+MB)
             //
             ctr = ctr - 1;
-            Rtpmqrt("R", "T", m, mb - k, k, 0, nb, &a[(i - 1)], lda, &t[((ctr * k + 1) - 1) * ldt], ldt, &c[(1 - 1)], ldc, &c[(i - 1) * ldc], ldc, work, info);
+            Rtpmqrt("R", "T", m, mb - k, k, 0, nb, &a[(i - 1)], lda, &t[((ctr * k + 1) - 1) * ldt], ldt, &c[0], ldc, &c[(i - 1) * ldc], ldc, work, info);
             //
         }
         //
-        //         Multiply Q to the first block of C (1:M,1:MB)
+        // Multiply Q to the first block of C (1:M,1:MB)
         //
-        Rgemqrt("R", "T", m, mb, k, nb, &a[(1 - 1)], lda, t, ldt, &c[(1 - 1)], ldc, work, info);
+        Rgemqrt("R", "T", m, mb, k, nb, &a[0], lda, t, ldt, &c[0], ldc, work, info);
         //
     } else if (right && notran) {
         //
-        //         Multiply Q to the first block of C
+        // Multiply Q to the first block of C
         //
         kk = mod((n - k), (mb - k));
         ii = n - kk + 1;
         ctr = 1;
-        Rgemqrt("R", "N", m, mb, k, nb, &a[(1 - 1)], lda, t, ldt, &c[(1 - 1)], ldc, work, info);
+        Rgemqrt("R", "N", m, mb, k, nb, &a[0], lda, t, ldt, &c[0], ldc, work, info);
         //
         for (i = mb + 1; i <= ii - mb + k; i = i + (mb - k)) {
             //
-            //         Multiply Q to the current block of C (1:M,I:I+MB)
+            // Multiply Q to the current block of C (1:M,I:I+MB)
             //
-            Rtpmqrt("R", "N", m, mb - k, k, 0, nb, &a[(i - 1)], lda, &t[((ctr * k + 1) - 1) * ldt], ldt, &c[(1 - 1)], ldc, &c[(i - 1) * ldc], ldc, work, info);
+            Rtpmqrt("R", "N", m, mb - k, k, 0, nb, &a[(i - 1)], lda, &t[((ctr * k + 1) - 1) * ldt], ldt, &c[0], ldc, &c[(i - 1) * ldc], ldc, work, info);
             ctr++;
             //
         }
         if (ii <= n) {
             //
-            //         Multiply Q to the last block of C
+            // Multiply Q to the last block of C
             //
-            Rtpmqrt("R", "N", m, kk, k, 0, nb, &a[(ii - 1)], lda, &t[((ctr * k + 1) - 1) * ldt], ldt, &c[(1 - 1)], ldc, &c[(ii - 1) * ldc], ldc, work, info);
+            Rtpmqrt("R", "N", m, kk, k, 0, nb, &a[(ii - 1)], lda, &t[((ctr * k + 1) - 1) * ldt], ldt, &c[0], ldc, &c[(ii - 1) * ldc], ldc, work, info);
             //
         }
         //
@@ -219,6 +207,6 @@ void Rlamtsqr(const char *side, const char *trans, INTEGER const &m, INTEGER con
     //
     work[1 - 1] = lw;
     //
-    //     End of RLAMTSQR
+    // End of Rlamtsqr
     //
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DLASQ2.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -37,7 +44,7 @@ void Rlasq2(INTEGER const n, REAL *z, INTEGER &info) {
     REAL tol2 = 0.0;
     const REAL zero = 0.0;
     REAL d = 0.0;
-    const REAL half = 0.5e0;
+    const REAL half = 0.5;
     REAL t = 0.0;
     REAL s = 0.0;
     const REAL one = 1.0;
@@ -51,7 +58,7 @@ void Rlasq2(INTEGER const n, REAL *z, INTEGER &info) {
     bool ieee = false;
     INTEGER i0 = 0;
     INTEGER n0 = 0;
-    const REAL cbias = 1.50e0;
+    const REAL cbias = 1.5;
     INTEGER ipn4 = 0;
     INTEGER i4 = 0;
     REAL temp = 0.0;
@@ -87,31 +94,8 @@ void Rlasq2(INTEGER const n, REAL *z, INTEGER &info) {
     REAL tempq = 0.0;
     REAL tempe = 0.0;
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input arguments.
-    //     (in case Rlasq2 is not called by Rlasq1)
+    // Test the input arguments.
+    // (in case Rlasq2 is not called by Rlasq1)
     //
     info = 0;
     eps = Rlamch("Precision");
@@ -127,7 +111,7 @@ void Rlasq2(INTEGER const n, REAL *z, INTEGER &info) {
         return;
     } else if (n == 1) {
         //
-        //        1-by-1 case.
+        // 1-by-1 case.
         //
         if (z[1 - 1] < zero) {
             info = -201;
@@ -136,7 +120,7 @@ void Rlasq2(INTEGER const n, REAL *z, INTEGER &info) {
         return;
     } else if (n == 2) {
         //
-        //        2-by-2 case.
+        // 2-by-2 case.
         //
         if (z[1 - 1] < zero) {
             info = -201;
@@ -173,7 +157,7 @@ void Rlasq2(INTEGER const n, REAL *z, INTEGER &info) {
         return;
     }
     //
-    //     Check for negative data and compute sums of q's and e's.
+    // Check for negative data and compute sums of q's and e's.
     //
     z[(2 * n) - 1] = zero;
     emin = z[2 - 1];
@@ -196,7 +180,7 @@ void Rlasq2(INTEGER const n, REAL *z, INTEGER &info) {
         e += z[(k + 1) - 1];
         qmax = max(qmax, z[k - 1]);
         emin = min(emin, z[(k + 1) - 1]);
-        zmax = max({qmax, zmax, z[(k + 1) - 1]});
+        zmax = max(qmax, zmax, z[(k + 1) - 1]);
     }
     if (z[(2 * n - 1) - 1] < zero) {
         info = -(200 + 2 * n - 1);
@@ -207,7 +191,7 @@ void Rlasq2(INTEGER const n, REAL *z, INTEGER &info) {
     qmax = max(qmax, z[(2 * n - 1) - 1]);
     zmax = max(qmax, zmax);
     //
-    //     Check for diagonality.
+    // Check for diagonality.
     //
     if (e == zero) {
         for (k = 2; k <= n; k = k + 1) {
@@ -220,18 +204,18 @@ void Rlasq2(INTEGER const n, REAL *z, INTEGER &info) {
     //
     trace = d + e;
     //
-    //     Check for zero data.
+    // Check for zero data.
     //
     if (trace == zero) {
         z[(2 * n - 1) - 1] = zero;
         return;
     }
     //
-    //     Check whether the machine is IEEE conformable.
+    // Check whether the machine is IEEE conformable.
     //
     ieee = (iMlaenv(10, "Rlasq2", "N", 1, 2, 3, 4) == 1);
     //
-    //     Rearrange data for locality: Z=(q1,qq1,e1,ee1,q2,qq2,e2,ee2,...).
+    // Rearrange data for locality: Z=(q1,qq1,e1,ee1,q2,qq2,e2,ee2,...).
     //
     for (k = 2 * n; k >= 2; k = k - 2) {
         z[(2 * k) - 1] = zero;
@@ -243,7 +227,7 @@ void Rlasq2(INTEGER const n, REAL *z, INTEGER &info) {
     i0 = 1;
     n0 = n;
     //
-    //     Reverse the qd-array, if warranted.
+    // Reverse the qd-array, if warranted.
     //
     if (cbias * z[(4 * i0 - 3) - 1] < z[(4 * n0 - 3) - 1]) {
         ipn4 = 4 * (i0 + n0);
@@ -257,7 +241,7 @@ void Rlasq2(INTEGER const n, REAL *z, INTEGER &info) {
         }
     }
     //
-    //     Initial split checking via dqd and Li's test.
+    // Initial split checking via dqd and Li's test.
     //
     pp = 0;
     //
@@ -273,7 +257,7 @@ void Rlasq2(INTEGER const n, REAL *z, INTEGER &info) {
             }
         }
         //
-        //        dqd maps Z to ZZ plus Li's test.
+        // dqd maps Z to ZZ plus Li's test.
         //
         emin = z[(4 * i0 + pp + 1) - 1];
         d = z[(4 * i0 + pp - 3) - 1];
@@ -296,19 +280,19 @@ void Rlasq2(INTEGER const n, REAL *z, INTEGER &info) {
         }
         z[(4 * n0 - pp - 2) - 1] = d;
         //
-        //        Now find qmax.
+        // Now find qmax.
         //
         qmax = z[(4 * i0 - pp - 2) - 1];
         for (i4 = 4 * i0 - pp + 2; i4 <= 4 * n0 - pp - 2; i4 = i4 + 4) {
             qmax = max(qmax, z[i4 - 1]);
         }
         //
-        //        Prepare for the next iteration on K.
+        // Prepare for the next iteration on K.
         //
         pp = 1 - pp;
     }
     //
-    //     Initialise variables to pass to Rlasq3.
+    // Initialise variables to pass to Rlasq3.
     //
     ttype = 0;
     dmin1 = zero;
@@ -328,10 +312,10 @@ void Rlasq2(INTEGER const n, REAL *z, INTEGER &info) {
             goto statement_170;
         }
         //
-        //        While array unfinished do
+        // While array unfinished do
         //
-        //        E(N0) holds the value of SIGMA when submatrix in I0:N0
-        //        splits from the rest of the array, but is negated.
+        // E(N0) holds the value of SIGMA when submatrix in I0:N0
+        // splits from the rest of the array, but is negated.
         //
         desig = zero;
         if (n0 == n) {
@@ -344,8 +328,8 @@ void Rlasq2(INTEGER const n, REAL *z, INTEGER &info) {
             return;
         }
         //
-        //        Find last unreduced submatrix's top index I0, find QMAX and
-        //        EMIN. Find Gershgorin-type bound if Q's much greater than E's.
+        // Find last unreduced submatrix's top index I0, find QMAX and
+        // EMIN. Find Gershgorin-type bound if Q's much greater than E's.
         //
         emax = zero;
         if (n0 > i0) {
@@ -363,7 +347,7 @@ void Rlasq2(INTEGER const n, REAL *z, INTEGER &info) {
                 qmin = min(qmin, z[(i4 - 3) - 1]);
                 emax = max(emax, z[(i4 - 5) - 1]);
             }
-            qmax = max(qmax, REAL(z[(i4 - 7) - 1] + z[(i4 - 5) - 1]));
+            qmax = max(qmax, z[(i4 - 7) - 1] + z[(i4 - 5) - 1]);
             emin = min(emin, z[(i4 - 5) - 1]);
         }
         i4 = 4;
@@ -403,15 +387,15 @@ void Rlasq2(INTEGER const n, REAL *z, INTEGER &info) {
             }
         }
         //
-        //        Put -(initial shift) into DMIN.
+        // Put -(initial shift) into DMIN.
         //
-        dmin = -max(zero, REAL(qmin - two * sqrt(qmin) * sqrt(emax)));
+        dmin = -max(zero, qmin - two * sqrt(qmin) * sqrt(emax));
         //
-        //        Now I0:N0 is unreduced.
-        //        PP = 0 for ping, PP = 1 for pong.
-        //        PP = 2 indicates that flipping was applied to the Z array and
-        //               and that the tests for deflation upon entry in Rlasq3
-        //               should not be performed.
+        // Now I0:N0 is unreduced.
+        // PP = 0 for ping, PP = 1 for pong.
+        // PP = 2 indicates that flipping was applied to the Z array and
+        // and that the tests for deflation upon entry in Rlasq3
+        // should not be performed.
         //
         nbig = 100 * (n0 - i0 + 1);
         for (iwhilb = 1; iwhilb <= nbig; iwhilb = iwhilb + 1) {
@@ -419,13 +403,13 @@ void Rlasq2(INTEGER const n, REAL *z, INTEGER &info) {
                 goto statement_150;
             }
             //
-            //           While submatrix unfinished take a good dqds step.
+            // While submatrix unfinished take a good dqds step.
             //
             Rlasq3(i0, n0, z, pp, dmin, sigma, desig, qmax, nfail, iter, ndiv, ieee, ttype, dmin1, dmin2, dn, dn1, dn2, g, tau);
             //
             pp = 1 - pp;
             //
-            //           When EMIN is very small check for splits.
+            // When EMIN is very small check for splits.
             //
             if (pp == 0 && n0 - i0 >= 3) {
                 if (z[(4 * n0) - 1] <= tol2 * qmax || z[(4 * n0 - 1) - 1] <= tol2 * sigma) {
@@ -456,9 +440,9 @@ void Rlasq2(INTEGER const n, REAL *z, INTEGER &info) {
         //
         info = 2;
         //
-        //        Maximum number of iterations exceeded, restore the shift
-        //        SIGMA and place the new d's and e's in a qd array.
-        //        This might need to be done for several blocks
+        // Maximum number of iterations exceeded, restore the shift
+        // SIGMA and place the new d's and e's in a qd array.
+        // This might need to be done for several blocks
         //
         i1 = i0;
         n1 = n0;
@@ -472,7 +456,7 @@ void Rlasq2(INTEGER const n, REAL *z, INTEGER &info) {
             z[(4 * k - 3) - 1] += sigma + tempe - z[(4 * k - 5) - 1];
         }
         //
-        //        Prepare to do this on the previous block if there is one
+        // Prepare to do this on the previous block if there is one
         //
         if (i1 > 1) {
             n1 = i1 - 1;
@@ -486,9 +470,9 @@ void Rlasq2(INTEGER const n, REAL *z, INTEGER &info) {
         for (k = 1; k <= n; k = k + 1) {
             z[(2 * k - 1) - 1] = z[(4 * k - 3) - 1];
             //
-            //        Only the block 1..N0 is unfinished.  The rest of the e's
-            //        must be essentially zero, although sometimes other data
-            //        has been stored in them.
+            // Only the block 1..N0 is unfinished.  The rest of the e's
+            // must be essentially zero, although sometimes other data
+            // has been stored in them.
             //
             if (k < n0) {
                 z[(2 * k) - 1] = z[(4 * k - 1) - 1];
@@ -498,7 +482,7 @@ void Rlasq2(INTEGER const n, REAL *z, INTEGER &info) {
         }
         return;
     //
-    //        end IWHILB
+    // end IWHILB
     //
     statement_150:;
         //
@@ -507,17 +491,17 @@ void Rlasq2(INTEGER const n, REAL *z, INTEGER &info) {
     info = 3;
     return;
 //
-//     end IWHILA
+// end IWHILA
 //
 statement_170:
     //
-    //     Move q's to the front.
+    // Move q's to the front.
     //
     for (k = 2; k <= n; k = k + 1) {
         z[k - 1] = z[(4 * k - 3) - 1];
     }
     //
-    //     Sort and compute sum of eigenvalues.
+    // Sort and compute sum of eigenvalues.
     //
     Rlasrt("D", n, z, iinfo);
     //
@@ -526,14 +510,14 @@ statement_170:
         e += z[k - 1];
     }
     //
-    //     Store trace, sum(eigenvalues) and information on performance.
+    // Store trace, sum(eigenvalues) and information on performance.
     //
     z[(2 * n + 1) - 1] = trace;
     z[(2 * n + 2) - 1] = e;
-    z[(2 * n + 3) - 1] = iter;
-    z[(2 * n + 4) - 1] = castREAL(ndiv) / castREAL(n * n);
+    z[(2 * n + 3) - 1] = castREAL(iter);
+    z[(2 * n + 4) - 1] = castREAL(ndiv) / castREAL(pow2(n));
     z[(2 * n + 5) - 1] = hundrd * nfail / castREAL(iter);
     //
-    //     End of Rlasq2
+    // End of Rlasq2
     //
 }

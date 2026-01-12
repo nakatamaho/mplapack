@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZSGT01.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -40,27 +47,6 @@ using fem::common;
 
 void Csgt01(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER const m, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, COMPLEX *z, INTEGER const ldz, REAL *d, COMPLEX *work, REAL *rwork, REAL *result) {
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     const REAL zero = 0.0;
     result[1 - 1] = zero;
     if (n <= 0) {
@@ -69,7 +55,7 @@ void Csgt01(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER cons
     //
     REAL ulp = Rlamch("Epsilon");
     //
-    //     Compute product of 1-norms of A and Z.
+    // Compute product of 1-norms of A and Z.
     //
     REAL anorm = Clanhe("1", uplo, n, a, lda, rwork) * Clange("1", n, m, z, ldz, rwork);
     const REAL one = 1.0;
@@ -82,7 +68,7 @@ void Csgt01(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER cons
     INTEGER i = 0;
     if (itype == 1) {
         //
-        //        Norm of AZ - BZD
+        // Norm of AZ - BZD
         //
         Chemm("Left", uplo, n, m, cone, a, lda, z, ldz, czero, work, n);
         for (i = 1; i <= m; i = i + 1) {
@@ -94,7 +80,7 @@ void Csgt01(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER cons
         //
     } else if (itype == 2) {
         //
-        //        Norm of ABZ - ZD
+        // Norm of ABZ - ZD
         //
         Chemm("Left", uplo, n, m, cone, b, ldb, z, ldz, czero, work, n);
         for (i = 1; i <= m; i = i + 1) {
@@ -106,7 +92,7 @@ void Csgt01(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER cons
         //
     } else if (itype == 3) {
         //
-        //        Norm of BAZ - ZD
+        // Norm of BAZ - ZD
         //
         Chemm("Left", uplo, n, m, cone, a, lda, z, ldz, czero, work, n);
         for (i = 1; i <= m; i = i + 1) {
@@ -117,6 +103,6 @@ void Csgt01(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER cons
         result[1 - 1] = (Clange("1", n, m, z, ldz, rwork) / anorm) / (n * ulp);
     }
     //
-    //     End of CDGT01
+    // End of Cdgt01
     //
 }

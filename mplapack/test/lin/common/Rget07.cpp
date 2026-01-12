@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DGET07.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
@@ -50,7 +57,7 @@ void Rget07(const char *trans, INTEGER const n, INTEGER const nrhs, REAL *a, INT
     REAL tmp = 0.0;
     REAL axbi = 0.0;
     //
-    //     Quick exit if N = 0 or NRHS = 0.
+    // Quick exit if N = 0 or NRHS = 0.
     //
     if (n <= 0 || nrhs <= 0) {
         reslts[1 - 1] = zero;
@@ -63,9 +70,9 @@ void Rget07(const char *trans, INTEGER const n, INTEGER const nrhs, REAL *a, INT
     ovfl = one / unfl;
     notran = Mlsame(trans, "N");
     //
-    //     Test 1:  Compute the maximum of
-    //        norm(X - XACT) / ( norm(X) * FERR )
-    //     over all the vectors X and XACT using the infinity-norm.
+    // Test 1:  Compute the maximum of
+    // norm(X - XACT) / ( norm(X) * FERR )
+    // over all the vectors X and XACT using the infinity-norm.
     //
     errbnd = zero;
     if (chkferr) {
@@ -97,8 +104,8 @@ void Rget07(const char *trans, INTEGER const n, INTEGER const nrhs, REAL *a, INT
     }
     reslts[1 - 1] = errbnd;
     //
-    //     Test 2:  Compute the maximum of BERR / ( (n+1)*EPS + (*) ), where
-    //     (*) = (n+1)*UNFL / (min_i (abs(op(A))*abs(X) +abs(b))_i )
+    // Test 2:  Compute the maximum of BERR / ( (n+1)*EPS + (*) ), where
+    // (*) = (n+1)*UNFL / (min_i (abs(op(A))*abs(X) +abs(b))_i )
     //
     for (k = 1; k <= nrhs; k = k + 1) {
         for (i = 1; i <= n; i = i + 1) {
@@ -126,6 +133,6 @@ void Rget07(const char *trans, INTEGER const n, INTEGER const nrhs, REAL *a, INT
         }
     }
     //
-    //     End of Rget07
+    // End of Rget07
     //
 }

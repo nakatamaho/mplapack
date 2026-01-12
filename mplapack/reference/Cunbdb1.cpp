@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,12 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine ZUNBDB1.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Cunbdb1(INTEGER const m, INTEGER const p, INTEGER const q, COMPLEX *x11, INTEGER const ldx11, COMPLEX *x21, INTEGER const ldx21, REAL *theta, REAL *phi, COMPLEX *taup1, COMPLEX *taup2, COMPLEX *tauq1, COMPLEX *work, INTEGER const lwork, INTEGER &info) {
     //
-    //     Test input arguments
+    // Test input arguments
     //
     info = 0;
     bool lquery = lwork == -1;
@@ -48,7 +55,7 @@ void Cunbdb1(INTEGER const m, INTEGER const p, INTEGER const q, COMPLEX *x11, IN
         info = -7;
     }
     //
-    //     Compute workspace
+    // Compute workspace
     //
     INTEGER ilarf = 0;
     INTEGER llarf = 0;
@@ -58,12 +65,12 @@ void Cunbdb1(INTEGER const m, INTEGER const p, INTEGER const q, COMPLEX *x11, IN
     INTEGER lworkmin = 0;
     if (info == 0) {
         ilarf = 2;
-        llarf = max({p - 1, m - p - 1, q - 1});
+        llarf = max(p - 1, m - p - 1, q - 1);
         iorbdb5 = 2;
         lorbdb5 = q - 2;
         lworkopt = max(ilarf + llarf - 1, iorbdb5 + lorbdb5 - 1);
         lworkmin = lworkopt;
-        work[1 - 1] = castREAL(lworkopt);
+        work[1 - 1] = lworkopt;
         if (lwork < lworkmin && !lquery) {
             info = -14;
         }
@@ -75,7 +82,7 @@ void Cunbdb1(INTEGER const m, INTEGER const p, INTEGER const q, COMPLEX *x11, IN
         return;
     }
     //
-    //     Reduce columns 1, ..., Q of X11 and X21
+    // Reduce columns 1, ..., Q of X11 and X21
     //
     INTEGER i = 0;
     REAL c = 0.0;
@@ -110,6 +117,6 @@ void Cunbdb1(INTEGER const m, INTEGER const p, INTEGER const q, COMPLEX *x11, IN
         //
     }
     //
-    //     End of Cunbdb1
+    // End of Cunbdb1
     //
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,12 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine DSYGST.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Rsygst(INTEGER const itype, const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, INTEGER &info) {
     //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     bool upper = Mlsame(uplo, "U");
@@ -51,38 +58,38 @@ void Rsygst(INTEGER const itype, const char *uplo, INTEGER const n, REAL *a, INT
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0) {
         return;
     }
     //
-    //     Determine the block size for this environment.
+    // Determine the block size for this environment.
     //
     INTEGER nb = iMlaenv(1, "Rsygst", uplo, n, -1, -1, -1);
     //
     INTEGER k = 0;
     INTEGER kb = 0;
     const REAL one = 1.0;
-    const REAL half = 0.5e0;
+    const REAL half = 0.5;
     if (nb <= 1 || nb >= n) {
         //
-        //        Use unblocked code
+        // Use unblocked code
         //
         Rsygs2(itype, uplo, n, a, lda, b, ldb, info);
     } else {
         //
-        //        Use blocked code
+        // Use blocked code
         //
         if (itype == 1) {
             if (upper) {
                 //
-                //              Compute inv(U**T)*A*inv(U)
+                // Compute inv(U**T)*A*inv(U)
                 //
                 for (k = 1; k <= n; k = k + nb) {
                     kb = min(n - k + 1, nb);
                     //
-                    //                 Update the upper triangle of A(k:n,k:n)
+                    // Update the upper triangle of A(k:n,k:n)
                     //
                     Rsygs2(itype, uplo, kb, &a[(k - 1) + (k - 1) * lda], lda, &b[(k - 1) + (k - 1) * ldb], ldb, info);
                     if (k + kb <= n) {
@@ -95,12 +102,12 @@ void Rsygst(INTEGER const itype, const char *uplo, INTEGER const n, REAL *a, INT
                 }
             } else {
                 //
-                //              Compute inv(L)*A*inv(L**T)
+                // Compute inv(L)*A*inv(L**T)
                 //
                 for (k = 1; k <= n; k = k + nb) {
                     kb = min(n - k + 1, nb);
                     //
-                    //                 Update the lower triangle of A(k:n,k:n)
+                    // Update the lower triangle of A(k:n,k:n)
                     //
                     Rsygs2(itype, uplo, kb, &a[(k - 1) + (k - 1) * lda], lda, &b[(k - 1) + (k - 1) * ldb], ldb, info);
                     if (k + kb <= n) {
@@ -115,12 +122,12 @@ void Rsygst(INTEGER const itype, const char *uplo, INTEGER const n, REAL *a, INT
         } else {
             if (upper) {
                 //
-                //              Compute U*A*U**T
+                // Compute U*A*U**T
                 //
                 for (k = 1; k <= n; k = k + nb) {
                     kb = min(n - k + 1, nb);
                     //
-                    //                 Update the upper triangle of A(1:k+kb-1,1:k+kb-1)
+                    // Update the upper triangle of A(1:k+kb-1,1:k+kb-1)
                     //
                     Rtrmm("Left", uplo, "No transpose", "Non-unit", k - 1, kb, one, b, ldb, &a[(k - 1) * lda], lda);
                     Rsymm("Right", uplo, k - 1, kb, half, &a[(k - 1) + (k - 1) * lda], lda, &b[(k - 1) * ldb], ldb, one, &a[(k - 1) * lda], lda);
@@ -131,12 +138,12 @@ void Rsygst(INTEGER const itype, const char *uplo, INTEGER const n, REAL *a, INT
                 }
             } else {
                 //
-                //              Compute L**T*A*L
+                // Compute L**T*A*L
                 //
                 for (k = 1; k <= n; k = k + nb) {
                     kb = min(n - k + 1, nb);
                     //
-                    //                 Update the lower triangle of A(1:k+kb-1,1:k+kb-1)
+                    // Update the lower triangle of A(1:k+kb-1,1:k+kb-1)
                     //
                     Rtrmm("Right", uplo, "No transpose", "Non-unit", kb, k - 1, one, b, ldb, &a[(k - 1)], lda);
                     Rsymm("Left", uplo, kb, k - 1, half, &a[(k - 1) + (k - 1) * lda], lda, &b[(k - 1)], ldb, one, &a[(k - 1)], lda);
@@ -149,6 +156,6 @@ void Rsygst(INTEGER const itype, const char *uplo, INTEGER const n, REAL *a, INT
         }
     }
     //
-    //     End of Rsygst
+    // End of Rsygst
     //
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DSVDCH.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -54,30 +61,7 @@ void Rsvdch(INTEGER const n, REAL *s, REAL *e, REAL *svd, REAL const tol, INTEGE
     INTEGER count = 0;
     const REAL zero = 0.0;
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Get machine constants
+    // Get machine constants
     //
     info = 0;
     if (n <= 0) {
@@ -87,23 +71,23 @@ void Rsvdch(INTEGER const n, REAL *s, REAL *e, REAL *svd, REAL const tol, INTEGE
     ovfl = Rlamch("Overflow");
     eps = Rlamch("Epsilon") * Rlamch("Base");
     //
-    //     UNFLEP is chosen so that when an eigenvalue is multiplied by the
-    //     scale factor sqrt(OVFL)*sqrt(sqrt(UNFL))/MX in Rsvdct, it exceeds
-    //     sqrt(UNFL), which is the lower limit for Rsvdct.
+    // UNFLEP is chosen so that when an eigenvalue is multiplied by the
+    // scale factor sqrt(OVFL)*sqrt(sqrt(UNFL))/MX in Rsvdct, it exceeds
+    // sqrt(UNFL), which is the lower limit for Rsvdct.
     //
     unflep = (sqrt(sqrt(unfl)) / sqrt(ovfl)) * svd[1 - 1] + unfl / eps;
     //
-    //     The value of EPS works best when TOL .GE. 10.
+    // The value of EPS works best when TOL .GE. 10.
     //
     eps = tol * max(REAL(castREAL(n) / 10.0), REAL(1.0)) * eps;
     //
-    //     TPNT points to singular value at right endpoint of interval
-    //     BPNT points to singular value at left  endpoint of interval
+    // TPNT points to singular value at right endpoint of interval
+    // BPNT points to singular value at left  endpoint of interval
     //
     tpnt = 1;
     bpnt = 1;
 //
-//     Begin loop over all intervals
+// Begin loop over all intervals
 //
 statement_10:
     upper = (one + eps) * svd[tpnt - 1] + unflep;
@@ -112,7 +96,7 @@ statement_10:
         lower = -upper;
     }
 //
-//     Begin loop merging overlapping intervals
+// Begin loop merging overlapping intervals
 //
 statement_20:
     if (bpnt == n) {
@@ -123,7 +107,7 @@ statement_20:
         goto statement_30;
     }
     //
-    //     Merge
+    // Merge
     //
     bpnt++;
     lower = (one - eps) * svd[bpnt - 1] - unflep;
@@ -133,7 +117,7 @@ statement_20:
     goto statement_20;
 statement_30:
     //
-    //     Count singular values in interval [ LOWER, UPPER ]
+    // Count singular values in interval [ LOWER, UPPER ]
     //
     Rsvdct(n, s, e, lower, numl);
     Rsvdct(n, s, e, upper, numu);
@@ -143,7 +127,7 @@ statement_30:
     }
     if (count != bpnt - tpnt + 1) {
         //
-        //        Wrong number of singular values in interval
+        // Wrong number of singular values in interval
         //
         info = tpnt;
         goto statement_40;
@@ -155,6 +139,6 @@ statement_30:
     }
 statement_40:;
     //
-    //     End of Rsvdch
+    // End of Rsvdch
     //
 }

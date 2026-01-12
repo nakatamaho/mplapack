@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DGET32.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -63,7 +70,7 @@ void Rget32(REAL &rmax, INTEGER &lmax, INTEGER &ninfo, INTEGER &knt) {
     const REAL zero = 0.0;
     rmax = zero;
     //
-    //     Begin test loop
+    // Begin test loop
     //
     INTEGER itranl = 0;
     INTEGER itranr = 0;
@@ -293,6 +300,6 @@ void Rget32(REAL &rmax, INTEGER &lmax, INTEGER &ninfo, INTEGER &knt) {
         }
     }
     //
-    //     End of Rget32
+    // End of Rget32
     //
 }

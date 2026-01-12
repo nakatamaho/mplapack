@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,32 +26,17 @@
  *
  */
 
+// Derived from LAPACK routine DSYTRS_AA.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Rsytrs_aa(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *a, INTEGER const lda, INTEGER *ipiv, REAL *b, INTEGER const ldb, REAL *work, INTEGER const lwork, INTEGER &info) {
-    //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
     info = 0;
     bool upper = Mlsame(uplo, "U");
@@ -79,7 +64,7 @@ void Rsytrs_aa(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *a, I
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0 || nrhs == 0) {
         return;
@@ -90,13 +75,13 @@ void Rsytrs_aa(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *a, I
     const REAL one = 1.0;
     if (upper) {
         //
-        //        Solve A*X = B, where A = U**T*T*U.
+        // Solve A*X = B, where A = U**T*T*U.
         //
-        //        1) Forward substitution with U**T
+        // 1) Forward substitution with U**T
         //
         if (n > 1) {
             //
-            //           Pivot, P**T * B -> B
+            // Pivot, P**T * B -> B
             //
             for (k = 1; k <= n; k = k + 1) {
                 kp = ipiv[k - 1];
@@ -105,31 +90,31 @@ void Rsytrs_aa(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *a, I
                 }
             }
             //
-            //           Compute U**T \ B -> B    [ (U**T \P**T * B) ]
+            // Compute U**T \ B -> B    [ (U**T \P**T * B) ]
             //
             Rtrsm("L", "U", "T", "U", n - 1, nrhs, one, &a[(2 - 1) * lda], lda, &b[(2 - 1)], ldb);
         }
         //
-        //        2) Solve with triangular matrix T
+        // 2) Solve with triangular matrix T
         //
-        //        Compute T \ B -> B   [ T \ (U**T \P**T * B) ]
+        // Compute T \ B -> B   [ T \ (U**T \P**T * B) ]
         //
-        Rlacpy("F", 1, n, &a[(1 - 1)], lda + 1, &work[n - 1], 1);
+        Rlacpy("F", 1, n, &a[0], lda + 1, &work[n - 1], 1);
         if (n > 1) {
             Rlacpy("F", 1, n - 1, &a[(2 - 1) * lda], lda + 1, &work[1 - 1], 1);
             Rlacpy("F", 1, n - 1, &a[(2 - 1) * lda], lda + 1, &work[(2 * n) - 1], 1);
         }
         Rgtsv(n, nrhs, &work[1 - 1], &work[n - 1], &work[(2 * n) - 1], b, ldb, info);
         //
-        //        3) Backward substitution with U
+        // 3) Backward substitution with U
         //
         if (n > 1) {
             //
-            //           Compute U \ B -> B   [ U \ (T \ (U**T \P**T * B) ) ]
+            // Compute U \ B -> B   [ U \ (T \ (U**T \P**T * B) ) ]
             //
             Rtrsm("L", "U", "N", "U", n - 1, nrhs, one, &a[(2 - 1) * lda], lda, &b[(2 - 1)], ldb);
             //
-            //           Pivot, P * B -> B  [ P * (U \ (T \ (U**T \P**T * B) )) ]
+            // Pivot, P * B -> B  [ P * (U \ (T \ (U**T \P**T * B) )) ]
             //
             for (k = n; k >= 1; k = k - 1) {
                 kp = ipiv[k - 1];
@@ -141,13 +126,13 @@ void Rsytrs_aa(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *a, I
         //
     } else {
         //
-        //        Solve A*X = B, where A = L*T*L**T.
+        // Solve A*X = B, where A = L*T*L**T.
         //
-        //        1) Forward substitution with L
+        // 1) Forward substitution with L
         //
         if (n > 1) {
             //
-            //           Pivot, P**T * B -> B
+            // Pivot, P**T * B -> B
             //
             for (k = 1; k <= n; k = k + 1) {
                 kp = ipiv[k - 1];
@@ -156,31 +141,31 @@ void Rsytrs_aa(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *a, I
                 }
             }
             //
-            //           Compute L \ B -> B    [ (L \P**T * B) ]
+            // Compute L \ B -> B    [ (L \P**T * B) ]
             //
             Rtrsm("L", "L", "N", "U", n - 1, nrhs, one, &a[(2 - 1)], lda, &b[(2 - 1)], ldb);
         }
         //
-        //        2) Solve with triangular matrix T
+        // 2) Solve with triangular matrix T
         //
-        //        Compute T \ B -> B   [ T \ (L \P**T * B) ]
+        // Compute T \ B -> B   [ T \ (L \P**T * B) ]
         //
-        Rlacpy("F", 1, n, &a[(1 - 1)], lda + 1, &work[n - 1], 1);
+        Rlacpy("F", 1, n, &a[0], lda + 1, &work[n - 1], 1);
         if (n > 1) {
             Rlacpy("F", 1, n - 1, &a[(2 - 1)], lda + 1, &work[1 - 1], 1);
             Rlacpy("F", 1, n - 1, &a[(2 - 1)], lda + 1, &work[(2 * n) - 1], 1);
         }
         Rgtsv(n, nrhs, &work[1 - 1], &work[n - 1], &work[(2 * n) - 1], b, ldb, info);
         //
-        //        3) Backward substitution with L**T
+        // 3) Backward substitution with L**T
         //
         if (n > 1) {
             //
-            //           Compute (L**T \ B) -> B   [ L**T \ (T \ (L \P**T * B) ) ]
+            // Compute (L**T \ B) -> B   [ L**T \ (T \ (L \P**T * B) ) ]
             //
             Rtrsm("L", "L", "T", "U", n - 1, nrhs, one, &a[(2 - 1)], lda, &b[(2 - 1)], ldb);
             //
-            //           Pivot, P * B -> B  [ P * (L**T \ (T \ (L \P**T * B) )) ]
+            // Pivot, P * B -> B  [ P * (L**T \ (T \ (L \P**T * B) )) ]
             //
             for (k = n; k >= 1; k = k - 1) {
                 kp = ipiv[k - 1];
@@ -192,6 +177,6 @@ void Rsytrs_aa(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *a, I
         //
     }
     //
-    //     End of Rsytrs_aa
+    // End of Rsytrs_aa
     //
 }

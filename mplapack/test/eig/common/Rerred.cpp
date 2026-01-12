@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DERRED.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -90,7 +97,7 @@ void Rerred(const char *path, INTEGER const nunit) {
     INTEGER ns = 0;
     if (Mlsamen(2, c2, "EV")) {
         //
-        //        Test Rgeev
+        // Test Rgeev
         //
         strncpy(srnamt, "Rgeev", srnamt_len);
         infot = 1;
@@ -118,7 +125,7 @@ void Rerred(const char *path, INTEGER const nunit) {
         //
     } else if (Mlsamen(2, c2, "ES")) {
         //
-        //        Test Rgees
+        // Test Rgees
         //
         strncpy(srnamt, "Rgees", srnamt_len);
         infot = 1;
@@ -143,7 +150,7 @@ void Rerred(const char *path, INTEGER const nunit) {
         //
     } else if (Mlsamen(2, c2, "VX")) {
         //
-        //        Test Rgeevx
+        // Test Rgeevx
         //
         strncpy(srnamt, "Rgeevx", srnamt_len);
         infot = 1;
@@ -183,7 +190,7 @@ void Rerred(const char *path, INTEGER const nunit) {
         //
     } else if (Mlsamen(2, c2, "SX")) {
         //
-        //        Test Rgeesx
+        // Test Rgeesx
         //
         strncpy(srnamt, "Rgeesx", srnamt_len);
         infot = 1;
@@ -211,7 +218,7 @@ void Rerred(const char *path, INTEGER const nunit) {
         //
     } else if (Mlsamen(2, c2, "BD")) {
         //
-        //        Test Rgesvd
+        // Test Rgesvd
         //
         strncpy(srnamt, "Rgesvd", srnamt_len);
         infot = 1;
@@ -245,7 +252,7 @@ void Rerred(const char *path, INTEGER const nunit) {
             write(nout, format_9998);
         }
         //
-        //        Test Rgesdd
+        // Test Rgesdd
         //
         strncpy(srnamt, "Rgesdd", srnamt_len);
         infot = 1;
@@ -317,7 +324,7 @@ void Rerred(const char *path, INTEGER const nunit) {
             write(nout, format_9998);
         }
         //
-        //        Test Rgesvdx
+        // Test Rgesvdx
         //
         strncpy(srnamt, "Rgesvdx", srnamt_len);
         infot = 1;
@@ -363,7 +370,7 @@ void Rerred(const char *path, INTEGER const nunit) {
             write(nout, format_9998);
         }
         //
-        //        Test Rgesvdq
+        // Test Rgesvdq
         //
         strncpy(srnamt, "Rgesvdq", srnamt_len);
         infot = 1;
@@ -407,7 +414,7 @@ void Rerred(const char *path, INTEGER const nunit) {
         }
     }
     //
-    //     Print a summary line.
+    // Print a summary line.
     //
     if (!Mlsamen(2, c2, "BD")) {
         if (ok) {
@@ -417,5 +424,5 @@ void Rerred(const char *path, INTEGER const nunit) {
         }
     }
     //
-    //     End of Rerred
+    // End of Rerred
 }

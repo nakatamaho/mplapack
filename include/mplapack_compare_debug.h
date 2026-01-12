@@ -46,6 +46,9 @@ using std::complex;
 using std::cout;
 using std::endl;
 
+static inline int max_int(int a, int b) { return (a < b) ? b : a; }
+static inline int min_int(int a, int b) { return (a > b) ? b : a; }
+
 #include <mpcomplex.h>
 #include <mpreal.h>
 using namespace mpfr;
@@ -145,7 +148,7 @@ inline double drand48() {
 }
 #endif
 
-extern int mplapack_errno; //Mxerbla.override.cpp
+extern int mplapack_errno; // Mxerbla.override.cpp
 
 #if defined __MPLAPACK_BUILD_DEBUG_CPP__
 #define _MPLAPACK_DEBUG_EXTERN_

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZTPT06.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -38,32 +45,11 @@ using fem::common;
 
 void Ctpt06(REAL const rcond, REAL const rcondc, const char *uplo, const char *diag, INTEGER const n, COMPLEX *ap, REAL *rwork, REAL &rat) {
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     REAL eps = Rlamch("Epsilon");
     REAL rmax = max(rcond, rcondc);
     REAL rmin = min(rcond, rcondc);
     //
-    //     Do the easy cases first.
+    // Do the easy cases first.
     //
     const REAL zero = 0.0;
     const REAL one = 1.0;
@@ -71,29 +57,29 @@ void Ctpt06(REAL const rcond, REAL const rcondc, const char *uplo, const char *d
     REAL anorm = 0.0;
     if (rmin < zero) {
         //
-        //        Invalid value for RCOND or RCONDC, return 1/EPS.
+        // Invalid value for RCOND or RCONDC, return 1/EPS.
         //
         rat = one / eps;
         //
     } else if (rmin > zero) {
         //
-        //        Both estimates are positive, return RMAX/RMIN - 1.
+        // Both estimates are positive, return RMAX/RMIN - 1.
         //
         rat = rmax / rmin - one;
         //
     } else if (rmax == zero) {
         //
-        //        Both estimates zero.
+        // Both estimates zero.
         //
         rat = zero;
         //
     } else {
         //
-        //        One estimate is zero, the other is non-zero.  If the matrix is
-        //        ill-conditioned, return the nonzero estimate multiplied by
-        //        1/EPS; if the matrix is badly scaled, return the nonzero
-        //        estimate multiplied by BIGNUM/TMAX, where TMAX is the maximum
-        //        element in absolute value in A.
+        // One estimate is zero, the other is non-zero.  If the matrix is
+        // ill-conditioned, return the nonzero estimate multiplied by
+        // 1/EPS; if the matrix is badly scaled, return the nonzero
+        // estimate multiplied by BIGNUM/TMAX, where TMAX is the maximum
+        // element in absolute value in A.
         //
         bignum = one / Rlamch("Safe minimum");
         anorm = Clantp("M", uplo, diag, n, ap, rwork);
@@ -101,6 +87,6 @@ void Ctpt06(REAL const rcond, REAL const rcondc, const char *uplo, const char *d
         rat = rmax * (min({bignum / max(one, anorm), one / eps}));
     }
     //
-    //     End of Ctpt06
+    // End of Ctpt06
     //
 }

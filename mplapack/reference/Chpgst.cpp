@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,12 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine ZHPGST.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Chpgst(INTEGER const itype, const char *uplo, INTEGER const n, COMPLEX *ap, COMPLEX *bp, INTEGER &info) {
     //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     bool upper = Mlsame(uplo, "U");
@@ -58,7 +65,7 @@ void Chpgst(INTEGER const itype, const char *uplo, INTEGER const n, COMPLEX *ap,
     INTEGER k1k1 = 0;
     REAL akk = 0.0;
     REAL bkk = 0.0;
-    const REAL half = 0.5e+0;
+    const REAL half = 0.5;
     COMPLEX ct = 0.0;
     INTEGER k1 = 0;
     INTEGER j1j1 = 0;
@@ -66,16 +73,16 @@ void Chpgst(INTEGER const itype, const char *uplo, INTEGER const n, COMPLEX *ap,
     if (itype == 1) {
         if (upper) {
             //
-            //           Compute inv(U**H)*A*inv(U)
+            // Compute inv(U**H)*A*inv(U)
             //
-            //           J1 and JJ are the indices of A(1,j) and A(j,j)
+            // J1 and JJ are the indices of A(1,j) and A(j,j)
             //
             jj = 0;
             for (j = 1; j <= n; j = j + 1) {
                 j1 = jj + 1;
                 jj += j;
                 //
-                //              Compute the j-th column of the upper triangle of A
+                // Compute the j-th column of the upper triangle of A
                 //
                 ap[jj - 1] = ap[jj - 1].real();
                 bjj = bp[jj - 1].real();
@@ -86,15 +93,15 @@ void Chpgst(INTEGER const itype, const char *uplo, INTEGER const n, COMPLEX *ap,
             }
         } else {
             //
-            //           Compute inv(L)*A*inv(L**H)
+            // Compute inv(L)*A*inv(L**H)
             //
-            //           KK and K1K1 are the indices of A(k,k) and A(k+1,k+1)
+            // KK and K1K1 are the indices of A(k,k) and A(k+1,k+1)
             //
             kk = 1;
             for (k = 1; k <= n; k = k + 1) {
                 k1k1 = kk + n - k + 1;
                 //
-                //              Update the lower triangle of A(k:n,k:n)
+                // Update the lower triangle of A(k:n,k:n)
                 //
                 akk = ap[kk - 1].real();
                 bkk = bp[kk - 1].real();
@@ -114,16 +121,16 @@ void Chpgst(INTEGER const itype, const char *uplo, INTEGER const n, COMPLEX *ap,
     } else {
         if (upper) {
             //
-            //           Compute U*A*U**H
+            // Compute U*A*U**H
             //
-            //           K1 and KK are the indices of A(1,k) and A(k,k)
+            // K1 and KK are the indices of A(1,k) and A(k,k)
             //
             kk = 0;
             for (k = 1; k <= n; k = k + 1) {
                 k1 = kk + 1;
                 kk += k;
                 //
-                //              Update the upper triangle of A(1:k,1:k)
+                // Update the upper triangle of A(1:k,1:k)
                 //
                 akk = ap[kk - 1].real();
                 bkk = bp[kk - 1].real();
@@ -137,15 +144,15 @@ void Chpgst(INTEGER const itype, const char *uplo, INTEGER const n, COMPLEX *ap,
             }
         } else {
             //
-            //           Compute L**H *A*L
+            // Compute L**H *A*L
             //
-            //           JJ and J1J1 are the indices of A(j,j) and A(j+1,j+1)
+            // JJ and J1J1 are the indices of A(j,j) and A(j+1,j+1)
             //
             jj = 1;
             for (j = 1; j <= n; j = j + 1) {
                 j1j1 = jj + n - j + 1;
                 //
-                //              Compute the j-th column of the lower triangle of A
+                // Compute the j-th column of the lower triangle of A
                 //
                 ajj = ap[jj - 1].real();
                 bjj = bp[jj - 1].real();
@@ -158,6 +165,6 @@ void Chpgst(INTEGER const itype, const char *uplo, INTEGER const n, COMPLEX *ap,
         }
     }
     //
-    //     End of Chpgst
+    // End of Chpgst
     //
 }

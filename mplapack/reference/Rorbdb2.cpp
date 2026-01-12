@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,35 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine DORBDB2.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Rorbdb2(INTEGER const m, INTEGER const p, INTEGER const q, REAL *x11, INTEGER const ldx11, REAL *x21, INTEGER const ldx21, REAL *theta, REAL *phi, REAL *taup1, REAL *taup2, REAL *tauq1, REAL *work, INTEGER const lwork, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  ====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Intrinsic Function ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test input arguments
+    // Test input arguments
     //
     info = 0;
     bool lquery = lwork == -1;
@@ -71,7 +55,7 @@ void Rorbdb2(INTEGER const m, INTEGER const p, INTEGER const q, REAL *x11, INTEG
         info = -7;
     }
     //
-    //     Compute workspace
+    // Compute workspace
     //
     INTEGER ilarf = 0;
     INTEGER llarf = 0;
@@ -81,7 +65,7 @@ void Rorbdb2(INTEGER const m, INTEGER const p, INTEGER const q, REAL *x11, INTEG
     INTEGER lworkmin = 0;
     if (info == 0) {
         ilarf = 2;
-        llarf = max({p - 1, m - p, q - 1});
+        llarf = max(p - 1, m - p, q - 1);
         iorbdb5 = 2;
         lorbdb5 = q - 1;
         lworkopt = max(ilarf + llarf - 1, iorbdb5 + lorbdb5 - 1);
@@ -98,7 +82,7 @@ void Rorbdb2(INTEGER const m, INTEGER const p, INTEGER const q, REAL *x11, INTEG
         return;
     }
     //
-    //     Reduce rows 1, ..., P of X11 and X21
+    // Reduce rows 1, ..., P of X11 and X21
     //
     INTEGER i = 0;
     REAL c = 0.0;
@@ -135,7 +119,7 @@ void Rorbdb2(INTEGER const m, INTEGER const p, INTEGER const q, REAL *x11, INTEG
         //
     }
     //
-    //     Reduce the bottom-right portion of X21 to the identity matrix
+    // Reduce the bottom-right portion of X21 to the identity matrix
     //
     for (i = p + 1; i <= q; i = i + 1) {
         Rlarfgp(m - p - i + 1, x21[(i - 1) + (i - 1) * ldx21], &x21[((i + 1) - 1) + (i - 1) * ldx21], 1, taup2[i - 1]);
@@ -143,6 +127,6 @@ void Rorbdb2(INTEGER const m, INTEGER const p, INTEGER const q, REAL *x11, INTEG
         Rlarf("L", m - p - i + 1, q - i, &x21[(i - 1) + (i - 1) * ldx21], 1, taup2[i - 1], &x21[(i - 1) + ((i + 1) - 1) * ldx21], ldx21, &work[ilarf - 1]);
     }
     //
-    //     End of Rorbdb2
+    // End of Rorbdb2
     //
 }

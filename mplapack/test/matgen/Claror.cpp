@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,8 +26,16 @@
  *
  */
 
+// Derived from LAPACK routine ZLAROR.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
+
 #include <mplapack_matgen.h>
 
 #if defined ___MPLAPACK_BUILD_WITH_DD___
@@ -53,7 +61,7 @@ void Claror(const char *side, const char *init, INTEGER const m, INTEGER const n
         itype = 4;
     }
     //
-    //     Check for argument errors.
+    // Check for argument errors.
     //
     if (itype == 0) {
         info = -1;
@@ -76,7 +84,7 @@ void Claror(const char *side, const char *init, INTEGER const m, INTEGER const n
         nxfrm = n;
     }
     //
-    //     Initialize A to the identity matrix if desired
+    // Initialize A to the identity matrix if desired
     //
     const COMPLEX czero = COMPLEX(0.0, 0.0);
     const COMPLEX cone = COMPLEX(1.0, 0.0);
@@ -84,12 +92,12 @@ void Claror(const char *side, const char *init, INTEGER const m, INTEGER const n
         Claset("Full", m, n, czero, cone, a, lda);
     }
     //
-    //     If no rotation possible, still multiply by
-    //     a random complex number from the circle |x| = 1
+    // If no rotation possible, still multiply by
+    // a random complex number from the circle |x| = 1
     //
-    //      2)      Compute Rotation by computing Householder
-    //              Transformations H(2), H(3), ..., H(n).  Note that the
-    //              order in which they are computed is irrelevant.
+    // 2)      Compute Rotation by computing Householder
+    // Transformations H(2), H(3), ..., H(n).  Note that the
+    // order in which they are computed is irrelevant.
     //
     INTEGER j = 0;
     for (j = 1; j <= nxfrm; j = j + 1) {
@@ -108,13 +116,13 @@ void Claror(const char *side, const char *init, INTEGER const m, INTEGER const n
     for (ixfrm = 2; ixfrm <= nxfrm; ixfrm = ixfrm + 1) {
         kbeg = nxfrm - ixfrm + 1;
         //
-        //        Generate independent normal( 0, 1 ) random numbers
+        // Generate independent normal( 0, 1 ) random numbers
         //
         for (j = kbeg; j <= nxfrm; j = j + 1) {
             x[j - 1] = Clarnd(3, iseed);
         }
         //
-        //        Generate a Householder transformation from the random vector X
+        // Generate a Householder transformation from the random vector X
         //
         xnorm = RCnrm2(ixfrm, &x[kbeg - 1], 1);
         xabs = abs(x[kbeg - 1]);
@@ -135,11 +143,11 @@ void Claror(const char *side, const char *init, INTEGER const m, INTEGER const n
         }
         x[kbeg - 1] += xnorms; //this somehow doesn't work properly with GCC + libqd
         //
-        //        Apply Householder transformation to A
+        // Apply Householder transformation to A
         //
         if (itype == 1 || itype == 3 || itype == 4) {
             //
-            //           Apply H(k) on the left of A
+            // Apply H(k) on the left of A
             //
             Cgemv("C", ixfrm, n, cone, &a[(kbeg - 1)], lda, &x[kbeg - 1], 1, czero, &x[(2 * nxfrm + 1) - 1], 1);
             Cgerc(ixfrm, n, -COMPLEX(factor), &x[kbeg - 1], 1, &x[(2 * nxfrm + 1) - 1], 1, &a[(kbeg - 1)], lda);
@@ -148,7 +156,7 @@ void Claror(const char *side, const char *init, INTEGER const m, INTEGER const n
         //
         if (itype >= 2 && itype <= 4) {
             //
-            //           Apply H(k)* (or H(k)') on the right of A
+            // Apply H(k)* (or H(k)') on the right of A
             //
             if (itype == 4) {
                 Clacgv(ixfrm, &x[kbeg - 1], 1);
@@ -170,7 +178,7 @@ void Claror(const char *side, const char *init, INTEGER const m, INTEGER const n
     }
     x[(2 * nxfrm) - 1] = csign;
     //
-    //     Scale the matrix A by D.
+    // Scale the matrix A by D.
     //
     INTEGER irow = 0;
     if (itype == 1 || itype == 3 || itype == 4) {
@@ -192,7 +200,7 @@ void Claror(const char *side, const char *init, INTEGER const m, INTEGER const n
         }
     }
     //
-    //     End of Claror
+    // End of Claror
     //
 }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,32 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine ZLASWLQ.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Claswlq(INTEGER const m, INTEGER const n, INTEGER const mb, INTEGER const nb, COMPLEX *a, INTEGER const lda, COMPLEX *t, INTEGER const ldt, COMPLEX *work, INTEGER const lwork, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd. --
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. EXTERNAL FUNCTIONS ..
-    //     .. EXTERNAL SUBROUTINES ..
-    //     .. INTRINSIC FUNCTIONS ..
-    //     ..
-    //     .. EXECUTABLE STATEMENTS ..
-    //
-    //     TEST THE INPUT ARGUMENTS
+    // TEST THE INPUT ARGUMENTS
     //
     info = 0;
     //
@@ -83,13 +70,13 @@ void Claswlq(INTEGER const m, INTEGER const n, INTEGER const mb, INTEGER const n
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (min(m, n) == 0) {
         return;
     }
     //
-    //     The LQ Decomposition
+    // The LQ Decomposition
     //
     if ((m >= n) || (nb <= m) || (nb >= n)) {
         Cgelqt(m, n, mb, a, lda, t, ldt, work, info);
@@ -99,28 +86,28 @@ void Claswlq(INTEGER const m, INTEGER const n, INTEGER const mb, INTEGER const n
     INTEGER kk = mod((n - m), (nb - m));
     INTEGER ii = n - kk + 1;
     //
-    //      Compute the LQ factorization of the first block A(1:M,1:NB)
+    // Compute the LQ factorization of the first block A(1:M,1:NB)
     //
-    Cgelqt(m, nb, mb, &a[(1 - 1)], lda, t, ldt, work, info);
+    Cgelqt(m, nb, mb, &a[0], lda, t, ldt, work, info);
     INTEGER ctr = 1;
     //
     INTEGER i = 0;
     for (i = nb + 1; i <= ii - nb + m; i = i + (nb - m)) {
         //
-        //      Compute the QR factorization of the current block A(1:M,I:I+NB-M)
+        // Compute the QR factorization of the current block A(1:M,I:I+NB-M)
         //
-        Ctplqt(m, nb - m, 0, mb, &a[(1 - 1)], lda, &a[(i - 1) * lda], lda, &t[((ctr * m + 1) - 1) * ldt], ldt, work, info);
+        Ctplqt(m, nb - m, 0, mb, &a[0], lda, &a[(i - 1) * lda], lda, &t[((ctr * m + 1) - 1) * ldt], ldt, work, info);
         ctr++;
     }
     //
-    //     Compute the QR factorization of the last block A(1:M,II:N)
+    // Compute the QR factorization of the last block A(1:M,II:N)
     //
     if (ii <= n) {
-        Ctplqt(m, kk, 0, mb, &a[(1 - 1)], lda, &a[(ii - 1) * lda], lda, &t[((ctr * m + 1) - 1) * ldt], ldt, work, info);
+        Ctplqt(m, kk, 0, mb, &a[0], lda, &a[(ii - 1) * lda], lda, &t[((ctr * m + 1) - 1) * ldt], ldt, work, info);
     }
     //
     work[1 - 1] = m * mb;
     //
-    //     End of Claswlq
+    // End of Claswlq
     //
 }

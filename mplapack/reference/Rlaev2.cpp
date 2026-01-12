@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,12 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine DLAEV2.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Rlaev2(REAL const a, REAL const b, REAL const c, REAL &rt1, REAL &rt2, REAL &cs1, REAL &sn1) {
     //
-    //     Compute the eigenvalues
+    // Compute the eigenvalues
     //
     REAL sm = a + c;
     REAL df = a - c;
@@ -56,41 +63,41 @@ void Rlaev2(REAL const a, REAL const b, REAL const c, REAL &rt1, REAL &rt2, REAL
         rt = ab * sqrt(one + pow2((adf / ab)));
     } else {
         //
-        //        Includes case AB=ADF=0
+        // Includes case AB=ADF=0
         //
         rt = ab * sqrt(two);
     }
     const REAL zero = 0.0;
-    const REAL half = 0.5e0;
+    const REAL half = 0.5;
     INTEGER sgn1 = 0;
     if (sm < zero) {
         rt1 = half * (sm - rt);
         sgn1 = -1;
         //
-        //        Order of execution important.
-        //        To get fully accurate smaller eigenvalue,
-        //        next line needs to be executed in higher precision.
+        // Order of execution important.
+        // To get fully accurate smaller eigenvalue,
+        // next line needs to be executed in higher precision.
         //
         rt2 = (acmx / rt1) * acmn - (b / rt1) * b;
     } else if (sm > zero) {
         rt1 = half * (sm + rt);
         sgn1 = 1;
         //
-        //        Order of execution important.
-        //        To get fully accurate smaller eigenvalue,
-        //        next line needs to be executed in higher precision.
+        // Order of execution important.
+        // To get fully accurate smaller eigenvalue,
+        // next line needs to be executed in higher precision.
         //
         rt2 = (acmx / rt1) * acmn - (b / rt1) * b;
     } else {
         //
-        //        Includes case RT1 = RT2 = 0
+        // Includes case RT1 = RT2 = 0
         //
         rt1 = half * rt;
         rt2 = -half * rt;
         sgn1 = 1;
     }
     //
-    //     Compute the eigenvector
+    // Compute the eigenvector
     //
     REAL cs = 0.0;
     INTEGER sgn2 = 0;
@@ -124,6 +131,6 @@ void Rlaev2(REAL const a, REAL const b, REAL const c, REAL &rt1, REAL &rt2, REAL
         sn1 = tn;
     }
     //
-    //     End of Rlaev2
+    // End of Rlaev2
     //
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,10 +26,17 @@
  *
  */
 
+// Derived from LAPACK routine DLAED1.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rlaed1(INTEGER const n, REAL *d, REAL *q, INTEGER const ldq, INTEGER *indxq, REAL rho, INTEGER const cutpnt, REAL *work, INTEGER *iwork, INTEGER &info) {
+void Rlaed1(INTEGER const n, REAL *d, REAL *q, INTEGER const ldq, INTEGER *indxq, REAL &rho, INTEGER const cutpnt, REAL *work, INTEGER *iwork, INTEGER &info) {
     INTEGER iz = 0;
     INTEGER idlmda = 0;
     INTEGER iw = 0;
@@ -45,26 +52,7 @@ void Rlaed1(INTEGER const n, REAL *d, REAL *q, INTEGER const ldq, INTEGER *indxq
     INTEGER n2 = 0;
     INTEGER i = 0;
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     //
@@ -80,15 +68,15 @@ void Rlaed1(INTEGER const n, REAL *d, REAL *q, INTEGER const ldq, INTEGER *indxq
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0) {
         return;
     }
     //
-    //     The following values are integer pointers which indicate
-    //     the portion of the workspace
-    //     used by a particular array in Rlaed2 and Rlaed3.
+    // The following values are integer pointers which indicate
+    // the portion of the workspace
+    // used by a particular array in Rlaed2 and Rlaed3.
     //
     iz = 1;
     idlmda = iz + n;
@@ -100,14 +88,14 @@ void Rlaed1(INTEGER const n, REAL *d, REAL *q, INTEGER const ldq, INTEGER *indxq
     coltyp = indxc + n;
     indxp = coltyp + n;
     //
-    //     Form the z-vector which consists of the last row of Q_1 and the
-    //     first row of Q_2.
+    // Form the z-vector which consists of the last row of Q_1 and the
+    // first row of Q_2.
     //
     Rcopy(cutpnt, &q[(cutpnt - 1)], ldq, &work[iz - 1], 1);
     zpp1 = cutpnt + 1;
     Rcopy(n - cutpnt, &q[(zpp1 - 1) + (zpp1 - 1) * ldq], ldq, &work[(iz + cutpnt) - 1], 1);
     //
-    //     Deflate eigenvalues.
+    // Deflate eigenvalues.
     //
     Rlaed2(k, n, cutpnt, d, q, ldq, indxq, rho, &work[iz - 1], &work[idlmda - 1], &work[iw - 1], &work[iq2 - 1], &iwork[indx - 1], &iwork[indxc - 1], &iwork[indxp - 1], &iwork[coltyp - 1], info);
     //
@@ -115,7 +103,7 @@ void Rlaed1(INTEGER const n, REAL *d, REAL *q, INTEGER const ldq, INTEGER *indxq
         goto statement_20;
     }
     //
-    //     Solve Secular Equation.
+    // Solve Secular Equation.
     //
     if (k != 0) {
         is = (iwork[coltyp - 1] + iwork[(coltyp + 1) - 1]) * cutpnt + (iwork[(coltyp + 1) - 1] + iwork[(coltyp + 2) - 1]) * (n - cutpnt) + iq2;
@@ -124,7 +112,7 @@ void Rlaed1(INTEGER const n, REAL *d, REAL *q, INTEGER const ldq, INTEGER *indxq
             goto statement_20;
         }
         //
-        //     Prepare the INDXQ sorting permutation.
+        // Prepare the INDXQ sorting permutation.
         //
         n1 = k;
         n2 = n - k;
@@ -137,6 +125,6 @@ void Rlaed1(INTEGER const n, REAL *d, REAL *q, INTEGER const ldq, INTEGER *indxq
 //
 statement_20:;
     //
-    //     End of Rlaed1
+    // End of Rlaed1
     //
 }

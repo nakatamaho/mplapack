@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine ZTSQR01.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -75,7 +82,7 @@ void Ctsqr01(const char *tssw, INTEGER &m, INTEGER &n, INTEGER const mb, INTEGER
     INTEGER lwork = 10;
     bool ts = Mlsame(tssw, "TS");
     //
-    //     TEST MATRICES WITH HALF OF MATRIX BEING ZEROS
+    // TEST MATRICES WITH HALF OF MATRIX BEING ZEROS
     //
     bool testzeros = false;
     //
@@ -135,7 +142,7 @@ void Ctsqr01(const char *tssw, INTEGER &m, INTEGER &n, INTEGER const mb, INTEGER
     COMPLEX lq[l * n];
     if (ts) {
         //
-        //     Factor the matrix A in the array AF.
+        // Factor the matrix A in the array AF.
         //
         Cgeqr(m, n, af, m, tquery, -1, workquery, -1, info);
         tsize = castINTEGER(tquery[1 - 1].real());
@@ -152,17 +159,17 @@ void Ctsqr01(const char *tssw, INTEGER &m, INTEGER &n, INTEGER const mb, INTEGER
         lwork = max(lwork, castINTEGER(workquery[1 - 1].real()));
         Cgeqr(m, n, af, m, t, tsize, work, lwork, info);
         //
-        //     Generate the m-by-m matrix Q
+        // Generate the m-by-m matrix Q
         //
         Claset("Full", m, m, czero, one, q, m);
         Cgemqr("L", "N", m, m, k, af, m, t, tsize, q, m, work, lwork, info);
         //
-        //     Copy R
+        // Copy R
         //
         Claset("Full", m, n, czero, czero, r, m);
         Clacpy("Upper", m, n, af, m, r, m);
         //
-        //     Compute |R - Q'*A| / |A| and store in RESULT(1)
+        // Compute |R - Q'*A| / |A| and store in RESULT(1)
         //
         Cgemm("C", "N", m, n, m, -one, q, m, a, m, one, r, m);
         anorm = Clange("1", m, n, a, m, rwork);
@@ -173,14 +180,14 @@ void Ctsqr01(const char *tssw, INTEGER &m, INTEGER &n, INTEGER const mb, INTEGER
             result[1 - 1] = zero;
         }
         //
-        //     Compute |I - Q'*Q| and store in RESULT(2)
+        // Compute |I - Q'*Q| and store in RESULT(2)
         //
         Claset("Full", m, m, czero, one, r, m);
         Cherk("U", "C", m, m, -one.real(), q, m, one.real(), r, m);
         resid = Clansy("1", "Upper", m, r, m, rwork);
         result[2 - 1] = resid / (eps * max((INTEGER)1, m));
         //
-        //     Generate random m-by-n matrix C and a copy CF
+        // Generate random m-by-n matrix C and a copy CF
         //
         for (j = 1; j <= n; j = j + 1) {
             Clarnv(2, iseed, m, &c[(j - 1) * ldc]);
@@ -192,7 +199,7 @@ void Ctsqr01(const char *tssw, INTEGER &m, INTEGER &n, INTEGER const mb, INTEGER
         //
         Cgemqr("L", "N", m, n, k, af, m, t, tsize, cf, m, work, lwork, info);
         //
-        //     Compute |Q*C - Q*C| / |C|
+        // Compute |Q*C - Q*C| / |C|
         //
         Cgemm("N", "N", m, n, m, -one, q, m, c, m, one, cf, m);
         resid = Clange("1", m, n, cf, m, rwork);
@@ -202,7 +209,7 @@ void Ctsqr01(const char *tssw, INTEGER &m, INTEGER &n, INTEGER const mb, INTEGER
             result[3 - 1] = zero;
         }
         //
-        //     Copy C into CF again
+        // Copy C into CF again
         //
         Clacpy("Full", m, n, c, m, cf, m);
         //
@@ -210,7 +217,7 @@ void Ctsqr01(const char *tssw, INTEGER &m, INTEGER &n, INTEGER const mb, INTEGER
         //
         Cgemqr("L", "C", m, n, k, af, m, t, tsize, cf, m, work, lwork, info);
         //
-        //     Compute |QT*C - QT*C| / |C|
+        // Compute |QT*C - QT*C| / |C|
         //
         Cgemm("C", "N", m, n, m, -one, q, m, c, m, one, cf, m);
         resid = Clange("1", m, n, cf, m, rwork);
@@ -220,7 +227,7 @@ void Ctsqr01(const char *tssw, INTEGER &m, INTEGER &n, INTEGER const mb, INTEGER
             result[4 - 1] = zero;
         }
         //
-        //     Generate random n-by-m matrix D and a copy DF
+        // Generate random n-by-m matrix D and a copy DF
         //
         for (j = 1; j <= m; j = j + 1) {
             Clarnv(2, iseed, n, &d[(j - 1) * ldd]);
@@ -232,7 +239,7 @@ void Ctsqr01(const char *tssw, INTEGER &m, INTEGER &n, INTEGER const mb, INTEGER
         //
         Cgemqr("R", "N", n, m, k, af, m, t, tsize, df, n, work, lwork, info);
         //
-        //     Compute |D*Q - D*Q| / |D|
+        // Compute |D*Q - D*Q| / |D|
         //
         Cgemm("N", "N", n, m, m, -one, d, n, q, m, one, df, n);
         resid = Clange("1", n, m, df, n, rwork);
@@ -242,15 +249,15 @@ void Ctsqr01(const char *tssw, INTEGER &m, INTEGER &n, INTEGER const mb, INTEGER
             result[5 - 1] = zero;
         }
         //
-        //     Copy D into DF again
+        // Copy D into DF again
         //
         Clacpy("Full", n, m, d, n, df, n);
         //
-        //     Apply Q to D as D*QT
+        // Apply Q to D as D*QT
         //
         Cgemqr("R", "C", n, m, k, af, m, t, tsize, df, n, work, lwork, info);
         //
-        //     Compute |D*QT - D*QT| / |D|
+        // Compute |D*QT - D*QT| / |D|
         //
         Cgemm("N", "C", n, m, m, -one, d, n, q, m, one, df, n);
         resid = Clange("1", n, m, df, n, rwork);
@@ -260,7 +267,7 @@ void Ctsqr01(const char *tssw, INTEGER &m, INTEGER &n, INTEGER const mb, INTEGER
             result[6 - 1] = zero;
         }
         //
-        //     Short and wide
+        // Short and wide
         //
     } else {
         Cgelq(m, n, af, m, tquery, -1, workquery, -1, info);
@@ -278,17 +285,17 @@ void Ctsqr01(const char *tssw, INTEGER &m, INTEGER &n, INTEGER const mb, INTEGER
         lwork = max(lwork, castINTEGER(workquery[1 - 1].real()));
         Cgelq(m, n, af, m, t, tsize, work, lwork, info);
         //
-        //     Generate the n-by-n matrix Q
+        // Generate the n-by-n matrix Q
         //
         Claset("Full", n, n, czero, one, q, n);
         Cgemlq("R", "N", n, n, k, af, m, t, tsize, q, n, work, lwork, info);
         //
-        //     Copy R
+        // Copy R
         //
         Claset("Full", m, n, czero, czero, lq, l);
         Clacpy("Lower", m, n, af, m, lq, l);
         //
-        //     Compute |L - A*Q'| / |A| and store in RESULT(1)
+        // Compute |L - A*Q'| / |A| and store in RESULT(1)
         //
         Cgemm("N", "C", m, n, n, -one, a, m, q, n, one, lq, l);
         anorm = Clange("1", m, n, a, m, rwork);
@@ -299,14 +306,14 @@ void Ctsqr01(const char *tssw, INTEGER &m, INTEGER &n, INTEGER const mb, INTEGER
             result[1 - 1] = zero;
         }
         //
-        //     Compute |I - Q'*Q| and store in RESULT(2)
+        // Compute |I - Q'*Q| and store in RESULT(2)
         //
         Claset("Full", n, n, czero, one, lq, l);
         Cherk("U", "C", n, n, -one.real(), q, n, one.real(), lq, l);
         resid = Clansy("1", "Upper", n, lq, l, rwork);
         result[2 - 1] = resid / (eps * max((INTEGER)1, n));
         //
-        //     Generate random m-by-n matrix C and a copy CF
+        // Generate random m-by-n matrix C and a copy CF
         //
         for (j = 1; j <= m; j = j + 1) {
             Clarnv(2, iseed, n, &d[(j - 1) * ldd]);
@@ -314,11 +321,11 @@ void Ctsqr01(const char *tssw, INTEGER &m, INTEGER &n, INTEGER const mb, INTEGER
         dnorm = Clange("1", n, m, d, n, rwork);
         Clacpy("Full", n, m, d, n, df, n);
         //
-        //     Apply Q to C as Q*C
+        // Apply Q to C as Q*C
         //
         Cgemlq("L", "N", n, m, k, af, m, t, tsize, df, n, work, lwork, info);
         //
-        //     Compute |Q*D - Q*D| / |D|
+        // Compute |Q*D - Q*D| / |D|
         //
         Cgemm("N", "N", n, m, n, -one, q, n, d, n, one, df, n);
         resid = Clange("1", n, m, df, n, rwork);
@@ -328,15 +335,15 @@ void Ctsqr01(const char *tssw, INTEGER &m, INTEGER &n, INTEGER const mb, INTEGER
             result[3 - 1] = zero;
         }
         //
-        //     Copy D into DF again
+        // Copy D into DF again
         //
         Clacpy("Full", n, m, d, n, df, n);
         //
-        //     Apply Q to D as QT*D
+        // Apply Q to D as QT*D
         //
         Cgemlq("L", "C", n, m, k, af, m, t, tsize, df, n, work, lwork, info);
         //
-        //     Compute |QT*D - QT*D| / |D|
+        // Compute |QT*D - QT*D| / |D|
         //
         Cgemm("C", "N", n, m, n, -one, q, n, d, n, one, df, n);
         resid = Clange("1", n, m, df, n, rwork);
@@ -346,7 +353,7 @@ void Ctsqr01(const char *tssw, INTEGER &m, INTEGER &n, INTEGER const mb, INTEGER
             result[4 - 1] = zero;
         }
         //
-        //     Generate random n-by-m matrix D and a copy DF
+        // Generate random n-by-m matrix D and a copy DF
         //
         for (j = 1; j <= n; j = j + 1) {
             Clarnv(2, iseed, m, &c[(j - 1) * ldc]);
@@ -354,11 +361,11 @@ void Ctsqr01(const char *tssw, INTEGER &m, INTEGER &n, INTEGER const mb, INTEGER
         cnorm = Clange("1", m, n, c, m, rwork);
         Clacpy("Full", m, n, c, m, cf, m);
         //
-        //     Apply Q to C as C*Q
+        // Apply Q to C as C*Q
         //
         Cgemlq("R", "N", m, n, k, af, m, t, tsize, cf, m, work, lwork, info);
         //
-        //     Compute |C*Q - C*Q| / |C|
+        // Compute |C*Q - C*Q| / |C|
         //
         Cgemm("N", "N", m, n, n, -one, c, m, q, n, one, cf, m);
         resid = Clange("1", n, m, df, n, rwork);
@@ -368,15 +375,15 @@ void Ctsqr01(const char *tssw, INTEGER &m, INTEGER &n, INTEGER const mb, INTEGER
             result[5 - 1] = zero;
         }
         //
-        //     Copy C into CF again
+        // Copy C into CF again
         //
         Clacpy("Full", m, n, c, m, cf, m);
         //
-        //     Apply Q to D as D*QT
+        // Apply Q to D as D*QT
         //
         Cgemlq("R", "C", m, n, k, af, m, t, tsize, cf, m, work, lwork, info);
         //
-        //     Compute |C*QT - C*QT| / |C|
+        // Compute |C*QT - C*QT| / |C|
         //
         Cgemm("N", "C", m, n, n, -one, c, m, q, n, one, cf, m);
         resid = Clange("1", m, n, cf, m, rwork);

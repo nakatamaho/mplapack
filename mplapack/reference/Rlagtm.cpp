@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,35 +26,23 @@
  *
  */
 
+// Derived from LAPACK routine DLAGTM.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Rlagtm(const char *trans, INTEGER const n, INTEGER const nrhs, REAL const alpha, REAL *dl, REAL *d, REAL *du, REAL *x, INTEGER const ldx, REAL const beta, REAL *b, INTEGER const ldb) {
     //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     if (n == 0) {
         return;
     }
     //
-    //     Multiply B by BETA if BETA.NE.1.
+    // Multiply B by BETA if BETA.NE.1.
     //
     const REAL zero = 0.0;
     INTEGER j = 0;
@@ -77,7 +65,7 @@ void Rlagtm(const char *trans, INTEGER const n, INTEGER const nrhs, REAL const a
     if (alpha == one) {
         if (Mlsame(trans, "N")) {
             //
-            //           Compute B := B + A*X
+            // Compute B := B + A*X
             //
             for (j = 1; j <= nrhs; j = j + 1) {
                 if (n == 1) {
@@ -92,7 +80,7 @@ void Rlagtm(const char *trans, INTEGER const n, INTEGER const nrhs, REAL const a
             }
         } else {
             //
-            //           Compute B := B + A**T*X
+            // Compute B := B + A**T*X
             //
             for (j = 1; j <= nrhs; j = j + 1) {
                 if (n == 1) {
@@ -109,7 +97,7 @@ void Rlagtm(const char *trans, INTEGER const n, INTEGER const nrhs, REAL const a
     } else if (alpha == -one) {
         if (Mlsame(trans, "N")) {
             //
-            //           Compute B := B - A*X
+            // Compute B := B - A*X
             //
             for (j = 1; j <= nrhs; j = j + 1) {
                 if (n == 1) {
@@ -124,7 +112,7 @@ void Rlagtm(const char *trans, INTEGER const n, INTEGER const nrhs, REAL const a
             }
         } else {
             //
-            //           Compute B := B - A**T*X
+            // Compute B := B - A**T*X
             //
             for (j = 1; j <= nrhs; j = j + 1) {
                 if (n == 1) {
@@ -140,6 +128,6 @@ void Rlagtm(const char *trans, INTEGER const n, INTEGER const nrhs, REAL const a
         }
     }
     //
-    //     End of Rlagtm
+    // End of Rlagtm
     //
 }

@@ -1,24 +1,54 @@
-#!/bin/bash
+#!/usr/bin/env bash
+set -euo pipefail
 
-USE_CCACHE=yes
+USE_CCACHE=${USE_CCACHE:-yes}
+PREFIX=${PREFIX:-"$HOME/MPLAPACK"}
 
-if [ x"$USE_CCACHE" = x"yes" ] ; then
-CXX="ccache g++" ; export CXX
-CC="ccache gcc" ; export CC
-FC="gfortran"; export FC
-ccache -M 80G
+# Move to repository root (directory containing configure.ac)
+script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+cd "$script_dir/.."
+
+# Optional: ccache
+if [[ "$USE_CCACHE" == "yes" ]]; then
+  command -v ccache >/dev/null 2>&1 || { echo "ccache not found"; exit 1; }
+  export CC="ccache gcc"
+  export CXX="ccache g++"
+  export FC="ccache gfortran"
+  ccache -M 80G
 else
-CXX="g++" ; export CXX
-CC="gcc" ; export CC
-FC="gfortran"; export FC
+  export CC="gcc"
+  export CXX="g++"
+  export FC="gfortran"
 fi
 
-pushd mplapack/test/compare ; bash gen.Makefile.am.sh ; popd
+# Generate Makefile.am (if your project needs it)
+pushd mplapack/test/compare >/dev/null
+bash gen.Makefile.am.sh
+popd >/dev/null
 
-aclocal ; autoconf ; automake --add-missing
-autoreconf --force --install
-if [ `uname -m` = "x86_64" ]; then
-./configure --prefix=$HOME/MPLAPACK --enable-gmp=yes --enable-mpfr=yes --enable-_Float128=yes --enable-qd=yes --enable-dd=yes --enable-double=yes --enable-_Float64x=yes --enable-test=yes --enable-benchmark=yes
-else
-./configure --prefix=$HOME/MPLAPACK --enable-gmp=yes --enable-mpfr=yes --enable-_Float128=yes --enable-qd=yes --enable-dd=yes --enable-double=yes --enable-test=yes --enable-benchmark=yes
+# Regenerate autotools files (libtoolize must happen before automake)
+rm -rf autom4te.cache
+mkdir -p m4
+
+libtoolize --force --copy
+autoreconf -fi
+
+# Configure options
+common_opts=(
+  "--prefix=$PREFIX"
+  "--enable-gmp=yes"
+  "--enable-mpfr=yes"
+  "--enable-_Float128=yes"
+  "--enable-qd=yes"
+  "--enable-dd=yes"
+  "--enable-double=yes"
+  "--enable-test=yes"
+  "--enable-benchmark=yes"
+)
+
+# _Float64x is typically x86_64-only in your logic
+if [[ "$(uname -m)" == "x86_64" ]]; then
+  common_opts+=("--enable-_Float64x=yes")
 fi
+
+./configure "${common_opts[@]}"

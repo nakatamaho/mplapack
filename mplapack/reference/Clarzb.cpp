@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,39 +26,25 @@
  *
  */
 
+// Derived from LAPACK routine ZLARZB.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Clarzb(const char *side, const char *trans, const char *direct, const char *storev, INTEGER const m, INTEGER const n, INTEGER const k, INTEGER const l, COMPLEX *v, INTEGER const ldv, COMPLEX *t, INTEGER const ldt, COMPLEX *c, INTEGER const ldc, COMPLEX *work, INTEGER const ldwork) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (m <= 0 || n <= 0) {
         return;
     }
     //
-    //     Check for currently supported options
+    // Check for currently supported options
     //
     INTEGER info = 0;
     if (!Mlsame(direct, "B")) {
@@ -83,26 +69,26 @@ void Clarzb(const char *side, const char *trans, const char *direct, const char 
     INTEGER i = 0;
     if (Mlsame(side, "L")) {
         //
-        //        Form  H * C  or  H**H * C
+        // Form  H * C  or  H**H * C
         //
-        //        W( 1:n, 1:k ) = C( 1:k, 1:n )**H
+        // W( 1:n, 1:k ) = C( 1:k, 1:n )**H
         //
         for (j = 1; j <= k; j = j + 1) {
             Ccopy(n, &c[(j - 1)], ldc, &work[(j - 1) * ldwork], 1);
         }
         //
-        //        W( 1:n, 1:k ) = W( 1:n, 1:k ) + ...
-        //                        C( m-l+1:m, 1:n )**H * V( 1:k, 1:l )**T
+        // W( 1:n, 1:k ) = W( 1:n, 1:k ) + ...
+        // C( m-l+1:m, 1:n )**H * V( 1:k, 1:l )**T
         //
         if (l > 0) {
             Cgemm("Transpose", "Conjugate transpose", n, k, l, one, &c[((m - l + 1) - 1)], ldc, v, ldv, one, work, ldwork);
         }
         //
-        //        W( 1:n, 1:k ) = W( 1:n, 1:k ) * T**T  or  W( 1:m, 1:k ) * T
+        // W( 1:n, 1:k ) = W( 1:n, 1:k ) * T**T  or  W( 1:m, 1:k ) * T
         //
         Ctrmm("Right", "Lower", &transt, "Non-unit", n, k, one, t, ldt, work, ldwork);
         //
-        //        C( 1:k, 1:n ) = C( 1:k, 1:n ) - W( 1:n, 1:k )**H
+        // C( 1:k, 1:n ) = C( 1:k, 1:n ) - W( 1:n, 1:k )**H
         //
         for (j = 1; j <= n; j = j + 1) {
             for (i = 1; i <= k; i = i + 1) {
@@ -110,8 +96,8 @@ void Clarzb(const char *side, const char *trans, const char *direct, const char 
             }
         }
         //
-        //        C( m-l+1:m, 1:n ) = C( m-l+1:m, 1:n ) - ...
-        //                            V( 1:k, 1:l )**H * W( 1:n, 1:k )**H
+        // C( m-l+1:m, 1:n ) = C( m-l+1:m, 1:n ) - ...
+        // V( 1:k, 1:l )**H * W( 1:n, 1:k )**H
         //
         if (l > 0) {
             Cgemm("Transpose", "Transpose", l, n, k, -one, v, ldv, work, ldwork, one, &c[((m - l + 1) - 1)], ldc);
@@ -119,23 +105,23 @@ void Clarzb(const char *side, const char *trans, const char *direct, const char 
         //
     } else if (Mlsame(side, "R")) {
         //
-        //        Form  C * H  or  C * H**H
+        // Form  C * H  or  C * H**H
         //
-        //        W( 1:m, 1:k ) = C( 1:m, 1:k )
+        // W( 1:m, 1:k ) = C( 1:m, 1:k )
         //
         for (j = 1; j <= k; j = j + 1) {
             Ccopy(m, &c[(j - 1) * ldc], 1, &work[(j - 1) * ldwork], 1);
         }
         //
-        //        W( 1:m, 1:k ) = W( 1:m, 1:k ) + ...
-        //                        C( 1:m, n-l+1:n ) * V( 1:k, 1:l )**H
+        // W( 1:m, 1:k ) = W( 1:m, 1:k ) + ...
+        // C( 1:m, n-l+1:n ) * V( 1:k, 1:l )**H
         //
         if (l > 0) {
             Cgemm("No transpose", "Transpose", m, k, l, one, &c[((n - l + 1) - 1) * ldc], ldc, v, ldv, one, work, ldwork);
         }
         //
-        //        W( 1:m, 1:k ) = W( 1:m, 1:k ) * conj( T )  or
-        //                        W( 1:m, 1:k ) * T**H
+        // W( 1:m, 1:k ) = W( 1:m, 1:k ) * conjg( T )  or
+        // W( 1:m, 1:k ) * T**H
         //
         for (j = 1; j <= k; j = j + 1) {
             Clacgv(k - j + 1, &t[(j - 1) + (j - 1) * ldt], 1);
@@ -145,7 +131,7 @@ void Clarzb(const char *side, const char *trans, const char *direct, const char 
             Clacgv(k - j + 1, &t[(j - 1) + (j - 1) * ldt], 1);
         }
         //
-        //        C( 1:m, 1:k ) = C( 1:m, 1:k ) - W( 1:m, 1:k )
+        // C( 1:m, 1:k ) = C( 1:m, 1:k ) - W( 1:m, 1:k )
         //
         for (j = 1; j <= k; j = j + 1) {
             for (i = 1; i <= m; i = i + 1) {
@@ -153,8 +139,8 @@ void Clarzb(const char *side, const char *trans, const char *direct, const char 
             }
         }
         //
-        //        C( 1:m, n-l+1:n ) = C( 1:m, n-l+1:n ) - ...
-        //                            W( 1:m, 1:k ) * conj( V( 1:k, 1:l ) )
+        // C( 1:m, n-l+1:n ) = C( 1:m, n-l+1:n ) - ...
+        // W( 1:m, 1:k ) * conjg( V( 1:k, 1:l ) )
         //
         for (j = 1; j <= l; j = j + 1) {
             Clacgv(k, &v[(j - 1) * ldv], 1);
@@ -168,6 +154,6 @@ void Clarzb(const char *side, const char *trans, const char *direct, const char 
         //
     }
     //
-    //     End of Clarzb
+    // End of Clarzb
     //
 }

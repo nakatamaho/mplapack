@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DLARTGP.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -43,15 +50,13 @@ void Rlartgp(REAL const f, REAL const g, REAL &cs, REAL &sn, REAL &r) {
     INTEGER count = 0;
     INTEGER i = 0;
     //
-    //     .. Executable Statements ..
-    //
-    //     IF( FIRST ) THEN
+    // IF( FIRST ) THEN
     safmin = Rlamch("S");
     eps = Rlamch("E");
     safmn2 = pow(Rlamch("B"), castINTEGER(log(safmin / eps) / log(Rlamch("B")) / two));
     safmx2 = one / safmn2;
-    //        FIRST = .FALSE.
-    //     END IF
+    // FIRST = .FALSE.
+    // END IF
     if (g == zero) {
         cs = sign(one, f);
         sn = zero;
@@ -108,6 +113,6 @@ void Rlartgp(REAL const f, REAL const g, REAL &cs, REAL &sn, REAL &r) {
         }
     }
     //
-    //     End of Rlartgp
+    // End of Rlartgp
     //
 }

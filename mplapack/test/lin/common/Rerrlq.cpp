@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DERRLQ.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -112,7 +119,7 @@ void Rerrlq(const char *path, INTEGER const nunit) {
     Rgelqf(2, 1, a, 2, b, w, 1, info);
     chkxer("Rgelqf", infot, nout, lerr, ok);
     //
-    //     Rgelq2
+    // Rgelq2
     //
     infot = 1;
     strncpy(srnamt, "Rgelq2", srnamt_len);
@@ -125,7 +132,7 @@ void Rerrlq(const char *path, INTEGER const nunit) {
     Rgelq2(2, 1, a, 1, b, w, info);
     chkxer("Rgelq2", infot, nout, lerr, ok);
     //
-    //     Rgelqs
+    // Rgelqs
     //
     infot = 1;
     strncpy(srnamt, "Rgelqs", srnamt_len);
@@ -150,7 +157,7 @@ void Rerrlq(const char *path, INTEGER const nunit) {
     Rgelqs(1, 1, 2, a, 1, x, b, 1, w, 1, info);
     chkxer("Rgelqs", infot, nout, lerr, ok);
     //
-    //     Rorglq
+    // Rorglq
     //
     infot = 1;
     strncpy(srnamt, "Rorglq", srnamt_len);
@@ -175,7 +182,7 @@ void Rerrlq(const char *path, INTEGER const nunit) {
     Rorglq(2, 2, 0, a, 2, x, w, 1, info);
     chkxer("Rorglq", infot, nout, lerr, ok);
     //
-    //     Rorgl2
+    // Rorgl2
     //
     infot = 1;
     strncpy(srnamt, "Rorgl2", srnamt_len);
@@ -197,7 +204,7 @@ void Rerrlq(const char *path, INTEGER const nunit) {
     Rorgl2(2, 2, 0, a, 1, x, w, info);
     chkxer("Rorgl2", infot, nout, lerr, ok);
     //
-    //     Rormlq
+    // Rormlq
     //
     infot = 1;
     strncpy(srnamt, "Rormlq", srnamt_len);
@@ -237,7 +244,7 @@ void Rerrlq(const char *path, INTEGER const nunit) {
     Rormlq("R", "N", 2, 1, 0, a, 1, x, af, 2, w, 1, info);
     chkxer("Rormlq", infot, nout, lerr, ok);
     //
-    //     Rorml2
+    // Rorml2
     //
     infot = 1;
     strncpy(srnamt, "Rorml2", srnamt_len);
@@ -271,10 +278,10 @@ void Rerrlq(const char *path, INTEGER const nunit) {
     Rorml2("L", "N", 2, 1, 0, a, 2, x, af, 1, w, info);
     chkxer("Rorml2", infot, nout, lerr, ok);
     //
-    //     Print a summary line.
+    // Print a summary line.
     //
     Alaesm(path, ok, nout);
     //
-    //     End of Rerrlq
+    // End of Rerrlq
     //
 }

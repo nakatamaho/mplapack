@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,13 +26,21 @@
  *
  */
 
+// Derived from LAPACK routine ILAENV.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 #include <string.h>
 
 #define subnamlen 17
 
-INTEGER iMlaenv(INTEGER const ispec, const char *name, const char *opts, INTEGER const n1, INTEGER const n2, INTEGER const n3, INTEGER const n4) {
+INTEGER
+iMlaenv(INTEGER const ispec, const char *name, const char *opts, INTEGER const n1, INTEGER const n2, INTEGER const n3, INTEGER const n4) {
     INTEGER return_value = 0;
     char subnam[subnamlen];
     memset(subnam, '\0', sizeof(subnam));
@@ -52,47 +60,49 @@ INTEGER iMlaenv(INTEGER const ispec, const char *name, const char *opts, INTEGER
     //
     switch (ispec) {
     case 1:
-        goto L10;
+        goto statement_10;
     case 2:
-        goto L10;
+        goto statement_10;
     case 3:
-        goto L10;
+        goto statement_10;
     case 4:
-        goto L80;
+        goto statement_80;
     case 5:
-        goto L90;
+        goto statement_90;
     case 6:
-        goto L100;
+        goto statement_100;
     case 7:
-        goto L110;
+        goto statement_110;
     case 8:
-        goto L120;
+        goto statement_120;
     case 9:
-        goto L130;
+        goto statement_130;
     case 10:
-        goto L140;
+        goto statement_140;
     case 11:
-        goto L150;
+        goto statement_150;
     case 12:
-        goto L160;
+        goto statement_160;
     case 13:
-        goto L160;
+        goto statement_160;
     case 14:
-        goto L160;
+        goto statement_160;
     case 15:
-        goto L160;
+        goto statement_160;
     case 16:
-        goto L160;
+        goto statement_160;
+    default:
+        break;
     }
     //
-    //     Invalid value for ISPEC
+    // Invalid value for ISPEC
     //
     return_value = -1;
     return return_value;
+//
+statement_10:
     //
-L10:
-    //
-    //     Convert NAME to upper case if the first character is lower case.
+    // Convert NAME to upper case if the first character is lower case.
     //
     return_value = 1;
     //
@@ -113,28 +123,31 @@ L10:
     strncpy(c3, subnam + 3, 3);
     strncpy(c4, c3 + 1, 2);
     twostage = strlen(subnam) >= 11 && subnam[10] == '2';
-
+    //
     switch (ispec) {
     case 1:
-        goto L50;
+        goto statement_50;
     case 2:
-        goto L60;
+        goto statement_60;
     case 3:
-        goto L70;
+        goto statement_70;
+    default:
+        break;
     }
-L50:
+//
+statement_50:
     //
-    //     ISPEC = 1:  block size
+    // ISPEC = 1:  block size
     //
-    //     In these examples, separate code is provided for setting NB for
-    //     real and complex.  We assume that NB will take the same value in
-    //     single or REAL precision.
+    // In these examples, separate code is provided for setting NB for
+    // real and complex.  We assume that NB will take the same value in
+    // single or double precision.
     //
     nb = 1;
     //
     if (strncmp(subnam + 1, "LAORH", 5) == 0) {
         //
-        //        This is for *LAORHR_GETRFNP routine
+        // This is for *LAORHR_GETRFNP routine
         //
         if (sname) {
             nb = 32;
@@ -157,14 +170,14 @@ L50:
         } else if (strncmp(c3, "QR ", 3) == 0) {
             if (n3 == 1) {
                 if (sname) {
-                    //    M*N
-                    if (n1 * n2 <= 131072 || n1 <= 8192) {
+                    // M*N
+                    if ((n1 * n2 <= 131072) || (n1 <= 8192)) {
                         nb = n1;
                     } else {
                         nb = 32768 / n2;
                     }
                 } else {
-                    if (n1 * n2 <= 131072 || n1 <= 8192) {
+                    if ((n1 * n2 <= 131072) || (n1 <= 8192)) {
                         nb = n1;
                     } else {
                         nb = 32768 / n2;
@@ -180,14 +193,14 @@ L50:
         } else if (strncmp(c3, "LQ ", 3) == 0) {
             if (n3 == 2) {
                 if (sname) {
-                    //    M*N
-                    if (n1 * n2 <= 131072 || n1 <= 8192) {
+                    // M*N
+                    if ((n1 * n2 <= 131072) || (n1 <= 8192)) {
                         nb = n1;
                     } else {
                         nb = 32768 / n2;
                     }
                 } else {
-                    if (n1 * n2 <= 131072 || n1 <= 8192) {
+                    if ((n1 * n2 <= 131072) || (n1 <= 8192)) {
                         nb = n1;
                     } else {
                         nb = 32768 / n2;
@@ -350,9 +363,9 @@ L50:
     return_value = nb;
     return return_value;
 //
-L60:
+statement_60:
     //
-    //     ISPEC = 2:  minimum block size
+    // ISPEC = 2:  minimum block size
     //
     nbmin = 2;
     if (strncmp(c2, "GE", 2) == 0) {
@@ -424,9 +437,9 @@ L60:
     return_value = nbmin;
     return return_value;
 //
-L70:
+statement_70:
     //
-    //     ISPEC = 3:  crossover point
+    // ISPEC = 3:  crossover point
     //
     nx = 0;
     if (strncmp(c2, "GE", 2) == 0) {
@@ -478,76 +491,79 @@ L70:
     return_value = nx;
     return return_value;
 //
-L80:
+statement_80:
     //
-    //     ISPEC = 4:  number of shifts (used by xHSEQR)
+    // ISPEC = 4:  number of shifts (used by xHSEQR)
     //
     return_value = 6;
     return return_value;
 //
-L90:
+statement_90:
+    //
+    // ISPEC = 5:  minimum column dimension (not used)
+    //
     return_value = 2;
     return return_value;
-
-L100:
+//
+statement_100:
     //
-    //     ISPEC = 6:  crossover point for SVD (used by xGELSS and xGESVD)
+    // ISPEC = 6:  crossover point for SVD (used by xGELSS and xGESVD)
     //
-    return_value = castINTEGER(castREAL(min(n1, n2)) * 1.6);
+    return_value = castINTEGER(castREAL(min(n1, n2)) * 1.6e0);
     return return_value;
+//
+statement_110:
     //
-L110:
-    //
-    //     ISPEC = 7:  number of processors (not used)
+    // ISPEC = 7:  number of processors (not used)
     //
     return_value = 1;
     return return_value;
 //
-L120:
+statement_120:
     //
-    //     ISPEC = 8:  crossover point for multishift (used by xHSEQR)
+    // ISPEC = 8:  crossover point for multishift (used by xHSEQR)
     //
     return_value = 50;
     return return_value;
 //
-L130:
+statement_130:
     //
-    //     ISPEC = 9:  maximum size of the subproblems at the bottom of the
-    //                 computation tree in the divide-and-conquer algorithm
-    //                 (used by xGELSD and xGESDD)
+    // ISPEC = 9:  maximum size of the subproblems at the bottom of the
+    // computation tree in the divide-and-conquer algorithm
+    // (used by xGELSD and xGESDD)
     //
     return_value = 25;
     return return_value;
 //
-L140:
+statement_140:
     //
-    //     ISPEC = 10: ieee and infinity NaN arithmetic can be trusted not to trap
+    // ISPEC = 10: ieee and infinity NaN arithmetic can be trusted not to trap
     //
-    //     iMlaenv = 0
+    // iMlaenv = 0
     return_value = 1;
     if (return_value == 1) {
         return_value = iMieeeck(1, 0.0, 1.0);
     }
     return return_value;
+//
+statement_150:
     //
-L150:
+    // ISPEC = 11: ieee infinity arithmetic can be trusted not to trap
     //
-    //     ISPEC = 11: ieee infinity arithmetic can be trusted not to trap
-    //
-    //     iMlaenv = 0
+    // iMlaenv = 0
     return_value = 1;
     if (return_value == 1) {
         return_value = iMieeeck(0, 0.0, 1.0);
     }
     return return_value;
 //
-L160:
+statement_160:
     //
-    //     12 <= ISPEC <= 16: xHSEQR or related subroutines.
+    // 12 <= ISPEC <= 16: xHSEQR or related subroutines.
     //
     return_value = iMparmq(ispec, name, opts, n1, n2, n3, n4);
     return return_value;
     //
-    //     End of iMlaenv
+    // End of iMlaenv
     //
 }

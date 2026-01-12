@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,25 +26,17 @@
  *
  */
 
+// Derived from LAPACK routine DLARTV.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Rlartv(INTEGER const n, REAL *x, INTEGER const incx, REAL *y, INTEGER const incy, REAL *c, REAL *s, INTEGER const incc) {
-    //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Executable Statements ..
     //
     INTEGER ix = 1;
     INTEGER iy = 1;
@@ -62,6 +54,6 @@ void Rlartv(INTEGER const n, REAL *x, INTEGER const incx, REAL *y, INTEGER const
         ic += incc;
     }
     //
-    //     End of Rlartv
+    // End of Rlartv
     //
 }

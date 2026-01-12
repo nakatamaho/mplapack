@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZGET54.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -40,50 +47,25 @@ using fem::common;
 
 void Cget54(INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, COMPLEX *s, INTEGER const lds, COMPLEX *t, INTEGER const ldt, COMPLEX *u, INTEGER const ldu, COMPLEX *v, INTEGER const ldv, COMPLEX *work, REAL &result) {
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     const REAL zero = 0.0;
     result = zero;
     if (n <= 0) {
         return;
     }
     //
-    //     Constants
+    // Constants
     //
     REAL unfl = Rlamch("Safe minimum");
     REAL ulp = Rlamch("Epsilon") * Rlamch("Base");
     //
-    //     compute the norm of (A,B)
+    // compute the norm of (A,B)
     //
     Clacpy("Full", n, n, a, lda, work, n);
     Clacpy("Full", n, n, b, ldb, &work[(n * n + 1) - 1], n);
     REAL dum[1];
     REAL abnorm = max({Clange("1", n, 2 * n, work, n, dum), unfl});
     //
-    //     Compute W1 = A - U*S*V', and put in the array WORK(1:N*N)
+    // Compute W1 = A - U*S*V', and put in the array WORK(1:N*N)
     //
     Clacpy(" ", n, n, a, lda, work, n);
     const COMPLEX cone = COMPLEX(1.0, 0.0);
@@ -92,14 +74,14 @@ void Cget54(INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER 
     //
     Cgemm("N", "C", n, n, n, -cone, &work[(n * n + 1) - 1], n, v, ldv, cone, work, n);
     //
-    //     Compute W2 = B - U*T*V', and put in the workarray W(N*N+1:2*N*N)
+    // Compute W2 = B - U*T*V', and put in the workarray W(N*N+1:2*N*N)
     //
     Clacpy(" ", n, n, b, ldb, &work[(n * n + 1) - 1], n);
     Cgemm("N", "N", n, n, n, cone, u, ldu, t, ldt, czero, &work[(2 * n * n + 1) - 1], n);
     //
     Cgemm("N", "C", n, n, n, -cone, &work[(2 * n * n + 1) - 1], n, v, ldv, cone, &work[(n * n + 1) - 1], n);
     //
-    //     Compute norm(W)/ ( ulp*norm((A,B)) )
+    // Compute norm(W)/ ( ulp*norm((A,B)) )
     //
     REAL wnorm = Clange("1", n, 2 * n, work, n, dum);
     //
@@ -114,6 +96,6 @@ void Cget54(INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER 
         }
     }
     //
-    //     End of Cget54
+    // End of Cget54
     //
 }

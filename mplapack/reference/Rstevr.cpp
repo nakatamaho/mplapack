@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DSTEVR.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -56,7 +63,7 @@ void Rstevr(const char *jobz, const char *range, INTEGER const n, REAL *d, REAL 
     INTEGER indifl = 0;
     INTEGER indiwo = 0;
     bool test = false;
-    const REAL two = 2.0e+0;
+    const REAL two = 2.0;
     bool tryrac = false;
     char order;
     INTEGER nsplit = 0;
@@ -67,30 +74,7 @@ void Rstevr(const char *jobz, const char *range, INTEGER const n, REAL *d, REAL 
     INTEGER jj = 0;
     INTEGER itmp1 = 0;
     //
-    //  -- LAPACK driver routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     ieeeok = iMlaenv(10, "Rstevr", "N", 1, 2, 3, 4);
     //
@@ -147,7 +131,7 @@ void Rstevr(const char *jobz, const char *range, INTEGER const n, REAL *d, REAL 
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     m = 0;
     if (n == 0) {
@@ -165,21 +149,21 @@ void Rstevr(const char *jobz, const char *range, INTEGER const n, REAL *d, REAL 
             }
         }
         if (wantz) {
-            z[(1 - 1)] = one;
+            z[0] = one;
         }
         return;
     }
     //
-    //     Get machine constants.
+    // Get machine constants.
     //
     safmin = Rlamch("Safe minimum");
     eps = Rlamch("Precision");
     smlnum = safmin / eps;
     bignum = one / smlnum;
     rmin = sqrt(smlnum);
-    rmax = min(REAL(sqrt(bignum)), REAL(one / sqrt(sqrt(safmin))));
+    rmax = min(sqrt(bignum), one / sqrt(sqrt(safmin)));
     //
-    //     Scale matrix to allowable range, if necessary.
+    // Scale matrix to allowable range, if necessary.
     //
     iscale = 0;
     if (valeig) {
@@ -204,26 +188,26 @@ void Rstevr(const char *jobz, const char *range, INTEGER const n, REAL *d, REAL 
         }
     }
     //
-    //     Initialize indices into workspaces.  Note: These indices are used only
-    //     if Rsterf or Rstemr fail.
+    // Initialize indices into workspaces.  Note: These indices are used only
+    // if Rsterf or Rstemr fail.
     //
-    //     IWORK(INDIBL:INDIBL+M-1) corresponds to IBLOCK in Rstebz and
-    //     stores the block indices of each of the M<=N eigenvalues.
+    // IWORK(INDIBL:INDIBL+M-1) corresponds to IBLOCK in Rstebz and
+    // stores the block indices of each of the M<=N eigenvalues.
     indibl = 1;
-    //     IWORK(INDISP:INDISP+NSPLIT-1) corresponds to ISPLIT in Rstebz and
-    //     stores the starting and finishing indices of each block.
+    // IWORK(INDISP:INDISP+NSPLIT-1) corresponds to ISPLIT in Rstebz and
+    // stores the starting and finishing indices of each block.
     indisp = indibl + n;
-    //     IWORK(INDIFL:INDIFL+N-1) stores the indices of eigenvectors
-    //     that corresponding to eigenvectors that fail to converge in
-    //     Rstein.  This information is discarded; if any fail, the driver
-    //     returns INFO > 0.
+    // IWORK(INDIFL:INDIFL+N-1) stores the indices of eigenvectors
+    // that corresponding to eigenvectors that fail to converge in
+    // Rstein.  This information is discarded; if any fail, the driver
+    // returns INFO > 0.
     indifl = indisp + n;
-    //     INDIWO is the offset of the remaining integer workspace.
+    // INDIWO is the offset of the remaining integer workspace.
     indiwo = indisp + n;
     //
-    //     If all eigenvalues are desired, then
-    //     call Rsterf or Rstemr.  If this fails for some eigenvalue, then
-    //     try Rstebz.
+    // If all eigenvalues are desired, then
+    // call Rsterf or Rstemr.  If this fails for some eigenvalue, then
+    // try Rstebz.
     //
     test = false;
     if (indeig) {
@@ -253,7 +237,7 @@ void Rstevr(const char *jobz, const char *range, INTEGER const n, REAL *d, REAL 
         info = 0;
     }
     //
-    //     Otherwise, call Rstebz and, if eigenvectors are desired, Rstein.
+    // Otherwise, call Rstebz and, if eigenvectors are desired, Rstein.
     //
     if (wantz) {
         order = 'B';
@@ -267,7 +251,7 @@ void Rstevr(const char *jobz, const char *range, INTEGER const n, REAL *d, REAL 
         Rstein(n, d, e, m, w, &iwork[indibl - 1], &iwork[indisp - 1], z, ldz, work, &iwork[indiwo - 1], &iwork[indifl - 1], info);
     }
 //
-//     If matrix was scaled, then rescale eigenvalues appropriately.
+// If matrix was scaled, then rescale eigenvalues appropriately.
 //
 statement_10:
     if (iscale == 1) {
@@ -279,8 +263,8 @@ statement_10:
         Rscal(imax, one / sigma, w, 1);
     }
     //
-    //     If eigenvalues are not in order, then sort them, along with
-    //     eigenvectors.
+    // If eigenvalues are not in order, then sort them, along with
+    // eigenvectors.
     //
     if (wantz) {
         for (j = 1; j <= m - 1; j = j + 1) {
@@ -304,12 +288,12 @@ statement_10:
         }
     }
     //
-    //      Causes problems with tests 19 & 20:
-    //      IF (wantz .and. INDEIG ) Z( 1,1) = Z(1,1) / 1.002 + .002
+    // Causes problems with tests 19 & 20:
+    // IF (wantz .and. INDEIG ) Z( 1,1) = Z(1,1) / 1.002 + .002
     //
     work[1 - 1] = lwmin;
     iwork[1 - 1] = liwmin;
     //
-    //     End of Rstevr
+    // End of Rstevr
     //
 }

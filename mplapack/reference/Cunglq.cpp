@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,35 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine ZUNGLQ.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Cunglq(INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX *a, INTEGER const lda, COMPLEX *tau, COMPLEX *work, INTEGER const lwork, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input arguments
+    // Test the input arguments
     //
     info = 0;
     INTEGER nb = iMlaenv(1, "Cunglq", " ", m, n, k, -1);
@@ -79,10 +63,10 @@ void Cunglq(INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX *a, INTEG
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (m <= 0) {
-        work[1 - 1] = 1;
+        work[1 - 1] = 1.0;
         return;
     }
     //
@@ -92,19 +76,19 @@ void Cunglq(INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX *a, INTEG
     INTEGER ldwork = 0;
     if (nb > 1 && nb < k) {
         //
-        //        Determine when to cross over from blocked to unblocked code.
+        // Determine when to cross over from blocked to unblocked code.
         //
         nx = max((INTEGER)0, iMlaenv(3, "Cunglq", " ", m, n, k, -1));
         if (nx < k) {
             //
-            //           Determine if workspace is large enough for blocked code.
+            // Determine if workspace is large enough for blocked code.
             //
             ldwork = m;
             iws = ldwork * nb;
             if (lwork < iws) {
                 //
-                //              Not enough workspace to use optimal NB:  reduce NB and
-                //              determine the minimum value of NB.
+                // Not enough workspace to use optimal NB:  reduce NB and
+                // determine the minimum value of NB.
                 //
                 nb = lwork / ldwork;
                 nbmin = max((INTEGER)2, iMlaenv(2, "Cunglq", " ", m, n, k, -1));
@@ -119,13 +103,13 @@ void Cunglq(INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX *a, INTEG
     const COMPLEX zero = COMPLEX(0.0, 0.0);
     if (nb >= nbmin && nb < k && nx < k) {
         //
-        //        Use blocked code after the last block.
-        //        The first kk rows are handled by the block method.
+        // Use blocked code after the last block.
+        // The first kk rows are handled by the block method.
         //
         ki = ((k - nx - 1) / nb) * nb;
         kk = min(k, ki + nb);
         //
-        //        Set A(kk+1:m,1:kk) to zero.
+        // Set A(kk+1:m,1:kk) to zero.
         //
         for (j = 1; j <= kk; j = j + 1) {
             for (i = kk + 1; i <= m; i = i + 1) {
@@ -136,7 +120,7 @@ void Cunglq(INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX *a, INTEG
         kk = 0;
     }
     //
-    //     Use unblocked code for the last or only block.
+    // Use unblocked code for the last or only block.
     //
     INTEGER iinfo = 0;
     if (kk < m) {
@@ -147,27 +131,27 @@ void Cunglq(INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX *a, INTEG
     INTEGER l = 0;
     if (kk > 0) {
         //
-        //        Use blocked code
+        // Use blocked code
         //
         for (i = ki + 1; i >= 1; i = i - nb) {
             ib = min(nb, k - i + 1);
             if (i + ib <= m) {
                 //
-                //              Form the triangular factor of the block reflector
-                //              H = H(i) H(i+1) . . . H(i+ib-1)
+                // Form the triangular factor of the block reflector
+                // H = H(i) H(i+1) . . . H(i+ib-1)
                 //
                 Clarft("Forward", "Rowwise", n - i + 1, ib, &a[(i - 1) + (i - 1) * lda], lda, &tau[i - 1], work, ldwork);
                 //
-                //              Apply H**H to A(i+ib:m,i:n) from the right
+                // Apply H**H to A(i+ib:m,i:n) from the right
                 //
                 Clarfb("Right", "Conjugate transpose", "Forward", "Rowwise", m - i - ib + 1, n - i + 1, ib, &a[(i - 1) + (i - 1) * lda], lda, work, ldwork, &a[((i + ib) - 1) + (i - 1) * lda], lda, &work[(ib + 1) - 1], ldwork);
             }
             //
-            //           Apply H**H to columns i:n of current block
+            // Apply H**H to columns i:n of current block
             //
             Cungl2(ib, n - i + 1, ib, &a[(i - 1) + (i - 1) * lda], lda, &tau[i - 1], work, iinfo);
             //
-            //           Set columns 1:i-1 of current block to zero
+            // Set columns 1:i-1 of current block to zero
             //
             for (j = 1; j <= i - 1; j = j + 1) {
                 for (l = i; l <= i + ib - 1; l = l + 1) {
@@ -179,6 +163,6 @@ void Cunglq(INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX *a, INTEG
     //
     work[1 - 1] = iws;
     //
-    //     End of Cunglq
+    // End of Cunglq
     //
 }

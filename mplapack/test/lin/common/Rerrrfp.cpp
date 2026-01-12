@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DERRRFP.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -222,7 +229,7 @@ void Rerrrfp(INTEGER const nunit) {
     Rsfrk("N", "U", "N", 0, 0, alpha, a, 0, beta, b);
     chkxer("Rsfrk", infot, nout, lerr, ok);
     //
-    //     Print a summary line.
+    // Print a summary line.
     //
     if (ok) {
         write(nout, "(1x,'MULTIPLE PRECISION RFP routines passed the tests of ',"
@@ -231,6 +238,6 @@ void Rerrrfp(INTEGER const nunit) {
         write(nout, "(' *** RFP routines failed the tests of the error ','exits ***')");
     }
     //
-    //     End of Rerrrfp
+    // End of Rerrrfp
     //
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,12 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine ZTRSYL.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Ctrsyl(const char *trana, const char *tranb, INTEGER const isgn, INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, COMPLEX *c, INTEGER const ldc, REAL &scale, INTEGER &info) {
     //
-    //     Decode and Test input parameters
+    // Decode and Test input parameters
     //
     bool notrna = Mlsame(trana, "N");
     bool notrnb = Mlsame(tranb, "N");
@@ -59,7 +66,7 @@ void Ctrsyl(const char *trana, const char *tranb, INTEGER const isgn, INTEGER co
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     const REAL one = 1.0;
     scale = one;
@@ -67,15 +74,16 @@ void Ctrsyl(const char *trana, const char *tranb, INTEGER const isgn, INTEGER co
         return;
     }
     //
-    //     Set constants to control overflow
+    // Set constants to control overflow
     //
     REAL eps = Rlamch("P");
     REAL smlnum = Rlamch("S");
     REAL bignum = one / smlnum;
+    Rlabad(smlnum, bignum);
     smlnum = smlnum * castREAL(m * n) / eps;
     bignum = one / smlnum;
     REAL dum[1];
-    REAL smin = max({smlnum, REAL(eps * Clange("M", m, m, a, lda, dum)), REAL(eps * Clange("M", n, n, b, ldb, dum))});
+    REAL smin = max(smlnum, eps * Clange("M", m, m, a, lda, dum), eps * Clange("M", n, n, b, ldb, dum));
     REAL sgn = castREAL(isgn);
     //
     INTEGER l = 0;
@@ -91,17 +99,17 @@ void Ctrsyl(const char *trana, const char *tranb, INTEGER const isgn, INTEGER co
     INTEGER j = 0;
     if (notrna && notrnb) {
         //
-        //        Solve    A*X + ISGN*X*B = scale*C.
+        // Solve    A*X + ISGN*X*B = scale*C.
         //
-        //        The (K,L)th block of X is determined starting from
-        //        bottom-left corner column by column by
+        // The (K,L)th block of X is determined starting from
+        // bottom-left corner column by column by
         //
-        //            A(K,K)*X(K,L) + ISGN*X(K,L)*B(L,L) = C(K,L) - R(K,L)
+        // A(K,K)*X(K,L) + ISGN*X(K,L)*B(L,L) = C(K,L) - R(K,L)
         //
-        //        Where
-        //                    M                        L-1
-        //          R(K,L) = SUM [A(K,I)*X(I,L)] +ISGN*SUM [X(K,J)*B(J,L)].
-        //                  I=K+1                      J=1
+        // Where
+        // M                        L-1
+        // R(K,L) = SUM [A(K,I)*X(I,L)] +ISGN*SUM [X(K,J)*B(J,L)].
+        // I=K+1                      J=1
         //
         for (l = 1; l <= n; l = l + 1) {
             for (k = m; k >= 1; k = k - 1) {
@@ -139,17 +147,17 @@ void Ctrsyl(const char *trana, const char *tranb, INTEGER const isgn, INTEGER co
         //
     } else if (!notrna && notrnb) {
         //
-        //        Solve    A**H *X + ISGN*X*B = scale*C.
+        // Solve    A**H *X + ISGN*X*B = scale*C.
         //
-        //        The (K,L)th block of X is determined starting from
-        //        upper-left corner column by column by
+        // The (K,L)th block of X is determined starting from
+        // upper-left corner column by column by
         //
-        //            A**H(K,K)*X(K,L) + ISGN*X(K,L)*B(L,L) = C(K,L) - R(K,L)
+        // A**H(K,K)*X(K,L) + ISGN*X(K,L)*B(L,L) = C(K,L) - R(K,L)
         //
-        //        Where
-        //                   K-1                           L-1
-        //          R(K,L) = SUM [A**H(I,K)*X(I,L)] + ISGN*SUM [X(K,J)*B(J,L)]
-        //                   I=1                           J=1
+        // Where
+        // K-1                           L-1
+        // R(K,L) = SUM [A**H(I,K)*X(I,L)] + ISGN*SUM [X(K,J)*B(J,L)]
+        // I=1                           J=1
         //
         for (l = 1; l <= n; l = l + 1) {
             for (k = 1; k <= m; k = k + 1) {
@@ -188,20 +196,20 @@ void Ctrsyl(const char *trana, const char *tranb, INTEGER const isgn, INTEGER co
         //
     } else if (!notrna && !notrnb) {
         //
-        //        Solve    A**H*X + ISGN*X*B**H = C.
+        // Solve    A**H*X + ISGN*X*B**H = C.
         //
-        //        The (K,L)th block of X is determined starting from
-        //        upper-right corner column by column by
+        // The (K,L)th block of X is determined starting from
+        // upper-right corner column by column by
         //
-        //            A**H(K,K)*X(K,L) + ISGN*X(K,L)*B**H(L,L) = C(K,L) - R(K,L)
+        // A**H(K,K)*X(K,L) + ISGN*X(K,L)*B**H(L,L) = C(K,L) - R(K,L)
         //
-        //        Where
-        //                    K-1
-        //           R(K,L) = SUM [A**H(I,K)*X(I,L)] +
-        //                    I=1
-        //                           N
-        //                     ISGN*SUM [X(K,J)*B**H(L,J)].
-        //                          J=L+1
+        // Where
+        // K-1
+        // R(K,L) = SUM [A**H(I,K)*X(I,L)] +
+        // I=1
+        // N
+        // ISGN*SUM [X(K,J)*B**H(L,J)].
+        // J=L+1
         //
         for (l = n; l >= 1; l = l - 1) {
             for (k = 1; k <= m; k = k + 1) {
@@ -240,17 +248,17 @@ void Ctrsyl(const char *trana, const char *tranb, INTEGER const isgn, INTEGER co
         //
     } else if (notrna && !notrnb) {
         //
-        //        Solve    A*X + ISGN*X*B**H = C.
+        // Solve    A*X + ISGN*X*B**H = C.
         //
-        //        The (K,L)th block of X is determined starting from
-        //        bottom-left corner column by column by
+        // The (K,L)th block of X is determined starting from
+        // bottom-left corner column by column by
         //
-        //           A(K,K)*X(K,L) + ISGN*X(K,L)*B**H(L,L) = C(K,L) - R(K,L)
+        // A(K,K)*X(K,L) + ISGN*X(K,L)*B**H(L,L) = C(K,L) - R(K,L)
         //
-        //        Where
-        //                    M                          N
-        //          R(K,L) = SUM [A(K,I)*X(I,L)] + ISGN*SUM [X(K,J)*B**H(L,J)]
-        //                  I=K+1                      J=L+1
+        // Where
+        // M                          N
+        // R(K,L) = SUM [A(K,I)*X(I,L)] + ISGN*SUM [X(K,J)*B**H(L,J)]
+        // I=K+1                      J=L+1
         //
         for (l = n; l >= 1; l = l - 1) {
             for (k = m; k >= 1; k = k - 1) {
@@ -289,6 +297,6 @@ void Ctrsyl(const char *trana, const char *tranb, INTEGER const isgn, INTEGER co
         //
     }
     //
-    //     End of Ctrsyl
+    // End of Ctrsyl
     //
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine ZERRGT.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -77,16 +84,16 @@ void Cerrgt(const char *path, INTEGER const nunit) {
     REAL df[nmax];
     if (Mlsamen(2, c2, "GT")) {
         //
-        //        Test error exits for the general tridiagonal routines.
+        // Test error exits for the general tridiagonal routines.
         //
-        //        Cgttrf
+        // Cgttrf
         //
         strncpy(srnamt, "Cgttrf", srnamt_len);
         infot = 1;
         Cgttrf(-1, dl, e, du, du2, ip, info);
         chkxer("Cgttrf", infot, nout, lerr, ok);
         //
-        //        Cgttrs
+        // Cgttrs
         //
         strncpy(srnamt, "Cgttrs", srnamt_len);
         infot = 1;
@@ -102,7 +109,7 @@ void Cerrgt(const char *path, INTEGER const nunit) {
         Cgttrs("N", 2, 1, dl, e, du, du2, ip, x, 1, info);
         chkxer("Cgttrs", infot, nout, lerr, ok);
         //
-        //        Cgtrfs
+        // Cgtrfs
         //
         strncpy(srnamt, "Cgtrfs", srnamt_len);
         infot = 1;
@@ -121,7 +128,7 @@ void Cerrgt(const char *path, INTEGER const nunit) {
         Cgtrfs("N", 2, 1, dl, e, du, dlf, ef, duf, du2, ip, b, 2, x, 1, r1, r2, w, rw, info);
         chkxer("Cgtrfs", infot, nout, lerr, ok);
         //
-        //        Cgtcon
+        // Cgtcon
         //
         strncpy(srnamt, "Cgtcon", srnamt_len);
         infot = 1;
@@ -136,17 +143,17 @@ void Cerrgt(const char *path, INTEGER const nunit) {
         //
     } else if (Mlsamen(2, c2, "PT")) {
         //
-        //        Test error exits for the positive definite tridiagonal
-        //        routines.
+        // Test error exits for the positive definite tridiagonal
+        // routines.
         //
-        //        Cpttrf
+        // Cpttrf
         //
         strncpy(srnamt, "Cpttrf", srnamt_len);
         infot = 1;
         Cpttrf(-1, d, e, info);
         chkxer("Cpttrf", infot, nout, lerr, ok);
         //
-        //        Cpttrs
+        // Cpttrs
         //
         strncpy(srnamt, "Cpttrs", srnamt_len);
         infot = 1;
@@ -162,7 +169,7 @@ void Cerrgt(const char *path, INTEGER const nunit) {
         Cpttrs("U", 2, 1, d, e, x, 1, info);
         chkxer("Cpttrs", infot, nout, lerr, ok);
         //
-        //        Cptrfs
+        // Cptrfs
         //
         strncpy(srnamt, "Cptrfs", srnamt_len);
         infot = 1;
@@ -181,7 +188,7 @@ void Cerrgt(const char *path, INTEGER const nunit) {
         Cptrfs("U", 2, 1, d, e, df, ef, b, 2, x, 1, r1, r2, w, rw, info);
         chkxer("Cptrfs", infot, nout, lerr, ok);
         //
-        //        Cptcon
+        // Cptcon
         //
         strncpy(srnamt, "Cptcon", srnamt_len);
         infot = 1;
@@ -192,10 +199,10 @@ void Cerrgt(const char *path, INTEGER const nunit) {
         chkxer("Cptcon", infot, nout, lerr, ok);
     }
     //
-    //     Print a summary line.
+    // Print a summary line.
     //
     Alaesm(path, ok, nout);
     //
-    //     End of Cerrgt
+    // End of Cerrgt
     //
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine ZERRHE.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -81,11 +88,11 @@ void Cerrhe(const char *path, INTEGER const nunit) {
     REAL rcond = 0.0;
     if (Mlsamen(2, c2, "HE")) {
         //
-        //        Test error exits of the routines that use factorization
-        //        of a Hermitian indefinite matrix with patrial
-        //        (Bunch-Kaufman) diagonal pivoting method.
+        // Test error exits of the routines that use factorization
+        // of a Hermitian indefinite matrix with patrial
+        // (Bunch-Kaufman) diagonal pivoting method.
         //
-        //        Chetrf
+        // Chetrf
         //
         strncpy(srnamt, "Chetrf", srnamt_len);
         infot = 1;
@@ -104,7 +111,7 @@ void Cerrhe(const char *path, INTEGER const nunit) {
         Chetrf("U", 0, a, 1, ip, w, -2, info);
         chkxer("Chetrf", infot, nout, lerr, ok);
         //
-        //        Chetf2
+        // Chetf2
         //
         strncpy(srnamt, "Chetf2", srnamt_len);
         infot = 1;
@@ -117,7 +124,7 @@ void Cerrhe(const char *path, INTEGER const nunit) {
         Chetf2("U", 2, a, 1, ip, info);
         chkxer("Chetf2", infot, nout, lerr, ok);
         //
-        //        Chetri
+        // Chetri
         //
         strncpy(srnamt, "Chetri", srnamt_len);
         infot = 1;
@@ -130,7 +137,7 @@ void Cerrhe(const char *path, INTEGER const nunit) {
         Chetri("U", 2, a, 1, ip, w, info);
         chkxer("Chetri", infot, nout, lerr, ok);
         //
-        //        Chetri2
+        // Chetri2
         //
         strncpy(srnamt, "Chetri2", srnamt_len);
         infot = 1;
@@ -143,7 +150,7 @@ void Cerrhe(const char *path, INTEGER const nunit) {
         Chetri2("U", 2, a, 1, ip, w, 1, info);
         chkxer("Chetri2", infot, nout, lerr, ok);
         //
-        //        Chetri2x
+        // Chetri2x
         //
         strncpy(srnamt, "Chetri2x", srnamt_len);
         infot = 1;
@@ -156,7 +163,7 @@ void Cerrhe(const char *path, INTEGER const nunit) {
         Chetri2x("U", 2, a, 1, ip, w, 1, info);
         chkxer("Chetri2x", infot, nout, lerr, ok);
         //
-        //        Chetrs
+        // Chetrs
         //
         strncpy(srnamt, "Chetrs", srnamt_len);
         infot = 1;
@@ -175,7 +182,7 @@ void Cerrhe(const char *path, INTEGER const nunit) {
         Chetrs("U", 2, 1, a, 2, ip, b, 1, info);
         chkxer("Chetrs", infot, nout, lerr, ok);
         //
-        //        Cherfs
+        // Cherfs
         //
         strncpy(srnamt, "Cherfs", srnamt_len);
         infot = 1;
@@ -200,7 +207,7 @@ void Cerrhe(const char *path, INTEGER const nunit) {
         Cherfs("U", 2, 1, a, 2, af, 2, ip, b, 2, x, 1, r1, r2, w, r, info);
         chkxer("Cherfs", infot, nout, lerr, ok);
         //
-        //        Checon
+        // Checon
         //
         strncpy(srnamt, "Checon", srnamt_len);
         infot = 1;
@@ -218,11 +225,11 @@ void Cerrhe(const char *path, INTEGER const nunit) {
         //
     } else if (Mlsamen(2, c2, "HR")) {
         //
-        //        Test error exits of the routines that use factorization
-        //        of a Hermitian indefinite matrix with rook
-        //        (bounded Bunch-Kaufman) diagonal pivoting method.
+        // Test error exits of the routines that use factorization
+        // of a Hermitian indefinite matrix with rook
+        // (bounded Bunch-Kaufman) diagonal pivoting method.
         //
-        //        Chetrf_rook
+        // Chetrf_rook
         //
         strncpy(srnamt, "Chetrf_rook", srnamt_len);
         infot = 1;
@@ -241,7 +248,7 @@ void Cerrhe(const char *path, INTEGER const nunit) {
         Chetrf_rook("U", 0, a, 1, ip, w, -2, info);
         chkxer("Chetrf_rook", infot, nout, lerr, ok);
         //
-        //        Chetf2_rook
+        // Chetf2_rook
         //
         strncpy(srnamt, "Chetf2_rook", srnamt_len);
         infot = 1;
@@ -254,7 +261,7 @@ void Cerrhe(const char *path, INTEGER const nunit) {
         Chetf2_rook("U", 2, a, 1, ip, info);
         chkxer("Chetf2_rook", infot, nout, lerr, ok);
         //
-        //        Chetri_rook
+        // Chetri_rook
         //
         strncpy(srnamt, "Chetri_rook", srnamt_len);
         infot = 1;
@@ -267,7 +274,7 @@ void Cerrhe(const char *path, INTEGER const nunit) {
         Chetri_rook("U", 2, a, 1, ip, w, info);
         chkxer("Chetri_rook", infot, nout, lerr, ok);
         //
-        //        Chetrs_rook
+        // Chetrs_rook
         //
         strncpy(srnamt, "Chetrs_rook", srnamt_len);
         infot = 1;
@@ -286,7 +293,7 @@ void Cerrhe(const char *path, INTEGER const nunit) {
         Chetrs_rook("U", 2, 1, a, 2, ip, b, 1, info);
         chkxer("Chetrs_rook", infot, nout, lerr, ok);
         //
-        //        Checon_rook
+        // Checon_rook
         //
         strncpy(srnamt, "Checon_rook", srnamt_len);
         infot = 1;
@@ -304,15 +311,15 @@ void Cerrhe(const char *path, INTEGER const nunit) {
         //
     } else if (Mlsamen(2, c2, "HK")) {
         //
-        //        Test error exits of the routines that use factorization
-        //        of a symmetric indefinite matrix with rook
-        //        (bounded Bunch-Kaufman) pivoting with the new storage
-        //        format for factors L ( or U) and D.
+        // Test error exits of the routines that use factorization
+        // of a symmetric indefinite matrix with rook
+        // (bounded Bunch-Kaufman) pivoting with the new storage
+        // format for factors L ( or U) and D.
         //
-        //        L (or U) is stored in A, diagonal of D is stored on the
-        //        diagonal of A, subdiagonal of D is stored in a separate array E.
+        // L (or U) is stored in A, diagonal of D is stored on the
+        // diagonal of A, subdiagonal of D is stored in a separate array E.
         //
-        //        Chetrf_rk
+        // Chetrf_rk
         //
         strncpy(srnamt, "Chetrf_rk", srnamt_len);
         infot = 1;
@@ -331,7 +338,7 @@ void Cerrhe(const char *path, INTEGER const nunit) {
         Chetrf_rk("U", 0, a, 1, e, ip, w, -2, info);
         chkxer("Chetrf_rk", infot, nout, lerr, ok);
         //
-        //        Chetf2_rk
+        // Chetf2_rk
         //
         strncpy(srnamt, "Chetf2_rk", srnamt_len);
         infot = 1;
@@ -344,7 +351,7 @@ void Cerrhe(const char *path, INTEGER const nunit) {
         Chetf2_rk("U", 2, a, 1, e, ip, info);
         chkxer("Chetf2_rk", infot, nout, lerr, ok);
         //
-        //        Chetri_3
+        // Chetri_3
         //
         strncpy(srnamt, "Chetri_3", srnamt_len);
         infot = 1;
@@ -363,7 +370,7 @@ void Cerrhe(const char *path, INTEGER const nunit) {
         Chetri_3("U", 0, a, 1, e, ip, w, -2, info);
         chkxer("Chetri_3", infot, nout, lerr, ok);
         //
-        //        Chetri_3x
+        // Chetri_3x
         //
         strncpy(srnamt, "Chetri_3x", srnamt_len);
         infot = 1;
@@ -376,7 +383,7 @@ void Cerrhe(const char *path, INTEGER const nunit) {
         Chetri_3x("U", 2, a, 1, e, ip, w, 1, info);
         chkxer("Chetri_3x", infot, nout, lerr, ok);
         //
-        //        Chetrs_3
+        // Chetrs_3
         //
         strncpy(srnamt, "Chetrs_3", srnamt_len);
         infot = 1;
@@ -395,7 +402,7 @@ void Cerrhe(const char *path, INTEGER const nunit) {
         Chetrs_3("U", 2, 1, a, 2, e, ip, b, 1, info);
         chkxer("Chetrs_3", infot, nout, lerr, ok);
         //
-        //        Checon_3
+        // Checon_3
         //
         strncpy(srnamt, "Checon_3", srnamt_len);
         infot = 1;
@@ -411,12 +418,12 @@ void Cerrhe(const char *path, INTEGER const nunit) {
         Checon_3("U", 1, a, 1, e, ip, -1.0, rcond, w, info);
         chkxer("Checon_3", infot, nout, lerr, ok);
         //
-        //        Test error exits of the routines that use factorization
-        //        of a Hermitian indefinite matrix with Aasen's algorithm.
+        // Test error exits of the routines that use factorization
+        // of a Hermitian indefinite matrix with Aasen's algorithm.
         //
     } else if (Mlsamen(2, c2, "HA")) {
         //
-        //        Chetrf_aa
+        // Chetrf_aa
         //
         strncpy(srnamt, "Chetrf_aa", srnamt_len);
         infot = 1;
@@ -435,7 +442,7 @@ void Cerrhe(const char *path, INTEGER const nunit) {
         Chetrf_aa("U", 0, a, 1, ip, w, -2, info);
         chkxer("Chetrf_aa", infot, nout, lerr, ok);
         //
-        //        Chetrs_aa
+        // Chetrs_aa
         //
         strncpy(srnamt, "Chetrs_aa", srnamt_len);
         infot = 1;
@@ -462,10 +469,10 @@ void Cerrhe(const char *path, INTEGER const nunit) {
         //
     } else if (Mlsamen(2, c2, "S2")) {
         //
-        //        Test error exits of the routines that use factorization
-        //        of a symmetric indefinite matrix with Aasen's algorithm.
+        // Test error exits of the routines that use factorization
+        // of a symmetric indefinite matrix with Aasen's algorithm.
         //
-        //        Chetrf_aa_2stage
+        // Chetrf_aa_2stage
         //
         strncpy(srnamt, "Chetrf_aa_2stage", srnamt_len);
         infot = 1;
@@ -484,7 +491,7 @@ void Cerrhe(const char *path, INTEGER const nunit) {
         Chetrf_aa_2stage("U", 2, a, 2, a, 8, ip, ip, w, 0, info);
         chkxer("Chetrf_aa_2stage", infot, nout, lerr, ok);
         //
-        //        Chetrs_aa_2stage
+        // Chetrs_aa_2stage
         //
         strncpy(srnamt, "Chetrs_aa_2stage", srnamt_len);
         infot = 1;
@@ -508,11 +515,11 @@ void Cerrhe(const char *path, INTEGER const nunit) {
         //
     } else if (Mlsamen(2, c2, "HP")) {
         //
-        //        Test error exits of the routines that use factorization
-        //        of a Hermitian indefinite packed matrix with patrial
-        //        (Bunch-Kaufman) diagonal pivoting method.
+        // Test error exits of the routines that use factorization
+        // of a Hermitian indefinite packed matrix with patrial
+        // (Bunch-Kaufman) diagonal pivoting method.
         //
-        //        Chptrf
+        // Chptrf
         //
         strncpy(srnamt, "Chptrf", srnamt_len);
         infot = 1;
@@ -522,7 +529,7 @@ void Cerrhe(const char *path, INTEGER const nunit) {
         Chptrf("U", -1, a, ip, info);
         chkxer("Chptrf", infot, nout, lerr, ok);
         //
-        //        Chptri
+        // Chptri
         //
         strncpy(srnamt, "Chptri", srnamt_len);
         infot = 1;
@@ -532,7 +539,7 @@ void Cerrhe(const char *path, INTEGER const nunit) {
         Chptri("U", -1, a, ip, w, info);
         chkxer("Chptri", infot, nout, lerr, ok);
         //
-        //        Chptrs
+        // Chptrs
         //
         strncpy(srnamt, "Chptrs", srnamt_len);
         infot = 1;
@@ -548,7 +555,7 @@ void Cerrhe(const char *path, INTEGER const nunit) {
         Chptrs("U", 2, 1, a, ip, b, 1, info);
         chkxer("Chptrs", infot, nout, lerr, ok);
         //
-        //        Chprfs
+        // Chprfs
         //
         strncpy(srnamt, "Chprfs", srnamt_len);
         infot = 1;
@@ -567,7 +574,7 @@ void Cerrhe(const char *path, INTEGER const nunit) {
         Chprfs("U", 2, 1, a, af, ip, b, 2, x, 1, r1, r2, w, r, info);
         chkxer("Chprfs", infot, nout, lerr, ok);
         //
-        //        Chpcon
+        // Chpcon
         //
         strncpy(srnamt, "Chpcon", srnamt_len);
         infot = 1;
@@ -581,10 +588,10 @@ void Cerrhe(const char *path, INTEGER const nunit) {
         chkxer("Chpcon", infot, nout, lerr, ok);
     }
     //
-    //     Print a summary line.
+    // Print a summary line.
     //
     Alaesm(path, ok, nout);
     //
-    //     End of Cerrhe
+    // End of Cerrhe
     //
 }

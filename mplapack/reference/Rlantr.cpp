@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,36 +26,18 @@
  *
  */
 
+// Derived from LAPACK routine DLANTR.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 REAL Rlantr(const char *norm, const char *uplo, const char *diag, INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *work) {
     REAL return_value = 0.0;
-    //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    // =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
     const REAL zero = 0.0;
     REAL value = 0.0;
@@ -70,7 +52,7 @@ REAL Rlantr(const char *norm, const char *uplo, const char *diag, INTEGER const 
         value = zero;
     } else if (Mlsame(norm, "M")) {
         //
-        //        Find max(abs(A(i,j))).
+        // Find max(abs(A(i,j))).
         //
         if (Mlsame(diag, "U")) {
             value = one;
@@ -115,9 +97,9 @@ REAL Rlantr(const char *norm, const char *uplo, const char *diag, INTEGER const 
                 }
             }
         }
-    } else if ((Mlsame(norm, "O")) || ((Mlsame(norm, "1")))) {
+    } else if ((Mlsame(norm, "O")) || (Mlsame(norm, "1"))) {
         //
-        //        Find norm1(A).
+        // Find norm1(A).
         //
         value = zero;
         udiag = Mlsame(diag, "U");
@@ -158,7 +140,7 @@ REAL Rlantr(const char *norm, const char *uplo, const char *diag, INTEGER const 
         }
     } else if (Mlsame(norm, "I")) {
         //
-        //        Find normI(A).
+        // Find normI(A).
         //
         if (Mlsame(uplo, "U")) {
             if (Mlsame(diag, "U")) {
@@ -213,10 +195,10 @@ REAL Rlantr(const char *norm, const char *uplo, const char *diag, INTEGER const 
         }
     } else if ((Mlsame(norm, "F")) || (Mlsame(norm, "E"))) {
         //
-        //        Find normF(A).
-        //        SSQ(1) is scale
-        //        SSQ(2) is sum-of-squares
-        //        For better accuracy, sum each column separately.
+        // Find normF(A).
+        // SSQ(1) is scale
+        // SSQ(2) is sum-of-squares
+        // For better accuracy, sum each column separately.
         //
         if (Mlsame(uplo, "U")) {
             if (Mlsame(diag, "U")) {
@@ -265,6 +247,6 @@ REAL Rlantr(const char *norm, const char *uplo, const char *diag, INTEGER const 
     return_value = value;
     return return_value;
     //
-    //     End of Rlantr
+    // End of Rlantr
     //
 }

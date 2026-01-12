@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DDRVSG2STG.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -98,7 +105,7 @@ void Rdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
     static const char *format_9999 = "(' Rdrvsg2stg: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,', JTYPE=',i6,"
                                      "', ISEED=(',3(i5,','),i5,')')";
     //
-    //     1)      Check for errors
+    // 1)      Check for errors
     //
     ntestt = 0;
     info = 0;
@@ -112,7 +119,7 @@ void Rdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
         }
     }
     //
-    //     Check for errors
+    // Check for errors
     //
     if (nsizes < 0) {
         info = -1;
@@ -135,13 +142,13 @@ void Rdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (nsizes == 0 || ntypes == 0) {
         return;
     }
     //
-    //     More Important constants
+    // More Important constants
     //
     unfl = Rlamch("Safe minimum");
     ovfl = Rlamch("Overflow");
@@ -154,7 +161,7 @@ void Rdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
         iseed2[i - 1] = iseed[i - 1];
     }
     //
-    //     Loop over sizes, types
+    // Loop over sizes, types
     //
     nerrs = 0;
     nmats = 0;
@@ -182,20 +189,20 @@ void Rdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 ioldsd[j - 1] = iseed[j - 1];
             }
             //
-            //           2)      Compute "A"
+            // 2)      Compute "A"
             //
-            //                   Control parameters:
+            // Control parameters:
             //
-            //               KMAGN  KMODE        KTYPE
-            //           =1  O(1)   clustered 1  zero
-            //           =2  large  clustered 2  identity
-            //           =3  small  exponential  (none)
-            //           =4         arithmetic   diagonal, w/ eigenvalues
-            //           =5         random log   hermitian, w/ eigenvalues
-            //           =6         random       (none)
-            //           =7                      random diagonal
-            //           =8                      random hermitian
-            //           =9                      banded, w/ eigenvalues
+            // KMAGN  KMODE        KTYPE
+            // =1  O(1)   clustered 1  zero
+            // =2  large  clustered 2  identity
+            // =3  small  exponential  (none)
+            // =4         arithmetic   diagonal, w/ eigenvalues
+            // =5         random log   hermitian, w/ eigenvalues
+            // =6         random       (none)
+            // =7                      random diagonal
+            // =8                      random hermitian
+            // =9                      banded, w/ eigenvalues
             //
             if (mtypes > maxtyp) {
                 goto statement_90;
@@ -204,7 +211,7 @@ void Rdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
             itype = ktype[jtype - 1];
             imode = kmode[jtype - 1];
             //
-            //           Compute norm
+            // Compute norm
             //
             switch (kmagn[jtype - 1]) {
             case 1:
@@ -244,7 +251,7 @@ void Rdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
             //
             if (itype == 1) {
                 //
-                //              Zero
+                // Zero
                 //
                 ka = 0;
                 kb = 0;
@@ -252,7 +259,7 @@ void Rdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 //
             } else if (itype == 2) {
                 //
-                //              Identity
+                // Identity
                 //
                 ka = 0;
                 kb = 0;
@@ -263,7 +270,7 @@ void Rdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 //
             } else if (itype == 4) {
                 //
-                //              Diagonal Matrix, [Eigen]values Specified
+                // Diagonal Matrix, [Eigen]values Specified
                 //
                 ka = 0;
                 kb = 0;
@@ -271,7 +278,7 @@ void Rdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 //
             } else if (itype == 5) {
                 //
-                //              symmetric, eigenvalues specified
+                // symmetric, eigenvalues specified
                 //
                 ka = max((INTEGER)0, n - 1);
                 kb = ka;
@@ -279,7 +286,7 @@ void Rdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 //
             } else if (itype == 7) {
                 //
-                //              Diagonal, random eigenvalues
+                // Diagonal, random eigenvalues
                 //
                 ka = 0;
                 kb = 0;
@@ -287,7 +294,7 @@ void Rdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 //
             } else if (itype == 8) {
                 //
-                //              symmetric, random eigenvalues
+                // symmetric, random eigenvalues
                 //
                 ka = max((INTEGER)0, n - 1);
                 kb = ka;
@@ -295,16 +302,16 @@ void Rdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 //
             } else if (itype == 9) {
                 //
-                //              symmetric banded, eigenvalues specified
+                // symmetric banded, eigenvalues specified
                 //
-                //              The following values are used for the half-bandwidths:
+                // The following values are used for the half-bandwidths:
                 //
-                //                ka = 1   kb = 1
-                //                ka = 2   kb = 1
-                //                ka = 2   kb = 2
-                //                ka = 3   kb = 1
-                //                ka = 3   kb = 2
-                //                ka = 3   kb = 3
+                // ka = 1   kb = 1
+                // ka = 2   kb = 1
+                // ka = 2   kb = 2
+                // ka = 3   kb = 1
+                // ka = 3   kb = 2
+                // ka = 3   kb = 3
                 //
                 kb9++;
                 if (kb9 > ka9) {
@@ -342,17 +349,17 @@ void Rdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 }
             }
             //
-            //           3) Call Rsygv, Rspgv, Rsbgv, SSYGVD, SSPGVD, SSBGVD,
-            //              Rsygvx, Rspgvx, and Rsbgvx, do tests.
+            // 3) Call Rsygv, Rspgv, Rsbgv, SSYGVD, SSPGVD, SSBGVD,
+            // Rsygvx, Rspgvx, and Rsbgvx, do tests.
             //
-            //           loop over the three generalized problems
-            //                 IBTYPE = 1: A*x = (lambda)*B*x
-            //                 IBTYPE = 2: A*B*x = (lambda)*x
-            //                 IBTYPE = 3: B*A*x = (lambda)*x
+            // loop over the three generalized problems
+            // IBTYPE = 1: A*x = (lambda)*B*x
+            // IBTYPE = 2: A*B*x = (lambda)*x
+            // IBTYPE = 3: B*A*x = (lambda)*x
             //
             for (ibtype = 1; ibtype <= 3; ibtype = ibtype + 1) {
                 //
-                //              loop over the setting UPLO
+                // loop over the setting UPLO
                 //
                 for (ibuplo = 1; ibuplo <= 2; ibuplo = ibuplo + 1) {
                     if (ibuplo == 1) {
@@ -362,12 +369,12 @@ void Rdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                         uplo = 'L';
                     }
                     //
-                    //                 Generate random well-conditioned positive definite
-                    //                 matrix B, of bandwidth not greater than that of A.
+                    // Generate random well-conditioned positive definite
+                    // matrix B, of bandwidth not greater than that of A.
                     //
                     Rlatms(n, n, "U", iseed, "P", work, 5, ten, one, kb, kb, &uplo, b, ldb, &work[(n + 1) - 1], iinfo);
                     //
-                    //                 Test Rsygv
+                    // Test Rsygv
                     //
                     ntest++;
                     //
@@ -389,11 +396,11 @@ void Rdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                         }
                     }
                     //
-                    //                 Do Test
+                    // Do Test
                     //
                     Rsgt01(ibtype, &uplo, n, n, a, lda, b, ldb, z, ldz, d, work, &result[ntest - 1]);
                     //
-                    //                 Test Rsygv_2stage
+                    // Test Rsygv_2stage
                     //
                     ntest++;
                     //
@@ -415,14 +422,14 @@ void Rdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                         }
                     }
                     //
-                    //                 Do Test
+                    // Do Test
                     //
-                    //                  CALL Rsgt01( IBTYPE, UPLO, N, N, A, LDA, B, LDB, Z,
-                    //     $                         LDZ, D, WORK, RESULT( NTEST ) )
+                    // CALL Rsgt01( IBTYPE, UPLO, N, N, A, LDA, B, LDB, Z,
+                    // $                         LDZ, D, WORK, RESULT( NTEST ) )
                     //
-                    //                 Do Tests | D1 - D2 | / ( |D1| ulp )
-                    //                 D1 computed using the standard 1-stage reduction as reference
-                    //                 D2 computed using the 2-stage reduction
+                    // Do Tests | D1 - D2 | / ( |D1| ulp )
+                    // D1 computed using the standard 1-stage reduction as reference
+                    // D2 computed using the 2-stage reduction
                     //
                     temp1 = zero;
                     temp2 = zero;
@@ -433,7 +440,7 @@ void Rdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     //
                     result[ntest - 1] = temp2 / max(unfl, REAL(ulp * max(temp1, temp2)));
                     //
-                    //                 Test Rsygvd
+                    // Test Rsygvd
                     //
                     ntest++;
                     //
@@ -456,11 +463,11 @@ void Rdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                         }
                     }
                     //
-                    //                 Do Test
+                    // Do Test
                     //
                     Rsgt01(ibtype, &uplo, n, n, a, lda, b, ldb, z, ldz, d, work, &result[ntest - 1]);
                     //
-                    //                 Test Rsygvx
+                    // Test Rsygvx
                     //
                     ntest++;
                     //
@@ -482,7 +489,7 @@ void Rdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                         }
                     }
                     //
-                    //                 Do Test
+                    // Do Test
                     //
                     Rsgt01(ibtype, &uplo, n, n, a, lda, b, ldb, z, ldz, d, work, &result[ntest - 1]);
                     //
@@ -491,10 +498,10 @@ void Rdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     Rlacpy(" ", n, n, a, lda, ab, lda);
                     Rlacpy(&uplo, n, n, b, ldb, bb, ldb);
                     //
-                    //                 since we do not know the exact eigenvalues of this
-                    //                 eigenpair, we just set VL and VU as constants.
-                    //                 It is quite possible that there are no eigenvalues
-                    //                 in this interval.
+                    // since we do not know the exact eigenvalues of this
+                    // eigenpair, we just set VL and VU as constants.
+                    // It is quite possible that there are no eigenvalues
+                    // in this interval.
                     //
                     vl = zero;
                     vu = anorm;
@@ -513,7 +520,7 @@ void Rdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                         }
                     }
                     //
-                    //                 Do Test
+                    // Do Test
                     //
                     Rsgt01(ibtype, &uplo, n, m, a, lda, b, ldb, z, ldz, d, work, &result[ntest - 1]);
                     //
@@ -537,17 +544,17 @@ void Rdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                         }
                     }
                     //
-                    //                 Do Test
+                    // Do Test
                     //
                     Rsgt01(ibtype, &uplo, n, m, a, lda, b, ldb, z, ldz, d, work, &result[ntest - 1]);
                 //
                 statement_100:
                     //
-                    //                 Test Rspgv
+                    // Test Rspgv
                     //
                     ntest++;
                     //
-                    //                 Copy the matrices into packed storage.
+                    // Copy the matrices into packed storage.
                     //
                     if (Mlsame(&uplo, "U")) {
                         ij = 1;
@@ -584,15 +591,15 @@ void Rdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                         }
                     }
                     //
-                    //                 Do Test
+                    // Do Test
                     //
                     Rsgt01(ibtype, &uplo, n, n, a, lda, b, ldb, z, ldz, d, work, &result[ntest - 1]);
                     //
-                    //                 Test Rspgvd
+                    // Test Rspgvd
                     //
                     ntest++;
                     //
-                    //                 Copy the matrices into packed storage.
+                    // Copy the matrices into packed storage.
                     //
                     if (Mlsame(&uplo, "U")) {
                         ij = 1;
@@ -629,15 +636,15 @@ void Rdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                         }
                     }
                     //
-                    //                 Do Test
+                    // Do Test
                     //
                     Rsgt01(ibtype, &uplo, n, n, a, lda, b, ldb, z, ldz, d, work, &result[ntest - 1]);
                     //
-                    //                 Test Rspgvx
+                    // Test Rspgvx
                     //
                     ntest++;
                     //
-                    //                 Copy the matrices into packed storage.
+                    // Copy the matrices into packed storage.
                     //
                     if (Mlsame(&uplo, "U")) {
                         ij = 1;
@@ -674,13 +681,13 @@ void Rdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                         }
                     }
                     //
-                    //                 Do Test
+                    // Do Test
                     //
                     Rsgt01(ibtype, &uplo, n, m, a, lda, b, ldb, z, ldz, d, work, &result[ntest - 1]);
                     //
                     ntest++;
                     //
-                    //                 Copy the matrices into packed storage.
+                    // Copy the matrices into packed storage.
                     //
                     if (Mlsame(&uplo, "U")) {
                         ij = 1;
@@ -719,13 +726,13 @@ void Rdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                         }
                     }
                     //
-                    //                 Do Test
+                    // Do Test
                     //
                     Rsgt01(ibtype, &uplo, n, m, a, lda, b, ldb, z, ldz, d, work, &result[ntest - 1]);
                     //
                     ntest++;
                     //
-                    //                 Copy the matrices into packed storage.
+                    // Copy the matrices into packed storage.
                     //
                     if (Mlsame(&uplo, "U")) {
                         ij = 1;
@@ -762,7 +769,7 @@ void Rdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                         }
                     }
                     //
-                    //                 Do Test
+                    // Do Test
                     //
                     Rsgt01(ibtype, &uplo, n, m, a, lda, b, ldb, z, ldz, d, work, &result[ntest - 1]);
                 //
@@ -770,11 +777,11 @@ void Rdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     //
                     if (ibtype == 1) {
                         //
-                        //                    TEST Rsbgv
+                        // TEST Rsbgv
                         //
                         ntest++;
                         //
-                        //                    Copy the matrices into band storage.
+                        // Copy the matrices into band storage.
                         //
                         if (Mlsame(&uplo, "U")) {
                             for (j = 1; j <= n; j = j + 1) {
@@ -811,15 +818,15 @@ void Rdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                             }
                         }
                         //
-                        //                    Do Test
+                        // Do Test
                         //
                         Rsgt01(ibtype, &uplo, n, n, a, lda, b, ldb, z, ldz, d, work, &result[ntest - 1]);
                         //
-                        //                    TEST Rsbgvd
+                        // TEST Rsbgvd
                         //
                         ntest++;
                         //
-                        //                    Copy the matrices into band storage.
+                        // Copy the matrices into band storage.
                         //
                         if (Mlsame(&uplo, "U")) {
                             for (j = 1; j <= n; j = j + 1) {
@@ -856,15 +863,15 @@ void Rdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                             }
                         }
                         //
-                        //                    Do Test
+                        // Do Test
                         //
                         Rsgt01(ibtype, &uplo, n, n, a, lda, b, ldb, z, ldz, d, work, &result[ntest - 1]);
                         //
-                        //                    Test Rsbgvx
+                        // Test Rsbgvx
                         //
                         ntest++;
                         //
-                        //                    Copy the matrices into band storage.
+                        // Copy the matrices into band storage.
                         //
                         if (Mlsame(&uplo, "U")) {
                             for (j = 1; j <= n; j = j + 1) {
@@ -901,13 +908,13 @@ void Rdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                             }
                         }
                         //
-                        //                    Do Test
+                        // Do Test
                         //
                         Rsgt01(ibtype, &uplo, n, m, a, lda, b, ldb, z, ldz, d, work, &result[ntest - 1]);
                         //
                         ntest++;
                         //
-                        //                    Copy the matrices into band storage.
+                        // Copy the matrices into band storage.
                         //
                         if (Mlsame(&uplo, "U")) {
                             for (j = 1; j <= n; j = j + 1) {
@@ -946,13 +953,13 @@ void Rdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                             }
                         }
                         //
-                        //                    Do Test
+                        // Do Test
                         //
                         Rsgt01(ibtype, &uplo, n, m, a, lda, b, ldb, z, ldz, d, work, &result[ntest - 1]);
                         //
                         ntest++;
                         //
-                        //                    Copy the matrices into band storage.
+                        // Copy the matrices into band storage.
                         //
                         if (Mlsame(&uplo, "U")) {
                             for (j = 1; j <= n; j = j + 1) {
@@ -989,7 +996,7 @@ void Rdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                             }
                         }
                         //
-                        //                    Do Test
+                        // Do Test
                         //
                         Rsgt01(ibtype, &uplo, n, m, a, lda, b, ldb, z, ldz, d, work, &result[ntest - 1]);
                         //
@@ -999,7 +1006,7 @@ void Rdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 }
             }
             //
-            //           End of Loop -- Check for RESULT(j) > THRESH
+            // End of Loop -- Check for RESULT(j) > THRESH
             //
             ntestt += ntest;
             Rlafts("DSG", n, n, jtype, ntest, result, ioldsd, thresh, nounit, nerrs);
@@ -1007,10 +1014,10 @@ void Rdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
         }
     }
     //
-    //     Summary
+    // Summary
     //
     Rlasum("DSG", nounit, nerrs, ntestt);
     //
-    //     End of Rdrvsg2stg
+    // End of Rdrvsg2stg
     //
 }

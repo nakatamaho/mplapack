@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,35 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine DGETRF.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Rgetrf(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, INTEGER *ipiv, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     if (m < 0) {
@@ -69,13 +53,13 @@ void Rgetrf(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, INTEGE
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (m == 0 || n == 0) {
         return;
     }
     //
-    //     Determine the block size for this environment.
+    // Determine the block size for this environment.
     //
     INTEGER nb = iMlaenv(1, "Rgetrf", " ", m, n, -1, -1);
     INTEGER j = 0;
@@ -85,22 +69,22 @@ void Rgetrf(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, INTEGE
     const REAL one = 1.0;
     if (nb <= 1 || nb >= min(m, n)) {
         //
-        //        Use unblocked code.
+        // Use unblocked code.
         //
         Rgetrf2(m, n, a, lda, ipiv, info);
     } else {
         //
-        //        Use blocked code.
+        // Use blocked code.
         //
         for (j = 1; j <= min(m, n); j = j + nb) {
             jb = min(min(m, n) - j + 1, nb);
             //
-            //           Factor diagonal and subdiagonal blocks and test for exact
-            //           singularity.
+            // Factor diagonal and subdiagonal blocks and test for exact
+            // singularity.
             //
             Rgetrf2(m - j + 1, jb, &a[(j - 1) + (j - 1) * lda], lda, &ipiv[j - 1], iinfo);
             //
-            //           Adjust INFO and the pivot indices.
+            // Adjust INFO and the pivot indices.
             //
             if (info == 0 && iinfo > 0) {
                 info = iinfo + j - 1;
@@ -109,22 +93,22 @@ void Rgetrf(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, INTEGE
                 ipiv[i - 1] += j - 1;
             }
             //
-            //           Apply interchanges to columns 1:J-1.
+            // Apply interchanges to columns 1:J-1.
             //
             Rlaswp(j - 1, a, lda, j, j + jb - 1, ipiv, 1);
             //
             if (j + jb <= n) {
                 //
-                //              Apply interchanges to columns J+JB:N.
+                // Apply interchanges to columns J+JB:N.
                 //
                 Rlaswp(n - j - jb + 1, &a[((j + jb) - 1) * lda], lda, j, j + jb - 1, ipiv, 1);
                 //
-                //              Compute block row of U.
+                // Compute block row of U.
                 //
                 Rtrsm("Left", "Lower", "No transpose", "Unit", jb, n - j - jb + 1, one, &a[(j - 1) + (j - 1) * lda], lda, &a[(j - 1) + ((j + jb) - 1) * lda], lda);
                 if (j + jb <= m) {
                     //
-                    //                 Update trailing submatrix.
+                    // Update trailing submatrix.
                     //
                     Rgemm("No transpose", "No transpose", m - j - jb + 1, n - j - jb + 1, jb, -one, &a[((j + jb) - 1) + (j - 1) * lda], lda, &a[(j - 1) + ((j + jb) - 1) * lda], lda, one, &a[((j + jb) - 1) + ((j + jb) - 1) * lda], lda);
                 }
@@ -132,6 +116,6 @@ void Rgetrf(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, INTEGE
         }
     }
     //
-    //     End of Rgetrf
+    // End of Rgetrf
     //
 }

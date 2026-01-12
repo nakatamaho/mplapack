@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,33 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine DPTTRS.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Rpttrs(INTEGER const n, INTEGER const nrhs, REAL *d, REAL *e, REAL *b, INTEGER const ldb, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input arguments.
+    // Test the input arguments.
     //
     info = 0;
     if (n < 0) {
@@ -67,13 +53,13 @@ void Rpttrs(INTEGER const n, INTEGER const nrhs, REAL *d, REAL *e, REAL *b, INTE
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0 || nrhs == 0) {
         return;
     }
     //
-    //     Determine the number of right-hand sides to solve at a time.
+    // Determine the number of right-hand sides to solve at a time.
     //
     INTEGER nb = 0;
     if (nrhs == 1) {
@@ -93,6 +79,6 @@ void Rpttrs(INTEGER const n, INTEGER const nrhs, REAL *d, REAL *e, REAL *b, INTE
         }
     }
     //
-    //     End of Rpttrs
+    // End of Rpttrs
     //
 }

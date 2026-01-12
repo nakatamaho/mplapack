@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DLARGV.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -68,6 +75,6 @@ void Rlargv(INTEGER const n, REAL *x, INTEGER const incx, REAL *y, INTEGER const
         ix += incx;
     }
     //
-    //     End of Rlargv
+    // End of Rlargv
     //
 }

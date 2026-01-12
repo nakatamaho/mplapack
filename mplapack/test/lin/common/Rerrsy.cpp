@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DERRSY.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -109,11 +116,11 @@ void Rerrsy(const char *path, INTEGER const nunit) {
     INTEGER info = 0;
     if (Mlsamen(2, c2, "SY")) {
         //
-        //        Test error exits of the routines that use factorization
-        //        of a symmetric indefinite matrix with patrial
-        //        (Bunch-Kaufman) pivoting.
+        // Test error exits of the routines that use factorization
+        // of a symmetric indefinite matrix with patrial
+        // (Bunch-Kaufman) pivoting.
         //
-        //        Rsytrf
+        // Rsytrf
         //
         strncpy(srnamt, "Rsytrf", srnamt_len);
         infot = 1;
@@ -132,7 +139,7 @@ void Rerrsy(const char *path, INTEGER const nunit) {
         Rsytrf("U", 0, a, 1, ip, w, -2, info);
         chkxer("Rsytrf", infot, nout, lerr, ok);
         //
-        //        Rsytf2
+        // Rsytf2
         //
         strncpy(srnamt, "Rsytf2", srnamt_len);
         infot = 1;
@@ -145,7 +152,7 @@ void Rerrsy(const char *path, INTEGER const nunit) {
         Rsytf2("U", 2, a, 1, ip, info);
         chkxer("Rsytf2", infot, nout, lerr, ok);
         //
-        //        Rsytri
+        // Rsytri
         //
         strncpy(srnamt, "Rsytri", srnamt_len);
         infot = 1;
@@ -158,7 +165,7 @@ void Rerrsy(const char *path, INTEGER const nunit) {
         Rsytri("U", 2, a, 1, ip, w, info);
         chkxer("Rsytri", infot, nout, lerr, ok);
         //
-        //        Rsytri2
+        // Rsytri2
         //
         strncpy(srnamt, "Rsytri2", srnamt_len);
         infot = 1;
@@ -171,7 +178,7 @@ void Rerrsy(const char *path, INTEGER const nunit) {
         Rsytri2("U", 2, a, 1, ip, w, iw[1 - 1], info);
         chkxer("Rsytri2", infot, nout, lerr, ok);
         //
-        //        Rsytri2x
+        // Rsytri2x
         //
         strncpy(srnamt, "Rsytri2x", srnamt_len);
         infot = 1;
@@ -184,7 +191,7 @@ void Rerrsy(const char *path, INTEGER const nunit) {
         Rsytri2x("U", 2, a, 1, ip, w, 1, info);
         chkxer("Rsytri2x", infot, nout, lerr, ok);
         //
-        //        Rsytrs
+        // Rsytrs
         //
         strncpy(srnamt, "Rsytrs", srnamt_len);
         infot = 1;
@@ -203,7 +210,7 @@ void Rerrsy(const char *path, INTEGER const nunit) {
         Rsytrs("U", 2, 1, a, 2, ip, b, 1, info);
         chkxer("Rsytrs", infot, nout, lerr, ok);
         //
-        //        Rsyrfs
+        // Rsyrfs
         //
         strncpy(srnamt, "Rsyrfs", srnamt_len);
         infot = 1;
@@ -228,7 +235,7 @@ void Rerrsy(const char *path, INTEGER const nunit) {
         Rsyrfs("U", 2, 1, a, 2, af, 2, ip, b, 2, x, 1, r1, r2, w, iw, info);
         chkxer("Rsyrfs", infot, nout, lerr, ok);
         //
-        //        Rsycon
+        // Rsycon
         //
         strncpy(srnamt, "Rsycon", srnamt_len);
         infot = 1;
@@ -246,11 +253,11 @@ void Rerrsy(const char *path, INTEGER const nunit) {
         //
     } else if (Mlsamen(2, c2, "SR")) {
         //
-        //        Test error exits of the routines that use factorization
-        //        of a symmetric indefinite matrix with rook
-        //        (bounded Bunch-Kaufman) pivoting.
+        // Test error exits of the routines that use factorization
+        // of a symmetric indefinite matrix with rook
+        // (bounded Bunch-Kaufman) pivoting.
         //
-        //        Rsytrf_rook
+        // Rsytrf_rook
         //
         strncpy(srnamt, "Rsytrf_rook", srnamt_len);
         infot = 1;
@@ -269,7 +276,7 @@ void Rerrsy(const char *path, INTEGER const nunit) {
         Rsytrf_rook("U", 0, a, 1, ip, w, -2, info);
         chkxer("Rsytrf_rook", infot, nout, lerr, ok);
         //
-        //        Rsytf2_rook
+        // Rsytf2_rook
         //
         strncpy(srnamt, "Rsytf2_rook", srnamt_len);
         infot = 1;
@@ -282,7 +289,7 @@ void Rerrsy(const char *path, INTEGER const nunit) {
         Rsytf2_rook("U", 2, a, 1, ip, info);
         chkxer("Rsytf2_rook", infot, nout, lerr, ok);
         //
-        //        Rsytri_rook
+        // Rsytri_rook
         //
         strncpy(srnamt, "Rsytri_rook", srnamt_len);
         infot = 1;
@@ -295,7 +302,7 @@ void Rerrsy(const char *path, INTEGER const nunit) {
         Rsytri_rook("U", 2, a, 1, ip, w, info);
         chkxer("Rsytri_rook", infot, nout, lerr, ok);
         //
-        //        Rsytrs_rook
+        // Rsytrs_rook
         //
         strncpy(srnamt, "Rsytrs_rook", srnamt_len);
         infot = 1;
@@ -314,7 +321,7 @@ void Rerrsy(const char *path, INTEGER const nunit) {
         Rsytrs_rook("U", 2, 1, a, 2, ip, b, 1, info);
         chkxer("Rsytrs_rook", infot, nout, lerr, ok);
         //
-        //        Rsycon_rook
+        // Rsycon_rook
         //
         strncpy(srnamt, "Rsycon_rook", srnamt_len);
         infot = 1;
@@ -332,15 +339,15 @@ void Rerrsy(const char *path, INTEGER const nunit) {
         //
     } else if (Mlsamen(2, c2, "SK")) {
         //
-        //        Test error exits of the routines that use factorization
-        //        of a symmetric indefinite matrix with rook
-        //        (bounded Bunch-Kaufman) pivoting with the new storage
-        //        format for factors L ( or U) and D.
+        // Test error exits of the routines that use factorization
+        // of a symmetric indefinite matrix with rook
+        // (bounded Bunch-Kaufman) pivoting with the new storage
+        // format for factors L ( or U) and D.
         //
-        //        L (or U) is stored in A, diagonal of D is stored on the
-        //        diagonal of A, subdiagonal of D is stored in a separate array E.
+        // L (or U) is stored in A, diagonal of D is stored on the
+        // diagonal of A, subdiagonal of D is stored in a separate array E.
         //
-        //        Rsytrf_rk
+        // Rsytrf_rk
         //
         strncpy(srnamt, "Rsytrf_rk", srnamt_len);
         infot = 1;
@@ -359,7 +366,7 @@ void Rerrsy(const char *path, INTEGER const nunit) {
         Rsytrf_rk("U", 0, a, 1, e, ip, w, -2, info);
         chkxer("Rsytrf_rk", infot, nout, lerr, ok);
         //
-        //        Rsytf2_rk
+        // Rsytf2_rk
         //
         strncpy(srnamt, "Rsytf2_rk", srnamt_len);
         infot = 1;
@@ -372,7 +379,7 @@ void Rerrsy(const char *path, INTEGER const nunit) {
         Rsytf2_rk("U", 2, a, 1, e, ip, info);
         chkxer("Rsytf2_rk", infot, nout, lerr, ok);
         //
-        //        Rsytri_3
+        // Rsytri_3
         //
         strncpy(srnamt, "Rsytri_3", srnamt_len);
         infot = 1;
@@ -391,7 +398,7 @@ void Rerrsy(const char *path, INTEGER const nunit) {
         Rsytri_3("U", 0, a, 1, e, ip, w, -2, info);
         chkxer("Rsytri_3", infot, nout, lerr, ok);
         //
-        //        Rsytri_3x
+        // Rsytri_3x
         //
         strncpy(srnamt, "Rsytri_3x", srnamt_len);
         infot = 1;
@@ -404,7 +411,7 @@ void Rerrsy(const char *path, INTEGER const nunit) {
         Rsytri_3x("U", 2, a, 1, e, ip, w, 1, info);
         chkxer("Rsytri_3x", infot, nout, lerr, ok);
         //
-        //        Rsytrs_3
+        // Rsytrs_3
         //
         strncpy(srnamt, "Rsytrs_3", srnamt_len);
         infot = 1;
@@ -423,7 +430,7 @@ void Rerrsy(const char *path, INTEGER const nunit) {
         Rsytrs_3("U", 2, 1, a, 2, e, ip, b, 1, info);
         chkxer("Rsytrs_3", infot, nout, lerr, ok);
         //
-        //        Rsycon_3
+        // Rsycon_3
         //
         strncpy(srnamt, "Rsycon_3", srnamt_len);
         infot = 1;
@@ -441,10 +448,10 @@ void Rerrsy(const char *path, INTEGER const nunit) {
         //
     } else if (Mlsamen(2, c2, "SA")) {
         //
-        //        Test error exits of the routines that use factorization
-        //        of a symmetric indefinite matrix with Aasen's algorithm.
+        // Test error exits of the routines that use factorization
+        // of a symmetric indefinite matrix with Aasen's algorithm.
         //
-        //        Rsytrf_aa
+        // Rsytrf_aa
         //
         strncpy(srnamt, "Rsytrf_aa", srnamt_len);
         infot = 1;
@@ -463,7 +470,7 @@ void Rerrsy(const char *path, INTEGER const nunit) {
         Rsytrf_aa("U", 0, a, 1, ip, w, -2, info);
         chkxer("Rsytrf_aa", infot, nout, lerr, ok);
         //
-        //        Rsytrs_aa
+        // Rsytrs_aa
         //
         strncpy(srnamt, "Rsytrs_aa", srnamt_len);
         infot = 1;
@@ -490,10 +497,10 @@ void Rerrsy(const char *path, INTEGER const nunit) {
         //
     } else if (Mlsamen(2, c2, "S2")) {
         //
-        //        Test error exits of the routines that use factorization
-        //        of a symmetric indefinite matrix with Aasen's algorithm.
+        // Test error exits of the routines that use factorization
+        // of a symmetric indefinite matrix with Aasen's algorithm.
         //
-        //        Rsytrf_aa_2stage
+        // Rsytrf_aa_2stage
         //
         strncpy(srnamt, "Rsytrf_aa_2stage", srnamt_len);
         infot = 1;
@@ -512,7 +519,7 @@ void Rerrsy(const char *path, INTEGER const nunit) {
         Rsytrf_aa_2stage("U", 2, a, 2, a, 8, ip, ip, w, 0, info);
         chkxer("Rsytrf_aa_2stage", infot, nout, lerr, ok);
         //
-        //        Rsytrs_aa_2stage
+        // Rsytrs_aa_2stage
         //
         strncpy(srnamt, "Rsytrs_aa_2stage", srnamt_len);
         infot = 1;
@@ -535,11 +542,11 @@ void Rerrsy(const char *path, INTEGER const nunit) {
         chkxer("Rsytrs_aa_STAGE", infot, nout, lerr, ok);
     } else if (Mlsamen(2, c2, "SP")) {
         //
-        //        Test error exits of the routines that use factorization
-        //        of a symmetric indefinite packed matrix with patrial
-        //        (Bunch-Kaufman) pivoting.
+        // Test error exits of the routines that use factorization
+        // of a symmetric indefinite packed matrix with patrial
+        // (Bunch-Kaufman) pivoting.
         //
-        //        Rsptrf
+        // Rsptrf
         //
         strncpy(srnamt, "Rsptrf", srnamt_len);
         infot = 1;
@@ -549,7 +556,7 @@ void Rerrsy(const char *path, INTEGER const nunit) {
         Rsptrf("U", -1, a, ip, info);
         chkxer("Rsptrf", infot, nout, lerr, ok);
         //
-        //        Rsptri
+        // Rsptri
         //
         strncpy(srnamt, "Rsptri", srnamt_len);
         infot = 1;
@@ -559,7 +566,7 @@ void Rerrsy(const char *path, INTEGER const nunit) {
         Rsptri("U", -1, a, ip, w, info);
         chkxer("Rsptri", infot, nout, lerr, ok);
         //
-        //        Rsptrs
+        // Rsptrs
         //
         strncpy(srnamt, "Rsptrs", srnamt_len);
         infot = 1;
@@ -575,7 +582,7 @@ void Rerrsy(const char *path, INTEGER const nunit) {
         Rsptrs("U", 2, 1, a, ip, b, 1, info);
         chkxer("Rsptrs", infot, nout, lerr, ok);
         //
-        //        Rsprfs
+        // Rsprfs
         //
         strncpy(srnamt, "Rsprfs", srnamt_len);
         infot = 1;
@@ -594,7 +601,7 @@ void Rerrsy(const char *path, INTEGER const nunit) {
         Rsprfs("U", 2, 1, a, af, ip, b, 2, x, 1, r1, r2, w, iw, info);
         chkxer("Rsprfs", infot, nout, lerr, ok);
         //
-        //        Rspcon
+        // Rspcon
         //
         infot = 1;
         strncpy(srnamt, "Rspcon", srnamt_len);
@@ -608,10 +615,10 @@ void Rerrsy(const char *path, INTEGER const nunit) {
         chkxer("Rspcon", infot, nout, lerr, ok);
     }
     //
-    //     Print a summary line.
+    // Print a summary line.
     //
     Alaesm(path, ok, nout);
     //
-    //     End of Rerrsy
+    // End of Rerrsy
     //
 }

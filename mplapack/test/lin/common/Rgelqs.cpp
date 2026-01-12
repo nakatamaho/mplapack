@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DGELQS.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -38,26 +45,7 @@ using fem::common;
 
 void Rgelqs(INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEGER const lda, REAL *tau, REAL *b, INTEGER const ldb, REAL *work, INTEGER const lwork, INTEGER &info) {
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     if (m < 0) {
@@ -78,28 +66,28 @@ void Rgelqs(INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEG
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0 || nrhs == 0 || m == 0) {
         return;
     }
     //
-    //     Solve L*X = B(1:m,:)
+    // Solve L*X = B(1:m,:)
     //
     const REAL one = 1.0;
     Rtrsm("Left", "Lower", "No transpose", "Non-unit", m, nrhs, one, a, lda, b, ldb);
     //
-    //     Set B(m+1:n,:) to zero
+    // Set B(m+1:n,:) to zero
     //
     const REAL zero = 0.0;
     if (m < n) {
         Rlaset("Full", n - m, nrhs, zero, zero, &b[((m + 1) - 1)], ldb);
     }
     //
-    //     B := Q' * B
+    // B := Q' * B
     //
     Rormlq("Left", "Transpose", n, nrhs, m, a, lda, tau, b, ldb, work, lwork, info);
     //
-    //     End of Rgelqs
+    // End of Rgelqs
     //
 }

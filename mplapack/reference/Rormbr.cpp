@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,33 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine DORMBR.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Rormbr(const char *vect, const char *side, const char *trans, INTEGER const m, INTEGER const n, INTEGER const k, REAL *a, INTEGER const lda, REAL *tau, REAL *c, INTEGER const ldc, REAL *work, INTEGER const lwork, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input arguments
+    // Test the input arguments
     //
     info = 0;
     bool applyq = Mlsame(vect, "Q");
@@ -60,6 +46,7 @@ void Rormbr(const char *vect, const char *side, const char *trans, INTEGER const
     bool notran = Mlsame(trans, "N");
     bool lquery = (lwork == -1);
     //
+    // NQ is the order of Q or P and NW is the minimum dimension of WORK
     //
     INTEGER nq = 0;
     INTEGER nw = 0;
@@ -93,21 +80,17 @@ void Rormbr(const char *vect, const char *side, const char *trans, INTEGER const
     INTEGER nb = 0;
     INTEGER lwkopt = 0;
     if (info == 0) {
-        char side_trans[3];
-        side_trans[0] = side[0];
-        side_trans[1] = trans[0];
-        side_trans[2] = '\0';
         if (applyq) {
             if (left) {
-                nb = iMlaenv(1, "Rormqr", side_trans, m - 1, n, m - 1, -1);
+                nb = iMlaenv(1, "Rormqr", CHAR2(side, trans), m - 1, n, m - 1, -1);
             } else {
-                nb = iMlaenv(1, "Rormqr", side_trans, m, n - 1, n - 1, -1);
+                nb = iMlaenv(1, "Rormqr", CHAR2(side, trans), m, n - 1, n - 1, -1);
             }
         } else {
             if (left) {
-                nb = iMlaenv(1, "Rormlq", side_trans, m - 1, n, m - 1, -1);
+                nb = iMlaenv(1, "Rormlq", CHAR2(side, trans), m - 1, n, m - 1, -1);
             } else {
-                nb = iMlaenv(1, "Rormlq", side_trans, m, n - 1, n - 1, -1);
+                nb = iMlaenv(1, "Rormlq", CHAR2(side, trans), m, n - 1, n - 1, -1);
             }
         }
         lwkopt = max((INTEGER)1, nw) * nb;
@@ -121,9 +104,9 @@ void Rormbr(const char *vect, const char *side, const char *trans, INTEGER const
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
-    work[1 - 1] = 1;
+    work[1 - 1] = 1.0;
     if (m == 0 || n == 0) {
         return;
     }
@@ -136,16 +119,16 @@ void Rormbr(const char *vect, const char *side, const char *trans, INTEGER const
     char transt;
     if (applyq) {
         //
-        //        Apply Q
+        // Apply Q
         //
         if (nq >= k) {
             //
-            //           Q was determined by a call to Rgebrd with nq >= k
+            // Q was determined by a call to Rgebrd with nq >= k
             //
             Rormqr(side, trans, m, n, k, a, lda, tau, c, ldc, work, lwork, iinfo);
         } else if (nq > 1) {
             //
-            //           Q was determined by a call to Rgebrd with nq < k
+            // Q was determined by a call to Rgebrd with nq < k
             //
             if (left) {
                 mi = m - 1;
@@ -162,7 +145,7 @@ void Rormbr(const char *vect, const char *side, const char *trans, INTEGER const
         }
     } else {
         //
-        //        Apply P
+        // Apply P
         //
         if (notran) {
             transt = 'T';
@@ -171,12 +154,12 @@ void Rormbr(const char *vect, const char *side, const char *trans, INTEGER const
         }
         if (nq > k) {
             //
-            //           P was determined by a call to Rgebrd with nq > k
+            // P was determined by a call to Rgebrd with nq > k
             //
             Rormlq(side, &transt, m, n, k, a, lda, tau, c, ldc, work, lwork, iinfo);
         } else if (nq > 1) {
             //
-            //           P was determined by a call to Rgebrd with nq <= k
+            // P was determined by a call to Rgebrd with nq <= k
             //
             if (left) {
                 mi = m - 1;
@@ -194,6 +177,6 @@ void Rormbr(const char *vect, const char *side, const char *trans, INTEGER const
     }
     work[1 - 1] = lwkopt;
     //
-    //     End of Rormbr
+    // End of Rormbr
     //
 }

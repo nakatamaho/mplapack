@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,31 +26,17 @@
  *
  */
 
+// Derived from LAPACK routine DLARF.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Rlarf(const char *side, INTEGER const m, INTEGER const n, REAL *v, INTEGER const incv, REAL const tau, REAL *c, INTEGER const ldc, REAL *work) {
-    //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
     bool applyleft = Mlsame(side, "L");
     INTEGER lastv = 0;
@@ -58,8 +44,8 @@ void Rlarf(const char *side, INTEGER const m, INTEGER const n, REAL *v, INTEGER 
     const REAL zero = 0.0;
     INTEGER i = 0;
     if (tau != zero) {
-        //     Set up variables for scanning V.  LASTV begins pointing to the end
-        //     of V.
+        // Set up variables for scanning V.  LASTV begins pointing to the end
+        // of V.
         if (applyleft) {
             lastv = m;
         } else {
@@ -70,52 +56,52 @@ void Rlarf(const char *side, INTEGER const m, INTEGER const n, REAL *v, INTEGER 
         } else {
             i = 1;
         }
-        //     Look for the last non-zero row in V.
+        // Look for the last non-zero row in V.
         while (lastv > 0 && v[i - 1] == zero) {
             lastv = lastv - 1;
             i = i - incv;
         }
         if (applyleft) {
-            //     Scan for the last non-zero column in C(1:lastv,:).
+            // Scan for the last non-zero column in C(1:lastv,:).
             lastc = iMladlc(lastv, n, c, ldc);
         } else {
-            //     Scan for the last non-zero row in C(:,1:lastv).
+            // Scan for the last non-zero row in C(:,1:lastv).
             lastc = iMladlr(m, lastv, c, ldc);
         }
     }
-    //     Note that lastc.eq.0 renders the BLAS operations null; no special
-    //     case is needed at this level.
+    // Note that lastc.eq.0 renders the BLAS operations null; no special
+    // case is needed at this level.
     const REAL one = 1.0;
     if (applyleft) {
         //
-        //        Form  H * C
+        // Form  H * C
         //
         if (lastv > 0) {
             //
-            //           w(1:lastc,1) := C(1:lastv,1:lastc)**T * v(1:lastv,1)
+            // w(1:lastc,1) := C(1:lastv,1:lastc)**T * v(1:lastv,1)
             //
             Rgemv("Transpose", lastv, lastc, one, c, ldc, v, incv, zero, work, 1);
             //
-            //           C(1:lastv,1:lastc) := C(...) - v(1:lastv,1) * w(1:lastc,1)**T
+            // C(1:lastv,1:lastc) := C(...) - v(1:lastv,1) * w(1:lastc,1)**T
             //
             Rger(lastv, lastc, -tau, v, incv, work, 1, c, ldc);
         }
     } else {
         //
-        //        Form  C * H
+        // Form  C * H
         //
         if (lastv > 0) {
             //
-            //           w(1:lastc,1) := C(1:lastc,1:lastv) * v(1:lastv,1)
+            // w(1:lastc,1) := C(1:lastc,1:lastv) * v(1:lastv,1)
             //
             Rgemv("No transpose", lastc, lastv, one, c, ldc, v, incv, zero, work, 1);
             //
-            //           C(1:lastc,1:lastv) := C(...) - w(1:lastc,1) * v(1:lastv,1)**T
+            // C(1:lastc,1:lastv) := C(...) - w(1:lastc,1) * v(1:lastv,1)**T
             //
             Rger(lastc, lastv, -tau, work, 1, v, incv, c, ldc);
         }
     }
     //
-    //     End of Rlarf
+    // End of Rlarf
     //
 }

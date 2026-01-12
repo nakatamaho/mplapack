@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DTSQR01.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -72,7 +79,7 @@ void Rtsqr01(const char *tssw, INTEGER const m, INTEGER const n, INTEGER const m
     INTEGER iseed[] = {1988, 1989, 1990, 1991};
     bool ts = Mlsame(tssw, "TS");
     //
-    //     TEST MATRICES WITH HALF OF MATRIX BEING ZEROS
+    // TEST MATRICES WITH HALF OF MATRIX BEING ZEROS
     //
     bool testzeros = false;
     //
@@ -82,9 +89,11 @@ void Rtsqr01(const char *tssw, INTEGER const m, INTEGER const n, INTEGER const m
     INTEGER mnb = max(mb, nb);
     INTEGER lwork = max((INTEGER)3, l) * mnb;
     //
-    //     Dynamically allocate local arrays
+    // Dynamically allocate local arrays
     //
-    //     Put random numbers into A and copy to AF
+    // FABLE: ALLOCATE removed (RAII in C++)
+    //
+    // Put random numbers into A and copy to AF
     //
     INTEGER j = 0;
     REAL *a = new REAL[m * n];
@@ -131,7 +140,7 @@ void Rtsqr01(const char *tssw, INTEGER const m, INTEGER const n, INTEGER const m
     REAL *work;
     if (ts) {
         //
-        //     Factor the matrix A in the array AF.
+        // Factor the matrix A in the array AF.
         //
         Rgeqr(m, n, af, m, tquery, -1, workquery, -1, info);
         tsize = castINTEGER(tquery[1 - 1]);
@@ -151,18 +160,18 @@ void Rtsqr01(const char *tssw, INTEGER const m, INTEGER const n, INTEGER const m
         strncpy(srnamt, "Rgeqr", srnamt_len);
         Rgeqr(m, n, af, m, t, tsize, work, lwork, info);
         //
-        //     Generate the m-by-m matrix Q
+        // Generate the m-by-m matrix Q
         //
         Rlaset("Full", m, m, zero, one, q, m);
         strncpy(srnamt, "Rgemqr", srnamt_len);
         Rgemqr("L", "N", m, m, k, af, m, t, tsize, q, m, work, lwork, info);
         //
-        //     Copy R
+        // Copy R
         //
         Rlaset("Full", m, n, zero, zero, r, m);
         Rlacpy("Upper", m, n, af, m, r, m);
         //
-        //     Compute |R - Q'*A| / |A| and store in RESULT(1)
+        // Compute |R - Q'*A| / |A| and store in RESULT(1)
         //
         Rgemm("T", "N", m, n, m, -one, q, m, a, m, one, r, m);
         anorm = Rlange("1", m, n, a, m, rwork);
@@ -173,14 +182,14 @@ void Rtsqr01(const char *tssw, INTEGER const m, INTEGER const n, INTEGER const m
             result[1 - 1] = zero;
         }
         //
-        //     Compute |I - Q'*Q| and store in RESULT(2)
+        // Compute |I - Q'*Q| and store in RESULT(2)
         //
         Rlaset("Full", m, m, zero, one, r, m);
         Rsyrk("U", "C", m, m, -one, q, m, one, r, m);
         resid = Rlansy("1", "Upper", m, r, m, rwork);
         result[2 - 1] = resid / (eps * max((INTEGER)1, m));
         //
-        //     Generate random m-by-n matrix C and a copy CF
+        // Generate random m-by-n matrix C and a copy CF
         //
         for (j = 1; j <= n; j = j + 1) {
             Rlarnv(2, iseed, m, &c[(j - 1) * ldc]);
@@ -188,12 +197,12 @@ void Rtsqr01(const char *tssw, INTEGER const m, INTEGER const n, INTEGER const m
         cnorm = Rlange("1", m, n, c, m, rwork);
         Rlacpy("Full", m, n, c, m, cf, m);
         //
-        //     Apply Q to C as Q*C
+        // Apply Q to C as Q*C
         //
         strncpy(srnamt, "Rgemqr", srnamt_len);
         Rgemqr("L", "N", m, n, k, af, m, t, tsize, cf, m, work, lwork, info);
         //
-        //     Compute |Q*C - Q*C| / |C|
+        // Compute |Q*C - Q*C| / |C|
         //
         Rgemm("N", "N", m, n, m, -one, q, m, c, m, one, cf, m);
         resid = Rlange("1", m, n, cf, m, rwork);
@@ -203,16 +212,16 @@ void Rtsqr01(const char *tssw, INTEGER const m, INTEGER const n, INTEGER const m
             result[3 - 1] = zero;
         }
         //
-        //     Copy C into CF again
+        // Copy C into CF again
         //
         Rlacpy("Full", m, n, c, m, cf, m);
         //
-        //     Apply Q to C as QT*C
+        // Apply Q to C as QT*C
         //
         strncpy(srnamt, "Rgemqr", srnamt_len);
         Rgemqr("L", "T", m, n, k, af, m, t, tsize, cf, m, work, lwork, info);
         //
-        //     Compute |QT*C - QT*C| / |C|
+        // Compute |QT*C - QT*C| / |C|
         //
         Rgemm("T", "N", m, n, m, -one, q, m, c, m, one, cf, m);
         resid = Rlange("1", m, n, cf, m, rwork);
@@ -222,7 +231,7 @@ void Rtsqr01(const char *tssw, INTEGER const m, INTEGER const n, INTEGER const m
             result[4 - 1] = zero;
         }
         //
-        //     Generate random n-by-m matrix D and a copy DF
+        // Generate random n-by-m matrix D and a copy DF
         //
         for (j = 1; j <= m; j = j + 1) {
             Rlarnv(2, iseed, n, &d[(j - 1) * ldd]);
@@ -230,12 +239,12 @@ void Rtsqr01(const char *tssw, INTEGER const m, INTEGER const n, INTEGER const m
         dnorm = Rlange("1", n, m, d, n, rwork);
         Rlacpy("Full", n, m, d, n, df, n);
         //
-        //     Apply Q to D as D*Q
+        // Apply Q to D as D*Q
         //
         strncpy(srnamt, "Rgemqr", srnamt_len);
         Rgemqr("R", "N", n, m, k, af, m, t, tsize, df, n, work, lwork, info);
         //
-        //     Compute |D*Q - D*Q| / |D|
+        // Compute |D*Q - D*Q| / |D|
         //
         Rgemm("N", "N", n, m, m, -one, d, n, q, m, one, df, n);
         resid = Rlange("1", n, m, df, n, rwork);
@@ -245,15 +254,15 @@ void Rtsqr01(const char *tssw, INTEGER const m, INTEGER const n, INTEGER const m
             result[5 - 1] = zero;
         }
         //
-        //     Copy D into DF again
+        // Copy D into DF again
         //
         Rlacpy("Full", n, m, d, n, df, n);
         //
-        //     Apply Q to D as D*QT
+        // Apply Q to D as D*QT
         //
         Rgemqr("R", "T", n, m, k, af, m, t, tsize, df, n, work, lwork, info);
         //
-        //     Compute |D*QT - D*QT| / |D|
+        // Compute |D*QT - D*QT| / |D|
         //
         Rgemm("N", "T", n, m, m, -one, d, n, q, m, one, df, n);
         resid = Rlange("1", n, m, df, n, rwork);
@@ -263,7 +272,7 @@ void Rtsqr01(const char *tssw, INTEGER const m, INTEGER const n, INTEGER const m
             result[6 - 1] = zero;
         }
         //
-        //     Short and wide
+        // Short and wide
         //
     } else {
         Rgelq(m, n, af, m, tquery, -1, workquery, -1, info);
@@ -284,18 +293,18 @@ void Rtsqr01(const char *tssw, INTEGER const m, INTEGER const n, INTEGER const m
         strncpy(srnamt, "Rgelq", srnamt_len);
         Rgelq(m, n, af, m, t, tsize, work, lwork, info);
         //
-        //     Generate the n-by-n matrix Q
+        // Generate the n-by-n matrix Q
         //
         Rlaset("Full", n, n, zero, one, q, n);
         strncpy(srnamt, "Rgemlq", srnamt_len);
         Rgemlq("R", "N", n, n, k, af, m, t, tsize, q, n, work, lwork, info);
         //
-        //     Copy R
+        // Copy R
         //
         Rlaset("Full", m, n, zero, zero, lq, l);
         Rlacpy("Lower", m, n, af, m, lq, l);
         //
-        //     Compute |L - A*Q'| / |A| and store in RESULT(1)
+        // Compute |L - A*Q'| / |A| and store in RESULT(1)
         //
         Rgemm("N", "T", m, n, n, -one, a, m, q, n, one, lq, l);
         anorm = Rlange("1", m, n, a, m, rwork);
@@ -306,14 +315,14 @@ void Rtsqr01(const char *tssw, INTEGER const m, INTEGER const n, INTEGER const m
             result[1 - 1] = zero;
         }
         //
-        //     Compute |I - Q'*Q| and store in RESULT(2)
+        // Compute |I - Q'*Q| and store in RESULT(2)
         //
         Rlaset("Full", n, n, zero, one, lq, l);
         Rsyrk("U", "C", n, n, -one, q, n, one, lq, l);
         resid = Rlansy("1", "Upper", n, lq, l, rwork);
         result[2 - 1] = resid / (eps * max((INTEGER)1, n));
         //
-        //     Generate random m-by-n matrix C and a copy CF
+        // Generate random m-by-n matrix C and a copy CF
         //
         for (j = 1; j <= m; j = j + 1) {
             Rlarnv(2, iseed, n, &d[(j - 1) * ldd]);
@@ -321,11 +330,11 @@ void Rtsqr01(const char *tssw, INTEGER const m, INTEGER const n, INTEGER const m
         dnorm = Rlange("1", n, m, d, n, rwork);
         Rlacpy("Full", n, m, d, n, df, n);
         //
-        //     Apply Q to C as Q*C
+        // Apply Q to C as Q*C
         //
         Rgemlq("L", "N", n, m, k, af, m, t, tsize, df, n, work, lwork, info);
         //
-        //     Compute |Q*D - Q*D| / |D|
+        // Compute |Q*D - Q*D| / |D|
         //
         Rgemm("N", "N", n, m, n, -one, q, n, d, n, one, df, n);
         resid = Rlange("1", n, m, df, n, rwork);
@@ -335,15 +344,15 @@ void Rtsqr01(const char *tssw, INTEGER const m, INTEGER const n, INTEGER const m
             result[3 - 1] = zero;
         }
         //
-        //     Copy D into DF again
+        // Copy D into DF again
         //
         Rlacpy("Full", n, m, d, n, df, n);
         //
-        //     Apply Q to D as QT*D
+        // Apply Q to D as QT*D
         //
         Rgemlq("L", "T", n, m, k, af, m, t, tsize, df, n, work, lwork, info);
         //
-        //     Compute |QT*D - QT*D| / |D|
+        // Compute |QT*D - QT*D| / |D|
         //
         Rgemm("T", "N", n, m, n, -one, q, n, d, n, one, df, n);
         resid = Rlange("1", n, m, df, n, rwork);
@@ -353,7 +362,7 @@ void Rtsqr01(const char *tssw, INTEGER const m, INTEGER const n, INTEGER const m
             result[4 - 1] = zero;
         }
         //
-        //     Generate random n-by-m matrix D and a copy DF
+        // Generate random n-by-m matrix D and a copy DF
         //
         for (j = 1; j <= n; j = j + 1) {
             Rlarnv(2, iseed, m, &c[(j - 1) * ldc]);
@@ -361,11 +370,11 @@ void Rtsqr01(const char *tssw, INTEGER const m, INTEGER const n, INTEGER const m
         cnorm = Rlange("1", m, n, c, m, rwork);
         Rlacpy("Full", m, n, c, m, cf, m);
         //
-        //     Apply Q to C as C*Q
+        // Apply Q to C as C*Q
         //
         Rgemlq("R", "N", m, n, k, af, m, t, tsize, cf, m, work, lwork, info);
         //
-        //     Compute |C*Q - C*Q| / |C|
+        // Compute |C*Q - C*Q| / |C|
         //
         Rgemm("N", "N", m, n, n, -one, c, m, q, n, one, cf, m);
         resid = Rlange("1", n, m, df, n, rwork);
@@ -375,15 +384,15 @@ void Rtsqr01(const char *tssw, INTEGER const m, INTEGER const n, INTEGER const m
             result[5 - 1] = zero;
         }
         //
-        //     Copy C into CF again
+        // Copy C into CF again
         //
         Rlacpy("Full", m, n, c, m, cf, m);
         //
-        //     Apply Q to D as D*QT
+        // Apply Q to D as D*QT
         //
         Rgemlq("R", "T", m, n, k, af, m, t, tsize, cf, m, work, lwork, info);
         //
-        //     Compute |C*QT - C*QT| / |C|
+        // Compute |C*QT - C*QT| / |C|
         //
         Rgemm("N", "T", m, n, n, -one, c, m, q, n, one, cf, m);
         resid = Rlange("1", m, n, cf, m, rwork);

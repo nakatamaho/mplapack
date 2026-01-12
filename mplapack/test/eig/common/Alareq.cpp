@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine ALAREQ.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -69,7 +76,7 @@ void Alareq(const char *path, INTEGER const nmats, bool *dotype, INTEGER const n
     //
     if (nmats >= ntypes) {
         //
-        //        Test everything if NMATS >= NTYPES.
+        // Test everything if NMATS >= NTYPES.
         //
         for (i = 1; i <= ntypes; i = i + 1) {
             dotype[i - 1] = true;
@@ -80,7 +87,7 @@ void Alareq(const char *path, INTEGER const nmats, bool *dotype, INTEGER const n
         }
         firstt = true;
         //
-        //        Read a line of matrix types if 0 < NMATS < NTYPES.
+        // Read a line of matrix types if 0 < NMATS < NTYPES.
         //
         if (nmats > 0) {
             getline(cin, str);
@@ -117,6 +124,7 @@ void Alareq(const char *path, INTEGER const nmats, bool *dotype, INTEGER const n
         //
     }
     return;
+//
 statement_90:
     write(nout, "(/,' *** End of file reached when trying to read matrix ','types for ',"
                 "a3,/,' *** Check that you are requesting the',"
@@ -124,6 +132,6 @@ statement_90:
         path;
     write(nout, star);
     //
-    //     End of Alareq
+    // End of Alareq
     //
 }

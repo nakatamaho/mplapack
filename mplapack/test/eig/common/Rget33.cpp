@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DGET33.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -40,14 +47,14 @@ using fem::common;
 
 void Rget33(REAL &rmax, INTEGER &lmax, INTEGER &ninfo, INTEGER &knt) {
     //
-    //     Get machine parameters
+    // Get machine parameters
     //
     REAL eps = Rlamch("P");
     REAL smlnum = Rlamch("S") / eps;
     const REAL one = 1.0;
     REAL bignum = one / smlnum;
     //
-    //     Set up test case parameters
+    // Set up test case parameters
     //
     REAL val[4];
     val[1 - 1] = one;
@@ -67,7 +74,7 @@ void Rget33(REAL &rmax, INTEGER &lmax, INTEGER &ninfo, INTEGER &knt) {
     const REAL zero = 0.0;
     rmax = zero;
     //
-    //     Begin test loop
+    // Begin test loop
     //
     INTEGER i1 = 0;
     INTEGER i2 = 0;
@@ -164,6 +171,6 @@ void Rget33(REAL &rmax, INTEGER &lmax, INTEGER &ninfo, INTEGER &knt) {
         }
     }
     //
-    //     End of Rget33
+    // End of Rget33
     //
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine ALASUM.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -53,6 +60,6 @@ void Alasum(const char *type, INTEGER const nout, INTEGER const nfail, INTEGER c
         write(nout, "(6x,i6,' error messages recorded')"), nerrs;
     }
     //
-    //     End of Alasum
+    // End of Alasum
     //
 }

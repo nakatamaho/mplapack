@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DGET23.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -84,7 +91,7 @@ void Rget23(bool const comp, const char *balanc, INTEGER const jtype, REAL const
     static const char *format_9999 = "(' Rget23: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,"
                                      "', INPUT EXAMPLE NUMBER = ',i4)";
     //
-    //     Check for errors
+    // Check for errors
     //
     nobal = Mlsame(balanc, "N");
     balok = nobal || Mlsame(balanc, "P") || Mlsame(balanc, "S") || Mlsame(balanc, "B");
@@ -114,7 +121,7 @@ void Rget23(bool const comp, const char *balanc, INTEGER const jtype, REAL const
         return;
     }
     //
-    //     Quick return if nothing to do
+    // Quick return if nothing to do
     //
     for (i = 1; i <= 11; i = i + 1) {
         result[i - 1] = -one;
@@ -124,13 +131,13 @@ void Rget23(bool const comp, const char *balanc, INTEGER const jtype, REAL const
         return;
     }
     //
-    //     More Important constants
+    // More Important constants
     //
     ulp = Rlamch("Precision");
     smlnum = Rlamch("S");
     ulpinv = one / ulp;
     //
-    //     Compute eigenvalues and eigenvectors, and test them
+    // Compute eigenvalues and eigenvectors, and test them
     //
     if (lwork >= 6 * n + n * n) {
         sense = 'B';
@@ -152,17 +159,17 @@ void Rget23(bool const comp, const char *balanc, INTEGER const jtype, REAL const
         return;
     }
     //
-    //     Do Test (1)
+    // Do Test (1)
     //
     Rget22("N", "N", "N", n, a, lda, vr, ldvr, wr, wi, work, res);
     result[1 - 1] = res[1 - 1];
     //
-    //     Do Test (2)
+    // Do Test (2)
     //
     Rget22("T", "N", "T", n, a, lda, vl, ldvl, wr, wi, work, res);
     result[2 - 1] = res[1 - 1];
     //
-    //     Do Test (3)
+    // Do Test (3)
     //
     for (j = 1; j <= n; j = j + 1) {
         tnrm = one;
@@ -190,7 +197,7 @@ void Rget23(bool const comp, const char *balanc, INTEGER const jtype, REAL const
         }
     }
     //
-    //     Do Test (4)
+    // Do Test (4)
     //
     for (j = 1; j <= n; j = j + 1) {
         tnrm = one;
@@ -218,13 +225,13 @@ void Rget23(bool const comp, const char *balanc, INTEGER const jtype, REAL const
         }
     }
     //
-    //     Test for all options of computing condition numbers
+    // Test for all options of computing condition numbers
     //
     for (isens = 1; isens <= isensm; isens = isens + 1) {
         //
         sense = sens[isens - 1];
         //
-        //        Compute eigenvalues only, and test them
+        // Compute eigenvalues only, and test them
         //
         Rlacpy("F", n, n, a, lda, h, lda);
         Rgeevx(balanc, "N", "N", &sense, n, h, lda, wr1, wi1, dum, 1, dum, 1, ilo1, ihi1, scale1, abnrm1, rcnde1, rcndv1, work, lwork, iwork, iinfo);
@@ -239,7 +246,7 @@ void Rget23(bool const comp, const char *balanc, INTEGER const jtype, REAL const
             goto statement_190;
         }
         //
-        //        Do Test (5)
+        // Do Test (5)
         //
         for (j = 1; j <= n; j = j + 1) {
             if (wr[j - 1] != wr1[j - 1] || wi[j - 1] != wi1[j - 1]) {
@@ -247,7 +254,7 @@ void Rget23(bool const comp, const char *balanc, INTEGER const jtype, REAL const
             }
         }
         //
-        //        Do Test (8)
+        // Do Test (8)
         //
         if (!nobal) {
             for (j = 1; j <= n; j = j + 1) {
@@ -266,7 +273,7 @@ void Rget23(bool const comp, const char *balanc, INTEGER const jtype, REAL const
             }
         }
         //
-        //        Do Test (9)
+        // Do Test (9)
         //
         if (isens == 2 && n > 1) {
             for (j = 1; j <= n; j = j + 1) {
@@ -276,7 +283,7 @@ void Rget23(bool const comp, const char *balanc, INTEGER const jtype, REAL const
             }
         }
         //
-        //        Compute eigenvalues and right eigenvectors, and test them
+        // Compute eigenvalues and right eigenvectors, and test them
         //
         Rlacpy("F", n, n, a, lda, h, lda);
         Rgeevx(balanc, "N", "V", &sense, n, h, lda, wr1, wi1, dum, 1, lre, ldlre, ilo1, ihi1, scale1, abnrm1, rcnde1, rcndv1, work, lwork, iwork, iinfo);
@@ -291,7 +298,7 @@ void Rget23(bool const comp, const char *balanc, INTEGER const jtype, REAL const
             goto statement_190;
         }
         //
-        //        Do Test (5) again
+        // Do Test (5) again
         //
         for (j = 1; j <= n; j = j + 1) {
             if (wr[j - 1] != wr1[j - 1] || wi[j - 1] != wi1[j - 1]) {
@@ -299,7 +306,7 @@ void Rget23(bool const comp, const char *balanc, INTEGER const jtype, REAL const
             }
         }
         //
-        //        Do Test (6)
+        // Do Test (6)
         //
         for (j = 1; j <= n; j = j + 1) {
             for (jj = 1; jj <= n; jj = jj + 1) {
@@ -309,7 +316,7 @@ void Rget23(bool const comp, const char *balanc, INTEGER const jtype, REAL const
             }
         }
         //
-        //        Do Test (8) again
+        // Do Test (8) again
         //
         if (!nobal) {
             for (j = 1; j <= n; j = j + 1) {
@@ -328,7 +335,7 @@ void Rget23(bool const comp, const char *balanc, INTEGER const jtype, REAL const
             }
         }
         //
-        //        Do Test (9) again
+        // Do Test (9) again
         //
         if (isens == 2 && n > 1) {
             for (j = 1; j <= n; j = j + 1) {
@@ -338,7 +345,7 @@ void Rget23(bool const comp, const char *balanc, INTEGER const jtype, REAL const
             }
         }
         //
-        //        Compute eigenvalues and left eigenvectors, and test them
+        // Compute eigenvalues and left eigenvectors, and test them
         //
         Rlacpy("F", n, n, a, lda, h, lda);
         Rgeevx(balanc, "V", "N", &sense, n, h, lda, wr1, wi1, lre, ldlre, dum, 1, ilo1, ihi1, scale1, abnrm1, rcnde1, rcndv1, work, lwork, iwork, iinfo);
@@ -353,7 +360,7 @@ void Rget23(bool const comp, const char *balanc, INTEGER const jtype, REAL const
             goto statement_190;
         }
         //
-        //        Do Test (5) again
+        // Do Test (5) again
         //
         for (j = 1; j <= n; j = j + 1) {
             if (wr[j - 1] != wr1[j - 1] || wi[j - 1] != wi1[j - 1]) {
@@ -361,7 +368,7 @@ void Rget23(bool const comp, const char *balanc, INTEGER const jtype, REAL const
             }
         }
         //
-        //        Do Test (7)
+        // Do Test (7)
         //
         for (j = 1; j <= n; j = j + 1) {
             for (jj = 1; jj <= n; jj = jj + 1) {
@@ -371,7 +378,7 @@ void Rget23(bool const comp, const char *balanc, INTEGER const jtype, REAL const
             }
         }
         //
-        //        Do Test (8) again
+        // Do Test (8) again
         //
         if (!nobal) {
             for (j = 1; j <= n; j = j + 1) {
@@ -390,7 +397,7 @@ void Rget23(bool const comp, const char *balanc, INTEGER const jtype, REAL const
             }
         }
         //
-        //        Do Test (9) again
+        // Do Test (9) again
         //
         if (isens == 2 && n > 1) {
             for (j = 1; j <= n; j = j + 1) {
@@ -404,7 +411,7 @@ void Rget23(bool const comp, const char *balanc, INTEGER const jtype, REAL const
         //
     }
     //
-    //     If COMP, compare condition numbers to precomputed ones
+    // If COMP, compare condition numbers to precomputed ones
     //
     if (comp) {
         Rlacpy("F", n, n, a, lda, h, lda);
@@ -416,8 +423,8 @@ void Rget23(bool const comp, const char *balanc, INTEGER const jtype, REAL const
             goto statement_250;
         }
         //
-        //        Sort eigenvalues and condition numbers lexicographically
-        //        to compare with inputs
+        // Sort eigenvalues and condition numbers lexicographically
+        // to compare with inputs
         //
         for (i = 1; i <= n - 1; i = i + 1) {
             kmin = i;
@@ -442,8 +449,8 @@ void Rget23(bool const comp, const char *balanc, INTEGER const jtype, REAL const
             rcondv[i - 1] = vrmin;
         }
         //
-        //        Compare condition numbers for eigenvectors
-        //        taking their condition numbers into account
+        // Compare condition numbers for eigenvectors
+        // taking their condition numbers into account
         //
         result[10 - 1] = zero;
         eps = max(epsin, ulp);
@@ -478,8 +485,8 @@ void Rget23(bool const comp, const char *balanc, INTEGER const jtype, REAL const
             result[10 - 1] = max(result[10 - 1], vmax);
         }
         //
-        //        Compare condition numbers for eigenvalues
-        //        taking their condition numbers into account
+        // Compare condition numbers for eigenvalues
+        // taking their condition numbers into account
         //
         result[11 - 1] = zero;
         for (i = 1; i <= n; i = i + 1) {
@@ -512,6 +519,6 @@ void Rget23(bool const comp, const char *balanc, INTEGER const jtype, REAL const
         //
     }
     //
-    //     End of Rget23
+    // End of Rget23
     //
 }

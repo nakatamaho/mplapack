@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZTRT03.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -38,30 +45,7 @@ using fem::common;
 
 void Ctrt03(const char *uplo, const char *trans, const char *diag, INTEGER const n, INTEGER const nrhs, COMPLEX *a, INTEGER const lda, REAL const scale, REAL *cnorm, REAL const tscal, COMPLEX *x, INTEGER const ldx, COMPLEX *b, INTEGER const ldb, COMPLEX *work, REAL &resid) {
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Quick exit if N = 0
+    // Quick exit if N = 0
     //
     const REAL zero = 0.0;
     if (n <= 0 || nrhs <= 0) {
@@ -71,8 +55,8 @@ void Ctrt03(const char *uplo, const char *trans, const char *diag, INTEGER const
     REAL eps = Rlamch("Epsilon");
     REAL smlnum = Rlamch("Safe minimum");
     //
-    //     Compute the norm of the triangular matrix A using the column
-    //     norms already computed by Clatrs.
+    // Compute the norm of the triangular matrix A using the column
+    // norms already computed by Clatrs.
     //
     REAL tnorm = zero;
     INTEGER j = 0;
@@ -86,8 +70,8 @@ void Ctrt03(const char *uplo, const char *trans, const char *diag, INTEGER const
         }
     }
     //
-    //     Compute the maximum over the number of right hand sides of
-    //        norm(op(A)*x - s*b) / ( norm(op(A)) * norm(x) * EPS ).
+    // Compute the maximum over the number of right hand sides of
+    // norm(op(A)*x - s*b) / ( norm(op(A)) * norm(x) * EPS ).
     //
     resid = zero;
     INTEGER ix = 0;
@@ -128,6 +112,6 @@ void Ctrt03(const char *uplo, const char *trans, const char *diag, INTEGER const
         resid = max(resid, err);
     }
     //
-    //     End of Ctrt03
+    // End of Ctrt03
     //
 }

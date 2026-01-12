@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,32 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine ZLATM5.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
+
 #include <mplapack_matgen.h>
 
 void Clatm5(INTEGER const prtype, INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, COMPLEX *c, INTEGER const ldc, COMPLEX *d, INTEGER const ldd, COMPLEX *e, INTEGER const lde, COMPLEX *f, INTEGER const ldf, COMPLEX *r, INTEGER const ldr, COMPLEX *l, INTEGER const ldl, REAL const alpha, INTEGER &qblcka, INTEGER &qblckb) {
-    //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Executable Statements ..
     //
     INTEGER i = 0;
     INTEGER j = 0;
@@ -254,13 +241,13 @@ void Clatm5(INTEGER const prtype, INTEGER const m, INTEGER const n, COMPLEX *a, 
         }
     }
     //
-    //     Compute rhs (C, F)
+    // Compute rhs (C, F)
     //
     Cgemm("N", "N", m, n, m, one, a, lda, r, ldr, zero, c, ldc);
     Cgemm("N", "N", m, n, n, -one, l, ldl, b, ldb, one, c, ldc);
     Cgemm("N", "N", m, n, m, one, d, ldd, r, ldr, zero, f, ldf);
     Cgemm("N", "N", m, n, n, -one, l, ldl, e, lde, one, f, ldf);
     //
-    //     End of Clatm5
+    // End of Clatm5
     //
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DERRQR.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -93,9 +100,9 @@ void Rerrqr(const char *path, INTEGER const nunit) {
     }
     ok = true;
     //
-    //     Error exits for QR factorization
+    // Error exits for QR factorization
     //
-    //     Rgeqrf
+    // Rgeqrf
     //
     strncpy(srnamt, "Rgeqrf", srnamt_len);
     infot = 1;
@@ -112,7 +119,7 @@ void Rerrqr(const char *path, INTEGER const nunit) {
     Rgeqrf(1, 2, a, 1, b, w, 1, info);
     chkxer("Rgeqrf", infot, nout, lerr, ok);
     //
-    //     Rgeqrfp
+    // Rgeqrfp
     //
     strncpy(srnamt, "Rgeqrfp", srnamt_len);
     infot = 1;
@@ -128,7 +135,7 @@ void Rerrqr(const char *path, INTEGER const nunit) {
     Rgeqrfp(1, 2, a, 1, b, w, 1, info);
     chkxer("Rgeqrfp", infot, nout, lerr, ok);
     //
-    //     Rgeqr2
+    // Rgeqr2
     //
     strncpy(srnamt, "Rgeqr2", srnamt_len);
     infot = 1;
@@ -141,7 +148,7 @@ void Rerrqr(const char *path, INTEGER const nunit) {
     Rgeqr2(2, 1, a, 1, b, w, info);
     chkxer("Rgeqr2", infot, nout, lerr, ok);
     //
-    //     Rgeqr2p
+    // Rgeqr2p
     //
     strncpy(srnamt, "Rgeqr2p", srnamt_len);
     infot = 1;
@@ -154,7 +161,7 @@ void Rerrqr(const char *path, INTEGER const nunit) {
     Rgeqr2p(2, 1, a, 1, b, w, info);
     chkxer("Rgeqr2p", infot, nout, lerr, ok);
     //
-    //     Rgeqrs
+    // Rgeqrs
     //
     strncpy(srnamt, "Rgeqrs", srnamt_len);
     infot = 1;
@@ -179,7 +186,7 @@ void Rerrqr(const char *path, INTEGER const nunit) {
     Rgeqrs(1, 1, 2, a, 1, x, b, 1, w, 1, info);
     chkxer("Rgeqrs", infot, nout, lerr, ok);
     //
-    //     Rorgqr
+    // Rorgqr
     //
     strncpy(srnamt, "Rorgqr", srnamt_len);
     infot = 1;
@@ -204,7 +211,7 @@ void Rerrqr(const char *path, INTEGER const nunit) {
     Rorgqr(2, 2, 0, a, 2, x, w, 1, info);
     chkxer("Rorgqr", infot, nout, lerr, ok);
     //
-    //     Rorg2r
+    // Rorg2r
     //
     strncpy(srnamt, "Rorg2r", srnamt_len);
     infot = 1;
@@ -226,7 +233,7 @@ void Rerrqr(const char *path, INTEGER const nunit) {
     Rorg2r(2, 1, 0, a, 1, x, w, info);
     chkxer("Rorg2r", infot, nout, lerr, ok);
     //
-    //     Rormqr
+    // Rormqr
     //
     strncpy(srnamt, "Rormqr", srnamt_len);
     infot = 1;
@@ -266,7 +273,7 @@ void Rerrqr(const char *path, INTEGER const nunit) {
     Rormqr("R", "N", 2, 1, 0, a, 1, x, af, 2, w, 1, info);
     chkxer("Rormqr", infot, nout, lerr, ok);
     //
-    //     Rorm2r
+    // Rorm2r
     //
     strncpy(srnamt, "Rorm2r", srnamt_len);
     infot = 1;
@@ -300,10 +307,10 @@ void Rerrqr(const char *path, INTEGER const nunit) {
     Rorm2r("L", "N", 2, 1, 0, a, 2, x, af, 1, w, info);
     chkxer("Rorm2r", infot, nout, lerr, ok);
     //
-    //     Print a summary line.
+    // Print a summary line.
     //
     Alaesm(path, ok, nout);
     //
-    //     End of Rerrqr
+    // End of Rerrqr
     //
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -29,28 +29,63 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-INTEGER Mmaxloc(REAL *dx, INTEGER const start, INTEGER const end, INTEGER const incx) {
-    INTEGER return_value = 1;
-    if (incx <= 0) {
-        return return_value;
+INTEGER Mmaxloc(REAL const *dx, INTEGER const start, INTEGER const end, INTEGER const incx) {
+    // Return the 1-based location of the maximum element within the section:
+    //   dx(start:end:incx)
+    // Assumptions:
+    //   - start/end are 1-based indices into dx
+    //   - incx is the stride in that same index space
+    // For an empty section or invalid stride (incx == 0), return 0 (Fortran semantics).
+    if (dx == nullptr) {
+        Mxerbla("Mmaxloc", 1);
+        return 0;
     }
-    REAL dmax = 0.0;
-    INTEGER i = 0;
-    INTEGER ix = 0;
-    if (incx == 1) {
-        //
-        //        code for increment equal to 1
-        //
-        dmax = dx[start - 1];
-        for (i = start + 1; i <= end; i = i + 1) {
-            if (dx[i - 1] > dmax) {
-                dmax = dx[i - 1];
-            }
-            return_value++;
+    if (incx == 0) {
+        Mxerbla("Mmaxloc", 4);
+        return 0;
+    }
+
+    // Determine whether the section is empty and compute its length n.
+    INTEGER n = 0;
+    if (incx > 0) {
+        if (start > end) {
+            return 0;
         }
-    } else {
-        printf("Mmaxloc: not yet implimented\n");
-        exit(0);
+        n = (end - start) / incx + 1;
+    } else { // incx < 0
+        if (start < end) {
+            return 0;
+        }
+        n = (start - end) / (-incx) + 1;
     }
-    return return_value;
+
+    // best_loc: 1-based location in the *section* (Fortran MAXLOC result for rank-1 with DIM=1)
+    INTEGER best_loc = 1;
+    // best_ix: 1-based index into dx (original index space)
+    INTEGER best_ix = start;
+
+    // Fast path for contiguous positive stride.
+    if (incx == 1) {
+        for (INTEGER loc = 2; loc <= n; ++loc) {
+            INTEGER ix = start + (loc - 1);
+            // Tie-breaking: keep the first occurrence (Fortran MAXLOC behavior)
+            if (dx[ix - 1] > dx[best_ix - 1]) {
+                best_ix = ix;
+                best_loc = loc;
+            }
+        }
+        return best_loc;
+    }
+
+    // General path for arbitrary stride (including negative).
+    INTEGER ix = start;
+    for (INTEGER loc = 2; loc <= n; ++loc) {
+        ix += incx;
+        // Tie-breaking: keep the first occurrence
+        if (dx[ix - 1] > dx[best_ix - 1]) {
+            best_ix = ix;
+            best_loc = loc;
+        }
+    }
+    return best_loc;
 }

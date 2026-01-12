@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DDRVSG.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -97,7 +104,7 @@ void Rdrvsg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     static const char *format_9999 = "(' Rdrvsg: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,', JTYPE=',i6,"
                                      "', ISEED=(',3(i5,','),i5,')')";
     //
-    //     1)      Check for errors
+    // 1)      Check for errors
     //
     ntestt = 0;
     info = 0;
@@ -111,7 +118,7 @@ void Rdrvsg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
         }
     }
     //
-    //     Check for errors
+    // Check for errors
     //
     if (nsizes < 0) {
         info = -1;
@@ -134,13 +141,13 @@ void Rdrvsg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (nsizes == 0 || ntypes == 0) {
         return;
     }
     //
-    //     More Important constants
+    // More Important constants
     //
     unfl = Rlamch("Safe minimum");
     ovfl = Rlamch("Overflow");
@@ -153,7 +160,7 @@ void Rdrvsg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
         iseed2[i - 1] = iseed[i - 1];
     }
     //
-    //     Loop over sizes, types
+    // Loop over sizes, types
     //
     nerrs = 0;
     nmats = 0;
@@ -181,20 +188,20 @@ void Rdrvsg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 ioldsd[j - 1] = iseed[j - 1];
             }
             //
-            //           2)      Compute "A"
+            // 2)      Compute "A"
             //
-            //                   Control parameters:
+            // Control parameters:
             //
-            //               KMAGN  KMODE        KTYPE
-            //           =1  O(1)   clustered 1  zero
-            //           =2  large  clustered 2  identity
-            //           =3  small  exponential  (none)
-            //           =4         arithmetic   diagonal, w/ eigenvalues
-            //           =5         random log   hermitian, w/ eigenvalues
-            //           =6         random       (none)
-            //           =7                      random diagonal
-            //           =8                      random hermitian
-            //           =9                      banded, w/ eigenvalues
+            // KMAGN  KMODE        KTYPE
+            // =1  O(1)   clustered 1  zero
+            // =2  large  clustered 2  identity
+            // =3  small  exponential  (none)
+            // =4         arithmetic   diagonal, w/ eigenvalues
+            // =5         random log   hermitian, w/ eigenvalues
+            // =6         random       (none)
+            // =7                      random diagonal
+            // =8                      random hermitian
+            // =9                      banded, w/ eigenvalues
             //
             if (mtypes > maxtyp) {
                 goto statement_90;
@@ -203,7 +210,7 @@ void Rdrvsg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             itype = ktype[jtype - 1];
             imode = kmode[jtype - 1];
             //
-            //           Compute norm
+            // Compute norm
             //
             switch (kmagn[jtype - 1]) {
             case 1:
@@ -233,11 +240,11 @@ void Rdrvsg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             iinfo = 0;
             cond = ulpinv;
             //
-            //           Special Matrices -- Identity & Jordan block
+            // Special Matrices -- Identity & Jordan block
             //
             if (itype == 1) {
                 //
-                //              Zero
+                // Zero
                 //
                 ka = 0;
                 kb = 0;
@@ -245,7 +252,7 @@ void Rdrvsg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 //
             } else if (itype == 2) {
                 //
-                //              Identity
+                // Identity
                 //
                 ka = 0;
                 kb = 0;
@@ -256,7 +263,7 @@ void Rdrvsg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 //
             } else if (itype == 4) {
                 //
-                //              Diagonal Matrix, [Eigen]values Specified
+                // Diagonal Matrix, [Eigen]values Specified
                 //
                 ka = 0;
                 kb = 0;
@@ -264,7 +271,7 @@ void Rdrvsg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 //
             } else if (itype == 5) {
                 //
-                //              symmetric, eigenvalues specified
+                // symmetric, eigenvalues specified
                 //
                 ka = max((INTEGER)0, n - 1);
                 kb = ka;
@@ -272,7 +279,7 @@ void Rdrvsg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 //
             } else if (itype == 7) {
                 //
-                //              Diagonal, random eigenvalues
+                // Diagonal, random eigenvalues
                 //
                 ka = 0;
                 kb = 0;
@@ -280,7 +287,7 @@ void Rdrvsg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 //
             } else if (itype == 8) {
                 //
-                //              symmetric, random eigenvalues
+                // symmetric, random eigenvalues
                 //
                 ka = max((INTEGER)0, n - 1);
                 kb = ka;
@@ -288,16 +295,16 @@ void Rdrvsg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 //
             } else if (itype == 9) {
                 //
-                //              symmetric banded, eigenvalues specified
+                // symmetric banded, eigenvalues specified
                 //
-                //              The following values are used for the half-bandwidths:
+                // The following values are used for the half-bandwidths:
                 //
-                //                ka = 1   kb = 1
-                //                ka = 2   kb = 1
-                //                ka = 2   kb = 2
-                //                ka = 3   kb = 1
-                //                ka = 3   kb = 2
-                //                ka = 3   kb = 3
+                // ka = 1   kb = 1
+                // ka = 2   kb = 1
+                // ka = 2   kb = 2
+                // ka = 3   kb = 1
+                // ka = 3   kb = 2
+                // ka = 3   kb = 3
                 //
                 kb9++;
                 if (kb9 > ka9) {
@@ -335,17 +342,17 @@ void Rdrvsg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 }
             }
             //
-            //           3) Call Rsygv, Rspgv, Rsbgv, SSYGVD, SSPGVD, SSBGVD,
-            //              Rsygvx, Rspgvx, and Rsbgvx, do tests.
+            // 3) Call Rsygv, Rspgv, Rsbgv, SSYGVD, SSPGVD, SSBGVD,
+            // Rsygvx, Rspgvx, and Rsbgvx, do tests.
             //
-            //           loop over the three generalized problems
-            //                 IBTYPE = 1: A*x = (lambda)*B*x
-            //                 IBTYPE = 2: A*B*x = (lambda)*x
-            //                 IBTYPE = 3: B*A*x = (lambda)*x
+            // loop over the three generalized problems
+            // IBTYPE = 1: A*x = (lambda)*B*x
+            // IBTYPE = 2: A*B*x = (lambda)*x
+            // IBTYPE = 3: B*A*x = (lambda)*x
             //
             for (ibtype = 1; ibtype <= 3; ibtype = ibtype + 1) {
                 //
-                //              loop over the setting UPLO
+                // loop over the setting UPLO
                 //
                 for (ibuplo = 1; ibuplo <= 2; ibuplo = ibuplo + 1) {
                     if (ibuplo == 1) {
@@ -355,12 +362,12 @@ void Rdrvsg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                         uplo = 'L';
                     }
                     //
-                    //                 Generate random well-conditioned positive definite
-                    //                 matrix B, of bandwidth not greater than that of A.
+                    // Generate random well-conditioned positive definite
+                    // matrix B, of bandwidth not greater than that of A.
                     //
                     Rlatms(n, n, "U", iseed, "P", work, 5, ten, one, kb, kb, &uplo, b, ldb, &work[(n + 1) - 1], iinfo);
                     //
-                    //                 Test Rsygv
+                    // Test Rsygv
                     //
                     ntest++;
                     //
@@ -409,11 +416,11 @@ void Rdrvsg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                         }
                     }
                     //
-                    //                 Do Test
+                    // Do Test
                     //
                     Rsgt01(ibtype, &uplo, n, n, a, lda, b, ldb, z, ldz, d, work, &result[ntest - 1]);
                     //
-                    //                 Test Rsygvx
+                    // Test Rsygvd
                     //
                     ntest++;
                     //
@@ -435,9 +442,11 @@ void Rdrvsg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                         }
                     }
                     //
-                    //                 Do Test
+                    // Do Test
                     //
                     Rsgt01(ibtype, &uplo, n, n, a, lda, b, ldb, z, ldz, d, work, &result[ntest - 1]);
+                    //
+                    // Test Rsygvx
                     //
                     ntest++;
                     //
@@ -466,7 +475,7 @@ void Rdrvsg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                         }
                     }
                     //
-                    //                 Do Test
+                    // Do Test
                     //
                     Rsgt01(ibtype, &uplo, n, m, a, lda, b, ldb, z, ldz, d, work, &result[ntest - 1]);
                     //
@@ -490,17 +499,17 @@ void Rdrvsg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                         }
                     }
                     //
-                    //                 Do Test
+                    // Do Test
                     //
                     Rsgt01(ibtype, &uplo, n, m, a, lda, b, ldb, z, ldz, d, work, &result[ntest - 1]);
                 //
                 statement_100:
                     //
-                    //                 Test Rspgv
+                    // Test Rspgv
                     //
                     ntest++;
                     //
-                    //                 Copy the matrices into packed storage.
+                    // Copy the matrices into packed storage.
                     //
                     if (Mlsame(&uplo, "U")) {
                         ij = 1;
@@ -537,15 +546,15 @@ void Rdrvsg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                         }
                     }
                     //
-                    //                 Do Test
+                    // Do Test
                     //
                     Rsgt01(ibtype, &uplo, n, n, a, lda, b, ldb, z, ldz, d, work, &result[ntest - 1]);
                     //
-                    //                 Test Rspgvd
+                    // Test Rspgvd
                     //
                     ntest++;
                     //
-                    //                 Copy the matrices into packed storage.
+                    // Copy the matrices into packed storage.
                     //
                     if (Mlsame(&uplo, "U")) {
                         ij = 1;
@@ -582,15 +591,15 @@ void Rdrvsg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                         }
                     }
                     //
-                    //                 Do Test
+                    // Do Test
                     //
                     Rsgt01(ibtype, &uplo, n, n, a, lda, b, ldb, z, ldz, d, work, &result[ntest - 1]);
                     //
-                    //                 Test Rspgvx
+                    // Test Rspgvx
                     //
                     ntest++;
                     //
-                    //                 Copy the matrices into packed storage.
+                    // Copy the matrices into packed storage.
                     //
                     if (Mlsame(&uplo, "U")) {
                         ij = 1;
@@ -627,13 +636,13 @@ void Rdrvsg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                         }
                     }
                     //
-                    //                 Do Test
+                    // Do Test
                     //
                     Rsgt01(ibtype, &uplo, n, m, a, lda, b, ldb, z, ldz, d, work, &result[ntest - 1]);
                     //
                     ntest++;
                     //
-                    //                 Copy the matrices into packed storage.
+                    // Copy the matrices into packed storage.
                     //
                     if (Mlsame(&uplo, "U")) {
                         ij = 1;
@@ -672,13 +681,13 @@ void Rdrvsg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                         }
                     }
                     //
-                    //                 Do Test
+                    // Do Test
                     //
                     Rsgt01(ibtype, &uplo, n, m, a, lda, b, ldb, z, ldz, d, work, &result[ntest - 1]);
                     //
                     ntest++;
                     //
-                    //                 Copy the matrices into packed storage.
+                    // Copy the matrices into packed storage.
                     //
                     if (Mlsame(&uplo, "U")) {
                         ij = 1;
@@ -715,7 +724,7 @@ void Rdrvsg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                         }
                     }
                     //
-                    //                 Do Test
+                    // Do Test
                     //
                     Rsgt01(ibtype, &uplo, n, m, a, lda, b, ldb, z, ldz, d, work, &result[ntest - 1]);
                 //
@@ -723,11 +732,11 @@ void Rdrvsg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     //
                     if (ibtype == 1) {
                         //
-                        //                    TEST Rsbgv
+                        // TEST Rsbgv
                         //
                         ntest++;
                         //
-                        //                    Copy the matrices into band storage.
+                        // Copy the matrices into band storage.
                         //
                         if (Mlsame(&uplo, "U")) {
                             for (j = 1; j <= n; j = j + 1) {
@@ -764,15 +773,15 @@ void Rdrvsg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                             }
                         }
                         //
-                        //                    Do Test
+                        // Do Test
                         //
                         Rsgt01(ibtype, &uplo, n, n, a, lda, b, ldb, z, ldz, d, work, &result[ntest - 1]);
                         //
-                        //                    TEST Rsbgvd
+                        // TEST Rsbgvd
                         //
                         ntest++;
                         //
-                        //                    Copy the matrices into band storage.
+                        // Copy the matrices into band storage.
                         //
                         if (Mlsame(&uplo, "U")) {
                             for (j = 1; j <= n; j = j + 1) {
@@ -809,15 +818,15 @@ void Rdrvsg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                             }
                         }
                         //
-                        //                    Do Test
+                        // Do Test
                         //
                         Rsgt01(ibtype, &uplo, n, n, a, lda, b, ldb, z, ldz, d, work, &result[ntest - 1]);
                         //
-                        //                    Test Rsbgvx
+                        // Test Rsbgvx
                         //
                         ntest++;
                         //
-                        //                    Copy the matrices into band storage.
+                        // Copy the matrices into band storage.
                         //
                         if (Mlsame(&uplo, "U")) {
                             for (j = 1; j <= n; j = j + 1) {
@@ -854,13 +863,13 @@ void Rdrvsg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                             }
                         }
                         //
-                        //                    Do Test
+                        // Do Test
                         //
                         Rsgt01(ibtype, &uplo, n, m, a, lda, b, ldb, z, ldz, d, work, &result[ntest - 1]);
                         //
                         ntest++;
                         //
-                        //                    Copy the matrices into band storage.
+                        // Copy the matrices into band storage.
                         //
                         if (Mlsame(&uplo, "U")) {
                             for (j = 1; j <= n; j = j + 1) {
@@ -899,13 +908,13 @@ void Rdrvsg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                             }
                         }
                         //
-                        //                    Do Test
+                        // Do Test
                         //
                         Rsgt01(ibtype, &uplo, n, m, a, lda, b, ldb, z, ldz, d, work, &result[ntest - 1]);
                         //
                         ntest++;
                         //
-                        //                    Copy the matrices into band storage.
+                        // Copy the matrices into band storage.
                         //
                         if (Mlsame(&uplo, "U")) {
                             for (j = 1; j <= n; j = j + 1) {
@@ -942,7 +951,7 @@ void Rdrvsg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                             }
                         }
                         //
-                        //                    Do Test
+                        // Do Test
                         //
                         Rsgt01(ibtype, &uplo, n, m, a, lda, b, ldb, z, ldz, d, work, &result[ntest - 1]);
                         //
@@ -952,7 +961,7 @@ void Rdrvsg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 }
             }
             //
-            //           End of Loop -- Check for RESULT(j) > THRESH
+            // End of Loop -- Check for RESULT(j) > THRESH
             //
             ntestt += ntest;
             Rlafts("DSG", n, n, jtype, ntest, result, ioldsd, thresh, nounit, nerrs);
@@ -960,10 +969,10 @@ void Rdrvsg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
         }
     }
     //
-    //     Summary
+    // Summary
     //
     Rlasum("DSG", nounit, nerrs, ntestt);
     //
-    //     End of Rdrvsg
+    // End of Rdrvsg
     //
 }

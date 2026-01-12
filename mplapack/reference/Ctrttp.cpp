@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,12 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine ZTRTTP.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Ctrttp(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *ap, INTEGER &info) {
     //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     bool lower = Mlsame(uplo, "L");
@@ -68,6 +75,6 @@ void Ctrttp(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, CO
         }
     }
     //
-    //     End of Ctrttp
+    // End of Ctrttp
     //
 }

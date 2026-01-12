@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DGET39.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -96,7 +103,7 @@ void Rget39(REAL &rmax, INTEGER &lmax, INTEGER &ninfo, INTEGER &knt) {
     ninfo = 0;
     smlnum = smlnum / eps;
     //
-    //     Begin test loop
+    // Begin test loop
     //
     INTEGER ivm5 = 0;
     INTEGER ivm4 = 0;
@@ -164,8 +171,8 @@ void Rget39(REAL &rmax, INTEGER &lmax, INTEGER &ninfo, INTEGER &knt) {
                                 ninfo++;
                             }
                             //
-                            //                       || T*x - scale*d || /
-                            //                         max(ulp*||T||*||x||,smlnum/ulp*||T||,smlnum)
+                            // || T*x - scale*d || /
+                            // max(ulp*||T||*||x||,smlnum/ulp*||T||,smlnum)
                             //
                             Rcopy(n, d, 1, y, 1);
                             Rgemv("No transpose", n, n, one, t, ldt, x, 1, -scale, y, 1);
@@ -185,8 +192,8 @@ void Rget39(REAL &rmax, INTEGER &lmax, INTEGER &ninfo, INTEGER &knt) {
                                 ninfo++;
                             }
                             //
-                            //                       || T*x - scale*d || /
-                            //                         max(ulp*||T||*||x||,smlnum/ulp*||T||,smlnum)
+                            // || T*x - scale*d || /
+                            // max(ulp*||T||*||x||,smlnum/ulp*||T||,smlnum)
                             //
                             Rcopy(n, d, 1, y, 1);
                             Rgemv("Transpose", n, n, one, t, ldt, x, 1, -scale, y, 1);
@@ -206,9 +213,9 @@ void Rget39(REAL &rmax, INTEGER &lmax, INTEGER &ninfo, INTEGER &knt) {
                                 ninfo++;
                             }
                             //
-                            //                       ||(T+i*B)*(x1+i*x2) - scale*(d1+i*d2)|| /
-                            //                          max(ulp*(||T||+||B||)*(||x1||+||x2||),
-                            //                                  smlnum/ulp * (||T||+||B||), smlnum )
+                            // ||(T+i*B)*(x1+i*x2) - scale*(d1+i*d2)|| /
+                            // max(ulp*(||T||+||B||)*(||x1||+||x2||),
+                            // smlnum/ulp * (||T||+||B||), smlnum )
                             //
                             Rcopy(2 * n, d, 1, y, 1);
                             y[1 - 1] = Rdot(n, b, 1, &x[(1 + n) - 1], 1) + scale * y[1 - 1];
@@ -238,9 +245,9 @@ void Rget39(REAL &rmax, INTEGER &lmax, INTEGER &ninfo, INTEGER &knt) {
                                 ninfo++;
                             }
                             //
-                            //                       ||(T+i*B)*(x1+i*x2) - scale*(d1+i*d2)|| /
-                            //                          max(ulp*(||T||+||B||)*(||x1||+||x2||),
-                            //                                  smlnum/ulp * (||T||+||B||), smlnum )
+                            // ||(T+i*B)*(x1+i*x2) - scale*(d1+i*d2)|| /
+                            // max(ulp*(||T||+||B||)*(||x1||+||x2||),
+                            // smlnum/ulp * (||T||+||B||), smlnum )
                             //
                             Rcopy(2 * n, d, 1, y, 1);
                             y[1 - 1] = b[1 - 1] * x[(1 + n) - 1] - scale * y[1 - 1];
@@ -270,6 +277,6 @@ void Rget39(REAL &rmax, INTEGER &lmax, INTEGER &ninfo, INTEGER &knt) {
         }
     }
     //
-    //     End of Rget39
+    // End of Rget39
     //
 }

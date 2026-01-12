@@ -1,0 +1,33 @@
+--- INSTALL/Makefile	2012-12-18 10:50:56.472058064 +0900
++++ INSTALL/Makefile	2012-12-18 10:51:19.142987936 +0900
+@@ -1,7 +1,7 @@
+ include ../make.inc
+ 
+ .SUFFIXES : .o .f 
+-all:  testlsame testslamch testdlamch testsecond testdsecnd testieee testversion 
++all:  dlamch.o slamch.o #testlsame testslamch testdlamch testsecond testdsecnd testieee testversion 
+ 
+ testlsame:  lsame.o lsametst.o
+ 	$(LOADER) $(LOADOPTS) -o testlsame lsame.o lsametst.o
+
+--- Makefile	2012-04-14 03:13:07.000000000 +0900
++++ Makefile	2012-12-18 11:57:26.223987770 +0900
+@@ -6,7 +6,7 @@
+ 
+ include make.inc
+ 
+-all: lapack_install lib blas_testing lapack_testing 
++all: lapack_install lib #blas_testing lapack_testing 
+ 
+ lib: lapacklib tmglib
+ #lib: blaslib variants lapacklib tmglib
+@@ -14,8 +14,7 @@
+ clean: cleanlib cleantesting cleanblas_testing 
+ 
+ lapack_install:
+-	( cd INSTALL; $(MAKE); ./testlsame; ./testslamch; ./testdlamch; \
+-	./testsecond; ./testdsecnd; ./testieee; ./testversion )
++	( cd INSTALL; $(MAKE) )
+ 
+ blaslib:
+ 	( cd BLAS/SRC; $(MAKE) )

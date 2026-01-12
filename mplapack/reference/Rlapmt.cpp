@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DLAPMT.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -46,7 +53,7 @@ void Rlapmt(bool const forwrd, INTEGER const m, INTEGER const n, REAL *x, INTEGE
     //
     if (forwrd) {
         //
-        //        Forward permutation
+        // Forward permutation
         //
         for (i = 1; i <= n; i = i + 1) {
             //
@@ -80,7 +87,7 @@ void Rlapmt(bool const forwrd, INTEGER const m, INTEGER const n, REAL *x, INTEGE
         //
     } else {
         //
-        //        Backward permutation
+        // Backward permutation
         //
         for (i = 1; i <= n; i = i + 1) {
             //
@@ -111,6 +118,6 @@ void Rlapmt(bool const forwrd, INTEGER const m, INTEGER const n, REAL *x, INTEGE
         //
     }
     //
-    //     End of Rlapmt
+    // End of Rlapmt
     //
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,15 +26,18 @@
  *
  */
 
+// Derived from LAPACK routine ZGTSV.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
-inline REAL cabs1(COMPLEX zdum) { return (abs(zdum.real()) + abs(zdum.imag())); }
-
 void Cgtsv(INTEGER const n, INTEGER const nrhs, COMPLEX *dl, COMPLEX *d, COMPLEX *du, COMPLEX *b, INTEGER const ldb, INTEGER &info) {
     COMPLEX zdum = 0.0;
-    //     ..
-    //     .. Executable Statements ..
     //
     info = 0;
     if (n < 0) {
@@ -61,19 +64,19 @@ void Cgtsv(INTEGER const n, INTEGER const nrhs, COMPLEX *dl, COMPLEX *d, COMPLEX
     for (k = 1; k <= n - 1; k = k + 1) {
         if (dl[k - 1] == zero) {
             //
-            //           Subdiagonal is zero, no elimination is required.
+            // Subdiagonal is zero, no elimination is required.
             //
             if (d[k - 1] == zero) {
                 //
-                //              Diagonal is zero: set INFO = K and return; a unique
-                //              solution can not be found.
+                // Diagonal is zero: set INFO = K and return; a unique
+                // solution can not be found.
                 //
                 info = k;
                 return;
             }
         } else if (cabs1(d[k - 1]) >= cabs1(dl[k - 1])) {
             //
-            //           No row interchange required
+            // No row interchange required
             //
             mult = dl[k - 1] / d[k - 1];
             d[(k + 1) - 1] = d[(k + 1) - 1] - mult * du[k - 1];
@@ -85,7 +88,7 @@ void Cgtsv(INTEGER const n, INTEGER const nrhs, COMPLEX *dl, COMPLEX *d, COMPLEX
             }
         } else {
             //
-            //           Interchange rows K and K+1
+            // Interchange rows K and K+1
             //
             mult = d[k - 1] / dl[k - 1];
             d[k - 1] = dl[k - 1];
@@ -108,7 +111,7 @@ void Cgtsv(INTEGER const n, INTEGER const nrhs, COMPLEX *dl, COMPLEX *d, COMPLEX
         return;
     }
     //
-    //     Back solve with the matrix U from the factorization.
+    // Back solve with the matrix U from the factorization.
     //
     for (j = 1; j <= nrhs; j = j + 1) {
         b[(n - 1) + (j - 1) * ldb] = b[(n - 1) + (j - 1) * ldb] / d[n - 1];
@@ -120,6 +123,6 @@ void Cgtsv(INTEGER const n, INTEGER const nrhs, COMPLEX *dl, COMPLEX *d, COMPLEX
         }
     }
     //
-    //     End of Cgtsv
+    // End of Cgtsv
     //
 }

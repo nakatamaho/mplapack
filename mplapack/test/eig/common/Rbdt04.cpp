@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DBDT04.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -40,30 +47,7 @@ using fem::common;
 
 void Rbdt04(const char *uplo, INTEGER const n, REAL *d, REAL *e, REAL *s, INTEGER const ns, REAL *u, INTEGER const ldu, REAL *vt, INTEGER const ldvt, REAL *work, REAL &resid) {
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    // ======================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Quick return if possible.
+    // Quick return if possible.
     //
     const REAL zero = 0.0;
     resid = zero;
@@ -73,7 +57,7 @@ void Rbdt04(const char *uplo, INTEGER const n, REAL *d, REAL *e, REAL *s, INTEGE
     //
     REAL eps = Rlamch("Precision");
     //
-    //     Compute S - U' * B * V.
+    // Compute S - U' * B * V.
     //
     REAL bnorm = zero;
     //
@@ -82,7 +66,7 @@ void Rbdt04(const char *uplo, INTEGER const n, REAL *d, REAL *e, REAL *s, INTEGE
     INTEGER j = 0;
     if (Mlsame(uplo, "U")) {
         //
-        //        B is upper bidiagonal.
+        // B is upper bidiagonal.
         //
         k = 0;
         for (i = 1; i <= ns; i = i + 1) {
@@ -99,7 +83,7 @@ void Rbdt04(const char *uplo, INTEGER const n, REAL *d, REAL *e, REAL *s, INTEGE
         }
     } else {
         //
-        //        B is lower bidiagonal.
+        // B is lower bidiagonal.
         //
         k = 0;
         for (i = 1; i <= ns; i = i + 1) {
@@ -119,7 +103,7 @@ void Rbdt04(const char *uplo, INTEGER const n, REAL *d, REAL *e, REAL *s, INTEGE
     const REAL one = 1.0;
     Rgemm("T", "N", ns, ns, n, -one, u, ldu, &work[1 - 1], n, zero, &work[(1 + n * ns) - 1], ns);
     //
-    //     norm(S - U' * B * V)
+    // norm(S - U' * B * V)
     //
     k = n * ns;
     for (i = 1; i <= ns; i = i + 1) {
@@ -144,6 +128,6 @@ void Rbdt04(const char *uplo, INTEGER const n, REAL *d, REAL *e, REAL *s, INTEGE
         }
     }
     //
-    //     End of Rbdt04
+    // End of Rbdt04
     //
 }

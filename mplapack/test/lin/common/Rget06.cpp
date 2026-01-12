@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DGET06.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <fem.hpp> // Fortran EMulation library of fable module
@@ -56,6 +63,6 @@ REAL Rget06(REAL const rcond, REAL const rcondc) {
     return_value = rat;
     return return_value;
     //
-    //     End of Rget06
+    // End of Rget06
     //
 }

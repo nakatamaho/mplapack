@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,33 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine DORBDB6.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Rorbdb6(INTEGER const m1, INTEGER const m2, INTEGER const n, REAL *x1, INTEGER const incx1, REAL *x2, INTEGER const incx2, REAL *q1, INTEGER const ldq1, REAL *q2, INTEGER const ldq2, REAL *work, INTEGER const lwork, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Function ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test input arguments
+    // Test input arguments
     //
     info = 0;
     if (m1 < 0) {
@@ -78,8 +64,8 @@ void Rorbdb6(INTEGER const m1, INTEGER const m2, INTEGER const n, REAL *x1, INTE
         return;
     }
     //
-    //     First, project X onto the orthogonal complement of Q's column
-    //     space
+    // First, project X onto the orthogonal complement of Q's column
+    // space
     //
     const REAL realzero = 0.0;
     REAL scl1 = realzero;
@@ -116,11 +102,11 @@ void Rorbdb6(INTEGER const m1, INTEGER const m2, INTEGER const n, REAL *x1, INTE
     Rlassq(m2, x2, incx2, scl2, ssq2);
     REAL normsq2 = pow2(scl1) * ssq1 + pow2(scl2) * ssq2;
     //
-    //     If projection is sufficiently large in norm, then stop.
-    //     If projection is zero, then stop.
-    //     Otherwise, project again.
+    // If projection is sufficiently large in norm, then stop.
+    // If projection is zero, then stop.
+    // Otherwise, project again.
     //
-    const REAL alphasq = 0.01e0;
+    const REAL alphasq = 0.01;
     if (normsq2 >= alphasq * normsq1) {
         return;
     }
@@ -156,9 +142,9 @@ void Rorbdb6(INTEGER const m1, INTEGER const m2, INTEGER const n, REAL *x1, INTE
     Rlassq(m1, x1, incx1, scl1, ssq1);
     normsq2 = pow2(scl1) * ssq1 + pow2(scl2) * ssq2;
     //
-    //     If second projection is sufficiently large in norm, then do
-    //     nothing more. Alternatively, if it shrunk significantly, then
-    //     truncate it to zero.
+    // If second projection is sufficiently large in norm, then do
+    // nothing more. Alternatively, if it shrunk significantly, then
+    // truncate it to zero.
     //
     if (normsq2 < alphasq * normsq1) {
         for (i = 1; i <= m1; i = i + 1) {
@@ -169,6 +155,6 @@ void Rorbdb6(INTEGER const m1, INTEGER const m2, INTEGER const n, REAL *x1, INTE
         }
     }
     //
-    //     End of Rorbdb6
+    // End of Rorbdb6
     //
 }

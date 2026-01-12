@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DLQT03.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -78,13 +85,13 @@ void Rlqt03(INTEGER const m, INTEGER const n, INTEGER const k, REAL *af, REAL *c
     INTEGER iseed[] = {1988, 1989, 1990, 1991};
     REAL eps = Rlamch("Epsilon");
     //
-    //     Copy the first k rows of the factorization to the array Q
+    // Copy the first k rows of the factorization to the array Q
     //
     const REAL rogue = -1.0e+10;
     Rlaset("Full", n, n, rogue, rogue, q, lda);
     Rlacpy("Upper", k, n - 1, &af[(2 - 1) * ldaf], lda, &q[(2 - 1) * ldq], lda);
     //
-    //     Generate the n-by-n matrix Q
+    // Generate the n-by-n matrix Q
     //
     INTEGER info = 0;
     strncpy(srnamt, "Rorglq", srnamt_len);
@@ -111,7 +118,7 @@ void Rlqt03(INTEGER const m, INTEGER const n, INTEGER const k, REAL *af, REAL *c
             nc = n;
         }
         //
-        //        Generate MC by NC matrix C
+        // Generate MC by NC matrix C
         //
         for (j = 1; j <= nc; j = j + 1) {
             Rlarnv(2, iseed, mc, &c[(j - 1) * ldc]);
@@ -128,16 +135,16 @@ void Rlqt03(INTEGER const m, INTEGER const n, INTEGER const k, REAL *af, REAL *c
                 trans = 'T';
             }
             //
-            //           Copy C
+            // Copy C
             //
             Rlacpy("Full", mc, nc, c, lda, cc, lda);
             //
-            //           Apply Q or Q' to C
+            // Apply Q or Q' to C
             //
             strncpy(srnamt, "Rormlq", srnamt_len);
             Rormlq(&side, &trans, mc, nc, k, af, lda, tau, cc, lda, work, lwork, info);
             //
-            //           Form explicit product and subtract
+            // Form explicit product and subtract
             //
             if (Mlsame(&side, "L")) {
                 Rgemm(&trans, "No transpose", mc, nc, mc, -one, q, lda, c, lda, one, cc, lda);
@@ -145,7 +152,7 @@ void Rlqt03(INTEGER const m, INTEGER const n, INTEGER const k, REAL *af, REAL *c
                 Rgemm("No transpose", &trans, mc, nc, nc, -one, c, lda, q, lda, one, cc, lda);
             }
             //
-            //           Compute error in the difference
+            // Compute error in the difference
             //
             resid = Rlange("1", mc, nc, cc, lda, rwork);
             result[((iside - 1) * 2 + itrans) - 1] = resid / (castREAL(max((INTEGER)1, n)) * cnorm * eps);
@@ -153,6 +160,6 @@ void Rlqt03(INTEGER const m, INTEGER const n, INTEGER const k, REAL *af, REAL *c
         }
     }
     //
-    //     End of Rlqt03
+    // End of Rlqt03
     //
 }

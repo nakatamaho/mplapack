@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DGSVTS3.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -47,7 +54,7 @@ void Rgsvts3(INTEGER const m, INTEGER const p, INTEGER const n, REAL *a, REAL *a
     REAL ulpinv = one / ulp;
     REAL unfl = Rlamch("Safe minimum");
     //
-    //     Copy the matrix A to the array AF.
+    // Copy the matrix A to the array AF.
     //
     Rlacpy("Full", m, n, a, lda, af, lda);
     Rlacpy("Full", p, n, b, ldb, bf, ldb);
@@ -55,14 +62,14 @@ void Rgsvts3(INTEGER const m, INTEGER const p, INTEGER const n, REAL *a, REAL *a
     REAL anorm = max({Rlange("1", m, n, a, lda, rwork), unfl});
     REAL bnorm = max({Rlange("1", p, n, b, ldb, rwork), unfl});
     //
-    //     Factorize the matrices A and B in the arrays AF and BF.
+    // Factorize the matrices A and B in the arrays AF and BF.
     //
     INTEGER k = 0;
     INTEGER l = 0;
     INTEGER info = 0;
     Rggsvd3("U", "V", "Q", m, n, p, k, l, af, lda, bf, ldb, alpha, beta, u, ldu, v, ldv, q, ldq, work, lwork, iwork, info);
     //
-    //     Copy R
+    // Copy R
     //
     INTEGER i = 0;
     INTEGER j = 0;
@@ -80,7 +87,7 @@ void Rgsvts3(INTEGER const m, INTEGER const p, INTEGER const n, REAL *a, REAL *a
         }
     }
     //
-    //     Compute A:= U'*A*Q - D1*R
+    // Compute A:= U'*A*Q - D1*R
     //
     const REAL zero = 0.0;
     Rgemm("No transpose", "No transpose", m, n, n, one, a, lda, q, ldq, zero, work, lda);
@@ -99,7 +106,7 @@ void Rgsvts3(INTEGER const m, INTEGER const p, INTEGER const n, REAL *a, REAL *a
         }
     }
     //
-    //     Compute norm( U'*A*Q - D1*R ) / ( MAX(1,M,N)*norm(A)*ULP ) .
+    // Compute norm( U'*A*Q - D1*R ) / ( MAX(1,M,N)*norm(A)*ULP ) .
     //
     REAL resid = Rlange("1", m, n, a, lda, rwork);
     //
@@ -109,7 +116,7 @@ void Rgsvts3(INTEGER const m, INTEGER const p, INTEGER const n, REAL *a, REAL *a
         result[1 - 1] = zero;
     }
     //
-    //     Compute B := V'*B*Q - D2*R
+    // Compute B := V'*B*Q - D2*R
     //
     Rgemm("No transpose", "No transpose", p, n, n, one, b, ldb, q, ldq, zero, work, ldb);
     //
@@ -121,7 +128,7 @@ void Rgsvts3(INTEGER const m, INTEGER const p, INTEGER const n, REAL *a, REAL *a
         }
     }
     //
-    //     Compute norm( V'*B*Q - D2*R ) / ( MAX(P,N)*norm(B)*ULP ) .
+    // Compute norm( V'*B*Q - D2*R ) / ( MAX(P,N)*norm(B)*ULP ) .
     //
     resid = Rlange("1", p, n, b, ldb, rwork);
     if (bnorm > zero) {
@@ -130,37 +137,37 @@ void Rgsvts3(INTEGER const m, INTEGER const p, INTEGER const n, REAL *a, REAL *a
         result[2 - 1] = zero;
     }
     //
-    //     Compute I - U'*U
+    // Compute I - U'*U
     //
     Rlaset("Full", m, m, zero, one, work, ldq);
     Rsyrk("Upper", "Transpose", m, m, -one, u, ldu, one, work, ldu);
     //
-    //     Compute norm( I - U'*U ) / ( M * ULP ) .
+    // Compute norm( I - U'*U ) / ( M * ULP ) .
     //
     resid = Rlansy("1", "Upper", m, work, ldu, rwork);
     result[3 - 1] = (resid / castREAL(max((INTEGER)1, m))) / ulp;
     //
-    //     Compute I - V'*V
+    // Compute I - V'*V
     //
     Rlaset("Full", p, p, zero, one, work, ldv);
     Rsyrk("Upper", "Transpose", p, p, -one, v, ldv, one, work, ldv);
     //
-    //     Compute norm( I - V'*V ) / ( P * ULP ) .
+    // Compute norm( I - V'*V ) / ( P * ULP ) .
     //
     resid = Rlansy("1", "Upper", p, work, ldv, rwork);
     result[4 - 1] = (resid / castREAL(max((INTEGER)1, p))) / ulp;
     //
-    //     Compute I - Q'*Q
+    // Compute I - Q'*Q
     //
     Rlaset("Full", n, n, zero, one, work, ldq);
     Rsyrk("Upper", "Transpose", n, n, -one, q, ldq, one, work, ldq);
     //
-    //     Compute norm( I - Q'*Q ) / ( N * ULP ) .
+    // Compute norm( I - Q'*Q ) / ( N * ULP ) .
     //
     resid = Rlansy("1", "Upper", n, work, ldq, rwork);
     result[5 - 1] = (resid / castREAL(max((INTEGER)1, n))) / ulp;
     //
-    //     Check sorting
+    // Check sorting
     //
     Rcopy(n, alpha, 1, work, 1);
     REAL temp = 0.0;
@@ -180,6 +187,6 @@ void Rgsvts3(INTEGER const m, INTEGER const p, INTEGER const n, REAL *a, REAL *a
         }
     }
     //
-    //     End of Rgsvts3
+    // End of Rgsvts3
     //
 }

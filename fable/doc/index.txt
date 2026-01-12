@@ -1,0 +1,422 @@
+=============================================
+ fable - Automatic Fortran to C++ conversion
+=============================================
+
+- **fable** converts fixed-format Fortran sources to C++.
+  The generated C++ code is designed to be human-readable and
+  suitable for further development. In many cases it can be compiled
+  and run without manual intervention.
+
+- fable comes with the C++ **fem** Fortran EMulation library.
+  The entire fem library is inlined and therefore very easy
+  to use: simply add ``-I/actual/path/fable`` or similar to
+  the compilation command.
+
+- The fem library has no dependencies other than a standard C++ compiler.
+
+- fable is written in Python (version 2.x) which comes pre-installed
+  with most modern Unix systems. A full Python distribution is included
+  in the fable bundle for Windows.
+
+- The name "fable" is short for "Fortran ABLEitung". "Ableitung" is a
+  german word which can mean both "derivative" and "branching off".
+
+- If you use fable in your work please cite:
+
+    Grosse-Kunstleve RW, Terwilliger TC, Sauter NK, Adams PD:
+    *Automatic Fortran to C++ conversion with FABLE*.
+    `Source Code for Biology and Medicine 2012, 7:5 <https://doi.org/10.1186/1751-0473-7-5>`_.
+
+- fable and fem development was supported by supplemental funding from
+  the American Recovery and Reinvestment Act (ARRA) to NIH/NIGMS grant
+  number P01GM063210. The work was also supported in part by the US
+  Department of Energy under Contract No. DE-AC02- 05CH11231.
+
+- fable and fem are a part of the cctbx open source
+  project: [`License`_] [`Copyright`_]
+
+- The fable Fortran reader could be re-used to generate code for
+  other target languages.
+
+- Send questions and comments to: fable@cci.lbl.gov
+
+.. _`License`: http://cctbx.svn.sourceforge.net/viewvc/cctbx/trunk/cctbx/LICENSE_2_0.txt?view=markup
+.. _`Copyright`: http://cctbx.svn.sourceforge.net/viewvc/cctbx/trunk/cctbx/COPYRIGHT_2_0.txt?view=markup
+
+----------------------------------------------------------------------
+
+Examples
+========
+
+- Small `Fortran source <sources/fable/test/valid/sf.f>`_ and corresponding
+  `fable.cout output <sf.cpp>`_
+
+- Selected LAPACK 3.2.1 functions converted to
+  `lapack_fem/selected.hpp <sources/lapack_fem/selected.hpp>`_
+
+----------------------------------------------------------------------
+
+Download - Install - Run
+========================
+
+- Unix systems with Python 2.3 through 2.7::
+
+    wget http://cci.lbl.gov/fable_bundles/current/fable_bundle.selfx
+    perl fable_bundle.selfx
+    source fable_build/setpaths.sh
+    fable.cout --example
+
+- Windows systems (XP or higher)::
+
+    Download http://cci.lbl.gov/fable_bundles/current/fable_win_xp.exe
+    fable_win_xp.exe
+    fable_build\setpaths.bat
+    fable.cout --example
+
+The ``fable.cout --example`` command is known to work with gcc 3.2 or
+higher, Visual C++ 7.1 or higher, and with recent development versions
+of clang++.
+
+----------------------------------------------------------------------
+
+Converting your sources
+=======================
+
+Pure-Fortran programs that don't link against external libraries
+can be converted simply with e.g.::
+
+  fable.cout main.f input.f calcs.f output.f --namespace=calcs > calcs.cpp
+
+``fable.cout`` supports ``--run`` to convert and immediately compile,
+link, and run the converted C++ code. If there is no ``PROGRAM``,
+``--compile`` can be used to quickly test compilation.
+
+Some advanced conversion features, such as suppressing conversion of
+certain procedures (SUBROUTINE, FUNCTION, BLOCKDATA, PROGRAM) or conversion
+to multiple files are available through a Python interface.
+
+----------------------------------------------------------------------
+
+Major features
+==============
+
+Call graph, topological sort, const analysis
+--------------------------------------------
+
+fable builds a call graph of all the input sources, performs
+a topological sort (with handling of dependency cycles) and
+const analysis tracing even through function pointers.
+The ``--top-procedure`` option of ``fable.cout`` can be used to
+extract only the specified SUBROUTINE or FUNCTION and all its
+dependencies; unused procedures are not converted. This feature was
+used to produce the
+`lapack_fem/selected.hpp <sources/lapack_fem/selected.hpp>`_
+example.
+
+No global variables in C++
+--------------------------
+
+Fortran programs have two types of global variables, COMMON and SAVE
+variables. In addition, the Fortran I/O units are essentially global
+variables. fable converts all global variables to C++ struct members
+so that the converted C++ code does not have any global variables. In
+this way an entire Fortran program is turned into a regular C++
+object that is fully encapsulated. Multiple such objects can co-exist
+in the same process without interference.
+
+In the converted C++ code, the object holding the originally global
+variables is called ``cmn``, short for "common". The state of the I/O
+system is stored under ``cmn.io``. All C++ functions using originally
+global variables or the I/O system have ``cmn`` inserted as the
+first argument.
+
+Example: [`Fortran <sources/fable/test/valid/conv_recipe.f>`_]
+[`C++ <conv_recipe.cpp>`_]
+
+Dynamic parameters
+------------------
+
+Due to the lack of dynamic memory allocation in Fortran 77, many
+existing Fortran programs use PARAMETER to statically define array
+sizes. fable supports turning originally static parameters into
+"dynamic parameters" as part of the automatic conversion process,
+for example::
+
+  fable.cout dp_example.f --dynamic_parameter="int array_size=100" > dp_example.cpp
+
+With this, all occurrences of ``PARAMETER(array_size=...)`` in the
+Fortran program are converted to use a dynamic size instead. The
+default ``array_size`` in the example is set to 100 (the original
+size in the Fortran code is ignored). The ``array_size`` can be set
+from the command line with the ``--fem-dynamic-parameters`` option,
+e.g.::
+
+  g++ -o dp_example -I/actual/path/fable dp_example.cpp
+  dp_example --fem-dynamic-parameters=200
+
+(Note that this option is removed from the list of command-line
+arguments as seen by the ``iargc()`` and ``getarg()`` intrinsic
+functions.)
+
+Example: [`Fortran <sources/fable/test/valid/dp_example.f>`_]
+[`C++ <dp_example.cpp>`_]
+
+Calls into external libraries
+-----------------------------
+
+For the automatic const analysis to work correctly, fable needs
+to "see" the implementations of all functions called directly or
+indirectly. If some Fortran sources are not available or if the
+Fortran program calls functions written in other languages, small
+"stubs" can be supplied from which fable can derive the correct const
+information. For example::
+
+      subroutine qread(iunit, buffer, nitems, result)
+      implicit none
+      integer iunit, nitems, result
+      real buffer(*)
+      buffer(1) = 0
+      result = 0
+      STOP 'FABLE_STUB'
+      end
+
+From this stub fable can deduce that ``iunit`` and ``ntimes`` are
+const, while ``buffer`` and ``result`` are non-const.  Currently,
+the converted C++ code needs to be modified manually to replace the
+body of the stub function with a call of the external function.
+(Possible but not implemented: automatic replacement of stub bodies
+with proper calls.)
+
+EQUIVALENCE and COMMON variants
+-------------------------------
+
+Large Fortran programs tend to make use of EQUIVALENCE and "common
+variants". A simple example of a common variant is::
+
+  program main
+  common /chunk/ a(200)
+  ...
+  end
+
+  subroutine sub1
+  common /chunk/ x(100), y(100)
+  ...
+  end
+
+fable is designed to handle all legal combinations of common
+variants and EQUIVALENCE, but the generated C++ code is
+cluttered quite badly with ``mbr<>`` and ``bind<>`` statements
+(e.g. [`Fortran <sources/fable/test/valid/common_variants.f>`_]
+[`C++ <common_variants.cpp>`_]). If the generated C++ code is
+meant to be a basis for future development, it is a good idea
+to consider modifying the Fortran code before finalizing the
+conversion. Sometimes common variants are accidental and can easily be
+avoided. To help in detecting such cases, ``fable.cout`` writes a file
+``fable_cout_common_report`` (`example <fable_cout_common_report>`_)
+which shows the differences between the variants.
+
+The use of Fortran EQUIVALENCE also leads to clutter in the
+generated C++ code. For equivalences involving common variables,
+``fable_cout_common_report`` shows a list of the problem cases, sorted
+by volume of the corresponding generated code. If it is known that the
+equivalences do not affect the size of a common block, the ``fable.cout
+--common-equivalence-simple`` option can be used to direct fable to
+generate much less cluttered C++ code for handling the equivalences.
+(Possible but not implemented: automatic detection of simple
+equivalences.)
+
+----------------------------------------------------------------------
+
+Recommended conversion workflow
+===============================
+
+In our experience, for large-scale programs (with more than a few
+thousand lines of code) the ability to quickly test the implementation
+is a crucial pre-requisite for a successful conversion to concise C++
+code. Therefore the conversion workflow should start with building a
+suite of tests. Ideally running the tests should execute each line
+of code at least once, but this is often difficult to achieve. In
+practice it may be fully sufficient to work with tests that call each
+subroutine at least once. The second most important aspect of a test
+suite is that it is fast. Long wait times tend to lead to developer
+fatigue and compromises in the interest of time. The result may be
+unnecessarily cluttered C++ code, hampering future developments. Quick
+tests give the developer a chance to try alternative transformations of
+the Fortran sources and different conversion options. Post conversion,
+the tests can be invaluable again during manual optimizations of the
+generated C++ code.
+
+Once tests are in place, the conversion workflow consists of cycles of:
+
+ - Running fable to generate C++ code.
+ - Analyzing conversion problems.
+ - Modifying the Fortran sources with the goal to obtain better C++ code
+   (e.g. by reworking COMMON blocks or eliminating EQUIVALENCE statements),
+   or to work around limitations of fable.
+ - Running the tests with a Fortran-compiled executable to validate the
+   Fortran changes.
+
+This sequence is repeated until the generated C++ code can be compiled
+and linked, so that testing with a C++-compiled executable can be
+inserted into the cycle. As soon as the C++ executable passes all
+tests, it is possible to leave the Fortran source behind and continue
+with development of the C++ code, but it may be very useful to continue
+changing the Fortran sources to improve the generated C++ code,
+and/or to experiment with the ``--common-equivalence-simple`` option.
+
+Conceivably there are situations in which it is best to modify the
+fable code generation rather than the Fortran sources. This was an
+important reason for releasing fable as open source (see also below).
+
+We found that Python's ``multiprocessing`` module (Python 2.6 or
+higher) is extremely helpful in parallelizing execution of tests. Given
+a modern multi-core machine it is realistic to expect completion of
+a full modify-build-test cycle in a couple minutes, even for programs
+with 100k+ lines of original Fortran code.
+
+----------------------------------------------------------------------
+
+fable/fem components and completeness
+=====================================
+
+The main fable components are ``fable.read`` and ``fable.cout``.
+The reader is supported by ``fable.tokenization``. The tokenization
+fully supports the Fortran 77 syntax and some Fortran 90 features
+(as used by LAPACK). The reader supports a nearly complete subset of
+Fortran 77 and a very small subset of Fortran 90 features. The C++
+code generation supports a large subset of Fortran 77. It may insert
+"UNHANDLED" messages into the output or even fail completely while
+processing unusual constructs.
+
+Development of the fem Fortran emulation library was guided by the
+requirements of the programs we have converted for our needs. The
+emulation of the I/O system may raise "Not implemented" exceptions
+during execution. A major component missing completely is the runtime
+support for direct-access files. Several unusual FORMAT edits are not
+supported. Some floating-point edits are emulated only approximately.
+
+A major reason for releasing fable and fem under an open source
+license is to enable users to continually complete and improve the
+implementations, and possibly reuse fable as a framework for other
+target languages. fable comes with a large set of unit tests so that
+any changes made can be quickly verified.
+
+[`Browse fable sources <sources/>`_]
+
+----------------------------------------------------------------------
+
+Fortran vs. C++ data types
+==========================
+
+fable assumes that the Fortran INTEGER type is a C++ ``int``, REAL is
+a C++ ``float``, and DOUBLE PRECISION is a C++ ``double``. On most
+current computing platforms, the sizes of the Fortran types should
+be identical to the sizes of the corresponding C++ types. The only
+exception is the mapping of the Fortran LOGICAL type to the C++
+``bool`` type. In this case we found it more important to map the
+concept rather than the implementation detail that a LOGICAL usually
+occupies four bytes while the size of a C++ ``bool`` is usually
+one byte. This small asymmetry has to be kept in mind when calling
+external libraries from FABLE-generated C++. The Fortran complex types
+are mapped to the C++ ``std::complex`` template class in the Standard
+Template Library (STL). Fortran CHARACTER strings are mapped to the
+``fem::str`` template class in the fem library.
+
+A complete list of Fortran data types supported by fable is in the
+example file
+`doc_data_type_star.f <sources/fable/test/valid/doc_data_type_star.f>`_.
+Running ``fable.cout`` with this file will
+`show all mappings to C++ types <doc_data_type_star.cpp>`_.
+Relevant files in the fem library are
+`data_type_star.hpp <sources/fable/fem/data_type_star.hpp>`_,
+`int_types.hpp <sources/fable/fem/utils/int_types.hpp>`_, and
+`zero.hpp <sources/fable/fem/zero.hpp>`_.
+
+----------------------------------------------------------------------
+
+fable array and array-reference types
+=====================================
+
+The fem library implements a family of array and array-reference
+types. The main type is the ``arr`` class template::
+
+  arr<int> one_dimensional(dimension(10));
+  arr<int, 2> two_dimensional(dimension(10, 20));
+
+The first template parameter is the data type, the second parameter
+specifies the number of dimensions; the default number of dimensions is
+``1`` and can be omitted. The ``dimension`` statements shown imply
+one-based indexing. An example of a two-dimensional array with a
+different offset is::
+
+  arr<int, 2> two_dimensional(dim1(-2,3).dim2(-4,5));
+
+fable supports up to six dimensions.
+The `arr` class template uses dynamic memory allocation. An alternative
+is used for small arrays with sizes <= 256, for example::
+
+  arr_1d<int, 3> vector;
+  arr_2d<int, 3, 3> matrix;
+
+Here the size of each dimension is fixed at compile time. Small arrays
+are allocated on the stack to avoid dynamic memory allocation overhead.
+
+Arrays are passed to functions via array-reference types, for example::
+
+  void sub1(arr_ref<int, 2> matrix) { ... }
+  void sub2(arr_cref<int, 2> matrix) { ... }
+
+``arr_ref`` indicates that the array is modified in the function;
+``arr_cref`` guarantees that the array is not modified in the function.
+The extra ``c`` in the second type name is short for ``const``.
+To emulate the Fortran behavior, scalars and arrays of non-matching
+dimensionality or sizes can be passed to an array reference in a
+function call. The sizes of the dimensions are set inside the called
+functions, for example::
+
+  matrix(dimension(10, 20));
+
+The syntax for setting the sizes is identical to that used for
+``arr`` types as shown above.
+
+Strings are handled via a dedicated family of types, for example::
+
+  fem::str<4> key = "name";
+
+The template parameter specifies the number of characters.
+Strings are passed in this way::
+
+  void sub1(str_ref line) { ... }
+  void sub2(str_cref line) { ... }
+
+Passing of string arrays also requires special types::
+
+  void sub1(str_arr_ref<1> text) { ... }
+  void sub2(str_arr_cref<2> text) { ... }
+
+These types had to be introduced to emulate the implicit passing
+of string lengths in Fortran. The template parameter specifies the
+number of dimensions.
+
+----------------------------------------------------------------------
+
+Miscellaneous practical remarks
+===============================
+
+- If fable error messages are not clear, use a Fortran compiler
+  to obtain potentially better messages.
+
+- A quick directed way to find out how fable converts certain
+  Fortran features is to write a tiny Fortran program and convert
+  it with ``fable.cout``.
+
+- Do not hesitate to inspect the fem sources. The fem implementations
+  are written in a minimalistic style, avoiding smart but unobvious
+  tricks to increase readability. (The price is a certain amount of
+  redundancy in the code, for example in the implementations of the
+  multi-dimensional array index calculations.)
+
+- Do not hesitate to ask questions about the fem library.
+
+- Be prepared to find that the ``cout.py`` script is the densest and
+  least organized part of the fable package.

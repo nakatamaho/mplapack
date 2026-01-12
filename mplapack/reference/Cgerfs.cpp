@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,10 +26,15 @@
  *
  */
 
+// Derived from LAPACK routine ZGERFS.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
-
-inline REAL abs1(COMPLEX zdum) { return abs(zdum.real()) + abs(zdum.imag()); }
 
 void Cgerfs(const char *trans, INTEGER const n, INTEGER const nrhs, COMPLEX *a, INTEGER const lda, COMPLEX *af, INTEGER const ldaf, INTEGER *ipiv, COMPLEX *b, INTEGER const ldb, COMPLEX *x, INTEGER const ldx, REAL *ferr, REAL *berr, COMPLEX *work, REAL *rwork, INTEGER &info) {
     COMPLEX zdum = 0.0;
@@ -44,19 +49,19 @@ void Cgerfs(const char *trans, INTEGER const n, INTEGER const nrhs, COMPLEX *a, 
     REAL safe1 = 0.0;
     REAL safe2 = 0.0;
     INTEGER count = 0;
-    const REAL three = 3.0e+0;
+    const REAL three = 3.0;
     REAL lstres = 0.0;
     const COMPLEX one = COMPLEX(1.0, 0.0);
     INTEGER i = 0;
     INTEGER k = 0;
     REAL xk = 0.0;
     REAL s = 0.0;
-    const REAL two = 2.0e+0;
+    const REAL two = 2.0;
     const INTEGER itmax = 5;
     INTEGER kase = 0;
     INTEGER isave[3];
     //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     notran = Mlsame(trans, "N");
@@ -80,7 +85,7 @@ void Cgerfs(const char *trans, INTEGER const n, INTEGER const nrhs, COMPLEX *a, 
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0 || nrhs == 0) {
         for (j = 1; j <= nrhs; j = j + 1) {
@@ -98,7 +103,7 @@ void Cgerfs(const char *trans, INTEGER const n, INTEGER const nrhs, COMPLEX *a, 
         transt = 'N';
     }
     //
-    //     NZ = maximum number of nonzero elements in each row of A, plus 1
+    // NZ = maximum number of nonzero elements in each row of A, plus 1
     //
     nz = n + 1;
     eps = Rlamch("Epsilon");
@@ -106,7 +111,7 @@ void Cgerfs(const char *trans, INTEGER const n, INTEGER const nrhs, COMPLEX *a, 
     safe1 = nz * safmin;
     safe2 = safe1 / eps;
     //
-    //     Do for each right hand side
+    // Do for each right hand side
     //
     for (j = 1; j <= nrhs; j = j + 1) {
         //
@@ -114,41 +119,41 @@ void Cgerfs(const char *trans, INTEGER const n, INTEGER const nrhs, COMPLEX *a, 
         lstres = three;
     statement_20:
         //
-        //        Loop until stopping criterion is satisfied.
+        // Loop until stopping criterion is satisfied.
         //
-        //        Compute residual R = B - op(A) * X,
-        //        where op(A) = A, A**T, or A**H, depending on TRANS.
+        // Compute residual R = B - op(A) * X,
+        // where op(A) = A, A**T, or A**H, depending on TRANS.
         //
         Ccopy(n, &b[(j - 1) * ldb], 1, work, 1);
         Cgemv(trans, n, n, -one, a, lda, &x[(j - 1) * ldx], 1, one, work, 1);
         //
-        //        Compute componentwise relative backward error from formula
+        // Compute componentwise relative backward error from formula
         //
-        //        max(i) ( abs(R(i)) / ( abs(op(A))*abs(X) + abs(B) )(i) )
+        // max(i) ( abs(R(i)) / ( abs(op(A))*abs(X) + abs(B) )(i) )
         //
-        //        where abs(Z) is the componentwise absolute value of the matrix
-        //        or vector Z.  If the i-th component of the denominator is less
-        //        than SAFE2, then SAFE1 is added to the i-th components of the
-        //        numerator and denominator before dividing.
+        // where abs(Z) is the componentwise absolute value of the matrix
+        // or vector Z.  If the i-th component of the denominator is less
+        // than SAFE2, then SAFE1 is added to the i-th components of the
+        // numerator and denominator before dividing.
         //
         for (i = 1; i <= n; i = i + 1) {
-            rwork[i - 1] = abs1(b[(i - 1) + (j - 1) * ldb]);
+            rwork[i - 1] = cabs1(b[(i - 1) + (j - 1) * ldb]);
         }
         //
-        //        Compute abs(op(A))*abs(X) + abs(B).
+        // Compute abs(op(A))*abs(X) + abs(B).
         //
         if (notran) {
             for (k = 1; k <= n; k = k + 1) {
-                xk = abs1(x[(k - 1) + (j - 1) * ldx]);
+                xk = cabs1(x[(k - 1) + (j - 1) * ldx]);
                 for (i = 1; i <= n; i = i + 1) {
-                    rwork[i - 1] += abs1(a[(i - 1) + (k - 1) * lda]) * xk;
+                    rwork[i - 1] += cabs1(a[(i - 1) + (k - 1) * lda]) * xk;
                 }
             }
         } else {
             for (k = 1; k <= n; k = k + 1) {
                 s = zero;
                 for (i = 1; i <= n; i = i + 1) {
-                    s += abs1(a[(i - 1) + (k - 1) * lda]) * abs1(x[(i - 1) + (j - 1) * ldx]);
+                    s += cabs1(a[(i - 1) + (k - 1) * lda]) * cabs1(x[(i - 1) + (j - 1) * ldx]);
                 }
                 rwork[k - 1] += s;
             }
@@ -156,22 +161,22 @@ void Cgerfs(const char *trans, INTEGER const n, INTEGER const nrhs, COMPLEX *a, 
         s = zero;
         for (i = 1; i <= n; i = i + 1) {
             if (rwork[i - 1] > safe2) {
-                s = max(s, REAL(abs1(work[i - 1]) / rwork[i - 1]));
+                s = max(s, cabs1(work[i - 1]) / rwork[i - 1]);
             } else {
-                s = max(s, REAL((abs1(work[i - 1]) + safe1) / (rwork[i - 1] + safe1)));
+                s = max(s, (cabs1(work[i - 1]) + safe1) / (rwork[i - 1] + safe1));
             }
         }
         berr[j - 1] = s;
         //
-        //        Test stopping criterion. Continue iterating if
-        //           1) The residual BERR(J) is larger than machine epsilon, and
-        //           2) BERR(J) decreased by at least a factor of 2 during the
-        //              last iteration, and
-        //           3) At most ITMAX iterations tried.
+        // Test stopping criterion. Continue iterating if
+        // 1) The residual BERR(J) is larger than machine epsilon, and
+        // 2) BERR(J) decreased by at least a factor of 2 during the
+        // last iteration, and
+        // 3) At most ITMAX iterations tried.
         //
         if (berr[j - 1] > eps && two * berr[j - 1] <= lstres && count <= itmax) {
             //
-            //           Update solution and try again.
+            // Update solution and try again.
             //
             Cgetrs(trans, n, 1, af, ldaf, ipiv, work, n, info);
             Caxpy(n, one, work, 1, &x[(j - 1) * ldx], 1);
@@ -180,33 +185,33 @@ void Cgerfs(const char *trans, INTEGER const n, INTEGER const nrhs, COMPLEX *a, 
             goto statement_20;
         }
         //
-        //        Bound error from formula
+        // Bound error from formula
         //
-        //        norm(X - XTRUE) / norm(X) .le. FERR =
-        //        norm( abs(inv(op(A)))*
-        //           ( abs(R) + NZ*EPS*( abs(op(A))*abs(X)+abs(B) ))) / norm(X)
+        // norm(X - XTRUE) / norm(X) .le. FERR =
+        // norm( abs(inv(op(A)))*
+        // ( abs(R) + NZ*EPS*( abs(op(A))*abs(X)+abs(B) ))) / norm(X)
         //
-        //        where
-        //          norm(Z) is the magnitude of the largest component of Z
-        //          inv(op(A)) is the inverse of op(A)
-        //          abs(Z) is the componentwise absolute value of the matrix or
-        //             vector Z
-        //          NZ is the maximum number of nonzeros in any row of A, plus 1
-        //          EPS is machine epsilon
+        // where
+        // norm(Z) is the magnitude of the largest component of Z
+        // inv(op(A)) is the inverse of op(A)
+        // abs(Z) is the componentwise absolute value of the matrix or
+        // vector Z
+        // NZ is the maximum number of nonzeros in any row of A, plus 1
+        // EPS is machine epsilon
         //
-        //        The i-th component of abs(R)+NZ*EPS*(abs(op(A))*abs(X)+abs(B))
-        //        is incremented by SAFE1 if the i-th component of
-        //        abs(op(A))*abs(X) + abs(B) is less than SAFE2.
+        // The i-th component of abs(R)+NZ*EPS*(abs(op(A))*abs(X)+abs(B))
+        // is incremented by SAFE1 if the i-th component of
+        // abs(op(A))*abs(X) + abs(B) is less than SAFE2.
         //
-        //        Use Clacn2 to estimate the infinity-norm of the matrix
-        //           inv(op(A)) * diag(W),
-        //        where W = abs(R) + NZ*EPS*( abs(op(A))*abs(X)+abs(B) )))
+        // Use Clacn2 to estimate the infinity-norm of the matrix
+        // inv(op(A)) * diag(W),
+        // where W = abs(R) + NZ*EPS*( abs(op(A))*abs(X)+abs(B) )))
         //
         for (i = 1; i <= n; i = i + 1) {
             if (rwork[i - 1] > safe2) {
-                rwork[i - 1] = abs1(work[i - 1]) + nz * eps * rwork[i - 1];
+                rwork[i - 1] = cabs1(work[i - 1]) + nz * eps * rwork[i - 1];
             } else {
-                rwork[i - 1] = abs1(work[i - 1]) + nz * eps * rwork[i - 1] + safe1;
+                rwork[i - 1] = cabs1(work[i - 1]) + nz * eps * rwork[i - 1] + safe1;
             }
         }
         //
@@ -216,7 +221,7 @@ void Cgerfs(const char *trans, INTEGER const n, INTEGER const nrhs, COMPLEX *a, 
         if (kase != 0) {
             if (kase == 1) {
                 //
-                //              Multiply by diag(W)*inv(op(A)**H).
+                // Multiply by diag(W)*inv(op(A)**H).
                 //
                 Cgetrs(&transt, n, 1, af, ldaf, ipiv, work, n, info);
                 for (i = 1; i <= n; i = i + 1) {
@@ -224,7 +229,7 @@ void Cgerfs(const char *trans, INTEGER const n, INTEGER const nrhs, COMPLEX *a, 
                 }
             } else {
                 //
-                //              Multiply by inv(op(A))*diag(W).
+                // Multiply by inv(op(A))*diag(W).
                 //
                 for (i = 1; i <= n; i = i + 1) {
                     work[i - 1] = rwork[i - 1] * work[i - 1];
@@ -234,11 +239,11 @@ void Cgerfs(const char *trans, INTEGER const n, INTEGER const nrhs, COMPLEX *a, 
             goto statement_100;
         }
         //
-        //        Normalize error.
+        // Normalize error.
         //
         lstres = zero;
         for (i = 1; i <= n; i = i + 1) {
-            lstres = max(lstres, abs1(x[(i - 1) + (j - 1) * ldx]));
+            lstres = max(lstres, cabs1(x[(i - 1) + (j - 1) * ldx]));
         }
         if (lstres != zero) {
             ferr[j - 1] = ferr[j - 1] / lstres;
@@ -246,6 +251,6 @@ void Cgerfs(const char *trans, INTEGER const n, INTEGER const nrhs, COMPLEX *a, 
         //
     }
     //
-    //     End of Cgerfs
+    // End of Cgerfs
     //
 }

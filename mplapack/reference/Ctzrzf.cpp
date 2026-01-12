@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,12 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine ZTZRZF.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Ctzrzf(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *tau, COMPLEX *work, INTEGER const lwork, INTEGER &info) {
     //
-    //     Test the input arguments
+    // Test the input arguments
     //
     info = 0;
     bool lquery = (lwork == -1);
@@ -52,7 +59,7 @@ void Ctzrzf(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, COM
             lwkmin = 1;
         } else {
             //
-            //           Determine the block size.
+            // Determine the block size.
             //
             nb = iMlaenv(1, "Cgerqf", " ", m, n, -1, -1);
             lwkopt = m * nb;
@@ -72,7 +79,7 @@ void Ctzrzf(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, COM
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     INTEGER i = 0;
     const COMPLEX zero = COMPLEX(0.0, 0.0);
@@ -91,19 +98,19 @@ void Ctzrzf(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, COM
     INTEGER ldwork = 0;
     if (nb > 1 && nb < m) {
         //
-        //        Determine when to cross over from blocked to unblocked code.
+        // Determine when to cross over from blocked to unblocked code.
         //
         nx = max((INTEGER)0, iMlaenv(3, "Cgerqf", " ", m, n, -1, -1));
         if (nx < m) {
             //
-            //           Determine if workspace is large enough for blocked code.
+            // Determine if workspace is large enough for blocked code.
             //
             ldwork = m;
             iws = ldwork * nb;
             if (lwork < iws) {
                 //
-                //              Not enough workspace to use optimal NB:  reduce NB and
-                //              determine the minimum value of NB.
+                // Not enough workspace to use optimal NB:  reduce NB and
+                // determine the minimum value of NB.
                 //
                 nb = lwork / ldwork;
                 nbmin = max((INTEGER)2, iMlaenv(2, "Cgerqf", " ", m, n, -1, -1));
@@ -118,8 +125,8 @@ void Ctzrzf(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, COM
     INTEGER mu = 0;
     if (nb >= nbmin && nb < m && nx < m) {
         //
-        //        Use blocked code initially.
-        //        The last kk rows are handled by the block method.
+        // Use blocked code initially.
+        // The last kk rows are handled by the block method.
         //
         m1 = min(m + 1, n);
         ki = ((m - nx - 1) / nb) * nb;
@@ -128,18 +135,18 @@ void Ctzrzf(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, COM
         for (i = m - kk + ki + 1; i >= m - kk + 1; i = i - nb) {
             ib = min(m - i + 1, nb);
             //
-            //           Compute the TZ factorization of the current block
-            //           A(i:i+ib-1,i:n)
+            // Compute the TZ factorization of the current block
+            // A(i:i+ib-1,i:n)
             //
             Clatrz(ib, n - i + 1, n - m, &a[(i - 1) + (i - 1) * lda], lda, &tau[i - 1], work);
             if (i > 1) {
                 //
-                //              Form the triangular factor of the block reflector
-                //              H = H(i+ib-1) . . . H(i+1) H(i)
+                // Form the triangular factor of the block reflector
+                // H = H(i+ib-1) . . . H(i+1) H(i)
                 //
                 Clarzt("Backward", "Rowwise", n - m, ib, &a[(i - 1) + (m1 - 1) * lda], lda, &tau[i - 1], work, ldwork);
                 //
-                //              Apply H to A(1:i-1,i:n) from the right
+                // Apply H to A(1:i-1,i:n) from the right
                 //
                 Clarzb("Right", "No transpose", "Backward", "Rowwise", i - 1, n - i + 1, ib, n - m, &a[(i - 1) + (m1 - 1) * lda], lda, work, ldwork, &a[(i - 1) * lda], lda, &work[(ib + 1) - 1], ldwork);
             }
@@ -149,7 +156,7 @@ void Ctzrzf(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, COM
         mu = m;
     }
     //
-    //     Use unblocked code to factor the last or only block
+    // Use unblocked code to factor the last or only block
     //
     if (mu > 0) {
         Clatrz(mu, n, n - m, a, lda, tau, work);
@@ -157,6 +164,6 @@ void Ctzrzf(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, COM
     //
     work[1 - 1] = lwkopt;
     //
-    //     End of Ctzrzf
+    // End of Ctzrzf
     //
 }

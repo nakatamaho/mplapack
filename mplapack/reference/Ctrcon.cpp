@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,10 +26,15 @@
  *
  */
 
+// Derived from LAPACK routine ZTRCON.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
-
-inline REAL abs1(COMPLEX zdum) { return abs(zdum.real()) + abs(zdum.imag()); }
 
 void Ctrcon(const char *norm, const char *uplo, const char *diag, INTEGER const n, COMPLEX *a, INTEGER const lda, REAL &rcond, COMPLEX *work, REAL *rwork, INTEGER &info) {
     COMPLEX zdum = 0.0;
@@ -49,36 +54,7 @@ void Ctrcon(const char *norm, const char *uplo, const char *diag, INTEGER const 
     INTEGER ix = 0;
     REAL xnorm = 0.0;
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Statement Functions ..
-    //     ..
-    //     .. Statement Function definitions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     upper = Mlsame(uplo, "U");
@@ -101,7 +77,7 @@ void Ctrcon(const char *norm, const char *uplo, const char *diag, INTEGER const 
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0) {
         rcond = one;
@@ -111,15 +87,15 @@ void Ctrcon(const char *norm, const char *uplo, const char *diag, INTEGER const 
     rcond = zero;
     smlnum = Rlamch("Safe minimum") * castREAL(max((INTEGER)1, n));
     //
-    //     Compute the norm of the triangular matrix A.
+    // Compute the norm of the triangular matrix A.
     //
     anorm = Clantr(norm, uplo, diag, n, n, a, lda, rwork);
     //
-    //     Continue only if ANORM > 0.
+    // Continue only if ANORM > 0.
     //
     if (anorm > zero) {
         //
-        //        Estimate the norm of the inverse of A.
+        // Estimate the norm of the inverse of A.
         //
         ainvnm = zero;
         normin = 'N';
@@ -134,22 +110,22 @@ void Ctrcon(const char *norm, const char *uplo, const char *diag, INTEGER const 
         if (kase != 0) {
             if (kase == kase1) {
                 //
-                //              Multiply by inv(A).
+                // Multiply by inv(A).
                 //
                 Clatrs(uplo, "No transpose", diag, &normin, n, a, lda, work, scale, rwork, info);
             } else {
                 //
-                //              Multiply by inv(A**H).
+                // Multiply by inv(A**H).
                 //
                 Clatrs(uplo, "Conjugate transpose", diag, &normin, n, a, lda, work, scale, rwork, info);
             }
             normin = 'Y';
             //
-            //           Multiply by 1/SCALE if doing so will not cause overflow.
+            // Multiply by 1/SCALE if doing so will not cause overflow.
             //
             if (scale != one) {
                 ix = iCamax(n, work, 1);
-                xnorm = abs1(work[ix - 1]);
+                xnorm = cabs1(work[ix - 1]);
                 if (scale < xnorm * smlnum || scale == zero) {
                     goto statement_20;
                 }
@@ -158,7 +134,7 @@ void Ctrcon(const char *norm, const char *uplo, const char *diag, INTEGER const 
             goto statement_10;
         }
         //
-        //        Compute the estimate of the reciprocal condition number.
+        // Compute the estimate of the reciprocal condition number.
         //
         if (ainvnm != zero) {
             rcond = (one / anorm) / ainvnm;
@@ -167,6 +143,6 @@ void Ctrcon(const char *norm, const char *uplo, const char *diag, INTEGER const 
 //
 statement_20:;
     //
-    //     End of Ctrcon
+    // End of Ctrcon
     //
 }

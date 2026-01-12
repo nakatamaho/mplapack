@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2021-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -29,36 +29,58 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-REAL Mmaxval(REAL *dx, INTEGER const start, INTEGER const end, INTEGER incx) {
-    REAL dmax = 0.0;
-    if (incx <= 0) {
-        return dx[start];
+REAL Mmaxval(REAL *dx, INTEGER const start, INTEGER const end, INTEGER const incx) {
+    // Fortran MAXVAL for a rank-1 section:
+    //   maxval( dx(start:end:incx) )
+    // Assumptions:
+    //   - start/end are 1-based indices into dx
+    //   - incx is the section stride (may be negative)
+    // Semantics for an empty section:
+    // - return -HUGE (implemented as -Rlamch("O") in LAPACK/MPLAPACK style)
+
+    if (dx == nullptr) {
+        Mxerbla("Mmaxval", 1);
+        return -Rlamch("O");
     }
-    INTEGER i = 0;
-    INTEGER ix = 0;
+
+    if (incx == 0) {
+        // Invalid stride: treat as empty section (Fortran array section with stride 0 is illegal)
+        Mxerbla("Mmaxval", 4);
+        return -Rlamch("O");
+    }
+
+    // Empty section check
+    if ((incx > 0 && start > end) || (incx < 0 && start < end)) {
+        return -Rlamch("O");
+    }
+
+    REAL dmax = dx[start - 1];
+
+    // Fast path: contiguous forward
     if (incx == 1) {
-        //
-        //        code for increment equal to 1
-        //
-        dmax = dx[start - 1];
-        for (i = start + 1; i <= end; i = i + 1) {
+        for (INTEGER i = start + 1; i <= end; ++i) {
             if (dx[i - 1] > dmax) {
                 dmax = dx[i - 1];
             }
         }
-    } else {
-        //
-        //        code for increment not equal to 1
-        //
-        ix = 1;
-        dmax = dx[start - 1];
-        ix += incx;
-        for (i = start + 1; i <= end; i = i + 1) {
+        return dmax;
+    }
+
+    // General path: arbitrary stride (positive or negative)
+    INTEGER ix = start + incx;
+    if (incx > 0) {
+        for (; ix <= end; ix += incx) {
             if (dx[ix - 1] > dmax) {
                 dmax = dx[ix - 1];
             }
-            ix += incx;
+        }
+    } else { // incx < 0
+        for (; ix >= end; ix += incx) {
+            if (dx[ix - 1] > dmax) {
+                dmax = dx[ix - 1];
+            }
         }
     }
+
     return dmax;
 }

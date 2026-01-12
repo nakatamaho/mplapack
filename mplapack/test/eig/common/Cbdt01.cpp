@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZBDT01.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -40,7 +47,7 @@ using fem::common;
 
 void Cbdt01(INTEGER const m, INTEGER const n, INTEGER const kd, COMPLEX *a, INTEGER const lda, COMPLEX *q, INTEGER const ldq, REAL *d, REAL *e, COMPLEX *pt, INTEGER const ldpt, COMPLEX *work, REAL *rwork, REAL &resid) {
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     const REAL zero = 0.0;
     if (m <= 0 || n <= 0) {
@@ -48,7 +55,7 @@ void Cbdt01(INTEGER const m, INTEGER const n, INTEGER const kd, COMPLEX *a, INTE
         return;
     }
     //
-    //     Compute A - Q * B * P' one column at a time.
+    // Compute A - Q * B * P' one column at a time.
     //
     resid = zero;
     INTEGER j = 0;
@@ -56,11 +63,11 @@ void Cbdt01(INTEGER const m, INTEGER const n, INTEGER const kd, COMPLEX *a, INTE
     const REAL one = 1.0;
     if (kd != 0) {
         //
-        //        B is bidiagonal.
+        // B is bidiagonal.
         //
         if (kd != 0 && m >= n) {
             //
-            //           B is upper bidiagonal and M >= N.
+            // B is upper bidiagonal and M >= N.
             //
             for (j = 1; j <= n; j = j + 1) {
                 Ccopy(m, &a[(j - 1) * lda], 1, work, 1);
@@ -73,7 +80,7 @@ void Cbdt01(INTEGER const m, INTEGER const n, INTEGER const kd, COMPLEX *a, INTE
             }
         } else if (kd < 0) {
             //
-            //           B is upper bidiagonal and M < N.
+            // B is upper bidiagonal and M < N.
             //
             for (j = 1; j <= n; j = j + 1) {
                 Ccopy(m, &a[(j - 1) * lda], 1, work, 1);
@@ -86,7 +93,7 @@ void Cbdt01(INTEGER const m, INTEGER const n, INTEGER const kd, COMPLEX *a, INTE
             }
         } else {
             //
-            //           B is lower bidiagonal.
+            // B is lower bidiagonal.
             //
             for (j = 1; j <= n; j = j + 1) {
                 Ccopy(m, &a[(j - 1) * lda], 1, work, 1);
@@ -100,7 +107,7 @@ void Cbdt01(INTEGER const m, INTEGER const n, INTEGER const kd, COMPLEX *a, INTE
         }
     } else {
         //
-        //        B is diagonal.
+        // B is diagonal.
         //
         if (m >= n) {
             for (j = 1; j <= n; j = j + 1) {
@@ -123,7 +130,7 @@ void Cbdt01(INTEGER const m, INTEGER const n, INTEGER const kd, COMPLEX *a, INTE
         }
     }
     //
-    //     Compute norm(A - Q * B * P') / ( n * norm(A) * EPS )
+    // Compute norm(A - Q * B * P') / ( n * norm(A) * EPS )
     //
     REAL anorm = Clange("1", m, n, a, lda, rwork);
     REAL eps = Rlamch("Precision");
@@ -144,6 +151,6 @@ void Cbdt01(INTEGER const m, INTEGER const n, INTEGER const kd, COMPLEX *a, INTE
         }
     }
     //
-    //     End of Cbdt01
+    // End of Cbdt01
     //
 }

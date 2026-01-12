@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DLAFTS.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -46,13 +53,13 @@ void Rlafts(const char *type, INTEGER const m, INTEGER const n, INTEGER const im
     INTEGER k = 0;
     if (m == n) {
         //
-        //     Output for square matrices:
+        // Output for square matrices:
         //
         for (k = 1; k <= ntests; k = k + 1) {
             if (result[k - 1] >= thresh) {
                 //
-                //           If this is the first test to fail, call Rlahd2
-                //           to print a header to the data file.
+                // If this is the first test to fail, call Rlahd2
+                // to print a header to the data file.
                 //
                 if (ie == 0) {
                     Rlahd2(iounit, type);
@@ -73,13 +80,13 @@ void Rlafts(const char *type, INTEGER const m, INTEGER const n, INTEGER const im
         }
     } else {
         //
-        //     Output for rectangular matrices
+        // Output for rectangular matrices
         //
         for (k = 1; k <= ntests; k = k + 1) {
             if (result[k - 1] >= thresh) {
                 //
-                //              If this is the first test to fail, call Rlahd2
-                //              to print a header to the data file.
+                // If this is the first test to fail, call Rlahd2
+                // to print a header to the data file.
                 //
                 if (ie == 0) {
                     Rlahd2(iounit, type);
@@ -101,6 +108,6 @@ void Rlafts(const char *type, INTEGER const m, INTEGER const n, INTEGER const im
         //
     }
     //
-    //     End of Rlafts
+    // End of Rlafts
     //
 }

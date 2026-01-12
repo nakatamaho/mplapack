@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine ALAHDG.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -55,21 +62,6 @@ void Alahdg(INTEGER const iounit, const char *path) {
     static const char *format_9961 = "(3x,i2,': Matrix scaled near underflow limit')";
     static const char *format_9962 = "(3x,i2,': Matrix scaled near overflow limit')";
     static const char *format_9999 = "(1x,a)";
-    //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
     if (iounit <= 0) {
         return;
@@ -102,7 +94,7 @@ void Alahdg(INTEGER const iounit, const char *path) {
         write(iounit, "(/,1x,a3,': CS Decomposition')"), path;
     }
     //
-    //     Matrix types
+    // Matrix types
     //
     write(iounit, format_9999), "Matrix types: ";
     //
@@ -165,13 +157,13 @@ void Alahdg(INTEGER const iounit, const char *path) {
             3;
     }
     //
-    //     Tests performed
+    // Tests performed
     //
     write(iounit, format_9999), "Test ratios: ";
     //
     if (itype == 1) {
         //
-        //        GQR decomposition of rectangular matrices
+        // GQR decomposition of rectangular matrices
         //
         write(iounit, "(3x,i2,': norm( R - Q'' * A ) / ( min( N, M )*norm( A )','* EPS )')"), 1;
         write(iounit, "(3x,i2,': norm( T * Z - Q'' * B )  / ( min(P,N)*norm(B)','* EPS )')"), 2;
@@ -179,7 +171,7 @@ void Alahdg(INTEGER const iounit, const char *path) {
         write(iounit, format_9933), 4;
     } else if (itype == 2) {
         //
-        //        GRQ decomposition of rectangular matrices
+        // GRQ decomposition of rectangular matrices
         //
         write(iounit, "(3x,i2,': norm( R - A * Q'' ) / ( min( N,M )*norm(A) * ','EPS )')"), 1;
         write(iounit, "(3x,i2,': norm( T * Q - Z'' * B )  / ( min( P,N ) * nor','m(B)*EPS )')"), 2;
@@ -187,20 +179,20 @@ void Alahdg(INTEGER const iounit, const char *path) {
         write(iounit, format_9933), 4;
     } else if (itype == 3) {
         //
-        //        LSE Problem
+        // LSE Problem
         //
         write(iounit, "(3x,i2,': norm( A*x - c )  / ( norm(A)*norm(x) * EPS )')"), 1;
         write(iounit, "(3x,i2,': norm( B*x - d )  / ( norm(B)*norm(x) * EPS )')"), 2;
     } else if (itype == 4) {
         //
-        //        GLM Problem
+        // GLM Problem
         //
         write(iounit, "(3x,i2,': norm( d - A*x - B*y ) / ( (norm(A)+norm(B) )*',"
                       "'(norm(x)+norm(y))*EPS )')"),
             1;
     } else if (itype == 5) {
         //
-        //        GSVD
+        // GSVD
         //
         write(iounit, "(3x,i2,': norm( U'' * A * Q - D1 * R ) / ( min( M, N )*',"
                       "'norm( A ) * EPS )')"),
@@ -213,7 +205,7 @@ void Alahdg(INTEGER const iounit, const char *path) {
         write(iounit, "(3x,i2,': norm( I - Q''*Q )   / ( N * EPS )')"), 5;
     } else if (itype == 6) {
         //
-        //        CSD
+        // CSD
         //
         write(iounit, "(3x,'2-by-2 CSD')");
         write(iounit, "(3x,i2,': norm( U1'' * X11 * V1 - C ) / ( max(  P,  Q)',"
@@ -246,18 +238,18 @@ void Alahdg(INTEGER const iounit, const char *path) {
         write(iounit, "(3x,i2,': principal angle ordering ( 0 or ULP )')"), 15;
     }
     //
-    //     GQR test ratio
+    // GQR test ratio
     //
-    //     GRQ test ratio
+    // GRQ test ratio
     //
-    //     LSE test ratio
+    // LSE test ratio
     //
-    //     GLM test ratio
+    // GLM test ratio
     //
-    //     GSVD test ratio
+    // GSVD test ratio
     //
-    //     CSD test ratio
+    // CSD test ratio
     //
-    //     End of Alahdg
+    // End of Alahdg
     //
 }

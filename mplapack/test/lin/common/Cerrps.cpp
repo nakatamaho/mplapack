@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZERRPS.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -41,7 +48,7 @@ void Cerrps(const char *path, INTEGER const nunit) {
     //
     nout = nunit;
     //
-    //     Set the variables to innocuous values.
+    // Set the variables to innocuous values.
     //
     INTEGER j = 0;
     const INTEGER nmax = 4;
@@ -62,10 +69,10 @@ void Cerrps(const char *path, INTEGER const nunit) {
     }
     ok = true;
     //
-    //        Test error exits of the routines that use the Cholesky
-    //        decomposition of an Hermitian positive semidefinite matrix.
+    // Test error exits of the routines that use the Cholesky
+    // decomposition of an Hermitian positive semidefinite matrix.
     //
-    //        Cpstrf
+    // Cpstrf
     //
     strncpy(srnamt, "Cpstrf", srnamt_len);
     infot = 1;
@@ -80,7 +87,7 @@ void Cerrps(const char *path, INTEGER const nunit) {
     Cpstrf("U", 2, a, 1, piv, rank, -1.0, rwork, info);
     chkxer("Cpstrf", infot, nout, lerr, ok);
     //
-    //        Cpstf2
+    // Cpstf2
     //
     strncpy(srnamt, "Cpstf2", srnamt_len);
     infot = 1;
@@ -93,10 +100,10 @@ void Cerrps(const char *path, INTEGER const nunit) {
     Cpstf2("U", 2, a, 1, piv, rank, -1.0, rwork, info);
     chkxer("Cpstf2", infot, nout, lerr, ok);
     //
-    //     Print a summary line.
+    // Print a summary line.
     //
     Alaesm(path, ok, nout);
     //
-    //     End of Cerrps
+    // End of Cerrps
     //
 }

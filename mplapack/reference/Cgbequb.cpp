@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,41 +26,20 @@
  *
  */
 
+// Derived from LAPACK routine ZGBEQUB.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
-inline REAL abs1(COMPLEX zdum) { return abs(zdum.real()) + abs(zdum.imag()); }
-
 void Cgbequb(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku, COMPLEX *ab, INTEGER const ldab, REAL *r, REAL *c, REAL &rowcnd, REAL &colcnd, REAL &amax, INTEGER &info) {
+    COMPLEX zdum = 0.0;
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Statement Functions ..
-    //     ..
-    //     .. Statement Function definitions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     if (m < 0) {
@@ -79,7 +58,7 @@ void Cgbequb(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const k
         return;
     }
     //
-    //     Quick return if possible.
+    // Quick return if possible.
     //
     const REAL one = 1.0;
     const REAL zero = 0.0;
@@ -90,27 +69,27 @@ void Cgbequb(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const k
         return;
     }
     //
-    //     Get machine constants.  Assume SMLNUM is a power of the radix.
+    // Get machine constants.  Assume SMLNUM is a power of the radix.
     //
     REAL smlnum = Rlamch("S");
     REAL bignum = one / smlnum;
     REAL radix = Rlamch("B");
     REAL logrdx = log(radix);
     //
-    //     Compute row scale factors.
+    // Compute row scale factors.
     //
     INTEGER i = 0;
     for (i = 1; i <= m; i = i + 1) {
         r[i - 1] = zero;
     }
     //
-    //     Find the maximum element in each row.
+    // Find the maximum element in each row.
     //
     INTEGER kd = ku + 1;
     INTEGER j = 0;
     for (j = 1; j <= n; j = j + 1) {
         for (i = max(j - ku, (INTEGER)1); i <= min(j + kl, m); i = i + 1) {
-            r[i - 1] = max(r[i - 1], abs1(ab[((kd + i - j) - 1) + (j - 1) * ldab]));
+            r[i - 1] = max(r[i - 1], cabs1(ab[((kd + i - j) - 1) + (j - 1) * ldab]));
         }
     }
     for (i = 1; i <= m; i = i + 1) {
@@ -119,7 +98,7 @@ void Cgbequb(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const k
         }
     }
     //
-    //     Find the maximum and minimum scale factors.
+    // Find the maximum and minimum scale factors.
     //
     REAL rcmin = bignum;
     REAL rcmax = zero;
@@ -131,7 +110,7 @@ void Cgbequb(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const k
     //
     if (rcmin == zero) {
         //
-        //        Find the first zero scale factor and return an error code.
+        // Find the first zero scale factor and return an error code.
         //
         for (i = 1; i <= m; i = i + 1) {
             if (r[i - 1] == zero) {
@@ -141,36 +120,36 @@ void Cgbequb(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const k
         }
     } else {
         //
-        //        Invert the scale factors.
+        // Invert the scale factors.
         //
         for (i = 1; i <= m; i = i + 1) {
             r[i - 1] = one / min(max(r[i - 1], smlnum), bignum);
         }
         //
-        //        Compute ROWCND = min(R(I)) / max(R(I)).
+        // Compute ROWCND = min(R(I)) / max(R(I)).
         //
         rowcnd = max(rcmin, smlnum) / min(rcmax, bignum);
     }
     //
-    //     Compute column scale factors.
+    // Compute column scale factors.
     //
     for (j = 1; j <= n; j = j + 1) {
         c[j - 1] = zero;
     }
     //
-    //     Find the maximum element in each column,
-    //     assuming the row scaling computed above.
+    // Find the maximum element in each column,
+    // assuming the row scaling computed above.
     //
     for (j = 1; j <= n; j = j + 1) {
         for (i = max(j - ku, (INTEGER)1); i <= min(j + kl, m); i = i + 1) {
-            c[j - 1] = max(c[j - 1], REAL(abs1(ab[((kd + i - j) - 1) + (j - 1) * ldab]) * r[i - 1]));
+            c[j - 1] = max(c[j - 1], cabs1(ab[((kd + i - j) - 1) + (j - 1) * ldab]) * r[i - 1]);
         }
         if (c[j - 1] > zero) {
             c[j - 1] = pow(radix, castINTEGER(log(c[j - 1]) / logrdx));
         }
     }
     //
-    //     Find the maximum and minimum scale factors.
+    // Find the maximum and minimum scale factors.
     //
     rcmin = bignum;
     rcmax = zero;
@@ -181,7 +160,7 @@ void Cgbequb(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const k
     //
     if (rcmin == zero) {
         //
-        //        Find the first zero scale factor and return an error code.
+        // Find the first zero scale factor and return an error code.
         //
         for (j = 1; j <= n; j = j + 1) {
             if (c[j - 1] == zero) {
@@ -191,17 +170,17 @@ void Cgbequb(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const k
         }
     } else {
         //
-        //        Invert the scale factors.
+        // Invert the scale factors.
         //
         for (j = 1; j <= n; j = j + 1) {
             c[j - 1] = one / min(max(c[j - 1], smlnum), bignum);
         }
         //
-        //        Compute COLCND = min(C(J)) / max(C(J)).
+        // Compute COLCND = min(C(J)) / max(C(J)).
         //
         colcnd = max(rcmin, smlnum) / min(rcmax, bignum);
     }
     //
-    //     End of Cgbequb
+    // End of Cgbequb
     //
 }

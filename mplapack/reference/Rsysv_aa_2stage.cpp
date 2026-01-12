@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,33 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine DSYSV_AA_2STAGE.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Rsysv_aa_2stage(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *a, INTEGER const lda, REAL *tb, INTEGER const ltb, INTEGER *ipiv, INTEGER *ipiv2, REAL *b, INTEGER const ldb, REAL *work, INTEGER const lwork, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     bool upper = Mlsame(uplo, "U");
@@ -87,12 +73,12 @@ void Rsysv_aa_2stage(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL
         return;
     }
     //
-    //     Compute the factorization A = U**T*T*U or A = L*T*L**T.
+    // Compute the factorization A = U**T*T*U or A = L*T*L**T.
     //
     Rsytrf_aa_2stage(uplo, n, a, lda, tb, ltb, ipiv, ipiv2, work, lwork, info);
     if (info == 0) {
         //
-        //        Solve the system A*X = B, overwriting B with X.
+        // Solve the system A*X = B, overwriting B with X.
         //
         Rsytrs_aa_2stage(uplo, n, nrhs, a, lda, tb, ltb, ipiv, ipiv2, b, ldb, info);
         //
@@ -100,6 +86,6 @@ void Rsysv_aa_2stage(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL
     //
     work[1 - 1] = lwkopt;
     //
-    //     End of Rsysv_aa_2stage
+    // End of Rsysv_aa_2stage
     //
 }

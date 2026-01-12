@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DDRVSY_RK.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -144,7 +151,7 @@ void Rdrvsy_rk(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs
     }
     lwork = max((INTEGER)2 * nmax, nmax * nrhs);
     //
-    //     Test the error exits
+    // Test the error exits
     //
     if (tsterr) {
         Rerrvx(path, nout);
@@ -158,7 +165,7 @@ void Rdrvsy_rk(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs
     xlaenv(1, nb);
     xlaenv(2, nbmin);
     //
-    //     Do for each value of N in NVAL
+    // Do for each value of N in NVAL
     //
     for (in = 1; in <= nn; in = in + 1) {
         n = nval[in - 1];
@@ -171,28 +178,28 @@ void Rdrvsy_rk(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs
         //
         for (imat = 1; imat <= nimat; imat = imat + 1) {
             //
-            //           Do the tests only if DOTYPE( IMAT ) is true.
+            // Do the tests only if DOTYPE( IMAT ) is true.
             //
             if (!dotype[imat - 1]) {
                 goto statement_170;
             }
             //
-            //           Skip types 3, 4, 5, or 6 if the matrix size is too small.
+            // Skip types 3, 4, 5, or 6 if the matrix size is too small.
             //
             zerot = imat >= 3 && imat <= 6;
             if (zerot && n < imat - 2) {
                 goto statement_170;
             }
             //
-            //           Do first for UPLO = 'U', then for UPLO = 'L'
+            // Do first for UPLO = 'U', then for UPLO = 'L'
             //
             for (iuplo = 1; iuplo <= 2; iuplo = iuplo + 1) {
                 uplo = uplos[iuplo - 1];
                 //
-                //              Begin generate the test matrix A.
+                // Begin generate the test matrix A.
                 //
-                //              Set up parameters with Rlatb4 for the matrix generator
-                //              based on the type of matrix to be generated.
+                // Set up parameters with Rlatb4 for the matrix generator
+                // based on the type of matrix to be generated.
                 //
                 Rlatb4(matpath, imat, n, n, &type, kl, ku, anorm, mode, cndnum, &dist);
                 //
@@ -200,18 +207,18 @@ void Rdrvsy_rk(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs
                 //
                 Rlatms(n, n, &dist, iseed, &type, rwork, mode, cndnum, anorm, kl, ku, &uplo, a, lda, work, info);
                 //
-                //              Check error code from Rlatms and handle error.
+                // Check error code from Rlatms and handle error.
                 //
                 if (info != 0) {
                     Alaerh(path, "Rlatms", info, 0, &uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                     //
-                    //                 Skip all tests for this generated matrix
+                    // Skip all tests for this generated matrix
                     //
                     goto statement_160;
                 }
                 //
-                //              For types 3-6, zero one or more rows and columns of the
-                //              matrix to test that INFO is returned correctly.
+                // For types 3-6, zero one or more rows and columns of the
+                // matrix to test that INFO is returned correctly.
                 //
                 if (zerot) {
                     if (imat == 3) {
@@ -224,7 +231,7 @@ void Rdrvsy_rk(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs
                     //
                     if (imat < 6) {
                         //
-                        //                    Set row and column IZERO to zero.
+                        // Set row and column IZERO to zero.
                         //
                         if (iuplo == 1) {
                             ioff = (izero - 1) * lda;
@@ -251,7 +258,7 @@ void Rdrvsy_rk(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs
                         ioff = 0;
                         if (iuplo == 1) {
                             //
-                            //                       Set the first IZERO rows and columns to zero.
+                            // Set the first IZERO rows and columns to zero.
                             //
                             for (j = 1; j <= n; j = j + 1) {
                                 i2 = min(j, izero);
@@ -262,7 +269,7 @@ void Rdrvsy_rk(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs
                             }
                         } else {
                             //
-                            //                       Set the last IZERO rows and columns to zero.
+                            // Set the last IZERO rows and columns to zero.
                             //
                             for (j = 1; j <= n; j = j + 1) {
                                 i1 = max(j, izero);
@@ -277,15 +284,15 @@ void Rdrvsy_rk(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs
                     izero = 0;
                 }
                 //
-                //              End generate the test matrix A.
+                // End generate the test matrix A.
                 //
                 for (ifact = 1; ifact <= nfact; ifact = ifact + 1) {
                     //
-                    //                 Do first for FACT = 'F', then for other values.
+                    // Do first for FACT = 'F', then for other values.
                     //
                     fact = facts[ifact - 1];
                     //
-                    //                 Compute the condition number
+                    // Compute the condition number
                     //
                     if (zerot) {
                         if (ifact == 1) {
@@ -295,27 +302,27 @@ void Rdrvsy_rk(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs
                         //
                     } else if (ifact == 1) {
                         //
-                        //                    Compute the 1-norm of A.
+                        // Compute the 1-norm of A.
                         //
                         anorm = Rlansy("1", &uplo, n, a, lda, rwork);
                         //
-                        //                    Factor the matrix A.
+                        // Factor the matrix A.
                         //
                         Rlacpy(&uplo, n, n, a, lda, afac, lda);
                         Rsytrf_rk(&uplo, n, afac, lda, e, iwork, work, lwork, info);
                         //
-                        //                    Compute inv(A) and take its norm.
+                        // Compute inv(A) and take its norm.
                         //
                         Rlacpy(&uplo, n, n, afac, lda, ainv, lda);
                         lwork = (n + nb + 1) * (nb + 3);
                         //
-                        //                    We need to compute the inverse to compute
-                        //                    RCONDC that is used later in TEST3.
+                        // We need to compute the inverse to compute
+                        // RCONDC that is used later in TEST3.
                         //
                         Rsytri_3(&uplo, n, ainv, lda, e, iwork, work, lwork, info);
                         ainvnm = Rlansy("1", &uplo, n, ainv, lda, rwork);
                         //
-                        //                    Compute the 1-norm condition number of A.
+                        // Compute the 1-norm condition number of A.
                         //
                         if (anorm <= zero || ainvnm <= zero) {
                             rcondc = one;
@@ -329,7 +336,7 @@ void Rdrvsy_rk(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs
                     Rlarhs(matpath, &xtype, &uplo, " ", n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
                     xtype = 'C';
                     //
-                    //                 --- Test Rsysv_rk  ---
+                    // --- Test Rsysv_rk  ---
                     //
                     if (ifact == 2) {
                         Rlacpy(&uplo, n, n, a, lda, afac, lda);
@@ -340,8 +347,8 @@ void Rdrvsy_rk(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs
                         //
                         Rsysv_rk(&uplo, n, nrhs, afac, lda, e, iwork, x, lda, work, lwork, info);
                         //
-                        //                    Adjust the expected value of INFO to account for
-                        //                    pivoting.
+                        // Adjust the expected value of INFO to account for
+                        // pivoting.
                         //
                         k = izero;
                         if (k > 0) {
@@ -357,7 +364,7 @@ void Rdrvsy_rk(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs
                             }
                         }
                         //
-                        //                    Check error code from Rsysv_rk and handle error.
+                        // Check error code from Rsysv_rk and handle error.
                         //
                         if (info != k) {
                             Alaerh(path, "Rsysv_rk", info, k, &uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
@@ -366,24 +373,24 @@ void Rdrvsy_rk(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs
                             goto statement_120;
                         }
                         //
-                        //+    TEST 1      Reconstruct matrix from factors and compute
-                        //                 residual.
+                        // +    TEST 1      Reconstruct matrix from factors and compute
+                        // residual.
                         //
                         Rsyt01_3(&uplo, n, a, lda, afac, lda, e, iwork, ainv, lda, rwork, result[1 - 1]);
                         //
-                        //+    TEST 2      Compute residual of the computed solution.
+                        // +    TEST 2      Compute residual of the computed solution.
                         //
                         Rlacpy("Full", n, nrhs, b, lda, work, lda);
                         Rpot02(&uplo, n, nrhs, a, lda, x, lda, work, lda, rwork, result[2 - 1]);
                         //
-                        //+    TEST 3
-                        //                 Check solution from generated exact solution.
+                        // +    TEST 3
+                        // Check solution from generated exact solution.
                         //
                         Rget04(n, nrhs, x, lda, xact, lda, rcondc, result[3 - 1]);
                         nt = 3;
                         //
-                        //                    Print information about the tests that did not pass
-                        //                    the threshold.
+                        // Print information about the tests that did not pass
+                        // the threshold.
                         //
                         for (k = 1; k <= nt; k = k + 1) {
                             if (result[k - 1] >= thresh) {
@@ -410,10 +417,10 @@ void Rdrvsy_rk(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs
         }
     }
     //
-    //     Print a summary of the results.
+    // Print a summary of the results.
     //
     Alasvm(path, nout, nfail, nrun, nerrs);
     //
-    //     End of Rdrvsy_rk
+    // End of Rdrvsy_rk
     //
 }

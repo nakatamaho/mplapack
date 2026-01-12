@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,12 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine ZUNBDB5.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Cunbdb5(INTEGER const m1, INTEGER const m2, INTEGER const n, COMPLEX *x1, INTEGER const incx1, COMPLEX *x2, INTEGER const incx2, COMPLEX *q1, INTEGER const ldq1, COMPLEX *q2, INTEGER const ldq2, COMPLEX *work, INTEGER const lwork, INTEGER &info) {
     //
-    //     Test input arguments
+    // Test input arguments
     //
     info = 0;
     if (m1 < 0) {
@@ -57,20 +64,20 @@ void Cunbdb5(INTEGER const m1, INTEGER const m2, INTEGER const n, COMPLEX *x1, I
         return;
     }
     //
-    //     Project X onto the orthogonal complement of Q
+    // Project X onto the orthogonal complement of Q
     //
     INTEGER childinfo = 0;
     Cunbdb6(m1, m2, n, x1, incx1, x2, incx2, q1, ldq1, q2, ldq2, work, lwork, childinfo);
     //
-    //     If the projection is nonzero, then return
+    // If the projection is nonzero, then return
     //
     const COMPLEX zero = COMPLEX(0.0, 0.0);
     if (RCnrm2(m1, x1, incx1) != zero || RCnrm2(m2, x2, incx2) != zero) {
         return;
     }
     //
-    //     Project each standard basis vector e_1,...,e_M1 in turn, stopping
-    //     when a nonzero projection is found
+    // Project each standard basis vector e_1,...,e_M1 in turn, stopping
+    // when a nonzero projection is found
     //
     INTEGER i = 0;
     INTEGER j = 0;
@@ -89,8 +96,8 @@ void Cunbdb5(INTEGER const m1, INTEGER const m2, INTEGER const n, COMPLEX *x1, I
         }
     }
     //
-    //     Project each standard basis vector e_(M1+1),...,e_(M1+M2) in turn,
-    //     stopping when a nonzero projection is found
+    // Project each standard basis vector e_(M1+1),...,e_(M1+M2) in turn,
+    // stopping when a nonzero projection is found
     //
     for (i = 1; i <= m2; i = i + 1) {
         for (j = 1; j <= m1; j = j + 1) {
@@ -106,6 +113,6 @@ void Cunbdb5(INTEGER const m1, INTEGER const m2, INTEGER const n, COMPLEX *x1, I
         }
     }
     //
-    //     End of Cunbdb5
+    // End of Cunbdb5
     //
 }

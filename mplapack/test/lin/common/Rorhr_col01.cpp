@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DORHR_COL01.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -108,7 +115,7 @@ void Rorhr_col01(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
     //
     INTEGER nb1_ub = min(nb1, n);
     //
-    //     Rgemqrt requires NB2 to be bounded by N.
+    // Rgemqrt requires NB2 to be bounded by N.
     //
     INTEGER nb2_ub = min(nb2, n);
     //
@@ -169,9 +176,9 @@ void Rorhr_col01(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
         }
     }
     //
-    //     End Householder reconstruction routines.
+    // End Householder reconstruction routines.
     //
-    //     Generate the m-by-m matrix Q
+    // Generate the m-by-m matrix Q
     //
     const REAL zero = 0.0;
     REAL *q = new REAL[l * l];
@@ -180,14 +187,14 @@ void Rorhr_col01(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
     //
     Rgemqrt("L", "N", m, m, k, nb2_ub, af, m, t2, nb2, q, m, work, info);
     //
-    //     Copy R
+    // Copy R
     //
     Rlaset("Full", m, n, zero, zero, r, m);
     //
     Rlacpy("Upper", m, n, af, m, r, m);
     //
-    //     TEST 1
-    //     Compute |R - (Q**T)*A| / ( eps * m * |A| ) and store in RESULT(1)
+    // TEST 1
+    // Compute |R - (Q**T)*A| / ( eps * m * |A| ) and store in RESULT(1)
     //
     Rgemm("T", "N", m, n, m, -one, q, m, a, m, one, r, m);
     //
@@ -200,15 +207,15 @@ void Rorhr_col01(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
         result[1 - 1] = zero;
     }
     //
-    //     TEST 2
-    //     Compute |I - (Q**T)*Q| / ( eps * m ) and store in RESULT(2)
+    // TEST 2
+    // Compute |I - (Q**T)*Q| / ( eps * m ) and store in RESULT(2)
     //
     Rlaset("Full", m, m, zero, one, r, m);
     Rsyrk("U", "T", m, m, -one, q, m, one, r, m);
     resid = Rlansy("1", "Upper", m, r, m, rwork);
     result[2 - 1] = resid / (eps * max((INTEGER)1, m));
     //
-    //     Generate random m-by-n matrix C
+    // Generate random m-by-n matrix C
     //
     REAL *c = new REAL[m * n];
     INTEGER ldc = m;
@@ -224,8 +231,8 @@ void Rorhr_col01(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
     //
     Rgemqrt("L", "N", m, n, k, nb2_ub, af, m, t2, nb2, cf, m, work, info);
     //
-    //     TEST 3
-    //     Compute |CF - Q*C| / ( eps *  m * |C| )
+    // TEST 3
+    // Compute |CF - Q*C| / ( eps *  m * |C| )
     //
     Rgemm("N", "N", m, n, m, -one, q, m, c, m, one, cf, m);
     resid = Rlange("1", m, n, cf, m, rwork);
@@ -235,7 +242,7 @@ void Rorhr_col01(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
         result[3 - 1] = zero;
     }
     //
-    //     Copy C into CF again
+    // Copy C into CF again
     //
     Rlacpy("Full", m, n, c, m, cf, m);
     //
@@ -243,8 +250,8 @@ void Rorhr_col01(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
     //
     Rgemqrt("L", "T", m, n, k, nb2_ub, af, m, t2, nb2, cf, m, work, info);
     //
-    //     TEST 4
-    //     Compute |CF - (Q**T)*C| / ( eps * m * |C|)
+    // TEST 4
+    // Compute |CF - (Q**T)*C| / ( eps * m * |C|)
     //
     Rgemm("T", "N", m, n, m, -one, q, m, c, m, one, cf, m);
     resid = Rlange("1", m, n, cf, m, rwork);
@@ -254,7 +261,7 @@ void Rorhr_col01(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
         result[4 - 1] = zero;
     }
     //
-    //     Generate random n-by-m matrix D and a copy DF
+    // Generate random n-by-m matrix D and a copy DF
     //
     REAL *d = new REAL[n * m];
     INTEGER ldd = n;
@@ -269,8 +276,8 @@ void Rorhr_col01(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
     //
     Rgemqrt("R", "N", n, m, k, nb2_ub, af, m, t2, nb2, df, n, work, info);
     //
-    //     TEST 5
-    //     Compute |DF - D*Q| / ( eps * m * |D| )
+    // TEST 5
+    // Compute |DF - D*Q| / ( eps * m * |D| )
     //
     Rgemm("N", "N", n, m, m, -one, d, n, q, m, one, df, n);
     resid = Rlange("1", n, m, df, n, rwork);
@@ -280,7 +287,7 @@ void Rorhr_col01(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
         result[5 - 1] = zero;
     }
     //
-    //     Copy D into DF again
+    // Copy D into DF again
     //
     Rlacpy("Full", n, m, d, n, df, n);
     //
@@ -288,8 +295,8 @@ void Rorhr_col01(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
     //
     Rgemqrt("R", "T", n, m, k, nb2_ub, af, m, t2, nb2, df, n, work, info);
     //
-    //     TEST 6
-    //     Compute |DF - D*(Q**T)| / ( eps * m * |D| )
+    // TEST 6
+    // Compute |DF - D*(Q**T)| / ( eps * m * |D| )
     //
     Rgemm("N", "T", n, m, m, -one, d, n, q, m, one, df, n);
     resid = Rlange("1", n, m, df, n, rwork);

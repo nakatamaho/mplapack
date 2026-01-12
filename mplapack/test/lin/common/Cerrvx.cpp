@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZERRVX.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -46,7 +53,7 @@ void Cerrvx(const char *path, INTEGER const nunit) {
     c2[0] = path[1];
     c2[1] = path[2];
     //
-    //     Set the variables to innocuous values.
+    // Set the variables to innocuous values.
     //
     INTEGER j = 0;
     const INTEGER nmax = 4;
@@ -88,7 +95,7 @@ void Cerrvx(const char *path, INTEGER const nunit) {
     REAL rf[nmax];
     if (Mlsamen(2, c2, "GE")) {
         //
-        //        Cgesv
+        // Cgesv
         //
         strncpy(srnamt, "Cgesv", srnamt_len);
         infot = 1;
@@ -104,7 +111,7 @@ void Cerrvx(const char *path, INTEGER const nunit) {
         Cgesv(2, 1, a, 2, ip, b, 1, info);
         chkxer("Cgesv", infot, nout, lerr, ok);
         //
-        //        Cgesvx
+        // Cgesvx
         //
         strncpy(srnamt, "Cgesvx", srnamt_len);
         infot = 1;
@@ -146,7 +153,7 @@ void Cerrvx(const char *path, INTEGER const nunit) {
         //
     } else if (Mlsamen(2, c2, "GB")) {
         //
-        //        Cgbsv
+        // Cgbsv
         //
         strncpy(srnamt, "Cgbsv", srnamt_len);
         infot = 1;
@@ -168,7 +175,7 @@ void Cerrvx(const char *path, INTEGER const nunit) {
         Cgbsv(2, 0, 0, 0, a, 1, ip, b, 1, info);
         chkxer("Cgbsv ", infot, nout, lerr, ok);
         //
-        //        Cgbsvx
+        // Cgbsvx
         //
         strncpy(srnamt, "Cgbsvx", srnamt_len);
         infot = 1;
@@ -216,7 +223,7 @@ void Cerrvx(const char *path, INTEGER const nunit) {
         //
     } else if (Mlsamen(2, c2, "GT")) {
         //
-        //        Cgtsv
+        // Cgtsv
         //
         strncpy(srnamt, "Cgtsv", srnamt_len);
         infot = 1;
@@ -229,7 +236,7 @@ void Cerrvx(const char *path, INTEGER const nunit) {
         Cgtsv(2, 0, &a[(1 - 1) + (1 - 1) * lda], &a[(1 - 1) + (2 - 1) * lda], &a[(1 - 1) + (3 - 1) * lda], b, 1, info);
         chkxer("Cgtsv ", infot, nout, lerr, ok);
         //
-        //        Cgtsvx
+        // Cgtsvx
         //
         strncpy(srnamt, "Cgtsvx", srnamt_len);
         infot = 1;
@@ -253,7 +260,7 @@ void Cerrvx(const char *path, INTEGER const nunit) {
         //
     } else if (Mlsamen(2, c2, "PO")) {
         //
-        //        Cposv
+        // Cposv
         //
         strncpy(srnamt, "Cposv", srnamt_len);
         infot = 1;
@@ -272,7 +279,7 @@ void Cerrvx(const char *path, INTEGER const nunit) {
         Cposv("U", 2, 0, a, 2, b, 1, info);
         chkxer("Cposv", infot, nout, lerr, ok);
         //
-        //        Cposvx
+        // Cposvx
         //
         strncpy(srnamt, "Cposvx", srnamt_len);
         infot = 1;
@@ -310,7 +317,7 @@ void Cerrvx(const char *path, INTEGER const nunit) {
         //
     } else if (Mlsamen(2, c2, "PP")) {
         //
-        //        Cppsv
+        // Cppsv
         //
         strncpy(srnamt, "Cppsv", srnamt_len);
         infot = 1;
@@ -326,7 +333,7 @@ void Cerrvx(const char *path, INTEGER const nunit) {
         Cppsv("U", 2, 0, a, b, 1, info);
         chkxer("Cppsv ", infot, nout, lerr, ok);
         //
-        //        Cppsvx
+        // Cppsvx
         //
         strncpy(srnamt, "Cppsvx", srnamt_len);
         infot = 1;
@@ -358,7 +365,7 @@ void Cerrvx(const char *path, INTEGER const nunit) {
         //
     } else if (Mlsamen(2, c2, "PB")) {
         //
-        //        Cpbsv
+        // Cpbsv
         //
         strncpy(srnamt, "Cpbsv", srnamt_len);
         infot = 1;
@@ -380,7 +387,7 @@ void Cerrvx(const char *path, INTEGER const nunit) {
         Cpbsv("U", 2, 0, 0, a, 1, b, 1, info);
         chkxer("Cpbsv ", infot, nout, lerr, ok);
         //
-        //        Cpbsvx
+        // Cpbsvx
         //
         strncpy(srnamt, "Cpbsvx", srnamt_len);
         infot = 1;
@@ -421,7 +428,7 @@ void Cerrvx(const char *path, INTEGER const nunit) {
         //
     } else if (Mlsamen(2, c2, "PT")) {
         //
-        //        Cptsv
+        // Cptsv
         //
         strncpy(srnamt, "Cptsv", srnamt_len);
         infot = 1;
@@ -434,7 +441,7 @@ void Cerrvx(const char *path, INTEGER const nunit) {
         Cptsv(2, 0, r, &a[(1 - 1) + (1 - 1) * lda], b, 1, info);
         chkxer("Cptsv ", infot, nout, lerr, ok);
         //
-        //        Cptsvx
+        // Cptsvx
         //
         strncpy(srnamt, "Cptsvx", srnamt_len);
         infot = 1;
@@ -455,7 +462,7 @@ void Cerrvx(const char *path, INTEGER const nunit) {
         //
     } else if (Mlsamen(2, c2, "HE")) {
         //
-        //        Chesv
+        // Chesv
         //
         strncpy(srnamt, "Chesv", srnamt_len);
         infot = 1;
@@ -480,7 +487,7 @@ void Cerrvx(const char *path, INTEGER const nunit) {
         Chesv("U", 0, 0, a, 1, ip, b, 1, w, -2, info);
         chkxer("Chesv ", infot, nout, lerr, ok);
         //
-        //        Chesvx
+        // Chesvx
         //
         strncpy(srnamt, "Chesvx", srnamt_len);
         infot = 1;
@@ -513,7 +520,7 @@ void Cerrvx(const char *path, INTEGER const nunit) {
         //
     } else if (Mlsamen(2, c2, "HR")) {
         //
-        //        Chesv_rook
+        // Chesv_rook
         //
         strncpy(srnamt, "Chesv_rook", srnamt_len);
         infot = 1;
@@ -537,15 +544,15 @@ void Cerrvx(const char *path, INTEGER const nunit) {
         //
     } else if (Mlsamen(2, c2, "HK")) {
         //
-        //        Csysv_rk
+        // Csysv_rk
         //
-        //        Test error exits of the driver that uses factorization
-        //        of a Hermitian indefinite matrix with rook
-        //        (bounded Bunch-Kaufman) pivoting with the new storage
-        //        format for factors L ( or U) and D.
+        // Test error exits of the driver that uses factorization
+        // of a Hermitian indefinite matrix with rook
+        // (bounded Bunch-Kaufman) pivoting with the new storage
+        // format for factors L ( or U) and D.
         //
-        //        L (or U) is stored in A, diagonal of D is stored on the
-        //        diagonal of A, subdiagonal of D is stored in a separate array E.
+        // L (or U) is stored in A, diagonal of D is stored on the
+        // diagonal of A, subdiagonal of D is stored in a separate array E.
         //
         strncpy(srnamt, "Chesv_rk", srnamt_len);
         infot = 1;
@@ -572,7 +579,7 @@ void Cerrvx(const char *path, INTEGER const nunit) {
         //
     } else if (Mlsamen(2, c2, "HA")) {
         //
-        //        Chesv_aa
+        // Chesv_aa
         //
         strncpy(srnamt, "Chesv_aa", srnamt_len);
         infot = 1;
@@ -590,7 +597,7 @@ void Cerrvx(const char *path, INTEGER const nunit) {
         //
     } else if (Mlsamen(2, c2, "H2")) {
         //
-        //        Chesv_aa_2stage
+        // ZHESV_AASEN_2STAGE
         //
         strncpy(srnamt, "Chesv_aa_2stage", srnamt_len);
         infot = 1;
@@ -614,7 +621,7 @@ void Cerrvx(const char *path, INTEGER const nunit) {
         //
     } else if (Mlsamen(2, c2, "S2")) {
         //
-        //        Csysv_aa_2stage
+        // ZSYSV_AASEN_2STAGE
         //
         strncpy(srnamt, "Csysv_aa_2stage", srnamt_len);
         infot = 1;
@@ -635,10 +642,10 @@ void Cerrvx(const char *path, INTEGER const nunit) {
         infot = 7;
         Csysv_aa_2stage("U", 2, 1, a, 2, a, 1, ip, ip, b, 2, w, 1, info);
         chkxer("Csysv_aa_2stage", infot, nout, lerr, ok);
-        //*
+        // *
     } else if (Mlsamen(2, c2, "HP")) {
         //
-        //        Chpsv
+        // Chpsv
         //
         strncpy(srnamt, "Chpsv", srnamt_len);
         infot = 1;
@@ -654,7 +661,7 @@ void Cerrvx(const char *path, INTEGER const nunit) {
         Chpsv("U", 2, 0, a, ip, b, 1, info);
         chkxer("Chpsv", infot, nout, lerr, ok);
         //
-        //        Chpsvx
+        // Chpsvx
         //
         strncpy(srnamt, "Chpsvx", srnamt_len);
         infot = 1;
@@ -678,7 +685,7 @@ void Cerrvx(const char *path, INTEGER const nunit) {
         //
     } else if (Mlsamen(2, c2, "SY")) {
         //
-        //        Csysv
+        // Csysv
         //
         strncpy(srnamt, "Csysv", srnamt_len);
         infot = 1;
@@ -700,7 +707,7 @@ void Cerrvx(const char *path, INTEGER const nunit) {
         Csysv("U", 0, 0, a, 1, ip, b, 1, w, -2, info);
         chkxer("Csysv", infot, nout, lerr, ok);
         //
-        //        Csysvx
+        // Csysvx
         //
         strncpy(srnamt, "Csysvx", srnamt_len);
         infot = 1;
@@ -733,7 +740,7 @@ void Cerrvx(const char *path, INTEGER const nunit) {
         //
     } else if (Mlsamen(2, c2, "SR")) {
         //
-        //        Csysv_rook
+        // Csysv_rook
         //
         strncpy(srnamt, "Csysv_rook", srnamt_len);
         infot = 1;
@@ -756,15 +763,15 @@ void Cerrvx(const char *path, INTEGER const nunit) {
         //
     } else if (Mlsamen(2, c2, "SK")) {
         //
-        //        Csysv_rk
+        // Csysv_rk
         //
-        //        Test error exits of the driver that uses factorization
-        //        of a symmetric indefinite matrix with rook
-        //        (bounded Bunch-Kaufman) pivoting with the new storage
-        //        format for factors L ( or U) and D.
+        // Test error exits of the driver that uses factorization
+        // of a symmetric indefinite matrix with rook
+        // (bounded Bunch-Kaufman) pivoting with the new storage
+        // format for factors L ( or U) and D.
         //
-        //        L (or U) is stored in A, diagonal of D is stored on the
-        //        diagonal of A, subdiagonal of D is stored in a separate array E.
+        // L (or U) is stored in A, diagonal of D is stored on the
+        // diagonal of A, subdiagonal of D is stored in a separate array E.
         //
         strncpy(srnamt, "Csysv_rk", srnamt_len);
         infot = 1;
@@ -791,7 +798,7 @@ void Cerrvx(const char *path, INTEGER const nunit) {
         //
     } else if (Mlsamen(2, c2, "SP")) {
         //
-        //        Cspsv
+        // Cspsv
         //
         strncpy(srnamt, "Cspsv", srnamt_len);
         infot = 1;
@@ -807,7 +814,7 @@ void Cerrvx(const char *path, INTEGER const nunit) {
         Cspsv("U", 2, 0, a, ip, b, 1, info);
         chkxer("Cspsv", infot, nout, lerr, ok);
         //
-        //        Cspsvx
+        // Cspsvx
         //
         strncpy(srnamt, "Cspsvx", srnamt_len);
         infot = 1;
@@ -830,7 +837,7 @@ void Cerrvx(const char *path, INTEGER const nunit) {
         chkxer("Cspsvx", infot, nout, lerr, ok);
     }
     //
-    //     Print a summary line.
+    // Print a summary line.
     //
     if (ok) {
         write(nout, "(1x,a3,' drivers passed the tests of the error exits')"), path;
@@ -838,6 +845,6 @@ void Cerrvx(const char *path, INTEGER const nunit) {
         write(nout, "(' *** ',a3,' drivers failed the tests of the error ','exits ***')"), path;
     }
     //
-    //     End of Cerrvx
+    // End of Cerrvx
     //
 }

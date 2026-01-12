@@ -1,9 +1,7 @@
 /*
- * Copyright (c) 2008-2010
+ * Copyright (c) 2008-2026
  *      Nakata, Maho
  *      All rights reserved.
- *
- *  $Id: Rlamch.cpp,v 1.16 2010/08/07 04:48:32 nakatamaho Exp $
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -47,140 +45,118 @@
 #include <stdio.h>
 
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
-//"E" denots we always calculate relative machine precision (e).
-// where 1+e = 1, minimum of e.
+
+REAL RlamchE_mpfr(void);
+REAL RlamchS_mpfr(void);
+REAL RlamchB_mpfr(void);
+REAL RlamchP_mpfr(void);
+REAL RlamchN_mpfr(void);
+REAL RlamchR_mpfr(void);
+REAL RlamchM_mpfr(void);
+REAL RlamchU_mpfr(void);
+REAL RlamchL_mpfr(void);
+REAL RlamchO_mpfr(void);
+REAL RlamchZ_mpfr(void);
+
+// "E" : relative machine precision (unit roundoff), assume rounding
 REAL RlamchE_mpfr(void) {
-    static REAL eps;
-    static int called = 0;
+    REAL one = 1.0;
+    const mp_prec_t prec = one.get_prec();
 
-    if (called)
-        return eps;
+    REAL eps;
+    eps.set_prec(prec);
 
-    REAL one = 1.0, rtmp;
-    mp_prec_t prec;
-    prec = one.get_prec();
-    rtmp = exp2(REAL(prec));
-    eps = one / rtmp;
-    called = 1;
+    // eps = 2^(-prec)  (DLAMCH('E') semantics: EPSILON * 0.5)
+    eps = mul_2si(one, -static_cast<mp_exp_t>(prec));
     return eps;
 }
 
-//"S" denots we always calculate `safe minimum, such that 1/sfmin does not overflow'.
-// cf.http://www.netlib.org/blas/dlamch.f
+// "S" : safe minimum such that 1/sfmin does not overflow (netlib logic)
+// sfmin = rmin; small = 1/rmax; if (small >= sfmin) sfmin = small*(1+eps)
 REAL RlamchS_mpfr(void) {
-    static REAL safemin;
-    static int called = 0;
-
-    if (called)
-        return safemin;
-
-    REAL one = 1.0, rtmp;
-    mp_exp_t emin;
-    emin = one.get_emin() + 1;
-    safemin = div_2ui(one, -emin);
-    return safemin;
-}
-
-//"B" base  = base of the machine
-// cf.http://www.netlib.org/blas/dlamch.f
-REAL RlamchB_mpfr(void) {
-    REAL two;
-    two = 2.0;
-    return two;
-}
-
-//"P" prec = eps*base
-// cf.http://www.netlib.org/blas/dlamch.f
-REAL RlamchP_mpfr(void) {
-    REAL base, eps, prec;
-
-    base = RlamchB_mpfr();
-    eps = RlamchE_mpfr();
-    prec = eps * base;
-    return prec;
-}
-
-//"N" t = number of digits in mantissa
-// cf.http://www.netlib.org/blas/dlamch.f
-REAL RlamchN_mpfr(void) {
-    REAL r;
-    mp_prec_t p = mpfr::mpreal::default_prec;
-    return REAL(p);
-}
-
-//"R" rnd   = 1.0 when rounding occurs in addition, 0.0 otherwise
-// cf.http://www.netlib.org/blas/dlamch.f
-REAL RlamchR_mpfr(void) {
-    // always rounding in addition on MPFR.
-    REAL mtmp;
-    mtmp = 1.0;
-    return mtmp;
-}
-
-//"M"
-// cf.http://www.netlib.org/blas/dlamch.f
-REAL RlamchM_mpfr(void) {
-    // Note: in MPFR, no gradual underflow, just happens suddenly.
-    REAL rtmp;
-    mpreal minexp(rtmp.get_emin());
-    return minexp;
-}
-
-//"U"
-// cf.http://www.netlib.org/blas/dlamch.f
-REAL RlamchU_mpfr(void) {
-    static REAL safemin;
-    static int called = 0;
-
-    if (called)
-        return safemin;
-
-    REAL one = 1.0, rtmp;
-    mp_exp_t emin;
-    emin = one.get_emin();
-    safemin = div_2si(one, -emin - 1);
-    return safemin;
-}
-
-//"L"
-// cf.http://www.netlib.org/blas/dlamch.f
-REAL RlamchL_mpfr(void) {
-    mpreal dummy;
-    mp_exp_t emax;
-    emax = dummy.get_emax() - 1;
-    return mpreal(emax);
-}
-
-//"O"
-// cf.http://www.netlib.org/blas/dlamch.f
-REAL RlamchO_mpfr(void) {
-    ///(1-2^(-p))*2^emax
-    // in double's case, +1.7976931348623157e+308 = +4.4942328371557898e+307 x 3.999999999999999(16 digits)
-    // where +4.4942328371557898e+307 is the reciprocal of 1/safmin.
-    // of course +4.4942328371557898e+307 times 4 overflows.
-
-    static REAL overflow;
-    static int called = 0;
-
-    if (called)
-        return overflow;
-
     REAL one = 1.0;
-    REAL rtmp;
-    mp_prec_t prec = one.get_prec();
-    mp_exp_t emax = one.get_emax();
-    rtmp = exp2(-REAL(prec));
-    overflow = mul_2si(one, emax - 1);
-    overflow = overflow * (one - rtmp) * 2.0;
-    return overflow;
+    const mp_prec_t prec = one.get_prec();
+
+    const REAL eps = RlamchE_mpfr();
+    const REAL rmin = RlamchU_mpfr();
+    const REAL rmax = RlamchO_mpfr();
+
+    REAL sfmin;
+    sfmin.set_prec(prec);
+
+    sfmin = rmin;
+    const REAL small = one / rmax;
+    if (small >= sfmin) {
+        sfmin = small * (one + eps);
+    }
+    return sfmin;
 }
 
-//"Z" :dummy
-// cf.http://www.netlib.org/blas/dlamch.f
-REAL RlamchZ_mpfr(void) {
-    REAL mtemp = 0.0;
-    return mtemp;
+// "B" : base of the machine
+REAL RlamchB_mpfr(void) { return REAL(2.0); }
+
+// "P" : precision = eps*base
+REAL RlamchP_mpfr(void) { return RlamchE_mpfr() * RlamchB_mpfr(); }
+
+// "N" : number of (base) digits in the mantissa
+REAL RlamchN_mpfr(void) {
+    REAL one = 1.0;
+    return REAL(one.get_prec());
 }
+
+// "R" : rounding mode (1.0 when rounding occurs in addition, 0.0 otherwise)
+REAL RlamchR_mpfr(void) {
+    // DLAMCH('R') reports whether the arithmetic rounds (1) or chops/truncates (0).
+    // For MPFR, this is controlled by the current default rounding mode.
+    // We interpret MPFR_RNDZ (round toward zero) as chopping; other modes imply rounding.
+    const mpfr_rnd_t rnd = mpfr_get_default_rounding_mode();
+    return (rnd == MPFR_RNDZ) ? REAL(0.0) : REAL(1.0);
+}
+
+// "M" : minimum exponent (emin) used by DLAMCH
+REAL RlamchM_mpfr(void) {
+    REAL one = 1.0;
+    return REAL(one.get_emin());
+}
+
+// "U" : underflow threshold rmin = base^(emin-1)
+// MPFR: smallest positive number is 0.5 * 2^emin => rmin = 2^(emin-1)
+REAL RlamchU_mpfr(void) {
+    REAL one = 1.0;
+    const mp_prec_t prec = one.get_prec();
+    const mp_exp_t emin = one.get_emin();
+
+    REAL rmin;
+    rmin.set_prec(prec);
+    rmin = mul_2si(one, emin - 1);
+    return rmin;
+}
+
+// "L" : largest exponent before overflow (emax) used by DLAMCH
+REAL RlamchL_mpfr(void) {
+    REAL one = 1.0;
+    return REAL(one.get_emax());
+}
+
+// "O" : overflow threshold rmax = (base^emax) * (1 - eps)
+// MPFR: largest value is (1 - eps) * 2^emax
+REAL RlamchO_mpfr(void) {
+    REAL one = 1.0;
+    const mp_prec_t prec = one.get_prec();
+    const mp_exp_t emax = one.get_emax();
+
+    const REAL eps = RlamchE_mpfr();
+
+    REAL rmax;
+    rmax.set_prec(prec);
+
+    // rmax = (1 - eps) * 2^emax
+    rmax = mul_2si(one - eps, emax);
+    return rmax;
+}
+
+// "Z" : dummy
+REAL RlamchZ_mpfr(void) { return REAL(0.0); }
 
 REAL Rlamch_mpfr(const char *cmach) {
     if (Mlsame(cmach, "E"))
@@ -207,189 +183,151 @@ REAL Rlamch_mpfr(const char *cmach) {
     Mxerbla("Rlamch", 1);
     return RlamchZ_mpfr();
 }
+
 #endif
 
 #if defined ___MPLAPACK_BUILD_WITH_GMP___
-//"E" denots we always calculate relative machine precision (e).
-// where 1+e = 1, minimum of e.
+REAL RlamchE_gmp(void);
+REAL RlamchS_gmp(void);
+REAL RlamchB_gmp(void);
+REAL RlamchP_gmp(void);
+REAL RlamchN_gmp(void);
+REAL RlamchR_gmp(void);
+REAL RlamchM_gmp(void);
+REAL RlamchU_gmp(void);
+REAL RlamchL_gmp(void);
+REAL RlamchO_gmp(void);
+REAL RlamchZ_gmp(void);
+
+// Helper: choose a conservative exponent limit for GMP mpf.
+//
+// mp_exp_t is a signed type (typically long). We use half of its maximum
+// to keep headroom for internal GMP exponent arithmetic and match the
+// historical constants (0x3FFFFFFF for 32-bit, 0x3FFFFFFFFFFFFFFF for 64-bit).
+static inline mp_bitcnt_t get_max_safe_exponent() {
+    const mp_exp_t max_e = std::numeric_limits<mp_exp_t>::max();
+    return static_cast<mp_bitcnt_t>(max_e / 2);
+}
+
+// "E": Relative machine precision for chopping/truncation.
+// Option B for GMP mpf: chopping.
+// Define eps as the smallest E such that 1 + E > 1 (gap near 1).
+// For this mpf setting, eps = 2^(-prec).
 REAL RlamchE_gmp(void) {
-    static REAL eps;
-    static int called = 0;
-    if (called)
-        return eps;
-    REAL one;
-    unsigned long exp2;
-    one = 1.0;
-    exp2 = mpf_get_prec(one.get_mpf_t());
-    mpf_div_2exp(eps.get_mpf_t(), one.get_mpf_t(), exp2);
-    called = 1;
+    const REAL one = 1.0;
+    const mp_bitcnt_t prec = mpf_get_prec(one.get_mpf_t());
+
+    REAL eps;
+    eps.set_prec(prec);
+
+    // eps = 2^(-prec)
+    mpf_div_2exp(eps.get_mpf_t(), one.get_mpf_t(), prec);
+
     return eps;
 }
 
-//"S" denots we always calculate `safe minimum, such that 1/sfmin does not overflow'.
-// cf.http://www.netlib.org/blas/dlamch.f
+// "S": Safe minimum such that 1/sfmin does not overflow.
+//
+// Netlib DLAMCH logic:
+//   sfmin = rmin
+//   small = 1/rmax
+//   if (small >= sfmin) sfmin = small * (1 + eps)
+// Dependency: RlamchE_gmp, RlamchU_gmp, RlamchO_gmp
 REAL RlamchS_gmp(void) {
+    const REAL one = 1.0;
+    const mp_bitcnt_t prec = mpf_get_prec(one.get_mpf_t());
+
     REAL sfmin;
-    REAL one = 1.0;
-    unsigned long exp2;
-#if defined _WIN32 //exponent investigated by MPFR
-    exp2 = 0x3FFFFFFF;
-#else
-    exp2 = 0x3FFFFFFFFFFFFFFFL;
-#endif
-    mpf_div_2exp(sfmin.get_mpf_t(), one.get_mpf_t(), exp2);
+    sfmin.set_prec(prec);
+
+    const REAL eps = RlamchE_gmp();
+    const REAL rmin = RlamchU_gmp();
+    const REAL rmax = RlamchO_gmp();
+
+    sfmin = rmin;
+    const REAL small = one / rmax;
+    if (small >= sfmin) {
+        sfmin = small * (one + eps);
+    }
     return sfmin;
-
-    /* following code fragment is to test safe minimum
-        REAL largenum;
-        for(int p = 60; p>=0; p--) {
-          for (int a=16; a<= 5120; a=a+128) {
-            sfmin = 0.0;
-            mpf_set_default_prec(a);
-            exp2 = (1UL << (mp_bits_per_limb-p)) - 1;
-            mpf_div_2exp(sfmin.get_mpf_t(), one.get_mpf_t(), exp2);
-            largenum  = 1.0 / sfmin;
-            gmp_printf("%d, a:%5d, p:%5d sfmin: %16.20Fe largenum: %16.20Fe\n", mp_bits_per_limb, a, p, sfmin.get_mpf_t(), largenum.get_mpf_t());
-            if (sfmin < 1.0 ) { printf("sfmin yes\n"); }
-            if (largenum > 1.0 ) { printf("largenum yes\n"); }
-          }
-        }
-    */
 }
 
-//"B" base  = base of the machine
-// cf.http://www.netlib.org/blas/dlamch.f
-REAL RlamchB_gmp(void) {
-    REAL two;
-    two = 2.0;
-    return two;
-}
+// "B": Base of the machine (radix).
+REAL RlamchB_gmp(void) { return REAL(2.0); }
 
-//"P" prec = eps*base
-// cf.http://www.netlib.org/blas/dlamch.f
-REAL RlamchP_gmp(void) {
-    REAL base, eps, prec;
+// "P": Precision = eps * base.
+// Dependency: RlamchE_gmp, RlamchB_gmp
+REAL RlamchP_gmp(void) { return RlamchE_gmp() * RlamchB_gmp(); }
 
-    base = RlamchB_gmp();
-    eps = RlamchE_gmp();
-    prec = eps * base;
-    return prec;
-}
-
-//"N" t = number of digits in mantissa
-// cf.http://www.netlib.org/blas/dlamch.f
+// "N": Number of base-B digits in the mantissa.
 REAL RlamchN_gmp(void) {
-    unsigned long int tmp;
-    REAL mtmp;
-    REAL mtmp2;
-    tmp = mpf_get_prec(mtmp.get_mpf_t());
-    mtmp2 = tmp;
-    return mtmp2;
-
-    /* following is fragment of code to test digits in mantissa
-       for (int a=8; a<= 5120; a=a+128) {
-         mpf_set_default_prec(a);
-         REAL mmtmp;
-         tmp = mpf_get_prec(mmtmp.get_mpf_t());
-         printf("number of digits in mantissa %d\n", (int)tmp );
-       }
-    */
+    const REAL one = 1.0;
+    const mp_bitcnt_t prec = mpf_get_prec(one.get_mpf_t());
+    return REAL(prec);
 }
 
-//"R" rnd   = 1.0 when rounding occurs in addition, 0.0 otherwise
-// cf.http://www.netlib.org/blas/dlamch.f
-REAL RlamchR_gmp(void) {
-    // always rounding in addition on GMP.
-    REAL mtmp;
+// "R": Rounding mode indicator.
+//      Returns 1.0 when rounding occurs in addition, 0.0 otherwise.
+//      GMP mpf arithmetic uses truncation (chopping), not round-to-nearest.
+REAL RlamchR_gmp(void) { return REAL(0.0); }
 
-    mtmp = 1.0;
-    return mtmp;
-}
-
-//"M"
-// cf.http://www.netlib.org/blas/dlamch.f
+// "M": Minimum exponent (emin).
+//      DLAMCH defines rmin = base^(emin-1).
+//      With base=2 and rmin = 2^(-E), we have emin = 1 - E.
+//
+// Dependency: get_max_safe_exponent (not other Rlamch functions)
 REAL RlamchM_gmp(void) {
-    unsigned long exp2;
-    REAL tmp;
-    REAL uflowmin, one = 1.0;
-#if defined _WIN32 //exponent investigated by MPFR
-    exp2 = 0x3FFFFFFF;
-#else
-    exp2 = 0x3FFFFFFFFFFFFFFFL; //exponent investigated by MPFR
-#endif
-    tmp = exp2;
-    return -tmp;
-
-    /*
-      following code fragment is to test minimum
-      exponent before (gradual) underflow...but we just got Bus error
-        REAL mtmp1, mtmp2;
-        for(int p = 11; p>=0; p--) {
-          for (int a=51200; a<= 102400; a=a+128) {
-            mpf_set_default_prec(a);
-            printf("p %d a %d \n", p, a);
-            uflowmin=0.0;
-            exp2 = (1UL << (mp_bits_per_limb-p)) - 1;
-            mpf_div_2exp(uflowmin.get_mpf_t(), one.get_mpf_t(), exp2);
-            mtmp1 = uflowmin/2.0;
-            gmp_printf("p %d, uflowmin: %16.20Fe uflowmin/2 %16.20Fe\n", p, uflowmin.get_mpf_t(), mtmp1.get_mpf_t());
-            mtmp2 = mtmp1 * 2.0;
-            gmp_printf("mtmp2: %16.20Fe %lu\n", mtmp2.get_mpf_t(),exp2);
-            if (uflowmin != mtmp2 ) { printf("underflow\n"); exit(1); }
-          }
-        }
-    */
+    const mp_bitcnt_t E = get_max_safe_exponent();
+    return REAL(1.0) - REAL(E);
 }
 
-//"U"
-// cf.http://www.netlib.org/blas/dlamch.f
+// "U": Underflow threshold (rmin), minimum positive normalized number.
+//      rmin = 2^(-E) where E = get_max_safe_exponent()
+// Dependency: None (base quantity)
 REAL RlamchU_gmp(void) {
-    REAL underflowmin;
-    REAL one = 1.0;
-    unsigned long exp2;
-#if defined _WIN32
-    exp2 = 0x3FFFFFFF;
-#else
-    exp2 = 0x3FFFFFFFFFFFFFFFL;
-#endif
-    mpf_div_2exp(underflowmin.get_mpf_t(), one.get_mpf_t(), exp2);
-    return underflowmin;
+    const REAL one = 1.0;
+    const mp_bitcnt_t prec = mpf_get_prec(one.get_mpf_t());
+    const mp_bitcnt_t E = get_max_safe_exponent();
+
+    REAL rmin;
+    rmin.set_prec(prec);
+    // rmin = 2^(-E)
+    mpf_div_2exp(rmin.get_mpf_t(), one.get_mpf_t(), E);
+
+    return rmin;
 }
 
-//"L"
-// cf.http://www.netlib.org/blas/dlamch.f
+// "L": Maximum exponent (emax).
+//      DLAMCH defines rmax ~ base^emax.
+//      With rmax ~ 2^E, we have emax = E.
 REAL RlamchL_gmp(void) {
-    REAL maxexp;
-    unsigned long exp2;
-#if defined _WIN32
-    exp2 = 0x3FFFFFFF;
-#else
-    exp2 = 0x3FFFFFFFFFFFFFFFL;
-#endif
-    return maxexp;
+    const mp_bitcnt_t E = get_max_safe_exponent();
+    return REAL(E);
 }
 
-//"O"
-// cf.http://www.netlib.org/blas/dlamch.f
+// "O": Overflow threshold (rmax), maximum finite number.
+//      rmax = (1 - eps) * 2^emax  (DLAMCH model)
+//
+// Dependency: RlamchE_gmp
 REAL RlamchO_gmp(void) {
-    REAL overflowmax;
-    REAL one = 1.0;
-    unsigned long exp2;
-#if defined _WIN32
-    exp2 = 0x3FFFFFFF;
-#else
-    exp2 = 0x3FFFFFFFFFFFFFFFL;
-#endif
-    mpf_mul_2exp(overflowmax.get_mpf_t(), one.get_mpf_t(), exp2);
-    return overflowmax;
+    const REAL one = 1.0;
+    const mp_bitcnt_t prec = mpf_get_prec(one.get_mpf_t());
+    const mp_bitcnt_t E = get_max_safe_exponent();
+
+    REAL rmax;
+    rmax.set_prec(prec);
+
+    const REAL eps = RlamchE_gmp();
+    const REAL mant = one - eps;
+
+    // rmax = (1 - eps) * 2^E
+    mpf_mul_2exp(rmax.get_mpf_t(), mant.get_mpf_t(), E);
+
+    return rmax;
 }
 
-//"Z" :dummy
-// cf.http://www.netlib.org/blas/dlamch.f
-REAL RlamchZ_gmp(void) {
-    REAL mtemp = 0.0;
-    return mtemp;
-}
+// "Z": Dummy/placeholder (not used in standard LAPACK).
+REAL RlamchZ_gmp(void) { return REAL(0.0); }
 
 REAL Rlamch_gmp(const char *cmach) {
     if (Mlsame(cmach, "E"))
@@ -419,79 +357,84 @@ REAL Rlamch_gmp(const char *cmach) {
 #endif
 
 #if defined ___MPLAPACK_BUILD_WITH_QD___
-//"E" denots we always calculate relative machine precision (e).
-// where 1+e = 1, minimum of e.
+qd_real RlamchE_qd(void);
+qd_real RlamchS_qd(void);
+qd_real RlamchB_qd(void);
+qd_real RlamchP_qd(void);
+qd_real RlamchN_qd(void);
+qd_real RlamchR_qd(void);
+qd_real RlamchM_qd(void);
+qd_real RlamchU_qd(void);
+qd_real RlamchL_qd(void);
+qd_real RlamchO_qd(void);
+qd_real RlamchZ_qd(void);
+
+// "E" : relative machine precision (unit roundoff), assume rounding
 qd_real RlamchE_qd(void) {
-    // 2^-209 = 1.21e-63
+    // QD library provides a constant for machine precision.
+    // We use it as DLAMCH('E') (unit roundoff) for qd_real.
     return qd_real::_eps;
 }
 
-//"S" denots we always calculate `safe minimum, such that 1/sfmin does not overflow'.
-// cf.http://www.netlib.org/blas/dlamch.f
+// "S" : safe minimum such that 1/sfmin does not overflow (netlib logic)
 qd_real RlamchS_qd(void) {
-    // 2^(-1022+3*53) = 1.626e-260
-    return qd_real::_min_normalized;
+    const qd_real one(1.0);
+    const qd_real eps = RlamchE_qd();
+
+    // netlib: sfmin = rmin; small = 1/rmax; if (small >= sfmin) sfmin = small*(1+eps)
+    qd_real sfmin = RlamchU_qd();
+    const qd_real small = one / RlamchO_qd();
+
+    if (small >= sfmin) {
+        sfmin = small * (one + eps);
+    }
+    return sfmin;
 }
 
-//"B" base  = base of the machine
-// cf.http://www.netlib.org/blas/dlamch.f
-qd_real RlamchB_qd(void) {
-    qd_real two;
-    two = 2.0;
-    return two;
-}
+// "B" : base of the machine
+qd_real RlamchB_qd(void) { return qd_real(2.0); }
 
-//"P" prec = eps*base
-// cf.http://www.netlib.org/blas/dlamch.f
-qd_real RlamchP_qd(void) {
-    qd_real base, eps, prec;
+// "P" : precision = eps*base
+qd_real RlamchP_qd(void) { return RlamchE_qd() * RlamchB_qd(); }
 
-    base = RlamchB_qd();
-    eps = RlamchE_qd();
-    prec = eps * base;
-    return prec;
-}
-
-//"N" t = number of digits in mantissa
-// cf.http://www.netlib.org/blas/dlamch.f
+// "N" : number of (base) digits in the mantissa
 qd_real RlamchN_qd(void) {
-    return (qd_real)212.0; // 53*4
+    // Keep N consistent with E/P used above.
+    // If E  2^(-N) (unit roundoff) and base=2, then P = 2*E.
+    return qd_real(209.0);
 }
 
-//"R" rnd   = 1.0 when rounding occurs in addition, 0.0 otherwise
-// cf.http://www.netlib.org/blas/dlamch.f
+// "R" : rounding mode (1.0 when rounding occurs in addition, 0.0 otherwise)
 qd_real RlamchR_qd(void) {
-    qd_real mtmp;
-    mtmp = 1.0;
-    return mtmp;
+    // QD operations are performed via IEEE double arithmetic; rounding occurs.
+    return qd_real(1.0);
 }
 
-//"M"
-// cf.http://www.netlib.org/blas/dlamch.f
-qd_real RlamchM_qd(void) { return qd_real(-1021.0 + 3.0 * 53.0); }
+// "M" : minimum exponent (emin) used by DLAMCH
+qd_real RlamchM_qd(void) {
+    // With rmin = _min_normalized  2^(-1022 + 3*53) = 2^-863,
+    // DLAMCH defines rmin = base^(emin-1) with base=2, hence emin = -862.
+    return qd_real(-862.0);
+}
 
-//"U"
-// cf.http://www.netlib.org/blas/dlamch.f
+// "U" : underflow threshold (rmin; minimum positive "full-precision" normal)
 qd_real RlamchU_qd(void) { return qd_real::_min_normalized; }
 
-//"L"
-// cf.http://www.netlib.org/blas/dlamch.f
-qd_real RlamchL_qd(void) { return (qd_real)1024.0; }
+// "L" : largest exponent (emax) used by DLAMCH
+qd_real RlamchL_qd(void) {
+    // Exponent range is effectively that of IEEE double.
+    return qd_real(1024.0);
+}
 
-//"O"
-// cf.http://www.netlib.org/blas/dlamch.f
+// "O" : overflow threshold (rmax; maximum finite)
 qd_real RlamchO_qd(void) {
-    // thus we use smaller values
-    qd_real a = qd_real::_max;
-    return a;
+    // Use _max as the overflow threshold.
+    // If you prefer extra headroom for intermediate operations, consider _safe_max.
+    return qd_real::_max;
 }
 
-//"Z" :dummy
-// cf.http://www.netlib.org/blas/dlamch.f
-qd_real RlamchZ_qd(void) {
-    qd_real mtemp = 0.0;
-    return mtemp;
-}
+// "Z" : dummy
+qd_real RlamchZ_qd(void) { return qd_real(0.0); }
 
 qd_real Rlamch_qd(const char *cmach) {
     if (Mlsame(cmach, "E"))
@@ -521,76 +464,67 @@ qd_real Rlamch_qd(const char *cmach) {
 #endif
 
 #if defined ___MPLAPACK_BUILD_WITH_DD___
-//"E" denots we always calculate relative machine precision (e).
-// where 1+e = 1, minimum of e.
+dd_real RlamchE_dd(void);
+dd_real RlamchS_dd(void);
+dd_real RlamchB_dd(void);
+dd_real RlamchP_dd(void);
+dd_real RlamchN_dd(void);
+dd_real RlamchR_dd(void);
+dd_real RlamchM_dd(void);
+dd_real RlamchU_dd(void);
+dd_real RlamchL_dd(void);
+dd_real RlamchO_dd(void);
+dd_real RlamchZ_dd(void);
+
+// "E" : relative machine precision (unit roundoff), assume rounding
 dd_real RlamchE_dd(void) {
-    // 2^(-52-52) = 2^-104 = 4.93e-32
+    // dd_real::_eps is already unit roundoff (2^-104)
     return dd_real::_eps;
 }
 
-//"S" denots we always calculate `safe minimum, such that 1/sfmin does not overflow'.
-// cf.http://www.netlib.org/blas/dlamch.f
+// "S" : safe minimum such that 1/sfmin does not overflow (netlib logic)
 dd_real RlamchS_dd(void) {
-    // 2^(-1022+53) = 2.0042e-292
-    return dd_real::_min_normalized;
+    const dd_real one(1.0);
+    const dd_real eps = RlamchE_dd();
+    dd_real sfmin = RlamchU_dd();
+    const dd_real small = one / RlamchO_dd();
+    if (small >= sfmin) {
+        sfmin = small * (one + eps);
+    }
+    return sfmin;
 }
 
-//"B" base  = base of the machine
-// cf.http://www.netlib.org/blas/dlamch.f
-dd_real RlamchB_dd(void) {
-    dd_real two;
-    two = 2.0;
-    return two;
-}
+// "B" : base of the machine
+dd_real RlamchB_dd(void) { return dd_real(2.0); }
 
-//"P" prec = eps*base
-// cf.http://www.netlib.org/blas/dlamch.f
-dd_real RlamchP_dd(void) {
-    dd_real base, eps, prec;
+// "P" : precision = eps*base
+dd_real RlamchP_dd(void) { return RlamchE_dd() * RlamchB_dd(); }
 
-    base = RlamchB_dd();
-    eps = RlamchE_dd();
-    prec = eps * base;
-    return prec;
-}
-
-//"N" t = number of digits in mantissa
-// cf.http://www.netlib.org/blas/dlamch.f
+// "N" : number of (base) digits in the mantissa
 dd_real RlamchN_dd(void) {
-    return (dd_real)106.0; // 53*2
+    return dd_real((double)std::numeric_limits<dd_real>::digits); // 104
 }
 
-//"R" rnd   = 1.0 when rounding occurs in addition, 0.0 otherwise
-// cf.http://www.netlib.org/blas/dlamch.f
-dd_real RlamchR_dd(void) {
-    dd_real mtmp;
-    mtmp = 1.0;
-    return mtmp;
+// "R" : rounding mode (1.0 when rounding occurs in addition)
+dd_real RlamchR_dd(void) { return dd_real(1.0); }
+
+// "M" : minimum exponent (emin) where rmin = base^(emin-1)
+dd_real RlamchM_dd(void) {
+    int emin = 0;
+    (void)std::frexp(dd_real::_min_normalized, &emin);
+    return dd_real((double)emin);
 }
 
-//"M"
-// cf.http://www.netlib.org/blas/dlamch.f
-dd_real RlamchM_dd(void) { return dd_real(-1021.0 + 53.0); }
-
-//"U"
-// cf.http://www.netlib.org/blas/dlamch.f
+// "U" : underflow threshold (rmin; minimum positive normalized)
 dd_real RlamchU_dd(void) { return dd_real::_min_normalized; }
 
-//"L"
-// cf.http://www.netlib.org/blas/dlamch.f
-dd_real RlamchL_dd(void) { return (dd_real)1024.0; }
+// "L" : largest exponent (emax) where rmax  base^emax
+dd_real RlamchL_dd(void) { return dd_real(1024.0); }
 
-//"O"
-// cf.http://www.netlib.org/blas/dlamch.f
-dd_real RlamchO_dd(void) {
-    // due to bug of dd_real, we cannot take some arithmetic for dd_real::_max; e.g. sqrt.
-    // thus we use smaller values
-    dd_real a = dd_real::_max;
-    return a;
-}
+// "O" : overflow threshold (rmax; maximum finite)
+dd_real RlamchO_dd(void) { return dd_real::_max; }
 
-//"Z" :dummy
-// cf.http://www.netlib.org/blas/dlamch.f
+// "Z" : dummy
 dd_real RlamchZ_dd(void) {
     dd_real mtemp = 0.0;
     return mtemp;
@@ -624,125 +558,76 @@ dd_real Rlamch_dd(const char *cmach) {
 #endif
 
 #if defined ___MPLAPACK_BUILD_WITH_DOUBLE___
-//"E" denots we always calculate relative machine precision (e).
-// where 1+e = 1, minimum of e.
+double RlamchE_double(void);
+double RlamchS_double(void);
+double RlamchB_double(void);
+double RlamchP_double(void);
+double RlamchN_double(void);
+double RlamchR_double(void);
+double RlamchM_double(void);
+double RlamchU_double(void);
+double RlamchL_double(void);
+double RlamchO_double(void);
+double RlamchZ_double(void);
+
+// "E" : relative machine precision (unit roundoff), assume rounding
 double RlamchE_double(void) {
     static double eps;
     static int called = 0;
+
     if (called)
         return eps;
+
     eps = 1.0;
-    // We all know double is the IEEE 754 2008 binary64 format has 53bit significant digits
+    // IEEE 754 binary64 has DBL_MANT_DIG (=53) significant bits.
+    // This computes eps = 2^(-DBL_MANT_DIG) = 2^-53 (unit roundoff).
     for (int i = 0; i < DBL_MANT_DIG; i++) {
         eps = eps / 2.0;
     }
+
     called = 1;
     return eps;
 }
 
-//"S" denots we always calculate `safe minimum, such that 1/sfmin does not overflow'.
-// cf.http://www.netlib.org/blas/dlamch.f
+// "S" : safe minimum such that 1/sfmin does not overflow
 double RlamchS_double(void) {
+    // For IEEE binary64, DBL_MIN is safe since 1/DBL_MIN does not overflow.
     return DBL_MIN;
-
-    // IEEE 754 2008 binary64: emin = -1022
-    // 2^{-1022} = 2.225073858507201e-308 = DBL_MIN in float.h
-    static double eps;
-    static int called = 0;
-    if (called)
-        return eps;
-    eps = 1.0;
-    // We all know double is the IEEE 754 2008 binary64 format has 53bit significant digits
-    for (int i = 0; i < 1022; i++) {
-        eps = eps / 2.0;
-    }
-    called = 1;
-    return eps;
 }
 
-//"B" base  = base of the machine
-// cf.http://www.netlib.org/blas/dlamch.f
-double RlamchB_double(void) {
-    double two;
-    two = 2.0;
-    return two;
-}
+// "B" : base of the machine
+double RlamchB_double(void) { return 2.0; }
 
-//"P" prec = eps*base
-// cf.http://www.netlib.org/blas/dlamch.f
-double RlamchP_double(void) {
-    double base, eps, prec;
+// "P" : precision = eps*base
+double RlamchP_double(void) { return RlamchE_double() * RlamchB_double(); }
 
-    base = RlamchB_double();
-    eps = RlamchE_double();
-    prec = eps * base;
-    return prec;
-}
-
-//"N" t = number of digits in mantissa
-// cf.http://www.netlib.org/blas/dlamch.f
+// "N" : number of digits in mantissa
 double RlamchN_double(void) {
-    // IEEE 754 2008 binary64 has 53 (52+1) bit significant digits
-    return (double)DBL_MANT_DIG;
+    return (double)DBL_MANT_DIG; // 53
 }
 
-//"R" rnd   = 1.0 when rounding occurs in addition, 0.0 otherwise
-// cf.http://www.netlib.org/blas/dlamch.f
-double RlamchR_double(void) {
-    double mtmp;
-    mtmp = 1.0;
-    return mtmp;
-}
+// "R" : 1.0 when rounding occurs in addition, 0.0 otherwise
+double RlamchR_double(void) { return 1.0; }
 
-//"M"
-// cf.http://www.netlib.org/blas/dlamch.f
+// "M" : minimum exponent (emin) used by DLAMCH
 double RlamchM_double(void) {
-    // the exponent of IEEE 754 2008 binary64 is -1022.
-    // then -1022 + 1 = -1021.
+    // For IEEE binary64, DBL_MIN_EXP is -1021 (so emin-1 = -1022 gives DBL_MIN).
     return (double)DBL_MIN_EXP;
 }
 
-//"U"
-// cf.http://www.netlib.org/blas/dlamch.f
-double RlamchU_double(void) {
-    return DBL_MIN;
+// "U" : underflow threshold (rmin; minimum positive normal)
+double RlamchU_double(void) { return DBL_MIN; }
 
-    // 2^{-1021-1} minimum exponent
-    static double eps;
-    static int called = 0;
-    if (called)
-        return eps;
-    eps = 1.0;
-    // We all know double is the IEEE 754 2008 binary64 format has 53bit significant digits
-    for (int i = 0; i < 1022; i++) {
-        eps = eps / 2.0;
-    }
-    called = 1;
-    return eps;
-}
-
-//"L"
-// cf.http://www.netlib.org/blas/dlamch.f
+// "L" : largest exponent (emax) used by DLAMCH
 double RlamchL_double(void) {
-    //+1023 in IEEE 754 2008 binary64
-    // then 1023 + 1 = 1024.
-    return DBL_MAX_EXP;
+    return (double)DBL_MAX_EXP; // 1024
 }
 
-//"O"
-// cf.http://www.netlib.org/blas/dlamch.f
-double RlamchO_double(void) {
-    // 1.7976931348623157E+308 in IEEE 754 2008 binary64.
-    return DBL_MAX;
-}
+// "O" : overflow threshold (rmax; maximum finite)
+double RlamchO_double(void) { return DBL_MAX; }
 
-//"Z" :dummy
-// cf.http://www.netlib.org/blas/dlamch.f
-double RlamchZ_double(void) {
-    double mtemp = 0.0;
-    return mtemp;
-}
-
+// "Z" : dummy
+double RlamchZ_double(void) { return 0.0; }
 double Rlamch_double(const char *cmach) {
     if (Mlsame(cmach, "E"))
         return RlamchE_double();
@@ -770,110 +655,108 @@ double Rlamch_double(const char *cmach) {
 #endif
 
 #if defined ___MPLAPACK_BUILD_WITH__FLOAT64X___
-//"E" denots we always calculate relative machine precision (e).
-// where 1+e = 1, minimum of e.
+_Float64x RlamchE__Float64x(void);
+_Float64x RlamchS__Float64x(void);
+_Float64x RlamchB__Float64x(void);
+_Float64x RlamchP__Float64x(void);
+_Float64x RlamchN__Float64x(void);
+_Float64x RlamchR__Float64x(void);
+_Float64x RlamchM__Float64x(void);
+_Float64x RlamchU__Float64x(void);
+_Float64x RlamchL__Float64x(void);
+_Float64x RlamchO__Float64x(void);
+_Float64x RlamchZ__Float64x(void);
+
+// "E" : relative machine precision (unit roundoff), assume rounding
 _Float64x RlamchE__Float64x(void) {
     static _Float64x eps;
     static int called = 0;
+
     if (called)
         return eps;
-    eps = 1.0;
-    //_Float64x is the 80-bit extended precision format with 64bit significant digits
-    for (int i = 0; i < LDBL_MANT_DIG; i++) {
-        eps = eps / 2.0;
-    }
+
+    eps = (_Float64x)1.0;
+
+#if defined(FLT64X_MANT_DIG)
+    // Compute eps = 2^(-FLT64X_MANT_DIG)
+    for (int i = 0; i < FLT64X_MANT_DIG; i++)
+        eps /= (_Float64x)2.0;
+#else
+    // Fallback: assume _Float64x matches long double characteristics.
+    for (int i = 0; i < LDBL_MANT_DIG; i++)
+        eps /= (_Float64x)2.0;
+#endif
+
     called = 1;
     return eps;
 }
 
-//"S" denots we always calculate `safe minimum, such that 1/sfmin does not overflow'.
-// cf.http://www.netlib.org/blas/dlamch.f
+// "S" : safe minimum such that 1/sfmin does not overflow
 _Float64x RlamchS__Float64x(void) {
-    return LDBL_MIN;
-
-    static _Float64x eps;
-    static int called = 0;
-    if (called)
-        return eps;
-    eps = 1.0;
-    /* We all know double is the _Float64x 80 bit format has 64bit significant digits and 15 for the exponent (2^15)/2 - 1 = 16383 */
-    for (int i = 0; i < 16383; i++) {
-        eps = eps / 2.0;
-    }
-    called = 1;
-    return eps;
+#if defined(FLT64X_MIN)
+    return (_Float64x)FLT64X_MIN;
+#else
+    // Fallback: assume _Float64x matches long double characteristics.
+    return (_Float64x)LDBL_MIN;
+#endif
 }
 
-//"B" base  = base of the machine
-// cf.http://www.netlib.org/blas/dlamch.f
-_Float64x RlamchB__Float64x(void) {
-    _Float64x two;
-    two = 2.0;
-    return two;
-}
+// "B" : base of the machine
+_Float64x RlamchB__Float64x(void) { return (_Float64x)2.0; }
 
-//"P" prec = eps*base
-// cf.http://www.netlib.org/blas/dlamch.f
-_Float64x RlamchP__Float64x(void) {
-    _Float64x base, eps, prec;
+// "P" : precision = eps*base
+_Float64x RlamchP__Float64x(void) { return RlamchE__Float64x() * RlamchB__Float64x(); }
 
-    base = RlamchB__Float64x();
-    eps = RlamchE__Float64x();
-    prec = eps * base;
-    return prec;
-}
-
-//"N" t = number of digits in mantissa
-// cf.http://www.netlib.org/blas/dlamch.f
+// "N" : number of digits in mantissa
 _Float64x RlamchN__Float64x(void) {
-    // _Float64x with 80 bits has 64 bit significant digits
+#if defined(FLT64X_MANT_DIG)
+    return (_Float64x)FLT64X_MANT_DIG;
+#else
     return (_Float64x)LDBL_MANT_DIG;
+#endif
 }
 
-//"R" rnd   = 1.0 when rounding occurs in addition, 0.0 otherwise
-// cf.http://www.netlib.org/blas/dlamch.f
-_Float64x RlamchR__Float64x(void) {
-    _Float64x mtmp;
-    mtmp = 1.0;
-    return mtmp;
+// "R" : 1.0 when rounding occurs in addition, 0.0 otherwise
+_Float64x RlamchR__Float64x(void) { return (_Float64x)1.0; }
+
+// "M" : minimum exponent (emin) used by DLAMCH
+_Float64x RlamchM__Float64x(void) {
+#if defined(FLT64X_MIN_EXP)
+    return (_Float64x)FLT64X_MIN_EXP;
+#else
+    return (_Float64x)LDBL_MIN_EXP;
+#endif
 }
 
-//"M"
-// cf.http://www.netlib.org/blas/dlamch.f
-_Float64x RlamchM__Float64x(void) { return (_Float64x)LDBL_MIN_EXP; }
-
-//"U"
-// cf.http://www.netlib.org/blas/dlamch.f
+// "U" : underflow threshold (rmin; minimum positive normal)
 _Float64x RlamchU__Float64x(void) {
-    return LDBL_MIN;
-
-    static double eps;
-    static int called = 0;
-    if (called)
-        return eps;
-    eps = 1.0;
-    /* We all know double is the _Float64x 80 bit format has 64bit significant digits and 15 for the exponent (2^15)/2 - 1 = 16383 */
-    for (int i = 0; i < 16383; i++) {
-        eps = eps / 2.0;
-    }
-    called = 1;
-    return eps;
+#if defined(FLT64X_MIN)
+    return (_Float64x)FLT64X_MIN;
+#else
+    return (_Float64x)LDBL_MIN;
+#endif
 }
 
-//"L"
-// cf.http://www.netlib.org/blas/dlamch.f
-_Float64x RlamchL__Float64x(void) { return LDBL_MAX_EXP; }
-
-//"O"
-// cf.http://www.netlib.org/blas/dlamch.f
-_Float64x RlamchO__Float64x(void) { return LDBL_MAX; }
-
-//"Z" :dummy
-// cf.http://www.netlib.org/blas/dlamch.f
-_Float64x RlamchZ__Float64x(void) {
-    _Float64x mtemp = 0.0;
-    return mtemp;
+// "L" : largest exponent (emax) used by DLAMCH
+_Float64x RlamchL__Float64x(void) {
+#if defined(FLT64X_MAX_EXP)
+    return (_Float64x)FLT64X_MAX_EXP;
+#else
+    return (_Float64x)LDBL_MAX_EXP;
+#endif
 }
+
+// "O" : overflow threshold (rmax; maximum finite)
+_Float64x RlamchO__Float64x(void) {
+#if defined(FLT64X_MAX)
+    return (_Float64x)FLT64X_MAX;
+#else
+    return (_Float64x)LDBL_MAX;
+#endif
+}
+
+// "Z" : dummy
+_Float64x RlamchZ__Float64x(void) { return (_Float64x)0.0; }
 
 _Float64x Rlamch__Float64x(const char *cmach) {
     if (Mlsame(cmach, "E"))
@@ -902,64 +785,54 @@ _Float64x Rlamch__Float64x(const char *cmach) {
 #endif
 
 #if defined ___MPLAPACK_BUILD_WITH__FLOAT128___
-//"E" denots we always calculate relative machine precision (e).
-// where 1+e = 1, minimum of e.
+_Float128 RlamchE__Float128(void);
+_Float128 RlamchS__Float128(void);
+_Float128 RlamchB__Float128(void);
+_Float128 RlamchP__Float128(void);
+_Float128 RlamchN__Float128(void);
+_Float128 RlamchR__Float128(void);
+_Float128 RlamchM__Float128(void);
+_Float128 RlamchU__Float128(void);
+_Float128 RlamchL__Float128(void);
+_Float128 RlamchO__Float128(void);
+_Float128 RlamchZ__Float128(void);
+
+// "E" : relative machine precision (unit roundoff), assume rounding
+// DLAMCH('E') corresponds to 0.5 * (gap near 1) when rounding occurs.
 _Float128 RlamchE__Float128(void) {
 #if defined ___MPLAPACK_WANT_LIBQUADMATH___
-    return FLT128_EPSILON;
+    return (_Float128)FLT128_EPSILON * (_Float128)0.5;
 #elif defined ___MPLAPACK_LONGDOUBLE_IS_BINARY128___
-    return 1.92592994438723585305597794258492732e-34L;
+    // 2^-113
+    return 9.6296497219361792652798897129246365926905e-35L;
 #else
-    return 1.92592994438723585305597794258492732e-34Q;
+    // 2^-113
+    return 9.6296497219361792652798897129246365926905e-35Q;
 #endif
 }
 
-//"S" denots we always calculate `safe minimum, such that 1/sfmin does not overflow'.
-// cf.http://www.netlib.org/blas/dlamch.f
+// "S" : safe minimum such that 1/sfmin does not overflow (netlib logic)
+// sfmin = rmin; small = 1/rmax; if (small >= sfmin) sfmin = small*(1+eps)
 _Float128 RlamchS__Float128(void) {
-// IEEE 754 2008 binary128: emin = -16382
-// 2^{-16382} = 3.36210314311209350626267781732175260e-4932Q
-#if defined ___MPLAPACK_WANT_LIBQUADMATH___
-    return FLT128_MIN;
-#elif defined ___MPLAPACK_LONGDOUBLE_IS_BINARY128___
-    return 3.36210314311209350626267781732175260e-4932L;
-#else
-    return 3.36210314311209350626267781732175260e-4932Q;
-#endif
+    const _Float128 one = (_Float128)1.0;
+    const _Float128 eps = RlamchE__Float128();
 
-    static _Float128 eps;
-    static int called = 0;
-    if (called)
-        return eps;
-    eps = 1.0;
-    // We all know double is the IEEE 754 2008 binary128 format has 113bit significant digits
-    for (int i = 0; i < 16383; i++) {
-        eps = eps / 2.0;
+    _Float128 sfmin = RlamchU__Float128();
+    const _Float128 small = one / RlamchO__Float128();
+
+    if (small >= sfmin) {
+        sfmin = small * (one + eps);
     }
-    called = 1;
+    return sfmin;
 }
 
-//"B" base  = base of the machine
-// cf.http://www.netlib.org/blas/dlamch.f
-_Float128 RlamchB__Float128(void) {
-    _Float128 two;
-    two = 2.0;
-    return two;
-}
+// "B" : base of the machine
+_Float128 RlamchB__Float128(void) { return (_Float128)2.0; }
 
-//"P" prec = eps*base
-// cf.http://www.netlib.org/blas/dlamch.f
-_Float128 RlamchP__Float128(void) {
-    _Float128 base, eps, prec;
+// "P" : precision = eps*base
+_Float128 RlamchP__Float128(void) { return RlamchE__Float128() * RlamchB__Float128(); }
 
-    base = RlamchB__Float128();
-    eps = RlamchE__Float128();
-    prec = eps * base;
-    return prec;
-}
-
-//"N" t = number of digits in mantissa
-// cf.http://www.netlib.org/blas/dlamch.f
+// "N" : number of digits in mantissa
 _Float128 RlamchN__Float128(void) {
 #if defined ___MPLAPACK_WANT_LIBQUADMATH___
     return (_Float128)FLT128_MANT_DIG; // 113
@@ -968,84 +841,53 @@ _Float128 RlamchN__Float128(void) {
 #endif
 }
 
-//"R" rnd   = 1.0 when rounding occurs in addition, 0.0 otherwise
-// cf.http://www.netlib.org/blas/dlamch.f
-_Float128 RlamchR__Float128(void) {
-    _Float128 mtmp;
-    mtmp = 1.0;
-    return mtmp;
-}
+// "R" : 1.0 when rounding occurs in addition, 0.0 otherwise
+_Float128 RlamchR__Float128(void) { return (_Float128)1.0; }
 
-//"M"
-// cf.http://www.netlib.org/blas/dlamch.f
+// "M" : minimum exponent (emin) used by DLAMCH
+// For IEEE binary128, FLT128_MIN is 2^(-16382) and DLAMCH uses rmin = base^(emin-1).
+// Thus emin = -16381 so that emin-1 = -16382.
 _Float128 RlamchM__Float128(void) {
-    // the exponent of IEEE 754 2008 binary64 is -16382.
-    // then -16382 + 1 = -16381
 #if defined ___MPLAPACK_WANT_LIBQUADMATH___
-    return FLT128_MIN_EXP;
-#elif defined ___MPLAPACK_LONGDOUBLE_IS_BINARY128___
-    return (-16381);
+    return (_Float128)FLT128_MIN_EXP; // -16381
 #else
-    return (-16381);
+    return (_Float128)(-16381);
 #endif
 }
 
-//"U"
-// cf.http://www.netlib.org/blas/dlamch.f
+// "U" : underflow threshold (rmin; minimum positive normal)
 _Float128 RlamchU__Float128(void) {
 #if defined ___MPLAPACK_WANT_LIBQUADMATH___
-    return FLT128_MIN;
+    return (_Float128)FLT128_MIN;
 #elif defined ___MPLAPACK_LONGDOUBLE_IS_BINARY128___
-    return 3.36210314311209350626267781732175260e-4932L;
+    return 3.3621031431120935062626778173217526025981e-4932L;
 #else
-    return 3.36210314311209350626267781732175260e-4932Q;
+    return 3.3621031431120935062626778173217526025981e-4932Q;
 #endif
-
-    // 2^{-16382+1} minimum exponent
-    static double eps;
-    static int called = 0;
-    if (called)
-        return eps;
-    eps = 1.0;
-    // We all know double is the IEEE 754 2008 binary128 format has 113bit significant digits
-    for (int i = 0; i < 16382; i++) {
-        eps = eps / 2.0;
-    }
-    called = 1;
-    return eps;
 }
 
-//"L"
-// cf.http://www.netlib.org/blas/dlamch.f
+// "L" : largest exponent (emax) used by DLAMCH
 _Float128 RlamchL__Float128(void) {
-    //+16383 in IEEE 754 2008 binary128
-    // then 16383 + 1 = 16384
 #if defined ___MPLAPACK_WANT_LIBQUADMATH___
-    return FLT128_MAX_EXP;
+    return (_Float128)FLT128_MAX_EXP; // 16384
 #else
-    return 16384;
+    return (_Float128)16384;
 #endif
 }
 
-//"O"
-// cf.http://www.netlib.org/blas/dlamch.f
+// "O" : overflow threshold (rmax; maximum finite)
 _Float128 RlamchO__Float128(void) {
-    // 1.18973149535723176508575932662800702e4932Q in IEEE 754 2008 binary128.
 #if defined ___MPLAPACK_WANT_LIBQUADMATH___
-    return FLT128_MAX;
+    return (_Float128)FLT128_MAX;
 #elif defined ___MPLAPACK_LONGDOUBLE_IS_BINARY128___
-    return 1.18973149535723176508575932662800702e4932L;
+    return 1.1897314953572317650857593266280070161965e+4932L;
 #else
-    return 1.18973149535723176508575932662800702e4932Q;
+    return 1.1897314953572317650857593266280070161965e+4932Q;
 #endif
 }
 
-//"Z" :dummy
-// cf.http://www.netlib.org/blas/dlamch.f
-_Float128 RlamchZ__Float128(void) {
-    _Float128 mtemp = 0.0;
-    return mtemp;
-}
+// "Z" : dummy
+_Float128 RlamchZ__Float128(void) { return (_Float128)0.0; }
 
 _Float128 Rlamch__Float128(const char *cmach) {
     if (Mlsame(cmach, "E"))

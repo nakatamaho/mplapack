@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine ALADHD.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -68,21 +75,6 @@ void Aladhd(INTEGER const iounit, const char *path) {
     static const char *format_9993 = "(/,1x,a3,' drivers:  ',a9,' positive definite tridiagonal')";
     static const char *format_9994 = "(/,1x,a3,' drivers:  ',a9,' positive definite band matrices')";
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     if (iounit <= 0) {
         return;
     }
@@ -102,7 +94,7 @@ void Aladhd(INTEGER const iounit, const char *path) {
     char sym[9];
     if (Mlsamen(2, p2, "GE")) {
         //
-        //        GE: General dense
+        // GE: General dense
         //
         write(iounit, "(/,1x,a3,' drivers:  General dense matrices')"), path;
         write(iounit, "(' Matrix types:')");
@@ -124,7 +116,7 @@ void Aladhd(INTEGER const iounit, const char *path) {
         //
     } else if (Mlsamen(2, p2, "GB")) {
         //
-        //        GB: General band
+        // GB: General band
         //
         write(iounit, "(/,1x,a3,' drivers:  General band matrices')"), path;
         write(iounit, "(' Matrix types:')");
@@ -144,7 +136,7 @@ void Aladhd(INTEGER const iounit, const char *path) {
         //
     } else if (Mlsamen(2, p2, "GT")) {
         //
-        //        GT: General tridiagonal
+        // GT: General tridiagonal
         //
         write(iounit, "(/,1x,a3,' drivers:  General tridiagonal')"), path;
         write(iounit, "(' Matrix types (1-6 have specified condition numbers):',/,4x,"
@@ -165,9 +157,9 @@ void Aladhd(INTEGER const iounit, const char *path) {
         //
     } else if (Mlsamen(2, p2, "PO") || Mlsamen(2, p2, "PP") || Mlsamen(2, p2, "PS")) {
         //
-        //        PO: Positive definite full
-        //        PS: Positive definite full
-        //        PP: Positive definite packed
+        // PO: Positive definite full
+        // PS: Positive definite full
+        // PP: Positive definite packed
         //
         if (sord) {
             strncpy(sym, "Symmetric", strlen(sym));
@@ -198,7 +190,7 @@ void Aladhd(INTEGER const iounit, const char *path) {
         //
     } else if (Mlsamen(2, p2, "PB")) {
         //
-        //        PB: Positive definite band
+        // PB: Positive definite band
         //
         if (sord) {
             write(iounit, format_9994), path, "Symmetric";
@@ -223,7 +215,7 @@ void Aladhd(INTEGER const iounit, const char *path) {
         //
     } else if (Mlsamen(2, p2, "PT")) {
         //
-        //        PT: Positive definite tridiagonal
+        // PT: Positive definite tridiagonal
         //
         if (sord) {
             write(iounit, format_9993), path, "Symmetric";
@@ -250,10 +242,10 @@ void Aladhd(INTEGER const iounit, const char *path) {
         //
     } else if (Mlsamen(2, p2, "SY") || Mlsamen(2, p2, "SP")) {
         //
-        //        SY: Symmetric indefinite full
-        //            with partial (Bunch-Kaufman) pivoting algorithm
-        //        SP: Symmetric indefinite packed
-        //            with partial (Bunch-Kaufman) pivoting algorithm
+        // SY: Symmetric indefinite full
+        // with partial (Bunch-Kaufman) pivoting algorithm
+        // SP: Symmetric indefinite packed
+        // with partial (Bunch-Kaufman) pivoting algorithm
         //
         if (Mlsame(c3, "Y")) {
             write(iounit, format_9992), path, "Symmetric";
@@ -277,14 +269,14 @@ void Aladhd(INTEGER const iounit, const char *path) {
         //
     } else if (Mlsamen(2, p2, "SR") || Mlsamen(2, p2, "SK")) {
         //
-        //        SR: Symmetric indefinite full,
-        //            with rook (bounded Bunch-Kaufman) pivoting algorithm
+        // SR: Symmetric indefinite full,
+        // with rook (bounded Bunch-Kaufman) pivoting algorithm
         //
-        //        SK: Symmetric indefinite full,
-        //            with rook (bounded Bunch-Kaufman) pivoting algorithm,
-        //            ( new storage format for factors:
-        //              L and diagonal of D is stored in A,
-        //              subdiagonal of D is stored in E )
+        // SK: Symmetric indefinite full,
+        // with rook (bounded Bunch-Kaufman) pivoting algorithm,
+        // ( new storage format for factors:
+        // L and diagonal of D is stored in A,
+        // subdiagonal of D is stored in E )
         //
         write(iounit, format_9992), path, "Symmetric";
         //
@@ -303,8 +295,8 @@ void Aladhd(INTEGER const iounit, const char *path) {
         //
     } else if (Mlsamen(2, p2, "HA")) {
         //
-        //        HA: Hermitian
-        //            Aasen algorithm
+        // HA: Hermitian
+        // Aasen algorithm
         write(iounit, "(/,1x,a3,' drivers:  ',a9,' indefinite matrices',"
                       "', \"Aasen\" Algorithm')"),
             path, "Hermitian";
@@ -323,10 +315,10 @@ void Aladhd(INTEGER const iounit, const char *path) {
         //
     } else if (Mlsamen(2, p2, "HE") || Mlsamen(2, p2, "HP")) {
         //
-        //        HE: Hermitian indefinite full
-        //            with partial (Bunch-Kaufman) pivoting algorithm
-        //        HP: Hermitian indefinite packed
-        //            with partial (Bunch-Kaufman) pivoting algorithm
+        // HE: Hermitian indefinite full
+        // with partial (Bunch-Kaufman) pivoting algorithm
+        // HP: Hermitian indefinite packed
+        // with partial (Bunch-Kaufman) pivoting algorithm
         //
         if (Mlsame(c3, "E")) {
             write(iounit, format_9992), path, "Hermitian";
@@ -348,14 +340,14 @@ void Aladhd(INTEGER const iounit, const char *path) {
         //
     } else if (Mlsamen(2, p2, "HR") || Mlsamen(2, p2, "HK")) {
         //
-        //        HR: Hermitian indefinite full,
-        //            with rook (bounded Bunch-Kaufman) pivoting algorithm
+        // HR: Hermitian indefinite full,
+        // with rook (bounded Bunch-Kaufman) pivoting algorithm
         //
-        //        HK: Hermitian indefinite full,
-        //            with rook (bounded Bunch-Kaufman) pivoting algorithm,
-        //            ( new storage format for factors:
-        //              L and diagonal of D is stored in A,
-        //              subdiagonal of D is stored in E )
+        // HK: Hermitian indefinite full,
+        // with rook (bounded Bunch-Kaufman) pivoting algorithm,
+        // ( new storage format for factors:
+        // L and diagonal of D is stored in A,
+        // subdiagonal of D is stored in E )
         //
         write(iounit, format_9992), path, "Hermitian";
         //
@@ -370,31 +362,31 @@ void Aladhd(INTEGER const iounit, const char *path) {
         //
     } else {
         //
-        //        Print error message if no header is available.
+        // Print error message if no header is available.
         //
         write(iounit, "(/,1x,a3,':  No header available')"), path;
     }
     //
-    //     First line of header
+    // First line of header
     //
-    //     GE matrix types
+    // GE matrix types
     //
-    //     GB matrix types
+    // GB matrix types
     //
-    //     GT matrix types
+    // GT matrix types
     //
-    //     PT matrix types
+    // PT matrix types
     //
-    //     PO, PP matrix types
+    // PO, PP matrix types
     //
-    //     PB matrix types
+    // PB matrix types
     //
-    //     SSY, SSP, CHE, CHP matrix types
+    // SSY, SSP, CHE, CHP matrix types
     //
-    //     CSY, CSP matrix types
+    // CSY, CSP matrix types
     //
-    //     Test ratios
+    // Test ratios
     //
-    //     End of Aladhd
+    // End of Aladhd
     //
 }

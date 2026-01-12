@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine ZERRPO.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -72,15 +79,15 @@ void Cerrpo(const char *path, INTEGER const nunit) {
     REAL anrm = 1.0;
     ok = true;
     //
-    //     Test error exits of the routines that use the Cholesky
-    //     decomposition of a Hermitian positive definite matrix.
+    // Test error exits of the routines that use the Cholesky
+    // decomposition of a Hermitian positive definite matrix.
     //
     INTEGER info = 0;
     REAL r[nmax];
     REAL rcond = 0.0;
     if (Mlsamen(2, c2, "PO")) {
         //
-        //        Cpotrf
+        // Cpotrf
         //
         strncpy(srnamt, "Cpotrf", srnamt_len);
         infot = 1;
@@ -93,7 +100,7 @@ void Cerrpo(const char *path, INTEGER const nunit) {
         Cpotrf("U", 2, a, 1, info);
         chkxer("Cpotrf", infot, nout, lerr, ok);
         //
-        //        Cpotf2
+        // Cpotf2
         //
         strncpy(srnamt, "Cpotf2", srnamt_len);
         infot = 1;
@@ -106,7 +113,7 @@ void Cerrpo(const char *path, INTEGER const nunit) {
         Cpotf2("U", 2, a, 1, info);
         chkxer("Cpotf2", infot, nout, lerr, ok);
         //
-        //        Cpotri
+        // Cpotri
         //
         strncpy(srnamt, "Cpotri", srnamt_len);
         infot = 1;
@@ -119,7 +126,7 @@ void Cerrpo(const char *path, INTEGER const nunit) {
         Cpotri("U", 2, a, 1, info);
         chkxer("Cpotri", infot, nout, lerr, ok);
         //
-        //        Cpotrs
+        // Cpotrs
         //
         strncpy(srnamt, "Cpotrs", srnamt_len);
         infot = 1;
@@ -138,7 +145,7 @@ void Cerrpo(const char *path, INTEGER const nunit) {
         Cpotrs("U", 2, 1, a, 2, b, 1, info);
         chkxer("Cpotrs", infot, nout, lerr, ok);
         //
-        //        Cporfs
+        // Cporfs
         //
         strncpy(srnamt, "Cporfs", srnamt_len);
         infot = 1;
@@ -163,7 +170,7 @@ void Cerrpo(const char *path, INTEGER const nunit) {
         Cporfs("U", 2, 1, a, 2, af, 2, b, 2, x, 1, r1, r2, w, r, info);
         chkxer("Cporfs", infot, nout, lerr, ok);
         //
-        //        Cpocon
+        // Cpocon
         //
         strncpy(srnamt, "Cpocon", srnamt_len);
         infot = 1;
@@ -179,7 +186,7 @@ void Cerrpo(const char *path, INTEGER const nunit) {
         Cpocon("U", 1, a, 1, -anrm, rcond, w, r, info);
         chkxer("Cpocon", infot, nout, lerr, ok);
         //
-        //        Cpoequ
+        // Cpoequ
         //
         strncpy(srnamt, "Cpoequ", srnamt_len);
         infot = 1;
@@ -189,12 +196,12 @@ void Cerrpo(const char *path, INTEGER const nunit) {
         Cpoequ(2, a, 1, r1, rcond, anrm, info);
         chkxer("Cpoequ", infot, nout, lerr, ok);
         //
-        //     Test error exits of the routines that use the Cholesky
-        //     decomposition of a Hermitian positive definite packed matrix.
+        // Test error exits of the routines that use the Cholesky
+        // decomposition of a Hermitian positive definite packed matrix.
         //
     } else if (Mlsamen(2, c2, "PP")) {
         //
-        //        Cpptrf
+        // Cpptrf
         //
         strncpy(srnamt, "Cpptrf", srnamt_len);
         infot = 1;
@@ -204,7 +211,7 @@ void Cerrpo(const char *path, INTEGER const nunit) {
         Cpptrf("U", -1, a, info);
         chkxer("Cpptrf", infot, nout, lerr, ok);
         //
-        //        Cpptri
+        // Cpptri
         //
         strncpy(srnamt, "Cpptri", srnamt_len);
         infot = 1;
@@ -214,7 +221,7 @@ void Cerrpo(const char *path, INTEGER const nunit) {
         Cpptri("U", -1, a, info);
         chkxer("Cpptri", infot, nout, lerr, ok);
         //
-        //        Cpptrs
+        // Cpptrs
         //
         strncpy(srnamt, "Cpptrs", srnamt_len);
         infot = 1;
@@ -230,7 +237,7 @@ void Cerrpo(const char *path, INTEGER const nunit) {
         Cpptrs("U", 2, 1, a, b, 1, info);
         chkxer("Cpptrs", infot, nout, lerr, ok);
         //
-        //        Cpprfs
+        // Cpprfs
         //
         strncpy(srnamt, "Cpprfs", srnamt_len);
         infot = 1;
@@ -249,7 +256,7 @@ void Cerrpo(const char *path, INTEGER const nunit) {
         Cpprfs("U", 2, 1, a, af, b, 2, x, 1, r1, r2, w, r, info);
         chkxer("Cpprfs", infot, nout, lerr, ok);
         //
-        //        Cppcon
+        // Cppcon
         //
         strncpy(srnamt, "Cppcon", srnamt_len);
         infot = 1;
@@ -262,7 +269,7 @@ void Cerrpo(const char *path, INTEGER const nunit) {
         Cppcon("U", 1, a, -anrm, rcond, w, r, info);
         chkxer("Cppcon", infot, nout, lerr, ok);
         //
-        //        Cppequ
+        // Cppequ
         //
         strncpy(srnamt, "Cppequ", srnamt_len);
         infot = 1;
@@ -272,12 +279,12 @@ void Cerrpo(const char *path, INTEGER const nunit) {
         Cppequ("U", -1, a, r1, rcond, anrm, info);
         chkxer("Cppequ", infot, nout, lerr, ok);
         //
-        //     Test error exits of the routines that use the Cholesky
-        //     decomposition of a Hermitian positive definite band matrix.
+        // Test error exits of the routines that use the Cholesky
+        // decomposition of a Hermitian positive definite band matrix.
         //
     } else if (Mlsamen(2, c2, "PB")) {
         //
-        //        Cpbtrf
+        // Cpbtrf
         //
         strncpy(srnamt, "Cpbtrf", srnamt_len);
         infot = 1;
@@ -293,7 +300,7 @@ void Cerrpo(const char *path, INTEGER const nunit) {
         Cpbtrf("U", 2, 1, a, 1, info);
         chkxer("Cpbtrf", infot, nout, lerr, ok);
         //
-        //        Cpbtf2
+        // Cpbtf2
         //
         strncpy(srnamt, "Cpbtf2", srnamt_len);
         infot = 1;
@@ -309,7 +316,7 @@ void Cerrpo(const char *path, INTEGER const nunit) {
         Cpbtf2("U", 2, 1, a, 1, info);
         chkxer("Cpbtf2", infot, nout, lerr, ok);
         //
-        //        Cpbtrs
+        // Cpbtrs
         //
         strncpy(srnamt, "Cpbtrs", srnamt_len);
         infot = 1;
@@ -331,7 +338,7 @@ void Cerrpo(const char *path, INTEGER const nunit) {
         Cpbtrs("U", 2, 0, 1, a, 1, b, 1, info);
         chkxer("Cpbtrs", infot, nout, lerr, ok);
         //
-        //        Cpbrfs
+        // Cpbrfs
         //
         strncpy(srnamt, "Cpbrfs", srnamt_len);
         infot = 1;
@@ -359,7 +366,7 @@ void Cerrpo(const char *path, INTEGER const nunit) {
         Cpbrfs("U", 2, 0, 1, a, 1, af, 1, b, 2, x, 1, r1, r2, w, r, info);
         chkxer("Cpbrfs", infot, nout, lerr, ok);
         //
-        //        Cpbcon
+        // Cpbcon
         //
         strncpy(srnamt, "Cpbcon", srnamt_len);
         infot = 1;
@@ -378,7 +385,7 @@ void Cerrpo(const char *path, INTEGER const nunit) {
         Cpbcon("U", 1, 0, a, 1, -anrm, rcond, w, r, info);
         chkxer("Cpbcon", infot, nout, lerr, ok);
         //
-        //        Cpbequ
+        // Cpbequ
         //
         strncpy(srnamt, "Cpbequ", srnamt_len);
         infot = 1;
@@ -395,10 +402,10 @@ void Cerrpo(const char *path, INTEGER const nunit) {
         chkxer("Cpbequ", infot, nout, lerr, ok);
     }
     //
-    //     Print a summary line.
+    // Print a summary line.
     //
     Alaesm(path, ok, nout);
     //
-    //     End of Cerrpo
+    // End of Cerrpo
     //
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZLARZ.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -35,50 +42,50 @@ void Clarz(const char *side, INTEGER const m, INTEGER const n, INTEGER const l, 
     const COMPLEX one = COMPLEX(1.0, 0.0);
     if (Mlsame(side, "L")) {
         //
-        //        Form  H * C
+        // Form  H * C
         //
         if (tau != zero) {
             //
-            //           w( 1:n ) = conj( C( 1, 1:n ) )
+            // w( 1:n ) = conjg( C( 1, 1:n ) )
             //
             Ccopy(n, c, ldc, work, 1);
             Clacgv(n, work, 1);
             //
-            //           w( 1:n ) = conj( w( 1:n ) + C( m-l+1:m, 1:n )**H * v( 1:l ) )
+            // w( 1:n ) = conjg( w( 1:n ) + C( m-l+1:m, 1:n )**H * v( 1:l ) )
             //
             Cgemv("Conjugate transpose", l, n, one, &c[((m - l + 1) - 1)], ldc, v, incv, one, work, 1);
             Clacgv(n, work, 1);
             //
-            //           C( 1, 1:n ) = C( 1, 1:n ) - tau * w( 1:n )
+            // C( 1, 1:n ) = C( 1, 1:n ) - tau * w( 1:n )
             //
             Caxpy(n, -tau, work, 1, c, ldc);
             //
-            //           C( m-l+1:m, 1:n ) = C( m-l+1:m, 1:n ) - ...
-            //                               tau * v( 1:l ) * w( 1:n )**H
+            // C( m-l+1:m, 1:n ) = C( m-l+1:m, 1:n ) - ...
+            // tau * v( 1:l ) * w( 1:n )**H
             //
             Cgeru(l, n, -tau, v, incv, work, 1, &c[((m - l + 1) - 1)], ldc);
         }
         //
     } else {
         //
-        //        Form  C * H
+        // Form  C * H
         //
         if (tau != zero) {
             //
-            //           w( 1:m ) = C( 1:m, 1 )
+            // w( 1:m ) = C( 1:m, 1 )
             //
             Ccopy(m, c, 1, work, 1);
             //
-            //           w( 1:m ) = w( 1:m ) + C( 1:m, n-l+1:n, 1:n ) * v( 1:l )
+            // w( 1:m ) = w( 1:m ) + C( 1:m, n-l+1:n, 1:n ) * v( 1:l )
             //
             Cgemv("No transpose", m, l, one, &c[((n - l + 1) - 1) * ldc], ldc, v, incv, one, work, 1);
             //
-            //           C( 1:m, 1 ) = C( 1:m, 1 ) - tau * w( 1:m )
+            // C( 1:m, 1 ) = C( 1:m, 1 ) - tau * w( 1:m )
             //
             Caxpy(m, -tau, work, 1, c, 1);
             //
-            //           C( 1:m, n-l+1:n ) = C( 1:m, n-l+1:n ) - ...
-            //                               tau * w( 1:m ) * v( 1:l )**H
+            // C( 1:m, n-l+1:n ) = C( 1:m, n-l+1:n ) - ...
+            // tau * w( 1:m ) * v( 1:l )**H
             //
             Cgerc(m, l, -tau, work, 1, v, incv, &c[((n - l + 1) - 1) * ldc], ldc);
             //
@@ -86,6 +93,6 @@ void Clarz(const char *side, INTEGER const m, INTEGER const n, INTEGER const l, 
         //
     }
     //
-    //     End of Clarz
+    // End of Clarz
     //
 }

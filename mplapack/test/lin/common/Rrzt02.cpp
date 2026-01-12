@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DRZT02.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -39,31 +46,6 @@ using fem::common;
 REAL Rrzt02(INTEGER const m, INTEGER const n, REAL *af, INTEGER const lda, REAL *tau, REAL *work, INTEGER const lwork) {
     REAL return_value = 0.0;
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     const REAL zero = 0.0;
     return_value = zero;
     //
@@ -72,27 +54,27 @@ REAL Rrzt02(INTEGER const m, INTEGER const n, REAL *af, INTEGER const lda, REAL 
         return return_value;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (m <= 0 || n <= 0) {
         return return_value;
     }
     //
-    //     Q := I
+    // Q := I
     //
     const REAL one = 1.0;
     Rlaset("Full", n, n, zero, one, work, n);
     //
-    //     Q := P(1) * ... * P(m) * Q
+    // Q := P(1) * ... * P(m) * Q
     //
     INTEGER info = 0;
     Rormrz("Left", "No transpose", n, n, m, n - m, af, lda, tau, work, n, &work[(n * n + 1) - 1], lwork - n * n, info);
     //
-    //     Q := P(m) * ... * P(1) * Q
+    // Q := P(m) * ... * P(1) * Q
     //
     Rormrz("Left", "Transpose", n, n, m, n - m, af, lda, tau, work, n, &work[(n * n + 1) - 1], lwork - n * n, info);
     //
-    //     Q := Q - I
+    // Q := Q - I
     //
     INTEGER i = 0;
     for (i = 1; i <= n; i = i + 1) {
@@ -103,6 +85,6 @@ REAL Rrzt02(INTEGER const m, INTEGER const n, REAL *af, INTEGER const lda, REAL 
     return_value = Rlange("One-norm", n, n, work, n, rwork) / (Rlamch("Epsilon") * castREAL(max(m, n)));
     return return_value;
     //
-    //     End of Rrzt02
+    // End of Rrzt02
     //
 }

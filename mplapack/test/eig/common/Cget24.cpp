@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine ZGET24.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -85,7 +92,7 @@ void Cget24(bool const comp, INTEGER const jtype, REAL const thresh, INTEGER *is
     static const char *format_9999 = "(' Cget24: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,"
                                      "', INPUT EXAMPLE NUMBER = ',i4)";
     //
-    //     Check for errors
+    // Check for errors
     //
     info = 0;
     if (thresh < zero) {
@@ -107,7 +114,7 @@ void Cget24(bool const comp, INTEGER const jtype, REAL const thresh, INTEGER *is
         return;
     }
     //
-    //     Quick return if nothing to do
+    // Quick return if nothing to do
     //
     for (i = 1; i <= 17; i = i + 1) {
         result[i - 1] = -one;
@@ -117,13 +124,13 @@ void Cget24(bool const comp, INTEGER const jtype, REAL const thresh, INTEGER *is
         return;
     }
     //
-    //     Important constants
+    // Important constants
     //
     smlnum = Rlamch("Safe minimum");
     ulp = Rlamch("Precision");
     ulpinv = one / ulp;
     //
-    //     Perform tests (1)-(13)
+    // Perform tests (1)-(13)
     //
     selopt = 0;
     for (isort = 0; isort <= 1; isort = isort + 1) {
@@ -135,7 +142,7 @@ void Cget24(bool const comp, INTEGER const jtype, REAL const thresh, INTEGER *is
             rsub = 6;
         }
         //
-        //        Compute Schur form and Schur vectors, and test them
+        // Compute Schur form and Schur vectors, and test them
         //
         Clacpy("F", n, n, a, lda, h, lda);
         Cgeesx("V", &sort, Cslect, "N", n, h, lda, sdim, w, vs, ldvs, rconde, rcondv, work, lwork, rwork, bwork, iinfo);
@@ -153,7 +160,7 @@ void Cget24(bool const comp, INTEGER const jtype, REAL const thresh, INTEGER *is
             Ccopy(n, w, 1, wtmp, 1);
         }
         //
-        //        Do Test (1) or Test (7)
+        // Do Test (1) or Test (7)
         //
         result[(1 + rsub) - 1] = zero;
         for (j = 1; j <= n - 1; j = j + 1) {
@@ -164,17 +171,17 @@ void Cget24(bool const comp, INTEGER const jtype, REAL const thresh, INTEGER *is
             }
         }
         //
-        //        Test (2) or (8): Compute norm(A - Q*H*Q') / (norm(A) * N * ULP)
+        // Test (2) or (8): Compute norm(A - Q*H*Q') / (norm(A) * N * ULP)
         //
-        //        Copy A to VS1, used as workspace
+        // Copy A to VS1, used as workspace
         //
         Clacpy(" ", n, n, a, lda, vs1, ldvs);
         //
-        //        Compute Q*H and store in HT.
+        // Compute Q*H and store in HT.
         //
         Cgemm("No transpose", "No transpose", n, n, n, cone, vs, ldvs, h, lda, czero, ht, lda);
         //
-        //        Compute A - Q*H*Q'
+        // Compute A - Q*H*Q'
         //
         Cgemm("No transpose", "Conjugate transpose", n, n, n, -cone, ht, lda, vs, ldvs, cone, vs1, ldvs);
         //
@@ -191,11 +198,11 @@ void Cget24(bool const comp, INTEGER const jtype, REAL const thresh, INTEGER *is
             }
         }
         //
-        //        Test (3) or (9):  Compute norm( I - Q'*Q ) / ( N * ULP )
+        // Test (3) or (9):  Compute norm( I - Q'*Q ) / ( N * ULP )
         //
         Cunt01("Columns", n, n, vs, ldvs, work, lwork, rwork, result[(3 + rsub) - 1]);
         //
-        //        Do Test (4) or Test (10)
+        // Do Test (4) or Test (10)
         //
         result[(4 + rsub) - 1] = zero;
         for (i = 1; i <= n; i = i + 1) {
@@ -204,7 +211,7 @@ void Cget24(bool const comp, INTEGER const jtype, REAL const thresh, INTEGER *is
             }
         }
         //
-        //        Do Test (5) or Test (11)
+        // Do Test (5) or Test (11)
         //
         Clacpy("F", n, n, a, lda, ht, lda);
         Cgeesx("N", &sort, Cslect, "N", n, ht, lda, sdim, wt, vs, ldvs, rconde, rcondv, work, lwork, rwork, bwork, iinfo);
@@ -228,7 +235,7 @@ void Cget24(bool const comp, INTEGER const jtype, REAL const thresh, INTEGER *is
             }
         }
         //
-        //        Do Test (6) or Test (12)
+        // Do Test (6) or Test (12)
         //
         result[(6 + rsub) - 1] = zero;
         for (i = 1; i <= n; i = i + 1) {
@@ -237,7 +244,7 @@ void Cget24(bool const comp, INTEGER const jtype, REAL const thresh, INTEGER *is
             }
         }
         //
-        //        Do Test (13)
+        // Do Test (13)
         //
         if (isort == 1) {
             result[13 - 1] = zero;
@@ -259,12 +266,12 @@ void Cget24(bool const comp, INTEGER const jtype, REAL const thresh, INTEGER *is
         //
     }
     //
-    //     If there is enough workspace, perform tests (14) and (15)
-    //     as well as (10) through (13)
+    // If there is enough workspace, perform tests (14) and (15)
+    // as well as (10) through (13)
     //
     if (lwork >= (n * (n + 1)) / 2) {
         //
-        //        Compute both RCONDE and RCONDV with VS
+        // Compute both RCONDE and RCONDV with VS
         //
         sort = 'S';
         result[14 - 1] = zero;
@@ -283,7 +290,7 @@ void Cget24(bool const comp, INTEGER const jtype, REAL const thresh, INTEGER *is
             goto statement_220;
         }
         //
-        //        Perform tests (10), (11), (12), and (13)
+        // Perform tests (10), (11), (12), and (13)
         //
         for (i = 1; i <= n; i = i + 1) {
             if (w[i - 1] != wt[i - 1]) {
@@ -302,7 +309,7 @@ void Cget24(bool const comp, INTEGER const jtype, REAL const thresh, INTEGER *is
             result[13 - 1] = ulpinv;
         }
         //
-        //        Compute both RCONDE and RCONDV without VS, and compare
+        // Compute both RCONDE and RCONDV without VS, and compare
         //
         Clacpy("F", n, n, a, lda, ht, lda);
         Cgeesx("N", &sort, Cslect, "B", n, ht, lda, sdim1, wt, vs1, ldvs, rcnde1, rcndv1, work, lwork, rwork, bwork, iinfo);
@@ -318,7 +325,7 @@ void Cget24(bool const comp, INTEGER const jtype, REAL const thresh, INTEGER *is
             goto statement_220;
         }
         //
-        //        Perform tests (14) and (15)
+        // Perform tests (14) and (15)
         //
         if (rcnde1 != rconde) {
             result[14 - 1] = ulpinv;
@@ -327,7 +334,7 @@ void Cget24(bool const comp, INTEGER const jtype, REAL const thresh, INTEGER *is
             result[15 - 1] = ulpinv;
         }
         //
-        //        Perform tests (10), (11), (12), and (13)
+        // Perform tests (10), (11), (12), and (13)
         //
         for (i = 1; i <= n; i = i + 1) {
             if (w[i - 1] != wt[i - 1]) {
@@ -346,7 +353,7 @@ void Cget24(bool const comp, INTEGER const jtype, REAL const thresh, INTEGER *is
             result[13 - 1] = ulpinv;
         }
         //
-        //        Compute RCONDE with VS, and compare
+        // Compute RCONDE with VS, and compare
         //
         Clacpy("F", n, n, a, lda, ht, lda);
         Cgeesx("V", &sort, Cslect, "E", n, ht, lda, sdim1, wt, vs1, ldvs, rcnde1, rcndv1, work, lwork, rwork, bwork, iinfo);
@@ -361,13 +368,13 @@ void Cget24(bool const comp, INTEGER const jtype, REAL const thresh, INTEGER *is
             goto statement_220;
         }
         //
-        //        Perform test (14)
+        // Perform test (14)
         //
         if (rcnde1 != rconde) {
             result[14 - 1] = ulpinv;
         }
         //
-        //        Perform tests (10), (11), (12), and (13)
+        // Perform tests (10), (11), (12), and (13)
         //
         for (i = 1; i <= n; i = i + 1) {
             if (w[i - 1] != wt[i - 1]) {
@@ -386,7 +393,7 @@ void Cget24(bool const comp, INTEGER const jtype, REAL const thresh, INTEGER *is
             result[13 - 1] = ulpinv;
         }
         //
-        //        Compute RCONDE without VS, and compare
+        // Compute RCONDE without VS, and compare
         //
         Clacpy("F", n, n, a, lda, ht, lda);
         Cgeesx("N", &sort, Cslect, "E", n, ht, lda, sdim1, wt, vs1, ldvs, rcnde1, rcndv1, work, lwork, rwork, bwork, iinfo);
@@ -401,13 +408,13 @@ void Cget24(bool const comp, INTEGER const jtype, REAL const thresh, INTEGER *is
             goto statement_220;
         }
         //
-        //        Perform test (14)
+        // Perform test (14)
         //
         if (rcnde1 != rconde) {
             result[14 - 1] = ulpinv;
         }
         //
-        //        Perform tests (10), (11), (12), and (13)
+        // Perform tests (10), (11), (12), and (13)
         //
         for (i = 1; i <= n; i = i + 1) {
             if (w[i - 1] != wt[i - 1]) {
@@ -426,7 +433,7 @@ void Cget24(bool const comp, INTEGER const jtype, REAL const thresh, INTEGER *is
             result[13 - 1] = ulpinv;
         }
         //
-        //        Compute RCONDV with VS, and compare
+        // Compute RCONDV with VS, and compare
         //
         Clacpy("F", n, n, a, lda, ht, lda);
         Cgeesx("V", &sort, Cslect, "V", n, ht, lda, sdim1, wt, vs1, ldvs, rcnde1, rcndv1, work, lwork, rwork, bwork, iinfo);
@@ -441,13 +448,13 @@ void Cget24(bool const comp, INTEGER const jtype, REAL const thresh, INTEGER *is
             goto statement_220;
         }
         //
-        //        Perform test (15)
+        // Perform test (15)
         //
         if (rcndv1 != rcondv) {
             result[15 - 1] = ulpinv;
         }
         //
-        //        Perform tests (10), (11), (12), and (13)
+        // Perform tests (10), (11), (12), and (13)
         //
         for (i = 1; i <= n; i = i + 1) {
             if (w[i - 1] != wt[i - 1]) {
@@ -466,7 +473,7 @@ void Cget24(bool const comp, INTEGER const jtype, REAL const thresh, INTEGER *is
             result[13 - 1] = ulpinv;
         }
         //
-        //        Compute RCONDV without VS, and compare
+        // Compute RCONDV without VS, and compare
         //
         Clacpy("F", n, n, a, lda, ht, lda);
         Cgeesx("N", &sort, Cslect, "V", n, ht, lda, sdim1, wt, vs1, ldvs, rcnde1, rcndv1, work, lwork, rwork, bwork, iinfo);
@@ -481,13 +488,13 @@ void Cget24(bool const comp, INTEGER const jtype, REAL const thresh, INTEGER *is
             goto statement_220;
         }
         //
-        //        Perform test (15)
+        // Perform test (15)
         //
         if (rcndv1 != rcondv) {
             result[15 - 1] = ulpinv;
         }
         //
-        //        Perform tests (10), (11), (12), and (13)
+        // Perform tests (10), (11), (12), and (13)
         //
         for (i = 1; i <= n; i = i + 1) {
             if (w[i - 1] != wt[i - 1]) {
@@ -510,14 +517,14 @@ void Cget24(bool const comp, INTEGER const jtype, REAL const thresh, INTEGER *is
 //
 statement_220:
     //
-    //     If there are precomputed reciprocal condition numbers, compare
-    //     computed values with them.
+    // If there are precomputed reciprocal condition numbers, compare
+    // computed values with them.
     //
     if (comp) {
         //
-        //        First set up SELOPT, SELDIM, SELVAL, SELWR and SELWI so that
-        //        the logical function Cslect selects the eigenvalues specified
-        //        by NSLCT, ISLCT and ISRT.
+        // First set up SELOPT, SELDIM, SELVAL, SELWR and SELWI so that
+        // the logical function Cslect selects the eigenvalues specified
+        // by NSLCT, ISLCT and ISRT.
         //
         seldim = n;
         selopt = 1;
@@ -557,7 +564,7 @@ statement_220:
             selval[ipnt[islct[i - 1] - 1] - 1] = true;
         }
         //
-        //        Compute condition numbers
+        // Compute condition numbers
         //
         Clacpy("F", n, n, a, lda, ht, lda);
         Cgeesx("N", "S", Cslect, "B", n, ht, lda, sdim1, wt, vs1, ldvs, rconde, rcondv, work, lwork, rwork, bwork, iinfo);
@@ -569,8 +576,8 @@ statement_220:
             goto statement_270;
         }
         //
-        //        Compare condition number for average of selected eigenvalues
-        //        taking its condition number into account
+        // Compare condition number for average of selected eigenvalues
+        // taking its condition number into account
         //
         anorm = Clange("1", n, n, a, lda, rwork);
         v = max(REAL(castREAL(n) * eps * anorm), smlnum);
@@ -601,8 +608,8 @@ statement_220:
             result[16 - 1] = one;
         }
         //
-        //        Compare condition numbers for right invariant subspace
-        //        taking its condition number into account
+        // Compare condition numbers for right invariant subspace
+        // taking its condition number into account
         //
         if (v > rcondv * rconde) {
             tol = rcondv;
@@ -632,6 +639,6 @@ statement_220:
         //
     }
     //
-    //     End of Cget24
+    // End of Cget24
     //
 }

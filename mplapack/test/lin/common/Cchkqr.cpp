@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine ZCHKQR.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -90,7 +97,7 @@ void Cchkqr(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
         iseed[i - 1] = iseedy[i - 1];
     }
     //
-    //     Test the error exits
+    // Test the error exits
     //
     if (tsterr) {
         Cerrqr(path, nout);
@@ -101,42 +108,42 @@ void Cchkqr(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     lda = nmax;
     lwork = nmax * max(nmax, nrhs);
     //
-    //     Do for each value of M in MVAL.
+    // Do for each value of M in MVAL.
     //
     for (im = 1; im <= nm; im = im + 1) {
         m = mval[im - 1];
         //
-        //        Do for each value of N in NVAL.
+        // Do for each value of N in NVAL.
         //
         for (in = 1; in <= nn; in = in + 1) {
             n = nval[in - 1];
             minmn = min(m, n);
             for (imat = 1; imat <= ntypes; imat = imat + 1) {
                 //
-                //              Do the tests only if DOTYPE( IMAT ) is true.
+                // Do the tests only if DOTYPE( IMAT ) is true.
                 //
                 if (!dotype[imat - 1]) {
                     goto statement_50;
                 }
                 //
-                //              Set up parameters with Clatb4 and generate a test matrix
-                //              with Clatms.
+                // Set up parameters with Clatb4 and generate a test matrix
+                // with Clatms.
                 //
                 Clatb4(path, imat, m, n, type, kl, ku, anorm, mode, cndnum, dist);
                 //
                 strncpy(srnamt, "Clatms", srnamt_len);
                 Clatms(m, n, dist, iseed, type, rwork, mode, cndnum, anorm, kl, ku, "No packing", a, lda, work, info);
                 //
-                //              Check error code from Clatms.
+                // Check error code from Clatms.
                 //
                 if (info != 0) {
                     Alaerh(path, "Clatms", info, 0, " ", m, n, -1, -1, -1, imat, nfail, nerrs, nout);
                     goto statement_50;
                 }
                 //
-                //              Set some values for K: the first value must be MINMN,
-                //              corresponding to the call of Cqrt01; other values are
-                //              used in the calls of Cqrt02, and must not exceed MINMN.
+                // Set some values for K: the first value must be MINMN,
+                // corresponding to the call of Cqrt01; other values are
+                // used in the calls of Cqrt02, and must not exceed MINMN.
                 //
                 kval[1 - 1] = minmn;
                 kval[2 - 1] = 0;
@@ -152,12 +159,12 @@ void Cchkqr(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                     nk = 4;
                 }
                 //
-                //              Do for each value of K in KVAL
+                // Do for each value of K in KVAL
                 //
                 for (ik = 1; ik <= nk; ik = ik + 1) {
                     k = kval[ik - 1];
                     //
-                    //                 Do for each pair of values (NB,NX) in NBVAL and NXVAL.
+                    // Do for each pair of values (NB,NX) in NBVAL and NXVAL.
                     //
                     for (inb = 1; inb <= nnb; inb = inb + 1) {
                         nb = nbval[inb - 1];
@@ -170,11 +177,11 @@ void Cchkqr(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                         nt = 2;
                         if (ik == 1) {
                             //
-                            //                       Test Cgeqrf
+                            // Test Cgeqrf
                             //
                             Cqrt01(m, n, a, af, aq, ar, lda, tau, work, lwork, rwork, &result[1 - 1]);
                             //
-                            //                       Test Cgeqrfp
+                            // Test Cgeqrfp
                             //
                             Cqrt01p(m, n, a, af, aq, ar, lda, tau, work, lwork, rwork, &result[8 - 1]);
                             //
@@ -184,27 +191,27 @@ void Cchkqr(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                             nt++;
                         } else if (m >= n) {
                             //
-                            //                       Test Cungqr, using factorization
-                            //                       returned by Cqrt01
+                            // Test Cungqr, using factorization
+                            // returned by Cqrt01
                             //
                             Cqrt02(m, n, k, a, af, aq, ar, lda, tau, work, lwork, rwork, &result[1 - 1]);
                         }
                         if (m >= k) {
                             //
-                            //                       Test Cunmqr, using factorization returned
-                            //                       by Cqrt01
+                            // Test Cunmqr, using factorization returned
+                            // by Cqrt01
                             //
                             Cqrt03(m, n, k, af, ac, ar, aq, lda, tau, work, lwork, rwork, &result[3 - 1]);
                             nt += 4;
                             //
-                            //                       If M>=N and K=N, call Cgeqrs to solve a system
-                            //                       with NRHS right hand sides and compute the
-                            //                       residual.
+                            // If M>=N and K=N, call Cgeqrs to solve a system
+                            // with NRHS right hand sides and compute the
+                            // residual.
                             //
                             if (k == n && inb == 1) {
                                 //
-                                //                          Generate a solution and set the right
-                                //                          hand side.
+                                // Generate a solution and set the right
+                                // hand side.
                                 //
                                 strncpy(srnamt, "Clarhs", srnamt_len);
                                 Clarhs(path, "New", "Full", "No transpose", m, n, 0, 0, nrhs, a, lda, xact, lda, b, lda, iseed, info);
@@ -213,7 +220,7 @@ void Cchkqr(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                 strncpy(srnamt, "Cgeqrs", srnamt_len);
                                 Cgeqrs(m, n, nrhs, af, lda, tau, x, lda, work, lwork, info);
                                 //
-                                //                          Check error code from Cgeqrs.
+                                // Check error code from Cgeqrs.
                                 //
                                 if (info != 0) {
                                     Alaerh(path, "Cgeqrs", info, 0, " ", m, n, nrhs, -1, nb, imat, nfail, nerrs, nout);
@@ -224,8 +231,8 @@ void Cchkqr(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                             }
                         }
                         //
-                        //                    Print information about the tests that did not
-                        //                    pass the threshold.
+                        // Print information about the tests that did not
+                        // pass the threshold.
                         //
                         for (i = 1; i <= ntests; i = i + 1) {
                             if (result[i - 1] >= thresh) {
@@ -247,10 +254,10 @@ void Cchkqr(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
         }
     }
     //
-    //     Print a summary of the results.
+    // Print a summary of the results.
     //
     Alasum(path, nout, nfail, nrun, nerrs);
     //
-    //     End of Cchkqr
+    // End of Cchkqr
     //
 }

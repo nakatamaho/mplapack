@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZUNT03.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -40,30 +47,7 @@ using fem::common;
 
 void Cunt03(const char *rc, INTEGER const mu, INTEGER const mv, INTEGER const n, INTEGER const k, COMPLEX *u, INTEGER const ldu, COMPLEX *v, INTEGER const ldv, COMPLEX *work, INTEGER const lwork, REAL *rwork, REAL &result, INTEGER &info) {
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Check inputs
+    // Check inputs
     //
     info = 0;
     INTEGER irc = 0;
@@ -94,7 +78,7 @@ void Cunt03(const char *rc, INTEGER const mu, INTEGER const mv, INTEGER const n,
         return;
     }
     //
-    //     Initialize result
+    // Initialize result
     //
     const REAL zero = 0.0;
     result = zero;
@@ -102,7 +86,7 @@ void Cunt03(const char *rc, INTEGER const mu, INTEGER const mv, INTEGER const n,
         return;
     }
     //
-    //     Machine constants
+    // Machine constants
     //
     REAL ulp = Rlamch("Precision");
     //
@@ -117,7 +101,7 @@ void Cunt03(const char *rc, INTEGER const mu, INTEGER const mv, INTEGER const n,
     REAL res2 = 0.0;
     if (irc == 0) {
         //
-        //        Compare rows
+        // Compare rows
         //
         res1 = zero;
         for (i = 1; i <= k; i = i + 1) {
@@ -139,13 +123,13 @@ void Cunt03(const char *rc, INTEGER const mu, INTEGER const mv, INTEGER const n,
         }
         res1 = res1 / (castREAL(n) * ulp);
         //
-        //        Compute orthogonality of rows of V.
+        // Compute orthogonality of rows of V.
         //
         Cunt01("Rows", mv, n, v, ldv, work, lwork, rwork, res2);
         //
     } else {
         //
-        //        Compare columns
+        // Compare columns
         //
         res1 = zero;
         for (i = 1; i <= k; i = i + 1) {
@@ -167,13 +151,13 @@ void Cunt03(const char *rc, INTEGER const mu, INTEGER const mv, INTEGER const n,
         }
         res1 = res1 / (castREAL(n) * ulp);
         //
-        //        Compute orthogonality of columns of V.
+        // Compute orthogonality of columns of V.
         //
         Cunt01("Columns", n, mv, v, ldv, work, lwork, rwork, res2);
     }
     //
     result = min(REAL(max(res1, res2)), REAL(one / ulp));
     //
-    //     End of Cunt03
+    // End of Cunt03
     //
 }

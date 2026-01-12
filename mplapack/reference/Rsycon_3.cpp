@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DSYCON_3.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -38,32 +45,7 @@ void Rsycon_3(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REA
     REAL ainvnm = 0.0;
     INTEGER isave[3];
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     upper = Mlsame(uplo, "U");
@@ -81,7 +63,7 @@ void Rsycon_3(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REA
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     rcond = zero;
     if (n == 0) {
@@ -91,11 +73,11 @@ void Rsycon_3(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REA
         return;
     }
     //
-    //     Check that the diagonal matrix D is nonsingular.
+    // Check that the diagonal matrix D is nonsingular.
     //
     if (upper) {
         //
-        //        Upper triangular storage: examine D from bottom to top
+        // Upper triangular storage: examine D from bottom to top
         //
         for (i = n; i >= 1; i = i - 1) {
             if (ipiv[i - 1] > 0 && a[(i - 1) + (i - 1) * lda] == zero) {
@@ -104,7 +86,7 @@ void Rsycon_3(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REA
         }
     } else {
         //
-        //        Lower triangular storage: examine D from top to bottom.
+        // Lower triangular storage: examine D from top to bottom.
         //
         for (i = 1; i <= n; i = i + 1) {
             if (ipiv[i - 1] > 0 && a[(i - 1) + (i - 1) * lda] == zero) {
@@ -113,25 +95,25 @@ void Rsycon_3(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REA
         }
     }
     //
-    //     Estimate the 1-norm of the inverse.
+    // Estimate the 1-norm of the inverse.
     //
     kase = 0;
 statement_30:
     Rlacn2(n, &work[(n + 1) - 1], work, iwork, ainvnm, kase, isave);
     if (kase != 0) {
         //
-        //        Multiply by inv(L*D*L**T) or inv(U*D*U**T).
+        // Multiply by inv(L*D*L**T) or inv(U*D*U**T).
         //
         Rsytrs_3(uplo, n, 1, a, lda, e, ipiv, work, n, info);
         goto statement_30;
     }
     //
-    //     Compute the estimate of the reciprocal condition number.
+    // Compute the estimate of the reciprocal condition number.
     //
     if (ainvnm != zero) {
         rcond = (one / ainvnm) / anorm;
     }
     //
-    //     End of Rsycon_3
+    // End of Rsycon_3
     //
 }

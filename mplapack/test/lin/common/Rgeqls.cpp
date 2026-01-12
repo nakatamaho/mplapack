@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DGEQLS.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -38,26 +45,7 @@ using fem::common;
 
 void Rgeqls(INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEGER const lda, REAL *tau, REAL *b, INTEGER const ldb, REAL *work, INTEGER const lwork, INTEGER &info) {
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input arguments.
+    // Test the input arguments.
     //
     info = 0;
     if (m < 0) {
@@ -78,21 +66,21 @@ void Rgeqls(INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEG
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0 || nrhs == 0 || m == 0) {
         return;
     }
     //
-    //     B := Q' * B
+    // B := Q' * B
     //
     Rormql("Left", "Transpose", m, nrhs, n, a, lda, tau, b, ldb, work, lwork, info);
     //
-    //     Solve L*X = B(m-n+1:m,:)
+    // Solve L*X = B(m-n+1:m,:)
     //
     const REAL one = 1.0;
     Rtrsm("Left", "Lower", "No transpose", "Non-unit", n, nrhs, one, &a[((m - n + 1) - 1)], lda, &b[((m - n + 1) - 1)], ldb);
     //
-    //     End of Rgeqls
+    // End of Rgeqls
     //
 }

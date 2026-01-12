@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine ZCHKGG.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -111,7 +118,7 @@ void Cchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     static const char *format_9999 = "(' Cchkgg: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,', JTYPE=',i6,"
                                      "', ISEED=(',3(i5,','),i5,')')";
     //
-    //     Check for errors
+    // Check for errors
     //
     info = 0;
     //
@@ -126,7 +133,7 @@ void Cchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     //
     lwkopt = max({(INTEGER)2 * nmax * nmax, 4 * nmax, (INTEGER)1});
     //
-    //     Check for errors
+    // Check for errors
     //
     if (nsizes < 0) {
         info = -1;
@@ -149,7 +156,7 @@ void Cchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (nsizes == 0 || ntypes == 0) {
         return;
@@ -161,12 +168,12 @@ void Cchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     safmax = one / safmin;
     ulpinv = one / ulp;
     //
-    //     The values RMAGN(2:3) depend on N, see below.
+    // The values RMAGN(2:3) depend on N, see below.
     //
     rmagn[0] = zero;
     rmagn[1] = one;
     //
-    //     Loop over sizes, types
+    // Loop over sizes, types
     //
     ntestt = 0;
     nerrs = 0;
@@ -191,38 +198,38 @@ void Cchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             nmats++;
             ntest = 0;
             //
-            //           Save ISEED in case of an error.
+            // Save ISEED in case of an error.
             //
             for (j = 1; j <= 4; j = j + 1) {
                 ioldsd[j - 1] = iseed[j - 1];
             }
             //
-            //           Initialize RESULT
+            // Initialize RESULT
             //
             for (j = 1; j <= 15; j = j + 1) {
                 result[j - 1] = zero;
             }
             //
-            //           Compute A and B
+            // Compute A and B
             //
-            //           Description of control parameters:
+            // Description of control parameters:
             //
-            //           KZLASS: =1 means w/o rotation, =2 means w/ rotation,
-            //                   =3 means random.
-            //           KATYPE: the "type" to be passed to Clatm4 for computing A.
-            //           KAZERO: the pattern of zeros on the diagonal for A:
-            //                   =1: ( xxx ), =2: (0, xxx ) =3: ( 0, 0, xxx, 0 ),
-            //                   =4: ( 0, xxx, 0, 0 ), =5: ( 0, 0, 1, xxx, 0 ),
-            //                   =6: ( 0, 1, 0, xxx, 0 ).  (xxx means a string of
-            //                   non-zero entries.)
-            //           KAMAGN: the magnitude of the matrix: =0: zero, =1: O(1),
-            //                   =2: large, =3: small.
-            //           LASIGN: .TRUE. if the diagonal elements of A are to be
-            //                   multiplied by a random magnitude 1 number.
-            //           KBTYPE, KBZERO, KBMAGN, LBSIGN: the same, but for B.
-            //           KTRIAN: =0: don't fill in the upper triangle, =1: do.
-            //           KZ1, KZ2, KADD: used to implement KAZERO and KBZERO.
-            //           RMAGN:  used to implement KAMAGN and KBMAGN.
+            // KZLASS: =1 means w/o rotation, =2 means w/ rotation,
+            // =3 means random.
+            // KATYPE: the "type" to be passed to Clatm4 for computing A.
+            // KAZERO: the pattern of zeros on the diagonal for A:
+            // =1: ( xxx ), =2: (0, xxx ) =3: ( 0, 0, xxx, 0 ),
+            // =4: ( 0, xxx, 0, 0 ), =5: ( 0, 0, 1, xxx, 0 ),
+            // =6: ( 0, 1, 0, xxx, 0 ).  (xxx means a string of
+            // non-zero entries.)
+            // KAMAGN: the magnitude of the matrix: =0: zero, =1: O(1),
+            // =2: large, =3: small.
+            // LASIGN: .TRUE. if the diagonal elements of A are to be
+            // multiplied by a random magnitude 1 number.
+            // KBTYPE, KBZERO, KBMAGN, LBSIGN: the same, but for B.
+            // KTRIAN: =0: don't fill in the upper triangle, =1: do.
+            // KZ1, KZ2, KADD: used to implement KAZERO and KBZERO.
+            // RMAGN:  used to implement KAMAGN and KBMAGN.
             //
             if (mtypes > maxtyp) {
                 goto statement_110;
@@ -230,7 +237,7 @@ void Cchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             iinfo = 0;
             if (kclass[jtype - 1] < 3) {
                 //
-                //              Generate A (w/o rotation)
+                // Generate A (w/o rotation)
                 //
                 if (abs(katype[jtype - 1]) == 3) {
                     in = 2 * ((n - 1) / 2) + 1;
@@ -246,7 +253,7 @@ void Cchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     a[(iadd - 1) + (iadd - 1) * lda] = rmagn[kamagn[jtype - 1]];
                 }
                 //
-                //              Generate B (w/o rotation)
+                // Generate B (w/o rotation)
                 //
                 if (abs(kbtype[jtype - 1]) == 3) {
                     in = 2 * ((n - 1) / 2) + 1;
@@ -264,11 +271,11 @@ void Cchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 //
                 if (kclass[jtype - 1] == 2 && n > 0) {
                     //
-                    //                 Include rotations
+                    // Include rotations
                     //
-                    //                 Generate U, V as Householder transformations times a
-                    //                 diagonal matrix.  (Note that Clarfg makes U(j,j) and
-                    //                 V(j,j) real.)
+                    // Generate U, V as Householder transformations times a
+                    // diagonal matrix.  (Note that Clarfg makes U(j,j) and
+                    // V(j,j) real.)
                     //
                     for (jc = 1; jc <= n - 1; jc = jc + 1) {
                         for (jr = jc; jr <= n; jr = jr + 1) {
@@ -291,7 +298,7 @@ void Cchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     work[(2 * n) - 1] = czero;
                     work[(4 * n) - 1] = ctemp / abs(ctemp);
                     //
-                    //                 Apply the diagonal matrices
+                    // Apply the diagonal matrices
                     //
                     for (jc = 1; jc <= n; jc = jc + 1) {
                         for (jr = 1; jr <= n; jr = jr + 1) {
@@ -318,7 +325,7 @@ void Cchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 }
             } else {
                 //
-                //              Random matrices
+                // Random matrices
                 //
                 for (jc = 1; jc <= n; jc = jc + 1) {
                     for (jr = 1; jr <= n; jr = jr + 1) {
@@ -341,7 +348,7 @@ void Cchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
         //
         statement_110:
             //
-            //           Call Cgeqr2, Cunm2r, and Cgghrd to compute H, T, U, and V
+            // Call Cgeqr2, Cunm2r, and Cgghrd to compute H, T, U, and V
             //
             Clacpy(" ", n, n, a, lda, h, lda);
             Clacpy(" ", n, n, b, lda, t, lda);
@@ -378,18 +385,18 @@ void Cchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             }
             ntest = 4;
             //
-            //           Do tests 1--4
+            // Do tests 1--4
             //
             Cget51(1, n, a, lda, h, lda, u, ldu, v, ldu, work, rwork, result[1 - 1]);
             Cget51(1, n, b, lda, t, lda, u, ldu, v, ldu, work, rwork, result[2 - 1]);
             Cget51(3, n, b, lda, t, lda, u, ldu, u, ldu, work, rwork, result[3 - 1]);
             Cget51(3, n, b, lda, t, lda, v, ldu, v, ldu, work, rwork, result[4 - 1]);
             //
-            //           Call Chgeqz to compute S1, P1, S2, P2, Q, and Z, do tests.
+            // Call Chgeqz to compute S1, P1, S2, P2, Q, and Z, do tests.
             //
-            //           Compute T1 and UZ
+            // Compute T1 and UZ
             //
-            //           Eigenvalues only
+            // Eigenvalues only
             //
             Clacpy(" ", n, n, h, lda, s2, lda);
             Clacpy(" ", n, n, t, lda, p2, lda);
@@ -403,7 +410,7 @@ void Cchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 goto statement_210;
             }
             //
-            //           Eigenvalues and Full Schur Form
+            // Eigenvalues and Full Schur Form
             //
             Clacpy(" ", n, n, h, lda, s2, lda);
             Clacpy(" ", n, n, t, lda, p2, lda);
@@ -415,7 +422,7 @@ void Cchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 goto statement_210;
             }
             //
-            //           Eigenvalues, Schur Form, and Schur Vectors
+            // Eigenvalues, Schur Form, and Schur Vectors
             //
             Clacpy(" ", n, n, h, lda, s1, lda);
             Clacpy(" ", n, n, t, lda, p1, lda);
@@ -429,23 +436,23 @@ void Cchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             //
             ntest = 8;
             //
-            //           Do Tests 5--8
+            // Do Tests 5--8
             //
             Cget51(1, n, h, lda, s1, lda, q, ldu, z, ldu, work, rwork, result[5 - 1]);
             Cget51(1, n, t, lda, p1, lda, q, ldu, z, ldu, work, rwork, result[6 - 1]);
             Cget51(3, n, t, lda, p1, lda, q, ldu, q, ldu, work, rwork, result[7 - 1]);
             Cget51(3, n, t, lda, p1, lda, z, ldu, z, ldu, work, rwork, result[8 - 1]);
             //
-            //           Compute the Left and Right Eigenvectors of (S1,P1)
+            // Compute the Left and Right Eigenvectors of (S1,P1)
             //
-            //           9: Compute the left eigenvector Matrix without
-            //              back transforming:
+            // 9: Compute the left eigenvector Matrix without
+            // back transforming:
             //
             ntest = 9;
             result[9 - 1] = ulpinv;
             //
-            //           To test "SELECT" option, compute half of the eigenvectors
-            //           in one call, and half in another
+            // To test "SELECT" option, compute half of the eigenvectors
+            // in one call, and half in another
             //
             i1 = n / 2;
             for (j = 1; j <= i1; j = j + 1) {
@@ -510,8 +517,8 @@ void Cchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             ntest = 11;
             result[11 - 1] = ulpinv;
             //
-            //           To test "SELECT" option, compute half of the eigenvectors
-            //           in one call, and half in another
+            // To test "SELECT" option, compute half of the eigenvectors
+            // in one call, and half in another
             //
             i1 = n / 2;
             for (j = 1; j <= i1; j = j + 1) {
@@ -574,12 +581,12 @@ void Cchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             //
             if (tstdif) {
                 //
-                //              Do Tests 13--14
+                // Do Tests 13--14
                 //
                 Cget51(2, n, s1, lda, s2, lda, q, ldu, z, ldu, work, rwork, result[13 - 1]);
                 Cget51(2, n, p1, lda, p2, lda, q, ldu, z, ldu, work, rwork, result[14 - 1]);
                 //
-                //              Do Test 15
+                // Do Test 15
                 //
                 temp1 = zero;
                 temp2 = zero;
@@ -599,24 +606,24 @@ void Cchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 ntest = 12;
             }
         //
-        //           End of Loop -- Check for RESULT(j) > THRESH
+        // End of Loop -- Check for RESULT(j) > THRESH
         //
         statement_210:
             //
             ntestt += ntest;
             //
-            //           Print out tests which fail.
+            // Print out tests which fail.
             //
             for (jr = 1; jr <= ntest; jr = jr + 1) {
                 if (result[jr - 1] >= thresh) {
                     //
-                    //                 If this is the first test to fail,
-                    //                 print a header to the data file.
+                    // If this is the first test to fail,
+                    // print a header to the data file.
                     //
                     if (nerrs == 0) {
                         write(nounit, "(1x,a3,' -- Complex Generalized eigenvalue problem')"), "ZGG";
                         //
-                        //                    Matrix types
+                        // Matrix types
                         //
                         write(nounit, "(' Matrix types (see Cchkgg for details): ')");
                         write(nounit, "(' Special Matrices:',23x,'(J''=transposed Jordan block)',/,"
@@ -636,7 +643,7 @@ void Cchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                                       "'  26=random O(1) matrices.')"),
                             "Unitary";
                         //
-                        //                    Tests performed
+                        // Tests performed
                         //
                         {
                             write_loop wloop(cmn, nounit,
@@ -682,10 +689,10 @@ void Cchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
         }
     }
     //
-    //     Summary
+    // Summary
     //
     Rlasum("ZGG", nounit, nerrs, ntestt);
     //
-    //     End of Cchkgg
+    // End of Cchkgg
     //
 }

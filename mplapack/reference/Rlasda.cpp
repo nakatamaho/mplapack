@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,13 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine DLASDA.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Rlasda(INTEGER const icompq, INTEGER const smlsiz, INTEGER const n, INTEGER const sqre, REAL *d, REAL *e, REAL *u, INTEGER const ldu, REAL *vt, INTEGER *k, REAL *difl, REAL *difr, REAL *z, REAL *poles, INTEGER *givptr, INTEGER *givcol, INTEGER const ldgcol, INTEGER *perm, REAL *givnum, REAL *c, REAL *s, REAL *work, INTEGER *iwork, INTEGER &info) {
-    INTEGER ldvt = ldu;
     //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     //
@@ -56,7 +62,7 @@ void Rlasda(INTEGER const icompq, INTEGER const smlsiz, INTEGER const n, INTEGER
     //
     INTEGER m = n + sqre;
     //
-    //     If the input matrix is too small, call Rlasdq to find the SVD.
+    // If the input matrix is too small, call Rlasdq to find the SVD.
     //
     if (n <= smlsiz) {
         if (icompq == 0) {
@@ -67,7 +73,7 @@ void Rlasda(INTEGER const icompq, INTEGER const smlsiz, INTEGER const n, INTEGER
         return;
     }
     //
-    //     Book-keeping and  set up the computation tree.
+    // Book-keeping and  set up the computation tree.
     //
     INTEGER inode = 1;
     INTEGER ndiml = inode + n;
@@ -88,8 +94,8 @@ void Rlasda(INTEGER const icompq, INTEGER const smlsiz, INTEGER const n, INTEGER
     INTEGER nd = 0;
     Rlasdt(n, nlvl, nd, &iwork[inode - 1], &iwork[ndiml - 1], &iwork[ndimr - 1], smlsiz);
     //
-    //     for the nodes on bottom level of the tree, solve
-    //     their subproblems by Rlasdq.
+    // for the nodes on bottom level of the tree, solve
+    // their subproblems by Rlasdq.
     //
     INTEGER ndb1 = (nd + 1) / 2;
     INTEGER i = 0;
@@ -111,11 +117,11 @@ void Rlasda(INTEGER const icompq, INTEGER const smlsiz, INTEGER const n, INTEGER
     INTEGER nrp1 = 0;
     for (i = ndb1; i <= nd; i = i + 1) {
         //
-        //        IC : center row of each node
-        //        NL : number of rows of left  subproblem
-        //        NR : number of rows of right subproblem
-        //        NLF: starting row of the left   subproblem
-        //        NRF: starting row of the right  subproblem
+        // IC : center row of each node
+        // NL : number of rows of left  subproblem
+        // NR : number of rows of right subproblem
+        // NLF: starting row of the left   subproblem
+        // NRF: starting row of the right  subproblem
         //
         i1 = i - 1;
         ic = iwork[(inode + i1) - 1];
@@ -139,7 +145,7 @@ void Rlasda(INTEGER const icompq, INTEGER const smlsiz, INTEGER const n, INTEGER
             Rlaset("A", nlp1, nlp1, zero, one, &vt[(nlf - 1)], ldu);
             Rlasdq("U", sqrei, nl, nlp1, nl, ncc, &d[nlf - 1], &e[nlf - 1], &vt[(nlf - 1)], ldu, &u[(nlf - 1)], ldu, &u[(nlf - 1)], ldu, &work[nwork1 - 1], info);
             Rcopy(nlp1, &vt[(nlf - 1)], 1, &work[vfi - 1], 1);
-            Rcopy(nlp1, &vt[(nlf - 1) + (nlp1 - 1) * ldvt], 1, &work[vli - 1], 1);
+            Rcopy(nlp1, &vt[(nlf - 1) + (nlp1 - 1) * ldu], 1, &work[vli - 1], 1);
         }
         if (info != 0) {
             return;
@@ -167,7 +173,7 @@ void Rlasda(INTEGER const icompq, INTEGER const smlsiz, INTEGER const n, INTEGER
             Rlaset("A", nrp1, nrp1, zero, one, &vt[(nrf - 1)], ldu);
             Rlasdq("U", sqrei, nr, nrp1, nr, ncc, &d[nrf - 1], &e[nrf - 1], &vt[(nrf - 1)], ldu, &u[(nrf - 1)], ldu, &u[(nrf - 1)], ldu, &work[nwork1 - 1], info);
             Rcopy(nrp1, &vt[(nrf - 1)], 1, &work[vfi - 1], 1);
-            Rcopy(nrp1, &vt[(nrf - 1) + (nrp1 - 1) * ldvt], 1, &work[vli - 1], 1);
+            Rcopy(nrp1, &vt[(nrf - 1) + (nrp1 - 1) * ldu], 1, &work[vli - 1], 1);
         }
         if (info != 0) {
             return;
@@ -177,9 +183,9 @@ void Rlasda(INTEGER const icompq, INTEGER const smlsiz, INTEGER const n, INTEGER
         }
     }
     //
-    //     Now conquer each subproblem bottom-up.
+    // Now conquer each subproblem bottom-up.
     //
-    j = (INTEGER)pow((double)2, (double)nlvl);
+    j = (INTEGER(1) << (nlvl));
     INTEGER lvl = 0;
     INTEGER lvl2 = 0;
     INTEGER lf = 0;
@@ -190,14 +196,14 @@ void Rlasda(INTEGER const icompq, INTEGER const smlsiz, INTEGER const n, INTEGER
     for (lvl = nlvl; lvl >= 1; lvl = lvl - 1) {
         lvl2 = lvl * 2 - 1;
         //
-        //        Find the first node LF and last node LL on
-        //        the current level LVL.
+        // Find the first node LF and last node LL on
+        // the current level LVL.
         //
         if (lvl == 1) {
             lf = 1;
             ll = 1;
         } else {
-            lf = (INTEGER)pow((double)2, (double)(lvl - 1));
+            lf = (INTEGER(1) << ((lvl - 1)));
             ll = 2 * lf - 1;
         }
         for (i = lf; i <= ll; i = i + 1) {
@@ -229,6 +235,6 @@ void Rlasda(INTEGER const icompq, INTEGER const smlsiz, INTEGER const n, INTEGER
         }
     }
     //
-    //     End of Rlasda
+    // End of Rlasda
     //
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,10 +26,22 @@
  *
  */
 
+// Derived from LAPACK routine DLASY2.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Rlasy2(bool const ltranl, bool const ltranr, INTEGER const isgn, INTEGER const n1, INTEGER const n2, REAL *tl, INTEGER const ldtl, REAL *tr, INTEGER const ldtr, REAL *b, INTEGER const ldb, REAL &scale, REAL *x, INTEGER const ldx, REAL &xnorm, INTEGER &info) {
+    static INTEGER locu12[4] = {3, 4, 1, 2};
+    static INTEGER locl21[4] = {2, 1, 4, 3};
+    static INTEGER locu22[4] = {4, 3, 2, 1};
+    static bool xswpiv[4] = {false, false, true, true};
+    static bool bswpiv[4] = {false, true, false, true};
     REAL eps = 0.0;
     REAL smlnum = 0.0;
     REAL sgn = 0.0;
@@ -49,65 +61,33 @@ void Rlasy2(bool const ltranl, bool const ltranr, INTEGER const isgn, INTEGER co
     bool xswap = false;
     bool bswap = false;
     REAL temp = 0.0;
-    const REAL two = 2.0e+0;
-    const REAL half = 0.5e+0;
-    REAL x2[4];
+    const REAL two = 2.0;
+    const REAL half = 0.5;
+    REAL x2[2];
     const REAL zero = 0.0;
     REAL t16[4 * 4];
-    INTEGER ldt16 = 4;
     INTEGER i = 0;
     REAL xmax = 0.0;
     INTEGER ip = 0;
     INTEGER jp = 0;
     INTEGER ipsv = 0;
     INTEGER jpsv = 0;
-    INTEGER j = 0;
     INTEGER jpiv[4];
-    static INTEGER locu12[4] = {3, 4, 1, 2};
-    static INTEGER locl21[4] = {2, 1, 4, 3};
-    static INTEGER locu22[4] = {4, 3, 2, 1};
-    static bool xswpiv[4] = {false, false, true, true};
-    static bool bswpiv[4] = {false, true, false, true};
-    const REAL eight = 8.0e+0;
+    INTEGER j = 0;
+    const REAL eight = 8.0;
+    INTEGER ldt16 = 4;
     //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    // =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Data statements ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Do not check the input parameters for errors
+    // Do not check the input parameters for errors
     //
     info = 0;
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n1 == 0 || n2 == 0) {
         return;
     }
     //
-    //     Set constants to control overflow
+    // Set constants to control overflow
     //
     eps = Rlamch("P");
     smlnum = Rlamch("S") / eps;
@@ -127,10 +107,10 @@ void Rlasy2(bool const ltranl, bool const ltranr, INTEGER const isgn, INTEGER co
         break;
     }
 //
-//     1 by 1: TL11*X + SGN*X*TR11 = B11
+// 1 by 1: TL11*X + SGN*X*TR11 = B11
 //
 statement_10:
-    tau1 = tl[(1 - 1)] + sgn * tr[(1 - 1)];
+    tau1 = tl[0] + sgn * tr[0];
     bet = abs(tau1);
     if (bet <= smlnum) {
         tau1 = smlnum;
@@ -139,24 +119,24 @@ statement_10:
     }
     //
     scale = one;
-    gam = abs(b[(1 - 1)]);
+    gam = abs(b[0]);
     if (smlnum * gam > bet) {
         scale = one / gam;
     }
     //
-    x[(1 - 1)] = (b[(1 - 1)] * scale) / tau1;
-    xnorm = abs(x[(1 - 1)]);
+    x[0] = (b[0] * scale) / tau1;
+    xnorm = abs(x[0]);
     return;
 //
-//     1 by 2:
-//     TL11*[X11 X12] + ISGN*[X11 X12]*op[TR11 TR12]  = [B11 B12]
-//                                       [TR21 TR22]
+// 1 by 2:
+// TL11*[X11 X12] + ISGN*[X11 X12]*op[TR11 TR12]  = [B11 B12]
+// [TR21 TR22]
 //
 statement_20:
     //
-    smin = max(REAL(eps * max({abs(tl[(1 - 1)]), abs(tr[(1 - 1)]), abs(tr[(2 - 1) * ldtr]), abs(tr[(2 - 1)]), abs(tr[(2 - 1) + (2 - 1) * ldtr])})), smlnum);
-    tmp[1 - 1] = tl[(1 - 1)] + sgn * tr[(1 - 1)];
-    tmp[4 - 1] = tl[(1 - 1)] + sgn * tr[(2 - 1) + (2 - 1) * ldtr];
+    smin = max(eps * max(abs(tl[0]), abs(tr[0]), abs(tr[(2 - 1) * ldtr]), abs(tr[(2 - 1)]), abs(tr[(2 - 1) + (2 - 1) * ldtr])), smlnum);
+    tmp[1 - 1] = tl[0] + sgn * tr[0];
+    tmp[4 - 1] = tl[0] + sgn * tr[(2 - 1) + (2 - 1) * ldtr];
     if (ltranr) {
         tmp[2 - 1] = sgn * tr[(2 - 1)];
         tmp[3 - 1] = sgn * tr[(2 - 1) * ldtr];
@@ -164,18 +144,18 @@ statement_20:
         tmp[2 - 1] = sgn * tr[(2 - 1) * ldtr];
         tmp[3 - 1] = sgn * tr[(2 - 1)];
     }
-    btmp[1 - 1] = b[(1 - 1)];
+    btmp[1 - 1] = b[0];
     btmp[2 - 1] = b[(2 - 1) * ldb];
     goto statement_40;
 //
-//     2 by 1:
-//          op[TL11 TL12]*[X11] + ISGN* [X11]*TR11  = [B11]
-//            [TL21 TL22] [X21]         [X21]         [B21]
+// 2 by 1:
+// op[TL11 TL12]*[X11] + ISGN* [X11]*TR11  = [B11]
+// [TL21 TL22] [X21]         [X21]         [B21]
 //
 statement_30:
-    smin = max(REAL(eps * max({abs(tr[(1 - 1)]), abs(tl[(1 - 1)]), abs(tl[(2 - 1) * ldtl]), abs(tl[(2 - 1)]), abs(tl[(2 - 1) + (2 - 1) * ldtl])})), smlnum);
-    tmp[1 - 1] = tl[(1 - 1)] + sgn * tr[(1 - 1)];
-    tmp[4 - 1] = tl[(2 - 1) + (2 - 1) * ldtl] + sgn * tr[(1 - 1)];
+    smin = max(eps * max(abs(tr[0]), abs(tl[0]), abs(tl[(2 - 1) * ldtl]), abs(tl[(2 - 1)]), abs(tl[(2 - 1) + (2 - 1) * ldtl])), smlnum);
+    tmp[1 - 1] = tl[0] + sgn * tr[0];
+    tmp[4 - 1] = tl[(2 - 1) + (2 - 1) * ldtl] + sgn * tr[0];
     if (ltranl) {
         tmp[2 - 1] = tl[(2 - 1) * ldtl];
         tmp[3 - 1] = tl[(2 - 1)];
@@ -183,12 +163,12 @@ statement_30:
         tmp[2 - 1] = tl[(2 - 1)];
         tmp[3 - 1] = tl[(2 - 1) * ldtl];
     }
-    btmp[1 - 1] = b[(1 - 1)];
+    btmp[1 - 1] = b[0];
     btmp[2 - 1] = b[(2 - 1)];
 statement_40:
     //
-    //     Solve 2 by 2 system using complete pivoting.
-    //     Set pivots less than SMIN to SMIN.
+    // Solve 2 by 2 system using complete pivoting.
+    // Set pivots less than SMIN to SMIN.
     //
     ipiv = iRamax(4, tmp, 1);
     u11 = tmp[ipiv - 1];
@@ -225,32 +205,32 @@ statement_40:
         x2[2 - 1] = x2[1 - 1];
         x2[1 - 1] = temp;
     }
-    x[(1 - 1)] = x2[1 - 1];
+    x[0] = x2[1 - 1];
     if (n1 == 1) {
         x[(2 - 1) * ldx] = x2[2 - 1];
-        xnorm = abs(x[(1 - 1)]) + abs(x[(2 - 1) * ldx]);
+        xnorm = abs(x[0]) + abs(x[(2 - 1) * ldx]);
     } else {
         x[(2 - 1)] = x2[2 - 1];
-        xnorm = max(abs(x[(1 - 1)]), abs(x[(2 - 1)]));
+        xnorm = max(abs(x[0]), abs(x[(2 - 1)]));
     }
     return;
 //
-//     2 by 2:
-//     op[TL11 TL12]*[X11 X12] +ISGN* [X11 X12]*op[TR11 TR12] = [B11 B12]
-//       [TL21 TL22] [X21 X22]        [X21 X22]   [TR21 TR22]   [B21 B22]
+// 2 by 2:
+// op[TL11 TL12]*[X11 X12] +ISGN* [X11 X12]*op[TR11 TR12] = [B11 B12]
+// [TL21 TL22] [X21 X22]        [X21 X22]   [TR21 TR22]   [B21 B22]
 //
-//     Solve equivalent 4 by 4 system using complete pivoting.
-//     Set pivots less than SMIN to SMIN.
+// Solve equivalent 4 by 4 system using complete pivoting.
+// Set pivots less than SMIN to SMIN.
 //
 statement_50:
-    smin = max({abs(tr[(1 - 1)]), abs(tr[(2 - 1) * ldtr]), abs(tr[(2 - 1)]), abs(tr[(2 - 1) + (2 - 1) * ldtr])});
-    smin = max({smin, REAL(abs(tl[(1 - 1)])), REAL(abs(tl[(2 - 1) * ldtl])), REAL(abs(tl[(2 - 1)])), REAL(abs(tl[(2 - 1) + (2 - 1) * ldtl]))});
-    smin = max(REAL(eps * smin), smlnum);
+    smin = max(abs(tr[0]), abs(tr[(2 - 1) * ldtr]), abs(tr[(2 - 1)]), abs(tr[(2 - 1) + (2 - 1) * ldtr]));
+    smin = max(smin, abs(tl[0]), abs(tl[(2 - 1) * ldtl]), abs(tl[(2 - 1)]), abs(tl[(2 - 1) + (2 - 1) * ldtl]));
+    smin = max(eps * smin, smlnum);
     btmp[1 - 1] = zero;
     Rcopy(16, btmp, 0, t16, 1);
-    t16[(1 - 1)] = tl[(1 - 1)] + sgn * tr[(1 - 1)];
-    t16[(2 - 1) + (2 - 1) * ldt16] = tl[(2 - 1) + (2 - 1) * ldtl] + sgn * tr[(1 - 1)];
-    t16[(3 - 1) + (3 - 1) * ldt16] = tl[(1 - 1)] + sgn * tr[(2 - 1) + (2 - 1) * ldtr];
+    t16[0] = tl[0] + sgn * tr[0];
+    t16[(2 - 1) + (2 - 1) * ldt16] = tl[(2 - 1) + (2 - 1) * ldtl] + sgn * tr[0];
+    t16[(3 - 1) + (3 - 1) * ldt16] = tl[0] + sgn * tr[(2 - 1) + (2 - 1) * ldtr];
     t16[(4 - 1) + (4 - 1) * ldt16] = tl[(2 - 1) + (2 - 1) * ldtl] + sgn * tr[(2 - 1) + (2 - 1) * ldtr];
     if (ltranl) {
         t16[(2 - 1) * ldt16] = tl[(2 - 1)];
@@ -274,12 +254,12 @@ statement_50:
         t16[(3 - 1)] = sgn * tr[(2 - 1) * ldtr];
         t16[(4 - 1) + (2 - 1) * ldt16] = sgn * tr[(2 - 1) * ldtr];
     }
-    btmp[1 - 1] = b[(1 - 1)];
+    btmp[1 - 1] = b[0];
     btmp[2 - 1] = b[(2 - 1)];
     btmp[3 - 1] = b[(2 - 1) * ldb];
     btmp[4 - 1] = b[(2 - 1) + (2 - 1) * ldb];
     //
-    //     Perform elimination
+    // Perform elimination
     //
     for (i = 1; i <= 3; i = i + 1) {
         xmax = zero;
@@ -319,8 +299,8 @@ statement_50:
         t16[(4 - 1) + (4 - 1) * ldt16] = smin;
     }
     scale = one;
-    if ((eight * smlnum) * abs(btmp[1 - 1]) > abs(t16[(1 - 1)]) || (eight * smlnum) * abs(btmp[2 - 1]) > abs(t16[(2 - 1) + (2 - 1) * ldt16]) || (eight * smlnum) * abs(btmp[3 - 1]) > abs(t16[(3 - 1) + (3 - 1) * ldt16]) || (eight * smlnum) * abs(btmp[4 - 1]) > abs(t16[(4 - 1) + (4 - 1) * ldt16])) {
-        scale = (one / eight) / max({abs(btmp[1 - 1]), abs(btmp[2 - 1]), abs(btmp[3 - 1]), abs(btmp[4 - 1])});
+    if ((eight * smlnum) * abs(btmp[1 - 1]) > abs(t16[0]) || (eight * smlnum) * abs(btmp[2 - 1]) > abs(t16[(2 - 1) + (2 - 1) * ldt16]) || (eight * smlnum) * abs(btmp[3 - 1]) > abs(t16[(3 - 1) + (3 - 1) * ldt16]) || (eight * smlnum) * abs(btmp[4 - 1]) > abs(t16[(4 - 1) + (4 - 1) * ldt16])) {
+        scale = (one / eight) / max(abs(btmp[1 - 1]), abs(btmp[2 - 1]), abs(btmp[3 - 1]), abs(btmp[4 - 1]));
         btmp[1 - 1] = btmp[1 - 1] * scale;
         btmp[2 - 1] = btmp[2 - 1] * scale;
         btmp[3 - 1] = btmp[3 - 1] * scale;
@@ -337,16 +317,16 @@ statement_50:
     for (i = 1; i <= 3; i = i + 1) {
         if (jpiv[(4 - i) - 1] != 4 - i) {
             temp = tmp[(4 - i) - 1];
-            tmp[(4 - i) - 1] = tmp[(jpiv[(4 - i) - 1]) - 1];
-            tmp[(jpiv[(4 - i) - 1]) - 1] = temp;
+            tmp[(4 - i) - 1] = tmp[jpiv[(4 - i) - 1] - 1];
+            tmp[jpiv[(4 - i) - 1] - 1] = temp;
         }
     }
-    x[(1 - 1)] = tmp[1 - 1];
+    x[0] = tmp[1 - 1];
     x[(2 - 1)] = tmp[2 - 1];
     x[(2 - 1) * ldx] = tmp[3 - 1];
     x[(2 - 1) + (2 - 1) * ldx] = tmp[4 - 1];
     xnorm = max(abs(tmp[1 - 1]) + abs(tmp[3 - 1]), abs(tmp[2 - 1]) + abs(tmp[4 - 1]));
     //
-    //     End of Rlasy2
+    // End of Rlasy2
     //
 }

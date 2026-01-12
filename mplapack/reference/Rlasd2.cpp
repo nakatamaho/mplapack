@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DLASD2.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -39,7 +46,7 @@ void Rlasd2(INTEGER const nl, INTEGER const nr, INTEGER const sqre, INTEGER &k, 
     INTEGER idxi = 0;
     REAL eps = 0.0;
     REAL tol = 0.0;
-    const REAL eight = 8.0e+0;
+    const REAL eight = 8.0;
     INTEGER k2 = 0;
     INTEGER j = 0;
     INTEGER jprev = 0;
@@ -53,36 +60,11 @@ void Rlasd2(INTEGER const nl, INTEGER const nr, INTEGER const sqre, INTEGER &k, 
     INTEGER ct = 0;
     INTEGER psm[4];
     INTEGER jp = 0;
-    const REAL two = 2.0e+0;
+    const REAL two = 2.0;
     REAL hlftol = 0.0;
     const REAL one = 1.0;
     //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     //
@@ -114,8 +96,8 @@ void Rlasd2(INTEGER const nl, INTEGER const nr, INTEGER const sqre, INTEGER &k, 
     nlp1 = nl + 1;
     nlp2 = nl + 2;
     //
-    //     Generate the first part of the vector Z; and move the singular
-    //     values in the first part of D one position backward.
+    // Generate the first part of the vector Z; and move the singular
+    // values in the first part of D one position backward.
     //
     z1 = alpha * vt[(nlp1 - 1) + (nlp1 - 1) * ldvt];
     z[1 - 1] = z1;
@@ -125,13 +107,13 @@ void Rlasd2(INTEGER const nl, INTEGER const nr, INTEGER const sqre, INTEGER &k, 
         idxq[(i + 1) - 1] = idxq[i - 1] + 1;
     }
     //
-    //     Generate the second part of the vector Z.
+    // Generate the second part of the vector Z.
     //
     for (i = nlp2; i <= m; i = i + 1) {
         z[i - 1] = beta * vt[(i - 1) + (nlp2 - 1) * ldvt];
     }
     //
-    //     Initialize some reference arrays.
+    // Initialize some reference arrays.
     //
     for (i = 2; i <= nlp1; i = i + 1) {
         coltyp[i - 1] = 1;
@@ -140,14 +122,14 @@ void Rlasd2(INTEGER const nl, INTEGER const nr, INTEGER const sqre, INTEGER &k, 
         coltyp[i - 1] = 2;
     }
     //
-    //     Sort the singular values into increasing order
+    // Sort the singular values into increasing order
     //
     for (i = nlp2; i <= n; i = i + 1) {
         idxq[i - 1] += nlp1;
     }
     //
-    //     DSIGMA, IDXC, IDXC, and the first column of U2
-    //     are used as storage space.
+    // DSIGMA, IDXC, IDXC, and the first column of U2
+    // are used as storage space.
     //
     for (i = 2; i <= n; i = i + 1) {
         dsigma[i - 1] = d[idxq[i - 1] - 1];
@@ -164,37 +146,37 @@ void Rlasd2(INTEGER const nl, INTEGER const nr, INTEGER const sqre, INTEGER &k, 
         coltyp[i - 1] = idxc[idxi - 1];
     }
     //
-    //     Calculate the allowable deflation tolerance
+    // Calculate the allowable deflation tolerance
     //
     eps = Rlamch("Epsilon");
     tol = max(abs(alpha), abs(beta));
-    tol = eight * eps * max(REAL(abs(d[n - 1])), tol);
+    tol = eight * eps * max(abs(d[n - 1]), tol);
     //
-    //     There are 2 kinds of deflation -- first a value in the z-vector
-    //     is small, second two (or more) singular values are very close
-    //     together (their difference is small).
+    // There are 2 kinds of deflation -- first a value in the z-vector
+    // is small, second two (or more) singular values are very close
+    // together (their difference is small).
     //
-    //     If the value in the z-vector is small, we simply permute the
-    //     array so that the corresponding singular value is moved to the
-    //     end.
+    // If the value in the z-vector is small, we simply permute the
+    // array so that the corresponding singular value is moved to the
+    // end.
     //
-    //     If two values in the D-vector are close, we perform a two-sided
-    //     rotation designed to make one of the corresponding z-vector
-    //     entries zero, and then permute the array so that the deflated
-    //     singular value is moved to the end.
+    // If two values in the D-vector are close, we perform a two-sided
+    // rotation designed to make one of the corresponding z-vector
+    // entries zero, and then permute the array so that the deflated
+    // singular value is moved to the end.
     //
-    //     If there are multiple singular values then the problem deflates.
-    //     Here the number of equal singular values are found.  As each equal
-    //     singular value is found, an elementary reflector is computed to
-    //     rotate the corresponding singular subspace so that the
-    //     corresponding components of Z are zero in this new basis.
+    // If there are multiple singular values then the problem deflates.
+    // Here the number of equal singular values are found.  As each equal
+    // singular value is found, an elementary reflector is computed to
+    // rotate the corresponding singular subspace so that the
+    // corresponding components of Z are zero in this new basis.
     //
     k = 1;
     k2 = n + 1;
     for (j = 2; j <= n; j = j + 1) {
         if (abs(z[j - 1]) <= tol) {
             //
-            //           Deflate due to small z component.
+            // Deflate due to small z component.
             //
             k2 = k2 - 1;
             idxp[k2 - 1] = j;
@@ -216,24 +198,24 @@ statement_100:
     }
     if (abs(z[j - 1]) <= tol) {
         //
-        //        Deflate due to small z component.
+        // Deflate due to small z component.
         //
         k2 = k2 - 1;
         idxp[k2 - 1] = j;
         coltyp[j - 1] = 4;
     } else {
         //
-        //        Check if singular values are close enough to allow deflation.
+        // Check if singular values are close enough to allow deflation.
         //
         if (abs(d[j - 1] - d[jprev - 1]) <= tol) {
             //
-            //           Deflation is possible.
+            // Deflation is possible.
             //
             s = z[jprev - 1];
             c = z[j - 1];
             //
-            //           Find sqrt(a**2+b**2) without overflow or
-            //           destructive underflow.
+            // Find sqrt(a**2+b**2) without overflow or
+            // destructive underflow.
             //
             tau = Rlapy2(c, s);
             c = c / tau;
@@ -241,8 +223,8 @@ statement_100:
             z[j - 1] = tau;
             z[jprev - 1] = zero;
             //
-            //           Apply back the Givens rotation to the left and right
-            //           singular vector matrices.
+            // Apply back the Givens rotation to the left and right
+            // singular vector matrices.
             //
             idxjp = idxq[(idx[jprev - 1] + 1) - 1];
             idxj = idxq[(idx[j - 1] + 1) - 1];
@@ -272,7 +254,7 @@ statement_100:
     goto statement_100;
 statement_110:
     //
-    //     Record the last singular value.
+    // Record the last singular value.
     //
     k++;
     u2[(k - 1)] = z[jprev - 1];
@@ -281,10 +263,10 @@ statement_110:
 //
 statement_120:
     //
-    //     Count up the total number of the various types of columns, then
-    //     form a permutation which positions the four column types into
-    //     four groups of uniform structure (although one or more of these
-    //     groups may be empty).
+    // Count up the total number of the various types of columns, then
+    // form a permutation which positions the four column types into
+    // four groups of uniform structure (although one or more of these
+    // groups may be empty).
     //
     for (j = 1; j <= 4; j = j + 1) {
         ctot[j - 1] = 0;
@@ -294,17 +276,17 @@ statement_120:
         ctot[ct - 1]++;
     }
     //
-    //     PSM(*) = Position in SubMatrix (of types 1 through 4)
+    // PSM(*) = Position in SubMatrix (of types 1 through 4)
     //
     psm[1 - 1] = 2;
     psm[2 - 1] = 2 + ctot[1 - 1];
     psm[3 - 1] = psm[2 - 1] + ctot[2 - 1];
     psm[4 - 1] = psm[3 - 1] + ctot[3 - 1];
     //
-    //     Fill out the IDXC array so that the permutation which it induces
-    //     will place all type-1 columns first, all type-2 columns next,
-    //     then all type-3's, and finally all type-4's, starting from the
-    //     second column. This applies similarly to the rows of VT.
+    // Fill out the IDXC array so that the permutation which it induces
+    // will place all type-1 columns first, all type-2 columns next,
+    // then all type-3's, and finally all type-4's, starting from the
+    // second column. This applies similarly to the rows of VT.
     //
     for (j = 2; j <= n; j = j + 1) {
         jp = idxp[j - 1];
@@ -313,17 +295,17 @@ statement_120:
         psm[ct - 1]++;
     }
     //
-    //     Sort the singular values and corresponding singular vectors into
-    //     DSIGMA, U2, and VT2 respectively.  The singular values/vectors
-    //     which were not deflated go into the first K slots of DSIGMA, U2,
-    //     and VT2 respectively, while those which were deflated go into the
-    //     last N - K slots, except that the first column/row will be treated
-    //     separately.
+    // Sort the singular values and corresponding singular vectors into
+    // DSIGMA, U2, and VT2 respectively.  The singular values/vectors
+    // which were not deflated go into the first K slots of DSIGMA, U2,
+    // and VT2 respectively, while those which were deflated go into the
+    // last N - K slots, except that the first column/row will be treated
+    // separately.
     //
     for (j = 2; j <= n; j = j + 1) {
         jp = idxp[j - 1];
         dsigma[j - 1] = d[jp - 1];
-        idxj = idxq[(idx[idxp[idxc[j - 1] - 1] - 1] + 1) - 1];
+        idxj = idxq[(idx[(idxp[idxc[j - 1] - 1]) - 1] + 1) - 1];
         if (idxj <= nlp1) {
             idxj = idxj - 1;
         }
@@ -331,7 +313,7 @@ statement_120:
         Rcopy(m, &vt[(idxj - 1)], ldvt, &vt2[(j - 1)], ldvt2);
     }
     //
-    //     Determine DSIGMA(1), DSIGMA(2) and Z(1)
+    // Determine DSIGMA(1), DSIGMA(2) and Z(1)
     //
     dsigma[1 - 1] = zero;
     hlftol = tol / two;
@@ -356,12 +338,12 @@ statement_120:
         }
     }
     //
-    //     Move the rest of the updating row to Z.
+    // Move the rest of the updating row to Z.
     //
     Rcopy(k - 1, &u2[(2 - 1)], 1, &z[2 - 1], 1);
     //
-    //     Determine the first column of U2, the first row of VT2 and the
-    //     last row of VT.
+    // Determine the first column of U2, the first row of VT2 and the
+    // last row of VT.
     //
     Rlaset("A", n, 1, zero, zero, u2, ldu2);
     u2[(nlp1 - 1)] = one;
@@ -375,14 +357,14 @@ statement_120:
             vt[(m - 1) + (i - 1) * ldvt] = c * vt[(m - 1) + (i - 1) * ldvt];
         }
     } else {
-        Rcopy(m, &vt[(nlp1 - 1)], ldvt, &vt2[(1 - 1)], ldvt2);
+        Rcopy(m, &vt[(nlp1 - 1)], ldvt, &vt2[0], ldvt2);
     }
     if (m > n) {
         Rcopy(m, &vt[(m - 1)], ldvt, &vt2[(m - 1)], ldvt2);
     }
     //
-    //     The deflated singular values and their corresponding vectors go
-    //     into the back of D, U, and V respectively.
+    // The deflated singular values and their corresponding vectors go
+    // into the back of D, U, and V respectively.
     //
     if (n > k) {
         Rcopy(n - k, &dsigma[(k + 1) - 1], 1, &d[(k + 1) - 1], 1);
@@ -390,12 +372,12 @@ statement_120:
         Rlacpy("A", n - k, m, &vt2[((k + 1) - 1)], ldvt2, &vt[((k + 1) - 1)], ldvt);
     }
     //
-    //     Copy CTOT into COLTYP for referencing in Rlasd3.
+    // Copy CTOT into COLTYP for referencing in Rlasd3.
     //
     for (j = 1; j <= 4; j = j + 1) {
         coltyp[j - 1] = ctot[j - 1];
     }
     //
-    //     End of Rlasd2
+    // End of Rlasd2
     //
 }

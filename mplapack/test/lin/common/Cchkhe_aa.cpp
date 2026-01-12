@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine ZCHKHE_AA.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -86,14 +93,14 @@ void Cchkhe_aa(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
     INTEGER irhs = 0;
     INTEGER nrhs = 0;
     //
-    //     Test path
+    // Initialize constants and the random number seed.
     //
     path[0] = 'C';
     path[1] = 'H';
     path[2] = 'A';
     //
-    //     Path to generate matrices
     //
+    // Path to generate matrices
     matpath[0] = 'C';
     matpath[1] = 'H';
     matpath[2] = 'E';
@@ -104,19 +111,19 @@ void Cchkhe_aa(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
         iseed[i - 1] = iseedy[i - 1];
     }
     //
-    //     Test the error exits
+    // Test the error exits
     //
     if (tsterr) {
         Cerrhe(path, nout);
     }
     infot = 0;
     //
-    //     Set the minimum block size for which the block routine should
-    //     be used, which will be later returned by iMlaenv
+    // Set the minimum block size for which the block routine should
+    // be used, which will be later returned by iMlaenv
     //
     xlaenv(2, 2);
     //
-    //     Do for each value of N in NVAL
+    // Do for each value of N in NVAL
     //
     for (in = 1; in <= nn; in = in + 1) {
         n = nval[in - 1];
@@ -135,46 +142,46 @@ void Cchkhe_aa(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
         izero = 0;
         for (imat = 1; imat <= nimat; imat = imat + 1) {
             //
-            //           Do the tests only if DOTYPE( IMAT ) is true.
+            // Do the tests only if DOTYPE( IMAT ) is true.
             //
             if (!dotype[imat - 1]) {
                 goto statement_170;
             }
             //
-            //           Skip types 3, 4, 5, or 6 if the matrix size is too small.
+            // Skip types 3, 4, 5, or 6 if the matrix size is too small.
             //
             zerot = imat >= 3 && imat <= 6;
             if (zerot && n < imat - 2) {
                 goto statement_170;
             }
             //
-            //           Do first for UPLO = 'U', then for UPLO = 'L'
+            // Do first for UPLO = 'U', then for UPLO = 'L'
             //
             for (iuplo = 1; iuplo <= 2; iuplo = iuplo + 1) {
                 uplo[0] = uplos[iuplo - 1];
                 //
-                //              Set up parameters with Clatb4 for the matrix generator
-                //              based on the type of matrix to be generated.
+                // Set up parameters with Clatb4 for the matrix generator
+                // based on the type of matrix to be generated.
                 //
                 Clatb4(matpath, imat, n, n, type, kl, ku, anorm, mode, cndnum, dist);
                 //
-                //              Generate a matrix with Clatms.
+                // Generate a matrix with Clatms.
                 //
                 strncpy(srnamt, "Clatms", srnamt_len);
                 Clatms(n, n, dist, iseed, type, rwork, mode, cndnum, anorm, kl, ku, uplo, a, lda, work, info);
                 //
-                //              Check error code from Clatms and handle error.
+                // Check error code from Clatms and handle error.
                 //
                 if (info != 0) {
                     Alaerh(path, "Clatms", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                     //
-                    //                 Skip all tests for this generated matrix
+                    // Skip all tests for this generated matrix
                     //
                     goto statement_160;
                 }
                 //
-                //              For types 3-6, zero one or more rows and columns of
-                //              the matrix to test that INFO is returned correctly.
+                // For types 3-6, zero one or more rows and columns of
+                // the matrix to test that INFO is returned correctly.
                 //
                 if (zerot) {
                     if (imat == 3) {
@@ -187,7 +194,7 @@ void Cchkhe_aa(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
                     //
                     if (imat < 6) {
                         //
-                        //                    Set row and column IZERO to zero.
+                        // Set row and column IZERO to zero.
                         //
                         if (iuplo == 1) {
                             ioff = (izero - 1) * lda;
@@ -213,7 +220,7 @@ void Cchkhe_aa(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
                     } else {
                         if (iuplo == 1) {
                             //
-                            //                       Set the first IZERO rows and columns to zero.
+                            // Set the first IZERO rows and columns to zero.
                             //
                             ioff = 0;
                             for (j = 1; j <= n; j = j + 1) {
@@ -226,7 +233,7 @@ void Cchkhe_aa(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
                             izero = 1;
                         } else {
                             //
-                            //                       Set the last IZERO rows and columns to zero.
+                            // Set the last IZERO rows and columns to zero.
                             //
                             ioff = 0;
                             for (j = 1; j <= n; j = j + 1) {
@@ -242,71 +249,71 @@ void Cchkhe_aa(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
                     izero = 0;
                 }
                 //
-                //              End generate test matrix A.
+                // End generate test matrix A.
                 //
-                //              Set the imaginary part of the diagonals.
+                // Set the imaginary part of the diagonals.
                 //
                 Claipd(n, a, lda + 1, 0);
                 //
-                //              Do for each value of NB in NBVAL
+                // Do for each value of NB in NBVAL
                 //
                 for (inb = 1; inb <= nnb; inb = inb + 1) {
                     //
-                    //                 Set the optimal blocksize, which will be later
-                    //                 returned by iMlaenv.
+                    // Set the optimal blocksize, which will be later
+                    // returned by iMlaenv.
                     //
                     nb = nbval[inb - 1];
                     xlaenv(1, nb);
                     //
-                    //                 Copy the test matrix A into matrix AFAC which
-                    //                 will be factorized in place. This is needed to
-                    //                 preserve the test matrix A for subsequent tests.
+                    // Copy the test matrix A into matrix AFAC which
+                    // will be factorized in place. This is needed to
+                    // preserve the test matrix A for subsequent tests.
                     //
                     Clacpy(uplo, n, n, a, lda, afac, lda);
                     //
-                    //                 Compute the L*D*L**T or U*D*U**T factorization of the
-                    //                 matrix. IWORK stores details of the interchanges and
-                    //                 the block structure of D. AINV is a work array for
-                    //                 block factorization, LWORK is the length of AINV.
+                    // Compute the L*D*L**T or U*D*U**T factorization of the
+                    // matrix. IWORK stores details of the interchanges and
+                    // the block structure of D. AINV is a work array for
+                    // block factorization, LWORK is the length of AINV.
                     //
                     lwork = max((INTEGER)1, (nb + 1) * lda);
                     strncpy(srnamt, "Chetrf_aa", srnamt_len);
                     Chetrf_aa(uplo, n, afac, lda, iwork, ainv, lwork, info);
                     //
-                    //                 Adjust the expected value of INFO to account for
-                    //                 pivoting.
+                    // Adjust the expected value of INFO to account for
+                    // pivoting.
                     //
-                    //                  IF( IZERO.GT.0 ) THEN
-                    //                     J = 1
-                    //                     K = IZERO
-                    //  100                CONTINUE
-                    //                     IF( J.EQ.K ) THEN
-                    //                        K = IWORK( J )
-                    //                     ELSE IF( IWORK( J ).EQ.K ) THEN
-                    //                        K = J
-                    //                     END IF
-                    //                     IF( J.LT.K ) THEN
-                    //                        J = J + 1
-                    //                        GO TO 100
-                    //                     END IF
-                    //                  ELSE
+                    // IF( IZERO.GT.0 ) THEN
+                    // J = 1
+                    // K = IZERO
+                    // 100                CONTINUE
+                    // IF( J.EQ.K ) THEN
+                    // K = IWORK( J )
+                    // ELSE IF( IWORK( J ).EQ.K ) THEN
+                    // K = J
+                    // END IF
+                    // IF( J.LT.K ) THEN
+                    // J = J + 1
+                    // GO TO 100
+                    // END IF
+                    // ELSE
                     k = 0;
-                    //                  END IF
+                    // END IF
                     //
-                    //                 Check error code from Chetrf and handle error.
+                    // Check error code from Chetrf and handle error.
                     //
                     if (info != k) {
                         Alaerh(path, "Chetrf_aa", info, k, uplo, n, n, -1, -1, nb, imat, nfail, nerrs, nout);
                     }
                     //
-                    //+    TEST 1
-                    //                 Reconstruct matrix from factors and compute residual.
+                    // +    TEST 1
+                    // Reconstruct matrix from factors and compute residual.
                     //
                     Chet01_aa(uplo, n, a, lda, afac, lda, iwork, ainv, lda, rwork, result[1 - 1]);
                     nt = 1;
                     //
-                    //                 Print information about the tests that did not pass
-                    //                 the threshold.
+                    // Print information about the tests that did not pass
+                    // the threshold.
                     //
                     for (k = 1; k <= nt; k = k + 1) {
                         if (result[k - 1] >= thresh) {
@@ -322,22 +329,22 @@ void Cchkhe_aa(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
                     }
                     nrun += nt;
                     //
-                    //                 Skip solver test if INFO is not 0.
+                    // Skip solver test if INFO is not 0.
                     //
                     if (info != 0) {
                         goto statement_140;
                     }
                     //
-                    //                 Do for each value of NRHS in NSVAL.
+                    // Do for each value of NRHS in NSVAL.
                     //
                     for (irhs = 1; irhs <= nns; irhs = irhs + 1) {
                         nrhs = nsval[irhs - 1];
                         //
-                        //+    TEST 2 (Using TRS)
-                        //                 Solve and compute residual for  A * X = B.
+                        // +    TEST 2 (Using TRS)
+                        // Solve and compute residual for  A * X = B.
                         //
-                        //                    Choose a set of NRHS random solution vectors
-                        //                    stored in XACT and set up the right hand side B
+                        // Choose a set of NRHS random solution vectors
+                        // stored in XACT and set up the right hand side B
                         //
                         strncpy(srnamt, "Clarhs", srnamt_len);
                         Clarhs(matpath, &xtype, uplo, " ", n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
@@ -357,12 +364,12 @@ void Cchkhe_aa(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
                             //
                             Clacpy("Full", n, nrhs, b, lda, work, lda);
                             //
-                            //                       Compute the residual for the solution
+                            // Compute the residual for the solution
                             //
                             Cpot02(uplo, n, nrhs, a, lda, x, lda, work, lda, rwork, result[2 - 1]);
                             //
-                            //                       Print information about the tests that did not pass
-                            //                       the threshold.
+                            // Print information about the tests that did not pass
+                            // the threshold.
                             //
                             for (k = 2; k <= 2; k = k + 1) {
                                 if (result[k - 1] >= thresh) {
@@ -379,7 +386,7 @@ void Cchkhe_aa(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
                         }
                         nrun++;
                         //
-                        //                 End do for each value of NRHS in NSVAL.
+                        // End do for each value of NRHS in NSVAL.
                         //
                     }
                 statement_140:;
@@ -391,13 +398,13 @@ void Cchkhe_aa(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
     statement_180:;
     }
     //
-    //     Print a summary of the results.
+    // Print a summary of the results.
     //
     Alasum(path, nout, nfail, nrun, nerrs);
     //
     // 9997 FORMAT( ' UPLO = ''', A1, ''', N =', I5, ',', 10X, ' type ', I2,
-    //     $      ', test(', I2, ') =', G12.5 )
+    // $      ', test(', I2, ') =', G12.5 )
     //
-    //     End of Cchkhe_aa
+    // End of Cchkhe_aa
     //
 }

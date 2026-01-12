@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DERRQL.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -112,7 +119,7 @@ void Rerrql(const char *path, INTEGER const nunit) {
     Rgeqlf(1, 2, a, 1, b, w, 1, info);
     chkxer("Rgeqlf", infot, nout, lerr, ok);
     //
-    //     Rgeql2
+    // Rgeql2
     //
     infot = 1;
     strncpy(srnamt, "Rgeql2", srnamt_len);
@@ -125,7 +132,7 @@ void Rerrql(const char *path, INTEGER const nunit) {
     Rgeql2(2, 1, a, 1, b, w, info);
     chkxer("Rgeql2", infot, nout, lerr, ok);
     //
-    //     Rgeqls
+    // Rgeqls
     //
     infot = 1;
     strncpy(srnamt, "Rgeqls", srnamt_len);
@@ -150,7 +157,7 @@ void Rerrql(const char *path, INTEGER const nunit) {
     Rgeqls(1, 1, 2, a, 1, x, b, 1, w, 1, info);
     chkxer("Rgeqls", infot, nout, lerr, ok);
     //
-    //     Rorgql
+    // Rorgql
     //
     infot = 1;
     strncpy(srnamt, "Rorgql", srnamt_len);
@@ -175,7 +182,7 @@ void Rerrql(const char *path, INTEGER const nunit) {
     Rorgql(2, 2, 0, a, 2, x, w, 1, info);
     chkxer("Rorgql", infot, nout, lerr, ok);
     //
-    //     Rorg2l
+    // Rorg2l
     //
     infot = 1;
     strncpy(srnamt, "Rorg2l", srnamt_len);
@@ -197,7 +204,7 @@ void Rerrql(const char *path, INTEGER const nunit) {
     Rorg2l(2, 1, 0, a, 1, x, w, info);
     chkxer("Rorg2l", infot, nout, lerr, ok);
     //
-    //     Rormql
+    // Rormql
     //
     infot = 1;
     strncpy(srnamt, "Rormql", srnamt_len);
@@ -237,7 +244,7 @@ void Rerrql(const char *path, INTEGER const nunit) {
     Rormql("R", "N", 2, 1, 0, a, 1, x, af, 2, w, 1, info);
     chkxer("Rormql", infot, nout, lerr, ok);
     //
-    //     Rorm2l
+    // Rorm2l
     //
     infot = 1;
     strncpy(srnamt, "Rorm2l", srnamt_len);
@@ -271,10 +278,10 @@ void Rerrql(const char *path, INTEGER const nunit) {
     Rorm2l("L", "N", 2, 1, 0, a, 2, x, af, 1, w, info);
     chkxer("Rorm2l", infot, nout, lerr, ok);
     //
-    //     Print a summary line.
+    // Print a summary line.
     //
     Alaesm(path, ok, nout);
     //
-    //     End of Rerrql
+    // End of Rerrql
     //
 }

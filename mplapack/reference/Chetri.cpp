@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZHETRI.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -45,30 +52,7 @@ void Chetri(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
     INTEGER j = 0;
     COMPLEX temp = 0.0;
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     upper = Mlsame(uplo, "U");
@@ -84,17 +68,17 @@ void Chetri(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0) {
         return;
     }
     //
-    //     Check that the diagonal matrix D is nonsingular.
+    // Check that the diagonal matrix D is nonsingular.
     //
     if (upper) {
         //
-        //        Upper triangular storage: examine D from bottom to top
+        // Upper triangular storage: examine D from bottom to top
         //
         for (info = n; info >= 1; info = info - 1) {
             if (ipiv[info - 1] > 0 && a[(info - 1) + (info - 1) * lda] == zero) {
@@ -103,7 +87,7 @@ void Chetri(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
         }
     } else {
         //
-        //        Lower triangular storage: examine D from top to bottom.
+        // Lower triangular storage: examine D from top to bottom.
         //
         for (info = 1; info <= n; info = info + 1) {
             if (ipiv[info - 1] > 0 && a[(info - 1) + (info - 1) * lda] == zero) {
@@ -115,15 +99,15 @@ void Chetri(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
     //
     if (upper) {
         //
-        //        Compute inv(A) from the factorization A = U*D*U**H.
+        // Compute inv(A) from the factorization A = U*D*U**H.
         //
-        //        K is the main loop index, increasing from 1 to N in steps of
-        //        1 or 2, depending on the size of the diagonal blocks.
+        // K is the main loop index, increasing from 1 to N in steps of
+        // 1 or 2, depending on the size of the diagonal blocks.
         //
         k = 1;
     statement_30:
         //
-        //        If K > N, exit from loop.
+        // If K > N, exit from loop.
         //
         if (k > n) {
             goto statement_50;
@@ -131,25 +115,25 @@ void Chetri(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
         //
         if (ipiv[k - 1] > 0) {
             //
-            //           1 x 1 diagonal block
+            // 1 x 1 diagonal block
             //
-            //           Invert the diagonal block.
+            // Invert the diagonal block.
             //
             a[(k - 1) + (k - 1) * lda] = one / a[(k - 1) + (k - 1) * lda].real();
             //
-            //           Compute column K of the inverse.
+            // Compute column K of the inverse.
             //
             if (k > 1) {
                 Ccopy(k - 1, &a[(k - 1) * lda], 1, work, 1);
                 Chemv(uplo, k - 1, -cone, a, lda, work, 1, zero, &a[(k - 1) * lda], 1);
-                a[(k - 1) + (k - 1) * lda] = a[(k - 1) + (k - 1) * lda] - (Cdotc(k - 1, work, 1, &a[(k - 1) * lda], 1)).real();
+                a[(k - 1) + (k - 1) * lda] = a[(k - 1) + (k - 1) * lda] - Cdotc(k - 1, work, 1, &a[(k - 1) * lda], 1).real();
             }
             kstep = 1;
         } else {
             //
-            //           2 x 2 diagonal block
+            // 2 x 2 diagonal block
             //
-            //           Invert the diagonal block.
+            // Invert the diagonal block.
             //
             t = abs(a[(k - 1) + ((k + 1) - 1) * lda]);
             ak = a[(k - 1) + (k - 1) * lda].real() / t;
@@ -160,16 +144,16 @@ void Chetri(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
             a[((k + 1) - 1) + ((k + 1) - 1) * lda] = ak / d;
             a[(k - 1) + ((k + 1) - 1) * lda] = -akkp1 / d;
             //
-            //           Compute columns K and K+1 of the inverse.
+            // Compute columns K and K+1 of the inverse.
             //
             if (k > 1) {
                 Ccopy(k - 1, &a[(k - 1) * lda], 1, work, 1);
                 Chemv(uplo, k - 1, -cone, a, lda, work, 1, zero, &a[(k - 1) * lda], 1);
-                a[(k - 1) + (k - 1) * lda] = a[(k - 1) + (k - 1) * lda] - (Cdotc(k - 1, work, 1, &a[(k - 1) * lda], 1)).real();
+                a[(k - 1) + (k - 1) * lda] = a[(k - 1) + (k - 1) * lda] - Cdotc(k - 1, work, 1, &a[(k - 1) * lda], 1).real();
                 a[(k - 1) + ((k + 1) - 1) * lda] = a[(k - 1) + ((k + 1) - 1) * lda] - Cdotc(k - 1, &a[(k - 1) * lda], 1, &a[((k + 1) - 1) * lda], 1);
                 Ccopy(k - 1, &a[((k + 1) - 1) * lda], 1, work, 1);
                 Chemv(uplo, k - 1, -cone, a, lda, work, 1, zero, &a[((k + 1) - 1) * lda], 1);
-                a[((k + 1) - 1) + ((k + 1) - 1) * lda] = a[((k + 1) - 1) + ((k + 1) - 1) * lda] - (Cdotc(k - 1, work, 1, &a[((k + 1) - 1) * lda], 1)).real();
+                a[((k + 1) - 1) + ((k + 1) - 1) * lda] = a[((k + 1) - 1) + ((k + 1) - 1) * lda] - Cdotc(k - 1, work, 1, &a[((k + 1) - 1) * lda], 1).real();
             }
             kstep = 2;
         }
@@ -177,8 +161,8 @@ void Chetri(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
         kp = abs(ipiv[k - 1]);
         if (kp != k) {
             //
-            //           Interchange rows and columns K and KP in the leading
-            //           submatrix A(1:k+1,1:k+1)
+            // Interchange rows and columns K and KP in the leading
+            // submatrix A(1:k+1,1:k+1)
             //
             Cswap(kp - 1, &a[(k - 1) * lda], 1, &a[(kp - 1) * lda], 1);
             for (j = kp + 1; j <= k - 1; j = j + 1) {
@@ -203,15 +187,15 @@ void Chetri(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
         //
     } else {
         //
-        //        Compute inv(A) from the factorization A = L*D*L**H.
+        // Compute inv(A) from the factorization A = L*D*L**H.
         //
-        //        K is the main loop index, increasing from 1 to N in steps of
-        //        1 or 2, depending on the size of the diagonal blocks.
+        // K is the main loop index, increasing from 1 to N in steps of
+        // 1 or 2, depending on the size of the diagonal blocks.
         //
         k = n;
     statement_60:
         //
-        //        If K < 1, exit from loop.
+        // If K < 1, exit from loop.
         //
         if (k < 1) {
             goto statement_80;
@@ -219,25 +203,25 @@ void Chetri(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
         //
         if (ipiv[k - 1] > 0) {
             //
-            //           1 x 1 diagonal block
+            // 1 x 1 diagonal block
             //
-            //           Invert the diagonal block.
+            // Invert the diagonal block.
             //
             a[(k - 1) + (k - 1) * lda] = one / a[(k - 1) + (k - 1) * lda].real();
             //
-            //           Compute column K of the inverse.
+            // Compute column K of the inverse.
             //
             if (k < n) {
                 Ccopy(n - k, &a[((k + 1) - 1) + (k - 1) * lda], 1, work, 1);
                 Chemv(uplo, n - k, -cone, &a[((k + 1) - 1) + ((k + 1) - 1) * lda], lda, work, 1, zero, &a[((k + 1) - 1) + (k - 1) * lda], 1);
-                a[(k - 1) + (k - 1) * lda] = a[(k - 1) + (k - 1) * lda] - (Cdotc(n - k, work, 1, &a[((k + 1) - 1) + (k - 1) * lda], 1)).real();
+                a[(k - 1) + (k - 1) * lda] = a[(k - 1) + (k - 1) * lda] - Cdotc(n - k, work, 1, &a[((k + 1) - 1) + (k - 1) * lda], 1).real();
             }
             kstep = 1;
         } else {
             //
-            //           2 x 2 diagonal block
+            // 2 x 2 diagonal block
             //
-            //           Invert the diagonal block.
+            // Invert the diagonal block.
             //
             t = abs(a[(k - 1) + ((k - 1) - 1) * lda]);
             ak = a[((k - 1) - 1) + ((k - 1) - 1) * lda].real() / t;
@@ -248,16 +232,16 @@ void Chetri(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
             a[(k - 1) + (k - 1) * lda] = ak / d;
             a[(k - 1) + ((k - 1) - 1) * lda] = -akkp1 / d;
             //
-            //           Compute columns K-1 and K of the inverse.
+            // Compute columns K-1 and K of the inverse.
             //
             if (k < n) {
                 Ccopy(n - k, &a[((k + 1) - 1) + (k - 1) * lda], 1, work, 1);
                 Chemv(uplo, n - k, -cone, &a[((k + 1) - 1) + ((k + 1) - 1) * lda], lda, work, 1, zero, &a[((k + 1) - 1) + (k - 1) * lda], 1);
-                a[(k - 1) + (k - 1) * lda] = a[(k - 1) + (k - 1) * lda] - (Cdotc(n - k, work, 1, &a[((k + 1) - 1) + (k - 1) * lda], 1)).real();
+                a[(k - 1) + (k - 1) * lda] = a[(k - 1) + (k - 1) * lda] - Cdotc(n - k, work, 1, &a[((k + 1) - 1) + (k - 1) * lda], 1).real();
                 a[(k - 1) + ((k - 1) - 1) * lda] = a[(k - 1) + ((k - 1) - 1) * lda] - Cdotc(n - k, &a[((k + 1) - 1) + (k - 1) * lda], 1, &a[((k + 1) - 1) + ((k - 1) - 1) * lda], 1);
                 Ccopy(n - k, &a[((k + 1) - 1) + ((k - 1) - 1) * lda], 1, work, 1);
                 Chemv(uplo, n - k, -cone, &a[((k + 1) - 1) + ((k + 1) - 1) * lda], lda, work, 1, zero, &a[((k + 1) - 1) + ((k - 1) - 1) * lda], 1);
-                a[((k - 1) - 1) + ((k - 1) - 1) * lda] = a[((k - 1) - 1) + ((k - 1) - 1) * lda] - (Cdotc(n - k, work, 1, &a[((k + 1) - 1) + ((k - 1) - 1) * lda], 1)).real();
+                a[((k - 1) - 1) + ((k - 1) - 1) * lda] = a[((k - 1) - 1) + ((k - 1) - 1) * lda] - Cdotc(n - k, work, 1, &a[((k + 1) - 1) + ((k - 1) - 1) * lda], 1).real();
             }
             kstep = 2;
         }
@@ -265,8 +249,8 @@ void Chetri(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
         kp = abs(ipiv[k - 1]);
         if (kp != k) {
             //
-            //           Interchange rows and columns K and KP in the trailing
-            //           submatrix A(k-1:n,k-1:n)
+            // Interchange rows and columns K and KP in the trailing
+            // submatrix A(k-1:n,k-1:n)
             //
             if (kp < n) {
                 Cswap(n - kp, &a[((kp + 1) - 1) + (k - 1) * lda], 1, &a[((kp + 1) - 1) + (kp - 1) * lda], 1);
@@ -292,6 +276,6 @@ void Chetri(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
     statement_80:;
     }
     //
-    //     End of Chetri
+    // End of Chetri
     //
 }

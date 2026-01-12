@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DLCTSX.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -68,14 +75,14 @@ bool Rlctsx(REAL const /* ar */, REAL const /* ai */, REAL const /* beta */) {
         }
     }
     //
-    //       IF( AR/BETA.GT.0.0 )THEN
-    //          Rlctsx = .TRUE.
-    //       ELSE
-    //          Rlctsx = .FALSE.
-    //       END IF
+    // IF( AR/BETA.GT.0.0 )THEN
+    // Rlctsx = .TRUE.
+    // ELSE
+    // Rlctsx = .FALSE.
+    // END IF
     //
     return return_value;
     //
-    //     End of Rlctsx
+    // End of Rlctsx
     //
 }

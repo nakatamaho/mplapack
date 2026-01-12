@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DLATME.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -33,43 +40,18 @@
 
 void Rlatme(INTEGER const n, const char *dist, INTEGER *iseed, REAL *d, INTEGER const mode, REAL const cond, REAL const dmax, const char *ei, const char *rsign, const char *upper, const char *sim, REAL *ds, INTEGER const modes, REAL const conds, INTEGER const kl, INTEGER const ku, REAL const anorm, REAL *a, INTEGER const lda, REAL *work, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     1)      Decode and Test the input parameters.
-    //             Initialize flags & seed.
+    // 1)      Decode and Test the input parameters.
+    // Initialize flags & seed.
     //
     info = 0;
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0) {
         return;
     }
     //
-    //     Decode DIST
+    // Decode DIST
     //
     INTEGER idist = 0;
     if (Mlsame(dist, "U")) {
@@ -82,7 +64,7 @@ void Rlatme(INTEGER const n, const char *dist, INTEGER *iseed, REAL *d, INTEGER 
         idist = -1;
     }
     //
-    //     Check EI
+    // Check EI
     //
     bool useei = true;
     bool badei = false;
@@ -107,7 +89,7 @@ void Rlatme(INTEGER const n, const char *dist, INTEGER *iseed, REAL *d, INTEGER 
         }
     }
     //
-    //     Decode RSIGN
+    // Decode RSIGN
     //
     INTEGER irsign = 0;
     if (Mlsame(rsign, "T")) {
@@ -118,7 +100,7 @@ void Rlatme(INTEGER const n, const char *dist, INTEGER *iseed, REAL *d, INTEGER 
         irsign = -1;
     }
     //
-    //     Decode UPPER
+    // Decode UPPER
     //
     INTEGER iupper = 0;
     if (Mlsame(upper, "T")) {
@@ -129,7 +111,7 @@ void Rlatme(INTEGER const n, const char *dist, INTEGER *iseed, REAL *d, INTEGER 
         iupper = -1;
     }
     //
-    //     Decode SIM
+    // Decode SIM
     //
     INTEGER isim = 0;
     if (Mlsame(sim, "T")) {
@@ -140,7 +122,7 @@ void Rlatme(INTEGER const n, const char *dist, INTEGER *iseed, REAL *d, INTEGER 
         isim = -1;
     }
     //
-    //     Check DS, if MODES=0 and ISIM=1
+    // Check DS, if MODES=0 and ISIM=1
     //
     bool bads = false;
     const REAL zero = 0.0;
@@ -152,7 +134,7 @@ void Rlatme(INTEGER const n, const char *dist, INTEGER *iseed, REAL *d, INTEGER 
         }
     }
     //
-    //     Set INFO if an error
+    // Set INFO if an error
     //
     const REAL one = 1.0;
     if (n < 0) {
@@ -190,7 +172,7 @@ void Rlatme(INTEGER const n, const char *dist, INTEGER *iseed, REAL *d, INTEGER 
         return;
     }
     //
-    //     Initialize random number generator
+    // Initialize random number generator
     //
     INTEGER i = 0;
     //
@@ -208,7 +190,7 @@ void Rlatme(INTEGER const n, const char *dist, INTEGER *iseed, REAL *d, INTEGER 
     REAL alpha = 0.0;
     if (mode != 0 && abs(mode) != 6) {
         //
-        //        Scale by DMAX
+        // Scale by DMAX
         //
         temp = abs(d[1 - 1]);
         for (i = 2; i <= n; i = i + 1) {
@@ -231,7 +213,7 @@ void Rlatme(INTEGER const n, const char *dist, INTEGER *iseed, REAL *d, INTEGER 
     Rlaset("Full", n, n, zero, zero, a, lda);
     Rcopy(n, d, 1, a, lda + 1);
     //
-    //     Set up complex conjugate pairs
+    // Set up complex conjugate pairs
     //
     const REAL half = 1.0 / 2.0;
     if (mode == 0) {
@@ -256,8 +238,8 @@ void Rlatme(INTEGER const n, const char *dist, INTEGER *iseed, REAL *d, INTEGER 
         }
     }
     //
-    //     3)      If UPPER='T', set upper triangle of A to random numbers.
-    //             (but don't modify the corners of 2x2 blocks.)
+    // 3)      If UPPER='T', set upper triangle of A to random numbers.
+    // (but don't modify the corners of 2x2 blocks.)
     //
     INTEGER jc = 0;
     INTEGER jr = 0;
@@ -272,17 +254,17 @@ void Rlatme(INTEGER const n, const char *dist, INTEGER *iseed, REAL *d, INTEGER 
         }
     }
     //
-    //     4)      If SIM='T', apply similarity transformation.
+    // 4)      If SIM='T', apply similarity transformation.
     //
-    //                                -1
-    //             Transform is  X A X  , where X = U S V, thus
+    // -1
+    // Transform is  X A X  , where X = U S V, thus
     //
-    //             it is  U S V A V' (1/S) U'
+    // it is  U S V A V' (1/S) U'
     //
     if (isim != 0) {
         //
-        //        Compute S (singular values of the eigenvector matrix)
-        //        according to CONDS and MODES
+        // Compute S (singular values of the eigenvector matrix)
+        // according to CONDS and MODES
         //
         Rlatm1(modes, conds, 0, 0, iseed, ds, n, iinfo);
         if (iinfo != 0) {
@@ -290,7 +272,7 @@ void Rlatme(INTEGER const n, const char *dist, INTEGER *iseed, REAL *d, INTEGER 
             return;
         }
         //
-        //        Multiply by V and V'
+        // Multiply by V and V'
         //
         Rlarge(n, a, lda, iseed, work, iinfo);
         if (iinfo != 0) {
@@ -298,7 +280,7 @@ void Rlatme(INTEGER const n, const char *dist, INTEGER *iseed, REAL *d, INTEGER 
             return;
         }
         //
-        //        Multiply by S and (1/S)
+        // Multiply by S and (1/S)
         //
         for (j = 1; j <= n; j = j + 1) {
             Rscal(n, ds[j - 1], &a[(j - 1)], lda);
@@ -310,7 +292,7 @@ void Rlatme(INTEGER const n, const char *dist, INTEGER *iseed, REAL *d, INTEGER 
             }
         }
         //
-        //        Multiply by U and U'
+        // Multiply by U and U'
         //
         Rlarge(n, a, lda, iseed, work, iinfo);
         if (iinfo != 0) {
@@ -319,7 +301,7 @@ void Rlatme(INTEGER const n, const char *dist, INTEGER *iseed, REAL *d, INTEGER 
         }
     }
     //
-    //     5)      Reduce the bandwidth.
+    // 5)      Reduce the bandwidth.
     //
     INTEGER jcr = 0;
     INTEGER ic = 0;
@@ -330,7 +312,7 @@ void Rlatme(INTEGER const n, const char *dist, INTEGER *iseed, REAL *d, INTEGER 
     INTEGER ir = 0;
     if (kl < n - 1) {
         //
-        //        Reduce bandwidth -- kill column
+        // Reduce bandwidth -- kill column
         //
         for (jcr = kl + 1; jcr <= n - 1; jcr = jcr + 1) {
             ic = jcr - kl;
@@ -353,7 +335,7 @@ void Rlatme(INTEGER const n, const char *dist, INTEGER *iseed, REAL *d, INTEGER 
         }
     } else if (ku < n - 1) {
         //
-        //        Reduce upper bandwidth -- kill a row at a time.
+        // Reduce upper bandwidth -- kill a row at a time.
         //
         for (jcr = ku + 1; jcr <= n - 1; jcr = jcr + 1) {
             ir = jcr - ku;
@@ -376,7 +358,7 @@ void Rlatme(INTEGER const n, const char *dist, INTEGER *iseed, REAL *d, INTEGER 
         }
     }
     //
-    //     Scale the matrix to have norm ANORM
+    // Scale the matrix to have norm ANORM
     //
     REAL tempa[1];
     if (anorm >= zero) {
@@ -389,6 +371,6 @@ void Rlatme(INTEGER const n, const char *dist, INTEGER *iseed, REAL *d, INTEGER 
         }
     }
     //
-    //     End of Rlatme
+    // End of Rlatme
     //
 }

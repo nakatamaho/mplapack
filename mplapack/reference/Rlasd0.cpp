@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,12 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine DLASD0.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Rlasd0(INTEGER const n, INTEGER const sqre, REAL *d, REAL *e, REAL *u, INTEGER const ldu, REAL *vt, INTEGER const ldvt, INTEGER const smlsiz, INTEGER *iwork, REAL *work, INTEGER &info) {
     //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     //
@@ -55,14 +62,14 @@ void Rlasd0(INTEGER const n, INTEGER const sqre, REAL *d, REAL *e, REAL *u, INTE
         return;
     }
     //
-    //     If the input matrix is too small, call Rlasdq to find the SVD.
+    // If the input matrix is too small, call Rlasdq to find the SVD.
     //
     if (n <= smlsiz) {
         Rlasdq("U", sqre, n, m, n, 0, d, e, vt, ldvt, u, ldu, u, ldu, work, info);
         return;
     }
     //
-    //     Set up the computation tree.
+    // Set up the computation tree.
     //
     INTEGER inode = 1;
     INTEGER ndiml = inode + n;
@@ -73,8 +80,8 @@ void Rlasd0(INTEGER const n, INTEGER const sqre, REAL *d, REAL *e, REAL *u, INTE
     INTEGER nd = 0;
     Rlasdt(n, nlvl, nd, &iwork[inode - 1], &iwork[ndiml - 1], &iwork[ndimr - 1], smlsiz);
     //
-    //     For the nodes on bottom level of the tree, solve
-    //     their subproblems by Rlasdq.
+    // For the nodes on bottom level of the tree, solve
+    // their subproblems by Rlasdq.
     //
     INTEGER ndb1 = (nd + 1) / 2;
     INTEGER ncc = 0;
@@ -92,11 +99,11 @@ void Rlasd0(INTEGER const n, INTEGER const sqre, REAL *d, REAL *e, REAL *u, INTE
     INTEGER j = 0;
     for (i = ndb1; i <= nd; i = i + 1) {
         //
-        //     IC : center row of each node
-        //     NL : number of rows of left  subproblem
-        //     NR : number of rows of right subproblem
-        //     NLF: starting row of the left   subproblem
-        //     NRF: starting row of the right  subproblem
+        // IC : center row of each node
+        // NL : number of rows of left  subproblem
+        // NR : number of rows of right subproblem
+        // NLF: starting row of the left   subproblem
+        // NRF: starting row of the right  subproblem
         //
         i1 = i - 1;
         ic = iwork[(inode + i1) - 1];
@@ -131,7 +138,7 @@ void Rlasd0(INTEGER const n, INTEGER const sqre, REAL *d, REAL *e, REAL *u, INTE
         }
     }
     //
-    //     Now conquer each subproblem bottom-up.
+    // Now conquer each subproblem bottom-up.
     //
     INTEGER lvl = 0;
     INTEGER lf = 0;
@@ -142,14 +149,14 @@ void Rlasd0(INTEGER const n, INTEGER const sqre, REAL *d, REAL *e, REAL *u, INTE
     REAL beta = 0.0;
     for (lvl = nlvl; lvl >= 1; lvl = lvl - 1) {
         //
-        //        Find the first node LF and last node LL on the
-        //        current level LVL.
+        // Find the first node LF and last node LL on the
+        // current level LVL.
         //
         if (lvl == 1) {
             lf = 1;
             ll = 1;
         } else {
-            lf = (INTEGER)pow((double)2, (double)(lvl - 1));
+            lf = (INTEGER(1) << ((lvl - 1)));
             ll = 2 * lf - 1;
         }
         for (i = lf; i <= ll; i = i + 1) {
@@ -168,7 +175,7 @@ void Rlasd0(INTEGER const n, INTEGER const sqre, REAL *d, REAL *e, REAL *u, INTE
             beta = e[ic - 1];
             Rlasd1(nl, nr, sqrei, &d[nlf - 1], alpha, beta, &u[(nlf - 1) + (nlf - 1) * ldu], ldu, &vt[(nlf - 1) + (nlf - 1) * ldvt], ldvt, &iwork[idxqc - 1], &iwork[iwk - 1], work, info);
             //
-            //        Report the possible convergence failure.
+            // Report the possible convergence failure.
             //
             if (info != 0) {
                 return;
@@ -176,6 +183,6 @@ void Rlasd0(INTEGER const n, INTEGER const sqre, REAL *d, REAL *e, REAL *u, INTE
         }
     }
     //
-    //     End of Rlasd0
+    // End of Rlasd0
     //
 }

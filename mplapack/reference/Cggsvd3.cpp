@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,12 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine ZGGSVD3.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Cggsvd3(const char *jobu, const char *jobv, const char *jobq, INTEGER const m, INTEGER const n, INTEGER const p, INTEGER &k, INTEGER &l, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, REAL *alpha, REAL *beta, COMPLEX *u, INTEGER const ldu, COMPLEX *v, INTEGER const ldv, COMPLEX *q, INTEGER const ldq, COMPLEX *work, INTEGER const lwork, REAL *rwork, INTEGER *iwork, INTEGER &info) {
     //
-    //     Decode and test the input parameters
+    // Decode and test the input parameters
     //
     bool wantu = Mlsame(jobu, "U");
     bool wantv = Mlsame(jobv, "V");
@@ -39,7 +46,7 @@ void Cggsvd3(const char *jobu, const char *jobv, const char *jobq, INTEGER const
     bool lquery = (lwork == -1);
     INTEGER lwkopt = 1;
     //
-    //     Test the input arguments
+    // Test the input arguments
     //
     info = 0;
     if (!(wantu || Mlsame(jobu, "N"))) {
@@ -68,14 +75,14 @@ void Cggsvd3(const char *jobu, const char *jobv, const char *jobq, INTEGER const
         info = -24;
     }
     //
-    //     Compute workspace
+    // Compute workspace
     //
     REAL tola = 0.0;
     REAL tolb = 0.0;
     if (info == 0) {
         Cggsvp3(jobu, jobv, jobq, m, p, n, a, lda, b, ldb, tola, tolb, k, l, u, ldu, v, ldv, q, ldq, iwork, rwork, work, work, -1, info);
         lwkopt = n + castINTEGER(work[1 - 1].real());
-        lwkopt = max((INTEGER)2 * n, lwkopt);
+        lwkopt = max(2 * n, lwkopt);
         lwkopt = max((INTEGER)1, lwkopt);
         work[1 - 1] = COMPLEX(lwkopt);
     }
@@ -88,28 +95,28 @@ void Cggsvd3(const char *jobu, const char *jobv, const char *jobq, INTEGER const
         return;
     }
     //
-    //     Compute the Frobenius norm of matrices A and B
+    // Compute the Frobenius norm of matrices A and B
     //
     REAL anorm = Clange("1", m, n, a, lda, rwork);
     REAL bnorm = Clange("1", p, n, b, ldb, rwork);
     //
-    //     Get machine precision and set up threshold for determining
-    //     the effective numerical rank of the matrices A and B.
+    // Get machine precision and set up threshold for determining
+    // the effective numerical rank of the matrices A and B.
     //
     REAL ulp = Rlamch("Precision");
     REAL unfl = Rlamch("Safe Minimum");
-    tola = castREAL(max(m, n)) * max(anorm, unfl) * ulp;
-    tolb = castREAL(max(p, n)) * max(bnorm, unfl) * ulp;
+    tola = max(m, n) * max(anorm, unfl) * ulp;
+    tolb = max(p, n) * max(bnorm, unfl) * ulp;
     //
     Cggsvp3(jobu, jobv, jobq, m, p, n, a, lda, b, ldb, tola, tolb, k, l, u, ldu, v, ldv, q, ldq, iwork, rwork, work, &work[(n + 1) - 1], lwork - n, info);
     //
-    //     Compute the GSVD of two upper "triangular" matrices
+    // Compute the GSVD of two upper "triangular" matrices
     //
     INTEGER ncycle = 0;
     Ctgsja(jobu, jobv, jobq, m, p, n, k, l, a, lda, b, ldb, tola, tolb, alpha, beta, u, ldu, v, ldv, q, ldq, work, ncycle, info);
     //
-    //     Sort the singular values and store the pivot indices in IWORK
-    //     Copy ALPHA to RWORK, then sort ALPHA in RWORK
+    // Sort the singular values and store the pivot indices in IWORK
+    // Copy ALPHA to RWORK, then sort ALPHA in RWORK
     //
     Rcopy(n, alpha, 1, rwork, 1);
     INTEGER ibnd = min(l, m - k);
@@ -120,7 +127,7 @@ void Cggsvd3(const char *jobu, const char *jobv, const char *jobq, INTEGER const
     REAL temp = 0.0;
     for (i = 1; i <= ibnd; i = i + 1) {
         //
-        //        Scan for largest ALPHA(K+I)
+        // Scan for largest ALPHA(K+I)
         //
         isub = i;
         smax = rwork[(k + i) - 1];
@@ -142,6 +149,6 @@ void Cggsvd3(const char *jobu, const char *jobv, const char *jobq, INTEGER const
     //
     work[1 - 1] = COMPLEX(lwkopt);
     //
-    //     End of Cggsvd3
+    // End of Cggsvd3
     //
 }

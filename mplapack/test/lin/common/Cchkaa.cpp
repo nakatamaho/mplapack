@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine ZCHKAA.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -308,7 +315,7 @@ void Cchkaa(void) {
     statement_60:;
     }
     //
-    //     Read the values of NX
+    // Read the values of NX
     //
     ss.str("");
     getline(cin, str);
@@ -416,7 +423,7 @@ void Cchkaa(void) {
         exit(0);
     }
     //
-    //     Calculate and print the machine dependent constants.
+    // Calculate and print the machine dependent constants.
     //
     eps = Rlamch("Underflow threshold");
     sprintnum_short(buf, eps);
@@ -1107,7 +1114,7 @@ void Cchkaa(void) {
     write(nout, "(/,' End of tests')");
     write(nout, "(' Total time used = ',f12.2,' seconds',/)"), int(s2 - s1);
     //
-    //     End of Cchkaa
+    // End of Cchkaa
     //
 }
 int main(int argc, char const *argv[]) { Cchkaa(); }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DTPT05.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -57,28 +64,7 @@ void Rtpt05(const char *uplo, const char *trans, const char *diag, INTEGER const
     INTEGER jc = 0;
     REAL axbi = 0.0;
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Quick exit if N = 0 or NRHS = 0.
+    // Quick exit if N = 0 or NRHS = 0.
     //
     if (n <= 0 || nrhs <= 0) {
         reslts[1 - 1] = zero;
@@ -93,9 +79,9 @@ void Rtpt05(const char *uplo, const char *trans, const char *diag, INTEGER const
     notran = Mlsame(trans, "N");
     unit = Mlsame(diag, "U");
     //
-    //     Test 1:  Compute the maximum of
-    //        norm(X - XACT) / ( norm(X) * FERR )
-    //     over all the vectors X and XACT using the infinity-norm.
+    // Test 1:  Compute the maximum of
+    // norm(X - XACT) / ( norm(X) * FERR )
+    // over all the vectors X and XACT using the infinity-norm.
     //
     errbnd = zero;
     for (j = 1; j <= nrhs; j = j + 1) {
@@ -125,8 +111,8 @@ void Rtpt05(const char *uplo, const char *trans, const char *diag, INTEGER const
     }
     reslts[1 - 1] = errbnd;
     //
-    //     Test 2:  Compute the maximum of BERR / ( (n+1)*EPS + (*) ), where
-    //     (*) = (n+1)*UNFL / (min_i (abs(A)*abs(X) +abs(b))_i )
+    // Test 2:  Compute the maximum of BERR / ( (n+1)*EPS + (*) ), where
+    // (*) = (n+1)*UNFL / (min_i (abs(A)*abs(X) +abs(b))_i )
     //
     ifu = 0;
     if (unit) {
@@ -189,6 +175,6 @@ void Rtpt05(const char *uplo, const char *trans, const char *diag, INTEGER const
         }
     }
     //
-    //     End of Rtpt05
+    // End of Rtpt05
     //
 }

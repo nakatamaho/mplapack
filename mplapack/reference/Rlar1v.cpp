@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DLAR1V.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -49,28 +56,6 @@ void Rlar1v(INTEGER const n, INTEGER const b1, INTEGER const bn, REAL const lamb
     REAL tmp = 0.0;
     const REAL one = 1.0;
     //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     eps = Rlamch("Precision");
     //
     if (r == 0) {
@@ -81,9 +66,9 @@ void Rlar1v(INTEGER const n, INTEGER const b1, INTEGER const bn, REAL const lamb
         r2 = r;
     }
     //
-    //     Storage for LPLUS
+    // Storage for LPLUS
     indlpl = 0;
-    //     Storage for UMINUS
+    // Storage for UMINUS
     indumn = n;
     inds = 2 * n + 1;
     indp = 3 * n + 1;
@@ -94,8 +79,8 @@ void Rlar1v(INTEGER const n, INTEGER const b1, INTEGER const bn, REAL const lamb
         work[(inds + b1 - 1) - 1] = lld[(b1 - 1) - 1];
     }
     //
-    //     Compute the stationary transform (using the differential form)
-    //     until the index R2.
+    // Compute the stationary transform (using the differential form)
+    // until the index R2.
     //
     sawnan1 = false;
     neg1 = 0;
@@ -123,7 +108,7 @@ void Rlar1v(INTEGER const n, INTEGER const b1, INTEGER const bn, REAL const lamb
 //
 statement_60:
     if (sawnan1) {
-        //        Runs a slower version of the above loop if a NaN is detected
+        // Runs a slower version of the above loop if a NaN is detected
         neg1 = 0;
         s = work[(inds + b1 - 1) - 1] - lambda;
         for (i = b1; i <= r1 - 1; i = i + 1) {
@@ -155,8 +140,8 @@ statement_60:
         }
     }
     //
-    //     Compute the progressive transform (using the differential form)
-    //     until the index R1
+    // Compute the progressive transform (using the differential form)
+    // until the index R1
     //
     sawnan2 = false;
     neg2 = 0;
@@ -174,7 +159,7 @@ statement_60:
     sawnan2 = Risnan(tmp);
     //
     if (sawnan2) {
-        //        Runs a slower version of the above loop if a NaN is detected
+        // Runs a slower version of the above loop if a NaN is detected
         neg2 = 0;
         for (i = bn - 1; i >= r1; i = i - 1) {
             dminus = lld[i - 1] + work[(indp + i) - 1];
@@ -193,8 +178,8 @@ statement_60:
         }
     }
     //
-    //     Find the index (from R1 to R2) of the largest (in magnitude)
-    //     diagonal element of the inverse
+    // Find the index (from R1 to R2) of the largest (in magnitude)
+    // diagonal element of the inverse
     //
     mingma = work[(inds + r1 - 1) - 1] + work[(indp + r1 - 1) - 1];
     if (mingma < zero) {
@@ -220,14 +205,14 @@ statement_60:
         }
     }
     //
-    //     Compute the FP vector: solve N^T v = e_r
+    // Compute the FP vector: solve N^T v = e_r
     //
     isuppz[1 - 1] = b1;
     isuppz[2 - 1] = bn;
     z[r - 1] = one;
     ztz = one;
     //
-    //     Compute the FP vector upwards from R
+    // Compute the FP vector upwards from R
     //
     if (!sawnan1 && !sawnan2) {
         for (i = r - 1; i >= b1; i = i - 1) {
@@ -241,7 +226,7 @@ statement_60:
         }
     statement_220:;
     } else {
-        //        Run slower loop if NaN occurred.
+        // Run slower loop if NaN occurred.
         for (i = r - 1; i >= b1; i = i - 1) {
             if (z[(i + 1) - 1] == zero) {
                 z[i - 1] = -(ld[(i + 1) - 1] / ld[i - 1]) * z[(i + 2) - 1];
@@ -258,7 +243,7 @@ statement_60:
     statement_240:;
     }
     //
-    //     Compute the FP vector downwards from R in blocks of size BLKSIZ
+    // Compute the FP vector downwards from R in blocks of size BLKSIZ
     if (!sawnan1 && !sawnan2) {
         for (i = r; i <= bn - 1; i = i + 1) {
             z[(i + 1) - 1] = -(work[(indumn + i) - 1] * z[i - 1]);
@@ -271,7 +256,7 @@ statement_60:
         }
     statement_260:;
     } else {
-        //        Run slower loop if NaN occurred.
+        // Run slower loop if NaN occurred.
         for (i = r; i <= bn - 1; i = i + 1) {
             if (z[i - 1] == zero) {
                 z[(i + 1) - 1] = -(ld[(i - 1) - 1] / ld[i - 1]) * z[(i - 1) - 1];
@@ -288,13 +273,13 @@ statement_60:
     statement_280:;
     }
     //
-    //     Compute quantities for convergence test
+    // Compute quantities for convergence test
     //
     tmp = one / ztz;
     nrminv = sqrt(tmp);
     resid = abs(mingma) * nrminv;
     rqcorr = mingma * tmp;
     //
-    //     End of Rlar1v
+    // End of Rlar1v
     //
 }

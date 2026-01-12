@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine ZGET35.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -102,14 +109,14 @@ void Cget35(REAL &rmax, INTEGER &lmax, INTEGER &ninfo, INTEGER &knt, INTEGER con
     REAL res1 = 0.0;
     REAL res = 0.0;
     //
-    //     Get machine parameters
+    // Get machine parameters
     //
     eps = Rlamch("P");
     smlnum = Rlamch("S") / eps;
     bignum = one / smlnum;
     //    Rlabad(smlnum, bignum);
     //
-    //     Set up test case parameters
+    // Set up test case parameters
     //
     vm1[1 - 1] = sqrt(smlnum);
     vm1[2 - 1] = one;

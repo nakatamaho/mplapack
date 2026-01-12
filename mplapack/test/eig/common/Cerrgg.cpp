@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZERRGG.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -48,7 +55,7 @@ void Cerrgg(const char *path, INTEGER const nunit) {
     c2[0] = path[1];
     c2[1] = path[2];
     //
-    //     Set the variables to innocuous values.
+    // Set the variables to innocuous values.
     //
     INTEGER j = 0;
     const INTEGER nmax = 3;
@@ -79,7 +86,7 @@ void Cerrgg(const char *path, INTEGER const nunit) {
     INTEGER nt = 0;
     INTEGER lwork = 1;
     //
-    //     Test error exits for the GG path.
+    // Test error exits for the GG path.
     //
     COMPLEX q[nmax * nmax];
     COMPLEX z[nmax * nmax];
@@ -114,7 +121,7 @@ void Cerrgg(const char *path, INTEGER const nunit) {
     REAL dif = 0.0;
     if (Mlsamen(2, c2, "GG")) {
         //
-        //        Cgghrd
+        // Cgghrd
         //
         infot = 1;
         strncpy(srnamt, "Cgghrd", srnamt_len);
@@ -146,7 +153,7 @@ void Cerrgg(const char *path, INTEGER const nunit) {
         chkxer("Cgghrd", infot, nout, lerr, ok);
         nt += 9;
         //
-        //        Cgghd3
+        // Cgghd3
         //
         strncpy(srnamt, "Cgghd3", srnamt_len);
         infot = 1;
@@ -178,7 +185,7 @@ void Cerrgg(const char *path, INTEGER const nunit) {
         chkxer("Cgghd3", infot, nout, lerr, ok);
         nt += 9;
         //
-        //        Chgeqz
+        // Chgeqz
         //
         strncpy(srnamt, "Chgeqz", srnamt_len);
         infot = 1;
@@ -213,7 +220,7 @@ void Cerrgg(const char *path, INTEGER const nunit) {
         chkxer("Chgeqz", infot, nout, lerr, ok);
         nt += 10;
         //
-        //        Ctgevc
+        // Ctgevc
         //
         strncpy(srnamt, "Ctgevc", srnamt_len);
         infot = 1;
@@ -242,11 +249,11 @@ void Cerrgg(const char *path, INTEGER const nunit) {
         chkxer("Ctgevc", infot, nout, lerr, ok);
         nt += 8;
         //
-        //     Test error exits for the GSV path.
+        // Test error exits for the GSV path.
         //
     } else if (Mlsamen(3, path, "GSV")) {
         //
-        //        Cggsvd3
+        // Cggsvd3
         //
         strncpy(srnamt, "Cggsvd3", srnamt_len);
         infot = 1;
@@ -284,7 +291,7 @@ void Cerrgg(const char *path, INTEGER const nunit) {
         chkxer("Cggsvd3", infot, nout, lerr, ok);
         nt += 11;
         //
-        //        Cggsvp3
+        // Cggsvp3
         //
         strncpy(srnamt, "Cggsvp3", srnamt_len);
         infot = 1;
@@ -322,7 +329,7 @@ void Cerrgg(const char *path, INTEGER const nunit) {
         chkxer("Cggsvp3", infot, nout, lerr, ok);
         nt += 11;
         //
-        //        Ctgsja
+        // Ctgsja
         //
         strncpy(srnamt, "Ctgsja", srnamt_len);
         infot = 1;
@@ -360,11 +367,11 @@ void Cerrgg(const char *path, INTEGER const nunit) {
         chkxer("Ctgsja", infot, nout, lerr, ok);
         nt += 11;
         //
-        //     Test error exits for the GLM path.
+        // Test error exits for the GLM path.
         //
     } else if (Mlsamen(3, path, "GLM")) {
         //
-        //        Cggglm
+        // Cggglm
         //
         strncpy(srnamt, "Cggglm", srnamt_len);
         infot = 1;
@@ -393,11 +400,11 @@ void Cerrgg(const char *path, INTEGER const nunit) {
         chkxer("Cggglm", infot, nout, lerr, ok);
         nt += 8;
         //
-        //     Test error exits for the LSE path.
+        // Test error exits for the LSE path.
         //
     } else if (Mlsamen(3, path, "LSE")) {
         //
-        //        Cgglse
+        // Cgglse
         //
         strncpy(srnamt, "Cgglse", srnamt_len);
         infot = 1;
@@ -426,11 +433,11 @@ void Cerrgg(const char *path, INTEGER const nunit) {
         chkxer("Cgglse", infot, nout, lerr, ok);
         nt += 8;
         //
-        //     Test error exits for the CSD path.
+        // Test error exits for the CSD path.
         //
     } else if (Mlsamen(3, path, "CSD")) {
         //
-        //        Cuncsd
+        // Cuncsd
         //
         strncpy(srnamt, "Cuncsd", srnamt_len);
         infot = 7;
@@ -459,11 +466,11 @@ void Cerrgg(const char *path, INTEGER const nunit) {
         chkxer("Cuncsd", infot, nout, lerr, ok);
         nt += 8;
         //
-        //     Test error exits for the GQR path.
+        // Test error exits for the GQR path.
         //
     } else if (Mlsamen(3, path, "GQR")) {
         //
-        //        Cggqrf
+        // Cggqrf
         //
         strncpy(srnamt, "Cggqrf", srnamt_len);
         infot = 1;
@@ -486,7 +493,7 @@ void Cerrgg(const char *path, INTEGER const nunit) {
         chkxer("Cggqrf", infot, nout, lerr, ok);
         nt += 6;
         //
-        //        Cggrqf
+        // Cggrqf
         //
         strncpy(srnamt, "Cggrqf", srnamt_len);
         infot = 1;
@@ -509,11 +516,11 @@ void Cerrgg(const char *path, INTEGER const nunit) {
         chkxer("Cggrqf", infot, nout, lerr, ok);
         nt += 6;
         //
-        //     Test error exits for the ZGS, ZGV, ZGX, and ZXV paths.
+        // Test error exits for the ZGS, ZGV, ZGX, and ZXV paths.
         //
     } else if (Mlsamen(3, path, "ZGS") || Mlsamen(3, path, "ZGV") || Mlsamen(3, path, "ZGX") || Mlsamen(3, path, "ZXV")) {
         //
-        //        Cgges
+        // Cgges
         //
         strncpy(srnamt, "Cgges", srnamt_len);
         infot = 1;
@@ -551,7 +558,7 @@ void Cerrgg(const char *path, INTEGER const nunit) {
         chkxer("Cgges ", infot, nout, lerr, ok);
         nt += 11;
         //
-        //        Cgges3
+        // Cgges3
         //
         strncpy(srnamt, "Cgges3", srnamt_len);
         infot = 1;
@@ -589,7 +596,7 @@ void Cerrgg(const char *path, INTEGER const nunit) {
         chkxer("Cgges3", infot, nout, lerr, ok);
         nt += 11;
         //
-        //        Cggesx
+        // Cggesx
         //
         strncpy(srnamt, "Cggesx", srnamt_len);
         infot = 1;
@@ -633,7 +640,7 @@ void Cerrgg(const char *path, INTEGER const nunit) {
         chkxer("Cggesx", infot, nout, lerr, ok);
         nt += 13;
         //
-        //        Cggev
+        // Cggev
         //
         strncpy(srnamt, "Cggev", srnamt_len);
         infot = 1;
@@ -668,7 +675,7 @@ void Cerrgg(const char *path, INTEGER const nunit) {
         chkxer("Cggev ", infot, nout, lerr, ok);
         nt += 10;
         //
-        //        Cggev3
+        // Cggev3
         //
         strncpy(srnamt, "Cggev3", srnamt_len);
         infot = 1;
@@ -703,7 +710,7 @@ void Cerrgg(const char *path, INTEGER const nunit) {
         chkxer("Cggev3", infot, nout, lerr, ok);
         nt += 10;
         //
-        //        Cggevx
+        // Cggevx
         //
         strncpy(srnamt, "Cggevx", srnamt_len);
         infot = 1;
@@ -744,7 +751,7 @@ void Cerrgg(const char *path, INTEGER const nunit) {
         chkxer("Cggevx", infot, nout, lerr, ok);
         nt += 12;
         //
-        //        Ctgexc
+        // Ctgexc
         //
         strncpy(srnamt, "Ctgexc", srnamt_len);
         infot = 3;
@@ -770,7 +777,7 @@ void Cerrgg(const char *path, INTEGER const nunit) {
         chkxer("Ctgexc", infot, nout, lerr, ok);
         nt += 7;
         //
-        //        Ctgsen
+        // Ctgsen
         //
         strncpy(srnamt, "Ctgsen", srnamt_len);
         infot = 1;
@@ -805,7 +812,7 @@ void Cerrgg(const char *path, INTEGER const nunit) {
         chkxer("Ctgsen", infot, nout, lerr, ok);
         nt += 11;
         //
-        //        Ctgsna
+        // Ctgsna
         //
         strncpy(srnamt, "Ctgsna", srnamt_len);
         infot = 1;
@@ -837,7 +844,7 @@ void Cerrgg(const char *path, INTEGER const nunit) {
         chkxer("Ctgsna", infot, nout, lerr, ok);
         nt += 9;
         //
-        //        Ctgsyl
+        // Ctgsyl
         //
         strncpy(srnamt, "Ctgsyl", srnamt_len);
         infot = 1;
@@ -879,7 +886,7 @@ void Cerrgg(const char *path, INTEGER const nunit) {
         nt += 12;
     }
     //
-    //     Print a summary line.
+    // Print a summary line.
     //
     if (ok) {
         write(nout, "(1x,a3,' routines passed the tests of the error exits (',i3,"
@@ -889,6 +896,6 @@ void Cerrgg(const char *path, INTEGER const nunit) {
         write(nout, "(' *** ',a3,' routines failed the tests of the error ','exits ***')"), path;
     }
     //
-    //     End of Cerrgg
+    // End of Cerrgg
     //
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,36 +26,20 @@
  *
  */
 
+// Derived from LAPACK routine DSYTRI2X.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Rsytri2x(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INTEGER *ipiv, REAL *work, INTEGER const nb, INTEGER &info) {
+    INTEGER ldwork = n + nb + 1;
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     bool upper = Mlsame(uplo, "U");
@@ -67,7 +51,7 @@ void Rsytri2x(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INT
         info = -4;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (info != 0) {
         Mxerbla("Rsytri2x", -info);
@@ -77,18 +61,18 @@ void Rsytri2x(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INT
         return;
     }
     //
-    //     Convert A
-    //     Workspace got Non-diag elements of D
+    // Convert A
+    // Workspace got Non-diag elements of D
     //
     INTEGER iinfo = 0;
     Rsyconv(uplo, "C", n, a, lda, ipiv, work, iinfo);
     //
-    //     Check that the diagonal matrix D is nonsingular.
+    // Check that the diagonal matrix D is nonsingular.
     //
     const REAL zero = 0.0;
     if (upper) {
         //
-        //        Upper triangular storage: examine D from bottom to top
+        // Upper triangular storage: examine D from bottom to top
         //
         for (info = n; info >= 1; info = info - 1) {
             if (ipiv[info - 1] > 0 && a[(info - 1) + (info - 1) * lda] == zero) {
@@ -97,7 +81,7 @@ void Rsytri2x(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INT
         }
     } else {
         //
-        //        Lower triangular storage: examine D from top to bottom.
+        // Lower triangular storage: examine D from top to bottom.
         //
         for (info = 1; info <= n; info = info + 1) {
             if (ipiv[info - 1] > 0 && a[(info - 1) + (info - 1) * lda] == zero) {
@@ -107,14 +91,14 @@ void Rsytri2x(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INT
     }
     info = 0;
     //
-    //  Splitting Workspace
-    //     U01 is a block (N,NB+1)
-    //     The first element of U01 is in WORK(1,1)
-    //     U11 is a block (NB+1,NB+1)
-    //     The first element of U11 is in WORK(N+1,1)
+    // Splitting Workspace
+    // U01 is a block (N,NB+1)
+    // The first element of U01 is in WORK(1,1)
+    // U11 is a block (NB+1,NB+1)
+    // The first element of U11 is in WORK(N+1,1)
     INTEGER u11 = n;
-    //     INVD is a block (N,2)
-    //     The first element of INVD is in WORK(1,INVD)
+    // INVD is a block (N,2)
+    // The first element of INVD is in WORK(1,INVD)
     INTEGER invd = nb + 2;
     //
     INTEGER k = 0;
@@ -133,25 +117,24 @@ void Rsytri2x(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INT
     REAL u01_ip1_j = 0.0;
     REAL u11_i_j = 0.0;
     REAL u11_ip1_j = 0.0;
-    INTEGER ldwork = n + nb + 1;
     INTEGER ip = 0;
     if (upper) {
         //
-        //        invA = P * inv(U**T)*inv(D)*inv(U)*P**T.
+        // invA = P * inv(U**T)*inv(D)*inv(U)*P**T.
         //
         Rtrtri(uplo, "U", n, a, lda, info);
         //
-        //       inv(D) and inv(D)*inv(U)
+        // inv(D) and inv(D)*inv(U)
         //
         k = 1;
         while (k <= n) {
             if (ipiv[k - 1] > 0) {
-                //           1 x 1 diagonal NNB
+                // 1 x 1 diagonal NNB
                 work[(k - 1) + (invd - 1) * ldwork] = one / a[(k - 1) + (k - 1) * lda];
                 work[(k - 1) + ((invd + 1) - 1) * ldwork] = 0.0;
                 k++;
             } else {
-                //           2 x 2 diagonal NNB
+                // 2 x 2 diagonal NNB
                 t = work[((k + 1) - 1)];
                 ak = a[(k - 1) + (k - 1) * lda] / t;
                 akp1 = a[((k + 1) - 1) + ((k + 1) - 1) * lda] / t;
@@ -165,9 +148,9 @@ void Rsytri2x(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INT
             }
         }
         //
-        //       inv(U**T) = (inv(U))**T
+        // inv(U**T) = (inv(U))**T
         //
-        //       inv(U**T)*inv(D)*inv(U)
+        // inv(U**T)*inv(D)*inv(U)
         //
         cut = n;
         while (cut > 0) {
@@ -176,13 +159,13 @@ void Rsytri2x(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INT
                 nnb = cut;
             } else {
                 count = 0;
-                //             count negative elements,
+                // count negative elements,
                 for (i = cut + 1 - nnb; i <= cut; i = i + 1) {
                     if (ipiv[i - 1] < 0) {
                         count++;
                     }
                 }
-                //             need a even number for a clear cut
+                // need a even number for a clear cut
                 if (mod(count, 2) == 1) {
                     nnb++;
                 }
@@ -190,7 +173,7 @@ void Rsytri2x(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INT
             //
             cut = cut - nnb;
             //
-            //          U01 Block
+            // U01 Block
             //
             for (i = 1; i <= cut; i = i + 1) {
                 for (j = 1; j <= nnb; j = j + 1) {
@@ -198,7 +181,7 @@ void Rsytri2x(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INT
                 }
             }
             //
-            //          U11 Block
+            // U11 Block
             //
             for (i = 1; i <= nnb; i = i + 1) {
                 work[((u11 + i) - 1) + (i - 1) * ldwork] = one;
@@ -210,7 +193,7 @@ void Rsytri2x(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INT
                 }
             }
             //
-            //          invD*U01
+            // invD*U01
             //
             i = 1;
             while (i <= cut) {
@@ -230,7 +213,7 @@ void Rsytri2x(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INT
                 }
             }
             //
-            //        invD1*U11
+            // invD1*U11
             //
             i = 1;
             while (i <= nnb) {
@@ -250,7 +233,7 @@ void Rsytri2x(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INT
                 }
             }
             //
-            //       U11**T*invD1*U11->U11
+            // U11**T*invD1*U11->U11
             //
             Rtrmm("L", "U", "T", "U", nnb, nnb, one, &a[((cut + 1) - 1) + ((cut + 1) - 1) * lda], lda, &work[((u11 + 1) - 1)], n + nb + 1);
             //
@@ -260,11 +243,11 @@ void Rsytri2x(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INT
                 }
             }
             //
-            //          U01**T*invD*U01->A(CUT+I,CUT+J)
+            // U01**T*invD*U01->A(CUT+I,CUT+J)
             //
             Rgemm("T", "N", nnb, nnb, cut, one, &a[((cut + 1) - 1) * lda], lda, work, n + nb + 1, zero, &work[((u11 + 1) - 1)], n + nb + 1);
             //
-            //        U11 =  U11**T*invD1*U11 + U01**T*invD*U01
+            // U11 =  U11**T*invD1*U11 + U01**T*invD*U01
             //
             for (i = 1; i <= nnb; i = i + 1) {
                 for (j = i; j <= nnb; j = j + 1) {
@@ -272,11 +255,11 @@ void Rsytri2x(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INT
                 }
             }
             //
-            //        U01 =  U00**T*invD0*U01
+            // U01 =  U00**T*invD0*U01
             //
             Rtrmm("L", uplo, "T", "U", cut, nnb, one, a, lda, work, n + nb + 1);
             //
-            //        Update U01
+            // Update U01
             //
             for (i = 1; i <= cut; i = i + 1) {
                 for (j = 1; j <= nnb; j = j + 1) {
@@ -284,11 +267,11 @@ void Rsytri2x(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INT
                 }
             }
             //
-            //      Next Block
+            // Next Block
             //
         }
         //
-        //        Apply PERMUTATIONS P and P**T: P * inv(U**T)*inv(D)*inv(U) *P**T
+        // Apply PERMUTATIONS P and P**T: P * inv(U**T)*inv(D)*inv(U) *P**T
         //
         i = 1;
         while (i <= n) {
@@ -314,23 +297,23 @@ void Rsytri2x(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INT
         }
     } else {
         //
-        //        LOWER...
+        // LOWER...
         //
-        //        invA = P * inv(U**T)*inv(D)*inv(U)*P**T.
+        // invA = P * inv(U**T)*inv(D)*inv(U)*P**T.
         //
         Rtrtri(uplo, "U", n, a, lda, info);
         //
-        //       inv(D) and inv(D)*inv(U)
+        // inv(D) and inv(D)*inv(U)
         //
         k = n;
         while (k >= 1) {
             if (ipiv[k - 1] > 0) {
-                //           1 x 1 diagonal NNB
+                // 1 x 1 diagonal NNB
                 work[(k - 1) + (invd - 1) * ldwork] = one / a[(k - 1) + (k - 1) * lda];
                 work[(k - 1) + ((invd + 1) - 1) * ldwork] = 0.0;
                 k = k - 1;
             } else {
-                //           2 x 2 diagonal NNB
+                // 2 x 2 diagonal NNB
                 t = work[((k - 1) - 1)];
                 ak = a[((k - 1) - 1) + ((k - 1) - 1) * lda] / t;
                 akp1 = a[(k - 1) + (k - 1) * lda] / t;
@@ -344,9 +327,9 @@ void Rsytri2x(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INT
             }
         }
         //
-        //       inv(U**T) = (inv(U))**T
+        // inv(U**T) = (inv(U))**T
         //
-        //       inv(U**T)*inv(D)*inv(U)
+        // inv(U**T)*inv(D)*inv(U)
         //
         cut = 0;
         while (cut < n) {
@@ -355,24 +338,24 @@ void Rsytri2x(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INT
                 nnb = n - cut;
             } else {
                 count = 0;
-                //             count negative elements,
+                // count negative elements,
                 for (i = cut + 1; i <= cut + nnb; i = i + 1) {
                     if (ipiv[i - 1] < 0) {
                         count++;
                     }
                 }
-                //             need a even number for a clear cut
+                // need a even number for a clear cut
                 if (mod(count, 2) == 1) {
                     nnb++;
                 }
             }
-            //     L21 Block
+            // L21 Block
             for (i = 1; i <= n - cut - nnb; i = i + 1) {
                 for (j = 1; j <= nnb; j = j + 1) {
                     work[(i - 1) + (j - 1) * ldwork] = a[((cut + nnb + i) - 1) + ((cut + j) - 1) * lda];
                 }
             }
-            //     L11 Block
+            // L11 Block
             for (i = 1; i <= nnb; i = i + 1) {
                 work[((u11 + i) - 1) + (i - 1) * ldwork] = one;
                 for (j = i + 1; j <= nnb; j = j + 1) {
@@ -383,7 +366,7 @@ void Rsytri2x(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INT
                 }
             }
             //
-            //          invD*L21
+            // invD*L21
             //
             i = n - cut - nnb;
             while (i >= 1) {
@@ -403,7 +386,7 @@ void Rsytri2x(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INT
                 }
             }
             //
-            //        invD1*L11
+            // invD1*L11
             //
             i = nnb;
             while (i >= 1) {
@@ -423,7 +406,7 @@ void Rsytri2x(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INT
                 }
             }
             //
-            //       L11**T*invD1*L11->L11
+            // L11**T*invD1*L11->L11
             //
             Rtrmm("L", uplo, "T", "U", nnb, nnb, one, &a[((cut + 1) - 1) + ((cut + 1) - 1) * lda], lda, &work[((u11 + 1) - 1)], n + nb + 1);
             //
@@ -435,11 +418,11 @@ void Rsytri2x(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INT
             //
             if ((cut + nnb) < n) {
                 //
-                //          L21**T*invD2*L21->A(CUT+I,CUT+J)
+                // L21**T*invD2*L21->A(CUT+I,CUT+J)
                 //
                 Rgemm("T", "N", nnb, nnb, n - nnb - cut, one, &a[((cut + nnb + 1) - 1) + ((cut + 1) - 1) * lda], lda, work, n + nb + 1, zero, &work[((u11 + 1) - 1)], n + nb + 1);
                 //
-                //        L11 =  L11**T*invD1*L11 + U01**T*invD*U01
+                // L11 =  L11**T*invD1*L11 + U01**T*invD*U01
                 //
                 for (i = 1; i <= nnb; i = i + 1) {
                     for (j = 1; j <= i; j = j + 1) {
@@ -447,11 +430,11 @@ void Rsytri2x(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INT
                     }
                 }
                 //
-                //        L01 =  L22**T*invD2*L21
+                // L01 =  L22**T*invD2*L21
                 //
                 Rtrmm("L", uplo, "T", "U", n - nnb - cut, nnb, one, &a[((cut + nnb + 1) - 1) + ((cut + nnb + 1) - 1) * lda], lda, work, n + nb + 1);
                 //
-                //      Update L21
+                // Update L21
                 //
                 for (i = 1; i <= n - cut - nnb; i = i + 1) {
                     for (j = 1; j <= nnb; j = j + 1) {
@@ -461,7 +444,7 @@ void Rsytri2x(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INT
                 //
             } else {
                 //
-                //        L11 =  L11**T*invD1*L11
+                // L11 =  L11**T*invD1*L11
                 //
                 for (i = 1; i <= nnb; i = i + 1) {
                     for (j = 1; j <= i; j = j + 1) {
@@ -470,12 +453,12 @@ void Rsytri2x(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INT
                 }
             }
             //
-            //      Next Block
+            // Next Block
             //
             cut += nnb;
         }
         //
-        //        Apply PERMUTATIONS P and P**T: P * inv(U**T)*inv(D)*inv(U) *P**T
+        // Apply PERMUTATIONS P and P**T: P * inv(U**T)*inv(D)*inv(U) *P**T
         //
         i = n;
         while (i >= 1) {
@@ -501,6 +484,6 @@ void Rsytri2x(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INT
         }
     }
     //
-    //     End of Rsytri2x
+    // End of Rsytri2x
     //
 }

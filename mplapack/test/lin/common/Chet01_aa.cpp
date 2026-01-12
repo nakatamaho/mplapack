@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZHET01_AA.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -38,30 +45,7 @@ using fem::common;
 
 void Chet01_aa(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *afac, INTEGER const ldafac, INTEGER *ipiv, COMPLEX *c, INTEGER const ldc, REAL *rwork, REAL &resid) {
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Quick exit if N = 0.
+    // Quick exit if N = 0.
     //
     const REAL zero = 0.0;
     if (n <= 0) {
@@ -69,12 +53,12 @@ void Chet01_aa(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda,
         return;
     }
     //
-    //     Determine EPS and the norm of A.
+    // Determine EPS and the norm of A.
     //
     REAL eps = Rlamch("Epsilon");
     REAL anorm = Clanhe("1", uplo, n, a, lda, rwork);
     //
-    //     Initialize C to the tridiagonal matrix T.
+    // Initialize C to the tridiagonal matrix T.
     //
     const COMPLEX czero = COMPLEX(0.0, 0.0);
     Claset("Full", n, n, czero, czero, c, ldc);
@@ -93,7 +77,7 @@ void Chet01_aa(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda,
             Clacgv(n - 1, &c[(1 - 1) + (2 - 1) * ldc], ldc + 1);
         }
         //
-        //        Call Ctrmm to form the product U' * D (or L * D ).
+        // Call Ctrmm to form the product U' * D (or L * D ).
         //
         if (Mlsame(uplo, "U")) {
             Ctrmm("Left", uplo, "Conjugate transpose", "Unit", n - 1, n, cone, &afac[(1 - 1) + (2 - 1) * ldafac], ldafac, &c[(2 - 1)], ldc);
@@ -101,7 +85,7 @@ void Chet01_aa(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda,
             Ctrmm("Left", uplo, "No transpose", "Unit", n - 1, n, cone, &afac[(2 - 1)], ldafac, &c[(2 - 1)], ldc);
         }
         //
-        //        Call Ctrmm again to multiply by U (or L ).
+        // Call Ctrmm again to multiply by U (or L ).
         //
         if (Mlsame(uplo, "U")) {
             Ctrmm("Right", uplo, "No transpose", "Unit", n, n - 1, cone, &afac[(1 - 1) + (2 - 1) * ldafac], ldafac, &c[(1 - 1) + (2 - 1) * ldc], ldc);
@@ -109,7 +93,7 @@ void Chet01_aa(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda,
             Ctrmm("Right", uplo, "Conjugate transpose", "Unit", n, n - 1, cone, &afac[(2 - 1)], ldafac, &c[(1 - 1) + (2 - 1) * ldc], ldc);
         }
         //
-        //        Apply hermitian pivots
+        // Apply hermitian pivots
         //
         for (j = n; j >= 1; j = j - 1) {
             i = ipiv[j - 1];
@@ -125,7 +109,7 @@ void Chet01_aa(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda,
         }
     }
     //
-    //     Compute the difference  C - A .
+    // Compute the difference  C - A .
     //
     if (Mlsame(uplo, "U")) {
         for (j = 1; j <= n; j = j + 1) {
@@ -141,7 +125,7 @@ void Chet01_aa(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda,
         }
     }
     //
-    //     Compute norm( C - A ) / ( N * norm(A) * EPS )
+    // Compute norm( C - A ) / ( N * norm(A) * EPS )
     //
     resid = Clanhe("1", uplo, n, c, ldc, rwork);
     //
@@ -154,6 +138,6 @@ void Chet01_aa(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda,
         resid = ((resid / castREAL(n)) / anorm) / eps;
     }
     //
-    //     End of Chet01_aa
+    // End of Chet01_aa
     //
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZHBT21.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -40,30 +47,7 @@ using fem::common;
 
 void Chbt21(const char *uplo, INTEGER const n, INTEGER const ka, INTEGER const ks, COMPLEX *a, INTEGER const lda, REAL *d, REAL *e, COMPLEX *u, INTEGER const ldu, COMPLEX *work, REAL *rwork, REAL *result) {
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Constants
+    // Constants
     //
     const REAL zero = 0.0;
     result[1 - 1] = zero;
@@ -87,17 +71,17 @@ void Chbt21(const char *uplo, INTEGER const n, INTEGER const ka, INTEGER const k
     REAL unfl = Rlamch("Safe minimum");
     REAL ulp = Rlamch("Epsilon") * Rlamch("Base");
     //
-    //     Some Error Checks
+    // Some Error Checks
     //
-    //     Do Test 1
+    // Do Test 1
     //
-    //     Norm of A:
+    // Norm of A:
     //
     REAL anorm = max({Clanhb("1", &cuplo, n, ika, a, lda, rwork), unfl});
     //
-    //     Compute error matrix:    Error = A - U S U**H
+    // Compute error matrix:    Error = A - U S U**H
     //
-    //     Copy A from SB to SP storage format.
+    // Copy A from SB to SP storage format.
     //
     INTEGER j = 0;
     INTEGER jc = 0;
@@ -146,9 +130,9 @@ void Chbt21(const char *uplo, INTEGER const n, INTEGER const ka, INTEGER const k
         }
     }
     //
-    //     Do Test 2
+    // Do Test 2
     //
-    //     Compute  U U**H - I
+    // Compute  U U**H - I
     //
     const COMPLEX cone = COMPLEX(1.0, 0.0);
     const COMPLEX czero = COMPLEX(0.0, 0.0);
@@ -160,6 +144,6 @@ void Chbt21(const char *uplo, INTEGER const n, INTEGER const ka, INTEGER const k
     //
     result[2 - 1] = min(Clange("1", n, n, work, n, rwork), castREAL(n)) / (n * ulp);
     //
-    //     End of Chbt21
+    // End of Chbt21
     //
 }

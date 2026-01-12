@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,10 +26,17 @@
  *
  */
 
+// Derived from LAPACK routine DLAEBZ.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rlaebz(INTEGER const ijob, INTEGER const nitmax, INTEGER const n, INTEGER const mmax, INTEGER const minp, INTEGER const nbmin, REAL const abstol, REAL const reltol, REAL const pivmin, REAL *d, REAL *e, REAL *e2, INTEGER *nval, REAL *ab, REAL *c, INTEGER &mout, INTEGER *nab, REAL *work, INTEGER *iwork, INTEGER &info) {
+void Rlaebz(INTEGER const ijob, INTEGER const nitmax, INTEGER const n, INTEGER const mmax, INTEGER const minp, INTEGER const nbmin, REAL const abstol, REAL const reltol, REAL const pivmin, REAL *d, REAL * /* e */, REAL *e2, INTEGER *nval, REAL *ab, REAL *c, INTEGER &mout, INTEGER *nab, REAL *work, INTEGER *iwork, INTEGER &info) {
     INTEGER ji = 0;
     INTEGER jp = 0;
     REAL tmp1 = 0.0;
@@ -45,10 +52,8 @@ void Rlaebz(INTEGER const ijob, INTEGER const nitmax, INTEGER const n, INTEGER c
     INTEGER itmp1 = 0;
     INTEGER kfnew = 0;
     INTEGER itmp2 = 0;
-    INTEGER ldab = mmax;
-    INTEGER ldnab = mmax;
     //
-    //     Check for Errors
+    // Check for Errors
     //
     info = 0;
     if (ijob < 1 || ijob > 3) {
@@ -56,127 +61,127 @@ void Rlaebz(INTEGER const ijob, INTEGER const nitmax, INTEGER const n, INTEGER c
         return;
     }
     //
-    //     Initialize NAB
+    // Initialize NAB
     //
     if (ijob == 1) {
         //
-        //        Compute the number of eigenvalues in the initial intervals.
+        // Compute the number of eigenvalues in the initial intervals.
         //
         mout = 0;
         for (ji = 1; ji <= minp; ji = ji + 1) {
             for (jp = 1; jp <= 2; jp = jp + 1) {
-                tmp1 = d[1 - 1] - ab[(ji - 1) + (jp - 1) * ldab];
+                tmp1 = d[1 - 1] - ab[(ji - 1) + (jp - 1) * mmax];
                 if (abs(tmp1) < pivmin) {
                     tmp1 = -pivmin;
                 }
-                nab[(ji - 1) + (jp - 1) * ldnab] = 0;
+                nab[(ji - 1) + (jp - 1) * mmax] = 0;
                 if (tmp1 <= zero) {
-                    nab[(ji - 1) + (jp - 1) * ldnab] = 1;
+                    nab[(ji - 1) + (jp - 1) * mmax] = 1;
                 }
                 //
                 for (j = 2; j <= n; j = j + 1) {
-                    tmp1 = d[j - 1] - e2[(j - 1) - 1] / tmp1 - ab[(ji - 1) + (jp - 1) * ldab];
+                    tmp1 = d[j - 1] - e2[(j - 1) - 1] / tmp1 - ab[(ji - 1) + (jp - 1) * mmax];
                     if (abs(tmp1) < pivmin) {
                         tmp1 = -pivmin;
                     }
                     if (tmp1 <= zero) {
-                        nab[(ji - 1) + (jp - 1) * ldnab]++;
+                        nab[(ji - 1) + (jp - 1) * mmax]++;
                     }
                 }
             }
-            mout += nab[(ji - 1) + (2 - 1) * ldnab] - nab[(ji - 1)];
+            mout += nab[(ji - 1) + (2 - 1) * mmax] - nab[(ji - 1)];
         }
         return;
     }
     //
-    //     Initialize for loop
+    // Initialize for loop
     //
-    //     KF and KL have the following meaning:
-    //        Intervals 1,...,KF-1 have converged.
-    //        Intervals KF,...,KL  still need to be refined.
+    // KF and KL have the following meaning:
+    // Intervals 1,...,KF-1 have converged.
+    // Intervals KF,...,KL  still need to be refined.
     //
     kf = 1;
     kl = minp;
     //
-    //     If IJOB=2, initialize C.
-    //     If IJOB=3, use the user-supplied starting point.
+    // If IJOB=2, initialize C.
+    // If IJOB=3, use the user-supplied starting point.
     //
     if (ijob == 2) {
         for (ji = 1; ji <= minp; ji = ji + 1) {
-            c[ji - 1] = half * (ab[(ji - 1)] + ab[(ji - 1) + (2 - 1) * ldab]);
+            c[ji - 1] = half * (ab[(ji - 1)] + ab[(ji - 1) + (2 - 1) * mmax]);
         }
     }
     //
-    //     Iteration loop
+    // Iteration loop
     //
     for (jit = 1; jit <= nitmax; jit = jit + 1) {
         //
-        //        Loop over intervals
+        // Loop over intervals
         //
         if (kl - kf + 1 >= nbmin && nbmin > 0) {
             //
-            //           Begin of Parallel Version of the loop
+            // Begin of Parallel Version of the loop
             //
             for (ji = kf; ji <= kl; ji = ji + 1) {
                 //
-                //              Compute N(c), the number of eigenvalues less than c
+                // Compute N(c), the number of eigenvalues less than c
                 //
                 work[ji - 1] = d[1 - 1] - c[ji - 1];
                 iwork[ji - 1] = 0;
                 if (work[ji - 1] <= pivmin) {
                     iwork[ji - 1] = 1;
-                    work[ji - 1] = min(work[ji - 1], REAL(-pivmin));
+                    work[ji - 1] = min(work[ji - 1], -pivmin);
                 }
                 //
                 for (j = 2; j <= n; j = j + 1) {
                     work[ji - 1] = d[j - 1] - e2[(j - 1) - 1] / work[ji - 1] - c[ji - 1];
                     if (work[ji - 1] <= pivmin) {
                         iwork[ji - 1]++;
-                        work[ji - 1] = min(work[ji - 1], REAL(-pivmin));
+                        work[ji - 1] = min(work[ji - 1], -pivmin);
                     }
                 }
             }
             //
             if (ijob <= 2) {
                 //
-                //              IJOB=2: Choose all intervals containing eigenvalues.
+                // IJOB=2: Choose all intervals containing eigenvalues.
                 //
                 klnew = kl;
                 for (ji = kf; ji <= kl; ji = ji + 1) {
                     //
-                    //                 Insure that N(w) is monotone
+                    // Insure that N(w) is monotone
                     //
-                    iwork[ji - 1] = min({nab[(ji - 1) + (2 - 1) * ldnab], max(nab[(ji - 1)], iwork[ji - 1])});
+                    iwork[ji - 1] = min(nab[(ji - 1) + (2 - 1) * mmax], max(nab[(ji - 1)], iwork[ji - 1]));
                     //
-                    //                 Update the Queue -- add intervals if both halves
-                    //                 contain eigenvalues.
+                    // Update the Queue -- add intervals if both halves
+                    // contain eigenvalues.
                     //
-                    if (iwork[ji - 1] == nab[(ji - 1) + (2 - 1) * ldnab]) {
+                    if (iwork[ji - 1] == nab[(ji - 1) + (2 - 1) * mmax]) {
                         //
-                        //                    No eigenvalue in the upper interval:
-                        //                    just use the lower interval.
+                        // No eigenvalue in the upper interval:
+                        // just use the lower interval.
                         //
-                        ab[(ji - 1) + (2 - 1) * ldab] = c[ji - 1];
+                        ab[(ji - 1) + (2 - 1) * mmax] = c[ji - 1];
                         //
                     } else if (iwork[ji - 1] == nab[(ji - 1)]) {
                         //
-                        //                    No eigenvalue in the lower interval:
-                        //                    just use the upper interval.
+                        // No eigenvalue in the lower interval:
+                        // just use the upper interval.
                         //
                         ab[(ji - 1)] = c[ji - 1];
                     } else {
                         klnew++;
                         if (klnew <= mmax) {
                             //
-                            //                       Eigenvalue in both intervals -- add upper to
-                            //                       queue.
+                            // Eigenvalue in both intervals -- add upper to
+                            // queue.
                             //
-                            ab[(klnew - 1) + (2 - 1) * ldab] = ab[(ji - 1) + (2 - 1) * ldab];
-                            nab[(klnew - 1) + (2 - 1) * ldnab] = nab[(ji - 1) + (2 - 1) * ldnab];
+                            ab[(klnew - 1) + (2 - 1) * mmax] = ab[(ji - 1) + (2 - 1) * mmax];
+                            nab[(klnew - 1) + (2 - 1) * mmax] = nab[(ji - 1) + (2 - 1) * mmax];
                             ab[(klnew - 1)] = c[ji - 1];
                             nab[(klnew - 1)] = iwork[ji - 1];
-                            ab[(ji - 1) + (2 - 1) * ldab] = c[ji - 1];
-                            nab[(ji - 1) + (2 - 1) * ldnab] = iwork[ji - 1];
+                            ab[(ji - 1) + (2 - 1) * mmax] = c[ji - 1];
+                            nab[(ji - 1) + (2 - 1) * mmax] = iwork[ji - 1];
                         } else {
                             info = mmax + 1;
                         }
@@ -188,8 +193,8 @@ void Rlaebz(INTEGER const ijob, INTEGER const nitmax, INTEGER const n, INTEGER c
                 kl = klnew;
             } else {
                 //
-                //              IJOB=3: Binary search.  Keep only the interval containing
-                //                      w   s.t. N(w) = NVAL
+                // IJOB=3: Binary search.  Keep only the interval containing
+                // w   s.t. N(w) = NVAL
                 //
                 for (ji = kf; ji <= kl; ji = ji + 1) {
                     if (iwork[ji - 1] <= nval[ji - 1]) {
@@ -197,90 +202,90 @@ void Rlaebz(INTEGER const ijob, INTEGER const nitmax, INTEGER const n, INTEGER c
                         nab[(ji - 1)] = iwork[ji - 1];
                     }
                     if (iwork[ji - 1] >= nval[ji - 1]) {
-                        ab[(ji - 1) + (2 - 1) * ldab] = c[ji - 1];
-                        nab[(ji - 1) + (2 - 1) * ldnab] = iwork[ji - 1];
+                        ab[(ji - 1) + (2 - 1) * mmax] = c[ji - 1];
+                        nab[(ji - 1) + (2 - 1) * mmax] = iwork[ji - 1];
                     }
                 }
             }
             //
         } else {
             //
-            //           End of Parallel Version of the loop
+            // End of Parallel Version of the loop
             //
-            //           Begin of Serial Version of the loop
+            // Begin of Serial Version of the loop
             //
             klnew = kl;
             for (ji = kf; ji <= kl; ji = ji + 1) {
                 //
-                //              Compute N(w), the number of eigenvalues less than w
+                // Compute N(w), the number of eigenvalues less than w
                 //
                 tmp1 = c[ji - 1];
                 tmp2 = d[1 - 1] - tmp1;
                 itmp1 = 0;
                 if (tmp2 <= pivmin) {
                     itmp1 = 1;
-                    tmp2 = min(tmp2, REAL(-pivmin));
+                    tmp2 = min(tmp2, -pivmin);
                 }
                 //
                 for (j = 2; j <= n; j = j + 1) {
                     tmp2 = d[j - 1] - e2[(j - 1) - 1] / tmp2 - tmp1;
                     if (tmp2 <= pivmin) {
                         itmp1++;
-                        tmp2 = min(tmp2, REAL(-pivmin));
+                        tmp2 = min(tmp2, -pivmin);
                     }
                 }
                 //
                 if (ijob <= 2) {
                     //
-                    //                 IJOB=2: Choose all intervals containing eigenvalues.
+                    // IJOB=2: Choose all intervals containing eigenvalues.
                     //
-                    //                 Insure that N(w) is monotone
+                    // Insure that N(w) is monotone
                     //
-                    itmp1 = min({nab[(ji - 1) + (2 - 1) * ldnab], max(nab[(ji - 1)], itmp1)});
+                    itmp1 = min(nab[(ji - 1) + (2 - 1) * mmax], max(nab[(ji - 1)], itmp1));
                     //
-                    //                 Update the Queue -- add intervals if both halves
-                    //                 contain eigenvalues.
+                    // Update the Queue -- add intervals if both halves
+                    // contain eigenvalues.
                     //
-                    if (itmp1 == nab[(ji - 1) + (2 - 1) * ldnab]) {
+                    if (itmp1 == nab[(ji - 1) + (2 - 1) * mmax]) {
                         //
-                        //                    No eigenvalue in the upper interval:
-                        //                    just use the lower interval.
+                        // No eigenvalue in the upper interval:
+                        // just use the lower interval.
                         //
-                        ab[(ji - 1) + (2 - 1) * ldab] = tmp1;
+                        ab[(ji - 1) + (2 - 1) * mmax] = tmp1;
                         //
                     } else if (itmp1 == nab[(ji - 1)]) {
                         //
-                        //                    No eigenvalue in the lower interval:
-                        //                    just use the upper interval.
+                        // No eigenvalue in the lower interval:
+                        // just use the upper interval.
                         //
                         ab[(ji - 1)] = tmp1;
                     } else if (klnew < mmax) {
                         //
-                        //                    Eigenvalue in both intervals -- add upper to queue.
+                        // Eigenvalue in both intervals -- add upper to queue.
                         //
                         klnew++;
-                        ab[(klnew - 1) + (2 - 1) * ldab] = ab[(ji - 1) + (2 - 1) * ldab];
-                        nab[(klnew - 1) + (2 - 1) * ldnab] = nab[(ji - 1) + (2 - 1) * ldnab];
+                        ab[(klnew - 1) + (2 - 1) * mmax] = ab[(ji - 1) + (2 - 1) * mmax];
+                        nab[(klnew - 1) + (2 - 1) * mmax] = nab[(ji - 1) + (2 - 1) * mmax];
                         ab[(klnew - 1)] = tmp1;
                         nab[(klnew - 1)] = itmp1;
-                        ab[(ji - 1) + (2 - 1) * ldab] = tmp1;
-                        nab[(ji - 1) + (2 - 1) * ldnab] = itmp1;
+                        ab[(ji - 1) + (2 - 1) * mmax] = tmp1;
+                        nab[(ji - 1) + (2 - 1) * mmax] = itmp1;
                     } else {
                         info = mmax + 1;
                         return;
                     }
                 } else {
                     //
-                    //                 IJOB=3: Binary search.  Keep only the interval
-                    //                         containing  w  s.t. N(w) = NVAL
+                    // IJOB=3: Binary search.  Keep only the interval
+                    // containing  w  s.t. N(w) = NVAL
                     //
                     if (itmp1 <= nval[ji - 1]) {
                         ab[(ji - 1)] = tmp1;
                         nab[(ji - 1)] = itmp1;
                     }
                     if (itmp1 >= nval[ji - 1]) {
-                        ab[(ji - 1) + (2 - 1) * ldab] = tmp1;
-                        nab[(ji - 1) + (2 - 1) * ldnab] = itmp1;
+                        ab[(ji - 1) + (2 - 1) * mmax] = tmp1;
+                        nab[(ji - 1) + (2 - 1) * mmax] = itmp1;
                     }
                 }
             }
@@ -288,30 +293,30 @@ void Rlaebz(INTEGER const ijob, INTEGER const nitmax, INTEGER const n, INTEGER c
             //
         }
         //
-        //        Check for convergence
+        // Check for convergence
         //
         kfnew = kf;
         for (ji = kf; ji <= kl; ji = ji + 1) {
-            tmp1 = abs(ab[(ji - 1) + (2 - 1) * ldab] - ab[(ji - 1)]);
-            tmp2 = max(abs(ab[(ji - 1) + (2 - 1) * ldab]), abs(ab[(ji - 1)]));
-            if (tmp1 < max({abstol, pivmin, REAL(reltol * tmp2)}) || nab[(ji - 1)] >= nab[(ji - 1) + (2 - 1) * ldnab]) {
+            tmp1 = abs(ab[(ji - 1) + (2 - 1) * mmax] - ab[(ji - 1)]);
+            tmp2 = max(abs(ab[(ji - 1) + (2 - 1) * mmax]), abs(ab[(ji - 1)]));
+            if (tmp1 < max(abstol, pivmin, reltol * tmp2) || nab[(ji - 1)] >= nab[(ji - 1) + (2 - 1) * mmax]) {
                 //
-                //              Converged -- Swap with position KFNEW,
-                //                           then increment KFNEW
+                // Converged -- Swap with position KFNEW,
+                // then increment KFNEW
                 //
                 if (ji > kfnew) {
                     tmp1 = ab[(ji - 1)];
-                    tmp2 = ab[(ji - 1) + (2 - 1) * ldab];
+                    tmp2 = ab[(ji - 1) + (2 - 1) * mmax];
                     itmp1 = nab[(ji - 1)];
-                    itmp2 = nab[(ji - 1) + (2 - 1) * ldnab];
+                    itmp2 = nab[(ji - 1) + (2 - 1) * mmax];
                     ab[(ji - 1)] = ab[(kfnew - 1)];
-                    ab[(ji - 1) + (2 - 1) * ldab] = ab[(kfnew - 1) + (2 - 1) * ldab];
+                    ab[(ji - 1) + (2 - 1) * mmax] = ab[(kfnew - 1) + (2 - 1) * mmax];
                     nab[(ji - 1)] = nab[(kfnew - 1)];
-                    nab[(ji - 1) + (2 - 1) * ldnab] = nab[(kfnew - 1) + (2 - 1) * ldnab];
+                    nab[(ji - 1) + (2 - 1) * mmax] = nab[(kfnew - 1) + (2 - 1) * mmax];
                     ab[(kfnew - 1)] = tmp1;
-                    ab[(kfnew - 1) + (2 - 1) * ldab] = tmp2;
+                    ab[(kfnew - 1) + (2 - 1) * mmax] = tmp2;
                     nab[(kfnew - 1)] = itmp1;
-                    nab[(kfnew - 1) + (2 - 1) * ldnab] = itmp2;
+                    nab[(kfnew - 1) + (2 - 1) * mmax] = itmp2;
                     if (ijob == 3) {
                         itmp1 = nval[ji - 1];
                         nval[ji - 1] = nval[kfnew - 1];
@@ -323,25 +328,25 @@ void Rlaebz(INTEGER const ijob, INTEGER const nitmax, INTEGER const n, INTEGER c
         }
         kf = kfnew;
         //
-        //        Choose Midpoints
+        // Choose Midpoints
         //
         for (ji = kf; ji <= kl; ji = ji + 1) {
-            c[ji - 1] = half * (ab[(ji - 1)] + ab[(ji - 1) + (2 - 1) * ldab]);
+            c[ji - 1] = half * (ab[(ji - 1)] + ab[(ji - 1) + (2 - 1) * mmax]);
         }
         //
-        //        If no more intervals to refine, quit.
+        // If no more intervals to refine, quit.
         //
         if (kf > kl) {
             goto statement_140;
         }
     }
 //
-//     Converged
+// Converged
 //
 statement_140:
     info = max(kl + 1 - kf, (INTEGER)0);
     mout = kl;
     //
-    //     End of Rlaebz
+    // End of Rlaebz
     //
 }

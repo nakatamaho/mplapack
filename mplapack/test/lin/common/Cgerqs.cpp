@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZGERQS.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -38,26 +45,7 @@ using fem::common;
 
 void Cgerqs(INTEGER const m, INTEGER const n, INTEGER const nrhs, COMPLEX *a, INTEGER const lda, COMPLEX *tau, COMPLEX *b, INTEGER const ldb, COMPLEX *work, INTEGER const lwork, INTEGER &info) {
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     if (m < 0) {
@@ -78,26 +66,26 @@ void Cgerqs(INTEGER const m, INTEGER const n, INTEGER const nrhs, COMPLEX *a, IN
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0 || nrhs == 0 || m == 0) {
         return;
     }
     //
-    //     Solve R*X = B(n-m+1:n,:)
+    // Solve R*X = B(n-m+1:n,:)
     //
     const COMPLEX cone = COMPLEX(1.0, 0.0);
     Ctrsm("Left", "Upper", "No transpose", "Non-unit", m, nrhs, cone, &a[((n - m + 1) - 1) * lda], lda, &b[((n - m + 1) - 1)], ldb);
     //
-    //     Set B(1:n-m,:) to zero
+    // Set B(1:n-m,:) to zero
     //
     const COMPLEX czero = COMPLEX(0.0, 0.0);
     Claset("Full", n - m, nrhs, czero, czero, b, ldb);
     //
-    //     B := Q' * B
+    // B := Q' * B
     //
     Cunmrq("Left", "Conjugate transpose", n, nrhs, m, a, lda, tau, b, ldb, work, lwork, info);
     //
-    //     End of Cgerqs
+    // End of Cgerqs
     //
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ALASVM.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -42,17 +49,6 @@ void Alasvm(const char *type, INTEGER const nout, INTEGER const nfail, INTEGER c
     common cmn;
     common_write write(cmn);
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Executable Statements ..
-    //
     if (nfail > 0) {
         write(nout, "(1x,a3,' drivers: ',i6,' out of ',i6,"
                     "' tests failed to pass the threshold')"),
@@ -66,6 +62,6 @@ void Alasvm(const char *type, INTEGER const nout, INTEGER const nfail, INTEGER c
         write(nout, "(14x,i6,' error messages recorded')"), nerrs;
     }
     //
-    //     End of Alasvm
+    // End of Alasvm
     //
 }

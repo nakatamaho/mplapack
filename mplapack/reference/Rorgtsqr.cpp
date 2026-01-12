@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,33 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine DORGTSQR.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Rorgtsqr(INTEGER const m, INTEGER const n, INTEGER const mb, INTEGER const nb, REAL *a, INTEGER const lda, REAL *t, INTEGER const ldt, REAL *work, INTEGER const lwork, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input parameters
+    // Test the input parameters
     //
     bool lquery = lwork == -1;
     info = 0;
@@ -71,24 +57,25 @@ void Rorgtsqr(INTEGER const m, INTEGER const n, INTEGER const mb, INTEGER const 
         info = -4;
     } else if (lda < max((INTEGER)1, m)) {
         info = -6;
-    } else if (ldt < max({(INTEGER)1, min(nb, n)})) {
+    } else if (ldt < max((INTEGER)1, min(nb, n))) {
         info = -8;
     } else {
         //
-        //        This workspace is used to store array C(LDC, N) and WORK(LWORK)
-        //        in the call to Rlamtsqr. See the documentation for Rlamtsqr.
+        // Test the input LWORK for the dimension of the array WORK.
+        // This workspace is used to store array C(LDC, N) and WORK(LWORK)
+        // in the call to Rlamtsqr. See the documentation for Rlamtsqr.
         //
         if (lwork < 2 && (!lquery)) {
             info = -10;
         } else {
             //
-            //           Set block size for column blocks
+            // Set block size for column blocks
             //
             nblocal = min(nb, n);
             //
-            //           LWORK = -1, then set the size for the array C(LDC,N)
-            //           in Rlamtsqr call and set the optimal size of the work array
-            //           WORK(LWORK) in Rlamtsqr call.
+            // LWORK = -1, then set the size for the array C(LDC,N)
+            // in Rlamtsqr call and set the optimal size of the work array
+            // WORK(LWORK) in Rlamtsqr call.
             //
             ldc = m;
             lc = ldc * n;
@@ -103,7 +90,7 @@ void Rorgtsqr(INTEGER const m, INTEGER const n, INTEGER const mb, INTEGER const 
         //
     }
     //
-    //     Handle error in the input parameters and return workspace query.
+    // Handle error in the input parameters and return workspace query.
     //
     if (info != 0) {
         Mxerbla("Rorgtsqr", -info);
@@ -113,38 +100,39 @@ void Rorgtsqr(INTEGER const m, INTEGER const n, INTEGER const mb, INTEGER const 
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (min(m, n) == 0) {
         work[1 - 1] = castREAL(lworkopt);
         return;
     }
     //
-    //     (1) Form explicitly the tall-skinny M-by-N left submatrix Q1_in
-    //     of M-by-M orthogonal matrix Q_in, which is implicitly stored in
-    //     the subdiagonal part of input array A and in the input array T.
-    //     Perform by the following operation using the routine Rlamtsqr.
+    // (1) Form explicitly the tall-skinny M-by-N left submatrix Q1_in
+    // of M-by-M orthogonal matrix Q_in, which is implicitly stored in
+    // the subdiagonal part of input array A and in the input array T.
+    // Perform by the following operation using the routine Rlamtsqr.
     //
-    //         Q1_in = Q_in * ( I ), where I is a N-by-N identity matrix,
-    //                        ( 0 )        0 is a (M-N)-by-N zero matrix.
+    // Q1_in = Q_in * ( I ), where I is a N-by-N identity matrix,
+    // ( 0 )        0 is a (M-N)-by-N zero matrix.
     //
-    //     (1a) Form M-by-N matrix in the array WORK(1:LDC*N) with ones
-    //     on the diagonal and zeros elsewhere.
+    // (1a) Form M-by-N matrix in the array WORK(1:LDC*N) with ones
+    // on the diagonal and zeros elsewhere.
     //
     const REAL zero = 0.0;
     const REAL one = 1.0;
     Rlaset("F", m, n, zero, one, work, ldc);
     //
-    //     (1b)  On input, WORK(1:LDC*N) stores ( I );
-    //                                          ( 0 )
+    // (1b)  On input, WORK(1:LDC*N) stores ( I );
+    // ( 0 )
     //
-    //           On output, WORK(1:LDC*N) stores Q1_in.
+    // On output, WORK(1:LDC*N) stores Q1_in.
     //
     INTEGER iinfo = 0;
     Rlamtsqr("L", "N", m, n, n, mb, nblocal, a, lda, t, ldt, work, ldc, &work[(lc + 1) - 1], lw, iinfo);
     //
-    //     (2) Copy the result from the part of the work array (1:M,1:N)
-    //     the output array A(1:M,1:N) column-by-column.
+    // (2) Copy the result from the part of the work array (1:M,1:N)
+    // with the leading dimension LDC that starts at WORK(1) into
+    // the output array A(1:M,1:N) column-by-column.
     //
     INTEGER j = 0;
     for (j = 1; j <= n; j = j + 1) {
@@ -153,6 +141,6 @@ void Rorgtsqr(INTEGER const m, INTEGER const n, INTEGER const mb, INTEGER const 
     //
     work[1 - 1] = castREAL(lworkopt);
     //
-    //     End of Rorgtsqr
+    // End of Rorgtsqr
     //
 }

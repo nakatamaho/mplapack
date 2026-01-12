@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine ZHET21.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -62,7 +69,7 @@ void Chet21(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER cons
     REAL unfl = Rlamch("Safe minimum");
     REAL ulp = Rlamch("Epsilon") * Rlamch("Base");
     //
-    //     Some Error Checks
+    // Some Error Checks
     //
     const REAL ten = 10.0;
     if (itype < 1 || itype > 3) {
@@ -70,9 +77,9 @@ void Chet21(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER cons
         return;
     }
     //
-    //     Do Test 1
+    // Do Test 1
     //
-    //     Norm of A:
+    // Norm of A:
     //
     const REAL one = 1.0;
     REAL anorm = 0.0;
@@ -82,7 +89,7 @@ void Chet21(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER cons
         anorm = max({Clanhe("1", &cuplo, n, a, lda, rwork), unfl});
     }
     //
-    //     Compute error matrix:
+    // Compute error matrix:
     //
     const COMPLEX czero = COMPLEX(0.0, 0.0);
     INTEGER j = 0;
@@ -95,7 +102,7 @@ void Chet21(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER cons
     INTEGER iinfo = 0;
     if (itype == 1) {
         //
-        //        ITYPE=1: error = A - U S U**H
+        // ITYPE=1: error = A - U S U**H
         //
         Claset("Full", n, n, czero, czero, work, n);
         Clacpy(&cuplo, n, n, a, lda, work, n);
@@ -113,7 +120,7 @@ void Chet21(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER cons
         //
     } else if (itype == 2) {
         //
-        //        ITYPE=2: error = V S V**H - A
+        // ITYPE=2: error = V S V**H - A
         //
         Claset("Full", n, n, czero, czero, work, n);
         //
@@ -166,7 +173,7 @@ void Chet21(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER cons
         //
     } else if (itype == 3) {
         //
-        //        ITYPE=3: error = U V**H - I
+        // ITYPE=3: error = U V**H - I
         //
         if (n < 2) {
             return;
@@ -199,9 +206,9 @@ void Chet21(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER cons
         }
     }
     //
-    //     Do Test 2
+    // Do Test 2
     //
-    //     Compute  U U**H - I
+    // Compute  U U**H - I
     //
     if (itype == 1) {
         Cgemm("N", "C", n, n, n, cone, u, ldu, u, ldu, czero, work, n);
@@ -213,6 +220,6 @@ void Chet21(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER cons
         result[2 - 1] = min({Clange("1", n, n, work, n, rwork), castREAL(n)}) / (n * ulp);
     }
     //
-    //     End of Chet21
+    // End of Chet21
     //
 }

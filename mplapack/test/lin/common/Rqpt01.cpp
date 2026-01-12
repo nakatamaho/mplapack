@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DQPT01.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -39,43 +46,18 @@ using fem::common;
 REAL Rqpt01(INTEGER const m, INTEGER const n, INTEGER const k, REAL *a, REAL *af, INTEGER const lda, REAL *tau, INTEGER *jpvt, REAL *work, INTEGER const lwork) {
     REAL return_value = 0.0;
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     const REAL zero = 0.0;
     return_value = zero;
     INTEGER ldaf = lda;
     //
-    //     Test if there is enough workspace
+    // Test if there is enough workspace
     //
     if (lwork < m * n + n) {
         Mxerbla("Rqpt01", 10);
         return return_value;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (m <= 0 || n <= 0) {
         return return_value;
@@ -104,7 +86,7 @@ REAL Rqpt01(INTEGER const m, INTEGER const n, INTEGER const k, REAL *a, REAL *af
     const REAL one = 1.0;
     for (j = 1; j <= n; j = j + 1) {
         //
-        //        Compare i-th column of QR and jpvt(i)-th column of A
+        // Compare i-th column of QR and jpvt(i)-th column of A
         //
         Raxpy(m, -one, &a[(jpvt[j - 1] - 1) * lda], 1, &work[((j - 1) * m + 1) - 1], 1);
     }
@@ -116,6 +98,6 @@ REAL Rqpt01(INTEGER const m, INTEGER const n, INTEGER const k, REAL *a, REAL *af
     //
     return return_value;
     //
-    //     End of Rqpt01
+    // End of Rqpt01
     //
 }

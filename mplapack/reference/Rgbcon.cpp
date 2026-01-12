@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DGBCON.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -48,35 +55,10 @@ void Rgbcon(const char *norm, INTEGER const n, INTEGER const kl, INTEGER const k
     REAL scale = 0.0;
     INTEGER ix = 0;
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
-    onenrm = (Mlsame(norm, "1")) || Mlsame(norm, "O");
+    onenrm = Mlsame(norm, "1") || Mlsame(norm, "O");
     if (!onenrm && !Mlsame(norm, "I")) {
         info = -1;
     } else if (n < 0) {
@@ -95,7 +77,7 @@ void Rgbcon(const char *norm, INTEGER const n, INTEGER const kl, INTEGER const k
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     rcond = zero;
     if (n == 0) {
@@ -107,7 +89,7 @@ void Rgbcon(const char *norm, INTEGER const n, INTEGER const kl, INTEGER const k
     //
     smlnum = Rlamch("Safe minimum");
     //
-    //     Estimate the norm of inv(A).
+    // Estimate the norm of inv(A).
     //
     ainvnm = zero;
     normin = 'N';
@@ -124,7 +106,7 @@ statement_10:
     if (kase != 0) {
         if (kase == kase1) {
             //
-            //           Multiply by inv(L).
+            // Multiply by inv(L).
             //
             if (lnoti) {
                 for (j = 1; j <= n - 1; j = j + 1) {
@@ -139,16 +121,16 @@ statement_10:
                 }
             }
             //
-            //           Multiply by inv(U).
+            // Multiply by inv(U).
             //
             Rlatbs("Upper", "No transpose", "Non-unit", &normin, n, kl + ku, ab, ldab, work, scale, &work[(2 * n + 1) - 1], info);
         } else {
             //
-            //           Multiply by inv(U**T).
+            // Multiply by inv(U**T).
             //
             Rlatbs("Upper", "Transpose", "Non-unit", &normin, n, kl + ku, ab, ldab, work, scale, &work[(2 * n + 1) - 1], info);
             //
-            //           Multiply by inv(L**T).
+            // Multiply by inv(L**T).
             //
             if (lnoti) {
                 for (j = n - 1; j >= 1; j = j - 1) {
@@ -164,7 +146,7 @@ statement_10:
             }
         }
         //
-        //        Divide X by 1/SCALE if doing so will not cause overflow.
+        // Divide X by 1/SCALE if doing so will not cause overflow.
         //
         normin = 'Y';
         if (scale != one) {
@@ -177,7 +159,7 @@ statement_10:
         goto statement_10;
     }
     //
-    //     Compute the estimate of the reciprocal condition number.
+    // Compute the estimate of the reciprocal condition number.
     //
     if (ainvnm != zero) {
         rcond = (one / ainvnm) / anorm;
@@ -185,6 +167,6 @@ statement_10:
 //
 statement_40:;
     //
-    //     End of Rgbcon
+    // End of Rgbcon
     //
 }

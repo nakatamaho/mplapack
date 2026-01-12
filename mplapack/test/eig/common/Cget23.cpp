@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine ZGET23.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -85,34 +92,7 @@ void Cget23(bool const comp, INTEGER const isrt, const char *balanc, INTEGER con
     static const char *format_9999 = "(' Cget23: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,"
                                      "', INPUT EXAMPLE NUMBER = ',i4)";
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Data statements ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Check for errors
+    // Check for errors
     //
     nobal = Mlsame(balanc, "N");
     balok = nobal || Mlsame(balanc, "P") || Mlsame(balanc, "S") || Mlsame(balanc, "B");
@@ -144,7 +124,7 @@ void Cget23(bool const comp, INTEGER const isrt, const char *balanc, INTEGER con
         return;
     }
     //
-    //     Quick return if nothing to do
+    // Quick return if nothing to do
     //
     for (i = 1; i <= 11; i = i + 1) {
         result[i - 1] = -one;
@@ -154,13 +134,13 @@ void Cget23(bool const comp, INTEGER const isrt, const char *balanc, INTEGER con
         return;
     }
     //
-    //     More Important constants
+    // More Important constants
     //
     ulp = Rlamch("Precision");
     smlnum = Rlamch("S");
     ulpinv = one / ulp;
     //
-    //     Compute eigenvalues and eigenvectors, and test them
+    // Compute eigenvalues and eigenvectors, and test them
     //
     if (lwork >= 2 * n + n * n) {
         sense = 'B';
@@ -182,17 +162,17 @@ void Cget23(bool const comp, INTEGER const isrt, const char *balanc, INTEGER con
         return;
     }
     //
-    //     Do Test (1)
+    // Do Test (1)
     //
     Cget22("N", "N", "N", n, a, lda, vr, ldvr, w, work, rwork, res);
     result[1 - 1] = res[1 - 1];
     //
-    //     Do Test (2)
+    // Do Test (2)
     //
     Cget22("C", "N", "C", n, a, lda, vl, ldvl, w, work, rwork, res);
     result[2 - 1] = res[1 - 1];
     //
-    //     Do Test (3)
+    // Do Test (3)
     //
     for (j = 1; j <= n; j = j + 1) {
         tnrm = RCnrm2(n, &vr[(j - 1) * ldvr], 1);
@@ -213,7 +193,7 @@ void Cget23(bool const comp, INTEGER const isrt, const char *balanc, INTEGER con
         }
     }
     //
-    //     Do Test (4)
+    // Do Test (4)
     //
     for (j = 1; j <= n; j = j + 1) {
         tnrm = RCnrm2(n, &vl[(j - 1) * ldvl], 1);
@@ -234,13 +214,13 @@ void Cget23(bool const comp, INTEGER const isrt, const char *balanc, INTEGER con
         }
     }
     //
-    //     Test for all options of computing condition numbers
+    // Test for all options of computing condition numbers
     //
     for (isens = 1; isens <= isensm; isens = isens + 1) {
         //
         sense = sens[isens - 1];
         //
-        //        Compute eigenvalues only, and test them
+        // Compute eigenvalues only, and test them
         //
         Clacpy("F", n, n, a, lda, h, lda);
         Cgeevx(balanc, "N", "N", &sense, n, h, lda, w1, cdum, 1, cdum, 1, ilo1, ihi1, scale1, abnrm1, rcnde1, rcndv1, work, lwork, rwork, iinfo);
@@ -255,7 +235,7 @@ void Cget23(bool const comp, INTEGER const isrt, const char *balanc, INTEGER con
             goto statement_190;
         }
         //
-        //        Do Test (5)
+        // Do Test (5)
         //
         for (j = 1; j <= n; j = j + 1) {
             if (w[j - 1] != w1[j - 1]) {
@@ -263,7 +243,7 @@ void Cget23(bool const comp, INTEGER const isrt, const char *balanc, INTEGER con
             }
         }
         //
-        //        Do Test (8)
+        // Do Test (8)
         //
         if (!nobal) {
             for (j = 1; j <= n; j = j + 1) {
@@ -282,7 +262,7 @@ void Cget23(bool const comp, INTEGER const isrt, const char *balanc, INTEGER con
             }
         }
         //
-        //        Do Test (9)
+        // Do Test (9)
         //
         if (isens == 2 && n > 1) {
             for (j = 1; j <= n; j = j + 1) {
@@ -292,7 +272,7 @@ void Cget23(bool const comp, INTEGER const isrt, const char *balanc, INTEGER con
             }
         }
         //
-        //        Compute eigenvalues and right eigenvectors, and test them
+        // Compute eigenvalues and right eigenvectors, and test them
         //
         Clacpy("F", n, n, a, lda, h, lda);
         Cgeevx(balanc, "N", "V", &sense, n, h, lda, w1, cdum, 1, lre, ldlre, ilo1, ihi1, scale1, abnrm1, rcnde1, rcndv1, work, lwork, rwork, iinfo);
@@ -307,7 +287,7 @@ void Cget23(bool const comp, INTEGER const isrt, const char *balanc, INTEGER con
             goto statement_190;
         }
         //
-        //        Do Test (5) again
+        // Do Test (5) again
         //
         for (j = 1; j <= n; j = j + 1) {
             if (w[j - 1] != w1[j - 1]) {
@@ -315,7 +295,7 @@ void Cget23(bool const comp, INTEGER const isrt, const char *balanc, INTEGER con
             }
         }
         //
-        //        Do Test (6)
+        // Do Test (6)
         //
         for (j = 1; j <= n; j = j + 1) {
             for (jj = 1; jj <= n; jj = jj + 1) {
@@ -325,7 +305,7 @@ void Cget23(bool const comp, INTEGER const isrt, const char *balanc, INTEGER con
             }
         }
         //
-        //        Do Test (8) again
+        // Do Test (8) again
         //
         if (!nobal) {
             for (j = 1; j <= n; j = j + 1) {
@@ -344,7 +324,7 @@ void Cget23(bool const comp, INTEGER const isrt, const char *balanc, INTEGER con
             }
         }
         //
-        //        Do Test (9) again
+        // Do Test (9) again
         //
         if (isens == 2 && n > 1) {
             for (j = 1; j <= n; j = j + 1) {
@@ -354,7 +334,7 @@ void Cget23(bool const comp, INTEGER const isrt, const char *balanc, INTEGER con
             }
         }
         //
-        //        Compute eigenvalues and left eigenvectors, and test them
+        // Compute eigenvalues and left eigenvectors, and test them
         //
         Clacpy("F", n, n, a, lda, h, lda);
         Cgeevx(balanc, "V", "N", &sense, n, h, lda, w1, lre, ldlre, cdum, 1, ilo1, ihi1, scale1, abnrm1, rcnde1, rcndv1, work, lwork, rwork, iinfo);
@@ -369,7 +349,7 @@ void Cget23(bool const comp, INTEGER const isrt, const char *balanc, INTEGER con
             goto statement_190;
         }
         //
-        //        Do Test (5) again
+        // Do Test (5) again
         //
         for (j = 1; j <= n; j = j + 1) {
             if (w[j - 1] != w1[j - 1]) {
@@ -377,7 +357,7 @@ void Cget23(bool const comp, INTEGER const isrt, const char *balanc, INTEGER con
             }
         }
         //
-        //        Do Test (7)
+        // Do Test (7)
         //
         for (j = 1; j <= n; j = j + 1) {
             for (jj = 1; jj <= n; jj = jj + 1) {
@@ -387,7 +367,7 @@ void Cget23(bool const comp, INTEGER const isrt, const char *balanc, INTEGER con
             }
         }
         //
-        //        Do Test (8) again
+        // Do Test (8) again
         //
         if (!nobal) {
             for (j = 1; j <= n; j = j + 1) {
@@ -406,7 +386,7 @@ void Cget23(bool const comp, INTEGER const isrt, const char *balanc, INTEGER con
             }
         }
         //
-        //        Do Test (9) again
+        // Do Test (9) again
         //
         if (isens == 2 && n > 1) {
             for (j = 1; j <= n; j = j + 1) {
@@ -420,7 +400,7 @@ void Cget23(bool const comp, INTEGER const isrt, const char *balanc, INTEGER con
         //
     }
     //
-    //     If COMP, compare condition numbers to precomputed ones
+    // If COMP, compare condition numbers to precomputed ones
     //
     if (comp) {
         Clacpy("F", n, n, a, lda, h, lda);
@@ -432,8 +412,8 @@ void Cget23(bool const comp, INTEGER const isrt, const char *balanc, INTEGER con
             goto statement_250;
         }
         //
-        //        Sort eigenvalues and condition numbers lexicographically
-        //        to compare with inputs
+        // Sort eigenvalues and condition numbers lexicographically
+        // to compare with inputs
         //
         for (i = 1; i <= n - 1; i = i + 1) {
             kmin = i;
@@ -464,8 +444,8 @@ void Cget23(bool const comp, INTEGER const isrt, const char *balanc, INTEGER con
             rcondv[i - 1] = vrimin;
         }
         //
-        //        Compare condition numbers for eigenvectors
-        //        taking their condition numbers into account
+        // Compare condition numbers for eigenvectors
+        // taking their condition numbers into account
         //
         result[10 - 1] = zero;
         eps = max(epsin, ulp);
@@ -500,8 +480,8 @@ void Cget23(bool const comp, INTEGER const isrt, const char *balanc, INTEGER con
             result[10 - 1] = max(result[10 - 1], vmax);
         }
         //
-        //        Compare condition numbers for eigenvalues
-        //        taking their condition numbers into account
+        // Compare condition numbers for eigenvalues
+        // taking their condition numbers into account
         //
         result[11 - 1] = zero;
         for (i = 1; i <= n; i = i + 1) {
@@ -534,6 +514,6 @@ void Cget23(bool const comp, INTEGER const isrt, const char *balanc, INTEGER con
         //
     }
     //
-    //     End of Cget23
+    // End of Cget23
     //
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,33 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine DSPGST.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Rspgst(INTEGER const itype, const char *uplo, INTEGER const n, REAL *ap, REAL *bp, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     bool upper = Mlsame(uplo, "U");
@@ -78,7 +64,7 @@ void Rspgst(INTEGER const itype, const char *uplo, INTEGER const n, REAL *ap, RE
     INTEGER k1k1 = 0;
     REAL akk = 0.0;
     REAL bkk = 0.0;
-    const REAL half = 0.5e0;
+    const REAL half = 0.5;
     REAL ct = 0.0;
     INTEGER k1 = 0;
     INTEGER j1j1 = 0;
@@ -86,16 +72,16 @@ void Rspgst(INTEGER const itype, const char *uplo, INTEGER const n, REAL *ap, RE
     if (itype == 1) {
         if (upper) {
             //
-            //           Compute inv(U**T)*A*inv(U)
+            // Compute inv(U**T)*A*inv(U)
             //
-            //           J1 and JJ are the indices of A(1,j) and A(j,j)
+            // J1 and JJ are the indices of A(1,j) and A(j,j)
             //
             jj = 0;
             for (j = 1; j <= n; j = j + 1) {
                 j1 = jj + 1;
                 jj += j;
                 //
-                //              Compute the j-th column of the upper triangle of A
+                // Compute the j-th column of the upper triangle of A
                 //
                 bjj = bp[jj - 1];
                 Rtpsv(uplo, "Transpose", "Nonunit", j, bp, &ap[j1 - 1], 1);
@@ -105,15 +91,15 @@ void Rspgst(INTEGER const itype, const char *uplo, INTEGER const n, REAL *ap, RE
             }
         } else {
             //
-            //           Compute inv(L)*A*inv(L**T)
+            // Compute inv(L)*A*inv(L**T)
             //
-            //           KK and K1K1 are the indices of A(k,k) and A(k+1,k+1)
+            // KK and K1K1 are the indices of A(k,k) and A(k+1,k+1)
             //
             kk = 1;
             for (k = 1; k <= n; k = k + 1) {
                 k1k1 = kk + n - k + 1;
                 //
-                //              Update the lower triangle of A(k:n,k:n)
+                // Update the lower triangle of A(k:n,k:n)
                 //
                 akk = ap[kk - 1];
                 bkk = bp[kk - 1];
@@ -133,16 +119,16 @@ void Rspgst(INTEGER const itype, const char *uplo, INTEGER const n, REAL *ap, RE
     } else {
         if (upper) {
             //
-            //           Compute U*A*U**T
+            // Compute U*A*U**T
             //
-            //           K1 and KK are the indices of A(1,k) and A(k,k)
+            // K1 and KK are the indices of A(1,k) and A(k,k)
             //
             kk = 0;
             for (k = 1; k <= n; k = k + 1) {
                 k1 = kk + 1;
                 kk += k;
                 //
-                //              Update the upper triangle of A(1:k,1:k)
+                // Update the upper triangle of A(1:k,1:k)
                 //
                 akk = ap[kk - 1];
                 bkk = bp[kk - 1];
@@ -156,15 +142,15 @@ void Rspgst(INTEGER const itype, const char *uplo, INTEGER const n, REAL *ap, RE
             }
         } else {
             //
-            //           Compute L**T *A*L
+            // Compute L**T *A*L
             //
-            //           JJ and J1J1 are the indices of A(j,j) and A(j+1,j+1)
+            // JJ and J1J1 are the indices of A(j,j) and A(j+1,j+1)
             //
             jj = 1;
             for (j = 1; j <= n; j = j + 1) {
                 j1j1 = jj + n - j + 1;
                 //
-                //              Compute the j-th column of the lower triangle of A
+                // Compute the j-th column of the lower triangle of A
                 //
                 ajj = ap[jj - 1];
                 bjj = bp[jj - 1];
@@ -177,6 +163,6 @@ void Rspgst(INTEGER const itype, const char *uplo, INTEGER const n, REAL *ap, RE
         }
     }
     //
-    //     End of Rspgst
+    // End of Rspgst
     //
 }

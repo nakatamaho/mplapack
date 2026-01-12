@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DDRVEV.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -103,7 +110,7 @@ void Rdrvev(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     ntestf = 0;
     info = 0;
     //
-    //     Important constants
+    // Important constants
     //
     badnn = false;
     nmax = 0;
@@ -114,7 +121,7 @@ void Rdrvev(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
         }
     }
     //
-    //     Check for errors
+    // Check for errors
     //
     if (nsizes < 0) {
         info = -1;
@@ -143,13 +150,13 @@ void Rdrvev(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
         return;
     }
     //
-    //     Quick return if nothing to do
+    // Quick return if nothing to do
     //
     if (nsizes == 0 || ntypes == 0) {
         return;
     }
     //
-    //     More Important constants
+    // More Important constants
     //
     unfl = Rlamch("Safe minimum");
     ovfl = one / unfl;
@@ -158,7 +165,7 @@ void Rdrvev(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     rtulp = sqrt(ulp);
     rtulpi = one / rtulp;
     //
-    //     Loop over sizes, types
+    // Loop over sizes, types
     //
     nerrs = 0;
     //
@@ -175,27 +182,27 @@ void Rdrvev(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 goto statement_260;
             }
             //
-            //           Save ISEED in case of an error.
+            // Save ISEED in case of an error.
             //
             for (j = 1; j <= 4; j = j + 1) {
                 ioldsd[j - 1] = iseed[j - 1];
             }
             //
-            //           Compute "A"
+            // Compute "A"
             //
-            //           Control parameters:
+            // Control parameters:
             //
-            //           KMAGN  KCONDS  KMODE        KTYPE
-            //       =1  O(1)   1       clustered 1  zero
-            //       =2  large  large   clustered 2  identity
-            //       =3  small          exponential  Jordan
-            //       =4                 arithmetic   diagonal, (w/ eigenvalues)
-            //       =5                 random log   symmetric, w/ eigenvalues
-            //       =6                 random       general, w/ eigenvalues
-            //       =7                              random diagonal
-            //       =8                              random symmetric
-            //       =9                              random general
-            //       =10                             random triangular
+            // KMAGN  KCONDS  KMODE        KTYPE
+            // =1  O(1)   1       clustered 1  zero
+            // =2  large  large   clustered 2  identity
+            // =3  small          exponential  Jordan
+            // =4                 arithmetic   diagonal, (w/ eigenvalues)
+            // =5                 random log   symmetric, w/ eigenvalues
+            // =6                 random       general, w/ eigenvalues
+            // =7                              random diagonal
+            // =8                              random symmetric
+            // =9                              random general
+            // =10                             random triangular
             //
             if (mtypes > maxtyp) {
                 goto statement_90;
@@ -204,7 +211,7 @@ void Rdrvev(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             itype = ktype[jtype - 1];
             imode = kmode[jtype - 1];
             //
-            //           Compute norm
+            // Compute norm
             //
             switch (kmagn[jtype - 1]) {
             case 1:
@@ -235,16 +242,16 @@ void Rdrvev(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             iinfo = 0;
             cond = ulpinv;
             //
-            //           Special Matrices -- Identity & Jordan block
+            // Special Matrices -- Identity & Jordan block
             //
-            //              Zero
+            // Zero
             //
             if (itype == 1) {
                 iinfo = 0;
                 //
             } else if (itype == 2) {
                 //
-                //              Identity
+                // Identity
                 //
                 for (jcol = 1; jcol <= n; jcol = jcol + 1) {
                     a[(jcol - 1) + (jcol - 1) * lda] = anorm;
@@ -252,7 +259,7 @@ void Rdrvev(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 //
             } else if (itype == 3) {
                 //
-                //              Jordan Block
+                // Jordan Block
                 //
                 for (jcol = 1; jcol <= n; jcol = jcol + 1) {
                     a[(jcol - 1) + (jcol - 1) * lda] = anorm;
@@ -263,19 +270,19 @@ void Rdrvev(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 //
             } else if (itype == 4) {
                 //
-                //              Diagonal Matrix, [Eigen]values Specified
+                // Diagonal Matrix, [Eigen]values Specified
                 //
                 Rlatms(n, n, "S", iseed, "S", work, imode, cond, anorm, 0, 0, "N", a, lda, &work[(n + 1) - 1], iinfo);
                 //
             } else if (itype == 5) {
                 //
-                //              Symmetric, eigenvalues specified
+                // Symmetric, eigenvalues specified
                 //
                 Rlatms(n, n, "S", iseed, "S", work, imode, cond, anorm, n, n, "N", a, lda, &work[(n + 1) - 1], iinfo);
                 //
             } else if (itype == 6) {
                 //
-                //              General, eigenvalues specified
+                // General, eigenvalues specified
                 //
                 if (kconds[jtype - 1] == 1) {
                     conds = one;
@@ -290,19 +297,19 @@ void Rdrvev(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 //
             } else if (itype == 7) {
                 //
-                //              Diagonal, random eigenvalues
+                // Diagonal, random eigenvalues
                 //
                 Rlatmr(n, n, "S", iseed, "S", work, 6, one, one, "T", "N", &work[(n + 1) - 1], 1, one, &work[(2 * n + 1) - 1], 1, one, "N", idumma, 0, 0, zero, anorm, "NO", a, lda, iwork, iinfo);
                 //
             } else if (itype == 8) {
                 //
-                //              Symmetric, random eigenvalues
+                // Symmetric, random eigenvalues
                 //
                 Rlatmr(n, n, "S", iseed, "S", work, 6, one, one, "T", "N", &work[(n + 1) - 1], 1, one, &work[(2 * n + 1) - 1], 1, one, "N", idumma, n, n, zero, anorm, "NO", a, lda, iwork, iinfo);
                 //
             } else if (itype == 9) {
                 //
-                //              General, random eigenvalues
+                // General, random eigenvalues
                 //
                 Rlatmr(n, n, "S", iseed, "N", work, 6, one, one, "T", "N", &work[(n + 1) - 1], 1, one, &work[(2 * n + 1) - 1], 1, one, "N", idumma, n, n, zero, anorm, "NO", a, lda, iwork, iinfo);
                 if (n >= 4) {
@@ -314,7 +321,7 @@ void Rdrvev(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 //
             } else if (itype == 10) {
                 //
-                //              Triangular, random eigenvalues
+                // Triangular, random eigenvalues
                 //
                 Rlatmr(n, n, "S", iseed, "N", work, 6, one, one, "T", "N", &work[(n + 1) - 1], 1, one, &work[(2 * n + 1) - 1], 1, one, "N", idumma, n, 0, zero, anorm, "NO", a, lda, iwork, iinfo);
                 //
@@ -331,7 +338,7 @@ void Rdrvev(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
         //
         statement_90:
             //
-            //           Test for minimal and generous workspace
+            // Test for minimal and generous workspace
             //
             for (iwk = 1; iwk <= 2; iwk = iwk + 1) {
                 if (iwk == 1) {
@@ -341,13 +348,13 @@ void Rdrvev(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 }
                 nnwork = max(nnwork, (INTEGER)1);
                 //
-                //              Initialize RESULT
+                // Initialize RESULT
                 //
                 for (j = 1; j <= 7; j = j + 1) {
                     result[j - 1] = -one;
                 }
                 //
-                //              Compute eigenvalues and eigenvectors, and test them
+                // Compute eigenvalues and eigenvectors, and test them
                 //
                 Rlacpy("F", n, n, a, lda, h, lda);
                 Rgeev("V", "V", n, h, lda, wr, wi, vl, ldvl, vr, ldvr, work, nnwork, iinfo);
@@ -358,17 +365,17 @@ void Rdrvev(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     goto statement_220;
                 }
                 //
-                //              Do Test (1)
+                // Do Test (1)
                 //
                 Rget22("N", "N", "N", n, a, lda, vr, ldvr, wr, wi, work, res);
                 result[1 - 1] = res[1 - 1];
                 //
-                //              Do Test (2)
+                // Do Test (2)
                 //
                 Rget22("T", "N", "T", n, a, lda, vl, ldvl, wr, wi, work, res);
                 result[2 - 1] = res[1 - 1];
                 //
-                //              Do Test (3)
+                // Do Test (3)
                 //
                 for (j = 1; j <= n; j = j + 1) {
                     tnrm = one;
@@ -396,7 +403,7 @@ void Rdrvev(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     }
                 }
                 //
-                //              Do Test (4)
+                // Do Test (4)
                 //
                 for (j = 1; j <= n; j = j + 1) {
                     tnrm = one;
@@ -424,7 +431,7 @@ void Rdrvev(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     }
                 }
                 //
-                //              Compute eigenvalues only, and test them
+                // Compute eigenvalues only, and test them
                 //
                 Rlacpy("F", n, n, a, lda, h, lda);
                 Rgeev("N", "N", n, h, lda, wr1, wi1, dum, 1, dum, 1, work, nnwork, iinfo);
@@ -435,7 +442,7 @@ void Rdrvev(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     goto statement_220;
                 }
                 //
-                //              Do Test (5)
+                // Do Test (5)
                 //
                 for (j = 1; j <= n; j = j + 1) {
                     if (wr[j - 1] != wr1[j - 1] || wi[j - 1] != wi1[j - 1]) {
@@ -443,7 +450,7 @@ void Rdrvev(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     }
                 }
                 //
-                //              Compute eigenvalues and right eigenvectors, and test them
+                // Compute eigenvalues and right eigenvectors, and test them
                 //
                 Rlacpy("F", n, n, a, lda, h, lda);
                 Rgeev("N", "V", n, h, lda, wr1, wi1, dum, 1, lre, ldlre, work, nnwork, iinfo);
@@ -454,7 +461,7 @@ void Rdrvev(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     goto statement_220;
                 }
                 //
-                //              Do Test (5) again
+                // Do Test (5) again
                 //
                 for (j = 1; j <= n; j = j + 1) {
                     if (wr[j - 1] != wr1[j - 1] || wi[j - 1] != wi1[j - 1]) {
@@ -462,7 +469,7 @@ void Rdrvev(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     }
                 }
                 //
-                //              Do Test (6)
+                // Do Test (6)
                 //
                 for (j = 1; j <= n; j = j + 1) {
                     for (jj = 1; jj <= n; jj = jj + 1) {
@@ -472,7 +479,7 @@ void Rdrvev(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     }
                 }
                 //
-                //              Compute eigenvalues and left eigenvectors, and test them
+                // Compute eigenvalues and left eigenvectors, and test them
                 //
                 Rlacpy("F", n, n, a, lda, h, lda);
                 Rgeev("V", "N", n, h, lda, wr1, wi1, lre, ldlre, dum, 1, work, nnwork, iinfo);
@@ -483,7 +490,7 @@ void Rdrvev(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     goto statement_220;
                 }
                 //
-                //              Do Test (5) again
+                // Do Test (5) again
                 //
                 for (j = 1; j <= n; j = j + 1) {
                     if (wr[j - 1] != wr1[j - 1] || wi[j - 1] != wi1[j - 1]) {
@@ -491,7 +498,7 @@ void Rdrvev(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     }
                 }
                 //
-                //              Do Test (7)
+                // Do Test (7)
                 //
                 for (j = 1; j <= n; j = j + 1) {
                     for (jj = 1; jj <= n; jj = jj + 1) {
@@ -501,7 +508,7 @@ void Rdrvev(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     }
                 }
             //
-            //              End of Loop -- Check for RESULT(j) > THRESH
+            // End of Loop -- Check for RESULT(j) > THRESH
             //
             statement_220:
                 //
@@ -574,10 +581,10 @@ void Rdrvev(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
         }
     }
     //
-    //     Summary
+    // Summary
     //
     Rlasum(path, nounit, nerrs, ntestt);
     //
-    //     End of Rdrvev
+    // End of Rdrvev
     //
 }

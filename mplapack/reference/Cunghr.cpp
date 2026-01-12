@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,35 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine ZUNGHR.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Cunghr(INTEGER const n, INTEGER const ilo, INTEGER const ihi, COMPLEX *a, INTEGER const lda, COMPLEX *tau, COMPLEX *work, INTEGER const lwork, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input arguments
+    // Test the input arguments
     //
     info = 0;
     INTEGER nh = ihi - ilo;
@@ -86,16 +70,16 @@ void Cunghr(INTEGER const n, INTEGER const ilo, INTEGER const ihi, COMPLEX *a, I
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0) {
-        work[1 - 1] = 1;
+        work[1 - 1] = 1.0;
         return;
     }
     //
-    //     Shift the vectors which define the elementary reflectors one
-    //     column to the right, and set the first ilo and the last n-ihi
-    //     rows and columns to those of the unit matrix
+    // Shift the vectors which define the elementary reflectors one
+    // column to the right, and set the first ilo and the last n-ihi
+    // rows and columns to those of the unit matrix
     //
     INTEGER j = 0;
     INTEGER i = 0;
@@ -128,12 +112,12 @@ void Cunghr(INTEGER const n, INTEGER const ilo, INTEGER const ihi, COMPLEX *a, I
     INTEGER iinfo = 0;
     if (nh > 0) {
         //
-        //        Generate Q(ilo+1:ihi,ilo+1:ihi)
+        // Generate Q(ilo+1:ihi,ilo+1:ihi)
         //
         Cungqr(nh, nh, nh, &a[((ilo + 1) - 1) + ((ilo + 1) - 1) * lda], lda, &tau[ilo - 1], work, lwork, iinfo);
     }
     work[1 - 1] = lwkopt;
     //
-    //     End of Cunghr
+    // End of Cunghr
     //
 }

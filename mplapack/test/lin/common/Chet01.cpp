@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZHET01.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -38,30 +45,7 @@ using fem::common;
 
 void Chet01(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *afac, INTEGER const ldafac, INTEGER *ipiv, COMPLEX *c, INTEGER const ldc, REAL *rwork, REAL &resid) {
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Quick exit if N = 0.
+    // Quick exit if N = 0.
     //
     const REAL zero = 0.0;
     if (n <= 0) {
@@ -69,13 +53,13 @@ void Chet01(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, CO
         return;
     }
     //
-    //     Determine EPS and the norm of A.
+    // Determine EPS and the norm of A.
     //
     REAL eps = Rlamch("Epsilon");
     REAL anorm = Clanhe("1", uplo, n, a, lda, rwork);
     //
-    //     Check the imaginary parts of the diagonal elements and return with
-    //     an error code if any are nonzero.
+    // Check the imaginary parts of the diagonal elements and return with
+    // an error code if any are nonzero.
     //
     INTEGER j = 0;
     const REAL one = 1.0;
@@ -86,22 +70,22 @@ void Chet01(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, CO
         }
     }
     //
-    //     Initialize C to the identity matrix.
+    // Initialize C to the identity matrix.
     //
     const COMPLEX czero = COMPLEX(0.0, 0.0);
     const COMPLEX cone = COMPLEX(1.0, 0.0);
     Claset("Full", n, n, czero, cone, c, ldc);
     //
-    //     Call Clavhe to form the product D * U' (or D * L' ).
+    // Call Clavhe to form the product D * U' (or D * L' ).
     //
     INTEGER info = 0;
     Clavhe(uplo, "Conjugate", "Non-unit", n, n, afac, ldafac, ipiv, c, ldc, info);
     //
-    //     Call Clavhe again to multiply by U (or L ).
+    // Call Clavhe again to multiply by U (or L ).
     //
     Clavhe(uplo, "No transpose", "Unit", n, n, afac, ldafac, ipiv, c, ldc, info);
     //
-    //     Compute the difference  C - A .
+    // Compute the difference  C - A .
     //
     INTEGER i = 0;
     if (Mlsame(uplo, "U")) {
@@ -120,7 +104,7 @@ void Chet01(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, CO
         }
     }
     //
-    //     Compute norm( C - A ) / ( N * norm(A) * EPS )
+    // Compute norm( C - A ) / ( N * norm(A) * EPS )
     //
     resid = Clanhe("1", uplo, n, c, ldc, rwork);
     //
@@ -132,6 +116,6 @@ void Chet01(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, CO
         resid = ((resid / castREAL(n)) / anorm) / eps;
     }
     //
-    //     End of Chet01
+    // End of Chet01
     //
 }

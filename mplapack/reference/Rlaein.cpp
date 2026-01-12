@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,12 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine DLAEIN.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Rlaein(bool const rightv, bool const noinit, INTEGER const n, REAL *h, INTEGER const ldh, REAL const wr, REAL const wi, REAL *vr, REAL *vi, REAL *b, INTEGER const ldb, REAL *work, REAL const eps3, REAL const smlnum, REAL const bignum, INTEGER &info) {
     REAL rootn = 0.0;
-    const REAL tenth = 1.0e-1;
+    const REAL tenth = 0.1;
     REAL growto = 0.0;
     const REAL one = 1.0;
     REAL nrmsml = 0.0;
@@ -65,15 +72,15 @@ void Rlaein(bool const rightv, bool const noinit, INTEGER const n, REAL *h, INTE
     //
     info = 0;
     //
-    //     GROWTO is the threshold used in the acceptance test for an
-    //     eigenvector.
+    // GROWTO is the threshold used in the acceptance test for an
+    // eigenvector.
     //
     rootn = sqrt(castREAL(n));
     growto = tenth / rootn;
-    nrmsml = max(one, REAL(eps3 * rootn)) * smlnum;
+    nrmsml = max(one, eps3 * rootn) * smlnum;
     //
-    //     Form B = H - (WR,WI)*I (except that the subdiagonal elements and
-    //     the imaginary parts of the diagonal elements are not stored).
+    // Form B = H - (WR,WI)*I (except that the subdiagonal elements and
+    // the imaginary parts of the diagonal elements are not stored).
     //
     for (j = 1; j <= n; j = j + 1) {
         for (i = 1; i <= j - 1; i = i + 1) {
@@ -84,18 +91,18 @@ void Rlaein(bool const rightv, bool const noinit, INTEGER const n, REAL *h, INTE
     //
     if (wi == zero) {
         //
-        //        Real eigenvalue.
+        // Real eigenvalue.
         //
         if (noinit) {
             //
-            //           Set initial vector.
+            // Set initial vector.
             //
             for (i = 1; i <= n; i = i + 1) {
                 vr[i - 1] = eps3;
             }
         } else {
             //
-            //           Scale supplied initial vector.
+            // Scale supplied initial vector.
             //
             vnorm = Rnrm2(n, vr, 1);
             Rscal(n, (eps3 * rootn) / max(vnorm, nrmsml), vr, 1);
@@ -103,14 +110,14 @@ void Rlaein(bool const rightv, bool const noinit, INTEGER const n, REAL *h, INTE
         //
         if (rightv) {
             //
-            //           LU decomposition with partial pivoting of B, replacing zero
-            //           pivots by EPS3.
+            // LU decomposition with partial pivoting of B, replacing zero
+            // pivots by EPS3.
             //
             for (i = 1; i <= n - 1; i = i + 1) {
                 ei = h[((i + 1) - 1) + (i - 1) * ldh];
                 if (abs(b[(i - 1) + (i - 1) * ldb]) < abs(ei)) {
                     //
-                    //                 Interchange rows and eliminate.
+                    // Interchange rows and eliminate.
                     //
                     x = b[(i - 1) + (i - 1) * ldb] / ei;
                     b[(i - 1) + (i - 1) * ldb] = ei;
@@ -121,7 +128,7 @@ void Rlaein(bool const rightv, bool const noinit, INTEGER const n, REAL *h, INTE
                     }
                 } else {
                     //
-                    //                 Eliminate without interchange.
+                    // Eliminate without interchange.
                     //
                     if (b[(i - 1) + (i - 1) * ldb] == zero) {
                         b[(i - 1) + (i - 1) * ldb] = eps3;
@@ -142,14 +149,14 @@ void Rlaein(bool const rightv, bool const noinit, INTEGER const n, REAL *h, INTE
             //
         } else {
             //
-            //           UL decomposition with partial pivoting of B, replacing zero
-            //           pivots by EPS3.
+            // UL decomposition with partial pivoting of B, replacing zero
+            // pivots by EPS3.
             //
             for (j = n; j >= 2; j = j - 1) {
                 ej = h[(j - 1) + ((j - 1) - 1) * ldh];
                 if (abs(b[(j - 1) + (j - 1) * ldb]) < abs(ej)) {
                     //
-                    //                 Interchange columns and eliminate.
+                    // Interchange columns and eliminate.
                     //
                     x = b[(j - 1) + (j - 1) * ldb] / ej;
                     b[(j - 1) + (j - 1) * ldb] = ej;
@@ -160,7 +167,7 @@ void Rlaein(bool const rightv, bool const noinit, INTEGER const n, REAL *h, INTE
                     }
                 } else {
                     //
-                    //                 Eliminate without interchange.
+                    // Eliminate without interchange.
                     //
                     if (b[(j - 1) + (j - 1) * ldb] == zero) {
                         b[(j - 1) + (j - 1) * ldb] = eps3;
@@ -173,8 +180,8 @@ void Rlaein(bool const rightv, bool const noinit, INTEGER const n, REAL *h, INTE
                     }
                 }
             }
-            if (b[(1 - 1)] == zero) {
-                b[(1 - 1)] = eps3;
+            if (b[0] == zero) {
+                b[0] = eps3;
             }
             //
             trans = 'T';
@@ -184,21 +191,21 @@ void Rlaein(bool const rightv, bool const noinit, INTEGER const n, REAL *h, INTE
         normin = 'N';
         for (its = 1; its <= n; its = its + 1) {
             //
-            //           Solve U*x = scale*v for a right eigenvector
-            //             or U**T*x = scale*v for a left eigenvector,
-            //           overwriting x on v.
+            // Solve U*x = scale*v for a right eigenvector
+            // or U**T*x = scale*v for a left eigenvector,
+            // overwriting x on v.
             //
             Rlatrs("Upper", &trans, "Nonunit", &normin, n, b, ldb, vr, scale, work, ierr);
             normin = 'Y';
             //
-            //           Test for sufficient growth in the norm of v.
+            // Test for sufficient growth in the norm of v.
             //
             vnorm = Rasum(n, vr, 1);
             if (vnorm >= growto * scale) {
                 goto statement_120;
             }
             //
-            //           Choose new orthogonal starting vector and try again.
+            // Choose new orthogonal starting vector and try again.
             //
             temp = eps3 / (rootn + one);
             vr[1 - 1] = eps3;
@@ -208,23 +215,23 @@ void Rlaein(bool const rightv, bool const noinit, INTEGER const n, REAL *h, INTE
             vr[(n - its + 1) - 1] = vr[(n - its + 1) - 1] - eps3 * rootn;
         }
         //
-        //        Failure to find eigenvector in N iterations.
+        // Failure to find eigenvector in N iterations.
         //
         info = 1;
     //
     statement_120:
         //
-        //        Normalize eigenvector.
+        // Normalize eigenvector.
         //
         i = iRamax(n, vr, 1);
         Rscal(n, one / abs(vr[i - 1]), vr, 1);
     } else {
         //
-        //        Complex eigenvalue.
+        // Complex eigenvalue.
         //
         if (noinit) {
             //
-            //           Set initial vector.
+            // Set initial vector.
             //
             for (i = 1; i <= n; i = i + 1) {
                 vr[i - 1] = eps3;
@@ -232,7 +239,7 @@ void Rlaein(bool const rightv, bool const noinit, INTEGER const n, REAL *h, INTE
             }
         } else {
             //
-            //           Scale supplied initial vector.
+            // Scale supplied initial vector.
             //
             norm = Rlapy2(Rnrm2(n, vr, 1), Rnrm2(n, vi, 1));
             rec = (eps3 * rootn) / max(norm, nrmsml);
@@ -242,11 +249,11 @@ void Rlaein(bool const rightv, bool const noinit, INTEGER const n, REAL *h, INTE
         //
         if (rightv) {
             //
-            //           LU decomposition with partial pivoting of B, replacing zero
-            //           pivots by EPS3.
+            // LU decomposition with partial pivoting of B, replacing zero
+            // pivots by EPS3.
             //
-            //           The imaginary part of the (i,j)-th element of U is stored in
-            //           B(j+1,i).
+            // The imaginary part of the (i,j)-th element of U is stored in
+            // B(j+1,i).
             //
             b[(2 - 1)] = -wi;
             for (i = 2; i <= n; i = i + 1) {
@@ -258,7 +265,7 @@ void Rlaein(bool const rightv, bool const noinit, INTEGER const n, REAL *h, INTE
                 ei = h[((i + 1) - 1) + (i - 1) * ldh];
                 if (absbii < abs(ei)) {
                     //
-                    //                 Interchange rows and eliminate.
+                    // Interchange rows and eliminate.
                     //
                     xr = b[(i - 1) + (i - 1) * ldb] / ei;
                     xi = b[((i + 1) - 1) + (i - 1) * ldb] / ei;
@@ -276,7 +283,7 @@ void Rlaein(bool const rightv, bool const noinit, INTEGER const n, REAL *h, INTE
                     b[((i + 2) - 1) + ((i + 1) - 1) * ldb] += xr * wi;
                 } else {
                     //
-                    //                 Eliminate without interchanging rows.
+                    // Eliminate without interchanging rows.
                     //
                     if (absbii == zero) {
                         b[(i - 1) + (i - 1) * ldb] = eps3;
@@ -293,7 +300,7 @@ void Rlaein(bool const rightv, bool const noinit, INTEGER const n, REAL *h, INTE
                     b[((i + 2) - 1) + ((i + 1) - 1) * ldb] = b[((i + 2) - 1) + ((i + 1) - 1) * ldb] - wi;
                 }
                 //
-                //              Compute 1-norm of offdiagonal elements of i-th row.
+                // Compute 1-norm of offdiagonal elements of i-th row.
                 //
                 work[i - 1] = Rasum(n - i, &b[(i - 1) + ((i + 1) - 1) * ldb], ldb) + Rasum(n - i, &b[((i + 2) - 1) + (i - 1) * ldb], 1);
             }
@@ -307,11 +314,11 @@ void Rlaein(bool const rightv, bool const noinit, INTEGER const n, REAL *h, INTE
             i3 = -1;
         } else {
             //
-            //           UL decomposition with partial pivoting of conj(B),
-            //           replacing zero pivots by EPS3.
+            // UL decomposition with partial pivoting of conjg(B),
+            // replacing zero pivots by EPS3.
             //
-            //           The imaginary part of the (i,j)-th element of U is stored in
-            //           B(j+1,i).
+            // The imaginary part of the (i,j)-th element of U is stored in
+            // B(j+1,i).
             //
             b[((n + 1) - 1) + (n - 1) * ldb] = wi;
             for (j = 1; j <= n - 1; j = j + 1) {
@@ -323,7 +330,7 @@ void Rlaein(bool const rightv, bool const noinit, INTEGER const n, REAL *h, INTE
                 absbjj = Rlapy2(b[(j - 1) + (j - 1) * ldb], b[((j + 1) - 1) + (j - 1) * ldb]);
                 if (absbjj < abs(ej)) {
                     //
-                    //                 Interchange columns and eliminate
+                    // Interchange columns and eliminate
                     //
                     xr = b[(j - 1) + (j - 1) * ldb] / ej;
                     xi = b[((j + 1) - 1) + (j - 1) * ldb] / ej;
@@ -341,7 +348,7 @@ void Rlaein(bool const rightv, bool const noinit, INTEGER const n, REAL *h, INTE
                     b[(j - 1) + ((j - 1) - 1) * ldb] = b[(j - 1) + ((j - 1) - 1) * ldb] - xr * wi;
                 } else {
                     //
-                    //                 Eliminate without interchange.
+                    // Eliminate without interchange.
                     //
                     if (absbjj == zero) {
                         b[(j - 1) + (j - 1) * ldb] = eps3;
@@ -358,12 +365,12 @@ void Rlaein(bool const rightv, bool const noinit, INTEGER const n, REAL *h, INTE
                     b[(j - 1) + ((j - 1) - 1) * ldb] += wi;
                 }
                 //
-                //              Compute 1-norm of offdiagonal elements of j-th column.
+                // Compute 1-norm of offdiagonal elements of j-th column.
                 //
                 work[j - 1] = Rasum(j - 1, &b[(j - 1) * ldb], 1) + Rasum(j - 1, &b[((j + 1) - 1)], ldb);
             }
-            if (b[(1 - 1)] == zero && b[(2 - 1)] == zero) {
-                b[(1 - 1)] = eps3;
+            if (b[0] == zero && b[(2 - 1)] == zero) {
+                b[0] = eps3;
             }
             work[1 - 1] = zero;
             //
@@ -377,11 +384,11 @@ void Rlaein(bool const rightv, bool const noinit, INTEGER const n, REAL *h, INTE
             vmax = one;
             vcrit = bignum;
             //
-            //           Solve U*(xr,xi) = scale*(vr,vi) for a right eigenvector,
-            //             or U**T*(xr,xi) = scale*(vr,vi) for a left eigenvector,
-            //           overwriting (xr,xi) on (vr,vi).
+            // Solve U*(xr,xi) = scale*(vr,vi) for a right eigenvector,
+            // or U**T*(xr,xi) = scale*(vr,vi) for a left eigenvector,
+            // overwriting (xr,xi) on (vr,vi).
             //
-            for (i = i1; i3 >= 0 ? i <= i2 : i >= i2; i = i + i3) {
+            for (i = i1; i3 > 0 ? i <= i2 : i >= i2; i = i + i3) {
                 //
                 if (work[i - 1] > vcrit) {
                     rec = one / vmax;
@@ -421,10 +428,10 @@ void Rlaein(bool const rightv, bool const noinit, INTEGER const n, REAL *h, INTE
                         }
                     }
                     //
-                    //                 Divide by diagonal element of B.
+                    // Divide by diagonal element of B.
                     //
                     Rladiv(xr, xi, b[(i - 1) + (i - 1) * ldb], b[((i + 1) - 1) + (i - 1) * ldb], vr[i - 1], vi[i - 1]);
-                    vmax = max(REAL(abs(vr[i - 1]) + abs(vi[i - 1])), vmax);
+                    vmax = max(abs(vr[i - 1]) + abs(vi[i - 1]), vmax);
                     vcrit = bignum / vmax;
                 } else {
                     for (j = 1; j <= n; j = j + 1) {
@@ -439,14 +446,14 @@ void Rlaein(bool const rightv, bool const noinit, INTEGER const n, REAL *h, INTE
                 }
             }
             //
-            //           Test for sufficient growth in the norm of (VR,VI).
+            // Test for sufficient growth in the norm of (VR,VI).
             //
             vnorm = Rasum(n, vr, 1) + Rasum(n, vi, 1);
             if (vnorm >= growto * scale) {
                 goto statement_280;
             }
             //
-            //           Choose a new orthogonal starting vector and try again.
+            // Choose a new orthogonal starting vector and try again.
             //
             y = eps3 / (rootn + one);
             vr[1 - 1] = eps3;
@@ -459,23 +466,23 @@ void Rlaein(bool const rightv, bool const noinit, INTEGER const n, REAL *h, INTE
             vr[(n - its + 1) - 1] = vr[(n - its + 1) - 1] - eps3 * rootn;
         }
         //
-        //        Failure to find eigenvector in N iterations
+        // Failure to find eigenvector in N iterations
         //
         info = 1;
     //
     statement_280:
         //
-        //        Normalize eigenvector.
+        // Normalize eigenvector.
         //
         vnorm = zero;
         for (i = 1; i <= n; i = i + 1) {
-            vnorm = max(vnorm, REAL(abs(vr[i - 1]) + abs(vi[i - 1])));
+            vnorm = max(vnorm, abs(vr[i - 1]) + abs(vi[i - 1]));
         }
         Rscal(n, one / vnorm, vr, 1);
         Rscal(n, one / vnorm, vi, 1);
         //
     }
     //
-    //     End of Rlaein
+    // End of Rlaein
     //
 }

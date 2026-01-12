@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DLASD7.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -41,18 +48,18 @@ void Rlasd7(INTEGER const icompq, INTEGER const nl, INTEGER const nr, INTEGER co
     INTEGER idxi = 0;
     REAL eps = 0.0;
     REAL tol = 0.0;
-    const REAL eight = 8.0e+0;
+    const REAL eight = 8.0;
     INTEGER k2 = 0;
     INTEGER j = 0;
     INTEGER jprev = 0;
     INTEGER idxjp = 0;
     INTEGER idxj = 0;
     INTEGER jp = 0;
-    const REAL two = 2.0e+0;
+    const REAL two = 2.0;
     REAL hlftol = 0.0;
     const REAL one = 1.0;
     //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     n = nl + nr + 1;
@@ -82,8 +89,8 @@ void Rlasd7(INTEGER const icompq, INTEGER const nl, INTEGER const nr, INTEGER co
         givptr = 0;
     }
     //
-    //     Generate the first part of the vector Z and move the singular
-    //     values in the first part of D one position backward.
+    // Generate the first part of the vector Z and move the singular
+    // values in the first part of D one position backward.
     //
     z1 = alpha * vl[nlp1 - 1];
     vl[nlp1 - 1] = zero;
@@ -97,20 +104,20 @@ void Rlasd7(INTEGER const icompq, INTEGER const nl, INTEGER const nr, INTEGER co
     }
     vf[1 - 1] = tau;
     //
-    //     Generate the second part of the vector Z.
+    // Generate the second part of the vector Z.
     //
     for (i = nlp2; i <= m; i = i + 1) {
         z[i - 1] = beta * vf[i - 1];
         vf[i - 1] = zero;
     }
     //
-    //     Sort the singular values into increasing order
+    // Sort the singular values into increasing order
     //
     for (i = nlp2; i <= n; i = i + 1) {
         idxq[i - 1] += nlp1;
     }
     //
-    //     DSIGMA, IDXC, IDXC, and ZW are used as storage space.
+    // DSIGMA, IDXC, IDXC, and ZW are used as storage space.
     //
     for (i = 2; i <= n; i = i + 1) {
         dsigma[i - 1] = d[idxq[i - 1] - 1];
@@ -129,37 +136,37 @@ void Rlasd7(INTEGER const icompq, INTEGER const nl, INTEGER const nr, INTEGER co
         vl[i - 1] = vlw[idxi - 1];
     }
     //
-    //     Calculate the allowable deflation tolerance
+    // Calculate the allowable deflation tolerance
     //
     eps = Rlamch("Epsilon");
     tol = max(abs(alpha), abs(beta));
-    tol = eight * eight * eps * max(REAL(abs(d[n - 1])), tol);
+    tol = eight * eight * eps * max(abs(d[n - 1]), tol);
     //
-    //     There are 2 kinds of deflation -- first a value in the z-vector
-    //     is small, second two (or more) singular values are very close
-    //     together (their difference is small).
+    // There are 2 kinds of deflation -- first a value in the z-vector
+    // is small, second two (or more) singular values are very close
+    // together (their difference is small).
     //
-    //     If the value in the z-vector is small, we simply permute the
-    //     array so that the corresponding singular value is moved to the
-    //     end.
+    // If the value in the z-vector is small, we simply permute the
+    // array so that the corresponding singular value is moved to the
+    // end.
     //
-    //     If two values in the D-vector are close, we perform a two-sided
-    //     rotation designed to make one of the corresponding z-vector
-    //     entries zero, and then permute the array so that the deflated
-    //     singular value is moved to the end.
+    // If two values in the D-vector are close, we perform a two-sided
+    // rotation designed to make one of the corresponding z-vector
+    // entries zero, and then permute the array so that the deflated
+    // singular value is moved to the end.
     //
-    //     If there are multiple singular values then the problem deflates.
-    //     Here the number of equal singular values are found.  As each equal
-    //     singular value is found, an elementary reflector is computed to
-    //     rotate the corresponding singular subspace so that the
-    //     corresponding components of Z are zero in this new basis.
+    // If there are multiple singular values then the problem deflates.
+    // Here the number of equal singular values are found.  As each equal
+    // singular value is found, an elementary reflector is computed to
+    // rotate the corresponding singular subspace so that the
+    // corresponding components of Z are zero in this new basis.
     //
     k = 1;
     k2 = n + 1;
     for (j = 2; j <= n; j = j + 1) {
         if (abs(z[j - 1]) <= tol) {
             //
-            //           Deflate due to small z component.
+            // Deflate due to small z component.
             //
             k2 = k2 - 1;
             idxp[k2 - 1] = j;
@@ -180,23 +187,23 @@ statement_80:
     }
     if (abs(z[j - 1]) <= tol) {
         //
-        //        Deflate due to small z component.
+        // Deflate due to small z component.
         //
         k2 = k2 - 1;
         idxp[k2 - 1] = j;
     } else {
         //
-        //        Check if singular values are close enough to allow deflation.
+        // Check if singular values are close enough to allow deflation.
         //
         if (abs(d[j - 1] - d[jprev - 1]) <= tol) {
             //
-            //           Deflation is possible.
+            // Deflation is possible.
             //
             s = z[jprev - 1];
             c = z[j - 1];
             //
-            //           Find sqrt(a**2+b**2) without overflow or
-            //           destructive underflow.
+            // Find sqrt(a**2+b**2) without overflow or
+            // destructive underflow.
             //
             tau = Rlapy2(c, s);
             z[j - 1] = tau;
@@ -204,7 +211,7 @@ statement_80:
             c = c / tau;
             s = -s / tau;
             //
-            //           Record the appropriate Givens rotation
+            // Record the appropriate Givens rotation
             //
             if (icompq == 1) {
                 givptr++;
@@ -237,7 +244,7 @@ statement_80:
     goto statement_80;
 statement_90:
     //
-    //     Record the last singular value.
+    // Record the last singular value.
     //
     k++;
     zw[k - 1] = z[jprev - 1];
@@ -246,9 +253,9 @@ statement_90:
 //
 statement_100:
     //
-    //     Sort the singular values into DSIGMA. The singular values which
-    //     were not deflated go into the first K slots of DSIGMA, except
-    //     that DSIGMA(1) is treated separately.
+    // Sort the singular values into DSIGMA. The singular values which
+    // were not deflated go into the first K slots of DSIGMA, except
+    // that DSIGMA(1) is treated separately.
     //
     for (j = 2; j <= n; j = j + 1) {
         jp = idxp[j - 1];
@@ -266,13 +273,13 @@ statement_100:
         }
     }
     //
-    //     The deflated singular values go back into the last N - K slots of
-    //     D.
+    // The deflated singular values go back into the last N - K slots of
+    // D.
     //
     Rcopy(n - k, &dsigma[(k + 1) - 1], 1, &d[(k + 1) - 1], 1);
     //
-    //     Determine DSIGMA(1), DSIGMA(2), Z(1), VF(1), VL(1), VF(M), and
-    //     VL(M).
+    // Determine DSIGMA(1), DSIGMA(2), Z(1), VF(1), VL(1), VF(M), and
+    // VL(M).
     //
     dsigma[1 - 1] = zero;
     hlftol = tol / two;
@@ -299,12 +306,12 @@ statement_100:
         }
     }
     //
-    //     Restore Z, VF, and VL.
+    // Restore Z, VF, and VL.
     //
     Rcopy(k - 1, &zw[2 - 1], 1, &z[2 - 1], 1);
     Rcopy(n - 1, &vfw[2 - 1], 1, &vf[2 - 1], 1);
     Rcopy(n - 1, &vlw[2 - 1], 1, &vl[2 - 1], 1);
     //
-    //     End of Rlasd7
+    // End of Rlasd7
     //
 }

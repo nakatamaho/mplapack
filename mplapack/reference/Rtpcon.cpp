@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DTPCON.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -46,32 +53,7 @@ void Rtpcon(const char *norm, const char *uplo, const char *diag, INTEGER const 
     INTEGER ix = 0;
     REAL xnorm = 0.0;
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     upper = Mlsame(uplo, "U");
@@ -92,7 +74,7 @@ void Rtpcon(const char *norm, const char *uplo, const char *diag, INTEGER const 
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0) {
         rcond = one;
@@ -102,15 +84,15 @@ void Rtpcon(const char *norm, const char *uplo, const char *diag, INTEGER const 
     rcond = zero;
     smlnum = Rlamch("Safe minimum") * castREAL(max((INTEGER)1, n));
     //
-    //     Compute the norm of the triangular matrix A.
+    // Compute the norm of the triangular matrix A.
     //
     anorm = Rlantp(norm, uplo, diag, n, ap, work);
     //
-    //     Continue only if ANORM > 0.
+    // Continue only if ANORM > 0.
     //
     if (anorm > zero) {
         //
-        //        Estimate the norm of the inverse of A.
+        // Estimate the norm of the inverse of A.
         //
         ainvnm = zero;
         normin = 'N';
@@ -125,18 +107,18 @@ void Rtpcon(const char *norm, const char *uplo, const char *diag, INTEGER const 
         if (kase != 0) {
             if (kase == kase1) {
                 //
-                //              Multiply by inv(A).
+                // Multiply by inv(A).
                 //
                 Rlatps(uplo, "No transpose", diag, &normin, n, ap, work, scale, &work[(2 * n + 1) - 1], info);
             } else {
                 //
-                //              Multiply by inv(A**T).
+                // Multiply by inv(A**T).
                 //
                 Rlatps(uplo, "Transpose", diag, &normin, n, ap, work, scale, &work[(2 * n + 1) - 1], info);
             }
             normin = 'Y';
             //
-            //           Multiply by 1/SCALE if doing so will not cause overflow.
+            // Multiply by 1/SCALE if doing so will not cause overflow.
             //
             if (scale != one) {
                 ix = iRamax(n, work, 1);
@@ -149,7 +131,7 @@ void Rtpcon(const char *norm, const char *uplo, const char *diag, INTEGER const 
             goto statement_10;
         }
         //
-        //        Compute the estimate of the reciprocal condition number.
+        // Compute the estimate of the reciprocal condition number.
         //
         if (ainvnm != zero) {
             rcond = (one / anorm) / ainvnm;
@@ -158,6 +140,6 @@ void Rtpcon(const char *norm, const char *uplo, const char *diag, INTEGER const 
 //
 statement_20:;
     //
-    //     End of Rtpcon
+    // End of Rtpcon
     //
 }

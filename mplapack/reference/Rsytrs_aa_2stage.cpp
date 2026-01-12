@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,32 +26,17 @@
  *
  */
 
+// Derived from LAPACK routine DSYTRS_AA_2STAGE.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Rsytrs_aa_2stage(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *a, INTEGER const lda, REAL *tb, INTEGER const ltb, INTEGER *ipiv, INTEGER *ipiv2, REAL *b, INTEGER const ldb, INTEGER &info) {
-    //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
     info = 0;
     bool upper = Mlsame(uplo, "U");
@@ -73,13 +58,13 @@ void Rsytrs_aa_2stage(const char *uplo, INTEGER const n, INTEGER const nrhs, REA
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0 || nrhs == 0) {
         return;
     }
     //
-    //     Read NB and compute LDTB
+    // Read NB and compute LDTB
     //
     INTEGER nb = castINTEGER(tb[1 - 1]);
     INTEGER ldtb = ltb / n;
@@ -87,30 +72,30 @@ void Rsytrs_aa_2stage(const char *uplo, INTEGER const n, INTEGER const nrhs, REA
     const REAL one = 1.0;
     if (upper) {
         //
-        //        Solve A*X = B, where A = U**T*T*U.
+        // Solve A*X = B, where A = U**T*T*U.
         //
         if (n > nb) {
             //
-            //           Pivot, P**T * B -> B
+            // Pivot, P**T * B -> B
             //
             Rlaswp(nrhs, b, ldb, nb + 1, n, ipiv, 1);
             //
-            //           Compute (U**T \ B) -> B    [ (U**T \P**T * B) ]
+            // Compute (U**T \ B) -> B    [ (U**T \P**T * B) ]
             //
             Rtrsm("L", "U", "T", "U", n - nb, nrhs, one, &a[((nb + 1) - 1) * lda], lda, &b[((nb + 1) - 1)], ldb);
             //
         }
         //
-        //        Compute T \ B -> B   [ T \ (U**T \P**T * B) ]
+        // Compute T \ B -> B   [ T \ (U**T \P**T * B) ]
         //
         Rgbtrs("N", n, nb, nb, nrhs, tb, ldtb, ipiv2, b, ldb, info);
         if (n > nb) {
             //
-            //           Compute (U \ B) -> B   [ U \ (T \ (U**T \P**T * B) ) ]
+            // Compute (U \ B) -> B   [ U \ (T \ (U**T \P**T * B) ) ]
             //
             Rtrsm("L", "U", "N", "U", n - nb, nrhs, one, &a[((nb + 1) - 1) * lda], lda, &b[((nb + 1) - 1)], ldb);
             //
-            //           Pivot, P * B -> B  [ P * (U \ (T \ (U**T \P**T * B) )) ]
+            // Pivot, P * B -> B  [ P * (U \ (T \ (U**T \P**T * B) )) ]
             //
             Rlaswp(nrhs, b, ldb, nb + 1, n, ipiv, -1);
             //
@@ -118,36 +103,36 @@ void Rsytrs_aa_2stage(const char *uplo, INTEGER const n, INTEGER const nrhs, REA
         //
     } else {
         //
-        //        Solve A*X = B, where A = L*T*L**T.
+        // Solve A*X = B, where A = L*T*L**T.
         //
         if (n > nb) {
             //
-            //           Pivot, P**T * B -> B
+            // Pivot, P**T * B -> B
             //
             Rlaswp(nrhs, b, ldb, nb + 1, n, ipiv, 1);
             //
-            //           Compute (L \ B) -> B    [ (L \P**T * B) ]
+            // Compute (L \ B) -> B    [ (L \P**T * B) ]
             //
             Rtrsm("L", "L", "N", "U", n - nb, nrhs, one, &a[((nb + 1) - 1)], lda, &b[((nb + 1) - 1)], ldb);
             //
         }
         //
-        //        Compute T \ B -> B   [ T \ (L \P**T * B) ]
+        // Compute T \ B -> B   [ T \ (L \P**T * B) ]
         //
         Rgbtrs("N", n, nb, nb, nrhs, tb, ldtb, ipiv2, b, ldb, info);
         if (n > nb) {
             //
-            //           Compute (L**T \ B) -> B   [ L**T \ (T \ (L \P**T * B) ) ]
+            // Compute (L**T \ B) -> B   [ L**T \ (T \ (L \P**T * B) ) ]
             //
             Rtrsm("L", "L", "T", "U", n - nb, nrhs, one, &a[((nb + 1) - 1)], lda, &b[((nb + 1) - 1)], ldb);
             //
-            //           Pivot, P * B -> B  [ P * (L**T \ (T \ (L \P**T * B) )) ]
+            // Pivot, P * B -> B  [ P * (L**T \ (T \ (L \P**T * B) )) ]
             //
             Rlaswp(nrhs, b, ldb, nb + 1, n, ipiv, -1);
             //
         }
     }
     //
-    //     End of Rsytrs_aa_2stage
+    // End of Rsytrs_aa_2stage
     //
 }

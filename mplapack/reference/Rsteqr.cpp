@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DSTEQR.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -73,30 +80,7 @@ void Rsteqr(const char *compz, INTEGER const n, REAL *d, REAL *e, REAL *z, INTEG
     INTEGER k = 0;
     INTEGER j = 0;
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     //
@@ -121,7 +105,7 @@ void Rsteqr(const char *compz, INTEGER const n, REAL *d, REAL *e, REAL *z, INTEG
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0) {
         return;
@@ -129,12 +113,12 @@ void Rsteqr(const char *compz, INTEGER const n, REAL *d, REAL *e, REAL *z, INTEG
     //
     if (n == 1) {
         if (icompz == 2) {
-            z[(1 - 1)] = one;
+            z[0] = one;
         }
         return;
     }
     //
-    //     Determine the unit roundoff and over/underflow thresholds.
+    // Determine the unit roundoff and over/underflow thresholds.
     //
     eps = Rlamch("E");
     eps2 = pow2(eps);
@@ -143,8 +127,8 @@ void Rsteqr(const char *compz, INTEGER const n, REAL *d, REAL *e, REAL *z, INTEG
     ssfmax = sqrt(safmax) / three;
     ssfmin = sqrt(safmin) / eps2;
     //
-    //     Compute the eigenvalues and eigenvectors of the tridiagonal
-    //     matrix.
+    // Compute the eigenvalues and eigenvectors of the tridiagonal
+    // matrix.
     //
     if (icompz == 2) {
         Rlaset("Full", n, n, zero, one, z, ldz);
@@ -153,9 +137,9 @@ void Rsteqr(const char *compz, INTEGER const n, REAL *d, REAL *e, REAL *z, INTEG
     nmaxit = n * maxit;
     jtot = 0;
     //
-    //     Determine where the matrix splits and choose QL or QR iteration
-    //     for each block, according to whether top or bottom diagonal
-    //     element is smaller.
+    // Determine where the matrix splits and choose QL or QR iteration
+    // for each block, according to whether top or bottom diagonal
+    // element is smaller.
     //
     l1 = 1;
     nm1 = n - 1;
@@ -191,7 +175,7 @@ statement_30:
         goto statement_10;
     }
     //
-    //     Scale submatrix in rows and columns L to LEND
+    // Scale submatrix in rows and columns L to LEND
     //
     anorm = Rlanst("M", lend - l + 1, &d[l - 1], &e[l - 1]);
     iscale = 0;
@@ -208,7 +192,7 @@ statement_30:
         Rlascl("G", 0, 0, anorm, ssfmin, lend - l, 1, &e[l - 1], n, info);
     }
     //
-    //     Choose between QL and QR iteration
+    // Choose between QL and QR iteration
     //
     if (abs(d[lend - 1]) < abs(d[l - 1])) {
         lend = lsv;
@@ -217,9 +201,9 @@ statement_30:
     //
     if (lend > l) {
     //
-    //        QL Iteration
+    // QL Iteration
     //
-    //        Look for small subdiagonal element.
+    // Look for small subdiagonal element.
     //
     statement_40:
         if (l != lend) {
@@ -243,8 +227,8 @@ statement_30:
             goto statement_80;
         }
         //
-        //        If remaining matrix is 2-by-2, use Rlae2 or SLAEV2
-        //        to compute its eigensystem.
+        // If remaining matrix is 2-by-2, use Rlae2 or SLAEV2
+        // to compute its eigensystem.
         //
         if (m == l + 1) {
             if (icompz > 0) {
@@ -270,7 +254,7 @@ statement_30:
         }
         jtot++;
         //
-        //        Form shift.
+        // Form shift.
         //
         g = (d[(l + 1) - 1] - p) / (two * e[l - 1]);
         r = Rlapy2(g, one);
@@ -280,7 +264,7 @@ statement_30:
         c = one;
         p = zero;
         //
-        //        Inner loop
+        // Inner loop
         //
         mm1 = m - 1;
         for (i = mm1; i >= l; i = i - 1) {
@@ -296,7 +280,7 @@ statement_30:
             d[(i + 1) - 1] = g + p;
             g = c * r - b;
             //
-            //           If eigenvectors are desired, then save rotations.
+            // If eigenvectors are desired, then save rotations.
             //
             if (icompz > 0) {
                 work[i - 1] = c;
@@ -305,7 +289,7 @@ statement_30:
             //
         }
         //
-        //        If eigenvectors are desired, then apply saved rotations.
+        // If eigenvectors are desired, then apply saved rotations.
         //
         if (icompz > 0) {
             mm = m - l + 1;
@@ -316,7 +300,7 @@ statement_30:
         e[l - 1] = g;
         goto statement_40;
     //
-    //        Eigenvalue found.
+    // Eigenvalue found.
     //
     statement_80:
         d[l - 1] = p;
@@ -329,9 +313,9 @@ statement_30:
         //
     } else {
     //
-    //        QR Iteration
+    // QR Iteration
     //
-    //        Look for small superdiagonal element.
+    // Look for small superdiagonal element.
     //
     statement_90:
         if (l != lend) {
@@ -355,8 +339,8 @@ statement_30:
             goto statement_130;
         }
         //
-        //        If remaining matrix is 2-by-2, use Rlae2 or SLAEV2
-        //        to compute its eigensystem.
+        // If remaining matrix is 2-by-2, use Rlae2 or SLAEV2
+        // to compute its eigensystem.
         //
         if (m == l - 1) {
             if (icompz > 0) {
@@ -382,7 +366,7 @@ statement_30:
         }
         jtot++;
         //
-        //        Form shift.
+        // Form shift.
         //
         g = (d[(l - 1) - 1] - p) / (two * e[(l - 1) - 1]);
         r = Rlapy2(g, one);
@@ -392,7 +376,7 @@ statement_30:
         c = one;
         p = zero;
         //
-        //        Inner loop
+        // Inner loop
         //
         lm1 = l - 1;
         for (i = m; i <= lm1; i = i + 1) {
@@ -408,7 +392,7 @@ statement_30:
             d[i - 1] = g + p;
             g = c * r - b;
             //
-            //           If eigenvectors are desired, then save rotations.
+            // If eigenvectors are desired, then save rotations.
             //
             if (icompz > 0) {
                 work[i - 1] = c;
@@ -417,7 +401,7 @@ statement_30:
             //
         }
         //
-        //        If eigenvectors are desired, then apply saved rotations.
+        // If eigenvectors are desired, then apply saved rotations.
         //
         if (icompz > 0) {
             mm = l - m + 1;
@@ -428,7 +412,7 @@ statement_30:
         e[lm1 - 1] = g;
         goto statement_90;
     //
-    //        Eigenvalue found.
+    // Eigenvalue found.
     //
     statement_130:
         d[l - 1] = p;
@@ -441,7 +425,7 @@ statement_30:
         //
     }
 //
-//     Undo scaling if necessary
+// Undo scaling if necessary
 //
 statement_140:
     if (iscale == 1) {
@@ -452,8 +436,8 @@ statement_140:
         Rlascl("G", 0, 0, ssfmin, anorm, lendsv - lsv, 1, &e[lsv - 1], n, info);
     }
     //
-    //     Check for no convergence to an eigenvalue after a total
-    //     of N*MAXIT iterations.
+    // Check for no convergence to an eigenvalue after a total
+    // of N*MAXIT iterations.
     //
     if (jtot < nmaxit) {
         goto statement_10;
@@ -465,18 +449,18 @@ statement_140:
     }
     goto statement_190;
 //
-//     Order eigenvalues and eigenvectors.
+// Order eigenvalues and eigenvectors.
 //
 statement_160:
     if (icompz == 0) {
         //
-        //        Use Quick Sort
+        // Use Quick Sort
         //
         Rlasrt("I", n, d, info);
         //
     } else {
         //
-        //        Use Selection Sort to minimize swaps of eigenvectors
+        // Use Selection Sort to minimize swaps of eigenvectors
         //
         for (ii = 2; ii <= n; ii = ii + 1) {
             i = ii - 1;
@@ -498,6 +482,6 @@ statement_160:
 //
 statement_190:;
     //
-    //     End of Rsteqr
+    // End of Rsteqr
     //
 }

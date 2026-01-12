@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,12 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine ZUNBDB6.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Cunbdb6(INTEGER const m1, INTEGER const m2, INTEGER const n, COMPLEX *x1, INTEGER const incx1, COMPLEX *x2, INTEGER const incx2, COMPLEX *q1, INTEGER const ldq1, COMPLEX *q2, INTEGER const ldq2, COMPLEX *work, INTEGER const lwork, INTEGER &info) {
     //
-    //     Test input arguments
+    // Test input arguments
     //
     info = 0;
     if (m1 < 0) {
@@ -57,8 +64,8 @@ void Cunbdb6(INTEGER const m1, INTEGER const m2, INTEGER const n, COMPLEX *x1, I
         return;
     }
     //
-    //     First, project X onto the orthogonal complement of Q's column
-    //     space
+    // First, project X onto the orthogonal complement of Q's column
+    // space
     //
     const REAL realzero = 0.0;
     REAL scl1 = realzero;
@@ -95,11 +102,11 @@ void Cunbdb6(INTEGER const m1, INTEGER const m2, INTEGER const n, COMPLEX *x1, I
     Classq(m2, x2, incx2, scl2, ssq2);
     REAL normsq2 = pow2(scl1) * ssq1 + pow2(scl2) * ssq2;
     //
-    //     If projection is sufficiently large in norm, then stop.
-    //     If projection is zero, then stop.
-    //     Otherwise, project again.
+    // If projection is sufficiently large in norm, then stop.
+    // If projection is zero, then stop.
+    // Otherwise, project again.
     //
-    const REAL alphasq = 0.01e0;
+    const REAL alphasq = 0.01;
     if (normsq2 >= alphasq * normsq1) {
         return;
     }
@@ -135,9 +142,9 @@ void Cunbdb6(INTEGER const m1, INTEGER const m2, INTEGER const n, COMPLEX *x1, I
     Classq(m1, x1, incx1, scl1, ssq1);
     normsq2 = pow2(scl1) * ssq1 + pow2(scl2) * ssq2;
     //
-    //     If second projection is sufficiently large in norm, then do
-    //     nothing more. Alternatively, if it shrunk significantly, then
-    //     truncate it to zero.
+    // If second projection is sufficiently large in norm, then do
+    // nothing more. Alternatively, if it shrunk significantly, then
+    // truncate it to zero.
     //
     if (normsq2 < alphasq * normsq1) {
         for (i = 1; i <= m1; i = i + 1) {
@@ -148,6 +155,6 @@ void Cunbdb6(INTEGER const m1, INTEGER const m2, INTEGER const n, COMPLEX *x1, I
         }
     }
     //
-    //     End of Cunbdb6
+    // End of Cunbdb6
     //
 }

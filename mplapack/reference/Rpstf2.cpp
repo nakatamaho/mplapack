@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DPSTF2.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -41,30 +48,7 @@ void Rpstf2(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INTEG
     REAL dtemp = 0.0;
     const REAL one = 1.0;
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input parameters
+    // Test the input parameters
     //
     info = 0;
     upper = Mlsame(uplo, "U");
@@ -80,19 +64,19 @@ void Rpstf2(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INTEG
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0) {
         return;
     }
     //
-    //     Initialize PIV
+    // Initialize PIV
     //
     for (i = 1; i <= n; i = i + 1) {
         piv[i - 1] = i;
     }
     //
-    //     Compute stopping value
+    // Compute stopping value
     //
     pvt = 1;
     ajj = a[(pvt - 1) + (pvt - 1) * lda];
@@ -108,7 +92,7 @@ void Rpstf2(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INTEG
         goto statement_170;
     }
     //
-    //     Compute stopping value if not supplied
+    // Compute stopping value if not supplied
     //
     if (tol < zero) {
         dstop = n * Rlamch("Epsilon") * ajj;
@@ -116,7 +100,7 @@ void Rpstf2(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INTEG
         dstop = tol;
     }
     //
-    //     Set first half of WORK to zero, holds dot products
+    // Set first half of WORK to zero, holds dot products
     //
     for (i = 1; i <= n; i = i + 1) {
         work[i - 1] = 0.0;
@@ -124,13 +108,13 @@ void Rpstf2(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INTEG
     //
     if (upper) {
         //
-        //        Compute the Cholesky factorization P**T * A * P = U**T * U
+        // Compute the Cholesky factorization P**T * A * P = U**T * U
         //
         for (j = 1; j <= n; j = j + 1) {
             //
-            //        Find pivot, test for exit, else swap rows and columns
-            //        Update dot products, compute possible pivots which are
-            //        stored in the second half of WORK
+            // Find pivot, test for exit, else swap rows and columns
+            // Update dot products, compute possible pivots which are
+            // stored in the second half of WORK
             //
             for (i = j; i <= n; i = i + 1) {
                 //
@@ -153,7 +137,7 @@ void Rpstf2(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INTEG
             //
             if (j != pvt) {
                 //
-                //              Pivot OK, so can now swap pivot rows and columns
+                // Pivot OK, so can now swap pivot rows and columns
                 //
                 a[(pvt - 1) + (pvt - 1) * lda] = a[(j - 1) + (j - 1) * lda];
                 Rswap(j - 1, &a[(j - 1) * lda], 1, &a[(pvt - 1) * lda], 1);
@@ -162,7 +146,7 @@ void Rpstf2(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INTEG
                 }
                 Rswap(pvt - j - 1, &a[(j - 1) + ((j + 1) - 1) * lda], lda, &a[((j + 1) - 1) + (pvt - 1) * lda], 1);
                 //
-                //              Swap dot products and PIV
+                // Swap dot products and PIV
                 //
                 dtemp = work[j - 1];
                 work[j - 1] = work[pvt - 1];
@@ -175,7 +159,7 @@ void Rpstf2(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INTEG
             ajj = sqrt(ajj);
             a[(j - 1) + (j - 1) * lda] = ajj;
             //
-            //           Compute elements J+1:N of row J
+            // Compute elements J+1:N of row J
             //
             if (j < n) {
                 Rgemv("Trans", j - 1, n - j, -one, &a[((j + 1) - 1) * lda], lda, &a[(j - 1) * lda], 1, one, &a[(j - 1) + ((j + 1) - 1) * lda], lda);
@@ -186,13 +170,13 @@ void Rpstf2(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INTEG
         //
     } else {
         //
-        //        Compute the Cholesky factorization P**T * A * P = L * L**T
+        // Compute the Cholesky factorization P**T * A * P = L * L**T
         //
         for (j = 1; j <= n; j = j + 1) {
             //
-            //        Find pivot, test for exit, else swap rows and columns
-            //        Update dot products, compute possible pivots which are
-            //        stored in the second half of WORK
+            // Find pivot, test for exit, else swap rows and columns
+            // Update dot products, compute possible pivots which are
+            // stored in the second half of WORK
             //
             for (i = j; i <= n; i = i + 1) {
                 //
@@ -215,7 +199,7 @@ void Rpstf2(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INTEG
             //
             if (j != pvt) {
                 //
-                //              Pivot OK, so can now swap pivot rows and columns
+                // Pivot OK, so can now swap pivot rows and columns
                 //
                 a[(pvt - 1) + (pvt - 1) * lda] = a[(j - 1) + (j - 1) * lda];
                 Rswap(j - 1, &a[(j - 1)], lda, &a[(pvt - 1)], lda);
@@ -224,7 +208,7 @@ void Rpstf2(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INTEG
                 }
                 Rswap(pvt - j - 1, &a[((j + 1) - 1) + (j - 1) * lda], 1, &a[(pvt - 1) + ((j + 1) - 1) * lda], lda);
                 //
-                //              Swap dot products and PIV
+                // Swap dot products and PIV
                 //
                 dtemp = work[j - 1];
                 work[j - 1] = work[pvt - 1];
@@ -237,7 +221,7 @@ void Rpstf2(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INTEG
             ajj = sqrt(ajj);
             a[(j - 1) + (j - 1) * lda] = ajj;
             //
-            //           Compute elements J+1:N of column J
+            // Compute elements J+1:N of column J
             //
             if (j < n) {
                 Rgemv("No Trans", n - j, j - 1, -one, &a[((j + 1) - 1)], lda, &a[(j - 1)], lda, one, &a[((j + 1) - 1) + (j - 1) * lda], 1);
@@ -248,21 +232,21 @@ void Rpstf2(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INTEG
         //
     }
     //
-    //     Ran to completion, A has full rank
+    // Ran to completion, A has full rank
     //
     rank = n;
     //
     goto statement_170;
 statement_160:
     //
-    //     Rank is number of steps completed.  Set INFO = 1 to signal
-    //     that the factorization cannot be used to solve a system.
+    // Rank is number of steps completed.  Set INFO = 1 to signal
+    // that the factorization cannot be used to solve a system.
     //
     rank = j - 1;
     info = 1;
 //
 statement_170:;
     //
-    //     End of Rpstf2
+    // End of Rpstf2
     //
 }

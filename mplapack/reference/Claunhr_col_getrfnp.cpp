@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,35 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine ZLAUNHR_COL_GETRFNP.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Claunhr_col_getrfnp(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *d, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     if (m < 0) {
@@ -69,13 +53,13 @@ void Claunhr_col_getrfnp(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER c
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (min(m, n) == 0) {
         return;
     }
     //
-    //     Determine the block size for this environment.
+    // Determine the block size for this environment.
     //
     INTEGER nb = iMlaenv(1, "Claunhr_col_getrfnp", " ", m, n, -1, -1);
     //
@@ -85,28 +69,28 @@ void Claunhr_col_getrfnp(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER c
     const COMPLEX cone = COMPLEX(1.0, 0.0);
     if (nb <= 1 || nb >= min(m, n)) {
         //
-        //        Use unblocked code.
+        // Use unblocked code.
         //
         Claunhr_col_getrfnp2(m, n, a, lda, d, info);
     } else {
         //
-        //        Use blocked code.
+        // Use blocked code.
         //
         for (j = 1; j <= min(m, n); j = j + nb) {
             jb = min(min(m, n) - j + 1, nb);
             //
-            //           Factor diagonal and subdiagonal blocks.
+            // Factor diagonal and subdiagonal blocks.
             //
             Claunhr_col_getrfnp2(m - j + 1, jb, &a[(j - 1) + (j - 1) * lda], lda, &d[j - 1], iinfo);
             //
             if (j + jb <= n) {
                 //
-                //              Compute block row of U.
+                // Compute block row of U.
                 //
                 Ctrsm("Left", "Lower", "No transpose", "Unit", jb, n - j - jb + 1, cone, &a[(j - 1) + (j - 1) * lda], lda, &a[(j - 1) + ((j + jb) - 1) * lda], lda);
                 if (j + jb <= m) {
                     //
-                    //                 Update trailing submatrix.
+                    // Update trailing submatrix.
                     //
                     Cgemm("No transpose", "No transpose", m - j - jb + 1, n - j - jb + 1, jb, -cone, &a[((j + jb) - 1) + (j - 1) * lda], lda, &a[(j - 1) + ((j + jb) - 1) * lda], lda, cone, &a[((j + jb) - 1) + ((j + jb) - 1) * lda], lda);
                 }
@@ -114,6 +98,6 @@ void Claunhr_col_getrfnp(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER c
         }
     }
     //
-    //     End of Claunhr_col_getrfnp
+    // End of Claunhr_col_getrfnp
     //
 }

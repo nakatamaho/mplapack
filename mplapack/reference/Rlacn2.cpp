@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DLACN2.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -38,7 +45,7 @@ void Rlacn2(INTEGER const n, REAL *v, REAL *x, INTEGER *isgn, REAL &est, INTEGER
     INTEGER jlast = 0;
     const INTEGER itmax = 5;
     REAL altsgn = 0.0;
-    const REAL two = 2.0e+0;
+    const REAL two = 2.0;
     REAL temp = 0.0;
     //
     if (kase == 0) {
@@ -65,14 +72,14 @@ void Rlacn2(INTEGER const n, REAL *v, REAL *x, INTEGER *isgn, REAL &est, INTEGER
         break;
     }
 //
-//     ................ ENTRY   (ISAVE( 1 ) = 1)
-//     FIRST ITERATION.  X HAS BEEN OVERWRITTEN BY A*X.
+// ................ ENTRY   (ISAVE( 1 ) = 1)
+// FIRST ITERATION.  X HAS BEEN OVERWRITTEN BY A*X.
 //
 statement_20:
     if (n == 1) {
         v[1 - 1] = x[1 - 1];
         est = abs(v[1 - 1]);
-        //        ... QUIT
+        // ... QUIT
         goto statement_150;
     }
     est = Rasum(n, x, 1);
@@ -89,14 +96,14 @@ statement_20:
     isave[1 - 1] = 2;
     return;
 //
-//     ................ ENTRY   (ISAVE( 1 ) = 2)
-//     FIRST ITERATION.  X HAS BEEN OVERWRITTEN BY TRANSPOSE(A)*X.
+// ................ ENTRY   (ISAVE( 1 ) = 2)
+// FIRST ITERATION.  X HAS BEEN OVERWRITTEN BY TRANSPOSE(A)*X.
 //
 statement_40:
     isave[2 - 1] = iRamax(n, x, 1);
     isave[3 - 1] = 2;
 //
-//     MAIN LOOP - ITERATIONS 2,3,...,ITMAX.
+// MAIN LOOP - ITERATIONS 2,3,...,ITMAX.
 //
 statement_50:
     for (i = 1; i <= n; i = i + 1) {
@@ -107,8 +114,8 @@ statement_50:
     isave[1 - 1] = 3;
     return;
 //
-//     ................ ENTRY   (ISAVE( 1 ) = 3)
-//     X HAS BEEN OVERWRITTEN BY A*X.
+// ................ ENTRY   (ISAVE( 1 ) = 3)
+// X HAS BEEN OVERWRITTEN BY A*X.
 //
 statement_70:
     Rcopy(n, x, 1, v, 1);
@@ -124,11 +131,11 @@ statement_70:
             goto statement_90;
         }
     }
-    //     REPEATED SIGN VECTOR DETECTED, HENCE ALGORITHM HAS CONVERGED.
+    // REPEATED SIGN VECTOR DETECTED, HENCE ALGORITHM HAS CONVERGED.
     goto statement_120;
 //
 statement_90:
-    //     TEST FOR CYCLING.
+    // TEST FOR CYCLING.
     if (est <= estold) {
         goto statement_120;
     }
@@ -145,8 +152,8 @@ statement_90:
     isave[1 - 1] = 4;
     return;
 //
-//     ................ ENTRY   (ISAVE( 1 ) = 4)
-//     X HAS BEEN OVERWRITTEN BY TRANSPOSE(A)*X.
+// ................ ENTRY   (ISAVE( 1 ) = 4)
+// X HAS BEEN OVERWRITTEN BY TRANSPOSE(A)*X.
 //
 statement_110:
     jlast = isave[2 - 1];
@@ -156,7 +163,7 @@ statement_110:
         goto statement_50;
     }
 //
-//     ITERATION COMPLETE.  FINAL STAGE.
+// ITERATION COMPLETE.  FINAL STAGE.
 //
 statement_120:
     altsgn = one;
@@ -168,8 +175,8 @@ statement_120:
     isave[1 - 1] = 5;
     return;
 //
-//     ................ ENTRY   (ISAVE( 1 ) = 5)
-//     X HAS BEEN OVERWRITTEN BY A*X.
+// ................ ENTRY   (ISAVE( 1 ) = 5)
+// X HAS BEEN OVERWRITTEN BY A*X.
 //
 statement_140:
     temp = two * (Rasum(n, x, 1) / castREAL(3 * n));
@@ -181,6 +188,6 @@ statement_140:
 statement_150:
     kase = 0;
     //
-    //     End of Rlacn2
+    // End of Rlacn2
     //
 }

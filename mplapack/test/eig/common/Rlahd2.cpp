@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DLAHD2.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -195,18 +202,18 @@ void Rlahd2(INTEGER const iounit, const char *path) {
     if (Mlsamen(2, c2, "HS")) {
         if (sord) {
             //
-            //           Real Non-symmetric Eigenvalue Problem:
+            // Real Non-symmetric Eigenvalue Problem:
             //
             write(iounit, "(/,1x,a3,' -- Real Non-symmetric eigenvalue problem')"), path;
             //
-            //           Matrix types
+            // Matrix types
             //
             write(iounit, format_9988);
             write(iounit, format_9987);
             write(iounit, format_9986), "pairs ", "pairs ", "prs.", "prs.";
             write(iounit, format_9985);
             //
-            //           Tests performed
+            // Tests performed
             //
             {
                 write_loop wloop(cmn, iounit, format_9984);
@@ -218,18 +225,18 @@ void Rlahd2(INTEGER const iounit, const char *path) {
             //
         } else {
             //
-            //           Complex Non-symmetric Eigenvalue Problem:
+            // Complex Non-symmetric Eigenvalue Problem:
             //
             write(iounit, "(/,1x,a3,' -- Complex Non-symmetric eigenvalue problem')"), path;
             //
-            //           Matrix types
+            // Matrix types
             //
             write(iounit, format_9988);
             write(iounit, format_9987);
             write(iounit, format_9986), "e.vals", "e.vals", "e.vs", "e.vs";
             write(iounit, format_9985);
             //
-            //           Tests performed
+            // Tests performed
             //
             {
                 write_loop wloop(cmn, iounit, format_9984);
@@ -244,33 +251,33 @@ void Rlahd2(INTEGER const iounit, const char *path) {
         //
         if (sord) {
             //
-            //           Real Symmetric Eigenvalue Problem:
+            // Real Symmetric Eigenvalue Problem:
             //
             write(iounit, "(/,1x,a3,' -- Real Symmetric eigenvalue problem')"), path;
             //
-            //           Matrix types
+            // Matrix types
             //
             write(iounit, format_9983);
             write(iounit, format_9982);
             write(iounit, format_9981), "Symmetric";
             //
-            //           Tests performed
+            // Tests performed
             //
             write(iounit, "(/,' Tests performed:  See sdrvst.f')");
             //
         } else {
             //
-            //           Complex Hermitian Eigenvalue Problem:
+            // Complex Hermitian Eigenvalue Problem:
             //
             write(iounit, "(/,1x,a3,' -- Complex Hermitian eigenvalue problem')"), path;
             //
-            //           Matrix types
+            // Matrix types
             //
             write(iounit, format_9983);
             write(iounit, format_9982);
             write(iounit, format_9981), "Hermitian";
             //
-            //           Tests performed
+            // Tests performed
             //
             write(iounit, "(/,' Tests performed:  See cdrvst.f')");
         }
@@ -279,17 +286,17 @@ void Rlahd2(INTEGER const iounit, const char *path) {
         //
         if (sord) {
             //
-            //           Real Symmetric Generalized Eigenvalue Problem:
+            // Real Symmetric Generalized Eigenvalue Problem:
             //
             write(iounit, "(/,1x,a3,' -- Real Symmetric Generalized eigenvalue ','problem')"), path;
             //
-            //           Matrix types
+            // Matrix types
             //
             write(iounit, format_9980);
             write(iounit, format_9979);
             write(iounit, format_9978), "Symmetric";
             //
-            //           Tests performed
+            // Tests performed
             //
             write(iounit, "(/,' Tests performed:   ',/,"
                           "'( For each pair (A,B), where A is of the given type ',/,"
@@ -326,17 +333,17 @@ void Rlahd2(INTEGER const iounit, const char *path) {
             //
         } else {
             //
-            //           Complex Hermitian Generalized Eigenvalue Problem:
+            // Complex Hermitian Generalized Eigenvalue Problem:
             //
             write(iounit, "(/,1x,a3,' -- Complex Hermitian Generalized eigenvalue ','problem')"), path;
             //
-            //           Matrix types
+            // Matrix types
             //
             write(iounit, format_9980);
             write(iounit, format_9979);
             write(iounit, format_9978), "Hermitian";
             //
-            //           Tests performed
+            // Tests performed
             //
             write(iounit, "(/,' Tests performed:   ',/,"
                           "'( For each pair (A,B), where A is of the given type ',/,"
@@ -377,29 +384,29 @@ void Rlahd2(INTEGER const iounit, const char *path) {
         //
         if (sord) {
             //
-            //           Real Singular Value Decomposition:
+            // Real Singular Value Decomposition:
             //
             write(iounit, "(/,1x,a3,' -- Real Singular Value Decomposition')"), path;
             //
-            //           Matrix types
+            // Matrix types
             //
             write(iounit, format_9973);
             //
-            //           Tests performed
+            // Tests performed
             //
             write(iounit, format_9972), "orthogonal";
             write(iounit, format_9971);
         } else {
             //
-            //           Complex Singular Value Decomposition:
+            // Complex Singular Value Decomposition:
             //
             write(iounit, "(/,1x,a3,' -- Complex Singular Value Decomposition')"), path;
             //
-            //           Matrix types
+            // Matrix types
             //
             write(iounit, format_9973);
             //
-            //           Tests performed
+            // Tests performed
             //
             write(iounit, format_9972), "unitary   ";
             write(iounit, format_9971);
@@ -409,28 +416,28 @@ void Rlahd2(INTEGER const iounit, const char *path) {
         //
         if (sord) {
             //
-            //           Real General Band reduction to bidiagonal form:
+            // Real General Band reduction to bidiagonal form:
             //
             write(iounit, "(/,1x,a3,' -- Real Band reduc. to bidiagonal form')"), path;
             //
-            //           Matrix types
+            // Matrix types
             //
             write(iounit, format_9970);
             //
-            //           Tests performed
+            // Tests performed
             //
             write(iounit, format_9969), "orthogonal";
         } else {
             //
-            //           Complex Band reduction to bidiagonal form:
+            // Complex Band reduction to bidiagonal form:
             //
             write(iounit, "(/,1x,a3,' -- Complex Band reduc. to bidiagonal form')"), path;
             //
-            //           Matrix types
+            // Matrix types
             //
             write(iounit, format_9970);
             //
-            //           Tests performed
+            // Tests performed
             //
             write(iounit, format_9969), "unitary   ";
         }
@@ -441,14 +448,14 @@ void Rlahd2(INTEGER const iounit, const char *path) {
         return;
     }
     //
-    //     Symmetric/Hermitian eigenproblem
+    // Symmetric/Hermitian eigenproblem
     //
-    //     Symmetric/Hermitian Generalized eigenproblem
+    // Symmetric/Hermitian Generalized eigenproblem
     //
-    //     Singular Value Decomposition
+    // Singular Value Decomposition
     //
-    //     Band reduction to bidiagonal form
+    // Band reduction to bidiagonal form
     //
-    //     End of Rlahd2
+    // End of Rlahd2
     //
 }

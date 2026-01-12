@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine ZERRRFP.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -223,7 +230,7 @@ void Cerrrfp(INTEGER const nunit) {
     Chfrk("N", "U", "N", 0, 0, alpha, a, 0, beta, b);
     chkxer("Chfrk ", infot, nout, lerr, ok);
     //
-    //     Print a summary line.
+    // Print a summary line.
     //
     if (ok) {
         write(nout, "(1x,'MULTIPLE PRECISION COMPLEX RFP routines passed the tests of the ','error exits')");
@@ -231,6 +238,6 @@ void Cerrrfp(INTEGER const nunit) {
         write(nout, "(' *** RFP routines failed the tests of the error ','exits ***')");
     }
     //
-    //     End of Cerrrfp
+    // End of Cerrrfp
     //
 }

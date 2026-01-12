@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DLAMRG.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -35,21 +42,6 @@ void Rlamrg(INTEGER const n1, INTEGER const n2, REAL *a, INTEGER const dtrd1, IN
     INTEGER ind1 = 0;
     INTEGER ind2 = 0;
     INTEGER i = 0;
-    //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Executable Statements ..
     //
     n1sv = n1;
     n2sv = n2;
@@ -64,7 +56,7 @@ void Rlamrg(INTEGER const n1, INTEGER const n2, REAL *a, INTEGER const dtrd1, IN
         ind2 = n1 + n2;
     }
     i = 1;
-//     while ( (N1SV > 0) & (N2SV > 0) )
+// while ( (N1SV > 0) & (N2SV > 0) )
 statement_10:
     if (n1sv > 0 && n2sv > 0) {
         if (a[ind1 - 1] <= a[ind2 - 1]) {
@@ -80,7 +72,7 @@ statement_10:
         }
         goto statement_10;
     }
-    //     end while
+    // end while
     if (n1sv == 0) {
         for (n1sv = 1; n1sv <= n2sv; n1sv = n1sv + 1) {
             index[i - 1] = ind2;
@@ -88,7 +80,7 @@ statement_10:
             ind2 += dtrd2;
         }
     } else {
-        //     N2SV .EQ. 0
+        // N2SV .EQ. 0
         for (n2sv = 1; n2sv <= n1sv; n2sv = n2sv + 1) {
             index[i - 1] = ind1;
             i++;
@@ -96,6 +88,6 @@ statement_10:
         }
     }
     //
-    //     End of Rlamrg
+    // End of Rlamrg
     //
 }

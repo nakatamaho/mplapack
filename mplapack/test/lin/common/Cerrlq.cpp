@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZERRLQ.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -44,7 +51,7 @@ void Cerrlq(const char *path, INTEGER const nunit) {
     nout = nunit;
     write(nout, star);
     //
-    //     Set the variables to innocuous values.
+    // Set the variables to innocuous values.
     //
     INTEGER j = 0;
     const INTEGER nmax = 2;
@@ -67,9 +74,9 @@ void Cerrlq(const char *path, INTEGER const nunit) {
     }
     ok = true;
     //
-    //     Error exits for LQ factorization
+    // Error exits for LQ factorization
     //
-    //     Cgelqf
+    // Cgelqf
     //
     strncpy(srnamt, "Cgelqf", srnamt_len);
     infot = 1;
@@ -86,7 +93,7 @@ void Cerrlq(const char *path, INTEGER const nunit) {
     Cgelqf(2, 1, a, 2, b, w, 1, info);
     chkxer("Cgelqf", infot, nout, lerr, ok);
     //
-    //     Cgelq2
+    // Cgelq2
     //
     strncpy(srnamt, "Cgelq2", srnamt_len);
     infot = 1;
@@ -99,7 +106,7 @@ void Cerrlq(const char *path, INTEGER const nunit) {
     Cgelq2(2, 1, a, 1, b, w, info);
     chkxer("Cgelq2", infot, nout, lerr, ok);
     //
-    //     Cgelqs
+    // Cgelqs
     //
     strncpy(srnamt, "Cgelqs", srnamt_len);
     infot = 1;
@@ -124,7 +131,7 @@ void Cerrlq(const char *path, INTEGER const nunit) {
     Cgelqs(1, 1, 2, a, 1, x, b, 1, w, 1, info);
     chkxer("Cgelqs", infot, nout, lerr, ok);
     //
-    //     Cunglq
+    // Cunglq
     //
     strncpy(srnamt, "Cunglq", srnamt_len);
     infot = 1;
@@ -149,7 +156,7 @@ void Cerrlq(const char *path, INTEGER const nunit) {
     Cunglq(2, 2, 0, a, 2, x, w, 1, info);
     chkxer("Cunglq", infot, nout, lerr, ok);
     //
-    //     Cungl2
+    // Cungl2
     //
     strncpy(srnamt, "Cungl2", srnamt_len);
     infot = 1;
@@ -171,7 +178,7 @@ void Cerrlq(const char *path, INTEGER const nunit) {
     Cungl2(2, 2, 0, a, 1, x, w, info);
     chkxer("Cungl2", infot, nout, lerr, ok);
     //
-    //     Cunmlq
+    // Cunmlq
     //
     strncpy(srnamt, "Cunmlq", srnamt_len);
     infot = 1;
@@ -211,7 +218,7 @@ void Cerrlq(const char *path, INTEGER const nunit) {
     Cunmlq("R", "N", 2, 1, 0, a, 1, x, af, 2, w, 1, info);
     chkxer("Cunmlq", infot, nout, lerr, ok);
     //
-    //     Cunml2
+    // Cunml2
     //
     strncpy(srnamt, "Cunml2", srnamt_len);
     infot = 1;
@@ -245,10 +252,10 @@ void Cerrlq(const char *path, INTEGER const nunit) {
     Cunml2("L", "N", 2, 1, 0, a, 2, x, af, 1, w, info);
     chkxer("Cunml2", infot, nout, lerr, ok);
     //
-    //     Print a summary line.
+    // Print a summary line.
     //
     Alaesm(path, ok, nout);
     //
-    //     End of Cerrlq
+    // End of Cerrlq
     //
 }

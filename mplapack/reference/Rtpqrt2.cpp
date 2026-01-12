@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,33 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine DTPQRT2.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Rtpqrt2(INTEGER const m, INTEGER const n, INTEGER const l, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL *t, INTEGER const ldt, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input arguments
+    // Test the input arguments
     //
     info = 0;
     if (m < 0) {
@@ -73,7 +59,7 @@ void Rtpqrt2(INTEGER const m, INTEGER const n, INTEGER const l, REAL *a, INTEGER
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0 || m == 0) {
         return;
@@ -82,24 +68,24 @@ void Rtpqrt2(INTEGER const m, INTEGER const n, INTEGER const l, REAL *a, INTEGER
     INTEGER i = 0;
     INTEGER p = 0;
     INTEGER j = 0;
-    const REAL one = 1.0f;
+    const REAL one = 1.0;
     REAL alpha = 0.0;
     for (i = 1; i <= n; i = i + 1) {
         //
-        //        Generate elementary reflector H(I) to annihilate B(:,I)
+        // Generate elementary reflector H(I) to annihilate B(:,I)
         //
         p = m - l + min(l, i);
         Rlarfg(p + 1, a[(i - 1) + (i - 1) * lda], &b[(i - 1) * ldb], 1, t[(i - 1)]);
         if (i < n) {
             //
-            //           W(1:N-I) := C(I:M,I+1:N)^H * C(I:M,I) [use W = T(:,N)]
+            // W(1:N-I) := C(I:M,I+1:N)^H * C(I:M,I) [use W = T(:,N)]
             //
             for (j = 1; j <= n - i; j = j + 1) {
                 t[(j - 1) + (n - 1) * ldt] = (a[(i - 1) + ((i + j) - 1) * lda]);
             }
             Rgemv("T", p, n - i, one, &b[((i + 1) - 1) * ldb], ldb, &b[(i - 1) * ldb], 1, one, &t[(n - 1) * ldt], 1);
             //
-            //           C(I:M,I+1:N) = C(I:m,I+1:N) + alpha*C(I:M,I)*W(1:N-1)^H
+            // C(I:M,I+1:N) = C(I:m,I+1:N) + alpha*C(I:M,I)*W(1:N-1)^H
             //
             alpha = -(t[(i - 1)]);
             for (j = 1; j <= n - i; j = j + 1) {
@@ -109,12 +95,12 @@ void Rtpqrt2(INTEGER const m, INTEGER const n, INTEGER const l, REAL *a, INTEGER
         }
     }
     //
-    const REAL zero = 0.0f;
+    const REAL zero = 0.0;
     INTEGER mp = 0;
     INTEGER np = 0;
     for (i = 2; i <= n; i = i + 1) {
         //
-        //        T(1:I-1,I) := C(I:M,1:I-1)^H * (alpha * C(I:M,I))
+        // T(1:I-1,I) := C(I:M,1:I-1)^H * (alpha * C(I:M,I))
         //
         alpha = -t[(i - 1)];
         //
@@ -125,31 +111,31 @@ void Rtpqrt2(INTEGER const m, INTEGER const n, INTEGER const l, REAL *a, INTEGER
         mp = min(m - l + 1, m);
         np = min(p + 1, n);
         //
-        //        Triangular part of B2
+        // Triangular part of B2
         //
         for (j = 1; j <= p; j = j + 1) {
             t[(j - 1) + (i - 1) * ldt] = alpha * b[((m - l + j) - 1) + (i - 1) * ldb];
         }
         Rtrmv("U", "T", "N", p, &b[(mp - 1)], ldb, &t[(i - 1) * ldt], 1);
         //
-        //        Rectangular part of B2
+        // Rectangular part of B2
         //
         Rgemv("T", l, i - 1 - p, alpha, &b[(mp - 1) + (np - 1) * ldb], ldb, &b[(mp - 1) + (i - 1) * ldb], 1, zero, &t[(np - 1) + (i - 1) * ldt], 1);
         //
-        //        B1
+        // B1
         //
         Rgemv("T", m - l, i - 1, alpha, b, ldb, &b[(i - 1) * ldb], 1, one, &t[(i - 1) * ldt], 1);
         //
-        //        T(1:I-1,I) := T(1:I-1,1:I-1) * T(1:I-1,I)
+        // T(1:I-1,I) := T(1:I-1,1:I-1) * T(1:I-1,I)
         //
         Rtrmv("U", "N", "N", i - 1, t, ldt, &t[(i - 1) * ldt], 1);
         //
-        //        T(I,I) = tau(I)
+        // T(I,I) = tau(I)
         //
         t[(i - 1) + (i - 1) * ldt] = t[(i - 1)];
         t[(i - 1)] = zero;
     }
     //
-    //     End of Rtpqrt2
+    // End of Rtpqrt2
     //
 }

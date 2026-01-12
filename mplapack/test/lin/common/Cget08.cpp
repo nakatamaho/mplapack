@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine ZGET08.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -86,7 +93,7 @@ void Cget08(const char *trans, INTEGER const m, INTEGER const n, INTEGER const n
         n2 = n;
     }
     //
-    //     Exit with RESID = 1/EPS if ANORM = 0.
+    // Exit with RESID = 1/EPS if ANORM = 0.
     //
     REAL eps = Rlamch("Epsilon");
     REAL anorm = Clange("I", n1, n2, a, lda, rwork);
@@ -96,13 +103,13 @@ void Cget08(const char *trans, INTEGER const m, INTEGER const n, INTEGER const n
         return;
     }
     //
-    //     Compute  B - A*X  (or  B - A'*X ) and store in B.
+    // Compute  B - A*X  (or  B - A'*X ) and store in B.
     //
     const COMPLEX cone = COMPLEX(1.0, 0.0);
     Cgemm(trans, "No transpose", n1, nrhs, n2, -cone, a, lda, x, ldx, cone, b, ldb);
     //
-    //     Compute the maximum over the number of right hand sides of
-    //        norm(B - A*X) / ( norm(A) * norm(X) * EPS ) .
+    // Compute the maximum over the number of right hand sides of
+    // norm(B - A*X) / ( norm(A) * norm(X) * EPS ) .
     //
     resid = zero;
     INTEGER j = 0;
@@ -120,6 +127,6 @@ void Cget08(const char *trans, INTEGER const m, INTEGER const n, INTEGER const n
         }
     }
     //
-    //     End of Cget02
+    // End of Cget02
     //
 }

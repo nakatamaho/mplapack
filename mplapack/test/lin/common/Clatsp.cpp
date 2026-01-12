@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine ZLATSP.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -68,14 +75,14 @@ void Clatsp(const char *uplo, INTEGER const n, COMPLEX *x, INTEGER *iseed) {
     REAL beta = alpha - 1.0 / 1000.0;
     REAL alpha3 = alpha * alpha * alpha;
     //
-    //     Fill the matrix with zeros.
+    // Fill the matrix with zeros.
     //
     INTEGER j = 0;
     for (j = 1; j <= n * (n + 1) / 2; j = j + 1) {
         x[j - 1] = 0.0;
     }
     //
-    //     UPLO = 'U':  Upper triangular storage
+    // UPLO = 'U':  Upper triangular storage
     //
     INTEGER n5 = 0;
     INTEGER jj = 0;
@@ -113,7 +120,7 @@ void Clatsp(const char *uplo, INTEGER const n, COMPLEX *x, INTEGER *iseed) {
             jj = jj - (j - 4);
         }
         //
-        //        Clean-up for N not a multiple of 5.
+        // Clean-up for N not a multiple of 5.
         //
         j = n5 - 1;
         if (j > 2) {
@@ -146,7 +153,7 @@ void Clatsp(const char *uplo, INTEGER const n, COMPLEX *x, INTEGER *iseed) {
             j = j - 1;
         }
         //
-        //     UPLO = 'L':  Lower triangular storage
+        // UPLO = 'L':  Lower triangular storage
         //
     } else {
         n5 = n / 5;
@@ -177,7 +184,7 @@ void Clatsp(const char *uplo, INTEGER const n, COMPLEX *x, INTEGER *iseed) {
             jj += (n - j - 3);
         }
         //
-        //        Clean-up for N not a multiple of 5.
+        // Clean-up for N not a multiple of 5.
         //
         j = n5 + 1;
         if (j < n - 1) {
@@ -212,6 +219,6 @@ void Clatsp(const char *uplo, INTEGER const n, COMPLEX *x, INTEGER *iseed) {
         }
     }
     //
-    //     End of Clatsp
+    // End of Clatsp
     //
 }

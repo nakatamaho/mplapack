@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DGET04.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
@@ -35,7 +42,7 @@ using fem::common;
 
 void Rget04(INTEGER const n, INTEGER const nrhs, REAL *x, INTEGER const ldx, REAL *xact, INTEGER const ldxact, REAL const rcond, REAL &resid) {
     //
-    //     Quick exit if N = 0 or NRHS = 0.
+    // Quick exit if N = 0 or NRHS = 0.
     //
     const REAL zero = 0.0;
     if (n <= 0 || nrhs <= 0) {
@@ -43,7 +50,7 @@ void Rget04(INTEGER const n, INTEGER const nrhs, REAL *x, INTEGER const ldx, REA
         return;
     }
     //
-    //     Exit with RESID = 1/EPS if RCOND is invalid.
+    // Exit with RESID = 1/EPS if RCOND is invalid.
     //
     REAL eps = Rlamch("Epsilon");
     if (rcond < zero) {
@@ -51,9 +58,9 @@ void Rget04(INTEGER const n, INTEGER const nrhs, REAL *x, INTEGER const ldx, REA
         return;
     }
     //
-    //     Compute the maximum of
-    //        norm(X - XACT) / ( norm(XACT) * EPS )
-    //     over all the vectors X and XACT .
+    // Compute the maximum of
+    // norm(X - XACT) / ( norm(XACT) * EPS )
+    // over all the vectors X and XACT .
     //
     resid = zero;
     INTEGER j = 0;
@@ -80,6 +87,6 @@ void Rget04(INTEGER const n, INTEGER const nrhs, REAL *x, INTEGER const ldx, REA
         resid = resid / eps;
     }
     //
-    //     End of Rget04
+    // End of Rget04
     //
 }

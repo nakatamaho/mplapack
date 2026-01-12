@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DERRORHR_COL.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -71,7 +78,7 @@ void Rerrorhr_col(const char *path, INTEGER const nunit) {
     nout = nunit;
     write(nout, star);
     //
-    //     Set the variables to innocuous values.
+    // Set the variables to innocuous values.
     //
     INTEGER j = 0;
     const INTEGER nmax = 2;
@@ -90,9 +97,9 @@ void Rerrorhr_col(const char *path, INTEGER const nunit) {
     }
     ok = true;
     //
-    //     Error exits for Householder reconstruction
+    // Error exits for Householder reconstruction
     //
-    //     Rorhr_col
+    // Rorhr_col
     //
     //
     infot = 1;
@@ -134,10 +141,10 @@ void Rerrorhr_col(const char *path, INTEGER const nunit) {
     Rorhr_col(4, 3, 2, a, 4, t, 1, d, info);
     chkxer("Rorhr_col", infot, nout, lerr, ok);
     //
-    //     Print a summary line.
+    // Print a summary line.
     //
     Alaesm(path, ok, nout);
     //
-    //     End of Rerrorhr_col
+    // End of Rerrorhr_col
     //
 }

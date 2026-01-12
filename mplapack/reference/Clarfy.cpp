@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,50 +26,36 @@
  *
  */
 
+// Derived from LAPACK routine ZLARFY.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Clarfy(const char *uplo, INTEGER const n, COMPLEX *v, INTEGER const incv, COMPLEX const tau, COMPLEX *c, INTEGER const ldc, COMPLEX *work) {
-    //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
     const COMPLEX zero = COMPLEX(0.0, 0.0);
     if (tau == zero) {
         return;
     }
     //
-    //     Form  w:= C * v
+    // Form  w:= C * v
     //
     const COMPLEX one = COMPLEX(1.0, 0.0);
     Chemv(uplo, n, one, c, ldc, v, incv, zero, work, 1);
     //
-    const COMPLEX half = COMPLEX(0.5e+0, 0.0);
+    const COMPLEX half = COMPLEX(0.5, 0.0);
     COMPLEX alpha = -half * tau * Cdotc(n, work, 1, v, incv);
     Caxpy(n, alpha, v, incv, work, 1);
     //
-    //     C := C - v * w' - w * v'
+    // C := C - v * w' - w * v'
     //
     Cher2(uplo, n, -tau, v, incv, work, 1, c, ldc);
     //
-    //     End of Clarfy
+    // End of Clarfy
     //
 }

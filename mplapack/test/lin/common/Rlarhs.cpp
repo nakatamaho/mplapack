@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DLARHS.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
@@ -35,30 +42,7 @@ using fem::common;
 
 void Rlarhs(const char *path, const char *xtype, const char *uplo, const char *trans, INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku, INTEGER const nrhs, REAL *a, INTEGER const lda, REAL *x, INTEGER const ldx, REAL *b, INTEGER const ldb, INTEGER *iseed, INTEGER &info) {
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     char c1[1];
@@ -103,7 +87,7 @@ void Rlarhs(const char *path, const char *xtype, const char *uplo, const char *t
         return;
     }
     //
-    //     Initialize X to NRHS random vectors unless XTYPE = 'C'.
+    // Initialize X to NRHS random vectors unless XTYPE = 'C'.
     //
     INTEGER nx = 0;
     INTEGER mb = 0;
@@ -121,27 +105,27 @@ void Rlarhs(const char *path, const char *xtype, const char *uplo, const char *t
         }
     }
     //
-    //     Multiply X by op( A ) using an appropriate
-    //     matrix multiply routine.
+    // Multiply X by op( A ) using an appropriate
+    // matrix multiply routine.
     //
     const REAL one = 1.0;
     const REAL zero = 0.0;
     char diag;
     if (Mlsamen(2, c2, "GE") || Mlsamen(2, c2, "QR") || Mlsamen(2, c2, "LQ") || Mlsamen(2, c2, "QL") || Mlsamen(2, c2, "RQ")) {
         //
-        //        General matrix
+        // General matrix
         //
         Rgemm(trans, "N", mb, nrhs, nx, one, a, lda, x, ldx, zero, b, ldb);
         //
     } else if (Mlsamen(2, c2, "PO") || Mlsamen(2, c2, "SY")) {
         //
-        //        Symmetric matrix, 2-D storage
+        // Symmetric matrix, 2-D storage
         //
         Rsymm("Left", uplo, n, nrhs, one, a, lda, x, ldx, zero, b, ldb);
         //
     } else if (Mlsamen(2, c2, "GB")) {
         //
-        //        General matrix, band storage
+        // General matrix, band storage
         //
         for (j = 1; j <= nrhs; j = j + 1) {
             Rgbmv(trans, mb, nx, kl, ku, one, a, lda, &x[(j - 1) * ldx], 1, zero, &b[(j - 1) * ldb], 1);
@@ -149,7 +133,7 @@ void Rlarhs(const char *path, const char *xtype, const char *uplo, const char *t
         //
     } else if (Mlsamen(2, c2, "PB")) {
         //
-        //        Symmetric matrix, band storage
+        // Symmetric matrix, band storage
         //
         for (j = 1; j <= nrhs; j = j + 1) {
             Rsbmv(uplo, n, kl, one, a, lda, &x[(j - 1) * ldx], 1, zero, &b[(j - 1) * ldb], 1);
@@ -157,7 +141,7 @@ void Rlarhs(const char *path, const char *xtype, const char *uplo, const char *t
         //
     } else if (Mlsamen(2, c2, "PP") || Mlsamen(2, c2, "SP")) {
         //
-        //        Symmetric matrix, packed storage
+        // Symmetric matrix, packed storage
         //
         for (j = 1; j <= nrhs; j = j + 1) {
             Rspmv(uplo, n, one, a, &x[(j - 1) * ldx], 1, zero, &b[(j - 1) * ldb], 1);
@@ -165,9 +149,9 @@ void Rlarhs(const char *path, const char *xtype, const char *uplo, const char *t
         //
     } else if (Mlsamen(2, c2, "TR")) {
         //
-        //        Triangular matrix.  Note that for triangular matrices,
-        //           KU = 1 => non-unit triangular
-        //           KU = 2 => unit triangular
+        // Triangular matrix.  Note that for triangular matrices,
+        // KU = 1 => non-unit triangular
+        // KU = 2 => unit triangular
         //
         Rlacpy("Full", n, nrhs, x, ldx, b, ldb);
         if (ku == 2) {
@@ -179,7 +163,7 @@ void Rlarhs(const char *path, const char *xtype, const char *uplo, const char *t
         //
     } else if (Mlsamen(2, c2, "TP")) {
         //
-        //        Triangular matrix, packed storage
+        // Triangular matrix, packed storage
         //
         Rlacpy("Full", n, nrhs, x, ldx, b, ldb);
         if (ku == 2) {
@@ -193,7 +177,7 @@ void Rlarhs(const char *path, const char *xtype, const char *uplo, const char *t
         //
     } else if (Mlsamen(2, c2, "TB")) {
         //
-        //        Triangular matrix, banded storage
+        // Triangular matrix, banded storage
         //
         Rlacpy("Full", n, nrhs, x, ldx, b, ldb);
         if (ku == 2) {
@@ -207,12 +191,12 @@ void Rlarhs(const char *path, const char *xtype, const char *uplo, const char *t
         //
     } else {
         //
-        //        If PATH is none of the above, return with an error code.
+        // If PATH is none of the above, return with an error code.
         //
         info = -1;
         Mxerbla("Rlarhs", -info);
     }
     //
-    //     End of Rlarhs
+    // End of Rlarhs
     //
 }

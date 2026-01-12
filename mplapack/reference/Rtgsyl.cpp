@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DTGSYL.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -57,7 +64,7 @@ void Rtgsyl(const char *trans, INTEGER const ijob, INTEGER const m, INTEGER cons
     INTEGER linfo = 0;
     INTEGER k = 0;
     //
-    //     Decode and test input parameters
+    // Decode and test input parameters
     //
     info = 0;
     notran = Mlsame(trans, "N");
@@ -114,10 +121,10 @@ void Rtgsyl(const char *trans, INTEGER const ijob, INTEGER const m, INTEGER cons
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (m == 0 || n == 0) {
-        scale = 1;
+        scale = 1.0;
         if (notran) {
             if (ijob != 0) {
                 dif = 0.0;
@@ -126,7 +133,7 @@ void Rtgsyl(const char *trans, INTEGER const ijob, INTEGER const m, INTEGER cons
         return;
     }
     //
-    //     Determine optimal block sizes MB and NB
+    // Determine optimal block sizes MB and NB
     //
     mb = iMlaenv(2, "Rtgsyl", trans, m, n, -1, -1);
     nb = iMlaenv(5, "Rtgsyl", trans, m, n, -1, -1);
@@ -147,7 +154,7 @@ void Rtgsyl(const char *trans, INTEGER const ijob, INTEGER const m, INTEGER cons
         //
         for (iround = 1; iround <= isolve; iround = iround + 1) {
             //
-            //           Use unblocked Level 2 solver
+            // Use unblocked Level 2 solver
             //
             dscale = zero;
             dsum = one;
@@ -180,7 +187,7 @@ void Rtgsyl(const char *trans, INTEGER const ijob, INTEGER const m, INTEGER cons
         return;
     }
     //
-    //     Determine block structure of A
+    // Determine block structure of A
     //
     p = 0;
     i = 1;
@@ -205,7 +212,7 @@ statement_50:
         p = p - 1;
     }
     //
-    //     Determine block structure of B
+    // Determine block structure of B
     //
     q = p + 1;
     j = 1;
@@ -234,10 +241,10 @@ statement_70:
         //
         for (iround = 1; iround <= isolve; iround = iround + 1) {
             //
-            //           Solve (I, J)-subsystem
-            //               A(I, I) * R(I, J) - L(I, J) * B(J, J) = C(I, J)
-            //               D(I, I) * R(I, J) - L(I, J) * E(J, J) = F(I, J)
-            //           for I = P, P - 1,..., 1; J = 1, 2,..., Q
+            // Solve (I, J)-subsystem
+            // A(I, I) * R(I, J) - L(I, J) * B(J, J) = C(I, J)
+            // D(I, I) * R(I, J) - L(I, J) * E(J, J) = F(I, J)
+            // for I = P, P - 1,..., 1; J = 1, 2,..., Q
             //
             dscale = zero;
             dsum = one;
@@ -278,8 +285,8 @@ statement_70:
                         scale = scale * scaloc;
                     }
                     //
-                    //                 Substitute R(I, J) and L(I, J) into remaining
-                    //                 equation.
+                    // Substitute R(I, J) and L(I, J) into remaining
+                    // equation.
                     //
                     if (i > 1) {
                         Rgemm("N", "N", is - 1, nb, mb, -one, &a[(is - 1) * lda], lda, &c[(is - 1) + (js - 1) * ldc], ldc, one, &c[(js - 1) * ldc], ldc);
@@ -316,10 +323,10 @@ statement_70:
         //
     } else {
         //
-        //        Solve transposed (I, J)-subsystem
-        //             A(I, I)**T * R(I, J)  + D(I, I)**T * L(I, J)  =  C(I, J)
-        //             R(I, J)  * B(J, J)**T + L(I, J)  * E(J, J)**T = -F(I, J)
-        //        for I = 1,2,..., P; J = Q, Q-1,..., 1
+        // Solve transposed (I, J)-subsystem
+        // A(I, I)**T * R(I, J)  + D(I, I)**T * L(I, J)  =  C(I, J)
+        // R(I, J)  * B(J, J)**T + L(I, J)  * E(J, J)**T = -F(I, J)
+        // for I = 1,2,..., P; J = Q, Q-1,..., 1
         //
         scale = one;
         for (i = 1; i <= p; i = i + 1) {
@@ -354,7 +361,7 @@ statement_70:
                     scale = scale * scaloc;
                 }
                 //
-                //              Substitute R(I, J) and L(I, J) into remaining equation.
+                // Substitute R(I, J) and L(I, J) into remaining equation.
                 //
                 if (j > p + 2) {
                     Rgemm("N", "T", mb, js - 1, nb, one, &c[(is - 1) + (js - 1) * ldc], ldc, &b[(js - 1) * ldb], ldb, one, &f[(is - 1)], ldf);
@@ -371,6 +378,6 @@ statement_70:
     //
     work[1 - 1] = lwmin;
     //
-    //     End of Rtgsyl
+    // End of Rtgsyl
     //
 }

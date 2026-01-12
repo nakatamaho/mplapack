@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,27 +26,17 @@
  *
  */
 
+// Derived from LAPACK routine ZLAR2V.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Clar2v(INTEGER const n, COMPLEX *x, COMPLEX *y, COMPLEX *z, INTEGER const incx, REAL *c, COMPLEX *s, INTEGER const incc) {
-    //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
     INTEGER ix = 1;
     INTEGER ic = 1;
@@ -91,6 +81,6 @@ void Clar2v(INTEGER const n, COMPLEX *x, COMPLEX *y, COMPLEX *z, INTEGER const i
         ic += incc;
     }
     //
-    //     End of Clar2v
+    // End of Clar2v
     //
 }

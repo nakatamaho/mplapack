@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DLATB5.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -59,16 +66,16 @@ void Rlatb5(const char *path, INTEGER const imat, INTEGER const n, char *type, I
     c2[0] = path[1];
     c2[1] = path[2];
     //
-    //     Set some parameters
+    // Set some parameters
     //
     *dist = 'S';
     mode = 3;
     //
-    //     Set TYPE, the type of matrix to be generated.
+    // Set TYPE, the type of matrix to be generated.
     //
     *type = c2[0];
     //
-    //     Set the lower and upper bandwidths.
+    // Set the lower and upper bandwidths.
     //
     if (imat == 1) {
         kl = 0;
@@ -77,7 +84,7 @@ void Rlatb5(const char *path, INTEGER const imat, INTEGER const n, char *type, I
     }
     ku = kl;
     //
-    //     Set the condition number and norm.etc
+    // Set the condition number and norm.etc
     //
     const REAL two = 2.0e+0;
     if (imat == 3) {
@@ -109,6 +116,6 @@ void Rlatb5(const char *path, INTEGER const imat, INTEGER const n, char *type, I
         cndnum = one;
     }
     //
-    //     End of Rlatb5
+    // End of Rlatb5
     //
 }

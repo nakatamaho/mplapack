@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,35 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine ZPOTRF2.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Cpotrf2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input parameters
+    // Test the input parameters
     //
     info = 0;
     bool upper = Mlsame(uplo, "U");
@@ -70,13 +54,13 @@ void Cpotrf2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, I
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0) {
         return;
     }
     //
-    //     N=1 case
+    // N=1 case
     //
     REAL ajj = 0.0;
     const REAL zero = 0.0;
@@ -87,41 +71,41 @@ void Cpotrf2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, I
     const REAL one = 1.0;
     if (n == 1) {
         //
-        //        Test for non-positive-definiteness
+        // Test for non-positive-definiteness
         //
-        ajj = a[(1 - 1)].real();
+        ajj = a[0].real();
         if (ajj <= zero || Risnan(ajj)) {
             info = 1;
             return;
         }
         //
-        //        Factor
+        // Factor
         //
-        a[(1 - 1)] = sqrt(ajj);
+        a[0] = sqrt(ajj);
         //
-        //     Use recursive code
+        // Use recursive code
         //
     } else {
         n1 = n / 2;
         n2 = n - n1;
         //
-        //        Factor A11
+        // Factor A11
         //
-        Cpotrf2(uplo, n1, &a[(1 - 1)], lda, iinfo);
+        Cpotrf2(uplo, n1, &a[0], lda, iinfo);
         if (iinfo != 0) {
             info = iinfo;
             return;
         }
         //
-        //        Compute the Cholesky factorization A = U**H*U
+        // Compute the Cholesky factorization A = U**H*U
         //
         if (upper) {
             //
-            //           Update and scale A12
+            // Update and scale A12
             //
-            Ctrsm("L", "U", "C", "N", n1, n2, cone, &a[(1 - 1)], lda, &a[((n1 + 1) - 1) * lda], lda);
+            Ctrsm("L", "U", "C", "N", n1, n2, cone, &a[0], lda, &a[((n1 + 1) - 1) * lda], lda);
             //
-            //           Update and factor A22
+            // Update and factor A22
             //
             Cherk(uplo, "C", n2, n1, -one, &a[((n1 + 1) - 1) * lda], lda, one, &a[((n1 + 1) - 1) + ((n1 + 1) - 1) * lda], lda);
             Cpotrf2(uplo, n2, &a[((n1 + 1) - 1) + ((n1 + 1) - 1) * lda], lda, iinfo);
@@ -130,15 +114,15 @@ void Cpotrf2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, I
                 return;
             }
             //
-            //        Compute the Cholesky factorization A = L*L**H
+            // Compute the Cholesky factorization A = L*L**H
             //
         } else {
             //
-            //           Update and scale A21
+            // Update and scale A21
             //
-            Ctrsm("R", "L", "C", "N", n2, n1, cone, &a[(1 - 1)], lda, &a[((n1 + 1) - 1)], lda);
+            Ctrsm("R", "L", "C", "N", n2, n1, cone, &a[0], lda, &a[((n1 + 1) - 1)], lda);
             //
-            //           Update and factor A22
+            // Update and factor A22
             //
             Cherk(uplo, "N", n2, n1, -one, &a[((n1 + 1) - 1)], lda, one, &a[((n1 + 1) - 1) + ((n1 + 1) - 1) * lda], lda);
             Cpotrf2(uplo, n2, &a[((n1 + 1) - 1) + ((n1 + 1) - 1) * lda], lda, iinfo);
@@ -149,6 +133,6 @@ void Cpotrf2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, I
         }
     }
     //
-    //     End of Cpotrf2
+    // End of Cpotrf2
     //
 }

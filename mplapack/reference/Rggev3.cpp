@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DGGEV3.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -58,13 +65,13 @@ void Rggev3(const char *jobvl, const char *jobvr, INTEGER const n, REAL *a, INTE
     INTEGER icols = 0;
     INTEGER itau = 0;
     char chtemp;
-    bool ldumma;
+    bool ldumma[1];
     INTEGER in = 0;
     INTEGER jc = 0;
     REAL temp = 0.0;
     INTEGER jr = 0;
     //
-    //     Decode the input arguments
+    // Decode the input arguments
     //
     if (Mlsame(jobvl, "N")) {
         ijobvl = 1;
@@ -89,7 +96,7 @@ void Rggev3(const char *jobvl, const char *jobvr, INTEGER const n, REAL *a, INTE
     }
     ilv = ilvl || ilvr;
     //
-    //     Test the input arguments
+    // Test the input arguments
     //
     info = 0;
     lquery = (lwork == -1);
@@ -111,11 +118,11 @@ void Rggev3(const char *jobvl, const char *jobvr, INTEGER const n, REAL *a, INTE
         info = -16;
     }
     //
-    //     Compute workspace
+    // Compute workspace
     //
     if (info == 0) {
         Rgeqrf(n, n, b, ldb, work, work, -1, ierr);
-        lwkopt = max({(INTEGER)1, 8 * n, 3 * n + castINTEGER(work[1 - 1])});
+        lwkopt = max((INTEGER)1, 8 * n, 3 * n + castINTEGER(work[1 - 1]));
         Rormqr("L", "T", n, n, n, b, ldb, work, a, lda, work, -1, ierr);
         lwkopt = max(lwkopt, 3 * n + castINTEGER(work[1 - 1]));
         if (ilvl) {
@@ -144,21 +151,22 @@ void Rggev3(const char *jobvl, const char *jobvr, INTEGER const n, REAL *a, INTE
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0) {
         return;
     }
     //
-    //     Get machine constants
+    // Get machine constants
     //
     eps = Rlamch("P");
     smlnum = Rlamch("S");
     bignum = one / smlnum;
+    Rlabad(smlnum, bignum);
     smlnum = sqrt(smlnum) / eps;
     bignum = one / smlnum;
     //
-    //     Scale A if max element outside range [SMLNUM,BIGNUM]
+    // Scale A if max element outside range [SMLNUM,BIGNUM]
     //
     anrm = Rlange("M", n, n, a, lda, work);
     ilascl = false;
@@ -173,7 +181,7 @@ void Rggev3(const char *jobvl, const char *jobvr, INTEGER const n, REAL *a, INTE
         Rlascl("G", 0, 0, anrm, anrmto, n, n, a, lda, ierr);
     }
     //
-    //     Scale B if max element outside range [SMLNUM,BIGNUM]
+    // Scale B if max element outside range [SMLNUM,BIGNUM]
     //
     bnrm = Rlange("M", n, n, b, ldb, work);
     ilbscl = false;
@@ -188,14 +196,14 @@ void Rggev3(const char *jobvl, const char *jobvr, INTEGER const n, REAL *a, INTE
         Rlascl("G", 0, 0, bnrm, bnrmto, n, n, b, ldb, ierr);
     }
     //
-    //     Permute the matrices A, B to isolate eigenvalues if possible
+    // Permute the matrices A, B to isolate eigenvalues if possible
     //
     ileft = 1;
     iright = n + 1;
     iwrk = iright + n;
     Rggbal("P", n, a, lda, b, ldb, ilo, ihi, &work[ileft - 1], &work[iright - 1], &work[iwrk - 1], ierr);
     //
-    //     Reduce B to triangular form (QR decomposition of B)
+    // Reduce B to triangular form (QR decomposition of B)
     //
     irows = ihi + 1 - ilo;
     if (ilv) {
@@ -207,11 +215,11 @@ void Rggev3(const char *jobvl, const char *jobvr, INTEGER const n, REAL *a, INTE
     iwrk = itau + irows;
     Rgeqrf(irows, icols, &b[(ilo - 1) + (ilo - 1) * ldb], ldb, &work[itau - 1], &work[iwrk - 1], lwork + 1 - iwrk, ierr);
     //
-    //     Apply the orthogonal transformation to matrix A
+    // Apply the orthogonal transformation to matrix A
     //
     Rormqr("L", "T", irows, icols, irows, &b[(ilo - 1) + (ilo - 1) * ldb], ldb, &work[itau - 1], &a[(ilo - 1) + (ilo - 1) * lda], lda, &work[iwrk - 1], lwork + 1 - iwrk, ierr);
     //
-    //     Initialize VL
+    // Initialize VL
     //
     if (ilvl) {
         Rlaset("Full", n, n, zero, one, vl, ldvl);
@@ -221,25 +229,25 @@ void Rggev3(const char *jobvl, const char *jobvr, INTEGER const n, REAL *a, INTE
         Rorgqr(irows, irows, irows, &vl[(ilo - 1) + (ilo - 1) * ldvl], ldvl, &work[itau - 1], &work[iwrk - 1], lwork + 1 - iwrk, ierr);
     }
     //
-    //     Initialize VR
+    // Initialize VR
     //
     if (ilvr) {
         Rlaset("Full", n, n, zero, one, vr, ldvr);
     }
     //
-    //     Reduce to generalized Hessenberg form
+    // Reduce to generalized Hessenberg form
     //
     if (ilv) {
         //
-        //        Eigenvectors requested -- work on whole matrix.
+        // Eigenvectors requested -- work on whole matrix.
         //
         Rgghd3(jobvl, jobvr, n, ilo, ihi, a, lda, b, ldb, vl, ldvl, vr, ldvr, &work[iwrk - 1], lwork + 1 - iwrk, ierr);
     } else {
         Rgghd3("N", "N", irows, 1, irows, &a[(ilo - 1) + (ilo - 1) * lda], lda, &b[(ilo - 1) + (ilo - 1) * ldb], ldb, vl, ldvl, vr, ldvr, &work[iwrk - 1], lwork + 1 - iwrk, ierr);
     }
     //
-    //     Perform QZ algorithm (Compute eigenvalues, and optionally, the
-    //     Schur forms and Schur vectors)
+    // Perform QZ algorithm (Compute eigenvalues, and optionally, the
+    // Schur forms and Schur vectors)
     //
     iwrk = itau;
     if (ilv) {
@@ -259,7 +267,7 @@ void Rggev3(const char *jobvl, const char *jobvr, INTEGER const n, REAL *a, INTE
         goto statement_110;
     }
     //
-    //     Compute Eigenvectors
+    // Compute Eigenvectors
     //
     if (ilv) {
         if (ilvl) {
@@ -271,13 +279,13 @@ void Rggev3(const char *jobvl, const char *jobvr, INTEGER const n, REAL *a, INTE
         } else {
             chtemp = 'R';
         }
-        Rtgevc(&chtemp, "B", &ldumma, n, a, lda, b, ldb, vl, ldvl, vr, ldvr, n, in, &work[iwrk - 1], ierr);
+        Rtgevc(&chtemp, "B", ldumma, n, a, lda, b, ldb, vl, ldvl, vr, ldvr, n, in, &work[iwrk - 1], ierr);
         if (ierr != 0) {
             info = n + 2;
             goto statement_110;
         }
         //
-        //        Undo balancing on VL and VR and normalization
+        // Undo balancing on VL and VR and normalization
         //
         if (ilvl) {
             Rggbak("P", "L", n, ilo, ihi, &work[ileft - 1], &work[iright - 1], n, vl, ldvl, ierr);
@@ -288,11 +296,11 @@ void Rggev3(const char *jobvl, const char *jobvr, INTEGER const n, REAL *a, INTE
                 temp = zero;
                 if (alphai[jc - 1] == zero) {
                     for (jr = 1; jr <= n; jr = jr + 1) {
-                        temp = max(temp, REAL(abs(vl[(jr - 1) + (jc - 1) * ldvl])));
+                        temp = max(temp, abs(vl[(jr - 1) + (jc - 1) * ldvl]));
                     }
                 } else {
                     for (jr = 1; jr <= n; jr = jr + 1) {
-                        temp = max(temp, REAL(abs(vl[(jr - 1) + (jc - 1) * ldvl]) + abs(vl[(jr - 1) + ((jc + 1) - 1) * ldvl])));
+                        temp = max(temp, abs(vl[(jr - 1) + (jc - 1) * ldvl]) + abs(vl[(jr - 1) + ((jc + 1) - 1) * ldvl]));
                     }
                 }
                 if (temp < smlnum) {
@@ -321,11 +329,11 @@ void Rggev3(const char *jobvl, const char *jobvr, INTEGER const n, REAL *a, INTE
                 temp = zero;
                 if (alphai[jc - 1] == zero) {
                     for (jr = 1; jr <= n; jr = jr + 1) {
-                        temp = max(temp, REAL(abs(vr[(jr - 1) + (jc - 1) * ldvr])));
+                        temp = max(temp, abs(vr[(jr - 1) + (jc - 1) * ldvr]));
                     }
                 } else {
                     for (jr = 1; jr <= n; jr = jr + 1) {
-                        temp = max(temp, REAL(abs(vr[(jr - 1) + (jc - 1) * ldvr]) + abs(vr[(jr - 1) + ((jc + 1) - 1) * ldvr])));
+                        temp = max(temp, abs(vr[(jr - 1) + (jc - 1) * ldvr]) + abs(vr[(jr - 1) + ((jc + 1) - 1) * ldvr]));
                     }
                 }
                 if (temp < smlnum) {
@@ -346,11 +354,11 @@ void Rggev3(const char *jobvl, const char *jobvr, INTEGER const n, REAL *a, INTE
             }
         }
         //
-        //        End of eigenvector calculation
+        // End of eigenvector calculation
         //
     }
 //
-//     Undo scaling if necessary
+// Undo scaling if necessary
 //
 statement_110:
     //
@@ -365,6 +373,6 @@ statement_110:
     //
     work[1 - 1] = lwkopt;
     //
-    //     End of Rggev3
+    // End of Rggev3
     //
 }

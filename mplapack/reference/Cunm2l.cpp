@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,41 +26,25 @@
  *
  */
 
+// Derived from LAPACK routine ZUNM2L.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Cunm2l(const char *side, const char *trans, INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX *a, INTEGER const lda, COMPLEX *tau, COMPLEX *c, INTEGER const ldc, COMPLEX *work, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input arguments
+    // Test the input arguments
     //
     info = 0;
     bool left = Mlsame(side, "L");
     bool notran = Mlsame(trans, "N");
     //
-    //     NQ is the order of Q
+    // NQ is the order of Q
     //
     INTEGER nq = 0;
     if (left) {
@@ -88,7 +72,7 @@ void Cunm2l(const char *side, const char *trans, INTEGER const m, INTEGER const 
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (m == 0 || n == 0 || k == 0) {
         return;
@@ -119,20 +103,20 @@ void Cunm2l(const char *side, const char *trans, INTEGER const m, INTEGER const 
     COMPLEX taui = 0.0;
     COMPLEX aii = 0.0;
     const COMPLEX one = COMPLEX(1.0, 0.0);
-    for (i = i1; i3 >= 0 ? i <= i2 : i >= i2; i = i + i3) {
+    for (i = i1; i3 > 0 ? i <= i2 : i >= i2; i = i + i3) {
         if (left) {
             //
-            //           H(i) or H(i)**H is applied to C(1:m-k+i,1:n)
+            // H(i) or H(i)**H is applied to C(1:m-k+i,1:n)
             //
             mi = m - k + i;
         } else {
             //
-            //           H(i) or H(i)**H is applied to C(1:m,1:n-k+i)
+            // H(i) or H(i)**H is applied to C(1:m,1:n-k+i)
             //
             ni = n - k + i;
         }
         //
-        //        Apply H(i) or H(i)**H
+        // Apply H(i) or H(i)**H
         //
         if (notran) {
             taui = tau[i - 1];
@@ -145,6 +129,6 @@ void Cunm2l(const char *side, const char *trans, INTEGER const m, INTEGER const 
         a[((nq - k + i) - 1) + (i - 1) * lda] = aii;
     }
     //
-    //     End of Cunm2l
+    // End of Cunm2l
     //
 }

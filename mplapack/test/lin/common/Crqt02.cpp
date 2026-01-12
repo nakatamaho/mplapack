@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZRQT02.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -37,11 +44,8 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Crqt02(INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX *a, COMPLEX *af, COMPLEX *q, COMPLEX *r, INTEGER const lda, COMPLEX *tau, COMPLEX *work, INTEGER const lwork, REAL *rwork, REAL *result) {
-
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+    // Quick return if possible
     //
     //     .. Scalar Arguments ..
     //     ..
@@ -80,7 +84,7 @@ void Crqt02(INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX *a, COMPL
     //
     REAL eps = Rlamch("Epsilon");
     //
-    //     Copy the last k rows of the factorization to the array Q
+    // Copy the last k rows of the factorization to the array Q
     //
     const COMPLEX rogue = COMPLEX(-1.0e+10, -1.0e+10);
     Claset("Full", m, n, rogue, rogue, q, lda);
@@ -91,22 +95,22 @@ void Crqt02(INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX *a, COMPL
         Clacpy("Lower", k - 1, k - 1, &af[((m - k + 2) - 1) + ((n - k + 1) - 1) * ldaf], lda, &q[((m - k + 2) - 1) + ((n - k + 1) - 1) * ldq], lda);
     }
     //
-    //     Generate the last n rows of the matrix Q
+    // Generate the last n rows of the matrix Q
     //
     INTEGER info = 0;
     Cungrq(m, n, k, q, lda, &tau[(m - k + 1) - 1], work, lwork, info);
     //
-    //     Copy R(m-k+1:m,n-m+1:n)
+    // Copy R(m-k+1:m,n-m+1:n)
     //
     Claset("Full", k, m, COMPLEX(zero), COMPLEX(zero), &r[((m - k + 1) - 1) + ((n - m + 1) - 1) * ldr], lda);
     Clacpy("Upper", k, k, &af[((m - k + 1) - 1) + ((n - k + 1) - 1) * ldaf], lda, &r[((m - k + 1) - 1) + ((n - k + 1) - 1) * ldr], lda);
     //
-    //     Compute R(m-k+1:m,n-m+1:n) - A(m-k+1:m,1:n) * Q(n-m+1:n,1:n)'
+    // Compute R(m-k+1:m,n-m+1:n) - A(m-k+1:m,1:n) * Q(n-m+1:n,1:n)'
     //
     const REAL one = 1.0;
     Cgemm("No transpose", "Conjugate transpose", k, m, n, COMPLEX(-one), &a[((m - k + 1) - 1)], lda, q, lda, COMPLEX(one), &r[((m - k + 1) - 1) + ((n - m + 1) - 1) * ldr], lda);
     //
-    //     Compute norm( R - A*Q' ) / ( N * norm(A) * EPS ) .
+    // Compute norm( R - A*Q' ) / ( N * norm(A) * EPS ) .
     //
     REAL anorm = Clange("1", k, n, &a[((m - k + 1) - 1)], lda, rwork);
     REAL resid = Clange("1", k, m, &r[((m - k + 1) - 1) + ((n - m + 1) - 1) * ldr], lda, rwork);
@@ -116,17 +120,17 @@ void Crqt02(INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX *a, COMPL
         result[1 - 1] = zero;
     }
     //
-    //     Compute I - Q*Q'
+    // Compute I - Q*Q'
     //
     Claset("Full", m, m, COMPLEX(zero), COMPLEX(one), r, lda);
     Cherk("Upper", "No transpose", m, n, -one, q, lda, one, r, lda);
     //
-    //     Compute norm( I - Q*Q' ) / ( N * EPS ) .
+    // Compute norm( I - Q*Q' ) / ( N * EPS ) .
     //
     resid = Clansy("1", "Upper", m, r, lda, rwork);
     //
     result[2 - 1] = (resid / castREAL(max((INTEGER)1, n))) / eps;
     //
-    //     End of Crqt02
+    // End of Crqt02
     //
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZTGSEN.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -41,7 +48,7 @@ void Ctgsen(INTEGER const ijob, bool const wantq, bool const wantz, bool *select
     INTEGER liwmin = 0;
     const REAL one = 1.0;
     const REAL zero = 0.0;
-    REAL rscale = 0.0;
+    REAL dscale = 0.0;
     REAL dsum = 0.0;
     INTEGER i = 0;
     REAL safmin = 0.0;
@@ -50,7 +57,7 @@ void Ctgsen(INTEGER const ijob, bool const wantq, bool const wantz, bool *select
     INTEGER n1 = 0;
     INTEGER n2 = 0;
     INTEGER ijb = 0;
-    REAL rRscal = 0.0;
+    REAL rdscal = 0.0;
     const INTEGER idifjb = 3;
     INTEGER kase = 0;
     INTEGER mn2 = 0;
@@ -58,7 +65,7 @@ void Ctgsen(INTEGER const ijob, bool const wantq, bool const wantz, bool *select
     COMPLEX temp1 = 0.0;
     COMPLEX temp2 = 0.0;
     //
-    //     Decode and test the input parameters
+    // Decode and test the input parameters
     //
     info = 0;
     lquery = (lwork == -1 || liwork == -1);
@@ -89,7 +96,8 @@ void Ctgsen(INTEGER const ijob, bool const wantq, bool const wantz, bool *select
     wantd2 = ijob == 3 || ijob == 5;
     wantd = wantd1 || wantd2;
     //
-    //     subspaces.
+    // Set M to the dimension of the specified pair of deflating
+    // subspaces.
     //
     m = 0;
     if (!lquery || ijob != 0) {
@@ -113,7 +121,7 @@ void Ctgsen(INTEGER const ijob, bool const wantq, bool const wantz, bool *select
         liwmin = max((INTEGER)1, n + 2);
     } else if (ijob == 3 || ijob == 5) {
         lwmin = max((INTEGER)1, 4 * m * (n - m));
-        liwmin = max({(INTEGER)1, 2 * m * (n - m), n + 2});
+        liwmin = max((INTEGER)1, 2 * m * (n - m), n + 2);
     } else {
         lwmin = 1;
         liwmin = 1;
@@ -135,7 +143,7 @@ void Ctgsen(INTEGER const ijob, bool const wantq, bool const wantz, bool *select
         return;
     }
     //
-    //     Quick return if possible.
+    // Quick return if possible.
     //
     if (m == n || m == 0) {
         if (wantp) {
@@ -143,23 +151,23 @@ void Ctgsen(INTEGER const ijob, bool const wantq, bool const wantz, bool *select
             pr = one;
         }
         if (wantd) {
-            rscale = zero;
+            dscale = zero;
             dsum = one;
             for (i = 1; i <= n; i = i + 1) {
-                Classq(n, &a[(i - 1) * lda], 1, rscale, dsum);
-                Classq(n, &b[(i - 1) * ldb], 1, rscale, dsum);
+                Classq(n, &a[(i - 1) * lda], 1, dscale, dsum);
+                Classq(n, &b[(i - 1) * ldb], 1, dscale, dsum);
             }
-            dif[1 - 1] = rscale * sqrt(dsum);
+            dif[1 - 1] = dscale * sqrt(dsum);
             dif[2 - 1] = dif[1 - 1];
         }
         goto statement_70;
     }
     //
-    //     Get machine constant
+    // Get machine constant
     //
     safmin = Rlamch("S");
     //
-    //     Collect the selected blocks at the top-left corner of (A, B).
+    // Collect the selected blocks at the top-left corner of (A, B).
     //
     ks = 0;
     for (k = 1; k <= n; k = k + 1) {
@@ -167,8 +175,8 @@ void Ctgsen(INTEGER const ijob, bool const wantq, bool const wantz, bool *select
         if (swap) {
             ks++;
             //
-            //           Swap the K-th block to position KS. Compute unitary Q
-            //           and Z that will swap adjacent diagonal blocks in (A, B).
+            // Swap the K-th block to position KS. Compute unitary Q
+            // and Z that will swap adjacent diagonal blocks in (A, B).
             //
             if (k != ks) {
                 Ctgexc(wantq, wantz, n, a, lda, b, ldb, q, ldq, z, ldz, k, ks, ierr);
@@ -176,7 +184,7 @@ void Ctgsen(INTEGER const ijob, bool const wantq, bool const wantz, bool *select
             //
             if (ierr > 0) {
                 //
-                //              Swap is rejected: exit.
+                // Swap is rejected: exit.
                 //
                 info = 1;
                 if (wantp) {
@@ -193,9 +201,9 @@ void Ctgsen(INTEGER const ijob, bool const wantq, bool const wantz, bool *select
     }
     if (wantp) {
         //
-        //        Solve generalized Sylvester equation for R and L:
-        //                   A11 * R - L * A22 = A12
-        //                   B11 * R - L * B22 = B12
+        // Solve generalized Sylvester equation for R and L:
+        // A11 * R - L * A22 = A12
+        // B11 * R - L * B22 = B12
         //
         n1 = m;
         n2 = n - m;
@@ -203,33 +211,33 @@ void Ctgsen(INTEGER const ijob, bool const wantq, bool const wantz, bool *select
         Clacpy("Full", n1, n2, &a[(i - 1) * lda], lda, work, n1);
         Clacpy("Full", n1, n2, &b[(i - 1) * ldb], ldb, &work[(n1 * n2 + 1) - 1], n1);
         ijb = 0;
-        Ctgsyl("N", ijb, n1, n2, a, lda, &a[(i - 1) + (i - 1) * lda], lda, work, n1, b, ldb, &b[(i - 1) + (i - 1) * ldb], ldb, &work[(n1 * n2 + 1) - 1], n1, rscale, dif[1 - 1], &work[(n1 * n2 * 2 + 1) - 1], lwork - 2 * n1 * n2, iwork, ierr);
+        Ctgsyl("N", ijb, n1, n2, a, lda, &a[(i - 1) + (i - 1) * lda], lda, work, n1, b, ldb, &b[(i - 1) + (i - 1) * ldb], ldb, &work[(n1 * n2 + 1) - 1], n1, dscale, dif[1 - 1], &work[(n1 * n2 * 2 + 1) - 1], lwork - 2 * n1 * n2, iwork, ierr);
         //
-        //        Estimate the reciprocal of norms of "projections" onto
-        //        left and right eigenspaces
+        // Estimate the reciprocal of norms of "projections" onto
+        // left and right eigenspaces
         //
-        rRscal = zero;
+        rdscal = zero;
         dsum = one;
-        Classq(n1 * n2, work, 1, rRscal, dsum);
-        pl = rRscal * sqrt(dsum);
+        Classq(n1 * n2, work, 1, rdscal, dsum);
+        pl = rdscal * sqrt(dsum);
         if (pl == zero) {
             pl = one;
         } else {
-            pl = rscale / (sqrt(rscale * rscale / pl + pl) * sqrt(pl));
+            pl = dscale / (sqrt(dscale * dscale / pl + pl) * sqrt(pl));
         }
-        rRscal = zero;
+        rdscal = zero;
         dsum = one;
-        Classq(n1 * n2, &work[(n1 * n2 + 1) - 1], 1, rRscal, dsum);
-        pr = rRscal * sqrt(dsum);
+        Classq(n1 * n2, &work[(n1 * n2 + 1) - 1], 1, rdscal, dsum);
+        pr = rdscal * sqrt(dsum);
         if (pr == zero) {
             pr = one;
         } else {
-            pr = rscale / (sqrt(rscale * rscale / pr + pr) * sqrt(pr));
+            pr = dscale / (sqrt(dscale * dscale / pr + pr) * sqrt(pr));
         }
     }
     if (wantd) {
         //
-        //        Compute estimates Difu and Difl.
+        // Compute estimates Difu and Difl.
         //
         if (wantd1) {
             n1 = m;
@@ -237,19 +245,19 @@ void Ctgsen(INTEGER const ijob, bool const wantq, bool const wantz, bool *select
             i = n1 + 1;
             ijb = idifjb;
             //
-            //           Frobenius norm-based Difu estimate.
+            // Frobenius norm-based Difu estimate.
             //
-            Ctgsyl("N", ijb, n1, n2, a, lda, &a[(i - 1) + (i - 1) * lda], lda, work, n1, b, ldb, &b[(i - 1) + (i - 1) * ldb], ldb, &work[(n1 * n2 + 1) - 1], n1, rscale, dif[1 - 1], &work[(n1 * n2 * 2 + 1) - 1], lwork - 2 * n1 * n2, iwork, ierr);
+            Ctgsyl("N", ijb, n1, n2, a, lda, &a[(i - 1) + (i - 1) * lda], lda, work, n1, b, ldb, &b[(i - 1) + (i - 1) * ldb], ldb, &work[(n1 * n2 + 1) - 1], n1, dscale, dif[1 - 1], &work[(n1 * n2 * 2 + 1) - 1], lwork - 2 * n1 * n2, iwork, ierr);
             //
-            //           Frobenius norm-based Difl estimate.
+            // Frobenius norm-based Difl estimate.
             //
-            Ctgsyl("N", ijb, n2, n1, &a[(i - 1) + (i - 1) * lda], lda, a, lda, work, n2, &b[(i - 1) + (i - 1) * ldb], ldb, b, ldb, &work[(n1 * n2 + 1) - 1], n2, rscale, dif[2 - 1], &work[(n1 * n2 * 2 + 1) - 1], lwork - 2 * n1 * n2, iwork, ierr);
+            Ctgsyl("N", ijb, n2, n1, &a[(i - 1) + (i - 1) * lda], lda, a, lda, work, n2, &b[(i - 1) + (i - 1) * ldb], ldb, b, ldb, &work[(n1 * n2 + 1) - 1], n2, dscale, dif[2 - 1], &work[(n1 * n2 * 2 + 1) - 1], lwork - 2 * n1 * n2, iwork, ierr);
         } else {
             //
-            //           Compute 1-norm-based estimates of Difu and Difl using
-            //           reversed communication with Clacn2. In each step a
-            //           generalized Sylvester equation or a transposed variant
-            //           is solved.
+            // Compute 1-norm-based estimates of Difu and Difl using
+            // reversed communication with Clacn2. In each step a
+            // generalized Sylvester equation or a transposed variant
+            // is solved.
             //
             kase = 0;
             n1 = m;
@@ -258,58 +266,58 @@ void Ctgsen(INTEGER const ijob, bool const wantq, bool const wantz, bool *select
             ijb = 0;
             mn2 = 2 * n1 * n2;
         //
-        //           1-norm-based estimate of Difu.
+        // 1-norm-based estimate of Difu.
         //
         statement_40:
             Clacn2(mn2, &work[(mn2 + 1) - 1], work, dif[1 - 1], kase, isave);
             if (kase != 0) {
                 if (kase == 1) {
                     //
-                    //                 Solve generalized Sylvester equation
+                    // Solve generalized Sylvester equation
                     //
-                    Ctgsyl("N", ijb, n1, n2, a, lda, &a[(i - 1) + (i - 1) * lda], lda, work, n1, b, ldb, &b[(i - 1) + (i - 1) * ldb], ldb, &work[(n1 * n2 + 1) - 1], n1, rscale, dif[1 - 1], &work[(n1 * n2 * 2 + 1) - 1], lwork - 2 * n1 * n2, iwork, ierr);
+                    Ctgsyl("N", ijb, n1, n2, a, lda, &a[(i - 1) + (i - 1) * lda], lda, work, n1, b, ldb, &b[(i - 1) + (i - 1) * ldb], ldb, &work[(n1 * n2 + 1) - 1], n1, dscale, dif[1 - 1], &work[(n1 * n2 * 2 + 1) - 1], lwork - 2 * n1 * n2, iwork, ierr);
                 } else {
                     //
-                    //                 Solve the transposed variant.
+                    // Solve the transposed variant.
                     //
-                    Ctgsyl("C", ijb, n1, n2, a, lda, &a[(i - 1) + (i - 1) * lda], lda, work, n1, b, ldb, &b[(i - 1) + (i - 1) * ldb], ldb, &work[(n1 * n2 + 1) - 1], n1, rscale, dif[1 - 1], &work[(n1 * n2 * 2 + 1) - 1], lwork - 2 * n1 * n2, iwork, ierr);
+                    Ctgsyl("C", ijb, n1, n2, a, lda, &a[(i - 1) + (i - 1) * lda], lda, work, n1, b, ldb, &b[(i - 1) + (i - 1) * ldb], ldb, &work[(n1 * n2 + 1) - 1], n1, dscale, dif[1 - 1], &work[(n1 * n2 * 2 + 1) - 1], lwork - 2 * n1 * n2, iwork, ierr);
                 }
                 goto statement_40;
             }
-            dif[1 - 1] = rscale / dif[1 - 1];
+            dif[1 - 1] = dscale / dif[1 - 1];
         //
-        //           1-norm-based estimate of Difl.
+        // 1-norm-based estimate of Difl.
         //
         statement_50:
             Clacn2(mn2, &work[(mn2 + 1) - 1], work, dif[2 - 1], kase, isave);
             if (kase != 0) {
                 if (kase == 1) {
                     //
-                    //                 Solve generalized Sylvester equation
+                    // Solve generalized Sylvester equation
                     //
-                    Ctgsyl("N", ijb, n2, n1, &a[(i - 1) + (i - 1) * lda], lda, a, lda, work, n2, &b[(i - 1) + (i - 1) * ldb], ldb, b, ldb, &work[(n1 * n2 + 1) - 1], n2, rscale, dif[2 - 1], &work[(n1 * n2 * 2 + 1) - 1], lwork - 2 * n1 * n2, iwork, ierr);
+                    Ctgsyl("N", ijb, n2, n1, &a[(i - 1) + (i - 1) * lda], lda, a, lda, work, n2, &b[(i - 1) + (i - 1) * ldb], ldb, b, ldb, &work[(n1 * n2 + 1) - 1], n2, dscale, dif[2 - 1], &work[(n1 * n2 * 2 + 1) - 1], lwork - 2 * n1 * n2, iwork, ierr);
                 } else {
                     //
-                    //                 Solve the transposed variant.
+                    // Solve the transposed variant.
                     //
-                    Ctgsyl("C", ijb, n2, n1, &a[(i - 1) + (i - 1) * lda], lda, a, lda, work, n2, b, ldb, &b[(i - 1) + (i - 1) * ldb], ldb, &work[(n1 * n2 + 1) - 1], n2, rscale, dif[2 - 1], &work[(n1 * n2 * 2 + 1) - 1], lwork - 2 * n1 * n2, iwork, ierr);
+                    Ctgsyl("C", ijb, n2, n1, &a[(i - 1) + (i - 1) * lda], lda, a, lda, work, n2, b, ldb, &b[(i - 1) + (i - 1) * ldb], ldb, &work[(n1 * n2 + 1) - 1], n2, dscale, dif[2 - 1], &work[(n1 * n2 * 2 + 1) - 1], lwork - 2 * n1 * n2, iwork, ierr);
                 }
                 goto statement_50;
             }
-            dif[2 - 1] = rscale / dif[2 - 1];
+            dif[2 - 1] = dscale / dif[2 - 1];
         }
     }
     //
-    //     If B(K,K) is complex, make it real and positive (normalization
-    //     of the generalized Schur form) and Store the generalized
-    //     eigenvalues of reordered pair (A, B)
+    // If B(K,K) is complex, make it real and positive (normalization
+    // of the generalized Schur form) and Store the generalized
+    // eigenvalues of reordered pair (A, B)
     //
     for (k = 1; k <= n; k = k + 1) {
-        rscale = abs(b[(k - 1) + (k - 1) * ldb]);
-        if (rscale > safmin) {
-            temp1 = conj(b[(k - 1) + (k - 1) * ldb] / rscale);
-            temp2 = b[(k - 1) + (k - 1) * ldb] / rscale;
-            b[(k - 1) + (k - 1) * ldb] = rscale;
+        dscale = abs(b[(k - 1) + (k - 1) * ldb]);
+        if (dscale > safmin) {
+            temp1 = conj(b[(k - 1) + (k - 1) * ldb] / dscale);
+            temp2 = b[(k - 1) + (k - 1) * ldb] / dscale;
+            b[(k - 1) + (k - 1) * ldb] = dscale;
             Cscal(n - k, temp1, &b[(k - 1) + ((k + 1) - 1) * ldb], ldb);
             Cscal(n - k + 1, temp1, &a[(k - 1) + (k - 1) * lda], lda);
             if (wantq) {
@@ -329,6 +337,6 @@ statement_70:
     work[1 - 1] = lwmin;
     iwork[1 - 1] = liwmin;
     //
-    //     End of Ctgsen
+    // End of Ctgsen
     //
 }

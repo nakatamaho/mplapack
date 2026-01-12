@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DSPRFS.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -39,7 +46,7 @@ void Rsprfs(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *ap, REA
     REAL safe1 = 0.0;
     REAL safe2 = 0.0;
     INTEGER count = 0;
-    const REAL three = 3.0e+0;
+    const REAL three = 3.0;
     REAL lstres = 0.0;
     const REAL one = 1.0;
     INTEGER i = 0;
@@ -48,37 +55,12 @@ void Rsprfs(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *ap, REA
     REAL s = 0.0;
     REAL xk = 0.0;
     INTEGER ik = 0;
-    const REAL two = 2.0e+0;
+    const REAL two = 2.0;
     const INTEGER itmax = 5;
     INTEGER kase = 0;
     INTEGER isave[3];
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     upper = Mlsame(uplo, "U");
@@ -98,7 +80,7 @@ void Rsprfs(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *ap, REA
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0 || nrhs == 0) {
         for (j = 1; j <= nrhs; j = j + 1) {
@@ -108,7 +90,7 @@ void Rsprfs(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *ap, REA
         return;
     }
     //
-    //     NZ = maximum number of nonzero elements in each row of A, plus 1
+    // NZ = maximum number of nonzero elements in each row of A, plus 1
     //
     nz = n + 1;
     eps = Rlamch("Epsilon");
@@ -116,7 +98,7 @@ void Rsprfs(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *ap, REA
     safe1 = nz * safmin;
     safe2 = safe1 / eps;
     //
-    //     Do for each right hand side
+    // Do for each right hand side
     //
     for (j = 1; j <= nrhs; j = j + 1) {
         //
@@ -124,27 +106,27 @@ void Rsprfs(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *ap, REA
         lstres = three;
     statement_20:
         //
-        //        Loop until stopping criterion is satisfied.
+        // Loop until stopping criterion is satisfied.
         //
-        //        Compute residual R = B - A * X
+        // Compute residual R = B - A * X
         //
         Rcopy(n, &b[(j - 1) * ldb], 1, &work[(n + 1) - 1], 1);
         Rspmv(uplo, n, -one, ap, &x[(j - 1) * ldx], 1, one, &work[(n + 1) - 1], 1);
         //
-        //        Compute componentwise relative backward error from formula
+        // Compute componentwise relative backward error from formula
         //
-        //        max(i) ( abs(R(i)) / ( abs(A)*abs(X) + abs(B) )(i) )
+        // max(i) ( abs(R(i)) / ( abs(A)*abs(X) + abs(B) )(i) )
         //
-        //        where abs(Z) is the componentwise absolute value of the matrix
-        //        or vector Z.  If the i-th component of the denominator is less
-        //        than SAFE2, then SAFE1 is added to the i-th components of the
-        //        numerator and denominator before dividing.
+        // where abs(Z) is the componentwise absolute value of the matrix
+        // or vector Z.  If the i-th component of the denominator is less
+        // than SAFE2, then SAFE1 is added to the i-th components of the
+        // numerator and denominator before dividing.
         //
         for (i = 1; i <= n; i = i + 1) {
             work[i - 1] = abs(b[(i - 1) + (j - 1) * ldb]);
         }
         //
-        //        Compute abs(A)*abs(X) + abs(B).
+        // Compute abs(A)*abs(X) + abs(B).
         //
         kk = 1;
         if (upper) {
@@ -178,22 +160,22 @@ void Rsprfs(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *ap, REA
         s = zero;
         for (i = 1; i <= n; i = i + 1) {
             if (work[i - 1] > safe2) {
-                s = max(s, REAL(abs(work[(n + i) - 1]) / work[i - 1]));
+                s = max(s, abs(work[(n + i) - 1]) / work[i - 1]);
             } else {
-                s = max(s, REAL((abs(work[(n + i) - 1]) + safe1) / (work[i - 1] + safe1)));
+                s = max(s, (abs(work[(n + i) - 1]) + safe1) / (work[i - 1] + safe1));
             }
         }
         berr[j - 1] = s;
         //
-        //        Test stopping criterion. Continue iterating if
-        //           1) The residual BERR(J) is larger than machine epsilon, and
-        //           2) BERR(J) decreased by at least a factor of 2 during the
-        //              last iteration, and
-        //           3) At most ITMAX iterations tried.
+        // Test stopping criterion. Continue iterating if
+        // 1) The residual BERR(J) is larger than machine epsilon, and
+        // 2) BERR(J) decreased by at least a factor of 2 during the
+        // last iteration, and
+        // 3) At most ITMAX iterations tried.
         //
         if (berr[j - 1] > eps && two * berr[j - 1] <= lstres && count <= itmax) {
             //
-            //           Update solution and try again.
+            // Update solution and try again.
             //
             Rsptrs(uplo, n, 1, afp, ipiv, &work[(n + 1) - 1], n, info);
             Raxpy(n, one, &work[(n + 1) - 1], 1, &x[(j - 1) * ldx], 1);
@@ -202,27 +184,27 @@ void Rsprfs(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *ap, REA
             goto statement_20;
         }
         //
-        //        Bound error from formula
+        // Bound error from formula
         //
-        //        norm(X - XTRUE) / norm(X) .le. FERR =
-        //        norm( abs(inv(A))*
-        //           ( abs(R) + NZ*EPS*( abs(A)*abs(X)+abs(B) ))) / norm(X)
+        // norm(X - XTRUE) / norm(X) .le. FERR =
+        // norm( abs(inv(A))*
+        // ( abs(R) + NZ*EPS*( abs(A)*abs(X)+abs(B) ))) / norm(X)
         //
-        //        where
-        //          norm(Z) is the magnitude of the largest component of Z
-        //          inv(A) is the inverse of A
-        //          abs(Z) is the componentwise absolute value of the matrix or
-        //             vector Z
-        //          NZ is the maximum number of nonzeros in any row of A, plus 1
-        //          EPS is machine epsilon
+        // where
+        // norm(Z) is the magnitude of the largest component of Z
+        // inv(A) is the inverse of A
+        // abs(Z) is the componentwise absolute value of the matrix or
+        // vector Z
+        // NZ is the maximum number of nonzeros in any row of A, plus 1
+        // EPS is machine epsilon
         //
-        //        The i-th component of abs(R)+NZ*EPS*(abs(A)*abs(X)+abs(B))
-        //        is incremented by SAFE1 if the i-th component of
-        //        abs(A)*abs(X) + abs(B) is less than SAFE2.
+        // The i-th component of abs(R)+NZ*EPS*(abs(A)*abs(X)+abs(B))
+        // is incremented by SAFE1 if the i-th component of
+        // abs(A)*abs(X) + abs(B) is less than SAFE2.
         //
-        //        Use Rlacn2 to estimate the infinity-norm of the matrix
-        //           inv(A) * diag(W),
-        //        where W = abs(R) + NZ*EPS*( abs(A)*abs(X)+abs(B) )))
+        // Use Rlacn2 to estimate the infinity-norm of the matrix
+        // inv(A) * diag(W),
+        // where W = abs(R) + NZ*EPS*( abs(A)*abs(X)+abs(B) )))
         //
         for (i = 1; i <= n; i = i + 1) {
             if (work[i - 1] > safe2) {
@@ -238,7 +220,7 @@ void Rsprfs(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *ap, REA
         if (kase != 0) {
             if (kase == 1) {
                 //
-                //              Multiply by diag(W)*inv(A**T).
+                // Multiply by diag(W)*inv(A**T).
                 //
                 Rsptrs(uplo, n, 1, afp, ipiv, &work[(n + 1) - 1], n, info);
                 for (i = 1; i <= n; i = i + 1) {
@@ -246,7 +228,7 @@ void Rsprfs(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *ap, REA
                 }
             } else if (kase == 2) {
                 //
-                //              Multiply by inv(A)*diag(W).
+                // Multiply by inv(A)*diag(W).
                 //
                 for (i = 1; i <= n; i = i + 1) {
                     work[(n + i) - 1] = work[i - 1] * work[(n + i) - 1];
@@ -256,11 +238,11 @@ void Rsprfs(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *ap, REA
             goto statement_100;
         }
         //
-        //        Normalize error.
+        // Normalize error.
         //
         lstres = zero;
         for (i = 1; i <= n; i = i + 1) {
-            lstres = max(lstres, REAL(abs(x[(i - 1) + (j - 1) * ldx])));
+            lstres = max(lstres, abs(x[(i - 1) + (j - 1) * ldx]));
         }
         if (lstres != zero) {
             ferr[j - 1] = ferr[j - 1] / lstres;
@@ -268,6 +250,6 @@ void Rsprfs(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *ap, REA
         //
     }
     //
-    //     End of RsprFS
+    // End of Rsprfs
     //
 }

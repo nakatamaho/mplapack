@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine ALAHD.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -104,23 +111,6 @@ void Alahd(INTEGER const iounit, const char *_path) {
     static const char *format_9994 = "(/,1x,a3,':  ',a9,' positive definite band matrices')";
     static const char *format_9995 = "(/,1x,a3,':  ',a9,' positive definite packed matrices')";
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     if (iounit <= 0) {
         return;
     }
@@ -146,7 +136,7 @@ void Alahd(INTEGER const iounit, const char *_path) {
 
     if (Mlsamen(2, p2, "GE")) {
         //
-        //        GE: General dense
+        // GE: General dense
         //
         write(iounit, "(/,1x,a3,':  General dense matrices')"), path;
         write(iounit, "(' Matrix types:')");
@@ -164,7 +154,7 @@ void Alahd(INTEGER const iounit, const char *_path) {
         //
     } else if (Mlsamen(2, p2, "GB")) {
         //
-        //        GB: General band
+        // GB: General band
         //
         write(iounit, "(/,1x,a3,':  General band matrices')"), path;
         write(iounit, "(' Matrix types:')");
@@ -184,7 +174,7 @@ void Alahd(INTEGER const iounit, const char *_path) {
         //
     } else if (Mlsamen(2, p2, "GT")) {
         //
-        //        GT: General tridiagonal
+        // GT: General tridiagonal
         //
         write(iounit, "(/,1x,a3,':  General tridiagonal')"), path;
         write(iounit, "(' Matrix types (1-6 have specified condition numbers):',/,4x,"
@@ -206,8 +196,8 @@ void Alahd(INTEGER const iounit, const char *_path) {
         //
     } else if (Mlsamen(2, p2, "PO") || Mlsamen(2, p2, "PP")) {
         //
-        //        PO: Positive definite full
-        //        PP: Positive definite packed
+        // PO: Positive definite full
+        // PP: Positive definite packed
         //
         if (sord) {
             strncpy(sym, "Symmetric", strlen(sym));
@@ -240,7 +230,7 @@ void Alahd(INTEGER const iounit, const char *_path) {
         //
     } else if (Mlsamen(2, p2, "PS")) {
         //
-        //        PS: Positive semi-definite full
+        // PS: Positive semi-definite full
         //
         if (sord) {
             strncpy(sym, "Symmetric", strlen(sym));
@@ -266,7 +256,7 @@ void Alahd(INTEGER const iounit, const char *_path) {
         write(iounit, "(' Messages:')");
     } else if (Mlsamen(2, p2, "PB")) {
         //
-        //        PB: Positive definite band
+        // PB: Positive definite band
         //
         if (sord) {
             write(iounit, format_9994), path, "Symmetric";
@@ -292,7 +282,7 @@ void Alahd(INTEGER const iounit, const char *_path) {
         //
     } else if (Mlsamen(2, p2, "PT")) {
         //
-        //        PT: Positive definite tridiagonal
+        // PT: Positive definite tridiagonal
         //
         if (sord) {
             write(iounit, format_9993), path, "Symmetric";
@@ -320,8 +310,8 @@ void Alahd(INTEGER const iounit, const char *_path) {
         //
     } else if (Mlsamen(2, p2, "SY")) {
         //
-        //        SY: Symmetric indefinite full,
-        //            with partial (Bunch-Kaufman) pivoting algorithm
+        // SY: Symmetric indefinite full,
+        // with partial (Bunch-Kaufman) pivoting algorithm
         //
         if (Mlsame(c3, "Y")) {
             write(iounit, format_9992), path, "Symmetric";
@@ -348,14 +338,14 @@ void Alahd(INTEGER const iounit, const char *_path) {
         //
     } else if (Mlsamen(2, p2, "SR") || Mlsamen(2, p2, "SK")) {
         //
-        //        SR: Symmetric indefinite full,
-        //            with rook (bounded Bunch-Kaufman) pivoting algorithm
+        // SR: Symmetric indefinite full,
+        // with rook (bounded Bunch-Kaufman) pivoting algorithm
         //
-        //        SK: Symmetric indefinite full,
-        //            with rook (bounded Bunch-Kaufman) pivoting algorithm,
-        //            ( new storage format for factors:
-        //              L and diagonal of D is stored in A,
-        //              subdiagonal of D is stored in E )
+        // SK: Symmetric indefinite full,
+        // with rook (bounded Bunch-Kaufman) pivoting algorithm,
+        // ( new storage format for factors:
+        // L and diagonal of D is stored in A,
+        // subdiagonal of D is stored in E )
         //
         write(iounit, format_9892), path, "Symmetric";
         //
@@ -380,8 +370,8 @@ void Alahd(INTEGER const iounit, const char *_path) {
         //
     } else if (Mlsamen(2, p2, "SP")) {
         //
-        //        SP: Symmetric indefinite packed,
-        //            with partial (Bunch-Kaufman) pivoting algorithm
+        // SP: Symmetric indefinite packed,
+        // with partial (Bunch-Kaufman) pivoting algorithm
         //
         if (Mlsame(c3, "Y")) {
             write(iounit, format_9992), path, "Symmetric";
@@ -407,8 +397,8 @@ void Alahd(INTEGER const iounit, const char *_path) {
         //
     } else if (Mlsamen(2, p2, "HA")) {
         //
-        //        HA: Hermitian,
-        //            with Assen Algorithm
+        // HA: Hermitian,
+        // with Assen Algorithm
         //
         write(iounit, format_9992), path, "Hermitian";
         //
@@ -429,8 +419,8 @@ void Alahd(INTEGER const iounit, const char *_path) {
         //
     } else if (Mlsamen(2, p2, "HE")) {
         //
-        //        HE: Hermitian indefinite full,
-        //            with partial (Bunch-Kaufman) pivoting algorithm
+        // HE: Hermitian indefinite full,
+        // with partial (Bunch-Kaufman) pivoting algorithm
         //
         write(iounit, format_9992), path, "Hermitian";
         //
@@ -451,14 +441,14 @@ void Alahd(INTEGER const iounit, const char *_path) {
         //
     } else if (Mlsamen(2, p2, "HR") || Mlsamen(2, p2, "HR")) {
         //
-        //        HR: Hermitian indefinite full,
-        //            with rook (bounded Bunch-Kaufman) pivoting algorithm
+        // HR: Hermitian indefinite full,
+        // with rook (bounded Bunch-Kaufman) pivoting algorithm
         //
-        //        HK: Hermitian indefinite full,
-        //            with rook (bounded Bunch-Kaufman) pivoting algorithm,
-        //            ( new storage format for factors:
-        //              L and diagonal of D is stored in A,
-        //              subdiagonal of D is stored in E )
+        // HK: Hermitian indefinite full,
+        // with rook (bounded Bunch-Kaufman) pivoting algorithm,
+        // ( new storage format for factors:
+        // L and diagonal of D is stored in A,
+        // subdiagonal of D is stored in E )
         //
         write(iounit, format_9892), path, "Hermitian";
         //
@@ -479,8 +469,8 @@ void Alahd(INTEGER const iounit, const char *_path) {
         //
     } else if (Mlsamen(2, p2, "HP")) {
         //
-        //        HP: Hermitian indefinite packed,
-        //            with partial (Bunch-Kaufman) pivoting algorithm
+        // HP: Hermitian indefinite packed,
+        // with partial (Bunch-Kaufman) pivoting algorithm
         //
         if (Mlsame(c3, "E")) {
             write(iounit, format_9992), path, "Hermitian";
@@ -502,8 +492,8 @@ void Alahd(INTEGER const iounit, const char *_path) {
         //
     } else if (Mlsamen(2, p2, "TR") || Mlsamen(2, p2, "TP")) {
         //
-        //        TR: Triangular full
-        //        TP: Triangular packed
+        // TR: Triangular full
+        // TP: Triangular packed
         //
         if (Mlsame(c3, "R")) {
             write(iounit, "(/,1x,a3,':  Triangular matrices')"), path;
@@ -552,7 +542,7 @@ void Alahd(INTEGER const iounit, const char *_path) {
         //
     } else if (Mlsamen(2, p2, "TB")) {
         //
-        //        TB: Triangular band
+        // TB: Triangular band
         //
         write(iounit, "(/,1x,a3,':  Triangular band matrices')"), path;
         std::string _str;
@@ -590,7 +580,7 @@ void Alahd(INTEGER const iounit, const char *_path) {
         //
     } else if (Mlsamen(2, p2, "QR")) {
         //
-        //        QR decomposition of rectangular matrices
+        // QR decomposition of rectangular matrices
         //
         write(iounit, format_9987), path, "QR";
         write(iounit, "(' Matrix types:')");
@@ -609,7 +599,7 @@ void Alahd(INTEGER const iounit, const char *_path) {
         //
     } else if (Mlsamen(2, p2, "LQ")) {
         //
-        //        LQ decomposition of rectangular matrices
+        // LQ decomposition of rectangular matrices
         //
         write(iounit, format_9987), path, "LQ";
         write(iounit, "(' Matrix types:')");
@@ -626,7 +616,7 @@ void Alahd(INTEGER const iounit, const char *_path) {
         //
     } else if (Mlsamen(2, p2, "QL")) {
         //
-        //        QL decomposition of rectangular matrices
+        // QL decomposition of rectangular matrices
         //
         write(iounit, format_9987), path, "QL";
         write(iounit, "(' Matrix types:')");
@@ -643,7 +633,7 @@ void Alahd(INTEGER const iounit, const char *_path) {
         //
     } else if (Mlsamen(2, p2, "RQ")) {
         //
-        //        RQ decomposition of rectangular matrices
+        // RQ decomposition of rectangular matrices
         //
         write(iounit, format_9987), path, "RQ";
         write(iounit, "(' Matrix types:')");
@@ -660,7 +650,7 @@ void Alahd(INTEGER const iounit, const char *_path) {
         //
     } else if (Mlsamen(2, p2, "QP")) {
         //
-        //        QR decomposition with column pivoting
+        // QR decomposition with column pivoting
         //
         write(iounit, "(/,1x,a3,':  QR factorization with column pivoting')"), path;
         write(iounit, "(' Matrix types (2-6 have condition 1/EPS):',/,4x,'1. Zero matrix',21x,"
@@ -675,7 +665,7 @@ void Alahd(INTEGER const iounit, const char *_path) {
         //
     } else if (Mlsamen(2, p2, "TZ")) {
         //
-        //        TZ:  Trapezoidal
+        // TZ:  Trapezoidal
         //
         write(iounit, "(/,1x,a3,':  RQ factorization of trapezoidal matrix')"), path;
         write(iounit, "(' Matrix types (2-3 have condition 1/EPS):',/,4x,'1. Zero matrix',/,"
@@ -689,8 +679,8 @@ void Alahd(INTEGER const iounit, const char *_path) {
         //
     } else if (Mlsamen(2, p2, "LS")) {
         //
-        //        LS:  Least Squares driver routines for
-        //             LS, LSD, LSS, LSX and LSY.
+        // LS:  Least Squares driver routines for
+        // LS, LSD, LSS, LSX and LSY.
         //
         write(iounit, "(/,1x,a3,':  Least squares driver routines')"), path;
         write(iounit, "(' Matrix types (1-3: full rank, 4-6: rank deficient):',/,4x,"
@@ -717,7 +707,7 @@ void Alahd(INTEGER const iounit, const char *_path) {
         //
     } else if (Mlsamen(2, p2, "LU")) {
         //
-        //        LU factorization variants
+        // LU factorization variants
         //
         write(iounit, "(/,1x,a3,':  LU factorization variants')"), path;
         write(iounit, "(' Matrix types:')");
@@ -728,7 +718,7 @@ void Alahd(INTEGER const iounit, const char *_path) {
         //
     } else if (Mlsamen(2, p2, "CH")) {
         //
-        //        Cholesky factorization variants
+        // Cholesky factorization variants
         //
         write(iounit, "(/,1x,a3,':  Cholesky factorization variants')"), path;
         write(iounit, "(' Matrix types:')");
@@ -744,7 +734,7 @@ void Alahd(INTEGER const iounit, const char *_path) {
         //
     } else if (Mlsamen(2, p2, "QS")) {
         //
-        //        QR factorization variants
+        // QR factorization variants
         //
         write(iounit, "(/,1x,a3,':  QR factorization variants')"), path;
         write(iounit, "(' Matrix types:')");
@@ -753,7 +743,7 @@ void Alahd(INTEGER const iounit, const char *_path) {
         //
     } else if (Mlsamen(2, p2, "QT")) {
         //
-        //        QRT (general matrices)
+        // QRT (general matrices)
         //
         write(iounit, "(/,1x,a3,':  QRT factorization for general matrices')"), path;
         write(iounit, "(' Test ratios:')");
@@ -766,7 +756,7 @@ void Alahd(INTEGER const iounit, const char *_path) {
         //
     } else if (Mlsamen(2, p2, "QX")) {
         //
-        //        QRT (triangular-pentagonal)
+        // QRT (triangular-pentagonal)
         //
         write(iounit, "(/,1x,a3,':  QRT factorization for ','triangular-pentagonal matrices')"), path;
         write(iounit, "(' Test ratios:')");
@@ -779,7 +769,7 @@ void Alahd(INTEGER const iounit, const char *_path) {
         //
     } else if (Mlsamen(2, p2, "TQ")) {
         //
-        //        QRT (triangular-pentagonal)
+        // QRT (triangular-pentagonal)
         //
         write(iounit, "(/,1x,a3,':  LQT factorization for general matrices')"), path;
         write(iounit, "(' Test ratios:')");
@@ -792,7 +782,7 @@ void Alahd(INTEGER const iounit, const char *_path) {
         //
     } else if (Mlsamen(2, p2, "XQ")) {
         //
-        //        QRT (triangular-pentagonal)
+        // QRT (triangular-pentagonal)
         //
         write(iounit, "(/,1x,a3,':  LQT factorization for ','triangular-pentagonal matrices')"), path;
         write(iounit, "(' Test ratios:')");
@@ -805,7 +795,7 @@ void Alahd(INTEGER const iounit, const char *_path) {
         //
     } else if (Mlsamen(2, p2, "TS")) {
         //
-        //        TS:  QR routines for tall-skinny and short-wide matrices
+        // TS:  QR routines for tall-skinny and short-wide matrices
         //
         write(iounit, "(/,1x,a3,':  TS factorization for ',"
                       "'tall-skinny or short-wide matrices')"),
@@ -820,7 +810,7 @@ void Alahd(INTEGER const iounit, const char *_path) {
         //
     } else if (Mlsamen(2, p2, "HH")) {
         //
-        //        HH:  Householder reconstruction for tall-skinny matrices
+        // HH:  Householder reconstruction for tall-skinny matrices
         //
         write(iounit, "(/,1x,a3,':  Householder recostruction from TSQR',"
                       "' factorization output ',/,' for tall-skinny matrices.')"),
@@ -835,47 +825,47 @@ void Alahd(INTEGER const iounit, const char *_path) {
         //
     } else {
         //
-        //        Print error message if no header is available.
+        // Print error message if no header is available.
         //
         write(iounit, "(/,1x,a3,':  No header available')"), path;
     }
     //
-    //     First line of header
+    // First line of header
     //
-    //     GE matrix types
+    // GE matrix types
     //
-    //     GB matrix types
+    // GB matrix types
     //
-    //     GT matrix types
+    // GT matrix types
     //
-    //     PT matrix types
+    // PT matrix types
     //
-    //     PO, PP matrix types
+    // PO, PP matrix types
     //
-    //     CH matrix types
+    // CH matrix types
     //
-    //     PS matrix types
+    // PS matrix types
     //
-    //     PB matrix types
+    // PB matrix types
     //
-    //     SSY, SSR, SSP, CHE, CHR, CHP matrix types
+    // SSY, SSR, SSP, CHE, CHR, CHP matrix types
     //
-    //     CSY, CSR, CSP matrix types
+    // CSY, CSR, CSP matrix types
     //
-    //     QR matrix types
+    // QR matrix types
     //
-    //     QP matrix types
+    // QP matrix types
     //
-    //     TZ matrix types
+    // TZ matrix types
     //
-    //     LS matrix types
+    // LS matrix types
     //
-    //     TR, TP matrix types
+    // TR, TP matrix types
     //
-    //     TB matrix types
+    // TB matrix types
     //
-    //     Test ratios
+    // Test ratios
     //
-    //     End of Alahd
+    // End of Alahd
     //
 }

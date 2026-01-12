@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DSYEVX.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -75,7 +82,7 @@ void Rsyevx(const char *jobz, const char *range, const char *uplo, INTEGER const
     INTEGER jj = 0;
     INTEGER itmp1 = 0;
     //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     lower = Mlsame(uplo, "L");
     wantz = Mlsame(jobz, "V");
@@ -121,7 +128,7 @@ void Rsyevx(const char *jobz, const char *range, const char *uplo, INTEGER const
         } else {
             lwkmin = 8 * n;
             nb = iMlaenv(1, "Rsytrd", uplo, n, -1, -1, -1);
-            nb = max({nb, iMlaenv(1, "Rormtr", uplo, n, -1, -1, -1)});
+            nb = max(nb, iMlaenv(1, "Rormtr", uplo, n, -1, -1, -1));
             lwkopt = max(lwkmin, (nb + 3) * n);
             work[1 - 1] = lwkopt;
         }
@@ -138,7 +145,7 @@ void Rsyevx(const char *jobz, const char *range, const char *uplo, INTEGER const
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     m = 0;
     if (n == 0) {
@@ -148,29 +155,29 @@ void Rsyevx(const char *jobz, const char *range, const char *uplo, INTEGER const
     if (n == 1) {
         if (alleig || indeig) {
             m = 1;
-            w[1 - 1] = a[(1 - 1)];
+            w[1 - 1] = a[0];
         } else {
-            if (vl < a[(1 - 1)] && vu >= a[(1 - 1)]) {
+            if (vl < a[0] && vu >= a[0]) {
                 m = 1;
-                w[1 - 1] = a[(1 - 1)];
+                w[1 - 1] = a[0];
             }
         }
         if (wantz) {
-            z[(1 - 1)] = one;
+            z[0] = one;
         }
         return;
     }
     //
-    //     Get machine constants.
+    // Get machine constants.
     //
     safmin = Rlamch("Safe minimum");
     eps = Rlamch("Precision");
     smlnum = safmin / eps;
     bignum = one / smlnum;
     rmin = sqrt(smlnum);
-    rmax = min(REAL(sqrt(bignum)), REAL(one / sqrt(sqrt(safmin))));
+    rmax = min(sqrt(bignum), one / sqrt(sqrt(safmin)));
     //
-    //     Scale matrix to allowable range, if necessary.
+    // Scale matrix to allowable range, if necessary.
     //
     iscale = 0;
     abstll = abstol;
@@ -205,7 +212,7 @@ void Rsyevx(const char *jobz, const char *range, const char *uplo, INTEGER const
         }
     }
     //
-    //     Call Rsytrd to reduce symmetric matrix to tridiagonal form.
+    // Call Rsytrd to reduce symmetric matrix to tridiagonal form.
     //
     indtau = 1;
     inde = indtau + n;
@@ -214,9 +221,9 @@ void Rsyevx(const char *jobz, const char *range, const char *uplo, INTEGER const
     llwork = lwork - indwrk + 1;
     Rsytrd(uplo, n, a, lda, &work[indd - 1], &work[inde - 1], &work[indtau - 1], &work[indwrk - 1], llwork, iinfo);
     //
-    //     If all eigenvalues are desired and ABSTOL is less than or equal to
-    //     zero, then call Rsterf or Rorgtr and Rsteqr.  If this fails for
-    //     some eigenvalue, then try Rstebz.
+    // If all eigenvalues are desired and ABSTOL is less than or equal to
+    // zero, then call Rsterf or Rorgtr and SSTEQR.  If this fails for
+    // some eigenvalue, then try Rstebz.
     //
     test = false;
     if (indeig) {
@@ -248,7 +255,7 @@ void Rsyevx(const char *jobz, const char *range, const char *uplo, INTEGER const
         info = 0;
     }
     //
-    //     Otherwise, call Rstebz and, if eigenvectors are desired, SSTEIN.
+    // Otherwise, call Rstebz and, if eigenvectors are desired, SSTEIN.
     //
     if (wantz) {
         order = 'B';
@@ -263,15 +270,15 @@ void Rsyevx(const char *jobz, const char *range, const char *uplo, INTEGER const
     if (wantz) {
         Rstein(n, &work[indd - 1], &work[inde - 1], m, w, &iwork[indibl - 1], &iwork[indisp - 1], z, ldz, &work[indwrk - 1], &iwork[indiwo - 1], ifail, info);
         //
-        //        Apply orthogonal matrix used in reduction to tridiagonal
-        //        form to eigenvectors returned by Rstein.
+        // Apply orthogonal matrix used in reduction to tridiagonal
+        // form to eigenvectors returned by Rstein.
         //
         indwkn = inde;
         llwrkn = lwork - indwkn + 1;
         Rormtr("L", uplo, "N", n, m, a, lda, &work[indtau - 1], z, ldz, &work[indwkn - 1], llwrkn, iinfo);
     }
 //
-//     If matrix was scaled, then rescale eigenvalues appropriately.
+// If matrix was scaled, then rescale eigenvalues appropriately.
 //
 statement_40:
     if (iscale == 1) {
@@ -283,8 +290,8 @@ statement_40:
         Rscal(imax, one / sigma, w, 1);
     }
     //
-    //     If eigenvalues are not in order, then sort them, along with
-    //     eigenvectors.
+    // If eigenvalues are not in order, then sort them, along with
+    // eigenvectors.
     //
     if (wantz) {
         for (j = 1; j <= m - 1; j = j + 1) {
@@ -313,10 +320,10 @@ statement_40:
         }
     }
     //
-    //     Set WORK(1) to optimal workspace size.
+    // Set WORK(1) to optimal workspace size.
     //
     work[1 - 1] = lwkopt;
     //
-    //     End of Rsyevx
+    // End of Rsyevx
     //
 }

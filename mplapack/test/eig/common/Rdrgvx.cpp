@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DDRGVX.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -48,7 +55,7 @@ using namespace std;
 using std::regex;
 using std::regex_replace;
 
-void Rdrgvx(INTEGER const nsize, REAL const thresh, INTEGER const nin, INTEGER const nout, REAL *a, INTEGER const lda, REAL *b, REAL *ai, REAL *bi, REAL *alphar, REAL *alphai, REAL *beta, REAL *vl, REAL *vr, INTEGER const ilo, INTEGER const ihi, REAL *lscale, REAL *rscale, REAL *s, REAL *dtru, REAL *dif, REAL *diftru, REAL *work, INTEGER const lwork, INTEGER *iwork, INTEGER const liwork, REAL *result, bool *bwork, INTEGER &info) {
+void Rdrgvx(INTEGER const nsize, REAL const thresh, INTEGER const nin, INTEGER const nout, REAL *a, INTEGER const lda, REAL *b, REAL *ai, REAL *bi, REAL *alphar, REAL *alphai, REAL *beta, REAL *vl, REAL *vr, INTEGER ilo, INTEGER ihi, REAL *lscale, REAL *rscale, REAL *s, REAL *dtru, REAL *dif, REAL *diftru, REAL *work, INTEGER const lwork, INTEGER *iwork, INTEGER const liwork, REAL *result, bool *bwork, INTEGER &info) {
     common cmn;
     common_read read(cmn);
     common_write write(cmn);
@@ -108,7 +115,7 @@ void Rdrgvx(INTEGER const nsize, REAL const thresh, INTEGER const nin, INTEGER c
                                      "' Bits of error=',0p,a,',',9x,'N=',i6,', JTYPE=',i6,', IWA=',i5,"
                                      "', IWB=',i5,', IWX=',i5,', IWY=',i5)";
     //
-    //     Check for errors
+    // Check for errors
     //
     info = 0;
     //
@@ -128,12 +135,12 @@ void Rdrgvx(INTEGER const nsize, REAL const thresh, INTEGER const nin, INTEGER c
         info = -26;
     }
     //
-    //     Compute workspace
-    //      (Note: Comments in the code beginning "Workspace:" describe the
-    //       minimal amount of workspace needed at that point in the code,
-    //       as well as the preferred amount for good performance.
-    //       NB refers to the optimal block size for the immediately
-    //       following subroutine, as returned by iMlaenv.)
+    // Compute workspace
+    // (Note: Comments in the code beginning "Workspace:" describe the
+    // minimal amount of workspace needed at that point in the code,
+    // as well as the preferred amount for good performance.
+    // NB refers to the optimal block size for the immediately
+    // following subroutine, as returned by iMlaenv.)
     //
     minwrk = 1;
     if (info == 0 && lwork >= 1) {
@@ -164,7 +171,7 @@ void Rdrgvx(INTEGER const nsize, REAL const thresh, INTEGER const nin, INTEGER c
         goto statement_90;
     }
     //
-    //     Parameters used for generating test matrices.
+    // Parameters used for generating test matrices.
     //
     weight[1 - 1] = tnth;
     weight[2 - 1] = half;
@@ -178,13 +185,13 @@ void Rdrgvx(INTEGER const nsize, REAL const thresh, INTEGER const nin, INTEGER c
                 for (iwx = 1; iwx <= 5; iwx = iwx + 1) {
                     for (iwy = 1; iwy <= 5; iwy = iwy + 1) {
                         //
-                        //                    generated a test matrix pair
+                        // generated a test matrix pair
                         //
                         Rlatm6(iptype, 5, a, lda, b, vr, lda, vl, lda, weight[iwa - 1], weight[iwb - 1], weight[iwx - 1], weight[iwy - 1], dtru, diftru);
                         //
-                        //                    Compute eigenvalues/eigenvectors of (A, B).
-                        //                    Compute eigenvalue/eigenvector condition numbers
-                        //                    using computed eigenvectors.
+                        // Compute eigenvalues/eigenvectors of (A, B).
+                        // Compute eigenvalue/eigenvector condition numbers
+                        // using computed eigenvectors.
                         //
                         Rlacpy("F", n, n, a, lda, ai, lda);
                         Rlacpy("F", n, n, b, lda, bi, lda);
@@ -198,7 +205,7 @@ void Rdrgvx(INTEGER const nsize, REAL const thresh, INTEGER const nin, INTEGER c
                             goto statement_30;
                         }
                         //
-                        //                    Compute the norm(A, B)
+                        // Compute the norm(A, B)
                         //
                         Rlacpy("Full", n, n, ai, lda, work, n);
                         Rlacpy("Full", n, n, bi, lda, &work[(n * n + 1) - 1], n);
@@ -238,7 +245,7 @@ void Rdrgvx(INTEGER const nsize, REAL const thresh, INTEGER const nin, INTEGER c
                             }
                         }
                         //
-                        //                    Test (4)
+                        // Test (4)
                         //
                         result[4 - 1] = zero;
                         if (dif[1 - 1] == zero) {
@@ -265,20 +272,20 @@ void Rdrgvx(INTEGER const nsize, REAL const thresh, INTEGER const nin, INTEGER c
                         //
                         ntestt += 4;
                         //
-                        //                    Print out tests which fail.
+                        // Print out tests which fail.
                         //
                         for (j = 1; j <= 4; j = j + 1) {
                             if ((result[j - 1] >= thrsh2 && j >= 4) || (result[j - 1] >= thresh && j <= 3)) {
                                 //
-                                //                       If this is the first test to fail,
-                                //                       print a header to the data file.
+                                // If this is the first test to fail,
+                                // print a header to the data file.
                                 //
                                 if (nerrs == 0) {
                                     write(nout, format_9997), "DXV";
                                     //
-                                    //                          Print out messages for built-in examples
+                                    // Print out messages for built-in examples
                                     //
-                                    //                          Matrix types
+                                    // Matrix types
                                     //
                                     write(nout, "(' Matrix types: ',/)");
                                     write(nout, "(' TYPE 1: Da is diagonal, Db is identity, ',/,"
@@ -288,7 +295,7 @@ void Rdrgvx(INTEGER const nsize, REAL const thresh, INTEGER const nin, INTEGER c
                                                 "'     A = Y^(-H) Da X^(-1), B = Y^(-H) Db X^(-1) ',/,"
                                                 "'     YH and X are left and right eigenvectors. ',/)");
                                     //
-                                    //                          Tests performed
+                                    // Tests performed
                                     //
                                     write(nout, format_9992), "'", "transpose", "'";
                                     //
@@ -485,12 +492,12 @@ statement_90:
     }
 statement_150:
     //
-    //     Summary
+    // Summary
     //
     Alasvm("DXV", nout, nerrs, ntestt, 0);
     //
     work[1 - 1] = maxwrk;
     //
-    //     End of Rdrgvx
+    // End of Rdrgvx
     //
 }

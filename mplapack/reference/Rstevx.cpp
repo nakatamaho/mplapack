@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DSTEVX.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -61,30 +68,7 @@ void Rstevx(const char *jobz, const char *range, INTEGER const n, REAL *d, REAL 
     INTEGER jj = 0;
     INTEGER itmp1 = 0;
     //
-    //  -- LAPACK driver routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     wantz = Mlsame(jobz, "V");
     alleig = Mlsame(range, "A");
@@ -122,7 +106,7 @@ void Rstevx(const char *jobz, const char *range, INTEGER const n, REAL *d, REAL 
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     m = 0;
     if (n == 0) {
@@ -140,21 +124,21 @@ void Rstevx(const char *jobz, const char *range, INTEGER const n, REAL *d, REAL 
             }
         }
         if (wantz) {
-            z[(1 - 1)] = one;
+            z[0] = one;
         }
         return;
     }
     //
-    //     Get machine constants.
+    // Get machine constants.
     //
     safmin = Rlamch("Safe minimum");
     eps = Rlamch("Precision");
     smlnum = safmin / eps;
     bignum = one / smlnum;
     rmin = sqrt(smlnum);
-    rmax = min(REAL(sqrt(bignum)), REAL(one / sqrt(sqrt(safmin))));
+    rmax = min(sqrt(bignum), one / sqrt(sqrt(safmin)));
     //
-    //     Scale matrix to allowable range, if necessary.
+    // Scale matrix to allowable range, if necessary.
     //
     iscale = 0;
     if (valeig) {
@@ -181,9 +165,9 @@ void Rstevx(const char *jobz, const char *range, INTEGER const n, REAL *d, REAL 
         }
     }
     //
-    //     If all eigenvalues are desired and ABSTOL is less than zero, then
-    //     call Rsterf or SSTEQR.  If this fails for some eigenvalue, then
-    //     try Rstebz.
+    // If all eigenvalues are desired and ABSTOL is less than zero, then
+    // call Rsterf or SSTEQR.  If this fails for some eigenvalue, then
+    // try Rstebz.
     //
     test = false;
     if (indeig) {
@@ -212,7 +196,7 @@ void Rstevx(const char *jobz, const char *range, INTEGER const n, REAL *d, REAL 
         info = 0;
     }
     //
-    //     Otherwise, call Rstebz and, if eigenvectors are desired, SSTEIN.
+    // Otherwise, call Rstebz and, if eigenvectors are desired, SSTEIN.
     //
     if (wantz) {
         order = 'B';
@@ -229,7 +213,7 @@ void Rstevx(const char *jobz, const char *range, INTEGER const n, REAL *d, REAL 
         Rstein(n, d, e, m, w, &iwork[indibl - 1], &iwork[indisp - 1], z, ldz, &work[indwrk - 1], &iwork[indiwo - 1], ifail, info);
     }
 //
-//     If matrix was scaled, then rescale eigenvalues appropriately.
+// If matrix was scaled, then rescale eigenvalues appropriately.
 //
 statement_20:
     if (iscale == 1) {
@@ -241,8 +225,8 @@ statement_20:
         Rscal(imax, one / sigma, w, 1);
     }
     //
-    //     If eigenvalues are not in order, then sort them, along with
-    //     eigenvectors.
+    // If eigenvalues are not in order, then sort them, along with
+    // eigenvectors.
     //
     if (wantz) {
         for (j = 1; j <= m - 1; j = j + 1) {
@@ -271,6 +255,6 @@ statement_20:
         }
     }
     //
-    //     End of Rstevx
+    // End of Rstevx
     //
 }

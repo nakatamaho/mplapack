@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DLAPTM.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -38,28 +45,11 @@ using fem::common;
 
 void Rlaptm(INTEGER const n, INTEGER const nrhs, REAL const alpha, REAL *d, REAL *e, REAL *x, INTEGER const ldx, REAL const beta, REAL *b, INTEGER const ldb) {
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     if (n == 0) {
         return;
     }
     //
-    //     Multiply B by BETA if BETA.NE.1.
+    // Multiply B by BETA if BETA.NE.1.
     //
     const REAL zero = 0.0;
     INTEGER j = 0;
@@ -81,7 +71,7 @@ void Rlaptm(INTEGER const n, INTEGER const nrhs, REAL const alpha, REAL *d, REAL
     //
     if (alpha == one) {
         //
-        //        Compute B := B + A*X
+        // Compute B := B + A*X
         //
         for (j = 1; j <= nrhs; j = j + 1) {
             if (n == 1) {
@@ -96,7 +86,7 @@ void Rlaptm(INTEGER const n, INTEGER const nrhs, REAL const alpha, REAL *d, REAL
         }
     } else if (alpha == -one) {
         //
-        //        Compute B := B - A*X
+        // Compute B := B - A*X
         //
         for (j = 1; j <= nrhs; j = j + 1) {
             if (n == 1) {
@@ -111,6 +101,6 @@ void Rlaptm(INTEGER const n, INTEGER const nrhs, REAL const alpha, REAL *d, REAL
         }
     }
     //
-    //     End of Rlaptm
+    // End of Rlaptm
     //
 }

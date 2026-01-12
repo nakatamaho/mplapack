@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine ZCHKTZ.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -78,7 +85,7 @@ void Cchktz(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     }
     eps = Rlamch("Epsilon");
     //
-    //     Test the error exits
+    // Test the error exits
     //
     if (tsterr) {
         Cerrtz(path, nout);
@@ -87,14 +94,14 @@ void Cchktz(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     //
     for (im = 1; im <= nm; im = im + 1) {
         //
-        //        Do for each value of M in MVAL.
+        // Do for each value of M in MVAL.
         //
         m = mval[im - 1];
         lda = max((INTEGER)1, m);
         //
         for (in = 1; in <= nn; in = in + 1) {
             //
-            //           Do for each value of N in NVAL for which M .LE. N.
+            // Do for each value of N in NVAL for which M .LE. N.
             //
             n = nval[in - 1];
             mnmin = min(m, n);
@@ -106,17 +113,17 @@ void Cchktz(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                         goto statement_50;
                     }
                     //
-                    //                 Do for each type of singular value distribution.
-                    //                    0:  zero matrix
-                    //                    1:  one small singular value
-                    //                    2:  exponential distribution
+                    // Do for each type of singular value distribution.
+                    // 0:  zero matrix
+                    // 1:  one small singular value
+                    // 2:  exponential distribution
                     //
                     mode = imode - 1;
                     //
-                    //                 Test ZTZRQF
+                    // Test ZTZRQF
                     //
-                    //                 Generate test matrix of size m by n using
-                    //                 singular value distribution indicated by `mode'.
+                    // Generate test matrix of size m by n using
+                    // singular value distribution indicated by `mode'.
                     //
                     if (mode == 0) {
                         Claset("Full", m, n, COMPLEX(zero), COMPLEX(zero), a, lda);
@@ -130,30 +137,30 @@ void Cchktz(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                         Rlaord("Decreasing", mnmin, s, 1);
                     }
                     //
-                    //                 Save A and its singular values
+                    // Save A and its singular values
                     //
                     Clacpy("All", m, n, a, lda, copya, lda);
                     //
-                    //                 Call Ctzrzf to reduce the upper trapezoidal matrix to
-                    //                 upper triangular form.
+                    // Call Ctzrzf to reduce the upper trapezoidal matrix to
+                    // upper triangular form.
                     //
                     strncpy(srnamt, "Ctzrzf", srnamt_len);
                     Ctzrzf(m, n, a, lda, tau, work, lwork, info);
                     //
-                    //                 Compute norm(svd(a) - svd(r))
+                    // Compute norm(svd(a) - svd(r))
                     //
                     result[1 - 1] = Cqrt12(m, m, a, lda, s, work, lwork, rwork);
                     //
-                    //                 Compute norm( A - R*Q )
+                    // Compute norm( A - R*Q )
                     //
                     result[2 - 1] = Crzt01(m, n, copya, a, lda, tau, work, lwork);
                     //
-                    //                 Compute norm(Q'*Q - I).
+                    // Compute norm(Q'*Q - I).
                     //
                     result[3 - 1] = Crzt02(m, n, a, lda, tau, work, lwork);
                     //
-                    //                 Print information about the tests that did not pass
-                    //                 the threshold.
+                    // Print information about the tests that did not pass
+                    // the threshold.
                     //
                     for (k = 1; k <= ntests; k = k + 1) {
                         if (result[k - 1] >= thresh) {
@@ -174,10 +181,10 @@ void Cchktz(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
         }
     }
     //
-    //     Print a summary of the results.
+    // Print a summary of the results.
     //
     Alasum(path, nout, nfail, nrun, nerrs);
     //
-    //     End if Cchktz
+    // End if Cchktz
     //
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZGET52.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -41,7 +48,6 @@ using fem::common;
 inline REAL abs1(COMPLEX x) { return abs(x.real()) + abs(x.imag()); }
 
 void Cget52(bool const left, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, COMPLEX *e, INTEGER const lde, COMPLEX *alpha, COMPLEX *beta, COMPLEX *work, REAL *rwork, REAL *result) {
-    //
     COMPLEX x = 0.0;
     //
     const REAL zero = 0.0;
@@ -66,7 +72,7 @@ void Cget52(bool const left, INTEGER const n, COMPLEX *a, INTEGER const lda, COM
         normab = 'O';
     }
     //
-    //     Norm of A, B, and E:
+    // Norm of A, B, and E:
     //
     REAL anorm = max({Clange(&normab, n, n, a, lda, rwork), safmin});
     REAL bnorm = max({Clange(&normab, n, n, b, ldb, rwork), safmin});
@@ -74,8 +80,8 @@ void Cget52(bool const left, INTEGER const n, COMPLEX *a, INTEGER const lda, COM
     REAL alfmax = safmax / max(one, bnorm);
     REAL betmax = safmax / max(one, anorm);
     //
-    //     Compute error matrix.
-    //     Column i = ( b(i) A - a(i) B ) E(i) / max( |a(i) B| |b(i) A| )
+    // Compute error matrix.
+    // Column i = ( b(i) A - a(i) B ) E(i) / max( |a(i) B| |b(i) A| )
     //
     INTEGER jvec = 0;
     COMPLEX alphai = 0.0;
@@ -108,11 +114,11 @@ void Cget52(bool const left, INTEGER const n, COMPLEX *a, INTEGER const lda, COM
     //
     REAL errnrm = Clange("One", n, n, work, n, rwork) / enorm;
     //
-    //     Compute RESULT(1)
+    // Compute RESULT(1)
     //
     result[1 - 1] = errnrm / ulp;
     //
-    //     Normalization of E:
+    // Normalization of E:
     //
     REAL enrmer = zero;
     REAL temp1 = 0.0;
@@ -125,10 +131,10 @@ void Cget52(bool const left, INTEGER const n, COMPLEX *a, INTEGER const lda, COM
         enrmer = max(enrmer, REAL(temp1 - one));
     }
     //
-    //     Compute RESULT(2) : the normalization error in E.
+    // Compute RESULT(2) : the normalization error in E.
     //
     result[2 - 1] = enrmer / (castREAL(n) * ulp);
     //
-    //     End of Cget52
+    // End of Cget52
     //
 }

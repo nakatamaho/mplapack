@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZLATSY.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -38,9 +45,7 @@ using fem::common;
 
 void Clatsy(const char *uplo, INTEGER const n, COMPLEX *x, INTEGER const ldx, INTEGER *iseed) {
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+    // Initialize constants
     //
     //     .. Scalar Arguments ..
     //     ..
@@ -69,7 +74,7 @@ void Clatsy(const char *uplo, INTEGER const n, COMPLEX *x, INTEGER const ldx, IN
     REAL beta = alpha - 1.0 / 1000.0;
     REAL alpha3 = alpha * alpha * alpha;
     //
-    //     UPLO = 'U':  Upper triangular storage
+    // UPLO = 'U':  Upper triangular storage
     //
     INTEGER j = 0;
     INTEGER i = 0;
@@ -81,7 +86,7 @@ void Clatsy(const char *uplo, INTEGER const n, COMPLEX *x, INTEGER const ldx, IN
     COMPLEX r = 0.0;
     if (Mlsame(uplo, "U")) {
         //
-        //        Fill the upper triangle of the matrix with zeros.
+        // Fill the upper triangle of the matrix with zeros.
         //
         for (j = 1; j <= n; j = j + 1) {
             for (i = 1; i <= j; i = i + 1) {
@@ -110,7 +115,7 @@ void Clatsy(const char *uplo, INTEGER const n, COMPLEX *x, INTEGER const ldx, IN
             }
         }
         //
-        //        Clean-up for N not a multiple of 5.
+        // Clean-up for N not a multiple of 5.
         //
         i = n5 - 1;
         if (i > 2) {
@@ -139,11 +144,11 @@ void Clatsy(const char *uplo, INTEGER const n, COMPLEX *x, INTEGER const ldx, IN
             i = i - 1;
         }
         //
-        //     UPLO = 'L':  Lower triangular storage
+        // UPLO = 'L':  Lower triangular storage
         //
     } else {
         //
-        //        Fill the lower triangle of the matrix with zeros.
+        // Fill the lower triangle of the matrix with zeros.
         //
         for (j = 1; j <= n; j = j + 1) {
             for (i = j; i <= n; i = i + 1) {
@@ -172,7 +177,7 @@ void Clatsy(const char *uplo, INTEGER const n, COMPLEX *x, INTEGER const ldx, IN
             }
         }
         //
-        //        Clean-up for N not a multiple of 5.
+        // Clean-up for N not a multiple of 5.
         //
         i = n5 + 1;
         if (i < n - 1) {
@@ -202,6 +207,6 @@ void Clatsy(const char *uplo, INTEGER const n, COMPLEX *x, INTEGER const ldx, IN
         }
     }
     //
-    //     End of Clatsy
+    // End of Clatsy
     //
 }

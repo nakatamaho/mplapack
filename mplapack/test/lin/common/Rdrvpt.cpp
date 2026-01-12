@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DDRVPT.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -125,7 +132,7 @@ void Rdrvpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
         iseed[i - 1] = iseedy[i - 1];
     }
     //
-    //     Test the error exits
+    // Test the error exits
     //
     if (tsterr) {
         Rerrvx(path, nout);
@@ -133,7 +140,7 @@ void Rdrvpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     //
     for (in = 1; in <= nn; in = in + 1) {
         //
-        //        Do for each value of N in NVAL.
+        // Do for each value of N in NVAL.
         //
         n = nval[in - 1];
         lda = max((INTEGER)1, n);
@@ -144,13 +151,13 @@ void Rdrvpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
         //
         for (imat = 1; imat <= nimat; imat = imat + 1) {
             //
-            //           Do the tests only if DOTYPE( IMAT ) is true.
+            // Do the tests only if DOTYPE( IMAT ) is true.
             //
             if (n > 0 && !dotype[imat - 1]) {
                 goto statement_110;
             }
             //
-            //           Set up parameters with Rlatb4.
+            // Set up parameters with Rlatb4.
             //
             Rlatb4(path, imat, n, n, &type, kl, ku, anorm, mode, cond, &dist);
             //
@@ -162,7 +169,7 @@ void Rdrvpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                 //
                 Rlatms(n, n, &dist, iseed, &type, rwork, mode, cond, anorm, kl, ku, "B", a, 2, work, info);
                 //
-                //              Check the error code from Rlatms.
+                // Check the error code from Rlatms.
                 //
                 if (info != 0) {
                     Alaerh(path, "Rlatms", info, 0, " ", n, n, kl, ku, -1, imat, nfail, nerrs, nout);
@@ -170,7 +177,7 @@ void Rdrvpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                 }
                 izero = 0;
                 //
-                //              Copy the matrix to D and E.
+                // Copy the matrix to D and E.
                 //
                 ia = 1;
                 for (i = 1; i <= n - 1; i = i + 1) {
@@ -183,17 +190,17 @@ void Rdrvpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                 }
             } else {
                 //
-                //              Type 7-12:  generate a diagonally dominant matrix with
-                //              unknown condition number in the vectors D and E.
+                // Type 7-12:  generate a diagonally dominant matrix with
+                // unknown condition number in the vectors D and E.
                 //
                 if (!zerot || !dotype[7 - 1]) {
                     //
-                    //                 Let D and E have values from [-1,1].
+                    // Let D and E have values from [-1,1].
                     //
                     Rlarnv(2, iseed, n, d);
                     Rlarnv(2, iseed, n - 1, e);
                     //
-                    //                 Make the tridiagonal matrix diagonally dominant.
+                    // Make the tridiagonal matrix diagonally dominant.
                     //
                     if (n == 1) {
                         d[1 - 1] = abs(d[1 - 1]);
@@ -205,7 +212,7 @@ void Rdrvpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         }
                     }
                     //
-                    //                 Scale D and E so the maximum element is ANORM.
+                    // Scale D and E so the maximum element is ANORM.
                     //
                     ix = iRamax(n, d, 1);
                     dmax = d[ix - 1];
@@ -216,8 +223,8 @@ void Rdrvpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                     //
                 } else if (izero > 0) {
                     //
-                    //                 Reuse the last matrix by copying back the zeroed out
-                    //                 elements.
+                    // Reuse the last matrix by copying back the zeroed out
+                    // elements.
                     //
                     if (izero == 1) {
                         d[1 - 1] = z[2 - 1];
@@ -234,8 +241,8 @@ void Rdrvpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                     }
                 }
                 //
-                //              For types 8-10, set one row and column of the matrix to
-                //              zero.
+                // For types 8-10, set one row and column of the matrix to
+                // zero.
                 //
                 izero = 0;
                 if (imat == 8) {
@@ -267,7 +274,7 @@ void Rdrvpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                 }
             }
             //
-            //           Generate NRHS random solution vectors.
+            // Generate NRHS random solution vectors.
             //
             ix = 1;
             for (j = 1; j <= nrhs; j = j + 1) {
@@ -275,7 +282,7 @@ void Rdrvpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                 ix += lda;
             }
             //
-            //           Set the right hand side.
+            // Set the right hand side.
             //
             Rlaptm(n, nrhs, one, d, e, xact, lda, zero, b, lda);
             //
@@ -286,8 +293,8 @@ void Rdrvpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                     fact = 'N';
                 }
                 //
-                //              Compute the condition number for comparison with
-                //              the value returned by Rptsvx.
+                // Compute the condition number for comparison with
+                // the value returned by Rptsvx.
                 //
                 if (zerot) {
                     if (ifact == 1) {
@@ -297,7 +304,7 @@ void Rdrvpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                     //
                 } else if (ifact == 1) {
                     //
-                    //                 Compute the 1-norm of A.
+                    // Compute the 1-norm of A.
                     //
                     anorm = Rlanst("1", n, d, e);
                     //
@@ -306,12 +313,12 @@ void Rdrvpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         Rcopy(n - 1, e, 1, &e[(n + 1) - 1], 1);
                     }
                     //
-                    //                 Factor the matrix A.
+                    // Factor the matrix A.
                     //
                     Rpttrf(n, &d[(n + 1) - 1], &e[(n + 1) - 1], info);
                     //
-                    //                 Use Rpttrs to solve for one column at a time of
-                    //                 inv(A), computing the maximum column sum as we go.
+                    // Use Rpttrs to solve for one column at a time of
+                    // inv(A), computing the maximum column sum as we go.
                     //
                     ainvnm = zero;
                     for (i = 1; i <= n; i = i + 1) {
@@ -323,7 +330,7 @@ void Rdrvpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         ainvnm = max({ainvnm, Rasum(n, x, 1)});
                     }
                     //
-                    //                 Compute the 1-norm condition number of A.
+                    // Compute the 1-norm condition number of A.
                     //
                     if (anorm <= zero || ainvnm <= zero) {
                         rcondc = one;
@@ -334,7 +341,7 @@ void Rdrvpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                 //
                 if (ifact == 2) {
                     //
-                    //                 --- Test Rptsv --
+                    // --- Test Rptsv --
                     //
                     Rcopy(n, d, 1, &d[(n + 1) - 1], 1);
                     if (n > 1) {
@@ -346,7 +353,7 @@ void Rdrvpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                     //
                     Rptsv(n, nrhs, &d[(n + 1) - 1], &e[(n + 1) - 1], x, lda, info);
                     //
-                    //                 Check error code from Rptsv .
+                    // Check error code from Rptsv .
                     //
                     if (info != izero) {
                         Alaerh(path, "Rptsv ", info, izero, " ", n, n, 1, 1, nrhs, imat, nfail, nerrs, nout);
@@ -354,24 +361,24 @@ void Rdrvpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                     nt = 0;
                     if (izero == 0) {
                         //
-                        //                    Check the factorization by computing the ratio
-                        //                       norm(L*D*L' - A) / (n * norm(A) * EPS )
+                        // Check the factorization by computing the ratio
+                        // norm(L*D*L' - A) / (n * norm(A) * EPS )
                         //
                         Rptt01(n, d, e, &d[(n + 1) - 1], &e[(n + 1) - 1], work, result[1 - 1]);
                         //
-                        //                    Compute the residual in the solution.
+                        // Compute the residual in the solution.
                         //
                         Rlacpy("Full", n, nrhs, b, lda, work, lda);
                         Rptt02(n, nrhs, d, e, x, lda, work, lda, result[2 - 1]);
                         //
-                        //                    Check solution from generated exact solution.
+                        // Check solution from generated exact solution.
                         //
                         Rget04(n, nrhs, x, lda, xact, lda, rcondc, result[3 - 1]);
                         nt = 3;
                     }
                     //
-                    //                 Print information about the tests that did not pass
-                    //                 the threshold.
+                    // Print information about the tests that did not pass
+                    // the threshold.
                     //
                     for (k = 1; k <= nt; k = k + 1) {
                         if (result[k - 1] >= thresh) {
@@ -388,11 +395,11 @@ void Rdrvpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                     nrun += nt;
                 }
                 //
-                //              --- Test Rptsvx ---
+                // --- Test Rptsvx ---
                 //
                 if (ifact > 1) {
                     //
-                    //                 Initialize D( N+1:2*N ) and E( N+1:2*N ) to zero.
+                    // Initialize D( N+1:2*N ) and E( N+1:2*N ) to zero.
                     //
                     for (i = 1; i <= n - 1; i = i + 1) {
                         d[(n + i) - 1] = zero;
@@ -410,7 +417,7 @@ void Rdrvpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                 //
                 Rptsvx(&fact, n, nrhs, d, e, &d[(n + 1) - 1], &e[(n + 1) - 1], b, lda, x, lda, rcond, rwork, &rwork[(nrhs + 1) - 1], work, info);
                 //
-                //              Check the error code from Rptsvx.
+                // Check the error code from Rptsvx.
                 //
                 if (info != izero) {
                     Alaerh(path, "Rptsvx", info, izero, &fact, n, n, 1, 1, nrhs, imat, nfail, nerrs, nout);
@@ -418,8 +425,8 @@ void Rdrvpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                 if (izero == 0) {
                     if (ifact == 2) {
                         //
-                        //                    Check the factorization by computing the ratio
-                        //                       norm(L*D*L' - A) / (n * norm(A) * EPS )
+                        // Check the factorization by computing the ratio
+                        // norm(L*D*L' - A) / (n * norm(A) * EPS )
                         //
                         k1 = 1;
                         Rptt01(n, d, e, &d[(n + 1) - 1], &e[(n + 1) - 1], work, result[1 - 1]);
@@ -427,28 +434,28 @@ void Rdrvpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         k1 = 2;
                     }
                     //
-                    //                 Compute the residual in the solution.
+                    // Compute the residual in the solution.
                     //
                     Rlacpy("Full", n, nrhs, b, lda, work, lda);
                     Rptt02(n, nrhs, d, e, x, lda, work, lda, result[2 - 1]);
                     //
-                    //                 Check solution from generated exact solution.
+                    // Check solution from generated exact solution.
                     //
                     Rget04(n, nrhs, x, lda, xact, lda, rcondc, result[3 - 1]);
                     //
-                    //                 Check error bounds from iterative refinement.
+                    // Check error bounds from iterative refinement.
                     //
                     Rptt05(n, nrhs, d, e, b, lda, x, lda, xact, lda, rwork, &rwork[(nrhs + 1) - 1], &result[4 - 1]);
                 } else {
                     k1 = 6;
                 }
                 //
-                //              Check the reciprocal of the condition number.
+                // Check the reciprocal of the condition number.
                 //
                 result[6 - 1] = Rget06(rcond, rcondc);
                 //
-                //              Print information about the tests that did not pass
-                //              the threshold.
+                // Print information about the tests that did not pass
+                // the threshold.
                 //
                 for (k = k1; k <= 6; k = k + 1) {
                     if (result[k - 1] >= thresh) {
@@ -469,10 +476,10 @@ void Rdrvpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
         }
     }
     //
-    //     Print a summary of the results.
+    // Print a summary of the results.
     //
     Alasvm(path, nout, nfail, nrun, nerrs);
     //
-    //     End of Rdrvpt
+    // End of Rdrvpt
     //
 }

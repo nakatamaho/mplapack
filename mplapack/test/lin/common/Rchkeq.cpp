@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DCHKEQ.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -90,7 +97,7 @@ void Rchkeq(REAL const thresh, INTEGER const nout) {
         rpow[i - 1] = one / mpow[i - 1];
     }
     //
-    //     Test Rgeequ
+    // Test Rgeequ
     //
     INTEGER n = 0;
     INTEGER m = 0;
@@ -137,7 +144,7 @@ void Rchkeq(REAL const thresh, INTEGER const nout) {
         }
     }
     //
-    //     Test with zero rows and columns
+    // Test with zero rows and columns
     //
     for (j = 1; j <= nsz; j = j + 1) {
         a[(max(nsz - 1, (INTEGER)1) - 1) + (j - 1) * lda] = zero;
@@ -159,7 +166,7 @@ void Rchkeq(REAL const thresh, INTEGER const nout) {
     }
     reslts[1 - 1] = reslts[1 - 1] / eps;
     //
-    //     Test Rgbequ
+    // Test Rgbequ
     //
     INTEGER kl = 0;
     INTEGER ku = 0;
@@ -245,7 +252,7 @@ void Rchkeq(REAL const thresh, INTEGER const nout) {
     }
     reslts[2 - 1] = reslts[2 - 1] / eps;
     //
-    //     Test Rpoequ
+    // Test Rpoequ
     //
     for (n = 0; n <= nsz; n = n + 1) {
         //
@@ -280,13 +287,13 @@ void Rchkeq(REAL const thresh, INTEGER const nout) {
     }
     reslts[3 - 1] = reslts[3 - 1] / eps;
     //
-    //     Test Rppequ
+    // Test Rppequ
     //
     const INTEGER nszp = (nsz * (nsz + 1)) / 2;
     REAL ap[nszp];
     for (n = 0; n <= nsz; n = n + 1) {
         //
-        //        Upper triangular packed storage
+        // Upper triangular packed storage
         //
         for (i = 1; i <= (n * (n + 1)) / 2; i = i + 1) {
             ap[i - 1] = zero;
@@ -309,7 +316,7 @@ void Rchkeq(REAL const thresh, INTEGER const nout) {
             }
         }
         //
-        //        Lower triangular packed storage
+        // Lower triangular packed storage
         //
         for (i = 1; i <= (n * (n + 1)) / 2; i = i + 1) {
             ap[i - 1] = zero;
@@ -343,12 +350,12 @@ void Rchkeq(REAL const thresh, INTEGER const nout) {
     }
     reslts[4 - 1] = reslts[4 - 1] / eps;
     //
-    //     Test Rpbequ
+    // Test Rpbequ
     //
     for (n = 0; n <= nsz; n = n + 1) {
         for (kl = 0; kl <= max(n - 1, (INTEGER)0); kl = kl + 1) {
             //
-            //           Test upper triangular storage
+            // Test upper triangular storage
             //
             for (j = 1; j <= nsz; j = j + 1) {
                 for (i = 1; i <= nszb; i = i + 1) {
@@ -380,7 +387,7 @@ void Rchkeq(REAL const thresh, INTEGER const nout) {
                 }
             }
             //
-            //           Test lower triangular storage
+            // Test lower triangular storage
             //
             for (j = 1; j <= nsz; j = j + 1) {
                 for (i = 1; i <= nszb; i = i + 1) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,36 +26,18 @@
  *
  */
 
+// Derived from LAPACK routine ZLANHP.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 REAL Clanhp(const char *norm, const char *uplo, INTEGER const n, COMPLEX *ap, REAL *work) {
     REAL return_value = 0.0;
-    //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    // =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
     const REAL zero = 0.0;
     REAL value = 0.0;
@@ -71,7 +53,7 @@ REAL Clanhp(const char *norm, const char *uplo, INTEGER const n, COMPLEX *ap, RE
         value = zero;
     } else if (Mlsame(norm, "M")) {
         //
-        //        Find max(abs(A(i,j))).
+        // Find max(abs(A(i,j))).
         //
         value = zero;
         if (Mlsame(uplo, "U")) {
@@ -105,9 +87,9 @@ REAL Clanhp(const char *norm, const char *uplo, INTEGER const n, COMPLEX *ap, RE
                 k += n - j + 1;
             }
         }
-    } else if ((Mlsame(norm, "I")) || (Mlsame(norm, "O")) || ((Mlsame(norm, "1")))) {
+    } else if ((Mlsame(norm, "I")) || (Mlsame(norm, "O")) || (Mlsame(norm, "1"))) {
         //
-        //        Find normI(A) ( = norm1(A), since A is hermitian).
+        // Find normI(A) ( = norm1(A), since A is hermitian).
         //
         value = zero;
         k = 1;
@@ -149,15 +131,15 @@ REAL Clanhp(const char *norm, const char *uplo, INTEGER const n, COMPLEX *ap, RE
         }
     } else if ((Mlsame(norm, "F")) || (Mlsame(norm, "E"))) {
         //
-        //        Find normF(A).
-        //        SSQ(1) is scale
-        //        SSQ(2) is sum-of-squares
-        //        For better accuracy, sum each column separately.
+        // Find normF(A).
+        // SSQ(1) is scale
+        // SSQ(2) is sum-of-squares
+        // For better accuracy, sum each column separately.
         //
         ssq[1 - 1] = zero;
         ssq[2 - 1] = one;
         //
-        //        Sum off-diagonals
+        // Sum off-diagonals
         //
         k = 2;
         if (Mlsame(uplo, "U")) {
@@ -179,7 +161,7 @@ REAL Clanhp(const char *norm, const char *uplo, INTEGER const n, COMPLEX *ap, RE
         }
         ssq[2 - 1] = 2 * ssq[2 - 1];
         //
-        //        Sum diagonal
+        // Sum diagonal
         //
         k = 1;
         colssq[1 - 1] = zero;
@@ -207,6 +189,6 @@ REAL Clanhp(const char *norm, const char *uplo, INTEGER const n, COMPLEX *ap, RE
     return_value = value;
     return return_value;
     //
-    //     End of Clanhp
+    // End of Clanhp
     //
 }

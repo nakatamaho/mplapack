@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine ZCHKPP.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -97,7 +104,7 @@ void Cchkpp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
         iseed[i - 1] = iseedy[i - 1];
     }
     //
-    //     Test the error exits
+    // Test the error exits
     //
     if (tsterr) {
         Cerrpo(path, nout);
@@ -116,20 +123,20 @@ void Cchkpp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
         //
         for (imat = 1; imat <= nimat; imat = imat + 1) {
             //
-            //           Do the tests only if DOTYPE( IMAT ) is true.
+            // Do the tests only if DOTYPE( IMAT ) is true.
             //
             if (!dotype[imat - 1]) {
                 goto statement_100;
             }
             //
-            //           Skip types 3, 4, or 5 if the matrix size is too small.
+            // Skip types 3, 4, or 5 if the matrix size is too small.
             //
             zerot = imat >= 3 && imat <= 5;
             if (zerot && n < imat - 2) {
                 goto statement_100;
             }
             //
-            //           Do first for UPLO = 'U', then for UPLO = 'L'
+            // Do first for UPLO = 'U', then for UPLO = 'L'
             //
             for (iuplo = 1; iuplo <= 2; iuplo = iuplo + 1) {
                 uplo[0] = uplos[iuplo - 1];
@@ -149,8 +156,8 @@ void Cchkpp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                     goto statement_90;
                 }
                 //
-                //              For types 3-5, zero one row and column of the matrix to
-                //              test that INFO is returned correctly.
+                // For types 3-5, zero one row and column of the matrix to
+                // test that INFO is returned correctly.
                 //
                 if (zerot) {
                     if (imat == 3) {
@@ -161,7 +168,7 @@ void Cchkpp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                         izero = n / 2 + 1;
                     }
                     //
-                    //                 Set row and column IZERO of A to 0.
+                    // Set row and column IZERO of A to 0.
                     //
                     if (iuplo == 1) {
                         ioff = (izero - 1) * izero / 2;
@@ -188,7 +195,7 @@ void Cchkpp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                     izero = 0;
                 }
                 //
-                //              Set the imaginary part of the diagonals.
+                // Set the imaginary part of the diagonals.
                 //
                 if (iuplo == 1) {
                     Claipd(n, a, 2, 1);
@@ -196,7 +203,7 @@ void Cchkpp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                     Claipd(n, a, n, -1);
                 }
                 //
-                //              Compute the L*L' or U'*U factorization of the matrix.
+                // Compute the L*L' or U'*U factorization of the matrix.
                 //
                 npp = n * (n + 1) / 2;
                 Ccopy(npp, a, 1, afac, 1);
@@ -209,20 +216,20 @@ void Cchkpp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                     goto statement_90;
                 }
                 //
-                //              Skip the tests if INFO is not 0.
+                // Skip the tests if INFO is not 0.
                 //
                 if (info != 0) {
                     goto statement_90;
                 }
                 //
-                //+    TEST 1
-                //              Reconstruct matrix from factors and compute residual.
+                // +    TEST 1
+                // Reconstruct matrix from factors and compute residual.
                 //
                 Ccopy(npp, afac, 1, ainv, 1);
                 Cppt01(uplo, n, a, ainv, rwork, result[1 - 1]);
                 //
-                //+    TEST 2
-                //              Form the inverse and compute the residual.
+                // +    TEST 2
+                // Form the inverse and compute the residual.
                 //
                 Ccopy(npp, afac, 1, ainv, 1);
                 Cpptri(uplo, n, ainv, info);
@@ -235,8 +242,8 @@ void Cchkpp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                 //
                 Cppt03(uplo, n, a, ainv, work, lda, rwork, rcondc, result[2 - 1]);
                 //
-                //              Print information about the tests that did not pass
-                //              the threshold.
+                // Print information about the tests that did not pass
+                // the threshold.
                 //
                 for (k = 1; k <= 2; k = k + 1) {
                     if (result[k - 1] >= thresh) {
@@ -289,8 +296,8 @@ void Cchkpp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                     Cget04(n, nrhs, x, lda, xact, lda, rcondc, result[5 - 1]);
                     Cppt05(uplo, n, nrhs, a, b, lda, x, lda, xact, lda, rwork, &rwork[(nrhs + 1) - 1], &result[6 - 1]);
                     //
-                    //                 Print information about the tests that did not pass
-                    //                 the threshold.
+                    // Print information about the tests that did not pass
+                    // the threshold.
                     //
                     for (k = 3; k <= 7; k = k + 1) {
                         if (result[k - 1] >= thresh) {
@@ -321,7 +328,7 @@ void Cchkpp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                 //
                 result[8 - 1] = Rget06(rcond, rcondc);
                 //
-                //              Print the test ratio if greater than or equal to THRESH.
+                // Print the test ratio if greater than or equal to THRESH.
                 //
                 if (result[8 - 1] >= thresh) {
                     if (nfail == 0 && nerrs == 0) {
@@ -339,10 +346,10 @@ void Cchkpp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
         }
     }
     //
-    //     Print a summary of the results.
+    // Print a summary of the results.
     //
     Alasum(path, nout, nfail, nrun, nerrs);
     //
-    //     End of Cchkpp
+    // End of Cchkpp
     //
 }

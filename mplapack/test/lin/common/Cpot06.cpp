@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine ZPOT06.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -75,7 +82,7 @@ void Cpot06(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a, I
         return;
     }
     //
-    //     Exit with RESID = 1/EPS if ANORM = 0.
+    // Exit with RESID = 1/EPS if ANORM = 0.
     //
     REAL eps = Rlamch("Epsilon");
     REAL anorm = Clansy("I", uplo, n, a, lda, rwork);
@@ -85,15 +92,15 @@ void Cpot06(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a, I
         return;
     }
     //
-    //     Compute  B - A*X  and store in B.
+    // Compute  B - A*X  and store in B.
     INTEGER ifail = 0;
     //
     const COMPLEX negcone = COMPLEX(-1.0, 0.0);
     const COMPLEX cone = COMPLEX(1.0, 0.0);
     Chemm("Left", uplo, n, nrhs, negcone, a, lda, x, ldx, cone, b, ldb);
     //
-    //     Compute the maximum over the number of right hand sides of
-    //        norm(B - A*X) / ( norm(A) * norm(X) * EPS ) .
+    // Compute the maximum over the number of right hand sides of
+    // norm(B - A*X) / ( norm(A) * norm(X) * EPS ) .
     //
     resid = zero;
     INTEGER j = 0;
@@ -111,6 +118,6 @@ void Cpot06(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a, I
         }
     }
     //
-    //     End of Cpot06
+    // End of Cpot06
     //
 }

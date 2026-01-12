@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine ZERRLS.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -54,7 +61,7 @@ void Cerrls(const char *path, INTEGER const nunit) {
     a[(2 - 1)] = (4.0e+0, 0.0);
     ok = true;
     //
-    //     Test error exits for the least squares driver routines.
+    // Test error exits for the least squares driver routines.
     //
     COMPLEX b[nmax * nmax];
     COMPLEX w[nmax];
@@ -66,7 +73,7 @@ void Cerrls(const char *path, INTEGER const nunit) {
     INTEGER ip[nmax];
     if (Mlsamen(2, c2, "LS")) {
         //
-        //        Cgels
+        // Cgels
         //
         infot = 1;
         strncpy(srnamt, "Cgels", srnamt_len);
@@ -91,7 +98,7 @@ void Cerrls(const char *path, INTEGER const nunit) {
         Cgels("N", 1, 1, 0, a, 1, b, 1, w, 1, info);
         chkxer("Cgels ", infot, nout, lerr, ok);
         //
-        //        Cgelss
+        // Cgelss
         //
         strncpy(srnamt, "Cgelss", srnamt_len);
         infot = 1;
@@ -110,7 +117,7 @@ void Cerrls(const char *path, INTEGER const nunit) {
         Cgelss(2, 0, 0, a, 2, b, 1, s, rcond, irnk, w, 2, rw, info);
         chkxer("Cgelss", infot, nout, lerr, ok);
         //
-        //        Cgelsy
+        // Cgelsy
         //
         strncpy(srnamt, "Cgelsy", srnamt_len);
         infot = 1;
@@ -132,7 +139,7 @@ void Cerrls(const char *path, INTEGER const nunit) {
         Cgelsy(0, 3, 0, a, 1, b, 3, ip, rcond, irnk, w, 1, rw, info);
         chkxer("Cgelsy", infot, nout, lerr, ok);
         //
-        //        Cgelsd
+        // Cgelsd
         //
         strncpy(srnamt, "Cgelsd", srnamt_len);
         infot = 1;
@@ -155,10 +162,10 @@ void Cerrls(const char *path, INTEGER const nunit) {
         chkxer("Cgelsd", infot, nout, lerr, ok);
     }
     //
-    //     Print a summary line.
+    // Print a summary line.
     //
     Alaesm(path, ok, nout);
     //
-    //     End of Cerrls
+    // End of Cerrls
     //
 }

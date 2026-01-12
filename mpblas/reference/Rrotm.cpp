@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,27 +26,19 @@
  *
  */
 
+// Derived from BLAS routine DROTM.
+// Original BLAS authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 
 void Rrotm(INTEGER const n, REAL *dx, INTEGER const incx, REAL *dy, INTEGER const incy, REAL *dparam) {
-    //
-    //  -- Reference BLAS level1 routine --
-    //  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Local Scalars ..
-    //     ..
-    REAL zero = 0.0;
+    // SAVE
     REAL two = 2.0;
-    //     ..
-    //
+    REAL zero = 0.0;
     REAL dflag = dparam[1 - 1];
     if (n <= 0 || (dflag + two == zero)) {
         return;

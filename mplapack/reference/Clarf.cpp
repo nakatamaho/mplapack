@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZLARF.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -37,8 +44,8 @@ void Clarf(const char *side, INTEGER const m, INTEGER const n, COMPLEX *v, INTEG
     const COMPLEX zero = COMPLEX(0.0, 0.0);
     INTEGER i = 0;
     if (tau != zero) {
-        //     Set up variables for scanning V.  LASTV begins pointing to the end
-        //     of V.
+        // Set up variables for scanning V.  LASTV begins pointing to the end
+        // of V.
         if (applyleft) {
             lastv = m;
         } else {
@@ -49,52 +56,52 @@ void Clarf(const char *side, INTEGER const m, INTEGER const n, COMPLEX *v, INTEG
         } else {
             i = 1;
         }
-        //     Look for the last non-zero row in V.
+        // Look for the last non-zero row in V.
         while (lastv > 0 && v[i - 1] == zero) {
             lastv = lastv - 1;
             i = i - incv;
         }
         if (applyleft) {
-            //     Scan for the last non-zero column in C(1:lastv,:).
+            // Scan for the last non-zero column in C(1:lastv,:).
             lastc = iMlazlc(lastv, n, c, ldc);
         } else {
-            //     Scan for the last non-zero row in C(:,1:lastv).
+            // Scan for the last non-zero row in C(:,1:lastv).
             lastc = iMlazlr(m, lastv, c, ldc);
         }
     }
-    //     Note that lastc.eq.0 renders the BLAS operations null; no special
-    //     case is needed at this level.
+    // Note that lastc.eq.0 renders the BLAS operations null; no special
+    // case is needed at this level.
     const COMPLEX one = COMPLEX(1.0, 0.0);
     if (applyleft) {
         //
-        //        Form  H * C
+        // Form  H * C
         //
         if (lastv > 0) {
             //
-            //           w(1:lastc,1) := C(1:lastv,1:lastc)**H * v(1:lastv,1)
+            // w(1:lastc,1) := C(1:lastv,1:lastc)**H * v(1:lastv,1)
             //
             Cgemv("Conjugate transpose", lastv, lastc, one, c, ldc, v, incv, zero, work, 1);
             //
-            //           C(1:lastv,1:lastc) := C(...) - v(1:lastv,1) * w(1:lastc,1)**H
+            // C(1:lastv,1:lastc) := C(...) - v(1:lastv,1) * w(1:lastc,1)**H
             //
             Cgerc(lastv, lastc, -tau, v, incv, work, 1, c, ldc);
         }
     } else {
         //
-        //        Form  C * H
+        // Form  C * H
         //
         if (lastv > 0) {
             //
-            //           w(1:lastc,1) := C(1:lastc,1:lastv) * v(1:lastv,1)
+            // w(1:lastc,1) := C(1:lastc,1:lastv) * v(1:lastv,1)
             //
             Cgemv("No transpose", lastc, lastv, one, c, ldc, v, incv, zero, work, 1);
             //
-            //           C(1:lastc,1:lastv) := C(...) - w(1:lastc,1) * v(1:lastv,1)**H
+            // C(1:lastc,1:lastv) := C(...) - w(1:lastc,1) * v(1:lastv,1)**H
             //
             Cgerc(lastc, lastv, -tau, work, 1, v, incv, c, ldc);
         }
     }
     //
-    //     End of Clarf
+    // End of Clarf
     //
 }

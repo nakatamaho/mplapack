@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine ZERRSY.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -81,11 +88,11 @@ void Cerrsy(const char *path, INTEGER const nunit) {
     REAL rcond = 0.0;
     if (Mlsamen(2, c2, "SY")) {
         //
-        //        Test error exits of the routines that use factorization
-        //        of a symmetric indefinite matrix with patrial
-        //        (Bunch-Kaufman) diagonal pivoting method.
+        // Test error exits of the routines that use factorization
+        // of a symmetric indefinite matrix with patrial
+        // (Bunch-Kaufman) diagonal pivoting method.
         //
-        //        Csytrf
+        // Csytrf
         //
         strncpy(srnamt, "Csytrf", srnamt_len);
         infot = 1;
@@ -104,7 +111,7 @@ void Cerrsy(const char *path, INTEGER const nunit) {
         Csytrf("U", 0, a, 1, ip, w, -2, info);
         chkxer("Csytrf", infot, nout, lerr, ok);
         //
-        //        Csytf2
+        // Csytf2
         //
         strncpy(srnamt, "Csytf2", srnamt_len);
         infot = 1;
@@ -117,7 +124,7 @@ void Cerrsy(const char *path, INTEGER const nunit) {
         Csytf2("U", 2, a, 1, ip, info);
         chkxer("Csytf2", infot, nout, lerr, ok);
         //
-        //        Csytri
+        // Csytri
         //
         strncpy(srnamt, "Csytri", srnamt_len);
         infot = 1;
@@ -130,7 +137,7 @@ void Cerrsy(const char *path, INTEGER const nunit) {
         Csytri("U", 2, a, 1, ip, w, info);
         chkxer("Csytri", infot, nout, lerr, ok);
         //
-        //        Csytri2
+        // Csytri2
         //
         strncpy(srnamt, "Csytri2", srnamt_len);
         infot = 1;
@@ -143,7 +150,7 @@ void Cerrsy(const char *path, INTEGER const nunit) {
         Csytri2("U", 2, a, 1, ip, w, 1, info);
         chkxer("Csytri2", infot, nout, lerr, ok);
         //
-        //        Csytri2x
+        // Csytri2x
         //
         strncpy(srnamt, "Csytri2x", srnamt_len);
         infot = 1;
@@ -156,7 +163,7 @@ void Cerrsy(const char *path, INTEGER const nunit) {
         Csytri2x("U", 2, a, 1, ip, w, 1, info);
         chkxer("Csytri2x", infot, nout, lerr, ok);
         //
-        //        Csytrs
+        // Csytrs
         //
         strncpy(srnamt, "Csytrs", srnamt_len);
         infot = 1;
@@ -175,7 +182,7 @@ void Cerrsy(const char *path, INTEGER const nunit) {
         Csytrs("U", 2, 1, a, 2, ip, b, 1, info);
         chkxer("Csytrs", infot, nout, lerr, ok);
         //
-        //        Csyrfs
+        // Csyrfs
         //
         strncpy(srnamt, "Csyrfs", srnamt_len);
         infot = 1;
@@ -200,7 +207,7 @@ void Cerrsy(const char *path, INTEGER const nunit) {
         Csyrfs("U", 2, 1, a, 2, af, 2, ip, b, 2, x, 1, r1, r2, w, r, info);
         chkxer("Csyrfs", infot, nout, lerr, ok);
         //
-        //        Csycon
+        // Csycon
         //
         strncpy(srnamt, "Csycon", srnamt_len);
         infot = 1;
@@ -218,11 +225,11 @@ void Cerrsy(const char *path, INTEGER const nunit) {
         //
     } else if (Mlsamen(2, c2, "SR")) {
         //
-        //        Test error exits of the routines that use factorization
-        //        of a symmetric indefinite matrix with rook
-        //        (bounded Bunch-Kaufman) diagonal pivoting method.
+        // Test error exits of the routines that use factorization
+        // of a symmetric indefinite matrix with rook
+        // (bounded Bunch-Kaufman) diagonal pivoting method.
         //
-        //        Csytrf_rook
+        // Csytrf_rook
         //
         strncpy(srnamt, "Csytrf_rook", srnamt_len);
         infot = 1;
@@ -241,7 +248,7 @@ void Cerrsy(const char *path, INTEGER const nunit) {
         Csytrf_rook("U", 0, a, 1, ip, w, -2, info);
         chkxer("Csytrf_rook", infot, nout, lerr, ok);
         //
-        //        Csytf2_rook
+        // Csytf2_rook
         //
         strncpy(srnamt, "Csytf2_rook", srnamt_len);
         infot = 1;
@@ -254,7 +261,7 @@ void Cerrsy(const char *path, INTEGER const nunit) {
         Csytf2_rook("U", 2, a, 1, ip, info);
         chkxer("Csytf2_rook", infot, nout, lerr, ok);
         //
-        //        Csytri_rook
+        // Csytri_rook
         //
         strncpy(srnamt, "Csytri_rook", srnamt_len);
         infot = 1;
@@ -267,7 +274,7 @@ void Cerrsy(const char *path, INTEGER const nunit) {
         Csytri_rook("U", 2, a, 1, ip, w, info);
         chkxer("Csytri_rook", infot, nout, lerr, ok);
         //
-        //        Csytrs_rook
+        // Csytrs_rook
         //
         strncpy(srnamt, "Csytrs_rook", srnamt_len);
         infot = 1;
@@ -286,7 +293,7 @@ void Cerrsy(const char *path, INTEGER const nunit) {
         Csytrs_rook("U", 2, 1, a, 2, ip, b, 1, info);
         chkxer("Csytrs_rook", infot, nout, lerr, ok);
         //
-        //        Csycon_rook
+        // Csycon_rook
         //
         strncpy(srnamt, "Csycon_rook", srnamt_len);
         infot = 1;
@@ -304,15 +311,15 @@ void Cerrsy(const char *path, INTEGER const nunit) {
         //
     } else if (Mlsamen(2, c2, "SK")) {
         //
-        //        Test error exits of the routines that use factorization
-        //        of a symmetric indefinite matrix with rook
-        //        (bounded Bunch-Kaufman) pivoting with the new storage
-        //        format for factors L ( or U) and D.
+        // Test error exits of the routines that use factorization
+        // of a symmetric indefinite matrix with rook
+        // (bounded Bunch-Kaufman) pivoting with the new storage
+        // format for factors L ( or U) and D.
         //
-        //        L (or U) is stored in A, diagonal of D is stored on the
-        //        diagonal of A, subdiagonal of D is stored in a separate array E.
+        // L (or U) is stored in A, diagonal of D is stored on the
+        // diagonal of A, subdiagonal of D is stored in a separate array E.
         //
-        //        Csytrf_rk
+        // Csytrf_rk
         //
         strncpy(srnamt, "Csytrf_rk", srnamt_len);
         infot = 1;
@@ -331,7 +338,7 @@ void Cerrsy(const char *path, INTEGER const nunit) {
         Csytrf_rk("U", 0, a, 1, e, ip, w, -2, info);
         chkxer("Csytrf_rk", infot, nout, lerr, ok);
         //
-        //        Csytf2_rk
+        // Csytf2_rk
         //
         strncpy(srnamt, "Csytf2_rk", srnamt_len);
         infot = 1;
@@ -344,7 +351,7 @@ void Cerrsy(const char *path, INTEGER const nunit) {
         Csytf2_rk("U", 2, a, 1, e, ip, info);
         chkxer("Csytf2_rk", infot, nout, lerr, ok);
         //
-        //        Csytri_3
+        // Csytri_3
         //
         strncpy(srnamt, "Csytri_3", srnamt_len);
         infot = 1;
@@ -363,7 +370,7 @@ void Cerrsy(const char *path, INTEGER const nunit) {
         Csytri_3("U", 0, a, 1, e, ip, w, -2, info);
         chkxer("Csytri_3", infot, nout, lerr, ok);
         //
-        //        Csytri_3x
+        // Csytri_3x
         //
         strncpy(srnamt, "Csytri_3x", srnamt_len);
         infot = 1;
@@ -376,7 +383,7 @@ void Cerrsy(const char *path, INTEGER const nunit) {
         Csytri_3x("U", 2, a, 1, e, ip, w, 1, info);
         chkxer("Csytri_3x", infot, nout, lerr, ok);
         //
-        //        Csytrs_3
+        // Csytrs_3
         //
         strncpy(srnamt, "Csytrs_3", srnamt_len);
         infot = 1;
@@ -395,7 +402,7 @@ void Cerrsy(const char *path, INTEGER const nunit) {
         Csytrs_3("U", 2, 1, a, 2, e, ip, b, 1, info);
         chkxer("Csytrs_3", infot, nout, lerr, ok);
         //
-        //        Csycon_3
+        // Csycon_3
         //
         strncpy(srnamt, "Csycon_3", srnamt_len);
         infot = 1;
@@ -413,11 +420,11 @@ void Cerrsy(const char *path, INTEGER const nunit) {
         //
     } else if (Mlsamen(2, c2, "SP")) {
         //
-        //        Test error exits of the routines that use factorization
-        //        of a symmetric indefinite packed matrix with patrial
-        //        (Bunch-Kaufman) pivoting.
+        // Test error exits of the routines that use factorization
+        // of a symmetric indefinite packed matrix with patrial
+        // (Bunch-Kaufman) pivoting.
         //
-        //        Csptrf
+        // Csptrf
         //
         strncpy(srnamt, "Csptrf", srnamt_len);
         infot = 1;
@@ -427,7 +434,7 @@ void Cerrsy(const char *path, INTEGER const nunit) {
         Csptrf("U", -1, a, ip, info);
         chkxer("Csptrf", infot, nout, lerr, ok);
         //
-        //        Csptri
+        // Csptri
         //
         strncpy(srnamt, "Csptri", srnamt_len);
         infot = 1;
@@ -437,7 +444,7 @@ void Cerrsy(const char *path, INTEGER const nunit) {
         Csptri("U", -1, a, ip, w, info);
         chkxer("Csptri", infot, nout, lerr, ok);
         //
-        //        Csptrs
+        // Csptrs
         //
         strncpy(srnamt, "Csptrs", srnamt_len);
         infot = 1;
@@ -453,7 +460,7 @@ void Cerrsy(const char *path, INTEGER const nunit) {
         Csptrs("U", 2, 1, a, ip, b, 1, info);
         chkxer("Csptrs", infot, nout, lerr, ok);
         //
-        //        Csprfs
+        // Csprfs
         //
         strncpy(srnamt, "Csprfs", srnamt_len);
         infot = 1;
@@ -472,7 +479,7 @@ void Cerrsy(const char *path, INTEGER const nunit) {
         Csprfs("U", 2, 1, a, af, ip, b, 2, x, 1, r1, r2, w, r, info);
         chkxer("Csprfs", infot, nout, lerr, ok);
         //
-        //        Cspcon
+        // Cspcon
         //
         strncpy(srnamt, "Cspcon", srnamt_len);
         infot = 1;
@@ -487,10 +494,10 @@ void Cerrsy(const char *path, INTEGER const nunit) {
         //
     } else if (Mlsamen(2, c2, "SA")) {
         //
-        //        Test error exits of the routines that use factorization
-        //        of a symmetric indefinite matrix with Aasen's algorithm.
+        // Test error exits of the routines that use factorization
+        // of a symmetric indefinite matrix with Aasen's algorithm.
         //
-        //        Csytrf_aa
+        // Csytrf_aa
         //
         strncpy(srnamt, "Csytrf_aa", srnamt_len);
         infot = 1;
@@ -509,7 +516,7 @@ void Cerrsy(const char *path, INTEGER const nunit) {
         Csytrf_aa("U", 0, a, 1, ip, w, -2, info);
         chkxer("Csytrf_aa", infot, nout, lerr, ok);
         //
-        //        Csytrs_aa
+        // Csytrs_aa
         //
         strncpy(srnamt, "Csytrs_aa", srnamt_len);
         infot = 1;
@@ -530,10 +537,10 @@ void Cerrsy(const char *path, INTEGER const nunit) {
         //
     } else if (Mlsamen(2, c2, "S2")) {
         //
-        //        Test error exits of the routines that use factorization
-        //        of a symmetric indefinite matrix with Aasen's algorithm.
+        // Test error exits of the routines that use factorization
+        // of a symmetric indefinite matrix with Aasen's algorithm.
         //
-        //        Csytrf_aa_2stage
+        // Csytrf_aa_2stage
         //
         strncpy(srnamt, "Csytrf_aa_2stage", srnamt_len);
         infot = 1;
@@ -552,7 +559,7 @@ void Cerrsy(const char *path, INTEGER const nunit) {
         Csytrf_aa_2stage("U", 2, a, 2, a, 8, ip, ip, w, 0, info);
         chkxer("Csytrf_aa_2stage", infot, nout, lerr, ok);
         //
-        //        CHETRS_AA_2STAGE
+        // CHETRS_AA_2STAGE
         //
         strncpy(srnamt, "Csytrs_aa_2stage", srnamt_len);
         infot = 1;
@@ -576,10 +583,10 @@ void Cerrsy(const char *path, INTEGER const nunit) {
         //
     }
     //
-    //     Print a summary line.
+    // Print a summary line.
     //
     Alaesm(path, ok, nout);
     //
-    //     End of Cerrsy
+    // End of Cerrsy
     //
 }

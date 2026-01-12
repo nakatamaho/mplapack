@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DDRVES.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -112,7 +119,7 @@ void Rdrves(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     info = 0;
     selopt = 0;
     //
-    //     Important constants
+    // Important constants
     //
     badnn = false;
     nmax = 0;
@@ -152,13 +159,13 @@ void Rdrves(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
         return;
     }
     //
-    //     Quick return if nothing to do
+    // Quick return if nothing to do
     //
     if (nsizes == 0 || ntypes == 0) {
         return;
     }
     //
-    //     More Important constants
+    // More Important constants
     //
     unfl = Rlamch("Safe minimum");
     ovfl = one / unfl;
@@ -167,7 +174,7 @@ void Rdrves(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     rtulp = sqrt(ulp);
     rtulpi = one / rtulp;
     //
-    //     Loop over sizes, types
+    // Loop over sizes, types
     //
     nerrs = 0;
     //
@@ -183,27 +190,27 @@ void Rdrves(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 goto statement_260;
             }
             //
-            //           Save ISEED in case of an error.
+            // Save ISEED in case of an error.
             //
             for (j = 1; j <= 4; j = j + 1) {
                 ioldsd[j - 1] = iseed[j - 1];
             }
             //
-            //           Compute "A"
+            // Compute "A"
             //
-            //           Control parameters:
+            // Control parameters:
             //
-            //           KMAGN  KCONDS  KMODE        KTYPE
-            //       =1  O(1)   1       clustered 1  zero
-            //       =2  large  large   clustered 2  identity
-            //       =3  small          exponential  Jordan
-            //       =4                 arithmetic   diagonal, (w/ eigenvalues)
-            //       =5                 random log   symmetric, w/ eigenvalues
-            //       =6                 random       general, w/ eigenvalues
-            //       =7                              random diagonal
-            //       =8                              random symmetric
-            //       =9                              random general
-            //       =10                             random triangular
+            // KMAGN  KCONDS  KMODE        KTYPE
+            // =1  O(1)   1       clustered 1  zero
+            // =2  large  large   clustered 2  identity
+            // =3  small          exponential  Jordan
+            // =4                 arithmetic   diagonal, (w/ eigenvalues)
+            // =5                 random log   symmetric, w/ eigenvalues
+            // =6                 random       general, w/ eigenvalues
+            // =7                              random diagonal
+            // =8                              random symmetric
+            // =9                              random general
+            // =10                             random triangular
             //
             if (mtypes > maxtyp) {
                 goto statement_90;
@@ -212,7 +219,7 @@ void Rdrves(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             itype = ktype[jtype - 1];
             imode = kmode[jtype - 1];
             //
-            //           Compute norm
+            // Compute norm
             //
             switch (kmagn[jtype - 1]) {
             case 1:
@@ -243,16 +250,16 @@ void Rdrves(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             iinfo = 0;
             cond = ulpinv;
             //
-            //           Special Matrices -- Identity & Jordan block
+            // Special Matrices -- Identity & Jordan block
             //
-            //              Zero
+            // Zero
             //
             if (itype == 1) {
                 iinfo = 0;
                 //
             } else if (itype == 2) {
                 //
-                //              Identity
+                // Identity
                 //
                 for (jcol = 1; jcol <= n; jcol = jcol + 1) {
                     a[(jcol - 1) + (jcol - 1) * lda] = anorm;
@@ -260,7 +267,7 @@ void Rdrves(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 //
             } else if (itype == 3) {
                 //
-                //              Jordan Block
+                // Jordan Block
                 //
                 for (jcol = 1; jcol <= n; jcol = jcol + 1) {
                     a[(jcol - 1) + (jcol - 1) * lda] = anorm;
@@ -271,19 +278,19 @@ void Rdrves(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 //
             } else if (itype == 4) {
                 //
-                //              Diagonal Matrix, [Eigen]values Specified
+                // Diagonal Matrix, [Eigen]values Specified
                 //
                 Rlatms(n, n, "S", iseed, "S", work, imode, cond, anorm, 0, 0, "N", a, lda, &work[(n + 1) - 1], iinfo);
                 //
             } else if (itype == 5) {
                 //
-                //              Symmetric, eigenvalues specified
+                // Symmetric, eigenvalues specified
                 //
                 Rlatms(n, n, "S", iseed, "S", work, imode, cond, anorm, n, n, "N", a, lda, &work[(n + 1) - 1], iinfo);
                 //
             } else if (itype == 6) {
                 //
-                //              General, eigenvalues specified
+                // General, eigenvalues specified
                 //
                 if (kconds[jtype - 1] == 1) {
                     conds = one;
@@ -298,19 +305,19 @@ void Rdrves(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 //
             } else if (itype == 7) {
                 //
-                //              Diagonal, random eigenvalues
+                // Diagonal, random eigenvalues
                 //
                 Rlatmr(n, n, "S", iseed, "S", work, 6, one, one, "T", "N", &work[(n + 1) - 1], 1, one, &work[(2 * n + 1) - 1], 1, one, "N", idumma, 0, 0, zero, anorm, "NO", a, lda, iwork, iinfo);
                 //
             } else if (itype == 8) {
                 //
-                //              Symmetric, random eigenvalues
+                // Symmetric, random eigenvalues
                 //
                 Rlatmr(n, n, "S", iseed, "S", work, 6, one, one, "T", "N", &work[(n + 1) - 1], 1, one, &work[(2 * n + 1) - 1], 1, one, "N", idumma, n, n, zero, anorm, "NO", a, lda, iwork, iinfo);
                 //
             } else if (itype == 9) {
                 //
-                //              General, random eigenvalues
+                // General, random eigenvalues
                 //
                 Rlatmr(n, n, "S", iseed, "N", work, 6, one, one, "T", "N", &work[(n + 1) - 1], 1, one, &work[(2 * n + 1) - 1], 1, one, "N", idumma, n, n, zero, anorm, "NO", a, lda, iwork, iinfo);
                 if (n >= 4) {
@@ -322,7 +329,7 @@ void Rdrves(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 //
             } else if (itype == 10) {
                 //
-                //              Triangular, random eigenvalues
+                // Triangular, random eigenvalues
                 //
                 Rlatmr(n, n, "S", iseed, "N", work, 6, one, one, "T", "N", &work[(n + 1) - 1], 1, one, &work[(2 * n + 1) - 1], 1, one, "N", idumma, n, 0, zero, anorm, "NO", a, lda, iwork, iinfo);
                 //
@@ -339,7 +346,7 @@ void Rdrves(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
         //
         statement_90:
             //
-            //           Test for minimal and generous workspace
+            // Test for minimal and generous workspace
             //
             for (iwk = 1; iwk <= 2; iwk = iwk + 1) {
                 if (iwk == 1) {
@@ -349,13 +356,13 @@ void Rdrves(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 }
                 nnwork = max(nnwork, (INTEGER)1);
                 //
-                //              Initialize RESULT
+                // Initialize RESULT
                 //
                 for (j = 1; j <= 13; j = j + 1) {
                     result[j - 1] = -one;
                 }
                 //
-                //              Test with and without sorting of eigenvalues
+                // Test with and without sorting of eigenvalues
                 //
                 for (isort = 0; isort <= 1; isort = isort + 1) {
                     if (isort == 0) {
@@ -366,7 +373,7 @@ void Rdrves(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                         rsub = 6;
                     }
                     //
-                    //                 Compute Schur form and Schur vectors, and test them
+                    // Compute Schur form and Schur vectors, and test them
                     //
                     Rlacpy("F", n, n, a, lda, h, lda);
                     Rgees("V", &sort, Rslect, n, h, lda, sdim, wr, wi, vs, ldvs, work, nnwork, bwork, iinfo);
@@ -377,7 +384,7 @@ void Rdrves(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                         goto statement_220;
                     }
                     //
-                    //                 Do Test (1) or Test (7)
+                    // Do Test (1) or Test (7)
                     //
                     result[(1 + rsub) - 1] = zero;
                     for (j = 1; j <= n - 2; j = j + 1) {
@@ -400,14 +407,14 @@ void Rdrves(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                         }
                     }
                     //
-                    //                 Do Tests (2) and (3) or Tests (8) and (9)
+                    // Do Tests (2) and (3) or Tests (8) and (9)
                     //
                     lwork = max((INTEGER)1, 2 * n * n);
                     Rhst01(n, 1, n, a, lda, h, lda, vs, ldvs, work, lwork, res);
                     result[(2 + rsub) - 1] = res[1 - 1];
                     result[(3 + rsub) - 1] = res[2 - 1];
                     //
-                    //                 Do Test (4) or Test (10)
+                    // Do Test (4) or Test (10)
                     //
                     result[(4 + rsub) - 1] = zero;
                     for (i = 1; i <= n; i = i + 1) {
@@ -435,7 +442,7 @@ void Rdrves(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                         }
                     }
                     //
-                    //                 Do Test (5) or Test (11)
+                    // Do Test (5) or Test (11)
                     //
                     Rlacpy("F", n, n, a, lda, ht, lda);
                     Rgees("N", &sort, Rslect, n, ht, lda, sdim, wrt, wit, vs, ldvs, work, nnwork, bwork, iinfo);
@@ -455,7 +462,7 @@ void Rdrves(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                         }
                     }
                     //
-                    //                 Do Test (6) or Test (12)
+                    // Do Test (6) or Test (12)
                     //
                     result[(6 + rsub) - 1] = zero;
                     for (i = 1; i <= n; i = i + 1) {
@@ -464,7 +471,7 @@ void Rdrves(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                         }
                     }
                     //
-                    //                 Do Test (13)
+                    // Do Test (13)
                     //
                     if (isort == 1) {
                         result[13 - 1] = zero;
@@ -486,7 +493,7 @@ void Rdrves(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     //
                 }
             //
-            //              End of Loop -- Check for RESULT(j) > THRESH
+            // End of Loop -- Check for RESULT(j) > THRESH
             //
             statement_220:
                 //
@@ -570,10 +577,10 @@ void Rdrves(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
         }
     }
     //
-    //     Summary
+    // Summary
     //
     Rlasum(path, nounit, nerrs, ntestt);
     //
-    //     End of Rdrves
+    // End of Rdrves
     //
 }

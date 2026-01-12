@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,10 +26,15 @@
  *
  */
 
+// Derived from LAPACK routine ZGGBAL.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
-
-inline REAL abs1(COMPLEX cdum) { return abs(cdum.real()) + abs(cdum.imag()); }
 
 void Cggbal(const char *job, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, INTEGER &ilo, INTEGER &ihi, REAL *lscale, REAL *rscale, REAL *work, INTEGER &info) {
     COMPLEX cdum = 0.0;
@@ -46,13 +51,13 @@ void Cggbal(const char *job, INTEGER const n, COMPLEX *a, INTEGER const lda, COM
     INTEGER ip1 = 0;
     INTEGER nr = 0;
     const REAL zero = 0.0;
-    const REAL sclfac = 1.0e+1;
+    const REAL sclfac = 10.0;
     REAL basl = 0.0;
     REAL ta = 0.0;
     REAL tb = 0.0;
     REAL coef = 0.0;
     REAL coef2 = 0.0;
-    const REAL half = 0.5e+0;
+    const REAL half = 0.5;
     REAL coef5 = 0.0;
     INTEGER nrp2 = 0;
     REAL beta = 0.0;
@@ -61,7 +66,7 @@ void Cggbal(const char *job, INTEGER const n, COMPLEX *a, INTEGER const lda, COM
     REAL ew = 0.0;
     REAL ewc = 0.0;
     REAL pgamma = 0.0;
-    const REAL three = 3.0e+0;
+    const REAL three = 3.0;
     REAL t = 0.0;
     REAL tc = 0.0;
     INTEGER kount = 0;
@@ -82,34 +87,7 @@ void Cggbal(const char *job, INTEGER const n, COMPLEX *a, INTEGER const lda, COM
     INTEGER lcab = 0;
     INTEGER jc = 0;
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Statement Functions ..
-    //     ..
-    //     .. Statement Function definitions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input parameters
+    // Test the input parameters
     //
     info = 0;
     if (!Mlsame(job, "N") && !Mlsame(job, "P") && !Mlsame(job, "S") && !Mlsame(job, "B")) {
@@ -126,7 +104,7 @@ void Cggbal(const char *job, INTEGER const n, COMPLEX *a, INTEGER const lda, COM
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0) {
         ilo = 1;
@@ -160,9 +138,9 @@ void Cggbal(const char *job, INTEGER const n, COMPLEX *a, INTEGER const lda, COM
     //
     goto statement_30;
 //
-//     Permute the matrices A and B to isolate the eigenvalues.
+// Permute the matrices A and B to isolate the eigenvalues.
 //
-//     Find row with one nonzero in columns 1 through L
+// Find row with one nonzero in columns 1 through L
 //
 statement_20:
     l = lm1;
@@ -170,8 +148,8 @@ statement_20:
         goto statement_30;
     }
     //
-    rscale[1 - 1] = 1;
-    lscale[1 - 1] = 1;
+    rscale[1 - 1] = 1.0;
+    lscale[1 - 1] = 1.0;
     goto statement_190;
 //
 statement_30:
@@ -202,7 +180,7 @@ statement_30:
     }
     goto statement_100;
 //
-//     Find column with one nonzero in rows K through N
+// Find column with one nonzero in rows K through N
 //
 statement_90:
     k++;
@@ -232,7 +210,7 @@ statement_100:
     }
     goto statement_190;
 //
-//     Permute rows M and I
+// Permute rows M and I
 //
 statement_160:
     lscale[m - 1] = i;
@@ -242,7 +220,7 @@ statement_160:
     Cswap(n - k + 1, &a[(i - 1) + (k - 1) * lda], lda, &a[(m - 1) + (k - 1) * lda], lda);
     Cswap(n - k + 1, &b[(i - 1) + (k - 1) * ldb], ldb, &b[(m - 1) + (k - 1) * ldb], ldb);
 //
-//     Permute columns M and J
+// Permute columns M and J
 //
 statement_170:
     rscale[m - 1] = j;
@@ -278,7 +256,7 @@ statement_190:
         return;
     }
     //
-    //     Balance the submatrix in rows ILO to IHI.
+    // Balance the submatrix in rows ILO to IHI.
     //
     nr = ihi - ilo + 1;
     for (i = ilo; i <= ihi; i = i + 1) {
@@ -293,7 +271,7 @@ statement_190:
         work[(i + 5 * n) - 1] = zero;
     }
     //
-    //     Compute right side vector in resulting linear equations
+    // Compute right side vector in resulting linear equations
     //
     basl = log10(sclfac);
     for (i = ilo; i <= ihi; i = i + 1) {
@@ -302,14 +280,14 @@ statement_190:
                 ta = zero;
                 goto statement_210;
             }
-            ta = log10(abs1(a[(i - 1) + (j - 1) * lda])) / basl;
+            ta = log10(cabs1(a[(i - 1) + (j - 1) * lda])) / basl;
         //
         statement_210:
             if (b[(i - 1) + (j - 1) * ldb] == czero) {
                 tb = zero;
                 goto statement_220;
             }
-            tb = log10(abs1(b[(i - 1) + (j - 1) * ldb])) / basl;
+            tb = log10(cabs1(b[(i - 1) + (j - 1) * ldb])) / basl;
         //
         statement_220:
             work[(i + 4 * n) - 1] = work[(i + 4 * n) - 1] - ta - tb;
@@ -324,7 +302,7 @@ statement_190:
     beta = zero;
     it = 1;
 //
-//     Start generalized conjugate gradient iteration
+// Start generalized conjugate gradient iteration
 //
 statement_250:
     //
@@ -358,7 +336,7 @@ statement_250:
         work[(i + n) - 1] += t;
     }
     //
-    //     Apply matrix to vector
+    // Apply matrix to vector
     //
     for (i = ilo; i <= ihi; i = i + 1) {
         kount = 0;
@@ -403,7 +381,7 @@ statement_250:
     sum = Rdot(nr, &work[(ilo + n) - 1], 1, &work[(ilo + 2 * n) - 1], 1) + Rdot(nr, &work[ilo - 1], 1, &work[(ilo + 3 * n) - 1], 1);
     alpha = gamma / sum;
     //
-    //     Determine correction to current iteration
+    // Determine correction to current iteration
     //
     cmax = zero;
     for (i = ilo; i <= ihi; i = i + 1) {
@@ -431,7 +409,7 @@ statement_250:
         goto statement_250;
     }
 //
-//     End generalized conjugate gradient iteration
+// End generalized conjugate gradient iteration
 //
 statement_350:
     sfmin = Rlamch("S");
@@ -445,7 +423,7 @@ statement_350:
         rab = max(rab, abs(b[(i - 1) + ((irab + ilo - 1) - 1) * ldb]));
         lrab = castINTEGER(log10(rab + sfmin) / basl + one);
         ir = castINTEGER(lscale[i - 1] + sign(half, lscale[i - 1]));
-        ir = min({max(ir, lsfmin), lsfmax, lsfmax - lrab});
+        ir = min(max(ir, lsfmin), lsfmax, lsfmax - lrab);
         lscale[i - 1] = pow(sclfac, ir);
         icab = iCamax(ihi, &a[(i - 1) * lda], 1);
         cab = abs(a[(icab - 1) + (i - 1) * lda]);
@@ -453,24 +431,24 @@ statement_350:
         cab = max(cab, abs(b[(icab - 1) + (i - 1) * ldb]));
         lcab = castINTEGER(log10(cab + sfmin) / basl + one);
         jc = castINTEGER(rscale[i - 1] + sign(half, rscale[i - 1]));
-        jc = min({max(jc, lsfmin), lsfmax, lsfmax - lcab});
+        jc = min(max(jc, lsfmin), lsfmax, lsfmax - lcab);
         rscale[i - 1] = pow(sclfac, jc);
     }
     //
-    //     Row scaling of matrices A and B
+    // Row scaling of matrices A and B
     //
     for (i = ilo; i <= ihi; i = i + 1) {
         CRscal(n - ilo + 1, lscale[i - 1], &a[(i - 1) + (ilo - 1) * lda], lda);
         CRscal(n - ilo + 1, lscale[i - 1], &b[(i - 1) + (ilo - 1) * ldb], ldb);
     }
     //
-    //     Column scaling of matrices A and B
+    // Column scaling of matrices A and B
     //
     for (j = ilo; j <= ihi; j = j + 1) {
         CRscal(ihi, rscale[j - 1], &a[(j - 1) * lda], 1);
         CRscal(ihi, rscale[j - 1], &b[(j - 1) * ldb], 1);
     }
     //
-    //     End of Cggbal
+    // End of Cggbal
     //
 }

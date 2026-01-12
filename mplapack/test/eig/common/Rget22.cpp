@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DGET22.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -68,7 +75,7 @@ void Rget22(const char *transa, const char *transe, const char *transw, INTEGER 
         ince = lde;
     }
     //
-    //     Check normalization of E
+    // Check normalization of E
     //
     const REAL one = 1.0;
     REAL enrmin = one / ulp;
@@ -79,7 +86,7 @@ void Rget22(const char *transa, const char *transe, const char *transw, INTEGER 
     INTEGER j = 0;
     if (itrnse == 0) {
         //
-        //        Eigenvectors are column vectors.
+        // Eigenvectors are column vectors.
         //
         ipair = 0;
         for (jvec = 1; jvec <= n; jvec = jvec + 1) {
@@ -89,7 +96,7 @@ void Rget22(const char *transa, const char *transe, const char *transw, INTEGER 
             }
             if (ipair == 1) {
                 //
-                //              Complex eigenvector
+                // Complex eigenvector
                 //
                 for (j = 1; j <= n; j = j + 1) {
                     temp1 = max(temp1, REAL(abs(e[(j - 1) + (jvec - 1) * lde]) + abs(e[(j - 1) + ((jvec + 1) - 1) * lde])));
@@ -101,7 +108,7 @@ void Rget22(const char *transa, const char *transe, const char *transw, INTEGER 
                 ipair = 0;
             } else {
                 //
-                //              Real eigenvector
+                // Real eigenvector
                 //
                 for (j = 1; j <= n; j = j + 1) {
                     temp1 = max(temp1, REAL(abs(e[(j - 1) + (jvec - 1) * lde])));
@@ -114,7 +121,7 @@ void Rget22(const char *transa, const char *transe, const char *transw, INTEGER 
         //
     } else {
         //
-        //        Eigenvectors are row vectors.
+        // Eigenvectors are row vectors.
         //
         for (jvec = 1; jvec <= n; jvec = jvec + 1) {
             work[jvec - 1] = zero;
@@ -144,17 +151,17 @@ void Rget22(const char *transa, const char *transe, const char *transw, INTEGER 
         }
     }
     //
-    //     Norm of A:
+    // Norm of A:
     //
     REAL anorm = max(Rlange(&norma, n, n, a, lda, work), unfl);
     //
-    //     Norm of E:
+    // Norm of E:
     //
     REAL enorm = max(Rlange(&norme, n, n, e, lde, work), ulp);
     //
-    //     Norm of error:
+    // Norm of error:
     //
-    //     Error =  AE - EW
+    // Error =  AE - EW
     //
     Rlaset("Full", n, n, zero, zero, work, n);
     //
@@ -198,7 +205,7 @@ void Rget22(const char *transa, const char *transe, const char *transw, INTEGER 
     //
     REAL errnrm = Rlange("One", n, n, work, n, &work[(n * n + 1) - 1]) / enorm;
     //
-    //     Compute RESULT(1) (avoiding under/overflow)
+    // Compute RESULT(1) (avoiding under/overflow)
     //
     if (anorm > errnrm) {
         result[1 - 1] = (errnrm / anorm) / ulp;
@@ -210,10 +217,10 @@ void Rget22(const char *transa, const char *transe, const char *transw, INTEGER 
         }
     }
     //
-    //     Compute RESULT(2) : the normalization error in E.
+    // Compute RESULT(2) : the normalization error in E.
     //
     result[2 - 1] = max(abs(enrmax - one), abs(enrmin - one)) / (castREAL(n) * ulp);
     //
-    //     End of Rget22
+    // End of Rget22
     //
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZHETRS.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -42,29 +49,6 @@ void Chetrs(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a, I
     INTEGER j = 0;
     COMPLEX bkm1 = 0.0;
     COMPLEX bk = 0.0;
-    //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
     info = 0;
     upper = Mlsame(uplo, "U");
@@ -84,7 +68,7 @@ void Chetrs(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a, I
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0 || nrhs == 0) {
         return;
@@ -92,17 +76,17 @@ void Chetrs(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a, I
     //
     if (upper) {
         //
-        //        Solve A*X = B, where A = U*D*U**H.
+        // Solve A*X = B, where A = U*D*U**H.
         //
-        //        First solve U*D*X = B, overwriting B with X.
+        // First solve U*D*X = B, overwriting B with X.
         //
-        //        K is the main loop index, decreasing from N to 1 in steps of
-        //        1 or 2, depending on the size of the diagonal blocks.
+        // K is the main loop index, decreasing from N to 1 in steps of
+        // 1 or 2, depending on the size of the diagonal blocks.
         //
         k = n;
     statement_10:
         //
-        //        If K < 1, exit from loop.
+        // If K < 1, exit from loop.
         //
         if (k < 1) {
             goto statement_30;
@@ -110,43 +94,43 @@ void Chetrs(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a, I
         //
         if (ipiv[k - 1] > 0) {
             //
-            //           1 x 1 diagonal block
+            // 1 x 1 diagonal block
             //
-            //           Interchange rows K and IPIV(K).
+            // Interchange rows K and IPIV(K).
             //
             kp = ipiv[k - 1];
             if (kp != k) {
                 Cswap(nrhs, &b[(k - 1)], ldb, &b[(kp - 1)], ldb);
             }
             //
-            //           Multiply by inv(U(K)), where U(K) is the transformation
-            //           stored in column K of A.
+            // Multiply by inv(U(K)), where U(K) is the transformation
+            // stored in column K of A.
             //
-            Cgeru(k - 1, nrhs, -one, &a[(k - 1) * lda], 1, &b[(k - 1)], ldb, &b[(1 - 1)], ldb);
+            Cgeru(k - 1, nrhs, -one, &a[(k - 1) * lda], 1, &b[(k - 1)], ldb, &b[0], ldb);
             //
-            //           Multiply by the inverse of the diagonal block.
+            // Multiply by the inverse of the diagonal block.
             //
             s = one.real() / a[(k - 1) + (k - 1) * lda].real();
             CRscal(nrhs, s, &b[(k - 1)], ldb);
             k = k - 1;
         } else {
             //
-            //           2 x 2 diagonal block
+            // 2 x 2 diagonal block
             //
-            //           Interchange rows K-1 and -IPIV(K).
+            // Interchange rows K-1 and -IPIV(K).
             //
             kp = -ipiv[k - 1];
             if (kp != k - 1) {
                 Cswap(nrhs, &b[((k - 1) - 1)], ldb, &b[(kp - 1)], ldb);
             }
             //
-            //           Multiply by inv(U(K)), where U(K) is the transformation
-            //           stored in columns K-1 and K of A.
+            // Multiply by inv(U(K)), where U(K) is the transformation
+            // stored in columns K-1 and K of A.
             //
-            Cgeru(k - 2, nrhs, -one, &a[(k - 1) * lda], 1, &b[(k - 1)], ldb, &b[(1 - 1)], ldb);
-            Cgeru(k - 2, nrhs, -one, &a[((k - 1) - 1) * lda], 1, &b[((k - 1) - 1)], ldb, &b[(1 - 1)], ldb);
+            Cgeru(k - 2, nrhs, -one, &a[(k - 1) * lda], 1, &b[(k - 1)], ldb, &b[0], ldb);
+            Cgeru(k - 2, nrhs, -one, &a[((k - 1) - 1) * lda], 1, &b[((k - 1) - 1)], ldb, &b[0], ldb);
             //
-            //           Multiply by the inverse of the diagonal block.
+            // Multiply by the inverse of the diagonal block.
             //
             akm1k = a[((k - 1) - 1) + (k - 1) * lda];
             akm1 = a[((k - 1) - 1) + ((k - 1) - 1) * lda] / akm1k;
@@ -164,15 +148,15 @@ void Chetrs(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a, I
         goto statement_10;
     statement_30:
         //
-        //        Next solve U**H *X = B, overwriting B with X.
+        // Next solve U**H *X = B, overwriting B with X.
         //
-        //        K is the main loop index, increasing from 1 to N in steps of
-        //        1 or 2, depending on the size of the diagonal blocks.
+        // K is the main loop index, increasing from 1 to N in steps of
+        // 1 or 2, depending on the size of the diagonal blocks.
         //
         k = 1;
     statement_40:
         //
-        //        If K > N, exit from loop.
+        // If K > N, exit from loop.
         //
         if (k > n) {
             goto statement_50;
@@ -180,10 +164,10 @@ void Chetrs(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a, I
         //
         if (ipiv[k - 1] > 0) {
             //
-            //           1 x 1 diagonal block
+            // 1 x 1 diagonal block
             //
-            //           Multiply by inv(U**H(K)), where U(K) is the transformation
-            //           stored in column K of A.
+            // Multiply by inv(U**H(K)), where U(K) is the transformation
+            // stored in column K of A.
             //
             if (k > 1) {
                 Clacgv(nrhs, &b[(k - 1)], ldb);
@@ -191,7 +175,7 @@ void Chetrs(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a, I
                 Clacgv(nrhs, &b[(k - 1)], ldb);
             }
             //
-            //           Interchange rows K and IPIV(K).
+            // Interchange rows K and IPIV(K).
             //
             kp = ipiv[k - 1];
             if (kp != k) {
@@ -200,10 +184,10 @@ void Chetrs(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a, I
             k++;
         } else {
             //
-            //           2 x 2 diagonal block
+            // 2 x 2 diagonal block
             //
-            //           Multiply by inv(U**H(K+1)), where U(K+1) is the transformation
-            //           stored in columns K and K+1 of A.
+            // Multiply by inv(U**H(K+1)), where U(K+1) is the transformation
+            // stored in columns K and K+1 of A.
             //
             if (k > 1) {
                 Clacgv(nrhs, &b[(k - 1)], ldb);
@@ -215,7 +199,7 @@ void Chetrs(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a, I
                 Clacgv(nrhs, &b[((k + 1) - 1)], ldb);
             }
             //
-            //           Interchange rows K and -IPIV(K).
+            // Interchange rows K and -IPIV(K).
             //
             kp = -ipiv[k - 1];
             if (kp != k) {
@@ -229,17 +213,17 @@ void Chetrs(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a, I
         //
     } else {
         //
-        //        Solve A*X = B, where A = L*D*L**H.
+        // Solve A*X = B, where A = L*D*L**H.
         //
-        //        First solve L*D*X = B, overwriting B with X.
+        // First solve L*D*X = B, overwriting B with X.
         //
-        //        K is the main loop index, increasing from 1 to N in steps of
-        //        1 or 2, depending on the size of the diagonal blocks.
+        // K is the main loop index, increasing from 1 to N in steps of
+        // 1 or 2, depending on the size of the diagonal blocks.
         //
         k = 1;
     statement_60:
         //
-        //        If K > N, exit from loop.
+        // If K > N, exit from loop.
         //
         if (k > n) {
             goto statement_80;
@@ -247,47 +231,47 @@ void Chetrs(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a, I
         //
         if (ipiv[k - 1] > 0) {
             //
-            //           1 x 1 diagonal block
+            // 1 x 1 diagonal block
             //
-            //           Interchange rows K and IPIV(K).
+            // Interchange rows K and IPIV(K).
             //
             kp = ipiv[k - 1];
             if (kp != k) {
                 Cswap(nrhs, &b[(k - 1)], ldb, &b[(kp - 1)], ldb);
             }
             //
-            //           Multiply by inv(L(K)), where L(K) is the transformation
-            //           stored in column K of A.
+            // Multiply by inv(L(K)), where L(K) is the transformation
+            // stored in column K of A.
             //
             if (k < n) {
                 Cgeru(n - k, nrhs, -one, &a[((k + 1) - 1) + (k - 1) * lda], 1, &b[(k - 1)], ldb, &b[((k + 1) - 1)], ldb);
             }
             //
-            //           Multiply by the inverse of the diagonal block.
+            // Multiply by the inverse of the diagonal block.
             //
             s = one.real() / a[(k - 1) + (k - 1) * lda].real();
             CRscal(nrhs, s, &b[(k - 1)], ldb);
             k++;
         } else {
             //
-            //           2 x 2 diagonal block
+            // 2 x 2 diagonal block
             //
-            //           Interchange rows K+1 and -IPIV(K).
+            // Interchange rows K+1 and -IPIV(K).
             //
             kp = -ipiv[k - 1];
             if (kp != k + 1) {
                 Cswap(nrhs, &b[((k + 1) - 1)], ldb, &b[(kp - 1)], ldb);
             }
             //
-            //           Multiply by inv(L(K)), where L(K) is the transformation
-            //           stored in columns K and K+1 of A.
+            // Multiply by inv(L(K)), where L(K) is the transformation
+            // stored in columns K and K+1 of A.
             //
             if (k < n - 1) {
                 Cgeru(n - k - 1, nrhs, -one, &a[((k + 2) - 1) + (k - 1) * lda], 1, &b[(k - 1)], ldb, &b[((k + 2) - 1)], ldb);
                 Cgeru(n - k - 1, nrhs, -one, &a[((k + 2) - 1) + ((k + 1) - 1) * lda], 1, &b[((k + 1) - 1)], ldb, &b[((k + 2) - 1)], ldb);
             }
             //
-            //           Multiply by the inverse of the diagonal block.
+            // Multiply by the inverse of the diagonal block.
             //
             akm1k = a[((k + 1) - 1) + (k - 1) * lda];
             akm1 = a[(k - 1) + (k - 1) * lda] / conj(akm1k);
@@ -305,15 +289,15 @@ void Chetrs(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a, I
         goto statement_60;
     statement_80:
         //
-        //        Next solve L**H *X = B, overwriting B with X.
+        // Next solve L**H *X = B, overwriting B with X.
         //
-        //        K is the main loop index, decreasing from N to 1 in steps of
-        //        1 or 2, depending on the size of the diagonal blocks.
+        // K is the main loop index, decreasing from N to 1 in steps of
+        // 1 or 2, depending on the size of the diagonal blocks.
         //
         k = n;
     statement_90:
         //
-        //        If K < 1, exit from loop.
+        // If K < 1, exit from loop.
         //
         if (k < 1) {
             goto statement_100;
@@ -321,10 +305,10 @@ void Chetrs(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a, I
         //
         if (ipiv[k - 1] > 0) {
             //
-            //           1 x 1 diagonal block
+            // 1 x 1 diagonal block
             //
-            //           Multiply by inv(L**H(K)), where L(K) is the transformation
-            //           stored in column K of A.
+            // Multiply by inv(L**H(K)), where L(K) is the transformation
+            // stored in column K of A.
             //
             if (k < n) {
                 Clacgv(nrhs, &b[(k - 1)], ldb);
@@ -332,7 +316,7 @@ void Chetrs(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a, I
                 Clacgv(nrhs, &b[(k - 1)], ldb);
             }
             //
-            //           Interchange rows K and IPIV(K).
+            // Interchange rows K and IPIV(K).
             //
             kp = ipiv[k - 1];
             if (kp != k) {
@@ -341,10 +325,10 @@ void Chetrs(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a, I
             k = k - 1;
         } else {
             //
-            //           2 x 2 diagonal block
+            // 2 x 2 diagonal block
             //
-            //           Multiply by inv(L**H(K-1)), where L(K-1) is the transformation
-            //           stored in columns K-1 and K of A.
+            // Multiply by inv(L**H(K-1)), where L(K-1) is the transformation
+            // stored in columns K-1 and K of A.
             //
             if (k < n) {
                 Clacgv(nrhs, &b[(k - 1)], ldb);
@@ -356,7 +340,7 @@ void Chetrs(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a, I
                 Clacgv(nrhs, &b[((k - 1) - 1)], ldb);
             }
             //
-            //           Interchange rows K and -IPIV(K).
+            // Interchange rows K and -IPIV(K).
             //
             kp = -ipiv[k - 1];
             if (kp != k) {
@@ -369,6 +353,6 @@ void Chetrs(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a, I
     statement_100:;
     }
     //
-    //     End of Chetrs
+    // End of Chetrs
     //
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DLASUM.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -48,6 +55,6 @@ void Rlasum(const char *type, INTEGER const iounit, INTEGER const ie, INTEGER co
         write(iounit, "(/,1x,a14,a3,a24,i5,a11)"), "All tests for ", type, " passed the threshold ( ", nrun, " tests run)";
     }
     //
-    //     End of Rlasum
+    // End of Rlasum
     //
 }

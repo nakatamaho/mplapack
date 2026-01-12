@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,36 +26,24 @@
  *
  */
 
+// Derived from LAPACK routine ZSYTRI2.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Csytri2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, INTEGER *ipiv, COMPLEX *work, INTEGER const lwork, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     bool upper = Mlsame(uplo, "U");
     bool lquery = (lwork == -1);
-    //     Get blocksize
+    // Get blocksize
     INTEGER nbmax = iMlaenv(1, "Csytri2", uplo, n, -1, -1, -1);
     INTEGER minsize = 0;
     if (nbmax >= n) {
@@ -74,7 +62,7 @@ void Csytri2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, I
         info = -7;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (info != 0) {
         Mxerbla("Csytri2", -info);
@@ -93,6 +81,6 @@ void Csytri2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, I
         Csytri2x(uplo, n, a, lda, ipiv, work, nbmax, info);
     }
     //
-    //     End of Csytri2
+    // End of Csytri2
     //
 }

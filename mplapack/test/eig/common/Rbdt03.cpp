@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DBDT03.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -40,7 +47,7 @@ using fem::common;
 
 void Rbdt03(const char *uplo, INTEGER const n, INTEGER const kd, REAL *d, REAL *e, REAL *u, INTEGER const ldu, REAL *s, REAL *vt, INTEGER const ldvt, REAL *work, REAL &resid) {
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     const REAL zero = 0.0;
     resid = zero;
@@ -48,7 +55,7 @@ void Rbdt03(const char *uplo, INTEGER const n, INTEGER const kd, REAL *d, REAL *
         return;
     }
     //
-    //     Compute B - U * S * V' one column at a time.
+    // Compute B - U * S * V' one column at a time.
     //
     REAL bnorm = zero;
     INTEGER j = 0;
@@ -56,11 +63,11 @@ void Rbdt03(const char *uplo, INTEGER const n, INTEGER const kd, REAL *d, REAL *
     const REAL one = 1.0;
     if (kd >= 1) {
         //
-        //        B is bidiagonal.
+        // B is bidiagonal.
         //
         if (Mlsame(uplo, "U")) {
             //
-            //           B is upper bidiagonal.
+            // B is upper bidiagonal.
             //
             for (j = 1; j <= n; j = j + 1) {
                 for (i = 1; i <= n; i = i + 1) {
@@ -78,7 +85,7 @@ void Rbdt03(const char *uplo, INTEGER const n, INTEGER const kd, REAL *d, REAL *
             }
         } else {
             //
-            //           B is lower bidiagonal.
+            // B is lower bidiagonal.
             //
             for (j = 1; j <= n; j = j + 1) {
                 for (i = 1; i <= n; i = i + 1) {
@@ -97,7 +104,7 @@ void Rbdt03(const char *uplo, INTEGER const n, INTEGER const kd, REAL *d, REAL *
         }
     } else {
         //
-        //        B is diagonal.
+        // B is diagonal.
         //
         for (j = 1; j <= n; j = j + 1) {
             for (i = 1; i <= n; i = i + 1) {
@@ -111,7 +118,7 @@ void Rbdt03(const char *uplo, INTEGER const n, INTEGER const kd, REAL *d, REAL *
         bnorm = abs(d[j - 1]);
     }
     //
-    //     Compute norm(B - U * S * V') / ( n * norm(B) * EPS )
+    // Compute norm(B - U * S * V') / ( n * norm(B) * EPS )
     //
     REAL eps = Rlamch("Precision");
     //
@@ -131,6 +138,6 @@ void Rbdt03(const char *uplo, INTEGER const n, INTEGER const kd, REAL *d, REAL *
         }
     }
     //
-    //     End of Rbdt03
+    // End of Rbdt03
     //
 }

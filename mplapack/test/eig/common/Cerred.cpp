@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine ZERRED.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -93,7 +100,7 @@ void Cerred(const char *path, INTEGER const nunit) {
     INTEGER ns = 0;
     if (Mlsamen(2, c2, "EV")) {
         //
-        //        Test Cgeev
+        // Test Cgeev
         //
         strncpy(srnamt, "Cgeev", srnamt_len);
         infot = 1;
@@ -121,7 +128,7 @@ void Cerred(const char *path, INTEGER const nunit) {
         //
     } else if (Mlsamen(2, c2, "ES")) {
         //
-        //        Test Cgees
+        // Test Cgees
         //
         strncpy(srnamt, "Cgees", srnamt_len);
         infot = 1;
@@ -146,7 +153,7 @@ void Cerred(const char *path, INTEGER const nunit) {
         //
     } else if (Mlsamen(2, c2, "VX")) {
         //
-        //        Test Cgeevx
+        // Test Cgeevx
         //
         strncpy(srnamt, "Cgeevx", srnamt_len);
         infot = 1;
@@ -183,7 +190,7 @@ void Cerred(const char *path, INTEGER const nunit) {
         //
     } else if (Mlsamen(2, c2, "SX")) {
         //
-        //        Test Cgeesx
+        // Test Cgeesx
         //
         strncpy(srnamt, "Cgeesx", srnamt_len);
         infot = 1;
@@ -211,7 +218,7 @@ void Cerred(const char *path, INTEGER const nunit) {
         //
     } else if (Mlsamen(2, c2, "BD")) {
         //
-        //        Test Cgesvd
+        // Test Cgesvd
         //
         strncpy(srnamt, "Cgesvd", srnamt_len);
         infot = 1;
@@ -245,7 +252,7 @@ void Cerred(const char *path, INTEGER const nunit) {
             write(nout, format_9998);
         }
         //
-        //        Test Cgesdd
+        // Test Cgesdd
         //
         strncpy(srnamt, "Cgesdd", srnamt_len);
         infot = 1;
@@ -273,7 +280,7 @@ void Cerred(const char *path, INTEGER const nunit) {
             write(nout, format_9998);
         }
         //
-        //        Test Cgejsv
+        // Test Cgejsv
         //
         strncpy(srnamt, "Cgejsv", srnamt_len);
         infot = 1;
@@ -316,7 +323,7 @@ void Cerred(const char *path, INTEGER const nunit) {
             write(nout, format_9998);
         }
         //
-        //        Test Cgesvdx
+        // Test Cgesvdx
         //
         strncpy(srnamt, "Cgesvdx", srnamt_len);
         infot = 1;
@@ -362,7 +369,7 @@ void Cerred(const char *path, INTEGER const nunit) {
             write(nout, format_9998);
         }
         //
-        //        Test Cgesvdq
+        // Test Cgesvdq
         //
         strncpy(srnamt, "Cgesvdq", srnamt_len);
         infot = 1;
@@ -406,7 +413,7 @@ void Cerred(const char *path, INTEGER const nunit) {
         }
     }
     //
-    //     Print a summary line.
+    // Print a summary line.
     //
     if (!Mlsamen(2, c2, "BD")) {
         if (ok) {
@@ -416,6 +423,6 @@ void Cerred(const char *path, INTEGER const nunit) {
         }
     }
     //
-    //     End of Cerred
+    // End of Cerred
     //
 }

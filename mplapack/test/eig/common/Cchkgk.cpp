@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZCHKGK.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -47,8 +54,6 @@ using fem::common;
 using namespace std;
 using std::regex;
 using std::regex_replace;
-
-inline REAL cabs1(COMPLEX cdum) { return abs(cdum.real()) + abs(cdum.imag()); }
 
 void Cchkgk(INTEGER const nin, INTEGER const nout) {
     common cmn;
@@ -279,6 +284,6 @@ void Cchkgk(INTEGER const nin, INTEGER const nout) {
     write(nout, "(' number of examples where info is not 0       =',i4)"), ninfo;
     write(nout, "(' total number of examples tested              =',i4)"), knt;
     //
-    //     End of Cchkgk
+    // End of Cchkgk
     //
 }

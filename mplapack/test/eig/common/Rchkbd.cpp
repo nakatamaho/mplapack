@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DCHKBD.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -114,7 +121,7 @@ void Rchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
     static const char *format_9998 = "(' Rchkbd: ',a,' returned INFO=',i6,'.',/,9x,'M=',i6,', N=',i6,"
                                      "', JTYPE=',i6,', ISEED=(',3(i5,','),i5,')')";
     //
-    //     Check for errors
+    // Check for errors
     //
     info = 0;
     //
@@ -137,7 +144,7 @@ void Rchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
         minwrk = max({minwrk, 3 * (mval[j - 1] + nval[j - 1]), mval[j - 1] * (mval[j - 1] + max({mval[j - 1], nval[j - 1], nrhs}) + 1) + nval[j - 1] * min(nval[j - 1], mval[j - 1])});
     }
     //
-    //     Check for errors
+    // Check for errors
     //
     if (nsizes < 0) {
         info = -1;
@@ -215,21 +222,21 @@ void Rchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
             //
             uplo = ' ';
             //
-            //           Compute "A"
+            // Compute "A"
             //
-            //           Control parameters:
+            // Control parameters:
             //
-            //           KMAGN  KMODE        KTYPE
-            //       =1  O(1)   clustered 1  zero
-            //       =2  large  clustered 2  identity
-            //       =3  small  exponential  (none)
-            //       =4         arithmetic   diagonal, (w/ eigenvalues)
-            //       =5         random       symmetric, w/ eigenvalues
-            //       =6                      nonsymmetric, w/ singular values
-            //       =7                      random diagonal
-            //       =8                      random symmetric
-            //       =9                      random nonsymmetric
-            //       =10                     random bidiagonal (log. distrib.)
+            // KMAGN  KMODE        KTYPE
+            // =1  O(1)   clustered 1  zero
+            // =2  large  clustered 2  identity
+            // =3  small  exponential  (none)
+            // =4         arithmetic   diagonal, (w/ eigenvalues)
+            // =5         random       symmetric, w/ eigenvalues
+            // =6                      nonsymmetric, w/ singular values
+            // =7                      random diagonal
+            // =8                      random symmetric
+            // =9                      random nonsymmetric
+            // =10                     random bidiagonal (log. distrib.)
             //
             if (mtypes > maxtyp) {
                 goto statement_100;
@@ -238,7 +245,7 @@ void Rchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
             itype = ktype[jtype - 1];
             imode = kmode[jtype - 1];
             //
-            //           Compute norm
+            // Compute norm
             //
             switch (kmagn[jtype - 1]) {
             case 1:
@@ -272,13 +279,13 @@ void Rchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
             bidiag = false;
             if (itype == 1) {
                 //
-                //              Zero matrix
+                // Zero matrix
                 //
                 iinfo = 0;
                 //
             } else if (itype == 2) {
                 //
-                //              Identity
+                // Identity
                 //
                 for (jcol = 1; jcol <= mnmin; jcol = jcol + 1) {
                     a[(jcol - 1) + (jcol - 1) * lda] = anorm;
@@ -286,43 +293,43 @@ void Rchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
                 //
             } else if (itype == 4) {
                 //
-                //              Diagonal Matrix, [Eigen]values Specified
+                // Diagonal Matrix, [Eigen]values Specified
                 //
                 Rlatms(mnmin, mnmin, "S", iseed, "N", work, imode, cond, anorm, 0, 0, "N", a, lda, &work[(mnmin + 1) - 1], iinfo);
                 //
             } else if (itype == 5) {
                 //
-                //              Symmetric, eigenvalues specified
+                // Symmetric, eigenvalues specified
                 //
                 Rlatms(mnmin, mnmin, "S", iseed, "S", work, imode, cond, anorm, m, n, "N", a, lda, &work[(mnmin + 1) - 1], iinfo);
                 //
             } else if (itype == 6) {
                 //
-                //              Nonsymmetric, singular values specified
+                // Nonsymmetric, singular values specified
                 //
                 Rlatms(m, n, "S", iseed, "N", work, imode, cond, anorm, m, n, "N", a, lda, &work[(mnmin + 1) - 1], iinfo);
                 //
             } else if (itype == 7) {
                 //
-                //              Diagonal, random entries
+                // Diagonal, random entries
                 //
                 Rlatmr(mnmin, mnmin, "S", iseed, "N", work, 6, one, one, "T", "N", &work[(mnmin + 1) - 1], 1, one, &work[(2 * mnmin + 1) - 1], 1, one, "N", iwork, 0, 0, zero, anorm, "NO", a, lda, iwork, iinfo);
                 //
             } else if (itype == 8) {
                 //
-                //              Symmetric, random entries
+                // Symmetric, random entries
                 //
                 Rlatmr(mnmin, mnmin, "S", iseed, "S", work, 6, one, one, "T", "N", &work[(mnmin + 1) - 1], 1, one, &work[(m + mnmin + 1) - 1], 1, one, "N", iwork, m, n, zero, anorm, "NO", a, lda, iwork, iinfo);
                 //
             } else if (itype == 9) {
                 //
-                //              Nonsymmetric, random entries
+                // Nonsymmetric, random entries
                 //
                 Rlatmr(m, n, "S", iseed, "N", work, 6, one, one, "T", "N", &work[(mnmin + 1) - 1], 1, one, &work[(m + mnmin + 1) - 1], 1, one, "N", iwork, m, n, zero, anorm, "NO", a, lda, iwork, iinfo);
                 //
             } else if (itype == 10) {
                 //
-                //              Bidiagonal, random entries
+                // Bidiagonal, random entries
                 //
                 temp1 = -two * log(ulp);
                 for (j = 1; j <= mnmin; j = j + 1) {
@@ -345,7 +352,7 @@ void Rchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
             //
             if (iinfo == 0) {
                 //
-                //              Generate Right-Hand Side
+                // Generate Right-Hand Side
                 //
                 if (bidiag) {
                     Rlatmr(mnmin, nrhs, "S", iseed, "N", work, 6, one, one, "T", "N", &work[(mnmin + 1) - 1], 1, one, &work[(2 * mnmin + 1) - 1], 1, one, "N", iwork, mnmin, nrhs, zero, one, "NO", y, ldx, iwork, iinfo);
@@ -354,7 +361,7 @@ void Rchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
                 }
             }
             //
-            //           Error Exit
+            // Error Exit
             //
             if (iinfo != 0) {
                 write(nout, format_9998), "Generator", iinfo, m, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
@@ -364,17 +371,17 @@ void Rchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
         //
         statement_100:
             //
-            //           Call Rgebrd and Rorgbr to compute B, Q, and P, do tests.
+            // Call Rgebrd and Rorgbr to compute B, Q, and P, do tests.
             //
             if (!bidiag) {
                 //
-                //              Compute transformations to reduce A to bidiagonal form:
-                //              B := Q' * A * P.
+                // Compute transformations to reduce A to bidiagonal form:
+                // B := Q' * A * P.
                 //
                 Rlacpy(" ", m, n, a, lda, q, ldq);
                 Rgebrd(m, n, q, ldq, bd, be, work, &work[(mnmin + 1) - 1], &work[(2 * mnmin + 1) - 1], lwork - 2 * mnmin, iinfo);
                 //
-                //              Check error code from Rgebrd.
+                // Check error code from Rgebrd.
                 //
                 if (iinfo != 0) {
                     write(nout, format_9998), "Rgebrd", iinfo, m, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
@@ -389,7 +396,7 @@ void Rchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
                     uplo = 'L';
                 }
                 //
-                //              Generate Q
+                // Generate Q
                 //
                 mq = m;
                 if (nrhs <= 0) {
@@ -397,7 +404,7 @@ void Rchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
                 }
                 Rorgbr("Q", m, mq, n, q, ldq, work, &work[(2 * mnmin + 1) - 1], lwork - 2 * mnmin, iinfo);
                 //
-                //              Check error code from Rorgbr.
+                // Check error code from Rorgbr.
                 //
                 if (iinfo != 0) {
                     write(nout, format_9998), "Rorgbr(Q)", iinfo, m, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
@@ -405,11 +412,11 @@ void Rchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
                     return;
                 }
                 //
-                //              Generate P'
+                // Generate P'
                 //
                 Rorgbr("P", mnmin, n, m, pt, ldpt, &work[(mnmin + 1) - 1], &work[(2 * mnmin + 1) - 1], lwork - 2 * mnmin, iinfo);
                 //
-                //              Check error code from Rorgbr.
+                // Check error code from Rorgbr.
                 //
                 if (iinfo != 0) {
                     write(nout, format_9998), "Rorgbr(P)", iinfo, m, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
@@ -417,21 +424,21 @@ void Rchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
                     return;
                 }
                 //
-                //              Apply Q' to an M by NRHS matrix X:  Y := Q' * X.
+                // Apply Q' to an M by NRHS matrix X:  Y := Q' * X.
                 //
                 Rgemm("Transpose", "No transpose", m, nrhs, m, one, q, ldq, x, ldx, zero, y, ldx);
                 //
-                //              Test 1:  Check the decomposition A := Q * B * PT
-                //                   2:  Check the orthogonality of Q
-                //                   3:  Check the orthogonality of PT
+                // Test 1:  Check the decomposition A := Q * B * PT
+                // 2:  Check the orthogonality of Q
+                // 3:  Check the orthogonality of PT
                 //
                 Rbdt01(m, n, 1, a, lda, q, ldq, bd, be, pt, ldpt, work, result[1 - 1]);
                 Rort01("Columns", m, mq, q, ldq, work, lwork, result[2 - 1]);
                 Rort01("Rows", mnmin, n, pt, ldpt, work, lwork, result[3 - 1]);
             }
             //
-            //           Use Rbdsqr to form the SVD of the bidiagonal matrix B:
-            //           B := U * S1 * VT, and compute Z = U' * Y.
+            // Use Rbdsqr to form the SVD of the bidiagonal matrix B:
+            // B := U * S1 * VT, and compute Z = U' * Y.
             //
             Rcopy(mnmin, bd, 1, s1, 1);
             if (mnmin > 0) {
@@ -443,7 +450,7 @@ void Rchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
             //
             Rbdsqr(&uplo, mnmin, mnmin, mnmin, nrhs, s1, work, vt, ldpt, u, ldpt, z, ldx, &work[(mnmin + 1) - 1], iinfo);
             //
-            //           Check error code from Rbdsqr.
+            // Check error code from Rbdsqr.
             //
             if (iinfo != 0) {
                 write(nout, format_9998), "Rbdsqr(vects)", iinfo, m, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
@@ -456,8 +463,8 @@ void Rchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
                 }
             }
             //
-            //           Use Rbdsqr to compute only the singular values of the
-            //           bidiagonal matrix B;  U, VT, and Z should not be modified.
+            // Use Rbdsqr to compute only the singular values of the
+            // bidiagonal matrix B;  U, VT, and Z should not be modified.
             //
             Rcopy(mnmin, bd, 1, s2, 1);
             if (mnmin > 0) {
@@ -466,7 +473,7 @@ void Rchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
             //
             Rbdsqr(&uplo, mnmin, 0, 0, 0, s2, work, vt, ldpt, u, ldpt, z, ldx, &work[(mnmin + 1) - 1], iinfo);
             //
-            //           Check error code from Rbdsqr.
+            // Check error code from Rbdsqr.
             //
             if (iinfo != 0) {
                 write(nout, format_9998), "Rbdsqr(values)", iinfo, m, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
@@ -479,18 +486,18 @@ void Rchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
                 }
             }
             //
-            //           Test 4:  Check the decomposition B := U * S1 * VT
-            //                5:  Check the computation Z := U' * Y
-            //                6:  Check the orthogonality of U
-            //                7:  Check the orthogonality of VT
+            // Test 4:  Check the decomposition B := U * S1 * VT
+            // 5:  Check the computation Z := U' * Y
+            // 6:  Check the orthogonality of U
+            // 7:  Check the orthogonality of VT
             //
             Rbdt03(&uplo, mnmin, 1, bd, be, u, ldpt, s1, vt, ldpt, work, result[4 - 1]);
             Rbdt02(mnmin, nrhs, y, ldx, z, ldx, u, ldpt, work, result[5 - 1]);
             Rort01("Columns", mnmin, mnmin, u, ldpt, work, lwork, result[6 - 1]);
             Rort01("Rows", mnmin, mnmin, vt, ldpt, work, lwork, result[7 - 1]);
             //
-            //           Test 8:  Check that the singular values are sorted in
-            //                    non-increasing order and are non-negative
+            // Test 8:  Check that the singular values are sorted in
+            // non-increasing order and are non-negative
             //
             result[8 - 1] = zero;
             for (i = 1; i <= mnmin - 1; i = i + 1) {
@@ -507,7 +514,7 @@ void Rchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
                 }
             }
             //
-            //           Test 9:  Compare Rbdsqr with and without singular vectors
+            // Test 9:  Compare Rbdsqr with and without singular vectors
             //
             temp2 = zero;
             //
@@ -518,13 +525,13 @@ void Rchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
             //
             result[9 - 1] = temp2;
             //
-            //           Test 10:  Sturm sequence test of singular values
-            //                     Go up by factors of two until it succeeds
+            // Test 10:  Sturm sequence test of singular values
+            // Go up by factors of two until it succeeds
             //
             temp1 = thresh * (half - ulp);
             //
             for (j = 0; j <= log2ui; j = j + 1) {
-                //               CALL Rsvdch( MNMIN, BD, BE, S1, TEMP1, IINFO )
+                // CALL Rsvdch( MNMIN, BD, BE, S1, TEMP1, IINFO )
                 if (iinfo == 0) {
                     goto statement_140;
                 }
@@ -534,8 +541,8 @@ void Rchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
         statement_140:
             result[10 - 1] = temp1;
             //
-            //           Use Rbdsqr to form the decomposition A := (QU) S (VT PT)
-            //           from the bidiagonal form A := Q B PT.
+            // Use Rbdsqr to form the decomposition A := (QU) S (VT PT)
+            // from the bidiagonal form A := Q B PT.
             //
             if (!bidiag) {
                 Rcopy(mnmin, bd, 1, s2, 1);
@@ -545,10 +552,10 @@ void Rchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
                 //
                 Rbdsqr(&uplo, mnmin, n, m, nrhs, s2, work, pt, ldpt, q, ldq, y, ldx, &work[(mnmin + 1) - 1], iinfo);
                 //
-                //              Test 11:  Check the decomposition A := Q*U * S2 * VT*PT
-                //                   12:  Check the computation Z := U' * Q' * X
-                //                   13:  Check the orthogonality of Q*U
-                //                   14:  Check the orthogonality of VT*PT
+                // Test 11:  Check the decomposition A := Q*U * S2 * VT*PT
+                // 12:  Check the computation Z := U' * Q' * X
+                // 13:  Check the orthogonality of Q*U
+                // 14:  Check the orthogonality of VT*PT
                 //
                 Rbdt01(m, n, 0, a, lda, q, ldq, s2, dumma, pt, ldpt, work, result[11 - 1]);
                 Rbdt02(m, nrhs, x, ldx, y, ldx, q, ldq, work, result[12 - 1]);
@@ -556,8 +563,8 @@ void Rchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
                 Rort01("Rows", mnmin, n, pt, ldpt, work, lwork, result[14 - 1]);
             }
             //
-            //           Use Rbdsdc to form the SVD of the bidiagonal matrix B:
-            //           B := U * S1 * VT
+            // Use Rbdsdc to form the SVD of the bidiagonal matrix B:
+            // B := U * S1 * VT
             //
             Rcopy(mnmin, bd, 1, s1, 1);
             if (mnmin > 0) {
@@ -568,7 +575,7 @@ void Rchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
             //
             Rbdsdc(&uplo, "I", mnmin, s1, work, u, ldpt, vt, ldpt, dum, idum, &work[(mnmin + 1) - 1], iwork, iinfo);
             //
-            //           Check error code from Rbdsdc.
+            // Check error code from Rbdsdc.
             //
             if (iinfo != 0) {
                 write(nout, format_9998), "Rbdsdc(vects)", iinfo, m, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
@@ -581,8 +588,8 @@ void Rchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
                 }
             }
             //
-            //           Use Rbdsdc to compute only the singular values of the
-            //           bidiagonal matrix B;  U and VT should not be modified.
+            // Use Rbdsdc to compute only the singular values of the
+            // bidiagonal matrix B;  U and VT should not be modified.
             //
             Rcopy(mnmin, bd, 1, s2, 1);
             if (mnmin > 0) {
@@ -591,7 +598,7 @@ void Rchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
             //
             Rbdsdc(&uplo, "N", mnmin, s2, work, dum, 1, dum, 1, dum, idum, &work[(mnmin + 1) - 1], iwork, iinfo);
             //
-            //           Check error code from Rbdsdc.
+            // Check error code from Rbdsdc.
             //
             if (iinfo != 0) {
                 write(nout, format_9998), "Rbdsdc(values)", iinfo, m, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
@@ -604,16 +611,16 @@ void Rchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
                 }
             }
             //
-            //           Test 15:  Check the decomposition B := U * S1 * VT
-            //                16:  Check the orthogonality of U
-            //                17:  Check the orthogonality of VT
+            // Test 15:  Check the decomposition B := U * S1 * VT
+            // 16:  Check the orthogonality of U
+            // 17:  Check the orthogonality of VT
             //
             Rbdt03(&uplo, mnmin, 1, bd, be, u, ldpt, s1, vt, ldpt, work, result[15 - 1]);
             Rort01("Columns", mnmin, mnmin, u, ldpt, work, lwork, result[16 - 1]);
             Rort01("Rows", mnmin, mnmin, vt, ldpt, work, lwork, result[17 - 1]);
             //
-            //           Test 18:  Check that the singular values are sorted in
-            //                     non-increasing order and are non-negative
+            // Test 18:  Check that the singular values are sorted in
+            // non-increasing order and are non-negative
             //
             result[18 - 1] = zero;
             for (i = 1; i <= mnmin - 1; i = i + 1) {
@@ -630,7 +637,7 @@ void Rchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
                 }
             }
             //
-            //           Test 19:  Compare Rbdsqr with and without singular vectors
+            // Test 19:  Compare Rbdsqr with and without singular vectors
             //
             temp2 = zero;
             //
@@ -641,8 +648,8 @@ void Rchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
             //
             result[19 - 1] = temp2;
             //
-            //           Use Rbdsvdx to compute the SVD of the bidiagonal matrix B:
-            //           B := U * S1 * VT
+            // Use Rbdsvdx to compute the SVD of the bidiagonal matrix B:
+            // B := U * S1 * VT
             //
             if (jtype == 10 || jtype == 16) {
                 //              =================================
@@ -667,7 +674,7 @@ void Rchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
             //
             Rbdsvdx(&uplo, "V", "A", mnmin, &work[iwbd - 1], &work[iwbe - 1], zero, zero, 0, 0, ns1, s1, &work[iwbz - 1], mnmin2, &work[iwwork - 1], iwork, iinfo);
             //
-            //           Check error code from Rbdsvdx.
+            // Check error code from Rbdsvdx.
             //
             if (iinfo != 0) {
                 write(nout, format_9998), "Rbdsvdx(vects,A)", iinfo, m, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
@@ -688,13 +695,13 @@ void Rchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
                 j += mnmin;
             }
             //
-            //           Use Rbdsvdx to compute only the singular values of the
-            //           bidiagonal matrix B;  U and VT should not be modified.
+            // Use Rbdsvdx to compute only the singular values of the
+            // bidiagonal matrix B;  U and VT should not be modified.
             //
             if (jtype == 9) {
-                //              =================================
-                //              Matrix types temporarily disabled
-                //              =================================
+                // =================================
+                // Matrix types temporarily disabled
+                // =================================
                 result[24 - 1] = zero;
                 goto statement_270;
             }
@@ -706,7 +713,7 @@ void Rchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
             //
             Rbdsvdx(&uplo, "N", "A", mnmin, &work[iwbd - 1], &work[iwbe - 1], zero, zero, 0, 0, ns2, s2, &work[iwbz - 1], mnmin2, &work[iwwork - 1], iwork, iinfo);
             //
-            //           Check error code from Rbdsvdx.
+            // Check error code from Rbdsvdx.
             //
             if (iinfo != 0) {
                 write(nout, format_9998), "Rbdsvdx(values,A)", iinfo, m, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
@@ -719,16 +726,16 @@ void Rchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
                 }
             }
             //
-            //           Save S1 for tests 30-34.
+            // Save S1 for tests 30-34.
             //
             Rcopy(mnmin, s1, 1, &work[iwbs - 1], 1);
             //
-            //           Test 20:  Check the decomposition B := U * S1 * VT
-            //                21:  Check the orthogonality of U
-            //                22:  Check the orthogonality of VT
-            //                23:  Check that the singular values are sorted in
-            //                     non-increasing order and are non-negative
-            //                24:  Compare Rbdsvdx with and without singular vectors
+            // Test 20:  Check the decomposition B := U * S1 * VT
+            // 21:  Check the orthogonality of U
+            // 22:  Check the orthogonality of VT
+            // 23:  Check that the singular values are sorted in
+            // non-increasing order and are non-negative
+            // 24:  Compare Rbdsvdx with and without singular vectors
             //
             Rbdt03(&uplo, mnmin, 1, bd, be, u, ldpt, s1, vt, ldpt, &work[(iwbs + mnmin) - 1], result[20 - 1]);
             Rort01("Columns", mnmin, mnmin, u, ldpt, &work[(iwbs + mnmin) - 1], lwork - mnmin, result[21 - 1]);
@@ -757,9 +764,9 @@ void Rchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
             result[24 - 1] = temp2;
             anorm = s1[1 - 1];
             //
-            //           Use Rbdsvdx with RANGE='I': choose random values for IL and
-            //           IU, and ask for the IL-th through IU-th singular values
-            //           and corresponding vectors.
+            // Use Rbdsvdx with RANGE='I': choose random values for IL and
+            // IU, and ask for the IL-th through IU-th singular values
+            // and corresponding vectors.
             //
             for (i = 1; i <= 4; i = i + 1) {
                 iseed2[i - 1] = iseed[i - 1];
@@ -784,7 +791,7 @@ void Rchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
             //
             Rbdsvdx(&uplo, "V", "I", mnmin, &work[iwbd - 1], &work[iwbe - 1], zero, zero, il, iu, ns1, s1, &work[iwbz - 1], mnmin2, &work[iwwork - 1], iwork, iinfo);
             //
-            //           Check error code from Rbdsvdx.
+            // Check error code from Rbdsvdx.
             //
             if (iinfo != 0) {
                 write(nout, format_9998), "Rbdsvdx(vects,I)", iinfo, m, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
@@ -805,8 +812,8 @@ void Rchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
                 j += mnmin;
             }
             //
-            //           Use Rbdsvdx to compute only the singular values of the
-            //           bidiagonal matrix B;  U and VT should not be modified.
+            // Use Rbdsvdx to compute only the singular values of the
+            // bidiagonal matrix B;  U and VT should not be modified.
             //
             Rcopy(mnmin, bd, 1, &work[iwbd - 1], 1);
             if (mnmin > 0) {
@@ -815,7 +822,7 @@ void Rchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
             //
             Rbdsvdx(&uplo, "N", "I", mnmin, &work[iwbd - 1], &work[iwbe - 1], zero, zero, il, iu, ns2, s2, &work[iwbz - 1], mnmin2, &work[iwwork - 1], iwork, iinfo);
             //
-            //           Check error code from Rbdsvdx.
+            // Check error code from Rbdsvdx.
             //
             if (iinfo != 0) {
                 write(nout, format_9998), "Rbdsvdx(values,I)", iinfo, m, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
@@ -828,12 +835,12 @@ void Rchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
                 }
             }
             //
-            //           Test 25:  Check S1 - U' * B * VT'
-            //                26:  Check the orthogonality of U
-            //                27:  Check the orthogonality of VT
-            //                28:  Check that the singular values are sorted in
-            //                     non-increasing order and are non-negative
-            //                29:  Compare Rbdsvdx with and without singular vectors
+            // Test 25:  Check S1 - U' * B * VT'
+            // 26:  Check the orthogonality of U
+            // 27:  Check the orthogonality of VT
+            // 28:  Check that the singular values are sorted in
+            // non-increasing order and are non-negative
+            // 29:  Compare Rbdsvdx with and without singular vectors
             //
             Rbdt04(&uplo, mnmin, bd, be, s1, ns1, u, ldpt, vt, ldpt, &work[(iwbs + mnmin) - 1], result[25 - 1]);
             Rort01("Columns", mnmin, ns1, u, ldpt, &work[(iwbs + mnmin) - 1], lwork - mnmin, result[26 - 1]);
@@ -861,9 +868,9 @@ void Rchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
             }
             result[29 - 1] = temp2;
             //
-            //           Use Rbdsvdx with RANGE='V': determine the values VL and VU
-            //           of the IL-th and IU-th singular values and ask for all
-            //           singular values in this range.
+            // Use Rbdsvdx with RANGE='V': determine the values VL and VU
+            // of the IL-th and IU-th singular values and ask for all
+            // singular values in this range.
             //
             Rcopy(mnmin, &work[iwbs - 1], 1, s1, 1);
             //
@@ -895,7 +902,7 @@ void Rchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
             //
             Rbdsvdx(&uplo, "V", "V", mnmin, &work[iwbd - 1], &work[iwbe - 1], vl, vu, 0, 0, ns1, s1, &work[iwbz - 1], mnmin2, &work[iwwork - 1], iwork, iinfo);
             //
-            //           Check error code from Rbdsvdx.
+            // Check error code from Rbdsvdx.
             //
             if (iinfo != 0) {
                 write(nout, format_9998), "Rbdsvdx(vects,V)", iinfo, m, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
@@ -916,8 +923,8 @@ void Rchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
                 j += mnmin;
             }
             //
-            //           Use Rbdsvdx to compute only the singular values of the
-            //           bidiagonal matrix B;  U and VT should not be modified.
+            // Use Rbdsvdx to compute only the singular values of the
+            // bidiagonal matrix B;  U and VT should not be modified.
             //
             Rcopy(mnmin, bd, 1, &work[iwbd - 1], 1);
             if (mnmin > 0) {
@@ -926,7 +933,7 @@ void Rchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
             //
             Rbdsvdx(&uplo, "N", "V", mnmin, &work[iwbd - 1], &work[iwbe - 1], vl, vu, 0, 0, ns2, s2, &work[iwbz - 1], mnmin2, &work[iwwork - 1], iwork, iinfo);
             //
-            //           Check error code from Rbdsvdx.
+            // Check error code from Rbdsvdx.
             //
             if (iinfo != 0) {
                 write(nout, format_9998), "Rbdsvdx(values,V)", iinfo, m, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
@@ -939,12 +946,12 @@ void Rchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
                 }
             }
             //
-            //           Test 30:  Check S1 - U' * B * VT'
-            //                31:  Check the orthogonality of U
-            //                32:  Check the orthogonality of VT
-            //                33:  Check that the singular values are sorted in
-            //                     non-increasing order and are non-negative
-            //                34:  Compare Rbdsvdx with and without singular vectors
+            // Test 30:  Check S1 - U' * B * VT'
+            // 31:  Check the orthogonality of U
+            // 32:  Check the orthogonality of VT
+            // 33:  Check that the singular values are sorted in
+            // non-increasing order and are non-negative
+            // 34:  Compare Rbdsvdx with and without singular vectors
             //
             Rbdt04(&uplo, mnmin, bd, be, s1, ns1, u, ldpt, vt, ldpt, &work[(iwbs + mnmin) - 1], result[30 - 1]);
             Rort01("Columns", mnmin, ns1, u, ldpt, &work[(iwbs + mnmin) - 1], lwork - mnmin, result[31 - 1]);
@@ -972,7 +979,7 @@ void Rchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
             }
             result[34 - 1] = temp2;
         //
-        //           End of Loop -- Check for RESULT(j) > THRESH
+        // End of Loop -- Check for RESULT(j) > THRESH
         //
         statement_270:
             //
@@ -998,10 +1005,10 @@ void Rchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
         }
     }
     //
-    //     Summary
+    // Summary
     //
     Alasum(path, nout, nfail, ntest, 0);
     //
-    //     End of Rchkbd
+    // End of Rchkbd
     //
 }

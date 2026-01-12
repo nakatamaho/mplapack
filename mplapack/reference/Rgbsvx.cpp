@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DGBSVX.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -51,7 +58,7 @@ void Rgbsvx(const char *fact, const char *trans, INTEGER const n, INTEGER const 
         bignum = one / smlnum;
     }
     //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     REAL rcmin = 0.0;
     const REAL zero = 0.0;
@@ -126,12 +133,12 @@ void Rgbsvx(const char *fact, const char *trans, INTEGER const n, INTEGER const 
     INTEGER infequ = 0;
     if (equil) {
         //
-        //        Compute row and column scalings to equilibrate the matrix A.
+        // Compute row and column scalings to equilibrate the matrix A.
         //
         Rgbequ(n, n, kl, ku, ab, ldab, r, c, rowcnd, colcnd, amax, infequ);
         if (infequ == 0) {
             //
-            //           Equilibrate the matrix.
+            // Equilibrate the matrix.
             //
             Rlaqgb(n, n, kl, ku, ab, ldab, r, c, rowcnd, colcnd, amax, equed);
             rowequ = Mlsame(equed, "R") || Mlsame(equed, "B");
@@ -139,7 +146,7 @@ void Rgbsvx(const char *fact, const char *trans, INTEGER const n, INTEGER const 
         }
     }
     //
-    //     Scale the right hand side.
+    // Scale the right hand side.
     //
     INTEGER i = 0;
     if (notran) {
@@ -164,7 +171,7 @@ void Rgbsvx(const char *fact, const char *trans, INTEGER const n, INTEGER const 
     REAL rpvgrw = 0.0;
     if (nofact || equil) {
         //
-        //        Compute the LU factorization of the band matrix A.
+        // Compute the LU factorization of the band matrix A.
         //
         for (j = 1; j <= n; j = j + 1) {
             j1 = max(j - ku, (INTEGER)1);
@@ -174,20 +181,20 @@ void Rgbsvx(const char *fact, const char *trans, INTEGER const n, INTEGER const 
         //
         Rgbtrf(n, n, kl, ku, afb, ldafb, ipiv, info);
         //
-        //        Return if INFO is non-zero.
+        // Return if INFO is non-zero.
         //
         if (info > 0) {
             //
-            //           Compute the reciprocal pivot growth factor of the
-            //           leading rank-deficient INFO columns of A.
+            // Compute the reciprocal pivot growth factor of the
+            // leading rank-deficient INFO columns of A.
             //
             anorm = zero;
             for (j = 1; j <= info; j = j + 1) {
                 for (i = max(ku + 2 - j, (INTEGER)1); i <= min(n + ku + 1 - j, kl + ku + 1); i = i + 1) {
-                    anorm = max(anorm, REAL(abs(ab[(i - 1) + (j - 1) * ldab])));
+                    anorm = max(anorm, abs(ab[(i - 1) + (j - 1) * ldab]));
                 }
             }
-            rpvgrw = Rlantb("M", "U", "N", info, min(info - 1, kl + ku), &afb[(max((INTEGER)1, kl + ku + 2 - info) - 1) + (1 - 1) * ldafb], ldafb, work);
+            rpvgrw = Rlantb("M", "U", "N", info, min(info - 1, kl + ku), &afb[(max((INTEGER)1, kl + ku + 2 - info) - 1)], ldafb, work);
             if (rpvgrw == zero) {
                 rpvgrw = one;
             } else {
@@ -199,8 +206,8 @@ void Rgbsvx(const char *fact, const char *trans, INTEGER const n, INTEGER const 
         }
     }
     //
-    //     Compute the norm of the matrix A and the
-    //     reciprocal pivot growth factor RPVGRW.
+    // Compute the norm of the matrix A and the
+    // reciprocal pivot growth factor RPVGRW.
     //
     char norm;
     if (notran) {
@@ -216,22 +223,22 @@ void Rgbsvx(const char *fact, const char *trans, INTEGER const n, INTEGER const 
         rpvgrw = Rlangb("M", n, kl, ku, ab, ldab, work) / rpvgrw;
     }
     //
-    //     Compute the reciprocal of the condition number of A.
+    // Compute the reciprocal of the condition number of A.
     //
     Rgbcon(&norm, n, kl, ku, afb, ldafb, ipiv, anorm, rcond, work, iwork, info);
     //
-    //     Compute the solution matrix X.
+    // Compute the solution matrix X.
     //
     Rlacpy("Full", n, nrhs, b, ldb, x, ldx);
     Rgbtrs(trans, n, kl, ku, nrhs, afb, ldafb, ipiv, x, ldx, info);
     //
-    //     Use iterative refinement to improve the computed solution and
-    //     compute error bounds and backward error estimates for it.
+    // Use iterative refinement to improve the computed solution and
+    // compute error bounds and backward error estimates for it.
     //
     Rgbrfs(trans, n, kl, ku, nrhs, ab, ldab, afb, ldafb, ipiv, b, ldb, x, ldx, ferr, berr, work, iwork, info);
     //
-    //     Transform the solution matrix X to a solution of the original
-    //     system.
+    // Transform the solution matrix X to a solution of the original
+    // system.
     //
     if (notran) {
         if (colequ) {
@@ -255,7 +262,7 @@ void Rgbsvx(const char *fact, const char *trans, INTEGER const n, INTEGER const 
         }
     }
     //
-    //     Set INFO = N+1 if the matrix is singular to working precision.
+    // Set INFO = N+1 if the matrix is singular to working precision.
     //
     if (rcond < Rlamch("Epsilon")) {
         info = n + 1;
@@ -263,6 +270,6 @@ void Rgbsvx(const char *fact, const char *trans, INTEGER const n, INTEGER const 
     //
     work[1 - 1] = rpvgrw;
     //
-    //     End of Rgbsvx
+    // End of Rgbsvx
     //
 }

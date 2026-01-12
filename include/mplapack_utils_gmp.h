@@ -87,6 +87,19 @@ inline mpf_class pow2(mpf_class a) {
     return mtmp;
 }
 
+inline mpc_class pow2(mpc_class a) {
+    mpc_class mtmp = a * a;
+    return mtmp;
+}
+
+#include <type_traits>
+
+// Square for INTEGER (workspace sizes, indices).
+#ifndef MPLAPACK_POW2_MPLAPACKINT_DEFINED
+#define MPLAPACK_POW2_MPLAPACKINT_DEFINED
+inline mplapackint pow2(mplapackint a) { return a * a; }
+#endif // MPLAPACK_POW2_MPLAPACKINT_DEFINED
+
 inline mpf_class sign(mpf_class a, mpf_class b) {
     mpf_class mtmp;
     mpf_abs(mtmp.get_mpf_t(), a.get_mpf_t());
@@ -237,5 +250,210 @@ inline mpc_class exp(mpc_class x) {
     ans.imag(ex * s);
     return ans;
 }
+
+static inline mpf_class cabs1(const mpc_class &z) { return abs(z.real()) + abs(z.imag()); }
+
+#include <type_traits>
+
+// NOTE:
+// Do NOT 'using std::min/max' here.
+// std::min/max have a 3-arg overload where the 3rd argument is a comparator,
+// which hijacks Fortran-style min(a,b,c)/max(a,b,c) calls.
+
+#ifndef MPLAPACK_MINMAX_MPLAPACKINT_DEFINED
+#define MPLAPACK_MINMAX_MPLAPACKINT_DEFINED
+
+// min/max for mplapackint (Fortran INTEGER)
+inline mplapackint min(mplapackint a, mplapackint b) { return (a > b) ? b : a; }
+inline mplapackint max(mplapackint a, mplapackint b) { return (a < b) ? b : a; }
+
+// 3-arg overloads block std::min/max(a,b,comp) hijack.
+inline mplapackint min(mplapackint a, mplapackint b, mplapackint c) {
+    mplapackint r = min(a, b);
+    return min(r, c);
+}
+inline mplapackint max(mplapackint a, mplapackint b, mplapackint c) {
+    mplapackint r = max(a, b);
+    return max(r, c);
+}
+
+// 4+ args: fold expression, mplapackint only.
+template <typename... Args, typename = std::enable_if_t<(std::is_same_v<mplapackint, std::decay_t<Args>> && ...)>> inline mplapackint min(mplapackint a, mplapackint b, mplapackint c, Args... rest) {
+    mplapackint r = min(a, b, c);
+    ((r = min(r, rest)), ...);
+    return r;
+}
+
+template <typename... Args, typename = std::enable_if_t<(std::is_same_v<mplapackint, std::decay_t<Args>> && ...)>> inline mplapackint max(mplapackint a, mplapackint b, mplapackint c, Args... rest) {
+    mplapackint r = max(a, b, c);
+    ((r = max(r, rest)), ...);
+    return r;
+}
+
+#endif // MPLAPACK_MINMAX_MPLAPACKINT_DEFINED
+
+#ifndef MPLAPACK_MINMAX_MPF_CLASS_DEFINED
+#define MPLAPACK_MINMAX_MPF_CLASS_DEFINED
+
+#include <type_traits>
+
+// Non-template overloads for mpf_class to beat std::min/std::max templates
+// when both arguments are exactly mpf_class.
+inline mpf_class min(const mpf_class &a, const mpf_class &b) { return (a > b) ? b : a; }
+inline mpf_class max(const mpf_class &a, const mpf_class &b) { return (a < b) ? b : a; }
+
+inline mpf_class min(const mpf_class &a, const mpf_class &b, const mpf_class &c) {
+    mpf_class r = ::min(a, b);
+    return ::min(r, c);
+}
+inline mpf_class max(const mpf_class &a, const mpf_class &b, const mpf_class &c) {
+    mpf_class r = ::max(a, b);
+    return ::max(r, c);
+}
+
+// -------------------------
+// 2-arg: GMP expressions
+//   - Same E: this overload should win over std::max/std::min.
+//   - Different E: enabled only when E1 != E2.
+// -------------------------
+
+template <class E> inline mpf_class min(const __gmp_expr<mpf_t, E> &a, const __gmp_expr<mpf_t, E> &b) {
+    mpf_class aa(a), bb(b);
+    return (aa > bb) ? bb : aa;
+}
+
+template <class E> inline mpf_class max(const __gmp_expr<mpf_t, E> &a, const __gmp_expr<mpf_t, E> &b) {
+    mpf_class aa(a), bb(b);
+    return (aa < bb) ? bb : aa;
+}
+
+template <class E1, class E2, typename = std::enable_if_t<!std::is_same_v<E1, E2>>> inline mpf_class min(const __gmp_expr<mpf_t, E1> &a, const __gmp_expr<mpf_t, E2> &b) {
+    mpf_class aa(a), bb(b);
+    return (aa > bb) ? bb : aa;
+}
+
+template <class E1, class E2, typename = std::enable_if_t<!std::is_same_v<E1, E2>>> inline mpf_class max(const __gmp_expr<mpf_t, E1> &a, const __gmp_expr<mpf_t, E2> &b) {
+    mpf_class aa(a), bb(b);
+    return (aa < bb) ? bb : aa;
+}
+
+// -------------------------
+// 3-arg: Fortran semantics (NOT comparator)
+//   - Third argument is any type constructible to mpf_class,
+//     to prevent std::max(a,b,comp) hijack.
+// -------------------------
+
+template <class E, class C, typename = std::enable_if_t<std::is_constructible_v<mpf_class, C>>> inline mpf_class min(const __gmp_expr<mpf_t, E> &a, const __gmp_expr<mpf_t, E> &b, const C &c) {
+    mpf_class r = ::min(a, b);
+    return ::min(r, mpf_class(c));
+}
+
+template <class E, class C, typename = std::enable_if_t<std::is_constructible_v<mpf_class, C>>> inline mpf_class max(const __gmp_expr<mpf_t, E> &a, const __gmp_expr<mpf_t, E> &b, const C &c) {
+    mpf_class r = ::max(a, b);
+    return ::max(r, mpf_class(c));
+}
+
+template <class E1, class E2, class C, typename = std::enable_if_t<!std::is_same_v<E1, E2> && std::is_constructible_v<mpf_class, C>>> inline mpf_class min(const __gmp_expr<mpf_t, E1> &a, const __gmp_expr<mpf_t, E2> &b, const C &c) {
+    mpf_class r = ::min(a, b);
+    return ::min(r, mpf_class(c));
+}
+
+template <class E1, class E2, class C, typename = std::enable_if_t<!std::is_same_v<E1, E2> && std::is_constructible_v<mpf_class, C>>> inline mpf_class max(const __gmp_expr<mpf_t, E1> &a, const __gmp_expr<mpf_t, E2> &b, const C &c) {
+    mpf_class r = ::max(a, b);
+    return ::max(r, mpf_class(c));
+}
+
+// -------------------------
+// 4+ args: fold (Rest must be constructible to mpf_class)
+// -------------------------
+
+template <class E, class C, class... Rest, typename = std::enable_if_t<std::is_constructible_v<mpf_class, C> && (std::is_constructible_v<mpf_class, Rest> && ...)>> inline mpf_class min(const __gmp_expr<mpf_t, E> &a, const __gmp_expr<mpf_t, E> &b, const C &c, const Rest &...rest) {
+    mpf_class r = ::min(a, b, c);
+    ((r = ::min(r, mpf_class(rest))), ...);
+    return r;
+}
+
+template <class E, class C, class... Rest, typename = std::enable_if_t<std::is_constructible_v<mpf_class, C> && (std::is_constructible_v<mpf_class, Rest> && ...)>> inline mpf_class max(const __gmp_expr<mpf_t, E> &a, const __gmp_expr<mpf_t, E> &b, const C &c, const Rest &...rest) {
+    mpf_class r = ::max(a, b, c);
+    ((r = ::max(r, mpf_class(rest))), ...);
+    return r;
+}
+
+template <class E1, class E2, class C, class... Rest, typename = std::enable_if_t<!std::is_same_v<E1, E2> && std::is_constructible_v<mpf_class, C> && (std::is_constructible_v<mpf_class, Rest> && ...)>> inline mpf_class min(const __gmp_expr<mpf_t, E1> &a, const __gmp_expr<mpf_t, E2> &b, const C &c, const Rest &...rest) {
+    mpf_class r = ::min(a, b, c);
+    ((r = ::min(r, mpf_class(rest))), ...);
+    return r;
+}
+
+template <class E1, class E2, class C, class... Rest, typename = std::enable_if_t<!std::is_same_v<E1, E2> && std::is_constructible_v<mpf_class, C> && (std::is_constructible_v<mpf_class, Rest> && ...)>> inline mpf_class max(const __gmp_expr<mpf_t, E1> &a, const __gmp_expr<mpf_t, E2> &b, const C &c, const Rest &...rest) {
+    mpf_class r = ::max(a, b, c);
+    ((r = ::max(r, mpf_class(rest))), ...);
+    return r;
+}
+
+#endif // MPLAPACK_MINMAX_MPF_CLASS_DEFINED
+
+#ifndef MPLAPACK_CHAR_UTILS_H
+#define MPLAPACK_CHAR_UTILS_H
+
+// Small helpers to build short option strings for ILAENV / IMlaenv calls.
+//
+// Typical usage:
+//   const char *jbcmpz = CHAR2(job, compz);
+//   nmin = iMlaenv(12, "Chseqr", jbcmpz, n, ilo, ihi, lwork);
+//
+// job, compz, side, howmny, sense, ... are almost always const char* pointing
+// to single-character flags ("N", "V", "S", "E", etc.).
+
+// 2-character helper -------------------------------------------------------
+inline const char *CHAR2(char c1, char c2) {
+    // Thread-local to avoid cross-call races.
+    static thread_local char buf[3];
+    buf[0] = c1;
+    buf[1] = c2;
+    buf[2] = '\0';
+    return buf;
+}
+
+inline const char *CHAR2(const char *c1, const char *c2) {
+    // Accept "N", "V", etc. as const char* and take their first characters.
+    const char a = (c1 && *c1) ? *c1 : '\0';
+    const char b = (c2 && *c2) ? *c2 : '\0';
+    return CHAR2(a, b);
+}
+
+// 3-character helper -------------------------------------------------------
+inline const char *CHAR3(char c1, char c2, char c3) {
+    static thread_local char buf[4];
+    buf[0] = c1;
+    buf[1] = c2;
+    buf[2] = c3;
+    buf[3] = '\0';
+    return buf;
+}
+
+inline const char *CHAR3(const char *c1, const char *c2, const char *c3) {
+    const char a = (c1 && *c1) ? *c1 : '\0';
+    const char b = (c2 && *c2) ? *c2 : '\0';
+    const char c = (c3 && *c3) ? *c3 : '\0';
+    return CHAR3(a, b, c);
+}
+
+#endif // MPLAPACK_CHAR_UTILS_H
+
+// Integer ceil for GMP mpf_class.
+// Returns ceil(x) as mplapackint.
+#ifndef MPLAPACK_ICEIL_MPF_CLASS_DEFINED
+#define MPLAPACK_ICEIL_MPF_CLASS_DEFINED
+inline mplapackint iceil(const mpf_class &x) {
+    // mpf_class -> long is trunc toward zero (via mpf_get_si).
+    mplapackint t = static_cast<mplapackint>(x.get_si());
+    mpf_class tt = t;
+    if (x > tt) {
+        ++t;
+    }
+    return t;
+}
+#endif // MPLAPACK_ICEIL_MPF_CLASS_DEFINED
 
 #endif

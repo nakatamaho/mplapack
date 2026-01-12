@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine ZCHKPT.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -127,7 +134,7 @@ void Cchkpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
         iseed[i - 1] = iseedy[i - 1];
     }
     //
-    //     Test the error exits
+    // Test the error exits
     //
     if (tsterr) {
         Cerrgt(path, nout);
@@ -135,7 +142,7 @@ void Cchkpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
     //
     for (in = 1; in <= nn; in = in + 1) {
         //
-        //        Do for each value of N in NVAL.
+        // Do for each value of N in NVAL.
         //
         n = nval[in - 1];
         lda = max((INTEGER)1, n);
@@ -146,13 +153,13 @@ void Cchkpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
         //
         for (imat = 1; imat <= nimat; imat = imat + 1) {
             //
-            //           Do the tests only if DOTYPE( IMAT ) is true.
+            // Do the tests only if DOTYPE( IMAT ) is true.
             //
             if (n > 0 && !dotype[imat - 1]) {
                 goto statement_110;
             }
             //
-            //           Set up parameters with Clatb4.
+            // Set up parameters with Clatb4.
             //
             Clatb4(path, imat, n, n, &type, kl, ku, anorm, mode, cond, &dist);
             //
@@ -164,7 +171,7 @@ void Cchkpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                 //
                 Clatms(n, n, &dist, iseed, &type, rwork, mode, cond, anorm, kl, ku, "B", a, 2, work, info);
                 //
-                //              Check the error code from Clatms.
+                // Check the error code from Clatms.
                 //
                 if (info != 0) {
                     Alaerh(path, "Clatms", info, 0, " ", n, n, kl, ku, -1, imat, nfail, nerrs, nout);
@@ -172,7 +179,7 @@ void Cchkpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                 }
                 izero = 0;
                 //
-                //              Copy the matrix to D and E.
+                // Copy the matrix to D and E.
                 //
                 ia = 1;
                 for (i = 1; i <= n - 1; i = i + 1) {
@@ -185,17 +192,17 @@ void Cchkpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                 }
             } else {
                 //
-                //              Type 7-12:  generate a diagonally dominant matrix with
-                //              unknown condition number in the vectors D and E.
+                // Type 7-12:  generate a diagonally dominant matrix with
+                // unknown condition number in the vectors D and E.
                 //
                 if (!zerot || !dotype[7 - 1]) {
                     //
-                    //                 Let E be complex, D real, with values from [-1,1].
+                    // Let E be complex, D real, with values from [-1,1].
                     //
                     Rlarnv(2, iseed, n, d);
                     Clarnv(2, iseed, n - 1, e);
                     //
-                    //                 Make the tridiagonal matrix diagonally dominant.
+                    // Make the tridiagonal matrix diagonally dominant.
                     //
                     if (n == 1) {
                         d[1 - 1] = abs(d[1 - 1]);
@@ -207,7 +214,7 @@ void Cchkpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                         }
                     }
                     //
-                    //                 Scale D and E so the maximum element is ANORM.
+                    // Scale D and E so the maximum element is ANORM.
                     //
                     ix = iRamax(n, d, 1);
                     dmax = d[ix - 1];
@@ -216,8 +223,8 @@ void Cchkpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                     //
                 } else if (izero > 0) {
                     //
-                    //                 Reuse the last matrix by copying back the zeroed out
-                    //                 elements.
+                    // Reuse the last matrix by copying back the zeroed out
+                    // elements.
                     //
                     if (izero == 1) {
                         d[1 - 1] = z[2 - 1].real();
@@ -234,8 +241,8 @@ void Cchkpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                     }
                 }
                 //
-                //              For types 8-10, set one row and column of the matrix to
-                //              zero.
+                // For types 8-10, set one row and column of the matrix to
+                // zero.
                 //
                 izero = 0;
                 if (imat == 8) {
@@ -272,13 +279,13 @@ void Cchkpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                 Ccopy(n - 1, e, 1, &e[(n + 1) - 1], 1);
             }
             //
-            //+    TEST 1
-            //           Factor A as L*D*L' and compute the ratio
-            //              norm(L*D*L' - A) / (n * norm(A) * EPS )
+            // +    TEST 1
+            // Factor A as L*D*L' and compute the ratio
+            // norm(L*D*L' - A) / (n * norm(A) * EPS )
             //
             Cpttrf(n, &d[(n + 1) - 1], &e[(n + 1) - 1], info);
             //
-            //           Check error code from Cpttrf.
+            // Check error code from Cpttrf.
             //
             if (info != izero) {
                 Alaerh(path, "Cpttrf", info, izero, " ", n, n, -1, -1, -1, imat, nfail, nerrs, nout);
@@ -292,7 +299,7 @@ void Cchkpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
             //
             Cptt01(n, d, e, &d[(n + 1) - 1], &e[(n + 1) - 1], work, result[1 - 1]);
             //
-            //           Print the test ratio if greater than or equal to THRESH.
+            // Print the test ratio if greater than or equal to THRESH.
             //
             if (result[1 - 1] >= thresh) {
                 if (nfail == 0 && nerrs == 0) {
@@ -304,14 +311,14 @@ void Cchkpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
             }
             nrun++;
             //
-            //           Compute RCONDC = 1 / (norm(A) * norm(inv(A))
+            // Compute RCONDC = 1 / (norm(A) * norm(inv(A))
             //
-            //           Compute norm(A).
+            // Compute norm(A).
             //
             anorm = Clanht("1", n, d, e);
             //
-            //           Use Cpttrs to solve for one column at a time of inv(A),
-            //           computing the maximum column sum as we go.
+            // Use Cpttrs to solve for one column at a time of inv(A),
+            // computing the maximum column sum as we go.
             //
             ainvnm = zero;
             for (i = 1; i <= n; i = i + 1) {
@@ -327,7 +334,7 @@ void Cchkpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
             for (irhs = 1; irhs <= nns; irhs = irhs + 1) {
                 nrhs = nsval[irhs - 1];
                 //
-                //           Generate NRHS random solution vectors.
+                // Generate NRHS random solution vectors.
                 //
                 ix = 1;
                 for (j = 1; j <= nrhs; j = j + 1) {
@@ -337,21 +344,21 @@ void Cchkpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                 //
                 for (iuplo = 1; iuplo <= 2; iuplo = iuplo + 1) {
                     //
-                    //              Do first for UPLO = 'U', then for UPLO = 'L'.
+                    // Do first for UPLO = 'U', then for UPLO = 'L'.
                     //
                     uplo = uplos[iuplo - 1];
                     //
-                    //              Set the right hand side.
+                    // Set the right hand side.
                     //
                     Claptm(&uplo, n, nrhs, one, d, e, xact, lda, zero, b, lda);
                     //
-                    //+    TEST 2
-                    //              Solve A*x = b and compute the residual.
+                    // +    TEST 2
+                    // Solve A*x = b and compute the residual.
                     //
                     Clacpy("Full", n, nrhs, b, lda, x, lda);
                     Cpttrs(&uplo, n, nrhs, &d[(n + 1) - 1], &e[(n + 1) - 1], x, lda, info);
                     //
-                    //              Check error code from Cpttrs.
+                    // Check error code from Cpttrs.
                     //
                     if (info != 0) {
                         Alaerh(path, "Cpttrs", info, 0, &uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
@@ -370,7 +377,7 @@ void Cchkpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                     //
                     Cptrfs(&uplo, n, nrhs, d, e, &d[(n + 1) - 1], &e[(n + 1) - 1], b, lda, x, lda, rwork, &rwork[(nrhs + 1) - 1], work, &rwork[(2 * nrhs + 1) - 1], info);
                     //
-                    //              Check error code from Cptrfs.
+                    // Check error code from Cptrfs.
                     //
                     if (info != 0) {
                         Alaerh(path, "Cptrfs", info, 0, &uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
@@ -379,8 +386,8 @@ void Cchkpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                     Cget04(n, nrhs, x, lda, xact, lda, rcondc, result[4 - 1]);
                     Cptt05(n, nrhs, d, e, b, lda, x, lda, xact, lda, rwork, &rwork[(nrhs + 1) - 1], &result[5 - 1]);
                     //
-                    //              Print information about the tests that did not pass the
-                    //              threshold.
+                    // Print information about the tests that did not pass the
+                    // threshold.
                     //
                     for (k = 2; k <= 6; k = k + 1) {
                         if (result[k - 1] >= thresh) {
@@ -399,14 +406,14 @@ void Cchkpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                 }
             }
         //
-        //+    TEST 7
-        //           Estimate the reciprocal of the condition number of the
-        //           matrix.
+        // +    TEST 7
+        // Estimate the reciprocal of the condition number of the
+        // matrix.
         //
         statement_100:
             Cptcon(n, &d[(n + 1) - 1], &e[(n + 1) - 1], anorm, rcond, rwork, info);
             //
-            //           Check error code from Cptcon.
+            // Check error code from Cptcon.
             //
             if (info != 0) {
                 Alaerh(path, "Cptcon", info, 0, " ", n, n, -1, -1, -1, imat, nfail, nerrs, nout);
@@ -414,7 +421,7 @@ void Cchkpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
             //
             result[7 - 1] = Rget06(rcond, rcondc);
             //
-            //           Print the test ratio if greater than or equal to THRESH.
+            // Print the test ratio if greater than or equal to THRESH.
             //
             if (result[7 - 1] >= thresh) {
                 if (nfail == 0 && nerrs == 0) {
@@ -429,10 +436,10 @@ void Cchkpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
         }
     }
     //
-    //     Print a summary of the results.
+    // Print a summary of the results.
     //
     Alasum(path, nout, nfail, nrun, nerrs);
     //
-    //     End of Cchkpt
+    // End of Cchkpt
     //
 }

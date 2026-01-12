@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DLATM4.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -63,29 +70,6 @@ void Rlatm4(INTEGER const itype, INTEGER const n, INTEGER const nz1, INTEGER con
     INTEGER ioff = 0;
     INTEGER jr = 0;
     INTEGER jc = 0;
-    //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
     if (n <= 0) {
         return;
@@ -132,7 +116,7 @@ void Rlatm4(INTEGER const itype, INTEGER const n, INTEGER const nz1, INTEGER con
             break;
         }
     //
-    //        abs(ITYPE) = 1: Identity
+    // abs(ITYPE) = 1: Identity
     //
     statement_10:
         for (jd = 1; jd <= n; jd = jd + 1) {
@@ -140,7 +124,7 @@ void Rlatm4(INTEGER const itype, INTEGER const n, INTEGER const nz1, INTEGER con
         }
         goto statement_220;
     //
-    //        abs(ITYPE) = 2: Transposed Jordan block
+    // abs(ITYPE) = 2: Transposed Jordan block
     //
     statement_30:
         for (jd = 1; jd <= n - 1; jd = jd + 1) {
@@ -150,8 +134,8 @@ void Rlatm4(INTEGER const itype, INTEGER const n, INTEGER const nz1, INTEGER con
         isde = n - 1;
         goto statement_220;
     //
-    //        abs(ITYPE) = 3: Transposed Jordan block, followed by the
-    //                        identity.
+    // abs(ITYPE) = 3: Transposed Jordan block, followed by the
+    // identity.
     //
     statement_50:
         k = (n - 1) / 2;
@@ -165,7 +149,7 @@ void Rlatm4(INTEGER const itype, INTEGER const n, INTEGER const nz1, INTEGER con
         }
         goto statement_220;
     //
-    //        abs(ITYPE) = 4: 1,...,k
+    // abs(ITYPE) = 4: 1,...,k
     //
     statement_80:
         for (jd = kbeg; jd <= kend; jd = jd + 1) {
@@ -173,7 +157,7 @@ void Rlatm4(INTEGER const itype, INTEGER const n, INTEGER const nz1, INTEGER con
         }
         goto statement_220;
     //
-    //        abs(ITYPE) = 5: One large D value:
+    // abs(ITYPE) = 5: One large D value:
     //
     statement_100:
         for (jd = kbeg + 1; jd <= kend; jd = jd + 1) {
@@ -182,7 +166,7 @@ void Rlatm4(INTEGER const itype, INTEGER const n, INTEGER const nz1, INTEGER con
         a[(kbeg - 1) + (kbeg - 1) * lda] = one;
         goto statement_220;
     //
-    //        abs(ITYPE) = 6: One small D value:
+    // abs(ITYPE) = 6: One small D value:
     //
     statement_120:
         for (jd = kbeg; jd <= kend - 1; jd = jd + 1) {
@@ -191,7 +175,7 @@ void Rlatm4(INTEGER const itype, INTEGER const n, INTEGER const nz1, INTEGER con
         a[(kend - 1) + (kend - 1) * lda] = rcond;
         goto statement_220;
     //
-    //        abs(ITYPE) = 7: Exponentially distributed D values:
+    // abs(ITYPE) = 7: Exponentially distributed D values:
     //
     statement_140:
         a[(kbeg - 1) + (kbeg - 1) * lda] = one;
@@ -203,7 +187,7 @@ void Rlatm4(INTEGER const itype, INTEGER const n, INTEGER const nz1, INTEGER con
         }
         goto statement_220;
     //
-    //        abs(ITYPE) = 8: Arithmetically distributed D values:
+    // abs(ITYPE) = 8: Arithmetically distributed D values:
     //
     statement_160:
         a[(kbeg - 1) + (kbeg - 1) * lda] = one;
@@ -215,7 +199,7 @@ void Rlatm4(INTEGER const itype, INTEGER const n, INTEGER const nz1, INTEGER con
         }
         goto statement_220;
     //
-    //        abs(ITYPE) = 9: Randomly distributed D values on ( RCOND, 1):
+    // abs(ITYPE) = 9: Randomly distributed D values on ( RCOND, 1):
     //
     statement_180:
         alpha = log(rcond);
@@ -224,7 +208,7 @@ void Rlatm4(INTEGER const itype, INTEGER const n, INTEGER const nz1, INTEGER con
         }
         goto statement_220;
     //
-    //        abs(ITYPE) = 10: Randomly distributed D values from DIST
+    // abs(ITYPE) = 10: Randomly distributed D values from DIST
     //
     statement_200:
         for (jd = kbeg; jd <= kend; jd = jd + 1) {
@@ -233,7 +217,7 @@ void Rlatm4(INTEGER const itype, INTEGER const n, INTEGER const nz1, INTEGER con
     //
     statement_220:
         //
-        //        Scale by AMAGN
+        // Scale by AMAGN
         //
         for (jd = kbeg; jd <= kend; jd = jd + 1) {
             a[(jd - 1) + (jd - 1) * lda] = amagn * a[(jd - 1) + (jd - 1) * lda];
@@ -242,8 +226,8 @@ void Rlatm4(INTEGER const itype, INTEGER const n, INTEGER const nz1, INTEGER con
             a[((jd + 1) - 1) + (jd - 1) * lda] = amagn * a[((jd + 1) - 1) + (jd - 1) * lda];
         }
         //
-        //        If ISIGN = 1 or 2, assign random signs to diagonal and
-        //        subdiagonal
+        // If ISIGN = 1 or 2, assign random signs to diagonal and
+        // subdiagonal
         //
         if (isign > 0) {
             for (jd = kbeg; jd <= kend; jd = jd + 1) {
@@ -262,7 +246,7 @@ void Rlatm4(INTEGER const itype, INTEGER const n, INTEGER const nz1, INTEGER con
             }
         }
         //
-        //        Reverse if ITYPE < 0
+        // Reverse if ITYPE < 0
         //
         if (itype < 0) {
             for (jd = kbeg; jd <= (kbeg + kend - 1) / 2; jd = jd + 1) {
@@ -277,15 +261,15 @@ void Rlatm4(INTEGER const itype, INTEGER const n, INTEGER const nz1, INTEGER con
             }
         }
         //
-        //        If ISIGN = 2, and no subdiagonals already, then apply
-        //        random rotations to make 2x2 blocks.
+        // If ISIGN = 2, and no subdiagonals already, then apply
+        // random rotations to make 2x2 blocks.
         //
         if (isign == 2 && itype != 2 && itype != 3) {
             safmin = Rlamch("S");
             for (jd = kbeg; jd <= kend - 1; jd = jd + 2) {
                 if (Rlaran(iseed) > half) {
                     //
-                    //                 Rotation on left.
+                    // Rotation on left.
                     //
                     cl = two * Rlaran(iseed) - one;
                     sl = two * Rlaran(iseed) - one;
@@ -293,7 +277,7 @@ void Rlatm4(INTEGER const itype, INTEGER const n, INTEGER const nz1, INTEGER con
                     cl = cl * temp;
                     sl = sl * temp;
                     //
-                    //                 Rotation on right.
+                    // Rotation on right.
                     //
                     cr = two * Rlaran(iseed) - one;
                     sr = two * Rlaran(iseed) - one;
@@ -301,7 +285,7 @@ void Rlatm4(INTEGER const itype, INTEGER const n, INTEGER const nz1, INTEGER con
                     cr = cr * temp;
                     sr = sr * temp;
                     //
-                    //                 Apply
+                    // Apply
                     //
                     sv1 = a[(jd - 1) + (jd - 1) * lda];
                     sv2 = a[((jd + 1) - 1) + ((jd + 1) - 1) * lda];
@@ -315,7 +299,7 @@ void Rlatm4(INTEGER const itype, INTEGER const n, INTEGER const nz1, INTEGER con
         //
     }
     //
-    //     Fill in upper triangle (except for 2x2 blocks)
+    // Fill in upper triangle (except for 2x2 blocks)
     //
     if (triang != zero) {
         if (isign != 2 || itype == 2 || itype == 3) {
@@ -336,6 +320,6 @@ void Rlatm4(INTEGER const itype, INTEGER const n, INTEGER const nz1, INTEGER con
         }
     }
     //
-    //     End of Rlatm4
+    // End of Rlatm4
     //
 }

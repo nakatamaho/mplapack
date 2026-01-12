@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DCHKEE.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -378,8 +385,8 @@ void Rchkee(void) {
             }
         }
         //
-        //     Read the values of P
-        //
+    //
+    // Read the values of P
         if (glm || gqr || gsv || csd || lse) {
             getline(cin, str);
             iss.clear();
@@ -404,8 +411,8 @@ void Rchkee(void) {
             }
         }
         //
-        //     Read the values of N
-        //
+    //
+    // Read the values of N
         if (svd || dbb || glm || gqr || gsv || csd || lse) {
             getline(cin, str);
             iss.clear();

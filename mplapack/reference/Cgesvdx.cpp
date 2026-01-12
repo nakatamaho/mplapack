@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,37 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine ZGESVDX.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Cgesvdx(const char *jobu, const char *jobvt, const char *range, INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, REAL const vl, REAL const vu, INTEGER const il, INTEGER const iu, INTEGER &ns, REAL *s, COMPLEX *u, INTEGER const ldu, COMPLEX *vt, INTEGER const ldvt, COMPLEX *work, INTEGER const lwork, REAL *rwork, INTEGER *iwork, INTEGER &info) {
     //
-    //  -- LAPACK driver routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input arguments.
+    // Test the input arguments.
     //
     ns = 0;
     info = 0;
@@ -119,66 +101,62 @@ void Cgesvdx(const char *jobu, const char *jobvt, const char *range, INTEGER con
         }
     }
     //
-    //     Compute workspace
-    //     (Note: Comments in the code beginning "Workspace:" describe the
-    //     minimal amount of workspace needed at that point in the code,
-    //     as well as the preferred amount for good performance.
-    //     NB refers to the optimal block size for the immediately
-    //     following subroutine, as returned by iMlaenv.)
+    // Compute workspace
+    // (Note: Comments in the code beginning "Workspace:" describe the
+    // minimal amount of workspace needed at that point in the code,
+    // as well as the preferred amount for good performance.
+    // NB refers to the optimal block size for the immediately
+    // following subroutine, as returned by iMlaenv.)
     //
     INTEGER minwrk = 0;
     INTEGER maxwrk = 0;
     INTEGER mnthr = 0;
-    char jobu_jobvt[3];
-    jobu_jobvt[0] = jobu[0];
-    jobu_jobvt[1] = jobvt[0];
-    jobu_jobvt[2] = '\0';
     if (info == 0) {
         minwrk = 1;
         maxwrk = 1;
         if (minmn > 0) {
             if (m >= n) {
-                mnthr = iMlaenv(6, "Cgesvd", jobu_jobvt, m, n, 0, 0);
+                mnthr = iMlaenv(6, "Cgesvd", CHAR2(jobu, jobvt), m, n, 0, 0);
                 if (m >= mnthr) {
                     //
-                    //                 Path 1 (M much larger than N)
+                    // Path 1 (M much larger than N)
                     //
                     minwrk = n * (n + 5);
                     maxwrk = n + n * iMlaenv(1, "Cgeqrf", " ", m, n, -1, -1);
-                    maxwrk = max({maxwrk, n * n + 2 * n + 2 * n * iMlaenv(1, "Cgebrd", " ", n, n, -1, -1)});
+                    maxwrk = max(maxwrk, n * n + 2 * n + 2 * n * iMlaenv(1, "Cgebrd", " ", n, n, -1, -1));
                     if (wantu || wantvt) {
-                        maxwrk = max({maxwrk, n * n + 2 * n + n * iMlaenv(1, "Cunmqr", "LN", n, n, n, -1)});
+                        maxwrk = max(maxwrk, n * n + 2 * n + n * iMlaenv(1, "Cunmqr", "LN", n, n, n, -1));
                     }
                 } else {
                     //
-                    //                 Path 2 (M at least N, but not much larger)
+                    // Path 2 (M at least N, but not much larger)
                     //
                     minwrk = 3 * n + m;
                     maxwrk = 2 * n + (m + n) * iMlaenv(1, "Cgebrd", " ", m, n, -1, -1);
                     if (wantu || wantvt) {
-                        maxwrk = max({maxwrk, 2 * n + n * iMlaenv(1, "Cunmqr", "LN", n, n, n, -1)});
+                        maxwrk = max(maxwrk, 2 * n + n * iMlaenv(1, "Cunmqr", "LN", n, n, n, -1));
                     }
                 }
             } else {
-                mnthr = iMlaenv(6, "Cgesvd", jobu_jobvt, m, n, 0, 0);
+                mnthr = iMlaenv(6, "Cgesvd", CHAR2(jobu, jobvt), m, n, 0, 0);
                 if (n >= mnthr) {
                     //
-                    //                 Path 1t (N much larger than M)
+                    // Path 1t (N much larger than M)
                     //
                     minwrk = m * (m + 5);
                     maxwrk = m + m * iMlaenv(1, "Cgelqf", " ", m, n, -1, -1);
-                    maxwrk = max({maxwrk, m * m + 2 * m + 2 * m * iMlaenv(1, "Cgebrd", " ", m, m, -1, -1)});
+                    maxwrk = max(maxwrk, m * m + 2 * m + 2 * m * iMlaenv(1, "Cgebrd", " ", m, m, -1, -1));
                     if (wantu || wantvt) {
-                        maxwrk = max({maxwrk, m * m + 2 * m + m * iMlaenv(1, "Cunmqr", "LN", m, m, m, -1)});
+                        maxwrk = max(maxwrk, m * m + 2 * m + m * iMlaenv(1, "Cunmqr", "LN", m, m, m, -1));
                     }
                 } else {
                     //
-                    //                 Path 2t (N greater than M, but not much larger)
+                    // Path 2t (N greater than M, but not much larger)
                     //
                     minwrk = 3 * m + n;
                     maxwrk = 2 * m + (m + n) * iMlaenv(1, "Cgebrd", " ", m, n, -1, -1);
                     if (wantu || wantvt) {
-                        maxwrk = max({maxwrk, 2 * m + m * iMlaenv(1, "Cunmqr", "LN", m, m, m, -1)});
+                        maxwrk = max(maxwrk, 2 * m + m * iMlaenv(1, "Cunmqr", "LN", m, m, m, -1));
                     }
                 }
             }
@@ -198,13 +176,13 @@ void Cgesvdx(const char *jobu, const char *jobvt, const char *range, INTEGER con
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (m == 0 || n == 0) {
         return;
     }
     //
-    //     Set singular values indices accord to RANGE='A'.
+    // Set singular values indices accord to RANGE='A'.
     //
     char rngtgk;
     INTEGER iltgk = 0;
@@ -223,14 +201,14 @@ void Cgesvdx(const char *jobu, const char *jobvt, const char *range, INTEGER con
         iutgk = 0;
     }
     //
-    //     Get machine constants
+    // Get machine constants
     //
     REAL eps = Rlamch("P");
     REAL smlnum = sqrt(Rlamch("S")) / eps;
     const REAL one = 1.0;
     REAL bignum = one / smlnum;
     //
-    //     Scale A if max element outside range [SMLNUM,BIGNUM]
+    // Scale A if max element outside range [SMLNUM,BIGNUM]
     //
     REAL dum[1];
     REAL anrm = Clange("M", m, n, a, lda, dum);
@@ -260,26 +238,26 @@ void Cgesvdx(const char *jobu, const char *jobvt, const char *range, INTEGER con
     INTEGER ilqf = 0;
     if (m >= n) {
         //
-        //        A has at least as many rows as columns. If A has sufficiently
-        //        more rows than columns, first reduce A using the QR
-        //        decomposition.
+        // A has at least as many rows as columns. If A has sufficiently
+        // more rows than columns, first reduce A using the QR
+        // decomposition.
         //
         if (m >= mnthr) {
             //
-            //           Path 1 (M much larger than N):
-            //           A = Q * R = Q * ( QB * B * PB**T )
-            //                     = Q * ( QB * ( UB * S * VB**T ) * PB**T )
-            //           U = Q * QB * UB; V**T = VB**T * PB**T
+            // Path 1 (M much larger than N):
+            // A = Q * R = Q * ( QB * B * PB**T )
+            // = Q * ( QB * ( UB * S * VB**T ) * PB**T )
+            // U = Q * QB * UB; V**T = VB**T * PB**T
             //
-            //           Compute A=Q*R
-            //           (Workspace: need 2*N, prefer N+N*NB)
+            // Compute A=Q*R
+            // (Workspace: need 2*N, prefer N+N*NB)
             //
             itau = 1;
             itemp = itau + n;
             Cgeqrf(m, n, a, lda, &work[itau - 1], &work[itemp - 1], lwork - itemp + 1, info);
             //
-            //           Copy R into WORK and bidiagonalize it:
-            //           (Workspace: need N*N+3*N, prefer N*N+N+2*N*NB)
+            // Copy R into WORK and bidiagonalize it:
+            // (Workspace: need N*N+3*N, prefer N*N+N+2*N*NB)
             //
             iqrf = itemp;
             itauq = itemp + n * n;
@@ -293,12 +271,12 @@ void Cgesvdx(const char *jobu, const char *jobvt, const char *range, INTEGER con
             Cgebrd(n, n, &work[iqrf - 1], n, &rwork[id - 1], &rwork[ie - 1], &work[itauq - 1], &work[itaup - 1], &work[itemp - 1], lwork - itemp + 1, info);
             itempr = itgkz + n * (n * 2 + 1);
             //
-            //           Solve eigenvalue problem TGK*Z=Z*S.
-            //           (Workspace: need 2*N*N+14*N)
+            // Solve eigenvalue problem TGK*Z=Z*S.
+            // (Workspace: need 2*N*N+14*N)
             //
             Rbdsvdx("U", &jobz, &rngtgk, n, &rwork[id - 1], &rwork[ie - 1], vl, vu, iltgk, iutgk, ns, s, &rwork[itgkz - 1], n * 2, &rwork[itempr - 1], iwork, info);
             //
-            //           If needed, compute left singular vectors.
+            // If needed, compute left singular vectors.
             //
             if (wantu) {
                 k = itgkz;
@@ -311,18 +289,18 @@ void Cgesvdx(const char *jobu, const char *jobvt, const char *range, INTEGER con
                 }
                 Claset("A", m - n, ns, czero, czero, &u[((n + 1) - 1)], ldu);
                 //
-                //              Call Cunmbr to compute QB*UB.
-                //              (Workspace in WORK( ITEMP ): need N, prefer N*NB)
+                // Call Cunmbr to compute QB*UB.
+                // (Workspace in WORK( ITEMP ): need N, prefer N*NB)
                 //
                 Cunmbr("Q", "L", "N", n, ns, n, &work[iqrf - 1], n, &work[itauq - 1], u, ldu, &work[itemp - 1], lwork - itemp + 1, info);
                 //
-                //              Call Cunmqr to compute Q*(QB*UB).
-                //              (Workspace in WORK( ITEMP ): need N, prefer N*NB)
+                // Call Cunmqr to compute Q*(QB*UB).
+                // (Workspace in WORK( ITEMP ): need N, prefer N*NB)
                 //
                 Cunmqr("L", "N", m, ns, n, a, lda, &work[itau - 1], u, ldu, &work[itemp - 1], lwork - itemp + 1, info);
             }
             //
-            //           If needed, compute right singular vectors.
+            // If needed, compute right singular vectors.
             //
             if (wantvt) {
                 k = itgkz + n;
@@ -334,20 +312,20 @@ void Cgesvdx(const char *jobu, const char *jobvt, const char *range, INTEGER con
                     k += n;
                 }
                 //
-                //              Call Cunmbr to compute VB**T * PB**T
-                //              (Workspace in WORK( ITEMP ): need N, prefer N*NB)
+                // Call Cunmbr to compute VB**T * PB**T
+                // (Workspace in WORK( ITEMP ): need N, prefer N*NB)
                 //
                 Cunmbr("P", "R", "C", ns, n, n, &work[iqrf - 1], n, &work[itaup - 1], vt, ldvt, &work[itemp - 1], lwork - itemp + 1, info);
             }
         } else {
             //
-            //           Path 2 (M at least N, but not much larger)
-            //           Reduce A to bidiagonal form without QR decomposition
-            //           A = QB * B * PB**T = QB * ( UB * S * VB**T ) * PB**T
-            //           U = QB * UB; V**T = VB**T * PB**T
+            // Path 2 (M at least N, but not much larger)
+            // Reduce A to bidiagonal form without QR decomposition
+            // A = QB * B * PB**T = QB * ( UB * S * VB**T ) * PB**T
+            // U = QB * UB; V**T = VB**T * PB**T
             //
-            //           Bidiagonalize A
-            //           (Workspace: need 2*N+M, prefer 2*N+(M+N)*NB)
+            // Bidiagonalize A
+            // (Workspace: need 2*N+M, prefer 2*N+(M+N)*NB)
             //
             itauq = 1;
             itaup = itauq + n;
@@ -358,12 +336,12 @@ void Cgesvdx(const char *jobu, const char *jobvt, const char *range, INTEGER con
             Cgebrd(m, n, a, lda, &rwork[id - 1], &rwork[ie - 1], &work[itauq - 1], &work[itaup - 1], &work[itemp - 1], lwork - itemp + 1, info);
             itempr = itgkz + n * (n * 2 + 1);
             //
-            //           Solve eigenvalue problem TGK*Z=Z*S.
-            //           (Workspace: need 2*N*N+14*N)
+            // Solve eigenvalue problem TGK*Z=Z*S.
+            // (Workspace: need 2*N*N+14*N)
             //
             Rbdsvdx("U", &jobz, &rngtgk, n, &rwork[id - 1], &rwork[ie - 1], vl, vu, iltgk, iutgk, ns, s, &rwork[itgkz - 1], n * 2, &rwork[itempr - 1], iwork, info);
             //
-            //           If needed, compute left singular vectors.
+            // If needed, compute left singular vectors.
             //
             if (wantu) {
                 k = itgkz;
@@ -376,13 +354,13 @@ void Cgesvdx(const char *jobu, const char *jobvt, const char *range, INTEGER con
                 }
                 Claset("A", m - n, ns, czero, czero, &u[((n + 1) - 1)], ldu);
                 //
-                //              Call Cunmbr to compute QB*UB.
-                //              (Workspace in WORK( ITEMP ): need N, prefer N*NB)
+                // Call Cunmbr to compute QB*UB.
+                // (Workspace in WORK( ITEMP ): need N, prefer N*NB)
                 //
                 Cunmbr("Q", "L", "N", m, ns, n, a, lda, &work[itauq - 1], u, ldu, &work[itemp - 1], lwork - itemp + 1, ierr);
             }
             //
-            //           If needed, compute right singular vectors.
+            // If needed, compute right singular vectors.
             //
             if (wantvt) {
                 k = itgkz + n;
@@ -394,33 +372,33 @@ void Cgesvdx(const char *jobu, const char *jobvt, const char *range, INTEGER con
                     k += n;
                 }
                 //
-                //              Call Cunmbr to compute VB**T * PB**T
-                //              (Workspace in WORK( ITEMP ): need N, prefer N*NB)
+                // Call Cunmbr to compute VB**T * PB**T
+                // (Workspace in WORK( ITEMP ): need N, prefer N*NB)
                 //
                 Cunmbr("P", "R", "C", ns, n, n, a, lda, &work[itaup - 1], vt, ldvt, &work[itemp - 1], lwork - itemp + 1, ierr);
             }
         }
     } else {
         //
-        //        A has more columns than rows. If A has sufficiently more
-        //        columns than rows, first reduce A using the LQ decomposition.
+        // A has more columns than rows. If A has sufficiently more
+        // columns than rows, first reduce A using the LQ decomposition.
         //
         if (n >= mnthr) {
             //
-            //           Path 1t (N much larger than M):
-            //           A = L * Q = ( QB * B * PB**T ) * Q
-            //                     = ( QB * ( UB * S * VB**T ) * PB**T ) * Q
-            //           U = QB * UB ; V**T = VB**T * PB**T * Q
+            // Path 1t (N much larger than M):
+            // A = L * Q = ( QB * B * PB**T ) * Q
+            // = ( QB * ( UB * S * VB**T ) * PB**T ) * Q
+            // U = QB * UB ; V**T = VB**T * PB**T * Q
             //
-            //           Compute A=L*Q
-            //           (Workspace: need 2*M, prefer M+M*NB)
+            // Compute A=L*Q
+            // (Workspace: need 2*M, prefer M+M*NB)
             //
             itau = 1;
             itemp = itau + m;
             Cgelqf(m, n, a, lda, &work[itau - 1], &work[itemp - 1], lwork - itemp + 1, info);
             //
-            //           Copy L into WORK and bidiagonalize it:
-            //           (Workspace in WORK( ITEMP ): need M*M+3*M, prefer M*M+M+2*M*NB)
+            // Copy L into WORK and bidiagonalize it:
+            // (Workspace in WORK( ITEMP ): need M*M+3*M, prefer M*M+M+2*M*NB)
             //
             ilqf = itemp;
             itauq = ilqf + m * m;
@@ -434,12 +412,12 @@ void Cgesvdx(const char *jobu, const char *jobvt, const char *range, INTEGER con
             Cgebrd(m, m, &work[ilqf - 1], m, &rwork[id - 1], &rwork[ie - 1], &work[itauq - 1], &work[itaup - 1], &work[itemp - 1], lwork - itemp + 1, info);
             itempr = itgkz + m * (m * 2 + 1);
             //
-            //           Solve eigenvalue problem TGK*Z=Z*S.
-            //           (Workspace: need 2*M*M+14*M)
+            // Solve eigenvalue problem TGK*Z=Z*S.
+            // (Workspace: need 2*M*M+14*M)
             //
             Rbdsvdx("U", &jobz, &rngtgk, m, &rwork[id - 1], &rwork[ie - 1], vl, vu, iltgk, iutgk, ns, s, &rwork[itgkz - 1], m * 2, &rwork[itempr - 1], iwork, info);
             //
-            //           If needed, compute left singular vectors.
+            // If needed, compute left singular vectors.
             //
             if (wantu) {
                 k = itgkz;
@@ -451,13 +429,13 @@ void Cgesvdx(const char *jobu, const char *jobvt, const char *range, INTEGER con
                     k += m;
                 }
                 //
-                //              Call Cunmbr to compute QB*UB.
-                //              (Workspace in WORK( ITEMP ): need M, prefer M*NB)
+                // Call Cunmbr to compute QB*UB.
+                // (Workspace in WORK( ITEMP ): need M, prefer M*NB)
                 //
                 Cunmbr("Q", "L", "N", m, ns, m, &work[ilqf - 1], m, &work[itauq - 1], u, ldu, &work[itemp - 1], lwork - itemp + 1, info);
             }
             //
-            //           If needed, compute right singular vectors.
+            // If needed, compute right singular vectors.
             //
             if (wantvt) {
                 k = itgkz + m;
@@ -470,25 +448,25 @@ void Cgesvdx(const char *jobu, const char *jobvt, const char *range, INTEGER con
                 }
                 Claset("A", ns, n - m, czero, czero, &vt[((m + 1) - 1) * ldvt], ldvt);
                 //
-                //              Call Cunmbr to compute (VB**T)*(PB**T)
-                //              (Workspace in WORK( ITEMP ): need M, prefer M*NB)
+                // Call Cunmbr to compute (VB**T)*(PB**T)
+                // (Workspace in WORK( ITEMP ): need M, prefer M*NB)
                 //
                 Cunmbr("P", "R", "C", ns, m, m, &work[ilqf - 1], m, &work[itaup - 1], vt, ldvt, &work[itemp - 1], lwork - itemp + 1, info);
                 //
-                //              Call Cunmlq to compute ((VB**T)*(PB**T))*Q.
-                //              (Workspace in WORK( ITEMP ): need M, prefer M*NB)
+                // Call Cunmlq to compute ((VB**T)*(PB**T))*Q.
+                // (Workspace in WORK( ITEMP ): need M, prefer M*NB)
                 //
                 Cunmlq("R", "N", ns, n, m, a, lda, &work[itau - 1], vt, ldvt, &work[itemp - 1], lwork - itemp + 1, info);
             }
         } else {
             //
-            //           Path 2t (N greater than M, but not much larger)
-            //           Reduce to bidiagonal form without LQ decomposition
-            //           A = QB * B * PB**T = QB * ( UB * S * VB**T ) * PB**T
-            //           U = QB * UB; V**T = VB**T * PB**T
+            // Path 2t (N greater than M, but not much larger)
+            // Reduce to bidiagonal form without LQ decomposition
+            // A = QB * B * PB**T = QB * ( UB * S * VB**T ) * PB**T
+            // U = QB * UB; V**T = VB**T * PB**T
             //
-            //           Bidiagonalize A
-            //           (Workspace: need 2*M+N, prefer 2*M+(M+N)*NB)
+            // Bidiagonalize A
+            // (Workspace: need 2*M+N, prefer 2*M+(M+N)*NB)
             //
             itauq = 1;
             itaup = itauq + m;
@@ -499,12 +477,12 @@ void Cgesvdx(const char *jobu, const char *jobvt, const char *range, INTEGER con
             Cgebrd(m, n, a, lda, &rwork[id - 1], &rwork[ie - 1], &work[itauq - 1], &work[itaup - 1], &work[itemp - 1], lwork - itemp + 1, info);
             itempr = itgkz + m * (m * 2 + 1);
             //
-            //           Solve eigenvalue problem TGK*Z=Z*S.
-            //           (Workspace: need 2*M*M+14*M)
+            // Solve eigenvalue problem TGK*Z=Z*S.
+            // (Workspace: need 2*M*M+14*M)
             //
             Rbdsvdx("L", &jobz, &rngtgk, m, &rwork[id - 1], &rwork[ie - 1], vl, vu, iltgk, iutgk, ns, s, &rwork[itgkz - 1], m * 2, &rwork[itempr - 1], iwork, info);
             //
-            //           If needed, compute left singular vectors.
+            // If needed, compute left singular vectors.
             //
             if (wantu) {
                 k = itgkz;
@@ -516,13 +494,13 @@ void Cgesvdx(const char *jobu, const char *jobvt, const char *range, INTEGER con
                     k += m;
                 }
                 //
-                //              Call Cunmbr to compute QB*UB.
-                //              (Workspace in WORK( ITEMP ): need M, prefer M*NB)
+                // Call Cunmbr to compute QB*UB.
+                // (Workspace in WORK( ITEMP ): need M, prefer M*NB)
                 //
                 Cunmbr("Q", "L", "N", m, ns, n, a, lda, &work[itauq - 1], u, ldu, &work[itemp - 1], lwork - itemp + 1, info);
             }
             //
-            //           If needed, compute right singular vectors.
+            // If needed, compute right singular vectors.
             //
             if (wantvt) {
                 k = itgkz + m;
@@ -535,15 +513,15 @@ void Cgesvdx(const char *jobu, const char *jobvt, const char *range, INTEGER con
                 }
                 Claset("A", ns, n - m, czero, czero, &vt[((m + 1) - 1) * ldvt], ldvt);
                 //
-                //              Call Cunmbr to compute VB**T * PB**T
-                //              (Workspace in WORK( ITEMP ): need M, prefer M*NB)
+                // Call Cunmbr to compute VB**T * PB**T
+                // (Workspace in WORK( ITEMP ): need M, prefer M*NB)
                 //
                 Cunmbr("P", "R", "C", ns, n, m, a, lda, &work[itaup - 1], vt, ldvt, &work[itemp - 1], lwork - itemp + 1, info);
             }
         }
     }
     //
-    //     Undo scaling if necessary
+    // Undo scaling if necessary
     //
     if (iscl == 1) {
         if (anrm > bignum) {
@@ -554,10 +532,10 @@ void Cgesvdx(const char *jobu, const char *jobvt, const char *range, INTEGER con
         }
     }
     //
-    //     Return optimal workspace in WORK(1)
+    // Return optimal workspace in WORK(1)
     //
     work[1 - 1] = COMPLEX(castREAL(maxwrk), zero);
     //
-    //     End of Cgesvdx
+    // End of Cgesvdx
     //
 }

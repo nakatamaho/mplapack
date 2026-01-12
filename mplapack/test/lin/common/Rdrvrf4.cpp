@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DDRVRF4.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -117,16 +124,16 @@ void Rdrvrf4(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
                                 beta = Rlarnd(2, iseed);
                             }
                             //
-                            //                       All the parameters are set:
-                            //                          CFORM, UPLO, TRANS, M, N,
-                            //                          ALPHA, and BETA
-                            //                       READY TO TEST!
+                            // All the parameters are set:
+                            // CFORM, UPLO, TRANS, M, N,
+                            // ALPHA, and BETA
+                            // READY TO TEST!
                             //
                             nrun++;
                             //
                             if (itrans == 1) {
                                 //
-                                //                          In this case we are NOTRANS, so A is N-by-K
+                                // In this case we are NOTRANS, so A is N-by-K
                                 //
                                 for (j = 1; j <= k; j = j + 1) {
                                     for (i = 1; i <= n; i = i + 1) {
@@ -138,7 +145,7 @@ void Rdrvrf4(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
                                 //
                             } else {
                                 //
-                                //                          In this case we are TRANS, so A is K-by-N
+                                // In this case we are TRANS, so A is K-by-N
                                 //
                                 for (j = 1; j <= n; j = j + 1) {
                                     for (i = 1; i <= k; i = i + 1) {
@@ -150,10 +157,10 @@ void Rdrvrf4(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
                                 //
                             }
                             //
-                            //                       Generate C1 our N--by--N symmetric matrix.
-                            //                       Make sure C2 has the same upper/lower part,
-                            //                       (the one that we do not touch), so
-                            //                       copy the initial C1 in C2 in it.
+                            // Generate C1 our N--by--N symmetric matrix.
+                            // Make sure C2 has the same upper/lower part,
+                            // (the one that we do not touch), so
+                            // copy the initial C1 in C2 in it.
                             //
                             for (j = 1; j <= n; j = j + 1) {
                                 for (i = 1; i <= n; i = i + 1) {
@@ -181,7 +188,7 @@ void Rdrvrf4(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
                             //
                             Rtfttr(&cform, &uplo, n, crf, c2, ldc, info);
                             //
-                            //                       compare C1 and C2
+                            // compare C1 and C2
                             //
                             for (j = 1; j <= n; j = j + 1) {
                                 for (i = 1; i <= n; i = i + 1) {
@@ -189,10 +196,10 @@ void Rdrvrf4(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
                                 }
                             }
                             //
-                            //                       Yes, C1 is symmetric so we could call Rlansy,
-                            //                       but we want to check the upper part that is
-                            //                       supposed to be unchanged and the diagonal that
-                            //                       is supposed to be real -> Rlange
+                            // Yes, C1 is symmetric so we could call Rlansy,
+                            // but we want to check the upper part that is
+                            // supposed to be unchanged and the diagonal that
+                            // is supposed to be real -> Rlange
                             //
                             result[1 - 1] = Rlange("I", n, n, c1, ldc, d_work_Rlange);
                             result[1 - 1] = result[1 - 1] / max(REAL(abs(alpha) * norma + abs(beta)), one) / castREAL(max(n, (INTEGER)1)) / eps;
@@ -218,7 +225,7 @@ void Rdrvrf4(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
         }
     }
     //
-    //     Print a summary of the results.
+    // Print a summary of the results.
     //
     if (nfail == 0) {
         write(nout, "(1x,'All tests for ',a5,' auxiliary routine passed the ',"
@@ -230,6 +237,6 @@ void Rdrvrf4(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
             "Rsfrk", nfail, nrun;
     }
     //
-    //     End of Rdrvrf4
+    // End of Rdrvrf4
     //
 }

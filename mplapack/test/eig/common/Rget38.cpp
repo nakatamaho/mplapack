@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DGET38.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -143,9 +150,9 @@ void Rget38(REAL *rmax, INTEGER *lmax, INTEGER *ninfo, INTEGER &knt, INTEGER con
     string str;
     istringstream iss;
 //
-//     Read input data until N=0.  Assume input eigenvalues are sorted
-//     lexicographically (increasing by real part, then decreasing by
-//     imaginary part)
+// Read input data until N=0.  Assume input eigenvalues are sorted
+// lexicographically (increasing by real part, then decreasing by
+// imaginary part)
 //
 statement_10:
     getline(cin, str);
@@ -189,7 +196,7 @@ statement_10:
     tnrm = Rlange("M", n, n, tmp, ldt, work);
     for (iscl = 1; iscl <= 3; iscl = iscl + 1) {
         //
-        //        Scale input matrix
+        // Scale input matrix
         //
         knt++;
         Rlacpy("F", n, n, tmp, ldt, t, ldt);
@@ -202,7 +209,7 @@ statement_10:
         }
         Rlacpy("F", n, n, t, ldt, tsav, ldt);
         //
-        //        Compute Schur form
+        // Compute Schur form
         //
         Rgehrd(n, 1, n, t, ldt, &work[1 - 1], &work[(n + 1) - 1], lwork - n, info);
         if (info != 0) {
@@ -211,12 +218,12 @@ statement_10:
             goto statement_160;
         }
         //
-        //        Generate orthogonal matrix
+        // Generate orthogonal matrix
         //
         Rlacpy("L", n, n, t, ldt, q, ldt);
         Rorghr(n, 1, n, q, ldt, &work[1 - 1], &work[(n + 1) - 1], lwork - n, info);
         //
-        //        Compute eigenvalues and the Schur form T
+        // Compute Schur form
         //
         Rhseqr("S", "V", n, 1, n, t, ldt, wr, wi, q, ldt, work, lwork, info);
         if (info != 0) {
@@ -225,7 +232,7 @@ statement_10:
             goto statement_160;
         }
         //
-        //        Sort, select eigenvalues
+        // Sort, select eigenvalues
         //
         for (i = 1; i <= n; i = i + 1) {
             ipnt[i - 1] = i;
@@ -256,7 +263,7 @@ statement_10:
             select[ipnt[iselec[i - 1] - 1] - 1] = true;
         }
         //
-        //        Compute condition numbers
+        // Compute condition numbers
         //
         Rlacpy("F", n, n, q, ldt, qsav, ldt);
         Rlacpy("F", n, n, t, ldt, tsav1, ldt);
@@ -269,7 +276,7 @@ statement_10:
         septmp = sep / vmul;
         stmp = s;
         //
-        //        Compute residuals
+        // Compute residuals
         //
         Rhst01(n, 1, n, tsav, ldt, t, ldt, q, ldt, work, lwork, result);
         vmax = max(result[1 - 1], result[2 - 1]);
@@ -280,8 +287,8 @@ statement_10:
             }
         }
         //
-        //        Compare condition number for eigenvalue cluster
-        //        taking its condition number into account
+        // Compare condition number for eigenvalue cluster
+        // taking its condition number into account
         //
         v = max(REAL(two * castREAL(n) * eps * tnrm), smlnum);
         if (tnrm == zero) {
@@ -317,8 +324,8 @@ statement_10:
             }
         }
         //
-        //        Compare condition numbers for invariant subspace
-        //        taking its condition number into account
+        // Compare condition numbers for invariant subspace
+        // taking its condition number into account
         //
         if (v > septmp * stmp) {
             tol = septmp;
@@ -350,8 +357,8 @@ statement_10:
             }
         }
         //
-        //        Compare condition number for eigenvalue cluster
-        //        without taking its condition number into account
+        // Compare condition number for eigenvalue cluster
+        // without taking its condition number into account
         //
         if (sin <= castREAL(2 * n) * eps && stmp <= castREAL(2 * n) * eps) {
             vmax = one;
@@ -373,8 +380,8 @@ statement_10:
             }
         }
         //
-        //        Compare condition numbers for invariant subspace
-        //        without taking its condition number into account
+        // Compare condition numbers for invariant subspace
+        // without taking its condition number into account
         //
         if (sepin <= v && septmp <= v) {
             vmax = one;
@@ -396,8 +403,8 @@ statement_10:
             }
         }
         //
-        //        Compute eigenvalue condition number only and compare
-        //        Update Q
+        // Compute eigenvalue condition number only and compare
+        // Update Q
         //
         vmax = zero;
         Rlacpy("F", n, n, tsav1, ldt, ttmp, ldt);
@@ -427,8 +434,8 @@ statement_10:
             }
         }
         //
-        //        Compute invariant subspace condition number only and compare
-        //        Update Q
+        // Compute invariant subspace condition number only and compare
+        // Update Q
         //
         Rlacpy("F", n, n, tsav1, ldt, ttmp, ldt);
         Rlacpy("F", n, n, qsav, ldt, qtmp, ldt);
@@ -457,8 +464,8 @@ statement_10:
             }
         }
         //
-        //        Compute eigenvalue condition number only and compare
-        //        Do not update Q
+        // Compute eigenvalue condition number only and compare
+        // Do not update Q
         //
         Rlacpy("F", n, n, tsav1, ldt, ttmp, ldt);
         Rlacpy("F", n, n, qsav, ldt, qtmp, ldt);
@@ -487,8 +494,8 @@ statement_10:
             }
         }
         //
-        //        Compute invariant subspace condition number only and compare
-        //        Do not update Q
+        // Compute invariant subspace condition number only and compare
+        // Do not update Q
         //
         Rlacpy("F", n, n, tsav1, ldt, ttmp, ldt);
         Rlacpy("F", n, n, qsav, ldt, qtmp, ldt);
@@ -526,6 +533,6 @@ statement_10:
     }
     goto statement_10;
     //
-    //     End of Rget38
+    // End of Rget38
     //
 }

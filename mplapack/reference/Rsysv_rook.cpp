@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,33 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine DSYSV_ROOK.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Rsysv_rook(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *a, INTEGER const lda, INTEGER *ipiv, REAL *b, INTEGER const ldb, REAL *work, INTEGER const lwork, INTEGER &info) {
     //
-    //  -- LAPACK driver routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     bool lquery = (lwork == -1);
@@ -88,14 +74,14 @@ void Rsysv_rook(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *a, 
         return;
     }
     //
-    //     Compute the factorization A = U*D*U**T or A = L*D*L**T.
+    // Compute the factorization A = U*D*U**T or A = L*D*L**T.
     //
     Rsytrf_rook(uplo, n, a, lda, ipiv, work, lwork, info);
     if (info == 0) {
         //
-        //        Solve the system A*X = B, overwriting B with X.
+        // Solve the system A*X = B, overwriting B with X.
         //
-        //        Solve with TRS_ROOK ( Use Level 2 BLAS)
+        // Solve with TRS_ROOK ( Use Level 2 BLAS)
         //
         Rsytrs_rook(uplo, n, nrhs, a, lda, ipiv, b, ldb, info);
         //
@@ -103,6 +89,6 @@ void Rsysv_rook(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *a, 
     //
     work[1 - 1] = lwkopt;
     //
-    //     End of Rsysv_rook
+    // End of Rsysv_rook
     //
 }

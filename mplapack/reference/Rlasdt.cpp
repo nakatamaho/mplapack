@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,16 +26,23 @@
  *
  */
 
+// Derived from LAPACK routine DLASDT.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Rlasdt(INTEGER const n, INTEGER &lvl, INTEGER &nd, INTEGER *inode, INTEGER *ndiml, INTEGER *ndimr, INTEGER const msub) {
     //
-    //     Find the number of levels on the tree.
+    // Find the number of levels on the tree.
     //
     INTEGER maxn = max((INTEGER)1, n);
-    const REAL two = 2.0e+0;
-    REAL temp = log(castREAL(maxn) / castREAL(msub + (INTEGER)1)) / log(two);
+    const REAL two = 2.0;
+    REAL temp = log(castREAL(maxn) / castREAL(msub + 1)) / log(two);
     lvl = castINTEGER(temp) + 1;
     //
     INTEGER i = n / 2;
@@ -49,8 +56,8 @@ void Rlasdt(INTEGER const n, INTEGER &lvl, INTEGER &nd, INTEGER *inode, INTEGER 
     INTEGER ncrnt = 0;
     for (nlvl = 1; nlvl <= lvl - 1; nlvl = nlvl + 1) {
         //
-        //        Constructing the tree at (NLVL+1)-st level. The number of
-        //        nodes created on this level is LLST * 2.
+        // Constructing the tree at (NLVL+1)-st level. The number of
+        // nodes created on this level is LLST * 2.
         //
         for (i = 0; i <= llst - 1; i = i + 1) {
             il += 2;
@@ -67,6 +74,6 @@ void Rlasdt(INTEGER const n, INTEGER &lvl, INTEGER &nd, INTEGER *inode, INTEGER 
     }
     nd = llst * 2 - 1;
     //
-    //     End of Rlasdt
+    // End of Rlasdt
     //
 }

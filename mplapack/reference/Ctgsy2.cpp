@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,12 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine ZTGSY2.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Ctgsy2(const char *trans, INTEGER const ijob, INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, COMPLEX *c, INTEGER const ldc, COMPLEX *d, INTEGER const ldd, COMPLEX *e, INTEGER const lde, COMPLEX *f, INTEGER const ldf, REAL &scale, REAL &rdsum, REAL &rdscal, INTEGER &info) {
     //
-    //     Decode and test input parameters
+    // Decode and test input parameters
     //
     info = 0;
     INTEGER ierr = 0;
@@ -81,29 +88,29 @@ void Ctgsy2(const char *trans, INTEGER const ijob, INTEGER const m, INTEGER cons
     COMPLEX alpha = 0.0;
     if (notran) {
         //
-        //        Solve (I, J) - system
-        //           A(I, I) * R(I, J) - L(I, J) * B(J, J) = C(I, J)
-        //           D(I, I) * R(I, J) - L(I, J) * E(J, J) = F(I, J)
-        //        for I = M, M - 1, ..., 1; J = 1, 2, ..., N
+        // Solve (I, J) - system
+        // A(I, I) * R(I, J) - L(I, J) * B(J, J) = C(I, J)
+        // D(I, I) * R(I, J) - L(I, J) * E(J, J) = F(I, J)
+        // for I = M, M - 1, ..., 1; J = 1, 2, ..., N
         //
         scale = one;
         scaloc = one;
         for (j = 1; j <= n; j = j + 1) {
             for (i = m; i >= 1; i = i - 1) {
                 //
-                //              Build 2 by 2 system
+                // Build 2 by 2 system
                 //
-                z[(1 - 1)] = a[(i - 1) + (i - 1) * lda];
+                z[0] = a[(i - 1) + (i - 1) * lda];
                 z[(2 - 1)] = d[(i - 1) + (i - 1) * ldd];
                 z[(2 - 1) * ldz] = -b[(j - 1) + (j - 1) * ldb];
                 z[(2 - 1) + (2 - 1) * ldz] = -e[(j - 1) + (j - 1) * lde];
                 //
-                //              Set up right hand side(s)
+                // Set up right hand side(s)
                 //
                 rhs[1 - 1] = c[(i - 1) + (j - 1) * ldc];
                 rhs[2 - 1] = f[(i - 1) + (j - 1) * ldf];
                 //
-                //              Solve Z * x = RHS
+                // Solve Z * x = RHS
                 //
                 Cgetc2(ldz, z, ldz, ipiv, jpiv, ierr);
                 if (ierr > 0) {
@@ -122,12 +129,12 @@ void Ctgsy2(const char *trans, INTEGER const ijob, INTEGER const m, INTEGER cons
                     Clatdf(ijob, ldz, z, ldz, rhs, rdsum, rdscal, ipiv, jpiv);
                 }
                 //
-                //              Unpack solution vector(s)
+                // Unpack solution vector(s)
                 //
                 c[(i - 1) + (j - 1) * ldc] = rhs[1 - 1];
                 f[(i - 1) + (j - 1) * ldf] = rhs[2 - 1];
                 //
-                //              Substitute R(I, J) and L(I, J) into remaining equation.
+                // Substitute R(I, J) and L(I, J) into remaining equation.
                 //
                 if (i > 1) {
                     alpha = -rhs[1 - 1];
@@ -143,29 +150,29 @@ void Ctgsy2(const char *trans, INTEGER const ijob, INTEGER const m, INTEGER cons
         }
     } else {
         //
-        //        Solve transposed (I, J) - system:
-        //           A(I, I)**H * R(I, J) + D(I, I)**H * L(J, J) = C(I, J)
-        //           R(I, I) * B(J, J) + L(I, J) * E(J, J)   = -F(I, J)
-        //        for I = 1, 2, ..., M, J = N, N - 1, ..., 1
+        // Solve transposed (I, J) - system:
+        // A(I, I)**H * R(I, J) + D(I, I)**H * L(J, J) = C(I, J)
+        // R(I, I) * B(J, J) + L(I, J) * E(J, J)   = -F(I, J)
+        // for I = 1, 2, ..., M, J = N, N - 1, ..., 1
         //
         scale = one;
         scaloc = one;
         for (i = 1; i <= m; i = i + 1) {
             for (j = n; j >= 1; j = j - 1) {
                 //
-                //              Build 2 by 2 system Z**H
+                // Build 2 by 2 system Z**H
                 //
-                z[(1 - 1)] = conj(a[(i - 1) + (i - 1) * lda]);
+                z[0] = conj(a[(i - 1) + (i - 1) * lda]);
                 z[(2 - 1)] = -conj(b[(j - 1) + (j - 1) * ldb]);
                 z[(2 - 1) * ldz] = conj(d[(i - 1) + (i - 1) * ldd]);
                 z[(2 - 1) + (2 - 1) * ldz] = -conj(e[(j - 1) + (j - 1) * lde]);
                 //
-                //              Set up right hand side(s)
+                // Set up right hand side(s)
                 //
                 rhs[1 - 1] = c[(i - 1) + (j - 1) * ldc];
                 rhs[2 - 1] = f[(i - 1) + (j - 1) * ldf];
                 //
-                //              Solve Z**H * x = RHS
+                // Solve Z**H * x = RHS
                 //
                 Cgetc2(ldz, z, ldz, ipiv, jpiv, ierr);
                 if (ierr > 0) {
@@ -180,12 +187,12 @@ void Ctgsy2(const char *trans, INTEGER const ijob, INTEGER const m, INTEGER cons
                     scale = scale * scaloc;
                 }
                 //
-                //              Unpack solution vector(s)
+                // Unpack solution vector(s)
                 //
                 c[(i - 1) + (j - 1) * ldc] = rhs[1 - 1];
                 f[(i - 1) + (j - 1) * ldf] = rhs[2 - 1];
                 //
-                //              Substitute R(I, J) and L(I, J) into remaining equation.
+                // Substitute R(I, J) and L(I, J) into remaining equation.
                 //
                 for (k = 1; k <= j - 1; k = k + 1) {
                     f[(i - 1) + (k - 1) * ldf] += rhs[1 - 1] * conj(b[(k - 1) + (j - 1) * ldb]) + rhs[2 - 1] * conj(e[(k - 1) + (j - 1) * lde]);
@@ -198,6 +205,6 @@ void Ctgsy2(const char *trans, INTEGER const ijob, INTEGER const m, INTEGER cons
         }
     }
     //
-    //     End of Ctgsy2
+    // End of Ctgsy2
     //
 }

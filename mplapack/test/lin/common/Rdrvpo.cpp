@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DDRVPO.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -113,21 +120,21 @@ void Rdrvpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
         iseed[i - 1] = iseedy[i - 1];
     }
     //
-    //     Test the error exits
+    // Test the error exits
     //
     if (tsterr) {
         Rerrvx(path, nout);
     }
     infot = 0;
     //
-    //     Set the block size and minimum block size for testing.
+    // Set the block size and minimum block size for testing.
     //
     nb = 1;
     nbmin = 2;
     xlaenv(1, nb);
     xlaenv(2, nbmin);
     //
-    //     Do for each value of N in NVAL
+    // Do for each value of N in NVAL
     //
     for (in = 1; in <= nn; in = in + 1) {
         n = nval[in - 1];
@@ -140,41 +147,41 @@ void Rdrvpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
         //
         for (imat = 1; imat <= nimat; imat = imat + 1) {
             //
-            //           Do the tests only if DOTYPE( IMAT ) is true.
+            // Do the tests only if DOTYPE( IMAT ) is true.
             //
             if (!dotype[imat - 1]) {
                 goto statement_120;
             }
             //
-            //           Skip types 3, 4, or 5 if the matrix size is too small.
+            // Skip types 3, 4, or 5 if the matrix size is too small.
             //
             zerot = imat >= 3 && imat <= 5;
             if (zerot && n < imat - 2) {
                 goto statement_120;
             }
             //
-            //           Do first for UPLO = 'U', then for UPLO = 'L'
+            // Do first for UPLO = 'U', then for UPLO = 'L'
             //
             for (iuplo = 1; iuplo <= 2; iuplo = iuplo + 1) {
                 uplo[0] = uplos[iuplo - 1];
                 //
-                //              Set up parameters with Rlatb4 and generate a test matrix
-                //              with Rlatms.
+                // Set up parameters with Rlatb4 and generate a test matrix
+                // with Rlatms.
                 //
                 Rlatb4(path, imat, n, n, type, kl, ku, anorm, mode, cndnum, dist);
                 //
                 strncpy(srnamt, "Rlatms", srnamt_len);
                 Rlatms(n, n, dist, iseed, type, rwork, mode, cndnum, anorm, kl, ku, uplo, a, lda, work, info);
                 //
-                //              Check error code from Rlatms.
+                // Check error code from Rlatms.
                 //
                 if (info != 0) {
                     Alaerh(path, "Rlatms", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                     goto statement_110;
                 }
                 //
-                //              For types 3-5, zero one row and column of the matrix to
-                //              test that INFO is returned correctly.
+                // For types 3-5, zero one row and column of the matrix to
+                // test that INFO is returned correctly.
                 //
                 if (zerot) {
                     if (imat == 3) {
@@ -186,7 +193,7 @@ void Rdrvpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                     }
                     ioff = (izero - 1) * lda;
                     //
-                    //                 Set row and column IZERO of A to 0.
+                    // Set row and column IZERO of A to 0.
                     //
                     if (iuplo == 1) {
                         for (i = 1; i <= izero - 1; i = i + 1) {
@@ -212,7 +219,7 @@ void Rdrvpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                     izero = 0;
                 }
                 //
-                //              Save a copy of the matrix A in ASAV.
+                // Save a copy of the matrix A in ASAV.
                 //
                 Rlacpy(uplo, n, n, a, lda, asav, lda);
                 //
@@ -238,16 +245,16 @@ void Rdrvpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                             //
                         } else if (!Mlsame(fact, "N")) {
                             //
-                            //                       Compute the condition number for comparison with
-                            //                       the value returned by Rposvx (FACT = 'N' reuses
-                            //                       the condition number from the previous iteration
-                            //                       with FACT = 'F').
+                            // Compute the condition number for comparison with
+                            // the value returned by Rposvx (FACT = 'N' reuses
+                            // the condition number from the previous iteration
+                            // with FACT = 'F').
                             //
                             Rlacpy(uplo, n, n, asav, lda, afac, lda);
                             if (equil || iequed > 1) {
                                 //
-                                //                          Compute row and column scale factors to
-                                //                          equilibrate the matrix A.
+                                // Compute row and column scale factors to
+                                // equilibrate the matrix A.
                                 //
                                 Rpoequ(n, afac, lda, s, scond, amax, info);
                                 if (info == 0 && n > 0) {
@@ -255,33 +262,33 @@ void Rdrvpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                         scond = zero;
                                     }
                                     //
-                                    //                             Equilibrate the matrix.
+                                    // Equilibrate the matrix.
                                     //
                                     Rlaqsy(uplo, n, afac, lda, s, scond, amax, equed);
                                 }
                             }
                             //
-                            //                       Save the condition number of the
-                            //                       non-equilibrated system for use in Rget04.
+                            // Save the condition number of the
+                            // non-equilibrated system for use in Rget04.
                             //
                             if (equil) {
                                 roldc = rcondc;
                             }
                             //
-                            //                       Compute the 1-norm of A.
+                            // Compute the 1-norm of A.
                             //
                             anorm = Rlansy("1", uplo, n, afac, lda, rwork);
                             //
-                            //                       Factor the matrix A.
+                            // Factor the matrix A.
                             //
                             Rpotrf(uplo, n, afac, lda, info);
                             //
-                            //                       Form the inverse of A.
+                            // Form the inverse of A.
                             //
                             Rlacpy(uplo, n, n, afac, lda, a, lda);
                             Rpotri(uplo, n, a, lda, info);
                             //
-                            //                       Compute the 1-norm condition number of A.
+                            // Compute the 1-norm condition number of A.
                             //
                             ainvnm = Rlansy("1", uplo, n, a, lda, rwork);
                             if (anorm <= zero || ainvnm <= zero) {
@@ -291,11 +298,11 @@ void Rdrvpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                             }
                         }
                         //
-                        //                    Restore the matrix A.
+                        // Restore the matrix A.
                         //
                         Rlacpy(uplo, n, n, asav, lda, a, lda);
                         //
-                        //                    Form an exact solution and set the right hand side.
+                        // Form an exact solution and set the right hand side.
                         //
                         strncpy(srnamt, "Rlarhs", srnamt_len);
                         Rlarhs(path, xtype, uplo, " ", n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
@@ -304,10 +311,10 @@ void Rdrvpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         //
                         if (nofact) {
                             //
-                            //                       --- Test Rposv  ---
+                            // --- Test Rposv  ---
                             //
-                            //                       Compute the L*L' or U'*U factorization of the
-                            //                       matrix and solve the system.
+                            // Compute the L*L' or U'*U factorization of the
+                            // matrix and solve the system.
                             //
                             Rlacpy(uplo, n, n, a, lda, afac, lda);
                             Rlacpy("Full", n, nrhs, b, lda, x, lda);
@@ -315,7 +322,7 @@ void Rdrvpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                             strncpy(srnamt, "Rposv", srnamt_len);
                             Rposv(uplo, n, nrhs, afac, lda, x, lda, info);
                             //
-                            //                       Check error code from Rposv .
+                            // Check error code from Rposv .
                             //
                             if (info != izero) {
                                 Alaerh(path, "Rposv ", info, izero, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
@@ -324,23 +331,23 @@ void Rdrvpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                 goto statement_70;
                             }
                             //
-                            //                       Reconstruct matrix from factors and compute
-                            //                       residual.
+                            // Reconstruct matrix from factors and compute
+                            // residual.
                             //
                             Rpot01(uplo, n, a, lda, afac, lda, rwork, result[1 - 1]);
                             //
-                            //                       Compute residual of the computed solution.
+                            // Compute residual of the computed solution.
                             //
                             Rlacpy("Full", n, nrhs, b, lda, work, lda);
                             Rpot02(uplo, n, nrhs, a, lda, x, lda, work, lda, rwork, result[2 - 1]);
                             //
-                            //                       Check solution from generated exact solution.
+                            // Check solution from generated exact solution.
                             //
                             Rget04(n, nrhs, x, lda, xact, lda, rcondc, result[3 - 1]);
                             nt = 3;
                             //
-                            //                       Print information about the tests that did not
-                            //                       pass the threshold.
+                            // Print information about the tests that did not
+                            // pass the threshold.
                             //
                             for (k = 1; k <= nt; k = k + 1) {
                                 if (result[k - 1] >= thresh) {
@@ -358,7 +365,7 @@ void Rdrvpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         statement_70:;
                         }
                         //
-                        //                    --- Test Rposvx ---
+                        // --- Test Rposvx ---
                         //
                         if (!prefac) {
                             Rlaset(uplo, n, n, zero, zero, afac, lda);
@@ -366,19 +373,19 @@ void Rdrvpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         Rlaset("Full", n, nrhs, zero, zero, x, lda);
                         if (iequed > 1 && n > 0) {
                             //
-                            //                       Equilibrate the matrix if FACT='F' and
-                            //                       EQUED='Y'.
+                            // Equilibrate the matrix if FACT='F' and
+                            // EQUED='Y'.
                             //
                             Rlaqsy(uplo, n, a, lda, s, scond, amax, equed);
                         }
                         //
-                        //                    Solve the system and compute the condition number
-                        //                    and error bounds using Rposvx.
+                        // Solve the system and compute the condition number
+                        // and error bounds using Rposvx.
                         //
                         strncpy(srnamt, "Rposvx", srnamt_len);
                         Rposvx(fact, uplo, n, nrhs, a, lda, afac, lda, equed, s, b, lda, x, lda, rcond, rwork, &rwork[(nrhs + 1) - 1], work, iwork, info);
                         //
-                        //                    Check the error code from Rposvx.
+                        // Check the error code from Rposvx.
                         //
                         if (info != izero) {
                             fact_uplo[0] = fact[0];
@@ -391,8 +398,8 @@ void Rdrvpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         if (info == 0) {
                             if (!prefac) {
                                 //
-                                //                          Reconstruct matrix from factors and compute
-                                //                          residual.
+                                // Reconstruct matrix from factors and compute
+                                // residual.
                                 //
                                 Rpot01(uplo, n, a, lda, afac, lda, &rwork[(2 * nrhs + 1) - 1], result[1 - 1]);
                                 k1 = 1;
@@ -400,12 +407,12 @@ void Rdrvpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                 k1 = 2;
                             }
                             //
-                            //                       Compute residual of the computed solution.
+                            // Compute residual of the computed solution.
                             //
                             Rlacpy("Full", n, nrhs, bsav, lda, work, lda);
                             Rpot02(uplo, n, nrhs, asav, lda, x, lda, work, lda, &rwork[(2 * nrhs + 1) - 1], result[2 - 1]);
                             //
-                            //                       Check solution from generated exact solution.
+                            // Check solution from generated exact solution.
                             //
                             if (nofact || (prefac && Mlsame(equed, "N"))) {
                                 Rget04(n, nrhs, x, lda, xact, lda, rcondc, result[3 - 1]);
@@ -413,21 +420,21 @@ void Rdrvpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                 Rget04(n, nrhs, x, lda, xact, lda, roldc, result[3 - 1]);
                             }
                             //
-                            //                       Check the error bounds from iterative
-                            //                       refinement.
+                            // Check the error bounds from iterative
+                            // refinement.
                             //
                             Rpot05(uplo, n, nrhs, asav, lda, b, lda, x, lda, xact, lda, rwork, &rwork[(nrhs + 1) - 1], &result[4 - 1]);
                         } else {
                             k1 = 6;
                         }
                         //
-                        //                    Compare RCOND from Rposvx with the computed value
-                        //                    in RCONDC.
+                        // Compare RCOND from Rposvx with the computed value
+                        // in RCONDC.
                         //
                         result[6 - 1] = Rget06(rcond, rcondc);
                         //
-                        //                    Print information about the tests that did not pass
-                        //                    the threshold.
+                        // Print information about the tests that did not pass
+                        // the threshold.
                         //
                         for (k = k1; k <= 6; k = k + 1) {
                             if (result[k - 1] >= thresh) {
@@ -458,10 +465,10 @@ void Rdrvpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
         }
     }
     //
-    //     Print a summary of the results.
+    // Print a summary of the results.
     //
     Alasvm(path, nout, nfail, nrun, nerrs);
     //
-    //     End of Rdrvpo
+    // End of Rdrvpo
     //
 }

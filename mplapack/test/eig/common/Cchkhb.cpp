@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine ZCHKHB.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -90,39 +97,12 @@ void Cchkhb(INTEGER const nsizes, INTEGER *nn, INTEGER const nwdths, INTEGER *kk
     static const char *format_9999 = "(' Cchkhb: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,', JTYPE=',i6,"
                                      "', ISEED=(',3(i5,','),i5,')')";
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Data statements ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Check for errors
+    // Check for errors
     //
     ntestt = 0;
     info = 0;
     //
-    //     Important constants
+    // Important constants
     //
     badnn = false;
     nmax = 1;
@@ -143,7 +123,7 @@ void Cchkhb(INTEGER const nsizes, INTEGER *nn, INTEGER const nwdths, INTEGER *kk
     }
     kmax = min(nmax - 1, kmax);
     //
-    //     Check for errors
+    // Check for errors
     //
     if (nsizes < 0) {
         info = -1;
@@ -168,13 +148,13 @@ void Cchkhb(INTEGER const nsizes, INTEGER *nn, INTEGER const nwdths, INTEGER *kk
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (nsizes == 0 || ntypes == 0 || nwdths == 0) {
         return;
     }
     //
-    //     More Important constants
+    // More Important constants
     //
     unfl = Rlamch("Safe minimum");
     ovfl = one / unfl;
@@ -183,7 +163,7 @@ void Cchkhb(INTEGER const nsizes, INTEGER *nn, INTEGER const nwdths, INTEGER *kk
     rtunfl = sqrt(unfl);
     rtovfl = sqrt(ovfl);
     //
-    //     Loop over sizes, types
+    // Loop over sizes, types
     //
     nerrs = 0;
     nmats = 0;
@@ -216,22 +196,22 @@ void Cchkhb(INTEGER const nsizes, INTEGER *nn, INTEGER const nwdths, INTEGER *kk
                     ioldsd[j - 1] = iseed[j - 1];
                 }
                 //
-                //              Compute "A".
-                //              Store as "Upper"; later, we will copy to other format.
+                // Compute "A".
+                // Store as "Upper"; later, we will copy to other format.
                 //
-                //              Control parameters:
+                // Control parameters:
                 //
-                //                  KMAGN  KMODE        KTYPE
-                //              =1  O(1)   clustered 1  zero
-                //              =2  large  clustered 2  identity
-                //              =3  small  exponential  (none)
-                //              =4         arithmetic   diagonal, (w/ eigenvalues)
-                //              =5         random log   hermitian, w/ eigenvalues
-                //              =6         random       (none)
-                //              =7                      random diagonal
-                //              =8                      random hermitian
-                //              =9                      positive definite
-                //              =10                     diagonally dominant tridiagonal
+                // KMAGN  KMODE        KTYPE
+                // =1  O(1)   clustered 1  zero
+                // =2  large  clustered 2  identity
+                // =3  small  exponential  (none)
+                // =4         arithmetic   diagonal, (w/ eigenvalues)
+                // =5         random log   hermitian, w/ eigenvalues
+                // =6         random       (none)
+                // =7                      random diagonal
+                // =8                      random hermitian
+                // =9                      positive definite
+                // =10                     diagonally dominant tridiagonal
                 //
                 if (mtypes > maxtyp) {
                     goto statement_100;
@@ -240,7 +220,7 @@ void Cchkhb(INTEGER const nsizes, INTEGER *nn, INTEGER const nwdths, INTEGER *kk
                 itype = ktype[jtype - 1];
                 imode = kmode[jtype - 1];
                 //
-                //              Compute norm
+                // Compute norm
                 //
                 switch (kmagn[jtype - 1]) {
                 case 1:
@@ -275,16 +255,16 @@ void Cchkhb(INTEGER const nsizes, INTEGER *nn, INTEGER const nwdths, INTEGER *kk
                     cond = ulpinv * aninv / ten;
                 }
                 //
-                //              Special Matrices -- Identity & Jordan block
+                // Special Matrices -- Identity & Jordan block
                 //
-                //                 Zero
+                // Zero
                 //
                 if (itype == 1) {
                     iinfo = 0;
                     //
                 } else if (itype == 2) {
                     //
-                    //                 Identity
+                    // Identity
                     //
                     for (jcol = 1; jcol <= n; jcol = jcol + 1) {
                         a[((k + 1) - 1) + (jcol - 1) * lda] = anorm;
@@ -292,37 +272,37 @@ void Cchkhb(INTEGER const nsizes, INTEGER *nn, INTEGER const nwdths, INTEGER *kk
                     //
                 } else if (itype == 4) {
                     //
-                    //                 Diagonal Matrix, [Eigen]values Specified
+                    // Diagonal Matrix, [Eigen]values Specified
                     //
                     Clatms(n, n, "S", iseed, "H", rwork, imode, cond, anorm, 0, 0, "Q", &a[((k + 1) - 1)], lda, work, iinfo);
                     //
                 } else if (itype == 5) {
                     //
-                    //                 Hermitian, eigenvalues specified
+                    // Hermitian, eigenvalues specified
                     //
                     Clatms(n, n, "S", iseed, "H", rwork, imode, cond, anorm, k, k, "Q", a, lda, work, iinfo);
                     //
                 } else if (itype == 7) {
                     //
-                    //                 Diagonal, random eigenvalues
+                    // Diagonal, random eigenvalues
                     //
                     Clatmr(n, n, "S", iseed, "H", work, 6, one, cone, "T", "N", &work[(n + 1) - 1], 1, one, &work[(2 * n + 1) - 1], 1, one, "N", idumma, 0, 0, zero, anorm, "Q", &a[((k + 1) - 1)], lda, idumma, iinfo);
                     //
                 } else if (itype == 8) {
                     //
-                    //                 Hermitian, random eigenvalues
+                    // Hermitian, random eigenvalues
                     //
                     Clatmr(n, n, "S", iseed, "H", work, 6, one, cone, "T", "N", &work[(n + 1) - 1], 1, one, &work[(2 * n + 1) - 1], 1, one, "N", idumma, k, k, zero, anorm, "Q", a, lda, idumma, iinfo);
                     //
                 } else if (itype == 9) {
                     //
-                    //                 Positive definite, eigenvalues specified.
+                    // Positive definite, eigenvalues specified.
                     //
                     Clatms(n, n, "S", iseed, "P", rwork, imode, cond, anorm, k, k, "Q", a, lda, &work[(n + 1) - 1], iinfo);
                     //
                 } else if (itype == 10) {
                     //
-                    //                 Positive definite tridiagonal, eigenvalues specified.
+                    // Positive definite tridiagonal, eigenvalues specified.
                     //
                     if (n > 1) {
                         k = max((INTEGER)1, k);
@@ -348,7 +328,7 @@ void Cchkhb(INTEGER const nsizes, INTEGER *nn, INTEGER const nwdths, INTEGER *kk
             //
             statement_100:
                 //
-                //              Call Chbtrd to compute S and U from upper triangle.
+                // Call Chbtrd to compute S and U from upper triangle.
                 //
                 Clacpy(" ", k + 1, n, a, lda, work, lda);
                 //
@@ -366,12 +346,12 @@ void Cchkhb(INTEGER const nsizes, INTEGER *nn, INTEGER const nwdths, INTEGER *kk
                     }
                 }
                 //
-                //              Do tests 1 and 2
+                // Do tests 1 and 2
                 //
                 Chbt21("Upper", n, k, 1, a, lda, sd, se, u, ldu, work, rwork, &result[1 - 1]);
                 //
-                //              Convert A from Upper-Triangle-Only storage to
-                //              Lower-Triangle-Only storage.
+                // Convert A from Upper-Triangle-Only storage to
+                // Lower-Triangle-Only storage.
                 //
                 for (jc = 1; jc <= n; jc = jc + 1) {
                     for (jr = 0; jr <= min(k, n - jc); jr = jr + 1) {
@@ -384,7 +364,7 @@ void Cchkhb(INTEGER const nsizes, INTEGER *nn, INTEGER const nwdths, INTEGER *kk
                     }
                 }
                 //
-                //              Call Chbtrd to compute S and U from lower triangle
+                // Call Chbtrd to compute S and U from lower triangle
                 //
                 Clacpy(" ", k + 1, n, a, lda, work, lda);
                 //
@@ -403,22 +383,22 @@ void Cchkhb(INTEGER const nsizes, INTEGER *nn, INTEGER const nwdths, INTEGER *kk
                 }
                 ntest = 4;
                 //
-                //              Do tests 3 and 4
+                // Do tests 3 and 4
                 //
                 Chbt21("Lower", n, k, 1, a, lda, sd, se, u, ldu, work, rwork, &result[3 - 1]);
             //
-            //              End of Loop -- Check for RESULT(j) > THRESH
+            // End of Loop -- Check for RESULT(j) > THRESH
             //
             statement_150:
                 ntestt += ntest;
                 //
-                //              Print out tests which fail.
+                // Print out tests which fail.
                 //
                 for (jr = 1; jr <= ntest; jr = jr + 1) {
                     if (result[jr - 1] >= thresh) {
                         //
-                        //                    If this is the first test to fail,
-                        //                    print a header to the data file.
+                        // If this is the first test to fail,
+                        // print a header to the data file.
                         //
                         if (nerrs == 0) {
                             write(nounit, "(/,1x,a3,"
@@ -472,10 +452,10 @@ void Cchkhb(INTEGER const nsizes, INTEGER *nn, INTEGER const nwdths, INTEGER *kk
         }
     }
     //
-    //     Summary
+    // Summary
     //
     Rlasum("ZHB", nounit, nerrs, ntestt);
     //
-    //     End of Cchkhb
+    // End of Cchkhb
     //
 }

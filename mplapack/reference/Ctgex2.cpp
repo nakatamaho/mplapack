@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZTGEX2.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -45,7 +52,7 @@ void Ctgex2(bool const wantq, bool const wantz, INTEGER const n, COMPLEX *a, INT
     COMPLEX work[8];
     REAL sa = 0.0;
     REAL sb = 0.0;
-    const REAL twenty = 2.0e+1;
+    const REAL twenty = 20.0;
     REAL thresha = 0.0;
     REAL threshb = 0.0;
     COMPLEX f = 0.0;
@@ -58,34 +65,9 @@ void Ctgex2(bool const wantq, bool const wantz, INTEGER const n, COMPLEX *a, INT
     const bool wands = true;
     INTEGER i = 0;
     //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     info = 0;
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n <= 1) {
         return;
@@ -95,12 +77,12 @@ void Ctgex2(bool const wantq, bool const wantz, INTEGER const n, COMPLEX *a, INT
     weak = false;
     strong = false;
     //
-    //     Make a local copy of selected block in (A, B)
+    // Make a local copy of selected block in (A, B)
     //
     Clacpy("Full", m, m, &a[(j1 - 1) + (j1 - 1) * lda], lda, s, ldst);
     Clacpy("Full", m, m, &b[(j1 - 1) + (j1 - 1) * ldb], ldb, t, ldst);
     //
-    //     Compute the threshold for testing the acceptance of swapping.
+    // Compute the threshold for testing the acceptance of swapping.
     //
     eps = Rlamch("P");
     smlnum = Rlamch("S") / eps;
@@ -115,38 +97,38 @@ void Ctgex2(bool const wantq, bool const wantz, INTEGER const n, COMPLEX *a, INT
     Classq(m * m, &work[(m * m + 1) - 1], 1, scale, sum);
     sb = scale * sqrt(sum);
     //
-    //     THRES has been changed from
-    //        THRESH = MAX( TEN*EPS*SA, SMLNUM )
-    //     to
-    //        THRESH = MAX( TWENTY*EPS*SA, SMLNUM )
-    //     on 04/01/10.
-    //     "Bug" reported by Ondra Kamenik, confirmed by Julie Langou, fixed by
-    //     Jim Demmel and Guillaume Revy. See forum post 1783.
+    // THRES has been changed from
+    // THRESH = MAX( TEN*EPS*SA, SMLNUM )
+    // to
+    // THRESH = MAX( TWENTY*EPS*SA, SMLNUM )
+    // on 04/01/10.
+    // "Bug" reported by Ondra Kamenik, confirmed by Julie Langou, fixed by
+    // Jim Demmel and Guillaume Revy. See forum post 1783.
     //
-    thresha = max(REAL(twenty * eps * sa), smlnum);
-    threshb = max(REAL(twenty * eps * sb), smlnum);
+    thresha = max(twenty * eps * sa, smlnum);
+    threshb = max(twenty * eps * sb, smlnum);
     //
-    //     Compute unitary QL and RQ that swap 1-by-1 and 1-by-1 blocks
-    //     using Givens rotations and perform the swap tentatively.
+    // Compute unitary QL and RQ that swap 1-by-1 and 1-by-1 blocks
+    // using Givens rotations and perform the swap tentatively.
     //
-    f = s[(2 - 1) + (2 - 1) * ldst] * t[(1 - 1)] - t[(2 - 1) + (2 - 1) * ldst] * s[(1 - 1)];
+    f = s[(2 - 1) + (2 - 1) * ldst] * t[0] - t[(2 - 1) + (2 - 1) * ldst] * s[0];
     g = s[(2 - 1) + (2 - 1) * ldst] * t[(2 - 1) * ldst] - t[(2 - 1) + (2 - 1) * ldst] * s[(2 - 1) * ldst];
-    sa = abs(s[(2 - 1) + (2 - 1) * ldst]) * abs(t[(1 - 1)]);
-    sb = abs(s[(1 - 1)]) * abs(t[(2 - 1) + (2 - 1) * ldst]);
+    sa = abs(s[(2 - 1) + (2 - 1) * ldst]) * abs(t[0]);
+    sb = abs(s[0]) * abs(t[(2 - 1) + (2 - 1) * ldst]);
     Clartg(g, f, cz, sz, cdum);
     sz = -sz;
-    Crot(2, &s[(1 - 1)], 1, &s[(2 - 1) * ldst], 1, cz, conj(sz));
-    Crot(2, &t[(1 - 1)], 1, &t[(2 - 1) * ldst], 1, cz, conj(sz));
+    Crot(2, &s[0], 1, &s[(2 - 1) * ldst], 1, cz, conj(sz));
+    Crot(2, &t[0], 1, &t[(2 - 1) * ldst], 1, cz, conj(sz));
     if (sa >= sb) {
-        Clartg(s[(1 - 1)], s[(2 - 1)], cq, sq, cdum);
+        Clartg(s[0], s[(2 - 1)], cq, sq, cdum);
     } else {
-        Clartg(t[(1 - 1)], t[(2 - 1)], cq, sq, cdum);
+        Clartg(t[0], t[(2 - 1)], cq, sq, cdum);
     }
-    Crot(2, &s[(1 - 1)], ldst, &s[(2 - 1)], ldst, cq, sq);
-    Crot(2, &t[(1 - 1)], ldst, &t[(2 - 1)], ldst, cq, sq);
+    Crot(2, &s[0], ldst, &s[(2 - 1)], ldst, cq, sq);
+    Crot(2, &t[0], ldst, &t[(2 - 1)], ldst, cq, sq);
     //
-    //     Weak stability test: |S21| <= O(EPS F-norm((A)))
-    //                          and  |T21| <= O(EPS F-norm((B)))
+    // Weak stability test: |S21| <= O(EPS F-norm((A)))
+    // and  |T21| <= O(EPS F-norm((B)))
     //
     weak = abs(s[(2 - 1)]) <= thresha && abs(t[(2 - 1)]) <= threshb;
     if (!weak) {
@@ -155,10 +137,10 @@ void Ctgex2(bool const wantq, bool const wantz, INTEGER const n, COMPLEX *a, INT
     //
     if (wands) {
         //
-        //        Strong stability test:
-        //           F-norm((A-QL**H*S*QR)) <= O(EPS*F-norm((A)))
-        //           and
-        //           F-norm((B-QL**H*T*QR)) <= O(EPS*F-norm((B)))
+        // Strong stability test:
+        // F-norm((A-QL**H*S*QR)) <= O(EPS*F-norm((A)))
+        // and
+        // F-norm((B-QL**H*T*QR)) <= O(EPS*F-norm((B)))
         //
         Clacpy("Full", m, m, s, ldst, work, m);
         Clacpy("Full", m, m, t, ldst, &work[(m * m + 1) - 1], m);
@@ -186,20 +168,20 @@ void Ctgex2(bool const wantq, bool const wantz, INTEGER const n, COMPLEX *a, INT
         }
     }
     //
-    //     If the swap is accepted ("weakly" and "strongly"), apply the
-    //     equivalence transformations to the original matrix pair (A,B)
+    // If the swap is accepted ("weakly" and "strongly"), apply the
+    // equivalence transformations to the original matrix pair (A,B)
     //
     Crot(j1 + 1, &a[(j1 - 1) * lda], 1, &a[((j1 + 1) - 1) * lda], 1, cz, conj(sz));
     Crot(j1 + 1, &b[(j1 - 1) * ldb], 1, &b[((j1 + 1) - 1) * ldb], 1, cz, conj(sz));
     Crot(n - j1 + 1, &a[(j1 - 1) + (j1 - 1) * lda], lda, &a[((j1 + 1) - 1) + (j1 - 1) * lda], lda, cq, sq);
     Crot(n - j1 + 1, &b[(j1 - 1) + (j1 - 1) * ldb], ldb, &b[((j1 + 1) - 1) + (j1 - 1) * ldb], ldb, cq, sq);
     //
-    //     Set  N1 by N2 (2,1) blocks to 0
+    // Set  N1 by N2 (2,1) blocks to 0
     //
     a[((j1 + 1) - 1) + (j1 - 1) * lda] = czero;
     b[((j1 + 1) - 1) + (j1 - 1) * ldb] = czero;
     //
-    //     Accumulate transformations into Q and Z if requested.
+    // Accumulate transformations into Q and Z if requested.
     //
     if (wantz) {
         Crot(n, &z[(j1 - 1) * ldz], 1, &z[((j1 + 1) - 1) * ldz], 1, cz, conj(sz));
@@ -208,15 +190,15 @@ void Ctgex2(bool const wantq, bool const wantz, INTEGER const n, COMPLEX *a, INT
         Crot(n, &q[(j1 - 1) * ldq], 1, &q[((j1 + 1) - 1) * ldq], 1, cq, conj(sq));
     }
     //
-    //     Exit with INFO = 0 if swap was successfully performed.
+    // Exit with INFO = 0 if swap was successfully performed.
     //
     return;
 //
-//     Exit with INFO = 1 if swap was rejected.
+// Exit with INFO = 1 if swap was rejected.
 //
 statement_20:
     info = 1;
     //
-    //     End of Ctgex2
+    // End of Ctgex2
     //
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,12 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine ZTREXC.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Ctrexc(const char *compq, INTEGER const n, COMPLEX *t, INTEGER const ldt, COMPLEX *q, INTEGER const ldq, INTEGER const ifst, INTEGER const ilst, INTEGER &info) {
     //
-    //     Decode and test the input parameters.
+    // Decode and test the input parameters.
     //
     info = 0;
     bool wantq = Mlsame(compq, "V");
@@ -53,7 +60,7 @@ void Ctrexc(const char *compq, INTEGER const n, COMPLEX *t, INTEGER const ldt, C
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n <= 1 || ifst == ilst) {
         return;
@@ -64,14 +71,14 @@ void Ctrexc(const char *compq, INTEGER const n, COMPLEX *t, INTEGER const ldt, C
     INTEGER m3 = 0;
     if (ifst < ilst) {
         //
-        //        Move the IFST-th diagonal element forward down the diagonal.
+        // Move the IFST-th diagonal element forward down the diagonal.
         //
         m1 = 0;
         m2 = -1;
         m3 = 1;
     } else {
         //
-        //        Move the IFST-th diagonal element backward up the diagonal.
+        // Move the IFST-th diagonal element backward up the diagonal.
         //
         m1 = -1;
         m2 = 0;
@@ -86,16 +93,16 @@ void Ctrexc(const char *compq, INTEGER const n, COMPLEX *t, INTEGER const ldt, C
     COMPLEX temp = 0.0;
     for (k = ifst + m1; m3 >= 0 ? k <= ilst + m2 : k >= ilst + m2; k = k + m3) {
         //
-        //        Interchange the k-th and (k+1)-th diagonal elements.
+        // Interchange the k-th and (k+1)-th diagonal elements.
         //
         t11 = t[(k - 1) + (k - 1) * ldt];
         t22 = t[((k + 1) - 1) + ((k + 1) - 1) * ldt];
         //
-        //        Determine the transformation to perform the interchange.
+        // Determine the transformation to perform the interchange.
         //
         Clartg(t[(k - 1) + ((k + 1) - 1) * ldt], t22 - t11, cs, sn, temp);
         //
-        //        Apply transformation to the matrix T.
+        // Apply transformation to the matrix T.
         //
         if (k + 2 <= n) {
             Crot(n - k - 1, &t[(k - 1) + ((k + 2) - 1) * ldt], ldt, &t[((k + 1) - 1) + ((k + 2) - 1) * ldt], ldt, cs, sn);
@@ -107,13 +114,13 @@ void Ctrexc(const char *compq, INTEGER const n, COMPLEX *t, INTEGER const ldt, C
         //
         if (wantq) {
             //
-            //           Accumulate transformation in the matrix Q.
+            // Accumulate transformation in the matrix Q.
             //
             Crot(n, &q[(k - 1) * ldq], 1, &q[((k + 1) - 1) * ldq], 1, cs, conj(sn));
         }
         //
     }
     //
-    //     End of Ctrexc
+    // End of Ctrexc
     //
 }

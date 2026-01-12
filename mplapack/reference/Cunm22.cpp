@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,42 +26,27 @@
  *
  */
 
+// Derived from LAPACK routine ZUNM22.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Cunm22(const char *side, const char *trans, INTEGER const m, INTEGER const n, INTEGER const n1, INTEGER const n2, COMPLEX *q, INTEGER const ldq, COMPLEX *c, INTEGER const ldc, COMPLEX *work, INTEGER const lwork, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input arguments
+    // Test the input arguments
     //
     info = 0;
     bool left = Mlsame(side, "L");
     bool notran = Mlsame(trans, "N");
     bool lquery = (lwork == -1);
     //
-    //     NQ is the order of Q;
+    // NQ is the order of Q;
+    // NW is the minimum dimension of WORK.
     //
     INTEGER nq = 0;
     if (left) {
@@ -106,14 +91,14 @@ void Cunm22(const char *side, const char *trans, INTEGER const m, INTEGER const 
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (m == 0 || n == 0) {
-        work[1 - 1] = 1;
+        work[1 - 1] = 1.0;
         return;
     }
     //
-    //     Degenerate cases (N1 = 0 or N2 = 0) are handled using Ctrmm.
+    // Degenerate cases (N1 = 0 or N2 = 0) are handled using Ctrmm.
     //
     const COMPLEX one = COMPLEX(1.0, 0.0);
     if (n1 == 0) {
@@ -126,7 +111,7 @@ void Cunm22(const char *side, const char *trans, INTEGER const m, INTEGER const 
         return;
     }
     //
-    //     Compute the largest chunk size available from the workspace.
+    // Compute the largest chunk size available from the workspace.
     //
     INTEGER nb = max((INTEGER)1, min(lwork, lwkopt) / nq);
     //
@@ -139,25 +124,25 @@ void Cunm22(const char *side, const char *trans, INTEGER const m, INTEGER const 
                 len = min(nb, n - i + 1);
                 ldwork = m;
                 //
-                //              Multiply bottom part of C by Q12.
+                // Multiply bottom part of C by Q12.
                 //
                 Clacpy("All", n1, len, &c[((n2 + 1) - 1) + (i - 1) * ldc], ldc, work, ldwork);
                 Ctrmm("Left", "Lower", "No Transpose", "Non-Unit", n1, len, one, &q[((n2 + 1) - 1) * ldq], ldq, work, ldwork);
                 //
-                //              Multiply top part of C by Q11.
+                // Multiply top part of C by Q11.
                 //
                 Cgemm("No Transpose", "No Transpose", n1, len, n2, one, q, ldq, &c[(i - 1) * ldc], ldc, one, work, ldwork);
                 //
-                //              Multiply top part of C by Q21.
+                // Multiply top part of C by Q21.
                 //
                 Clacpy("All", n2, len, &c[(i - 1) * ldc], ldc, &work[(n1 + 1) - 1], ldwork);
                 Ctrmm("Left", "Upper", "No Transpose", "Non-Unit", n2, len, one, &q[((n1 + 1) - 1)], ldq, &work[(n1 + 1) - 1], ldwork);
                 //
-                //              Multiply bottom part of C by Q22.
+                // Multiply bottom part of C by Q22.
                 //
                 Cgemm("No Transpose", "No Transpose", n2, len, n1, one, &q[((n1 + 1) - 1) + ((n2 + 1) - 1) * ldq], ldq, &c[((n2 + 1) - 1) + (i - 1) * ldc], ldc, one, &work[(n1 + 1) - 1], ldwork);
                 //
-                //              Copy everything back.
+                // Copy everything back.
                 //
                 Clacpy("All", m, len, work, ldwork, &c[(i - 1) * ldc], ldc);
             }
@@ -166,25 +151,25 @@ void Cunm22(const char *side, const char *trans, INTEGER const m, INTEGER const 
                 len = min(nb, n - i + 1);
                 ldwork = m;
                 //
-                //              Multiply bottom part of C by Q21**H.
+                // Multiply bottom part of C by Q21**H.
                 //
                 Clacpy("All", n2, len, &c[((n1 + 1) - 1) + (i - 1) * ldc], ldc, work, ldwork);
                 Ctrmm("Left", "Upper", "Conjugate", "Non-Unit", n2, len, one, &q[((n1 + 1) - 1)], ldq, work, ldwork);
                 //
-                //              Multiply top part of C by Q11**H.
+                // Multiply top part of C by Q11**H.
                 //
                 Cgemm("Conjugate", "No Transpose", n2, len, n1, one, q, ldq, &c[(i - 1) * ldc], ldc, one, work, ldwork);
                 //
-                //              Multiply top part of C by Q12**H.
+                // Multiply top part of C by Q12**H.
                 //
                 Clacpy("All", n1, len, &c[(i - 1) * ldc], ldc, &work[(n2 + 1) - 1], ldwork);
                 Ctrmm("Left", "Lower", "Conjugate", "Non-Unit", n1, len, one, &q[((n2 + 1) - 1) * ldq], ldq, &work[(n2 + 1) - 1], ldwork);
                 //
-                //              Multiply bottom part of C by Q22**H.
+                // Multiply bottom part of C by Q22**H.
                 //
                 Cgemm("Conjugate", "No Transpose", n1, len, n2, one, &q[((n1 + 1) - 1) + ((n2 + 1) - 1) * ldq], ldq, &c[((n1 + 1) - 1) + (i - 1) * ldc], ldc, one, &work[(n2 + 1) - 1], ldwork);
                 //
-                //              Copy everything back.
+                // Copy everything back.
                 //
                 Clacpy("All", m, len, work, ldwork, &c[(i - 1) * ldc], ldc);
             }
@@ -195,25 +180,25 @@ void Cunm22(const char *side, const char *trans, INTEGER const m, INTEGER const 
                 len = min(nb, m - i + 1);
                 ldwork = len;
                 //
-                //              Multiply right part of C by Q21.
+                // Multiply right part of C by Q21.
                 //
                 Clacpy("All", len, n2, &c[(i - 1) + ((n1 + 1) - 1) * ldc], ldc, work, ldwork);
                 Ctrmm("Right", "Upper", "No Transpose", "Non-Unit", len, n2, one, &q[((n1 + 1) - 1)], ldq, work, ldwork);
                 //
-                //              Multiply left part of C by Q11.
+                // Multiply left part of C by Q11.
                 //
                 Cgemm("No Transpose", "No Transpose", len, n2, n1, one, &c[(i - 1)], ldc, q, ldq, one, work, ldwork);
                 //
-                //              Multiply left part of C by Q12.
+                // Multiply left part of C by Q12.
                 //
                 Clacpy("All", len, n1, &c[(i - 1)], ldc, &work[(1 + n2 * ldwork) - 1], ldwork);
                 Ctrmm("Right", "Lower", "No Transpose", "Non-Unit", len, n1, one, &q[((n2 + 1) - 1) * ldq], ldq, &work[(1 + n2 * ldwork) - 1], ldwork);
                 //
-                //              Multiply right part of C by Q22.
+                // Multiply right part of C by Q22.
                 //
                 Cgemm("No Transpose", "No Transpose", len, n1, n2, one, &c[(i - 1) + ((n1 + 1) - 1) * ldc], ldc, &q[((n1 + 1) - 1) + ((n2 + 1) - 1) * ldq], ldq, one, &work[(1 + n2 * ldwork) - 1], ldwork);
                 //
-                //              Copy everything back.
+                // Copy everything back.
                 //
                 Clacpy("All", len, n, work, ldwork, &c[(i - 1)], ldc);
             }
@@ -222,25 +207,25 @@ void Cunm22(const char *side, const char *trans, INTEGER const m, INTEGER const 
                 len = min(nb, m - i + 1);
                 ldwork = len;
                 //
-                //              Multiply right part of C by Q12**H.
+                // Multiply right part of C by Q12**H.
                 //
                 Clacpy("All", len, n1, &c[(i - 1) + ((n2 + 1) - 1) * ldc], ldc, work, ldwork);
                 Ctrmm("Right", "Lower", "Conjugate", "Non-Unit", len, n1, one, &q[((n2 + 1) - 1) * ldq], ldq, work, ldwork);
                 //
-                //              Multiply left part of C by Q11**H.
+                // Multiply left part of C by Q11**H.
                 //
                 Cgemm("No Transpose", "Conjugate", len, n1, n2, one, &c[(i - 1)], ldc, q, ldq, one, work, ldwork);
                 //
-                //              Multiply left part of C by Q21**H.
+                // Multiply left part of C by Q21**H.
                 //
                 Clacpy("All", len, n2, &c[(i - 1)], ldc, &work[(1 + n1 * ldwork) - 1], ldwork);
                 Ctrmm("Right", "Upper", "Conjugate", "Non-Unit", len, n2, one, &q[((n1 + 1) - 1)], ldq, &work[(1 + n1 * ldwork) - 1], ldwork);
                 //
-                //              Multiply right part of C by Q22**H.
+                // Multiply right part of C by Q22**H.
                 //
                 Cgemm("No Transpose", "Conjugate", len, n2, n1, one, &c[(i - 1) + ((n2 + 1) - 1) * ldc], ldc, &q[((n1 + 1) - 1) + ((n2 + 1) - 1) * ldq], ldq, one, &work[(1 + n1 * ldwork) - 1], ldwork);
                 //
-                //              Copy everything back.
+                // Copy everything back.
                 //
                 Clacpy("All", len, n, work, ldwork, &c[(i - 1)], ldc);
             }
@@ -249,6 +234,6 @@ void Cunm22(const char *side, const char *trans, INTEGER const m, INTEGER const 
     //
     work[1 - 1] = COMPLEX(lwkopt);
     //
-    //     End of Cunm22
+    // End of Cunm22
     //
 }

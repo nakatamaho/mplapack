@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DERRTR.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -92,9 +99,9 @@ void Rerrtr(const char *path, INTEGER const nunit) {
     REAL scale = 0.0;
     if (Mlsamen(2, c2, "TR")) {
         //
-        //        Test error exits for the general triangular routines.
+        // Test error exits for the general triangular routines.
         //
-        //        Rtrtri
+        // Rtrtri
         //
         infot = 1;
         strncpy(srnamt, "Rtrtri", srnamt_len);
@@ -110,7 +117,7 @@ void Rerrtr(const char *path, INTEGER const nunit) {
         Rtrtri("U", "N", 2, a, 1, info);
         chkxer("Rtrtri", infot, nout, lerr, ok);
         //
-        //        Rtrti2
+        // Rtrti2
         //
         infot = 1;
         strncpy(srnamt, "Rtrti2", srnamt_len);
@@ -126,7 +133,7 @@ void Rerrtr(const char *path, INTEGER const nunit) {
         Rtrti2("U", "N", 2, a, 1, info);
         chkxer("Rtrti2", infot, nout, lerr, ok);
         //
-        //        Rtrtrs
+        // Rtrtrs
         //
         infot = 1;
         strncpy(srnamt, "Rtrtrs", srnamt_len);
@@ -151,7 +158,7 @@ void Rerrtr(const char *path, INTEGER const nunit) {
         Rtrtrs("U", "N", "N", 2, 1, a, 2, x, 1, info);
         chkxer("Rtrtrs", infot, nout, lerr, ok);
         //
-        //        Rtrrfs
+        // Rtrrfs
         //
         infot = 1;
         strncpy(srnamt, "Rtrrfs", srnamt_len);
@@ -179,7 +186,7 @@ void Rerrtr(const char *path, INTEGER const nunit) {
         Rtrrfs("U", "N", "N", 2, 1, a, 2, b, 2, x, 1, r1, r2, w, iw, info);
         chkxer("Rtrrfs", infot, nout, lerr, ok);
         //
-        //        Rtrcon
+        // Rtrcon
         //
         infot = 1;
         strncpy(srnamt, "Rtrcon", srnamt_len);
@@ -198,7 +205,7 @@ void Rerrtr(const char *path, INTEGER const nunit) {
         Rtrcon("1", "U", "N", 2, a, 1, rcond, w, iw, info);
         chkxer("Rtrcon", infot, nout, lerr, ok);
         //
-        //        Rlatrs
+        // Rlatrs
         //
         infot = 1;
         strncpy(srnamt, "Rlatrs", srnamt_len);
@@ -222,9 +229,9 @@ void Rerrtr(const char *path, INTEGER const nunit) {
         //
     } else if (Mlsamen(2, c2, "TP")) {
         //
-        //        Test error exits for the packed triangular routines.
+        // Test error exits for the packed triangular routines.
         //
-        //        Rtptri
+        // Rtptri
         //
         infot = 1;
         strncpy(srnamt, "Rtptri", srnamt_len);
@@ -237,7 +244,7 @@ void Rerrtr(const char *path, INTEGER const nunit) {
         Rtptri("U", "N", -1, a, info);
         chkxer("Rtptri", infot, nout, lerr, ok);
         //
-        //        Rtptrs
+        // Rtptrs
         //
         infot = 1;
         strncpy(srnamt, "Rtptrs", srnamt_len);
@@ -259,7 +266,7 @@ void Rerrtr(const char *path, INTEGER const nunit) {
         Rtptrs("U", "N", "N", 2, 1, a, x, 1, info);
         chkxer("Rtptrs", infot, nout, lerr, ok);
         //
-        //        Rtprfs
+        // Rtprfs
         //
         infot = 1;
         strncpy(srnamt, "Rtprfs", srnamt_len);
@@ -284,7 +291,7 @@ void Rerrtr(const char *path, INTEGER const nunit) {
         Rtprfs("U", "N", "N", 2, 1, a, b, 2, x, 1, r1, r2, w, iw, info);
         chkxer("Rtprfs", infot, nout, lerr, ok);
         //
-        //        Rtpcon
+        // Rtpcon
         //
         infot = 1;
         strncpy(srnamt, "Rtpcon", srnamt_len);
@@ -300,7 +307,7 @@ void Rerrtr(const char *path, INTEGER const nunit) {
         Rtpcon("1", "U", "N", -1, a, rcond, w, iw, info);
         chkxer("Rtpcon", infot, nout, lerr, ok);
         //
-        //        Rlatps
+        // Rlatps
         //
         infot = 1;
         strncpy(srnamt, "Rlatps", srnamt_len);
@@ -321,9 +328,9 @@ void Rerrtr(const char *path, INTEGER const nunit) {
         //
     } else if (Mlsamen(2, c2, "TB")) {
         //
-        //        Test error exits for the banded triangular routines.
+        // Test error exits for the banded triangular routines.
         //
-        //        Rtbtrs
+        // Rtbtrs
         //
         infot = 1;
         strncpy(srnamt, "Rtbtrs", srnamt_len);
@@ -351,7 +358,7 @@ void Rerrtr(const char *path, INTEGER const nunit) {
         Rtbtrs("U", "N", "N", 2, 0, 1, a, 1, x, 1, info);
         chkxer("Rtbtrs", infot, nout, lerr, ok);
         //
-        //        Rtbrfs
+        // Rtbrfs
         //
         infot = 1;
         strncpy(srnamt, "Rtbrfs", srnamt_len);
@@ -382,7 +389,7 @@ void Rerrtr(const char *path, INTEGER const nunit) {
         Rtbrfs("U", "N", "N", 2, 1, 1, a, 2, b, 2, x, 1, r1, r2, w, iw, info);
         chkxer("Rtbrfs", infot, nout, lerr, ok);
         //
-        //        Rtbcon
+        // Rtbcon
         //
         infot = 1;
         strncpy(srnamt, "Rtbcon", srnamt_len);
@@ -404,7 +411,7 @@ void Rerrtr(const char *path, INTEGER const nunit) {
         Rtbcon("1", "U", "N", 2, 1, a, 1, rcond, w, iw, info);
         chkxer("Rtbcon", infot, nout, lerr, ok);
         //
-        //        Rlatbs
+        // Rlatbs
         //
         infot = 1;
         strncpy(srnamt, "Rlatbs", srnamt_len);
@@ -430,10 +437,10 @@ void Rerrtr(const char *path, INTEGER const nunit) {
         chkxer("Rlatbs", infot, nout, lerr, ok);
     }
     //
-    //     Print a summary line.
+    // Print a summary line.
     //
     Alaesm(path, ok, nout);
     //
-    //     End of Rerrtr
+    // End of Rerrtr
     //
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine ZQRT05.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -124,8 +131,7 @@ void Cqrt05(INTEGER const m, INTEGER const n, INTEGER const l, INTEGER const nb,
     INTEGER ldr = m2;
     Claset("Full", m2, n, czero, czero, r, m2);
     Clacpy("Upper", m2, n, af, m2, r, m2);
-    //
-    //     Compute |R - Q'*A| / |A| and store in RESULT(1)
+    // Compute |R - Q'*A| / |A| and store in RESULT(1)
     //
     Cgemm("C", "N", m2, n, m2, -one, q, m2, a, m2, one, r, m2);
     REAL *rwork = new REAL[m2];
@@ -138,14 +144,14 @@ void Cqrt05(INTEGER const m, INTEGER const n, INTEGER const l, INTEGER const nb,
         result[1 - 1] = zero;
     }
     //
-    //     Compute |I - Q'*Q| and store in RESULT(2)
+    // Compute |I - Q'*Q| and store in RESULT(2)
     //
     Claset("Full", m2, m2, czero, one, r, m2);
     Cherk("U", "C", m2, m2, -one.real(), q, m2, one.real(), r, m2);
     resid = Clansy("1", "Upper", m2, r, m2, rwork);
     result[2 - 1] = resid / (eps * max((INTEGER)1, m2));
     //
-    //     Generate random m-by-n matrix C and a copy CF
+    // Generate random m-by-n matrix C and a copy CF
     //
     COMPLEX *c = new COMPLEX[m2 * n];
     INTEGER ldc = m2;
@@ -157,11 +163,11 @@ void Cqrt05(INTEGER const m, INTEGER const n, INTEGER const l, INTEGER const nb,
     INTEGER ldcf = m2;
     Clacpy("Full", m2, n, c, m2, cf, m2);
     //
-    //     Apply Q to C as Q*C
+    // Apply Q to C as Q*C
     //
     Ctpmqrt("L", "N", m, n, k, l, nb, &af[(np1 - 1)], m2, t, ldt, cf, m2, &cf[(np1 - 1)], m2, work, info);
     //
-    //     Compute |Q*C - Q*C| / |C|
+    // Compute |Q*C - Q*C| / |C|
     //
     Cgemm("N", "N", m2, n, m2, -one, q, m2, c, m2, one, cf, m2);
     resid = Clange("1", m2, n, cf, m2, rwork);
@@ -171,15 +177,15 @@ void Cqrt05(INTEGER const m, INTEGER const n, INTEGER const l, INTEGER const nb,
         result[3 - 1] = zero;
     }
     //
-    //     Copy C into CF again
+    // Copy C into CF again
     //
     Clacpy("Full", m2, n, c, m2, cf, m2);
     //
-    //     Apply Q to C as QT*C
+    // Apply Q to C as QT*C
     //
     Ctpmqrt("L", "C", m, n, k, l, nb, &af[(np1 - 1)], m2, t, ldt, cf, m2, &cf[(np1 - 1)], m2, work, info);
     //
-    //     Compute |QT*C - QT*C| / |C|
+    // Compute |QT*C - QT*C| / |C|
     //
     Cgemm("C", "N", m2, n, m2, -one, q, m2, c, m2, one, cf, m2);
     resid = Clange("1", m2, n, cf, m2, rwork);
@@ -202,11 +208,11 @@ void Cqrt05(INTEGER const m, INTEGER const n, INTEGER const l, INTEGER const nb,
     INTEGER lddf = n;
     Clacpy("Full", n, m2, d, n, df, n);
     //
-    //     Apply Q to D as D*Q
+    // Apply Q to D as D*Q
     //
     Ctpmqrt("R", "N", n, m, n, l, nb, &af[(np1 - 1)], m2, t, ldt, df, n, &df[(np1 - 1) * lddf], n, work, info);
     //
-    //     Compute |D*Q - D*Q| / |D|
+    // Compute |D*Q - D*Q| / |D|
     //
     Cgemm("N", "N", n, m2, m2, -one, d, n, q, m2, one, df, n);
     resid = Clange("1", n, m2, df, n, rwork);
@@ -216,15 +222,15 @@ void Cqrt05(INTEGER const m, INTEGER const n, INTEGER const l, INTEGER const nb,
         result[5 - 1] = zero;
     }
     //
-    //     Copy D into DF again
+    // Copy D into DF again
     //
     Clacpy("Full", n, m2, d, n, df, n);
     //
-    //     Apply Q to D as D*QT
+    // Apply Q to D as D*QT
     //
     Ctpmqrt("R", "C", n, m, n, l, nb, &af[(np1 - 1)], m2, t, ldt, df, n, &df[(np1 - 1) * lddf], n, work, info);
     //
-    //     Compute |D*QT - D*QT| / |D|
+    // Compute |D*QT - D*QT| / |D|
     //
     Cgemm("N", "C", n, m2, m2, -one, d, n, q, m2, one, df, n);
     resid = Clange("1", n, m2, df, n, rwork);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DDRGEV3.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -93,7 +100,7 @@ void Rdrgev3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
     static const char *format_9999 = "(' Rdrgev3: ',a,' returned INFO=',i6,'.',/,3x,'N=',i6,', JTYPE=',i6,"
                                      "', ISEED=(',4(i4,','),i5,')')";
     //
-    //     Check for errors
+    // Check for errors
     //
     info = 0;
     //
@@ -122,12 +129,12 @@ void Rdrgev3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
         info = -17;
     }
     //
-    //     Compute workspace
-    //      (Note: Comments in the code beginning "Workspace:" describe the
-    //       minimal amount of workspace needed at that point in the code,
-    //       as well as the preferred amount for good performance.
-    //       NB refers to the optimal block size for the immediately
-    //       following subroutine, as returned by iMlaenv.
+    // Compute workspace
+    // (Note: Comments in the code beginning "Workspace:" describe the
+    // minimal amount of workspace needed at that point in the code,
+    // as well as the preferred amount for good performance.
+    // NB refers to the optimal block size for the immediately
+    // following subroutine, as returned by iMlaenv.
     //
     minwrk = 1;
     if (info == 0 && lwork >= 1) {
@@ -146,7 +153,7 @@ void Rdrgev3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (nsizes == 0 || ntypes == 0) {
         return;
@@ -158,12 +165,12 @@ void Rdrgev3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
     safmax = one / safmin;
     ulpinv = one / ulp;
     //
-    //     The values RMAGN(2:3) depend on N, see below.
+    // The values RMAGN(2:3) depend on N, see below.
     //
     rmagn[0] = zero;
     rmagn[1] = one;
     //
-    //     Loop over sizes, types
+    // Loop over sizes, types
     //
     ntestt = 0;
     nerrs = 0;
@@ -187,34 +194,34 @@ void Rdrgev3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
             }
             nmats++;
             //
-            //           Save ISEED in case of an error.
+            // Save ISEED in case of an error.
             //
             for (j = 1; j <= 4; j = j + 1) {
                 ioldsd[j - 1] = iseed[j - 1];
             }
             //
-            //           Generate test matrices A and B
+            // Generate test matrices A and B
             //
-            //           Description of control parameters:
+            // Description of control parameters:
             //
-            //           KZLASS: =1 means w/o rotation, =2 means w/ rotation,
-            //                   =3 means random.
-            //           KATYPE: the "type" to be passed to Rlatm4 for computing A.
-            //           KAZERO: the pattern of zeros on the diagonal for A:
-            //                   =1: ( xxx ), =2: (0, xxx ) =3: ( 0, 0, xxx, 0 ),
-            //                   =4: ( 0, xxx, 0, 0 ), =5: ( 0, 0, 1, xxx, 0 ),
-            //                   =6: ( 0, 1, 0, xxx, 0 ).  (xxx means a string of
-            //                   non-zero entries.)
-            //           KAMAGN: the magnitude of the matrix: =0: zero, =1: O(1),
-            //                   =2: large, =3: small.
-            //           IASIGN: 1 if the diagonal elements of A are to be
-            //                   multiplied by a random magnitude 1 number, =2 if
-            //                   randomly chosen diagonal blocks are to be rotated
-            //                   to form 2x2 blocks.
-            //           KBTYPE, KBZERO, KBMAGN, IBSIGN: the same, but for B.
-            //           KTRIAN: =0: don't fill in the upper triangle, =1: do.
-            //           KZ1, KZ2, KADD: used to implement KAZERO and KBZERO.
-            //           RMAGN: used to implement KAMAGN and KBMAGN.
+            // KZLASS: =1 means w/o rotation, =2 means w/ rotation,
+            // =3 means random.
+            // KATYPE: the "type" to be passed to Rlatm4 for computing A.
+            // KAZERO: the pattern of zeros on the diagonal for A:
+            // =1: ( xxx ), =2: (0, xxx ) =3: ( 0, 0, xxx, 0 ),
+            // =4: ( 0, xxx, 0, 0 ), =5: ( 0, 0, 1, xxx, 0 ),
+            // =6: ( 0, 1, 0, xxx, 0 ).  (xxx means a string of
+            // non-zero entries.)
+            // KAMAGN: the magnitude of the matrix: =0: zero, =1: O(1),
+            // =2: large, =3: small.
+            // IASIGN: 1 if the diagonal elements of A are to be
+            // multiplied by a random magnitude 1 number, =2 if
+            // randomly chosen diagonal blocks are to be rotated
+            // to form 2x2 blocks.
+            // KBTYPE, KBZERO, KBMAGN, IBSIGN: the same, but for B.
+            // KTRIAN: =0: don't fill in the upper triangle, =1: do.
+            // KZ1, KZ2, KADD: used to implement KAZERO and KBZERO.
+            // RMAGN: used to implement KAMAGN and KBMAGN.
             //
             if (mtypes > maxtyp) {
                 goto statement_100;
@@ -222,7 +229,7 @@ void Rdrgev3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
             ierr = 0;
             if (kclass[jtype - 1] < 3) {
                 //
-                //              Generate A (w/o rotation)
+                // Generate A (w/o rotation)
                 //
                 if (abs(katype[jtype - 1]) == 3) {
                     in = 2 * ((n - 1) / 2) + 1;
@@ -238,7 +245,7 @@ void Rdrgev3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
                     a[(iadd - 1) + (iadd - 1) * lda] = one;
                 }
                 //
-                //              Generate B (w/o rotation)
+                // Generate B (w/o rotation)
                 //
                 if (abs(kbtype[jtype - 1]) == 3) {
                     in = 2 * ((n - 1) / 2) + 1;
@@ -256,10 +263,10 @@ void Rdrgev3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
                 //
                 if (kclass[jtype - 1] == 2 && n > 0) {
                     //
-                    //                 Include rotations
+                    // Include rotations
                     //
-                    //                 Generate Q, Z as Householder transformations times
-                    //                 a diagonal matrix.
+                    // Generate Q, Z as Householder transformations times
+                    // a diagonal matrix.
                     //
                     for (jc = 1; jc <= n - 1; jc = jc + 1) {
                         for (jr = jc; jr <= n; jr = jr + 1) {
@@ -280,7 +287,7 @@ void Rdrgev3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
                     work[(2 * n) - 1] = zero;
                     work[(4 * n) - 1] = sign(one, Rlarnd(2, iseed));
                     //
-                    //                 Apply the diagonal matrices
+                    // Apply the diagonal matrices
                     //
                     for (jc = 1; jc <= n; jc = jc + 1) {
                         for (jr = 1; jr <= n; jr = jr + 1) {
@@ -307,7 +314,7 @@ void Rdrgev3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
                 }
             } else {
                 //
-                //              Random matrices
+                // Random matrices
                 //
                 for (jc = 1; jc <= n; jc = jc + 1) {
                     for (jr = 1; jr <= n; jr = jr + 1) {
@@ -331,7 +338,7 @@ void Rdrgev3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
                 result[i - 1] = -one;
             }
             //
-            //           Call Rggev3 to compute eigenvalues and eigenvectors.
+            // Call Rggev3 to compute eigenvalues and eigenvectors.
             //
             Rlacpy(" ", n, n, a, lda, s, lda);
             Rlacpy(" ", n, n, b, lda, t, lda);
@@ -377,8 +384,8 @@ void Rdrgev3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
                 }
             }
             //
-            //           Do the test (6): Compute eigenvalues and left eigenvectors,
-            //           and test them
+            // Do the test (6): Compute eigenvalues and left eigenvectors,
+            // and test them
             //
             Rlacpy(" ", n, n, a, lda, s, lda);
             Rlacpy(" ", n, n, b, lda, t, lda);
@@ -404,8 +411,8 @@ void Rdrgev3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
                 }
             }
             //
-            //           DO the test (7): Compute eigenvalues and right eigenvectors,
-            //           and test them
+            // DO the test (7): Compute eigenvalues and right eigenvectors,
+            // and test them
             //
             Rlacpy(" ", n, n, a, lda, s, lda);
             Rlacpy(" ", n, n, b, lda, t, lda);
@@ -431,24 +438,24 @@ void Rdrgev3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
                 }
             }
         //
-        //           End of Loop -- Check for RESULT(j) > THRESH
+        // End of Loop -- Check for RESULT(j) > THRESH
         //
         statement_190:
             //
             ntestt += 7;
             //
-            //           Print out tests which fail.
+            // Print out tests which fail.
             //
             for (jr = 1; jr <= 7; jr = jr + 1) {
                 if (result[jr - 1] >= thresh) {
                     //
-                    //                 If this is the first test to fail,
-                    //                 print a header to the data file.
+                    // If this is the first test to fail,
+                    // print a header to the data file.
                     //
                     if (nerrs == 0) {
                         write(nounit, "(/,1x,a3,' -- Real Generalized eigenvalue problem driver')"), "DGV";
                         //
-                        //                    Matrix types
+                        // Matrix types
                         //
                         write(nounit, "(' Matrix types (see Rdrgev3 for details): ')");
                         write(nounit, "(' Special Matrices:',23x,'(J''=transposed Jordan block)',/,"
@@ -468,7 +475,7 @@ void Rdrgev3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
                                       "'  26=random O(1) matrices.')"),
                             "Orthogonal";
                         //
-                        //                    Tests performed
+                        // Tests performed
                         //
                         write(nounit, "(/,' Tests performed:    ',/,"
                                       "' 1 = max | ( b A - a B )''*l | / const.,',/,"
@@ -499,12 +506,12 @@ void Rdrgev3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
         }
     }
     //
-    //     Summary
+    // Summary
     //
     Alasvm("DGV", nounit, nerrs, ntestt, 0);
     //
     work[1 - 1] = maxwrk;
     //
-    //     End of Rdrgev3
+    // End of Rdrgev3
     //
 }

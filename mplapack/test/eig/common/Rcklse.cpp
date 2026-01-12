@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DCKLSE.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -76,9 +83,7 @@ void Rcklse(INTEGER const nn, INTEGER *mval, INTEGER *pval, INTEGER *nval, INTEG
     INTEGER i = 0;
     static const char *format_9999 = "(' DLATMS in Rcklse   INFO = ',i5)";
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+    // Initialize constants and the random number seed.
     //
     //     .. Scalar Arguments ..
     //     ..
@@ -114,7 +119,7 @@ void Rcklse(INTEGER const nn, INTEGER *mval, INTEGER *pval, INTEGER *nval, INTEG
     ldb = nmax;
     lwork = nmax * nmax;
     //
-    //     Check for valid input values.
+    // Check for valid input values.
     //
     for (ik = 1; ik <= nn; ik = ik + 1) {
         m = mval[ik - 1];
@@ -133,7 +138,7 @@ void Rcklse(INTEGER const nn, INTEGER *mval, INTEGER *pval, INTEGER *nval, INTEG
     }
     firstt = true;
     //
-    //     Do for each value of M in MVAL.
+    // Do for each value of M in MVAL.
     //
     for (ik = 1; ik <= nn; ik = ik + 1) {
         m = mval[ik - 1];
@@ -145,14 +150,14 @@ void Rcklse(INTEGER const nn, INTEGER *mval, INTEGER *pval, INTEGER *nval, INTEG
         //
         for (imat = 1; imat <= ntypes; imat = imat + 1) {
             //
-            //           Do the tests only if DOTYPE( IMAT ) is true.
+            // Do the tests only if DOTYPE( IMAT ) is true.
             //
             if (!dotype[imat - 1]) {
                 goto statement_30;
             }
             //
-            //           Set up parameters with Rlatb9 and generate test
-            //           matrices A and B with DLATMS.
+            // Set up parameters with Rlatb9 and generate test
+            // matrices A and B with Rlatms.
             //
             Rlatb9(path, imat, m, p, n, &type, kla, kua, klb, kub, anorm, bnorm, modea, modeb, cndnma, cndnmb, &dista, &distb);
             //
@@ -170,7 +175,7 @@ void Rcklse(INTEGER const nn, INTEGER *mval, INTEGER *pval, INTEGER *nval, INTEG
                 goto statement_30;
             }
             //
-            //           Generate the right-hand sides C and D for the LSE.
+            // Generate the right-hand sides C and D for the LSE.
             //
             Rlarhs("DGE", "New solution", "Upper", "N", m, n, max(m - 1, (INTEGER)0), max(n - 1, (INTEGER)0), 1, a, lda, &x[(4 * nmax + 1) - 1], max(n, (INTEGER)1), x, max(m, (INTEGER)1), iseed, iinfo);
             //
@@ -180,8 +185,8 @@ void Rcklse(INTEGER const nn, INTEGER *mval, INTEGER *pval, INTEGER *nval, INTEG
             //
             Rlsets(m, p, n, a, af, lda, b, bf, ldb, x, &x[(nmax + 1) - 1], &x[(2 * nmax + 1) - 1], &x[(3 * nmax + 1) - 1], &x[(4 * nmax + 1) - 1], work, lwork, rwork, &result[1 - 1]);
             //
-            //           Print information about the tests that did not
-            //           pass the threshold.
+            // Print information about the tests that did not
+            // pass the threshold.
             //
             for (i = 1; i <= nt; i = i + 1) {
                 if (result[i - 1] >= thresh) {
@@ -203,10 +208,10 @@ void Rcklse(INTEGER const nn, INTEGER *mval, INTEGER *pval, INTEGER *nval, INTEG
     statement_40:;
     }
     //
-    //     Print a summary of the results.
+    // Print a summary of the results.
     //
     Alasum(path, nout, nfail, nrun, (INTEGER)0);
     //
-    //     End of Rcklse
+    // End of Rcklse
     //
 }

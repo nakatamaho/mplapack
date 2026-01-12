@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DCHKEC.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -68,7 +75,7 @@ void Rchkec(REAL const thresh, bool const tsterr, INTEGER const nin, INTEGER con
                 "/,/)"),
         buf2;
     //
-    //     Test error exits if TSTERR is .TRUE.
+    // Test error exits if TSTERR is .TRUE.
     //
     if (tsterr) {
         Rerrec(path, nout);
@@ -217,6 +224,6 @@ void Rchkec(REAL const thresh, bool const tsterr, INTEGER const nin, INTEGER con
             path, ntests;
     }
     //
-    //     End of Rchkec
+    // End of Rchkec
     //
 }

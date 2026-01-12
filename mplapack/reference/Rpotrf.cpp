@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DPOTRF.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -36,30 +43,7 @@ void Rpotrf(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INTEG
     INTEGER jb = 0;
     const REAL one = 1.0;
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     upper = Mlsame(uplo, "U");
@@ -75,32 +59,32 @@ void Rpotrf(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INTEG
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0) {
         return;
     }
     //
-    //     Determine the block size for this environment.
+    // Determine the block size for this environment.
     //
     nb = iMlaenv(1, "Rpotrf", uplo, n, -1, -1, -1);
     if (nb <= 1 || nb >= n) {
         //
-        //        Use unblocked code.
+        // Use unblocked code.
         //
         Rpotrf2(uplo, n, a, lda, info);
     } else {
         //
-        //        Use blocked code.
+        // Use blocked code.
         //
         if (upper) {
             //
-            //           Compute the Cholesky factorization A = U**T*U.
+            // Compute the Cholesky factorization A = U**T*U.
             //
             for (j = 1; j <= n; j = j + nb) {
                 //
-                //              Update and factorize the current diagonal block and test
-                //              for non-positive-definiteness.
+                // Update and factorize the current diagonal block and test
+                // for non-positive-definiteness.
                 //
                 jb = min(nb, n - j + 1);
                 Rsyrk("Upper", "Transpose", jb, j - 1, -one, &a[(j - 1) * lda], lda, one, &a[(j - 1) + (j - 1) * lda], lda);
@@ -110,7 +94,7 @@ void Rpotrf(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INTEG
                 }
                 if (j + jb <= n) {
                     //
-                    //                 Compute the current block row.
+                    // Compute the current block row.
                     //
                     Rgemm("Transpose", "No transpose", jb, n - j - jb + 1, j - 1, -one, &a[(j - 1) * lda], lda, &a[((j + jb) - 1) * lda], lda, one, &a[(j - 1) + ((j + jb) - 1) * lda], lda);
                     Rtrsm("Left", "Upper", "Transpose", "Non-unit", jb, n - j - jb + 1, one, &a[(j - 1) + (j - 1) * lda], lda, &a[(j - 1) + ((j + jb) - 1) * lda], lda);
@@ -119,12 +103,12 @@ void Rpotrf(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INTEG
             //
         } else {
             //
-            //           Compute the Cholesky factorization A = L*L**T.
+            // Compute the Cholesky factorization A = L*L**T.
             //
             for (j = 1; j <= n; j = j + nb) {
                 //
-                //              Update and factorize the current diagonal block and test
-                //              for non-positive-definiteness.
+                // Update and factorize the current diagonal block and test
+                // for non-positive-definiteness.
                 //
                 jb = min(nb, n - j + 1);
                 Rsyrk("Lower", "No transpose", jb, j - 1, -one, &a[(j - 1)], lda, one, &a[(j - 1) + (j - 1) * lda], lda);
@@ -134,7 +118,7 @@ void Rpotrf(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INTEG
                 }
                 if (j + jb <= n) {
                     //
-                    //                 Compute the current block column.
+                    // Compute the current block column.
                     //
                     Rgemm("No transpose", "Transpose", n - j - jb + 1, jb, j - 1, -one, &a[((j + jb) - 1)], lda, &a[(j - 1)], lda, one, &a[((j + jb) - 1) + (j - 1) * lda], lda);
                     Rtrsm("Right", "Lower", "Transpose", "Non-unit", n - j - jb + 1, jb, one, &a[(j - 1) + (j - 1) * lda], lda, &a[((j + jb) - 1) + (j - 1) * lda], lda);
@@ -149,6 +133,6 @@ statement_30:
 //
 statement_40:;
     //
-    //     End of Rpotrf
+    // End of Rpotrf
     //
 }

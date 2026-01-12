@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,39 +26,22 @@
  *
  */
 
+// Derived from LAPACK routine ZHETRI2X.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Chetri2x(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, INTEGER *ipiv, COMPLEX *work, INTEGER const nb, INTEGER &info) {
+    INTEGER ldwork = n + nb + 1;
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
-    INTEGER ldwork = n + nb + 1;
     bool upper = Mlsame(uplo, "U");
     if (!upper && !Mlsame(uplo, "L")) {
         info = -1;
@@ -68,7 +51,7 @@ void Chetri2x(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, 
         info = -4;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (info != 0) {
         Mxerbla("Chetri2x", -info);
@@ -78,18 +61,18 @@ void Chetri2x(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, 
         return;
     }
     //
-    //     Convert A
-    //     Workspace got Non-diag elements of D
+    // Convert A
+    // Workspace got Non-diag elements of D
     //
     INTEGER iinfo = 0;
     Csyconv(uplo, "C", n, a, lda, ipiv, work, iinfo);
     //
-    //     Check that the diagonal matrix D is nonsingular.
+    // Check that the diagonal matrix D is nonsingular.
     //
     const COMPLEX zero = COMPLEX(0.0, 0.0);
     if (upper) {
         //
-        //        Upper triangular storage: examine D from bottom to top
+        // Upper triangular storage: examine D from bottom to top
         //
         for (info = n; info >= 1; info = info - 1) {
             if (ipiv[info - 1] > 0 && a[(info - 1) + (info - 1) * lda] == zero) {
@@ -98,7 +81,7 @@ void Chetri2x(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, 
         }
     } else {
         //
-        //        Lower triangular storage: examine D from top to bottom.
+        // Lower triangular storage: examine D from top to bottom.
         //
         for (info = 1; info <= n; info = info + 1) {
             if (ipiv[info - 1] > 0 && a[(info - 1) + (info - 1) * lda] == zero) {
@@ -108,14 +91,14 @@ void Chetri2x(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, 
     }
     info = 0;
     //
-    //  Splitting Workspace
-    //     U01 is a block (N,NB+1)
-    //     The first element of U01 is in WORK(1,1)
-    //     U11 is a block (NB+1,NB+1)
-    //     The first element of U11 is in WORK(N+1,1)
+    // Splitting Workspace
+    // U01 is a block (N,NB+1)
+    // The first element of U01 is in WORK(1,1)
+    // U11 is a block (NB+1,NB+1)
+    // The first element of U11 is in WORK(N+1,1)
     INTEGER u11 = n;
-    //     INVD is a block (N,2)
-    //     The first element of INVD is in WORK(1,INVD)
+    // INVD is a block (N,2)
+    // The first element of INVD is in WORK(1,INVD)
     INTEGER invd = nb + 2;
     //
     INTEGER k = 0;
@@ -138,24 +121,24 @@ void Chetri2x(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, 
     INTEGER ip = 0;
     if (upper) {
         //
-        //        invA = P * inv(U**H)*inv(D)*inv(U)*P**H.
+        // invA = P * inv(U**H)*inv(D)*inv(U)*P**H.
         //
         Ctrtri(uplo, "U", n, a, lda, info);
         //
-        //       inv(D) and inv(D)*inv(U)
+        // inv(D) and inv(D)*inv(U)
         //
         k = 1;
         while (k <= n) {
             if (ipiv[k - 1] > 0) {
-                //           1 x 1 diagonal NNB
-                work[(k - 1) + (invd - 1) * ldwork] = one / (a[(k - 1) + (k - 1) * lda]).real();
+                // 1 x 1 diagonal NNB
+                work[(k - 1) + (invd - 1) * ldwork] = one / a[(k - 1) + (k - 1) * lda].real();
                 work[(k - 1) + ((invd + 1) - 1) * ldwork] = 0.0;
                 k++;
             } else {
-                //           2 x 2 diagonal NNB
+                // 2 x 2 diagonal NNB
                 t = abs(work[((k + 1) - 1)]);
-                ak = (a[(k - 1) + (k - 1) * lda]).real() / t;
-                akp1 = (a[((k + 1) - 1) + ((k + 1) - 1) * lda]).real() / t;
+                ak = a[(k - 1) + (k - 1) * lda].real() / t;
+                akp1 = a[((k + 1) - 1) + ((k + 1) - 1) * lda].real() / t;
                 akkp1 = work[((k + 1) - 1)] / t;
                 d = t * (ak * akp1 - one);
                 work[(k - 1) + (invd - 1) * ldwork] = akp1 / d;
@@ -166,9 +149,9 @@ void Chetri2x(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, 
             }
         }
         //
-        //       inv(U**H) = (inv(U))**H
+        // inv(U**H) = (inv(U))**H
         //
-        //       inv(U**H)*inv(D)*inv(U)
+        // inv(U**H)*inv(D)*inv(U)
         //
         cut = n;
         while (cut > 0) {
@@ -177,13 +160,13 @@ void Chetri2x(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, 
                 nnb = cut;
             } else {
                 count = 0;
-                //             count negative elements,
+                // count negative elements,
                 for (i = cut + 1 - nnb; i <= cut; i = i + 1) {
                     if (ipiv[i - 1] < 0) {
                         count++;
                     }
                 }
-                //             need a even number for a clear cut
+                // need a even number for a clear cut
                 if (mod(count, 2) == 1) {
                     nnb++;
                 }
@@ -191,7 +174,7 @@ void Chetri2x(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, 
             //
             cut = cut - nnb;
             //
-            //          U01 Block
+            // U01 Block
             //
             for (i = 1; i <= cut; i = i + 1) {
                 for (j = 1; j <= nnb; j = j + 1) {
@@ -199,7 +182,7 @@ void Chetri2x(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, 
                 }
             }
             //
-            //          U11 Block
+            // U11 Block
             //
             for (i = 1; i <= nnb; i = i + 1) {
                 work[((u11 + i) - 1) + (i - 1) * ldwork] = cone;
@@ -211,7 +194,7 @@ void Chetri2x(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, 
                 }
             }
             //
-            //          invD*U01
+            // invD*U01
             //
             i = 1;
             while (i <= cut) {
@@ -231,7 +214,7 @@ void Chetri2x(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, 
                 }
             }
             //
-            //        invD1*U11
+            // invD1*U11
             //
             i = 1;
             while (i <= nnb) {
@@ -251,7 +234,7 @@ void Chetri2x(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, 
                 }
             }
             //
-            //       U11**H*invD1*U11->U11
+            // U11**H*invD1*U11->U11
             //
             Ctrmm("L", "U", "C", "U", nnb, nnb, cone, &a[((cut + 1) - 1) + ((cut + 1) - 1) * lda], lda, &work[((u11 + 1) - 1)], n + nb + 1);
             //
@@ -261,11 +244,11 @@ void Chetri2x(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, 
                 }
             }
             //
-            //          U01**H*invD*U01->A(CUT+I,CUT+J)
+            // U01**H*invD*U01->A(CUT+I,CUT+J)
             //
             Cgemm("C", "N", nnb, nnb, cut, cone, &a[((cut + 1) - 1) * lda], lda, work, n + nb + 1, zero, &work[((u11 + 1) - 1)], n + nb + 1);
             //
-            //        U11 =  U11**H*invD1*U11 + U01**H*invD*U01
+            // U11 =  U11**H*invD1*U11 + U01**H*invD*U01
             //
             for (i = 1; i <= nnb; i = i + 1) {
                 for (j = i; j <= nnb; j = j + 1) {
@@ -273,11 +256,11 @@ void Chetri2x(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, 
                 }
             }
             //
-            //        U01 =  U00**H*invD0*U01
+            // U01 =  U00**H*invD0*U01
             //
             Ctrmm("L", uplo, "C", "U", cut, nnb, cone, a, lda, work, n + nb + 1);
             //
-            //        Update U01
+            // Update U01
             //
             for (i = 1; i <= cut; i = i + 1) {
                 for (j = 1; j <= nnb; j = j + 1) {
@@ -285,11 +268,11 @@ void Chetri2x(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, 
                 }
             }
             //
-            //      Next Block
+            // Next Block
             //
         }
         //
-        //        Apply PERMUTATIONS P and P**H: P * inv(U**H)*inv(D)*inv(U) *P**H
+        // Apply PERMUTATIONS P and P**H: P * inv(U**H)*inv(D)*inv(U) *P**H
         //
         i = 1;
         while (i <= n) {
@@ -315,26 +298,26 @@ void Chetri2x(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, 
         }
     } else {
         //
-        //        LOWER...
+        // LOWER...
         //
-        //        invA = P * inv(U**H)*inv(D)*inv(U)*P**H.
+        // invA = P * inv(U**H)*inv(D)*inv(U)*P**H.
         //
         Ctrtri(uplo, "U", n, a, lda, info);
         //
-        //       inv(D) and inv(D)*inv(U)
+        // inv(D) and inv(D)*inv(U)
         //
         k = n;
         while (k >= 1) {
             if (ipiv[k - 1] > 0) {
-                //           1 x 1 diagonal NNB
+                // 1 x 1 diagonal NNB
                 work[(k - 1) + (invd - 1) * ldwork] = one / a[(k - 1) + (k - 1) * lda].real();
                 work[(k - 1) + ((invd + 1) - 1) * ldwork] = 0.0;
                 k = k - 1;
             } else {
-                //           2 x 2 diagonal NNB
+                // 2 x 2 diagonal NNB
                 t = abs(work[((k - 1) - 1)]);
-                ak = (a[((k - 1) - 1) + ((k - 1) - 1) * lda]).real() / t;
-                akp1 = (a[(k - 1) + (k - 1) * lda]).real() / t;
+                ak = a[((k - 1) - 1) + ((k - 1) - 1) * lda].real() / t;
+                akp1 = a[(k - 1) + (k - 1) * lda].real() / t;
                 akkp1 = work[((k - 1) - 1)] / t;
                 d = t * (ak * akp1 - one);
                 work[((k - 1) - 1) + (invd - 1) * ldwork] = akp1 / d;
@@ -345,9 +328,9 @@ void Chetri2x(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, 
             }
         }
         //
-        //       inv(U**H) = (inv(U))**H
+        // inv(U**H) = (inv(U))**H
         //
-        //       inv(U**H)*inv(D)*inv(U)
+        // inv(U**H)*inv(D)*inv(U)
         //
         cut = 0;
         while (cut < n) {
@@ -356,24 +339,24 @@ void Chetri2x(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, 
                 nnb = n - cut;
             } else {
                 count = 0;
-                //             count negative elements,
+                // count negative elements,
                 for (i = cut + 1; i <= cut + nnb; i = i + 1) {
                     if (ipiv[i - 1] < 0) {
                         count++;
                     }
                 }
-                //             need a even number for a clear cut
+                // need a even number for a clear cut
                 if (mod(count, 2) == 1) {
                     nnb++;
                 }
             }
-            //      L21 Block
+            // L21 Block
             for (i = 1; i <= n - cut - nnb; i = i + 1) {
                 for (j = 1; j <= nnb; j = j + 1) {
                     work[(i - 1) + (j - 1) * ldwork] = a[((cut + nnb + i) - 1) + ((cut + j) - 1) * lda];
                 }
             }
-            //     L11 Block
+            // L11 Block
             for (i = 1; i <= nnb; i = i + 1) {
                 work[((u11 + i) - 1) + (i - 1) * ldwork] = cone;
                 for (j = i + 1; j <= nnb; j = j + 1) {
@@ -384,7 +367,7 @@ void Chetri2x(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, 
                 }
             }
             //
-            //          invD*L21
+            // invD*L21
             //
             i = n - cut - nnb;
             while (i >= 1) {
@@ -404,7 +387,7 @@ void Chetri2x(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, 
                 }
             }
             //
-            //        invD1*L11
+            // invD1*L11
             //
             i = nnb;
             while (i >= 1) {
@@ -424,7 +407,7 @@ void Chetri2x(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, 
                 }
             }
             //
-            //       L11**H*invD1*L11->L11
+            // L11**H*invD1*L11->L11
             //
             Ctrmm("L", uplo, "C", "U", nnb, nnb, cone, &a[((cut + 1) - 1) + ((cut + 1) - 1) * lda], lda, &work[((u11 + 1) - 1)], n + nb + 1);
             //
@@ -436,11 +419,11 @@ void Chetri2x(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, 
             //
             if ((cut + nnb) < n) {
                 //
-                //          L21**H*invD2*L21->A(CUT+I,CUT+J)
+                // L21**H*invD2*L21->A(CUT+I,CUT+J)
                 //
                 Cgemm("C", "N", nnb, nnb, n - nnb - cut, cone, &a[((cut + nnb + 1) - 1) + ((cut + 1) - 1) * lda], lda, work, n + nb + 1, zero, &work[((u11 + 1) - 1)], n + nb + 1);
                 //
-                //        L11 =  L11**H*invD1*L11 + U01**H*invD*U01
+                // L11 =  L11**H*invD1*L11 + U01**H*invD*U01
                 //
                 for (i = 1; i <= nnb; i = i + 1) {
                     for (j = 1; j <= i; j = j + 1) {
@@ -448,11 +431,11 @@ void Chetri2x(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, 
                     }
                 }
                 //
-                //        L01 =  L22**H*invD2*L21
+                // L01 =  L22**H*invD2*L21
                 //
                 Ctrmm("L", uplo, "C", "U", n - nnb - cut, nnb, cone, &a[((cut + nnb + 1) - 1) + ((cut + nnb + 1) - 1) * lda], lda, work, n + nb + 1);
                 //
-                //      Update L21
+                // Update L21
                 for (i = 1; i <= n - cut - nnb; i = i + 1) {
                     for (j = 1; j <= nnb; j = j + 1) {
                         a[((cut + nnb + i) - 1) + ((cut + j) - 1) * lda] = work[(i - 1) + (j - 1) * ldwork];
@@ -460,7 +443,7 @@ void Chetri2x(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, 
                 }
             } else {
                 //
-                //        L11 =  L11**H*invD1*L11
+                // L11 =  L11**H*invD1*L11
                 //
                 for (i = 1; i <= nnb; i = i + 1) {
                     for (j = 1; j <= i; j = j + 1) {
@@ -469,12 +452,12 @@ void Chetri2x(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, 
                 }
             }
             //
-            //      Next Block
+            // Next Block
             //
             cut += nnb;
         }
         //
-        //        Apply PERMUTATIONS P and P**H: P * inv(U**H)*inv(D)*inv(U) *P**H
+        // Apply PERMUTATIONS P and P**H: P * inv(U**H)*inv(D)*inv(U) *P**H
         //
         i = n;
         while (i >= 1) {
@@ -500,6 +483,6 @@ void Chetri2x(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, 
         }
     }
     //
-    //     End of Chetri2x
+    // End of Chetri2x
     //
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine ZCHKHS.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -112,7 +119,7 @@ void Cchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     static const char *format_9999 = "(' Cchkhs: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,', JTYPE=',i6,"
                                      "', ISEED=(',3(i5,','),i5,')')";
     //
-    //     Check for errors
+    // Check for errors
     //
     ntestt = 0;
     info = 0;
@@ -126,7 +133,7 @@ void Cchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
         }
     }
     //
-    //     Check for errors
+    // Check for errors
     //
     if (nsizes < 0) {
         info = -1;
@@ -149,13 +156,13 @@ void Cchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (nsizes == 0 || ntypes == 0) {
         return;
     }
     //
-    //     More important constants
+    // More important constants
     //
     unfl = Rlamch("Safe minimum");
     ovfl = Rlamch("Overflow");
@@ -166,7 +173,7 @@ void Cchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     rtulp = sqrt(ulp);
     rtulpi = one / rtulp;
     //
-    //     Loop over sizes, types
+    // Loop over sizes, types
     //
     nerrs = 0;
     nmats = 0;
@@ -192,33 +199,33 @@ void Cchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             nmats++;
             ntest = 0;
             //
-            //           Save ISEED in case of an error.
+            // Save ISEED in case of an error.
             //
             for (j = 1; j <= 4; j = j + 1) {
                 ioldsd[j - 1] = iseed[j - 1];
             }
             //
-            //           Initialize RESULT
+            // Initialize RESULT
             //
             for (j = 1; j <= 14; j = j + 1) {
                 result[j - 1] = zero;
             }
             //
-            //           Compute "A"
+            // Compute "A"
             //
-            //           Control parameters:
+            // Control parameters:
             //
-            //           KMAGN  KCONDS  KMODE        KTYPE
-            //       =1  O(1)   1       clustered 1  zero
-            //       =2  large  large   clustered 2  identity
-            //       =3  small          exponential  Jordan
-            //       =4                 arithmetic   diagonal, (w/ eigenvalues)
-            //       =5                 random log   hermitian, w/ eigenvalues
-            //       =6                 random       general, w/ eigenvalues
-            //       =7                              random diagonal
-            //       =8                              random hermitian
-            //       =9                              random general
-            //       =10                             random triangular
+            // KMAGN  KCONDS  KMODE        KTYPE
+            // =1  O(1)   1       clustered 1  zero
+            // =2  large  large   clustered 2  identity
+            // =3  small          exponential  Jordan
+            // =4                 arithmetic   diagonal, (w/ eigenvalues)
+            // =5                 random log   hermitian, w/ eigenvalues
+            // =6                 random       general, w/ eigenvalues
+            // =7                              random diagonal
+            // =8                              random hermitian
+            // =9                              random general
+            // =10                             random triangular
             //
             if (mtypes > maxtyp) {
                 goto statement_100;
@@ -227,7 +234,7 @@ void Cchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             itype = ktype[jtype - 1];
             imode = kmode[jtype - 1];
             //
-            //           Compute norm
+            // Compute norm
             //
             switch (kmagn[jtype - 1]) {
             case 1:
@@ -258,16 +265,16 @@ void Cchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             iinfo = 0;
             cond = ulpinv;
             //
-            //           Special Matrices
+            // Special Matrices
             //
             if (itype == 1) {
                 //
-                //              Zero
+                // Zero
                 //
                 iinfo = 0;
             } else if (itype == 2) {
                 //
-                //              Identity
+                // Identity
                 //
                 for (jcol = 1; jcol <= n; jcol = jcol + 1) {
                     a[(jcol - 1) + (jcol - 1) * lda] = anorm;
@@ -275,7 +282,7 @@ void Cchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 //
             } else if (itype == 3) {
                 //
-                //              Jordan Block
+                // Jordan Block
                 //
                 for (jcol = 1; jcol <= n; jcol = jcol + 1) {
                     a[(jcol - 1) + (jcol - 1) * lda] = anorm;
@@ -286,19 +293,19 @@ void Cchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 //
             } else if (itype == 4) {
                 //
-                //              Diagonal Matrix, [Eigen]values Specified
+                // Diagonal Matrix, [Eigen]values Specified
                 //
                 Clatmr(n, n, "D", iseed, "N", work, imode, cond, cone, "T", "N", &work[(n + 1) - 1], 1, one, &work[(2 * n + 1) - 1], 1, one, "N", idumma, 0, 0, zero, anorm, "NO", a, lda, iwork, iinfo);
                 //
             } else if (itype == 5) {
                 //
-                //              Hermitian, eigenvalues specified
+                // Hermitian, eigenvalues specified
                 //
                 Clatms(n, n, "D", iseed, "H", rwork, imode, cond, anorm, n, n, "N", a, lda, work, iinfo);
                 //
             } else if (itype == 6) {
                 //
-                //              General, eigenvalues specified
+                // General, eigenvalues specified
                 //
                 if (kconds[jtype - 1] == 1) {
                     conds = one;
@@ -312,25 +319,25 @@ void Cchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 //
             } else if (itype == 7) {
                 //
-                //              Diagonal, random eigenvalues
+                // Diagonal, random eigenvalues
                 //
                 Clatmr(n, n, "D", iseed, "N", work, 6, one, cone, "T", "N", &work[(n + 1) - 1], 1, one, &work[(2 * n + 1) - 1], 1, one, "N", idumma, 0, 0, zero, anorm, "NO", a, lda, iwork, iinfo);
                 //
             } else if (itype == 8) {
                 //
-                //              Hermitian, random eigenvalues
+                // Hermitian, random eigenvalues
                 //
                 Clatmr(n, n, "D", iseed, "H", work, 6, one, cone, "T", "N", &work[(n + 1) - 1], 1, one, &work[(2 * n + 1) - 1], 1, one, "N", idumma, n, n, zero, anorm, "NO", a, lda, iwork, iinfo);
                 //
             } else if (itype == 9) {
                 //
-                //              General, random eigenvalues
+                // General, random eigenvalues
                 //
                 Clatmr(n, n, "D", iseed, "N", work, 6, one, cone, "T", "N", &work[(n + 1) - 1], 1, one, &work[(2 * n + 1) - 1], 1, one, "N", idumma, n, n, zero, anorm, "NO", a, lda, iwork, iinfo);
                 //
             } else if (itype == 10) {
                 //
-                //              Triangular, random eigenvalues
+                // Triangular, random eigenvalues
                 //
                 Clatmr(n, n, "D", iseed, "N", work, 6, one, cone, "T", "N", &work[(n + 1) - 1], 1, one, &work[(2 * n + 1) - 1], 1, one, "N", idumma, n, 0, zero, anorm, "NO", a, lda, iwork, iinfo);
                 //
@@ -347,7 +354,7 @@ void Cchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
         //
         statement_100:
             //
-            //           Call Cgehrd to compute H and U, do tests.
+            // Call Cgehrd to compute H and U, do tests.
             //
             Clacpy(" ", n, n, a, lda, h, lda);
             ntest = 1;
@@ -378,9 +385,9 @@ void Cchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             //
             Chst01(n, ilo, ihi, a, lda, h, lda, u, ldu, work, nwork, rwork, &result[1 - 1]);
             //
-            //           Call Chseqr to compute T1, T2 and Z, do tests.
+            // Call Chseqr to compute T1, T2 and Z, do tests.
             //
-            //           Eigenvalues only (W3)
+            // Eigenvalues only (W3)
             //
             Clacpy(" ", n, n, h, lda, t2, lda);
             ntest = 3;
@@ -395,7 +402,7 @@ void Cchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 }
             }
             //
-            //           Eigenvalues (W1) and Full Schur Form (T2)
+            // Eigenvalues (W1) and Full Schur Form (T2)
             //
             Clacpy(" ", n, n, h, lda, t2, lda);
             //
@@ -406,7 +413,7 @@ void Cchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 goto statement_240;
             }
             //
-            //           Eigenvalues (W1), Schur Form (T1), and Schur Vectors (UZ)
+            // Eigenvalues (W1), Schur Form (T1), and Schur Vectors (UZ)
             //
             Clacpy(" ", n, n, h, lda, t1, lda);
             Clacpy(" ", n, n, u, ldu, uz, ldu);
@@ -418,26 +425,26 @@ void Cchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 goto statement_240;
             }
             //
-            //           Compute Z = U' UZ
+            // Compute Z = U' UZ
             //
             Cgemm("C", "N", n, n, n, cone, u, ldu, uz, ldu, czero, z, ldu);
             ntest = 8;
             //
-            //           Do Tests 3: | H - Z T Z' | / ( |H| n ulp )
-            //                and 4: | I - Z Z' | / ( n ulp )
+            // Do Tests 3: | H - Z T Z' | / ( |H| n ulp )
+            // and 4: | I - Z Z' | / ( n ulp )
             //
             Chst01(n, ilo, ihi, h, lda, t1, lda, z, ldu, work, nwork, rwork, &result[3 - 1]);
             //
-            //           Do Tests 5: | A - UZ T (UZ)' | / ( |A| n ulp )
-            //                and 6: | I - UZ (UZ)' | / ( n ulp )
+            // Do Tests 5: | A - UZ T (UZ)' | / ( |A| n ulp )
+            // and 6: | I - UZ (UZ)' | / ( n ulp )
             //
             Chst01(n, ilo, ihi, a, lda, t1, lda, uz, ldu, work, nwork, rwork, &result[5 - 1]);
             //
-            //           Do Test 7: | T2 - T1 | / ( |T| n ulp )
+            // Do Test 7: | T2 - T1 | / ( |T| n ulp )
             //
             Cget10(n, n, t2, lda, t1, lda, work, rwork, result[7 - 1]);
             //
-            //           Do Test 8: | W3 - W1 | / ( max(|W1|,|W3|) ulp )
+            // Do Test 8: | W3 - W1 | / ( max(|W1|,|W3|) ulp )
             //
             temp1 = zero;
             temp2 = zero;
@@ -448,14 +455,14 @@ void Cchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             //
             result[8 - 1] = temp2 / max(unfl, REAL(ulp * max(temp1, temp2)));
             //
-            //           Compute the Left and Right Eigenvectors of T
+            // Compute the Left and Right Eigenvectors of T
             //
-            //           Compute the Right eigenvector Matrix:
+            // Compute the Right eigenvector Matrix:
             //
             ntest = 9;
             result[9 - 1] = ulpinv;
             //
-            //           Select every other eigenvector
+            // Select every other eigenvector
             //
             for (j = 1; j <= n; j = j + 1) {
                 select[j - 1] = false;
@@ -507,7 +514,7 @@ void Cchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 write(nounit, format_9997), "Right", "Ctrevc", n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
             }
             //
-            //           Compute the Left eigenvector Matrix:
+            // Compute the Left eigenvector Matrix:
             //
             ntest = 10;
             result[10 - 1] = ulpinv;
@@ -555,7 +562,7 @@ void Cchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 write(nounit, format_9997), "Left", "Ctrevc", n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
             }
             //
-            //           Call Chsein for Right eigenvectors of H, do test 11
+            // Call Chsein for Right eigenvectors of H, do test 11
             //
             ntest = 11;
             result[11 - 1] = ulpinv;
@@ -631,9 +638,9 @@ void Cchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 }
             } else {
                 //
-                //              Test 13:  | AX - XW | / ( |A| |X| ulp )
+                // Test 13:  | AX - XW | / ( |A| |X| ulp )
                 //
-                //                        (from inverse iteration)
+                // (from inverse iteration)
                 //
                 Cget22("N", "N", "N", n, a, lda, evectx, ldu, w3, work, rwork, &dumma[1 - 1]);
                 if (dumma[1 - 1] < ulpinv) {
@@ -641,7 +648,7 @@ void Cchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 }
             }
             //
-            //           Call Cunmhr for Left eigenvectors of A, do test 14
+            // Call Cunmhr for Left eigenvectors of A, do test 14
             //
             ntest = 14;
             result[14 - 1] = ulpinv;
@@ -655,9 +662,9 @@ void Cchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 }
             } else {
                 //
-                //              Test 14:  | YA - WY | / ( |A| |Y| ulp )
+                // Test 14:  | YA - WY | / ( |A| |Y| ulp )
                 //
-                //                        (from inverse iteration)
+                // (from inverse iteration)
                 //
                 Cget22("C", "N", "C", n, a, lda, evecty, ldu, w3, work, rwork, &dumma[3 - 1]);
                 if (dumma[3 - 1] < ulpinv) {
@@ -665,7 +672,7 @@ void Cchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 }
             }
         //
-        //           End of Loop -- Check for RESULT(j) > THRESH
+        // End of Loop -- Check for RESULT(j) > THRESH
         //
         statement_240:
             //
@@ -677,10 +684,10 @@ void Cchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     statement_260:;
     }
     //
-    //     Summary
+    // Summary
     //
     Rlasum("ZHS", nounit, nerrs, ntestt);
     //
-    //     End of Cchkhs
+    // End of Cchkhs
     //
 }

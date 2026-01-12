@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZGET04.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -41,7 +48,7 @@ inline REAL abs1(COMPLEX zdum) { return abs(zdum.real()) + abs(zdum.imag()); }
 void Cget04(INTEGER const n, INTEGER const nrhs, COMPLEX *x, INTEGER const ldx, COMPLEX *xact, INTEGER const ldxact, REAL const rcond, REAL &resid) {
     COMPLEX zdum = 0.0;
     //
-    //     Quick exit if N = 0 or NRHS = 0.
+    // Quick exit if N = 0 or NRHS = 0.
     //
     const REAL zero = 0.0;
     if (n <= 0 || nrhs <= 0) {
@@ -49,7 +56,7 @@ void Cget04(INTEGER const n, INTEGER const nrhs, COMPLEX *x, INTEGER const ldx, 
         return;
     }
     //
-    //     Exit with RESID = 1/EPS if RCOND is invalid.
+    // Exit with RESID = 1/EPS if RCOND is invalid.
     //
     REAL eps = Rlamch("Epsilon");
     if (rcond < zero) {
@@ -57,9 +64,9 @@ void Cget04(INTEGER const n, INTEGER const nrhs, COMPLEX *x, INTEGER const ldx, 
         return;
     }
     //
-    //     Compute the maximum of
-    //        norm(X - XACT) / ( norm(XACT) * EPS )
-    //     over all the vectors X and XACT .
+    // Compute the maximum of
+    // norm(X - XACT) / ( norm(XACT) * EPS )
+    // over all the vectors X and XACT .
     //
     resid = zero;
     INTEGER j = 0;
@@ -86,6 +93,6 @@ void Cget04(INTEGER const n, INTEGER const nrhs, COMPLEX *x, INTEGER const ldx, 
         resid = resid / eps;
     }
     //
-    //     End of Cget04
+    // End of Cget04
     //
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,35 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine DLAUU2.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Rlauu2(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INTEGER &info) {
     //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     bool upper = Mlsame(uplo, "U");
@@ -70,7 +54,7 @@ void Rlauu2(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INTEG
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0) {
         return;
@@ -81,7 +65,7 @@ void Rlauu2(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INTEG
     const REAL one = 1.0;
     if (upper) {
         //
-        //        Compute the product U * U**T.
+        // Compute the product U * U**T.
         //
         for (i = 1; i <= n; i = i + 1) {
             aii = a[(i - 1) + (i - 1) * lda];
@@ -95,7 +79,7 @@ void Rlauu2(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INTEG
         //
     } else {
         //
-        //        Compute the product L**T * L.
+        // Compute the product L**T * L.
         //
         for (i = 1; i <= n; i = i + 1) {
             aii = a[(i - 1) + (i - 1) * lda];
@@ -108,6 +92,6 @@ void Rlauu2(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INTEG
         }
     }
     //
-    //     End of Rlauu2
+    // End of Rlauu2
     //
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,30 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine ZTPQRT.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Ctpqrt(INTEGER const m, INTEGER const n, INTEGER const l, INTEGER const nb, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, COMPLEX *t, INTEGER const ldt, COMPLEX *work, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    // =====================================================================
-    //
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input arguments
+    // Test the input arguments
     //
     info = 0;
     if (m < 0) {
@@ -72,7 +61,7 @@ void Ctpqrt(INTEGER const m, INTEGER const n, INTEGER const l, INTEGER const nb,
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (m == 0 || n == 0) {
         return;
@@ -85,7 +74,7 @@ void Ctpqrt(INTEGER const m, INTEGER const n, INTEGER const l, INTEGER const nb,
     INTEGER iinfo = 0;
     for (i = 1; i <= n; i = i + nb) {
         //
-        //     Compute the QR factorization of the current block
+        // Compute the QR factorization of the current block
         //
         ib = min(n - i + 1, nb);
         mb = min(m - l + i + ib - 1, m);
@@ -97,13 +86,13 @@ void Ctpqrt(INTEGER const m, INTEGER const n, INTEGER const l, INTEGER const nb,
         //
         Ctpqrt2(mb, ib, lb, &a[(i - 1) + (i - 1) * lda], lda, &b[(i - 1) * ldb], ldb, &t[(i - 1) * ldt], ldt, iinfo);
         //
-        //     Update by applying H**H to B(:,I+IB:N) from the left
+        // Update by applying H**H to B(:,I+IB:N) from the left
         //
         if (i + ib <= n) {
             Ctprfb("L", "C", "F", "C", mb, n - i - ib + 1, ib, lb, &b[(i - 1) * ldb], ldb, &t[(i - 1) * ldt], ldt, &a[(i - 1) + ((i + ib) - 1) * lda], lda, &b[((i + ib) - 1) * ldb], ldb, work, ib);
         }
     }
     //
-    //     End of Ctpqrt
+    // End of Ctpqrt
     //
 }

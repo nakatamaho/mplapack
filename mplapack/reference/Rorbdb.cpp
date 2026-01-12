@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,17 +26,20 @@
  *
  */
 
+// Derived from LAPACK routine DORBDB.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Rorbdb(const char *trans, const char *signs, INTEGER const m, INTEGER const p, INTEGER const q, REAL *x11, INTEGER const ldx11, REAL *x12, INTEGER const ldx12, REAL *x21, INTEGER const ldx21, REAL *x22, INTEGER const ldx22, REAL *theta, REAL *phi, REAL *taup1, REAL *taup2, REAL *tauq1, REAL *tauq2, REAL *work, INTEGER const lwork, INTEGER &info) {
     //
-    //     Test input arguments
+    // Test input arguments
     //
-#if defined ___MPLAPACK_BUILD_WITH_GMP___
-    printf("MPLAPACK ERROR Rorbdb.cpp is not supported for GMP\n");
-    exit(1);
-#endif
     info = 0;
     bool colmajor = !Mlsame(trans, "T");
     const REAL realone = 1.0;
@@ -81,7 +84,7 @@ void Rorbdb(const char *trans, const char *signs, INTEGER const m, INTEGER const
         info = -13;
     }
     //
-    //     Compute workspace
+    // Compute workspace
     //
     INTEGER lworkopt = 0;
     INTEGER lworkmin = 0;
@@ -100,13 +103,13 @@ void Rorbdb(const char *trans, const char *signs, INTEGER const m, INTEGER const
         return;
     }
     //
-    //     Handle column-major and row-major separately
+    // Handle column-major and row-major separately
     //
     INTEGER i = 0;
     const REAL one = 1.0;
     if (colmajor) {
         //
-        //        Reduce columns 1, ..., Q of X11, X12, X21, and X22
+        // Reduce columns 1, ..., Q of X11, X12, X21, and X22
         //
         for (i = 1; i <= q; i = i + 1) {
             //
@@ -192,7 +195,7 @@ void Rorbdb(const char *trans, const char *signs, INTEGER const m, INTEGER const
             //
         }
         //
-        //        Reduce columns Q + 1, ..., P of X12, X22
+        // Reduce columns Q + 1, ..., P of X12, X22
         //
         for (i = q + 1; i <= p; i = i + 1) {
             //
@@ -213,7 +216,7 @@ void Rorbdb(const char *trans, const char *signs, INTEGER const m, INTEGER const
             //
         }
         //
-        //        Reduce columns P + 1, ..., M - Q of X12, X22
+        // Reduce columns P + 1, ..., M - Q of X12, X22
         //
         for (i = 1; i <= m - p - q; i = i + 1) {
             //
@@ -232,7 +235,7 @@ void Rorbdb(const char *trans, const char *signs, INTEGER const m, INTEGER const
         //
     } else {
         //
-        //        Reduce columns 1, ..., Q of X11, X12, X21, X22
+        // Reduce columns 1, ..., Q of X11, X12, X21, X22
         //
         for (i = 1; i <= q; i = i + 1) {
             //
@@ -310,7 +313,7 @@ void Rorbdb(const char *trans, const char *signs, INTEGER const m, INTEGER const
             //
         }
         //
-        //        Reduce columns Q + 1, ..., P of X12, X22
+        // Reduce columns Q + 1, ..., P of X12, X22
         //
         for (i = q + 1; i <= p; i = i + 1) {
             //
@@ -327,7 +330,7 @@ void Rorbdb(const char *trans, const char *signs, INTEGER const m, INTEGER const
             //
         }
         //
-        //        Reduce columns P + 1, ..., M - Q of X12, X22
+        // Reduce columns P + 1, ..., M - Q of X12, X22
         //
         for (i = 1; i <= m - p - q; i = i + 1) {
             //
@@ -344,6 +347,6 @@ void Rorbdb(const char *trans, const char *signs, INTEGER const m, INTEGER const
         //
     }
     //
-    //     End of Rorbdb
+    // End of Rorbdb
     //
 }

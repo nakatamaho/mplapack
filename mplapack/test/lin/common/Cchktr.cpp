@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine ZCHKTR.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -103,7 +110,7 @@ void Cchktr(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
         iseed[i - 1] = iseedy[i - 1];
     }
     //
-    //     Test the error exits
+    // Test the error exits
     //
     if (tsterr) {
         Cerrtr(path, nout);
@@ -112,7 +119,7 @@ void Cchktr(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
     //
     for (in = 1; in <= nn; in = in + 1) {
         //
-        //        Do for each value of N in NVAL
+        // Do for each value of N in NVAL
         //
         n = nval[in - 1];
         lda = max((INTEGER)1, n);
@@ -120,7 +127,7 @@ void Cchktr(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
         //
         for (imat = 1; imat <= ntype1; imat = imat + 1) {
             //
-            //           Do the tests only if DOTYPE( IMAT ) is true.
+            // Do the tests only if DOTYPE( IMAT ) is true.
             //
             if (!dotype[imat - 1]) {
                 goto statement_80;
@@ -128,16 +135,16 @@ void Cchktr(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
             //
             for (iuplo = 1; iuplo <= 2; iuplo = iuplo + 1) {
                 //
-                //              Do first for UPLO = 'U', then for UPLO = 'L'
+                // Do first for UPLO = 'U', then for UPLO = 'L'
                 //
                 uplo[0] = uplos[iuplo - 1];
                 //
-                //              Call Clattr to generate a triangular test matrix.
+                // Call Clattr to generate a triangular test matrix.
                 //
                 strncpy(srnamt, "Clattr", srnamt_len);
                 Clattr(imat, uplo, "No transpose", diag, iseed, n, a, lda, x, work, rwork, info);
                 //
-                //              Set IDIAG = 1 for non-unit matrices, 2 for unit.
+                // Set IDIAG = 1 for non-unit matrices, 2 for unit.
                 //
                 if (Mlsame(diag, "N")) {
                     idiag = 1;
@@ -147,19 +154,19 @@ void Cchktr(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                 //
                 for (inb = 1; inb <= nnb; inb = inb + 1) {
                     //
-                    //                 Do for each blocksize in NBVAL
+                    // Do for each blocksize in NBVAL
                     //
                     nb = nbval[inb - 1];
                     xlaenv(1, nb);
                     //
-                    //+    TEST 1
-                    //                 Form the inverse of A.
+                    // +    TEST 1
+                    // Form the inverse of A.
                     //
                     Clacpy(uplo, n, n, a, lda, ainv, lda);
                     strncpy(srnamt, "Ctrtri", srnamt_len);
                     Ctrtri(uplo, diag, n, ainv, lda, info);
                     //
-                    //                 Check error code from Ctrtri.
+                    // Check error code from Ctrtri.
                     //
                     if (info != 0) {
                         uplo_diag[0] = uplo[0];
@@ -178,12 +185,12 @@ void Cchktr(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                         rcondi = (one / anorm) / ainvnm;
                     }
                     //
-                    //                 Compute the residual for the triangular matrix times
-                    //                 its inverse.  Also compute the 1-norm condition number
-                    //                 of A.
+                    // Compute the residual for the triangular matrix times
+                    // its inverse.  Also compute the 1-norm condition number
+                    // of A.
                     //
                     Ctrt01(uplo, diag, n, a, lda, ainv, lda, rcondo, rwork, result[1 - 1]);
-                    //                 Print the test ratio if it is .GE. THRESH.
+                    // Print the test ratio if it is .GE. THRESH.
                     //
                     if (result[1 - 1] >= thresh) {
                         if (nfail == 0 && nerrs == 0) {
@@ -197,7 +204,7 @@ void Cchktr(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                     }
                     nrun++;
                     //
-                    //                 Skip remaining tests if not the first block size.
+                    // Skip remaining tests if not the first block size.
                     //
                     if (inb != 1) {
                         goto statement_60;
@@ -209,7 +216,7 @@ void Cchktr(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                         //
                         for (itran = 1; itran <= ntran; itran = itran + 1) {
                             //
-                            //                    Do for op(A) = A, A**T, or A**H.
+                            // Do for op(A) = A, A**T, or A**H.
                             //
                             trans[0] = transs[itran - 1];
                             if (itran == 1) {
@@ -220,8 +227,8 @@ void Cchktr(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                                 rcondc = rcondi;
                             }
                             //
-                            //+    TEST 2
-                            //                       Solve and compute residual for op(A)*x = b.
+                            // +    TEST 2
+                            // Solve and compute residual for op(A)*x = b.
                             //
                             strncpy(srnamt, "Clarhs", srnamt_len);
                             Clarhs(path, &xtype, uplo, trans, n, n, 0, idiag, nrhs, a, lda, xact, lda, b, lda, iseed, info);
@@ -231,7 +238,7 @@ void Cchktr(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                             strncpy(srnamt, "Ctrtrs", srnamt_len);
                             Ctrtrs(uplo, trans, diag, n, nrhs, a, lda, x, lda, info);
                             //
-                            //                       Check error code from Ctrtrs.
+                            // Check error code from Ctrtrs.
                             //
                             if (info != 0) {
                                 uplo_trans_diag[0] = uplo[0];
@@ -249,19 +256,19 @@ void Cchktr(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                             //
                             Ctrt02(uplo, trans, diag, n, nrhs, a, lda, x, lda, b, lda, work, rwork, result[2 - 1]);
                             //
-                            //+    TEST 3
-                            //                       Check solution from generated exact solution.
+                            // +    TEST 3
+                            // Check solution from generated exact solution.
                             //
                             Cget04(n, nrhs, x, lda, xact, lda, rcondc, result[3 - 1]);
                             //
-                            //+    TESTS 4, 5, and 6
-                            //                       Use iterative refinement to improve the solution
-                            //                       and compute error bounds.
+                            // +    TESTS 4, 5, and 6
+                            // Use iterative refinement to improve the solution
+                            // and compute error bounds.
                             //
                             strncpy(srnamt, "Ctrrfs", srnamt_len);
                             Ctrrfs(uplo, trans, diag, n, nrhs, a, lda, b, lda, x, lda, rwork, &rwork[(nrhs + 1) - 1], work, &rwork[(2 * nrhs + 1) - 1], info);
                             //
-                            //                       Check error code from Ctrrfs.
+                            // Check error code from Ctrrfs.
                             //
                             if (info != 0) {
                                 uplo_trans_diag[0] = uplo[0];
@@ -294,8 +301,8 @@ void Cchktr(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                         }
                     }
                     //
-                    //+    TEST 7
-                    //                       Get an estimate of RCOND = 1/CNDNUM.
+                    // +    TEST 7
+                    // Get an estimate of RCOND = 1/CNDNUM.
                     //
                     for (itran = 1; itran <= 2; itran = itran + 1) {
                         if (itran == 1) {
@@ -308,7 +315,7 @@ void Cchktr(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                         strncpy(srnamt, "Ctrcon", srnamt_len);
                         Ctrcon(norm, uplo, diag, n, a, lda, rcond, work, rwork, info);
                         //
-                        //                       Check error code from Ctrcon.
+                        // Check error code from Ctrcon.
                         //
                         if (info != 0) {
                             norm_uplo_diag[0] = norm[0];
@@ -340,11 +347,11 @@ void Cchktr(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
         statement_80:;
         }
         //
-        //        Use pathological test matrices to test Clatrs.
+        // Use pathological test matrices to test Clatrs.
         //
         for (imat = ntype1 + 1; imat <= ntypes; imat = imat + 1) {
             //
-            //           Do the tests only if DOTYPE( IMAT ) is true.
+            // Do the tests only if DOTYPE( IMAT ) is true.
             //
             if (!dotype[imat - 1]) {
                 goto statement_110;
@@ -352,28 +359,28 @@ void Cchktr(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
             //
             for (iuplo = 1; iuplo <= 2; iuplo = iuplo + 1) {
                 //
-                //              Do first for UPLO = 'U', then for UPLO = 'L'
+                // Do first for UPLO = 'U', then for UPLO = 'L'
                 //
                 uplo[0] = uplos[iuplo - 1];
                 for (itran = 1; itran <= ntran; itran = itran + 1) {
                     //
-                    //                 Do for op(A) = A, A**T, and A**H.
+                    // Do for op(A) = A, A**T, and A**H.
                     //
                     trans[0] = transs[itran - 1];
                     //
-                    //                 Call Clattr to generate a triangular test matrix.
+                    // Call Clattr to generate a triangular test matrix.
                     //
                     strncpy(srnamt, "Clattr", srnamt_len);
                     Clattr(imat, uplo, trans, diag, iseed, n, a, lda, x, work, rwork, info);
                     //
-                    //+    TEST 8
-                    //                 Solve the system op(A)*x = b.
+                    // +    TEST 8
+                    // Solve the system op(A)*x = b.
                     //
                     strncpy(srnamt, "Clatrs", srnamt_len);
                     Ccopy(n, x, 1, b, 1);
                     Clatrs(uplo, trans, diag, "N", n, a, lda, b, scale, rwork, info);
                     //
-                    //                 Check error code from Clatrs.
+                    // Check error code from Clatrs.
                     //
                     if (info != 0) {
                         uplo_trans_diag[0] = uplo[0];
@@ -391,7 +398,7 @@ void Cchktr(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                     Ccopy(n, x, 1, &b[(n + 1) - 1], 1);
                     Clatrs(uplo, trans, diag, "Y", n, a, lda, &b[(n + 1) - 1], scale, rwork, info);
                     //
-                    //                 Check error code from Clatrs.
+                    // Check error code from Clatrs.
                     //
                     if (info != 0) {
                         uplo_trans_diag[0] = uplo[0];
@@ -429,10 +436,10 @@ void Cchktr(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
         }
     }
     //
-    //     Print a summary of the results.
+    // Print a summary of the results.
     //
     Alasum(path, nout, nfail, nrun, nerrs);
     //
-    //     End of Cchktr
+    // End of Cchktr
     //
 }

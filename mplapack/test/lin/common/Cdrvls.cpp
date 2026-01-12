@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine ZDRVLS.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -119,25 +126,25 @@ void Cdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     }
     eps = Rlamch("Epsilon");
     //
-    //     Threshold for rank estimation
+    // Threshold for rank estimation
     //
     rcond = sqrt(eps) - (sqrt(eps) - eps) / 2.0;
     //
-    //     Test the error exits
+    // Test the error exits
     //
     xlaenv(9, smlsiz);
     if (tsterr) {
         Cerrls(path, nout);
     }
     //
-    //     Print the header if NM = 0 or NN = 0 and THRESH = 0.
+    // Print the header if NM = 0 or NN = 0 and THRESH = 0.
     //
     if ((nm == 0 || nn == 0) && thresh == zero) {
         Alahd(nout, path);
     }
     infot = 0;
     //
-    //     Compute maximal workspace needed for all routines
+    // Compute maximal workspace needed for all routines
     //
     nmax = 0;
     mmax = 0;
@@ -162,15 +169,15 @@ void Cdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     nrhs = nsmax;
     mnmin = max(min(m, n), (INTEGER)1);
     //
-    //     Compute workspace needed for routines
-    //     Cqrt14, Cqrt17 (two side cases), Cqrt15 and Cqrt12
+    // Compute workspace needed for routines
+    // Cqrt14, Cqrt17 (two side cases), Cqrt15 and Cqrt12
     //
     lwork = max({(INTEGER)1, (m + n) * nrhs, (n + nrhs) * (m + 2), (m + nrhs) * (n + 2), max({m + mnmin, nrhs * mnmin, 2 * n + m}), max({m * n + 4 * mnmin + max(m, n), m * n + 2 * mnmin + 4 * n})});
     lrwork = 1;
     liwork = 1;
     //
-    //     Iterate through all test cases and compute necessary workspace
-    //     sizes for ?GELS, ?GETSLS, ?GELSY, ?GELSS and ?GELSD routines.
+    // Iterate through all test cases and compute necessary workspace
+    // sizes for ?GELS, ?GETSLS, ?GELSY, ?GELSS and ?GELSD routines.
     //
     for (im = 1; im <= nm; im = im + 1) {
         m = mval[im - 1];
@@ -193,31 +200,31 @@ void Cdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                         trans[0] = 'C';
                                     }
                                     //
-                                    //                             Compute workspace needed for Cgels
+                                    // Compute workspace needed for Cgels
                                     Cgels(trans, m, n, nrhs, a, lda, b, ldb, wq, -1, info);
                                     lwork_Cgels = castINTEGER(wq[1 - 1].real());
-                                    //                             Compute workspace needed for Cgetsls
+                                    // Compute workspace needed for Cgetsls
                                     Cgetsls(trans, m, n, nrhs, a, lda, b, ldb, wq, -1, info);
                                     lwork_Cgetsls = castINTEGER(wq[1 - 1].real());
                                 }
                             }
-                            //                       Compute workspace needed for Cgelsy
+                            // Compute workspace needed for Cgelsy
                             Cgelsy(m, n, nrhs, a, lda, b, ldb, iwq, rcond, crank, wq, -1, rwq, info);
                             lwork_Cgelsy = castINTEGER(wq[1 - 1].real());
                             lrwork_Cgelsy = 2 * n;
-                            //                       Compute workspace needed for Cgelss
+                            // Compute workspace needed for Cgelss
                             Cgelss(m, n, nrhs, a, lda, b, ldb, s, rcond, crank, wq, -1, rwq, info);
                             lwork_Cgelss = castINTEGER(wq[1 - 1].real());
                             lrwork_Cgelss = 5 * mnmin;
-                            //                       Compute workspace needed for Cgelsd
+                            // Compute workspace needed for Cgelsd
                             Cgelsd(m, n, nrhs, a, lda, b, ldb, s, rcond, crank, wq, -1, rwq, iwq, info);
                             lwork_Cgelsd = castINTEGER(wq[1 - 1].real());
                             lrwork_Cgelsd = castINTEGER(rwq[1 - 1]);
-                            //                       Compute LIWORK workspace needed for Cgelsy and Cgelsd
+                            // Compute LIWORK workspace needed for Cgelsy and Cgelsd
                             liwork = max({liwork, n, iwq[1 - 1]});
-                            //                       Compute LRWORK workspace needed for Cgelsy, Cgelss and Cgelsd
+                            // Compute LRWORK workspace needed for Cgelsy, Cgelss and Cgelsd
                             lrwork = max({lrwork, lrwork_Cgelsy, lrwork_Cgelss, lrwork_Cgelsd});
-                            //                       Compute LWORK workspace needed for all functions
+                            // Compute LWORK workspace needed for all functions
                             lwork = max({lwork, lwork_Cgels, lwork_Cgetsls, lwork_Cgelsy, lwork_Cgelss, lwork_Cgelsd});
                         }
                     }
@@ -255,9 +262,9 @@ void Cdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                         //
                         if (irank == 1) {
                             //
-                            //                       Test Cgels
+                            // Test Cgels
                             //
-                            //                       Generate a matrix of scaling type ISCALE
+                            // Generate a matrix of scaling type ISCALE
                             //
                             Cqrt13(iscale, m, n, copya, lda, norma, iseed);
                             for (inb = 1; inb <= nnb; inb = inb + 1) {
@@ -275,7 +282,7 @@ void Cdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                     }
                                     ldwork = max((INTEGER)1, ncols);
                                     //
-                                    //                             Set up a consistent rhs
+                                    // Set up a consistent rhs
                                     //
                                     if (ncols > 0) {
                                         Clarnv(2, iseed, ncols * nrhs, work);
@@ -284,7 +291,7 @@ void Cdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                     Cgemm(trans, "No transpose", nrows, nrhs, ncols, cone, copya, lda, work, ldwork, czero, b, ldb);
                                     Clacpy("Full", nrows, nrhs, b, ldb, copyb, ldb);
                                     //
-                                    //                             Solve LS or overdetermined system
+                                    // Solve LS or overdetermined system
                                     //
                                     if (m > 0 && n > 0) {
                                         Clacpy("Full", m, n, copya, lda, a, lda);
@@ -296,7 +303,7 @@ void Cdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                         Alaerh(path, "Cgels ", info, 0, trans, m, n, nrhs, -1, nb, itype, nfail, nerrs, nout);
                                     }
                                     //
-                                    //                             Check correctness of results
+                                    // Check correctness of results
                                     //
                                     ldwork = max((INTEGER)1, nrows);
                                     if (nrows > 0 && nrhs > 0) {
@@ -306,18 +313,18 @@ void Cdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                     //
                                     if ((itran == 1 && m >= n) || (itran == 2 && m < n)) {
                                         //
-                                        //                                Solving LS system
+                                        // Solving LS system
                                         //
                                         result[2 - 1] = Cqrt17(trans, 1, m, n, nrhs, copya, lda, b, ldb, copyb, ldb, c, work, lwork);
                                     } else {
                                         //
-                                        //                                Solving overdetermined system
+                                        // Solving overdetermined system
                                         //
                                         result[2 - 1] = Cqrt14(trans, m, n, nrhs, copya, lda, b, ldb, work, lwork);
                                     }
                                     //
-                                    //                             Print information about the tests that
-                                    //                             did not pass the threshold.
+                                    // Print information about the tests that
+                                    // did not pass the threshold.
                                     //
                                     for (k = 1; k <= 2; k = k + 1) {
                                         if (result[k - 1] >= thresh) {
@@ -335,9 +342,9 @@ void Cdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                 }
                             }
                             //
-                            //                       Test Cgetsls
+                            // Test Cgetsls
                             //
-                            //                       Generate a matrix of scaling type ISCALE
+                            // Generate a matrix of scaling type ISCALE
                             //
                             Cqrt13(iscale, m, n, copya, lda, norma, iseed);
                             for (inb = 1; inb <= nnb; inb = inb + 1) {
@@ -357,7 +364,7 @@ void Cdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                         }
                                         ldwork = max((INTEGER)1, ncols);
                                         //
-                                        //                             Set up a consistent rhs
+                                        // Set up a consistent rhs
                                         //
                                         if (ncols > 0) {
                                             Clarnv(2, iseed, ncols * nrhs, work);
@@ -366,7 +373,7 @@ void Cdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                         Cgemm(trans, "No transpose", nrows, nrhs, ncols, cone, copya, lda, work, ldwork, czero, b, ldb);
                                         Clacpy("Full", nrows, nrhs, b, ldb, copyb, ldb);
                                         //
-                                        //                             Solve LS or overdetermined system
+                                        // Solve LS or overdetermined system
                                         //
                                         if (m > 0 && n > 0) {
                                             Clacpy("Full", m, n, copya, lda, a, lda);
@@ -377,7 +384,7 @@ void Cdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                             Alaerh(path, "Cgetsls ", info, 0, trans, m, n, nrhs, -1, nb, itype, nfail, nerrs, nout);
                                         }
                                         //
-                                        //                             Check correctness of results
+                                        // Check correctness of results
                                         //
                                         ldwork = max((INTEGER)1, nrows);
                                         if (nrows > 0 && nrhs > 0) {
@@ -387,18 +394,18 @@ void Cdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                         //
                                         if ((itran == 1 && m >= n) || (itran == 2 && m < n)) {
                                             //
-                                            //                                Solving LS system
+                                            // Solving LS system
                                             //
                                             result[16 - 1] = Cqrt17(trans, 1, m, n, nrhs, copya, lda, b, ldb, copyb, ldb, c, work, lwork);
                                         } else {
                                             //
-                                            //                                Solving overdetermined system
+                                            // Solving overdetermined system
                                             //
                                             result[16 - 1] = Cqrt14(trans, m, n, nrhs, copya, lda, b, ldb, work, lwork);
                                         }
                                         //
-                                        //                             Print information about the tests that
-                                        //                             did not pass the threshold.
+                                        // Print information about the tests that
+                                        // did not pass the threshold.
                                         //
                                         for (k = 15; k <= 16; k = k + 1) {
                                             if (result[k - 1] >= thresh) {
@@ -419,16 +426,16 @@ void Cdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                             }
                         }
                         //
-                        //                    Generate a matrix of scaling type ISCALE and rank
-                        //                    type IRANK.
+                        // Generate a matrix of scaling type ISCALE and rank
+                        // type IRANK.
                         //
                         Cqrt15(iscale, irank, m, n, nrhs, copya, lda, copyb, ldb, copys, rank, norma, normb, iseed, work, lwork);
                         //
-                        //                    workspace used: MAX(M+MIN(M,N),NRHS*MIN(M,N),2*N+M)
+                        // workspace used: MAX(M+MIN(M,N),NRHS*MIN(M,N),2*N+M)
                         //
                         ldwork = max((INTEGER)1, m);
                         //
-                        //                    Loop for testing different block sizes.
+                        // Loop for testing different block sizes.
                         //
                         for (inb = 1; inb <= nnb; inb = inb + 1) {
                             nb = nbval[inb - 1];
@@ -443,7 +450,7 @@ void Cdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                             Clacpy("Full", m, n, copya, lda, a, lda);
                             Clacpy("Full", m, nrhs, copyb, ldb, b, ldb);
                             //
-                            //                       Initialize vector IWORK.
+                            // Initialize vector IWORK.
                             //
                             for (j = 1; j <= n; j = j + 1) {
                                 iwork[j - 1] = 0;
@@ -454,29 +461,29 @@ void Cdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                 Alaerh(path, "Cgelsy", info, 0, " ", m, n, nrhs, -1, nb, itype, nfail, nerrs, nout);
                             }
                             //
-                            //                       workspace used: 2*MNMIN+NB*NB+NB*MAX(N,NRHS)
+                            // workspace used: 2*MNMIN+NB*NB+NB*MAX(N,NRHS)
                             //
-                            //                       Test 3:  Compute relative error in svd
-                            //                                workspace: M*N + 4*MIN(M,N) + MAX(M,N)
+                            // Test 3:  Compute relative error in svd
+                            // workspace: M*N + 4*MIN(M,N) + MAX(M,N)
                             //
                             result[3 - 1] = Cqrt12(crank, crank, a, lda, copys, work, lwork, rwork);
                             //
-                            //                       Test 4:  Compute error in solution
-                            //                                workspace:  M*NRHS + M
+                            // Test 4:  Compute error in solution
+                            // workspace:  M*NRHS + M
                             //
                             Clacpy("Full", m, nrhs, copyb, ldb, work, ldwork);
                             Cqrt16("No transpose", m, n, nrhs, copya, lda, b, ldb, work, ldwork, rwork, result[4 - 1]);
                             //
-                            //                       Test 5:  Check norm of r'*A
-                            //                                workspace: NRHS*(M+N)
+                            // Test 5:  Check norm of r'*A
+                            // workspace: NRHS*(M+N)
                             //
                             result[5 - 1] = zero;
                             if (m > crank) {
                                 result[5 - 1] = Cqrt17("No transpose", 1, m, n, nrhs, copya, lda, b, ldb, copyb, ldb, c, work, lwork);
                             }
                             //
-                            //                       Test 6:  Check if x is in the rowspace of A
-                            //                                workspace: (M+NRHS)*(N+2)
+                            // Test 6:  Check if x is in the rowspace of A
+                            // workspace: (M+NRHS)*(N+2)
                             //
                             result[6 - 1] = zero;
                             //
@@ -484,11 +491,11 @@ void Cdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                 result[6 - 1] = Cqrt14("No transpose", m, n, nrhs, copya, lda, b, ldb, work, lwork);
                             }
                             //
-                            //                       Test Cgelss
+                            // Test Cgelss
                             //
-                            //                       Cgelss:  Compute the minimum-norm solution
-                            //                       X to min( norm( A * X - B ) )
-                            //                       using the SVD.
+                            // Cgelss:  Compute the minimum-norm solution
+                            // X to min( norm( A * X - B ) )
+                            // using the SVD.
                             //
                             Clacpy("Full", m, n, copya, lda, a, lda);
                             Clacpy("Full", m, nrhs, copyb, ldb, b, ldb);
@@ -498,10 +505,10 @@ void Cdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                 Alaerh(path, "Cgelss", info, 0, " ", m, n, nrhs, -1, nb, itype, nfail, nerrs, nout);
                             }
                             //
-                            //                       workspace used: 3*min(m,n) +
-                            //                                       max((INTEGER)2*min(m,n),nrhs,max(m,n))
+                            // workspace used: 3*min(m,n) +
+                            // max(2*min(m,n),nrhs,max(m,n))
                             //
-                            //                       Test 7:  Compute relative error in svd
+                            // Test 7:  Compute relative error in svd
                             //
                             if (rank > 0) {
                                 Raxpy(mnmin, -one, copys, 1, s, 1);
@@ -510,19 +517,19 @@ void Cdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                 result[7 - 1] = zero;
                             }
                             //
-                            //                       Test 8:  Compute error in solution
+                            // Test 8:  Compute error in solution
                             //
                             Clacpy("Full", m, nrhs, copyb, ldb, work, ldwork);
                             Cqrt16("No transpose", m, n, nrhs, copya, lda, b, ldb, work, ldwork, rwork, result[8 - 1]);
                             //
-                            //                       Test 9:  Check norm of r'*A
+                            // Test 9:  Check norm of r'*A
                             //
                             result[9 - 1] = zero;
                             if (m > crank) {
                                 result[9 - 1] = Cqrt17("No transpose", 1, m, n, nrhs, copya, lda, b, ldb, copyb, ldb, c, work, lwork);
                             }
                             //
-                            //                       Test 10:  Check if x is in the rowspace of A
+                            // Test 10:  Check if x is in the rowspace of A
                             //
                             result[10 - 1] = zero;
                             if (n > crank) {
@@ -544,7 +551,7 @@ void Cdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                 Alaerh(path, "Cgelsd", info, 0, " ", m, n, nrhs, -1, nb, itype, nfail, nerrs, nout);
                             }
                             //
-                            //                       Test 11:  Compute relative error in svd
+                            // Test 11:  Compute relative error in svd
                             //
                             if (rank > 0) {
                                 Raxpy(mnmin, -one, copys, 1, s, 1);
@@ -553,27 +560,27 @@ void Cdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                 result[11 - 1] = zero;
                             }
                             //
-                            //                       Test 12:  Compute error in solution
+                            // Test 12:  Compute error in solution
                             //
                             Clacpy("Full", m, nrhs, copyb, ldb, work, ldwork);
                             Cqrt16("No transpose", m, n, nrhs, copya, lda, b, ldb, work, ldwork, rwork, result[12 - 1]);
                             //
-                            //                       Test 13:  Check norm of r'*A
+                            // Test 13:  Check norm of r'*A
                             //
                             result[13 - 1] = zero;
                             if (m > crank) {
                                 result[13 - 1] = Cqrt17("No transpose", 1, m, n, nrhs, copya, lda, b, ldb, copyb, ldb, c, work, lwork);
                             }
                             //
-                            //                       Test 14:  Check if x is in the rowspace of A
+                            // Test 14:  Check if x is in the rowspace of A
                             //
                             result[14 - 1] = zero;
                             if (n > crank) {
                                 result[14 - 1] = Cqrt14("No transpose", m, n, nrhs, copya, lda, b, ldb, work, lwork);
                             }
                             //
-                            //                       Print information about the tests that did not
-                            //                       pass the threshold.
+                            // Print information about the tests that did not
+                            // pass the threshold.
                             //
                             for (k = 3; k <= 14; k = k + 1) {
                                 if (result[k - 1] >= thresh) {
@@ -597,7 +604,7 @@ void Cdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
         }
     }
     //
-    //     Print a summary of the results.
+    // Print a summary of the results.
     //
     Alasvm(path, nout, nfail, nrun, nerrs);
     //

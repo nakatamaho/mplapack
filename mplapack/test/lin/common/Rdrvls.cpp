@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DDRVLS.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -110,11 +117,11 @@ void Rdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     }
     eps = Rlamch("Epsilon");
     //
-    //     Threshold for rank estimation
+    // Threshold for rank estimation
     //
     rcond = sqrt(eps) - (sqrt(eps) - eps) / 2;
     //
-    //     Test the error exits
+    // Test the error exits
     //
     xlaenv(2, 2);
     xlaenv(9, smlsiz);
@@ -122,7 +129,7 @@ void Rdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
         Rerrls(path, nout);
     }
     //
-    //     Print the header if NM = 0 or NN = 0 and THRESH = 0.
+    // Print the header if NM = 0 or NN = 0 and THRESH = 0.
     //
     if ((nm == 0 || nn == 0) && thresh == zero) {
         Alahd(nout, path);
@@ -131,7 +138,7 @@ void Rdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     xlaenv(2, 2);
     xlaenv(9, smlsiz);
     //
-    //     Compute maximal workspace needed for all routines
+    // Compute maximal workspace needed for all routines
     //
     nmax = 0;
     mmax = 0;
@@ -156,14 +163,14 @@ void Rdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     nrhs = nsmax;
     mnmin = max(min(m, n), (INTEGER)1);
     //
-    //     Compute workspace needed for routines
-    //     Rqrt14, Rqrt17 (two side cases), Rqrt15 and Rqrt12
+    // Compute workspace needed for routines
+    // Rqrt14, Rqrt17 (two side cases), Rqrt15 and Rqrt12
     //
     lwork = max({(INTEGER)1, (m + n) * nrhs, (n + nrhs) * (m + 2), (m + nrhs) * (n + 2), max({m + mnmin, nrhs * mnmin, 2 * n + m}), max({m * n + 4 * mnmin + max(m, n), m * n + 2 * mnmin + 4 * n})});
     liwork = 1;
     //
-    //     Iterate through all test cases and compute necessary workspace
-    //     sizes for ?GELS, ?GETSLS, ?GELSY, ?GELSS and ?GELSD routines.
+    // Iterate through all test cases and compute necessary workspace
+    // sizes for ?GELS, ?GETSLS, ?GELSY, ?GELSS and ?GELSD routines.
     //
     for (im = 1; im <= nm; im = im + 1) {
         m = mval[im - 1];
@@ -186,26 +193,26 @@ void Rdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                         trans[0] = 'T';
                                     }
                                     //
-                                    //                             Compute workspace needed for Rgels
+                                    // Compute workspace needed for Rgels
                                     Rgels(trans, m, n, nrhs, a, lda, b, ldb, wq, -1, info);
                                     lwork_Rgels = castINTEGER(wq[1 - 1]);
-                                    //                             Compute workspace needed for Rgetsls
+                                    // Compute workspace needed for Rgetsls
                                     Rgetsls(trans, m, n, nrhs, a, lda, b, ldb, wq, -1, info);
                                     lwork_Rgetsls = castINTEGER(wq[1 - 1]);
                                 }
                             }
-                            //                       Compute workspace needed for Rgelsy
+                            // Compute workspace needed for Rgelsy
                             Rgelsy(m, n, nrhs, a, lda, b, ldb, iwq, rcond, crank, wq, -1, info);
                             lwork_Rgelsy = castINTEGER(wq[1 - 1]);
-                            //                       Compute workspace needed for Rgelss
+                            // Compute workspace needed for Rgelss
                             Rgelss(m, n, nrhs, a, lda, b, ldb, s, rcond, crank, wq, -1, info);
                             lwork_Rgelss = castINTEGER(wq[1 - 1]);
-                            //                       Compute workspace needed for Rgelsd
+                            // Compute workspace needed for Rgelsd
                             Rgelsd(m, n, nrhs, a, lda, b, ldb, s, rcond, crank, wq, -1, iwq, info);
                             lwork_Rgelsd = castINTEGER(wq[1 - 1]);
-                            //                       Compute LIWORK workspace needed for Rgelsy and Rgelsd
+                            // Compute LIWORK workspace needed for Rgelsy and Rgelsd
                             liwork = max({liwork, n, iwq[1 - 1]});
-                            //                       Compute LWORK workspace needed for all functions
+                            // Compute LWORK workspace needed for all functions
                             lwork = max({lwork, lwork_Rgels, lwork_Rgetsls, lwork_Rgelsy, lwork_Rgelss, lwork_Rgelsd});
                         }
                     }
@@ -240,9 +247,9 @@ void Rdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                         //
                         if (irank == 1) {
                             //
-                            //                       Test Rgels
+                            // Test Rgels
                             //
-                            //                       Generate a matrix of scaling type ISCALE
+                            // Generate a matrix of scaling type ISCALE
                             //
                             Rqrt13(iscale, m, n, copya, lda, norma, iseed);
                             for (inb = 1; inb <= nnb; inb = inb + 1) {
@@ -260,7 +267,7 @@ void Rdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                     }
                                     ldwork = max((INTEGER)1, ncols);
                                     //
-                                    //                             Set up a consistent rhs
+                                    // Set up a consistent rhs
                                     //
                                     if (ncols > 0) {
                                         Rlarnv(2, iseed, ncols * nrhs, work);
@@ -269,7 +276,7 @@ void Rdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                     Rgemm(trans, "No transpose", nrows, nrhs, ncols, one, copya, lda, work, ldwork, zero, b, ldb);
                                     Rlacpy("Full", nrows, nrhs, b, ldb, copyb, ldb);
                                     //
-                                    //                             Solve LS or overdetermined system
+                                    // Solve LS or overdetermined system
                                     //
                                     if (m > 0 && n > 0) {
                                         Rlacpy("Full", m, n, copya, lda, a, lda);
@@ -281,7 +288,7 @@ void Rdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                         Alaerh(path, "Rgels", info, 0, trans, m, n, nrhs, -1, nb, itype, nfail, nerrs, nout);
                                     }
                                     //
-                                    //                             Check correctness of results
+                                    // Check correctness of results
                                     //
                                     ldwork = max((INTEGER)1, nrows);
                                     if (nrows > 0 && nrhs > 0) {
@@ -291,18 +298,18 @@ void Rdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                     //
                                     if ((itran == 1 && m >= n) || (itran == 2 && m < n)) {
                                         //
-                                        //                                Solving LS system
+                                        // Solving LS system
                                         //
                                         result[2 - 1] = Rqrt17(trans, 1, m, n, nrhs, copya, lda, b, ldb, copyb, ldb, c, work, lwork);
                                     } else {
                                         //
-                                        //                                Solving overdetermined system
+                                        // Solving overdetermined system
                                         //
                                         result[2 - 1] = Rqrt14(trans, m, n, nrhs, copya, lda, b, ldb, work, lwork);
                                     }
                                     //
-                                    //                             Print information about the tests that
-                                    //                             did not pass the threshold.
+                                    // Print information about the tests that
+                                    // did not pass the threshold.
                                     //
                                     for (k = 1; k <= 2; k = k + 1) {
                                         if (result[k - 1] >= thresh) {
@@ -320,9 +327,9 @@ void Rdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                 }
                             }
                             //
-                            //                       Test Rgetsls
+                            // Test Rgetsls
                             //
-                            //                       Generate a matrix of scaling type ISCALE
+                            // Generate a matrix of scaling type ISCALE
                             //
                             Rqrt13(iscale, m, n, copya, lda, norma, iseed);
                             for (inb = 1; inb <= nnb; inb = inb + 1) {
@@ -342,7 +349,7 @@ void Rdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                         }
                                         ldwork = max((INTEGER)1, ncols);
                                         //
-                                        //                             Set up a consistent rhs
+                                        // Set up a consistent rhs
                                         //
                                         if (ncols > 0) {
                                             Rlarnv(2, iseed, ncols * nrhs, work);
@@ -351,7 +358,7 @@ void Rdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                         Rgemm(trans, "No transpose", nrows, nrhs, ncols, one, copya, lda, work, ldwork, zero, b, ldb);
                                         Rlacpy("Full", nrows, nrhs, b, ldb, copyb, ldb);
                                         //
-                                        //                             Solve LS or overdetermined system
+                                        // Solve LS or overdetermined system
                                         //
                                         if (m > 0 && n > 0) {
                                             Rlacpy("Full", m, n, copya, lda, a, lda);
@@ -363,7 +370,7 @@ void Rdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                             Alaerh(path, "Rgetsls", info, 0, trans, m, n, nrhs, -1, nb, itype, nfail, nerrs, nout);
                                         }
                                         //
-                                        //                             Check correctness of results
+                                        // Check correctness of results
                                         //
                                         ldwork = max((INTEGER)1, nrows);
                                         if (nrows > 0 && nrhs > 0) {
@@ -373,18 +380,18 @@ void Rdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                         //
                                         if ((itran == 1 && m >= n) || (itran == 2 && m < n)) {
                                             //
-                                            //                                Solving LS system
+                                            // Solving LS system
                                             //
                                             result[16 - 1] = Rqrt17(trans, 1, m, n, nrhs, copya, lda, b, ldb, copyb, ldb, c, work, lwork);
                                         } else {
                                             //
-                                            //                                Solving overdetermined system
+                                            // Solving overdetermined system
                                             //
                                             result[16 - 1] = Rqrt14(trans, m, n, nrhs, copya, lda, b, ldb, work, lwork);
                                         }
                                         //
-                                        //                             Print information about the tests that
-                                        //                             did not pass the threshold.
+                                        // Print information about the tests that
+                                        // did not pass the threshold.
                                         //
                                         for (k = 15; k <= 16; k = k + 1) {
                                             if (result[k - 1] >= thresh) {
@@ -405,16 +412,16 @@ void Rdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                             }
                         }
                         //
-                        //                    Generate a matrix of scaling type ISCALE and rank
-                        //                    type IRANK.
+                        // Generate a matrix of scaling type ISCALE and rank
+                        // type IRANK.
                         //
                         Rqrt15(iscale, irank, m, n, nrhs, copya, lda, copyb, ldb, copys, rank, norma, normb, iseed, work, lwork);
                         //
-                        //                    workspace used: MAX(M+MIN(M,N),NRHS*MIN(M,N),2*N+M)
+                        // workspace used: MAX(M+MIN(M,N),NRHS*MIN(M,N),2*N+M)
                         //
                         ldwork = max((INTEGER)1, m);
                         //
-                        //                    Loop for testing different block sizes.
+                        // Loop for testing different block sizes.
                         //
                         for (inb = 1; inb <= nnb; inb = inb + 1) {
                             nb = nbval[inb - 1];
@@ -441,27 +448,27 @@ void Rdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                 Alaerh(path, "Rgelsy", info, 0, " ", m, n, nrhs, -1, nb, itype, nfail, nerrs, nout);
                             }
                             //
-                            //                       Test 3:  Compute relative error in svd
-                            //                                workspace: M*N + 4*MIN(M,N) + MAX(M,N)
+                            // Test 3:  Compute relative error in svd
+                            // workspace: M*N + 4*MIN(M,N) + MAX(M,N)
                             //
                             result[3 - 1] = Rqrt12(crank, crank, a, lda, copys, work, lwork);
                             //
-                            //                       Test 4:  Compute error in solution
-                            //                                workspace:  M*NRHS + M
+                            // Test 4:  Compute error in solution
+                            // workspace:  M*NRHS + M
                             //
                             Rlacpy("Full", m, nrhs, copyb, ldb, work, ldwork);
                             Rqrt16("No transpose", m, n, nrhs, copya, lda, b, ldb, work, ldwork, &work[(m * nrhs + 1) - 1], result[4 - 1]);
                             //
-                            //                       Test 5:  Check norm of r'*A
-                            //                                workspace: NRHS*(M+N)
+                            // Test 5:  Check norm of r'*A
+                            // workspace: NRHS*(M+N)
                             //
                             result[5 - 1] = zero;
                             if (m > crank) {
                                 result[5 - 1] = Rqrt17("No transpose", 1, m, n, nrhs, copya, lda, b, ldb, copyb, ldb, c, work, lwork);
                             }
                             //
-                            //                       Test 6:  Check if x is in the rowspace of A
-                            //                                workspace: (M+NRHS)*(N+2)
+                            // Test 6:  Check if x is in the rowspace of A
+                            // workspace: (M+NRHS)*(N+2)
                             //
                             result[6 - 1] = zero;
                             //
@@ -469,11 +476,11 @@ void Rdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                 result[6 - 1] = Rqrt14("No transpose", m, n, nrhs, copya, lda, b, ldb, work, lwork);
                             }
                             //
-                            //                       Test Rgelss
+                            // Test Rgelss
                             //
-                            //                       Rgelss:  Compute the minimum-norm solution X
-                            //                       to min( norm( A * X - B ) )
-                            //                       using the SVD.
+                            // Rgelss:  Compute the minimum-norm solution X
+                            // to min( norm( A * X - B ) )
+                            // using the SVD.
                             //
                             Rlacpy("Full", m, n, copya, lda, a, lda);
                             Rlacpy("Full", m, nrhs, copyb, ldb, b, ldb);
@@ -483,10 +490,10 @@ void Rdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                 Alaerh(path, "Rgelss", info, 0, " ", m, n, nrhs, -1, nb, itype, nfail, nerrs, nout);
                             }
                             //
-                            //                       workspace used: 3*min(m,n) +
-                            //                                       max((INTEGER)2*min(m,n),nrhs,max(m,n))
+                            // workspace used: 3*min(m,n) +
+                            // max(2*min(m,n),nrhs,max(m,n))
                             //
-                            //                       Test 7:  Compute relative error in svd
+                            // Test 7:  Compute relative error in svd
                             //
                             if (rank > 0) {
                                 Raxpy(mnmin, -one, copys, 1, s, 1);
@@ -495,32 +502,32 @@ void Rdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                 result[7 - 1] = zero;
                             }
                             //
-                            //                       Test 8:  Compute error in solution
+                            // Test 8:  Compute error in solution
                             //
                             Rlacpy("Full", m, nrhs, copyb, ldb, work, ldwork);
                             Rqrt16("No transpose", m, n, nrhs, copya, lda, b, ldb, work, ldwork, &work[(m * nrhs + 1) - 1], result[8 - 1]);
                             //
-                            //                       Test 9:  Check norm of r'*A
+                            // Test 9:  Check norm of r'*A
                             //
                             result[9 - 1] = zero;
                             if (m > crank) {
                                 result[9 - 1] = Rqrt17("No transpose", 1, m, n, nrhs, copya, lda, b, ldb, copyb, ldb, c, work, lwork);
                             }
                             //
-                            //                       Test 10:  Check if x is in the rowspace of A
+                            // Test 10:  Check if x is in the rowspace of A
                             //
                             result[10 - 1] = zero;
                             if (n > crank) {
                                 result[10 - 1] = Rqrt14("No transpose", m, n, nrhs, copya, lda, b, ldb, work, lwork);
                             }
                             //
-                            //                       Test Rgelsd
+                            // Test Rgelsd
                             //
-                            //                       Rgelsd:  Compute the minimum-norm solution X
-                            //                       to min( norm( A * X - B ) ) using a
-                            //                       divide and conquer SVD.
+                            // Rgelsd:  Compute the minimum-norm solution X
+                            // to min( norm( A * X - B ) ) using a
+                            // divide and conquer SVD.
                             //
-                            //                       Initialize vector IWORK.
+                            // Initialize vector IWORK.
                             //
                             for (j = 1; j <= n; j = j + 1) {
                                 iwork[j - 1] = 0;
@@ -535,7 +542,7 @@ void Rdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                 Alaerh(path, "Rgelsd", info, 0, " ", m, n, nrhs, -1, nb, itype, nfail, nerrs, nout);
                             }
                             //
-                            //                       Test 11:  Compute relative error in svd
+                            // Test 11:  Compute relative error in svd
                             //
                             if (rank > 0) {
                                 Raxpy(mnmin, -one, copys, 1, s, 1);
@@ -544,27 +551,27 @@ void Rdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                 result[11 - 1] = zero;
                             }
                             //
-                            //                       Test 12:  Compute error in solution
+                            // Test 12:  Compute error in solution
                             //
                             Rlacpy("Full", m, nrhs, copyb, ldb, work, ldwork);
                             Rqrt16("No transpose", m, n, nrhs, copya, lda, b, ldb, work, ldwork, &work[(m * nrhs + 1) - 1], result[12 - 1]);
                             //
-                            //                       Test 13:  Check norm of r'*A
+                            // Test 13:  Check norm of r'*A
                             //
                             result[13 - 1] = zero;
                             if (m > crank) {
                                 result[13 - 1] = Rqrt17("No transpose", 1, m, n, nrhs, copya, lda, b, ldb, copyb, ldb, c, work, lwork);
                             }
                             //
-                            //                       Test 14:  Check if x is in the rowspace of A
+                            // Test 14:  Check if x is in the rowspace of A
                             //
                             result[14 - 1] = zero;
                             if (n > crank) {
                                 result[14 - 1] = Rqrt14("No transpose", m, n, nrhs, copya, lda, b, ldb, work, lwork);
                             }
                             //
-                            //                       Print information about the tests that did not
-                            //                       pass the threshold.
+                            // Print information about the tests that did not
+                            // pass the threshold.
                             //
                             for (k = 3; k <= 14; k = k + 1) {
                                 if (result[k - 1] >= thresh) {
@@ -588,13 +595,13 @@ void Rdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
         }
     }
     //
-    //     Print a summary of the results.
+    // Print a summary of the results.
     //
     Alasvm(path, nout, nfail, nrun, nerrs);
     //
     delete[] work;
     delete[] iwork;
     //
-    //     End of Rdrvls
+    // End of Rdrvls
     //
 }

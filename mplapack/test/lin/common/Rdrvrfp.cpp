@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DDRVRFP.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -83,7 +90,7 @@ void Rdrvrfp(INTEGER const nout, INTEGER const nn, INTEGER *nval, INTEGER const 
     INTEGER nt = 0;
     INTEGER k = 0;
     //
-    //     Initialize constants and the random number seed.
+    // Initialize constants and the random number seed.
     //
     nrun = 0;
     nfail = 0;
@@ -106,13 +113,13 @@ void Rdrvrfp(INTEGER const nout, INTEGER const nn, INTEGER *nval, INTEGER const 
                 //
                 imat = ntval[iit - 1];
                 //
-                //              If N.EQ.0, only consider the first type
+                // If N.EQ.0, only consider the first type
                 //
                 if (n == 0 && iit >= 1) {
                     goto statement_120;
                 }
                 //
-                //              Skip types 3, 4, or 5 if the matrix size is too small.
+                // Skip types 3, 4, or 5 if the matrix size is too small.
                 //
                 if (imat == 4 && n <= 1) {
                     goto statement_120;
@@ -121,12 +128,12 @@ void Rdrvrfp(INTEGER const nout, INTEGER const nn, INTEGER *nval, INTEGER const 
                     goto statement_120;
                 }
                 //
-                //              Do first for UPLO = 'U', then for UPLO = 'L'
+                // Do first for UPLO = 'U', then for UPLO = 'L'
                 //
                 for (iuplo = 1; iuplo <= 2; iuplo = iuplo + 1) {
                     uplo = uplos[iuplo - 1];
                     //
-                    //                 Do first for CFORM = 'N', then for CFORM = 'C'
+                    // Do first for CFORM = 'N', then for CFORM = 'C'
                     //
                     for (iform = 1; iform <= 2; iform = iform + 1) {
                         cform = forms[iform - 1];
@@ -145,8 +152,8 @@ void Rdrvrfp(INTEGER const nout, INTEGER const nn, INTEGER *nval, INTEGER const 
                             goto statement_100;
                         }
                         //
-                        //                    For types 3-5, zero one row and column of the matrix to
-                        //                    test that INFO is returned correctly.
+                        // For types 3-5, zero one row and column of the matrix to
+                        // test that INFO is returned correctly.
                         //
                         zerot = imat >= 3 && imat <= 5;
                         if (zerot) {
@@ -159,7 +166,7 @@ void Rdrvrfp(INTEGER const nout, INTEGER const nn, INTEGER *nval, INTEGER const 
                             }
                             ioff = (izero - 1) * lda;
                             //
-                            //                       Set row and column IZERO of A to 0.
+                            // Set row and column IZERO of A to 0.
                             //
                             if (iuplo == 1) {
                                 for (i = 1; i <= izero - 1; i = i + 1) {
@@ -185,36 +192,36 @@ void Rdrvrfp(INTEGER const nout, INTEGER const nn, INTEGER *nval, INTEGER const 
                             izero = 0;
                         }
                         //
-                        //                    Save a copy of the matrix A in ASAV.
+                        // Save a copy of the matrix A in ASAV.
                         //
                         Rlacpy(&uplo, n, n, a, lda, asav, lda);
                         //
-                        //                    Compute the condition number of A (RCONDC).
+                        // Compute the condition number of A (RCONDC).
                         //
                         if (zerot) {
                             rcondc = zero;
                         } else {
                             //
-                            //                       Compute the 1-norm of A.
+                            // Compute the 1-norm of A.
                             //
                             anorm = Rlansy("1", &uplo, n, a, lda, d_work_Rlansy);
                             //
-                            //                       Factor the matrix A.
+                            // Factor the matrix A.
                             //
                             Rpotrf(&uplo, n, a, lda, info);
                             //
-                            //                       Form the inverse of A.
+                            // Form the inverse of A.
                             //
                             Rpotri(&uplo, n, a, lda, info);
                             //
                             if (n != 0) {
                                 //
-                                //                          Compute the 1-norm condition number of A.
+                                // Compute the 1-norm condition number of A.
                                 //
                                 ainvnm = Rlansy("1", &uplo, n, a, lda, d_work_Rlansy);
                                 rcondc = (one / anorm) / ainvnm;
                                 //
-                                //                          Restore the matrix A.
+                                // Restore the matrix A.
                                 //
                                 Rlacpy(&uplo, n, n, asav, lda, a, lda);
                             }
@@ -226,8 +233,8 @@ void Rdrvrfp(INTEGER const nout, INTEGER const nn, INTEGER *nval, INTEGER const 
                         Rlarhs("RPO", "N", &uplo, " ", n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
                         Rlacpy("Full", n, nrhs, b, lda, bsav, lda);
                         //
-                        //                    Compute the L*L' or U'*U factorization of the
-                        //                    matrix and solve the system.
+                        // Compute the L*L' or U'*U factorization of the
+                        // matrix and solve the system.
                         //
                         Rlacpy(&uplo, n, n, a, lda, afac, lda);
                         Rlacpy("Full", n, nrhs, b, ldb, x, ldb);
@@ -235,19 +242,19 @@ void Rdrvrfp(INTEGER const nout, INTEGER const nn, INTEGER *nval, INTEGER const 
                         Rtrttf(&cform, &uplo, n, afac, lda, arf, info);
                         Rpftrf(&cform, &uplo, n, arf, info);
                         //
-                        //                    Check error code from Rpftrf.
+                        // Check error code from Rpftrf.
                         //
                         if (info != izero) {
                             //
-                            //                       LANGOU: there is a small hick here: IZERO should
-                            //                       always be INFO however if INFO is ZERO, Alaerh does not
-                            //                       complain.
+                            // LANGOU: there is a small hick here: IZERO should
+                            // always be INFO however if INFO is ZERO, Alaerh does not
+                            // complain.
                             //
                             Alaerh("RPF", "Rpfsv", info, izero, &uplo, n, n, -1, -1, nrhs, iit, nfail, nerrs, nout);
                             goto statement_100;
                         }
                         //
-                        //                    Skip the tests if INFO is not 0.
+                        // Skip the tests if INFO is not 0.
                         //
                         if (info != 0) {
                             goto statement_100;
@@ -257,14 +264,14 @@ void Rdrvrfp(INTEGER const nout, INTEGER const nn, INTEGER *nval, INTEGER const 
                         //
                         Rtfttr(&cform, &uplo, n, arf, afac, lda, info);
                         //
-                        //                    Reconstruct matrix from factors and compute
-                        //                    residual.
+                        // Reconstruct matrix from factors and compute
+                        // residual.
                         //
                         Rlacpy(&uplo, n, n, afac, lda, asav, lda);
                         Rpot01(&uplo, n, a, lda, afac, lda, d_work_Rpot01, result[1 - 1]);
                         Rlacpy(&uplo, n, n, asav, lda, afac, lda);
                         //
-                        //                    Form the inverse and compute the residual.
+                        // Form the inverse and compute the residual.
                         //
                         if (mod(n, 2) == 0) {
                             Rlacpy("A", n + 1, n / 2, arf, n + 1, arfinv, n + 1);
@@ -276,7 +283,7 @@ void Rdrvrfp(INTEGER const nout, INTEGER const nn, INTEGER *nval, INTEGER const 
                         //
                         Rtfttr(&cform, &uplo, n, arfinv, ainv, lda, info);
                         //
-                        //                    Check error code from Rpftri.
+                        // Check error code from Rpftri.
                         //
                         if (info != 0) {
                             Alaerh("RPO", "Rpftri", info, 0, &uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
@@ -284,18 +291,18 @@ void Rdrvrfp(INTEGER const nout, INTEGER const nn, INTEGER *nval, INTEGER const 
                         //
                         Rpot03(&uplo, n, a, lda, ainv, lda, d_temp_Rpot03, lda, d_work_Rpot03, rcondc, result[2 - 1]);
                         //
-                        //                    Compute residual of the computed solution.
+                        // Compute residual of the computed solution.
                         //
                         Rlacpy("Full", n, nrhs, b, lda, d_temp_Rpot02, lda);
                         Rpot02(&uplo, n, nrhs, a, lda, x, lda, d_temp_Rpot02, lda, d_work_Rpot02, result[3 - 1]);
                         //
-                        //                    Check solution from generated exact solution.
+                        // Check solution from generated exact solution.
                         //
                         Rget04(n, nrhs, x, lda, xact, lda, rcondc, result[4 - 1]);
                         nt = 4;
                         //
-                        //                    Print information about the tests that did not
-                        //                    pass the threshold.
+                        // Print information about the tests that did not
+                        // pass the threshold.
                         //
                         for (k = 1; k <= nt; k = k + 1) {
                             if (result[k - 1] >= thresh) {
@@ -318,10 +325,10 @@ void Rdrvrfp(INTEGER const nout, INTEGER const nn, INTEGER *nval, INTEGER const 
         }
     }
     //
-    //     Print a summary of the results.
+    // Print a summary of the results.
     //
     Alasvm("RPF", nout, nfail, nrun, nerrs);
     //
-    //     End of Rdrvrfp
+    // End of Rdrvrfp
     //
 }

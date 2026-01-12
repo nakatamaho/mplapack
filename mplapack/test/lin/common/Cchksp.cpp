@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine ZCHKSP.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -103,14 +110,14 @@ void Cchksp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
         iseed[i - 1] = iseedy[i - 1];
     }
     //
-    //     Test the error exits
+    // Test the error exits
     //
     if (tsterr) {
         Cerrsy(path, nout);
     }
     infot = 0;
     //
-    //     Do for each value of N in NVAL
+    // Do for each value of N in NVAL
     //
     for (in = 1; in <= nn; in = in + 1) {
         n = nval[in - 1];
@@ -123,20 +130,20 @@ void Cchksp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
         //
         for (imat = 1; imat <= nimat; imat = imat + 1) {
             //
-            //           Do the tests only if DOTYPE( IMAT ) is true.
+            // Do the tests only if DOTYPE( IMAT ) is true.
             //
             if (!dotype[imat - 1]) {
                 goto statement_160;
             }
             //
-            //           Skip types 3, 4, 5, or 6 if the matrix size is too small.
+            // Skip types 3, 4, 5, or 6 if the matrix size is too small.
             //
             zerot = imat >= 3 && imat <= 6;
             if (zerot && n < imat - 2) {
                 goto statement_160;
             }
             //
-            //           Do first for UPLO = 'U', then for UPLO = 'L'
+            // Do first for UPLO = 'U', then for UPLO = 'L'
             //
             for (iuplo = 1; iuplo <= 2; iuplo = iuplo + 1) {
                 uplo[0] = uplos[iuplo - 1];
@@ -148,23 +155,23 @@ void Cchksp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                 //
                 if (imat != ntypes) {
                     //
-                    //                 Set up parameters with Clatb4 and generate a test
-                    //                 matrix with Clatms.
+                    // Set up parameters with Clatb4 and generate a test
+                    // matrix with Clatms.
                     //
                     Clatb4(path, imat, n, n, type, kl, ku, anorm, mode, cndnum, dist);
                     //
                     strncpy(srnamt, "Clatms", srnamt_len);
                     Clatms(n, n, dist, iseed, type, rwork, mode, cndnum, anorm, kl, ku, &packit, a, lda, work, info);
                     //
-                    //                 Check error code from Clatms.
+                    // Check error code from Clatms.
                     //
                     if (info != 0) {
                         Alaerh(path, "Clatms", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                         goto statement_150;
                     }
                     //
-                    //                 For types 3-6, zero one or more rows and columns of
-                    //                 the matrix to test that INFO is returned correctly.
+                    // For types 3-6, zero one or more rows and columns of
+                    // the matrix to test that INFO is returned correctly.
                     //
                     if (zerot) {
                         if (imat == 3) {
@@ -177,7 +184,7 @@ void Cchksp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                         //
                         if (imat < 6) {
                             //
-                            //                       Set row and column IZERO to zero.
+                            // Set row and column IZERO to zero.
                             //
                             if (iuplo == 1) {
                                 ioff = (izero - 1) * izero / 2;
@@ -203,7 +210,7 @@ void Cchksp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                         } else {
                             if (iuplo == 1) {
                                 //
-                                //                          Set the first IZERO rows and columns to zero.
+                                // Set the first IZERO rows and columns to zero.
                                 //
                                 ioff = 0;
                                 for (j = 1; j <= n; j = j + 1) {
@@ -215,7 +222,7 @@ void Cchksp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                                 }
                             } else {
                                 //
-                                //                          Set the last IZERO rows and columns to zero.
+                                // Set the last IZERO rows and columns to zero.
                                 //
                                 ioff = 0;
                                 for (j = 1; j <= n; j = j + 1) {
@@ -232,21 +239,21 @@ void Cchksp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                     }
                 } else {
                     //
-                    //                 Use a special block diagonal matrix to test alternate
-                    //                 code for the 2 x 2 blocks.
+                    // Use a special block diagonal matrix to test alternate
+                    // code for the 2 x 2 blocks.
                     //
                     Clatsp(uplo, n, a, iseed);
                 }
                 //
-                //              Compute the L*D*L' or U*D*U' factorization of the matrix.
+                // Compute the L*D*L' or U*D*U' factorization of the matrix.
                 //
                 npp = n * (n + 1) / 2;
                 Ccopy(npp, a, 1, afac, 1);
                 strncpy(srnamt, "Csptrf", srnamt_len);
                 Csptrf(uplo, n, afac, iwork, info);
                 //
-                //              Adjust the expected value of INFO to account for
-                //              pivoting.
+                // Adjust the expected value of INFO to account for
+                // pivoting.
                 //
                 k = izero;
                 if (k > 0) {
@@ -262,7 +269,7 @@ void Cchksp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                     }
                 }
                 //
-                //              Check error code from Csptrf.
+                // Check error code from Csptrf.
                 //
                 if (info != k) {
                     Alaerh(path, "Csptrf", info, k, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
@@ -273,21 +280,21 @@ void Cchksp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                     trfcon = false;
                 }
                 //
-                //+    TEST 1
-                //              Reconstruct matrix from factors and compute residual.
+                // +    TEST 1
+                // Reconstruct matrix from factors and compute residual.
                 //
                 Cspt01(uplo, n, a, afac, iwork, ainv, lda, rwork, result[1 - 1]);
                 nt = 1;
                 //
-                //+    TEST 2
-                //              Form the inverse and compute the residual.
+                // +    TEST 2
+                // Form the inverse and compute the residual.
                 //
                 if (!trfcon) {
                     Ccopy(npp, afac, 1, ainv, 1);
                     strncpy(srnamt, "Csptri", srnamt_len);
                     Csptri(uplo, n, ainv, iwork, work, info);
                     //
-                    //              Check error code from Csptri.
+                    // Check error code from Csptri.
                     //
                     if (info != 0) {
                         Alaerh(path, "Csptri", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
@@ -297,8 +304,8 @@ void Cchksp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                     nt = 2;
                 }
                 //
-                //              Print information about the tests that did not pass
-                //              the threshold.
+                // Print information about the tests that did not pass
+                // the threshold.
                 //
                 for (k = 1; k <= nt; k = k + 1) {
                     if (result[k - 1] >= thresh) {
@@ -312,7 +319,7 @@ void Cchksp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                 }
                 nrun += nt;
                 //
-                //              Do only the condition estimate if INFO is not 0.
+                // Do only the condition estimate if INFO is not 0.
                 //
                 if (trfcon) {
                     rcondc = zero;
@@ -322,8 +329,8 @@ void Cchksp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                 for (irhs = 1; irhs <= nns; irhs = irhs + 1) {
                     nrhs = nsval[irhs - 1];
                     //
-                    //+    TEST 3
-                    //              Solve and compute residual for  A * X = B.
+                    // +    TEST 3
+                    // Solve and compute residual for  A * X = B.
                     //
                     strncpy(srnamt, "Clarhs", srnamt_len);
                     Clarhs(path, &xtype, uplo, " ", n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
@@ -332,7 +339,7 @@ void Cchksp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                     strncpy(srnamt, "Csptrs", srnamt_len);
                     Csptrs(uplo, n, nrhs, afac, iwork, x, lda, info);
                     //
-                    //              Check error code from Csptrs.
+                    // Check error code from Csptrs.
                     //
                     if (info != 0) {
                         Alaerh(path, "Csptrs", info, 0, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
@@ -341,18 +348,18 @@ void Cchksp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                     Clacpy("Full", n, nrhs, b, lda, work, lda);
                     Cspt02(uplo, n, nrhs, a, x, lda, work, lda, rwork, result[3 - 1]);
                     //
-                    //+    TEST 4
-                    //              Check solution from generated exact solution.
+                    // +    TEST 4
+                    // Check solution from generated exact solution.
                     //
                     Cget04(n, nrhs, x, lda, xact, lda, rcondc, result[4 - 1]);
                     //
-                    //+    TESTS 5, 6, and 7
-                    //              Use iterative refinement to improve the solution.
+                    // +    TESTS 5, 6, and 7
+                    // Use iterative refinement to improve the solution.
                     //
                     strncpy(srnamt, "Csprfs", srnamt_len);
                     Csprfs(uplo, n, nrhs, a, afac, iwork, b, lda, x, lda, rwork, &rwork[(nrhs + 1) - 1], work, &rwork[(2 * nrhs + 1) - 1], info);
                     //
-                    //              Check error code from Csprfs.
+                    // Check error code from Csprfs.
                     //
                     if (info != 0) {
                         Alaerh(path, "Csprfs", info, 0, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
@@ -361,8 +368,8 @@ void Cchksp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                     Cget04(n, nrhs, x, lda, xact, lda, rcondc, result[5 - 1]);
                     Cppt05(uplo, n, nrhs, a, b, lda, x, lda, xact, lda, rwork, &rwork[(nrhs + 1) - 1], &result[6 - 1]);
                     //
-                    //                 Print information about the tests that did not pass
-                    //                 the threshold.
+                    // Print information about the tests that did not pass
+                    // the threshold.
                     //
                     for (k = 3; k <= 7; k = k + 1) {
                         if (result[k - 1] >= thresh) {
@@ -379,15 +386,15 @@ void Cchksp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                     nrun += 5;
                 }
             //
-            //+    TEST 8
-            //              Get an estimate of RCOND = 1/CNDNUM.
+            // +    TEST 8
+            // Get an estimate of RCOND = 1/CNDNUM.
             //
             statement_140:
                 anorm = Clansp("1", uplo, n, a, rwork);
                 strncpy(srnamt, "Cspcon", srnamt_len);
                 Cspcon(uplo, n, afac, iwork, anorm, rcond, work, info);
                 //
-                //              Check error code from Cspcon.
+                // Check error code from Cspcon.
                 //
                 if (info != 0) {
                     Alaerh(path, "Cspcon", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
@@ -395,7 +402,7 @@ void Cchksp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                 //
                 result[8 - 1] = Rget06(rcond, rcondc);
                 //
-                //              Print the test ratio if it is .GE. THRESH.
+                // Print the test ratio if it is .GE. THRESH.
                 //
                 if (result[8 - 1] >= thresh) {
                     if (nfail == 0 && nerrs == 0) {
@@ -412,10 +419,10 @@ void Cchksp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
         }
     }
     //
-    //     Print a summary of the results.
+    // Print a summary of the results.
     //
     Alasum(path, nout, nfail, nrun, nerrs);
     //
-    //     End of Cchksp
+    // End of Cchksp
     //
 }

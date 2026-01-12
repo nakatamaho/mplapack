@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DCHKRFP.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -297,7 +304,7 @@ void Rchkrfp(void) {
     write(nout, "(/,' End of tests')");
     write(nout, "(' Total time used = ',f12.2,' seconds',/)"), int(s2 - s1);
     //
-    //     End of Rchkrfp
+    // End of Rchkrfp
     //
 }
 

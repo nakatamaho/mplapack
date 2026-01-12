@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine ZERRBD.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -64,7 +71,7 @@ void Cerrbd(const char *path, INTEGER const nunit) {
     ok = true;
     INTEGER nt = 0;
     //
-    //     Test error exits of the SVD routines.
+    // Test error exits of the SVD routines.
     //
     REAL d[nmax];
     REAL e[nmax];
@@ -78,7 +85,7 @@ void Cerrbd(const char *path, INTEGER const nunit) {
     REAL rw[4 * nmax];
     if (Mlsamen(2, c2, "BD")) {
         //
-        //        Cgebrd
+        // Cgebrd
         //
         strncpy(srnamt, "Cgebrd", srnamt_len);
         infot = 1;
@@ -95,7 +102,7 @@ void Cerrbd(const char *path, INTEGER const nunit) {
         chkxer("Cgebrd", infot, nout, lerr, ok);
         nt += 4;
         //
-        //        Cungbr
+        // Cungbr
         //
         strncpy(srnamt, "Cungbr", srnamt_len);
         infot = 1;
@@ -130,7 +137,7 @@ void Cerrbd(const char *path, INTEGER const nunit) {
         chkxer("Cungbr", infot, nout, lerr, ok);
         nt += 10;
         //
-        //        Cunmbr
+        // Cunmbr
         //
         strncpy(srnamt, "Cunmbr", srnamt_len);
         infot = 1;
@@ -174,7 +181,7 @@ void Cerrbd(const char *path, INTEGER const nunit) {
         chkxer("Cunmbr", infot, nout, lerr, ok);
         nt += 13;
         //
-        //        Cbdsqr
+        // Cbdsqr
         //
         strncpy(srnamt, "Cbdsqr", srnamt_len);
         infot = 1;
@@ -204,7 +211,7 @@ void Cerrbd(const char *path, INTEGER const nunit) {
         nt += 8;
     }
     //
-    //     Print a summary line.
+    // Print a summary line.
     //
     if (ok) {
         write(nout, "(1x,a3,' routines passed the tests of the error exits (',i3,"
@@ -214,6 +221,6 @@ void Cerrbd(const char *path, INTEGER const nunit) {
         write(nout, "(' *** ',a3,' routines failed the tests of the error ','exits ***')"), path;
     }
     //
-    //     End of Cerrbd
+    // End of Cerrbd
     //
 }

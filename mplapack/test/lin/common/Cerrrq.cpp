@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine ZERRRQ.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -64,9 +71,9 @@ void Cerrrq(const char *path, INTEGER const nunit) {
     }
     ok = true;
     //
-    //     Error exits for RQ factorization
+    // Error exits for RQ factorization
     //
-    //     Cgerqf
+    // Cgerqf
     //
     strncpy(srnamt, "Cgerqf", srnamt_len);
     infot = 1;
@@ -83,7 +90,7 @@ void Cerrrq(const char *path, INTEGER const nunit) {
     Cgerqf(2, 1, a, 2, b, w, 1, info);
     chkxer("Cgerqf", infot, nout, lerr, ok);
     //
-    //     Cgerq2
+    // Cgerq2
     //
     strncpy(srnamt, "Cgerq2", srnamt_len);
     infot = 1;
@@ -96,7 +103,7 @@ void Cerrrq(const char *path, INTEGER const nunit) {
     Cgerq2(2, 1, a, 1, b, w, info);
     chkxer("Cgerq2", infot, nout, lerr, ok);
     //
-    //     Cgerqs
+    // Cgerqs
     //
     strncpy(srnamt, "Cgerqs", srnamt_len);
     infot = 1;
@@ -121,7 +128,7 @@ void Cerrrq(const char *path, INTEGER const nunit) {
     Cgerqs(1, 1, 2, a, 1, x, b, 1, w, 1, info);
     chkxer("Cgerqs", infot, nout, lerr, ok);
     //
-    //     Cungrq
+    // Cungrq
     //
     strncpy(srnamt, "Cungrq", srnamt_len);
     infot = 1;
@@ -146,7 +153,7 @@ void Cerrrq(const char *path, INTEGER const nunit) {
     Cungrq(2, 2, 0, a, 2, x, w, 1, info);
     chkxer("Cungrq", infot, nout, lerr, ok);
     //
-    //     Cungr2
+    // Cungr2
     //
     strncpy(srnamt, "Cungr2", srnamt_len);
     infot = 1;
@@ -168,7 +175,7 @@ void Cerrrq(const char *path, INTEGER const nunit) {
     Cungr2(2, 2, 0, a, 1, x, w, info);
     chkxer("Cungr2", infot, nout, lerr, ok);
     //
-    //     Cunmrq
+    // Cunmrq
     //
     strncpy(srnamt, "Cunmrq", srnamt_len);
     infot = 1;
@@ -208,7 +215,7 @@ void Cerrrq(const char *path, INTEGER const nunit) {
     Cunmrq("R", "N", 2, 1, 0, a, 1, x, af, 2, w, 1, info);
     chkxer("Cunmrq", infot, nout, lerr, ok);
     //
-    //     Cunmr2
+    // Cunmr2
     //
     strncpy(srnamt, "Cunmr2", srnamt_len);
     infot = 1;
@@ -242,10 +249,10 @@ void Cerrrq(const char *path, INTEGER const nunit) {
     Cunmr2("L", "N", 2, 1, 0, a, 1, x, af, 1, w, info);
     chkxer("Cunmr2", infot, nout, lerr, ok);
     //
-    //     Print a summary line.
+    // Print a summary line.
     //
     Alaesm(path, ok, nout);
     //
-    //     End of Cerrrq
+    // End of Cerrrq
     //
 }

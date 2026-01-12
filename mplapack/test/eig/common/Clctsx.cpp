@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine ZLCTSX.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -64,14 +71,14 @@ bool Clctsx(COMPLEX const /* alpha */, COMPLEX const /* beta */) {
         }
     }
     //
-    //      IF( BETA.EQ.CZERO ) THEN
-    //         Clctsx = ( DBLE( ALPHA ).GT.ZERO )
-    //      ELSE
-    //         Clctsx = ( DBLE( ALPHA/BETA ).GT.ZERO )
-    //      END IF
+    // IF( BETA.EQ.CZERO ) THEN
+    // Clctsx = ( DBLE( ALPHA ).GT.ZERO )
+    // ELSE
+    // Clctsx = ( DBLE( ALPHA/BETA ).GT.ZERO )
+    // END IF
     //
     return return_value;
     //
-    //     End of Clctsx
+    // End of Clctsx
     //
 }

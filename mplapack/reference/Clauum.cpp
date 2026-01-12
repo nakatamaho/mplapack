@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,35 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine ZLAUUM.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Clauum(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, INTEGER &info) {
     //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     bool upper = Mlsame(uplo, "U");
@@ -70,13 +54,13 @@ void Clauum(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0) {
         return;
     }
     //
-    //     Determine the block size for this environment.
+    // Determine the block size for this environment.
     //
     INTEGER nb = iMlaenv(1, "Clauum", uplo, n, -1, -1, -1);
     //
@@ -86,16 +70,16 @@ void Clauum(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
     const REAL one = 1.0;
     if (nb <= 1 || nb >= n) {
         //
-        //        Use unblocked code
+        // Use unblocked code
         //
         Clauu2(uplo, n, a, lda, info);
     } else {
         //
-        //        Use blocked code
+        // Use blocked code
         //
         if (upper) {
             //
-            //           Compute the product U * U**H.
+            // Compute the product U * U**H.
             //
             for (i = 1; i <= n; i = i + nb) {
                 ib = min(nb, n - i + 1);
@@ -108,7 +92,7 @@ void Clauum(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
             }
         } else {
             //
-            //           Compute the product L**H * L.
+            // Compute the product L**H * L.
             //
             for (i = 1; i <= n; i = i + nb) {
                 ib = min(nb, n - i + 1);
@@ -122,6 +106,6 @@ void Clauum(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
         }
     }
     //
-    //     End of Clauum
+    // End of Clauum
     //
 }

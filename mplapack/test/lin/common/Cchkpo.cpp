@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine ZCHKPO.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -94,14 +101,14 @@ void Cchkpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
         iseed[i - 1] = iseedy[i - 1];
     }
     //
-    //     Test the error exits
+    // Test the error exits
     //
     if (tsterr) {
         Cerrpo(path, nout);
     }
     infot = 0;
     //
-    //     Do for each value of N in NVAL
+    // Do for each value of N in NVAL
     //
     for (in = 1; in <= nn; in = in + 1) {
         n = nval[in - 1];
@@ -115,20 +122,20 @@ void Cchkpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
         izero = 0;
         for (imat = 1; imat <= nimat; imat = imat + 1) {
             //
-            //           Do the tests only if DOTYPE( IMAT ) is true.
+            // Do the tests only if DOTYPE( IMAT ) is true.
             //
             if (!dotype[imat - 1]) {
                 goto statement_110;
             }
             //
-            //           Skip types 3, 4, or 5 if the matrix size is too small.
+            // Skip types 3, 4, or 5 if the matrix size is too small.
             //
             zerot = imat >= 3 && imat <= 5;
             if (zerot && n < imat - 2) {
                 goto statement_110;
             }
             //
-            //           Do first for UPLO = 'U', then for UPLO = 'L'
+            // Do first for UPLO = 'U', then for UPLO = 'L'
             //
             for (iuplo = 1; iuplo <= 2; iuplo = iuplo + 1) {
                 uplo[0] = uplos[iuplo - 1];
@@ -147,8 +154,8 @@ void Cchkpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                     goto statement_100;
                 }
                 //
-                //              For types 3-5, zero one row and column of the matrix to
-                //              test that INFO is returned correctly.
+                // For types 3-5, zero one row and column of the matrix to
+                // test that INFO is returned correctly.
                 //
                 if (zerot) {
                     if (imat == 3) {
@@ -160,7 +167,7 @@ void Cchkpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                     }
                     ioff = (izero - 1) * lda;
                     //
-                    //                 Set row and column IZERO of A to 0.
+                    // Set row and column IZERO of A to 0.
                     //
                     if (iuplo == 1) {
                         for (i = 1; i <= izero - 1; i = i + 1) {
@@ -186,11 +193,11 @@ void Cchkpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                     izero = 0;
                 }
                 //
-                //              Set the imaginary part of the diagonals.
+                // Set the imaginary part of the diagonals.
                 //
                 Claipd(n, a, lda + 1, 0);
                 //
-                //              Do for each value of NB in NBVAL
+                // Do for each value of NB in NBVAL
                 //
                 for (inb = 1; inb <= nnb; inb = inb + 1) {
                     nb = nbval[inb - 1];
@@ -208,7 +215,7 @@ void Cchkpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                         goto statement_90;
                     }
                     //
-                    //                 Skip the tests if INFO is not 0.
+                    // Skip the tests if INFO is not 0.
                     //
                     if (info != 0) {
                         goto statement_90;
@@ -234,8 +241,8 @@ void Cchkpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                     //
                     Cpot03(uplo, n, a, lda, ainv, lda, work, lda, rwork, rcondc, result[2 - 1]);
                     //
-                    //                 Print information about the tests that did not pass
-                    //                 the threshold.
+                    // Print information about the tests that did not pass
+                    // the threshold.
                     //
                     for (k = 1; k <= 2; k = k + 1) {
                         if (result[k - 1] >= thresh) {
@@ -251,8 +258,8 @@ void Cchkpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                     }
                     nrun += 2;
                     //
-                    //                 Skip the rest of the tests unless this is the first
-                    //                 blocksize.
+                    // Skip the rest of the tests unless this is the first
+                    // blocksize.
                     //
                     if (inb != 1) {
                         goto statement_90;
@@ -297,8 +304,8 @@ void Cchkpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                         Cget04(n, nrhs, x, lda, xact, lda, rcondc, result[5 - 1]);
                         Cpot05(uplo, n, nrhs, a, lda, b, lda, x, lda, xact, lda, rwork, &rwork[(nrhs + 1) - 1], &result[6 - 1]);
                         //
-                        //                    Print information about the tests that did not pass
-                        //                    the threshold.
+                        // Print information about the tests that did not pass
+                        // the threshold.
                         //
                         for (k = 3; k <= 7; k = k + 1) {
                             if (result[k - 1] >= thresh) {
@@ -329,7 +336,7 @@ void Cchkpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                     //
                     result[8 - 1] = Rget06(rcond, rcondc);
                     //
-                    //                 Print the test ratio if it is .GE. THRESH.
+                    // Print the test ratio if it is .GE. THRESH.
                     //
                     if (result[8 - 1] >= thresh) {
                         if (nfail == 0 && nerrs == 0) {
@@ -350,10 +357,10 @@ void Cchkpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
         }
     }
     //
-    //     Print a summary of the results.
+    // Print a summary of the results.
     //
     Alasum(path, nout, nfail, nrun, nerrs);
     //
-    //     End of Cchkpo
+    // End of Cchkpo
     //
 }

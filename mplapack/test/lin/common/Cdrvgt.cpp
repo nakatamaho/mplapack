@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine ZDRVGT.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -105,7 +112,7 @@ void Cdrvgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
         iseed[i - 1] = iseedy[i - 1];
     }
     //
-    //     Test the error exits
+    // Test the error exits
     //
     if (tsterr) {
         Cerrvx(path, nout);
@@ -114,7 +121,7 @@ void Cdrvgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     //
     for (in = 1; in <= nn; in = in + 1) {
         //
-        //        Do for each value of N in NVAL.
+        // Do for each value of N in NVAL.
         //
         n = nval[in - 1];
         m = max(n - 1, (INTEGER)0);
@@ -126,13 +133,13 @@ void Cdrvgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
         //
         for (imat = 1; imat <= nimat; imat = imat + 1) {
             //
-            //           Do the tests only if DOTYPE( IMAT ) is true.
+            // Do the tests only if DOTYPE( IMAT ) is true.
             //
             if (!dotype[imat - 1]) {
                 goto statement_130;
             }
             //
-            //           Set up parameters with Clatb4.
+            // Set up parameters with Clatb4.
             //
             Clatb4(path, imat, n, n, type, kl, ku, anorm, mode, cond, dist);
             //
@@ -159,12 +166,12 @@ void Cdrvgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                 Ccopy(n, &af[2 - 1], 3, &a[(m + 1) - 1], 1);
             } else {
                 //
-                //              Types 7-12:  generate tridiagonal matrices with
-                //              unknown condition numbers.
+                // Types 7-12:  generate tridiagonal matrices with
+                // unknown condition numbers.
                 //
                 if (!zerot || !dotype[7 - 1]) {
                     //
-                    //                 Generate a matrix with elements from [-1,1].
+                    // Generate a matrix with elements from [-1,1].
                     //
                     Clarnv(2, iseed, n + 2 * m, a);
                     if (anorm != one) {
@@ -172,8 +179,8 @@ void Cdrvgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                     }
                 } else if (izero > 0) {
                     //
-                    //                 Reuse the last matrix by copying back the zeroed out
-                    //                 elements.
+                    // Reuse the last matrix by copying back the zeroed out
+                    // elements.
                     //
                     if (izero == 1) {
                         a[n - 1] = z[2 - 1];
@@ -190,7 +197,7 @@ void Cdrvgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                     }
                 }
                 //
-                //              If IMAT > 7, set one column of the matrix to 0.
+                // If IMAT > 7, set one column of the matrix to 0.
                 //
                 if (!zerot) {
                     izero = 0;
@@ -227,8 +234,8 @@ void Cdrvgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                     fact[0] = 'N';
                 }
                 //
-                //              Compute the condition number for comparison with
-                //              the value returned by Cgtsvx.
+                // Compute the condition number for comparison with
+                // the value returned by Cgtsvx.
                 //
                 if (zerot) {
                     if (ifact == 1) {
@@ -240,17 +247,17 @@ void Cdrvgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                 } else if (ifact == 1) {
                     Ccopy(n + 2 * m, a, 1, af, 1);
                     //
-                    //                 Compute the 1-norm and infinity-norm of A.
+                    // Compute the 1-norm and infinity-norm of A.
                     //
                     anormo = Clangt("1", n, a, &a[(m + 1) - 1], &a[(n + m + 1) - 1]);
                     anormi = Clangt("I", n, a, &a[(m + 1) - 1], &a[(n + m + 1) - 1]);
                     //
-                    //                 Factor the matrix A.
+                    // Factor the matrix A.
                     //
                     Cgttrf(n, af, &af[(m + 1) - 1], &af[(n + m + 1) - 1], &af[(n + 2 * m + 1) - 1], iwork, info);
                     //
-                    //                 Use Cgttrs to solve for one column at a time of
-                    //                 inv(A), computing the maximum column sum as we go.
+                    // Use Cgttrs to solve for one column at a time of
+                    // inv(A), computing the maximum column sum as we go.
                     //
                     ainvnm = zero;
                     for (i = 1; i <= n; i = i + 1) {
@@ -262,7 +269,7 @@ void Cdrvgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         ainvnm = max({ainvnm, RCasum(n, x, 1)});
                     }
                     //
-                    //                 Compute the 1-norm condition number of A.
+                    // Compute the 1-norm condition number of A.
                     //
                     if (anormo <= zero || ainvnm <= zero) {
                         rcondo = one;
@@ -270,8 +277,8 @@ void Cdrvgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         rcondo = (one / anormo) / ainvnm;
                     }
                     //
-                    //                 Use Cgttrs to solve for one column at a time of
-                    //                 inv(A'), computing the maximum column sum as we go.
+                    // Use Cgttrs to solve for one column at a time of
+                    // inv(A'), computing the maximum column sum as we go.
                     //
                     ainvnm = zero;
                     for (i = 1; i <= n; i = i + 1) {
@@ -283,7 +290,7 @@ void Cdrvgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         ainvnm = max({ainvnm, RCasum(n, x, 1)});
                     }
                     //
-                    //                 Compute the infinity-norm condition number of A.
+                    // Compute the infinity-norm condition number of A.
                     //
                     if (anormi <= zero || ainvnm <= zero) {
                         rcondi = one;
@@ -300,7 +307,7 @@ void Cdrvgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         rcondc = rcondi;
                     }
                     //
-                    //                 Generate NRHS random solution vectors.
+                    // Generate NRHS random solution vectors.
                     //
                     ix = 1;
                     for (j = 1; j <= nrhs; j = j + 1) {
@@ -308,23 +315,23 @@ void Cdrvgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         ix += lda;
                     }
                     //
-                    //                 Set the right hand side.
+                    // Set the right hand side.
                     //
                     Clagtm(trans, n, nrhs, one, a, &a[(m + 1) - 1], &a[(n + m + 1) - 1], xact, lda, zero, b, lda);
                     //
                     if (ifact == 2 && itran == 1) {
                         //
-                        //                    --- Test Cgtsv  ---
+                        // --- Test Cgtsv  ---
                         //
-                        //                    Solve the system using Gaussian elimination with
-                        //                    partial pivoting.
+                        // Solve the system using Gaussian elimination with
+                        // partial pivoting.
                         //
                         Ccopy(n + 2 * m, a, 1, af, 1);
                         Clacpy("Full", n, nrhs, b, lda, x, lda);
                         //
                         Cgtsv(n, nrhs, af, &af[(m + 1) - 1], &af[(n + m + 1) - 1], x, lda, info);
                         //
-                        //                    Check error code from Cgtsv .
+                        // Check error code from Cgtsv .
                         //
                         if (info != izero) {
                             Alaerh(path, "Cgtsv ", info, izero, " ", n, n, 1, 1, nrhs, imat, nfail, nerrs, nout);
@@ -332,19 +339,19 @@ void Cdrvgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         nt = 1;
                         if (izero == 0) {
                             //
-                            //                       Check residual of computed solution.
+                            // Check residual of computed solution.
                             //
                             Clacpy("Full", n, nrhs, b, lda, work, lda);
                             Cgtt02(trans, n, nrhs, a, &a[(m + 1) - 1], &a[(n + m + 1) - 1], x, lda, work, lda, result[2 - 1]);
                             //
-                            //                       Check solution from generated exact solution.
+                            // Check solution from generated exact solution.
                             //
                             Cget04(n, nrhs, x, lda, xact, lda, rcondc, result[3 - 1]);
                             nt = 3;
                         }
                         //
-                        //                    Print information about the tests that did not pass
-                        //                    the threshold.
+                        // Print information about the tests that did not pass
+                        // the threshold.
                         //
                         for (k = 2; k <= nt; k = k + 1) {
                             if (result[k - 1] >= thresh) {
@@ -361,11 +368,11 @@ void Cdrvgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         nrun += nt - 1;
                     }
                     //
-                    //                 --- Test Cgtsvx ---
+                    // --- Test Cgtsvx ---
                     //
                     if (ifact > 1) {
                         //
-                        //                    Initialize AF to zero.
+                        // Initialize AF to zero.
                         //
                         for (i = 1; i <= 3 * n - 2; i = i + 1) {
                             af[i - 1] = zero;
@@ -389,8 +396,8 @@ void Cdrvgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                     //
                     if (ifact >= 2) {
                         //
-                        //                    Reconstruct matrix from factors and compute
-                        //                    residual.
+                        // Reconstruct matrix from factors and compute
+                        // residual.
                         //
                         Cgtt01(n, a, &a[(m + 1) - 1], &a[(n + m + 1) - 1], af, &af[(m + 1) - 1], &af[(n + m + 1) - 1], &af[(n + 2 * m + 1) - 1], iwork, work, lda, rwork, result[1 - 1]);
                         k1 = 1;
@@ -401,23 +408,23 @@ void Cdrvgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                     if (info == 0) {
                         trfcon = false;
                         //
-                        //                    Check residual of computed solution.
+                        // Check residual of computed solution.
                         //
                         Clacpy("Full", n, nrhs, b, lda, work, lda);
                         Cgtt02(trans, n, nrhs, a, &a[(m + 1) - 1], &a[(n + m + 1) - 1], x, lda, work, lda, result[2 - 1]);
                         //
-                        //                    Check solution from generated exact solution.
+                        // Check solution from generated exact solution.
                         //
                         Cget04(n, nrhs, x, lda, xact, lda, rcondc, result[3 - 1]);
                         //
-                        //                    Check the error bounds from iterative refinement.
+                        // Check the error bounds from iterative refinement.
                         //
                         Cgtt05(trans, n, nrhs, a, &a[(m + 1) - 1], &a[(n + m + 1) - 1], b, lda, x, lda, xact, lda, rwork, &rwork[(nrhs + 1) - 1], &result[4 - 1]);
                         nt = 5;
                     }
                     //
-                    //                 Print information about the tests that did not pass
-                    //                 the threshold.
+                    // Print information about the tests that did not pass
+                    // the threshold.
                     //
                     for (k = k1; k <= nt; k = k + 1) {
                         if (result[k - 1] >= thresh) {
@@ -430,7 +437,7 @@ void Cdrvgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         }
                     }
                     //
-                    //                 Check the reciprocal of the condition number.
+                    // Check the reciprocal of the condition number.
                     //
                     result[6 - 1] = Rget06(rcond, rcondc);
                     if (result[6 - 1] >= thresh) {
@@ -450,10 +457,10 @@ void Cdrvgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
         }
     }
     //
-    //     Print a summary of the results.
+    // Print a summary of the results.
     //
     Alasvm(path, nout, nfail, nrun, nerrs);
     //
-    //     End of Cdrvgt
+    // End of Cdrvgt
     //
 }

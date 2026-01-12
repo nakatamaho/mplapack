@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,12 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine ZSYSV_AA.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Csysv_aa(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a, INTEGER const lda, INTEGER *ipiv, COMPLEX *b, INTEGER const ldb, COMPLEX *work, INTEGER const lwork, INTEGER &info) {
     //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     bool lquery = (lwork == -1);
@@ -45,7 +52,7 @@ void Csysv_aa(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a,
         info = -5;
     } else if (ldb < max((INTEGER)1, n)) {
         info = -8;
-    } else if (lwork < max((INTEGER)2 * n, 3 * n - 2) && !lquery) {
+    } else if (lwork < max(2 * n, 3 * n - 2) && !lquery) {
         info = -10;
     }
     //
@@ -68,12 +75,12 @@ void Csysv_aa(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a,
         return;
     }
     //
-    //     Compute the factorization A = U**T*T*U or A = L*T*L**T.
+    // Compute the factorization A = U**T*T*U or A = L*T*L**T.
     //
     Csytrf_aa(uplo, n, a, lda, ipiv, work, lwork, info);
     if (info == 0) {
         //
-        //        Solve the system A*X = B, overwriting B with X.
+        // Solve the system A*X = B, overwriting B with X.
         //
         Csytrs_aa(uplo, n, nrhs, a, lda, ipiv, b, ldb, work, lwork, info);
         //
@@ -81,6 +88,6 @@ void Csysv_aa(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a,
     //
     work[1 - 1] = lwkopt;
     //
-    //     End of Csysv_aa
+    // End of Csysv_aa
     //
 }

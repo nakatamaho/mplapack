@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DGTT02.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -38,30 +45,7 @@ using fem::common;
 
 void Rgtt02(const char *trans, INTEGER const n, INTEGER const nrhs, REAL *dl, REAL *d, REAL *du, REAL *x, INTEGER const ldx, REAL *b, INTEGER const ldb, REAL &resid) {
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Quick exit if N = 0 or NRHS = 0
+    // Quick exit if N = 0 or NRHS = 0
     //
     const REAL zero = 0.0;
     resid = zero;
@@ -69,8 +53,8 @@ void Rgtt02(const char *trans, INTEGER const n, INTEGER const nrhs, REAL *dl, RE
         return;
     }
     //
-    //     Compute the maximum over the number of right hand sides of
-    //        norm(B - op(A)*X) / ( norm(A) * norm(X) * EPS ).
+    // Compute the maximum over the number of right hand sides of
+    // norm(B - op(A)*X) / ( norm(A) * norm(X) * EPS ).
     //
     REAL anorm = 0.0;
     if (Mlsame(trans, "N")) {
@@ -79,7 +63,7 @@ void Rgtt02(const char *trans, INTEGER const n, INTEGER const nrhs, REAL *dl, RE
         anorm = Rlangt("I", n, dl, d, du);
     }
     //
-    //     Exit with RESID = 1/EPS if ANORM = 0.
+    // Exit with RESID = 1/EPS if ANORM = 0.
     //
     REAL eps = Rlamch("Epsilon");
     const REAL one = 1.0;
@@ -88,7 +72,7 @@ void Rgtt02(const char *trans, INTEGER const n, INTEGER const nrhs, REAL *dl, RE
         return;
     }
     //
-    //     Compute B - op(A)*X.
+    // Compute B - op(A)*X.
     //
     Rlagtm(trans, n, nrhs, -one, dl, d, du, x, ldx, one, b, ldb);
     //
@@ -105,6 +89,6 @@ void Rgtt02(const char *trans, INTEGER const n, INTEGER const nrhs, REAL *dl, RE
         }
     }
     //
-    //     End of Rgtt02
+    // End of Rgtt02
     //
 }

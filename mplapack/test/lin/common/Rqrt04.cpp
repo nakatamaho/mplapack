@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DQRT04.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -105,8 +112,7 @@ void Rqrt04(INTEGER const m, INTEGER const n, INTEGER const nb, REAL *result) {
     INTEGER ldr = m;
     Rlaset("Full", m, n, zero, zero, r, m);
     Rlacpy("Upper", m, n, af, m, r, m);
-    //
-    //     Compute |R - Q'*A| / |A| and store in RESULT(1)
+    // Compute |R - Q'*A| / |A| and store in RESULT(1)
     //
     Rgemm("T", "N", m, n, m, -one, q, m, a, m, one, r, m);
     REAL *rwork = new REAL[l];
@@ -118,14 +124,14 @@ void Rqrt04(INTEGER const m, INTEGER const n, INTEGER const nb, REAL *result) {
         result[1 - 1] = zero;
     }
     //
-    //     Compute |I - Q'*Q| and store in RESULT(2)
+    // Compute |I - Q'*Q| and store in RESULT(2)
     //
     Rlaset("Full", m, m, zero, one, r, m);
     Rsyrk("U", "C", m, m, -one, q, m, one, r, m);
     resid = Rlansy("1", "Upper", m, r, m, rwork);
     result[2 - 1] = resid / (eps * max((INTEGER)1, m));
     //
-    //     Generate random m-by-n matrix C and a copy CF
+    // Generate random m-by-n matrix C and a copy CF
     //
     REAL *c = new REAL[m * n];
     INTEGER ldc = m;
@@ -136,11 +142,11 @@ void Rqrt04(INTEGER const m, INTEGER const n, INTEGER const nb, REAL *result) {
     REAL *cf = new REAL[m * n];
     Rlacpy("Full", m, n, c, m, cf, m);
     //
-    //     Apply Q to C as Q*C
+    // Apply Q to C as Q*C
     //
     Rgemqrt("L", "N", m, n, k, nb, af, m, t, nb, cf, m, work, info);
     //
-    //     Compute |Q*C - Q*C| / |C|
+    // Compute |Q*C - Q*C| / |C|
     //
     Rgemm("N", "N", m, n, m, -one, q, m, c, m, one, cf, m);
     resid = Rlange("1", m, n, cf, m, rwork);
@@ -150,15 +156,15 @@ void Rqrt04(INTEGER const m, INTEGER const n, INTEGER const nb, REAL *result) {
         result[3 - 1] = zero;
     }
     //
-    //     Copy C into CF again
+    // Copy C into CF again
     //
     Rlacpy("Full", m, n, c, m, cf, m);
     //
-    //     Apply Q to C as QT*C
+    // Apply Q to C as QT*C
     //
     Rgemqrt("L", "T", m, n, k, nb, af, m, t, nb, cf, m, work, info);
     //
-    //     Compute |QT*C - QT*C| / |C|
+    // Compute |QT*C - QT*C| / |C|
     //
     Rgemm("T", "N", m, n, m, -one, q, m, c, m, one, cf, m);
     resid = Rlange("1", m, n, cf, m, rwork);
@@ -168,7 +174,7 @@ void Rqrt04(INTEGER const m, INTEGER const n, INTEGER const nb, REAL *result) {
         result[4 - 1] = zero;
     }
     //
-    //     Generate random n-by-m matrix D and a copy DF
+    // Generate random n-by-m matrix D and a copy DF
     //
     REAL *d = new REAL[n * m];
     INTEGER ldd = n;
@@ -180,11 +186,11 @@ void Rqrt04(INTEGER const m, INTEGER const n, INTEGER const nb, REAL *result) {
     INTEGER lddf = n;
     Rlacpy("Full", n, m, d, n, df, n);
     //
-    //     Apply Q to D as D*Q
+    // Apply Q to D as D*Q
     //
     Rgemqrt("R", "N", n, m, k, nb, af, m, t, nb, df, n, work, info);
     //
-    //     Compute |D*Q - D*Q| / |D|
+    // Compute |D*Q - D*Q| / |D|
     //
     Rgemm("N", "N", n, m, m, -one, d, n, q, m, one, df, n);
     resid = Rlange("1", n, m, df, n, rwork);
@@ -194,15 +200,15 @@ void Rqrt04(INTEGER const m, INTEGER const n, INTEGER const nb, REAL *result) {
         result[5 - 1] = zero;
     }
     //
-    //     Copy D into DF again
+    // Copy D into DF again
     //
     Rlacpy("Full", n, m, d, n, df, n);
     //
-    //     Apply Q to D as D*QT
+    // Apply Q to D as D*QT
     //
     Rgemqrt("R", "T", n, m, k, nb, af, m, t, nb, df, n, work, info);
     //
-    //     Compute |D*QT - D*QT| / |D|
+    // Compute |D*QT - D*QT| / |D|
     //
     Rgemm("N", "T", n, m, m, -one, d, n, q, m, one, df, n);
     resid = Rlange("1", n, m, df, n, rwork);
