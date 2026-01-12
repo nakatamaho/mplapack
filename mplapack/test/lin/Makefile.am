@@ -39,6 +39,18 @@ lib_LTLIBRARIES += liblin__Float128.la liblin_override__Float128.la
 SUBDIRS += _Float128
 endif
 
+# SUBDIRS contains "."; we only parallelize real subdirectories.
+CHECK_SUBDIRS = $(filter-out .,$(SUBDIRS))
+
+.PHONY: check-recursive $(CHECK_SUBDIRS:%=check-subdir-%)
+
+# Override Automake's default check-recursive to enable `make -j check`.
+check-recursive: $(CHECK_SUBDIRS:%=check-subdir-%)
+
+# Generic rule: check-subdir-mpfr -> $(MAKE) -C mpfr check
+check-subdir-%:
+	$(AM_V_at)$(MAKE) $(AM_MAKEFLAGS) -C $* check
+
 if ENABLE_MPFR
 liblin_override_mpfr_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR)  -I$(MPC_INCLUDEDIR) -I$(top_srcdir)/mpfrc++ -D___MPLAPACK_BUILD_WITH_MPFR___ -I$(top_srcdir)/mplapack/test/fable
 liblin_override_mpfr_la_SOURCES = common/Mxerbla.cpp common/iMlaenv.cpp

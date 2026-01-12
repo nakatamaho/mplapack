@@ -1,4 +1,4 @@
-SUBDIRS = 
+SUBDIRS =
 
 if ENABLE_GMP
 SUBDIRS += gmp
@@ -28,3 +28,11 @@ if ENABLE__FLOAT64X
 SUBDIRS += _Float64x
 endif
 
+CHECK_SUBDIRS = $(SUBDIRS)
+
+.PHONY: check-recursive $(CHECK_SUBDIRS:%=check-subdir-%)
+
+check-recursive: $(CHECK_SUBDIRS:%=check-subdir-%)
+
+check-subdir-%:
+	$(AM_V_at)$(MAKE) $(AM_MAKEFLAGS) -C $* check

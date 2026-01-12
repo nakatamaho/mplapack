@@ -3,6 +3,28 @@ check_PROGRAMS = $(mplapack_mpfr_test_PROGRAMS)
 mplapack_mpfr_test_PROGRAMS = xeigtstR_mpfr xeigtstC_mpfr
 mplapack_mpfr_testdir = $(prefix)/lib/$(target)/mplapack/test/eig
 
+# -----------------------------------------------------------------------------
+# MPFR emulation profiles
+#
+# MPFR uses 0.5 <= m < 1 for the mantissa, so IEEE-like emulation uses:
+#   binary64  : emin=-1021,  emax=1024,  prec=53
+#   binary128 : emin=-16381, emax=16384, prec=113
+#
+# Add a new profile by:
+#   1) appending its name to MPFR_PROFILES
+#   2) defining MPFR_ENV_<name> and MPFR_PROFILE_LABEL_<name>
+# -----------------------------------------------------------------------------
+
+MPFR_PROFILES = current binary64 binary128
+
+MPFR_ENV_current  =
+MPFR_ENV_binary64  = MPLAPACK_MPFR_EMAX=1024  MPLAPACK_MPFR_EMIN=-1021  MPLAPACK_MPFR_PRECISION=53
+MPFR_ENV_binary128 = MPLAPACK_MPFR_EMAX=16384 MPLAPACK_MPFR_EMIN=-16381 MPLAPACK_MPFR_PRECISION=113
+
+MPFR_PROFILE_LABEL_current  = current
+MPFR_PROFILE_LABEL_binary64  = binary64 (prec=53 emin=-1021 emax=1024)
+MPFR_PROFILE_LABEL_binary128 = binary128 (prec=113 emin=-16381 emax=16384)
+
 $(check_PROGRAMS): ../libeig_mpfr.la ../libeig_override_mpfr.la
 
 if IS_MINGW
@@ -29,168 +51,99 @@ if IS_MACOS
 	bash $(top_builddir)/misc/fix_dylib_macOS.sh $(mplapack_mpfr_testdir) $(prefix)
 endif
 
-check: Rnep.out Rsep.out Rse2.out Rsvd.out Rec.out Red.out Rgg.out Rgd.out Rsb.out Rsg.out Rbal.out Rbak.out Rgbal.out Rgbak.out Rbb.out Rglm.out Rgqr.out Rgsv.out Rcsd.out Rlse.out \
-       Cnep.out Csep.out Cse2.out Csvd.out Cec.out Ced.out Cgg.out Cgd.out Csb.out Csg.out Cbal.out Cbak.out Cgbal.out Cgbak.out Cbb.out Cglm.out Cgqr.out Cgsv.out Ccsd.out Clse.out
+# -----------------------------------------------------------------------------
+# Test sets (base names; outputs are <test>.<profile>.out)
+# -----------------------------------------------------------------------------
+
+MPFR_REAL_TESTS = \
+	Rnep Rsep Rse2 Rsvd Rec Red Rgg Rgd Rsb Rsg Rbal Rbak Rgbal Rgbak Rbb Rglm Rgqr Rgsv Rcsd Rlse
+
+MPFR_COMPLEX_TESTS = \
+	Cnep Csep Cse2 Csvd Cec Ced Cgg Cgd Csb Csg Cbal Cbak Cgbal Cgbak Cbb Cglm Cgqr Cgsv Ccsd Clse
+
+MPFR_ALL_TESTS = $(MPFR_REAL_TESTS) $(MPFR_COMPLEX_TESTS)
+
+# -----------------------------------------------------------------------------
+# "make check": run per profile in parallel
+# -----------------------------------------------------------------------------
+
+.PHONY: mpfr-check mpfr-check-%
+
+check: mpfr-check
+
+mpfr-check: $(MPFR_PROFILES:%=mpfr-check-%)
+	@echo "MPFR lin tests done for profiles: $(MPFR_PROFILES)"
+
+# Pattern target: builds all <test>.<profile>.out for the given profile.
+mpfr-check-%: $(addsuffix .%.out,$(MPFR_ALL_TESTS))
+	@echo "MPFR profile '$*' done."
 
 clean-local:
 	rm -f *.out *~ \#*
 
-Rnep.out: ../nep.in xeigtstR_mpfr
-	@echo NEP: Testing Nonsymmetric Eigenvalue Problem routines
-	./xeigtstR_mpfr < ../nep.in > $@ 2>&1
+# -----------------------------------------------------------------------------
+# Rule generator (keeps recipes identical; avoids copy/paste per profile)
+# -----------------------------------------------------------------------------
 
-Rsep.out: ../sep.in xeigtstR_mpfr
-	@echo SEP: Testing Symmetric Eigenvalue Problem routines
-	./xeigtstR_mpfr < ../sep.in > $@ 2>&1
+define MPFR_EIG_RULE
+$1.$2.out: $3 $4
+	@echo "$5: $6 [$(MPFR_PROFILE_LABEL_$2)]"
+	@set -e; { \
+		echo "=== MPFR profile: $(MPFR_PROFILE_LABEL_$2) ==="; \
+		$$(MPFR_ENV_$2) ./$4 < $3; \
+	} > $$@ 2>&1
+endef
 
-Rse2.out: ../se2.in xeigtstR_mpfr
-	@echo SEP: Testing Symmetric Eigenvalue Problem routines
-	./xeigtstR_mpfr < ../se2.in > $@ 2>&1
+define GEN_MPFR_EIG_TEST
+$$(foreach p,$$(MPFR_PROFILES),$$(eval $$(call MPFR_EIG_RULE,$1,$$(p),$2,$3,$4,$5)))
+endef
 
-Rsvd.out: ../svd.in xeigtstR_mpfr
-	@echo SVD: Testing Singular Value Decomposition routines
-	./xeigtstR_mpfr < ../svd.in > $@ 2>&1
+# -----------------------------------------------------------------------------
+# Real tests
+# -----------------------------------------------------------------------------
 
-Rec.out: ../Rec.in xeigtstR_mpfr
-	@echo DEC: Testing Eigen Condition Routines
-	./xeigtstR_mpfr < ../Rec.in > $@ 2>&1
+$(eval $(call GEN_MPFR_EIG_TEST,Rnep,../nep.in,xeigtstR_mpfr,NEP,Testing Nonsymmetric Eigenvalue Problem routines))
+$(eval $(call GEN_MPFR_EIG_TEST,Rsep,../sep.in,xeigtstR_mpfr,SEP,Testing Symmetric Eigenvalue Problem routines))
+$(eval $(call GEN_MPFR_EIG_TEST,Rse2,../se2.in,xeigtstR_mpfr,SEP,Testing Symmetric Eigenvalue Problem routines))
+$(eval $(call GEN_MPFR_EIG_TEST,Rsvd,../svd.in,xeigtstR_mpfr,SVD,Testing Singular Value Decomposition routines))
+$(eval $(call GEN_MPFR_EIG_TEST,Rec,../Rec.in,xeigtstR_mpfr,DEC,Testing Eigen Condition Routines))
+$(eval $(call GEN_MPFR_EIG_TEST,Red,../Red.in,xeigtstR_mpfr,DEV,Testing Nonsymmetric Eigenvalue Driver))
+$(eval $(call GEN_MPFR_EIG_TEST,Rgg,../Rgg.in,xeigtstR_mpfr,GGS,Testing Generalized Nonsymmetric Eigenvalue Problem routines))
+$(eval $(call GEN_MPFR_EIG_TEST,Rgd,../Rgd.in,xeigtstR_mpfr,GDD,Testing Nonsymmetric Generalized Eigenvalue Problem driver routine))
+$(eval $(call GEN_MPFR_EIG_TEST,Rsb,../Rsb.in,xeigtstR_mpfr,SBB,Testing banded Schur decomposition routines))
+$(eval $(call GEN_MPFR_EIG_TEST,Rsg,../Rsg.in,xeigtstR_mpfr,SGG,Testing Generalized Symmetric Eigenvalue Problem routines))
+$(eval $(call GEN_MPFR_EIG_TEST,Rbal,../Rbal.in,xeigtstR_mpfr,DGEBAL,Testing the balancing of a real general matrix))
+$(eval $(call GEN_MPFR_EIG_TEST,Rbak,../Rbak.in,xeigtstR_mpfr,DGEBAK,Testing the back transformation of a real balanced matrix))
+$(eval $(call GEN_MPFR_EIG_TEST,Rgbal,../Rgbal.in,xeigtstR_mpfr,DGGBAL,Testing the balancing of a pair of real general matrices))
+$(eval $(call GEN_MPFR_EIG_TEST,Rgbak,../Rgbak.in,xeigtstR_mpfr,DGGBAK,Testing the back transformation of a pair of real balanced matrices))
+$(eval $(call GEN_MPFR_EIG_TEST,Rbb,../Rbb.in,xeigtstR_mpfr,DBB,Testing banded Singular Value Decomposition routines))
+$(eval $(call GEN_MPFR_EIG_TEST,Rglm,../glm.in,xeigtstR_mpfr,GLM,Testing Generalized Linear Regression Model routines))
+$(eval $(call GEN_MPFR_EIG_TEST,Rgqr,../gqr.in,xeigtstR_mpfr,GQR,Testing Generalized QR and RQ factorization routines))
+$(eval $(call GEN_MPFR_EIG_TEST,Rgsv,../gsv.in,xeigtstR_mpfr,GSV,Testing Generalized Singular Value Decomposition routines))
+$(eval $(call GEN_MPFR_EIG_TEST,Rcsd,../csd.in,xeigtstR_mpfr,CSD,Testing CS Decomposition routines))
+$(eval $(call GEN_MPFR_EIG_TEST,Rlse,../lse.in,xeigtstR_mpfr,LSE,Testing Constrained Linear Least Squares routines))
 
-Red.out: ../Red.in xeigtstR_mpfr
-	@echo DEV: Testing Nonsymmetric Eigenvalue Driver
-	./xeigtstR_mpfr < ../Red.in > $@ 2>&1
+# -----------------------------------------------------------------------------
+# Complex tests
+# -----------------------------------------------------------------------------
 
-Rgg.out: ../Rgg.in xeigtstR_mpfr
-	@echo DGG: Testing Nonsymmetric Generalized Eigenvalue Problem routines
-	./xeigtstR_mpfr < ../Rgg.in > $@ 2>&1
-
-Rgd.out: ../Rgd.in xeigtstR_mpfr
-	@echo DGD: Testing Nonsymmetric Generalized Eigenvalue Problem driver routines
-	./xeigtstR_mpfr < ../Rgd.in > $@ 2>&1
-
-Rsb.out: ../Rsb.in xeigtstR_mpfr
-	@echo DSB: Testing Symmetric Eigenvalue Problem routines
-	./xeigtstR_mpfr < ../Rsb.in > $@ 2>&1
-
-Rsg.out: ../Rsg.in xeigtstR_mpfr
-	@echo DSG: Testing Symmetric Generalized Eigenvalue Problem routines
-	./xeigtstR_mpfr < ../Rsg.in > $@ 2>&1
-
-Rbal.out: ../Rbal.in xeigtstR_mpfr
-	@echo Rgebal: Testing the balancing of a general matrix
-	./xeigtstR_mpfr < ../Rbal.in > $@ 2>&1
-
-Rbak.out: ../Rbak.in xeigtstR_mpfr
-	@echo Rgebak: Testing the back transformation of balanced matrix
-	./xeigtstR_mpfr < ../Rbak.in > $@ 2>&1
-
-Rgbal.out: ../Rgbal.in xeigtstR_mpfr
-	@echo Rggbal: Testing the balancing of a pair of general matrices
-	./xeigtstR_mpfr < ../Rgbal.in > $@ 2>&1
-
-Rgbak.out: ../Rgbak.in xeigtstR_mpfr
-	@echo Rggbak: Testing the back transformation of a pair of balanced matrices
-	./xeigtstR_mpfr < ../Rgbak.in > $@ 2>&1
-
-Rbb.out: ../Rbb.in xeigtstR_mpfr
-	@echo DBB: Testing banded Singular Value Decomposition routines
-	./xeigtstR_mpfr < ../Rbb.in > $@ 2>&1
-
-Rglm.out: ../glm.in xeigtstR_mpfr
-	@echo GLM: Testing Generalized Linear Regression Model routines
-	./xeigtstR_mpfr < ../glm.in > $@ 2>&1
-
-Rgqr.out: ../gqr.in xeigtstR_mpfr
-	@echo GQR: Testing Generalized QR and RQ factorization routines
-	./xeigtstR_mpfr < ../gqr.in > $@ 2>&1
-
-Rgsv.out: ../gsv.in xeigtstR_mpfr
-	@echo GSV: Testing Generalized Singular Value Decomposition routines
-	./xeigtstR_mpfr < ../gsv.in > $@ 2>&1
-
-Rcsd.out: ../csd.in xeigtstR_mpfr
-	@echo CSD: Testing CS Decomposition routines
-	./xeigtstR_mpfr < ../csd.in > $@ 2>&1
-
-Rlse.out: ../lse.in xeigtstR_mpfr
-	@echo LSE: Testing Constrained Linear Least Squares routines
-	./xeigtstR_mpfr < ../lse.in > $@ 2>&1
-
-Cnep.out: ../nep.in ./xeigtstC_mpfr
-	@echo NEP: Testing Nonsymmetric Eigenvalue Problem routines
-	./xeigtstC_mpfr < ../nep.in > $@ 2>&1
-
-Csep.out: ../sep.in ./xeigtstC_mpfr
-	@echo SEP: Testing Symmetric Eigenvalue Problem routines
-	./xeigtstC_mpfr < ../sep.in > $@ 2>&1
-
-Cse2.out: ../se2.in ./xeigtstC_mpfr
-	@echo SEP: Testing Symmetric Eigenvalue Problem routines
-	./xeigtstC_mpfr < ../se2.in > $@ 2>&1
-
-Csvd.out: ../svd.in ./xeigtstC_mpfr
-	@echo SVD: Testing Singular Value Decomposition routines
-	./xeigtstC_mpfr < ../svd.in > $@ 2>&1
-
-Cec.out: ../Cec.in ./xeigtstC_mpfr
-	@echo CEC: Testing COMPLEX Eigen Condition Routines
-	./xeigtstC_mpfr < ../Cec.in > $@ 2>&1
-
-Ced.out: ../Ced.in ./xeigtstC_mpfr
-	@echo CES: Testing COMPLEX Nonsymmetric Schur Form Driver
-	./xeigtstC_mpfr < ../Ced.in > $@ 2>&1
-
-Cgg.out: ../Cgg.in ./xeigtstC_mpfr
-	@echo CGG: Testing COMPLEX Nonsymmetric Generalized Eigenvalue Problem routines
-	./xeigtstC_mpfr < ../Cgg.in > $@ 2>&1
-
-Cgd.out: ../Cgd.in ./xeigtstC_mpfr
-	@echo CGD: Testing COMPLEX Nonsymmetric Generalized Eigenvalue Problem driver routines
-	./xeigtstC_mpfr < ../Cgd.in > $@ 2>&1
-
-Csb.out: ../Csb.in ./xeigtstC_mpfr
-	@echo CHB: Testing Hermitian Eigenvalue Problem routines
-	./xeigtstC_mpfr < ../Csb.in > $@ 2>&1
-
-Csg.out: ../Csg.in ./xeigtstC_mpfr
-	@echo CSG: Testing Symmetric Generalized Eigenvalue Problem routines
-	./xeigtstC_mpfr < ../Csg.in > $@ 2>&1
-
-Cbal.out: ../Cbal.in ./xeigtstC_mpfr
-	@echo CGEBAL: Testing the balancing of a COMPLEX general matrix
-	./xeigtstC_mpfr < ../Cbal.in > $@ 2>&1
-
-Cbak.out: ../Cbak.in ./xeigtstC_mpfr
-	@echo CGEBAK: Testing the back transformation of a COMPLEX balanced matrix
-	./xeigtstC_mpfr < ../Cbak.in > $@ 2>&1
-
-Cgbal.out: ../Cgbal.in ./xeigtstC_mpfr
-	@echo CGGBAL: Testing the balancing of a pair of COMPLEX general matrices
-	./xeigtstC_mpfr < ../Cgbal.in > $@ 2>&1
-
-Cgbak.out: ../Cgbak.in ./xeigtstC_mpfr
-	@echo CGGBAK: Testing the back transformation of a pair of COMPLEX balanced matrices
-	./xeigtstC_mpfr < ../Cgbak.in > $@ 2>&1
-
-Cbb.out: ../Cbb.in ./xeigtstC_mpfr
-	@echo CBB: Testing banded Singular Value Decomposition routines
-	./xeigtstC_mpfr < ../Cbb.in > $@ 2>&1
-
-Cglm.out: ../glm.in ./xeigtstC_mpfr
-	@echo GLM: Testing Generalized Linear Regression Model routines
-	./xeigtstC_mpfr < ../glm.in > $@ 2>&1
-
-Cgqr.out: ../gqr.in ./xeigtstC_mpfr
-	@echo GQR: Testing Generalized QR and RQ factorization routines
-	./xeigtstC_mpfr < ../gqr.in > $@ 2>&1
-
-Cgsv.out: ../gsv.in ./xeigtstC_mpfr
-	@echo GSV: Testing Generalized Singular Value Decomposition routines
-	./xeigtstC_mpfr < ../gsv.in > $@ 2>&1
-
-Ccsd.out: ../csd.in ./xeigtstC_mpfr
-	@echo CSD: Testing CS Decomposition routines
-	./xeigtstC_mpfr < ../csd.in > $@ 2>&1
-
-Clse.out: ../lse.in ./xeigtstC_mpfr
-	@echo LSE: Testing Constrained Linear Least Squares routines
-	./xeigtstC_mpfr < ../lse.in > $@ 2>&1
+$(eval $(call GEN_MPFR_EIG_TEST,Cnep,../nep.in,xeigtstC_mpfr,NEP,Testing Nonsymmetric Eigenvalue Problem routines))
+$(eval $(call GEN_MPFR_EIG_TEST,Csep,../sep.in,xeigtstC_mpfr,SEP,Testing Symmetric Eigenvalue Problem routines))
+$(eval $(call GEN_MPFR_EIG_TEST,Cse2,../se2.in,xeigtstC_mpfr,SEP,Testing Symmetric Eigenvalue Problem routines))
+$(eval $(call GEN_MPFR_EIG_TEST,Csvd,../svd.in,xeigtstC_mpfr,SVD,Testing Singular Value Decomposition routines))
+$(eval $(call GEN_MPFR_EIG_TEST,Cec,../Cec.in,xeigtstC_mpfr,DEC,Testing Eigen Condition Routines))
+$(eval $(call GEN_MPFR_EIG_TEST,Ced,../Ced.in,xeigtstC_mpfr,DEV,Testing Nonsymmetric Eigenvalue Driver))
+$(eval $(call GEN_MPFR_EIG_TEST,Cgg,../Cgg.in,xeigtstC_mpfr,GGS,Testing Generalized Nonsymmetric Eigenvalue Problem routines))
+$(eval $(call GEN_MPFR_EIG_TEST,Cgd,../Cgd.in,xeigtstC_mpfr,GDD,Testing Nonsymmetric Generalized Eigenvalue Problem driver routine))
+$(eval $(call GEN_MPFR_EIG_TEST,Csb,../Csb.in,xeigtstC_mpfr,SBB,Testing banded Schur decomposition routines))
+$(eval $(call GEN_MPFR_EIG_TEST,Csg,../Csg.in,xeigtstC_mpfr,SGG,Testing Generalized Symmetric Eigenvalue Problem routines))
+$(eval $(call GEN_MPFR_EIG_TEST,Cbal,../Cbal.in,xeigtstC_mpfr,CGEBAL,Testing the balancing of a COMPLEX general matrix))
+$(eval $(call GEN_MPFR_EIG_TEST,Cbak,../Cbak.in,xeigtstC_mpfr,CGEBAK,Testing the back transformation of a COMPLEX balanced matrix))
+$(eval $(call GEN_MPFR_EIG_TEST,Cgbal,../Cgbal.in,xeigtstC_mpfr,CGGBAL,Testing the balancing of a pair of COMPLEX general matrices))
+$(eval $(call GEN_MPFR_EIG_TEST,Cgbak,../Cgbak.in,xeigtstC_mpfr,CGGBAK,Testing the back transformation of a pair of COMPLEX balanced matrices))
+$(eval $(call GEN_MPFR_EIG_TEST,Cbb,../Cbb.in,xeigtstC_mpfr,CBB,Testing banded Singular Value Decomposition routines))
+$(eval $(call GEN_MPFR_EIG_TEST,Cglm,../glm.in,xeigtstC_mpfr,GLM,Testing Generalized Linear Regression Model routines))
+$(eval $(call GEN_MPFR_EIG_TEST,Cgqr,../gqr.in,xeigtstC_mpfr,GQR,Testing Generalized QR and RQ factorization routines))
+$(eval $(call GEN_MPFR_EIG_TEST,Cgsv,../gsv.in,xeigtstC_mpfr,GSV,Testing Generalized Singular Value Decomposition routines))
+$(eval $(call GEN_MPFR_EIG_TEST,Ccsd,../csd.in,xeigtstC_mpfr,CSD,Testing CS Decomposition routines))
+$(eval $(call GEN_MPFR_EIG_TEST,Clse,../lse.in,xeigtstC_mpfr,LSE,Testing Constrained Linear Least Squares routines))
