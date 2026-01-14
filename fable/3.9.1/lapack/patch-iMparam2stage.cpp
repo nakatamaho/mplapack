@@ -112,16 +112,15 @@ index 4bd4b1b2..12d9517f 100644
          // Invalid value for PRECISION
          //
 @@ -181,8 +154,8 @@ iMparam2stage(INTEGER const ispec, const char *name, const char *opts, INTEGER c
-         // matrix (V,T) of the second stage. should be >= 1.
          //
          // Will add the VECT OPTION HERE next release
--        vect = opts(1, 1);
+         vect = opts[0];
 -        if (vect == "N") {
-+        vect = opts[0];
 +        if (vect == 'N') {
              lhous = max((INTEGER)1, 4 * ni);
          } else {
              // This is not correct, it need to call the ALGO and the stage2
+
 @@ -207,30 +180,39 @@ iMparam2stage(INTEGER const ispec, const char *name, const char *opts, INTEGER c
          // TRD_stage 2: = (2NB+1)*N + KD*NTHREADS
          // TRD_both   : = max(stage1,stage2) + AB ( AB=(KD+1)*N )

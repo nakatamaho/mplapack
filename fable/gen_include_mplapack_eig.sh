@@ -22,6 +22,7 @@ awk '1' ./*.hpp \
   | grep -vE '^[[:space:]]*-' \
   | grep -vF 'common(int argc, char const *argv[]);' \
   | grep -vF 'common(int argc, const char *argv[]);' \
+  | grep -vF 'program_' \
   | grep -v main \
   | sort -u > header_all
 

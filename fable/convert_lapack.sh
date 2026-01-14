@@ -14,6 +14,14 @@ mode="${2:-}"
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 name_map="${script_dir}/mplapack_name_map.txt"
 
+fable_cout_env=()
+case "$mode" in
+    lin|eig)
+        # Enable small CHARACTER*n -> char[] only for lin/eig tests
+        fable_cout_env=(env FABLE_SMALL_CHAR=1)
+        ;;
+esac
+
 case "$mode" in
     "")
         header="${script_dir}/../mplapack/reference/mplapack.h.in"
@@ -118,7 +126,7 @@ tmp_cpp="$(mktemp)"
 # mplapack_name_map.txt from the same directory as this script.
 (
     cd "$script_dir"
-    python -m fable.command_line.cout "$src_abs" > /dev/null
+    "${fable_cout_env[@]}" python -m fable.command_line.cout "$src_abs" > /dev/null
 )
 
 # Ensure the expected generated C++ file exists.

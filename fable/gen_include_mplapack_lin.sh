@@ -21,6 +21,7 @@ cat *hpp \
   | grep -v abs1 \
   | grep -vE '^[[:space:]]*-[[:space:]]+' \
   | grep -v main \
+  | grep -v program_ \
   | sort | uniq > header_all
 
 rm *hpp

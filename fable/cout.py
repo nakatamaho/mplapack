@@ -7,6 +7,26 @@ import math
 import tempfile
 import typing
 
+def _env_flag(name: str, default: bool = False) -> bool:
+    """Parse a boolean environment variable.
+
+    Accepted truthy values:  1, true, yes, on
+    Accepted falsy values:   0, false, no, off, (empty)
+    Other values fall back to Python truthiness.
+    """
+    v = os.environ.get(name)
+    if v is None:
+        return default
+    v = str(v).strip().lower()
+    if v in ("1", "true", "yes", "on"):
+        return True
+    if v in ("0", "false", "no", "off", ""):
+        return False
+    return bool(v)
+
+# Enable the legacy small CHARACTER*n -> char[] optimization only when requested.
+# Default is OFF to prefer fem::str<N> (lower maintenance, fewer edge cases).
+FABLE_SMALL_CHAR_ENABLED = _env_flag("FABLE_SMALL_CHAR", default=False)
 
 def _load_mplapack_signatures():
     """Load mplapack_signatures.py in a robust way.
@@ -232,7 +252,9 @@ def _adjust_actuals_using_signature(arg_string: str, signature, conv_info=None) 
             # IMPORTANT: only do this when the base identifier is a CHARACTER dummy
             # argument emitted as a plain (const) char* (scalar or CHARACTER*1 array),
             # or a small CHARACTER*n scalar mapped to char[].
-            m = re.match(r"^([A-Za-z_][A-Za-z0-9_]*)\s*\[", s)
+            # NOTE: use fullmatch so we do NOT prefix '&' to compound expressions
+            # like 'job[0] + compz[0]' (this would create invalid pointer arithmetic).
+            m = re.fullmatch(r"([A-Za-z_][A-Za-z0-9_]*)\s*\[[^\]]+\]\s*$", s)
             if m:
                 base = m.group(1)
                 if (base in small_char_identifiers
@@ -1363,7 +1385,7 @@ def _rewrite_small_char_substrings(text: str) -> str:
     return out
 
 
-def _emit_small_char_string_assignment(curr_scope, clhs: str, crhs: str) -> bool:
+def _emit_small_char_string_assignment(curr_scope, clhs: str, crhs: str, conv_info=None) -> bool:
     """Emit element-wise assignments for small CHARACTER*n scalars mapped to char[].
 
     This is needed because plain C arrays cannot be assigned in C++:
@@ -1397,7 +1419,9 @@ def _emit_small_char_string_assignment(curr_scope, clhs: str, crhs: str) -> bool
 
     src = m.group(1)
     if src not in small_char_identifiers:
-        return False
+        # Allow substring copies from dummy CHARACTER arguments modeled as plain char*.
+        if conv_info is None or src not in _plain_char_ptr_dummy_cpp_names(conv_info):
+            return False
 
     inner = m.group(2)
     args = _split_top_level_commas(inner)
@@ -1832,6 +1856,67 @@ def _is_plain_character_pointer_dummy(conv_info, name: str) -> bool:
         pass
     return False
 
+def _plain_char_ptr_dummy_cpp_names(conv_info):
+    """Return a cached set of C++ names for CHARACTER dummy arguments modeled as plain (const) char*."""
+    if conv_info is None or getattr(conv_info, "fproc", None) is None:
+        return set()
+    names = set()
+    for id_tok in getattr(conv_info.fproc, "args", []) or []:
+        try:
+            if getattr(id_tok, "value", None) == "*":
+                continue
+            if _is_plain_character_pointer_dummy(conv_info, id_tok.value):
+                cpp_name = conv_info.vmap.get(
+                    id_tok.value, prepend_identifier_if_necessary(id_tok.value))
+                names.add(cpp_name)
+        except Exception:
+            continue
+    return names
+
+def _rewrite_plain_char_ptr_unit_substrings(text: str, conv_info) -> str:
+    """Rewrite Fortran-style unit-length substrings on plain char* dummies.
+
+    Example:
+        path(1, 1)  ->  path[(1) - 1]
+
+    This is only applied to dummy CHARACTER arguments emitted as (const) char*.
+    We intentionally only rewrite unit-length substrings (start == end) because
+    longer substrings generally require an explicit temporary buffer.
+    """
+    names = _plain_char_ptr_dummy_cpp_names(conv_info)
+    if not names:
+        return text
+
+    int_re = re.compile(r'^[+-]?[0-9]+$')
+    name_re = re.compile(r'^[A-Za-z_]\w*$')
+
+    out = text
+    for name in names:
+        # Match: name(arg1, arg2) where arg1/arg2 have no nested parentheses.
+        pat = re.compile(rf"\b{re.escape(name)}\s*\(\s*([^,()]+?)\s*,\s*([^,()]+?)\s*\)")
+
+        def _repl(m):
+            a = m.group(1).strip()
+            b = m.group(2).strip()
+            if a.replace(" ", "") != b.replace(" ", ""):
+                return m.group(0)
+            # Prefer clean C++ for simple cases:
+            #   path(1,1) -> path[0]
+            #   path(i,i) -> path[i - 1]
+            a_key = a.replace(" ", "")
+            if int_re.fullmatch(a_key):
+                try:
+                    return f"{name}[{int(a_key) - 1}]"
+                except Exception:
+                    # Fallback (should be rare)
+                    return f"{name}[{a_key} - 1]"
+            if name_re.fullmatch(a_key):
+                return f"{name}[{a_key} - 1]"
+            # Complex expression: keep parentheses for safety
+            return f"{name}[({a}) - 1]"
+
+        out = pat.sub(_repl, out)
+    return out
 
 def _rewrite_unary_intrinsic(text: str, func_name: str, repl_func):
     """Rewrite occurrences of func_name(arg) using repl_func(arg).
@@ -2827,6 +2912,8 @@ def convert_tokens(conv_info, tokens, commas=False, had_str_concat=None):
     s = rewrite_intrinsics(s)
     # Clean redundant parentheses for unary subscripts only, e.g. a[(k)] -> a[k]
     s = rewrite_unary_bracket_parens(s)
+    # Rewrite unit-length substrings on plain char* dummy arguments: path(1,1) -> path[(1)-1]
+    s = _rewrite_plain_char_ptr_unit_substrings(s, conv_info)
     return s
 
 
@@ -3080,7 +3167,8 @@ def convert_declaration(rapp, conv_info, fdecl, crhs, const):
         # becomes
         #   char name[2];
         #
-        # We only apply this to short fixed-length scalars (length 24).
+        # We only apply this to short fixed-length scalars when enabled via
+        # environment variable FABLE_SMALL_CHAR=1.
         if dt_code == "character" and fdecl.size_tokens is not None:
             size_expr = convert_tokens(
                 conv_info=conv_info,
@@ -3096,7 +3184,7 @@ def convert_declaration(rapp, conv_info, fdecl, crhs, const):
                 # Non-numeric length expression -> fall back to fem::str<...>
                 length_is_small = False
 
-            if length_is_small:
+            if length_is_small and FABLE_SMALL_CHAR_ENABLED:
                 def const_qualifier():
                     if const:
                         return "const "
@@ -3108,6 +3196,11 @@ def convert_declaration(rapp, conv_info, fdecl, crhs, const):
                 # Remember that this scalar CHARACTER*n was mapped to a small char[].
                 small_char_identifiers.add(vname)
                 small_char_identifier_lengths[vname] = length_val
+                # If this declaration had an initializer (typically from a merged assignment),
+                # we cannot initialize a plain C array in the declaration. Ask the caller
+                # to emit an assignment statement that will be expanded into element copies.
+                if crhs is not None:
+                    return True
                 return False
 
         # For plain CHARACTER*1 (mapped to C++ 'char') without an explicit
@@ -4698,7 +4791,7 @@ def convert_executable(
                         return True
                     if (not in_place_op_left() and not in_place_op_right()):
                         if _emit_small_char_string_assignment(
-                                curr_scope=curr_scope, clhs=clhs, crhs=crhs):
+                                curr_scope=curr_scope, clhs=clhs, crhs=crhs, conv_info=conv_info):
                             pass
                         else:
                             # Rewrite substring-style calls on small CHARACTER*n scalars
@@ -6885,15 +6978,19 @@ def _postprocess_ilaenv_char_concat(lines):
             r'^([A-Za-z_][A-Za-z0-9_]*)\s*\(\s*:?\s*1\s*\)$')
         substr_pat3 = re.compile(
             r'^([A-Za-z_][A-Za-z0-9_]*)\s*\(\s*1\s*:\s*1\s*\)$')
+        # Also accept C++-style element forms produced by earlier rewrites:
+        #   job[0], &job[0], job[(1) - 1], &job[(1) - 1]
+        arr0_pat = re.compile(
+            r'^\s*&?\s*([A-Za-z_][A-Za-z0-9_]*)\s*\[\s*0\s*\]\s*$')
+        arr1m1_pat = re.compile(
+            r'^\s*&?\s*([A-Za-z_][A-Za-z0-9_]*)\s*\[\s*\(?\s*1\s*\)?\s*-\s*1\s*\]\s*$')
 
         norm_parts = []
         for p in parts:
-            m = substr_pat1.match(p) or substr_pat2.match(
-                p) or substr_pat3.match(p)
-            if m:
-                base = m.group(1)
-            else:
-                base = p
+            p0 = p.strip()
+            m = (substr_pat1.match(p0) or substr_pat2.match(p0) or substr_pat3.match(p0)
+                 or arr0_pat.match(p0) or arr1m1_pat.match(p0))
+            base = m.group(1) if m else p0
             if not ident_pat.match(base):
                 return None
             norm_parts.append(base.lower())
