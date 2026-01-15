@@ -18,7 +18,7 @@ fable_cout_env=()
 case "$mode" in
     lin|eig)
         # Enable small CHARACTER*n -> char[] only for lin/eig tests
-        fable_cout_env=(env FABLE_SMALL_CHAR=1)
+        fable_cout_env=(env FABLE_SMALL_CHAR=1 FABLE_SUPPRESS_COMMON=1)
         ;;
 esac
 

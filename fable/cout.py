@@ -6,6 +6,22 @@ import os.path
 import math
 import tempfile
 import typing
+from decimal import Decimal, InvalidOperation
+
+def _env_int(name: str, default: int) -> int:
+    v = os.environ.get(name)
+    if v is None:
+        return default
+    try:
+        return int(str(v).strip())
+    except Exception:
+        return default
+
+def _env_str(name: str, default: str) -> str:
+    v = os.environ.get(name)
+    if v is None:
+        return default
+    return str(v).strip()
 
 def _env_flag(name: str, default: bool = False) -> bool:
     """Parse a boolean environment variable.
@@ -27,6 +43,9 @@ def _env_flag(name: str, default: bool = False) -> bool:
 # Enable the legacy small CHARACTER*n -> char[] optimization only when requested.
 # Default is OFF to prefer fem::str<N> (lower maintenance, fewer edge cases).
 FABLE_SMALL_CHAR_ENABLED = _env_flag("FABLE_SMALL_CHAR", default=False)
+
+# If set, do not emit COMMON/SAVE boilerplate structs into generated C++.
+FABLE_SUPPRESS_COMMON = _env_flag("FABLE_SUPPRESS_COMMON", default=False)
 
 def _load_mplapack_signatures():
     """Load mplapack_signatures.py in a robust way.
@@ -240,6 +259,29 @@ def _adjust_actuals_using_signature(arg_string: str, signature, conv_info=None) 
         elif kind in ("PTR_CHAR", "PTR_CHAR_IN", "PTR_CHAR_OUT"):
             # Already passing by address.
             if s.startswith("&"):
+                new_parts.append(part)
+                continue
+
+            # Fortran substring on plain CHARACTER dummy (emitted as const char*):
+            #   name(i,j)  ->  name + (i-1)
+            # This matches LAPACK-style usage (e.g. LSAMEN/LSAME) where the length
+            # is explicit or only leading characters are inspected.
+            m = re.fullmatch(
+                r"([A-Za-z_][A-Za-z0-9_]*)\s*\(\s*([^,()]+?)\s*,\s*([^,()]+?)\s*\)",
+                s,
+            )
+            if m and conv_info is not None and _is_plain_character_pointer_dummy(conv_info, m.group(1)):
+                base = m.group(1)
+                a = m.group(2).strip()  # start index (Fortran 1-based)
+                leading = part[:len(part) - len(s)]
+                try:
+                    off = int(a) - 1
+                    if off == 0:
+                        part = leading + base
+                    else:
+                        part = leading + f"{base} + {off}"
+                except Exception:
+                    part = leading + f"{base} + (({a}) - 1)"
                 new_parts.append(part)
                 continue
 
@@ -754,30 +796,76 @@ def convert_token(vmap, leading, tok, had_str_concat=None):
         return "0x"+tv
     if (tok.is_real()):
         return tv+"f"
+
     if (tok.is_double_precision()):
-        # Pretty-print double precision literals:
-        # - Normalize Fortran D exponent to e/E
-        # - Use 0.0 / 1.0 instead of 0.0e+0 / 1.0e+0
+        # Pretty-print double precision literals in base-10.
+        # Goal: avoid ugly float reformatting (1e-20 -> 9.999..e-21),
+        # and prefer expanded decimals (1e-3 -> 0.001) when reasonable.
         s = tv.replace("D", "d").replace("d", "e")
+
+        # Controls (optional):
+        #   FABLE_FLOAT_LITERAL_STYLE = auto|fixed|scientific|original
+        #   FABLE_FLOAT_FIXED_EXP_MAX = max |exp10| to expand in auto mode (default 20)
+        #   FABLE_FLOAT_FIXED_MAXLEN  = max output length for fixed in auto mode (default 120)
+        style = os.environ.get("FABLE_FLOAT_LITERAL_STYLE", "auto").strip().lower()
         try:
-            v = float(s)
+            fixed_exp_max = int(os.environ.get("FABLE_FLOAT_FIXED_EXP_MAX", "20"))
         except Exception:
-            # Fallback: simple d->e replacement
-            return s
-        # Special cases for common constants
-        if v == 0.0:
-            return "0.0"
-        if v == 1.0:
-            return "1.0"
-        # Generic formatting
-        out = format(v, ".16g")
+            fixed_exp_max = 20
+        try:
+            fixed_max_len = int(os.environ.get("FABLE_FLOAT_FIXED_MAXLEN", "120"))
+        except Exception:
+            fixed_max_len = 120
+
+        # Extract base-10 exponent from the literal text (if present).
+        m = re.search(r"[eE]([+-]?\d+)\s*$", s)
+        exp10 = 0
+        if m:
+            try:
+                exp10 = int(m.group(1))
+            except Exception:
+                exp10 = 0
+
+        if style == "original":
+            out = s
+        else:
+            try:
+                d = Decimal(s)
+            except (InvalidOperation, ValueError):
+                return s
+
+            if d.is_zero():
+                return "0.0"
+            if d == 1:
+                return "1.0"
+
+            # Fixed-point (expanded) form: 1e-3 -> 0.001
+            fixed = format(d, "f")
+            if "." in fixed:
+                fixed = fixed.rstrip("0").rstrip(".")
+
+            # Scientific form (canonical): 1.0e-20 -> 1e-20
+            sci = format(d.normalize(), "E").replace("E", "e").replace("e+", "e")
+
+            if style == "fixed":
+                out = fixed
+            elif style == "scientific":
+                out = sci
+            else:
+                # auto: expand only if exponent is moderate and string does not explode.
+                if abs(exp10) <= fixed_exp_max and len(fixed) <= fixed_max_len:
+                    out = fixed
+                else:
+                    out = sci
+
         # Ensure it looks like a floating literal in C++
         if ("e" not in out and "E" not in out
                 and "." not in out
-                and "nan" not in out
-                and "inf" not in out):
+                and "nan" not in out.lower()
+                and "inf" not in out.lower()):
             out += ".0"
         return out
+
     if (tok.is_complex()):
         return convert_complex_literal(vmap=vmap, tok=tok)
     tok.raise_not_supported()
@@ -9497,6 +9585,10 @@ def process(
         debug=False):
     assert [file_names, all_fprocs].count(None) == 1
 
+    # Environment override: suppress emitting COMMON/SAVE boilerplate structs.
+    if FABLE_SUPPRESS_COMMON:
+        suppress_common = True
+
     # Reset per-run marker set (used to force UNHANDLED initializers for
     # machine-constant-style PARAMETER expressions).
     _FORCE_UNHANDLED_PARAMETER_NAMES.clear()
@@ -9656,7 +9748,8 @@ def process(
                     fproc.dynamic_parameters.add(dp_props.name)
     #
 
-    if (separate_cmn_hpp):
+    emit_cmn_hpp = (separate_cmn_hpp and not suppress_common)
+    if (emit_cmn_hpp):
         cmn_buffer = []
         cmn_callback = cmn_buffer.append
         include_guard(
@@ -9681,7 +9774,7 @@ def process(
             raise
         show_traceback()
         converted_commons_info = None
-    if (separate_cmn_hpp):
+    if (emit_cmn_hpp):
         close_namespace(callback=cmn_callback,
                         namespace=namespace, hpp_guard=True)
         with open("cmn.hpp", "w") as f:
