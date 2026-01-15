@@ -48,7 +48,7 @@ Clarnd(INTEGER const idist, INTEGER *iseed) {
     REAL t1 = Rlaran(iseed);
     REAL t2 = Rlaran(iseed);
     //
-    const REAL two = 2.0e+0;
+    const REAL two = 2.0;
     const REAL one = 1.0;
     const REAL zero = 0.0;
     const REAL twopi = two * pi(zero);
