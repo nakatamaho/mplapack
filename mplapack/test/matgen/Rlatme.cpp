@@ -175,10 +175,17 @@ void Rlatme(INTEGER const n, const char *dist, INTEGER *iseed, REAL *d, INTEGER 
     // Initialize random number generator
     //
     INTEGER i = 0;
+    for (i = 1; i <= 4; i = i + 1) {
+        iseed[i - 1] = mod(abs(iseed[i - 1]), 4096);
+    }
     //
-    //     2)      Set up diagonal of A
+    if (mod(iseed[4 - 1], 2) != 1) {
+        iseed[4 - 1]++;
+    }
     //
-    //             Compute D according to COND and MODE
+    // 2)      Set up diagonal of A
+    //
+    // Compute D according to COND and MODE
     //
     INTEGER iinfo = 0;
     Rlatm1(mode, cond, irsign, idist, iseed, d, n, iinfo);
@@ -194,7 +201,7 @@ void Rlatme(INTEGER const n, const char *dist, INTEGER *iseed, REAL *d, INTEGER 
         //
         temp = abs(d[1 - 1]);
         for (i = 2; i <= n; i = i + 1) {
-            temp = max(temp, REAL(abs(d[i - 1])));
+            temp = max(temp, abs(d[i - 1]));
         }
         //
         if (temp > zero) {
