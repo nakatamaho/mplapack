@@ -36,6 +36,8 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
+#include <mplapack_matgen.h>
+
 void Clarge(INTEGER const n, COMPLEX *a, INTEGER const lda, INTEGER *iseed, COMPLEX *work, INTEGER &info) {
     //
     // Test the input arguments
