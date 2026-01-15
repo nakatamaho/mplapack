@@ -88,7 +88,7 @@ void Rlatm6(INTEGER const type, INTEGER const n, REAL *a, INTEGER const lda, REA
     b[(2 - 1) + (4 - 1) * ldb] = wx - wy;
     b[(5 - 1) * ldb] = -wx + wy;
     b[(2 - 1) + (5 - 1) * ldb] = wx + wy;
-    const REAL two = 2.0e+0;
+    const REAL two = 2.0;
     if (type == 1) {
         a[(3 - 1) * lda] = wx * a[(1 - 1)] + wy * a[(3 - 1) + (3 - 1) * lda];
         a[(2 - 1) + (3 - 1) * lda] = -wx * a[(2 - 1) + (2 - 1) * lda] + wy * a[(3 - 1) + (3 - 1) * lda];
