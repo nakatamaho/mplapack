@@ -36,6 +36,8 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
+#include <mplapack_matgen.h>
+
 void Rlarge(INTEGER const n, REAL *a, INTEGER const lda, INTEGER *iseed, REAL *work, INTEGER &info) {
     //
     // Test the input arguments
