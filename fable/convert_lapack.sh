@@ -14,12 +14,20 @@ mode="${2:-}"
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 name_map="${script_dir}/mplapack_name_map.txt"
 
+
+: "${FABLE_SMALL_CHAR:=12}"
+
 fable_cout_env=()
 case "$mode" in
-    lin|eig)
-        # Enable small CHARACTER*n -> char[] only for lin/eig tests
-        fable_cout_env=(env FABLE_SMALL_CHAR=1 FABLE_SUPPRESS_COMMON=1)
-        ;;
+  lin|eig)
+    fable_cout_env=(env FABLE_SMALL_CHAR="2" FABLE_SUPPRESS_COMMON=True FABLE_SUPPRESS_SAVE=1)
+    ;;
+  matgen)
+    fable_cout_env=(env FABLE_SMALL_CHAR="2" FABLE_SUPPRESS_COMMON=True FABLE_SUPPRESS_SAVE=1)
+    ;;
+  *)
+    fable_cout_env=(env FABLE_SMALL_CHAR="$FABLE_SMALL_CHAR")
+    ;;
 esac
 
 case "$mode" in
