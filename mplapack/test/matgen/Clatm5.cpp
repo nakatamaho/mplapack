@@ -45,7 +45,7 @@ void Clatm5(INTEGER const prtype, INTEGER const m, INTEGER const n, COMPLEX *a, 
     const COMPLEX one = COMPLEX(1.0, 0.0);
     const COMPLEX zero = COMPLEX(0.0, 0.0);
     const COMPLEX half = COMPLEX(0.5, 0.0);
-    const COMPLEX twenty = COMPLEX(2.0, 0.0);
+    const COMPLEX twenty = COMPLEX(20.0, 0.0);
     const COMPLEX two = COMPLEX(2.0, 0.0);
     const REAL rtwo = 2.0;
     INTEGER k = 0;
