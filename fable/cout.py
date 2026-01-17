@@ -328,6 +328,13 @@ def _adjust_actuals_using_signature(arg_string: str, signature, conv_info=None) 
                 if conv_info is not None and _is_dummy_character_arg(conv_info, s):
                     new_parts.append(part)
                     continue
+                # Scalar CHARACTER*n locals emitted as fem::str<N> do NOT
+                # implicitly convert to (const) char*. Pass the fixed buffer.
+                if conv_info is not None and _is_scalar_character_fem_str(conv_info, s):
+                    leading = part[:len(part) - len(s)]
+                    part = leading + s + ".elems"
+                    new_parts.append(part)
+                    continue
                 # Small CHARACTER*n scalars mapped to char[] decay to char*,
                 # so do NOT add '&' here (jbcmpz -> const char*).
                 if s in small_char_identifiers:
@@ -388,6 +395,32 @@ complex_pointer_identifiers = set()
 # small fixed-length CHARACTER scalars mapped to char[]
 small_char_identifiers = set()
 small_char_identifier_lengths = {}  # name -> int length for small char[]
+
+def _fable_small_char_max_len() -> int:
+    """Return max CHARACTER*n length to map to a plain C char[].
+
+    Controlled by env var FABLE_SMALL_CHAR.
+
+    Accepted values:
+      - unset                 : default 10 (historical behavior)
+      - integer string        : use that value (<= 1 disables small-char arrays)
+      - 'false'/'off'/'no'/0  : disable
+      - 'true'/'on'/'yes'     : default 10
+    """
+    raw = os.environ.get("FABLE_SMALL_CHAR")
+    if raw is None:
+        return 10
+    s = str(raw).strip().lower()
+    if s in ("", "true", "on", "yes"):
+        return 10
+    if s in ("false", "off", "no", "0"):
+        return 0
+    try:
+        return int(s)
+    except ValueError:
+        return 10
+
+_FABLE_SMALL_CHAR_MAX_LEN = _fable_small_char_max_len()
 
 # -----------------------------------------------------------------------------
 # Machine-constant-style intrinsics in F90 PARAMETER expressions
@@ -1996,6 +2029,43 @@ def _is_plain_character_pointer_dummy(conv_info, name: str) -> bool:
         pass
     return False
 
+def _is_scalar_character_fem_str(conv_info, name: str) -> bool:
+    """True if 'name' is scalar CHARACTER emitted as fem::str<...> (not char/char[]/dummy)."""
+    if conv_info is None or getattr(conv_info, "fproc", None) is None:
+        return False
+    if _is_dummy_character_arg(conv_info, name):
+        return False
+    if name in small_char_identifiers:
+        return False
+    try:
+        fdecl = conv_info.fproc.fdecl_by_identifier.get(name.lower()) or \
+                conv_info.fproc.fdecl_by_identifier.get(name)
+    except Exception:
+        return False
+    if fdecl is None:
+        return False
+    dt = getattr(fdecl, "data_type", None)
+    dt_code = dt if isinstance(dt, str) else getattr(dt, "value", None)
+    if dt_code != "character":
+        return False
+    if getattr(fdecl, "dim_tokens", None) is not None:
+        return False
+    st = getattr(fdecl, "size_tokens", None)
+    if st is None:
+        return False  # CHARACTER*1 -> char
+    try:
+        if len(st) == 1 and st[0].is_integer() and st[0].value == "1":
+            return False
+    except Exception:
+        pass
+    try:
+        size_expr = convert_tokens(conv_info=conv_info, tokens=st, commas=False).strip()
+        if size_expr == "1":
+            return False
+    except Exception:
+        pass
+    return True
+
 def _plain_char_ptr_dummy_cpp_names(conv_info):
     """Return a cached set of C++ names for CHARACTER dummy arguments modeled as plain (const) char*."""
     if conv_info is None or getattr(conv_info, "fproc", None) is None:
@@ -3307,8 +3377,7 @@ def convert_declaration(rapp, conv_info, fdecl, crhs, const):
         # becomes
         #   char name[2];
         #
-        # We only apply this to short fixed-length scalars when enabled via
-        # environment variable FABLE_SMALL_CHAR=1.
+        # We only apply this to short fixed-length scalars (length <= _FABLE_SMALL_CHAR_MAX_LEN).
         if dt_code == "character" and fdecl.size_tokens is not None:
             size_expr = convert_tokens(
                 conv_info=conv_info,
@@ -3318,7 +3387,7 @@ def convert_declaration(rapp, conv_info, fdecl, crhs, const):
             length_is_small = False
             try:
                 length_val = int(size_expr)
-                if 1 < length_val <= 10:
+                if 1 < length_val <= _FABLE_SMALL_CHAR_MAX_LEN:
                     length_is_small = True
             except ValueError:
                 # Non-numeric length expression -> fall back to fem::str<...>

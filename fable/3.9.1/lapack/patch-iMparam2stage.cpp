@@ -16,11 +16,11 @@ index 4bd4b1b2..12d9517f 100644
      INTEGER return_value = 0;
      //
      // Invalid value for ISPEC
-@@ -52,71 +55,41 @@ iMparam2stage(INTEGER const ispec, const char *name, const char *opts, INTEGER c
+@@ -52,77 +55,41 @@
      INTEGER nthreads = 1;
      // WRITE(*,*) 'IPARAM VOICI NTHREADS ISPEC ',NTHREADS, ISPEC
      //
--    fem::str<12> subnam = 0;
+-    char subnam[12];
 +    char subnam[SUBNAM_LEN];
      INTEGER ic = 0;
      INTEGER iz = 0;
@@ -44,14 +44,14 @@ index 4bd4b1b2..12d9517f 100644
          //
          return_value = -1;
 -        subnam = *name;
--        ic = fem::ichar(subnam(1, 1));
+-        ic = fem::ichar(subnam[0]);
 -        iz = fem::ichar("Z");
 -        if (iz == 90 || iz == 122) {
 -            //
 -            // ASCII character set
 -            //
 -            if (ic >= 97 && ic <= 122) {
--                subnam(1, 1) = fem::fchar(ic - 32);
+-                subnam[0] = fem::fchar(ic - 32);
 -                for (i = 2; i <= 12; i = i + 1) {
 -                    ic = fem::ichar(subnam(i, i));
 -                    if (ic >= 97 && ic <= 122) {
@@ -65,7 +65,7 @@ index 4bd4b1b2..12d9517f 100644
 -            // EBCDIC character set
 -            //
 -            if ((ic >= 129 && ic <= 137) || (ic >= 145 && ic <= 153) || (ic >= 162 && ic <= 169)) {
--                subnam(1, 1) = fem::fchar(ic + 64);
+-                subnam[0] = fem::fchar(ic + 64);
 -                for (i = 2; i <= 12; i = i + 1) {
 -                    ic = fem::ichar(subnam(i, i));
 -                    if ((ic >= 129 && ic <= 137) || (ic >= 145 && ic <= 153) || (ic >= 162 && ic <= 169)) {
@@ -79,7 +79,7 @@ index 4bd4b1b2..12d9517f 100644
 -            // Prime machines:  ASCII+128
 -            //
 -            if (ic >= 225 && ic <= 250) {
--                subnam(1, 1) = fem::fchar(ic - 32);
+-                subnam[0] = fem::fchar(ic - 32);
 -                for (i = 2; i <= 12; i = i + 1) {
 -                    ic = fem::ichar(subnam(i, i));
 -                    if (ic >= 225 && ic <= 250) {
@@ -89,12 +89,17 @@ index 4bd4b1b2..12d9517f 100644
 -            }
 -        }
          //
--        prec = subnam(1, 1);
--        algo = subnam(4, 6);
--        stag = subnam(8, 12);
+         prec = subnam[0];
+-        algo[0] = subnam[(4 - 1)];
+-        algo[1] = subnam[(5 - 1)];
+-        algo[2] = subnam[(6 - 1)];
+-        stag[0] = subnam[(8 - 1)];
+-        stag[1] = subnam[(9 - 1)];
+-        stag[2] = subnam[(10 - 1)];
+-        stag[3] = subnam[(11 - 1)];
+-        stag[4] = subnam[(12 - 1)];
 -        rprec = prec == "S" || prec == "D";
 -        cprec = prec == "C" || prec == "Z";
-+        prec = subnam[0];
 +        algo[0] = subnam[3];
 +        algo[1] = subnam[4];
 +        algo[2] = subnam[5];
@@ -111,7 +116,7 @@ index 4bd4b1b2..12d9517f 100644
          //
          // Invalid value for PRECISION
          //
-@@ -181,8 +154,8 @@ iMparam2stage(INTEGER const ispec, const char *name, const char *opts, INTEGER c
+@@ -188,7 +155,7 @@
          //
          // Will add the VECT OPTION HERE next release
          vect = opts[0];
@@ -120,30 +125,25 @@ index 4bd4b1b2..12d9517f 100644
              lhous = max((INTEGER)1, 4 * ni);
          } else {
              // This is not correct, it need to call the ALGO and the stage2
-
-@@ -183,27 +183,36 @@
-         // + max(2*KD*KD, KD*NTHREADS)
+@@ -217,26 +184,35 @@
          // + (KD+1)*N
          lwork = -1;
--        subnam(1, 1) = prec;
+         subnam[0] = prec;
 -        subnam(2, 6) = "GEQRF";
--        qroptnb = iMlaenv(1, subnam.elems, " ", ni, nbi, -1, -1);
--        subnam(2, 6) = "GELQF";
--        lqoptnb = iMlaenv(1, subnam.elems, " ", nbi, ni, -1, -1);
-+        subnam[0] = prec;
 +        subnam[(2 - 1)] = 'G';
 +        subnam[(3 - 1)] = 'E';
 +        subnam[(4 - 1)] = 'Q';
 +        subnam[(5 - 1)] = 'R';
 +        subnam[(6 - 1)] = 'F';
 +
-+        qroptnb = iMlaenv(1, subnam, " ", ni, nbi, -1, -1);
+         qroptnb = iMlaenv(1, subnam, " ", ni, nbi, -1, -1);
+-        subnam(2, 6) = "GELQF";
 +        subnam[(2 - 1)] = 'G';
 +        subnam[(3 - 1)] = 'E';
 +        subnam[(4 - 1)] = 'L';
 +        subnam[(5 - 1)] = 'Q';
 +        subnam[(6 - 1)] = 'F';
-+        lqoptnb = iMlaenv(1, subnam, " ", nbi, ni, -1, -1);
+         lqoptnb = iMlaenv(1, subnam, " ", nbi, ni, -1, -1);
          // Could be QR or LQ for TRD and the max for BRD
          factoptnb = max(qroptnb, lqoptnb);
 -        if (algo == "TRD") {
