@@ -36,46 +36,23 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
+#include <mplapack_matgen.h>
+
 void Clahilb(INTEGER const n, INTEGER const nrhs, COMPLEX *a, INTEGER const lda, COMPLEX *x, INTEGER const ldx, COMPLEX *b, INTEGER const ldb, REAL *work, INTEGER &info, const char *path) {
-    //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Parameters ..
-    //                  exact.
-    //                  a small componentwise relative error.
-    //     ??? complex uses how many bits ???
-    //
-    //     d's are generated from random permutation of those eight elements.
-    //
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. External Functions
-    //     ..
-    //     .. Executable Statements ..
-    COMPLEX d1[8] = {COMPLEX(-1.0, 0.0), COMPLEX(0.0, 1.0), COMPLEX(-1.0, -1.0), COMPLEX(0.0, -1.0), COMPLEX(1.0, 0.0), COMPLEX(-1.0, 1.0), COMPLEX(1.0, 1.0), COMPLEX(1.0, -1.0)};
-    COMPLEX d2[8] = {COMPLEX(-1.0, 0.0), COMPLEX(0.0, -1.0), COMPLEX(-1.0, 1.0), COMPLEX(0.0, 1.0), COMPLEX(1.0, 0.0), COMPLEX(-1.0, -1.0), COMPLEX(1.0, -1.0), COMPLEX(1.0, 1.0)};
-    COMPLEX invd1[8] = {COMPLEX(-1.0, 0.0), COMPLEX(0.0, -1.0), COMPLEX(-0.5, 0.5), COMPLEX(0.0, 1.0), COMPLEX(1.0, 0.0), COMPLEX(-0.5, -0.5), COMPLEX(0.5, -0.5), COMPLEX(0.5, 0.5)};
-    COMPLEX invd2[8] = {COMPLEX(-1.0, 0.0), COMPLEX(0.0, 1.0), COMPLEX(-0.5, -0.5), COMPLEX(0.0, -1.0), COMPLEX(1.0, 0.0), COMPLEX(-0.5, 0.5), COMPLEX(0.5, 0.5), COMPLEX(0.5, -0.5)};
+    static COMPLEX d1[8] = {COMPLEX(-1.0, 0.0), COMPLEX(0.0, 1.0), COMPLEX(-1.0, -1.0), COMPLEX(0.0, -1.0), COMPLEX(1.0, 0.0), COMPLEX(-1.0, 1.0), COMPLEX(1.0, 1.0), COMPLEX(1.0, -1.0)};
+    static COMPLEX d2[8] = {COMPLEX(-1.0, 0.0), COMPLEX(0.0, -1.0), COMPLEX(-1.0, 1.0), COMPLEX(0.0, 1.0), COMPLEX(1.0, 0.0), COMPLEX(-1.0, -1.0), COMPLEX(1.0, -1.0), COMPLEX(1.0, 1.0)};
+    static COMPLEX invd1[8] = {COMPLEX(-1.0, 0.0), COMPLEX(0.0, -1.0), COMPLEX(-0.5, 0.5), COMPLEX(0.0, 1.0), COMPLEX(1.0, 0.0), COMPLEX(-0.5, -0.5), COMPLEX(0.5, -0.5), COMPLEX(0.5, 0.5)};
+    static COMPLEX invd2[8] = {COMPLEX(-1.0, 0.0), COMPLEX(0.0, 1.0), COMPLEX(-0.5, -0.5), COMPLEX(0.0, -1.0), COMPLEX(1.0, 0.0), COMPLEX(-0.5, 0.5), COMPLEX(0.5, 0.5), COMPLEX(0.5, -0.5)};
     char c2[2];
     c2[0] = path[(2 - 1)];
     c2[1] = path[(3 - 1)];
     //
-    //     Test the input arguments
+    // Test the input arguments
     //
     info = 0;
     const INTEGER nmax_approx = 11;
     if (n < 0 || n > nmax_approx) {
-        info = -1.0;
+        info = -1;
     } else if (nrhs < 0) {
         info = -2;
     } else if (lda < n) {
