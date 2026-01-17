@@ -337,4 +337,6 @@ for pass in $(seq 1 "${PASSES}"); do
   fi
 done
 
+bash "${FABLE}/patch_lapack_test.sh"
+
 echo "ALL DONE"

@@ -3160,9 +3160,18 @@ def convert_data_type(conv_info, fdecl, crhs):
             # If the Fortran code had "CHARACTER*1 normin /'N'/", that will
             # already be reflected in crhs before this point.
         else:
+            # For CHARACTER*n (n > 1) scalars we use fem::str<n>.
+            # IMPORTANT: do not inject an implicit initializer here.
+            #
+            # Reason:
+            #   If we set crhs="0" at this stage, later declaration emission
+            #   cannot see and apply a DATA initializer like:
+            #       DATA intstr / '0123456789' /
+            #
+            # The actual initializer is resolved in convert_declaration() via
+            # build_scalar_data_initializers(), falling back to a zero shortcut
+            # only when no DATA initializer exists.
             ctype = f"fem::str<{csize}>"
-            if crhs is None:
-                crhs = "0"
 
     else:
         def convert_to_ctype_with_size(ctype):
@@ -5604,6 +5613,10 @@ def convert_executable(
 
 
 def export_save_struct(callback, conv_info):
+    # User policy: when COMMON/SAVE boilerplate is suppressed, do not emit
+    # any auto-generated SAVE structs. These will be provided manually.
+    if FABLE_SUPPRESS_COMMON:
+        return
     cci = conv_info.converted_commons_info
     if (cci is not None):
         buffer = cci.save_struct_buffers.get(conv_info.fproc.name.value)
