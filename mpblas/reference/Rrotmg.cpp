@@ -36,24 +36,23 @@
 #include <mpblas.h>
 
 void Rrotmg(REAL &dd1, REAL &dd2, REAL &dx1, REAL const dy1, REAL *dparam) {
-    // SAVE
-    REAL gam = 4096.0;
-    REAL gamsq = 16777216.0;
-    REAL one = 1.0;
-    REAL rgamsq = 0x1p-24;
-    REAL two = 2.0;
     REAL zero = 0.0;
+    REAL one = 1.0;
     REAL dflag = 0.0;
     REAL dh11 = 0.0;
     REAL dh12 = 0.0;
     REAL dh21 = 0.0;
     REAL dh22 = 0.0;
     REAL dp2 = 0.0;
+    REAL two = 2.0;
     REAL dp1 = 0.0;
     REAL dq2 = 0.0;
     REAL dq1 = 0.0;
     REAL du = 0.0;
     REAL dtemp = 0.0;
+    REAL rgamsq = 0x1p-24;
+    REAL gamsq = 16777216.0;
+    REAL gam = 4096.0;
     if (dd1 < zero) {
         // GO ZERO-H-D-AND-DX1..
         dflag = -one;
