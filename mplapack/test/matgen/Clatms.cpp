@@ -192,9 +192,13 @@ void Clatms(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
         iseed[i - 1] = mod(abs(iseed[i - 1]), 4096);
     }
     //
-    //     2)      Set up D  if indicated.
+    if (mod(iseed[4 - 1], 2) != 1) {
+        iseed[4 - 1]++;
+    }
     //
-    //             Compute D according to COND and MODE
+    // 2)      Set up D  if indicated.
+    //
+    // Compute D according to COND and MODE
     //
     INTEGER iinfo = 0;
     Rlatm1(mode, cond, irsign, idist, iseed, d, mnmin, iinfo);
@@ -222,7 +226,7 @@ void Clatms(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
         //
         temp = abs(d[1 - 1]);
         for (i = 2; i <= mnmin; i = i + 1) {
-            temp = max(temp, REAL(abs(d[i - 1])));
+            temp = max(temp, abs(d[i - 1]));
         }
         //
         if (temp > zero) {
@@ -279,7 +283,8 @@ void Clatms(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
     INTEGER jku = 0;
     INTEGER jr = 0;
     COMPLEX extra = 0.0;
-    const REAL twopi = 6.28318530717958647692528676655900576839e+0;
+    const REAL two = 2.0;
+    const REAL twopi = two * pi(temp);
     REAL angle = 0.0;
     COMPLEX c = 0.0;
     COMPLEX s = 0.0;
