@@ -121,19 +121,15 @@ index 4bd4b1b2..12d9517f 100644
          } else {
              // This is not correct, it need to call the ALGO and the stage2
 
-@@ -207,30 +180,39 @@ iMparam2stage(INTEGER const ispec, const char *name, const char *opts, INTEGER c
-         // TRD_stage 2: = (2NB+1)*N + KD*NTHREADS
-         // TRD_both   : = max(stage1,stage2) + AB ( AB=(KD+1)*N )
-         // = N*KD + N*max(KD+1,FACTOPTNB)
--        // + max(2*KD*KD, KD*NTHREADS)
-+        // + max((INTEGER)2*KD*KD, KD*NTHREADS)
+@@ -183,27 +183,36 @@
+         // + max(2*KD*KD, KD*NTHREADS)
          // + (KD+1)*N
          lwork = -1;
 -        subnam(1, 1) = prec;
 -        subnam(2, 6) = "GEQRF";
--        qroptnb = iMlaenv(1, &subnam, " ", ni, nbi, -1, -1);
+-        qroptnb = iMlaenv(1, subnam.elems, " ", ni, nbi, -1, -1);
 -        subnam(2, 6) = "GELQF";
--        lqoptnb = iMlaenv(1, &subnam, " ", nbi, ni, -1, -1);
+-        lqoptnb = iMlaenv(1, subnam.elems, " ", nbi, ni, -1, -1);
 +        subnam[0] = prec;
 +        subnam[(2 - 1)] = 'G';
 +        subnam[(3 - 1)] = 'E';

@@ -15,7 +15,7 @@ script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 name_map="${script_dir}/mplapack_name_map.txt"
 
 
-: "${FABLE_SMALL_CHAR:=12}"
+: "${FABLE_SMALL_CHAR:=13}"
 
 fable_cout_env=()
 case "$mode" in
