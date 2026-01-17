@@ -3426,30 +3426,19 @@ def convert_declaration(rapp, conv_info, fdecl, crhs, const):
     ).strip()
 
     # Build a single "number of elements" expression.
-    # If extents are compile-time constants, use numeric sizes to match
-    # the reference style (e.g. MAXTYP -> 15).
+    # Policy: never fold extents into numeric literals, even if they are compile-time constants.
     dt_rank = len(fdecl.dim_tokens) if fdecl.dim_tokens is not None else 0
-    if (not is_dynamic and vals is not None and vals.count(None) == 0
-            and all(isinstance(v, int) for v in vals)):
-        if dt_rank == 1:
-            size_expr = str(int(vals[0]))
-        else:
-            try:
-                size_expr = str(int(math.prod(vals)))
-            except Exception:
-                size_expr = convert_dims_to_static_size(
-                    conv_info=conv_info, dim_tokens=fdecl.dim_tokens)
+
+    if dt_rank == 1:
+        size_expr = dim_expr
     else:
-        if dt_rank == 1:
-            size_expr = dim_expr
+        parts = _split_actuals(dim_expr)
+        if parts and len(parts) == dt_rank:
+            size_expr = " * ".join(parts)
         else:
-            parts = _split_actuals(dim_expr)
-            if parts and len(parts) == dt_rank:
-                size_expr = " * ".join(parts)
-            else:
-                # Conservative fallback: compute a symbolic product of extents.
-                size_expr = convert_dims_to_static_size(
-                    conv_info=conv_info, dim_tokens=fdecl.dim_tokens)
+            # Conservative fallback: compute a symbolic product of extents.
+            size_expr = convert_dims_to_static_size(
+                conv_info=conv_info, dim_tokens=fdecl.dim_tokens)
 
     if is_dynamic:
         # Runtime-sized local array: allocate on the heap and expose a raw pointer.
