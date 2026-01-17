@@ -257,6 +257,20 @@ def _adjust_actuals_using_signature(arg_string: str, signature, conv_info=None) 
                 part = leading + "&" + s
 
         elif kind in ("PTR_CHAR", "PTR_CHAR_IN", "PTR_CHAR_OUT"):
+            # fem::str<N> is not implicitly convertible to (const) char*.
+            # For character-pointer parameters, pass the underlying buffer.
+            m = re.fullmatch(r"&\s*([A-Za-z_][A-Za-z0-9_]*)$", s)
+            if m and _is_fem_str_scalar(conv_info, m.group(1)):
+                leading = part[:len(part) - len(s)]
+                part = leading + m.group(1) + ".elems"
+                new_parts.append(part)
+                continue
+
+            if re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*$", s) and _is_fem_str_scalar(conv_info, s):
+                leading = part[:len(part) - len(s)]
+                part = leading + s + ".elems"
+                new_parts.append(part)
+                continue
             # Already passing by address.
             if s.startswith("&"):
                 new_parts.append(part)
@@ -1105,6 +1119,8 @@ class conversion_info(global_conversion_info):
         "comment_manager",
         "vmap",
         "data_initializers",
+        "array_data_initializers",
+        "hoisted_data_array_names",
         "ld_constant_decls",
     ]
 
@@ -1129,6 +1145,13 @@ class conversion_info(global_conversion_info):
 
         # IMPORTANT: initialize DATA initializer map
         O.data_initializers = None
+
+        # Map: array name (lower) -> (elem_ctype, dims_ints:list[int], init_list:list[str], rank:int)
+        # Used to fold DATA statements into a single static array initializer.
+        O.array_data_initializers = None
+
+        # Set of array names (lower) that were hoisted and emitted as static initializers.
+        O.hoisted_data_array_names = set()
 
         # Map: auto-generated leading-dimension variable -> initializer expression.
         # This avoids hardcoding constants and repeating expressions in flattened 2D indexing.
@@ -1904,6 +1927,35 @@ def _is_dummy_character_arg(conv_info, name: str) -> bool:
     key = (id(conv_info.fproc), name.lower())
     return key in _dummy_character_args
 
+def _is_fem_str_scalar(conv_info, name: str) -> bool:
+    """Return True if 'name' is a scalar CHARACTER mapped to fem::str<N>."""
+    if conv_info is None or getattr(conv_info, "fproc", None) is None:
+        return False
+    if _is_dummy_character_arg(conv_info, name):
+        return False
+    if name in small_char_identifiers:
+        return False
+    try:
+        fdecl = conv_info.fproc.fdecl_by_identifier.get(name.lower()) or conv_info.fproc.fdecl_by_identifier.get(name)
+    except Exception:
+        return False
+    if fdecl is None:
+        return False
+    dt = getattr(fdecl, "data_type", None)
+    dt_code = dt if isinstance(dt, str) else getattr(dt, "value", None)
+    if str(dt_code).lower() != "character":
+        return False
+    if getattr(fdecl, "dim_tokens", None) is not None:
+        return False
+    st = getattr(fdecl, "size_tokens", None)
+    if st is None:
+        return False
+    try:
+        if len(st) == 1 and getattr(st[0], "is_integer", None) and st[0].is_integer() and st[0].value == "1":
+            return False
+    except Exception:
+        pass
+    return True
 
 def _is_plain_character_pointer_dummy(conv_info, name: str) -> bool:
     """Return True if 'name' is a CHARACTER dummy argument emitted as (const) char*.
@@ -3335,6 +3387,14 @@ def convert_declaration(rapp, conv_info, fdecl, crhs, const):
     # Array declaration (local fixed-size arrays).
     # MPLAPACK reference code prefers plain C arrays for small work arrays,
     # e.g. "INTEGER isave[3];".
+    # If this array was already emitted as a hoisted static DATA initializer,
+    # suppress the plain declaration here.
+    try:
+        if (hasattr(conv_info, "hoisted_data_array_names")
+                and fdecl.id_tok.value.lower() in conv_info.hoisted_data_array_names):
+            return False
+    except Exception:
+        pass
     def const_qualifier():
         if (const):
             return "const "
@@ -3366,17 +3426,30 @@ def convert_declaration(rapp, conv_info, fdecl, crhs, const):
     ).strip()
 
     # Build a single "number of elements" expression.
+    # If extents are compile-time constants, use numeric sizes to match
+    # the reference style (e.g. MAXTYP -> 15).
     dt_rank = len(fdecl.dim_tokens) if fdecl.dim_tokens is not None else 0
-    if dt_rank == 1:
-        size_expr = dim_expr
-    else:
-        parts = _split_actuals(dim_expr)
-        if parts and len(parts) == dt_rank:
-            size_expr = " * ".join(parts)
+    if (not is_dynamic and vals is not None and vals.count(None) == 0
+            and all(isinstance(v, int) for v in vals)):
+        if dt_rank == 1:
+            size_expr = str(int(vals[0]))
         else:
-            # Conservative fallback: compute a symbolic product of extents.
-            size_expr = convert_dims_to_static_size(
-                conv_info=conv_info, dim_tokens=fdecl.dim_tokens)
+            try:
+                size_expr = str(int(math.prod(vals)))
+            except Exception:
+                size_expr = convert_dims_to_static_size(
+                    conv_info=conv_info, dim_tokens=fdecl.dim_tokens)
+    else:
+        if dt_rank == 1:
+            size_expr = dim_expr
+        else:
+            parts = _split_actuals(dim_expr)
+            if parts and len(parts) == dt_rank:
+                size_expr = " * ".join(parts)
+            else:
+                # Conservative fallback: compute a symbolic product of extents.
+                size_expr = convert_dims_to_static_size(
+                    conv_info=conv_info, dim_tokens=fdecl.dim_tokens)
 
     if is_dynamic:
         # Runtime-sized local array: allocate on the heap and expose a raw pointer.
@@ -4147,6 +4220,105 @@ def build_scalar_data_initializers(conv_info):
     return init
 
 
+def build_array_data_initializers(conv_info):
+    """Collect constant DATA initializers for local arrays.
+
+    Supported patterns (safe subset):
+      - Single target array name
+      - Any rank >= 1 with compile-time constant extents
+      - No implied DO loops
+      - Optional repetition factors (e.g. 5*4) where the repetition is an integer literal
+
+    Returns:
+      dict name_lower -> (elem_ctype:str, dims_ints:list[int], init_list:list[str], rank:int)
+
+    Notes:
+      - Multi-dimensional DATA is flattened in Fortran storage order as it appears in the DATA list.
+      - We require that the expanded DATA list length equals the product of extents.
+    """
+    init = {}
+    fproc = getattr(conv_info, "fproc", None)
+    if fproc is None:
+        return init
+
+    for nlist, clist in getattr(fproc, "data", []) or []:
+        # Skip implied DO loops
+        implied_dos = []
+        find_implied_dos(result=implied_dos, tokens=nlist)
+        if implied_dos:
+            continue
+
+        # Only handle single simple identifier target
+        if len(nlist) != 1:
+            continue
+        toks = getattr(nlist[0], "value", None)
+        if not toks or len(toks) != 1 or not toks[0].is_identifier():
+            continue
+        id_tok = toks[0]
+
+        try:
+            fdecl = fproc.get_fdecl(id_tok=id_tok)
+        except Exception:
+            fdecl = None
+        if fdecl is None or getattr(fdecl, "dim_tokens", None) is None:
+            continue
+
+        rank = len(getattr(fdecl, "dim_tokens", []) or [])
+        if rank <= 0:
+            continue
+
+        vals = fproc.eval_dimensions_simple(dim_tokens=fdecl.dim_tokens, allow_power=False)
+        if vals is None or vals.count(None) != 0:
+            continue
+        try:
+            dims_ints = [int(v) for v in vals]
+        except Exception:
+            continue
+        if any(v <= 0 for v in dims_ints):
+            continue
+
+        try:
+            n_elems = int(math.prod(dims_ints))
+        except Exception:
+            continue
+        if n_elems <= 0:
+            continue
+
+        expanded = []
+        ok = True
+        for repetition_tok, ctoks in clist:
+            cc = convert_tokens(conv_info=conv_info, tokens=ctoks)
+            rep = 1
+            if repetition_tok is not None:
+                rep_s = convert_tokens(conv_info=conv_info, tokens=[repetition_tok]).strip()
+                try:
+                    rep = int(rep_s)
+                except Exception:
+                    ok = False
+                    break
+                if rep <= 0:
+                    ok = False
+                    break
+            expanded.extend([cc] * rep)
+            if len(expanded) > n_elems:
+                ok = False
+                break
+
+        if not ok:
+            continue
+        if len(expanded) != n_elems:
+            continue
+
+        try:
+            elem_ctype = convert_data_type(conv_info=conv_info, fdecl=fdecl, crhs=None)[0]
+        except Exception:
+            elem_ctype = None
+
+        init[str(id_tok.value).lower()] = (elem_ctype, dims_ints, expanded, rank)
+
+    return init
+
+
 def declare_identifiers_parameter_recursion(
         conv_info, top_scope, curr_scope, tokens):
     from fable.tokenization import extract_identifiers
@@ -4465,13 +4637,7 @@ def declare_identifier(conv_info, top_scope, curr_scope, id_tok, crhs=None):
 def convert_executable(
         callback, conv_info, args_fdecl_with_dim=None, blockdata=None):
     top_scope = scope(parent=None)
-    if (conv_info.fproc.uses_save
-            and not (getattr(conv_info.fproc, "conv_hook", None) is not None
-                     and conv_info.fproc.conv_hook.ignore_common_and_save)):
-        macro = "FEM_CMN_SVE"
-        if (conv_info.fproc.conv_hook.needs_sve_dynamic_parameters):
-            macro += "_DYNAMIC_PARAMETERS"
-        top_scope.append("%s(%s);" % (macro, conv_info.fproc.name.value))
+    # User policy: do not emit FEM_CMN_SVE(...) boilerplate.
     top_scope.remember_insert_point()
     curr_scope = top_scope
     if (args_fdecl_with_dim is not None):
@@ -4521,6 +4687,52 @@ def convert_executable(
                     curr_scope=curr_scope,
                     id_tok=id_tok)
     from fable.tokenization import extract_identifiers
+
+    # Hoist constant DATA initializers for local arrays as static declarations.
+    # This avoids runtime DATA initialization blocks and keeps the static tables
+    # grouped at the top of the function.
+    try:
+        if conv_info.array_data_initializers is None:
+            conv_info.array_data_initializers = build_array_data_initializers(conv_info)
+        if conv_info.array_data_initializers:
+            for nlist, _clist in conv_info.fproc.data:
+                if not nlist or len(nlist) != 1:
+                    continue
+                toks = getattr(nlist[0], "value", None)
+                if not toks or len(toks) != 1 or not toks[0].is_identifier():
+                    continue
+                tgt = toks[0].value.lower()
+                if tgt in conv_info.hoisted_data_array_names:
+                    continue
+                rec = conv_info.array_data_initializers.get(tgt)
+                if rec is None:
+                    continue
+                elem_ctype, dims_ints, init_list, rank = rec
+                fdecl = conv_info.fproc.get_fdecl(id_tok=toks[0])
+                if fdecl is None:
+                    continue
+                # Only hoist local arrays.
+                if not (fdecl.is_local() or fdecl.is_save() or fdecl.is_parameter()):
+                    continue
+                conv_info.set_vmap_from_fdecl(fdecl=fdecl)
+                vname = conv_info.vmap.get(fdecl.id_tok.value, prepend_identifier_if_necessary(fdecl.id_tok.value))
+                mplapack_elem_ctype = convert_to_mplapack_type(elem_ctype)
+                if rank == 1 and dims_ints and len(dims_ints) == 1:
+                    dim_part = f"[{int(dims_ints[0])}]"
+                else:
+                    # For multi-dimensional DATA (e.g. IPIVOT(4,4)), emit an unsized initializer.
+                    dim_part = "[]"
+                top_scope.append(
+                    "static %s %s%s = {%s};" % (
+                        mplapack_elem_ctype,
+                        vname,
+                        dim_part,
+                        ", ".join(init_list),
+                    )
+                )
+                conv_info.hoisted_data_array_names.add(tgt)
+    except Exception:
+        pass
     variant_buffers = convert_variant_allocate_and_bindings(
         conv_info=conv_info, top_scope=top_scope)
     top_scope.remember_insert_point()
@@ -4540,7 +4752,8 @@ def convert_executable(
     if (not top_scope.insert_point_is_current()):
         top_scope.top_append("// SAVE")
         top_scope.append("//")
-    if (conv_info.fproc.conv_hook.needs_is_called_first_time):
+    # User policy: do not emit runtime DATA initialization blocks.
+    if (False and conv_info.fproc.conv_hook.needs_is_called_first_time):
         first_time_scope = top_scope.open_nested_scope(
             opening_text=["if (is_called_first_time) {"])
         if (len(variant_buffers.first_time) != 0):
@@ -4575,7 +4788,7 @@ def convert_executable(
     for line in variant_buffers.bindings:
         top_scope.append(line)
     top_scope.remember_insert_point()
-    if (conv_info.fproc.conv_hook.data_init_after_variant_bind):
+    if (False and conv_info.fproc.conv_hook.data_init_after_variant_bind):
         data_init_scope = top_scope.open_nested_scope(
             opening_text=["if (is_called_first_time) {"])
         convert_data(conv_info=conv_info, data_init_scope=data_init_scope)
