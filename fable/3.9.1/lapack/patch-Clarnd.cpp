@@ -7,7 +7,7 @@ index e3d2bebe..b64fd198 100644
      const REAL one = 1.0;
      const REAL zero = 0.0;
 -    const REAL twopi = 6.28318530717958647692528676655900576839;
-+    const REAL twopi = pi(zero) * two;
++    const REAL twopi = two * pi(zero);
      if (idist == 1) {
          //
          // real and imaginary parts each uniform (0,1)
