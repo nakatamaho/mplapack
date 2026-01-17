@@ -767,6 +767,97 @@ def convert_complex_literal(vmap, tok):
     return "COMPLEX(%s)" % ", ".join(cc)
 
 
+def _normalize_leading_dot_float_literal(s: str) -> str:
+    """Normalize leading-dot decimals: .5 -> 0.5, -.5 -> -0.5.
+
+    This is a cosmetic normalization to keep generated C++ consistent.
+    It intentionally avoids touching member access like `obj.5`.
+    """
+    return re.sub(r'(?<![0-9A-Za-z_])([+-]?)\.(\d)', r'\g<1>0.\g<2>', s)
+
+
+def _format_decimal_float_literal(tv: str, *, is_double_precision: bool) -> str:
+    """Pretty-print Fortran floating literals for C++.
+
+    - Unifies REAL and DOUBLE PRECISION formatting.
+    - Converts Fortran D-exponents to e-exponents.
+    - Optionally expands scientific notation (1e-3 -> 0.001) when reasonable.
+
+    Controls (optional env vars):
+      FABLE_FLOAT_LITERAL_STYLE = auto|fixed|scientific|original
+      FABLE_FLOAT_FIXED_EXP_MAX = max |exp10| to expand in auto mode (default 20)
+      FABLE_FLOAT_FIXED_MAXLEN  = max output length for fixed in auto mode (default 120)
+    """
+    s = tv.strip()
+
+    # Normalize Fortran exponent letters to 'e'.
+    # For DOUBLE PRECISION, D (or d) is the canonical exponent marker.
+    # For REAL, E (or e) is canonical, but we defensively normalize D as well.
+    if is_double_precision:
+        s = s.replace('D', 'd').replace('d', 'e')
+    else:
+        # Only rewrite D/d when it looks like an exponent marker.
+        s = re.sub(r'([dD])([+-]?\d+)\s*$', lambda m: 'e' + m.group(2), s)
+
+    style = os.environ.get('FABLE_FLOAT_LITERAL_STYLE', 'auto').strip().lower()
+    try:
+        fixed_exp_max = int(os.environ.get('FABLE_FLOAT_FIXED_EXP_MAX', '20'))
+    except Exception:
+        fixed_exp_max = 20
+    try:
+        fixed_max_len = int(os.environ.get('FABLE_FLOAT_FIXED_MAXLEN', '120'))
+    except Exception:
+        fixed_max_len = 120
+
+    # Extract base-10 exponent from the literal text (if present).
+    m = re.search(r'[eE]([+-]?\d+)\s*$', s)
+    exp10 = 0
+    if m:
+        try:
+            exp10 = int(m.group(1))
+        except Exception:
+            exp10 = 0
+
+    if style == 'original':
+        out = s
+    else:
+        try:
+            d = Decimal(s)
+        except (InvalidOperation, ValueError):
+            out = s
+        else:
+            if d.is_zero():
+                return '0.0'
+            if d == 1:
+                return '1.0'
+
+            fixed = format(d, 'f')
+            if '.' in fixed:
+                fixed = fixed.rstrip('0').rstrip('.')
+
+            sci = format(d.normalize(), 'E').replace('E', 'e').replace('e+', 'e')
+
+            if style == 'fixed':
+                out = fixed
+            elif style == 'scientific':
+                out = sci
+            else:
+                # auto: expand only if exponent is moderate and string does not explode.
+                if abs(exp10) <= fixed_exp_max and len(fixed) <= fixed_max_len:
+                    out = fixed
+                else:
+                    out = sci
+
+    out = _normalize_leading_dot_float_literal(out)
+
+    # Ensure it looks like a floating literal in C++.
+    if ('e' not in out and 'E' not in out
+            and '.' not in out
+            and 'nan' not in out.lower()
+            and 'inf' not in out.lower()):
+        out += '.0'
+    return out
+
 def convert_token(vmap, leading, tok, had_str_concat=None):
     tv = tok.value
     if tok.is_identifier():
@@ -842,76 +933,9 @@ def convert_token(vmap, leading, tok, had_str_concat=None):
     if (tok.is_hexadecimal()):
         return "0x"+tv
     if (tok.is_real()):
-        return tv+"f"
-
+        return _format_decimal_float_literal(tv, is_double_precision=False)
     if (tok.is_double_precision()):
-        # Pretty-print double precision literals in base-10.
-        # Goal: avoid ugly float reformatting (1e-20 -> 9.999..e-21),
-        # and prefer expanded decimals (1e-3 -> 0.001) when reasonable.
-        s = tv.replace("D", "d").replace("d", "e")
-
-        # Controls (optional):
-        #   FABLE_FLOAT_LITERAL_STYLE = auto|fixed|scientific|original
-        #   FABLE_FLOAT_FIXED_EXP_MAX = max |exp10| to expand in auto mode (default 20)
-        #   FABLE_FLOAT_FIXED_MAXLEN  = max output length for fixed in auto mode (default 120)
-        style = os.environ.get("FABLE_FLOAT_LITERAL_STYLE", "auto").strip().lower()
-        try:
-            fixed_exp_max = int(os.environ.get("FABLE_FLOAT_FIXED_EXP_MAX", "20"))
-        except Exception:
-            fixed_exp_max = 20
-        try:
-            fixed_max_len = int(os.environ.get("FABLE_FLOAT_FIXED_MAXLEN", "120"))
-        except Exception:
-            fixed_max_len = 120
-
-        # Extract base-10 exponent from the literal text (if present).
-        m = re.search(r"[eE]([+-]?\d+)\s*$", s)
-        exp10 = 0
-        if m:
-            try:
-                exp10 = int(m.group(1))
-            except Exception:
-                exp10 = 0
-
-        if style == "original":
-            out = s
-        else:
-            try:
-                d = Decimal(s)
-            except (InvalidOperation, ValueError):
-                return s
-
-            if d.is_zero():
-                return "0.0"
-            if d == 1:
-                return "1.0"
-
-            # Fixed-point (expanded) form: 1e-3 -> 0.001
-            fixed = format(d, "f")
-            if "." in fixed:
-                fixed = fixed.rstrip("0").rstrip(".")
-
-            # Scientific form (canonical): 1.0e-20 -> 1e-20
-            sci = format(d.normalize(), "E").replace("E", "e").replace("e+", "e")
-
-            if style == "fixed":
-                out = fixed
-            elif style == "scientific":
-                out = sci
-            else:
-                # auto: expand only if exponent is moderate and string does not explode.
-                if abs(exp10) <= fixed_exp_max and len(fixed) <= fixed_max_len:
-                    out = fixed
-                else:
-                    out = sci
-
-        # Ensure it looks like a floating literal in C++
-        if ("e" not in out and "E" not in out
-                and "." not in out
-                and "nan" not in out.lower()
-                and "inf" not in out.lower()):
-            out += ".0"
-        return out
+        return _format_decimal_float_literal(tv, is_double_precision=True)
 
     if (tok.is_complex()):
         return convert_complex_literal(vmap=vmap, tok=tok)
@@ -4781,8 +4805,10 @@ def convert_executable(
                 # Only hoist local arrays.
                 if not (fdecl.is_local() or fdecl.is_save() or fdecl.is_parameter()):
                     continue
-                conv_info.set_vmap_from_fdecl(fdecl=fdecl)
-                vname = conv_info.vmap.get(fdecl.id_tok.value, prepend_identifier_if_necessary(fdecl.id_tok.value))
+                # DATA-initialized local arrays are safe to treat as function-local static.
+                # Force local mapping to avoid invalid names like `sve.X` in declarations.
+                conv_info.set_vmap_force_local(fdecl=fdecl)
+                vname = conv_info.vmapped(fdecl=fdecl)
                 mplapack_elem_ctype = convert_to_mplapack_type(elem_ctype)
                 if rank == 1 and dims_ints and len(dims_ints) == 1:
                     dim_part = f"[{int(dims_ints[0])}]"
