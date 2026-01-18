@@ -141,7 +141,7 @@ void Clatmt(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
     //
     bool givens = false;
     if (isym == 1) {
-        if (castREAL(llb + uub) < 0.3e0 * castREAL(max((INTEGER)1, mr + nc))) {
+        if (castREAL(llb + uub) < 0.3 * castREAL(max((INTEGER)1, mr + nc))) {
             givens = true;
         }
     } else {
@@ -226,7 +226,7 @@ void Clatmt(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
         //
         temp = abs(d[1 - 1]);
         for (i = 2; i <= rank; i = i + 1) {
-            temp = max(temp, REAL(abs(d[i - 1])));
+            temp = max(temp, abs(d[i - 1]));
         }
         //
         if (temp > zero) {
@@ -283,7 +283,8 @@ void Clatmt(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
     INTEGER jku = 0;
     INTEGER jr = 0;
     COMPLEX extra = 0.0;
-    const REAL twopi = 6.28318530717958647692528676655900576839e+0;
+    const REAL two = 2.0;
+    const REAL twopi = two * pi(zero);
     REAL angle = 0.0;
     COMPLEX c = 0.0;
     COMPLEX s = 0.0;
