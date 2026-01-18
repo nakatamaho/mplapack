@@ -276,7 +276,7 @@ void Rlatmt(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
     INTEGER jr = 0;
     REAL extra = 0.0;
     const REAL two = 2.0;
-    const REAL twopi = pi(zero) * two;
+    const REAL twopi = two * pi(zero);
     REAL angle = 0.0;
     REAL c = 0.0;
     REAL s = 0.0;
