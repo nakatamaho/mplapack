@@ -11,7 +11,7 @@
  INTEGER
  iMlaenv(INTEGER const ispec, const char *name, const char *opts, INTEGER const n1, INTEGER const n2, INTEGER const n3, INTEGER const n4) {
      INTEGER return_value = 0;
--    fem::str<16> subnam = fem::zero<fem::str<16>>();
+-    fem::str<16> subnam;
 +    char subnam[subnamlen];
 +    memset(subnam, '\0', sizeof(subnam));
      INTEGER ic = 0;
