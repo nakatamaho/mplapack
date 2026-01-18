@@ -7,6 +7,8 @@
 #include <fem/str_arr_ref.hpp>
 #include <fem/utils/double_to_string.hpp>
 #include <fem/utils/misc.hpp>
+#include <type_traits>
+#include <utility>
 #include <fem/utils/real_as_string.hpp>
 #if defined(_MSC_VER)
 #define FEM_WRITE_CRLF true
@@ -14,6 +16,26 @@
 #define FEM_WRITE_CRLF false
 #endif
 namespace fem {
+
+// Helper for printing user-defined numeric types (e.g. multiprecision reals).
+// If sprintnum_short(char*, T const&) is available, we convert the value to a
+// short string and emit it as text, ignoring the numeric edit descriptor.
+namespace detail {
+
+template <typename T>
+struct make_void {
+    typedef void type;
+};
+
+template <typename T, typename = void>
+struct has_sprintnum_short : std::false_type {
+};
+
+template <typename T>
+struct has_sprintnum_short<T, typename make_void<decltype(sprintnum_short(std::declval<char*>(), std::declval<T const&>()))>::type> : std::true_type {
+};
+} // namespace detail
+
 struct write_loop_base {
     bool write_crlf;
     unsigned pos;
@@ -307,6 +329,27 @@ class write_loop : write_loop_base
         } else {
             out.reset();
             throw TBXX_NOT_IMPLEMENTED();
+        }
+        return *this;
+    }
+
+    // Fallback for user-defined numeric types (e.g. multiprecision reals).
+    // We intentionally ignore the numeric edit descriptor (g/f/e/d/...) and
+    // emit the short text produced by sprintnum_short.
+    template <typename T>
+    typename std::enable_if<detail::has_sprintnum_short<T>::value && !std::is_arithmetic<T>::value, write_loop&>::type operator,(T const& val) {
+        if (io_mode == io_unformatted) {
+            out.reset();
+            throw TBXX_NOT_IMPLEMENTED();
+        }
+        char buf[256];
+        sprintnum_short(buf, val);
+        buf[sizeof(buf) - 1] = '\0';
+        if (io_mode == io_list_directed) {
+           to_stream(buf, std::strlen(buf));
+            prev_was_string = false;
+        } else {
+           (*this), buf;
         }
         return *this;
     }
