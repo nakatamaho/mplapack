@@ -4458,6 +4458,23 @@ def build_scalar_data_initializers(conv_info):
 
     return init
 
+def _get_scalar_data_initializer(conv_info, name: str):
+    """Return the C++ literal for a scalar DATA initializer of 'name', or None.
+
+    This is a small helper used in declaration emission to recognize
+    DATA-initialized scalars that should be modeled as function-local
+    static variables.
+    """
+    if conv_info is None or getattr(conv_info, "fproc", None) is None:
+        return None
+    if not hasattr(conv_info, "data_initializers"):
+        return None
+    if conv_info.data_initializers is None:
+        conv_info.data_initializers = build_scalar_data_initializers(conv_info)
+    try:
+        return conv_info.data_initializers.get(str(name).lower())
+    except Exception:
+        return None
 
 def build_array_data_initializers(conv_info):
     """Collect constant DATA initializers for local arrays.
@@ -4758,6 +4775,30 @@ def declare_identifier(conv_info, top_scope, curr_scope, id_tok, crhs=None):
         and getattr(conv_info.fproc, "conv_hook", None) is not None
         and conv_info.fproc.conv_hook.ignore_common_and_save
     )
+
+    # Treat simple DATA-initialized SAVE scalars as function-local static
+    # variables instead of routing them through `sve.<name>`.
+    #
+    # Fortran semantics: a local variable with a DATA initializer has static
+    # storage duration (effectively SAVE). Modeling it as a function-local
+    # `static` keeps the code simple and avoids SAVE structs/indirections.
+    if (fdecl is not None
+            and fdecl.is_save()
+            and not ignore_cs
+            and getattr(fdecl, "dim_tokens", None) is None):
+        init = _get_scalar_data_initializer(conv_info, fdecl.id_tok.value)
+        if init is not None:
+            # Force a plain local C++ identifier (no 'sve.' prefix).
+            conv_info.set_vmap_force_local(fdecl=fdecl)
+            vname = conv_info.vmapped(fdecl=fdecl)
+            ctype = convert_data_type(
+                conv_info=conv_info, fdecl=fdecl, crhs=None)[0]
+            mplapack_ctype = convert_to_mplapack_type(ctype)
+            rapp = get_rapp()
+            rapp(f"static {mplapack_ctype} {vname} = {init};")
+            # If we were called from an assignment, the assignment must still
+            # be emitted (do NOT fold into the static initializer).
+            return crhs is not None
 
     if (fdecl is not None
         and (fdecl.is_local()
