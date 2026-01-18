@@ -2688,6 +2688,37 @@ def convert_tokens(conv_info, tokens, commas=False, had_str_concat=None):
     prev_tok = None
     if (had_str_concat is None):
         had_str_concat = mutable(value=False)
+
+    # In I/O lists, NAME(i) and A(i,j) must be treated as array references,
+    # not as function calls. convert_tokens() already does the right thing for
+    # general expressions; this helper mirrors the same indexing rules here.
+    def _io_is_simple_atom(expr: str) -> bool:
+        core = _strip_outer_parens_balanced(expr.strip())
+        if _ident_re.fullmatch(core) or _int_lit_re.fullmatch(core):
+            return True
+        # Also treat a single array element like name[...] as "simple".
+        if re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*\s*\[[^\]]+\]\s*$", core):
+            return True
+        return False
+
+    def _io_atom_or_paren(expr: str) -> str:
+        core = _strip_outer_parens_balanced(expr.strip())
+        if _io_is_simple_atom(core):
+            return core
+        return f"({expr.strip()})"
+
+    def _io_index_1d(i_expr: str, lb_expr: str) -> str:
+        lb_expr = lb_expr.strip()
+        if lb_expr == "0":
+            return _io_atom_or_paren(i_expr)
+        return f"{_io_atom_or_paren(i_expr)} - {_io_atom_or_paren(lb_expr)}"
+
+    def _io_offset(idx_expr: str, lb_expr: str) -> str:
+        lb_expr = lb_expr.strip()
+        if lb_expr == "0":
+            return _io_atom_or_paren(idx_expr)
+        return f"{_io_atom_or_paren(idx_expr)} - {_io_atom_or_paren(lb_expr)}"
+
     from fable.tokenization import group_power
     for tok in group_power(tokens=tokens):
         if (tok.is_seq()):
@@ -3472,6 +3503,23 @@ def convert_declaration(rapp, conv_info, fdecl, crhs, const):
                     fdecl.id_tok.value.lower())
                 if init is not None:
                     crhs = init
+            # For scalar CHARACTER*n mapped to fem::str<N>, do not force a
+            # zero initializer when there is no explicit initializer.
+            #
+            # This preserves Fortran semantics where an uninitialized local
+            # CHARACTER variable is undefined until assigned (unless it has
+            # a DATA initializer).
+            if (crhs is None
+                    and (not const)
+                    and isinstance(ctype, str)
+                    and ctype.startswith("fem::str<")):
+                def const_qualifier():
+                    if const:
+                        return "const "
+                    return ""
+                mplapack_ctype = convert_to_mplapack_type(ctype)
+                rapp("%s%s %s;" % (const_qualifier(), mplapack_ctype, vname))
+                return False
 
             # Fallback: zero-initialize as before
             if crhs is None:
@@ -3752,6 +3800,40 @@ def find_implied_dos(result, tokens):
         elif (tok.is_implied_do()):
             result.append(tok)
 
+# Helpers for array indexing expressions in I/O lists.
+# In convert_io_loop(), NAME(i) must be treated as an array element, not a function call.
+def _io_is_simple_atom(expr: str) -> bool:
+    s = expr.strip()
+    # identifier or integer literal
+    if re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", s):
+        return True
+    if re.fullmatch(r"[0-9]+", s):
+        return True
+    # already an array element like a[...]
+    if re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*\s*\[[^\]]+\]\s*", s):
+        return True
+    return False
+
+
+def _io_atom_or_paren(expr: str) -> str:
+    s = expr.strip()
+    if _io_is_simple_atom(s):
+        return s
+    return f"({s})"
+
+
+def _io_index_1d(i_expr: str, lb_expr: str) -> str:
+    lb = lb_expr.strip()
+    if lb == "0":
+        return _io_atom_or_paren(i_expr)
+    return f"{_io_atom_or_paren(i_expr)} - {_io_atom_or_paren(lb)}"
+
+
+def _io_offset(idx_expr: str, lb_expr: str) -> str:
+    lb = lb_expr.strip()
+    if lb == "0":
+        return _io_atom_or_paren(idx_expr)
+    return f"{_io_atom_or_paren(idx_expr)} - {_io_atom_or_paren(lb)}"
 
 def convert_io_loop(
         io_scope, io_op, conv_info, tokens, cbuf=None, had_str_concat=None):
@@ -3813,19 +3895,85 @@ def convert_io_loop(
                 had_str_concat=had_str_concat)
             cbuf.append_comma()
         elif (tok.is_parentheses()):
-            cbuf.append_opening_parenthesis()
-            if (cmn_needs_to_be_inserted(conv_info=conv_info, prev_tok=prev_tok)):
-                cbuf.append("cmn")
-                if (len(tok.value) != 0):
-                    cbuf.append_comma()
-            convert_io_loop(
-                io_scope,
-                io_op,
-                conv_info,
-                tokens=tok.value,
-                cbuf=cbuf,
-                had_str_concat=had_str_concat)
-            cbuf.append_closing_parenthesis()
+            # Detect array reference: A(i) / A(i,j) inside I/O lists.
+            # The normal expression converter (convert_tokens) handles this,
+            # but the I/O list converter historically treated parentheses as
+            # plain grouping. That produced invalid C++ like mval(i).
+            is_array_ref = False
+            fdecl = None
+            if (prev_tok is not None
+                    and prev_tok.is_identifier()
+                    and conv_info is not None
+                    and conv_info.fproc is not None):
+                try:
+                    fdecl = conv_info.fproc.get_fdecl(id_tok=prev_tok)
+                except Exception:
+                    fdecl = None
+
+            if (fdecl is not None
+                    and getattr(fdecl, "dim_tokens", None) is not None
+                    and not fdecl.is_user_defined_callable()):
+                is_array_ref = True
+
+            if (is_array_ref):
+                idx_str = convert_tokens(
+                    conv_info=conv_info,
+                    tokens=tok.value,
+                    commas=True,
+                    had_str_concat=had_str_concat)
+                parts = _split_actuals(idx_str)
+
+                if (len(parts) == 1):
+                    i_expr = parts[0].strip()
+                    lb_expr = get_lower_bound(conv_info, fdecl, 0).strip()
+                    cbuf.append("[" + _io_index_1d(i_expr, lb_expr) + "]")
+
+                elif (len(parts) == 2):
+                    i_expr = parts[0].strip()
+                    j_expr = parts[1].strip()
+                    lb1 = get_lower_bound(conv_info, fdecl, 0).strip()
+                    lb2 = get_lower_bound(conv_info, fdecl, 1).strip()
+
+                    default_ldname = "ld" + prev_tok.value.lower()
+                    ldexpr = get_leading_dimension_expr(
+                        conv_info, fdecl, default=default_ldname)
+                    ldexpr = _maybe_use_ld_variable(
+                        conv_info, ldexpr, default_ldname)
+
+                    row_off = _io_offset(i_expr, lb1)
+                    col_off = _io_offset(j_expr, lb2)
+                    index_expr = f"({row_off}) + ({col_off}) * {ldexpr}"
+                    cbuf.append("[" + index_expr + "]")
+
+                else:
+                    # Fallback: treat as a normal parenthesized expression.
+                    cbuf.append_opening_parenthesis()
+                    if (cmn_needs_to_be_inserted(conv_info=conv_info, prev_tok=prev_tok)):
+                        cbuf.append("cmn")
+                        if (len(tok.value) != 0):
+                            cbuf.append_comma()
+                    convert_io_loop(
+                        io_scope,
+                        io_op,
+                        conv_info,
+                        tokens=tok.value,
+                        cbuf=cbuf,
+                        had_str_concat=had_str_concat)
+                    cbuf.append_closing_parenthesis()
+            else:
+                cbuf.append_opening_parenthesis()
+                if (cmn_needs_to_be_inserted(conv_info=conv_info, prev_tok=prev_tok)):
+                    cbuf.append("cmn")
+                    if (len(tok.value) != 0):
+                        cbuf.append_comma()
+                convert_io_loop(
+                    io_scope,
+                    io_op,
+                    conv_info,
+                    tokens=tok.value,
+                    cbuf=cbuf,
+                    had_str_concat=had_str_concat)
+                cbuf.append_closing_parenthesis()
         elif (tok.is_implied_do()):
             cbuf.flush()
             from fable.tokenization import implied_do_info
