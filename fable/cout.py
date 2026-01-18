@@ -3384,6 +3384,17 @@ def convert_declaration(rapp, conv_info, fdecl, crhs, const):
             rapp("%s%s %s;" % (const_qualifier(), mplapack_ctype, vname))
             return False
 
+        # For fixed-length CHARACTER scalars emitted as fem::str<N>,
+        # do NOT inject any artificial initializer (no fem::zero<> fallback).
+        # This matches Fortran semantics: local CHARACTER is not implicitly initialized.
+        if crhs is None and ctype.startswith("fem::str<"):
+            def const_qualifier():
+                if const:
+                    return "const "
+                return ""
+            mplapack_ctype = convert_to_mplapack_type(ctype)
+            rapp("%s%s %s;" % (const_qualifier(), mplapack_ctype, vname))
+            return False
         if crhs is None:
             # Try DATA-based initializer for simple scalar DATA
             if hasattr(conv_info, "data_initializers"):
@@ -3394,16 +3405,14 @@ def convert_declaration(rapp, conv_info, fdecl, crhs, const):
                     fdecl.id_tok.value.lower())
                 if init is not None:
                     crhs = init
-            # For scalar CHARACTER*n mapped to fem::str<N>, do not force a
-            # zero initializer when there is no explicit initializer.
+
+            # For fixed-length CHARACTER scalars emitted as fem::str<N>, avoid injecting
+            # an artificial initializer (no fem::zero<> fallback). If there is no DATA
+            # initializer, keep the declaration uninitialized to match Fortran semantics.
             #
-            # This preserves Fortran semantics where an uninitialized local
-            # CHARACTER variable is undefined until assigned (unless it has
-            # a DATA initializer).
-            if (crhs is None
-                    and (not const)
-                    and isinstance(ctype, str)
-                    and ctype.startswith("fem::str<")):
+            # This preserves DATA initialization when it exists, e.g.:
+            #   DATA threq / 2.0d0 / , intstr / '0123456789' /
+            if crhs is None and ctype.startswith("fem::str<") and not const:
                 def const_qualifier():
                     if const:
                         return "const "
