@@ -10,3 +10,4 @@ patch  < ~/mplapack/fable/3.9.1/lapack/patch-Clarnd.cpp
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Claror.cpp
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Rlarnd.cpp
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Clatmt.cpp
+patch  < ~/mplapack/fable/3.9.1/lapack/patch-Rlaror.cpp
