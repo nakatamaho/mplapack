@@ -32,7 +32,7 @@ inline bool check_fem_utils_int_types() {
     }
     return result;
 }
-inline int main_with_catch(int argc, char const* argv[], void (*callable)(int argc, char const* argv[])) {
+inline int main_with_catch(int argc, char const *argv[], void (*callable)(int argc, char const *argv[])) {
     user_plus_system_time();
     if (!check_fem_utils_int_types()) {
         return 255;
@@ -45,13 +45,13 @@ inline int main_with_catch(int argc, char const* argv[], void (*callable)(int ar
 #endif
     try {
         callable(argc, argv);
-    } catch (fem::stop_info const& info) {
+    } catch (fem::stop_info const &info) {
         std::fflush(stdout);
         std::fprintf(stderr, "%s\n", info.what());
         std::fflush(stderr);
-    } catch (std::exception const& e) {
+    } catch (std::exception const &e) {
         std::fflush(stdout);
-        char const* what = e.what();
+        char const *what = e.what();
         if (what == 0)
             what = "null";
         std::fprintf(stderr, "std::exception what(): %s\n", what);
@@ -70,9 +70,9 @@ struct command_line_arguments {
     std::vector<std::string> buffer;
     std::vector<std::string> dynamic_parameters_fields;
     command_line_arguments() {}
-    command_line_arguments(int argc, char const* argv[]) {
+    command_line_arguments(int argc, char const *argv[]) {
         for (int i = 0; i < argc; i++) {
-            char const* arg = argv[i];
+            char const *arg = argv[i];
             if (utils::starts_with(arg,
                                    /*start*/ 0,
                                    /*stop*/ dynamic_parameters_option.size(), dynamic_parameters_option.c_str())) {
@@ -87,9 +87,9 @@ struct command_line_arguments {
     }
 };
 struct dynamic_parameters_from {
-    command_line_arguments const& command_line_args;
+    command_line_arguments const &command_line_args;
     int i_fld;
-    dynamic_parameters_from(command_line_arguments const& command_line_args_, int max_number_of_flds) : command_line_args(command_line_args_), i_fld(0) {
+    dynamic_parameters_from(command_line_arguments const &command_line_args_, int max_number_of_flds) : command_line_args(command_line_args_), i_fld(0) {
         int n_flds = static_cast<int>(command_line_args.dynamic_parameters_fields.size());
         if (n_flds > max_number_of_flds) {
             std::ostringstream o;
@@ -97,10 +97,10 @@ struct dynamic_parameters_from {
             throw std::runtime_error(o.str());
         }
     }
-    template <typename T> dynamic_parameters_from& reset_if_given(T& value) {
+    template <typename T> dynamic_parameters_from &reset_if_given(T &value) {
         int n_flds = static_cast<int>(command_line_args.dynamic_parameters_fields.size());
         if (i_fld < n_flds) {
-            std::string const& fld = command_line_args.dynamic_parameters_fields[i_fld];
+            std::string const &fld = command_line_args.dynamic_parameters_fields[i_fld];
             std::istringstream i(fld);
             i >> value;
             if (i.fail()) {
@@ -115,7 +115,7 @@ struct dynamic_parameters_from {
 };
 template <typename D> struct dynamic_parameters_capsule {
     D dynamic_params;
-    dynamic_parameters_capsule(command_line_arguments const& command_line_args) : dynamic_params(command_line_args) {}
+    dynamic_parameters_capsule(command_line_arguments const &command_line_args) : dynamic_params(command_line_args) {}
 };
 } // namespace fem
 #endif // GUARD

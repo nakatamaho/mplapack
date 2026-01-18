@@ -3,30 +3,30 @@
 #include <fem/io.hpp>
 namespace fem {
 struct open_chain {
-    mutable io_unit* u_ptr;
-    int* iostat_ptr;
+    mutable io_unit *u_ptr;
+    int *iostat_ptr;
 
   private:
-    open_chain const& operator=(open_chain const&); // not implemented
+    open_chain const &operator=(open_chain const &); // not implemented
   public:
-    open_chain(io_unit* u_ptr_) : u_ptr(u_ptr_), iostat_ptr(0) {}
-    open_chain(open_chain const& other) : u_ptr(other.u_ptr), iostat_ptr(other.iostat_ptr) { other.u_ptr = 0; }
+    open_chain(io_unit *u_ptr_) : u_ptr(u_ptr_), iostat_ptr(0) {}
+    open_chain(open_chain const &other) : u_ptr(other.u_ptr), iostat_ptr(other.iostat_ptr) { other.u_ptr = 0; }
     ~open_chain() {
         if (u_ptr == 0)
             return;
         u_ptr->open(iostat_ptr);
     }
-    open_chain& access(std::string const& val) {
+    open_chain &access(std::string const &val) {
         int i = utils::keyword_index(io_unit::ac_keywords(), val, "OPEN ACCESS");
         u_ptr->access = static_cast<io_unit::access_types>(i);
         return *this;
     }
-    open_chain& form(std::string const& val) {
+    open_chain &form(std::string const &val) {
         int i = utils::keyword_index(io_unit::fm_keywords(), val, "OPEN FORM");
         u_ptr->form = static_cast<io_unit::form_types>(i);
         return *this;
     }
-    open_chain& recl(int const& val) {
+    open_chain &recl(int const &val) {
         if (val <= 0) {
             throw io_err("Invalid OPEN RECL: value is zero or negative,"
                          " but must be greater than zero");
@@ -34,17 +34,17 @@ struct open_chain {
         u_ptr->recl = static_cast<unsigned>(val);
         return *this;
     }
-    open_chain& blank(std::string const& val) {
+    open_chain &blank(std::string const &val) {
         int i = utils::keyword_index(io_unit::bl_keywords(), val, "OPEN BLANK");
         u_ptr->blank = static_cast<io_unit::blank_types>(i);
         return *this;
     }
-    open_chain& status(std::string const& val) {
+    open_chain &status(std::string const &val) {
         int i = utils::keyword_index(io_unit::st_keywords(), val, "OPEN STATUS");
         u_ptr->status = static_cast<io_unit::status_types>(i);
         return *this;
     }
-    open_chain& iostat(int& val) {
+    open_chain &iostat(int &val) {
         iostat_ptr = &val;
         return *this;
     }

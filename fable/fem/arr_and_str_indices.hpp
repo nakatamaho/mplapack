@@ -50,7 +50,7 @@ struct str_index {
 template <size_t Ndims> struct arr_and_str_indices {
     arr_index_data<Ndims> arr_ix;
     str_index str_ix;
-    arr_and_str_indices(arr_index_data<Ndims> const& arr_ix_, str_index const& str_ix_) : arr_ix(arr_ix_), str_ix(str_ix_) {}
+    arr_and_str_indices(arr_index_data<Ndims> const &arr_ix_, str_index const &str_ix_) : arr_ix(arr_ix_), str_ix(str_ix_) {}
 };
 template <size_t Ndims> inline arr_and_str_indices<Ndims> arr_index_data<Ndims>::operator()(int first, int last) const { return arr_and_str_indices<Ndims>(*this, str_index(first, last)); }
 } // namespace fem

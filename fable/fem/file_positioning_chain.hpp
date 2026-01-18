@@ -4,15 +4,15 @@
 #include <fem/io.hpp>
 namespace fem {
 struct file_positioning_chain {
-    char const* io_function;
-    mutable io_unit* u_ptr;
-    int* iostat_ptr;
+    char const *io_function;
+    mutable io_unit *u_ptr;
+    int *iostat_ptr;
 
   private:
-    file_positioning_chain const& operator=(file_positioning_chain const&); // not implemented
+    file_positioning_chain const &operator=(file_positioning_chain const &); // not implemented
   public:
-    file_positioning_chain(char const* io_function_, io_unit* u_ptr_) : io_function(io_function_), u_ptr(u_ptr_), iostat_ptr(0) {}
-    file_positioning_chain(file_positioning_chain const& other) : io_function(other.io_function), u_ptr(other.u_ptr), iostat_ptr(other.iostat_ptr) { other.u_ptr = 0; }
+    file_positioning_chain(char const *io_function_, io_unit *u_ptr_) : io_function(io_function_), u_ptr(u_ptr_), iostat_ptr(0) {}
+    file_positioning_chain(file_positioning_chain const &other) : io_function(other.io_function), u_ptr(other.u_ptr), iostat_ptr(other.iostat_ptr) { other.u_ptr = 0; }
     ~file_positioning_chain() NOEXCEPT_FALSE {
         if (u_ptr == 0) {
             throw TBXX_NOT_IMPLEMENTED(); // should open file file
@@ -27,7 +27,7 @@ struct file_positioning_chain {
             throw TBXX_UNREACHABLE_ERROR();
         }
     }
-    file_positioning_chain& iostat(int& val) {
+    file_positioning_chain &iostat(int &val) {
         iostat_ptr = &val;
         return *this;
     }

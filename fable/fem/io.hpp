@@ -14,8 +14,8 @@ enum unformatted_type { unformatted };
 enum io_modes { io_unformatted = 0, io_list_directed, io_formatted };
 static const char end_of_unformatted_record = static_cast<char>(0xAAU);
 struct std_file {
-    std::FILE* ptr;
-    std_file(std::FILE* ptr_ = 0) : ptr(ptr_) {}
+    std::FILE *ptr;
+    std_file(std::FILE *ptr_ = 0) : ptr(ptr_) {}
 };
 inline bool is_std_io_unit(int unit) { return (unit == 0 || unit == 5 || unit == 6); }
 struct io_unit {
@@ -23,27 +23,27 @@ struct io_unit {
     std::string file_name;
     std_file stream;
     bool prev_op_was_write;
-    static const char** ac_keywords() {
-        static const char* result[] = {"sequential", "direct", 0};
+    static const char **ac_keywords() {
+        static const char *result[] = {"sequential", "direct", 0};
         return result;
     }
     enum access_types { ac_sequential = 0, ac_direct, ac_undef };
     access_types access;
-    static const char** fm_keywords() {
-        static const char* result[] = {"formatted", "unformatted", 0};
+    static const char **fm_keywords() {
+        static const char *result[] = {"formatted", "unformatted", 0};
         return result;
     }
     enum form_types { fm_formatted = 0, fm_unformatted, fm_undef };
     form_types form;
     unsigned recl;
-    static const char** bl_keywords() {
-        static const char* result[] = {"null", "zero", 0};
+    static const char **bl_keywords() {
+        static const char *result[] = {"null", "zero", 0};
         return result;
     }
     enum blank_types { bl_null = 0, bl_zero, bl_undef };
     blank_types blank;
-    static const char** st_keywords() {
-        static const char* result[] = {"old", "new", "scratch", "unknown", 0};
+    static const char **st_keywords() {
+        static const char *result[] = {"old", "new", "scratch", "unknown", 0};
         return result;
     }
     enum status_types { st_old = 0, st_new, st_scratch, st_unknown, st_undef };
@@ -81,7 +81,7 @@ struct io_unit {
         }
         return file_name;
     }
-    void open(int* iostat_ptr) {
+    void open(int *iostat_ptr) {
         if (status == st_undef) {
             status = st_unknown; // f77_std 12.10.1
         }
@@ -172,7 +172,7 @@ struct io_unit {
             status = st_old;
         }
     }
-    void close(int* iostat_ptr = 0, bool status_delete = false) {
+    void close(int *iostat_ptr = 0, bool status_delete = false) {
         if (iostat_ptr != 0)
             *iostat_ptr = 0; // XXX
         if (is_std_io_unit(number))
@@ -185,8 +185,8 @@ struct io_unit {
             std::remove(file_name.c_str());
         }
     }
-    void backspace(int* iostat_ptr) { throw TBXX_NOT_IMPLEMENTED(); }
-    void endfile(int* iostat_ptr) {
+    void backspace(int *iostat_ptr) { throw TBXX_NOT_IMPLEMENTED(); }
+    void endfile(int *iostat_ptr) {
         if (is_std_io_unit(number)) {
             throw TBXX_NOT_IMPLEMENTED();
         }
@@ -195,7 +195,7 @@ struct io_unit {
         }
         prev_op_was_write = false;
     }
-    void rewind(int* iostat_ptr) {
+    void rewind(int *iostat_ptr) {
         if (stream.ptr == 0 || std::fseek(stream.ptr, 0L, SEEK_SET) != 0) {
             iostat = 1;
             if (iostat_ptr != 0) {
@@ -221,7 +221,7 @@ struct io : utils::noncopyable {
             i->second.close();
         }
     }
-    io_unit* unit_ptr(int unit, bool auto_open = false) {
+    io_unit *unit_ptr(int unit, bool auto_open = false) {
         typedef std::map<int, io_unit>::iterator it;
         it map_iter = units.find(unit);
         if (map_iter == units.end()) {
@@ -234,7 +234,7 @@ struct io : utils::noncopyable {
     }
     //! Easy C++ access.
     std::string file_name_of_unit(int unit) {
-        io_unit* u_ptr = unit_ptr(unit);
+        io_unit *u_ptr = unit_ptr(unit);
         if (u_ptr == 0)
             return "";
         return u_ptr->file_name;
@@ -246,7 +246,7 @@ struct io : utils::noncopyable {
     inline struct file_positioning_chain backspace(int unit);
     inline struct file_positioning_chain endfile(int unit);
     inline struct file_positioning_chain rewind(int unit);
-    inline bool is_opened_simple(std::string const& file_name) const {
+    inline bool is_opened_simple(std::string const &file_name) const {
         typedef std::map<int, io_unit>::const_iterator it;
         it e = units.end();
         for (it i = units.begin(); i != e; i++) {
@@ -257,8 +257,8 @@ struct io : utils::noncopyable {
         return false;
     }
     utils::slick_ptr<utils::simple_ostream> simple_ostream(int unit) {
-        io_unit* u_ptr = unit_ptr(unit, /*auto_open*/ true);
-        std_file& sf = u_ptr->stream;
+        io_unit *u_ptr = unit_ptr(unit, /*auto_open*/ true);
+        std_file &sf = u_ptr->stream;
         if (!u_ptr->prev_op_was_write) {
             if (!is_std_io_unit(unit)) {
                 if (!utils::path::truncate_file_at_current_position(sf.ptr)) {
@@ -270,12 +270,12 @@ struct io : utils::noncopyable {
         return utils::slick_ptr<utils::simple_ostream>(new utils::simple_ostream_to_c_file(sf.ptr));
     }
     utils::slick_ptr<utils::simple_istream> simple_istream(int unit) {
-        io_unit* u_ptr = unit_ptr(unit, /*auto_open*/ true);
+        io_unit *u_ptr = unit_ptr(unit, /*auto_open*/ true);
         u_ptr->prev_op_was_write = false;
         return utils::slick_ptr<utils::simple_istream>(new utils::simple_istream_from_c_file(u_ptr->stream.ptr));
     }
     void flush(int unit) {
-        io_unit* u_ptr = unit_ptr(unit);
+        io_unit *u_ptr = unit_ptr(unit);
         if (u_ptr != 0) {
             int status = std::fflush(u_ptr->stream.ptr);
             if (status != 0) {
