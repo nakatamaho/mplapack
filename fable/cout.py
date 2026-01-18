@@ -3384,17 +3384,6 @@ def convert_declaration(rapp, conv_info, fdecl, crhs, const):
             rapp("%s%s %s;" % (const_qualifier(), mplapack_ctype, vname))
             return False
 
-        # For fixed-length CHARACTER scalars emitted as fem::str<N>,
-        # do NOT inject any artificial initializer (no fem::zero<> fallback).
-        # This matches Fortran semantics: local CHARACTER is not implicitly initialized.
-        if crhs is None and ctype.startswith("fem::str<"):
-            def const_qualifier():
-                if const:
-                    return "const "
-                return ""
-            mplapack_ctype = convert_to_mplapack_type(ctype)
-            rapp("%s%s %s;" % (const_qualifier(), mplapack_ctype, vname))
-            return False
         if crhs is None:
             # Try DATA-based initializer for simple scalar DATA
             if hasattr(conv_info, "data_initializers"):
@@ -4766,6 +4755,55 @@ def convert_executable(
                 conv_info.hoisted_data_array_names.add(tgt)
     except Exception:
         pass
+
+    # Hoist constant DATA initializers for local scalars as static declarations.
+    # This covers patterns like:
+    #   DATA threq / 2.0d0 / , intstr / '0123456789' /
+    # even when runtime DATA init blocks are suppressed.
+    try:
+        if conv_info.data_initializers is None:
+            conv_info.data_initializers = build_scalar_data_initializers(conv_info)
+        if conv_info.data_initializers:
+            for fdecl in conv_info.fproc.fdecl_by_identifier.values():
+                if fdecl is None:
+                    continue
+                # Only scalars.
+                if getattr(fdecl, "dim_tokens", None) is not None:
+                    continue
+                # Only local/SAVE/PARAMETER (skip COMMON).
+                if not (fdecl.is_local() or fdecl.is_save() or fdecl.is_parameter()):
+                    continue
+                name_lower = fdecl.id_tok.value.lower()
+                init_expr = conv_info.data_initializers.get(name_lower)
+                if init_expr is None:
+                    continue
+                # Avoid redeclaration if already mapped/declared.
+                if fdecl.id_tok.value in conv_info.vmap:
+                    continue
+                # Skip dummy CHARACTER arguments (already in signature).
+                if _is_dummy_character_arg(conv_info, fdecl.id_tok.value):
+                    continue
+
+                # DATA implies SAVE for local variables: emit as function-local static.
+                conv_info.set_vmap_force_local(fdecl=fdecl)
+                vname = conv_info.vmapped(fdecl=fdecl)
+
+                ctype = convert_data_type(conv_info=conv_info, fdecl=fdecl, crhs=None)[0]
+                mplapack_ctype = convert_to_mplapack_type(ctype)
+                # If the target is a plain char (CHARACTER*1), convert "X" -> 'X'.
+                if mplapack_ctype == "char":
+                    m = re.match(r'^"((?:\\.)|[^\\])"$', init_expr)
+                    if m:
+                        inner = m.group(1)
+                        # Escape single quote inside the char literal.
+                        if inner == "'":
+                            inner = "\\'"
+                        init_expr = "'" + inner + "'"
+
+                top_scope.append(f"static {mplapack_ctype} {vname} = {init_expr};")
+    except Exception:
+        pass
+
     variant_buffers = convert_variant_allocate_and_bindings(
         conv_info=conv_info, top_scope=top_scope)
     top_scope.remember_insert_point()
