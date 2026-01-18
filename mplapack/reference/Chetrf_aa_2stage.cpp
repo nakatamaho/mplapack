@@ -111,8 +111,8 @@ void Chetrf_aa_2stage(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER con
     //
     INTEGER i = 0;
     INTEGER jb = 0;
-    const COMPLEX one = COMPLEX(1.0e+0, 0.0e+0);
-    const COMPLEX zero = COMPLEX(0.0e+0, 0.0e+0);
+    const COMPLEX one = COMPLEX(1.0, 0.0);
+    const COMPLEX zero = COMPLEX(0.0, 0.0);
     INTEGER iinfo = 0;
     INTEGER k = 0;
     INTEGER i1 = 0;
