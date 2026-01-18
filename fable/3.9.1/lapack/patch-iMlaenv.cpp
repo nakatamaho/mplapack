@@ -11,7 +11,7 @@
  INTEGER
  iMlaenv(INTEGER const ispec, const char *name, const char *opts, INTEGER const n1, INTEGER const n2, INTEGER const n3, INTEGER const n4) {
      INTEGER return_value = 0;
--    fem::str<16> subnam = 0;
+-    fem::str<16> subnam = fem::zero<fem::str<16>>();
 +    char subnam[subnamlen];
 +    memset(subnam, '\0', sizeof(subnam));
      INTEGER ic = 0;
@@ -24,14 +24,6 @@
      char c2[2];
      char c3[3];
      char c4[2];
-@@ -53,6 +56,7 @@
-     INTEGER nb = 0;
-     INTEGER nbmin = 0;
-     INTEGER nx = 0;
-+    INTEGER name_len;
-     //
-     switch (ispec) {
-     case 1:
 @@ -101,63 +105,24 @@
      // Convert NAME to upper case if the first character is lower case.
      //

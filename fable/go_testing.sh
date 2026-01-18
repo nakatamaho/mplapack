@@ -19,7 +19,7 @@ shopt -s nullglob
 # We skip single precision real/complex families: s* and c*.
 EXCLUDE_PREFIXES=( s c )
 # Exclude specific files by name (case-insensitive).
-EXCLUDE_FILES=( )
+EXCLUDE_FILES=( dlaran )
 
 PASSES="${1:-2}"
 
