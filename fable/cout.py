@@ -2682,43 +2682,351 @@ def rewrite_unary_bracket_parens(text: str) -> str:
     return "".join(out)
 
 
+
+
+def _convert_parentheses_postfix(conv_info, prev_tok, tok, had_str_concat):
+    """Return the postfix string for a parentheses token.
+
+    This centralizes the translation of Fortran-style parentheses that follow
+    an identifier:
+      - array element / slice: a(i), a(i,j), a(i:j), z(i:j, col)
+      - function call: foo(...)
+      - plain grouping: (expr)
+
+    The same logic must be used by both convert_tokens() and convert_io_loop()
+    so that array flattening (lower-bound shifts and leading-dimension
+    multiplication) is defined in exactly one place.
+    """
+
+    # Detect array reference: a(i) or a(i,j)
+    is_array_ref = False
+    fdecl = None
+
+    if (prev_tok is not None
+            and getattr(prev_tok, 'is_identifier', lambda: False)()
+            and conv_info is not None
+            and getattr(conv_info, 'fproc', None) is not None):
+        try:
+            fdecl = conv_info.fproc.get_fdecl(id_tok=prev_tok)
+        except Exception:
+            fdecl = None
+
+    if (fdecl is not None
+            and getattr(fdecl, 'dim_tokens', None) is not None
+            and not fdecl.is_user_defined_callable()):
+        # Non-callable with dimensions -> array reference
+        is_array_ref = True
+
+    if is_array_ref:
+        # Check if this is an array slice (contains ':' operator)
+        def _contains_colon_op(tokens):
+            """Return True if token list contains a colon operator (array slice)."""
+            for t in tokens:
+                if hasattr(t, 'is_op_with') and t.is_op_with(value=':'):
+                    return True
+                if hasattr(t, 'value') and isinstance(t.value, (list, tuple)):
+                    if _contains_colon_op(t.value):
+                        return True
+            return False
+
+        is_array_slice = _contains_colon_op(tok.value)
+
+        # Convert indices inside parentheses to C++ array indexing
+        idx_str = convert_tokens(
+            conv_info=conv_info,
+            tokens=tok.value,
+            commas=True,
+            had_str_concat=had_str_concat)
+
+        # Split by top-level commas, ignoring commas inside nested parentheses
+        parts = _split_actuals(idx_str)
+
+        if is_array_slice and len(parts) == 2:
+            # 1D slice: a(start:end) -> [__SLICE__(start, end)]
+            start_expr = parts[0].strip()
+            end_expr = parts[1].strip()
+            return f'[__SLICE__({start_expr}, {end_expr})]'
+
+        if is_array_slice and len(parts) == 3:
+            # Two possible meanings:
+            #   (A) 1D slice with stride: a(start:end:step)
+            #   (B) 2D slice on first dimension: z(start:end, col)
+            # Disambiguate using declared rank.
+            rank = 0
+            try:
+                rank = len(getattr(fdecl, 'dim_tokens', None) or [])
+            except Exception:
+                rank = 0
+
+            if rank == 1:
+                start_expr = parts[0].strip()
+                end_expr = parts[1].strip()
+                step_expr = parts[2].strip()
+                return f'[__SLICE__({start_expr}, {end_expr}, {step_expr})]'
+
+            # 2D slice on first dimension: [__SLICE2D__(start, end, col, ldname)]
+            start_expr = parts[0].strip()
+            end_expr = parts[1].strip()
+            col_expr = parts[2].strip()
+            default_ldname = 'ld' + prev_tok.value.lower()
+            ldexpr = get_leading_dimension_expr(conv_info, fdecl, default=default_ldname)
+            ldexpr = _maybe_use_ld_variable(conv_info, ldexpr, default_ldname)
+            return f'[__SLICE2D__({start_expr}, {end_expr}, {col_expr}, {ldexpr})]'
+
+        if len(parts) == 1:
+            # One-dimensional array: a(i)
+            i_expr = parts[0].strip()
+            lb_expr = get_lower_bound(conv_info, fdecl, 0).strip()
+
+            int_re = re.compile(r'^[0-9]+$')
+            name_re = re.compile(r'^[A-Za-z_][A-Za-z0-9_]*$')
+            array_elem_re = re.compile(r'^[A-Za-z_][A-Za-z0-9_]*\s*\[[^\[\]]+\]\s*$')
+
+            def canonical_simple_index(s):
+                """Return canonical simple index (identifier/int/array/func) or None."""
+                s = s.strip()
+                # Strip outer layers of parentheses if they enclose the whole expr.
+                while s.startswith('(') and s.endswith(')'):
+                    depth = 0
+                    balanced_outer = True
+                    for pos, ch in enumerate(s):
+                        if ch == '(':
+                            depth += 1
+                        elif ch == ')':
+                            depth -= 1
+                        if depth == 0 and pos != len(s) - 1:
+                            balanced_outer = False
+                            break
+                    if not balanced_outer:
+                        break
+                    s = s[1:-1].strip()
+
+                if name_re.fullmatch(s) or int_re.fullmatch(s):
+                    return s
+                if array_elem_re.fullmatch(s):
+                    return s
+
+                # Recognize NAME( ... ) with balanced parentheses.
+                if not s:
+                    return None
+                if not (s[0].isalpha() or s[0] == '_'):
+                    return None
+                pos = 0
+                while pos < len(s) and (s[pos].isalnum() or s[pos] == '_'):
+                    pos += 1
+                name = s[:pos]
+                while pos < len(s) and s[pos].isspace():
+                    pos += 1
+                if pos >= len(s) or s[pos] != '(':
+                    return None
+
+                start_paren = pos
+                depth = 0
+                end_paren = None
+                for i in range(start_paren, len(s)):
+                    ch = s[i]
+                    if ch == '(':
+                        depth += 1
+                    elif ch == ')':
+                        depth -= 1
+                        if depth == 0:
+                            end_paren = i
+                            break
+                if end_paren is None:
+                    return None
+
+                pos = end_paren + 1
+                while pos < len(s) and s[pos].isspace():
+                    pos += 1
+                if pos != len(s):
+                    return None
+
+                inner = s[start_paren + 1:end_paren]
+                return f'{name}({inner})'
+
+            # Keep "1 - 1" (do not fold into 0) for auditability.
+            canon_i = canonical_simple_index(i_expr)
+
+            if lb_expr == '0':
+                index_expr = canon_i if canon_i is not None else f'({i_expr})'
+            else:
+                lb_simple = bool(name_re.fullmatch(lb_expr) or int_re.fullmatch(lb_expr))
+                idx_simple = canon_i is not None
+                if idx_simple and lb_simple:
+                    index_expr = f'{canon_i} - {lb_expr}'
+                elif idx_simple and not lb_simple:
+                    index_expr = f'{canon_i} - ({lb_expr})'
+                elif not idx_simple and lb_simple:
+                    index_expr = f'({i_expr}) - {lb_expr}'
+                else:
+                    index_expr = f'({i_expr}) - ({lb_expr})'
+
+            return '[' + index_expr + ']'
+
+        if len(parts) == 2:
+            # Two-dimensional array: a(i, j)
+            i_expr, j_expr = parts
+            i_expr = i_expr.strip()
+            j_expr = j_expr.strip()
+
+            default_ldname = 'ld' + prev_tok.value.lower()
+            ldexpr = get_leading_dimension_expr(conv_info, fdecl, default=default_ldname)
+            ldexpr = _maybe_use_ld_variable(conv_info, ldexpr, default_ldname)
+
+            lb1 = get_lower_bound(conv_info, fdecl, 0).strip()
+            lb2 = get_lower_bound(conv_info, fdecl, 1).strip()
+
+            simple_name = re.compile(r'^[A-Za-z_][A-Za-z0-9_]*$')
+            simple_int = re.compile(r'^[0-9]+$')
+
+            def canonical_simple_2(s):
+                """Return canonical simple index (identifier/int/array element) or None."""
+                s = s.strip()
+                while s.startswith('(') and s.endswith(')'):
+                    depth = 0
+                    balanced_outer = True
+                    for pos, ch in enumerate(s):
+                        if ch == '(':
+                            depth += 1
+                        elif ch == ')':
+                            depth -= 1
+                        if depth == 0 and pos != len(s) - 1:
+                            balanced_outer = False
+                            break
+                    if not balanced_outer:
+                        break
+                    s = s[1:-1].strip()
+
+                if simple_name.fullmatch(s) or simple_int.fullmatch(s):
+                    return s
+
+                # Recognize NAME[ ... ] with balanced brackets.
+                if not s:
+                    return None
+                if not (s[0].isalpha() or s[0] == '_'):
+                    return None
+                pos = 0
+                while pos < len(s) and (s[pos].isalnum() or s[pos] == '_'):
+                    pos += 1
+                name = s[:pos]
+                while pos < len(s) and s[pos].isspace():
+                    pos += 1
+                if pos >= len(s) or s[pos] != '[':
+                    return None
+
+                start_bracket = pos
+                depth = 0
+                end_bracket = None
+                for i in range(start_bracket, len(s)):
+                    ch = s[i]
+                    if ch == '[':
+                        depth += 1
+                    elif ch == ']':
+                        depth -= 1
+                        if depth == 0:
+                            end_bracket = i
+                            break
+                if end_bracket is None:
+                    return None
+
+                pos = end_bracket + 1
+                while pos < len(s) and s[pos].isspace():
+                    pos += 1
+                if pos != len(s):
+                    return None
+
+                inner = s[start_bracket + 1:end_bracket]
+                return f'{name}[{inner}]'
+
+            if lb1 == '1' and lb2 == '1':
+                core_i = canonical_simple_2(i_expr)
+                if core_i is not None:
+                    i_term = f'{core_i} - 1'
+                else:
+                    if simple_name.match(i_expr) or simple_int.match(i_expr):
+                        i_term = f'{i_expr} - 1'
+                    else:
+                        i_term = f'({i_expr}) - 1'
+
+                core_j = canonical_simple_2(j_expr)
+                if core_j is not None:
+                    j_term = f'({core_j} - 1)'
+                else:
+                    if simple_name.match(j_expr) or simple_int.match(j_expr):
+                        j_term = f'({j_expr} - 1)'
+                    else:
+                        j_term = f'(({j_expr}) - 1)'
+
+                index_expr = f'({i_term}) + {j_term}*{ldexpr}'
+                return '[' + index_expr + ']'
+
+            # General lower-bound aware path
+            def make_offset(idx_expr: str, lb_expr: str) -> str:
+                idx_expr = idx_expr.strip()
+                lb_expr = lb_expr.strip()
+                core = canonical_simple_2(idx_expr)
+
+                if lb_expr == '0':
+                    return core if core is not None else f'({idx_expr})'
+
+                lb_simple = bool(simple_name.fullmatch(lb_expr) or simple_int.fullmatch(lb_expr))
+
+                if core is not None:
+                    return f'{core} - {lb_expr}' if lb_simple else f'{core} - ({lb_expr})'
+
+                return f'({idx_expr}) - {lb_expr}' if lb_simple else f'({idx_expr}) - ({lb_expr})'
+
+            row_off = make_offset(i_expr, lb1)
+            col_off = make_offset(j_expr, lb2)
+            index_expr = f'{row_off} + {col_off}*{ldexpr}'
+            return '[' + index_expr + ']'
+
+        # Fallback: treat like a normal call/parenthesized expression
+        if (cmn_needs_to_be_inserted(conv_info=conv_info, prev_tok=prev_tok)):
+            if (len(tok.value) != 0) and (len(tok.value[0].value) != 0):
+                op = '(cmn, '
+            else:
+                op = '(cmn'
+        else:
+            op = '('
+        inner = convert_tokens(
+            conv_info=conv_info,
+            tokens=tok.value,
+            commas=True,
+            had_str_concat=had_str_concat)
+        return op + inner + ')'
+
+    # Normal function call or parenthesized expression
+    inner = convert_tokens(
+        conv_info=conv_info,
+        tokens=tok.value,
+        commas=True,
+        had_str_concat=had_str_concat)
+
+    # If the previous token is an identifier and corresponds to a known signature,
+    # adjust actual arguments according to pointer/value information.
+    if (prev_tok is not None and getattr(prev_tok, 'is_identifier', lambda: False)()):
+        sig = _lookup_routine_signature(prev_tok.value)
+        if sig is not None:
+            inner = _adjust_actuals_using_signature(inner, sig, conv_info)
+
+    # Decide whether we need to inject "cmn" as the first argument.
+    if (cmn_needs_to_be_inserted(conv_info=conv_info, prev_tok=prev_tok)):
+        if (len(tok.value) != 0) and (len(tok.value[0].value) != 0):
+            op = '(cmn, '
+        else:
+            op = '(cmn'
+    else:
+        op = '('
+
+    return op + inner + ')'
+
 def convert_tokens(conv_info, tokens, commas=False, had_str_concat=None):
     result = []
     rapp = result.append
     prev_tok = None
     if (had_str_concat is None):
         had_str_concat = mutable(value=False)
-
-    # In I/O lists, NAME(i) and A(i,j) must be treated as array references,
-    # not as function calls. convert_tokens() already does the right thing for
-    # general expressions; this helper mirrors the same indexing rules here.
-    def _io_is_simple_atom(expr: str) -> bool:
-        core = _strip_outer_parens_balanced(expr.strip())
-        if _ident_re.fullmatch(core) or _int_lit_re.fullmatch(core):
-            return True
-        # Also treat a single array element like name[...] as "simple".
-        if re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*\s*\[[^\]]+\]\s*$", core):
-            return True
-        return False
-
-    def _io_atom_or_paren(expr: str) -> str:
-        core = _strip_outer_parens_balanced(expr.strip())
-        if _io_is_simple_atom(core):
-            return core
-        return f"({expr.strip()})"
-
-    def _io_index_1d(i_expr: str, lb_expr: str) -> str:
-        lb_expr = lb_expr.strip()
-        if lb_expr == "0":
-            return _io_atom_or_paren(i_expr)
-        return f"{_io_atom_or_paren(i_expr)} - {_io_atom_or_paren(lb_expr)}"
-
-    def _io_offset(idx_expr: str, lb_expr: str) -> str:
-        lb_expr = lb_expr.strip()
-        if lb_expr == "0":
-            return _io_atom_or_paren(idx_expr)
-        return f"{_io_atom_or_paren(idx_expr)} - {_io_atom_or_paren(lb_expr)}"
-
     from fable.tokenization import group_power
     for tok in group_power(tokens=tokens):
         if (tok.is_seq()):
@@ -2733,428 +3041,11 @@ def convert_tokens(conv_info, tokens, commas=False, had_str_concat=None):
                     commas=False,
                     had_str_concat=had_str_concat))
         elif (tok.is_parentheses()):
-            # Detect array reference: a(i) or a(i,j)
-            is_array_ref = False
-            fdecl = None
-            if (prev_tok is not None
-                    and prev_tok.is_identifier()
-                    and conv_info.fproc is not None):
-                try:
-                    fdecl = conv_info.fproc.get_fdecl(id_tok=prev_tok)
-                except Exception:
-                    fdecl = None
-
-            if (fdecl is not None
-                    and getattr(fdecl, "dim_tokens", None) is not None
-                    and not fdecl.is_user_defined_callable()):
-                # Non-callable with dimensions -> array reference
-                is_array_ref = True
-
-            if is_array_ref:
-                # Check if this is an array slice (contains ':' operator)
-                def _contains_colon_op(tokens):
-                    """Check if token list contains a colon operator (array slice)."""
-                    for t in tokens:
-                        if hasattr(t, 'is_op_with') and t.is_op_with(value=":"):
-                            return True
-                        if hasattr(t, 'value') and isinstance(t.value, (list, tuple)):
-                            if _contains_colon_op(t.value):
-                                return True
-                    return False
-
-                is_array_slice = _contains_colon_op(tok.value)
-
-                # Convert indices inside parentheses to C++ array indexing
-                idx_str = convert_tokens(
-                    conv_info=conv_info,
-                    tokens=tok.value,
-                    commas=True,
-                    had_str_concat=had_str_concat)
-
-                # Split by top-level commas, ignoring commas inside nested parentheses
-                parts = _split_actuals(idx_str)
-
-                if is_array_slice and len(parts) == 2:
-                    # 1D Array slice: a(start:end) was converted to "start, end"
-                    # Output special marker format that will be processed later
-                    # Format: [__SLICE__(start, end)]
-                    # This marker will be transformed by _postprocess_mmaxloc for Mmaxloc calls
-                    start_expr = parts[0].strip()
-                    end_expr = parts[1].strip()
-                    rapp(f"[__SLICE__({start_expr}, {end_expr})]")
-                elif is_array_slice and len(parts) == 3:
-                    # Two possible meanings:
-                    #   (A) 1D slice with stride: a(start:end:step)
-                    #   (B) 2D slice on first dimension: z(start:end, col)
-                    #
-                    # Disambiguate using the declared rank of the array.
-                    # Rank==1 -> treat as (A), otherwise treat as (B).
-                    rank = 0
-                    try:
-                        rank = len(getattr(fdecl, "dim_tokens", None) or [])
-                    except Exception:
-                        rank = 0
-
-                    if rank == 1:
-                        # 1D slice with stride: a(start:end:step)
-                        start_expr = parts[0].strip()
-                        end_expr = parts[1].strip()
-                        step_expr = parts[2].strip()
-                        # Encode the stride explicitly in __SLICE__ so postprocessing
-                        # can emit Mmaxval/Mminval(..., incx) correctly.
-                        rapp(
-                            f"[__SLICE__({start_expr}, {end_expr}, {step_expr})]")
-                    else:
-                        # 2D Array slice on first dimension: z(start:end, col)
-                        # was converted to "start, end, col"
-                        # Format: [__SLICE2D__(start, end, col, ldname)]
-                        start_expr = parts[0].strip()
-                        end_expr = parts[1].strip()
-                        col_expr = parts[2].strip()
-                        default_ldname = "ld" + prev_tok.value.lower()
-                        ldexpr = get_leading_dimension_expr(
-                            conv_info, fdecl, default=default_ldname)
-                        ldexpr = _maybe_use_ld_variable(
-                            conv_info, ldexpr, default_ldname)
-                        rapp(
-                            f"[__SLICE2D__({start_expr}, {end_expr}, {col_expr}, {ldexpr})]")
-
-                elif len(parts) == 1:
-                    # One-dimensional array: a(i)
-                    i_expr = parts[0].strip()
-                    lb_expr = get_lower_bound(conv_info, fdecl, 0).strip()
-
-                    int_re = re.compile(r"^[0-9]+$")
-                    name_re = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
-                    array_elem_re = re.compile(
-                        r"^[A-Za-z_][A-Za-z0-9_]*\s*\[[^\[\]]+\]\s*$"
-                    )
-
-                    def canonical_simple_index(s):
-                        """Return canonical simple index (identifier/int/array/func) or None.
-
-                        Simple indices include:
-                        - plain identifiers: i, j, idx
-                        - integer literals: 0, 1, 10
-                        - single array elements: name[...]
-                        - single function calls: name(...)
-                        Outer parentheses around the whole expression are stripped.
-                        """
-                        s = s.strip()
-                        # Strip outer layers of parentheses if they enclose the whole expr.
-                        while s.startswith("(") and s.endswith(")"):
-                            depth = 0
-                            balanced_outer = True
-                            for pos, ch in enumerate(s):
-                                if ch == "(":
-                                    depth += 1
-                                elif ch == ")":
-                                    depth -= 1
-                                if depth == 0 and pos != len(s) - 1:
-                                    balanced_outer = False
-                                    break
-                            if not balanced_outer:
-                                break
-                            s = s[1:-1].strip()
-
-                        # Plain identifier or integer literal
-                        if name_re.fullmatch(s):
-                            return s
-                        if int_re.fullmatch(s):
-                            return s
-                        # Simple array element (non-nested) handled via regex
-                        if array_elem_re.fullmatch(s):
-                            return s
-
-                        # Try to recognize NAME( ... ) with balanced parentheses,
-                        # allowing nested parentheses inside the argument list.
-                        if not s:
-                            return None
-                        if not (s[0].isalpha() or s[0] == "_"):
-                            return None
-                        pos = 0
-                        while pos < len(s) and (s[pos].isalnum() or s[pos] == "_"):
-                            pos += 1
-                        name = s[:pos]
-                        # Skip whitespace.
-                        while pos < len(s) and s[pos].isspace():
-                            pos += 1
-                        if pos >= len(s) or s[pos] != "(":
-                            return None
-
-                        # Find matching closing parenthesis.
-                        start_paren = pos
-                        depth = 0
-                        end_paren = None
-                        for i in range(start_paren, len(s)):
-                            ch = s[i]
-                            if ch == "(":
-                                depth += 1
-                            elif ch == ")":
-                                depth -= 1
-                                if depth == 0:
-                                    end_paren = i
-                                    break
-                        if end_paren is None:
-                            return None
-
-                        # After ')', only whitespace is allowed.
-                        pos = end_paren + 1
-                        while pos < len(s) and s[pos].isspace():
-                            pos += 1
-                        if pos != len(s):
-                            return None
-
-                        inner = s[start_paren + 1: end_paren]
-                        return f"{name}({inner})"
-
-                    # NOTE: Do not constant-fold "1 - 1" into "0" for 1D indexing.
-                    # Keeping "a[1 - 1]" helps auditing generated code vs. Fortran sources.
-                    canon_i = canonical_simple_index(i_expr)
-
-                    # If lower bound is exactly 0, avoid generating "i - 0".
-                    if lb_expr == "0":
-                        if canon_i is not None:
-                            # a(i) with lb=0 -> a[i]
-                            index_expr = canon_i
-                        else:
-                            # Complex index: group once: a(f(i)) -> a[(f(i))]
-                            index_expr = f"({i_expr})"
-                    else:
-                        # Non-zero lower bound: generate "index - lb"
-                        lb_simple = bool(
-                            name_re.fullmatch(
-                                lb_expr) or int_re.fullmatch(lb_expr)
-                        )
-                        idx_simple = canon_i is not None
-
-                        if idx_simple and lb_simple:
-                            index_expr = f"{canon_i} - {lb_expr}"
-                        elif idx_simple and not lb_simple:
-                            index_expr = f"{canon_i} - ({lb_expr})"
-                        elif not idx_simple and lb_simple:
-                            index_expr = f"({i_expr}) - {lb_expr}"
-                        else:
-                            index_expr = f"({i_expr}) - ({lb_expr})"
-
-                    rapp("[" + index_expr + "]")
-
-                elif len(parts) == 2:
-                    # Two-dimensional array: a(i, j)
-                    i_expr, j_expr = parts
-                    i_expr = i_expr.strip()
-                    j_expr = j_expr.strip()
-                    default_ldname = "ld" + prev_tok.value.lower()
-                    ldexpr = get_leading_dimension_expr(
-                        conv_info, fdecl, default=default_ldname)
-                    ldexpr = _maybe_use_ld_variable(
-                        conv_info, ldexpr, default_ldname)
-
-                    lb1 = get_lower_bound(conv_info, fdecl, 0).strip()
-                    lb2 = get_lower_bound(conv_info, fdecl, 1).strip()
-
-                    simple_name = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
-                    simple_int = re.compile(r"^[0-9]+$")
-                    array_elem_re = re.compile(
-                        r"^[A-Za-z_][A-Za-z0-9_]*\s*\[[^\[\]]+\]\s*$"
-                    )
-
-                    def canonical_simple_2(s):
-                        """Return canonical simple index (identifier/int/array element) or None.
-
-                        This strips outer parentheses that enclose the whole expression, e.g.
-                        "(perm[i - 1])" -> "perm[i - 1]". It also recognizes array
-                        elements of the form NAME[ ... ] even if the index expression
-                        itself contains nested brackets.
-                        """
-                        s = s.strip()
-
-                        # Strip outer layers of parentheses if they enclose the whole expr.
-                        while s.startswith("(") and s.endswith(")"):
-                            depth = 0
-                            balanced_outer = True
-                            for pos, ch in enumerate(s):
-                                if ch == "(":
-                                    depth += 1
-                                elif ch == ")":
-                                    depth -= 1
-                                # If we close the outermost paren before the end,
-                                # then these are not purely outer parentheses.
-                                if depth == 0 and pos != len(s) - 1:
-                                    balanced_outer = False
-                                    break
-                            if not balanced_outer:
-                                break
-                            # Drop the outermost pair.
-                            s = s[1:-1].strip()
-
-                        # Plain identifier or integer literal
-                        if simple_name.fullmatch(s):
-                            return s
-                        if simple_int.fullmatch(s):
-                            return s
-
-                        # Try to recognize NAME[ ... ] with a balanced bracketed index,
-                        # allowing nested brackets inside the index expression.
-                        if not s:
-                            return None
-                        # Parse the leading NAME.
-                        if not (s[0].isalpha() or s[0] == "_"):
-                            return None
-                        pos = 0
-                        while pos < len(s) and (s[pos].isalnum() or s[pos] == "_"):
-                            pos += 1
-                        name = s[:pos]
-                        # Skip whitespace.
-                        while pos < len(s) and s[pos].isspace():
-                            pos += 1
-                        if pos >= len(s) or s[pos] != "[":
-                            return None
-
-                        # Find the matching closing bracket, tracking nested brackets.
-                        start_bracket = pos
-                        depth = 0
-                        end_bracket = None
-                        for i in range(start_bracket, len(s)):
-                            ch = s[i]
-                            if ch == "[":
-                                depth += 1
-                            elif ch == "]":
-                                depth -= 1
-                                if depth == 0:
-                                    end_bracket = i
-                                    break
-                        if end_bracket is None:
-                            return None
-
-                        # After the matching ']', only whitespace is allowed.
-                        pos = end_bracket + 1
-                        while pos < len(s) and s[pos].isspace():
-                            pos += 1
-                        if pos != len(s):
-                            # Trailing junk -> not a simple array element
-                            return None
-
-                        # Canonical form: NAME[inner]
-                        inner = s[start_bracket + 1: end_bracket]
-                        return f"{name}[{inner}]"
-
-                    # --- Fast path: both lower bounds are 1 (LAPACK-style arrays) ---
-                    if lb1 == "1" and lb2 == "1":
-                        # Row index term (first dimension)
-                        core_i = canonical_simple_2(i_expr)
-                        if core_i is not None:
-                            # Simple core: i, m, perm[i-1], givcol[...]
-                            i_term = f"{core_i} - 1"
-                        else:
-                            # Fallback to legacy behavior
-                            if simple_name.match(i_expr) or simple_int.match(i_expr):
-                                i_term = f"{i_expr} - 1"
-                            else:
-                                i_term = f"({i_expr}) - 1"
-
-                        # Column index term (second dimension)
-                        core_j = canonical_simple_2(j_expr)
-                        if core_j is not None:
-                            j_term = f"({core_j} - 1)"
-                        else:
-                            if simple_name.match(j_expr) or simple_int.match(j_expr):
-                                j_term = f"({j_expr} - 1)"
-                            else:
-                                j_term = f"(({j_expr}) - 1)"
-
-                        # Flattened index: (i_term) + (j_term)*ldname
-                        index_expr = f"({i_term}) + {j_term}*{ldexpr}"
-                        rapp("[" + index_expr + "]")
-
-                    else:
-                        # --- General lower-bound aware path (0-based or arbitrary L1,L2) ---
-
-                        def make_offset(idx_expr: str, lb_expr: str) -> str:
-                            """Build a single-dimension offset term (row or column)."""
-                            idx_expr = idx_expr.strip()
-                            lb_expr = lb_expr.strip()
-                            core = canonical_simple_2(idx_expr)
-
-                            # Lower bound exactly 0: do not emit "- 0".
-                            if lb_expr == "0":
-                                if core is not None:
-                                    return core
-                                return f"({idx_expr})"
-
-                            # Non-zero lower bound
-                            lb_simple = bool(
-                                simple_name.fullmatch(lb_expr)
-                                or simple_int.fullmatch(lb_expr)
-                            )
-
-                            if core is not None:
-                                # Simple core: use "core - lb"
-                                if lb_simple:
-                                    return f"{core} - {lb_expr}"
-                                else:
-                                    return f"{core} - ({lb_expr})"
-
-                            # Complex index with no simple core
-                            if lb_simple:
-                                return f"({idx_expr}) - {lb_expr}"
-                            return f"({idx_expr}) - ({lb_expr})"
-
-                        # Row (first dimension) and column (second dimension) offsets
-                        row_off = make_offset(i_expr, lb1)
-                        col_off = make_offset(j_expr, lb2)
-
-                        # Multiply the (possibly parenthesized) column offset by ldname.
-                        index_expr = f"{row_off} + {col_off}*{ldexpr}"
-                        rapp("[" + index_expr + "]")
-
-                else:
-                    # Fallback: treat like a normal call/parenthesized expression
-                    if (cmn_needs_to_be_inserted(
-                            conv_info=conv_info, prev_tok=prev_tok)):
-                        if (len(tok.value) != 0) and (len(tok.value[0].value) != 0):
-                            op = "(cmn, "
-                        else:
-                            op = "(cmn"
-                    else:
-                        op = "("
-                    inner = convert_tokens(
-                        conv_info=conv_info,
-                        tokens=tok.value,
-                        commas=True,
-                        had_str_concat=had_str_concat)
-                    rapp(op + inner + ")")
-            else:
-                # Normal function call or parenthesized expression
-                # First, convert the inside of parentheses to a string
-                inner = convert_tokens(
-                    conv_info=conv_info,
-                    tokens=tok.value,
-                    commas=True,
-                    had_str_concat=had_str_concat)
-
-                # If the previous token is an identifier and corresponds to a
-                # BLAS/LAPACK routine with a known signature, adjust actual
-                # arguments according to the pointer/value information.
-                if (prev_tok is not None
-                        and prev_tok.is_identifier()):
-                    sig = _lookup_routine_signature(prev_tok.value)
-
-                    if sig is not None:
-                        inner = _adjust_actuals_using_signature(
-                            inner, sig, conv_info)
-
-                # Then decide whether we need to inject "cmn" as the first argument
-                if (cmn_needs_to_be_inserted(conv_info=conv_info, prev_tok=prev_tok)):
-                    if (len(tok.value) != 0) and (len(tok.value[0].value) != 0):
-                        op = "(cmn, "
-                    else:
-                        op = "(cmn"
-                else:
-                    op = "("
-
-                rapp(op + inner + ")")
-
+            rapp(_convert_parentheses_postfix(
+                conv_info=conv_info,
+                prev_tok=prev_tok,
+                tok=tok,
+                had_str_concat=had_str_concat))
         elif (tok.is_implied_do()):
             raise AssertionError
         elif (tok.is_power()):
@@ -3800,40 +3691,6 @@ def find_implied_dos(result, tokens):
         elif (tok.is_implied_do()):
             result.append(tok)
 
-# Helpers for array indexing expressions in I/O lists.
-# In convert_io_loop(), NAME(i) must be treated as an array element, not a function call.
-def _io_is_simple_atom(expr: str) -> bool:
-    s = expr.strip()
-    # identifier or integer literal
-    if re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", s):
-        return True
-    if re.fullmatch(r"[0-9]+", s):
-        return True
-    # already an array element like a[...]
-    if re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*\s*\[[^\]]+\]\s*", s):
-        return True
-    return False
-
-
-def _io_atom_or_paren(expr: str) -> str:
-    s = expr.strip()
-    if _io_is_simple_atom(s):
-        return s
-    return f"({s})"
-
-
-def _io_index_1d(i_expr: str, lb_expr: str) -> str:
-    lb = lb_expr.strip()
-    if lb == "0":
-        return _io_atom_or_paren(i_expr)
-    return f"{_io_atom_or_paren(i_expr)} - {_io_atom_or_paren(lb)}"
-
-
-def _io_offset(idx_expr: str, lb_expr: str) -> str:
-    lb = lb_expr.strip()
-    if lb == "0":
-        return _io_atom_or_paren(idx_expr)
-    return f"{_io_atom_or_paren(idx_expr)} - {_io_atom_or_paren(lb)}"
 
 def convert_io_loop(
         io_scope, io_op, conv_info, tokens, cbuf=None, had_str_concat=None):
@@ -3895,85 +3752,11 @@ def convert_io_loop(
                 had_str_concat=had_str_concat)
             cbuf.append_comma()
         elif (tok.is_parentheses()):
-            # Detect array reference: A(i) / A(i,j) inside I/O lists.
-            # The normal expression converter (convert_tokens) handles this,
-            # but the I/O list converter historically treated parentheses as
-            # plain grouping. That produced invalid C++ like mval(i).
-            is_array_ref = False
-            fdecl = None
-            if (prev_tok is not None
-                    and prev_tok.is_identifier()
-                    and conv_info is not None
-                    and conv_info.fproc is not None):
-                try:
-                    fdecl = conv_info.fproc.get_fdecl(id_tok=prev_tok)
-                except Exception:
-                    fdecl = None
-
-            if (fdecl is not None
-                    and getattr(fdecl, "dim_tokens", None) is not None
-                    and not fdecl.is_user_defined_callable()):
-                is_array_ref = True
-
-            if (is_array_ref):
-                idx_str = convert_tokens(
-                    conv_info=conv_info,
-                    tokens=tok.value,
-                    commas=True,
-                    had_str_concat=had_str_concat)
-                parts = _split_actuals(idx_str)
-
-                if (len(parts) == 1):
-                    i_expr = parts[0].strip()
-                    lb_expr = get_lower_bound(conv_info, fdecl, 0).strip()
-                    cbuf.append("[" + _io_index_1d(i_expr, lb_expr) + "]")
-
-                elif (len(parts) == 2):
-                    i_expr = parts[0].strip()
-                    j_expr = parts[1].strip()
-                    lb1 = get_lower_bound(conv_info, fdecl, 0).strip()
-                    lb2 = get_lower_bound(conv_info, fdecl, 1).strip()
-
-                    default_ldname = "ld" + prev_tok.value.lower()
-                    ldexpr = get_leading_dimension_expr(
-                        conv_info, fdecl, default=default_ldname)
-                    ldexpr = _maybe_use_ld_variable(
-                        conv_info, ldexpr, default_ldname)
-
-                    row_off = _io_offset(i_expr, lb1)
-                    col_off = _io_offset(j_expr, lb2)
-                    index_expr = f"({row_off}) + ({col_off}) * {ldexpr}"
-                    cbuf.append("[" + index_expr + "]")
-
-                else:
-                    # Fallback: treat as a normal parenthesized expression.
-                    cbuf.append_opening_parenthesis()
-                    if (cmn_needs_to_be_inserted(conv_info=conv_info, prev_tok=prev_tok)):
-                        cbuf.append("cmn")
-                        if (len(tok.value) != 0):
-                            cbuf.append_comma()
-                    convert_io_loop(
-                        io_scope,
-                        io_op,
-                        conv_info,
-                        tokens=tok.value,
-                        cbuf=cbuf,
-                        had_str_concat=had_str_concat)
-                    cbuf.append_closing_parenthesis()
-            else:
-                cbuf.append_opening_parenthesis()
-                if (cmn_needs_to_be_inserted(conv_info=conv_info, prev_tok=prev_tok)):
-                    cbuf.append("cmn")
-                    if (len(tok.value) != 0):
-                        cbuf.append_comma()
-                convert_io_loop(
-                    io_scope,
-                    io_op,
-                    conv_info,
-                    tokens=tok.value,
-                    cbuf=cbuf,
-                    had_str_concat=had_str_concat)
-                cbuf.append_closing_parenthesis()
+            cbuf.append(_convert_parentheses_postfix(
+                conv_info=conv_info,
+                prev_tok=prev_tok,
+                tok=tok,
+                had_str_concat=had_str_concat))
         elif (tok.is_implied_do()):
             cbuf.flush()
             from fable.tokenization import implied_do_info
@@ -4458,23 +4241,6 @@ def build_scalar_data_initializers(conv_info):
 
     return init
 
-def _get_scalar_data_initializer(conv_info, name: str):
-    """Return the C++ literal for a scalar DATA initializer of 'name', or None.
-
-    This is a small helper used in declaration emission to recognize
-    DATA-initialized scalars that should be modeled as function-local
-    static variables.
-    """
-    if conv_info is None or getattr(conv_info, "fproc", None) is None:
-        return None
-    if not hasattr(conv_info, "data_initializers"):
-        return None
-    if conv_info.data_initializers is None:
-        conv_info.data_initializers = build_scalar_data_initializers(conv_info)
-    try:
-        return conv_info.data_initializers.get(str(name).lower())
-    except Exception:
-        return None
 
 def build_array_data_initializers(conv_info):
     """Collect constant DATA initializers for local arrays.
@@ -4775,30 +4541,6 @@ def declare_identifier(conv_info, top_scope, curr_scope, id_tok, crhs=None):
         and getattr(conv_info.fproc, "conv_hook", None) is not None
         and conv_info.fproc.conv_hook.ignore_common_and_save
     )
-
-    # Treat simple DATA-initialized SAVE scalars as function-local static
-    # variables instead of routing them through `sve.<name>`.
-    #
-    # Fortran semantics: a local variable with a DATA initializer has static
-    # storage duration (effectively SAVE). Modeling it as a function-local
-    # `static` keeps the code simple and avoids SAVE structs/indirections.
-    if (fdecl is not None
-            and fdecl.is_save()
-            and not ignore_cs
-            and getattr(fdecl, "dim_tokens", None) is None):
-        init = _get_scalar_data_initializer(conv_info, fdecl.id_tok.value)
-        if init is not None:
-            # Force a plain local C++ identifier (no 'sve.' prefix).
-            conv_info.set_vmap_force_local(fdecl=fdecl)
-            vname = conv_info.vmapped(fdecl=fdecl)
-            ctype = convert_data_type(
-                conv_info=conv_info, fdecl=fdecl, crhs=None)[0]
-            mplapack_ctype = convert_to_mplapack_type(ctype)
-            rapp = get_rapp()
-            rapp(f"static {mplapack_ctype} {vname} = {init};")
-            # If we were called from an assignment, the assignment must still
-            # be emitted (do NOT fold into the static initializer).
-            return crhs is not None
 
     if (fdecl is not None
         and (fdecl.is_local()
