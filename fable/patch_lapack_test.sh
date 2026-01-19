@@ -14,3 +14,5 @@ patch  < ~/mplapack/fable/3.9.1/lapack/patch-Rlaror.cpp
 
 cd /home/docker/mplapack/mplapack/test/lin/common
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Rchkaa.cpp
+patch  < ~/mplapack/fable/3.9.1/lapack/patch-Clatb5.cpp
+
