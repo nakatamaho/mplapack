@@ -42,6 +42,11 @@ using fem::common;
 
 #include <mplapack_matgen.h>
 
+#if defined ___MPLAPACK_BUILD_WITH_DD___
+#pragma GCC push_options
+#pragma GCC optimize("O0")
+#endif
+
 void Claror(str_cref side, str_cref init, INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, INTEGER *iseed, COMPLEX *x, INTEGER &info) {
     //
     info = 0;
