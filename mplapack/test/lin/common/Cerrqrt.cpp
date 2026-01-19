@@ -44,6 +44,11 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Cerrqrt(fem::str_cref path, INTEGER const nunit) {
+    common cmn;
+    common_write write(cmn);
+    //
+    nout = nunit;
+    write(nout, star);
     //
     // Set the variables to innocuous values.
     //
