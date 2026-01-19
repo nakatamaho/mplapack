@@ -20,10 +20,10 @@ name_map="${script_dir}/mplapack_name_map.txt"
 fable_cout_env=()
 case "$mode" in
   lin|eig)
-    fable_cout_env=(env FABLE_SMALL_CHAR="2" FABLE_SUPPRESS_COMMON=True FABLE_SUPPRESS_SAVE=1)
+    fable_cout_env=(env FABLE_SMALL_CHAR="0" FABLE_SUPPRESS_COMMON=True FABLE_SUPPRESS_SAVE=1)
     ;;
   matgen)
-    fable_cout_env=(env FABLE_SMALL_CHAR="2" FABLE_SUPPRESS_COMMON=True FABLE_SUPPRESS_SAVE=1)
+    fable_cout_env=(env FABLE_SMALL_CHAR="0" FABLE_SUPPRESS_COMMON=True FABLE_SUPPRESS_SAVE=1)
     ;;
   *)
     fable_cout_env=(env FABLE_SMALL_CHAR="$FABLE_SMALL_CHAR")
