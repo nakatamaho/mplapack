@@ -106,6 +106,7 @@ MANUAL_MAPPINGS_CORE=(
 )
 
 MANUAL_MAPPINGS_TESTING=(
+  "xlaenv Mxlaenv"
 )
 
 # ------------------------------------------------------------

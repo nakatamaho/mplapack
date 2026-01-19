@@ -5235,14 +5235,19 @@ def convert_executable(
                 clhs = convert_tokens(
                     conv_info=conv_info, tokens=ei.lhs_tokens)
 
-                # For scalar CHARACTER dummy arguments that were mapped as char *,
+                # For scalar CHARACTER dummy arguments emitted as plain (const) char*,
                 # assignments should dereference the pointer:
                 #   EQUED = 'N'  ->  *equed = 'N';
+                #
+                # In view mode (FABLE_SMALL_CHAR=0), scalar CHARACTER dummies are
+                # emitted as fem::str_ref / fem::str_cref, so dereferencing would
+                # be incorrect (e.g. dist = 'S' must stay as `dist = "S";`).
                 if (
                     lhs_is_character
                     and lhs_fdecl is not None
                     and lhs_fdecl.dim_tokens is None
                     and _is_dummy_character_arg(conv_info, id_tok.value)
+                    and _is_plain_character_pointer_dummy(conv_info, id_tok.value)
                 ):
                     # clhs is typically just the mapped name (e.g. "equed")
                     if not clhs.startswith("*"):
@@ -10446,8 +10451,11 @@ def process(
                 raise
             show_traceback()
 
-    # Rewrite single-character string literals for CHARACTER*1 variables.
-    result = [rewrite_single_char_string_literals(line) for line in result]
+    # Rewrite single-character string literals for CHARACTER*1 variables (char scalars).
+    # In view mode (FABLE_SMALL_CHAR=0), scalar CHARACTER dummies/locals are fem::str, so
+    # rewriting "A" -> 'A' would break assignments like: fem::str_ref dist; dist = "S";
+    if not FABLE_SMALL_CHAR_VIEW:
+        result = [rewrite_single_char_string_literals(line) for line in result]
 
     result = _postprocess_mplapack_labels_and_comments(result)
     result = _normalize_fortran_comment_prefix(result)
