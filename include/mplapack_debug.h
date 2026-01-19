@@ -48,7 +48,7 @@ _MPLAPACK_MXERBLA_EXTERN_ int infot;
 _MPLAPACK_MXERBLA_EXTERN_ INTEGER nout;
 _MPLAPACK_MXERBLA_EXTERN_ bool ok;
 _MPLAPACK_MXERBLA_EXTERN_ bool lerr;
-_MPLAPACK_MXERBLA_EXTERN_ char srnamt[srnamt_len];
+_MPLAPACK_MXERBLA_EXTERN_ fem::str<srnamt_len> srnamt;
 
 #include <mplapack_print_double.h>
 #include <mplapack_print.h>
