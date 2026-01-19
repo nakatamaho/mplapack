@@ -220,21 +220,18 @@ def _adjust_actuals_using_signature(arg_string: str, signature, conv_info=None, 
 
     def _elems_suffix_for_identifier(name: str) -> str:
         """Return correct accessor to obtain a (const) char* buffer.
-
-        - For view-style CHARACTER dummies (str_cref/str_ref), elems is a member
-          function: use '.elems()'.
+        - For view-style CHARACTER dummies (fem::str_cref/fem::str_ref), elems is a
+          member function: use '.elems()'.
         - For fixed-length fem::str<N>, elems is a data member array: use '.elems'.
         """
         # In view-mode test conversions (FABLE_SMALL_CHAR=0), core MPLAPACK routines
-        # expect raw (const) char* buffers. Force '.elems()' on fem::str/str_view actuals
+        # expect raw (const) char* buffers. Force '.elems' on fem::str/str_view actuals
         # for those calls to avoid '&fem::str' type mismatches.
-        if force_elems_call:
-            return ".elems()"
-
-        if conv_info is not None and _is_dummy_character_arg(conv_info, name) and not _is_plain_character_pointer_dummy(conv_info, name):
+        if (conv_info is not None
+                and _is_dummy_character_arg(conv_info, name)
+                and not _is_plain_character_pointer_dummy(conv_info, name)):
             return ".elems()"
         return ".elems"
-
     for part, kind in zip(parts, signature):
         s = part.lstrip()
 
@@ -466,7 +463,7 @@ def _load_mplapack_name_maps():
           * mplapack_name_map.txt
 
     The maps are kept separate so we can apply special call-site rules
-    (e.g., forcing '.elems()' for core MPLAPACK routines in view mode).
+    (e.g., forcing '.elems' for core MPLAPACK routines in view mode).
     """
     core_path = _resolve_name_map_path("mplapack_name_map.txt")
     core = _load_mplapack_name_map_file(core_path)
@@ -492,7 +489,7 @@ _MPLAPACK_CPP_TO_FORTRAN = {
 }
 
 # C++-side routine names that belong to the CORE map (lowercase).
-# Used to force '.elems()' for fem::str/str_view actuals when FABLE_SMALL_CHAR=0.
+# Used to force '.elems' for fem::str/str_view actuals when FABLE_SMALL_CHAR=0.
 _MPLAPACK_CORE_CPP_NAMES = {str(cpp).lower() for cpp in _MPLAPACK_NAME_MAP_CORE.values()}
 
 
@@ -1031,7 +1028,7 @@ def convert_token(vmap, leading, tok, had_str_concat=None):
         s = '"' + escape_string_literal(tok.value) + '"'
         if (had_str_concat is None or not had_str_concat.value):
             return s
-        return "str_cref(%s)" % s
+        return "fem::str_cref(%s)" % s
     if (tok.is_logical()):
         if (tv == ".false."):
             return "false"
@@ -6293,9 +6290,9 @@ def convert_to_cpp_function(
                 #   - View mode (FABLE_SMALL_CHAR=0): str_cref / str_ref
                 if FABLE_SMALL_CHAR_VIEW:
                     if fdecl.is_modified:
-                        cargs_append("str_ref", arg_name)
+                        cargs_append("fem::str_ref", arg_name)
                     else:
-                        cargs_append("str_cref", arg_name)
+                        cargs_append("fem::str_cref", arg_name)
                 else:
                     if fdecl.is_modified:
                         cargs_append("char *", arg_name)
