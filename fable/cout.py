@@ -44,6 +44,15 @@ def _env_flag(name: str, default: bool = False) -> bool:
 # Default is OFF to prefer fem::str<N> (lower maintenance, fewer edge cases).
 FABLE_SMALL_CHAR_ENABLED = _env_flag("FABLE_SMALL_CHAR", default=False)
 
+# Compatibility mode for test conversions: when FABLE_SMALL_CHAR is set to "0",
+# emit string view types (str_cref / str_ref) for scalar CHARACTER dummy args,
+# and keep CHARACTER*1 scalars as fem::str<1> (not plain char).
+#
+# This avoids mixing plain 'char' with fem::str_ref in generated test code
+# (e.g., c1 = aline(i,i)), and still allows MPLAPACK calls to receive raw
+# buffers via ' .elems' when needed.
+FABLE_SMALL_CHAR_VIEW = (str(os.environ.get("FABLE_SMALL_CHAR", "")).strip() == "0")
+
 # If set, do not emit COMMON/SAVE boilerplate structs into generated C++.
 FABLE_SUPPRESS_COMMON = _env_flag("FABLE_SUPPRESS_COMMON", default=False)
 
@@ -209,6 +218,17 @@ def _adjust_actuals_using_signature(arg_string: str, signature, conv_info=None) 
 
     new_parts = []
 
+    def _elems_suffix_for_identifier(name: str) -> str:
+        """Return correct accessor to obtain a (const) char* buffer.
+
+        - For view-style CHARACTER dummies (str_cref/str_ref), elems is a member
+          function: use '.elems()'.
+        - For fixed-length fem::str<N>, elems is a data member array: use '.elems'.
+        """
+        if conv_info is not None and _is_dummy_character_arg(conv_info, name) and not _is_plain_character_pointer_dummy(conv_info, name):
+            return ".elems()"
+        return ".elems"
+
     for part, kind in zip(parts, signature):
         s = part.lstrip()
 
@@ -260,15 +280,26 @@ def _adjust_actuals_using_signature(arg_string: str, signature, conv_info=None) 
             # fem::str<N> is not implicitly convertible to (const) char*.
             # For character-pointer parameters, pass the underlying buffer.
             m = re.fullmatch(r"&\s*([A-Za-z_][A-Za-z0-9_]*)$", s)
-            if m and _is_fem_str_scalar(conv_info, m.group(1)):
+            if m and (
+                _is_fem_str_scalar(conv_info, m.group(1))
+                or (conv_info is not None and _is_dummy_character_arg(conv_info, m.group(1))
+                    and not _is_plain_character_pointer_dummy(conv_info, m.group(1)))
+                or (conv_info is not None and _is_scalar_character_fem_str(conv_info, m.group(1)))
+            ):
                 leading = part[:len(part) - len(s)]
-                part = leading + m.group(1) + ".elems"
+                name = m.group(1)
+                part = leading + name + _elems_suffix_for_identifier(name)
                 new_parts.append(part)
                 continue
 
-            if re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*$", s) and _is_fem_str_scalar(conv_info, s):
+            if re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*$", s) and (
+                _is_fem_str_scalar(conv_info, s)
+                or (conv_info is not None and _is_dummy_character_arg(conv_info, s)
+                    and not _is_plain_character_pointer_dummy(conv_info, s))
+                or (conv_info is not None and _is_scalar_character_fem_str(conv_info, s))
+            ):
                 leading = part[:len(part) - len(s)]
-                part = leading + s + ".elems"
+                part = leading + s + _elems_suffix_for_identifier(s)
                 new_parts.append(part)
                 continue
             # Already passing by address.
@@ -284,6 +315,19 @@ def _adjust_actuals_using_signature(arg_string: str, signature, conv_info=None) 
                 r"([A-Za-z_][A-Za-z0-9_]*)\s*\(\s*([^,()]+?)\s*,\s*([^,()]+?)\s*\)",
                 s,
             )
+            if m and conv_info is not None and (
+                (_is_fem_str_scalar(conv_info, m.group(1)) or _is_scalar_character_fem_str(conv_info, m.group(1)))
+                or (_is_dummy_character_arg(conv_info, m.group(1)) and not _is_plain_character_pointer_dummy(conv_info, m.group(1)))
+            ):
+                base = m.group(1)
+                a = m.group(2).strip()
+                b = m.group(3).strip()
+                leading = part[:len(part) - len(s)]
+                # Substring yields a view type (str_ref/str_cref): elems is a function.
+                part = leading + f"{base}({a}, {b}).elems()"
+                new_parts.append(part)
+                continue
+
             if m and conv_info is not None and _is_plain_character_pointer_dummy(conv_info, m.group(1)):
                 base = m.group(1)
                 a = m.group(2).strip()  # start index (Fortran 1-based)
@@ -324,15 +368,20 @@ def _adjust_actuals_using_signature(arg_string: str, signature, conv_info=None) 
             # unless it is a CHARACTER dummy argument (already a pointer),
             # or a small CHARACTER*n scalar we mapped to char[].
             if re.match(r"[A-Za-z_][A-Za-z0-9_]*$", s):
-                # CHARACTER dummy arguments are already const char*.
+                # CHARACTER dummy arguments may be plain (const) char* or view types.
                 if conv_info is not None and _is_dummy_character_arg(conv_info, s):
+                    if _is_plain_character_pointer_dummy(conv_info, s):
+                        new_parts.append(part)
+                        continue
+                    leading = part[:len(part) - len(s)]
+                    part = leading + s + _elems_suffix_for_identifier(s)
                     new_parts.append(part)
                     continue
                 # Scalar CHARACTER*n locals emitted as fem::str<N> do NOT
                 # implicitly convert to (const) char*. Pass the fixed buffer.
                 if conv_info is not None and _is_scalar_character_fem_str(conv_info, s):
                     leading = part[:len(part) - len(s)]
-                    part = leading + s + ".elems"
+                    part = leading + s + _elems_suffix_for_identifier(s)
                     new_parts.append(part)
                     continue
                 # Small CHARACTER*n scalars mapped to char[] decay to char*,
@@ -2039,9 +2088,9 @@ def _is_plain_character_pointer_dummy(conv_info, name: str) -> bool:
     dt_code = getattr(dt, "value", None) if dt is not None else None
     if dt_code != "character":
         return False
-    # Scalar CHARACTER dummy: emitted as (const) char*
+    # Scalar CHARACTER dummy: emitted as (const) char* unless view mode is enabled.
     if getattr(fdecl, "dim_tokens", None) is None:
-        return True
+        return (not FABLE_SMALL_CHAR_VIEW)
     # Array CHARACTER dummy: only CHARACTER*1 arrays are treated as plain pointer.
     st = getattr(fdecl, "size_tokens", None)
     if st is None:
@@ -2075,17 +2124,18 @@ def _is_scalar_character_fem_str(conv_info, name: str) -> bool:
     if getattr(fdecl, "dim_tokens", None) is not None:
         return False
     st = getattr(fdecl, "size_tokens", None)
+    # In view mode, CHARACTER*1 scalars are emitted as fem::str<1> (not plain char).
     if st is None:
-        return False  # CHARACTER*1 -> char
+        return bool(FABLE_SMALL_CHAR_VIEW)
     try:
         if len(st) == 1 and st[0].is_integer() and st[0].value == "1":
-            return False
+            return bool(FABLE_SMALL_CHAR_VIEW)
     except Exception:
         pass
     try:
         size_expr = convert_tokens(conv_info=conv_info, tokens=st, commas=False).strip()
         if size_expr == "1":
-            return False
+            return bool(FABLE_SMALL_CHAR_VIEW)
     except Exception:
         pass
     return True
@@ -3100,7 +3150,7 @@ def convert_data_type(conv_info, fdecl, crhs):
             csize = convert_tokens(conv_info=conv_info, tokens=size_tokens)
 
         # CHARACTER*1 scalar → plain char (no implicit initialization)
-        if csize.strip() == "1" and dim_tokens is None:
+        if csize.strip() == "1" and dim_tokens is None and not FABLE_SMALL_CHAR_VIEW:
             ctype = "char"
             # Do not set crhs here if there is no explicit initializer.
             # If the Fortran code had "CHARACTER*1 normin /'N'/", that will
@@ -6174,12 +6224,18 @@ def convert_to_cpp_function(
             _mark_dummy_character_arg(conv_info, id_tok.value)
             if (fdecl.dim_tokens is None):
                 # Scalar CHARACTER argument.
-                # If it is modified (INTENT OUT/INOUT), use char *.
-                # Otherwise, treat as input-only and use const char *.
-                if fdecl.is_modified:
-                    cargs_append("char *", arg_name)
+                #   - Default: classic LAPACK-style (const) char*
+                #   - View mode (FABLE_SMALL_CHAR=0): str_cref / str_ref
+                if FABLE_SMALL_CHAR_VIEW:
+                    if fdecl.is_modified:
+                        cargs_append("str_ref", arg_name)
+                    else:
+                        cargs_append("str_cref", arg_name)
                 else:
-                    cargs_append("const char *", arg_name)
+                    if fdecl.is_modified:
+                        cargs_append("char *", arg_name)
+                    else:
+                        cargs_append("const char *", arg_name)
             else:
                 # CHARACTER arrays:
                 #   - CHARACTER*1 arrays are modeled as a plain char pointer (char*/const char*)
