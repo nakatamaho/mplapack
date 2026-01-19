@@ -42,7 +42,7 @@ using fem::common;
 
 #include <mplapack_matgen.h>
 
-void Clatme(INTEGER const n, str_cref dist, INTEGER *iseed, COMPLEX *d, INTEGER const mode, REAL const cond, COMPLEX const dmax, str_cref rsign, str_cref upper, str_cref sim, REAL *ds, INTEGER const modes, REAL const conds, INTEGER const kl, INTEGER const ku, REAL const anorm, COMPLEX *a, INTEGER const lda, COMPLEX *work, INTEGER &info) {
+void Clatme(INTEGER const n, fem::str_cref dist, INTEGER *iseed, COMPLEX *d, INTEGER const mode, REAL const cond, COMPLEX const dmax, fem::str_cref rsign, fem::str_cref upper, fem::str_cref sim, REAL *ds, INTEGER const modes, REAL const conds, INTEGER const kl, INTEGER const ku, REAL const anorm, COMPLEX *a, INTEGER const lda, COMPLEX *work, INTEGER &info) {
     //
     // 1)      Decode and Test the input parameters.
     // Initialize flags & seed.

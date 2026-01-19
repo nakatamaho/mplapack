@@ -42,7 +42,7 @@ using fem::common;
 
 #include <mplapack_matgen.h>
 
-void Rlatmr(INTEGER const m, INTEGER const n, str_cref dist, INTEGER *iseed, str_cref sym, REAL *d, INTEGER const mode, REAL const cond, REAL const dmax, str_cref rsign, str_cref grade, REAL *dl, INTEGER const model, REAL const condl, REAL *dr, INTEGER const moder, REAL const condr, str_cref pivtng, INTEGER *ipivot, INTEGER const kl, INTEGER const ku, REAL const sparse, REAL const anorm, str_cref pack, REAL *a, INTEGER const lda, INTEGER *iwork, INTEGER &info) {
+void Rlatmr(INTEGER const m, INTEGER const n, fem::str_cref dist, INTEGER *iseed, fem::str_cref sym, REAL *d, INTEGER const mode, REAL const cond, REAL const dmax, fem::str_cref rsign, fem::str_cref grade, REAL *dl, INTEGER const model, REAL const condl, REAL *dr, INTEGER const moder, REAL const condr, fem::str_cref pivtng, INTEGER *ipivot, INTEGER const kl, INTEGER const ku, REAL const sparse, REAL const anorm, fem::str_cref pack, REAL *a, INTEGER const lda, INTEGER *iwork, INTEGER &info) {
     //
     // 1)      Decode and Test the input parameters.
     // Initialize flags & seed.

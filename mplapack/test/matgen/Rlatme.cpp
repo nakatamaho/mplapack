@@ -42,7 +42,7 @@ using fem::common;
 
 #include <mplapack_matgen.h>
 
-void Rlatme(INTEGER const n, str_cref dist, INTEGER *iseed, REAL *d, INTEGER const mode, REAL const cond, REAL const dmax, const char *ei, str_cref rsign, str_cref upper, str_cref sim, REAL *ds, INTEGER const modes, REAL const conds, INTEGER const kl, INTEGER const ku, REAL const anorm, REAL *a, INTEGER const lda, REAL *work, INTEGER &info) {
+void Rlatme(INTEGER const n, fem::str_cref dist, INTEGER *iseed, REAL *d, INTEGER const mode, REAL const cond, REAL const dmax, const char *ei, fem::str_cref rsign, fem::str_cref upper, fem::str_cref sim, REAL *ds, INTEGER const modes, REAL const conds, INTEGER const kl, INTEGER const ku, REAL const anorm, REAL *a, INTEGER const lda, REAL *work, INTEGER &info) {
     //
     // 1)      Decode and Test the input parameters.
     // Initialize flags & seed.

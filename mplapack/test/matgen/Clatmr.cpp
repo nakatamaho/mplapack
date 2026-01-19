@@ -42,7 +42,7 @@ using fem::common;
 
 #include <mplapack_matgen.h>
 
-void Clatmr(INTEGER const m, INTEGER const n, str_cref dist, INTEGER *iseed, str_cref sym, COMPLEX *d, INTEGER const mode, REAL const cond, COMPLEX const dmax, str_cref rsign, str_cref grade, COMPLEX *dl, INTEGER const model, REAL const condl, COMPLEX *dr, INTEGER const moder, REAL const condr, str_cref pivtng, INTEGER *ipivot, INTEGER const kl, INTEGER const ku, REAL const sparse, REAL const anorm, str_cref pack, COMPLEX *a, INTEGER const lda, INTEGER *iwork, INTEGER &info) {
+void Clatmr(INTEGER const m, INTEGER const n, fem::str_cref dist, INTEGER *iseed, fem::str_cref sym, COMPLEX *d, INTEGER const mode, REAL const cond, COMPLEX const dmax, fem::str_cref rsign, fem::str_cref grade, COMPLEX *dl, INTEGER const model, REAL const condl, COMPLEX *dr, INTEGER const moder, REAL const condr, fem::str_cref pivtng, INTEGER *ipivot, INTEGER const kl, INTEGER const ku, REAL const sparse, REAL const anorm, fem::str_cref pack, COMPLEX *a, INTEGER const lda, INTEGER *iwork, INTEGER &info) {
     //
     // 1)      Decode and Test the input parameters.
     // Initialize flags & seed.
