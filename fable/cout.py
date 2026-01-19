@@ -188,7 +188,7 @@ def _is_array_variable(conv_info, name: str) -> bool:
         return False
 
 
-def _adjust_actuals_using_signature(arg_string: str, signature, conv_info=None) -> str:
+def _adjust_actuals_using_signature(arg_string: str, signature, conv_info=None, force_elems_call: bool = False) -> str:
     """Adjust actual arguments based on pointer/value signature.
 
     For PTR_NUMERIC arguments, if the expression looks like an array
@@ -225,6 +225,12 @@ def _adjust_actuals_using_signature(arg_string: str, signature, conv_info=None) 
           function: use '.elems()'.
         - For fixed-length fem::str<N>, elems is a data member array: use '.elems'.
         """
+        # In view-mode test conversions (FABLE_SMALL_CHAR=0), core MPLAPACK routines
+        # expect raw (const) char* buffers. Force '.elems()' on fem::str/str_view actuals
+        # for those calls to avoid '&fem::str' type mismatches.
+        if force_elems_call:
+            return ".elems()"
+
         if conv_info is not None and _is_dummy_character_arg(conv_info, name) and not _is_plain_character_pointer_dummy(conv_info, name):
             return ".elems()"
         return ".elems"
@@ -397,8 +403,31 @@ def _adjust_actuals_using_signature(arg_string: str, signature, conv_info=None) 
     return ", ".join(p.strip() for p in new_parts)
 
 
-def _load_mplapack_name_map(path=None):
-    """Load Fortran -> MPLAPACK C++ name mapping from an external text file.
+def _resolve_name_map_path(filename: str) -> str:
+    """Resolve the path to a name-map file.
+
+    Search order:
+      1) current working directory
+      2) directory containing this module
+
+    This supports pipelines that `cd` into a tools directory before running
+    `python -m fable.command_line.cout`.
+    """
+    candidates = [
+        os.path.join(os.getcwd(), filename),
+        os.path.join(os.path.dirname(__file__), filename),
+    ]
+    for p in candidates:
+        try:
+            if os.path.isfile(p):
+                return p
+        except Exception:
+            pass
+    return candidates[-1]
+
+
+def _load_mplapack_name_map_file(path: str) -> dict:
+    """Load Fortran -> MPLAPACK C++ routine name mapping from a text file.
 
     Format (whitespace separated, # for comments):
 
@@ -408,14 +437,10 @@ def _load_mplapack_name_map(path=None):
         xerbla          Mxerbla
         dcabs1          RCabs1
     """
-    if path is None:
-        base_dir = os.path.dirname(__file__)
-        path = os.path.join(base_dir, "mplapack_name_map.txt")
     mapping = {}
     try:
         with open(path) as f:
             for line in f:
-                # Strip comments after '#'
                 line = line.split("#", 1)[0].strip()
                 if not line:
                     continue
@@ -423,19 +448,53 @@ def _load_mplapack_name_map(path=None):
                 if len(parts) < 2:
                     continue
                 src, dst = parts[0], parts[1]
-                mapping[src.lower()] = dst
+                mapping[str(src).lower()] = str(dst)
     except OSError:
-        # Map file is optional; fall back to default naming rules.
+        # Map files are optional; fall back to default naming rules.
         pass
     return mapping
 
 
-_MPLAPACK_NAME_MAP = _load_mplapack_name_map()
+def _load_mplapack_name_maps():
+    """Load core/testing name maps.
+
+    Policy:
+      - View mode (FABLE_SMALL_CHAR=0): read BOTH
+          * mplapack_name_map.txt
+          * mplapack_testing_name_map.txt
+      - Non-view mode (!=0): read ONLY
+          * mplapack_name_map.txt
+
+    The maps are kept separate so we can apply special call-site rules
+    (e.g., forcing '.elems()' for core MPLAPACK routines in view mode).
+    """
+    core_path = _resolve_name_map_path("mplapack_name_map.txt")
+    core = _load_mplapack_name_map_file(core_path)
+
+    testing = {}
+    if FABLE_SMALL_CHAR_VIEW:
+        testing_path = _resolve_name_map_path("mplapack_testing_name_map.txt")
+        testing = _load_mplapack_name_map_file(testing_path)
+
+    combined = dict(core)
+    # Keep core precedence if a key accidentally overlaps.
+    for k, v in testing.items():
+        if k not in combined:
+            combined[k] = v
+    return core, testing, combined
+
+
+_MPLAPACK_NAME_MAP_CORE, _MPLAPACK_NAME_MAP_TESTING, _MPLAPACK_NAME_MAP = _load_mplapack_name_maps()
 
 # Reverse lookup: C++ routine name (lowercase) -> Fortran name (lowercase)
 _MPLAPACK_CPP_TO_FORTRAN = {
-    cpp.lower(): f_name.lower() for (f_name, cpp) in _MPLAPACK_NAME_MAP.items()
+    str(cpp).lower(): str(f_name).lower() for (f_name, cpp) in _MPLAPACK_NAME_MAP.items()
 }
+
+# C++-side routine names that belong to the CORE map (lowercase).
+# Used to force '.elems()' for fem::str/str_view actuals when FABLE_SMALL_CHAR=0.
+_MPLAPACK_CORE_CPP_NAMES = {str(cpp).lower() for cpp in _MPLAPACK_NAME_MAP_CORE.values()}
+
 
 # Track COMPLEX-typed C++ identifiers in the current procedure.
 # Names are C++ identifiers after vmapping (e.g. "alpha", "a", "cmn.z").
@@ -3058,7 +3117,12 @@ def _convert_parentheses_postfix(conv_info, prev_tok, tok, had_str_concat):
     if (prev_tok is not None and getattr(prev_tok, 'is_identifier', lambda: False)()):
         sig = _lookup_routine_signature(prev_tok.value)
         if sig is not None:
-            inner = _adjust_actuals_using_signature(inner, sig, conv_info)
+            force_elems = False
+            if FABLE_SMALL_CHAR_VIEW:
+                base_name = str(prev_tok.value).split("::")[-1].strip()
+                mapped_name = convert_function_name_to_mplapack(base_name)
+                force_elems = (str(mapped_name).lower() in _MPLAPACK_CORE_CPP_NAMES)
+            inner = _adjust_actuals_using_signature(inner, sig, conv_info, force_elems_call=force_elems)
 
     # Decide whether we need to inject "cmn" as the first argument.
     if (cmn_needs_to_be_inserted(conv_info=conv_info, prev_tok=prev_tok)):
@@ -5589,7 +5653,8 @@ def convert_executable(
                     callee_key = called.split("::")[-1]
                     sig = _lookup_routine_signature(callee_key)
                     if sig is not None:
-                        a = _adjust_actuals_using_signature(a, sig, conv_info)
+                        force_elems = bool(FABLE_SMALL_CHAR_VIEW and callee_key.lower() in _MPLAPACK_CORE_CPP_NAMES)
+                        a = _adjust_actuals_using_signature(a, sig, conv_info, force_elems_call=force_elems)
 
                     def cmn_a():
                         if (len(cmn) == 0):
