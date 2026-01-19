@@ -236,7 +236,7 @@ void Rlattr(INTEGER const imat, fem::str_cref uplo, fem::str_cref trans, fem::st
         //
         x = sqrt(cndnum) - 1 / sqrt(cndnum);
         if (n > 2) {
-            y = sqrt(2.0 / (n - 2)) * x;
+            y = sqrt(two / REAL(n - 2)) * x;
         } else {
             y = zero;
         }
@@ -273,7 +273,7 @@ void Rlattr(INTEGER const imat, fem::str_cref uplo, fem::str_cref trans, fem::st
         if (upper) {
             for (j = 1; j <= n - 1; j = j + 1) {
                 ra = a[(j - 1) + ((j + 1) - 1) * lda];
-                rb = 2.0;
+                rb = two;
                 Rrotg(ra, rb, c, s);
                 //
                 // Multiply by [ c  s; -s  c] on the left.
@@ -295,7 +295,7 @@ void Rlattr(INTEGER const imat, fem::str_cref uplo, fem::str_cref trans, fem::st
         } else {
             for (j = 1; j <= n - 1; j = j + 1) {
                 ra = a[((j + 1) - 1) + (j - 1) * lda];
-                rb = 2.0;
+                rb = two;
                 Rrotg(ra, rb, c, s);
                 //
                 // Multiply by [ c -s;  s  c] on the right.
@@ -532,7 +532,7 @@ void Rlattr(INTEGER const imat, fem::str_cref uplo, fem::str_cref trans, fem::st
                 a[((j - 1) - 1) * lda] = -(tscal / castREAL(n + 1)) / castREAL(n + 2);
                 a[((j - 1) - 1) + ((j - 1) - 1) * lda] = one;
                 b[(j - 1) - 1] = texp * castREAL(n * n + n - 1);
-                texp = texp * 2.0;
+                texp = texp * two;
             }
             b[1 - 1] = (castREAL(n + 1) / castREAL(n + 2)) * tscal;
         } else {
@@ -543,7 +543,7 @@ void Rlattr(INTEGER const imat, fem::str_cref uplo, fem::str_cref trans, fem::st
                 a[(n - 1) + ((j + 1) - 1) * lda] = -(tscal / castREAL(n + 1)) / castREAL(n + 2);
                 a[((j + 1) - 1) + ((j + 1) - 1) * lda] = one;
                 b[(j + 1) - 1] = texp * castREAL(n * n + n - 1);
-                texp = texp * 2.0;
+                texp = texp * two;
             }
             b[n - 1] = (castREAL(n + 1) / castREAL(n + 2)) * tscal;
         }
