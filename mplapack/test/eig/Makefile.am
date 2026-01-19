@@ -293,7 +293,6 @@ common/Rdrgsx.cpp \
 common/Alareq.cpp \
 common/Alarqg.cpp \
 common/iMlaenv.cpp \
-common/chkxer.cpp \
 common/xlaenv.cpp 
 
 install-data-hook:

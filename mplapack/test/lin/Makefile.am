@@ -123,10 +123,10 @@ endif
 
 LIN_SOURCES = \
 common/xlaenv.cpp \
+common/Chkxer.cpp \
 common/Rdrvpp.cpp \
 common/Cdrvpp.cpp \
 common/Alaesm.cpp \
-common/chkxer.cpp \
 common/Claipd.cpp \
 common/Alasum.cpp \
 common/Rgennd.cpp \
