@@ -38,7 +38,6 @@ patch  < ~/mplapack/fable/3.9.1/lapack/patch-Mxlaenv.cpp
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Rdrvls.cpp
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Cerrlqtp.cpp
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Cerrlqt.cpp
-patch  < ~/mplapack/fable/3.9.1/lapack/patch-Clatb4.cpp
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Ctsqr01.cpp
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Cunhr_col01.cpp
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Cunhr_col02.cpp
