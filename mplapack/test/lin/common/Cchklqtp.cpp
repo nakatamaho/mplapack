@@ -49,7 +49,7 @@ void Cchklqtp(REAL const thresh, bool const tsterr, INTEGER const nm, INTEGER *m
     //
     // Initialize constants
     //
-    fem::str<3> path = 'Z';
+    fem::str<3> path = "Z";
     path(2, 3) = "XQ";
     INTEGER nrun = 0;
     INTEGER nfail = 0;

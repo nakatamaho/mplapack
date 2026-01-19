@@ -90,11 +90,11 @@ void Crqt03(INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX *af, COMP
     REAL resid = 0.0;
     for (iside = 1; iside <= 2; iside = iside + 1) {
         if (iside == 1) {
-            side = 'L';
+            side = "L";
             mc = n;
             nc = m;
         } else {
-            side = 'R';
+            side = "R";
             mc = m;
             nc = n;
         }
@@ -111,9 +111,9 @@ void Crqt03(INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX *af, COMP
         //
         for (itrans = 1; itrans <= 2; itrans = itrans + 1) {
             if (itrans == 1) {
-                trans = 'N';
+                trans = "N";
             } else {
-                trans = 'C';
+                trans = "C";
             }
             //
             // Copy C

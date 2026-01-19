@@ -115,7 +115,7 @@ void Cchktr(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
         //
         n = nval[in - 1];
         lda = max((INTEGER)1, n);
-        xtype = 'N';
+        xtype = "N";
         //
         for (imat = 1; imat <= ntype1; imat = imat + 1) {
             //
@@ -149,7 +149,7 @@ void Cchktr(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                     // Do for each blocksize in NBVAL
                     //
                     nb = nbval[inb - 1];
-                    xlaenv(1, nb);
+                    Mxlaenv(1, nb);
                     //
                     // +    TEST 1
                     // Form the inverse of A.
@@ -200,7 +200,7 @@ void Cchktr(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                     //
                     for (irhs = 1; irhs <= nns; irhs = irhs + 1) {
                         nrhs = nsval[irhs - 1];
-                        xtype = 'N';
+                        xtype = "N";
                         //
                         for (itran = 1; itran <= ntran; itran = itran + 1) {
                             //
@@ -208,10 +208,10 @@ void Cchktr(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                             //
                             trans = transs[itran - 1];
                             if (itran == 1) {
-                                norm = 'O';
+                                norm = "O";
                                 rcondc = rcondo;
                             } else {
-                                norm = 'I';
+                                norm = "I";
                                 rcondc = rcondi;
                             }
                             //
@@ -220,7 +220,7 @@ void Cchktr(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                             //
                             srnamt = "ZLARHS";
                             Clarhs(path, xtype, uplo, trans, n, n, 0, idiag, nrhs, a, lda, xact, lda, b, lda, iseed, info);
-                            xtype = 'C';
+                            xtype = "C";
                             Clacpy("Full", n, nrhs, b, lda, x, lda);
                             //
                             srnamt = "ZTRTRS";
@@ -285,10 +285,10 @@ void Cchktr(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                     //
                     for (itran = 1; itran <= 2; itran = itran + 1) {
                         if (itran == 1) {
-                            norm = 'O';
+                            norm = "O";
                             rcondc = rcondo;
                         } else {
-                            norm = 'I';
+                            norm = "I";
                             rcondc = rcondi;
                         }
                         srnamt = "ZTRCON";

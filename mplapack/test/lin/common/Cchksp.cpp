@@ -115,7 +115,7 @@ void Cchksp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
     for (in = 1; in <= nn; in = in + 1) {
         n = nval[in - 1];
         lda = max(n, (INTEGER)1);
-        xtype = 'N';
+        xtype = "N";
         nimat = ntypes;
         if (n <= 0) {
             nimat = 1;
@@ -141,9 +141,9 @@ void Cchksp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
             for (iuplo = 1; iuplo <= 2; iuplo = iuplo + 1) {
                 uplo = uplos[iuplo - 1];
                 if (Mlsame(uplo.elems, "U")) {
-                    packit = 'C';
+                    packit = "C";
                 } else {
-                    packit = 'R';
+                    packit = "R";
                 }
                 //
                 if (imat != ntypes) {

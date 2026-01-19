@@ -254,9 +254,9 @@ void Cdrvpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
             //
             for (ifact = 1; ifact <= 2; ifact = ifact + 1) {
                 if (ifact == 1) {
-                    fact = 'F';
+                    fact = "F";
                 } else {
-                    fact = 'N';
+                    fact = "N";
                 }
                 //
                 // Compute the condition number for comparison with

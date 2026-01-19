@@ -122,7 +122,7 @@ endif
 endif
 
 LIN_SOURCES = \
-common/xlaenv.cpp \
+common/Mxlaenv.cpp \
 common/Chkxer.cpp \
 common/Rdrvpp.cpp \
 common/Cdrvpp.cpp \

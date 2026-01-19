@@ -98,7 +98,7 @@ void Rchkps(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
         Rerrps(path, nout);
     }
     infot = 0;
-    xlaenv(2, 2);
+    Mxlaenv(2, 2);
     //
     // Do for each value of N in NVAL
     //
@@ -156,7 +156,7 @@ void Rchkps(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                     //
                     for (inb = 1; inb <= nnb; inb = inb + 1) {
                         nb = nbval[inb - 1];
-                        xlaenv(1, nb);
+                        Mxlaenv(1, nb);
                         //
                         // Compute the pivoted L*L' or U'*U factorization
                         // of the matrix.

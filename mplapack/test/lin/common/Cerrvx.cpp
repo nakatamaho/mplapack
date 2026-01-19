@@ -82,7 +82,7 @@ void Cerrvx(fem::str_cref path, INTEGER const nunit) {
         r[j - 1] = 0.0;
         ip[j - 1] = j;
     }
-    fem::str<1> eq = ' ';
+    fem::str<1> eq = " ";
     ok = true;
     //
     INTEGER info = 0;
@@ -129,15 +129,15 @@ void Cerrvx(fem::str_cref path, INTEGER const nunit) {
         Cgesvx("N", "N", 2, 1, a, 2, af, 1, ip, eq.elems, r, c, b, 2, x, 2, rcond, r1, r2, w, rw, info);
         Chkxer("ZGESVX", infot, nout, lerr, ok);
         infot = 10;
-        eq = '/';
+        eq = "/";
         Cgesvx("F", "N", 0, 0, a, 1, af, 1, ip, eq.elems, r, c, b, 1, x, 1, rcond, r1, r2, w, rw, info);
         Chkxer("ZGESVX", infot, nout, lerr, ok);
         infot = 11;
-        eq = 'R';
+        eq = "R";
         Cgesvx("F", "N", 1, 0, a, 1, af, 1, ip, eq.elems, r, c, b, 1, x, 1, rcond, r1, r2, w, rw, info);
         Chkxer("ZGESVX", infot, nout, lerr, ok);
         infot = 12;
-        eq = 'C';
+        eq = "C";
         Cgesvx("F", "N", 1, 0, a, 1, af, 1, ip, eq.elems, r, c, b, 1, x, 1, rcond, r1, r2, w, rw, info);
         Chkxer("ZGESVX", infot, nout, lerr, ok);
         infot = 14;
@@ -199,15 +199,15 @@ void Cerrvx(fem::str_cref path, INTEGER const nunit) {
         Cgbsvx("N", "N", 1, 1, 1, 0, a, 3, af, 3, ip, eq.elems, r, c, b, 1, x, 1, rcond, r1, r2, w, rw, info);
         Chkxer("ZGBSVX", infot, nout, lerr, ok);
         infot = 12;
-        eq = '/';
+        eq = "/";
         Cgbsvx("F", "N", 0, 0, 0, 0, a, 1, af, 1, ip, eq.elems, r, c, b, 1, x, 1, rcond, r1, r2, w, rw, info);
         Chkxer("ZGBSVX", infot, nout, lerr, ok);
         infot = 13;
-        eq = 'R';
+        eq = "R";
         Cgbsvx("F", "N", 1, 0, 0, 0, a, 1, af, 1, ip, eq.elems, r, c, b, 1, x, 1, rcond, r1, r2, w, rw, info);
         Chkxer("ZGBSVX", infot, nout, lerr, ok);
         infot = 14;
-        eq = 'C';
+        eq = "C";
         Cgbsvx("F", "N", 1, 0, 0, 0, a, 1, af, 1, ip, eq.elems, r, c, b, 1, x, 1, rcond, r1, r2, w, rw, info);
         Chkxer("ZGBSVX", infot, nout, lerr, ok);
         infot = 16;
@@ -297,11 +297,11 @@ void Cerrvx(fem::str_cref path, INTEGER const nunit) {
         Cposvx("N", "U", 2, 0, a, 2, af, 1, eq.elems, c, b, 2, x, 2, rcond, r1, r2, w, rw, info);
         Chkxer("ZPOSVX", infot, nout, lerr, ok);
         infot = 9;
-        eq = '/';
+        eq = "/";
         Cposvx("F", "U", 0, 0, a, 1, af, 1, eq.elems, c, b, 1, x, 1, rcond, r1, r2, w, rw, info);
         Chkxer("ZPOSVX", infot, nout, lerr, ok);
         infot = 10;
-        eq = 'Y';
+        eq = "Y";
         Cposvx("F", "U", 1, 0, a, 1, af, 1, eq.elems, c, b, 1, x, 1, rcond, r1, r2, w, rw, info);
         Chkxer("ZPOSVX", infot, nout, lerr, ok);
         infot = 12;
@@ -345,11 +345,11 @@ void Cerrvx(fem::str_cref path, INTEGER const nunit) {
         Cppsvx("N", "U", 0, -1, a, af, eq.elems, c, b, 1, x, 1, rcond, r1, r2, w, rw, info);
         Chkxer("ZPPSVX", infot, nout, lerr, ok);
         infot = 7;
-        eq = '/';
+        eq = "/";
         Cppsvx("F", "U", 0, 0, a, af, eq.elems, c, b, 1, x, 1, rcond, r1, r2, w, rw, info);
         Chkxer("ZPPSVX", infot, nout, lerr, ok);
         infot = 8;
-        eq = 'Y';
+        eq = "Y";
         Cppsvx("F", "U", 1, 0, a, af, eq.elems, c, b, 1, x, 1, rcond, r1, r2, w, rw, info);
         Chkxer("ZPPSVX", infot, nout, lerr, ok);
         infot = 10;
@@ -408,11 +408,11 @@ void Cerrvx(fem::str_cref path, INTEGER const nunit) {
         Cpbsvx("N", "U", 1, 1, 0, a, 2, af, 1, eq.elems, c, b, 2, x, 2, rcond, r1, r2, w, rw, info);
         Chkxer("ZPBSVX", infot, nout, lerr, ok);
         infot = 10;
-        eq = '/';
+        eq = "/";
         Cpbsvx("F", "U", 0, 0, 0, a, 1, af, 1, eq.elems, c, b, 1, x, 1, rcond, r1, r2, w, rw, info);
         Chkxer("ZPBSVX", infot, nout, lerr, ok);
         infot = 11;
-        eq = 'Y';
+        eq = "Y";
         Cpbsvx("F", "U", 1, 0, 0, a, 1, af, 1, eq.elems, c, b, 1, x, 1, rcond, r1, r2, w, rw, info);
         Chkxer("ZPBSVX", infot, nout, lerr, ok);
         infot = 13;

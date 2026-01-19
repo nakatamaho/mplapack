@@ -177,9 +177,9 @@ void Clarhs(fem::str_cref path, fem::str_cref xtype, fem::str_cref uplo, fem::st
         //
         Clacpy("Full", n, nrhs, x, ldx, b, ldb);
         if (ku == 2) {
-            diag = 'U';
+            diag = "U";
         } else {
-            diag = 'N';
+            diag = "N";
         }
         Ctrmm("Left", uplo.elems(), trans.elems(), diag.elems, n, nrhs, one, a, lda, b, ldb);
         //
@@ -189,9 +189,9 @@ void Clarhs(fem::str_cref path, fem::str_cref xtype, fem::str_cref uplo, fem::st
         //
         Clacpy("Full", n, nrhs, x, ldx, b, ldb);
         if (ku == 2) {
-            diag = 'U';
+            diag = "U";
         } else {
-            diag = 'N';
+            diag = "N";
         }
         for (j = 1; j <= nrhs; j = j + 1) {
             Ctpmv(uplo.elems(), trans.elems(), diag.elems, n, a, &b[(j - 1) * ldb], 1);
@@ -203,9 +203,9 @@ void Clarhs(fem::str_cref path, fem::str_cref xtype, fem::str_cref uplo, fem::st
         //
         Clacpy("Full", n, nrhs, x, ldx, b, ldb);
         if (ku == 2) {
-            diag = 'U';
+            diag = "U";
         } else {
-            diag = 'N';
+            diag = "N";
         }
         for (j = 1; j <= nrhs; j = j + 1) {
             Ctbmv(uplo.elems(), trans.elems(), diag.elems, n, kl, a, lda, &b[(j - 1) * ldb], 1);

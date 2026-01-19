@@ -133,15 +133,15 @@ void Cdrvpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     //
     nb = 1;
     nbmin = 2;
-    xlaenv(1, nb);
-    xlaenv(2, nbmin);
+    Mxlaenv(1, nb);
+    Mxlaenv(2, nbmin);
     //
     // Do for each value of N in NVAL
     //
     for (in = 1; in <= nn; in = in + 1) {
         n = nval[in - 1];
         lda = max(n, (INTEGER)1);
-        xtype = 'N';
+        xtype = "N";
         //
         // Set limits on the number of loop iterations.
         //
@@ -169,12 +169,12 @@ void Cdrvpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
             for (iuplo = 1; iuplo <= 2; iuplo = iuplo + 1) {
                 koff = 1;
                 if (iuplo == 1) {
-                    uplo = 'U';
-                    packit = 'Q';
+                    uplo = "U";
+                    packit = "Q";
                     koff = max((INTEGER)1, kd + 2 - n);
                 } else {
-                    uplo = 'L';
-                    packit = 'B';
+                    uplo = "L";
+                    packit = "B";
                 }
                 //
                 for (imat = 1; imat <= nimat; imat = imat + 1) {
@@ -362,7 +362,7 @@ void Cdrvpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                             //
                             srnamt = "ZLARHS";
                             Clarhs(path, xtype, uplo, " ", n, n, kd, kd, nrhs, a, ldab, xact, lda, b, lda, iseed, info);
-                            xtype = 'C';
+                            xtype = "C";
                             Clacpy("Full", n, nrhs, b, lda, bsav, lda);
                             //
                             if (nofact) {

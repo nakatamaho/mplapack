@@ -162,8 +162,8 @@ void Cdrvab(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nns, IN
             //
             for (irhs = 1; irhs <= nns; irhs = irhs + 1) {
                 nrhs = nsval[irhs - 1];
-                xtype = 'N';
-                trans = 'N';
+                xtype = "N";
+                trans = "N";
                 //
                 srnamt = "ZLARHS";
                 Clarhs(path, xtype, " ", trans, n, n, kl, ku, nrhs, a, lda, x, lda, b, lda, iseed, info);

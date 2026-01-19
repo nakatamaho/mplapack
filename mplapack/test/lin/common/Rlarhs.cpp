@@ -155,9 +155,9 @@ void Rlarhs(fem::str_cref path, fem::str_cref xtype, fem::str_cref uplo, fem::st
         //
         Rlacpy("Full", n, nrhs, x, ldx, b, ldb);
         if (ku == 2) {
-            diag = 'U';
+            diag = "U";
         } else {
-            diag = 'N';
+            diag = "N";
         }
         Rtrmm("Left", uplo.elems(), trans.elems(), diag.elems, n, nrhs, one, a, lda, b, ldb);
         //
@@ -167,9 +167,9 @@ void Rlarhs(fem::str_cref path, fem::str_cref xtype, fem::str_cref uplo, fem::st
         //
         Rlacpy("Full", n, nrhs, x, ldx, b, ldb);
         if (ku == 2) {
-            diag = 'U';
+            diag = "U";
         } else {
-            diag = 'N';
+            diag = "N";
         }
         for (j = 1; j <= nrhs; j = j + 1) {
             Rtpmv(uplo.elems(), trans.elems(), diag.elems, n, a, &b[(j - 1) * ldb], 1);
@@ -181,9 +181,9 @@ void Rlarhs(fem::str_cref path, fem::str_cref xtype, fem::str_cref uplo, fem::st
         //
         Rlacpy("Full", n, nrhs, x, ldx, b, ldb);
         if (ku == 2) {
-            diag = 'U';
+            diag = "U";
         } else {
-            diag = 'N';
+            diag = "N";
         }
         for (j = 1; j <= nrhs; j = j + 1) {
             Rtbmv(uplo.elems(), trans.elems(), diag.elems, n, kl, a, lda, &b[(j - 1) * ldb], 1);

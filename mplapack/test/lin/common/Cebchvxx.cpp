@@ -48,10 +48,10 @@ void Cebchvxx(REAL const thresh, fem::str_cref path) {
     common_write write(cmn);
     INTEGER ldabcopy = (nmax - 1) + (nmax - 1) + 1;
     COMPLEX zdum = 0.0;
-    fem::str<1> fact = 'E';
-    fem::str<1> uplo = 'U';
-    fem::str<1> trans = 'N';
-    fem::str<1> equed = 'N';
+    fem::str<1> fact = "E";
+    fem::str<1> uplo = "U";
+    fem::str<1> trans = "N";
+    fem::str<1> equed = "N";
     REAL eps = Rlamch("Epsilon");
     INTEGER nfail = 0;
     INTEGER n_aux_tests = 0;

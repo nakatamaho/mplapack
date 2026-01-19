@@ -99,7 +99,7 @@ void Cchklq(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
         Cerrlq(path, nout);
     }
     infot = 0;
-    xlaenv(2, 2);
+    Mxlaenv(2, 2);
     //
     lda = nmax;
     lwork = nmax * max(nmax, nrhs);
@@ -164,9 +164,9 @@ void Cchklq(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                     //
                     for (inb = 1; inb <= nnb; inb = inb + 1) {
                         nb = nbval[inb - 1];
-                        xlaenv(1, nb);
+                        Mxlaenv(1, nb);
                         nx = nxval[inb - 1];
-                        xlaenv(3, nx);
+                        Mxlaenv(3, nx);
                         for (i = 1; i <= ntests; i = i + 1) {
                             result[i - 1] = zero;
                         }

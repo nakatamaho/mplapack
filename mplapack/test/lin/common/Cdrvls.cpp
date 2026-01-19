@@ -135,7 +135,7 @@ void Cdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     //
     // Test the error exits
     //
-    xlaenv(9, smlsiz);
+    Mxlaenv(9, smlsiz);
     if (tsterr) {
         Cerrls(path, nout);
     }
@@ -198,9 +198,9 @@ void Cdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                             if (irank == 1) {
                                 for (itran = 1; itran <= 2; itran = itran + 1) {
                                     if (itran == 1) {
-                                        trans = 'N';
+                                        trans = "N";
                                     } else {
-                                        trans = 'C';
+                                        trans = "C";
                                     }
                                     //
                                     // Compute workspace needed for Cgels
@@ -269,16 +269,16 @@ void Cdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                             Cqrt13(iscale, m, n, copya, lda, norma, iseed);
                             for (inb = 1; inb <= nnb; inb = inb + 1) {
                                 nb = nbval[inb - 1];
-                                xlaenv(1, nb);
-                                xlaenv(3, nxval[inb - 1]);
+                                Mxlaenv(1, nb);
+                                Mxlaenv(3, nxval[inb - 1]);
                                 //
                                 for (itran = 1; itran <= 2; itran = itran + 1) {
                                     if (itran == 1) {
-                                        trans = 'N';
+                                        trans = "N";
                                         nrows = m;
                                         ncols = n;
                                     } else {
-                                        trans = 'C';
+                                        trans = "C";
                                         nrows = n;
                                         ncols = m;
                                     }
@@ -351,18 +351,18 @@ void Cdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                             Cqrt13(iscale, m, n, copya, lda, norma, iseed);
                             for (inb = 1; inb <= nnb; inb = inb + 1) {
                                 mb = nbval[inb - 1];
-                                xlaenv(1, mb);
+                                Mxlaenv(1, mb);
                                 for (imb = 1; imb <= nnb; imb = imb + 1) {
                                     nb = nbval[imb - 1];
-                                    xlaenv(2, nb);
+                                    Mxlaenv(2, nb);
                                     //
                                     for (itran = 1; itran <= 2; itran = itran + 1) {
                                         if (itran == 1) {
-                                            trans = 'N';
+                                            trans = "N";
                                             nrows = m;
                                             ncols = n;
                                         } else {
-                                            trans = 'C';
+                                            trans = "C";
                                             nrows = n;
                                             ncols = m;
                                         }
@@ -443,8 +443,8 @@ void Cdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                         //
                         for (inb = 1; inb <= nnb; inb = inb + 1) {
                             nb = nbval[inb - 1];
-                            xlaenv(1, nb);
-                            xlaenv(3, nxval[inb - 1]);
+                            Mxlaenv(1, nb);
+                            Mxlaenv(3, nxval[inb - 1]);
                             //
                             // Test Cgelsy
                             //
@@ -550,7 +550,7 @@ void Cdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                             // to min( norm( A * X - B ) ) using a
                             // divide and conquer SVD.
                             //
-                            xlaenv(9, 25);
+                            Mxlaenv(9, 25);
                             //
                             Clacpy("Full", m, n, copya, lda, a, lda);
                             Clacpy("Full", m, nrhs, copyb, ldb, b, ldb);

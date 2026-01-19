@@ -225,7 +225,7 @@ void Cerrhe(fem::str_cref path, INTEGER const nunit) {
         infot = 2;
         Cherfsx("U", eq, -1, 0, a, 1, af, 1, ip, s, b, 1, x, 1, rcond, berr, n_err_bnds, err_bnds_n, err_bnds_c, nparams, params, w, r, info);
         Chkxer("ZHERFSX", infot, nout, lerr, ok);
-        eq = 'N';
+        eq = "N";
         infot = 3;
         Cherfsx("U", eq, -1, 0, a, 1, af, 1, ip, s, b, 1, x, 1, rcond, berr, n_err_bnds, err_bnds_n, err_bnds_c, nparams, params, w, r, info);
         Chkxer("ZHERFSX", infot, nout, lerr, ok);

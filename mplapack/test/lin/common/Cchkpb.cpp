@@ -121,7 +121,7 @@ void Cchkpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
     for (in = 1; in <= nn; in = in + 1) {
         n = nval[in - 1];
         lda = max(n, (INTEGER)1);
-        xtype = 'N';
+        xtype = "N";
         //
         // Set limits on the number of loop iterations.
         //
@@ -149,12 +149,12 @@ void Cchkpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
             for (iuplo = 1; iuplo <= 2; iuplo = iuplo + 1) {
                 koff = 1;
                 if (iuplo == 1) {
-                    uplo = 'U';
+                    uplo = "U";
                     koff = max((INTEGER)1, kd + 2 - n);
-                    packit = 'Q';
+                    packit = "Q";
                 } else {
-                    uplo = 'L';
-                    packit = 'B';
+                    uplo = "L";
+                    packit = "B";
                 }
                 //
                 for (imat = 1; imat <= nimat; imat = imat + 1) {
@@ -257,7 +257,7 @@ void Cchkpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                     //
                     for (inb = 1; inb <= nnb; inb = inb + 1) {
                         nb = nbval[inb - 1];
-                        xlaenv(1, nb);
+                        Mxlaenv(1, nb);
                         //
                         // Compute the L*L' or U'*U factorization of the band
                         // matrix.

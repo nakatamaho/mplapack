@@ -112,12 +112,12 @@ void Rchkge(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     //
     // Test the error exits
     //
-    xlaenv(1, 1);
+    Mxlaenv(1, 1);
     if (tsterr) {
         Rerrge(path, nout);
     }
     infot = 0;
-    xlaenv(2, 2);
+    Mxlaenv(2, 2);
     //
     // Do for each value of M in MVAL
     //
@@ -129,7 +129,7 @@ void Rchkge(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
         //
         for (in = 1; in <= nn; in = in + 1) {
             n = nval[in - 1];
-            xtype = 'N';
+            xtype = "N";
             nimat = ntypes;
             if (m <= 0 || n <= 0) {
                 nimat = 1;
@@ -198,7 +198,7 @@ void Rchkge(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                 //
                 for (inb = 1; inb <= nnb; inb = inb + 1) {
                     nb = nbval[inb - 1];
-                    xlaenv(1, nb);
+                    Mxlaenv(1, nb);
                     //
                     // Compute the LU factorization of the matrix.
                     //
@@ -294,7 +294,7 @@ void Rchkge(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                     //
                     for (irhs = 1; irhs <= nns; irhs = irhs + 1) {
                         nrhs = nsval[irhs - 1];
-                        xtype = 'N';
+                        xtype = "N";
                         //
                         for (itran = 1; itran <= ntran; itran = itran + 1) {
                             trans = transs[itran - 1];
@@ -309,7 +309,7 @@ void Rchkge(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                             //
                             srnamt = "DLARHS";
                             Rlarhs(path, xtype, " ", trans, n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
-                            xtype = 'C';
+                            xtype = "C";
                             //
                             Rlacpy("Full", n, nrhs, b, lda, x, lda);
                             srnamt = "DGETRS";
@@ -371,11 +371,11 @@ void Rchkge(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                         if (itran == 1) {
                             anorm = anormo;
                             rcondc = rcondo;
-                            norm = 'O';
+                            norm = "O";
                         } else {
                             anorm = anormi;
                             rcondc = rcondi;
-                            norm = 'I';
+                            norm = "I";
                         }
                         srnamt = "DGECON";
                         Rgecon(norm.elems, n, afac, lda, anorm, rcond, work, &iwork[(n + 1) - 1], info);

@@ -182,7 +182,7 @@ void Rdrvac(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nns, IN
                 //
                 for (irhs = 1; irhs <= nns; irhs = irhs + 1) {
                     nrhs = nsval[irhs - 1];
-                    xtype = 'N';
+                    xtype = "N";
                     //
                     // Form an exact solution and set the right hand side.
                     //

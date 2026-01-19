@@ -129,15 +129,15 @@ void Rdrvsy(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     //
     nb = 1;
     nbmin = 2;
-    xlaenv(1, nb);
-    xlaenv(2, nbmin);
+    Mxlaenv(1, nb);
+    Mxlaenv(2, nbmin);
     //
     // Do for each value of N in NVAL
     //
     for (in = 1; in <= nn; in = in + 1) {
         n = nval[in - 1];
         lda = max(n, (INTEGER)1);
-        xtype = 'N';
+        xtype = "N";
         nimat = ntypes;
         if (n <= 0) {
             nimat = 1;
@@ -291,7 +291,7 @@ void Rdrvsy(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                     //
                     srnamt = "DLARHS";
                     Rlarhs(path, xtype, uplo, " ", n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
-                    xtype = 'C';
+                    xtype = "C";
                     //
                     // --- Test Rsysv  ---
                     //
@@ -461,7 +461,7 @@ void Rdrvsy(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                     //
                     srnamt = "DSYSVXX";
                     n_err_bnds = 3;
-                    equed = 'N';
+                    equed = "N";
                     Rsysvxx(fact, uplo, n, nrhs, a, lda, afac, lda, iwork, equed, work[(n + 1) - 1], b, lda, x, lda, rcond, rpvgrw_svxx, berr, n_err_bnds, errbnds_n, errbnds_c, 0, zero, work, iwork[(n + 1) - 1], info);
                     //
                     // Adjust the expected value of INFO to account for

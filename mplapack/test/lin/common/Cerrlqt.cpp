@@ -44,30 +44,24 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Cerrlqt(fem::str_cref path, INTEGER const nunit) {
-    common cmn;
-    common_write write(cmn);
-    //
-    nout = nunit;
-    write(nout, star);
     //
     // Set the variables to innocuous values.
     //
     INTEGER j = 0;
     const INTEGER nmax = 2;
     INTEGER i = 0;
+    const REAL one = 1.0;
     COMPLEX a[nmax * nmax];
     COMPLEX c[nmax * nmax];
     COMPLEX t[nmax * nmax];
     COMPLEX w[nmax];
-    REAL zero = 0.0;
-    REAL one = 1.0;
     for (j = 1; j <= nmax; j = j + 1) {
         for (i = 1; i <= nmax; i = i + 1) {
             a[(i - 1) + (j - 1) * nmax] = one / COMPLEX(castREAL(i + j), 0.0);
             c[(i - 1) + (j - 1) * nmax] = one / COMPLEX(castREAL(i + j), 0.0);
             t[(i - 1) + (j - 1) * nmax] = one / COMPLEX(castREAL(i + j), 0.0);
         }
-        w[j - 1] = zero;
+        w[j - 1] = 0.0;
     }
     ok = true;
     //

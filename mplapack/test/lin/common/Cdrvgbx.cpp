@@ -155,15 +155,15 @@ void Cdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     //
     nb = 1;
     nbmin = 2;
-    xlaenv(1, nb);
-    xlaenv(2, nbmin);
+    Mxlaenv(1, nb);
+    Mxlaenv(2, nbmin);
     //
     // Do for each value of N in NVAL
     //
     for (in = 1; in <= nn; in = in + 1) {
         n = nval[in - 1];
         ldb = max(n, (INTEGER)1);
-        xtype = 'N';
+        xtype = "N";
         //
         // Set limits on the number of loop iterations.
         //
@@ -411,7 +411,7 @@ void Cdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                 //
                                 srnamt = "ZLARHS";
                                 Clarhs(path, xtype, "Full", trans, n, n, kl, ku, nrhs, a, lda, xact, ldb, b, ldb, iseed, info);
-                                xtype = 'C';
+                                xtype = "C";
                                 Clacpy("Full", n, nrhs, b, ldb, bsav, ldb);
                                 //
                                 if (nofact && itran == 1) {

@@ -49,7 +49,7 @@ void Cchktsqr(REAL const thresh, bool const tsterr, INTEGER const nm, INTEGER *m
     //
     // Initialize constants
     //
-    fem::str<3> path = 'Z';
+    fem::str<3> path = "Z";
     path(2, 3) = "TS";
     INTEGER nrun = 0;
     INTEGER nfail = 0;
@@ -85,10 +85,10 @@ void Cchktsqr(REAL const thresh, bool const tsterr, INTEGER const nm, INTEGER *m
             if (min(m, n) != 0) {
                 for (inb = 1; inb <= nnb; inb = inb + 1) {
                     mb = nbval[inb - 1];
-                    xlaenv(1, mb);
+                    Mxlaenv(1, mb);
                     for (imb = 1; imb <= nnb; imb = imb + 1) {
                         nb = nbval[imb - 1];
-                        xlaenv(2, nb);
+                        Mxlaenv(2, nb);
                         //
                         // Test Cgeqr and Cgemqr
                         //
@@ -127,10 +127,10 @@ void Cchktsqr(REAL const thresh, bool const tsterr, INTEGER const nm, INTEGER *m
             if (min(m, n) != 0) {
                 for (inb = 1; inb <= nnb; inb = inb + 1) {
                     mb = nbval[inb - 1];
-                    xlaenv(1, mb);
+                    Mxlaenv(1, mb);
                     for (imb = 1; imb <= nnb; imb = imb + 1) {
                         nb = nbval[imb - 1];
-                        xlaenv(2, nb);
+                        Mxlaenv(2, nb);
                         //
                         // Test Cgelq and Cgemlq
                         //

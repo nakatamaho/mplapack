@@ -77,7 +77,7 @@ void Clatb4(fem::str_cref path, INTEGER const imat, INTEGER const m, INTEGER con
     //
     // Set some parameters we don't plan to change.
     //
-    *dist = 'S';
+    dist = "S";
     mode = 3;
     //
     // xQR, xLQ, xQL, xRQ:  Set parameters to generate a general
@@ -89,7 +89,7 @@ void Clatb4(fem::str_cref path, INTEGER const imat, INTEGER const m, INTEGER con
         //
         // Set TYPE, the type of matrix to be generated.
         //
-        *type = 'N';
+        type = "N";
         //
         // Set the lower and upper bandwidths.
         //
@@ -131,7 +131,7 @@ void Clatb4(fem::str_cref path, INTEGER const imat, INTEGER const m, INTEGER con
         //
         // Set TYPE, the type of matrix to be generated.
         //
-        *type = 'N';
+        type = "N";
         //
         // Set the lower and upper bandwidths.
         //
@@ -173,7 +173,7 @@ void Clatb4(fem::str_cref path, INTEGER const imat, INTEGER const m, INTEGER con
         //
         // Set TYPE, the type of matrix to be generated.
         //
-        *type = 'N';
+        type = "N";
         //
         // Set the condition number and norm.
         //
@@ -199,7 +199,7 @@ void Clatb4(fem::str_cref path, INTEGER const imat, INTEGER const m, INTEGER con
         //
         // Set TYPE, the type of matrix to be generated.
         //
-        *type = 'N';
+        type = "N";
         //
         // Set the lower and upper bandwidths.
         //
@@ -235,7 +235,7 @@ void Clatb4(fem::str_cref path, INTEGER const imat, INTEGER const m, INTEGER con
         //
         // Set TYPE, the type of matrix to be generated.
         //
-        *type = c2(1, 1);
+        type = c2(1, 1);
         //
         // Set the lower and upper bandwidths.
         //
@@ -271,7 +271,7 @@ void Clatb4(fem::str_cref path, INTEGER const imat, INTEGER const m, INTEGER con
         //
         // Set TYPE, the type of matrix to be generated.
         //
-        *type = c2(1, 1);
+        type = c2(1, 1);
         //
         // Set the lower and upper bandwidths.
         //
@@ -306,7 +306,7 @@ void Clatb4(fem::str_cref path, INTEGER const imat, INTEGER const m, INTEGER con
         //
         // Set TYPE, the type of matrix to be generated.
         //
-        *type = 'P';
+        type = "P";
         //
         // Set the norm and condition number.
         //
@@ -331,7 +331,7 @@ void Clatb4(fem::str_cref path, INTEGER const imat, INTEGER const m, INTEGER con
         // xPT:  Set parameters to generate a symmetric positive definite
         // tridiagonal matrix.
         //
-        *type = 'P';
+        type = "P";
         if (imat == 1) {
             kl = 0;
         } else {
@@ -363,7 +363,7 @@ void Clatb4(fem::str_cref path, INTEGER const imat, INTEGER const m, INTEGER con
         //
         // Set TYPE, the type of matrix to be generated.
         //
-        *type = 'N';
+        type = "N";
         //
         // Set the lower and upper bandwidths.
         //
@@ -403,7 +403,7 @@ void Clatb4(fem::str_cref path, INTEGER const imat, INTEGER const m, INTEGER con
         //
         // Set TYPE, the type of matrix to be generated.
         //
-        *type = 'N';
+        type = "N";
         //
         // Set the norm and condition number.
         //

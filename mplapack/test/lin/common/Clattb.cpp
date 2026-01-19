@@ -54,9 +54,9 @@ void Clattb(INTEGER const imat, fem::str_cref uplo, fem::str_cref trans, fem::st
     REAL bignum = (one - ulp) / smlnum;
     Rlabad(smlnum, bignum);
     if ((imat >= 6 && imat <= 9) || imat == 17) {
-        *diag = 'U';
+        diag = "U";
     } else {
-        *diag = 'N';
+        diag = "N";
     }
     info = 0;
     //
@@ -83,13 +83,13 @@ void Clattb(INTEGER const imat, fem::str_cref uplo, fem::str_cref trans, fem::st
         ku = kd;
         ioff = 1 + max((INTEGER)0, kd - n + 1);
         kl = 0;
-        packit = 'Q';
+        packit = "Q";
     } else {
         Clatb4(path, -imat, n, n, type, kl, ku, anorm, mode, cndnum, dist);
         kl = kd;
         ioff = 1;
         ku = 0;
-        packit = 'B';
+        packit = "B";
     }
     //
     // IMAT <= 5:  Non-unit triangular matrix

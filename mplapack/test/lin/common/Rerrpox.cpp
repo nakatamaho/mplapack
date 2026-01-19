@@ -189,7 +189,7 @@ void Rerrpo(fem::str_cref path, INTEGER const nunit) {
         infot = 2;
         Rporfsx("U", "/", -1, 0, a, 1, af, 1, s, b, 1, x, 1, rcond, berr, n_err_bnds, err_bnds_n, err_bnds_c, nparams, params, w, iw, info);
         Chkxer("DPORFSX", infot, nout, lerr, ok);
-        eq = 'N';
+        eq = "N";
         infot = 3;
         Rporfsx("U", eq, -1, 0, a, 1, af, 1, s, b, 1, x, 1, rcond, berr, n_err_bnds, err_bnds_n, err_bnds_c, nparams, params, w, iw, info);
         Chkxer("DPORFSX", infot, nout, lerr, ok);

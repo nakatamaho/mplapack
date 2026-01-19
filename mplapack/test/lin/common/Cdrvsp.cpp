@@ -117,8 +117,8 @@ void Cdrvsp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     //
     nb = 1;
     nbmin = 2;
-    xlaenv(1, nb);
-    xlaenv(2, nbmin);
+    Mxlaenv(1, nb);
+    Mxlaenv(2, nbmin);
     //
     // Do for each value of N in NVAL
     //
@@ -126,7 +126,7 @@ void Cdrvsp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
         n = nval[in - 1];
         lda = max(n, (INTEGER)1);
         npp = n * (n + 1) / 2;
-        xtype = 'N';
+        xtype = "N";
         nimat = ntypes;
         if (n <= 0) {
             nimat = 1;
@@ -151,11 +151,11 @@ void Cdrvsp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
             //
             for (iuplo = 1; iuplo <= 2; iuplo = iuplo + 1) {
                 if (iuplo == 1) {
-                    uplo = 'U';
-                    packit = 'C';
+                    uplo = "U";
+                    packit = "C";
                 } else {
-                    uplo = 'L';
-                    packit = 'R';
+                    uplo = "L";
+                    packit = "R";
                 }
                 //
                 if (imat != ntypes) {
@@ -295,7 +295,7 @@ void Cdrvsp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                     //
                     srnamt = "ZLARHS";
                     Clarhs(path, xtype, uplo, " ", n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
-                    xtype = 'C';
+                    xtype = "C";
                     //
                     // --- Test Cspsv  ---
                     //

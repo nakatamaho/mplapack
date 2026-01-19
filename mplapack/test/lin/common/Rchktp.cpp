@@ -114,7 +114,7 @@ void Rchktp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
         n = nval[in - 1];
         lda = max((INTEGER)1, n);
         lap = lda * (lda + 1) / 2;
-        xtype = 'N';
+        xtype = "N";
         //
         for (imat = 1; imat <= ntype1; imat = imat + 1) {
             //
@@ -188,7 +188,7 @@ void Rchktp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                 //
                 for (irhs = 1; irhs <= nns; irhs = irhs + 1) {
                     nrhs = nsval[irhs - 1];
-                    xtype = 'N';
+                    xtype = "N";
                     //
                     for (itran = 1; itran <= ntran; itran = itran + 1) {
                         //
@@ -196,10 +196,10 @@ void Rchktp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                         //
                         trans = transs[itran - 1];
                         if (itran == 1) {
-                            norm = 'O';
+                            norm = "O";
                             rcondc = rcondo;
                         } else {
-                            norm = 'I';
+                            norm = "I";
                             rcondc = rcondi;
                         }
                         //
@@ -208,7 +208,7 @@ void Rchktp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                         //
                         srnamt = "DLARHS";
                         Rlarhs(path, xtype, uplo, trans, n, n, 0, idiag, nrhs, ap, lap, xact, lda, b, lda, iseed, info);
-                        xtype = 'C';
+                        xtype = "C";
                         Rlacpy("Full", n, nrhs, b, lda, x, lda);
                         //
                         srnamt = "DTPTRS";
@@ -266,10 +266,10 @@ void Rchktp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                 //
                 for (itran = 1; itran <= 2; itran = itran + 1) {
                     if (itran == 1) {
-                        norm = 'O';
+                        norm = "O";
                         rcondc = rcondo;
                     } else {
-                        norm = 'I';
+                        norm = "I";
                         rcondc = rcondi;
                     }
                     //

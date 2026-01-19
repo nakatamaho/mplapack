@@ -188,7 +188,7 @@ void Cerrpo(fem::str_cref path, INTEGER const nunit) {
         infot = 2;
         Cporfsx("U", "/", -1, 0, a, 1, af, 1, s, b, 1, x, 1, rcond, berr, n_err_bnds, err_bnds_n, err_bnds_c, nparams, params, w, r, info);
         Chkxer("ZPORFSX", infot, nout, lerr, ok);
-        eq = 'N';
+        eq = "N";
         infot = 3;
         Cporfsx("U", eq, -1, 0, a, 1, af, 1, s, b, 1, x, 1, rcond, berr, n_err_bnds, err_bnds_n, err_bnds_c, nparams, params, w, r, info);
         Chkxer("ZPORFSX", infot, nout, lerr, ok);

@@ -119,7 +119,7 @@ void Cchktb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
         //
         n = nval[in - 1];
         lda = max((INTEGER)1, n);
-        xtype = 'N';
+        xtype = "N";
         nimat = ntype1;
         nimat2 = ntypes;
         if (n <= 0) {
@@ -207,7 +207,7 @@ void Cchktb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                     //
                     for (irhs = 1; irhs <= nns; irhs = irhs + 1) {
                         nrhs = nsval[irhs - 1];
-                        xtype = 'N';
+                        xtype = "N";
                         //
                         for (itran = 1; itran <= ntran; itran = itran + 1) {
                             //
@@ -215,10 +215,10 @@ void Cchktb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                             //
                             trans = transs[itran - 1];
                             if (itran == 1) {
-                                norm = 'O';
+                                norm = "O";
                                 rcondc = rcondo;
                             } else {
-                                norm = 'I';
+                                norm = "I";
                                 rcondc = rcondi;
                             }
                             //
@@ -227,7 +227,7 @@ void Cchktb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                             //
                             srnamt = "ZLARHS";
                             Clarhs(path, xtype, uplo, trans, n, n, kd, idiag, nrhs, ab, ldab, xact, lda, b, lda, iseed, info);
-                            xtype = 'C';
+                            xtype = "C";
                             Clacpy("Full", n, nrhs, b, lda, x, lda);
                             //
                             srnamt = "ZTBTRS";
@@ -286,10 +286,10 @@ void Cchktb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                     //
                     for (itran = 1; itran <= 2; itran = itran + 1) {
                         if (itran == 1) {
-                            norm = 'O';
+                            norm = "O";
                             rcondc = rcondo;
                         } else {
-                            norm = 'I';
+                            norm = "I";
                             rcondc = rcondi;
                         }
                         srnamt = "ZTBCON";

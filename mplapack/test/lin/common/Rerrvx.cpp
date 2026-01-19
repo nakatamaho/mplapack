@@ -82,7 +82,7 @@ void Rerrvx(fem::str_cref path, INTEGER const nunit) {
         r[j - 1] = 0.0;
         ip[j - 1] = j;
     }
-    fem::str<1> eq = ' ';
+    fem::str<1> eq = " ";
     ok = true;
     //
     INTEGER info = 0;
@@ -128,15 +128,15 @@ void Rerrvx(fem::str_cref path, INTEGER const nunit) {
         Rgesvx("N", "N", 2, 1, a, 2, af, 1, ip, eq.elems, r, c, b, 2, x, 2, rcond, r1, r2, w, iw, info);
         Chkxer("DGESVX", infot, nout, lerr, ok);
         infot = 10;
-        eq = '/';
+        eq = "/";
         Rgesvx("F", "N", 0, 0, a, 1, af, 1, ip, eq.elems, r, c, b, 1, x, 1, rcond, r1, r2, w, iw, info);
         Chkxer("DGESVX", infot, nout, lerr, ok);
         infot = 11;
-        eq = 'R';
+        eq = "R";
         Rgesvx("F", "N", 1, 0, a, 1, af, 1, ip, eq.elems, r, c, b, 1, x, 1, rcond, r1, r2, w, iw, info);
         Chkxer("DGESVX", infot, nout, lerr, ok);
         infot = 12;
-        eq = 'C';
+        eq = "C";
         Rgesvx("F", "N", 1, 0, a, 1, af, 1, ip, eq.elems, r, c, b, 1, x, 1, rcond, r1, r2, w, iw, info);
         Chkxer("DGESVX", infot, nout, lerr, ok);
         infot = 14;
@@ -198,15 +198,15 @@ void Rerrvx(fem::str_cref path, INTEGER const nunit) {
         Rgbsvx("N", "N", 1, 1, 1, 0, a, 3, af, 3, ip, eq.elems, r, c, b, 1, x, 1, rcond, r1, r2, w, iw, info);
         Chkxer("DGBSVX", infot, nout, lerr, ok);
         infot = 12;
-        eq = '/';
+        eq = "/";
         Rgbsvx("F", "N", 0, 0, 0, 0, a, 1, af, 1, ip, eq.elems, r, c, b, 1, x, 1, rcond, r1, r2, w, iw, info);
         Chkxer("DGBSVX", infot, nout, lerr, ok);
         infot = 13;
-        eq = 'R';
+        eq = "R";
         Rgbsvx("F", "N", 1, 0, 0, 0, a, 1, af, 1, ip, eq.elems, r, c, b, 1, x, 1, rcond, r1, r2, w, iw, info);
         Chkxer("DGBSVX", infot, nout, lerr, ok);
         infot = 14;
-        eq = 'C';
+        eq = "C";
         Rgbsvx("F", "N", 1, 0, 0, 0, a, 1, af, 1, ip, eq.elems, r, c, b, 1, x, 1, rcond, r1, r2, w, iw, info);
         Chkxer("DGBSVX", infot, nout, lerr, ok);
         infot = 16;
@@ -296,11 +296,11 @@ void Rerrvx(fem::str_cref path, INTEGER const nunit) {
         Rposvx("N", "U", 2, 0, a, 2, af, 1, eq.elems, c, b, 2, x, 2, rcond, r1, r2, w, iw, info);
         Chkxer("DPOSVX", infot, nout, lerr, ok);
         infot = 9;
-        eq = '/';
+        eq = "/";
         Rposvx("F", "U", 0, 0, a, 1, af, 1, eq.elems, c, b, 1, x, 1, rcond, r1, r2, w, iw, info);
         Chkxer("DPOSVX", infot, nout, lerr, ok);
         infot = 10;
-        eq = 'Y';
+        eq = "Y";
         Rposvx("F", "U", 1, 0, a, 1, af, 1, eq.elems, c, b, 1, x, 1, rcond, r1, r2, w, iw, info);
         Chkxer("DPOSVX", infot, nout, lerr, ok);
         infot = 12;
@@ -344,11 +344,11 @@ void Rerrvx(fem::str_cref path, INTEGER const nunit) {
         Rppsvx("N", "U", 0, -1, a, af, eq.elems, c, b, 1, x, 1, rcond, r1, r2, w, iw, info);
         Chkxer("DPPSVX", infot, nout, lerr, ok);
         infot = 7;
-        eq = '/';
+        eq = "/";
         Rppsvx("F", "U", 0, 0, a, af, eq.elems, c, b, 1, x, 1, rcond, r1, r2, w, iw, info);
         Chkxer("DPPSVX", infot, nout, lerr, ok);
         infot = 8;
-        eq = 'Y';
+        eq = "Y";
         Rppsvx("F", "U", 1, 0, a, af, eq.elems, c, b, 1, x, 1, rcond, r1, r2, w, iw, info);
         Chkxer("DPPSVX", infot, nout, lerr, ok);
         infot = 10;
@@ -407,11 +407,11 @@ void Rerrvx(fem::str_cref path, INTEGER const nunit) {
         Rpbsvx("N", "U", 1, 1, 0, a, 2, af, 1, eq.elems, c, b, 2, x, 2, rcond, r1, r2, w, iw, info);
         Chkxer("DPBSVX", infot, nout, lerr, ok);
         infot = 10;
-        eq = '/';
+        eq = "/";
         Rpbsvx("F", "U", 0, 0, 0, a, 1, af, 1, eq.elems, c, b, 1, x, 1, rcond, r1, r2, w, iw, info);
         Chkxer("DPBSVX", infot, nout, lerr, ok);
         infot = 11;
-        eq = 'Y';
+        eq = "Y";
         Rpbsvx("F", "U", 1, 0, 0, a, 1, af, 1, eq.elems, c, b, 1, x, 1, rcond, r1, r2, w, iw, info);
         Chkxer("DPBSVX", infot, nout, lerr, ok);
         infot = 13;

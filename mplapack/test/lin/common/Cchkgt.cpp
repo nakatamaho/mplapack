@@ -249,9 +249,9 @@ void Cchkgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
             for (itran = 1; itran <= 2; itran = itran + 1) {
                 trans = transs[itran - 1];
                 if (itran == 1) {
-                    norm = 'O';
+                    norm = "O";
                 } else {
-                    norm = 'I';
+                    norm = "I";
                 }
                 anorm = Clangt(norm.elems, n, a, &a[(m + 1) - 1], &a[(n + m + 1) - 1]);
                 //

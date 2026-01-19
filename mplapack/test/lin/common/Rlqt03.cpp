@@ -73,11 +73,11 @@ void Rlqt03(INTEGER const m, INTEGER const n, INTEGER const k, REAL *af, REAL *c
     REAL resid = 0.0;
     for (iside = 1; iside <= 2; iside = iside + 1) {
         if (iside == 1) {
-            side = 'L';
+            side = "L";
             mc = n;
             nc = m;
         } else {
-            side = 'R';
+            side = "R";
             mc = m;
             nc = n;
         }
@@ -94,9 +94,9 @@ void Rlqt03(INTEGER const m, INTEGER const n, INTEGER const k, REAL *af, REAL *c
         //
         for (itrans = 1; itrans <= 2; itrans = itrans + 1) {
             if (itrans == 1) {
-                trans = 'N';
+                trans = "N";
             } else {
-                trans = 'T';
+                trans = "T";
             }
             //
             // Copy C

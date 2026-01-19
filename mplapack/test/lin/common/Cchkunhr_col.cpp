@@ -49,7 +49,7 @@ void Cchkunhr_col(REAL const thresh, bool const tsterr, INTEGER const nm, INTEGE
     //
     // Initialize constants
     //
-    fem::str<1> path = 'Z';
+    fem::str<1> path = "Z";
     path(2, 3) = "HH";
     INTEGER nrun = 0;
     INTEGER nfail = 0;

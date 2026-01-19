@@ -126,7 +126,7 @@ void Rchkgb(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
         Rerrge(path, nout);
     }
     infot = 0;
-    xlaenv(2, 2);
+    Mxlaenv(2, 2);
     //
     // Initialize the first value for the lower and upper bandwidths.
     //
@@ -151,7 +151,7 @@ void Rchkgb(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
         //
         for (in = 1; in <= nn; in = in + 1) {
             n = nval[in - 1];
-            xtype = 'N';
+            xtype = "N";
             //
             // Set values to use for the upper bandwidth.
             //
@@ -307,7 +307,7 @@ void Rchkgb(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                         //
                         for (inb = 1; inb <= nnb; inb = inb + 1) {
                             nb = nbval[inb - 1];
-                            xlaenv(1, nb);
+                            Mxlaenv(1, nb);
                             //
                             // Compute the LU factorization of the band matrix.
                             //
@@ -399,16 +399,16 @@ void Rchkgb(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                             //
                             for (irhs = 1; irhs <= nns; irhs = irhs + 1) {
                                 nrhs = nsval[irhs - 1];
-                                xtype = 'N';
+                                xtype = "N";
                                 //
                                 for (itran = 1; itran <= ntran; itran = itran + 1) {
                                     trans = transs[itran - 1];
                                     if (itran == 1) {
                                         rcondc = rcondo;
-                                        norm = 'O';
+                                        norm = "O";
                                     } else {
                                         rcondc = rcondi;
-                                        norm = 'I';
+                                        norm = "I";
                                     }
                                     //
                                     // +    TEST 2:
@@ -416,7 +416,7 @@ void Rchkgb(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                     //
                                     srnamt = "DLARHS";
                                     Rlarhs(path, xtype, " ", trans, n, n, kl, ku, nrhs, a, lda, xact, ldb, b, ldb, iseed, info);
-                                    xtype = 'C';
+                                    xtype = "C";
                                     Rlacpy("Full", n, nrhs, b, ldb, x, ldb);
                                     //
                                     srnamt = "DGBTRS";
@@ -475,11 +475,11 @@ void Rchkgb(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                 if (itran == 1) {
                                     anorm = anormo;
                                     rcondc = rcondo;
-                                    norm = 'O';
+                                    norm = "O";
                                 } else {
                                     anorm = anormi;
                                     rcondc = rcondi;
-                                    norm = 'I';
+                                    norm = "I";
                                 }
                                 srnamt = "DGBCON";
                                 Rgbcon(norm.elems, n, kl, ku, afac, ldafac, iwork, anorm, rcond, work, &iwork[(n + 1) - 1], info);

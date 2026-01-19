@@ -69,12 +69,12 @@ void Clatb5(fem::str_cref path, INTEGER const imat, INTEGER const n, fem::str_re
     //
     // Set some parameters
     //
-    *dist = 'S';
+    dist = "S";
     mode = 3;
     //
     // Set TYPE, the type of matrix to be generated.
     //
-    *type = c2(1, 1);
+    type = c2(1, 1);
     //
     // Set the lower and upper bandwidths.
     //

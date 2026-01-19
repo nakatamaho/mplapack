@@ -124,8 +124,8 @@ void Rdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     //
     // Test the error exits
     //
-    xlaenv(2, 2);
-    xlaenv(9, smlsiz);
+    Mxlaenv(2, 2);
+    Mxlaenv(9, smlsiz);
     if (tsterr) {
         Rerrls(path, nout);
     }
@@ -136,8 +136,8 @@ void Rdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
         Alahd(nout, path);
     }
     infot = 0;
-    xlaenv(2, 2);
-    xlaenv(9, smlsiz);
+    Mxlaenv(2, 2);
+    Mxlaenv(9, smlsiz);
     //
     // Compute maximal workspace needed for all routines
     //
@@ -189,9 +189,9 @@ void Rdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                             if (irank == 1) {
                                 for (itran = 1; itran <= 2; itran = itran + 1) {
                                     if (itran == 1) {
-                                        trans = 'N';
+                                        trans = "N";
                                     } else {
-                                        trans = 'T';
+                                        trans = "T";
                                     }
                                     //
                                     // Compute workspace needed for Rgels
@@ -255,16 +255,16 @@ void Rdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                             Rqrt13(iscale, m, n, copya, lda, norma, iseed);
                             for (inb = 1; inb <= nnb; inb = inb + 1) {
                                 nb = nbval[inb - 1];
-                                xlaenv(1, nb);
-                                xlaenv(3, nxval[inb - 1]);
+                                Mxlaenv(1, nb);
+                                Mxlaenv(3, nxval[inb - 1]);
                                 //
                                 for (itran = 1; itran <= 2; itran = itran + 1) {
                                     if (itran == 1) {
-                                        trans = 'N';
+                                        trans = "N";
                                         nrows = m;
                                         ncols = n;
                                     } else {
-                                        trans = 'T';
+                                        trans = "T";
                                         nrows = n;
                                         ncols = m;
                                     }
@@ -336,18 +336,18 @@ void Rdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                             Rqrt13(iscale, m, n, copya, lda, norma, iseed);
                             for (inb = 1; inb <= nnb; inb = inb + 1) {
                                 mb = nbval[inb - 1];
-                                xlaenv(1, mb);
+                                Mxlaenv(1, mb);
                                 for (imb = 1; imb <= nnb; imb = imb + 1) {
                                     nb = nbval[imb - 1];
-                                    xlaenv(2, nb);
+                                    Mxlaenv(2, nb);
                                     //
                                     for (itran = 1; itran <= 2; itran = itran + 1) {
                                         if (itran == 1) {
-                                            trans = 'N';
+                                            trans = "N";
                                             nrows = m;
                                             ncols = n;
                                         } else {
-                                            trans = 'T';
+                                            trans = "T";
                                             nrows = n;
                                             ncols = m;
                                         }
@@ -428,8 +428,8 @@ void Rdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                         //
                         for (inb = 1; inb <= nnb; inb = inb + 1) {
                             nb = nbval[inb - 1];
-                            xlaenv(1, nb);
-                            xlaenv(3, nxval[inb - 1]);
+                            Mxlaenv(1, nb);
+                            Mxlaenv(3, nxval[inb - 1]);
                             //
                             // Test Rgelsy
                             //
