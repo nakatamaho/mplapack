@@ -40,6 +40,11 @@ done
 # Exclude any file whose basename starts with these prefixes
 EXCLUDE_PREFIXES=( s c )
 
+# Force-include these stems even if they match excluded prefixes.
+# Utility routines like chkxer start with "c" but are required by many tests.
+# Add more entries here if you hit similar false exclusions.
+FORCE_INCLUDE_BASENAMES=( chkxer )
+
 # Basenames that will be converted manually
 EXCLUDE_BASENAMES_MANUAL=( )
 
@@ -72,18 +77,30 @@ for src in "${candidates[@]}"; do
     stem_lc="${stem,,}"           # normalize for comparisons
 
     skip=false
+    force=false
 
-    # Check prefix exceptions (e.g., s*, c*)
-    for pfx in "${EXCLUDE_PREFIXES[@]}"; do
-        pfx_lc="${pfx,,}"
-        if [[ "$stem_lc" == "$pfx_lc"* ]]; then
-            skip=true
+    # Force-include check (stem match)
+    for inc in "${FORCE_INCLUDE_BASENAMES[@]}"; do
+        inc_lc="${inc,,}"
+        if [[ "$stem_lc" == "$inc_lc" ]]; then
+            force=true
             break
         fi
     done
 
+    # Check prefix exceptions (e.g., s*, c*)
+    if ! $force; then
+        for pfx in "${EXCLUDE_PREFIXES[@]}"; do
+            pfx_lc="${pfx,,}"
+            if [[ "$stem_lc" == "$pfx_lc"* ]]; then
+                skip=true
+                break
+            fi
+        done
+    fi
+
     # Check exact-basename exceptions
-    if ! $skip; then
+    if ! $skip && ! $force; then
         for ex in "${EXCLUDE_BASENAMES[@]}"; do
             ex_lc="${ex,,}"
             if [[ "$stem_lc" == "$ex_lc" ]]; then
