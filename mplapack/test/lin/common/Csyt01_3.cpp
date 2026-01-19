@@ -43,7 +43,7 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-void Csyt01_3(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *afac, INTEGER const ldafac, COMPLEX *e, INTEGER *ipiv, COMPLEX *c, INTEGER const ldc, REAL *rwork, REAL &resid) {
+void Csyt01_3(fem::str_cref uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *afac, INTEGER const ldafac, COMPLEX *e, INTEGER *ipiv, COMPLEX *c, INTEGER const ldc, REAL *rwork, REAL &resid) {
     //
     // Quick exit if N = 0.
     //
@@ -56,12 +56,12 @@ void Csyt01_3(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, 
     // a) Revert to multiplyers of L
     //
     INTEGER info = 0;
-    Csyconvf_rook(uplo, "R", n, afac, ldafac, e, ipiv, info);
+    Csyconvf_rook(uplo.elems(), "R", n, afac, ldafac, e, ipiv, info);
     //
     // 1) Determine EPS and the norm of A.
     //
     REAL eps = Rlamch("Epsilon");
-    REAL anorm = Clansy("1", uplo, n, a, lda, rwork);
+    REAL anorm = Clansy("1", uplo.elems(), n, a, lda, rwork);
     //
     // 2) Initialize C to the identity matrix.
     //
@@ -81,7 +81,7 @@ void Csyt01_3(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, 
     //
     INTEGER j = 0;
     INTEGER i = 0;
-    if (Mlsame(uplo, "U")) {
+    if (Mlsame(uplo.elems(), "U")) {
         for (j = 1; j <= n; j = j + 1) {
             for (i = 1; i <= j; i = i + 1) {
                 c[(i - 1) + (j - 1) * ldc] = c[(i - 1) + (j - 1) * ldc] - a[(i - 1) + (j - 1) * lda];
@@ -97,7 +97,7 @@ void Csyt01_3(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, 
     //
     // 6) Compute norm( C - A ) / ( N * norm(A) * EPS )
     //
-    resid = Clansy("1", uplo, n, c, ldc, rwork);
+    resid = Clansy("1", uplo.elems(), n, c, ldc, rwork);
     //
     const REAL one = 1.0;
     if (anorm <= zero) {
@@ -110,7 +110,7 @@ void Csyt01_3(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, 
     //
     // b) Convert to factor of L (or U)
     //
-    Csyconvf_rook(uplo, "C", n, afac, ldafac, e, ipiv, info);
+    Csyconvf_rook(uplo.elems(), "C", n, afac, ldafac, e, ipiv, info);
     //
     // End of Csyt01_3
     //

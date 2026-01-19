@@ -43,36 +43,13 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-struct common_infoc {
-    int infot;
-    int nout;
-    bool ok;
-    bool lerr;
-
-    common_infoc() : infot(0), nout(0), ok(false), lerr(false) {}
-};
-
-struct common_srnamc {
-    fem::str<32> srnamt;
-
-    common_srnamc() : srnamt(0) {}
-};
-
-struct common : fem::common, common_infoc, common_srnamc {
-    common(int argc, char const *argv[]) : fem::common(argc, argv) {}
-};
-
-void Cerrvx(const char *path, INTEGER const nunit) {
+void Cerrvx(fem::str_cref path, INTEGER const nunit) {
+    common cmn;
     common_write write(cmn);
-    int &infot = cmn.infot;
-    int &nout = cmn.nout;
-    bool &ok = cmn.ok;
-    bool &lerr = cmn.lerr;
-    fem::str<32> &srnamt = cmn.srnamt;
     //
     nout = nunit;
     write(nout, star);
-    char c2[2];
+    fem::str<2> c2 = path(2, 3);
     //
     // Set the variables to innocuous values.
     //
@@ -105,7 +82,7 @@ void Cerrvx(const char *path, INTEGER const nunit) {
         r[j - 1] = 0.0;
         ip[j - 1] = j;
     }
-    char eq = ' ';
+    fem::str<1> eq = ' ';
     ok = true;
     //
     INTEGER info = 0;
@@ -120,7 +97,7 @@ void Cerrvx(const char *path, INTEGER const nunit) {
     REAL params[1];
     REAL rf[nmax];
     const REAL one = 1.0;
-    if (Mlsamen(2, c2, "GE")) {
+    if (Mlsamen(2, c2.elems, "GE")) {
         //
         // Cgesv
         //
@@ -142,40 +119,40 @@ void Cerrvx(const char *path, INTEGER const nunit) {
         //
         srnamt = "ZGESVX";
         infot = 1;
-        Cgesvx("/", "N", 0, 0, a, 1, af, 1, ip, &eq, r, c, b, 1, x, 1, rcond, r1, r2, w, rw, info);
+        Cgesvx("/", "N", 0, 0, a, 1, af, 1, ip, eq.elems, r, c, b, 1, x, 1, rcond, r1, r2, w, rw, info);
         Chkxer("ZGESVX", infot, nout, lerr, ok);
         infot = 2;
-        Cgesvx("N", "/", 0, 0, a, 1, af, 1, ip, &eq, r, c, b, 1, x, 1, rcond, r1, r2, w, rw, info);
+        Cgesvx("N", "/", 0, 0, a, 1, af, 1, ip, eq.elems, r, c, b, 1, x, 1, rcond, r1, r2, w, rw, info);
         Chkxer("ZGESVX", infot, nout, lerr, ok);
         infot = 3;
-        Cgesvx("N", "N", -1, 0, a, 1, af, 1, ip, &eq, r, c, b, 1, x, 1, rcond, r1, r2, w, rw, info);
+        Cgesvx("N", "N", -1, 0, a, 1, af, 1, ip, eq.elems, r, c, b, 1, x, 1, rcond, r1, r2, w, rw, info);
         Chkxer("ZGESVX", infot, nout, lerr, ok);
         infot = 4;
-        Cgesvx("N", "N", 0, -1, a, 1, af, 1, ip, &eq, r, c, b, 1, x, 1, rcond, r1, r2, w, rw, info);
+        Cgesvx("N", "N", 0, -1, a, 1, af, 1, ip, eq.elems, r, c, b, 1, x, 1, rcond, r1, r2, w, rw, info);
         Chkxer("ZGESVX", infot, nout, lerr, ok);
         infot = 6;
-        Cgesvx("N", "N", 2, 1, a, 1, af, 2, ip, &eq, r, c, b, 2, x, 2, rcond, r1, r2, w, rw, info);
+        Cgesvx("N", "N", 2, 1, a, 1, af, 2, ip, eq.elems, r, c, b, 2, x, 2, rcond, r1, r2, w, rw, info);
         Chkxer("ZGESVX", infot, nout, lerr, ok);
         infot = 8;
-        Cgesvx("N", "N", 2, 1, a, 2, af, 1, ip, &eq, r, c, b, 2, x, 2, rcond, r1, r2, w, rw, info);
+        Cgesvx("N", "N", 2, 1, a, 2, af, 1, ip, eq.elems, r, c, b, 2, x, 2, rcond, r1, r2, w, rw, info);
         Chkxer("ZGESVX", infot, nout, lerr, ok);
         infot = 10;
         eq = '/';
-        Cgesvx("F", "N", 0, 0, a, 1, af, 1, ip, &eq, r, c, b, 1, x, 1, rcond, r1, r2, w, rw, info);
+        Cgesvx("F", "N", 0, 0, a, 1, af, 1, ip, eq.elems, r, c, b, 1, x, 1, rcond, r1, r2, w, rw, info);
         Chkxer("ZGESVX", infot, nout, lerr, ok);
         infot = 11;
         eq = 'R';
-        Cgesvx("F", "N", 1, 0, a, 1, af, 1, ip, &eq, r, c, b, 1, x, 1, rcond, r1, r2, w, rw, info);
+        Cgesvx("F", "N", 1, 0, a, 1, af, 1, ip, eq.elems, r, c, b, 1, x, 1, rcond, r1, r2, w, rw, info);
         Chkxer("ZGESVX", infot, nout, lerr, ok);
         infot = 12;
         eq = 'C';
-        Cgesvx("F", "N", 1, 0, a, 1, af, 1, ip, &eq, r, c, b, 1, x, 1, rcond, r1, r2, w, rw, info);
+        Cgesvx("F", "N", 1, 0, a, 1, af, 1, ip, eq.elems, r, c, b, 1, x, 1, rcond, r1, r2, w, rw, info);
         Chkxer("ZGESVX", infot, nout, lerr, ok);
         infot = 14;
-        Cgesvx("N", "N", 2, 1, a, 2, af, 2, ip, &eq, r, c, b, 1, x, 2, rcond, r1, r2, w, rw, info);
+        Cgesvx("N", "N", 2, 1, a, 2, af, 2, ip, eq.elems, r, c, b, 1, x, 2, rcond, r1, r2, w, rw, info);
         Chkxer("ZGESVX", infot, nout, lerr, ok);
         infot = 16;
-        Cgesvx("N", "N", 2, 1, a, 2, af, 2, ip, &eq, r, c, b, 2, x, 1, rcond, r1, r2, w, rw, info);
+        Cgesvx("N", "N", 2, 1, a, 2, af, 2, ip, eq.elems, r, c, b, 2, x, 1, rcond, r1, r2, w, rw, info);
         Chkxer("ZGESVX", infot, nout, lerr, ok);
         //
         // Cgesvxx
@@ -220,7 +197,7 @@ void Cerrvx(const char *path, INTEGER const nunit) {
         Cgesvxx("N", "N", 2, 1, a, 2, af, 2, ip, eq, r, c, b, 2, x, 1, rcond, rpvgrw, berr, n_err_bnds, err_bnds_n, err_bnds_c, nparams, params, w, rw, info);
         Chkxer("ZGESVXX", infot, nout, lerr, ok);
         //
-    } else if (Mlsamen(2, c2, "GB")) {
+    } else if (Mlsamen(2, c2.elems, "GB")) {
         //
         // Cgbsv
         //
@@ -248,46 +225,46 @@ void Cerrvx(const char *path, INTEGER const nunit) {
         //
         srnamt = "ZGBSVX";
         infot = 1;
-        Cgbsvx("/", "N", 0, 0, 0, 0, a, 1, af, 1, ip, &eq, r, c, b, 1, x, 1, rcond, r1, r2, w, rw, info);
+        Cgbsvx("/", "N", 0, 0, 0, 0, a, 1, af, 1, ip, eq.elems, r, c, b, 1, x, 1, rcond, r1, r2, w, rw, info);
         Chkxer("ZGBSVX", infot, nout, lerr, ok);
         infot = 2;
-        Cgbsvx("N", "/", 0, 0, 0, 0, a, 1, af, 1, ip, &eq, r, c, b, 1, x, 1, rcond, r1, r2, w, rw, info);
+        Cgbsvx("N", "/", 0, 0, 0, 0, a, 1, af, 1, ip, eq.elems, r, c, b, 1, x, 1, rcond, r1, r2, w, rw, info);
         Chkxer("ZGBSVX", infot, nout, lerr, ok);
         infot = 3;
-        Cgbsvx("N", "N", -1, 0, 0, 0, a, 1, af, 1, ip, &eq, r, c, b, 1, x, 1, rcond, r1, r2, w, rw, info);
+        Cgbsvx("N", "N", -1, 0, 0, 0, a, 1, af, 1, ip, eq.elems, r, c, b, 1, x, 1, rcond, r1, r2, w, rw, info);
         Chkxer("ZGBSVX", infot, nout, lerr, ok);
         infot = 4;
-        Cgbsvx("N", "N", 1, -1, 0, 0, a, 1, af, 1, ip, &eq, r, c, b, 1, x, 1, rcond, r1, r2, w, rw, info);
+        Cgbsvx("N", "N", 1, -1, 0, 0, a, 1, af, 1, ip, eq.elems, r, c, b, 1, x, 1, rcond, r1, r2, w, rw, info);
         Chkxer("ZGBSVX", infot, nout, lerr, ok);
         infot = 5;
-        Cgbsvx("N", "N", 1, 0, -1, 0, a, 1, af, 1, ip, &eq, r, c, b, 1, x, 1, rcond, r1, r2, w, rw, info);
+        Cgbsvx("N", "N", 1, 0, -1, 0, a, 1, af, 1, ip, eq.elems, r, c, b, 1, x, 1, rcond, r1, r2, w, rw, info);
         Chkxer("ZGBSVX", infot, nout, lerr, ok);
         infot = 6;
-        Cgbsvx("N", "N", 0, 0, 0, -1, a, 1, af, 1, ip, &eq, r, c, b, 1, x, 1, rcond, r1, r2, w, rw, info);
+        Cgbsvx("N", "N", 0, 0, 0, -1, a, 1, af, 1, ip, eq.elems, r, c, b, 1, x, 1, rcond, r1, r2, w, rw, info);
         Chkxer("ZGBSVX", infot, nout, lerr, ok);
         infot = 8;
-        Cgbsvx("N", "N", 1, 1, 1, 0, a, 2, af, 4, ip, &eq, r, c, b, 1, x, 1, rcond, r1, r2, w, rw, info);
+        Cgbsvx("N", "N", 1, 1, 1, 0, a, 2, af, 4, ip, eq.elems, r, c, b, 1, x, 1, rcond, r1, r2, w, rw, info);
         Chkxer("ZGBSVX", infot, nout, lerr, ok);
         infot = 10;
-        Cgbsvx("N", "N", 1, 1, 1, 0, a, 3, af, 3, ip, &eq, r, c, b, 1, x, 1, rcond, r1, r2, w, rw, info);
+        Cgbsvx("N", "N", 1, 1, 1, 0, a, 3, af, 3, ip, eq.elems, r, c, b, 1, x, 1, rcond, r1, r2, w, rw, info);
         Chkxer("ZGBSVX", infot, nout, lerr, ok);
         infot = 12;
         eq = '/';
-        Cgbsvx("F", "N", 0, 0, 0, 0, a, 1, af, 1, ip, &eq, r, c, b, 1, x, 1, rcond, r1, r2, w, rw, info);
+        Cgbsvx("F", "N", 0, 0, 0, 0, a, 1, af, 1, ip, eq.elems, r, c, b, 1, x, 1, rcond, r1, r2, w, rw, info);
         Chkxer("ZGBSVX", infot, nout, lerr, ok);
         infot = 13;
         eq = 'R';
-        Cgbsvx("F", "N", 1, 0, 0, 0, a, 1, af, 1, ip, &eq, r, c, b, 1, x, 1, rcond, r1, r2, w, rw, info);
+        Cgbsvx("F", "N", 1, 0, 0, 0, a, 1, af, 1, ip, eq.elems, r, c, b, 1, x, 1, rcond, r1, r2, w, rw, info);
         Chkxer("ZGBSVX", infot, nout, lerr, ok);
         infot = 14;
         eq = 'C';
-        Cgbsvx("F", "N", 1, 0, 0, 0, a, 1, af, 1, ip, &eq, r, c, b, 1, x, 1, rcond, r1, r2, w, rw, info);
+        Cgbsvx("F", "N", 1, 0, 0, 0, a, 1, af, 1, ip, eq.elems, r, c, b, 1, x, 1, rcond, r1, r2, w, rw, info);
         Chkxer("ZGBSVX", infot, nout, lerr, ok);
         infot = 16;
-        Cgbsvx("N", "N", 2, 0, 0, 0, a, 1, af, 1, ip, &eq, r, c, b, 1, x, 2, rcond, r1, r2, w, rw, info);
+        Cgbsvx("N", "N", 2, 0, 0, 0, a, 1, af, 1, ip, eq.elems, r, c, b, 1, x, 2, rcond, r1, r2, w, rw, info);
         Chkxer("ZGBSVX", infot, nout, lerr, ok);
         infot = 18;
-        Cgbsvx("N", "N", 2, 0, 0, 0, a, 1, af, 1, ip, &eq, r, c, b, 2, x, 1, rcond, r1, r2, w, rw, info);
+        Cgbsvx("N", "N", 2, 0, 0, 0, a, 1, af, 1, ip, eq.elems, r, c, b, 2, x, 1, rcond, r1, r2, w, rw, info);
         Chkxer("ZGBSVX", infot, nout, lerr, ok);
         //
         // Cgbsvxx
@@ -338,7 +315,7 @@ void Cerrvx(const char *path, INTEGER const nunit) {
         Cgbsvxx("N", "N", 2, 1, 1, 1, a, 3, af, 4, ip, eq, r, c, b, 2, x, 1, rcond, rpvgrw, berr, n_err_bnds, err_bnds_n, err_bnds_c, nparams, params, w, rw, info);
         Chkxer("ZGBSVXX", infot, nout, lerr, ok);
         //
-    } else if (Mlsamen(2, c2, "GT")) {
+    } else if (Mlsamen(2, c2.elems, "GT")) {
         //
         // Cgtsv
         //
@@ -375,7 +352,7 @@ void Cerrvx(const char *path, INTEGER const nunit) {
         Cgtsvx("N", "N", 2, 0, &a[0], &a[(2 - 1) * nmax], &a[(3 - 1) * nmax], &af[0], &af[(2 - 1) * nmax], &af[(3 - 1) * nmax], &af[(4 - 1) * nmax], ip, b, 2, x, 1, rcond, r1, r2, w, rw, info);
         Chkxer("ZGTSVX", infot, nout, lerr, ok);
         //
-    } else if (Mlsamen(2, c2, "HR")) {
+    } else if (Mlsamen(2, c2.elems, "HR")) {
         //
         // Chesv_rook
         //
@@ -393,7 +370,7 @@ void Cerrvx(const char *path, INTEGER const nunit) {
         Chesv_rook("U", 2, 0, a, 2, ip, b, 1, w, 1, info);
         Chkxer("ZHESV_ROOK", infot, nout, lerr, ok);
         //
-    } else if (Mlsamen(2, c2, "PO")) {
+    } else if (Mlsamen(2, c2.elems, "PO")) {
         //
         // Cposv
         //
@@ -418,36 +395,36 @@ void Cerrvx(const char *path, INTEGER const nunit) {
         //
         srnamt = "ZPOSVX";
         infot = 1;
-        Cposvx("/", "U", 0, 0, a, 1, af, 1, &eq, c, b, 1, x, 1, rcond, r1, r2, w, rw, info);
+        Cposvx("/", "U", 0, 0, a, 1, af, 1, eq.elems, c, b, 1, x, 1, rcond, r1, r2, w, rw, info);
         Chkxer("ZPOSVX", infot, nout, lerr, ok);
         infot = 2;
-        Cposvx("N", "/", 0, 0, a, 1, af, 1, &eq, c, b, 1, x, 1, rcond, r1, r2, w, rw, info);
+        Cposvx("N", "/", 0, 0, a, 1, af, 1, eq.elems, c, b, 1, x, 1, rcond, r1, r2, w, rw, info);
         Chkxer("ZPOSVX", infot, nout, lerr, ok);
         infot = 3;
-        Cposvx("N", "U", -1, 0, a, 1, af, 1, &eq, c, b, 1, x, 1, rcond, r1, r2, w, rw, info);
+        Cposvx("N", "U", -1, 0, a, 1, af, 1, eq.elems, c, b, 1, x, 1, rcond, r1, r2, w, rw, info);
         Chkxer("ZPOSVX", infot, nout, lerr, ok);
         infot = 4;
-        Cposvx("N", "U", 0, -1, a, 1, af, 1, &eq, c, b, 1, x, 1, rcond, r1, r2, w, rw, info);
+        Cposvx("N", "U", 0, -1, a, 1, af, 1, eq.elems, c, b, 1, x, 1, rcond, r1, r2, w, rw, info);
         Chkxer("ZPOSVX", infot, nout, lerr, ok);
         infot = 6;
-        Cposvx("N", "U", 2, 0, a, 1, af, 2, &eq, c, b, 2, x, 2, rcond, r1, r2, w, rw, info);
+        Cposvx("N", "U", 2, 0, a, 1, af, 2, eq.elems, c, b, 2, x, 2, rcond, r1, r2, w, rw, info);
         Chkxer("ZPOSVX", infot, nout, lerr, ok);
         infot = 8;
-        Cposvx("N", "U", 2, 0, a, 2, af, 1, &eq, c, b, 2, x, 2, rcond, r1, r2, w, rw, info);
+        Cposvx("N", "U", 2, 0, a, 2, af, 1, eq.elems, c, b, 2, x, 2, rcond, r1, r2, w, rw, info);
         Chkxer("ZPOSVX", infot, nout, lerr, ok);
         infot = 9;
         eq = '/';
-        Cposvx("F", "U", 0, 0, a, 1, af, 1, &eq, c, b, 1, x, 1, rcond, r1, r2, w, rw, info);
+        Cposvx("F", "U", 0, 0, a, 1, af, 1, eq.elems, c, b, 1, x, 1, rcond, r1, r2, w, rw, info);
         Chkxer("ZPOSVX", infot, nout, lerr, ok);
         infot = 10;
         eq = 'Y';
-        Cposvx("F", "U", 1, 0, a, 1, af, 1, &eq, c, b, 1, x, 1, rcond, r1, r2, w, rw, info);
+        Cposvx("F", "U", 1, 0, a, 1, af, 1, eq.elems, c, b, 1, x, 1, rcond, r1, r2, w, rw, info);
         Chkxer("ZPOSVX", infot, nout, lerr, ok);
         infot = 12;
-        Cposvx("N", "U", 2, 0, a, 2, af, 2, &eq, c, b, 1, x, 2, rcond, r1, r2, w, rw, info);
+        Cposvx("N", "U", 2, 0, a, 2, af, 2, eq.elems, c, b, 1, x, 2, rcond, r1, r2, w, rw, info);
         Chkxer("ZPOSVX", infot, nout, lerr, ok);
         infot = 14;
-        Cposvx("N", "U", 2, 0, a, 2, af, 2, &eq, c, b, 2, x, 1, rcond, r1, r2, w, rw, info);
+        Cposvx("N", "U", 2, 0, a, 2, af, 2, eq.elems, c, b, 2, x, 1, rcond, r1, r2, w, rw, info);
         Chkxer("ZPOSVX", infot, nout, lerr, ok);
         //
         // Cposvxx
@@ -488,7 +465,7 @@ void Cerrvx(const char *path, INTEGER const nunit) {
         Cposvxx("N", "U", 2, 0, a, 2, af, 2, eq, c, b, 2, x, 1, rcond, rpvgrw, berr, n_err_bnds, err_bnds_n, err_bnds_c, nparams, params, w, rw, info);
         Chkxer("ZPOSVXX", infot, nout, lerr, ok);
         //
-    } else if (Mlsamen(2, c2, "PP")) {
+    } else if (Mlsamen(2, c2.elems, "PP")) {
         //
         // Cppsv
         //
@@ -510,33 +487,33 @@ void Cerrvx(const char *path, INTEGER const nunit) {
         //
         srnamt = "ZPPSVX";
         infot = 1;
-        Cppsvx("/", "U", 0, 0, a, af, &eq, c, b, 1, x, 1, rcond, r1, r2, w, rw, info);
+        Cppsvx("/", "U", 0, 0, a, af, eq.elems, c, b, 1, x, 1, rcond, r1, r2, w, rw, info);
         Chkxer("ZPPSVX", infot, nout, lerr, ok);
         infot = 2;
-        Cppsvx("N", "/", 0, 0, a, af, &eq, c, b, 1, x, 1, rcond, r1, r2, w, rw, info);
+        Cppsvx("N", "/", 0, 0, a, af, eq.elems, c, b, 1, x, 1, rcond, r1, r2, w, rw, info);
         Chkxer("ZPPSVX", infot, nout, lerr, ok);
         infot = 3;
-        Cppsvx("N", "U", -1, 0, a, af, &eq, c, b, 1, x, 1, rcond, r1, r2, w, rw, info);
+        Cppsvx("N", "U", -1, 0, a, af, eq.elems, c, b, 1, x, 1, rcond, r1, r2, w, rw, info);
         Chkxer("ZPPSVX", infot, nout, lerr, ok);
         infot = 4;
-        Cppsvx("N", "U", 0, -1, a, af, &eq, c, b, 1, x, 1, rcond, r1, r2, w, rw, info);
+        Cppsvx("N", "U", 0, -1, a, af, eq.elems, c, b, 1, x, 1, rcond, r1, r2, w, rw, info);
         Chkxer("ZPPSVX", infot, nout, lerr, ok);
         infot = 7;
         eq = '/';
-        Cppsvx("F", "U", 0, 0, a, af, &eq, c, b, 1, x, 1, rcond, r1, r2, w, rw, info);
+        Cppsvx("F", "U", 0, 0, a, af, eq.elems, c, b, 1, x, 1, rcond, r1, r2, w, rw, info);
         Chkxer("ZPPSVX", infot, nout, lerr, ok);
         infot = 8;
         eq = 'Y';
-        Cppsvx("F", "U", 1, 0, a, af, &eq, c, b, 1, x, 1, rcond, r1, r2, w, rw, info);
+        Cppsvx("F", "U", 1, 0, a, af, eq.elems, c, b, 1, x, 1, rcond, r1, r2, w, rw, info);
         Chkxer("ZPPSVX", infot, nout, lerr, ok);
         infot = 10;
-        Cppsvx("N", "U", 2, 0, a, af, &eq, c, b, 1, x, 2, rcond, r1, r2, w, rw, info);
+        Cppsvx("N", "U", 2, 0, a, af, eq.elems, c, b, 1, x, 2, rcond, r1, r2, w, rw, info);
         Chkxer("ZPPSVX", infot, nout, lerr, ok);
         infot = 12;
-        Cppsvx("N", "U", 2, 0, a, af, &eq, c, b, 2, x, 1, rcond, r1, r2, w, rw, info);
+        Cppsvx("N", "U", 2, 0, a, af, eq.elems, c, b, 2, x, 1, rcond, r1, r2, w, rw, info);
         Chkxer("ZPPSVX", infot, nout, lerr, ok);
         //
-    } else if (Mlsamen(2, c2, "PB")) {
+    } else if (Mlsamen(2, c2.elems, "PB")) {
         //
         // Cpbsv
         //
@@ -564,42 +541,42 @@ void Cerrvx(const char *path, INTEGER const nunit) {
         //
         srnamt = "ZPBSVX";
         infot = 1;
-        Cpbsvx("/", "U", 0, 0, 0, a, 1, af, 1, &eq, c, b, 1, x, 1, rcond, r1, r2, w, rw, info);
+        Cpbsvx("/", "U", 0, 0, 0, a, 1, af, 1, eq.elems, c, b, 1, x, 1, rcond, r1, r2, w, rw, info);
         Chkxer("ZPBSVX", infot, nout, lerr, ok);
         infot = 2;
-        Cpbsvx("N", "/", 0, 0, 0, a, 1, af, 1, &eq, c, b, 1, x, 1, rcond, r1, r2, w, rw, info);
+        Cpbsvx("N", "/", 0, 0, 0, a, 1, af, 1, eq.elems, c, b, 1, x, 1, rcond, r1, r2, w, rw, info);
         Chkxer("ZPBSVX", infot, nout, lerr, ok);
         infot = 3;
-        Cpbsvx("N", "U", -1, 0, 0, a, 1, af, 1, &eq, c, b, 1, x, 1, rcond, r1, r2, w, rw, info);
+        Cpbsvx("N", "U", -1, 0, 0, a, 1, af, 1, eq.elems, c, b, 1, x, 1, rcond, r1, r2, w, rw, info);
         Chkxer("ZPBSVX", infot, nout, lerr, ok);
         infot = 4;
-        Cpbsvx("N", "U", 1, -1, 0, a, 1, af, 1, &eq, c, b, 1, x, 1, rcond, r1, r2, w, rw, info);
+        Cpbsvx("N", "U", 1, -1, 0, a, 1, af, 1, eq.elems, c, b, 1, x, 1, rcond, r1, r2, w, rw, info);
         Chkxer("ZPBSVX", infot, nout, lerr, ok);
         infot = 5;
-        Cpbsvx("N", "U", 0, 0, -1, a, 1, af, 1, &eq, c, b, 1, x, 1, rcond, r1, r2, w, rw, info);
+        Cpbsvx("N", "U", 0, 0, -1, a, 1, af, 1, eq.elems, c, b, 1, x, 1, rcond, r1, r2, w, rw, info);
         Chkxer("ZPBSVX", infot, nout, lerr, ok);
         infot = 7;
-        Cpbsvx("N", "U", 1, 1, 0, a, 1, af, 2, &eq, c, b, 2, x, 2, rcond, r1, r2, w, rw, info);
+        Cpbsvx("N", "U", 1, 1, 0, a, 1, af, 2, eq.elems, c, b, 2, x, 2, rcond, r1, r2, w, rw, info);
         Chkxer("ZPBSVX", infot, nout, lerr, ok);
         infot = 9;
-        Cpbsvx("N", "U", 1, 1, 0, a, 2, af, 1, &eq, c, b, 2, x, 2, rcond, r1, r2, w, rw, info);
+        Cpbsvx("N", "U", 1, 1, 0, a, 2, af, 1, eq.elems, c, b, 2, x, 2, rcond, r1, r2, w, rw, info);
         Chkxer("ZPBSVX", infot, nout, lerr, ok);
         infot = 10;
         eq = '/';
-        Cpbsvx("F", "U", 0, 0, 0, a, 1, af, 1, &eq, c, b, 1, x, 1, rcond, r1, r2, w, rw, info);
+        Cpbsvx("F", "U", 0, 0, 0, a, 1, af, 1, eq.elems, c, b, 1, x, 1, rcond, r1, r2, w, rw, info);
         Chkxer("ZPBSVX", infot, nout, lerr, ok);
         infot = 11;
         eq = 'Y';
-        Cpbsvx("F", "U", 1, 0, 0, a, 1, af, 1, &eq, c, b, 1, x, 1, rcond, r1, r2, w, rw, info);
+        Cpbsvx("F", "U", 1, 0, 0, a, 1, af, 1, eq.elems, c, b, 1, x, 1, rcond, r1, r2, w, rw, info);
         Chkxer("ZPBSVX", infot, nout, lerr, ok);
         infot = 13;
-        Cpbsvx("N", "U", 2, 0, 0, a, 1, af, 1, &eq, c, b, 1, x, 2, rcond, r1, r2, w, rw, info);
+        Cpbsvx("N", "U", 2, 0, 0, a, 1, af, 1, eq.elems, c, b, 1, x, 2, rcond, r1, r2, w, rw, info);
         Chkxer("ZPBSVX", infot, nout, lerr, ok);
         infot = 15;
-        Cpbsvx("N", "U", 2, 0, 0, a, 1, af, 1, &eq, c, b, 2, x, 1, rcond, r1, r2, w, rw, info);
+        Cpbsvx("N", "U", 2, 0, 0, a, 1, af, 1, eq.elems, c, b, 2, x, 1, rcond, r1, r2, w, rw, info);
         Chkxer("ZPBSVX", infot, nout, lerr, ok);
         //
-    } else if (Mlsamen(2, c2, "PT")) {
+    } else if (Mlsamen(2, c2.elems, "PT")) {
         //
         // Cptsv
         //
@@ -633,7 +610,7 @@ void Cerrvx(const char *path, INTEGER const nunit) {
         Cptsvx("N", 2, 0, r, &a[0], rf, &af[0], b, 2, x, 1, rcond, r1, r2, w, rw, info);
         Chkxer("ZPTSVX", infot, nout, lerr, ok);
         //
-    } else if (Mlsamen(2, c2, "HE")) {
+    } else if (Mlsamen(2, c2.elems, "HE")) {
         //
         // Chesv
         //
@@ -729,7 +706,7 @@ void Cerrvx(const char *path, INTEGER const nunit) {
         Chesvxx("N", "U", 2, 0, a, 2, af, 2, ip, eq, c, b, 2, x, 1, rcond, rpvgrw, berr, n_err_bnds, err_bnds_n, err_bnds_c, nparams, params, w, rw, info);
         Chkxer("ZHESVXX", infot, nout, lerr, ok);
         //
-    } else if (Mlsamen(2, c2, "HR")) {
+    } else if (Mlsamen(2, c2.elems, "HR")) {
         //
         // Chesv_rook
         //
@@ -753,7 +730,7 @@ void Cerrvx(const char *path, INTEGER const nunit) {
         Chesv_rook("U", 0, 0, a, 1, ip, b, 1, w, -2, info);
         Chkxer("ZHESV_ROOK", infot, nout, lerr, ok);
         //
-    } else if (Mlsamen(2, c2, "HK")) {
+    } else if (Mlsamen(2, c2.elems, "HK")) {
         //
         // Csysv_rk
         //
@@ -788,7 +765,7 @@ void Cerrvx(const char *path, INTEGER const nunit) {
         Chesv_rk("U", 0, 0, a, 1, e, ip, b, 1, w, -2, info);
         Chkxer("ZHESV_RK", infot, nout, lerr, ok);
         //
-    } else if (Mlsamen(2, c2, "HP")) {
+    } else if (Mlsamen(2, c2.elems, "HP")) {
         //
         // Chpsv
         //
@@ -828,7 +805,7 @@ void Cerrvx(const char *path, INTEGER const nunit) {
         Chpsvx("N", "U", 2, 0, a, af, ip, b, 2, x, 1, rcond, r1, r2, w, rw, info);
         Chkxer("ZHPSVX", infot, nout, lerr, ok);
         //
-    } else if (Mlsamen(2, c2, "SY")) {
+    } else if (Mlsamen(2, c2.elems, "SY")) {
         //
         // Csysv
         //
@@ -918,7 +895,7 @@ void Cerrvx(const char *path, INTEGER const nunit) {
         Chkxer("ZSYSVXX", infot, nout, lerr, ok);
         infot = 11;
         eq = 'Y';
-        r[0] = -one;
+        r[1 - 1] = -one;
         Csysvxx("F", "U", 2, 0, a, 2, af, 2, ip, eq, r, b, 2, x, 2, rcond, rpvgrw, berr, n_err_bnds, err_bnds_n, err_bnds_c, nparams, params, w, rw, info);
         Chkxer("ZSYSVXX", infot, nout, lerr, ok);
         infot = 13;
@@ -929,7 +906,7 @@ void Cerrvx(const char *path, INTEGER const nunit) {
         Csysvxx("N", "U", 2, 0, a, 2, af, 2, ip, eq, r, b, 2, x, 1, rcond, rpvgrw, berr, n_err_bnds, err_bnds_n, err_bnds_c, nparams, params, w, rw, info);
         Chkxer("ZSYSVXX", infot, nout, lerr, ok);
         //
-    } else if (Mlsamen(2, c2, "SR")) {
+    } else if (Mlsamen(2, c2.elems, "SR")) {
         //
         // Csysv_rook
         //
@@ -952,7 +929,7 @@ void Cerrvx(const char *path, INTEGER const nunit) {
         infot = 10;
         Csysv_rook("U", 0, 0, a, 1, ip, b, 1, w, -2, info);
         //
-    } else if (Mlsamen(2, c2, "SK")) {
+    } else if (Mlsamen(2, c2.elems, "SK")) {
         //
         // Csysv_rk
         //
@@ -987,7 +964,7 @@ void Cerrvx(const char *path, INTEGER const nunit) {
         Csysv_rk("U", 0, 0, a, 1, e, ip, b, 1, w, -2, info);
         Chkxer("ZSYSV_RK", infot, nout, lerr, ok);
         //
-    } else if (Mlsamen(2, c2, "SP")) {
+    } else if (Mlsamen(2, c2.elems, "SP")) {
         //
         // Cspsv
         //

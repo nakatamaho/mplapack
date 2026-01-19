@@ -42,15 +42,15 @@ using fem::common;
 
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-#include <mplapack_debug.h>
 
-void Cerrtsqr(const char *path, INTEGER const nunit) {
+void Cerrtsqr(fem::str_cref path, INTEGER const nunit) {
     common cmn;
     common_write write(cmn);
     //
     nout = nunit;
+    write(nout, star);
     //
-    //     Set the variables to innocuous values.
+    // Set the variables to innocuous values.
     //
     INTEGER j = 0;
     const INTEGER nmax = 2;
@@ -58,141 +58,138 @@ void Cerrtsqr(const char *path, INTEGER const nunit) {
     COMPLEX a[nmax * nmax];
     COMPLEX c[nmax * nmax];
     COMPLEX t[nmax * nmax];
-    INTEGER lda = nmax;
-    INTEGER ldc = nmax;
-    INTEGER ldt = nmax;
     COMPLEX w[nmax];
     for (j = 1; j <= nmax; j = j + 1) {
         for (i = 1; i <= nmax; i = i + 1) {
-            a[(i - 1) + (j - 1) * lda] = 1.0 / castREAL(i + j);
-            c[(i - 1) + (j - 1) * ldc] = 1.0 / castREAL(i + j);
-            t[(i - 1) + (j - 1) * ldt] = 1.0 / castREAL(i + j);
+            a[(i - 1) + (j - 1) * nmax] = 1.0 / castREAL(i + j);
+            c[(i - 1) + (j - 1) * nmax] = 1.0 / castREAL(i + j);
+            t[(i - 1) + (j - 1) * nmax] = 1.0 / castREAL(i + j);
         }
         w[j - 1] = 0.0;
     }
     ok = true;
     //
-    //     Error exits for TS factorization
+    // Error exits for TS factorization
     //
-    //     Cgeqr
+    // Cgeqr
     //
-    strncpy(srnamt, "Cgeqr", srnamt_len);
+    srnamt = "ZGEQR";
+    infot = 1;
     COMPLEX tau[nmax];
     INTEGER info = 0;
-    infot = 1;
     Cgeqr(-1, 0, a, 1, tau, 1, w, 1, info);
-    chkxer("Cgeqr", infot, nout, lerr, ok);
+    Chkxer("ZGEQR", infot, nout, lerr, ok);
     infot = 2;
     Cgeqr(0, -1, a, 1, tau, 1, w, 1, info);
-    chkxer("Cgeqr", infot, nout, lerr, ok);
+    Chkxer("ZGEQR", infot, nout, lerr, ok);
     infot = 4;
     Cgeqr(1, 1, a, 0, tau, 1, w, 1, info);
-    chkxer("Cgeqr", infot, nout, lerr, ok);
+    Chkxer("ZGEQR", infot, nout, lerr, ok);
     infot = 6;
     Cgeqr(3, 2, a, 3, tau, 1, w, 1, info);
-    chkxer("Cgeqr", infot, nout, lerr, ok);
+    Chkxer("ZGEQR", infot, nout, lerr, ok);
     infot = 8;
     Cgeqr(3, 2, a, 3, tau, 8, w, 0, info);
-    chkxer("Cgeqr", infot, nout, lerr, ok);
+    Chkxer("ZGEQR", infot, nout, lerr, ok);
     //
-    //     Cgemqr
+    // Cgemqr
     //
-    tau[1 - 1] = 1;
-    tau[2 - 1] = 1;
+    tau[1 - 1] = 1.0;
+    tau[2 - 1] = 1.0;
+    srnamt = "ZGEMQR";
     INTEGER nb = 1;
-    strncpy(srnamt, "Cgemqr", srnamt_len);
     infot = 1;
     Cgemqr("/", "N", 0, 0, 0, a, 1, tau, 1, c, 1, w, 1, info);
-    chkxer("Cgemqr", infot, nout, lerr, ok);
+    Chkxer("ZGEMQR", infot, nout, lerr, ok);
     infot = 2;
     Cgemqr("L", "/", 0, 0, 0, a, 1, tau, 1, c, 1, w, 1, info);
-    chkxer("Cgemqr", infot, nout, lerr, ok);
+    Chkxer("ZGEMQR", infot, nout, lerr, ok);
     infot = 3;
     Cgemqr("L", "N", -1, 0, 0, a, 1, tau, 1, c, 1, w, 1, info);
-    chkxer("Cgemqr", infot, nout, lerr, ok);
+    Chkxer("ZGEMQR", infot, nout, lerr, ok);
     infot = 4;
     Cgemqr("L", "N", 0, -1, 0, a, 1, tau, 1, c, 1, w, 1, info);
-    chkxer("Cgemqr", infot, nout, lerr, ok);
+    Chkxer("ZGEMQR", infot, nout, lerr, ok);
     infot = 5;
     Cgemqr("L", "N", 0, 0, -1, a, 1, tau, 1, c, 1, w, 1, info);
-    chkxer("Cgemqr", infot, nout, lerr, ok);
+    Chkxer("ZGEMQR", infot, nout, lerr, ok);
     infot = 5;
     Cgemqr("R", "N", 0, 0, -1, a, 1, tau, 1, c, 1, w, 1, info);
-    chkxer("Cgemqr", infot, nout, lerr, ok);
+    Chkxer("ZGEMQR", infot, nout, lerr, ok);
     infot = 7;
     Cgemqr("L", "N", 2, 1, 0, a, 0, tau, 1, c, 1, w, 1, info);
-    chkxer("Cgemqr", infot, nout, lerr, ok);
+    Chkxer("ZGEMQR", infot, nout, lerr, ok);
     infot = 9;
     Cgemqr("R", "N", 2, 2, 1, a, 2, tau, 0, c, 1, w, 1, info);
-    chkxer("Cgemqr", infot, nout, lerr, ok);
+    Chkxer("ZGEMQR", infot, nout, lerr, ok);
     infot = 9;
     Cgemqr("L", "N", 2, 2, 1, a, 2, tau, 0, c, 1, w, 1, info);
-    chkxer("Cgemqr", infot, nout, lerr, ok);
+    Chkxer("ZGEMQR", infot, nout, lerr, ok);
     infot = 11;
     Cgemqr("L", "N", 2, 1, 1, a, 2, tau, 6, c, 0, w, 1, info);
-    chkxer("Cgemqr", infot, nout, lerr, ok);
+    Chkxer("ZGEMQR", infot, nout, lerr, ok);
     infot = 13;
     Cgemqr("L", "N", 2, 2, 1, a, 2, tau, 6, c, 2, w, 0, info);
-    chkxer("Cgemqr", infot, nout, lerr, ok);
+    Chkxer("ZGEMQR", infot, nout, lerr, ok);
     //
     // Cgelq
     //
-    strncpy(srnamt, "Cgelq", srnamt_len);
+    srnamt = "ZGELQ";
     infot = 1;
     Cgelq(-1, 0, a, 1, tau, 1, w, 1, info);
-    chkxer("Cgelq", infot, nout, lerr, ok);
+    Chkxer("ZGELQ", infot, nout, lerr, ok);
     infot = 2;
     Cgelq(0, -1, a, 1, tau, 1, w, 1, info);
-    chkxer("Cgelq", infot, nout, lerr, ok);
+    Chkxer("ZGELQ", infot, nout, lerr, ok);
     infot = 4;
     Cgelq(1, 1, a, 0, tau, 1, w, 1, info);
-    chkxer("Cgelq", infot, nout, lerr, ok);
+    Chkxer("ZGELQ", infot, nout, lerr, ok);
     infot = 6;
     Cgelq(2, 3, a, 3, tau, 1, w, 1, info);
-    chkxer("Cgelq", infot, nout, lerr, ok);
+    Chkxer("ZGELQ", infot, nout, lerr, ok);
     infot = 8;
     Cgelq(2, 3, a, 3, tau, 8, w, 0, info);
-    chkxer("Cgelq", infot, nout, lerr, ok);
+    Chkxer("ZGELQ", infot, nout, lerr, ok);
     //
-    //     Cgemlq
+    // Cgemlq
     //
-    tau[1 - 1] = 1;
-    tau[2 - 1] = 1;
+    tau[1 - 1] = 1.0;
+    tau[2 - 1] = 1.0;
+    srnamt = "ZGEMLQ";
     nb = 1;
-    strncpy(srnamt, "Cgemlq", srnamt_len);
     infot = 1;
     Cgemlq("/", "N", 0, 0, 0, a, 1, tau, 1, c, 1, w, 1, info);
-    chkxer("Cgemlq", infot, nout, lerr, ok);
+    Chkxer("ZGEMLQ", infot, nout, lerr, ok);
     infot = 2;
     Cgemlq("L", "/", 0, 0, 0, a, 1, tau, 1, c, 1, w, 1, info);
-    chkxer("Cgemlq", infot, nout, lerr, ok);
+    Chkxer("ZGEMLQ", infot, nout, lerr, ok);
     infot = 3;
     Cgemlq("L", "N", -1, 0, 0, a, 1, tau, 1, c, 1, w, 1, info);
-    chkxer("Cgemlq", infot, nout, lerr, ok);
+    Chkxer("ZGEMLQ", infot, nout, lerr, ok);
     infot = 4;
     Cgemlq("L", "N", 0, -1, 0, a, 1, tau, 1, c, 1, w, 1, info);
-    chkxer("Cgemlq", infot, nout, lerr, ok);
+    Chkxer("ZGEMLQ", infot, nout, lerr, ok);
     infot = 5;
     Cgemlq("L", "N", 0, 0, -1, a, 1, tau, 1, c, 1, w, 1, info);
-    chkxer("Cgemlq", infot, nout, lerr, ok);
+    Chkxer("ZGEMLQ", infot, nout, lerr, ok);
     infot = 5;
     Cgemlq("R", "N", 0, 0, -1, a, 1, tau, 1, c, 1, w, 1, info);
-    chkxer("Cgemlq", infot, nout, lerr, ok);
+    Chkxer("ZGEMLQ", infot, nout, lerr, ok);
     infot = 7;
     Cgemlq("L", "N", 1, 2, 0, a, 0, tau, 1, c, 1, w, 1, info);
-    chkxer("Cgemlq", infot, nout, lerr, ok);
+    Chkxer("ZGEMLQ", infot, nout, lerr, ok);
     infot = 9;
     Cgemlq("R", "N", 2, 2, 1, a, 1, tau, 0, c, 1, w, 1, info);
-    chkxer("Cgemlq", infot, nout, lerr, ok);
+    Chkxer("ZGEMLQ", infot, nout, lerr, ok);
     infot = 9;
     Cgemlq("L", "N", 2, 2, 1, a, 1, tau, 0, c, 1, w, 1, info);
-    chkxer("Cgemlq", infot, nout, lerr, ok);
+    Chkxer("ZGEMLQ", infot, nout, lerr, ok);
     infot = 11;
     Cgemlq("L", "N", 1, 2, 1, a, 1, tau, 6, c, 0, w, 1, info);
-    chkxer("Cgemlq", infot, nout, lerr, ok);
+    Chkxer("ZGEMLQ", infot, nout, lerr, ok);
     infot = 13;
     Cgemlq("L", "N", 2, 2, 1, a, 2, tau, 6, c, 2, w, 0, info);
-    chkxer("Cgemlq", infot, nout, lerr, ok);
+    Chkxer("ZGEMLQ", infot, nout, lerr, ok);
     //
     // Print a summary line.
     //

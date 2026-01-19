@@ -43,18 +43,13 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-#include <mplapack_debug.h>
-
 void Cdrvpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, REAL const thresh, bool const tsterr, INTEGER const /* nmax */, COMPLEX *a, COMPLEX *afac, COMPLEX *asav, COMPLEX *b, COMPLEX *bsav, COMPLEX *x, COMPLEX *xact, REAL *s, COMPLEX *work, REAL *rwork, INTEGER const nout) {
     common cmn;
     common_write write(cmn);
-    //
-    char facts[] = {'F', 'N', 'E'};
-    char equeds[] = {'N', 'Y'};
-    INTEGER iseedy[] = {1988, 1989, 1990, 1991};
-    char path[4] = {};
-    char buf[1024];
-    char fact_uplo[3];
+    static INTEGER iseedy[4] = {1988, 1989, 1990, 1991};
+    static fem::str<1> facts[3] = {"F", "N", "E"};
+    static fem::str<1> equeds[2] = {"N", "Y"};
+    fem::str<3> path;
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
@@ -67,7 +62,7 @@ void Cdrvpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     INTEGER in = 0;
     INTEGER n = 0;
     INTEGER lda = 0;
-    char xtype[1];
+    fem::str<1> xtype;
     INTEGER nkd = 0;
     const INTEGER ntypes = 8;
     INTEGER nimat = 0;
@@ -76,17 +71,17 @@ void Cdrvpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     INTEGER ldab = 0;
     INTEGER iuplo = 0;
     INTEGER koff = 0;
-    char uplo[1];
-    char packit[1];
+    fem::str<1> uplo;
+    fem::str<1> packit;
     INTEGER imat = 0;
     bool zerot = false;
-    char type[1];
+    fem::str<1> type;
     INTEGER kl = 0;
     INTEGER ku = 0;
     REAL anorm = 0.0;
     INTEGER mode = 0;
     REAL cndnum = 0.0;
-    char dist[1];
+    fem::str<1> dist;
     INTEGER info = 0;
     INTEGER izero = 0;
     INTEGER iw = 0;
@@ -95,10 +90,10 @@ void Cdrvpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     INTEGER i2 = 0;
     const REAL zero = 0.0;
     INTEGER iequed = 0;
-    char equed[1];
+    fem::str<1> equed;
     INTEGER nfact = 0;
     INTEGER ifact = 0;
-    char fact[1];
+    fem::str<1> fact;
     bool prefac = false;
     bool nofact = false;
     bool equil = false;
@@ -115,11 +110,10 @@ void Cdrvpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     REAL rcond = 0.0;
     INTEGER k1 = 0;
     //
-    //     Initialize constants and the random number seed.
+    // Initialize constants and the random number seed.
     //
-    path[0] = 'C';
-    path[1] = 'P';
-    path[2] = 'B';
+    path(1, 1) = "Zomplex precision";
+    path(2, 3) = "PB";
     nrun = 0;
     nfail = 0;
     nerrs = 0;
@@ -147,7 +141,7 @@ void Cdrvpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     for (in = 1; in <= nn; in = in + 1) {
         n = nval[in - 1];
         lda = max(n, (INTEGER)1);
-        xtype[0] = 'N';
+        xtype = 'N';
         //
         // Set limits on the number of loop iterations.
         //
@@ -175,12 +169,12 @@ void Cdrvpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
             for (iuplo = 1; iuplo <= 2; iuplo = iuplo + 1) {
                 koff = 1;
                 if (iuplo == 1) {
-                    uplo[0] = 'U';
-                    packit[0] = 'Q';
+                    uplo = 'U';
+                    packit = 'Q';
                     koff = max((INTEGER)1, kd + 2 - n);
                 } else {
-                    uplo[0] = 'L';
-                    packit[0] = 'B';
+                    uplo = 'L';
+                    packit = 'B';
                 }
                 //
                 for (imat = 1; imat <= nimat; imat = imat + 1) {
@@ -200,17 +194,18 @@ void Cdrvpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                     //
                     if (!zerot || !dotype[1 - 1]) {
                         //
-                        //                    Set up parameters with Clatb4 and generate a test
-                        //                    matrix with Clatms.
+                        // Set up parameters with Clatb4 and generate a test
+                        // matrix with Clatms.
                         //
                         Clatb4(path, imat, n, n, type, kl, ku, anorm, mode, cndnum, dist);
                         //
+                        srnamt = "ZLATMS";
                         Clatms(n, n, dist, iseed, type, rwork, mode, cndnum, anorm, kd, kd, packit, &a[koff - 1], ldab, work, info);
                         //
-                        //                    Check error code from Clatms.
+                        // Check error code from Clatms.
                         //
                         if (info != 0) {
-                            Alaerh(path, "Clatms", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                            Alaerh(path, "ZLATMS", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                             goto statement_80;
                         }
                     } else if (izero > 0) {
@@ -283,7 +278,7 @@ void Cdrvpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                     Clacpy("Full", kd + 1, n, a, ldab, asav, ldab);
                     //
                     for (iequed = 1; iequed <= 2; iequed = iequed + 1) {
-                        equed[0] = equeds[iequed - 1];
+                        equed = equeds[iequed - 1];
                         if (iequed == 1) {
                             nfact = 3;
                         } else {
@@ -291,10 +286,10 @@ void Cdrvpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         }
                         //
                         for (ifact = 1; ifact <= nfact; ifact = ifact + 1) {
-                            fact[0] = facts[ifact - 1];
-                            prefac = Mlsame(fact, "F");
-                            nofact = Mlsame(fact, "N");
-                            equil = Mlsame(fact, "E");
+                            fact = facts[ifact - 1];
+                            prefac = Mlsame(fact.elems, "F");
+                            nofact = Mlsame(fact.elems, "N");
+                            equil = Mlsame(fact.elems, "E");
                             //
                             if (zerot) {
                                 if (prefac) {
@@ -302,7 +297,7 @@ void Cdrvpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                 }
                                 rcondc = zero;
                                 //
-                            } else if (!Mlsame(fact, "N")) {
+                            } else if (!Mlsame(fact.elems, "N")) {
                                 //
                                 // Compute the condition number for comparison
                                 // with the value returned by Cpbsvx (FACT =
@@ -315,7 +310,7 @@ void Cdrvpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                     // Compute row and column scale factors to
                                     // equilibrate the matrix A.
                                     //
-                                    Cpbequ(uplo, n, kd, afac, ldab, s, scond, amax, info);
+                                    Cpbequ(uplo.elems, n, kd, afac, ldab, s, scond, amax, info);
                                     if (info == 0 && n > 0) {
                                         if (iequed > 1) {
                                             scond = zero;
@@ -323,7 +318,7 @@ void Cdrvpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                         //
                                         // Equilibrate the matrix.
                                         //
-                                        Claqhb(uplo, n, kd, afac, ldab, s, scond, amax, equed);
+                                        Claqhb(uplo.elems, n, kd, afac, ldab, s, scond, amax, equed.elems);
                                     }
                                 }
                                 //
@@ -336,18 +331,19 @@ void Cdrvpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                 //
                                 // Compute the 1-norm of A.
                                 //
-                                anorm = Clanhb("1", uplo, n, kd, afac, ldab, rwork);
+                                anorm = Clanhb("1", uplo.elems, n, kd, afac, ldab, rwork);
                                 //
                                 // Factor the matrix A.
                                 //
-                                Cpbtrf(uplo, n, kd, afac, ldab, info);
+                                Cpbtrf(uplo.elems, n, kd, afac, ldab, info);
                                 //
                                 // Form the inverse of A.
                                 //
                                 Claset("Full", n, n, COMPLEX(zero), COMPLEX(one), a, lda);
-                                Cpbtrs(uplo, n, kd, n, afac, ldab, a, lda, info);
+                                srnamt = "ZPBTRS";
+                                Cpbtrs(uplo.elems, n, kd, n, afac, ldab, a, lda, info);
                                 //
-                                //                          Compute the 1-norm condition number of A.
+                                // Compute the 1-norm condition number of A.
                                 //
                                 ainvnm = Clange("1", n, n, a, lda, rwork);
                                 if (anorm <= zero || ainvnm <= zero) {
@@ -361,11 +357,12 @@ void Cdrvpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                             //
                             Clacpy("Full", kd + 1, n, asav, ldab, a, ldab);
                             //
-                            //                       Form an exact solution and set the right hand
-                            //                       side.
+                            // Form an exact solution and set the right hand
+                            // side.
                             //
+                            srnamt = "ZLARHS";
                             Clarhs(path, xtype, uplo, " ", n, n, kd, kd, nrhs, a, ldab, xact, lda, b, lda, iseed, info);
-                            xtype[0] = 'C';
+                            xtype = 'C';
                             Clacpy("Full", n, nrhs, b, lda, bsav, lda);
                             //
                             if (nofact) {
@@ -378,12 +375,13 @@ void Cdrvpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                 Clacpy("Full", kd + 1, n, a, ldab, afac, ldab);
                                 Clacpy("Full", n, nrhs, b, lda, x, lda);
                                 //
-                                Cpbsv(uplo, n, kd, nrhs, afac, ldab, x, lda, info);
+                                srnamt = "ZPBSV ";
+                                Cpbsv(uplo.elems, n, kd, nrhs, afac, ldab, x, lda, info);
                                 //
-                                //                          Check error code from Cpbsv .
+                                // Check error code from Cpbsv .
                                 //
                                 if (info != izero) {
-                                    Alaerh(path, "Cpbsv ", info, izero, uplo, n, n, kd, kd, nrhs, imat, nfail, nerrs, nout);
+                                    Alaerh(path, "ZPBSV ", info, izero, uplo, n, n, kd, kd, nrhs, imat, nfail, nerrs, nout);
                                     goto statement_40;
                                 } else if (info != 0) {
                                     goto statement_40;
@@ -412,10 +410,9 @@ void Cdrvpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                         if (nfail == 0 && nerrs == 0) {
                                             Aladhd(nout, path);
                                         }
-                                        sprintnum_short(buf, result[k - 1]);
                                         write(nout, "(1x,a,', UPLO=''',a1,''', N =',i5,', KD =',i5,"
-                                                    "', type ',i1,', test(',i1,')=',a)"),
-                                            "Cpbsv ", uplo, n, kd, imat, k, buf;
+                                                    "', type ',i1,', test(',i1,')=',g12.5)"),
+                                            "ZPBSV ", uplo, n, kd, imat, k, result[k - 1];
                                         nfail++;
                                     }
                                 }
@@ -431,24 +428,22 @@ void Cdrvpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                             Claset("Full", n, nrhs, COMPLEX(zero), COMPLEX(zero), x, lda);
                             if (iequed > 1 && n > 0) {
                                 //
-                                //                          Equilibrate the matrix if FACT='F' and
-                                //                          EQUED='Y'
+                                // Equilibrate the matrix if FACT='F' and
+                                // EQUED='Y'
                                 //
-                                Claqhb(uplo, n, kd, a, ldab, s, scond, amax, equed);
+                                Claqhb(uplo.elems, n, kd, a, ldab, s, scond, amax, equed.elems);
                             }
                             //
-                            //                       Solve the system and compute the condition
-                            //                       number and error bounds using Cpbsvx.
+                            // Solve the system and compute the condition
+                            // number and error bounds using Cpbsvx.
                             //
-                            Cpbsvx(fact, uplo, n, kd, nrhs, a, ldab, afac, ldab, equed, s, b, lda, x, lda, rcond, rwork, &rwork[(nrhs + 1) - 1], work, &rwork[(2 * nrhs + 1) - 1], info);
+                            srnamt = "ZPBSVX";
+                            Cpbsvx(fact.elems, uplo.elems, n, kd, nrhs, a, ldab, afac, ldab, equed.elems, s, b, lda, x, lda, rcond, rwork, &rwork[(nrhs + 1) - 1], work, &rwork[(2 * nrhs + 1) - 1], info);
                             //
-                            //                       Check the error code from Cpbsvx.
+                            // Check the error code from Cpbsvx.
                             //
                             if (info != izero) {
-                                fact_uplo[0] = fact[0];
-                                fact_uplo[1] = uplo[0];
-                                fact_uplo[2] = '\0';
-                                Alaerh(path, "Cpbsvx", info, izero, fact_uplo, n, n, kd, kd, nrhs, imat, nfail, nerrs, nout);
+                                Alaerh(path, "ZPBSVX", info, izero, fact + uplo, n, n, kd, kd, nrhs, imat, nfail, nerrs, nout);
                                 goto statement_60;
                             }
                             //
@@ -471,7 +466,7 @@ void Cdrvpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                 //
                                 // Check solution from generated exact solution.
                                 //
-                                if (nofact || (prefac && Mlsame(equed, "N"))) {
+                                if (nofact || (prefac && Mlsame(equed.elems, "N"))) {
                                     Cget04(n, nrhs, x, lda, xact, lda, rcondc, result[3 - 1]);
                                 } else {
                                     Cget04(n, nrhs, x, lda, xact, lda, roldc, result[3 - 1]);
@@ -499,16 +494,14 @@ void Cdrvpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                         Aladhd(nout, path);
                                     }
                                     if (prefac) {
-                                        sprintnum_short(buf, result[k - 1]);
                                         write(nout, "(1x,a,'( ''',a1,''', ''',a1,''', ',i5,', ',i5,"
                                                     "', ... ), EQUED=''',a1,''', type ',i1,', test(',i1,"
-                                                    "')=',a)"),
-                                            "Cpbsvx", fact, uplo, n, kd, equed, imat, k, buf;
+                                                    "')=',g12.5)"),
+                                            "ZPBSVX", fact, uplo, n, kd, equed, imat, k, result[k - 1];
                                     } else {
-                                        sprintnum_short(buf, result[k - 1]);
                                         write(nout, "(1x,a,'( ''',a1,''', ''',a1,''', ',i5,', ',i5,"
-                                                    "', ... ), type ',i1,', test(',i1,')=',a)"),
-                                            "Cpbsvx", fact, uplo, n, kd, imat, k, buf;
+                                                    "', ... ), type ',i1,', test(',i1,')=',g12.5)"),
+                                            "ZPBSVX", fact, uplo, n, kd, imat, k, result[k - 1];
                                     }
                                     nfail++;
                                 }

@@ -43,52 +43,13 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-struct common_infoc {
-    int infot;
-    int nunit;
-    bool ok;
-    bool lerr;
-
-    common_infoc() : infot(0), nunit(0), ok(false), lerr(false) {}
-};
-
-struct common_srnamc {
-    fem::str<32> srnamt;
-
-    common_srnamc() : srnamt(0) {}
-};
-
-struct common : fem::common, common_infoc, common_srnamc {
-    fem::cmn_sve ddrvac_sve;
-
-    common(int argc, char const *argv[]) : fem::common(argc, argv) {}
-};
-
-struct ddrvac_save {
-    arr<int> iseedy;
-    arr<fem::str<1>> uplos;
-
-    ddrvac_save() : iseedy(dimension(4), fem::fill0), uplos(dimension(2), fem::fill0) {}
-};
-
 void Rdrvac(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nns, INTEGER *nsval, REAL const thresh, INTEGER const /* nmax */, REAL *a, REAL *afac, REAL *b, REAL *x, REAL *work, REAL *rwork, REAL *swork, INTEGER const nout) {
-    FEM_CMN_SVE(ddrvac);
+    common cmn;
     common_write write(cmn);
-    fem::str<32> &srnamt = cmn.srnamt;
-    arr_ref<int> iseedy(sve.iseedy, dimension(4));
-    str_arr_ref<1> uplos(sve.uplos, dimension(2));
-    if (is_called_first_time) {
-        {
-            static const int values[] = {1988, 1989, 1990, 1991};
-            fem::data_of_type<int>(FEM_VALUES_AND_SIZE), iseedy;
-        }
-        {
-            static const char *values[] = {"U", "L"};
-            fem::data_of_type_str(FEM_VALUES_AND_SIZE), uplos;
-        }
-    }
+    static INTEGER iseedy[4] = {1988, 1989, 1990, 1991};
+    static fem::str<1> uplos[2] = {"U", "L"};
     INTEGER kase = 0;
-    char path[3];
+    fem::str<3> path;
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
@@ -102,21 +63,21 @@ void Rdrvac(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nns, IN
     INTEGER imat = 0;
     bool zerot = false;
     INTEGER iuplo = 0;
-    char uplo;
-    char type;
+    fem::str<1> uplo;
+    fem::str<1> type;
     INTEGER kl = 0;
     INTEGER ku = 0;
     REAL anorm = 0.0;
     INTEGER mode = 0;
     REAL cndnum = 0.0;
-    char dist;
+    fem::str<1> dist;
     INTEGER info = 0;
     INTEGER izero = 0;
     INTEGER ioff = 0;
     const REAL zero = 0.0;
     INTEGER irhs = 0;
     INTEGER nrhs = 0;
-    char xtype;
+    fem::str<1> xtype;
     INTEGER iter = 0;
     const INTEGER ntests = 1;
     REAL result[ntests];
@@ -124,7 +85,7 @@ void Rdrvac(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nns, IN
     // Initialize constants and the random number seed.
     //
     kase = 0;
-    path[0] = "Double precision";
+    path(1, 1) = "Double precision";
     path(2, 3) = "PO";
     nrun = 0;
     nfail = 0;
@@ -133,7 +94,7 @@ void Rdrvac(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nns, IN
         iseed[i - 1] = iseedy[i - 1];
     }
     //
-    cmn.infot = 0;
+    infot = 0;
     //
     // Do for each value of N in MVAL
     //
@@ -168,15 +129,15 @@ void Rdrvac(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nns, IN
                 // Set up parameters with Rlatb4 and generate a test matrix
                 // with Rlatms.
                 //
-                Rlatb4(path, imat, n, n, &type, kl, ku, anorm, mode, cndnum, &dist);
+                Rlatb4(path, imat, n, n, type, kl, ku, anorm, mode, cndnum, dist);
                 //
                 srnamt = "DLATMS";
-                Rlatms(n, n, &dist, iseed, &type, rwork, mode, cndnum, anorm, kl, ku, &uplo, a, lda, work, info);
+                Rlatms(n, n, dist, iseed, type, rwork, mode, cndnum, anorm, kl, ku, uplo, a, lda, work, info);
                 //
                 // Check error code from Rlatms.
                 //
                 if (info != 0) {
-                    Alaerh(path, "DLATMS", info, 0, &uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                    Alaerh(path, "DLATMS", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                     goto statement_100;
                 }
                 //
@@ -226,7 +187,7 @@ void Rdrvac(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nns, IN
                     // Form an exact solution and set the right hand side.
                     //
                     srnamt = "DLARHS";
-                    Rlarhs(path, &xtype, &uplo, " ", n, n, kl, ku, nrhs, a, lda, x, lda, b, lda, iseed, info);
+                    Rlarhs(path, xtype, uplo, " ", n, n, kl, ku, nrhs, a, lda, x, lda, b, lda, iseed, info);
                     //
                     // Compute the L*L' or U'*U factorization of the
                     // matrix and solve the system.
@@ -272,7 +233,7 @@ void Rdrvac(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nns, IN
                     //
                     Rlacpy("All", n, nrhs, b, lda, work, lda);
                     //
-                    Rpot06(&uplo, n, nrhs, a, lda, x, lda, work, lda, rwork, result[0]);
+                    Rpot06(uplo, n, nrhs, a, lda, x, lda, work, lda, rwork, result[1 - 1]);
                     //
                     // Check if the test passes the tesing.
                     // Print information about the tests that did not
@@ -286,7 +247,7 @@ void Rdrvac(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nns, IN
                     // NORM1(B - A*X)/(NORM1(A)*NORM1(X)*EPS) < THRES
                     // (Cf. the linear solver testing routines)
                     //
-                    if ((thresh <= 0.0e+00) || ((iter >= 0) && (n > 0) && (result[0] >= sqrt(castREAL(n)))) || ((iter < 0) && (result[0] >= thresh))) {
+                    if ((thresh <= 0.0) || ((iter >= 0) && (n > 0) && (result[1 - 1] >= sqrt(castREAL(n)))) || ((iter < 0) && (result[1 - 1] >= thresh))) {
                         //
                         if (nfail == 0 && nerrs == 0) {
                             write(nout, "(/,1x,a3,':  positive definite dense matrices')"), "DPO";
@@ -309,7 +270,7 @@ void Rdrvac(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nns, IN
                         //
                         write(nout, "(' UPLO=''',a1,''', N =',i5,', NRHS=',i3,', type ',i2,"
                                     "', test(',i2,') =',g12.5)"),
-                            uplo, n, nrhs, imat, 1, result(1);
+                            uplo, n, nrhs, imat, 1, result[1 - 1];
                         //
                         nfail++;
                         //

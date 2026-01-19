@@ -34,22 +34,23 @@
 //   NAG Ltd.
 
 #include <mpblas.h>
+#include <mplapack.h>
+
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
-#include <mplapack_lin.h>
-#include <mplapack.h>
 
-void Alaesm(const char *path, bool const ok, INTEGER const nout) {
+#include <mplapack_matgen.h>
+#include <mplapack_lin.h>
+
+void Alaesm(fem::str_cref path, bool const ok, INTEGER const nout) {
     common cmn;
     common_write write(cmn);
-    char _path[4];
-    strncpy(_path, path, 3);
-    _path[3] = '\0';
+    //
     if (ok) {
-        write(nout, "(1x,a3,' routines passed the tests of the error exits')"), _path;
+        write(nout, "(1x,a3,' routines passed the tests of the error exits')"), path;
     } else {
-        write(nout, "(' *** ',a3,' routines failed the tests of the error ','exits ***')"), _path;
+        write(nout, "(' *** ',a3,' routines failed the tests of the error ','exits ***')"), path;
     }
     //
     // End of Alaesm

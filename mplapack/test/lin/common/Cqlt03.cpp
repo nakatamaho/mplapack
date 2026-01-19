@@ -44,43 +44,9 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Cqlt03(INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX *af, COMPLEX *c, COMPLEX *cc, COMPLEX *q, INTEGER const lda, COMPLEX *tau, COMPLEX *work, INTEGER const lwork, REAL *rwork, REAL *result) {
+    common cmn;
+    static INTEGER iseed[4] = {1988, 1989, 1990, 1991};
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Scalars in Common ..
-    //     ..
-    //     .. Common blocks ..
-    //     ..
-    //     .. Data statements ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    INTEGER ldaf = lda;
-    INTEGER ldc = lda;
-    INTEGER ldcc = lda;
-    INTEGER ldq = lda;
-    INTEGER iseed[] = {1988, 1989, 1990, 1991};
     REAL eps = Rlamch("Epsilon");
     INTEGER minmn = min(m, n);
     //
@@ -97,29 +63,30 @@ void Cqlt03(INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX *af, COMP
     //
     // Copy the last k columns of the factorization to the array Q
     //
-    const COMPLEX rogue = COMPLEX(-1.0e+10, -1.0e+10);
+    const COMPLEX rogue = COMPLEX(-10000000000.0, -10000000000.0);
     Claset("Full", m, m, rogue, rogue, q, lda);
     if (k > 0 && m > k) {
-        Clacpy("Full", m - k, k, &af[((n - k + 1) - 1) * ldaf], lda, &q[((m - k + 1) - 1) * ldq], lda);
+        Clacpy("Full", m - k, k, &af[((n - k + 1) - 1) * lda], lda, &q[((m - k + 1) - 1) * lda], lda);
     }
     if (k > 1) {
-        Clacpy("Upper", k - 1, k - 1, &af[((m - k + 1) - 1) + ((n - k + 2) - 1) * ldaf], lda, &q[((m - k + 1) - 1) + ((m - k + 2) - 1) * ldq], lda);
+        Clacpy("Upper", k - 1, k - 1, &af[((m - k + 1) - 1) + ((n - k + 2) - 1) * lda], lda, &q[((m - k + 1) - 1) + ((m - k + 2) - 1) * lda], lda);
     }
     //
     // Generate the m-by-m matrix Q
     //
+    srnamt = "ZUNGQL";
     INTEGER info = 0;
     Cungql(m, m, k, q, lda, &tau[(minmn - k + 1) - 1], work, lwork, info);
     //
     INTEGER iside = 0;
-    char side;
+    fem::str<1> side;
     INTEGER mc = 0;
     INTEGER nc = 0;
     INTEGER j = 0;
     REAL cnorm = 0.0;
     const REAL one = 1.0;
     INTEGER itrans = 0;
-    char trans;
+    fem::str<1> trans;
     REAL resid = 0.0;
     for (iside = 1; iside <= 2; iside = iside + 1) {
         if (iside == 1) {
@@ -135,7 +102,7 @@ void Cqlt03(INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX *af, COMP
         // Generate MC by NC matrix C
         //
         for (j = 1; j <= nc; j = j + 1) {
-            Clarnv(2, iseed, mc, &c[(j - 1) * ldc]);
+            Clarnv(2, iseed, mc, &c[(j - 1) * lda]);
         }
         cnorm = Clange("1", mc, nc, c, lda, rwork);
         if (cnorm == zero) {
@@ -155,16 +122,17 @@ void Cqlt03(INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX *af, COMP
             //
             // Apply Q or Q' to C
             //
+            srnamt = "ZUNMQL";
             if (k > 0) {
-                Cunmql(&side, &trans, mc, nc, k, &af[((n - k + 1) - 1) * ldaf], lda, &tau[(minmn - k + 1) - 1], cc, lda, work, lwork, info);
+                Cunmql(side.elems, trans.elems, mc, nc, k, &af[((n - k + 1) - 1) * lda], lda, &tau[(minmn - k + 1) - 1], cc, lda, work, lwork, info);
             }
             //
             // Form explicit product and subtract
             //
-            if (Mlsame(&side, "L")) {
-                Cgemm(&trans, "No transpose", mc, nc, mc, COMPLEX(-one), q, lda, c, lda, COMPLEX(one), cc, lda);
+            if (Mlsame(side.elems, "L")) {
+                Cgemm(trans.elems, "No transpose", mc, nc, mc, COMPLEX(-one), q, lda, c, lda, COMPLEX(one), cc, lda);
             } else {
-                Cgemm("No transpose", &trans, mc, nc, nc, COMPLEX(-one), c, lda, q, lda, COMPLEX(one), cc, lda);
+                Cgemm("No transpose", trans.elems, mc, nc, nc, COMPLEX(-one), c, lda, q, lda, COMPLEX(one), cc, lda);
             }
             //
             // Compute error in the difference

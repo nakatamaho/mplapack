@@ -43,7 +43,7 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-void Rppt02(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *a, REAL *x, INTEGER const ldx, REAL *b, INTEGER const ldb, REAL *rwork, REAL &resid) {
+void Rppt02(fem::str_cref uplo, INTEGER const n, INTEGER const nrhs, REAL *a, REAL *x, INTEGER const ldx, REAL *b, INTEGER const ldb, REAL *rwork, REAL &resid) {
     //
     // Quick exit if N = 0 or NRHS = 0.
     //
@@ -56,7 +56,7 @@ void Rppt02(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *a, REAL
     // Exit with RESID = 1/EPS if ANORM = 0.
     //
     REAL eps = Rlamch("Epsilon");
-    REAL anorm = Rlansp("1", uplo, n, a, rwork);
+    REAL anorm = Rlansp("1", uplo.elems(), n, a, rwork);
     const REAL one = 1.0;
     if (anorm <= zero) {
         resid = one / eps;
@@ -67,7 +67,7 @@ void Rppt02(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *a, REAL
     //
     INTEGER j = 0;
     for (j = 1; j <= nrhs; j = j + 1) {
-        Rspmv(uplo, n, -one, a, &x[(j - 1) * ldx], 1, one, &b[(j - 1) * ldb], 1);
+        Rspmv(uplo.elems(), n, -one, a, &x[(j - 1) * ldx], 1, one, &b[(j - 1) * ldb], 1);
     }
     //
     // Compute the maximum over the number of right hand sides of
@@ -82,7 +82,7 @@ void Rppt02(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *a, REAL
         if (xnorm <= zero) {
             resid = one / eps;
         } else {
-            resid = max(resid, REAL(((bnorm / anorm) / xnorm) / eps));
+            resid = max(resid, ((bnorm / anorm) / xnorm) / eps);
         }
     }
     //

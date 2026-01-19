@@ -42,24 +42,22 @@ using fem::common;
 
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-#include <mplapack_debug.h>
 
-void Cerrpo(const char *path, INTEGER const nunit) {
+void Cerrpo(fem::str_cref path, INTEGER const nunit) {
+    common cmn;
+    common_write write(cmn);
     //
     nout = nunit;
-    char c2[2];
-    c2[0] = path[1];
-    c2[1] = path[2];
+    write(nout, star);
+    fem::str<2> c2 = path(2, 3);
     //
-    //     Set the variables to innocuous values.
+    // Set the variables to innocuous values.
     //
     INTEGER j = 0;
     const INTEGER nmax = 4;
     INTEGER i = 0;
     COMPLEX a[nmax * nmax];
     COMPLEX af[nmax * nmax];
-    INTEGER lda = nmax;
-    INTEGER ldaf = nmax;
     COMPLEX b[nmax];
     REAL r1[nmax];
     REAL r2[nmax];
@@ -67,8 +65,8 @@ void Cerrpo(const char *path, INTEGER const nunit) {
     COMPLEX x[nmax];
     for (j = 1; j <= nmax; j = j + 1) {
         for (i = 1; i <= nmax; i = i + 1) {
-            a[(i - 1) + (j - 1) * lda] = COMPLEX(1.0 / castREAL(i + j), -1.0 / castREAL(i + j));
-            af[(i - 1) + (j - 1) * ldaf] = COMPLEX(1.0 / castREAL(i + j), -1.0 / castREAL(i + j));
+            a[(i - 1) + (j - 1) * nmax] = COMPLEX(1.0 / castREAL(i + j), -1.0 / castREAL(i + j));
+            af[(i - 1) + (j - 1) * nmax] = COMPLEX(1.0 / castREAL(i + j), -1.0 / castREAL(i + j));
         }
         b[j - 1] = 0.0;
         r1[j - 1] = 0.0;
@@ -85,321 +83,321 @@ void Cerrpo(const char *path, INTEGER const nunit) {
     INTEGER info = 0;
     REAL r[nmax];
     REAL rcond = 0.0;
-    if (Mlsamen(2, c2, "PO")) {
+    if (Mlsamen(2, c2.elems, "PO")) {
         //
         // Cpotrf
         //
-        strncpy(srnamt, "Cpotrf", srnamt_len);
+        srnamt = "ZPOTRF";
         infot = 1;
         Cpotrf("/", 0, a, 1, info);
-        chkxer("Cpotrf", infot, nout, lerr, ok);
+        Chkxer("ZPOTRF", infot, nout, lerr, ok);
         infot = 2;
         Cpotrf("U", -1, a, 1, info);
-        chkxer("Cpotrf", infot, nout, lerr, ok);
+        Chkxer("ZPOTRF", infot, nout, lerr, ok);
         infot = 4;
         Cpotrf("U", 2, a, 1, info);
-        chkxer("Cpotrf", infot, nout, lerr, ok);
+        Chkxer("ZPOTRF", infot, nout, lerr, ok);
         //
         // Cpotf2
         //
-        strncpy(srnamt, "Cpotf2", srnamt_len);
+        srnamt = "ZPOTF2";
         infot = 1;
         Cpotf2("/", 0, a, 1, info);
-        chkxer("Cpotf2", infot, nout, lerr, ok);
+        Chkxer("ZPOTF2", infot, nout, lerr, ok);
         infot = 2;
         Cpotf2("U", -1, a, 1, info);
-        chkxer("Cpotf2", infot, nout, lerr, ok);
+        Chkxer("ZPOTF2", infot, nout, lerr, ok);
         infot = 4;
         Cpotf2("U", 2, a, 1, info);
-        chkxer("Cpotf2", infot, nout, lerr, ok);
+        Chkxer("ZPOTF2", infot, nout, lerr, ok);
         //
         // Cpotri
         //
-        strncpy(srnamt, "Cpotri", srnamt_len);
+        srnamt = "ZPOTRI";
         infot = 1;
         Cpotri("/", 0, a, 1, info);
-        chkxer("Cpotri", infot, nout, lerr, ok);
+        Chkxer("ZPOTRI", infot, nout, lerr, ok);
         infot = 2;
         Cpotri("U", -1, a, 1, info);
-        chkxer("Cpotri", infot, nout, lerr, ok);
+        Chkxer("ZPOTRI", infot, nout, lerr, ok);
         infot = 4;
         Cpotri("U", 2, a, 1, info);
-        chkxer("Cpotri", infot, nout, lerr, ok);
+        Chkxer("ZPOTRI", infot, nout, lerr, ok);
         //
         // Cpotrs
         //
-        strncpy(srnamt, "Cpotrs", srnamt_len);
+        srnamt = "ZPOTRS";
         infot = 1;
         Cpotrs("/", 0, 0, a, 1, b, 1, info);
-        chkxer("Cpotrs", infot, nout, lerr, ok);
+        Chkxer("ZPOTRS", infot, nout, lerr, ok);
         infot = 2;
         Cpotrs("U", -1, 0, a, 1, b, 1, info);
-        chkxer("Cpotrs", infot, nout, lerr, ok);
+        Chkxer("ZPOTRS", infot, nout, lerr, ok);
         infot = 3;
         Cpotrs("U", 0, -1, a, 1, b, 1, info);
-        chkxer("Cpotrs", infot, nout, lerr, ok);
+        Chkxer("ZPOTRS", infot, nout, lerr, ok);
         infot = 5;
         Cpotrs("U", 2, 1, a, 1, b, 2, info);
-        chkxer("Cpotrs", infot, nout, lerr, ok);
+        Chkxer("ZPOTRS", infot, nout, lerr, ok);
         infot = 7;
         Cpotrs("U", 2, 1, a, 2, b, 1, info);
-        chkxer("Cpotrs", infot, nout, lerr, ok);
+        Chkxer("ZPOTRS", infot, nout, lerr, ok);
         //
         // Cporfs
         //
-        strncpy(srnamt, "Cporfs", srnamt_len);
+        srnamt = "ZPORFS";
         infot = 1;
         Cporfs("/", 0, 0, a, 1, af, 1, b, 1, x, 1, r1, r2, w, r, info);
-        chkxer("Cporfs", infot, nout, lerr, ok);
+        Chkxer("ZPORFS", infot, nout, lerr, ok);
         infot = 2;
         Cporfs("U", -1, 0, a, 1, af, 1, b, 1, x, 1, r1, r2, w, r, info);
-        chkxer("Cporfs", infot, nout, lerr, ok);
+        Chkxer("ZPORFS", infot, nout, lerr, ok);
         infot = 3;
         Cporfs("U", 0, -1, a, 1, af, 1, b, 1, x, 1, r1, r2, w, r, info);
-        chkxer("Cporfs", infot, nout, lerr, ok);
+        Chkxer("ZPORFS", infot, nout, lerr, ok);
         infot = 5;
         Cporfs("U", 2, 1, a, 1, af, 2, b, 2, x, 2, r1, r2, w, r, info);
-        chkxer("Cporfs", infot, nout, lerr, ok);
+        Chkxer("ZPORFS", infot, nout, lerr, ok);
         infot = 7;
         Cporfs("U", 2, 1, a, 2, af, 1, b, 2, x, 2, r1, r2, w, r, info);
-        chkxer("Cporfs", infot, nout, lerr, ok);
+        Chkxer("ZPORFS", infot, nout, lerr, ok);
         infot = 9;
         Cporfs("U", 2, 1, a, 2, af, 2, b, 1, x, 2, r1, r2, w, r, info);
-        chkxer("Cporfs", infot, nout, lerr, ok);
+        Chkxer("ZPORFS", infot, nout, lerr, ok);
         infot = 11;
         Cporfs("U", 2, 1, a, 2, af, 2, b, 2, x, 1, r1, r2, w, r, info);
-        chkxer("Cporfs", infot, nout, lerr, ok);
+        Chkxer("ZPORFS", infot, nout, lerr, ok);
         //
         // Cpocon
         //
-        strncpy(srnamt, "Cpocon", srnamt_len);
+        srnamt = "ZPOCON";
         infot = 1;
         Cpocon("/", 0, a, 1, anrm, rcond, w, r, info);
-        chkxer("Cpocon", infot, nout, lerr, ok);
+        Chkxer("ZPOCON", infot, nout, lerr, ok);
         infot = 2;
         Cpocon("U", -1, a, 1, anrm, rcond, w, r, info);
-        chkxer("Cpocon", infot, nout, lerr, ok);
+        Chkxer("ZPOCON", infot, nout, lerr, ok);
         infot = 4;
         Cpocon("U", 2, a, 1, anrm, rcond, w, r, info);
-        chkxer("Cpocon", infot, nout, lerr, ok);
+        Chkxer("ZPOCON", infot, nout, lerr, ok);
         infot = 5;
         Cpocon("U", 1, a, 1, -anrm, rcond, w, r, info);
-        chkxer("Cpocon", infot, nout, lerr, ok);
+        Chkxer("ZPOCON", infot, nout, lerr, ok);
         //
         // Cpoequ
         //
-        strncpy(srnamt, "Cpoequ", srnamt_len);
+        srnamt = "ZPOEQU";
         infot = 1;
         Cpoequ(-1, a, 1, r1, rcond, anrm, info);
-        chkxer("Cpoequ", infot, nout, lerr, ok);
+        Chkxer("ZPOEQU", infot, nout, lerr, ok);
         infot = 3;
         Cpoequ(2, a, 1, r1, rcond, anrm, info);
-        chkxer("Cpoequ", infot, nout, lerr, ok);
+        Chkxer("ZPOEQU", infot, nout, lerr, ok);
         //
         // Test error exits of the routines that use the Cholesky
         // decomposition of a Hermitian positive definite packed matrix.
         //
-    } else if (Mlsamen(2, c2, "PP")) {
+    } else if (Mlsamen(2, c2.elems, "PP")) {
         //
         // Cpptrf
         //
-        strncpy(srnamt, "Cpptrf", srnamt_len);
+        srnamt = "ZPPTRF";
         infot = 1;
         Cpptrf("/", 0, a, info);
-        chkxer("Cpptrf", infot, nout, lerr, ok);
+        Chkxer("ZPPTRF", infot, nout, lerr, ok);
         infot = 2;
         Cpptrf("U", -1, a, info);
-        chkxer("Cpptrf", infot, nout, lerr, ok);
+        Chkxer("ZPPTRF", infot, nout, lerr, ok);
         //
         // Cpptri
         //
-        strncpy(srnamt, "Cpptri", srnamt_len);
+        srnamt = "ZPPTRI";
         infot = 1;
         Cpptri("/", 0, a, info);
-        chkxer("Cpptri", infot, nout, lerr, ok);
+        Chkxer("ZPPTRI", infot, nout, lerr, ok);
         infot = 2;
         Cpptri("U", -1, a, info);
-        chkxer("Cpptri", infot, nout, lerr, ok);
+        Chkxer("ZPPTRI", infot, nout, lerr, ok);
         //
         // Cpptrs
         //
-        strncpy(srnamt, "Cpptrs", srnamt_len);
+        srnamt = "ZPPTRS";
         infot = 1;
         Cpptrs("/", 0, 0, a, b, 1, info);
-        chkxer("Cpptrs", infot, nout, lerr, ok);
+        Chkxer("ZPPTRS", infot, nout, lerr, ok);
         infot = 2;
         Cpptrs("U", -1, 0, a, b, 1, info);
-        chkxer("Cpptrs", infot, nout, lerr, ok);
+        Chkxer("ZPPTRS", infot, nout, lerr, ok);
         infot = 3;
         Cpptrs("U", 0, -1, a, b, 1, info);
-        chkxer("Cpptrs", infot, nout, lerr, ok);
+        Chkxer("ZPPTRS", infot, nout, lerr, ok);
         infot = 6;
         Cpptrs("U", 2, 1, a, b, 1, info);
-        chkxer("Cpptrs", infot, nout, lerr, ok);
+        Chkxer("ZPPTRS", infot, nout, lerr, ok);
         //
         // Cpprfs
         //
-        strncpy(srnamt, "Cpprfs", srnamt_len);
+        srnamt = "ZPPRFS";
         infot = 1;
         Cpprfs("/", 0, 0, a, af, b, 1, x, 1, r1, r2, w, r, info);
-        chkxer("Cpprfs", infot, nout, lerr, ok);
+        Chkxer("ZPPRFS", infot, nout, lerr, ok);
         infot = 2;
         Cpprfs("U", -1, 0, a, af, b, 1, x, 1, r1, r2, w, r, info);
-        chkxer("Cpprfs", infot, nout, lerr, ok);
+        Chkxer("ZPPRFS", infot, nout, lerr, ok);
         infot = 3;
         Cpprfs("U", 0, -1, a, af, b, 1, x, 1, r1, r2, w, r, info);
-        chkxer("Cpprfs", infot, nout, lerr, ok);
+        Chkxer("ZPPRFS", infot, nout, lerr, ok);
         infot = 7;
         Cpprfs("U", 2, 1, a, af, b, 1, x, 2, r1, r2, w, r, info);
-        chkxer("Cpprfs", infot, nout, lerr, ok);
+        Chkxer("ZPPRFS", infot, nout, lerr, ok);
         infot = 9;
         Cpprfs("U", 2, 1, a, af, b, 2, x, 1, r1, r2, w, r, info);
-        chkxer("Cpprfs", infot, nout, lerr, ok);
+        Chkxer("ZPPRFS", infot, nout, lerr, ok);
         //
         // Cppcon
         //
-        strncpy(srnamt, "Cppcon", srnamt_len);
+        srnamt = "ZPPCON";
         infot = 1;
         Cppcon("/", 0, a, anrm, rcond, w, r, info);
-        chkxer("Cppcon", infot, nout, lerr, ok);
+        Chkxer("ZPPCON", infot, nout, lerr, ok);
         infot = 2;
         Cppcon("U", -1, a, anrm, rcond, w, r, info);
-        chkxer("Cppcon", infot, nout, lerr, ok);
+        Chkxer("ZPPCON", infot, nout, lerr, ok);
         infot = 4;
         Cppcon("U", 1, a, -anrm, rcond, w, r, info);
-        chkxer("Cppcon", infot, nout, lerr, ok);
+        Chkxer("ZPPCON", infot, nout, lerr, ok);
         //
         // Cppequ
         //
-        strncpy(srnamt, "Cppequ", srnamt_len);
+        srnamt = "ZPPEQU";
         infot = 1;
         Cppequ("/", 0, a, r1, rcond, anrm, info);
-        chkxer("Cppequ", infot, nout, lerr, ok);
+        Chkxer("ZPPEQU", infot, nout, lerr, ok);
         infot = 2;
         Cppequ("U", -1, a, r1, rcond, anrm, info);
-        chkxer("Cppequ", infot, nout, lerr, ok);
+        Chkxer("ZPPEQU", infot, nout, lerr, ok);
         //
         // Test error exits of the routines that use the Cholesky
         // decomposition of a Hermitian positive definite band matrix.
         //
-    } else if (Mlsamen(2, c2, "PB")) {
+    } else if (Mlsamen(2, c2.elems, "PB")) {
         //
         // Cpbtrf
         //
-        strncpy(srnamt, "Cpbtrf", srnamt_len);
+        srnamt = "ZPBTRF";
         infot = 1;
         Cpbtrf("/", 0, 0, a, 1, info);
-        chkxer("Cpbtrf", infot, nout, lerr, ok);
+        Chkxer("ZPBTRF", infot, nout, lerr, ok);
         infot = 2;
         Cpbtrf("U", -1, 0, a, 1, info);
-        chkxer("Cpbtrf", infot, nout, lerr, ok);
+        Chkxer("ZPBTRF", infot, nout, lerr, ok);
         infot = 3;
         Cpbtrf("U", 1, -1, a, 1, info);
-        chkxer("Cpbtrf", infot, nout, lerr, ok);
+        Chkxer("ZPBTRF", infot, nout, lerr, ok);
         infot = 5;
         Cpbtrf("U", 2, 1, a, 1, info);
-        chkxer("Cpbtrf", infot, nout, lerr, ok);
+        Chkxer("ZPBTRF", infot, nout, lerr, ok);
         //
         // Cpbtf2
         //
-        strncpy(srnamt, "Cpbtf2", srnamt_len);
+        srnamt = "ZPBTF2";
         infot = 1;
         Cpbtf2("/", 0, 0, a, 1, info);
-        chkxer("Cpbtf2", infot, nout, lerr, ok);
+        Chkxer("ZPBTF2", infot, nout, lerr, ok);
         infot = 2;
         Cpbtf2("U", -1, 0, a, 1, info);
-        chkxer("Cpbtf2", infot, nout, lerr, ok);
+        Chkxer("ZPBTF2", infot, nout, lerr, ok);
         infot = 3;
         Cpbtf2("U", 1, -1, a, 1, info);
-        chkxer("Cpbtf2", infot, nout, lerr, ok);
+        Chkxer("ZPBTF2", infot, nout, lerr, ok);
         infot = 5;
         Cpbtf2("U", 2, 1, a, 1, info);
-        chkxer("Cpbtf2", infot, nout, lerr, ok);
+        Chkxer("ZPBTF2", infot, nout, lerr, ok);
         //
         // Cpbtrs
         //
-        strncpy(srnamt, "Cpbtrs", srnamt_len);
+        srnamt = "ZPBTRS";
         infot = 1;
         Cpbtrs("/", 0, 0, 0, a, 1, b, 1, info);
-        chkxer("Cpbtrs", infot, nout, lerr, ok);
+        Chkxer("ZPBTRS", infot, nout, lerr, ok);
         infot = 2;
         Cpbtrs("U", -1, 0, 0, a, 1, b, 1, info);
-        chkxer("Cpbtrs", infot, nout, lerr, ok);
+        Chkxer("ZPBTRS", infot, nout, lerr, ok);
         infot = 3;
         Cpbtrs("U", 1, -1, 0, a, 1, b, 1, info);
-        chkxer("Cpbtrs", infot, nout, lerr, ok);
+        Chkxer("ZPBTRS", infot, nout, lerr, ok);
         infot = 4;
         Cpbtrs("U", 0, 0, -1, a, 1, b, 1, info);
-        chkxer("Cpbtrs", infot, nout, lerr, ok);
+        Chkxer("ZPBTRS", infot, nout, lerr, ok);
         infot = 6;
         Cpbtrs("U", 2, 1, 1, a, 1, b, 1, info);
-        chkxer("Cpbtrs", infot, nout, lerr, ok);
+        Chkxer("ZPBTRS", infot, nout, lerr, ok);
         infot = 8;
         Cpbtrs("U", 2, 0, 1, a, 1, b, 1, info);
-        chkxer("Cpbtrs", infot, nout, lerr, ok);
+        Chkxer("ZPBTRS", infot, nout, lerr, ok);
         //
         // Cpbrfs
         //
-        strncpy(srnamt, "Cpbrfs", srnamt_len);
+        srnamt = "ZPBRFS";
         infot = 1;
         Cpbrfs("/", 0, 0, 0, a, 1, af, 1, b, 1, x, 1, r1, r2, w, r, info);
-        chkxer("Cpbrfs", infot, nout, lerr, ok);
+        Chkxer("ZPBRFS", infot, nout, lerr, ok);
         infot = 2;
         Cpbrfs("U", -1, 0, 0, a, 1, af, 1, b, 1, x, 1, r1, r2, w, r, info);
-        chkxer("Cpbrfs", infot, nout, lerr, ok);
+        Chkxer("ZPBRFS", infot, nout, lerr, ok);
         infot = 3;
         Cpbrfs("U", 1, -1, 0, a, 1, af, 1, b, 1, x, 1, r1, r2, w, r, info);
-        chkxer("Cpbrfs", infot, nout, lerr, ok);
+        Chkxer("ZPBRFS", infot, nout, lerr, ok);
         infot = 4;
         Cpbrfs("U", 0, 0, -1, a, 1, af, 1, b, 1, x, 1, r1, r2, w, r, info);
-        chkxer("Cpbrfs", infot, nout, lerr, ok);
+        Chkxer("ZPBRFS", infot, nout, lerr, ok);
         infot = 6;
         Cpbrfs("U", 2, 1, 1, a, 1, af, 2, b, 2, x, 2, r1, r2, w, r, info);
-        chkxer("Cpbrfs", infot, nout, lerr, ok);
+        Chkxer("ZPBRFS", infot, nout, lerr, ok);
         infot = 8;
         Cpbrfs("U", 2, 1, 1, a, 2, af, 1, b, 2, x, 2, r1, r2, w, r, info);
-        chkxer("Cpbrfs", infot, nout, lerr, ok);
+        Chkxer("ZPBRFS", infot, nout, lerr, ok);
         infot = 10;
         Cpbrfs("U", 2, 0, 1, a, 1, af, 1, b, 1, x, 2, r1, r2, w, r, info);
-        chkxer("Cpbrfs", infot, nout, lerr, ok);
+        Chkxer("ZPBRFS", infot, nout, lerr, ok);
         infot = 12;
         Cpbrfs("U", 2, 0, 1, a, 1, af, 1, b, 2, x, 1, r1, r2, w, r, info);
-        chkxer("Cpbrfs", infot, nout, lerr, ok);
+        Chkxer("ZPBRFS", infot, nout, lerr, ok);
         //
         // Cpbcon
         //
-        strncpy(srnamt, "Cpbcon", srnamt_len);
+        srnamt = "ZPBCON";
         infot = 1;
         Cpbcon("/", 0, 0, a, 1, anrm, rcond, w, r, info);
-        chkxer("Cpbcon", infot, nout, lerr, ok);
+        Chkxer("ZPBCON", infot, nout, lerr, ok);
         infot = 2;
         Cpbcon("U", -1, 0, a, 1, anrm, rcond, w, r, info);
-        chkxer("Cpbcon", infot, nout, lerr, ok);
+        Chkxer("ZPBCON", infot, nout, lerr, ok);
         infot = 3;
         Cpbcon("U", 1, -1, a, 1, anrm, rcond, w, r, info);
-        chkxer("Cpbcon", infot, nout, lerr, ok);
+        Chkxer("ZPBCON", infot, nout, lerr, ok);
         infot = 5;
         Cpbcon("U", 2, 1, a, 1, anrm, rcond, w, r, info);
-        chkxer("Cpbcon", infot, nout, lerr, ok);
+        Chkxer("ZPBCON", infot, nout, lerr, ok);
         infot = 6;
         Cpbcon("U", 1, 0, a, 1, -anrm, rcond, w, r, info);
-        chkxer("Cpbcon", infot, nout, lerr, ok);
+        Chkxer("ZPBCON", infot, nout, lerr, ok);
         //
         // Cpbequ
         //
-        strncpy(srnamt, "Cpbequ", srnamt_len);
+        srnamt = "ZPBEQU";
         infot = 1;
         Cpbequ("/", 0, 0, a, 1, r1, rcond, anrm, info);
-        chkxer("Cpbequ", infot, nout, lerr, ok);
+        Chkxer("ZPBEQU", infot, nout, lerr, ok);
         infot = 2;
         Cpbequ("U", -1, 0, a, 1, r1, rcond, anrm, info);
-        chkxer("Cpbequ", infot, nout, lerr, ok);
+        Chkxer("ZPBEQU", infot, nout, lerr, ok);
         infot = 3;
         Cpbequ("U", 1, -1, a, 1, r1, rcond, anrm, info);
-        chkxer("Cpbequ", infot, nout, lerr, ok);
+        Chkxer("ZPBEQU", infot, nout, lerr, ok);
         infot = 5;
         Cpbequ("U", 2, 1, a, 1, r1, rcond, anrm, info);
-        chkxer("Cpbequ", infot, nout, lerr, ok);
+        Chkxer("ZPBEQU", infot, nout, lerr, ok);
     }
     //
     // Print a summary line.

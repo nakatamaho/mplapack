@@ -43,14 +43,11 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-#include <mplapack_debug.h>
-
 void Cchkq3(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INTEGER *nval, INTEGER const nnb, INTEGER *nbval, INTEGER *nxval, REAL const thresh, COMPLEX *a, COMPLEX *copya, REAL *s, COMPLEX *tau, COMPLEX *work, REAL *rwork, INTEGER *iwork, INTEGER const nout) {
     common cmn;
     common_write write(cmn);
-    INTEGER iseedy[] = {1988, 1989, 1990, 1991};
-    char path[4] = {};
-    char buf[1024];
+    static INTEGER iseedy[4] = {1988, 1989, 1990, 1991};
+    fem::str<3> path;
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
@@ -82,9 +79,10 @@ void Cchkq3(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     REAL result[ntests];
     INTEGER k = 0;
     //
-    path[0] = 'C';
-    path[1] = 'Q';
-    path[2] = '3';
+    // Initialize constants and the random number seed.
+    //
+    path(1, 1) = "Zomplex precision";
+    path(2, 3) = "Q3";
     nrun = 0;
     nfail = 0;
     nerrs = 0;
@@ -107,7 +105,7 @@ void Cchkq3(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
             //
             n = nval[in - 1];
             mnmin = min(m, n);
-            lwork = max({(INTEGER)1, m * max(m, n) + 4 * mnmin + max(m, n)});
+            lwork = max((INTEGER)1, m * max(m, n) + 4 * mnmin + max(m, n));
             //
             for (imode = 1; imode <= ntypes; imode = imode + 1) {
                 if (!dotype[imode - 1]) {
@@ -180,7 +178,7 @@ void Cchkq3(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                     //
                     lw = nb * (n + 1);
                     //
-                    strncpy(srnamt, "Cgeqp3", srnamt_len);
+                    srnamt = "ZGEQP3";
                     Cgeqp3(m, n, a, lda, &iwork[(n + 1) - 1], tau, work, lw, rwork, info);
                     //
                     // Compute norm(svd(a) - svd(r))
@@ -203,10 +201,9 @@ void Cchkq3(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                             if (nfail == 0 && nerrs == 0) {
                                 Alahd(nout, path);
                             }
-                            sprintnum_short(buf, result[k - 1]);
-                            write(nout, "(' M =',i5,', N =',i5,', NB =',i4,', type ',i2,"
-                                        "', test ',i2,', ratio =',a)"),
-                                m, n, nb, imode, k, buf;
+                            write(nout, "(1x,a,' M =',i5,', N =',i5,', NB =',i4,', type ',i2,"
+                                        "', test ',i2,', ratio =',g12.5)"),
+                                "ZGEQP3", m, n, nb, imode, k, result[k - 1];
                             nfail++;
                         }
                     }

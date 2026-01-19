@@ -43,14 +43,11 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-#include <mplapack_debug.h>
-
 void Cchktz(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INTEGER *nval, REAL const thresh, bool const tsterr, COMPLEX *a, COMPLEX *copya, REAL *s, COMPLEX *tau, COMPLEX *work, REAL *rwork, INTEGER const nout) {
     common cmn;
     common_write write(cmn);
-    INTEGER iseedy[] = {1988, 1989, 1990, 1991};
-    char path[4] = {};
-    char buf[1024];
+    static INTEGER iseedy[4] = {1988, 1989, 1990, 1991};
+    fem::str<3> path;
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
@@ -74,9 +71,10 @@ void Cchktz(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     REAL result[ntests];
     INTEGER k = 0;
     //
-    path[0] = 'C';
-    path[1] = 'T';
-    path[2] = 'Z';
+    // Initialize constants and the random number seed.
+    //
+    path(1, 1) = "Zomplex precision";
+    path(2, 3) = "TZ";
     nrun = 0;
     nfail = 0;
     nerrs = 0;
@@ -144,7 +142,7 @@ void Cchktz(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                     // Call Ctzrzf to reduce the upper trapezoidal matrix to
                     // upper triangular form.
                     //
-                    strncpy(srnamt, "Ctzrzf", srnamt_len);
+                    srnamt = "ZTZRZF";
                     Ctzrzf(m, n, a, lda, tau, work, lwork, info);
                     //
                     // Compute norm(svd(a) - svd(r))
@@ -167,10 +165,9 @@ void Cchktz(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                             if (nfail == 0 && nerrs == 0) {
                                 Alahd(nout, path);
                             }
-                            sprintnum_short(buf, result[k - 1]);
                             write(nout, "(' M =',i5,', N =',i5,', type ',i2,', test ',i2,', ratio =',"
-                                        "a)"),
-                                m, n, imode, k, buf;
+                                        "g12.5)"),
+                                m, n, imode, k, result[k - 1];
                             nfail++;
                         }
                     }

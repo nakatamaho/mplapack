@@ -44,13 +44,9 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Crqt01(INTEGER const m, INTEGER const n, COMPLEX *a, COMPLEX *af, COMPLEX *q, COMPLEX *r, INTEGER const lda, COMPLEX *tau, COMPLEX *work, INTEGER const lwork, REAL *rwork, REAL *result) {
-    //
-    //
+    common cmn;
     //
     INTEGER minmn = min(m, n);
-    INTEGER ldaf = lda;
-    INTEGER ldq = lda;
-    INTEGER ldr = lda;
     REAL eps = Rlamch("Epsilon");
     //
     // Copy the matrix A to the array AF.
@@ -59,19 +55,20 @@ void Crqt01(INTEGER const m, INTEGER const n, COMPLEX *a, COMPLEX *af, COMPLEX *
     //
     // Factorize the matrix A in the array AF.
     //
+    srnamt = "ZGERQF";
     INTEGER info = 0;
     Cgerqf(m, n, af, lda, tau, work, lwork, info);
     //
     // Copy details of Q
     //
-    const COMPLEX rogue = COMPLEX(-1.0e+10, -1.0e+10);
+    const COMPLEX rogue = COMPLEX(-10000000000.0, -10000000000.0);
     Claset("Full", n, n, rogue, rogue, q, lda);
     if (m <= n) {
         if (m > 0 && m < n) {
             Clacpy("Full", m, n - m, af, lda, &q[((n - m + 1) - 1)], lda);
         }
         if (m > 1) {
-            Clacpy("Lower", m - 1, m - 1, &af[(2 - 1) + ((n - m + 1) - 1) * ldaf], lda, &q[((n - m + 2) - 1) + ((n - m + 1) - 1) * ldq], lda);
+            Clacpy("Lower", m - 1, m - 1, &af[(2 - 1) + ((n - m + 1) - 1) * lda], lda, &q[((n - m + 2) - 1) + ((n - m + 1) - 1) * lda], lda);
         }
     } else {
         if (n > 1) {
@@ -81,6 +78,7 @@ void Crqt01(INTEGER const m, INTEGER const n, COMPLEX *a, COMPLEX *af, COMPLEX *
     //
     // Generate the n-by-n matrix Q
     //
+    srnamt = "ZUNGRQ";
     Cungrq(n, n, minmn, q, lda, tau, work, lwork, info);
     //
     // Copy R
@@ -89,7 +87,7 @@ void Crqt01(INTEGER const m, INTEGER const n, COMPLEX *a, COMPLEX *af, COMPLEX *
     Claset("Full", m, n, COMPLEX(zero), COMPLEX(zero), r, lda);
     if (m <= n) {
         if (m > 0) {
-            Clacpy("Upper", m, m, &af[((n - m + 1) - 1) * ldaf], lda, &r[((n - m + 1) - 1) * ldr], lda);
+            Clacpy("Upper", m, m, &af[((n - m + 1) - 1) * lda], lda, &r[((n - m + 1) - 1) * lda], lda);
         }
     } else {
         if (m > n && n > 0) {

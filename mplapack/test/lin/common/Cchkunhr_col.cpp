@@ -43,46 +43,14 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-#include <mplapack_debug.h>
-
 void Cchkunhr_col(REAL const thresh, bool const tsterr, INTEGER const nm, INTEGER *mval, INTEGER const nn, INTEGER *nval, INTEGER const nnb, INTEGER *nbval, INTEGER const nout) {
     common cmn;
     common_write write(cmn);
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+    // Initialize constants
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Scalars in Common ..
-    //     ..
-    //     .. Common blocks ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Initialize constants
-    //
-    char path[4] = {};
-    path[0] = 'C';
-    path[1] = 'H';
-    path[2] = 'H';
-    char buf[1024];
+    fem::str<1> path = 'Z';
+    path(2, 3) = "HH";
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
@@ -92,8 +60,9 @@ void Cchkunhr_col(REAL const thresh, bool const tsterr, INTEGER const nm, INTEGE
     if (tsterr) {
         Cerrunhr_col(path, nout);
     }
+    infot = 0;
     //
-    //     Do for each value of M in MVAL.
+    // Do for each value of M in MVAL.
     //
     INTEGER i = 0;
     INTEGER m = 0;
@@ -153,10 +122,9 @@ void Cchkunhr_col(REAL const thresh, bool const tsterr, INTEGER const nm, INTEGE
                                             if (nfail == 0 && nerrs == 0) {
                                                 Alahd(nout, path);
                                             }
-                                            sprintnum_short(buf, result[t - 1]);
-                                            write(nout, "('Cungtsqr and Cunhr_col: M=',i5,', N=',i5,', MB1=',"
-                                                        "i5,', NB1=',i5,', NB2=',i5,' test(',i2,')=',a)"),
-                                                m, n, mb1, nb1, nb2, t, buf;
+                                            write(nout, "('ZUNGTSQR and ZUNHR_COL: M=',i5,', N=',i5,', MB1=',"
+                                                        "i5,', NB1=',i5,', NB2=',i5,' test(',i2,')=',g12.5)"),
+                                                m, n, mb1, nb1, nb2, t, result[t - 1];
                                             nfail++;
                                         }
                                     }
@@ -217,11 +185,10 @@ void Cchkunhr_col(REAL const thresh, bool const tsterr, INTEGER const nm, INTEGE
                                             if (nfail == 0 && nerrs == 0) {
                                                 Alahd(nout, path);
                                             }
-                                            sprintnum_short(buf, result[t - 1]);
-                                            write(nout, "('Cungtsqr_row and Cunhr_col: M=',i5,', N=',i5,"
+                                            write(nout, "('ZUNGTSQR_ROW and ZUNHR_COL: M=',i5,', N=',i5,"
                                                         "', MB1=',i5,', NB1=',i5,', NB2=',i5,' test(',i2,')=',"
-                                                        "a)"),
-                                                m, n, mb1, nb1, nb2, t, buf;
+                                                        "g12.5)"),
+                                                m, n, mb1, nb1, nb2, t, result[t - 1];
                                             nfail++;
                                         }
                                     }

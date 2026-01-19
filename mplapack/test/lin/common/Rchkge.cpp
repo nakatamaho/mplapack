@@ -43,15 +43,12 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-#include <mplapack_debug.h>
-
 void Rchkge(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INTEGER *nval, INTEGER const nnb, INTEGER *nbval, INTEGER const nns, INTEGER *nsval, REAL const thresh, bool const tsterr, INTEGER const nmax, REAL *a, REAL *afac, REAL *ainv, REAL *b, REAL *x, REAL *xact, REAL *work, REAL *rwork, INTEGER *iwork, INTEGER const nout) {
     common cmn;
     common_write write(cmn);
-    const INTEGER ntran = 3;
-    char transs[ntran] = {'N', 'T', 'C'};
-    char path[4] = {};
-    char buf[1024];
+    static INTEGER iseedy[4] = {1988, 1989, 1990, 1991};
+    static fem::str<1> transs[3] = {"N", "T", "C"};
+    fem::str<3> path;
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
@@ -62,18 +59,18 @@ void Rchkge(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     INTEGER lda = 0;
     INTEGER in = 0;
     INTEGER n = 0;
-    char xtype;
+    fem::str<1> xtype;
     const INTEGER ntypes = 11;
     INTEGER nimat = 0;
     INTEGER imat = 0;
     bool zerot = false;
-    char type;
+    fem::str<1> type;
     INTEGER kl = 0;
     INTEGER ku = 0;
     REAL anorm = 0.0;
     INTEGER mode = 0;
     REAL cndnum = 0.0;
-    char dist;
+    fem::str<1> dist;
     INTEGER info = 0;
     INTEGER izero = 0;
     INTEGER ioff = 0;
@@ -95,22 +92,25 @@ void Rchkge(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     INTEGER k = 0;
     INTEGER irhs = 0;
     INTEGER itran = 0;
-    char trans;
+    const INTEGER ntran = 3;
+    fem::str<1> trans;
     REAL rcondc = 0.0;
-    char norm;
+    fem::str<1> norm;
     REAL rcond = 0.0;
     REAL dummy = 0.0;
     //
-    //     Initialize constants and the random number seed.
+    // Initialize constants and the random number seed.
     //
-    path[0] = 'R';
-    path[1] = 'G';
-    path[2] = 'E';
+    path(1, 1) = "Double precision";
+    path(2, 3) = "GE";
     nrun = 0;
     nfail = 0;
     nerrs = 0;
+    for (i = 1; i <= 4; i = i + 1) {
+        iseed[i - 1] = iseedy[i - 1];
+    }
     //
-    //     Test the error exits
+    // Test the error exits
     //
     xlaenv(1, 1);
     if (tsterr) {
@@ -153,15 +153,15 @@ void Rchkge(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                 // Set up parameters with Rlatb4 and generate a test matrix
                 // with Rlatms.
                 //
-                Rlatb4(path, imat, m, n, &type, kl, ku, anorm, mode, cndnum, &dist);
+                Rlatb4(path, imat, m, n, type, kl, ku, anorm, mode, cndnum, dist);
                 //
-                strncpy(srnamt, "Rlatms", strlen(srnamt));
-                Rlatms(m, n, &dist, iseed, &type, rwork, mode, cndnum, anorm, kl, ku, "No packing", a, lda, work, info);
+                srnamt = "DLATMS";
+                Rlatms(m, n, dist, iseed, type, rwork, mode, cndnum, anorm, kl, ku, "No packing", a, lda, work, info);
                 //
                 // Check error code from Rlatms.
                 //
                 if (info != 0) {
-                    Alaerh(path, "Rlatms", info, 0, " ", m, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                    Alaerh(path, "DLATMS", info, 0, " ", m, n, -1, -1, -1, imat, nfail, nerrs, nout);
                     goto statement_100;
                 }
                 //
@@ -203,13 +203,13 @@ void Rchkge(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                     // Compute the LU factorization of the matrix.
                     //
                     Rlacpy("Full", m, n, a, lda, afac, lda);
-                    strncpy(srnamt, "Rgetrf", strlen(srnamt));
+                    srnamt = "DGETRF";
                     Rgetrf(m, n, afac, lda, iwork, info);
                     //
                     // Check error code from Rgetrf.
                     //
                     if (info != izero) {
-                        Alaerh(path, "Rgetrf", info, izero, " ", m, n, -1, -1, nb, imat, nfail, nerrs, nout);
+                        Alaerh(path, "DGETRF", info, izero, " ", m, n, -1, -1, nb, imat, nfail, nerrs, nout);
                     }
                     trfcon = false;
                     //
@@ -226,7 +226,7 @@ void Rchkge(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                     //
                     if (m == n && info == 0) {
                         Rlacpy("Full", n, n, afac, lda, ainv, lda);
-                        strncpy(srnamt, "Rgetri", strlen(srnamt));
+                        srnamt = "DGETRI";
                         nrhs = nsval[1 - 1];
                         lwork = nmax * max((INTEGER)3, nrhs);
                         Rgetri(n, ainv, lda, iwork, work, lwork, info);
@@ -234,7 +234,7 @@ void Rchkge(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                         // Check error code from Rgetri.
                         //
                         if (info != 0) {
-                            Alaerh(path, "Rgetri", info, 0, " ", n, n, -1, -1, nb, imat, nfail, nerrs, nout);
+                            Alaerh(path, "DGETRI", info, 0, " ", n, n, -1, -1, nb, imat, nfail, nerrs, nout);
                         }
                         //
                         // Compute the residual for the matrix times its
@@ -273,10 +273,9 @@ void Rchkge(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                             if (nfail == 0 && nerrs == 0) {
                                 Alahd(nout, path);
                             }
-                            sprintnum_short(buf, result[k - 1]);
                             write(nout, "(' M = ',i5,', N =',i5,', NB =',i4,', type ',i2,', test(',i2,"
-                                        "') =',a)"),
-                                m, n, nb, imat, k, buf;
+                                        "') =',g12.5)"),
+                                m, n, nb, imat, k, result[k - 1];
                             nfail++;
                         }
                     }
@@ -308,43 +307,43 @@ void Rchkge(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                             // +    TEST 3
                             // Solve and compute residual for A * X = B.
                             //
-                            strncpy(srnamt, "Rlarhs", strlen(srnamt));
-                            Rlarhs(path, &xtype, " ", &trans, n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
+                            srnamt = "DLARHS";
+                            Rlarhs(path, xtype, " ", trans, n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
                             xtype = 'C';
                             //
                             Rlacpy("Full", n, nrhs, b, lda, x, lda);
-                            strncpy(srnamt, "Rgetrs", strlen(srnamt));
-                            Rgetrs(&trans, n, nrhs, afac, lda, iwork, x, lda, info);
+                            srnamt = "DGETRS";
+                            Rgetrs(trans.elems, n, nrhs, afac, lda, iwork, x, lda, info);
                             //
                             // Check error code from Rgetrs.
                             //
                             if (info != 0) {
-                                Alaerh(path, "Rgetrs", info, 0, &trans, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                                Alaerh(path, "DGETRS", info, 0, trans, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                             }
                             //
                             Rlacpy("Full", n, nrhs, b, lda, work, lda);
-                            Rget02(&trans, n, n, nrhs, a, lda, x, lda, work, lda, rwork, result[3 - 1]);
+                            Rget02(trans, n, n, nrhs, a, lda, x, lda, work, lda, rwork, result[3 - 1]);
                             //
-                            //+    TEST 4
-                            //                       Check solution from generated exact solution.
+                            // +    TEST 4
+                            // Check solution from generated exact solution.
                             //
                             Rget04(n, nrhs, x, lda, xact, lda, rcondc, result[4 - 1]);
                             //
-                            //+    TESTS 5, 6, and 7
-                            //                       Use iterative refinement to improve the
-                            //                       solution.
+                            // +    TESTS 5, 6, and 7
+                            // Use iterative refinement to improve the
+                            // solution.
                             //
-                            Rgerfs(&trans, n, nrhs, a, lda, afac, lda, iwork, b, lda, x, lda, rwork, &rwork[(nrhs + 1) - 1], work, &iwork[(n + 1) - 1], info);
+                            srnamt = "DGERFS";
+                            Rgerfs(trans.elems, n, nrhs, a, lda, afac, lda, iwork, b, lda, x, lda, rwork, &rwork[(nrhs + 1) - 1], work, &iwork[(n + 1) - 1], info);
                             //
-                            //                       Check error code from Rgerfs.
+                            // Check error code from Rgerfs.
                             //
-                            strncpy(srnamt, "Rgerfs", strlen(srnamt));
                             if (info != 0) {
-                                Alaerh(path, "Rgerfs", info, 0, &trans, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                                Alaerh(path, "DGERFS", info, 0, trans, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                             }
                             //
                             Rget04(n, nrhs, x, lda, xact, lda, rcondc, result[5 - 1]);
-                            Rget07(&trans, n, nrhs, a, lda, b, lda, x, lda, xact, lda, rwork, true, &rwork[(nrhs + 1) - 1], &result[6 - 1]);
+                            Rget07(trans, n, nrhs, a, lda, b, lda, x, lda, xact, lda, rwork, true, &rwork[(nrhs + 1) - 1], &result[6 - 1]);
                             //
                             // Print information about the tests that did not
                             // pass the threshold.
@@ -354,10 +353,9 @@ void Rchkge(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                     if (nfail == 0 && nerrs == 0) {
                                         Alahd(nout, path);
                                     }
-                                    sprintnum_short(buf, result[k - 1]);
                                     write(nout, "(' TRANS=''',a1,''', N =',i5,', NRHS=',i3,', type ',i2,"
-                                                "', test(',i2,') =',a)"),
-                                        &trans, n, nrhs, imat, k, buf;
+                                                "', test(',i2,') =',g12.5)"),
+                                        trans, n, nrhs, imat, k, result[k - 1];
                                     nfail++;
                                 }
                             }
@@ -379,30 +377,31 @@ void Rchkge(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                             rcondc = rcondi;
                             norm = 'I';
                         }
-                        strncpy(srnamt, "Rgecon", strlen(srnamt));
-                        Rgecon(&norm, n, afac, lda, anorm, rcond, work, &iwork[(n + 1) - 1], info);
+                        srnamt = "DGECON";
+                        Rgecon(norm.elems, n, afac, lda, anorm, rcond, work, &iwork[(n + 1) - 1], info);
                         //
                         // Check error code from Rgecon.
                         //
                         if (info != 0) {
-                            Alaerh(path, "Rgecon", info, 0, &norm, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                            Alaerh(path, "DGECON", info, 0, norm, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                         }
                         //
+                        // This line is needed on a Sun SPARCstation.
                         //
+                        dummy = rcond;
                         //
                         result[8 - 1] = Rget06(rcond, rcondc);
                         //
-                        //                    Print information about the tests that did not pass
-                        //                    the threshold.
+                        // Print information about the tests that did not pass
+                        // the threshold.
                         //
-                        sprintnum_short(buf, result[8 - 1]);
                         if (result[8 - 1] >= thresh) {
                             if (nfail == 0 && nerrs == 0) {
                                 Alahd(nout, path);
                             }
                             write(nout, "(' NORM =''',a1,''', N =',i5,',',10x,' type ',i2,', test(',"
-                                        "i2,') =',a)"),
-                                &norm, n, imat, 8, buf;
+                                        "i2,') =',g12.5)"),
+                                norm, n, imat, 8, result[8 - 1];
                             nfail++;
                         }
                         nrun++;

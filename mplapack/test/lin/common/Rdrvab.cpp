@@ -43,44 +43,12 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-struct common_infoc {
-    int infot;
-    int nunit;
-    bool ok;
-    bool lerr;
-
-    common_infoc() : infot(0), nunit(0), ok(false), lerr(false) {}
-};
-
-struct common_srnamc {
-    fem::str<32> srnamt;
-
-    common_srnamc() : srnamt(0) {}
-};
-
-struct common : fem::common, common_infoc, common_srnamc {
-    fem::cmn_sve ddrvab_sve;
-
-    common(int argc, char const *argv[]) : fem::common(argc, argv) {}
-};
-
-struct ddrvab_save {
-    arr<int> iseedy;
-
-    ddrvab_save() : iseedy(dimension(4), fem::fill0) {}
-};
-
 void Rdrvab(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nns, INTEGER *nsval, REAL const thresh, INTEGER const /* nmax */, REAL *a, REAL *afac, REAL *b, REAL *x, REAL *work, REAL *rwork, REAL *swork, INTEGER *iwork, INTEGER const nout) {
-    FEM_CMN_SVE(ddrvab);
+    common cmn;
     common_write write(cmn);
-    fem::str<32> &srnamt = cmn.srnamt;
-    arr_ref<int> iseedy(sve.iseedy, dimension(4));
-    if (is_called_first_time) {
-        static const int values[] = {2006, 2007, 2008, 2009};
-        fem::data_of_type<int>(FEM_VALUES_AND_SIZE), iseedy;
-    }
+    static INTEGER iseedy[4] = {2006, 2007, 2008, 2009};
     INTEGER kase = 0;
-    char path[3];
+    fem::str<3> path;
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
@@ -94,21 +62,21 @@ void Rdrvab(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nns, IN
     INTEGER nimat = 0;
     INTEGER imat = 0;
     bool zerot = false;
-    char type;
+    fem::str<1> type;
     INTEGER kl = 0;
     INTEGER ku = 0;
     REAL anorm = 0.0;
     INTEGER mode = 0;
     REAL cndnum = 0.0;
-    char dist;
+    fem::str<1> dist;
     INTEGER info = 0;
     INTEGER izero = 0;
     INTEGER ioff = 0;
     const REAL zero = 0.0;
     INTEGER irhs = 0;
     INTEGER nrhs = 0;
-    char xtype;
-    char trans;
+    fem::str<1> xtype;
+    fem::str<1> trans;
     INTEGER iter = 0;
     const INTEGER ntests = 1;
     REAL result[ntests];
@@ -116,7 +84,7 @@ void Rdrvab(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nns, IN
     // Initialize constants and the random number seed.
     //
     kase = 0;
-    path[0] = "Double precision";
+    path(1, 1) = "Double precision";
     path(2, 3) = "GE";
     nrun = 0;
     nfail = 0;
@@ -125,7 +93,7 @@ void Rdrvab(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nns, IN
         iseed[i - 1] = iseedy[i - 1];
     }
     //
-    cmn.infot = 0;
+    infot = 0;
     //
     // Do for each value of M in MVAL
     //
@@ -157,10 +125,10 @@ void Rdrvab(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nns, IN
             // Set up parameters with Rlatb4 and generate a test matrix
             // with Rlatms.
             //
-            Rlatb4(path, imat, m, n, &type, kl, ku, anorm, mode, cndnum, &dist);
+            Rlatb4(path, imat, m, n, type, kl, ku, anorm, mode, cndnum, dist);
             //
             srnamt = "DLATMS";
-            Rlatms(m, n, &dist, iseed, &type, rwork, mode, cndnum, anorm, kl, ku, "No packing", a, lda, work, info);
+            Rlatms(m, n, dist, iseed, type, rwork, mode, cndnum, anorm, kl, ku, "No packing", a, lda, work, info);
             //
             // Check error code from Rlatms.
             //
@@ -198,7 +166,7 @@ void Rdrvab(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nns, IN
                 trans = 'N';
                 //
                 srnamt = "DLARHS";
-                Rlarhs(path, &xtype, " ", &trans, n, n, kl, ku, nrhs, a, lda, x, lda, b, lda, iseed, info);
+                Rlarhs(path, xtype, " ", trans, n, n, kl, ku, nrhs, a, lda, x, lda, b, lda, iseed, info);
                 //
                 srnamt = "DSGESV";
                 //
@@ -241,7 +209,7 @@ void Rdrvab(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nns, IN
                 //
                 Rlacpy("Full", n, nrhs, b, lda, work, lda);
                 //
-                Rget08(&trans, n, n, nrhs, a, lda, x, lda, work, lda, rwork, result[0]);
+                Rget08(trans, n, n, nrhs, a, lda, x, lda, work, lda, rwork, result[1 - 1]);
                 //
                 // Check if the test passes the tesing.
                 // Print information about the tests that did not
@@ -255,7 +223,7 @@ void Rdrvab(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nns, IN
                 // NORMI(B - A*X)/(NORMI(A)*NORMI(X)*EPS) < THRES
                 // (Cf. the linear solver testing routines)
                 //
-                if ((thresh <= 0.0e+00) || ((iter >= 0) && (n > 0) && (result[0] >= sqrt(castREAL(n)))) || ((iter < 0) && (result[0] >= thresh))) {
+                if ((thresh <= 0.0) || ((iter >= 0) && (n > 0) && (result[1 - 1] >= sqrt(castREAL(n)))) || ((iter < 0) && (result[1 - 1] >= thresh))) {
                     //
                     if (nfail == 0 && nerrs == 0) {
                         write(nout, "(/,1x,a3,':  General dense matrices')"), "DGE";
@@ -277,7 +245,7 @@ void Rdrvab(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nns, IN
                     //
                     write(nout, "(' TRANS=''',a1,''', N =',i5,', NRHS=',i3,', type ',i2,', test(',"
                                 "i2,') =',g12.5)"),
-                        trans, n, nrhs, imat, 1, result(1);
+                        trans, n, nrhs, imat, 1, result[1 - 1];
                     nfail++;
                 }
                 nrun++;

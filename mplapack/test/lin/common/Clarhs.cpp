@@ -43,31 +43,27 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-void Clarhs(const char *path, const char *xtype, const char *uplo, const char *trans, INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku, INTEGER const nrhs, COMPLEX *a, INTEGER const lda, COMPLEX *x, INTEGER const ldx, COMPLEX *b, INTEGER const ldb, INTEGER *iseed, INTEGER &info) {
+void Clarhs(fem::str_cref path, fem::str_cref xtype, fem::str_cref uplo, fem::str_cref trans, INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku, INTEGER const nrhs, COMPLEX *a, INTEGER const lda, COMPLEX *x, INTEGER const ldx, COMPLEX *b, INTEGER const ldb, INTEGER *iseed, INTEGER &info) {
     //
     // Test the input parameters.
     //
     info = 0;
-    char c1;
-    char c2[2];
-    char c3;
-    c1 = path[0];
-    c2[0] = path[1];
-    c2[1] = path[2];
-    bool tran = Mlsame(trans, "T") || Mlsame(trans, "C");
+    fem::str<1> c1 = path(1, 1);
+    fem::str<2> c2 = path(2, 3);
+    bool tran = Mlsame(trans.elems(), "T") || Mlsame(trans.elems(), "C");
     bool notran = !tran;
-    bool gen = Mlsame(&c2[0], "G");
-    bool qrs = Mlsame(&c2[0], "Q") || Mlsame(&c2[1], "Q");
-    bool sym = Mlsame(&c2[0], "P") || Mlsame(&c2[0], "S") || Mlsame(&c2[0], "H");
-    bool tri = Mlsame(&c2[0], "T");
-    bool band = Mlsame(&c2[1], "B");
-    if (!Mlsame(&c1, "Z") && !Mlsame(&c1, "C")) {
+    bool gen = Mlsame(path(2, 2).elems(), "G");
+    bool qrs = Mlsame(path(2, 2).elems(), "Q") || Mlsame(path(3, 3).elems(), "Q");
+    bool sym = Mlsame(path(2, 2).elems(), "P") || Mlsame(path(2, 2).elems(), "S") || Mlsame(path(2, 2).elems(), "H");
+    bool tri = Mlsame(path(2, 2).elems(), "T");
+    bool band = Mlsame(path(3, 3).elems(), "B");
+    if (!Mlsame(c1.elems, "Zomplex precision")) {
         info = -1;
-    } else if (!(Mlsame(xtype, "N") || Mlsame(xtype, "C"))) {
+    } else if (!(Mlsame(xtype.elems(), "N") || Mlsame(xtype.elems(), "C"))) {
         info = -2;
-    } else if ((sym || tri) && !(Mlsame(uplo, "U") || Mlsame(uplo, "L"))) {
+    } else if ((sym || tri) && !(Mlsame(uplo.elems(), "U") || Mlsame(uplo.elems(), "L"))) {
         info = -3;
-    } else if ((gen || qrs) && !(tran || Mlsame(trans, "N"))) {
+    } else if ((gen || qrs) && !(tran || Mlsame(trans.elems(), "N"))) {
         info = -4;
     } else if (m < 0) {
         info = -5;
@@ -103,7 +99,7 @@ void Clarhs(const char *path, const char *xtype, const char *uplo, const char *t
         mb = m;
     }
     INTEGER j = 0;
-    if (!Mlsame(xtype, "C")) {
+    if (!Mlsame(xtype.elems(), "C")) {
         for (j = 1; j <= nrhs; j = j + 1) {
             Clarnv(2, iseed, n, &x[(j - 1) * ldx]);
         }
@@ -114,42 +110,42 @@ void Clarhs(const char *path, const char *xtype, const char *uplo, const char *t
     //
     const COMPLEX one = COMPLEX(1.0, 0.0);
     const COMPLEX zero = COMPLEX(0.0, 0.0);
-    char diag;
-    if (Mlsamen(2, c2, "GE") || Mlsamen(2, c2, "QR") || Mlsamen(2, c2, "LQ") || Mlsamen(2, c2, "QL") || Mlsamen(2, c2, "RQ")) {
+    fem::str<1> diag;
+    if (Mlsamen(2, c2.elems, "GE") || Mlsamen(2, c2.elems, "QR") || Mlsamen(2, c2.elems, "LQ") || Mlsamen(2, c2.elems, "QL") || Mlsamen(2, c2.elems, "RQ")) {
         //
         // General matrix
         //
-        Cgemm(trans, "N", mb, nrhs, nx, one, a, lda, x, ldx, zero, b, ldb);
+        Cgemm(trans.elems(), "N", mb, nrhs, nx, one, a, lda, x, ldx, zero, b, ldb);
         //
-    } else if (Mlsamen(2, c2, "PO") || Mlsamen(2, c2, "HE")) {
+    } else if (Mlsamen(2, c2.elems, "PO") || Mlsamen(2, c2.elems, "HE")) {
         //
         // Hermitian matrix, 2-D storage
         //
-        Chemm("Left", uplo, n, nrhs, one, a, lda, x, ldx, zero, b, ldb);
+        Chemm("Left", uplo.elems(), n, nrhs, one, a, lda, x, ldx, zero, b, ldb);
         //
-    } else if (Mlsamen(2, c2, "SY")) {
+    } else if (Mlsamen(2, c2.elems, "SY")) {
         //
         // Symmetric matrix, 2-D storage
         //
-        Csymm("Left", uplo, n, nrhs, one, a, lda, x, ldx, zero, b, ldb);
+        Csymm("Left", uplo.elems(), n, nrhs, one, a, lda, x, ldx, zero, b, ldb);
         //
-    } else if (Mlsamen(2, c2, "GB")) {
+    } else if (Mlsamen(2, c2.elems, "GB")) {
         //
         // General matrix, band storage
         //
         for (j = 1; j <= nrhs; j = j + 1) {
-            Cgbmv(trans, m, n, kl, ku, one, a, lda, &x[(j - 1) * ldx], 1, zero, &b[(j - 1) * ldb], 1);
+            Cgbmv(trans.elems(), m, n, kl, ku, one, a, lda, &x[(j - 1) * ldx], 1, zero, &b[(j - 1) * ldb], 1);
         }
         //
-    } else if (Mlsamen(2, c2, "PB") || Mlsamen(2, c2, "HB")) {
+    } else if (Mlsamen(2, c2.elems, "PB") || Mlsamen(2, c2.elems, "HB")) {
         //
         // Hermitian matrix, band storage
         //
         for (j = 1; j <= nrhs; j = j + 1) {
-            Chbmv(uplo, n, kl, one, a, lda, &x[(j - 1) * ldx], 1, zero, &b[(j - 1) * ldb], 1);
+            Chbmv(uplo.elems(), n, kl, one, a, lda, &x[(j - 1) * ldx], 1, zero, &b[(j - 1) * ldb], 1);
         }
         //
-    } else if (Mlsamen(2, c2, "SB")) {
+    } else if (Mlsamen(2, c2.elems, "SB")) {
         //
         // Symmetric matrix, band storage
         //
@@ -157,23 +153,23 @@ void Clarhs(const char *path, const char *xtype, const char *uplo, const char *t
             Csbmv(uplo, n, kl, one, a, lda, &x[(j - 1) * ldx], 1, zero, &b[(j - 1) * ldb], 1);
         }
         //
-    } else if (Mlsamen(2, c2, "PP") || Mlsamen(2, c2, "HP")) {
+    } else if (Mlsamen(2, c2.elems, "PP") || Mlsamen(2, c2.elems, "HP")) {
         //
         // Hermitian matrix, packed storage
         //
         for (j = 1; j <= nrhs; j = j + 1) {
-            Chpmv(uplo, n, one, a, &x[(j - 1) * ldx], 1, zero, &b[(j - 1) * ldb], 1);
+            Chpmv(uplo.elems(), n, one, a, &x[(j - 1) * ldx], 1, zero, &b[(j - 1) * ldb], 1);
         }
         //
-    } else if (Mlsamen(2, c2, "SP")) {
+    } else if (Mlsamen(2, c2.elems, "SP")) {
         //
         // Symmetric matrix, packed storage
         //
         for (j = 1; j <= nrhs; j = j + 1) {
-            Cspmv(uplo, n, one, a, &x[(j - 1) * ldx], 1, zero, &b[(j - 1) * ldb], 1);
+            Cspmv(uplo.elems(), n, one, a, &x[(j - 1) * ldx], 1, zero, &b[(j - 1) * ldb], 1);
         }
         //
-    } else if (Mlsamen(2, c2, "TR")) {
+    } else if (Mlsamen(2, c2.elems, "TR")) {
         //
         // Triangular matrix.  Note that for triangular matrices,
         // KU = 1 => non-unit triangular
@@ -185,9 +181,9 @@ void Clarhs(const char *path, const char *xtype, const char *uplo, const char *t
         } else {
             diag = 'N';
         }
-        Ctrmm("Left", uplo, trans, &diag, n, nrhs, one, a, lda, b, ldb);
+        Ctrmm("Left", uplo.elems(), trans.elems(), diag.elems, n, nrhs, one, a, lda, b, ldb);
         //
-    } else if (Mlsamen(2, c2, "TP")) {
+    } else if (Mlsamen(2, c2.elems, "TP")) {
         //
         // Triangular matrix, packed storage
         //
@@ -198,10 +194,10 @@ void Clarhs(const char *path, const char *xtype, const char *uplo, const char *t
             diag = 'N';
         }
         for (j = 1; j <= nrhs; j = j + 1) {
-            Ctpmv(uplo, trans, &diag, n, a, &b[(j - 1) * ldb], 1);
+            Ctpmv(uplo.elems(), trans.elems(), diag.elems, n, a, &b[(j - 1) * ldb], 1);
         }
         //
-    } else if (Mlsamen(2, c2, "TB")) {
+    } else if (Mlsamen(2, c2.elems, "TB")) {
         //
         // Triangular matrix, banded storage
         //
@@ -212,7 +208,7 @@ void Clarhs(const char *path, const char *xtype, const char *uplo, const char *t
             diag = 'N';
         }
         for (j = 1; j <= nrhs; j = j + 1) {
-            Ctbmv(uplo, trans, &diag, n, kl, a, lda, &b[(j - 1) * ldb], 1);
+            Ctbmv(uplo.elems(), trans.elems(), diag.elems, n, kl, a, lda, &b[(j - 1) * ldb], 1);
         }
         //
     } else {

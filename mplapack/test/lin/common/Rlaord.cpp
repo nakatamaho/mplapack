@@ -43,7 +43,7 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-void Rlaord(const char *job, INTEGER const n, REAL *x, INTEGER const incx) {
+void Rlaord(fem::str_cref job, INTEGER const n, REAL *x, INTEGER const incx) {
     INTEGER inc = 0;
     INTEGER i = 0;
     INTEGER ix = 0;
@@ -51,7 +51,7 @@ void Rlaord(const char *job, INTEGER const n, REAL *x, INTEGER const incx) {
     REAL temp = 0.0;
     //
     inc = abs(incx);
-    if (Mlsame(job, "I")) {
+    if (Mlsame(job.elems(), "I")) {
         //
         // Sort in increasing order
         //
@@ -74,7 +74,7 @@ void Rlaord(const char *job, INTEGER const n, REAL *x, INTEGER const incx) {
         statement_20:;
         }
         //
-    } else if (Mlsame(job, "D")) {
+    } else if (Mlsame(job.elems(), "D")) {
         //
         // Sort in decreasing order
         //

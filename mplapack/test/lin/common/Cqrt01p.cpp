@@ -44,37 +44,8 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Cqrt01p(INTEGER const m, INTEGER const n, COMPLEX *a, COMPLEX *af, COMPLEX *q, COMPLEX *r, INTEGER const lda, COMPLEX *tau, COMPLEX *work, INTEGER const lwork, REAL *rwork, REAL *result) {
+    common cmn;
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Scalars in Common ..
-    //     ..
-    //     .. Common blocks ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    INTEGER ldaf = lda;
-    INTEGER ldq = lda;
-    INTEGER ldr = lda;
     INTEGER minmn = min(m, n);
     REAL eps = Rlamch("Epsilon");
     //
@@ -84,17 +55,19 @@ void Cqrt01p(INTEGER const m, INTEGER const n, COMPLEX *a, COMPLEX *af, COMPLEX 
     //
     // Factorize the matrix A in the array AF.
     //
+    srnamt = "ZGEQRFP";
     INTEGER info = 0;
     Cgeqrfp(m, n, af, lda, tau, work, lwork, info);
     //
     // Copy details of Q
     //
-    const COMPLEX rogue = COMPLEX(-1.0e+10, -1.0e+10);
+    const COMPLEX rogue = COMPLEX(-10000000000.0, -10000000000.0);
     Claset("Full", m, m, rogue, rogue, q, lda);
     Clacpy("Lower", m - 1, n, &af[(2 - 1)], lda, &q[(2 - 1)], lda);
     //
     // Generate the m-by-m matrix Q
     //
+    srnamt = "ZUNGQR";
     Cungqr(m, m, minmn, q, lda, tau, work, lwork, info);
     //
     // Copy R

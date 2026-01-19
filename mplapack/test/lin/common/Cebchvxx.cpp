@@ -43,14 +43,15 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-void Cebchvxx(REAL const thresh, const char *path) {
+void Cebchvxx(REAL const thresh, fem::str_cref path) {
+    common cmn;
     common_write write(cmn);
     INTEGER ldabcopy = (nmax - 1) + (nmax - 1) + 1;
     COMPLEX zdum = 0.0;
-    char fact = 'E';
-    char uplo = 'U';
-    char trans = 'N';
-    char equed = 'N';
+    fem::str<1> fact = 'E';
+    fem::str<1> uplo = 'U';
+    fem::str<1> trans = 'N';
+    fem::str<1> equed = 'N';
     REAL eps = Rlamch("Epsilon");
     INTEGER nfail = 0;
     INTEGER n_aux_tests = 0;
@@ -58,7 +59,7 @@ void Cebchvxx(REAL const thresh, const char *path) {
     INTEGER lda = nmax;
     INTEGER ldab = (nmax - 1) + (nmax - 1) + 1;
     INTEGER ldafb = 2 * (nmax - 1) + (nmax - 1) + 1;
-    char c2[2];
+    fem::str<2> c2 = path(2, 3);
     bool printed_guide = false;
     INTEGER n = 0;
     const INTEGER nparams = 2;
@@ -113,13 +114,13 @@ void Cebchvxx(REAL const thresh, const char *path) {
     const INTEGER cond_i = 3;
     REAL nwise_rcond = 0.0;
     REAL cwise_rcond = 0.0;
-    char nguar;
+    fem::str<1> nguar;
     const INTEGER ntests = 6;
     REAL tstrat[ntests];
-    char cguar;
+    fem::str<1> cguar;
     for (n = 1; n <= nmax; n = n + 1) {
-        params[0] = -1.0;
-        params[1] = -1.0;
+        params[1 - 1] = -1.0;
+        params[2 - 1] = -1.0;
         kl = n - 1;
         ku = n - 1;
         nrhs = n;
@@ -142,13 +143,13 @@ void Cebchvxx(REAL const thresh, const char *path) {
             }
         }
         Clacpy("ALL", kl + ku + 1, n, ab, ldab, abcopy, ldab);
-        if (Mlsamen(2, c2, "SY")) {
+        if (Mlsamen(2, c2.elems, "SY")) {
             Csysvxx(fact, uplo, n, nrhs, acopy, lda, af, lda, ipiv, equed, s, b, lda, x, lda, orcond, rpvgrw, berr, nerrbnd, errbnd_n, errbnd_c, nparams, params, work, rwork, info);
-        } else if (Mlsamen(2, c2, "PO")) {
+        } else if (Mlsamen(2, c2.elems, "PO")) {
             Cposvxx(fact, uplo, n, nrhs, acopy, lda, af, lda, equed, s, b, lda, x, lda, orcond, rpvgrw, berr, nerrbnd, errbnd_n, errbnd_c, nparams, params, work, rwork, info);
-        } else if (Mlsamen(2, c2, "HE")) {
+        } else if (Mlsamen(2, c2.elems, "HE")) {
             Chesvxx(fact, uplo, n, nrhs, acopy, lda, af, lda, ipiv, equed, s, b, lda, x, lda, orcond, rpvgrw, berr, nerrbnd, errbnd_n, errbnd_c, nparams, params, work, rwork, info);
-        } else if (Mlsamen(2, c2, "GB")) {
+        } else if (Mlsamen(2, c2.elems, "GB")) {
             Cgbsvxx(fact, trans, n, kl, ku, nrhs, abcopy, ldab, afb, ldafb, ipiv, equed, r, c, b, lda, x, lda, orcond, rpvgrw, berr, nerrbnd, errbnd_n, errbnd_c, nparams, params, work, rwork, info);
         } else {
             Cgesvxx(fact, trans, n, nrhs, acopy, lda, af, lda, ipiv, equed, r, c, b, lda, x, lda, orcond, rpvgrw, berr, nerrbnd, errbnd_n, errbnd_c, nparams, params, work, rwork, info);
@@ -170,7 +171,7 @@ void Cebchvxx(REAL const thresh, const char *path) {
         }
         rnorm = 0.0;
         rinorm = 0.0;
-        if (Mlsamen(2, c2, "PO") || Mlsamen(2, c2, "SY") || Mlsamen(2, c2, "HE")) {
+        if (Mlsamen(2, c2.elems, "PO") || Mlsamen(2, c2.elems, "SY") || Mlsamen(2, c2.elems, "HE")) {
             for (i = 1; i <= n; i = i + 1) {
                 sumr = 0.0;
                 sumri = 0.0;
@@ -181,7 +182,7 @@ void Cebchvxx(REAL const thresh, const char *path) {
                 rnorm = max(rnorm, sumr);
                 rinorm = max(rinorm, sumri);
             }
-        } else if (Mlsamen(2, c2, "GE") || Mlsamen(2, c2, "GB")) {
+        } else if (Mlsamen(2, c2.elems, "GE") || Mlsamen(2, c2.elems, "GB")) {
             for (i = 1; i <= n; i = i + 1) {
                 sumr = 0.0;
                 sumri = 0.0;
@@ -258,63 +259,63 @@ void Cebchvxx(REAL const thresh, const char *path) {
             if (ncond >= condthresh) {
                 nguar = "YES";
                 if (nwise_bnd > errthresh) {
-                    tstrat[0] = 1 / (2.0 * eps);
+                    tstrat[1 - 1] = 1 / (2.0 * eps);
                 } else {
                     if (nwise_bnd != 0.0) {
-                        tstrat[0] = nwise_err / nwise_bnd;
+                        tstrat[1 - 1] = nwise_err / nwise_bnd;
                     } else if (nwise_err != 0.0) {
-                        tstrat[0] = 1 / (16.0 * eps);
+                        tstrat[1 - 1] = 1 / (16.0 * eps);
                     } else {
-                        tstrat[0] = 0.0;
+                        tstrat[1 - 1] = 0.0;
                     }
-                    if (tstrat[0] > 1.0) {
-                        tstrat[0] = 1 / (4.0 * eps);
+                    if (tstrat[1 - 1] > 1.0) {
+                        tstrat[1 - 1] = 1 / (4.0 * eps);
                     }
                 }
             } else {
                 nguar = "NO";
                 if (nwise_bnd < 1.0) {
-                    tstrat[0] = 1 / (8.0 * eps);
+                    tstrat[1 - 1] = 1 / (8.0 * eps);
                 } else {
-                    tstrat[0] = 1.0;
+                    tstrat[1 - 1] = 1.0;
                 }
             }
             if (ccond >= condthresh) {
                 cguar = "YES";
                 if (cwise_bnd > errthresh) {
-                    tstrat[1] = 1 / (2.0 * eps);
+                    tstrat[2 - 1] = 1 / (2.0 * eps);
                 } else {
                     if (cwise_bnd != 0.0) {
-                        tstrat[1] = cwise_err / cwise_bnd;
+                        tstrat[2 - 1] = cwise_err / cwise_bnd;
                     } else if (cwise_err != 0.0) {
-                        tstrat[1] = 1 / (16.0 * eps);
+                        tstrat[2 - 1] = 1 / (16.0 * eps);
                     } else {
-                        tstrat[1] = 0.0;
+                        tstrat[2 - 1] = 0.0;
                     }
-                    if (tstrat[1] > 1.0) {
-                        tstrat[1] = 1 / (4.0 * eps);
+                    if (tstrat[2 - 1] > 1.0) {
+                        tstrat[2 - 1] = 1 / (4.0 * eps);
                     }
                 }
             } else {
                 cguar = "NO";
                 if (cwise_bnd < 1.0) {
-                    tstrat[1] = 1 / (8.0 * eps);
+                    tstrat[2 - 1] = 1 / (8.0 * eps);
                 } else {
-                    tstrat[1] = 1.0;
+                    tstrat[2 - 1] = 1.0;
                 }
             }
-            tstrat[2] = berr[k - 1] / eps;
-            tstrat[3] = rcond / orcond;
-            if (rcond >= condthresh && tstrat[3] < 1.0) {
-                tstrat[3] = 1.0 / tstrat[3];
+            tstrat[3 - 1] = berr[k - 1] / eps;
+            tstrat[4 - 1] = rcond / orcond;
+            if (rcond >= condthresh && tstrat[4 - 1] < 1.0) {
+                tstrat[4 - 1] = 1.0 / tstrat[4 - 1];
             }
-            tstrat[4] = ncond / nwise_rcond;
-            if (ncond >= condthresh && tstrat[4] < 1.0) {
-                tstrat[4] = 1.0 / tstrat[4];
+            tstrat[5 - 1] = ncond / nwise_rcond;
+            if (ncond >= condthresh && tstrat[5 - 1] < 1.0) {
+                tstrat[5 - 1] = 1.0 / tstrat[5 - 1];
             }
-            tstrat[5] = ccond / nwise_rcond;
-            if (ccond >= condthresh && tstrat[5] < 1.0) {
-                tstrat[5] = 1.0 / tstrat[5];
+            tstrat[6 - 1] = ccond / nwise_rcond;
+            if (ccond >= condthresh && tstrat[6 - 1] < 1.0) {
+                tstrat[6 - 1] = 1.0 / tstrat[6 - 1];
             }
             for (i = 1; i <= ntests; i = i + 1) {
                 if (tstrat[i - 1] > thresh) {
@@ -337,7 +338,7 @@ void Cebchvxx(REAL const thresh, const char *path) {
                     }
                     write(6, "(' Z',a2,'SVXX: N =',i2,', RHS = ',i2,', NWISE GUAR. = ',a,"
                              "', CWISE GUAR. = ',a,' test(',i1,') =',g12.5)"),
-                        c2, n, k, nguar, cguar, i, tstrat(i);
+                        c2, n, k, nguar, cguar, i, tstrat[i - 1];
                     nfail++;
                 }
             }

@@ -43,18 +43,19 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-void Alareq(const char *path, INTEGER const nmats, bool *dotype, INTEGER const ntypes, INTEGER const nin, INTEGER const nout) {
+void Alareq(fem::str_cref path, INTEGER const nmats, bool *dotype, INTEGER const ntypes, INTEGER const nin, INTEGER const nout) {
     common cmn;
     common_read read(cmn);
     common_write write(cmn);
+    static fem::str<10> intstr = "0123456789";
     INTEGER i = 0;
     bool firstt = false;
-    char line[80];
+    fem::str<80> line;
     INTEGER lenp = 0;
     INTEGER j = 0;
     INTEGER nreq[100];
     INTEGER i1 = 0;
-    char c1;
+    fem::str<1> c1;
     INTEGER k = 0;
     INTEGER ic = 0;
     INTEGER nt = 0;
@@ -69,9 +70,6 @@ void Alareq(const char *path, INTEGER const nmats, bool *dotype, INTEGER const n
             dotype[i - 1] = true;
         }
     } else {
-        printf("Not yet supported \n");
-        exit(-1);
-#ifdef NOTYET
         for (i = 1; i <= ntypes; i = i + 1) {
             dotype[i - 1] = false;
         }
@@ -82,10 +80,10 @@ void Alareq(const char *path, INTEGER const nmats, bool *dotype, INTEGER const n
         if (nmats > 0) {
             try {
                 read(nin, "(a80)"), line;
-            } catch (read_end const) {
+            } catch (fem::read_end const &) {
                 goto statement_90;
             }
-            lenp = len[line - 1];
+            lenp = fem::len(line);
             i = 0;
             for (j = 1; j <= nmats; j = j + 1) {
                 nreq[j - 1] = 0;
@@ -101,14 +99,14 @@ void Alareq(const char *path, INTEGER const nmats, bool *dotype, INTEGER const n
                         goto statement_80;
                     }
                 }
-                if (line[(i - 1) + (i - 1) * ldline] != " " && line[(i - 1) + (i - 1) * ldline] != ",") {
+                if (line(i, i) != " " && line(i, i) != ",") {
                     i1 = i;
-                    c1 = line[(i1 - 1) + (i1 - 1) * ldline];
+                    c1 = line(i1, i1);
                     //
                     // Check that a valid integer was read
                     //
                     for (k = 1; k <= 10; k = k + 1) {
-                        if (c1 == intstr[(k - 1) + (k - 1) * ldintstr]) {
+                        if (c1 == intstr(k, k)) {
                             ic = k - 1;
                             goto statement_50;
                         }
@@ -149,7 +147,6 @@ void Alareq(const char *path, INTEGER const nmats, bool *dotype, INTEGER const n
             }
         }
     statement_80:;
-#endif
     }
     return;
 //
@@ -159,6 +156,7 @@ statement_90:
                 "' right number of types for each path',/)"),
         path;
     write(nout, star);
+    FEM_STOP(0);
     //
     // End of Alareq
     //

@@ -43,16 +43,12 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-#include <mplapack_debug.h>
-
 void Cchkpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, INTEGER *nbval, INTEGER const nns, INTEGER *nsval, REAL const thresh, bool const tsterr, INTEGER const /* nmax */, COMPLEX *a, COMPLEX *afac, COMPLEX *ainv, COMPLEX *b, COMPLEX *x, COMPLEX *xact, COMPLEX *work, REAL *rwork, INTEGER const nout) {
     common cmn;
     common_write write(cmn);
-    //
-    INTEGER iseedy[] = {1988, 1989, 1990, 1991};
-    char uplos[] = {'U', 'L'};
-    char path[4] = {};
-    char buf[1024];
+    static INTEGER iseedy[4] = {1988, 1989, 1990, 1991};
+    static fem::str<1> uplos[2] = {"U", "L"};
+    fem::str<3> path;
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
@@ -61,21 +57,21 @@ void Cchkpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
     INTEGER in = 0;
     INTEGER n = 0;
     INTEGER lda = 0;
-    char xtype[1];
+    fem::str<1> xtype;
     const INTEGER ntypes = 9;
     INTEGER nimat = 0;
     INTEGER izero = 0;
     INTEGER imat = 0;
     bool zerot = false;
     INTEGER iuplo = 0;
-    char uplo[1];
-    char type[1];
+    fem::str<1> uplo;
+    fem::str<1> type;
     INTEGER kl = 0;
     INTEGER ku = 0;
     REAL anorm = 0.0;
     INTEGER mode = 0;
     REAL cndnum = 0.0;
-    char dist[1];
+    fem::str<1> dist;
     INTEGER info = 0;
     INTEGER ioff = 0;
     const COMPLEX czero = COMPLEX(0.0, 0.0);
@@ -89,11 +85,10 @@ void Cchkpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
     INTEGER nrhs = 0;
     REAL rcond = 0.0;
     //
-    //     Initialize constants and the random number seed.
+    // Initialize constants and the random number seed.
     //
-    path[0] = 'C';
-    path[1] = 'P';
-    path[2] = 'O';
+    path(1, 1) = "Zomplex precision";
+    path(2, 3) = "PO";
     nrun = 0;
     nfail = 0;
     nerrs = 0;
@@ -113,7 +108,7 @@ void Cchkpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
     for (in = 1; in <= nn; in = in + 1) {
         n = nval[in - 1];
         lda = max(n, (INTEGER)1);
-        xtype[0] = 'N';
+        xtype = 'N';
         nimat = ntypes;
         if (n <= 0) {
             nimat = 1;
@@ -138,19 +133,20 @@ void Cchkpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
             // Do first for UPLO = 'U', then for UPLO = 'L'
             //
             for (iuplo = 1; iuplo <= 2; iuplo = iuplo + 1) {
-                uplo[0] = uplos[iuplo - 1];
+                uplo = uplos[iuplo - 1];
                 //
-                //              Set up parameters with Clatb4 and generate a test matrix
-                //              with Clatms.
+                // Set up parameters with Clatb4 and generate a test matrix
+                // with Clatms.
                 //
                 Clatb4(path, imat, n, n, type, kl, ku, anorm, mode, cndnum, dist);
                 //
+                srnamt = "ZLATMS";
                 Clatms(n, n, dist, iseed, type, rwork, mode, cndnum, anorm, kl, ku, uplo, a, lda, work, info);
                 //
-                //              Check error code from Clatms.
+                // Check error code from Clatms.
                 //
                 if (info != 0) {
-                    Alaerh(path, "Clatms", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                    Alaerh(path, "ZLATMS", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                     goto statement_100;
                 }
                 //
@@ -203,15 +199,16 @@ void Cchkpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                     nb = nbval[inb - 1];
                     xlaenv(1, nb);
                     //
-                    //                 Compute the L*L' or U'*U factorization of the matrix.
+                    // Compute the L*L' or U'*U factorization of the matrix.
                     //
-                    Clacpy(uplo, n, n, a, lda, afac, lda);
-                    Cpotrf(uplo, n, afac, lda, info);
+                    Clacpy(uplo.elems, n, n, a, lda, afac, lda);
+                    srnamt = "ZPOTRF";
+                    Cpotrf(uplo.elems, n, afac, lda, info);
                     //
-                    //                 Check error code from Cpotrf.
+                    // Check error code from Cpotrf.
                     //
                     if (info != izero) {
-                        Alaerh(path, "Cpotrf", info, izero, uplo, n, n, -1, -1, nb, imat, nfail, nerrs, nout);
+                        Alaerh(path, "ZPOTRF", info, izero, uplo, n, n, -1, -1, nb, imat, nfail, nerrs, nout);
                         goto statement_90;
                     }
                     //
@@ -221,22 +218,23 @@ void Cchkpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                         goto statement_90;
                     }
                     //
-                    //+    TEST 1
-                    //                 Reconstruct matrix from factors and compute residual.
+                    // +    TEST 1
+                    // Reconstruct matrix from factors and compute residual.
                     //
-                    Clacpy(uplo, n, n, afac, lda, ainv, lda);
+                    Clacpy(uplo.elems, n, n, afac, lda, ainv, lda);
                     Cpot01(uplo, n, a, lda, ainv, lda, rwork, result[1 - 1]);
                     //
-                    //+    TEST 2
-                    //                 Form the inverse and compute the residual.
+                    // +    TEST 2
+                    // Form the inverse and compute the residual.
                     //
-                    Clacpy(uplo, n, n, afac, lda, ainv, lda);
-                    Cpotri(uplo, n, ainv, lda, info);
+                    Clacpy(uplo.elems, n, n, afac, lda, ainv, lda);
+                    srnamt = "ZPOTRI";
+                    Cpotri(uplo.elems, n, ainv, lda, info);
                     //
-                    //                 Check error code from Cpotri.
+                    // Check error code from Cpotri.
                     //
                     if (info != 0) {
-                        Alaerh(path, "Cpotri", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                        Alaerh(path, "ZPOTRI", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                     }
                     //
                     Cpot03(uplo, n, a, lda, ainv, lda, work, lda, rwork, rcondc, result[2 - 1]);
@@ -249,10 +247,9 @@ void Cchkpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                             if (nfail == 0 && nerrs == 0) {
                                 Alahd(nout, path);
                             }
-                            sprintnum_short(buf, result[k - 1]);
                             write(nout, "(' UPLO = ''',a1,''', N =',i5,', NB =',i4,', type ',i2,"
-                                        "', test ',i2,', ratio =',a)"),
-                                uplo, n, nb, imat, k, buf;
+                                        "', test ',i2,', ratio =',g12.5)"),
+                                uplo, n, nb, imat, k, result[k - 1];
                             nfail++;
                         }
                     }
@@ -268,37 +265,40 @@ void Cchkpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                     for (irhs = 1; irhs <= nns; irhs = irhs + 1) {
                         nrhs = nsval[irhs - 1];
                         //
-                        //+    TEST 3
-                        //                 Solve and compute residual for A * X = B .
+                        // +    TEST 3
+                        // Solve and compute residual for A * X = B .
                         //
+                        srnamt = "ZLARHS";
                         Clarhs(path, xtype, uplo, " ", n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
                         Clacpy("Full", n, nrhs, b, lda, x, lda);
                         //
-                        Cpotrs(uplo, n, nrhs, afac, lda, x, lda, info);
+                        srnamt = "ZPOTRS";
+                        Cpotrs(uplo.elems, n, nrhs, afac, lda, x, lda, info);
                         //
-                        //                 Check error code from Cpotrs.
+                        // Check error code from Cpotrs.
                         //
                         if (info != 0) {
-                            Alaerh(path, "Cpotrs", info, 0, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                            Alaerh(path, "ZPOTRS", info, 0, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                         }
                         //
                         Clacpy("Full", n, nrhs, b, lda, work, lda);
                         Cpot02(uplo, n, nrhs, a, lda, x, lda, work, lda, rwork, result[3 - 1]);
                         //
-                        //+    TEST 4
-                        //                 Check solution from generated exact solution.
+                        // +    TEST 4
+                        // Check solution from generated exact solution.
                         //
                         Cget04(n, nrhs, x, lda, xact, lda, rcondc, result[4 - 1]);
                         //
-                        //+    TESTS 5, 6, and 7
-                        //                 Use iterative refinement to improve the solution.
+                        // +    TESTS 5, 6, and 7
+                        // Use iterative refinement to improve the solution.
                         //
-                        Cporfs(uplo, n, nrhs, a, lda, afac, lda, b, lda, x, lda, rwork, &rwork[(nrhs + 1) - 1], work, &rwork[(2 * nrhs + 1) - 1], info);
+                        srnamt = "ZPORFS";
+                        Cporfs(uplo.elems, n, nrhs, a, lda, afac, lda, b, lda, x, lda, rwork, &rwork[(nrhs + 1) - 1], work, &rwork[(2 * nrhs + 1) - 1], info);
                         //
-                        //                 Check error code from Cporfs.
+                        // Check error code from Cporfs.
                         //
                         if (info != 0) {
-                            Alaerh(path, "Cporfs", info, 0, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                            Alaerh(path, "ZPORFS", info, 0, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                         }
                         //
                         Cget04(n, nrhs, x, lda, xact, lda, rcondc, result[5 - 1]);
@@ -312,26 +312,26 @@ void Cchkpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                                 if (nfail == 0 && nerrs == 0) {
                                     Alahd(nout, path);
                                 }
-                                sprintnum_short(buf, result[k - 1]);
                                 write(nout, "(' UPLO = ''',a1,''', N =',i5,', NRHS=',i3,', type ',i2,"
-                                            "', test(',i2,') =',a)"),
-                                    uplo, n, nrhs, imat, k, buf;
+                                            "', test(',i2,') =',g12.5)"),
+                                    uplo, n, nrhs, imat, k, result[k - 1];
                                 nfail++;
                             }
                         }
                         nrun += 5;
                     }
                     //
-                    //+    TEST 8
-                    //                 Get an estimate of RCOND = 1/CNDNUM.
+                    // +    TEST 8
+                    // Get an estimate of RCOND = 1/CNDNUM.
                     //
-                    anorm = Clanhe("1", uplo, n, a, lda, rwork);
-                    Cpocon(uplo, n, afac, lda, anorm, rcond, work, rwork, info);
+                    anorm = Clanhe("1", uplo.elems, n, a, lda, rwork);
+                    srnamt = "ZPOCON";
+                    Cpocon(uplo.elems, n, afac, lda, anorm, rcond, work, rwork, info);
                     //
-                    //                 Check error code from Cpocon.
+                    // Check error code from Cpocon.
                     //
                     if (info != 0) {
-                        Alaerh(path, "Cpocon", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                        Alaerh(path, "ZPOCON", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                     }
                     //
                     result[8 - 1] = Rget06(rcond, rcondc);
@@ -342,10 +342,9 @@ void Cchkpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                         if (nfail == 0 && nerrs == 0) {
                             Alahd(nout, path);
                         }
-                        sprintnum_short(buf, result[8 - 1]);
                         write(nout, "(' UPLO = ''',a1,''', N =',i5,',',10x,' type ',i2,', test(',i2,"
-                                    "') =',a)"),
-                            uplo, n, imat, 8, buf;
+                                    "') =',g12.5)"),
+                            uplo, n, imat, 8, result[8 - 1];
                         nfail++;
                     }
                     nrun++;

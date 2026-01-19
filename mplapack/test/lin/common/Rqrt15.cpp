@@ -52,13 +52,13 @@ void Rqrt15(INTEGER const scale, INTEGER const rksel, INTEGER const m, INTEGER c
     INTEGER j = 0;
     const REAL zero = 0.0;
     REAL temp = 0.0;
-    const REAL svmin = 0.1e0;
+    const REAL svmin = 0.1;
     const REAL two = 2.0;
     INTEGER info = 0;
     REAL dummy[1];
     //
     mn = min(m, n);
-    if (lwork < max({m + mn, mn * nrhs, 2 * n + m})) {
+    if (lwork < max(m + mn, mn * nrhs, 2 * n + m)) {
         Mxerbla("Rqrt15", 16);
         return;
     }

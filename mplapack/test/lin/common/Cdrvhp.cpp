@@ -42,18 +42,13 @@ using fem::common;
 
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-#include <mplapack_debug.h>
 
 void Cdrvhp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, REAL const thresh, bool const tsterr, INTEGER const /* nmax */, COMPLEX *a, COMPLEX *afac, COMPLEX *ainv, COMPLEX *b, COMPLEX *x, COMPLEX *xact, COMPLEX *work, REAL *rwork, INTEGER *iwork, INTEGER const nout) {
     common cmn;
     common_write write(cmn);
-    //
-    const INTEGER nfact = 2;
-    char uplos[] = {'U', 'L'};
-    char facts[] = {'F', 'N'};
-    INTEGER iseedy[] = {1988, 1989, 1990, 1991};
-    char path[4] = {};
-    char buf[1024];
+    static INTEGER iseedy[4] = {1988, 1989, 1990, 1991};
+    static fem::str<1> facts[2] = {"F", "N"};
+    fem::str<3> path;
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
@@ -65,21 +60,21 @@ void Cdrvhp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     INTEGER n = 0;
     INTEGER lda = 0;
     INTEGER npp = 0;
-    char xtype[1];
+    fem::str<1> xtype;
     const INTEGER ntypes = 10;
     INTEGER nimat = 0;
     INTEGER imat = 0;
     bool zerot = false;
     INTEGER iuplo = 0;
-    char uplo[1];
-    char packit[1];
-    char type[1];
+    fem::str<1> uplo;
+    fem::str<1> packit;
+    fem::str<1> type;
     INTEGER kl = 0;
     INTEGER ku = 0;
     REAL anorm = 0.0;
     INTEGER mode = 0;
     REAL cndnum = 0.0;
-    char dist[1];
+    fem::str<1> dist;
     INTEGER info = 0;
     INTEGER izero = 0;
     INTEGER ioff = 0;
@@ -88,7 +83,8 @@ void Cdrvhp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     INTEGER i2 = 0;
     INTEGER i1 = 0;
     INTEGER ifact = 0;
-    char fact[1];
+    const INTEGER nfact = 2;
+    fem::str<1> fact;
     REAL rcondc = 0.0;
     REAL ainvnm = 0.0;
     const REAL one = 1.0;
@@ -98,13 +94,11 @@ void Cdrvhp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     INTEGER nt = 0;
     REAL rcond = 0.0;
     INTEGER k1 = 0;
-    char fact_uplo[3];
     //
-    //     Initialize constants and the random number seed.
+    // Initialize constants and the random number seed.
     //
-    path[0] = 'C';
-    path[1] = 'H';
-    path[2] = 'P';
+    path(1, 1) = "Z";
+    path(2, 3) = "HP";
     nrun = 0;
     nfail = 0;
     nerrs = 0;
@@ -132,7 +126,7 @@ void Cdrvhp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
         n = nval[in - 1];
         lda = max(n, (INTEGER)1);
         npp = n * (n + 1) / 2;
-        xtype[0] = 'N';
+        xtype = 'N';
         nimat = ntypes;
         if (n <= 0) {
             nimat = 1;
@@ -157,24 +151,25 @@ void Cdrvhp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
             //
             for (iuplo = 1; iuplo <= 2; iuplo = iuplo + 1) {
                 if (iuplo == 1) {
-                    uplo[0] = 'U';
-                    packit[0] = 'C';
+                    uplo = 'U';
+                    packit = 'C';
                 } else {
-                    uplo[0] = 'L';
-                    packit[0] = 'R';
+                    uplo = 'L';
+                    packit = 'R';
                 }
                 //
-                //              Set up parameters with Clatb4 and generate a test matrix
-                //              with Clatms.
+                // Set up parameters with Clatb4 and generate a test matrix
+                // with Clatms.
                 //
                 Clatb4(path, imat, n, n, type, kl, ku, anorm, mode, cndnum, dist);
                 //
+                srnamt = "ZLATMS";
                 Clatms(n, n, dist, iseed, type, rwork, mode, cndnum, anorm, kl, ku, packit, a, lda, work, info);
                 //
-                //              Check error code from Clatms.
+                // Check error code from Clatms.
                 //
                 if (info != 0) {
-                    Alaerh(path, "Clatms", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                    Alaerh(path, "ZLATMS", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                     goto statement_160;
                 }
                 //
@@ -257,7 +252,7 @@ void Cdrvhp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                     //
                     // Do first for FACT = 'F', then for other values.
                     //
-                    fact[0] = facts[ifact - 1];
+                    fact = facts[ifact - 1];
                     //
                     // Compute the condition number for comparison with
                     // the value returned by Chpsvx.
@@ -272,18 +267,18 @@ void Cdrvhp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         //
                         // Compute the 1-norm of A.
                         //
-                        anorm = Clanhp("1", uplo, n, a, rwork);
+                        anorm = Clanhp("1", uplo.elems, n, a, rwork);
                         //
                         // Factor the matrix A.
                         //
                         Ccopy(npp, a, 1, afac, 1);
-                        Chptrf(uplo, n, afac, iwork, info);
+                        Chptrf(uplo.elems, n, afac, iwork, info);
                         //
                         // Compute inv(A) and take its norm.
                         //
                         Ccopy(npp, afac, 1, ainv, 1);
-                        Chptri(uplo, n, ainv, iwork, work, info);
-                        ainvnm = Clanhp("1", uplo, n, ainv, rwork);
+                        Chptri(uplo.elems, n, ainv, iwork, work, info);
+                        ainvnm = Clanhp("1", uplo.elems, n, ainv, rwork);
                         //
                         // Compute the 1-norm condition number of A.
                         //
@@ -294,23 +289,25 @@ void Cdrvhp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         }
                     }
                     //
-                    //                 Form an exact solution and set the right hand side.
+                    // Form an exact solution and set the right hand side.
                     //
+                    srnamt = "ZLARHS";
                     Clarhs(path, xtype, uplo, " ", n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
-                    xtype[0] = 'C';
+                    xtype = 'C';
                     //
-                    //                 --- Test Chpsv  ---
+                    // --- Test Chpsv  ---
                     //
                     if (ifact == 2) {
                         Ccopy(npp, a, 1, afac, 1);
                         Clacpy("Full", n, nrhs, b, lda, x, lda);
                         //
-                        //                    Factor the matrix and solve the system using Chpsv.
+                        // Factor the matrix and solve the system using Chpsv.
                         //
-                        Chpsv(uplo, n, nrhs, afac, iwork, x, lda, info);
+                        srnamt = "ZHPSV ";
+                        Chpsv(uplo.elems, n, nrhs, afac, iwork, x, lda, info);
                         //
-                        //                    Adjust the expected value of INFO to account for
-                        //                    pivoting.
+                        // Adjust the expected value of INFO to account for
+                        // pivoting.
                         //
                         k = izero;
                         if (k > 0) {
@@ -329,7 +326,7 @@ void Cdrvhp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         // Check error code from Chpsv .
                         //
                         if (info != k) {
-                            Alaerh(path, "Chpsv ", info, k, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                            Alaerh(path, "ZHPSV ", info, k, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                             goto statement_120;
                         } else if (info != 0) {
                             goto statement_120;
@@ -358,10 +355,9 @@ void Cdrvhp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                 if (nfail == 0 && nerrs == 0) {
                                     Aladhd(nout, path);
                                 }
-                                sprintnum_short(buf, result[k - 1]);
                                 write(nout, "(1x,a,', UPLO=''',a1,''', N =',i5,', type ',i2,', test ',"
-                                            "i2,', ratio =',a)"),
-                                    "Chpsv ", uplo, n, imat, k, buf;
+                                            "i2,', ratio =',g12.5)"),
+                                    "ZHPSV ", uplo, n, imat, k, result[k - 1];
                                 nfail++;
                             }
                         }
@@ -376,13 +372,14 @@ void Cdrvhp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                     }
                     Claset("Full", n, nrhs, COMPLEX(zero), COMPLEX(zero), x, lda);
                     //
-                    //                 Solve the system and compute the condition number and
-                    //                 error bounds using Chpsvx.
+                    // Solve the system and compute the condition number and
+                    // error bounds using Chpsvx.
                     //
-                    Chpsvx(fact, uplo, n, nrhs, a, afac, iwork, b, lda, x, lda, rcond, rwork, &rwork[(nrhs + 1) - 1], work, &rwork[(2 * nrhs + 1) - 1], info);
+                    srnamt = "ZHPSVX";
+                    Chpsvx(fact.elems, uplo.elems, n, nrhs, a, afac, iwork, b, lda, x, lda, rcond, rwork, &rwork[(nrhs + 1) - 1], work, &rwork[(2 * nrhs + 1) - 1], info);
                     //
-                    //                 Adjust the expected value of INFO to account for
-                    //                 pivoting.
+                    // Adjust the expected value of INFO to account for
+                    // pivoting.
                     //
                     k = izero;
                     if (k > 0) {
@@ -401,10 +398,7 @@ void Cdrvhp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                     // Check the error code from Chpsvx.
                     //
                     if (info != k) {
-                        fact_uplo[0] = fact[0];
-                        fact_uplo[1] = uplo[0];
-                        fact_uplo[2] = '\0';
-                        Alaerh(path, "Chpsvx", info, k, fact_uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                        Alaerh(path, "ZHPSVX", info, k, fact + uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                         goto statement_150;
                     }
                     //
@@ -449,10 +443,9 @@ void Cdrvhp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                             if (nfail == 0 && nerrs == 0) {
                                 Aladhd(nout, path);
                             }
-                            sprintnum_short(buf, result[k - 1]);
                             write(nout, "(1x,a,', FACT=''',a1,''', UPLO=''',a1,''', N =',i5,', type ',"
                                         "i2,', test ',i2,', ratio =',g12.5)"),
-                                "Chpsvx", fact, uplo, n, imat, k, buf;
+                                "ZHPSVX", fact, uplo, n, imat, k, result[k - 1];
                             nfail++;
                         }
                     }

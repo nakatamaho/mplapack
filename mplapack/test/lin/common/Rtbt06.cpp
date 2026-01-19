@@ -43,7 +43,7 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-void Rtbt06(REAL const rcond, REAL const rcondc, const char *uplo, const char *diag, INTEGER const n, INTEGER const kd, REAL *ab, INTEGER const ldab, REAL *work, REAL &rat) {
+void Rtbt06(REAL const rcond, REAL const rcondc, fem::str_cref uplo, fem::str_cref diag, INTEGER const n, INTEGER const kd, REAL *ab, INTEGER const ldab, REAL *work, REAL &rat) {
     //
     REAL eps = Rlamch("Epsilon");
     REAL rmax = max(rcond, rcondc);
@@ -84,9 +84,10 @@ void Rtbt06(REAL const rcond, REAL const rcondc, const char *uplo, const char *d
         //
         smlnum = Rlamch("Safe minimum");
         bignum = one / smlnum;
-        anorm = Rlantb("M", uplo, diag, n, kd, ab, ldab, work);
+        Rlabad(smlnum, bignum);
+        anorm = Rlantb("M", uplo.elems(), diag.elems(), n, kd, ab, ldab, work);
         //
-        rat = rmax * (min({bignum / max(one, anorm), one / eps}));
+        rat = rmax * (min(bignum / max(one, anorm), one / eps));
     }
     //
     // End of Rtbt06

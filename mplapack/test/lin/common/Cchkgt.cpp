@@ -43,15 +43,12 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-#include <mplapack_debug.h>
-
 void Cchkgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, INTEGER *nsval, REAL const thresh, bool const tsterr, COMPLEX *a, COMPLEX *af, COMPLEX *b, COMPLEX *x, COMPLEX *xact, COMPLEX *work, REAL *rwork, INTEGER *iwork, INTEGER const nout) {
     common cmn;
     common_write write(cmn);
-    INTEGER iseedy[] = {1988, 1989, 1990, 1991};
-    char transs[] = {'N', 'T', 'C'};
-    char path[4] = {};
-    char buf[1024];
+    static INTEGER iseedy[4] = {0, 0, 0, 1};
+    static fem::str<1> transs[3] = {"N", "T", "C"};
+    fem::str<3> path;
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
@@ -64,13 +61,13 @@ void Cchkgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
     const INTEGER ntypes = 12;
     INTEGER nimat = 0;
     INTEGER imat = 0;
-    char type[1];
+    fem::str<1> type;
     INTEGER kl = 0;
     INTEGER ku = 0;
     REAL anorm = 0.0;
     INTEGER mode = 0;
     REAL cond = 0.0;
-    char dist[1];
+    fem::str<1> dist;
     bool zerot = false;
     INTEGER koff = 0;
     INTEGER info = 0;
@@ -82,8 +79,8 @@ void Cchkgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
     const INTEGER ntests = 7;
     REAL result[ntests];
     INTEGER itran = 0;
-    char trans[1];
-    char norm[1];
+    fem::str<1> trans;
+    fem::str<1> norm;
     REAL ainvnm = 0.0;
     INTEGER j = 0;
     REAL rcondc = 0.0;
@@ -95,9 +92,8 @@ void Cchkgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
     INTEGER ix = 0;
     INTEGER k = 0;
     //
-    path[0] = 'C';
-    path[1] = 'G';
-    path[2] = 'T';
+    path(1, 1) = "Zomplex precision";
+    path(2, 3) = "GT";
     nrun = 0;
     nfail = 0;
     nerrs = 0;
@@ -141,14 +137,14 @@ void Cchkgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                 //
                 // Types 1-6:  generate matrices of known condition number.
                 //
-                koff = max({(INTEGER)2 - ku, 3 - max((INTEGER)1, n)});
-                strncpy(srnamt, "Clatms", srnamt_len);
+                koff = max(2 - ku, 3 - max((INTEGER)1, n));
+                srnamt = "ZLATMS";
                 Clatms(n, n, dist, iseed, type, rwork, mode, cond, anorm, kl, ku, "Z", &af[koff - 1], 3, work, info);
                 //
                 // Check the error code from Clatms.
                 //
                 if (info != 0) {
-                    Alaerh(path, "Clatms", info, 0, " ", n, n, kl, ku, -1, imat, nfail, nerrs, nout);
+                    Alaerh(path, "ZLATMS", info, 0, " ", n, n, kl, ku, -1, imat, nfail, nerrs, nout);
                     goto statement_100;
                 }
                 izero = 0;
@@ -227,13 +223,13 @@ void Cchkgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
             // norm(L*U - A) / (n * norm(A) * EPS )
             //
             Ccopy(n + 2 * m, a, 1, af, 1);
-            strncpy(srnamt, "Cgttrf", srnamt_len);
+            srnamt = "ZGTTRF";
             Cgttrf(n, af, &af[(m + 1) - 1], &af[(n + m + 1) - 1], &af[(n + 2 * m + 1) - 1], iwork, info);
             //
             // Check error code from Cgttrf.
             //
             if (info != izero) {
-                Alaerh(path, "Cgttrf", info, izero, " ", n, n, 1, 1, -1, imat, nfail, nerrs, nout);
+                Alaerh(path, "ZGTTRF", info, izero, " ", n, n, 1, 1, -1, imat, nfail, nerrs, nout);
             }
             trfcon = info != 0;
             //
@@ -245,20 +241,19 @@ void Cchkgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                 if (nfail == 0 && nerrs == 0) {
                     Alahd(nout, path);
                 }
-                sprintnum_short(buf, result[1 - 1]);
-                write(nout, "(12x,'N =',i5,',',10x,' type ',i2,', test(',i2,') = ',a)"), n, imat, 1, buf;
+                write(nout, "(12x,'N =',i5,',',10x,' type ',i2,', test(',i2,') = ',g12.5)"), n, imat, 1, result[1 - 1];
                 nfail++;
             }
             nrun++;
             //
             for (itran = 1; itran <= 2; itran = itran + 1) {
-                trans[0] = transs[itran - 1];
+                trans = transs[itran - 1];
                 if (itran == 1) {
-                    norm[0] = 'O';
+                    norm = 'O';
                 } else {
-                    norm[0] = 'I';
+                    norm = 'I';
                 }
-                anorm = Clangt(norm, n, a, &a[(m + 1) - 1], &a[(n + m + 1) - 1]);
+                anorm = Clangt(norm.elems, n, a, &a[(m + 1) - 1], &a[(n + m + 1) - 1]);
                 //
                 if (!trfcon) {
                     //
@@ -271,8 +266,8 @@ void Cchkgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                             x[j - 1] = zero;
                         }
                         x[i - 1] = one;
-                        Cgttrs(trans, n, 1, af, &af[(m + 1) - 1], &af[(n + m + 1) - 1], &af[(n + 2 * m + 1) - 1], iwork, x, lda, info);
-                        ainvnm = max({ainvnm, RCasum(n, x, 1)});
+                        Cgttrs(trans.elems, n, 1, af, &af[(m + 1) - 1], &af[(n + m + 1) - 1], &af[(n + 2 * m + 1) - 1], iwork, x, lda, info);
+                        ainvnm = max(ainvnm, RCasum(n, x, 1));
                     }
                     //
                     // Compute RCONDC = 1 / (norm(A) * norm(inv(A))
@@ -295,13 +290,13 @@ void Cchkgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                 // Estimate the reciprocal of the condition number of the
                 // matrix.
                 //
-                strncpy(srnamt, "Cgtcon", srnamt_len);
-                Cgtcon(norm, n, af, &af[(m + 1) - 1], &af[(n + m + 1) - 1], &af[(n + 2 * m + 1) - 1], iwork, anorm, rcond, work, info);
+                srnamt = "ZGTCON";
+                Cgtcon(norm.elems, n, af, &af[(m + 1) - 1], &af[(n + m + 1) - 1], &af[(n + 2 * m + 1) - 1], iwork, anorm, rcond, work, info);
                 //
                 // Check error code from Cgtcon.
                 //
                 if (info != 0) {
-                    Alaerh(path, "Cgtcon", info, 0, norm, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                    Alaerh(path, "ZGTCON", info, 0, norm, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                 }
                 //
                 result[7 - 1] = Rget06(rcond, rcondc);
@@ -312,10 +307,9 @@ void Cchkgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                     if (nfail == 0 && nerrs == 0) {
                         Alahd(nout, path);
                     }
-                    sprintnum_short(buf, result[7 - 1]);
                     write(nout, "(' NORM =''',a1,''', N =',i5,',',10x,' type ',i2,', test(',i2,"
-                                "') = ',a)"),
-                        norm, n, imat, 7, buf;
+                                "') = ',g12.5)"),
+                        norm, n, imat, 7, result[7 - 1];
                     nfail++;
                 }
                 nrun++;
@@ -339,7 +333,7 @@ void Cchkgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                 }
                 //
                 for (itran = 1; itran <= 3; itran = itran + 1) {
-                    trans[0] = transs[itran - 1];
+                    trans = transs[itran - 1];
                     if (itran == 1) {
                         rcondc = rcondo;
                     } else {
@@ -348,19 +342,19 @@ void Cchkgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                     //
                     // Set the right hand side.
                     //
-                    Clagtm(trans, n, nrhs, one, a, &a[(m + 1) - 1], &a[(n + m + 1) - 1], xact, lda, zero, b, lda);
+                    Clagtm(trans.elems, n, nrhs, one, a, &a[(m + 1) - 1], &a[(n + m + 1) - 1], xact, lda, zero, b, lda);
                     //
                     // +    TEST 2
                     // Solve op(A) * X = B and compute the residual.
                     //
                     Clacpy("Full", n, nrhs, b, lda, x, lda);
-                    strncpy(srnamt, "Cgttrs", srnamt_len);
-                    Cgttrs(trans, n, nrhs, af, &af[(m + 1) - 1], &af[(n + m + 1) - 1], &af[(n + 2 * m + 1) - 1], iwork, x, lda, info);
+                    srnamt = "ZGTTRS";
+                    Cgttrs(trans.elems, n, nrhs, af, &af[(m + 1) - 1], &af[(n + m + 1) - 1], &af[(n + 2 * m + 1) - 1], iwork, x, lda, info);
                     //
                     // Check error code from Cgttrs.
                     //
                     if (info != 0) {
-                        Alaerh(path, "Cgttrs", info, 0, trans, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                        Alaerh(path, "ZGTTRS", info, 0, trans, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                     }
                     //
                     Clacpy("Full", n, nrhs, b, lda, work, lda);
@@ -374,13 +368,13 @@ void Cchkgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                     // +    TESTS 4, 5, and 6
                     // Use iterative refinement to improve the solution.
                     //
-                    strncpy(srnamt, "Cgtrfs", srnamt_len);
-                    Cgtrfs(trans, n, nrhs, a, &a[(m + 1) - 1], &a[(n + m + 1) - 1], af, &af[(m + 1) - 1], &af[(n + m + 1) - 1], &af[(n + 2 * m + 1) - 1], iwork, b, lda, x, lda, rwork, &rwork[(nrhs + 1) - 1], work, &rwork[(2 * nrhs + 1) - 1], info);
+                    srnamt = "ZGTRFS";
+                    Cgtrfs(trans.elems, n, nrhs, a, &a[(m + 1) - 1], &a[(n + m + 1) - 1], af, &af[(m + 1) - 1], &af[(n + m + 1) - 1], &af[(n + 2 * m + 1) - 1], iwork, b, lda, x, lda, rwork, &rwork[(nrhs + 1) - 1], work, &rwork[(2 * nrhs + 1) - 1], info);
                     //
                     // Check error code from Cgtrfs.
                     //
                     if (info != 0) {
-                        Alaerh(path, "Cgtrfs", info, 0, trans, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                        Alaerh(path, "ZGTRFS", info, 0, trans, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                     }
                     //
                     Cget04(n, nrhs, x, lda, xact, lda, rcondc, result[4 - 1]);
@@ -394,10 +388,9 @@ void Cchkgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                             if (nfail == 0 && nerrs == 0) {
                                 Alahd(nout, path);
                             }
-                            sprintnum_short(buf, result[k - 1]);
                             write(nout, "(' TRANS=''',a1,''', N =',i5,', NRHS=',i3,', type ',i2,"
-                                        "', test(',i2,') = ',a)"),
-                                trans, n, nrhs, imat, k, buf;
+                                        "', test(',i2,') = ',g12.5)"),
+                                trans, n, nrhs, imat, k, result[k - 1];
                             nfail++;
                         }
                     }

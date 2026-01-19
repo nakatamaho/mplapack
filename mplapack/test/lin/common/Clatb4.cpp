@@ -43,29 +43,39 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-void Clatb4(const char *path, INTEGER const imat, INTEGER const m, INTEGER const n, char *type, INTEGER &kl, INTEGER &ku, REAL &anorm, INTEGER &mode, REAL &cndnum, char *dist) {
-    REAL badc1;
-    REAL badc2;
-    REAL eps;
-    REAL large;
-    REAL small;
+void Clatb4(fem::str_cref path, INTEGER const imat, INTEGER const m, INTEGER const n, fem::str_ref type, INTEGER &kl, INTEGER &ku, REAL &anorm, INTEGER &mode, REAL &cndnum, fem::str_ref dist) {
+    common cmn;
+    static bool first = true;
+    double &badc1 = sve.badc1;
+    double &badc2 = sve.badc2;
+    double &eps = sve.eps;
+    double &large = sve.large;
+    double &small = sve.small;
     //
-    const REAL tenth = 0.1e+0;
+    // Set some constants for use in the subroutine.
+    //
+    const REAL tenth = 0.1;
     const REAL one = 1.0;
-    const REAL shrink = 0.025e0;
-    eps = Rlamch("Precision");
-    badc2 = tenth / eps;
-    badc1 = sqrt(badc2);
-    small = Rlamch("Safe minimum");
-    large = one / small;
-    small = shrink * (small / eps);
-    large = one / small;
+    const REAL shrink = 0.25;
+    if (first) {
+        first = false;
+        eps = Rlamch("Precision");
+        badc2 = tenth / eps;
+        badc1 = sqrt(badc2);
+        small = Rlamch("Safe minimum");
+        large = one / small;
+        //
+        // If it looks like we're on a Cray, take the square root of
+        // SMALL and LARGE to avoid overflow and underflow problems.
+        //
+        Rlabad(small, large);
+        small = shrink * (small / eps);
+        large = one / small;
+    }
     //
-    char c2[2];
-    c2[0] = path[1];
-    c2[1] = path[2];
+    fem::str<2> c2 = path(2, 3);
     //
-    //     Set some parameters we don't plan to change.
+    // Set some parameters we don't plan to change.
     //
     *dist = 'S';
     mode = 3;
@@ -73,9 +83,9 @@ void Clatb4(const char *path, INTEGER const imat, INTEGER const m, INTEGER const
     // xQR, xLQ, xQL, xRQ:  Set parameters to generate a general
     // M x N matrix.
     //
-    const REAL two = 2.0e+0;
+    const REAL two = 2.0;
     INTEGER mat = 0;
-    if (Mlsamen(2, c2, "QR") || Mlsamen(2, c2, "LQ") || Mlsamen(2, c2, "QL") || Mlsamen(2, c2, "RQ")) {
+    if (Mlsamen(2, c2.elems, "QR") || Mlsamen(2, c2.elems, "LQ") || Mlsamen(2, c2.elems, "QL") || Mlsamen(2, c2.elems, "RQ")) {
         //
         // Set TYPE, the type of matrix to be generated.
         //
@@ -115,7 +125,7 @@ void Clatb4(const char *path, INTEGER const imat, INTEGER const m, INTEGER const
             anorm = one;
         }
         //
-    } else if (Mlsamen(2, c2, "GE")) {
+    } else if (Mlsamen(2, c2.elems, "GE")) {
         //
         // xGE:  Set parameters to generate a general M x N matrix.
         //
@@ -157,7 +167,7 @@ void Clatb4(const char *path, INTEGER const imat, INTEGER const m, INTEGER const
             anorm = one;
         }
         //
-    } else if (Mlsamen(2, c2, "GB")) {
+    } else if (Mlsamen(2, c2.elems, "GB")) {
         //
         // xGB:  Set parameters to generate a general banded matrix.
         //
@@ -183,7 +193,7 @@ void Clatb4(const char *path, INTEGER const imat, INTEGER const m, INTEGER const
             anorm = one;
         }
         //
-    } else if (Mlsamen(2, c2, "GT")) {
+    } else if (Mlsamen(2, c2.elems, "GT")) {
         //
         // xGT:  Set parameters to generate a general tridiagonal matrix.
         //
@@ -218,14 +228,14 @@ void Clatb4(const char *path, INTEGER const imat, INTEGER const m, INTEGER const
             anorm = one;
         }
         //
-    } else if (Mlsamen(2, c2, "PO") || Mlsamen(2, c2, "PP")) {
+    } else if (Mlsamen(2, c2.elems, "PO") || Mlsamen(2, c2.elems, "PP")) {
         //
         // xPO, xPP: Set parameters to generate a
         // symmetric or Hermitian positive definite matrix.
         //
         // Set TYPE, the type of matrix to be generated.
         //
-        *type = c2[0];
+        *type = c2(1, 1);
         //
         // Set the lower and upper bandwidths.
         //
@@ -254,14 +264,14 @@ void Clatb4(const char *path, INTEGER const imat, INTEGER const m, INTEGER const
             anorm = one;
         }
         //
-    } else if (Mlsamen(2, c2, "HE") || Mlsamen(2, c2, "HP") || Mlsamen(2, c2, "SY") || Mlsamen(2, c2, "SP")) {
+    } else if (Mlsamen(2, c2.elems, "HE") || Mlsamen(2, c2.elems, "HP") || Mlsamen(2, c2.elems, "SY") || Mlsamen(2, c2.elems, "SP")) {
         //
         // xHE, xHP, xSY, xSP: Set parameters to generate a
         // symmetric or Hermitian matrix.
         //
         // Set TYPE, the type of matrix to be generated.
         //
-        *type = c2[0];
+        *type = c2(1, 1);
         //
         // Set the lower and upper bandwidths.
         //
@@ -290,7 +300,7 @@ void Clatb4(const char *path, INTEGER const imat, INTEGER const m, INTEGER const
             anorm = one;
         }
         //
-    } else if (Mlsamen(2, c2, "PB")) {
+    } else if (Mlsamen(2, c2.elems, "PB")) {
         //
         // xPB:  Set parameters to generate a symmetric band matrix.
         //
@@ -316,7 +326,7 @@ void Clatb4(const char *path, INTEGER const imat, INTEGER const m, INTEGER const
             anorm = one;
         }
         //
-    } else if (Mlsamen(2, c2, "PT")) {
+    } else if (Mlsamen(2, c2.elems, "PT")) {
         //
         // xPT:  Set parameters to generate a symmetric positive definite
         // tridiagonal matrix.
@@ -347,7 +357,7 @@ void Clatb4(const char *path, INTEGER const imat, INTEGER const m, INTEGER const
             anorm = one;
         }
         //
-    } else if (Mlsamen(2, c2, "TR") || Mlsamen(2, c2, "TP")) {
+    } else if (Mlsamen(2, c2.elems, "TR") || Mlsamen(2, c2.elems, "TP")) {
         //
         // xTR, xTP:  Set parameters to generate a triangular matrix
         //
@@ -387,7 +397,7 @@ void Clatb4(const char *path, INTEGER const imat, INTEGER const m, INTEGER const
             anorm = one;
         }
         //
-    } else if (Mlsamen(2, c2, "TB")) {
+    } else if (Mlsamen(2, c2.elems, "TB")) {
         //
         // xTB:  Set parameters to generate a triangular band matrix.
         //

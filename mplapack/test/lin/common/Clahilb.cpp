@@ -43,39 +43,15 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-void Clahilb(INTEGER const n, INTEGER const nrhs, COMPLEX *a, INTEGER const lda, COMPLEX *x, INTEGER const ldx, COMPLEX *b, INTEGER const ldb, REAL *work, INTEGER &info, const char *path) {
+void Clahilb(INTEGER const n, INTEGER const nrhs, COMPLEX *a, INTEGER const lda, COMPLEX *x, INTEGER const ldx, COMPLEX *b, INTEGER const ldb, REAL *work, INTEGER &info, fem::str_cref path) {
+    common cmn;
+    static COMPLEX d1[8] = {COMPLEX(-1.0, 0.0), COMPLEX(0.0, 1.0), COMPLEX(-1.0, -1.0), COMPLEX(0.0, -1.0), COMPLEX(1.0, 0.0), COMPLEX(-1.0, 1.0), COMPLEX(1.0, 1.0), COMPLEX(1.0, -1.0)};
+    static COMPLEX d2[8] = {COMPLEX(-1.0, 0.0), COMPLEX(0.0, -1.0), COMPLEX(-1.0, 1.0), COMPLEX(0.0, 1.0), COMPLEX(1.0, 0.0), COMPLEX(-1.0, -1.0), COMPLEX(1.0, -1.0), COMPLEX(1.0, 1.0)};
+    static COMPLEX invd1[8] = {COMPLEX(-1.0, 0.0), COMPLEX(0.0, -1.0), COMPLEX(-0.5, 0.5), COMPLEX(0.0, 1.0), COMPLEX(1.0, 0.0), COMPLEX(-0.5, -0.5), COMPLEX(0.5, -0.5), COMPLEX(0.5, 0.5)};
+    static COMPLEX invd2[8] = {COMPLEX(-1.0, 0.0), COMPLEX(0.0, 1.0), COMPLEX(-0.5, -0.5), COMPLEX(0.0, -1.0), COMPLEX(1.0, 0.0), COMPLEX(-0.5, 0.5), COMPLEX(0.5, 0.5), COMPLEX(0.5, -0.5)};
+    fem::str<2> c2 = path(2, 3);
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Parameters ..
-    //                  exact.
-    //                  a small componentwise relative error.
-    //     ??? complex uses how many bits ???
-    //
-    //     d's are generated from random permutation of those eight elements.
-    //
-    //     ..
-    //     .. External Functions
-    //     ..
-    //     .. Executable Statements ..
-    COMPLEX d1[8] = {COMPLEX(-1.0, 0.0), COMPLEX(0.0, 1.0), COMPLEX(-1.0, -1.0), COMPLEX(0.0, -1.0), COMPLEX(1.0, 0.0), COMPLEX(-1.0, 1.0), COMPLEX(1.0, 1.0), COMPLEX(1.0, -1.0)};
-    COMPLEX d2[8] = {COMPLEX(-1.0, 0.0), COMPLEX(0.0, -1.0), COMPLEX(-1.0, 1.0), COMPLEX(0.0, 1.0), COMPLEX(1, 0.0), COMPLEX(-1.0, -1.0), COMPLEX(1, -1.0), COMPLEX(1, 1.0)};
-    COMPLEX invd1[8] = {COMPLEX(-1.0, 0.0), COMPLEX(0.0, -1.0), COMPLEX(-0.5, 0.5), COMPLEX(0.0, 1.0), COMPLEX(1, 0.0), COMPLEX(-0.5, -0.5), COMPLEX(0.5, -0.5), COMPLEX(0.5, 0.5)};
-    COMPLEX invd2[8] = {COMPLEX(-1.0, 0.0), COMPLEX(0.0, 1.0), COMPLEX(-0.5, -0.5), COMPLEX(0.0, -1.0), COMPLEX(1, 0.0), COMPLEX(-0.5, 0.5), COMPLEX(0.5, 0.5), COMPLEX(0.5, -0.5)};
-    char c2[2];
-    c2[0] = path[1];
-    c2[1] = path[2];
-    //
-    //     Test the input arguments
+    // Test the input arguments
     //
     info = 0;
     const INTEGER nmax_approx = 11;
@@ -123,7 +99,7 @@ void Clahilb(INTEGER const n, INTEGER const nrhs, COMPLEX *a, INTEGER const lda,
     // take D1_i = D2_i, else, D1_i = D2_i*
     INTEGER j = 0;
     const INTEGER size_d = 8;
-    if (Mlsamen(2, c2, "SY")) {
+    if (Mlsamen(2, c2.elems, "SY")) {
         for (j = 1; j <= n; j = j + 1) {
             for (i = 1; i <= n; i = i + 1) {
                 a[(i - 1) + (j - 1) * lda] = d1[(mod(j, size_d) + 1) - 1] * (castREAL(m) / (i + j - 1)) * d1[(mod(i, size_d) + 1) - 1];
@@ -152,7 +128,7 @@ void Clahilb(INTEGER const n, INTEGER const nrhs, COMPLEX *a, INTEGER const lda,
     //
     // If we are testing SY routines,
     // take D1_i = D2_i, else, D1_i = D2_i*
-    if (Mlsamen(2, c2, "SY")) {
+    if (Mlsamen(2, c2.elems, "SY")) {
         for (j = 1; j <= nrhs; j = j + 1) {
             for (i = 1; i <= n; i = i + 1) {
                 x[(i - 1) + (j - 1) * ldx] = invd1[(mod(j, size_d) + 1) - 1] * ((work[i - 1] * work[j - 1]) / (i + j - 1)) * invd1[(mod(i, size_d) + 1) - 1];

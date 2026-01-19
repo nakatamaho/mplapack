@@ -43,36 +43,13 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-struct common_infoc {
-    int infot;
-    int nout;
-    bool ok;
-    bool lerr;
-
-    common_infoc() : infot(0), nout(0), ok(false), lerr(false) {}
-};
-
-struct common_srnamc {
-    fem::str<32> srnamt;
-
-    common_srnamc() : srnamt(0) {}
-};
-
-struct common : fem::common, common_infoc, common_srnamc {
-    common(int argc, char const *argv[]) : fem::common(argc, argv) {}
-};
-
-void Cerrge(const char *path, INTEGER const nunit) {
+void Cerrge(fem::str_cref path, INTEGER const nunit) {
+    common cmn;
     common_write write(cmn);
-    int &infot = cmn.infot;
-    int &nout = cmn.nout;
-    bool &ok = cmn.ok;
-    bool &lerr = cmn.lerr;
-    fem::str<32> &srnamt = cmn.srnamt;
     //
     nout = nunit;
     write(nout, star);
-    char c2[2];
+    fem::str<2> c2 = path(2, 3);
     //
     // Set the variables to innocuous values.
     //
@@ -112,7 +89,7 @@ void Cerrge(const char *path, INTEGER const nunit) {
     REAL r[nmax];
     INTEGER n_err_bnds = 0;
     INTEGER nparams = 0;
-    char eq;
+    fem::str<1> eq;
     REAL rcond = 0.0;
     REAL berr = 0.0;
     COMPLEX err_bnds_n[nmax * 3];
@@ -120,7 +97,7 @@ void Cerrge(const char *path, INTEGER const nunit) {
     COMPLEX params = 0.0;
     REAL anrm = 0.0;
     REAL ccond = 0.0;
-    if (Mlsamen(2, c2, "GE")) {
+    if (Mlsamen(2, c2.elems, "GE")) {
         //
         // Cgetrf
         //
@@ -280,7 +257,7 @@ void Cerrge(const char *path, INTEGER const nunit) {
         // Test error exits of the routines that use the LU decomposition
         // of a general band matrix.
         //
-    } else if (Mlsamen(2, c2, "GB")) {
+    } else if (Mlsamen(2, c2.elems, "GB")) {
         //
         // Cgbtrf
         //

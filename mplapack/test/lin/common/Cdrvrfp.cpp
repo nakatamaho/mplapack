@@ -43,16 +43,12 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-#include <mplapack_debug.h>
-
-void Cdrvrfp(INTEGER const nout, INTEGER const nn, INTEGER *nval, INTEGER const nns, INTEGER *nsval, INTEGER const nnt, INTEGER *ntval, REAL const thresh, COMPLEX *a, COMPLEX *asav, COMPLEX *afac, COMPLEX *ainv, COMPLEX *b, COMPLEX *bsav, COMPLEX *xact, COMPLEX *x, COMPLEX *arf, COMPLEX *arfinv, COMPLEX *z_work_Clatms, COMPLEX *z_work_Cpot02, COMPLEX *z_work_Cpot03, REAL *d_work_Clatms, REAL *d_work_Clanhe, REAL *d_work_Cpot01, REAL *d_work_Cpot02, REAL *d_work_Cpot03) {
+void Cdrvrfp(INTEGER const nout, INTEGER const nn, INTEGER *nval, INTEGER const nns, INTEGER *nsval, INTEGER const nnt, INTEGER *ntval, REAL const thresh, COMPLEX *a, COMPLEX *asav, COMPLEX *afac, COMPLEX *ainv, COMPLEX *b, COMPLEX *bsav, COMPLEX *xact, COMPLEX *x, COMPLEX *arf, COMPLEX *arfinv, COMPLEX *z_work_zlatms, COMPLEX *z_work_zpot02, COMPLEX *z_work_zpot03, REAL *d_work_zlatms, REAL *d_work_zlanhe, REAL *d_work_zpot01, REAL *d_work_zpot02, REAL *d_work_zpot03) {
     common cmn;
     common_write write(cmn);
-    //
-    INTEGER iseedy[] = {1988, 1989, 1990, 1991};
-    char uplos[] = {'U', 'L'};
-    char forms[] = {'N', 'C'};
-    char buf[1024];
+    static INTEGER iseedy[4] = {1988, 1989, 1990, 1991};
+    static fem::str<1> uplos[2] = {"U", "L"};
+    static fem::str<1> forms[2] = {"N", "C"};
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
@@ -67,16 +63,16 @@ void Cdrvrfp(INTEGER const nout, INTEGER const nn, INTEGER *nval, INTEGER const 
     INTEGER iit = 0;
     INTEGER imat = 0;
     INTEGER iuplo = 0;
-    char uplo;
+    fem::str<1> uplo;
     INTEGER iform = 0;
-    char cform;
-    char ctype;
+    fem::str<1> cform;
+    fem::str<1> ctype;
     INTEGER kl = 0;
     INTEGER ku = 0;
     REAL anorm = 0.0;
     INTEGER mode = 0;
     REAL cndnum = 0.0;
-    char dist;
+    fem::str<1> dist;
     INTEGER info = 0;
     bool zerot = false;
     INTEGER izero = 0;
@@ -141,14 +137,15 @@ void Cdrvrfp(INTEGER const nout, INTEGER const nn, INTEGER *nval, INTEGER const 
                         // Set up parameters with Clatb4 and generate a test
                         // matrix with Clatms.
                         //
-                        Clatb4("ZPO", imat, n, n, &ctype, kl, ku, anorm, mode, cndnum, &dist);
+                        Clatb4("ZPO", imat, n, n, ctype, kl, ku, anorm, mode, cndnum, dist);
                         //
-                        Clatms(n, n, &dist, iseed, &ctype, d_work_Clatms, mode, cndnum, anorm, kl, ku, &uplo, a, lda, z_work_Clatms, info);
+                        srnamt = "ZLATMS";
+                        Clatms(n, n, dist, iseed, ctype, d_work_zlatms, mode, cndnum, anorm, kl, ku, uplo, a, lda, z_work_zlatms, info);
                         //
-                        //                    Check error code from Clatms.
+                        // Check error code from Clatms.
                         //
                         if (info != 0) {
-                            Alaerh("ZPF", "Clatms", info, 0, &uplo, n, n, -1, -1, -1, iit, nfail, nerrs, nout);
+                            Alaerh("ZPF", "ZLATMS", info, 0, uplo, n, n, -1, -1, -1, iit, nfail, nerrs, nout);
                             goto statement_100;
                         }
                         //
@@ -198,7 +195,7 @@ void Cdrvrfp(INTEGER const nout, INTEGER const nn, INTEGER *nval, INTEGER const 
                         //
                         // Save a copy of the matrix A in ASAV.
                         //
-                        Clacpy(&uplo, n, n, a, lda, asav, lda);
+                        Clacpy(uplo.elems, n, n, a, lda, asav, lda);
                         //
                         // Compute the condition number of A (RCONDC).
                         //
@@ -208,43 +205,46 @@ void Cdrvrfp(INTEGER const nout, INTEGER const nn, INTEGER *nval, INTEGER const 
                             //
                             // Compute the 1-norm of A.
                             //
-                            anorm = Clanhe("1", &uplo, n, a, lda, d_work_Clanhe);
+                            anorm = Clanhe("1", uplo.elems, n, a, lda, d_work_zlanhe);
                             //
                             // Factor the matrix A.
                             //
-                            Cpotrf(&uplo, n, a, lda, info);
+                            Cpotrf(uplo.elems, n, a, lda, info);
                             //
                             // Form the inverse of A.
                             //
-                            Cpotri(&uplo, n, a, lda, info);
+                            Cpotri(uplo.elems, n, a, lda, info);
                             //
                             if (n != 0) {
                                 //
                                 // Compute the 1-norm condition number of A.
                                 //
-                                ainvnm = Clanhe("1", &uplo, n, a, lda, d_work_Clanhe);
+                                ainvnm = Clanhe("1", uplo.elems, n, a, lda, d_work_zlanhe);
                                 rcondc = (one / anorm) / ainvnm;
                                 //
                                 // Restore the matrix A.
                                 //
-                                Clacpy(&uplo, n, n, asav, lda, a, lda);
+                                Clacpy(uplo.elems, n, n, asav, lda, a, lda);
                             }
                             //
                         }
                         //
-                        //                    Form an exact solution and set the right hand side.
+                        // Form an exact solution and set the right hand side.
                         //
-                        Clarhs("ZPO", "N", &uplo, " ", n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
+                        srnamt = "ZLARHS";
+                        Clarhs("ZPO", "N", uplo, " ", n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
                         Clacpy("Full", n, nrhs, b, lda, bsav, lda);
                         //
                         // Compute the L*L' or U'*U factorization of the
                         // matrix and solve the system.
                         //
-                        Clacpy(&uplo, n, n, a, lda, afac, lda);
+                        Clacpy(uplo.elems, n, n, a, lda, afac, lda);
                         Clacpy("Full", n, nrhs, b, ldb, x, ldb);
                         //
-                        Ctrttf(&cform, &uplo, n, afac, lda, arf, info);
-                        Cpftrf(&cform, &uplo, n, arf, info);
+                        srnamt = "ZTRTTF";
+                        Ctrttf(cform.elems, uplo.elems, n, afac, lda, arf, info);
+                        srnamt = "ZPFTRF";
+                        Cpftrf(cform.elems, uplo.elems, n, arf, info);
                         //
                         // Check error code from Cpftrf.
                         //
@@ -254,7 +254,7 @@ void Cdrvrfp(INTEGER const nout, INTEGER const nn, INTEGER *nval, INTEGER const 
                             // always be INFO however if INFO is ZERO, Alaerh does not
                             // complain.
                             //
-                            Alaerh("ZPF", "ZPFSV ", info, izero, &uplo, n, n, -1, -1, nrhs, iit, nfail, nerrs, nout);
+                            Alaerh("ZPF", "ZPFSV ", info, izero, uplo, n, n, -1, -1, nrhs, iit, nfail, nerrs, nout);
                             goto statement_100;
                         }
                         //
@@ -264,16 +264,18 @@ void Cdrvrfp(INTEGER const nout, INTEGER const nn, INTEGER *nval, INTEGER const 
                             goto statement_100;
                         }
                         //
-                        Cpftrs(&cform, &uplo, n, nrhs, arf, x, ldb, info);
+                        srnamt = "ZPFTRS";
+                        Cpftrs(cform.elems, uplo.elems, n, nrhs, arf, x, ldb, info);
                         //
-                        Ctfttr(&cform, &uplo, n, arf, afac, lda, info);
+                        srnamt = "ZTFTTR";
+                        Ctfttr(cform.elems, uplo.elems, n, arf, afac, lda, info);
                         //
                         // Reconstruct matrix from factors and compute
                         // residual.
                         //
-                        Clacpy(&uplo, n, n, afac, lda, asav, lda);
-                        Cpot01(&uplo, n, a, lda, afac, lda, d_work_Cpot01, result[1 - 1]);
-                        Clacpy(&uplo, n, n, asav, lda, afac, lda);
+                        Clacpy(uplo.elems, n, n, afac, lda, asav, lda);
+                        Cpot01(uplo, n, a, lda, afac, lda, d_work_zpot01, result[1 - 1]);
+                        Clacpy(uplo.elems, n, n, asav, lda, afac, lda);
                         //
                         // Form the inverse and compute the residual.
                         //
@@ -283,22 +285,24 @@ void Cdrvrfp(INTEGER const nout, INTEGER const nn, INTEGER *nval, INTEGER const 
                             Clacpy("A", n, (n + 1) / 2, arf, n, arfinv, n);
                         }
                         //
-                        Cpftri(&cform, &uplo, n, arfinv, info);
+                        srnamt = "ZPFTRI";
+                        Cpftri(cform.elems, uplo.elems, n, arfinv, info);
                         //
-                        Ctfttr(&cform, &uplo, n, arfinv, ainv, lda, info);
+                        srnamt = "ZTFTTR";
+                        Ctfttr(cform.elems, uplo.elems, n, arfinv, ainv, lda, info);
                         //
                         // Check error code from Cpftri.
                         //
                         if (info != 0) {
-                            Alaerh("ZPO", "Cpftri", info, 0, &uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                            Alaerh("ZPO", "ZPFTRI", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                         }
                         //
-                        Cpot03(&uplo, n, a, lda, ainv, lda, z_work_Cpot03, lda, d_work_Cpot03, rcondc, result[2 - 1]);
+                        Cpot03(uplo, n, a, lda, ainv, lda, z_work_zpot03, lda, d_work_zpot03, rcondc, result[2 - 1]);
                         //
                         // Compute residual of the computed solution.
                         //
-                        Clacpy("Full", n, nrhs, b, lda, z_work_Cpot02, lda);
-                        Cpot02(&uplo, n, nrhs, a, lda, x, lda, z_work_Cpot02, lda, d_work_Cpot02, result[3 - 1]);
+                        Clacpy("Full", n, nrhs, b, lda, z_work_zpot02, lda);
+                        Cpot02(uplo, n, nrhs, a, lda, x, lda, z_work_zpot02, lda, d_work_zpot02, result[3 - 1]);
                         //
                         // Check solution from generated exact solution.
                         //
@@ -313,10 +317,9 @@ void Cdrvrfp(INTEGER const nout, INTEGER const nn, INTEGER *nval, INTEGER const 
                                 if (nfail == 0 && nerrs == 0) {
                                     Aladhd(nout, "ZPF");
                                 }
-                                sprintnum_short(buf, result[k - 1]);
                                 write(nout, "(1x,a6,', UPLO=''',a1,''', N =',i5,', type ',i1,', test(',"
-                                            "i1,')=',a)"),
-                                    "ZPFSV ", &uplo, n, iit, k, buf;
+                                            "i1,')=',g12.5)"),
+                                    "ZPFSV ", uplo, n, iit, k, result[k - 1];
                                 nfail++;
                             }
                         }

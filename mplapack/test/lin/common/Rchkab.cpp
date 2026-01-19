@@ -43,42 +43,11 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-struct common_infoc {
-    int infot;
-    int nunit;
-    bool ok;
-    bool lerr;
-
-    common_infoc() : infot(0), nunit(0), ok(false), lerr(false) {}
-};
-
-struct common_srnamc {
-    fem::str<32> srnamt;
-
-    common_srnamc() : srnamt(0) {}
-};
-
-struct common : fem::common, common_infoc, common_srnamc {
-    fem::cmn_sve program_dchkab_sve;
-
-    common(int argc, char const *argv[]) : fem::common(argc, argv) {}
-};
-
-struct program_dchkab_save {
-    fem::str<10> intstr;
-
-    program_dchkab_save() : intstr(0) {}
-};
-
 void program_dchkab(int argc, char const *argv[]) {
     common cmn(argc, argv);
-    FEM_CMN_SVE(program_dchkab);
     common_read read(cmn);
     common_write write(cmn);
-    fem::str<10> &intstr = sve.intstr;
-    if (is_called_first_time) {
-        intstr = "0123456789";
-    }
+    static fem::str<10> intstr = "0123456789";
     REAL s1 = 0.0;
     const INTEGER nmax = 132;
     INTEGER lda = 0;
@@ -100,14 +69,14 @@ void program_dchkab(int argc, char const *argv[]) {
     bool tsterr = false;
     REAL seps = 0.0;
     REAL eps = 0.0;
-    fem::str<72> aline = 0;
-    char path[3];
+    fem::str<72> aline;
+    fem::str<3> path;
     const INTEGER matmax = 30;
     INTEGER nmats = 0;
-    char c1;
+    fem::str<1> c1;
     INTEGER k = 0;
     INTEGER ic = 0;
-    char c2[2];
+    fem::str<2> c2;
     INTEGER nrhs = 0;
     INTEGER ntypes = 0;
     bool dotype[matmax];
@@ -159,15 +128,15 @@ void program_dchkab(int argc, char const *argv[]) {
     {
         read_loop rloop(cmn, nin, star);
         for (i = 1; i <= nm; i = i + 1) {
-            rloop, mval(i);
+            rloop, mval[i - 1];
         }
     }
     for (i = 1; i <= nm; i = i + 1) {
         if (mval[i - 1] < 0) {
-            write(nout, format_9996), " M  ", mval(i), 0;
+            write(nout, format_9996), " M  ", mval[i - 1], 0;
             fatal = true;
         } else if (mval[i - 1] > nmax) {
-            write(nout, format_9995), " M  ", mval(i), nmax;
+            write(nout, format_9995), " M  ", mval[i - 1], nmax;
             fatal = true;
         }
     }
@@ -176,7 +145,7 @@ void program_dchkab(int argc, char const *argv[]) {
             write_loop wloop(cmn, nout, format_9993);
             wloop, "M   ";
             for (i = 1; i <= nm; i = i + 1) {
-                wloop, mval(i);
+                wloop, mval[i - 1];
             }
         }
     }
@@ -196,15 +165,15 @@ void program_dchkab(int argc, char const *argv[]) {
     {
         read_loop rloop(cmn, nin, star);
         for (i = 1; i <= nns; i = i + 1) {
-            rloop, nsval(i);
+            rloop, nsval[i - 1];
         }
     }
     for (i = 1; i <= nns; i = i + 1) {
         if (nsval[i - 1] < 0) {
-            write(nout, format_9996), "NRHS", nsval(i), 0;
+            write(nout, format_9996), "NRHS", nsval[i - 1], 0;
             fatal = true;
         } else if (nsval[i - 1] > maxrhs) {
-            write(nout, format_9995), "NRHS", nsval(i), maxrhs;
+            write(nout, format_9995), "NRHS", nsval[i - 1], maxrhs;
             fatal = true;
         }
     }
@@ -213,7 +182,7 @@ void program_dchkab(int argc, char const *argv[]) {
             write_loop wloop(cmn, nout, format_9993);
             wloop, "NRHS";
             for (i = 1; i <= nns; i = i + 1) {
-                wloop, nsval(i);
+                wloop, nsval[i - 1];
             }
         }
     }
@@ -295,14 +264,13 @@ statement_120:
     }
     goto statement_100;
 statement_130:
-    c1 = path[0];
-    c2[0] = path[(2 - 1)];
-    c2[1] = path[(3 - 1)];
-    nrhs = nsval[0];
+    c1 = path(1, 1);
+    c2 = path(2, 3);
+    nrhs = nsval[1 - 1];
     //
     // Check first character for correct precision.
     //
-    if (!Mlsame(&c1, "Double precision")) {
+    if (!Mlsame(c1.elems, "Double precision")) {
         write(nout, "(/,1x,a6,' routines were not tested')"), path;
         //
     } else if (nmats <= 0) {
@@ -312,7 +280,7 @@ statement_130:
         write(nout, format_9989), path;
         goto statement_140;
         //
-    } else if (Mlsamen(2, c2, "GE")) {
+    } else if (Mlsamen(2, c2.elems, "GE")) {
         //
         // GE:  general matrices
         //
@@ -331,7 +299,7 @@ statement_130:
             write(nout, format_9989), "DSGESV";
         }
         //
-    } else if (Mlsamen(2, c2, "PO")) {
+    } else if (Mlsamen(2, c2.elems, "PO")) {
         //
         // PO:  positive definite matrices
         //

@@ -44,78 +44,43 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Rqrt04(INTEGER const m, INTEGER const n, INTEGER const nb, REAL *result) {
-    //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     .. Return values ..
-    //
-    //  =====================================================================
-    //
-    //     ..
-    //     .. Local allocatable arrays
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Data statements ..
-    //
-    INTEGER iseed[] = {1988, 1989, 1990, 1991};
+    common cmn;
+    static INTEGER iseed[4] = {1988, 1989, 1990, 1991};
     REAL eps = Rlamch("Epsilon");
     INTEGER k = min(m, n);
     INTEGER l = max(m, n);
     INTEGER lwork = max((INTEGER)2, l) * max((INTEGER)2, l) * nb;
-    //
-    //     Dynamically allocate local arrays
-    //
-    //     Put random numbers into A and copy to AF
-    //
-    INTEGER j = 0;
-    REAL *a = new REAL[m * n];
-    INTEGER lda = m;
-    for (j = 1; j <= n; j = j + 1) {
-        Rlarnv(2, iseed, m, &a[(j - 1) * lda]);
-    }
-    REAL *af = new REAL[m * n];
-    INTEGER ldaf = m;
-    Rlacpy("Full", m, n, a, m, af, m);
-    //
-    //     Factor the matrix A in the array AF.
-    //
-    REAL *t = new REAL[nb * n];
     INTEGER ldt = nb;
-    REAL *work = new REAL[lwork];
+    INTEGER j = 0;
+    std::unique_ptr<REAL[]> __a_storage(new REAL[m * n]);
+    REAL *a = __a_storage.get();
+    for (j = 1; j <= n; j = j + 1) {
+        Rlarnv(2, iseed, m, &a[(j - 1) * m]);
+    }
+    std::unique_ptr<REAL[]> __af_storage(new REAL[m * n]);
+    REAL *af = __af_storage.get();
+    Rlacpy("Full", m, n, a, m, af, m);
+    std::unique_ptr<REAL[]> __t_storage(new REAL[nb * n]);
+    REAL *t = __t_storage.get();
+    std::unique_ptr<REAL[]> __work_storage(new REAL[lwork]);
+    REAL *work = __work_storage.get();
     INTEGER info = 0;
     Rgeqrt(m, n, nb, af, m, t, ldt, work, info);
-    //
-    //     Generate the m-by-m matrix Q
-    //
-    const REAL zero = 0.0f;
-    const REAL one = 1.0f;
-    REAL *q = new REAL[m * m];
-    INTEGER ldq = m;
+    const REAL zero = 0.0;
+    const REAL one = 1.0;
+    std::unique_ptr<REAL[]> __q_storage(new REAL[m * m]);
+    REAL *q = __q_storage.get();
     Rlaset("Full", m, m, zero, one, q, m);
     Rgemqrt("R", "N", m, m, k, nb, af, m, t, ldt, q, m, work, info);
-    //
-    //     Copy R
-    //
-    REAL *r = new REAL[m * l];
-    INTEGER ldr = m;
+    std::unique_ptr<REAL[]> __r_storage(new REAL[m * l]);
+    REAL *r = __r_storage.get();
     Rlaset("Full", m, n, zero, zero, r, m);
     Rlacpy("Upper", m, n, af, m, r, m);
     // Compute |R - Q'*A| / |A| and store in RESULT(1)
     //
     Rgemm("T", "N", m, n, m, -one, q, m, a, m, one, r, m);
-    REAL *rwork = new REAL[l];
+    std::unique_ptr<REAL[]> __rwork_storage(new REAL[l]);
+    REAL *rwork = __rwork_storage.get();
     REAL anorm = Rlange("1", m, n, a, m, rwork);
     REAL resid = Rlange("1", m, n, r, m, rwork);
     if (anorm > zero) {
@@ -133,13 +98,14 @@ void Rqrt04(INTEGER const m, INTEGER const n, INTEGER const nb, REAL *result) {
     //
     // Generate random m-by-n matrix C and a copy CF
     //
-    REAL *c = new REAL[m * n];
-    INTEGER ldc = m;
+    std::unique_ptr<REAL[]> __c_storage(new REAL[m * n]);
+    REAL *c = __c_storage.get();
     for (j = 1; j <= n; j = j + 1) {
-        Rlarnv(2, iseed, m, &c[(j - 1) * ldc]);
+        Rlarnv(2, iseed, m, &c[(j - 1) * m]);
     }
     REAL cnorm = Rlange("1", m, n, c, m, rwork);
-    REAL *cf = new REAL[m * n];
+    std::unique_ptr<REAL[]> __cf_storage(new REAL[m * n]);
+    REAL *cf = __cf_storage.get();
     Rlacpy("Full", m, n, c, m, cf, m);
     //
     // Apply Q to C as Q*C
@@ -176,14 +142,14 @@ void Rqrt04(INTEGER const m, INTEGER const n, INTEGER const nb, REAL *result) {
     //
     // Generate random n-by-m matrix D and a copy DF
     //
-    REAL *d = new REAL[n * m];
-    INTEGER ldd = n;
+    std::unique_ptr<REAL[]> __d_storage(new REAL[n * m]);
+    REAL *d = __d_storage.get();
     for (j = 1; j <= m; j = j + 1) {
-        Rlarnv(2, iseed, n, &d[(j - 1) * ldd]);
+        Rlarnv(2, iseed, n, &d[(j - 1) * n]);
     }
     REAL dnorm = Rlange("1", n, m, d, n, rwork);
-    REAL *df = new REAL[n * m];
-    INTEGER lddf = n;
+    std::unique_ptr<REAL[]> __df_storage(new REAL[n * m]);
+    REAL *df = __df_storage.get();
     Rlacpy("Full", n, m, d, n, df, n);
     //
     // Apply Q to D as D*Q
@@ -218,18 +184,8 @@ void Rqrt04(INTEGER const m, INTEGER const n, INTEGER const nb, REAL *result) {
         result[6 - 1] = zero;
     }
     //
-    //     Deallocate all arrays
+    // Deallocate all arrays
     //
-    delete[] a;
-    delete[] af;
-    delete[] q;
-    delete[] r;
-    delete[] rwork;
-    delete[] work;
-    delete[] t;
-    delete[] c;
-    delete[] d;
-    delete[] cf;
-    delete[] df;
+    FEM_THROW_UNHANDLED("executable deallocate: deallocate(a,af,q,r,rwork,work,t,c,d,cf,df)");
     //
 }

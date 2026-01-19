@@ -42,47 +42,23 @@ using fem::common;
 
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-#include <mplapack_debug.h>
 
-INTEGER iMlaenv(INTEGER const ispec, const char *name, const char * /* opts */, INTEGER const n1, INTEGER const n2, INTEGER const n3, INTEGER const /* n4 */) {
+INTEGER
+iMlaenv(INTEGER const ispec, str_cref name, str_cref /* opts */, INTEGER const n1, INTEGER const n2, INTEGER const n3, INTEGER const /* n4 */) {
     INTEGER return_value = 0;
+    arr_cref<int> iparms(cmn.iparms, dimension(100));
     //
-    //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Arrays in Common ..
-    //     ..
-    //     .. Common blocks ..
-    //     ..
-    //     .. Save statement ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    std::string str = name;
-    char *subname = new char[str.size() + 1];
-    std::strcpy(subname, str.c_str());
     if (ispec >= 1 && ispec <= 5) {
         //
         // Return a value from the common block.
         //
-        if (strncmp(&subname[1], "geqr", 4) == 0) {
+        if (name(2, 6) == "GEQR ") {
             if (n3 == 2) {
                 return_value = iparms[2 - 1];
             } else {
                 return_value = iparms[1 - 1];
             }
-        } else if (strncmp(&subname[1], "gelq", 4) == 0) {
+        } else if (name(2, 6) == "GELQ ") {
             if (n3 == 2) {
                 return_value = iparms[2 - 1];
             } else {
@@ -96,7 +72,7 @@ INTEGER iMlaenv(INTEGER const ispec, const char *name, const char * /* opts */, 
         //
         // Compute SVD crossover point.
         //
-        return_value = castINTEGER(castREAL(min(n1, castINTEGER(castREAL(n2) * 1.6))));
+        return_value = castINTEGER(castREAL(min(n1, n2)) * 1.6);
         //
     } else if (ispec >= 7 && ispec <= 9) {
         //
@@ -121,7 +97,7 @@ INTEGER iMlaenv(INTEGER const ispec, const char *name, const char * /* opts */, 
         // iMlaenv = 0
         return_value = 1;
         if (return_value == 1) {
-            return_value = iMieeeck(1, 0.0, 1.0);
+            return_value = iMieeeck(0, 0.0, 1.0);
         }
         //
     } else {
@@ -131,15 +107,17 @@ INTEGER iMlaenv(INTEGER const ispec, const char *name, const char * /* opts */, 
         return_value = -1;
     }
     //
-    delete[] subname;
     return return_value;
     //
     // End of iMlaenv
     //
 }
 
-INTEGER iMlaenv2stage(INTEGER const ispec, const char *name, const char *opts, INTEGER const n1, INTEGER const n2, INTEGER const n3, INTEGER const n4) {
+INTEGER
+iMlaenv2stage(INTEGER const ispec, str_cref name, str_cref opts, INTEGER const n1, INTEGER const n2, INTEGER const n3, INTEGER const n4) {
     INTEGER return_value = 0;
+    // COMMON claenv
+    arr_cref<int> iparms(cmn.iparms, dimension(100));
     //
     //
     // .. Scalar Arguments ..
@@ -167,7 +145,7 @@ INTEGER iMlaenv2stage(INTEGER const ispec, const char *name, const char *opts, I
             return_value = iparms[1 - 1];
         } else {
             iispec = 16 + ispec;
-            return_value = iMparam2stage(iispec, name, opts, n1, n2, n3, n4);
+            return_value = iMparam2stage(iispec, name.elems(), opts.elems(), n1, n2, n3, n4);
         }
         //
     } else {

@@ -44,19 +44,19 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Rlqt02(INTEGER const m, INTEGER const n, INTEGER const k, REAL *a, REAL *af, REAL *q, REAL *l, INTEGER const lda, REAL *tau, REAL *work, INTEGER const lwork, REAL *rwork, REAL *result) {
+    common cmn;
     //
     REAL eps = Rlamch("Epsilon");
     //
     // Copy the first k rows of the factorization to the array Q
     //
-    const REAL rogue = -1.0e+10;
-    INTEGER ldaf = lda;
-    INTEGER ldq = lda;
+    const REAL rogue = -10000000000.0;
     Rlaset("Full", m, n, rogue, rogue, q, lda);
-    Rlacpy("Upper", k, n - 1, &af[(2 - 1) * ldaf], lda, &q[(2 - 1) * ldq], lda);
+    Rlacpy("Upper", k, n - 1, &af[(2 - 1) * lda], lda, &q[(2 - 1) * lda], lda);
     //
     // Generate the first n columns of the matrix Q
     //
+    srnamt = "DORGLQ";
     INTEGER info = 0;
     Rorglq(m, n, k, q, lda, tau, work, lwork, info);
     //

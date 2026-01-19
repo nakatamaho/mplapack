@@ -43,7 +43,7 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-void Rlavsy_rook(const char *uplo, const char *trans, const char *diag, INTEGER const n, INTEGER const nrhs, REAL *a, INTEGER const lda, INTEGER *ipiv, REAL *b, INTEGER const ldb, INTEGER &info) {
+void Rlavsy_rook(fem::str_cref uplo, fem::str_cref trans, fem::str_cref diag, INTEGER const n, INTEGER const nrhs, REAL *a, INTEGER const lda, INTEGER *ipiv, REAL *b, INTEGER const ldb, INTEGER &info) {
     bool nounit = false;
     INTEGER k = 0;
     const REAL one = 1.0;
@@ -59,11 +59,11 @@ void Rlavsy_rook(const char *uplo, const char *trans, const char *diag, INTEGER 
     // Test the input parameters.
     //
     info = 0;
-    if (!Mlsame(uplo, "U") && !Mlsame(uplo, "L")) {
+    if (!Mlsame(uplo.elems(), "U") && !Mlsame(uplo.elems(), "L")) {
         info = -1;
-    } else if (!Mlsame(trans, "N") && !Mlsame(trans, "T") && !Mlsame(trans, "C")) {
+    } else if (!Mlsame(trans.elems(), "N") && !Mlsame(trans.elems(), "T") && !Mlsame(trans.elems(), "C")) {
         info = -2;
-    } else if (!Mlsame(diag, "U") && !Mlsame(diag, "N")) {
+    } else if (!Mlsame(diag.elems(), "U") && !Mlsame(diag.elems(), "N")) {
         info = -3;
     } else if (n < 0) {
         info = -4;
@@ -83,18 +83,18 @@ void Rlavsy_rook(const char *uplo, const char *trans, const char *diag, INTEGER 
         return;
     }
     //
-    nounit = Mlsame(diag, "N");
+    nounit = Mlsame(diag.elems(), "N");
     // ------------------------------------------
     //
     // Compute  B := A * B  (No transpose)
     //
     // ------------------------------------------
-    if (Mlsame(trans, "N")) {
+    if (Mlsame(trans.elems(), "N")) {
         //
         // Compute  B := U*B
         // where U = P(m)*inv(U(m))* ... *P(1)*inv(U(1))
         //
-        if (Mlsame(uplo, "U")) {
+        if (Mlsame(uplo.elems(), "U")) {
             //
             // Loop forward applying the transformations.
             //
@@ -119,7 +119,7 @@ void Rlavsy_rook(const char *uplo, const char *trans, const char *diag, INTEGER 
                     //
                     // Apply the transformation.
                     //
-                    Rger(k - 1, nrhs, one, &a[(k - 1) * lda], 1, &b[(k - 1)], ldb, &b[(1 - 1) + (1 - 1) * ldb], ldb);
+                    Rger(k - 1, nrhs, one, &a[(k - 1) * lda], 1, &b[(k - 1)], ldb, &b[0], ldb);
                     //
                     // Interchange if P(K) .ne. I.
                     //
@@ -154,8 +154,8 @@ void Rlavsy_rook(const char *uplo, const char *trans, const char *diag, INTEGER 
                     //
                     // Apply the transformations.
                     //
-                    Rger(k - 1, nrhs, one, &a[(k - 1) * lda], 1, &b[(k - 1)], ldb, &b[(1 - 1) + (1 - 1) * ldb], ldb);
-                    Rger(k - 1, nrhs, one, &a[((k + 1) - 1) * lda], 1, &b[((k + 1) - 1)], ldb, &b[(1 - 1) + (1 - 1) * ldb], ldb);
+                    Rger(k - 1, nrhs, one, &a[(k - 1) * lda], 1, &b[(k - 1)], ldb, &b[0], ldb);
+                    Rger(k - 1, nrhs, one, &a[((k + 1) - 1) * lda], 1, &b[((k + 1) - 1)], ldb, &b[0], ldb);
                     //
                     // Interchange if a permutation was applied at the
                     // K-th step of the factorization.
@@ -284,7 +284,7 @@ void Rlavsy_rook(const char *uplo, const char *trans, const char *diag, INTEGER 
         // where U  = P(m)*inv(U(m))* ... *P(1)*inv(U(1))
         // and   U' = inv(U'(1))*P(1)* ... *inv(U'(m))*P(m)
         //
-        if (Mlsame(uplo, "U")) {
+        if (Mlsame(uplo.elems(), "U")) {
             //
             // Loop backward applying the transformations.
             //

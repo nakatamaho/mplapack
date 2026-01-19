@@ -43,7 +43,7 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-void Cppt01(const char *uplo, INTEGER const n, COMPLEX *a, COMPLEX *afac, REAL *rwork, REAL &resid) {
+void Cppt01(fem::str_cref uplo, INTEGER const n, COMPLEX *a, COMPLEX *afac, REAL *rwork, REAL &resid) {
     //
     // Quick exit if N = 0
     //
@@ -56,7 +56,7 @@ void Cppt01(const char *uplo, INTEGER const n, COMPLEX *a, COMPLEX *afac, REAL *
     // Exit with RESID = 1/EPS if ANORM = 0.
     //
     REAL eps = Rlamch("Epsilon");
-    REAL anorm = Clanhp("1", uplo, n, a, rwork);
+    REAL anorm = Clanhp("1", uplo.elems(), n, a, rwork);
     const REAL one = 1.0;
     if (anorm <= zero) {
         resid = one / eps;
@@ -68,7 +68,7 @@ void Cppt01(const char *uplo, INTEGER const n, COMPLEX *a, COMPLEX *afac, REAL *
     //
     INTEGER kc = 1;
     INTEGER k = 0;
-    if (Mlsame(uplo, "U")) {
+    if (Mlsame(uplo.elems(), "U")) {
         for (k = 1; k <= n; k = k + 1) {
             if (afac[kc - 1].imag() != zero) {
                 resid = one / eps;
@@ -91,13 +91,13 @@ void Cppt01(const char *uplo, INTEGER const n, COMPLEX *a, COMPLEX *afac, REAL *
     REAL tr = 0.0;
     INTEGER i = 0;
     COMPLEX tc = 0.0;
-    if (Mlsame(uplo, "U")) {
+    if (Mlsame(uplo.elems(), "U")) {
         kc = (n * (n - 1)) / 2 + 1;
         for (k = n; k >= 1; k = k - 1) {
             //
             // Compute the (K,K) element of the result.
             //
-            tr = Cdotc(k, &afac[kc - 1], 1, &afac[kc - 1], 1).real();
+            tr = Cdotc(k, &afac[kc - 1], 1, &afac[kc - 1], 1);
             afac[(kc + k - 1) - 1] = tr;
             //
             // Compute the rest of column K.
@@ -144,7 +144,7 @@ void Cppt01(const char *uplo, INTEGER const n, COMPLEX *a, COMPLEX *afac, REAL *
         //
         kc = 1;
         for (k = 1; k <= n; k = k + 1) {
-            afac[kc - 1] = afac[kc - 1] - (a[kc - 1]).real();
+            afac[kc - 1] = afac[kc - 1] - a[kc - 1].real();
             for (i = k + 1; i <= n; i = i + 1) {
                 afac[(kc + i - k) - 1] = afac[(kc + i - k) - 1] - a[(kc + i - k) - 1];
             }
@@ -154,7 +154,7 @@ void Cppt01(const char *uplo, INTEGER const n, COMPLEX *a, COMPLEX *afac, REAL *
     //
     // Compute norm( L*U - A ) / ( N * norm(A) * EPS )
     //
-    resid = Clanhp("1", uplo, n, afac, rwork);
+    resid = Clanhp("1", uplo.elems(), n, afac, rwork);
     //
     resid = ((resid / castREAL(n)) / anorm) / eps;
     //

@@ -43,19 +43,18 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-REAL Rqrt17(const char *trans, INTEGER const iresid, INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEGER const lda, REAL *x, INTEGER const ldx, REAL *b, INTEGER const ldb, REAL *c, REAL *work, INTEGER const lwork) {
+REAL Rqrt17(fem::str_cref trans, INTEGER const iresid, INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEGER const lda, REAL *x, INTEGER const ldx, REAL *b, INTEGER const ldb, REAL *c, REAL *work, INTEGER const lwork) {
     REAL return_value = 0.0;
-    INTEGER ldc = ldb;
     //
     const REAL zero = 0.0;
     return_value = zero;
     //
     INTEGER nrows = 0;
     INTEGER ncols = 0;
-    if (Mlsame(trans, "N")) {
+    if (Mlsame(trans.elems(), "N")) {
         nrows = m;
         ncols = n;
-    } else if (Mlsame(trans, "T")) {
+    } else if (Mlsame(trans.elems(), "T")) {
         nrows = n;
         ncols = m;
     } else {
@@ -82,7 +81,7 @@ REAL Rqrt17(const char *trans, INTEGER const iresid, INTEGER const m, INTEGER co
     // compute residual and scale it
     //
     Rlacpy("All", nrows, nrhs, b, ldb, c, ldb);
-    Rgemm(trans, "No transpose", nrows, nrhs, ncols, -one, a, lda, x, ldx, one, c, ldb);
+    Rgemm(trans.elems(), "No transpose", nrows, nrhs, ncols, -one, a, lda, x, ldx, one, c, ldb);
     REAL normrs = Rlange("Max", nrows, nrhs, c, ldb, rwork);
     INTEGER info = 0;
     if (normrs > smlnum) {
@@ -92,7 +91,7 @@ REAL Rqrt17(const char *trans, INTEGER const iresid, INTEGER const m, INTEGER co
     //
     // compute R'*A
     //
-    Rgemm("Transpose", trans, nrhs, ncols, nrows, one, c, ldb, a, lda, zero, work, nrhs);
+    Rgemm("Transpose", trans.elems(), nrhs, ncols, nrows, one, c, ldb, a, lda, zero, work, nrhs);
     //
     // compute and properly scale error
     //
@@ -117,7 +116,7 @@ REAL Rqrt17(const char *trans, INTEGER const iresid, INTEGER const m, INTEGER co
         }
     }
     //
-    return_value = err / (Rlamch("Epsilon") * castREAL(max({m, n, nrhs})));
+    return_value = err / (Rlamch("Epsilon") * castREAL(max(m, n, nrhs)));
     return return_value;
     //
     // End of Rqrt17

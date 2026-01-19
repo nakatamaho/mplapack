@@ -43,7 +43,7 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-void Rpot02(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *a, INTEGER const lda, REAL *x, INTEGER const ldx, REAL *b, INTEGER const ldb, REAL *rwork, REAL &resid) {
+void Rpot02(fem::str_cref uplo, INTEGER const n, INTEGER const nrhs, REAL *a, INTEGER const lda, REAL *x, INTEGER const ldx, REAL *b, INTEGER const ldb, REAL *rwork, REAL &resid) {
     //
     // Quick exit if N = 0 or NRHS = 0.
     //
@@ -56,7 +56,7 @@ void Rpot02(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *a, INTE
     // Exit with RESID = 1/EPS if ANORM = 0.
     //
     REAL eps = Rlamch("Epsilon");
-    REAL anorm = Rlansy("1", uplo, n, a, lda, rwork);
+    REAL anorm = Rlansy("1", uplo.elems(), n, a, lda, rwork);
     const REAL one = 1.0;
     if (anorm <= zero) {
         resid = one / eps;
@@ -65,7 +65,7 @@ void Rpot02(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *a, INTE
     //
     // Compute  B - A*X
     //
-    Rsymm("Left", uplo, n, nrhs, -one, a, lda, x, ldx, one, b, ldb);
+    Rsymm("Left", uplo.elems(), n, nrhs, -one, a, lda, x, ldx, one, b, ldb);
     //
     // Compute the maximum over the number of right hand sides of
     // norm( B - A*X ) / ( norm(A) * norm(X) * EPS ) .
@@ -80,7 +80,7 @@ void Rpot02(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *a, INTE
         if (xnorm <= zero) {
             resid = one / eps;
         } else {
-            resid = max(resid, REAL(((bnorm / anorm) / xnorm) / eps));
+            resid = max(resid, ((bnorm / anorm) / xnorm) / eps);
         }
     }
     //

@@ -43,7 +43,7 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-void Rpot03(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL *ainv, INTEGER const ldainv, REAL *work, INTEGER const ldwork, REAL *rwork, REAL &rcond, REAL &resid) {
+void Rpot03(fem::str_cref uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL *ainv, INTEGER const ldainv, REAL *work, INTEGER const ldwork, REAL *rwork, REAL &rcond, REAL &resid) {
     //
     // Quick exit if N = 0.
     //
@@ -58,8 +58,8 @@ void Rpot03(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL 
     // Exit with RESID = 1/EPS if ANORM = 0 or AINVNM = 0.
     //
     REAL eps = Rlamch("Epsilon");
-    REAL anorm = Rlansy("1", uplo, n, a, lda, rwork);
-    REAL ainvnm = Rlansy("1", uplo, n, ainv, ldainv, rwork);
+    REAL anorm = Rlansy("1", uplo.elems(), n, a, lda, rwork);
+    REAL ainvnm = Rlansy("1", uplo.elems(), n, ainv, ldainv, rwork);
     if (anorm <= zero || ainvnm <= zero) {
         rcond = zero;
         resid = one / eps;
@@ -72,7 +72,7 @@ void Rpot03(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL 
     //
     INTEGER j = 0;
     INTEGER i = 0;
-    if (Mlsame(uplo, "U")) {
+    if (Mlsame(uplo.elems(), "U")) {
         for (j = 1; j <= n; j = j + 1) {
             for (i = 1; i <= j - 1; i = i + 1) {
                 ainv[(j - 1) + (i - 1) * ldainv] = ainv[(i - 1) + (j - 1) * ldainv];
@@ -85,7 +85,7 @@ void Rpot03(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL 
             }
         }
     }
-    Rsymm("Left", uplo, n, n, -one, a, lda, ainv, ldainv, zero, work, ldwork);
+    Rsymm("Left", uplo.elems(), n, n, -one, a, lda, ainv, ldainv, zero, work, ldwork);
     //
     // Add the identity matrix to WORK .
     //

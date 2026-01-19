@@ -44,33 +44,8 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Rqrt05(INTEGER const m, INTEGER const n, INTEGER const l, INTEGER const nb, REAL *result) {
-    //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     .. Return values ..
-    //
-    //  =====================================================================
-    //
-    //     ..
-    //     .. Local allocatable arrays
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //
-    //     Dynamically allocate all arrays
-    //
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Data statements ..
-    //
-    INTEGER iseed[4] = {1988, 1989, 1990, 1991};
+    common cmn;
+    static INTEGER iseed[4] = {1988, 1989, 1990, 1991};
     REAL eps = Rlamch("Epsilon");
     INTEGER k = n;
     INTEGER m2 = m + n;
@@ -81,61 +56,49 @@ void Rqrt05(INTEGER const m, INTEGER const n, INTEGER const l, INTEGER const nb,
         np1 = 1;
     }
     INTEGER lwork = m2 * m2 * nb;
-    //
-    //     Put random stuff into A
-    //
-    const REAL zero = 0.0f;
-    REAL *a = new REAL[m2 * n];
-    INTEGER lda = m2;
-    Rlaset("Full", m2, n, zero, zero, a, m2);
-    REAL *t = new REAL[nb * n];
     INTEGER ldt = nb;
+    const REAL zero = 0.0;
+    std::unique_ptr<REAL[]> __a_storage(new REAL[m2 * n]);
+    REAL *a = __a_storage.get();
+    Rlaset("Full", m2, n, zero, zero, a, m2);
+    std::unique_ptr<REAL[]> __t_storage(new REAL[nb * n]);
+    REAL *t = __t_storage.get();
     Rlaset("Full", nb, n, zero, zero, t, nb);
     INTEGER j = 0;
     for (j = 1; j <= n; j = j + 1) {
-        Rlarnv(2, iseed, j, &a[(j - 1) * lda]);
+        Rlarnv(2, iseed, j, &a[(j - 1) * m2]);
     }
     if (m > 0) {
         for (j = 1; j <= n; j = j + 1) {
-            Rlarnv(2, iseed, m - l, &a[(min(n + m, n + 1) - 1) + (j - 1) * lda]);
+            Rlarnv(2, iseed, m - l, &a[(min(n + m, n + 1) - 1) + (j - 1) * m2]);
         }
     }
     if (l > 0) {
         for (j = 1; j <= n; j = j + 1) {
-            Rlarnv(2, iseed, min(j, l), &a[(min(n + m, n + m - l + 1) - 1) + (j - 1) * lda]);
+            Rlarnv(2, iseed, min(j, l), &a[(min(n + m, n + m - l + 1) - 1) + (j - 1) * m2]);
         }
     }
-    //
-    //     Copy the matrix A to the array AF.
-    //
-    REAL *af = new REAL[m2 * n];
-    INTEGER ldaf = m2;
+    std::unique_ptr<REAL[]> __af_storage(new REAL[m2 * n]);
+    REAL *af = __af_storage.get();
     Rlacpy("Full", m2, n, a, m2, af, m2);
-    //
-    //     Factor the matrix A in the array AF.
-    //
-    REAL *work = new REAL[lwork];
+    std::unique_ptr<REAL[]> __work_storage(new REAL[lwork]);
+    REAL *work = __work_storage.get();
     INTEGER info = 0;
     Rtpqrt(m, n, l, nb, af, m2, &af[(np1 - 1)], m2, t, ldt, work, info);
-    //
-    //     Generate the (M+N)-by-(M+N) matrix Q by applying H to I
-    //
-    const REAL one = 1.0f;
-    REAL *q = new REAL[m2 * m2];
-    INTEGER ldq = m2;
+    const REAL one = 1.0;
+    std::unique_ptr<REAL[]> __q_storage(new REAL[m2 * m2]);
+    REAL *q = __q_storage.get();
     Rlaset("Full", m2, m2, zero, one, q, m2);
     Rgemqrt("R", "N", m2, m2, k, nb, af, m2, t, ldt, q, m2, work, info);
-    //
-    //     Copy R
-    //
-    REAL *r = new REAL[m2 * m2];
-    INTEGER ldr = m2;
+    std::unique_ptr<REAL[]> __r_storage(new REAL[m2 * m2]);
+    REAL *r = __r_storage.get();
     Rlaset("Full", m2, n, zero, zero, r, m2);
     Rlacpy("Upper", m2, n, af, m2, r, m2);
     // Compute |R - Q'*A| / |A| and store in RESULT(1)
     //
     Rgemm("T", "N", m2, n, m2, -one, q, m2, a, m2, one, r, m2);
-    REAL *rwork = new REAL[m2];
+    std::unique_ptr<REAL[]> __rwork_storage(new REAL[m2]);
+    REAL *rwork = __rwork_storage.get();
     REAL anorm = Rlange("1", m2, n, a, m2, rwork);
     REAL resid = Rlange("1", m2, n, r, m2, rwork);
     if (anorm > zero) {
@@ -153,13 +116,14 @@ void Rqrt05(INTEGER const m, INTEGER const n, INTEGER const l, INTEGER const nb,
     //
     // Generate random m-by-n matrix C and a copy CF
     //
-    REAL *c = new REAL[m2 * n];
-    INTEGER ldc = m2;
+    std::unique_ptr<REAL[]> __c_storage(new REAL[m2 * n]);
+    REAL *c = __c_storage.get();
     for (j = 1; j <= n; j = j + 1) {
-        Rlarnv(2, iseed, m2, &c[(j - 1) * ldc]);
+        Rlarnv(2, iseed, m2, &c[(j - 1) * m2]);
     }
     REAL cnorm = Rlange("1", m2, n, c, m2, rwork);
-    REAL *cf = new REAL[m2 * n];
+    std::unique_ptr<REAL[]> __cf_storage(new REAL[m2 * n]);
+    REAL *cf = __cf_storage.get();
     Rlacpy("Full", m2, n, c, m2, cf, m2);
     //
     // Apply Q to C as Q*C
@@ -196,19 +160,19 @@ void Rqrt05(INTEGER const m, INTEGER const n, INTEGER const l, INTEGER const nb,
     //
     // Generate random n-by-m matrix D and a copy DF
     //
-    REAL *d = new REAL[n * m2];
-    INTEGER ldd = n;
+    std::unique_ptr<REAL[]> __d_storage(new REAL[n * m2]);
+    REAL *d = __d_storage.get();
     for (j = 1; j <= m2; j = j + 1) {
-        Rlarnv(2, iseed, n, &d[(j - 1) * ldd]);
+        Rlarnv(2, iseed, n, &d[(j - 1) * n]);
     }
     REAL dnorm = Rlange("1", n, m2, d, n, rwork);
-    REAL *df = new REAL[n * m2];
-    INTEGER lddf = n;
+    std::unique_ptr<REAL[]> __df_storage(new REAL[n * m2]);
+    REAL *df = __df_storage.get();
     Rlacpy("Full", n, m2, d, n, df, n);
     //
     // Apply Q to D as D*Q
     //
-    Rtpmqrt("R", "N", n, m, n, l, nb, &af[(np1 - 1)], m2, t, ldt, df, n, &df[(np1 - 1) * lddf], n, work, info);
+    Rtpmqrt("R", "N", n, m, n, l, nb, &af[(np1 - 1)], m2, t, ldt, df, n, &df[(np1 - 1) * n], n, work, info);
     //
     // Compute |D*Q - D*Q| / |D|
     //
@@ -226,7 +190,7 @@ void Rqrt05(INTEGER const m, INTEGER const n, INTEGER const l, INTEGER const nb,
     //
     // Apply Q to D as D*QT
     //
-    Rtpmqrt("R", "T", n, m, n, l, nb, &af[(np1 - 1)], m2, t, ldt, df, n, &df[(np1 - 1) * lddf], n, work, info);
+    Rtpmqrt("R", "T", n, m, n, l, nb, &af[(np1 - 1)], m2, t, ldt, df, n, &df[(np1 - 1) * n], n, work, info);
     //
     // Compute |D*QT - D*QT| / |D|
     //
@@ -238,17 +202,7 @@ void Rqrt05(INTEGER const m, INTEGER const n, INTEGER const l, INTEGER const nb,
         result[6 - 1] = zero;
     }
     //
-    //     Deallocate all arrays
+    // Deallocate all arrays
     //
-    delete[] a;
-    delete[] af;
-    delete[] q;
-    delete[] r;
-    delete[] rwork;
-    delete[] work;
-    delete[] t;
-    delete[] c;
-    delete[] d;
-    delete[] cf;
-    delete[] df;
+    FEM_THROW_UNHANDLED("executable deallocate: deallocate(a,af,q,r,rwork,work,t,c,d,cf,df)");
 }

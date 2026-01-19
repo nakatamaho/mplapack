@@ -43,30 +43,24 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-#include <mplapack_debug.h>
-
 void Cchktsqr(REAL const thresh, bool const tsterr, INTEGER const nm, INTEGER *mval, INTEGER const nn, INTEGER *nval, INTEGER const nnb, INTEGER *nbval, INTEGER const nout) {
     common cmn;
     common_write write(cmn);
     //
     // Initialize constants
     //
-    char path[4] = {};
-    path[0] = 'C';
-    path[1] = 'T';
-    path[2] = 'S';
-    char buf[1024];
+    fem::str<3> path = 'Z';
+    path(2, 3) = "TS";
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
     //
     // Test the error exits
     //
-    xlaenv(1, 0);
-    xlaenv(2, 0);
     if (tsterr) {
         Cerrtsqr(path, nout);
     }
+    infot = 0;
     //
     // Do for each value of M in MVAL.
     //
@@ -108,10 +102,9 @@ void Cchktsqr(REAL const thresh, bool const tsterr, INTEGER const nm, INTEGER *m
                                 if (nfail == 0 && nerrs == 0) {
                                     Alahd(nout, path);
                                 }
-                                sprintnum_short(buf, result[t - 1]);
                                 write(nout, "('TS: M=',i5,', N=',i5,', MB=',i5,', NB=',i5,' test(',i2,"
-                                            "')=',a)"),
-                                    m, n, mb, nb, t, buf;
+                                            "')=',g12.5)"),
+                                    m, n, mb, nb, t, result[t - 1];
                                 nfail++;
                             }
                         }
@@ -151,10 +144,9 @@ void Cchktsqr(REAL const thresh, bool const tsterr, INTEGER const nm, INTEGER *m
                                 if (nfail == 0 && nerrs == 0) {
                                     Alahd(nout, path);
                                 }
-                                sprintnum_short(buf, result[t - 1]);
                                 write(nout, "('SW: M=',i5,', N=',i5,', MB=',i5,', NB=',i5,' test(',i2,"
-                                            "')=',a)"),
-                                    m, n, mb, nb, t, buf;
+                                            "')=',g12.5)"),
+                                    m, n, mb, nb, t, result[t - 1];
                                 nfail++;
                             }
                         }

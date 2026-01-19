@@ -43,68 +43,14 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-struct common_infoc {
-    int infot;
-    int nunit;
-    bool ok;
-    bool lerr;
-
-    common_infoc() : infot(0), nunit(0), ok(false), lerr(false) {}
-};
-
-struct common_srnamc {
-    fem::str<32> srnamt;
-
-    common_srnamc() : srnamt(0) {}
-};
-
-struct common : fem::common, common_infoc, common_srnamc {
-    fem::cmn_sve zdrvgb_sve;
-
-    common(int argc, char const *argv[]) : fem::common(argc, argv) {}
-};
-
-struct zdrvgb_save {
-    static const int ntran = 3;
-
-    arr<fem::str<1>> equeds;
-    arr<fem::str<1>> facts;
-    arr<int> iseedy;
-    arr<fem::str<1>> transs;
-
-    zdrvgb_save() : equeds(dimension(4), fem::fill0), facts(dimension(3), fem::fill0), iseedy(dimension(4), fem::fill0), transs(dimension(ntran), fem::fill0) {}
-};
-
-const int zdrvgb_save::ntran;
-
 void Cdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, REAL const thresh, bool const tsterr, COMPLEX *a, INTEGER const la, COMPLEX *afb, INTEGER const lafb, COMPLEX *asav, COMPLEX *b, COMPLEX *bsav, COMPLEX *x, COMPLEX *xact, REAL *s, COMPLEX *work, REAL *rwork, INTEGER *iwork, INTEGER const nout) {
-    FEM_CMN_SVE(zdrvgb);
+    common cmn;
     common_write write(cmn);
-    fem::str<32> &srnamt = cmn.srnamt;
-    str_arr_ref<1> equeds(sve.equeds, dimension(4));
-    str_arr_ref<1> facts(sve.facts, dimension(3));
-    arr_ref<int> iseedy(sve.iseedy, dimension(4));
-    const INTEGER ntran = 3;
-    str_arr_ref<1> transs(sve.transs, dimension(ntran));
-    if (is_called_first_time) {
-        {
-            static const int values[] = {1988, 1989, 1990, 1991};
-            fem::data_of_type<int>(FEM_VALUES_AND_SIZE), iseedy;
-        }
-        {
-            static const char *values[] = {"N", "T", "C"};
-            fem::data_of_type_str(FEM_VALUES_AND_SIZE), transs;
-        }
-        {
-            static const char *values[] = {"F", "N", "E"};
-            fem::data_of_type_str(FEM_VALUES_AND_SIZE), facts;
-        }
-        {
-            static const char *values[] = {"N", "R", "C", "B"};
-            fem::data_of_type_str(FEM_VALUES_AND_SIZE), equeds;
-        }
-    }
-    char path[3];
+    static INTEGER iseedy[4] = {1988, 1989, 1990, 1991};
+    static fem::str<1> transs[3] = {"N", "T", "C"};
+    static fem::str<1> facts[3] = {"F", "N", "E"};
+    static fem::str<1> equeds[4] = {"N", "R", "C", "B"};
+    fem::str<3> path;
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
@@ -115,7 +61,7 @@ void Cdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     INTEGER in = 0;
     INTEGER n = 0;
     INTEGER ldb = 0;
-    char xtype;
+    fem::str<1> xtype;
     INTEGER nkl = 0;
     INTEGER nku = 0;
     const INTEGER ntypes = 8;
@@ -128,11 +74,11 @@ void Cdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     INTEGER ldafb = 0;
     INTEGER imat = 0;
     bool zerot = false;
-    char type;
+    fem::str<1> type;
     REAL anorm = 0.0;
     INTEGER mode = 0;
     REAL cndnum = 0.0;
-    char dist;
+    fem::str<1> dist;
     const REAL one = 1.0;
     REAL rcondc = 0.0;
     INTEGER info = 0;
@@ -143,10 +89,10 @@ void Cdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     const REAL zero = 0.0;
     INTEGER j = 0;
     INTEGER iequed = 0;
-    char equed;
+    fem::str<1> equed;
     INTEGER nfact = 0;
     INTEGER ifact = 0;
-    char fact;
+    fem::str<1> fact;
     bool prefac = false;
     bool nofact = false;
     bool equil = false;
@@ -161,7 +107,8 @@ void Cdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     REAL anormi = 0.0;
     REAL ainvnm = 0.0;
     INTEGER itran = 0;
-    char trans;
+    const INTEGER ntran = 3;
+    fem::str<1> trans;
     const INTEGER ntests = 7;
     REAL result[ntests];
     INTEGER nt = 0;
@@ -188,7 +135,7 @@ void Cdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     //
     // Initialize constants and the random number seed.
     //
-    path[0] = "Zomplex precision";
+    path(1, 1) = "Zomplex precision";
     path(2, 3) = "GB";
     nrun = 0;
     nfail = 0;
@@ -202,7 +149,7 @@ void Cdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     if (tsterr) {
         Cerrvx(path, nout);
     }
-    cmn.infot = 0;
+    infot = 0;
     //
     // Set the block size and minimum block size for testing.
     //
@@ -302,11 +249,11 @@ void Cdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                     // Set up parameters with Clatb4 and generate a
                     // test matrix with Clatms.
                     //
-                    Clatb4(path, imat, n, n, &type, kl, ku, anorm, mode, cndnum, &dist);
+                    Clatb4(path, imat, n, n, type, kl, ku, anorm, mode, cndnum, dist);
                     rcondc = one / cndnum;
                     //
                     srnamt = "ZLATMS";
-                    Clatms(n, n, &dist, iseed, &type, rwork, mode, cndnum, anorm, kl, ku, "Z", a, lda, work, info);
+                    Clatms(n, n, dist, iseed, type, rwork, mode, cndnum, anorm, kl, ku, "Z", a, lda, work, info);
                     //
                     // Check the error code from Clatms.
                     //
@@ -358,9 +305,9 @@ void Cdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         //
                         for (ifact = 1; ifact <= nfact; ifact = ifact + 1) {
                             fact = facts[ifact - 1];
-                            prefac = Mlsame(&fact, "F");
-                            nofact = Mlsame(&fact, "N");
-                            equil = Mlsame(&fact, "E");
+                            prefac = Mlsame(fact.elems, "F");
+                            nofact = Mlsame(fact.elems, "N");
+                            equil = Mlsame(fact.elems, "E");
                             //
                             if (zerot) {
                                 if (prefac) {
@@ -384,20 +331,20 @@ void Cdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                     //
                                     Cgbequ(n, n, kl, ku, &afb[(kl + 1) - 1], ldafb, s, &s[(n + 1) - 1], rowcnd, colcnd, amax, info);
                                     if (info == 0 && n > 0) {
-                                        if (Mlsame(&equed, "R")) {
+                                        if (Mlsame(equed.elems, "R")) {
                                             rowcnd = zero;
                                             colcnd = one;
-                                        } else if (Mlsame(&equed, "C")) {
+                                        } else if (Mlsame(equed.elems, "C")) {
                                             rowcnd = one;
                                             colcnd = zero;
-                                        } else if (Mlsame(&equed, "B")) {
+                                        } else if (Mlsame(equed.elems, "B")) {
                                             rowcnd = zero;
                                             colcnd = zero;
                                         }
                                         //
                                         // Equilibrate the matrix.
                                         //
-                                        Claqgb(n, n, kl, ku, &afb[(kl + 1) - 1], ldafb, s, &s[(n + 1) - 1], rowcnd, colcnd, amax, &equed);
+                                        Claqgb(n, n, kl, ku, &afb[(kl + 1) - 1], ldafb, s, &s[(n + 1) - 1], rowcnd, colcnd, amax, equed.elems);
                                     }
                                 }
                                 //
@@ -463,7 +410,7 @@ void Cdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                 // side.
                                 //
                                 srnamt = "ZLARHS";
-                                Clarhs(path, &xtype, "Full", &trans, n, n, kl, ku, nrhs, a, lda, xact, ldb, b, ldb, iseed, info);
+                                Clarhs(path, xtype, "Full", trans, n, n, kl, ku, nrhs, a, lda, xact, ldb, b, ldb, iseed, info);
                                 xtype = 'C';
                                 Clacpy("Full", n, nrhs, b, ldb, bsav, ldb);
                                 //
@@ -489,7 +436,7 @@ void Cdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                     // Reconstruct matrix from factors and
                                     // compute residual.
                                     //
-                                    Cgbt01(n, n, kl, ku, a, lda, afb, ldafb, iwork, work, result[0]);
+                                    Cgbt01(n, n, kl, ku, a, lda, afb, ldafb, iwork, work, result[1 - 1]);
                                     nt = 1;
                                     if (izero == 0) {
                                         //
@@ -497,12 +444,12 @@ void Cdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                         // solution.
                                         //
                                         Clacpy("Full", n, nrhs, b, ldb, work, ldb);
-                                        Cgbt02("No transpose", n, n, kl, ku, nrhs, a, lda, x, ldb, work, ldb, result[1]);
+                                        Cgbt02("No transpose", n, n, kl, ku, nrhs, a, lda, x, ldb, work, ldb, result[2 - 1]);
                                         //
                                         // Check solution from generated exact
                                         // solution.
                                         //
-                                        Cget04(n, nrhs, x, ldb, xact, ldb, rcondc, result[2]);
+                                        Cget04(n, nrhs, x, ldb, xact, ldb, rcondc, result[3 - 1]);
                                         nt = 3;
                                     }
                                     //
@@ -516,7 +463,7 @@ void Cdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                             }
                                             write(nout, "(1x,a,', N=',i5,', KL=',i5,', KU=',i5,', type ',i1,"
                                                         "', test(',i1,')=',g12.5)"),
-                                                "ZGBSV ", n, kl, ku, imat, k, result(k);
+                                                "ZGBSV ", n, kl, ku, imat, k, result[k - 1];
                                             nfail++;
                                         }
                                     }
@@ -534,14 +481,14 @@ void Cdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                     // Equilibrate the matrix if FACT = 'F' and
                                     // EQUED = 'R', 'C', or 'B'.
                                     //
-                                    Claqgb(n, n, kl, ku, a, lda, s, &s[(n + 1) - 1], rowcnd, colcnd, amax, &equed);
+                                    Claqgb(n, n, kl, ku, a, lda, s, &s[(n + 1) - 1], rowcnd, colcnd, amax, equed.elems);
                                 }
                                 //
                                 // Solve the system and compute the condition
                                 // number and error bounds using Cgbsvx.
                                 //
                                 srnamt = "ZGBSVX";
-                                Cgbsvx(&fact, &trans, n, kl, ku, nrhs, a, lda, afb, ldafb, iwork, &equed, s, &s[(ldb + 1) - 1], b, ldb, x, ldb, rcond, rwork, &rwork[(nrhs + 1) - 1], work, &rwork[(2 * nrhs + 1) - 1], info);
+                                Cgbsvx(fact.elems, trans.elems, n, kl, ku, nrhs, a, lda, afb, ldafb, iwork, equed.elems, s, &s[(ldb + 1) - 1], b, ldb, x, ldb, rcond, rwork, &rwork[(nrhs + 1) - 1], work, &rwork[(2 * nrhs + 1) - 1], info);
                                 //
                                 // Check the error code from Cgbsvx.
                                 //
@@ -573,14 +520,14 @@ void Cdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                         rpvgrw = Clangb("M", n, kl, ku, a, lda, rdum) / rpvgrw;
                                     }
                                 }
-                                result[6] = abs(rpvgrw - rwork[(2 * nrhs + 1) - 1]) / max(rwork[(2 * nrhs + 1) - 1], rpvgrw) / Rlamch("E");
+                                result[7 - 1] = abs(rpvgrw - rwork[(2 * nrhs + 1) - 1]) / max(rwork[(2 * nrhs + 1) - 1], rpvgrw) / Rlamch("E");
                                 //
                                 if (!prefac) {
                                     //
                                     // Reconstruct matrix from factors and
                                     // compute residual.
                                     //
-                                    Cgbt01(n, n, kl, ku, a, lda, afb, ldafb, iwork, work, result[0]);
+                                    Cgbt01(n, n, kl, ku, a, lda, afb, ldafb, iwork, work, result[1 - 1]);
                                     k1 = 1;
                                 } else {
                                     k1 = 2;
@@ -592,26 +539,26 @@ void Cdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                     // Compute residual of the computed solution.
                                     //
                                     Clacpy("Full", n, nrhs, bsav, ldb, work, ldb);
-                                    Cgbt02(&trans, n, n, kl, ku, nrhs, asav, lda, x, ldb, work, ldb, result[1]);
+                                    Cgbt02(trans, n, n, kl, ku, nrhs, asav, lda, x, ldb, work, ldb, result[2 - 1]);
                                     //
                                     // Check solution from generated exact
                                     // solution.
                                     //
-                                    if (nofact || (prefac && Mlsame(&equed, "N"))) {
-                                        Cget04(n, nrhs, x, ldb, xact, ldb, rcondc, result[2]);
+                                    if (nofact || (prefac && Mlsame(equed.elems, "N"))) {
+                                        Cget04(n, nrhs, x, ldb, xact, ldb, rcondc, result[3 - 1]);
                                     } else {
                                         if (itran == 1) {
                                             roldc = roldo;
                                         } else {
                                             roldc = roldi;
                                         }
-                                        Cget04(n, nrhs, x, ldb, xact, ldb, roldc, result[2]);
+                                        Cget04(n, nrhs, x, ldb, xact, ldb, roldc, result[3 - 1]);
                                     }
                                     //
                                     // Check the error bounds from iterative
                                     // refinement.
                                     //
-                                    Cgbt05(&trans, n, kl, ku, nrhs, asav, lda, bsav, ldb, x, ldb, xact, ldb, rwork, &rwork[(nrhs + 1) - 1], &result[3]);
+                                    Cgbt05(trans, n, kl, ku, nrhs, asav, lda, bsav, ldb, x, ldb, xact, ldb, rwork, &rwork[(nrhs + 1) - 1], &result[4 - 1]);
                                 } else {
                                     trfcon = true;
                                 }
@@ -619,7 +566,7 @@ void Cdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                 // Compare RCOND from Cgbsvx with the computed
                                 // value in RCONDC.
                                 //
-                                result[5] = Rget06(rcond, rcondc);
+                                result[6 - 1] = Rget06(rcond, rcondc);
                                 //
                                 // Print information about the tests that did
                                 // not pass the threshold.
@@ -631,47 +578,47 @@ void Cdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                                 Aladhd(nout, path);
                                             }
                                             if (prefac) {
-                                                write(nout, format_9995), "ZGBSVX", fact, trans, n, kl, ku, equed, imat, k, result(k);
+                                                write(nout, format_9995), "ZGBSVX", fact, trans, n, kl, ku, equed, imat, k, result[k - 1];
                                             } else {
-                                                write(nout, format_9996), "ZGBSVX", fact, trans, n, kl, ku, imat, k, result(k);
+                                                write(nout, format_9996), "ZGBSVX", fact, trans, n, kl, ku, imat, k, result[k - 1];
                                             }
                                             nfail++;
                                         }
                                     }
                                     nrun += 7 - k1;
                                 } else {
-                                    if (result[0] >= thresh && !prefac) {
+                                    if (result[1 - 1] >= thresh && !prefac) {
                                         if (nfail == 0 && nerrs == 0) {
                                             Aladhd(nout, path);
                                         }
                                         if (prefac) {
-                                            write(nout, format_9995), "ZGBSVX", fact, trans, n, kl, ku, equed, imat, 1, result(1);
+                                            write(nout, format_9995), "ZGBSVX", fact, trans, n, kl, ku, equed, imat, 1, result[1 - 1];
                                         } else {
-                                            write(nout, format_9996), "ZGBSVX", fact, trans, n, kl, ku, imat, 1, result(1);
+                                            write(nout, format_9996), "ZGBSVX", fact, trans, n, kl, ku, imat, 1, result[1 - 1];
                                         }
                                         nfail++;
                                         nrun++;
                                     }
-                                    if (result[5] >= thresh) {
+                                    if (result[6 - 1] >= thresh) {
                                         if (nfail == 0 && nerrs == 0) {
                                             Aladhd(nout, path);
                                         }
                                         if (prefac) {
-                                            write(nout, format_9995), "ZGBSVX", fact, trans, n, kl, ku, equed, imat, 6, result(6);
+                                            write(nout, format_9995), "ZGBSVX", fact, trans, n, kl, ku, equed, imat, 6, result[6 - 1];
                                         } else {
-                                            write(nout, format_9996), "ZGBSVX", fact, trans, n, kl, ku, imat, 6, result(6);
+                                            write(nout, format_9996), "ZGBSVX", fact, trans, n, kl, ku, imat, 6, result[6 - 1];
                                         }
                                         nfail++;
                                         nrun++;
                                     }
-                                    if (result[6] >= thresh) {
+                                    if (result[7 - 1] >= thresh) {
                                         if (nfail == 0 && nerrs == 0) {
                                             Aladhd(nout, path);
                                         }
                                         if (prefac) {
-                                            write(nout, format_9995), "ZGBSVX", fact, trans, n, kl, ku, equed, imat, 7, result(7);
+                                            write(nout, format_9995), "ZGBSVX", fact, trans, n, kl, ku, equed, imat, 7, result[7 - 1];
                                         } else {
-                                            write(nout, format_9996), "ZGBSVX", fact, trans, n, kl, ku, imat, 7, result(7);
+                                            write(nout, format_9996), "ZGBSVX", fact, trans, n, kl, ku, imat, 7, result[7 - 1];
                                         }
                                         nfail++;
                                         nrun++;
@@ -696,7 +643,7 @@ void Cdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                     // Equilibrate the matrix if FACT = 'F' and
                                     // EQUED = 'R', 'C', or 'B'.
                                     //
-                                    Claqgb(n, n, kl, ku, a, lda, s, &s[(n + 1) - 1], rowcnd, colcnd, amax, &equed);
+                                    Claqgb(n, n, kl, ku, a, lda, s, &s[(n + 1) - 1], rowcnd, colcnd, amax, equed.elems);
                                 }
                                 //
                                 // Solve the system and compute the condition number
@@ -725,14 +672,14 @@ void Cdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                     rpvgrw = Cla_gbrpvgrw(n, kl, ku, n, a, lda, afb, ldafb);
                                 }
                                 //
-                                result[6] = abs(rpvgrw - rpvgrw_svxx) / max(rpvgrw_svxx, rpvgrw) / Rlamch("E");
+                                result[7 - 1] = abs(rpvgrw - rpvgrw_svxx) / max(rpvgrw_svxx, rpvgrw) / Rlamch("E");
                                 //
                                 if (!prefac) {
                                     //
                                     // Reconstruct matrix from factors and compute
                                     // residual.
                                     //
-                                    Cgbt01(n, n, kl, ku, a, lda, afb, ldafb, iwork, &work[(2 * nrhs + 1) - 1], result[0]);
+                                    Cgbt01(n, n, kl, ku, a, lda, afb, ldafb, iwork, &work[(2 * nrhs + 1) - 1], result[1 - 1]);
                                     k1 = 1;
                                 } else {
                                     k1 = 2;
@@ -744,19 +691,19 @@ void Cdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                     // Compute residual of the computed solution.
                                     //
                                     Clacpy("Full", n, nrhs, bsav, ldb, work, ldb);
-                                    Cgbt02(&trans, n, n, kl, ku, nrhs, asav, lda, x, ldb, work, ldb, result[1]);
+                                    Cgbt02(trans, n, n, kl, ku, nrhs, asav, lda, x, ldb, work, ldb, result[2 - 1]);
                                     //
                                     // Check solution from generated exact solution.
                                     //
-                                    if (nofact || (prefac && Mlsame(&equed, "N"))) {
-                                        Cget04(n, nrhs, x, ldb, xact, ldb, rcondc, result[2]);
+                                    if (nofact || (prefac && Mlsame(equed.elems, "N"))) {
+                                        Cget04(n, nrhs, x, ldb, xact, ldb, rcondc, result[3 - 1]);
                                     } else {
                                         if (itran == 1) {
                                             roldc = roldo;
                                         } else {
                                             roldc = roldi;
                                         }
-                                        Cget04(n, nrhs, x, ldb, xact, ldb, roldc, result[2]);
+                                        Cget04(n, nrhs, x, ldb, xact, ldb, roldc, result[3 - 1]);
                                     }
                                 } else {
                                     trfcon = true;
@@ -765,7 +712,7 @@ void Cdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                 // Compare RCOND from Cgbsvxx with the computed value
                                 // in RCONDC.
                                 //
-                                result[5] = Rget06(rcond, rcondc);
+                                result[6 - 1] = Rget06(rcond, rcondc);
                                 //
                                 // Print information about the tests that did not pass
                                 // the threshold.
@@ -777,47 +724,47 @@ void Cdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                                 Aladhd(nout, path);
                                             }
                                             if (prefac) {
-                                                write(nout, format_9995), "ZGBSVXX", fact, trans, n, kl, ku, equed, imat, k, result(k);
+                                                write(nout, format_9995), "ZGBSVXX", fact, trans, n, kl, ku, equed, imat, k, result[k - 1];
                                             } else {
-                                                write(nout, format_9996), "ZGBSVXX", fact, trans, n, kl, ku, imat, k, result(k);
+                                                write(nout, format_9996), "ZGBSVXX", fact, trans, n, kl, ku, imat, k, result[k - 1];
                                             }
                                             nfail++;
                                         }
                                     }
                                     nrun += 7 - k1;
                                 } else {
-                                    if (result[0] >= thresh && !prefac) {
+                                    if (result[1 - 1] >= thresh && !prefac) {
                                         if (nfail == 0 && nerrs == 0) {
                                             Aladhd(nout, path);
                                         }
                                         if (prefac) {
-                                            write(nout, format_9995), "ZGBSVXX", fact, trans, n, kl, ku, equed, imat, 1, result(1);
+                                            write(nout, format_9995), "ZGBSVXX", fact, trans, n, kl, ku, equed, imat, 1, result[1 - 1];
                                         } else {
-                                            write(nout, format_9996), "ZGBSVXX", fact, trans, n, kl, ku, imat, 1, result(1);
+                                            write(nout, format_9996), "ZGBSVXX", fact, trans, n, kl, ku, imat, 1, result[1 - 1];
                                         }
                                         nfail++;
                                         nrun++;
                                     }
-                                    if (result[5] >= thresh) {
+                                    if (result[6 - 1] >= thresh) {
                                         if (nfail == 0 && nerrs == 0) {
                                             Aladhd(nout, path);
                                         }
                                         if (prefac) {
-                                            write(nout, format_9995), "ZGBSVXX", fact, trans, n, kl, ku, equed, imat, 6, result(6);
+                                            write(nout, format_9995), "ZGBSVXX", fact, trans, n, kl, ku, equed, imat, 6, result[6 - 1];
                                         } else {
-                                            write(nout, format_9996), "ZGBSVXX", fact, trans, n, kl, ku, imat, 6, result(6);
+                                            write(nout, format_9996), "ZGBSVXX", fact, trans, n, kl, ku, imat, 6, result[6 - 1];
                                         }
                                         nfail++;
                                         nrun++;
                                     }
-                                    if (result[6] >= thresh) {
+                                    if (result[7 - 1] >= thresh) {
                                         if (nfail == 0 && nerrs == 0) {
                                             Aladhd(nout, path);
                                         }
                                         if (prefac) {
-                                            write(nout, format_9995), "ZGBSVXX", fact, trans, n, kl, ku, equed, imat, 7, result(7);
+                                            write(nout, format_9995), "ZGBSVXX", fact, trans, n, kl, ku, equed, imat, 7, result[7 - 1];
                                         } else {
-                                            write(nout, format_9996), "ZGBSVXX", fact, trans, n, kl, ku, imat, 7, result(7);
+                                            write(nout, format_9996), "ZGBSVXX", fact, trans, n, kl, ku, imat, 7, result[7 - 1];
                                         }
                                         nfail++;
                                         nrun++;

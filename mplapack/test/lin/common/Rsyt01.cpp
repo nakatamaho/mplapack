@@ -43,7 +43,7 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-void Rsyt01(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL *afac, INTEGER const ldafac, INTEGER *ipiv, REAL *c, INTEGER const ldc, REAL *rwork, REAL &resid) {
+void Rsyt01(fem::str_cref uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL *afac, INTEGER const ldafac, INTEGER *ipiv, REAL *c, INTEGER const ldc, REAL *rwork, REAL &resid) {
     //
     // Quick exit if N = 0.
     //
@@ -56,7 +56,7 @@ void Rsyt01(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL 
     // Determine EPS and the norm of A.
     //
     REAL eps = Rlamch("Epsilon");
-    REAL anorm = Rlansy("1", uplo, n, a, lda, rwork);
+    REAL anorm = Rlansy("1", uplo.elems(), n, a, lda, rwork);
     //
     // Initialize C to the identity matrix.
     //
@@ -76,7 +76,7 @@ void Rsyt01(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL 
     //
     INTEGER j = 0;
     INTEGER i = 0;
-    if (Mlsame(uplo, "U")) {
+    if (Mlsame(uplo.elems(), "U")) {
         for (j = 1; j <= n; j = j + 1) {
             for (i = 1; i <= j; i = i + 1) {
                 c[(i - 1) + (j - 1) * ldc] = c[(i - 1) + (j - 1) * ldc] - a[(i - 1) + (j - 1) * lda];
@@ -92,7 +92,7 @@ void Rsyt01(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL 
     //
     // Compute norm( C - A ) / ( N * norm(A) * EPS )
     //
-    resid = Rlansy("1", uplo, n, c, ldc, rwork);
+    resid = Rlansy("1", uplo.elems(), n, c, ldc, rwork);
     //
     if (anorm <= zero) {
         if (resid != zero) {

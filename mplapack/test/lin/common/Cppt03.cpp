@@ -43,7 +43,7 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-void Cppt03(const char *uplo, INTEGER const n, COMPLEX *a, COMPLEX *ainv, COMPLEX *work, INTEGER const ldwork, REAL *rwork, REAL &rcond, REAL &resid) {
+void Cppt03(fem::str_cref uplo, INTEGER const n, COMPLEX *a, COMPLEX *ainv, COMPLEX *work, INTEGER const ldwork, REAL *rwork, REAL &rcond, REAL &resid) {
     //
     // Quick exit if N = 0.
     //
@@ -58,8 +58,8 @@ void Cppt03(const char *uplo, INTEGER const n, COMPLEX *a, COMPLEX *ainv, COMPLE
     // Exit with RESID = 1/EPS if ANORM = 0 or AINVNM = 0.
     //
     REAL eps = Rlamch("Epsilon");
-    REAL anorm = Clanhp("1", uplo, n, a, rwork);
-    REAL ainvnm = Clanhp("1", uplo, n, ainv, rwork);
+    REAL anorm = Clanhp("1", uplo.elems(), n, a, rwork);
+    REAL ainvnm = Clanhp("1", uplo.elems(), n, ainv, rwork);
     if (anorm <= zero || ainvnm <= zero) {
         rcond = zero;
         resid = one / eps;
@@ -77,7 +77,7 @@ void Cppt03(const char *uplo, INTEGER const n, COMPLEX *a, COMPLEX *ainv, COMPLE
     INTEGER i = 0;
     const COMPLEX cone = COMPLEX(1.0, 0.0);
     const COMPLEX czero = COMPLEX(0.0, 0.0);
-    if (Mlsame(uplo, "U")) {
+    if (Mlsame(uplo.elems(), "U")) {
         //
         // Copy AINV
         //
@@ -126,7 +126,7 @@ void Cppt03(const char *uplo, INTEGER const n, COMPLEX *a, COMPLEX *ainv, COMPLE
         for (j = n; j >= 2; j = j - 1) {
             Chpmv("Lower", n, -cone, a, &work[((j - 1) - 1) * ldwork], 1, czero, &work[(j - 1) * ldwork], 1);
         }
-        Chpmv("Lower", n, -cone, a, &ainv[1 - 1], 1, czero, &work[(1 - 1)], 1);
+        Chpmv("Lower", n, -cone, a, &ainv[1 - 1], 1, czero, &work[0], 1);
         //
     }
     //

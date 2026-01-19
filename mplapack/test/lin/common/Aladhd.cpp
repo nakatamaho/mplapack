@@ -43,7 +43,7 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-void Aladhd(INTEGER const iounit, const char *path) {
+void Aladhd(INTEGER const iounit, fem::str_cref path) {
     common cmn;
     common_write write(cmn);
     static const char *format_9972 = "(3x,i2,': abs( WORK(1) - RPVGRW ) /',' ( max( WORK(1), RPVGRW ) * EPS )')";
@@ -78,21 +78,17 @@ void Aladhd(INTEGER const iounit, const char *path) {
     if (iounit <= 0) {
         return;
     }
-    char c1[1];
-    char c3[1];
-    char p2[2];
-    c1[0] = path[0];
-    c3[0] = path[2];
-    p2[0] = path[1];
-    p2[1] = path[2];
-    bool sord = Mlsame(c1, "R");
-    bool corz = Mlsame(c1, "C");
+    fem::str<1> c1 = path(1, 1);
+    fem::str<1> c3 = path(3, 3);
+    fem::str<2> p2 = path(2, 3);
+    bool sord = Mlsame(c1.elems, "S") || Mlsame(c1.elems, "D");
+    bool corz = Mlsame(c1.elems, "C") || Mlsame(c1.elems, "Z");
     if (!(sord || corz)) {
         return;
     }
     //
-    char sym[9];
-    if (Mlsamen(2, p2, "GE")) {
+    fem::str<9> sym;
+    if (Mlsamen(2, p2.elems, "GE")) {
         //
         // GE: General dense
         //
@@ -114,7 +110,7 @@ void Aladhd(INTEGER const iounit, const char *path) {
         write(iounit, format_9972), 7;
         write(iounit, "(' Messages:')");
         //
-    } else if (Mlsamen(2, p2, "GB")) {
+    } else if (Mlsamen(2, p2.elems, "GB")) {
         //
         // GB: General band
         //
@@ -134,7 +130,7 @@ void Aladhd(INTEGER const iounit, const char *path) {
         write(iounit, format_9972), 7;
         write(iounit, "(' Messages:')");
         //
-    } else if (Mlsamen(2, p2, "GT")) {
+    } else if (Mlsamen(2, p2.elems, "GT")) {
         //
         // GT: General tridiagonal
         //
@@ -155,18 +151,18 @@ void Aladhd(INTEGER const iounit, const char *path) {
         write(iounit, format_9976), 6;
         write(iounit, "(' Messages:')");
         //
-    } else if (Mlsamen(2, p2, "PO") || Mlsamen(2, p2, "PP") || Mlsamen(2, p2, "PS")) {
+    } else if (Mlsamen(2, p2.elems, "PO") || Mlsamen(2, p2.elems, "PP") || Mlsamen(2, p2.elems, "PS")) {
         //
         // PO: Positive definite full
         // PS: Positive definite full
         // PP: Positive definite packed
         //
         if (sord) {
-            strncpy(sym, "Symmetric", strlen(sym));
+            sym = "Symmetric";
         } else {
-            strncpy(sym, "Hermitian", strlen(sym));
+            sym = "Hermitian";
         }
-        if (Mlsame(c3, "O")) {
+        if (Mlsame(c3.elems, "O")) {
             write(iounit, "(/,1x,a3,' drivers:  ',a9,' positive definite matrices')"), path, sym;
         } else {
             write(iounit, "(/,1x,a3,' drivers:  ',a9,' positive definite packed matrices')"), path, sym;
@@ -188,7 +184,7 @@ void Aladhd(INTEGER const iounit, const char *path) {
         write(iounit, format_9976), 6;
         write(iounit, "(' Messages:')");
         //
-    } else if (Mlsamen(2, p2, "PB")) {
+    } else if (Mlsamen(2, p2.elems, "PB")) {
         //
         // PB: Positive definite band
         //
@@ -213,7 +209,7 @@ void Aladhd(INTEGER const iounit, const char *path) {
         write(iounit, format_9976), 6;
         write(iounit, "(' Messages:')");
         //
-    } else if (Mlsamen(2, p2, "PT")) {
+    } else if (Mlsamen(2, p2.elems, "PT")) {
         //
         // PT: Positive definite tridiagonal
         //
@@ -240,14 +236,14 @@ void Aladhd(INTEGER const iounit, const char *path) {
         write(iounit, format_9976), 6;
         write(iounit, "(' Messages:')");
         //
-    } else if (Mlsamen(2, p2, "SY") || Mlsamen(2, p2, "SP")) {
+    } else if (Mlsamen(2, p2.elems, "SY") || Mlsamen(2, p2.elems, "SP")) {
         //
         // SY: Symmetric indefinite full
         // with partial (Bunch-Kaufman) pivoting algorithm
         // SP: Symmetric indefinite packed
         // with partial (Bunch-Kaufman) pivoting algorithm
         //
-        if (Mlsame(c3, "Y")) {
+        if (Mlsame(c3.elems, "Y")) {
             write(iounit, format_9992), path, "Symmetric";
         } else {
             write(iounit, format_9991), path, "Symmetric";
@@ -267,7 +263,7 @@ void Aladhd(INTEGER const iounit, const char *path) {
         write(iounit, format_9976), 6;
         write(iounit, "(' Messages:')");
         //
-    } else if (Mlsamen(2, p2, "SR") || Mlsamen(2, p2, "SK")) {
+    } else if (Mlsamen(2, p2.elems, "SR") || Mlsamen(2, p2.elems, "SK")) {
         //
         // SR: Symmetric indefinite full,
         // with rook (bounded Bunch-Kaufman) pivoting algorithm
@@ -293,7 +289,7 @@ void Aladhd(INTEGER const iounit, const char *path) {
         write(iounit, format_9979), 3;
         write(iounit, "(' Messages:')");
         //
-    } else if (Mlsamen(2, p2, "HA")) {
+    } else if (Mlsamen(2, p2.elems, "HA")) {
         //
         // HA: Hermitian
         // Aasen algorithm
@@ -313,14 +309,14 @@ void Aladhd(INTEGER const iounit, const char *path) {
         write(iounit, format_9976), 6;
         write(iounit, "(' Messages:')");
         //
-    } else if (Mlsamen(2, p2, "HE") || Mlsamen(2, p2, "HP")) {
+    } else if (Mlsamen(2, p2.elems, "HE") || Mlsamen(2, p2.elems, "HP")) {
         //
         // HE: Hermitian indefinite full
         // with partial (Bunch-Kaufman) pivoting algorithm
         // HP: Hermitian indefinite packed
         // with partial (Bunch-Kaufman) pivoting algorithm
         //
-        if (Mlsame(c3, "E")) {
+        if (Mlsame(c3.elems, "E")) {
             write(iounit, format_9992), path, "Hermitian";
         } else {
             write(iounit, format_9991), path, "Hermitian";
@@ -338,7 +334,7 @@ void Aladhd(INTEGER const iounit, const char *path) {
         write(iounit, format_9976), 6;
         write(iounit, "(' Messages:')");
         //
-    } else if (Mlsamen(2, p2, "HR") || Mlsamen(2, p2, "HK")) {
+    } else if (Mlsamen(2, p2.elems, "HR") || Mlsamen(2, p2.elems, "HK")) {
         //
         // HR: Hermitian indefinite full,
         // with rook (bounded Bunch-Kaufman) pivoting algorithm

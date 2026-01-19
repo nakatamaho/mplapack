@@ -36,7 +36,7 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-void chkxer(const char *srnamt, INTEGER const &infot, INTEGER const &nout, bool &lerr, bool &ok) {
+void Chkxer(const char *srnamt, INTEGER const &infot, INTEGER const &nout, bool &lerr, bool &ok) {
     //
     common cmn;
     common_write write(cmn);

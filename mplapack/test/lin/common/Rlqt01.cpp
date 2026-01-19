@@ -43,40 +43,9 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-#include <mplapack_debug.h>
-
 void Rlqt01(INTEGER const m, INTEGER const n, REAL *a, REAL *af, REAL *q, REAL *l, INTEGER const lda, REAL *tau, REAL *work, INTEGER const lwork, REAL *rwork, REAL *result) {
+    common cmn;
     //
-    //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Scalars in Common ..
-    //     ..
-    //     .. Common blocks ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    INTEGER ldaf = lda;
-    INTEGER ldq = lda;
     INTEGER minmn = min(m, n);
     REAL eps = Rlamch("Epsilon");
     //
@@ -86,21 +55,21 @@ void Rlqt01(INTEGER const m, INTEGER const n, REAL *a, REAL *af, REAL *q, REAL *
     //
     // Factorize the matrix A in the array AF.
     //
+    srnamt = "DGELQF";
     INTEGER info = 0;
-    strncpy(srnamt, "Rgelqf", srnamt_len);
     Rgelqf(m, n, af, lda, tau, work, lwork, info);
     //
     // Copy details of Q
     //
-    const REAL rogue = -1.0e+10;
+    const REAL rogue = -10000000000.0;
     Rlaset("Full", n, n, rogue, rogue, q, lda);
     if (n > 1) {
-        Rlacpy("Upper", m, n - 1, &af[(2 - 1) * ldaf], lda, &q[(2 - 1) * ldq], lda);
+        Rlacpy("Upper", m, n - 1, &af[(2 - 1) * lda], lda, &q[(2 - 1) * lda], lda);
     }
     //
     // Generate the n-by-n matrix Q
     //
-    strncpy(srnamt, "Rorglq", srnamt_len);
+    srnamt = "DORGLQ";
     Rorglq(n, n, minmn, q, lda, tau, work, lwork, info);
     //
     // Copy L

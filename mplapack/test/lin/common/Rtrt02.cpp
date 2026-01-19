@@ -43,7 +43,7 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-void Rtrt02(const char *uplo, const char *trans, const char *diag, INTEGER const n, INTEGER const nrhs, REAL *a, INTEGER const lda, REAL *x, INTEGER const ldx, REAL *b, INTEGER const ldb, REAL *work, REAL &resid) {
+void Rtrt02(fem::str_cref uplo, fem::str_cref trans, fem::str_cref diag, INTEGER const n, INTEGER const nrhs, REAL *a, INTEGER const lda, REAL *x, INTEGER const ldx, REAL *b, INTEGER const ldb, REAL *work, REAL &resid) {
     //
     // Quick exit if N = 0 or NRHS = 0
     //
@@ -56,10 +56,10 @@ void Rtrt02(const char *uplo, const char *trans, const char *diag, INTEGER const
     // Compute the 1-norm of A or A'.
     //
     REAL anorm = 0.0;
-    if (Mlsame(trans, "N")) {
-        anorm = Rlantr("1", uplo, diag, n, n, a, lda, work);
+    if (Mlsame(trans.elems(), "N")) {
+        anorm = Rlantr("1", uplo.elems(), diag.elems(), n, n, a, lda, work);
     } else {
-        anorm = Rlantr("I", uplo, diag, n, n, a, lda, work);
+        anorm = Rlantr("I", uplo.elems(), diag.elems(), n, n, a, lda, work);
     }
     //
     // Exit with RESID = 1/EPS if ANORM = 0.
@@ -80,14 +80,14 @@ void Rtrt02(const char *uplo, const char *trans, const char *diag, INTEGER const
     REAL xnorm = 0.0;
     for (j = 1; j <= nrhs; j = j + 1) {
         Rcopy(n, &x[(j - 1) * ldx], 1, work, 1);
-        Rtrmv(uplo, trans, diag, n, a, lda, work, 1);
+        Rtrmv(uplo.elems(), trans.elems(), diag.elems(), n, a, lda, work, 1);
         Raxpy(n, -one, &b[(j - 1) * ldb], 1, work, 1);
         bnorm = Rasum(n, work, 1);
         xnorm = Rasum(n, &x[(j - 1) * ldx], 1);
         if (xnorm <= zero) {
             resid = one / eps;
         } else {
-            resid = max(resid, REAL(((bnorm / anorm) / xnorm) / eps));
+            resid = max(resid, ((bnorm / anorm) / xnorm) / eps);
         }
     }
     //

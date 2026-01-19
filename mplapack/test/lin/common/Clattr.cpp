@@ -43,17 +43,16 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-void Clattr(INTEGER const imat, const char *uplo, const char *trans, char *diag, INTEGER *iseed, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *b, COMPLEX *work, REAL *rwork, INTEGER &info) {
+void Clattr(INTEGER const imat, fem::str_cref uplo, fem::str_cref trans, fem::str_ref diag, INTEGER *iseed, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *b, COMPLEX *work, REAL *rwork, INTEGER &info) {
     //
-    char path[4] = {};
-    path[0] = 'C';
-    path[1] = 'T';
-    path[2] = 'R';
+    fem::str<3> path = "Zomplex precision";
+    path(2, 3) = "TR";
     REAL unfl = Rlamch("Safe minimum");
     REAL ulp = Rlamch("Epsilon") * Rlamch("Base");
     REAL smlnum = unfl;
     const REAL one = 1.0;
     REAL bignum = (one - ulp) / smlnum;
+    Rlabad(smlnum, bignum);
     if ((imat >= 7 && imat <= 10) || imat == 18) {
         *diag = 'U';
     } else {
@@ -69,18 +68,18 @@ void Clattr(INTEGER const imat, const char *uplo, const char *trans, char *diag,
     //
     // Call Clatb4 to set parameters for CLATMS.
     //
-    bool upper = Mlsame(uplo, "U");
-    char type;
+    bool upper = Mlsame(uplo.elems(), "U");
+    fem::str<1> type;
     INTEGER kl = 0;
     INTEGER ku = 0;
     REAL anorm = 0.0;
     INTEGER mode = 0;
     REAL cndnum = 0.0;
-    char dist;
+    fem::str<1> dist;
     if (upper) {
-        Clatb4(path, imat, n, n, &type, kl, ku, anorm, mode, cndnum, &dist);
+        Clatb4(path, imat, n, n, type, kl, ku, anorm, mode, cndnum, dist);
     } else {
-        Clatb4(path, -imat, n, n, &type, kl, ku, anorm, mode, cndnum, &dist);
+        Clatb4(path, -imat, n, n, type, kl, ku, anorm, mode, cndnum, dist);
     }
     //
     // IMAT <= 6:  Non-unit triangular matrix
@@ -100,7 +99,7 @@ void Clattr(INTEGER const imat, const char *uplo, const char *trans, char *diag,
     COMPLEX rb = 0.0;
     REAL c = 0.0;
     COMPLEX s = 0.0;
-    const REAL two = 2.0e+0;
+    const REAL two = 2.0;
     INTEGER iy = 0;
     REAL bnorm = 0.0;
     REAL bscal = 0.0;
@@ -109,7 +108,7 @@ void Clattr(INTEGER const imat, const char *uplo, const char *trans, char *diag,
     REAL texp = 0.0;
     REAL tleft = 0.0;
     if (imat <= 6) {
-        Clatms(n, n, &dist, iseed, &type, rwork, mode, cndnum, anorm, kl, ku, "No packing", a, lda, work, info);
+        Clatms(n, n, dist, iseed, type, rwork, mode, cndnum, anorm, kl, ku, "No packing", a, lda, work, info);
         //
         // IMAT > 6:  Unit triangular matrix
         // The diagonal is deliberately set to something other than 1.
@@ -156,67 +155,66 @@ void Clattr(INTEGER const imat, const char *uplo, const char *trans, char *diag,
             }
         }
         //
-        //        Since the trace of a unit triangular matrix is 1, the product
-        //        of its singular values must be 1.  Let s = sqrt(CNDNUM),
-        //        x = sqrt(s) - 1/sqrt(s), y = sqrt(2/(n-2))*x, and z = x**2.
-        //        The following triangular matrix has singular values s, 1, 1,
-        //        ..., 1, 1/s:
+        // Since the trace of a unit triangular matrix is 1, the product
+        // of its singular values must be 1.  Let s = sqrt(CNDNUM),
+        // x = sqrt(s) - 1/sqrt(s), y = sqrt(2/(n-2))*x, and z = x**2.
+        // The following triangular matrix has singular values s, 1, 1,
+        // ..., 1, 1/s:
         //
-        //        1  y  y  y  ...  y  y  z
-        //           1  0  0  ...  0  0  y
-        //              1  0  ...  0  0  y
-        //                 .  ...  .  .  .
-        //                     .   .  .  .
-        //                         1  0  y
-        //                            1  y
-        //                               1
+        // 1  y  y  y  ...  y  y  z
+        // 1  0  0  ...  0  0  y
+        // 1  0  ...  0  0  y
+        // .  ...  .  .  .
+        // .   .  .  .
+        // 1  0  y
+        // 1  y
+        // 1
         //
-        //        To fill in the zeros, we first multiply by a matrix with small
-        //        condition number of the form
+        // To fill in the zeros, we first multiply by a matrix with small
+        // condition number of the form
         //
-        //        1  0  0  0  0  ...
-        //           1  +  *  0  0  ...
-        //              1  +  0  0  0
-        //                 1  +  *  0  0
-        //                    1  +  0  0
-        //                       ...
-        //                          1  +  0
-        //                             1  0
-        //                                1
+        // 1  0  0  0  0  ...
+        // 1  +  *  0  0  ...
+        // 1  +  0  0  0
+        // 1  +  *  0  0
+        // 1  +  0  0
+        // ...
+        // 1  +  0
+        // 1  0
+        // 1
         //
-        //        Each element marked with a '*' is formed by taking the product
-        //        of the adjacent elements marked with '+'.  The '*'s can be
-        //        chosen freely, and the '+'s are chosen so that the inverse of
-        //        T will have elements of the same magnitude as T.  If the *'s in
-        //        both T and inv(T) have small magnitude, T is well conditioned.
-        //        The two offdiagonals of T are stored in WORK.
+        // Each element marked with a '*' is formed by taking the product
+        // of the adjacent elements marked with '+'.  The '*'s can be
+        // chosen freely, and the '+'s are chosen so that the inverse of
+        // T will have elements of the same magnitude as T.  If the *'s in
+        // both T and inv(T) have small magnitude, T is well conditioned.
+        // The two offdiagonals of T are stored in WORK.
         //
-        //        The product of these two matrices has the form
+        // The product of these two matrices has the form
         //
-        //        1  y  y  y  y  y  .  y  y  z
-        //           1  +  *  0  0  .  0  0  y
-        //              1  +  0  0  .  0  0  y
-        //                 1  +  *  .  .  .  .
-        //                    1  +  .  .  .  .
-        //                       .  .  .  .  .
-        //                          .  .  .  .
-        //                             1  +  y
-        //                                1  y
-        //                                   1
+        // 1  y  y  y  y  y  .  y  y  z
+        // 1  +  *  0  0  .  0  0  y
+        // 1  +  0  0  .  0  0  y
+        // 1  +  *  .  .  .  .
+        // 1  +  .  .  .  .
+        // .  .  .  .  .
+        // .  .  .  .
+        // 1  +  y
+        // 1  y
+        // 1
         //
-        //        Now we multiply by Givens rotations, using the fact that
+        // Now we multiply by Givens rotations, using the fact that
         //
-        //              [  c   s ] [  1   w ] [ -c  -s ] =  [  1  -w ]
-        //              [ -s   c ] [  0   1 ] [  s  -c ]    [  0   1 ]
-        //        and
-        //              [ -c  -s ] [  1   0 ] [  c   s ] =  [  1   0 ]
-        //              [  s  -c ] [  w   1 ] [ -s   c ]    [ -w   1 ]
+        // [  c   s ] [  1   w ] [ -c  -s ] =  [  1  -w ]
+        // [ -s   c ] [  0   1 ] [  s  -c ]    [  0   1 ]
+        // and
+        // [ -c  -s ] [  1   0 ] [  c   s ] =  [  1   0 ]
+        // [  s  -c ] [  w   1 ] [ -s   c ]    [ -w   1 ]
         //
-        //        where c = w / sqrt(w**2+4) and s = 2 / sqrt(w**2+4).
+        // where c = w / sqrt(w**2+4) and s = 2 / sqrt(w**2+4).
         //
-        REAL quarter = 0.25;
-        star1 = quarter * Clarnd(5, iseed);
-        sfac = 0.5e0;
+        star1 = 0.25 * Clarnd(5, iseed);
+        sfac = 0.5;
         plus1 = sfac * Clarnd(5, iseed);
         for (j = 1; j <= n; j = j + 2) {
             plus2 = star1 / plus1;
@@ -235,10 +233,9 @@ void Clattr(INTEGER const imat, const char *uplo, const char *trans, char *diag,
             }
         }
         //
-        REAL two = 2.0;
         x = sqrt(cndnum) - 1 / sqrt(cndnum);
         if (n > 2) {
-            y = sqrt(two / castREAL(n - 2)) * x;
+            y = sqrt(2.0 / (n - 2)) * x;
         } else {
             y = zero;
         }
@@ -374,7 +371,7 @@ void Clattr(INTEGER const imat, const char *uplo, const char *trans, char *diag,
                 }
                 a[(j - 1) + (j - 1) * lda] = Clarnd(5, iseed);
             }
-            a[(1 - 1) + (1 - 1) * lda] = smlnum * a[(1 - 1) + (1 - 1) * lda];
+            a[0] = smlnum * a[0];
         }
         //
     } else if (imat == 13) {
@@ -397,7 +394,7 @@ void Clattr(INTEGER const imat, const char *uplo, const char *trans, char *diag,
                 }
                 a[(j - 1) + (j - 1) * lda] = Clarnd(5, iseed);
             }
-            a[(1 - 1) + (1 - 1) * lda] = smlnum * a[(1 - 1) + (1 - 1) * lda];
+            a[0] = smlnum * a[0];
         }
         //
     } else if (imat == 14) {
@@ -617,7 +614,7 @@ void Clattr(INTEGER const imat, const char *uplo, const char *trans, char *diag,
     //
     // Flip the matrix if the transpose will be used.
     //
-    if (!Mlsame(trans, "N")) {
+    if (!Mlsame(trans.elems(), "N")) {
         if (upper) {
             for (j = 1; j <= n / 2; j = j + 1) {
                 Cswap(n - 2 * j + 1, &a[(j - 1) + (j - 1) * lda], lda, &a[((j + 1) - 1) + ((n - j + 1) - 1) * lda], -1);

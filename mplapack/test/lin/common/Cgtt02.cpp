@@ -43,7 +43,7 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-void Cgtt02(const char *trans, INTEGER const n, INTEGER const nrhs, COMPLEX *dl, COMPLEX *d, COMPLEX *du, COMPLEX *x, INTEGER const ldx, COMPLEX *b, INTEGER const ldb, REAL &resid) {
+void Cgtt02(fem::str_cref trans, INTEGER const n, INTEGER const nrhs, COMPLEX *dl, COMPLEX *d, COMPLEX *du, COMPLEX *x, INTEGER const ldx, COMPLEX *b, INTEGER const ldb, REAL &resid) {
     //
     // Quick exit if N = 0 or NRHS = 0
     //
@@ -57,7 +57,7 @@ void Cgtt02(const char *trans, INTEGER const n, INTEGER const nrhs, COMPLEX *dl,
     // norm(B - op(A)*X) / ( norm(A) * norm(X) * EPS ).
     //
     REAL anorm = 0.0;
-    if (Mlsame(trans, "N")) {
+    if (Mlsame(trans.elems(), "N")) {
         anorm = Clangt("1", n, dl, d, du);
     } else {
         anorm = Clangt("I", n, dl, d, du);
@@ -74,7 +74,7 @@ void Cgtt02(const char *trans, INTEGER const n, INTEGER const nrhs, COMPLEX *dl,
     //
     // Compute B - op(A)*X.
     //
-    Clagtm(trans, n, nrhs, -one, dl, d, du, x, ldx, one, b, ldb);
+    Clagtm(trans.elems(), n, nrhs, -one, dl, d, du, x, ldx, one, b, ldb);
     //
     INTEGER j = 0;
     REAL bnorm = 0.0;
@@ -85,7 +85,7 @@ void Cgtt02(const char *trans, INTEGER const n, INTEGER const nrhs, COMPLEX *dl,
         if (xnorm <= zero) {
             resid = one / eps;
         } else {
-            resid = max(resid, REAL(((bnorm / anorm) / xnorm) / eps));
+            resid = max(resid, ((bnorm / anorm) / xnorm) / eps);
         }
     }
     //

@@ -42,13 +42,10 @@ using fem::common;
 
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-#include <string>
-#include <iostream>
 
-void Alahd(INTEGER const iounit, const char *_path) {
+void Alahd(INTEGER const iounit, fem::str_cref path) {
     common cmn;
     common_write write(cmn);
-    char subnam_trimmed[1024];
     static const char *format_9892 = "(/,1x,a3,':  ',a9,' indefinite matrices',"
                                      "', \"rook\" (bounded Bunch-Kaufman) pivoting')";
     static const char *format_9926 = "(3x,i2,': Largest 2-Norm of 2-by-2 pivots',/,12x,"
@@ -114,27 +111,19 @@ void Alahd(INTEGER const iounit, const char *_path) {
     if (iounit <= 0) {
         return;
     }
-    char path[4] = {};
-    strncpy(path, _path, 3);
-    path[3] = '\0';
-    char c1[1];
-    c1[0] = path[0];
-    char c3[1];
-    c3[0] = path[2];
-    char p2[2];
-    p2[0] = path[1];
-    p2[1] = path[2];
-    bool sord = Mlsame(c1, "R");
-    bool corz = Mlsame(c1, "C") || Mlsame(c1, "Z");
+    fem::str<1> c1 = path(1, 1);
+    fem::str<1> c3 = path(3, 3);
+    fem::str<2> p2 = path(2, 3);
+    bool sord = Mlsame(c1.elems, "S") || Mlsame(c1.elems, "D");
+    bool corz = Mlsame(c1.elems, "C") || Mlsame(c1.elems, "Z");
     if (!(sord || corz)) {
         return;
     }
     //
-    char sym[9];
-    char eigcnm[4];
-    char subnam[32];
-
-    if (Mlsamen(2, p2, "GE")) {
+    fem::str<9> sym;
+    fem::str<4> eigcnm;
+    fem::str<32> subnam;
+    if (Mlsamen(2, p2.elems, "GE")) {
         //
         // GE: General dense
         //
@@ -152,7 +141,7 @@ void Alahd(INTEGER const iounit, const char *_path) {
         write(iounit, format_9955), 8;
         write(iounit, "(' Messages:')");
         //
-    } else if (Mlsamen(2, p2, "GB")) {
+    } else if (Mlsamen(2, p2.elems, "GB")) {
         //
         // GB: General band
         //
@@ -172,7 +161,7 @@ void Alahd(INTEGER const iounit, const char *_path) {
         write(iounit, format_9955), 7;
         write(iounit, "(' Messages:')");
         //
-    } else if (Mlsamen(2, p2, "GT")) {
+    } else if (Mlsamen(2, p2.elems, "GT")) {
         //
         // GT: General tridiagonal
         //
@@ -194,17 +183,17 @@ void Alahd(INTEGER const iounit, const char *_path) {
         write(iounit, format_9955), 7;
         write(iounit, "(' Messages:')");
         //
-    } else if (Mlsamen(2, p2, "PO") || Mlsamen(2, p2, "PP")) {
+    } else if (Mlsamen(2, p2.elems, "PO") || Mlsamen(2, p2.elems, "PP")) {
         //
         // PO: Positive definite full
         // PP: Positive definite packed
         //
         if (sord) {
-            strncpy(sym, "Symmetric", strlen(sym));
+            sym = "Symmetric";
         } else {
-            strncpy(sym, "Hermitian", strlen(sym));
+            sym = "Hermitian";
         }
-        if (Mlsame(c3, "O")) {
+        if (Mlsame(c3.elems, "O")) {
             write(iounit, "(/,1x,a3,':  ',a9,' positive definite matrices')"), path, sym;
         } else {
             write(iounit, format_9995), path, sym;
@@ -228,16 +217,20 @@ void Alahd(INTEGER const iounit, const char *_path) {
         write(iounit, format_9955), 8;
         write(iounit, "(' Messages:')");
         //
-    } else if (Mlsamen(2, p2, "PS")) {
+    } else if (Mlsamen(2, p2.elems, "PS")) {
         //
         // PS: Positive semi-definite full
         //
         if (sord) {
-            strncpy(sym, "Symmetric", strlen(sym));
+            sym = "Symmetric";
         } else {
-            strncpy(sym, "Hermitian", strlen(sym));
+            sym = "Hermitian";
         }
-        strncpy(eigcnm, "1D12", strlen(eigcnm));
+        if (Mlsame(c1.elems, "S") || Mlsame(c1.elems, "C")) {
+            eigcnm = "1E04";
+        } else {
+            eigcnm = "1D12";
+        }
         write(iounit, format_9995), path, sym;
         write(iounit, "(' Matrix types:')");
         write(iounit, "(4x,'1. Diagonal',/,4x,'2. Random, CNDNUM = 2',14x,/,3x,"
@@ -254,7 +247,7 @@ void Alahd(INTEGER const iounit, const char *_path) {
         write(iounit, "(3x,'norm( P * U'' * U * P'' - A ) / ( N * norm(A) * EPS )',', or',/,"
                       "3x,'norm( P * L * L'' * P'' - A ) / ( N * norm(A) * EPS )')");
         write(iounit, "(' Messages:')");
-    } else if (Mlsamen(2, p2, "PB")) {
+    } else if (Mlsamen(2, p2.elems, "PB")) {
         //
         // PB: Positive definite band
         //
@@ -280,7 +273,7 @@ void Alahd(INTEGER const iounit, const char *_path) {
         write(iounit, format_9955), 7;
         write(iounit, "(' Messages:')");
         //
-    } else if (Mlsamen(2, p2, "PT")) {
+    } else if (Mlsamen(2, p2.elems, "PT")) {
         //
         // PT: Positive definite tridiagonal
         //
@@ -308,12 +301,12 @@ void Alahd(INTEGER const iounit, const char *_path) {
         write(iounit, format_9955), 7;
         write(iounit, "(' Messages:')");
         //
-    } else if (Mlsamen(2, p2, "SY")) {
+    } else if (Mlsamen(2, p2.elems, "SY")) {
         //
         // SY: Symmetric indefinite full,
         // with partial (Bunch-Kaufman) pivoting algorithm
         //
-        if (Mlsame(c3, "Y")) {
+        if (Mlsame(c3.elems, "Y")) {
             write(iounit, format_9992), path, "Symmetric";
         } else {
             write(iounit, format_9991), path, "Symmetric";
@@ -336,7 +329,7 @@ void Alahd(INTEGER const iounit, const char *_path) {
         write(iounit, format_9955), 9;
         write(iounit, "(' Messages:')");
         //
-    } else if (Mlsamen(2, p2, "SR") || Mlsamen(2, p2, "SK")) {
+    } else if (Mlsamen(2, p2.elems, "SR") || Mlsamen(2, p2.elems, "SK")) {
         //
         // SR: Symmetric indefinite full,
         // with rook (bounded Bunch-Kaufman) pivoting algorithm
@@ -368,12 +361,12 @@ void Alahd(INTEGER const iounit, const char *_path) {
         write(iounit, format_9955), 7;
         write(iounit, "(' Messages:')");
         //
-    } else if (Mlsamen(2, p2, "SP")) {
+    } else if (Mlsamen(2, p2.elems, "SP")) {
         //
         // SP: Symmetric indefinite packed,
         // with partial (Bunch-Kaufman) pivoting algorithm
         //
-        if (Mlsame(c3, "Y")) {
+        if (Mlsame(c3.elems, "Y")) {
             write(iounit, format_9992), path, "Symmetric";
         } else {
             write(iounit, format_9991), path, "Symmetric";
@@ -395,7 +388,7 @@ void Alahd(INTEGER const iounit, const char *_path) {
         write(iounit, format_9955), 8;
         write(iounit, "(' Messages:')");
         //
-    } else if (Mlsamen(2, p2, "HA")) {
+    } else if (Mlsamen(2, p2.elems, "HA")) {
         //
         // HA: Hermitian,
         // with Assen Algorithm
@@ -417,7 +410,7 @@ void Alahd(INTEGER const iounit, const char *_path) {
         write(iounit, format_9955), 9;
         write(iounit, "(' Messages:')");
         //
-    } else if (Mlsamen(2, p2, "HE")) {
+    } else if (Mlsamen(2, p2.elems, "HE")) {
         //
         // HE: Hermitian indefinite full,
         // with partial (Bunch-Kaufman) pivoting algorithm
@@ -439,7 +432,7 @@ void Alahd(INTEGER const iounit, const char *_path) {
         write(iounit, format_9955), 9;
         write(iounit, "(' Messages:')");
         //
-    } else if (Mlsamen(2, p2, "HR") || Mlsamen(2, p2, "HR")) {
+    } else if (Mlsamen(2, p2.elems, "HR") || Mlsamen(2, p2.elems, "HR")) {
         //
         // HR: Hermitian indefinite full,
         // with rook (bounded Bunch-Kaufman) pivoting algorithm
@@ -467,12 +460,12 @@ void Alahd(INTEGER const iounit, const char *_path) {
         write(iounit, format_9955), 7;
         write(iounit, "(' Messages:')");
         //
-    } else if (Mlsamen(2, p2, "HP")) {
+    } else if (Mlsamen(2, p2.elems, "HP")) {
         //
         // HP: Hermitian indefinite packed,
         // with partial (Bunch-Kaufman) pivoting algorithm
         //
-        if (Mlsame(c3, "E")) {
+        if (Mlsame(c3.elems, "E")) {
             write(iounit, format_9992), path, "Hermitian";
         } else {
             write(iounit, format_9991), path, "Hermitian";
@@ -490,21 +483,17 @@ void Alahd(INTEGER const iounit, const char *_path) {
         write(iounit, format_9955), 8;
         write(iounit, "(' Messages:')");
         //
-    } else if (Mlsamen(2, p2, "TR") || Mlsamen(2, p2, "TP")) {
+    } else if (Mlsamen(2, p2.elems, "TR") || Mlsamen(2, p2.elems, "TP")) {
         //
         // TR: Triangular full
         // TP: Triangular packed
         //
-        if (Mlsame(c3, "R")) {
+        if (Mlsame(c3.elems, "R")) {
             write(iounit, "(/,1x,a3,':  Triangular matrices')"), path;
-            std::string _str;
-            _str = path[0] + "LATRS";
-            strncpy(subnam, _str.c_str(), strlen(subnam));
+            subnam = path(1, 1) + fem::str_cref("LATRS");
         } else {
             write(iounit, "(/,1x,a3,':  Triangular packed matrices')"), path;
-            std::string _str;
-            _str = path[0] + "LATRS";
-            strncpy(subnam, _str.c_str(), strlen(subnam));
+            subnam = path(1, 1) + fem::str_cref("LATPS");
         }
         write(iounit, "(' Matrix types for ',a3,' routines:',/,4x,'1. Diagonal',24x,"
                       "'6. Scaled near overflow',/,4x,'2. Random, CNDNUM = 2',14x,"
@@ -513,8 +502,6 @@ void Alahd(INTEGER const iounit, const char *_path) {
                       "'9. Unit, CNDNUM = sqrt(0.1/EPS)',/,4x,'5. Scaled near underflow',10x,"
                       "'10. Unit, CNDNUM = 0.1/EPS')"),
             path;
-        memset(subnam_trimmed, '\0', sizeof(subnam_trimmed));
-        strncpy(subnam_trimmed, subnam, strlen(subnam_trimmed) - 1);
         write(iounit, "(' Special types for testing ',a,':',/,3x,"
                       "'11. Matrix elements are O(1), large right hand side',/,3x,"
                       "'12. First diagonal causes overflow,',' offdiagonal column norms < 1',"
@@ -525,8 +512,7 @@ void Alahd(INTEGER const iounit, const char *_path) {
                       "'16. One zero diagonal element',/,3x,"
                       "'17. Large offdiagonals cause overflow when adding a column',/,3x,"
                       "'18. Unit triangular with large right hand side')"),
-            subnam_trimmed;
-
+            subnam(1, fem::len_trim(subnam));
         write(iounit, "(' Test ratios:')");
         write(iounit, format_9961), 1;
         write(iounit, format_9960), 2;
@@ -535,28 +521,21 @@ void Alahd(INTEGER const iounit, const char *_path) {
         write(iounit, format_9957), 5;
         write(iounit, format_9956), 6;
         write(iounit, format_9955), 7;
-        memset(subnam_trimmed, '\0', sizeof(subnam_trimmed));
-        strncpy(subnam_trimmed, subnam, strlen(subnam_trimmed) - 1);
-        write(iounit, format_9951), subnam_trimmed, 8;
+        write(iounit, format_9951), subnam(1, fem::len_trim(subnam)), 8;
         write(iounit, "(' Messages:')");
         //
-    } else if (Mlsamen(2, p2, "TB")) {
+    } else if (Mlsamen(2, p2.elems, "TB")) {
         //
         // TB: Triangular band
         //
         write(iounit, "(/,1x,a3,':  Triangular band matrices')"), path;
-        std::string _str;
-        _str = path[0] + "LATBS";
-        strncpy(subnam, _str.c_str(), strlen(subnam));
+        subnam = path(1, 1) + fem::str_cref("LATBS");
         write(iounit, "(' Matrix types for ',a3,' routines:',/,4x,'1. Random, CNDNUM = 2',14x,"
                       "'6. Identity',/,4x,'2. Random, CNDNUM = sqrt(0.1/EPS)  ',"
                       "'7. Unit triangular, CNDNUM = 2',/,4x,'3. Random, CNDNUM = 0.1/EPS',8x,"
                       "'8. Unit, CNDNUM = sqrt(0.1/EPS)',/,4x,'4. Scaled near underflow',11x,"
                       "'9. Unit, CNDNUM = 0.1/EPS',/,4x,'5. Scaled near overflow')"),
             path;
-
-        memset(subnam_trimmed, '\0', sizeof(subnam_trimmed));
-        strncpy(subnam_trimmed, subnam, strlen(subnam_trimmed) - 1);
         write(iounit, "(' Special types for testing ',a,':',/,3x,"
                       "'10. Matrix elements are O(1), large right hand side',/,3x,"
                       "'11. First diagonal causes overflow,',' offdiagonal column norms < 1',"
@@ -567,7 +546,7 @@ void Alahd(INTEGER const iounit, const char *_path) {
                       "'15. One zero diagonal element',/,3x,"
                       "'16. Large offdiagonals cause overflow when adding a column',/,3x,"
                       "'17. Unit triangular with large right hand side')"),
-            subnam_trimmed;
+            subnam(1, fem::len_trim(subnam));
         write(iounit, "(' Test ratios:')");
         write(iounit, format_9960), 1;
         write(iounit, format_9959), 2;
@@ -575,10 +554,10 @@ void Alahd(INTEGER const iounit, const char *_path) {
         write(iounit, format_9957), 4;
         write(iounit, format_9956), 5;
         write(iounit, format_9955), 6;
-        write(iounit, format_9951), subnam_trimmed, 7;
+        write(iounit, format_9951), subnam(1, fem::len_trim(subnam)), 7;
         write(iounit, "(' Messages:')");
         //
-    } else if (Mlsamen(2, p2, "QR")) {
+    } else if (Mlsamen(2, p2.elems, "QR")) {
         //
         // QR decomposition of rectangular matrices
         //
@@ -597,7 +576,7 @@ void Alahd(INTEGER const iounit, const char *_path) {
         write(iounit, "(3x,i2,': diagonal is not non-negative')"), 9;
         write(iounit, "(' Messages:')");
         //
-    } else if (Mlsamen(2, p2, "LQ")) {
+    } else if (Mlsamen(2, p2.elems, "LQ")) {
         //
         // LQ decomposition of rectangular matrices
         //
@@ -614,7 +593,7 @@ void Alahd(INTEGER const iounit, const char *_path) {
         write(iounit, format_9960), 7;
         write(iounit, "(' Messages:')");
         //
-    } else if (Mlsamen(2, p2, "QL")) {
+    } else if (Mlsamen(2, p2.elems, "QL")) {
         //
         // QL decomposition of rectangular matrices
         //
@@ -631,7 +610,7 @@ void Alahd(INTEGER const iounit, const char *_path) {
         write(iounit, format_9960), 7;
         write(iounit, "(' Messages:')");
         //
-    } else if (Mlsamen(2, p2, "RQ")) {
+    } else if (Mlsamen(2, p2.elems, "RQ")) {
         //
         // RQ decomposition of rectangular matrices
         //
@@ -648,7 +627,7 @@ void Alahd(INTEGER const iounit, const char *_path) {
         write(iounit, format_9960), 7;
         write(iounit, "(' Messages:')");
         //
-    } else if (Mlsamen(2, p2, "QP")) {
+    } else if (Mlsamen(2, p2.elems, "QP")) {
         //
         // QR decomposition with column pivoting
         //
@@ -663,7 +642,7 @@ void Alahd(INTEGER const iounit, const char *_path) {
         write(iounit, format_9938), 3;
         write(iounit, "(' Messages:')");
         //
-    } else if (Mlsamen(2, p2, "TZ")) {
+    } else if (Mlsamen(2, p2.elems, "TZ")) {
         //
         // TZ:  Trapezoidal
         //
@@ -677,7 +656,7 @@ void Alahd(INTEGER const iounit, const char *_path) {
         write(iounit, format_9938), 3;
         write(iounit, "(' Messages:')");
         //
-    } else if (Mlsamen(2, p2, "LS")) {
+    } else if (Mlsamen(2, p2.elems, "LS")) {
         //
         // LS:  Least Squares driver routines for
         // LS, LSD, LSS, LSX and LSY.
@@ -705,7 +684,7 @@ void Alahd(INTEGER const iounit, const char *_path) {
         write(iounit, "(3x,' 7-10: same as 3-6',3x,' 11-14: same as 3-6')");
         write(iounit, "(' Messages:')");
         //
-    } else if (Mlsamen(2, p2, "LU")) {
+    } else if (Mlsamen(2, p2.elems, "LU")) {
         //
         // LU factorization variants
         //
@@ -716,7 +695,7 @@ void Alahd(INTEGER const iounit, const char *_path) {
         write(iounit, format_9962), 1;
         write(iounit, "(' Messages:')");
         //
-    } else if (Mlsamen(2, p2, "CH")) {
+    } else if (Mlsamen(2, p2.elems, "CH")) {
         //
         // Cholesky factorization variants
         //
@@ -732,7 +711,7 @@ void Alahd(INTEGER const iounit, const char *_path) {
         write(iounit, format_9954), 1;
         write(iounit, "(' Messages:')");
         //
-    } else if (Mlsamen(2, p2, "QS")) {
+    } else if (Mlsamen(2, p2.elems, "QS")) {
         //
         // QR factorization variants
         //
@@ -741,7 +720,7 @@ void Alahd(INTEGER const iounit, const char *_path) {
         write(iounit, format_9970);
         write(iounit, "(' Test ratios:')");
         //
-    } else if (Mlsamen(2, p2, "QT")) {
+    } else if (Mlsamen(2, p2.elems, "QT")) {
         //
         // QRT (general matrices)
         //
@@ -754,7 +733,7 @@ void Alahd(INTEGER const iounit, const char *_path) {
         write(iounit, "(3x,i2,': norm( C*Q - C*Q ) / ( M * norm(C) * EPS )')"), 5;
         write(iounit, "(3x,i2,': norm( C*Q'' - C*Q'' ) / ( M * norm(C) * EPS )')"), 6;
         //
-    } else if (Mlsamen(2, p2, "QX")) {
+    } else if (Mlsamen(2, p2.elems, "QX")) {
         //
         // QRT (triangular-pentagonal)
         //
@@ -767,7 +746,7 @@ void Alahd(INTEGER const iounit, const char *_path) {
         write(iounit, "(3x,i2,': norm( C*Q - C*Q ) / ( (M+N) * norm(C) * EPS )')"), 5;
         write(iounit, "(3x,i2,': norm( C*Q'' - C*Q'' ) / ( (M+N) * norm(C) * EPS )')"), 6;
         //
-    } else if (Mlsamen(2, p2, "TQ")) {
+    } else if (Mlsamen(2, p2.elems, "TQ")) {
         //
         // QRT (triangular-pentagonal)
         //
@@ -780,7 +759,7 @@ void Alahd(INTEGER const iounit, const char *_path) {
         write(iounit, "(3x,i2,': norm( C*Q - C*Q ) / ( (M+N) * norm(C) * EPS )')"), 5;
         write(iounit, "(3x,i2,': norm( C*Q'' - C*Q'' ) / ( (M+N) * norm(C) * EPS )')"), 6;
         //
-    } else if (Mlsamen(2, p2, "XQ")) {
+    } else if (Mlsamen(2, p2.elems, "XQ")) {
         //
         // QRT (triangular-pentagonal)
         //
@@ -793,7 +772,7 @@ void Alahd(INTEGER const iounit, const char *_path) {
         write(iounit, "(3x,i2,': norm( C*Q - C*Q ) / ( (M+N) * norm(C) * EPS )')"), 5;
         write(iounit, "(3x,i2,': norm( C*Q'' - C*Q'' ) / ( (M+N) * norm(C) * EPS )')"), 6;
         //
-    } else if (Mlsamen(2, p2, "TS")) {
+    } else if (Mlsamen(2, p2.elems, "TS")) {
         //
         // TS:  QR routines for tall-skinny and short-wide matrices
         //
@@ -808,7 +787,7 @@ void Alahd(INTEGER const iounit, const char *_path) {
         write(iounit, "(3x,i2,': norm( C*Q - C*Q ) / ( (M+N) * norm(C) * EPS )')"), 5;
         write(iounit, "(3x,i2,': norm( C*Q'' - C*Q'' ) / ( (M+N) * norm(C) * EPS )')"), 6;
         //
-    } else if (Mlsamen(2, p2, "HH")) {
+    } else if (Mlsamen(2, p2.elems, "HH")) {
         //
         // HH:  Householder reconstruction for tall-skinny matrices
         //

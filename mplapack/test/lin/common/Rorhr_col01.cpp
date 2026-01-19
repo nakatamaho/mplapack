@@ -44,74 +44,48 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Rorhr_col01(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER const nb1, INTEGER const nb2, REAL *result) {
+    common cmn;
+    static INTEGER iseed[4] = {1988, 1989, 1990, 1991};
+    // TEST MATRICES WITH HALF OF MATRIX BEING ZEROS
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     .. Return values ..
-    //
-    //  =====================================================================
-    //
-    //     ..
-    //     .. Local allocatable arrays
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Scalars in Common ..
-    //     ..
-    //     .. Common blocks ..
-    //     ..
-    //     .. Data statements ..
-    //
-    //     TEST MATRICES WITH HALF OF MATRIX BEING ZEROS
-    //
-    INTEGER iseed[4] = {1988, 1989, 1990, 1991};
     bool testzeros = false;
     //
     REAL eps = Rlamch("Epsilon");
     INTEGER k = min(m, n);
-    INTEGER l = max({m, n, (INTEGER)1});
+    INTEGER l = max(m, n, 1);
     //
-    //     Dynamically allocate local arrays
+    // Dynamically allocate local arrays
     //
-    //     Put random numbers into A and copy to AF
+    // FABLE: ALLOCATE removed (RAII in C++)
+    //
+    // Put random numbers into A and copy to AF
     //
     INTEGER j = 0;
-    REAL *a = new REAL[m * n];
-    INTEGER lda = m;
+    std::unique_ptr<REAL[]> __a_storage(new REAL[m * n]);
+    REAL *a = __a_storage.get();
     for (j = 1; j <= n; j = j + 1) {
-        Rlarnv(2, iseed, m, &a[(j - 1) * lda]);
+        Rlarnv(2, iseed, m, &a[(j - 1) * m]);
     }
     if (testzeros) {
         if (m >= 4) {
             for (j = 1; j <= n; j = j + 1) {
-                Rlarnv(2, iseed, m / 2, &a[((m / 4) - 1) + (j - 1) * lda]);
+                Rlarnv(2, iseed, m / 2, &a[((m / 4) - 1) + (j - 1) * m]);
             }
         }
     }
-    REAL *af = new REAL[m * n];
-    INTEGER ldaf = m;
+    std::unique_ptr<REAL[]> __af_storage(new REAL[m * n]);
+    REAL *af = __af_storage.get();
     Rlacpy("Full", m, n, a, m, af, m);
     //
-    //     Number of row blocks in Rlatsqr
+    // Number of row blocks in Rlatsqr
     //
-    INTEGER nrb = max((INTEGER)1, castINTEGER(ceil(castREAL(m - n) / castREAL(mb1 - n))));
+    INTEGER nrb = max((INTEGER)1, iceil(castREAL(m - n) / castREAL(mb1 - n)));
     //
-    //     Begin determine LWORK for the array WORK and allocate memory.
+    // FABLE: ALLOCATE removed (RAII in C++)
     //
-    //     Rlatsqr requires NB1 to be bounded by N.
+    // Begin determine LWORK for the array WORK and allocate memory.
+    //
+    // Rlatsqr requires NB1 to be bounded by N.
     //
     INTEGER nb1_ub = min(nb1, n);
     //
@@ -119,7 +93,8 @@ void Rorhr_col01(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
     //
     INTEGER nb2_ub = min(nb2, n);
     //
-    REAL *t1 = new REAL[nb1 * n * nrb];
+    std::unique_ptr<REAL[]> __t1_storage(new REAL[nb1 * n * nrb]);
+    REAL *t1 = __t1_storage.get();
     REAL workquery[1];
     INTEGER info = 0;
     Rlatsqr(m, n, mb1, nb1_ub, af, m, t1, nb1, workquery, -1, info);
@@ -128,51 +103,61 @@ void Rorhr_col01(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
     //
     lwork = max(lwork, castINTEGER(workquery[1 - 1]));
     //
-    //     In Rgemqrt, WORK is N*NB2_UB if SIDE = 'L',
-    //                or  M*NB2_UB if SIDE = 'R'.
+    // In Rgemqrt, WORK is N*NB2_UB if SIDE = 'L',
+    // or  M*NB2_UB if SIDE = 'R'.
     //
-    lwork = max({lwork, nb2_ub * n, nb2_ub * m});
+    lwork = max(lwork, nb2_ub * n, nb2_ub * m);
     //
-    //     End allocate memory for WORK.
+    // FABLE: ALLOCATE removed (RAII in C++)
     //
-    //     Begin Householder reconstruction routines
+    // End allocate memory for WORK.
     //
-    //     Factor the matrix A in the array AF.
+    // Begin Householder reconstruction routines
     //
-    REAL *work = new REAL[lwork];
+    // Factor the matrix A in the array AF.
+    //
+    srnamt = "DLATSQR";
+    std::unique_ptr<REAL[]> __work_storage(new REAL[lwork]);
+    REAL *work = __work_storage.get();
     Rlatsqr(m, n, mb1, nb1_ub, af, m, t1, nb1, work, lwork, info);
     //
-    //     Copy the factor R into the array R.
+    // Copy the factor R into the array R.
     //
-    REAL *r = new REAL[m * l];
-    INTEGER ldr = m;
+    srnamt = "DLACPY";
+    std::unique_ptr<REAL[]> __r_storage(new REAL[m * l]);
+    REAL *r = __r_storage.get();
     Rlacpy("U", n, n, af, m, r, m);
     //
-    //     Reconstruct the orthogonal matrix Q.
+    // Reconstruct the orthogonal matrix Q.
     //
+    srnamt = "DORGTSQR";
     Rorgtsqr(m, n, mb1, nb1, af, m, t1, nb1, work, lwork, info);
     //
-    //     Perform the Householder reconstruction, the result is stored
-    //     the arrays AF and T2.
+    // Perform the Householder reconstruction, the result is stored
+    // the arrays AF and T2.
     //
-    REAL *t2 = new REAL[nb2 * n];
-    REAL *diag = new REAL[n];
+    srnamt = "DORHR_COL";
+    std::unique_ptr<REAL[]> __t2_storage(new REAL[nb2 * n]);
+    REAL *t2 = __t2_storage.get();
+    std::unique_ptr<REAL[]> __diag_storage(new REAL[n]);
+    REAL *diag = __diag_storage.get();
     Rorhr_col(m, n, nb2, af, m, t2, nb2, diag, info);
     //
-    //     Compute the factor R_hr corresponding to the Householder
-    //     reconstructed Q_hr and place it in the upper triangle of AF to
-    //     match the Q storage format in Rgeqrt. R_hr = R_tsqr * S,
-    //     this means changing the sign of I-th row of the matrix R_tsqr
-    //     according to sign of of I-th diagonal element DIAG(I) of the
-    //     matrix S.
+    // Compute the factor R_hr corresponding to the Householder
+    // reconstructed Q_hr and place it in the upper triangle of AF to
+    // match the Q storage format in Rgeqrt. R_hr = R_tsqr * S,
+    // this means changing the sign of I-th row of the matrix R_tsqr
+    // according to sign of of I-th diagonal element DIAG(I) of the
+    // matrix S.
     //
+    srnamt = "DLACPY";
     Rlacpy("U", n, n, r, m, af, m);
     //
     INTEGER i = 0;
     const REAL one = 1.0;
     for (i = 1; i <= n; i = i + 1) {
         if (diag[i - 1] == -one) {
-            Rscal(n + 1 - i, -one, &af[(i - 1) + (i - 1) * ldaf], m);
+            Rscal(n + 1 - i, -one, &af[(i - 1) + (i - 1) * m], m);
         }
     }
     //
@@ -181,10 +166,11 @@ void Rorhr_col01(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
     // Generate the m-by-m matrix Q
     //
     const REAL zero = 0.0;
-    REAL *q = new REAL[l * l];
-    INTEGER ldq = l;
+    std::unique_ptr<REAL[]> __q_storage(new REAL[l * l]);
+    REAL *q = __q_storage.get();
     Rlaset("Full", m, m, zero, one, q, m);
     //
+    srnamt = "DGEMQRT";
     Rgemqrt("L", "N", m, m, k, nb2_ub, af, m, t2, nb2, q, m, work, info);
     //
     // Copy R
@@ -198,7 +184,8 @@ void Rorhr_col01(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
     //
     Rgemm("T", "N", m, n, m, -one, q, m, a, m, one, r, m);
     //
-    REAL *rwork = new REAL[l];
+    std::unique_ptr<REAL[]> __rwork_storage(new REAL[l]);
+    REAL *rwork = __rwork_storage.get();
     REAL anorm = Rlange("1", m, n, a, m, rwork);
     REAL resid = Rlange("1", m, n, r, m, rwork);
     if (anorm > zero) {
@@ -217,18 +204,19 @@ void Rorhr_col01(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
     //
     // Generate random m-by-n matrix C
     //
-    REAL *c = new REAL[m * n];
-    INTEGER ldc = m;
+    std::unique_ptr<REAL[]> __c_storage(new REAL[m * n]);
+    REAL *c = __c_storage.get();
     for (j = 1; j <= n; j = j + 1) {
-        Rlarnv(2, iseed, m, &c[(j - 1) * ldc]);
+        Rlarnv(2, iseed, m, &c[(j - 1) * m]);
     }
     REAL cnorm = Rlange("1", m, n, c, m, rwork);
-    REAL *cf = new REAL[m * n];
-    INTEGER ldcf = m;
+    std::unique_ptr<REAL[]> __cf_storage(new REAL[m * n]);
+    REAL *cf = __cf_storage.get();
     Rlacpy("Full", m, n, c, m, cf, m);
     //
-    //     Apply Q to C as Q*C = CF
+    // Apply Q to C as Q*C = CF
     //
+    srnamt = "DGEMQRT";
     Rgemqrt("L", "N", m, n, k, nb2_ub, af, m, t2, nb2, cf, m, work, info);
     //
     // TEST 3
@@ -246,8 +234,9 @@ void Rorhr_col01(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
     //
     Rlacpy("Full", m, n, c, m, cf, m);
     //
-    //     Apply Q to C as (Q**T)*C = CF
+    // Apply Q to C as (Q**T)*C = CF
     //
+    srnamt = "DGEMQRT";
     Rgemqrt("L", "T", m, n, k, nb2_ub, af, m, t2, nb2, cf, m, work, info);
     //
     // TEST 4
@@ -263,17 +252,19 @@ void Rorhr_col01(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
     //
     // Generate random n-by-m matrix D and a copy DF
     //
-    REAL *d = new REAL[n * m];
-    INTEGER ldd = n;
+    std::unique_ptr<REAL[]> __d_storage(new REAL[n * m]);
+    REAL *d = __d_storage.get();
     for (j = 1; j <= m; j = j + 1) {
-        Rlarnv(2, iseed, n, &d[(j - 1) * ldd]);
+        Rlarnv(2, iseed, n, &d[(j - 1) * n]);
     }
     REAL dnorm = Rlange("1", n, m, d, n, rwork);
-    REAL *df = new REAL[n * m];
+    std::unique_ptr<REAL[]> __df_storage(new REAL[n * m]);
+    REAL *df = __df_storage.get();
     Rlacpy("Full", n, m, d, n, df, n);
     //
-    //     Apply Q to D as D*Q = DF
+    // Apply Q to D as D*Q = DF
     //
+    srnamt = "DGEMQRT";
     Rgemqrt("R", "N", n, m, k, nb2_ub, af, m, t2, nb2, df, n, work, info);
     //
     // TEST 5
@@ -291,8 +282,9 @@ void Rorhr_col01(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
     //
     Rlacpy("Full", n, m, d, n, df, n);
     //
-    //     Apply Q to D as D*QT = DF
+    // Apply Q to D as D*QT = DF
     //
+    srnamt = "DGEMQRT";
     Rgemqrt("R", "T", n, m, k, nb2_ub, af, m, t2, nb2, df, n, work, info);
     //
     // TEST 6
@@ -306,22 +298,11 @@ void Rorhr_col01(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
         result[6 - 1] = zero;
     }
     //
-    //     Deallocate all arrays
+    // Deallocate all arrays
     //
-    delete[] a;
-    delete[] af;
-    delete[] q;
-    delete[] r;
-    delete[] rwork;
-    delete[] work;
-    delete[] t1;
-    delete[] t2;
-    delete[] diag;
-    delete[] c;
-    delete[] d;
-    delete[] cf;
-    delete[] df;
+    FEM_THROW_UNHANDLED("executable deallocate: deallocate(a,af,q,r,rwork,work,t1,t2,diag,c,d,cf,d"
+                        "f)");
     //
-    //     End of Rorhr_col01
+    // End of Rorhr_col01
     //
 }

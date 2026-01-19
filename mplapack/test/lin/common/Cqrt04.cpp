@@ -44,57 +44,46 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Cqrt04(INTEGER const m, INTEGER const n, INTEGER const nb, REAL *result) {
-    //
-    INTEGER iseed[] = {1988, 1989, 1990, 1991};
+    common cmn;
+    static INTEGER iseed[4] = {1988, 1989, 1990, 1991};
     REAL eps = Rlamch("Epsilon");
     INTEGER k = min(m, n);
     INTEGER l = max(m, n);
     INTEGER lwork = max((INTEGER)2, l) * max((INTEGER)2, l) * nb;
-    //
-    //     Dynamically allocate local arrays
-    //
-    //     Put random numbers into A and copy to AF
-    //
-    INTEGER j = 0;
-    COMPLEX *a = new COMPLEX[m * n];
-    INTEGER lda = m;
-    for (j = 1; j <= n; j = j + 1) {
-        Clarnv(2, iseed, m, &a[(j - 1) * lda]);
-    }
-    COMPLEX *af = new COMPLEX[m * n];
-    INTEGER ldaf = m;
-    Clacpy("Full", m, n, a, m, af, m);
-    //
-    //     Factor the matrix A in the array AF.
-    //
-    COMPLEX *t = new COMPLEX[nb * n];
     INTEGER ldt = nb;
-    COMPLEX *work = new COMPLEX[lwork];
+    INTEGER j = 0;
+    std::unique_ptr<COMPLEX[]> __a_storage(new COMPLEX[m * n]);
+    COMPLEX *a = __a_storage.get();
+    for (j = 1; j <= n; j = j + 1) {
+        Clarnv(2, iseed, m, &a[(j - 1) * m]);
+    }
+    std::unique_ptr<COMPLEX[]> __af_storage(new COMPLEX[m * n]);
+    COMPLEX *af = __af_storage.get();
+    Clacpy("Full", m, n, a, m, af, m);
+    std::unique_ptr<COMPLEX[]> __t_storage(new COMPLEX[nb * n]);
+    COMPLEX *t = __t_storage.get();
+    std::unique_ptr<COMPLEX[]> __work_storage(new COMPLEX[lwork]);
+    COMPLEX *work = __work_storage.get();
     INTEGER info = 0;
     Cgeqrt(m, n, nb, af, m, t, ldt, work, info);
-    //
-    //     Generate the m-by-m matrix Q
-    //
-    const COMPLEX czero = COMPLEX(0.0f, 0.0f);
-    const COMPLEX one = COMPLEX(1.0f, 0.0f);
-    COMPLEX *q = new COMPLEX[m * m];
-    INTEGER ldq = m;
+    const COMPLEX czero = COMPLEX(0.0, 0.0);
+    const COMPLEX one = COMPLEX(1.0, 0.0);
+    std::unique_ptr<COMPLEX[]> __q_storage(new COMPLEX[m * m]);
+    COMPLEX *q = __q_storage.get();
     Claset("Full", m, m, czero, one, q, m);
     Cgemqrt("R", "N", m, m, k, nb, af, m, t, ldt, q, m, work, info);
-    //
-    //     Copy R
-    //
-    COMPLEX *r = new COMPLEX[m * l];
-    INTEGER ldr = m;
+    std::unique_ptr<COMPLEX[]> __r_storage(new COMPLEX[m * l]);
+    COMPLEX *r = __r_storage.get();
     Claset("Full", m, n, czero, czero, r, m);
     Clacpy("Upper", m, n, af, m, r, m);
     // Compute |R - Q'*A| / |A| and store in RESULT(1)
     //
     Cgemm("C", "N", m, n, m, -one, q, m, a, m, one, r, m);
-    REAL *rwork = new REAL[l];
+    std::unique_ptr<REAL[]> __rwork_storage(new REAL[l]);
+    REAL *rwork = __rwork_storage.get();
     REAL anorm = Clange("1", m, n, a, m, rwork);
     REAL resid = Clange("1", m, n, r, m, rwork);
-    const REAL zero = 0.0f;
+    const REAL zero = 0.0;
     if (anorm > zero) {
         result[1 - 1] = resid / (eps * max((INTEGER)1, m) * anorm);
     } else {
@@ -104,20 +93,20 @@ void Cqrt04(INTEGER const m, INTEGER const n, INTEGER const nb, REAL *result) {
     // Compute |I - Q'*Q| and store in RESULT(2)
     //
     Claset("Full", m, m, czero, one, r, m);
-    Cherk("U", "C", m, m, -one.real(), q, m, one.real(), r, m);
+    Cherk("U", "C", m, m, dreal(-one), q, m, dreal(one), r, m);
     resid = Clansy("1", "Upper", m, r, m, rwork);
     result[2 - 1] = resid / (eps * max((INTEGER)1, m));
     //
     // Generate random m-by-n matrix C and a copy CF
     //
-    COMPLEX *c = new COMPLEX[m * n];
-    INTEGER ldc = m;
+    std::unique_ptr<COMPLEX[]> __c_storage(new COMPLEX[m * n]);
+    COMPLEX *c = __c_storage.get();
     for (j = 1; j <= n; j = j + 1) {
-        Clarnv(2, iseed, m, &c[(j - 1) * ldc]);
+        Clarnv(2, iseed, m, &c[(j - 1) * m]);
     }
     REAL cnorm = Clange("1", m, n, c, m, rwork);
-    COMPLEX *cf = new COMPLEX[m * n];
-    INTEGER ldcf = m;
+    std::unique_ptr<COMPLEX[]> __cf_storage(new COMPLEX[m * n]);
+    COMPLEX *cf = __cf_storage.get();
     Clacpy("Full", m, n, c, m, cf, m);
     //
     // Apply Q to C as Q*C
@@ -154,14 +143,14 @@ void Cqrt04(INTEGER const m, INTEGER const n, INTEGER const nb, REAL *result) {
     //
     // Generate random n-by-m matrix D and a copy DF
     //
-    COMPLEX *d = new COMPLEX[n * m];
-    INTEGER ldd = n;
+    std::unique_ptr<COMPLEX[]> __d_storage(new COMPLEX[n * m]);
+    COMPLEX *d = __d_storage.get();
     for (j = 1; j <= m; j = j + 1) {
-        Clarnv(2, iseed, n, &d[(j - 1) * ldd]);
+        Clarnv(2, iseed, n, &d[(j - 1) * n]);
     }
     REAL dnorm = Clange("1", n, m, d, n, rwork);
-    COMPLEX *df = new COMPLEX[n * m];
-    INTEGER lddf = n;
+    std::unique_ptr<COMPLEX[]> __df_storage(new COMPLEX[n * m]);
+    COMPLEX *df = __df_storage.get();
     Clacpy("Full", n, m, d, n, df, n);
     //
     // Apply Q to D as D*Q
@@ -196,17 +185,8 @@ void Cqrt04(INTEGER const m, INTEGER const n, INTEGER const nb, REAL *result) {
         result[6 - 1] = zero;
     }
     //
-    //     Deallocate all arrays
+    // Deallocate all arrays
     //
-    delete[] a;
-    delete[] af;
-    delete[] q;
-    delete[] r;
-    delete[] rwork;
-    delete[] work;
-    delete[] t;
-    delete[] c;
-    delete[] d;
-    delete[] cf;
-    delete[] df;
+    FEM_THROW_UNHANDLED("executable deallocate: deallocate(a,af,q,r,rwork,work,t,c,d,cf,df)");
+    //
 }

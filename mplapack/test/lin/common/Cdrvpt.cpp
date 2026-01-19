@@ -43,15 +43,11 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-#include <mplapack_debug.h>
-
 void Cdrvpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, REAL const thresh, bool const tsterr, COMPLEX *a, REAL *d, COMPLEX *e, COMPLEX *b, COMPLEX *x, COMPLEX *xact, COMPLEX *work, REAL *rwork, INTEGER const nout) {
     common cmn;
     common_write write(cmn);
-    //
-    INTEGER iseedy[] = {1988, 1989, 1990, 1991};
-    char path[4] = {};
-    char buf[1024];
+    static INTEGER iseedy[4] = {0, 0, 0, 1};
+    fem::str<3> path;
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
@@ -63,13 +59,13 @@ void Cdrvpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     const INTEGER ntypes = 12;
     INTEGER nimat = 0;
     INTEGER imat = 0;
-    char type;
+    fem::str<1> type;
     INTEGER kl = 0;
     INTEGER ku = 0;
     REAL anorm = 0.0;
     INTEGER mode = 0;
     REAL cond = 0.0;
-    char dist;
+    fem::str<1> dist;
     bool zerot = false;
     INTEGER info = 0;
     INTEGER izero = 0;
@@ -81,7 +77,7 @@ void Cdrvpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     INTEGER j = 0;
     const REAL one = 1.0;
     INTEGER ifact = 0;
-    char fact;
+    fem::str<1> fact;
     REAL rcondc = 0.0;
     REAL ainvnm = 0.0;
     INTEGER nt = 0;
@@ -91,41 +87,8 @@ void Cdrvpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     REAL rcond = 0.0;
     INTEGER k1 = 0;
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Scalars in Common ..
-    //     ..
-    //     .. Common blocks ..
-    //     ..
-    //     .. Data statements ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    path[0] = 'C';
-    path[1] = 'P';
-    path[2] = 'T';
-
+    path(1, 1) = "Zomplex precision";
+    path(2, 3) = "PT";
     nrun = 0;
     nfail = 0;
     nerrs = 0;
@@ -138,6 +101,7 @@ void Cdrvpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     if (tsterr) {
         Cerrvx(path, nout);
     }
+    infot = 0;
     //
     for (in = 1; in <= nn; in = in + 1) {
         //
@@ -160,20 +124,21 @@ void Cdrvpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
             //
             // Set up parameters with Clatb4.
             //
-            Clatb4(path, imat, n, n, &type, kl, ku, anorm, mode, cond, &dist);
+            Clatb4(path, imat, n, n, type, kl, ku, anorm, mode, cond, dist);
             //
             zerot = imat >= 8 && imat <= 10;
             if (imat <= 6) {
                 //
-                //              Type 1-6:  generate a symmetric tridiagonal matrix of
-                //              known condition number in lower triangular band storage.
+                // Type 1-6:  generate a symmetric tridiagonal matrix of
+                // known condition number in lower triangular band storage.
                 //
-                Clatms(n, n, &dist, iseed, &type, rwork, mode, cond, anorm, kl, ku, "B", a, 2, work, info);
+                srnamt = "ZLATMS";
+                Clatms(n, n, dist, iseed, type, rwork, mode, cond, anorm, kl, ku, "B", a, 2, work, info);
                 //
                 // Check the error code from Clatms.
                 //
                 if (info != 0) {
-                    Alaerh(path, "Clatms", info, 0, " ", n, n, kl, ku, -1, imat, nfail, nerrs, nout);
+                    Alaerh(path, "ZLATMS", info, 0, " ", n, n, kl, ku, -1, imat, nfail, nerrs, nout);
                     goto statement_110;
                 }
                 izero = 0;
@@ -328,7 +293,7 @@ void Cdrvpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         }
                         x[i - 1] = one;
                         Cpttrs("Lower", n, 1, &d[(n + 1) - 1], &e[(n + 1) - 1], x, lda, info);
-                        ainvnm = max({ainvnm, RCasum(n, x, 1)});
+                        ainvnm = max(ainvnm, RCasum(n, x, 1));
                     }
                     //
                     // Compute the 1-norm condition number of A.
@@ -350,14 +315,15 @@ void Cdrvpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                     }
                     Clacpy("Full", n, nrhs, b, lda, x, lda);
                     //
-                    //                 Factor A as L*D*L' and solve the system A*X = B.
+                    // Factor A as L*D*L' and solve the system A*X = B.
                     //
+                    srnamt = "ZPTSV ";
                     Cptsv(n, nrhs, &d[(n + 1) - 1], &e[(n + 1) - 1], x, lda, info);
                     //
                     // Check error code from Cptsv .
                     //
                     if (info != izero) {
-                        Alaerh(path, "Cptsv ", info, izero, " ", n, n, 1, 1, nrhs, imat, nfail, nerrs, nout);
+                        Alaerh(path, "ZPTSV ", info, izero, " ", n, n, 1, 1, nrhs, imat, nfail, nerrs, nout);
                     }
                     nt = 0;
                     if (izero == 0) {
@@ -386,10 +352,9 @@ void Cdrvpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                             if (nfail == 0 && nerrs == 0) {
                                 Aladhd(nout, path);
                             }
-                            sprintnum_short(buf, result[k - 1]);
                             write(nout, "(1x,a,', N =',i5,', type ',i2,', test ',i2,', ratio = ',"
-                                        "a)"),
-                                "Cptsv ", n, imat, k, buf;
+                                        "g12.5)"),
+                                "ZPTSV ", n, imat, k, result[k - 1];
                             nfail++;
                         }
                     }
@@ -413,15 +378,16 @@ void Cdrvpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                 //
                 Claset("Full", n, nrhs, COMPLEX(zero), COMPLEX(zero), x, lda);
                 //
-                //              Solve the system and compute the condition number and
-                //              error bounds using Cptsvx.
+                // Solve the system and compute the condition number and
+                // error bounds using Cptsvx.
                 //
-                Cptsvx(&fact, n, nrhs, d, e, &d[(n + 1) - 1], &e[(n + 1) - 1], b, lda, x, lda, rcond, rwork, &rwork[(nrhs + 1) - 1], work, &rwork[(2 * nrhs + 1) - 1], info);
+                srnamt = "ZPTSVX";
+                Cptsvx(fact.elems, n, nrhs, d, e, &d[(n + 1) - 1], &e[(n + 1) - 1], b, lda, x, lda, rcond, rwork, &rwork[(nrhs + 1) - 1], work, &rwork[(2 * nrhs + 1) - 1], info);
                 //
                 // Check the error code from Cptsvx.
                 //
                 if (info != izero) {
-                    Alaerh(path, "Cptsvx", info, izero, &fact, n, n, 1, 1, nrhs, imat, nfail, nerrs, nout);
+                    Alaerh(path, "ZPTSVX", info, izero, fact, n, n, 1, 1, nrhs, imat, nfail, nerrs, nout);
                 }
                 if (izero == 0) {
                     if (ifact == 2) {
@@ -463,10 +429,9 @@ void Cdrvpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         if (nfail == 0 && nerrs == 0) {
                             Aladhd(nout, path);
                         }
-                        sprintnum_short(buf, result[k - 1]);
                         write(nout, "(1x,a,', FACT=''',a1,''', N =',i5,', type ',i2,', test ',i2,"
-                                    "', ratio = ',a)"),
-                            "Cptsvx", fact, n, imat, k, buf;
+                                    "', ratio = ',g12.5)"),
+                            "ZPTSVX", fact, n, imat, k, result[k - 1];
                         nfail++;
                     }
                 }

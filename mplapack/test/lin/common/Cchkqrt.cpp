@@ -43,19 +43,14 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-#include <mplapack_debug.h>
-
 void Cchkqrt(REAL const thresh, bool const tsterr, INTEGER const nm, INTEGER *mval, INTEGER const nn, INTEGER *nval, INTEGER const nnb, INTEGER *nbval, INTEGER const nout) {
     common cmn;
     common_write write(cmn);
     //
     // Initialize constants
     //
-    char path[4] = {};
-    path[0] = 'C';
-    path[1] = 'Q';
-    path[2] = 'T';
-    char buf[1024];
+    fem::str<3> path = 'Z';
+    path(2, 3) = "QT";
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
@@ -106,8 +101,7 @@ void Cchkqrt(REAL const thresh, bool const tsterr, INTEGER const nm, INTEGER *mv
                             if (nfail == 0 && nerrs == 0) {
                                 Alahd(nout, path);
                             }
-                            sprintnum_short(buf, result[t - 1]);
-                            write(nout, "(' M=',i5,', N=',i5,', NB=',i4,' test(',i2,')=',g12.5)"), m, n, nb, t, buf;
+                            write(nout, "(' M=',i5,', N=',i5,', NB=',i4,' test(',i2,')=',g12.5)"), m, n, nb, t, result[t - 1];
                             nfail++;
                         }
                     }

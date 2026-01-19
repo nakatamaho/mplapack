@@ -43,36 +43,13 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-struct common_infoc {
-    int infot;
-    int nout;
-    bool ok;
-    bool lerr;
-
-    common_infoc() : infot(0), nout(0), ok(false), lerr(false) {}
-};
-
-struct common_srnamc {
-    fem::str<32> srnamt;
-
-    common_srnamc() : srnamt(0) {}
-};
-
-struct common : fem::common, common_infoc, common_srnamc {
-    common(int argc, char const *argv[]) : fem::common(argc, argv) {}
-};
-
-void Cerrsy(const char *path, INTEGER const nunit) {
+void Cerrsy(fem::str_cref path, INTEGER const nunit) {
+    common cmn;
     common_write write(cmn);
-    int &infot = cmn.infot;
-    int &nout = cmn.nout;
-    bool &ok = cmn.ok;
-    bool &lerr = cmn.lerr;
-    fem::str<32> &srnamt = cmn.srnamt;
     //
     nout = nunit;
     write(nout, star);
-    char c2[2];
+    fem::str<2> c2 = path(2, 3);
     //
     // Set the variables to innocuous values.
     //
@@ -110,13 +87,13 @@ void Cerrsy(const char *path, INTEGER const nunit) {
     REAL r[nmax];
     INTEGER n_err_bnds = 0;
     INTEGER nparams = 0;
-    char eq;
+    fem::str<1> eq;
     REAL rcond = 0.0;
     REAL berr = 0.0;
     REAL err_bnds_n[nmax * 3];
     REAL err_bnds_c[nmax * 3];
     REAL params[1];
-    if (Mlsamen(2, c2, "SY")) {
+    if (Mlsamen(2, c2.elems, "SY")) {
         //
         // Test error exits of the routines that use factorization
         // of a symmetric indefinite matrix with patrial
@@ -284,7 +261,7 @@ void Cerrsy(const char *path, INTEGER const nunit) {
         Csycon("U", 1, a, 1, ip, -anrm, rcond, w, info);
         Chkxer("ZSYCON", infot, nout, lerr, ok);
         //
-    } else if (Mlsamen(2, c2, "SR")) {
+    } else if (Mlsamen(2, c2.elems, "SR")) {
         //
         // Test error exits of the routines that use factorization
         // of a symmetric indefinite matrix with rook
@@ -370,7 +347,7 @@ void Cerrsy(const char *path, INTEGER const nunit) {
         Csycon_rook("U", 1, a, 1, ip, -anrm, rcond, w, info);
         Chkxer("ZSYCON_ROOK", infot, nout, lerr, ok);
         //
-    } else if (Mlsamen(2, c2, "SK")) {
+    } else if (Mlsamen(2, c2.elems, "SK")) {
         //
         // Test error exits of the routines that use factorization
         // of a symmetric indefinite matrix with rook
@@ -479,7 +456,7 @@ void Cerrsy(const char *path, INTEGER const nunit) {
         Csycon_3("U", 1, a, 1, e, ip, -1.0, rcond, w, info);
         Chkxer("ZSYCON_3", infot, nout, lerr, ok);
         //
-    } else if (Mlsamen(2, c2, "SP")) {
+    } else if (Mlsamen(2, c2.elems, "SP")) {
         //
         // Test error exits of the routines that use factorization
         // of a symmetric indefinite packed matrix with patrial

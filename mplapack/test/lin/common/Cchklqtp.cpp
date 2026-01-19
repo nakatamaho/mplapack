@@ -43,19 +43,14 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-#include <mplapack_debug.h>
-
 void Cchklqtp(REAL const thresh, bool const tsterr, INTEGER const nm, INTEGER *mval, INTEGER const nn, INTEGER *nval, INTEGER const nnb, INTEGER *nbval, INTEGER const nout) {
     common cmn;
     common_write write(cmn);
     //
     // Initialize constants
     //
-    char path[4] = {};
-    path[0] = 'C';
-    path[1] = 'X';
-    path[2] = 'Q';
-    char buf[1024];
+    fem::str<3> path = 'Z';
+    path(2, 3) = "XQ";
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
@@ -65,6 +60,7 @@ void Cchklqtp(REAL const thresh, bool const tsterr, INTEGER const nm, INTEGER *m
     if (tsterr) {
         Cerrlqtp(path, nout);
     }
+    infot = 0;
     //
     // Do for each value of M
     //
@@ -110,10 +106,9 @@ void Cchklqtp(REAL const thresh, bool const tsterr, INTEGER const nm, INTEGER *m
                                 if (nfail == 0 && nerrs == 0) {
                                     Alahd(nout, path);
                                 }
-                                sprintnum_short(buf, result[t - 1]);
                                 write(nout, "(' M=',i5,', N=',i5,', NB=',i4,' L=',i4,' test(',i2,')=',"
-                                            "a)"),
-                                    m, n, nb, l, t, buf;
+                                            "g12.5)"),
+                                    m, n, nb, l, t, result[t - 1];
                                 nfail++;
                             }
                         }

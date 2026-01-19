@@ -43,7 +43,7 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-void Rpbt01(const char *uplo, INTEGER const n, INTEGER const kd, REAL *a, INTEGER const lda, REAL *afac, INTEGER const ldafac, REAL *rwork, REAL &resid) {
+void Rpbt01(fem::str_cref uplo, INTEGER const n, INTEGER const kd, REAL *a, INTEGER const lda, REAL *afac, INTEGER const ldafac, REAL *rwork, REAL &resid) {
     //
     // Quick exit if N = 0.
     //
@@ -56,7 +56,7 @@ void Rpbt01(const char *uplo, INTEGER const n, INTEGER const kd, REAL *a, INTEGE
     // Exit with RESID = 1/EPS if ANORM = 0.
     //
     REAL eps = Rlamch("Epsilon");
-    REAL anorm = Rlansb("1", uplo, n, kd, a, lda, rwork);
+    REAL anorm = Rlansb("1", uplo.elems(), n, kd, a, lda, rwork);
     const REAL one = 1.0;
     if (anorm <= zero) {
         resid = one / eps;
@@ -69,7 +69,7 @@ void Rpbt01(const char *uplo, INTEGER const n, INTEGER const kd, REAL *a, INTEGE
     INTEGER kc = 0;
     INTEGER klen = 0;
     REAL t = 0.0;
-    if (Mlsame(uplo, "U")) {
+    if (Mlsame(uplo.elems(), "U")) {
         for (k = n; k >= 1; k = k - 1) {
             kc = max((INTEGER)1, kd + 2 - k);
             klen = kd + 1 - kc;
@@ -114,7 +114,7 @@ void Rpbt01(const char *uplo, INTEGER const n, INTEGER const kd, REAL *a, INTEGE
     INTEGER mu = 0;
     INTEGER i = 0;
     INTEGER ml = 0;
-    if (Mlsame(uplo, "U")) {
+    if (Mlsame(uplo.elems(), "U")) {
         for (j = 1; j <= n; j = j + 1) {
             mu = max((INTEGER)1, kd + 2 - j);
             for (i = mu; i <= kd + 1; i = i + 1) {
@@ -132,7 +132,7 @@ void Rpbt01(const char *uplo, INTEGER const n, INTEGER const kd, REAL *a, INTEGE
     //
     // Compute norm( L*L' - A ) / ( N * norm(A) * EPS )
     //
-    resid = Rlansb("I", uplo, n, kd, afac, ldafac, rwork);
+    resid = Rlansb("I", uplo.elems(), n, kd, afac, ldafac, rwork);
     //
     resid = ((resid / castREAL(n)) / anorm) / eps;
     //

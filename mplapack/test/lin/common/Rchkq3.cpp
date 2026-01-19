@@ -43,14 +43,11 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-#include <mplapack_debug.h>
-
 void Rchkq3(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INTEGER *nval, INTEGER const nnb, INTEGER *nbval, INTEGER *nxval, REAL const thresh, REAL *a, REAL *copya, REAL *s, REAL *tau, REAL *work, INTEGER *iwork, INTEGER const nout) {
     common cmn;
     common_write write(cmn);
-    INTEGER iseedy[] = {1988, 1989, 1990, 1991};
-    char path[4] = {};
-    char buf[1024];
+    static INTEGER iseedy[4] = {1988, 1989, 1990, 1991};
+    fem::str<3> path;
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
@@ -81,11 +78,10 @@ void Rchkq3(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     REAL result[ntests];
     INTEGER k = 0;
     //
-    //     Initialize constants and the random number seed.
+    // Initialize constants and the random number seed.
     //
-    path[0] = 'R';
-    path[1] = 'Q';
-    path[2] = '3';
+    path(1, 1) = "Double precision";
+    path(2, 3) = "Q3";
     nrun = 0;
     nfail = 0;
     nerrs = 0;
@@ -93,6 +89,7 @@ void Rchkq3(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
         iseed[i - 1] = iseedy[i - 1];
     }
     eps = Rlamch("Epsilon");
+    infot = 0;
     //
     for (im = 1; im <= nm; im = im + 1) {
         //
@@ -107,7 +104,7 @@ void Rchkq3(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
             //
             n = nval[in - 1];
             mnmin = min(m, n);
-            lwork = max({(INTEGER)1, m * max(m, n) + 4 * mnmin + max(m, n), m * n + 2 * mnmin + 4 * n});
+            lwork = max((INTEGER)1, m * max(m, n) + 4 * mnmin + max(m, n), m * n + 2 * mnmin + 4 * n);
             //
             for (imode = 1; imode <= ntypes; imode = imode + 1) {
                 if (!dotype[imode - 1]) {
@@ -180,8 +177,9 @@ void Rchkq3(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                     //
                     lw = max((INTEGER)1, 2 * n + nb * (n + 1));
                     //
-                    //                 Compute the QP3 factorization of A
+                    // Compute the QP3 factorization of A
                     //
+                    srnamt = "DGEQP3";
                     Rgeqp3(m, n, a, lda, &iwork[(n + 1) - 1], tau, work, lw, info);
                     //
                     // Compute norm(svd(a) - svd(r))
@@ -204,10 +202,9 @@ void Rchkq3(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                             if (nfail == 0 && nerrs == 0) {
                                 Alahd(nout, path);
                             }
-                            sprintnum_short(buf, result[k - 1]);
                             write(nout, "(1x,a,' M =',i5,', N =',i5,', NB =',i4,', type ',i2,"
-                                        "', test ',i2,', ratio =',a)"),
-                                "Rgeqp3", m, n, nb, imode, k, buf;
+                                        "', test ',i2,', ratio =',g12.5)"),
+                                "DGEQP3", m, n, nb, imode, k, result[k - 1];
                             nfail++;
                         }
                     }

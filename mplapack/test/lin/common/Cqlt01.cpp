@@ -44,40 +44,10 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Cqlt01(INTEGER const m, INTEGER const n, COMPLEX *a, COMPLEX *af, COMPLEX *q, COMPLEX *l, INTEGER const lda, COMPLEX *tau, COMPLEX *work, INTEGER const lwork, REAL *rwork, REAL *result) {
-    //
-    //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Scalars in Common ..
-    //     ..
-    //     .. Common blocks ..
-    //     ..
-    //     .. Executable Statements ..
+    common cmn;
     //
     INTEGER minmn = min(m, n);
     REAL eps = Rlamch("Epsilon");
-    INTEGER ldaf = lda;
-    INTEGER ldq = lda;
-    INTEGER ldl = lda;
     //
     // Copy the matrix A to the array AF.
     //
@@ -85,28 +55,30 @@ void Cqlt01(INTEGER const m, INTEGER const n, COMPLEX *a, COMPLEX *af, COMPLEX *
     //
     // Factorize the matrix A in the array AF.
     //
+    srnamt = "ZGEQLF";
     INTEGER info = 0;
     Cgeqlf(m, n, af, lda, tau, work, lwork, info);
     //
     // Copy details of Q
     //
-    const COMPLEX rogue = COMPLEX(-1.0e+10, -1.0e+10);
+    const COMPLEX rogue = COMPLEX(-10000000000.0, -10000000000.0);
     Claset("Full", m, m, rogue, rogue, q, lda);
     if (m >= n) {
         if (n < m && n > 0) {
-            Clacpy("Full", m - n, n, af, lda, &q[((m - n + 1) - 1) * ldq], lda);
+            Clacpy("Full", m - n, n, af, lda, &q[((m - n + 1) - 1) * lda], lda);
         }
         if (n > 1) {
-            Clacpy("Upper", n - 1, n - 1, &af[((m - n + 1) - 1) + (2 - 1) * ldaf], lda, &q[((m - n + 1) - 1) + ((m - n + 2) - 1) * ldq], lda);
+            Clacpy("Upper", n - 1, n - 1, &af[((m - n + 1) - 1) + (2 - 1) * lda], lda, &q[((m - n + 1) - 1) + ((m - n + 2) - 1) * lda], lda);
         }
     } else {
         if (m > 1) {
-            Clacpy("Upper", m - 1, m - 1, &af[((n - m + 2) - 1) * ldaf], lda, &q[(2 - 1) * ldq], lda);
+            Clacpy("Upper", m - 1, m - 1, &af[((n - m + 2) - 1) * lda], lda, &q[(2 - 1) * lda], lda);
         }
     }
     //
     // Generate the m-by-m matrix Q
     //
+    srnamt = "ZUNGQL";
     Cungql(m, m, minmn, q, lda, tau, work, lwork, info);
     //
     // Copy L
@@ -122,7 +94,7 @@ void Cqlt01(INTEGER const m, INTEGER const n, COMPLEX *a, COMPLEX *af, COMPLEX *
             Clacpy("Full", m, n - m, af, lda, l, lda);
         }
         if (m > 0) {
-            Clacpy("Lower", m, m, &af[((n - m + 1) - 1) * ldaf], lda, &l[((n - m + 1) - 1) * ldl], lda);
+            Clacpy("Lower", m, m, &af[((n - m + 1) - 1) * lda], lda, &l[((n - m + 1) - 1) * lda], lda);
         }
     }
     //

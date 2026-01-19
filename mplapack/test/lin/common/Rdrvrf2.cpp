@@ -46,13 +46,12 @@ using fem::common;
 void Rdrvrf2(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL *a, INTEGER const lda, REAL *arf, REAL *ap, REAL *asav) {
     common cmn;
     common_write write(cmn);
-    char uplos[2] = {'U', 'L'};
-    char forms[2] = {'N', 'T'};
-    INTEGER iseedy[4] = {1988, 1989, 1990, 1991};
+    static INTEGER iseedy[4] = {1988, 1989, 1990, 1991};
+    static fem::str<1> uplos[2] = {"U", "L"};
+    static fem::str<1> forms[2] = {"N", "T"};
     //
-    //     Initialize constants and the random number seed.
+    // Initialize constants and the random number seed.
     //
-    INTEGER ldasav = lda;
     INTEGER nrun = 0;
     INTEGER nerrs = 0;
     INTEGER info = 0;
@@ -65,10 +64,10 @@ void Rdrvrf2(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL *a, INTEG
     INTEGER iin = 0;
     INTEGER n = 0;
     INTEGER iuplo = 0;
-    char uplo;
+    fem::str<1> uplo;
     bool lower = false;
     INTEGER iform = 0;
-    char cform;
+    fem::str<1> cform;
     INTEGER j = 0;
     bool ok1 = false;
     bool ok2 = false;
@@ -100,17 +99,20 @@ void Rdrvrf2(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL *a, INTEG
                     }
                 }
                 //
-                Rtrttf(&cform, &uplo, n, a, lda, arf, info);
+                srnamt = "DTRTTF";
+                Rtrttf(cform.elems, uplo.elems, n, a, lda, arf, info);
                 //
-                Rtfttp(&cform, &uplo, n, arf, ap, info);
+                srnamt = "DTFTTP";
+                Rtfttp(cform.elems, uplo.elems, n, arf, ap, info);
                 //
-                Rtpttr(&uplo, n, ap, asav, lda, info);
+                srnamt = "DTPTTR";
+                Rtpttr(uplo.elems, n, ap, asav, lda, info);
                 //
                 ok1 = true;
                 if (lower) {
                     for (j = 1; j <= n; j = j + 1) {
                         for (i = j; i <= n; i = i + 1) {
-                            if (a[(i - 1) + (j - 1) * lda] != asav[(i - 1) + (j - 1) * ldasav]) {
+                            if (a[(i - 1) + (j - 1) * lda] != asav[(i - 1) + (j - 1) * lda]) {
                                 ok1 = false;
                             }
                         }
@@ -118,7 +120,7 @@ void Rdrvrf2(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL *a, INTEG
                 } else {
                     for (j = 1; j <= n; j = j + 1) {
                         for (i = 1; i <= j; i = i + 1) {
-                            if (a[(i - 1) + (j - 1) * lda] != asav[(i - 1) + (j - 1) * ldasav]) {
+                            if (a[(i - 1) + (j - 1) * lda] != asav[(i - 1) + (j - 1) * lda]) {
                                 ok1 = false;
                             }
                         }
@@ -127,17 +129,20 @@ void Rdrvrf2(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL *a, INTEG
                 //
                 nrun++;
                 //
-                Rtrttp(&uplo, n, a, lda, ap, info);
+                srnamt = "DTRTTP";
+                Rtrttp(uplo.elems, n, a, lda, ap, info);
                 //
-                Rtpttf(&cform, &uplo, n, ap, arf, info);
+                srnamt = "DTPTTF";
+                Rtpttf(cform.elems, uplo.elems, n, ap, arf, info);
                 //
-                Rtfttr(&cform, &uplo, n, arf, asav, lda, info);
+                srnamt = "DTFTTR";
+                Rtfttr(cform.elems, uplo.elems, n, arf, asav, lda, info);
                 //
                 ok2 = true;
                 if (lower) {
                     for (j = 1; j <= n; j = j + 1) {
                         for (i = j; i <= n; i = i + 1) {
-                            if (a[(i - 1) + (j - 1) * lda] != asav[(i - 1) + (j - 1) * ldasav]) {
+                            if (a[(i - 1) + (j - 1) * lda] != asav[(i - 1) + (j - 1) * lda]) {
                                 ok2 = false;
                             }
                         }
@@ -145,7 +150,7 @@ void Rdrvrf2(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL *a, INTEG
                 } else {
                     for (j = 1; j <= n; j = j + 1) {
                         for (i = 1; i <= j; i = i + 1) {
-                            if (a[(i - 1) + (j - 1) * lda] != asav[(i - 1) + (j - 1) * ldasav]) {
+                            if (a[(i - 1) + (j - 1) * lda] != asav[(i - 1) + (j - 1) * lda]) {
                                 ok2 = false;
                             }
                         }
@@ -160,7 +165,7 @@ void Rdrvrf2(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL *a, INTEG
                     }
                     write(nout, "(1x,'     Error in RFP,conversion routines N=',i5,' UPLO=''',a1,"
                                 "''', FORM =''',a1,'''')"),
-                        n, &uplo, &cform;
+                        n, uplo, cform;
                     nerrs++;
                 }
                 //

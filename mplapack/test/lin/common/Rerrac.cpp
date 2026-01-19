@@ -43,31 +43,9 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-struct common_infoc {
-    int infot;
-    int nout;
-    bool ok;
-    bool lerr;
-
-    common_infoc() : infot(0), nout(0), ok(false), lerr(false) {}
-};
-
-struct common_srnamc {
-    fem::str<32> srnamt;
-
-    common_srnamc() : srnamt(0) {}
-};
-
-struct common : fem::common, common_infoc, common_srnamc {
-    common(int argc, char const *argv[]) : fem::common(argc, argv) {}
-};
-
 void Rerrac(INTEGER const nunit) {
+    common cmn;
     common_write write(cmn);
-    int &infot = cmn.infot;
-    int &nout = cmn.nout;
-    bool &ok = cmn.ok;
-    bool &lerr = cmn.lerr;
     //
     nout = nunit;
     write(nout, star);
@@ -101,7 +79,7 @@ void Rerrac(INTEGER const nunit) {
     }
     ok = true;
     //
-    cmn.srnamt = "DSPOSV";
+    srnamt = "DSPOSV";
     infot = 1;
     REAL work[nmax * nmax];
     REAL swork[nmax * nmax];

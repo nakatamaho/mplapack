@@ -43,16 +43,12 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-#include <mplapack_debug.h>
-
 void Cchkps(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, INTEGER *nbval, INTEGER const nrank, INTEGER *rankval, REAL const thresh, bool const tsterr, INTEGER const /* nmax */, COMPLEX *a, COMPLEX *afac, COMPLEX *perm, INTEGER *piv, COMPLEX *work, REAL *rwork, INTEGER const nout) {
     common cmn;
     common_write write(cmn);
-    //
-    INTEGER iseedy[] = {1988, 1989, 1990, 1991};
-    const char uplos[] = {'U', 'L'};
-    char path[4] = {};
-    char buf[1024];
+    static INTEGER iseedy[4] = {1988, 1989, 1990, 1991};
+    static fem::str<1> uplos[2] = {"U", "L"};
+    fem::str<3> path;
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
@@ -68,26 +64,27 @@ void Cchkps(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
     INTEGER irank = 0;
     INTEGER rank = 0;
     INTEGER iuplo = 0;
-    char uplo[1];
-    char type[1];
+    fem::str<1> uplo;
+    fem::str<1> type;
     INTEGER kl = 0;
     INTEGER ku = 0;
     REAL anorm = 0.0;
     INTEGER mode = 0;
     REAL cndnum = 0.0;
-    char dist[1];
+    fem::str<1> dist;
     INTEGER info = 0;
     INTEGER inb = 0;
     INTEGER nb = 0;
-    const REAL one = 1.0f;
+    const REAL one = 1.0;
     REAL tol = 0.0;
     INTEGER comprank = 0;
     REAL result = 0.0;
     INTEGER rankdiff = 0;
     //
-    path[0] = 'C';
-    path[1] = 'P';
-    path[2] = 'S';
+    // Initialize constants and the random number seed.
+    //
+    path(1, 1) = "Zomplex Precision";
+    path(2, 3) = "PS";
     nrun = 0;
     nfail = 0;
     nerrs = 0;
@@ -132,25 +129,25 @@ void Cchkps(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                     goto statement_130;
                 }
                 //
-                rank = castINTEGER(ceil((castREAL(n) * castREAL(rankval[irank - 1])) / 100.0));
+                rank = iceil((n * castREAL(rankval[irank - 1])) / 100.0);
                 //
                 // Do first for UPLO = 'U', then for UPLO = 'L'
                 //
                 for (iuplo = 1; iuplo <= 2; iuplo = iuplo + 1) {
-                    uplo[0] = uplos[iuplo - 1];
+                    uplo = uplos[iuplo - 1];
                     //
                     // Set up parameters with Clatb5 and generate a test matrix
                     // with Clatmt.
                     //
                     Clatb5(path, imat, n, type, kl, ku, anorm, mode, cndnum, dist);
                     //
-                    strncpy(srnamt, "Clatmt", srnamt_len);
+                    srnamt = "ZLATMT";
                     Clatmt(n, n, dist, iseed, type, rwork, mode, cndnum, anorm, rank, kl, ku, uplo, a, lda, work, info);
                     //
                     // Check error code from Clatmt.
                     //
                     if (info != 0) {
-                        Alaerh(path, "Clatmt", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                        Alaerh(path, "ZLATMT", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                         goto statement_120;
                     }
                     //
@@ -163,18 +160,18 @@ void Cchkps(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                         // Compute the pivoted L*L' or U'*U factorization
                         // of the matrix.
                         //
-                        Clacpy(uplo, n, n, a, lda, afac, lda);
-                        strncpy(srnamt, "Cpstrf", srnamt_len);
+                        Clacpy(uplo.elems, n, n, a, lda, afac, lda);
+                        srnamt = "ZPSTRF";
                         //
                         // Use default tolerance
                         //
                         tol = -one;
-                        Cpstrf(uplo, n, afac, lda, piv, comprank, tol, rwork, info);
+                        Cpstrf(uplo.elems, n, afac, lda, piv, comprank, tol, rwork, info);
                         //
                         // Check error code from Cpstrf.
                         //
                         if ((info < izero) || (info != izero && rank == n) || (info <= izero && rank < n)) {
-                            Alaerh(path, "Cpstrf", info, izero, uplo, n, n, -1, -1, nb, imat, nfail, nerrs, nout);
+                            Alaerh(path, "ZPSTRF", info, izero, uplo, n, n, -1, -1, nb, imat, nfail, nerrs, nout);
                             goto statement_110;
                         }
                         //
@@ -201,10 +198,9 @@ void Cchkps(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                             if (nfail == 0 && nerrs == 0) {
                                 Alahd(nout, path);
                             }
-                            sprintnum_short(buf, result);
                             write(nout, "(' UPLO = ''',a1,''', N =',i5,', RANK =',i3,', Diff =',i5,"
-                                        "', NB =',i4,', type ',i2,', Ratio =',a)"),
-                                uplo, n, rank, rankdiff, nb, imat, buf;
+                                        "', NB =',i4,', type ',i2,', Ratio =',g12.5)"),
+                                uplo, n, rank, rankdiff, nb, imat, result;
                             nfail++;
                         }
                         nrun++;

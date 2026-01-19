@@ -43,18 +43,13 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-#include <mplapack_debug.h>
-
 void Rdrvpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, REAL const thresh, bool const tsterr, INTEGER const /* nmax */, REAL *a, REAL *afac, REAL *asav, REAL *b, REAL *bsav, REAL *x, REAL *xact, REAL *s, REAL *work, REAL *rwork, INTEGER *iwork, INTEGER const nout) {
     common cmn;
     common_write write(cmn);
-    //
-    char facts[] = {'F', 'N', 'E'};
-    char equeds[] = {'N', 'Y'};
-    INTEGER iseedy[] = {1988, 1989, 1990, 1991};
-    char path[4] = {};
-    char buf[1024];
-    char fact_uplo[3];
+    static INTEGER iseedy[4] = {1988, 1989, 1990, 1991};
+    static fem::str<1> facts[3] = {"F", "N", "E"};
+    static fem::str<1> equeds[2] = {"N", "Y"};
+    fem::str<3> path;
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
@@ -67,7 +62,7 @@ void Rdrvpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     INTEGER in = 0;
     INTEGER n = 0;
     INTEGER lda = 0;
-    char xtype[1];
+    fem::str<1> xtype;
     INTEGER nkd = 0;
     const INTEGER ntypes = 8;
     INTEGER nimat = 0;
@@ -76,17 +71,17 @@ void Rdrvpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     INTEGER ldab = 0;
     INTEGER iuplo = 0;
     INTEGER koff = 0;
-    char uplo[1];
-    char packit[1];
+    fem::str<1> uplo;
+    fem::str<1> packit;
     INTEGER imat = 0;
     bool zerot = false;
-    char type[1];
+    fem::str<1> type;
     INTEGER kl = 0;
     INTEGER ku = 0;
     REAL anorm = 0.0;
     INTEGER mode = 0;
     REAL cndnum = 0.0;
-    char dist[1];
+    fem::str<1> dist;
     INTEGER info = 0;
     INTEGER izero = 0;
     INTEGER iw = 0;
@@ -95,10 +90,10 @@ void Rdrvpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     INTEGER i2 = 0;
     const REAL zero = 0.0;
     INTEGER iequed = 0;
-    char equed[1];
+    fem::str<1> equed;
     INTEGER nfact = 0;
     INTEGER ifact = 0;
-    char fact[1];
+    fem::str<1> fact;
     bool prefac = false;
     bool nofact = false;
     bool equil = false;
@@ -115,9 +110,10 @@ void Rdrvpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     REAL rcond = 0.0;
     INTEGER k1 = 0;
     //
-    path[0] = 'R';
-    path[1] = 'P';
-    path[2] = 'B';
+    // Initialize constants and the random number seed.
+    //
+    path(1, 1) = "Double precision";
+    path(2, 3) = "PB";
     nrun = 0;
     nfail = 0;
     nerrs = 0;
@@ -145,7 +141,7 @@ void Rdrvpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     for (in = 1; in <= nn; in = in + 1) {
         n = nval[in - 1];
         lda = max(n, (INTEGER)1);
-        xtype[0] = 'N';
+        xtype = 'N';
         //
         // Set limits on the number of loop iterations.
         //
@@ -173,12 +169,12 @@ void Rdrvpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
             for (iuplo = 1; iuplo <= 2; iuplo = iuplo + 1) {
                 koff = 1;
                 if (iuplo == 1) {
-                    uplo[0] = 'U';
-                    packit[0] = 'Q';
+                    uplo = 'U';
+                    packit = 'Q';
                     koff = max((INTEGER)1, kd + 2 - n);
                 } else {
-                    uplo[0] = 'L';
-                    packit[0] = 'B';
+                    uplo = 'L';
+                    packit = 'B';
                 }
                 //
                 for (imat = 1; imat <= nimat; imat = imat + 1) {
@@ -203,13 +199,13 @@ void Rdrvpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         //
                         Rlatb4(path, imat, n, n, type, kl, ku, anorm, mode, cndnum, dist);
                         //
-                        strncpy(srnamt, "Rlatms", srnamt_len);
+                        srnamt = "DLATMS";
                         Rlatms(n, n, dist, iseed, type, rwork, mode, cndnum, anorm, kd, kd, packit, &a[koff - 1], ldab, work, info);
                         //
                         // Check error code from Rlatms.
                         //
                         if (info != 0) {
-                            Alaerh(path, "Rlatms", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                            Alaerh(path, "DLATMS", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                             goto statement_80;
                         }
                     } else if (izero > 0) {
@@ -274,7 +270,7 @@ void Rdrvpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                     Rlacpy("Full", kd + 1, n, a, ldab, asav, ldab);
                     //
                     for (iequed = 1; iequed <= 2; iequed = iequed + 1) {
-                        equed[0] = equeds[iequed - 1];
+                        equed = equeds[iequed - 1];
                         if (iequed == 1) {
                             nfact = 3;
                         } else {
@@ -282,10 +278,10 @@ void Rdrvpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         }
                         //
                         for (ifact = 1; ifact <= nfact; ifact = ifact + 1) {
-                            fact[0] = facts[ifact - 1];
-                            prefac = Mlsame(fact, "F");
-                            nofact = Mlsame(fact, "N");
-                            equil = Mlsame(fact, "E");
+                            fact = facts[ifact - 1];
+                            prefac = Mlsame(fact.elems, "F");
+                            nofact = Mlsame(fact.elems, "N");
+                            equil = Mlsame(fact.elems, "E");
                             //
                             if (zerot) {
                                 if (prefac) {
@@ -293,7 +289,7 @@ void Rdrvpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                 }
                                 rcondc = zero;
                                 //
-                            } else if (!Mlsame(fact, "N")) {
+                            } else if (!Mlsame(fact.elems, "N")) {
                                 //
                                 // Compute the condition number for comparison
                                 // with the value returned by Rpbsvx (FACT =
@@ -306,7 +302,7 @@ void Rdrvpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                     // Compute row and column scale factors to
                                     // equilibrate the matrix A.
                                     //
-                                    Rpbequ(uplo, n, kd, afac, ldab, s, scond, amax, info);
+                                    Rpbequ(uplo.elems, n, kd, afac, ldab, s, scond, amax, info);
                                     if (info == 0 && n > 0) {
                                         if (iequed > 1) {
                                             scond = zero;
@@ -314,7 +310,7 @@ void Rdrvpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                         //
                                         // Equilibrate the matrix.
                                         //
-                                        Rlaqsb(uplo, n, kd, afac, ldab, s, scond, amax, equed);
+                                        Rlaqsb(uplo.elems, n, kd, afac, ldab, s, scond, amax, equed.elems);
                                     }
                                 }
                                 //
@@ -327,17 +323,17 @@ void Rdrvpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                 //
                                 // Compute the 1-norm of A.
                                 //
-                                anorm = Rlansb("1", uplo, n, kd, afac, ldab, rwork);
+                                anorm = Rlansb("1", uplo.elems, n, kd, afac, ldab, rwork);
                                 //
                                 // Factor the matrix A.
                                 //
-                                Rpbtrf(uplo, n, kd, afac, ldab, info);
+                                Rpbtrf(uplo.elems, n, kd, afac, ldab, info);
                                 //
                                 // Form the inverse of A.
                                 //
                                 Rlaset("Full", n, n, zero, one, a, lda);
-                                strncpy(srnamt, "Rpbtrs", srnamt_len);
-                                Rpbtrs(uplo, n, kd, n, afac, ldab, a, lda, info);
+                                srnamt = "DPBTRS";
+                                Rpbtrs(uplo.elems, n, kd, n, afac, ldab, a, lda, info);
                                 //
                                 // Compute the 1-norm condition number of A.
                                 //
@@ -356,9 +352,9 @@ void Rdrvpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                             // Form an exact solution and set the right hand
                             // side.
                             //
-                            strncpy(srnamt, "Rlarhs", srnamt_len);
+                            srnamt = "DLARHS";
                             Rlarhs(path, xtype, uplo, " ", n, n, kd, kd, nrhs, a, ldab, xact, lda, b, lda, iseed, info);
-                            xtype[0] = 'C';
+                            xtype = 'C';
                             Rlacpy("Full", n, nrhs, b, lda, bsav, lda);
                             //
                             if (nofact) {
@@ -371,13 +367,13 @@ void Rdrvpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                 Rlacpy("Full", kd + 1, n, a, ldab, afac, ldab);
                                 Rlacpy("Full", n, nrhs, b, lda, x, lda);
                                 //
-                                strncpy(srnamt, "Rpbsv", srnamt_len);
-                                Rpbsv(uplo, n, kd, nrhs, afac, ldab, x, lda, info);
+                                srnamt = "DPBSV ";
+                                Rpbsv(uplo.elems, n, kd, nrhs, afac, ldab, x, lda, info);
                                 //
                                 // Check error code from Rpbsv .
                                 //
                                 if (info != izero) {
-                                    Alaerh(path, "Rpbsv", info, izero, uplo, n, n, kd, kd, nrhs, imat, nfail, nerrs, nout);
+                                    Alaerh(path, "DPBSV ", info, izero, uplo, n, n, kd, kd, nrhs, imat, nfail, nerrs, nout);
                                     goto statement_40;
                                 } else if (info != 0) {
                                     goto statement_40;
@@ -406,10 +402,9 @@ void Rdrvpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                         if (nfail == 0 && nerrs == 0) {
                                             Aladhd(nout, path);
                                         }
-                                        sprintnum_short(buf, result[k - 1]);
                                         write(nout, "(1x,a,', UPLO=''',a1,''', N =',i5,', KD =',i5,"
-                                                    "', type ',i1,', test(',i1,')=',a)"),
-                                            "Rpbsv ", uplo, n, kd, imat, k, buf;
+                                                    "', type ',i1,', test(',i1,')=',g12.5)"),
+                                            "DPBSV ", uplo, n, kd, imat, k, result[k - 1];
                                         nfail++;
                                     }
                                 }
@@ -428,22 +423,19 @@ void Rdrvpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                 // Equilibrate the matrix if FACT='F' and
                                 // EQUED='Y'
                                 //
-                                Rlaqsb(uplo, n, kd, a, ldab, s, scond, amax, equed);
+                                Rlaqsb(uplo.elems, n, kd, a, ldab, s, scond, amax, equed.elems);
                             }
                             //
                             // Solve the system and compute the condition
                             // number and error bounds using Rpbsvx.
                             //
-                            strncpy(srnamt, "Rpbsvx", srnamt_len);
-                            Rpbsvx(fact, uplo, n, kd, nrhs, a, ldab, afac, ldab, equed, s, b, lda, x, lda, rcond, rwork, &rwork[(nrhs + 1) - 1], work, iwork, info);
+                            srnamt = "DPBSVX";
+                            Rpbsvx(fact.elems, uplo.elems, n, kd, nrhs, a, ldab, afac, ldab, equed.elems, s, b, lda, x, lda, rcond, rwork, &rwork[(nrhs + 1) - 1], work, iwork, info);
                             //
                             // Check the error code from Rpbsvx.
                             //
                             if (info != izero) {
-                                fact_uplo[0] = fact[0];
-                                fact_uplo[1] = uplo[0];
-                                fact_uplo[2] = '\0';
-                                Alaerh(path, "Rpbsvx", info, izero, fact_uplo, n, n, kd, kd, nrhs, imat, nfail, nerrs, nout);
+                                Alaerh(path, "DPBSVX", info, izero, fact + uplo, n, n, kd, kd, nrhs, imat, nfail, nerrs, nout);
                                 goto statement_60;
                             }
                             //
@@ -466,7 +458,7 @@ void Rdrvpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                 //
                                 // Check solution from generated exact solution.
                                 //
-                                if (nofact || (prefac && Mlsame(equed, "N"))) {
+                                if (nofact || (prefac && Mlsame(equed.elems, "N"))) {
                                     Rget04(n, nrhs, x, lda, xact, lda, rcondc, result[3 - 1]);
                                 } else {
                                     Rget04(n, nrhs, x, lda, xact, lda, roldc, result[3 - 1]);
@@ -494,16 +486,14 @@ void Rdrvpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                         Aladhd(nout, path);
                                     }
                                     if (prefac) {
-                                        sprintnum_short(buf, result[k - 1]);
                                         write(nout, "(1x,a,'( ''',a1,''', ''',a1,''', ',i5,', ',i5,"
                                                     "', ... ), EQUED=''',a1,''', type ',i1,', test(',i1,"
-                                                    "')=',a)"),
-                                            "Rpbsvx", fact, uplo, n, kd, equed, imat, k, buf;
+                                                    "')=',g12.5)"),
+                                            "DPBSVX", fact, uplo, n, kd, equed, imat, k, result[k - 1];
                                     } else {
-                                        sprintnum_short(buf, result[k - 1]);
                                         write(nout, "(1x,a,'( ''',a1,''', ''',a1,''', ',i5,', ',i5,"
-                                                    "', ... ), type ',i1,', test(',i1,')=',a)"),
-                                            "Rpbsvx", fact, uplo, n, kd, imat, k, buf;
+                                                    "', ... ), type ',i1,', test(',i1,')=',g12.5)"),
+                                            "DPBSVX", fact, uplo, n, kd, imat, k, result[k - 1];
                                     }
                                     nfail++;
                                 }

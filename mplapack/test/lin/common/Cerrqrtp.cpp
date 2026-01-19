@@ -42,12 +42,13 @@ using fem::common;
 
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-#include <mplapack_debug.h>
 
-void Cerrqrtp(const char *path, INTEGER const nunit) {
+void Cerrqrtp(fem::str_cref path, INTEGER const nunit) {
     common cmn;
     common_write write(cmn);
+    //
     nout = nunit;
+    write(nout, star);
     //
     // Set the variables to innocuous values.
     //
@@ -57,15 +58,12 @@ void Cerrqrtp(const char *path, INTEGER const nunit) {
     COMPLEX a[nmax * nmax];
     COMPLEX c[nmax * nmax];
     COMPLEX t[nmax * nmax];
-    INTEGER lda = nmax;
-    INTEGER ldc = nmax;
-    INTEGER ldt = nmax;
     COMPLEX w[nmax];
     for (j = 1; j <= nmax; j = j + 1) {
         for (i = 1; i <= nmax; i = i + 1) {
-            a[(i - 1) + (j - 1) * lda] = COMPLEX(1.0 / castREAL(i + j), 0.0);
-            c[(i - 1) + (j - 1) * ldc] = COMPLEX(1.0 / castREAL(i + j), 0.0);
-            t[(i - 1) + (j - 1) * ldt] = COMPLEX(1.0 / castREAL(i + j), 0.0);
+            a[(i - 1) + (j - 1) * nmax] = 1.0 / COMPLEX(castREAL(i + j), 0.0);
+            c[(i - 1) + (j - 1) * nmax] = 1.0 / COMPLEX(castREAL(i + j), 0.0);
+            t[(i - 1) + (j - 1) * nmax] = 1.0 / COMPLEX(castREAL(i + j), 0.0);
         }
         w[j - 1] = COMPLEX(0.0, 0.0);
     }
@@ -75,97 +73,97 @@ void Cerrqrtp(const char *path, INTEGER const nunit) {
     //
     // Ctpqrt
     //
-    strncpy(srnamt, "Ctpqrt", srnamt_len);
+    srnamt = "ZTPQRT";
     infot = 1;
     COMPLEX b[nmax * nmax];
     INTEGER info = 0;
     Ctpqrt(-1, 1, 0, 1, a, 1, b, 1, t, 1, w, info);
-    chkxer("Ctpqrt", infot, nout, lerr, ok);
+    Chkxer("ZTPQRT", infot, nout, lerr, ok);
     infot = 2;
     Ctpqrt(1, -1, 0, 1, a, 1, b, 1, t, 1, w, info);
-    chkxer("Ctpqrt", infot, nout, lerr, ok);
+    Chkxer("ZTPQRT", infot, nout, lerr, ok);
     infot = 3;
     Ctpqrt(0, 1, -1, 1, a, 1, b, 1, t, 1, w, info);
-    chkxer("Ctpqrt", infot, nout, lerr, ok);
+    Chkxer("ZTPQRT", infot, nout, lerr, ok);
     infot = 3;
     Ctpqrt(0, 1, 1, 1, a, 1, b, 1, t, 1, w, info);
-    chkxer("Ctpqrt", infot, nout, lerr, ok);
+    Chkxer("ZTPQRT", infot, nout, lerr, ok);
     infot = 4;
     Ctpqrt(0, 1, 0, 0, a, 1, b, 1, t, 1, w, info);
-    chkxer("Ctpqrt", infot, nout, lerr, ok);
+    Chkxer("ZTPQRT", infot, nout, lerr, ok);
     infot = 4;
     Ctpqrt(0, 1, 0, 2, a, 1, b, 1, t, 1, w, info);
-    chkxer("Ctpqrt", infot, nout, lerr, ok);
+    Chkxer("ZTPQRT", infot, nout, lerr, ok);
     infot = 6;
     Ctpqrt(1, 2, 0, 2, a, 1, b, 1, t, 1, w, info);
-    chkxer("Ctpqrt", infot, nout, lerr, ok);
+    Chkxer("ZTPQRT", infot, nout, lerr, ok);
     infot = 8;
     Ctpqrt(2, 1, 0, 1, a, 1, b, 1, t, 1, w, info);
-    chkxer("Ctpqrt", infot, nout, lerr, ok);
+    Chkxer("ZTPQRT", infot, nout, lerr, ok);
     infot = 10;
     Ctpqrt(2, 2, 1, 2, a, 2, b, 2, t, 1, w, info);
-    chkxer("Ctpqrt", infot, nout, lerr, ok);
+    Chkxer("ZTPQRT", infot, nout, lerr, ok);
     //
     // Ctpqrt2
     //
-    strncpy(srnamt, "Ctpqrt2", srnamt_len);
+    srnamt = "ZTPQRT2";
     infot = 1;
     Ctpqrt2(-1, 0, 0, a, 1, b, 1, t, 1, info);
-    chkxer("Ctpqrt2", infot, nout, lerr, ok);
+    Chkxer("ZTPQRT2", infot, nout, lerr, ok);
     infot = 2;
     Ctpqrt2(0, -1, 0, a, 1, b, 1, t, 1, info);
-    chkxer("Ctpqrt2", infot, nout, lerr, ok);
+    Chkxer("ZTPQRT2", infot, nout, lerr, ok);
     infot = 3;
     Ctpqrt2(0, 0, -1, a, 1, b, 1, t, 1, info);
-    chkxer("Ctpqrt2", infot, nout, lerr, ok);
+    Chkxer("ZTPQRT2", infot, nout, lerr, ok);
     infot = 5;
     Ctpqrt2(2, 2, 0, a, 1, b, 2, t, 2, info);
-    chkxer("Ctpqrt2", infot, nout, lerr, ok);
+    Chkxer("ZTPQRT2", infot, nout, lerr, ok);
     infot = 7;
     Ctpqrt2(2, 2, 0, a, 2, b, 1, t, 2, info);
-    chkxer("Ctpqrt2", infot, nout, lerr, ok);
+    Chkxer("ZTPQRT2", infot, nout, lerr, ok);
     infot = 9;
     Ctpqrt2(2, 2, 0, a, 2, b, 2, t, 1, info);
-    chkxer("Ctpqrt2", infot, nout, lerr, ok);
+    Chkxer("ZTPQRT2", infot, nout, lerr, ok);
     //
     // Ctpmqrt
     //
-    strncpy(srnamt, "Ctpmqrt", srnamt_len);
+    srnamt = "ZTPMQRT";
     infot = 1;
     Ctpmqrt("/", "N", 0, 0, 0, 0, 1, a, 1, t, 1, b, 1, c, 1, w, info);
-    chkxer("Ctpmqrt", infot, nout, lerr, ok);
+    Chkxer("ZTPMQRT", infot, nout, lerr, ok);
     infot = 2;
     Ctpmqrt("L", "/", 0, 0, 0, 0, 1, a, 1, t, 1, b, 1, c, 1, w, info);
-    chkxer("Ctpmqrt", infot, nout, lerr, ok);
+    Chkxer("ZTPMQRT", infot, nout, lerr, ok);
     infot = 3;
     Ctpmqrt("L", "N", -1, 0, 0, 0, 1, a, 1, t, 1, b, 1, c, 1, w, info);
-    chkxer("Ctpmqrt", infot, nout, lerr, ok);
+    Chkxer("ZTPMQRT", infot, nout, lerr, ok);
     infot = 4;
     Ctpmqrt("L", "N", 0, -1, 0, 0, 1, a, 1, t, 1, b, 1, c, 1, w, info);
-    chkxer("Ctpmqrt", infot, nout, lerr, ok);
+    Chkxer("ZTPMQRT", infot, nout, lerr, ok);
     infot = 5;
     Ctpmqrt("L", "N", 0, 0, -1, 0, 1, a, 1, t, 1, b, 1, c, 1, w, info);
     infot = 6;
     Ctpmqrt("L", "N", 0, 0, 0, -1, 1, a, 1, t, 1, b, 1, c, 1, w, info);
-    chkxer("Ctpmqrt", infot, nout, lerr, ok);
+    Chkxer("ZTPMQRT", infot, nout, lerr, ok);
     infot = 7;
     Ctpmqrt("L", "N", 0, 0, 0, 0, 0, a, 1, t, 1, b, 1, c, 1, w, info);
-    chkxer("Ctpmqrt", infot, nout, lerr, ok);
+    Chkxer("ZTPMQRT", infot, nout, lerr, ok);
     infot = 9;
     Ctpmqrt("R", "N", 1, 2, 1, 1, 1, a, 1, t, 1, b, 1, c, 1, w, info);
-    chkxer("Ctpmqrt", infot, nout, lerr, ok);
+    Chkxer("ZTPMQRT", infot, nout, lerr, ok);
     infot = 9;
     Ctpmqrt("L", "N", 2, 1, 1, 1, 1, a, 1, t, 1, b, 1, c, 1, w, info);
-    chkxer("Ctpmqrt", infot, nout, lerr, ok);
+    Chkxer("ZTPMQRT", infot, nout, lerr, ok);
     infot = 11;
     Ctpmqrt("R", "N", 1, 1, 1, 1, 1, a, 1, t, 0, b, 1, c, 1, w, info);
-    chkxer("Ctpmqrt", infot, nout, lerr, ok);
+    Chkxer("ZTPMQRT", infot, nout, lerr, ok);
     infot = 13;
     Ctpmqrt("L", "N", 1, 1, 1, 1, 1, a, 1, t, 1, b, 0, c, 1, w, info);
-    chkxer("Ctpmqrt", infot, nout, lerr, ok);
+    Chkxer("ZTPMQRT", infot, nout, lerr, ok);
     infot = 15;
     Ctpmqrt("L", "N", 1, 1, 1, 1, 1, a, 1, t, 1, b, 1, c, 0, w, info);
-    chkxer("Ctpmqrt", infot, nout, lerr, ok);
+    Chkxer("ZTPMQRT", infot, nout, lerr, ok);
     //
     // Print a summary line.
     //

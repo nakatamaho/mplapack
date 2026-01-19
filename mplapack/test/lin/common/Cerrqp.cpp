@@ -42,25 +42,21 @@ using fem::common;
 
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-#include <mplapack_debug.h>
 
-void Cerrqp(const char *path, INTEGER const nunit) {
+void Cerrqp(fem::str_cref path, INTEGER const nunit) {
     common cmn;
     common_write write(cmn);
     //
     nout = nunit;
-    char c2[2];
-    c2[0] = path[1];
-    c2[1] = path[2];
+    fem::str<2> c2 = path(2, 3);
     const INTEGER nmax = 3;
     INTEGER lw = nmax + 1;
     COMPLEX a[nmax * nmax];
-    INTEGER lda = nmax;
-    a[(1 - 1) + (1 - 1) * lda] = COMPLEX(1.0, -1.0);
-    a[(1 - 1) + (2 - 1) * lda] = COMPLEX(2.0e+0, -2.0e+0);
-    a[(2 - 1) + (2 - 1) * lda] = COMPLEX(3.0e+0, -3.0e+0);
-    a[(2 - 1)] = COMPLEX(4.0e+0, -4.0e+0);
+    a[(2 - 1) * nmax] = COMPLEX(2.0, -2.0);
+    a[(2 - 1) + (2 - 1) * nmax] = COMPLEX(3.0, -3.0);
+    a[(2 - 1)] = COMPLEX(4.0, -4.0);
     ok = true;
+    write(nout, star);
     //
     // Test error exits for QR factorization with pivoting
     //
@@ -69,23 +65,23 @@ void Cerrqp(const char *path, INTEGER const nunit) {
     COMPLEX w[2 * nmax + 3 * nmax];
     REAL rw[2 * nmax];
     INTEGER info = 0;
-    if (Mlsamen(2, c2, "QP")) {
+    if (Mlsamen(2, c2.elems, "QP")) {
         //
         // Cgeqp3
         //
-        strncpy(srnamt, "Cgeqp3", srnamt_len);
+        srnamt = "ZGEQP3";
         infot = 1;
         Cgeqp3(-1, 0, a, 1, ip, tau, w, lw, rw, info);
-        chkxer("Cgeqp3", infot, nout, lerr, ok);
+        Chkxer("ZGEQP3", infot, nout, lerr, ok);
         infot = 2;
         Cgeqp3(1, -1, a, 1, ip, tau, w, lw, rw, info);
-        chkxer("Cgeqp3", infot, nout, lerr, ok);
+        Chkxer("ZGEQP3", infot, nout, lerr, ok);
         infot = 4;
         Cgeqp3(2, 3, a, 1, ip, tau, w, lw, rw, info);
-        chkxer("Cgeqp3", infot, nout, lerr, ok);
+        Chkxer("ZGEQP3", infot, nout, lerr, ok);
         infot = 8;
         Cgeqp3(2, 2, a, 2, ip, tau, w, lw - 10, rw, info);
-        chkxer("Cgeqp3", infot, nout, lerr, ok);
+        Chkxer("ZGEQP3", infot, nout, lerr, ok);
     }
     //
     // Print a summary line.

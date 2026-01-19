@@ -47,7 +47,6 @@ REAL Rrzt01(INTEGER const m, INTEGER const n, REAL *a, REAL *af, INTEGER const l
     REAL return_value = 0.0;
     //
     const REAL zero = 0.0;
-    INTEGER ldaf = lda;
     return_value = zero;
     //
     if (lwork < m * n + m) {
@@ -71,7 +70,7 @@ REAL Rrzt01(INTEGER const m, INTEGER const n, REAL *a, REAL *af, INTEGER const l
     INTEGER i = 0;
     for (j = 1; j <= m; j = j + 1) {
         for (i = 1; i <= j; i = i + 1) {
-            work[((j - 1) * m + i) - 1] = af[(i - 1) + (j - 1) * ldaf];
+            work[((j - 1) * m + i) - 1] = af[(i - 1) + (j - 1) * lda];
         }
     }
     //

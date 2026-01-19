@@ -43,7 +43,7 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-void Chet01(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *afac, INTEGER const ldafac, INTEGER *ipiv, COMPLEX *c, INTEGER const ldc, REAL *rwork, REAL &resid) {
+void Chet01(fem::str_cref uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *afac, INTEGER const ldafac, INTEGER *ipiv, COMPLEX *c, INTEGER const ldc, REAL *rwork, REAL &resid) {
     //
     // Quick exit if N = 0.
     //
@@ -56,7 +56,7 @@ void Chet01(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, CO
     // Determine EPS and the norm of A.
     //
     REAL eps = Rlamch("Epsilon");
-    REAL anorm = Clanhe("1", uplo, n, a, lda, rwork);
+    REAL anorm = Clanhe("1", uplo.elems(), n, a, lda, rwork);
     //
     // Check the imaginary parts of the diagonal elements and return with
     // an error code if any are nonzero.
@@ -88,7 +88,7 @@ void Chet01(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, CO
     // Compute the difference  C - A .
     //
     INTEGER i = 0;
-    if (Mlsame(uplo, "U")) {
+    if (Mlsame(uplo.elems(), "U")) {
         for (j = 1; j <= n; j = j + 1) {
             for (i = 1; i <= j - 1; i = i + 1) {
                 c[(i - 1) + (j - 1) * ldc] = c[(i - 1) + (j - 1) * ldc] - a[(i - 1) + (j - 1) * lda];
@@ -106,7 +106,7 @@ void Chet01(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, CO
     //
     // Compute norm( C - A ) / ( N * norm(A) * EPS )
     //
-    resid = Clanhe("1", uplo, n, c, ldc, rwork);
+    resid = Clanhe("1", uplo.elems(), n, c, ldc, rwork);
     //
     if (anorm <= zero) {
         if (resid != zero) {

@@ -43,15 +43,11 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-#include <mplapack_debug.h>
-
 void Rchkpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, INTEGER *nsval, REAL const thresh, bool const tsterr, REAL *a, REAL *d, REAL *e, REAL *b, REAL *x, REAL *xact, REAL *work, REAL *rwork, INTEGER const nout) {
     common cmn;
     common_write write(cmn);
-    //
-    INTEGER iseedy[] = {1988, 1989, 1990, 1991};
-    char path[4] = {};
-    char buf[1024];
+    static INTEGER iseedy[4] = {0, 0, 0, 1};
+    fem::str<3> path;
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
@@ -63,13 +59,13 @@ void Rchkpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
     const INTEGER ntypes = 12;
     INTEGER nimat = 0;
     INTEGER imat = 0;
-    char type;
+    fem::str<1> type;
     INTEGER kl = 0;
     INTEGER ku = 0;
     REAL anorm = 0.0;
     INTEGER mode = 0;
     REAL cond = 0.0;
-    char dist;
+    fem::str<1> dist;
     bool zerot = false;
     INTEGER info = 0;
     INTEGER izero = 0;
@@ -88,42 +84,10 @@ void Rchkpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
     INTEGER nrhs = 0;
     INTEGER k = 0;
     REAL rcond = 0.0;
-    static const char *format_9999 = "(' N =',i5,', type ',i2,', test ',i2,', ratio = ',a)";
+    static const char *format_9999 = "(' N =',i5,', type ',i2,', test ',i2,', ratio = ',g12.5)";
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Scalars in Common ..
-    //     ..
-    //     .. Common blocks ..
-    //     ..
-    //     .. Data statements ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    path[0] = 'R';
-    path[1] = 'P';
-    path[2] = 'T';
+    path(1, 1) = "Double precision";
+    path(2, 3) = "PT";
     nrun = 0;
     nfail = 0;
     nerrs = 0;
@@ -159,7 +123,7 @@ void Rchkpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
             //
             // Set up parameters with Rlatb4.
             //
-            Rlatb4(path, imat, n, n, &type, kl, ku, anorm, mode, cond, &dist);
+            Rlatb4(path, imat, n, n, type, kl, ku, anorm, mode, cond, dist);
             //
             zerot = imat >= 8 && imat <= 10;
             if (imat <= 6) {
@@ -167,13 +131,13 @@ void Rchkpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                 // Type 1-6:  generate a symmetric tridiagonal matrix of
                 // known condition number in lower triangular band storage.
                 //
-                strncpy(srnamt, "Rlatms", srnamt_len);
-                Rlatms(n, n, &dist, iseed, &type, rwork, mode, cond, anorm, kl, ku, "B", a, 2, work, info);
+                srnamt = "DLATMS";
+                Rlatms(n, n, dist, iseed, type, rwork, mode, cond, anorm, kl, ku, "B", a, 2, work, info);
                 //
                 // Check the error code from Rlatms.
                 //
                 if (info != 0) {
-                    Alaerh(path, "Rlatms", info, 0, " ", n, n, kl, ku, -1, imat, nfail, nerrs, nout);
+                    Alaerh(path, "DLATMS", info, 0, " ", n, n, kl, ku, -1, imat, nfail, nerrs, nout);
                     goto statement_100;
                 }
                 izero = 0;
@@ -287,7 +251,7 @@ void Rchkpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
             // Check error code from Rpttrf.
             //
             if (info != izero) {
-                Alaerh(path, "Rpttrf", info, izero, " ", n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                Alaerh(path, "DPTTRF", info, izero, " ", n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                 goto statement_100;
             }
             //
@@ -304,8 +268,7 @@ void Rchkpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                 if (nfail == 0 && nerrs == 0) {
                     Alahd(nout, path);
                 }
-                sprintnum_short(buf, result[1 - 1]);
-                write(nout, format_9999), n, imat, 1, buf;
+                write(nout, format_9999), n, imat, 1, result[1 - 1];
                 nfail++;
             }
             nrun++;
@@ -326,9 +289,9 @@ void Rchkpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                 }
                 x[i - 1] = one;
                 Rpttrs(n, 1, &d[(n + 1) - 1], &e[(n + 1) - 1], x, lda, info);
-                ainvnm = max({ainvnm, Rasum(n, x, 1)});
+                ainvnm = max(ainvnm, Rasum(n, x, 1));
             }
-            rcondc = one / max(one, REAL(anorm * ainvnm));
+            rcondc = one / max(one, anorm * ainvnm);
             //
             for (irhs = 1; irhs <= nns; irhs = irhs + 1) {
                 nrhs = nsval[irhs - 1];
@@ -354,7 +317,7 @@ void Rchkpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                 // Check error code from Rpttrs.
                 //
                 if (info != 0) {
-                    Alaerh(path, "Rpttrs", info, 0, " ", n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                    Alaerh(path, "DPTTRS", info, 0, " ", n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                 }
                 //
                 Rlacpy("Full", n, nrhs, b, lda, work, lda);
@@ -368,13 +331,13 @@ void Rchkpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                 // +    TESTS 4, 5, and 6
                 // Use iterative refinement to improve the solution.
                 //
-                strncpy(srnamt, "Rptrfs", srnamt_len);
+                srnamt = "DPTRFS";
                 Rptrfs(n, nrhs, d, e, &d[(n + 1) - 1], &e[(n + 1) - 1], b, lda, x, lda, rwork, &rwork[(nrhs + 1) - 1], work, info);
                 //
                 // Check error code from Rptrfs.
                 //
                 if (info != 0) {
-                    Alaerh(path, "Rptrfs", info, 0, " ", n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                    Alaerh(path, "DPTRFS", info, 0, " ", n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                 }
                 //
                 Rget04(n, nrhs, x, lda, xact, lda, rcondc, result[4 - 1]);
@@ -388,10 +351,9 @@ void Rchkpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                         if (nfail == 0 && nerrs == 0) {
                             Alahd(nout, path);
                         }
-                        sprintnum_short(buf, result[k - 1]);
                         write(nout, "(' N =',i5,', NRHS=',i3,', type ',i2,', test(',i2,') = ',"
-                                    "a)"),
-                            n, nrhs, imat, k, buf;
+                                    "g12.5)"),
+                            n, nrhs, imat, k, result[k - 1];
                         nfail++;
                     }
                 }
@@ -403,13 +365,13 @@ void Rchkpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
         // matrix.
         //
         statement_90:
-            strncpy(srnamt, "Rptcon", srnamt_len);
+            srnamt = "DPTCON";
             Rptcon(n, &d[(n + 1) - 1], &e[(n + 1) - 1], anorm, rcond, rwork, info);
             //
             // Check error code from Rptcon.
             //
             if (info != 0) {
-                Alaerh(path, "Rptcon", info, 0, " ", n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                Alaerh(path, "DPTCON", info, 0, " ", n, n, -1, -1, -1, imat, nfail, nerrs, nout);
             }
             //
             result[7 - 1] = Rget06(rcond, rcondc);
@@ -420,8 +382,7 @@ void Rchkpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                 if (nfail == 0 && nerrs == 0) {
                     Alahd(nout, path);
                 }
-                sprintnum_short(buf, result[7 - 1]);
-                write(nout, format_9999), n, imat, 7, buf;
+                write(nout, format_9999), n, imat, 7, result[7 - 1];
                 nfail++;
             }
             nrun++;

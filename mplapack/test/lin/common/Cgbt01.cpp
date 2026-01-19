@@ -65,7 +65,7 @@ void Cgbt01(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku
         i1 = max(kd + 1 - j, (INTEGER)1);
         i2 = min(kd + m - j, kl + kd);
         if (i2 >= i1) {
-            anorm = max({anorm, RCasum(i2 - i1 + 1, &a[(i1 - 1) + (j - 1) * lda], 1)});
+            anorm = max(anorm, RCasum(i2 - i1 + 1, &a[(i1 - 1) + (j - 1) * lda], 1));
         }
     }
     //
@@ -122,7 +122,7 @@ void Cgbt01(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku
             //
             // Compute the 1-norm of the column.
             //
-            resid = max({resid, RCasum(ju + jl + 1, work, 1)});
+            resid = max(resid, RCasum(ju + jl + 1, work, 1));
         }
     }
     //

@@ -43,21 +43,13 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-#include <mplapack_debug.h>
-
 void Rchktr(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, INTEGER *nbval, INTEGER const nns, INTEGER *nsval, REAL const thresh, bool const tsterr, INTEGER const /* nmax */, REAL *a, REAL *ainv, REAL *b, REAL *x, REAL *xact, REAL *work, REAL *rwork, INTEGER *iwork, INTEGER const nout) {
     common cmn;
     common_write write(cmn);
-    //
-    const INTEGER ntran = 3;
-    INTEGER iseedy[] = {1988, 1989, 1990, 1991};
-    char uplos[] = {'U', 'L'};
-    char transs[] = {'N', 'T', 'C'};
-    char uplo_diag[3];
-    char uplo_trans_diag[4];
-    char norm_uplo_diag[4];
-    char path[4] = {};
-    char buf[1024];
+    static INTEGER iseedy[4] = {1988, 1989, 1990, 1991};
+    static fem::str<1> uplos[2] = {"U", "L"};
+    static fem::str<1> transs[3] = {"N", "T", "C"};
+    fem::str<3> path;
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
@@ -66,12 +58,12 @@ void Rchktr(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
     INTEGER in = 0;
     INTEGER n = 0;
     INTEGER lda = 0;
-    char xtype;
+    fem::str<1> xtype;
     INTEGER imat = 0;
     const INTEGER ntype1 = 10;
     INTEGER iuplo = 0;
-    char uplo;
-    char diag;
+    fem::str<1> uplo;
+    fem::str<1> diag;
     INTEGER info = 0;
     INTEGER idiag = 0;
     INTEGER inb = 0;
@@ -87,8 +79,9 @@ void Rchktr(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
     INTEGER irhs = 0;
     INTEGER nrhs = 0;
     INTEGER itran = 0;
-    char trans;
-    char norm;
+    const INTEGER ntran = 3;
+    fem::str<1> trans;
+    fem::str<1> norm;
     REAL rcondc = 0.0;
     REAL dummy = 0.0;
     INTEGER k = 0;
@@ -98,42 +91,10 @@ void Rchktr(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
     static const char *format_9996 = "(1x,a,'( ''',a1,''', ''',a1,''', ''',a1,''', ''',a1,''',',i5,"
                                      "', ... ), type ',i2,', test(',i2,')=',g12.5)";
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+    // Initialize constants and the random number seed.
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Scalars in Common ..
-    //     ..
-    //     .. Common blocks ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Data statements ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Initialize constants and the random number seed.
-    //
-    path[0] = 'R';
-    path[1] = 'T';
-    path[2] = 'R';
+    path(1, 1) = "Double precision";
+    path(2, 3) = "TR";
     nrun = 0;
     nfail = 0;
     nerrs = 0;
@@ -146,6 +107,7 @@ void Rchktr(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
     if (tsterr) {
         Rerrtr(path, nout);
     }
+    infot = 0;
     xlaenv(2, 2);
     //
     for (in = 1; in <= nn; in = in + 1) {
@@ -170,13 +132,14 @@ void Rchktr(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                 //
                 uplo = uplos[iuplo - 1];
                 //
-                //              Call Rlattr to generate a triangular test matrix.
+                // Call Rlattr to generate a triangular test matrix.
                 //
-                Rlattr(imat, &uplo, "No transpose", &diag, iseed, n, a, lda, x, work, info);
+                srnamt = "DLATTR";
+                Rlattr(imat, uplo, "No transpose", diag, iseed, n, a, lda, x, work, info);
                 //
                 // Set IDIAG = 1 for non-unit matrices, 2 for unit.
                 //
-                if (Mlsame(&diag, "N")) {
+                if (Mlsame(diag.elems, "N")) {
                     idiag = 1;
                 } else {
                     idiag = 2;
@@ -192,22 +155,20 @@ void Rchktr(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                     // +    TEST 1
                     // Form the inverse of A.
                     //
-                    Rlacpy(&uplo, n, n, a, lda, ainv, lda);
-                    Rtrtri(&uplo, &diag, n, ainv, lda, info);
+                    Rlacpy(uplo.elems, n, n, a, lda, ainv, lda);
+                    srnamt = "DTRTRI";
+                    Rtrtri(uplo.elems, diag.elems, n, ainv, lda, info);
                     //
                     // Check error code from Rtrtri.
                     //
                     if (info != 0) {
-                        uplo_diag[0] = uplo;
-                        uplo_diag[1] = diag;
-                        uplo_diag[2] = '\0';
-                        Alaerh(path, "Rtrtri", info, 0, uplo_diag, n, n, -1, -1, nb, imat, nfail, nerrs, nout);
+                        Alaerh(path, "DTRTRI", info, 0, uplo + diag, n, n, -1, -1, nb, imat, nfail, nerrs, nout);
                     }
                     //
-                    //                 Compute the infinity-norm condition number of A.
+                    // Compute the infinity-norm condition number of A.
                     //
-                    anorm = Rlantr("I", &uplo, &diag, n, n, a, lda, rwork);
-                    ainvnm = Rlantr("I", &uplo, &diag, n, n, ainv, lda, rwork);
+                    anorm = Rlantr("I", uplo.elems, diag.elems, n, n, a, lda, rwork);
+                    ainvnm = Rlantr("I", uplo.elems, diag.elems, n, n, ainv, lda, rwork);
                     if (anorm <= zero || ainvnm <= zero) {
                         rcondi = one;
                     } else {
@@ -218,7 +179,7 @@ void Rchktr(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                     // its inverse.  Also compute the 1-norm condition number
                     // of A.
                     //
-                    Rtrt01(&uplo, &diag, n, a, lda, ainv, lda, rcondo, rwork, result[1 - 1]);
+                    Rtrt01(uplo, diag, n, a, lda, ainv, lda, rcondo, rwork, result[1 - 1]);
                     //
                     // Print the test ratio if it is .GE. THRESH.
                     //
@@ -226,10 +187,9 @@ void Rchktr(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                         if (nfail == 0 && nerrs == 0) {
                             Alahd(nout, path);
                         }
-                        sprintnum_short(buf, result[1 - 1]);
                         write(nout, "(' UPLO=''',a1,''', DIAG=''',a1,''', N=',i5,', NB=',i4,"
-                                    "', type ',i2,', test(',i2,')= ',a)"),
-                            uplo, diag, n, nb, imat, 1, buf;
+                                    "', type ',i2,', test(',i2,')= ',g12.5)"),
+                            uplo, diag, n, nb, imat, 1, result[1 - 1];
                         nfail++;
                     }
                     nrun++;
@@ -257,72 +217,64 @@ void Rchktr(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                                 rcondc = rcondi;
                             }
                             //
-                            //+    TEST 2
-                            //                       Solve and compute residual for op(A)*x = b.
+                            // +    TEST 2
+                            // Solve and compute residual for op(A)*x = b.
                             //
-                            Rlarhs(path, &xtype, &uplo, &trans, n, n, 0, idiag, nrhs, a, lda, xact, lda, b, lda, iseed, info);
+                            srnamt = "DLARHS";
+                            Rlarhs(path, xtype, uplo, trans, n, n, 0, idiag, nrhs, a, lda, xact, lda, b, lda, iseed, info);
                             xtype = 'C';
                             Rlacpy("Full", n, nrhs, b, lda, x, lda);
                             //
-                            Rtrtrs(&uplo, &trans, &diag, n, nrhs, a, lda, x, lda, info);
+                            srnamt = "DTRTRS";
+                            Rtrtrs(uplo.elems, trans.elems, diag.elems, n, nrhs, a, lda, x, lda, info);
                             //
                             // Check error code from Rtrtrs.
                             //
                             if (info != 0) {
-
-                                uplo_trans_diag[0] = uplo;
-                                uplo_trans_diag[1] = trans;
-                                uplo_trans_diag[2] = diag;
-                                uplo_trans_diag[3] = '\0';
-
-                                Alaerh(path, "Rtrtrs", info, 0, uplo_trans_diag, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                                Alaerh(path, "DTRTRS", info, 0, uplo + trans + diag, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                             }
                             //
-                            //                       This line is needed on a Sun SPARCstation.
+                            // This line is needed on a Sun SPARCstation.
                             //
                             if (n > 0) {
                                 dummy = a[1 - 1];
                             }
                             //
-                            Rtrt02(&uplo, &trans, &diag, n, nrhs, a, lda, x, lda, b, lda, work, result[2 - 1]);
+                            Rtrt02(uplo, trans, diag, n, nrhs, a, lda, x, lda, b, lda, work, result[2 - 1]);
                             //
-                            //+    TEST 3
-                            //                       Check solution from generated exact solution.
+                            // +    TEST 3
+                            // Check solution from generated exact solution.
                             //
                             Rget04(n, nrhs, x, lda, xact, lda, rcondc, result[3 - 1]);
                             //
-                            //+    TESTS 4, 5, and 6
-                            //                       Use iterative refinement to improve the solution
-                            //                       and compute error bounds.
+                            // +    TESTS 4, 5, and 6
+                            // Use iterative refinement to improve the solution
+                            // and compute error bounds.
                             //
-                            Rtrrfs(&uplo, &trans, &diag, n, nrhs, a, lda, b, lda, x, lda, rwork, &rwork[(nrhs + 1) - 1], work, iwork, info);
+                            srnamt = "DTRRFS";
+                            Rtrrfs(uplo.elems, trans.elems, diag.elems, n, nrhs, a, lda, b, lda, x, lda, rwork, &rwork[(nrhs + 1) - 1], work, iwork, info);
                             //
                             // Check error code from Rtrrfs.
                             //
                             if (info != 0) {
-                                uplo_trans_diag[0] = uplo;
-                                uplo_trans_diag[1] = trans;
-                                uplo_trans_diag[2] = diag;
-                                uplo_trans_diag[3] = '\0';
-                                Alaerh(path, "Rtrrfs", info, 0, uplo_trans_diag, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                                Alaerh(path, "DTRRFS", info, 0, uplo + trans + diag, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                             }
                             //
                             Rget04(n, nrhs, x, lda, xact, lda, rcondc, result[4 - 1]);
-                            Rtrt05(&uplo, &trans, &diag, n, nrhs, a, lda, b, lda, x, lda, xact, lda, rwork, &rwork[(nrhs + 1) - 1], &result[5 - 1]);
+                            Rtrt05(uplo, trans, diag, n, nrhs, a, lda, b, lda, x, lda, xact, lda, rwork, &rwork[(nrhs + 1) - 1], &result[5 - 1]);
                             //
-                            //                       Print information about the tests that did not
-                            //                       pass the threshold.
+                            // Print information about the tests that did not
+                            // pass the threshold.
                             //
                             for (k = 2; k <= 6; k = k + 1) {
                                 if (result[k - 1] >= thresh) {
                                     if (nfail == 0 && nerrs == 0) {
                                         Alahd(nout, path);
                                     }
-                                    sprintnum_short(buf, result[k - 1]);
                                     write(nout, "(' UPLO=''',a1,''', TRANS=''',a1,''', DIAG=''',a1,"
                                                 "''', N=',i5,', NB=',i4,', type ',i2,',      test(',i2,"
-                                                "')= ',a)"),
-                                        uplo, trans, diag, n, nrhs, imat, k, buf;
+                                                "')= ',g12.5)"),
+                                        uplo, trans, diag, n, nrhs, imat, k, result[k - 1];
                                     nfail++;
                                 }
                             }
@@ -341,30 +293,26 @@ void Rchktr(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                             norm = 'I';
                             rcondc = rcondi;
                         }
-                        Rtrcon(&norm, &uplo, &diag, n, a, lda, rcond, work, iwork, info);
+                        srnamt = "DTRCON";
+                        Rtrcon(norm.elems, uplo.elems, diag.elems, n, a, lda, rcond, work, iwork, info);
                         //
                         // Check error code from Rtrcon.
                         //
                         if (info != 0) {
-                            norm_uplo_diag[0] = norm;
-                            norm_uplo_diag[1] = uplo;
-                            norm_uplo_diag[2] = diag;
-                            norm_uplo_diag[3] = '\0';
-                            Alaerh(path, "Rtrcon", info, 0, norm_uplo_diag, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                            Alaerh(path, "DTRCON", info, 0, norm + uplo + diag, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                         }
                         //
-                        Rtrt06(rcond, rcondc, &uplo, &diag, n, a, lda, rwork, result[7 - 1]);
+                        Rtrt06(rcond, rcondc, uplo, diag, n, a, lda, rwork, result[7 - 1]);
                         //
-                        //                    Print the test ratio if it is .GE. THRESH.
+                        // Print the test ratio if it is .GE. THRESH.
                         //
                         if (result[7 - 1] >= thresh) {
                             if (nfail == 0 && nerrs == 0) {
                                 Alahd(nout, path);
                             }
-                            sprintnum_short(buf, result[7 - 1]);
                             write(nout, "(' NORM=''',a1,''', UPLO =''',a1,''', N=',i5,',',11x,"
-                                        "' type ',i2,', test(',i2,')=',a)"),
-                                norm, uplo, n, imat, 7, buf;
+                                        "' type ',i2,', test(',i2,')=',g12.5)"),
+                                norm, uplo, n, imat, 7, result[7 - 1];
                             nfail++;
                         }
                         nrun++;
@@ -396,63 +344,55 @@ void Rchktr(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                     //
                     trans = transs[itran - 1];
                     //
-                    //                 Call Rlattr to generate a triangular test matrix.
+                    // Call Rlattr to generate a triangular test matrix.
                     //
-                    Rlattr(imat, &uplo, &trans, &diag, iseed, n, a, lda, x, work, info);
+                    srnamt = "DLATTR";
+                    Rlattr(imat, uplo, trans, diag, iseed, n, a, lda, x, work, info);
                     //
-                    //+    TEST 8
-                    //                 Solve the system op(A)*x = b.
+                    // +    TEST 8
+                    // Solve the system op(A)*x = b.
                     //
+                    srnamt = "DLATRS";
                     Rcopy(n, x, 1, b, 1);
-                    Rlatrs(&uplo, &trans, &diag, "N", n, a, lda, b, scale, rwork, info);
+                    Rlatrs(uplo.elems, trans.elems, diag.elems, "N", n, a, lda, b, scale, rwork, info);
                     //
                     // Check error code from Rlatrs.
                     //
                     if (info != 0) {
-                        uplo_trans_diag[0] = uplo;
-                        uplo_trans_diag[1] = trans;
-                        uplo_trans_diag[2] = diag;
-                        uplo_trans_diag[3] = 'N';
-                        Alaerh(path, "Rlatrs", info, 0, uplo_trans_diag, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                        Alaerh(path, "DLATRS", info, 0, uplo + trans + diag + fem::str_cref("N"), n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                     }
                     //
-                    Rtrt03(&uplo, &trans, &diag, n, 1, a, lda, scale, rwork, one, b, lda, x, lda, work, result[8 - 1]);
+                    Rtrt03(uplo, trans, diag, n, 1, a, lda, scale, rwork, one, b, lda, x, lda, work, result[8 - 1]);
                     //
-                    //+    TEST 9
-                    //                 Solve op(A)*X = b again with NORMIN = 'Y'.
+                    // +    TEST 9
+                    // Solve op(A)*X = b again with NORMIN = 'Y'.
                     //
                     Rcopy(n, x, 1, &b[(n + 1) - 1], 1);
-                    Rlatrs(&uplo, &trans, &diag, "Y", n, a, lda, &b[(n + 1) - 1], scale, rwork, info);
+                    Rlatrs(uplo.elems, trans.elems, diag.elems, "Y", n, a, lda, &b[(n + 1) - 1], scale, rwork, info);
                     //
                     // Check error code from Rlatrs.
                     //
                     if (info != 0) {
-                        uplo_trans_diag[0] = uplo;
-                        uplo_trans_diag[1] = trans;
-                        uplo_trans_diag[2] = diag;
-                        uplo_trans_diag[3] = 'Y';
-                        Alaerh(path, "Rlatrs", info, 0, uplo_trans_diag, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                        Alaerh(path, "DLATRS", info, 0, uplo + trans + diag + fem::str_cref("Y"), n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                     }
                     //
-                    Rtrt03(&uplo, &trans, &diag, n, 1, a, lda, scale, rwork, one, &b[(n + 1) - 1], lda, x, lda, work, result[9 - 1]);
+                    Rtrt03(uplo, trans, diag, n, 1, a, lda, scale, rwork, one, &b[(n + 1) - 1], lda, x, lda, work, result[9 - 1]);
                     //
-                    //                 Print information about the tests that did not pass
-                    //                 the threshold.
+                    // Print information about the tests that did not pass
+                    // the threshold.
                     //
                     if (result[8 - 1] >= thresh) {
                         if (nfail == 0 && nerrs == 0) {
                             Alahd(nout, path);
                         }
-                        sprintnum_short(buf, result[8 - 1]);
-                        write(nout, format_9996), "Rlatrs", uplo, trans, diag, "N", n, imat, 8, buf;
+                        write(nout, format_9996), "DLATRS", uplo, trans, diag, "N", n, imat, 8, result[8 - 1];
                         nfail++;
                     }
                     if (result[9 - 1] >= thresh) {
                         if (nfail == 0 && nerrs == 0) {
                             Alahd(nout, path);
                         }
-                        sprintnum_short(buf, result[9 - 1]);
-                        write(nout, format_9996), "Rlatrs", uplo, trans, diag, "Y", n, imat, 9, buf;
+                        write(nout, format_9996), "DLATRS", uplo, trans, diag, "Y", n, imat, 9, result[9 - 1];
                         nfail++;
                     }
                     nrun += 2;

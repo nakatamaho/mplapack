@@ -43,17 +43,13 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-#include <mplapack_debug.h>
-
 void Cchkpp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, INTEGER *nsval, REAL const thresh, bool const tsterr, INTEGER const /* nmax */, COMPLEX *a, COMPLEX *afac, COMPLEX *ainv, COMPLEX *b, COMPLEX *x, COMPLEX *xact, COMPLEX *work, REAL *rwork, INTEGER const nout) {
     common cmn;
     common_write write(cmn);
-    //
-    INTEGER iseedy[] = {1988, 1989, 1990, 1991};
-    char packs[] = {'C', 'R'};
-    char uplos[] = {'U', 'L'};
-    char path[4] = {};
-    char buf[1024];
+    static INTEGER iseedy[4] = {1988, 1989, 1990, 1991};
+    static fem::str<1> uplos[2] = {"U", "L"};
+    static fem::str<1> packs[2] = {"C", "R"};
+    fem::str<3> path;
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
@@ -62,21 +58,21 @@ void Cchkpp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
     INTEGER in = 0;
     INTEGER n = 0;
     INTEGER lda = 0;
-    char xtype[1];
+    fem::str<1> xtype;
     const INTEGER ntypes = 9;
     INTEGER nimat = 0;
     INTEGER imat = 0;
     bool zerot = false;
     INTEGER iuplo = 0;
-    char uplo[1];
-    char packit[1];
-    char type[1];
+    fem::str<1> uplo;
+    fem::str<1> packit;
+    fem::str<1> type;
     INTEGER kl = 0;
     INTEGER ku = 0;
     REAL anorm = 0.0;
     INTEGER mode = 0;
     REAL cndnum = 0.0;
-    char dist[1];
+    fem::str<1> dist;
     INTEGER info = 0;
     INTEGER izero = 0;
     INTEGER ioff = 0;
@@ -90,13 +86,12 @@ void Cchkpp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
     INTEGER nrhs = 0;
     REAL rcond = 0.0;
     static const char *format_9999 = "(' UPLO = ''',a1,''', N =',i5,', type ',i2,', test ',i2,', ratio =',"
-                                     "a)";
+                                     "g12.5)";
     //
-    //     Initialize constants and the random number seed.
+    // Initialize constants and the random number seed.
     //
-    path[0] = 'C';
-    path[1] = 'P';
-    path[2] = 'P';
+    path(1, 1) = "Zomplex precision";
+    path(2, 3) = "PP";
     nrun = 0;
     nfail = 0;
     nerrs = 0;
@@ -109,13 +104,14 @@ void Cchkpp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
     if (tsterr) {
         Cerrpo(path, nout);
     }
+    infot = 0;
     //
-    //     Do for each value of N in NVAL
+    // Do for each value of N in NVAL
     //
     for (in = 1; in <= nn; in = in + 1) {
         n = nval[in - 1];
         lda = max(n, (INTEGER)1);
-        xtype[0] = 'N';
+        xtype = 'N';
         nimat = ntypes;
         if (n <= 0) {
             nimat = 1;
@@ -139,20 +135,21 @@ void Cchkpp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
             // Do first for UPLO = 'U', then for UPLO = 'L'
             //
             for (iuplo = 1; iuplo <= 2; iuplo = iuplo + 1) {
-                uplo[0] = uplos[iuplo - 1];
-                packit[0] = packs[iuplo - 1];
+                uplo = uplos[iuplo - 1];
+                packit = packs[iuplo - 1];
                 //
-                //              Set up parameters with Clatb4 and generate a test matrix
-                //              with Clatms.
+                // Set up parameters with Clatb4 and generate a test matrix
+                // with Clatms.
                 //
                 Clatb4(path, imat, n, n, type, kl, ku, anorm, mode, cndnum, dist);
                 //
+                srnamt = "ZLATMS";
                 Clatms(n, n, dist, iseed, type, rwork, mode, cndnum, anorm, kl, ku, packit, a, lda, work, info);
                 //
-                //              Check error code from Clatms.
+                // Check error code from Clatms.
                 //
                 if (info != 0) {
-                    Alaerh(path, "Clatms", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                    Alaerh(path, "ZLATMS", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                     goto statement_90;
                 }
                 //
@@ -207,12 +204,13 @@ void Cchkpp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                 //
                 npp = n * (n + 1) / 2;
                 Ccopy(npp, a, 1, afac, 1);
-                Cpptrf(uplo, n, afac, info);
+                srnamt = "ZPPTRF";
+                Cpptrf(uplo.elems, n, afac, info);
                 //
-                //              Check error code from Cpptrf.
+                // Check error code from Cpptrf.
                 //
                 if (info != izero) {
-                    Alaerh(path, "Cpptrf", info, izero, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                    Alaerh(path, "ZPPTRF", info, izero, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                     goto statement_90;
                 }
                 //
@@ -232,12 +230,13 @@ void Cchkpp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                 // Form the inverse and compute the residual.
                 //
                 Ccopy(npp, afac, 1, ainv, 1);
-                Cpptri(uplo, n, ainv, info);
+                srnamt = "ZPPTRI";
+                Cpptri(uplo.elems, n, ainv, info);
                 //
-                //              Check error code from Cpptri.
+                // Check error code from Cpptri.
                 //
                 if (info != 0) {
-                    Alaerh(path, "Cpptri", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                    Alaerh(path, "ZPPTRI", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                 }
                 //
                 Cppt03(uplo, n, a, ainv, work, lda, rwork, rcondc, result[2 - 1]);
@@ -250,8 +249,7 @@ void Cchkpp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                         if (nfail == 0 && nerrs == 0) {
                             Alahd(nout, path);
                         }
-                        sprintnum_short(buf, result[k - 1]);
-                        write(nout, format_9999), uplo, n, imat, k, buf;
+                        write(nout, format_9999), uplo, n, imat, k, result[k - 1];
                         nfail++;
                     }
                 }
@@ -260,37 +258,40 @@ void Cchkpp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                 for (irhs = 1; irhs <= nns; irhs = irhs + 1) {
                     nrhs = nsval[irhs - 1];
                     //
-                    //+    TEST 3
-                    //              Solve and compute residual for  A * X = B.
+                    // +    TEST 3
+                    // Solve and compute residual for  A * X = B.
                     //
+                    srnamt = "ZLARHS";
                     Clarhs(path, xtype, uplo, " ", n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
                     Clacpy("Full", n, nrhs, b, lda, x, lda);
                     //
-                    Cpptrs(uplo, n, nrhs, afac, x, lda, info);
+                    srnamt = "ZPPTRS";
+                    Cpptrs(uplo.elems, n, nrhs, afac, x, lda, info);
                     //
-                    //              Check error code from Cpptrs.
+                    // Check error code from Cpptrs.
                     //
                     if (info != 0) {
-                        Alaerh(path, "Cpptrs", info, 0, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                        Alaerh(path, "ZPPTRS", info, 0, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                     }
                     //
                     Clacpy("Full", n, nrhs, b, lda, work, lda);
                     Cppt02(uplo, n, nrhs, a, x, lda, work, lda, rwork, result[3 - 1]);
                     //
-                    //+    TEST 4
-                    //              Check solution from generated exact solution.
+                    // +    TEST 4
+                    // Check solution from generated exact solution.
                     //
                     Cget04(n, nrhs, x, lda, xact, lda, rcondc, result[4 - 1]);
                     //
-                    //+    TESTS 5, 6, and 7
-                    //              Use iterative refinement to improve the solution.
+                    // +    TESTS 5, 6, and 7
+                    // Use iterative refinement to improve the solution.
                     //
-                    Cpprfs(uplo, n, nrhs, a, afac, b, lda, x, lda, rwork, &rwork[(nrhs + 1) - 1], work, &rwork[(2 * nrhs + 1) - 1], info);
+                    srnamt = "ZPPRFS";
+                    Cpprfs(uplo.elems, n, nrhs, a, afac, b, lda, x, lda, rwork, &rwork[(nrhs + 1) - 1], work, &rwork[(2 * nrhs + 1) - 1], info);
                     //
-                    //              Check error code from Cpprfs.
+                    // Check error code from Cpprfs.
                     //
                     if (info != 0) {
-                        Alaerh(path, "Cpprfs", info, 0, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                        Alaerh(path, "ZPPRFS", info, 0, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                     }
                     //
                     Cget04(n, nrhs, x, lda, xact, lda, rcondc, result[5 - 1]);
@@ -304,26 +305,26 @@ void Cchkpp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                             if (nfail == 0 && nerrs == 0) {
                                 Alahd(nout, path);
                             }
-                            sprintnum_short(buf, result[k - 1]);
                             write(nout, "(' UPLO = ''',a1,''', N =',i5,', NRHS=',i3,', type ',i2,"
-                                        "', test(',i2,') =',a)"),
-                                uplo, n, nrhs, imat, k, buf;
+                                        "', test(',i2,') =',g12.5)"),
+                                uplo, n, nrhs, imat, k, result[k - 1];
                             nfail++;
                         }
                     }
                     nrun += 5;
                 }
                 //
-                //+    TEST 8
-                //              Get an estimate of RCOND = 1/CNDNUM.
+                // +    TEST 8
+                // Get an estimate of RCOND = 1/CNDNUM.
                 //
-                anorm = Clanhp("1", uplo, n, a, rwork);
-                Cppcon(uplo, n, afac, anorm, rcond, work, rwork, info);
+                anorm = Clanhp("1", uplo.elems, n, a, rwork);
+                srnamt = "ZPPCON";
+                Cppcon(uplo.elems, n, afac, anorm, rcond, work, rwork, info);
                 //
-                //              Check error code from Cppcon.
+                // Check error code from Cppcon.
                 //
                 if (info != 0) {
-                    Alaerh(path, "Cppcon", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                    Alaerh(path, "ZPPCON", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                 }
                 //
                 result[8 - 1] = Rget06(rcond, rcondc);
@@ -334,8 +335,7 @@ void Cchkpp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                     if (nfail == 0 && nerrs == 0) {
                         Alahd(nout, path);
                     }
-                    sprintnum_short(buf, result[8 - 1]);
-                    write(nout, format_9999), uplo, n, imat, 8, buf;
+                    write(nout, format_9999), uplo, n, imat, 8, result[8 - 1];
                     nfail++;
                 }
                 nrun++;

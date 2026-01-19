@@ -44,37 +44,10 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Cqlt02(INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX *a, COMPLEX *af, COMPLEX *q, COMPLEX *l, INTEGER const lda, COMPLEX *tau, COMPLEX *work, INTEGER const lwork, REAL *rwork, REAL *result) {
+    common cmn;
     //
     // Quick return if possible
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Scalars in Common ..
-    //     ..
-    //     .. Common blocks ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Quick return if possible
-    //
-    INTEGER ldaf = lda;
-    INTEGER ldq = lda;
-    INTEGER ldl = lda;
     const REAL zero = 0.0;
     if (m == 0 || n == 0 || k == 0) {
         result[1 - 1] = zero;
@@ -86,34 +59,35 @@ void Cqlt02(INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX *a, COMPL
     //
     // Copy the last k columns of the factorization to the array Q
     //
-    const COMPLEX rogue = COMPLEX(-1.0e+10, -1.0e+10);
+    const COMPLEX rogue = COMPLEX(-10000000000.0, -10000000000.0);
     Claset("Full", m, n, rogue, rogue, q, lda);
     if (k < m) {
-        Clacpy("Full", m - k, k, &af[((n - k + 1) - 1) * ldaf], lda, &q[((n - k + 1) - 1) * ldq], lda);
+        Clacpy("Full", m - k, k, &af[((n - k + 1) - 1) * lda], lda, &q[((n - k + 1) - 1) * lda], lda);
     }
     if (k > 1) {
-        Clacpy("Upper", k - 1, k - 1, &af[((m - k + 1) - 1) + ((n - k + 2) - 1) * ldaf], lda, &q[((m - k + 1) - 1) + ((n - k + 2) - 1) * ldq], lda);
+        Clacpy("Upper", k - 1, k - 1, &af[((m - k + 1) - 1) + ((n - k + 2) - 1) * lda], lda, &q[((m - k + 1) - 1) + ((n - k + 2) - 1) * lda], lda);
     }
     //
     // Generate the last n columns of the matrix Q
     //
+    srnamt = "ZUNGQL";
     INTEGER info = 0;
     Cungql(m, n, k, q, lda, &tau[(n - k + 1) - 1], work, lwork, info);
     //
     // Copy L(m-n+1:m,n-k+1:n)
     //
-    Claset("Full", n, k, COMPLEX(zero), COMPLEX(zero), &l[((m - n + 1) - 1) + ((n - k + 1) - 1) * ldl], lda);
-    Clacpy("Lower", k, k, &af[((m - k + 1) - 1) + ((n - k + 1) - 1) * ldaf], lda, &l[((m - k + 1) - 1) + ((n - k + 1) - 1) * ldl], lda);
+    Claset("Full", n, k, COMPLEX(zero), COMPLEX(zero), &l[((m - n + 1) - 1) + ((n - k + 1) - 1) * lda], lda);
+    Clacpy("Lower", k, k, &af[((m - k + 1) - 1) + ((n - k + 1) - 1) * lda], lda, &l[((m - k + 1) - 1) + ((n - k + 1) - 1) * lda], lda);
     //
     // Compute L(m-n+1:m,n-k+1:n) - Q(1:m,m-n+1:m)' * A(1:m,n-k+1:n)
     //
     const REAL one = 1.0;
-    Cgemm("Conjugate transpose", "No transpose", n, k, m, COMPLEX(-one), q, lda, &a[((n - k + 1) - 1) * lda], lda, COMPLEX(one), &l[((m - n + 1) - 1) + ((n - k + 1) - 1) * ldl], lda);
+    Cgemm("Conjugate transpose", "No transpose", n, k, m, COMPLEX(-one), q, lda, &a[((n - k + 1) - 1) * lda], lda, COMPLEX(one), &l[((m - n + 1) - 1) + ((n - k + 1) - 1) * lda], lda);
     //
     // Compute norm( L - Q'*A ) / ( M * norm(A) * EPS ) .
     //
     REAL anorm = Clange("1", m, k, &a[((n - k + 1) - 1) * lda], lda, rwork);
-    REAL resid = Clange("1", n, k, &l[((m - n + 1) - 1) + ((n - k + 1) - 1) * ldl], lda, rwork);
+    REAL resid = Clange("1", n, k, &l[((m - n + 1) - 1) + ((n - k + 1) - 1) * lda], lda, rwork);
     if (anorm > zero) {
         result[1 - 1] = ((resid / castREAL(max((INTEGER)1, m))) / anorm) / eps;
     } else {
