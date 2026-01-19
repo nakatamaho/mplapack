@@ -2,43 +2,40 @@
 set -euo pipefail
 
 # ------------------------------------------------------------
-# Locate MPLAPACK root, BLAS/LAPACK source dirs, and output file
+# Locate MPLAPACK root, source dirs, and output files
 # ------------------------------------------------------------
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 mplapack_root="$(cd "${script_dir}/.." && pwd)"
 lapack_version="${LAPACK_VERSION:-3.9.1}"
+
+# Core (BLAS/LAPACK library) sources
 blas_src="${mplapack_root}/external/lapack/work/internal/lapack-${lapack_version}/BLAS/SRC"
 lapack_src="${mplapack_root}/external/lapack/work/internal/lapack-${lapack_version}/SRC"
+
+# Testing sources (kept completely separate from core map)
 eig_src="${mplapack_root}/external/lapack/work/internal/lapack-${lapack_version}/TESTING/EIG"
 lin_src="${mplapack_root}/external/lapack/work/internal/lapack-${lapack_version}/TESTING/LIN"
 matgen_src="${mplapack_root}/external/lapack/work/internal/lapack-${lapack_version}/TESTING/MATGEN"
-out="${script_dir}/mplapack_name_map.txt"
 
-if [[ ! -d "$blas_src" ]]; then
-    echo "Error: BLAS source directory not found: $blas_src" >&2
-    exit 1
-fi
-if [[ ! -d "$lapack_src" ]]; then
-    echo "Error: LAPACK source directory not found: $lapack_src" >&2
-    exit 1
-fi
-if [[ ! -d "$eig_src" ]]; then
-    echo "Error: LAPACK TESTING/EIG directory not found: $eig_src" >&2
-    exit 1
-fi
-if [[ ! -d "$lin_src" ]]; then
-    echo "Error: LAPACK TESTING/LIN directory not found: $lin_src" >&2
-    exit 1
-fi
-if [[ ! -d "$matgen_src" ]]; then
-    echo "Error: LAPACK TESTING/MATGEN directory not found: $matgen_src" >&2
-    exit 1
-fi
+# Output name maps (MUST be separate)
+out_core="${script_dir}/mplapack_name_map.txt"
+out_testing="${script_dir}/mplapack_testing_name_map.txt"
 
-# Redirect all stdout to the output file
-: > "$out"
-exec > "$out"
+check_dir() {
+    local d="$1"
+    local label="$2"
+    if [[ ! -d "$d" ]]; then
+        echo "Error: ${label} directory not found: $d" >&2
+        exit 1
+    fi
+}
+
+check_dir "$blas_src"   "BLAS source"
+check_dir "$lapack_src" "LAPACK source"
+check_dir "$eig_src"    "LAPACK TESTING/EIG"
+check_dir "$lin_src"    "LAPACK TESTING/LIN"
+check_dir "$matgen_src" "LAPACK TESTING/MATGEN"
 
 # ------------------------------------------------------------
 # Exception lists: files that should NOT be converted
@@ -66,10 +63,14 @@ EXCLUDE_BASENAMES=(
 # ------------------------------------------------------------
 # Manual mappings:
 #   fortran_name -> cpp_name
-# These are emitted as-is and then skipped by the automatic rule.
+#
+# IMPORTANT:
+# - MANUAL_MAPPINGS_CORE applies ONLY to BLAS/SRC + LAPACK/SRC.
+# - MANUAL_MAPPINGS_TESTING applies ONLY to TESTING/{EIG,LIN,MATGEN}.
+# - Do NOT merge BLAS/LAPACK entries into the testing name map.
 # ------------------------------------------------------------
 
-MANUAL_MAPPINGS=(
+MANUAL_MAPPINGS_CORE=(
   "dznrm2 RCnrm2"
   "dzasum RCasum"
   "idamax iRamax"
@@ -101,6 +102,9 @@ MANUAL_MAPPINGS=(
   "la_isnan Mla_isnan"
   "ilaprec iMlaprec"
   "lsamen Mlsamen"
+)
+
+MANUAL_MAPPINGS_TESTING=(
 )
 
 # ------------------------------------------------------------
@@ -145,21 +149,96 @@ make_cpp_name_from_prefix() {
     esac
 }
 
+# Write a name map to the given output file.
+# Args:
+#   $1: output path
+#   $2: name of the manual mapping array variable
+#   $3: name of the file list array variable
+write_map() {
+    local out="$1"
+    local manual_name="$2"
+    local files_name="$3"
+
+    # Namerefs (bash 4.3+). The script already requires bash 4+ due to associative arrays.
+    local -n manual="$manual_name"
+    local -n files="$files_name"
+
+    : > "$out"
+
+    # Avoid duplicates for the same basename within THIS map.
+    local -A seen=()
+
+    local entry src dst
+    for entry in "${manual[@]}"; do
+        set -- $entry
+        src="$1"
+        dst="$2"
+        printf "%-16s %s\n" "$src" "$dst" >> "$out"
+        seen["$src"]=1
+    done
+
+    local f base cpp_name
+    for f in "${files[@]}"; do
+        base="${f##*/}"
+        base="${base%.*}"  # strip extension (.f/.F/.f90/.F90)
+
+        # Skip if already handled by manual mappings or earlier occurrences
+        if [[ -n "${seen["$base"]+x}" ]]; then
+            continue
+        fi
+
+        # Skip by excluded prefixes
+        if has_excluded_prefix "$base"; then
+            continue
+        fi
+
+        # Skip by excluded basenames
+        if is_excluded_basename "$base"; then
+            continue
+        fi
+
+        # Default mapping rule
+        cpp_name="$(make_cpp_name_from_prefix "$base")"
+        printf "%-16s %s\n" "$base" "$cpp_name" >> "$out"
+        seen["$base"]=1
+    done
+}
+
 # ------------------------------------------------------------
 # Main
 # ------------------------------------------------------------
 
-# Input file list:
-#   1) use command-line arguments if given
-#   2) otherwise, use Fortran sources (*.f/*.F/*.f90/*.F90) in the BLAS and LAPACK source directories
-files=()
+core_files=()
+testing_files=()
+
+# If arguments are provided, split them into core vs testing by path pattern.
+# If a basename-only is provided, it will be treated as core by default.
 if [[ "$#" -gt 0 ]]; then
-    files=("$@")
+    for p in "$@"; do
+        if [[ "$p" == *"/TESTING/EIG/"* || "$p" == *"/TESTING/LIN/"* || "$p" == *"/TESTING/MATGEN/"* ]]; then
+            testing_files+=("$p")
+        else
+            core_files+=("$p")
+        fi
+    done
+
+    if ((${#core_files[@]})); then
+        mapfile -t core_files < <(printf '%s\n' "${core_files[@]}" | sort)
+    fi
+    if ((${#testing_files[@]})); then
+        mapfile -t testing_files < <(printf '%s\n' "${testing_files[@]}" | sort)
+    fi
 else
-    mapfile -t files < <(
+    # Enumerate sources (keep core/testing separate; do NOT generate a superset testing map).
+    mapfile -t core_files < <(
         {
             find "$blas_src"   -maxdepth 1 -type f \( -name '*.f' -o -name '*.F' -o -name '*.f90' -o -name '*.F90' \)
             find "$lapack_src" -maxdepth 1 -type f \( -name '*.f' -o -name '*.F' -o -name '*.f90' -o -name '*.F90' \)
+        } | sort
+    )
+
+    mapfile -t testing_files < <(
+        {
             find "$eig_src"    -maxdepth 1 -type f \( -name '*.f' -o -name '*.F' -o -name '*.f90' -o -name '*.F90' \)
             find "$lin_src"    -maxdepth 1 -type f \( -name '*.f' -o -name '*.F' -o -name '*.f90' -o -name '*.F90' \)
             find "$matgen_src" -maxdepth 1 -type f \( -name '*.f' -o -name '*.F' -o -name '*.f90' -o -name '*.F90' \)
@@ -167,41 +246,9 @@ else
     )
 fi
 
-# To avoid duplicates for the same basename
-declare -A SEEN_BASES=()
+write_map "$out_core"    MANUAL_MAPPINGS_CORE    core_files
+write_map "$out_testing" MANUAL_MAPPINGS_TESTING testing_files
 
-# First emit manual mappings
-for entry in "${MANUAL_MAPPINGS[@]}"; do
-    set -- $entry
-    src="$1"
-    dst="$2"
-    printf "%-16s %s\n" "$src" "$dst"
-    SEEN_BASES["$src"]=1
-done
+echo "Wrote: $out_core" >&2
+echo "Wrote: $out_testing" >&2
 
-# Now auto-generate mappings from filenames
-for src in "${files[@]}"; do
-    base="${src##*/}"
-    base="${base%.*}"  # strip extension (.f/.F/.f90/.F90)
-
-    # Skip if already handled by MANUAL_MAPPINGS
-    if [[ -n "${SEEN_BASES["$base"]+x}" ]]; then
-        continue
-    fi
-
-    # Skip by excluded prefixes
-    if has_excluded_prefix "$base"; then
-        continue
-    fi
-
-    # Skip by excluded basenames
-    if is_excluded_basename "$base"; then
-        continue
-    fi
-
-    # Default mapping rule
-    cpp_name="$(make_cpp_name_from_prefix "$base")"
-
-    printf "%-16s %s\n" "$base" "$cpp_name"
-    SEEN_BASES["$base"]=1
-done
