@@ -44,13 +44,11 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Mxlaenv(INTEGER const ispec, INTEGER const nvalue) {
-    common cmn;
-    arr_ref<int> iparms(cmn.iparms, dimension(100));
-    //
     if (ispec >= 1 && ispec <= 9) {
         iparms[ispec - 1] = nvalue;
     }
     //
-    // End of Mxlaenv
+    // End of xlaenv
     //
 }
+
