@@ -72,7 +72,7 @@ void Clatsp(fem::str_cref uplo, INTEGER const n, COMPLEX *x, INTEGER *iseed) {
     const COMPLEX eye = COMPLEX(0.0, 1.0);
     COMPLEX c = 0.0;
     COMPLEX r = 0.0;
-    if (Mlsame(uplo, "U")) {
+    if (Mlsame(uplo.elems(), "U")) {
         n5 = n / 5;
         n5 = n - 5 * n5 + 1;
         //
