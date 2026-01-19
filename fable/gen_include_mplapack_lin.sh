@@ -10,7 +10,7 @@ fi
 
 FILES=`ls *cpp`
 for filename in $FILES; do
-/usr/local/bin/ctags -x --c++-kinds=pf --language-force=c++ --_xformat='%{typeref} %{name} %{signature};' ${filename} | sed -e 's/^typename //' >  ${filename%.*}.hpp
+/usr/local/bin/ctags -x --c++-kinds=pf --language-force=c++ --_xformat='%{typeref} %{name} %{signature};' "${filename}" | sed -E 's/^typename[[:space:]]*:[[:space:]]*//' > "${filename%.*}.hpp"
 done
 
 printf "REAL Rlamch(const char *cmach);" > Rlamch.hpp
