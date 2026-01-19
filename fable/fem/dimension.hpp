@@ -53,20 +53,20 @@ struct dim_buffer : dims<arr_dim_max> {
         std::copy(other.origin, other.origin + actual_number_of_dimensions, origin);
     }
     template <size_t BufferNdims> dim_buffer(dims<BufferNdims> const &source) : actual_number_of_dimensions(BufferNdims) { this->set_dims(source); }
-    template <unsigned I> void set_origin_all_star() {
-        actual_number_of_dimensions = (I + 1);
-        all[I] = size_t_max;
-        origin[I] = 1;
+    template <unsigned II> void set_origin_all_star() {
+        actual_number_of_dimensions = (II + 1);
+        all[II] = size_t_max;
+        origin[II] = 1;
     }
-    template <unsigned I> void set_origin_all(ssize_t first, star_type const &) {
-        actual_number_of_dimensions = (I + 1);
-        all[I] = size_t_max - 1;
-        origin[I] = first;
+    template <unsigned II> void set_origin_all(ssize_t first, star_type const &) {
+        actual_number_of_dimensions = (II + 1);
+        all[II] = size_t_max - 1;
+        origin[II] = first;
     }
-    template <unsigned I> void set_origin_all(ssize_t first, ssize_t last) {
-        actual_number_of_dimensions = (I + 1);
-        all[I] = last - first + 1;
-        origin[I] = first;
+    template <unsigned II> void set_origin_all(ssize_t first, ssize_t last) {
+        actual_number_of_dimensions = (II + 1);
+        all[II] = last - first + 1;
+        origin[II] = first;
     }
     size_t actual_size_1d() const { return size_1d(actual_number_of_dimensions); }
     template <size_t MaxNdims> size_t actual_index_1d(arr_index_data<MaxNdims> const &arr_index) const {
