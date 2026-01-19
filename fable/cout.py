@@ -56,6 +56,27 @@ FABLE_SMALL_CHAR_VIEW = (str(os.environ.get("FABLE_SMALL_CHAR", "")).strip() == 
 # If set, do not emit COMMON/SAVE boilerplate structs into generated C++.
 FABLE_SUPPRESS_COMMON = _env_flag("FABLE_SUPPRESS_COMMON", default=False)
 
+def _parse_ident_list_env(name: str) -> typing.Set[str]:
+    """Parse an environment variable as a list of identifiers.
+
+    Splits on commas and whitespace, returns lowercase identifiers.
+    """
+    v = os.environ.get(name)
+    if v is None:
+        return set()
+    s = str(v).strip()
+    if not s:
+        return set()
+    parts = re.split(r"[,\s]+", s)
+    return {p.lower() for p in parts if p}
+
+# COMMON scalars that should be treated as externally provided globals
+# instead of being accessed as members of `cmn`.
+FABLE_EXTERN_COMMON_SCALARS = _parse_ident_list_env("FABLE_EXTERN_COMMON_SCALARS")
+if FABLE_SUPPRESS_COMMON:
+    # LAPACK test harness commonly externalizes these.
+    FABLE_EXTERN_COMMON_SCALARS.update({"srnamt", "infot"})
+
 def _load_mplapack_signatures():
     """Load mplapack_signatures.py in a robust way.
 
@@ -1342,8 +1363,13 @@ class conversion_info(global_conversion_info):
     def set_vmap_from_fdecl(O, fdecl):
         identifier = fdecl.id_tok.value
         if (fdecl.is_common()):
-            O.vmap[identifier] = "cmn." + \
-                prepend_identifier_if_necessary(identifier)
+            if (getattr(fdecl, "dim_tokens", None) is None
+                    and identifier.lower() in FABLE_EXTERN_COMMON_SCALARS):
+                # COMMON scalar is provided externally (declared as an extern global).
+                O.vmap[identifier] = prepend_identifier_if_necessary(identifier)
+            else:
+                O.vmap[identifier] = "cmn." + \
+                    prepend_identifier_if_necessary(identifier)
         elif (fdecl.is_save()
               and not (O.fproc is not None
                        and getattr(O.fproc, "conv_hook", None) is not None
@@ -4717,6 +4743,14 @@ def declare_identifier(conv_info, top_scope, curr_scope, id_tok, crhs=None):
     else:
         src_var = conv_info.vmap[identifier]
 
+    # COMMON scalar handled externally: keep it as a plain identifier and
+    # do not emit local reference aliases like `T& x = cmn.x;`.
+    if (fdecl.is_common()
+            and getattr(fdecl, "dim_tokens", None) is None
+            and identifier.lower() in FABLE_EXTERN_COMMON_SCALARS):
+        conv_info.vmap[identifier] = prepend_identifier_if_necessary(identifier)
+        return crhs is not None
+
     # For COMMON or SAVE variables, we sometimes create local references
     # like "REAL& x = cmn.x;" or "REAL& x = sve.x;".
     save_ok = (
@@ -6450,6 +6484,13 @@ def convert_to_cpp_function(
         else:
             callback(cname + "(\n  " + ",\n  ".join(cargs) + ")" + last)
     cpp_callback("{")
+    need_local_cmn = (
+        getattr(conv_info.fproc, "needs_cmn", False)
+        or getattr(conv_info.fproc, "uses_read", False)
+        or getattr(conv_info.fproc, "uses_write", False)
+    )
+    if need_local_cmn:
+        cpp_callback("  common cmn;")
     if (cdecl != "void"):
         cpp_callback("  %s %s = %s;" % (
             cdecl,
@@ -7038,7 +7079,13 @@ void
                 raise
             show_traceback()
         else:
-            if (fproc.needs_cmn and not fproc.conv_hook.ignore_common_and_save):
+            need_cmn_obj = (
+                fproc.needs_cmn
+                or getattr(fproc, "uses_read", False)
+                or getattr(fproc, "uses_write", False)
+                or bool(getattr(global_conv_info.topological_fprocs.all_fprocs, "blockdata", None))
+            )
+            if need_cmn_obj:
                 callback("  common cmn(argc, argv);")
             for line in result_buffer:
                 callback(line)
