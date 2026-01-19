@@ -58,7 +58,7 @@ void Rtsqr01(fem::str_cref tssw, INTEGER const m, INTEGER const n, INTEGER const
     //
     REAL eps = Rlamch("Epsilon");
     INTEGER k = min(m, n);
-    INTEGER l = max(m, n, 1);
+    INTEGER l = max(m, n, (INTEGER)1);
     INTEGER mnb = max(mb, nb);
     INTEGER lwork = max((INTEGER)3, l) * mnb;
     //
