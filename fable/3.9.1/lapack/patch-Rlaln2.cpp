@@ -1,6 +1,8 @@
 --- a/mplapack/reference/Rlaln2.cpp
 +++ b/mplapack/reference/Rlaln2.cpp
-@@ -36,23 +36,15 @@
+--- Rlaln2.cpp_	2026-01-20 06:38:22.156674144 +0900
++++ Rlaln2.cpp	2026-01-20 06:38:27.148828136 +0900
+@@ -36,24 +36,15 @@
  #include <mpblas.h>
  #include <mplapack.h>
  
@@ -10,6 +12,7 @@
 +#define crv (equiv_1)
 +
  void Rlaln2(bool const ltrans, INTEGER const na, INTEGER const nw, REAL const smin, REAL const ca, REAL *a, INTEGER const lda, REAL const d1, REAL const d2, REAL *b, INTEGER const ldb, REAL const wr, REAL const wi, REAL *x, INTEGER const ldx, REAL &scale, REAL &xnorm, INTEGER &info) {
+-    common cmn;
 -    static bool zswap[4] = {false, false, true, true};
 -    static bool rswap[4] = {false, true, false, true};
 +    static bool zswap[] = {false, false, true, true};

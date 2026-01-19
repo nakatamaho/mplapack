@@ -1,9 +1,10 @@
 --- a/mplapack/reference/Clacon.cpp
 +++ b/mplapack/reference/Clacon.cpp
-@@ -37,16 +37,16 @@
+@@ -37,17 +37,16 @@
  #include <mplapack.h>
  
  void Clacon(INTEGER const n, COMPLEX *v, COMPLEX *x, REAL &est, INTEGER &kase) {
+-    common cmn;
 -    REAL absxi = 0.0;
 -    REAL altsgn = 0.0;
 -    REAL estold = 0.0;

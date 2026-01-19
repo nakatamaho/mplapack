@@ -42,6 +42,7 @@ patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Rlarnv.cpp
 patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Rlarrb.cpp
 patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Rlarrd.cpp
 patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Rlarrk.cpp
+patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Rlasy2.cpp
 patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Rspgvd.cpp
 patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Rstebz.cpp
 patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Rsyequb.cpp
@@ -51,4 +52,3 @@ patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-iMlaenv.cpp
 patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-iMparam2stage.cpp
 patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-iMparmq.cpp
 
-#patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Rlasy2.cpp
