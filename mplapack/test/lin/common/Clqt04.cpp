@@ -185,8 +185,4 @@ void Clqt04(INTEGER const m, INTEGER const n, INTEGER const nb, REAL *result) {
         result[6 - 1] = zero;
     }
     //
-    // Deallocate all arrays
-    //
-    FEM_THROW_UNHANDLED("executable deallocate: deallocate(a,af,q,l,rwork,work,t,c,d,cf,df)");
-    //
 }
