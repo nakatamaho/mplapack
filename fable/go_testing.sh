@@ -228,7 +228,7 @@ convert_dir() {
     fi
     if command -v parallel >/dev/null 2>&1; then
       parallel -j "${JOBS}" --halt soon,fail=1 \
-        "echo 'Converting {}'; bash '${FABLE}/convert_lapack.sh' '{}' '${mode}'" \
+        "echo 'Converting {}'; bash -x '${FABLE}/convert_lapack.sh' '{}' '${mode}'" \
         ::: "${files[@]}"
     else
       # Fallback without GNU parallel.
