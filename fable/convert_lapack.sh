@@ -10,9 +10,14 @@ src="$1"
 #echo "DBG: src='$1' mode='${2-}' script_dir='${script_dir-}'" >&2
 mode="${2:-}"
 
-# Directory of this script (used to find header_blas.txt and mplapack_name_map.txt)
+# Directory of this script (used to find headers and name maps)
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-name_map="${script_dir}/mplapack_name_map.txt"
+core_name_map="${script_dir}/mplapack_name_map.txt"
+testing_name_map="${script_dir}/mplapack_testing_name_map.txt"
+
+# Expose both maps to the converter (harmless if ignored).
+# This is a future-proof hook for fable.command_line.cout / cout.py.
+name_map_files_env="${core_name_map}:${testing_name_map}"
 
 
 : "${FABLE_SMALL_CHAR:=12}"
@@ -20,13 +25,13 @@ name_map="${script_dir}/mplapack_name_map.txt"
 fable_cout_env=()
 case "$mode" in
   lin|eig)
-    fable_cout_env=(env FABLE_SMALL_CHAR="0" FABLE_SUPPRESS_COMMON=True FABLE_SUPPRESS_SAVE=1)
+    fable_cout_env=(env FABLE_SMALL_CHAR="0" FABLE_SUPPRESS_COMMON=True FABLE_SUPPRESS_SAVE=1 FABLE_NAME_MAP_FILES="$name_map_files_env")
     ;;
   matgen)
-    fable_cout_env=(env FABLE_SMALL_CHAR="0" FABLE_SUPPRESS_COMMON=True FABLE_SUPPRESS_SAVE=1)
+    fable_cout_env=(env FABLE_SMALL_CHAR="0" FABLE_SUPPRESS_COMMON=True FABLE_SUPPRESS_SAVE=1 FABLE_NAME_MAP_FILES="$name_map_files_env")
     ;;
   *)
-    fable_cout_env=(env FABLE_SMALL_CHAR="$FABLE_SMALL_CHAR")
+    fable_cout_env=(env FABLE_SMALL_CHAR="$FABLE_SMALL_CHAR" FABLE_NAME_MAP_FILES="$name_map_files_env")
     ;;
 esac
 
@@ -67,9 +72,13 @@ if [ ! -f "$header" ]; then
     exit 1
 fi
 
-# Enforce that mplapack_name_map.txt exists next to this script.
-if [ ! -f "$name_map" ]; then
-    echo "Error: MPLAPACK name map not found: $name_map" >&2
+# Enforce that both name maps exist next to this script.
+if [ ! -f "$core_name_map" ]; then
+    echo "Error: MPLAPACK core name map not found: $core_name_map" >&2
+    exit 1
+fi
+if [ ! -f "$testing_name_map" ]; then
+    echo "Error: MPLAPACK testing name map not found: $testing_name_map" >&2
     exit 1
 fi
 
@@ -90,26 +99,51 @@ src_base="$(basename "$src_abs")"
 fortran_name="${src_base%.*}"
 lower_fortran="${fortran_name,,}"
 
-# Map Fortran name to MPLAPACK C++ name using mplapack_name_map.txt first.
+# Decide which name map should take precedence.
+# - For testing conversions (lin/eig/matgen or sources under .../TESTING/...),
+#   prefer the testing map first.
+# - Otherwise prefer the core map first.
+is_testing=false
+case "$mode" in
+    lin|eig|matgen) is_testing=true ;;
+esac
+if [[ "$src_abs" == *"/TESTING/"* ]]; then
+    is_testing=true
+fi
+
+map_files=()
+if $is_testing; then
+    map_files=("$testing_name_map" "$core_name_map")
+else
+    map_files=("$core_name_map" "$testing_name_map")
+fi
+
+# Map Fortran name to MPLAPACK C++ name using BOTH name maps.
+# The first match wins (based on the precedence above).
 mapped_name=""
-while IFS= read -r line; do
-    # Strip comments starting with #
-    line="${line%%#*}"
-    # Trim leading/trailing whitespace
-    line="$(echo "$line" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
-    [ -z "$line" ] && continue
-    set -- $line
-    src_name="$1"
-    dst_name="$2"
-    if [ "${src_name,,}" = "$lower_fortran" ]; then
-        mapped_name="$dst_name"
+for map_file in "${map_files[@]}"; do
+    while IFS= read -r line; do
+        # Strip comments starting with #
+        line="${line%%#*}"
+        # Trim leading/trailing whitespace
+        line="$(echo "$line" | sed -e "s/^[[:space:]]*//" -e "s/[[:space:]]*$//")"
+        [ -z "$line" ] && continue
+        set -- $line
+        src_name="$1"
+        dst_name="$2"
+        if [ "${src_name,,}" = "$lower_fortran" ]; then
+            mapped_name="$dst_name"
+            break
+        fi
+    done < "$map_file"
+    if [ -n "$mapped_name" ]; then
         break
     fi
-done < "$name_map"
+done
 
 # If not found in the map, apply the default MPLAPACK rule:
 #   s/d -> R, c/z -> C, a -> A
-# Other leading letters must be listed in mplapack_name_map.txt.
+# Other leading letters must be listed in either name map file.
 if [ -z "$mapped_name" ]; then
     first_char="${lower_fortran:0:1}"
     rest_name="${lower_fortran:1}"
@@ -118,7 +152,7 @@ if [ -z "$mapped_name" ]; then
         c|z) mapped_name="C${rest_name}" ;;
         a)   mapped_name="A${rest_name}" ;;
         *)
-            echo "Error: routine '${fortran_name}' is not in ${name_map} and has no default mapping rule" >&2
+            echo "Error: routine '${fortran_name}' is not in ${core_name_map} or ${testing_name_map} and has no default mapping rule" >&2
             exit 1
             ;;
     esac
@@ -131,7 +165,7 @@ tmp_body="$(mktemp)"
 tmp_cpp="$(mktemp)"
 
 # Run fable cout in the script directory so that cout.py can load
-# mplapack_name_map.txt from the same directory as this script.
+# mplapack_name_map.txt and mplapack_testing_name_map.txt from the same directory as this script.
 (
     cd "$script_dir"
     "${fable_cout_env[@]}" python -m fable.command_line.cout "$src_abs" > /dev/null
