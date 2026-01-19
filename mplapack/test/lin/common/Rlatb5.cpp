@@ -50,11 +50,11 @@ void Rlatb5(fem::str_cref path, INTEGER const imat, INTEGER const n, fem::str_re
     const REAL tenth = 0.1;
     const REAL one = 1.0;
     const REAL shrink = 0.25;
-    eps = Rlamch("Precision");
-    badc2 = tenth / eps;
-    badc1 = sqrt(badc2);
-    small = Rlamch("Safe minimum");
-    large = one / small;
+    REAL eps = Rlamch("Precision");
+    REAL badc2 = tenth / eps;
+    REAL badc1 = sqrt(badc2);
+    REAL small = Rlamch("Safe minimum");
+    REAL large = one / small;
     //
     // If it looks like we're on a Cray, take the square root of
     // SMALL and LARGE to avoid overflow and underflow problems.
