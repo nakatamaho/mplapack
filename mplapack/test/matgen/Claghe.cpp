@@ -36,6 +36,10 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
+#include <fem.hpp> // Fortran EMulation library of fable module
+using namespace fem::major_types;
+using fem::common;
+
 #include <mplapack_matgen.h>
 
 void Claghe(INTEGER const n, INTEGER const k, REAL *d, COMPLEX *a, INTEGER const lda, INTEGER *iseed, COMPLEX *work, INTEGER &info) {

@@ -36,9 +36,13 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
+#include <fem.hpp> // Fortran EMulation library of fable module
+using namespace fem::major_types;
+using fem::common;
+
 #include <mplapack_matgen.h>
 
-void Rlatmt(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, const char *sym, REAL *d, INTEGER const mode, REAL const cond, REAL const dmax, INTEGER const rank, INTEGER const kl, INTEGER const ku, const char *pack, REAL *a, INTEGER const lda, REAL *work, INTEGER &info) {
+void Rlatmt(INTEGER const m, INTEGER const n, str_cref dist, INTEGER *iseed, str_cref sym, REAL *d, INTEGER const mode, REAL const cond, REAL const dmax, INTEGER const rank, INTEGER const kl, INTEGER const ku, str_cref pack, REAL *a, INTEGER const lda, REAL *work, INTEGER &info) {
     //
     // 1)      Decode and Test the input parameters.
     // Initialize flags & seed.
@@ -54,11 +58,11 @@ void Rlatmt(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
     // Decode DIST
     //
     INTEGER idist = 0;
-    if (Mlsame(dist, "U")) {
+    if (Mlsame(dist.elems(), "U")) {
         idist = 1;
-    } else if (Mlsame(dist, "S")) {
+    } else if (Mlsame(dist.elems(), "S")) {
         idist = 2;
-    } else if (Mlsame(dist, "N")) {
+    } else if (Mlsame(dist.elems(), "N")) {
         idist = 3;
     } else {
         idist = -1;
@@ -68,16 +72,16 @@ void Rlatmt(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
     //
     INTEGER isym = 0;
     INTEGER irsign = 0;
-    if (Mlsame(sym, "N")) {
+    if (Mlsame(sym.elems(), "N")) {
         isym = 1;
         irsign = 0;
-    } else if (Mlsame(sym, "P")) {
+    } else if (Mlsame(sym.elems(), "P")) {
         isym = 2;
         irsign = 0;
-    } else if (Mlsame(sym, "S")) {
+    } else if (Mlsame(sym.elems(), "S")) {
         isym = 2;
         irsign = 1;
-    } else if (Mlsame(sym, "H")) {
+    } else if (Mlsame(sym.elems(), "H")) {
         isym = 2;
         irsign = 1;
     } else {
@@ -88,27 +92,27 @@ void Rlatmt(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
     //
     INTEGER isympk = 0;
     INTEGER ipack = 0;
-    if (Mlsame(pack, "N")) {
+    if (Mlsame(pack.elems(), "N")) {
         ipack = 0;
-    } else if (Mlsame(pack, "U")) {
+    } else if (Mlsame(pack.elems(), "U")) {
         ipack = 1;
         isympk = 1;
-    } else if (Mlsame(pack, "L")) {
+    } else if (Mlsame(pack.elems(), "L")) {
         ipack = 2;
         isympk = 1;
-    } else if (Mlsame(pack, "C")) {
+    } else if (Mlsame(pack.elems(), "C")) {
         ipack = 3;
         isympk = 2;
-    } else if (Mlsame(pack, "R")) {
+    } else if (Mlsame(pack.elems(), "R")) {
         ipack = 4;
         isympk = 3;
-    } else if (Mlsame(pack, "B")) {
+    } else if (Mlsame(pack.elems(), "B")) {
         ipack = 5;
         isympk = 3;
-    } else if (Mlsame(pack, "Q")) {
+    } else if (Mlsame(pack.elems(), "Q")) {
         ipack = 6;
         isympk = 2;
-    } else if (Mlsame(pack, "Z")) {
+    } else if (Mlsame(pack.elems(), "Z")) {
         ipack = 7;
     } else {
         ipack = -1;

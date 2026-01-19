@@ -36,6 +36,10 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
+#include <fem.hpp> // Fortran EMulation library of fable module
+using namespace fem::major_types;
+using fem::common;
+
 #include <mplapack_matgen.h>
 
 void Clakf2(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *b, COMPLEX *d, COMPLEX *e, COMPLEX *z, INTEGER const ldz) {

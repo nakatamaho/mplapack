@@ -36,14 +36,13 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
+#include <fem.hpp> // Fortran EMulation library of fable module
+using namespace fem::major_types;
+using fem::common;
+
 #include <mplapack_matgen.h>
 
-#if defined ___MPLAPACK_BUILD_WITH_DD___
-#pragma GCC push_options
-#pragma GCC optimize("O0")
-#endif
-
-void Claror(const char *side, const char *init, INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, INTEGER *iseed, COMPLEX *x, INTEGER &info) {
+void Claror(str_cref side, str_cref init, INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, INTEGER *iseed, COMPLEX *x, INTEGER &info) {
     //
     info = 0;
     if (n == 0 || m == 0) {
@@ -51,13 +50,13 @@ void Claror(const char *side, const char *init, INTEGER const m, INTEGER const n
     }
     //
     INTEGER itype = 0;
-    if (Mlsame(side, "L")) {
+    if (Mlsame(side.elems(), "L")) {
         itype = 1;
-    } else if (Mlsame(side, "R")) {
+    } else if (Mlsame(side.elems(), "R")) {
         itype = 2;
-    } else if (Mlsame(side, "C")) {
+    } else if (Mlsame(side.elems(), "C")) {
         itype = 3;
-    } else if (Mlsame(side, "T")) {
+    } else if (Mlsame(side.elems(), "T")) {
         itype = 4;
     }
     //
@@ -88,7 +87,7 @@ void Claror(const char *side, const char *init, INTEGER const m, INTEGER const n
     //
     const COMPLEX czero = COMPLEX(0.0, 0.0);
     const COMPLEX cone = COMPLEX(1.0, 0.0);
-    if (Mlsame(init, "I")) {
+    if (Mlsame(init.elems(), "I")) {
         Claset("Full", m, n, czero, cone, a, lda);
     }
     //

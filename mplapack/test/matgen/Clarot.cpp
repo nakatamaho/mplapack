@@ -36,6 +36,10 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
+#include <fem.hpp> // Fortran EMulation library of fable module
+using namespace fem::major_types;
+using fem::common;
+
 #include <mplapack_matgen.h>
 
 void Clarot(bool const lrows, bool const lleft, bool const lright, INTEGER const nl, COMPLEX const c, COMPLEX const s, COMPLEX *a, INTEGER const lda, COMPLEX &xleft, COMPLEX &xright) {

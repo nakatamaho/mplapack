@@ -36,6 +36,10 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
+#include <fem.hpp> // Fortran EMulation library of fable module
+using namespace fem::major_types;
+using fem::common;
+
 #include <mplapack_matgen.h>
 
 void Rlatm6(INTEGER const type, INTEGER const n, REAL *a, INTEGER const lda, REAL *b, REAL *x, INTEGER const ldx, REAL *y, INTEGER const ldy, REAL const alpha, REAL const beta, REAL const wx, REAL const wy, REAL *s, REAL *dif) {

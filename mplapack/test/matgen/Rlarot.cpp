@@ -36,6 +36,10 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
+#include <fem.hpp> // Fortran EMulation library of fable module
+using namespace fem::major_types;
+using fem::common;
+
 #include <mplapack_matgen.h>
 
 void Rlarot(bool const lrows, bool const lleft, bool const lright, INTEGER const nl, REAL const c, REAL const s, REAL *a, INTEGER const lda, REAL &xleft, REAL &xright) {
