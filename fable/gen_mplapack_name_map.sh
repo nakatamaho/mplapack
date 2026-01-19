@@ -102,6 +102,7 @@ MANUAL_MAPPINGS_CORE=(
   "la_isnan Mla_isnan"
   "ilaprec iMlaprec"
   "lsamen Mlsamen"
+  "chkxer Chkxer"
 )
 
 MANUAL_MAPPINGS_TESTING=(

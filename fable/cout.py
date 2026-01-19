@@ -75,7 +75,7 @@ def _parse_ident_list_env(name: str) -> typing.Set[str]:
 FABLE_EXTERN_COMMON_SCALARS = _parse_ident_list_env("FABLE_EXTERN_COMMON_SCALARS")
 if FABLE_SUPPRESS_COMMON:
     # LAPACK test harness commonly externalizes these.
-    FABLE_EXTERN_COMMON_SCALARS.update({"srnamt", "infot"})
+    FABLE_EXTERN_COMMON_SCALARS.update({"infot", "srnamt", "ok", "lerr", "nout"})
 
 def _load_mplapack_signatures():
     """Load mplapack_signatures.py in a robust way.
