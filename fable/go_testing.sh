@@ -21,6 +21,10 @@ EXCLUDE_PREFIXES=( s c )
 # Exclude specific files by name (case-insensitive).
 EXCLUDE_FILES=( dlaran xerbla ilaenv xlaenv)
 
+# Force-include specific utility routines even if they match excluded prefixes.
+# Example: chkxer is required by many LAPACK tests but starts with "c".
+FORCE_INCLUDE_STEMS=( chkxer )
+
 PASSES="${1:-2}"
 
 ROOT="${ROOT:-/home/docker/mplapack}"
@@ -191,23 +195,34 @@ convert_dir() {
     fi
 
     local files=()
-    local src base base_lower stem stem_lower skip pfx ex ex_lower ex_stem
+    local src base base_lower stem stem_lower skip force inc inc_lower pfx ex ex_lower ex_stem
     for src in "${all[@]}"; do
       base="${src##*/}"      # e.g., cbdt01.f
       base_lower="${base,,}"
       stem="${base%%.*}"     # e.g., cbdt01
       stem_lower="${stem,,}" # case-insensitive compare
 
-      skip=false
-      for pfx in "${EXCLUDE_PREFIXES[@]}"; do
-        if [[ "${stem_lower}" == "${pfx}"* ]]; then
-          skip=true
+      force=false
+      for inc in "${FORCE_INCLUDE_STEMS[@]}"; do
+        inc_lower="${inc,,}"
+        if [[ "${stem_lower}" == "${inc_lower}" ]]; then
+          force=true
           break
         fi
       done
 
+      skip=false
+      if ! $force; then
+        for pfx in "${EXCLUDE_PREFIXES[@]}"; do
+          if [[ "${stem_lower}" == "${pfx}"* ]]; then
+            skip=true
+            break
+          fi
+        done
+      fi
+
       # Check exact-file exceptions
-      if ! $skip && (( ${#EXCLUDE_FILES[@]} > 0 )); then
+      if ! $skip && ! $force && (( ${#EXCLUDE_FILES[@]} > 0 )); then
         for ex in "${EXCLUDE_FILES[@]}"; do
           ex_lower="${ex,,}"
           ex_stem="${ex_lower%%.*}"  # allow both "foo.f" and "foo"
@@ -228,7 +243,7 @@ convert_dir() {
     fi
     if command -v parallel >/dev/null 2>&1; then
       parallel -j "${JOBS}" --halt soon,fail=1 \
-        "echo 'Converting {}'; bash -x '${FABLE}/convert_lapack.sh' '{}' '${mode}'" \
+        "echo 'Converting {}'; bash '${FABLE}/convert_lapack.sh' '{}' '${mode}'" \
         ::: "${files[@]}"
     else
       # Fallback without GNU parallel.
