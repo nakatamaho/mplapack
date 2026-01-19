@@ -50,7 +50,6 @@ void Rlatb5(fem::str_cref path, INTEGER const imat, INTEGER const n, fem::str_re
     const REAL tenth = 0.1;
     const REAL one = 1.0;
     const REAL shrink = 0.25;
-    first = false;
     eps = Rlamch("Precision");
     badc2 = tenth / eps;
     badc1 = sqrt(badc2);
