@@ -70,22 +70,34 @@ namespace utils {
     }
 
     inline void copy_with_blank_padding(char const *src, size_t src_size, char *dest, size_t dest_size) {
-        if (dest_size < src_size) {
-            std::memmove(dest, src, dest_size);
-        } else {
-            std::memmove(dest, src, src_size);
-            for (size_t i = src_size; i < dest_size; i++) {
-                dest[i] = ' ';
-            }
+        // Copy up to dest_size characters from src (src_size excludes '\0'),
+        // then pad the rest with blanks. Never writes past dest[0..dest_size-1].
+        if (dest_size == 0) {
+            return;
+        }
+
+        const size_t ncopy = (src_size < dest_size) ? src_size : dest_size;
+
+        if (ncopy != 0) {
+            std::memmove(dest, src, ncopy);
+        }
+        for (size_t i = ncopy; i < dest_size; ++i) {
+            dest[i] = ' ';
         }
     }
 
     inline void copy_with_blank_padding(char const *src, char *dest, size_t dest_size) {
-        size_t i;
-        for (i = 0; i < dest_size && *src != '\0'; i++) {
+        // Copy from NUL-terminated src into fixed-size dest,
+        // then pad remaining slots with blanks. Never writes past dest[0..dest_size-1].
+        if (dest_size == 0) {
+            return;
+        }
+
+        size_t i = 0;
+        for (; i < dest_size && *src != '\0'; ++i) {
             dest[i] = *src++;
         }
-        for (; i < dest_size; i++) {
+        for (; i < dest_size; ++i) {
             dest[i] = ' ';
         }
     }
