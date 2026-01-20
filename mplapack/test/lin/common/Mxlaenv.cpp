@@ -33,8 +33,6 @@
 //   Univ. of Colorado Denver
 //   NAG Ltd.
 
-#define __MPLAPACK_XLAENV__
-
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -44,6 +42,9 @@ using fem::common;
 
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
+
+#define __MPLAPACK_XLAENV__
+#include <mplapack_debug.h>
 
 void Mxlaenv(INTEGER const ispec, INTEGER const nvalue) {
     //
