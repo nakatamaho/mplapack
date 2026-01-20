@@ -44,6 +44,7 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Rchkaa(void) {
+    common cmn;
     common_read read(cmn);
     common_write write(cmn);
     static fem::str<10> intstr = "0123456789";
@@ -933,4 +934,4 @@ statement_140:
     //
 }
 
-int main(int argc, char const *argv[]) { return Rchkaa(); }
+int main(int argc, char const *argv[]) { Rchkaa(); }
