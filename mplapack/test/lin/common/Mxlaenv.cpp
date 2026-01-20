@@ -33,6 +33,8 @@
 //   Univ. of Colorado Denver
 //   NAG Ltd.
 
+#define __MPLAPACK_XLAENV__
+
 #include <mpblas.h>
 #include <mplapack.h>
 
