@@ -43,6 +43,11 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
+#include <mplapack_debug.h>
+
+#include <iostream>
+#include <sstream>
+
 void Rchkaa(void) {
     common cmn;
     common_read read(cmn);
@@ -54,14 +59,14 @@ void Rchkaa(void) {
     INTEGER lda = 0;
     bool fatal = false;
     const INTEGER nin = 5;
+    const INTEGER nout = 6;
+    INTEGER nm = 0;
     INTEGER mplapack_vers_major = 0;
     INTEGER mplapack_vers_minor = 0;
     INTEGER mplapack_vers_patch = 0;
     INTEGER lapack_vers_major = 0;
     INTEGER lapack_vers_minor = 0;
     INTEGER lapack_vers_patch = 0;
-    const INTEGER nout = 6;
-    INTEGER nm = 0;
     const INTEGER maxin = 12;
     INTEGER mval[maxin];
     INTEGER i = 0;
