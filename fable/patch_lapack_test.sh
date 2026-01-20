@@ -13,7 +13,6 @@ patch  < ~/mplapack/fable/3.9.1/lapack/patch-Clatmt.cpp
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Rlaror.cpp
 
 cd /home/docker/mplapack/mplapack/test/lin/common
-patch  < ~/mplapack/fable/3.9.1/lapack/patch-Rchkaa.cpp
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Clatb5.cpp
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Cdrvls.cpp
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Cerrqrt.cpp
@@ -50,4 +49,5 @@ patch  < ~/mplapack/fable/3.9.1/lapack/patch-Clattp.cpp
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Clattr.cpp
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Rchkeq.cpp
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Rlattr.cpp
+patch  < ~/mplapack/fable/3.9.1/lapack/patch-Rchkaa.cpp
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Cchkaa.cpp
