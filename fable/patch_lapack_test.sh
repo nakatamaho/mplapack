@@ -52,4 +52,3 @@ patch  < ~/mplapack/fable/3.9.1/lapack/patch-Clattr.cpp
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Rchkeq.cpp
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Rlattr.cpp
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Cchkaa.cpp
-patch  < ~/mplapack/fable/3.9.1/lapack/patch-Mxlaenv.cpp
