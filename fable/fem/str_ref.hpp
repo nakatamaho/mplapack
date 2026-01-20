@@ -2,6 +2,8 @@
 #define FEM_STR_REF_HPP
 #include <fem/utils/misc.hpp>
 #include <fem/utils/string.hpp>
+#include <cstring>
+
 namespace fem {
 struct str_cref {
   protected:
@@ -48,7 +50,18 @@ struct str_ref : str_cref {
     str_ref(str_ref const &other, int len) : str_cref(other, len) {}
     char *elems() const { return const_cast<char *>(elems_); }
     char &operator[](int i) const { return elems()[i]; }
-    void operator=(char const *rhs) { utils::copy_with_blank_padding(rhs, elems(), len()); }
+    void operator=(char const *rhs) {
+        // Fortran fixed-length character assignment:
+        // - Copy up to destination length
+        // - Pad with blanks if source is shorter
+        // Never rely on the NUL-terminated overload because it can confuse
+        // the optimizer when destination length is very small (e.g., CHAR*1).
+        if (rhs == nullptr) {
+            utils::copy_with_blank_padding("", 0, elems(), len());
+        } else {
+            utils::copy_with_blank_padding(rhs, std::strlen(rhs), elems(), len());
+        }
+    }
     void operator=(std::string const &rhs) { utils::copy_with_blank_padding(rhs.data(), rhs.size(), elems(), len()); }
     void operator=(str_cref const &rhs) { utils::copy_with_blank_padding(rhs.elems(), rhs.len(), elems(), len()); }
     void operator=(str_ref const &rhs) { (*this) = static_cast<str_cref>(rhs); }
