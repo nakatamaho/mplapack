@@ -43,39 +43,7 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#include <mplapack_debug.h>
-
 void Rgqrts(INTEGER const n, INTEGER const m, INTEGER const p, REAL *a, REAL *af, REAL *q, REAL *r, INTEGER const lda, REAL *taua, REAL *b, REAL *bf, REAL *z, REAL *t, REAL *bwk, INTEGER const ldb, REAL *taub, REAL *work, INTEGER const lwork, REAL *rwork, REAL *result) {
-    INTEGER ldaf = lda;
-    INTEGER ldq = lda;
-    INTEGER ldr = lda;
-    INTEGER ldbf = ldb;
-    INTEGER ldz = ldb;
-    INTEGER ldt = ldb;
-    INTEGER ldbwk = ldb;
-    //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
     REAL ulp = Rlamch("Precision");
     REAL unfl = Rlamch("Safe minimum");
@@ -85,8 +53,8 @@ void Rgqrts(INTEGER const n, INTEGER const m, INTEGER const p, REAL *a, REAL *af
     Rlacpy("Full", n, m, a, lda, af, lda);
     Rlacpy("Full", n, p, b, ldb, bf, ldb);
     //
-    REAL anorm = max({Rlange("1", n, m, a, lda, rwork), unfl});
-    REAL bnorm = max({Rlange("1", n, p, b, ldb, rwork), unfl});
+    REAL anorm = max(Rlange("1", n, m, a, lda, rwork), unfl);
+    REAL bnorm = max(Rlange("1", n, p, b, ldb, rwork), unfl);
     //
     // Factorize the matrices A and B in the arrays AF and BF.
     //
@@ -95,7 +63,7 @@ void Rgqrts(INTEGER const n, INTEGER const m, INTEGER const p, REAL *a, REAL *af
     //
     // Generate the N-by-N matrix Q
     //
-    const REAL rogue = -1.0e+10;
+    const REAL rogue = -10000000000.0;
     Rlaset("Full", n, n, rogue, rogue, q, lda);
     Rlacpy("Lower", n - 1, m, &af[(2 - 1)], lda, &q[(2 - 1)], lda);
     Rorgqr(n, n, min(n, m), q, lda, taua, work, lwork, info);
@@ -108,7 +76,7 @@ void Rgqrts(INTEGER const n, INTEGER const m, INTEGER const p, REAL *a, REAL *af
             Rlacpy("Full", n, p - n, bf, ldb, &z[((p - n + 1) - 1)], ldb);
         }
         if (n > 1) {
-            Rlacpy("Lower", n - 1, n - 1, &bf[(2 - 1) + ((p - n + 1) - 1) * ldbf], ldb, &z[((p - n + 2) - 1) + ((p - n + 1) - 1) * ldz], ldb);
+            Rlacpy("Lower", n - 1, n - 1, &bf[(2 - 1) + ((p - n + 1) - 1) * ldb], ldb, &z[((p - n + 2) - 1) + ((p - n + 1) - 1) * ldb], ldb);
         }
     } else {
         if (p > 1) {
@@ -127,7 +95,7 @@ void Rgqrts(INTEGER const n, INTEGER const m, INTEGER const p, REAL *a, REAL *af
     //
     Rlaset("Full", n, p, zero, zero, t, ldb);
     if (n <= p) {
-        Rlacpy("Upper", n, n, &bf[((p - n + 1) - 1) * ldbf], ldb, &t[((p - n + 1) - 1) * ldt], ldb);
+        Rlacpy("Upper", n, n, &bf[((p - n + 1) - 1) * ldb], ldb, &t[((p - n + 1) - 1) * ldb], ldb);
     } else {
         Rlacpy("Full", n - p, p, bf, ldb, t, ldb);
         Rlacpy("Upper", p, p, &bf[((n - p + 1) - 1)], ldb, &t[((n - p + 1) - 1)], ldb);
@@ -142,7 +110,7 @@ void Rgqrts(INTEGER const n, INTEGER const m, INTEGER const p, REAL *a, REAL *af
     //
     REAL resid = Rlange("1", n, m, r, lda, rwork);
     if (anorm > zero) {
-        result[1 - 1] = ((resid / castREAL(max({(INTEGER)1, m, n}))) / anorm) / ulp;
+        result[1 - 1] = ((resid / castREAL(max((INTEGER)1, m, n))) / anorm) / ulp;
     } else {
         result[1 - 1] = zero;
     }
@@ -156,7 +124,7 @@ void Rgqrts(INTEGER const n, INTEGER const m, INTEGER const p, REAL *a, REAL *af
     //
     resid = Rlange("1", n, p, bwk, ldb, rwork);
     if (bnorm > zero) {
-        result[2 - 1] = ((resid / castREAL(max({(INTEGER)1, p, n}))) / bnorm) / ulp;
+        result[2 - 1] = ((resid / castREAL(max((INTEGER)1, p, n))) / bnorm) / ulp;
     } else {
         result[2 - 1] = zero;
     }

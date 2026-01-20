@@ -43,13 +43,10 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#include <mplapack_debug.h>
-
-void Rget23(bool const comp, const char *balanc, INTEGER const jtype, REAL const thresh, INTEGER *iseed, INTEGER const nounit, INTEGER const n, REAL *a, INTEGER const lda, REAL *h, REAL *wr, REAL *wi, REAL *wr1, REAL *wi1, REAL *vl, INTEGER const ldvl, REAL *vr, INTEGER const ldvr, REAL *lre, INTEGER const ldlre, REAL *rcondv, REAL *rcndv1, REAL *rcdvin, REAL *rconde, REAL *rcnde1, REAL *rcdein, REAL *scale, REAL *scale1, REAL *result, REAL *work, INTEGER const lwork, INTEGER *iwork, INTEGER &info) {
-
+void Rget23(bool const comp, fem::str_cref balanc, INTEGER const jtype, REAL const thresh, INTEGER *iseed, INTEGER const nounit, INTEGER const n, REAL *a, INTEGER const lda, REAL *h, REAL *wr, REAL *wi, REAL *wr1, REAL *wi1, REAL *vl, INTEGER const ldvl, REAL *vr, INTEGER const ldvr, REAL *lre, INTEGER const ldlre, REAL *rcondv, REAL *rcndv1, REAL *rcdvin, REAL *rconde, REAL *rcnde1, REAL *rcdein, REAL *scale, REAL *scale1, REAL *result, REAL *work, INTEGER const lwork, INTEGER *iwork, INTEGER &info) {
     common cmn;
     common_write write(cmn);
-    const char sens[] = {'N', 'V'};
+    static fem::str<1> sens[2] = {"N", "V"};
     bool nobal = false;
     bool balok = false;
     const REAL zero = 0.0;
@@ -58,7 +55,7 @@ void Rget23(bool const comp, const char *balanc, INTEGER const jtype, REAL const
     REAL ulp = 0.0;
     REAL smlnum = 0.0;
     REAL ulpinv = 0.0;
-    char sense;
+    fem::str<1> sense;
     INTEGER isensm = 0;
     INTEGER ilo = 0;
     INTEGER ihi = 0;
@@ -80,21 +77,21 @@ void Rget23(bool const comp, const char *balanc, INTEGER const jtype, REAL const
     INTEGER kmin = 0;
     REAL vrmin = 0.0;
     REAL vimin = 0.0;
-    const REAL epsin = 5.9605e-8;
+    const REAL epsin = 0.000000059605;
     REAL eps = 0.0;
     REAL v = 0.0;
     REAL tol = 0.0;
     REAL tolin = 0.0;
     REAL vmax = 0.0;
-    static const char *format_9998 = "(' Rget23: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,', JTYPE=',i6,"
+    static const char *format_9998 = "(' DGET23: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,', JTYPE=',i6,"
                                      "', BALANC = ',a,', ISEED=(',3(i5,','),i5,')')";
-    static const char *format_9999 = "(' Rget23: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,"
+    static const char *format_9999 = "(' DGET23: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,"
                                      "', INPUT EXAMPLE NUMBER = ',i4)";
     //
     // Check for errors
     //
-    nobal = Mlsame(balanc, "N");
-    balok = nobal || Mlsame(balanc, "P") || Mlsame(balanc, "S") || Mlsame(balanc, "B");
+    nobal = Mlsame(balanc.elems(), "N");
+    balok = nobal || Mlsame(balanc.elems(), "P") || Mlsame(balanc.elems(), "S") || Mlsame(balanc.elems(), "B");
     info = 0;
     if (!balok) {
         info = -2;
@@ -140,20 +137,20 @@ void Rget23(bool const comp, const char *balanc, INTEGER const jtype, REAL const
     // Compute eigenvalues and eigenvectors, and test them
     //
     if (lwork >= 6 * n + n * n) {
-        sense = 'B';
+        sense = "B";
         isensm = 2;
     } else {
-        sense = 'E';
+        sense = "E";
         isensm = 1;
     }
     Rlacpy("F", n, n, a, lda, h, lda);
-    Rgeevx(balanc, "V", "V", &sense, n, h, lda, wr, wi, vl, ldvl, vr, ldvr, ilo, ihi, scale, abnrm, rconde, rcondv, work, lwork, iwork, iinfo);
+    Rgeevx(balanc.elems(), "V", "V", sense.elems, n, h, lda, wr, wi, vl, ldvl, vr, ldvr, ilo, ihi, scale, abnrm, rconde, rcondv, work, lwork, iwork, iinfo);
     if (iinfo != 0) {
         result[1 - 1] = ulpinv;
         if (jtype != 22) {
-            write(nounit, format_9998), "Rgeevx1", iinfo, n, jtype, balanc, iseed[0], iseed[1], iseed[2], iseed[3];
+            write(nounit, format_9998), "DGEEVX1", iinfo, n, jtype, balanc, iseed;
         } else {
-            write(nounit, format_9999), "Rgeevx1", iinfo, n, iseed[1 - 1];
+            write(nounit, format_9999), "DGEEVX1", iinfo, n, iseed[1 - 1];
         }
         info = abs(iinfo);
         return;
@@ -178,7 +175,7 @@ void Rget23(bool const comp, const char *balanc, INTEGER const jtype, REAL const
         } else if (wi[j - 1] > zero) {
             tnrm = Rlapy2(Rnrm2(n, &vr[(j - 1) * ldvr], 1), Rnrm2(n, &vr[((j + 1) - 1) * ldvr], 1));
         }
-        result[3 - 1] = max(result[3 - 1], REAL(min(ulpinv, REAL(abs(tnrm - one) / ulp))));
+        result[3 - 1] = max(result[3 - 1], min(ulpinv, abs(tnrm - one) / ulp));
         if (wi[j - 1] > zero) {
             vmx = zero;
             vrmx = zero;
@@ -206,7 +203,7 @@ void Rget23(bool const comp, const char *balanc, INTEGER const jtype, REAL const
         } else if (wi[j - 1] > zero) {
             tnrm = Rlapy2(Rnrm2(n, &vl[(j - 1) * ldvl], 1), Rnrm2(n, &vl[((j + 1) - 1) * ldvl], 1));
         }
-        result[4 - 1] = max(result[4 - 1], min(ulpinv, REAL(abs(tnrm - one) / ulp)));
+        result[4 - 1] = max(result[4 - 1], min(ulpinv, abs(tnrm - one) / ulp));
         if (wi[j - 1] > zero) {
             vmx = zero;
             vrmx = zero;
@@ -234,13 +231,13 @@ void Rget23(bool const comp, const char *balanc, INTEGER const jtype, REAL const
         // Compute eigenvalues only, and test them
         //
         Rlacpy("F", n, n, a, lda, h, lda);
-        Rgeevx(balanc, "N", "N", &sense, n, h, lda, wr1, wi1, dum, 1, dum, 1, ilo1, ihi1, scale1, abnrm1, rcnde1, rcndv1, work, lwork, iwork, iinfo);
+        Rgeevx(balanc.elems(), "N", "N", sense.elems, n, h, lda, wr1, wi1, dum, 1, dum, 1, ilo1, ihi1, scale1, abnrm1, rcnde1, rcndv1, work, lwork, iwork, iinfo);
         if (iinfo != 0) {
             result[1 - 1] = ulpinv;
             if (jtype != 22) {
-                write(nounit, format_9998), "Rgeevx2", iinfo, n, jtype, balanc, iseed;
+                write(nounit, format_9998), "DGEEVX2", iinfo, n, jtype, balanc, iseed;
             } else {
-                write(nounit, format_9999), "Rgeevx2", iinfo, n, iseed[1 - 1];
+                write(nounit, format_9999), "DGEEVX2", iinfo, n, iseed[1 - 1];
             }
             info = abs(iinfo);
             goto statement_190;
@@ -286,13 +283,13 @@ void Rget23(bool const comp, const char *balanc, INTEGER const jtype, REAL const
         // Compute eigenvalues and right eigenvectors, and test them
         //
         Rlacpy("F", n, n, a, lda, h, lda);
-        Rgeevx(balanc, "N", "V", &sense, n, h, lda, wr1, wi1, dum, 1, lre, ldlre, ilo1, ihi1, scale1, abnrm1, rcnde1, rcndv1, work, lwork, iwork, iinfo);
+        Rgeevx(balanc.elems(), "N", "V", sense.elems, n, h, lda, wr1, wi1, dum, 1, lre, ldlre, ilo1, ihi1, scale1, abnrm1, rcnde1, rcndv1, work, lwork, iwork, iinfo);
         if (iinfo != 0) {
             result[1 - 1] = ulpinv;
             if (jtype != 22) {
-                write(nounit, format_9998), "Rgeevx3", iinfo, n, jtype, balanc, iseed;
+                write(nounit, format_9998), "DGEEVX3", iinfo, n, jtype, balanc, iseed;
             } else {
-                write(nounit, format_9999), "Rgeevx3", iinfo, n, iseed[1 - 1];
+                write(nounit, format_9999), "DGEEVX3", iinfo, n, iseed[1 - 1];
             }
             info = abs(iinfo);
             goto statement_190;
@@ -348,13 +345,13 @@ void Rget23(bool const comp, const char *balanc, INTEGER const jtype, REAL const
         // Compute eigenvalues and left eigenvectors, and test them
         //
         Rlacpy("F", n, n, a, lda, h, lda);
-        Rgeevx(balanc, "V", "N", &sense, n, h, lda, wr1, wi1, lre, ldlre, dum, 1, ilo1, ihi1, scale1, abnrm1, rcnde1, rcndv1, work, lwork, iwork, iinfo);
+        Rgeevx(balanc.elems(), "V", "N", sense.elems, n, h, lda, wr1, wi1, lre, ldlre, dum, 1, ilo1, ihi1, scale1, abnrm1, rcnde1, rcndv1, work, lwork, iwork, iinfo);
         if (iinfo != 0) {
             result[1 - 1] = ulpinv;
             if (jtype != 22) {
-                write(nounit, format_9998), "Rgeevx4", iinfo, n, jtype, balanc, iseed;
+                write(nounit, format_9998), "DGEEVX4", iinfo, n, jtype, balanc, iseed;
             } else {
-                write(nounit, format_9999), "Rgeevx4", iinfo, n, iseed[1 - 1];
+                write(nounit, format_9999), "DGEEVX4", iinfo, n, iseed[1 - 1];
             }
             info = abs(iinfo);
             goto statement_190;
@@ -418,7 +415,7 @@ void Rget23(bool const comp, const char *balanc, INTEGER const jtype, REAL const
         Rgeevx("N", "V", "V", "B", n, h, lda, wr, wi, vl, ldvl, vr, ldvr, ilo, ihi, scale, abnrm, rconde, rcondv, work, lwork, iwork, iinfo);
         if (iinfo != 0) {
             result[1 - 1] = ulpinv;
-            write(nounit, format_9999), "Rgeevx5", iinfo, n, iseed[1 - 1];
+            write(nounit, format_9999), "DGEEVX5", iinfo, n, iseed[1 - 1];
             info = abs(iinfo);
             goto statement_250;
         }
@@ -454,7 +451,7 @@ void Rget23(bool const comp, const char *balanc, INTEGER const jtype, REAL const
         //
         result[10 - 1] = zero;
         eps = max(epsin, ulp);
-        v = max(REAL(castREAL(n) * eps * abnrm), smlnum);
+        v = max(castREAL(n) * eps * abnrm, smlnum);
         if (abnrm == zero) {
             v = one;
         }
@@ -469,8 +466,8 @@ void Rget23(bool const comp, const char *balanc, INTEGER const jtype, REAL const
             } else {
                 tolin = v / rcdein[i - 1];
             }
-            tol = max(tol, REAL(smlnum / eps));
-            tolin = max(tolin, REAL(smlnum / eps));
+            tol = max(tol, smlnum / eps);
+            tolin = max(tolin, smlnum / eps);
             if (eps * (rcdvin[i - 1] - tolin) > rcondv[i - 1] + tol) {
                 vmax = one / eps;
             } else if (rcdvin[i - 1] - tolin > rcondv[i - 1] + tol) {
@@ -500,8 +497,8 @@ void Rget23(bool const comp, const char *balanc, INTEGER const jtype, REAL const
             } else {
                 tolin = v / rcdvin[i - 1];
             }
-            tol = max(tol, REAL(smlnum / eps));
-            tolin = max(tolin, REAL(smlnum / eps));
+            tol = max(tol, smlnum / eps);
+            tolin = max(tolin, smlnum / eps);
             if (eps * (rcdein[i - 1] - tolin) > rconde[i - 1] + tol) {
                 vmax = one / eps;
             } else if (rcdein[i - 1] - tolin > rconde[i - 1] + tol) {

@@ -43,17 +43,12 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#include <mplapack_debug.h>
-
 void Cdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotype, INTEGER *iseed, REAL const thresh, INTEGER const nounit, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, REAL *d, REAL *d2, COMPLEX *z, INTEGER const ldz, COMPLEX *ab, COMPLEX *bb, COMPLEX *ap, COMPLEX *bp, COMPLEX *work, INTEGER const nwork, REAL *rwork, INTEGER const lrwork, INTEGER *iwork, INTEGER const liwork, REAL *result, INTEGER &info) {
-    INTEGER ldab = lda;
-    INTEGER ldbb = ldb;
     common cmn;
     common_write write(cmn);
-    const INTEGER maxtyp = 21;
-    INTEGER ktype[21] = {1, 2, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 8, 8, 8, 9, 9, 9, 9, 9, 9};
-    INTEGER kmagn[21] = {1, 1, 1, 1, 1, 2, 3, 1, 1, 1, 2, 3, 1, 2, 3, 1, 1, 1, 1, 1, 1};
-    INTEGER kmode[21] = {0, 0, 4, 3, 1, 4, 4, 4, 3, 1, 4, 4, 0, 0, 0, 4, 4, 4, 4, 4, 4};
+    static INTEGER ktype[21] = {1, 2, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 8, 8, 8, 9, 9, 9, 9, 9, 9};
+    static INTEGER kmagn[21] = {1, 1, 1, 1, 1, 2, 3, 1, 1, 1, 2, 3, 1, 2, 3, 1, 1, 1, 1, 1, 1};
+    static INTEGER kmode[21] = {0, 0, 4, 3, 1, 4, 4, 4, 3, 1, 4, 4, 0, 0, 0, 4, 4, 4, 4, 4, 4};
     INTEGER ntestt = 0;
     bool badnn = false;
     INTEGER nmax = 0;
@@ -72,6 +67,7 @@ void Cdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
     INTEGER jsize = 0;
     INTEGER n = 0;
     REAL aninv = 0.0;
+    const INTEGER maxtyp = 21;
     INTEGER mtypes = 0;
     INTEGER ka9 = 0;
     INTEGER kb9 = 0;
@@ -96,7 +92,7 @@ void Cdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
     INTEGER itemp = 0;
     INTEGER ibtype = 0;
     INTEGER ibuplo = 0;
-    char uplo;
+    fem::str<1> uplo;
     const REAL ten = 10.0;
     REAL temp1 = 0.0;
     REAL temp2 = 0.0;
@@ -104,7 +100,7 @@ void Cdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
     REAL vu = 0.0;
     INTEGER m = 0;
     INTEGER ij = 0;
-    static const char *format_9999 = "(' Cdrvsg2stg: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,', JTYPE=',i6,"
+    static const char *format_9999 = "(' ZDRVSG2STG: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,', JTYPE=',i6,"
                                      "', ISEED=(',3(i5,','),i5,')')";
     //
     // 1)      Check for errors
@@ -133,11 +129,11 @@ void Cdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
         info = -9;
     } else if (ldz <= 1 || ldz < nmax) {
         info = -16;
-    } else if (2 * (max(nmax, (INTEGER)2) * max(nmax, (INTEGER)2)) > nwork) {
+    } else if (2 * pow2(max(nmax, (INTEGER)2)) > nwork) {
         info = -21;
-    } else if (2 * (max(nmax, (INTEGER)2) * max(nmax, (INTEGER)2)) > lrwork) {
+    } else if (2 * pow2(max(nmax, (INTEGER)2)) > lrwork) {
         info = -23;
-    } else if (2 * (max(nmax, (INTEGER)2) * max(nmax, (INTEGER)2)) > liwork) {
+    } else if (2 * pow2(max(nmax, (INTEGER)2)) > liwork) {
         info = -25;
     }
     //
@@ -156,6 +152,7 @@ void Cdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
     //
     unfl = Rlamch("Safe minimum");
     ovfl = Rlamch("Overflow");
+    Rlabad(unfl, ovfl);
     ulp = Rlamch("Epsilon") * Rlamch("Base");
     ulpinv = one / ulp;
     rtunfl = sqrt(unfl);
@@ -243,15 +240,9 @@ void Cdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
         statement_70:
             //
             iinfo = 0;
-#ifdef ___MPLAPACK_BUILD_WITH_MPFR___
-            // There is exactly 0 eigenvalue for n=odd and Rlaebz.cpp cannot find
-            // 0 eigenvalue and fail to converge. Fix may Rlaebz.cpp help.
-            cond = ulpinv * 1e-3;
-#else
             cond = ulpinv;
-#endif
             //
-            //           Special Matrices -- Identity & Jordan block
+            // Special Matrices -- Identity & Jordan block
             //
             if (itype == 1) {
                 //
@@ -322,8 +313,8 @@ void Cdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     ka9++;
                     kb9 = 1;
                 }
-                ka = max({(INTEGER)0, min(n - 1, ka9)});
-                kb = max({(INTEGER)0, min(n - 1, kb9)});
+                ka = max((INTEGER)0, min(n - 1, ka9));
+                kb = max((INTEGER)0, min(n - 1, kb9));
                 Clatms(n, n, "S", iseed, "H", rwork, imode, cond, anorm, ka, ka, "N", a, lda, work, iinfo);
                 //
             } else {
@@ -332,7 +323,7 @@ void Cdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
             }
             //
             if (iinfo != 0) {
-                write(nounit, format_9999), "Generator", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                write(nounit, format_9999), "Generator", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 return;
             }
@@ -367,30 +358,27 @@ void Cdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 //
                 for (ibuplo = 1; ibuplo <= 2; ibuplo = ibuplo + 1) {
                     if (ibuplo == 1) {
-                        uplo = 'U';
+                        uplo = "U";
                     }
                     if (ibuplo == 2) {
-                        uplo = 'L';
+                        uplo = "L";
                     }
                     //
                     // Generate random well-conditioned positive definite
                     // matrix B, of bandwidth not greater than that of A.
                     //
-                    Clatms(n, n, "U", iseed, "P", rwork, 5, ten, one, kb, kb, &uplo, b, ldb, &work[(n + 1) - 1], iinfo);
+                    Clatms(n, n, "U", iseed, "P", rwork, 5, ten, one, kb, kb, uplo, b, ldb, &work[(n + 1) - 1], iinfo);
                     //
                     // Test Chegv
                     //
                     ntest++;
                     //
                     Clacpy(" ", n, n, a, lda, z, ldz);
-                    Clacpy(&uplo, n, n, b, ldb, bb, ldb);
+                    Clacpy(uplo.elems, n, n, b, ldb, bb, ldb);
                     //
-                    Chegv(ibtype, "V", &uplo, n, z, ldz, bb, ldb, d, work, nwork, rwork, iinfo);
+                    Chegv(ibtype, "V", uplo.elems, n, z, ldz, bb, ldb, d, work, nwork, rwork, iinfo);
                     if (iinfo != 0) {
-                        if (Mlsame(&uplo, "U"))
-                            write(nounit, format_9999), "Chegv(V,U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
-                        else
-                            write(nounit, format_9999), "Chegv(V,N)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                        write(nounit, format_9999), "ZHEGV(V," + uplo + fem::str_cref(")"), iinfo, n, jtype, ioldsd;
                         info = abs(iinfo);
                         if (iinfo < 0) {
                             return;
@@ -402,21 +390,18 @@ void Cdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     //
                     // Do Test
                     //
-                    Csgt01(ibtype, &uplo, n, n, a, lda, b, ldb, z, ldz, d, work, rwork, &result[ntest - 1]);
+                    Csgt01(ibtype, uplo, n, n, a, lda, b, ldb, z, ldz, d, work, rwork, &result[ntest - 1]);
                     //
                     // Test Chegv_2stage
                     //
                     ntest++;
                     //
                     Clacpy(" ", n, n, a, lda, z, ldz);
-                    Clacpy(&uplo, n, n, b, ldb, bb, ldb);
+                    Clacpy(uplo.elems, n, n, b, ldb, bb, ldb);
                     //
-                    Chegv_2stage(ibtype, "N", &uplo, n, z, ldz, bb, ldb, d2, work, nwork, rwork, iinfo);
+                    Chegv_2stage(ibtype, "N", uplo.elems, n, z, ldz, bb, ldb, d2, work, nwork, rwork, iinfo);
                     if (iinfo != 0) {
-                        if (Mlsame(&uplo, "U"))
-                            write(nounit, format_9999), "Chegv_2stage(V,U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
-                        else
-                            write(nounit, format_9999), "Chegv_2stage(V,L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                        write(nounit, format_9999), "ZHEGV_2STAGE(V," + uplo + fem::str_cref(")"), iinfo, n, jtype, ioldsd;
                         info = abs(iinfo);
                         if (iinfo < 0) {
                             return;
@@ -438,25 +423,22 @@ void Cdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     temp1 = zero;
                     temp2 = zero;
                     for (j = 1; j <= n; j = j + 1) {
-                        temp1 = max({temp1, REAL(abs(d[j - 1])), REAL(abs(d2[j - 1]))});
-                        temp2 = max(temp2, REAL(abs(d[j - 1] - d2[j - 1])));
+                        temp1 = max(temp1, abs(d[j - 1]), abs(d2[j - 1]));
+                        temp2 = max(temp2, abs(d[j - 1] - d2[j - 1]));
                     }
                     //
-                    result[ntest - 1] = temp2 / max({unfl, REAL(ulp * max(temp1, temp2))});
+                    result[ntest - 1] = temp2 / max(unfl, ulp * max(temp1, temp2));
                     //
                     // Test Chegvd
                     //
                     ntest++;
                     //
                     Clacpy(" ", n, n, a, lda, z, ldz);
-                    Clacpy(&uplo, n, n, b, ldb, bb, ldb);
+                    Clacpy(uplo.elems, n, n, b, ldb, bb, ldb);
                     //
-                    Chegvd(ibtype, "V", &uplo, n, z, ldz, bb, ldb, d, work, nwork, rwork, lrwork, iwork, liwork, iinfo);
+                    Chegvd(ibtype, "V", uplo.elems, n, z, ldz, bb, ldb, d, work, nwork, rwork, lrwork, iwork, liwork, iinfo);
                     if (iinfo != 0) {
-                        if (Mlsame(&uplo, "U"))
-                            write(nounit, format_9999), "Chegvd(V,U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
-                        else
-                            write(nounit, format_9999), "Chegvd(V,L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                        write(nounit, format_9999), "ZHEGVD(V," + uplo + fem::str_cref(")"), iinfo, n, jtype, ioldsd;
                         info = abs(iinfo);
                         if (iinfo < 0) {
                             return;
@@ -468,21 +450,18 @@ void Cdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     //
                     // Do Test
                     //
-                    Csgt01(ibtype, &uplo, n, n, a, lda, b, ldb, z, ldz, d, work, rwork, &result[ntest - 1]);
+                    Csgt01(ibtype, uplo, n, n, a, lda, b, ldb, z, ldz, d, work, rwork, &result[ntest - 1]);
                     //
                     // Test Chegvx
                     //
                     ntest++;
                     //
                     Clacpy(" ", n, n, a, lda, ab, lda);
-                    Clacpy(&uplo, n, n, b, ldb, bb, ldb);
+                    Clacpy(uplo.elems, n, n, b, ldb, bb, ldb);
                     //
-                    Chegvx(ibtype, "V", "A", &uplo, n, ab, lda, bb, ldb, vl, vu, il, iu, abstol, m, d, z, ldz, work, nwork, rwork, &iwork[(n + 1) - 1], iwork, iinfo);
+                    Chegvx(ibtype, "V", "A", uplo.elems, n, ab, lda, bb, ldb, vl, vu, il, iu, abstol, m, d, z, ldz, work, nwork, rwork, &iwork[(n + 1) - 1], iwork, iinfo);
                     if (iinfo != 0) {
-                        if (Mlsame(&uplo, "U"))
-                            write(nounit, format_9999), "Chegvx(V,A,U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
-                        else
-                            write(nounit, format_9999), "Chegvx(V,A,L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                        write(nounit, format_9999), "ZHEGVX(V,A" + uplo + fem::str_cref(")"), iinfo, n, jtype, ioldsd;
                         info = abs(iinfo);
                         if (iinfo < 0) {
                             return;
@@ -494,12 +473,12 @@ void Cdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     //
                     // Do Test
                     //
-                    Csgt01(ibtype, &uplo, n, n, a, lda, b, ldb, z, ldz, d, work, rwork, &result[ntest - 1]);
+                    Csgt01(ibtype, uplo, n, n, a, lda, b, ldb, z, ldz, d, work, rwork, &result[ntest - 1]);
                     //
                     ntest++;
                     //
                     Clacpy(" ", n, n, a, lda, ab, lda);
-                    Clacpy(&uplo, n, n, b, ldb, bb, ldb);
+                    Clacpy(uplo.elems, n, n, b, ldb, bb, ldb);
                     //
                     // since we do not know the exact eigenvalues of this
                     // eigenpair, we just set VL and VU as constants.
@@ -508,12 +487,9 @@ void Cdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     //
                     vl = zero;
                     vu = anorm;
-                    Chegvx(ibtype, "V", "V", &uplo, n, ab, lda, bb, ldb, vl, vu, il, iu, abstol, m, d, z, ldz, work, nwork, rwork, &iwork[(n + 1) - 1], iwork, iinfo);
+                    Chegvx(ibtype, "V", "V", uplo.elems, n, ab, lda, bb, ldb, vl, vu, il, iu, abstol, m, d, z, ldz, work, nwork, rwork, &iwork[(n + 1) - 1], iwork, iinfo);
                     if (iinfo != 0) {
-                        if (Mlsame(&uplo, "U"))
-                            write(nounit, format_9999), "Chegvx(V,V,U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
-                        else
-                            write(nounit, format_9999), "Chegvx(V,V,L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                        write(nounit, format_9999), "ZHEGVX(V,V," + uplo + fem::str_cref(")"), iinfo, n, jtype, ioldsd;
                         info = abs(iinfo);
                         if (iinfo < 0) {
                             return;
@@ -525,19 +501,16 @@ void Cdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     //
                     // Do Test
                     //
-                    Csgt01(ibtype, &uplo, n, m, a, lda, b, ldb, z, ldz, d, work, rwork, &result[ntest - 1]);
+                    Csgt01(ibtype, uplo, n, m, a, lda, b, ldb, z, ldz, d, work, rwork, &result[ntest - 1]);
                     //
                     ntest++;
                     //
                     Clacpy(" ", n, n, a, lda, ab, lda);
-                    Clacpy(&uplo, n, n, b, ldb, bb, ldb);
+                    Clacpy(uplo.elems, n, n, b, ldb, bb, ldb);
                     //
-                    Chegvx(ibtype, "V", "I", &uplo, n, ab, lda, bb, ldb, vl, vu, il, iu, abstol, m, d, z, ldz, work, nwork, rwork, &iwork[(n + 1) - 1], iwork, iinfo);
+                    Chegvx(ibtype, "V", "I", uplo.elems, n, ab, lda, bb, ldb, vl, vu, il, iu, abstol, m, d, z, ldz, work, nwork, rwork, &iwork[(n + 1) - 1], iwork, iinfo);
                     if (iinfo != 0) {
-                        if (Mlsame(&uplo, "U"))
-                            write(nounit, format_9999), "Chegvx(V,I,U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
-                        else
-                            write(nounit, format_9999), "Chegvx(V,I,L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                        write(nounit, format_9999), "ZHEGVX(V,I," + uplo + fem::str_cref(")"), iinfo, n, jtype, ioldsd;
                         info = abs(iinfo);
                         if (iinfo < 0) {
                             return;
@@ -549,7 +522,7 @@ void Cdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     //
                     // Do Test
                     //
-                    Csgt01(ibtype, &uplo, n, m, a, lda, b, ldb, z, ldz, d, work, rwork, &result[ntest - 1]);
+                    Csgt01(ibtype, uplo, n, m, a, lda, b, ldb, z, ldz, d, work, rwork, &result[ntest - 1]);
                 //
                 statement_100:
                     //
@@ -559,7 +532,7 @@ void Cdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     //
                     // Copy the matrices into packed storage.
                     //
-                    if (Mlsame(&uplo, "U")) {
+                    if (Mlsame(uplo.elems, "U")) {
                         ij = 1;
                         for (j = 1; j <= n; j = j + 1) {
                             for (i = 1; i <= j; i = i + 1) {
@@ -579,12 +552,9 @@ void Cdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                         }
                     }
                     //
-                    Chpgv(ibtype, "V", &uplo, n, ap, bp, d, z, ldz, work, rwork, iinfo);
+                    Chpgv(ibtype, "V", uplo.elems, n, ap, bp, d, z, ldz, work, rwork, iinfo);
                     if (iinfo != 0) {
-                        if (Mlsame(&uplo, "U"))
-                            write(nounit, format_9999), "Chpgv(V,U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
-                        else
-                            write(nounit, format_9999), "Chpgv(V,L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                        write(nounit, format_9999), "ZHPGV(V," + uplo + fem::str_cref(")"), iinfo, n, jtype, ioldsd;
                         info = abs(iinfo);
                         if (iinfo < 0) {
                             return;
@@ -596,7 +566,7 @@ void Cdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     //
                     // Do Test
                     //
-                    Csgt01(ibtype, &uplo, n, n, a, lda, b, ldb, z, ldz, d, work, rwork, &result[ntest - 1]);
+                    Csgt01(ibtype, uplo, n, n, a, lda, b, ldb, z, ldz, d, work, rwork, &result[ntest - 1]);
                     //
                     // Test Chpgvd
                     //
@@ -604,7 +574,7 @@ void Cdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     //
                     // Copy the matrices into packed storage.
                     //
-                    if (Mlsame(&uplo, "U")) {
+                    if (Mlsame(uplo.elems, "U")) {
                         ij = 1;
                         for (j = 1; j <= n; j = j + 1) {
                             for (i = 1; i <= j; i = i + 1) {
@@ -624,12 +594,9 @@ void Cdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                         }
                     }
                     //
-                    Chpgvd(ibtype, "V", &uplo, n, ap, bp, d, z, ldz, work, nwork, rwork, lrwork, iwork, liwork, iinfo);
+                    Chpgvd(ibtype, "V", uplo.elems, n, ap, bp, d, z, ldz, work, nwork, rwork, lrwork, iwork, liwork, iinfo);
                     if (iinfo != 0) {
-                        if (Mlsame(&uplo, "U"))
-                            write(nounit, format_9999), "Chpgvd(V,U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
-                        else
-                            write(nounit, format_9999), "Chpgvd(V,L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                        write(nounit, format_9999), "ZHPGVD(V," + uplo + fem::str_cref(")"), iinfo, n, jtype, ioldsd;
                         info = abs(iinfo);
                         if (iinfo < 0) {
                             return;
@@ -641,7 +608,7 @@ void Cdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     //
                     // Do Test
                     //
-                    Csgt01(ibtype, &uplo, n, n, a, lda, b, ldb, z, ldz, d, work, rwork, &result[ntest - 1]);
+                    Csgt01(ibtype, uplo, n, n, a, lda, b, ldb, z, ldz, d, work, rwork, &result[ntest - 1]);
                     //
                     // Test Chpgvx
                     //
@@ -649,7 +616,7 @@ void Cdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     //
                     // Copy the matrices into packed storage.
                     //
-                    if (Mlsame(&uplo, "U")) {
+                    if (Mlsame(uplo.elems, "U")) {
                         ij = 1;
                         for (j = 1; j <= n; j = j + 1) {
                             for (i = 1; i <= j; i = i + 1) {
@@ -669,12 +636,9 @@ void Cdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                         }
                     }
                     //
-                    Chpgvx(ibtype, "V", "A", &uplo, n, ap, bp, vl, vu, il, iu, abstol, m, d, z, ldz, work, rwork, &iwork[(n + 1) - 1], iwork, info);
+                    Chpgvx(ibtype, "V", "A", uplo.elems, n, ap, bp, vl, vu, il, iu, abstol, m, d, z, ldz, work, rwork, &iwork[(n + 1) - 1], iwork, info);
                     if (iinfo != 0) {
-                        if (Mlsame(&uplo, "U"))
-                            write(nounit, format_9999), "Chpgvx(V,A,U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
-                        else
-                            write(nounit, format_9999), "Chpgvx(V,A,L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                        write(nounit, format_9999), "ZHPGVX(V,A" + uplo + fem::str_cref(")"), iinfo, n, jtype, ioldsd;
                         info = abs(iinfo);
                         if (iinfo < 0) {
                             return;
@@ -686,13 +650,13 @@ void Cdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     //
                     // Do Test
                     //
-                    Csgt01(ibtype, &uplo, n, n, a, lda, b, ldb, z, ldz, d, work, rwork, &result[ntest - 1]);
+                    Csgt01(ibtype, uplo, n, n, a, lda, b, ldb, z, ldz, d, work, rwork, &result[ntest - 1]);
                     //
                     ntest++;
                     //
                     // Copy the matrices into packed storage.
                     //
-                    if (Mlsame(&uplo, "U")) {
+                    if (Mlsame(uplo.elems, "U")) {
                         ij = 1;
                         for (j = 1; j <= n; j = j + 1) {
                             for (i = 1; i <= j; i = i + 1) {
@@ -714,12 +678,9 @@ void Cdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     //
                     vl = zero;
                     vu = anorm;
-                    Chpgvx(ibtype, "V", "V", &uplo, n, ap, bp, vl, vu, il, iu, abstol, m, d, z, ldz, work, rwork, &iwork[(n + 1) - 1], iwork, info);
+                    Chpgvx(ibtype, "V", "V", uplo.elems, n, ap, bp, vl, vu, il, iu, abstol, m, d, z, ldz, work, rwork, &iwork[(n + 1) - 1], iwork, info);
                     if (iinfo != 0) {
-                        if (Mlsame(&uplo, "U"))
-                            write(nounit, format_9999), "Chpgvx(V,V,U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
-                        else
-                            write(nounit, format_9999), "Chpgvx(V,V,L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                        write(nounit, format_9999), "ZHPGVX(V,V" + uplo + fem::str_cref(")"), iinfo, n, jtype, ioldsd;
                         info = abs(iinfo);
                         if (iinfo < 0) {
                             return;
@@ -731,13 +692,13 @@ void Cdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     //
                     // Do Test
                     //
-                    Csgt01(ibtype, &uplo, n, m, a, lda, b, ldb, z, ldz, d, work, rwork, &result[ntest - 1]);
+                    Csgt01(ibtype, uplo, n, m, a, lda, b, ldb, z, ldz, d, work, rwork, &result[ntest - 1]);
                     //
                     ntest++;
                     //
                     // Copy the matrices into packed storage.
                     //
-                    if (Mlsame(&uplo, "U")) {
+                    if (Mlsame(uplo.elems, "U")) {
                         ij = 1;
                         for (j = 1; j <= n; j = j + 1) {
                             for (i = 1; i <= j; i = i + 1) {
@@ -757,12 +718,9 @@ void Cdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                         }
                     }
                     //
-                    Chpgvx(ibtype, "V", "I", &uplo, n, ap, bp, vl, vu, il, iu, abstol, m, d, z, ldz, work, rwork, &iwork[(n + 1) - 1], iwork, info);
+                    Chpgvx(ibtype, "V", "I", uplo.elems, n, ap, bp, vl, vu, il, iu, abstol, m, d, z, ldz, work, rwork, &iwork[(n + 1) - 1], iwork, info);
                     if (iinfo != 0) {
-                        if (Mlsame(&uplo, "U"))
-                            write(nounit, format_9999), "Chpgvx(V,I,U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
-                        else
-                            write(nounit, format_9999), "Chpgvx(V,I,L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                        write(nounit, format_9999), "ZHPGVX(V,I" + uplo + fem::str_cref(")"), iinfo, n, jtype, ioldsd;
                         info = abs(iinfo);
                         if (iinfo < 0) {
                             return;
@@ -774,7 +732,7 @@ void Cdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     //
                     // Do Test
                     //
-                    Csgt01(ibtype, &uplo, n, m, a, lda, b, ldb, z, ldz, d, work, rwork, &result[ntest - 1]);
+                    Csgt01(ibtype, uplo, n, m, a, lda, b, ldb, z, ldz, d, work, rwork, &result[ntest - 1]);
                 //
                 statement_310:
                     //
@@ -786,32 +744,29 @@ void Cdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                         //
                         // Copy the matrices into band storage.
                         //
-                        if (Mlsame(&uplo, "U")) {
+                        if (Mlsame(uplo.elems, "U")) {
                             for (j = 1; j <= n; j = j + 1) {
                                 for (i = max((INTEGER)1, j - ka); i <= j; i = i + 1) {
-                                    ab[((ka + 1 + i - j) - 1) + (j - 1) * ldab] = a[(i - 1) + (j - 1) * lda];
+                                    ab[((ka + 1 + i - j) - 1) + (j - 1) * lda] = a[(i - 1) + (j - 1) * lda];
                                 }
                                 for (i = max((INTEGER)1, j - kb); i <= j; i = i + 1) {
-                                    bb[((kb + 1 + i - j) - 1) + (j - 1) * ldbb] = b[(i - 1) + (j - 1) * ldb];
+                                    bb[((kb + 1 + i - j) - 1) + (j - 1) * ldb] = b[(i - 1) + (j - 1) * ldb];
                                 }
                             }
                         } else {
                             for (j = 1; j <= n; j = j + 1) {
                                 for (i = j; i <= min(n, j + ka); i = i + 1) {
-                                    ab[((1 + i - j) - 1) + (j - 1) * ldab] = a[(i - 1) + (j - 1) * lda];
+                                    ab[((1 + i - j) - 1) + (j - 1) * lda] = a[(i - 1) + (j - 1) * lda];
                                 }
                                 for (i = j; i <= min(n, j + kb); i = i + 1) {
-                                    bb[((1 + i - j) - 1) + (j - 1) * ldbb] = b[(i - 1) + (j - 1) * ldb];
+                                    bb[((1 + i - j) - 1) + (j - 1) * ldb] = b[(i - 1) + (j - 1) * ldb];
                                 }
                             }
                         }
                         //
-                        Chbgv("V", &uplo, n, ka, kb, ab, lda, bb, ldb, d, z, ldz, work, rwork, iinfo);
+                        Chbgv("V", uplo.elems, n, ka, kb, ab, lda, bb, ldb, d, z, ldz, work, rwork, iinfo);
                         if (iinfo != 0) {
-                            if (Mlsame(&uplo, "U"))
-                                write(nounit, format_9999), "Chbgv(V,U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
-                            else
-                                write(nounit, format_9999), "Chbgv(V,L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                            write(nounit, format_9999), "ZHBGV(V," + uplo + fem::str_cref(")"), iinfo, n, jtype, ioldsd;
                             info = abs(iinfo);
                             if (iinfo < 0) {
                                 return;
@@ -823,7 +778,7 @@ void Cdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                         //
                         // Do Test
                         //
-                        Csgt01(ibtype, &uplo, n, n, a, lda, b, ldb, z, ldz, d, work, rwork, &result[ntest - 1]);
+                        Csgt01(ibtype, uplo, n, n, a, lda, b, ldb, z, ldz, d, work, rwork, &result[ntest - 1]);
                         //
                         // TEST Chbgvd
                         //
@@ -831,32 +786,29 @@ void Cdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                         //
                         // Copy the matrices into band storage.
                         //
-                        if (Mlsame(&uplo, "U")) {
+                        if (Mlsame(uplo.elems, "U")) {
                             for (j = 1; j <= n; j = j + 1) {
                                 for (i = max((INTEGER)1, j - ka); i <= j; i = i + 1) {
-                                    ab[((ka + 1 + i - j) - 1) + (j - 1) * ldab] = a[(i - 1) + (j - 1) * lda];
+                                    ab[((ka + 1 + i - j) - 1) + (j - 1) * lda] = a[(i - 1) + (j - 1) * lda];
                                 }
                                 for (i = max((INTEGER)1, j - kb); i <= j; i = i + 1) {
-                                    bb[((kb + 1 + i - j) - 1) + (j - 1) * ldbb] = b[(i - 1) + (j - 1) * ldb];
+                                    bb[((kb + 1 + i - j) - 1) + (j - 1) * ldb] = b[(i - 1) + (j - 1) * ldb];
                                 }
                             }
                         } else {
                             for (j = 1; j <= n; j = j + 1) {
                                 for (i = j; i <= min(n, j + ka); i = i + 1) {
-                                    ab[((1 + i - j) - 1) + (j - 1) * ldab] = a[(i - 1) + (j - 1) * lda];
+                                    ab[((1 + i - j) - 1) + (j - 1) * lda] = a[(i - 1) + (j - 1) * lda];
                                 }
                                 for (i = j; i <= min(n, j + kb); i = i + 1) {
-                                    bb[((1 + i - j) - 1) + (j - 1) * ldbb] = b[(i - 1) + (j - 1) * ldb];
+                                    bb[((1 + i - j) - 1) + (j - 1) * ldb] = b[(i - 1) + (j - 1) * ldb];
                                 }
                             }
                         }
                         //
-                        Chbgvd("V", &uplo, n, ka, kb, ab, lda, bb, ldb, d, z, ldz, work, nwork, rwork, lrwork, iwork, liwork, iinfo);
+                        Chbgvd("V", uplo.elems, n, ka, kb, ab, lda, bb, ldb, d, z, ldz, work, nwork, rwork, lrwork, iwork, liwork, iinfo);
                         if (iinfo != 0) {
-                            if (Mlsame(&uplo, "U"))
-                                write(nounit, format_9999), "Chbgvd(V,U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
-                            else
-                                write(nounit, format_9999), "Chbgvd(V,L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                            write(nounit, format_9999), "ZHBGVD(V," + uplo + fem::str_cref(")"), iinfo, n, jtype, ioldsd;
                             info = abs(iinfo);
                             if (iinfo < 0) {
                                 return;
@@ -868,7 +820,7 @@ void Cdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                         //
                         // Do Test
                         //
-                        Csgt01(ibtype, &uplo, n, n, a, lda, b, ldb, z, ldz, d, work, rwork, &result[ntest - 1]);
+                        Csgt01(ibtype, uplo, n, n, a, lda, b, ldb, z, ldz, d, work, rwork, &result[ntest - 1]);
                         //
                         // Test Chbgvx
                         //
@@ -876,32 +828,29 @@ void Cdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                         //
                         // Copy the matrices into band storage.
                         //
-                        if (Mlsame(&uplo, "U")) {
+                        if (Mlsame(uplo.elems, "U")) {
                             for (j = 1; j <= n; j = j + 1) {
                                 for (i = max((INTEGER)1, j - ka); i <= j; i = i + 1) {
-                                    ab[((ka + 1 + i - j) - 1) + (j - 1) * ldab] = a[(i - 1) + (j - 1) * lda];
+                                    ab[((ka + 1 + i - j) - 1) + (j - 1) * lda] = a[(i - 1) + (j - 1) * lda];
                                 }
                                 for (i = max((INTEGER)1, j - kb); i <= j; i = i + 1) {
-                                    bb[((kb + 1 + i - j) - 1) + (j - 1) * ldbb] = b[(i - 1) + (j - 1) * ldb];
+                                    bb[((kb + 1 + i - j) - 1) + (j - 1) * ldb] = b[(i - 1) + (j - 1) * ldb];
                                 }
                             }
                         } else {
                             for (j = 1; j <= n; j = j + 1) {
                                 for (i = j; i <= min(n, j + ka); i = i + 1) {
-                                    ab[((1 + i - j) - 1) + (j - 1) * ldab] = a[(i - 1) + (j - 1) * lda];
+                                    ab[((1 + i - j) - 1) + (j - 1) * lda] = a[(i - 1) + (j - 1) * lda];
                                 }
                                 for (i = j; i <= min(n, j + kb); i = i + 1) {
-                                    bb[((1 + i - j) - 1) + (j - 1) * ldbb] = b[(i - 1) + (j - 1) * ldb];
+                                    bb[((1 + i - j) - 1) + (j - 1) * ldb] = b[(i - 1) + (j - 1) * ldb];
                                 }
                             }
                         }
                         //
-                        Chbgvx("V", "A", &uplo, n, ka, kb, ab, lda, bb, ldb, bp, max((INTEGER)1, n), vl, vu, il, iu, abstol, m, d, z, ldz, work, rwork, &iwork[(n + 1) - 1], iwork, iinfo);
+                        Chbgvx("V", "A", uplo.elems, n, ka, kb, ab, lda, bb, ldb, bp, max((INTEGER)1, n), vl, vu, il, iu, abstol, m, d, z, ldz, work, rwork, &iwork[(n + 1) - 1], iwork, iinfo);
                         if (iinfo != 0) {
-                            if (Mlsame(&uplo, "U"))
-                                write(nounit, format_9999), "Chbgvx(V,A,U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
-                            else
-                                write(nounit, format_9999), "Chbgvx(V,A,L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                            write(nounit, format_9999), "ZHBGVX(V,A" + uplo + fem::str_cref(")"), iinfo, n, jtype, ioldsd;
                             info = abs(iinfo);
                             if (iinfo < 0) {
                                 return;
@@ -913,40 +862,37 @@ void Cdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                         //
                         // Do Test
                         //
-                        Csgt01(ibtype, &uplo, n, n, a, lda, b, ldb, z, ldz, d, work, rwork, &result[ntest - 1]);
+                        Csgt01(ibtype, uplo, n, n, a, lda, b, ldb, z, ldz, d, work, rwork, &result[ntest - 1]);
                         //
                         ntest++;
                         //
                         // Copy the matrices into band storage.
                         //
-                        if (Mlsame(&uplo, "U")) {
+                        if (Mlsame(uplo.elems, "U")) {
                             for (j = 1; j <= n; j = j + 1) {
                                 for (i = max((INTEGER)1, j - ka); i <= j; i = i + 1) {
-                                    ab[((ka + 1 + i - j) - 1) + (j - 1) * ldab] = a[(i - 1) + (j - 1) * lda];
+                                    ab[((ka + 1 + i - j) - 1) + (j - 1) * lda] = a[(i - 1) + (j - 1) * lda];
                                 }
                                 for (i = max((INTEGER)1, j - kb); i <= j; i = i + 1) {
-                                    bb[((kb + 1 + i - j) - 1) + (j - 1) * ldbb] = b[(i - 1) + (j - 1) * ldb];
+                                    bb[((kb + 1 + i - j) - 1) + (j - 1) * ldb] = b[(i - 1) + (j - 1) * ldb];
                                 }
                             }
                         } else {
                             for (j = 1; j <= n; j = j + 1) {
                                 for (i = j; i <= min(n, j + ka); i = i + 1) {
-                                    ab[((1 + i - j) - 1) + (j - 1) * ldab] = a[(i - 1) + (j - 1) * lda];
+                                    ab[((1 + i - j) - 1) + (j - 1) * lda] = a[(i - 1) + (j - 1) * lda];
                                 }
                                 for (i = j; i <= min(n, j + kb); i = i + 1) {
-                                    bb[((1 + i - j) - 1) + (j - 1) * ldbb] = b[(i - 1) + (j - 1) * ldb];
+                                    bb[((1 + i - j) - 1) + (j - 1) * ldb] = b[(i - 1) + (j - 1) * ldb];
                                 }
                             }
                         }
                         //
                         vl = zero;
                         vu = anorm;
-                        Chbgvx("V", "V", &uplo, n, ka, kb, ab, lda, bb, ldb, bp, max((INTEGER)1, n), vl, vu, il, iu, abstol, m, d, z, ldz, work, rwork, &iwork[(n + 1) - 1], iwork, iinfo);
+                        Chbgvx("V", "V", uplo.elems, n, ka, kb, ab, lda, bb, ldb, bp, max((INTEGER)1, n), vl, vu, il, iu, abstol, m, d, z, ldz, work, rwork, &iwork[(n + 1) - 1], iwork, iinfo);
                         if (iinfo != 0) {
-                            if (Mlsame(&uplo, "U"))
-                                write(nounit, format_9999), "Chbgvx(V,V,U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
-                            else
-                                write(nounit, format_9999), "Chbgvx(V,V,L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                            write(nounit, format_9999), "ZHBGVX(V,V" + uplo + fem::str_cref(")"), iinfo, n, jtype, ioldsd;
                             info = abs(iinfo);
                             if (iinfo < 0) {
                                 return;
@@ -958,38 +904,35 @@ void Cdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                         //
                         // Do Test
                         //
-                        Csgt01(ibtype, &uplo, n, m, a, lda, b, ldb, z, ldz, d, work, rwork, &result[ntest - 1]);
+                        Csgt01(ibtype, uplo, n, m, a, lda, b, ldb, z, ldz, d, work, rwork, &result[ntest - 1]);
                         //
                         ntest++;
                         //
                         // Copy the matrices into band storage.
                         //
-                        if (Mlsame(&uplo, "U")) {
+                        if (Mlsame(uplo.elems, "U")) {
                             for (j = 1; j <= n; j = j + 1) {
                                 for (i = max((INTEGER)1, j - ka); i <= j; i = i + 1) {
-                                    ab[((ka + 1 + i - j) - 1) + (j - 1) * ldab] = a[(i - 1) + (j - 1) * lda];
+                                    ab[((ka + 1 + i - j) - 1) + (j - 1) * lda] = a[(i - 1) + (j - 1) * lda];
                                 }
                                 for (i = max((INTEGER)1, j - kb); i <= j; i = i + 1) {
-                                    bb[((kb + 1 + i - j) - 1) + (j - 1) * ldbb] = b[(i - 1) + (j - 1) * ldb];
+                                    bb[((kb + 1 + i - j) - 1) + (j - 1) * ldb] = b[(i - 1) + (j - 1) * ldb];
                                 }
                             }
                         } else {
                             for (j = 1; j <= n; j = j + 1) {
                                 for (i = j; i <= min(n, j + ka); i = i + 1) {
-                                    ab[((1 + i - j) - 1) + (j - 1) * ldab] = a[(i - 1) + (j - 1) * lda];
+                                    ab[((1 + i - j) - 1) + (j - 1) * lda] = a[(i - 1) + (j - 1) * lda];
                                 }
                                 for (i = j; i <= min(n, j + kb); i = i + 1) {
-                                    bb[((1 + i - j) - 1) + (j - 1) * ldbb] = b[(i - 1) + (j - 1) * ldb];
+                                    bb[((1 + i - j) - 1) + (j - 1) * ldb] = b[(i - 1) + (j - 1) * ldb];
                                 }
                             }
                         }
                         //
-                        Chbgvx("V", "I", &uplo, n, ka, kb, ab, lda, bb, ldb, bp, max((INTEGER)1, n), vl, vu, il, iu, abstol, m, d, z, ldz, work, rwork, &iwork[(n + 1) - 1], iwork, iinfo);
+                        Chbgvx("V", "I", uplo.elems, n, ka, kb, ab, lda, bb, ldb, bp, max((INTEGER)1, n), vl, vu, il, iu, abstol, m, d, z, ldz, work, rwork, &iwork[(n + 1) - 1], iwork, iinfo);
                         if (iinfo != 0) {
-                            if (Mlsame(&uplo, "U"))
-                                write(nounit, format_9999), "Chbgvx(V,I,U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
-                            else
-                                write(nounit, format_9999), "Chbgvx(V,I,L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                            write(nounit, format_9999), "ZHBGVX(V,I" + uplo + fem::str_cref(")"), iinfo, n, jtype, ioldsd;
                             info = abs(iinfo);
                             if (iinfo < 0) {
                                 return;
@@ -1001,7 +944,7 @@ void Cdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                         //
                         // Do Test
                         //
-                        Csgt01(ibtype, &uplo, n, m, a, lda, b, ldb, z, ldz, d, work, rwork, &result[ntest - 1]);
+                        Csgt01(ibtype, uplo, n, m, a, lda, b, ldb, z, ldz, d, work, rwork, &result[ntest - 1]);
                         //
                     }
                 //

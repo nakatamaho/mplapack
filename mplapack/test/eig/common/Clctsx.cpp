@@ -37,19 +37,22 @@
 #include <mplapack.h>
 
 #include <fem.hpp> // Fortran EMulation library of fable module
+using namespace fem::major_types;
+using fem::common;
 
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#include <mplapack_common_mn.h>
-#include <mplapack_debug.h>
-
 bool Clctsx(COMPLEX const /* alpha */, COMPLEX const /* beta */) {
+    common cmn;
     bool return_value = false;
+    int &mplusn = cmn.mplusn;
+    int &i = cmn.i;
+    bool &fs = cmn.fs;
     //
     if (fs) {
         i++;
-        if (i <= m) {
+        if (i <= cmn.m) {
             return_value = false;
         } else {
             return_value = true;
@@ -60,7 +63,7 @@ bool Clctsx(COMPLEX const /* alpha */, COMPLEX const /* beta */) {
         }
     } else {
         i++;
-        if (i <= n) {
+        if (i <= cmn.n) {
             return_value = true;
         } else {
             return_value = false;

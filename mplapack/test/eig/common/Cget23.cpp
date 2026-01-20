@@ -43,13 +43,10 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#include <mplapack_debug.h>
-
-void Cget23(bool const comp, INTEGER const isrt, const char *balanc, INTEGER const jtype, REAL const thresh, INTEGER *iseed, INTEGER const nounit, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *h, COMPLEX *w, COMPLEX *w1, COMPLEX *vl, INTEGER const ldvl, COMPLEX *vr, INTEGER const ldvr, COMPLEX *lre, INTEGER const ldlre, REAL *rcondv, REAL *rcndv1, REAL *rcdvin, REAL *rconde, REAL *rcnde1, REAL *rcdein, REAL *scale, REAL *scale1, REAL *result, COMPLEX *work, INTEGER const lwork, REAL *rwork, INTEGER &info) {
-    INTEGER ldh = lda;
+void Cget23(bool const comp, INTEGER const isrt, fem::str_cref balanc, INTEGER const jtype, REAL const thresh, INTEGER *iseed, INTEGER const nounit, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *h, COMPLEX *w, COMPLEX *w1, COMPLEX *vl, INTEGER const ldvl, COMPLEX *vr, INTEGER const ldvr, COMPLEX *lre, INTEGER const ldlre, REAL *rcondv, REAL *rcndv1, REAL *rcdvin, REAL *rconde, REAL *rcnde1, REAL *rcdein, REAL *scale, REAL *scale1, REAL *result, COMPLEX *work, INTEGER const lwork, REAL *rwork, INTEGER &info) {
     common cmn;
     common_write write(cmn);
-    const char sens[] = {'N', 'V'};
+    static fem::str<1> sens[2] = {"N", "V"};
     bool nobal = false;
     bool balok = false;
     const REAL zero = 0.0;
@@ -58,7 +55,7 @@ void Cget23(bool const comp, INTEGER const isrt, const char *balanc, INTEGER con
     REAL ulp = 0.0;
     REAL smlnum = 0.0;
     REAL ulpinv = 0.0;
-    char sense;
+    fem::str<1> sense;
     INTEGER isensm = 0;
     INTEGER ilo = 0;
     INTEGER ihi = 0;
@@ -81,21 +78,21 @@ void Cget23(bool const comp, INTEGER const isrt, const char *balanc, INTEGER con
     REAL vrimin = 0.0;
     REAL vricmp = 0.0;
     COMPLEX ctmp = 0.0;
-    const REAL epsin = 5.9605e-8;
+    const REAL epsin = 0.000000059605;
     REAL eps = 0.0;
     REAL v = 0.0;
     REAL tol = 0.0;
     REAL tolin = 0.0;
     REAL vmax = 0.0;
-    static const char *format_9998 = "(' Cget23: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,', JTYPE=',i6,"
+    static const char *format_9998 = "(' ZGET23: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,', JTYPE=',i6,"
                                      "', BALANC = ',a,', ISEED=(',3(i5,','),i5,')')";
-    static const char *format_9999 = "(' Cget23: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,"
+    static const char *format_9999 = "(' ZGET23: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,"
                                      "', INPUT EXAMPLE NUMBER = ',i4)";
     //
     // Check for errors
     //
-    nobal = Mlsame(balanc, "N");
-    balok = nobal || Mlsame(balanc, "P") || Mlsame(balanc, "S") || Mlsame(balanc, "B");
+    nobal = Mlsame(balanc.elems(), "N");
+    balok = nobal || Mlsame(balanc.elems(), "P") || Mlsame(balanc.elems(), "S") || Mlsame(balanc.elems(), "B");
     info = 0;
     if (isrt != 0 && isrt != 1) {
         info = -2;
@@ -143,20 +140,20 @@ void Cget23(bool const comp, INTEGER const isrt, const char *balanc, INTEGER con
     // Compute eigenvalues and eigenvectors, and test them
     //
     if (lwork >= 2 * n + n * n) {
-        sense = 'B';
+        sense = "B";
         isensm = 2;
     } else {
-        sense = 'E';
+        sense = "E";
         isensm = 1;
     }
     Clacpy("F", n, n, a, lda, h, lda);
-    Cgeevx(balanc, "V", "V", &sense, n, h, lda, w, vl, ldvl, vr, ldvr, ilo, ihi, scale, abnrm, rconde, rcondv, work, lwork, rwork, iinfo);
+    Cgeevx(balanc.elems(), "V", "V", sense.elems, n, h, lda, w, vl, ldvl, vr, ldvr, ilo, ihi, scale, abnrm, rconde, rcondv, work, lwork, rwork, iinfo);
     if (iinfo != 0) {
         result[1 - 1] = ulpinv;
         if (jtype != 22) {
-            write(nounit, format_9998), "Cgeevx1", iinfo, n, jtype, balanc, iseed;
+            write(nounit, format_9998), "ZGEEVX1", iinfo, n, jtype, balanc, iseed;
         } else {
-            write(nounit, format_9999), "Cgeevx1", iinfo, n, iseed[1 - 1];
+            write(nounit, format_9999), "ZGEEVX1", iinfo, n, iseed[1 - 1];
         }
         info = abs(iinfo);
         return;
@@ -176,7 +173,7 @@ void Cget23(bool const comp, INTEGER const isrt, const char *balanc, INTEGER con
     //
     for (j = 1; j <= n; j = j + 1) {
         tnrm = RCnrm2(n, &vr[(j - 1) * ldvr], 1);
-        result[3 - 1] = max({result[3 - 1], min(ulpinv, REAL(abs(tnrm - one) / ulp))});
+        result[3 - 1] = max(result[3 - 1], min(ulpinv, abs(tnrm - one) / ulp));
         vmx = zero;
         vrmx = zero;
         for (jj = 1; jj <= n; jj = jj + 1) {
@@ -197,7 +194,7 @@ void Cget23(bool const comp, INTEGER const isrt, const char *balanc, INTEGER con
     //
     for (j = 1; j <= n; j = j + 1) {
         tnrm = RCnrm2(n, &vl[(j - 1) * ldvl], 1);
-        result[4 - 1] = max(result[4 - 1], min(ulpinv, REAL(abs(tnrm - one) / ulp)));
+        result[4 - 1] = max(result[4 - 1], min(ulpinv, abs(tnrm - one) / ulp));
         vmx = zero;
         vrmx = zero;
         for (jj = 1; jj <= n; jj = jj + 1) {
@@ -223,13 +220,13 @@ void Cget23(bool const comp, INTEGER const isrt, const char *balanc, INTEGER con
         // Compute eigenvalues only, and test them
         //
         Clacpy("F", n, n, a, lda, h, lda);
-        Cgeevx(balanc, "N", "N", &sense, n, h, lda, w1, cdum, 1, cdum, 1, ilo1, ihi1, scale1, abnrm1, rcnde1, rcndv1, work, lwork, rwork, iinfo);
+        Cgeevx(balanc.elems(), "N", "N", sense.elems, n, h, lda, w1, cdum, 1, cdum, 1, ilo1, ihi1, scale1, abnrm1, rcnde1, rcndv1, work, lwork, rwork, iinfo);
         if (iinfo != 0) {
             result[1 - 1] = ulpinv;
             if (jtype != 22) {
-                write(nounit, format_9998), "Cgeevx2", iinfo, n, jtype, balanc, iseed;
+                write(nounit, format_9998), "ZGEEVX2", iinfo, n, jtype, balanc, iseed;
             } else {
-                write(nounit, format_9999), "Cgeevx2", iinfo, n, iseed[1 - 1];
+                write(nounit, format_9999), "ZGEEVX2", iinfo, n, iseed[1 - 1];
             }
             info = abs(iinfo);
             goto statement_190;
@@ -275,13 +272,13 @@ void Cget23(bool const comp, INTEGER const isrt, const char *balanc, INTEGER con
         // Compute eigenvalues and right eigenvectors, and test them
         //
         Clacpy("F", n, n, a, lda, h, lda);
-        Cgeevx(balanc, "N", "V", &sense, n, h, lda, w1, cdum, 1, lre, ldlre, ilo1, ihi1, scale1, abnrm1, rcnde1, rcndv1, work, lwork, rwork, iinfo);
+        Cgeevx(balanc.elems(), "N", "V", sense.elems, n, h, lda, w1, cdum, 1, lre, ldlre, ilo1, ihi1, scale1, abnrm1, rcnde1, rcndv1, work, lwork, rwork, iinfo);
         if (iinfo != 0) {
             result[1 - 1] = ulpinv;
             if (jtype != 22) {
-                write(nounit, format_9998), "Cgeevx3", iinfo, n, jtype, balanc, iseed;
+                write(nounit, format_9998), "ZGEEVX3", iinfo, n, jtype, balanc, iseed;
             } else {
-                write(nounit, format_9999), "Cgeevx3", iinfo, n, iseed[1 - 1];
+                write(nounit, format_9999), "ZGEEVX3", iinfo, n, iseed[1 - 1];
             }
             info = abs(iinfo);
             goto statement_190;
@@ -337,13 +334,13 @@ void Cget23(bool const comp, INTEGER const isrt, const char *balanc, INTEGER con
         // Compute eigenvalues and left eigenvectors, and test them
         //
         Clacpy("F", n, n, a, lda, h, lda);
-        Cgeevx(balanc, "V", "N", &sense, n, h, lda, w1, lre, ldlre, cdum, 1, ilo1, ihi1, scale1, abnrm1, rcnde1, rcndv1, work, lwork, rwork, iinfo);
+        Cgeevx(balanc.elems(), "V", "N", sense.elems, n, h, lda, w1, lre, ldlre, cdum, 1, ilo1, ihi1, scale1, abnrm1, rcnde1, rcndv1, work, lwork, rwork, iinfo);
         if (iinfo != 0) {
             result[1 - 1] = ulpinv;
             if (jtype != 22) {
-                write(nounit, format_9998), "Cgeevx4", iinfo, n, jtype, balanc, iseed;
+                write(nounit, format_9998), "ZGEEVX4", iinfo, n, jtype, balanc, iseed;
             } else {
-                write(nounit, format_9999), "Cgeevx4", iinfo, n, iseed[1 - 1];
+                write(nounit, format_9999), "ZGEEVX4", iinfo, n, iseed[1 - 1];
             }
             info = abs(iinfo);
             goto statement_190;
@@ -407,7 +404,7 @@ void Cget23(bool const comp, INTEGER const isrt, const char *balanc, INTEGER con
         Cgeevx("N", "V", "V", "B", n, h, lda, w, vl, ldvl, vr, ldvr, ilo, ihi, scale, abnrm, rconde, rcondv, work, lwork, rwork, iinfo);
         if (iinfo != 0) {
             result[1 - 1] = ulpinv;
-            write(nounit, format_9999), "Cgeevx5", iinfo, n, iseed[1 - 1];
+            write(nounit, format_9999), "ZGEEVX5", iinfo, n, iseed[1 - 1];
             info = abs(iinfo);
             goto statement_250;
         }
@@ -449,7 +446,7 @@ void Cget23(bool const comp, INTEGER const isrt, const char *balanc, INTEGER con
         //
         result[10 - 1] = zero;
         eps = max(epsin, ulp);
-        v = max(REAL(castREAL(n) * eps * abnrm), smlnum);
+        v = max(castREAL(n) * eps * abnrm, smlnum);
         if (abnrm == zero) {
             v = one;
         }
@@ -464,8 +461,8 @@ void Cget23(bool const comp, INTEGER const isrt, const char *balanc, INTEGER con
             } else {
                 tolin = v / rcdein[i - 1];
             }
-            tol = max(tol, REAL(smlnum / eps));
-            tolin = max(tolin, REAL(smlnum / eps));
+            tol = max(tol, smlnum / eps);
+            tolin = max(tolin, smlnum / eps);
             if (eps * (rcdvin[i - 1] - tolin) > rcondv[i - 1] + tol) {
                 vmax = one / eps;
             } else if (rcdvin[i - 1] - tolin > rcondv[i - 1] + tol) {
@@ -495,8 +492,8 @@ void Cget23(bool const comp, INTEGER const isrt, const char *balanc, INTEGER con
             } else {
                 tolin = v / rcdvin[i - 1];
             }
-            tol = max(tol, REAL(smlnum / eps));
-            tolin = max(tolin, REAL(smlnum / eps));
+            tol = max(tol, smlnum / eps);
+            tolin = max(tolin, smlnum / eps);
             if (eps * (rcdein[i - 1] - tolin) > rconde[i - 1] + tol) {
                 vmax = one / eps;
             } else if (rcdein[i - 1] - tolin > rconde[i - 1] + tol) {

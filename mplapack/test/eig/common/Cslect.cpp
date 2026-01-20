@@ -53,12 +53,12 @@ bool Cslect(COMPLEX const z) {
     REAL rmin = 0.0;
     INTEGER i = 0;
     REAL x = 0.0;
-    if (selopt == 0) {
+    if (cmn.selopt == 0) {
         return_value = (z.real() < zero);
     } else {
         rmin = abs(z - COMPLEX(selwr[1 - 1], selwi[1 - 1]));
         return_value = selval[1 - 1];
-        for (i = 2; i <= seldim; i = i + 1) {
+        for (i = 2; i <= cmn.seldim; i = i + 1) {
             x = abs(z - COMPLEX(selwr[i - 1], selwi[i - 1]));
             if (x <= rmin) {
                 rmin = x;

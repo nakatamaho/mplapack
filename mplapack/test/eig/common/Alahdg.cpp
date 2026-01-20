@@ -43,9 +43,7 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#include <mplapack_debug.h>
-
-void Alahdg(INTEGER const iounit, const char *path) {
+void Alahdg(INTEGER const iounit, fem::str_cref path) {
     common cmn;
     common_write write(cmn);
     static const char *format_9932 = "(3x,i2,': norm( I - Q''*Q )   / ( N * EPS )')";
@@ -66,30 +64,27 @@ void Alahdg(INTEGER const iounit, const char *path) {
     if (iounit <= 0) {
         return;
     }
-    char c2[3];
-    c2[0] = path[0];
-    c2[1] = path[1];
-    c2[2] = path[2];
+    fem::str<3> c2 = path(1, 3);
     //
-    //     First line describing matrices in this path
+    // First line describing matrices in this path
     //
     INTEGER itype = 0;
-    if (Mlsamen(3, c2, "GQR")) {
+    if (Mlsamen(3, c2.elems, "GQR")) {
         itype = 1;
         write(iounit, "(/,1x,a3,': GQR factorization of general matrices')"), path;
-    } else if (Mlsamen(3, c2, "GRQ")) {
+    } else if (Mlsamen(3, c2.elems, "GRQ")) {
         itype = 2;
         write(iounit, "(/,1x,a3,': GRQ factorization of general matrices')"), path;
-    } else if (Mlsamen(3, c2, "LSE")) {
+    } else if (Mlsamen(3, c2.elems, "LSE")) {
         itype = 3;
         write(iounit, "(/,1x,a3,': LSE Problem')"), path;
-    } else if (Mlsamen(3, c2, "GLM")) {
+    } else if (Mlsamen(3, c2.elems, "GLM")) {
         itype = 4;
         write(iounit, "(/,1x,a3,': GLM Problem')"), path;
-    } else if (Mlsamen(3, c2, "GSV")) {
+    } else if (Mlsamen(3, c2.elems, "GSV")) {
         itype = 5;
         write(iounit, "(/,1x,a3,': Generalized Singular Value Decomposition')"), path;
-    } else if (Mlsamen(3, c2, "CSD")) {
+    } else if (Mlsamen(3, c2.elems, "CSD")) {
         itype = 6;
         write(iounit, "(/,1x,a3,': CS Decomposition')"), path;
     }

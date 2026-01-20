@@ -42,12 +42,10 @@ using fem::common;
 
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
-#include <mplapack_debug.h>
 
-void Rerrec(const char *path, INTEGER const nunit) {
+void Rerrec(fem::str_cref path, INTEGER const nunit) {
     common cmn;
     common_write write(cmn);
-    //
     //
     nout = nunit;
     ok = true;
@@ -61,164 +59,162 @@ void Rerrec(const char *path, INTEGER const nunit) {
     const REAL zero = 0.0;
     REAL a[nmax * nmax];
     REAL b[nmax * nmax];
-    INTEGER lda = nmax;
-    INTEGER ldb = nmax;
     for (j = 1; j <= nmax; j = j + 1) {
         for (i = 1; i <= nmax; i = i + 1) {
-            a[(i - 1) + (j - 1) * lda] = zero;
-            b[(i - 1) + (j - 1) * ldb] = zero;
+            a[(i - 1) + (j - 1) * nmax] = zero;
+            b[(i - 1) + (j - 1) * nmax] = zero;
         }
     }
     const REAL one = 1.0;
     bool sel[nmax];
     for (i = 1; i <= nmax; i = i + 1) {
-        a[(i - 1) + (i - 1) * lda] = one;
+        a[(i - 1) + (i - 1) * nmax] = one;
         sel[i - 1] = true;
     }
     //
-    //     Test Rtrsyl
+    // Test Rtrsyl
     //
+    srnamt = "DTRSYL";
     infot = 1;
     REAL c[nmax * nmax];
     REAL scale = 0.0;
     INTEGER info = 0;
-    strncpy(srnamt, "Rtrsyl", srnamt_len);
     Rtrsyl("X", "N", 1, 0, 0, a, 1, b, 1, c, 1, scale, info);
-    chkxer("Rtrsyl", infot, nout, lerr, ok);
+    Chkxer("DTRSYL", infot, nout, lerr, ok);
     infot = 2;
     Rtrsyl("N", "X", 1, 0, 0, a, 1, b, 1, c, 1, scale, info);
-    chkxer("Rtrsyl", infot, nout, lerr, ok);
+    Chkxer("DTRSYL", infot, nout, lerr, ok);
     infot = 3;
     Rtrsyl("N", "N", 0, 0, 0, a, 1, b, 1, c, 1, scale, info);
-    chkxer("Rtrsyl", infot, nout, lerr, ok);
+    Chkxer("DTRSYL", infot, nout, lerr, ok);
     infot = 4;
     Rtrsyl("N", "N", 1, -1, 0, a, 1, b, 1, c, 1, scale, info);
-    chkxer("Rtrsyl", infot, nout, lerr, ok);
+    Chkxer("DTRSYL", infot, nout, lerr, ok);
     infot = 5;
     Rtrsyl("N", "N", 1, 0, -1, a, 1, b, 1, c, 1, scale, info);
-    chkxer("Rtrsyl", infot, nout, lerr, ok);
+    Chkxer("DTRSYL", infot, nout, lerr, ok);
     infot = 7;
     Rtrsyl("N", "N", 1, 2, 0, a, 1, b, 1, c, 2, scale, info);
-    chkxer("Rtrsyl", infot, nout, lerr, ok);
+    Chkxer("DTRSYL", infot, nout, lerr, ok);
     infot = 9;
     Rtrsyl("N", "N", 1, 0, 2, a, 1, b, 1, c, 1, scale, info);
-    chkxer("Rtrsyl", infot, nout, lerr, ok);
+    Chkxer("DTRSYL", infot, nout, lerr, ok);
     infot = 11;
     Rtrsyl("N", "N", 1, 2, 0, a, 2, b, 1, c, 1, scale, info);
-    chkxer("Rtrsyl", infot, nout, lerr, ok);
+    Chkxer("DTRSYL", infot, nout, lerr, ok);
     nt += 8;
     //
-    //     Test Rtrexc
+    // Test Rtrexc
     //
+    srnamt = "DTREXC";
     INTEGER ifst = 1;
     INTEGER ilst = 1;
     infot = 1;
     REAL work[nmax];
-    strncpy(srnamt, "Rtrexc", srnamt_len);
     Rtrexc("X", 1, a, 1, b, 1, ifst, ilst, work, info);
-    chkxer("Rtrexc", infot, nout, lerr, ok);
+    Chkxer("DTREXC", infot, nout, lerr, ok);
     infot = 2;
     Rtrexc("N", -1, a, 1, b, 1, ifst, ilst, work, info);
-    chkxer("Rtrexc", infot, nout, lerr, ok);
+    Chkxer("DTREXC", infot, nout, lerr, ok);
     infot = 4;
     ilst = 2;
     Rtrexc("N", 2, a, 1, b, 1, ifst, ilst, work, info);
-    chkxer("Rtrexc", infot, nout, lerr, ok);
+    Chkxer("DTREXC", infot, nout, lerr, ok);
     infot = 6;
     Rtrexc("V", 2, a, 2, b, 1, ifst, ilst, work, info);
-    chkxer("Rtrexc", infot, nout, lerr, ok);
+    Chkxer("DTREXC", infot, nout, lerr, ok);
     infot = 7;
     ifst = 0;
     ilst = 1;
     Rtrexc("V", 1, a, 1, b, 1, ifst, ilst, work, info);
-    chkxer("Rtrexc", infot, nout, lerr, ok);
+    Chkxer("DTREXC", infot, nout, lerr, ok);
     infot = 7;
     ifst = 2;
     Rtrexc("V", 1, a, 1, b, 1, ifst, ilst, work, info);
-    chkxer("Rtrexc", infot, nout, lerr, ok);
+    Chkxer("DTREXC", infot, nout, lerr, ok);
     infot = 8;
     ifst = 1;
     ilst = 0;
     Rtrexc("V", 1, a, 1, b, 1, ifst, ilst, work, info);
-    chkxer("Rtrexc", infot, nout, lerr, ok);
+    Chkxer("DTREXC", infot, nout, lerr, ok);
     infot = 8;
     ilst = 2;
     Rtrexc("V", 1, a, 1, b, 1, ifst, ilst, work, info);
-    chkxer("Rtrexc", infot, nout, lerr, ok);
+    Chkxer("DTREXC", infot, nout, lerr, ok);
     nt += 8;
     //
-    //     Test Rtrsna
+    // Test Rtrsna
     //
+    srnamt = "DTRSNA";
     infot = 1;
     REAL s[nmax];
     REAL sep[nmax];
     INTEGER m = 0;
     INTEGER iwork[nmax];
-    strncpy(srnamt, "Rtrsna", srnamt_len);
     Rtrsna("X", "A", sel, 0, a, 1, b, 1, c, 1, s, sep, 1, m, work, 1, iwork, info);
-    chkxer("Rtrsna", infot, nout, lerr, ok);
+    Chkxer("DTRSNA", infot, nout, lerr, ok);
     infot = 2;
     Rtrsna("B", "X", sel, 0, a, 1, b, 1, c, 1, s, sep, 1, m, work, 1, iwork, info);
-    chkxer("Rtrsna", infot, nout, lerr, ok);
+    Chkxer("DTRSNA", infot, nout, lerr, ok);
     infot = 4;
     Rtrsna("B", "A", sel, -1, a, 1, b, 1, c, 1, s, sep, 1, m, work, 1, iwork, info);
-    chkxer("Rtrsna", infot, nout, lerr, ok);
+    Chkxer("DTRSNA", infot, nout, lerr, ok);
     infot = 6;
     Rtrsna("V", "A", sel, 2, a, 1, b, 1, c, 1, s, sep, 2, m, work, 2, iwork, info);
-    chkxer("Rtrsna", infot, nout, lerr, ok);
+    Chkxer("DTRSNA", infot, nout, lerr, ok);
     infot = 8;
     Rtrsna("B", "A", sel, 2, a, 2, b, 1, c, 2, s, sep, 2, m, work, 2, iwork, info);
-    chkxer("Rtrsna", infot, nout, lerr, ok);
+    Chkxer("DTRSNA", infot, nout, lerr, ok);
     infot = 10;
     Rtrsna("B", "A", sel, 2, a, 2, b, 2, c, 1, s, sep, 2, m, work, 2, iwork, info);
-    chkxer("Rtrsna", infot, nout, lerr, ok);
+    Chkxer("DTRSNA", infot, nout, lerr, ok);
     infot = 13;
     Rtrsna("B", "A", sel, 1, a, 1, b, 1, c, 1, s, sep, 0, m, work, 1, iwork, info);
-    chkxer("Rtrsna", infot, nout, lerr, ok);
+    Chkxer("DTRSNA", infot, nout, lerr, ok);
     infot = 13;
     Rtrsna("B", "S", sel, 2, a, 2, b, 2, c, 2, s, sep, 1, m, work, 2, iwork, info);
-    chkxer("Rtrsna", infot, nout, lerr, ok);
+    Chkxer("DTRSNA", infot, nout, lerr, ok);
     infot = 16;
     Rtrsna("B", "A", sel, 2, a, 2, b, 2, c, 2, s, sep, 2, m, work, 1, iwork, info);
-    chkxer("Rtrsna", infot, nout, lerr, ok);
+    Chkxer("DTRSNA", infot, nout, lerr, ok);
     nt += 9;
     //
-    //     Test Rtrsen
+    // Test Rtrsen
     //
     sel[1 - 1] = false;
+    srnamt = "DTRSEN";
     infot = 1;
     REAL wr[nmax];
     REAL wi[nmax];
-    strncpy(srnamt, "Rtrsen", srnamt_len);
     Rtrsen("X", "N", sel, 0, a, 1, b, 1, wr, wi, m, s[1 - 1], sep[1 - 1], work, 1, iwork, 1, info);
-    chkxer("Rtrsen", infot, nout, lerr, ok);
+    Chkxer("DTRSEN", infot, nout, lerr, ok);
     infot = 2;
     Rtrsen("N", "X", sel, 0, a, 1, b, 1, wr, wi, m, s[1 - 1], sep[1 - 1], work, 1, iwork, 1, info);
-    chkxer("Rtrsen", infot, nout, lerr, ok);
+    Chkxer("DTRSEN", infot, nout, lerr, ok);
     infot = 4;
     Rtrsen("N", "N", sel, -1, a, 1, b, 1, wr, wi, m, s[1 - 1], sep[1 - 1], work, 1, iwork, 1, info);
-    chkxer("Rtrsen", infot, nout, lerr, ok);
+    Chkxer("DTRSEN", infot, nout, lerr, ok);
     infot = 6;
     Rtrsen("N", "N", sel, 2, a, 1, b, 1, wr, wi, m, s[1 - 1], sep[1 - 1], work, 2, iwork, 1, info);
-    chkxer("Rtrsen", infot, nout, lerr, ok);
+    Chkxer("DTRSEN", infot, nout, lerr, ok);
     infot = 8;
     Rtrsen("N", "V", sel, 2, a, 2, b, 1, wr, wi, m, s[1 - 1], sep[1 - 1], work, 1, iwork, 1, info);
-    chkxer("Rtrsen", infot, nout, lerr, ok);
+    Chkxer("DTRSEN", infot, nout, lerr, ok);
     infot = 15;
     Rtrsen("N", "V", sel, 2, a, 2, b, 2, wr, wi, m, s[1 - 1], sep[1 - 1], work, 0, iwork, 1, info);
-    chkxer("Rtrsen", infot, nout, lerr, ok);
+    Chkxer("DTRSEN", infot, nout, lerr, ok);
     infot = 15;
     Rtrsen("E", "V", sel, 3, a, 3, b, 3, wr, wi, m, s[1 - 1], sep[1 - 1], work, 1, iwork, 1, info);
-    chkxer("Rtrsen", infot, nout, lerr, ok);
+    Chkxer("DTRSEN", infot, nout, lerr, ok);
     infot = 15;
     Rtrsen("V", "V", sel, 3, a, 3, b, 3, wr, wi, m, s[1 - 1], sep[1 - 1], work, 3, iwork, 2, info);
-    chkxer("Rtrsen", infot, nout, lerr, ok);
+    Chkxer("DTRSEN", infot, nout, lerr, ok);
     infot = 17;
     Rtrsen("E", "V", sel, 2, a, 2, b, 2, wr, wi, m, s[1 - 1], sep[1 - 1], work, 1, iwork, 0, info);
-    chkxer("Rtrsen", infot, nout, lerr, ok);
+    Chkxer("DTRSEN", infot, nout, lerr, ok);
     infot = 17;
     Rtrsen("V", "V", sel, 3, a, 3, b, 3, wr, wi, m, s[1 - 1], sep[1 - 1], work, 4, iwork, 1, info);
-    chkxer("Rtrsen", infot, nout, lerr, ok);
+    Chkxer("DTRSEN", infot, nout, lerr, ok);
     nt += 10;
     //
     // Print a summary line.

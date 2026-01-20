@@ -43,9 +43,7 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#include <mplapack_debug.h>
-
-void Rlahd2(INTEGER const iounit, const char *path) {
+void Rlahd2(INTEGER const iounit, fem::str_cref path) {
     common cmn;
     common_write write(cmn);
     static const char *format_9969 = "(/,' Test ratios:  ','(B: upper bidiagonal, Q and P: ',a10,/,16x,"
@@ -190,16 +188,15 @@ void Rlahd2(INTEGER const iounit, const char *path) {
     if (iounit <= 0) {
         return;
     }
-    bool sord = Mlsame(path, "R") || Mlsame(path, "D");
-    bool corz = Mlsame(path, "C") || Mlsame(path, "Z");
+    bool sord = Mlsame(path.elems(), "S") || Mlsame(path.elems(), "D");
+    bool corz = Mlsame(path.elems(), "C") || Mlsame(path.elems(), "Z");
     if (!sord && !corz) {
         write(iounit, format_9999), path;
     }
-    char c2[2];
-    c2[0] = path[1];
-    c2[1] = path[2];
+    fem::str<2> c2 = path(2, 3);
+    //
     INTEGER j = 0;
-    if (Mlsamen(2, c2, "HS")) {
+    if (Mlsamen(2, c2.elems, "HS")) {
         if (sord) {
             //
             // Real Non-symmetric Eigenvalue Problem:
@@ -247,7 +244,7 @@ void Rlahd2(INTEGER const iounit, const char *path) {
             }
         }
         //
-    } else if (Mlsamen(2, c2, "ST")) {
+    } else if (Mlsamen(2, c2.elems, "ST")) {
         //
         if (sord) {
             //
@@ -282,7 +279,7 @@ void Rlahd2(INTEGER const iounit, const char *path) {
             write(iounit, "(/,' Tests performed:  See cdrvst.f')");
         }
         //
-    } else if (Mlsamen(2, c2, "SG")) {
+    } else if (Mlsamen(2, c2.elems, "SG")) {
         //
         if (sord) {
             //
@@ -302,33 +299,33 @@ void Rlahd2(INTEGER const iounit, const char *path) {
                           "'( For each pair (A,B), where A is of the given type ',/,"
                           "' and B is a random well-conditioned matrix. D is ',/,"
                           "' diagonal, and Z is orthogonal. )',/,"
-                          "' 1 = Rsygv, with ITYPE=1 and UPLO=''U'':',"
+                          "' 1 = DSYGV, with ITYPE=1 and UPLO=''U'':',"
                           "'  | A Z - B Z D | / ( |A| |Z| n ulp )     ',/,"
-                          "' 2 = Rspgv, with ITYPE=1 and UPLO=''U'':',"
+                          "' 2 = DSPGV, with ITYPE=1 and UPLO=''U'':',"
                           "'  | A Z - B Z D | / ( |A| |Z| n ulp )     ',/,"
-                          "' 3 = Rsbgv, with ITYPE=1 and UPLO=''U'':',"
+                          "' 3 = DSBGV, with ITYPE=1 and UPLO=''U'':',"
                           "'  | A Z - B Z D | / ( |A| |Z| n ulp )     ',/,"
-                          "' 4 = Rsygv, with ITYPE=1 and UPLO=''L'':',"
+                          "' 4 = DSYGV, with ITYPE=1 and UPLO=''L'':',"
                           "'  | A Z - B Z D | / ( |A| |Z| n ulp )     ',/,"
-                          "' 5 = Rspgv, with ITYPE=1 and UPLO=''L'':',"
+                          "' 5 = DSPGV, with ITYPE=1 and UPLO=''L'':',"
                           "'  | A Z - B Z D | / ( |A| |Z| n ulp )     ',/,"
-                          "' 6 = Rsbgv, with ITYPE=1 and UPLO=''L'':',"
+                          "' 6 = DSBGV, with ITYPE=1 and UPLO=''L'':',"
                           "'  | A Z - B Z D | / ( |A| |Z| n ulp )     ')");
-            write(iounit, "(' 7 = Rsygv, with ITYPE=2 and UPLO=''U'':',"
+            write(iounit, "(' 7 = DSYGV, with ITYPE=2 and UPLO=''U'':',"
                           "'  | A B Z - Z D | / ( |A| |Z| n ulp )     ',/,"
-                          "' 8 = Rspgv, with ITYPE=2 and UPLO=''U'':',"
+                          "' 8 = DSPGV, with ITYPE=2 and UPLO=''U'':',"
                           "'  | A B Z - Z D | / ( |A| |Z| n ulp )     ',/,"
-                          "' 9 = Rspgv, with ITYPE=2 and UPLO=''L'':',"
+                          "' 9 = DSPGV, with ITYPE=2 and UPLO=''L'':',"
                           "'  | A B Z - Z D | / ( |A| |Z| n ulp )     ',/,"
-                          "'10 = Rspgv, with ITYPE=2 and UPLO=''L'':',"
+                          "'10 = DSPGV, with ITYPE=2 and UPLO=''L'':',"
                           "'  | A B Z - Z D | / ( |A| |Z| n ulp )     ',/,"
-                          "'11 = Rsygv, with ITYPE=3 and UPLO=''U'':',"
+                          "'11 = DSYGV, with ITYPE=3 and UPLO=''U'':',"
                           "'  | B A Z - Z D | / ( |A| |Z| n ulp )     ',/,"
-                          "'12 = Rspgv, with ITYPE=3 and UPLO=''U'':',"
+                          "'12 = DSPGV, with ITYPE=3 and UPLO=''U'':',"
                           "'  | B A Z - Z D | / ( |A| |Z| n ulp )     ',/,"
-                          "'13 = Rsygv, with ITYPE=3 and UPLO=''L'':',"
+                          "'13 = DSYGV, with ITYPE=3 and UPLO=''L'':',"
                           "'  | B A Z - Z D | / ( |A| |Z| n ulp )     ',/,"
-                          "'14 = Rspgv, with ITYPE=3 and UPLO=''L'':',"
+                          "'14 = DSPGV, with ITYPE=3 and UPLO=''L'':',"
                           "'  | B A Z - Z D | / ( |A| |Z| n ulp )     ')");
             //
         } else {
@@ -349,38 +346,38 @@ void Rlahd2(INTEGER const iounit, const char *path) {
                           "'( For each pair (A,B), where A is of the given type ',/,"
                           "' and B is a random well-conditioned matrix. D is ',/,"
                           "' diagonal, and Z is unitary. )',/,"
-                          "' 1 = Chegv, with ITYPE=1 and UPLO=''U'':',"
+                          "' 1 = ZHEGV, with ITYPE=1 and UPLO=''U'':',"
                           "'  | A Z - B Z D | / ( |A| |Z| n ulp )     ',/,"
-                          "' 2 = Chpgv, with ITYPE=1 and UPLO=''U'':',"
+                          "' 2 = ZHPGV, with ITYPE=1 and UPLO=''U'':',"
                           "'  | A Z - B Z D | / ( |A| |Z| n ulp )     ',/,"
-                          "' 3 = Chbgv, with ITYPE=1 and UPLO=''U'':',"
+                          "' 3 = ZHBGV, with ITYPE=1 and UPLO=''U'':',"
                           "'  | A Z - B Z D | / ( |A| |Z| n ulp )     ',/,"
-                          "' 4 = Chegv, with ITYPE=1 and UPLO=''L'':',"
+                          "' 4 = ZHEGV, with ITYPE=1 and UPLO=''L'':',"
                           "'  | A Z - B Z D | / ( |A| |Z| n ulp )     ',/,"
-                          "' 5 = Chpgv, with ITYPE=1 and UPLO=''L'':',"
+                          "' 5 = ZHPGV, with ITYPE=1 and UPLO=''L'':',"
                           "'  | A Z - B Z D | / ( |A| |Z| n ulp )     ',/,"
-                          "' 6 = Chbgv, with ITYPE=1 and UPLO=''L'':',"
+                          "' 6 = ZHBGV, with ITYPE=1 and UPLO=''L'':',"
                           "'  | A Z - B Z D | / ( |A| |Z| n ulp )     ')");
-            write(iounit, "(' 7 = Chegv, with ITYPE=2 and UPLO=''U'':',"
+            write(iounit, "(' 7 = ZHEGV, with ITYPE=2 and UPLO=''U'':',"
                           "'  | A B Z - Z D | / ( |A| |Z| n ulp )     ',/,"
-                          "' 8 = Chpgv, with ITYPE=2 and UPLO=''U'':',"
+                          "' 8 = ZHPGV, with ITYPE=2 and UPLO=''U'':',"
                           "'  | A B Z - Z D | / ( |A| |Z| n ulp )     ',/,"
-                          "' 9 = Chpgv, with ITYPE=2 and UPLO=''L'':',"
+                          "' 9 = ZHPGV, with ITYPE=2 and UPLO=''L'':',"
                           "'  | A B Z - Z D | / ( |A| |Z| n ulp )     ',/,"
-                          "'10 = Chpgv, with ITYPE=2 and UPLO=''L'':',"
+                          "'10 = ZHPGV, with ITYPE=2 and UPLO=''L'':',"
                           "'  | A B Z - Z D | / ( |A| |Z| n ulp )     ',/,"
-                          "'11 = Chegv, with ITYPE=3 and UPLO=''U'':',"
+                          "'11 = ZHEGV, with ITYPE=3 and UPLO=''U'':',"
                           "'  | B A Z - Z D | / ( |A| |Z| n ulp )     ',/,"
-                          "'12 = Chpgv, with ITYPE=3 and UPLO=''U'':',"
+                          "'12 = ZHPGV, with ITYPE=3 and UPLO=''U'':',"
                           "'  | B A Z - Z D | / ( |A| |Z| n ulp )     ',/,"
-                          "'13 = Chegv, with ITYPE=3 and UPLO=''L'':',"
+                          "'13 = ZHEGV, with ITYPE=3 and UPLO=''L'':',"
                           "'  | B A Z - Z D | / ( |A| |Z| n ulp )     ',/,"
-                          "'14 = Chpgv, with ITYPE=3 and UPLO=''L'':',"
+                          "'14 = ZHPGV, with ITYPE=3 and UPLO=''L'':',"
                           "'  | B A Z - Z D | / ( |A| |Z| n ulp )     ')");
             //
         }
         //
-    } else if (Mlsamen(2, c2, "BD")) {
+    } else if (Mlsamen(2, c2.elems, "BD")) {
         //
         if (sord) {
             //
@@ -412,7 +409,7 @@ void Rlahd2(INTEGER const iounit, const char *path) {
             write(iounit, format_9971);
         }
         //
-    } else if (Mlsamen(2, c2, "BB")) {
+    } else if (Mlsamen(2, c2.elems, "BB")) {
         //
         if (sord) {
             //

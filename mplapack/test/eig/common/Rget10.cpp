@@ -43,8 +43,6 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#include <mplapack_debug.h>
-
 void Rget10(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL *work, REAL &result) {
     //
     // Quick return if possible
@@ -64,18 +62,18 @@ void Rget10(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *
     for (j = 1; j <= n; j = j + 1) {
         Rcopy(m, &a[(j - 1) * lda], 1, work, 1);
         Raxpy(m, -one, &b[(j - 1) * ldb], 1, work, 1);
-        wnorm = max({wnorm, Rasum(n, work, 1)});
+        wnorm = max(wnorm, Rasum(n, work, 1));
     }
     //
-    REAL anorm = max({Rlange("1", m, n, a, lda, work), unfl});
+    REAL anorm = max(Rlange("1", m, n, a, lda, work), unfl);
     //
     if (anorm > wnorm) {
         result = (wnorm / anorm) / (m * eps);
     } else {
         if (anorm < one) {
-            result = (min(wnorm, REAL(m * anorm)) / anorm) / (castREAL(m) * eps);
+            result = (min(wnorm, m * anorm) / anorm) / (m * eps);
         } else {
-            result = min(REAL(wnorm / anorm), castREAL(m)) / (castREAL(m) * eps);
+            result = min(wnorm / anorm, castREAL(m)) / (m * eps);
         }
     }
     //

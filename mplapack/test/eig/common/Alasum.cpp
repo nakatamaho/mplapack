@@ -43,9 +43,7 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#include <mplapack_debug.h>
-
-void Alasum(const char *type, INTEGER const nout, INTEGER const nfail, INTEGER const nrun, INTEGER const nerrs) {
+void Alasum(fem::str_cref type, INTEGER const nout, INTEGER const nfail, INTEGER const nrun, INTEGER const nerrs) {
     common cmn;
     common_write write(cmn);
     //

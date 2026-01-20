@@ -43,8 +43,6 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#include <mplapack_debug.h>
-
 void Cstt22(INTEGER const n, INTEGER const m, INTEGER const kband, REAL *ad, REAL *ae, REAL *sd, REAL *se, COMPLEX *u, INTEGER const ldu, COMPLEX *work, INTEGER const ldwork, REAL *rwork, REAL *result) {
     //
     const REAL zero = 0.0;
@@ -66,9 +64,9 @@ void Cstt22(INTEGER const n, INTEGER const m, INTEGER const kband, REAL *ad, REA
     if (n > 1) {
         anorm = abs(ad[1 - 1]) + abs(ae[1 - 1]);
         for (j = 2; j <= n - 1; j = j + 1) {
-            anorm = max(anorm, REAL(abs(ad[j - 1]) + abs(ae[j - 1]) + abs(ae[(j - 1) - 1])));
+            anorm = max(anorm, abs(ad[j - 1]) + abs(ae[j - 1]) + abs(ae[(j - 1) - 1]));
         }
-        anorm = max(anorm, REAL(abs(ad[n - 1]) + abs(ae[(n - 1) - 1])));
+        anorm = max(anorm, abs(ad[n - 1]) + abs(ae[(n - 1) - 1]));
     } else {
         anorm = abs(ad[1 - 1]);
     }
@@ -109,12 +107,12 @@ void Cstt22(INTEGER const n, INTEGER const m, INTEGER const kband, REAL *ad, REA
     //
     const REAL one = 1.0;
     if (anorm > wnorm) {
-        result[1 - 1] = (wnorm / anorm) / (castREAL(m) * ulp);
+        result[1 - 1] = (wnorm / anorm) / (m * ulp);
     } else {
         if (anorm < one) {
-            result[1 - 1] = (min(wnorm, REAL(castREAL(m) * anorm)) / anorm) / (castREAL(m) * ulp);
+            result[1 - 1] = (min(wnorm, m * anorm) / anorm) / (m * ulp);
         } else {
-            result[1 - 1] = min(REAL(wnorm / anorm), castREAL(m)) / (castREAL(m) * ulp);
+            result[1 - 1] = min(wnorm / anorm, castREAL(m)) / (m * ulp);
         }
     }
     //

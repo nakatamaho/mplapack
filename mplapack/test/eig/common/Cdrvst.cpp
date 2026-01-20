@@ -43,19 +43,12 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#include <mplapack_debug.h>
-
 void Cdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotype, INTEGER *iseed, REAL const thresh, INTEGER const nounit, COMPLEX *a, INTEGER const lda, REAL *d1, REAL *d2, REAL *d3, REAL *wa1, REAL *wa2, REAL *wa3, COMPLEX *u, INTEGER const ldu, COMPLEX *v, COMPLEX *tau, COMPLEX *z, COMPLEX *work, INTEGER const lwork, REAL *rwork, INTEGER const lrwork, INTEGER *iwork, INTEGER const liwork, REAL *result, INTEGER &info) {
-
-    INTEGER ldv = ldu;
-    INTEGER ldz = ldu;
-
     common cmn;
     common_write write(cmn);
-    const INTEGER maxtyp = 18;
-    INTEGER ktype[18] = {1, 2, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 8, 8, 8, 9, 9, 9};
-    INTEGER kmagn[18] = {1, 1, 1, 1, 1, 2, 3, 1, 1, 1, 2, 3, 1, 2, 3, 1, 2, 3};
-    INTEGER kmode[18] = {0, 0, 4, 3, 1, 4, 4, 4, 3, 1, 4, 4, 0, 0, 0, 4, 4, 4};
+    static INTEGER ktype[18] = {1, 2, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 8, 8, 8, 9, 9, 9};
+    static INTEGER kmagn[18] = {1, 1, 1, 1, 1, 2, 3, 1, 1, 1, 2, 3, 1, 2, 3, 1, 2, 3};
+    static INTEGER kmode[18] = {0, 0, 4, 3, 1, 4, 4, 4, 3, 1, 4, 4, 0, 0, 0, 4, 4, 4};
     INTEGER ntestt = 0;
     bool badnn = false;
     INTEGER nmax = 0;
@@ -74,12 +67,13 @@ void Cdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     INTEGER nmats = 0;
     INTEGER jsize = 0;
     INTEGER n = 0;
-    const REAL two = 2.0e+0;
+    const REAL two = 2.0;
     INTEGER lgn = 0;
     INTEGER lwedc = 0;
     INTEGER lrwedc = 0;
     INTEGER liwedc = 0;
     REAL aninv = 0.0;
+    const INTEGER maxtyp = 18;
     INTEGER mtypes = 0;
     INTEGER jtype = 0;
     INTEGER ntest = 0;
@@ -104,7 +98,7 @@ void Cdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     INTEGER iu = 0;
     INTEGER itemp = 0;
     INTEGER iuplo = 0;
-    char uplo;
+    fem::str<1> uplo;
     REAL temp1 = 0.0;
     REAL temp2 = 0.0;
     REAL temp3 = 0.0;
@@ -118,9 +112,9 @@ void Cdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     INTEGER indx = 0;
     INTEGER indwrk = 0;
     INTEGER kd = 0;
-    static const char *format_9998 = "(' Cdrvst: ',a,' returned INFO=',i6,/,9x,'N=',i6,', KD=',i6,', JTYPE=',"
+    static const char *format_9998 = "(' ZDRVST: ',a,' returned INFO=',i6,/,9x,'N=',i6,', KD=',i6,', JTYPE=',"
                                      "i6,', ISEED=(',3(i5,','),i5,')')";
-    static const char *format_9999 = "(' Cdrvst: ',a,' returned INFO=',i6,/,9x,'N=',i6,', JTYPE=',i6,"
+    static const char *format_9999 = "(' ZDRVST: ',a,' returned INFO=',i6,/,9x,'N=',i6,', JTYPE=',i6,"
                                      "', ISEED=(',3(i5,','),i5,')')";
     //
     // 1)      Check for errors
@@ -149,7 +143,7 @@ void Cdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
         info = -9;
     } else if (ldu < nmax) {
         info = -16;
-    } else if (2 * max((INTEGER)2, nmax) * max((INTEGER)2, nmax) > lwork) {
+    } else if (2 * pow2(max((INTEGER)2, nmax)) > lwork) {
         info = -22;
     }
     //
@@ -188,14 +182,14 @@ void Cdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
         n = nn[jsize - 1];
         if (n > 0) {
             lgn = castINTEGER(log(castREAL(n)) / log(two));
-            if ((INTEGER)pow((double)2, (double)lgn) < n) {
+            if ((INTEGER(1) << (lgn)) < n) {
                 lgn++;
             }
-            if ((INTEGER)pow((double)2, (double)lgn) < n) {
+            if ((INTEGER(1) << (lgn)) < n) {
                 lgn++;
             }
-            lwedc = max((INTEGER)2 * n + n * n, 2 * n * n);
-            lrwedc = 1 + 4 * n + 2 * n * lgn + 3 * n * n;
+            lwedc = max(2 * n + n * n, 2 * n * n);
+            lrwedc = 1 + 4 * n + 2 * n * lgn + 3 * pow2(n);
             liwedc = 3 + 5 * n;
         } else {
             lwedc = 2;
@@ -272,17 +266,11 @@ void Cdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             //
             Claset("Full", lda, n, czero, czero, a, lda);
             iinfo = 0;
-#ifdef ___MPLAPACK_BUILD_WITH_MPFR___
-            // If there are at least two eigenvalues, one is zero and the other
-            // is nearly 0, then Cheevx fail to converge. Fix Rlaebz.cpp may help.
-            cond = ulpinv * 1e-3;
-#else
             cond = ulpinv;
-#endif
             //
-            //           Special Matrices -- Identity & Jordan block
+            // Special Matrices -- Identity & Jordan block
             //
-            //                   Zero
+            // Zero
             //
             if (itype == 1) {
                 iinfo = 0;
@@ -343,7 +331,7 @@ void Cdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             }
             //
             if (iinfo != 0) {
-                write(nounit, format_9999), "Generator", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                write(nounit, format_9999), "Generator", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 return;
             }
@@ -369,9 +357,9 @@ void Cdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             //
             for (iuplo = 0; iuplo <= 1; iuplo = iuplo + 1) {
                 if (iuplo == 0) {
-                    uplo = 'L';
+                    uplo = "L";
                 } else {
-                    uplo = 'U';
+                    uplo = "U";
                 }
                 //
                 // Call Cheevd and CHEEVX.
@@ -379,12 +367,9 @@ void Cdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 Clacpy(" ", n, n, a, lda, v, ldu);
                 //
                 ntest++;
-                Cheevd("V", &uplo, n, a, ldu, d1, work, lwedc, rwork, lrwedc, iwork, liwedc, iinfo);
+                Cheevd("V", uplo.elems, n, a, ldu, d1, work, lwedc, rwork, lrwedc, iwork, liwedc, iinfo);
                 if (iinfo != 0) {
-                    if (Mlsame(&uplo, "U"))
-                        write(nounit, format_9999), "Cheevd(V,U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
-                    else
-                        write(nounit, format_9999), "Cheevd(V,L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                    write(nounit, format_9999), "ZHEEVD(V," + uplo + fem::str_cref(")"), iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -398,17 +383,14 @@ void Cdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 //
                 // Do tests 1 and 2.
                 //
-                Chet21(1, &uplo, n, 0, v, ldu, d1, d2, a, ldu, z, ldu, tau, work, rwork, &result[ntest - 1]);
+                Chet21(1, uplo, n, 0, v, ldu, d1, d2, a, ldu, z, ldu, tau, work, rwork, &result[ntest - 1]);
                 //
                 Clacpy(" ", n, n, v, ldu, a, lda);
                 //
                 ntest += 2;
-                Cheevd("N", &uplo, n, a, ldu, d3, work, lwedc, rwork, lrwedc, iwork, liwedc, iinfo);
+                Cheevd("N", uplo.elems, n, a, ldu, d3, work, lwedc, rwork, lrwedc, iwork, liwedc, iinfo);
                 if (iinfo != 0) {
-                    if (Mlsame(&uplo, "U"))
-                        write(nounit, format_9999), "Cheevd(N,U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
-                    else
-                        write(nounit, format_9999), "Cheevd(N,L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                    write(nounit, format_9999), "ZHEEVD(N," + uplo + fem::str_cref(")"), iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -423,10 +405,10 @@ void Cdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 temp1 = zero;
                 temp2 = zero;
                 for (j = 1; j <= n; j = j + 1) {
-                    temp1 = max({temp1, REAL(abs(d1[j - 1])), REAL(abs(d3[j - 1]))});
-                    temp2 = max(temp2, REAL(abs(d1[j - 1] - d3[j - 1])));
+                    temp1 = max(temp1, abs(d1[j - 1]), abs(d3[j - 1]));
+                    temp2 = max(temp2, abs(d1[j - 1] - d3[j - 1]));
                 }
-                result[ntest - 1] = temp2 / max(unfl, REAL(ulp * max(temp1, temp2)));
+                result[ntest - 1] = temp2 / max(unfl, ulp * max(temp1, temp2));
             //
             statement_130:
                 Clacpy(" ", n, n, v, ldu, a, lda);
@@ -436,14 +418,14 @@ void Cdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 if (n > 0) {
                     temp3 = max(abs(d1[1 - 1]), abs(d1[n - 1]));
                     if (il != 1) {
-                        vl = d1[il - 1] - max({REAL(half * (d1[il - 1] - d1[(il - 1) - 1])), REAL(ten * ulp * temp3), REAL(ten * rtunfl)});
+                        vl = d1[il - 1] - max(half * (d1[il - 1] - d1[(il - 1) - 1]), ten * ulp * temp3, ten * rtunfl);
                     } else if (n > 0) {
-                        vl = d1[1 - 1] - max({REAL(half * (d1[n - 1] - d1[1 - 1])), REAL(ten * ulp * temp3), REAL(ten * rtunfl)});
+                        vl = d1[1 - 1] - max(half * (d1[n - 1] - d1[1 - 1]), ten * ulp * temp3, ten * rtunfl);
                     }
                     if (iu != n) {
-                        vu = d1[iu - 1] + max({REAL(half * (d1[(iu + 1) - 1] - d1[iu - 1])), REAL(ten * ulp * temp3), REAL(ten * rtunfl)});
+                        vu = d1[iu - 1] + max(half * (d1[(iu + 1) - 1] - d1[iu - 1]), ten * ulp * temp3, ten * rtunfl);
                     } else if (n > 0) {
-                        vu = d1[n - 1] + max({REAL(half * (d1[n - 1] - d1[1 - 1])), REAL(ten * ulp * temp3), REAL(ten * rtunfl)});
+                        vu = d1[n - 1] + max(half * (d1[n - 1] - d1[1 - 1]), ten * ulp * temp3, ten * rtunfl);
                     }
                 } else {
                     temp3 = zero;
@@ -451,12 +433,9 @@ void Cdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     vu = one;
                 }
                 //
-                Cheevx("V", "A", &uplo, n, a, ldu, vl, vu, il, iu, abstol, m, wa1, z, ldu, work, lwork, rwork, iwork, &iwork[(5 * n + 1) - 1], iinfo);
+                Cheevx("V", "A", uplo.elems, n, a, ldu, vl, vu, il, iu, abstol, m, wa1, z, ldu, work, lwork, rwork, iwork, &iwork[(5 * n + 1) - 1], iinfo);
                 if (iinfo != 0) {
-                    if (Mlsame(&uplo, "U"))
-                        write(nounit, format_9999), "Cheevx(V,A,U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
-                    else
-                        write(nounit, format_9999), "Cheevx(V,A,L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                    write(nounit, format_9999), "ZHEEVX(V,A," + uplo + fem::str_cref(")"), iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -472,15 +451,12 @@ void Cdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 //
                 Clacpy(" ", n, n, v, ldu, a, lda);
                 //
-                Chet21(1, &uplo, n, 0, a, ldu, wa1, d2, z, ldu, v, ldu, tau, work, rwork, &result[ntest - 1]);
+                Chet21(1, uplo, n, 0, a, ldu, wa1, d2, z, ldu, v, ldu, tau, work, rwork, &result[ntest - 1]);
                 //
                 ntest += 2;
-                Cheevx("N", "A", &uplo, n, a, ldu, vl, vu, il, iu, abstol, m2, wa2, z, ldu, work, lwork, rwork, iwork, &iwork[(5 * n + 1) - 1], iinfo);
+                Cheevx("N", "A", uplo.elems, n, a, ldu, vl, vu, il, iu, abstol, m2, wa2, z, ldu, work, lwork, rwork, iwork, &iwork[(5 * n + 1) - 1], iinfo);
                 if (iinfo != 0) {
-                    if (Mlsame(&uplo, "U"))
-                        write(nounit, format_9999), "Cheevx(N,A,U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
-                    else
-                        write(nounit, format_9999), "Cheevx(N,A,L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                    write(nounit, format_9999), "ZHEEVX(N,A," + uplo + fem::str_cref(")"), iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -495,22 +471,19 @@ void Cdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 temp1 = zero;
                 temp2 = zero;
                 for (j = 1; j <= n; j = j + 1) {
-                    temp1 = max({temp1, REAL(abs(wa1[j - 1])), REAL(abs(wa2[j - 1]))});
-                    temp2 = max(temp2, REAL(abs(wa1[j - 1] - wa2[j - 1])));
+                    temp1 = max(temp1, abs(wa1[j - 1]), abs(wa2[j - 1]));
+                    temp2 = max(temp2, abs(wa1[j - 1] - wa2[j - 1]));
                 }
-                result[ntest - 1] = temp2 / max(unfl, REAL(ulp * max(temp1, temp2)));
+                result[ntest - 1] = temp2 / max(unfl, ulp * max(temp1, temp2));
             //
             statement_150:
                 Clacpy(" ", n, n, v, ldu, a, lda);
                 //
                 ntest++;
                 //
-                Cheevx("V", "I", &uplo, n, a, ldu, vl, vu, il, iu, abstol, m2, wa2, z, ldu, work, lwork, rwork, iwork, &iwork[(5 * n + 1) - 1], iinfo);
+                Cheevx("V", "I", uplo.elems, n, a, ldu, vl, vu, il, iu, abstol, m2, wa2, z, ldu, work, lwork, rwork, iwork, &iwork[(5 * n + 1) - 1], iinfo);
                 if (iinfo != 0) {
-                    if (Mlsame(&uplo, "U"))
-                        write(nounit, format_9999), "Cheevx(V,I,U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
-                    else
-                        write(nounit, format_9999), "Cheevx(V,I,L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                    write(nounit, format_9999), "ZHEEVX(V,I," + uplo + fem::str_cref(")"), iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -524,16 +497,13 @@ void Cdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 //
                 Clacpy(" ", n, n, v, ldu, a, lda);
                 //
-                Chet22(1, &uplo, n, m2, 0, a, ldu, wa2, d2, z, ldu, v, ldu, tau, work, rwork, &result[ntest - 1]);
+                Chet22(1, uplo, n, m2, 0, a, ldu, wa2, d2, z, ldu, v, ldu, tau, work, rwork, &result[ntest - 1]);
                 //
                 ntest += 2;
                 //
-                Cheevx("N", "I", &uplo, n, a, ldu, vl, vu, il, iu, abstol, m3, wa3, z, ldu, work, lwork, rwork, iwork, &iwork[(5 * n + 1) - 1], iinfo);
+                Cheevx("N", "I", uplo.elems, n, a, ldu, vl, vu, il, iu, abstol, m3, wa3, z, ldu, work, lwork, rwork, iwork, &iwork[(5 * n + 1) - 1], iinfo);
                 if (iinfo != 0) {
-                    if (Mlsame(&uplo, "U"))
-                        write(nounit, format_9999), "Cheevx(N,I,U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
-                    else
-                        write(nounit, format_9999), "Cheevx(N,I,L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                    write(nounit, format_9999), "ZHEEVX(N,I," + uplo + fem::str_cref(")"), iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -552,19 +522,16 @@ void Cdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 } else {
                     temp3 = zero;
                 }
-                result[ntest - 1] = (temp1 + temp2) / max(unfl, REAL(temp3 * ulp));
+                result[ntest - 1] = (temp1 + temp2) / max(unfl, temp3 * ulp);
             //
             statement_160:
                 Clacpy(" ", n, n, v, ldu, a, lda);
                 //
                 ntest++;
                 //
-                Cheevx("V", "V", &uplo, n, a, ldu, vl, vu, il, iu, abstol, m2, wa2, z, ldu, work, lwork, rwork, iwork, &iwork[(5 * n + 1) - 1], iinfo);
+                Cheevx("V", "V", uplo.elems, n, a, ldu, vl, vu, il, iu, abstol, m2, wa2, z, ldu, work, lwork, rwork, iwork, &iwork[(5 * n + 1) - 1], iinfo);
                 if (iinfo != 0) {
-                    if (Mlsame(&uplo, "U"))
-                        write(nounit, format_9999), "Cheevx(V,V,U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
-                    else
-                        write(nounit, format_9999), "Cheevx(V,V,L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                    write(nounit, format_9999), "ZHEEVX(V,V," + uplo + fem::str_cref(")"), iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -578,16 +545,13 @@ void Cdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 //
                 Clacpy(" ", n, n, v, ldu, a, lda);
                 //
-                Chet22(1, &uplo, n, m2, 0, a, ldu, wa2, d2, z, ldu, v, ldu, tau, work, rwork, &result[ntest - 1]);
+                Chet22(1, uplo, n, m2, 0, a, ldu, wa2, d2, z, ldu, v, ldu, tau, work, rwork, &result[ntest - 1]);
                 //
                 ntest += 2;
                 //
-                Cheevx("N", "V", &uplo, n, a, ldu, vl, vu, il, iu, abstol, m3, wa3, z, ldu, work, lwork, rwork, iwork, &iwork[(5 * n + 1) - 1], iinfo);
+                Cheevx("N", "V", uplo.elems, n, a, ldu, vl, vu, il, iu, abstol, m3, wa3, z, ldu, work, lwork, rwork, iwork, &iwork[(5 * n + 1) - 1], iinfo);
                 if (iinfo != 0) {
-                    if (Mlsame(&uplo, "U"))
-                        write(nounit, format_9999), "Cheevx(N,V,U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
-                    else
-                        write(nounit, format_9999), "Cheevx(N,V,L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                    write(nounit, format_9999), "ZHEEVX(N,V," + uplo + fem::str_cref(")"), iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -611,7 +575,7 @@ void Cdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 } else {
                     temp3 = zero;
                 }
-                result[ntest - 1] = (temp1 + temp2) / max(unfl, REAL(temp3 * ulp));
+                result[ntest - 1] = (temp1 + temp2) / max(unfl, temp3 * ulp);
             //
             statement_170:
                 //
@@ -642,12 +606,9 @@ void Cdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 //
                 ntest++;
                 indwrk = n * (n + 1) / 2 + 1;
-                Chpevd("V", &uplo, n, work, d1, z, ldu, &work[indwrk - 1], lwedc, rwork, lrwedc, iwork, liwedc, iinfo);
+                Chpevd("V", uplo.elems, n, work, d1, z, ldu, &work[indwrk - 1], lwedc, rwork, lrwedc, iwork, liwedc, iinfo);
                 if (iinfo != 0) {
-                    if (Mlsame(&uplo, "U"))
-                        write(nounit, format_9999), "Chpevd(V,U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
-                    else
-                        write(nounit, format_9999), "Chpevd(V,L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                    write(nounit, format_9999), "ZHPEVD(V," + uplo + fem::str_cref(")"), iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -661,7 +622,7 @@ void Cdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 //
                 // Do tests 13 and 14.
                 //
-                Chet21(1, &uplo, n, 0, a, lda, d1, d2, z, ldu, v, ldu, tau, work, rwork, &result[ntest - 1]);
+                Chet21(1, uplo, n, 0, a, lda, d1, d2, z, ldu, v, ldu, tau, work, rwork, &result[ntest - 1]);
                 //
                 if (iuplo == 1) {
                     indx = 1;
@@ -683,12 +644,9 @@ void Cdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 //
                 ntest += 2;
                 indwrk = n * (n + 1) / 2 + 1;
-                Chpevd("N", &uplo, n, work, d3, z, ldu, &work[indwrk - 1], lwedc, rwork, lrwedc, iwork, liwedc, iinfo);
+                Chpevd("N", uplo.elems, n, work, d3, z, ldu, &work[indwrk - 1], lwedc, rwork, lrwedc, iwork, liwedc, iinfo);
                 if (iinfo != 0) {
-                    if (Mlsame(&uplo, "U"))
-                        write(nounit, format_9999), "Chpevd(N,U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
-                    else
-                        write(nounit, format_9999), "Chpevd(N,L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                    write(nounit, format_9999), "ZHPEVD(N," + uplo + fem::str_cref(")"), iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -703,10 +661,10 @@ void Cdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 temp1 = zero;
                 temp2 = zero;
                 for (j = 1; j <= n; j = j + 1) {
-                    temp1 = max({temp1, REAL(abs(d1[j - 1])), REAL(abs(d3[j - 1]))});
-                    temp2 = max(temp2, REAL(abs(d1[j - 1] - d3[j - 1])));
+                    temp1 = max(temp1, abs(d1[j - 1]), abs(d3[j - 1]));
+                    temp2 = max(temp2, abs(d1[j - 1] - d3[j - 1]));
                 }
-                result[ntest - 1] = temp2 / max(unfl, REAL(ulp * max(temp1, temp2)));
+                result[ntest - 1] = temp2 / max(unfl, ulp * max(temp1, temp2));
             //
             // Load array WORK with the upper or lower triangular part
             // of the matrix in packed form.
@@ -735,14 +693,14 @@ void Cdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 if (n > 0) {
                     temp3 = max(abs(d1[1 - 1]), abs(d1[n - 1]));
                     if (il != 1) {
-                        vl = d1[il - 1] - max({REAL(half * (d1[il - 1] - d1[(il - 1) - 1])), REAL(ten * ulp * temp3), REAL(ten * rtunfl)});
+                        vl = d1[il - 1] - max(half * (d1[il - 1] - d1[(il - 1) - 1]), ten * ulp * temp3, ten * rtunfl);
                     } else if (n > 0) {
-                        vl = d1[1 - 1] - max({REAL(half * (d1[n - 1] - d1[1 - 1])), REAL(ten * ulp * temp3), REAL(ten * rtunfl)});
+                        vl = d1[1 - 1] - max(half * (d1[n - 1] - d1[1 - 1]), ten * ulp * temp3, ten * rtunfl);
                     }
                     if (iu != n) {
-                        vu = d1[iu - 1] + max({REAL(half * (d1[(iu + 1) - 1] - d1[iu - 1])), REAL(ten * ulp * temp3), REAL(ten * rtunfl)});
+                        vu = d1[iu - 1] + max(half * (d1[(iu + 1) - 1] - d1[iu - 1]), ten * ulp * temp3, ten * rtunfl);
                     } else if (n > 0) {
-                        vu = d1[n - 1] + max({REAL(half * (d1[n - 1] - d1[1 - 1])), REAL(ten * ulp * temp3), REAL(ten * rtunfl)});
+                        vu = d1[n - 1] + max(half * (d1[n - 1] - d1[1 - 1]), ten * ulp * temp3, ten * rtunfl);
                     }
                 } else {
                     temp3 = zero;
@@ -750,12 +708,9 @@ void Cdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     vu = one;
                 }
                 //
-                Chpevx("V", "A", &uplo, n, work, vl, vu, il, iu, abstol, m, wa1, z, ldu, v, rwork, iwork, &iwork[(5 * n + 1) - 1], iinfo);
+                Chpevx("V", "A", uplo.elems, n, work, vl, vu, il, iu, abstol, m, wa1, z, ldu, v, rwork, iwork, &iwork[(5 * n + 1) - 1], iinfo);
                 if (iinfo != 0) {
-                    if (Mlsame(&uplo, "U"))
-                        write(nounit, format_9999), "Chpevx(V,A,U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
-                    else
-                        write(nounit, format_9999), "Chpevx(V,A,L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                    write(nounit, format_9999), "ZHPEVX(V,A," + uplo + fem::str_cref(")"), iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -769,7 +724,7 @@ void Cdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 //
                 // Do tests 16 and 17.
                 //
-                Chet21(1, &uplo, n, 0, a, ldu, wa1, d2, z, ldu, v, ldu, tau, work, rwork, &result[ntest - 1]);
+                Chet21(1, uplo, n, 0, a, ldu, wa1, d2, z, ldu, v, ldu, tau, work, rwork, &result[ntest - 1]);
                 //
                 ntest += 2;
                 //
@@ -791,12 +746,9 @@ void Cdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     }
                 }
                 //
-                Chpevx("N", "A", &uplo, n, work, vl, vu, il, iu, abstol, m2, wa2, z, ldu, v, rwork, iwork, &iwork[(5 * n + 1) - 1], iinfo);
+                Chpevx("N", "A", uplo.elems, n, work, vl, vu, il, iu, abstol, m2, wa2, z, ldu, v, rwork, iwork, &iwork[(5 * n + 1) - 1], iinfo);
                 if (iinfo != 0) {
-                    if (Mlsame(&uplo, "U"))
-                        write(nounit, format_9999), "Chpevx(N,A,U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
-                    else
-                        write(nounit, format_9999), "Chpevx(N,A,L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                    write(nounit, format_9999), "ZHPEVX(N,A," + uplo + fem::str_cref(")"), iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -811,10 +763,10 @@ void Cdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 temp1 = zero;
                 temp2 = zero;
                 for (j = 1; j <= n; j = j + 1) {
-                    temp1 = max({temp1, REAL(abs(wa1[j - 1])), REAL(abs(wa2[j - 1]))});
-                    temp2 = max(temp2, REAL(abs(wa1[j - 1] - wa2[j - 1])));
+                    temp1 = max(temp1, abs(wa1[j - 1]), abs(wa2[j - 1]));
+                    temp2 = max(temp2, abs(wa1[j - 1] - wa2[j - 1]));
                 }
-                result[ntest - 1] = temp2 / max(unfl, REAL(ulp * max(temp1, temp2)));
+                result[ntest - 1] = temp2 / max(unfl, ulp * max(temp1, temp2));
             //
             statement_370:
                 ntest++;
@@ -836,12 +788,9 @@ void Cdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     }
                 }
                 //
-                Chpevx("V", "I", &uplo, n, work, vl, vu, il, iu, abstol, m2, wa2, z, ldu, v, rwork, iwork, &iwork[(5 * n + 1) - 1], iinfo);
+                Chpevx("V", "I", uplo.elems, n, work, vl, vu, il, iu, abstol, m2, wa2, z, ldu, v, rwork, iwork, &iwork[(5 * n + 1) - 1], iinfo);
                 if (iinfo != 0) {
-                    if (Mlsame(&uplo, "U"))
-                        write(nounit, format_9999), "Chpevx(V,I,U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
-                    else
-                        write(nounit, format_9999), "Chpevx(V,I,L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                    write(nounit, format_9999), "ZHPEVX(V,I," + uplo + fem::str_cref(")"), iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -855,7 +804,7 @@ void Cdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 //
                 // Do tests 19 and 20.
                 //
-                Chet22(1, &uplo, n, m2, 0, a, ldu, wa2, d2, z, ldu, v, ldu, tau, work, rwork, &result[ntest - 1]);
+                Chet22(1, uplo, n, m2, 0, a, ldu, wa2, d2, z, ldu, v, ldu, tau, work, rwork, &result[ntest - 1]);
                 //
                 ntest += 2;
                 //
@@ -877,12 +826,9 @@ void Cdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     }
                 }
                 //
-                Chpevx("N", "I", &uplo, n, work, vl, vu, il, iu, abstol, m3, wa3, z, ldu, v, rwork, iwork, &iwork[(5 * n + 1) - 1], iinfo);
+                Chpevx("N", "I", uplo.elems, n, work, vl, vu, il, iu, abstol, m3, wa3, z, ldu, v, rwork, iwork, &iwork[(5 * n + 1) - 1], iinfo);
                 if (iinfo != 0) {
-                    if (Mlsame(&uplo, "U"))
-                        write(nounit, format_9999), "Chpevx(N,I,U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
-                    else
-                        write(nounit, format_9999), "Chpevx(N,I,L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                    write(nounit, format_9999), "ZHPEVX(N,I," + uplo + fem::str_cref(")"), iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -901,7 +847,7 @@ void Cdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 } else {
                     temp3 = zero;
                 }
-                result[ntest - 1] = (temp1 + temp2) / max(unfl, REAL(temp3 * ulp));
+                result[ntest - 1] = (temp1 + temp2) / max(unfl, temp3 * ulp);
             //
             statement_460:
                 ntest++;
@@ -923,12 +869,9 @@ void Cdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     }
                 }
                 //
-                Chpevx("V", "V", &uplo, n, work, vl, vu, il, iu, abstol, m2, wa2, z, ldu, v, rwork, iwork, &iwork[(5 * n + 1) - 1], iinfo);
+                Chpevx("V", "V", uplo.elems, n, work, vl, vu, il, iu, abstol, m2, wa2, z, ldu, v, rwork, iwork, &iwork[(5 * n + 1) - 1], iinfo);
                 if (iinfo != 0) {
-                    if (Mlsame(&uplo, "U"))
-                        write(nounit, format_9999), "Chpevx(V,V,U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
-                    else
-                        write(nounit, format_9999), "Chpevx(V,V,L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                    write(nounit, format_9999), "ZHPEVX(V,V," + uplo + fem::str_cref(")"), iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -942,7 +885,7 @@ void Cdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 //
                 // Do tests 22 and 23.
                 //
-                Chet22(1, &uplo, n, m2, 0, a, ldu, wa2, d2, z, ldu, v, ldu, tau, work, rwork, &result[ntest - 1]);
+                Chet22(1, uplo, n, m2, 0, a, ldu, wa2, d2, z, ldu, v, ldu, tau, work, rwork, &result[ntest - 1]);
                 //
                 ntest += 2;
                 //
@@ -964,12 +907,9 @@ void Cdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     }
                 }
                 //
-                Chpevx("N", "V", &uplo, n, work, vl, vu, il, iu, abstol, m3, wa3, z, ldu, v, rwork, iwork, &iwork[(5 * n + 1) - 1], iinfo);
+                Chpevx("N", "V", uplo.elems, n, work, vl, vu, il, iu, abstol, m3, wa3, z, ldu, v, rwork, iwork, &iwork[(5 * n + 1) - 1], iinfo);
                 if (iinfo != 0) {
-                    if (Mlsame(&uplo, "U"))
-                        write(nounit, format_9999), "Chpevx(N,V,U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
-                    else
-                        write(nounit, format_9999), "Chpevx(N,V,L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                    write(nounit, format_9999), "ZHPEVX(N,V," + uplo + fem::str_cref(")"), iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -993,7 +933,7 @@ void Cdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 } else {
                     temp3 = zero;
                 }
-                result[ntest - 1] = (temp1 + temp2) / max(unfl, REAL(temp3 * ulp));
+                result[ntest - 1] = (temp1 + temp2) / max(unfl, temp3 * ulp);
             //
             statement_550:
                 //
@@ -1013,24 +953,21 @@ void Cdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 if (iuplo == 1) {
                     for (j = 1; j <= n; j = j + 1) {
                         for (i = max((INTEGER)1, j - kd); i <= j; i = i + 1) {
-                            v[((kd + 1 + i - j) - 1) + (j - 1) * ldv] = a[(i - 1) + (j - 1) * lda];
+                            v[((kd + 1 + i - j) - 1) + (j - 1) * ldu] = a[(i - 1) + (j - 1) * lda];
                         }
                     }
                 } else {
                     for (j = 1; j <= n; j = j + 1) {
                         for (i = j; i <= min(n, j + kd); i = i + 1) {
-                            v[((1 + i - j) - 1) + (j - 1) * ldv] = a[(i - 1) + (j - 1) * lda];
+                            v[((1 + i - j) - 1) + (j - 1) * ldu] = a[(i - 1) + (j - 1) * lda];
                         }
                     }
                 }
                 //
                 ntest++;
-                Chbevd("V", &uplo, n, kd, v, ldu, d1, z, ldu, work, lwedc, rwork, lrwedc, iwork, liwedc, iinfo);
+                Chbevd("V", uplo.elems, n, kd, v, ldu, d1, z, ldu, work, lwedc, rwork, lrwedc, iwork, liwedc, iinfo);
                 if (iinfo != 0) {
-                    if (Mlsame(&uplo, "U"))
-                        write(nounit, format_9998), "Chbevd(V,U)", iinfo, n, kd, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
-                    else
-                        write(nounit, format_9998), "Chbevd(V,L)", iinfo, n, kd, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                    write(nounit, format_9998), "ZHBEVD(V," + uplo + fem::str_cref(")"), iinfo, n, kd, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -1044,29 +981,26 @@ void Cdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 //
                 // Do tests 25 and 26.
                 //
-                Chet21(1, &uplo, n, 0, a, lda, d1, d2, z, ldu, v, ldu, tau, work, rwork, &result[ntest - 1]);
+                Chet21(1, uplo, n, 0, a, lda, d1, d2, z, ldu, v, ldu, tau, work, rwork, &result[ntest - 1]);
                 //
                 if (iuplo == 1) {
                     for (j = 1; j <= n; j = j + 1) {
                         for (i = max((INTEGER)1, j - kd); i <= j; i = i + 1) {
-                            v[((kd + 1 + i - j) - 1) + (j - 1) * ldv] = a[(i - 1) + (j - 1) * lda];
+                            v[((kd + 1 + i - j) - 1) + (j - 1) * ldu] = a[(i - 1) + (j - 1) * lda];
                         }
                     }
                 } else {
                     for (j = 1; j <= n; j = j + 1) {
                         for (i = j; i <= min(n, j + kd); i = i + 1) {
-                            v[((1 + i - j) - 1) + (j - 1) * ldv] = a[(i - 1) + (j - 1) * lda];
+                            v[((1 + i - j) - 1) + (j - 1) * ldu] = a[(i - 1) + (j - 1) * lda];
                         }
                     }
                 }
                 //
                 ntest += 2;
-                Chbevd("N", &uplo, n, kd, v, ldu, d3, z, ldu, work, lwedc, rwork, lrwedc, iwork, liwedc, iinfo);
+                Chbevd("N", uplo.elems, n, kd, v, ldu, d3, z, ldu, work, lwedc, rwork, lrwedc, iwork, liwedc, iinfo);
                 if (iinfo != 0) {
-                    if (Mlsame(&uplo, "U"))
-                        write(nounit, format_9998), "Chbevd(N,U)", iinfo, n, kd, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
-                    else
-                        write(nounit, format_9998), "Chbevd(N,L)", iinfo, n, kd, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                    write(nounit, format_9998), "ZHBEVD(N," + uplo + fem::str_cref(")"), iinfo, n, kd, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -1081,10 +1015,10 @@ void Cdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 temp1 = zero;
                 temp2 = zero;
                 for (j = 1; j <= n; j = j + 1) {
-                    temp1 = max({temp1, REAL(abs(d1[j - 1])), REAL(abs(d3[j - 1]))});
-                    temp2 = max(temp2, REAL(abs(d1[j - 1] - d3[j - 1])));
+                    temp1 = max(temp1, abs(d1[j - 1]), abs(d3[j - 1]));
+                    temp2 = max(temp2, abs(d1[j - 1] - d3[j - 1]));
                 }
-                result[ntest - 1] = temp2 / max(unfl, REAL(ulp * max(temp1, temp2)));
+                result[ntest - 1] = temp2 / max(unfl, ulp * max(temp1, temp2));
             //
             // Load array V with the upper or lower triangular part
             // of the matrix in band form.
@@ -1093,24 +1027,21 @@ void Cdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 if (iuplo == 1) {
                     for (j = 1; j <= n; j = j + 1) {
                         for (i = max((INTEGER)1, j - kd); i <= j; i = i + 1) {
-                            v[((kd + 1 + i - j) - 1) + (j - 1) * ldv] = a[(i - 1) + (j - 1) * lda];
+                            v[((kd + 1 + i - j) - 1) + (j - 1) * ldu] = a[(i - 1) + (j - 1) * lda];
                         }
                     }
                 } else {
                     for (j = 1; j <= n; j = j + 1) {
                         for (i = j; i <= min(n, j + kd); i = i + 1) {
-                            v[((1 + i - j) - 1) + (j - 1) * ldv] = a[(i - 1) + (j - 1) * lda];
+                            v[((1 + i - j) - 1) + (j - 1) * ldu] = a[(i - 1) + (j - 1) * lda];
                         }
                     }
                 }
                 //
                 ntest++;
-                Chbevx("V", "A", &uplo, n, kd, v, ldu, u, ldu, vl, vu, il, iu, abstol, m, wa1, z, ldu, work, rwork, iwork, &iwork[(5 * n + 1) - 1], iinfo);
+                Chbevx("V", "A", uplo.elems, n, kd, v, ldu, u, ldu, vl, vu, il, iu, abstol, m, wa1, z, ldu, work, rwork, iwork, &iwork[(5 * n + 1) - 1], iinfo);
                 if (iinfo != 0) {
-                    if (Mlsame(&uplo, "U"))
-                        write(nounit, format_9999), "Chbevx(V,A,U)", iinfo, n, kd, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
-                    else
-                        write(nounit, format_9999), "Chbevx(V,A,L)", iinfo, n, kd, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                    write(nounit, format_9999), "ZHBEVX(V,A," + uplo + fem::str_cref(")"), iinfo, n, kd, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -1124,30 +1055,27 @@ void Cdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 //
                 // Do tests 28 and 29.
                 //
-                Chet21(1, &uplo, n, 0, a, ldu, wa1, d2, z, ldu, v, ldu, tau, work, rwork, &result[ntest - 1]);
+                Chet21(1, uplo, n, 0, a, ldu, wa1, d2, z, ldu, v, ldu, tau, work, rwork, &result[ntest - 1]);
                 //
                 ntest += 2;
                 //
                 if (iuplo == 1) {
                     for (j = 1; j <= n; j = j + 1) {
                         for (i = max((INTEGER)1, j - kd); i <= j; i = i + 1) {
-                            v[((kd + 1 + i - j) - 1) + (j - 1) * ldv] = a[(i - 1) + (j - 1) * lda];
+                            v[((kd + 1 + i - j) - 1) + (j - 1) * ldu] = a[(i - 1) + (j - 1) * lda];
                         }
                     }
                 } else {
                     for (j = 1; j <= n; j = j + 1) {
                         for (i = j; i <= min(n, j + kd); i = i + 1) {
-                            v[((1 + i - j) - 1) + (j - 1) * ldv] = a[(i - 1) + (j - 1) * lda];
+                            v[((1 + i - j) - 1) + (j - 1) * ldu] = a[(i - 1) + (j - 1) * lda];
                         }
                     }
                 }
                 //
-                Chbevx("N", "A", &uplo, n, kd, v, ldu, u, ldu, vl, vu, il, iu, abstol, m2, wa2, z, ldu, work, rwork, iwork, &iwork[(5 * n + 1) - 1], iinfo);
+                Chbevx("N", "A", uplo.elems, n, kd, v, ldu, u, ldu, vl, vu, il, iu, abstol, m2, wa2, z, ldu, work, rwork, iwork, &iwork[(5 * n + 1) - 1], iinfo);
                 if (iinfo != 0) {
-                    if (Mlsame(&uplo, "U"))
-                        write(nounit, format_9998), "Chbevx(N,A,U)", iinfo, n, kd, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
-                    else
-                        write(nounit, format_9998), "Chbevx(N,A,L)", iinfo, n, kd, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                    write(nounit, format_9998), "ZHBEVX(N,A," + uplo + fem::str_cref(")"), iinfo, n, kd, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -1162,10 +1090,10 @@ void Cdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 temp1 = zero;
                 temp2 = zero;
                 for (j = 1; j <= n; j = j + 1) {
-                    temp1 = max({temp1, REAL(abs(wa1[j - 1])), REAL(abs(wa2[j - 1]))});
-                    temp2 = max(temp2, REAL(abs(wa1[j - 1] - wa2[j - 1])));
+                    temp1 = max(temp1, abs(wa1[j - 1]), abs(wa2[j - 1]));
+                    temp2 = max(temp2, abs(wa1[j - 1] - wa2[j - 1]));
                 }
-                result[ntest - 1] = temp2 / max(unfl, REAL(ulp * max(temp1, temp2)));
+                result[ntest - 1] = temp2 / max(unfl, ulp * max(temp1, temp2));
             //
             // Load array V with the upper or lower triangular part
             // of the matrix in band form.
@@ -1175,23 +1103,20 @@ void Cdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 if (iuplo == 1) {
                     for (j = 1; j <= n; j = j + 1) {
                         for (i = max((INTEGER)1, j - kd); i <= j; i = i + 1) {
-                            v[((kd + 1 + i - j) - 1) + (j - 1) * ldv] = a[(i - 1) + (j - 1) * lda];
+                            v[((kd + 1 + i - j) - 1) + (j - 1) * ldu] = a[(i - 1) + (j - 1) * lda];
                         }
                     }
                 } else {
                     for (j = 1; j <= n; j = j + 1) {
                         for (i = j; i <= min(n, j + kd); i = i + 1) {
-                            v[((1 + i - j) - 1) + (j - 1) * ldv] = a[(i - 1) + (j - 1) * lda];
+                            v[((1 + i - j) - 1) + (j - 1) * ldu] = a[(i - 1) + (j - 1) * lda];
                         }
                     }
                 }
                 //
-                Chbevx("V", "I", &uplo, n, kd, v, ldu, u, ldu, vl, vu, il, iu, abstol, m2, wa2, z, ldu, work, rwork, iwork, &iwork[(5 * n + 1) - 1], iinfo);
+                Chbevx("V", "I", uplo.elems, n, kd, v, ldu, u, ldu, vl, vu, il, iu, abstol, m2, wa2, z, ldu, work, rwork, iwork, &iwork[(5 * n + 1) - 1], iinfo);
                 if (iinfo != 0) {
-                    if (Mlsame(&uplo, "U"))
-                        write(nounit, format_9998), "Chbevx(V,I,U)", iinfo, n, kd, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
-                    else
-                        write(nounit, format_9998), "Chbevx(V,I,L)", iinfo, n, kd, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                    write(nounit, format_9998), "ZHBEVX(V,I," + uplo + fem::str_cref(")"), iinfo, n, kd, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -1205,29 +1130,26 @@ void Cdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 //
                 // Do tests 31 and 32.
                 //
-                Chet22(1, &uplo, n, m2, 0, a, ldu, wa2, d2, z, ldu, v, ldu, tau, work, rwork, &result[ntest - 1]);
+                Chet22(1, uplo, n, m2, 0, a, ldu, wa2, d2, z, ldu, v, ldu, tau, work, rwork, &result[ntest - 1]);
                 //
                 ntest += 2;
                 //
                 if (iuplo == 1) {
                     for (j = 1; j <= n; j = j + 1) {
                         for (i = max((INTEGER)1, j - kd); i <= j; i = i + 1) {
-                            v[((kd + 1 + i - j) - 1) + (j - 1) * ldv] = a[(i - 1) + (j - 1) * lda];
+                            v[((kd + 1 + i - j) - 1) + (j - 1) * ldu] = a[(i - 1) + (j - 1) * lda];
                         }
                     }
                 } else {
                     for (j = 1; j <= n; j = j + 1) {
                         for (i = j; i <= min(n, j + kd); i = i + 1) {
-                            v[((1 + i - j) - 1) + (j - 1) * ldv] = a[(i - 1) + (j - 1) * lda];
+                            v[((1 + i - j) - 1) + (j - 1) * ldu] = a[(i - 1) + (j - 1) * lda];
                         }
                     }
                 }
-                Chbevx("N", "I", &uplo, n, kd, v, ldu, u, ldu, vl, vu, il, iu, abstol, m3, wa3, z, ldu, work, rwork, iwork, &iwork[(5 * n + 1) - 1], iinfo);
+                Chbevx("N", "I", uplo.elems, n, kd, v, ldu, u, ldu, vl, vu, il, iu, abstol, m3, wa3, z, ldu, work, rwork, iwork, &iwork[(5 * n + 1) - 1], iinfo);
                 if (iinfo != 0) {
-                    if (Mlsame(&uplo, "U"))
-                        write(nounit, format_9998), "Chbevx(N,I,U)", iinfo, n, kd, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
-                    else
-                        write(nounit, format_9998), "Chbevx(N,I,L)", iinfo, n, kd, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                    write(nounit, format_9998), "ZHBEVX(N,I," + uplo + fem::str_cref(")"), iinfo, n, kd, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -1246,7 +1168,7 @@ void Cdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 } else {
                     temp3 = zero;
                 }
-                result[ntest - 1] = (temp1 + temp2) / max(unfl, REAL(temp3 * ulp));
+                result[ntest - 1] = (temp1 + temp2) / max(unfl, temp3 * ulp);
             //
             // Load array V with the upper or lower triangular part
             // of the matrix in band form.
@@ -1256,22 +1178,19 @@ void Cdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 if (iuplo == 1) {
                     for (j = 1; j <= n; j = j + 1) {
                         for (i = max((INTEGER)1, j - kd); i <= j; i = i + 1) {
-                            v[((kd + 1 + i - j) - 1) + (j - 1) * ldv] = a[(i - 1) + (j - 1) * lda];
+                            v[((kd + 1 + i - j) - 1) + (j - 1) * ldu] = a[(i - 1) + (j - 1) * lda];
                         }
                     }
                 } else {
                     for (j = 1; j <= n; j = j + 1) {
                         for (i = j; i <= min(n, j + kd); i = i + 1) {
-                            v[((1 + i - j) - 1) + (j - 1) * ldv] = a[(i - 1) + (j - 1) * lda];
+                            v[((1 + i - j) - 1) + (j - 1) * ldu] = a[(i - 1) + (j - 1) * lda];
                         }
                     }
                 }
-                Chbevx("V", "V", &uplo, n, kd, v, ldu, u, ldu, vl, vu, il, iu, abstol, m2, wa2, z, ldu, work, rwork, iwork, &iwork[(5 * n + 1) - 1], iinfo);
+                Chbevx("V", "V", uplo.elems, n, kd, v, ldu, u, ldu, vl, vu, il, iu, abstol, m2, wa2, z, ldu, work, rwork, iwork, &iwork[(5 * n + 1) - 1], iinfo);
                 if (iinfo != 0) {
-                    if (Mlsame(&uplo, "U"))
-                        write(nounit, format_9998), "Chbevx(V,V,U)", iinfo, n, kd, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
-                    else
-                        write(nounit, format_9998), "Chbevx(V,V,L)", iinfo, n, kd, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                    write(nounit, format_9998), "ZHBEVX(V,V," + uplo + fem::str_cref(")"), iinfo, n, kd, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -1285,29 +1204,26 @@ void Cdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 //
                 // Do tests 34 and 35.
                 //
-                Chet22(1, &uplo, n, m2, 0, a, ldu, wa2, d2, z, ldu, v, ldu, tau, work, rwork, &result[ntest - 1]);
+                Chet22(1, uplo, n, m2, 0, a, ldu, wa2, d2, z, ldu, v, ldu, tau, work, rwork, &result[ntest - 1]);
                 //
                 ntest += 2;
                 //
                 if (iuplo == 1) {
                     for (j = 1; j <= n; j = j + 1) {
                         for (i = max((INTEGER)1, j - kd); i <= j; i = i + 1) {
-                            v[((kd + 1 + i - j) - 1) + (j - 1) * ldv] = a[(i - 1) + (j - 1) * lda];
+                            v[((kd + 1 + i - j) - 1) + (j - 1) * ldu] = a[(i - 1) + (j - 1) * lda];
                         }
                     }
                 } else {
                     for (j = 1; j <= n; j = j + 1) {
                         for (i = j; i <= min(n, j + kd); i = i + 1) {
-                            v[((1 + i - j) - 1) + (j - 1) * ldv] = a[(i - 1) + (j - 1) * lda];
+                            v[((1 + i - j) - 1) + (j - 1) * ldu] = a[(i - 1) + (j - 1) * lda];
                         }
                     }
                 }
-                Chbevx("N", "V", &uplo, n, kd, v, ldu, u, ldu, vl, vu, il, iu, abstol, m3, wa3, z, ldu, work, rwork, iwork, &iwork[(5 * n + 1) - 1], iinfo);
+                Chbevx("N", "V", uplo.elems, n, kd, v, ldu, u, ldu, vl, vu, il, iu, abstol, m3, wa3, z, ldu, work, rwork, iwork, &iwork[(5 * n + 1) - 1], iinfo);
                 if (iinfo != 0) {
-                    if (Mlsame(&uplo, "U"))
-                        write(nounit, format_9998), "Chbevx(N,V,U)", iinfo, n, kd, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
-                    else
-                        write(nounit, format_9998), "Chbevx(N,V,L)", iinfo, n, kd, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                    write(nounit, format_9998), "ZHBEVX(N,V," + uplo + fem::str_cref(")"), iinfo, n, kd, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -1331,7 +1247,7 @@ void Cdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 } else {
                     temp3 = zero;
                 }
-                result[ntest - 1] = (temp1 + temp2) / max(unfl, REAL(temp3 * ulp));
+                result[ntest - 1] = (temp1 + temp2) / max(unfl, temp3 * ulp);
             //
             statement_930:
                 //
@@ -1340,12 +1256,9 @@ void Cdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 Clacpy(" ", n, n, a, lda, v, ldu);
                 //
                 ntest++;
-                Cheev("V", &uplo, n, a, ldu, d1, work, lwork, rwork, iinfo);
+                Cheev("V", uplo.elems, n, a, ldu, d1, work, lwork, rwork, iinfo);
                 if (iinfo != 0) {
-                    if (Mlsame(&uplo, "U"))
-                        write(nounit, format_9999), "Cheev(V,U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
-                    else
-                        write(nounit, format_9999), "Cheev(V,L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                    write(nounit, format_9999), "ZHEEV(V," + uplo + fem::str_cref(")"), iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -1359,17 +1272,14 @@ void Cdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 //
                 // Do tests 37 and 38
                 //
-                Chet21(1, &uplo, n, 0, v, ldu, d1, d2, a, ldu, z, ldu, tau, work, rwork, &result[ntest - 1]);
+                Chet21(1, uplo, n, 0, v, ldu, d1, d2, a, ldu, z, ldu, tau, work, rwork, &result[ntest - 1]);
                 //
                 Clacpy(" ", n, n, v, ldu, a, lda);
                 //
                 ntest += 2;
-                Cheev("N", &uplo, n, a, ldu, d3, work, lwork, rwork, iinfo);
+                Cheev("N", uplo.elems, n, a, ldu, d3, work, lwork, rwork, iinfo);
                 if (iinfo != 0) {
-                    if (Mlsame(&uplo, "U"))
-                        write(nounit, format_9999), "Cheev(N,U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
-                    else
-                        write(nounit, format_9999), "Cheev(N,L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                    write(nounit, format_9999), "ZHEEV(N," + uplo + fem::str_cref(")"), iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -1384,10 +1294,10 @@ void Cdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 temp1 = zero;
                 temp2 = zero;
                 for (j = 1; j <= n; j = j + 1) {
-                    temp1 = max({temp1, REAL(abs(d1[j - 1])), REAL(abs(d3[j - 1]))});
-                    temp2 = max(temp2, REAL(abs(d1[j - 1] - d3[j - 1])));
+                    temp1 = max(temp1, abs(d1[j - 1]), abs(d3[j - 1]));
+                    temp2 = max(temp2, abs(d1[j - 1] - d3[j - 1]));
                 }
-                result[ntest - 1] = temp2 / max(unfl, REAL(ulp * max(temp1, temp2)));
+                result[ntest - 1] = temp2 / max(unfl, ulp * max(temp1, temp2));
             //
             statement_950:
                 //
@@ -1418,12 +1328,9 @@ void Cdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 //
                 ntest++;
                 indwrk = n * (n + 1) / 2 + 1;
-                Chpev("V", &uplo, n, work, d1, z, ldu, &work[indwrk - 1], rwork, iinfo);
+                Chpev("V", uplo.elems, n, work, d1, z, ldu, &work[indwrk - 1], rwork, iinfo);
                 if (iinfo != 0) {
-                    if (Mlsame(&uplo, "U"))
-                        write(nounit, format_9999), "Chpev(V,U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
-                    else
-                        write(nounit, format_9999), "Chpev(V,L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                    write(nounit, format_9999), "ZHPEV(V," + uplo + fem::str_cref(")"), iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -1437,7 +1344,7 @@ void Cdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 //
                 // Do tests 40 and 41.
                 //
-                Chet21(1, &uplo, n, 0, a, lda, d1, d2, z, ldu, v, ldu, tau, work, rwork, &result[ntest - 1]);
+                Chet21(1, uplo, n, 0, a, lda, d1, d2, z, ldu, v, ldu, tau, work, rwork, &result[ntest - 1]);
                 //
                 if (iuplo == 1) {
                     indx = 1;
@@ -1459,12 +1366,9 @@ void Cdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 //
                 ntest += 2;
                 indwrk = n * (n + 1) / 2 + 1;
-                Chpev("N", &uplo, n, work, d3, z, ldu, &work[indwrk - 1], rwork, iinfo);
+                Chpev("N", uplo.elems, n, work, d3, z, ldu, &work[indwrk - 1], rwork, iinfo);
                 if (iinfo != 0) {
-                    if (Mlsame(&uplo, "U"))
-                        write(nounit, format_9999), "Chpev(N,U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
-                    else
-                        write(nounit, format_9999), "Chpev(N,L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                    write(nounit, format_9999), "ZHPEV(N," + uplo + fem::str_cref(")"), iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -1479,10 +1383,10 @@ void Cdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 temp1 = zero;
                 temp2 = zero;
                 for (j = 1; j <= n; j = j + 1) {
-                    temp1 = max({temp1, REAL(abs(d1[j - 1])), REAL(abs(d3[j - 1]))});
-                    temp2 = max(temp2, REAL(abs(d1[j - 1] - d3[j - 1])));
+                    temp1 = max(temp1, abs(d1[j - 1]), abs(d3[j - 1]));
+                    temp2 = max(temp2, abs(d1[j - 1] - d3[j - 1]));
                 }
-                result[ntest - 1] = temp2 / max(unfl, REAL(ulp * max(temp1, temp2)));
+                result[ntest - 1] = temp2 / max(unfl, ulp * max(temp1, temp2));
             //
             statement_1050:
                 //
@@ -1502,24 +1406,21 @@ void Cdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 if (iuplo == 1) {
                     for (j = 1; j <= n; j = j + 1) {
                         for (i = max((INTEGER)1, j - kd); i <= j; i = i + 1) {
-                            v[((kd + 1 + i - j) - 1) + (j - 1) * ldv] = a[(i - 1) + (j - 1) * lda];
+                            v[((kd + 1 + i - j) - 1) + (j - 1) * ldu] = a[(i - 1) + (j - 1) * lda];
                         }
                     }
                 } else {
                     for (j = 1; j <= n; j = j + 1) {
                         for (i = j; i <= min(n, j + kd); i = i + 1) {
-                            v[((1 + i - j) - 1) + (j - 1) * ldv] = a[(i - 1) + (j - 1) * lda];
+                            v[((1 + i - j) - 1) + (j - 1) * ldu] = a[(i - 1) + (j - 1) * lda];
                         }
                     }
                 }
                 //
                 ntest++;
-                Chbev("V", &uplo, n, kd, v, ldu, d1, z, ldu, work, rwork, iinfo);
+                Chbev("V", uplo.elems, n, kd, v, ldu, d1, z, ldu, work, rwork, iinfo);
                 if (iinfo != 0) {
-                    if (Mlsame(&uplo, "U"))
-                        write(nounit, format_9998), "Chbev(V,U)", iinfo, n, kd, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
-                    else
-                        write(nounit, format_9998), "Chbev(V,L)", iinfo, n, kd, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                    write(nounit, format_9998), "ZHBEV(V," + uplo + fem::str_cref(")"), iinfo, n, kd, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -1533,29 +1434,26 @@ void Cdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 //
                 // Do tests 43 and 44.
                 //
-                Chet21(1, &uplo, n, 0, a, lda, d1, d2, z, ldu, v, ldu, tau, work, rwork, &result[ntest - 1]);
+                Chet21(1, uplo, n, 0, a, lda, d1, d2, z, ldu, v, ldu, tau, work, rwork, &result[ntest - 1]);
                 //
                 if (iuplo == 1) {
                     for (j = 1; j <= n; j = j + 1) {
                         for (i = max((INTEGER)1, j - kd); i <= j; i = i + 1) {
-                            v[((kd + 1 + i - j) - 1) + (j - 1) * ldv] = a[(i - 1) + (j - 1) * lda];
+                            v[((kd + 1 + i - j) - 1) + (j - 1) * ldu] = a[(i - 1) + (j - 1) * lda];
                         }
                     }
                 } else {
                     for (j = 1; j <= n; j = j + 1) {
                         for (i = j; i <= min(n, j + kd); i = i + 1) {
-                            v[((1 + i - j) - 1) + (j - 1) * ldv] = a[(i - 1) + (j - 1) * lda];
+                            v[((1 + i - j) - 1) + (j - 1) * ldu] = a[(i - 1) + (j - 1) * lda];
                         }
                     }
                 }
                 //
                 ntest += 2;
-                Chbev("N", &uplo, n, kd, v, ldu, d3, z, ldu, work, rwork, iinfo);
+                Chbev("N", uplo.elems, n, kd, v, ldu, d3, z, ldu, work, rwork, iinfo);
                 if (iinfo != 0) {
-                    if (Mlsame(&uplo, "U"))
-                        write(nounit, format_9998), "Chbev(N,U)", iinfo, n, kd, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
-                    else
-                        write(nounit, format_9998), "Chbev(N,L)", iinfo, n, kd, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                    write(nounit, format_9998), "ZHBEV(N," + uplo + fem::str_cref(")"), iinfo, n, kd, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -1572,19 +1470,16 @@ void Cdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 temp1 = zero;
                 temp2 = zero;
                 for (j = 1; j <= n; j = j + 1) {
-                    temp1 = max({temp1, REAL(abs(d1[j - 1])), REAL(abs(d3[j - 1]))});
-                    temp2 = max(temp2, REAL(abs(d1[j - 1] - d3[j - 1])));
+                    temp1 = max(temp1, abs(d1[j - 1]), abs(d3[j - 1]));
+                    temp2 = max(temp2, abs(d1[j - 1] - d3[j - 1]));
                 }
-                result[ntest - 1] = temp2 / max(unfl, REAL(ulp * max(temp1, temp2)));
+                result[ntest - 1] = temp2 / max(unfl, ulp * max(temp1, temp2));
                 //
                 Clacpy(" ", n, n, a, lda, v, ldu);
                 ntest++;
-                Cheevr("V", "A", &uplo, n, a, ldu, vl, vu, il, iu, abstol, m, wa1, z, ldu, iwork, work, lwork, rwork, lrwork, &iwork[(2 * n + 1) - 1], liwork - 2 * n, iinfo);
+                Cheevr("V", "A", uplo.elems, n, a, ldu, vl, vu, il, iu, abstol, m, wa1, z, ldu, iwork, work, lwork, rwork, lrwork, &iwork[(2 * n + 1) - 1], liwork - 2 * n, iinfo);
                 if (iinfo != 0) {
-                    if (Mlsame(&uplo, "U"))
-                        write(nounit, format_9999), "Cheevr(V,A,U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
-                    else
-                        write(nounit, format_9999), "Cheevr(V,A,L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                    write(nounit, format_9999), "ZHEEVR(V,A," + uplo + fem::str_cref(")"), iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -1600,15 +1495,12 @@ void Cdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 //
                 Clacpy(" ", n, n, v, ldu, a, lda);
                 //
-                Chet21(1, &uplo, n, 0, a, ldu, wa1, d2, z, ldu, v, ldu, tau, work, rwork, &result[ntest - 1]);
+                Chet21(1, uplo, n, 0, a, ldu, wa1, d2, z, ldu, v, ldu, tau, work, rwork, &result[ntest - 1]);
                 //
                 ntest += 2;
-                Cheevr("N", "A", &uplo, n, a, ldu, vl, vu, il, iu, abstol, m2, wa2, z, ldu, iwork, work, lwork, rwork, lrwork, &iwork[(2 * n + 1) - 1], liwork - 2 * n, iinfo);
+                Cheevr("N", "A", uplo.elems, n, a, ldu, vl, vu, il, iu, abstol, m2, wa2, z, ldu, iwork, work, lwork, rwork, lrwork, &iwork[(2 * n + 1) - 1], liwork - 2 * n, iinfo);
                 if (iinfo != 0) {
-                    if (Mlsame(&uplo, "U"))
-                        write(nounit, format_9999), "Cheevr(N,A,U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
-                    else
-                        write(nounit, format_9999), "Cheevr(N,A,L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                    write(nounit, format_9999), "ZHEEVR(N,A," + uplo + fem::str_cref(")"), iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -1623,21 +1515,18 @@ void Cdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 temp1 = zero;
                 temp2 = zero;
                 for (j = 1; j <= n; j = j + 1) {
-                    temp1 = max({temp1, REAL(abs(wa1[j - 1])), REAL(abs(wa2[j - 1]))});
-                    temp2 = max(temp2, REAL(abs(wa1[j - 1] - wa2[j - 1])));
+                    temp1 = max(temp1, abs(wa1[j - 1]), abs(wa2[j - 1]));
+                    temp2 = max(temp2, abs(wa1[j - 1] - wa2[j - 1]));
                 }
-                result[ntest - 1] = temp2 / max(unfl, REAL(ulp * max(temp1, temp2)));
+                result[ntest - 1] = temp2 / max(unfl, ulp * max(temp1, temp2));
             //
             statement_1170:
                 //
                 ntest++;
                 Clacpy(" ", n, n, v, ldu, a, lda);
-                Cheevr("V", "I", &uplo, n, a, ldu, vl, vu, il, iu, abstol, m2, wa2, z, ldu, iwork, work, lwork, rwork, lrwork, &iwork[(2 * n + 1) - 1], liwork - 2 * n, iinfo);
+                Cheevr("V", "I", uplo.elems, n, a, ldu, vl, vu, il, iu, abstol, m2, wa2, z, ldu, iwork, work, lwork, rwork, lrwork, &iwork[(2 * n + 1) - 1], liwork - 2 * n, iinfo);
                 if (iinfo != 0) {
-                    if (Mlsame(&uplo, "U"))
-                        write(nounit, format_9999), "Cheevr(V,I,U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
-                    else
-                        write(nounit, format_9999), "Cheevr(V,I,L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                    write(nounit, format_9999), "ZHEEVR(V,I," + uplo + fem::str_cref(")"), iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -1653,16 +1542,13 @@ void Cdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 //
                 Clacpy(" ", n, n, v, ldu, a, lda);
                 //
-                Chet22(1, &uplo, n, m2, 0, a, ldu, wa2, d2, z, ldu, v, ldu, tau, work, rwork, &result[ntest - 1]);
+                Chet22(1, uplo, n, m2, 0, a, ldu, wa2, d2, z, ldu, v, ldu, tau, work, rwork, &result[ntest - 1]);
                 //
                 ntest += 2;
                 Clacpy(" ", n, n, v, ldu, a, lda);
-                Cheevr("N", "I", &uplo, n, a, ldu, vl, vu, il, iu, abstol, m3, wa3, z, ldu, iwork, work, lwork, rwork, lrwork, &iwork[(2 * n + 1) - 1], liwork - 2 * n, iinfo);
+                Cheevr("N", "I", uplo.elems, n, a, ldu, vl, vu, il, iu, abstol, m3, wa3, z, ldu, iwork, work, lwork, rwork, lrwork, &iwork[(2 * n + 1) - 1], liwork - 2 * n, iinfo);
                 if (iinfo != 0) {
-                    if (Mlsame(&uplo, "U"))
-                        write(nounit, format_9999), "Cheevr(N,I,U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
-                    else
-                        write(nounit, format_9999), "Cheevr(N,I,L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                    write(nounit, format_9999), "ZHEEVR(N,I," + uplo + fem::str_cref(")"), iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -1676,17 +1562,14 @@ void Cdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 //
                 temp1 = Rsxt1(1, wa2, m2, wa3, m3, abstol, ulp, unfl);
                 temp2 = Rsxt1(1, wa3, m3, wa2, m2, abstol, ulp, unfl);
-                result[ntest - 1] = (temp1 + temp2) / max(unfl, REAL(ulp * temp3));
+                result[ntest - 1] = (temp1 + temp2) / max(unfl, ulp * temp3);
             statement_1180:
                 //
                 ntest++;
                 Clacpy(" ", n, n, v, ldu, a, lda);
-                Cheevr("V", "V", &uplo, n, a, ldu, vl, vu, il, iu, abstol, m2, wa2, z, ldu, iwork, work, lwork, rwork, lrwork, &iwork[(2 * n + 1) - 1], liwork - 2 * n, iinfo);
+                Cheevr("V", "V", uplo.elems, n, a, ldu, vl, vu, il, iu, abstol, m2, wa2, z, ldu, iwork, work, lwork, rwork, lrwork, &iwork[(2 * n + 1) - 1], liwork - 2 * n, iinfo);
                 if (iinfo != 0) {
-                    if (Mlsame(&uplo, "U"))
-                        write(nounit, format_9999), "Cheevr(V,V,U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
-                    else
-                        write(nounit, format_9999), "Cheevr(V,V,L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                    write(nounit, format_9999), "ZHEEVR(V,V," + uplo + fem::str_cref(")"), iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -1702,16 +1585,13 @@ void Cdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 //
                 Clacpy(" ", n, n, v, ldu, a, lda);
                 //
-                Chet22(1, &uplo, n, m2, 0, a, ldu, wa2, d2, z, ldu, v, ldu, tau, work, rwork, &result[ntest - 1]);
+                Chet22(1, uplo, n, m2, 0, a, ldu, wa2, d2, z, ldu, v, ldu, tau, work, rwork, &result[ntest - 1]);
                 //
                 ntest += 2;
                 Clacpy(" ", n, n, v, ldu, a, lda);
-                Cheevr("N", "V", &uplo, n, a, ldu, vl, vu, il, iu, abstol, m3, wa3, z, ldu, iwork, work, lwork, rwork, lrwork, &iwork[(2 * n + 1) - 1], liwork - 2 * n, iinfo);
+                Cheevr("N", "V", uplo.elems, n, a, ldu, vl, vu, il, iu, abstol, m3, wa3, z, ldu, iwork, work, lwork, rwork, lrwork, &iwork[(2 * n + 1) - 1], liwork - 2 * n, iinfo);
                 if (iinfo != 0) {
-                    if (Mlsame(&uplo, "U"))
-                        write(nounit, format_9999), "Cheevr(N,V,U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
-                    else
-                        write(nounit, format_9999), "Cheevr(N,V,L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                    write(nounit, format_9999), "ZHEEVR(N,V," + uplo + fem::str_cref(")"), iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -1735,7 +1615,7 @@ void Cdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 } else {
                     temp3 = zero;
                 }
-                result[ntest - 1] = (temp1 + temp2) / max(unfl, REAL(temp3 * ulp));
+                result[ntest - 1] = (temp1 + temp2) / max(unfl, temp3 * ulp);
                 //
                 Clacpy(" ", n, n, v, ldu, a, lda);
             //

@@ -43,33 +43,22 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#include <mplapack_debug.h>
-
-inline REAL abs1(COMPLEX x) { return abs(x.real()) + abs(x.imag()); }
-
 void Cdrges3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotype, INTEGER *iseed, REAL const thresh, INTEGER const nounit, COMPLEX *a, INTEGER const lda, COMPLEX *b, COMPLEX *s, COMPLEX *t, COMPLEX *q, INTEGER const ldq, COMPLEX *z, COMPLEX *alpha, COMPLEX *beta, COMPLEX *work, INTEGER const lwork, REAL *rwork, REAL *result, bool *bwork, INTEGER &info) {
-    INTEGER ldb = lda;
-    INTEGER lds = lda;
-    INTEGER ldt = lda;
-    INTEGER ldz = ldq;
-    char buf[1024];
     common cmn;
     common_write write(cmn);
-    const INTEGER maxtyp = 26;
-    INTEGER kclass[26] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3};
-    INTEGER kbmagn[26] = {1, 1, 1, 1, 1, 1, 1, 1, 3, 2, 3, 2, 2, 3, 1, 1, 1, 1, 1, 1, 1, 3, 2, 3, 2, 1};
-    INTEGER ktrian[26] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
-    bool lasign[26] = {false, false, false, false, false, false, true, false, true, true, false, false, true, true, true, false, true, false, false, false, true, true, true, true, true, false};
-    bool lbsign[26] = {false, false, false, false, false, false, false, true, false, false, true, true, false, false, true, false, true, false, false, false, false, false, false, false, false, false};
-    INTEGER kz1[6] = {0, 1, 2, 1, 3, 3};
-    INTEGER kz2[6] = {0, 0, 1, 2, 1, 1};
-    INTEGER kadd[6] = {0, 0, 0, 0, 3, 2};
-    INTEGER katype[26] = {0, 1, 0, 1, 2, 3, 4, 1, 4, 4, 1, 1, 4, 4, 4, 2, 4, 5, 8, 7, 9, 4, 4, 4, 4, 0};
-    INTEGER kbtype[26] = {0, 0, 1, 1, 2, -3, 1, 4, 1, 1, 4, 4, 1, 1, -4, 2, -4, 8, 8, 8, 8, 8, 8, 8, 8, 0};
-    INTEGER kazero[26] = {1, 1, 1, 1, 1, 1, 2, 1, 2, 2, 1, 1, 2, 2, 3, 1, 3, 5, 5, 5, 5, 3, 3, 3, 3, 1};
-    INTEGER kbzero[26] = {1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 2, 2, 1, 1, 4, 1, 4, 6, 6, 6, 6, 4, 4, 4, 4, 1};
-    INTEGER kamagn[26] = {1, 1, 1, 1, 1, 1, 1, 1, 2, 3, 2, 3, 2, 3, 1, 1, 1, 1, 1, 1, 1, 2, 3, 3, 2, 1};
-
+    static INTEGER kclass[26] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3};
+    static INTEGER kz1[6] = {0, 1, 2, 1, 3, 3};
+    static INTEGER kz2[6] = {0, 0, 1, 2, 1, 1};
+    static INTEGER kadd[6] = {0, 0, 0, 0, 3, 2};
+    static INTEGER katype[26] = {0, 1, 0, 1, 2, 3, 4, 1, 4, 4, 1, 1, 4, 4, 4, 2, 4, 5, 8, 7, 9, 4, 4, 4, 4, 0};
+    static INTEGER kbtype[26] = {0, 0, 1, 1, 2, -3, 1, 4, 1, 1, 4, 4, 1, 1, -4, 2, -4, 8, 8, 8, 8, 8, 8, 8, 8, 0};
+    static INTEGER kazero[26] = {1, 1, 1, 1, 1, 1, 2, 1, 2, 2, 1, 1, 2, 2, 3, 1, 3, 5, 5, 5, 5, 3, 3, 3, 3, 1};
+    static INTEGER kbzero[26] = {1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 2, 2, 1, 1, 4, 1, 4, 6, 6, 6, 6, 4, 4, 4, 4, 1};
+    static INTEGER kamagn[26] = {1, 1, 1, 1, 1, 1, 1, 1, 2, 3, 2, 3, 2, 3, 1, 1, 1, 1, 1, 1, 1, 2, 3, 3, 2, 1};
+    static INTEGER kbmagn[26] = {1, 1, 1, 1, 1, 1, 1, 1, 3, 2, 3, 2, 2, 3, 1, 1, 1, 1, 1, 1, 1, 3, 2, 3, 2, 1};
+    static INTEGER ktrian[26] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
+    static bool lasign[26] = {false, false, false, false, false, false, true, false, true, true, false, false, true, true, true, false, true, false, false, false, true, true, true, true, true, false};
+    static bool lbsign[26] = {false, false, false, false, false, false, false, true, false, false, true, true, false, false, true, false, true, false, false, false, false, false, false, false, false, false};
     COMPLEX x = 0.0;
     bool badnn = false;
     INTEGER nmax = 0;
@@ -83,13 +72,14 @@ void Cdrges3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
     const REAL one = 1.0;
     REAL safmax = 0.0;
     REAL ulpinv = 0.0;
-    REAL rmagn[4];
+    REAL rmagn[0, 3];
     INTEGER ntestt = 0;
     INTEGER nerrs = 0;
     INTEGER nmats = 0;
     INTEGER jsize = 0;
     INTEGER n = 0;
     INTEGER n1 = 0;
+    const INTEGER maxtyp = 26;
     INTEGER mtypes = 0;
     INTEGER jtype = 0;
     INTEGER ntest = 0;
@@ -104,14 +94,14 @@ void Cdrges3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
     COMPLEX ctemp = 0.0;
     INTEGER i = 0;
     INTEGER isort = 0;
-    char sort;
+    fem::str<1> sort;
     INTEGER rsub = 0;
     INTEGER sdim = 0;
     REAL temp1 = 0.0;
     bool ilabad = false;
     REAL temp2 = 0.0;
     INTEGER knteig = 0;
-    static const char *format_9999 = "(' Cdrges3: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,', JTYPE=',i6,"
+    static const char *format_9999 = "(' ZDRGES3: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,', JTYPE=',i6,"
                                      "', ISEED=(',4(i4,','),i5,')')";
     //
     // Check for errors
@@ -151,7 +141,7 @@ void Cdrges3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
     minwrk = 1;
     if (info == 0 && lwork >= 1) {
         minwrk = 3 * nmax * nmax;
-        nb = max({(INTEGER)1, iMlaenv(1, "Cgeqrf", " ", nmax, nmax, -1, -1), iMlaenv(1, "Cunmqr", "LC", nmax, nmax, nmax, -1), iMlaenv(1, "Cungqr", " ", nmax, nmax, nmax, -1)});
+        nb = max((INTEGER)1, iMlaenv(1, "Cgeqrf", " ", nmax, nmax, -1, -1), iMlaenv(1, "Cunmqr", "LC", nmax, nmax, nmax, -1), iMlaenv(1, "Cungqr", " ", nmax, nmax, nmax, -1));
         maxwrk = max(nmax + nmax * nb, 3 * nmax * nmax);
         work[1 - 1] = maxwrk;
     }
@@ -175,6 +165,7 @@ void Cdrges3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
     safmin = Rlamch("Safe minimum");
     safmin = safmin / ulp;
     safmax = one / safmin;
+    Rlabad(safmin, safmax);
     ulpinv = one / ulp;
     //
     // The values RMAGN(2:3) depend on N, see below.
@@ -258,7 +249,7 @@ void Cdrges3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
                 } else {
                     in = n;
                 }
-                Clatm4(katype[jtype - 1], in, kz1[kazero[jtype - 1] - 1], kz2[kazero[jtype - 1] - 1], lasign[jtype - 1], rmagn[kamagn[jtype - 1]], ulp, rmagn[ktrian[jtype - 1] * kamagn[jtype - 1]], 2, iseed, a, lda);
+                Clatm4(katype[jtype - 1], in, kz1[kazero[jtype - 1] - 1], kz2[kazero[jtype - 1] - 1], lasign[jtype - 1], rmagn[kamagn[jtype - 1]], ulp, rmagn[(ktrian[jtype - 1] * kamagn[jtype - 1])], 2, iseed, a, lda);
                 iadd = kadd[kazero[jtype - 1] - 1];
                 if (iadd > 0 && iadd <= n) {
                     a[(iadd - 1) + (iadd - 1) * lda] = rmagn[kamagn[jtype - 1]];
@@ -274,10 +265,10 @@ void Cdrges3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
                 } else {
                     in = n;
                 }
-                Clatm4(kbtype[jtype - 1], in, kz1[kbzero[jtype - 1] - 1], kz2[kbzero[jtype - 1] - 1], lbsign[jtype - 1], rmagn[kbmagn[jtype - 1]], one, rmagn[ktrian[jtype - 1] * kbmagn[jtype - 1]], 2, iseed, b, lda);
+                Clatm4(kbtype[jtype - 1], in, kz1[kbzero[jtype - 1] - 1], kz2[kbzero[jtype - 1] - 1], lbsign[jtype - 1], rmagn[kbmagn[jtype - 1]], one, rmagn[(ktrian[jtype - 1] * kbmagn[jtype - 1])], 2, iseed, b, lda);
                 iadd = kadd[kbzero[jtype - 1] - 1];
                 if (iadd != 0 && iadd <= n) {
-                    b[(iadd - 1) + (iadd - 1) * ldb] = rmagn[kbmagn[jtype - 1]];
+                    b[(iadd - 1) + (iadd - 1) * lda] = rmagn[kbmagn[jtype - 1]];
                 }
                 //
                 if (kclass[jtype - 1] == 2 && n > 0) {
@@ -290,21 +281,21 @@ void Cdrges3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
                     for (jc = 1; jc <= n - 1; jc = jc + 1) {
                         for (jr = jc; jr <= n; jr = jr + 1) {
                             q[(jr - 1) + (jc - 1) * ldq] = Clarnd(3, iseed);
-                            z[(jr - 1) + (jc - 1) * ldz] = Clarnd(3, iseed);
+                            z[(jr - 1) + (jc - 1) * ldq] = Clarnd(3, iseed);
                         }
                         Clarfg(n + 1 - jc, q[(jc - 1) + (jc - 1) * ldq], &q[((jc + 1) - 1) + (jc - 1) * ldq], 1, work[jc - 1]);
                         work[(2 * n + jc) - 1] = sign(one, q[(jc - 1) + (jc - 1) * ldq].real());
                         q[(jc - 1) + (jc - 1) * ldq] = cone;
-                        Clarfg(n + 1 - jc, z[(jc - 1) + (jc - 1) * ldz], &z[((jc + 1) - 1) + (jc - 1) * ldz], 1, work[(n + jc) - 1]);
-                        work[(3 * n + jc) - 1] = sign(one, z[(jc - 1) + (jc - 1) * ldz].real());
-                        z[(jc - 1) + (jc - 1) * ldz] = cone;
+                        Clarfg(n + 1 - jc, z[(jc - 1) + (jc - 1) * ldq], &z[((jc + 1) - 1) + (jc - 1) * ldq], 1, work[(n + jc) - 1]);
+                        work[(3 * n + jc) - 1] = sign(one, z[(jc - 1) + (jc - 1) * ldq].real());
+                        z[(jc - 1) + (jc - 1) * ldq] = cone;
                     }
                     ctemp = Clarnd(3, iseed);
                     q[(n - 1) + (n - 1) * ldq] = cone;
                     work[n - 1] = czero;
                     work[(3 * n) - 1] = ctemp / abs(ctemp);
                     ctemp = Clarnd(3, iseed);
-                    z[(n - 1) + (n - 1) * ldz] = cone;
+                    z[(n - 1) + (n - 1) * ldq] = cone;
                     work[(2 * n) - 1] = czero;
                     work[(4 * n) - 1] = ctemp / abs(ctemp);
                     //
@@ -313,7 +304,7 @@ void Cdrges3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
                     for (jc = 1; jc <= n; jc = jc + 1) {
                         for (jr = 1; jr <= n; jr = jr + 1) {
                             a[(jr - 1) + (jc - 1) * lda] = work[(2 * n + jr) - 1] * conj(work[(3 * n + jc) - 1]) * a[(jr - 1) + (jc - 1) * lda];
-                            b[(jr - 1) + (jc - 1) * ldb] = work[(2 * n + jr) - 1] * conj(work[(3 * n + jc) - 1]) * b[(jr - 1) + (jc - 1) * ldb];
+                            b[(jr - 1) + (jc - 1) * lda] = work[(2 * n + jr) - 1] * conj(work[(3 * n + jc) - 1]) * b[(jr - 1) + (jc - 1) * lda];
                         }
                     }
                     Cunm2r("L", "N", n, n, n - 1, q, ldq, work, a, lda, &work[(2 * n + 1) - 1], iinfo);
@@ -339,8 +330,8 @@ void Cdrges3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
                 //
                 for (jc = 1; jc <= n; jc = jc + 1) {
                     for (jr = 1; jr <= n; jr = jr + 1) {
-                        a[(jr - 1) + (jc - 1) * lda] = rmagn[kamagn[jtype - 1] - 1] * Clarnd(4, iseed);
-                        b[(jr - 1) + (jc - 1) * ldb] = rmagn[kbmagn[jtype - 1] - 1] * Clarnd(4, iseed);
+                        a[(jr - 1) + (jc - 1) * lda] = rmagn[kamagn[jtype - 1]] * Clarnd(4, iseed);
+                        b[(jr - 1) + (jc - 1) * lda] = rmagn[kbmagn[jtype - 1]] * Clarnd(4, iseed);
                     }
                 }
             }
@@ -348,7 +339,7 @@ void Cdrges3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
         statement_100:
             //
             if (iinfo != 0) {
-                write(nounit, format_9999), "Generator", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                write(nounit, format_9999), "Generator", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 return;
             }
@@ -363,10 +354,10 @@ void Cdrges3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
             //
             for (isort = 0; isort <= 1; isort = isort + 1) {
                 if (isort == 0) {
-                    sort = 'N';
+                    sort = "N";
                     rsub = 0;
                 } else {
-                    sort = 'S';
+                    sort = "S";
                     rsub = 5;
                 }
                 //
@@ -376,10 +367,10 @@ void Cdrges3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
                 Clacpy("Full", n, n, b, lda, t, lda);
                 ntest = 1 + rsub + isort;
                 result[(1 + rsub + isort) - 1] = ulpinv;
-                Cgges3("V", "V", &sort, Clctes, n, s, lda, t, lda, sdim, alpha, beta, q, ldq, z, ldq, work, lwork, rwork, bwork, iinfo);
+                Cgges3("V", "V", sort.elems, Clctes, n, s, lda, t, lda, sdim, alpha, beta, q, ldq, z, ldq, work, lwork, rwork, bwork, iinfo);
                 if (iinfo != 0 && iinfo != n + 2) {
                     result[(1 + rsub + isort) - 1] = ulpinv;
-                    write(nounit, format_9999), "Cgges3", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                    write(nounit, format_9999), "ZGGES3", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     goto statement_160;
                 }
@@ -407,25 +398,25 @@ void Cdrges3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
                 //
                 for (j = 1; j <= n; j = j + 1) {
                     ilabad = false;
-                    temp2 = (abs1(alpha[j - 1] - s[(j - 1) + (j - 1) * lds]) / max({safmin, abs1(alpha[j - 1]), abs1(s[(j - 1) + (j - 1) * lds])}) + abs1(beta[j - 1] - t[(j - 1) + (j - 1) * ldt]) / max({safmin, abs1(beta[j - 1]), abs1(t[(j - 1) + (j - 1) * ldt])})) / ulp;
+                    temp2 = (abs1(alpha[j - 1] - s[(j - 1) + (j - 1) * lda]) / max(safmin, abs1(alpha[j - 1]), abs1(s[(j - 1) + (j - 1) * lda])) + abs1(beta[j - 1] - t[(j - 1) + (j - 1) * lda]) / max(safmin, abs1(beta[j - 1]), abs1(t[(j - 1) + (j - 1) * lda]))) / ulp;
                     //
                     if (j < n) {
-                        if (s[((j + 1) - 1) + (j - 1) * lds] != zero) {
+                        if (s[((j + 1) - 1) + (j - 1) * lda] != zero) {
                             ilabad = true;
                             result[(5 + rsub) - 1] = ulpinv;
                         }
                     }
                     if (j > 1) {
-                        if (s[(j - 1) + ((j - 1) - 1) * lds] != zero) {
+                        if (s[(j - 1) + ((j - 1) - 1) * lda] != zero) {
                             ilabad = true;
                             result[(5 + rsub) - 1] = ulpinv;
                         }
                     }
                     temp1 = max(temp1, temp2);
                     if (ilabad) {
-                        write(nounit, "(' Cdrges3: S not in Schur form at eigenvalue ',i6,'.',/,9x,"
+                        write(nounit, "(' ZDRGES3: S not in Schur form at eigenvalue ',i6,'.',/,9x,"
                                       "'N=',i6,', JTYPE=',i6,', ISEED=(',3(i5,','),i5,')')"),
-                            j, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                            j, n, jtype, ioldsd;
                     }
                 }
                 result[(6 + rsub) - 1] = temp1;
@@ -470,7 +461,7 @@ void Cdrges3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
                         //
                         // Matrix types
                         //
-                        write(nounit, "(' Matrix types (see Cdrges3 for details): ')");
+                        write(nounit, "(' Matrix types (see ZDRGES3 for details): ')");
                         write(nounit, "(' Special Matrices:',23x,'(J''=transposed Jordan block)',/,"
                                       "'   1=(0,0)  2=(I,0)  3=(0,I)  4=(I,I)  5=(J'',J'')  ',"
                                       "'6=(diag(J'',I), diag(I,J''))',/,' Diagonal Matrices:  ( ',"
@@ -519,15 +510,13 @@ void Cdrges3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
                     }
                     nerrs++;
                     if (result[jr - 1] < 10000.0) {
-                        sprintnum_short(buf, result[jr - 1]);
                         write(nounit, "(' Matrix order=',i5,', type=',i2,', seed=',4(i4,','),"
-                                      "' result ',i2,' is',0p,a)"),
-                            n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3], jr, buf;
+                                      "' result ',i2,' is',0p,f8.2)"),
+                            n, jtype, ioldsd, jr, result[jr - 1];
                     } else {
-                        sprintnum_short(buf, result[jr - 1]);
                         write(nounit, "(' Matrix order=',i5,', type=',i2,', seed=',4(i4,','),"
-                                      "' result ',i2,' is',1p,a)"),
-                            n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3], jr, buf;
+                                      "' result ',i2,' is',1p,d10.3)"),
+                            n, jtype, ioldsd, jr, result[jr - 1];
                     }
                 }
             }

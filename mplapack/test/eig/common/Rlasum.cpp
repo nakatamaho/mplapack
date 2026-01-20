@@ -43,9 +43,7 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#include <mplapack_debug.h>
-
-void Rlasum(const char *type, INTEGER const iounit, INTEGER const ie, INTEGER const nrun) {
+void Rlasum(fem::str_cref type, INTEGER const iounit, INTEGER const ie, INTEGER const nrun) {
     common cmn;
     common_write write(cmn);
     //

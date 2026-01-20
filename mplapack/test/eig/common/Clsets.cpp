@@ -43,11 +43,7 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#include <mplapack_debug.h>
-
 void Clsets(INTEGER const m, INTEGER const p, INTEGER const n, COMPLEX *a, COMPLEX *af, INTEGER const lda, COMPLEX *b, COMPLEX *bf, INTEGER const ldb, COMPLEX *c, COMPLEX *cf, COMPLEX *d, COMPLEX *df, COMPLEX *x, COMPLEX *work, INTEGER const lwork, REAL *rwork, REAL *result) {
-    INTEGER ldaf = lda;
-    INTEGER ldbf = ldb;
     //
     // Copy the matrices A and B to the arrays AF and BF,
     // and the vectors C and D to the arrays CF and DF,

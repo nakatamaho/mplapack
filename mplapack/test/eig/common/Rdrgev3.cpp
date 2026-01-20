@@ -43,29 +43,22 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#include <mplapack_debug.h>
-
 void Rdrgev3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotype, INTEGER *iseed, REAL const thresh, INTEGER const nounit, REAL *a, INTEGER const lda, REAL *b, REAL *s, REAL *t, REAL *q, INTEGER const ldq, REAL *z, REAL *qe, INTEGER const ldqe, REAL *alphar, REAL *alphai, REAL *beta, REAL *alphr1, REAL *alphi1, REAL *beta1, REAL *work, INTEGER const lwork, REAL *result, INTEGER &info) {
-    INTEGER ldb = lda;
-    INTEGER lds = lda;
-    INTEGER ldt = lda;
-    INTEGER ldz = ldq;
     common cmn;
     common_write write(cmn);
-    const INTEGER maxtyp = 26;
-    INTEGER kclass[26] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3};
-    INTEGER kbmagn[26] = {1, 1, 1, 1, 1, 1, 1, 1, 3, 2, 3, 2, 2, 3, 1, 1, 1, 1, 1, 1, 1, 3, 2, 3, 2, 1};
-    INTEGER ktrian[26] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
-    INTEGER iasign[26] = {0, 0, 0, 0, 0, 0, 2, 0, 2, 2, 0, 0, 2, 2, 2, 0, 2, 0, 0, 0, 2, 2, 2, 2, 2, 0};
-    INTEGER ibsign[26] = {0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 2, 2, 0, 0, 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-    INTEGER kz1[6] = {0, 1, 2, 1, 3, 3};
-    INTEGER kz2[6] = {0, 0, 1, 2, 1, 1};
-    INTEGER kadd[6] = {0, 0, 0, 0, 3, 2};
-    INTEGER katype[26] = {0, 1, 0, 1, 2, 3, 4, 1, 4, 4, 1, 1, 4, 4, 4, 2, 4, 5, 8, 7, 9, 4, 4, 4, 4, 0};
-    INTEGER kbtype[26] = {0, 0, 1, 1, 2, -3, 1, 4, 1, 1, 4, 4, 1, 1, -4, 2, -4, 8, 8, 8, 8, 8, 8, 8, 8, 0};
-    INTEGER kazero[26] = {1, 1, 1, 1, 1, 1, 2, 1, 2, 2, 1, 1, 2, 2, 3, 1, 3, 5, 5, 5, 5, 3, 3, 3, 3, 1};
-    INTEGER kbzero[26] = {1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 2, 2, 1, 1, 4, 1, 4, 6, 6, 6, 6, 4, 4, 4, 4, 1};
-    INTEGER kamagn[26] = {1, 1, 1, 1, 1, 1, 1, 1, 2, 3, 2, 3, 2, 3, 1, 1, 1, 1, 1, 1, 1, 2, 3, 3, 2, 1};
+    static INTEGER kclass[26] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3};
+    static INTEGER kz1[6] = {0, 1, 2, 1, 3, 3};
+    static INTEGER kz2[6] = {0, 0, 1, 2, 1, 1};
+    static INTEGER kadd[6] = {0, 0, 0, 0, 3, 2};
+    static INTEGER katype[26] = {0, 1, 0, 1, 2, 3, 4, 1, 4, 4, 1, 1, 4, 4, 4, 2, 4, 5, 8, 7, 9, 4, 4, 4, 4, 0};
+    static INTEGER kbtype[26] = {0, 0, 1, 1, 2, -3, 1, 4, 1, 1, 4, 4, 1, 1, -4, 2, -4, 8, 8, 8, 8, 8, 8, 8, 8, 0};
+    static INTEGER kazero[26] = {1, 1, 1, 1, 1, 1, 2, 1, 2, 2, 1, 1, 2, 2, 3, 1, 3, 5, 5, 5, 5, 3, 3, 3, 3, 1};
+    static INTEGER kbzero[26] = {1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 2, 2, 1, 1, 4, 1, 4, 6, 6, 6, 6, 4, 4, 4, 4, 1};
+    static INTEGER kamagn[26] = {1, 1, 1, 1, 1, 1, 1, 1, 2, 3, 2, 3, 2, 3, 1, 1, 1, 1, 1, 1, 1, 2, 3, 3, 2, 1};
+    static INTEGER kbmagn[26] = {1, 1, 1, 1, 1, 1, 1, 1, 3, 2, 3, 2, 2, 3, 1, 1, 1, 1, 1, 1, 1, 3, 2, 3, 2, 1};
+    static INTEGER ktrian[26] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
+    static INTEGER iasign[26] = {0, 0, 0, 0, 0, 0, 2, 0, 2, 2, 0, 0, 2, 2, 2, 0, 2, 0, 0, 0, 2, 2, 2, 2, 2, 0};
+    static INTEGER ibsign[26] = {0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 2, 2, 0, 0, 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0};
     bool badnn = false;
     INTEGER nmax = 0;
     INTEGER j = 0;
@@ -77,13 +70,14 @@ void Rdrgev3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
     const REAL one = 1.0;
     REAL safmax = 0.0;
     REAL ulpinv = 0.0;
-    REAL rmagn[4];
+    REAL rmagn[0, 3];
     INTEGER ntestt = 0;
     INTEGER nerrs = 0;
     INTEGER nmats = 0;
     INTEGER jsize = 0;
     INTEGER n = 0;
     INTEGER n1 = 0;
+    const INTEGER maxtyp = 26;
     INTEGER mtypes = 0;
     INTEGER jtype = 0;
     INTEGER ioldsd[4];
@@ -93,11 +87,10 @@ void Rdrgev3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
     INTEGER jc = 0;
     INTEGER jr = 0;
     INTEGER i = 0;
-    char buf[1024];
-    static const char *format_9998 = "(' Rdrgev3: ',a,' Eigenvectors from ',a,' incorrectly normalized.',/,"
-                                     "' Bits of error=',0p,a,',',3x,'N=',i4,', JTYPE=',i3,', ISEED=(',4(i4,"
+    static const char *format_9998 = "(' DDRGEV3: ',a,' Eigenvectors from ',a,' incorrectly normalized.',/,"
+                                     "' Bits of error=',0p,g10.3,',',3x,'N=',i4,', JTYPE=',i3,', ISEED=(',4(i4,"
                                      "','),i5,')')";
-    static const char *format_9999 = "(' Rdrgev3: ',a,' returned INFO=',i6,'.',/,3x,'N=',i6,', JTYPE=',i6,"
+    static const char *format_9999 = "(' DDRGEV3: ',a,' returned INFO=',i6,'.',/,3x,'N=',i6,', JTYPE=',i6,"
                                      "', ISEED=(',4(i4,','),i5,')')";
     //
     // Check for errors
@@ -138,7 +131,7 @@ void Rdrgev3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
     //
     minwrk = 1;
     if (info == 0 && lwork >= 1) {
-        minwrk = max({(INTEGER)1, 8 * nmax, nmax * (nmax + 1)});
+        minwrk = max((INTEGER)1, 8 * nmax, nmax * (nmax + 1));
         maxwrk = 7 * nmax + nmax * iMlaenv(1, "Rgeqrf", " ", nmax, 1, nmax, 0);
         maxwrk = max(maxwrk, nmax * (nmax + 1));
         work[1 - 1] = maxwrk;
@@ -163,6 +156,7 @@ void Rdrgev3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
     ulp = Rlamch("Epsilon") * Rlamch("Base");
     safmin = safmin / ulp;
     safmax = one / safmin;
+    Rlabad(safmin, safmax);
     ulpinv = one / ulp;
     //
     // The values RMAGN(2:3) depend on N, see below.
@@ -180,7 +174,7 @@ void Rdrgev3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
         n = nn[jsize - 1];
         n1 = max((INTEGER)1, n);
         rmagn[2] = safmax * ulp / castREAL(n1);
-        rmagn[3] = safmin * ulpinv * castREAL(n1);
+        rmagn[3] = safmin * ulpinv * n1;
         //
         if (nsizes != 1) {
             mtypes = min(maxtyp, ntypes);
@@ -258,7 +252,7 @@ void Rdrgev3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
                 Rlatm4(kbtype[jtype - 1], in, kz1[kbzero[jtype - 1] - 1], kz2[kbzero[jtype - 1] - 1], ibsign[jtype - 1], rmagn[kbmagn[jtype - 1]], one, rmagn[(ktrian[jtype - 1] * kbmagn[jtype - 1])], 2, iseed, b, lda);
                 iadd = kadd[kbzero[jtype - 1] - 1];
                 if (iadd != 0 && iadd <= n) {
-                    b[(iadd - 1) + (iadd - 1) * ldb] = one;
+                    b[(iadd - 1) + (iadd - 1) * lda] = one;
                 }
                 //
                 if (kclass[jtype - 1] == 2 && n > 0) {
@@ -271,19 +265,19 @@ void Rdrgev3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
                     for (jc = 1; jc <= n - 1; jc = jc + 1) {
                         for (jr = jc; jr <= n; jr = jr + 1) {
                             q[(jr - 1) + (jc - 1) * ldq] = Rlarnd(3, iseed);
-                            z[(jr - 1) + (jc - 1) * ldz] = Rlarnd(3, iseed);
+                            z[(jr - 1) + (jc - 1) * ldq] = Rlarnd(3, iseed);
                         }
                         Rlarfg(n + 1 - jc, q[(jc - 1) + (jc - 1) * ldq], &q[((jc + 1) - 1) + (jc - 1) * ldq], 1, work[jc - 1]);
                         work[(2 * n + jc) - 1] = sign(one, q[(jc - 1) + (jc - 1) * ldq]);
                         q[(jc - 1) + (jc - 1) * ldq] = one;
-                        Rlarfg(n + 1 - jc, z[(jc - 1) + (jc - 1) * ldz], &z[((jc + 1) - 1) + (jc - 1) * ldz], 1, work[(n + jc) - 1]);
-                        work[(3 * n + jc) - 1] = sign(one, z[(jc - 1) + (jc - 1) * ldz]);
-                        z[(jc - 1) + (jc - 1) * ldz] = one;
+                        Rlarfg(n + 1 - jc, z[(jc - 1) + (jc - 1) * ldq], &z[((jc + 1) - 1) + (jc - 1) * ldq], 1, work[(n + jc) - 1]);
+                        work[(3 * n + jc) - 1] = sign(one, z[(jc - 1) + (jc - 1) * ldq]);
+                        z[(jc - 1) + (jc - 1) * ldq] = one;
                     }
                     q[(n - 1) + (n - 1) * ldq] = one;
                     work[n - 1] = zero;
                     work[(3 * n) - 1] = sign(one, Rlarnd(2, iseed));
-                    z[(n - 1) + (n - 1) * ldz] = one;
+                    z[(n - 1) + (n - 1) * ldq] = one;
                     work[(2 * n) - 1] = zero;
                     work[(4 * n) - 1] = sign(one, Rlarnd(2, iseed));
                     //
@@ -292,7 +286,7 @@ void Rdrgev3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
                     for (jc = 1; jc <= n; jc = jc + 1) {
                         for (jr = 1; jr <= n; jr = jr + 1) {
                             a[(jr - 1) + (jc - 1) * lda] = work[(2 * n + jr) - 1] * work[(3 * n + jc) - 1] * a[(jr - 1) + (jc - 1) * lda];
-                            b[(jr - 1) + (jc - 1) * ldb] = work[(2 * n + jr) - 1] * work[(3 * n + jc) - 1] * b[(jr - 1) + (jc - 1) * ldb];
+                            b[(jr - 1) + (jc - 1) * lda] = work[(2 * n + jr) - 1] * work[(3 * n + jc) - 1] * b[(jr - 1) + (jc - 1) * lda];
                         }
                     }
                     Rorm2r("L", "N", n, n, n - 1, q, ldq, work, a, lda, &work[(2 * n + 1) - 1], ierr);
@@ -319,7 +313,7 @@ void Rdrgev3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
                 for (jc = 1; jc <= n; jc = jc + 1) {
                     for (jr = 1; jr <= n; jr = jr + 1) {
                         a[(jr - 1) + (jc - 1) * lda] = rmagn[kamagn[jtype - 1]] * Rlarnd(2, iseed);
-                        b[(jr - 1) + (jc - 1) * ldb] = rmagn[kbmagn[jtype - 1]] * Rlarnd(2, iseed);
+                        b[(jr - 1) + (jc - 1) * lda] = rmagn[kbmagn[jtype - 1]] * Rlarnd(2, iseed);
                     }
                 }
             }
@@ -327,7 +321,7 @@ void Rdrgev3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
         statement_90:
             //
             if (ierr != 0) {
-                write(nounit, format_9999), "Generator", ierr, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                write(nounit, format_9999), "Generator", ierr, n, jtype, ioldsd;
                 info = abs(ierr);
                 return;
             }
@@ -345,35 +339,33 @@ void Rdrgev3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
             Rggev3("V", "V", n, s, lda, t, lda, alphar, alphai, beta, q, ldq, z, ldq, work, lwork, ierr);
             if (ierr != 0 && ierr != n + 1) {
                 result[1 - 1] = ulpinv;
-                write(nounit, format_9999), "Rggev31", ierr, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                write(nounit, format_9999), "DGGEV31", ierr, n, jtype, ioldsd;
                 info = abs(ierr);
                 goto statement_190;
             }
             //
-            //           Do the tests (1) and (2)
+            // Do the tests (1) and (2)
             //
             Rget52(true, n, a, lda, b, lda, q, ldq, alphar, alphai, beta, work, &result[1 - 1]);
             if (result[2 - 1] > thresh) {
-                sprintnum_short(buf, result[2 - 1]);
-                write(nounit, format_9998), "Left", "Rggev31", buf, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                write(nounit, format_9998), "Left", "DGGEV31", result[2 - 1], n, jtype, ioldsd;
             }
             //
-            //           Do the tests (3) and (4)
+            // Do the tests (3) and (4)
             //
             Rget52(false, n, a, lda, b, lda, z, ldq, alphar, alphai, beta, work, &result[3 - 1]);
             if (result[4 - 1] > thresh) {
-                sprintnum_short(buf, result[4 - 1]);
-                write(nounit, format_9998), "Right", "Rggev31", buf, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                write(nounit, format_9998), "Right", "DGGEV31", result[4 - 1], n, jtype, ioldsd;
             }
             //
-            //           Do the test (5)
+            // Do the test (5)
             //
             Rlacpy(" ", n, n, a, lda, s, lda);
             Rlacpy(" ", n, n, b, lda, t, lda);
             Rggev3("N", "N", n, s, lda, t, lda, alphr1, alphi1, beta1, q, ldq, z, ldq, work, lwork, ierr);
             if (ierr != 0 && ierr != n + 1) {
                 result[1 - 1] = ulpinv;
-                write(nounit, format_9999), "Rggev32", ierr, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                write(nounit, format_9999), "DGGEV32", ierr, n, jtype, ioldsd;
                 info = abs(ierr);
                 goto statement_190;
             }
@@ -392,7 +384,7 @@ void Rdrgev3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
             Rggev3("V", "N", n, s, lda, t, lda, alphr1, alphi1, beta1, qe, ldqe, z, ldq, work, lwork, ierr);
             if (ierr != 0 && ierr != n + 1) {
                 result[1 - 1] = ulpinv;
-                write(nounit, format_9999), "Rggev33", ierr, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                write(nounit, format_9999), "DGGEV33", ierr, n, jtype, ioldsd;
                 info = abs(ierr);
                 goto statement_190;
             }
@@ -419,7 +411,7 @@ void Rdrgev3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
             Rggev3("N", "V", n, s, lda, t, lda, alphr1, alphi1, beta1, q, ldq, qe, ldqe, work, lwork, ierr);
             if (ierr != 0 && ierr != n + 1) {
                 result[1 - 1] = ulpinv;
-                write(nounit, format_9999), "Rggev34", ierr, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                write(nounit, format_9999), "DGGEV34", ierr, n, jtype, ioldsd;
                 info = abs(ierr);
                 goto statement_190;
             }
@@ -432,7 +424,7 @@ void Rdrgev3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
             //
             for (j = 1; j <= n; j = j + 1) {
                 for (jc = 1; jc <= n; jc = jc + 1) {
-                    if (z[(j - 1) + (jc - 1) * ldz] != qe[(j - 1) + (jc - 1) * ldqe]) {
+                    if (z[(j - 1) + (jc - 1) * ldq] != qe[(j - 1) + (jc - 1) * ldqe]) {
                         result[7 - 1] = ulpinv;
                     }
                 }
@@ -457,7 +449,7 @@ void Rdrgev3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
                         //
                         // Matrix types
                         //
-                        write(nounit, "(' Matrix types (see Rdrgev3 for details): ')");
+                        write(nounit, "(' Matrix types (see DDRGEV3 for details): ')");
                         write(nounit, "(' Special Matrices:',23x,'(J''=transposed Jordan block)',/,"
                                       "'   1=(0,0)  2=(I,0)  3=(0,I)  4=(I,I)  5=(J'',J'')  ',"
                                       "'6=(diag(J'',I), diag(I,J''))',/,' Diagonal Matrices:  ( ',"
@@ -489,15 +481,13 @@ void Rdrgev3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
                     }
                     nerrs++;
                     if (result[jr - 1] < 10000.0) {
-                        sprintnum_short(buf, result[jr - 1]);
                         write(nounit, "(' Matrix order=',i5,', type=',i2,', seed=',4(i4,','),"
-                                      "' result ',i2,' is',0p,a)"),
-                            n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3], jr, buf;
+                                      "' result ',i2,' is',0p,f8.2)"),
+                            n, jtype, ioldsd, jr, result[jr - 1];
                     } else {
-                        sprintnum_short(buf, result[jr - 1]);
                         write(nounit, "(' Matrix order=',i5,', type=',i2,', seed=',4(i4,','),"
-                                      "' result ',i2,' is',1p,a)"),
-                            n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3], jr, buf;
+                                      "' result ',i2,' is',1p,d10.3)"),
+                            n, jtype, ioldsd, jr, result[jr - 1];
                     }
                 }
             }

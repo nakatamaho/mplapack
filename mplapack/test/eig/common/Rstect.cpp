@@ -43,8 +43,6 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#include <mplapack_debug.h>
-
 void Rstect(INTEGER const n, REAL *a, REAL *b, REAL const shift, INTEGER &num) {
     //
     // Get machine constants
@@ -57,7 +55,7 @@ void Rstect(INTEGER const n, REAL *a, REAL *b, REAL const shift, INTEGER &num) {
     REAL mx = abs(a[1 - 1]);
     INTEGER i = 0;
     for (i = 1; i <= n - 1; i = i + 1) {
-        mx = max({mx, REAL(abs(a[(i + 1) - 1])), REAL(abs(b[i - 1]))});
+        mx = max(mx, abs(a[(i + 1) - 1]), abs(b[i - 1]));
     }
     //
     // Handle easy cases, including zero matrix

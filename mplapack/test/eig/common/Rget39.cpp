@@ -43,59 +43,50 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#include <mplapack_debug.h>
-
 void Rget39(REAL &rmax, INTEGER &lmax, INTEGER &ninfo, INTEGER &knt) {
-    // SAVE
-
-    INTEGER idim[] = {4, 5, 5, 5, 5, 5};
-    INTEGER ival[150] = {3, 0, 0, 0, 0, 1, 1, -1, 0, 0, 3, 2, 1, 0, 0, 4, 3, 2, 2, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 2, 0, 0, 0, 3, 3, 4, 0, 0, 4, 2, 2, 3, 0, 1, 1, 1, 1, 5, 1, 0, 0, 0, 0, 2, 4, -2, 0, 0, 3, 3, 4, 0, 0, 4, 2, 2, 3, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 2, 1, -1, 0, 0, 9, 8, 1, 0, 0, 4, 9, 1, 2, -1, 2, 2, 2, 2, 2, 9, 0, 0, 0, 0, 6, 4, 0, 0, 0, 3, 2, 1, 1, 0, 5, 1, -1, 1, 0, 2, 2, 2, 2, 2, 4, 0, 0, 0, 0, 2, 2, 0, 0, 0, 1, 4, 4, 0, 0, 2, 4, 2, 2, -1, 2, 2, 2, 2, 2};
-    INTEGER ldval1 = 5;
-    INTEGER ldval2 = 25;
+    common cmn;
+    static INTEGER idim[6] = {4, 5, 5, 5, 5, 5};
+    static INTEGER ival[] = {3, 0, 0, 0, 0, 1, 1, -1, 0, 0, 3, 2, 1, 0, 0, 4, 3, 2, 2, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 2, 0, 0, 0, 3, 3, 4, 0, 0, 4, 2, 2, 3, 0, 1, 1, 1, 1, 5, 1, 0, 0, 0, 0, 2, 4, -2, 0, 0, 3, 3, 4, 0, 0, 4, 2, 2, 3, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 2, 1, -1, 0, 0, 9, 8, 1, 0, 0, 4, 9, 1, 2, -1, 2, 2, 2, 2, 2, 9, 0, 0, 0, 0, 6, 4, 0, 0, 0, 3, 2, 1, 1, 0, 5, 1, -1, 1, 0, 2, 2, 2, 2, 2, 4, 0, 0, 0, 0, 2, 2, 0, 0, 0, 1, 4, 4, 0, 0, 2, 4, 2, 2, -1, 2, 2, 2, 2, 2};
     //
-    //     Get machine parameters
+    // Get machine parameters
     //
     REAL eps = Rlamch("P");
     REAL smlnum = Rlamch("S");
     const REAL one = 1.0;
     REAL bignum = one / smlnum;
+    Rlabad(smlnum, bignum);
     //
-    //     Set up test case parameters
+    // Set up test case parameters
     //
     REAL vm1[5];
-    vm1[1 - 1] = one;
     vm1[2 - 1] = sqrt(smlnum);
     vm1[3 - 1] = sqrt(vm1[2 - 1]);
     vm1[4 - 1] = sqrt(bignum);
     vm1[5 - 1] = sqrt(vm1[4 - 1]);
     //
     REAL vm2[5];
-    vm2[1 - 1] = one;
     vm2[2 - 1] = sqrt(smlnum);
     vm2[3 - 1] = sqrt(vm2[2 - 1]);
     vm2[4 - 1] = sqrt(bignum);
     vm2[5 - 1] = sqrt(vm2[4 - 1]);
     //
     REAL vm3[5];
-    vm3[1 - 1] = one;
     vm3[2 - 1] = sqrt(smlnum);
     vm3[3 - 1] = sqrt(vm3[2 - 1]);
     vm3[4 - 1] = sqrt(bignum);
     vm3[5 - 1] = sqrt(vm3[4 - 1]);
     //
     REAL vm4[5];
-    vm4[1 - 1] = one;
     vm4[2 - 1] = sqrt(smlnum);
     vm4[3 - 1] = sqrt(vm4[2 - 1]);
     vm4[4 - 1] = sqrt(bignum);
     vm4[5 - 1] = sqrt(vm4[4 - 1]);
     //
     REAL vm5[3];
-    vm5[1 - 1] = one;
     vm5[2 - 1] = eps;
     vm5[3 - 1] = sqrt(smlnum);
     //
-    //     Initialization
+    // Initialization
     //
     knt = 0;
     const REAL zero = 0.0;
@@ -143,7 +134,7 @@ void Rget39(REAL &rmax, INTEGER &lmax, INTEGER &ninfo, INTEGER &knt) {
                             n = idim[ndim - 1];
                             for (i = 1; i <= n; i = i + 1) {
                                 for (j = 1; j <= n; j = j + 1) {
-                                    t[(i - 1) + (j - 1) * ldt] = castREAL(ival[(i - 1) + (j - 1) * ldval1 + (ndim - 1) * ldval2]) * vm1[ivm1 - 1];
+                                    t[(i - 1) + (j - 1) * ldt] = castREAL(ival(i, j, ndim)) * vm1[ivm1 - 1];
                                     if (i >= j) {
                                         t[(i - 1) + (j - 1) * ldt] = t[(i - 1) + (j - 1) * ldt] * vm5[ivm5 - 1];
                                     }
@@ -178,7 +169,7 @@ void Rget39(REAL &rmax, INTEGER &lmax, INTEGER &ninfo, INTEGER &knt) {
                             Rgemv("No transpose", n, n, one, t, ldt, x, 1, -scale, y, 1);
                             xnorm = Rasum(n, x, 1);
                             resid = Rasum(n, y, 1);
-                            domin = max({smlnum, REAL((smlnum / eps) * norm), REAL((norm * eps) * xnorm)});
+                            domin = max(smlnum, (smlnum / eps) * norm, (norm * eps) * xnorm);
                             resid = resid / domin;
                             if (resid > rmax) {
                                 rmax = resid;
@@ -199,7 +190,7 @@ void Rget39(REAL &rmax, INTEGER &lmax, INTEGER &ninfo, INTEGER &knt) {
                             Rgemv("Transpose", n, n, one, t, ldt, x, 1, -scale, y, 1);
                             xnorm = Rasum(n, x, 1);
                             resid = Rasum(n, y, 1);
-                            domin = max({smlnum, REAL((smlnum / eps) * norm), REAL((norm * eps) * xnorm)});
+                            domin = max(smlnum, (smlnum / eps) * norm, (norm * eps) * xnorm);
                             resid = resid / domin;
                             if (resid > rmax) {
                                 rmax = resid;
@@ -231,7 +222,7 @@ void Rget39(REAL &rmax, INTEGER &lmax, INTEGER &ninfo, INTEGER &knt) {
                             Rgemv("No transpose", n, n, one, t, ldt, &x[(1 + n) - 1], 1, one, &y[(1 + n) - 1], 1);
                             //
                             resid = Rasum(2 * n, y, 1);
-                            domin = max({smlnum, REAL((smlnum / eps) * normtb), REAL(eps * (normtb * Rasum(2 * n, x, 1)))});
+                            domin = max(smlnum, (smlnum / eps) * normtb, eps * (normtb * Rasum(2 * n, x, 1)));
                             resid = resid / domin;
                             if (resid > rmax) {
                                 rmax = resid;
@@ -263,7 +254,7 @@ void Rget39(REAL &rmax, INTEGER &lmax, INTEGER &ninfo, INTEGER &knt) {
                             Rgemv("Transpose", n, n, one, t, ldt, &x[(1 + n) - 1], 1, -one, &y[(1 + n) - 1], 1);
                             //
                             resid = Rasum(2 * n, y, 1);
-                            domin = max({smlnum, REAL((smlnum / eps) * normtb), REAL(eps * (normtb * Rasum(2 * n, x, 1)))});
+                            domin = max(smlnum, (smlnum / eps) * normtb, eps * (normtb * Rasum(2 * n, x, 1)));
                             resid = resid / domin;
                             if (resid > rmax) {
                                 rmax = resid;

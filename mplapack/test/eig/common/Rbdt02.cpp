@@ -43,8 +43,6 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#include <mplapack_debug.h>
-
 void Rbdt02(INTEGER const m, INTEGER const n, REAL *b, INTEGER const ldb, REAL *c, INTEGER const ldc, REAL *u, INTEGER const ldu, REAL *work, REAL &resid) {
     //
     // Quick return if possible
@@ -64,7 +62,7 @@ void Rbdt02(INTEGER const m, INTEGER const n, REAL *b, INTEGER const ldb, REAL *
     for (j = 1; j <= n; j = j + 1) {
         Rcopy(m, &b[(j - 1) * ldb], 1, work, 1);
         Rgemv("No transpose", m, m, -one, u, ldu, &c[(j - 1) * ldc], 1, one, work, 1);
-        resid = max({resid, Rasum(m, work, 1)});
+        resid = max(resid, Rasum(m, work, 1));
     }
     //
     // Compute norm of B.
@@ -80,9 +78,9 @@ void Rbdt02(INTEGER const m, INTEGER const n, REAL *b, INTEGER const ldb, REAL *
             resid = (resid / bnorm) / (realmn * eps);
         } else {
             if (bnorm < one) {
-                resid = (min(resid, REAL(realmn * bnorm)) / bnorm) / (realmn * eps);
+                resid = (min(resid, realmn * bnorm) / bnorm) / (realmn * eps);
             } else {
-                resid = min(REAL(resid / bnorm), realmn) / (realmn * eps);
+                resid = min(resid / bnorm, realmn) / (realmn * eps);
             }
         }
     }

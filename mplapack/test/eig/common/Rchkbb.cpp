@@ -43,17 +43,12 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#include <mplapack_debug.h>
-
 void Rchkbb(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nwdths, INTEGER *kk, INTEGER const ntypes, bool *dotype, INTEGER const nrhs, INTEGER *iseed, REAL const thresh, INTEGER const nounit, REAL *a, INTEGER const lda, REAL *ab, INTEGER const ldab, REAL *bd, REAL *be, REAL *q, INTEGER const ldq, REAL *p, INTEGER const ldp, REAL *c, INTEGER const ldc, REAL *cc, REAL *work, INTEGER const lwork, REAL *result, INTEGER &info) {
-
     common cmn;
     common_write write(cmn);
-    char buf[1024];
-    const INTEGER maxtyp = 15;
-    INTEGER ktype[15] = {1, 2, 4, 4, 4, 4, 4, 6, 6, 6, 6, 6, 9, 9, 9};
-    INTEGER kmagn[15] = {1, 1, 1, 1, 1, 2, 3, 1, 1, 1, 2, 3, 1, 2, 3};
-    INTEGER kmode[15] = {0, 0, 4, 3, 1, 4, 4, 4, 3, 1, 4, 4, 0, 0, 0};
+    static INTEGER ktype[15] = {1, 2, 4, 4, 4, 4, 4, 6, 6, 6, 6, 6, 9, 9, 9};
+    static INTEGER kmagn[15] = {1, 1, 1, 1, 1, 2, 3, 1, 1, 1, 2, 3, 1, 2, 3};
+    static INTEGER kmode[15] = {0, 0, 4, 3, 1, 4, 4, 4, 3, 1, 4, 4, 0, 0, 0};
     INTEGER ntestt = 0;
     bool badmm = false;
     bool badnn = false;
@@ -81,6 +76,7 @@ void Rchkbb(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nw
     INTEGER k = 0;
     INTEGER kl = 0;
     INTEGER ku = 0;
+    const INTEGER maxtyp = 15;
     INTEGER mtypes = 0;
     INTEGER jtype = 0;
     INTEGER ntest = 0;
@@ -95,7 +91,7 @@ void Rchkbb(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nw
     INTEGER idumma[1];
     INTEGER i = 0;
     INTEGER jr = 0;
-    static const char *format_9999 = "(' Rchkbb: ',a,' returned INFO=',i5,'.',/,9x,'M=',i5,' N=',i5,' K=',i5,"
+    static const char *format_9999 = "(' DCHKBB: ',a,' returned INFO=',i5,'.',/,9x,'M=',i5,' N=',i5,' K=',i5,"
                                      "', JTYPE=',i5,', ISEED=(',3(i5,','),i5,')')";
     //
     // Check for errors
@@ -119,7 +115,7 @@ void Rchkbb(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nw
         if (nval[j - 1] < 0) {
             badnn = true;
         }
-        mnmax = max({mnmax, min(mval[j - 1], nval[j - 1])});
+        mnmax = max(mnmax, min(mval[j - 1], nval[j - 1]));
     }
     //
     badnnb = false;
@@ -190,15 +186,15 @@ void Rchkbb(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nw
         m = mval[jsize - 1];
         n = nval[jsize - 1];
         mnmin = min(m, n);
-        amninv = one / castREAL(max({(INTEGER)1, m, n}));
+        amninv = one / castREAL(max((INTEGER)1, m, n));
         //
         for (jwidth = 1; jwidth <= nwdths; jwidth = jwidth + 1) {
             k = kk[jwidth - 1];
             if (k >= m && k >= n) {
                 goto statement_150;
             }
-            kl = max({(INTEGER)0, min(m - 1, k)});
-            ku = max({(INTEGER)0, min(n - 1, k)});
+            kl = max((INTEGER)0, min(m - 1, k));
+            ku = max((INTEGER)0, min(n - 1, k));
             //
             if (nsizes != 1) {
                 mtypes = min(maxtyp, ntypes);
@@ -314,7 +310,7 @@ void Rchkbb(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nw
                 Rlatmr(m, nrhs, "S", iseed, "N", work, 6, one, one, "T", "N", &work[(m + 1) - 1], 1, one, &work[(2 * m + 1) - 1], 1, one, "N", idumma, m, nrhs, zero, one, "NO", c, ldc, idumma, iinfo);
                 //
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "Generator", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                    write(nounit, format_9999), "Generator", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     return;
                 }
@@ -338,7 +334,7 @@ void Rchkbb(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nw
                 Rgbbrd("B", m, n, nrhs, kl, ku, ab, ldab, bd, be, q, ldq, p, ldp, cc, ldc, work, iinfo);
                 //
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "Rgbbrd", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                    write(nounit, format_9999), "DGBBRD", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -372,10 +368,9 @@ void Rchkbb(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nw
                             Rlahd2(nounit, "DBB");
                         }
                         nerrs++;
-                        sprintnum_short(buf, result[jr - 1]);
                         write(nounit, "(' M =',i4,' N=',i4,', K=',i3,', seed=',4(i4,','),' type ',i2,"
-                                      "', test(',i2,')=',a)"),
-                            m, n, k, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3], jtype, jr, buf;
+                                      "', test(',i2,')=',g10.3)"),
+                            m, n, k, ioldsd, jtype, jr, result[jr - 1];
                     }
                 }
             //

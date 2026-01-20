@@ -43,17 +43,15 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#include <mplapack_debug.h>
-
-void Rort03(const char *rc, INTEGER const mu, INTEGER const mv, INTEGER const n, INTEGER const k, REAL *u, INTEGER const ldu, REAL *v, INTEGER const ldv, REAL *work, INTEGER const lwork, REAL &result, INTEGER &info) {
+void Rort03(fem::str_cref rc, INTEGER const mu, INTEGER const mv, INTEGER const n, INTEGER const k, REAL *u, INTEGER const ldu, REAL *v, INTEGER const ldv, REAL *work, INTEGER const lwork, REAL &result, INTEGER &info) {
     //
     // Check inputs
     //
     info = 0;
     INTEGER irc = 0;
-    if (Mlsame(rc, "R")) {
+    if (Mlsame(rc.elems(), "R")) {
         irc = 0;
-    } else if (Mlsame(rc, "C")) {
+    } else if (Mlsame(rc.elems(), "C")) {
         irc = 1;
     } else {
         irc = -1;
@@ -106,7 +104,7 @@ void Rort03(const char *rc, INTEGER const mu, INTEGER const mv, INTEGER const n,
             lmx = iRamax(n, &u[(i - 1)], ldu);
             s = sign(one, u[(i - 1) + (lmx - 1) * ldu]) * sign(one, v[(i - 1) + (lmx - 1) * ldv]);
             for (j = 1; j <= n; j = j + 1) {
-                res1 = max(res1, REAL(abs(u[(i - 1) + (j - 1) * ldu] - s * v[(i - 1) + (j - 1) * ldv])));
+                res1 = max(res1, abs(u[(i - 1) + (j - 1) * ldu] - s * v[(i - 1) + (j - 1) * ldv]));
             }
         }
         res1 = res1 / (castREAL(n) * ulp);
@@ -124,7 +122,7 @@ void Rort03(const char *rc, INTEGER const mu, INTEGER const mv, INTEGER const n,
             lmx = iRamax(n, &u[(i - 1) * ldu], 1);
             s = sign(one, u[(lmx - 1) + (i - 1) * ldu]) * sign(one, v[(lmx - 1) + (i - 1) * ldv]);
             for (j = 1; j <= n; j = j + 1) {
-                res1 = max(res1, REAL(abs(u[(j - 1) + (i - 1) * ldu] - s * v[(j - 1) + (i - 1) * ldv])));
+                res1 = max(res1, abs(u[(j - 1) + (i - 1) * ldu] - s * v[(j - 1) + (i - 1) * ldv]));
             }
         }
         res1 = res1 / (castREAL(n) * ulp);
@@ -134,7 +132,7 @@ void Rort03(const char *rc, INTEGER const mu, INTEGER const mv, INTEGER const n,
         Rort01("Columns", n, mv, v, ldv, work, lwork, res2);
     }
     //
-    result = min(REAL(max(res1, res2)), REAL(one / ulp));
+    result = min(max(res1, res2), one / ulp);
     //
     // End of Rort03
     //

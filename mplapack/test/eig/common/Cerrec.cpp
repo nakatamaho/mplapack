@@ -41,15 +41,11 @@ using namespace fem::major_types;
 using fem::common;
 
 #include <mplapack_matgen.h>
-#include <mplapack_lin.h>
 #include <mplapack_eig.h>
 
-#include <mplapack_debug.h>
-
-void Cerrec(const char *path, INTEGER const nunit) {
+void Cerrec(fem::str_cref path, INTEGER const nunit) {
     common cmn;
     common_write write(cmn);
-    //
     //
     nout = nunit;
     ok = true;
@@ -63,93 +59,92 @@ void Cerrec(const char *path, INTEGER const nunit) {
     const REAL zero = 0.0;
     COMPLEX a[nmax * nmax];
     COMPLEX b[nmax * nmax];
-    INTEGER lda = nmax;
-    INTEGER ldb = nmax;
     for (j = 1; j <= nmax; j = j + 1) {
         for (i = 1; i <= nmax; i = i + 1) {
-            a[(i - 1) + (j - 1) * lda] = zero;
-            b[(i - 1) + (j - 1) * ldb] = zero;
+            a[(i - 1) + (j - 1) * nmax] = zero;
+            b[(i - 1) + (j - 1) * nmax] = zero;
         }
     }
     const REAL one = 1.0;
     bool sel[nmax];
     for (i = 1; i <= nmax; i = i + 1) {
-        a[(i - 1) + (i - 1) * lda] = one;
+        a[(i - 1) + (i - 1) * nmax] = one;
         sel[i - 1] = true;
     }
     //
-    //     Test Ctrsyl
+    // Test Ctrsyl
     //
+    srnamt = "ZTRSYL";
     infot = 1;
     COMPLEX c[nmax * nmax];
     REAL scale = 0.0;
     INTEGER info = 0;
-    strncpy(srnamt, "Ctrsyl", srnamt_len);
     Ctrsyl("X", "N", 1, 0, 0, a, 1, b, 1, c, 1, scale, info);
-    chkxer("Ctrsyl", infot, nout, lerr, ok);
+    Chkxer("ZTRSYL", infot, nout, lerr, ok);
     infot = 2;
     Ctrsyl("N", "X", 1, 0, 0, a, 1, b, 1, c, 1, scale, info);
-    chkxer("Ctrsyl", infot, nout, lerr, ok);
+    Chkxer("ZTRSYL", infot, nout, lerr, ok);
     infot = 3;
     Ctrsyl("N", "N", 0, 0, 0, a, 1, b, 1, c, 1, scale, info);
-    chkxer("Ctrsyl", infot, nout, lerr, ok);
+    Chkxer("ZTRSYL", infot, nout, lerr, ok);
     infot = 4;
     Ctrsyl("N", "N", 1, -1, 0, a, 1, b, 1, c, 1, scale, info);
-    chkxer("Ctrsyl", infot, nout, lerr, ok);
+    Chkxer("ZTRSYL", infot, nout, lerr, ok);
     infot = 5;
     Ctrsyl("N", "N", 1, 0, -1, a, 1, b, 1, c, 1, scale, info);
-    chkxer("Ctrsyl", infot, nout, lerr, ok);
+    Chkxer("ZTRSYL", infot, nout, lerr, ok);
     infot = 7;
     Ctrsyl("N", "N", 1, 2, 0, a, 1, b, 1, c, 2, scale, info);
-    chkxer("Ctrsyl", infot, nout, lerr, ok);
+    Chkxer("ZTRSYL", infot, nout, lerr, ok);
     infot = 9;
     Ctrsyl("N", "N", 1, 0, 2, a, 1, b, 1, c, 1, scale, info);
-    chkxer("Ctrsyl", infot, nout, lerr, ok);
+    Chkxer("ZTRSYL", infot, nout, lerr, ok);
     infot = 11;
     Ctrsyl("N", "N", 1, 2, 0, a, 2, b, 1, c, 1, scale, info);
-    chkxer("Ctrsyl", infot, nout, lerr, ok);
+    Chkxer("ZTRSYL", infot, nout, lerr, ok);
     nt += 8;
     //
-    //     Test Ctrexc
+    // Test Ctrexc
     //
+    srnamt = "ZTREXC";
     INTEGER ifst = 1;
     INTEGER ilst = 1;
     infot = 1;
-    strncpy(srnamt, "Ctrexc", srnamt_len);
     Ctrexc("X", 1, a, 1, b, 1, ifst, ilst, info);
-    chkxer("Ctrexc", infot, nout, lerr, ok);
+    Chkxer("ZTREXC", infot, nout, lerr, ok);
     infot = 2;
     Ctrexc("N", -1, a, 1, b, 1, ifst, ilst, info);
-    chkxer("Ctrexc", infot, nout, lerr, ok);
+    Chkxer("ZTREXC", infot, nout, lerr, ok);
     infot = 4;
     ilst = 2;
     Ctrexc("N", 2, a, 1, b, 1, ifst, ilst, info);
-    chkxer("Ctrexc", infot, nout, lerr, ok);
+    Chkxer("ZTREXC", infot, nout, lerr, ok);
     infot = 6;
     Ctrexc("V", 2, a, 2, b, 1, ifst, ilst, info);
-    chkxer("Ctrexc", infot, nout, lerr, ok);
+    Chkxer("ZTREXC", infot, nout, lerr, ok);
     infot = 7;
     ifst = 0;
     ilst = 1;
     Ctrexc("V", 1, a, 1, b, 1, ifst, ilst, info);
-    chkxer("Ctrexc", infot, nout, lerr, ok);
+    Chkxer("ZTREXC", infot, nout, lerr, ok);
     infot = 7;
     ifst = 2;
     Ctrexc("V", 1, a, 1, b, 1, ifst, ilst, info);
-    chkxer("Ctrexc", infot, nout, lerr, ok);
+    Chkxer("ZTREXC", infot, nout, lerr, ok);
     infot = 8;
     ifst = 1;
     ilst = 0;
     Ctrexc("V", 1, a, 1, b, 1, ifst, ilst, info);
-    chkxer("Ctrexc", infot, nout, lerr, ok);
+    Chkxer("ZTREXC", infot, nout, lerr, ok);
     infot = 8;
     ilst = 2;
     Ctrexc("V", 1, a, 1, b, 1, ifst, ilst, info);
-    chkxer("Ctrexc", infot, nout, lerr, ok);
+    Chkxer("ZTREXC", infot, nout, lerr, ok);
     nt += 8;
     //
-    //     Test Ctrsna
+    // Test Ctrsna
     //
+    srnamt = "ZTRSNA";
     infot = 1;
     REAL s[nmax];
     REAL sep[nmax];
@@ -157,64 +152,63 @@ void Cerrec(const char *path, INTEGER const nunit) {
     const INTEGER lw = nmax * (nmax + 2);
     COMPLEX work[lw];
     REAL rw[lw];
-    strncpy(srnamt, "Ctrsna", srnamt_len);
     Ctrsna("X", "A", sel, 0, a, 1, b, 1, c, 1, s, sep, 1, m, work, 1, rw, info);
-    chkxer("Ctrsna", infot, nout, lerr, ok);
+    Chkxer("ZTRSNA", infot, nout, lerr, ok);
     infot = 2;
     Ctrsna("B", "X", sel, 0, a, 1, b, 1, c, 1, s, sep, 1, m, work, 1, rw, info);
-    chkxer("Ctrsna", infot, nout, lerr, ok);
+    Chkxer("ZTRSNA", infot, nout, lerr, ok);
     infot = 4;
     Ctrsna("B", "A", sel, -1, a, 1, b, 1, c, 1, s, sep, 1, m, work, 1, rw, info);
-    chkxer("Ctrsna", infot, nout, lerr, ok);
+    Chkxer("ZTRSNA", infot, nout, lerr, ok);
     infot = 6;
     Ctrsna("V", "A", sel, 2, a, 1, b, 1, c, 1, s, sep, 2, m, work, 2, rw, info);
-    chkxer("Ctrsna", infot, nout, lerr, ok);
+    Chkxer("ZTRSNA", infot, nout, lerr, ok);
     infot = 8;
     Ctrsna("B", "A", sel, 2, a, 2, b, 1, c, 2, s, sep, 2, m, work, 2, rw, info);
-    chkxer("Ctrsna", infot, nout, lerr, ok);
+    Chkxer("ZTRSNA", infot, nout, lerr, ok);
     infot = 10;
     Ctrsna("B", "A", sel, 2, a, 2, b, 2, c, 1, s, sep, 2, m, work, 2, rw, info);
-    chkxer("Ctrsna", infot, nout, lerr, ok);
+    Chkxer("ZTRSNA", infot, nout, lerr, ok);
     infot = 13;
     Ctrsna("B", "A", sel, 1, a, 1, b, 1, c, 1, s, sep, 0, m, work, 1, rw, info);
-    chkxer("Ctrsna", infot, nout, lerr, ok);
+    Chkxer("ZTRSNA", infot, nout, lerr, ok);
     infot = 13;
     Ctrsna("B", "S", sel, 2, a, 2, b, 2, c, 2, s, sep, 1, m, work, 1, rw, info);
-    chkxer("Ctrsna", infot, nout, lerr, ok);
+    Chkxer("ZTRSNA", infot, nout, lerr, ok);
     infot = 16;
     Ctrsna("B", "A", sel, 2, a, 2, b, 2, c, 2, s, sep, 2, m, work, 1, rw, info);
-    chkxer("Ctrsna", infot, nout, lerr, ok);
+    Chkxer("ZTRSNA", infot, nout, lerr, ok);
     nt += 9;
     //
-    //     Test Ctrsen
+    // Test Ctrsen
     //
     sel[1 - 1] = false;
+    srnamt = "ZTRSEN";
     infot = 1;
     COMPLEX x[nmax];
-    strncpy(srnamt, "Ctrsen", srnamt_len);
     Ctrsen("X", "N", sel, 0, a, 1, b, 1, x, m, s[1 - 1], sep[1 - 1], work, 1, info);
-    chkxer("Ctrsen", infot, nout, lerr, ok);
+    Chkxer("ZTRSEN", infot, nout, lerr, ok);
     infot = 2;
     Ctrsen("N", "X", sel, 0, a, 1, b, 1, x, m, s[1 - 1], sep[1 - 1], work, 1, info);
-    chkxer("Ctrsen", infot, nout, lerr, ok);
+    Chkxer("ZTRSEN", infot, nout, lerr, ok);
     infot = 4;
     Ctrsen("N", "N", sel, -1, a, 1, b, 1, x, m, s[1 - 1], sep[1 - 1], work, 1, info);
-    chkxer("Ctrsen", infot, nout, lerr, ok);
+    Chkxer("ZTRSEN", infot, nout, lerr, ok);
     infot = 6;
     Ctrsen("N", "N", sel, 2, a, 1, b, 1, x, m, s[1 - 1], sep[1 - 1], work, 2, info);
-    chkxer("Ctrsen", infot, nout, lerr, ok);
+    Chkxer("ZTRSEN", infot, nout, lerr, ok);
     infot = 8;
     Ctrsen("N", "V", sel, 2, a, 2, b, 1, x, m, s[1 - 1], sep[1 - 1], work, 1, info);
-    chkxer("Ctrsen", infot, nout, lerr, ok);
+    Chkxer("ZTRSEN", infot, nout, lerr, ok);
     infot = 14;
     Ctrsen("N", "V", sel, 2, a, 2, b, 2, x, m, s[1 - 1], sep[1 - 1], work, 0, info);
-    chkxer("Ctrsen", infot, nout, lerr, ok);
+    Chkxer("ZTRSEN", infot, nout, lerr, ok);
     infot = 14;
     Ctrsen("E", "V", sel, 3, a, 3, b, 3, x, m, s[1 - 1], sep[1 - 1], work, 1, info);
-    chkxer("Ctrsen", infot, nout, lerr, ok);
+    Chkxer("ZTRSEN", infot, nout, lerr, ok);
     infot = 14;
     Ctrsen("V", "V", sel, 3, a, 3, b, 3, x, m, s[1 - 1], sep[1 - 1], work, 3, info);
-    chkxer("Ctrsen", infot, nout, lerr, ok);
+    Chkxer("ZTRSEN", infot, nout, lerr, ok);
     nt += 8;
     //
     // Print a summary line.

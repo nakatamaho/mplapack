@@ -43,8 +43,6 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#include <mplapack_debug.h>
-
 void Rsvdct(INTEGER const n, REAL *s, REAL *e, REAL const shift, INTEGER &num) {
     //
     // Get machine constants
@@ -58,7 +56,7 @@ void Rsvdct(INTEGER const n, REAL *s, REAL *e, REAL const shift, INTEGER &num) {
     REAL mx = abs(s[1 - 1]);
     INTEGER i = 0;
     for (i = 1; i <= n - 1; i = i + 1) {
-        mx = max({mx, REAL(abs(s[(i + 1) - 1])), REAL(abs(e[i - 1]))});
+        mx = max(mx, abs(s[(i + 1) - 1]), abs(e[i - 1]));
     }
     //
     const REAL zero = 0.0;

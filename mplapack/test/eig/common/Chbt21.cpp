@@ -43,9 +43,7 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#include <mplapack_debug.h>
-
-void Chbt21(const char *uplo, INTEGER const n, INTEGER const ka, INTEGER const ks, COMPLEX *a, INTEGER const lda, REAL *d, REAL *e, COMPLEX *u, INTEGER const ldu, COMPLEX *work, REAL *rwork, REAL *result) {
+void Chbt21(fem::str_cref uplo, INTEGER const n, INTEGER const ka, INTEGER const ks, COMPLEX *a, INTEGER const lda, REAL *d, REAL *e, COMPLEX *u, INTEGER const ldu, COMPLEX *work, REAL *rwork, REAL *result) {
     //
     // Constants
     //
@@ -59,13 +57,13 @@ void Chbt21(const char *uplo, INTEGER const n, INTEGER const ka, INTEGER const k
     INTEGER ika = max((INTEGER)0, min(n - 1, ka));
     //
     bool lower = false;
-    char cuplo;
-    if (Mlsame(uplo, "U")) {
+    fem::str<1> cuplo;
+    if (Mlsame(uplo.elems(), "U")) {
         lower = false;
-        cuplo = 'U';
+        cuplo = "U";
     } else {
         lower = true;
-        cuplo = 'L';
+        cuplo = "L";
     }
     //
     REAL unfl = Rlamch("Safe minimum");
@@ -77,7 +75,7 @@ void Chbt21(const char *uplo, INTEGER const n, INTEGER const ka, INTEGER const k
     //
     // Norm of A:
     //
-    REAL anorm = max({Clanhb("1", &cuplo, n, ika, a, lda, rwork), unfl});
+    REAL anorm = max(Clanhb("1", cuplo.elems, n, ika, a, lda, rwork), unfl);
     //
     // Compute error matrix:    Error = A - U S U**H
     //
@@ -109,24 +107,24 @@ void Chbt21(const char *uplo, INTEGER const n, INTEGER const ka, INTEGER const k
     }
     //
     for (j = 1; j <= n; j = j + 1) {
-        Chpr(&cuplo, n, -d[j - 1], &u[(j - 1) * ldu], 1, work);
+        Chpr(cuplo.elems, n, -d[j - 1], &u[(j - 1) * ldu], 1, work);
     }
     //
     if (n > 1 && ks == 1) {
         for (j = 1; j <= n - 1; j = j + 1) {
-            Chpr2(&cuplo, n, -COMPLEX(e[j - 1]), &u[(j - 1) * ldu], 1, &u[((j + 1) - 1) * ldu], 1, work);
+            Chpr2(cuplo.elems, n, -COMPLEX(e[j - 1]), &u[(j - 1) * ldu], 1, &u[((j + 1) - 1) * ldu], 1, work);
         }
     }
-    REAL wnorm = Clanhp("1", &cuplo, n, work, rwork);
+    REAL wnorm = Clanhp("1", cuplo.elems, n, work, rwork);
     //
     const REAL one = 1.0;
     if (anorm > wnorm) {
         result[1 - 1] = (wnorm / anorm) / (n * ulp);
     } else {
         if (anorm < one) {
-            result[1 - 1] = (min(wnorm, REAL(castREAL(n) * anorm)) / anorm) / (castREAL(n) * ulp);
+            result[1 - 1] = (min(wnorm, n * anorm) / anorm) / (n * ulp);
         } else {
-            result[1 - 1] = min(REAL(wnorm / anorm), castREAL(n)) / (castREAL(n) * ulp);
+            result[1 - 1] = min(wnorm / anorm, castREAL(n)) / (n * ulp);
         }
     }
     //

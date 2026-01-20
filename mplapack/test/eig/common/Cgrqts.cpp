@@ -43,39 +43,7 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#include <mplapack_debug.h>
-
 void Cgrqts(INTEGER const m, INTEGER const p, INTEGER const n, COMPLEX *a, COMPLEX *af, COMPLEX *q, COMPLEX *r, INTEGER const lda, COMPLEX *taua, COMPLEX *b, COMPLEX *bf, COMPLEX *z, COMPLEX *t, COMPLEX *bwk, INTEGER const ldb, COMPLEX *taub, COMPLEX *work, INTEGER const lwork, REAL *rwork, REAL *result) {
-    INTEGER ldaf = lda;
-    INTEGER ldq = lda;
-    INTEGER ldr = lda;
-    INTEGER ldbf = ldb;
-    INTEGER ldz = ldb;
-    INTEGER ldt = ldb;
-    INTEGER ldbwk = ldb;
-    //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
     REAL ulp = Rlamch("Precision");
     REAL unfl = Rlamch("Safe minimum");
@@ -85,8 +53,8 @@ void Cgrqts(INTEGER const m, INTEGER const p, INTEGER const n, COMPLEX *a, COMPL
     Clacpy("Full", m, n, a, lda, af, lda);
     Clacpy("Full", p, n, b, ldb, bf, ldb);
     //
-    REAL anorm = max({Clange("1", m, n, a, lda, rwork), unfl});
-    REAL bnorm = max({Clange("1", p, n, b, ldb, rwork), unfl});
+    REAL anorm = max(Clange("1", m, n, a, lda, rwork), unfl);
+    REAL bnorm = max(Clange("1", p, n, b, ldb, rwork), unfl);
     //
     // Factorize the matrices A and B in the arrays AF and BF.
     //
@@ -95,14 +63,14 @@ void Cgrqts(INTEGER const m, INTEGER const p, INTEGER const n, COMPLEX *a, COMPL
     //
     // Generate the N-by-N matrix Q
     //
-    const COMPLEX crogue = COMPLEX(-1.0e+10, 0.0);
+    const COMPLEX crogue = COMPLEX(-10000000000.0, 0.0);
     Claset("Full", n, n, crogue, crogue, q, lda);
     if (m <= n) {
         if (m > 0 && m < n) {
             Clacpy("Full", m, n - m, af, lda, &q[((n - m + 1) - 1)], lda);
         }
         if (m > 1) {
-            Clacpy("Lower", m - 1, m - 1, &af[(2 - 1) + ((n - m + 1) - 1) * ldaf], lda, &q[((n - m + 2) - 1) + ((n - m + 1) - 1) * ldq], lda);
+            Clacpy("Lower", m - 1, m - 1, &af[(2 - 1) + ((n - m + 1) - 1) * lda], lda, &q[((n - m + 2) - 1) + ((n - m + 1) - 1) * lda], lda);
         }
     } else {
         if (n > 1) {
@@ -124,7 +92,7 @@ void Cgrqts(INTEGER const m, INTEGER const p, INTEGER const n, COMPLEX *a, COMPL
     const COMPLEX czero = COMPLEX(0.0, 0.0);
     Claset("Full", m, n, czero, czero, r, lda);
     if (m <= n) {
-        Clacpy("Upper", m, m, &af[((n - m + 1) - 1) * ldaf], lda, &r[((n - m + 1) - 1) * ldr], lda);
+        Clacpy("Upper", m, m, &af[((n - m + 1) - 1) * lda], lda, &r[((n - m + 1) - 1) * lda], lda);
     } else {
         Clacpy("Full", m - n, n, af, lda, r, lda);
         Clacpy("Upper", n, n, &af[((m - n + 1) - 1)], lda, &r[((m - n + 1) - 1)], lda);
@@ -145,7 +113,7 @@ void Cgrqts(INTEGER const m, INTEGER const p, INTEGER const n, COMPLEX *a, COMPL
     REAL resid = Clange("1", m, n, r, lda, rwork);
     const REAL zero = 0.0;
     if (anorm > zero) {
-        result[1 - 1] = ((resid / castREAL(max({(INTEGER)1, m, n}))) / anorm) / ulp;
+        result[1 - 1] = ((resid / castREAL(max((INTEGER)1, m, n))) / anorm) / ulp;
     } else {
         result[1 - 1] = zero;
     }
@@ -159,7 +127,7 @@ void Cgrqts(INTEGER const m, INTEGER const p, INTEGER const n, COMPLEX *a, COMPL
     //
     resid = Clange("1", p, n, bwk, ldb, rwork);
     if (bnorm > zero) {
-        result[2 - 1] = ((resid / castREAL(max({(INTEGER)1, p, m}))) / bnorm) / ulp;
+        result[2 - 1] = ((resid / castREAL(max((INTEGER)1, p, m))) / bnorm) / ulp;
     } else {
         result[2 - 1] = zero;
     }

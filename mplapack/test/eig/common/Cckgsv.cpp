@@ -43,13 +43,10 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#include <mplapack_debug.h>
-
 void Cckgsv(INTEGER const nm, INTEGER *mval, INTEGER *pval, INTEGER *nval, INTEGER const nmats, INTEGER *iseed, REAL const thresh, INTEGER const nmax, COMPLEX *a, COMPLEX *af, COMPLEX *b, COMPLEX *bf, COMPLEX *u, COMPLEX *v, COMPLEX *q, REAL *alpha, REAL *beta, COMPLEX *r, INTEGER *iwork, COMPLEX *work, REAL *rwork, INTEGER const nin, INTEGER const nout, INTEGER &info) {
     common cmn;
     common_write write(cmn);
-    char path[4];
-    char buf[1024];
+    fem::str<3> path;
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     bool firstt = false;
@@ -67,7 +64,7 @@ void Cckgsv(INTEGER const nm, INTEGER *mval, INTEGER *pval, INTEGER *nval, INTEG
     INTEGER p = 0;
     INTEGER n = 0;
     INTEGER imat = 0;
-    char type;
+    fem::str<1> type;
     INTEGER kla = 0;
     INTEGER kua = 0;
     INTEGER klb = 0;
@@ -78,21 +75,18 @@ void Cckgsv(INTEGER const nm, INTEGER *mval, INTEGER *pval, INTEGER *nval, INTEG
     INTEGER modeb = 0;
     REAL cndnma = 0.0;
     REAL cndnmb = 0.0;
-    char dista;
-    char distb;
+    fem::str<1> dista;
+    fem::str<1> distb;
     INTEGER iinfo = 0;
     INTEGER nt = 0;
     const INTEGER ntests = 12;
     REAL result[ntests];
     INTEGER i = 0;
-    static const char *format_9999 = "(' ZLATMS in Cckgsv   INFO = ',i5)";
+    static const char *format_9999 = "(' ZLATMS in ZCKGSV   INFO = ',i5)";
     //
     // Initialize constants and the random number seed.
     //
-    path[0] = 'G';
-    path[1] = 'S';
-    path[2] = 'V';
-    path[3] = '\0';
+    path(1, 3) = "GSV";
     info = 0;
     nrun = 0;
     nfail = 0;
@@ -124,11 +118,11 @@ void Cckgsv(INTEGER const nm, INTEGER *mval, INTEGER *pval, INTEGER *nval, INTEG
             // Set up parameters with Rlatb9 and generate test
             // matrices A and B with Clatms.
             //
-            Rlatb9(path, imat, m, p, n, &type, kla, kua, klb, kub, anorm, bnorm, modea, modeb, cndnma, cndnmb, &dista, &distb);
+            Rlatb9(path, imat, m, p, n, type, kla, kua, klb, kub, anorm, bnorm, modea, modeb, cndnma, cndnmb, dista, distb);
             //
             // Generate M by N matrix A
             //
-            Clatms(m, n, &dista, iseed, &type, rwork, modea, cndnma, anorm, kla, kua, "No packing", a, lda, work, iinfo);
+            Clatms(m, n, dista, iseed, type, rwork, modea, cndnma, anorm, kla, kua, "No packing", a, lda, work, iinfo);
             if (iinfo != 0) {
                 write(nout, format_9999), iinfo;
                 info = abs(iinfo);
@@ -137,7 +131,7 @@ void Cckgsv(INTEGER const nm, INTEGER *mval, INTEGER *pval, INTEGER *nval, INTEG
             //
             // Generate P by N matrix B
             //
-            Clatms(p, n, &distb, iseed, &type, rwork, modeb, cndnmb, bnorm, klb, kub, "No packing", b, ldb, work, iinfo);
+            Clatms(p, n, distb, iseed, type, rwork, modeb, cndnmb, bnorm, klb, kub, "No packing", b, ldb, work, iinfo);
             if (iinfo != 0) {
                 write(nout, format_9999), iinfo;
                 info = abs(iinfo);
@@ -157,10 +151,9 @@ void Cckgsv(INTEGER const nm, INTEGER *mval, INTEGER *pval, INTEGER *nval, INTEG
                         firstt = false;
                         Alahdg(nout, path);
                     }
-                    sprintnum_short(buf, result[i - 1]);
                     write(nout, "(' M=',i4,' P=',i4,', N=',i4,', type ',i2,', test ',i2,"
-                                "', ratio=',a)"),
-                        m, p, n, imat, i, buf;
+                                "', ratio=',g13.6)"),
+                        m, p, n, imat, i, result[i - 1];
                     nfail++;
                 }
             }

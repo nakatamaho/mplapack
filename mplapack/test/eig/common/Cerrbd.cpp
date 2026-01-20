@@ -41,31 +41,25 @@ using namespace fem::major_types;
 using fem::common;
 
 #include <mplapack_matgen.h>
-#include <mplapack_lin.h>
 #include <mplapack_eig.h>
 
-#include <mplapack_debug.h>
-
-void Cerrbd(const char *path, INTEGER const nunit) {
+void Cerrbd(fem::str_cref path, INTEGER const nunit) {
     common cmn;
     common_write write(cmn);
     //
-    ok = true;
     nout = nunit;
-    char c2[2];
-    c2[0] = path[1];
-    c2[1] = path[2];
+    write(nout, star);
+    fem::str<2> c2 = path(2, 3);
     //
-    //     Set the variables to innocuous values.
+    // Set the variables to innocuous values.
     //
     INTEGER j = 0;
     const INTEGER nmax = 4;
     INTEGER i = 0;
     COMPLEX a[nmax * nmax];
-    INTEGER lda = nmax;
     for (j = 1; j <= nmax; j = j + 1) {
         for (i = 1; i <= nmax; i = i + 1) {
-            a[(i - 1) + (j - 1) * lda] = 1.0 / castREAL(i + j);
+            a[(i - 1) + (j - 1) * nmax] = 1.0 / castREAL(i + j);
         }
     }
     ok = true;
@@ -83,131 +77,131 @@ void Cerrbd(const char *path, INTEGER const nunit) {
     COMPLEX u[nmax * nmax];
     COMPLEX v[nmax * nmax];
     REAL rw[4 * nmax];
-    if (Mlsamen(2, c2, "BD")) {
+    if (Mlsamen(2, c2.elems, "BD")) {
         //
         // Cgebrd
         //
-        strncpy(srnamt, "Cgebrd", srnamt_len);
+        srnamt = "ZGEBRD";
         infot = 1;
         Cgebrd(-1, 0, a, 1, d, e, tq, tp, w, 1, info);
-        chkxer("Cgebrd", infot, nout, lerr, ok);
+        Chkxer("ZGEBRD", infot, nout, lerr, ok);
         infot = 2;
         Cgebrd(0, -1, a, 1, d, e, tq, tp, w, 1, info);
-        chkxer("Cgebrd", infot, nout, lerr, ok);
+        Chkxer("ZGEBRD", infot, nout, lerr, ok);
         infot = 4;
         Cgebrd(2, 1, a, 1, d, e, tq, tp, w, 2, info);
-        chkxer("Cgebrd", infot, nout, lerr, ok);
+        Chkxer("ZGEBRD", infot, nout, lerr, ok);
         infot = 10;
         Cgebrd(2, 1, a, 2, d, e, tq, tp, w, 1, info);
-        chkxer("Cgebrd", infot, nout, lerr, ok);
+        Chkxer("ZGEBRD", infot, nout, lerr, ok);
         nt += 4;
         //
         // Cungbr
         //
-        strncpy(srnamt, "Cungbr", srnamt_len);
+        srnamt = "ZUNGBR";
         infot = 1;
         Cungbr("/", 0, 0, 0, a, 1, tq, w, 1, info);
-        chkxer("Cungbr", infot, nout, lerr, ok);
+        Chkxer("ZUNGBR", infot, nout, lerr, ok);
         infot = 2;
         Cungbr("Q", -1, 0, 0, a, 1, tq, w, 1, info);
-        chkxer("Cungbr", infot, nout, lerr, ok);
+        Chkxer("ZUNGBR", infot, nout, lerr, ok);
         infot = 3;
         Cungbr("Q", 0, -1, 0, a, 1, tq, w, 1, info);
-        chkxer("Cungbr", infot, nout, lerr, ok);
+        Chkxer("ZUNGBR", infot, nout, lerr, ok);
         infot = 3;
         Cungbr("Q", 0, 1, 0, a, 1, tq, w, 1, info);
-        chkxer("Cungbr", infot, nout, lerr, ok);
+        Chkxer("ZUNGBR", infot, nout, lerr, ok);
         infot = 3;
         Cungbr("Q", 1, 0, 1, a, 1, tq, w, 1, info);
-        chkxer("Cungbr", infot, nout, lerr, ok);
+        Chkxer("ZUNGBR", infot, nout, lerr, ok);
         infot = 3;
         Cungbr("P", 1, 0, 0, a, 1, tq, w, 1, info);
-        chkxer("Cungbr", infot, nout, lerr, ok);
+        Chkxer("ZUNGBR", infot, nout, lerr, ok);
         infot = 3;
         Cungbr("P", 0, 1, 1, a, 1, tq, w, 1, info);
-        chkxer("Cungbr", infot, nout, lerr, ok);
+        Chkxer("ZUNGBR", infot, nout, lerr, ok);
         infot = 4;
         Cungbr("Q", 0, 0, -1, a, 1, tq, w, 1, info);
-        chkxer("Cungbr", infot, nout, lerr, ok);
+        Chkxer("ZUNGBR", infot, nout, lerr, ok);
         infot = 6;
         Cungbr("Q", 2, 1, 1, a, 1, tq, w, 1, info);
-        chkxer("Cungbr", infot, nout, lerr, ok);
+        Chkxer("ZUNGBR", infot, nout, lerr, ok);
         infot = 9;
         Cungbr("Q", 2, 2, 1, a, 2, tq, w, 1, info);
-        chkxer("Cungbr", infot, nout, lerr, ok);
+        Chkxer("ZUNGBR", infot, nout, lerr, ok);
         nt += 10;
         //
         // Cunmbr
         //
-        strncpy(srnamt, "Cunmbr", srnamt_len);
+        srnamt = "ZUNMBR";
         infot = 1;
         Cunmbr("/", "L", "T", 0, 0, 0, a, 1, tq, u, 1, w, 1, info);
-        chkxer("Cunmbr", infot, nout, lerr, ok);
+        Chkxer("ZUNMBR", infot, nout, lerr, ok);
         infot = 2;
         Cunmbr("Q", "/", "T", 0, 0, 0, a, 1, tq, u, 1, w, 1, info);
-        chkxer("Cunmbr", infot, nout, lerr, ok);
+        Chkxer("ZUNMBR", infot, nout, lerr, ok);
         infot = 3;
         Cunmbr("Q", "L", "/", 0, 0, 0, a, 1, tq, u, 1, w, 1, info);
-        chkxer("Cunmbr", infot, nout, lerr, ok);
+        Chkxer("ZUNMBR", infot, nout, lerr, ok);
         infot = 4;
         Cunmbr("Q", "L", "C", -1, 0, 0, a, 1, tq, u, 1, w, 1, info);
-        chkxer("Cunmbr", infot, nout, lerr, ok);
+        Chkxer("ZUNMBR", infot, nout, lerr, ok);
         infot = 5;
         Cunmbr("Q", "L", "C", 0, -1, 0, a, 1, tq, u, 1, w, 1, info);
-        chkxer("Cunmbr", infot, nout, lerr, ok);
+        Chkxer("ZUNMBR", infot, nout, lerr, ok);
         infot = 6;
         Cunmbr("Q", "L", "C", 0, 0, -1, a, 1, tq, u, 1, w, 1, info);
-        chkxer("Cunmbr", infot, nout, lerr, ok);
+        Chkxer("ZUNMBR", infot, nout, lerr, ok);
         infot = 8;
         Cunmbr("Q", "L", "C", 2, 0, 0, a, 1, tq, u, 2, w, 1, info);
-        chkxer("Cunmbr", infot, nout, lerr, ok);
+        Chkxer("ZUNMBR", infot, nout, lerr, ok);
         infot = 8;
         Cunmbr("Q", "R", "C", 0, 2, 0, a, 1, tq, u, 1, w, 1, info);
-        chkxer("Cunmbr", infot, nout, lerr, ok);
+        Chkxer("ZUNMBR", infot, nout, lerr, ok);
         infot = 8;
         Cunmbr("P", "L", "C", 2, 0, 2, a, 1, tq, u, 2, w, 1, info);
-        chkxer("Cunmbr", infot, nout, lerr, ok);
+        Chkxer("ZUNMBR", infot, nout, lerr, ok);
         infot = 8;
         Cunmbr("P", "R", "C", 0, 2, 2, a, 1, tq, u, 1, w, 1, info);
-        chkxer("Cunmbr", infot, nout, lerr, ok);
+        Chkxer("ZUNMBR", infot, nout, lerr, ok);
         infot = 11;
         Cunmbr("Q", "R", "C", 2, 0, 0, a, 1, tq, u, 1, w, 1, info);
-        chkxer("Cunmbr", infot, nout, lerr, ok);
+        Chkxer("ZUNMBR", infot, nout, lerr, ok);
         infot = 13;
         Cunmbr("Q", "L", "C", 0, 2, 0, a, 1, tq, u, 1, w, 0, info);
-        chkxer("Cunmbr", infot, nout, lerr, ok);
+        Chkxer("ZUNMBR", infot, nout, lerr, ok);
         infot = 13;
         Cunmbr("Q", "R", "C", 2, 0, 0, a, 1, tq, u, 2, w, 0, info);
-        chkxer("Cunmbr", infot, nout, lerr, ok);
+        Chkxer("ZUNMBR", infot, nout, lerr, ok);
         nt += 13;
         //
         // Cbdsqr
         //
-        strncpy(srnamt, "Cbdsqr", srnamt_len);
+        srnamt = "ZBDSQR";
         infot = 1;
         Cbdsqr("/", 0, 0, 0, 0, d, e, v, 1, u, 1, a, 1, rw, info);
-        chkxer("Cbdsqr", infot, nout, lerr, ok);
+        Chkxer("ZBDSQR", infot, nout, lerr, ok);
         infot = 2;
         Cbdsqr("U", -1, 0, 0, 0, d, e, v, 1, u, 1, a, 1, rw, info);
-        chkxer("Cbdsqr", infot, nout, lerr, ok);
+        Chkxer("ZBDSQR", infot, nout, lerr, ok);
         infot = 3;
         Cbdsqr("U", 0, -1, 0, 0, d, e, v, 1, u, 1, a, 1, rw, info);
-        chkxer("Cbdsqr", infot, nout, lerr, ok);
+        Chkxer("ZBDSQR", infot, nout, lerr, ok);
         infot = 4;
         Cbdsqr("U", 0, 0, -1, 0, d, e, v, 1, u, 1, a, 1, rw, info);
-        chkxer("Cbdsqr", infot, nout, lerr, ok);
+        Chkxer("ZBDSQR", infot, nout, lerr, ok);
         infot = 5;
         Cbdsqr("U", 0, 0, 0, -1, d, e, v, 1, u, 1, a, 1, rw, info);
-        chkxer("Cbdsqr", infot, nout, lerr, ok);
+        Chkxer("ZBDSQR", infot, nout, lerr, ok);
         infot = 9;
         Cbdsqr("U", 2, 1, 0, 0, d, e, v, 1, u, 1, a, 1, rw, info);
-        chkxer("Cbdsqr", infot, nout, lerr, ok);
+        Chkxer("ZBDSQR", infot, nout, lerr, ok);
         infot = 11;
         Cbdsqr("U", 0, 0, 2, 0, d, e, v, 1, u, 1, a, 1, rw, info);
-        chkxer("Cbdsqr", infot, nout, lerr, ok);
+        Chkxer("ZBDSQR", infot, nout, lerr, ok);
         infot = 13;
         Cbdsqr("U", 2, 0, 0, 1, d, e, v, 1, u, 1, a, 1, rw, info);
-        chkxer("Cbdsqr", infot, nout, lerr, ok);
+        Chkxer("ZBDSQR", infot, nout, lerr, ok);
         nt += 8;
     }
     //
