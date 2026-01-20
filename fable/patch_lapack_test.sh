@@ -34,7 +34,6 @@ patch  < ~/mplapack/fable/3.9.1/lapack/patch-Rqrt04.cpp
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Rlqt05.cpp
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Rlqt04.cpp
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Rlatb5.cpp
-patch  < ~/mplapack/fable/3.9.1/lapack/patch-Mxlaenv.cpp
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Rdrvls.cpp
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Cerrlqtp.cpp
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Cerrlqt.cpp

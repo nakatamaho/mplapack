@@ -19,7 +19,7 @@ shopt -s nullglob
 # We skip single precision real/complex families: s* and c*.
 EXCLUDE_PREFIXES=( s c )
 # Exclude specific files by name (case-insensitive).
-EXCLUDE_FILES=( dlaran xerbla ilaenv )
+EXCLUDE_FILES=( dlaran xerbla ilaenv xlaenv )
 
 # Force-include specific utility routines even if they match excluded prefixes.
 # Example: chkxer is required by many LAPACK tests but starts with "c".
