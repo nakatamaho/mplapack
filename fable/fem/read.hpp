@@ -216,10 +216,16 @@ class read_loop // TODO copy-constructor potential performance problem
             from_stream_unformatted(reinterpret_cast<char *>(&val), sizeof(integer_star_8));
         } else if (io_mode == io_list_directed) {
             inp.reset();
-            throw TBXX_NOT_IMPLEMENTED();
+            val = static_cast<integer_star_8>(read_star_long());
         } else {
-            inp.reset();
-            throw TBXX_NOT_IMPLEMENTED();
+            std::string const &ed = next_edit_descriptor();
+            int n = ed.size();
+            if (ed[0] == 'i' && n > 1) {
+                n = utils::unsigned_integer_value(ed.data(), 1, n);
+                val = static_cast<integer_star_8>(read_fmt_long(n));
+            } else {
+                val = static_cast<integer_star_8>(read_star_long());
+            }
         }
         return *this;
     }

@@ -249,9 +249,19 @@ class write_loop : write_loop_base
             std::string s = o.str();
             to_stream_star(s.data(), s.size());
             prev_was_string = false;
-        } else {
-            out.reset();
-            throw TBXX_NOT_IMPLEMENTED();
+       } else {
+            std::string const &ed = next_edit_descriptor();
+            if (ed[0] == 'i') {
+                // Use long long formatting for INTEGER*8.
+                std::string fmt = "%" + ed.substr(1) + "lld";
+                char buf[64];
+                int n = std::snprintf(buf, sizeof(buf), fmt.c_str(), static_cast<long long>(val));
+                to_stream_fmt(buf, n);
+            } else {
+                char buf[64];
+                int n = std::snprintf(buf, sizeof(buf), " %lld", static_cast<long long>(val));
+                to_stream_fmt(buf, n);
+            }
         }
         return *this;
     }

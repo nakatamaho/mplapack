@@ -8331,6 +8331,73 @@ def _postprocess_complex_zero_initializers(lines):
         out.append(line)
     return out
 
+def _postprocess_fix_scalar_str_length_from_slices(lines):
+    """Fix wrong fem::str<N> length for scalar locals when slices exceed N.
+
+    Why this exists:
+      Some Fortran forms like "CHARACTER(LEN=3) PATH" may not surface as
+      fdecl.size_tokens depending on the upstream parser. When that happens we may
+      accidentally emit fem::str<1> based on later scalar assignments, while the
+      code still contains substring operations like PATH(2:3). That yields
+      -Wstringop-overflow in optimized builds.
+
+    Strategy:
+      1) Collect scalar fem::str<N> declarations (locals).
+      2) Collect maximum substring end index used for those identifiers.
+      3) If max_end > N, widen the declaration to fem::str<max_end>.
+
+    This is a conservative postprocess: it only widens and never shrinks.
+    """
+
+    # Match scalar fem::str<N> declarations (optionally initialized).
+    decl_re = re.compile(
+        r"\b(?P<type>fem::str<(?P<n>\d+)>)\s+"
+        r"(?P<name>[A-Za-z_]\w*)\b(?!\s*\[)"
+    )
+
+    # Match substring usage: name(2, 3)
+    slice_re = re.compile(
+        r"\b(?P<name>[A-Za-z_]\w*)\s*\(\s*(?P<first>\d+)\s*,\s*(?P<last>\d+)\s*\)"
+    )
+
+    declared_len = {}
+    for line in lines:
+        m = decl_re.search(line)
+        if not m:
+            continue
+        name = m.group("name")
+        # Skip references and declarations in function parameter lists.
+        if "&" in line[: m.start("name")]:
+            continue
+        declared_len[name] = int(m.group("n"))
+
+    if not declared_len:
+        return lines
+
+    need_len = dict(declared_len)
+    for line in lines:
+        for m in slice_re.finditer(line):
+            name = m.group("name")
+            if name not in need_len:
+                continue
+            last = int(m.group("last"))
+            if last > need_len[name]:
+                need_len[name] = last
+
+    out = []
+    for line in lines:
+        m = decl_re.search(line)
+        if not m:
+            out.append(line)
+            continue
+        name = m.group("name")
+        old_n = int(m.group("n"))
+        new_n = need_len.get(name, old_n)
+        if new_n <= old_n:
+            out.append(line)
+            continue
+        out.append(line.replace(f"fem::str<{old_n}>", f"fem::str<{new_n}>", 1))
+    return out
 
 def _fix_fortran_externals(src):
     """Downgrade simple Fortran 90 EXTERNAL declarations to F77 style.
@@ -10495,6 +10562,13 @@ def process(
     # Convert array slice assignments to for loops
     result = _postprocess_slice_assignment(result)
 
+    # Widen fem::str<N> scalar locals when substring slices exceed N.
+    # This fixes cases like:
+    #   CHARACTER(LEN=3) PATH
+    # where the upstream parser may drop LEN=3 and we would otherwise emit
+    # fem::str<1> path but still generate path(2, 3) = ...
+    result = _postprocess_fix_scalar_str_length_from_slices(result)
+    
     # Clean up temporary Fortran files created for preprocessing.
     for tmp in temp_files:
         try:
