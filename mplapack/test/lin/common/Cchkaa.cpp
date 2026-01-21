@@ -1081,4 +1081,4 @@ statement_140:
     //
 }
 
-int main(int argc, char const *argv[]) { Cchkaa(); }
+int main(int argc, char const *argv[]) { return fem::main_with_catch(argc, argv, program_Cchkaa); }
