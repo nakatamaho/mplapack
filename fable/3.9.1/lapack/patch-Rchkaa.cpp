@@ -1,16 +1,14 @@
---- Rchkaa.cpp_	2026-01-20 13:35:12.172165696 +0900
-+++ Rchkaa.cpp	2026-01-20 13:35:14.660218092 +0900
-@@ -43,8 +43,8 @@
+--- Rchkaa.cpp_	2026-01-21 18:18:36.231766967 +0900
++++ Rchkaa.cpp	2026-01-21 18:18:36.236767070 +0900
+@@ -43,7 +43,7 @@
  #include <mplapack_matgen.h>
  #include <mplapack_lin.h>
  
 -void program_dchkaa(int argc, char const *argv[]) {
--    common cmn(argc, argv);
 +void program_Rchkaa(int argc, char const *argv[]) {
-+    common cmn;
+     common cmn(argc, argv);
      common_read read(cmn);
      common_write write(cmn);
-     static fem::str<10> intstr = "0123456789";
 @@ -54,9 +54,12 @@
      INTEGER lda = 0;
      bool fatal = false;
@@ -36,7 +34,7 @@
 -                "i1,'.',i1,'.',i1,/,/,' The following parameter values will be used:')"),
 -        vers_major, vers_minor, vers_patch;
 +    iMlaver(mplapack_vers_major, mplapack_vers_minor, mplapack_vers_patch, lapack_vers_major, lapack_vers_minor, lapack_vers_patch);
-+    write(nout, "(' Tests of the Multiple precision version of LAPACK MPLAPACK VERSION ',i1,'.',i1,'.',i1,/, "
++    write(nout, "(' Tests of the Multiple precision version of LAPACK ',i1,'.',i1,'.',i1,/, "
 +                "' Based on the original LAPACK VERSION ',i1,'.',i1,'.',i1,/,/, 'The following parameter values will be used:')"),
 +        mplapack_vers_major, mplapack_vers_minor, mplapack_vers_patch, lapack_vers_major, lapack_vers_minor, lapack_vers_patch;
      //
