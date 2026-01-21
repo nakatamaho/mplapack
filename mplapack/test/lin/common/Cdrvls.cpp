@@ -239,8 +239,6 @@ void Cdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     //
     lwlsy = lwork;
     //
-    // FABLE: ALLOCATE removed (RAII in C++)
-    //
     for (im = 1; im <= nm; im = im + 1) {
         m = mval[im - 1];
         lda = max((INTEGER)1, m);
