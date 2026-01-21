@@ -96,9 +96,9 @@ flush
 """.splitlines())
 
 is_modified_info_by_name = {
-  "cpu_time": (0,),
-  "date": (0,),
-  "getarg": (1,),
-  "getenv": (1,),
-  "time": (0,)
+    "cpu_time": (0,),
+    "date": (0,),
+    "getarg": (1,),
+    "getenv": (1,),
+    "time": (0,)
 }
