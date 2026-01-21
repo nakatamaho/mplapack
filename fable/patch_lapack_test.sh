@@ -14,7 +14,6 @@ patch  < ~/mplapack/fable/3.9.1/lapack/patch-Rlaror.cpp
 
 cd /home/docker/mplapack/mplapack/test/lin/common
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Clatb5.cpp
-patch  < ~/mplapack/fable/3.9.1/lapack/patch-Cdrvls.cpp
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Cerrqrt.cpp
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Cerrqrtp.cpp
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Clatsp.cpp
@@ -24,10 +23,7 @@ patch  < ~/mplapack/fable/3.9.1/lapack/patch-Cpot01.cpp
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Cppt01.cpp
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Cpst01.cpp
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Rtsqr01.cpp
-patch  < ~/mplapack/fable/3.9.1/lapack/patch-Rlqt05.cpp
-patch  < ~/mplapack/fable/3.9.1/lapack/patch-Rlqt04.cpp
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Rlatb5.cpp
-patch  < ~/mplapack/fable/3.9.1/lapack/patch-Rdrvls.cpp
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Cerrlqtp.cpp
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Cerrlqt.cpp
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Ctsqr01.cpp
