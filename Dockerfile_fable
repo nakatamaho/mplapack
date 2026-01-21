@@ -55,8 +55,8 @@ RUN apt install -y --install-recommends wine-stable
 ### mingw end ###
 
 ### cuda start ###
-RUN apt install -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" keyboard-configuration
-RUN apt install -y cuda-drivers
+#RUN apt install -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" keyboard-configuration
+#RUN apt install -y cuda-drivers
 ### cuda end ###
 
 ARG DOCKER_UID=1000
