@@ -3,9 +3,9 @@
 
 namespace fem {
 
-  struct star_type {};
+struct star_type {};
 
-  static const star_type star = star_type();
+static const star_type star = star_type();
 
 } // namespace fem
 
