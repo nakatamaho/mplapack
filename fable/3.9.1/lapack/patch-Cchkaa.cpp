@@ -1,33 +1,32 @@
---- Cchkaa.cpp_	2026-01-20 13:35:36.236672493 +0900
-+++ Cchkaa.cpp	2026-01-20 13:35:41.691787391 +0900
-@@ -43,8 +43,8 @@
+--- Cchkaa.cpp_	2026-01-21 18:02:32.934488926 +0900
++++ Cchkaa.cpp	2026-01-21 18:02:32.940489041 +0900
+@@ -43,7 +43,7 @@
  #include <mplapack_matgen.h>
  #include <mplapack_lin.h>
  
 -void program_zchkaa(int argc, char const *argv[]) {
--    common cmn(argc, argv);
-+void Cchkaa(void) {
-+    common cmn;
++void program_Cchkaa(int argc, char const *argv[]) {
+     common cmn(argc, argv);
      common_read read(cmn);
      common_write write(cmn);
-     static fem::str<10> intstr = "0123456789";
-@@ -54,9 +54,12 @@
+@@ -54,10 +54,13 @@
      INTEGER lda = 0;
      bool fatal = false;
      const INTEGER nin = 5;
 -    INTEGER vers_major = 0;
 -    INTEGER vers_minor = 0;
 -    INTEGER vers_patch = 0;
+     const INTEGER nout = 6;
 +    INTEGER mplapack_vers_major = 0;
 +    INTEGER mplapack_vers_minor = 0;
 +    INTEGER mplapack_vers_patch = 0;
 +    INTEGER lapack_vers_major = 0;
 +    INTEGER lapack_vers_minor = 0;
 +    INTEGER lapack_vers_patch = 0;
-     const INTEGER nout = 6;
      INTEGER nm = 0;
      const INTEGER maxin = 12;
-@@ -125,10 +125,10 @@
+     INTEGER mval[maxin];
+@@ -125,10 +128,10 @@
      //
      // Report values of parameters.
      //
@@ -42,7 +41,7 @@
      //
      // Read the values of M
      //
-@@ -1078,4 +1078,4 @@
+@@ -1078,4 +1081,4 @@
      //
  }
  

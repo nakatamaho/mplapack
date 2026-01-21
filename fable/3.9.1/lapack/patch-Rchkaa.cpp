@@ -6,7 +6,7 @@
  
 -void program_dchkaa(int argc, char const *argv[]) {
 -    common cmn(argc, argv);
-+void Rchkaa(void) {
++void program_Rchkaa(int argc, char const *argv[]) {
 +    common cmn;
      common_read read(cmn);
      common_write write(cmn);
@@ -47,4 +47,4 @@
  }
  
 -int main(int argc, char const *argv[]) { return fem::main_with_catch(argc, argv, program_dchkaa); }
-+int main(int argc, char const *argv[]) { Rchkaa(); }
++int main(int argc, char const *argv[]) { return fem::main_with_catch(argc, argv, program_Rchkaa); }
