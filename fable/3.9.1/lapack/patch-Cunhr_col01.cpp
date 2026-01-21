@@ -1,13 +1,5 @@
 --- Cunhr_col01.cpp_	2026-01-21 20:55:15.896518051 +0900
 +++ Cunhr_col01.cpp	2026-01-21 20:55:15.900518107 +0900
-@@ -45,6 +45,7 @@
- #include <memory>
- 
- void Cunhr_col01(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER const nb1, INTEGER const nb2, REAL *result) {
-+    common cmn;
-     static INTEGER iseed[4] = {1988, 1989, 1990, 1991};
-     // TEST MATRICES WITH HALF OF MATRIX BEING ZEROS
-     //
 @@ -52,7 +53,7 @@
      //
      REAL eps = Rlamch("Epsilon");
