@@ -43,8 +43,8 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-void Cchkaa(void) {
-    common cmn;
+void program_Cchkaa(int argc, char const *argv[]) {
+    common cmn(argc, argv);
     common_read read(cmn);
     common_write write(cmn);
     static fem::str<10> intstr = "0123456789";
@@ -54,13 +54,13 @@ void Cchkaa(void) {
     INTEGER lda = 0;
     bool fatal = false;
     const INTEGER nin = 5;
+    const INTEGER nout = 6;
     INTEGER mplapack_vers_major = 0;
     INTEGER mplapack_vers_minor = 0;
     INTEGER mplapack_vers_patch = 0;
     INTEGER lapack_vers_major = 0;
     INTEGER lapack_vers_minor = 0;
     INTEGER lapack_vers_patch = 0;
-    const INTEGER nout = 6;
     INTEGER nm = 0;
     const INTEGER maxin = 12;
     INTEGER mval[maxin];
