@@ -43,8 +43,8 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-void program_Rchkrfp(int argc, char const *argv[]) {
-    common cmn(argc, argv);
+void Rchkrfp(void) {
+    common cmn;
     common_read read(cmn);
     common_write write(cmn);
     static const char *format_9991 = "(' Relative machine ',a,' is taken to be',d16.6)";
@@ -281,4 +281,4 @@ void program_Rchkrfp(int argc, char const *argv[]) {
     //
 }
 
-int main(int argc, char const *argv[]) { return fem::main_with_catch(argc, argv, program_Rchkrfp); }
+int main(int argc, char const *argv[]) { Rchkrfp(); }
