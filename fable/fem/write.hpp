@@ -249,7 +249,7 @@ class write_loop : write_loop_base
             std::string s = o.str();
             to_stream_star(s.data(), s.size());
             prev_was_string = false;
-       } else {
+        } else {
             std::string const &ed = next_edit_descriptor();
             if (ed[0] == 'i') {
                 // Use long long formatting for INTEGER*8.

@@ -1,14 +1,16 @@
---- Cchkrfp.cpp_	2026-01-21 18:37:48.706947842 +0900
-+++ Cchkrfp.cpp	2026-01-21 18:37:48.712947960 +0900
-@@ -43,7 +43,7 @@
+--- Cchkrfp.cpp_	2026-01-21 19:57:58.924315069 +0900
++++ Cchkrfp.cpp	2026-01-21 19:57:58.931315193 +0900
+@@ -43,8 +43,8 @@
  #include <mplapack_matgen.h>
  #include <mplapack_lin.h>
  
 -void program_zchkrfp(int argc, char const *argv[]) {
-+void program_Cchkrfp(int argc, char const *argv[]) {
-     common cmn(argc, argv);
+-    common cmn(argc, argv);
++void Cchkrfp(void) {
++    common cmn;
      common_read read(cmn);
      common_write write(cmn);
+     static const char *format_9991 = "(' Relative machine ',a,' is taken to be',d16.6)";
 @@ -60,18 +60,21 @@
      // Read a dummy line.
      //
@@ -44,4 +46,4 @@
  }
  
 -int main(int argc, char const *argv[]) { return fem::main_with_catch(argc, argv, program_zchkrfp); }
-+int main(int argc, char const *argv[]) { return fem::main_with_catch(argc, argv, program_Cchkrfp); }
++int main(int argc, char const *argv[]) { Cchkrfp(); }

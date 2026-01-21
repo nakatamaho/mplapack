@@ -10,7 +10,7 @@ namespace ext {
     namespace bp = boost::python;
     // helper, not available in Python
     // compare with fable/__init__.py
-    unsigned get_code_stop(bp::object const& code, int stop) {
+    unsigned get_code_stop(bp::object const &code, int stop) {
         unsigned len_code = bp::len(code);
         if (stop < 0)
             return len_code;
@@ -18,15 +18,15 @@ namespace ext {
         return static_cast<unsigned>(stop);
     }
     // compare with fable/__init__.py
-    int unsigned_integer_scan(bp::object const& code, unsigned start, int stop) {
+    int unsigned_integer_scan(bp::object const &code, unsigned start, int stop) {
         unsigned code_stop = get_code_stop(code, stop);
-        char const* s = bp::extract<char const*>(code)();
+        char const *s = bp::extract<char const *>(code)();
         return fem::utils::unsigned_integer_scan(s, start, code_stop);
     }
     // compare with fable/__init__.py
-    int floating_point_scan_after_exponent_char(bp::object const& code, unsigned start, int stop) {
+    int floating_point_scan_after_exponent_char(bp::object const &code, unsigned start, int stop) {
         unsigned code_stop = get_code_stop(code, stop);
-        char const* s = bp::extract<char const*>(code)();
+        char const *s = bp::extract<char const *>(code)();
         unsigned i = start;
         if (i < code_stop) {
             int c = s[i];
@@ -38,9 +38,9 @@ namespace ext {
         return -1;
     }
     // compare with fable/__init__.py
-    int floating_point_scan_after_dot(bp::object const& code, unsigned start, int stop) {
+    int floating_point_scan_after_dot(bp::object const &code, unsigned start, int stop) {
         unsigned code_stop = get_code_stop(code, stop);
-        char const* s = bp::extract<char const*>(code)();
+        char const *s = bp::extract<char const *>(code)();
         int i = unsigned_integer_scan(code, start, stop);
         if (i < 0)
             i = start;
@@ -53,9 +53,9 @@ namespace ext {
         return i;
     }
     // compare with fable/__init__.py
-    int identifier_scan(bp::object const& code, unsigned start, int stop) {
+    int identifier_scan(bp::object const &code, unsigned start, int stop) {
         unsigned code_stop = get_code_stop(code, stop);
-        char const* s = bp::extract<char const*>(code)();
+        char const *s = bp::extract<char const *>(code)();
         unsigned i = start;
         if (i < code_stop) {
             int c = s[i++];
@@ -71,9 +71,9 @@ namespace ext {
         return -1;
     }
     // compare with fable/__init__.py
-    int find_closing_parenthesis(bp::object const& code, unsigned start, int stop) {
+    int find_closing_parenthesis(bp::object const &code, unsigned start, int stop) {
         unsigned code_stop = get_code_stop(code, stop);
-        char const* s = bp::extract<char const*>(code)();
+        char const *s = bp::extract<char const *>(code)();
         unsigned n_inner = 0;
         for (unsigned i = start; i < code_stop; i++) {
             int c = s[i];
@@ -87,7 +87,7 @@ namespace ext {
         }
         return -1;
     }
-    bp::list exercise_fem_utils_split_comma_separated(std::string const& s) {
+    bp::list exercise_fem_utils_split_comma_separated(std::string const &s) {
         bp::list result;
         std::vector<std::string> buffer;
         unsigned i = fem::utils::split_comma_separated(buffer, s.c_str());
@@ -112,7 +112,7 @@ namespace ext {
         result.append(sizeof(fem::real_star_16));
         return result;
     }
-    bp::list exercise_fem_format_tokenizer(std::string const& fmt) {
+    bp::list exercise_fem_format_tokenizer(std::string const &fmt) {
         bp::list result;
         fem::format::tokenizer tz(fmt.c_str(), fmt.size());
         typedef std::vector<fem::utils::token>::const_iterator it;
@@ -122,19 +122,19 @@ namespace ext {
         }
         return result;
     }
-    bp::tuple exercise_fem_utils_string_to_double(std::string const& str) {
+    bp::tuple exercise_fem_utils_string_to_double(std::string const &str) {
         fem::utils::simple_istream_from_std_string inp(str.c_str());
         fem::utils::string_to_double conv(inp);
         return bp::make_tuple(conv.result, (conv.error_message ? bp::object(*conv.error_message) : bp::object()), inp.get());
     }
-    bp::tuple exercise_fem_utils_string_to_double_fmt(std::string const& str, int w, int d, bool blanks_zero, int exp_scale) {
+    bp::tuple exercise_fem_utils_string_to_double_fmt(std::string const &str, int w, int d, bool blanks_zero, int exp_scale) {
         fem::utils::simple_istream_from_std_string inp(str.c_str());
         fem::utils::string_to_double_fmt conv(inp, w, d, blanks_zero, exp_scale);
         return bp::make_tuple(conv.result, (conv.error_message ? bp::object(*conv.error_message) : bp::object()), inp.get());
     }
     struct equivalence_array_alignment_wrappers {
         typedef fem::utils::equivalence::array_alignment w_t;
-        static bp::list infer_diffs0_from_diff_matrix(w_t& O) {
+        static bp::list infer_diffs0_from_diff_matrix(w_t &O) {
             O.infer_diffs0_from_diff_matrix();
             bp::list result;
             size_t n = O.diffs0.size();

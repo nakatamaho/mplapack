@@ -1,14 +1,16 @@
---- Cchkaa.cpp_	2026-01-21 18:29:07.070889091 +0900
-+++ Cchkaa.cpp	2026-01-21 18:29:07.075889185 +0900
-@@ -43,7 +43,7 @@
+--- Cchkaa.cpp_	2026-01-21 19:57:52.138194225 +0900
++++ Cchkaa.cpp	2026-01-21 19:57:52.144194332 +0900
+@@ -43,8 +43,8 @@
  #include <mplapack_matgen.h>
  #include <mplapack_lin.h>
  
 -void program_zchkaa(int argc, char const *argv[]) {
-+void program_Cchkaa(int argc, char const *argv[]) {
-     common cmn(argc, argv);
+-    common cmn(argc, argv);
++void Cchkaa(void) {
++    common cmn;
      common_read read(cmn);
      common_write write(cmn);
+     static fem::str<10> intstr = "0123456789";
 @@ -54,10 +54,13 @@
      INTEGER lda = 0;
      bool fatal = false;
@@ -46,4 +48,4 @@
  }
  
 -int main(int argc, char const *argv[]) { return fem::main_with_catch(argc, argv, program_zchkaa); }
-+int main(int argc, char const *argv[]) { return fem::main_with_catch(argc, argv, program_Cchkaa); }
++int main(int argc, char const *argv[]) { Cchkaa(); }
