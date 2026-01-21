@@ -1,5 +1,5 @@
---- Rchkrfp.cpp_	2026-01-21 18:29:14.733032980 +0900
-+++ Rchkrfp.cpp	2026-01-21 18:29:14.740033112 +0900
+--- Rchkrfp.cpp_	2026-01-21 18:40:10.844749830 +0900
++++ Rchkrfp.cpp	2026-01-21 18:40:15.445840807 +0900
 @@ -43,7 +43,7 @@
  #include <mplapack_matgen.h>
  #include <mplapack_lin.h>
@@ -9,7 +9,7 @@
      common cmn(argc, argv);
      common_read read(cmn);
      common_write write(cmn);
-@@ -60,18 +60,21 @@
+@@ -60,19 +60,21 @@
      // Read a dummy line.
      //
      const INTEGER nin = 5;
@@ -26,6 +26,7 @@
 -    write(nout, "(/,' Tests of the DOUBLE PRECISION LAPACK RFP routines ',/,"
 -                "' LAPACK VERSION ',i1,'.',i1,'.',i1,/,/,"
 -                "' The following parameter values will be used:')"),
+-        vers_major, vers_minor, vers_patch;
 +    INTEGER mplapack_vers_major = 0;
 +    INTEGER mplapack_vers_minor = 0;
 +    INTEGER mplapack_vers_patch = 0;
@@ -38,7 +39,8 @@
 +        mplapack_vers_major, mplapack_vers_minor, mplapack_vers_patch, lapack_vers_major, lapack_vers_minor, lapack_vers_patch;
      //
      // Read the values of N
-@@ -279,4 +282,4 @@
+     //
+@@ -279,4 +281,4 @@
      //
  }
  
