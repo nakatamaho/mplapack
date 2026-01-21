@@ -5,7 +5,6 @@ except Exception:
     ext = None
 else:
     ext = bp.import_ext("fable_ext", optional=True)
-from six.moves import range
 
 # compare with fem/utils/string.hpp
 

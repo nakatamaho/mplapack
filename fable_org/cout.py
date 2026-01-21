@@ -1,11 +1,9 @@
 from __future__ import absolute_import, division, print_function
-from six.moves import range
 from libtbx.utils import product
 from libtbx import group_args
 from libtbx import mutable
 from libtbx import Auto
 import os.path
-from six.moves import zip
 
 fmt_comma_placeholder = chr(255)
 

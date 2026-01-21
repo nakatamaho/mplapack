@@ -7,8 +7,6 @@ import platform
 import time
 import sys
 import os
-from six.moves import range
-from six.moves import zip
 op = os.path
 
 __this_script__ = "cctbx_project/fable/test/sf_times.py"

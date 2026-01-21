@@ -3,7 +3,7 @@ from fable import cout
 from libtbx.test_utils import \
     Exception_expected, show_diff, anchored_block_show_diff as absd
 import libtbx.load_env
-from six.moves import StringIO
+from io import StringIO
 import os
 op = os.path
 
