@@ -1,13 +1,10 @@
 #ifndef FEM_UTILS_RANDOM_HPP
 #define FEM_UTILS_RANDOM_HPP
-
 #include <fem/size_t.hpp>
 #include <string>
 #include <ctime>
-
 namespace fem {
 namespace utils {
-
     inline std::string random_name_simple(size_t size) {
         static bool first_call = true;
         static size_t random_state;
@@ -25,8 +22,6 @@ namespace utils {
         }
         return result;
     }
-
 } // namespace utils
 } // namespace fem
-
 #endif // GUARD

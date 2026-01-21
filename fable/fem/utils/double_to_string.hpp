@@ -1,18 +1,13 @@
 #ifndef FEM_UTILS_DOUBLE_TO_STRING_HPP
 #define FEM_UTILS_DOUBLE_TO_STRING_HPP
-
 #include <fem/utils/char.hpp>
 #include <fem/utils/int_types.hpp>
-
 namespace fem {
 namespace utils {
-
     struct double_to_string_scientific_notation {
         static const int buffer_capacity = 256;
         char buffer[buffer_capacity];
-
         double_to_string_scientific_notation() {}
-
         double_to_string_scientific_notation(double value,
                                              int w,         // "w" part of Fortran "w.d" format
                                              int d,         // "d" part of Fortran "w.d" format
@@ -160,8 +155,6 @@ namespace utils {
             }
         }
     };
-
 } // namespace utils
 } // namespace fem
-
 #endif // GUARD

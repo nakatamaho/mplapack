@@ -16,21 +16,16 @@
 #define FEM_WRITE_CRLF false
 #endif
 namespace fem {
-
 // Helper for printing user-defined numeric types (e.g. multiprecision reals).
 // If sprintnum_short(char*, T const&) is available, we convert the value to a
 // short string and emit it as text, ignoring the numeric edit descriptor.
 namespace detail {
-
     template <typename T> struct make_void {
         typedef void type;
     };
-
     template <typename T, typename = void> struct has_sprintnum_short : std::false_type {};
-
     template <typename T> struct has_sprintnum_short<T, typename make_void<decltype(sprintnum_short(std::declval<char *>(), std::declval<T const &>()))>::type> : std::true_type {};
 } // namespace detail
-
 struct write_loop_base {
     bool write_crlf;
     unsigned pos;
@@ -337,7 +332,6 @@ class write_loop : write_loop_base
         }
         return *this;
     }
-
     // Fallback for user-defined numeric types (e.g. multiprecision reals).
     // We intentionally ignore the numeric edit descriptor (g/f/e/d/...) and
     // emit the short text produced by sprintnum_short.

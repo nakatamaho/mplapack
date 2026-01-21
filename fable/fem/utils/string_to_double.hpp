@@ -1,45 +1,35 @@
 #ifndef FEM_UTILS_STRING_TO_DOUBLE_HPP
 #define FEM_UTILS_STRING_TO_DOUBLE_HPP
-
 #include <fem/utils/char.hpp>
 #include <fem/utils/simple_streams.hpp>
 #include <tbxx/optional_copy.hpp>
-
 namespace fem {
 namespace utils {
-
     template <size_t Size> struct string_to_double_ad_hoc_limts;
-
     // Simple upper estimates, not guarding against floating-point errors,
     // but guarding against unusual sizeof(double).
     template <> struct string_to_double_ad_hoc_limts<8> {
         static const unsigned max_digit_count = 16;
         static const unsigned max_exp_int = 308;
     };
-
     // Ideally in string_to_double_ad_hoc_limts<8>, but it does not
     // seem to be straightforward to do.
     static const double one_e_minus_0_16[] = {1e0, 1e-1, 1e-2, 1e-3, 1e-4, 1e-5, 1e-6, 1e-7, 1e-8, 1e-9, 1e-10, 1e-11, 1e-12, 1e-13, 1e-14, 1e-15, 1e-16};
     static const double one_e_two_pow_0_8[] = {1e1, 1e2, 1e4, 1e8, 1e16, 1e32, 1e64, 1e128, 1e256};
-
     struct string_to_double {
         double result;
         tbxx::optional_copy<std::string> error_message;
         bool stream_end;
-
         string_to_double() {}
-
         string_to_double(simple_istream &inp, unsigned decimal_point_substitute = 0, int exp_scale_substitute = 0) {
             reset();
             convert(inp, decimal_point_substitute, exp_scale_substitute);
         }
-
         void reset() {
             result = 0;
             error_message.release();
             stream_end = false;
         }
-
         void set_error_message(int c) {
             static const std::string inp_err("Input error while reading floating-point value.");
             static const std::string inp_eoi("End of input while reading floating-point value.");
@@ -53,7 +43,6 @@ namespace utils {
                 error_message = err_inv + format_char_for_display(c);
             }
         }
-
         void convert(simple_istream &inp,
                      unsigned decimal_point_substitute = 0, // "d" part of Fortran "w.d" format
                      int exp_scale_substitute = 0)          // Fortran "P" scaling
@@ -178,8 +167,6 @@ namespace utils {
                 result *= exp_double;
         }
     };
-
 } // namespace utils
 } // namespace fem
-
 #endif // GUARD

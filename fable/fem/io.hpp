@@ -174,9 +174,15 @@ struct io_unit {
     }
     void close(int *iostat_ptr = 0, bool status_delete = false) {
         if (iostat_ptr != 0)
-            *iostat_ptr = 0; // XXX
-        if (is_std_io_unit(number))
+            *iostat_ptr = 0;
+        if (is_std_io_unit(number)) {
+            // Do not fclose() stdin/stdout/stderr.
+            // Keep standard units connected for the lifetime of the process.
+            // (This prevents later I/O failures when multiple fem::common objects
+            // are created/destroyed within one executable.)
+            prev_op_was_write = false;
             return;
+        }
         if (stream.ptr != 0) {
             std::fclose(stream.ptr);
             stream.ptr = 0;
@@ -225,6 +231,20 @@ struct io : utils::noncopyable {
         typedef std::map<int, io_unit>::iterator it;
         it map_iter = units.find(unit);
         if (map_iter == units.end()) {
+            // Lazy preconnection for standard Fortran units.
+            // unit 5: stdin, unit 6: stdout, unit 0: stderr.
+            if (is_std_io_unit(unit)) {
+                std_file sf;
+                if (unit == 0) {
+                    sf = std_file(stderr);
+                } else if (unit == 5) {
+                    sf = std_file(stdin);
+                } else { // unit == 6
+                    sf = std_file(stdout);
+                }
+                map_iter = units.insert(std::make_pair(unit, io_unit(unit, std::string(""), sf))).first;
+                return &(map_iter->second);
+            }
             if (!auto_open)
                 return 0;
             map_iter = units.insert(std::make_pair(unit, io_unit(unit))).first;

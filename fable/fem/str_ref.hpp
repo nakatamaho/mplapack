@@ -3,7 +3,6 @@
 #include <fem/utils/misc.hpp>
 #include <fem/utils/string.hpp>
 #include <cstring>
-
 namespace fem {
 struct str_cref {
   protected:

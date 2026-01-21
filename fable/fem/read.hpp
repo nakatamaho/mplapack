@@ -9,24 +9,18 @@
 #include <fem/utils/string_to_double_fmt.hpp>
 #include <complex>
 #include <type_traits>
-
 #define IOSTAT_OK 0
 #define IOSTAT_ERROR 1
 #define IOSTAT_END -1
 namespace fem {
-
 namespace detail {
     template <typename T> struct is_std_complex : std::false_type {};
     template <typename U> struct is_std_complex<std::complex<U>> : std::true_type {};
-
     template <typename T> inline void assign_from_double(T &dst, double src, std::true_type) { dst = src; }
     template <typename T> inline void assign_from_double(T &dst, double src, std::false_type) { dst = T(src); }
     template <typename T> inline void assign_from_double(T &dst, double src) { assign_from_double(dst, src, std::is_assignable<T &, double>{}); }
-
     template <typename T> struct read_via_double : std::integral_constant<bool, !std::is_arithmetic<T>::value && !is_std_complex<T>::value && (std::is_assignable<T &, double>::value || std::is_constructible<T, double>::value)> {};
-
 } // namespace detail
-
 class read_loop // TODO copy-constructor potential performance problem
 {
   private:
@@ -54,7 +48,6 @@ class read_loop // TODO copy-constructor potential performance problem
             throw std::runtime_error("I/O unit is not connected: unit=" + std::to_string(unit));
         }
     }
-
     read_loop(str_cref const &internal_file, star_type const &) : inp(utils::slick_ptr<utils::simple_istream>(new utils::simple_istream_from_char_ptr_and_size(internal_file.elems(), internal_file.len()))), first_inp_get(true), blanks_zero(false), exp_scale(0), io_mode(io_list_directed), iostat_ptr(0) {}
     read_loop(str_cref const &internal_file, str_cref fmt) : inp(utils::slick_ptr<utils::simple_istream>(new utils::simple_istream_from_char_ptr_and_size(internal_file.elems(), internal_file.len()))), first_inp_get(true), fmt_loop(fmt), blanks_zero(false), exp_scale(0), io_mode(io_formatted), iostat_ptr(0) {}
     read_loop &rec(int const &) {
@@ -251,7 +244,6 @@ class read_loop // TODO copy-constructor potential performance problem
         }
         return *this;
     }
-
     read_loop &operator,(double &val) {
         if (io_mode == io_unformatted) {
             from_stream_unformatted(reinterpret_cast<char *>(&val), sizeof(double));
@@ -260,7 +252,6 @@ class read_loop // TODO copy-constructor potential performance problem
         }
         return *this;
     }
-
     template <typename T> typename std::enable_if<detail::read_via_double<T>::value, read_loop &>::type operator,(T &val) {
         // Read user-defined real types (e.g. multiprecision REAL) via double.
         // This intentionally loses precision but keeps the generated code simple.

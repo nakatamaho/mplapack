@@ -1,15 +1,12 @@
 #ifndef FEM_UTILS_STRING_HPP
 #define FEM_UTILS_STRING_HPP
-
 #include <fem/size_t.hpp>
 #include <fem/utils/char.hpp>
 #include <tbxx/error_utils.hpp>
 #include <algorithm>
 #include <cstring>
-
 namespace fem {
 namespace utils {
-
     inline bool starts_with(char const *str, unsigned start, unsigned stop, char const *substr) {
         for (unsigned j = start; j < stop;) {
             if (*substr == '\0')
@@ -19,14 +16,12 @@ namespace utils {
         }
         return (start != stop);
     }
-
     inline bool ends_with_char(std::string const &str, int c) {
         unsigned i = str.size();
         if (i == 0)
             return false;
         return (str[i - 1] == c);
     }
-
     // compare with fable/__init__.py
     inline int unsigned_integer_scan(char const *code, unsigned start, unsigned stop) {
         unsigned i = start;
@@ -39,7 +34,6 @@ namespace utils {
             return -1;
         return i;
     }
-
     //! Assumes ASCII or similar.
     inline unsigned unsigned_integer_value(char const *str, unsigned start, unsigned stop) {
         unsigned result = 0;
@@ -50,9 +44,7 @@ namespace utils {
         }
         return result;
     }
-
     inline unsigned unsigned_integer_value(char const *str, unsigned stop) { return unsigned_integer_value(str, 0, stop); }
-
     inline int signed_integer_value(char const *str, unsigned start, unsigned stop) {
         bool negative;
         if (str[start] == '-') {
@@ -68,16 +60,13 @@ namespace utils {
             result *= -1;
         return result;
     }
-
     inline void copy_with_blank_padding(char const *src, size_t src_size, char *dest, size_t dest_size) {
         // Copy up to dest_size characters from src (src_size excludes '\0'),
         // then pad the rest with blanks. Never writes past dest[0..dest_size-1].
         if (dest_size == 0) {
             return;
         }
-
         const size_t ncopy = (src_size < dest_size) ? src_size : dest_size;
-
         if (ncopy != 0) {
             std::memmove(dest, src, ncopy);
         }
@@ -85,14 +74,12 @@ namespace utils {
             dest[i] = ' ';
         }
     }
-
     inline void copy_with_blank_padding(char const *src, char *dest, size_t dest_size) {
         // Copy from NUL-terminated src into fixed-size dest,
         // then pad remaining slots with blanks. Never writes past dest[0..dest_size-1].
         if (dest_size == 0) {
             return;
         }
-
         size_t i = 0;
         for (; i < dest_size && *src != '\0'; ++i) {
             dest[i] = *src++;
@@ -101,7 +88,6 @@ namespace utils {
             dest[i] = ' ';
         }
     }
-
     inline bool string_eq(char const *lhs, size_t lhs_size, char const *rhs, size_t rhs_size) {
         static const char blank = ' ';
         if (lhs_size < rhs_size) {
@@ -115,7 +101,6 @@ namespace utils {
         }
         return true;
     }
-
     inline bool string_eq(char const *lhs, size_t lhs_size, char const *rhs) {
         static const char blank = ' ';
         for (size_t i = 0; i < lhs_size; i++) {
@@ -135,7 +120,6 @@ namespace utils {
         }
         return true;
     }
-
     inline int string_compare_lexical(char const *lhs, size_t lhs_size, char const *rhs, size_t rhs_size) {
         size_t n = std::max(lhs_size, rhs_size);
         for (size_t i = 0; i < n; i++) {
@@ -148,7 +132,6 @@ namespace utils {
         }
         return 0;
     }
-
     inline size_t find_leading_blank_padding(char const *str, size_t stop) {
         size_t i = 0;
         while (i != stop) {
@@ -158,7 +141,6 @@ namespace utils {
         }
         return i;
     }
-
     inline size_t find_trailing_blank_padding(char const *str, size_t stop) {
         size_t i = stop;
         while (i != 0) {
@@ -170,9 +152,7 @@ namespace utils {
         }
         return i;
     }
-
     inline size_t_2 find_leading_and_trailing_blank_padding(char const *str, size_t stop) { return size_t_2(find_leading_blank_padding(str, stop), find_trailing_blank_padding(str, stop)); }
-
     inline std::string strip_leading_and_trailing_blank_padding(std::string const &str) {
         size_t_2 indices = find_leading_and_trailing_blank_padding(str.data(), str.size());
         if (indices.elems[0] == 0 && indices.elems[1] == str.size()) {
@@ -180,7 +160,6 @@ namespace utils {
         }
         return std::string(str.data() + indices.elems[0], indices.elems[1] - indices.elems[0]);
     }
-
     inline std::string to_lower(std::string const &str) {
         std::string result = str;
         size_t n = str.size();
@@ -189,7 +168,6 @@ namespace utils {
         }
         return result;
     }
-
     inline int keyword_index(char const *valid_vals[], std::string const &val, char const *throw_info = 0) {
         std::string val_norm = to_lower(strip_leading_and_trailing_blank_padding(val));
         for (int i = 0; valid_vals[i] != 0; i++) {
@@ -204,7 +182,6 @@ namespace utils {
         }
         return -1;
     }
-
     //! Assumes ASCII or similar.
     inline std::string format_char_for_display(int c) {
         std::ostringstream o;
@@ -223,7 +200,6 @@ namespace utils {
             o << ")";
         return o.str();
     }
-
     inline void string_reverse_in_place(char *s, size_t s_size) {
         if (s_size == 0)
             return;
@@ -235,7 +211,6 @@ namespace utils {
             j--;
         }
     }
-
     //! Assumes ASCII or similar.
     inline int int_to_string(char *buffer, int buffer_size, int width, int value, int left_padding_character = ' ') {
         int i = 0;
@@ -250,7 +225,6 @@ namespace utils {
         string_reverse_in_place(buffer, i);
         return i;
     }
-
     template <typename VectorOfStringType> unsigned split_comma_separated(VectorOfStringType &result, char const *c_str) {
         for (unsigned i = 0;; i++) {
             char c = c_str[i];
@@ -269,8 +243,6 @@ namespace utils {
             }
         }
     }
-
 } // namespace utils
 } // namespace fem
-
 #endif // GUARD
