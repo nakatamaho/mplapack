@@ -34,5 +34,6 @@ patch  < ~/mplapack/fable/3.9.1/lapack/patch-Clattp.cpp
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Clattr.cpp
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Rchkeq.cpp
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Rlattr.cpp
+patch  < ~/mplapack/fable/3.9.1/lapack/patch-Rtsqr01.cpp
 #patch  < ~/mplapack/fable/3.9.1/lapack/patch-Rchkaa.cpp
 #patch  < ~/mplapack/fable/3.9.1/lapack/patch-Cchkaa.cpp
