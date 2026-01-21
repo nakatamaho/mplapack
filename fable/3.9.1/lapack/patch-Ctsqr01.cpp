@@ -1,14 +1,5 @@
 --- Ctsqr01.cpp
 +++ Ctsqr01.cpp
-@@ -43,6 +43,8 @@
- #include <mplapack_matgen.h>
- #include <mplapack_lin.h>
- 
-+#include <memory>
-+
- void Ctsqr01(fem::str_cref tssw, INTEGER const m, INTEGER const n, INTEGER const mb, INTEGER const nb, REAL *result) {
-     common cmn;
-     static INTEGER iseed[4] = {1988, 1989, 1990, 1991};
 @@ -56,14 +58,12 @@
      //
      REAL eps = Rlamch("Epsilon");
@@ -54,13 +45,3 @@
          resid = Clansy("1", "Upper", n, lq, l, rwork);
          result[2 - 1] = resid / (eps * max((INTEGER)1, n));
          //
-@@ -377,9 +377,4 @@
-         }
-         //
-     }
--    //
--    // Deallocate all arrays
--    //
--    FEM_THROW_UNHANDLED("executable deallocate: deallocate(a,af,q,r,rwork,work,t,c,d,cf,df)");
--    //
- }
