@@ -42,7 +42,6 @@ using fem::common;
 
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-
 #include <memory>
 
 void Rorhr_col02(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER const nb1, INTEGER const nb2, REAL *result) {
@@ -57,8 +56,6 @@ void Rorhr_col02(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
     INTEGER l = max(m, n, (INTEGER)1);
     //
     // Dynamically allocate local arrays
-    //
-    // FABLE: ALLOCATE removed (RAII in C++)
     //
     // Put random numbers into A and copy to AF
     //
@@ -101,6 +98,8 @@ void Rorhr_col02(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
     // or  M*NB2_UB if SIDE = 'R'.
     //
     lwork = max(lwork, nb2_ub * n, nb2_ub * m);
+    //
+    // End allocate memory for WORK.
     //
     // Begin Householder reconstruction routines
     //
@@ -250,6 +249,8 @@ void Rorhr_col02(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
     } else {
         result[6 - 1] = zero;
     }
+    //
+    // Deallocate all arrays
     //
     // End of Rorhr_col02
     //
