@@ -44,7 +44,6 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Rrqt02(INTEGER const m, INTEGER const n, INTEGER const k, REAL *a, REAL *af, REAL *q, REAL *r, INTEGER const lda, REAL *tau, REAL *work, INTEGER const lwork, REAL *rwork, REAL *result) {
-    common cmn;
     //
     // Quick return if possible
     //

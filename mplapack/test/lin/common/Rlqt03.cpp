@@ -44,7 +44,6 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Rlqt03(INTEGER const m, INTEGER const n, INTEGER const k, REAL *af, REAL *c, REAL *cc, REAL *q, INTEGER const lda, REAL *tau, REAL *work, INTEGER const lwork, REAL *rwork, REAL *result) {
-    common cmn;
     static INTEGER iseed[4] = {1988, 1989, 1990, 1991};
     //
     REAL eps = Rlamch("Epsilon");

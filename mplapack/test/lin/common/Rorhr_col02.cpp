@@ -45,7 +45,6 @@ using fem::common;
 #include <memory>
 
 void Rorhr_col02(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER const nb1, INTEGER const nb2, REAL *result) {
-    common cmn;
     static INTEGER iseed[4] = {1988, 1989, 1990, 1991};
     // TEST MATRICES WITH HALF OF MATRIX BEING ZEROS
     //

@@ -45,7 +45,6 @@ using fem::common;
 #include <memory>
 
 void Clqt05(INTEGER const m, INTEGER const n, INTEGER const l, INTEGER const nb, REAL *result) {
-    common cmn;
     static INTEGER iseed[4] = {1988, 1989, 1990, 1991};
     REAL eps = Rlamch("Epsilon");
     INTEGER k = m;

@@ -44,7 +44,6 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Crqt02(INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX *a, COMPLEX *af, COMPLEX *q, COMPLEX *r, INTEGER const lda, COMPLEX *tau, COMPLEX *work, INTEGER const lwork, REAL *rwork, REAL *result) {
-    common cmn;
     //
     // Quick return if possible
     //

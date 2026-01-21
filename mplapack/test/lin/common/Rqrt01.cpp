@@ -44,7 +44,6 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Rqrt01(INTEGER const m, INTEGER const n, REAL *a, REAL *af, REAL *q, REAL *r, INTEGER const lda, REAL *tau, REAL *work, INTEGER const lwork, REAL *rwork, REAL *result) {
-    common cmn;
     //
     INTEGER minmn = min(m, n);
     REAL eps = Rlamch("Epsilon");

@@ -44,7 +44,6 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Clqt02(INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX *a, COMPLEX *af, COMPLEX *q, COMPLEX *l, INTEGER const lda, COMPLEX *tau, COMPLEX *work, INTEGER const lwork, REAL *rwork, REAL *result) {
-    common cmn;
     //
     REAL eps = Rlamch("Epsilon");
     //
