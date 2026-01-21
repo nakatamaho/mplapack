@@ -1,5 +1,5 @@
---- Cchkrfp.cpp_	2026-01-21 18:29:24.955225186 +0900
-+++ Cchkrfp.cpp	2026-01-21 18:29:24.959225262 +0900
+--- Cchkrfp.cpp_	2026-01-21 18:37:48.706947842 +0900
++++ Cchkrfp.cpp	2026-01-21 18:37:48.712947960 +0900
 @@ -43,7 +43,7 @@
  #include <mplapack_matgen.h>
  #include <mplapack_lin.h>
@@ -9,7 +9,7 @@
      common cmn(argc, argv);
      common_read read(cmn);
      common_write write(cmn);
-@@ -60,18 +60,22 @@
+@@ -60,18 +60,21 @@
      // Read a dummy line.
      //
      const INTEGER nin = 5;
@@ -21,17 +21,17 @@
 -    INTEGER vers_major = 0;
 -    INTEGER vers_minor = 0;
 -    INTEGER vers_patch = 0;
+-    ilaver(vers_major, vers_minor, vers_patch);
+-    const INTEGER nout = 6;
+-    write(nout, "(/,' Tests of the COMPLEX*16 LAPACK RFP routines ',/,' LAPACK VERSION ',"
+-                "i1,'.',i1,'.',i1,/,/,' The following parameter values will be used:')"),
+-        vers_major, vers_minor, vers_patch;
 +    INTEGER mplapack_vers_major = 0;
 +    INTEGER mplapack_vers_minor = 0;
 +    INTEGER mplapack_vers_patch = 0;
 +    INTEGER lapack_vers_major = 0;
 +    INTEGER lapack_vers_minor = 0;
 +    INTEGER lapack_vers_patch = 0;
-     ilaver(vers_major, vers_minor, vers_patch);
--    const INTEGER nout = 6;
--    write(nout, "(/,' Tests of the COMPLEX*16 LAPACK RFP routines ',/,' LAPACK VERSION ',"
--                "i1,'.',i1,'.',i1,/,/,' The following parameter values will be used:')"),
--        vers_major, vers_minor, vers_patch;
 +    iMlaver(mplapack_vers_major, mplapack_vers_minor, mplapack_vers_patch, lapack_vers_major, lapack_vers_minor, lapack_vers_patch);
 +    write(nout, "(' Tests of the Multiple precision version of LAPACK MPLAPACK VERSION ',i1,'.',i1,'.',i1,/, "
 +	  "' Based on original LAPACK VERSION ',i1,'.',i1,'.',i1,/,/, 'The following parameter values will be used:')"),
@@ -39,7 +39,7 @@
      //
      // Read the values of N
      //
-@@ -279,4 +283,4 @@
+@@ -279,4 +282,4 @@
      //
  }
  
