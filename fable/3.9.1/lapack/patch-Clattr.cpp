@@ -25,7 +25,7 @@
          x = sqrt(cndnum) - 1 / sqrt(cndnum);
          if (n > 2) {
 -            y = sqrt(2.0 / (n - 2)) * x;
-+            y = sqrt(two / REAL(n - 2)) * x;
++            y = sqrt(two / REAL(static_cast<double>(n - 2))) * x; //DD, QD don't have constructor dd_real(long int) and doesn't harm for other environment
          } else {
              y = zero;
          }
