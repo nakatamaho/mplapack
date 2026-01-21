@@ -1,5 +1,5 @@
---- Cchkaa.cpp_	2026-01-21 18:02:32.934488926 +0900
-+++ Cchkaa.cpp	2026-01-21 18:02:32.940489041 +0900
+--- Cchkaa.cpp_	2026-01-21 18:23:41.010948502 +0900
++++ Cchkaa.cpp	2026-01-21 18:23:41.017948625 +0900
 @@ -43,7 +43,7 @@
  #include <mplapack_matgen.h>
  #include <mplapack_lin.h>
@@ -46,4 +46,4 @@
  }
  
 -int main(int argc, char const *argv[]) { return fem::main_with_catch(argc, argv, program_zchkaa); }
-+int main(int argc, char const *argv[]) { Cchkaa(); }
++int main(int argc, char const *argv[]) { return fem::main_with_catch(argc, argv, program_Cchkaa); }
