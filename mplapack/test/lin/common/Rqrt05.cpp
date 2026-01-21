@@ -42,7 +42,6 @@ using fem::common;
 
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-
 #include <memory>
 
 void Rqrt05(INTEGER const m, INTEGER const n, INTEGER const l, INTEGER const nb, REAL *result) {
@@ -203,4 +202,7 @@ void Rqrt05(INTEGER const m, INTEGER const n, INTEGER const l, INTEGER const nb,
     } else {
         result[6 - 1] = zero;
     }
+    //
+    // Deallocate all arrays
+    //
 }
