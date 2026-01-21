@@ -44,7 +44,6 @@ using fem::common;
 #include <mplapack_eig.h>
 
 void Rlatb9(fem::str_cref path, INTEGER const imat, INTEGER const m, INTEGER const p, INTEGER const n, fem::str_ref type, INTEGER &kla, INTEGER &kua, INTEGER &klb, INTEGER &kub, REAL &anorm, REAL &bnorm, INTEGER &modea, INTEGER &modeb, REAL &cndnma, REAL &cndnmb, fem::str_ref dista, fem::str_ref distb) {
-    common cmn;
     static bool first = true;
     double &badc1 = sve.badc1;
     double &badc2 = sve.badc2;

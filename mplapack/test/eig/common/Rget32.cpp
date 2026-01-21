@@ -44,7 +44,6 @@ using fem::common;
 #include <mplapack_eig.h>
 
 void Rget32(REAL &rmax, INTEGER &lmax, INTEGER &ninfo, INTEGER &knt) {
-    common cmn;
     static INTEGER itval[] = {8, 4, 2, 1, 4, 8, 1, 2, 2, 1, 8, 4, 1, 2, 4, 8, 9, 4, 2, 1, 4, 9, 1, 2, 2, 1, 9, 4, 1, 2, 4, 9};
     INTEGER ldtl = 2;
     INTEGER ldtr = 2;

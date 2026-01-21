@@ -44,7 +44,6 @@ using fem::common;
 #include <mplapack_eig.h>
 
 void Rget31(REAL &rmax, INTEGER &lmax, INTEGER *ninfo, INTEGER &knt) {
-    common cmn;
     static bool ltrans[2] = {false, true};
     INTEGER lda = 2;
     INTEGER ldb = 2;

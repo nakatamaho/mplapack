@@ -1576,11 +1576,6 @@ statement_380:
     s2 = dsecnd();
     write(nout, "(' Total time used = ',f12.2,' seconds',/)"), s2 - s1;
     //
-    FEM_THROW_UNHANDLED("executable deallocate: deallocate(a,stat=allocatestatus)");
-    FEM_THROW_UNHANDLED("executable deallocate: deallocate(b,stat=allocatestatus)");
-    FEM_THROW_UNHANDLED("executable deallocate: deallocate(c,stat=allocatestatus)");
-    FEM_THROW_UNHANDLED("executable deallocate: deallocate(work,stat=allocatestatus)");
-    //
     // End of Rchkee
     //
 }
