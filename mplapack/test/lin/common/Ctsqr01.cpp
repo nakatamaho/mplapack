@@ -42,6 +42,7 @@ using fem::common;
 
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
+#include <memory>
 
 #include <memory>
 
@@ -377,4 +378,7 @@ void Ctsqr01(fem::str_cref tssw, INTEGER const m, INTEGER const n, INTEGER const
         }
         //
     }
+    //
+    // Deallocate all arrays
+    //
 }
