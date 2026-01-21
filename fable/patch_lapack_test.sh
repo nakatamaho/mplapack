@@ -30,6 +30,7 @@ patch  < ~/mplapack/fable/3.9.1/lapack/patch-Cpot01.cpp
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Cppt01.cpp
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Cpst01.cpp
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Cqrt05.cpp
+patch  < ~/mplapack/fable/3.9.1/lapack/patch-Ctsqr01.cpp
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Cunhr_col01.cpp
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Cunhr_col02.cpp
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Rchkeq.cpp
