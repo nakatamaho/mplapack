@@ -1,10 +1,9 @@
---- Rlatb5.cpp
-+++ Rlatb5.cpp
-@@ -44,34 +44,24 @@
+--- Rlatb5.cpp_	2026-01-21 20:55:15.923518430 +0900
++++ Rlatb5.cpp	2026-01-21 20:55:15.929518514 +0900
+@@ -44,33 +44,24 @@
  #include <mplapack_lin.h>
  
  void Rlatb5(fem::str_cref path, INTEGER const imat, INTEGER const n, fem::str_ref type, INTEGER &kl, INTEGER &ku, REAL &anorm, INTEGER &mode, REAL &cndnum, fem::str_ref dist) {
--    common cmn;
 -    static bool first = true;
 -    double &badc1 = sve.badc1;
 -    double &badc2 = sve.badc2;

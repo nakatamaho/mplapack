@@ -1,10 +1,9 @@
---- Clatb4.cpp
-+++ Clatb4.cpp
-@@ -44,34 +44,23 @@
+--- Clatb4.cpp_	2026-01-21 20:53:01.391686996 +0900
++++ Clatb4.cpp	2026-01-21 20:53:01.397687075 +0900
+@@ -44,33 +44,23 @@
  #include <mplapack_lin.h>
  
  void Clatb4(fem::str_cref path, INTEGER const imat, INTEGER const m, INTEGER const n, fem::str_ref type, INTEGER &kl, INTEGER &ku, REAL &anorm, INTEGER &mode, REAL &cndnum, fem::str_ref dist) {
--    common cmn;
 -    static bool first = true;
 -    double &badc1 = sve.badc1;
 -    double &badc2 = sve.badc2;

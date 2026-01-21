@@ -1,10 +1,9 @@
---- Clatb5.cpp_	2026-01-19 17:10:11.603081610 +0900
-+++ Clatb5.cpp	2026-01-19 17:11:09.583589327 +0900
-@@ -44,34 +44,26 @@
+--- Clatb5.cpp_	2026-01-21 20:55:15.870517686 +0900
++++ Clatb5.cpp	2026-01-21 20:55:15.875517756 +0900
+@@ -44,33 +44,26 @@
  #include <mplapack_lin.h>
  
  void Clatb5(fem::str_cref path, INTEGER const imat, INTEGER const n, fem::str_ref type, INTEGER &kl, INTEGER &ku, REAL &anorm, INTEGER &mode, REAL &cndnum, fem::str_ref dist) {
--    common cmn;
 -    static bool first = true;
 -    double &badc1 = sve.badc1;
 -    double &badc2 = sve.badc2;

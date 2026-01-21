@@ -1,10 +1,9 @@
---- a/mplapack/reference/Clacon.cpp
-+++ b/mplapack/reference/Clacon.cpp
-@@ -37,17 +37,16 @@
+--- Clacon.cpp_	2026-01-21 21:03:48.611266540 +0900
++++ Clacon.cpp	2026-01-21 21:03:48.618266651 +0900
+@@ -37,16 +37,16 @@
  #include <mplapack.h>
  
  void Clacon(INTEGER const n, COMPLEX *v, COMPLEX *x, REAL &est, INTEGER &kase) {
--    common cmn;
 -    REAL absxi = 0.0;
 -    REAL altsgn = 0.0;
 -    REAL estold = 0.0;

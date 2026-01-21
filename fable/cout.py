@@ -6284,6 +6284,23 @@ def _infer_user_defined_callable_signatures(conv_info):
         final[name] = (st["ret"], args)
         _INFERRED_CALLABLE_SIGNATURES[key] = final
 
+_CMN_WORD_RE = re.compile(r"\bcmn\b")
+
+
+def _needs_cmn_object_from_lines(lines: typing.Iterable[str]) -> bool:
+    """Return True if any emitted C++ line references the `cmn` variable.
+
+    We look for the standalone identifier `cmn` in the code part of each line,
+    ignoring anything after '//' comments. This avoids emitting an unused
+    `common cmn;` in routines that do not touch COMMON/IO helpers.
+    """
+    for ln in lines:
+        if ln is None:
+            continue
+        code = str(ln).split("//", 1)[0]
+        if _CMN_WORD_RE.search(code):
+            return True
+    return False
 
 def convert_to_cpp_function(
         cpp_callback,
@@ -6495,25 +6512,25 @@ def convert_to_cpp_function(
         else:
             callback(cname + "(\n  " + ",\n  ".join(cargs) + ")" + last)
     cpp_callback("{")
-    need_local_cmn = (
-        getattr(conv_info.fproc, "needs_cmn", False)
-        or getattr(conv_info.fproc, "uses_read", False)
-        or getattr(conv_info.fproc, "uses_write", False)
-    )
-    if need_local_cmn:
-        cpp_callback("  common cmn;")
+    body_buffer = []
+
     if (cdecl != "void"):
-        cpp_callback("  %s %s = %s;" % (
+        body_buffer.append("  %s %s = %s;" % (
             cdecl,
             conv_info.vmap[conv_info.fproc.name.value],
             zero_shortcut_if_possible(ctype=cdecl)))
     if (force_not_implemented):
-        cpp_callback("  throw TBXX_NOT_IMPLEMENTED();")
+        body_buffer.append("  throw TBXX_NOT_IMPLEMENTED();")
     else:
         convert_executable(
-            callback=cpp_callback,
+            callback=body_buffer.append,
             conv_info=conv_info,
             args_fdecl_with_dim=args_fdecl_with_dim)
+    need_local_cmn = _needs_cmn_object_from_lines(body_buffer)
+    if need_local_cmn:
+        cpp_callback("  common cmn;")
+    for line in body_buffer:
+        cpp_callback(line)
     cpp_callback("}")
     produce_trailing_comments(callback=callback, fproc=conv_info.fproc)
 
@@ -7090,12 +7107,11 @@ void
                 raise
             show_traceback()
         else:
-            need_cmn_obj = (
-                fproc.needs_cmn
-                or getattr(fproc, "uses_read", False)
-                or getattr(fproc, "uses_write", False)
-                or bool(getattr(global_conv_info.topological_fprocs.all_fprocs, "blockdata", None))
-            )
+            need_cmn_obj = _needs_cmn_object_from_lines(result_buffer)
+            if (not need_cmn_obj):
+                callback("""  if (argc != 1) {
+    throw std::runtime_error("Unexpected command-line arguments.");
+  }""")
             if need_cmn_obj:
                 callback("  common cmn(argc, argv);")
             for line in result_buffer:

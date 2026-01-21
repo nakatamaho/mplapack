@@ -1,10 +1,9 @@
---- a/mplapack/reference/Rlacon.cpp
-+++ b/mplapack/reference/Rlacon.cpp
-@@ -37,15 +37,14 @@
+--- Rlacon.cpp_	2026-01-21 21:03:48.629266826 +0900
++++ Rlacon.cpp	2026-01-21 21:03:48.634266905 +0900
+@@ -37,14 +37,14 @@
  #include <mplapack.h>
  
  void Rlacon(INTEGER const n, REAL *v, REAL *x, INTEGER *isgn, REAL &est, INTEGER &kase) {
--    common cmn;
 -    REAL altsgn = 0.0;
 -    REAL estold = 0.0;
 -    INTEGER i = 0;
