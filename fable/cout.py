@@ -9491,8 +9491,6 @@ def _fix_fortran_f90_decl_syntax(src: str) -> str:
         if parsed_alloc:
             objs, stat_var = parsed_alloc
             if objs and all((name.lower() in raii_alloc_names) for name, _ in objs):
-                out_lines.append(
-                    f"!FABLE: ALLOCATE removed (RAII in C++){eol0}")
                 if stat_var:
                     out_lines.append(f"{indent}{stat_var} = 0{eol0}")
                 i = j
