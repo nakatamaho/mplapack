@@ -42,6 +42,7 @@ using fem::common;
 
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
+#include <memory>
 
 #include <memory>
 
@@ -55,6 +56,8 @@ void Cunhr_col01(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
     REAL eps = Rlamch("Epsilon");
     INTEGER k = min(m, n);
     INTEGER l = max(m, n, (INTEGER)1);
+    //
+    // Dynamically allocate local arrays
     //
     // Put random numbers into A and copy to AF
     //
@@ -78,8 +81,6 @@ void Cunhr_col01(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
     // Number of row blocks in Clatsqr
     //
     INTEGER nrb = max((INTEGER)1, iceil(castREAL(m - n) / castREAL(mb1 - n)));
-    //
-    // FABLE: ALLOCATE removed (RAII in C++)
     //
     // Begin determine LWORK for the array WORK and allocate memory.
     //
@@ -105,8 +106,6 @@ void Cunhr_col01(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
     // or  M*NB2_UB if SIDE = 'R'.
     //
     lwork = max(lwork, nb2_ub * n, nb2_ub * m);
-    //
-    // FABLE: ALLOCATE removed (RAII in C++)
     //
     // End allocate memory for WORK.
     //
@@ -298,9 +297,6 @@ void Cunhr_col01(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
     }
     //
     // Deallocate all arrays
-    //
-    FEM_THROW_UNHANDLED("executable deallocate: deallocate(a,af,q,r,rwork,work,t1,t2,diag,c,d,cf,d"
-                        "f)");
     //
     // End of Cunhr_col01
     //
