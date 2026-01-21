@@ -43,13 +43,8 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-#include <mplapack_debug.h>
-
-#include <iostream>
-#include <sstream>
-
-void Rchkaa(void) {
-    common cmn;
+void program_Rchkaa(int argc, char const *argv[]) {
+    common cmn(argc, argv);
     common_read read(cmn);
     common_write write(cmn);
     static fem::str<10> intstr = "0123456789";
@@ -60,13 +55,13 @@ void Rchkaa(void) {
     bool fatal = false;
     const INTEGER nin = 5;
     const INTEGER nout = 6;
-    INTEGER nm = 0;
     INTEGER mplapack_vers_major = 0;
     INTEGER mplapack_vers_minor = 0;
     INTEGER mplapack_vers_patch = 0;
     INTEGER lapack_vers_major = 0;
     INTEGER lapack_vers_minor = 0;
     INTEGER lapack_vers_patch = 0;
+    INTEGER nm = 0;
     const INTEGER maxin = 12;
     INTEGER mval[maxin];
     INTEGER i = 0;
@@ -134,7 +129,7 @@ void Rchkaa(void) {
     // Report values of parameters.
     //
     iMlaver(mplapack_vers_major, mplapack_vers_minor, mplapack_vers_patch, lapack_vers_major, lapack_vers_minor, lapack_vers_patch);
-    write(nout, "(' Tests of the Multiple precision version of LAPACK MPLAPACK VERSION ',i1,'.',i1,'.',i1,/, "
+    write(nout, "(' Tests of the Multiple precision version of LAPACK VERSION ',i1,'.',i1,'.',i1,/, "
                 "' Based on the original LAPACK VERSION ',i1,'.',i1,'.',i1,/,/, 'The following parameter values will be used:')"),
         mplapack_vers_major, mplapack_vers_minor, mplapack_vers_patch, lapack_vers_major, lapack_vers_minor, lapack_vers_patch;
     //
@@ -939,4 +934,4 @@ statement_140:
     //
 }
 
-int main(int argc, char const *argv[]) { Rchkaa(); }
+int main(int argc, char const *argv[]) { return fem::main_with_catch(argc, argv, program_Rchkaa); }
