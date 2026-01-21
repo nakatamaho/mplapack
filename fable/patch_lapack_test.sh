@@ -7,7 +7,6 @@ patch  < ~/mplapack/fable/3.9.1/lapack/patch-Claror.cpp
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Clatm5.cpp
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Clatms.cpp
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Clatmt.cpp
-patch  < ~/mplapack/fable/3.9.1/lapack/patch-Clahilb.cpp
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Rlarnd.cpp
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Rlaror.cpp
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Rlatms.cpp
