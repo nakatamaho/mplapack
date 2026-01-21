@@ -44,8 +44,6 @@ using fem::common;
 #include <mplapack_lin.h>
 #include <memory>
 
-#include <memory>
-
 void Ctsqr01(fem::str_cref tssw, INTEGER const m, INTEGER const n, INTEGER const mb, INTEGER const nb, REAL *result) {
     common cmn;
     static INTEGER iseed[4] = {1988, 1989, 1990, 1991};
@@ -132,7 +130,6 @@ void Ctsqr01(fem::str_cref tssw, INTEGER const m, INTEGER const n, INTEGER const
         lwork = max(lwork, castINTEGER(workquery[1 - 1].real()));
         Cgemqr("R", "C", n, m, k, af, m, tquery, tsize, df, n, workquery, -1, info);
         lwork = max(lwork, castINTEGER(workquery[1 - 1].real()));
-        // FABLE: ALLOCATE removed (RAII in C++)
         srnamt = "ZGEQR";
         Cgeqr(m, n, af, m, t, tsize, work, lwork, info);
         //
@@ -264,7 +261,6 @@ void Ctsqr01(fem::str_cref tssw, INTEGER const m, INTEGER const n, INTEGER const
         lwork = max(lwork, castINTEGER(workquery[1 - 1].real()));
         Cgemlq("R", "C", m, n, k, af, m, tquery, tsize, cf, m, workquery, -1, info);
         lwork = max(lwork, castINTEGER(workquery[1 - 1].real()));
-        // FABLE: ALLOCATE removed (RAII in C++)
         srnamt = "ZGELQ";
         Cgelq(m, n, af, m, t, tsize, work, lwork, info);
         //
