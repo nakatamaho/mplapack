@@ -43,5 +43,7 @@ patch  < ~/mplapack/fable/3.9.1/lapack/patch-Rlattr.cpp
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Rorhr_col01.cpp
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Rorhr_col02.cpp
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Rtsqr01.cpp
-#patch  < ~/mplapack/fable/3.9.1/lapack/patch-Rchkaa.cpp
-#patch  < ~/mplapack/fable/3.9.1/lapack/patch-Cchkaa.cpp
+patch  < ~/mplapack/fable/3.9.1/lapack/patch-Rchkaa.cpp
+patch  < ~/mplapack/fable/3.9.1/lapack/patch-Cchkaa.cpp
+patch  < ~/mplapack/fable/3.9.1/lapack/patch-Rchkrfp.cpp
+patch  < ~/mplapack/fable/3.9.1/lapack/patch-Cchkrfp.cpp
