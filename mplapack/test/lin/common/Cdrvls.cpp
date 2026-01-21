@@ -42,7 +42,6 @@ using fem::common;
 
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-
 #include <memory>
 
 void Cdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INTEGER *nval, INTEGER const nns, INTEGER *nsval, INTEGER const nnb, INTEGER *nbval, INTEGER *nxval, REAL const thresh, bool const tsterr, COMPLEX *a, COMPLEX *copya, COMPLEX *b, COMPLEX *copyb, COMPLEX *c, REAL *s, REAL *copys, INTEGER const nout) {
