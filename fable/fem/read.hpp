@@ -1,5 +1,6 @@
 #ifndef FEM_READ_HPP
 #define FEM_READ_HPP
+#include <stdexcept>
 #include <fem/common.hpp>
 #include <fem/format.hpp>
 #include <fem/star.hpp>
@@ -38,9 +39,31 @@ class read_loop // TODO copy-constructor potential performance problem
     int *iostat_ptr;
 
   public:
-    read_loop(common &cmn, int const &unit, unformatted_type const &) : inp(cmn.io.simple_istream(unit)), first_inp_get(true), blanks_zero(false), exp_scale(0), io_mode(io_unformatted), iostat_ptr(0) {}
-    read_loop(common &cmn, int const &unit, star_type const &) : inp(cmn.io.simple_istream(unit)), first_inp_get(true), blanks_zero(false), exp_scale(0), io_mode(io_list_directed), iostat_ptr(0) {}
-    read_loop(common &cmn, int const &unit, str_cref fmt) : inp(cmn.io.simple_istream(unit)), first_inp_get(true), fmt_loop(fmt), blanks_zero(false), exp_scale(0), io_mode(io_formatted), iostat_ptr(0) {}
+    read_loop(common &cmn, int const &unit, unformatted_type const &)
+      : inp(cmn.io.simple_istream(unit)), first_inp_get(true),
+        blanks_zero(false), exp_scale(0), io_mode(io_unformatted), iostat_ptr(0)
+    {
+        if (!inp) {
+  	    throw std::runtime_error("I/O unit is not connected: unit=" + std::to_string(unit));
+        }
+    }
+    read_loop(common &cmn, int const &unit, star_type const &)
+      : inp(cmn.io.simple_istream(unit)), first_inp_get(true),
+        blanks_zero(false), exp_scale(0), io_mode(io_list_directed), iostat_ptr(0)
+    {
+        if (!inp) {
+  	    throw std::runtime_error("I/O unit is not connected: unit=" + std::to_string(unit));
+        }
+    }
+    read_loop(common &cmn, int const &unit, str_cref fmt)
+      : inp(cmn.io.simple_istream(unit)), first_inp_get(true), fmt_loop(fmt),
+        blanks_zero(false), exp_scale(0), io_mode(io_formatted), iostat_ptr(0)
+    {
+        if (!inp) {
+  	    throw std::runtime_error("I/O unit is not connected: unit=" + std::to_string(unit));
+        }
+    }
+
     read_loop(str_cref const &internal_file, star_type const &) : inp(utils::slick_ptr<utils::simple_istream>(new utils::simple_istream_from_char_ptr_and_size(internal_file.elems(), internal_file.len()))), first_inp_get(true), blanks_zero(false), exp_scale(0), io_mode(io_list_directed), iostat_ptr(0) {}
     read_loop(str_cref const &internal_file, str_cref fmt) : inp(utils::slick_ptr<utils::simple_istream>(new utils::simple_istream_from_char_ptr_and_size(internal_file.elems(), internal_file.len()))), first_inp_get(true), fmt_loop(fmt), blanks_zero(false), exp_scale(0), io_mode(io_formatted), iostat_ptr(0) {}
     read_loop &rec(int const &) {

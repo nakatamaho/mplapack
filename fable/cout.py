@@ -5707,6 +5707,12 @@ def convert_executable(
                     curr_scope.append("return;")
             elif (ei.key == "continue"):
                 pass
+            elif (ei.key == "deallocate"):
+                 # Policy: ignore DEALLOCATE statements in executable code.
+                 # Local allocatable arrays are typically rewritten into explicit-shape
+                 # locals or RAII-managed storage during preprocessing / declaration
+                 # conversion, so an explicit DEALLOCATE would be redundant.
+                 pass
             elif (ei.key == "goto"):
                 curr_scope.append("goto statement_%s;" % ei.label.value)
             elif (ei.key == "goto_computed"):
@@ -7635,6 +7641,46 @@ def _postprocess_strip_wp_kind_suffix(lines):
         out.append(code + comment)
     return out
 
+def _postprocess_add_memory_include(lines):
+    """Ensure '#include <memory>' exists when std::unique_ptr is used.
+
+    Policy:
+      - Insert only if std::unique_ptr appears and the include is missing.
+      - Place the include with other includes, keeping exactly one blank line
+        between the include block and the following code/prototypes.
+    """
+
+    needs = any("std::unique_ptr<" in ln for ln in lines)
+    if not needs:
+        return lines
+    if any(ln.strip() == "#include <memory>" for ln in lines):
+        return lines
+
+    # Find the last include line near the top of the file.
+    last_inc = -1
+    for i, ln in enumerate(lines):
+        if ln.startswith("#include "):
+            last_inc = i
+            continue
+        # Allow preprocessor directives / comments before includes.
+        if last_inc < 0 and (ln.startswith("#") or ln.strip().startswith("//") or ln.strip() == ""):
+            continue
+        if last_inc >= 0:
+            # We are past the include block.
+            break
+
+    if last_inc < 0:
+        # No includes found; insert at the beginning.
+        new_lines = ["#include <memory>"] + lines
+        return new_lines
+
+    new_lines = lines[:last_inc + 1] + ["#include <memory>"] + lines[last_inc + 1:]
+
+    # Ensure a blank line after the include block.
+    j = last_inc + 2
+    if j < len(new_lines) and new_lines[j].strip() != "":
+        new_lines.insert(j, "")
+    return new_lines
 
 def _postprocess_index_zero_simplify(text):
     """
@@ -10561,6 +10607,9 @@ def process(
 
     # Convert array slice assignments to for loops
     result = _postprocess_slice_assignment(result)
+
+    # Add missing standard includes based on emitted C++ constructs.
+    result = _postprocess_add_memory_include(result)
 
     # Widen fem::str<N> scalar locals when substring slices exceed N.
     # This fixes cases like:
