@@ -42,7 +42,6 @@ using fem::common;
 
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-
 #include <memory>
 
 void Rtsqr01(fem::str_cref tssw, INTEGER const m, INTEGER const n, INTEGER const mb, INTEGER const nb, REAL *result) {
@@ -63,8 +62,6 @@ void Rtsqr01(fem::str_cref tssw, INTEGER const m, INTEGER const n, INTEGER const
     INTEGER lwork = max((INTEGER)3, l) * mnb;
     //
     // Dynamically allocate local arrays
-    //
-    // FABLE: ALLOCATE removed (RAII in C++)
     //
     // Put random numbers into A and copy to AF
     //
@@ -132,7 +129,6 @@ void Rtsqr01(fem::str_cref tssw, INTEGER const m, INTEGER const n, INTEGER const
         lwork = max(lwork, castINTEGER(workquery[1 - 1]));
         Rgemqr("R", "T", n, m, k, af, m, tquery, tsize, df, n, workquery, -1, info);
         lwork = max(lwork, castINTEGER(workquery[1 - 1]));
-        // FABLE: ALLOCATE removed (RAII in C++)
         srnamt = "DGEQR";
         Rgeqr(m, n, af, m, t, tsize, work, lwork, info);
         //
@@ -264,7 +260,6 @@ void Rtsqr01(fem::str_cref tssw, INTEGER const m, INTEGER const n, INTEGER const
         lwork = max(lwork, castINTEGER(workquery[1 - 1]));
         Rgemlq("R", "T", m, n, k, af, m, tquery, tsize, cf, m, workquery, -1, info);
         lwork = max(lwork, castINTEGER(workquery[1 - 1]));
-        // FABLE: ALLOCATE removed (RAII in C++)
         srnamt = "DGELQ";
         Rgelq(m, n, af, m, t, tsize, work, lwork, info);
         //
@@ -378,4 +373,7 @@ void Rtsqr01(fem::str_cref tssw, INTEGER const m, INTEGER const n, INTEGER const
         }
         //
     }
+    //
+    // Deallocate all arrays
+    //
 }
