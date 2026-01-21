@@ -1,16 +1,18 @@
-#!/bin/bash
+#!/bin/sh
 
 USE_CCACHE=yes
 
-if [ x"$USE_CCACHE" = x"yes" ] ; then
+if [ x$USE_CCACHE = x"yes" ] ; then
 CXX="ccache g++" ; export CXX
 CC="ccache gcc" ; export CC
 FC="gfortran"; export FC
-ccache -M 80G
+F77="gfortran"; export F77
+ccache -M 60G
 else
 CXX="g++" ; export CXX
 CC="gcc" ; export CC
 FC="gfortran"; export FC
+F77="gfortran"; export F77
 fi
 
 pushd mplapack/test/compare ; bash gen.Makefile.am.sh ; popd
