@@ -54,13 +54,13 @@ void program_Rchkaa(int argc, char const *argv[]) {
     INTEGER lda = 0;
     bool fatal = false;
     const INTEGER nin = 5;
-    const INTEGER nout = 6;
     INTEGER mplapack_vers_major = 0;
     INTEGER mplapack_vers_minor = 0;
     INTEGER mplapack_vers_patch = 0;
     INTEGER lapack_vers_major = 0;
     INTEGER lapack_vers_minor = 0;
     INTEGER lapack_vers_patch = 0;
+    const INTEGER nout = 6;
     INTEGER nm = 0;
     const INTEGER maxin = 12;
     INTEGER mval[maxin];
@@ -129,7 +129,7 @@ void program_Rchkaa(int argc, char const *argv[]) {
     // Report values of parameters.
     //
     iMlaver(mplapack_vers_major, mplapack_vers_minor, mplapack_vers_patch, lapack_vers_major, lapack_vers_minor, lapack_vers_patch);
-    write(nout, "(' Tests of the Multiple precision version of LAPACK VERSION ',i1,'.',i1,'.',i1,/, "
+    write(nout, "(' Tests of the Multiple precision version of LAPACK ',i1,'.',i1,'.',i1,/, "
                 "' Based on the original LAPACK VERSION ',i1,'.',i1,'.',i1,/,/, 'The following parameter values will be used:')"),
         mplapack_vers_major, mplapack_vers_minor, mplapack_vers_patch, lapack_vers_major, lapack_vers_minor, lapack_vers_patch;
     //
