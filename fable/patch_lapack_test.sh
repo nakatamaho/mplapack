@@ -25,6 +25,7 @@ patch  < ~/mplapack/fable/3.9.1/lapack/patch-Clatsy.cpp
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Clattp.cpp
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Clattr.cpp
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Clqt04.cpp
+patch  < ~/mplapack/fable/3.9.1/lapack/patch-Clqt05.cpp
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Cpbt01.cpp
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Cpot01.cpp
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Cppt01.cpp
