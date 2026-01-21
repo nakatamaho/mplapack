@@ -45,7 +45,6 @@ using fem::common;
 #include <memory>
 
 void Rtsqr01(fem::str_cref tssw, INTEGER const m, INTEGER const n, INTEGER const mb, INTEGER const nb, REAL *result) {
-    common cmn;
     static INTEGER iseed[4] = {1988, 1989, 1990, 1991};
     // TEST TALL SKINNY OR SHORT WIDE
     //
