@@ -42,7 +42,6 @@ using fem::common;
 
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-
 #include <memory>
 
 void Cunhr_col02(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER const nb1, INTEGER const nb2, REAL *result) {
@@ -57,8 +56,6 @@ void Cunhr_col02(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
     INTEGER l = max(m, n, (INTEGER)1);
     //
     // Dynamically allocate local arrays
-    //
-    // FABLE: ALLOCATE removed (RAII in C++)
     //
     // Put random numbers into A and copy to AF
     //
@@ -83,8 +80,6 @@ void Cunhr_col02(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
     //
     INTEGER nrb = max((INTEGER)1, iceil(castREAL(m - n) / castREAL(mb1 - n)));
     //
-    // FABLE: ALLOCATE removed (RAII in C++)
-    //
     // Begin determine LWORK for the array WORK and allocate memory.
     //
     // Cgemqrt requires NB2 to be bounded by N.
@@ -103,8 +98,6 @@ void Cunhr_col02(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
     // or  M*NB2_UB if SIDE = 'R'.
     //
     lwork = max(lwork, nb2_ub * n, nb2_ub * m);
-    //
-    // FABLE: ALLOCATE removed (RAII in C++)
     //
     // End allocate memory for WORK.
     //
@@ -257,6 +250,8 @@ void Cunhr_col02(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
     } else {
         result[6 - 1] = zero;
     }
+    //
+    // Deallocate all arrays
     //
     // End of Cunhr_col02
     //
