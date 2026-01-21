@@ -1,6 +1,5 @@
 #ifndef FEM_WRITE_HPP
 #define FEM_WRITE_HPP
-
 #include <noexcept_false.hpp>
 #include <fem/common.hpp>
 #include <fem/format.hpp>
@@ -9,15 +8,12 @@
 #include <fem/utils/double_to_string.hpp>
 #include <fem/utils/misc.hpp>
 #include <fem/utils/real_as_string.hpp>
-
 #if defined(_MSC_VER)
 #define FEM_WRITE_CRLF true
 #else
 #define FEM_WRITE_CRLF false
 #endif
-
 namespace fem {
-
 struct write_loop_base {
     bool write_crlf;
     unsigned pos;
@@ -25,10 +21,8 @@ struct write_loop_base {
     int exp_scale;
     unsigned number_of_x_held;
     bool suppress_new_line_at_end;
-
     write_loop_base(bool write_crlf_ = false) : write_crlf(write_crlf_), pos(0), prev_was_string(false), exp_scale(0), number_of_x_held(0), suppress_new_line_at_end(false) {}
 };
-
 class write_loop : write_loop_base
 // TODO copy-constructor potential performance problem
 {
@@ -41,19 +35,12 @@ class write_loop : write_loop_base
 
   public:
     write_loop(common &cmn, int const &unit, unformatted_type const &) : write_loop_base(FEM_WRITE_CRLF && !is_std_io_unit(unit)), out(cmn.io.simple_ostream(unit)), internal_file_len(-1), io_mode(io_unformatted), terminated_by_colon(false) {}
-
     write_loop(common &cmn, int const &unit, star_type const &) : write_loop_base(FEM_WRITE_CRLF && !is_std_io_unit(unit)), out(cmn.io.simple_ostream(unit)), internal_file_len(-1), io_mode(io_list_directed), terminated_by_colon(false) {}
-
     write_loop(common &cmn, int const &unit, str_cref fmt) : write_loop_base(FEM_WRITE_CRLF && !is_std_io_unit(unit)), out(cmn.io.simple_ostream(unit)), internal_file_len(-1), io_mode(io_formatted), fmt_loop(fmt), terminated_by_colon(false) {}
-
     write_loop(str_ref const &internal_file, star_type const &) : out(utils::slick_ptr<utils::simple_ostream>(new utils::simple_ostream_to_char_ptr_and_size(internal_file.elems(), internal_file.len()))), internal_file_len(internal_file.len()), io_mode(io_list_directed), terminated_by_colon(false) {}
-
     write_loop(str_ref const &internal_file, str_cref fmt) : out(utils::slick_ptr<utils::simple_ostream>(new utils::simple_ostream_to_char_ptr_and_size(internal_file.elems(), internal_file.len()))), internal_file_len(internal_file.len()), io_mode(io_formatted), fmt_loop(fmt), terminated_by_colon(false) {}
-
     template <size_t Ndims> write_loop(str_arr_ref<Ndims> const &internal_file, star_type const &) : out(utils::slick_ptr<utils::simple_ostream>(new utils::simple_ostream_to_char_ptr_and_size(internal_file.begin(), internal_file.len()))), internal_file_len(internal_file.len()), io_mode(io_list_directed), terminated_by_colon(false) {}
-
     template <size_t Ndims> write_loop(str_arr_ref<Ndims> const &internal_file, str_cref fmt) : out(utils::slick_ptr<utils::simple_ostream>(new utils::simple_ostream_to_char_ptr_and_size(internal_file.begin(), internal_file.len()))), internal_file_len(internal_file.len()), io_mode(io_formatted), fmt_loop(fmt), terminated_by_colon(false) {}
-
     std::string const &next_edit_descriptor(bool final = false) {
         while (true) {
             if (terminated_by_colon) {
@@ -117,7 +104,6 @@ class write_loop : write_loop_base
             }
         }
     }
-
     write_loop &operator,(char const &val) {
         if (io_mode == io_unformatted) {
             to_stream_unformatted(&val, 1);
@@ -130,7 +116,6 @@ class write_loop : write_loop_base
         }
         return *this;
     }
-
     write_loop &operator,(char const *val) {
         if (io_mode == io_unformatted) {
             to_stream_unformatted(val, std::strlen(val));
@@ -159,7 +144,6 @@ class write_loop : write_loop_base
         }
         return *this;
     }
-
     write_loop &operator,(bool const &val) {
         if (io_mode == io_unformatted) {
             to_stream_unformatted(reinterpret_cast<char const *>(&val), sizeof(bool));
@@ -180,7 +164,6 @@ class write_loop : write_loop_base
         }
         return *this;
     }
-
     write_loop &operator,(integer_star_1 const &val) {
         if (io_mode == io_unformatted) {
             to_stream_unformatted(reinterpret_cast<char const *>(&val), sizeof(integer_star_1));
@@ -195,7 +178,6 @@ class write_loop : write_loop_base
         }
         return *this;
     }
-
     write_loop &operator,(integer_star_2 const &val) {
         if (io_mode == io_unformatted) {
             to_stream_unformatted(reinterpret_cast<char const *>(&val), sizeof(integer_star_2));
@@ -210,7 +192,6 @@ class write_loop : write_loop_base
         }
         return *this;
     }
-
     write_loop &operator,(integer_star_4 const &val) {
         if (io_mode == io_unformatted) {
             to_stream_unformatted(reinterpret_cast<char const *>(&val), sizeof(integer_star_4));
@@ -240,7 +221,6 @@ class write_loop : write_loop_base
         }
         return *this;
     }
-
     write_loop &operator,(integer_star_8 const &val) {
         if (io_mode == io_unformatted) {
             to_stream_unformatted(reinterpret_cast<char const *>(&val), sizeof(integer_star_8));
@@ -306,7 +286,6 @@ class write_loop : write_loop_base
         }
         return *this;
     }
-
     write_loop &operator,(double const &val) {
         if (io_mode == io_unformatted) {
             to_stream_unformatted(reinterpret_cast<char const *>(&val), sizeof(double));
@@ -319,7 +298,6 @@ class write_loop : write_loop_base
         }
         return *this;
     }
-
     write_loop &operator,(long double const &val) {
         if (io_mode == io_unformatted) {
             to_stream_unformatted(reinterpret_cast<char const *>(&val), actual_sizeof_long_double);
@@ -332,7 +310,6 @@ class write_loop : write_loop_base
         }
         return *this;
     }
-
     write_loop &operator,(std::complex<float> const &val) {
         if (io_mode == io_unformatted) {
             float re = val.real();
@@ -349,7 +326,6 @@ class write_loop : write_loop_base
         }
         return *this;
     }
-
     write_loop &operator,(std::complex<double> const &val) {
         if (io_mode == io_unformatted) {
             double re = val.real();
@@ -366,7 +342,6 @@ class write_loop : write_loop_base
         }
         return *this;
     }
-
     write_loop &operator,(std::complex<long double> const &val) {
         if (io_mode == io_unformatted) {
             long double re = val.real();
@@ -382,7 +357,6 @@ class write_loop : write_loop_base
         }
         return *this;
     }
-
     write_loop &operator,(str_cref const &val) {
         if (io_mode == io_unformatted) {
             to_stream_unformatted(val.elems(), val.len());
@@ -404,7 +378,6 @@ class write_loop : write_loop_base
         }
         return *this;
     }
-
     write_loop &operator,(str_addends const &val) {
         int ll = val.lhs.len();
         int rl = val.rhs.len();
@@ -415,7 +388,6 @@ class write_loop : write_loop_base
         (*this), str_cref(b, ll + rl);
         return *this;
     }
-
     template <typename T, size_t Ndims> write_loop &operator,(arr_cref<T, Ndims> const &val) {
         size_t n = val.size_1d();
         T const *val_begin = val.begin();
@@ -424,7 +396,6 @@ class write_loop : write_loop_base
         }
         return *this;
     }
-
     template <size_t Ndims> write_loop &operator,(str_arr_cref<Ndims> const &val) {
         size_t n = val.size_1d();
         int l = val.len();
@@ -434,7 +405,6 @@ class write_loop : write_loop_base
         }
         return *this;
     }
-
     ~write_loop() NOEXCEPT_FALSE {
         if (out.get() == 0)
             return;
@@ -492,7 +462,6 @@ class write_loop : write_loop_base
             to_stream_fmt(buf, n);
         }
     }
-
     void to_stream_unformatted(char const *buf, unsigned n) {
         for (unsigned i = 0; i < n; i++) {
             char c = buf[i];
@@ -502,7 +471,6 @@ class write_loop : write_loop_base
             }
         }
     }
-
     void to_stream_fmt(char const *buf, unsigned n) {
         while (number_of_x_held != 0) {
             out->put(" ", 1);
@@ -510,7 +478,6 @@ class write_loop : write_loop_base
         }
         out->put(buf, n);
     }
-
     void to_stream_star(char const *buf, unsigned n, bool space = true) {
         if (pos == 0) {
             out->put(' ');
@@ -529,13 +496,11 @@ class write_loop : write_loop_base
         out->put(buf, n);
         pos += n;
     }
-
     void to_stream_star_strip_leading_and_trailing_blank_padding(char const *buf, unsigned n, bool space = true) {
         size_t_2 indices = utils::find_leading_and_trailing_blank_padding(buf, n);
         to_stream_star(buf + indices.elems[0], indices.elems[1] - indices.elems[0],
                        /*space*/ false);
     }
-
     void to_stream_star_complex(char const *buf_re, unsigned n_re, char const *buf_im, unsigned n_im) {
         to_stream_star("(", 1);
         {
@@ -549,48 +514,37 @@ class write_loop : write_loop_base
         prev_was_string = false;
     }
 };
-
 struct common_write {
     common &cmn;
-
     common_write(common &cmn_) : cmn(cmn_) {}
-
     write_loop operator()(int unit, unformatted_type const &) {
         write_loop result(cmn, unit, unformatted);
         return result;
     }
-
     write_loop operator()(int unit, star_type const &) {
         write_loop result(cmn, unit, star);
         return result;
     }
-
     write_loop operator()(int const &unit, str_cref fmt) {
         write_loop result(cmn, unit, fmt);
         return result;
     }
-
     write_loop operator()(str_ref const &internal_file, star_type const &) {
         write_loop result(internal_file, star);
         return result;
     }
-
     write_loop operator()(str_ref const &internal_file, str_cref fmt) {
         write_loop result(internal_file, fmt);
         return result;
     }
-
     template <size_t Ndims> write_loop operator()(str_arr_ref<Ndims> const &internal_file, star_type const &) {
         write_loop result(internal_file, star);
         return result;
     }
-
     template <size_t Ndims> write_loop operator()(str_arr_ref<Ndims> const &internal_file, str_cref fmt) {
         write_loop result(internal_file, fmt);
         return result;
     }
 };
-
 } // namespace fem
-
 #endif // GUARD

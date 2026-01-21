@@ -1,24 +1,18 @@
 #ifndef FEM_UTILS_EQUIVALENCE_HPP
 #define FEM_UTILS_EQUIVALENCE_HPP
-
 #include <fem/size_t.hpp>
 #include <tbxx/error_utils.hpp>
 #include <algorithm>
 #include <vector>
-
 namespace fem {
 namespace utils {
     namespace equivalence {
-
         struct array_alignment {
             size_t members_size;
             std::vector<ssize_t> diff_matrix;
             std::vector<ssize_t> diffs0;
-
             array_alignment(size_t members_size_) : members_size(members_size_), diff_matrix(members_size * (members_size - 1), ssize_t_max) {}
-
             static std::string msg_prefix() { return "equivalence::array_alignment: "; }
-
             void add_anchor(size_t i0, ssize_t a0, size_t i1, ssize_t a1) {
                 static const char *msg_directly = "directly conflicting input";
                 if (i0 == i1) {
@@ -44,7 +38,6 @@ namespace utils {
                     }
                 }
             }
-
             void infer_diffs0_from_diff_matrix() {
                 size_t n = members_size;
                 std::vector<size_t> cluster_indices(n);
@@ -120,9 +113,7 @@ namespace utils {
                 }
             }
         };
-
     } // namespace equivalence
 } // namespace utils
 } // namespace fem
-
 #endif // GUARD

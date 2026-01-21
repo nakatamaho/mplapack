@@ -1,6 +1,5 @@
 #ifndef FEM_IO_HPP
 #define FEM_IO_HPP
-
 #include <fem/io_exceptions.hpp>
 #include <fem/utils/misc.hpp>
 #include <fem/utils/path.hpp>
@@ -9,60 +8,46 @@
 #include <fem/utils/string.hpp>
 #include <map>
 #include <cstdio>
-
 namespace fem {
-
 static const char file_not_specified[] = "";
 enum unformatted_type { unformatted };
-
 enum io_modes { io_unformatted = 0, io_list_directed, io_formatted };
-
 static const char end_of_unformatted_record = static_cast<char>(0xAAU);
-
 struct std_file {
     std::FILE *ptr;
-
     std_file(std::FILE *ptr_ = 0) : ptr(ptr_) {}
 };
-
 inline bool is_std_io_unit(int unit) { return (unit == 0 || unit == 5 || unit == 6); }
-
 struct io_unit {
     int number;
     std::string file_name;
     std_file stream;
     bool prev_op_was_write;
-
     static const char **ac_keywords() {
         static const char *result[] = {"sequential", "direct", 0};
         return result;
     }
     enum access_types { ac_sequential = 0, ac_direct, ac_undef };
     access_types access;
-
     static const char **fm_keywords() {
         static const char *result[] = {"formatted", "unformatted", 0};
         return result;
     }
     enum form_types { fm_formatted = 0, fm_unformatted, fm_undef };
     form_types form;
-
     unsigned recl;
-
     static const char **bl_keywords() {
         static const char *result[] = {"null", "zero", 0};
         return result;
     }
     enum blank_types { bl_null = 0, bl_zero, bl_undef };
     blank_types blank;
-
     static const char **st_keywords() {
         static const char *result[] = {"old", "new", "scratch", "unknown", 0};
         return result;
     }
     enum status_types { st_old = 0, st_new, st_scratch, st_unknown, st_undef };
     status_types status;
-
     /*! f77_std 12.9.7
         If no error condition or end-of-file condition exists, the
         value of ios is zero. If an error condition exists, the value
@@ -71,9 +56,7 @@ struct io_unit {
         XXX NOT IMPLEMENTED
      */
     int iostat;
-
     io_unit(int number_, std::string file_name_ = std::string(""), std_file stream_ = std_file(0)) : number(number_), file_name(file_name_), stream(stream_), prev_op_was_write(false), access(ac_undef), form(fm_undef), recl(0), blank(bl_undef), status(st_undef), iostat(0) {}
-
     std::string get_file_name_set_default_if_necessary() {
         if (file_name.size() == 0 && !is_std_io_unit(number)) {
             if (status != st_scratch) {
@@ -98,7 +81,6 @@ struct io_unit {
         }
         return file_name;
     }
-
     void open(int *iostat_ptr) {
         if (status == st_undef) {
             status = st_unknown; // f77_std 12.10.1
@@ -190,7 +172,6 @@ struct io_unit {
             status = st_old;
         }
     }
-
     void close(int *iostat_ptr = 0, bool status_delete = false) {
         if (iostat_ptr != 0)
             *iostat_ptr = 0; // XXX
@@ -204,9 +185,7 @@ struct io_unit {
             std::remove(file_name.c_str());
         }
     }
-
     void backspace(int *iostat_ptr) { throw TBXX_NOT_IMPLEMENTED(); }
-
     void endfile(int *iostat_ptr) {
         if (is_std_io_unit(number)) {
             throw TBXX_NOT_IMPLEMENTED();
@@ -216,7 +195,6 @@ struct io_unit {
         }
         prev_op_was_write = false;
     }
-
     void rewind(int *iostat_ptr) {
         if (stream.ptr == 0 || std::fseek(stream.ptr, 0L, SEEK_SET) != 0) {
             iostat = 1;
@@ -229,16 +207,13 @@ struct io_unit {
         prev_op_was_write = false;
     }
 };
-
 struct io : utils::noncopyable {
     std::map<int, io_unit> units;
-
     io() {
         units.insert(std::make_pair(0, io_unit(0, "", stderr)));
         units.insert(std::make_pair(5, io_unit(5, "", stdin)));
         units.insert(std::make_pair(6, io_unit(6, "", stdout)));
     }
-
     ~io() {
         typedef std::map<int, io_unit>::iterator it;
         it e = units.end();
@@ -246,7 +221,6 @@ struct io : utils::noncopyable {
             i->second.close();
         }
     }
-
     io_unit *unit_ptr(int unit, bool auto_open = false) {
         typedef std::map<int, io_unit>::iterator it;
         it map_iter = units.find(unit);
@@ -258,7 +232,6 @@ struct io : utils::noncopyable {
         }
         return &(map_iter->second);
     }
-
     //! Easy C++ access.
     std::string file_name_of_unit(int unit) {
         io_unit *u_ptr = unit_ptr(unit);
@@ -266,21 +239,13 @@ struct io : utils::noncopyable {
             return "";
         return u_ptr->file_name;
     }
-
     inline struct inquire_chain inquire_unit(int unit);
-
     inline struct inquire_chain inquire_file(std::string file, bool blank_padding_removed_already = false);
-
     inline struct open_chain open(int unit, std::string file = std::string(), bool blank_padding_removed_already = false);
-
     inline struct close_chain close(int unit);
-
     inline struct file_positioning_chain backspace(int unit);
-
     inline struct file_positioning_chain endfile(int unit);
-
     inline struct file_positioning_chain rewind(int unit);
-
     inline bool is_opened_simple(std::string const &file_name) const {
         typedef std::map<int, io_unit>::const_iterator it;
         it e = units.end();
@@ -291,7 +256,6 @@ struct io : utils::noncopyable {
         }
         return false;
     }
-
     utils::slick_ptr<utils::simple_ostream> simple_ostream(int unit) {
         io_unit *u_ptr = unit_ptr(unit, /*auto_open*/ true);
         std_file &sf = u_ptr->stream;
@@ -305,13 +269,11 @@ struct io : utils::noncopyable {
         }
         return utils::slick_ptr<utils::simple_ostream>(new utils::simple_ostream_to_c_file(sf.ptr));
     }
-
     utils::slick_ptr<utils::simple_istream> simple_istream(int unit) {
         io_unit *u_ptr = unit_ptr(unit, /*auto_open*/ true);
         u_ptr->prev_op_was_write = false;
         return utils::slick_ptr<utils::simple_istream>(new utils::simple_istream_from_c_file(u_ptr->stream.ptr));
     }
-
     void flush(int unit) {
         io_unit *u_ptr = unit_ptr(unit);
         if (u_ptr != 0) {
@@ -322,7 +284,5 @@ struct io : utils::noncopyable {
         }
     }
 };
-
 } // namespace fem
-
 #endif // GUARD

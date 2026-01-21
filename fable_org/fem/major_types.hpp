@@ -1,15 +1,12 @@
 #ifndef FEM_MAJOR_TYPES_HPP
 #define FEM_MAJOR_TYPES_HPP
-
 #include <fem/arr_size.hpp>
 #include <fem/data.hpp>
 #include <fem/read.hpp>
 #include <fem/variant.hpp>
 #include <fem/write.hpp>
-
 namespace fem {
 namespace major_types {
-
     using fem::arr;
     using fem::arr_1d;
     using fem::arr_2d;
@@ -36,8 +33,6 @@ namespace major_types {
     using fem::str_ref;
     using fem::values;
     using fem::write_loop;
-
 } // namespace major_types
 } // namespace fem
-
 #endif // GUARD

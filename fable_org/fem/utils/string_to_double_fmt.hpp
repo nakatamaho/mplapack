@@ -1,14 +1,10 @@
 #ifndef FEM_UTILS_STRING_TO_DOUBLE_FMT_HPP
 #define FEM_UTILS_STRING_TO_DOUBLE_FMT_HPP
-
 #include <fem/utils/string_to_double.hpp>
-
 namespace fem {
 namespace utils {
-
     struct string_to_double_fmt : string_to_double {
         string_to_double_fmt() {}
-
         string_to_double_fmt(simple_istream &inp, unsigned w, unsigned d, bool blanks_zero, int exp_scale) {
             reset();
             if (w == 0)
@@ -45,8 +41,6 @@ namespace utils {
             convert(buf_inp, d, exp_scale);
         }
     };
-
 } // namespace utils
 } // namespace fem
-
 #endif // GUARD

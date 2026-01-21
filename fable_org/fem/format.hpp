@@ -1,6 +1,5 @@
 #ifndef FEM_FORMAT_HPP
 #define FEM_FORMAT_HPP
-
 #include <fem/io_exceptions.hpp>
 #include <fem/str_ref.hpp>
 #include <fem/utils/char.hpp>
@@ -9,10 +8,8 @@
 #include <vector>
 #include <stdexcept>
 #include <cstring>
-
 namespace fem {
 namespace format {
-
     struct tokenizer : utils::noncopyable {
       protected:
         char *code;
@@ -22,7 +19,6 @@ namespace format {
 
       public:
         std::vector<utils::token> tokens;
-
         tokenizer(char const *fmt, unsigned fmt_stop) {
             utils::simple_buffer<char> buffer(fmt_stop * 2);
             code = buffer.space;
@@ -69,13 +65,9 @@ namespace format {
 
       protected:
         void raise_invalid() { throw std::runtime_error("Invalid FORMAT specification: " + std::string(code, stop + 1)); }
-
         bool starts_with(char const *substr, unsigned start) { return utils::starts_with(code, start, stop, substr); }
-
         int unsigned_integer_scan(unsigned start) { return utils::unsigned_integer_scan(code, start, stop); }
-
         void add_token(char const *type, unsigned start) { tokens.push_back(utils::token(type, std::string(&code[start], &code[i]))); }
-
         void add_token_string() {
             unsigned str_size = 0;
             char opening_quote = code[i];
@@ -92,7 +84,6 @@ namespace format {
             }
             raise_invalid();
         }
-
         void process() {
             unsigned i_code = i;
             char c = code[i_code];
@@ -186,30 +177,24 @@ namespace format {
             raise_invalid();
         }
     };
-
     struct repeat_point {
         unsigned i_fmt;
         unsigned n;
         bool wait_for_closing_parenthesis;
-
         repeat_point(unsigned i_fmt_, unsigned n_, bool wait_for_closing_parenthesis_ = false) : i_fmt(i_fmt_), n(n_), wait_for_closing_parenthesis(wait_for_closing_parenthesis_) {}
     };
-
     struct token_loop {
         std::vector<utils::token> fmt_tokens;
         unsigned i_fmt;
         unsigned i_fmt_wrap;
         unsigned simple_repeat;
         std::vector<format::repeat_point> repeat_points;
-
         token_loop() : i_fmt(0), i_fmt_wrap(0), simple_repeat(0) {}
-
         token_loop(str_cref fmt) : i_fmt(0), i_fmt_wrap(0), simple_repeat(0) {
             format::tokenizer tz(fmt.elems(), fmt.len());
             fmt_tokens.swap(tz.tokens);
             repeat_points.reserve(32); // uncritical; avoids reallocation in most
         } // cases
-
         utils::token const *next_executable_token(bool final = false) {
             if (simple_repeat != 0) {
                 simple_repeat--;
@@ -277,8 +262,6 @@ namespace format {
             }
         }
     };
-
 } // namespace format
 } // namespace fem
-
 #endif // GUARD

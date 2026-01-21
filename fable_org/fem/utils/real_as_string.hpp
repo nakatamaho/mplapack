@@ -1,15 +1,11 @@
 #ifndef FEM_UTILS_REAL_AS_STRING_HPP
 #define FEM_UTILS_REAL_AS_STRING_HPP
-
 #include <cstdio>
-
 namespace fem {
 namespace utils {
-
     struct float_as_string_list_directed {
         char begin[64];
         int n;
-
         float_as_string_list_directed(double const &val) // intentionally forcing promotion to double
         {
 #if defined(_MSC_VER)
@@ -53,12 +49,10 @@ namespace utils {
 #endif
         }
     };
-
     struct double_as_string_list_directed {
         char buffer[64];
         char *begin;
         int n;
-
         double_as_string_list_directed(double const &val) : begin(buffer) {
             char const *cfmte = "%23.15E";
             char const *cfmt = cfmte;
@@ -117,8 +111,6 @@ namespace utils {
             }
         }
     };
-
 } // namespace utils
 } // namespace fem
-
 #endif // GUARD

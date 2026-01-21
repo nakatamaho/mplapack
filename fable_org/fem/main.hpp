@@ -1,20 +1,16 @@
 #ifndef FEM_MAIN_HPP
 #define FEM_MAIN_HPP
-
 #include <fem/intrinsics_extra.hpp>
 #include <fem/stop.hpp>
 #include <fem/utils/int_types.hpp>
 #include <fem/utils/string.hpp>
 #include <vector>
 #include <cstdio>
-
 #if defined(_MSC_VER)
 #include <fcntl.h>
 #include <io.h>
 #endif
-
 namespace fem {
-
 inline bool check_fem_utils_int_types() {
     bool result = true;
 #define FABLE_LOC(bits, expected_sz)                                                                                     \
@@ -36,7 +32,6 @@ inline bool check_fem_utils_int_types() {
     }
     return result;
 }
-
 inline int main_with_catch(int argc, char const *argv[], void (*callable)(int argc, char const *argv[])) {
     user_plus_system_time();
     if (!check_fem_utils_int_types()) {
@@ -70,15 +65,11 @@ inline int main_with_catch(int argc, char const *argv[], void (*callable)(int ar
     }
     return 0;
 }
-
 static const std::string dynamic_parameters_option("--fem-dynamic-parameters");
-
 struct command_line_arguments {
     std::vector<std::string> buffer;
     std::vector<std::string> dynamic_parameters_fields;
-
     command_line_arguments() {}
-
     command_line_arguments(int argc, char const *argv[]) {
         for (int i = 0; i < argc; i++) {
             char const *arg = argv[i];
@@ -95,11 +86,9 @@ struct command_line_arguments {
         }
     }
 };
-
 struct dynamic_parameters_from {
     command_line_arguments const &command_line_args;
     int i_fld;
-
     dynamic_parameters_from(command_line_arguments const &command_line_args_, int max_number_of_flds) : command_line_args(command_line_args_), i_fld(0) {
         int n_flds = static_cast<int>(command_line_args.dynamic_parameters_fields.size());
         if (n_flds > max_number_of_flds) {
@@ -108,7 +97,6 @@ struct dynamic_parameters_from {
             throw std::runtime_error(o.str());
         }
     }
-
     template <typename T> dynamic_parameters_from &reset_if_given(T &value) {
         int n_flds = static_cast<int>(command_line_args.dynamic_parameters_fields.size());
         if (i_fld < n_flds) {
@@ -125,13 +113,9 @@ struct dynamic_parameters_from {
         return *this;
     }
 };
-
 template <typename D> struct dynamic_parameters_capsule {
     D dynamic_params;
-
     dynamic_parameters_capsule(command_line_arguments const &command_line_args) : dynamic_params(command_line_args) {}
 };
-
 } // namespace fem
-
 #endif // GUARD
