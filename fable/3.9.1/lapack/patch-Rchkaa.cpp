@@ -1,5 +1,5 @@
---- Rchkaa.cpp_	2026-01-21 18:18:36.231766967 +0900
-+++ Rchkaa.cpp	2026-01-21 18:18:36.236767070 +0900
+--- Rchkaa.cpp_	2026-01-21 18:28:37.385333136 +0900
++++ Rchkaa.cpp	2026-01-21 18:28:37.389333210 +0900
 @@ -43,7 +43,7 @@
  #include <mplapack_matgen.h>
  #include <mplapack_lin.h>
@@ -9,22 +9,23 @@
      common cmn(argc, argv);
      common_read read(cmn);
      common_write write(cmn);
-@@ -54,9 +54,12 @@
+@@ -54,10 +54,13 @@
      INTEGER lda = 0;
      bool fatal = false;
      const INTEGER nin = 5;
 -    INTEGER vers_major = 0;
 -    INTEGER vers_minor = 0;
 -    INTEGER vers_patch = 0;
+     const INTEGER nout = 6;
 +    INTEGER mplapack_vers_major = 0;
 +    INTEGER mplapack_vers_minor = 0;
 +    INTEGER mplapack_vers_patch = 0;
 +    INTEGER lapack_vers_major = 0;
 +    INTEGER lapack_vers_minor = 0;
 +    INTEGER lapack_vers_patch = 0;
-     const INTEGER nout = 6;
      INTEGER nm = 0;
      const INTEGER maxin = 12;
+     INTEGER mval[maxin];
 @@ -125,10 +128,10 @@
      //
      // Report values of parameters.
