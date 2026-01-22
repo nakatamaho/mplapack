@@ -20,12 +20,62 @@
 #endif
 #endif
 #if defined(___MPLAPACK_BUILD_WITH_QD___) || defined(___MPLAPACK_BUILD_WITH_DD___)
+// QD headers define and use qd::nint (and other short identifiers) inside the headers.
+// MPLAPACK (or other code) may define macros like `nint`, which would macro-expand
+// `qd::nint` into `qd::__dd_nint` and break the QD headers.
+// Temporarily disable such macros while including QD headers.
+#if defined(nint)
+#  pragma push_macro("nint")
+#  undef nint
+#  define FEM_RESTORE_nint 1
+#endif
+#if defined(min)
+#  pragma push_macro("min")
+#  undef min
+#  define FEM_RESTORE_min 1
+#endif
+#if defined(max)
+#  pragma push_macro("max")
+#  undef max
+#  define FEM_RESTORE_max 1
+#endif
+#if defined(abs)
+#  pragma push_macro("abs")
+#  undef abs
+#  define FEM_RESTORE_abs 1
+#endif
+#if defined(sign)
+#  pragma push_macro("sign")
+#  undef sign
+#  define FEM_RESTORE_sign 1
+#endif
 #if __has_include(<qd/dd_real.h>)
 #include <qd/dd_real.h>
 #endif
 #if __has_include(<qd/qd_real.h>)
 #include <qd/qd_real.h>
 #endif
+#if defined(FEM_RESTORE_sign)
+#  pragma pop_macro("sign")
+#  undef FEM_RESTORE_sign
+#endif
+#if defined(FEM_RESTORE_abs)
+#  pragma pop_macro("abs")
+#  undef FEM_RESTORE_abs
+#endif
+#if defined(FEM_RESTORE_max)
+#  pragma pop_macro("max")
+#  undef FEM_RESTORE_max
+#endif
+#if defined(FEM_RESTORE_min)
+#  pragma pop_macro("min")
+#  undef FEM_RESTORE_min
+#endif
+#if defined(FEM_RESTORE_nint)
+#  pragma pop_macro("nint")
+#  undef FEM_RESTORE_nint
+#endif
+
 #endif
 #define IOSTAT_OK 0
 #define IOSTAT_ERROR 1
