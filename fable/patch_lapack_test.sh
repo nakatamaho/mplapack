@@ -70,3 +70,4 @@ patch  < ~/mplapack/fable/3.9.1/lapack/patch-Cchkgg.cpp
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Rdrgsx.cpp
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Cdrgsx.cpp
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Rchkee.cpp
+patch  < ~/mplapack/fable/3.9.1/lapack/patch-Cchkee.cpp
