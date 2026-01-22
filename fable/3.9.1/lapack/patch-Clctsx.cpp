@@ -1,6 +1,6 @@
---- Clctsx.cpp_	2026-01-22 08:18:09.039455957 +0900
-+++ Clctsx.cpp	2026-01-22 08:18:09.046456093 +0900
-@@ -36,23 +36,18 @@
+--- Clctsx.cpp_	2026-01-22 13:36:11.874996820 +0900
++++ Clctsx.cpp	2026-01-22 13:36:11.881996941 +0900
+@@ -36,13 +36,12 @@
  #include <mpblas.h>
  #include <mplapack.h>
  
@@ -15,25 +15,5 @@
 +#include <mplapack_debug.h>
 +
  bool Clctsx(COMPLEX const /* alpha */, COMPLEX const /* beta */) {
--    common cmn;
      bool return_value = false;
--    int &mplusn = cmn.mplusn;
--    int &i = cmn.i;
--    bool &fs = cmn.fs;
      //
-     if (fs) {
-         i++;
--        if (i <= cmn.m) {
-+        if (i <= m) {
-             return_value = false;
-         } else {
-             return_value = true;
-@@ -63,7 +58,7 @@
-         }
-     } else {
-         i++;
--        if (i <= cmn.n) {
-+        if (i <= n) {
-             return_value = true;
-         } else {
-             return_value = false;

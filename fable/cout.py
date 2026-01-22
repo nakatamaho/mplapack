@@ -56,6 +56,11 @@ FABLE_SMALL_CHAR_VIEW = (str(os.environ.get("FABLE_SMALL_CHAR", "")).strip() == 
 # If set, do not emit COMMON/SAVE boilerplate structs into generated C++.
 FABLE_SUPPRESS_COMMON = _env_flag("FABLE_SUPPRESS_COMMON", default=False)
 
+# If set, treat all COMMON variables as externally provided globals (no "cmn." prefix)
+# and do not emit local reference aliases/wrappers for them. Useful when COMMON is
+# rewritten into project-wide globals (e.g., MPLAPACK).
+FABLE_COMMON_AS_GLOBALS = _env_flag("FABLE_COMMON_AS_GLOBALS", default=False)
+
 def _parse_ident_list_env(name: str) -> typing.Set[str]:
     """Parse an environment variable as a list of identifiers.
 
@@ -1363,7 +1368,11 @@ class conversion_info(global_conversion_info):
     def set_vmap_from_fdecl(O, fdecl):
         identifier = fdecl.id_tok.value
         if (fdecl.is_common()):
-            if (getattr(fdecl, "dim_tokens", None) is None
+            if FABLE_COMMON_AS_GLOBALS:
+                # COMMON variables are rewritten as globals in the target project.
+                # Emit plain identifiers (no `cmn.` access).
+                O.vmap[identifier] = prepend_identifier_if_necessary(identifier)
+            elif (getattr(fdecl, "dim_tokens", None) is None
                     and identifier.lower() in FABLE_EXTERN_COMMON_SCALARS):
                 # COMMON scalar is provided externally (declared as an extern global).
                 O.vmap[identifier] = prepend_identifier_if_necessary(identifier)
@@ -3629,12 +3638,16 @@ def convert_declaration(rapp, conv_info, fdecl, crhs, const):
             mplapack_elem_ctype, size_expr))
         rapp("%s *%s = %s.get();" % (
             mplapack_elem_ctype, vname, storage_name))
-        return False
+        # If this declaration was triggered by an assignment (crhs != None),
+        # we still need to emit the assignment statement; C arrays / raw pointers
+        # cannot be initialized in the declaration.
+        return (crhs is not None)
 
     # Constant-size local array: keep as a plain C array.
     rapp("%s%s %s[%s];" % (
         const_qualifier(), mplapack_elem_ctype, vname, size_expr))
-    return False
+    # Same rationale as above: caller must emit the assignment if present.
+    return (crhs is not None)
 
 
 class scope(object):
@@ -4722,6 +4735,12 @@ def declare_identifier(conv_info, top_scope, curr_scope, id_tok, crhs=None):
             result = True
         return result
     identifier = id_tok.value
+
+    # If the target project rewrites COMMON into globals, do not generate
+    # `cmn.` accesses or local alias wrappers (they become self-referential).
+    if (fdecl is not None and fdecl.is_common() and FABLE_COMMON_AS_GLOBALS):
+        conv_info.vmap[identifier] = prepend_identifier_if_necessary(identifier)
+        return crhs is not None
 
     def get_common_name_if_cast_is_needed():
         if (not fdecl.is_common()):
