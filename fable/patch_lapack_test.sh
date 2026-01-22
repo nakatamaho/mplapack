@@ -50,3 +50,10 @@ patch  < ~/mplapack/fable/3.9.1/lapack/patch-Cchkrfp.cpp
 
 cd /home/docker/mplapack/mplapack/test/eig/common
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Cget52.cpp
+patch  < ~/mplapack/fable/3.9.1/lapack/patch-Clctsx.cpp
+patch  < ~/mplapack/fable/3.9.1/lapack/patch-Cslect.cpp
+patch  < ~/mplapack/fable/3.9.1/lapack/patch-Rlctsx.cpp
+patch  < ~/mplapack/fable/3.9.1/lapack/patch-Rslect.cpp
+patch  < ~/mplapack/fable/3.9.1/lapack/patch-Rckcsd.cpp
+patch  < ~/mplapack/fable/3.9.1/lapack/patch-Rlatb9.cpp
+patch  < ~/mplapack/fable/3.9.1/lapack/patch-Rchkec.cpp
