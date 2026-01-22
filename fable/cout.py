@@ -3148,7 +3148,28 @@ def _convert_parentheses_postfix(conv_info, prev_tok, tok, had_str_concat):
 
             row_off = make_offset(i_expr, lb1)
             col_off = make_offset(j_expr, lb2)
-            index_expr = f'{row_off} + {col_off}*{ldexpr}'
+            array_elem_re = re.compile(r'^[A-Za-z_][A-Za-z0-9_]*\s*\[[^\[\]]+\]\s*$')
+
+            def is_zero_literal(expr: str) -> bool:
+                return (_strip_outer_parens_balanced(expr.strip()) == '0')
+
+            def is_simple_term(expr: str) -> bool:
+                expr = _strip_outer_parens_balanced(expr.strip())
+                return (bool(simple_name.fullmatch(expr))
+                        or bool(simple_int.fullmatch(expr))
+                        or bool(array_elem_re.fullmatch(expr)))
+
+            def wrap_add_term(expr: str) -> str:
+                expr = expr.strip()
+                return expr if is_simple_term(expr) else f'({expr})'
+
+            terms = []
+            if not is_zero_literal(row_off):
+                terms.append(wrap_add_term(row_off))
+            if not is_zero_literal(col_off):
+                terms.append(f'({col_off})*{ldexpr}')
+
+            index_expr = ' + '.join(terms) if terms else '0'
             return '[' + index_expr + ']'
 
         if len(parts) == 3:
@@ -3238,7 +3259,22 @@ def _convert_parentheses_postfix(conv_info, prev_tok, tok, had_str_concat):
 
                 # Fortran column-major flattening:
                 #   a(i,j,k) -> a[(i-lb1) + (j-lb2)*ld1 + (k-lb3)*ld1*ld2]
-                index_expr = f'{off1} + ({off2})*{ld1} + ({off3})*{ld1}*{ld2}'
+                def is_zero_literal(expr: str) -> bool:
+                    return (_strip_outer_parens_balanced(expr.strip()) == '0')
+
+                def wrap_add_term(expr: str) -> str:
+                    expr = expr.strip()
+                    return expr if is_simple_index(expr) else f'({expr})'
+
+                terms = []
+                if not is_zero_literal(off1):
+                    terms.append(wrap_add_term(off1))
+                if not is_zero_literal(off2):
+                    terms.append(f'({off2})*{ld1}')
+                if not is_zero_literal(off3):
+                    terms.append(f'({off3})*{ld1}*{ld2}')
+
+                index_expr = ' + '.join(terms) if terms else '0'
                 return '[' + index_expr + ']'
 
         # Fallback: treat like a normal call/parenthesized expression
