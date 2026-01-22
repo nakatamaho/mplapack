@@ -71,9 +71,6 @@ typedef qd_complex COMPLEX;
 #define iMlaenv iMlaenv_qd
 #define iMieeeck iMieeeck_qd
 #define iMparmq iMparmq_qd
-#if !defined __MUTILS_CPP__
-#define nint __qd_nint
-#endif
 #endif
 
 #if defined ___MPLAPACK_BUILD_WITH_DD___
@@ -88,9 +85,6 @@ typedef dd_complex COMPLEX;
 #define iMlaenv iMlaenv_dd
 #define iMieeeck iMieeeck_dd
 #define iMparmq iMparmq_dd
-#if !defined __MUTILS_CPP__
-#define nint __dd_nint
-#endif
 #endif
 
 #if defined ___MPLAPACK_BUILD_WITH_DOUBLE___
