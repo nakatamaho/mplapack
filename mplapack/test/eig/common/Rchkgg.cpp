@@ -114,7 +114,7 @@ void Rchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     // Maximum blocksize and shift -- we assume that blocksize and number
     // of shifts are monotone increasing functions of N.
     //
-    lwkopt = max(6 * nmax, 2 * nmax * nmax, 1);
+    lwkopt = max(6 * nmax, 2 * nmax * nmax, (INTEGER)1);
     //
     // Check for errors
     //

@@ -115,7 +115,7 @@ void Cchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
         }
     }
     //
-    lwkopt = max(2 * nmax * nmax, 4 * nmax, 1);
+    lwkopt = max(2 * nmax * nmax, 4 * nmax, (INTEGER)1);
     //
     // Check for errors
     //
