@@ -378,7 +378,7 @@ void Cdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     //
                     Chegv(ibtype, "V", uplo.elems, n, z, ldz, bb, ldb, d, work, nwork, rwork, iinfo);
                     if (iinfo != 0) {
-                        write(nounit, format_9999), "ZHEGV(V," + uplo + fem::str_cref(")"), iinfo, n, jtype, ioldsd;
+                        write(nounit, format_9999), "ZHEGV(V," + uplo + ")", iinfo, n, jtype, ioldsd;
                         info = abs(iinfo);
                         if (iinfo < 0) {
                             return;
@@ -401,7 +401,7 @@ void Cdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     //
                     Chegv_2stage(ibtype, "N", uplo.elems, n, z, ldz, bb, ldb, d2, work, nwork, rwork, iinfo);
                     if (iinfo != 0) {
-                        write(nounit, format_9999), "ZHEGV_2STAGE(V," + uplo + fem::str_cref(")"), iinfo, n, jtype, ioldsd;
+                        write(nounit, format_9999), "ZHEGV_2STAGE(V," + uplo + ")", iinfo, n, jtype, ioldsd;
                         info = abs(iinfo);
                         if (iinfo < 0) {
                             return;
@@ -438,7 +438,7 @@ void Cdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     //
                     Chegvd(ibtype, "V", uplo.elems, n, z, ldz, bb, ldb, d, work, nwork, rwork, lrwork, iwork, liwork, iinfo);
                     if (iinfo != 0) {
-                        write(nounit, format_9999), "ZHEGVD(V," + uplo + fem::str_cref(")"), iinfo, n, jtype, ioldsd;
+                        write(nounit, format_9999), "ZHEGVD(V," + uplo + ")", iinfo, n, jtype, ioldsd;
                         info = abs(iinfo);
                         if (iinfo < 0) {
                             return;
@@ -461,7 +461,7 @@ void Cdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     //
                     Chegvx(ibtype, "V", "A", uplo.elems, n, ab, lda, bb, ldb, vl, vu, il, iu, abstol, m, d, z, ldz, work, nwork, rwork, &iwork[(n + 1) - 1], iwork, iinfo);
                     if (iinfo != 0) {
-                        write(nounit, format_9999), "ZHEGVX(V,A" + uplo + fem::str_cref(")"), iinfo, n, jtype, ioldsd;
+                        write(nounit, format_9999), "ZHEGVX(V,A" + uplo + ")", iinfo, n, jtype, ioldsd;
                         info = abs(iinfo);
                         if (iinfo < 0) {
                             return;
@@ -489,7 +489,7 @@ void Cdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     vu = anorm;
                     Chegvx(ibtype, "V", "V", uplo.elems, n, ab, lda, bb, ldb, vl, vu, il, iu, abstol, m, d, z, ldz, work, nwork, rwork, &iwork[(n + 1) - 1], iwork, iinfo);
                     if (iinfo != 0) {
-                        write(nounit, format_9999), "ZHEGVX(V,V," + uplo + fem::str_cref(")"), iinfo, n, jtype, ioldsd;
+                        write(nounit, format_9999), "ZHEGVX(V,V," + uplo + ")", iinfo, n, jtype, ioldsd;
                         info = abs(iinfo);
                         if (iinfo < 0) {
                             return;
@@ -510,7 +510,7 @@ void Cdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     //
                     Chegvx(ibtype, "V", "I", uplo.elems, n, ab, lda, bb, ldb, vl, vu, il, iu, abstol, m, d, z, ldz, work, nwork, rwork, &iwork[(n + 1) - 1], iwork, iinfo);
                     if (iinfo != 0) {
-                        write(nounit, format_9999), "ZHEGVX(V,I," + uplo + fem::str_cref(")"), iinfo, n, jtype, ioldsd;
+                        write(nounit, format_9999), "ZHEGVX(V,I," + uplo + ")", iinfo, n, jtype, ioldsd;
                         info = abs(iinfo);
                         if (iinfo < 0) {
                             return;
@@ -554,7 +554,7 @@ void Cdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     //
                     Chpgv(ibtype, "V", uplo.elems, n, ap, bp, d, z, ldz, work, rwork, iinfo);
                     if (iinfo != 0) {
-                        write(nounit, format_9999), "ZHPGV(V," + uplo + fem::str_cref(")"), iinfo, n, jtype, ioldsd;
+                        write(nounit, format_9999), "ZHPGV(V," + uplo + ")", iinfo, n, jtype, ioldsd;
                         info = abs(iinfo);
                         if (iinfo < 0) {
                             return;
@@ -596,7 +596,7 @@ void Cdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     //
                     Chpgvd(ibtype, "V", uplo.elems, n, ap, bp, d, z, ldz, work, nwork, rwork, lrwork, iwork, liwork, iinfo);
                     if (iinfo != 0) {
-                        write(nounit, format_9999), "ZHPGVD(V," + uplo + fem::str_cref(")"), iinfo, n, jtype, ioldsd;
+                        write(nounit, format_9999), "ZHPGVD(V," + uplo + ")", iinfo, n, jtype, ioldsd;
                         info = abs(iinfo);
                         if (iinfo < 0) {
                             return;
@@ -638,7 +638,7 @@ void Cdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     //
                     Chpgvx(ibtype, "V", "A", uplo.elems, n, ap, bp, vl, vu, il, iu, abstol, m, d, z, ldz, work, rwork, &iwork[(n + 1) - 1], iwork, info);
                     if (iinfo != 0) {
-                        write(nounit, format_9999), "ZHPGVX(V,A" + uplo + fem::str_cref(")"), iinfo, n, jtype, ioldsd;
+                        write(nounit, format_9999), "ZHPGVX(V,A" + uplo + ")", iinfo, n, jtype, ioldsd;
                         info = abs(iinfo);
                         if (iinfo < 0) {
                             return;
@@ -680,7 +680,7 @@ void Cdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     vu = anorm;
                     Chpgvx(ibtype, "V", "V", uplo.elems, n, ap, bp, vl, vu, il, iu, abstol, m, d, z, ldz, work, rwork, &iwork[(n + 1) - 1], iwork, info);
                     if (iinfo != 0) {
-                        write(nounit, format_9999), "ZHPGVX(V,V" + uplo + fem::str_cref(")"), iinfo, n, jtype, ioldsd;
+                        write(nounit, format_9999), "ZHPGVX(V,V" + uplo + ")", iinfo, n, jtype, ioldsd;
                         info = abs(iinfo);
                         if (iinfo < 0) {
                             return;
@@ -720,7 +720,7 @@ void Cdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     //
                     Chpgvx(ibtype, "V", "I", uplo.elems, n, ap, bp, vl, vu, il, iu, abstol, m, d, z, ldz, work, rwork, &iwork[(n + 1) - 1], iwork, info);
                     if (iinfo != 0) {
-                        write(nounit, format_9999), "ZHPGVX(V,I" + uplo + fem::str_cref(")"), iinfo, n, jtype, ioldsd;
+                        write(nounit, format_9999), "ZHPGVX(V,I" + uplo + ")", iinfo, n, jtype, ioldsd;
                         info = abs(iinfo);
                         if (iinfo < 0) {
                             return;
@@ -766,7 +766,7 @@ void Cdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                         //
                         Chbgv("V", uplo.elems, n, ka, kb, ab, lda, bb, ldb, d, z, ldz, work, rwork, iinfo);
                         if (iinfo != 0) {
-                            write(nounit, format_9999), "ZHBGV(V," + uplo + fem::str_cref(")"), iinfo, n, jtype, ioldsd;
+                            write(nounit, format_9999), "ZHBGV(V," + uplo + ")", iinfo, n, jtype, ioldsd;
                             info = abs(iinfo);
                             if (iinfo < 0) {
                                 return;
@@ -808,7 +808,7 @@ void Cdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                         //
                         Chbgvd("V", uplo.elems, n, ka, kb, ab, lda, bb, ldb, d, z, ldz, work, nwork, rwork, lrwork, iwork, liwork, iinfo);
                         if (iinfo != 0) {
-                            write(nounit, format_9999), "ZHBGVD(V," + uplo + fem::str_cref(")"), iinfo, n, jtype, ioldsd;
+                            write(nounit, format_9999), "ZHBGVD(V," + uplo + ")", iinfo, n, jtype, ioldsd;
                             info = abs(iinfo);
                             if (iinfo < 0) {
                                 return;
@@ -850,7 +850,7 @@ void Cdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                         //
                         Chbgvx("V", "A", uplo.elems, n, ka, kb, ab, lda, bb, ldb, bp, max((INTEGER)1, n), vl, vu, il, iu, abstol, m, d, z, ldz, work, rwork, &iwork[(n + 1) - 1], iwork, iinfo);
                         if (iinfo != 0) {
-                            write(nounit, format_9999), "ZHBGVX(V,A" + uplo + fem::str_cref(")"), iinfo, n, jtype, ioldsd;
+                            write(nounit, format_9999), "ZHBGVX(V,A" + uplo + ")", iinfo, n, jtype, ioldsd;
                             info = abs(iinfo);
                             if (iinfo < 0) {
                                 return;
@@ -892,7 +892,7 @@ void Cdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                         vu = anorm;
                         Chbgvx("V", "V", uplo.elems, n, ka, kb, ab, lda, bb, ldb, bp, max((INTEGER)1, n), vl, vu, il, iu, abstol, m, d, z, ldz, work, rwork, &iwork[(n + 1) - 1], iwork, iinfo);
                         if (iinfo != 0) {
-                            write(nounit, format_9999), "ZHBGVX(V,V" + uplo + fem::str_cref(")"), iinfo, n, jtype, ioldsd;
+                            write(nounit, format_9999), "ZHBGVX(V,V" + uplo + ")", iinfo, n, jtype, ioldsd;
                             info = abs(iinfo);
                             if (iinfo < 0) {
                                 return;
@@ -932,7 +932,7 @@ void Cdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                         //
                         Chbgvx("V", "I", uplo.elems, n, ka, kb, ab, lda, bb, ldb, bp, max((INTEGER)1, n), vl, vu, il, iu, abstol, m, d, z, ldz, work, rwork, &iwork[(n + 1) - 1], iwork, iinfo);
                         if (iinfo != 0) {
-                            write(nounit, format_9999), "ZHBGVX(V,I" + uplo + fem::str_cref(")"), iinfo, n, jtype, ioldsd;
+                            write(nounit, format_9999), "ZHBGVX(V,I" + uplo + ")", iinfo, n, jtype, ioldsd;
                             info = abs(iinfo);
                             if (iinfo < 0) {
                                 return;
