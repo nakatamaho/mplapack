@@ -63,9 +63,11 @@ void Rget35(REAL &rmax, INTEGER &lmax, INTEGER &ninfo, INTEGER &knt) {
     // Set up test case parameters
     //
     REAL vm1[3];
+    vm1[1 - 1] = sqrt(smlnum);
     vm1[2 - 1] = one;
     vm1[3 - 1] = sqrt(bignum);
     REAL vm2[3];
+    vm2[1 - 1] = one;
     const REAL two = 2.0;
     vm2[2 - 1] = one + two * eps;
     vm2[3 - 1] = two;

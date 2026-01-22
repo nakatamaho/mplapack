@@ -61,6 +61,7 @@ void Rget32(REAL &rmax, INTEGER &lmax, INTEGER &ninfo, INTEGER &knt) {
     // Set up test case parameters
     //
     REAL val[3];
+    val[1 - 1] = sqrt(smlnum);
     val[2 - 1] = one;
     val[3 - 1] = sqrt(bignum);
     //

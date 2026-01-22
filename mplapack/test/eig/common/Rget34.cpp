@@ -59,6 +59,7 @@ void Rget34(REAL &rmax, INTEGER &lmax, INTEGER *ninfo, INTEGER &knt) {
     //
     const REAL zero = 0.0;
     REAL val[9];
+    val[1 - 1] = zero;
     val[2 - 1] = sqrt(smlnum);
     val[3 - 1] = one;
     const REAL two = 2.0;
@@ -69,6 +70,7 @@ void Rget34(REAL &rmax, INTEGER &lmax, INTEGER *ninfo, INTEGER &knt) {
     val[8 - 1] = -two;
     val[9 - 1] = -sqrt(bignum);
     REAL vm[2];
+    vm[1 - 1] = one;
     vm[2 - 1] = one + two * eps;
     REAL t[4 * 4];
     Rcopy(16, &val[4 - 1], 0, &t[0], 1);

@@ -60,12 +60,14 @@ void Rget33(REAL &rmax, INTEGER &lmax, INTEGER &ninfo, INTEGER &knt) {
     // Set up test case parameters
     //
     REAL val[4];
+    val[1 - 1] = one;
     const REAL two = 2.0;
     val[2 - 1] = one + two * eps;
     val[3 - 1] = two;
     const REAL four = 4.0;
     val[4 - 1] = two - four * eps;
     REAL vm[3];
+    vm[1 - 1] = smlnum;
     vm[2 - 1] = one;
     vm[3 - 1] = bignum;
     //
