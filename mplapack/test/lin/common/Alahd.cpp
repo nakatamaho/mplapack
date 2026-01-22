@@ -490,10 +490,10 @@ void Alahd(INTEGER const iounit, fem::str_cref path) {
         //
         if (Mlsame(c3.elems, "R")) {
             write(iounit, "(/,1x,a3,':  Triangular matrices')"), path;
-            subnam = path(1, 1) + fem::str_cref("LATRS");
+            subnam = path(1, 1) + "LATRS";
         } else {
             write(iounit, "(/,1x,a3,':  Triangular packed matrices')"), path;
-            subnam = path(1, 1) + fem::str_cref("LATPS");
+            subnam = path(1, 1) + "LATPS";
         }
         write(iounit, "(' Matrix types for ',a3,' routines:',/,4x,'1. Diagonal',24x,"
                       "'6. Scaled near overflow',/,4x,'2. Random, CNDNUM = 2',14x,"
@@ -529,7 +529,7 @@ void Alahd(INTEGER const iounit, fem::str_cref path) {
         // TB: Triangular band
         //
         write(iounit, "(/,1x,a3,':  Triangular band matrices')"), path;
-        subnam = path(1, 1) + fem::str_cref("LATBS");
+        subnam = path(1, 1) + "LATBS";
         write(iounit, "(' Matrix types for ',a3,' routines:',/,4x,'1. Random, CNDNUM = 2',14x,"
                       "'6. Identity',/,4x,'2. Random, CNDNUM = sqrt(0.1/EPS)  ',"
                       "'7. Unit triangular, CNDNUM = 2',/,4x,'3. Random, CNDNUM = 0.1/EPS',8x,"

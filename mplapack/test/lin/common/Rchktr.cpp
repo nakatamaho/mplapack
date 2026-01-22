@@ -359,7 +359,7 @@ void Rchktr(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                     // Check error code from Rlatrs.
                     //
                     if (info != 0) {
-                        Alaerh(path, "DLATRS", info, 0, uplo + trans + diag + fem::str_cref("N"), n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                        Alaerh(path, "DLATRS", info, 0, uplo + trans + diag + "N", n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                     }
                     //
                     Rtrt03(uplo, trans, diag, n, 1, a, lda, scale, rwork, one, b, lda, x, lda, work, result[8 - 1]);
@@ -373,7 +373,7 @@ void Rchktr(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                     // Check error code from Rlatrs.
                     //
                     if (info != 0) {
-                        Alaerh(path, "DLATRS", info, 0, uplo + trans + diag + fem::str_cref("Y"), n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                        Alaerh(path, "DLATRS", info, 0, uplo + trans + diag + "Y", n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                     }
                     //
                     Rtrt03(uplo, trans, diag, n, 1, a, lda, scale, rwork, one, &b[(n + 1) - 1], lda, x, lda, work, result[9 - 1]);

@@ -356,7 +356,7 @@ void Cchktb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                         // Check error code from Clatbs.
                         //
                         if (info != 0) {
-                            Alaerh(path, "ZLATBS", info, 0, uplo + trans + diag + fem::str_cref("N"), n, n, kd, kd, -1, imat, nfail, nerrs, nout);
+                            Alaerh(path, "ZLATBS", info, 0, uplo + trans + diag + "N", n, n, kd, kd, -1, imat, nfail, nerrs, nout);
                         }
                         //
                         Ctbt03(uplo, trans, diag, n, kd, 1, ab, ldab, scale, rwork, one, b, lda, x, lda, work, result[7 - 1]);
@@ -370,7 +370,7 @@ void Cchktb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                         // Check error code from Clatbs.
                         //
                         if (info != 0) {
-                            Alaerh(path, "ZLATBS", info, 0, uplo + trans + diag + fem::str_cref("Y"), n, n, kd, kd, -1, imat, nfail, nerrs, nout);
+                            Alaerh(path, "ZLATBS", info, 0, uplo + trans + diag + "Y", n, n, kd, kd, -1, imat, nfail, nerrs, nout);
                         }
                         //
                         Ctbt03(uplo, trans, diag, n, kd, 1, ab, ldab, scale, rwork, one, b, lda, x, lda, work, result[8 - 1]);
