@@ -62,3 +62,4 @@ patch  < ~/mplapack/fable/3.9.1/lapack/patch-Cget24.cpp
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Rdrves.cpp
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Rget24.cpp
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Cdrges3.cpp
+patch  < ~/mplapack/fable/3.9.1/lapack/patch-Cchkbd.cpp
