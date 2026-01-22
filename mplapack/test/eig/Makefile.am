@@ -115,8 +115,6 @@ EIG_SOURCES = \
 common/Cslect.cpp \
 common/Rslect.cpp \
 common/Rlctsx.cpp \
-common/Rlacsg.cpp \
-common/Clacsg.cpp \
 common/Rlasum.cpp \
 common/Rlctes.cpp \
 common/Alasmg.cpp \
