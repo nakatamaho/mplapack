@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine CHKXER.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -42,11 +49,11 @@ void Chkxer(fem::str_cref srnamt, INTEGER const infot, INTEGER const nout, bool 
     if (!lerr) {
         write(nout, "(' *** Illegal value of parameter number ',i2,' not detected by ',a6,"
                     "' ***')"),
-            infot, srnamt;
+            infot, srnamt(1, fem::len_trim(srnamt));
         ok = false;
     }
     lerr = false;
     //
-    // End of Chkxer
+    // End of Chkxer.
     //
 }
