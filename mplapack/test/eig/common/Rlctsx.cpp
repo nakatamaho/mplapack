@@ -43,7 +43,6 @@
 #include <mplapack_debug.h>
 
 bool Rlctsx(REAL const /* ar */, REAL const /* ai */, REAL const /* beta */) {
-    common cmn;
     bool return_value = false;
     //
     if (fs) {
