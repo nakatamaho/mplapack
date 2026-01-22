@@ -1054,7 +1054,12 @@ def convert_token(vmap, leading, tok, had_str_concat=None):
         s = '"' + escape_string_literal(tok.value) + '"'
         if (had_str_concat is None or not had_str_concat.value):
             return s
-        return "fem::str_cref(%s)" % s
+        # In a concatenation chain, wrap only the leading literal so that the first '+'
+        # has a class-type operand. Subsequent literals can remain as plain C++ string
+        # literals (requires fem operator+ overloads for (str_cref + char[]) etc.).
+        if (leading):
+            return "fem::str_cref(%s)" % s
+        return s
     if (tok.is_logical()):
         if (tv == ".false."):
             return "false"
@@ -1072,6 +1077,20 @@ def convert_token(vmap, leading, tok, had_str_concat=None):
         return convert_complex_literal(vmap=vmap, tok=tok)
     tok.raise_not_supported()
 
+def _tokens_have_str_concat(tokens):
+    """Return True if the token tree contains the Fortran string concat operator '//'."""
+    if not tokens:
+        return False
+    for tok in tokens:
+        try:
+            if tok.is_op_with(value="//"):
+                return True
+        except Exception:
+            pass
+        v = getattr(tok, "value", None)
+        if isinstance(v, list) and _tokens_have_str_concat(v):
+            return True
+    return False
 
 class major_types_cache(object):
 
@@ -3160,14 +3179,14 @@ def _convert_parentheses_postfix(conv_info, prev_tok, tok, had_str_concat):
                         or bool(array_elem_re.fullmatch(expr)))
 
             def wrap_add_term(expr: str) -> str:
-                expr = expr.strip()
-                return expr if is_simple_term(expr) else f'({expr})'
+                core = _strip_outer_parens_balanced(expr.strip())
+                return core if is_simple_term(core) else f'({core})'
 
             terms = []
             if not is_zero_literal(row_off):
                 terms.append(wrap_add_term(row_off))
             if not is_zero_literal(col_off):
-                terms.append(f'({col_off})*{ldexpr}')
+                terms.append(f'{wrap_add_term(col_off)} * {ldexpr}')
 
             index_expr = ' + '.join(terms) if terms else '0'
             return '[' + index_expr + ']'
@@ -3263,16 +3282,16 @@ def _convert_parentheses_postfix(conv_info, prev_tok, tok, had_str_concat):
                     return (_strip_outer_parens_balanced(expr.strip()) == '0')
 
                 def wrap_add_term(expr: str) -> str:
-                    expr = expr.strip()
-                    return expr if is_simple_index(expr) else f'({expr})'
+                    core = _strip_outer_parens_balanced(expr.strip())
+                    return core if is_simple_index(core) else f'({core})'
 
                 terms = []
                 if not is_zero_literal(off1):
                     terms.append(wrap_add_term(off1))
                 if not is_zero_literal(off2):
-                    terms.append(f'({off2})*{ld1}')
+                    terms.append(f'{wrap_add_term(off2)} * {ld1}')
                 if not is_zero_literal(off3):
-                    terms.append(f'({off3})*{ld1}*{ld2}')
+                    terms.append(f'{wrap_add_term(off3)} * {ld1} * {ld2}')
 
                 index_expr = ' + '.join(terms) if terms else '0'
                 return '[' + index_expr + ']'
@@ -3328,6 +3347,8 @@ def convert_tokens(conv_info, tokens, commas=False, had_str_concat=None):
     prev_tok = None
     if (had_str_concat is None):
         had_str_concat = mutable(value=False)
+    if (not had_str_concat.value) and _tokens_have_str_concat(tokens):
+        had_str_concat.value = True
     from fable.tokenization import group_power
     for tok in group_power(tokens=tokens):
         if (tok.is_seq()):
@@ -4047,6 +4068,8 @@ def convert_io_loop(
     prev_tok = None
     if (had_str_concat is None):
         had_str_concat = mutable(value=False)
+    if (not had_str_concat.value) and _tokens_have_str_concat(tokens):
+        had_str_concat.value = True
 
     from fable.tokenization import group_power
     for tok in group_power(tokens=tokens):
