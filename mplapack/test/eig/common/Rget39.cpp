@@ -58,30 +58,35 @@ void Rget39(REAL &rmax, INTEGER &lmax, INTEGER &ninfo, INTEGER &knt) {
     // Set up test case parameters
     //
     REAL vm1[5];
+    vm1[1 - 1] = one;
     vm1[2 - 1] = sqrt(smlnum);
     vm1[3 - 1] = sqrt(vm1[2 - 1]);
     vm1[4 - 1] = sqrt(bignum);
     vm1[5 - 1] = sqrt(vm1[4 - 1]);
     //
     REAL vm2[5];
+    vm2[1 - 1] = one;
     vm2[2 - 1] = sqrt(smlnum);
     vm2[3 - 1] = sqrt(vm2[2 - 1]);
     vm2[4 - 1] = sqrt(bignum);
     vm2[5 - 1] = sqrt(vm2[4 - 1]);
     //
     REAL vm3[5];
+    vm3[1 - 1] = one;
     vm3[2 - 1] = sqrt(smlnum);
     vm3[3 - 1] = sqrt(vm3[2 - 1]);
     vm3[4 - 1] = sqrt(bignum);
     vm3[5 - 1] = sqrt(vm3[4 - 1]);
     //
     REAL vm4[5];
+    vm4[1 - 1] = one;
     vm4[2 - 1] = sqrt(smlnum);
     vm4[3 - 1] = sqrt(vm4[2 - 1]);
     vm4[4 - 1] = sqrt(bignum);
     vm4[5 - 1] = sqrt(vm4[4 - 1]);
     //
     REAL vm5[3];
+    vm5[1 - 1] = one;
     vm5[2 - 1] = eps;
     vm5[3 - 1] = sqrt(smlnum);
     //

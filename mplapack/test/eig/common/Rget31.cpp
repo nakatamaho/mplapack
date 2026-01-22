@@ -61,29 +61,35 @@ void Rget31(REAL &rmax, INTEGER &lmax, INTEGER *ninfo, INTEGER &knt) {
     // Set up test case parameters
     //
     REAL vsmin[4];
+    vsmin[1 - 1] = smlnum;
     vsmin[2 - 1] = eps;
     const REAL ten = 10.0;
     vsmin[3 - 1] = one / (ten * ten);
     vsmin[4 - 1] = one / eps;
     REAL vab[3];
+    vab[1 - 1] = sqrt(smlnum);
     vab[2 - 1] = one;
     vab[3 - 1] = sqrt(bignum);
     const REAL zero = 0.0;
     REAL vwr[4];
+    vwr[1 - 1] = zero;
     const REAL half = 0.5;
     vwr[2 - 1] = half;
     const REAL two = 2.0;
     vwr[3 - 1] = two;
     vwr[4 - 1] = one;
     REAL vwi[4];
+    vwi[1 - 1] = smlnum;
     vwi[2 - 1] = eps;
     vwi[3 - 1] = one;
     vwi[4 - 1] = two;
     REAL vdd[4];
+    vdd[1 - 1] = sqrt(smlnum);
     vdd[2 - 1] = one;
     vdd[3 - 1] = two;
     vdd[4 - 1] = sqrt(bignum);
     REAL vca[5];
+    vca[1 - 1] = zero;
     vca[2 - 1] = sqrt(smlnum);
     vca[3 - 1] = eps;
     vca[4 - 1] = half;
