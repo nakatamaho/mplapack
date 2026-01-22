@@ -10,24 +10,23 @@
 #include <cstdlib>
 #include <type_traits>
 #if defined(___MPLAPACK_BUILD_WITH_GMP___)
-#  if __has_include(<gmpxx.h>)
-#    include <gmpxx.h>
-#  endif
+#if __has_include(<gmpxx.h>)
+#include <gmpxx.h>
+#endif
 #endif
 #if defined(___MPLAPACK_BUILD_WITH_MPFR___)
-#  if __has_include(<mpreal.h>)
-#    include <mpreal.h>
-#  endif
+#if __has_include(<mpreal.h>)
+#include <mpreal.h>
+#endif
 #endif
 #if defined(___MPLAPACK_BUILD_WITH_QD___) || defined(___MPLAPACK_BUILD_WITH_DD___)
-#  if __has_include(<qd/dd_real.h>)
-#    include <qd/dd_real.h>
-#  endif
-#  if __has_include(<qd/qd_real.h>)
-#    include <qd/qd_real.h>
-#  endif
+#if __has_include(<qd/dd_real.h>)
+#include <qd/dd_real.h>
 #endif
-
+#if __has_include(<qd/qd_real.h>)
+#include <qd/qd_real.h>
+#endif
+#endif
 #define IOSTAT_OK 0
 #define IOSTAT_ERROR 1
 #define IOSTAT_END -1
@@ -42,18 +41,14 @@ class read_loop // TODO copy-constructor potential performance problem
     int exp_scale;
     io_modes io_mode;
     int *iostat_ptr;
-
     static inline void normalize_fortran_exponent(std::string &s) {
-        for (char &ch : s) {
+        for (char &ch: s) {
             if (ch == 'D' || ch == 'd') {
                 ch = 'E';
             }
         }
     }
-
-
-    template <class T>
-    static inline void assign_from_token_string(T &val, std::string s) {
+    template <class T> static inline void assign_from_token_string(T &val, std::string s) {
         normalize_fortran_exponent(s);
         if constexpr (std::is_constructible<T, const char *>::value) {
             val = T(s.c_str());
@@ -248,11 +243,18 @@ class read_loop // TODO copy-constructor potential performance problem
         if (io_mode == io_unformatted) {
             from_stream_unformatted(reinterpret_cast<char *>(&val), sizeof(integer_star_8));
         } else if (io_mode == io_list_directed) {
-            inp.reset();
-            throw TBXX_NOT_IMPLEMENTED();
+            // List-directed integer read (Fortran "*")
+            val = static_cast<integer_star_8>(read_star_long());
         } else {
-            inp.reset();
-            throw TBXX_NOT_IMPLEMENTED();
+            // Formatted integer read (Iw) or fallback to list-directed rules
+            std::string const &ed = next_edit_descriptor();
+            int n = static_cast<int>(ed.size());
+            if (ed[0] == 'i' && n > 1) {
+                n = utils::unsigned_integer_value(ed.data(), 1, n);
+                val = static_cast<integer_star_8>(read_fmt_long(n));
+            } else {
+                val = static_cast<integer_star_8>(read_star_long());
+            }
         }
         return *this;
     }
@@ -272,15 +274,13 @@ class read_loop // TODO copy-constructor potential performance problem
         }
         return *this;
     }
-
     // --- Selected multiprecision/back-end numeric types: read as string token, normalize, then assign ---
-//
-// Rationale: LAPACK test inputs are within binary64, but MPLAPACK back-ends may use
-// mpf_class/mpreal/_Float128/_Float64x/QD/DD. Reading as a raw token and then
-// constructing/assigning avoids heavy formatted parsing (g2.16 etc.) and handles
-// Fortran 'D' exponents by normalization to 'E'.
-//
-
+    //
+    // Rationale: LAPACK test inputs are within binary64, but MPLAPACK back-ends may use
+    // mpf_class/mpreal/_Float128/_Float64x/QD/DD. Reading as a raw token and then
+    // constructing/assigning avoids heavy formatted parsing (g2.16 etc.) and handles
+    // Fortran 'D' exponents by normalization to 'E'.
+    //
 #if defined(___MPLAPACK_BUILD_WITH_GMP___)
     read_loop &operator,(mpf_class &val) {
         std::string s = read_numeric_as_string();
@@ -289,7 +289,6 @@ class read_loop // TODO copy-constructor potential performance problem
         return *this;
     }
 #endif
-
 #if defined(___MPLAPACK_BUILD_WITH_MPFR___)
     read_loop &operator,(mpfr::mpreal &val) {
         std::string s = read_numeric_as_string();
@@ -298,7 +297,6 @@ class read_loop // TODO copy-constructor potential performance problem
         return *this;
     }
 #endif
-
 #if defined(___MPLAPACK_BUILD_WITH__FLOAT128___) && defined(__FLT128_MAX__)
     read_loop &operator,(_Float128 &val) {
         std::string s = read_numeric_as_string();
@@ -308,7 +306,6 @@ class read_loop // TODO copy-constructor potential performance problem
         return *this;
     }
 #endif
-
 #if defined(___MPLAPACK_BUILD_WITH__FLOAT64X___) && defined(__FLT64X_MAX__)
     read_loop &operator,(_Float64x &val) {
         std::string s = read_numeric_as_string();
@@ -318,7 +315,6 @@ class read_loop // TODO copy-constructor potential performance problem
         return *this;
     }
 #endif
-
 #if defined(___MPLAPACK_BUILD_WITH_DD___)
     // QD library dd_real (double-double)
     read_loop &operator,(dd_real &val) {
@@ -327,7 +323,6 @@ class read_loop // TODO copy-constructor potential performance problem
         return *this;
     }
 #endif
-
 #if defined(___MPLAPACK_BUILD_WITH_QD___)
     // QD library qd_real (quad-double)
     read_loop &operator,(qd_real &val) {
@@ -336,13 +331,10 @@ class read_loop // TODO copy-constructor potential performance problem
         return *this;
     }
 #endif
-
 // double is already handled by the existing arithmetic path.
 #if defined(___MPLAPACK_BUILD_WITH_DOUBLE___)
 // no-op
 #endif
-
-
     read_loop &operator,(std::complex<float> &val) {
         if (io_mode == io_unformatted) {
             float re, im;
@@ -576,7 +568,6 @@ class read_loop // TODO copy-constructor potential performance problem
             *iostat_ptr = IOSTAT_ERROR;
         throw io_err("Invalid character while reading floating-point value: " + utils::format_char_for_display(c));
     }
-
     // --- Helpers for reading numeric tokens as raw strings ---
     // These are used for selected multiprecision types (mpf_class, mpfr::mpreal, _Float128, ...).
     // For LAPACK test inputs, values are at most binary64, so string->ctor assignment is sufficient.
@@ -586,11 +577,13 @@ class read_loop // TODO copy-constructor potential performance problem
         // normalizing each component.
         auto trim_inplace = [](std::string &x) {
             size_t b = x.find_first_not_of(' ');
-            if (b == std::string::npos) { x.clear(); return; }
+            if (b == std::string::npos) {
+                x.clear();
+                return;
+            }
             size_t e = x.find_last_not_of(' ');
             x = x.substr(b, e - b + 1);
         };
-
         trim_inplace(s);
         if (s.size() >= 2 && s.front() == '(' && s.back() == ')') {
             std::string inside = s.substr(1, s.size() - 2);
@@ -600,16 +593,23 @@ class read_loop // TODO copy-constructor potential performance problem
                 std::string b = inside.substr(comma + 1);
                 trim_inplace(a);
                 trim_inplace(b);
-                for (char &c : a) { if (c == 'D' || c == 'd') c = 'E'; }
-                for (char &c : b) { if (c == 'D' || c == 'd') c = 'E'; }
+                for (char &c: a) {
+                    if (c == 'D' || c == 'd')
+                        c = 'E';
+                }
+                for (char &c: b) {
+                    if (c == 'D' || c == 'd')
+                        c = 'E';
+                }
                 return "(" + a + "," + b + ")";
             }
         }
-        for (char &c : s) { if (c == 'D' || c == 'd') c = 'E'; }
+        for (char &c: s) {
+            if (c == 'D' || c == 'd')
+                c = 'E';
+        }
         return s;
     }
-
-
     std::string read_star_token_string() {
         // Skip leading whitespace and commas
         int c = 0;
@@ -652,7 +652,6 @@ class read_loop // TODO copy-constructor potential performance problem
             s.push_back(static_cast<char>(c));
         }
     }
-
     std::string read_fmt_token_string(int w) {
         std::string s;
         s.reserve(static_cast<size_t>(w));
@@ -675,7 +674,6 @@ class read_loop // TODO copy-constructor potential performance problem
         size_t e = s.find_last_not_of(' ');
         return s.substr(b, e - b + 1);
     }
-
     std::string read_numeric_as_string() {
         if (io_mode == io_unformatted) {
             inp.reset();
@@ -693,7 +691,6 @@ class read_loop // TODO copy-constructor potential performance problem
         }
         return normalize_fortran_numeric_string(read_star_token_string());
     }
-
     void from_stream_unformatted(char *target, unsigned target_size) {
         for (unsigned i = 0; i < target_size; i++) {
             int ic = inp_get();
