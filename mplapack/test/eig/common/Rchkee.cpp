@@ -155,6 +155,7 @@ void program_dchkee(int argc, char const *argv[]) {
     static const char *format_9997 = "(/,/,1x,a3,':  NB =',i4,', NBMIN =',i4,', NX =',i4)";
     //
     //
+    //
     a = 0.0;
     b = 0.0;
     c = 0.0;
