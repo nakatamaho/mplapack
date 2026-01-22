@@ -308,6 +308,26 @@ def _adjust_actuals_using_signature(arg_string: str, signature, conv_info=None, 
         elif kind in ("PTR_CHAR", "PTR_CHAR_IN", "PTR_CHAR_OUT"):
             # fem::str<N> is not implicitly convertible to (const) char*.
             # For character-pointer parameters, pass the underlying buffer.
+            # CHARACTER*1 arrays are often emitted as fem::str<1> name[...].
+            # '&name' yields a pointer-to-array type, so pass name[0].elems instead.
+            m_arr = re.fullmatch(r"&\s*([A-Za-z_][A-Za-z0-9_]*)$", s)
+            if m_arr and _is_fem_str_len1_array(conv_info, m_arr.group(1)):
+                leading = part[:len(part) - len(s)]
+                name = m_arr.group(1)
+                part = leading + f"{name}[0]" + _elems_suffix_for_identifier(name)
+                new_parts.append(part)
+                continue
+
+            # '&name[idx]' where name is a CHARACTER*1 array -> name[idx].elems
+            m_arr_el = re.fullmatch(r"&\s*([A-Za-z_][A-Za-z0-9_]*)\s*\[\s*([^\]]+)\s*\]\s*$", s)
+            if m_arr_el and _is_fem_str_len1_array(conv_info, m_arr_el.group(1)):
+                leading = part[:len(part) - len(s)]
+                name = m_arr_el.group(1)
+                idx = m_arr_el.group(2).strip()
+                part = leading + f"{name}[{idx}]" + _elems_suffix_for_identifier(name)
+                new_parts.append(part)
+                continue
+
             m = re.fullmatch(r"&\s*([A-Za-z_][A-Za-z0-9_]*)$", s)
             if m and (
                 _is_fem_str_scalar(conv_info, m.group(1))
@@ -393,9 +413,26 @@ def _adjust_actuals_using_signature(arg_string: str, signature, conv_info=None, 
                     new_parts.append(part)
                     continue
 
+            # fem::str<1> CHARACTER arrays: name[idx] -> name[idx].elems
+            m_fem_arr_el = re.fullmatch(r"([A-Za-z_][A-Za-z0-9_]*)\s*\[\s*([^\]]+)\s*\]\s*$", s)
+            if m_fem_arr_el and _is_fem_str_len1_array(conv_info, m_fem_arr_el.group(1)):
+                leading = part[:len(part) - len(s)]
+                base = m_fem_arr_el.group(1)
+                idx = m_fem_arr_el.group(2).strip()
+                part = leading + f"{base}[{idx}]" + _elems_suffix_for_identifier(base)
+                new_parts.append(part)
+                continue
+
             # Bare identifier (e.g. normin) -> &normin,
             # unless it is a CHARACTER dummy argument (already a pointer),
             # or a small CHARACTER*n scalar we mapped to char[].
+            # fem::str<1> CHARACTER arrays: pass pointer to first element buffer.
+            if re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*$", s) and _is_fem_str_len1_array(conv_info, s):
+                leading = part[:len(part) - len(s)]
+                part = leading + f"{s}[0]" + _elems_suffix_for_identifier(s)
+                new_parts.append(part)
+                continue
+
             if re.match(r"[A-Za-z_][A-Za-z0-9_]*$", s):
                 # CHARACTER dummy arguments may be plain (const) char* or view types.
                 if conv_info is not None and _is_dummy_character_arg(conv_info, s):
@@ -2173,6 +2210,54 @@ def _is_fem_str_scalar(conv_info, name: str) -> bool:
     except Exception:
         pass
     return True
+
+def _is_fem_str_len1_array(conv_info, name: str) -> bool:
+    """Return True if 'name' is an array of CHARACTER*1 emitted as fem::str<1> name[...].
+
+    This is a common Fable representation for Fortran CHARACTER*1 arrays.
+    Such arrays cannot be passed to const char* by taking '&name' because that
+    yields a pointer-to-array type (e.g. fem::str<1>(*)[1]). Instead, callers
+    should pass a pointer to the first element's underlying buffer:
+        name[0].elems
+    """
+    if conv_info is None or getattr(conv_info, "fproc", None) is None:
+        return False
+    if _is_dummy_character_arg(conv_info, name):
+        return False
+    if name in small_char_identifiers:
+        return False
+    try:
+        fdecl = (
+            conv_info.fproc.fdecl_by_identifier.get(name.lower())
+            or conv_info.fproc.fdecl_by_identifier.get(name)
+        )
+    except Exception:
+        return False
+    if fdecl is None:
+        return False
+    dt = getattr(fdecl, "data_type", None)
+    dt_code = dt if isinstance(dt, str) else getattr(dt, "value", None)
+    if str(dt_code).lower() != "character":
+        return False
+    if getattr(fdecl, "dim_tokens", None) is None:
+        return False
+
+    # Default CHARACTER length is 1 if not explicitly given.
+    st = getattr(fdecl, "size_tokens", None)
+    if st is None:
+        return True
+    try:
+        if len(st) == 1 and getattr(st[0], "is_integer", None) and st[0].is_integer() and st[0].value == "1":
+            return True
+    except Exception:
+        pass
+    try:
+        size_expr = convert_tokens(conv_info=conv_info, tokens=st, commas=False).strip()
+        if size_expr == "1":
+            return True
+    except Exception:
+        pass
+    return False
 
 def _is_plain_character_pointer_dummy(conv_info, name: str) -> bool:
     """Return True if 'name' is a CHARACTER dummy argument emitted as (const) char*.
