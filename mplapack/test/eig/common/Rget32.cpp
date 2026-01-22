@@ -49,6 +49,8 @@ void Rget32(REAL &rmax, INTEGER &lmax, INTEGER &ninfo, INTEGER &knt) {
     INTEGER ldtr = 2;
     INTEGER ldb = 2;
     INTEGER ldx = 2;
+    INTEGER lditval = 2;
+    INTEGER ld2itval = 2;
     //
     // Get machine parameters
     //
@@ -155,10 +157,10 @@ void Rget32(REAL &rmax, INTEGER &lmax, INTEGER &ninfo, INTEGER &knt) {
                                 for (ib2 = 1; ib2 <= 3; ib2 = ib2 + 1) {
                                     b[0] = val[ib1 - 1];
                                     b[(2 - 1)] = -four * val[ib2 - 1];
-                                    tl[0] = itval(1, 1, itl) * val[itlscl - 1];
-                                    tl[(2 - 1)] = itval(2, 1, itl) * val[itlscl - 1];
-                                    tl[(2 - 1) * ldtl] = itval(1, 2, itl) * val[itlscl - 1];
-                                    tl[(2 - 1) + (2 - 1) * ldtl] = itval(2, 2, itl) * val[itlscl - 1];
+                                    tl[0] = itval[(itl - 1) * lditval * ld2itval] * val[itlscl - 1];
+                                    tl[(2 - 1)] = itval[(2 - 1) + 0 + (itl - 1) * lditval * ld2itval] * val[itlscl - 1];
+                                    tl[(2 - 1) * ldtl] = itval[(2 - 1) * lditval + (itl - 1) * lditval * ld2itval] * val[itlscl - 1];
+                                    tl[(2 - 1) + (2 - 1) * ldtl] = itval[(2 - 1) + (2 - 1) * lditval + (itl - 1) * lditval * ld2itval] * val[itlscl - 1];
                                     tr[0] = val[itr - 1];
                                     knt++;
                                     Rlasy2(ltranl, ltranr, isgn, n1, n2, tl, 2, tr, 2, b, 2, scale, x, 2, xnorm, info);
@@ -199,10 +201,10 @@ void Rget32(REAL &rmax, INTEGER &lmax, INTEGER &ninfo, INTEGER &knt) {
                                 for (ib2 = 1; ib2 <= 3; ib2 = ib2 + 1) {
                                     b[0] = val[ib1 - 1];
                                     b[(2 - 1) * ldb] = -two * val[ib2 - 1];
-                                    tr[0] = itval(1, 1, itr) * val[itrscl - 1];
-                                    tr[(2 - 1)] = itval(2, 1, itr) * val[itrscl - 1];
-                                    tr[(2 - 1) * ldtr] = itval(1, 2, itr) * val[itrscl - 1];
-                                    tr[(2 - 1) + (2 - 1) * ldtr] = itval(2, 2, itr) * val[itrscl - 1];
+                                    tr[0] = itval[(itr - 1) * lditval * ld2itval] * val[itrscl - 1];
+                                    tr[(2 - 1)] = itval[(2 - 1) + 0 + (itr - 1) * lditval * ld2itval] * val[itrscl - 1];
+                                    tr[(2 - 1) * ldtr] = itval[(2 - 1) * lditval + (itr - 1) * lditval * ld2itval] * val[itrscl - 1];
+                                    tr[(2 - 1) + (2 - 1) * ldtr] = itval[(2 - 1) + (2 - 1) * lditval + (itr - 1) * lditval * ld2itval] * val[itrscl - 1];
                                     tl[0] = val[itl - 1];
                                     knt++;
                                     Rlasy2(ltranl, ltranr, isgn, n1, n2, tl, 2, tr, 2, b, 2, scale, x, 2, xnorm, info);
@@ -247,14 +249,14 @@ void Rget32(REAL &rmax, INTEGER &lmax, INTEGER &ninfo, INTEGER &knt) {
                                             b[(2 - 1)] = -four * val[ib2 - 1];
                                             b[(2 - 1) * ldb] = -two * val[ib3 - 1];
                                             b[(2 - 1) + (2 - 1) * ldb] = eight * min(val[ib1 - 1], val[ib2 - 1], val[ib3 - 1]);
-                                            tr[0] = itval(1, 1, itr) * val[itrscl - 1];
-                                            tr[(2 - 1)] = itval(2, 1, itr) * val[itrscl - 1];
-                                            tr[(2 - 1) * ldtr] = itval(1, 2, itr) * val[itrscl - 1];
-                                            tr[(2 - 1) + (2 - 1) * ldtr] = itval(2, 2, itr) * val[itrscl - 1];
-                                            tl[0] = itval(1, 1, itl) * val[itlscl - 1];
-                                            tl[(2 - 1)] = itval(2, 1, itl) * val[itlscl - 1];
-                                            tl[(2 - 1) * ldtl] = itval(1, 2, itl) * val[itlscl - 1];
-                                            tl[(2 - 1) + (2 - 1) * ldtl] = itval(2, 2, itl) * val[itlscl - 1];
+                                            tr[0] = itval[(itr - 1) * lditval * ld2itval] * val[itrscl - 1];
+                                            tr[(2 - 1)] = itval[(2 - 1) + 0 + (itr - 1) * lditval * ld2itval] * val[itrscl - 1];
+                                            tr[(2 - 1) * ldtr] = itval[(2 - 1) * lditval + (itr - 1) * lditval * ld2itval] * val[itrscl - 1];
+                                            tr[(2 - 1) + (2 - 1) * ldtr] = itval[(2 - 1) + (2 - 1) * lditval + (itr - 1) * lditval * ld2itval] * val[itrscl - 1];
+                                            tl[0] = itval[(itl - 1) * lditval * ld2itval] * val[itlscl - 1];
+                                            tl[(2 - 1)] = itval[(2 - 1) + 0 + (itl - 1) * lditval * ld2itval] * val[itlscl - 1];
+                                            tl[(2 - 1) * ldtl] = itval[(2 - 1) * lditval + (itl - 1) * lditval * ld2itval] * val[itlscl - 1];
+                                            tl[(2 - 1) + (2 - 1) * ldtl] = itval[(2 - 1) + (2 - 1) * lditval + (itl - 1) * lditval * ld2itval] * val[itlscl - 1];
                                             knt++;
                                             Rlasy2(ltranl, ltranr, isgn, n1, n2, tl, 2, tr, 2, b, 2, scale, x, 2, xnorm, info);
                                             if (info != 0) {
