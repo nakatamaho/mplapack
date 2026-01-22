@@ -18,10 +18,9 @@ clang-format-19 -i -style '{
   BreakBeforeConceptDeclarations: Never,
   ReflowComments: true,
   SpacesInLineCommentPrefix: { Minimum: 1, Maximum: 1 },
-  MaxEmptyLinesToKeep: 0
   }' "$1"
 
-
+#  MaxEmptyLinesToKeep: 0
 
 
 
