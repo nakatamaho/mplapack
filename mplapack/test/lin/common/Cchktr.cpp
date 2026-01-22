@@ -357,7 +357,7 @@ void Cchktr(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                     // Check error code from Clatrs.
                     //
                     if (info != 0) {
-                        Alaerh(path, "ZLATRS", info, 0, uplo + trans + diag + fem::str_cref("N"), n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                        Alaerh(path, "ZLATRS", info, 0, uplo + trans + diag + "N", n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                     }
                     //
                     Ctrt03(uplo, trans, diag, n, 1, a, lda, scale, rwork, one, b, lda, x, lda, work, result[8 - 1]);
@@ -371,7 +371,7 @@ void Cchktr(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                     // Check error code from Clatrs.
                     //
                     if (info != 0) {
-                        Alaerh(path, "ZLATRS", info, 0, uplo + trans + diag + fem::str_cref("Y"), n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                        Alaerh(path, "ZLATRS", info, 0, uplo + trans + diag + "Y", n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                     }
                     //
                     Ctrt03(uplo, trans, diag, n, 1, a, lda, scale, rwork, one, &b[(n + 1) - 1], lda, x, lda, work, result[9 - 1]);
