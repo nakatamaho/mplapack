@@ -46,6 +46,8 @@ using fem::common;
 void Rget35(REAL &rmax, INTEGER &lmax, INTEGER &ninfo, INTEGER &knt) {
     static INTEGER idim[8] = {1, 2, 3, 4, 3, 3, 6, 4};
     static INTEGER ival[] = {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 0, 0, 0, 0, -2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 5, 1, 2, 0, 0, 0, -8, -2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 4, 0, 0, 0, 0, -5, 3, 0, 0, 0, 0, 1, 2, 1, 4, 0, 0, -3, -9, -1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 2, 3, 0, 0, 0, 0, 5, 6, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 3, -4, 0, 0, 0, 2, 5, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 0, 0, 0, 0, -2, 0, 0, 0, 0, 0, 5, 6, 3, 4, 0, 0, -1, -9, -5, 2, 0, 0, 8, 8, 8, 8, 5, 6, 9, 9, 9, 9, -7, 5, 1, 0, 0, 0, 0, 0, 1, 5, 2, 0, 0, 0, 2, -21, 5, 0, 0, 0, 1, 2, 3, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+    INTEGER ldival = 6;
+    INTEGER ld2ival = 6;
     INTEGER lda = 6;
     INTEGER ldb = 6;
     INTEGER ldc = 6;
@@ -134,7 +136,7 @@ void Rget35(REAL &rmax, INTEGER &lmax, INTEGER &ninfo, INTEGER &knt) {
                                         tnrm = zero;
                                         for (i = 1; i <= m; i = i + 1) {
                                             for (j = 1; j <= m; j = j + 1) {
-                                                a[(i - 1) + (j - 1) * lda] = ival(i, j, ima);
+                                                a[(i - 1) + (j - 1) * lda] = ival[(i - 1) + (j - 1) * ldival + (ima - 1) * ldival * ld2ival];
                                                 if (abs(i - j) <= 1) {
                                                     a[(i - 1) + (j - 1) * lda] = a[(i - 1) + (j - 1) * lda] * vm1[imlda1 - 1];
                                                     a[(i - 1) + (j - 1) * lda] = a[(i - 1) + (j - 1) * lda] * vm2[imlda2 - 1];
@@ -146,7 +148,7 @@ void Rget35(REAL &rmax, INTEGER &lmax, INTEGER &ninfo, INTEGER &knt) {
                                         }
                                         for (i = 1; i <= n; i = i + 1) {
                                             for (j = 1; j <= n; j = j + 1) {
-                                                b[(i - 1) + (j - 1) * ldb] = ival(i, j, imb);
+                                                b[(i - 1) + (j - 1) * ldb] = ival[(i - 1) + (j - 1) * ldival + (imb - 1) * ldival * ld2ival];
                                                 if (abs(i - j) <= 1) {
                                                     b[(i - 1) + (j - 1) * ldb] = b[(i - 1) + (j - 1) * ldb] * vm1[imldb1 - 1];
                                                 } else {

@@ -46,6 +46,8 @@ using fem::common;
 void Rget39(REAL &rmax, INTEGER &lmax, INTEGER &ninfo, INTEGER &knt) {
     static INTEGER idim[6] = {4, 5, 5, 5, 5, 5};
     static INTEGER ival[] = {3, 0, 0, 0, 0, 1, 1, -1, 0, 0, 3, 2, 1, 0, 0, 4, 3, 2, 2, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 2, 0, 0, 0, 3, 3, 4, 0, 0, 4, 2, 2, 3, 0, 1, 1, 1, 1, 5, 1, 0, 0, 0, 0, 2, 4, -2, 0, 0, 3, 3, 4, 0, 0, 4, 2, 2, 3, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 2, 1, -1, 0, 0, 9, 8, 1, 0, 0, 4, 9, 1, 2, -1, 2, 2, 2, 2, 2, 9, 0, 0, 0, 0, 6, 4, 0, 0, 0, 3, 2, 1, 1, 0, 5, 1, -1, 1, 0, 2, 2, 2, 2, 2, 4, 0, 0, 0, 0, 2, 2, 0, 0, 0, 1, 4, 4, 0, 0, 2, 4, 2, 2, -1, 2, 2, 2, 2, 2};
+    INTEGER ldival = 5;
+    INTEGER ld2ival = 5;
     //
     // Get machine parameters
     //
@@ -138,7 +140,7 @@ void Rget39(REAL &rmax, INTEGER &lmax, INTEGER &ninfo, INTEGER &knt) {
                             n = idim[ndim - 1];
                             for (i = 1; i <= n; i = i + 1) {
                                 for (j = 1; j <= n; j = j + 1) {
-                                    t[(i - 1) + (j - 1) * ldt] = castREAL(ival(i, j, ndim)) * vm1[ivm1 - 1];
+                                    t[(i - 1) + (j - 1) * ldt] = castREAL(ival[(i - 1) + (j - 1) * ldival + (ndim - 1) * ldival * ld2ival]) * vm1[ivm1 - 1];
                                     if (i >= j) {
                                         t[(i - 1) + (j - 1) * ldt] = t[(i - 1) + (j - 1) * ldt] * vm5[ivm5 - 1];
                                     }
