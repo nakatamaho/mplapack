@@ -181,7 +181,7 @@ void Rchkec(REAL const thresh, bool const tsterr, INTEGER const nin, INTEGER con
     //
     REAL rtgexc = 0.0;
     INTEGER ltgexc = 0;
-    INTEGER ntgexc = 0;
+    INTEGER ntgexc[3]; //bug, fixed in lapack 3.12.1 correctly (dget40 is also correcte) to ninfo(2)
     INTEGER ktgexc = 0;
     Rget40(rtgexc, ltgexc, ntgexc, ktgexc, nin);
     if (rtgexc > thresh) {
