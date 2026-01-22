@@ -1,24 +1,67 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Resolve repo root (works when executed inside a git working tree)
-repo_root="$(git rev-parse --show-toplevel 2>/dev/null || true)"
+# Resolve repo root (mplapack git toplevel)
+repo_root="${FABLE_REPO_ROOT:-$(git rev-parse --show-toplevel 2>/dev/null || true)}"
 if [[ -z "${repo_root}" ]]; then
-  echo "Error: not inside a git repository. cd into mplapack repo (or set FABLE_REPO_ROOT)." >&2
+  echo "Error: not inside a git repository. cd into mplapack repo or set FABLE_REPO_ROOT." >&2
   exit 1
 fi
 
-# If fable_org is under repo_root/fable_org, PYTHONPATH must include repo_root
-export PYTHONPATH="${repo_root}:${PYTHONPATH:-}"
+# Locate fable_org (prefer explicit env, then common layouts)
+candidates=()
+if [[ -n "${FABLE_ORG_ROOT:-}" ]]; then
+  candidates+=("${FABLE_ORG_ROOT}")
+fi
+candidates+=(
+  "${repo_root}/fable_org"
+  "${repo_root}/../fable_org"
+  "${HOME}/mplapack/fable_org"
+)
+
+fable_org_root=""
+for d in "${candidates[@]}"; do
+  if [[ -f "${d}/__init__.py" ]]; then
+    fable_org_root="${d}"
+    break
+  fi
+done
+
+if [[ -z "${fable_org_root}" ]]; then
+  echo "Error: fable_org not found. Tried:" >&2
+  for d in "${candidates[@]}"; do
+    echo "  - ${d}" >&2
+  done
+  echo "Set FABLE_ORG_ROOT=/path/to/fable_org (directory containing __init__.py)." >&2
+  exit 1
+fi
+
+# Make 'fable_org' importable: PYTHONPATH must include the parent directory
+fable_org_parent="$(cd "$(dirname "${fable_org_root}")" && pwd -P)"
+export PYTHONPATH="${fable_org_parent}:${PYTHONPATH:-}"
 
 py="${PYTHON:-python3}"
 
 if [[ $# -lt 1 ]]; then
-  echo "Usage: fable-cout <input_fortran_file> [-- extra args to cout]" >&2
+  echo "Usage: fable_org-cout <input_fortran_file> [-- extra args to cout]" >&2
   exit 2
 fi
 
 input="$1"
 shift
 
-exec "${py}" -m fable_org.command_line.cout "${input}" "$@"
+# Provide runtime alias: 'fable' -> 'fable_org', then run the module
+exec "${py}" - "${input}" "$@" <<'PY'
+import importlib
+import runpy
+import sys
+
+# Keep argv as: [module_name, ...original args...]
+sys.argv[0] = "fable_org.command_line.cout"
+
+fable_org = importlib.import_module("fable_org")
+# Alias so "import fable.*" inside fable_org works.
+sys.modules["fable"] = fable_org
+
+runpy.run_module("fable_org.command_line.cout", run_name="__main__")
+PY
