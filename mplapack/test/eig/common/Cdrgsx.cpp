@@ -47,11 +47,6 @@ void Cdrgsx(INTEGER const nsize, INTEGER const ncmax, REAL const thresh, INTEGER
     common cmn;
     common_read read(cmn);
     common_write write(cmn);
-    int &m = cmn.m;
-    int &n = cmn.n;
-    int &mplusn = cmn.mplusn;
-    int &k = cmn.k;
-    bool &fs = cmn.fs;
     COMPLEX x = 0.0;
     const REAL zero = 0.0;
     INTEGER minwrk = 0;

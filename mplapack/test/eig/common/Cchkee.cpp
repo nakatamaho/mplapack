@@ -191,7 +191,7 @@ void program_zchkee(int argc, char const *argv[]) {
     dc = 0.0;
     s1 = dsecnd();
     fatal = false;
-    cmn.nunit = nout;
+    nunit = nout;
 //
 // Return to here to read multiple sets of data
 //
