@@ -57,3 +57,7 @@ patch  < ~/mplapack/fable/3.9.1/lapack/patch-Rslect.cpp
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Rckcsd.cpp
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Rlatb9.cpp
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Rchkec.cpp
+patch  < ~/mplapack/fable/3.9.1/lapack/patch-Cdrves.cpp
+patch  < ~/mplapack/fable/3.9.1/lapack/patch-Cget24.cpp
+patch  < ~/mplapack/fable/3.9.1/lapack/patch-Rdrves.cpp
+patch  < ~/mplapack/fable/3.9.1/lapack/patch-Rget24.cpp
