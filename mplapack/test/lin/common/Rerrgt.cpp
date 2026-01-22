@@ -52,12 +52,16 @@ void Rerrgt(fem::str_cref path, INTEGER const nunit) {
     fem::str<2> c2 = path(2, 3);
     const INTEGER nmax = 2;
     REAL d[nmax];
+    d[1 - 1] = 1.0;
     d[2 - 1] = 2.0;
     REAL df[nmax];
+    df[1 - 1] = 1.0;
     df[2 - 1] = 2.0;
     REAL e[nmax];
+    e[1 - 1] = 3.0;
     e[2 - 1] = 4.0;
     REAL ef[nmax];
+    ef[1 - 1] = 3.0;
     ef[2 - 1] = 4.0;
     REAL anorm = 1.0;
     ok = true;

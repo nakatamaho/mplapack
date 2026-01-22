@@ -52,7 +52,9 @@ void Cerrrfp(INTEGER const nunit) {
     nout = nunit;
     ok = true;
     COMPLEX a[1 * 1];
+    a[0] = COMPLEX(1.0, 1.0);
     COMPLEX b[1 * 1];
+    b[0] = COMPLEX(1.0, 1.0);
     REAL alpha = 1.0;
     COMPLEX calpha = COMPLEX(1.0, 1.0);
     REAL beta = 1.0;

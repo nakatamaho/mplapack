@@ -52,7 +52,9 @@ void Rerrrfp(INTEGER const nunit) {
     nout = nunit;
     ok = true;
     REAL a[1 * 1];
+    a[0] = 1.0;
     REAL b[1 * 1];
+    b[0] = 1.0;
     REAL alpha = 1.0;
     REAL beta = 1.0;
     //

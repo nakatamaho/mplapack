@@ -53,6 +53,7 @@ void Rerrqp(fem::str_cref path, INTEGER const nunit) {
     const INTEGER nmax = 3;
     INTEGER lw = 3 * nmax + 1;
     REAL a[nmax * nmax];
+    a[0] = 1.0;
     a[(2 - 1) * nmax] = 2.0;
     a[(2 - 1) + (2 - 1) * nmax] = 3.0;
     a[(2 - 1)] = 4.0;

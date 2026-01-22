@@ -51,10 +51,12 @@ void Cerrtz(fem::str_cref path, INTEGER const nunit) {
     fem::str<2> c2 = path(2, 3);
     const INTEGER nmax = 2;
     COMPLEX a[nmax * nmax];
+    a[0] = COMPLEX(1.0, -1.0);
     a[(2 - 1) * nmax] = COMPLEX(2.0, -2.0);
     a[(2 - 1) + (2 - 1) * nmax] = COMPLEX(3.0, -3.0);
     a[(2 - 1)] = COMPLEX(4.0, -4.0);
     COMPLEX w[nmax];
+    w[1 - 1] = COMPLEX(0.0, 0.0);
     w[2 - 1] = COMPLEX(0.0, 0.0);
     ok = true;
     //

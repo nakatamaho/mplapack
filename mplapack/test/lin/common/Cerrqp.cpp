@@ -52,6 +52,7 @@ void Cerrqp(fem::str_cref path, INTEGER const nunit) {
     const INTEGER nmax = 3;
     INTEGER lw = nmax + 1;
     COMPLEX a[nmax * nmax];
+    a[0] = COMPLEX(1.0, -1.0);
     a[(2 - 1) * nmax] = COMPLEX(2.0, -2.0);
     a[(2 - 1) + (2 - 1) * nmax] = COMPLEX(3.0, -3.0);
     a[(2 - 1)] = COMPLEX(4.0, -4.0);

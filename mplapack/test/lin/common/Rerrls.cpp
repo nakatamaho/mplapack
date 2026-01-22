@@ -52,6 +52,7 @@ void Rerrls(fem::str_cref path, INTEGER const nunit) {
     fem::str<2> c2 = path(2, 3);
     const INTEGER nmax = 2;
     REAL a[nmax * nmax];
+    a[0] = 1.0;
     a[(2 - 1) * nmax] = 2.0;
     a[(2 - 1) + (2 - 1) * nmax] = 3.0;
     a[(2 - 1)] = 4.0;

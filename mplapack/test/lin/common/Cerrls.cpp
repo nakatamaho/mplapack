@@ -51,6 +51,7 @@ void Cerrls(fem::str_cref path, INTEGER const nunit) {
     fem::str<2> c2 = path(2, 3);
     const INTEGER nmax = 2;
     COMPLEX a[nmax * nmax];
+    a[0] = COMPLEX(1.0, 0.0);
     a[(2 - 1) * nmax] = COMPLEX(2.0, 0.0);
     a[(2 - 1) + (2 - 1) * nmax] = COMPLEX(3.0, 0.0);
     a[(2 - 1)] = COMPLEX(4.0, 0.0);
