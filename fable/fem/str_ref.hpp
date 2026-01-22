@@ -79,5 +79,18 @@ struct str_ref : str_cref {
     template <int StrLen> void operator=(str<StrLen> const &rhs);
     str_ref operator()(int first, int last) const { return str_ref(elems() + first - 1, last - first + 1); }
 };
+// Accept string literal (or const char*) on the left side of fem string concatenation.
+// This prevents ambiguous overload resolution with other libraries (e.g., mpfrc++).
+  template <std::size_t N>
+inline fem::str_addends operator+(char const (&lhs)[N], fem::str_cref const &rhs) {
+    // N includes the trailing '\0', so the string length is N-1.
+    return fem::str_addends(fem::str_cref(lhs, static_cast<int>(N - 1)), rhs);
+}
+
+// Optional symmetry (not strictly required, but nice to have)
+  template <std::size_t N>
+inline fem::str_addends operator+(fem::str_cref const &lhs, char const (&rhs)[N]) {
+return fem::str_addends(lhs, fem::str_cref(rhs, static_cast<int>(N - 1)));
+}
 } // namespace fem
 #endif // GUARD

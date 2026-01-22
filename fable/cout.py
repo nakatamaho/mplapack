@@ -3286,32 +3286,6 @@ def _convert_parentheses_postfix(conv_info, prev_tok, tok, had_str_concat):
 
     return op + inner + ')'
 
-def _tokens_have_str_concat(tokens):
-    """Return True if the token tree contains the Fortran string concat operator '//'.
-
-    The token-to-C++ conversion is single-pass. Without a pre-scan, the leading
-    string literal in an expression like
-
-        'A' // UPLO // ')'
-
-    would be emitted as a plain C string literal before the first '//' token is
-    seen. That can trigger ambiguous overload resolution when other libraries
-    provide competing operator+ overloads (e.g. mpfrc++).
-    """
-    for tok in tokens:
-        try:
-            if tok.is_op_with(value="//"):
-                return True
-        except Exception:
-            pass
-        try:
-            if tok.is_seq() or tok.is_parentheses() or tok.is_power() or tok.is_implied_do():
-                if _tokens_have_str_concat(tok.value):
-                    return True
-        except Exception:
-            pass
-    return False
-
 def convert_tokens(conv_info, tokens, commas=False, had_str_concat=None):
     result = []
     rapp = result.append
@@ -4037,10 +4011,6 @@ def convert_io_loop(
     prev_tok = None
     if (had_str_concat is None):
         had_str_concat = mutable(value=False)
-    # Pre-scan so that *leading* string literals in a concatenation expression
-    # are also wrapped with fem::str_cref(...).
-    if (not had_str_concat.value and _tokens_have_str_concat(tokens)):
-        had_str_concat.value = True
 
     from fable.tokenization import group_power
     for tok in group_power(tokens=tokens):
