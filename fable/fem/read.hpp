@@ -1,26 +1,37 @@
 #ifndef FEM_READ_HPP
 #define FEM_READ_HPP
-#include <stdexcept>
 #include <fem/common.hpp>
 #include <fem/format.hpp>
 #include <fem/star.hpp>
 #include <fem/str_arr_ref.hpp>
 #include <fem/utils/misc.hpp>
 #include <fem/utils/string_to_double_fmt.hpp>
-#include <complex>
+#include <string>
+#include <cstdlib>
 #include <type_traits>
+#if defined(___MPLAPACK_BUILD_WITH_GMP___)
+#  if __has_include(<gmpxx.h>)
+#    include <gmpxx.h>
+#  endif
+#endif
+#if defined(___MPLAPACK_BUILD_WITH_MPFR___)
+#  if __has_include(<mpreal.h>)
+#    include <mpreal.h>
+#  endif
+#endif
+#if defined(___MPLAPACK_BUILD_WITH_QD___) || defined(___MPLAPACK_BUILD_WITH_DD___)
+#  if __has_include(<qd/dd_real.h>)
+#    include <qd/dd_real.h>
+#  endif
+#  if __has_include(<qd/qd_real.h>)
+#    include <qd/qd_real.h>
+#  endif
+#endif
+
 #define IOSTAT_OK 0
 #define IOSTAT_ERROR 1
 #define IOSTAT_END -1
 namespace fem {
-namespace detail {
-    template <typename T> struct is_std_complex : std::false_type {};
-    template <typename U> struct is_std_complex<std::complex<U>> : std::true_type {};
-    template <typename T> inline void assign_from_double(T &dst, double src, std::true_type) { dst = src; }
-    template <typename T> inline void assign_from_double(T &dst, double src, std::false_type) { dst = T(src); }
-    template <typename T> inline void assign_from_double(T &dst, double src) { assign_from_double(dst, src, std::is_assignable<T &, double>{}); }
-    template <typename T> struct read_via_double : std::integral_constant<bool, !std::is_arithmetic<T>::value && !is_std_complex<T>::value && (std::is_assignable<T &, double>::value || std::is_constructible<T, double>::value)> {};
-} // namespace detail
 class read_loop // TODO copy-constructor potential performance problem
 {
   private:
@@ -32,22 +43,37 @@ class read_loop // TODO copy-constructor potential performance problem
     io_modes io_mode;
     int *iostat_ptr;
 
+    static inline void normalize_fortran_exponent(std::string &s) {
+        for (char &ch : s) {
+            if (ch == 'D' || ch == 'd') {
+                ch = 'E';
+            }
+        }
+    }
+
+
+    template <class T>
+    static inline void assign_from_token_string(T &val, std::string s) {
+        normalize_fortran_exponent(s);
+        if constexpr (std::is_constructible<T, const char *>::value) {
+            val = T(s.c_str());
+        } else if constexpr (std::is_assignable<T &, double>::value) {
+            long double ld = std::strtold(s.c_str(), nullptr);
+            val = static_cast<double>(ld);
+        } else if constexpr (std::is_constructible<T, double>::value) {
+            long double ld = std::strtold(s.c_str(), nullptr);
+            val = T(static_cast<double>(ld));
+        } else {
+            // As a last resort, try long double via double conversion.
+            long double ld = std::strtold(s.c_str(), nullptr);
+            val = T(static_cast<double>(ld));
+        }
+    }
+
   public:
-    read_loop(common &cmn, int const &unit, unformatted_type const &) : inp(cmn.io.simple_istream(unit)), first_inp_get(true), blanks_zero(false), exp_scale(0), io_mode(io_unformatted), iostat_ptr(0) {
-        if (!inp) {
-            throw std::runtime_error("I/O unit is not connected: unit=" + std::to_string(unit));
-        }
-    }
-    read_loop(common &cmn, int const &unit, star_type const &) : inp(cmn.io.simple_istream(unit)), first_inp_get(true), blanks_zero(false), exp_scale(0), io_mode(io_list_directed), iostat_ptr(0) {
-        if (!inp) {
-            throw std::runtime_error("I/O unit is not connected: unit=" + std::to_string(unit));
-        }
-    }
-    read_loop(common &cmn, int const &unit, str_cref fmt) : inp(cmn.io.simple_istream(unit)), first_inp_get(true), fmt_loop(fmt), blanks_zero(false), exp_scale(0), io_mode(io_formatted), iostat_ptr(0) {
-        if (!inp) {
-            throw std::runtime_error("I/O unit is not connected: unit=" + std::to_string(unit));
-        }
-    }
+    read_loop(common &cmn, int const &unit, unformatted_type const &) : inp(cmn.io.simple_istream(unit)), first_inp_get(true), blanks_zero(false), exp_scale(0), io_mode(io_unformatted), iostat_ptr(0) {}
+    read_loop(common &cmn, int const &unit, star_type const &) : inp(cmn.io.simple_istream(unit)), first_inp_get(true), blanks_zero(false), exp_scale(0), io_mode(io_list_directed), iostat_ptr(0) {}
+    read_loop(common &cmn, int const &unit, str_cref fmt) : inp(cmn.io.simple_istream(unit)), first_inp_get(true), fmt_loop(fmt), blanks_zero(false), exp_scale(0), io_mode(io_formatted), iostat_ptr(0) {}
     read_loop(str_cref const &internal_file, star_type const &) : inp(utils::slick_ptr<utils::simple_istream>(new utils::simple_istream_from_char_ptr_and_size(internal_file.elems(), internal_file.len()))), first_inp_get(true), blanks_zero(false), exp_scale(0), io_mode(io_list_directed), iostat_ptr(0) {}
     read_loop(str_cref const &internal_file, str_cref fmt) : inp(utils::slick_ptr<utils::simple_istream>(new utils::simple_istream_from_char_ptr_and_size(internal_file.elems(), internal_file.len()))), first_inp_get(true), fmt_loop(fmt), blanks_zero(false), exp_scale(0), io_mode(io_formatted), iostat_ptr(0) {}
     read_loop &rec(int const &) {
@@ -223,16 +249,10 @@ class read_loop // TODO copy-constructor potential performance problem
             from_stream_unformatted(reinterpret_cast<char *>(&val), sizeof(integer_star_8));
         } else if (io_mode == io_list_directed) {
             inp.reset();
-            val = static_cast<integer_star_8>(read_star_long());
+            throw TBXX_NOT_IMPLEMENTED();
         } else {
-            std::string const &ed = next_edit_descriptor();
-            int n = ed.size();
-            if (ed[0] == 'i' && n > 1) {
-                n = utils::unsigned_integer_value(ed.data(), 1, n);
-                val = static_cast<integer_star_8>(read_fmt_long(n));
-            } else {
-                val = static_cast<integer_star_8>(read_star_long());
-            }
+            inp.reset();
+            throw TBXX_NOT_IMPLEMENTED();
         }
         return *this;
     }
@@ -252,19 +272,77 @@ class read_loop // TODO copy-constructor potential performance problem
         }
         return *this;
     }
-    template <typename T> typename std::enable_if<detail::read_via_double<T>::value, read_loop &>::type operator,(T &val) {
-        // Read user-defined real types (e.g. multiprecision REAL) via double.
-        // This intentionally loses precision but keeps the generated code simple.
-        if (io_mode == io_unformatted) {
-            double tmp;
-            from_stream_unformatted(reinterpret_cast<char *>(&tmp), sizeof(double));
-            detail::assign_from_double(val, tmp);
-        } else {
-            double tmp = (io_mode == io_formatted ? read_fmt_double() : read_star_double());
-            detail::assign_from_double(val, tmp);
-        }
+
+    // --- Selected multiprecision/back-end numeric types: read as string token, normalize, then assign ---
+//
+// Rationale: LAPACK test inputs are within binary64, but MPLAPACK back-ends may use
+// mpf_class/mpreal/_Float128/_Float64x/QD/DD. Reading as a raw token and then
+// constructing/assigning avoids heavy formatted parsing (g2.16 etc.) and handles
+// Fortran 'D' exponents by normalization to 'E'.
+//
+
+#if defined(___MPLAPACK_BUILD_WITH_GMP___)
+    read_loop &operator,(mpf_class &val) {
+        std::string s = read_numeric_as_string();
+        normalize_fortran_exponent(s);
+        val = mpf_class(s.c_str());
         return *this;
     }
+#endif
+
+#if defined(___MPLAPACK_BUILD_WITH_MPFR___)
+    read_loop &operator,(mpfr::mpreal &val) {
+        std::string s = read_numeric_as_string();
+        normalize_fortran_exponent(s);
+        val = mpfr::mpreal(s.c_str());
+        return *this;
+    }
+#endif
+
+#if defined(___MPLAPACK_BUILD_WITH__FLOAT128___) && defined(__FLT128_MAX__)
+    read_loop &operator,(_Float128 &val) {
+        std::string s = read_numeric_as_string();
+        normalize_fortran_exponent(s);
+        long double ld = std::strtold(s.c_str(), nullptr);
+        val = static_cast<_Float128>(ld);
+        return *this;
+    }
+#endif
+
+#if defined(___MPLAPACK_BUILD_WITH__FLOAT64X___) && defined(__FLT64X_MAX__)
+    read_loop &operator,(_Float64x &val) {
+        std::string s = read_numeric_as_string();
+        normalize_fortran_exponent(s);
+        long double ld = std::strtold(s.c_str(), nullptr);
+        val = static_cast<_Float64x>(ld);
+        return *this;
+    }
+#endif
+
+#if defined(___MPLAPACK_BUILD_WITH_DD___)
+    // QD library dd_real (double-double)
+    read_loop &operator,(dd_real &val) {
+        std::string s = read_numeric_as_string();
+        assign_from_token_string(val, s);
+        return *this;
+    }
+#endif
+
+#if defined(___MPLAPACK_BUILD_WITH_QD___)
+    // QD library qd_real (quad-double)
+    read_loop &operator,(qd_real &val) {
+        std::string s = read_numeric_as_string();
+        assign_from_token_string(val, s);
+        return *this;
+    }
+#endif
+
+// double is already handled by the existing arithmetic path.
+#if defined(___MPLAPACK_BUILD_WITH_DOUBLE___)
+// no-op
+#endif
+
+
     read_loop &operator,(std::complex<float> &val) {
         if (io_mode == io_unformatted) {
             float re, im;
@@ -498,6 +576,124 @@ class read_loop // TODO copy-constructor potential performance problem
             *iostat_ptr = IOSTAT_ERROR;
         throw io_err("Invalid character while reading floating-point value: " + utils::format_char_for_display(c));
     }
+
+    // --- Helpers for reading numeric tokens as raw strings ---
+    // These are used for selected multiprecision types (mpf_class, mpfr::mpreal, _Float128, ...).
+    // For LAPACK test inputs, values are at most binary64, so string->ctor assignment is sufficient.
+    static std::string normalize_fortran_numeric_string(std::string s) {
+        // Convert Fortran 'D' exponent to 'E' (e.g., 1.0D+00 -> 1.0E+00).
+        // Also supports complex literals like "(-1.0D+00, 9.0D+00)" by
+        // normalizing each component.
+        auto trim_inplace = [](std::string &x) {
+            size_t b = x.find_first_not_of(' ');
+            if (b == std::string::npos) { x.clear(); return; }
+            size_t e = x.find_last_not_of(' ');
+            x = x.substr(b, e - b + 1);
+        };
+
+        trim_inplace(s);
+        if (s.size() >= 2 && s.front() == '(' && s.back() == ')') {
+            std::string inside = s.substr(1, s.size() - 2);
+            size_t comma = inside.find(',');
+            if (comma != std::string::npos) {
+                std::string a = inside.substr(0, comma);
+                std::string b = inside.substr(comma + 1);
+                trim_inplace(a);
+                trim_inplace(b);
+                for (char &c : a) { if (c == 'D' || c == 'd') c = 'E'; }
+                for (char &c : b) { if (c == 'D' || c == 'd') c = 'E'; }
+                return "(" + a + "," + b + ")";
+            }
+        }
+        for (char &c : s) { if (c == 'D' || c == 'd') c = 'E'; }
+        return s;
+    }
+
+
+    std::string read_star_token_string() {
+        // Skip leading whitespace and commas
+        int c = 0;
+        while (true) {
+            c = inp_get();
+            if (utils::is_stream_end(c)) {
+                inp.reset();
+                if (this->iostat_ptr != 0) {
+                    *iostat_ptr = IOSTAT_END;
+                }
+                throw read_end("End of input while reading token");
+            }
+            if (utils::is_end_of_line(c)) {
+                // Empty token at end-of-line
+                inp->backup();
+                inp.reset();
+                if (this->iostat_ptr != 0) {
+                    *iostat_ptr = IOSTAT_END;
+                }
+                throw read_end("End of line while reading token");
+            }
+            if (!utils::is_whitespace(c) && c != ',') {
+                break;
+            }
+        }
+        std::string s;
+        s.push_back(static_cast<char>(c));
+        while (true) {
+            c = inp_get();
+            if (utils::is_stream_end(c) || utils::is_whitespace(c) || c == ',') {
+                if (utils::is_end_of_line(c)) {
+                    inp->backup();
+                }
+                return s;
+            }
+            if (utils::is_end_of_line(c)) {
+                inp->backup();
+                return s;
+            }
+            s.push_back(static_cast<char>(c));
+        }
+    }
+
+    std::string read_fmt_token_string(int w) {
+        std::string s;
+        s.reserve(static_cast<size_t>(w));
+        for (int i = 0; i < w; i++) {
+            int c = inp_get();
+            if (utils::is_stream_end(c)) {
+                break;
+            }
+            if (utils::is_end_of_line(c)) {
+                inp->backup();
+                break;
+            }
+            s.push_back(static_cast<char>(c));
+        }
+        // Trim spaces on both ends
+        size_t b = s.find_first_not_of(' ');
+        if (b == std::string::npos) {
+            return std::string();
+        }
+        size_t e = s.find_last_not_of(' ');
+        return s.substr(b, e - b + 1);
+    }
+
+    std::string read_numeric_as_string() {
+        if (io_mode == io_unformatted) {
+            inp.reset();
+            throw TBXX_NOT_IMPLEMENTED();
+        }
+        if (io_mode == io_formatted) {
+            std::string const &ed = next_edit_descriptor();
+            int n = static_cast<int>(ed.size());
+            if (n >= 2 && std::strchr("defg", ed[0]) != 0) {
+                int iw = utils::unsigned_integer_scan(ed.data(), 1, ed.size());
+                int w = utils::unsigned_integer_value(ed.data(), 1, iw);
+                return normalize_fortran_numeric_string(read_fmt_token_string(w));
+            }
+            // Fallback to list-directed tokenization.
+        }
+        return normalize_fortran_numeric_string(read_star_token_string());
+    }
+
     void from_stream_unformatted(char *target, unsigned target_size) {
         for (unsigned i = 0; i < target_size; i++) {
             int ic = inp_get();
