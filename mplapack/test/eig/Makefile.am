@@ -291,7 +291,8 @@ common/Rdrgsx.cpp \
 common/Alareq.cpp \
 common/Alarqg.cpp \
 common/iMlaenv.cpp \
-common/xlaenv.cpp 
+common/Chkxer.cpp \
+common/Mxlaenv.cpp
 
 install-data-hook:
 if IS_MACOS

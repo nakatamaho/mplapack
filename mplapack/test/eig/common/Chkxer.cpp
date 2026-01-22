@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025
+ * Copyright (c) 2021
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,13 +26,6 @@
  *
  */
 
-// Derived from LAPACK routine XLAENV.
-// Original LAPACK authors:
-//   Univ. of Tennessee
-//   Univ. of California Berkeley
-//   Univ. of Colorado Denver
-//   NAG Ltd.
-
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -43,33 +36,17 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#define __MPLAPACK_XLAENV__
-#include <mplapack_debug.h>
-
-void xlaenv(INTEGER const &ispec, INTEGER const &nvalue) {
-    // COMMON claenv
-    //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Arrays in Common ..
-    //     ..
-    //     .. Common blocks ..
-    //     ..
-    //     .. Save statement ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    if (ispec >= 1 && ispec <= 16) {
-        iparms[ispec - 1] = nvalue;
+void Chkxer(fem::str_cref srnamt, INTEGER const infot, INTEGER const nout, bool &lerr, bool &ok) {
+    common cmn;
+    common_write write(cmn);
+    if (!lerr) {
+        write(nout, "(' *** Illegal value of parameter number ',i2,' not detected by ',a6,"
+                    "' ***')"),
+            infot, srnamt;
+        ok = false;
     }
+    lerr = false;
     //
-    // End of xlaenv
+    // End of Chkxer
     //
 }
