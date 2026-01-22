@@ -989,7 +989,7 @@ def _format_decimal_float_literal(tv: str, *, is_double_precision: bool) -> str:
         out += '.0'
     return out
 
-def convert_token(vmap, leading, tok, had_str_concat=None):
+def convert_token(vmap, leading, tok, had_str_concat=None, prev_operand_is_string=False):
     tv = tok.value
     if tok.is_identifier():
         # Apply vmap first (Fortran name -> C++ name or other mapped names)
@@ -1054,10 +1054,11 @@ def convert_token(vmap, leading, tok, had_str_concat=None):
         s = '"' + escape_string_literal(tok.value) + '"'
         if (had_str_concat is None or not had_str_concat.value):
             return s
-        # In a concatenation chain, wrap only the leading literal so that the first '+'
-        # has a class-type operand. Subsequent literals can remain as plain C++ string
-        # literals (requires fem operator+ overloads for (str_cref + char[]) etc.).
-        if (leading):
+        # In a concatenation chain, keep string literals as raw "..." unless the
+        # previous operand was also a string literal. This avoids invalid C++ like
+        # "A" + "B" while keeping generated code clean when fem provides
+        # operator+ overloads for (char[] + fem::str_cref).
+        if (prev_operand_is_string):
             return "fem::str_cref(%s)" % s
         return s
     if (tok.is_logical()):
@@ -3345,6 +3346,7 @@ def convert_tokens(conv_info, tokens, commas=False, had_str_concat=None):
     result = []
     rapp = result.append
     prev_tok = None
+    prev_operand_is_string = False
     if (had_str_concat is None):
         had_str_concat = mutable(value=False)
     if (not had_str_concat.value) and _tokens_have_str_concat(tokens):
@@ -3377,8 +3379,15 @@ def convert_tokens(conv_info, tokens, commas=False, had_str_concat=None):
                 vmap=conv_info.vmap,
                 leading=(len(result) == 0),
                 tok=tok,
-                had_str_concat=had_str_concat))
+                had_str_concat=had_str_concat,
+                prev_operand_is_string=prev_operand_is_string))
         prev_tok = tok
+        if (tok.is_op()):
+            pass
+        elif (tok.is_string()):
+            prev_operand_is_string = True
+        else:
+            prev_operand_is_string = False
 
     # Build base string
     if (commas):
@@ -4066,6 +4075,7 @@ def convert_io_loop(
     else:
         owning_cbuf = False
     prev_tok = None
+    prev_operand_is_string = False
     if (had_str_concat is None):
         had_str_concat = mutable(value=False)
     if (not had_str_concat.value) and _tokens_have_str_concat(tokens):
@@ -4112,8 +4122,15 @@ def convert_io_loop(
                 vmap=conv_info.vmap,
                 leading=cbuf.leading,
                 tok=tok,
-                had_str_concat=had_str_concat))
+                had_str_concat=had_str_concat,
+                prev_operand_is_string=prev_operand_is_string))
         prev_tok = tok
+        if (tok.is_op()):
+            pass
+        elif (tok.is_string()):
+            prev_operand_is_string = True
+        else:
+            prev_operand_is_string = False
     if (owning_cbuf):
         cbuf.flush()
 
