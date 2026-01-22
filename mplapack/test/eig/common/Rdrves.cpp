@@ -104,7 +104,7 @@ void Rdrves(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     ntestt = 0;
     ntestf = 0;
     info = 0;
-    cmn.selopt = 0;
+    selopt = 0;
     //
     // Important constants
     //

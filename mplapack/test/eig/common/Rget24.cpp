@@ -46,10 +46,6 @@ using fem::common;
 void Rget24(bool const comp, INTEGER const jtype, REAL const thresh, INTEGER *iseed, INTEGER const nounit, INTEGER const n, REAL *a, INTEGER const lda, REAL *h, REAL *ht, REAL *wr, REAL *wi, REAL *wrt, REAL *wit, REAL *wrtmp, REAL *witmp, REAL *vs, INTEGER const ldvs, REAL *vs1, REAL const rcdein, REAL const rcdvin, INTEGER const nslct, INTEGER *islct, REAL *result, REAL *work, INTEGER const lwork, INTEGER *iwork, bool *bwork, INTEGER &info) {
     common cmn;
     common_write write(cmn);
-    int &selopt = cmn.selopt;
-    arr_ref<bool> selval(cmn.selval, dimension(20));
-    arr_ref<double> selwr(cmn.selwr, dimension(20));
-    arr_ref<double> selwi(cmn.selwi, dimension(20));
     const REAL zero = 0.0;
     INTEGER i = 0;
     const REAL one = 1.0;
@@ -554,7 +550,7 @@ statement_250:
         // the logical function Rslect selects the eigenvalues specified
         // by NSLCT and ISLCT.
         //
-        cmn.seldim = n;
+        seldim = n;
         selopt = 1;
         eps = max(ulp, epsin);
         for (i = 1; i <= n; i = i + 1) {
