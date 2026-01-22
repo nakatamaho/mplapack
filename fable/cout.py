@@ -2842,6 +2842,8 @@ def _convert_parentheses_postfix(conv_info, prev_tok, tok, had_str_concat):
     # Detect array reference: a(i) or a(i,j)
     is_array_ref = False
     fdecl = None
+    data_rank = None
+    data_dims_ints = None
 
     if (prev_tok is not None
             and getattr(prev_tok, 'is_identifier', lambda: False)()
@@ -2857,6 +2859,25 @@ def _convert_parentheses_postfix(conv_info, prev_tok, tok, had_str_concat):
             and not fdecl.is_user_defined_callable()):
         # Non-callable with dimensions -> array reference
         is_array_ref = True
+
+    # Fallback: arrays hoisted from DATA may be emitted as `static T name[] = {...};`.
+    # In some corner cases get_fdecl() can fail at use sites; use DATA initializer metadata.
+    if (not is_array_ref
+            and prev_tok is not None
+            and getattr(prev_tok, 'is_identifier', lambda: False)()
+            and conv_info is not None
+            and getattr(conv_info, 'fproc', None) is not None):
+        try:
+            if getattr(conv_info, 'array_data_initializers', None) is None:
+                conv_info.array_data_initializers = build_array_data_initializers(conv_info)
+            rec = (conv_info.array_data_initializers or {}).get(prev_tok.value.lower())
+            if rec is not None:
+                _elem_ctype, dims_ints, _init_list, rank = rec
+                data_rank = rank
+                data_dims_ints = dims_ints
+                is_array_ref = True
+        except Exception:
+            pass
 
     if is_array_ref:
         # Check if this is an array slice (contains ':' operator)
@@ -2898,6 +2919,11 @@ def _convert_parentheses_postfix(conv_info, prev_tok, tok, had_str_concat):
                 rank = len(getattr(fdecl, 'dim_tokens', None) or [])
             except Exception:
                 rank = 0
+            if rank == 0 and data_rank is not None:
+                try:
+                    rank = int(data_rank)
+                except Exception:
+                    pass
 
             if rank == 1:
                 start_expr = parts[0].strip()
@@ -2910,8 +2936,11 @@ def _convert_parentheses_postfix(conv_info, prev_tok, tok, had_str_concat):
             end_expr = parts[1].strip()
             col_expr = parts[2].strip()
             default_ldname = 'ld' + prev_tok.value.lower()
-            ldexpr = get_leading_dimension_expr(conv_info, fdecl, default=default_ldname)
-            ldexpr = _maybe_use_ld_variable(conv_info, ldexpr, default_ldname)
+            if fdecl is not None:
+                ldexpr0 = get_leading_dimension_expr(conv_info, fdecl, default=default_ldname)
+            else:
+                ldexpr0 = str(int(data_dims_ints[0])) if (data_dims_ints and len(data_dims_ints) >= 1) else "1"
+            ldexpr = _maybe_use_ld_variable(conv_info, ldexpr0, default_ldname)
             return f'[__SLICE2D__({start_expr}, {end_expr}, {col_expr}, {ldexpr})]'
 
         if len(parts) == 1:
@@ -3121,6 +3150,96 @@ def _convert_parentheses_postfix(conv_info, prev_tok, tok, had_str_concat):
             col_off = make_offset(j_expr, lb2)
             index_expr = f'{row_off} + {col_off}*{ldexpr}'
             return '[' + index_expr + ']'
+
+        if len(parts) == 3:
+            # Three-dimensional array: a(i, j, k)
+            # Only handle element access (no ':' slice) when the declared rank is 3.
+            rank = 0
+            try:
+                rank = len(getattr(fdecl, 'dim_tokens', None) or [])
+            except Exception:
+                rank = 0
+            if rank == 0 and data_rank is not None:
+                try:
+                    rank = int(data_rank)
+                except Exception:
+                    pass
+            if rank == 3 and (not is_array_slice):
+                i_expr, j_expr, k_expr = parts
+                i_expr = i_expr.strip()
+                j_expr = j_expr.strip()
+                k_expr = k_expr.strip()
+
+                # Stride of the 2nd dimension is the extent of the 1st dimension.
+                default_ld1 = 'ld' + prev_tok.value.lower()
+                if fdecl is not None:
+                    ld1_expr = get_leading_dimension_expr(conv_info, fdecl, default=default_ld1)
+                else:
+                    ld1_expr = str(int(data_dims_ints[0])) if (data_dims_ints and len(data_dims_ints) >= 1) else "1"
+                ld1 = _maybe_use_ld_variable(conv_info, ld1_expr, default_ld1)
+
+                # Extent of the 2nd dimension (used as the multiplier for dim-3 stride).
+                if fdecl is not None:
+                    ld2_expr = None
+                    try:
+                        dt = getattr(fdecl, 'dim_tokens', None) or []
+                        if len(dt) >= 2:
+                            dim1_tokens = dt[1].value
+                            simple = _try_extract_first_dim_extent_identifier(conv_info, dim1_tokens)
+                            if simple:
+                                ld2_expr = simple
+                            else:
+                                ld2_expr = convert_dim_to_static_size(conv_info, tokens=dim1_tokens).strip()
+                    except Exception:
+                        ld2_expr = None
+                    if ld2_expr is None or not str(ld2_expr).strip():
+                        ld2_expr = "1"
+                else:
+                    ld2_expr = str(int(data_dims_ints[1])) if (data_dims_ints and len(data_dims_ints) >= 2) else "1"
+
+                default_ld2 = 'ld2' + prev_tok.value.lower()
+                ld2 = _maybe_use_ld_variable(conv_info, ld2_expr, default_ld2)
+
+                lb1 = get_lower_bound(conv_info, fdecl, 0).strip()
+                lb2 = get_lower_bound(conv_info, fdecl, 1).strip()
+                lb3 = get_lower_bound(conv_info, fdecl, 2).strip()
+
+                simple_name = re.compile(r'^[A-Za-z_][A-Za-z0-9_]*$')
+                simple_int = re.compile(r'^[0-9]+$')
+                array_elem_re = re.compile(r'^[A-Za-z_][A-Za-z0-9_]*\s*\[[^\[\]]+\]\s*$')
+
+                def is_simple_index(expr: str) -> bool:
+                    expr = expr.strip()
+                    return (bool(simple_name.fullmatch(expr))
+                            or bool(simple_int.fullmatch(expr))
+                            or bool(array_elem_re.fullmatch(expr)))
+
+                def make_offset(idx_expr: str, lb_expr: str) -> str:
+                    idx_expr = idx_expr.strip()
+                    lb_expr = lb_expr.strip()
+
+                    if lb_expr == '0':
+                        return idx_expr if is_simple_index(idx_expr) else f'({idx_expr})'
+
+                    lb_simple = bool(simple_name.fullmatch(lb_expr) or simple_int.fullmatch(lb_expr))
+                    idx_simple = is_simple_index(idx_expr)
+
+                    if idx_simple and lb_simple:
+                        return f'{idx_expr} - {lb_expr}'
+                    if idx_simple and not lb_simple:
+                        return f'{idx_expr} - ({lb_expr})'
+                    if (not idx_simple) and lb_simple:
+                        return f'({idx_expr}) - {lb_expr}'
+                    return f'({idx_expr}) - ({lb_expr})'
+
+                off1 = make_offset(i_expr, lb1)
+                off2 = make_offset(j_expr, lb2)
+                off3 = make_offset(k_expr, lb3)
+
+                # Fortran column-major flattening:
+                #   a(i,j,k) -> a[(i-lb1) + (j-lb2)*ld1 + (k-lb3)*ld1*ld2]
+                index_expr = f'{off1} + ({off2})*{ld1} + ({off3})*{ld1}*{ld2}'
+                return '[' + index_expr + ']'
 
         # Fallback: treat like a normal call/parenthesized expression
         if (cmn_needs_to_be_inserted(conv_info=conv_info, prev_tok=prev_tok)):
@@ -3615,7 +3734,11 @@ def convert_declaration(rapp, conv_info, fdecl, crhs, const):
     dt_rank = len(fdecl.dim_tokens) if fdecl.dim_tokens is not None else 0
 
     if dt_rank == 1:
-        size_expr = dim_expr
+        # Single-rank Fortran arrays may use explicit lower bounds, e.g. RMAGN(0:2).
+        # convert_tokens(..., commas=True) turns "0:2" into "0, 2", which is not a valid
+        # C++ array bound. Convert to an extent expression: upper-lower+1.
+        size_expr = convert_dim_to_static_size(
+            conv_info=conv_info, tokens=fdecl.dim_tokens[0].value)
     else:
         parts = _split_actuals(dim_expr)
         if parts and len(parts) == dt_rank:
@@ -9510,6 +9633,30 @@ def _fix_fortran_f90_decl_syntax(src: str) -> str:
     raii_alloc_names = set()  # all ALLOCATABLE vars we rewrite into explicit-shape decls
     indent = "      "
 
+    def _is_if_alloc_stat_stop(stmt: str, stat_var: str) -> bool:
+        low = stmt.lower().lstrip()
+        if not low.startswith("if"):
+            return False
+        sv = re.escape(stat_var.lower())
+        cmp_op = r"(?:\.ne\.|/=|!=|<>)"
+        pat1 = rf"^if\s*\(\s*{sv}\s*{cmp_op}\s*0\s*\)\s*stop\b"
+        pat2 = rf"^if\s*\(\s*0\s*{cmp_op}\s*{sv}\s*\)\s*stop\b"
+        return bool(re.match(pat1, low) or re.match(pat2, low))
+
+    def _is_if_alloc_stat_then(stmt: str, stat_var: str) -> bool:
+        low = stmt.lower().lstrip()
+        if not low.startswith("if"):
+            return False
+        sv = re.escape(stat_var.lower())
+        cmp_op = r"(?:\.ne\.|/=|!=|<>)"
+        pat1 = rf"^if\s*\(\s*{sv}\s*{cmp_op}\s*0\s*\)\s*then\b"
+        pat2 = rf"^if\s*\(\s*0\s*{cmp_op}\s*{sv}\s*\)\s*then\b"
+        return bool(re.match(pat1, low) or re.match(pat2, low))
+
+    def _is_endif_stmt(stmt: str) -> bool:
+        low = re.sub(r"\s+", "", stmt.lower().lstrip())
+        return low == "endif"
+
     i = 0
     while i < len(lines):
         rawi, eoli = split_eol(lines[i])
@@ -9526,9 +9673,51 @@ def _fix_fortran_f90_decl_syntax(src: str) -> str:
         if parsed_alloc:
             objs, stat_var = parsed_alloc
             if objs and all((name.lower() in raii_alloc_names) for name, _ in objs):
-                if stat_var:
+                # The allocation itself will be represented in C++ via RAII, so the classic
+                # "STAT=...; IF (stat/=0) STOP ..." pattern is redundant. Drop it when it
+                # immediately follows the removed ALLOCATE.
+                comment_buf = []
+                k = j
+                while k < len(lines):
+                    rawk, eolk = split_eol(lines[k])
+                    if not is_full_line_comment(rawk):
+                        break
+                    comment_buf.append(rawk + eolk)
+                    k += 1
+
+                skip_to = None
+                if stat_var and k < len(lines):
+                    stmt2, _, _, j2 = gather_fixed_statement(lines, k)
+                    if _is_if_alloc_stat_stop(stmt2, stat_var):
+                        skip_to = j2
+                    elif _is_if_alloc_stat_then(stmt2, stat_var):
+                        k3 = j2
+                        while k3 < len(lines):
+                            rawk3, _ = split_eol(lines[k3])
+                            if not is_full_line_comment(rawk3):
+                                break
+                            k3 += 1
+                        if k3 < len(lines):
+                            stmt3, _, _, j3 = gather_fixed_statement(lines, k3)
+                            if stmt3.lower().lstrip().startswith("stop"):
+                                k4 = j3
+                                while k4 < len(lines):
+                                    rawk4, _ = split_eol(lines[k4])
+                                    if not is_full_line_comment(rawk4):
+                                        break
+                                    k4 += 1
+                                if k4 < len(lines):
+                                    stmt4, _, _, j4 = gather_fixed_statement(lines, k4)
+                                    if _is_endif_stmt(stmt4):
+                                        skip_to = j4
+
+                # If we did not drop the associated IF/STOP, keep STAT initialized to a
+                # known value to avoid translating uninitialized uses.
+                if stat_var and skip_to is None:
                     out_lines.append(f"{indent}{stat_var} = 0{eol0}")
-                i = j
+
+                out_lines.extend(comment_buf)
+                i = skip_to if skip_to is not None else k
                 continue
             # Keep original lines unchanged.
             out_lines.extend(lines[i:j])
