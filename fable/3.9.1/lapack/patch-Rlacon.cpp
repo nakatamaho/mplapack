@@ -1,4 +1,5 @@
---- Rlacon.cpp_	2026-01-21 21:03:48.629266826 +0900
+--- a/mplapack/reference/Rlacon.cpp_	2026-01-21 21:03:48.611266540 +0900
++++ b/mplapack/reference/Rlacon.cpp	2026-01-21 21:03:48.618266651 +0900
 +++ Rlacon.cpp	2026-01-21 21:03:48.634266905 +0900
 @@ -37,14 +37,14 @@
  #include <mplapack.h>

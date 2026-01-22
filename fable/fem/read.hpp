@@ -188,12 +188,58 @@ class read_loop // TODO copy-constructor potential performance problem
     read_loop &operator,(bool &val) {
         if (io_mode == io_unformatted) {
             from_stream_unformatted(reinterpret_cast<char *>(&val), sizeof(bool));
-        } else if (io_mode == io_list_directed) {
-            inp.reset();
-            throw TBXX_NOT_IMPLEMENTED();
+            return *this;
+        }
+
+        auto parse_logical = [&](std::string s) -> bool {
+            // Trim spaces
+            auto l = s.find_first_not_of(' ');
+            if (l == std::string::npos) {
+                throw io_err("Empty token while reading logical value");
+            }
+            auto r = s.find_last_not_of(' ');
+            s = s.substr(l, r - l + 1);
+
+            // Remove surrounding dots, e.g. ".TRUE." -> "TRUE"
+            if (!s.empty() && s.front() == '.') {
+                s.erase(s.begin());
+            }
+            if (!s.empty() && s.back() == '.') {
+                s.pop_back();
+            }
+
+            // Uppercase
+            for (char &c : s) {
+                c = static_cast<char>(std::toupper(static_cast<unsigned char>(c)));
+            }
+
+            if (s == "T" || s == "TRUE") return true;
+            if (s == "F" || s == "FALSE") return false;
+
+            // Also accept "1"/"0" defensively
+            if (s == "1") return true;
+            if (s == "0") return false;
+
+            throw io_err("Invalid token while reading logical value: " + s);
+        };
+
+        if (io_mode == io_list_directed) {
+            std::string s = read_star_token_string();
+            val = parse_logical(s);
+            return *this;
+        }
+
+        // io_formatted: Lw (logical) or fall back to list-directed tokenization
+        std::string const &ed = next_edit_descriptor();
+        int n = static_cast<int>(ed.size());
+        if (n >= 2 && ed[0] == 'l') {
+            int iw = utils::unsigned_integer_scan(ed.data(), 1, ed.size());
+            int w  = utils::unsigned_integer_value(ed.data(), 1, iw);
+            std::string s = read_fmt_token_string(w);
+            val = parse_logical(s);
         } else {
-            inp.reset();
-            throw TBXX_NOT_IMPLEMENTED();
+            std::string s = read_star_token_string();
+            val = parse_logical(s);
         }
         return *this;
     }

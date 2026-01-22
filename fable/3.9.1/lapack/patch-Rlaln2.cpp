@@ -1,5 +1,5 @@
---- Rlaln2.cpp_	2026-01-21 21:03:48.647267112 +0900
-+++ Rlaln2.cpp	2026-01-21 21:03:48.653267207 +0900
+--- a/mplapack/reference/Rlaln2.cpp
++++ b/mplapack/reference/Rlaln2.cpp
 @@ -36,23 +36,15 @@
  #include <mpblas.h>
  #include <mplapack.h>
