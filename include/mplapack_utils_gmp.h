@@ -399,13 +399,11 @@ template <class E1, class E2, class C, class... Rest, typename = std::enable_if_
 // Small helpers to build short option strings for ILAENV / IMlaenv calls.
 //
 // Typical usage:
-//   const char *jbcmpz = CHAR2(job, compz);
-//   nmin = iMlaenv(12, "Chseqr", jbcmpz, n, ilo, ihi, lwork);
+//   mnthr = iMlaenv(6, "Cgesvd", CHAR2(jobu, jobvt), m, n, 0, 0);
 //
-// job, compz, side, howmny, sense, ... are almost always const char* pointing
-// to single-character flags ("N", "V", "S", "E", etc.).
+// jobu/jobvt/... are often const char* pointing to single-character flags
+// ("N", "V", "S", "E", etc.).
 
-// 2-char null-terminated buffer (lifetime: full-expression)
 struct charbuf2 {
     char s[3];
     constexpr charbuf2(char a, char b) : s{a, b, '\0'} {}
@@ -420,6 +418,14 @@ struct charbuf3 {
 
 constexpr charbuf2 CHAR2(char a, char b) { return charbuf2(a, b); }
 constexpr charbuf3 CHAR3(char a, char b, char c) { return charbuf3(a, b, c); }
+
+// Extract first character from a 1-char C string (e.g. "N").
+// If p is null or empty, returns '\0' to fail loudly downstream.
+constexpr char first_char(const char *p) { return (p && p[0] != '\0') ? p[0] : '\0'; }
+
+// Overloads for the common MPLAPACK/LAPACK style: const char* flags.
+constexpr charbuf2 CHAR2(const char *a, const char *b) { return charbuf2(first_char(a), first_char(b)); }
+constexpr charbuf3 CHAR3(const char *a, const char *b, const char *c) { return charbuf3(first_char(a), first_char(b), first_char(c)); }
 
 #endif // MPLAPACK_CHAR_UTILS_H
 
