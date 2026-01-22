@@ -374,7 +374,7 @@ void Rdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     //
                     Rsygv(ibtype, "V", uplo.elems, n, z, ldz, bb, ldb, d, work, nwork, iinfo);
                     if (iinfo != 0) {
-                        write(nounit, format_9999), "DSYGV(V," + uplo + fem::str_cref(")"), iinfo, n, jtype, ioldsd;
+                        write(nounit, format_9999), "DSYGV(V," + uplo + ")", iinfo, n, jtype, ioldsd;
                         info = abs(iinfo);
                         if (iinfo < 0) {
                             return;
@@ -397,7 +397,7 @@ void Rdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     //
                     Rsygv_2stage(ibtype, "N", uplo.elems, n, z, ldz, bb, ldb, d2, work, nwork, iinfo);
                     if (iinfo != 0) {
-                        write(nounit, format_9999), "DSYGV_2STAGE(V," + uplo + fem::str_cref(")"), iinfo, n, jtype, ioldsd;
+                        write(nounit, format_9999), "DSYGV_2STAGE(V," + uplo + ")", iinfo, n, jtype, ioldsd;
                         info = abs(iinfo);
                         if (iinfo < 0) {
                             return;
@@ -434,7 +434,7 @@ void Rdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     //
                     Rsygvd(ibtype, "V", uplo.elems, n, z, ldz, bb, ldb, d, work, nwork, iwork, liwork, iinfo);
                     if (iinfo != 0) {
-                        write(nounit, format_9999), "DSYGVD(V," + uplo + fem::str_cref(")"), iinfo, n, jtype, ioldsd;
+                        write(nounit, format_9999), "DSYGVD(V," + uplo + ")", iinfo, n, jtype, ioldsd;
                         info = abs(iinfo);
                         if (iinfo < 0) {
                             return;
@@ -457,7 +457,7 @@ void Rdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     //
                     Rsygvx(ibtype, "V", "A", uplo.elems, n, ab, lda, bb, ldb, vl, vu, il, iu, abstol, m, d, z, ldz, work, nwork, &iwork[(n + 1) - 1], iwork, iinfo);
                     if (iinfo != 0) {
-                        write(nounit, format_9999), "DSYGVX(V,A" + uplo + fem::str_cref(")"), iinfo, n, jtype, ioldsd;
+                        write(nounit, format_9999), "DSYGVX(V,A" + uplo + ")", iinfo, n, jtype, ioldsd;
                         info = abs(iinfo);
                         if (iinfo < 0) {
                             return;
@@ -485,7 +485,7 @@ void Rdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     vu = anorm;
                     Rsygvx(ibtype, "V", "V", uplo.elems, n, ab, lda, bb, ldb, vl, vu, il, iu, abstol, m, d, z, ldz, work, nwork, &iwork[(n + 1) - 1], iwork, iinfo);
                     if (iinfo != 0) {
-                        write(nounit, format_9999), "DSYGVX(V,V," + uplo + fem::str_cref(")"), iinfo, n, jtype, ioldsd;
+                        write(nounit, format_9999), "DSYGVX(V,V," + uplo + ")", iinfo, n, jtype, ioldsd;
                         info = abs(iinfo);
                         if (iinfo < 0) {
                             return;
@@ -506,7 +506,7 @@ void Rdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     //
                     Rsygvx(ibtype, "V", "I", uplo.elems, n, ab, lda, bb, ldb, vl, vu, il, iu, abstol, m, d, z, ldz, work, nwork, &iwork[(n + 1) - 1], iwork, iinfo);
                     if (iinfo != 0) {
-                        write(nounit, format_9999), "DSYGVX(V,I," + uplo + fem::str_cref(")"), iinfo, n, jtype, ioldsd;
+                        write(nounit, format_9999), "DSYGVX(V,I," + uplo + ")", iinfo, n, jtype, ioldsd;
                         info = abs(iinfo);
                         if (iinfo < 0) {
                             return;
@@ -550,7 +550,7 @@ void Rdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     //
                     Rspgv(ibtype, "V", uplo.elems, n, ap, bp, d, z, ldz, work, iinfo);
                     if (iinfo != 0) {
-                        write(nounit, format_9999), "DSPGV(V," + uplo + fem::str_cref(")"), iinfo, n, jtype, ioldsd;
+                        write(nounit, format_9999), "DSPGV(V," + uplo + ")", iinfo, n, jtype, ioldsd;
                         info = abs(iinfo);
                         if (iinfo < 0) {
                             return;
@@ -592,7 +592,7 @@ void Rdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     //
                     Rspgvd(ibtype, "V", uplo.elems, n, ap, bp, d, z, ldz, work, nwork, iwork, liwork, iinfo);
                     if (iinfo != 0) {
-                        write(nounit, format_9999), "DSPGVD(V," + uplo + fem::str_cref(")"), iinfo, n, jtype, ioldsd;
+                        write(nounit, format_9999), "DSPGVD(V," + uplo + ")", iinfo, n, jtype, ioldsd;
                         info = abs(iinfo);
                         if (iinfo < 0) {
                             return;
@@ -634,7 +634,7 @@ void Rdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     //
                     Rspgvx(ibtype, "V", "A", uplo.elems, n, ap, bp, vl, vu, il, iu, abstol, m, d, z, ldz, work, &iwork[(n + 1) - 1], iwork, info);
                     if (iinfo != 0) {
-                        write(nounit, format_9999), "DSPGVX(V,A" + uplo + fem::str_cref(")"), iinfo, n, jtype, ioldsd;
+                        write(nounit, format_9999), "DSPGVX(V,A" + uplo + ")", iinfo, n, jtype, ioldsd;
                         info = abs(iinfo);
                         if (iinfo < 0) {
                             return;
@@ -676,7 +676,7 @@ void Rdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     vu = anorm;
                     Rspgvx(ibtype, "V", "V", uplo.elems, n, ap, bp, vl, vu, il, iu, abstol, m, d, z, ldz, work, &iwork[(n + 1) - 1], iwork, info);
                     if (iinfo != 0) {
-                        write(nounit, format_9999), "DSPGVX(V,V" + uplo + fem::str_cref(")"), iinfo, n, jtype, ioldsd;
+                        write(nounit, format_9999), "DSPGVX(V,V" + uplo + ")", iinfo, n, jtype, ioldsd;
                         info = abs(iinfo);
                         if (iinfo < 0) {
                             return;
@@ -716,7 +716,7 @@ void Rdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     //
                     Rspgvx(ibtype, "V", "I", uplo.elems, n, ap, bp, vl, vu, il, iu, abstol, m, d, z, ldz, work, &iwork[(n + 1) - 1], iwork, info);
                     if (iinfo != 0) {
-                        write(nounit, format_9999), "DSPGVX(V,I" + uplo + fem::str_cref(")"), iinfo, n, jtype, ioldsd;
+                        write(nounit, format_9999), "DSPGVX(V,I" + uplo + ")", iinfo, n, jtype, ioldsd;
                         info = abs(iinfo);
                         if (iinfo < 0) {
                             return;
@@ -762,7 +762,7 @@ void Rdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                         //
                         Rsbgv("V", uplo.elems, n, ka, kb, ab, lda, bb, ldb, d, z, ldz, work, iinfo);
                         if (iinfo != 0) {
-                            write(nounit, format_9999), "DSBGV(V," + uplo + fem::str_cref(")"), iinfo, n, jtype, ioldsd;
+                            write(nounit, format_9999), "DSBGV(V," + uplo + ")", iinfo, n, jtype, ioldsd;
                             info = abs(iinfo);
                             if (iinfo < 0) {
                                 return;
@@ -804,7 +804,7 @@ void Rdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                         //
                         Rsbgvd("V", uplo.elems, n, ka, kb, ab, lda, bb, ldb, d, z, ldz, work, nwork, iwork, liwork, iinfo);
                         if (iinfo != 0) {
-                            write(nounit, format_9999), "DSBGVD(V," + uplo + fem::str_cref(")"), iinfo, n, jtype, ioldsd;
+                            write(nounit, format_9999), "DSBGVD(V," + uplo + ")", iinfo, n, jtype, ioldsd;
                             info = abs(iinfo);
                             if (iinfo < 0) {
                                 return;
@@ -846,7 +846,7 @@ void Rdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                         //
                         Rsbgvx("V", "A", uplo.elems, n, ka, kb, ab, lda, bb, ldb, bp, max((INTEGER)1, n), vl, vu, il, iu, abstol, m, d, z, ldz, work, &iwork[(n + 1) - 1], iwork, iinfo);
                         if (iinfo != 0) {
-                            write(nounit, format_9999), "DSBGVX(V,A" + uplo + fem::str_cref(")"), iinfo, n, jtype, ioldsd;
+                            write(nounit, format_9999), "DSBGVX(V,A" + uplo + ")", iinfo, n, jtype, ioldsd;
                             info = abs(iinfo);
                             if (iinfo < 0) {
                                 return;
@@ -888,7 +888,7 @@ void Rdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                         vu = anorm;
                         Rsbgvx("V", "V", uplo.elems, n, ka, kb, ab, lda, bb, ldb, bp, max((INTEGER)1, n), vl, vu, il, iu, abstol, m, d, z, ldz, work, &iwork[(n + 1) - 1], iwork, iinfo);
                         if (iinfo != 0) {
-                            write(nounit, format_9999), "DSBGVX(V,V" + uplo + fem::str_cref(")"), iinfo, n, jtype, ioldsd;
+                            write(nounit, format_9999), "DSBGVX(V,V" + uplo + ")", iinfo, n, jtype, ioldsd;
                             info = abs(iinfo);
                             if (iinfo < 0) {
                                 return;
@@ -928,7 +928,7 @@ void Rdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                         //
                         Rsbgvx("V", "I", uplo.elems, n, ka, kb, ab, lda, bb, ldb, bp, max((INTEGER)1, n), vl, vu, il, iu, abstol, m, d, z, ldz, work, &iwork[(n + 1) - 1], iwork, iinfo);
                         if (iinfo != 0) {
-                            write(nounit, format_9999), "DSBGVX(V,I" + uplo + fem::str_cref(")"), iinfo, n, jtype, ioldsd;
+                            write(nounit, format_9999), "DSBGVX(V,I" + uplo + ")", iinfo, n, jtype, ioldsd;
                             info = abs(iinfo);
                             if (iinfo < 0) {
                                 return;

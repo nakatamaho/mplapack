@@ -369,7 +369,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 ntest++;
                 Cheevd("V", uplo.elems, n, a, ldu, d1, work, lwedc, rwork, lrwedc, iwork, liwedc, iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "ZHEEVD(V," + uplo + fem::str_cref(")"), iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "ZHEEVD(V," + uplo + ")", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -390,7 +390,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 ntest += 2;
                 Cheevd_2stage("N", uplo.elems, n, a, ldu, d3, work, lwork, rwork, lrwedc, iwork, liwedc, iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "ZHEEVD_2STAGE(N," + uplo + fem::str_cref(")"), iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "ZHEEVD_2STAGE(N," + uplo + ")", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -435,7 +435,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 //
                 Cheevx("V", "A", uplo.elems, n, a, ldu, vl, vu, il, iu, abstol, m, wa1, z, ldu, work, lwork, rwork, iwork, &iwork[(5 * n + 1) - 1], iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "ZHEEVX(V,A," + uplo + fem::str_cref(")"), iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "ZHEEVX(V,A," + uplo + ")", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -456,7 +456,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 ntest += 2;
                 Cheevx_2stage("N", "A", uplo.elems, n, a, ldu, vl, vu, il, iu, abstol, m2, wa2, z, ldu, work, lwork, rwork, iwork, &iwork[(5 * n + 1) - 1], iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "ZHEEVX_2STAGE(N,A," + uplo + fem::str_cref(")"), iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "ZHEEVX_2STAGE(N,A," + uplo + ")", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -483,7 +483,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 //
                 Cheevx("V", "I", uplo.elems, n, a, ldu, vl, vu, il, iu, abstol, m2, wa2, z, ldu, work, lwork, rwork, iwork, &iwork[(5 * n + 1) - 1], iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "ZHEEVX(V,I," + uplo + fem::str_cref(")"), iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "ZHEEVX(V,I," + uplo + ")", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -503,7 +503,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 //
                 Cheevx_2stage("N", "I", uplo.elems, n, a, ldu, vl, vu, il, iu, abstol, m3, wa3, z, ldu, work, lwork, rwork, iwork, &iwork[(5 * n + 1) - 1], iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "ZHEEVX_2STAGE(N,I," + uplo + fem::str_cref(")"), iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "ZHEEVX_2STAGE(N,I," + uplo + ")", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -531,7 +531,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 //
                 Cheevx("V", "V", uplo.elems, n, a, ldu, vl, vu, il, iu, abstol, m2, wa2, z, ldu, work, lwork, rwork, iwork, &iwork[(5 * n + 1) - 1], iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "ZHEEVX(V,V," + uplo + fem::str_cref(")"), iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "ZHEEVX(V,V," + uplo + ")", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -551,7 +551,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 //
                 Cheevx_2stage("N", "V", uplo.elems, n, a, ldu, vl, vu, il, iu, abstol, m3, wa3, z, ldu, work, lwork, rwork, iwork, &iwork[(5 * n + 1) - 1], iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "ZHEEVX_2STAGE(N,V," + uplo + fem::str_cref(")"), iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "ZHEEVX_2STAGE(N,V," + uplo + ")", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -608,7 +608,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 indwrk = n * (n + 1) / 2 + 1;
                 Chpevd("V", uplo.elems, n, work, d1, z, ldu, &work[indwrk - 1], lwedc, rwork, lrwedc, iwork, liwedc, iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "ZHPEVD(V," + uplo + fem::str_cref(")"), iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "ZHPEVD(V," + uplo + ")", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -646,7 +646,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 indwrk = n * (n + 1) / 2 + 1;
                 Chpevd("N", uplo.elems, n, work, d3, z, ldu, &work[indwrk - 1], lwedc, rwork, lrwedc, iwork, liwedc, iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "ZHPEVD(N," + uplo + fem::str_cref(")"), iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "ZHPEVD(N," + uplo + ")", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -710,7 +710,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 //
                 Chpevx("V", "A", uplo.elems, n, work, vl, vu, il, iu, abstol, m, wa1, z, ldu, v, rwork, iwork, &iwork[(5 * n + 1) - 1], iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "ZHPEVX(V,A," + uplo + fem::str_cref(")"), iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "ZHPEVX(V,A," + uplo + ")", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -748,7 +748,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 //
                 Chpevx("N", "A", uplo.elems, n, work, vl, vu, il, iu, abstol, m2, wa2, z, ldu, v, rwork, iwork, &iwork[(5 * n + 1) - 1], iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "ZHPEVX(N,A," + uplo + fem::str_cref(")"), iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "ZHPEVX(N,A," + uplo + ")", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -790,7 +790,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 //
                 Chpevx("V", "I", uplo.elems, n, work, vl, vu, il, iu, abstol, m2, wa2, z, ldu, v, rwork, iwork, &iwork[(5 * n + 1) - 1], iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "ZHPEVX(V,I," + uplo + fem::str_cref(")"), iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "ZHPEVX(V,I," + uplo + ")", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -828,7 +828,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 //
                 Chpevx("N", "I", uplo.elems, n, work, vl, vu, il, iu, abstol, m3, wa3, z, ldu, v, rwork, iwork, &iwork[(5 * n + 1) - 1], iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "ZHPEVX(N,I," + uplo + fem::str_cref(")"), iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "ZHPEVX(N,I," + uplo + ")", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -871,7 +871,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 //
                 Chpevx("V", "V", uplo.elems, n, work, vl, vu, il, iu, abstol, m2, wa2, z, ldu, v, rwork, iwork, &iwork[(5 * n + 1) - 1], iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "ZHPEVX(V,V," + uplo + fem::str_cref(")"), iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "ZHPEVX(V,V," + uplo + ")", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -909,7 +909,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 //
                 Chpevx("N", "V", uplo.elems, n, work, vl, vu, il, iu, abstol, m3, wa3, z, ldu, v, rwork, iwork, &iwork[(5 * n + 1) - 1], iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "ZHPEVX(N,V," + uplo + fem::str_cref(")"), iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "ZHPEVX(N,V," + uplo + ")", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -967,7 +967,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 ntest++;
                 Chbevd("V", uplo.elems, n, kd, v, ldu, d1, z, ldu, work, lwedc, rwork, lrwedc, iwork, liwedc, iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9998), "ZHBEVD(V," + uplo + fem::str_cref(")"), iinfo, n, kd, jtype, ioldsd;
+                    write(nounit, format_9998), "ZHBEVD(V," + uplo + ")", iinfo, n, kd, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -1000,7 +1000,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 ntest += 2;
                 Chbevd_2stage("N", uplo.elems, n, kd, v, ldu, d3, z, ldu, work, lwork, rwork, lrwedc, iwork, liwedc, iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9998), "ZHBEVD_2STAGE(N," + uplo + fem::str_cref(")"), iinfo, n, kd, jtype, ioldsd;
+                    write(nounit, format_9998), "ZHBEVD_2STAGE(N," + uplo + ")", iinfo, n, kd, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -1041,7 +1041,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 ntest++;
                 Chbevx("V", "A", uplo.elems, n, kd, v, ldu, u, ldu, vl, vu, il, iu, abstol, m, wa1, z, ldu, work, rwork, iwork, &iwork[(5 * n + 1) - 1], iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "ZHBEVX(V,A," + uplo + fem::str_cref(")"), iinfo, n, kd, jtype, ioldsd;
+                    write(nounit, format_9999), "ZHBEVX(V,A," + uplo + ")", iinfo, n, kd, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -1075,7 +1075,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 //
                 Chbevx_2stage("N", "A", uplo.elems, n, kd, v, ldu, u, ldu, vl, vu, il, iu, abstol, m2, wa2, z, ldu, work, lwork, rwork, iwork, &iwork[(5 * n + 1) - 1], iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9998), "ZHBEVX_2STAGE(N,A," + uplo + fem::str_cref(")"), iinfo, n, kd, jtype, ioldsd;
+                    write(nounit, format_9998), "ZHBEVX_2STAGE(N,A," + uplo + ")", iinfo, n, kd, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -1116,7 +1116,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 //
                 Chbevx("V", "I", uplo.elems, n, kd, v, ldu, u, ldu, vl, vu, il, iu, abstol, m2, wa2, z, ldu, work, rwork, iwork, &iwork[(5 * n + 1) - 1], iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9998), "ZHBEVX(V,I," + uplo + fem::str_cref(")"), iinfo, n, kd, jtype, ioldsd;
+                    write(nounit, format_9998), "ZHBEVX(V,I," + uplo + ")", iinfo, n, kd, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -1149,7 +1149,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 }
                 Chbevx_2stage("N", "I", uplo.elems, n, kd, v, ldu, u, ldu, vl, vu, il, iu, abstol, m3, wa3, z, ldu, work, lwork, rwork, iwork, &iwork[(5 * n + 1) - 1], iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9998), "ZHBEVX_2STAGE(N,I," + uplo + fem::str_cref(")"), iinfo, n, kd, jtype, ioldsd;
+                    write(nounit, format_9998), "ZHBEVX_2STAGE(N,I," + uplo + ")", iinfo, n, kd, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -1190,7 +1190,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 }
                 Chbevx("V", "V", uplo.elems, n, kd, v, ldu, u, ldu, vl, vu, il, iu, abstol, m2, wa2, z, ldu, work, rwork, iwork, &iwork[(5 * n + 1) - 1], iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9998), "ZHBEVX(V,V," + uplo + fem::str_cref(")"), iinfo, n, kd, jtype, ioldsd;
+                    write(nounit, format_9998), "ZHBEVX(V,V," + uplo + ")", iinfo, n, kd, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -1223,7 +1223,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 }
                 Chbevx_2stage("N", "V", uplo.elems, n, kd, v, ldu, u, ldu, vl, vu, il, iu, abstol, m3, wa3, z, ldu, work, lwork, rwork, iwork, &iwork[(5 * n + 1) - 1], iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9998), "ZHBEVX_2STAGE(N,V," + uplo + fem::str_cref(")"), iinfo, n, kd, jtype, ioldsd;
+                    write(nounit, format_9998), "ZHBEVX_2STAGE(N,V," + uplo + ")", iinfo, n, kd, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -1258,7 +1258,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 ntest++;
                 Cheev("V", uplo.elems, n, a, ldu, d1, work, lwork, rwork, iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "ZHEEV(V," + uplo + fem::str_cref(")"), iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "ZHEEV(V," + uplo + ")", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -1279,7 +1279,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 ntest += 2;
                 Cheev_2stage("N", uplo.elems, n, a, ldu, d3, work, lwork, rwork, iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "ZHEEV_2STAGE(N," + uplo + fem::str_cref(")"), iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "ZHEEV_2STAGE(N," + uplo + ")", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -1330,7 +1330,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 indwrk = n * (n + 1) / 2 + 1;
                 Chpev("V", uplo.elems, n, work, d1, z, ldu, &work[indwrk - 1], rwork, iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "ZHPEV(V," + uplo + fem::str_cref(")"), iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "ZHPEV(V," + uplo + ")", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -1368,7 +1368,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 indwrk = n * (n + 1) / 2 + 1;
                 Chpev("N", uplo.elems, n, work, d3, z, ldu, &work[indwrk - 1], rwork, iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "ZHPEV(N," + uplo + fem::str_cref(")"), iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "ZHPEV(N," + uplo + ")", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -1420,7 +1420,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 ntest++;
                 Chbev("V", uplo.elems, n, kd, v, ldu, d1, z, ldu, work, rwork, iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9998), "ZHBEV(V," + uplo + fem::str_cref(")"), iinfo, n, kd, jtype, ioldsd;
+                    write(nounit, format_9998), "ZHBEV(V," + uplo + ")", iinfo, n, kd, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -1453,7 +1453,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 ntest += 2;
                 Chbev_2stage("N", uplo.elems, n, kd, v, ldu, d3, z, ldu, work, lwork, rwork, iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9998), "ZHBEV_2STAGE(N," + uplo + fem::str_cref(")"), iinfo, n, kd, jtype, ioldsd;
+                    write(nounit, format_9998), "ZHBEV_2STAGE(N," + uplo + ")", iinfo, n, kd, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -1479,7 +1479,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 ntest++;
                 Cheevr("V", "A", uplo.elems, n, a, ldu, vl, vu, il, iu, abstol, m, wa1, z, ldu, iwork, work, lwork, rwork, lrwork, &iwork[(2 * n + 1) - 1], liwork - 2 * n, iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "ZHEEVR(V,A," + uplo + fem::str_cref(")"), iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "ZHEEVR(V,A," + uplo + ")", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -1500,7 +1500,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 ntest += 2;
                 Cheevr_2stage("N", "A", uplo.elems, n, a, ldu, vl, vu, il, iu, abstol, m2, wa2, z, ldu, iwork, work, lwork, rwork, lrwork, &iwork[(2 * n + 1) - 1], liwork - 2 * n, iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "ZHEEVR_2STAGE(N,A," + uplo + fem::str_cref(")"), iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "ZHEEVR_2STAGE(N,A," + uplo + ")", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -1526,7 +1526,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 Clacpy(" ", n, n, v, ldu, a, lda);
                 Cheevr("V", "I", uplo.elems, n, a, ldu, vl, vu, il, iu, abstol, m2, wa2, z, ldu, iwork, work, lwork, rwork, lrwork, &iwork[(2 * n + 1) - 1], liwork - 2 * n, iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "ZHEEVR(V,I," + uplo + fem::str_cref(")"), iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "ZHEEVR(V,I," + uplo + ")", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -1548,7 +1548,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 Clacpy(" ", n, n, v, ldu, a, lda);
                 Cheevr_2stage("N", "I", uplo.elems, n, a, ldu, vl, vu, il, iu, abstol, m3, wa3, z, ldu, iwork, work, lwork, rwork, lrwork, &iwork[(2 * n + 1) - 1], liwork - 2 * n, iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "ZHEEVR_2STAGE(N,I," + uplo + fem::str_cref(")"), iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "ZHEEVR_2STAGE(N,I," + uplo + ")", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -1569,7 +1569,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 Clacpy(" ", n, n, v, ldu, a, lda);
                 Cheevr("V", "V", uplo.elems, n, a, ldu, vl, vu, il, iu, abstol, m2, wa2, z, ldu, iwork, work, lwork, rwork, lrwork, &iwork[(2 * n + 1) - 1], liwork - 2 * n, iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "ZHEEVR(V,V," + uplo + fem::str_cref(")"), iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "ZHEEVR(V,V," + uplo + ")", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -1591,7 +1591,7 @@ void Cdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 Clacpy(" ", n, n, v, ldu, a, lda);
                 Cheevr_2stage("N", "V", uplo.elems, n, a, ldu, vl, vu, il, iu, abstol, m3, wa3, z, ldu, iwork, work, lwork, rwork, lrwork, &iwork[(2 * n + 1) - 1], liwork - 2 * n, iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "ZHEEVR_2STAGE(N,V," + uplo + fem::str_cref(")"), iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "ZHEEVR_2STAGE(N,V," + uplo + ")", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
