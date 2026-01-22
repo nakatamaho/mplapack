@@ -49,7 +49,6 @@ void program_dchkee(int argc, char const *argv[]) {
     common_write write(cmn);
     static INTEGER ioldsd[4] = {0, 0, 0, 1};
     static fem::str<10> intstr = "0123456789";
-    INTEGER allocatestatus = 0;
     const INTEGER nmax = 132;
     const INTEGER need = 14;
     REAL a[nmax * nmax * need];
@@ -155,23 +154,6 @@ void program_dchkee(int argc, char const *argv[]) {
     static const char *format_9992 = "(1x,a3,':  Unrecognized path name')";
     static const char *format_9997 = "(/,/,1x,a3,':  NB =',i4,', NBMIN =',i4,', NX =',i4)";
     //
-    //
-    allocatestatus = 0;
-    if (allocatestatus != 0) {
-        FEM_STOP("*** Not enough memory ***");
-    }
-    allocatestatus = 0;
-    if (allocatestatus != 0) {
-        FEM_STOP("*** Not enough memory ***");
-    }
-    allocatestatus = 0;
-    if (allocatestatus != 0) {
-        FEM_STOP("*** Not enough memory ***");
-    }
-    allocatestatus = 0;
-    if (allocatestatus != 0) {
-        FEM_STOP("*** Not enough memory ***");
-    }
     //
     a = 0.0;
     b = 0.0;
