@@ -1,5 +1,36 @@
 #ifndef FEM_WRITE_HPP
 #define FEM_WRITE_HPP
+
+// Ensure MPLAPACK utils expose sprintnum()/sprintnum_short() and __MPLAPACK_BUFLEN__.
+// In mplapack_utils_*.h these are guarded by ___MPLAPACK_INTERNAL___.
+#ifndef ___MPLAPACK_INTERNAL___
+#define ___MPLAPACK_INTERNAL___ 1
+#endif
+
+// MPLAPACK backend utilities (printnum/sprintnum, precision, buffer length, etc.)
+#if defined(___MPLAPACK_BUILD_WITH_GMP___)
+#include "mplapack_utils_gmp.h"
+#elif defined(___MPLAPACK_BUILD_WITH_MPFR___)
+#include "mplapack_utils_mpfr.h"
+#elif defined(___MPLAPACK_BUILD_WITH__FLOAT128___)
+#include "mplapack_utils__Float128.h"
+#elif defined(___MPLAPACK_BUILD_WITH__FLOAT64X___)
+#include "mplapack_utils__Float64x.h"
+#elif defined(___MPLAPACK_BUILD_WITH_DD___)
+#include "mplapack_utils_dd.h"
+#elif defined(___MPLAPACK_BUILD_WITH_QD___)
+#include "mplapack_utils_qd.h"
+#elif defined(___MPLAPACK_BUILD_WITH_DOUBLE___)
+#include "mplapack_utils_double.h"
+#else
+#error "No MPLAPACK backend macro is defined (___MPLAPACK_BUILD_WITH_*___)."
+#endif
+
+// Fallback buffer length (should be provided by mplapack_utils_*.h).
+#ifndef __MPLAPACK_BUFLEN__
+#define __MPLAPACK_BUFLEN__ 1024
+#endif
+
 #include <noexcept_false.hpp>
 #include <fem/common.hpp>
 #include <fem/format.hpp>
@@ -332,17 +363,23 @@ class write_loop : write_loop_base
         }
         return *this;
     }
-    // Fallback for user-defined numeric types (e.g. multiprecision reals).
+    // Generic output path for MPLAPACK MP types:
+    // If ::sprintnum(char*, T) exists, stringify and forward to existing string output.
+    //
+    // This intentionally ignores Fortran numeric field widths (e.g., g10.3/g12.5),
+    // because MPLAPACK uses these prints mainly for diagnostics.
+    // Fallback for MPLAPACK numeric types providing sprintnum_short().
     // We intentionally ignore the numeric edit descriptor (g/f/e/d/...) and
     // emit the short text produced by sprintnum_short.
-    template <typename T> typename std::enable_if<detail::has_sprintnum_short<T>::value && !std::is_arithmetic<T>::value, write_loop &>::type operator,(T const &val) {
+    template <typename T, typename = decltype(sprintnum_short(static_cast<char *>(nullptr), std::declval<T const &>()))> write_loop &operator,(T const &val) {
         if (io_mode == io_unformatted) {
             out.reset();
             throw TBXX_NOT_IMPLEMENTED();
         }
-        char buf[256];
+        char buf[__MPLAPACK_BUFLEN__];
+        buf[0] = '\0';
         sprintnum_short(buf, val);
-        buf[sizeof(buf) - 1] = '\0';
+        buf[__MPLAPACK_BUFLEN__ - 1] = '\0';
         if (io_mode == io_list_directed) {
             to_stream(buf, std::strlen(buf));
             prev_was_string = false;
