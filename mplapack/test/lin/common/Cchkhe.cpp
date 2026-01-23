@@ -154,13 +154,13 @@ void Cchkhe(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                 //
                 // Generate a matrix with Clatms.
                 //
-                srnamt = "ZLATMS";
+                srnamt = "Clatms";
                 Clatms(n, n, dist, iseed, type, rwork, mode, cndnum, anorm, kl, ku, uplo, a, lda, work, info);
                 //
                 // Check error code from Clatms and handle error.
                 //
                 if (info != 0) {
-                    Alaerh(path, "ZLATMS", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                    Alaerh(path, "Clatms", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                     //
                     // Skip all tests for this generated matrix
                     //
@@ -366,7 +366,7 @@ void Cchkhe(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                         // Choose a set of NRHS random solution vectors
                         // stored in XACT and set up the right hand side B
                         //
-                        srnamt = "ZLARHS";
+                        srnamt = "Clarhs";
                         Clarhs(path, xtype, uplo, " ", n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
                         Clacpy("Full", n, nrhs, b, lda, x, lda);
                         //
@@ -391,7 +391,7 @@ void Cchkhe(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                         // Choose a set of NRHS random solution vectors
                         // stored in XACT and set up the right hand side B
                         //
-                        srnamt = "ZLARHS";
+                        srnamt = "Clarhs";
                         Clarhs(path, xtype, uplo, " ", n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
                         Clacpy("Full", n, nrhs, b, lda, x, lda);
                         //

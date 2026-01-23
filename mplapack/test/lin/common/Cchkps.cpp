@@ -141,13 +141,13 @@ void Cchkps(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                     //
                     Clatb5(path, imat, n, type, kl, ku, anorm, mode, cndnum, dist);
                     //
-                    srnamt = "ZLATMT";
+                    srnamt = "Clatmt";
                     Clatmt(n, n, dist, iseed, type, rwork, mode, cndnum, anorm, rank, kl, ku, uplo, a, lda, work, info);
                     //
                     // Check error code from Clatmt.
                     //
                     if (info != 0) {
-                        Alaerh(path, "ZLATMT", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                        Alaerh(path, "Clatmt", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                         goto statement_120;
                     }
                     //

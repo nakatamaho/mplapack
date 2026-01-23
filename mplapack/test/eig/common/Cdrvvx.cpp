@@ -360,7 +360,7 @@ void Cdrvvx(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             }
             //
             if (iinfo != 0) {
-                write(nounit, "(' ZDRVVX: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,', JTYPE=',i6,"
+                write(nounit, "(' Cdrvvx: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,', JTYPE=',i6,"
                               "', ISEED=(',3(i5,','),i5,')')"),
                     "Generator", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);

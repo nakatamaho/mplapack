@@ -155,13 +155,13 @@ void Rchkge(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                 //
                 Rlatb4(path, imat, m, n, type, kl, ku, anorm, mode, cndnum, dist);
                 //
-                srnamt = "DLATMS";
+                srnamt = "Rlatms";
                 Rlatms(m, n, dist, iseed, type, rwork, mode, cndnum, anorm, kl, ku, "No packing", a, lda, work, info);
                 //
                 // Check error code from Rlatms.
                 //
                 if (info != 0) {
-                    Alaerh(path, "DLATMS", info, 0, " ", m, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                    Alaerh(path, "Rlatms", info, 0, " ", m, n, -1, -1, -1, imat, nfail, nerrs, nout);
                     goto statement_100;
                 }
                 //
@@ -307,7 +307,7 @@ void Rchkge(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                             // +    TEST 3
                             // Solve and compute residual for A * X = B.
                             //
-                            srnamt = "DLARHS";
+                            srnamt = "Rlarhs";
                             Rlarhs(path, xtype, " ", trans, n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
                             xtype = "C";
                             //

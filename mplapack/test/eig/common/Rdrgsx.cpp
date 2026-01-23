@@ -226,7 +226,7 @@ void Rdrgsx(INTEGER const nsize, INTEGER const ncmax, REAL const thresh, INTEGER
                     //
                     if (linfo != 0 && linfo != mplusn + 2) {
                         result[1 - 1] = ulpinv;
-                        write(nout, "(' DDRGSX: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,"
+                        write(nout, "(' Rdrgsx: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,"
                                     "', JTYPE=',i6,')')"),
                             "DGGESX", linfo, mplusn, prtype;
                         info = linfo;
@@ -474,7 +474,7 @@ statement_80:
     //
     if (linfo != 0 && linfo != mplusn + 2) {
         result[1 - 1] = ulpinv;
-        write(nout, "(' DDRGSX: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,"
+        write(nout, "(' Rdrgsx: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,"
                     "', Input Example #',i2,')')"),
             "DGGESX", linfo, mplusn, nptknt;
         goto statement_130;

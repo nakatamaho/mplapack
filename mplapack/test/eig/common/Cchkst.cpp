@@ -1267,7 +1267,7 @@ void Cchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     //
                     if (nerrs == 0) {
                         write(nounit, "(/,1x,a3,' -- Complex Hermitian eigenvalue problem')"), "ZST";
-                        write(nounit, "(' Matrix types (see ZCHKST for details): ')");
+                        write(nounit, "(' Matrix types (see Cchkst for details): ')");
                         write(nounit, "(/,' Special Matrices:',/,"
                                       "'  1=Zero matrix.                        ',"
                                       "'  5=Diagonal: clustered entries.',/,"
@@ -1296,7 +1296,7 @@ void Cchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                         //
                         // Tests performed
                         //
-                        write(nounit, "(/,'Test performed:  see ZCHKST for details.',/)");
+                        write(nounit, "(/,'Test performed:  see Cchkst for details.',/)");
                     }
                     nerrs++;
                     if (result[jr - 1] < 10000.0) {

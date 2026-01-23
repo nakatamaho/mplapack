@@ -160,7 +160,7 @@ void Cchktb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                     //
                     // Call Clattb to generate a triangular test matrix.
                     //
-                    srnamt = "ZLATTB";
+                    srnamt = "Clattb";
                     Clattb(imat, uplo, "No transpose", diag, iseed, n, kd, ab, ldab, x, work, rwork, info);
                     //
                     // Set IDIAG = 1 for non-unit matrices, 2 for unit.
@@ -225,7 +225,7 @@ void Cchktb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                             // +    TEST 1
                             // Solve and compute residual for op(A)*x = b.
                             //
-                            srnamt = "ZLARHS";
+                            srnamt = "Clarhs";
                             Clarhs(path, xtype, uplo, trans, n, n, kd, idiag, nrhs, ab, ldab, xact, lda, b, lda, iseed, info);
                             xtype = "C";
                             Clacpy("Full", n, nrhs, b, lda, x, lda);
@@ -343,7 +343,7 @@ void Cchktb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                         //
                         // Call Clattb to generate a triangular test matrix.
                         //
-                        srnamt = "ZLATTB";
+                        srnamt = "Clattb";
                         Clattb(imat, uplo, trans, diag, iseed, n, kd, ab, ldab, x, work, rwork, info);
                         //
                         // +    TEST 7

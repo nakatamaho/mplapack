@@ -142,13 +142,13 @@ void Rchkps(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                     //
                     Rlatb5(path, imat, n, type, kl, ku, anorm, mode, cndnum, dist);
                     //
-                    srnamt = "DLATMT";
+                    srnamt = "Rlatmt";
                     Rlatmt(n, n, dist, iseed, type, rwork, mode, cndnum, anorm, rank, kl, ku, uplo, a, lda, work, info);
                     //
                     // Check error code from Rlatmt.
                     //
                     if (info != 0) {
-                        Alaerh(path, "DLATMT", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                        Alaerh(path, "Rlatmt", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                         goto statement_120;
                     }
                     //

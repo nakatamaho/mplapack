@@ -134,7 +134,7 @@ void Rchktr(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                 //
                 // Call Rlattr to generate a triangular test matrix.
                 //
-                srnamt = "DLATTR";
+                srnamt = "Rlattr";
                 Rlattr(imat, uplo, "No transpose", diag, iseed, n, a, lda, x, work, info);
                 //
                 // Set IDIAG = 1 for non-unit matrices, 2 for unit.
@@ -220,7 +220,7 @@ void Rchktr(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                             // +    TEST 2
                             // Solve and compute residual for op(A)*x = b.
                             //
-                            srnamt = "DLARHS";
+                            srnamt = "Rlarhs";
                             Rlarhs(path, xtype, uplo, trans, n, n, 0, idiag, nrhs, a, lda, xact, lda, b, lda, iseed, info);
                             xtype = "C";
                             Rlacpy("Full", n, nrhs, b, lda, x, lda);
@@ -346,7 +346,7 @@ void Rchktr(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                     //
                     // Call Rlattr to generate a triangular test matrix.
                     //
-                    srnamt = "DLATTR";
+                    srnamt = "Rlattr";
                     Rlattr(imat, uplo, trans, diag, iseed, n, a, lda, x, work, info);
                     //
                     // +    TEST 8

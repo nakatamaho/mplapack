@@ -217,13 +217,13 @@ void Rdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         Aladhd(nout, path);
                     }
                     if (lda * n > la) {
-                        write(nout, "(' *** In DDRVGB, LA=',i5,' is too small for N=',i5,', KU=',i5,"
+                        write(nout, "(' *** In Rdrvgb, LA=',i5,' is too small for N=',i5,', KU=',i5,"
                                     "', KL=',i5,/,' ==> Increase LA to at least ',i5)"),
                             la, n, kl, ku, n *(kl + ku + 1);
                         nerrs++;
                     }
                     if (ldafb * n > lafb) {
-                        write(nout, "(' *** In DDRVGB, LAFB=',i5,' is too small for N=',i5,', KU=',"
+                        write(nout, "(' *** In Rdrvgb, LAFB=',i5,' is too small for N=',i5,', KU=',"
                                     "i5,', KL=',i5,/,' ==> Increase LAFB to at least ',i5)"),
                             lafb, n, kl, ku, n * (2 * kl + ku + 1);
                         nerrs++;
@@ -252,13 +252,13 @@ void Rdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                     Rlatb4(path, imat, n, n, type, kl, ku, anorm, mode, cndnum, dist);
                     rcondc = one / cndnum;
                     //
-                    srnamt = "DLATMS";
+                    srnamt = "Rlatms";
                     Rlatms(n, n, dist, iseed, type, rwork, mode, cndnum, anorm, kl, ku, "Z", a, lda, work, info);
                     //
                     // Check the error code from Rlatms.
                     //
                     if (info != 0) {
-                        Alaerh(path, "DLATMS", info, 0, " ", n, n, kl, ku, -1, imat, nfail, nerrs, nout);
+                        Alaerh(path, "Rlatms", info, 0, " ", n, n, kl, ku, -1, imat, nfail, nerrs, nout);
                         goto statement_120;
                     }
                     //
@@ -409,7 +409,7 @@ void Rdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                 // Form an exact solution and set the right hand
                                 // side.
                                 //
-                                srnamt = "DLARHS";
+                                srnamt = "Rlarhs";
                                 Rlarhs(path, xtype, "Full", trans, n, n, kl, ku, nrhs, a, lda, xact, ldb, b, ldb, iseed, info);
                                 xtype = "C";
                                 Rlacpy("Full", n, nrhs, b, ldb, bsav, ldb);

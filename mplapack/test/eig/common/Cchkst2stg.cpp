@@ -1337,7 +1337,7 @@ void Cchkst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     //
                     if (nerrs == 0) {
                         write(nounit, "(/,1x,a3,' -- Complex Hermitian eigenvalue problem')"), "ZST";
-                        write(nounit, "(' Matrix types (see ZCHKST2STG for details): ')");
+                        write(nounit, "(' Matrix types (see Cchkst2stg for details): ')");
                         write(nounit, "(/,' Special Matrices:',/,"
                                       "'  1=Zero matrix.                        ',"
                                       "'  5=Diagonal: clustered entries.',/,"
@@ -1366,7 +1366,7 @@ void Cchkst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                         //
                         // Tests performed
                         //
-                        write(nounit, "(/,'Test performed:  see ZCHKST2STG for details.',/)");
+                        write(nounit, "(/,'Test performed:  see Cchkst2stg for details.',/)");
                     }
                     nerrs++;
                     if (result[jr - 1] < 10000.0) {

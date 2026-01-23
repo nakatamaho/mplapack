@@ -105,28 +105,28 @@ void Rerrrq(fem::str_cref path, INTEGER const nunit) {
     //
     // Rgerqs
     //
-    srnamt = "DGERQS";
+    srnamt = "Rgerqs";
     infot = 1;
     Rgerqs(-1, 0, 0, a, 1, x, b, 1, w, 1, info);
-    Chkxer("DGERQS", infot, nout, lerr, ok);
+    Chkxer("Rgerqs", infot, nout, lerr, ok);
     infot = 2;
     Rgerqs(0, -1, 0, a, 1, x, b, 1, w, 1, info);
-    Chkxer("DGERQS", infot, nout, lerr, ok);
+    Chkxer("Rgerqs", infot, nout, lerr, ok);
     infot = 2;
     Rgerqs(2, 1, 0, a, 2, x, b, 1, w, 1, info);
-    Chkxer("DGERQS", infot, nout, lerr, ok);
+    Chkxer("Rgerqs", infot, nout, lerr, ok);
     infot = 3;
     Rgerqs(0, 0, -1, a, 1, x, b, 1, w, 1, info);
-    Chkxer("DGERQS", infot, nout, lerr, ok);
+    Chkxer("Rgerqs", infot, nout, lerr, ok);
     infot = 5;
     Rgerqs(2, 2, 0, a, 1, x, b, 2, w, 1, info);
-    Chkxer("DGERQS", infot, nout, lerr, ok);
+    Chkxer("Rgerqs", infot, nout, lerr, ok);
     infot = 8;
     Rgerqs(2, 2, 0, a, 2, x, b, 1, w, 1, info);
-    Chkxer("DGERQS", infot, nout, lerr, ok);
+    Chkxer("Rgerqs", infot, nout, lerr, ok);
     infot = 10;
     Rgerqs(1, 1, 2, a, 1, x, b, 1, w, 1, info);
-    Chkxer("DGERQS", infot, nout, lerr, ok);
+    Chkxer("Rgerqs", infot, nout, lerr, ok);
     //
     // Rorgrq
     //

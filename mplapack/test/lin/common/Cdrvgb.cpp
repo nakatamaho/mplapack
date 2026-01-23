@@ -209,13 +209,13 @@ void Cdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         Aladhd(nout, path);
                     }
                     if (lda * n > la) {
-                        write(nout, "(' *** In ZDRVGB, LA=',i5,' is too small for N=',i5,', KU=',i5,"
+                        write(nout, "(' *** In Cdrvgb, LA=',i5,' is too small for N=',i5,', KU=',i5,"
                                     "', KL=',i5,/,' ==> Increase LA to at least ',i5)"),
                             la, n, kl, ku, n *(kl + ku + 1);
                         nerrs++;
                     }
                     if (ldafb * n > lafb) {
-                        write(nout, "(' *** In ZDRVGB, LAFB=',i5,' is too small for N=',i5,', KU=',"
+                        write(nout, "(' *** In Cdrvgb, LAFB=',i5,' is too small for N=',i5,', KU=',"
                                     "i5,', KL=',i5,/,' ==> Increase LAFB to at least ',i5)"),
                             lafb, n, kl, ku, n * (2 * kl + ku + 1);
                         nerrs++;
@@ -244,13 +244,13 @@ void Cdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                     Clatb4(path, imat, n, n, type, kl, ku, anorm, mode, cndnum, dist);
                     rcondc = one / cndnum;
                     //
-                    srnamt = "ZLATMS";
+                    srnamt = "Clatms";
                     Clatms(n, n, dist, iseed, type, rwork, mode, cndnum, anorm, kl, ku, "Z", a, lda, work, info);
                     //
                     // Check the error code from Clatms.
                     //
                     if (info != 0) {
-                        Alaerh(path, "ZLATMS", info, 0, " ", n, n, kl, ku, -1, imat, nfail, nerrs, nout);
+                        Alaerh(path, "Clatms", info, 0, " ", n, n, kl, ku, -1, imat, nfail, nerrs, nout);
                         goto statement_120;
                     }
                     //
@@ -401,7 +401,7 @@ void Cdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                 // Form an exact solution and set the right hand
                                 // side.
                                 //
-                                srnamt = "ZLARHS";
+                                srnamt = "Clarhs";
                                 Clarhs(path, xtype, "Full", trans, n, n, kl, ku, nrhs, a, lda, xact, ldb, b, ldb, iseed, info);
                                 xtype = "C";
                                 Clacpy("Full", n, nrhs, b, ldb, bsav, ldb);

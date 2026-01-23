@@ -162,13 +162,13 @@ void Rdrvsy_aa(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs
                 //
                 Rlatb4(matpath, imat, n, n, type, kl, ku, anorm, mode, cndnum, dist);
                 //
-                srnamt = "DLATMS";
+                srnamt = "Rlatms";
                 Rlatms(n, n, dist, iseed, type, rwork, mode, cndnum, anorm, kl, ku, uplo, a, lda, work, info);
                 //
                 // Check error code from Rlatms.
                 //
                 if (info != 0) {
-                    Alaerh(path, "DLATMS", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                    Alaerh(path, "Rlatms", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                     goto statement_160;
                 }
                 //
@@ -248,7 +248,7 @@ void Rdrvsy_aa(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs
                     //
                     // Form an exact solution and set the right hand side.
                     //
-                    srnamt = "DLARHS";
+                    srnamt = "Rlarhs";
                     Rlarhs(matpath, xtype, uplo, " ", n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
                     xtype = "C";
                     //

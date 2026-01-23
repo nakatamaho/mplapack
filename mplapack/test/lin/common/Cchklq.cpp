@@ -127,13 +127,13 @@ void Cchklq(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                 //
                 Clatb4(path, imat, m, n, type, kl, ku, anorm, mode, cndnum, dist);
                 //
-                srnamt = "ZLATMS";
+                srnamt = "Clatms";
                 Clatms(m, n, dist, iseed, type, rwork, mode, cndnum, anorm, kl, ku, "No packing", a, lda, work, info);
                 //
                 // Check error code from Clatms.
                 //
                 if (info != 0) {
-                    Alaerh(path, "ZLATMS", info, 0, " ", m, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                    Alaerh(path, "Clatms", info, 0, " ", m, n, -1, -1, -1, imat, nfail, nerrs, nout);
                     goto statement_50;
                 }
                 //
@@ -200,17 +200,17 @@ void Cchklq(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                 // Generate a solution and set the right
                                 // hand side.
                                 //
-                                srnamt = "ZLARHS";
+                                srnamt = "Clarhs";
                                 Clarhs(path, "New", "Full", "No transpose", m, n, 0, 0, nrhs, a, lda, xact, lda, b, lda, iseed, info);
                                 //
                                 Clacpy("Full", m, nrhs, b, lda, x, lda);
-                                srnamt = "ZGELQS";
+                                srnamt = "Cgelqs";
                                 Cgelqs(m, n, nrhs, af, lda, tau, x, lda, work, lwork, info);
                                 //
                                 // Check error code from Cgelqs.
                                 //
                                 if (info != 0) {
-                                    Alaerh(path, "ZGELQS", info, 0, " ", m, n, nrhs, -1, nb, imat, nfail, nerrs, nout);
+                                    Alaerh(path, "Cgelqs", info, 0, " ", m, n, nrhs, -1, nb, imat, nfail, nerrs, nout);
                                 }
                                 //
                                 Cget02("No transpose", m, n, nrhs, a, lda, x, lda, b, lda, rwork, result[7 - 1]);

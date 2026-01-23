@@ -1327,7 +1327,7 @@ void Rchkst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     //
                     if (nerrs == 0) {
                         write(nounit, "(/,1x,a3,' -- Real Symmetric eigenvalue problem')"), "DST";
-                        write(nounit, "(' Matrix types (see DCHKST2STG for details): ')");
+                        write(nounit, "(' Matrix types (see Rchkst2stg for details): ')");
                         write(nounit, "(/,' Special Matrices:',/,"
                                       "'  1=Zero matrix.                        ',"
                                       "'  5=Diagonal: clustered entries.',/,"
@@ -1356,7 +1356,7 @@ void Rchkst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                         //
                         // Tests performed
                         //
-                        write(nounit, "(/,'Test performed:  see DCHKST2STG for details.',/)");
+                        write(nounit, "(/,'Test performed:  see Rchkst2stg for details.',/)");
                     }
                     nerrs++;
                     write(nounit, "(' N=',i5,', seed=',4(i4,','),' type ',i2,', test(',i2,')=',"

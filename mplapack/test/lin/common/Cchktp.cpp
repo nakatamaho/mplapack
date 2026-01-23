@@ -132,7 +132,7 @@ void Cchktp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                 //
                 // Call Clattp to generate a triangular test matrix.
                 //
-                srnamt = "ZLATTP";
+                srnamt = "Clattp";
                 Clattp(imat, uplo, "No transpose", diag, iseed, n, ap, x, work, rwork, info);
                 //
                 // Set IDIAG = 1 for non-unit matrices, 2 for unit.
@@ -206,7 +206,7 @@ void Cchktp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                         // +    TEST 2
                         // Solve and compute residual for op(A)*x = b.
                         //
-                        srnamt = "ZLARHS";
+                        srnamt = "Clarhs";
                         Clarhs(path, xtype, uplo, trans, n, n, 0, idiag, nrhs, ap, lap, xact, lda, b, lda, iseed, info);
                         xtype = "C";
                         Clacpy("Full", n, nrhs, b, lda, x, lda);
@@ -323,7 +323,7 @@ void Cchktp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                     //
                     // Call Clattp to generate a triangular test matrix.
                     //
-                    srnamt = "ZLATTP";
+                    srnamt = "Clattp";
                     Clattp(imat, uplo, trans, diag, iseed, n, ap, x, work, rwork, info);
                     //
                     // +    TEST 8

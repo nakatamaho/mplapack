@@ -143,13 +143,13 @@ void Rchkpp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                 //
                 Rlatb4(path, imat, n, n, type, kl, ku, anorm, mode, cndnum, dist);
                 //
-                srnamt = "DLATMS";
+                srnamt = "Rlatms";
                 Rlatms(n, n, dist, iseed, type, rwork, mode, cndnum, anorm, kl, ku, packit, a, lda, work, info);
                 //
                 // Check error code from Rlatms.
                 //
                 if (info != 0) {
-                    Alaerh(path, "DLATMS", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                    Alaerh(path, "Rlatms", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                     goto statement_90;
                 }
                 //
@@ -253,7 +253,7 @@ void Rchkpp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                     // +    TEST 3
                     // Solve and compute residual for  A * X = B.
                     //
-                    srnamt = "DLARHS";
+                    srnamt = "Rlarhs";
                     Rlarhs(path, xtype, uplo, " ", n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
                     Rlacpy("Full", n, nrhs, b, lda, x, lda);
                     //

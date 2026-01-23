@@ -131,13 +131,13 @@ void Rchkpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                 // Type 1-6:  generate a symmetric tridiagonal matrix of
                 // known condition number in lower triangular band storage.
                 //
-                srnamt = "DLATMS";
+                srnamt = "Rlatms";
                 Rlatms(n, n, dist, iseed, type, rwork, mode, cond, anorm, kl, ku, "B", a, 2, work, info);
                 //
                 // Check the error code from Rlatms.
                 //
                 if (info != 0) {
-                    Alaerh(path, "DLATMS", info, 0, " ", n, n, kl, ku, -1, imat, nfail, nerrs, nout);
+                    Alaerh(path, "Rlatms", info, 0, " ", n, n, kl, ku, -1, imat, nfail, nerrs, nout);
                     goto statement_100;
                 }
                 izero = 0;

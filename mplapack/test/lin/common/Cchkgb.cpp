@@ -201,14 +201,14 @@ void Cchkgb(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                             Alahd(nout, path);
                         }
                         if (n * (kl + ku + 1) > la) {
-                            write(nout, "(' *** In ZCHKGB, LA=',i5,' is too small for M=',i5,', N=',"
+                            write(nout, "(' *** In Cchkgb, LA=',i5,' is too small for M=',i5,', N=',"
                                         "i5,', KL=',i4,', KU=',i4,/,' ==> Increase LA to at least ',"
                                         "i5)"),
                                 la, m, n, kl, ku, n *(kl + ku + 1);
                             nerrs++;
                         }
                         if (n * (2 * kl + ku + 1) > lafac) {
-                            write(nout, "(' *** In ZCHKGB, LAFAC=',i5,' is too small for M=',i5,"
+                            write(nout, "(' *** In Cchkgb, LAFAC=',i5,' is too small for M=',i5,"
                                         "', N=',i5,', KL=',i4,', KU=',i4,/,"
                                         "' ==> Increase LAFAC to at least ',i5)"),
                                 lafac, m, n, kl, ku, n * (2 * kl + ku + 1);
@@ -244,13 +244,13 @@ void Cchkgb(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                             for (i = 1; i <= koff - 1; i = i + 1) {
                                 a[i - 1] = zero;
                             }
-                            srnamt = "ZLATMS";
+                            srnamt = "Clatms";
                             Clatms(m, n, dist, iseed, type, rwork, mode, cndnum, anorm, kl, ku, "Z", &a[koff - 1], lda, work, info);
                             //
                             // Check the error code from Clatms.
                             //
                             if (info != 0) {
-                                Alaerh(path, "ZLATMS", info, 0, " ", m, n, kl, ku, -1, imat, nfail, nerrs, nout);
+                                Alaerh(path, "Clatms", info, 0, " ", m, n, kl, ku, -1, imat, nfail, nerrs, nout);
                                 goto statement_120;
                             }
                         } else if (izero > 0) {
@@ -413,7 +413,7 @@ void Cchkgb(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                     // +    TEST 2:
                                     // Solve and compute residual for A * X = B.
                                     //
-                                    srnamt = "ZLARHS";
+                                    srnamt = "Clarhs";
                                     Clarhs(path, xtype, " ", trans, n, n, kl, ku, nrhs, a, lda, xact, ldb, b, ldb, iseed, info);
                                     xtype = "C";
                                     Clacpy("Full", n, nrhs, b, ldb, x, ldb);

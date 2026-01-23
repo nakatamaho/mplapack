@@ -156,7 +156,7 @@ void Rckcsd(INTEGER const nm, INTEGER *mval, INTEGER *pval, INTEGER *qval, INTEG
             if (imat == 1) {
                 Rlaror("L", "I", m, m, x, ldx, iseed, work, iinfo);
                 if (m != 0 && iinfo != 0) {
-                    write(nout, "(' DLAROR in DCKCSD: M = ',i5,', INFO = ',i15)"), m, iinfo;
+                    write(nout, "(' Rlaror in Rckcsd: M = ',i5,', INFO = ',i15)"), m, iinfo;
                     info = abs(iinfo);
                     goto statement_20;
                 }

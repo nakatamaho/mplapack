@@ -127,13 +127,13 @@ void Rchkrq(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                 //
                 Rlatb4(path, imat, m, n, type, kl, ku, anorm, mode, cndnum, dist);
                 //
-                srnamt = "DLATMS";
+                srnamt = "Rlatms";
                 Rlatms(m, n, dist, iseed, type, rwork, mode, cndnum, anorm, kl, ku, "No packing", a, lda, work, info);
                 //
                 // Check error code from Rlatms.
                 //
                 if (info != 0) {
-                    Alaerh(path, "DLATMS", info, 0, " ", m, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                    Alaerh(path, "Rlatms", info, 0, " ", m, n, -1, -1, -1, imat, nfail, nerrs, nout);
                     goto statement_50;
                 }
                 //
@@ -201,17 +201,17 @@ void Rchkrq(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                 // Generate a solution and set the right
                                 // hand side.
                                 //
-                                srnamt = "DLARHS";
+                                srnamt = "Rlarhs";
                                 Rlarhs(path, "New", "Full", "No transpose", m, n, 0, 0, nrhs, a, lda, xact, lda, b, lda, iseed, info);
                                 //
                                 Rlacpy("Full", m, nrhs, b, lda, &x[(n - m + 1) - 1], lda);
-                                srnamt = "DGERQS";
+                                srnamt = "Rgerqs";
                                 Rgerqs(m, n, nrhs, af, lda, tau, x, lda, work, lwork, info);
                                 //
                                 // Check error code from Rgerqs.
                                 //
                                 if (info != 0) {
-                                    Alaerh(path, "DGERQS", info, 0, " ", m, n, nrhs, -1, nb, imat, nfail, nerrs, nout);
+                                    Alaerh(path, "Rgerqs", info, 0, " ", m, n, nrhs, -1, nb, imat, nfail, nerrs, nout);
                                 }
                                 //
                                 Rget02("No transpose", m, n, nrhs, a, lda, x, lda, b, lda, rwork, result[7 - 1]);

@@ -179,13 +179,13 @@ void Cchkpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                         //
                         Clatb4(path, imat, n, n, type, kl, ku, anorm, mode, cndnum, dist);
                         //
-                        srnamt = "ZLATMS";
+                        srnamt = "Clatms";
                         Clatms(n, n, dist, iseed, type, rwork, mode, cndnum, anorm, kd, kd, packit, &a[koff - 1], ldab, work, info);
                         //
                         // Check error code from Clatms.
                         //
                         if (info != 0) {
-                            Alaerh(path, "ZLATMS", info, 0, uplo, n, n, kd, kd, -1, imat, nfail, nerrs, nout);
+                            Alaerh(path, "Clatms", info, 0, uplo, n, n, kd, kd, -1, imat, nfail, nerrs, nout);
                             goto statement_60;
                         }
                     } else if (izero > 0) {
@@ -328,7 +328,7 @@ void Cchkpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                             // +    TEST 2
                             // Solve and compute residual for A * X = B.
                             //
-                            srnamt = "ZLARHS";
+                            srnamt = "Clarhs";
                             Clarhs(path, xtype, uplo, " ", n, n, kd, kd, nrhs, a, ldab, xact, lda, b, lda, iseed, info);
                             Clacpy("Full", n, nrhs, b, lda, x, lda);
                             //

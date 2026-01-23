@@ -449,7 +449,7 @@ void Rdrgev3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
                         //
                         // Matrix types
                         //
-                        write(nounit, "(' Matrix types (see DDRGEV3 for details): ')");
+                        write(nounit, "(' Matrix types (see Rdrgev3 for details): ')");
                         write(nounit, "(' Special Matrices:',23x,'(J''=transposed Jordan block)',/,"
                                       "'   1=(0,0)  2=(I,0)  3=(0,I)  4=(I,I)  5=(J'',J'')  ',"
                                       "'6=(diag(J'',I), diag(I,J''))',/,' Diagonal Matrices:  ( ',"

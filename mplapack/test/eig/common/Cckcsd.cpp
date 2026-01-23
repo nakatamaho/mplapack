@@ -156,7 +156,7 @@ void Cckcsd(INTEGER const nm, INTEGER *mval, INTEGER *pval, INTEGER *qval, INTEG
             if (imat == 1) {
                 Claror("L", "I", m, m, x, ldx, iseed, work, iinfo);
                 if (m != 0 && iinfo != 0) {
-                    write(nout, "(' ZLAROR in ZCKCSD: M = ',i5,', INFO = ',i15)"), m, iinfo;
+                    write(nout, "(' Claror in Cckcsd: M = ',i5,', INFO = ',i15)"), m, iinfo;
                     info = abs(iinfo);
                     goto statement_20;
                 }

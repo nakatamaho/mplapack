@@ -168,13 +168,13 @@ void Rchksy_aa(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
                 //
                 // Generate a matrix with Rlatms.
                 //
-                srnamt = "DLATMS";
+                srnamt = "Rlatms";
                 Rlatms(n, n, dist, iseed, type, rwork, mode, cndnum, anorm, kl, ku, uplo, a, lda, work, info);
                 //
                 // Check error code from Rlatms and handle error.
                 //
                 if (info != 0) {
-                    Alaerh(path, "DLATMS", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                    Alaerh(path, "Rlatms", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                     //
                     // Skip all tests for this generated matrix
                     //
@@ -343,7 +343,7 @@ void Rchksy_aa(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
                         // Choose a set of NRHS random solution vectors
                         // stored in XACT and set up the right hand side B
                         //
-                        srnamt = "DLARHS";
+                        srnamt = "Rlarhs";
                         Rlarhs(matpath, xtype, uplo, " ", n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
                         Rlacpy("Full", n, nrhs, b, lda, x, lda);
                         //

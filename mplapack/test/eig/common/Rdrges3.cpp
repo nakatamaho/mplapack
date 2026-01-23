@@ -433,7 +433,7 @@ void Rdrges3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
                         if (!ilabad) {
                             Rget53(&s[(i1 - 1) + (i1 - 1) * lda], lda, &t[(i1 - 1) + (i1 - 1) * lda], lda, beta[j - 1], alphar[j - 1], alphai[j - 1], temp2, ierr);
                             if (ierr >= 3) {
-                                write(nounit, "(' DDRGES3: DGET53 returned INFO=',i1,' for eigenvalue ',"
+                                write(nounit, "(' Rdrges3: Rget53 returned INFO=',i1,' for eigenvalue ',"
                                               "i6,'.',/,9x,'N=',i6,', JTYPE=',i6,', ISEED=(',4(i4,','),i5,"
                                               "')')"),
                                     ierr, j, n, jtype, ioldsd;
@@ -446,7 +446,7 @@ void Rdrges3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
                     }
                     temp1 = max(temp1, temp2);
                     if (ilabad) {
-                        write(nounit, "(' DDRGES3: S not in Schur form at eigenvalue ',i6,'.',/,9x,"
+                        write(nounit, "(' Rdrges3: S not in Schur form at eigenvalue ',i6,'.',/,9x,"
                                       "'N=',i6,', JTYPE=',i6,', ISEED=(',3(i5,','),i5,')')"),
                             j, n, jtype, ioldsd;
                     }
@@ -496,7 +496,7 @@ void Rdrges3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
                         //
                         // Matrix types
                         //
-                        write(nounit, "(' Matrix types (see DDRGES3 for details): ')");
+                        write(nounit, "(' Matrix types (see Rdrges3 for details): ')");
                         write(nounit, "(' Special Matrices:',23x,'(J''=transposed Jordan block)',/,"
                                       "'   1=(0,0)  2=(I,0)  3=(0,I)  4=(I,I)  5=(J'',J'')  ',"
                                       "'6=(diag(J'',I), diag(I,J''))',/,' Diagonal Matrices:  ( ',"

@@ -224,7 +224,7 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                 }
                 Rlatms(m, n, "U", iseed, "N", s, 4, castREAL(mnmin), anorm, m - 1, n - 1, "N", a, lda, work, iinfo);
                 if (iinfo != 0) {
-                    write(nout, "(' DDRVBD: ',a,' returned INFO=',i6,'.',/,9x,'M=',i6,', N=',i6,"
+                    write(nout, "(' Rdrvbd: ',a,' returned INFO=',i6,'.',/,9x,'M=',i6,', N=',i6,"
                                 "', JTYPE=',i6,', ISEED=(',3(i5,','),i5,')')"),
                         "Generator", iinfo, m, n, jtype, ioldsd;
                     info = abs(iinfo);

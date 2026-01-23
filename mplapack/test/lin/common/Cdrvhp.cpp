@@ -163,13 +163,13 @@ void Cdrvhp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                 //
                 Clatb4(path, imat, n, n, type, kl, ku, anorm, mode, cndnum, dist);
                 //
-                srnamt = "ZLATMS";
+                srnamt = "Clatms";
                 Clatms(n, n, dist, iseed, type, rwork, mode, cndnum, anorm, kl, ku, packit, a, lda, work, info);
                 //
                 // Check error code from Clatms.
                 //
                 if (info != 0) {
-                    Alaerh(path, "ZLATMS", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                    Alaerh(path, "Clatms", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                     goto statement_160;
                 }
                 //
@@ -291,7 +291,7 @@ void Cdrvhp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                     //
                     // Form an exact solution and set the right hand side.
                     //
-                    srnamt = "ZLARHS";
+                    srnamt = "Clarhs";
                     Clarhs(path, xtype, uplo, " ", n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
                     xtype = "C";
                     //

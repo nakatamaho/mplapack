@@ -138,13 +138,13 @@ void Rchkgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                 // Types 1-6:  generate matrices of known condition number.
                 //
                 koff = max(2 - ku, 3 - max((INTEGER)1, n));
-                srnamt = "DLATMS";
+                srnamt = "Rlatms";
                 Rlatms(n, n, dist, iseed, type, rwork, mode, cond, anorm, kl, ku, "Z", &af[koff - 1], 3, work, info);
                 //
                 // Check the error code from Rlatms.
                 //
                 if (info != 0) {
-                    Alaerh(path, "DLATMS", info, 0, " ", n, n, kl, ku, -1, imat, nfail, nerrs, nout);
+                    Alaerh(path, "Rlatms", info, 0, " ", n, n, kl, ku, -1, imat, nfail, nerrs, nout);
                     goto statement_100;
                 }
                 izero = 0;

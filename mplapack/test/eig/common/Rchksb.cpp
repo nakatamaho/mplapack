@@ -399,7 +399,7 @@ void Rchksb(INTEGER const nsizes, INTEGER *nn, INTEGER const nwdths, INTEGER *kk
                             write(nounit, "(/,1x,a3,"
                                           "' -- Real Symmetric Banded Tridiagonal Reduction Routines')"),
                                 "DSB";
-                            write(nounit, "(' Matrix types (see DCHKSB for details): ')");
+                            write(nounit, "(' Matrix types (see Rchksb for details): ')");
                             write(nounit, "(/,' Special Matrices:',/,"
                                           "'  1=Zero matrix.                        ',"
                                           "'  5=Diagonal: clustered entries.',/,"

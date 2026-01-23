@@ -134,13 +134,13 @@ void Cchkpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                 // Type 1-6:  generate a Hermitian tridiagonal matrix of
                 // known condition number in lower triangular band storage.
                 //
-                srnamt = "ZLATMS";
+                srnamt = "Clatms";
                 Clatms(n, n, dist, iseed, type, rwork, mode, cond, anorm, kl, ku, "B", a, 2, work, info);
                 //
                 // Check the error code from Clatms.
                 //
                 if (info != 0) {
-                    Alaerh(path, "ZLATMS", info, 0, " ", n, n, kl, ku, -1, imat, nfail, nerrs, nout);
+                    Alaerh(path, "Clatms", info, 0, " ", n, n, kl, ku, -1, imat, nfail, nerrs, nout);
                     goto statement_110;
                 }
                 izero = 0;

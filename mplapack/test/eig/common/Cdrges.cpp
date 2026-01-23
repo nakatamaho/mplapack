@@ -414,7 +414,7 @@ void Cdrges(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     }
                     temp1 = max(temp1, temp2);
                     if (ilabad) {
-                        write(nounit, "(' ZDRGES: S not in Schur form at eigenvalue ',i6,'.',/,9x,"
+                        write(nounit, "(' Cdrges: S not in Schur form at eigenvalue ',i6,'.',/,9x,"
                                       "'N=',i6,', JTYPE=',i6,', ISEED=(',3(i5,','),i5,')')"),
                             j, n, jtype, ioldsd;
                     }
@@ -461,7 +461,7 @@ void Cdrges(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                         //
                         // Matrix types
                         //
-                        write(nounit, "(' Matrix types (see ZDRGES for details): ')");
+                        write(nounit, "(' Matrix types (see Cdrges for details): ')");
                         write(nounit, "(' Special Matrices:',23x,'(J''=transposed Jordan block)',/,"
                                       "'   1=(0,0)  2=(I,0)  3=(0,I)  4=(I,I)  5=(J'',J'')  ',"
                                       "'6=(diag(J'',I), diag(I,J''))',/,' Diagonal Matrices:  ( ',"

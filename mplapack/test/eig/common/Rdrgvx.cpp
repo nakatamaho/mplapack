@@ -175,7 +175,7 @@ void Rdrgvx(INTEGER const nsize, REAL const thresh, INTEGER const nin, INTEGER c
                         Rggevx("N", "V", "V", "B", n, ai, lda, bi, lda, alphar, alphai, beta, vl, lda, vr, lda, ilo, ihi, lscale, rscale, anorm, bnorm, s, dif, work, lwork, iwork, bwork, linfo);
                         if (linfo != 0) {
                             result[1 - 1] = ulpinv;
-                            write(nout, "(' DDRGVX: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,"
+                            write(nout, "(' Rdrgvx: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,"
                                         "', JTYPE=',i6,')')"),
                                 "DGGEVX", linfo, n, iptype;
                             goto statement_30;
@@ -352,7 +352,7 @@ statement_90:
     //
     if (linfo != 0) {
         result[1 - 1] = ulpinv;
-        write(nout, "(' DDRGVX: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,"
+        write(nout, "(' Rdrgvx: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,"
                     "', Input example #',i2,')')"),
             "DGGEVX", linfo, n, nptknt;
         goto statement_140;

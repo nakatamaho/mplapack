@@ -1039,7 +1039,7 @@ statement_190:
                 c3, nbval[i - 1], nbmin[i - 1], nxval[i - 1], max((INTEGER)11, inmin[i - 1]), inwin[i - 1], inibl[i - 1], ishfts[i - 1], iacc22[i - 1];
             Cchkhs(nn, nval, maxtyp, dotype, iseed, thresh, nout, &a[0], nmax, &a[(2 - 1) * lda], &a[(3 - 1) * lda], &a[(4 - 1) * lda], &a[(5 - 1) * lda], nmax, &a[(6 - 1) * lda], &a[(7 - 1) * lda], &dc[0], &dc[(2 - 1) * nmax], &a[(8 - 1) * lda], &a[(9 - 1) * lda], &a[(10 - 1) * lda], &a[(11 - 1) * lda], &a[(12 - 1) * lda], &dc[(3 - 1) * nmax], work, lwork, rwork, iwork, logwrk, result, info);
             if (info != 0) {
-                write(nout, format_9980), "ZCHKHS", info;
+                write(nout, format_9980), "Cchkhs", info;
             }
         }
         //
@@ -1079,7 +1079,7 @@ statement_190:
                     Cchkst(nn, nval, maxtyp, dotype, iseed, thresh, nout, &a[0], nmax, &a[(2 - 1) * lda], &dr[0], &dr[(2 - 1) * nmax], &dr[(3 - 1) * nmax], &dr[(4 - 1) * nmax], &dr[(5 - 1) * nmax], &dr[(6 - 1) * nmax], &dr[(7 - 1) * nmax], &dr[(8 - 1) * nmax], &dr[(9 - 1) * nmax], &dr[(10 - 1) * nmax], &dr[(11 - 1) * nmax], &a[(3 - 1) * lda], nmax, &a[(4 - 1) * lda], &a[(5 - 1) * lda], &dc[0], &a[(6 - 1) * lda], work, lwork, rwork, lwork, iwork, liwork, result, info);
                 }
                 if (info != 0) {
-                    write(nout, format_9980), "ZCHKST", info;
+                    write(nout, format_9980), "Cchkst", info;
                 }
             }
             if (tstdrv) {
@@ -1089,7 +1089,7 @@ statement_190:
                     Cdrvst(nn, nval, 18, dotype, iseed, thresh, nout, &a[0], nmax, &dr[(3 - 1) * nmax], &dr[(4 - 1) * nmax], &dr[(5 - 1) * nmax], &dr[(8 - 1) * nmax], &dr[(9 - 1) * nmax], &dr[(10 - 1) * nmax], &a[(2 - 1) * lda], nmax, &a[(3 - 1) * lda], &dc[0], &a[(4 - 1) * lda], work, lwork, rwork, lwork, iwork, liwork, result, info);
                 }
                 if (info != 0) {
-                    write(nout, format_9980), "ZDRVST", info;
+                    write(nout, format_9980), "Cdrvst", info;
                 }
             }
         }
@@ -1128,7 +1128,7 @@ statement_190:
                 // $                      INFO )
                 Cdrvsg2stg(nn, nval, maxtyp, dotype, iseed, thresh, nout, &a[0], nmax, &a[(2 - 1) * lda], nmax, &dr[(3 - 1) * nmax], &dr[(4 - 1) * nmax], &a[(3 - 1) * lda], nmax, &a[(4 - 1) * lda], &a[(5 - 1) * lda], &a[(6 - 1) * lda], &a[(7 - 1) * lda], work, lwork, rwork, lwork, iwork, liwork, result, info);
                 if (info != 0) {
-                    write(nout, format_9980), "ZDRVSG", info;
+                    write(nout, format_9980), "Cdrvsg", info;
                 }
             }
         }
@@ -1173,7 +1173,7 @@ statement_190:
             if (tstchk) {
                 Cchkbd(nn, mval, nval, maxtyp, dotype, nrhs, iseed, thresh, &a[0], nmax, &dr[0], &dr[(2 - 1) * nmax], &dr[(3 - 1) * nmax], &dr[(4 - 1) * nmax], &a[(2 - 1) * lda], nmax, &a[(3 - 1) * lda], &a[(4 - 1) * lda], &a[(5 - 1) * lda], nmax, &a[(6 - 1) * lda], nmax, &a[(7 - 1) * lda], &a[(8 - 1) * lda], work, lwork, rwork, nout, info);
                 if (info != 0) {
-                    write(nout, format_9980), "ZCHKBD", info;
+                    write(nout, format_9980), "Cchkbd", info;
                 }
             }
             if (tstdrv) {
@@ -1318,7 +1318,7 @@ statement_190:
             if (tstchk) {
                 Cchkgg(nn, nval, maxtyp, dotype, iseed, thresh, tstdif, thrshn, nout, &a[0], nmax, &a[(2 - 1) * lda], &a[(3 - 1) * lda], &a[(4 - 1) * lda], &a[(5 - 1) * lda], &a[(6 - 1) * lda], &a[(7 - 1) * lda], &a[(8 - 1) * lda], &a[(9 - 1) * lda], nmax, &a[(10 - 1) * lda], &a[(11 - 1) * lda], &a[(12 - 1) * lda], &dc[0], &dc[(2 - 1) * nmax], &dc[(3 - 1) * nmax], &dc[(4 - 1) * nmax], &a[(13 - 1) * lda], &a[(14 - 1) * lda], work, lwork, rwork, logwrk, result, info);
                 if (info != 0) {
-                    write(nout, format_9980), "ZCHKGG", info;
+                    write(nout, format_9980), "Cchkgg", info;
                 }
             }
         }
@@ -1342,7 +1342,7 @@ statement_190:
             Cdrges(nn, nval, maxtyp, dotype, iseed, thresh, nout, &a[0], nmax, &a[(2 - 1) * lda], &a[(3 - 1) * lda], &a[(4 - 1) * lda], &a[(7 - 1) * lda], nmax, &a[(8 - 1) * lda], &dc[0], &dc[(2 - 1) * nmax], work, lwork, rwork, result, logwrk, info);
             //
             if (info != 0) {
-                write(nout, format_9980), "ZDRGES", info;
+                write(nout, format_9980), "Cdrges", info;
             }
             //
             // Blocked version
@@ -1350,7 +1350,7 @@ statement_190:
             Cdrges3(nn, nval, maxtyp, dotype, iseed, thresh, nout, &a[0], nmax, &a[(2 - 1) * lda], &a[(3 - 1) * lda], &a[(4 - 1) * lda], &a[(7 - 1) * lda], nmax, &a[(8 - 1) * lda], &dc[0], &dc[(2 - 1) * nmax], work, lwork, rwork, result, logwrk, info);
             //
             if (info != 0) {
-                write(nout, format_9980), "ZDRGES3", info;
+                write(nout, format_9980), "Cdrges3", info;
             }
         }
         write(nout, format_9973);
@@ -1375,7 +1375,7 @@ statement_190:
             Mxlaenv(5, 2);
             Cdrgsx(nn, ncmax, thresh, nin, nout, &a[0], nmax, &a[(2 - 1) * lda], &a[(3 - 1) * lda], &a[(4 - 1) * lda], &a[(5 - 1) * lda], &a[(6 - 1) * lda], &dc[0], &dc[(2 - 1) * nmax], c, ncmax * ncmax, s, work, lwork, rwork, iwork, liwork, logwrk, info);
             if (info != 0) {
-                write(nout, format_9980), "ZDRGSX", info;
+                write(nout, format_9980), "Cdrgsx", info;
             }
         }
         write(nout, format_9973);
@@ -1399,7 +1399,7 @@ statement_190:
             Alareq(c3, ntypes, dotype, maxtyp, nin, nout);
             Cdrgev(nn, nval, maxtyp, dotype, iseed, thresh, nout, &a[0], nmax, &a[(2 - 1) * lda], &a[(3 - 1) * lda], &a[(4 - 1) * lda], &a[(7 - 1) * lda], nmax, &a[(8 - 1) * lda], &a[(9 - 1) * lda], nmax, &dc[0], &dc[(2 - 1) * nmax], &dc[(3 - 1) * nmax], &dc[(4 - 1) * nmax], work, lwork, rwork, result, info);
             if (info != 0) {
-                write(nout, format_9980), "ZDRGEV", info;
+                write(nout, format_9980), "Cdrgev", info;
             }
             //
             // Blocked version
@@ -1407,7 +1407,7 @@ statement_190:
             Mxlaenv(16, 2);
             Cdrgev3(nn, nval, maxtyp, dotype, iseed, thresh, nout, &a[0], nmax, &a[(2 - 1) * lda], &a[(3 - 1) * lda], &a[(4 - 1) * lda], &a[(7 - 1) * lda], nmax, &a[(8 - 1) * lda], &a[(9 - 1) * lda], nmax, &dc[0], &dc[(2 - 1) * nmax], &dc[(3 - 1) * nmax], &dc[(4 - 1) * nmax], work, lwork, rwork, result, info);
             if (info != 0) {
-                write(nout, format_9980), "ZDRGEV3", info;
+                write(nout, format_9980), "Cdrgev3", info;
             }
         }
         write(nout, format_9973);
@@ -1432,7 +1432,7 @@ statement_190:
             Cdrgvx(nn, thresh, nin, nout, &a[0], nmax, &a[(2 - 1) * lda], &a[(3 - 1) * lda], &a[(4 - 1) * lda], &dc[0], &dc[(2 - 1) * nmax], &a[(5 - 1) * lda], &a[(6 - 1) * lda], iwork[1 - 1], iwork[2 - 1], &dr[0], &dr[(2 - 1) * nmax], &dr[(3 - 1) * nmax], &dr[(4 - 1) * nmax], &dr[(5 - 1) * nmax], &dr[(6 - 1) * nmax], work, lwork, rwork, &iwork[3 - 1], liwork - 2, result, logwrk, info);
             //
             if (info != 0) {
-                write(nout, format_9980), "ZDRGVX", info;
+                write(nout, format_9980), "Cdrgvx", info;
             }
         }
         write(nout, format_9973);
@@ -1456,7 +1456,7 @@ statement_190:
         // $                INFO )
         Cchkhb2stg(nn, nval, nk, kval, maxtyp, dotype, iseed, thresh, nout, &a[0], nmax, &dr[0], &dr[(2 - 1) * nmax], &dr[(3 - 1) * nmax], &dr[(4 - 1) * nmax], &dr[(5 - 1) * nmax], &a[(2 - 1) * lda], nmax, work, lwork, rwork, result, info);
         if (info != 0) {
-            write(nout, format_9980), "ZCHKHB", info;
+            write(nout, format_9980), "Cchkhb", info;
         }
         //
     } else if (Mlsamen(3, c3.elems, "ZBB")) {
@@ -1479,7 +1479,7 @@ statement_190:
             write(nout, "(/,/,1x,a3,':  NRHS =',i4)"), c3, nrhs;
             Cchkbb(nn, mval, nval, nk, kval, maxtyp, dotype, nrhs, iseed, thresh, nout, &a[0], nmax, &a[(2 - 1) * lda], 2 * nmax, &dr[0], &dr[(2 - 1) * nmax], &a[(4 - 1) * lda], nmax, &a[(5 - 1) * lda], nmax, &a[(6 - 1) * lda], nmax, &a[(7 - 1) * lda], work, lwork, rwork, result, info);
             if (info != 0) {
-                write(nout, format_9980), "ZCHKBB", info;
+                write(nout, format_9980), "Cchkbb", info;
             }
         }
         //
@@ -1495,7 +1495,7 @@ statement_190:
         }
         Cckglm(nn, nval, mval, pval, ntypes, iseed, thresh, nmax, &a[0], &a[(2 - 1) * lda], &b[0], &b[(2 - 1) * ldb], x, work, &dr[0], nin, nout, info);
         if (info != 0) {
-            write(nout, format_9980), "ZCKGLM", info;
+            write(nout, format_9980), "Cckglm", info;
         }
         //
     } else if (Mlsamen(3, c3.elems, "GQR")) {
@@ -1510,7 +1510,7 @@ statement_190:
         }
         Cckgqr(nn, mval, nn, pval, nn, nval, ntypes, iseed, thresh, nmax, &a[0], &a[(2 - 1) * lda], &a[(3 - 1) * lda], &a[(4 - 1) * lda], taua, &b[0], &b[(2 - 1) * ldb], &b[(3 - 1) * ldb], &b[(4 - 1) * ldb], &b[(5 - 1) * ldb], taub, work, &dr[0], nin, nout, info);
         if (info != 0) {
-            write(nout, format_9980), "ZCKGQR", info;
+            write(nout, format_9980), "Cckgqr", info;
         }
         //
     } else if (Mlsamen(3, c3.elems, "GSV")) {
@@ -1525,7 +1525,7 @@ statement_190:
         }
         Cckgsv(nn, mval, pval, nval, ntypes, iseed, thresh, nmax, &a[0], &a[(2 - 1) * lda], &b[0], &b[(2 - 1) * ldb], &a[(3 - 1) * lda], &b[(3 - 1) * ldb], &a[(4 - 1) * lda], alpha, beta, &b[(4 - 1) * ldb], iwork, work, &dr[0], nin, nout, info);
         if (info != 0) {
-            write(nout, format_9980), "ZCKGSV", info;
+            write(nout, format_9980), "Cckgsv", info;
         }
         //
     } else if (Mlsamen(3, c3.elems, "CSD")) {
@@ -1540,7 +1540,7 @@ statement_190:
         }
         Cckcsd(nn, mval, pval, nval, ntypes, iseed, thresh, nmax, &a[0], &a[(2 - 1) * lda], &a[(3 - 1) * lda], &a[(4 - 1) * lda], &a[(5 - 1) * lda], &a[(6 - 1) * lda], rwork, iwork, work, &dr[0], nin, nout, info);
         if (info != 0) {
-            write(nout, format_9980), "ZCKCSD", info;
+            write(nout, format_9980), "Cckcsd", info;
         }
         //
     } else if (Mlsamen(3, c3.elems, "LSE")) {
@@ -1555,7 +1555,7 @@ statement_190:
         }
         Ccklse(nn, mval, pval, nval, ntypes, iseed, thresh, nmax, &a[0], &a[(2 - 1) * lda], &b[0], &b[(2 - 1) * ldb], x, work, &dr[0], nin, nout, info);
         if (info != 0) {
-            write(nout, format_9980), "ZCKLSE", info;
+            write(nout, format_9980), "Ccklse", info;
         }
     } else {
         write(nout, star);

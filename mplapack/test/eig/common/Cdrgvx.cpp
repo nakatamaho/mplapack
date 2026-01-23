@@ -174,7 +174,7 @@ void Cdrgvx(INTEGER const nsize, REAL const thresh, INTEGER const nin, INTEGER c
                         //
                         Cggevx("N", "V", "V", "B", n, ai, lda, bi, lda, alpha, beta, vl, lda, vr, lda, ilo, ihi, lscale, rscale, anorm, bnorm, s, dif, work, lwork, rwork, iwork, bwork, linfo);
                         if (linfo != 0) {
-                            write(nout, "(' ZDRGVX: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,"
+                            write(nout, "(' Cdrgvx: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,"
                                         "', JTYPE=',i6,')')"),
                                 "ZGGEVX", linfo, n, iptype, iwa, iwb, iwx, iwy;
                             goto statement_30;
@@ -350,7 +350,7 @@ statement_90:
     Cggevx("N", "V", "V", "B", n, ai, lda, bi, lda, alpha, beta, vl, lda, vr, lda, ilo, ihi, lscale, rscale, anorm, bnorm, s, dif, work, lwork, rwork, iwork, bwork, linfo);
     //
     if (linfo != 0) {
-        write(nout, "(' ZDRGVX: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,"
+        write(nout, "(' Cdrgvx: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,"
                     "', Input example #',i2,')')"),
             "ZGGEVX", linfo, n, nptknt;
         goto statement_140;

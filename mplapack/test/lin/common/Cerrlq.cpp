@@ -105,28 +105,28 @@ void Cerrlq(fem::str_cref path, INTEGER const nunit) {
     //
     // Cgelqs
     //
-    srnamt = "ZGELQS";
+    srnamt = "Cgelqs";
     infot = 1;
     Cgelqs(-1, 0, 0, a, 1, x, b, 1, w, 1, info);
-    Chkxer("ZGELQS", infot, nout, lerr, ok);
+    Chkxer("Cgelqs", infot, nout, lerr, ok);
     infot = 2;
     Cgelqs(0, -1, 0, a, 1, x, b, 1, w, 1, info);
-    Chkxer("ZGELQS", infot, nout, lerr, ok);
+    Chkxer("Cgelqs", infot, nout, lerr, ok);
     infot = 2;
     Cgelqs(2, 1, 0, a, 2, x, b, 1, w, 1, info);
-    Chkxer("ZGELQS", infot, nout, lerr, ok);
+    Chkxer("Cgelqs", infot, nout, lerr, ok);
     infot = 3;
     Cgelqs(0, 0, -1, a, 1, x, b, 1, w, 1, info);
-    Chkxer("ZGELQS", infot, nout, lerr, ok);
+    Chkxer("Cgelqs", infot, nout, lerr, ok);
     infot = 5;
     Cgelqs(2, 2, 0, a, 1, x, b, 2, w, 1, info);
-    Chkxer("ZGELQS", infot, nout, lerr, ok);
+    Chkxer("Cgelqs", infot, nout, lerr, ok);
     infot = 8;
     Cgelqs(1, 2, 0, a, 1, x, b, 1, w, 1, info);
-    Chkxer("ZGELQS", infot, nout, lerr, ok);
+    Chkxer("Cgelqs", infot, nout, lerr, ok);
     infot = 10;
     Cgelqs(1, 1, 2, a, 1, x, b, 1, w, 1, info);
-    Chkxer("ZGELQS", infot, nout, lerr, ok);
+    Chkxer("Cgelqs", infot, nout, lerr, ok);
     //
     // Cunglq
     //

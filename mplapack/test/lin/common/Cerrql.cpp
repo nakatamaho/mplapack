@@ -105,28 +105,28 @@ void Cerrql(fem::str_cref path, INTEGER const nunit) {
     //
     // Cgeqls
     //
-    srnamt = "ZGEQLS";
+    srnamt = "Cgeqls";
     infot = 1;
     Cgeqls(-1, 0, 0, a, 1, x, b, 1, w, 1, info);
-    Chkxer("ZGEQLS", infot, nout, lerr, ok);
+    Chkxer("Cgeqls", infot, nout, lerr, ok);
     infot = 2;
     Cgeqls(0, -1, 0, a, 1, x, b, 1, w, 1, info);
-    Chkxer("ZGEQLS", infot, nout, lerr, ok);
+    Chkxer("Cgeqls", infot, nout, lerr, ok);
     infot = 2;
     Cgeqls(1, 2, 0, a, 1, x, b, 1, w, 1, info);
-    Chkxer("ZGEQLS", infot, nout, lerr, ok);
+    Chkxer("Cgeqls", infot, nout, lerr, ok);
     infot = 3;
     Cgeqls(0, 0, -1, a, 1, x, b, 1, w, 1, info);
-    Chkxer("ZGEQLS", infot, nout, lerr, ok);
+    Chkxer("Cgeqls", infot, nout, lerr, ok);
     infot = 5;
     Cgeqls(2, 1, 0, a, 1, x, b, 2, w, 1, info);
-    Chkxer("ZGEQLS", infot, nout, lerr, ok);
+    Chkxer("Cgeqls", infot, nout, lerr, ok);
     infot = 8;
     Cgeqls(2, 1, 0, a, 2, x, b, 1, w, 1, info);
-    Chkxer("ZGEQLS", infot, nout, lerr, ok);
+    Chkxer("Cgeqls", infot, nout, lerr, ok);
     infot = 10;
     Cgeqls(1, 1, 2, a, 1, x, b, 1, w, 1, info);
-    Chkxer("ZGEQLS", infot, nout, lerr, ok);
+    Chkxer("Cgeqls", infot, nout, lerr, ok);
     //
     // Cungql
     //

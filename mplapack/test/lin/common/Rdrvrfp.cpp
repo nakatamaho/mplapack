@@ -139,13 +139,13 @@ void Rdrvrfp(INTEGER const nout, INTEGER const nn, INTEGER *nval, INTEGER const 
                         //
                         Rlatb4("DPO", imat, n, n, ctype, kl, ku, anorm, mode, cndnum, dist);
                         //
-                        srnamt = "DLATMS";
+                        srnamt = "Rlatms";
                         Rlatms(n, n, dist, iseed, ctype, d_work_dlatms, mode, cndnum, anorm, kl, ku, uplo, a, lda, d_work_dlatms, info);
                         //
                         // Check error code from Rlatms.
                         //
                         if (info != 0) {
-                            Alaerh("DPF", "DLATMS", info, 0, uplo, n, n, -1, -1, -1, iit, nfail, nerrs, nout);
+                            Alaerh("DPF", "Rlatms", info, 0, uplo, n, n, -1, -1, -1, iit, nfail, nerrs, nout);
                             goto statement_100;
                         }
                         //
@@ -227,7 +227,7 @@ void Rdrvrfp(INTEGER const nout, INTEGER const nn, INTEGER *nval, INTEGER const 
                         //
                         // Form an exact solution and set the right hand side.
                         //
-                        srnamt = "DLARHS";
+                        srnamt = "Rlarhs";
                         Rlarhs("DPO", "N", uplo, " ", n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
                         Rlacpy("Full", n, nrhs, b, lda, bsav, lda);
                         //

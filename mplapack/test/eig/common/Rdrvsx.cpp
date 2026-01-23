@@ -371,7 +371,7 @@ void Rdrvsx(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             }
             //
             if (iinfo != 0) {
-                write(nounit, "(' DDRVSX: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,', JTYPE=',i6,"
+                write(nounit, "(' Rdrvsx: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,', JTYPE=',i6,"
                               "', ISEED=(',3(i5,','),i5,')')"),
                     "Generator", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);

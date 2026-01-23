@@ -143,13 +143,13 @@ void Cdrvgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                 // Types 1-6:  generate matrices of known condition number.
                 //
                 koff = max(2 - ku, 3 - max((INTEGER)1, n));
-                srnamt = "ZLATMS";
+                srnamt = "Clatms";
                 Clatms(n, n, dist, iseed, type, rwork, mode, cond, anorm, kl, ku, "Z", &af[koff - 1], 3, work, info);
                 //
                 // Check the error code from Clatms.
                 //
                 if (info != 0) {
-                    Alaerh(path, "ZLATMS", info, 0, " ", n, n, kl, ku, -1, imat, nfail, nerrs, nout);
+                    Alaerh(path, "Clatms", info, 0, " ", n, n, kl, ku, -1, imat, nfail, nerrs, nout);
                     goto statement_130;
                 }
                 izero = 0;

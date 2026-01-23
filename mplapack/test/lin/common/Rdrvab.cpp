@@ -127,13 +127,13 @@ void Rdrvab(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nns, IN
             //
             Rlatb4(path, imat, m, n, type, kl, ku, anorm, mode, cndnum, dist);
             //
-            srnamt = "DLATMS";
+            srnamt = "Rlatms";
             Rlatms(m, n, dist, iseed, type, rwork, mode, cndnum, anorm, kl, ku, "No packing", a, lda, work, info);
             //
             // Check error code from Rlatms.
             //
             if (info != 0) {
-                Alaerh(path, "DLATMS", info, 0, " ", m, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                Alaerh(path, "Rlatms", info, 0, " ", m, n, -1, -1, -1, imat, nfail, nerrs, nout);
                 goto statement_100;
             }
             //
@@ -165,7 +165,7 @@ void Rdrvab(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nns, IN
                 xtype = "N";
                 trans = "N";
                 //
-                srnamt = "DLARHS";
+                srnamt = "Rlarhs";
                 Rlarhs(path, xtype, " ", trans, n, n, kl, ku, nrhs, a, lda, x, lda, b, lda, iseed, info);
                 //
                 srnamt = "Rsgesv";
