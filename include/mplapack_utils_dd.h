@@ -122,6 +122,16 @@ inline dd_complex pow2(dd_complex a) {
     return mtmp;
 }
 
+inline dd_real pow4(dd_real a) {
+    dd_real mtmp = a * a * a * a;
+    return mtmp;
+}
+
+inline dd_complex pow4(dd_complex a) {
+    dd_complex mtmp = a * a * a *a;
+    return mtmp;
+}
+
 #include <type_traits>
 
 // Square for INTEGER (workspace sizes, indices).

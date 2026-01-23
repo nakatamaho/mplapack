@@ -92,6 +92,16 @@ inline mpc_class pow2(mpc_class a) {
     return mtmp;
 }
 
+inline mpf_class pow4(mpf_class a) {
+    mpf_class mtmp = a * a * a * a;
+    return mtmp;
+}
+
+inline mpc_class pow4(mpc_class a) {
+    mpc_class mtmp = a * a * a * a;
+    return mtmp;
+}
+
 #include <type_traits>
 
 // Square for INTEGER (workspace sizes, indices).

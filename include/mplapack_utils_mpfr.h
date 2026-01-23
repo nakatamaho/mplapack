@@ -105,6 +105,16 @@ inline mpcomplex pow2(mpcomplex a) {
     return mtmp;
 }
 
+inline mpreal pow4(mpreal a) {
+    mpreal mtmp = a * a * a *a;
+    return mtmp;
+}
+
+inline mpcomplex pow4(mpcomplex a) {
+    mpcomplex mtmp = a * a * a * a;
+    return mtmp;
+}
+
 #include <type_traits>
 
 // Square for INTEGER (workspace sizes, indices).

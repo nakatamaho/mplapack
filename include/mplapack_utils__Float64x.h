@@ -69,7 +69,9 @@ inline void sprintnum_short(char *buf, std::complex<_Float64x> ctmp) { snprintf(
 #endif
 
 inline _Float64x pow2(const _Float64x &a) { return a * a; }
+inline _Float64x pow4(const _Float64x &a) { return a * a * a *a; }
 inline std::complex<_Float64x> pow2(const std::complex<_Float64x> &a) { return a * a; }
+inline std::complex<_Float64x> pow4(const std::complex<_Float64x> &a) { return a * a * a * a; }
 
 #ifdef __cplusplus
 extern "C" {
@@ -180,6 +182,9 @@ inline void sprintnum_short(char *buf, std::complex<_Float64x> ctmp) { snprintf(
 #endif
 
 inline _Float64x pow2(const _Float64x &a) { return a * a; }
+inline _Float64x pow4(const _Float64x &a) { return a * a * a *a; }
+inline std::complex<_Float64x> pow2(const std::complex<_Float64x> &a) { return a * a; }
+inline std::complex<_Float64x> pow4(const std::complex<_Float64x> &a) { return a * a * a * a; }
 
 #ifdef __cplusplus
 extern "C" {

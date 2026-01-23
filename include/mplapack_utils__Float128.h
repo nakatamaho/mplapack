@@ -137,7 +137,9 @@ inline void sprintnum_short(char *buf, std::complex<_Float128> rtmp) {
 #endif
 
 inline _Float128 pow2(const _Float128 &a) { return a * a; }
+inline _Float128 pow4(const _Float128 &a) { return a * a * a * a; }
 inline std::complex<_Float128> pow2(const std::complex<_Float128> &a) { return a * a; }
+inline std::complex<_Float128> pow4(const std::complex<_Float128> &a) { return a * a * a * a; }
 
 // when _Float128 == long double, followings are already defined.
 

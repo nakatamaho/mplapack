@@ -126,6 +126,16 @@ inline qd_complex pow2(qd_complex a) {
     return mtmp;
 }
 
+inline qd_real pow4(qd_real a) {
+    qd_real mtmp = a * a * a * a;
+    return mtmp;
+}
+
+inline qd_complex pow4(qd_complex a) {
+    qd_complex mtmp = a * a * a * a;
+    return mtmp;
+}
+
 #include <type_traits>
 
 // Square for INTEGER (workspace sizes, indices).

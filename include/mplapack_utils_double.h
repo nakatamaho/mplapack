@@ -51,6 +51,18 @@ inline std::complex<double> pow2(std::complex<double> a) {
     return mtmp;
 }
 
+inline double pow4(double a) {
+    double mtmp;
+    mtmp = a * a * a * a;
+    return mtmp;
+}
+
+inline std::complex<double> pow4(std::complex<double> a) {
+    std::complex<double> mtmp;
+    mtmp = a * a * a * a;
+    return mtmp;
+}
+
 #include <type_traits>
 
 // Square for INTEGER (workspace sizes, indices).
