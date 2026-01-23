@@ -165,6 +165,7 @@ MANUAL_MAPPINGS_TESTING=(
   "dggev32 Rggev32"
   "dggev33 Rggev33"
   "dggev34 Rggev34"
+  "dpfsv Rpfsv"
 )
 
 # ------------------------------------------------------------

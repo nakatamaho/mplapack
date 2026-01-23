@@ -75,6 +75,10 @@ TOKEN_RE = re.compile(
     r'(?<![A-Za-z0-9_])([DSCZ][A-Z0-9_]{4,20})([ ]*)(?=[^A-Za-z0-9_]|$)'
 )
 
+# Whole-literal routine tag (optionally padded with trailing spaces).
+# Used for srnamt / Chkxer("XXXX  ", ...) style strings: padding is meaningless.
+TOKEN_ONLY_RE = re.compile(r'^([DSCZ][A-Za-z0-9_]{4,20})[ ]*$')
+
 # C/C++ normal string literal matcher (handles \" and \\).
 # NOTE: This is intentionally *not* a full C++ lexer; it is sufficient for
 # fable-generated code where string literals are emitted as normal literals.
@@ -103,6 +107,21 @@ def rewrite_literal_content(content: str, mapping: Dict[str, str]) -> Tuple[str,
     Replace routine tokens found inside a single C++ string literal content,
     but only if the token exists in mapping.
     """
+    # Special case: the literal is exactly one routine token (possibly padded).
+    # Examples:
+    #   Chkxer("Cgesvdq ", ...)
+    #   srnamt = "Cgghrd ";
+    # In these cases, trailing spaces are Fortran fixed-length leftovers and
+    # should be removed.
+    m0 = TOKEN_ONLY_RE.fullmatch(content)
+    if m0:
+        tok = m0.group(1)
+        mapped = mapping.get(tok.lower())
+        if mapped is not None:
+            return mapped, 1
+        # Even if already renamed / not found in mapping, still drop padding.
+        return tok, 0
+ 
     hits = 0
 
     def repl(m: re.Match) -> str:
@@ -115,7 +134,10 @@ def rewrite_literal_content(content: str, mapping: Dict[str, str]) -> Tuple[str,
             return m.group(0)
 
         hits += 1
-        return mapped
+        # Preserve original padding spaces.
+        # LAPACK tests often rely on fixed-width routine tags and aligned banners
+        # (e.g., "XXXXXX " or "ZLANHF         ***" inside FORMAT strings).
+        return mapped + spaces
 
     new_content = TOKEN_RE.sub(repl, content)
     return new_content, hits
@@ -155,7 +177,7 @@ def apply_patterns(text: str, mapping: Dict[str, str]) -> Tuple[str, int]:
             nonlocal total_hits
             content = m.group(2)
             new_content, hits = rewrite_literal_content(content, mapping)
-            if hits == 0:
+            if new_content == content:
                 return m.group(0)
             total_hits += hits
             return m.group(1) + new_content + m.group(3)
