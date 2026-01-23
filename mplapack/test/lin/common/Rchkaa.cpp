@@ -433,7 +433,7 @@ statement_130:
     //
     // Check first character for correct precision.
     //
-    if (!Mlsame(c1.elems, "Double precision")) {
+    if (!Mlsame(c1.elems, "Double precision") && !Mlsame(c1.elems, "R")) {
         write(nout, format_9990), path;
         //
     } else if (nmats <= 0) {
