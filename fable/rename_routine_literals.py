@@ -75,6 +75,19 @@ TOKEN_RE = re.compile(
     r'(?<![A-Za-z0-9_])([DSCZ][A-Z0-9_]{4,20})([ ]*)(?=[^A-Za-z0-9_]|$)'
 )
 
+# C/C++ normal string literal matcher (handles \" and \\).
+# NOTE: This is intentionally *not* a full C++ lexer; it is sufficient for
+# fable-generated code where format strings are emitted as normal literals.
+CPP_STRING_RE = re.compile(r'"((?:\\.|[^"\\])*)"')
+
+# Match format_#### assignments that may use adjacent string literals:
+#   format_9999 = "...."
+#   format_9999 = "...."
+#                "....";
+FORMAT_ASSIGN_RE = re.compile(
+    r'(\bformat_\d+\s*=\s*)(?P<lits>(?:"(?:\\.|[^"\\])*"\s*)+);',
+    flags=re.DOTALL,
+)
 
 def rewrite_literal_content(content: str, mapping: Dict[str, str]) -> Tuple[str, int]:
     """
@@ -105,6 +118,7 @@ def apply_patterns(text: str, mapping: Dict[str, str]) -> Tuple[str, int]:
       - srnamt = "...."
       - write(unit, fmt), "...."
       - write(unit, "....")  (format string inside parentheses)
+      - format_#### = "...." [possibly multi-literal]
       - chkxer/Chkxer/chkxer2/... (case-insensitive)
       - Mxerbla/Mxerbla_array
       - Alaerh/Alahd/Alaesm ... , "...."
@@ -140,6 +154,26 @@ def apply_patterns(text: str, mapping: Dict[str, str]) -> Tuple[str, int]:
             return m.group(1) + new_content + m.group(3)
 
         text = pat.sub(outer_repl, text)
+
+    # format_#### assignments: rewrite routine tokens inside the format strings.
+    # This is needed because many tests print routine tags via FORMAT constants,
+    # not via direct string literals in write(...), "...".
+    def format_repl(m: re.Match) -> str:
+        nonlocal total_hits
+        prefix = m.group(1)
+        lits = m.group("lits")
+
+        def one_lit(sm: re.Match) -> str:
+            nonlocal total_hits
+            content = sm.group(1)
+            new_content, hits = rewrite_literal_content(content, mapping)
+            total_hits += hits
+            return '"' + new_content + '"'
+
+        new_lits = CPP_STRING_RE.sub(one_lit, lits)
+        return prefix + new_lits + ";"
+
+    text = FORMAT_ASSIGN_RE.sub(format_repl, text)
 
     return text, total_hits
 
