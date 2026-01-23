@@ -359,10 +359,10 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
             if (jtype <= 7) {
                 ntest = 1;
                 for (i = 1; i <= n; i = i + 1) {
-                    d1[i - 1] = castREAL(a[(i - 1) + (i - 1) * lda]);
+                    d1[i - 1] = a[(i - 1) + (i - 1) * lda];
                 }
                 for (i = 1; i <= n - 1; i = i + 1) {
-                    d2[i - 1] = castREAL(a[((i + 1) - 1) + (i - 1) * lda]);
+                    d2[i - 1] = a[((i + 1) - 1) + (i - 1) * lda];
                 }
                 srnamt = "Rstev";
                 Rstev("V", n, d1, d2, z, ldu, work, iinfo);
@@ -382,16 +382,16 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 // Do tests 1 and 2.
                 //
                 for (i = 1; i <= n; i = i + 1) {
-                    d3[i - 1] = castREAL(a[(i - 1) + (i - 1) * lda]);
+                    d3[i - 1] = a[(i - 1) + (i - 1) * lda];
                 }
                 for (i = 1; i <= n - 1; i = i + 1) {
-                    d4[i - 1] = castREAL(a[((i + 1) - 1) + (i - 1) * lda]);
+                    d4[i - 1] = a[((i + 1) - 1) + (i - 1) * lda];
                 }
                 Rstt21(n, 0, d3, d4, d1, d2, z, ldu, work, &result[1 - 1]);
                 //
                 ntest = 3;
                 for (i = 1; i <= n - 1; i = i + 1) {
-                    d4[i - 1] = castREAL(a[((i + 1) - 1) + (i - 1) * lda]);
+                    d4[i - 1] = a[((i + 1) - 1) + (i - 1) * lda];
                 }
                 srnamt = "Rstev";
                 Rstev("N", n, d3, d4, z, ldu, work, iinfo);
@@ -421,10 +421,10 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 ntest = 4;
                 for (i = 1; i <= n; i = i + 1) {
                     eveigs[i - 1] = d3[i - 1];
-                    d1[i - 1] = castREAL(a[(i - 1) + (i - 1) * lda]);
+                    d1[i - 1] = a[(i - 1) + (i - 1) * lda];
                 }
                 for (i = 1; i <= n - 1; i = i + 1) {
-                    d2[i - 1] = castREAL(a[((i + 1) - 1) + (i - 1) * lda]);
+                    d2[i - 1] = a[((i + 1) - 1) + (i - 1) * lda];
                 }
                 srnamt = "Rstevx";
                 Rstevx("V", "A", n, d1, d2, vl, vu, il, iu, abstol, m, wa1, z, ldu, work, iwork, &iwork[(5 * n + 1) - 1], iinfo);
@@ -449,16 +449,16 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 // Do tests 4 and 5.
                 //
                 for (i = 1; i <= n; i = i + 1) {
-                    d3[i - 1] = castREAL(a[(i - 1) + (i - 1) * lda]);
+                    d3[i - 1] = a[(i - 1) + (i - 1) * lda];
                 }
                 for (i = 1; i <= n - 1; i = i + 1) {
-                    d4[i - 1] = castREAL(a[((i + 1) - 1) + (i - 1) * lda]);
+                    d4[i - 1] = a[((i + 1) - 1) + (i - 1) * lda];
                 }
                 Rstt21(n, 0, d3, d4, wa1, d2, z, ldu, work, &result[4 - 1]);
                 //
                 ntest = 6;
                 for (i = 1; i <= n - 1; i = i + 1) {
-                    d4[i - 1] = castREAL(a[((i + 1) - 1) + (i - 1) * lda]);
+                    d4[i - 1] = a[((i + 1) - 1) + (i - 1) * lda];
                 }
                 srnamt = "Rstevx";
                 Rstevx("N", "A", n, d3, d4, vl, vu, il, iu, abstol, m2, wa2, z, ldu, work, iwork, &iwork[(5 * n + 1) - 1], iinfo);
@@ -487,10 +487,10 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 //
                 ntest = 7;
                 for (i = 1; i <= n; i = i + 1) {
-                    d1[i - 1] = castREAL(a[(i - 1) + (i - 1) * lda]);
+                    d1[i - 1] = a[(i - 1) + (i - 1) * lda];
                 }
                 for (i = 1; i <= n - 1; i = i + 1) {
-                    d2[i - 1] = castREAL(a[((i + 1) - 1) + (i - 1) * lda]);
+                    d2[i - 1] = a[((i + 1) - 1) + (i - 1) * lda];
                 }
                 srnamt = "Rstevr";
                 Rstevr("V", "A", n, d1, d2, vl, vu, il, iu, abstol, m, wa1, z, ldu, iwork, work, lwork, &iwork[(2 * n + 1) - 1], liwork - 2 * n, iinfo);
@@ -514,16 +514,16 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 // Do tests 7 and 8.
                 //
                 for (i = 1; i <= n; i = i + 1) {
-                    d3[i - 1] = castREAL(a[(i - 1) + (i - 1) * lda]);
+                    d3[i - 1] = a[(i - 1) + (i - 1) * lda];
                 }
                 for (i = 1; i <= n - 1; i = i + 1) {
-                    d4[i - 1] = castREAL(a[((i + 1) - 1) + (i - 1) * lda]);
+                    d4[i - 1] = a[((i + 1) - 1) + (i - 1) * lda];
                 }
                 Rstt21(n, 0, d3, d4, wa1, d2, z, ldu, work, &result[7 - 1]);
                 //
                 ntest = 9;
                 for (i = 1; i <= n - 1; i = i + 1) {
-                    d4[i - 1] = castREAL(a[((i + 1) - 1) + (i - 1) * lda]);
+                    d4[i - 1] = a[((i + 1) - 1) + (i - 1) * lda];
                 }
                 srnamt = "Rstevr";
                 Rstevr("N", "A", n, d3, d4, vl, vu, il, iu, abstol, m2, wa2, z, ldu, iwork, work, lwork, &iwork[(2 * n + 1) - 1], liwork - 2 * n, iinfo);
@@ -552,10 +552,10 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 //
                 ntest = 10;
                 for (i = 1; i <= n; i = i + 1) {
-                    d1[i - 1] = castREAL(a[(i - 1) + (i - 1) * lda]);
+                    d1[i - 1] = a[(i - 1) + (i - 1) * lda];
                 }
                 for (i = 1; i <= n - 1; i = i + 1) {
-                    d2[i - 1] = castREAL(a[((i + 1) - 1) + (i - 1) * lda]);
+                    d2[i - 1] = a[((i + 1) - 1) + (i - 1) * lda];
                 }
                 srnamt = "Rstevx";
                 Rstevx("V", "I", n, d1, d2, vl, vu, il, iu, abstol, m2, wa2, z, ldu, work, iwork, &iwork[(5 * n + 1) - 1], iinfo);
@@ -575,16 +575,16 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 // Do tests 10 and 11.
                 //
                 for (i = 1; i <= n; i = i + 1) {
-                    d3[i - 1] = castREAL(a[(i - 1) + (i - 1) * lda]);
+                    d3[i - 1] = a[(i - 1) + (i - 1) * lda];
                 }
                 for (i = 1; i <= n - 1; i = i + 1) {
-                    d4[i - 1] = castREAL(a[((i + 1) - 1) + (i - 1) * lda]);
+                    d4[i - 1] = a[((i + 1) - 1) + (i - 1) * lda];
                 }
                 Rstt22(n, m2, 0, d3, d4, wa2, d2, z, ldu, work, max((INTEGER)1, m2), &result[10 - 1]);
                 //
                 ntest = 12;
                 for (i = 1; i <= n - 1; i = i + 1) {
-                    d4[i - 1] = castREAL(a[((i + 1) - 1) + (i - 1) * lda]);
+                    d4[i - 1] = a[((i + 1) - 1) + (i - 1) * lda];
                 }
                 srnamt = "Rstevx";
                 Rstevx("N", "I", n, d3, d4, vl, vu, il, iu, abstol, m3, wa3, z, ldu, work, iwork, &iwork[(5 * n + 1) - 1], iinfo);
@@ -625,10 +625,10 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 }
                 //
                 for (i = 1; i <= n; i = i + 1) {
-                    d1[i - 1] = castREAL(a[(i - 1) + (i - 1) * lda]);
+                    d1[i - 1] = a[(i - 1) + (i - 1) * lda];
                 }
                 for (i = 1; i <= n - 1; i = i + 1) {
-                    d2[i - 1] = castREAL(a[((i + 1) - 1) + (i - 1) * lda]);
+                    d2[i - 1] = a[((i + 1) - 1) + (i - 1) * lda];
                 }
                 srnamt = "Rstevx";
                 Rstevx("V", "V", n, d1, d2, vl, vu, il, iu, abstol, m2, wa2, z, ldu, work, iwork, &iwork[(5 * n + 1) - 1], iinfo);
@@ -655,16 +655,16 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 // Do tests 13 and 14.
                 //
                 for (i = 1; i <= n; i = i + 1) {
-                    d3[i - 1] = castREAL(a[(i - 1) + (i - 1) * lda]);
+                    d3[i - 1] = a[(i - 1) + (i - 1) * lda];
                 }
                 for (i = 1; i <= n - 1; i = i + 1) {
-                    d4[i - 1] = castREAL(a[((i + 1) - 1) + (i - 1) * lda]);
+                    d4[i - 1] = a[((i + 1) - 1) + (i - 1) * lda];
                 }
                 Rstt22(n, m2, 0, d3, d4, wa2, d2, z, ldu, work, max((INTEGER)1, m2), &result[13 - 1]);
                 //
                 ntest = 15;
                 for (i = 1; i <= n - 1; i = i + 1) {
-                    d4[i - 1] = castREAL(a[((i + 1) - 1) + (i - 1) * lda]);
+                    d4[i - 1] = a[((i + 1) - 1) + (i - 1) * lda];
                 }
                 srnamt = "Rstevx";
                 Rstevx("N", "V", n, d3, d4, vl, vu, il, iu, abstol, m3, wa3, z, ldu, work, iwork, &iwork[(5 * n + 1) - 1], iinfo);
@@ -689,10 +689,10 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 //
                 ntest = 16;
                 for (i = 1; i <= n; i = i + 1) {
-                    d1[i - 1] = castREAL(a[(i - 1) + (i - 1) * lda]);
+                    d1[i - 1] = a[(i - 1) + (i - 1) * lda];
                 }
                 for (i = 1; i <= n - 1; i = i + 1) {
-                    d2[i - 1] = castREAL(a[((i + 1) - 1) + (i - 1) * lda]);
+                    d2[i - 1] = a[((i + 1) - 1) + (i - 1) * lda];
                 }
                 srnamt = "Rstevd";
                 Rstevd("V", n, d1, d2, z, ldu, work, lwedc, iwork, liwedc, iinfo);
@@ -712,16 +712,16 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 // Do tests 16 and 17.
                 //
                 for (i = 1; i <= n; i = i + 1) {
-                    d3[i - 1] = castREAL(a[(i - 1) + (i - 1) * lda]);
+                    d3[i - 1] = a[(i - 1) + (i - 1) * lda];
                 }
                 for (i = 1; i <= n - 1; i = i + 1) {
-                    d4[i - 1] = castREAL(a[((i + 1) - 1) + (i - 1) * lda]);
+                    d4[i - 1] = a[((i + 1) - 1) + (i - 1) * lda];
                 }
                 Rstt21(n, 0, d3, d4, d1, d2, z, ldu, work, &result[16 - 1]);
                 //
                 ntest = 18;
                 for (i = 1; i <= n - 1; i = i + 1) {
-                    d4[i - 1] = castREAL(a[((i + 1) - 1) + (i - 1) * lda]);
+                    d4[i - 1] = a[((i + 1) - 1) + (i - 1) * lda];
                 }
                 srnamt = "Rstevd";
                 Rstevd("N", n, d3, d4, z, ldu, work, lwedc, iwork, liwedc, iinfo);
@@ -750,10 +750,10 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 //
                 ntest = 19;
                 for (i = 1; i <= n; i = i + 1) {
-                    d1[i - 1] = castREAL(a[(i - 1) + (i - 1) * lda]);
+                    d1[i - 1] = a[(i - 1) + (i - 1) * lda];
                 }
                 for (i = 1; i <= n - 1; i = i + 1) {
-                    d2[i - 1] = castREAL(a[((i + 1) - 1) + (i - 1) * lda]);
+                    d2[i - 1] = a[((i + 1) - 1) + (i - 1) * lda];
                 }
                 srnamt = "Rstevr";
                 Rstevr("V", "I", n, d1, d2, vl, vu, il, iu, abstol, m2, wa2, z, ldu, iwork, work, lwork, &iwork[(2 * n + 1) - 1], liwork - 2 * n, iinfo);
@@ -773,16 +773,16 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 // DO tests 19 and 20.
                 //
                 for (i = 1; i <= n; i = i + 1) {
-                    d3[i - 1] = castREAL(a[(i - 1) + (i - 1) * lda]);
+                    d3[i - 1] = a[(i - 1) + (i - 1) * lda];
                 }
                 for (i = 1; i <= n - 1; i = i + 1) {
-                    d4[i - 1] = castREAL(a[((i + 1) - 1) + (i - 1) * lda]);
+                    d4[i - 1] = a[((i + 1) - 1) + (i - 1) * lda];
                 }
                 Rstt22(n, m2, 0, d3, d4, wa2, d2, z, ldu, work, max((INTEGER)1, m2), &result[19 - 1]);
                 //
                 ntest = 21;
                 for (i = 1; i <= n - 1; i = i + 1) {
-                    d4[i - 1] = castREAL(a[((i + 1) - 1) + (i - 1) * lda]);
+                    d4[i - 1] = a[((i + 1) - 1) + (i - 1) * lda];
                 }
                 srnamt = "Rstevr";
                 Rstevr("N", "I", n, d3, d4, vl, vu, il, iu, abstol, m3, wa3, z, ldu, iwork, work, lwork, &iwork[(2 * n + 1) - 1], liwork - 2 * n, iinfo);
@@ -823,10 +823,10 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 }
                 //
                 for (i = 1; i <= n; i = i + 1) {
-                    d1[i - 1] = castREAL(a[(i - 1) + (i - 1) * lda]);
+                    d1[i - 1] = a[(i - 1) + (i - 1) * lda];
                 }
                 for (i = 1; i <= n - 1; i = i + 1) {
-                    d2[i - 1] = castREAL(a[((i + 1) - 1) + (i - 1) * lda]);
+                    d2[i - 1] = a[((i + 1) - 1) + (i - 1) * lda];
                 }
                 srnamt = "Rstevr";
                 Rstevr("V", "V", n, d1, d2, vl, vu, il, iu, abstol, m2, wa2, z, ldu, iwork, work, lwork, &iwork[(2 * n + 1) - 1], liwork - 2 * n, iinfo);
@@ -853,16 +853,16 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 // Do tests 22 and 23.
                 //
                 for (i = 1; i <= n; i = i + 1) {
-                    d3[i - 1] = castREAL(a[(i - 1) + (i - 1) * lda]);
+                    d3[i - 1] = a[(i - 1) + (i - 1) * lda];
                 }
                 for (i = 1; i <= n - 1; i = i + 1) {
-                    d4[i - 1] = castREAL(a[((i + 1) - 1) + (i - 1) * lda]);
+                    d4[i - 1] = a[((i + 1) - 1) + (i - 1) * lda];
                 }
                 Rstt22(n, m2, 0, d3, d4, wa2, d2, z, ldu, work, max((INTEGER)1, m2), &result[22 - 1]);
                 //
                 ntest = 24;
                 for (i = 1; i <= n - 1; i = i + 1) {
-                    d4[i - 1] = castREAL(a[((i + 1) - 1) + (i - 1) * lda]);
+                    d4[i - 1] = a[((i + 1) - 1) + (i - 1) * lda];
                 }
                 srnamt = "Rstevr";
                 Rstevr("N", "V", n, d3, d4, vl, vu, il, iu, abstol, m3, wa3, z, ldu, iwork, work, lwork, &iwork[(2 * n + 1) - 1], liwork - 2 * n, iinfo);

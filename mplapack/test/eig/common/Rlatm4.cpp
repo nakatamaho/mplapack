@@ -224,10 +224,10 @@ void Rlatm4(INTEGER const itype, INTEGER const n, INTEGER const nz1, INTEGER con
         // Scale by AMAGN
         //
         for (jd = kbeg; jd <= kend; jd = jd + 1) {
-            a[(jd - 1) + (jd - 1) * lda] = amagn * castREAL(a[(jd - 1) + (jd - 1) * lda]);
+            a[(jd - 1) + (jd - 1) * lda] = amagn * a[(jd - 1) + (jd - 1) * lda];
         }
         for (jd = isdb; jd <= isde; jd = jd + 1) {
-            a[((jd + 1) - 1) + (jd - 1) * lda] = amagn * castREAL(a[((jd + 1) - 1) + (jd - 1) * lda]);
+            a[((jd + 1) - 1) + (jd - 1) * lda] = amagn * a[((jd + 1) - 1) + (jd - 1) * lda];
         }
         //
         // If ISIGN = 1 or 2, assign random signs to diagonal and
@@ -235,14 +235,14 @@ void Rlatm4(INTEGER const itype, INTEGER const n, INTEGER const nz1, INTEGER con
         //
         if (isign > 0) {
             for (jd = kbeg; jd <= kend; jd = jd + 1) {
-                if (castREAL(a[(jd - 1) + (jd - 1) * lda]) != zero) {
+                if (a[(jd - 1) + (jd - 1) * lda] != zero) {
                     if (Rlaran(iseed) > half) {
                         a[(jd - 1) + (jd - 1) * lda] = -a[(jd - 1) + (jd - 1) * lda];
                     }
                 }
             }
             for (jd = isdb; jd <= isde; jd = jd + 1) {
-                if (castREAL(a[((jd + 1) - 1) + (jd - 1) * lda]) != zero) {
+                if (a[((jd + 1) - 1) + (jd - 1) * lda] != zero) {
                     if (Rlaran(iseed) > half) {
                         a[((jd + 1) - 1) + (jd - 1) * lda] = -a[((jd + 1) - 1) + (jd - 1) * lda];
                     }
