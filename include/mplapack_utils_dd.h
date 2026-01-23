@@ -97,7 +97,7 @@ inline void sprintnum_short(char *buf, dd_real rtmp) {
 inline void sprintnum(char *buf, dd_complex rtmp) {
     char buf1[__MPLAPACK_BUFLEN__], buf2[__MPLAPACK_BUFLEN__];
     rtmp.real().write(buf1, __MPLAPACK_BUFLEN__, DD_PRECISION);
-    rtmp.real().write(buf2, __MPLAPACK_BUFLEN__, DD_PRECISION);
+    rtmp.imag().write(buf2, __MPLAPACK_BUFLEN__, DD_PRECISION);
     strcat(buf, buf1);
     strcat(buf, buf2);
     strcat(buf, "i");
@@ -105,7 +105,7 @@ inline void sprintnum(char *buf, dd_complex rtmp) {
 inline void sprintnum_short(char *buf, dd_complex rtmp) {
     char buf1[__MPLAPACK_BUFLEN__], buf2[__MPLAPACK_BUFLEN__];
     rtmp.real().write(buf1, __MPLAPACK_BUFLEN__, DD_PRECISION_SHORT);
-    rtmp.real().write(buf2, __MPLAPACK_BUFLEN__, DD_PRECISION_SHORT);
+    rtmp.imag().write(buf2, __MPLAPACK_BUFLEN__, DD_PRECISION_SHORT);
     strcat(buf, buf1);
     strcat(buf, buf2);
     strcat(buf, "i");
