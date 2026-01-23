@@ -76,7 +76,7 @@ void Rckglm(INTEGER const nn, INTEGER *mval, INTEGER *pval, INTEGER *nval, INTEG
     INTEGER iinfo = 0;
     INTEGER i = 0;
     REAL resid = 0.0;
-    static const char *format_9999 = "(' DLATMS in DCKGLM INFO = ',i5)";
+    static const char *format_9999 = "(' Rlatms in Rckglm INFO = ',i5)";
     //
     // Initialize constants.
     //

@@ -87,10 +87,10 @@ void Rdrgev(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     INTEGER jc = 0;
     INTEGER jr = 0;
     INTEGER i = 0;
-    static const char *format_9998 = "(' DDRGEV: ',a,' Eigenvectors from ',a,' incorrectly ','normalized.',/,"
+    static const char *format_9998 = "(' Rdrgev: ',a,' Eigenvectors from ',a,' incorrectly ','normalized.',/,"
                                      "' Bits of error=',0p,g10.3,',',3x,'N=',i4,', JTYPE=',i3,', ISEED=(',4(i4,"
                                      "','),i5,')')";
-    static const char *format_9999 = "(' DDRGEV: ',a,' returned INFO=',i6,'.',/,3x,'N=',i6,', JTYPE=',i6,"
+    static const char *format_9999 = "(' Rdrgev: ',a,' returned INFO=',i6,'.',/,3x,'N=',i6,', JTYPE=',i6,"
                                      "', ISEED=(',4(i4,','),i5,')')";
     //
     // Check for errors

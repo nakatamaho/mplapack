@@ -81,9 +81,9 @@ void Cget24(bool const comp, INTEGER const jtype, REAL const thresh, INTEGER *is
     REAL v = 0.0;
     REAL tol = 0.0;
     REAL tolin = 0.0;
-    static const char *format_9998 = "(' ZGET24: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,', JTYPE=',i6,"
+    static const char *format_9998 = "(' Cget24: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,', JTYPE=',i6,"
                                      "', ISEED=(',3(i5,','),i5,')')";
-    static const char *format_9999 = "(' ZGET24: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,"
+    static const char *format_9999 = "(' Cget24: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,"
                                      "', INPUT EXAMPLE NUMBER = ',i4)";
     //
     // Check for errors

@@ -100,7 +100,7 @@ void Cdrgsx(INTEGER const nsize, INTEGER const ncmax, REAL const thresh, INTEGER
                                      "'when reordering fails',/,' 10 = 1/ULP  if PLEST/PLTRU > THRESH or ',"
                                      "'PLTRU/PLEST > THRESH',/,'    ( Test 10 is only for input examples )',/)";
     static const char *format_9996 = "(/,1x,a3,' -- Complex Expert Generalized Schur form',' problem driver')";
-    static const char *format_9997 = "(' ZDRGSX: S not in Schur form at eigenvalue ',i6,'.',/,9x,'N=',i6,"
+    static const char *format_9997 = "(' Cdrgsx: S not in Schur form at eigenvalue ',i6,'.',/,9x,'N=',i6,"
                                      "', JTYPE=',i6,')')";
     //
     // Check for errors

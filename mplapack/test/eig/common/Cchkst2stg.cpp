@@ -117,7 +117,7 @@ void Cchkst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
     INTEGER indrwk = 0;
     const bool crel = false;
     const bool crange = false;
-    static const char *format_9999 = "(' ZCHKST2STG: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,', JTYPE=',i6,"
+    static const char *format_9999 = "(' Cchkst2stg: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,', JTYPE=',i6,"
                                      "', ISEED=(',3(i5,','),i5,')')";
     //
     // Keep ftnchek happy

@@ -110,7 +110,7 @@ void Rchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     INTEGER m3 = 0;
     const bool srel = false;
     const bool srange = false;
-    static const char *format_9999 = "(' DCHKST: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,', JTYPE=',i6,"
+    static const char *format_9999 = "(' Rchkst: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,', JTYPE=',i6,"
                                      "', ISEED=(',3(i5,','),i5,')')";
     //
     // Keep ftnchek happy

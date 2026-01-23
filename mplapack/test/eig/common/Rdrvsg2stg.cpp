@@ -98,7 +98,7 @@ void Rdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
     REAL vu = 0.0;
     INTEGER m = 0;
     INTEGER ij = 0;
-    static const char *format_9999 = "(' DDRVSG2STG: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,', JTYPE=',i6,"
+    static const char *format_9999 = "(' Rdrvsg2stg: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,', JTYPE=',i6,"
                                      "', ISEED=(',3(i5,','),i5,')')";
     //
     // 1)      Check for errors

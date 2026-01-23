@@ -108,7 +108,7 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
     const REAL two = 2.0;
     INTEGER nsv = 0;
     INTEGER nfail = 0;
-    static const char *format_9995 = "(' ZDRVBD: ',a,' returned INFO=',i6,'.',/,9x,'M=',i6,', N=',i6,"
+    static const char *format_9995 = "(' Cdrvbd: ',a,' returned INFO=',i6,'.',/,9x,'M=',i6,', N=',i6,"
                                      "', JTYPE=',i6,', LSWORK=',i6,/,9x,'ISEED=(',3(i5,','),i5,')')";
     //
     // Check for errors

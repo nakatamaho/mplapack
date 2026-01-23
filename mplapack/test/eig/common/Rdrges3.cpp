@@ -99,7 +99,7 @@ void Rdrges3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
     INTEGER i1 = 0;
     INTEGER ierr = 0;
     INTEGER knteig = 0;
-    static const char *format_9999 = "(' DDRGES3: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,', JTYPE=',i6,"
+    static const char *format_9999 = "(' Rdrges3: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,', JTYPE=',i6,"
                                      "', ISEED=(',4(i4,','),i5,')')";
     //
     // Check for errors

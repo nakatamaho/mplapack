@@ -80,7 +80,7 @@ void Cckgqr(INTEGER const nm, INTEGER *mval, INTEGER const np, INTEGER *pval, IN
     const INTEGER ntests = 7;
     REAL result[ntests];
     INTEGER i = 0;
-    static const char *format_9999 = "(' ZLATMS in ZCKGQR:    INFO = ',i5)";
+    static const char *format_9999 = "(' Clatms in Cckgqr:    INFO = ',i5)";
     //
     // Initialize constants.
     //

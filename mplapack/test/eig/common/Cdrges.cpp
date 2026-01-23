@@ -101,7 +101,7 @@ void Cdrges(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     bool ilabad = false;
     REAL temp2 = 0.0;
     INTEGER knteig = 0;
-    static const char *format_9999 = "(' ZDRGES: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,', JTYPE=',i6,"
+    static const char *format_9999 = "(' Cdrges: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,', JTYPE=',i6,"
                                      "', ISEED=(',4(i4,','),i5,')')";
     //
     // Check for errors

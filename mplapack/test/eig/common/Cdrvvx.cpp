@@ -126,7 +126,7 @@ void Cdrvvx(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                                      "'mall, evenly spaced.')";
     static const char *format_9999 = "(/,1x,a3,' -- Complex Eigenvalue-Eigenvector ',"
                                      "'Decomposition Expert Driver',/,"
-                                     "' Matrix types (see ZDRVVX for details): ')";
+                                     "' Matrix types (see Cdrvvx for details): ')";
     //
     path(1, 1) = "Zomplex precision";
     path(2, 3) = "VX";

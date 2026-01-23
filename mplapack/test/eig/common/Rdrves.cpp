@@ -95,7 +95,7 @@ void Rdrves(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     INTEGER knteig = 0;
     INTEGER ntest = 0;
     INTEGER nfail = 0;
-    static const char *format_9992 = "(' DDRVES: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,', JTYPE=',i6,"
+    static const char *format_9992 = "(' Rdrves: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,', JTYPE=',i6,"
                                      "', ISEED=(',3(i5,','),i5,')')";
     //
     path(1, 1) = "Double precision";

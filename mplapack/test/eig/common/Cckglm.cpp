@@ -76,7 +76,7 @@ void Cckglm(INTEGER const nn, INTEGER *nval, INTEGER *mval, INTEGER *pval, INTEG
     INTEGER iinfo = 0;
     INTEGER i = 0;
     REAL resid = 0.0;
-    static const char *format_9999 = "(' ZLATMS in ZCKGLM INFO = ',i5)";
+    static const char *format_9999 = "(' Clatms in Cckglm INFO = ',i5)";
     //
     // Initialize constants.
     //

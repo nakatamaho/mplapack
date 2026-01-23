@@ -83,9 +83,9 @@ void Rget23(bool const comp, fem::str_cref balanc, INTEGER const jtype, REAL con
     REAL tol = 0.0;
     REAL tolin = 0.0;
     REAL vmax = 0.0;
-    static const char *format_9998 = "(' DGET23: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,', JTYPE=',i6,"
+    static const char *format_9998 = "(' Rget23: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,', JTYPE=',i6,"
                                      "', BALANC = ',a,', ISEED=(',3(i5,','),i5,')')";
-    static const char *format_9999 = "(' DGET23: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,"
+    static const char *format_9999 = "(' Rget23: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,"
                                      "', INPUT EXAMPLE NUMBER = ',i4)";
     //
     // Check for errors

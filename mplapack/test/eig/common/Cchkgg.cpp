@@ -96,10 +96,10 @@ void Cchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     REAL dumma[4];
     REAL temp1 = 0.0;
     REAL temp2 = 0.0;
-    static const char *format_9998 = "(' ZCHKGG: ',a,' Eigenvectors from ',a,' incorrectly ','normalized.',/,"
+    static const char *format_9998 = "(' Cchkgg: ',a,' Eigenvectors from ',a,' incorrectly ','normalized.',/,"
                                      "' Bits of error=',0p,g10.3,',',9x,'N=',i6,', JTYPE=',i6,', ISEED=(',3(i5,"
                                      "','),i5,')')";
-    static const char *format_9999 = "(' ZCHKGG: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,', JTYPE=',i6,"
+    static const char *format_9999 = "(' Cchkgg: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,', JTYPE=',i6,"
                                      "', ISEED=(',3(i5,','),i5,')')";
     //
     // Check for errors

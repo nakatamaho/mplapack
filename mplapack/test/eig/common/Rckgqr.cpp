@@ -80,7 +80,7 @@ void Rckgqr(INTEGER const nm, INTEGER *mval, INTEGER const np, INTEGER *pval, IN
     const INTEGER ntests = 7;
     REAL result[ntests];
     INTEGER i = 0;
-    static const char *format_9999 = "(' DLATMS in DCKGQR:    INFO = ',i5)";
+    static const char *format_9999 = "(' Rlatms in Rckgqr:    INFO = ',i5)";
     //
     // Initialize constants.
     //

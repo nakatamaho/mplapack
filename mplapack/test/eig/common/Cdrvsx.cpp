@@ -135,7 +135,7 @@ void Cdrvsx(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                                      "'4=Diagonal: evenly spaced entries.    ','  8=Diagonal: s',"
                                      "'mall, evenly spaced.')";
     static const char *format_9999 = "(/,1x,a3,' -- Complex Schur Form Decomposition Expert ','Driver',/,"
-                                     "' Matrix types (see ZDRVSX for details): ')";
+                                     "' Matrix types (see Cdrvsx for details): ')";
     //
     path(1, 1) = "Zomplex precision";
     path(2, 3) = "SX";

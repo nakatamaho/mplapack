@@ -91,7 +91,7 @@ void Cchkhb(INTEGER const nsizes, INTEGER *nn, INTEGER const nwdths, INTEGER *kk
     const REAL half = one / two;
     INTEGER jc = 0;
     INTEGER jr = 0;
-    static const char *format_9999 = "(' ZCHKHB: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,', JTYPE=',i6,"
+    static const char *format_9999 = "(' Cchkhb: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,', JTYPE=',i6,"
                                      "', ISEED=(',3(i5,','),i5,')')";
     //
     // Check for errors

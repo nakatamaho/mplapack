@@ -93,7 +93,7 @@ void Cdrvev(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     COMPLEX dum[1];
     INTEGER ntest = 0;
     INTEGER nfail = 0;
-    static const char *format_9993 = "(' ZDRVEV: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,', JTYPE=',i6,"
+    static const char *format_9993 = "(' Cdrvev: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,', JTYPE=',i6,"
                                      "', ISEED=(',3(i5,','),i5,')')";
     //
     path(1, 1) = "Zomplex precision";

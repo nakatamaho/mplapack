@@ -93,7 +93,7 @@ void Cchkbb(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nw
     const REAL zero = 0.0;
     INTEGER i = 0;
     INTEGER jr = 0;
-    static const char *format_9999 = "(' ZCHKBB: ',a,' returned INFO=',i5,'.',/,9x,'M=',i5,' N=',i5,' K=',i5,"
+    static const char *format_9999 = "(' Cchkbb: ',a,' returned INFO=',i5,'.',/,9x,'M=',i5,' N=',i5,' K=',i5,"
                                      "', JTYPE=',i5,', ISEED=(',3(i5,','),i5,')')";
     //
     // Check for errors

@@ -76,7 +76,7 @@ void Cdrgvx(INTEGER const nsize, REAL const thresh, INTEGER const nin, INTEGER c
     REAL ratio1 = 0.0;
     REAL ratio2 = 0.0;
     INTEGER j = 0;
-    static const char *format_9986 = "(' ZDRGVX: ',a,' Eigenvectors from ',a,' incorrectly ','normalized.',/,"
+    static const char *format_9986 = "(' Cdrgvx: ',a,' Eigenvectors from ',a,' incorrectly ','normalized.',/,"
                                      "' Bits of error=',0p,g10.3,',',9x,'N=',i6,', Input Example #',i2,')')";
     static const char *format_9992 = "(/,' Tests performed:  ',/,4x,"
                                      "' a is alpha, b is beta, l is a left eigenvector, ',/,4x,"
@@ -87,7 +87,7 @@ void Cdrgvx(INTEGER const nsize, REAL const thresh, INTEGER const nin, INTEGER c
                                      "' 4 = max( DIFest/DIFtru, DIFtru/DIFest ) ',"
                                      "' over the 1st and 5th eigenvectors',/)";
     static const char *format_9997 = "(/,1x,a3,' -- Complex Expert Eigenvalue/vector',' problem driver')";
-    static const char *format_9998 = "(' ZDRGVX: ',a,' Eigenvectors from ',a,' incorrectly ','normalized.',/,"
+    static const char *format_9998 = "(' Cdrgvx: ',a,' Eigenvectors from ',a,' incorrectly ','normalized.',/,"
                                      "' Bits of error=',0p,g10.3,',',9x,'N=',i6,', JTYPE=',i6,', IWA=',i5,"
                                      "', IWB=',i5,', IWX=',i5,', IWY=',i5)";
     //

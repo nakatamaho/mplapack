@@ -121,7 +121,7 @@ void Rdrvvx(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                                      "'4=Diagonal: evenly spaced entries.    ','  8=Diagonal: s',"
                                      "'mall, evenly spaced.')";
     static const char *format_9999 = "(/,1x,a3,' -- Real Eigenvalue-Eigenvector Decomposition',"
-                                     "' Expert Driver',/,' Matrix types (see DDRVVX for details): ')";
+                                     "' Expert Driver',/,' Matrix types (see Rdrvvx for details): ')";
     //
     path(1, 1) = "Double precision";
     path(2, 3) = "VX";

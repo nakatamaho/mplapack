@@ -96,13 +96,13 @@ void Cchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     INTEGER k = 0;
     bool match = false;
     INTEGER jj = 0;
-    static const char *format_9997 = "(' ZCHKHS: Selected ',a,' Eigenvectors from ',a,"
+    static const char *format_9997 = "(' Cchkhs: Selected ',a,' Eigenvectors from ',a,"
                                      "' do not match other eigenvectors ',9x,'N=',i6,', JTYPE=',i6,', ISEED=(',"
                                      "3(i5,','),i5,')')";
-    static const char *format_9998 = "(' ZCHKHS: ',a,' Eigenvectors from ',a,' incorrectly ','normalized.',/,"
+    static const char *format_9998 = "(' Cchkhs: ',a,' Eigenvectors from ',a,' incorrectly ','normalized.',/,"
                                      "' Bits of error=',0p,g10.3,',',9x,'N=',i6,', JTYPE=',i6,', ISEED=(',3(i5,"
                                      "','),i5,')')";
-    static const char *format_9999 = "(' ZCHKHS: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,', JTYPE=',i6,"
+    static const char *format_9999 = "(' Cchkhs: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,', JTYPE=',i6,"
                                      "', ISEED=(',3(i5,','),i5,')')";
     //
     // Check for errors

@@ -92,10 +92,10 @@ void Rchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     REAL dumma[4];
     REAL temp1 = 0.0;
     REAL temp2 = 0.0;
-    static const char *format_9998 = "(' DCHKGG: ',a,' Eigenvectors from ',a,' incorrectly ','normalized.',/,"
+    static const char *format_9998 = "(' Rchkgg: ',a,' Eigenvectors from ',a,' incorrectly ','normalized.',/,"
                                      "' Bits of error=',0p,g10.3,',',9x,'N=',i6,', JTYPE=',i6,', ISEED=(',3(i5,"
                                      "','),i5,')')";
-    static const char *format_9999 = "(' DCHKGG: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,', JTYPE=',i6,"
+    static const char *format_9999 = "(' Rchkgg: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,', JTYPE=',i6,"
                                      "', ISEED=(',3(i5,','),i5,')')";
     //
     // Check for errors

@@ -82,7 +82,7 @@ void Rckgsv(INTEGER const nm, INTEGER *mval, INTEGER *pval, INTEGER *nval, INTEG
     const INTEGER ntests = 12;
     REAL result[ntests];
     INTEGER i = 0;
-    static const char *format_9999 = "(' DLATMS in DCKGSV   INFO = ',i5)";
+    static const char *format_9999 = "(' Rlatms in Rckgsv INFO = ',i5)";
     //
     // Initialize constants and the random number seed.
     //

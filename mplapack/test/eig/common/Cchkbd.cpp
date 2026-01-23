@@ -96,7 +96,7 @@ void Cchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
     REAL temp2 = 0.0;
     const REAL half = 0.5;
     REAL dumma[1];
-    static const char *format_9998 = "(' ZCHKBD: ',a,' returned INFO=',i6,'.',/,9x,'M=',i6,', N=',i6,"
+    static const char *format_9998 = "(' Cchkbd: ',a,' returned INFO=',i6,'.',/,9x,'M=',i6,', N=',i6,"
                                      "', JTYPE=',i6,', ISEED=(',3(i5,','),i5,')')";
     //
     // Check for errors

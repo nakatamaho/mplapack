@@ -112,9 +112,9 @@ void Cdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     INTEGER indx = 0;
     INTEGER indwrk = 0;
     INTEGER kd = 0;
-    static const char *format_9998 = "(' ZDRVST: ',a,' returned INFO=',i6,/,9x,'N=',i6,', KD=',i6,', JTYPE=',"
+    static const char *format_9998 = "(' Cdrvst: ',a,' returned INFO=',i6,/,9x,'N=',i6,', KD=',i6,', JTYPE=',"
                                      "i6,', ISEED=(',3(i5,','),i5,')')";
-    static const char *format_9999 = "(' ZDRVST: ',a,' returned INFO=',i6,/,9x,'N=',i6,', JTYPE=',i6,"
+    static const char *format_9999 = "(' Cdrvst: ',a,' returned INFO=',i6,/,9x,'N=',i6,', JTYPE=',i6,"
                                      "', ISEED=(',3(i5,','),i5,')')";
     //
     // 1)      Check for errors
