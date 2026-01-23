@@ -71,45 +71,45 @@ void Rerrorhr_col(fem::str_cref path, INTEGER const nunit) {
     //
     // Rorhr_col
     //
-    srnamt = "DORHR_COL";
+    srnamt = "Rorhr_col";
     //
     infot = 1;
     INTEGER info = 0;
     Rorhr_col(-1, 0, 1, a, 1, t, 1, d, info);
-    Chkxer("DORHR_COL", infot, nout, lerr, ok);
+    Chkxer("Rorhr_col", infot, nout, lerr, ok);
     //
     infot = 2;
     Rorhr_col(0, -1, 1, a, 1, t, 1, d, info);
-    Chkxer("DORHR_COL", infot, nout, lerr, ok);
+    Chkxer("Rorhr_col", infot, nout, lerr, ok);
     Rorhr_col(1, 2, 1, a, 1, t, 1, d, info);
-    Chkxer("DORHR_COL", infot, nout, lerr, ok);
+    Chkxer("Rorhr_col", infot, nout, lerr, ok);
     //
     infot = 3;
     Rorhr_col(0, 0, -1, a, 1, t, 1, d, info);
-    Chkxer("DORHR_COL", infot, nout, lerr, ok);
+    Chkxer("Rorhr_col", infot, nout, lerr, ok);
     //
     Rorhr_col(0, 0, 0, a, 1, t, 1, d, info);
-    Chkxer("DORHR_COL", infot, nout, lerr, ok);
+    Chkxer("Rorhr_col", infot, nout, lerr, ok);
     //
     infot = 5;
     Rorhr_col(0, 0, 1, a, -1, t, 1, d, info);
-    Chkxer("DORHR_COL", infot, nout, lerr, ok);
+    Chkxer("Rorhr_col", infot, nout, lerr, ok);
     //
     Rorhr_col(0, 0, 1, a, 0, t, 1, d, info);
-    Chkxer("DORHR_COL", infot, nout, lerr, ok);
+    Chkxer("Rorhr_col", infot, nout, lerr, ok);
     //
     Rorhr_col(2, 0, 1, a, 1, t, 1, d, info);
-    Chkxer("DORHR_COL", infot, nout, lerr, ok);
+    Chkxer("Rorhr_col", infot, nout, lerr, ok);
     //
     infot = 7;
     Rorhr_col(0, 0, 1, a, 1, t, -1, d, info);
-    Chkxer("DORHR_COL", infot, nout, lerr, ok);
+    Chkxer("Rorhr_col", infot, nout, lerr, ok);
     //
     Rorhr_col(0, 0, 1, a, 1, t, 0, d, info);
-    Chkxer("DORHR_COL", infot, nout, lerr, ok);
+    Chkxer("Rorhr_col", infot, nout, lerr, ok);
     //
     Rorhr_col(4, 3, 2, a, 4, t, 1, d, info);
-    Chkxer("DORHR_COL", infot, nout, lerr, ok);
+    Chkxer("Rorhr_col", infot, nout, lerr, ok);
     //
     // Print a summary line.
     //

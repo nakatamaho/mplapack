@@ -340,7 +340,7 @@ void Cdrvpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                 // Form the inverse of A.
                                 //
                                 Claset("Full", n, n, COMPLEX(zero), COMPLEX(one), a, lda);
-                                srnamt = "ZPBTRS";
+                                srnamt = "Cpbtrs";
                                 Cpbtrs(uplo.elems, n, kd, n, afac, ldab, a, lda, info);
                                 //
                                 // Compute the 1-norm condition number of A.
@@ -375,13 +375,13 @@ void Cdrvpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                 Clacpy("Full", kd + 1, n, a, ldab, afac, ldab);
                                 Clacpy("Full", n, nrhs, b, lda, x, lda);
                                 //
-                                srnamt = "ZPBSV ";
+                                srnamt = "Cpbsv";
                                 Cpbsv(uplo.elems, n, kd, nrhs, afac, ldab, x, lda, info);
                                 //
                                 // Check error code from Cpbsv .
                                 //
                                 if (info != izero) {
-                                    Alaerh(path, "ZPBSV ", info, izero, uplo, n, n, kd, kd, nrhs, imat, nfail, nerrs, nout);
+                                    Alaerh(path, "Cpbsv", info, izero, uplo, n, n, kd, kd, nrhs, imat, nfail, nerrs, nout);
                                     goto statement_40;
                                 } else if (info != 0) {
                                     goto statement_40;
@@ -437,13 +437,13 @@ void Cdrvpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                             // Solve the system and compute the condition
                             // number and error bounds using Cpbsvx.
                             //
-                            srnamt = "ZPBSVX";
+                            srnamt = "Cpbsvx";
                             Cpbsvx(fact.elems, uplo.elems, n, kd, nrhs, a, ldab, afac, ldab, equed.elems, s, b, lda, x, lda, rcond, rwork, &rwork[(nrhs + 1) - 1], work, &rwork[(2 * nrhs + 1) - 1], info);
                             //
                             // Check the error code from Cpbsvx.
                             //
                             if (info != izero) {
-                                Alaerh(path, "ZPBSVX", info, izero, fact + uplo, n, n, kd, kd, nrhs, imat, nfail, nerrs, nout);
+                                Alaerh(path, "Cpbsvx", info, izero, fact + uplo, n, n, kd, kd, nrhs, imat, nfail, nerrs, nout);
                                 goto statement_60;
                             }
                             //

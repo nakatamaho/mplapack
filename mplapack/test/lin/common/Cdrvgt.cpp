@@ -324,13 +324,13 @@ void Cdrvgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         Ccopy(n + 2 * m, a, 1, af, 1);
                         Clacpy("Full", n, nrhs, b, lda, x, lda);
                         //
-                        srnamt = "ZGTSV ";
+                        srnamt = "Cgtsv";
                         Cgtsv(n, nrhs, af, &af[(m + 1) - 1], &af[(n + m + 1) - 1], x, lda, info);
                         //
                         // Check error code from Cgtsv .
                         //
                         if (info != izero) {
-                            Alaerh(path, "ZGTSV ", info, izero, " ", n, n, 1, 1, nrhs, imat, nfail, nerrs, nout);
+                            Alaerh(path, "Cgtsv", info, izero, " ", n, n, 1, 1, nrhs, imat, nfail, nerrs, nout);
                         }
                         nt = 1;
                         if (izero == 0) {
@@ -378,13 +378,13 @@ void Cdrvgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                     // Solve the system and compute the condition number and
                     // error bounds using Cgtsvx.
                     //
-                    srnamt = "ZGTSVX";
+                    srnamt = "Cgtsvx";
                     Cgtsvx(fact.elems, trans.elems, n, nrhs, a, &a[(m + 1) - 1], &a[(n + m + 1) - 1], af, &af[(m + 1) - 1], &af[(n + m + 1) - 1], &af[(n + 2 * m + 1) - 1], iwork, b, lda, x, lda, rcond, rwork, &rwork[(nrhs + 1) - 1], work, &rwork[(2 * nrhs + 1) - 1], info);
                     //
                     // Check the error code from Cgtsvx.
                     //
                     if (info != izero) {
-                        Alaerh(path, "ZGTSVX", info, izero, fact + trans, n, n, 1, 1, nrhs, imat, nfail, nerrs, nout);
+                        Alaerh(path, "Cgtsvx", info, izero, fact + trans, n, n, 1, 1, nrhs, imat, nfail, nerrs, nout);
                     }
                     //
                     if (ifact >= 2) {
@@ -424,7 +424,7 @@ void Cdrvgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                             if (nfail == 0 && nerrs == 0) {
                                 Aladhd(nout, path);
                             }
-                            write(nout, format_9998), "ZGTSVX", fact, trans, n, imat, k, result[k - 1];
+                            write(nout, format_9998), "Cgtsvx", fact, trans, n, imat, k, result[k - 1];
                             nfail++;
                         }
                     }
@@ -436,7 +436,7 @@ void Cdrvgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         if (nfail == 0 && nerrs == 0) {
                             Aladhd(nout, path);
                         }
-                        write(nout, format_9998), "ZGTSVX", fact, trans, n, imat, k, result[k - 1];
+                        write(nout, format_9998), "Cgtsvx", fact, trans, n, imat, k, result[k - 1];
                         nfail++;
                     }
                     nrun += nt - k1 + 2;

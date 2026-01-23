@@ -128,13 +128,13 @@ void Rtsqr01(fem::str_cref tssw, INTEGER const m, INTEGER const n, INTEGER const
         lwork = max(lwork, castINTEGER(workquery[1 - 1]));
         Rgemqr("R", "T", n, m, k, af, m, tquery, tsize, df, n, workquery, -1, info);
         lwork = max(lwork, castINTEGER(workquery[1 - 1]));
-        srnamt = "DGEQR";
+        srnamt = "Rgeqr";
         Rgeqr(m, n, af, m, t, tsize, work, lwork, info);
         //
         // Generate the m-by-m matrix Q
         //
         Rlaset("Full", m, m, zero, one, q, m);
-        srnamt = "DGEMQR";
+        srnamt = "Rgemqr";
         Rgemqr("L", "N", m, m, k, af, m, t, tsize, q, m, work, lwork, info);
         //
         // Copy R
@@ -170,7 +170,7 @@ void Rtsqr01(fem::str_cref tssw, INTEGER const m, INTEGER const n, INTEGER const
         //
         // Apply Q to C as Q*C
         //
-        srnamt = "DGEMQR";
+        srnamt = "Rgemqr";
         Rgemqr("L", "N", m, n, k, af, m, t, tsize, cf, m, work, lwork, info);
         //
         // Compute |Q*C - Q*C| / |C|
@@ -189,7 +189,7 @@ void Rtsqr01(fem::str_cref tssw, INTEGER const m, INTEGER const n, INTEGER const
         //
         // Apply Q to C as QT*C
         //
-        srnamt = "DGEMQR";
+        srnamt = "Rgemqr";
         Rgemqr("L", "T", m, n, k, af, m, t, tsize, cf, m, work, lwork, info);
         //
         // Compute |QT*C - QT*C| / |C|
@@ -212,7 +212,7 @@ void Rtsqr01(fem::str_cref tssw, INTEGER const m, INTEGER const n, INTEGER const
         //
         // Apply Q to D as D*Q
         //
-        srnamt = "DGEMQR";
+        srnamt = "Rgemqr";
         Rgemqr("R", "N", n, m, k, af, m, t, tsize, df, n, work, lwork, info);
         //
         // Compute |D*Q - D*Q| / |D|
@@ -259,13 +259,13 @@ void Rtsqr01(fem::str_cref tssw, INTEGER const m, INTEGER const n, INTEGER const
         lwork = max(lwork, castINTEGER(workquery[1 - 1]));
         Rgemlq("R", "T", m, n, k, af, m, tquery, tsize, cf, m, workquery, -1, info);
         lwork = max(lwork, castINTEGER(workquery[1 - 1]));
-        srnamt = "DGELQ";
+        srnamt = "Rgelq";
         Rgelq(m, n, af, m, t, tsize, work, lwork, info);
         //
         // Generate the n-by-n matrix Q
         //
         Rlaset("Full", n, n, zero, one, q, n);
-        srnamt = "DGEMLQ";
+        srnamt = "Rgemlq";
         Rgemlq("R", "N", n, n, k, af, m, t, tsize, q, n, work, lwork, info);
         //
         // Copy R

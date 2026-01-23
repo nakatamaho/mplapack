@@ -196,13 +196,13 @@ void Rchkpp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                 //
                 npp = n * (n + 1) / 2;
                 Rcopy(npp, a, 1, afac, 1);
-                srnamt = "DPPTRF";
+                srnamt = "Rpptrf";
                 Rpptrf(uplo.elems, n, afac, info);
                 //
                 // Check error code from Rpptrf.
                 //
                 if (info != izero) {
-                    Alaerh(path, "DPPTRF", info, izero, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                    Alaerh(path, "Rpptrf", info, izero, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                     goto statement_90;
                 }
                 //
@@ -222,13 +222,13 @@ void Rchkpp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                 // Form the inverse and compute the residual.
                 //
                 Rcopy(npp, afac, 1, ainv, 1);
-                srnamt = "DPPTRI";
+                srnamt = "Rpptri";
                 Rpptri(uplo.elems, n, ainv, info);
                 //
                 // Check error code from Rpptri.
                 //
                 if (info != 0) {
-                    Alaerh(path, "DPPTRI", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                    Alaerh(path, "Rpptri", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                 }
                 //
                 Rppt03(uplo, n, a, ainv, work, lda, rwork, rcondc, result[2 - 1]);
@@ -257,13 +257,13 @@ void Rchkpp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                     Rlarhs(path, xtype, uplo, " ", n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
                     Rlacpy("Full", n, nrhs, b, lda, x, lda);
                     //
-                    srnamt = "DPPTRS";
+                    srnamt = "Rpptrs";
                     Rpptrs(uplo.elems, n, nrhs, afac, x, lda, info);
                     //
                     // Check error code from Rpptrs.
                     //
                     if (info != 0) {
-                        Alaerh(path, "DPPTRS", info, 0, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                        Alaerh(path, "Rpptrs", info, 0, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                     }
                     //
                     Rlacpy("Full", n, nrhs, b, lda, work, lda);
@@ -277,13 +277,13 @@ void Rchkpp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                     // +    TESTS 5, 6, and 7
                     // Use iterative refinement to improve the solution.
                     //
-                    srnamt = "DPPRFS";
+                    srnamt = "Rpprfs";
                     Rpprfs(uplo.elems, n, nrhs, a, afac, b, lda, x, lda, rwork, &rwork[(nrhs + 1) - 1], work, iwork, info);
                     //
                     // Check error code from Rpprfs.
                     //
                     if (info != 0) {
-                        Alaerh(path, "DPPRFS", info, 0, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                        Alaerh(path, "Rpprfs", info, 0, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                     }
                     //
                     Rget04(n, nrhs, x, lda, xact, lda, rcondc, result[5 - 1]);
@@ -310,13 +310,13 @@ void Rchkpp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                 // Get an estimate of RCOND = 1/CNDNUM.
                 //
                 anorm = Rlansp("1", uplo.elems, n, a, rwork);
-                srnamt = "DPPCON";
+                srnamt = "Rppcon";
                 Rppcon(uplo.elems, n, afac, anorm, rcond, work, iwork, info);
                 //
                 // Check error code from Rppcon.
                 //
                 if (info != 0) {
-                    Alaerh(path, "DPPCON", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                    Alaerh(path, "Rppcon", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                 }
                 //
                 result[8 - 1] = Rget06(rcond, rcondc);

@@ -155,13 +155,13 @@ void Cchktr(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                     // Form the inverse of A.
                     //
                     Clacpy(uplo.elems, n, n, a, lda, ainv, lda);
-                    srnamt = "ZTRTRI";
+                    srnamt = "Ctrtri";
                     Ctrtri(uplo.elems, diag.elems, n, ainv, lda, info);
                     //
                     // Check error code from Ctrtri.
                     //
                     if (info != 0) {
-                        Alaerh(path, "ZTRTRI", info, 0, uplo + diag, n, n, -1, -1, nb, imat, nfail, nerrs, nout);
+                        Alaerh(path, "Ctrtri", info, 0, uplo + diag, n, n, -1, -1, nb, imat, nfail, nerrs, nout);
                     }
                     //
                     // Compute the infinity-norm condition number of A.
@@ -223,13 +223,13 @@ void Cchktr(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                             xtype = "C";
                             Clacpy("Full", n, nrhs, b, lda, x, lda);
                             //
-                            srnamt = "ZTRTRS";
+                            srnamt = "Ctrtrs";
                             Ctrtrs(uplo.elems, trans.elems, diag.elems, n, nrhs, a, lda, x, lda, info);
                             //
                             // Check error code from Ctrtrs.
                             //
                             if (info != 0) {
-                                Alaerh(path, "ZTRTRS", info, 0, uplo + trans + diag, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                                Alaerh(path, "Ctrtrs", info, 0, uplo + trans + diag, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                             }
                             //
                             // This line is needed on a Sun SPARCstation.
@@ -249,13 +249,13 @@ void Cchktr(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                             // Use iterative refinement to improve the solution
                             // and compute error bounds.
                             //
-                            srnamt = "ZTRRFS";
+                            srnamt = "Ctrrfs";
                             Ctrrfs(uplo.elems, trans.elems, diag.elems, n, nrhs, a, lda, b, lda, x, lda, rwork, &rwork[(nrhs + 1) - 1], work, &rwork[(2 * nrhs + 1) - 1], info);
                             //
                             // Check error code from Ctrrfs.
                             //
                             if (info != 0) {
-                                Alaerh(path, "ZTRRFS", info, 0, uplo + trans + diag, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                                Alaerh(path, "Ctrrfs", info, 0, uplo + trans + diag, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                             }
                             //
                             Cget04(n, nrhs, x, lda, xact, lda, rcondc, result[4 - 1]);
@@ -291,13 +291,13 @@ void Cchktr(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                             norm = "I";
                             rcondc = rcondi;
                         }
-                        srnamt = "ZTRCON";
+                        srnamt = "Ctrcon";
                         Ctrcon(norm.elems, uplo.elems, diag.elems, n, a, lda, rcond, work, rwork, info);
                         //
                         // Check error code from Ctrcon.
                         //
                         if (info != 0) {
-                            Alaerh(path, "ZTRCON", info, 0, norm + uplo + diag, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                            Alaerh(path, "Ctrcon", info, 0, norm + uplo + diag, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                         }
                         //
                         Ctrt06(rcond, rcondc, uplo, diag, n, a, lda, rwork, result[7 - 1]);
@@ -350,14 +350,14 @@ void Cchktr(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                     // +    TEST 8
                     // Solve the system op(A)*x = b.
                     //
-                    srnamt = "ZLATRS";
+                    srnamt = "Clatrs";
                     Ccopy(n, x, 1, b, 1);
                     Clatrs(uplo.elems, trans.elems, diag.elems, "N", n, a, lda, b, scale, rwork, info);
                     //
                     // Check error code from Clatrs.
                     //
                     if (info != 0) {
-                        Alaerh(path, "ZLATRS", info, 0, uplo + trans + diag + "N", n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                        Alaerh(path, "Clatrs", info, 0, uplo + trans + diag + "N", n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                     }
                     //
                     Ctrt03(uplo, trans, diag, n, 1, a, lda, scale, rwork, one, b, lda, x, lda, work, result[8 - 1]);
@@ -371,7 +371,7 @@ void Cchktr(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                     // Check error code from Clatrs.
                     //
                     if (info != 0) {
-                        Alaerh(path, "ZLATRS", info, 0, uplo + trans + diag + "Y", n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                        Alaerh(path, "Clatrs", info, 0, uplo + trans + diag + "Y", n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                     }
                     //
                     Ctrt03(uplo, trans, diag, n, 1, a, lda, scale, rwork, one, &b[(n + 1) - 1], lda, x, lda, work, result[9 - 1]);
@@ -383,14 +383,14 @@ void Cchktr(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                         if (nfail == 0 && nerrs == 0) {
                             Alahd(nout, path);
                         }
-                        write(nout, format_9996), "ZLATRS", uplo, trans, diag, "N", n, imat, 8, result[8 - 1];
+                        write(nout, format_9996), "Clatrs", uplo, trans, diag, "N", n, imat, 8, result[8 - 1];
                         nfail++;
                     }
                     if (result[9 - 1] >= thresh) {
                         if (nfail == 0 && nerrs == 0) {
                             Alahd(nout, path);
                         }
-                        write(nout, format_9996), "ZLATRS", uplo, trans, diag, "Y", n, imat, 9, result[9 - 1];
+                        write(nout, format_9996), "Clatrs", uplo, trans, diag, "Y", n, imat, 9, result[9 - 1];
                         nfail++;
                     }
                     nrun += 2;

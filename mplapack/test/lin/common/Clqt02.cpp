@@ -55,7 +55,7 @@ void Clqt02(INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX *a, COMPL
     //
     // Generate the first n columns of the matrix Q
     //
-    srnamt = "ZUNGLQ";
+    srnamt = "Cunglq";
     INTEGER info = 0;
     Cunglq(m, n, k, q, lda, tau, work, lwork, info);
     //

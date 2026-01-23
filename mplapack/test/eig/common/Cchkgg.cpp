@@ -342,14 +342,14 @@ void Cchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             //
             Cgeqr2(n, n, t, lda, work, &work[(n + 1) - 1], iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "ZGEQR2", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Cgeqr2", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 goto statement_210;
             }
             //
             Cunm2r("L", "C", n, n, n, t, lda, work, h, lda, &work[(n + 1) - 1], iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "ZUNM2R", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Cunm2r", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 goto statement_210;
             }
@@ -357,14 +357,14 @@ void Cchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             Claset("Full", n, n, czero, cone, u, ldu);
             Cunm2r("R", "N", n, n, n, t, lda, work, u, ldu, &work[(n + 1) - 1], iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "ZUNM2R", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Cunm2r", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 goto statement_210;
             }
             //
             Cgghrd("V", "I", n, 1, n, h, lda, t, lda, u, ldu, v, ldu, iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "ZGGHRD", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Cgghrd", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 goto statement_210;
             }
@@ -390,7 +390,7 @@ void Cchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             //
             Chgeqz("E", "N", "N", n, 1, n, s2, lda, p2, lda, alpha3, beta3, q, ldu, z, ldu, work, lwork, rwork, iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "ZHGEQZ(E)", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Chgeqz(E)", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 goto statement_210;
             }
@@ -402,7 +402,7 @@ void Cchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             //
             Chgeqz("S", "N", "N", n, 1, n, s2, lda, p2, lda, alpha1, beta1, q, ldu, z, ldu, work, lwork, rwork, iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "ZHGEQZ(S)", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Chgeqz(S)", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 goto statement_210;
             }
@@ -414,7 +414,7 @@ void Cchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             //
             Chgeqz("S", "I", "I", n, 1, n, s1, lda, p1, lda, alpha1, beta1, q, ldu, z, ldu, work, lwork, rwork, iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "ZHGEQZ(V)", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Chgeqz(V)", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 goto statement_210;
             }
@@ -449,7 +449,7 @@ void Cchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             //
             Ctgevc("L", "S", llwork, n, s1, lda, p1, lda, evectl, ldu, cdumma, ldu, n, in, work, rwork, iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "ZTGEVC(L,S1)", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Ctgevc(L,S1)", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 goto statement_210;
             }
@@ -464,7 +464,7 @@ void Cchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             //
             Ctgevc("L", "S", llwork, n, s1, lda, p1, lda, &evectl[((i1 + 1) - 1) * ldu], ldu, cdumma, ldu, n, in, work, rwork, iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "ZTGEVC(L,S2)", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Ctgevc(L,S2)", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 goto statement_210;
             }
@@ -483,7 +483,7 @@ void Cchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             Clacpy("F", n, n, q, ldu, evectl, ldu);
             Ctgevc("L", "B", llwork, n, s1, lda, p1, lda, evectl, ldu, cdumma, ldu, n, in, work, rwork, iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "ZTGEVC(L,B)", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Ctgevc(L,B)", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 goto statement_210;
             }
@@ -513,7 +513,7 @@ void Cchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             //
             Ctgevc("R", "S", llwork, n, s1, lda, p1, lda, cdumma, ldu, evectr, ldu, n, in, work, rwork, iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "ZTGEVC(R,S1)", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Ctgevc(R,S1)", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 goto statement_210;
             }
@@ -528,7 +528,7 @@ void Cchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             //
             Ctgevc("R", "S", llwork, n, s1, lda, p1, lda, cdumma, ldu, &evectr[((i1 + 1) - 1) * ldu], ldu, n, in, work, rwork, iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "ZTGEVC(R,S2)", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Ctgevc(R,S2)", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 goto statement_210;
             }
@@ -547,7 +547,7 @@ void Cchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             Clacpy("F", n, n, z, ldu, evectr, ldu);
             Ctgevc("R", "B", llwork, n, s1, lda, p1, lda, cdumma, ldu, evectr, ldu, n, in, work, rwork, iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "ZTGEVC(R,B)", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Ctgevc(R,B)", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 goto statement_210;
             }

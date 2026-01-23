@@ -369,7 +369,7 @@ void Cdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                 // Form the inverse of A.
                                 //
                                 Claset("Full", n, n, COMPLEX(zero), COMPLEX(one), work, ldb);
-                                srnamt = "ZGBTRS";
+                                srnamt = "Cgbtrs";
                                 Cgbtrs("No transpose", n, kl, ku, n, afb, ldafb, iwork, work, ldb, info);
                                 //
                                 // Compute the 1-norm condition number of A.
@@ -425,13 +425,13 @@ void Cdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                     Clacpy("Full", kl + ku + 1, n, a, lda, &afb[(kl + 1) - 1], ldafb);
                                     Clacpy("Full", n, nrhs, b, ldb, x, ldb);
                                     //
-                                    srnamt = "ZGBSV ";
+                                    srnamt = "Cgbsv";
                                     Cgbsv(n, kl, ku, nrhs, afb, ldafb, iwork, x, ldb, info);
                                     //
                                     // Check error code from Cgbsv .
                                     //
                                     if (info != izero) {
-                                        Alaerh(path, "ZGBSV ", info, izero, " ", n, n, kl, ku, nrhs, imat, nfail, nerrs, nout);
+                                        Alaerh(path, "Cgbsv", info, izero, " ", n, n, kl, ku, nrhs, imat, nfail, nerrs, nout);
                                     }
                                     //
                                     // Reconstruct matrix from factors and
@@ -488,13 +488,13 @@ void Cdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                 // Solve the system and compute the condition
                                 // number and error bounds using Cgbsvx.
                                 //
-                                srnamt = "ZGBSVX";
+                                srnamt = "Cgbsvx";
                                 Cgbsvx(fact.elems, trans.elems, n, kl, ku, nrhs, a, lda, afb, ldafb, iwork, equed.elems, s, &s[(ldb + 1) - 1], b, ldb, x, ldb, rcond, rwork, &rwork[(nrhs + 1) - 1], work, &rwork[(2 * nrhs + 1) - 1], info);
                                 //
                                 // Check the error code from Cgbsvx.
                                 //
                                 if (info != izero) {
-                                    Alaerh(path, "ZGBSVX", info, izero, fact + trans, n, n, kl, ku, nrhs, imat, nfail, nerrs, nout);
+                                    Alaerh(path, "Cgbsvx", info, izero, fact + trans, n, n, kl, ku, nrhs, imat, nfail, nerrs, nout);
                                 }
                                 //
                                 // Compare RWORK(2*NRHS+1) from Cgbsvx with the
@@ -579,9 +579,9 @@ void Cdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                                 Aladhd(nout, path);
                                             }
                                             if (prefac) {
-                                                write(nout, format_9995), "ZGBSVX", fact, trans, n, kl, ku, equed, imat, k, result[k - 1];
+                                                write(nout, format_9995), "Cgbsvx", fact, trans, n, kl, ku, equed, imat, k, result[k - 1];
                                             } else {
-                                                write(nout, format_9996), "ZGBSVX", fact, trans, n, kl, ku, imat, k, result[k - 1];
+                                                write(nout, format_9996), "Cgbsvx", fact, trans, n, kl, ku, imat, k, result[k - 1];
                                             }
                                             nfail++;
                                         }
@@ -593,9 +593,9 @@ void Cdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                             Aladhd(nout, path);
                                         }
                                         if (prefac) {
-                                            write(nout, format_9995), "ZGBSVX", fact, trans, n, kl, ku, equed, imat, 1, result[1 - 1];
+                                            write(nout, format_9995), "Cgbsvx", fact, trans, n, kl, ku, equed, imat, 1, result[1 - 1];
                                         } else {
-                                            write(nout, format_9996), "ZGBSVX", fact, trans, n, kl, ku, imat, 1, result[1 - 1];
+                                            write(nout, format_9996), "Cgbsvx", fact, trans, n, kl, ku, imat, 1, result[1 - 1];
                                         }
                                         nfail++;
                                         nrun++;
@@ -605,9 +605,9 @@ void Cdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                             Aladhd(nout, path);
                                         }
                                         if (prefac) {
-                                            write(nout, format_9995), "ZGBSVX", fact, trans, n, kl, ku, equed, imat, 6, result[6 - 1];
+                                            write(nout, format_9995), "Cgbsvx", fact, trans, n, kl, ku, equed, imat, 6, result[6 - 1];
                                         } else {
-                                            write(nout, format_9996), "ZGBSVX", fact, trans, n, kl, ku, imat, 6, result[6 - 1];
+                                            write(nout, format_9996), "Cgbsvx", fact, trans, n, kl, ku, imat, 6, result[6 - 1];
                                         }
                                         nfail++;
                                         nrun++;
@@ -617,9 +617,9 @@ void Cdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                             Aladhd(nout, path);
                                         }
                                         if (prefac) {
-                                            write(nout, format_9995), "ZGBSVX", fact, trans, n, kl, ku, equed, imat, 7, result[7 - 1];
+                                            write(nout, format_9995), "Cgbsvx", fact, trans, n, kl, ku, equed, imat, 7, result[7 - 1];
                                         } else {
-                                            write(nout, format_9996), "ZGBSVX", fact, trans, n, kl, ku, imat, 7, result[7 - 1];
+                                            write(nout, format_9996), "Cgbsvx", fact, trans, n, kl, ku, imat, 7, result[7 - 1];
                                         }
                                         nfail++;
                                         nrun++;
@@ -650,7 +650,7 @@ void Cdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                 // Solve the system and compute the condition number
                                 // and error bounds using Cgbsvxx.
                                 //
-                                srnamt = "ZGBSVXX";
+                                srnamt = "Cgbsvxx";
                                 n_err_bnds = 3;
                                 Cgbsvxx(fact, trans, n, kl, ku, nrhs, a, lda, afb, ldafb, iwork, equed, s, s[(n + 1) - 1], b, ldb, x, ldb, rcond, rpvgrw_svxx, berr, n_err_bnds, errbnds_n, errbnds_c, 0, zero, work, rwork, info);
                                 //
@@ -660,7 +660,7 @@ void Cdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                     goto statement_90;
                                 }
                                 if (info != izero) {
-                                    Alaerh(path, "ZGBSVXX", info, izero, fact + trans, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                                    Alaerh(path, "Cgbsvxx", info, izero, fact + trans, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                                     goto statement_90;
                                 }
                                 //
@@ -725,9 +725,9 @@ void Cdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                                 Aladhd(nout, path);
                                             }
                                             if (prefac) {
-                                                write(nout, format_9995), "ZGBSVXX", fact, trans, n, kl, ku, equed, imat, k, result[k - 1];
+                                                write(nout, format_9995), "Cgbsvxx", fact, trans, n, kl, ku, equed, imat, k, result[k - 1];
                                             } else {
-                                                write(nout, format_9996), "ZGBSVXX", fact, trans, n, kl, ku, imat, k, result[k - 1];
+                                                write(nout, format_9996), "Cgbsvxx", fact, trans, n, kl, ku, imat, k, result[k - 1];
                                             }
                                             nfail++;
                                         }
@@ -739,9 +739,9 @@ void Cdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                             Aladhd(nout, path);
                                         }
                                         if (prefac) {
-                                            write(nout, format_9995), "ZGBSVXX", fact, trans, n, kl, ku, equed, imat, 1, result[1 - 1];
+                                            write(nout, format_9995), "Cgbsvxx", fact, trans, n, kl, ku, equed, imat, 1, result[1 - 1];
                                         } else {
-                                            write(nout, format_9996), "ZGBSVXX", fact, trans, n, kl, ku, imat, 1, result[1 - 1];
+                                            write(nout, format_9996), "Cgbsvxx", fact, trans, n, kl, ku, imat, 1, result[1 - 1];
                                         }
                                         nfail++;
                                         nrun++;
@@ -751,9 +751,9 @@ void Cdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                             Aladhd(nout, path);
                                         }
                                         if (prefac) {
-                                            write(nout, format_9995), "ZGBSVXX", fact, trans, n, kl, ku, equed, imat, 6, result[6 - 1];
+                                            write(nout, format_9995), "Cgbsvxx", fact, trans, n, kl, ku, equed, imat, 6, result[6 - 1];
                                         } else {
-                                            write(nout, format_9996), "ZGBSVXX", fact, trans, n, kl, ku, imat, 6, result[6 - 1];
+                                            write(nout, format_9996), "Cgbsvxx", fact, trans, n, kl, ku, imat, 6, result[6 - 1];
                                         }
                                         nfail++;
                                         nrun++;
@@ -763,9 +763,9 @@ void Cdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                             Aladhd(nout, path);
                                         }
                                         if (prefac) {
-                                            write(nout, format_9995), "ZGBSVXX", fact, trans, n, kl, ku, equed, imat, 7, result[7 - 1];
+                                            write(nout, format_9995), "Cgbsvxx", fact, trans, n, kl, ku, equed, imat, 7, result[7 - 1];
                                         } else {
-                                            write(nout, format_9996), "ZGBSVXX", fact, trans, n, kl, ku, imat, 7, result[7 - 1];
+                                            write(nout, format_9996), "Cgbsvxx", fact, trans, n, kl, ku, imat, 7, result[7 - 1];
                                         }
                                         nfail++;
                                         nrun++;

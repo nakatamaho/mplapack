@@ -167,14 +167,14 @@ void Cdrvrf3(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
                                         // The case IUPLO.EQ.1 is when SIDE.EQ.'U'
                                         // -> QR factorization.
                                         //
-                                        srnamt = "ZGEQRF";
+                                        srnamt = "Cgeqrf";
                                         Cgeqrf(na, na, a, lda, tau, z_work_zgeqrf, lda, info);
                                     } else {
                                         //
                                         // The case IUPLO.EQ.2 is when SIDE.EQ.'L'
                                         // -> QL factorization.
                                         //
-                                        srnamt = "ZGELQF";
+                                        srnamt = "Cgelqf";
                                         Cgelqf(na, na, a, lda, tau, z_work_zgeqrf, lda, info);
                                     }
                                     //
@@ -189,7 +189,7 @@ void Cdrvrf3(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
                                     //
                                     // Store a copy of A in RFP format (in ARF).
                                     //
-                                    srnamt = "ZTRTTF";
+                                    srnamt = "Ctrttf";
                                     Ctrttf(cform.elems, uplo.elems, na, a, lda, arf, info);
                                     //
                                     // Generate B1 our M--by--N right-hand side
@@ -205,13 +205,13 @@ void Cdrvrf3(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
                                     // Solve op( A ) X = B or X op( A ) = B
                                     // with Ctrsm
                                     //
-                                    srnamt = "ZTRSM";
+                                    srnamt = "Ctrsm";
                                     Ctrsm(side.elems, uplo.elems, trans.elems, diag.elems, m, n, alpha, a, lda, b1, lda);
                                     //
                                     // Solve op( A ) X = B or X op( A ) = B
                                     // with Ctfsm
                                     //
-                                    srnamt = "ZTFSM";
+                                    srnamt = "Ctfsm";
                                     Ctfsm(cform.elems, side.elems, uplo.elems, trans.elems, diag.elems, m, n, alpha, arf, b2, lda);
                                     //
                                     // Check that the result agrees.
@@ -229,7 +229,7 @@ void Cdrvrf3(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
                                     if (result[1 - 1] >= thresh) {
                                         if (nfail == 0) {
                                             write(nout, star);
-                                            write(nout, "(1x,' *** Error(s) or Failure(s) while testing ZTFSM "
+                                            write(nout, "(1x,' *** Error(s) or Failure(s) while testing Ctfsm"
                                                         "        ***')");
                                         }
                                         write(nout, "(1x,'     Failure in ',a5,', CFORM=''',a1,''',',"

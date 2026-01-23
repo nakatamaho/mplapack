@@ -69,7 +69,7 @@ void Crqt02(INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX *a, COMPL
     //
     // Generate the last n rows of the matrix Q
     //
-    srnamt = "ZUNGRQ";
+    srnamt = "Cungrq";
     INTEGER info = 0;
     Cungrq(m, n, k, q, lda, &tau[(m - k + 1) - 1], work, lwork, info);
     //

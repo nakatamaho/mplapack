@@ -276,7 +276,7 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                 if (iwspc > 1) {
                     Clacpy("F", m, n, asav, lda, a, lda);
                 }
-                srnamt = "ZGESVD";
+                srnamt = "Cgesvd";
                 Cgesvd("A", "A", m, n, a, lda, ssav, usav, ldu, vtsav, ldvt, work, lswork, rwork, iinfo);
                 if (iinfo != 0) {
                     write(nounit, format_9995), "GESVD", iinfo, m, n, jtype, lswork, ioldsd;
@@ -319,7 +319,7 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                         jobu = cjob[(iju + 1) - 1];
                         jobvt = cjob[(ijvt + 1) - 1];
                         Clacpy("F", m, n, asav, lda, a, lda);
-                        srnamt = "ZGESVD";
+                        srnamt = "Cgesvd";
                         Cgesvd(jobu.elems, jobvt.elems, m, n, a, lda, s, u, ldu, vt, ldvt, work, lswork, rwork, iinfo);
                         //
                         // Compare U
@@ -381,7 +381,7 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                 // Factorize A
                 //
                 Clacpy("F", m, n, asav, lda, a, lda);
-                srnamt = "ZGESDD";
+                srnamt = "Cgesdd";
                 Cgesdd("A", m, n, a, lda, ssav, usav, ldu, vtsav, ldvt, work, lswork, rwork, iwork, iinfo);
                 if (iinfo != 0) {
                     write(nounit, format_9995), "GESDD", iinfo, m, n, jtype, lswork, ioldsd;
@@ -419,7 +419,7 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                 for (ijq = 0; ijq <= 2; ijq = ijq + 1) {
                     jobq = cjob[(ijq + 1) - 1];
                     Clacpy("F", m, n, asav, lda, a, lda);
-                    srnamt = "ZGESDD";
+                    srnamt = "Cgesdd";
                     Cgesdd(jobq.elems, m, n, a, lda, s, u, ldu, vt, ldvt, work, lswork, rwork, iwork, iinfo);
                     //
                     // Compare U
@@ -488,14 +488,14 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                     }
                     //
                     Clacpy("F", m, n, asav, lda, a, lda);
-                    srnamt = "ZGESVDQ";
+                    srnamt = "Cgesvdq";
                     //
                     lrwork = max((INTEGER)2, m, 5 * n);
                     liwork = max(n, (INTEGER)1);
                     Cgesvdq("H", "N", "N", "A", "A", m, n, a, lda, ssav, usav, ldu, vtsav, ldvt, numrank, iwork, liwork, work, lwork, rwork, lrwork, iinfo);
                     //
                     if (iinfo != 0) {
-                        write(nounit, format_9995), "ZGESVDQ", iinfo, m, n, jtype, lswork, ioldsd;
+                        write(nounit, format_9995), "Cgesvdq", iinfo, m, n, jtype, lswork, ioldsd;
                         info = abs(iinfo);
                         return;
                     }
@@ -542,7 +542,7 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                     }
                     //
                     Clacpy("F", m, n, asav, lda, usav, lda);
-                    srnamt = "ZGESVJ";
+                    srnamt = "Cgesvj";
                     Cgesvj("G", "U", "V", m, n, usav, lda, ssav, 0, a, ldvt, work, lwork, rwork, lrwork, iinfo);
                     //
                     // Cgesvj returns V not VH
@@ -600,7 +600,7 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                     lrwork = max((INTEGER)7, n + 2 * m);
                     //
                     Clacpy("F", m, n, asav, lda, vtsav, lda);
-                    srnamt = "ZGEJSV";
+                    srnamt = "Cgejsv";
                     Cgejsv("G", "U", "V", "R", "N", "N", m, n, vtsav, lda, ssav, usav, ldu, a, ldvt, work, lwork, rwork, lrwork, iwork, iinfo);
                     //
                     // Cgejsv returns V not VH
@@ -645,7 +645,7 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                 // Factorize A
                 //
                 Clacpy("F", m, n, asav, lda, a, lda);
-                srnamt = "ZGESVDX";
+                srnamt = "Cgesvdx";
                 Cgesvdx("V", "V", "A", m, n, a, lda, vl, vu, il, iu, ns, ssav, usav, ldu, vtsav, ldvt, work, lwork, rwork, iwork, iinfo);
                 if (iinfo != 0) {
                     write(nounit, format_9995), "GESVDX", iinfo, m, n, jtype, lswork, ioldsd;
@@ -692,7 +692,7 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                         jobvt = cjobv[(ijvt + 1) - 1];
                         range = cjobr[1 - 1];
                         Clacpy("F", m, n, asav, lda, a, lda);
-                        srnamt = "ZGESVDX";
+                        srnamt = "Cgesvdx";
                         Cgesvdx(jobu.elems, jobvt.elems, "A", m, n, a, lda, vl, vu, il, iu, ns, ssav, u, ldu, vt, ldvt, work, lwork, rwork, iwork, iinfo);
                         //
                         // Compare U
@@ -751,7 +751,7 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                     }
                 }
                 Clacpy("F", m, n, asav, lda, a, lda);
-                srnamt = "ZGESVDX";
+                srnamt = "Cgesvdx";
                 Cgesvdx("V", "V", "I", m, n, a, lda, vl, vu, il, iu, nsi, s, u, ldu, vt, ldvt, work, lwork, rwork, iwork, iinfo);
                 if (iinfo != 0) {
                     write(nounit, format_9995), "GESVDX", iinfo, m, n, jtype, lswork, ioldsd;
@@ -791,7 +791,7 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                     vu = one;
                 }
                 Clacpy("F", m, n, asav, lda, a, lda);
-                srnamt = "ZGESVDX";
+                srnamt = "Cgesvdx";
                 Cgesvdx("V", "V", "V", m, n, a, lda, vl, vu, il, iu, nsv, s, u, ldu, vt, ldvt, work, lwork, rwork, iwork, iinfo);
                 if (iinfo != 0) {
                     write(nounit, format_9995), "GESVDX", iinfo, m, n, jtype, lswork, ioldsd;
@@ -834,7 +834,7 @@ void Cdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                                   "' Tests performed: ( A is dense, U and V are unitary,',/,19x,"
                                   "' S is an array, and Upartial, VTpartial, and',/,19x,"
                                   "' Spartial are partially computed U, VT and S),',/)");
-                    write(nounit, "(' Tests performed with Test Threshold = ',f8.2,/,' ZGESVD: ',/,"
+                    write(nounit, "(' Tests performed with Test Threshold = ',f8.2,/,' Cgesvd: ',/,"
                                   "' 1 = | A - U diag(S) VT | / ( |A| max(M,N) ulp ) ',/,"
                                   "' 2 = | I - U**T U | / ( M ulp ) ',/,"
                                   "' 3 = | I - VT VT**T | / ( N ulp ) ',/,"

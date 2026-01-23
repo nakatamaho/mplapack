@@ -284,10 +284,10 @@ void Rdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                         Rlacpy("Full", m, n, copya, lda, a, lda);
                                         Rlacpy("Full", nrows, nrhs, copyb, ldb, b, ldb);
                                     }
-                                    srnamt = "DGELS ";
+                                    srnamt = "Rgels";
                                     Rgels(trans.elems, m, n, nrhs, a, lda, b, ldb, work, lwork, info);
                                     if (info != 0) {
-                                        Alaerh(path, "DGELS ", info, 0, trans, m, n, nrhs, -1, nb, itype, nfail, nerrs, nout);
+                                        Alaerh(path, "Rgels", info, 0, trans, m, n, nrhs, -1, nb, itype, nfail, nerrs, nout);
                                     }
                                     //
                                     // Check correctness of results
@@ -367,10 +367,10 @@ void Rdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                             Rlacpy("Full", m, n, copya, lda, a, lda);
                                             Rlacpy("Full", nrows, nrhs, copyb, ldb, b, ldb);
                                         }
-                                        srnamt = "DGETSLS ";
+                                        srnamt = "Rgetsls";
                                         Rgetsls(trans.elems, m, n, nrhs, a, lda, b, ldb, work, lwork, info);
                                         if (info != 0) {
-                                            Alaerh(path, "DGETSLS ", info, 0, trans, m, n, nrhs, -1, nb, itype, nfail, nerrs, nout);
+                                            Alaerh(path, "Rgetsls", info, 0, trans, m, n, nrhs, -1, nb, itype, nfail, nerrs, nout);
                                         }
                                         //
                                         // Check correctness of results
@@ -446,10 +446,10 @@ void Rdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                             Rlacpy("Full", m, n, copya, lda, a, lda);
                             Rlacpy("Full", m, nrhs, copyb, ldb, b, ldb);
                             //
-                            srnamt = "DGELSY";
+                            srnamt = "Rgelsy";
                             Rgelsy(m, n, nrhs, a, lda, b, ldb, iwork, rcond, crank, work, lwlsy, info);
                             if (info != 0) {
-                                Alaerh(path, "DGELSY", info, 0, " ", m, n, nrhs, -1, nb, itype, nfail, nerrs, nout);
+                                Alaerh(path, "Rgelsy", info, 0, " ", m, n, nrhs, -1, nb, itype, nfail, nerrs, nout);
                             }
                             //
                             // Test 3:  Compute relative error in svd
@@ -488,10 +488,10 @@ void Rdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                             //
                             Rlacpy("Full", m, n, copya, lda, a, lda);
                             Rlacpy("Full", m, nrhs, copyb, ldb, b, ldb);
-                            srnamt = "DGELSS";
+                            srnamt = "Rgelss";
                             Rgelss(m, n, nrhs, a, lda, b, ldb, s, rcond, crank, work, lwork, info);
                             if (info != 0) {
-                                Alaerh(path, "DGELSS", info, 0, " ", m, n, nrhs, -1, nb, itype, nfail, nerrs, nout);
+                                Alaerh(path, "Rgelss", info, 0, " ", m, n, nrhs, -1, nb, itype, nfail, nerrs, nout);
                             }
                             //
                             // workspace used: 3*min(m,n) +
@@ -540,10 +540,10 @@ void Rdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                             Rlacpy("Full", m, n, copya, lda, a, lda);
                             Rlacpy("Full", m, nrhs, copyb, ldb, b, ldb);
                             //
-                            srnamt = "DGELSD";
+                            srnamt = "Rgelsd";
                             Rgelsd(m, n, nrhs, a, lda, b, ldb, s, rcond, crank, work, lwork, iwork, info);
                             if (info != 0) {
-                                Alaerh(path, "DGELSD", info, 0, " ", m, n, nrhs, -1, nb, itype, nfail, nerrs, nout);
+                                Alaerh(path, "Rgelsd", info, 0, " ", m, n, nrhs, -1, nb, itype, nfail, nerrs, nout);
                             }
                             //
                             // Test 11:  Compute relative error in svd

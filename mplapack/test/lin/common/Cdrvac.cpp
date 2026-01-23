@@ -196,7 +196,7 @@ void Cdrvac(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nns, IN
                     // Compute the L*L' or U'*U factorization of the
                     // matrix and solve the system.
                     //
-                    srnamt = "ZCPOSV ";
+                    srnamt = "Ccposv";
                     kase++;
                     //
                     Clacpy("All", n, n, a, lda, afac, lda);

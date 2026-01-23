@@ -54,7 +54,7 @@ void Cqrt01(INTEGER const m, INTEGER const n, COMPLEX *a, COMPLEX *af, COMPLEX *
     //
     // Factorize the matrix A in the array AF.
     //
-    srnamt = "ZGEQRF";
+    srnamt = "Cgeqrf";
     INTEGER info = 0;
     Cgeqrf(m, n, af, lda, tau, work, lwork, info);
     //
@@ -66,7 +66,7 @@ void Cqrt01(INTEGER const m, INTEGER const n, COMPLEX *a, COMPLEX *af, COMPLEX *
     //
     // Generate the m-by-m matrix Q
     //
-    srnamt = "ZUNGQR";
+    srnamt = "Cungqr";
     Cungqr(m, m, minmn, q, lda, tau, work, lwork, info);
     //
     // Copy R

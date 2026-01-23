@@ -178,7 +178,7 @@ void Cchkq3(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                     //
                     lw = nb * (n + 1);
                     //
-                    srnamt = "ZGEQP3";
+                    srnamt = "Cgeqp3";
                     Cgeqp3(m, n, a, lda, &iwork[(n + 1) - 1], tau, work, lw, rwork, info);
                     //
                     // Compute norm(svd(a) - svd(r))

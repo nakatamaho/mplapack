@@ -324,13 +324,13 @@ void Rdrvgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         Rcopy(n + 2 * m, a, 1, af, 1);
                         Rlacpy("Full", n, nrhs, b, lda, x, lda);
                         //
-                        srnamt = "DGTSV ";
+                        srnamt = "Rgtsv";
                         Rgtsv(n, nrhs, af, &af[(m + 1) - 1], &af[(n + m + 1) - 1], x, lda, info);
                         //
                         // Check error code from Rgtsv .
                         //
                         if (info != izero) {
-                            Alaerh(path, "DGTSV ", info, izero, " ", n, n, 1, 1, nrhs, imat, nfail, nerrs, nout);
+                            Alaerh(path, "Rgtsv", info, izero, " ", n, n, 1, 1, nrhs, imat, nfail, nerrs, nout);
                         }
                         nt = 1;
                         if (izero == 0) {
@@ -378,13 +378,13 @@ void Rdrvgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                     // Solve the system and compute the condition number and
                     // error bounds using Rgtsvx.
                     //
-                    srnamt = "DGTSVX";
+                    srnamt = "Rgtsvx";
                     Rgtsvx(fact.elems, trans.elems, n, nrhs, a, &a[(m + 1) - 1], &a[(n + m + 1) - 1], af, &af[(m + 1) - 1], &af[(n + m + 1) - 1], &af[(n + 2 * m + 1) - 1], iwork, b, lda, x, lda, rcond, rwork, &rwork[(nrhs + 1) - 1], work, &iwork[(n + 1) - 1], info);
                     //
                     // Check the error code from Rgtsvx.
                     //
                     if (info != izero) {
-                        Alaerh(path, "DGTSVX", info, izero, fact + trans, n, n, 1, 1, nrhs, imat, nfail, nerrs, nout);
+                        Alaerh(path, "Rgtsvx", info, izero, fact + trans, n, n, 1, 1, nrhs, imat, nfail, nerrs, nout);
                     }
                     //
                     if (ifact >= 2) {
@@ -424,7 +424,7 @@ void Rdrvgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                             if (nfail == 0 && nerrs == 0) {
                                 Aladhd(nout, path);
                             }
-                            write(nout, format_9998), "DGTSVX", fact, trans, n, imat, k, result[k - 1];
+                            write(nout, format_9998), "Rgtsvx", fact, trans, n, imat, k, result[k - 1];
                             nfail++;
                         }
                     }
@@ -436,7 +436,7 @@ void Rdrvgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         if (nfail == 0 && nerrs == 0) {
                             Aladhd(nout, path);
                         }
-                        write(nout, format_9998), "DGTSVX", fact, trans, n, imat, k, result[k - 1];
+                        write(nout, format_9998), "Rgtsvx", fact, trans, n, imat, k, result[k - 1];
                         nfail++;
                     }
                     nrun += nt - k1 + 2;

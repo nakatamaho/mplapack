@@ -317,13 +317,13 @@ void Rdrvpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                     //
                     // Factor A as L*D*L' and solve the system A*X = B.
                     //
-                    srnamt = "DPTSV ";
+                    srnamt = "Rptsv";
                     Rptsv(n, nrhs, &d[(n + 1) - 1], &e[(n + 1) - 1], x, lda, info);
                     //
                     // Check error code from Rptsv .
                     //
                     if (info != izero) {
-                        Alaerh(path, "DPTSV ", info, izero, " ", n, n, 1, 1, nrhs, imat, nfail, nerrs, nout);
+                        Alaerh(path, "Rptsv", info, izero, " ", n, n, 1, 1, nrhs, imat, nfail, nerrs, nout);
                     }
                     nt = 0;
                     if (izero == 0) {
@@ -381,13 +381,13 @@ void Rdrvpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                 // Solve the system and compute the condition number and
                 // error bounds using Rptsvx.
                 //
-                srnamt = "DPTSVX";
+                srnamt = "Rptsvx";
                 Rptsvx(fact.elems, n, nrhs, d, e, &d[(n + 1) - 1], &e[(n + 1) - 1], b, lda, x, lda, rcond, rwork, &rwork[(nrhs + 1) - 1], work, info);
                 //
                 // Check the error code from Rptsvx.
                 //
                 if (info != izero) {
-                    Alaerh(path, "DPTSVX", info, izero, fact, n, n, 1, 1, nrhs, imat, nfail, nerrs, nout);
+                    Alaerh(path, "Rptsvx", info, izero, fact, n, n, 1, 1, nrhs, imat, nfail, nerrs, nout);
                 }
                 if (izero == 0) {
                     if (ifact == 2) {

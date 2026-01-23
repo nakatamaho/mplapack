@@ -55,7 +55,7 @@ void Cqrt02(INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX *a, COMPL
     //
     // Generate the first n columns of the matrix Q
     //
-    srnamt = "ZUNGQR";
+    srnamt = "Cungqr";
     INTEGER info = 0;
     Cungqr(m, n, k, q, lda, tau, work, lwork, info);
     //

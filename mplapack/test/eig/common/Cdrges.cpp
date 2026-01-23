@@ -370,7 +370,7 @@ void Cdrges(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 Cgges("V", "V", sort.elems, Clctes, n, s, lda, t, lda, sdim, alpha, beta, q, ldq, z, ldq, work, lwork, rwork, bwork, iinfo);
                 if (iinfo != 0 && iinfo != n + 2) {
                     result[(1 + rsub + isort) - 1] = ulpinv;
-                    write(nounit, format_9999), "ZGGES", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "Cgges", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     goto statement_160;
                 }

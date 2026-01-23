@@ -99,13 +99,13 @@ void Rdrvrf2(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL *a, INTEG
                     }
                 }
                 //
-                srnamt = "DTRTTF";
+                srnamt = "Rtrttf";
                 Rtrttf(cform.elems, uplo.elems, n, a, lda, arf, info);
                 //
-                srnamt = "DTFTTP";
+                srnamt = "Rtfttp";
                 Rtfttp(cform.elems, uplo.elems, n, arf, ap, info);
                 //
-                srnamt = "DTPTTR";
+                srnamt = "Rtpttr";
                 Rtpttr(uplo.elems, n, ap, asav, lda, info);
                 //
                 ok1 = true;
@@ -129,13 +129,13 @@ void Rdrvrf2(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL *a, INTEG
                 //
                 nrun++;
                 //
-                srnamt = "DTRTTP";
+                srnamt = "Rtrttp";
                 Rtrttp(uplo.elems, n, a, lda, ap, info);
                 //
-                srnamt = "DTPTTF";
+                srnamt = "Rtpttf";
                 Rtpttf(cform.elems, uplo.elems, n, ap, arf, info);
                 //
-                srnamt = "DTFTTR";
+                srnamt = "Rtfttr";
                 Rtfttr(cform.elems, uplo.elems, n, arf, asav, lda, info);
                 //
                 ok2 = true;

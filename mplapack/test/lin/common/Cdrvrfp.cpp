@@ -241,9 +241,9 @@ void Cdrvrfp(INTEGER const nout, INTEGER const nn, INTEGER *nval, INTEGER const 
                         Clacpy(uplo.elems, n, n, a, lda, afac, lda);
                         Clacpy("Full", n, nrhs, b, ldb, x, ldb);
                         //
-                        srnamt = "ZTRTTF";
+                        srnamt = "Ctrttf";
                         Ctrttf(cform.elems, uplo.elems, n, afac, lda, arf, info);
-                        srnamt = "ZPFTRF";
+                        srnamt = "Cpftrf";
                         Cpftrf(cform.elems, uplo.elems, n, arf, info);
                         //
                         // Check error code from Cpftrf.
@@ -264,10 +264,10 @@ void Cdrvrfp(INTEGER const nout, INTEGER const nn, INTEGER *nval, INTEGER const 
                             goto statement_100;
                         }
                         //
-                        srnamt = "ZPFTRS";
+                        srnamt = "Cpftrs";
                         Cpftrs(cform.elems, uplo.elems, n, nrhs, arf, x, ldb, info);
                         //
-                        srnamt = "ZTFTTR";
+                        srnamt = "Ctfttr";
                         Ctfttr(cform.elems, uplo.elems, n, arf, afac, lda, info);
                         //
                         // Reconstruct matrix from factors and compute
@@ -285,16 +285,16 @@ void Cdrvrfp(INTEGER const nout, INTEGER const nn, INTEGER *nval, INTEGER const 
                             Clacpy("A", n, (n + 1) / 2, arf, n, arfinv, n);
                         }
                         //
-                        srnamt = "ZPFTRI";
+                        srnamt = "Cpftri";
                         Cpftri(cform.elems, uplo.elems, n, arfinv, info);
                         //
-                        srnamt = "ZTFTTR";
+                        srnamt = "Ctfttr";
                         Ctfttr(cform.elems, uplo.elems, n, arfinv, ainv, lda, info);
                         //
                         // Check error code from Cpftri.
                         //
                         if (info != 0) {
-                            Alaerh("ZPO", "ZPFTRI", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                            Alaerh("ZPO", "Cpftri", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                         }
                         //
                         Cpot03(uplo, n, a, lda, ainv, lda, z_work_zpot03, lda, d_work_zpot03, rcondc, result[2 - 1]);

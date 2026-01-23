@@ -179,7 +179,7 @@ void Rchkq3(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                     //
                     // Compute the QP3 factorization of A
                     //
-                    srnamt = "DGEQP3";
+                    srnamt = "Rgeqp3";
                     Rgeqp3(m, n, a, lda, &iwork[(n + 1) - 1], tau, work, lw, info);
                     //
                     // Compute norm(svd(a) - svd(r))

@@ -88,109 +88,109 @@ void Rerrpo(fem::str_cref path, INTEGER const nunit) {
         //
         // Rpotrf
         //
-        srnamt = "DPOTRF";
+        srnamt = "Rpotrf";
         infot = 1;
         Rpotrf("/", 0, a, 1, info);
-        Chkxer("DPOTRF", infot, nout, lerr, ok);
+        Chkxer("Rpotrf", infot, nout, lerr, ok);
         infot = 2;
         Rpotrf("U", -1, a, 1, info);
-        Chkxer("DPOTRF", infot, nout, lerr, ok);
+        Chkxer("Rpotrf", infot, nout, lerr, ok);
         infot = 4;
         Rpotrf("U", 2, a, 1, info);
-        Chkxer("DPOTRF", infot, nout, lerr, ok);
+        Chkxer("Rpotrf", infot, nout, lerr, ok);
         //
         // Rpotf2
         //
-        srnamt = "DPOTF2";
+        srnamt = "Rpotf2";
         infot = 1;
         Rpotf2("/", 0, a, 1, info);
-        Chkxer("DPOTF2", infot, nout, lerr, ok);
+        Chkxer("Rpotf2", infot, nout, lerr, ok);
         infot = 2;
         Rpotf2("U", -1, a, 1, info);
-        Chkxer("DPOTF2", infot, nout, lerr, ok);
+        Chkxer("Rpotf2", infot, nout, lerr, ok);
         infot = 4;
         Rpotf2("U", 2, a, 1, info);
-        Chkxer("DPOTF2", infot, nout, lerr, ok);
+        Chkxer("Rpotf2", infot, nout, lerr, ok);
         //
         // Rpotri
         //
-        srnamt = "DPOTRI";
+        srnamt = "Rpotri";
         infot = 1;
         Rpotri("/", 0, a, 1, info);
-        Chkxer("DPOTRI", infot, nout, lerr, ok);
+        Chkxer("Rpotri", infot, nout, lerr, ok);
         infot = 2;
         Rpotri("U", -1, a, 1, info);
-        Chkxer("DPOTRI", infot, nout, lerr, ok);
+        Chkxer("Rpotri", infot, nout, lerr, ok);
         infot = 4;
         Rpotri("U", 2, a, 1, info);
-        Chkxer("DPOTRI", infot, nout, lerr, ok);
+        Chkxer("Rpotri", infot, nout, lerr, ok);
         //
         // Rpotrs
         //
-        srnamt = "DPOTRS";
+        srnamt = "Rpotrs";
         infot = 1;
         Rpotrs("/", 0, 0, a, 1, b, 1, info);
-        Chkxer("DPOTRS", infot, nout, lerr, ok);
+        Chkxer("Rpotrs", infot, nout, lerr, ok);
         infot = 2;
         Rpotrs("U", -1, 0, a, 1, b, 1, info);
-        Chkxer("DPOTRS", infot, nout, lerr, ok);
+        Chkxer("Rpotrs", infot, nout, lerr, ok);
         infot = 3;
         Rpotrs("U", 0, -1, a, 1, b, 1, info);
-        Chkxer("DPOTRS", infot, nout, lerr, ok);
+        Chkxer("Rpotrs", infot, nout, lerr, ok);
         infot = 5;
         Rpotrs("U", 2, 1, a, 1, b, 2, info);
-        Chkxer("DPOTRS", infot, nout, lerr, ok);
+        Chkxer("Rpotrs", infot, nout, lerr, ok);
         infot = 7;
         Rpotrs("U", 2, 1, a, 2, b, 1, info);
-        Chkxer("DPOTRS", infot, nout, lerr, ok);
+        Chkxer("Rpotrs", infot, nout, lerr, ok);
         //
         // Rporfs
         //
-        srnamt = "DPORFS";
+        srnamt = "Rporfs";
         infot = 1;
         Rporfs("/", 0, 0, a, 1, af, 1, b, 1, x, 1, r1, r2, w, iw, info);
-        Chkxer("DPORFS", infot, nout, lerr, ok);
+        Chkxer("Rporfs", infot, nout, lerr, ok);
         infot = 2;
         Rporfs("U", -1, 0, a, 1, af, 1, b, 1, x, 1, r1, r2, w, iw, info);
-        Chkxer("DPORFS", infot, nout, lerr, ok);
+        Chkxer("Rporfs", infot, nout, lerr, ok);
         infot = 3;
         Rporfs("U", 0, -1, a, 1, af, 1, b, 1, x, 1, r1, r2, w, iw, info);
-        Chkxer("DPORFS", infot, nout, lerr, ok);
+        Chkxer("Rporfs", infot, nout, lerr, ok);
         infot = 5;
         Rporfs("U", 2, 1, a, 1, af, 2, b, 2, x, 2, r1, r2, w, iw, info);
-        Chkxer("DPORFS", infot, nout, lerr, ok);
+        Chkxer("Rporfs", infot, nout, lerr, ok);
         infot = 7;
         Rporfs("U", 2, 1, a, 2, af, 1, b, 2, x, 2, r1, r2, w, iw, info);
-        Chkxer("DPORFS", infot, nout, lerr, ok);
+        Chkxer("Rporfs", infot, nout, lerr, ok);
         infot = 9;
         Rporfs("U", 2, 1, a, 2, af, 2, b, 1, x, 2, r1, r2, w, iw, info);
-        Chkxer("DPORFS", infot, nout, lerr, ok);
+        Chkxer("Rporfs", infot, nout, lerr, ok);
         infot = 11;
         Rporfs("U", 2, 1, a, 2, af, 2, b, 2, x, 1, r1, r2, w, iw, info);
-        Chkxer("DPORFS", infot, nout, lerr, ok);
+        Chkxer("Rporfs", infot, nout, lerr, ok);
         //
         // Rpocon
         //
-        srnamt = "DPOCON";
+        srnamt = "Rpocon";
         infot = 1;
         Rpocon("/", 0, a, 1, anrm, rcond, w, iw, info);
-        Chkxer("DPOCON", infot, nout, lerr, ok);
+        Chkxer("Rpocon", infot, nout, lerr, ok);
         infot = 2;
         Rpocon("U", -1, a, 1, anrm, rcond, w, iw, info);
-        Chkxer("DPOCON", infot, nout, lerr, ok);
+        Chkxer("Rpocon", infot, nout, lerr, ok);
         infot = 4;
         Rpocon("U", 2, a, 1, anrm, rcond, w, iw, info);
-        Chkxer("DPOCON", infot, nout, lerr, ok);
+        Chkxer("Rpocon", infot, nout, lerr, ok);
         //
         // Rpoequ
         //
-        srnamt = "DPOEQU";
+        srnamt = "Rpoequ";
         infot = 1;
         Rpoequ(-1, a, 1, r1, rcond, anrm, info);
-        Chkxer("DPOEQU", infot, nout, lerr, ok);
+        Chkxer("Rpoequ", infot, nout, lerr, ok);
         infot = 3;
         Rpoequ(2, a, 1, r1, rcond, anrm, info);
-        Chkxer("DPOEQU", infot, nout, lerr, ok);
+        Chkxer("Rpoequ", infot, nout, lerr, ok);
         //
     } else if (Mlsamen(2, c2.elems, "PP")) {
         //
@@ -199,78 +199,78 @@ void Rerrpo(fem::str_cref path, INTEGER const nunit) {
         //
         // Rpptrf
         //
-        srnamt = "DPPTRF";
+        srnamt = "Rpptrf";
         infot = 1;
         Rpptrf("/", 0, a, info);
-        Chkxer("DPPTRF", infot, nout, lerr, ok);
+        Chkxer("Rpptrf", infot, nout, lerr, ok);
         infot = 2;
         Rpptrf("U", -1, a, info);
-        Chkxer("DPPTRF", infot, nout, lerr, ok);
+        Chkxer("Rpptrf", infot, nout, lerr, ok);
         //
         // Rpptri
         //
-        srnamt = "DPPTRI";
+        srnamt = "Rpptri";
         infot = 1;
         Rpptri("/", 0, a, info);
-        Chkxer("DPPTRI", infot, nout, lerr, ok);
+        Chkxer("Rpptri", infot, nout, lerr, ok);
         infot = 2;
         Rpptri("U", -1, a, info);
-        Chkxer("DPPTRI", infot, nout, lerr, ok);
+        Chkxer("Rpptri", infot, nout, lerr, ok);
         //
         // Rpptrs
         //
-        srnamt = "DPPTRS";
+        srnamt = "Rpptrs";
         infot = 1;
         Rpptrs("/", 0, 0, a, b, 1, info);
-        Chkxer("DPPTRS", infot, nout, lerr, ok);
+        Chkxer("Rpptrs", infot, nout, lerr, ok);
         infot = 2;
         Rpptrs("U", -1, 0, a, b, 1, info);
-        Chkxer("DPPTRS", infot, nout, lerr, ok);
+        Chkxer("Rpptrs", infot, nout, lerr, ok);
         infot = 3;
         Rpptrs("U", 0, -1, a, b, 1, info);
-        Chkxer("DPPTRS", infot, nout, lerr, ok);
+        Chkxer("Rpptrs", infot, nout, lerr, ok);
         infot = 6;
         Rpptrs("U", 2, 1, a, b, 1, info);
-        Chkxer("DPPTRS", infot, nout, lerr, ok);
+        Chkxer("Rpptrs", infot, nout, lerr, ok);
         //
         // Rpprfs
         //
-        srnamt = "DPPRFS";
+        srnamt = "Rpprfs";
         infot = 1;
         Rpprfs("/", 0, 0, a, af, b, 1, x, 1, r1, r2, w, iw, info);
-        Chkxer("DPPRFS", infot, nout, lerr, ok);
+        Chkxer("Rpprfs", infot, nout, lerr, ok);
         infot = 2;
         Rpprfs("U", -1, 0, a, af, b, 1, x, 1, r1, r2, w, iw, info);
-        Chkxer("DPPRFS", infot, nout, lerr, ok);
+        Chkxer("Rpprfs", infot, nout, lerr, ok);
         infot = 3;
         Rpprfs("U", 0, -1, a, af, b, 1, x, 1, r1, r2, w, iw, info);
-        Chkxer("DPPRFS", infot, nout, lerr, ok);
+        Chkxer("Rpprfs", infot, nout, lerr, ok);
         infot = 7;
         Rpprfs("U", 2, 1, a, af, b, 1, x, 2, r1, r2, w, iw, info);
-        Chkxer("DPPRFS", infot, nout, lerr, ok);
+        Chkxer("Rpprfs", infot, nout, lerr, ok);
         infot = 9;
         Rpprfs("U", 2, 1, a, af, b, 2, x, 1, r1, r2, w, iw, info);
-        Chkxer("DPPRFS", infot, nout, lerr, ok);
+        Chkxer("Rpprfs", infot, nout, lerr, ok);
         //
         // Rppcon
         //
-        srnamt = "DPPCON";
+        srnamt = "Rppcon";
         infot = 1;
         Rppcon("/", 0, a, anrm, rcond, w, iw, info);
-        Chkxer("DPPCON", infot, nout, lerr, ok);
+        Chkxer("Rppcon", infot, nout, lerr, ok);
         infot = 2;
         Rppcon("U", -1, a, anrm, rcond, w, iw, info);
-        Chkxer("DPPCON", infot, nout, lerr, ok);
+        Chkxer("Rppcon", infot, nout, lerr, ok);
         //
         // Rppequ
         //
-        srnamt = "DPPEQU";
+        srnamt = "Rppequ";
         infot = 1;
         Rppequ("/", 0, a, r1, rcond, anrm, info);
-        Chkxer("DPPEQU", infot, nout, lerr, ok);
+        Chkxer("Rppequ", infot, nout, lerr, ok);
         infot = 2;
         Rppequ("U", -1, a, r1, rcond, anrm, info);
-        Chkxer("DPPEQU", infot, nout, lerr, ok);
+        Chkxer("Rppequ", infot, nout, lerr, ok);
         //
     } else if (Mlsamen(2, c2.elems, "PB")) {
         //
@@ -279,117 +279,117 @@ void Rerrpo(fem::str_cref path, INTEGER const nunit) {
         //
         // Rpbtrf
         //
-        srnamt = "DPBTRF";
+        srnamt = "Rpbtrf";
         infot = 1;
         Rpbtrf("/", 0, 0, a, 1, info);
-        Chkxer("DPBTRF", infot, nout, lerr, ok);
+        Chkxer("Rpbtrf", infot, nout, lerr, ok);
         infot = 2;
         Rpbtrf("U", -1, 0, a, 1, info);
-        Chkxer("DPBTRF", infot, nout, lerr, ok);
+        Chkxer("Rpbtrf", infot, nout, lerr, ok);
         infot = 3;
         Rpbtrf("U", 1, -1, a, 1, info);
-        Chkxer("DPBTRF", infot, nout, lerr, ok);
+        Chkxer("Rpbtrf", infot, nout, lerr, ok);
         infot = 5;
         Rpbtrf("U", 2, 1, a, 1, info);
-        Chkxer("DPBTRF", infot, nout, lerr, ok);
+        Chkxer("Rpbtrf", infot, nout, lerr, ok);
         //
         // Rpbtf2
         //
-        srnamt = "DPBTF2";
+        srnamt = "Rpbtf2";
         infot = 1;
         Rpbtf2("/", 0, 0, a, 1, info);
-        Chkxer("DPBTF2", infot, nout, lerr, ok);
+        Chkxer("Rpbtf2", infot, nout, lerr, ok);
         infot = 2;
         Rpbtf2("U", -1, 0, a, 1, info);
-        Chkxer("DPBTF2", infot, nout, lerr, ok);
+        Chkxer("Rpbtf2", infot, nout, lerr, ok);
         infot = 3;
         Rpbtf2("U", 1, -1, a, 1, info);
-        Chkxer("DPBTF2", infot, nout, lerr, ok);
+        Chkxer("Rpbtf2", infot, nout, lerr, ok);
         infot = 5;
         Rpbtf2("U", 2, 1, a, 1, info);
-        Chkxer("DPBTF2", infot, nout, lerr, ok);
+        Chkxer("Rpbtf2", infot, nout, lerr, ok);
         //
         // Rpbtrs
         //
-        srnamt = "DPBTRS";
+        srnamt = "Rpbtrs";
         infot = 1;
         Rpbtrs("/", 0, 0, 0, a, 1, b, 1, info);
-        Chkxer("DPBTRS", infot, nout, lerr, ok);
+        Chkxer("Rpbtrs", infot, nout, lerr, ok);
         infot = 2;
         Rpbtrs("U", -1, 0, 0, a, 1, b, 1, info);
-        Chkxer("DPBTRS", infot, nout, lerr, ok);
+        Chkxer("Rpbtrs", infot, nout, lerr, ok);
         infot = 3;
         Rpbtrs("U", 1, -1, 0, a, 1, b, 1, info);
-        Chkxer("DPBTRS", infot, nout, lerr, ok);
+        Chkxer("Rpbtrs", infot, nout, lerr, ok);
         infot = 4;
         Rpbtrs("U", 0, 0, -1, a, 1, b, 1, info);
-        Chkxer("DPBTRS", infot, nout, lerr, ok);
+        Chkxer("Rpbtrs", infot, nout, lerr, ok);
         infot = 6;
         Rpbtrs("U", 2, 1, 1, a, 1, b, 1, info);
-        Chkxer("DPBTRS", infot, nout, lerr, ok);
+        Chkxer("Rpbtrs", infot, nout, lerr, ok);
         infot = 8;
         Rpbtrs("U", 2, 0, 1, a, 1, b, 1, info);
-        Chkxer("DPBTRS", infot, nout, lerr, ok);
+        Chkxer("Rpbtrs", infot, nout, lerr, ok);
         //
         // Rpbrfs
         //
-        srnamt = "DPBRFS";
+        srnamt = "Rpbrfs";
         infot = 1;
         Rpbrfs("/", 0, 0, 0, a, 1, af, 1, b, 1, x, 1, r1, r2, w, iw, info);
-        Chkxer("DPBRFS", infot, nout, lerr, ok);
+        Chkxer("Rpbrfs", infot, nout, lerr, ok);
         infot = 2;
         Rpbrfs("U", -1, 0, 0, a, 1, af, 1, b, 1, x, 1, r1, r2, w, iw, info);
-        Chkxer("DPBRFS", infot, nout, lerr, ok);
+        Chkxer("Rpbrfs", infot, nout, lerr, ok);
         infot = 3;
         Rpbrfs("U", 1, -1, 0, a, 1, af, 1, b, 1, x, 1, r1, r2, w, iw, info);
-        Chkxer("DPBRFS", infot, nout, lerr, ok);
+        Chkxer("Rpbrfs", infot, nout, lerr, ok);
         infot = 4;
         Rpbrfs("U", 0, 0, -1, a, 1, af, 1, b, 1, x, 1, r1, r2, w, iw, info);
-        Chkxer("DPBRFS", infot, nout, lerr, ok);
+        Chkxer("Rpbrfs", infot, nout, lerr, ok);
         infot = 6;
         Rpbrfs("U", 2, 1, 1, a, 1, af, 2, b, 2, x, 2, r1, r2, w, iw, info);
-        Chkxer("DPBRFS", infot, nout, lerr, ok);
+        Chkxer("Rpbrfs", infot, nout, lerr, ok);
         infot = 8;
         Rpbrfs("U", 2, 1, 1, a, 2, af, 1, b, 2, x, 2, r1, r2, w, iw, info);
-        Chkxer("DPBRFS", infot, nout, lerr, ok);
+        Chkxer("Rpbrfs", infot, nout, lerr, ok);
         infot = 10;
         Rpbrfs("U", 2, 0, 1, a, 1, af, 1, b, 1, x, 2, r1, r2, w, iw, info);
-        Chkxer("DPBRFS", infot, nout, lerr, ok);
+        Chkxer("Rpbrfs", infot, nout, lerr, ok);
         infot = 12;
         Rpbrfs("U", 2, 0, 1, a, 1, af, 1, b, 2, x, 1, r1, r2, w, iw, info);
-        Chkxer("DPBRFS", infot, nout, lerr, ok);
+        Chkxer("Rpbrfs", infot, nout, lerr, ok);
         //
         // Rpbcon
         //
-        srnamt = "DPBCON";
+        srnamt = "Rpbcon";
         infot = 1;
         Rpbcon("/", 0, 0, a, 1, anrm, rcond, w, iw, info);
-        Chkxer("DPBCON", infot, nout, lerr, ok);
+        Chkxer("Rpbcon", infot, nout, lerr, ok);
         infot = 2;
         Rpbcon("U", -1, 0, a, 1, anrm, rcond, w, iw, info);
-        Chkxer("DPBCON", infot, nout, lerr, ok);
+        Chkxer("Rpbcon", infot, nout, lerr, ok);
         infot = 3;
         Rpbcon("U", 1, -1, a, 1, anrm, rcond, w, iw, info);
-        Chkxer("DPBCON", infot, nout, lerr, ok);
+        Chkxer("Rpbcon", infot, nout, lerr, ok);
         infot = 5;
         Rpbcon("U", 2, 1, a, 1, anrm, rcond, w, iw, info);
-        Chkxer("DPBCON", infot, nout, lerr, ok);
+        Chkxer("Rpbcon", infot, nout, lerr, ok);
         //
         // Rpbequ
         //
-        srnamt = "DPBEQU";
+        srnamt = "Rpbequ";
         infot = 1;
         Rpbequ("/", 0, 0, a, 1, r1, rcond, anrm, info);
-        Chkxer("DPBEQU", infot, nout, lerr, ok);
+        Chkxer("Rpbequ", infot, nout, lerr, ok);
         infot = 2;
         Rpbequ("U", -1, 0, a, 1, r1, rcond, anrm, info);
-        Chkxer("DPBEQU", infot, nout, lerr, ok);
+        Chkxer("Rpbequ", infot, nout, lerr, ok);
         infot = 3;
         Rpbequ("U", 1, -1, a, 1, r1, rcond, anrm, info);
-        Chkxer("DPBEQU", infot, nout, lerr, ok);
+        Chkxer("Rpbequ", infot, nout, lerr, ok);
         infot = 5;
         Rpbequ("U", 2, 1, a, 1, r1, rcond, anrm, info);
-        Chkxer("DPBEQU", infot, nout, lerr, ok);
+        Chkxer("Rpbequ", infot, nout, lerr, ok);
     }
     //
     // Print a summary line.

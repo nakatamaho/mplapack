@@ -230,13 +230,13 @@ void Rchktb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                             xtype = "C";
                             Rlacpy("Full", n, nrhs, b, lda, x, lda);
                             //
-                            srnamt = "DTBTRS";
+                            srnamt = "Rtbtrs";
                             Rtbtrs(uplo.elems, trans.elems, diag.elems, n, kd, nrhs, ab, ldab, x, lda, info);
                             //
                             // Check error code from Rtbtrs.
                             //
                             if (info != 0) {
-                                Alaerh(path, "DTBTRS", info, 0, uplo + trans + diag, n, n, kd, kd, nrhs, imat, nfail, nerrs, nout);
+                                Alaerh(path, "Rtbtrs", info, 0, uplo + trans + diag, n, n, kd, kd, nrhs, imat, nfail, nerrs, nout);
                             }
                             //
                             Rtbt02(uplo, trans, diag, n, kd, nrhs, ab, ldab, x, lda, b, lda, work, result[1 - 1]);
@@ -250,13 +250,13 @@ void Rchktb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                             // Use iterative refinement to improve the solution
                             // and compute error bounds.
                             //
-                            srnamt = "DTBRFS";
+                            srnamt = "Rtbrfs";
                             Rtbrfs(uplo.elems, trans.elems, diag.elems, n, kd, nrhs, ab, ldab, b, lda, x, lda, rwork, &rwork[(nrhs + 1) - 1], work, iwork, info);
                             //
                             // Check error code from Rtbrfs.
                             //
                             if (info != 0) {
-                                Alaerh(path, "DTBRFS", info, 0, uplo + trans + diag, n, n, kd, kd, nrhs, imat, nfail, nerrs, nout);
+                                Alaerh(path, "Rtbrfs", info, 0, uplo + trans + diag, n, n, kd, kd, nrhs, imat, nfail, nerrs, nout);
                             }
                             //
                             Rget04(n, nrhs, x, lda, xact, lda, rcondc, result[3 - 1]);
@@ -292,13 +292,13 @@ void Rchktb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                             norm = "I";
                             rcondc = rcondi;
                         }
-                        srnamt = "DTBCON";
+                        srnamt = "Rtbcon";
                         Rtbcon(norm.elems, uplo.elems, diag.elems, n, kd, ab, ldab, rcond, work, iwork, info);
                         //
                         // Check error code from Rtbcon.
                         //
                         if (info != 0) {
-                            Alaerh(path, "DTBCON", info, 0, norm + uplo + diag, n, n, kd, kd, -1, imat, nfail, nerrs, nout);
+                            Alaerh(path, "Rtbcon", info, 0, norm + uplo + diag, n, n, kd, kd, -1, imat, nfail, nerrs, nout);
                         }
                         //
                         Rtbt06(rcond, rcondc, uplo, diag, n, kd, ab, ldab, rwork, result[6 - 1]);
@@ -350,14 +350,14 @@ void Rchktb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                         // +    TEST 7
                         // Solve the system op(A)*x = b
                         //
-                        srnamt = "DLATBS";
+                        srnamt = "Rlatbs";
                         Rcopy(n, x, 1, b, 1);
                         Rlatbs(uplo.elems, trans.elems, diag.elems, "N", n, kd, ab, ldab, b, scale, rwork, info);
                         //
                         // Check error code from Rlatbs.
                         //
                         if (info != 0) {
-                            Alaerh(path, "DLATBS", info, 0, uplo + trans + diag + "N", n, n, kd, kd, -1, imat, nfail, nerrs, nout);
+                            Alaerh(path, "Rlatbs", info, 0, uplo + trans + diag + "N", n, n, kd, kd, -1, imat, nfail, nerrs, nout);
                         }
                         //
                         Rtbt03(uplo, trans, diag, n, kd, 1, ab, ldab, scale, rwork, one, b, lda, x, lda, work, result[7 - 1]);
@@ -371,7 +371,7 @@ void Rchktb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                         // Check error code from Rlatbs.
                         //
                         if (info != 0) {
-                            Alaerh(path, "DLATBS", info, 0, uplo + trans + diag + "Y", n, n, kd, kd, -1, imat, nfail, nerrs, nout);
+                            Alaerh(path, "Rlatbs", info, 0, uplo + trans + diag + "Y", n, n, kd, kd, -1, imat, nfail, nerrs, nout);
                         }
                         //
                         Rtbt03(uplo, trans, diag, n, kd, 1, ab, ldab, scale, rwork, one, b, lda, x, lda, work, result[8 - 1]);
@@ -383,14 +383,14 @@ void Rchktb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                             if (nfail == 0 && nerrs == 0) {
                                 Alahd(nout, path);
                             }
-                            write(nout, format_9997), "DLATBS", uplo, trans, diag, "N", n, kd, imat, 7, result[7 - 1];
+                            write(nout, format_9997), "Rlatbs", uplo, trans, diag, "N", n, kd, imat, 7, result[7 - 1];
                             nfail++;
                         }
                         if (result[8 - 1] >= thresh) {
                             if (nfail == 0 && nerrs == 0) {
                                 Alahd(nout, path);
                             }
-                            write(nout, format_9997), "DLATBS", uplo, trans, diag, "Y", n, kd, imat, 8, result[8 - 1];
+                            write(nout, format_9997), "Rlatbs", uplo, trans, diag, "Y", n, kd, imat, 8, result[8 - 1];
                             nfail++;
                         }
                         nrun += 2;

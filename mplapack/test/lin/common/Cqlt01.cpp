@@ -54,7 +54,7 @@ void Cqlt01(INTEGER const m, INTEGER const n, COMPLEX *a, COMPLEX *af, COMPLEX *
     //
     // Factorize the matrix A in the array AF.
     //
-    srnamt = "ZGEQLF";
+    srnamt = "Cgeqlf";
     INTEGER info = 0;
     Cgeqlf(m, n, af, lda, tau, work, lwork, info);
     //
@@ -77,7 +77,7 @@ void Cqlt01(INTEGER const m, INTEGER const n, COMPLEX *a, COMPLEX *af, COMPLEX *
     //
     // Generate the m-by-m matrix Q
     //
-    srnamt = "ZUNGQL";
+    srnamt = "Cungql";
     Cungql(m, m, minmn, q, lda, tau, work, lwork, info);
     //
     // Copy L

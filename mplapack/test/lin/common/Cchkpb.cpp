@@ -263,13 +263,13 @@ void Cchkpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                         // matrix.
                         //
                         Clacpy("Full", kd + 1, n, a, ldab, afac, ldab);
-                        srnamt = "ZPBTRF";
+                        srnamt = "Cpbtrf";
                         Cpbtrf(uplo.elems, n, kd, afac, ldab, info);
                         //
                         // Check error code from Cpbtrf.
                         //
                         if (info != izero) {
-                            Alaerh(path, "ZPBTRF", info, izero, uplo, n, n, kd, kd, nb, imat, nfail, nerrs, nout);
+                            Alaerh(path, "Cpbtrf", info, izero, uplo, n, n, kd, kd, nb, imat, nfail, nerrs, nout);
                             goto statement_50;
                         }
                         //
@@ -309,7 +309,7 @@ void Cchkpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                         // of RCONDC = 1/(norm(A) * norm(inv(A))).
                         //
                         Claset("Full", n, n, COMPLEX(zero), COMPLEX(one), ainv, lda);
-                        srnamt = "ZPBTRS";
+                        srnamt = "Cpbtrs";
                         Cpbtrs(uplo.elems, n, kd, n, afac, ldab, ainv, lda, info);
                         //
                         // Compute RCONDC = 1/(norm(A) * norm(inv(A))).
@@ -332,13 +332,13 @@ void Cchkpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                             Clarhs(path, xtype, uplo, " ", n, n, kd, kd, nrhs, a, ldab, xact, lda, b, lda, iseed, info);
                             Clacpy("Full", n, nrhs, b, lda, x, lda);
                             //
-                            srnamt = "ZPBTRS";
+                            srnamt = "Cpbtrs";
                             Cpbtrs(uplo.elems, n, kd, nrhs, afac, ldab, x, lda, info);
                             //
                             // Check error code from Cpbtrs.
                             //
                             if (info != 0) {
-                                Alaerh(path, "ZPBTRS", info, 0, uplo, n, n, kd, kd, nrhs, imat, nfail, nerrs, nout);
+                                Alaerh(path, "Cpbtrs", info, 0, uplo, n, n, kd, kd, nrhs, imat, nfail, nerrs, nout);
                             }
                             //
                             Clacpy("Full", n, nrhs, b, lda, work, lda);
@@ -352,13 +352,13 @@ void Cchkpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                             // +    TESTS 4, 5, and 6
                             // Use iterative refinement to improve the solution.
                             //
-                            srnamt = "ZPBRFS";
+                            srnamt = "Cpbrfs";
                             Cpbrfs(uplo.elems, n, kd, nrhs, a, ldab, afac, ldab, b, lda, x, lda, rwork, &rwork[(nrhs + 1) - 1], work, &rwork[(2 * nrhs + 1) - 1], info);
                             //
                             // Check error code from Cpbrfs.
                             //
                             if (info != 0) {
-                                Alaerh(path, "ZPBRFS", info, 0, uplo, n, n, kd, kd, nrhs, imat, nfail, nerrs, nout);
+                                Alaerh(path, "Cpbrfs", info, 0, uplo, n, n, kd, kd, nrhs, imat, nfail, nerrs, nout);
                             }
                             //
                             Cget04(n, nrhs, x, lda, xact, lda, rcondc, result[4 - 1]);
@@ -384,13 +384,13 @@ void Cchkpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                         // +    TEST 7
                         // Get an estimate of RCOND = 1/CNDNUM.
                         //
-                        srnamt = "ZPBCON";
+                        srnamt = "Cpbcon";
                         Cpbcon(uplo.elems, n, kd, afac, ldab, anorm, rcond, work, rwork, info);
                         //
                         // Check error code from Cpbcon.
                         //
                         if (info != 0) {
-                            Alaerh(path, "ZPBCON", info, 0, uplo, n, n, kd, kd, -1, imat, nfail, nerrs, nout);
+                            Alaerh(path, "Cpbcon", info, 0, uplo, n, n, kd, kd, -1, imat, nfail, nerrs, nout);
                         }
                         //
                         result[7 - 1] = Rget06(rcond, rcondc);

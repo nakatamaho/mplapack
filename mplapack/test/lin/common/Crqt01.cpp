@@ -54,7 +54,7 @@ void Crqt01(INTEGER const m, INTEGER const n, COMPLEX *a, COMPLEX *af, COMPLEX *
     //
     // Factorize the matrix A in the array AF.
     //
-    srnamt = "ZGERQF";
+    srnamt = "Cgerqf";
     INTEGER info = 0;
     Cgerqf(m, n, af, lda, tau, work, lwork, info);
     //
@@ -77,7 +77,7 @@ void Crqt01(INTEGER const m, INTEGER const n, COMPLEX *a, COMPLEX *af, COMPLEX *
     //
     // Generate the n-by-n matrix Q
     //
-    srnamt = "ZUNGRQ";
+    srnamt = "Cungrq";
     Cungrq(n, n, minmn, q, lda, tau, work, lwork, info);
     //
     // Copy R

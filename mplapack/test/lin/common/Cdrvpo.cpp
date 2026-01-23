@@ -314,13 +314,13 @@ void Cdrvpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                             Clacpy(uplo.elems, n, n, a, lda, afac, lda);
                             Clacpy("Full", n, nrhs, b, lda, x, lda);
                             //
-                            srnamt = "ZPOSV ";
+                            srnamt = "Cposv";
                             Cposv(uplo.elems, n, nrhs, afac, lda, x, lda, info);
                             //
                             // Check error code from Cposv .
                             //
                             if (info != izero) {
-                                Alaerh(path, "ZPOSV ", info, izero, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                                Alaerh(path, "Cposv", info, izero, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                                 goto statement_70;
                             } else if (info != 0) {
                                 goto statement_70;
@@ -376,13 +376,13 @@ void Cdrvpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         // Solve the system and compute the condition number
                         // and error bounds using Cposvx.
                         //
-                        srnamt = "ZPOSVX";
+                        srnamt = "Cposvx";
                         Cposvx(fact.elems, uplo.elems, n, nrhs, a, lda, afac, lda, equed.elems, s, b, lda, x, lda, rcond, rwork, &rwork[(nrhs + 1) - 1], work, &rwork[(2 * nrhs + 1) - 1], info);
                         //
                         // Check the error code from Cposvx.
                         //
                         if (info != izero) {
-                            Alaerh(path, "ZPOSVX", info, izero, fact + uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                            Alaerh(path, "Cposvx", info, izero, fact + uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                             goto statement_90;
                         }
                         //

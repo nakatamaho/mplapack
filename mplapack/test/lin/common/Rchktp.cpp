@@ -149,13 +149,13 @@ void Rchktp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                 if (n > 0) {
                     Rcopy(lap, ap, 1, ainvp, 1);
                 }
-                srnamt = "DTPTRI";
+                srnamt = "Rtptri";
                 Rtptri(uplo.elems, diag.elems, n, ainvp, info);
                 //
                 // Check error code from Rtptri.
                 //
                 if (info != 0) {
-                    Alaerh(path, "DTPTRI", info, 0, uplo + diag, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                    Alaerh(path, "Rtptri", info, 0, uplo + diag, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                 }
                 //
                 // Compute the infinity-norm condition number of A.
@@ -211,13 +211,13 @@ void Rchktp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                         xtype = "C";
                         Rlacpy("Full", n, nrhs, b, lda, x, lda);
                         //
-                        srnamt = "DTPTRS";
+                        srnamt = "Rtptrs";
                         Rtptrs(uplo.elems, trans.elems, diag.elems, n, nrhs, ap, x, lda, info);
                         //
                         // Check error code from Rtptrs.
                         //
                         if (info != 0) {
-                            Alaerh(path, "DTPTRS", info, 0, uplo + trans + diag, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                            Alaerh(path, "Rtptrs", info, 0, uplo + trans + diag, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                         }
                         //
                         Rtpt02(uplo, trans, diag, n, nrhs, ap, x, lda, b, lda, work, result[2 - 1]);
@@ -231,13 +231,13 @@ void Rchktp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                         // Use iterative refinement to improve the solution and
                         // compute error bounds.
                         //
-                        srnamt = "DTPRFS";
+                        srnamt = "Rtprfs";
                         Rtprfs(uplo.elems, trans.elems, diag.elems, n, nrhs, ap, b, lda, x, lda, rwork, &rwork[(nrhs + 1) - 1], work, iwork, info);
                         //
                         // Check error code from Rtprfs.
                         //
                         if (info != 0) {
-                            Alaerh(path, "DTPRFS", info, 0, uplo + trans + diag, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                            Alaerh(path, "Rtprfs", info, 0, uplo + trans + diag, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                         }
                         //
                         Rget04(n, nrhs, x, lda, xact, lda, rcondc, result[4 - 1]);
@@ -273,13 +273,13 @@ void Rchktp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                         rcondc = rcondi;
                     }
                     //
-                    srnamt = "DTPCON";
+                    srnamt = "Rtpcon";
                     Rtpcon(norm.elems, uplo.elems, diag.elems, n, ap, rcond, work, iwork, info);
                     //
                     // Check error code from Rtpcon.
                     //
                     if (info != 0) {
-                        Alaerh(path, "DTPCON", info, 0, norm + uplo + diag, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                        Alaerh(path, "Rtpcon", info, 0, norm + uplo + diag, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                     }
                     //
                     Rtpt06(rcond, rcondc, uplo, diag, n, ap, rwork, result[7 - 1]);
@@ -330,14 +330,14 @@ void Rchktp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                     // +    TEST 8
                     // Solve the system op(A)*x = b.
                     //
-                    srnamt = "DLATPS";
+                    srnamt = "Rlatps";
                     Rcopy(n, x, 1, b, 1);
                     Rlatps(uplo.elems, trans.elems, diag.elems, "N", n, ap, b, scale, rwork, info);
                     //
                     // Check error code from Rlatps.
                     //
                     if (info != 0) {
-                        Alaerh(path, "DLATPS", info, 0, uplo + trans + diag + "N", n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                        Alaerh(path, "Rlatps", info, 0, uplo + trans + diag + "N", n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                     }
                     //
                     Rtpt03(uplo, trans, diag, n, 1, ap, scale, rwork, one, b, lda, x, lda, work, result[8 - 1]);
@@ -351,7 +351,7 @@ void Rchktp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                     // Check error code from Rlatps.
                     //
                     if (info != 0) {
-                        Alaerh(path, "DLATPS", info, 0, uplo + trans + diag + "Y", n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                        Alaerh(path, "Rlatps", info, 0, uplo + trans + diag + "Y", n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                     }
                     //
                     Rtpt03(uplo, trans, diag, n, 1, ap, scale, rwork, one, &b[(n + 1) - 1], lda, x, lda, work, result[9 - 1]);
@@ -363,14 +363,14 @@ void Rchktp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                         if (nfail == 0 && nerrs == 0) {
                             Alahd(nout, path);
                         }
-                        write(nout, format_9996), "DLATPS", uplo, trans, diag, "N", n, imat, 8, result[8 - 1];
+                        write(nout, format_9996), "Rlatps", uplo, trans, diag, "N", n, imat, 8, result[8 - 1];
                         nfail++;
                     }
                     if (result[9 - 1] >= thresh) {
                         if (nfail == 0 && nerrs == 0) {
                             Alahd(nout, path);
                         }
-                        write(nout, format_9996), "DLATPS", uplo, trans, diag, "Y", n, imat, 9, result[9 - 1];
+                        write(nout, format_9996), "Rlatps", uplo, trans, diag, "Y", n, imat, 9, result[9 - 1];
                         nfail++;
                     }
                     nrun += 2;

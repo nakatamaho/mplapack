@@ -368,7 +368,7 @@ void Rdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                 // Form the inverse of A.
                                 //
                                 Rlaset("Full", n, n, zero, one, work, ldb);
-                                srnamt = "DGBTRS";
+                                srnamt = "Rgbtrs";
                                 Rgbtrs("No transpose", n, kl, ku, n, afb, ldafb, iwork, work, ldb, info);
                                 //
                                 // Compute the 1-norm condition number of A.
@@ -424,13 +424,13 @@ void Rdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                     Rlacpy("Full", kl + ku + 1, n, a, lda, &afb[(kl + 1) - 1], ldafb);
                                     Rlacpy("Full", n, nrhs, b, ldb, x, ldb);
                                     //
-                                    srnamt = "DGBSV ";
+                                    srnamt = "Rgbsv";
                                     Rgbsv(n, kl, ku, nrhs, afb, ldafb, iwork, x, ldb, info);
                                     //
                                     // Check error code from Rgbsv .
                                     //
                                     if (info != izero) {
-                                        Alaerh(path, "DGBSV ", info, izero, " ", n, n, kl, ku, nrhs, imat, nfail, nerrs, nout);
+                                        Alaerh(path, "Rgbsv", info, izero, " ", n, n, kl, ku, nrhs, imat, nfail, nerrs, nout);
                                     }
                                     //
                                     // Reconstruct matrix from factors and
@@ -487,13 +487,13 @@ void Rdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                 // Solve the system and compute the condition
                                 // number and error bounds using Rgbsvx.
                                 //
-                                srnamt = "DGBSVX";
+                                srnamt = "Rgbsvx";
                                 Rgbsvx(fact.elems, trans.elems, n, kl, ku, nrhs, a, lda, afb, ldafb, iwork, equed.elems, s, &s[(n + 1) - 1], b, ldb, x, ldb, rcond, rwork, &rwork[(nrhs + 1) - 1], work, &iwork[(n + 1) - 1], info);
                                 //
                                 // Check the error code from Rgbsvx.
                                 //
                                 if (info != izero) {
-                                    Alaerh(path, "DGBSVX", info, izero, fact + trans, n, n, kl, ku, nrhs, imat, nfail, nerrs, nout);
+                                    Alaerh(path, "Rgbsvx", info, izero, fact + trans, n, n, kl, ku, nrhs, imat, nfail, nerrs, nout);
                                 }
                                 //
                                 // Compare WORK(1) from Rgbsvx with the computed
@@ -578,9 +578,9 @@ void Rdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                                 Aladhd(nout, path);
                                             }
                                             if (prefac) {
-                                                write(nout, format_9995), "DGBSVX", fact, trans, n, kl, ku, equed, imat, k, result[k - 1];
+                                                write(nout, format_9995), "Rgbsvx", fact, trans, n, kl, ku, equed, imat, k, result[k - 1];
                                             } else {
-                                                write(nout, format_9996), "DGBSVX", fact, trans, n, kl, ku, imat, k, result[k - 1];
+                                                write(nout, format_9996), "Rgbsvx", fact, trans, n, kl, ku, imat, k, result[k - 1];
                                             }
                                             nfail++;
                                         }
@@ -592,9 +592,9 @@ void Rdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                             Aladhd(nout, path);
                                         }
                                         if (prefac) {
-                                            write(nout, format_9995), "DGBSVX", fact, trans, n, kl, ku, equed, imat, 1, result[1 - 1];
+                                            write(nout, format_9995), "Rgbsvx", fact, trans, n, kl, ku, equed, imat, 1, result[1 - 1];
                                         } else {
-                                            write(nout, format_9996), "DGBSVX", fact, trans, n, kl, ku, imat, 1, result[1 - 1];
+                                            write(nout, format_9996), "Rgbsvx", fact, trans, n, kl, ku, imat, 1, result[1 - 1];
                                         }
                                         nfail++;
                                         nrun++;
@@ -604,9 +604,9 @@ void Rdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                             Aladhd(nout, path);
                                         }
                                         if (prefac) {
-                                            write(nout, format_9995), "DGBSVX", fact, trans, n, kl, ku, equed, imat, 6, result[6 - 1];
+                                            write(nout, format_9995), "Rgbsvx", fact, trans, n, kl, ku, equed, imat, 6, result[6 - 1];
                                         } else {
-                                            write(nout, format_9996), "DGBSVX", fact, trans, n, kl, ku, imat, 6, result[6 - 1];
+                                            write(nout, format_9996), "Rgbsvx", fact, trans, n, kl, ku, imat, 6, result[6 - 1];
                                         }
                                         nfail++;
                                         nrun++;
@@ -616,9 +616,9 @@ void Rdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                             Aladhd(nout, path);
                                         }
                                         if (prefac) {
-                                            write(nout, format_9995), "DGBSVX", fact, trans, n, kl, ku, equed, imat, 7, result[7 - 1];
+                                            write(nout, format_9995), "Rgbsvx", fact, trans, n, kl, ku, equed, imat, 7, result[7 - 1];
                                         } else {
-                                            write(nout, format_9996), "DGBSVX", fact, trans, n, kl, ku, imat, 7, result[7 - 1];
+                                            write(nout, format_9996), "Rgbsvx", fact, trans, n, kl, ku, imat, 7, result[7 - 1];
                                         }
                                         nfail++;
                                         nrun++;
@@ -648,7 +648,7 @@ void Rdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                 // Solve the system and compute the condition number
                                 // and error bounds using Rgbsvxx.
                                 //
-                                srnamt = "DGBSVXX";
+                                srnamt = "Rgbsvxx";
                                 n_err_bnds = 3;
                                 Rgbsvxx(fact, trans, n, kl, ku, nrhs, a, lda, afb, ldafb, iwork, equed, s, s[(n + 1) - 1], b, ldb, x, ldb, rcond, rpvgrw_svxx, berr, n_err_bnds, errbnds_n, errbnds_c, 0, zero, work, iwork[(n + 1) - 1], info);
                                 //
@@ -658,7 +658,7 @@ void Rdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                     goto statement_90;
                                 }
                                 if (info != izero) {
-                                    Alaerh(path, "DGBSVXX", info, izero, fact + trans, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                                    Alaerh(path, "Rgbsvxx", info, izero, fact + trans, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                                     goto statement_90;
                                 }
                                 //
@@ -723,9 +723,9 @@ void Rdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                                 Aladhd(nout, path);
                                             }
                                             if (prefac) {
-                                                write(nout, format_9995), "DGBSVXX", fact, trans, n, kl, ku, equed, imat, k, result[k - 1];
+                                                write(nout, format_9995), "Rgbsvxx", fact, trans, n, kl, ku, equed, imat, k, result[k - 1];
                                             } else {
-                                                write(nout, format_9996), "DGBSVXX", fact, trans, n, kl, ku, imat, k, result[k - 1];
+                                                write(nout, format_9996), "Rgbsvxx", fact, trans, n, kl, ku, imat, k, result[k - 1];
                                             }
                                             nfail++;
                                         }
@@ -737,9 +737,9 @@ void Rdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                             Aladhd(nout, path);
                                         }
                                         if (prefac) {
-                                            write(nout, format_9995), "DGBSVXX", fact, trans, n, kl, ku, equed, imat, 1, result[1 - 1];
+                                            write(nout, format_9995), "Rgbsvxx", fact, trans, n, kl, ku, equed, imat, 1, result[1 - 1];
                                         } else {
-                                            write(nout, format_9996), "DGBSVXX", fact, trans, n, kl, ku, imat, 1, result[1 - 1];
+                                            write(nout, format_9996), "Rgbsvxx", fact, trans, n, kl, ku, imat, 1, result[1 - 1];
                                         }
                                         nfail++;
                                         nrun++;
@@ -749,9 +749,9 @@ void Rdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                             Aladhd(nout, path);
                                         }
                                         if (prefac) {
-                                            write(nout, format_9995), "DGBSVXX", fact, trans, n, kl, ku, equed, imat, 6, result[6 - 1];
+                                            write(nout, format_9995), "Rgbsvxx", fact, trans, n, kl, ku, equed, imat, 6, result[6 - 1];
                                         } else {
-                                            write(nout, format_9996), "DGBSVXX", fact, trans, n, kl, ku, imat, 6, result[6 - 1];
+                                            write(nout, format_9996), "Rgbsvxx", fact, trans, n, kl, ku, imat, 6, result[6 - 1];
                                         }
                                         nfail++;
                                         nrun++;
@@ -761,9 +761,9 @@ void Rdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                             Aladhd(nout, path);
                                         }
                                         if (prefac) {
-                                            write(nout, format_9995), "DGBSVXX", fact, trans, n, kl, ku, equed, imat, 7, result[7 - 1];
+                                            write(nout, format_9995), "Rgbsvxx", fact, trans, n, kl, ku, equed, imat, 7, result[7 - 1];
                                         } else {
-                                            write(nout, format_9996), "DGBSVXX", fact, trans, n, kl, ku, imat, 7, result[7 - 1];
+                                            write(nout, format_9996), "Rgbsvxx", fact, trans, n, kl, ku, imat, 7, result[7 - 1];
                                         }
                                         nfail++;
                                         nrun++;

@@ -313,7 +313,7 @@ void Cdrvsy_rook(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nr
                         // Factor the matrix and solve the system using
                         // Csysv_rook.
                         //
-                        srnamt = "ZSYSV_ROOK";
+                        srnamt = "Csysv_rook";
                         Csysv_rook(uplo.elems, n, nrhs, afac, lda, iwork, x, lda, work, lwork, info);
                         //
                         // Adjust the expected value of INFO to account for
@@ -336,7 +336,7 @@ void Cdrvsy_rook(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nr
                         // Check error code from Csysv_rook and handle error.
                         //
                         if (info != k) {
-                            Alaerh(path, "ZSYSV_ROOK", info, k, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                            Alaerh(path, "Csysv_rook", info, k, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                             goto statement_120;
                         } else if (info != 0) {
                             goto statement_120;

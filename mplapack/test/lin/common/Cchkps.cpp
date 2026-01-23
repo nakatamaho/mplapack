@@ -161,7 +161,7 @@ void Cchkps(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                         // of the matrix.
                         //
                         Clacpy(uplo.elems, n, n, a, lda, afac, lda);
-                        srnamt = "ZPSTRF";
+                        srnamt = "Cpstrf";
                         //
                         // Use default tolerance
                         //
@@ -171,7 +171,7 @@ void Cchkps(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                         // Check error code from Cpstrf.
                         //
                         if ((info < izero) || (info != izero && rank == n) || (info <= izero && rank < n)) {
-                            Alaerh(path, "ZPSTRF", info, izero, uplo, n, n, -1, -1, nb, imat, nfail, nerrs, nout);
+                            Alaerh(path, "Cpstrf", info, izero, uplo, n, n, -1, -1, nb, imat, nfail, nerrs, nout);
                             goto statement_110;
                         }
                         //

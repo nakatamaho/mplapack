@@ -169,22 +169,22 @@ void Cdrvrf4(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
                             //
                             normc = Clange("I", n, n, c1, ldc, d_work_zlange);
                             //
-                            srnamt = "ZTRTTF";
+                            srnamt = "Ctrttf";
                             Ctrttf(cform.elems, uplo.elems, n, c1, ldc, crf, info);
                             //
                             // call zherk the BLAS routine -> gives C1
                             //
-                            srnamt = "ZHERK ";
+                            srnamt = "Cherk";
                             Cherk(uplo.elems, trans.elems, n, k, alpha, a, lda, beta, c1, ldc);
                             //
                             // call zhfrk the RFP routine -> gives CRF
                             //
-                            srnamt = "ZHFRK ";
+                            srnamt = "Chfrk";
                             Chfrk(cform.elems, uplo.elems, trans.elems, n, k, alpha, a, lda, beta, crf);
                             //
                             // convert CRF in full format -> gives C2
                             //
-                            srnamt = "ZTFTTR";
+                            srnamt = "Ctfttr";
                             Ctfttr(cform.elems, uplo.elems, n, crf, c2, ldc, info);
                             //
                             // compare C1 and C2
@@ -206,7 +206,7 @@ void Cdrvrf4(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
                             if (result[1 - 1] >= thresh) {
                                 if (nfail == 0) {
                                     write(nout, star);
-                                    write(nout, "(1x,' *** Error(s) or Failure(s) while testing ZHFRK     "
+                                    write(nout, "(1x,' *** Error(s) or Failure(s) while testing Chfrk"
                                                 "    ***')");
                                 }
                                 write(nout, "(1x,'     Failure in ',a5,', CFORM=''',a1,''',',' UPLO=''',"

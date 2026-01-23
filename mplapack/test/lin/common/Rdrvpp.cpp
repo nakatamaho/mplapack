@@ -307,13 +307,13 @@ void Rdrvpp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                             Rcopy(npp, a, 1, afac, 1);
                             Rlacpy("Full", n, nrhs, b, lda, x, lda);
                             //
-                            srnamt = "DPPSV ";
+                            srnamt = "Rppsv";
                             Rppsv(uplo.elems, n, nrhs, afac, x, lda, info);
                             //
                             // Check error code from Rppsv .
                             //
                             if (info != izero) {
-                                Alaerh(path, "DPPSV ", info, izero, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                                Alaerh(path, "Rppsv", info, izero, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                                 goto statement_70;
                             } else if (info != 0) {
                                 goto statement_70;
@@ -369,13 +369,13 @@ void Rdrvpp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         // Solve the system and compute the condition number
                         // and error bounds using Rppsvx.
                         //
-                        srnamt = "DPPSVX";
+                        srnamt = "Rppsvx";
                         Rppsvx(fact.elems, uplo.elems, n, nrhs, a, afac, equed.elems, s, b, lda, x, lda, rcond, rwork, &rwork[(nrhs + 1) - 1], work, iwork, info);
                         //
                         // Check the error code from Rppsvx.
                         //
                         if (info != izero) {
-                            Alaerh(path, "DPPSVX", info, izero, fact + uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                            Alaerh(path, "Rppsvx", info, izero, fact + uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                             goto statement_90;
                         }
                         //

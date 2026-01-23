@@ -388,7 +388,7 @@ void Cdrgev(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             Cggev("V", "N", n, s, lda, t, lda, alpha1, beta1, qe, ldqe, z, ldq, work, lwork, rwork, ierr);
             if (ierr != 0 && ierr != n + 1) {
                 result[1 - 1] = ulpinv;
-                write(nounit, format_9999), "ZGGEV3", ierr, n, jtype, ioldsd;
+                write(nounit, format_9999), "Cggev3", ierr, n, jtype, ioldsd;
                 info = abs(ierr);
                 goto statement_190;
             }

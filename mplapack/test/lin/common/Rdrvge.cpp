@@ -277,14 +277,14 @@ void Rdrvge(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         //
                         // Factor the matrix A.
                         //
-                        srnamt = "DGETRF";
+                        srnamt = "Rgetrf";
                         Rgetrf(n, n, afac, lda, iwork, info);
                         //
                         // Form the inverse of A.
                         //
                         Rlacpy("Full", n, n, afac, lda, a, lda);
                         lwork = nmax * max((INTEGER)3, nrhs);
-                        srnamt = "DGETRI";
+                        srnamt = "Rgetri";
                         Rgetri(n, a, lda, iwork, work, lwork, info);
                         //
                         // Compute the 1-norm condition number of A.
@@ -338,13 +338,13 @@ void Rdrvge(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                             Rlacpy("Full", n, n, a, lda, afac, lda);
                             Rlacpy("Full", n, nrhs, b, lda, x, lda);
                             //
-                            srnamt = "DGESV ";
+                            srnamt = "Rgesv";
                             Rgesv(n, nrhs, afac, lda, iwork, x, lda, info);
                             //
                             // Check error code from Rgesv .
                             //
                             if (info != izero) {
-                                Alaerh(path, "DGESV ", info, izero, " ", n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                                Alaerh(path, "Rgesv", info, izero, " ", n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                             }
                             //
                             // Reconstruct matrix from factors and compute
@@ -397,13 +397,13 @@ void Rdrvge(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         // Solve the system and compute the condition number
                         // and error bounds using Rgesvx.
                         //
-                        srnamt = "DGESVX";
+                        srnamt = "Rgesvx";
                         Rgesvx(fact.elems, trans.elems, n, nrhs, a, lda, afac, lda, iwork, equed.elems, s, &s[(n + 1) - 1], b, lda, x, lda, rcond, rwork, &rwork[(nrhs + 1) - 1], work, &iwork[(n + 1) - 1], info);
                         //
                         // Check the error code from Rgesvx.
                         //
                         if (info != izero) {
-                            Alaerh(path, "DGESVX", info, izero, fact + trans, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                            Alaerh(path, "Rgesvx", info, izero, fact + trans, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                         }
                         //
                         // Compare WORK(1) from Rgesvx with the computed
@@ -481,9 +481,9 @@ void Rdrvge(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                         Aladhd(nout, path);
                                     }
                                     if (prefac) {
-                                        write(nout, format_9997), "DGESVX", fact, trans, n, equed, imat, k, result[k - 1];
+                                        write(nout, format_9997), "Rgesvx", fact, trans, n, equed, imat, k, result[k - 1];
                                     } else {
-                                        write(nout, format_9998), "DGESVX", fact, trans, n, imat, k, result[k - 1];
+                                        write(nout, format_9998), "Rgesvx", fact, trans, n, imat, k, result[k - 1];
                                     }
                                     nfail++;
                                 }
@@ -495,9 +495,9 @@ void Rdrvge(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                     Aladhd(nout, path);
                                 }
                                 if (prefac) {
-                                    write(nout, format_9997), "DGESVX", fact, trans, n, equed, imat, 1, result[1 - 1];
+                                    write(nout, format_9997), "Rgesvx", fact, trans, n, equed, imat, 1, result[1 - 1];
                                 } else {
-                                    write(nout, format_9998), "DGESVX", fact, trans, n, imat, 1, result[1 - 1];
+                                    write(nout, format_9998), "Rgesvx", fact, trans, n, imat, 1, result[1 - 1];
                                 }
                                 nfail++;
                                 nrun++;
@@ -507,9 +507,9 @@ void Rdrvge(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                     Aladhd(nout, path);
                                 }
                                 if (prefac) {
-                                    write(nout, format_9997), "DGESVX", fact, trans, n, equed, imat, 6, result[6 - 1];
+                                    write(nout, format_9997), "Rgesvx", fact, trans, n, equed, imat, 6, result[6 - 1];
                                 } else {
-                                    write(nout, format_9998), "DGESVX", fact, trans, n, imat, 6, result[6 - 1];
+                                    write(nout, format_9998), "Rgesvx", fact, trans, n, imat, 6, result[6 - 1];
                                 }
                                 nfail++;
                                 nrun++;
@@ -519,9 +519,9 @@ void Rdrvge(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                     Aladhd(nout, path);
                                 }
                                 if (prefac) {
-                                    write(nout, format_9997), "DGESVX", fact, trans, n, equed, imat, 7, result[7 - 1];
+                                    write(nout, format_9997), "Rgesvx", fact, trans, n, equed, imat, 7, result[7 - 1];
                                 } else {
-                                    write(nout, format_9998), "DGESVX", fact, trans, n, imat, 7, result[7 - 1];
+                                    write(nout, format_9998), "Rgesvx", fact, trans, n, imat, 7, result[7 - 1];
                                 }
                                 nfail++;
                                 nrun++;

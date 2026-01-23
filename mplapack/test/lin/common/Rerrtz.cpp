@@ -69,22 +69,22 @@ void Rerrtz(fem::str_cref path, INTEGER const nunit) {
         //
         // Rtzrzf
         //
-        srnamt = "DTZRZF";
+        srnamt = "Rtzrzf";
         infot = 1;
         Rtzrzf(-1, 0, a, 1, tau, w, 1, info);
-        Chkxer("DTZRZF", infot, nout, lerr, ok);
+        Chkxer("Rtzrzf", infot, nout, lerr, ok);
         infot = 2;
         Rtzrzf(1, 0, a, 1, tau, w, 1, info);
-        Chkxer("DTZRZF", infot, nout, lerr, ok);
+        Chkxer("Rtzrzf", infot, nout, lerr, ok);
         infot = 4;
         Rtzrzf(2, 2, a, 1, tau, w, 1, info);
-        Chkxer("DTZRZF", infot, nout, lerr, ok);
+        Chkxer("Rtzrzf", infot, nout, lerr, ok);
         infot = 7;
         Rtzrzf(2, 2, a, 2, tau, w, 0, info);
-        Chkxer("DTZRZF", infot, nout, lerr, ok);
+        Chkxer("Rtzrzf", infot, nout, lerr, ok);
         infot = 7;
         Rtzrzf(2, 3, a, 2, tau, w, 1, info);
-        Chkxer("DTZRZF", infot, nout, lerr, ok);
+        Chkxer("Rtzrzf", infot, nout, lerr, ok);
     }
     //
     // Print a summary line.

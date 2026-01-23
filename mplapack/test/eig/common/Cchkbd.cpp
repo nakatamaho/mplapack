@@ -358,7 +358,7 @@ void Cchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
                 // Check error code from Cgebrd.
                 //
                 if (iinfo != 0) {
-                    write(nout, format_9998), "ZGEBRD", iinfo, m, n, jtype, ioldsd;
+                    write(nout, format_9998), "Cgebrd", iinfo, m, n, jtype, ioldsd;
                     info = abs(iinfo);
                     return;
                 }
@@ -381,7 +381,7 @@ void Cchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
                 // Check error code from Cungbr.
                 //
                 if (iinfo != 0) {
-                    write(nout, format_9998), "ZUNGBR(Q)", iinfo, m, n, jtype, ioldsd;
+                    write(nout, format_9998), "Cungbr(Q)", iinfo, m, n, jtype, ioldsd;
                     info = abs(iinfo);
                     return;
                 }
@@ -393,7 +393,7 @@ void Cchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
                 // Check error code from Cungbr.
                 //
                 if (iinfo != 0) {
-                    write(nout, format_9998), "ZUNGBR(P)", iinfo, m, n, jtype, ioldsd;
+                    write(nout, format_9998), "Cungbr(P)", iinfo, m, n, jtype, ioldsd;
                     info = abs(iinfo);
                     return;
                 }
@@ -427,7 +427,7 @@ void Cchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
             // Check error code from Cbdsqr.
             //
             if (iinfo != 0) {
-                write(nout, format_9998), "ZBDSQR(vects)", iinfo, m, n, jtype, ioldsd;
+                write(nout, format_9998), "Cbdsqr(vects)", iinfo, m, n, jtype, ioldsd;
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     return;
@@ -450,7 +450,7 @@ void Cchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
             // Check error code from Cbdsqr.
             //
             if (iinfo != 0) {
-                write(nout, format_9998), "ZBDSQR(values)", iinfo, m, n, jtype, ioldsd;
+                write(nout, format_9998), "Cbdsqr(values)", iinfo, m, n, jtype, ioldsd;
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     return;

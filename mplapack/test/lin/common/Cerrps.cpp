@@ -75,31 +75,31 @@ void Cerrps(fem::str_cref path, INTEGER const nunit) {
     //
     // Cpstrf
     //
-    srnamt = "ZPSTRF";
+    srnamt = "Cpstrf";
     infot = 1;
     INTEGER rank = 0;
     INTEGER info = 0;
     Cpstrf("/", 0, a, 1, piv, rank, -1.0, rwork, info);
-    Chkxer("ZPSTRF", infot, nout, lerr, ok);
+    Chkxer("Cpstrf", infot, nout, lerr, ok);
     infot = 2;
     Cpstrf("U", -1, a, 1, piv, rank, -1.0, rwork, info);
-    Chkxer("ZPSTRF", infot, nout, lerr, ok);
+    Chkxer("Cpstrf", infot, nout, lerr, ok);
     infot = 4;
     Cpstrf("U", 2, a, 1, piv, rank, -1.0, rwork, info);
-    Chkxer("ZPSTRF", infot, nout, lerr, ok);
+    Chkxer("Cpstrf", infot, nout, lerr, ok);
     //
     // Cpstf2
     //
-    srnamt = "ZPSTF2";
+    srnamt = "Cpstf2";
     infot = 1;
     Cpstf2("/", 0, a, 1, piv, rank, -1.0, rwork, info);
-    Chkxer("ZPSTF2", infot, nout, lerr, ok);
+    Chkxer("Cpstf2", infot, nout, lerr, ok);
     infot = 2;
     Cpstf2("U", -1, a, 1, piv, rank, -1.0, rwork, info);
-    Chkxer("ZPSTF2", infot, nout, lerr, ok);
+    Chkxer("Cpstf2", infot, nout, lerr, ok);
     infot = 4;
     Cpstf2("U", 2, a, 1, piv, rank, -1.0, rwork, info);
-    Chkxer("ZPSTF2", infot, nout, lerr, ok);
+    Chkxer("Cpstf2", infot, nout, lerr, ok);
     //
     // Print a summary line.
     //

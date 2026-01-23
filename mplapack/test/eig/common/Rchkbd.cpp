@@ -373,7 +373,7 @@ void Rchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
                 // Check error code from Rgebrd.
                 //
                 if (iinfo != 0) {
-                    write(nout, format_9998), "DGEBRD", iinfo, m, n, jtype, ioldsd;
+                    write(nout, format_9998), "Rgebrd", iinfo, m, n, jtype, ioldsd;
                     info = abs(iinfo);
                     return;
                 }
@@ -396,7 +396,7 @@ void Rchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
                 // Check error code from Rorgbr.
                 //
                 if (iinfo != 0) {
-                    write(nout, format_9998), "DORGBR(Q)", iinfo, m, n, jtype, ioldsd;
+                    write(nout, format_9998), "Rorgbr(Q)", iinfo, m, n, jtype, ioldsd;
                     info = abs(iinfo);
                     return;
                 }
@@ -408,7 +408,7 @@ void Rchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
                 // Check error code from Rorgbr.
                 //
                 if (iinfo != 0) {
-                    write(nout, format_9998), "DORGBR(P)", iinfo, m, n, jtype, ioldsd;
+                    write(nout, format_9998), "Rorgbr(P)", iinfo, m, n, jtype, ioldsd;
                     info = abs(iinfo);
                     return;
                 }
@@ -442,7 +442,7 @@ void Rchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
             // Check error code from Rbdsqr.
             //
             if (iinfo != 0) {
-                write(nout, format_9998), "DBDSQR(vects)", iinfo, m, n, jtype, ioldsd;
+                write(nout, format_9998), "Rbdsqr(vects)", iinfo, m, n, jtype, ioldsd;
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     return;
@@ -465,7 +465,7 @@ void Rchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
             // Check error code from Rbdsqr.
             //
             if (iinfo != 0) {
-                write(nout, format_9998), "DBDSQR(values)", iinfo, m, n, jtype, ioldsd;
+                write(nout, format_9998), "Rbdsqr(values)", iinfo, m, n, jtype, ioldsd;
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     return;
@@ -567,7 +567,7 @@ void Rchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
             // Check error code from Rbdsdc.
             //
             if (iinfo != 0) {
-                write(nout, format_9998), "DBDSDC(vects)", iinfo, m, n, jtype, ioldsd;
+                write(nout, format_9998), "Rbdsdc(vects)", iinfo, m, n, jtype, ioldsd;
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     return;
@@ -590,7 +590,7 @@ void Rchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
             // Check error code from Rbdsdc.
             //
             if (iinfo != 0) {
-                write(nout, format_9998), "DBDSDC(values)", iinfo, m, n, jtype, ioldsd;
+                write(nout, format_9998), "Rbdsdc(values)", iinfo, m, n, jtype, ioldsd;
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     return;
@@ -667,7 +667,7 @@ void Rchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
             // Check error code from Rbdsvdx.
             //
             if (iinfo != 0) {
-                write(nout, format_9998), "DBDSVDX(vects,A)", iinfo, m, n, jtype, ioldsd;
+                write(nout, format_9998), "Rbdsvdx(vects,A)", iinfo, m, n, jtype, ioldsd;
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     return;
@@ -706,7 +706,7 @@ void Rchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
             // Check error code from Rbdsvdx.
             //
             if (iinfo != 0) {
-                write(nout, format_9998), "DBDSVDX(values,A)", iinfo, m, n, jtype, ioldsd;
+                write(nout, format_9998), "Rbdsvdx(values,A)", iinfo, m, n, jtype, ioldsd;
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     return;
@@ -784,7 +784,7 @@ void Rchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
             // Check error code from Rbdsvdx.
             //
             if (iinfo != 0) {
-                write(nout, format_9998), "DBDSVDX(vects,I)", iinfo, m, n, jtype, ioldsd;
+                write(nout, format_9998), "Rbdsvdx(vects,I)", iinfo, m, n, jtype, ioldsd;
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     return;
@@ -815,7 +815,7 @@ void Rchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
             // Check error code from Rbdsvdx.
             //
             if (iinfo != 0) {
-                write(nout, format_9998), "DBDSVDX(values,I)", iinfo, m, n, jtype, ioldsd;
+                write(nout, format_9998), "Rbdsvdx(values,I)", iinfo, m, n, jtype, ioldsd;
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     return;
@@ -895,7 +895,7 @@ void Rchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
             // Check error code from Rbdsvdx.
             //
             if (iinfo != 0) {
-                write(nout, format_9998), "DBDSVDX(vects,V)", iinfo, m, n, jtype, ioldsd;
+                write(nout, format_9998), "Rbdsvdx(vects,V)", iinfo, m, n, jtype, ioldsd;
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     return;
@@ -926,7 +926,7 @@ void Rchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
             // Check error code from Rbdsvdx.
             //
             if (iinfo != 0) {
-                write(nout, format_9998), "DBDSVDX(values,V)", iinfo, m, n, jtype, ioldsd;
+                write(nout, format_9998), "Rbdsvdx(values,V)", iinfo, m, n, jtype, ioldsd;
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     return;

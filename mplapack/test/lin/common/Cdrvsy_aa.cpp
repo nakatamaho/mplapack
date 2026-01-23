@@ -260,7 +260,7 @@ void Cdrvsy_aa(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs
                         //
                         // Factor the matrix and solve the system using Csysv_aa.
                         //
-                        srnamt = "ZSYSV_AA";
+                        srnamt = "Csysv_aa";
                         Csysv_aa(uplo.elems, n, nrhs, afac, lda, iwork, x, lda, work, lwork, info);
                         //
                         // Adjust the expected value of INFO to account for
@@ -286,7 +286,7 @@ void Cdrvsy_aa(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs
                         // Check error code from Csysv_aa .
                         //
                         if (info != k) {
-                            Alaerh(path, "ZSYSV_AA ", info, k, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                            Alaerh(path, "Csysv_aa", info, k, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                             goto statement_120;
                         } else if (info != 0) {
                             goto statement_120;

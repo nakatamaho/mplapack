@@ -79,29 +79,29 @@ void Rerrac(INTEGER const nunit) {
     }
     ok = true;
     //
-    srnamt = "DSPOSV";
+    srnamt = "Rsposv";
     infot = 1;
     REAL work[nmax * nmax];
     REAL swork[nmax * nmax];
     INTEGER iter = 0;
     INTEGER info = 0;
     Rsposv("/", 0, 0, a, 1, b, 1, x, 1, work, swork, iter, info);
-    Chkxer("DSPOSV", infot, nout, lerr, ok);
+    Chkxer("Rsposv", infot, nout, lerr, ok);
     infot = 2;
     Rsposv("U", -1, 0, a, 1, b, 1, x, 1, work, swork, iter, info);
-    Chkxer("DSPOSV", infot, nout, lerr, ok);
+    Chkxer("Rsposv", infot, nout, lerr, ok);
     infot = 3;
     Rsposv("U", 0, -1, a, 1, b, 1, x, 1, work, swork, iter, info);
-    Chkxer("DSPOSV", infot, nout, lerr, ok);
+    Chkxer("Rsposv", infot, nout, lerr, ok);
     infot = 5;
     Rsposv("U", 2, 1, a, 1, b, 2, x, 2, work, swork, iter, info);
-    Chkxer("DSPOSV", infot, nout, lerr, ok);
+    Chkxer("Rsposv", infot, nout, lerr, ok);
     infot = 7;
     Rsposv("U", 2, 1, a, 2, b, 1, x, 2, work, swork, iter, info);
-    Chkxer("DSPOSV", infot, nout, lerr, ok);
+    Chkxer("Rsposv", infot, nout, lerr, ok);
     infot = 9;
     Rsposv("U", 2, 1, a, 2, b, 2, x, 1, work, swork, iter, info);
-    Chkxer("DSPOSV", infot, nout, lerr, ok);
+    Chkxer("Rsposv", infot, nout, lerr, ok);
     //
     // Print a summary line.
     //

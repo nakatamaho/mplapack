@@ -75,33 +75,33 @@ void Cerrlq(fem::str_cref path, INTEGER const nunit) {
     //
     // Cgelqf
     //
-    srnamt = "ZGELQF";
+    srnamt = "Cgelqf";
     infot = 1;
     INTEGER info = 0;
     Cgelqf(-1, 0, a, 1, b, w, 1, info);
-    Chkxer("ZGELQF", infot, nout, lerr, ok);
+    Chkxer("Cgelqf", infot, nout, lerr, ok);
     infot = 2;
     Cgelqf(0, -1, a, 1, b, w, 1, info);
-    Chkxer("ZGELQF", infot, nout, lerr, ok);
+    Chkxer("Cgelqf", infot, nout, lerr, ok);
     infot = 4;
     Cgelqf(2, 1, a, 1, b, w, 2, info);
-    Chkxer("ZGELQF", infot, nout, lerr, ok);
+    Chkxer("Cgelqf", infot, nout, lerr, ok);
     infot = 7;
     Cgelqf(2, 1, a, 2, b, w, 1, info);
-    Chkxer("ZGELQF", infot, nout, lerr, ok);
+    Chkxer("Cgelqf", infot, nout, lerr, ok);
     //
     // Cgelq2
     //
-    srnamt = "ZGELQ2";
+    srnamt = "Cgelq2";
     infot = 1;
     Cgelq2(-1, 0, a, 1, b, w, info);
-    Chkxer("ZGELQ2", infot, nout, lerr, ok);
+    Chkxer("Cgelq2", infot, nout, lerr, ok);
     infot = 2;
     Cgelq2(0, -1, a, 1, b, w, info);
-    Chkxer("ZGELQ2", infot, nout, lerr, ok);
+    Chkxer("Cgelq2", infot, nout, lerr, ok);
     infot = 4;
     Cgelq2(2, 1, a, 1, b, w, info);
-    Chkxer("ZGELQ2", infot, nout, lerr, ok);
+    Chkxer("Cgelq2", infot, nout, lerr, ok);
     //
     // Cgelqs
     //
@@ -130,124 +130,124 @@ void Cerrlq(fem::str_cref path, INTEGER const nunit) {
     //
     // Cunglq
     //
-    srnamt = "ZUNGLQ";
+    srnamt = "Cunglq";
     infot = 1;
     Cunglq(-1, 0, 0, a, 1, x, w, 1, info);
-    Chkxer("ZUNGLQ", infot, nout, lerr, ok);
+    Chkxer("Cunglq", infot, nout, lerr, ok);
     infot = 2;
     Cunglq(0, -1, 0, a, 1, x, w, 1, info);
-    Chkxer("ZUNGLQ", infot, nout, lerr, ok);
+    Chkxer("Cunglq", infot, nout, lerr, ok);
     infot = 2;
     Cunglq(2, 1, 0, a, 2, x, w, 2, info);
-    Chkxer("ZUNGLQ", infot, nout, lerr, ok);
+    Chkxer("Cunglq", infot, nout, lerr, ok);
     infot = 3;
     Cunglq(0, 0, -1, a, 1, x, w, 1, info);
-    Chkxer("ZUNGLQ", infot, nout, lerr, ok);
+    Chkxer("Cunglq", infot, nout, lerr, ok);
     infot = 3;
     Cunglq(1, 1, 2, a, 1, x, w, 1, info);
-    Chkxer("ZUNGLQ", infot, nout, lerr, ok);
+    Chkxer("Cunglq", infot, nout, lerr, ok);
     infot = 5;
     Cunglq(2, 2, 0, a, 1, x, w, 2, info);
-    Chkxer("ZUNGLQ", infot, nout, lerr, ok);
+    Chkxer("Cunglq", infot, nout, lerr, ok);
     infot = 8;
     Cunglq(2, 2, 0, a, 2, x, w, 1, info);
-    Chkxer("ZUNGLQ", infot, nout, lerr, ok);
+    Chkxer("Cunglq", infot, nout, lerr, ok);
     //
     // Cungl2
     //
-    srnamt = "ZUNGL2";
+    srnamt = "Cungl2";
     infot = 1;
     Cungl2(-1, 0, 0, a, 1, x, w, info);
-    Chkxer("ZUNGL2", infot, nout, lerr, ok);
+    Chkxer("Cungl2", infot, nout, lerr, ok);
     infot = 2;
     Cungl2(0, -1, 0, a, 1, x, w, info);
-    Chkxer("ZUNGL2", infot, nout, lerr, ok);
+    Chkxer("Cungl2", infot, nout, lerr, ok);
     infot = 2;
     Cungl2(2, 1, 0, a, 2, x, w, info);
-    Chkxer("ZUNGL2", infot, nout, lerr, ok);
+    Chkxer("Cungl2", infot, nout, lerr, ok);
     infot = 3;
     Cungl2(0, 0, -1, a, 1, x, w, info);
-    Chkxer("ZUNGL2", infot, nout, lerr, ok);
+    Chkxer("Cungl2", infot, nout, lerr, ok);
     infot = 3;
     Cungl2(1, 1, 2, a, 1, x, w, info);
-    Chkxer("ZUNGL2", infot, nout, lerr, ok);
+    Chkxer("Cungl2", infot, nout, lerr, ok);
     infot = 5;
     Cungl2(2, 2, 0, a, 1, x, w, info);
-    Chkxer("ZUNGL2", infot, nout, lerr, ok);
+    Chkxer("Cungl2", infot, nout, lerr, ok);
     //
     // Cunmlq
     //
-    srnamt = "ZUNMLQ";
+    srnamt = "Cunmlq";
     infot = 1;
     Cunmlq("/", "N", 0, 0, 0, a, 1, x, af, 1, w, 1, info);
-    Chkxer("ZUNMLQ", infot, nout, lerr, ok);
+    Chkxer("Cunmlq", infot, nout, lerr, ok);
     infot = 2;
     Cunmlq("L", "/", 0, 0, 0, a, 1, x, af, 1, w, 1, info);
-    Chkxer("ZUNMLQ", infot, nout, lerr, ok);
+    Chkxer("Cunmlq", infot, nout, lerr, ok);
     infot = 3;
     Cunmlq("L", "N", -1, 0, 0, a, 1, x, af, 1, w, 1, info);
-    Chkxer("ZUNMLQ", infot, nout, lerr, ok);
+    Chkxer("Cunmlq", infot, nout, lerr, ok);
     infot = 4;
     Cunmlq("L", "N", 0, -1, 0, a, 1, x, af, 1, w, 1, info);
-    Chkxer("ZUNMLQ", infot, nout, lerr, ok);
+    Chkxer("Cunmlq", infot, nout, lerr, ok);
     infot = 5;
     Cunmlq("L", "N", 0, 0, -1, a, 1, x, af, 1, w, 1, info);
-    Chkxer("ZUNMLQ", infot, nout, lerr, ok);
+    Chkxer("Cunmlq", infot, nout, lerr, ok);
     infot = 5;
     Cunmlq("L", "N", 0, 1, 1, a, 1, x, af, 1, w, 1, info);
-    Chkxer("ZUNMLQ", infot, nout, lerr, ok);
+    Chkxer("Cunmlq", infot, nout, lerr, ok);
     infot = 5;
     Cunmlq("R", "N", 1, 0, 1, a, 1, x, af, 1, w, 1, info);
-    Chkxer("ZUNMLQ", infot, nout, lerr, ok);
+    Chkxer("Cunmlq", infot, nout, lerr, ok);
     infot = 7;
     Cunmlq("L", "N", 2, 0, 2, a, 1, x, af, 2, w, 1, info);
-    Chkxer("ZUNMLQ", infot, nout, lerr, ok);
+    Chkxer("Cunmlq", infot, nout, lerr, ok);
     infot = 7;
     Cunmlq("R", "N", 0, 2, 2, a, 1, x, af, 1, w, 1, info);
-    Chkxer("ZUNMLQ", infot, nout, lerr, ok);
+    Chkxer("Cunmlq", infot, nout, lerr, ok);
     infot = 10;
     Cunmlq("L", "N", 2, 1, 0, a, 2, x, af, 1, w, 1, info);
-    Chkxer("ZUNMLQ", infot, nout, lerr, ok);
+    Chkxer("Cunmlq", infot, nout, lerr, ok);
     infot = 12;
     Cunmlq("L", "N", 1, 2, 0, a, 1, x, af, 1, w, 1, info);
-    Chkxer("ZUNMLQ", infot, nout, lerr, ok);
+    Chkxer("Cunmlq", infot, nout, lerr, ok);
     infot = 12;
     Cunmlq("R", "N", 2, 1, 0, a, 1, x, af, 2, w, 1, info);
-    Chkxer("ZUNMLQ", infot, nout, lerr, ok);
+    Chkxer("Cunmlq", infot, nout, lerr, ok);
     //
     // Cunml2
     //
-    srnamt = "ZUNML2";
+    srnamt = "Cunml2";
     infot = 1;
     Cunml2("/", "N", 0, 0, 0, a, 1, x, af, 1, w, info);
-    Chkxer("ZUNML2", infot, nout, lerr, ok);
+    Chkxer("Cunml2", infot, nout, lerr, ok);
     infot = 2;
     Cunml2("L", "/", 0, 0, 0, a, 1, x, af, 1, w, info);
-    Chkxer("ZUNML2", infot, nout, lerr, ok);
+    Chkxer("Cunml2", infot, nout, lerr, ok);
     infot = 3;
     Cunml2("L", "N", -1, 0, 0, a, 1, x, af, 1, w, info);
-    Chkxer("ZUNML2", infot, nout, lerr, ok);
+    Chkxer("Cunml2", infot, nout, lerr, ok);
     infot = 4;
     Cunml2("L", "N", 0, -1, 0, a, 1, x, af, 1, w, info);
-    Chkxer("ZUNML2", infot, nout, lerr, ok);
+    Chkxer("Cunml2", infot, nout, lerr, ok);
     infot = 5;
     Cunml2("L", "N", 0, 0, -1, a, 1, x, af, 1, w, info);
-    Chkxer("ZUNML2", infot, nout, lerr, ok);
+    Chkxer("Cunml2", infot, nout, lerr, ok);
     infot = 5;
     Cunml2("L", "N", 0, 1, 1, a, 1, x, af, 1, w, info);
-    Chkxer("ZUNML2", infot, nout, lerr, ok);
+    Chkxer("Cunml2", infot, nout, lerr, ok);
     infot = 5;
     Cunml2("R", "N", 1, 0, 1, a, 1, x, af, 1, w, info);
-    Chkxer("ZUNML2", infot, nout, lerr, ok);
+    Chkxer("Cunml2", infot, nout, lerr, ok);
     infot = 7;
     Cunml2("L", "N", 2, 1, 2, a, 1, x, af, 2, w, info);
-    Chkxer("ZUNML2", infot, nout, lerr, ok);
+    Chkxer("Cunml2", infot, nout, lerr, ok);
     infot = 7;
     Cunml2("R", "N", 1, 2, 2, a, 1, x, af, 1, w, info);
-    Chkxer("ZUNML2", infot, nout, lerr, ok);
+    Chkxer("Cunml2", infot, nout, lerr, ok);
     infot = 10;
     Cunml2("L", "N", 2, 1, 0, a, 2, x, af, 1, w, info);
-    Chkxer("ZUNML2", infot, nout, lerr, ok);
+    Chkxer("Cunml2", infot, nout, lerr, ok);
     //
     // Print a summary line.
     //

@@ -69,7 +69,7 @@ void Rrqt02(INTEGER const m, INTEGER const n, INTEGER const k, REAL *a, REAL *af
     //
     // Generate the last n rows of the matrix Q
     //
-    srnamt = "DORGRQ";
+    srnamt = "Rorgrq";
     INTEGER info = 0;
     Rorgrq(m, n, k, q, lda, &tau[(m - k + 1) - 1], work, lwork, info);
     //

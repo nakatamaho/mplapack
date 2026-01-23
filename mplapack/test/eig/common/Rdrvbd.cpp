@@ -256,7 +256,7 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                 if (iws > 1) {
                     Rlacpy("F", m, n, asav, lda, a, lda);
                 }
-                srnamt = "DGESVD";
+                srnamt = "Rgesvd";
                 Rgesvd("A", "A", m, n, a, lda, ssav, usav, ldu, vtsav, ldvt, work, lswork, iinfo);
                 if (iinfo != 0) {
                     write(nout, format_9995), "GESVD", iinfo, m, n, jtype, lswork, ioldsd;
@@ -299,7 +299,7 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                         jobu = cjob[(iju + 1) - 1];
                         jobvt = cjob[(ijvt + 1) - 1];
                         Rlacpy("F", m, n, asav, lda, a, lda);
-                        srnamt = "DGESVD";
+                        srnamt = "Rgesvd";
                         Rgesvd(jobu.elems, jobvt.elems, m, n, a, lda, s, u, ldu, vt, ldvt, work, lswork, iinfo);
                         //
                         // Compare U
@@ -359,7 +359,7 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                 }
                 //
                 Rlacpy("F", m, n, asav, lda, a, lda);
-                srnamt = "DGESDD";
+                srnamt = "Rgesdd";
                 Rgesdd("A", m, n, a, lda, ssav, usav, ldu, vtsav, ldvt, work, lswork, iwork, iinfo);
                 if (iinfo != 0) {
                     write(nout, format_9995), "GESDD", iinfo, m, n, jtype, lswork, ioldsd;
@@ -397,7 +397,7 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                 for (ijq = 0; ijq <= 2; ijq = ijq + 1) {
                     jobq = cjob[(ijq + 1) - 1];
                     Rlacpy("F", m, n, asav, lda, a, lda);
-                    srnamt = "DGESDD";
+                    srnamt = "Rgesdd";
                     Rgesdd(jobq.elems, m, n, a, lda, s, u, ldu, vt, ldvt, work, lswork, iwork, iinfo);
                     //
                     // Compare U
@@ -466,14 +466,14 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                     }
                     //
                     Rlacpy("F", m, n, asav, lda, a, lda);
-                    srnamt = "DGESVDQ";
+                    srnamt = "Rgesvdq";
                     //
                     lrwork = 2;
                     liwork = max(n, (INTEGER)1);
                     Rgesvdq("H", "N", "N", "A", "A", m, n, a, lda, ssav, usav, ldu, vtsav, ldvt, numrank, iwork, liwork, work, lwork, rwork, lrwork, iinfo);
                     //
                     if (iinfo != 0) {
-                        write(nout, format_9995), "DGESVDQ", iinfo, m, n, jtype, lswork, ioldsd;
+                        write(nout, format_9995), "Rgesvdq", iinfo, m, n, jtype, lswork, ioldsd;
                         info = abs(iinfo);
                         return;
                     }
@@ -519,7 +519,7 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                     }
                     //
                     Rlacpy("F", m, n, asav, lda, usav, lda);
-                    srnamt = "DGESVJ";
+                    srnamt = "Rgesvj";
                     Rgesvj("G", "U", "V", m, n, usav, lda, ssav, 0, a, ldvt, work, lwork, info);
                     //
                     // Rgesvj returns V not VT
@@ -576,7 +576,7 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                     }
                     //
                     Rlacpy("F", m, n, asav, lda, vtsav, lda);
-                    srnamt = "DGEJSV";
+                    srnamt = "Rgejsv";
                     Rgejsv("G", "U", "V", "R", "N", "N", m, n, vtsav, lda, ssav, usav, ldu, a, ldvt, work, lwork, iwork, info);
                     //
                     // Rgejsv returns V not VT

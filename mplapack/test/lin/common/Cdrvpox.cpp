@@ -327,13 +327,13 @@ void Cdrvpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                             Clacpy(uplo.elems, n, n, a, lda, afac, lda);
                             Clacpy("Full", n, nrhs, b, lda, x, lda);
                             //
-                            srnamt = "ZPOSV ";
+                            srnamt = "Cposv";
                             Cposv(uplo.elems, n, nrhs, afac, lda, x, lda, info);
                             //
                             // Check error code from Cposv .
                             //
                             if (info != izero) {
-                                Alaerh(path, "ZPOSV ", info, izero, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                                Alaerh(path, "Cposv", info, izero, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                                 goto statement_70;
                             } else if (info != 0) {
                                 goto statement_70;
@@ -389,13 +389,13 @@ void Cdrvpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         // Solve the system and compute the condition number
                         // and error bounds using Cposvx.
                         //
-                        srnamt = "ZPOSVX";
+                        srnamt = "Cposvx";
                         Cposvx(fact.elems, uplo.elems, n, nrhs, a, lda, afac, lda, equed.elems, s, b, lda, x, lda, rcond, rwork, &rwork[(nrhs + 1) - 1], work, &rwork[(2 * nrhs + 1) - 1], info);
                         //
                         // Check the error code from Cposvx.
                         //
                         if (info != izero) {
-                            Alaerh(path, "ZPOSVX", info, izero, fact + uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                            Alaerh(path, "Cposvx", info, izero, fact + uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                             goto statement_90;
                         }
                         //
@@ -446,9 +446,9 @@ void Cdrvpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                     Aladhd(nout, path);
                                 }
                                 if (prefac) {
-                                    write(nout, format_9997), "ZPOSVX", fact, uplo, n, equed, imat, k, result[k - 1];
+                                    write(nout, format_9997), "Cposvx", fact, uplo, n, equed, imat, k, result[k - 1];
                                 } else {
-                                    write(nout, format_9998), "ZPOSVX", fact, uplo, n, imat, k, result[k - 1];
+                                    write(nout, format_9998), "Cposvx", fact, uplo, n, imat, k, result[k - 1];
                                 }
                                 nfail++;
                             }
@@ -477,7 +477,7 @@ void Cdrvpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         // Solve the system and compute the condition number
                         // and error bounds using Cposvxx.
                         //
-                        srnamt = "ZPOSVXX";
+                        srnamt = "Cposvxx";
                         n_err_bnds = 3;
                         Cposvxx(fact, uplo, n, nrhs, a, lda, afac, lda, equed, s, b, lda, x, lda, rcond, rpvgrw_svxx, berr, n_err_bnds, errbnds_n, errbnds_c, 0, zero, work, rwork[(2 * nrhs + 1) - 1], info);
                         //
@@ -487,7 +487,7 @@ void Cdrvpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                             goto statement_90;
                         }
                         if (info != izero) {
-                            Alaerh(path, "ZPOSVXX", info, izero, fact + uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                            Alaerh(path, "Cposvxx", info, izero, fact + uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                             goto statement_90;
                         }
                         //
@@ -538,9 +538,9 @@ void Cdrvpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                     Aladhd(nout, path);
                                 }
                                 if (prefac) {
-                                    write(nout, format_9997), "ZPOSVXX", fact, uplo, n, equed, imat, k, result[k - 1];
+                                    write(nout, format_9997), "Cposvxx", fact, uplo, n, equed, imat, k, result[k - 1];
                                 } else {
-                                    write(nout, format_9998), "ZPOSVXX", fact, uplo, n, imat, k, result[k - 1];
+                                    write(nout, format_9998), "Cposvxx", fact, uplo, n, imat, k, result[k - 1];
                                 }
                                 nfail++;
                             }

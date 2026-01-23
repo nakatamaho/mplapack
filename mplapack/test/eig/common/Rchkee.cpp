@@ -246,10 +246,10 @@ statement_10:
         write(nout, "(/,' Tests of the Generalized Nonsymmetric Eigenvalue ',"
                     "'Problem Expert Driver DGGEVX')");
     } else if (dsb) {
-        write(nout, "(' Tests of DSBTRD',/,' (reduction of a symmetric band ',"
+        write(nout, "(' Tests of Rsbtrd',/,' (reduction of a symmetric band ',"
                     "'matrix to tridiagonal form)')");
     } else if (dbb) {
-        write(nout, "(' Tests of DGBBRD',/,' (reduction of a general band ',"
+        write(nout, "(' Tests of Rgbbrd',/,' (reduction of a general band ',"
                     "'matrix to real bidiagonal form)')");
     } else if (glm) {
         write(nout, "(/,' Tests of the Generalized Linear Regression Model ','routines')");
@@ -1200,7 +1200,7 @@ statement_190:
             Alareq(c3, ntypes, dotype, maxtyp, nin, nout);
             Rdrvev(nn, nval, ntypes, dotype, iseed, thresh, nout, &a[0], nmax, &a[(2 - 1) * lda], &d[0], &d[(2 - 1) * nmax], &d[(3 - 1) * nmax], &d[(4 - 1) * nmax], &a[(3 - 1) * lda], nmax, &a[(4 - 1) * lda], nmax, &a[(5 - 1) * lda], nmax, result, work, lwork, iwork, info);
             if (info != 0) {
-                write(nout, format_9980), "DGEEV", info;
+                write(nout, format_9980), "Rgeev", info;
             }
         }
         write(nout, format_9973);
@@ -1224,7 +1224,7 @@ statement_190:
             Alareq(c3, ntypes, dotype, maxtyp, nin, nout);
             Rdrves(nn, nval, ntypes, dotype, iseed, thresh, nout, &a[0], nmax, &a[(2 - 1) * lda], &a[(3 - 1) * lda], &d[0], &d[(2 - 1) * nmax], &d[(3 - 1) * nmax], &d[(4 - 1) * nmax], &a[(4 - 1) * lda], nmax, result, work, lwork, iwork, logwrk, info);
             if (info != 0) {
-                write(nout, format_9980), "DGEES", info;
+                write(nout, format_9980), "Rgees", info;
             }
         }
         write(nout, format_9973);
@@ -1248,7 +1248,7 @@ statement_190:
             Alareq(c3, ntypes, dotype, maxtyp, nin, nout);
             Rdrvvx(nn, nval, ntypes, dotype, iseed, thresh, nin, nout, &a[0], nmax, &a[(2 - 1) * lda], &d[0], &d[(2 - 1) * nmax], &d[(3 - 1) * nmax], &d[(4 - 1) * nmax], &a[(3 - 1) * lda], nmax, &a[(4 - 1) * lda], nmax, &a[(5 - 1) * lda], nmax, &d[(5 - 1) * nmax], &d[(6 - 1) * nmax], &d[(7 - 1) * nmax], &d[(8 - 1) * nmax], &d[(9 - 1) * nmax], &d[(10 - 1) * nmax], &d[(11 - 1) * nmax], &d[(12 - 1) * nmax], result, work, lwork, iwork, info);
             if (info != 0) {
-                write(nout, format_9980), "DGEEVX", info;
+                write(nout, format_9980), "Rgeevx", info;
             }
         }
         write(nout, format_9973);
@@ -1272,7 +1272,7 @@ statement_190:
             Alareq(c3, ntypes, dotype, maxtyp, nin, nout);
             Rdrvsx(nn, nval, ntypes, dotype, iseed, thresh, nin, nout, &a[0], nmax, &a[(2 - 1) * lda], &a[(3 - 1) * lda], &d[0], &d[(2 - 1) * nmax], &d[(3 - 1) * nmax], &d[(4 - 1) * nmax], &d[(5 - 1) * nmax], &d[(6 - 1) * nmax], &a[(4 - 1) * lda], nmax, &a[(5 - 1) * lda], result, work, lwork, iwork, logwrk, info);
             if (info != 0) {
-                write(nout, format_9980), "DGEESX", info;
+                write(nout, format_9980), "Rgeesx", info;
             }
         }
         write(nout, format_9973);

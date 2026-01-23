@@ -73,97 +73,97 @@ void Rerrqrtp(fem::str_cref path, INTEGER const nunit) {
     //
     // Rtpqrt
     //
-    srnamt = "DTPQRT";
+    srnamt = "Rtpqrt";
     infot = 1;
     REAL b[nmax * nmax];
     INTEGER info = 0;
     Rtpqrt(-1, 1, 0, 1, a, 1, b, 1, t, 1, w, info);
-    Chkxer("DTPQRT", infot, nout, lerr, ok);
+    Chkxer("Rtpqrt", infot, nout, lerr, ok);
     infot = 2;
     Rtpqrt(1, -1, 0, 1, a, 1, b, 1, t, 1, w, info);
-    Chkxer("DTPQRT", infot, nout, lerr, ok);
+    Chkxer("Rtpqrt", infot, nout, lerr, ok);
     infot = 3;
     Rtpqrt(0, 1, -1, 1, a, 1, b, 1, t, 1, w, info);
-    Chkxer("DTPQRT", infot, nout, lerr, ok);
+    Chkxer("Rtpqrt", infot, nout, lerr, ok);
     infot = 3;
     Rtpqrt(0, 1, 1, 1, a, 1, b, 1, t, 1, w, info);
-    Chkxer("DTPQRT", infot, nout, lerr, ok);
+    Chkxer("Rtpqrt", infot, nout, lerr, ok);
     infot = 4;
     Rtpqrt(0, 1, 0, 0, a, 1, b, 1, t, 1, w, info);
-    Chkxer("DTPQRT", infot, nout, lerr, ok);
+    Chkxer("Rtpqrt", infot, nout, lerr, ok);
     infot = 4;
     Rtpqrt(0, 1, 0, 2, a, 1, b, 1, t, 1, w, info);
-    Chkxer("DTPQRT", infot, nout, lerr, ok);
+    Chkxer("Rtpqrt", infot, nout, lerr, ok);
     infot = 6;
     Rtpqrt(1, 2, 0, 2, a, 1, b, 1, t, 1, w, info);
-    Chkxer("DTPQRT", infot, nout, lerr, ok);
+    Chkxer("Rtpqrt", infot, nout, lerr, ok);
     infot = 8;
     Rtpqrt(2, 1, 0, 1, a, 1, b, 1, t, 1, w, info);
-    Chkxer("DTPQRT", infot, nout, lerr, ok);
+    Chkxer("Rtpqrt", infot, nout, lerr, ok);
     infot = 10;
     Rtpqrt(2, 2, 1, 2, a, 2, b, 2, t, 1, w, info);
-    Chkxer("DTPQRT", infot, nout, lerr, ok);
+    Chkxer("Rtpqrt", infot, nout, lerr, ok);
     //
     // Rtpqrt2
     //
-    srnamt = "DTPQRT2";
+    srnamt = "Rtpqrt2";
     infot = 1;
     Rtpqrt2(-1, 0, 0, a, 1, b, 1, t, 1, info);
-    Chkxer("DTPQRT2", infot, nout, lerr, ok);
+    Chkxer("Rtpqrt2", infot, nout, lerr, ok);
     infot = 2;
     Rtpqrt2(0, -1, 0, a, 1, b, 1, t, 1, info);
-    Chkxer("DTPQRT2", infot, nout, lerr, ok);
+    Chkxer("Rtpqrt2", infot, nout, lerr, ok);
     infot = 3;
     Rtpqrt2(0, 0, -1, a, 1, b, 1, t, 1, info);
-    Chkxer("DTPQRT2", infot, nout, lerr, ok);
+    Chkxer("Rtpqrt2", infot, nout, lerr, ok);
     infot = 5;
     Rtpqrt2(2, 2, 0, a, 1, b, 2, t, 2, info);
-    Chkxer("DTPQRT2", infot, nout, lerr, ok);
+    Chkxer("Rtpqrt2", infot, nout, lerr, ok);
     infot = 7;
     Rtpqrt2(2, 2, 0, a, 2, b, 1, t, 2, info);
-    Chkxer("DTPQRT2", infot, nout, lerr, ok);
+    Chkxer("Rtpqrt2", infot, nout, lerr, ok);
     infot = 9;
     Rtpqrt2(2, 2, 0, a, 2, b, 2, t, 1, info);
-    Chkxer("DTPQRT2", infot, nout, lerr, ok);
+    Chkxer("Rtpqrt2", infot, nout, lerr, ok);
     //
     // Rtpmqrt
     //
-    srnamt = "DTPMQRT";
+    srnamt = "Rtpmqrt";
     infot = 1;
     Rtpmqrt("/", "N", 0, 0, 0, 0, 1, a, 1, t, 1, b, 1, c, 1, w, info);
-    Chkxer("DTPMQRT", infot, nout, lerr, ok);
+    Chkxer("Rtpmqrt", infot, nout, lerr, ok);
     infot = 2;
     Rtpmqrt("L", "/", 0, 0, 0, 0, 1, a, 1, t, 1, b, 1, c, 1, w, info);
-    Chkxer("DTPMQRT", infot, nout, lerr, ok);
+    Chkxer("Rtpmqrt", infot, nout, lerr, ok);
     infot = 3;
     Rtpmqrt("L", "N", -1, 0, 0, 0, 1, a, 1, t, 1, b, 1, c, 1, w, info);
-    Chkxer("DTPMQRT", infot, nout, lerr, ok);
+    Chkxer("Rtpmqrt", infot, nout, lerr, ok);
     infot = 4;
     Rtpmqrt("L", "N", 0, -1, 0, 0, 1, a, 1, t, 1, b, 1, c, 1, w, info);
-    Chkxer("DTPMQRT", infot, nout, lerr, ok);
+    Chkxer("Rtpmqrt", infot, nout, lerr, ok);
     infot = 5;
     Rtpmqrt("L", "N", 0, 0, -1, 0, 1, a, 1, t, 1, b, 1, c, 1, w, info);
     infot = 6;
     Rtpmqrt("L", "N", 0, 0, 0, -1, 1, a, 1, t, 1, b, 1, c, 1, w, info);
-    Chkxer("DTPMQRT", infot, nout, lerr, ok);
+    Chkxer("Rtpmqrt", infot, nout, lerr, ok);
     infot = 7;
     Rtpmqrt("L", "N", 0, 0, 0, 0, 0, a, 1, t, 1, b, 1, c, 1, w, info);
-    Chkxer("DTPMQRT", infot, nout, lerr, ok);
+    Chkxer("Rtpmqrt", infot, nout, lerr, ok);
     infot = 9;
     Rtpmqrt("R", "N", 1, 2, 1, 1, 1, a, 1, t, 1, b, 1, c, 1, w, info);
-    Chkxer("DTPMQRT", infot, nout, lerr, ok);
+    Chkxer("Rtpmqrt", infot, nout, lerr, ok);
     infot = 9;
     Rtpmqrt("L", "N", 2, 1, 1, 1, 1, a, 1, t, 1, b, 1, c, 1, w, info);
-    Chkxer("DTPMQRT", infot, nout, lerr, ok);
+    Chkxer("Rtpmqrt", infot, nout, lerr, ok);
     infot = 11;
     Rtpmqrt("R", "N", 1, 1, 1, 1, 1, a, 1, t, 0, b, 1, c, 1, w, info);
-    Chkxer("DTPMQRT", infot, nout, lerr, ok);
+    Chkxer("Rtpmqrt", infot, nout, lerr, ok);
     infot = 13;
     Rtpmqrt("L", "N", 1, 1, 1, 1, 1, a, 1, t, 1, b, 0, c, 1, w, info);
-    Chkxer("DTPMQRT", infot, nout, lerr, ok);
+    Chkxer("Rtpmqrt", infot, nout, lerr, ok);
     infot = 15;
     Rtpmqrt("L", "N", 1, 1, 1, 1, 1, a, 1, t, 1, b, 1, c, 0, w, info);
-    Chkxer("DTPMQRT", infot, nout, lerr, ok);
+    Chkxer("Rtpmqrt", infot, nout, lerr, ok);
     //
     // Print a summary line.
     //

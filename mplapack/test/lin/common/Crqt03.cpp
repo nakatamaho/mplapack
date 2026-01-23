@@ -73,7 +73,7 @@ void Crqt03(INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX *af, COMP
     //
     // Generate the n-by-n matrix Q
     //
-    srnamt = "ZUNGRQ";
+    srnamt = "Cungrq";
     INTEGER info = 0;
     Cungrq(n, n, k, q, lda, &tau[(minmn - k + 1) - 1], work, lwork, info);
     //
@@ -121,7 +121,7 @@ void Crqt03(INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX *af, COMP
             //
             // Apply Q or Q' to C
             //
-            srnamt = "ZUNMRQ";
+            srnamt = "Cunmrq";
             if (k > 0) {
                 Cunmrq(side.elems, trans.elems, mc, nc, k, &af[((m - k + 1) - 1)], lda, &tau[(minmn - k + 1) - 1], cc, lda, work, lwork, info);
             }

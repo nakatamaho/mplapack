@@ -69,7 +69,7 @@ void Rqlt02(INTEGER const m, INTEGER const n, INTEGER const k, REAL *a, REAL *af
     //
     // Generate the last n columns of the matrix Q
     //
-    srnamt = "DORGQL";
+    srnamt = "Rorgql";
     INTEGER info = 0;
     Rorgql(m, n, k, q, lda, &tau[(n - k + 1) - 1], work, lwork, info);
     //

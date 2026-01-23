@@ -223,13 +223,13 @@ void Cchkgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
             // norm(L*U - A) / (n * norm(A) * EPS )
             //
             Ccopy(n + 2 * m, a, 1, af, 1);
-            srnamt = "ZGTTRF";
+            srnamt = "Cgttrf";
             Cgttrf(n, af, &af[(m + 1) - 1], &af[(n + m + 1) - 1], &af[(n + 2 * m + 1) - 1], iwork, info);
             //
             // Check error code from Cgttrf.
             //
             if (info != izero) {
-                Alaerh(path, "ZGTTRF", info, izero, " ", n, n, 1, 1, -1, imat, nfail, nerrs, nout);
+                Alaerh(path, "Cgttrf", info, izero, " ", n, n, 1, 1, -1, imat, nfail, nerrs, nout);
             }
             trfcon = info != 0;
             //
@@ -290,13 +290,13 @@ void Cchkgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                 // Estimate the reciprocal of the condition number of the
                 // matrix.
                 //
-                srnamt = "ZGTCON";
+                srnamt = "Cgtcon";
                 Cgtcon(norm.elems, n, af, &af[(m + 1) - 1], &af[(n + m + 1) - 1], &af[(n + 2 * m + 1) - 1], iwork, anorm, rcond, work, info);
                 //
                 // Check error code from Cgtcon.
                 //
                 if (info != 0) {
-                    Alaerh(path, "ZGTCON", info, 0, norm, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                    Alaerh(path, "Cgtcon", info, 0, norm, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                 }
                 //
                 result[7 - 1] = Rget06(rcond, rcondc);
@@ -348,13 +348,13 @@ void Cchkgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                     // Solve op(A) * X = B and compute the residual.
                     //
                     Clacpy("Full", n, nrhs, b, lda, x, lda);
-                    srnamt = "ZGTTRS";
+                    srnamt = "Cgttrs";
                     Cgttrs(trans.elems, n, nrhs, af, &af[(m + 1) - 1], &af[(n + m + 1) - 1], &af[(n + 2 * m + 1) - 1], iwork, x, lda, info);
                     //
                     // Check error code from Cgttrs.
                     //
                     if (info != 0) {
-                        Alaerh(path, "ZGTTRS", info, 0, trans, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                        Alaerh(path, "Cgttrs", info, 0, trans, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                     }
                     //
                     Clacpy("Full", n, nrhs, b, lda, work, lda);
@@ -368,13 +368,13 @@ void Cchkgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                     // +    TESTS 4, 5, and 6
                     // Use iterative refinement to improve the solution.
                     //
-                    srnamt = "ZGTRFS";
+                    srnamt = "Cgtrfs";
                     Cgtrfs(trans.elems, n, nrhs, a, &a[(m + 1) - 1], &a[(n + m + 1) - 1], af, &af[(m + 1) - 1], &af[(n + m + 1) - 1], &af[(n + 2 * m + 1) - 1], iwork, b, lda, x, lda, rwork, &rwork[(nrhs + 1) - 1], work, &rwork[(2 * nrhs + 1) - 1], info);
                     //
                     // Check error code from Cgtrfs.
                     //
                     if (info != 0) {
-                        Alaerh(path, "ZGTRFS", info, 0, trans, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                        Alaerh(path, "Cgtrfs", info, 0, trans, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                     }
                     //
                     Cget04(n, nrhs, x, lda, xact, lda, rcondc, result[4 - 1]);

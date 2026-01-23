@@ -74,92 +74,92 @@ void Cerrqrt(fem::str_cref path, INTEGER const nunit) {
     //
     // Cgeqrt
     //
-    srnamt = "ZGEQRT";
+    srnamt = "Cgeqrt";
     infot = 1;
     INTEGER info = 0;
     Cgeqrt(-1, 0, 1, a, 1, t, 1, w, info);
-    Chkxer("ZGEQRT", infot, nout, lerr, ok);
+    Chkxer("Cgeqrt", infot, nout, lerr, ok);
     infot = 2;
     Cgeqrt(0, -1, 1, a, 1, t, 1, w, info);
-    Chkxer("ZGEQRT", infot, nout, lerr, ok);
+    Chkxer("Cgeqrt", infot, nout, lerr, ok);
     infot = 3;
     Cgeqrt(0, 0, 0, a, 1, t, 1, w, info);
-    Chkxer("ZGEQRT", infot, nout, lerr, ok);
+    Chkxer("Cgeqrt", infot, nout, lerr, ok);
     infot = 5;
     Cgeqrt(2, 1, 1, a, 1, t, 1, w, info);
-    Chkxer("ZGEQRT", infot, nout, lerr, ok);
+    Chkxer("Cgeqrt", infot, nout, lerr, ok);
     infot = 7;
     Cgeqrt(2, 2, 2, a, 2, t, 1, w, info);
-    Chkxer("ZGEQRT", infot, nout, lerr, ok);
+    Chkxer("Cgeqrt", infot, nout, lerr, ok);
     //
     // Cgeqrt2
     //
-    srnamt = "ZGEQRT2";
+    srnamt = "Cgeqrt2";
     infot = 1;
     Cgeqrt2(-1, 0, a, 1, t, 1, info);
-    Chkxer("ZGEQRT2", infot, nout, lerr, ok);
+    Chkxer("Cgeqrt2", infot, nout, lerr, ok);
     infot = 2;
     Cgeqrt2(0, -1, a, 1, t, 1, info);
-    Chkxer("ZGEQRT2", infot, nout, lerr, ok);
+    Chkxer("Cgeqrt2", infot, nout, lerr, ok);
     infot = 4;
     Cgeqrt2(2, 1, a, 1, t, 1, info);
-    Chkxer("ZGEQRT2", infot, nout, lerr, ok);
+    Chkxer("Cgeqrt2", infot, nout, lerr, ok);
     infot = 6;
     Cgeqrt2(2, 2, a, 2, t, 1, info);
-    Chkxer("ZGEQRT2", infot, nout, lerr, ok);
+    Chkxer("Cgeqrt2", infot, nout, lerr, ok);
     //
     // Cgeqrt3
     //
-    srnamt = "ZGEQRT3";
+    srnamt = "Cgeqrt3";
     infot = 1;
     Cgeqrt3(-1, 0, a, 1, t, 1, info);
-    Chkxer("ZGEQRT3", infot, nout, lerr, ok);
+    Chkxer("Cgeqrt3", infot, nout, lerr, ok);
     infot = 2;
     Cgeqrt3(0, -1, a, 1, t, 1, info);
-    Chkxer("ZGEQRT3", infot, nout, lerr, ok);
+    Chkxer("Cgeqrt3", infot, nout, lerr, ok);
     infot = 4;
     Cgeqrt3(2, 1, a, 1, t, 1, info);
-    Chkxer("ZGEQRT3", infot, nout, lerr, ok);
+    Chkxer("Cgeqrt3", infot, nout, lerr, ok);
     infot = 6;
     Cgeqrt3(2, 2, a, 2, t, 1, info);
-    Chkxer("ZGEQRT3", infot, nout, lerr, ok);
+    Chkxer("Cgeqrt3", infot, nout, lerr, ok);
     //
     // Cgemqrt
     //
-    srnamt = "ZGEMQRT";
+    srnamt = "Cgemqrt";
     infot = 1;
     Cgemqrt("/", "N", 0, 0, 0, 1, a, 1, t, 1, c, 1, w, info);
-    Chkxer("ZGEMQRT", infot, nout, lerr, ok);
+    Chkxer("Cgemqrt", infot, nout, lerr, ok);
     infot = 2;
     Cgemqrt("L", "/", 0, 0, 0, 1, a, 1, t, 1, c, 1, w, info);
-    Chkxer("ZGEMQRT", infot, nout, lerr, ok);
+    Chkxer("Cgemqrt", infot, nout, lerr, ok);
     infot = 3;
     Cgemqrt("L", "N", -1, 0, 0, 1, a, 1, t, 1, c, 1, w, info);
-    Chkxer("ZGEMQRT", infot, nout, lerr, ok);
+    Chkxer("Cgemqrt", infot, nout, lerr, ok);
     infot = 4;
     Cgemqrt("L", "N", 0, -1, 0, 1, a, 1, t, 1, c, 1, w, info);
-    Chkxer("ZGEMQRT", infot, nout, lerr, ok);
+    Chkxer("Cgemqrt", infot, nout, lerr, ok);
     infot = 5;
     Cgemqrt("L", "N", 0, 0, -1, 1, a, 1, t, 1, c, 1, w, info);
-    Chkxer("ZGEMQRT", infot, nout, lerr, ok);
+    Chkxer("Cgemqrt", infot, nout, lerr, ok);
     infot = 5;
     Cgemqrt("R", "N", 0, 0, -1, 1, a, 1, t, 1, c, 1, w, info);
-    Chkxer("ZGEMQRT", infot, nout, lerr, ok);
+    Chkxer("Cgemqrt", infot, nout, lerr, ok);
     infot = 6;
     Cgemqrt("L", "N", 0, 0, 0, 0, a, 1, t, 1, c, 1, w, info);
-    Chkxer("ZGEMQRT", infot, nout, lerr, ok);
+    Chkxer("Cgemqrt", infot, nout, lerr, ok);
     infot = 8;
     Cgemqrt("R", "N", 1, 2, 1, 1, a, 1, t, 1, c, 1, w, info);
-    Chkxer("ZGEMQRT", infot, nout, lerr, ok);
+    Chkxer("Cgemqrt", infot, nout, lerr, ok);
     infot = 8;
     Cgemqrt("L", "N", 2, 1, 1, 1, a, 1, t, 1, c, 1, w, info);
-    Chkxer("ZGEMQRT", infot, nout, lerr, ok);
+    Chkxer("Cgemqrt", infot, nout, lerr, ok);
     infot = 10;
     Cgemqrt("R", "N", 1, 1, 1, 1, a, 1, t, 0, c, 1, w, info);
-    Chkxer("ZGEMQRT", infot, nout, lerr, ok);
+    Chkxer("Cgemqrt", infot, nout, lerr, ok);
     infot = 12;
     Cgemqrt("L", "N", 1, 1, 1, 1, a, 1, t, 1, c, 0, w, info);
-    Chkxer("ZGEMQRT", infot, nout, lerr, ok);
+    Chkxer("Cgemqrt", infot, nout, lerr, ok);
     //
     // Print a summary line.
     //

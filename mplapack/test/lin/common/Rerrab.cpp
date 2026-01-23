@@ -81,26 +81,26 @@ void Rerrab(INTEGER const nunit) {
     }
     ok = true;
     //
-    srnamt = "DSGESV";
+    srnamt = "Rsgesv";
     infot = 1;
     REAL work[1];
     REAL swork[1];
     INTEGER iter = 0;
     INTEGER info = 0;
     Rsgesv(-1, 0, a, 1, ip, b, 1, x, 1, work, swork, iter, info);
-    Chkxer("DSGESV", infot, nout, lerr, ok);
+    Chkxer("Rsgesv", infot, nout, lerr, ok);
     infot = 2;
     Rsgesv(0, -1, a, 1, ip, b, 1, x, 1, work, swork, iter, info);
-    Chkxer("DSGESV", infot, nout, lerr, ok);
+    Chkxer("Rsgesv", infot, nout, lerr, ok);
     infot = 4;
     Rsgesv(2, 1, a, 1, ip, b, 2, x, 2, work, swork, iter, info);
-    Chkxer("DSGESV", infot, nout, lerr, ok);
+    Chkxer("Rsgesv", infot, nout, lerr, ok);
     infot = 7;
     Rsgesv(2, 1, a, 2, ip, b, 1, x, 2, work, swork, iter, info);
-    Chkxer("DSGESV", infot, nout, lerr, ok);
+    Chkxer("Rsgesv", infot, nout, lerr, ok);
     infot = 9;
     Rsgesv(2, 1, a, 2, ip, b, 2, x, 1, work, swork, iter, info);
-    Chkxer("DSGESV", infot, nout, lerr, ok);
+    Chkxer("Rsgesv", infot, nout, lerr, ok);
     //
     // Print a summary line.
     //

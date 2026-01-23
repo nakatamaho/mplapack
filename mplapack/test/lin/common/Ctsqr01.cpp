@@ -129,13 +129,13 @@ void Ctsqr01(fem::str_cref tssw, INTEGER const m, INTEGER const n, INTEGER const
         lwork = max(lwork, castINTEGER(workquery[1 - 1].real()));
         Cgemqr("R", "C", n, m, k, af, m, tquery, tsize, df, n, workquery, -1, info);
         lwork = max(lwork, castINTEGER(workquery[1 - 1].real()));
-        srnamt = "ZGEQR";
+        srnamt = "Cgeqr";
         Cgeqr(m, n, af, m, t, tsize, work, lwork, info);
         //
         // Generate the m-by-m matrix Q
         //
         Claset("Full", m, m, czero, one, q, m);
-        srnamt = "ZGEMQR";
+        srnamt = "Cgemqr";
         Cgemqr("L", "N", m, m, k, af, m, t, tsize, q, m, work, lwork, info);
         //
         // Copy R
@@ -171,7 +171,7 @@ void Ctsqr01(fem::str_cref tssw, INTEGER const m, INTEGER const n, INTEGER const
         //
         // Apply Q to C as Q*C
         //
-        srnamt = "ZGEMQR";
+        srnamt = "Cgemqr";
         Cgemqr("L", "N", m, n, k, af, m, t, tsize, cf, m, work, lwork, info);
         //
         // Compute |Q*C - Q*C| / |C|
@@ -190,7 +190,7 @@ void Ctsqr01(fem::str_cref tssw, INTEGER const m, INTEGER const n, INTEGER const
         //
         // Apply Q to C as QT*C
         //
-        srnamt = "ZGEMQR";
+        srnamt = "Cgemqr";
         Cgemqr("L", "C", m, n, k, af, m, t, tsize, cf, m, work, lwork, info);
         //
         // Compute |QT*C - QT*C| / |C|
@@ -213,7 +213,7 @@ void Ctsqr01(fem::str_cref tssw, INTEGER const m, INTEGER const n, INTEGER const
         //
         // Apply Q to D as D*Q
         //
-        srnamt = "ZGEMQR";
+        srnamt = "Cgemqr";
         Cgemqr("R", "N", n, m, k, af, m, t, tsize, df, n, work, lwork, info);
         //
         // Compute |D*Q - D*Q| / |D|
@@ -260,13 +260,13 @@ void Ctsqr01(fem::str_cref tssw, INTEGER const m, INTEGER const n, INTEGER const
         lwork = max(lwork, castINTEGER(workquery[1 - 1].real()));
         Cgemlq("R", "C", m, n, k, af, m, tquery, tsize, cf, m, workquery, -1, info);
         lwork = max(lwork, castINTEGER(workquery[1 - 1].real()));
-        srnamt = "ZGELQ";
+        srnamt = "Cgelq";
         Cgelq(m, n, af, m, t, tsize, work, lwork, info);
         //
         // Generate the n-by-n matrix Q
         //
         Claset("Full", n, n, czero, one, q, n);
-        srnamt = "ZGEMLQ";
+        srnamt = "Cgemlq";
         Cgemlq("R", "N", n, n, k, af, m, t, tsize, q, n, work, lwork, info);
         //
         // Copy R

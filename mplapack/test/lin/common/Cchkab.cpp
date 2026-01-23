@@ -109,7 +109,7 @@ void program_zchkab(int argc, char const *argv[]) {
     // Report values of parameters.
     //
     ilaver(vers_major, vers_minor, vers_patch);
-    write(nout, "(' Tests of the COMPLEX*16 LAPACK ZCGESV/ZCPOSV routines ',/,"
+    write(nout, "(' Tests of the COMPLEX*16 LAPACK Ccgesv/Ccposv routines ',/,"
                 "' LAPACK VERSION ',i1,'.',i1,'.',i1,/,/,"
                 "' The following parameter values will be used:')"),
         vers_major, vers_minor, vers_patch;
@@ -279,7 +279,7 @@ statement_130:
         //
         // Check for a positive number of tests requested.
         //
-        write(nout, format_9990), "ZCGESV";
+        write(nout, format_9990), "Ccgesv";
         goto statement_140;
         //
     } else if (Mlsamen(2, c2.elems, "GE")) {
@@ -298,7 +298,7 @@ statement_130:
         if (tstdrv) {
             Cdrvab(dotype, nm, mval, nns, nsval, thresh, lda, &a[0], &a[(2 - 1) * lda], &b[0], &b[(2 - 1) * ldb], work, rwork, swork, iwork, nout);
         } else {
-            write(nout, format_9989), "ZCGESV";
+            write(nout, format_9989), "Ccgesv";
         }
         //
     } else if (Mlsamen(2, c2.elems, "PO")) {
@@ -315,7 +315,7 @@ statement_130:
         if (tstdrv) {
             Cdrvac(dotype, nm, mval, nns, nsval, thresh, lda, &a[0], &a[(2 - 1) * lda], &b[0], &b[(2 - 1) * ldb], work, rwork, swork, nout);
         } else {
-            write(nout, format_9989), "ZCPOSV";
+            write(nout, format_9989), "Ccposv";
         }
         //
     } else {

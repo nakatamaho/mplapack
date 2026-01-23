@@ -290,7 +290,7 @@ void Rdrvsy(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         //
                         // Factor the matrix and solve the system using Rsysv.
                         //
-                        srnamt = "DSYSV ";
+                        srnamt = "Rsysv";
                         Rsysv(uplo.elems, n, nrhs, afac, lda, iwork, x, lda, work, lwork, info);
                         //
                         // Adjust the expected value of INFO to account for
@@ -313,7 +313,7 @@ void Rdrvsy(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         // Check error code from Rsysv .
                         //
                         if (info != k) {
-                            Alaerh(path, "DSYSV ", info, k, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                            Alaerh(path, "Rsysv", info, k, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                             goto statement_120;
                         } else if (info != 0) {
                             goto statement_120;
@@ -362,7 +362,7 @@ void Rdrvsy(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                     // Solve the system and compute the condition number and
                     // error bounds using Rsysvx.
                     //
-                    srnamt = "DSYSVX";
+                    srnamt = "Rsysvx";
                     Rsysvx(fact.elems, uplo.elems, n, nrhs, a, lda, afac, lda, iwork, b, lda, x, lda, rcond, rwork, &rwork[(nrhs + 1) - 1], work, lwork, &iwork[(n + 1) - 1], info);
                     //
                     // Adjust the expected value of INFO to account for
@@ -385,7 +385,7 @@ void Rdrvsy(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                     // Check the error code from Rsysvx.
                     //
                     if (info != k) {
-                        Alaerh(path, "DSYSVX", info, k, fact + uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                        Alaerh(path, "Rsysvx", info, k, fact + uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                         goto statement_150;
                     }
                     //

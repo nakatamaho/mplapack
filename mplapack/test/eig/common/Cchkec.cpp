@@ -74,7 +74,7 @@ void Cchkec(REAL const thresh, bool const tsterr, INTEGER const nin, INTEGER con
     Cget35(rtrsyl, ltrsyl, ntrsyl, ktrsyl, nin);
     if (rtrsyl > thresh) {
         ok = false;
-        write(nout, "(' Error in ZTRSYL: RMAX =',d12.3,/,' LMAX = ',i8,' NINFO=',i8,' KNT=',"
+        write(nout, "(' Error in Ctrsyl: RMAX =',d12.3,/,' LMAX = ',i8,' NINFO=',i8,' KNT=',"
                     "i8)"),
             rtrsyl, ltrsyl, ntrsyl, ktrsyl;
     }
@@ -86,7 +86,7 @@ void Cchkec(REAL const thresh, bool const tsterr, INTEGER const nin, INTEGER con
     Cget36(rtrexc, ltrexc, ntrexc, ktrexc, nin);
     if (rtrexc > thresh || ntrexc > 0) {
         ok = false;
-        write(nout, "(' Error in ZTREXC: RMAX =',d12.3,/,' LMAX = ',i8,' NINFO=',i8,' KNT=',"
+        write(nout, "(' Error in Ctrexc: RMAX =',d12.3,/,' LMAX = ',i8,' NINFO=',i8,' KNT=',"
                     "i8)"),
             rtrexc, ltrexc, ntrexc, ktrexc;
     }
@@ -98,7 +98,7 @@ void Cchkec(REAL const thresh, bool const tsterr, INTEGER const nin, INTEGER con
     Cget37(rtrsna, ltrsna, ntrsna, ktrsna, nin);
     if (rtrsna[1 - 1] > thresh || rtrsna[2 - 1] > thresh || ntrsna[1 - 1] != 0 || ntrsna[2 - 1] != 0 || ntrsna[3 - 1] != 0) {
         ok = false;
-        write(nout, "(' Error in ZTRSNA: RMAX =',3d12.3,/,' LMAX = ',3i8,' NINFO=',3i8,"
+        write(nout, "(' Error in Ctrsna: RMAX =',3d12.3,/,' LMAX = ',3i8,' NINFO=',3i8,"
                     "' KNT=',i8)"),
             rtrsna, ltrsna, ntrsna, ktrsna;
     }
@@ -110,7 +110,7 @@ void Cchkec(REAL const thresh, bool const tsterr, INTEGER const nin, INTEGER con
     Cget38(rtrsen, ltrsen, ntrsen, ktrsen, nin);
     if (rtrsen[1 - 1] > thresh || rtrsen[2 - 1] > thresh || ntrsen[1 - 1] != 0 || ntrsen[2 - 1] != 0 || ntrsen[3 - 1] != 0) {
         ok = false;
-        write(nout, "(' Error in ZTRSEN: RMAX =',3d12.3,/,' LMAX = ',3i8,' NINFO=',3i8,"
+        write(nout, "(' Error in Ctrsen: RMAX =',3d12.3,/,' LMAX = ',3i8,' NINFO=',3i8,"
                     "' KNT=',i8)"),
             rtrsen, ltrsen, ntrsen, ktrsen;
     }

@@ -75,31 +75,31 @@ void Rerrps(fem::str_cref path, INTEGER const nunit) {
     //
     // Rpstrf
     //
-    srnamt = "DPSTRF";
+    srnamt = "Rpstrf";
     infot = 1;
     INTEGER rank = 0;
     INTEGER info = 0;
     Rpstrf("/", 0, a, 1, piv, rank, -1.0, work, info);
-    Chkxer("DPSTRF", infot, nout, lerr, ok);
+    Chkxer("Rpstrf", infot, nout, lerr, ok);
     infot = 2;
     Rpstrf("U", -1, a, 1, piv, rank, -1.0, work, info);
-    Chkxer("DPSTRF", infot, nout, lerr, ok);
+    Chkxer("Rpstrf", infot, nout, lerr, ok);
     infot = 4;
     Rpstrf("U", 2, a, 1, piv, rank, -1.0, work, info);
-    Chkxer("DPSTRF", infot, nout, lerr, ok);
+    Chkxer("Rpstrf", infot, nout, lerr, ok);
     //
     // Rpstf2
     //
-    srnamt = "DPSTF2";
+    srnamt = "Rpstf2";
     infot = 1;
     Rpstf2("/", 0, a, 1, piv, rank, -1.0, work, info);
-    Chkxer("DPSTF2", infot, nout, lerr, ok);
+    Chkxer("Rpstf2", infot, nout, lerr, ok);
     infot = 2;
     Rpstf2("U", -1, a, 1, piv, rank, -1.0, work, info);
-    Chkxer("DPSTF2", infot, nout, lerr, ok);
+    Chkxer("Rpstf2", infot, nout, lerr, ok);
     infot = 4;
     Rpstf2("U", 2, a, 1, piv, rank, -1.0, work, info);
-    Chkxer("DPSTF2", infot, nout, lerr, ok);
+    Chkxer("Rpstf2", infot, nout, lerr, ok);
     //
     // Print a summary line.
     //

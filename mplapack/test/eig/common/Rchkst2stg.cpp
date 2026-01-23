@@ -358,7 +358,7 @@ void Rchkst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
             Rsytrd("U", n, v, ldu, sd, se, tau, work, lwork, iinfo);
             //
             if (iinfo != 0) {
-                write(nounit, format_9999), "DSYTRD(U)", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Rsytrd(U)", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     return;
@@ -373,7 +373,7 @@ void Rchkst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
             ntest = 2;
             Rorgtr("U", n, u, ldu, tau, work, lwork, iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "DORGTR(U)", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Rorgtr(U)", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     return;
@@ -402,7 +402,7 @@ void Rchkst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
             //
             Rsteqr("N", n, d1, work, &work[(n + 1) - 1], ldu, &work[(n + 1) - 1], iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "DSTEQR(N)", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Rsteqr(N)", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     return;
@@ -433,7 +433,7 @@ void Rchkst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
             //
             Rsteqr("N", n, d2, work, &work[(n + 1) - 1], ldu, &work[(n + 1) - 1], iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "DSTEQR(N)", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Rsteqr(N)", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     return;
@@ -462,7 +462,7 @@ void Rchkst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
             //
             Rsteqr("N", n, d3, work, &work[(n + 1) - 1], ldu, &work[(n + 1) - 1], iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "DSTEQR(N)", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Rsteqr(N)", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     return;
@@ -509,7 +509,7 @@ void Rchkst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
             Rsptrd("U", n, vp, sd, se, tau, iinfo);
             //
             if (iinfo != 0) {
-                write(nounit, format_9999), "DSPTRD(U)", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Rsptrd(U)", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     return;
@@ -522,7 +522,7 @@ void Rchkst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
             ntest = 6;
             Ropgtr("U", n, vp, tau, u, ldu, work, iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "DOPGTR(U)", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Ropgtr(U)", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     return;
@@ -555,7 +555,7 @@ void Rchkst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
             Rsptrd("L", n, vp, sd, se, tau, iinfo);
             //
             if (iinfo != 0) {
-                write(nounit, format_9999), "DSPTRD(L)", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Rsptrd(L)", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     return;
@@ -568,7 +568,7 @@ void Rchkst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
             ntest = 8;
             Ropgtr("L", n, vp, tau, u, ldu, work, iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "DOPGTR(L)", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Ropgtr(L)", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     return;
@@ -594,7 +594,7 @@ void Rchkst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
             ntest = 9;
             Rsteqr("V", n, d1, work, z, ldu, &work[(n + 1) - 1], iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "DSTEQR(V)", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Rsteqr(V)", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     return;
@@ -614,7 +614,7 @@ void Rchkst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
             ntest = 11;
             Rsteqr("N", n, d2, work, &work[(n + 1) - 1], ldu, &work[(n + 1) - 1], iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "DSTEQR(N)", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Rsteqr(N)", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     return;
@@ -634,7 +634,7 @@ void Rchkst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
             ntest = 12;
             Rsterf(n, d3, work, iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "DSTERF", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Rsterf", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     return;
@@ -698,7 +698,7 @@ void Rchkst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 ntest = 14;
                 Rpteqr("V", n, d4, work, z, ldu, &work[(n + 1) - 1], iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "DPTEQR(V)", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "Rpteqr(V)", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -722,7 +722,7 @@ void Rchkst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 ntest = 16;
                 Rpteqr("N", n, d5, work, z, ldu, &work[(n + 1) - 1], iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "DPTEQR(N)", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "Rpteqr(N)", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -762,7 +762,7 @@ void Rchkst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 abstol = unfl + unfl;
                 Rstebz("A", "E", n, vl, vu, il, iu, abstol, sd, se, m, nsplit, wr, &iwork[1 - 1], &iwork[(n + 1) - 1], work, &iwork[(2 * n + 1) - 1], iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "DSTEBZ(A,rel)", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "Rstebz(A,rel)", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -792,7 +792,7 @@ void Rchkst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
             abstol = unfl + unfl;
             Rstebz("A", "E", n, vl, vu, il, iu, abstol, sd, se, m, nsplit, wa1, &iwork[1 - 1], &iwork[(n + 1) - 1], work, &iwork[(2 * n + 1) - 1], iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "DSTEBZ(A)", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Rstebz(A)", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     return;
@@ -832,7 +832,7 @@ void Rchkst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
             //
             Rstebz("I", "E", n, vl, vu, il, iu, abstol, sd, se, m2, nsplit, wa2, &iwork[1 - 1], &iwork[(n + 1) - 1], work, &iwork[(2 * n + 1) - 1], iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "DSTEBZ(I)", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Rstebz(I)", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     return;
@@ -863,7 +863,7 @@ void Rchkst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
             //
             Rstebz("V", "E", n, vl, vu, il, iu, abstol, sd, se, m3, nsplit, wa3, &iwork[1 - 1], &iwork[(n + 1) - 1], work, &iwork[(2 * n + 1) - 1], iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "DSTEBZ(V)", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Rstebz(V)", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     return;
@@ -897,7 +897,7 @@ void Rchkst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
             ntest = 21;
             Rstebz("A", "B", n, vl, vu, il, iu, abstol, sd, se, m, nsplit, wa1, &iwork[1 - 1], &iwork[(n + 1) - 1], work, &iwork[(2 * n + 1) - 1], iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "DSTEBZ(A,B)", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Rstebz(A,B)", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     return;
@@ -910,7 +910,7 @@ void Rchkst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
             //
             Rstein(n, sd, se, m, wa1, &iwork[1 - 1], &iwork[(n + 1) - 1], z, ldu, work, &iwork[(2 * n + 1) - 1], &iwork[(3 * n + 1) - 1], iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "DSTEIN", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Rstein", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     return;
@@ -938,7 +938,7 @@ void Rchkst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
             ntest = 22;
             Rstedc("I", n, d1, work, z, ldu, &work[(n + 1) - 1], lwedc - n, iwork, liwedc, iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "DSTEDC(I)", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Rstedc(I)", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     return;
@@ -965,7 +965,7 @@ void Rchkst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
             ntest = 24;
             Rstedc("V", n, d1, work, z, ldu, &work[(n + 1) - 1], lwedc - n, iwork, liwedc, iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "DSTEDC(V)", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Rstedc(V)", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     return;
@@ -992,7 +992,7 @@ void Rchkst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
             ntest = 26;
             Rstedc("N", n, d2, work, z, ldu, &work[(n + 1) - 1], lwedc - n, iwork, liwedc, iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "DSTEDC(N)", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Rstedc(N)", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     return;
@@ -1032,7 +1032,7 @@ void Rchkst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     abstol = unfl + unfl;
                     Rstemr("V", "A", n, sd, se, vl, vu, il, iu, m, wr, z, ldu, n, &iwork[1 - 1], tryrac, work, lwork, &iwork[(2 * n + 1) - 1], lwork - 2 * n, iinfo);
                     if (iinfo != 0) {
-                        write(nounit, format_9999), "DSTEMR(V,A,rel)", iinfo, n, jtype, ioldsd;
+                        write(nounit, format_9999), "Rstemr(V,A,rel)", iinfo, n, jtype, ioldsd;
                         info = abs(iinfo);
                         if (iinfo < 0) {
                             return;
@@ -1067,7 +1067,7 @@ void Rchkst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                         Rstemr("V", "I", n, sd, se, vl, vu, il, iu, m, wr, z, ldu, n, &iwork[1 - 1], tryrac, work, lwork, &iwork[(2 * n + 1) - 1], lwork - 2 * n, iinfo);
                         //
                         if (iinfo != 0) {
-                            write(nounit, format_9999), "DSTEMR(V,I,rel)", iinfo, n, jtype, ioldsd;
+                            write(nounit, format_9999), "Rstemr(V,I,rel)", iinfo, n, jtype, ioldsd;
                             info = abs(iinfo);
                             if (iinfo < 0) {
                                 return;
@@ -1116,7 +1116,7 @@ void Rchkst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     }
                     Rstemr("V", "I", n, d5, work, vl, vu, il, iu, m, d1, z, ldu, n, &iwork[1 - 1], tryrac, &work[(n + 1) - 1], lwork - n, &iwork[(2 * n + 1) - 1], liwork - 2 * n, iinfo);
                     if (iinfo != 0) {
-                        write(nounit, format_9999), "DSTEMR(V,I)", iinfo, n, jtype, ioldsd;
+                        write(nounit, format_9999), "Rstemr(V,I)", iinfo, n, jtype, ioldsd;
                         info = abs(iinfo);
                         if (iinfo < 0) {
                             return;
@@ -1142,7 +1142,7 @@ void Rchkst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     ntest = 31;
                     Rstemr("N", "I", n, d5, work, vl, vu, il, iu, m, d2, z, ldu, n, &iwork[1 - 1], tryrac, &work[(n + 1) - 1], lwork - n, &iwork[(2 * n + 1) - 1], liwork - 2 * n, iinfo);
                     if (iinfo != 0) {
-                        write(nounit, format_9999), "DSTEMR(N,I)", iinfo, n, jtype, ioldsd;
+                        write(nounit, format_9999), "Rstemr(N,I)", iinfo, n, jtype, ioldsd;
                         info = abs(iinfo);
                         if (iinfo < 0) {
                             return;
@@ -1194,7 +1194,7 @@ void Rchkst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     //
                     Rstemr("V", "V", n, d5, work, vl, vu, il, iu, m, d1, z, ldu, n, &iwork[1 - 1], tryrac, &work[(n + 1) - 1], lwork - n, &iwork[(2 * n + 1) - 1], liwork - 2 * n, iinfo);
                     if (iinfo != 0) {
-                        write(nounit, format_9999), "DSTEMR(V,V)", iinfo, n, jtype, ioldsd;
+                        write(nounit, format_9999), "Rstemr(V,V)", iinfo, n, jtype, ioldsd;
                         info = abs(iinfo);
                         if (iinfo < 0) {
                             return;
@@ -1220,7 +1220,7 @@ void Rchkst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     ntest = 34;
                     Rstemr("N", "V", n, d5, work, vl, vu, il, iu, m, d2, z, ldu, n, &iwork[1 - 1], tryrac, &work[(n + 1) - 1], lwork - n, &iwork[(2 * n + 1) - 1], liwork - 2 * n, iinfo);
                     if (iinfo != 0) {
-                        write(nounit, format_9999), "DSTEMR(N,V)", iinfo, n, jtype, ioldsd;
+                        write(nounit, format_9999), "Rstemr(N,V)", iinfo, n, jtype, ioldsd;
                         info = abs(iinfo);
                         if (iinfo < 0) {
                             return;
@@ -1263,7 +1263,7 @@ void Rchkst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 //
                 Rstemr("V", "A", n, d5, work, vl, vu, il, iu, m, d1, z, ldu, n, &iwork[1 - 1], tryrac, &work[(n + 1) - 1], lwork - n, &iwork[(2 * n + 1) - 1], liwork - 2 * n, iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "DSTEMR(V,A)", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "Rstemr(V,A)", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -1289,7 +1289,7 @@ void Rchkst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 ntest = 37;
                 Rstemr("N", "A", n, d5, work, vl, vu, il, iu, m, d2, z, ldu, n, &iwork[1 - 1], tryrac, &work[(n + 1) - 1], lwork - n, &iwork[(2 * n + 1) - 1], liwork - 2 * n, iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "DSTEMR(N,A)", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "Rstemr(N,A)", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;

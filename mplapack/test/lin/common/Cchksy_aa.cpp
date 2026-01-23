@@ -274,7 +274,7 @@ void Cchksy_aa(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
                     // the block structure of D. AINV is a work array for
                     // block factorization, LWORK is the length of AINV.
                     //
-                    srnamt = "ZSYTRF_AA";
+                    srnamt = "Csytrf_aa";
                     lwork = max((INTEGER)1, n * nb + n);
                     Csytrf_aa(uplo.elems, n, afac, lda, iwork, ainv, lwork, info);
                     //
@@ -301,7 +301,7 @@ void Cchksy_aa(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
                     // Check error code from Csytrf and handle error.
                     //
                     if (info != k) {
-                        Alaerh(path, "ZSYTRF_AA", info, k, uplo, n, n, -1, -1, nb, imat, nfail, nerrs, nout);
+                        Alaerh(path, "Csytrf_aa", info, k, uplo, n, n, -1, -1, nb, imat, nfail, nerrs, nout);
                     }
                     //
                     // +    TEST 1
@@ -347,7 +347,7 @@ void Cchksy_aa(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
                         Clarhs(matpath, xtype, uplo, " ", n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
                         Clacpy("Full", n, nrhs, b, lda, x, lda);
                         //
-                        srnamt = "ZSYTRS_AA";
+                        srnamt = "Csytrs_aa";
                         lwork = max((INTEGER)1, 3 * n - 2);
                         Csytrs_aa(uplo.elems, n, nrhs, afac, lda, iwork, x, lda, work, lwork, info);
                         //
@@ -355,7 +355,7 @@ void Cchksy_aa(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
                         //
                         if (info != 0) {
                             if (izero == 0) {
-                                Alaerh(path, "ZSYTRS_AA", info, 0, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                                Alaerh(path, "Csytrs_aa", info, 0, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                             }
                         } else {
                             Clacpy("Full", n, nrhs, b, lda, work, lda);

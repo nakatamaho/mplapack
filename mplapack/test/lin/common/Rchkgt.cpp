@@ -222,13 +222,13 @@ void Rchkgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
             // norm(L*U - A) / (n * norm(A) * EPS )
             //
             Rcopy(n + 2 * m, a, 1, af, 1);
-            srnamt = "DGTTRF";
+            srnamt = "Rgttrf";
             Rgttrf(n, af, &af[(m + 1) - 1], &af[(n + m + 1) - 1], &af[(n + 2 * m + 1) - 1], iwork, info);
             //
             // Check error code from Rgttrf.
             //
             if (info != izero) {
-                Alaerh(path, "DGTTRF", info, izero, " ", n, n, 1, 1, -1, imat, nfail, nerrs, nout);
+                Alaerh(path, "Rgttrf", info, izero, " ", n, n, 1, 1, -1, imat, nfail, nerrs, nout);
             }
             trfcon = info != 0;
             //
@@ -290,13 +290,13 @@ void Rchkgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                 // Estimate the reciprocal of the condition number of the
                 // matrix.
                 //
-                srnamt = "DGTCON";
+                srnamt = "Rgtcon";
                 Rgtcon(norm.elems, n, af, &af[(m + 1) - 1], &af[(n + m + 1) - 1], &af[(n + 2 * m + 1) - 1], iwork, anorm, rcond, work, &iwork[(n + 1) - 1], info);
                 //
                 // Check error code from Rgtcon.
                 //
                 if (info != 0) {
-                    Alaerh(path, "DGTCON", info, 0, norm, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                    Alaerh(path, "Rgtcon", info, 0, norm, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                 }
                 //
                 result[7 - 1] = Rget06(rcond, rcondc);
@@ -348,13 +348,13 @@ void Rchkgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                     // Solve op(A) * X = B and compute the residual.
                     //
                     Rlacpy("Full", n, nrhs, b, lda, x, lda);
-                    srnamt = "DGTTRS";
+                    srnamt = "Rgttrs";
                     Rgttrs(trans.elems, n, nrhs, af, &af[(m + 1) - 1], &af[(n + m + 1) - 1], &af[(n + 2 * m + 1) - 1], iwork, x, lda, info);
                     //
                     // Check error code from Rgttrs.
                     //
                     if (info != 0) {
-                        Alaerh(path, "DGTTRS", info, 0, trans, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                        Alaerh(path, "Rgttrs", info, 0, trans, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                     }
                     //
                     Rlacpy("Full", n, nrhs, b, lda, work, lda);
@@ -368,13 +368,13 @@ void Rchkgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                     // +    TESTS 4, 5, and 6
                     // Use iterative refinement to improve the solution.
                     //
-                    srnamt = "DGTRFS";
+                    srnamt = "Rgtrfs";
                     Rgtrfs(trans.elems, n, nrhs, a, &a[(m + 1) - 1], &a[(n + m + 1) - 1], af, &af[(m + 1) - 1], &af[(n + m + 1) - 1], &af[(n + 2 * m + 1) - 1], iwork, b, lda, x, lda, rwork, &rwork[(nrhs + 1) - 1], work, &iwork[(n + 1) - 1], info);
                     //
                     // Check error code from Rgtrfs.
                     //
                     if (info != 0) {
-                        Alaerh(path, "DGTRFS", info, 0, trans, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                        Alaerh(path, "Rgtrfs", info, 0, trans, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                     }
                     //
                     Rget04(n, nrhs, x, lda, xact, lda, rcondc, result[4 - 1]);

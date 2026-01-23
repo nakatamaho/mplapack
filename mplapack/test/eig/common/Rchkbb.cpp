@@ -334,7 +334,7 @@ void Rchkbb(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nw
                 Rgbbrd("B", m, n, nrhs, kl, ku, ab, ldab, bd, be, q, ldq, p, ldp, cc, ldc, work, iinfo);
                 //
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "DGBBRD", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "Rgbbrd", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;

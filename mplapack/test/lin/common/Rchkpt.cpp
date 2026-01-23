@@ -251,7 +251,7 @@ void Rchkpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
             // Check error code from Rpttrf.
             //
             if (info != izero) {
-                Alaerh(path, "DPTTRF", info, izero, " ", n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                Alaerh(path, "Rpttrf", info, izero, " ", n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                 goto statement_100;
             }
             //
@@ -317,7 +317,7 @@ void Rchkpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                 // Check error code from Rpttrs.
                 //
                 if (info != 0) {
-                    Alaerh(path, "DPTTRS", info, 0, " ", n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                    Alaerh(path, "Rpttrs", info, 0, " ", n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                 }
                 //
                 Rlacpy("Full", n, nrhs, b, lda, work, lda);
@@ -331,13 +331,13 @@ void Rchkpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                 // +    TESTS 4, 5, and 6
                 // Use iterative refinement to improve the solution.
                 //
-                srnamt = "DPTRFS";
+                srnamt = "Rptrfs";
                 Rptrfs(n, nrhs, d, e, &d[(n + 1) - 1], &e[(n + 1) - 1], b, lda, x, lda, rwork, &rwork[(nrhs + 1) - 1], work, info);
                 //
                 // Check error code from Rptrfs.
                 //
                 if (info != 0) {
-                    Alaerh(path, "DPTRFS", info, 0, " ", n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                    Alaerh(path, "Rptrfs", info, 0, " ", n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                 }
                 //
                 Rget04(n, nrhs, x, lda, xact, lda, rcondc, result[4 - 1]);
@@ -365,13 +365,13 @@ void Rchkpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
         // matrix.
         //
         statement_90:
-            srnamt = "DPTCON";
+            srnamt = "Rptcon";
             Rptcon(n, &d[(n + 1) - 1], &e[(n + 1) - 1], anorm, rcond, rwork, info);
             //
             // Check error code from Rptcon.
             //
             if (info != 0) {
-                Alaerh(path, "DPTCON", info, 0, " ", n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                Alaerh(path, "Rptcon", info, 0, " ", n, n, -1, -1, -1, imat, nfail, nerrs, nout);
             }
             //
             result[7 - 1] = Rget06(rcond, rcondc);

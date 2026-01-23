@@ -203,13 +203,13 @@ void Rchkge(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                     // Compute the LU factorization of the matrix.
                     //
                     Rlacpy("Full", m, n, a, lda, afac, lda);
-                    srnamt = "DGETRF";
+                    srnamt = "Rgetrf";
                     Rgetrf(m, n, afac, lda, iwork, info);
                     //
                     // Check error code from Rgetrf.
                     //
                     if (info != izero) {
-                        Alaerh(path, "DGETRF", info, izero, " ", m, n, -1, -1, nb, imat, nfail, nerrs, nout);
+                        Alaerh(path, "Rgetrf", info, izero, " ", m, n, -1, -1, nb, imat, nfail, nerrs, nout);
                     }
                     trfcon = false;
                     //
@@ -226,7 +226,7 @@ void Rchkge(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                     //
                     if (m == n && info == 0) {
                         Rlacpy("Full", n, n, afac, lda, ainv, lda);
-                        srnamt = "DGETRI";
+                        srnamt = "Rgetri";
                         nrhs = nsval[1 - 1];
                         lwork = nmax * max((INTEGER)3, nrhs);
                         Rgetri(n, ainv, lda, iwork, work, lwork, info);
@@ -234,7 +234,7 @@ void Rchkge(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                         // Check error code from Rgetri.
                         //
                         if (info != 0) {
-                            Alaerh(path, "DGETRI", info, 0, " ", n, n, -1, -1, nb, imat, nfail, nerrs, nout);
+                            Alaerh(path, "Rgetri", info, 0, " ", n, n, -1, -1, nb, imat, nfail, nerrs, nout);
                         }
                         //
                         // Compute the residual for the matrix times its
@@ -312,13 +312,13 @@ void Rchkge(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                             xtype = "C";
                             //
                             Rlacpy("Full", n, nrhs, b, lda, x, lda);
-                            srnamt = "DGETRS";
+                            srnamt = "Rgetrs";
                             Rgetrs(trans.elems, n, nrhs, afac, lda, iwork, x, lda, info);
                             //
                             // Check error code from Rgetrs.
                             //
                             if (info != 0) {
-                                Alaerh(path, "DGETRS", info, 0, trans, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                                Alaerh(path, "Rgetrs", info, 0, trans, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                             }
                             //
                             Rlacpy("Full", n, nrhs, b, lda, work, lda);
@@ -333,13 +333,13 @@ void Rchkge(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                             // Use iterative refinement to improve the
                             // solution.
                             //
-                            srnamt = "DGERFS";
+                            srnamt = "Rgerfs";
                             Rgerfs(trans.elems, n, nrhs, a, lda, afac, lda, iwork, b, lda, x, lda, rwork, &rwork[(nrhs + 1) - 1], work, &iwork[(n + 1) - 1], info);
                             //
                             // Check error code from Rgerfs.
                             //
                             if (info != 0) {
-                                Alaerh(path, "DGERFS", info, 0, trans, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                                Alaerh(path, "Rgerfs", info, 0, trans, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                             }
                             //
                             Rget04(n, nrhs, x, lda, xact, lda, rcondc, result[5 - 1]);
@@ -377,13 +377,13 @@ void Rchkge(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                             rcondc = rcondi;
                             norm = "I";
                         }
-                        srnamt = "DGECON";
+                        srnamt = "Rgecon";
                         Rgecon(norm.elems, n, afac, lda, anorm, rcond, work, &iwork[(n + 1) - 1], info);
                         //
                         // Check error code from Rgecon.
                         //
                         if (info != 0) {
-                            Alaerh(path, "DGECON", info, 0, norm, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                            Alaerh(path, "Rgecon", info, 0, norm, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                         }
                         //
                         // This line is needed on a Sun SPARCstation.

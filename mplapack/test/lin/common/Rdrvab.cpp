@@ -168,7 +168,7 @@ void Rdrvab(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nns, IN
                 srnamt = "DLARHS";
                 Rlarhs(path, xtype, " ", trans, n, n, kl, ku, nrhs, a, lda, x, lda, b, lda, iseed, info);
                 //
-                srnamt = "DSGESV";
+                srnamt = "Rsgesv";
                 //
                 kase++;
                 //

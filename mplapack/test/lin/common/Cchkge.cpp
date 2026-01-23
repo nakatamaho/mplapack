@@ -203,13 +203,13 @@ void Cchkge(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                     // Compute the LU factorization of the matrix.
                     //
                     Clacpy("Full", m, n, a, lda, afac, lda);
-                    srnamt = "ZGETRF";
+                    srnamt = "Cgetrf";
                     Cgetrf(m, n, afac, lda, iwork, info);
                     //
                     // Check error code from Cgetrf.
                     //
                     if (info != izero) {
-                        Alaerh(path, "ZGETRF", info, izero, " ", m, n, -1, -1, nb, imat, nfail, nerrs, nout);
+                        Alaerh(path, "Cgetrf", info, izero, " ", m, n, -1, -1, nb, imat, nfail, nerrs, nout);
                     }
                     trfcon = false;
                     //
@@ -226,7 +226,7 @@ void Cchkge(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                     //
                     if (m == n && info == 0) {
                         Clacpy("Full", n, n, afac, lda, ainv, lda);
-                        srnamt = "ZGETRI";
+                        srnamt = "Cgetri";
                         nrhs = nsval[1 - 1];
                         lwork = nmax * max((INTEGER)3, nrhs);
                         Cgetri(n, ainv, lda, iwork, work, lwork, info);
@@ -234,7 +234,7 @@ void Cchkge(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                         // Check error code from Cgetri.
                         //
                         if (info != 0) {
-                            Alaerh(path, "ZGETRI", info, 0, " ", n, n, -1, -1, nb, imat, nfail, nerrs, nout);
+                            Alaerh(path, "Cgetri", info, 0, " ", n, n, -1, -1, nb, imat, nfail, nerrs, nout);
                         }
                         //
                         // Compute the residual for the matrix times its
@@ -312,13 +312,13 @@ void Cchkge(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                             xtype = "C";
                             //
                             Clacpy("Full", n, nrhs, b, lda, x, lda);
-                            srnamt = "ZGETRS";
+                            srnamt = "Cgetrs";
                             Cgetrs(trans.elems, n, nrhs, afac, lda, iwork, x, lda, info);
                             //
                             // Check error code from Cgetrs.
                             //
                             if (info != 0) {
-                                Alaerh(path, "ZGETRS", info, 0, trans, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                                Alaerh(path, "Cgetrs", info, 0, trans, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                             }
                             //
                             Clacpy("Full", n, nrhs, b, lda, work, lda);
@@ -333,13 +333,13 @@ void Cchkge(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                             // Use iterative refinement to improve the
                             // solution.
                             //
-                            srnamt = "ZGERFS";
+                            srnamt = "Cgerfs";
                             Cgerfs(trans.elems, n, nrhs, a, lda, afac, lda, iwork, b, lda, x, lda, rwork, &rwork[(nrhs + 1) - 1], work, &rwork[(2 * nrhs + 1) - 1], info);
                             //
                             // Check error code from Cgerfs.
                             //
                             if (info != 0) {
-                                Alaerh(path, "ZGERFS", info, 0, trans, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                                Alaerh(path, "Cgerfs", info, 0, trans, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                             }
                             //
                             Cget04(n, nrhs, x, lda, xact, lda, rcondc, result[5 - 1]);
@@ -377,13 +377,13 @@ void Cchkge(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                             rcondc = rcondi;
                             norm = "I";
                         }
-                        srnamt = "ZGECON";
+                        srnamt = "Cgecon";
                         Cgecon(norm.elems, n, afac, lda, anorm, rcond, work, rwork, info);
                         //
                         // Check error code from Cgecon.
                         //
                         if (info != 0) {
-                            Alaerh(path, "ZGECON", info, 0, norm, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                            Alaerh(path, "Cgecon", info, 0, norm, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                         }
                         //
                         // This line is needed on a Sun SPARCstation.

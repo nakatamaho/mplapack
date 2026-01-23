@@ -241,7 +241,7 @@ void Cchkhp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                 //
                 npp = n * (n + 1) / 2;
                 Ccopy(npp, a, 1, afac, 1);
-                srnamt = "ZHPTRF";
+                srnamt = "Chptrf";
                 Chptrf(uplo.elems, n, afac, iwork, info);
                 //
                 // Adjust the expected value of INFO to account for
@@ -264,7 +264,7 @@ void Cchkhp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                 // Check error code from Chptrf.
                 //
                 if (info != k) {
-                    Alaerh(path, "ZHPTRF", info, k, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                    Alaerh(path, "Chptrf", info, k, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                 }
                 if (info != 0) {
                     trfcon = true;
@@ -283,13 +283,13 @@ void Cchkhp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                 //
                 if (!trfcon) {
                     Ccopy(npp, afac, 1, ainv, 1);
-                    srnamt = "ZHPTRI";
+                    srnamt = "Chptri";
                     Chptri(uplo.elems, n, ainv, iwork, work, info);
                     //
                     // Check error code from Chptri.
                     //
                     if (info != 0) {
-                        Alaerh(path, "ZHPTRI", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                        Alaerh(path, "Chptri", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                     }
                     //
                     Cppt03(uplo, n, a, ainv, work, lda, rwork, rcondc, result[2 - 1]);
@@ -328,13 +328,13 @@ void Cchkhp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                     xtype = "C";
                     Clacpy("Full", n, nrhs, b, lda, x, lda);
                     //
-                    srnamt = "ZHPTRS";
+                    srnamt = "Chptrs";
                     Chptrs(uplo.elems, n, nrhs, afac, iwork, x, lda, info);
                     //
                     // Check error code from Chptrs.
                     //
                     if (info != 0) {
-                        Alaerh(path, "ZHPTRS", info, 0, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                        Alaerh(path, "Chptrs", info, 0, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                     }
                     //
                     Clacpy("Full", n, nrhs, b, lda, work, lda);
@@ -348,13 +348,13 @@ void Cchkhp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                     // +    TESTS 5, 6, and 7
                     // Use iterative refinement to improve the solution.
                     //
-                    srnamt = "ZHPRFS";
+                    srnamt = "Chprfs";
                     Chprfs(uplo.elems, n, nrhs, a, afac, iwork, b, lda, x, lda, rwork, &rwork[(nrhs + 1) - 1], work, &rwork[(2 * nrhs + 1) - 1], info);
                     //
                     // Check error code from Chprfs.
                     //
                     if (info != 0) {
-                        Alaerh(path, "ZHPRFS", info, 0, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                        Alaerh(path, "Chprfs", info, 0, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                     }
                     //
                     Cget04(n, nrhs, x, lda, xact, lda, rcondc, result[5 - 1]);
@@ -382,13 +382,13 @@ void Cchkhp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
             //
             statement_140:
                 anorm = Clanhp("1", uplo.elems, n, a, rwork);
-                srnamt = "ZHPCON";
+                srnamt = "Chpcon";
                 Chpcon(uplo.elems, n, afac, iwork, anorm, rcond, work, info);
                 //
                 // Check error code from Chpcon.
                 //
                 if (info != 0) {
-                    Alaerh(path, "ZHPCON", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                    Alaerh(path, "Chpcon", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                 }
                 //
                 result[8 - 1] = Rget06(rcond, rcondc);

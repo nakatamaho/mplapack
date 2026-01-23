@@ -199,13 +199,13 @@ void Rchkpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                     // Compute the L*L' or U'*U factorization of the matrix.
                     //
                     Rlacpy(uplo.elems, n, n, a, lda, afac, lda);
-                    srnamt = "DPOTRF";
+                    srnamt = "Rpotrf";
                     Rpotrf(uplo.elems, n, afac, lda, info);
                     //
                     // Check error code from Rpotrf.
                     //
                     if (info != izero) {
-                        Alaerh(path, "DPOTRF", info, izero, uplo, n, n, -1, -1, nb, imat, nfail, nerrs, nout);
+                        Alaerh(path, "Rpotrf", info, izero, uplo, n, n, -1, -1, nb, imat, nfail, nerrs, nout);
                         goto statement_90;
                     }
                     //
@@ -225,13 +225,13 @@ void Rchkpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                     // Form the inverse and compute the residual.
                     //
                     Rlacpy(uplo.elems, n, n, afac, lda, ainv, lda);
-                    srnamt = "DPOTRI";
+                    srnamt = "Rpotri";
                     Rpotri(uplo.elems, n, ainv, lda, info);
                     //
                     // Check error code from Rpotri.
                     //
                     if (info != 0) {
-                        Alaerh(path, "DPOTRI", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                        Alaerh(path, "Rpotri", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                     }
                     //
                     Rpot03(uplo, n, a, lda, ainv, lda, work, lda, rwork, rcondc, result[2 - 1]);
@@ -269,13 +269,13 @@ void Rchkpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                         Rlarhs(path, xtype, uplo, " ", n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
                         Rlacpy("Full", n, nrhs, b, lda, x, lda);
                         //
-                        srnamt = "DPOTRS";
+                        srnamt = "Rpotrs";
                         Rpotrs(uplo.elems, n, nrhs, afac, lda, x, lda, info);
                         //
                         // Check error code from Rpotrs.
                         //
                         if (info != 0) {
-                            Alaerh(path, "DPOTRS", info, 0, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                            Alaerh(path, "Rpotrs", info, 0, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                         }
                         //
                         Rlacpy("Full", n, nrhs, b, lda, work, lda);
@@ -289,13 +289,13 @@ void Rchkpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                         // +    TESTS 5, 6, and 7
                         // Use iterative refinement to improve the solution.
                         //
-                        srnamt = "DPORFS";
+                        srnamt = "Rporfs";
                         Rporfs(uplo.elems, n, nrhs, a, lda, afac, lda, b, lda, x, lda, rwork, &rwork[(nrhs + 1) - 1], work, iwork, info);
                         //
                         // Check error code from Rporfs.
                         //
                         if (info != 0) {
-                            Alaerh(path, "DPORFS", info, 0, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                            Alaerh(path, "Rporfs", info, 0, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                         }
                         //
                         Rget04(n, nrhs, x, lda, xact, lda, rcondc, result[5 - 1]);
@@ -322,13 +322,13 @@ void Rchkpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                     // Get an estimate of RCOND = 1/CNDNUM.
                     //
                     anorm = Rlansy("1", uplo.elems, n, a, lda, rwork);
-                    srnamt = "DPOCON";
+                    srnamt = "Rpocon";
                     Rpocon(uplo.elems, n, afac, lda, anorm, rcond, work, iwork, info);
                     //
                     // Check error code from Rpocon.
                     //
                     if (info != 0) {
-                        Alaerh(path, "DPOCON", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                        Alaerh(path, "Rpocon", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                     }
                     //
                     result[8 - 1] = Rget06(rcond, rcondc);

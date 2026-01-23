@@ -294,7 +294,7 @@ void Cdrvhe(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         //
                         // Factor the matrix and solve the system using Chesv.
                         //
-                        srnamt = "ZHESV ";
+                        srnamt = "Chesv";
                         Chesv(uplo.elems, n, nrhs, afac, lda, iwork, x, lda, work, lwork, info);
                         //
                         // Adjust the expected value of INFO to account for
@@ -317,7 +317,7 @@ void Cdrvhe(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         // Check error code from Chesv .
                         //
                         if (info != k) {
-                            Alaerh(path, "ZHESV ", info, k, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                            Alaerh(path, "Chesv", info, k, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                             goto statement_120;
                         } else if (info != 0) {
                             goto statement_120;
@@ -366,7 +366,7 @@ void Cdrvhe(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                     // Solve the system and compute the condition number and
                     // error bounds using Chesvx.
                     //
-                    srnamt = "ZHESVX";
+                    srnamt = "Chesvx";
                     Chesvx(fact.elems, uplo.elems, n, nrhs, a, lda, afac, lda, iwork, b, lda, x, lda, rcond, rwork, &rwork[(nrhs + 1) - 1], work, lwork, &rwork[(2 * nrhs + 1) - 1], info);
                     //
                     // Adjust the expected value of INFO to account for
@@ -389,7 +389,7 @@ void Cdrvhe(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                     // Check the error code from Chesvx.
                     //
                     if (info != k) {
-                        Alaerh(path, "ZHESVX", info, k, fact + uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                        Alaerh(path, "Chesvx", info, k, fact + uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                         goto statement_150;
                     }
                     //

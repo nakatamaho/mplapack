@@ -140,7 +140,7 @@ void Rdrvrf1(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
                     //
                     cform = forms[iform - 1];
                     //
-                    srnamt = "DTRTTF";
+                    srnamt = "Rtrttf";
                     Rtrttf(cform.elems, uplo.elems, n, a, lda, arf, info);
                     //
                     // Check error code from Rtrttf

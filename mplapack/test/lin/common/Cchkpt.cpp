@@ -254,7 +254,7 @@ void Cchkpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
             // Check error code from Cpttrf.
             //
             if (info != izero) {
-                Alaerh(path, "ZPTTRF", info, izero, " ", n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                Alaerh(path, "Cpttrf", info, izero, " ", n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                 goto statement_110;
             }
             //
@@ -326,7 +326,7 @@ void Cchkpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                     // Check error code from Cpttrs.
                     //
                     if (info != 0) {
-                        Alaerh(path, "ZPTTRS", info, 0, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                        Alaerh(path, "Cpttrs", info, 0, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                     }
                     //
                     Clacpy("Full", n, nrhs, b, lda, work, lda);
@@ -340,13 +340,13 @@ void Cchkpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                     // +    TESTS 4, 5, and 6
                     // Use iterative refinement to improve the solution.
                     //
-                    srnamt = "ZPTRFS";
+                    srnamt = "Cptrfs";
                     Cptrfs(uplo.elems, n, nrhs, d, e, &d[(n + 1) - 1], &e[(n + 1) - 1], b, lda, x, lda, rwork, &rwork[(nrhs + 1) - 1], work, &rwork[(2 * nrhs + 1) - 1], info);
                     //
                     // Check error code from Cptrfs.
                     //
                     if (info != 0) {
-                        Alaerh(path, "ZPTRFS", info, 0, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                        Alaerh(path, "Cptrfs", info, 0, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                     }
                     //
                     Cget04(n, nrhs, x, lda, xact, lda, rcondc, result[4 - 1]);
@@ -376,13 +376,13 @@ void Cchkpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
         // matrix.
         //
         statement_100:
-            srnamt = "ZPTCON";
+            srnamt = "Cptcon";
             Cptcon(n, &d[(n + 1) - 1], &e[(n + 1) - 1], anorm, rcond, rwork, info);
             //
             // Check error code from Cptcon.
             //
             if (info != 0) {
-                Alaerh(path, "ZPTCON", info, 0, " ", n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                Alaerh(path, "Cptcon", info, 0, " ", n, n, -1, -1, -1, imat, nfail, nerrs, nout);
             }
             //
             result[7 - 1] = Rget06(rcond, rcondc);

@@ -274,7 +274,7 @@ void Cchksy_aa_2stage(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER con
                     // the block structure of D. AINV is a work array for
                     // block factorization, LWORK is the length of AINV.
                     //
-                    srnamt = "ZSYTRF_AA_2STAGE";
+                    srnamt = "Csytrf_aa_2stage";
                     lwork = min(n * nb, 3 * nmax * nmax);
                     Csytrf_aa_2stage(uplo.elems, n, afac, lda, ainv, (3 * nb + 1) * n, iwork, &iwork[(1 + n) - 1], work, lwork, info);
                     //
@@ -301,7 +301,7 @@ void Cchksy_aa_2stage(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER con
                     // Check error code from Csytrf and handle error.
                     //
                     if (info != k) {
-                        Alaerh(path, "ZSYTRF_AA_2STAGE", info, k, uplo, n, n, -1, -1, nb, imat, nfail, nerrs, nout);
+                        Alaerh(path, "Csytrf_aa_2stage", info, k, uplo, n, n, -1, -1, nb, imat, nfail, nerrs, nout);
                     }
                     //
                     // +    TEST 1
@@ -349,7 +349,7 @@ void Cchksy_aa_2stage(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER con
                         Clarhs(matpath, xtype, uplo, " ", n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
                         Clacpy("Full", n, nrhs, b, lda, x, lda);
                         //
-                        srnamt = "ZSYTRS_AA_2STAGE";
+                        srnamt = "Csytrs_aa_2stage";
                         lwork = max((INTEGER)1, 3 * n - 2);
                         Csytrs_aa_2stage(uplo.elems, n, nrhs, afac, lda, ainv, (3 * nb + 1) * n, iwork, &iwork[(1 + n) - 1], x, lda, info);
                         //
@@ -357,7 +357,7 @@ void Cchksy_aa_2stage(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER con
                         //
                         if (info != 0) {
                             if (izero == 0) {
-                                Alaerh(path, "ZSYTRS_AA_2STAGE", info, 0, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                                Alaerh(path, "Csytrs_aa_2stage", info, 0, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                             }
                         } else {
                             Clacpy("Full", n, nrhs, b, lda, work, lda);

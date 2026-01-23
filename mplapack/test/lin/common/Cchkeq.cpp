@@ -398,27 +398,27 @@ void Cchkeq(REAL const thresh, INTEGER const nout) {
         write(nout, "(1x,'All tests for ',a3,' routines passed the threshold')"), path;
     } else {
         if (reslts[1 - 1] > thresh) {
-            write(nout, "(' ZGEEQU failed test with value ',d10.3,' exceeding',' threshold ',"
+            write(nout, "(' Cgeequ failed test with value ',d10.3,' exceeding',' threshold ',"
                         "d10.3)"),
                 reslts[1 - 1], thresh;
         }
         if (reslts[2 - 1] > thresh) {
-            write(nout, "(' ZGBEQU failed test with value ',d10.3,' exceeding',' threshold ',"
+            write(nout, "(' Cgbequ failed test with value ',d10.3,' exceeding',' threshold ',"
                         "d10.3)"),
                 reslts[2 - 1], thresh;
         }
         if (reslts[3 - 1] > thresh) {
-            write(nout, "(' ZPOEQU failed test with value ',d10.3,' exceeding',' threshold ',"
+            write(nout, "(' Cpoequ failed test with value ',d10.3,' exceeding',' threshold ',"
                         "d10.3)"),
                 reslts[3 - 1], thresh;
         }
         if (reslts[4 - 1] > thresh) {
-            write(nout, "(' ZPPEQU failed test with value ',d10.3,' exceeding',' threshold ',"
+            write(nout, "(' Cppequ failed test with value ',d10.3,' exceeding',' threshold ',"
                         "d10.3)"),
                 reslts[4 - 1], thresh;
         }
         if (reslts[5 - 1] > thresh) {
-            write(nout, "(' ZPBEQU failed test with value ',d10.3,' exceeding',' threshold ',"
+            write(nout, "(' Cpbequ failed test with value ',d10.3,' exceeding',' threshold ',"
                         "d10.3)"),
                 reslts[5 - 1], thresh;
         }

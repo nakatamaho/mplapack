@@ -54,7 +54,7 @@ void Rqrt01p(INTEGER const m, INTEGER const n, REAL *a, REAL *af, REAL *q, REAL 
     //
     // Factorize the matrix A in the array AF.
     //
-    srnamt = "DGEQRFP";
+    srnamt = "Rgeqrfp";
     INTEGER info = 0;
     Rgeqrfp(m, n, af, lda, tau, work, lwork, info);
     //
@@ -66,7 +66,7 @@ void Rqrt01p(INTEGER const m, INTEGER const n, REAL *a, REAL *af, REAL *q, REAL 
     //
     // Generate the m-by-m matrix Q
     //
-    srnamt = "DORGQR";
+    srnamt = "Rorgqr";
     Rorgqr(m, m, minmn, q, lda, tau, work, lwork, info);
     //
     // Copy R

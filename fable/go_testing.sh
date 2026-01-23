@@ -352,6 +352,10 @@ for pass in $(seq 1 "${PASSES}"); do
   fi
 done
 
+python3 ~/mplapack/fable/rename_routine_literals.py --in-place --map ~/mplapack/fable/mplapack_name_map.txt ~/mplapack/mplapack/test/eig
+python3 ~/mplapack/fable/rename_routine_literals.py --in-place --map ~/mplapack/fable/mplapack_name_map.txt ~/mplapack/mplapack/test/lin
+python3 ~/mplapack/fable/rename_routine_literals.py --in-place --map ~/mplapack/fable/mplapack_name_map.txt ~/mplapack/mplapack/test/matgen
+
 bash "${FABLE}/patch_lapack_test.sh"
 
 echo "ALL DONE"

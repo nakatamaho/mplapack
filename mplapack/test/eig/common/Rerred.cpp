@@ -94,152 +94,152 @@ void Rerred(fem::str_cref path, INTEGER const nunit) {
         //
         // Test Rgeev
         //
-        srnamt = "DGEEV ";
+        srnamt = "Rgeev";
         infot = 1;
         Rgeev("X", "N", 0, a, 1, wr, wi, vl, 1, vr, 1, w, 1, info);
-        Chkxer("DGEEV ", infot, nout, lerr, ok);
+        Chkxer("Rgeev", infot, nout, lerr, ok);
         infot = 2;
         Rgeev("N", "X", 0, a, 1, wr, wi, vl, 1, vr, 1, w, 1, info);
-        Chkxer("DGEEV ", infot, nout, lerr, ok);
+        Chkxer("Rgeev", infot, nout, lerr, ok);
         infot = 3;
         Rgeev("N", "N", -1, a, 1, wr, wi, vl, 1, vr, 1, w, 1, info);
-        Chkxer("DGEEV ", infot, nout, lerr, ok);
+        Chkxer("Rgeev", infot, nout, lerr, ok);
         infot = 5;
         Rgeev("N", "N", 2, a, 1, wr, wi, vl, 1, vr, 1, w, 6, info);
-        Chkxer("DGEEV ", infot, nout, lerr, ok);
+        Chkxer("Rgeev", infot, nout, lerr, ok);
         infot = 9;
         Rgeev("V", "N", 2, a, 2, wr, wi, vl, 1, vr, 1, w, 8, info);
-        Chkxer("DGEEV ", infot, nout, lerr, ok);
+        Chkxer("Rgeev", infot, nout, lerr, ok);
         infot = 11;
         Rgeev("N", "V", 2, a, 2, wr, wi, vl, 1, vr, 1, w, 8, info);
-        Chkxer("DGEEV ", infot, nout, lerr, ok);
+        Chkxer("Rgeev", infot, nout, lerr, ok);
         infot = 13;
         Rgeev("V", "V", 1, a, 1, wr, wi, vl, 1, vr, 1, w, 3, info);
-        Chkxer("DGEEV ", infot, nout, lerr, ok);
+        Chkxer("Rgeev", infot, nout, lerr, ok);
         nt += 7;
         //
     } else if (Mlsamen(2, c2.elems, "ES")) {
         //
         // Test Rgees
         //
-        srnamt = "DGEES ";
+        srnamt = "Rgees";
         infot = 1;
         Rgees("X", "N", Rslect, 0, a, 1, sdim, wr, wi, vl, 1, w, 1, b, info);
-        Chkxer("DGEES ", infot, nout, lerr, ok);
+        Chkxer("Rgees", infot, nout, lerr, ok);
         infot = 2;
         Rgees("N", "X", Rslect, 0, a, 1, sdim, wr, wi, vl, 1, w, 1, b, info);
-        Chkxer("DGEES ", infot, nout, lerr, ok);
+        Chkxer("Rgees", infot, nout, lerr, ok);
         infot = 4;
         Rgees("N", "S", Rslect, -1, a, 1, sdim, wr, wi, vl, 1, w, 1, b, info);
-        Chkxer("DGEES ", infot, nout, lerr, ok);
+        Chkxer("Rgees", infot, nout, lerr, ok);
         infot = 6;
         Rgees("N", "S", Rslect, 2, a, 1, sdim, wr, wi, vl, 1, w, 6, b, info);
-        Chkxer("DGEES ", infot, nout, lerr, ok);
+        Chkxer("Rgees", infot, nout, lerr, ok);
         infot = 11;
         Rgees("V", "S", Rslect, 2, a, 2, sdim, wr, wi, vl, 1, w, 6, b, info);
-        Chkxer("DGEES ", infot, nout, lerr, ok);
+        Chkxer("Rgees", infot, nout, lerr, ok);
         infot = 13;
         Rgees("N", "S", Rslect, 1, a, 1, sdim, wr, wi, vl, 1, w, 2, b, info);
-        Chkxer("DGEES ", infot, nout, lerr, ok);
+        Chkxer("Rgees", infot, nout, lerr, ok);
         nt += 6;
         //
     } else if (Mlsamen(2, c2.elems, "VX")) {
         //
         // Test Rgeevx
         //
-        srnamt = "DGEEVX";
+        srnamt = "Rgeevx";
         infot = 1;
         Rgeevx("X", "N", "N", "N", 0, a, 1, wr, wi, vl, 1, vr, 1, ilo, ihi, s, abnrm, r1, r2, w, 1, iw, info);
-        Chkxer("DGEEVX", infot, nout, lerr, ok);
+        Chkxer("Rgeevx", infot, nout, lerr, ok);
         infot = 2;
         Rgeevx("N", "X", "N", "N", 0, a, 1, wr, wi, vl, 1, vr, 1, ilo, ihi, s, abnrm, r1, r2, w, 1, iw, info);
-        Chkxer("DGEEVX", infot, nout, lerr, ok);
+        Chkxer("Rgeevx", infot, nout, lerr, ok);
         infot = 3;
         Rgeevx("N", "N", "X", "N", 0, a, 1, wr, wi, vl, 1, vr, 1, ilo, ihi, s, abnrm, r1, r2, w, 1, iw, info);
-        Chkxer("DGEEVX", infot, nout, lerr, ok);
+        Chkxer("Rgeevx", infot, nout, lerr, ok);
         infot = 4;
         Rgeevx("N", "N", "N", "X", 0, a, 1, wr, wi, vl, 1, vr, 1, ilo, ihi, s, abnrm, r1, r2, w, 1, iw, info);
-        Chkxer("DGEEVX", infot, nout, lerr, ok);
+        Chkxer("Rgeevx", infot, nout, lerr, ok);
         infot = 5;
         Rgeevx("N", "N", "N", "N", -1, a, 1, wr, wi, vl, 1, vr, 1, ilo, ihi, s, abnrm, r1, r2, w, 1, iw, info);
-        Chkxer("DGEEVX", infot, nout, lerr, ok);
+        Chkxer("Rgeevx", infot, nout, lerr, ok);
         infot = 7;
         Rgeevx("N", "N", "N", "N", 2, a, 1, wr, wi, vl, 1, vr, 1, ilo, ihi, s, abnrm, r1, r2, w, 1, iw, info);
-        Chkxer("DGEEVX", infot, nout, lerr, ok);
+        Chkxer("Rgeevx", infot, nout, lerr, ok);
         infot = 11;
         Rgeevx("N", "V", "N", "N", 2, a, 2, wr, wi, vl, 1, vr, 1, ilo, ihi, s, abnrm, r1, r2, w, 6, iw, info);
-        Chkxer("DGEEVX", infot, nout, lerr, ok);
+        Chkxer("Rgeevx", infot, nout, lerr, ok);
         infot = 13;
         Rgeevx("N", "N", "V", "N", 2, a, 2, wr, wi, vl, 1, vr, 1, ilo, ihi, s, abnrm, r1, r2, w, 6, iw, info);
-        Chkxer("DGEEVX", infot, nout, lerr, ok);
+        Chkxer("Rgeevx", infot, nout, lerr, ok);
         infot = 21;
         Rgeevx("N", "N", "N", "N", 1, a, 1, wr, wi, vl, 1, vr, 1, ilo, ihi, s, abnrm, r1, r2, w, 1, iw, info);
-        Chkxer("DGEEVX", infot, nout, lerr, ok);
+        Chkxer("Rgeevx", infot, nout, lerr, ok);
         infot = 21;
         Rgeevx("N", "V", "N", "N", 1, a, 1, wr, wi, vl, 1, vr, 1, ilo, ihi, s, abnrm, r1, r2, w, 2, iw, info);
-        Chkxer("DGEEVX", infot, nout, lerr, ok);
+        Chkxer("Rgeevx", infot, nout, lerr, ok);
         infot = 21;
         Rgeevx("N", "N", "V", "V", 1, a, 1, wr, wi, vl, 1, vr, 1, ilo, ihi, s, abnrm, r1, r2, w, 3, iw, info);
-        Chkxer("DGEEVX", infot, nout, lerr, ok);
+        Chkxer("Rgeevx", infot, nout, lerr, ok);
         nt += 11;
         //
     } else if (Mlsamen(2, c2.elems, "SX")) {
         //
         // Test Rgeesx
         //
-        srnamt = "DGEESX";
+        srnamt = "Rgeesx";
         infot = 1;
         Rgeesx("X", "N", Rslect, "N", 0, a, 1, sdim, wr, wi, vl, 1, r1[1 - 1], r2[1 - 1], w, 1, iw, 1, b, info);
-        Chkxer("DGEESX", infot, nout, lerr, ok);
+        Chkxer("Rgeesx", infot, nout, lerr, ok);
         infot = 2;
         Rgeesx("N", "X", Rslect, "N", 0, a, 1, sdim, wr, wi, vl, 1, r1[1 - 1], r2[1 - 1], w, 1, iw, 1, b, info);
-        Chkxer("DGEESX", infot, nout, lerr, ok);
+        Chkxer("Rgeesx", infot, nout, lerr, ok);
         infot = 4;
         Rgeesx("N", "N", Rslect, "X", 0, a, 1, sdim, wr, wi, vl, 1, r1[1 - 1], r2[1 - 1], w, 1, iw, 1, b, info);
-        Chkxer("DGEESX", infot, nout, lerr, ok);
+        Chkxer("Rgeesx", infot, nout, lerr, ok);
         infot = 5;
         Rgeesx("N", "N", Rslect, "N", -1, a, 1, sdim, wr, wi, vl, 1, r1[1 - 1], r2[1 - 1], w, 1, iw, 1, b, info);
-        Chkxer("DGEESX", infot, nout, lerr, ok);
+        Chkxer("Rgeesx", infot, nout, lerr, ok);
         infot = 7;
         Rgeesx("N", "N", Rslect, "N", 2, a, 1, sdim, wr, wi, vl, 1, r1[1 - 1], r2[1 - 1], w, 6, iw, 1, b, info);
-        Chkxer("DGEESX", infot, nout, lerr, ok);
+        Chkxer("Rgeesx", infot, nout, lerr, ok);
         infot = 12;
         Rgeesx("V", "N", Rslect, "N", 2, a, 2, sdim, wr, wi, vl, 1, r1[1 - 1], r2[1 - 1], w, 6, iw, 1, b, info);
-        Chkxer("DGEESX", infot, nout, lerr, ok);
+        Chkxer("Rgeesx", infot, nout, lerr, ok);
         infot = 16;
         Rgeesx("N", "N", Rslect, "N", 1, a, 1, sdim, wr, wi, vl, 1, r1[1 - 1], r2[1 - 1], w, 2, iw, 1, b, info);
-        Chkxer("DGEESX", infot, nout, lerr, ok);
+        Chkxer("Rgeesx", infot, nout, lerr, ok);
         nt += 7;
         //
     } else if (Mlsamen(2, c2.elems, "BD")) {
         //
         // Test Rgesvd
         //
-        srnamt = "DGESVD";
+        srnamt = "Rgesvd";
         infot = 1;
         Rgesvd("X", "N", 0, 0, a, 1, s, u, 1, vt, 1, w, 1, info);
-        Chkxer("DGESVD", infot, nout, lerr, ok);
+        Chkxer("Rgesvd", infot, nout, lerr, ok);
         infot = 2;
         Rgesvd("N", "X", 0, 0, a, 1, s, u, 1, vt, 1, w, 1, info);
-        Chkxer("DGESVD", infot, nout, lerr, ok);
+        Chkxer("Rgesvd", infot, nout, lerr, ok);
         infot = 2;
         Rgesvd("O", "O", 0, 0, a, 1, s, u, 1, vt, 1, w, 1, info);
-        Chkxer("DGESVD", infot, nout, lerr, ok);
+        Chkxer("Rgesvd", infot, nout, lerr, ok);
         infot = 3;
         Rgesvd("N", "N", -1, 0, a, 1, s, u, 1, vt, 1, w, 1, info);
-        Chkxer("DGESVD", infot, nout, lerr, ok);
+        Chkxer("Rgesvd", infot, nout, lerr, ok);
         infot = 4;
         Rgesvd("N", "N", 0, -1, a, 1, s, u, 1, vt, 1, w, 1, info);
-        Chkxer("DGESVD", infot, nout, lerr, ok);
+        Chkxer("Rgesvd", infot, nout, lerr, ok);
         infot = 6;
         Rgesvd("N", "N", 2, 1, a, 1, s, u, 1, vt, 1, w, 5, info);
-        Chkxer("DGESVD", infot, nout, lerr, ok);
+        Chkxer("Rgesvd", infot, nout, lerr, ok);
         infot = 9;
         Rgesvd("A", "N", 2, 1, a, 2, s, u, 1, vt, 1, w, 5, info);
-        Chkxer("DGESVD", infot, nout, lerr, ok);
+        Chkxer("Rgesvd", infot, nout, lerr, ok);
         infot = 11;
         Rgesvd("N", "A", 1, 2, a, 1, s, u, 1, vt, 1, w, 5, info);
-        Chkxer("DGESVD", infot, nout, lerr, ok);
+        Chkxer("Rgesvd", infot, nout, lerr, ok);
         nt = 8;
         if (ok) {
             write(nout, format_9999), srnamt(1, fem::len_trim(srnamt)), nt;
@@ -249,25 +249,25 @@ void Rerred(fem::str_cref path, INTEGER const nunit) {
         //
         // Test Rgesdd
         //
-        srnamt = "DGESDD";
+        srnamt = "Rgesdd";
         infot = 1;
         Rgesdd("X", 0, 0, a, 1, s, u, 1, vt, 1, w, 1, iw, info);
-        Chkxer("DGESDD", infot, nout, lerr, ok);
+        Chkxer("Rgesdd", infot, nout, lerr, ok);
         infot = 2;
         Rgesdd("N", -1, 0, a, 1, s, u, 1, vt, 1, w, 1, iw, info);
-        Chkxer("DGESDD", infot, nout, lerr, ok);
+        Chkxer("Rgesdd", infot, nout, lerr, ok);
         infot = 3;
         Rgesdd("N", 0, -1, a, 1, s, u, 1, vt, 1, w, 1, iw, info);
-        Chkxer("DGESDD", infot, nout, lerr, ok);
+        Chkxer("Rgesdd", infot, nout, lerr, ok);
         infot = 5;
         Rgesdd("N", 2, 1, a, 1, s, u, 1, vt, 1, w, 5, iw, info);
-        Chkxer("DGESDD", infot, nout, lerr, ok);
+        Chkxer("Rgesdd", infot, nout, lerr, ok);
         infot = 8;
         Rgesdd("A", 2, 1, a, 2, s, u, 1, vt, 1, w, 5, iw, info);
-        Chkxer("DGESDD", infot, nout, lerr, ok);
+        Chkxer("Rgesdd", infot, nout, lerr, ok);
         infot = 10;
         Rgesdd("A", 1, 2, a, 1, s, u, 1, vt, 1, w, 5, iw, info);
-        Chkxer("DGESDD", infot, nout, lerr, ok);
+        Chkxer("Rgesdd", infot, nout, lerr, ok);
         nt = 6;
         if (ok) {
             write(nout, format_9999), srnamt(1, fem::len_trim(srnamt)), nt;
@@ -277,40 +277,40 @@ void Rerred(fem::str_cref path, INTEGER const nunit) {
         //
         // Test Rgejsv
         //
-        srnamt = "DGEJSV";
+        srnamt = "Rgejsv";
         infot = 1;
         Rgejsv("X", "U", "V", "R", "N", "N", 0, 0, a, 1, s, u, 1, vt, 1, w, 1, iw, info);
-        Chkxer("DGEJSV", infot, nout, lerr, ok);
+        Chkxer("Rgejsv", infot, nout, lerr, ok);
         infot = 2;
         Rgejsv("G", "X", "V", "R", "N", "N", 0, 0, a, 1, s, u, 1, vt, 1, w, 1, iw, info);
-        Chkxer("DGEJSV", infot, nout, lerr, ok);
+        Chkxer("Rgejsv", infot, nout, lerr, ok);
         infot = 3;
         Rgejsv("G", "U", "X", "R", "N", "N", 0, 0, a, 1, s, u, 1, vt, 1, w, 1, iw, info);
-        Chkxer("DGEJSV", infot, nout, lerr, ok);
+        Chkxer("Rgejsv", infot, nout, lerr, ok);
         infot = 4;
         Rgejsv("G", "U", "V", "X", "N", "N", 0, 0, a, 1, s, u, 1, vt, 1, w, 1, iw, info);
-        Chkxer("DGEJSV", infot, nout, lerr, ok);
+        Chkxer("Rgejsv", infot, nout, lerr, ok);
         infot = 5;
         Rgejsv("G", "U", "V", "R", "X", "N", 0, 0, a, 1, s, u, 1, vt, 1, w, 1, iw, info);
-        Chkxer("DGEJSV", infot, nout, lerr, ok);
+        Chkxer("Rgejsv", infot, nout, lerr, ok);
         infot = 6;
         Rgejsv("G", "U", "V", "R", "N", "X", 0, 0, a, 1, s, u, 1, vt, 1, w, 1, iw, info);
-        Chkxer("DGEJSV", infot, nout, lerr, ok);
+        Chkxer("Rgejsv", infot, nout, lerr, ok);
         infot = 7;
         Rgejsv("G", "U", "V", "R", "N", "N", -1, 0, a, 1, s, u, 1, vt, 1, w, 1, iw, info);
-        Chkxer("DGEJSV", infot, nout, lerr, ok);
+        Chkxer("Rgejsv", infot, nout, lerr, ok);
         infot = 8;
         Rgejsv("G", "U", "V", "R", "N", "N", 0, -1, a, 1, s, u, 1, vt, 1, w, 1, iw, info);
-        Chkxer("DGEJSV", infot, nout, lerr, ok);
+        Chkxer("Rgejsv", infot, nout, lerr, ok);
         infot = 10;
         Rgejsv("G", "U", "V", "R", "N", "N", 2, 1, a, 1, s, u, 1, vt, 1, w, 1, iw, info);
-        Chkxer("DGEJSV", infot, nout, lerr, ok);
+        Chkxer("Rgejsv", infot, nout, lerr, ok);
         infot = 13;
         Rgejsv("G", "U", "V", "R", "N", "N", 2, 2, a, 2, s, u, 1, vt, 2, w, 1, iw, info);
-        Chkxer("DGEJSV", infot, nout, lerr, ok);
+        Chkxer("Rgejsv", infot, nout, lerr, ok);
         infot = 15;
         Rgejsv("G", "U", "V", "R", "N", "N", 2, 2, a, 2, s, u, 2, vt, 1, w, 1, iw, info);
-        Chkxer("DGEJSV", infot, nout, lerr, ok);
+        Chkxer("Rgejsv", infot, nout, lerr, ok);
         nt = 11;
         if (ok) {
             write(nout, format_9999), srnamt(1, fem::len_trim(srnamt)), nt;
@@ -320,43 +320,43 @@ void Rerred(fem::str_cref path, INTEGER const nunit) {
         //
         // Test Rgesvdx
         //
-        srnamt = "DGESVDX";
+        srnamt = "Rgesvdx";
         infot = 1;
         Rgesvdx("X", "N", "A", 0, 0, a, 1, zero, zero, 0, 0, ns, s, u, 1, vt, 1, w, 1, iw, info);
-        Chkxer("DGESVDX", infot, nout, lerr, ok);
+        Chkxer("Rgesvdx", infot, nout, lerr, ok);
         infot = 2;
         Rgesvdx("N", "X", "A", 0, 0, a, 1, zero, zero, 0, 0, ns, s, u, 1, vt, 1, w, 1, iw, info);
-        Chkxer("DGESVDX", infot, nout, lerr, ok);
+        Chkxer("Rgesvdx", infot, nout, lerr, ok);
         infot = 3;
         Rgesvdx("N", "N", "X", 0, 0, a, 1, zero, zero, 0, 0, ns, s, u, 1, vt, 1, w, 1, iw, info);
-        Chkxer("DGESVDX", infot, nout, lerr, ok);
+        Chkxer("Rgesvdx", infot, nout, lerr, ok);
         infot = 4;
         Rgesvdx("N", "N", "A", -1, 0, a, 1, zero, zero, 0, 0, ns, s, u, 1, vt, 1, w, 1, iw, info);
-        Chkxer("DGESVDX", infot, nout, lerr, ok);
+        Chkxer("Rgesvdx", infot, nout, lerr, ok);
         infot = 5;
         Rgesvdx("N", "N", "A", 0, -1, a, 1, zero, zero, 0, 0, ns, s, u, 1, vt, 1, w, 1, iw, info);
-        Chkxer("DGESVDX", infot, nout, lerr, ok);
+        Chkxer("Rgesvdx", infot, nout, lerr, ok);
         infot = 7;
         Rgesvdx("N", "N", "A", 2, 1, a, 1, zero, zero, 0, 0, ns, s, u, 1, vt, 1, w, 1, iw, info);
-        Chkxer("DGESVDX", infot, nout, lerr, ok);
+        Chkxer("Rgesvdx", infot, nout, lerr, ok);
         infot = 8;
         Rgesvdx("N", "N", "V", 2, 1, a, 2, -one, zero, 0, 0, ns, s, u, 1, vt, 1, w, 1, iw, info);
-        Chkxer("DGESVDX", infot, nout, lerr, ok);
+        Chkxer("Rgesvdx", infot, nout, lerr, ok);
         infot = 9;
         Rgesvdx("N", "N", "V", 2, 1, a, 2, one, zero, 0, 0, ns, s, u, 1, vt, 1, w, 1, iw, info);
-        Chkxer("DGESVDX", infot, nout, lerr, ok);
+        Chkxer("Rgesvdx", infot, nout, lerr, ok);
         infot = 10;
         Rgesvdx("N", "N", "I", 2, 2, a, 2, zero, zero, 0, 1, ns, s, u, 1, vt, 1, w, 1, iw, info);
-        Chkxer("DGESVDX", infot, nout, lerr, ok);
+        Chkxer("Rgesvdx", infot, nout, lerr, ok);
         infot = 11;
         Rgesvdx("V", "N", "I", 2, 2, a, 2, zero, zero, 1, 0, ns, s, u, 1, vt, 1, w, 1, iw, info);
-        Chkxer("DGESVDX", infot, nout, lerr, ok);
+        Chkxer("Rgesvdx", infot, nout, lerr, ok);
         infot = 15;
         Rgesvdx("V", "N", "A", 2, 2, a, 2, zero, zero, 0, 0, ns, s, u, 1, vt, 1, w, 1, iw, info);
-        Chkxer("DGESVDX", infot, nout, lerr, ok);
+        Chkxer("Rgesvdx", infot, nout, lerr, ok);
         infot = 17;
         Rgesvdx("N", "V", "A", 2, 2, a, 2, zero, zero, 0, 0, ns, s, u, 1, vt, 1, w, 1, iw, info);
-        Chkxer("DGESVDX", infot, nout, lerr, ok);
+        Chkxer("Rgesvdx", infot, nout, lerr, ok);
         nt = 12;
         if (ok) {
             write(nout, format_9999), srnamt(1, fem::len_trim(srnamt)), nt;
@@ -366,40 +366,40 @@ void Rerred(fem::str_cref path, INTEGER const nunit) {
         //
         // Test Rgesvdq
         //
-        srnamt = "DGESVDQ";
+        srnamt = "Rgesvdq";
         infot = 1;
         Rgesvdq("X", "P", "T", "A", "A", 0, 0, a, 1, s, u, 0, vt, 0, ns, iw, 1, w, 1, w, 1, info);
-        Chkxer("DGESVDQ", infot, nout, lerr, ok);
+        Chkxer("Rgesvdq", infot, nout, lerr, ok);
         infot = 2;
         Rgesvdq("A", "X", "T", "A", "A", 0, 0, a, 1, s, u, 0, vt, 0, ns, iw, 1, w, 1, w, 1, info);
-        Chkxer("DGESVDQ", infot, nout, lerr, ok);
+        Chkxer("Rgesvdq", infot, nout, lerr, ok);
         infot = 3;
         Rgesvdq("A", "P", "X", "A", "A", 0, 0, a, 1, s, u, 0, vt, 0, ns, iw, 1, w, 1, w, 1, info);
-        Chkxer("DGESVDQ", infot, nout, lerr, ok);
+        Chkxer("Rgesvdq", infot, nout, lerr, ok);
         infot = 4;
         Rgesvdq("A", "P", "T", "X", "A", 0, 0, a, 1, s, u, 0, vt, 0, ns, iw, 1, w, 1, w, 1, info);
-        Chkxer("DGESVDQ", infot, nout, lerr, ok);
+        Chkxer("Rgesvdq", infot, nout, lerr, ok);
         infot = 5;
         Rgesvdq("A", "P", "T", "A", "X", 0, 0, a, 1, s, u, 0, vt, 0, ns, iw, 1, w, 1, w, 1, info);
-        Chkxer("DGESVDQ", infot, nout, lerr, ok);
+        Chkxer("Rgesvdq", infot, nout, lerr, ok);
         infot = 6;
         Rgesvdq("A", "P", "T", "A", "A", -1, 0, a, 1, s, u, 0, vt, 0, ns, iw, 1, w, 1, w, 1, info);
-        Chkxer("DGESVDQ", infot, nout, lerr, ok);
+        Chkxer("Rgesvdq", infot, nout, lerr, ok);
         infot = 7;
         Rgesvdq("A", "P", "T", "A", "A", 0, 1, a, 1, s, u, 0, vt, 0, ns, iw, 1, w, 1, w, 1, info);
-        Chkxer("DGESVDQ", infot, nout, lerr, ok);
+        Chkxer("Rgesvdq", infot, nout, lerr, ok);
         infot = 9;
         Rgesvdq("A", "P", "T", "A", "A", 1, 1, a, 0, s, u, 0, vt, 0, ns, iw, 1, w, 1, w, 1, info);
-        Chkxer("DGESVDQ", infot, nout, lerr, ok);
+        Chkxer("Rgesvdq", infot, nout, lerr, ok);
         infot = 12;
         Rgesvdq("A", "P", "T", "A", "A", 1, 1, a, 1, s, u, -1, vt, 0, ns, iw, 1, w, 1, w, 1, info);
-        Chkxer("DGESVDQ", infot, nout, lerr, ok);
+        Chkxer("Rgesvdq", infot, nout, lerr, ok);
         infot = 14;
         Rgesvdq("A", "P", "T", "A", "A", 1, 1, a, 1, s, u, 1, vt, -1, ns, iw, 1, w, 1, w, 1, info);
-        Chkxer("DGESVDQ", infot, nout, lerr, ok);
+        Chkxer("Rgesvdq", infot, nout, lerr, ok);
         infot = 17;
         Rgesvdq("A", "P", "T", "A", "A", 1, 1, a, 1, s, u, 1, vt, 1, ns, iw, -5, w, 1, w, 1, info);
-        Chkxer("DGESVDQ", infot, nout, lerr, ok);
+        Chkxer("Rgesvdq", infot, nout, lerr, ok);
         nt = 11;
         if (ok) {
             write(nout, format_9999), srnamt(1, fem::len_trim(srnamt)), nt;

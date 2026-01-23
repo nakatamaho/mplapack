@@ -290,7 +290,7 @@ void Cchkhe_rook(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nn
                     // block factorization, LWORK is the length of AINV.
                     //
                     lwork = max((INTEGER)2, nb) * lda;
-                    srnamt = "ZHETRF_ROOK";
+                    srnamt = "Chetrf_rook";
                     Chetrf_rook(uplo.elems, n, afac, lda, iwork, ainv, lwork, info);
                     //
                     // Adjust the expected value of INFO to account for
@@ -313,7 +313,7 @@ void Cchkhe_rook(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nn
                     // Check error code from Chetrf_rook and handle error.
                     //
                     if (info != k) {
-                        Alaerh(path, "ZHETRF_ROOK", info, k, uplo, n, n, -1, -1, nb, imat, nfail, nerrs, nout);
+                        Alaerh(path, "Chetrf_rook", info, k, uplo, n, n, -1, -1, nb, imat, nfail, nerrs, nout);
                     }
                     //
                     // Set the condition estimate flag if the INFO is not 0.
@@ -338,13 +338,13 @@ void Cchkhe_rook(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nn
                     //
                     if (inb == 1 && !trfcon) {
                         Clacpy(uplo.elems, n, n, afac, lda, ainv, lda);
-                        srnamt = "ZHETRI_ROOK";
+                        srnamt = "Chetri_rook";
                         Chetri_rook(uplo.elems, n, ainv, lda, iwork, work, info);
                         //
                         // Check error code from Chetri_rook and handle error.
                         //
                         if (info != 0) {
-                            Alaerh(path, "ZHETRI_ROOK", info, -1, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                            Alaerh(path, "Chetri_rook", info, -1, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                         }
                         //
                         // Compute the residual for a Hermitian matrix times
@@ -595,13 +595,13 @@ void Cchkhe_rook(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nn
                         Clarhs(matpath, xtype, uplo, " ", n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
                         Clacpy("Full", n, nrhs, b, lda, x, lda);
                         //
-                        srnamt = "ZHETRS_ROOK";
+                        srnamt = "Chetrs_rook";
                         Chetrs_rook(uplo.elems, n, nrhs, afac, lda, iwork, x, lda, info);
                         //
                         // Check error code from Chetrs_rook and handle error.
                         //
                         if (info != 0) {
-                            Alaerh(path, "ZHETRS_ROOK", info, 0, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                            Alaerh(path, "Chetrs_rook", info, 0, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                         }
                         //
                         Clacpy("Full", n, nrhs, b, lda, work, lda);
@@ -640,13 +640,13 @@ void Cchkhe_rook(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nn
                 //
                 statement_230:
                     anorm = Clanhe("1", uplo.elems, n, a, lda, rwork);
-                    srnamt = "ZHECON_ROOK";
+                    srnamt = "Checon_rook";
                     Checon_rook(uplo.elems, n, afac, lda, iwork, anorm, rcond, work, info);
                     //
                     // Check error code from Checon_rook and handle error.
                     //
                     if (info != 0) {
-                        Alaerh(path, "ZHECON_ROOK", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                        Alaerh(path, "Checon_rook", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                     }
                     //
                     // Compute the test ratio to compare values of RCOND

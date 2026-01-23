@@ -104,7 +104,7 @@ void Rorhr_col02(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
     //
     // Factor the matrix A in the array AF.
     //
-    srnamt = "DGETSQRHRT";
+    srnamt = "Rgetsqrhrt";
     std::unique_ptr<REAL[]> __work_storage(new REAL[lwork]);
     REAL *work = __work_storage.get();
     Rgetsqrhrt(m, n, mb1, nb1, nb2, af, m, t2, nb2, work, lwork, info);
@@ -119,7 +119,7 @@ void Rorhr_col02(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
     REAL *q = __q_storage.get();
     Rlaset("Full", m, m, zero, one, q, m);
     //
-    srnamt = "DGEMQRT";
+    srnamt = "Rgemqrt";
     Rgemqrt("L", "N", m, m, k, nb2_ub, af, m, t2, nb2, q, m, work, info);
     //
     // Copy R
@@ -167,7 +167,7 @@ void Rorhr_col02(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
     //
     // Apply Q to C as Q*C = CF
     //
-    srnamt = "DGEMQRT";
+    srnamt = "Rgemqrt";
     Rgemqrt("L", "N", m, n, k, nb2_ub, af, m, t2, nb2, cf, m, work, info);
     //
     // TEST 3
@@ -187,7 +187,7 @@ void Rorhr_col02(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
     //
     // Apply Q to C as (Q**T)*C = CF
     //
-    srnamt = "DGEMQRT";
+    srnamt = "Rgemqrt";
     Rgemqrt("L", "T", m, n, k, nb2_ub, af, m, t2, nb2, cf, m, work, info);
     //
     // TEST 4
@@ -215,7 +215,7 @@ void Rorhr_col02(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
     //
     // Apply Q to D as D*Q = DF
     //
-    srnamt = "DGEMQRT";
+    srnamt = "Rgemqrt";
     Rgemqrt("R", "N", n, m, k, nb2_ub, af, m, t2, nb2, df, n, work, info);
     //
     // TEST 5
@@ -235,7 +235,7 @@ void Rorhr_col02(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
     //
     // Apply Q to D as D*QT = DF
     //
-    srnamt = "DGEMQRT";
+    srnamt = "Rgemqrt";
     Rgemqrt("R", "T", n, m, k, nb2_ub, af, m, t2, nb2, df, n, work, info);
     //
     // TEST 6

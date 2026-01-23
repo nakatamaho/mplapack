@@ -290,7 +290,7 @@ void Cchkhe_rk(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
                     // block factorization, LWORK is the length of AINV.
                     //
                     lwork = max((INTEGER)2, nb) * lda;
-                    srnamt = "ZHETRF_RK";
+                    srnamt = "Chetrf_rk";
                     Chetrf_rk(uplo.elems, n, afac, lda, e, iwork, ainv, lwork, info);
                     //
                     // Adjust the expected value of INFO to account for
@@ -313,7 +313,7 @@ void Cchkhe_rk(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
                     // Check error code from Chetrf_rk and handle error.
                     //
                     if (info != k) {
-                        Alaerh(path, "ZHETRF_RK", info, k, uplo, n, n, -1, -1, nb, imat, nfail, nerrs, nout);
+                        Alaerh(path, "Chetrf_rk", info, k, uplo, n, n, -1, -1, nb, imat, nfail, nerrs, nout);
                     }
                     //
                     // Set the condition estimate flag if the INFO is not 0.
@@ -338,7 +338,7 @@ void Cchkhe_rk(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
                     //
                     if (inb == 1 && !trfcon) {
                         Clacpy(uplo.elems, n, n, afac, lda, ainv, lda);
-                        srnamt = "ZHETRI_3";
+                        srnamt = "Chetri_3";
                         //
                         // Another reason that we need to compute the inverse
                         // is that Cpot03 produces RCONDC which is used later
@@ -350,7 +350,7 @@ void Cchkhe_rk(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
                         // Check error code from Chetri_3 and handle error.
                         //
                         if (info != 0) {
-                            Alaerh(path, "ZHETRI_3", info, -1, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                            Alaerh(path, "Chetri_3", info, -1, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                         }
                         //
                         // Compute the residual for a Hermitian matrix times
@@ -601,13 +601,13 @@ void Cchkhe_rk(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
                         Clarhs(matpath, xtype, uplo, " ", n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
                         Clacpy("Full", n, nrhs, b, lda, x, lda);
                         //
-                        srnamt = "ZHETRS_3";
+                        srnamt = "Chetrs_3";
                         Chetrs_3(uplo.elems, n, nrhs, afac, lda, e, iwork, x, lda, info);
                         //
                         // Check error code from Chetrs_3 and handle error.
                         //
                         if (info != 0) {
-                            Alaerh(path, "ZHETRS_3", info, 0, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                            Alaerh(path, "Chetrs_3", info, 0, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                         }
                         //
                         Clacpy("Full", n, nrhs, b, lda, work, lda);
@@ -646,13 +646,13 @@ void Cchkhe_rk(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
                 //
                 statement_230:
                     anorm = Clanhe("1", uplo.elems, n, a, lda, rwork);
-                    srnamt = "ZHECON_3";
+                    srnamt = "Checon_3";
                     Checon_3(uplo.elems, n, afac, lda, e, iwork, anorm, rcond, work, info);
                     //
                     // Check error code from Checon_3 and handle error.
                     //
                     if (info != 0) {
-                        Alaerh(path, "ZHECON_3", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                        Alaerh(path, "Checon_3", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                     }
                     //
                     // Compute the test ratio to compare values of RCOND

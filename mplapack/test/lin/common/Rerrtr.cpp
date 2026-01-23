@@ -73,129 +73,129 @@ void Rerrtr(fem::str_cref path, INTEGER const nunit) {
         //
         // Rtrtri
         //
-        srnamt = "DTRTRI";
+        srnamt = "Rtrtri";
         infot = 1;
         Rtrtri("/", "N", 0, a, 1, info);
-        Chkxer("DTRTRI", infot, nout, lerr, ok);
+        Chkxer("Rtrtri", infot, nout, lerr, ok);
         infot = 2;
         Rtrtri("U", "/", 0, a, 1, info);
-        Chkxer("DTRTRI", infot, nout, lerr, ok);
+        Chkxer("Rtrtri", infot, nout, lerr, ok);
         infot = 3;
         Rtrtri("U", "N", -1, a, 1, info);
-        Chkxer("DTRTRI", infot, nout, lerr, ok);
+        Chkxer("Rtrtri", infot, nout, lerr, ok);
         infot = 5;
         Rtrtri("U", "N", 2, a, 1, info);
-        Chkxer("DTRTRI", infot, nout, lerr, ok);
+        Chkxer("Rtrtri", infot, nout, lerr, ok);
         //
         // Rtrti2
         //
-        srnamt = "DTRTI2";
+        srnamt = "Rtrti2";
         infot = 1;
         Rtrti2("/", "N", 0, a, 1, info);
-        Chkxer("DTRTI2", infot, nout, lerr, ok);
+        Chkxer("Rtrti2", infot, nout, lerr, ok);
         infot = 2;
         Rtrti2("U", "/", 0, a, 1, info);
-        Chkxer("DTRTI2", infot, nout, lerr, ok);
+        Chkxer("Rtrti2", infot, nout, lerr, ok);
         infot = 3;
         Rtrti2("U", "N", -1, a, 1, info);
-        Chkxer("DTRTI2", infot, nout, lerr, ok);
+        Chkxer("Rtrti2", infot, nout, lerr, ok);
         infot = 5;
         Rtrti2("U", "N", 2, a, 1, info);
-        Chkxer("DTRTI2", infot, nout, lerr, ok);
+        Chkxer("Rtrti2", infot, nout, lerr, ok);
         //
         // Rtrtrs
         //
-        srnamt = "DTRTRS";
+        srnamt = "Rtrtrs";
         infot = 1;
         Rtrtrs("/", "N", "N", 0, 0, a, 1, x, 1, info);
-        Chkxer("DTRTRS", infot, nout, lerr, ok);
+        Chkxer("Rtrtrs", infot, nout, lerr, ok);
         infot = 2;
         Rtrtrs("U", "/", "N", 0, 0, a, 1, x, 1, info);
-        Chkxer("DTRTRS", infot, nout, lerr, ok);
+        Chkxer("Rtrtrs", infot, nout, lerr, ok);
         infot = 3;
         Rtrtrs("U", "N", "/", 0, 0, a, 1, x, 1, info);
-        Chkxer("DTRTRS", infot, nout, lerr, ok);
+        Chkxer("Rtrtrs", infot, nout, lerr, ok);
         infot = 4;
         Rtrtrs("U", "N", "N", -1, 0, a, 1, x, 1, info);
-        Chkxer("DTRTRS", infot, nout, lerr, ok);
+        Chkxer("Rtrtrs", infot, nout, lerr, ok);
         infot = 5;
         Rtrtrs("U", "N", "N", 0, -1, a, 1, x, 1, info);
-        Chkxer("DTRTRS", infot, nout, lerr, ok);
+        Chkxer("Rtrtrs", infot, nout, lerr, ok);
         infot = 7;
         Rtrtrs("U", "N", "N", 2, 1, a, 1, x, 2, info);
-        Chkxer("DTRTRS", infot, nout, lerr, ok);
+        Chkxer("Rtrtrs", infot, nout, lerr, ok);
         infot = 9;
         Rtrtrs("U", "N", "N", 2, 1, a, 2, x, 1, info);
-        Chkxer("DTRTRS", infot, nout, lerr, ok);
+        Chkxer("Rtrtrs", infot, nout, lerr, ok);
         //
         // Rtrrfs
         //
-        srnamt = "DTRRFS";
+        srnamt = "Rtrrfs";
         infot = 1;
         Rtrrfs("/", "N", "N", 0, 0, a, 1, b, 1, x, 1, r1, r2, w, iw, info);
-        Chkxer("DTRRFS", infot, nout, lerr, ok);
+        Chkxer("Rtrrfs", infot, nout, lerr, ok);
         infot = 2;
         Rtrrfs("U", "/", "N", 0, 0, a, 1, b, 1, x, 1, r1, r2, w, iw, info);
-        Chkxer("DTRRFS", infot, nout, lerr, ok);
+        Chkxer("Rtrrfs", infot, nout, lerr, ok);
         infot = 3;
         Rtrrfs("U", "N", "/", 0, 0, a, 1, b, 1, x, 1, r1, r2, w, iw, info);
-        Chkxer("DTRRFS", infot, nout, lerr, ok);
+        Chkxer("Rtrrfs", infot, nout, lerr, ok);
         infot = 4;
         Rtrrfs("U", "N", "N", -1, 0, a, 1, b, 1, x, 1, r1, r2, w, iw, info);
-        Chkxer("DTRRFS", infot, nout, lerr, ok);
+        Chkxer("Rtrrfs", infot, nout, lerr, ok);
         infot = 5;
         Rtrrfs("U", "N", "N", 0, -1, a, 1, b, 1, x, 1, r1, r2, w, iw, info);
-        Chkxer("DTRRFS", infot, nout, lerr, ok);
+        Chkxer("Rtrrfs", infot, nout, lerr, ok);
         infot = 7;
         Rtrrfs("U", "N", "N", 2, 1, a, 1, b, 2, x, 2, r1, r2, w, iw, info);
-        Chkxer("DTRRFS", infot, nout, lerr, ok);
+        Chkxer("Rtrrfs", infot, nout, lerr, ok);
         infot = 9;
         Rtrrfs("U", "N", "N", 2, 1, a, 2, b, 1, x, 2, r1, r2, w, iw, info);
-        Chkxer("DTRRFS", infot, nout, lerr, ok);
+        Chkxer("Rtrrfs", infot, nout, lerr, ok);
         infot = 11;
         Rtrrfs("U", "N", "N", 2, 1, a, 2, b, 2, x, 1, r1, r2, w, iw, info);
-        Chkxer("DTRRFS", infot, nout, lerr, ok);
+        Chkxer("Rtrrfs", infot, nout, lerr, ok);
         //
         // Rtrcon
         //
-        srnamt = "DTRCON";
+        srnamt = "Rtrcon";
         infot = 1;
         Rtrcon("/", "U", "N", 0, a, 1, rcond, w, iw, info);
-        Chkxer("DTRCON", infot, nout, lerr, ok);
+        Chkxer("Rtrcon", infot, nout, lerr, ok);
         infot = 2;
         Rtrcon("1", "/", "N", 0, a, 1, rcond, w, iw, info);
-        Chkxer("DTRCON", infot, nout, lerr, ok);
+        Chkxer("Rtrcon", infot, nout, lerr, ok);
         infot = 3;
         Rtrcon("1", "U", "/", 0, a, 1, rcond, w, iw, info);
-        Chkxer("DTRCON", infot, nout, lerr, ok);
+        Chkxer("Rtrcon", infot, nout, lerr, ok);
         infot = 4;
         Rtrcon("1", "U", "N", -1, a, 1, rcond, w, iw, info);
-        Chkxer("DTRCON", infot, nout, lerr, ok);
+        Chkxer("Rtrcon", infot, nout, lerr, ok);
         infot = 6;
         Rtrcon("1", "U", "N", 2, a, 1, rcond, w, iw, info);
-        Chkxer("DTRCON", infot, nout, lerr, ok);
+        Chkxer("Rtrcon", infot, nout, lerr, ok);
         //
         // Rlatrs
         //
-        srnamt = "DLATRS";
+        srnamt = "Rlatrs";
         infot = 1;
         Rlatrs("/", "N", "N", "N", 0, a, 1, x, scale, w, info);
-        Chkxer("DLATRS", infot, nout, lerr, ok);
+        Chkxer("Rlatrs", infot, nout, lerr, ok);
         infot = 2;
         Rlatrs("U", "/", "N", "N", 0, a, 1, x, scale, w, info);
-        Chkxer("DLATRS", infot, nout, lerr, ok);
+        Chkxer("Rlatrs", infot, nout, lerr, ok);
         infot = 3;
         Rlatrs("U", "N", "/", "N", 0, a, 1, x, scale, w, info);
-        Chkxer("DLATRS", infot, nout, lerr, ok);
+        Chkxer("Rlatrs", infot, nout, lerr, ok);
         infot = 4;
         Rlatrs("U", "N", "N", "/", 0, a, 1, x, scale, w, info);
-        Chkxer("DLATRS", infot, nout, lerr, ok);
+        Chkxer("Rlatrs", infot, nout, lerr, ok);
         infot = 5;
         Rlatrs("U", "N", "N", "N", -1, a, 1, x, scale, w, info);
-        Chkxer("DLATRS", infot, nout, lerr, ok);
+        Chkxer("Rlatrs", infot, nout, lerr, ok);
         infot = 7;
         Rlatrs("U", "N", "N", "N", 2, a, 1, x, scale, w, info);
-        Chkxer("DLATRS", infot, nout, lerr, ok);
+        Chkxer("Rlatrs", infot, nout, lerr, ok);
         //
     } else if (Mlsamen(2, c2.elems, "TP")) {
         //
@@ -203,98 +203,98 @@ void Rerrtr(fem::str_cref path, INTEGER const nunit) {
         //
         // Rtptri
         //
-        srnamt = "DTPTRI";
+        srnamt = "Rtptri";
         infot = 1;
         Rtptri("/", "N", 0, a, info);
-        Chkxer("DTPTRI", infot, nout, lerr, ok);
+        Chkxer("Rtptri", infot, nout, lerr, ok);
         infot = 2;
         Rtptri("U", "/", 0, a, info);
-        Chkxer("DTPTRI", infot, nout, lerr, ok);
+        Chkxer("Rtptri", infot, nout, lerr, ok);
         infot = 3;
         Rtptri("U", "N", -1, a, info);
-        Chkxer("DTPTRI", infot, nout, lerr, ok);
+        Chkxer("Rtptri", infot, nout, lerr, ok);
         //
         // Rtptrs
         //
-        srnamt = "DTPTRS";
+        srnamt = "Rtptrs";
         infot = 1;
         Rtptrs("/", "N", "N", 0, 0, a, x, 1, info);
-        Chkxer("DTPTRS", infot, nout, lerr, ok);
+        Chkxer("Rtptrs", infot, nout, lerr, ok);
         infot = 2;
         Rtptrs("U", "/", "N", 0, 0, a, x, 1, info);
-        Chkxer("DTPTRS", infot, nout, lerr, ok);
+        Chkxer("Rtptrs", infot, nout, lerr, ok);
         infot = 3;
         Rtptrs("U", "N", "/", 0, 0, a, x, 1, info);
-        Chkxer("DTPTRS", infot, nout, lerr, ok);
+        Chkxer("Rtptrs", infot, nout, lerr, ok);
         infot = 4;
         Rtptrs("U", "N", "N", -1, 0, a, x, 1, info);
-        Chkxer("DTPTRS", infot, nout, lerr, ok);
+        Chkxer("Rtptrs", infot, nout, lerr, ok);
         infot = 5;
         Rtptrs("U", "N", "N", 0, -1, a, x, 1, info);
-        Chkxer("DTPTRS", infot, nout, lerr, ok);
+        Chkxer("Rtptrs", infot, nout, lerr, ok);
         infot = 8;
         Rtptrs("U", "N", "N", 2, 1, a, x, 1, info);
-        Chkxer("DTPTRS", infot, nout, lerr, ok);
+        Chkxer("Rtptrs", infot, nout, lerr, ok);
         //
         // Rtprfs
         //
-        srnamt = "DTPRFS";
+        srnamt = "Rtprfs";
         infot = 1;
         Rtprfs("/", "N", "N", 0, 0, a, b, 1, x, 1, r1, r2, w, iw, info);
-        Chkxer("DTPRFS", infot, nout, lerr, ok);
+        Chkxer("Rtprfs", infot, nout, lerr, ok);
         infot = 2;
         Rtprfs("U", "/", "N", 0, 0, a, b, 1, x, 1, r1, r2, w, iw, info);
-        Chkxer("DTPRFS", infot, nout, lerr, ok);
+        Chkxer("Rtprfs", infot, nout, lerr, ok);
         infot = 3;
         Rtprfs("U", "N", "/", 0, 0, a, b, 1, x, 1, r1, r2, w, iw, info);
-        Chkxer("DTPRFS", infot, nout, lerr, ok);
+        Chkxer("Rtprfs", infot, nout, lerr, ok);
         infot = 4;
         Rtprfs("U", "N", "N", -1, 0, a, b, 1, x, 1, r1, r2, w, iw, info);
-        Chkxer("DTPRFS", infot, nout, lerr, ok);
+        Chkxer("Rtprfs", infot, nout, lerr, ok);
         infot = 5;
         Rtprfs("U", "N", "N", 0, -1, a, b, 1, x, 1, r1, r2, w, iw, info);
-        Chkxer("DTPRFS", infot, nout, lerr, ok);
+        Chkxer("Rtprfs", infot, nout, lerr, ok);
         infot = 8;
         Rtprfs("U", "N", "N", 2, 1, a, b, 1, x, 2, r1, r2, w, iw, info);
-        Chkxer("DTPRFS", infot, nout, lerr, ok);
+        Chkxer("Rtprfs", infot, nout, lerr, ok);
         infot = 10;
         Rtprfs("U", "N", "N", 2, 1, a, b, 2, x, 1, r1, r2, w, iw, info);
-        Chkxer("DTPRFS", infot, nout, lerr, ok);
+        Chkxer("Rtprfs", infot, nout, lerr, ok);
         //
         // Rtpcon
         //
-        srnamt = "DTPCON";
+        srnamt = "Rtpcon";
         infot = 1;
         Rtpcon("/", "U", "N", 0, a, rcond, w, iw, info);
-        Chkxer("DTPCON", infot, nout, lerr, ok);
+        Chkxer("Rtpcon", infot, nout, lerr, ok);
         infot = 2;
         Rtpcon("1", "/", "N", 0, a, rcond, w, iw, info);
-        Chkxer("DTPCON", infot, nout, lerr, ok);
+        Chkxer("Rtpcon", infot, nout, lerr, ok);
         infot = 3;
         Rtpcon("1", "U", "/", 0, a, rcond, w, iw, info);
-        Chkxer("DTPCON", infot, nout, lerr, ok);
+        Chkxer("Rtpcon", infot, nout, lerr, ok);
         infot = 4;
         Rtpcon("1", "U", "N", -1, a, rcond, w, iw, info);
-        Chkxer("DTPCON", infot, nout, lerr, ok);
+        Chkxer("Rtpcon", infot, nout, lerr, ok);
         //
         // Rlatps
         //
-        srnamt = "DLATPS";
+        srnamt = "Rlatps";
         infot = 1;
         Rlatps("/", "N", "N", "N", 0, a, x, scale, w, info);
-        Chkxer("DLATPS", infot, nout, lerr, ok);
+        Chkxer("Rlatps", infot, nout, lerr, ok);
         infot = 2;
         Rlatps("U", "/", "N", "N", 0, a, x, scale, w, info);
-        Chkxer("DLATPS", infot, nout, lerr, ok);
+        Chkxer("Rlatps", infot, nout, lerr, ok);
         infot = 3;
         Rlatps("U", "N", "/", "N", 0, a, x, scale, w, info);
-        Chkxer("DLATPS", infot, nout, lerr, ok);
+        Chkxer("Rlatps", infot, nout, lerr, ok);
         infot = 4;
         Rlatps("U", "N", "N", "/", 0, a, x, scale, w, info);
-        Chkxer("DLATPS", infot, nout, lerr, ok);
+        Chkxer("Rlatps", infot, nout, lerr, ok);
         infot = 5;
         Rlatps("U", "N", "N", "N", -1, a, x, scale, w, info);
-        Chkxer("DLATPS", infot, nout, lerr, ok);
+        Chkxer("Rlatps", infot, nout, lerr, ok);
         //
     } else if (Mlsamen(2, c2.elems, "TB")) {
         //
@@ -302,109 +302,109 @@ void Rerrtr(fem::str_cref path, INTEGER const nunit) {
         //
         // Rtbtrs
         //
-        srnamt = "DTBTRS";
+        srnamt = "Rtbtrs";
         infot = 1;
         Rtbtrs("/", "N", "N", 0, 0, 0, a, 1, x, 1, info);
-        Chkxer("DTBTRS", infot, nout, lerr, ok);
+        Chkxer("Rtbtrs", infot, nout, lerr, ok);
         infot = 2;
         Rtbtrs("U", "/", "N", 0, 0, 0, a, 1, x, 1, info);
-        Chkxer("DTBTRS", infot, nout, lerr, ok);
+        Chkxer("Rtbtrs", infot, nout, lerr, ok);
         infot = 3;
         Rtbtrs("U", "N", "/", 0, 0, 0, a, 1, x, 1, info);
-        Chkxer("DTBTRS", infot, nout, lerr, ok);
+        Chkxer("Rtbtrs", infot, nout, lerr, ok);
         infot = 4;
         Rtbtrs("U", "N", "N", -1, 0, 0, a, 1, x, 1, info);
-        Chkxer("DTBTRS", infot, nout, lerr, ok);
+        Chkxer("Rtbtrs", infot, nout, lerr, ok);
         infot = 5;
         Rtbtrs("U", "N", "N", 0, -1, 0, a, 1, x, 1, info);
-        Chkxer("DTBTRS", infot, nout, lerr, ok);
+        Chkxer("Rtbtrs", infot, nout, lerr, ok);
         infot = 6;
         Rtbtrs("U", "N", "N", 0, 0, -1, a, 1, x, 1, info);
-        Chkxer("DTBTRS", infot, nout, lerr, ok);
+        Chkxer("Rtbtrs", infot, nout, lerr, ok);
         infot = 8;
         Rtbtrs("U", "N", "N", 2, 1, 1, a, 1, x, 2, info);
-        Chkxer("DTBTRS", infot, nout, lerr, ok);
+        Chkxer("Rtbtrs", infot, nout, lerr, ok);
         infot = 10;
         Rtbtrs("U", "N", "N", 2, 0, 1, a, 1, x, 1, info);
-        Chkxer("DTBTRS", infot, nout, lerr, ok);
+        Chkxer("Rtbtrs", infot, nout, lerr, ok);
         //
         // Rtbrfs
         //
-        srnamt = "DTBRFS";
+        srnamt = "Rtbrfs";
         infot = 1;
         Rtbrfs("/", "N", "N", 0, 0, 0, a, 1, b, 1, x, 1, r1, r2, w, iw, info);
-        Chkxer("DTBRFS", infot, nout, lerr, ok);
+        Chkxer("Rtbrfs", infot, nout, lerr, ok);
         infot = 2;
         Rtbrfs("U", "/", "N", 0, 0, 0, a, 1, b, 1, x, 1, r1, r2, w, iw, info);
-        Chkxer("DTBRFS", infot, nout, lerr, ok);
+        Chkxer("Rtbrfs", infot, nout, lerr, ok);
         infot = 3;
         Rtbrfs("U", "N", "/", 0, 0, 0, a, 1, b, 1, x, 1, r1, r2, w, iw, info);
-        Chkxer("DTBRFS", infot, nout, lerr, ok);
+        Chkxer("Rtbrfs", infot, nout, lerr, ok);
         infot = 4;
         Rtbrfs("U", "N", "N", -1, 0, 0, a, 1, b, 1, x, 1, r1, r2, w, iw, info);
-        Chkxer("DTBRFS", infot, nout, lerr, ok);
+        Chkxer("Rtbrfs", infot, nout, lerr, ok);
         infot = 5;
         Rtbrfs("U", "N", "N", 0, -1, 0, a, 1, b, 1, x, 1, r1, r2, w, iw, info);
-        Chkxer("DTBRFS", infot, nout, lerr, ok);
+        Chkxer("Rtbrfs", infot, nout, lerr, ok);
         infot = 6;
         Rtbrfs("U", "N", "N", 0, 0, -1, a, 1, b, 1, x, 1, r1, r2, w, iw, info);
-        Chkxer("DTBRFS", infot, nout, lerr, ok);
+        Chkxer("Rtbrfs", infot, nout, lerr, ok);
         infot = 8;
         Rtbrfs("U", "N", "N", 2, 1, 1, a, 1, b, 2, x, 2, r1, r2, w, iw, info);
-        Chkxer("DTBRFS", infot, nout, lerr, ok);
+        Chkxer("Rtbrfs", infot, nout, lerr, ok);
         infot = 10;
         Rtbrfs("U", "N", "N", 2, 1, 1, a, 2, b, 1, x, 2, r1, r2, w, iw, info);
-        Chkxer("DTBRFS", infot, nout, lerr, ok);
+        Chkxer("Rtbrfs", infot, nout, lerr, ok);
         infot = 12;
         Rtbrfs("U", "N", "N", 2, 1, 1, a, 2, b, 2, x, 1, r1, r2, w, iw, info);
-        Chkxer("DTBRFS", infot, nout, lerr, ok);
+        Chkxer("Rtbrfs", infot, nout, lerr, ok);
         //
         // Rtbcon
         //
-        srnamt = "DTBCON";
+        srnamt = "Rtbcon";
         infot = 1;
         Rtbcon("/", "U", "N", 0, 0, a, 1, rcond, w, iw, info);
-        Chkxer("DTBCON", infot, nout, lerr, ok);
+        Chkxer("Rtbcon", infot, nout, lerr, ok);
         infot = 2;
         Rtbcon("1", "/", "N", 0, 0, a, 1, rcond, w, iw, info);
-        Chkxer("DTBCON", infot, nout, lerr, ok);
+        Chkxer("Rtbcon", infot, nout, lerr, ok);
         infot = 3;
         Rtbcon("1", "U", "/", 0, 0, a, 1, rcond, w, iw, info);
-        Chkxer("DTBCON", infot, nout, lerr, ok);
+        Chkxer("Rtbcon", infot, nout, lerr, ok);
         infot = 4;
         Rtbcon("1", "U", "N", -1, 0, a, 1, rcond, w, iw, info);
-        Chkxer("DTBCON", infot, nout, lerr, ok);
+        Chkxer("Rtbcon", infot, nout, lerr, ok);
         infot = 5;
         Rtbcon("1", "U", "N", 0, -1, a, 1, rcond, w, iw, info);
-        Chkxer("DTBCON", infot, nout, lerr, ok);
+        Chkxer("Rtbcon", infot, nout, lerr, ok);
         infot = 7;
         Rtbcon("1", "U", "N", 2, 1, a, 1, rcond, w, iw, info);
-        Chkxer("DTBCON", infot, nout, lerr, ok);
+        Chkxer("Rtbcon", infot, nout, lerr, ok);
         //
         // Rlatbs
         //
-        srnamt = "DLATBS";
+        srnamt = "Rlatbs";
         infot = 1;
         Rlatbs("/", "N", "N", "N", 0, 0, a, 1, x, scale, w, info);
-        Chkxer("DLATBS", infot, nout, lerr, ok);
+        Chkxer("Rlatbs", infot, nout, lerr, ok);
         infot = 2;
         Rlatbs("U", "/", "N", "N", 0, 0, a, 1, x, scale, w, info);
-        Chkxer("DLATBS", infot, nout, lerr, ok);
+        Chkxer("Rlatbs", infot, nout, lerr, ok);
         infot = 3;
         Rlatbs("U", "N", "/", "N", 0, 0, a, 1, x, scale, w, info);
-        Chkxer("DLATBS", infot, nout, lerr, ok);
+        Chkxer("Rlatbs", infot, nout, lerr, ok);
         infot = 4;
         Rlatbs("U", "N", "N", "/", 0, 0, a, 1, x, scale, w, info);
-        Chkxer("DLATBS", infot, nout, lerr, ok);
+        Chkxer("Rlatbs", infot, nout, lerr, ok);
         infot = 5;
         Rlatbs("U", "N", "N", "N", -1, 0, a, 1, x, scale, w, info);
-        Chkxer("DLATBS", infot, nout, lerr, ok);
+        Chkxer("Rlatbs", infot, nout, lerr, ok);
         infot = 6;
         Rlatbs("U", "N", "N", "N", 1, -1, a, 1, x, scale, w, info);
-        Chkxer("DLATBS", infot, nout, lerr, ok);
+        Chkxer("Rlatbs", infot, nout, lerr, ok);
         infot = 8;
         Rlatbs("U", "N", "N", "N", 2, 1, a, 1, x, scale, w, info);
-        Chkxer("DLATBS", infot, nout, lerr, ok);
+        Chkxer("Rlatbs", infot, nout, lerr, ok);
     }
     //
     // Print a summary line.

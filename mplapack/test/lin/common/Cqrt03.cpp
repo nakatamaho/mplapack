@@ -56,7 +56,7 @@ void Cqrt03(INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX *af, COMP
     //
     // Generate the m-by-m matrix Q
     //
-    srnamt = "ZUNGQR";
+    srnamt = "Cungqr";
     INTEGER info = 0;
     Cungqr(m, m, k, q, lda, tau, work, lwork, info);
     //
@@ -105,7 +105,7 @@ void Cqrt03(INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX *af, COMP
             //
             // Apply Q or Q' to C
             //
-            srnamt = "ZUNMQR";
+            srnamt = "Cunmqr";
             Cunmqr(side.elems, trans.elems, mc, nc, k, af, lda, tau, cc, lda, work, lwork, info);
             //
             // Form explicit product and subtract

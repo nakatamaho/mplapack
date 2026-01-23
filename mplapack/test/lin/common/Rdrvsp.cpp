@@ -288,7 +288,7 @@ void Rdrvsp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         //
                         // Factor the matrix and solve the system using Rspsv.
                         //
-                        srnamt = "DSPSV ";
+                        srnamt = "Rspsv";
                         Rspsv(uplo.elems, n, nrhs, afac, iwork, x, lda, info);
                         //
                         // Adjust the expected value of INFO to account for
@@ -311,7 +311,7 @@ void Rdrvsp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         // Check error code from Rspsv .
                         //
                         if (info != k) {
-                            Alaerh(path, "DSPSV ", info, k, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                            Alaerh(path, "Rspsv", info, k, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                             goto statement_120;
                         } else if (info != 0) {
                             goto statement_120;
@@ -360,7 +360,7 @@ void Rdrvsp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                     // Solve the system and compute the condition number and
                     // error bounds using Rspsvx.
                     //
-                    srnamt = "DSPSVX";
+                    srnamt = "Rspsvx";
                     Rspsvx(fact.elems, uplo.elems, n, nrhs, a, afac, iwork, b, lda, x, lda, rcond, rwork, &rwork[(nrhs + 1) - 1], work, &iwork[(n + 1) - 1], info);
                     //
                     // Adjust the expected value of INFO to account for
@@ -383,7 +383,7 @@ void Rdrvsp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                     // Check the error code from Rspsvx.
                     //
                     if (info != k) {
-                        Alaerh(path, "DSPSVX", info, k, fact + uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                        Alaerh(path, "Rspsvx", info, k, fact + uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                         goto statement_150;
                     }
                     //

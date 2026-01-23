@@ -233,7 +233,7 @@ void Rchksp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                 //
                 npp = n * (n + 1) / 2;
                 Rcopy(npp, a, 1, afac, 1);
-                srnamt = "DSPTRF";
+                srnamt = "Rsptrf";
                 Rsptrf(uplo.elems, n, afac, iwork, info);
                 //
                 // Adjust the expected value of INFO to account for
@@ -256,7 +256,7 @@ void Rchksp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                 // Check error code from Rsptrf.
                 //
                 if (info != k) {
-                    Alaerh(path, "DSPTRF", info, k, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                    Alaerh(path, "Rsptrf", info, k, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                 }
                 if (info != 0) {
                     trfcon = true;
@@ -275,13 +275,13 @@ void Rchksp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                 //
                 if (!trfcon) {
                     Rcopy(npp, afac, 1, ainv, 1);
-                    srnamt = "DSPTRI";
+                    srnamt = "Rsptri";
                     Rsptri(uplo.elems, n, ainv, iwork, work, info);
                     //
                     // Check error code from Rsptri.
                     //
                     if (info != 0) {
-                        Alaerh(path, "DSPTRI", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                        Alaerh(path, "Rsptri", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                     }
                     //
                     Rppt03(uplo, n, a, ainv, work, lda, rwork, rcondc, result[2 - 1]);
@@ -319,13 +319,13 @@ void Rchksp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                     Rlarhs(path, xtype, uplo, " ", n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
                     Rlacpy("Full", n, nrhs, b, lda, x, lda);
                     //
-                    srnamt = "DSPTRS";
+                    srnamt = "Rsptrs";
                     Rsptrs(uplo.elems, n, nrhs, afac, iwork, x, lda, info);
                     //
                     // Check error code from Rsptrs.
                     //
                     if (info != 0) {
-                        Alaerh(path, "DSPTRS", info, 0, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                        Alaerh(path, "Rsptrs", info, 0, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                     }
                     //
                     Rlacpy("Full", n, nrhs, b, lda, work, lda);
@@ -339,13 +339,13 @@ void Rchksp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                     // +    TESTS 5, 6, and 7
                     // Use iterative refinement to improve the solution.
                     //
-                    srnamt = "DSPRFS";
+                    srnamt = "Rsprfs";
                     Rsprfs(uplo.elems, n, nrhs, a, afac, iwork, b, lda, x, lda, rwork, &rwork[(nrhs + 1) - 1], work, &iwork[(n + 1) - 1], info);
                     //
                     // Check error code from Rsprfs.
                     //
                     if (info != 0) {
-                        Alaerh(path, "DSPRFS", info, 0, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                        Alaerh(path, "Rsprfs", info, 0, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                     }
                     //
                     Rget04(n, nrhs, x, lda, xact, lda, rcondc, result[5 - 1]);
@@ -373,13 +373,13 @@ void Rchksp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
             //
             statement_140:
                 anorm = Rlansp("1", uplo.elems, n, a, rwork);
-                srnamt = "DSPCON";
+                srnamt = "Rspcon";
                 Rspcon(uplo.elems, n, afac, iwork, anorm, rcond, work, &iwork[(n + 1) - 1], info);
                 //
                 // Check error code from Rspcon.
                 //
                 if (info != 0) {
-                    Alaerh(path, "DSPCON", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                    Alaerh(path, "Rspcon", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                 }
                 //
                 result[8 - 1] = Rget06(rcond, rcondc);

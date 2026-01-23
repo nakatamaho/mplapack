@@ -237,9 +237,9 @@ void Rdrvrfp(INTEGER const nout, INTEGER const nn, INTEGER *nval, INTEGER const 
                         Rlacpy(uplo.elems, n, n, a, lda, afac, lda);
                         Rlacpy("Full", n, nrhs, b, ldb, x, ldb);
                         //
-                        srnamt = "DTRTTF";
+                        srnamt = "Rtrttf";
                         Rtrttf(cform.elems, uplo.elems, n, afac, lda, arf, info);
-                        srnamt = "DPFTRF";
+                        srnamt = "Rpftrf";
                         Rpftrf(cform.elems, uplo.elems, n, arf, info);
                         //
                         // Check error code from Rpftrf.
@@ -260,10 +260,10 @@ void Rdrvrfp(INTEGER const nout, INTEGER const nn, INTEGER *nval, INTEGER const 
                             goto statement_100;
                         }
                         //
-                        srnamt = "DPFTRS";
+                        srnamt = "Rpftrs";
                         Rpftrs(cform.elems, uplo.elems, n, nrhs, arf, x, ldb, info);
                         //
-                        srnamt = "DTFTTR";
+                        srnamt = "Rtfttr";
                         Rtfttr(cform.elems, uplo.elems, n, arf, afac, lda, info);
                         //
                         // Reconstruct matrix from factors and compute
@@ -281,16 +281,16 @@ void Rdrvrfp(INTEGER const nout, INTEGER const nn, INTEGER *nval, INTEGER const 
                             Rlacpy("A", n, (n + 1) / 2, arf, n, arfinv, n);
                         }
                         //
-                        srnamt = "DPFTRI";
+                        srnamt = "Rpftri";
                         Rpftri(cform.elems, uplo.elems, n, arfinv, info);
                         //
-                        srnamt = "DTFTTR";
+                        srnamt = "Rtfttr";
                         Rtfttr(cform.elems, uplo.elems, n, arfinv, ainv, lda, info);
                         //
                         // Check error code from Rpftri.
                         //
                         if (info != 0) {
-                            Alaerh("DPO", "DPFTRI", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                            Alaerh("DPO", "Rpftri", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                         }
                         //
                         Rpot03(uplo, n, a, lda, ainv, lda, d_temp_dpot03, lda, d_work_dpot03, rcondc, result[2 - 1]);

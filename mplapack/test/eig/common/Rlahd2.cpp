@@ -311,7 +311,7 @@ void Rlahd2(INTEGER const iounit, fem::str_cref path) {
                           "'  | A Z - B Z D | / ( |A| |Z| n ulp )     ',/,"
                           "' 6 = DSBGV, with ITYPE=1 and UPLO=''L'':',"
                           "'  | A Z - B Z D | / ( |A| |Z| n ulp )     ')");
-            write(iounit, "(' 7 = DSYGV, with ITYPE=2 and UPLO=''U'':',"
+            write(iounit, "(' 7 = Rsygv, with ITYPE=2 and UPLO=''U'':',"
                           "'  | A B Z - Z D | / ( |A| |Z| n ulp )     ',/,"
                           "' 8 = DSPGV, with ITYPE=2 and UPLO=''U'':',"
                           "'  | A B Z - Z D | / ( |A| |Z| n ulp )     ',/,"
@@ -358,7 +358,7 @@ void Rlahd2(INTEGER const iounit, fem::str_cref path) {
                           "'  | A Z - B Z D | / ( |A| |Z| n ulp )     ',/,"
                           "' 6 = ZHBGV, with ITYPE=1 and UPLO=''L'':',"
                           "'  | A Z - B Z D | / ( |A| |Z| n ulp )     ')");
-            write(iounit, "(' 7 = ZHEGV, with ITYPE=2 and UPLO=''U'':',"
+            write(iounit, "(' 7 = Chegv, with ITYPE=2 and UPLO=''U'':',"
                           "'  | A B Z - Z D | / ( |A| |Z| n ulp )     ',/,"
                           "' 8 = ZHPGV, with ITYPE=2 and UPLO=''U'':',"
                           "'  | A B Z - Z D | / ( |A| |Z| n ulp )     ',/,"

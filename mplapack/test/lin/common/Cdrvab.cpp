@@ -168,7 +168,7 @@ void Cdrvab(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nns, IN
                 srnamt = "ZLARHS";
                 Clarhs(path, xtype, " ", trans, n, n, kl, ku, nrhs, a, lda, x, lda, b, lda, iseed, info);
                 //
-                srnamt = "ZCGESV";
+                srnamt = "Ccgesv";
                 //
                 kase++;
                 //

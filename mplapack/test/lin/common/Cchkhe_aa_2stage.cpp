@@ -278,7 +278,7 @@ void Cchkhe_aa_2stage(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER con
                     // the block structure of D. AINV is a work array for
                     // block factorization, LWORK is the length of AINV.
                     //
-                    srnamt = "ZHETRF_AA_2STAGE";
+                    srnamt = "Chetrf_aa_2stage";
                     lwork = min(n * nb, 3 * nmax * nmax);
                     Chetrf_aa_2stage(uplo.elems, n, afac, lda, ainv, (3 * nb + 1) * n, iwork, &iwork[(1 + n) - 1], work, lwork, info);
                     //
@@ -305,7 +305,7 @@ void Cchkhe_aa_2stage(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER con
                     // Check error code from CHETRF and handle error.
                     //
                     if (info != k) {
-                        Alaerh(path, "ZHETRF_AA_2STAGE", info, k, uplo, n, n, -1, -1, nb, imat, nfail, nerrs, nout);
+                        Alaerh(path, "Chetrf_aa_2stage", info, k, uplo, n, n, -1, -1, nb, imat, nfail, nerrs, nout);
                     }
                     //
                     // +    TEST 1
@@ -354,7 +354,7 @@ void Cchkhe_aa_2stage(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER con
                         Clarhs(matpath, xtype, uplo, " ", n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
                         Clacpy("Full", n, nrhs, b, lda, x, lda);
                         //
-                        srnamt = "ZHETRS_AA_2STAGE";
+                        srnamt = "Chetrs_aa_2stage";
                         lwork = max((INTEGER)1, 3 * n - 2);
                         Chetrs_aa_2stage(uplo.elems, n, nrhs, afac, lda, ainv, (3 * nb + 1) * n, iwork, &iwork[(1 + n) - 1], x, lda, info);
                         //
@@ -362,7 +362,7 @@ void Cchkhe_aa_2stage(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER con
                         //
                         if (info != 0) {
                             if (izero == 0) {
-                                Alaerh(path, "ZHETRS_AA_2STAGE", info, 0, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                                Alaerh(path, "Chetrs_aa_2stage", info, 0, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                             }
                         } else {
                             //

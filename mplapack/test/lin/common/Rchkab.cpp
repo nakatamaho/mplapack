@@ -108,7 +108,7 @@ void program_dchkab(int argc, char const *argv[]) {
     // Report values of parameters.
     //
     ilaver(vers_major, vers_minor, vers_patch);
-    write(nout, "(' Tests of the DOUBLE PRECISION LAPACK DSGESV/DSPOSV',' routines ',/,"
+    write(nout, "(' Tests of the DOUBLE PRECISION LAPACK Rsgesv/Rsposv',' routines ',/,"
                 "' LAPACK VERSION ',i1,'.',i1,'.',i1,/,/,"
                 "' The following parameter values will be used:')"),
         vers_major, vers_minor, vers_patch;
@@ -296,7 +296,7 @@ statement_130:
         if (tstdrv) {
             Rdrvab(dotype, nm, mval, nns, nsval, thresh, lda, &a[0], &a[(2 - 1) * lda], &b[0], &b[(2 - 1) * ldb], work, rwork, swork, iwork, nout);
         } else {
-            write(nout, format_9989), "DSGESV";
+            write(nout, format_9989), "Rsgesv";
         }
         //
     } else if (Mlsamen(2, c2.elems, "PO")) {

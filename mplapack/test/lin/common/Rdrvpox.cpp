@@ -323,13 +323,13 @@ void Rdrvpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                             Rlacpy(uplo.elems, n, n, a, lda, afac, lda);
                             Rlacpy("Full", n, nrhs, b, lda, x, lda);
                             //
-                            srnamt = "DPOSV ";
+                            srnamt = "Rposv";
                             Rposv(uplo.elems, n, nrhs, afac, lda, x, lda, info);
                             //
                             // Check error code from Rposv .
                             //
                             if (info != izero) {
-                                Alaerh(path, "DPOSV ", info, izero, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                                Alaerh(path, "Rposv", info, izero, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                                 goto statement_70;
                             } else if (info != 0) {
                                 goto statement_70;
@@ -385,13 +385,13 @@ void Rdrvpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         // Solve the system and compute the condition number
                         // and error bounds using Rposvx.
                         //
-                        srnamt = "DPOSVX";
+                        srnamt = "Rposvx";
                         Rposvx(fact.elems, uplo.elems, n, nrhs, a, lda, afac, lda, equed.elems, s, b, lda, x, lda, rcond, rwork, &rwork[(nrhs + 1) - 1], work, iwork, info);
                         //
                         // Check the error code from Rposvx.
                         //
                         if (info != izero) {
-                            Alaerh(path, "DPOSVX", info, izero, fact + uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                            Alaerh(path, "Rposvx", info, izero, fact + uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                             goto statement_90;
                         }
                         //
@@ -442,9 +442,9 @@ void Rdrvpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                     Aladhd(nout, path);
                                 }
                                 if (prefac) {
-                                    write(nout, format_9997), "DPOSVX", fact, uplo, n, equed, imat, k, result[k - 1];
+                                    write(nout, format_9997), "Rposvx", fact, uplo, n, equed, imat, k, result[k - 1];
                                 } else {
-                                    write(nout, format_9998), "DPOSVX", fact, uplo, n, imat, k, result[k - 1];
+                                    write(nout, format_9998), "Rposvx", fact, uplo, n, imat, k, result[k - 1];
                                 }
                                 nfail++;
                             }
@@ -473,7 +473,7 @@ void Rdrvpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         // Solve the system and compute the condition number
                         // and error bounds using Rposvxx.
                         //
-                        srnamt = "DPOSVXX";
+                        srnamt = "Rposvxx";
                         n_err_bnds = 3;
                         Rposvxx(fact, uplo, n, nrhs, a, lda, afac, lda, equed, s, b, lda, x, lda, rcond, rpvgrw_svxx, berr, n_err_bnds, errbnds_n, errbnds_c, 0, zero, work, iwork, info);
                         //
@@ -483,7 +483,7 @@ void Rdrvpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                             goto statement_90;
                         }
                         if (info != izero) {
-                            Alaerh(path, "DPOSVXX", info, izero, fact + uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                            Alaerh(path, "Rposvxx", info, izero, fact + uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                             goto statement_90;
                         }
                         //
@@ -534,9 +534,9 @@ void Rdrvpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                     Aladhd(nout, path);
                                 }
                                 if (prefac) {
-                                    write(nout, format_9997), "DPOSVXX", fact, uplo, n, equed, imat, k, result[k - 1];
+                                    write(nout, format_9997), "Rposvxx", fact, uplo, n, equed, imat, k, result[k - 1];
                                 } else {
-                                    write(nout, format_9998), "DPOSVXX", fact, uplo, n, imat, k, result[k - 1];
+                                    write(nout, format_9998), "Rposvxx", fact, uplo, n, imat, k, result[k - 1];
                                 }
                                 nfail++;
                             }

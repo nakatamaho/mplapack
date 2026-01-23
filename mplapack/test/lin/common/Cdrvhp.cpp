@@ -303,7 +303,7 @@ void Cdrvhp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         //
                         // Factor the matrix and solve the system using Chpsv.
                         //
-                        srnamt = "ZHPSV ";
+                        srnamt = "Chpsv";
                         Chpsv(uplo.elems, n, nrhs, afac, iwork, x, lda, info);
                         //
                         // Adjust the expected value of INFO to account for
@@ -326,7 +326,7 @@ void Cdrvhp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         // Check error code from Chpsv .
                         //
                         if (info != k) {
-                            Alaerh(path, "ZHPSV ", info, k, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                            Alaerh(path, "Chpsv", info, k, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                             goto statement_120;
                         } else if (info != 0) {
                             goto statement_120;
@@ -375,7 +375,7 @@ void Cdrvhp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                     // Solve the system and compute the condition number and
                     // error bounds using Chpsvx.
                     //
-                    srnamt = "ZHPSVX";
+                    srnamt = "Chpsvx";
                     Chpsvx(fact.elems, uplo.elems, n, nrhs, a, afac, iwork, b, lda, x, lda, rcond, rwork, &rwork[(nrhs + 1) - 1], work, &rwork[(2 * nrhs + 1) - 1], info);
                     //
                     // Adjust the expected value of INFO to account for
@@ -398,7 +398,7 @@ void Cdrvhp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                     // Check the error code from Chpsvx.
                     //
                     if (info != k) {
-                        Alaerh(path, "ZHPSVX", info, k, fact + uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                        Alaerh(path, "Chpsvx", info, k, fact + uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                         goto statement_150;
                     }
                     //

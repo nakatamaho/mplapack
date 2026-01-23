@@ -55,7 +55,7 @@ void Rqrt02(INTEGER const m, INTEGER const n, INTEGER const k, REAL *a, REAL *af
     //
     // Generate the first n columns of the matrix Q
     //
-    srnamt = "DORGQR";
+    srnamt = "Rorgqr";
     INTEGER info = 0;
     Rorgqr(m, n, k, q, lda, tau, work, lwork, info);
     //

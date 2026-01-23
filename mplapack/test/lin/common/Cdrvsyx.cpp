@@ -312,7 +312,7 @@ void Cdrvsy(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         //
                         // Factor the matrix and solve the system using Csysv.
                         //
-                        srnamt = "ZSYSV ";
+                        srnamt = "Csysv";
                         Csysv(uplo.elems, n, nrhs, afac, lda, iwork, x, lda, work, lwork, info);
                         //
                         // Adjust the expected value of INFO to account for
@@ -335,7 +335,7 @@ void Cdrvsy(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         // Check error code from Csysv .
                         //
                         if (info != k) {
-                            Alaerh(path, "ZSYSV ", info, k, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                            Alaerh(path, "Csysv", info, k, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                             goto statement_120;
                         } else if (info != 0) {
                             goto statement_120;
@@ -384,7 +384,7 @@ void Cdrvsy(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                     // Solve the system and compute the condition number and
                     // error bounds using Csysvx.
                     //
-                    srnamt = "ZSYSVX";
+                    srnamt = "Csysvx";
                     Csysvx(fact.elems, uplo.elems, n, nrhs, a, lda, afac, lda, iwork, b, lda, x, lda, rcond, rwork, &rwork[(nrhs + 1) - 1], work, lwork, &rwork[(2 * nrhs + 1) - 1], info);
                     //
                     // Adjust the expected value of INFO to account for
@@ -407,7 +407,7 @@ void Cdrvsy(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                     // Check the error code from Csysvx.
                     //
                     if (info != k) {
-                        Alaerh(path, "ZSYSVX", info, k, fact + uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                        Alaerh(path, "Csysvx", info, k, fact + uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                         goto statement_150;
                     }
                     //
@@ -452,7 +452,7 @@ void Cdrvsy(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                             if (nfail == 0 && nerrs == 0) {
                                 Aladhd(nout, path);
                             }
-                            write(nout, format_9998), "ZSYSVX", fact, uplo, n, imat, k, result[k - 1];
+                            write(nout, format_9998), "Csysvx", fact, uplo, n, imat, k, result[k - 1];
                             nfail++;
                         }
                     }
@@ -470,7 +470,7 @@ void Cdrvsy(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                     // Solve the system and compute the condition number
                     // and error bounds using Csysvxx.
                     //
-                    srnamt = "ZSYSVXX";
+                    srnamt = "Csysvxx";
                     n_err_bnds = 3;
                     equed = "N";
                     Csysvxx(fact, uplo, n, nrhs, a, lda, afac, lda, iwork, equed, work[(n + 1) - 1], b, lda, x, lda, rcond, rpvgrw_svxx, berr, n_err_bnds, errbnds_n, errbnds_c, 0, zero, work, rwork, info);
@@ -495,7 +495,7 @@ void Cdrvsy(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                     // Check the error code from Csysvxx.
                     //
                     if (info != k && info <= n) {
-                        Alaerh(path, "ZSYSVXX", info, k, fact + uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                        Alaerh(path, "Csysvxx", info, k, fact + uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                         goto statement_150;
                     }
                     //
@@ -541,7 +541,7 @@ void Cdrvsy(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                             if (nfail == 0 && nerrs == 0) {
                                 Aladhd(nout, path);
                             }
-                            write(nout, format_9998), "ZSYSVXX", fact, uplo, n, imat, k, result[k - 1];
+                            write(nout, format_9998), "Csysvxx", fact, uplo, n, imat, k, result[k - 1];
                             nfail++;
                         }
                     }

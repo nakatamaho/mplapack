@@ -313,13 +313,13 @@ void Cchkgb(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                             if (m > 0 && n > 0) {
                                 Clacpy("Full", kl + ku + 1, n, a, lda, &afac[(kl + 1) - 1], ldafac);
                             }
-                            srnamt = "ZGBTRF";
+                            srnamt = "Cgbtrf";
                             Cgbtrf(m, n, kl, ku, afac, ldafac, iwork, info);
                             //
                             // Check error code from Cgbtrf.
                             //
                             if (info != izero) {
-                                Alaerh(path, "ZGBTRF", info, izero, " ", m, n, kl, ku, nb, imat, nfail, nerrs, nout);
+                                Alaerh(path, "Cgbtrf", info, izero, " ", m, n, kl, ku, nb, imat, nfail, nerrs, nout);
                             }
                             trfcon = false;
                             //
@@ -360,7 +360,7 @@ void Cchkgb(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                 //
                                 ldb = max((INTEGER)1, n);
                                 Claset("Full", n, n, COMPLEX(zero), COMPLEX(one), work, ldb);
-                                srnamt = "ZGBTRS";
+                                srnamt = "Cgbtrs";
                                 Cgbtrs("No transpose", n, kl, ku, n, afac, ldafac, iwork, work, ldb, info);
                                 //
                                 // Compute the 1-norm condition number of A.
@@ -418,13 +418,13 @@ void Cchkgb(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                     xtype = "C";
                                     Clacpy("Full", n, nrhs, b, ldb, x, ldb);
                                     //
-                                    srnamt = "ZGBTRS";
+                                    srnamt = "Cgbtrs";
                                     Cgbtrs(trans.elems, n, kl, ku, nrhs, afac, ldafac, iwork, x, ldb, info);
                                     //
                                     // Check error code from Cgbtrs.
                                     //
                                     if (info != 0) {
-                                        Alaerh(path, "ZGBTRS", info, 0, trans, n, n, kl, ku, -1, imat, nfail, nerrs, nout);
+                                        Alaerh(path, "Cgbtrs", info, 0, trans, n, n, kl, ku, -1, imat, nfail, nerrs, nout);
                                     }
                                     //
                                     Clacpy("Full", n, nrhs, b, ldb, work, ldb);
@@ -440,13 +440,13 @@ void Cchkgb(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                     // Use iterative refinement to improve the
                                     // solution.
                                     //
-                                    srnamt = "ZGBRFS";
+                                    srnamt = "Cgbrfs";
                                     Cgbrfs(trans.elems, n, kl, ku, nrhs, a, lda, afac, ldafac, iwork, b, ldb, x, ldb, rwork, &rwork[(nrhs + 1) - 1], work, &rwork[(2 * nrhs + 1) - 1], info);
                                     //
                                     // Check error code from Cgbrfs.
                                     //
                                     if (info != 0) {
-                                        Alaerh(path, "ZGBRFS", info, 0, trans, n, n, kl, ku, nrhs, imat, nfail, nerrs, nout);
+                                        Alaerh(path, "Cgbrfs", info, 0, trans, n, n, kl, ku, nrhs, imat, nfail, nerrs, nout);
                                     }
                                     //
                                     Cget04(n, nrhs, x, ldb, xact, ldb, rcondc, result[4 - 1]);
@@ -484,13 +484,13 @@ void Cchkgb(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                     rcondc = rcondi;
                                     norm = "I";
                                 }
-                                srnamt = "ZGBCON";
+                                srnamt = "Cgbcon";
                                 Cgbcon(norm.elems, n, kl, ku, afac, ldafac, iwork, anorm, rcond, work, rwork, info);
                                 //
                                 // Check error code from Cgbcon.
                                 //
                                 if (info != 0) {
-                                    Alaerh(path, "ZGBCON", info, 0, norm, n, n, kl, ku, -1, imat, nfail, nerrs, nout);
+                                    Alaerh(path, "Cgbcon", info, 0, norm, n, n, kl, ku, -1, imat, nfail, nerrs, nout);
                                 }
                                 //
                                 result[7 - 1] = Rget06(rcond, rcondc);

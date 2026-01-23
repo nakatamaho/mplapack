@@ -68,22 +68,22 @@ void Cerrtz(fem::str_cref path, INTEGER const nunit) {
         //
         // Ctzrzf
         //
-        srnamt = "ZTZRZF";
+        srnamt = "Ctzrzf";
         infot = 1;
         Ctzrzf(-1, 0, a, 1, tau, w, 1, info);
-        Chkxer("ZTZRZF", infot, nout, lerr, ok);
+        Chkxer("Ctzrzf", infot, nout, lerr, ok);
         infot = 2;
         Ctzrzf(1, 0, a, 1, tau, w, 1, info);
-        Chkxer("ZTZRZF", infot, nout, lerr, ok);
+        Chkxer("Ctzrzf", infot, nout, lerr, ok);
         infot = 4;
         Ctzrzf(2, 2, a, 1, tau, w, 1, info);
-        Chkxer("ZTZRZF", infot, nout, lerr, ok);
+        Chkxer("Ctzrzf", infot, nout, lerr, ok);
         infot = 7;
         Ctzrzf(2, 2, a, 2, tau, w, 0, info);
-        Chkxer("ZTZRZF", infot, nout, lerr, ok);
+        Chkxer("Ctzrzf", infot, nout, lerr, ok);
         infot = 7;
         Ctzrzf(2, 3, a, 2, tau, w, 1, info);
-        Chkxer("ZTZRZF", infot, nout, lerr, ok);
+        Chkxer("Ctzrzf", infot, nout, lerr, ok);
     }
     //
     // Print a summary line.

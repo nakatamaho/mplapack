@@ -182,7 +182,7 @@ statement_10:
 //
 statement_90:
     //
-    write(nout, "(1x,'.. test output of DGGBAL .. ')");
+    write(nout, "(1x,'.. test output of Rggbal.. ')");
     //
     write(nout, "(1x,'value of largest test error            = ',d12.3)"), rmax;
     write(nout, "(1x,'example number where info is not zero  = ',i4)"), lmax[1 - 1];

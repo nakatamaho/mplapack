@@ -364,7 +364,7 @@ void Cchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             Chetrd("U", n, v, ldu, sd, se, tau, work, lwork, iinfo);
             //
             if (iinfo != 0) {
-                write(nounit, format_9999), "ZHETRD(U)", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Chetrd(U)", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     return;
@@ -379,7 +379,7 @@ void Cchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             ntest = 2;
             Cungtr("U", n, u, ldu, tau, work, lwork, iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "ZUNGTR(U)", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Cungtr(U)", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     return;
@@ -403,7 +403,7 @@ void Cchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             Chetrd("L", n, v, ldu, sd, se, tau, work, lwork, iinfo);
             //
             if (iinfo != 0) {
-                write(nounit, format_9999), "ZHETRD(L)", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Chetrd(L)", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     return;
@@ -418,7 +418,7 @@ void Cchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             ntest = 4;
             Cungtr("L", n, u, ldu, tau, work, lwork, iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "ZUNGTR(L)", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Cungtr(L)", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     return;
@@ -449,7 +449,7 @@ void Cchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             Chptrd("U", n, vp, sd, se, tau, iinfo);
             //
             if (iinfo != 0) {
-                write(nounit, format_9999), "ZHPTRD(U)", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Chptrd(U)", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     return;
@@ -462,7 +462,7 @@ void Cchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             ntest = 6;
             Cupgtr("U", n, vp, tau, u, ldu, work, iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "ZUPGTR(U)", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Cupgtr(U)", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     return;
@@ -495,7 +495,7 @@ void Cchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             Chptrd("L", n, vp, sd, se, tau, iinfo);
             //
             if (iinfo != 0) {
-                write(nounit, format_9999), "ZHPTRD(L)", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Chptrd(L)", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     return;
@@ -508,7 +508,7 @@ void Cchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             ntest = 8;
             Cupgtr("L", n, vp, tau, u, ldu, work, iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "ZUPGTR(L)", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Cupgtr(L)", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     return;
@@ -534,7 +534,7 @@ void Cchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             ntest = 9;
             Csteqr("V", n, d1, rwork, z, ldu, &rwork[(n + 1) - 1], iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "ZSTEQR(V)", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Csteqr(V)", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     return;
@@ -554,7 +554,7 @@ void Cchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             ntest = 11;
             Csteqr("N", n, d2, rwork, work, ldu, &rwork[(n + 1) - 1], iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "ZSTEQR(N)", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Csteqr(N)", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     return;
@@ -574,7 +574,7 @@ void Cchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             ntest = 12;
             Rsterf(n, d3, rwork, iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "DSTERF", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Rsterf", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     return;
@@ -638,7 +638,7 @@ void Cchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 ntest = 14;
                 Cpteqr("V", n, d4, rwork, z, ldu, &rwork[(n + 1) - 1], iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "ZPTEQR(V)", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "Cpteqr(V)", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -662,7 +662,7 @@ void Cchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 ntest = 16;
                 Cpteqr("N", n, d5, rwork, z, ldu, &rwork[(n + 1) - 1], iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "ZPTEQR(N)", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "Cpteqr(N)", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -702,7 +702,7 @@ void Cchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 abstol = unfl + unfl;
                 Rstebz("A", "E", n, vl, vu, il, iu, abstol, sd, se, m, nsplit, wr, &iwork[1 - 1], &iwork[(n + 1) - 1], rwork, &iwork[(2 * n + 1) - 1], iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "DSTEBZ(A,rel)", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "Rstebz(A,rel)", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -732,7 +732,7 @@ void Cchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             abstol = unfl + unfl;
             Rstebz("A", "E", n, vl, vu, il, iu, abstol, sd, se, m, nsplit, wa1, &iwork[1 - 1], &iwork[(n + 1) - 1], rwork, &iwork[(2 * n + 1) - 1], iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "DSTEBZ(A)", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Rstebz(A)", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     return;
@@ -772,7 +772,7 @@ void Cchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             //
             Rstebz("I", "E", n, vl, vu, il, iu, abstol, sd, se, m2, nsplit, wa2, &iwork[1 - 1], &iwork[(n + 1) - 1], rwork, &iwork[(2 * n + 1) - 1], iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "DSTEBZ(I)", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Rstebz(I)", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     return;
@@ -803,7 +803,7 @@ void Cchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             //
             Rstebz("V", "E", n, vl, vu, il, iu, abstol, sd, se, m3, nsplit, wa3, &iwork[1 - 1], &iwork[(n + 1) - 1], rwork, &iwork[(2 * n + 1) - 1], iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "DSTEBZ(V)", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Rstebz(V)", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     return;
@@ -837,7 +837,7 @@ void Cchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             ntest = 21;
             Rstebz("A", "B", n, vl, vu, il, iu, abstol, sd, se, m, nsplit, wa1, &iwork[1 - 1], &iwork[(n + 1) - 1], rwork, &iwork[(2 * n + 1) - 1], iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "DSTEBZ(A,B)", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Rstebz(A,B)", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     return;
@@ -850,7 +850,7 @@ void Cchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             //
             Cstein(n, sd, se, m, wa1, &iwork[1 - 1], &iwork[(n + 1) - 1], z, ldu, rwork, &iwork[(2 * n + 1) - 1], &iwork[(3 * n + 1) - 1], iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "ZSTEIN", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Cstein", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     return;
@@ -880,7 +880,7 @@ void Cchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             ntest = 22;
             Cstedc("I", n, d1, &rwork[inde - 1], z, ldu, work, lwedc, &rwork[indrwk - 1], lrwedc, iwork, liwedc, iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "ZSTEDC(I)", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Cstedc(I)", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     return;
@@ -907,7 +907,7 @@ void Cchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             ntest = 24;
             Cstedc("V", n, d1, &rwork[inde - 1], z, ldu, work, lwedc, &rwork[indrwk - 1], lrwedc, iwork, liwedc, iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "ZSTEDC(V)", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Cstedc(V)", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     return;
@@ -934,7 +934,7 @@ void Cchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             ntest = 26;
             Cstedc("N", n, d2, &rwork[inde - 1], z, ldu, work, lwedc, &rwork[indrwk - 1], lrwedc, iwork, liwedc, iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "ZSTEDC(N)", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Cstedc(N)", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     return;
@@ -974,7 +974,7 @@ void Cchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     abstol = unfl + unfl;
                     Cstemr("V", "A", n, sd, se, vl, vu, il, iu, m, wr, z, ldu, n, &iwork[1 - 1], tryrac, rwork, lrwork, &iwork[(2 * n + 1) - 1], lwork - 2 * n, iinfo);
                     if (iinfo != 0) {
-                        write(nounit, format_9999), "ZSTEMR(V,A,rel)", iinfo, n, jtype, ioldsd;
+                        write(nounit, format_9999), "Cstemr(V,A,rel)", iinfo, n, jtype, ioldsd;
                         info = abs(iinfo);
                         if (iinfo < 0) {
                             return;
@@ -1009,7 +1009,7 @@ void Cchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                         Cstemr("V", "I", n, sd, se, vl, vu, il, iu, m, wr, z, ldu, n, &iwork[1 - 1], tryrac, rwork, lrwork, &iwork[(2 * n + 1) - 1], lwork - 2 * n, iinfo);
                         //
                         if (iinfo != 0) {
-                            write(nounit, format_9999), "ZSTEMR(V,I,rel)", iinfo, n, jtype, ioldsd;
+                            write(nounit, format_9999), "Cstemr(V,I,rel)", iinfo, n, jtype, ioldsd;
                             info = abs(iinfo);
                             if (iinfo < 0) {
                                 return;
@@ -1058,7 +1058,7 @@ void Cchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     }
                     Cstemr("V", "I", n, d5, rwork, vl, vu, il, iu, m, d1, z, ldu, n, &iwork[1 - 1], tryrac, &rwork[(n + 1) - 1], lrwork - n, &iwork[(2 * n + 1) - 1], liwork - 2 * n, iinfo);
                     if (iinfo != 0) {
-                        write(nounit, format_9999), "ZSTEMR(V,I)", iinfo, n, jtype, ioldsd;
+                        write(nounit, format_9999), "Cstemr(V,I)", iinfo, n, jtype, ioldsd;
                         info = abs(iinfo);
                         if (iinfo < 0) {
                             return;
@@ -1082,7 +1082,7 @@ void Cchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     ntest = 31;
                     Cstemr("N", "I", n, d5, rwork, vl, vu, il, iu, m, d2, z, ldu, n, &iwork[1 - 1], tryrac, &rwork[(n + 1) - 1], lrwork - n, &iwork[(2 * n + 1) - 1], liwork - 2 * n, iinfo);
                     if (iinfo != 0) {
-                        write(nounit, format_9999), "ZSTEMR(N,I)", iinfo, n, jtype, ioldsd;
+                        write(nounit, format_9999), "Cstemr(N,I)", iinfo, n, jtype, ioldsd;
                         info = abs(iinfo);
                         if (iinfo < 0) {
                             return;
@@ -1134,7 +1134,7 @@ void Cchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     //
                     Cstemr("V", "V", n, d5, rwork, vl, vu, il, iu, m, d1, z, ldu, m, &iwork[1 - 1], tryrac, &rwork[(n + 1) - 1], lrwork - n, &iwork[(2 * n + 1) - 1], liwork - 2 * n, iinfo);
                     if (iinfo != 0) {
-                        write(nounit, format_9999), "ZSTEMR(V,V)", iinfo, n, jtype, ioldsd;
+                        write(nounit, format_9999), "Cstemr(V,V)", iinfo, n, jtype, ioldsd;
                         info = abs(iinfo);
                         if (iinfo < 0) {
                             return;
@@ -1160,7 +1160,7 @@ void Cchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     ntest = 34;
                     Cstemr("N", "V", n, d5, rwork, vl, vu, il, iu, m, d2, z, ldu, n, &iwork[1 - 1], tryrac, &rwork[(n + 1) - 1], lrwork - n, &iwork[(2 * n + 1) - 1], liwork - 2 * n, iinfo);
                     if (iinfo != 0) {
-                        write(nounit, format_9999), "ZSTEMR(N,V)", iinfo, n, jtype, ioldsd;
+                        write(nounit, format_9999), "Cstemr(N,V)", iinfo, n, jtype, ioldsd;
                         info = abs(iinfo);
                         if (iinfo < 0) {
                             return;
@@ -1203,7 +1203,7 @@ void Cchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 //
                 Cstemr("V", "A", n, d5, rwork, vl, vu, il, iu, m, d1, z, ldu, n, &iwork[1 - 1], tryrac, &rwork[(n + 1) - 1], lrwork - n, &iwork[(2 * n + 1) - 1], liwork - 2 * n, iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "ZSTEMR(V,A)", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "Cstemr(V,A)", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -1229,7 +1229,7 @@ void Cchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 ntest = 37;
                 Cstemr("N", "A", n, d5, rwork, vl, vu, il, iu, m, d2, z, ldu, n, &iwork[1 - 1], tryrac, &rwork[(n + 1) - 1], lrwork - n, &iwork[(2 * n + 1) - 1], liwork - 2 * n, iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "ZSTEMR(N,A)", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "Cstemr(N,A)", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;

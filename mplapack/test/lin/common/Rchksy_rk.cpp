@@ -288,7 +288,7 @@ void Rchksy_rk(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
                     // block factorization, LWORK is the length of AINV.
                     //
                     lwork = max((INTEGER)2, nb) * lda;
-                    srnamt = "DSYTRF_RK";
+                    srnamt = "Rsytrf_rk";
                     Rsytrf_rk(uplo.elems, n, afac, lda, e, iwork, ainv, lwork, info);
                     //
                     // Adjust the expected value of INFO to account for
@@ -311,7 +311,7 @@ void Rchksy_rk(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
                     // Check error code from Rsytrf_rk and handle error.
                     //
                     if (info != k) {
-                        Alaerh(path, "DSYTRF_RK", info, k, uplo, n, n, -1, -1, nb, imat, nfail, nerrs, nout);
+                        Alaerh(path, "Rsytrf_rk", info, k, uplo, n, n, -1, -1, nb, imat, nfail, nerrs, nout);
                     }
                     //
                     // Set the condition estimate flag if the INFO is not 0.
@@ -336,7 +336,7 @@ void Rchksy_rk(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
                     //
                     if (inb == 1 && !trfcon) {
                         Rlacpy(uplo.elems, n, n, afac, lda, ainv, lda);
-                        srnamt = "DSYTRI_3";
+                        srnamt = "Rsytri_3";
                         //
                         // Another reason that we need to compute the inverse
                         // is that Rpot03 produces RCONDC which is used later
@@ -348,7 +348,7 @@ void Rchksy_rk(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
                         // Check error code from Rsytri_3 and handle error.
                         //
                         if (info != 0) {
-                            Alaerh(path, "DSYTRI_3", info, -1, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                            Alaerh(path, "Rsytri_3", info, -1, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                         }
                         //
                         // Compute the residual for a symmetric matrix times
@@ -597,13 +597,13 @@ void Rchksy_rk(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
                         Rlarhs(matpath, xtype, uplo, " ", n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
                         Rlacpy("Full", n, nrhs, b, lda, x, lda);
                         //
-                        srnamt = "DSYTRS_3";
+                        srnamt = "Rsytrs_3";
                         Rsytrs_3(uplo.elems, n, nrhs, afac, lda, e, iwork, x, lda, info);
                         //
                         // Check error code from Rsytrs_3 and handle error.
                         //
                         if (info != 0) {
-                            Alaerh(path, "DSYTRS_3", info, 0, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                            Alaerh(path, "Rsytrs_3", info, 0, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                         }
                         //
                         Rlacpy("Full", n, nrhs, b, lda, work, lda);
@@ -642,13 +642,13 @@ void Rchksy_rk(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
                 //
                 statement_230:
                     anorm = Rlansy("1", uplo.elems, n, a, lda, rwork);
-                    srnamt = "DSYCON_3";
+                    srnamt = "Rsycon_3";
                     Rsycon_3(uplo.elems, n, afac, lda, e, iwork, anorm, rcond, work, &iwork[(n + 1) - 1], info);
                     //
                     // Check error code from Rsycon_3 and handle error.
                     //
                     if (info != 0) {
-                        Alaerh(path, "DSYCON_3", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                        Alaerh(path, "Rsycon_3", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                     }
                     //
                     // Compute the test ratio to compare to values of RCOND

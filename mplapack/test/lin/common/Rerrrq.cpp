@@ -75,33 +75,33 @@ void Rerrrq(fem::str_cref path, INTEGER const nunit) {
     //
     // Rgerqf
     //
-    srnamt = "DGERQF";
+    srnamt = "Rgerqf";
     infot = 1;
     INTEGER info = 0;
     Rgerqf(-1, 0, a, 1, b, w, 1, info);
-    Chkxer("DGERQF", infot, nout, lerr, ok);
+    Chkxer("Rgerqf", infot, nout, lerr, ok);
     infot = 2;
     Rgerqf(0, -1, a, 1, b, w, 1, info);
-    Chkxer("DGERQF", infot, nout, lerr, ok);
+    Chkxer("Rgerqf", infot, nout, lerr, ok);
     infot = 4;
     Rgerqf(2, 1, a, 1, b, w, 2, info);
-    Chkxer("DGERQF", infot, nout, lerr, ok);
+    Chkxer("Rgerqf", infot, nout, lerr, ok);
     infot = 7;
     Rgerqf(2, 1, a, 2, b, w, 1, info);
-    Chkxer("DGERQF", infot, nout, lerr, ok);
+    Chkxer("Rgerqf", infot, nout, lerr, ok);
     //
     // Rgerq2
     //
-    srnamt = "DGERQ2";
+    srnamt = "Rgerq2";
     infot = 1;
     Rgerq2(-1, 0, a, 1, b, w, info);
-    Chkxer("DGERQ2", infot, nout, lerr, ok);
+    Chkxer("Rgerq2", infot, nout, lerr, ok);
     infot = 2;
     Rgerq2(0, -1, a, 1, b, w, info);
-    Chkxer("DGERQ2", infot, nout, lerr, ok);
+    Chkxer("Rgerq2", infot, nout, lerr, ok);
     infot = 4;
     Rgerq2(2, 1, a, 1, b, w, info);
-    Chkxer("DGERQ2", infot, nout, lerr, ok);
+    Chkxer("Rgerq2", infot, nout, lerr, ok);
     //
     // Rgerqs
     //
@@ -130,124 +130,124 @@ void Rerrrq(fem::str_cref path, INTEGER const nunit) {
     //
     // Rorgrq
     //
-    srnamt = "DORGRQ";
+    srnamt = "Rorgrq";
     infot = 1;
     Rorgrq(-1, 0, 0, a, 1, x, w, 1, info);
-    Chkxer("DORGRQ", infot, nout, lerr, ok);
+    Chkxer("Rorgrq", infot, nout, lerr, ok);
     infot = 2;
     Rorgrq(0, -1, 0, a, 1, x, w, 1, info);
-    Chkxer("DORGRQ", infot, nout, lerr, ok);
+    Chkxer("Rorgrq", infot, nout, lerr, ok);
     infot = 2;
     Rorgrq(2, 1, 0, a, 2, x, w, 2, info);
-    Chkxer("DORGRQ", infot, nout, lerr, ok);
+    Chkxer("Rorgrq", infot, nout, lerr, ok);
     infot = 3;
     Rorgrq(0, 0, -1, a, 1, x, w, 1, info);
-    Chkxer("DORGRQ", infot, nout, lerr, ok);
+    Chkxer("Rorgrq", infot, nout, lerr, ok);
     infot = 3;
     Rorgrq(1, 2, 2, a, 1, x, w, 1, info);
-    Chkxer("DORGRQ", infot, nout, lerr, ok);
+    Chkxer("Rorgrq", infot, nout, lerr, ok);
     infot = 5;
     Rorgrq(2, 2, 0, a, 1, x, w, 2, info);
-    Chkxer("DORGRQ", infot, nout, lerr, ok);
+    Chkxer("Rorgrq", infot, nout, lerr, ok);
     infot = 8;
     Rorgrq(2, 2, 0, a, 2, x, w, 1, info);
-    Chkxer("DORGRQ", infot, nout, lerr, ok);
+    Chkxer("Rorgrq", infot, nout, lerr, ok);
     //
     // Rorgr2
     //
-    srnamt = "DORGR2";
+    srnamt = "Rorgr2";
     infot = 1;
     Rorgr2(-1, 0, 0, a, 1, x, w, info);
-    Chkxer("DORGR2", infot, nout, lerr, ok);
+    Chkxer("Rorgr2", infot, nout, lerr, ok);
     infot = 2;
     Rorgr2(0, -1, 0, a, 1, x, w, info);
-    Chkxer("DORGR2", infot, nout, lerr, ok);
+    Chkxer("Rorgr2", infot, nout, lerr, ok);
     infot = 2;
     Rorgr2(2, 1, 0, a, 2, x, w, info);
-    Chkxer("DORGR2", infot, nout, lerr, ok);
+    Chkxer("Rorgr2", infot, nout, lerr, ok);
     infot = 3;
     Rorgr2(0, 0, -1, a, 1, x, w, info);
-    Chkxer("DORGR2", infot, nout, lerr, ok);
+    Chkxer("Rorgr2", infot, nout, lerr, ok);
     infot = 3;
     Rorgr2(1, 2, 2, a, 2, x, w, info);
-    Chkxer("DORGR2", infot, nout, lerr, ok);
+    Chkxer("Rorgr2", infot, nout, lerr, ok);
     infot = 5;
     Rorgr2(2, 2, 0, a, 1, x, w, info);
-    Chkxer("DORGR2", infot, nout, lerr, ok);
+    Chkxer("Rorgr2", infot, nout, lerr, ok);
     //
     // Rormrq
     //
-    srnamt = "DORMRQ";
+    srnamt = "Rormrq";
     infot = 1;
     Rormrq("/", "N", 0, 0, 0, a, 1, x, af, 1, w, 1, info);
-    Chkxer("DORMRQ", infot, nout, lerr, ok);
+    Chkxer("Rormrq", infot, nout, lerr, ok);
     infot = 2;
     Rormrq("L", "/", 0, 0, 0, a, 1, x, af, 1, w, 1, info);
-    Chkxer("DORMRQ", infot, nout, lerr, ok);
+    Chkxer("Rormrq", infot, nout, lerr, ok);
     infot = 3;
     Rormrq("L", "N", -1, 0, 0, a, 1, x, af, 1, w, 1, info);
-    Chkxer("DORMRQ", infot, nout, lerr, ok);
+    Chkxer("Rormrq", infot, nout, lerr, ok);
     infot = 4;
     Rormrq("L", "N", 0, -1, 0, a, 1, x, af, 1, w, 1, info);
-    Chkxer("DORMRQ", infot, nout, lerr, ok);
+    Chkxer("Rormrq", infot, nout, lerr, ok);
     infot = 5;
     Rormrq("L", "N", 0, 0, -1, a, 1, x, af, 1, w, 1, info);
-    Chkxer("DORMRQ", infot, nout, lerr, ok);
+    Chkxer("Rormrq", infot, nout, lerr, ok);
     infot = 5;
     Rormrq("L", "N", 0, 1, 1, a, 1, x, af, 1, w, 1, info);
-    Chkxer("DORMRQ", infot, nout, lerr, ok);
+    Chkxer("Rormrq", infot, nout, lerr, ok);
     infot = 5;
     Rormrq("R", "N", 1, 0, 1, a, 1, x, af, 1, w, 1, info);
-    Chkxer("DORMRQ", infot, nout, lerr, ok);
+    Chkxer("Rormrq", infot, nout, lerr, ok);
     infot = 7;
     Rormrq("L", "N", 2, 1, 2, a, 1, x, af, 2, w, 1, info);
-    Chkxer("DORMRQ", infot, nout, lerr, ok);
+    Chkxer("Rormrq", infot, nout, lerr, ok);
     infot = 7;
     Rormrq("R", "N", 1, 2, 2, a, 1, x, af, 1, w, 1, info);
-    Chkxer("DORMRQ", infot, nout, lerr, ok);
+    Chkxer("Rormrq", infot, nout, lerr, ok);
     infot = 10;
     Rormrq("L", "N", 2, 1, 0, a, 1, x, af, 1, w, 1, info);
-    Chkxer("DORMRQ", infot, nout, lerr, ok);
+    Chkxer("Rormrq", infot, nout, lerr, ok);
     infot = 12;
     Rormrq("L", "N", 1, 2, 0, a, 1, x, af, 1, w, 1, info);
-    Chkxer("DORMRQ", infot, nout, lerr, ok);
+    Chkxer("Rormrq", infot, nout, lerr, ok);
     infot = 12;
     Rormrq("R", "N", 2, 1, 0, a, 1, x, af, 2, w, 1, info);
-    Chkxer("DORMRQ", infot, nout, lerr, ok);
+    Chkxer("Rormrq", infot, nout, lerr, ok);
     //
     // Rormr2
     //
-    srnamt = "DORMR2";
+    srnamt = "Rormr2";
     infot = 1;
     Rormr2("/", "N", 0, 0, 0, a, 1, x, af, 1, w, info);
-    Chkxer("DORMR2", infot, nout, lerr, ok);
+    Chkxer("Rormr2", infot, nout, lerr, ok);
     infot = 2;
     Rormr2("L", "/", 0, 0, 0, a, 1, x, af, 1, w, info);
-    Chkxer("DORMR2", infot, nout, lerr, ok);
+    Chkxer("Rormr2", infot, nout, lerr, ok);
     infot = 3;
     Rormr2("L", "N", -1, 0, 0, a, 1, x, af, 1, w, info);
-    Chkxer("DORMR2", infot, nout, lerr, ok);
+    Chkxer("Rormr2", infot, nout, lerr, ok);
     infot = 4;
     Rormr2("L", "N", 0, -1, 0, a, 1, x, af, 1, w, info);
-    Chkxer("DORMR2", infot, nout, lerr, ok);
+    Chkxer("Rormr2", infot, nout, lerr, ok);
     infot = 5;
     Rormr2("L", "N", 0, 0, -1, a, 1, x, af, 1, w, info);
-    Chkxer("DORMR2", infot, nout, lerr, ok);
+    Chkxer("Rormr2", infot, nout, lerr, ok);
     infot = 5;
     Rormr2("L", "N", 0, 1, 1, a, 1, x, af, 1, w, info);
-    Chkxer("DORMR2", infot, nout, lerr, ok);
+    Chkxer("Rormr2", infot, nout, lerr, ok);
     infot = 5;
     Rormr2("R", "N", 1, 0, 1, a, 1, x, af, 1, w, info);
-    Chkxer("DORMR2", infot, nout, lerr, ok);
+    Chkxer("Rormr2", infot, nout, lerr, ok);
     infot = 7;
     Rormr2("L", "N", 2, 1, 2, a, 1, x, af, 2, w, info);
-    Chkxer("DORMR2", infot, nout, lerr, ok);
+    Chkxer("Rormr2", infot, nout, lerr, ok);
     infot = 7;
     Rormr2("R", "N", 1, 2, 2, a, 1, x, af, 1, w, info);
-    Chkxer("DORMR2", infot, nout, lerr, ok);
+    Chkxer("Rormr2", infot, nout, lerr, ok);
     infot = 10;
     Rormr2("L", "N", 2, 1, 0, a, 1, x, af, 1, w, info);
-    Chkxer("DORMR2", infot, nout, lerr, ok);
+    Chkxer("Rormr2", infot, nout, lerr, ok);
     //
     // Print a summary line.
     //

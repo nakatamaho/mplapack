@@ -332,7 +332,7 @@ void Rdrvpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                 // Form the inverse of A.
                                 //
                                 Rlaset("Full", n, n, zero, one, a, lda);
-                                srnamt = "DPBTRS";
+                                srnamt = "Rpbtrs";
                                 Rpbtrs(uplo.elems, n, kd, n, afac, ldab, a, lda, info);
                                 //
                                 // Compute the 1-norm condition number of A.
@@ -367,13 +367,13 @@ void Rdrvpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                 Rlacpy("Full", kd + 1, n, a, ldab, afac, ldab);
                                 Rlacpy("Full", n, nrhs, b, lda, x, lda);
                                 //
-                                srnamt = "DPBSV ";
+                                srnamt = "Rpbsv";
                                 Rpbsv(uplo.elems, n, kd, nrhs, afac, ldab, x, lda, info);
                                 //
                                 // Check error code from Rpbsv .
                                 //
                                 if (info != izero) {
-                                    Alaerh(path, "DPBSV ", info, izero, uplo, n, n, kd, kd, nrhs, imat, nfail, nerrs, nout);
+                                    Alaerh(path, "Rpbsv", info, izero, uplo, n, n, kd, kd, nrhs, imat, nfail, nerrs, nout);
                                     goto statement_40;
                                 } else if (info != 0) {
                                     goto statement_40;
@@ -429,13 +429,13 @@ void Rdrvpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                             // Solve the system and compute the condition
                             // number and error bounds using Rpbsvx.
                             //
-                            srnamt = "DPBSVX";
+                            srnamt = "Rpbsvx";
                             Rpbsvx(fact.elems, uplo.elems, n, kd, nrhs, a, ldab, afac, ldab, equed.elems, s, b, lda, x, lda, rcond, rwork, &rwork[(nrhs + 1) - 1], work, iwork, info);
                             //
                             // Check the error code from Rpbsvx.
                             //
                             if (info != izero) {
-                                Alaerh(path, "DPBSVX", info, izero, fact + uplo, n, n, kd, kd, nrhs, imat, nfail, nerrs, nout);
+                                Alaerh(path, "Rpbsvx", info, izero, fact + uplo, n, n, kd, kd, nrhs, imat, nfail, nerrs, nout);
                                 goto statement_60;
                             }
                             //

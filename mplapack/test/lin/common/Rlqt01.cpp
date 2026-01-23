@@ -54,7 +54,7 @@ void Rlqt01(INTEGER const m, INTEGER const n, REAL *a, REAL *af, REAL *q, REAL *
     //
     // Factorize the matrix A in the array AF.
     //
-    srnamt = "DGELQF";
+    srnamt = "Rgelqf";
     INTEGER info = 0;
     Rgelqf(m, n, af, lda, tau, work, lwork, info);
     //
@@ -68,7 +68,7 @@ void Rlqt01(INTEGER const m, INTEGER const n, REAL *a, REAL *af, REAL *q, REAL *
     //
     // Generate the n-by-n matrix Q
     //
-    srnamt = "DORGLQ";
+    srnamt = "Rorglq";
     Rorglq(n, n, minmn, q, lda, tau, work, lwork, info);
     //
     // Copy L

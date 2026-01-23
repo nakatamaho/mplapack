@@ -298,11 +298,11 @@ void Cdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                         Clacpy("Full", m, n, copya, lda, a, lda);
                                         Clacpy("Full", nrows, nrhs, copyb, ldb, b, ldb);
                                     }
-                                    srnamt = "ZGELS ";
+                                    srnamt = "Cgels";
                                     Cgels(trans.elems, m, n, nrhs, a, lda, b, ldb, work, lwork, info);
                                     //
                                     if (info != 0) {
-                                        Alaerh(path, "ZGELS ", info, 0, trans, m, n, nrhs, -1, nb, itype, nfail, nerrs, nout);
+                                        Alaerh(path, "Cgels", info, 0, trans, m, n, nrhs, -1, nb, itype, nfail, nerrs, nout);
                                     }
                                     //
                                     // Check correctness of results
@@ -382,10 +382,10 @@ void Cdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                             Clacpy("Full", m, n, copya, lda, a, lda);
                                             Clacpy("Full", nrows, nrhs, copyb, ldb, b, ldb);
                                         }
-                                        srnamt = "ZGETSLS ";
+                                        srnamt = "Cgetsls";
                                         Cgetsls(trans.elems, m, n, nrhs, a, lda, b, ldb, work, lwork, info);
                                         if (info != 0) {
-                                            Alaerh(path, "ZGETSLS ", info, 0, trans, m, n, nrhs, -1, nb, itype, nfail, nerrs, nout);
+                                            Alaerh(path, "Cgetsls", info, 0, trans, m, n, nrhs, -1, nb, itype, nfail, nerrs, nout);
                                         }
                                         //
                                         // Check correctness of results
@@ -461,10 +461,10 @@ void Cdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                 iwork[j - 1] = 0;
                             }
                             //
-                            srnamt = "ZGELSY";
+                            srnamt = "Cgelsy";
                             Cgelsy(m, n, nrhs, a, lda, b, ldb, iwork, rcond, crank, work, lwlsy, rwork, info);
                             if (info != 0) {
-                                Alaerh(path, "ZGELSY", info, 0, " ", m, n, nrhs, -1, nb, itype, nfail, nerrs, nout);
+                                Alaerh(path, "Cgelsy", info, 0, " ", m, n, nrhs, -1, nb, itype, nfail, nerrs, nout);
                             }
                             //
                             // workspace used: 2*MNMIN+NB*NB+NB*MAX(N,NRHS)
@@ -505,11 +505,11 @@ void Cdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                             //
                             Clacpy("Full", m, n, copya, lda, a, lda);
                             Clacpy("Full", m, nrhs, copyb, ldb, b, ldb);
-                            srnamt = "ZGELSS";
+                            srnamt = "Cgelss";
                             Cgelss(m, n, nrhs, a, lda, b, ldb, s, rcond, crank, work, lwork, rwork, info);
                             //
                             if (info != 0) {
-                                Alaerh(path, "ZGELSS", info, 0, " ", m, n, nrhs, -1, nb, itype, nfail, nerrs, nout);
+                                Alaerh(path, "Cgelss", info, 0, " ", m, n, nrhs, -1, nb, itype, nfail, nerrs, nout);
                             }
                             //
                             // workspace used: 3*min(m,n) +
@@ -554,10 +554,10 @@ void Cdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                             Clacpy("Full", m, n, copya, lda, a, lda);
                             Clacpy("Full", m, nrhs, copyb, ldb, b, ldb);
                             //
-                            srnamt = "ZGELSD";
+                            srnamt = "Cgelsd";
                             Cgelsd(m, n, nrhs, a, lda, b, ldb, s, rcond, crank, work, lwork, rwork, iwork, info);
                             if (info != 0) {
-                                Alaerh(path, "ZGELSD", info, 0, " ", m, n, nrhs, -1, nb, itype, nfail, nerrs, nout);
+                                Alaerh(path, "Cgelsd", info, 0, " ", m, n, nrhs, -1, nb, itype, nfail, nerrs, nout);
                             }
                             //
                             // Test 11:  Compute relative error in svd

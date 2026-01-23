@@ -265,7 +265,7 @@ void Rdrvsy_aa_2stage(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER con
                         //
                         // Factor the matrix and solve the system using Rsysv_aa.
                         //
-                        srnamt = "DSYSV_AA_2STAGE ";
+                        srnamt = "Rsysv_aa_2stage";
                         lwork = min(n * nb, 3 * nmax * nmax);
                         Rsysv_aa_2stage(uplo.elems, n, nrhs, afac, lda, ainv, (3 * nb + 1) * n, iwork, &iwork[(1 + n) - 1], x, lda, work, lwork, info);
                         //
@@ -292,7 +292,7 @@ void Rdrvsy_aa_2stage(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER con
                         // Check error code from Rsysv_aa .
                         //
                         if (info != k) {
-                            Alaerh(path, "DSYSV_AA", info, k, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                            Alaerh(path, "Rsysv_aa", info, k, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                             goto statement_120;
                         } else if (info != 0) {
                             goto statement_120;

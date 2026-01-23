@@ -162,7 +162,7 @@ void Rchkps(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                         // of the matrix.
                         //
                         Rlacpy(uplo.elems, n, n, a, lda, afac, lda);
-                        srnamt = "DPSTRF";
+                        srnamt = "Rpstrf";
                         //
                         // Use default tolerance
                         //
@@ -172,7 +172,7 @@ void Rchkps(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                         // Check error code from Rpstrf.
                         //
                         if ((info < izero) || (info != izero && rank == n) || (info <= izero && rank < n)) {
-                            Alaerh(path, "DPSTRF", info, izero, uplo, n, n, -1, -1, nb, imat, nfail, nerrs, nout);
+                            Alaerh(path, "Rpstrf", info, izero, uplo, n, n, -1, -1, nb, imat, nfail, nerrs, nout);
                             goto statement_110;
                         }
                         //

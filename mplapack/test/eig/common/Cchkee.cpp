@@ -249,10 +249,10 @@ statement_10:
         write(nout, "(/,' Tests of the Generalized Nonsymmetric Eigenvalue ',"
                     "'Problem Expert Driver ZGGEVX')");
     } else if (zhb) {
-        write(nout, "(' Tests of ZHBTRD',/,' (reduction of a Hermitian band ',"
+        write(nout, "(' Tests of Chbtrd',/,' (reduction of a Hermitian band ',"
                     "'matrix to real tridiagonal form)')");
     } else if (zbb) {
-        write(nout, "(' Tests of ZGBBRD',/,' (reduction of a general band ',"
+        write(nout, "(' Tests of Cgbbrd',/,' (reduction of a general band ',"
                     "'matrix to real bidiagonal form)')");
     } else if (glm) {
         write(nout, "(/,' Tests of the Generalized Linear Regression Model ','routines')");
@@ -1199,7 +1199,7 @@ statement_190:
             Alareq(c3, ntypes, dotype, maxtyp, nin, nout);
             Cdrvev(nn, nval, ntypes, dotype, iseed, thresh, nout, &a[0], nmax, &a[(2 - 1) * lda], &dc[0], &dc[(2 - 1) * nmax], &a[(3 - 1) * lda], nmax, &a[(4 - 1) * lda], nmax, &a[(5 - 1) * lda], nmax, result, work, lwork, rwork, iwork, info);
             if (info != 0) {
-                write(nout, format_9980), "ZGEEV", info;
+                write(nout, format_9980), "Cgeev", info;
             }
         }
         write(nout, format_9973);
@@ -1223,7 +1223,7 @@ statement_190:
             Alareq(c3, ntypes, dotype, maxtyp, nin, nout);
             Cdrves(nn, nval, ntypes, dotype, iseed, thresh, nout, &a[0], nmax, &a[(2 - 1) * lda], &a[(3 - 1) * lda], &dc[0], &dc[(2 - 1) * nmax], &a[(4 - 1) * lda], nmax, result, work, lwork, rwork, iwork, logwrk, info);
             if (info != 0) {
-                write(nout, format_9980), "ZGEES", info;
+                write(nout, format_9980), "Cgees", info;
             }
         }
         write(nout, format_9973);
@@ -1247,7 +1247,7 @@ statement_190:
             Alareq(c3, ntypes, dotype, maxtyp, nin, nout);
             Cdrvvx(nn, nval, ntypes, dotype, iseed, thresh, nin, nout, &a[0], nmax, &a[(2 - 1) * lda], &dc[0], &dc[(2 - 1) * nmax], &a[(3 - 1) * lda], nmax, &a[(4 - 1) * lda], nmax, &a[(5 - 1) * lda], nmax, &dr[0], &dr[(2 - 1) * nmax], &dr[(3 - 1) * nmax], &dr[(4 - 1) * nmax], &dr[(5 - 1) * nmax], &dr[(6 - 1) * nmax], &dr[(7 - 1) * nmax], &dr[(8 - 1) * nmax], result, work, lwork, rwork, info);
             if (info != 0) {
-                write(nout, format_9980), "ZGEEVX", info;
+                write(nout, format_9980), "Cgeevx", info;
             }
         }
         write(nout, format_9973);
@@ -1271,7 +1271,7 @@ statement_190:
             Alareq(c3, ntypes, dotype, maxtyp, nin, nout);
             Cdrvsx(nn, nval, ntypes, dotype, iseed, thresh, nin, nout, &a[0], nmax, &a[(2 - 1) * lda], &a[(3 - 1) * lda], &dc[0], &dc[(2 - 1) * nmax], &dc[(3 - 1) * nmax], &a[(4 - 1) * lda], nmax, &a[(5 - 1) * lda], result, work, lwork, rwork, logwrk, info);
             if (info != 0) {
-                write(nout, format_9980), "ZGEESX", info;
+                write(nout, format_9980), "Cgeesx", info;
             }
         }
         write(nout, format_9973);

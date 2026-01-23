@@ -84,58 +84,58 @@ void Rerrgt(fem::str_cref path, INTEGER const nunit) {
         //
         // Rgttrf
         //
-        srnamt = "DGTTRF";
+        srnamt = "Rgttrf";
         infot = 1;
         Rgttrf(-1, c, d, e, f, ip, info);
-        Chkxer("DGTTRF", infot, nout, lerr, ok);
+        Chkxer("Rgttrf", infot, nout, lerr, ok);
         //
         // Rgttrs
         //
-        srnamt = "DGTTRS";
+        srnamt = "Rgttrs";
         infot = 1;
         Rgttrs("/", 0, 0, c, d, e, f, ip, x, 1, info);
-        Chkxer("DGTTRS", infot, nout, lerr, ok);
+        Chkxer("Rgttrs", infot, nout, lerr, ok);
         infot = 2;
         Rgttrs("N", -1, 0, c, d, e, f, ip, x, 1, info);
-        Chkxer("DGTTRS", infot, nout, lerr, ok);
+        Chkxer("Rgttrs", infot, nout, lerr, ok);
         infot = 3;
         Rgttrs("N", 0, -1, c, d, e, f, ip, x, 1, info);
-        Chkxer("DGTTRS", infot, nout, lerr, ok);
+        Chkxer("Rgttrs", infot, nout, lerr, ok);
         infot = 10;
         Rgttrs("N", 2, 1, c, d, e, f, ip, x, 1, info);
-        Chkxer("DGTTRS", infot, nout, lerr, ok);
+        Chkxer("Rgttrs", infot, nout, lerr, ok);
         //
         // Rgtrfs
         //
-        srnamt = "DGTRFS";
+        srnamt = "Rgtrfs";
         infot = 1;
         Rgtrfs("/", 0, 0, c, d, e, cf, df, ef, f, ip, b, 1, x, 1, r1, r2, w, iw, info);
-        Chkxer("DGTRFS", infot, nout, lerr, ok);
+        Chkxer("Rgtrfs", infot, nout, lerr, ok);
         infot = 2;
         Rgtrfs("N", -1, 0, c, d, e, cf, df, ef, f, ip, b, 1, x, 1, r1, r2, w, iw, info);
-        Chkxer("DGTRFS", infot, nout, lerr, ok);
+        Chkxer("Rgtrfs", infot, nout, lerr, ok);
         infot = 3;
         Rgtrfs("N", 0, -1, c, d, e, cf, df, ef, f, ip, b, 1, x, 1, r1, r2, w, iw, info);
-        Chkxer("DGTRFS", infot, nout, lerr, ok);
+        Chkxer("Rgtrfs", infot, nout, lerr, ok);
         infot = 13;
         Rgtrfs("N", 2, 1, c, d, e, cf, df, ef, f, ip, b, 1, x, 2, r1, r2, w, iw, info);
-        Chkxer("DGTRFS", infot, nout, lerr, ok);
+        Chkxer("Rgtrfs", infot, nout, lerr, ok);
         infot = 15;
         Rgtrfs("N", 2, 1, c, d, e, cf, df, ef, f, ip, b, 2, x, 1, r1, r2, w, iw, info);
-        Chkxer("DGTRFS", infot, nout, lerr, ok);
+        Chkxer("Rgtrfs", infot, nout, lerr, ok);
         //
         // Rgtcon
         //
-        srnamt = "DGTCON";
+        srnamt = "Rgtcon";
         infot = 1;
         Rgtcon("/", 0, c, d, e, f, ip, anorm, rcond, w, iw, info);
-        Chkxer("DGTCON", infot, nout, lerr, ok);
+        Chkxer("Rgtcon", infot, nout, lerr, ok);
         infot = 2;
         Rgtcon("I", -1, c, d, e, f, ip, anorm, rcond, w, iw, info);
-        Chkxer("DGTCON", infot, nout, lerr, ok);
+        Chkxer("Rgtcon", infot, nout, lerr, ok);
         infot = 8;
         Rgtcon("I", 0, c, d, e, f, ip, -anorm, rcond, w, iw, info);
-        Chkxer("DGTCON", infot, nout, lerr, ok);
+        Chkxer("Rgtcon", infot, nout, lerr, ok);
         //
     } else if (Mlsamen(2, c2.elems, "PT")) {
         //
@@ -144,49 +144,49 @@ void Rerrgt(fem::str_cref path, INTEGER const nunit) {
         //
         // Rpttrf
         //
-        srnamt = "DPTTRF";
+        srnamt = "Rpttrf";
         infot = 1;
         Rpttrf(-1, d, e, info);
-        Chkxer("DPTTRF", infot, nout, lerr, ok);
+        Chkxer("Rpttrf", infot, nout, lerr, ok);
         //
         // Rpttrs
         //
-        srnamt = "DPTTRS";
+        srnamt = "Rpttrs";
         infot = 1;
         Rpttrs(-1, 0, d, e, x, 1, info);
-        Chkxer("DPTTRS", infot, nout, lerr, ok);
+        Chkxer("Rpttrs", infot, nout, lerr, ok);
         infot = 2;
         Rpttrs(0, -1, d, e, x, 1, info);
-        Chkxer("DPTTRS", infot, nout, lerr, ok);
+        Chkxer("Rpttrs", infot, nout, lerr, ok);
         infot = 6;
         Rpttrs(2, 1, d, e, x, 1, info);
-        Chkxer("DPTTRS", infot, nout, lerr, ok);
+        Chkxer("Rpttrs", infot, nout, lerr, ok);
         //
         // Rptrfs
         //
-        srnamt = "DPTRFS";
+        srnamt = "Rptrfs";
         infot = 1;
         Rptrfs(-1, 0, d, e, df, ef, b, 1, x, 1, r1, r2, w, info);
-        Chkxer("DPTRFS", infot, nout, lerr, ok);
+        Chkxer("Rptrfs", infot, nout, lerr, ok);
         infot = 2;
         Rptrfs(0, -1, d, e, df, ef, b, 1, x, 1, r1, r2, w, info);
-        Chkxer("DPTRFS", infot, nout, lerr, ok);
+        Chkxer("Rptrfs", infot, nout, lerr, ok);
         infot = 8;
         Rptrfs(2, 1, d, e, df, ef, b, 1, x, 2, r1, r2, w, info);
-        Chkxer("DPTRFS", infot, nout, lerr, ok);
+        Chkxer("Rptrfs", infot, nout, lerr, ok);
         infot = 10;
         Rptrfs(2, 1, d, e, df, ef, b, 2, x, 1, r1, r2, w, info);
-        Chkxer("DPTRFS", infot, nout, lerr, ok);
+        Chkxer("Rptrfs", infot, nout, lerr, ok);
         //
         // Rptcon
         //
-        srnamt = "DPTCON";
+        srnamt = "Rptcon";
         infot = 1;
         Rptcon(-1, d, e, anorm, rcond, w, info);
-        Chkxer("DPTCON", infot, nout, lerr, ok);
+        Chkxer("Rptcon", infot, nout, lerr, ok);
         infot = 4;
         Rptcon(0, d, e, -anorm, rcond, w, info);
-        Chkxer("DPTCON", infot, nout, lerr, ok);
+        Chkxer("Rptcon", infot, nout, lerr, ok);
     }
     //
     // Print a summary line.

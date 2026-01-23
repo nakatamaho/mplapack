@@ -384,7 +384,7 @@ void Rdrgev(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             Rggev("V", "N", n, s, lda, t, lda, alphr1, alphi1, beta1, qe, ldqe, z, ldq, work, lwork, ierr);
             if (ierr != 0 && ierr != n + 1) {
                 result[1 - 1] = ulpinv;
-                write(nounit, format_9999), "DGGEV3", ierr, n, jtype, ioldsd;
+                write(nounit, format_9999), "Rggev3", ierr, n, jtype, ioldsd;
                 info = abs(ierr);
                 goto statement_190;
             }

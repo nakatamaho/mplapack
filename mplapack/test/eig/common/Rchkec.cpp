@@ -78,7 +78,7 @@ void Rchkec(REAL const thresh, bool const tsterr, INTEGER const nin, INTEGER con
     Rget31(rlaln2, llaln2, nlaln2, klaln2);
     if (rlaln2 > thresh || nlaln2[1 - 1] != 0) {
         ok = false;
-        write(nout, "(' Error in DLALN2: RMAX =',d12.3,/,' LMAX = ',i8,' N','INFO=',2i8,"
+        write(nout, "(' Error in Rlaln2: RMAX =',d12.3,/,' LMAX = ',i8,' N','INFO=',2i8,"
                     "' KNT=',i8)"),
             rlaln2, llaln2, nlaln2, klaln2;
     }
@@ -90,7 +90,7 @@ void Rchkec(REAL const thresh, bool const tsterr, INTEGER const nin, INTEGER con
     Rget32(rlasy2, llasy2, nlasy2, klasy2);
     if (rlasy2 > thresh) {
         ok = false;
-        write(nout, "(' Error in DLASY2: RMAX =',d12.3,/,' LMAX = ',i8,' N','INFO=',i8,"
+        write(nout, "(' Error in Rlasy2: RMAX =',d12.3,/,' LMAX = ',i8,' N','INFO=',i8,"
                     "' KNT=',i8)"),
             rlasy2, llasy2, nlasy2, klasy2;
     }
@@ -102,7 +102,7 @@ void Rchkec(REAL const thresh, bool const tsterr, INTEGER const nin, INTEGER con
     Rget33(rlanv2, llanv2, nlanv2, klanv2);
     if (rlanv2 > thresh || nlanv2 != 0) {
         ok = false;
-        write(nout, "(' Error in DLANV2: RMAX =',d12.3,/,' LMAX = ',i8,' N','INFO=',i8,"
+        write(nout, "(' Error in Rlanv2: RMAX =',d12.3,/,' LMAX = ',i8,' N','INFO=',i8,"
                     "' KNT=',i8)"),
             rlanv2, llanv2, nlanv2, klanv2;
     }
@@ -114,7 +114,7 @@ void Rchkec(REAL const thresh, bool const tsterr, INTEGER const nin, INTEGER con
     Rget34(rlaexc, llaexc, nlaexc, klaexc);
     if (rlaexc > thresh || nlaexc[2 - 1] != 0) {
         ok = false;
-        write(nout, "(' Error in DLAEXC: RMAX =',d12.3,/,' LMAX = ',i8,' N','INFO=',2i8,"
+        write(nout, "(' Error in Rlaexc: RMAX =',d12.3,/,' LMAX = ',i8,' N','INFO=',2i8,"
                     "' KNT=',i8)"),
             rlaexc, llaexc, nlaexc, klaexc;
     }
@@ -126,7 +126,7 @@ void Rchkec(REAL const thresh, bool const tsterr, INTEGER const nin, INTEGER con
     Rget35(rtrsyl, ltrsyl, ntrsyl, ktrsyl);
     if (rtrsyl > thresh) {
         ok = false;
-        write(nout, "(' Error in DTRSYL: RMAX =',d12.3,/,' LMAX = ',i8,' N','INFO=',i8,"
+        write(nout, "(' Error in Rtrsyl: RMAX =',d12.3,/,' LMAX = ',i8,' N','INFO=',i8,"
                     "' KNT=',i8)"),
             rtrsyl, ltrsyl, ntrsyl, ktrsyl;
     }
@@ -138,7 +138,7 @@ void Rchkec(REAL const thresh, bool const tsterr, INTEGER const nin, INTEGER con
     Rget36(rtrexc, ltrexc, ntrexc, ktrexc, nin);
     if (rtrexc > thresh || ntrexc[3 - 1] > 0) {
         ok = false;
-        write(nout, "(' Error in DTREXC: RMAX =',d12.3,/,' LMAX = ',i8,' N','INFO=',3i8,"
+        write(nout, "(' Error in Rtrexc: RMAX =',d12.3,/,' LMAX = ',i8,' N','INFO=',3i8,"
                     "' KNT=',i8)"),
             rtrexc, ltrexc, ntrexc, ktrexc;
     }
@@ -150,7 +150,7 @@ void Rchkec(REAL const thresh, bool const tsterr, INTEGER const nin, INTEGER con
     Rget37(rtrsna, ltrsna, ntrsna, ktrsna, nin);
     if (rtrsna[1 - 1] > thresh || rtrsna[2 - 1] > thresh || ntrsna[1 - 1] != 0 || ntrsna[2 - 1] != 0 || ntrsna[3 - 1] != 0) {
         ok = false;
-        write(nout, "(' Error in DTRSNA: RMAX =',3d12.3,/,' LMAX = ',3i8,' NINFO=',3i8,"
+        write(nout, "(' Error in Rtrsna: RMAX =',3d12.3,/,' LMAX = ',3i8,' NINFO=',3i8,"
                     "' KNT=',i8)"),
             rtrsna, ltrsna, ntrsna, ktrsna;
     }
@@ -162,7 +162,7 @@ void Rchkec(REAL const thresh, bool const tsterr, INTEGER const nin, INTEGER con
     Rget38(rtrsen, ltrsen, ntrsen, ktrsen, nin);
     if (rtrsen[1 - 1] > thresh || rtrsen[2 - 1] > thresh || ntrsen[1 - 1] != 0 || ntrsen[2 - 1] != 0 || ntrsen[3 - 1] != 0) {
         ok = false;
-        write(nout, "(' Error in DTRSEN: RMAX =',3d12.3,/,' LMAX = ',3i8,' NINFO=',3i8,"
+        write(nout, "(' Error in Rtrsen: RMAX =',3d12.3,/,' LMAX = ',3i8,' NINFO=',3i8,"
                     "' KNT=',i8)"),
             rtrsen, ltrsen, ntrsen, ktrsen;
     }
@@ -174,7 +174,7 @@ void Rchkec(REAL const thresh, bool const tsterr, INTEGER const nin, INTEGER con
     Rget39(rlaqtr, llaqtr, nlaqtr, klaqtr);
     if (rlaqtr > thresh) {
         ok = false;
-        write(nout, "(' Error in DLAQTR: RMAX =',d12.3,/,' LMAX = ',i8,' N','INFO=',i8,"
+        write(nout, "(' Error in Rlaqtr: RMAX =',d12.3,/,' LMAX = ',i8,' N','INFO=',i8,"
                     "' KNT=',i8)"),
             rlaqtr, llaqtr, nlaqtr, klaqtr;
     }
@@ -186,7 +186,7 @@ void Rchkec(REAL const thresh, bool const tsterr, INTEGER const nin, INTEGER con
     Rget40(rtgexc, ltgexc, ntgexc, ktgexc, nin);
     if (rtgexc > thresh) {
         ok = false;
-        write(nout, "(' Error in DTGEXC: RMAX =',d12.3,/,' LMAX = ',i8,' N','INFO=',i8,"
+        write(nout, "(' Error in Rtgexc: RMAX =',d12.3,/,' LMAX = ',i8,' N','INFO=',i8,"
                     "' KNT=',i8)"),
             rtgexc, ltgexc, ntgexc, ktgexc;
     }

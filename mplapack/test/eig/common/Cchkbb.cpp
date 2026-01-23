@@ -336,7 +336,7 @@ void Cchkbb(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nw
                 Cgbbrd("B", m, n, nrhs, kl, ku, ab, ldab, bd, be, q, ldq, p, ldp, cc, ldc, work, rwork, iinfo);
                 //
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "ZGBBRD", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "Cgbbrd", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;

@@ -104,7 +104,7 @@ void Cunhr_col02(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
     //
     // Factor the matrix A in the array AF.
     //
-    srnamt = "ZGETSQRHRT";
+    srnamt = "Cgetsqrhrt";
     std::unique_ptr<COMPLEX[]> __work_storage(new COMPLEX[lwork]);
     COMPLEX *work = __work_storage.get();
     Cgetsqrhrt(m, n, mb1, nb1, nb2, af, m, t2, nb2, work, lwork, info);
@@ -119,7 +119,7 @@ void Cunhr_col02(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
     COMPLEX *q = __q_storage.get();
     Claset("Full", m, m, czero, cone, q, m);
     //
-    srnamt = "ZGEMQRT";
+    srnamt = "Cgemqrt";
     Cgemqrt("L", "N", m, m, k, nb2_ub, af, m, t2, nb2, q, m, work, info);
     //
     // Copy R
@@ -168,7 +168,7 @@ void Cunhr_col02(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
     //
     // Apply Q to C as Q*C = CF
     //
-    srnamt = "ZGEMQRT";
+    srnamt = "Cgemqrt";
     Cgemqrt("L", "N", m, n, k, nb2_ub, af, m, t2, nb2, cf, m, work, info);
     //
     // TEST 3
@@ -188,7 +188,7 @@ void Cunhr_col02(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
     //
     // Apply Q to C as (Q**T)*C = CF
     //
-    srnamt = "ZGEMQRT";
+    srnamt = "Cgemqrt";
     Cgemqrt("L", "C", m, n, k, nb2_ub, af, m, t2, nb2, cf, m, work, info);
     //
     // TEST 4
@@ -216,7 +216,7 @@ void Cunhr_col02(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
     //
     // Apply Q to D as D*Q = DF
     //
-    srnamt = "ZGEMQRT";
+    srnamt = "Cgemqrt";
     Cgemqrt("R", "N", n, m, k, nb2_ub, af, m, t2, nb2, df, n, work, info);
     //
     // TEST 5
@@ -236,7 +236,7 @@ void Cunhr_col02(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
     //
     // Apply Q to D as D*QT = DF
     //
-    srnamt = "ZGEMQRT";
+    srnamt = "Cgemqrt";
     Cgemqrt("R", "C", n, m, k, nb2_ub, af, m, t2, nb2, df, n, work, info);
     //
     // TEST 6

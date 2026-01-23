@@ -242,7 +242,7 @@ void Cchksp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                 //
                 npp = n * (n + 1) / 2;
                 Ccopy(npp, a, 1, afac, 1);
-                srnamt = "ZSPTRF";
+                srnamt = "Csptrf";
                 Csptrf(uplo.elems, n, afac, iwork, info);
                 //
                 // Adjust the expected value of INFO to account for
@@ -265,7 +265,7 @@ void Cchksp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                 // Check error code from Csptrf.
                 //
                 if (info != k) {
-                    Alaerh(path, "ZSPTRF", info, k, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                    Alaerh(path, "Csptrf", info, k, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                 }
                 if (info != 0) {
                     trfcon = true;
@@ -284,13 +284,13 @@ void Cchksp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                 //
                 if (!trfcon) {
                     Ccopy(npp, afac, 1, ainv, 1);
-                    srnamt = "ZSPTRI";
+                    srnamt = "Csptri";
                     Csptri(uplo.elems, n, ainv, iwork, work, info);
                     //
                     // Check error code from Csptri.
                     //
                     if (info != 0) {
-                        Alaerh(path, "ZSPTRI", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                        Alaerh(path, "Csptri", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                     }
                     //
                     Cspt03(uplo, n, a, ainv, work, lda, rwork, rcondc, result[2 - 1]);
@@ -328,13 +328,13 @@ void Cchksp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                     Clarhs(path, xtype, uplo, " ", n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
                     Clacpy("Full", n, nrhs, b, lda, x, lda);
                     //
-                    srnamt = "ZSPTRS";
+                    srnamt = "Csptrs";
                     Csptrs(uplo.elems, n, nrhs, afac, iwork, x, lda, info);
                     //
                     // Check error code from Csptrs.
                     //
                     if (info != 0) {
-                        Alaerh(path, "ZSPTRS", info, 0, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                        Alaerh(path, "Csptrs", info, 0, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                     }
                     //
                     Clacpy("Full", n, nrhs, b, lda, work, lda);
@@ -348,13 +348,13 @@ void Cchksp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                     // +    TESTS 5, 6, and 7
                     // Use iterative refinement to improve the solution.
                     //
-                    srnamt = "ZSPRFS";
+                    srnamt = "Csprfs";
                     Csprfs(uplo.elems, n, nrhs, a, afac, iwork, b, lda, x, lda, rwork, &rwork[(nrhs + 1) - 1], work, &rwork[(2 * nrhs + 1) - 1], info);
                     //
                     // Check error code from Csprfs.
                     //
                     if (info != 0) {
-                        Alaerh(path, "ZSPRFS", info, 0, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                        Alaerh(path, "Csprfs", info, 0, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                     }
                     //
                     Cget04(n, nrhs, x, lda, xact, lda, rcondc, result[5 - 1]);
@@ -382,13 +382,13 @@ void Cchksp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
             //
             statement_140:
                 anorm = Clansp("1", uplo.elems, n, a, rwork);
-                srnamt = "ZSPCON";
+                srnamt = "Cspcon";
                 Cspcon(uplo.elems, n, afac, iwork, anorm, rcond, work, info);
                 //
                 // Check error code from Cspcon.
                 //
                 if (info != 0) {
-                    Alaerh(path, "ZSPCON", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                    Alaerh(path, "Cspcon", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                 }
                 //
                 result[8 - 1] = Rget06(rcond, rcondc);

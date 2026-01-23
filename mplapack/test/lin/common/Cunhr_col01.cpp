@@ -110,27 +110,27 @@ void Cunhr_col01(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
     //
     // Factor the matrix A in the array AF.
     //
-    srnamt = "ZLATSQR";
+    srnamt = "Clatsqr";
     std::unique_ptr<COMPLEX[]> __work_storage(new COMPLEX[lwork]);
     COMPLEX *work = __work_storage.get();
     Clatsqr(m, n, mb1, nb1_ub, af, m, t1, nb1, work, lwork, info);
     //
     // Copy the factor R into the array R.
     //
-    srnamt = "ZLACPY";
+    srnamt = "Clacpy";
     std::unique_ptr<COMPLEX[]> __r_storage(new COMPLEX[m * l]);
     COMPLEX *r = __r_storage.get();
     Clacpy("U", n, n, af, m, r, m);
     //
     // Reconstruct the orthogonal matrix Q.
     //
-    srnamt = "ZUNGTSQR";
+    srnamt = "Cungtsqr";
     Cungtsqr(m, n, mb1, nb1, af, m, t1, nb1, work, lwork, info);
     //
     // Perform the Householder reconstruction, the result is stored
     // the arrays AF and T2.
     //
-    srnamt = "ZUNHR_COL";
+    srnamt = "Cunhr_col";
     std::unique_ptr<COMPLEX[]> __t2_storage(new COMPLEX[nb2 * n]);
     COMPLEX *t2 = __t2_storage.get();
     std::unique_ptr<COMPLEX[]> __diag_storage(new COMPLEX[n]);
@@ -144,7 +144,7 @@ void Cunhr_col01(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
     // according to sign of of I-th diagonal element DIAG(I) of the
     // matrix S.
     //
-    srnamt = "ZLACPY";
+    srnamt = "Clacpy";
     Clacpy("U", n, n, r, m, af, m);
     //
     INTEGER i = 0;
@@ -164,7 +164,7 @@ void Cunhr_col01(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
     COMPLEX *q = __q_storage.get();
     Claset("Full", m, m, czero, cone, q, m);
     //
-    srnamt = "ZGEMQRT";
+    srnamt = "Cgemqrt";
     Cgemqrt("L", "N", m, m, k, nb2_ub, af, m, t2, nb2, q, m, work, info);
     //
     // Copy R
@@ -211,7 +211,7 @@ void Cunhr_col01(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
     //
     // Apply Q to C as Q*C = CF
     //
-    srnamt = "ZGEMQRT";
+    srnamt = "Cgemqrt";
     Cgemqrt("L", "N", m, n, k, nb2_ub, af, m, t2, nb2, cf, m, work, info);
     //
     // TEST 3
@@ -231,7 +231,7 @@ void Cunhr_col01(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
     //
     // Apply Q to C as (Q**H)*C = CF
     //
-    srnamt = "ZGEMQRT";
+    srnamt = "Cgemqrt";
     Cgemqrt("L", "C", m, n, k, nb2_ub, af, m, t2, nb2, cf, m, work, info);
     //
     // TEST 4
@@ -259,7 +259,7 @@ void Cunhr_col01(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
     //
     // Apply Q to D as D*Q = DF
     //
-    srnamt = "ZGEMQRT";
+    srnamt = "Cgemqrt";
     Cgemqrt("R", "N", n, m, k, nb2_ub, af, m, t2, nb2, df, n, work, info);
     //
     // TEST 5
@@ -279,7 +279,7 @@ void Cunhr_col01(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
     //
     // Apply Q to D as D*QT = DF
     //
-    srnamt = "ZGEMQRT";
+    srnamt = "Cgemqrt";
     Cgemqrt("R", "C", n, m, k, nb2_ub, af, m, t2, nb2, df, n, work, info);
     //
     // TEST 6

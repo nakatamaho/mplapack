@@ -71,45 +71,45 @@ void Cerrunhr_col(fem::str_cref path, INTEGER const nunit) {
     //
     // Cunhr_col
     //
-    srnamt = "ZUNHR_COL";
+    srnamt = "Cunhr_col";
     //
     infot = 1;
     INTEGER info = 0;
     Cunhr_col(-1, 0, 1, a, 1, t, 1, d, info);
-    Chkxer("ZUNHR_COL", infot, nout, lerr, ok);
+    Chkxer("Cunhr_col", infot, nout, lerr, ok);
     //
     infot = 2;
     Cunhr_col(0, -1, 1, a, 1, t, 1, d, info);
-    Chkxer("ZUNHR_COL", infot, nout, lerr, ok);
+    Chkxer("Cunhr_col", infot, nout, lerr, ok);
     Cunhr_col(1, 2, 1, a, 1, t, 1, d, info);
-    Chkxer("ZUNHR_COL", infot, nout, lerr, ok);
+    Chkxer("Cunhr_col", infot, nout, lerr, ok);
     //
     infot = 3;
     Cunhr_col(0, 0, -1, a, 1, t, 1, d, info);
-    Chkxer("ZUNHR_COL", infot, nout, lerr, ok);
+    Chkxer("Cunhr_col", infot, nout, lerr, ok);
     //
     Cunhr_col(0, 0, 0, a, 1, t, 1, d, info);
-    Chkxer("ZUNHR_COL", infot, nout, lerr, ok);
+    Chkxer("Cunhr_col", infot, nout, lerr, ok);
     //
     infot = 5;
     Cunhr_col(0, 0, 1, a, -1, t, 1, d, info);
-    Chkxer("ZUNHR_COL", infot, nout, lerr, ok);
+    Chkxer("Cunhr_col", infot, nout, lerr, ok);
     //
     Cunhr_col(0, 0, 1, a, 0, t, 1, d, info);
-    Chkxer("ZUNHR_COL", infot, nout, lerr, ok);
+    Chkxer("Cunhr_col", infot, nout, lerr, ok);
     //
     Cunhr_col(2, 0, 1, a, 1, t, 1, d, info);
-    Chkxer("ZUNHR_COL", infot, nout, lerr, ok);
+    Chkxer("Cunhr_col", infot, nout, lerr, ok);
     //
     infot = 7;
     Cunhr_col(0, 0, 1, a, 1, t, -1, d, info);
-    Chkxer("ZUNHR_COL", infot, nout, lerr, ok);
+    Chkxer("Cunhr_col", infot, nout, lerr, ok);
     //
     Cunhr_col(0, 0, 1, a, 1, t, 0, d, info);
-    Chkxer("ZUNHR_COL", infot, nout, lerr, ok);
+    Chkxer("Cunhr_col", infot, nout, lerr, ok);
     //
     Cunhr_col(4, 3, 2, a, 4, t, 1, d, info);
-    Chkxer("ZUNHR_COL", infot, nout, lerr, ok);
+    Chkxer("Cunhr_col", infot, nout, lerr, ok);
     //
     // Print a summary line.
     //

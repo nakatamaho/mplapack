@@ -85,58 +85,58 @@ void Cerrgt(fem::str_cref path, INTEGER const nunit) {
         //
         // Cgttrf
         //
-        srnamt = "ZGTTRF";
+        srnamt = "Cgttrf";
         infot = 1;
         Cgttrf(-1, dl, e, du, du2, ip, info);
-        Chkxer("ZGTTRF", infot, nout, lerr, ok);
+        Chkxer("Cgttrf", infot, nout, lerr, ok);
         //
         // Cgttrs
         //
-        srnamt = "ZGTTRS";
+        srnamt = "Cgttrs";
         infot = 1;
         Cgttrs("/", 0, 0, dl, e, du, du2, ip, x, 1, info);
-        Chkxer("ZGTTRS", infot, nout, lerr, ok);
+        Chkxer("Cgttrs", infot, nout, lerr, ok);
         infot = 2;
         Cgttrs("N", -1, 0, dl, e, du, du2, ip, x, 1, info);
-        Chkxer("ZGTTRS", infot, nout, lerr, ok);
+        Chkxer("Cgttrs", infot, nout, lerr, ok);
         infot = 3;
         Cgttrs("N", 0, -1, dl, e, du, du2, ip, x, 1, info);
-        Chkxer("ZGTTRS", infot, nout, lerr, ok);
+        Chkxer("Cgttrs", infot, nout, lerr, ok);
         infot = 10;
         Cgttrs("N", 2, 1, dl, e, du, du2, ip, x, 1, info);
-        Chkxer("ZGTTRS", infot, nout, lerr, ok);
+        Chkxer("Cgttrs", infot, nout, lerr, ok);
         //
         // Cgtrfs
         //
-        srnamt = "ZGTRFS";
+        srnamt = "Cgtrfs";
         infot = 1;
         Cgtrfs("/", 0, 0, dl, e, du, dlf, ef, duf, du2, ip, b, 1, x, 1, r1, r2, w, rw, info);
-        Chkxer("ZGTRFS", infot, nout, lerr, ok);
+        Chkxer("Cgtrfs", infot, nout, lerr, ok);
         infot = 2;
         Cgtrfs("N", -1, 0, dl, e, du, dlf, ef, duf, du2, ip, b, 1, x, 1, r1, r2, w, rw, info);
-        Chkxer("ZGTRFS", infot, nout, lerr, ok);
+        Chkxer("Cgtrfs", infot, nout, lerr, ok);
         infot = 3;
         Cgtrfs("N", 0, -1, dl, e, du, dlf, ef, duf, du2, ip, b, 1, x, 1, r1, r2, w, rw, info);
-        Chkxer("ZGTRFS", infot, nout, lerr, ok);
+        Chkxer("Cgtrfs", infot, nout, lerr, ok);
         infot = 13;
         Cgtrfs("N", 2, 1, dl, e, du, dlf, ef, duf, du2, ip, b, 1, x, 2, r1, r2, w, rw, info);
-        Chkxer("ZGTRFS", infot, nout, lerr, ok);
+        Chkxer("Cgtrfs", infot, nout, lerr, ok);
         infot = 15;
         Cgtrfs("N", 2, 1, dl, e, du, dlf, ef, duf, du2, ip, b, 2, x, 1, r1, r2, w, rw, info);
-        Chkxer("ZGTRFS", infot, nout, lerr, ok);
+        Chkxer("Cgtrfs", infot, nout, lerr, ok);
         //
         // Cgtcon
         //
-        srnamt = "ZGTCON";
+        srnamt = "Cgtcon";
         infot = 1;
         Cgtcon("/", 0, dl, e, du, du2, ip, anorm, rcond, w, info);
-        Chkxer("ZGTCON", infot, nout, lerr, ok);
+        Chkxer("Cgtcon", infot, nout, lerr, ok);
         infot = 2;
         Cgtcon("I", -1, dl, e, du, du2, ip, anorm, rcond, w, info);
-        Chkxer("ZGTCON", infot, nout, lerr, ok);
+        Chkxer("Cgtcon", infot, nout, lerr, ok);
         infot = 8;
         Cgtcon("I", 0, dl, e, du, du2, ip, -anorm, rcond, w, info);
-        Chkxer("ZGTCON", infot, nout, lerr, ok);
+        Chkxer("Cgtcon", infot, nout, lerr, ok);
         //
     } else if (Mlsamen(2, c2.elems, "PT")) {
         //
@@ -145,55 +145,55 @@ void Cerrgt(fem::str_cref path, INTEGER const nunit) {
         //
         // Cpttrf
         //
-        srnamt = "ZPTTRF";
+        srnamt = "Cpttrf";
         infot = 1;
         Cpttrf(-1, d, e, info);
-        Chkxer("ZPTTRF", infot, nout, lerr, ok);
+        Chkxer("Cpttrf", infot, nout, lerr, ok);
         //
         // Cpttrs
         //
-        srnamt = "ZPTTRS";
+        srnamt = "Cpttrs";
         infot = 1;
         Cpttrs("/", 1, 0, d, e, x, 1, info);
-        Chkxer("ZPTTRS", infot, nout, lerr, ok);
+        Chkxer("Cpttrs", infot, nout, lerr, ok);
         infot = 2;
         Cpttrs("U", -1, 0, d, e, x, 1, info);
-        Chkxer("ZPTTRS", infot, nout, lerr, ok);
+        Chkxer("Cpttrs", infot, nout, lerr, ok);
         infot = 3;
         Cpttrs("U", 0, -1, d, e, x, 1, info);
-        Chkxer("ZPTTRS", infot, nout, lerr, ok);
+        Chkxer("Cpttrs", infot, nout, lerr, ok);
         infot = 7;
         Cpttrs("U", 2, 1, d, e, x, 1, info);
-        Chkxer("ZPTTRS", infot, nout, lerr, ok);
+        Chkxer("Cpttrs", infot, nout, lerr, ok);
         //
         // Cptrfs
         //
-        srnamt = "ZPTRFS";
+        srnamt = "Cptrfs";
         infot = 1;
         Cptrfs("/", 1, 0, d, e, df, ef, b, 1, x, 1, r1, r2, w, rw, info);
-        Chkxer("ZPTRFS", infot, nout, lerr, ok);
+        Chkxer("Cptrfs", infot, nout, lerr, ok);
         infot = 2;
         Cptrfs("U", -1, 0, d, e, df, ef, b, 1, x, 1, r1, r2, w, rw, info);
-        Chkxer("ZPTRFS", infot, nout, lerr, ok);
+        Chkxer("Cptrfs", infot, nout, lerr, ok);
         infot = 3;
         Cptrfs("U", 0, -1, d, e, df, ef, b, 1, x, 1, r1, r2, w, rw, info);
-        Chkxer("ZPTRFS", infot, nout, lerr, ok);
+        Chkxer("Cptrfs", infot, nout, lerr, ok);
         infot = 9;
         Cptrfs("U", 2, 1, d, e, df, ef, b, 1, x, 2, r1, r2, w, rw, info);
-        Chkxer("ZPTRFS", infot, nout, lerr, ok);
+        Chkxer("Cptrfs", infot, nout, lerr, ok);
         infot = 11;
         Cptrfs("U", 2, 1, d, e, df, ef, b, 2, x, 1, r1, r2, w, rw, info);
-        Chkxer("ZPTRFS", infot, nout, lerr, ok);
+        Chkxer("Cptrfs", infot, nout, lerr, ok);
         //
         // Cptcon
         //
-        srnamt = "ZPTCON";
+        srnamt = "Cptcon";
         infot = 1;
         Cptcon(-1, d, e, anorm, rcond, rw, info);
-        Chkxer("ZPTCON", infot, nout, lerr, ok);
+        Chkxer("Cptcon", infot, nout, lerr, ok);
         infot = 4;
         Cptcon(0, d, e, -anorm, rcond, rw, info);
-        Chkxer("ZPTCON", infot, nout, lerr, ok);
+        Chkxer("Cptcon", infot, nout, lerr, ok);
     }
     //
     // Print a summary line.

@@ -317,13 +317,13 @@ void Cdrvpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                     //
                     // Factor A as L*D*L' and solve the system A*X = B.
                     //
-                    srnamt = "ZPTSV ";
+                    srnamt = "Cptsv";
                     Cptsv(n, nrhs, &d[(n + 1) - 1], &e[(n + 1) - 1], x, lda, info);
                     //
                     // Check error code from Cptsv .
                     //
                     if (info != izero) {
-                        Alaerh(path, "ZPTSV ", info, izero, " ", n, n, 1, 1, nrhs, imat, nfail, nerrs, nout);
+                        Alaerh(path, "Cptsv", info, izero, " ", n, n, 1, 1, nrhs, imat, nfail, nerrs, nout);
                     }
                     nt = 0;
                     if (izero == 0) {
@@ -381,13 +381,13 @@ void Cdrvpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                 // Solve the system and compute the condition number and
                 // error bounds using Cptsvx.
                 //
-                srnamt = "ZPTSVX";
+                srnamt = "Cptsvx";
                 Cptsvx(fact.elems, n, nrhs, d, e, &d[(n + 1) - 1], &e[(n + 1) - 1], b, lda, x, lda, rcond, rwork, &rwork[(nrhs + 1) - 1], work, &rwork[(2 * nrhs + 1) - 1], info);
                 //
                 // Check the error code from Cptsvx.
                 //
                 if (info != izero) {
-                    Alaerh(path, "ZPTSVX", info, izero, fact, n, n, 1, 1, nrhs, imat, nfail, nerrs, nout);
+                    Alaerh(path, "Cptsvx", info, izero, fact, n, n, 1, 1, nrhs, imat, nfail, nerrs, nout);
                 }
                 if (izero == 0) {
                     if (ifact == 2) {

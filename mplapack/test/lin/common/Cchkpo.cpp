@@ -202,13 +202,13 @@ void Cchkpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                     // Compute the L*L' or U'*U factorization of the matrix.
                     //
                     Clacpy(uplo.elems, n, n, a, lda, afac, lda);
-                    srnamt = "ZPOTRF";
+                    srnamt = "Cpotrf";
                     Cpotrf(uplo.elems, n, afac, lda, info);
                     //
                     // Check error code from Cpotrf.
                     //
                     if (info != izero) {
-                        Alaerh(path, "ZPOTRF", info, izero, uplo, n, n, -1, -1, nb, imat, nfail, nerrs, nout);
+                        Alaerh(path, "Cpotrf", info, izero, uplo, n, n, -1, -1, nb, imat, nfail, nerrs, nout);
                         goto statement_90;
                     }
                     //
@@ -228,13 +228,13 @@ void Cchkpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                     // Form the inverse and compute the residual.
                     //
                     Clacpy(uplo.elems, n, n, afac, lda, ainv, lda);
-                    srnamt = "ZPOTRI";
+                    srnamt = "Cpotri";
                     Cpotri(uplo.elems, n, ainv, lda, info);
                     //
                     // Check error code from Cpotri.
                     //
                     if (info != 0) {
-                        Alaerh(path, "ZPOTRI", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                        Alaerh(path, "Cpotri", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                     }
                     //
                     Cpot03(uplo, n, a, lda, ainv, lda, work, lda, rwork, rcondc, result[2 - 1]);
@@ -272,13 +272,13 @@ void Cchkpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                         Clarhs(path, xtype, uplo, " ", n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
                         Clacpy("Full", n, nrhs, b, lda, x, lda);
                         //
-                        srnamt = "ZPOTRS";
+                        srnamt = "Cpotrs";
                         Cpotrs(uplo.elems, n, nrhs, afac, lda, x, lda, info);
                         //
                         // Check error code from Cpotrs.
                         //
                         if (info != 0) {
-                            Alaerh(path, "ZPOTRS", info, 0, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                            Alaerh(path, "Cpotrs", info, 0, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                         }
                         //
                         Clacpy("Full", n, nrhs, b, lda, work, lda);
@@ -292,13 +292,13 @@ void Cchkpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                         // +    TESTS 5, 6, and 7
                         // Use iterative refinement to improve the solution.
                         //
-                        srnamt = "ZPORFS";
+                        srnamt = "Cporfs";
                         Cporfs(uplo.elems, n, nrhs, a, lda, afac, lda, b, lda, x, lda, rwork, &rwork[(nrhs + 1) - 1], work, &rwork[(2 * nrhs + 1) - 1], info);
                         //
                         // Check error code from Cporfs.
                         //
                         if (info != 0) {
-                            Alaerh(path, "ZPORFS", info, 0, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                            Alaerh(path, "Cporfs", info, 0, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                         }
                         //
                         Cget04(n, nrhs, x, lda, xact, lda, rcondc, result[5 - 1]);
@@ -325,13 +325,13 @@ void Cchkpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                     // Get an estimate of RCOND = 1/CNDNUM.
                     //
                     anorm = Clanhe("1", uplo.elems, n, a, lda, rwork);
-                    srnamt = "ZPOCON";
+                    srnamt = "Cpocon";
                     Cpocon(uplo.elems, n, afac, lda, anorm, rcond, work, rwork, info);
                     //
                     // Check error code from Cpocon.
                     //
                     if (info != 0) {
-                        Alaerh(path, "ZPOCON", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                        Alaerh(path, "Cpocon", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                     }
                     //
                     result[8 - 1] = Rget06(rcond, rcondc);

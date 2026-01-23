@@ -73,7 +73,7 @@ void Rrqt03(INTEGER const m, INTEGER const n, INTEGER const k, REAL *af, REAL *c
     //
     // Generate the n-by-n matrix Q
     //
-    srnamt = "DORGRQ";
+    srnamt = "Rorgrq";
     INTEGER info = 0;
     Rorgrq(n, n, k, q, lda, &tau[(minmn - k + 1) - 1], work, lwork, info);
     //
@@ -121,7 +121,7 @@ void Rrqt03(INTEGER const m, INTEGER const n, INTEGER const k, REAL *af, REAL *c
             //
             // Apply Q or Q' to C
             //
-            srnamt = "DORMRQ";
+            srnamt = "Rormrq";
             if (k > 0) {
                 Rormrq(side.elems, trans.elems, mc, nc, k, &af[((m - k + 1) - 1)], lda, &tau[(minmn - k + 1) - 1], cc, lda, work, lwork, info);
             }

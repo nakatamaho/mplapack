@@ -149,13 +149,13 @@ void Cchktp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                 if (n > 0) {
                     Ccopy(lap, ap, 1, ainvp, 1);
                 }
-                srnamt = "ZTPTRI";
+                srnamt = "Ctptri";
                 Ctptri(uplo.elems, diag.elems, n, ainvp, info);
                 //
                 // Check error code from Ctptri.
                 //
                 if (info != 0) {
-                    Alaerh(path, "ZTPTRI", info, 0, uplo + diag, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                    Alaerh(path, "Ctptri", info, 0, uplo + diag, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                 }
                 //
                 // Compute the infinity-norm condition number of A.
@@ -211,13 +211,13 @@ void Cchktp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                         xtype = "C";
                         Clacpy("Full", n, nrhs, b, lda, x, lda);
                         //
-                        srnamt = "ZTPTRS";
+                        srnamt = "Ctptrs";
                         Ctptrs(uplo.elems, trans.elems, diag.elems, n, nrhs, ap, x, lda, info);
                         //
                         // Check error code from Ctptrs.
                         //
                         if (info != 0) {
-                            Alaerh(path, "ZTPTRS", info, 0, uplo + trans + diag, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                            Alaerh(path, "Ctptrs", info, 0, uplo + trans + diag, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                         }
                         //
                         Ctpt02(uplo, trans, diag, n, nrhs, ap, x, lda, b, lda, work, rwork, result[2 - 1]);
@@ -231,13 +231,13 @@ void Cchktp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                         // Use iterative refinement to improve the solution and
                         // compute error bounds.
                         //
-                        srnamt = "ZTPRFS";
+                        srnamt = "Ctprfs";
                         Ctprfs(uplo.elems, trans.elems, diag.elems, n, nrhs, ap, b, lda, x, lda, rwork, &rwork[(nrhs + 1) - 1], work, &rwork[(2 * nrhs + 1) - 1], info);
                         //
                         // Check error code from Ctprfs.
                         //
                         if (info != 0) {
-                            Alaerh(path, "ZTPRFS", info, 0, uplo + trans + diag, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                            Alaerh(path, "Ctprfs", info, 0, uplo + trans + diag, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                         }
                         //
                         Cget04(n, nrhs, x, lda, xact, lda, rcondc, result[4 - 1]);
@@ -272,13 +272,13 @@ void Cchktp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                         norm = "I";
                         rcondc = rcondi;
                     }
-                    srnamt = "ZTPCON";
+                    srnamt = "Ctpcon";
                     Ctpcon(norm.elems, uplo.elems, diag.elems, n, ap, rcond, work, rwork, info);
                     //
                     // Check error code from Ctpcon.
                     //
                     if (info != 0) {
-                        Alaerh(path, "ZTPCON", info, 0, norm + uplo + diag, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                        Alaerh(path, "Ctpcon", info, 0, norm + uplo + diag, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                     }
                     //
                     Ctpt06(rcond, rcondc, uplo, diag, n, ap, rwork, result[7 - 1]);
@@ -329,14 +329,14 @@ void Cchktp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                     // +    TEST 8
                     // Solve the system op(A)*x = b.
                     //
-                    srnamt = "ZLATPS";
+                    srnamt = "Clatps";
                     Ccopy(n, x, 1, b, 1);
                     Clatps(uplo.elems, trans.elems, diag.elems, "N", n, ap, b, scale, rwork, info);
                     //
                     // Check error code from Clatps.
                     //
                     if (info != 0) {
-                        Alaerh(path, "ZLATPS", info, 0, uplo + trans + diag + "N", n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                        Alaerh(path, "Clatps", info, 0, uplo + trans + diag + "N", n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                     }
                     //
                     Ctpt03(uplo, trans, diag, n, 1, ap, scale, rwork, one, b, lda, x, lda, work, result[8 - 1]);
@@ -350,7 +350,7 @@ void Cchktp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                     // Check error code from Clatps.
                     //
                     if (info != 0) {
-                        Alaerh(path, "ZLATPS", info, 0, uplo + trans + diag + "Y", n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                        Alaerh(path, "Clatps", info, 0, uplo + trans + diag + "Y", n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                     }
                     //
                     Ctpt03(uplo, trans, diag, n, 1, ap, scale, rwork, one, &b[(n + 1) - 1], lda, x, lda, work, result[9 - 1]);
@@ -362,14 +362,14 @@ void Cchktp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                         if (nfail == 0 && nerrs == 0) {
                             Alahd(nout, path);
                         }
-                        write(nout, format_9996), "ZLATPS", uplo, trans, diag, "N", n, imat, 8, result[8 - 1];
+                        write(nout, format_9996), "Clatps", uplo, trans, diag, "N", n, imat, 8, result[8 - 1];
                         nfail++;
                     }
                     if (result[9 - 1] >= thresh) {
                         if (nfail == 0 && nerrs == 0) {
                             Alahd(nout, path);
                         }
-                        write(nout, format_9996), "ZLATPS", uplo, trans, diag, "Y", n, imat, 9, result[9 - 1];
+                        write(nout, format_9996), "Clatps", uplo, trans, diag, "Y", n, imat, 9, result[9 - 1];
                         nfail++;
                     }
                     nrun += 2;

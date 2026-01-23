@@ -256,13 +256,13 @@ void Rchkpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                         // matrix.
                         //
                         Rlacpy("Full", kd + 1, n, a, ldab, afac, ldab);
-                        srnamt = "DPBTRF";
+                        srnamt = "Rpbtrf";
                         Rpbtrf(uplo.elems, n, kd, afac, ldab, info);
                         //
                         // Check error code from Rpbtrf.
                         //
                         if (info != izero) {
-                            Alaerh(path, "DPBTRF", info, izero, uplo, n, n, kd, kd, nb, imat, nfail, nerrs, nout);
+                            Alaerh(path, "Rpbtrf", info, izero, uplo, n, n, kd, kd, nb, imat, nfail, nerrs, nout);
                             goto statement_50;
                         }
                         //
@@ -302,7 +302,7 @@ void Rchkpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                         // of RCONDC = 1/(norm(A) * norm(inv(A))).
                         //
                         Rlaset("Full", n, n, zero, one, ainv, lda);
-                        srnamt = "DPBTRS";
+                        srnamt = "Rpbtrs";
                         Rpbtrs(uplo.elems, n, kd, n, afac, ldab, ainv, lda, info);
                         //
                         // Compute RCONDC = 1/(norm(A) * norm(inv(A))).
@@ -325,13 +325,13 @@ void Rchkpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                             Rlarhs(path, xtype, uplo, " ", n, n, kd, kd, nrhs, a, ldab, xact, lda, b, lda, iseed, info);
                             Rlacpy("Full", n, nrhs, b, lda, x, lda);
                             //
-                            srnamt = "DPBTRS";
+                            srnamt = "Rpbtrs";
                             Rpbtrs(uplo.elems, n, kd, nrhs, afac, ldab, x, lda, info);
                             //
                             // Check error code from Rpbtrs.
                             //
                             if (info != 0) {
-                                Alaerh(path, "DPBTRS", info, 0, uplo, n, n, kd, kd, nrhs, imat, nfail, nerrs, nout);
+                                Alaerh(path, "Rpbtrs", info, 0, uplo, n, n, kd, kd, nrhs, imat, nfail, nerrs, nout);
                             }
                             //
                             Rlacpy("Full", n, nrhs, b, lda, work, lda);
@@ -345,13 +345,13 @@ void Rchkpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                             // +    TESTS 4, 5, and 6
                             // Use iterative refinement to improve the solution.
                             //
-                            srnamt = "DPBRFS";
+                            srnamt = "Rpbrfs";
                             Rpbrfs(uplo.elems, n, kd, nrhs, a, ldab, afac, ldab, b, lda, x, lda, rwork, &rwork[(nrhs + 1) - 1], work, iwork, info);
                             //
                             // Check error code from Rpbrfs.
                             //
                             if (info != 0) {
-                                Alaerh(path, "DPBRFS", info, 0, uplo, n, n, kd, kd, nrhs, imat, nfail, nerrs, nout);
+                                Alaerh(path, "Rpbrfs", info, 0, uplo, n, n, kd, kd, nrhs, imat, nfail, nerrs, nout);
                             }
                             //
                             Rget04(n, nrhs, x, lda, xact, lda, rcondc, result[4 - 1]);
@@ -377,13 +377,13 @@ void Rchkpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                         // +    TEST 7
                         // Get an estimate of RCOND = 1/CNDNUM.
                         //
-                        srnamt = "DPBCON";
+                        srnamt = "Rpbcon";
                         Rpbcon(uplo.elems, n, kd, afac, ldab, anorm, rcond, work, iwork, info);
                         //
                         // Check error code from Rpbcon.
                         //
                         if (info != 0) {
-                            Alaerh(path, "DPBCON", info, 0, uplo, n, n, kd, kd, -1, imat, nfail, nerrs, nout);
+                            Alaerh(path, "Rpbcon", info, 0, uplo, n, n, kd, kd, -1, imat, nfail, nerrs, nout);
                         }
                         //
                         result[7 - 1] = Rget06(rcond, rcondc);

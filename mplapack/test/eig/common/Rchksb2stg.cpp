@@ -336,7 +336,7 @@ void Rchksb2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const nwdths, INTEGER
                 Rsbtrd("V", "U", n, k, work, lda, sd, se, u, ldu, &work[(lda * n + 1) - 1], iinfo);
                 //
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "DSBTRD(U)", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "Rsbtrd(U)", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -369,7 +369,7 @@ void Rchksb2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const nwdths, INTEGER
                 //
                 Rsteqr("N", n, d1, work, &work[(n + 1) - 1], ldu, &work[(n + 1) - 1], iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "DSTEQR(N)", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "Rsteqr(N)", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -400,7 +400,7 @@ void Rchksb2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const nwdths, INTEGER
                 //
                 Rsteqr("N", n, d2, work, &work[(n + 1) - 1], ldu, &work[(n + 1) - 1], iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "DSTEQR(N)", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "Rsteqr(N)", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -432,7 +432,7 @@ void Rchksb2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const nwdths, INTEGER
                 Rsbtrd("V", "L", n, k, work, lda, sd, se, u, ldu, &work[(lda * n + 1) - 1], iinfo);
                 //
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "DSBTRD(L)", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "Rsbtrd(L)", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -468,7 +468,7 @@ void Rchksb2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const nwdths, INTEGER
                 //
                 Rsteqr("N", n, d3, work, &work[(n + 1) - 1], ldu, &work[(n + 1) - 1], iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "DSTEQR(N)", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "Rsteqr(N)", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;

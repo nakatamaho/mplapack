@@ -264,7 +264,7 @@ void Rchksy(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                     // block factorization, LWORK is the length of AINV.
                     //
                     lwork = max((INTEGER)2, nb) * lda;
-                    srnamt = "DSYTRF";
+                    srnamt = "Rsytrf";
                     Rsytrf(uplo.elems, n, afac, lda, iwork, ainv, lwork, info);
                     //
                     // Adjust the expected value of INFO to account for
@@ -287,7 +287,7 @@ void Rchksy(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                     // Check error code from Rsytrf and handle error.
                     //
                     if (info != k) {
-                        Alaerh(path, "DSYTRF", info, k, uplo, n, n, -1, -1, nb, imat, nfail, nerrs, nout);
+                        Alaerh(path, "Rsytrf", info, k, uplo, n, n, -1, -1, nb, imat, nfail, nerrs, nout);
                     }
                     //
                     // Set the condition estimate flag if the INFO is not 0.
@@ -312,14 +312,14 @@ void Rchksy(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                     //
                     if (inb == 1 && !trfcon) {
                         Rlacpy(uplo.elems, n, n, afac, lda, ainv, lda);
-                        srnamt = "DSYTRI2";
+                        srnamt = "Rsytri2";
                         lwork = (n + nb + 1) * (nb + 3);
                         Rsytri2(uplo.elems, n, ainv, lda, iwork, work, lwork, info);
                         //
                         // Check error code from Rsytri2 and handle error.
                         //
                         if (info != 0) {
-                            Alaerh(path, "DSYTRI2", info, -1, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                            Alaerh(path, "Rsytri2", info, -1, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                         }
                         //
                         // Compute the residual for a symmetric matrix times
@@ -374,13 +374,13 @@ void Rchksy(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                         Rlarhs(path, xtype, uplo, " ", n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
                         Rlacpy("Full", n, nrhs, b, lda, x, lda);
                         //
-                        srnamt = "DSYTRS";
+                        srnamt = "Rsytrs";
                         Rsytrs(uplo.elems, n, nrhs, afac, lda, iwork, x, lda, info);
                         //
                         // Check error code from Rsytrs and handle error.
                         //
                         if (info != 0) {
-                            Alaerh(path, "DSYTRS", info, 0, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                            Alaerh(path, "Rsytrs", info, 0, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                         }
                         //
                         Rlacpy("Full", n, nrhs, b, lda, work, lda);
@@ -400,13 +400,13 @@ void Rchksy(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                         Rlarhs(path, xtype, uplo, " ", n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
                         Rlacpy("Full", n, nrhs, b, lda, x, lda);
                         //
-                        srnamt = "DSYTRS2";
+                        srnamt = "Rsytrs2";
                         Rsytrs2(uplo.elems, n, nrhs, afac, lda, iwork, x, lda, work, info);
                         //
                         // Check error code from Rsytrs2 and handle error.
                         //
                         if (info != 0) {
-                            Alaerh(path, "DSYTRS2", info, 0, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                            Alaerh(path, "Rsytrs2", info, 0, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                         }
                         //
                         Rlacpy("Full", n, nrhs, b, lda, work, lda);
@@ -423,13 +423,13 @@ void Rchksy(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                         // +    TESTS 6, 7, and 8
                         // Use iterative refinement to improve the solution.
                         //
-                        srnamt = "DSYRFS";
+                        srnamt = "Rsyrfs";
                         Rsyrfs(uplo.elems, n, nrhs, a, lda, afac, lda, iwork, b, lda, x, lda, rwork, &rwork[(nrhs + 1) - 1], work, &iwork[(n + 1) - 1], info);
                         //
                         // Check error code from Rsyrfs and handle error.
                         //
                         if (info != 0) {
-                            Alaerh(path, "DSYRFS", info, 0, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                            Alaerh(path, "Rsyrfs", info, 0, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                         }
                         //
                         Rget04(n, nrhs, x, lda, xact, lda, rcondc, result[6 - 1]);
@@ -460,13 +460,13 @@ void Rchksy(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                 //
                 statement_140:
                     anorm = Rlansy("1", uplo.elems, n, a, lda, rwork);
-                    srnamt = "DSYCON";
+                    srnamt = "Rsycon";
                     Rsycon(uplo.elems, n, afac, lda, iwork, anorm, rcond, work, &iwork[(n + 1) - 1], info);
                     //
                     // Check error code from Rsycon and handle error.
                     //
                     if (info != 0) {
-                        Alaerh(path, "DSYCON", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                        Alaerh(path, "Rsycon", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                     }
                     //
                     // Compute the test ratio to compare values of RCOND

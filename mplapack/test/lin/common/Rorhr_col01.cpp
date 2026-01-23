@@ -110,27 +110,27 @@ void Rorhr_col01(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
     //
     // Factor the matrix A in the array AF.
     //
-    srnamt = "DLATSQR";
+    srnamt = "Rlatsqr";
     std::unique_ptr<REAL[]> __work_storage(new REAL[lwork]);
     REAL *work = __work_storage.get();
     Rlatsqr(m, n, mb1, nb1_ub, af, m, t1, nb1, work, lwork, info);
     //
     // Copy the factor R into the array R.
     //
-    srnamt = "DLACPY";
+    srnamt = "Rlacpy";
     std::unique_ptr<REAL[]> __r_storage(new REAL[m * l]);
     REAL *r = __r_storage.get();
     Rlacpy("U", n, n, af, m, r, m);
     //
     // Reconstruct the orthogonal matrix Q.
     //
-    srnamt = "DORGTSQR";
+    srnamt = "Rorgtsqr";
     Rorgtsqr(m, n, mb1, nb1, af, m, t1, nb1, work, lwork, info);
     //
     // Perform the Householder reconstruction, the result is stored
     // the arrays AF and T2.
     //
-    srnamt = "DORHR_COL";
+    srnamt = "Rorhr_col";
     std::unique_ptr<REAL[]> __t2_storage(new REAL[nb2 * n]);
     REAL *t2 = __t2_storage.get();
     std::unique_ptr<REAL[]> __diag_storage(new REAL[n]);
@@ -144,7 +144,7 @@ void Rorhr_col01(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
     // according to sign of of I-th diagonal element DIAG(I) of the
     // matrix S.
     //
-    srnamt = "DLACPY";
+    srnamt = "Rlacpy";
     Rlacpy("U", n, n, r, m, af, m);
     //
     INTEGER i = 0;
@@ -164,7 +164,7 @@ void Rorhr_col01(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
     REAL *q = __q_storage.get();
     Rlaset("Full", m, m, zero, one, q, m);
     //
-    srnamt = "DGEMQRT";
+    srnamt = "Rgemqrt";
     Rgemqrt("L", "N", m, m, k, nb2_ub, af, m, t2, nb2, q, m, work, info);
     //
     // Copy R
@@ -210,7 +210,7 @@ void Rorhr_col01(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
     //
     // Apply Q to C as Q*C = CF
     //
-    srnamt = "DGEMQRT";
+    srnamt = "Rgemqrt";
     Rgemqrt("L", "N", m, n, k, nb2_ub, af, m, t2, nb2, cf, m, work, info);
     //
     // TEST 3
@@ -230,7 +230,7 @@ void Rorhr_col01(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
     //
     // Apply Q to C as (Q**T)*C = CF
     //
-    srnamt = "DGEMQRT";
+    srnamt = "Rgemqrt";
     Rgemqrt("L", "T", m, n, k, nb2_ub, af, m, t2, nb2, cf, m, work, info);
     //
     // TEST 4
@@ -258,7 +258,7 @@ void Rorhr_col01(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
     //
     // Apply Q to D as D*Q = DF
     //
-    srnamt = "DGEMQRT";
+    srnamt = "Rgemqrt";
     Rgemqrt("R", "N", n, m, k, nb2_ub, af, m, t2, nb2, df, n, work, info);
     //
     // TEST 5
@@ -278,7 +278,7 @@ void Rorhr_col01(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
     //
     // Apply Q to D as D*QT = DF
     //
-    srnamt = "DGEMQRT";
+    srnamt = "Rgemqrt";
     Rgemqrt("R", "T", n, m, k, nb2_ub, af, m, t2, nb2, df, n, work, info);
     //
     // TEST 6

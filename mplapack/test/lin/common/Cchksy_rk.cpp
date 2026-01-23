@@ -302,7 +302,7 @@ void Cchksy_rk(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
                     // block factorization, LWORK is the length of AINV.
                     //
                     lwork = max((INTEGER)2, nb) * lda;
-                    srnamt = "ZSYTRF_RK";
+                    srnamt = "Csytrf_rk";
                     Csytrf_rk(uplo.elems, n, afac, lda, e, iwork, ainv, lwork, info);
                     //
                     // Adjust the expected value of INFO to account for
@@ -325,7 +325,7 @@ void Cchksy_rk(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
                     // Check error code from Csytrf_rk and handle error.
                     //
                     if (info != k) {
-                        Alaerh(path, "ZSYTRF_RK", info, k, uplo, n, n, -1, -1, nb, imat, nfail, nerrs, nout);
+                        Alaerh(path, "Csytrf_rk", info, k, uplo, n, n, -1, -1, nb, imat, nfail, nerrs, nout);
                     }
                     //
                     // Set the condition estimate flag if the INFO is not 0.
@@ -350,7 +350,7 @@ void Cchksy_rk(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
                     //
                     if (inb == 1 && !trfcon) {
                         Clacpy(uplo.elems, n, n, afac, lda, ainv, lda);
-                        srnamt = "ZSYTRI_3";
+                        srnamt = "Csytri_3";
                         //
                         // Another reason that we need to compute the inverse
                         // is that Csyt03 produces RCONDC which is used later
@@ -362,7 +362,7 @@ void Cchksy_rk(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
                         // Check error code from Csytri_3 and handle error.
                         //
                         if (info != 0) {
-                            Alaerh(path, "ZSYTRI_3", info, -1, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                            Alaerh(path, "Csytri_3", info, -1, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                         }
                         //
                         // Compute the residual for a symmetric matrix times
@@ -610,13 +610,13 @@ void Cchksy_rk(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
                         Clarhs(matpath, xtype, uplo, " ", n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
                         Clacpy("Full", n, nrhs, b, lda, x, lda);
                         //
-                        srnamt = "ZSYTRS_3";
+                        srnamt = "Csytrs_3";
                         Csytrs_3(uplo.elems, n, nrhs, afac, lda, e, iwork, x, lda, info);
                         //
                         // Check error code from Csytrs_3 and handle error.
                         //
                         if (info != 0) {
-                            Alaerh(path, "ZSYTRS_3", info, 0, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                            Alaerh(path, "Csytrs_3", info, 0, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                         }
                         //
                         Clacpy("Full", n, nrhs, b, lda, work, lda);
@@ -655,13 +655,13 @@ void Cchksy_rk(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
                 //
                 statement_230:
                     anorm = Clansy("1", uplo.elems, n, a, lda, rwork);
-                    srnamt = "ZSYCON_3";
+                    srnamt = "Csycon_3";
                     Csycon_3(uplo.elems, n, afac, lda, e, iwork, anorm, rcond, work, info);
                     //
                     // Check error code from Csycon_3 and handle error.
                     //
                     if (info != 0) {
-                        Alaerh(path, "ZSYCON_3", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                        Alaerh(path, "Csycon_3", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                     }
                     //
                     // Compute the test ratio to compare values of RCOND

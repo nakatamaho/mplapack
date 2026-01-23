@@ -56,7 +56,7 @@ void Rqrt03(INTEGER const m, INTEGER const n, INTEGER const k, REAL *af, REAL *c
     //
     // Generate the m-by-m matrix Q
     //
-    srnamt = "DORGQR";
+    srnamt = "Rorgqr";
     INTEGER info = 0;
     Rorgqr(m, m, k, q, lda, tau, work, lwork, info);
     //
@@ -104,7 +104,7 @@ void Rqrt03(INTEGER const m, INTEGER const n, INTEGER const k, REAL *af, REAL *c
             //
             // Apply Q or Q' to C
             //
-            srnamt = "DORMQR";
+            srnamt = "Rormqr";
             Rormqr(side.elems, trans.elems, mc, nc, k, af, lda, tau, cc, lda, work, lwork, info);
             //
             // Form explicit product and subtract

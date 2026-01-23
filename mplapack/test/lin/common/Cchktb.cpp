@@ -230,13 +230,13 @@ void Cchktb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                             xtype = "C";
                             Clacpy("Full", n, nrhs, b, lda, x, lda);
                             //
-                            srnamt = "ZTBTRS";
+                            srnamt = "Ctbtrs";
                             Ctbtrs(uplo.elems, trans.elems, diag.elems, n, kd, nrhs, ab, ldab, x, lda, info);
                             //
                             // Check error code from Ctbtrs.
                             //
                             if (info != 0) {
-                                Alaerh(path, "ZTBTRS", info, 0, uplo + trans + diag, n, n, kd, kd, nrhs, imat, nfail, nerrs, nout);
+                                Alaerh(path, "Ctbtrs", info, 0, uplo + trans + diag, n, n, kd, kd, nrhs, imat, nfail, nerrs, nout);
                             }
                             //
                             Ctbt02(uplo, trans, diag, n, kd, nrhs, ab, ldab, x, lda, b, lda, work, rwork, result[1 - 1]);
@@ -250,13 +250,13 @@ void Cchktb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                             // Use iterative refinement to improve the solution
                             // and compute error bounds.
                             //
-                            srnamt = "ZTBRFS";
+                            srnamt = "Ctbrfs";
                             Ctbrfs(uplo.elems, trans.elems, diag.elems, n, kd, nrhs, ab, ldab, b, lda, x, lda, rwork, &rwork[(nrhs + 1) - 1], work, &rwork[(2 * nrhs + 1) - 1], info);
                             //
                             // Check error code from Ctbrfs.
                             //
                             if (info != 0) {
-                                Alaerh(path, "ZTBRFS", info, 0, uplo + trans + diag, n, n, kd, kd, nrhs, imat, nfail, nerrs, nout);
+                                Alaerh(path, "Ctbrfs", info, 0, uplo + trans + diag, n, n, kd, kd, nrhs, imat, nfail, nerrs, nout);
                             }
                             //
                             Cget04(n, nrhs, x, lda, xact, lda, rcondc, result[3 - 1]);
@@ -292,13 +292,13 @@ void Cchktb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                             norm = "I";
                             rcondc = rcondi;
                         }
-                        srnamt = "ZTBCON";
+                        srnamt = "Ctbcon";
                         Ctbcon(norm.elems, uplo.elems, diag.elems, n, kd, ab, ldab, rcond, work, rwork, info);
                         //
                         // Check error code from Ctbcon.
                         //
                         if (info != 0) {
-                            Alaerh(path, "ZTBCON", info, 0, norm + uplo + diag, n, n, kd, kd, -1, imat, nfail, nerrs, nout);
+                            Alaerh(path, "Ctbcon", info, 0, norm + uplo + diag, n, n, kd, kd, -1, imat, nfail, nerrs, nout);
                         }
                         //
                         Ctbt06(rcond, rcondc, uplo, diag, n, kd, ab, ldab, rwork, result[6 - 1]);
@@ -349,14 +349,14 @@ void Cchktb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                         // +    TEST 7
                         // Solve the system op(A)*x = b
                         //
-                        srnamt = "ZLATBS";
+                        srnamt = "Clatbs";
                         Ccopy(n, x, 1, b, 1);
                         Clatbs(uplo.elems, trans.elems, diag.elems, "N", n, kd, ab, ldab, b, scale, rwork, info);
                         //
                         // Check error code from Clatbs.
                         //
                         if (info != 0) {
-                            Alaerh(path, "ZLATBS", info, 0, uplo + trans + diag + "N", n, n, kd, kd, -1, imat, nfail, nerrs, nout);
+                            Alaerh(path, "Clatbs", info, 0, uplo + trans + diag + "N", n, n, kd, kd, -1, imat, nfail, nerrs, nout);
                         }
                         //
                         Ctbt03(uplo, trans, diag, n, kd, 1, ab, ldab, scale, rwork, one, b, lda, x, lda, work, result[7 - 1]);
@@ -370,7 +370,7 @@ void Cchktb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                         // Check error code from Clatbs.
                         //
                         if (info != 0) {
-                            Alaerh(path, "ZLATBS", info, 0, uplo + trans + diag + "Y", n, n, kd, kd, -1, imat, nfail, nerrs, nout);
+                            Alaerh(path, "Clatbs", info, 0, uplo + trans + diag + "Y", n, n, kd, kd, -1, imat, nfail, nerrs, nout);
                         }
                         //
                         Ctbt03(uplo, trans, diag, n, kd, 1, ab, ldab, scale, rwork, one, b, lda, x, lda, work, result[8 - 1]);
@@ -382,14 +382,14 @@ void Cchktb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                             if (nfail == 0 && nerrs == 0) {
                                 Alahd(nout, path);
                             }
-                            write(nout, format_9997), "ZLATBS", uplo, trans, diag, "N", n, kd, imat, 7, result[7 - 1];
+                            write(nout, format_9997), "Clatbs", uplo, trans, diag, "N", n, kd, imat, 7, result[7 - 1];
                             nfail++;
                         }
                         if (result[8 - 1] >= thresh) {
                             if (nfail == 0 && nerrs == 0) {
                                 Alahd(nout, path);
                             }
-                            write(nout, format_9997), "ZLATBS", uplo, trans, diag, "Y", n, kd, imat, 8, result[8 - 1];
+                            write(nout, format_9997), "Clatbs", uplo, trans, diag, "Y", n, kd, imat, 8, result[8 - 1];
                             nfail++;
                         }
                         nrun += 2;

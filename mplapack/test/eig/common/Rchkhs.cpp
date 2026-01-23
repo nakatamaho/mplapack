@@ -356,7 +356,7 @@ void Rchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             //
             if (iinfo != 0) {
                 result[1 - 1] = ulpinv;
-                write(nounit, format_9999), "DGEHRD", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Rgehrd", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 goto statement_250;
             }
@@ -385,7 +385,7 @@ void Rchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             //
             Rhseqr("E", "N", n, ilo, ihi, t2, lda, wr3, wi3, uz, ldu, work, nwork, iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "DHSEQR(E)", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Rhseqr(E)", iinfo, n, jtype, ioldsd;
                 if (iinfo <= n + 2) {
                     info = abs(iinfo);
                     goto statement_250;
@@ -398,7 +398,7 @@ void Rchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             //
             Rhseqr("S", "N", n, ilo, ihi, t2, lda, wr2, wi2, uz, ldu, work, nwork, iinfo);
             if (iinfo != 0 && iinfo <= n + 2) {
-                write(nounit, format_9999), "DHSEQR(S)", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Rhseqr(S)", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 goto statement_250;
             }
@@ -411,7 +411,7 @@ void Rchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             //
             Rhseqr("S", "V", n, ilo, ihi, t1, lda, wr1, wi1, uz, ldu, work, nwork, iinfo);
             if (iinfo != 0 && iinfo <= n + 2) {
-                write(nounit, format_9999), "DHSEQR(V)", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Rhseqr(V)", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 goto statement_250;
             }
@@ -484,7 +484,7 @@ void Rchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             //
             Rtrevc("Right", "All", select, n, t1, lda, dumma, ldu, evectr, ldu, n, in, work, iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "DTREVC(R,A)", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Rtrevc(R,A)", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 goto statement_250;
             }
@@ -502,7 +502,7 @@ void Rchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             //
             Rtrevc("Right", "Some", select, n, t1, lda, dumma, ldu, evectl, ldu, n, in, work, iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "DTREVC(R,S)", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Rtrevc(R,S)", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 goto statement_250;
             }
@@ -539,7 +539,7 @@ void Rchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             result[10 - 1] = ulpinv;
             Rtrevc("Left", "All", select, n, t1, lda, evectl, ldu, dumma, ldu, n, in, work, iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "DTREVC(L,A)", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Rtrevc(L,A)", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 goto statement_250;
             }
@@ -557,7 +557,7 @@ void Rchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             //
             Rtrevc("Left", "Some", select, n, t1, lda, evectr, ldu, dumma, ldu, n, in, work, iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "DTREVC(L,S)", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Rtrevc(L,S)", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 goto statement_250;
             }
@@ -598,7 +598,7 @@ void Rchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             //
             Rhsein("Right", "Qr", "Ninitv", select, n, h, lda, wr3, wi3, dumma, ldu, evectx, ldu, n1, in, work, iwork, iwork, iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "DHSEIN(R)", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Rhsein(R)", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     goto statement_250;
@@ -628,7 +628,7 @@ void Rchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             //
             Rhsein("Left", "Qr", "Ninitv", select, n, h, lda, wr3, wi3, evecty, ldu, dumma, ldu, n1, in, work, iwork, iwork, iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "DHSEIN(L)", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Rhsein(L)", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     goto statement_250;
@@ -655,7 +655,7 @@ void Rchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             //
             Rormhr("Left", "No transpose", n, n, ilo, ihi, uu, ldu, tau, evectx, ldu, work, nwork, iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "DORMHR(R)", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Rormhr(R)", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     goto statement_250;
@@ -679,7 +679,7 @@ void Rchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             //
             Rormhr("Left", "No transpose", n, n, ilo, ihi, uu, ldu, tau, evecty, ldu, work, nwork, iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "DORMHR(L)", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Rormhr(L)", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     goto statement_250;

@@ -70,19 +70,19 @@ void Cerrqp(fem::str_cref path, INTEGER const nunit) {
         //
         // Cgeqp3
         //
-        srnamt = "ZGEQP3";
+        srnamt = "Cgeqp3";
         infot = 1;
         Cgeqp3(-1, 0, a, 1, ip, tau, w, lw, rw, info);
-        Chkxer("ZGEQP3", infot, nout, lerr, ok);
+        Chkxer("Cgeqp3", infot, nout, lerr, ok);
         infot = 2;
         Cgeqp3(1, -1, a, 1, ip, tau, w, lw, rw, info);
-        Chkxer("ZGEQP3", infot, nout, lerr, ok);
+        Chkxer("Cgeqp3", infot, nout, lerr, ok);
         infot = 4;
         Cgeqp3(2, 3, a, 1, ip, tau, w, lw, rw, info);
-        Chkxer("ZGEQP3", infot, nout, lerr, ok);
+        Chkxer("Cgeqp3", infot, nout, lerr, ok);
         infot = 8;
         Cgeqp3(2, 2, a, 2, ip, tau, w, lw - 10, rw, info);
-        Chkxer("ZGEQP3", infot, nout, lerr, ok);
+        Chkxer("Cgeqp3", infot, nout, lerr, ok);
     }
     //
     // Print a summary line.

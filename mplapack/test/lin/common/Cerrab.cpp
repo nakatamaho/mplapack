@@ -81,7 +81,7 @@ void Cerrab(INTEGER const nunit) {
     }
     ok = true;
     //
-    srnamt = "ZCGESV";
+    srnamt = "Ccgesv";
     infot = 1;
     COMPLEX work[1];
     COMPLEX swork[1];
@@ -89,19 +89,19 @@ void Cerrab(INTEGER const nunit) {
     INTEGER iter = 0;
     INTEGER info = 0;
     Ccgesv(-1, 0, a, 1, ip, b, 1, x, 1, work, swork, rwork, iter, info);
-    Chkxer("ZCGESV", infot, nout, lerr, ok);
+    Chkxer("Ccgesv", infot, nout, lerr, ok);
     infot = 2;
     Ccgesv(0, -1, a, 1, ip, b, 1, x, 1, work, swork, rwork, iter, info);
-    Chkxer("ZCGESV", infot, nout, lerr, ok);
+    Chkxer("Ccgesv", infot, nout, lerr, ok);
     infot = 4;
     Ccgesv(2, 1, a, 1, ip, b, 2, x, 2, work, swork, rwork, iter, info);
-    Chkxer("ZCGESV", infot, nout, lerr, ok);
+    Chkxer("Ccgesv", infot, nout, lerr, ok);
     infot = 7;
     Ccgesv(2, 1, a, 2, ip, b, 1, x, 2, work, swork, rwork, iter, info);
-    Chkxer("ZCGESV", infot, nout, lerr, ok);
+    Chkxer("Ccgesv", infot, nout, lerr, ok);
     infot = 9;
     Ccgesv(2, 1, a, 2, ip, b, 2, x, 1, work, swork, rwork, iter, info);
-    Chkxer("ZCGESV", infot, nout, lerr, ok);
+    Chkxer("Ccgesv", infot, nout, lerr, ok);
     //
     // Print a summary line.
     //

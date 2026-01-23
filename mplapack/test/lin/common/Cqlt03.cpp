@@ -73,7 +73,7 @@ void Cqlt03(INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX *af, COMP
     //
     // Generate the m-by-m matrix Q
     //
-    srnamt = "ZUNGQL";
+    srnamt = "Cungql";
     INTEGER info = 0;
     Cungql(m, m, k, q, lda, &tau[(minmn - k + 1) - 1], work, lwork, info);
     //
@@ -121,7 +121,7 @@ void Cqlt03(INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX *af, COMP
             //
             // Apply Q or Q' to C
             //
-            srnamt = "ZUNMQL";
+            srnamt = "Cunmql";
             if (k > 0) {
                 Cunmql(side.elems, trans.elems, mc, nc, k, &af[((n - k + 1) - 1) * lda], lda, &tau[(minmn - k + 1) - 1], cc, lda, work, lwork, info);
             }

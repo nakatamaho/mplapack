@@ -217,12 +217,12 @@ statement_10:
 //
 statement_100:
     //
-    write(nout, "(1x,'.. test output of ZGGBAK .. ')");
+    write(nout, "(1x,'.. test output of Cggbak.. ')");
     //
     write(nout, "(' value of largest test error                  =',d12.3)"), rmax;
-    write(nout, "(' example number where ZGGBAL info is not 0    =',i4)"), lmax[1 - 1];
-    write(nout, "(' example number where ZGGBAK(L) info is not 0 =',i4)"), lmax[2 - 1];
-    write(nout, "(' example number where ZGGBAK(R) info is not 0 =',i4)"), lmax[3 - 1];
+    write(nout, "(' example number where Cggbal info is not 0    =',i4)"), lmax[1 - 1];
+    write(nout, "(' example number where Cggbak(L) info is not 0 =',i4)"), lmax[2 - 1];
+    write(nout, "(' example number where Cggbak(R) info is not 0 =',i4)"), lmax[3 - 1];
     write(nout, "(' example number having largest error          =',i4)"), lmax[4 - 1];
     write(nout, "(' number of examples where info is not 0       =',i4)"), ninfo;
     write(nout, "(' total number of examples tested              =',i4)"), knt;

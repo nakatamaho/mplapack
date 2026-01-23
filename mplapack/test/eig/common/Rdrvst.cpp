@@ -364,10 +364,10 @@ void Rdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 for (i = 1; i <= n - 1; i = i + 1) {
                     d2[i - 1] = castREAL(a[((i + 1) - 1) + (i - 1) * lda]);
                 }
-                srnamt = "DSTEV";
+                srnamt = "Rstev";
                 Rstev("V", n, d1, d2, z, ldu, work, iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "DSTEV(V)", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "Rstev(V)", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -393,10 +393,10 @@ void Rdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 for (i = 1; i <= n - 1; i = i + 1) {
                     d4[i - 1] = castREAL(a[((i + 1) - 1) + (i - 1) * lda]);
                 }
-                srnamt = "DSTEV";
+                srnamt = "Rstev";
                 Rstev("N", n, d3, d4, z, ldu, work, iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "DSTEV(N)", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "Rstev(N)", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -426,10 +426,10 @@ void Rdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 for (i = 1; i <= n - 1; i = i + 1) {
                     d2[i - 1] = castREAL(a[((i + 1) - 1) + (i - 1) * lda]);
                 }
-                srnamt = "DSTEVX";
+                srnamt = "Rstevx";
                 Rstevx("V", "A", n, d1, d2, vl, vu, il, iu, abstol, m, wa1, z, ldu, work, iwork, &iwork[(5 * n + 1) - 1], iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "DSTEVX(V,A)", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "Rstevx(V,A)", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -460,10 +460,10 @@ void Rdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 for (i = 1; i <= n - 1; i = i + 1) {
                     d4[i - 1] = castREAL(a[((i + 1) - 1) + (i - 1) * lda]);
                 }
-                srnamt = "DSTEVX";
+                srnamt = "Rstevx";
                 Rstevx("N", "A", n, d3, d4, vl, vu, il, iu, abstol, m2, wa2, z, ldu, work, iwork, &iwork[(5 * n + 1) - 1], iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "DSTEVX(N,A)", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "Rstevx(N,A)", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -492,10 +492,10 @@ void Rdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 for (i = 1; i <= n - 1; i = i + 1) {
                     d2[i - 1] = castREAL(a[((i + 1) - 1) + (i - 1) * lda]);
                 }
-                srnamt = "DSTEVR";
+                srnamt = "Rstevr";
                 Rstevr("V", "A", n, d1, d2, vl, vu, il, iu, abstol, m, wa1, z, ldu, iwork, work, lwork, &iwork[(2 * n + 1) - 1], liwork - 2 * n, iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "DSTEVR(V,A)", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "Rstevr(V,A)", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -525,10 +525,10 @@ void Rdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 for (i = 1; i <= n - 1; i = i + 1) {
                     d4[i - 1] = castREAL(a[((i + 1) - 1) + (i - 1) * lda]);
                 }
-                srnamt = "DSTEVR";
+                srnamt = "Rstevr";
                 Rstevr("N", "A", n, d3, d4, vl, vu, il, iu, abstol, m2, wa2, z, ldu, iwork, work, lwork, &iwork[(2 * n + 1) - 1], liwork - 2 * n, iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "DSTEVR(N,A)", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "Rstevr(N,A)", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -557,10 +557,10 @@ void Rdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 for (i = 1; i <= n - 1; i = i + 1) {
                     d2[i - 1] = castREAL(a[((i + 1) - 1) + (i - 1) * lda]);
                 }
-                srnamt = "DSTEVX";
+                srnamt = "Rstevx";
                 Rstevx("V", "I", n, d1, d2, vl, vu, il, iu, abstol, m2, wa2, z, ldu, work, iwork, &iwork[(5 * n + 1) - 1], iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "DSTEVX(V,I)", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "Rstevx(V,I)", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -586,10 +586,10 @@ void Rdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 for (i = 1; i <= n - 1; i = i + 1) {
                     d4[i - 1] = castREAL(a[((i + 1) - 1) + (i - 1) * lda]);
                 }
-                srnamt = "DSTEVX";
+                srnamt = "Rstevx";
                 Rstevx("N", "I", n, d3, d4, vl, vu, il, iu, abstol, m3, wa3, z, ldu, work, iwork, &iwork[(5 * n + 1) - 1], iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "DSTEVX(N,I)", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "Rstevx(N,I)", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -630,10 +630,10 @@ void Rdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 for (i = 1; i <= n - 1; i = i + 1) {
                     d2[i - 1] = castREAL(a[((i + 1) - 1) + (i - 1) * lda]);
                 }
-                srnamt = "DSTEVX";
+                srnamt = "Rstevx";
                 Rstevx("V", "V", n, d1, d2, vl, vu, il, iu, abstol, m2, wa2, z, ldu, work, iwork, &iwork[(5 * n + 1) - 1], iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "DSTEVX(V,V)", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "Rstevx(V,V)", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -666,10 +666,10 @@ void Rdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 for (i = 1; i <= n - 1; i = i + 1) {
                     d4[i - 1] = castREAL(a[((i + 1) - 1) + (i - 1) * lda]);
                 }
-                srnamt = "DSTEVX";
+                srnamt = "Rstevx";
                 Rstevx("N", "V", n, d3, d4, vl, vu, il, iu, abstol, m3, wa3, z, ldu, work, iwork, &iwork[(5 * n + 1) - 1], iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "DSTEVX(N,V)", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "Rstevx(N,V)", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -694,10 +694,10 @@ void Rdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 for (i = 1; i <= n - 1; i = i + 1) {
                     d2[i - 1] = castREAL(a[((i + 1) - 1) + (i - 1) * lda]);
                 }
-                srnamt = "DSTEVD";
+                srnamt = "Rstevd";
                 Rstevd("V", n, d1, d2, z, ldu, work, lwedc, iwork, liwedc, iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "DSTEVD(V)", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "Rstevd(V)", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -723,10 +723,10 @@ void Rdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 for (i = 1; i <= n - 1; i = i + 1) {
                     d4[i - 1] = castREAL(a[((i + 1) - 1) + (i - 1) * lda]);
                 }
-                srnamt = "DSTEVD";
+                srnamt = "Rstevd";
                 Rstevd("N", n, d3, d4, z, ldu, work, lwedc, iwork, liwedc, iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "DSTEVD(N)", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "Rstevd(N)", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -755,10 +755,10 @@ void Rdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 for (i = 1; i <= n - 1; i = i + 1) {
                     d2[i - 1] = castREAL(a[((i + 1) - 1) + (i - 1) * lda]);
                 }
-                srnamt = "DSTEVR";
+                srnamt = "Rstevr";
                 Rstevr("V", "I", n, d1, d2, vl, vu, il, iu, abstol, m2, wa2, z, ldu, iwork, work, lwork, &iwork[(2 * n + 1) - 1], liwork - 2 * n, iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "DSTEVR(V,I)", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "Rstevr(V,I)", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -784,10 +784,10 @@ void Rdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 for (i = 1; i <= n - 1; i = i + 1) {
                     d4[i - 1] = castREAL(a[((i + 1) - 1) + (i - 1) * lda]);
                 }
-                srnamt = "DSTEVR";
+                srnamt = "Rstevr";
                 Rstevr("N", "I", n, d3, d4, vl, vu, il, iu, abstol, m3, wa3, z, ldu, iwork, work, lwork, &iwork[(2 * n + 1) - 1], liwork - 2 * n, iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "DSTEVR(N,I)", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "Rstevr(N,I)", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -828,10 +828,10 @@ void Rdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 for (i = 1; i <= n - 1; i = i + 1) {
                     d2[i - 1] = castREAL(a[((i + 1) - 1) + (i - 1) * lda]);
                 }
-                srnamt = "DSTEVR";
+                srnamt = "Rstevr";
                 Rstevr("V", "V", n, d1, d2, vl, vu, il, iu, abstol, m2, wa2, z, ldu, iwork, work, lwork, &iwork[(2 * n + 1) - 1], liwork - 2 * n, iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "DSTEVR(V,V)", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "Rstevr(V,V)", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -864,10 +864,10 @@ void Rdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 for (i = 1; i <= n - 1; i = i + 1) {
                     d4[i - 1] = castREAL(a[((i + 1) - 1) + (i - 1) * lda]);
                 }
-                srnamt = "DSTEVR";
+                srnamt = "Rstevr";
                 Rstevr("N", "V", n, d3, d4, vl, vu, il, iu, abstol, m3, wa3, z, ldu, iwork, work, lwork, &iwork[(2 * n + 1) - 1], liwork - 2 * n, iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "DSTEVR(N,V)", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "Rstevr(N,V)", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -908,10 +908,10 @@ void Rdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 Rlacpy(" ", n, n, a, lda, v, ldu);
                 //
                 ntest++;
-                srnamt = "DSYEV";
+                srnamt = "Rsyev";
                 Rsyev("V", uplo.elems, n, a, ldu, d1, work, lwork, iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "DSYEV(V," + uplo + ")", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "Rsyev(V," + uplo + ")", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -930,10 +930,10 @@ void Rdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 Rlacpy(" ", n, n, v, ldu, a, lda);
                 //
                 ntest += 2;
-                srnamt = "DSYEV";
+                srnamt = "Rsyev";
                 Rsyev("N", uplo.elems, n, a, ldu, d3, work, lwork, iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "DSYEV(N," + uplo + ")", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "Rsyev(N," + uplo + ")", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -976,10 +976,10 @@ void Rdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     vu = one;
                 }
                 //
-                srnamt = "DSYEVX";
+                srnamt = "Rsyevx";
                 Rsyevx("V", "A", uplo.elems, n, a, ldu, vl, vu, il, iu, abstol, m, wa1, z, ldu, work, lwork, iwork, &iwork[(5 * n + 1) - 1], iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "DSYEVX(V,A," + uplo + ")", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "Rsyevx(V,A," + uplo + ")", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -998,10 +998,10 @@ void Rdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 Rsyt21(1, uplo, n, 0, a, ldu, d1, d2, z, ldu, v, ldu, tau, work, &result[ntest - 1]);
                 //
                 ntest += 2;
-                srnamt = "DSYEVX";
+                srnamt = "Rsyevx";
                 Rsyevx("N", "A", uplo.elems, n, a, ldu, vl, vu, il, iu, abstol, m2, wa2, z, ldu, work, lwork, iwork, &iwork[(5 * n + 1) - 1], iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "DSYEVX(N,A," + uplo + ")", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "Rsyevx(N,A," + uplo + ")", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -1025,10 +1025,10 @@ void Rdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 //
                 ntest++;
                 Rlacpy(" ", n, n, v, ldu, a, lda);
-                srnamt = "DSYEVX";
+                srnamt = "Rsyevx";
                 Rsyevx("V", "I", uplo.elems, n, a, ldu, vl, vu, il, iu, abstol, m2, wa2, z, ldu, work, lwork, iwork, &iwork[(5 * n + 1) - 1], iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "DSYEVX(V,I," + uplo + ")", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "Rsyevx(V,I," + uplo + ")", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -1048,10 +1048,10 @@ void Rdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 //
                 ntest += 2;
                 Rlacpy(" ", n, n, v, ldu, a, lda);
-                srnamt = "DSYEVX";
+                srnamt = "Rsyevx";
                 Rsyevx("N", "I", uplo.elems, n, a, ldu, vl, vu, il, iu, abstol, m3, wa3, z, ldu, work, lwork, iwork, &iwork[(5 * n + 1) - 1], iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "DSYEVX(N,I," + uplo + ")", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "Rsyevx(N,I," + uplo + ")", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -1070,10 +1070,10 @@ void Rdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 //
                 ntest++;
                 Rlacpy(" ", n, n, v, ldu, a, lda);
-                srnamt = "DSYEVX";
+                srnamt = "Rsyevx";
                 Rsyevx("V", "V", uplo.elems, n, a, ldu, vl, vu, il, iu, abstol, m2, wa2, z, ldu, work, lwork, iwork, &iwork[(5 * n + 1) - 1], iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "DSYEVX(V,V," + uplo + ")", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "Rsyevx(V,V," + uplo + ")", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -1093,10 +1093,10 @@ void Rdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 //
                 ntest += 2;
                 Rlacpy(" ", n, n, v, ldu, a, lda);
-                srnamt = "DSYEVX";
+                srnamt = "Rsyevx";
                 Rsyevx("N", "V", uplo.elems, n, a, ldu, vl, vu, il, iu, abstol, m3, wa3, z, ldu, work, lwork, iwork, &iwork[(5 * n + 1) - 1], iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "DSYEVX(N,V," + uplo + ")", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "Rsyevx(N,V," + uplo + ")", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -1150,10 +1150,10 @@ void Rdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 }
                 //
                 ntest++;
-                srnamt = "DSPEV";
+                srnamt = "Rspev";
                 Rspev("V", uplo.elems, n, work, d1, z, ldu, v, iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "DSPEV(V," + uplo + ")", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "Rspev(V," + uplo + ")", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -1188,10 +1188,10 @@ void Rdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 }
                 //
                 ntest += 2;
-                srnamt = "DSPEV";
+                srnamt = "Rspev";
                 Rspev("N", uplo.elems, n, work, d3, z, ldu, v, iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "DSPEV(N," + uplo + ")", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "Rspev(N," + uplo + ")", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -1253,10 +1253,10 @@ void Rdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     vu = one;
                 }
                 //
-                srnamt = "DSPEVX";
+                srnamt = "Rspevx";
                 Rspevx("V", "A", uplo.elems, n, work, vl, vu, il, iu, abstol, m, wa1, z, ldu, v, iwork, &iwork[(5 * n + 1) - 1], iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "DSPEVX(V,A," + uplo + ")", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "Rspevx(V,A," + uplo + ")", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -1292,10 +1292,10 @@ void Rdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     }
                 }
                 //
-                srnamt = "DSPEVX";
+                srnamt = "Rspevx";
                 Rspevx("N", "A", uplo.elems, n, work, vl, vu, il, iu, abstol, m2, wa2, z, ldu, v, iwork, &iwork[(5 * n + 1) - 1], iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "DSPEVX(N,A," + uplo + ")", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "Rspevx(N,A," + uplo + ")", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -1336,10 +1336,10 @@ void Rdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 //
                 ntest++;
                 //
-                srnamt = "DSPEVX";
+                srnamt = "Rspevx";
                 Rspevx("V", "I", uplo.elems, n, work, vl, vu, il, iu, abstol, m2, wa2, z, ldu, v, iwork, &iwork[(5 * n + 1) - 1], iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "DSPEVX(V,I," + uplo + ")", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "Rspevx(V,I," + uplo + ")", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -1375,10 +1375,10 @@ void Rdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     }
                 }
                 //
-                srnamt = "DSPEVX";
+                srnamt = "Rspevx";
                 Rspevx("N", "I", uplo.elems, n, work, vl, vu, il, iu, abstol, m3, wa3, z, ldu, v, iwork, &iwork[(5 * n + 1) - 1], iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "DSPEVX(N,I," + uplo + ")", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "Rspevx(N,I," + uplo + ")", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -1425,10 +1425,10 @@ void Rdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 //
                 ntest++;
                 //
-                srnamt = "DSPEVX";
+                srnamt = "Rspevx";
                 Rspevx("V", "V", uplo.elems, n, work, vl, vu, il, iu, abstol, m2, wa2, z, ldu, v, iwork, &iwork[(5 * n + 1) - 1], iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "DSPEVX(V,V," + uplo + ")", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "Rspevx(V,V," + uplo + ")", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -1464,10 +1464,10 @@ void Rdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     }
                 }
                 //
-                srnamt = "DSPEVX";
+                srnamt = "Rspevx";
                 Rspevx("N", "V", uplo.elems, n, work, vl, vu, il, iu, abstol, m3, wa3, z, ldu, v, iwork, &iwork[(5 * n + 1) - 1], iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "DSPEVX(N,V," + uplo + ")", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "Rspevx(N,V," + uplo + ")", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -1523,10 +1523,10 @@ void Rdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 }
                 //
                 ntest++;
-                srnamt = "DSBEV";
+                srnamt = "Rsbev";
                 Rsbev("V", uplo.elems, n, kd, v, ldu, d1, z, ldu, work, iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "DSBEV(V," + uplo + ")", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "Rsbev(V," + uplo + ")", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -1557,10 +1557,10 @@ void Rdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 }
                 //
                 ntest += 2;
-                srnamt = "DSBEV";
+                srnamt = "Rsbev";
                 Rsbev("N", uplo.elems, n, kd, v, ldu, d3, z, ldu, work, iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "DSBEV(N," + uplo + ")", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "Rsbev(N," + uplo + ")", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -1599,10 +1599,10 @@ void Rdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 }
                 //
                 ntest++;
-                srnamt = "DSBEVX";
+                srnamt = "Rsbevx";
                 Rsbevx("V", "A", uplo.elems, n, kd, v, ldu, u, ldu, vl, vu, il, iu, abstol, m, wa2, z, ldu, work, iwork, &iwork[(5 * n + 1) - 1], iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "DSBEVX(V,A," + uplo + ")", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "Rsbevx(V,A," + uplo + ")", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -1634,10 +1634,10 @@ void Rdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     }
                 }
                 //
-                srnamt = "DSBEVX";
+                srnamt = "Rsbevx";
                 Rsbevx("N", "A", uplo.elems, n, kd, v, ldu, u, ldu, vl, vu, il, iu, abstol, m3, wa3, z, ldu, work, iwork, &iwork[(5 * n + 1) - 1], iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "DSBEVX(N,A," + uplo + ")", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "Rsbevx(N,A," + uplo + ")", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -1673,10 +1673,10 @@ void Rdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     }
                 }
                 //
-                srnamt = "DSBEVX";
+                srnamt = "Rsbevx";
                 Rsbevx("V", "I", uplo.elems, n, kd, v, ldu, u, ldu, vl, vu, il, iu, abstol, m2, wa2, z, ldu, work, iwork, &iwork[(5 * n + 1) - 1], iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "DSBEVX(V,I," + uplo + ")", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "Rsbevx(V,I," + uplo + ")", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -1708,10 +1708,10 @@ void Rdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     }
                 }
                 //
-                srnamt = "DSBEVX";
+                srnamt = "Rsbevx";
                 Rsbevx("N", "I", uplo.elems, n, kd, v, ldu, u, ldu, vl, vu, il, iu, abstol, m3, wa3, z, ldu, work, iwork, &iwork[(5 * n + 1) - 1], iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "DSBEVX(N,I," + uplo + ")", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "Rsbevx(N,I," + uplo + ")", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -1748,10 +1748,10 @@ void Rdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     }
                 }
                 //
-                srnamt = "DSBEVX";
+                srnamt = "Rsbevx";
                 Rsbevx("V", "V", uplo.elems, n, kd, v, ldu, u, ldu, vl, vu, il, iu, abstol, m2, wa2, z, ldu, work, iwork, &iwork[(5 * n + 1) - 1], iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "DSBEVX(V,V," + uplo + ")", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "Rsbevx(V,V," + uplo + ")", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -1783,10 +1783,10 @@ void Rdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     }
                 }
                 //
-                srnamt = "DSBEVX";
+                srnamt = "Rsbevx";
                 Rsbevx("N", "V", uplo.elems, n, kd, v, ldu, u, ldu, vl, vu, il, iu, abstol, m3, wa3, z, ldu, work, iwork, &iwork[(5 * n + 1) - 1], iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "DSBEVX(N,V," + uplo + ")", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "Rsbevx(N,V," + uplo + ")", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -1819,10 +1819,10 @@ void Rdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 Rlacpy(" ", n, n, a, lda, v, ldu);
                 //
                 ntest++;
-                srnamt = "DSYEVD";
+                srnamt = "Rsyevd";
                 Rsyevd("V", uplo.elems, n, a, ldu, d1, work, lwedc, iwork, liwedc, iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "DSYEVD(V," + uplo + ")", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "Rsyevd(V," + uplo + ")", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -1841,10 +1841,10 @@ void Rdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 Rlacpy(" ", n, n, v, ldu, a, lda);
                 //
                 ntest += 2;
-                srnamt = "DSYEVD";
+                srnamt = "Rsyevd";
                 Rsyevd("N", uplo.elems, n, a, ldu, d3, work, lwedc, iwork, liwedc, iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "DSYEVD(N," + uplo + ")", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "Rsyevd(N," + uplo + ")", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -1892,10 +1892,10 @@ void Rdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 }
                 //
                 ntest++;
-                srnamt = "DSPEVD";
+                srnamt = "Rspevd";
                 Rspevd("V", uplo.elems, n, work, d1, z, ldu, &work[indx - 1], lwedc - indx + 1, iwork, liwedc, iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "DSPEVD(V," + uplo + ")", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "Rspevd(V," + uplo + ")", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -1931,10 +1931,10 @@ void Rdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 }
                 //
                 ntest += 2;
-                srnamt = "DSPEVD";
+                srnamt = "Rspevd";
                 Rspevd("N", uplo.elems, n, work, d3, z, ldu, &work[indx - 1], lwedc - indx + 1, iwork, liwedc, iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "DSPEVD(N," + uplo + ")", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "Rspevd(N," + uplo + ")", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -1983,10 +1983,10 @@ void Rdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 }
                 //
                 ntest++;
-                srnamt = "DSBEVD";
+                srnamt = "Rsbevd";
                 Rsbevd("V", uplo.elems, n, kd, v, ldu, d1, z, ldu, work, lwedc, iwork, liwedc, iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "DSBEVD(V," + uplo + ")", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "Rsbevd(V," + uplo + ")", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -2017,10 +2017,10 @@ void Rdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 }
                 //
                 ntest += 2;
-                srnamt = "DSBEVD";
+                srnamt = "Rsbevd";
                 Rsbevd("N", uplo.elems, n, kd, v, ldu, d3, z, ldu, work, lwedc, iwork, liwedc, iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "DSBEVD(N," + uplo + ")", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "Rsbevd(N," + uplo + ")", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -2044,10 +2044,10 @@ void Rdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 //
                 Rlacpy(" ", n, n, a, lda, v, ldu);
                 ntest++;
-                srnamt = "DSYEVR";
+                srnamt = "Rsyevr";
                 Rsyevr("V", "A", uplo.elems, n, a, ldu, vl, vu, il, iu, abstol, m, wa1, z, ldu, iwork, work, lwork, &iwork[(2 * n + 1) - 1], liwork - 2 * n, iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "DSYEVR(V,A," + uplo + ")", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "Rsyevr(V,A," + uplo + ")", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -2066,10 +2066,10 @@ void Rdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 Rsyt21(1, uplo, n, 0, a, ldu, wa1, d2, z, ldu, v, ldu, tau, work, &result[ntest - 1]);
                 //
                 ntest += 2;
-                srnamt = "DSYEVR";
+                srnamt = "Rsyevr";
                 Rsyevr("N", "A", uplo.elems, n, a, ldu, vl, vu, il, iu, abstol, m2, wa2, z, ldu, iwork, work, lwork, &iwork[(2 * n + 1) - 1], liwork - 2 * n, iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "DSYEVR(N,A," + uplo + ")", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "Rsyevr(N,A," + uplo + ")", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -2093,10 +2093,10 @@ void Rdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 //
                 ntest++;
                 Rlacpy(" ", n, n, v, ldu, a, lda);
-                srnamt = "DSYEVR";
+                srnamt = "Rsyevr";
                 Rsyevr("V", "I", uplo.elems, n, a, ldu, vl, vu, il, iu, abstol, m2, wa2, z, ldu, iwork, work, lwork, &iwork[(2 * n + 1) - 1], liwork - 2 * n, iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "DSYEVR(V,I," + uplo + ")", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "Rsyevr(V,I," + uplo + ")", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -2116,10 +2116,10 @@ void Rdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 //
                 ntest += 2;
                 Rlacpy(" ", n, n, v, ldu, a, lda);
-                srnamt = "DSYEVR";
+                srnamt = "Rsyevr";
                 Rsyevr("N", "I", uplo.elems, n, a, ldu, vl, vu, il, iu, abstol, m3, wa3, z, ldu, iwork, work, lwork, &iwork[(2 * n + 1) - 1], liwork - 2 * n, iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "DSYEVR(N,I," + uplo + ")", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "Rsyevr(N,I," + uplo + ")", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -2138,10 +2138,10 @@ void Rdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 //
                 ntest++;
                 Rlacpy(" ", n, n, v, ldu, a, lda);
-                srnamt = "DSYEVR";
+                srnamt = "Rsyevr";
                 Rsyevr("V", "V", uplo.elems, n, a, ldu, vl, vu, il, iu, abstol, m2, wa2, z, ldu, iwork, work, lwork, &iwork[(2 * n + 1) - 1], liwork - 2 * n, iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "DSYEVR(V,V," + uplo + ")", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "Rsyevr(V,V," + uplo + ")", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -2161,10 +2161,10 @@ void Rdrvst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 //
                 ntest += 2;
                 Rlacpy(" ", n, n, v, ldu, a, lda);
-                srnamt = "DSYEVR";
+                srnamt = "Rsyevr";
                 Rsyevr("N", "V", uplo.elems, n, a, ldu, vl, vu, il, iu, abstol, m3, wa3, z, ldu, iwork, work, lwork, &iwork[(2 * n + 1) - 1], liwork - 2 * n, iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "DSYEVR(N,V," + uplo + ")", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "Rsyevr(N,V," + uplo + ")", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;

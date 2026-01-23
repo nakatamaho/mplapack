@@ -338,7 +338,7 @@ void Cchkhb2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const nwdths, INTEGER
                 Chbtrd("V", "U", n, k, work, lda, sd, se, u, ldu, &work[(lda * n + 1) - 1], iinfo);
                 //
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "ZHBTRD(U)", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "Chbtrd(U)", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -371,7 +371,7 @@ void Cchkhb2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const nwdths, INTEGER
                 //
                 Csteqr("N", n, d1, rwork, work, ldu, &rwork[(n + 1) - 1], iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "ZSTEQR(N)", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "Csteqr(N)", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -402,7 +402,7 @@ void Cchkhb2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const nwdths, INTEGER
                 //
                 Csteqr("N", n, d2, rwork, work, ldu, &rwork[(n + 1) - 1], iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "ZSTEQR(N)", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "Csteqr(N)", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -434,7 +434,7 @@ void Cchkhb2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const nwdths, INTEGER
                 Chbtrd("V", "L", n, k, work, lda, sd, se, u, ldu, &work[(lda * n + 1) - 1], iinfo);
                 //
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "ZHBTRD(L)", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "Chbtrd(L)", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -470,7 +470,7 @@ void Cchkhb2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const nwdths, INTEGER
                 //
                 Csteqr("N", n, d3, rwork, work, ldu, &rwork[(n + 1) - 1], iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "ZSTEQR(N)", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "Csteqr(N)", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;

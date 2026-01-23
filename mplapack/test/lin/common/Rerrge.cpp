@@ -92,109 +92,109 @@ void Rerrge(fem::str_cref path, INTEGER const nunit) {
         //
         // Rgetrf
         //
-        srnamt = "DGETRF";
+        srnamt = "Rgetrf";
         infot = 1;
         Rgetrf(-1, 0, a, 1, ip, info);
-        Chkxer("DGETRF", infot, nout, lerr, ok);
+        Chkxer("Rgetrf", infot, nout, lerr, ok);
         infot = 2;
         Rgetrf(0, -1, a, 1, ip, info);
-        Chkxer("DGETRF", infot, nout, lerr, ok);
+        Chkxer("Rgetrf", infot, nout, lerr, ok);
         infot = 4;
         Rgetrf(2, 1, a, 1, ip, info);
-        Chkxer("DGETRF", infot, nout, lerr, ok);
+        Chkxer("Rgetrf", infot, nout, lerr, ok);
         //
         // Rgetf2
         //
-        srnamt = "DGETF2";
+        srnamt = "Rgetf2";
         infot = 1;
         Rgetf2(-1, 0, a, 1, ip, info);
-        Chkxer("DGETF2", infot, nout, lerr, ok);
+        Chkxer("Rgetf2", infot, nout, lerr, ok);
         infot = 2;
         Rgetf2(0, -1, a, 1, ip, info);
-        Chkxer("DGETF2", infot, nout, lerr, ok);
+        Chkxer("Rgetf2", infot, nout, lerr, ok);
         infot = 4;
         Rgetf2(2, 1, a, 1, ip, info);
-        Chkxer("DGETF2", infot, nout, lerr, ok);
+        Chkxer("Rgetf2", infot, nout, lerr, ok);
         //
         // Rgetri
         //
-        srnamt = "DGETRI";
+        srnamt = "Rgetri";
         infot = 1;
         Rgetri(-1, a, 1, ip, w, lw, info);
-        Chkxer("DGETRI", infot, nout, lerr, ok);
+        Chkxer("Rgetri", infot, nout, lerr, ok);
         infot = 3;
         Rgetri(2, a, 1, ip, w, lw, info);
-        Chkxer("DGETRI", infot, nout, lerr, ok);
+        Chkxer("Rgetri", infot, nout, lerr, ok);
         //
         // Rgetrs
         //
-        srnamt = "DGETRS";
+        srnamt = "Rgetrs";
         infot = 1;
         Rgetrs("/", 0, 0, a, 1, ip, b, 1, info);
-        Chkxer("DGETRS", infot, nout, lerr, ok);
+        Chkxer("Rgetrs", infot, nout, lerr, ok);
         infot = 2;
         Rgetrs("N", -1, 0, a, 1, ip, b, 1, info);
-        Chkxer("DGETRS", infot, nout, lerr, ok);
+        Chkxer("Rgetrs", infot, nout, lerr, ok);
         infot = 3;
         Rgetrs("N", 0, -1, a, 1, ip, b, 1, info);
-        Chkxer("DGETRS", infot, nout, lerr, ok);
+        Chkxer("Rgetrs", infot, nout, lerr, ok);
         infot = 5;
         Rgetrs("N", 2, 1, a, 1, ip, b, 2, info);
-        Chkxer("DGETRS", infot, nout, lerr, ok);
+        Chkxer("Rgetrs", infot, nout, lerr, ok);
         infot = 8;
         Rgetrs("N", 2, 1, a, 2, ip, b, 1, info);
-        Chkxer("DGETRS", infot, nout, lerr, ok);
+        Chkxer("Rgetrs", infot, nout, lerr, ok);
         //
         // Rgerfs
         //
-        srnamt = "DGERFS";
+        srnamt = "Rgerfs";
         infot = 1;
         Rgerfs("/", 0, 0, a, 1, af, 1, ip, b, 1, x, 1, r1, r2, w, iw, info);
-        Chkxer("DGERFS", infot, nout, lerr, ok);
+        Chkxer("Rgerfs", infot, nout, lerr, ok);
         infot = 2;
         Rgerfs("N", -1, 0, a, 1, af, 1, ip, b, 1, x, 1, r1, r2, w, iw, info);
-        Chkxer("DGERFS", infot, nout, lerr, ok);
+        Chkxer("Rgerfs", infot, nout, lerr, ok);
         infot = 3;
         Rgerfs("N", 0, -1, a, 1, af, 1, ip, b, 1, x, 1, r1, r2, w, iw, info);
-        Chkxer("DGERFS", infot, nout, lerr, ok);
+        Chkxer("Rgerfs", infot, nout, lerr, ok);
         infot = 5;
         Rgerfs("N", 2, 1, a, 1, af, 2, ip, b, 2, x, 2, r1, r2, w, iw, info);
-        Chkxer("DGERFS", infot, nout, lerr, ok);
+        Chkxer("Rgerfs", infot, nout, lerr, ok);
         infot = 7;
         Rgerfs("N", 2, 1, a, 2, af, 1, ip, b, 2, x, 2, r1, r2, w, iw, info);
-        Chkxer("DGERFS", infot, nout, lerr, ok);
+        Chkxer("Rgerfs", infot, nout, lerr, ok);
         infot = 10;
         Rgerfs("N", 2, 1, a, 2, af, 2, ip, b, 1, x, 2, r1, r2, w, iw, info);
-        Chkxer("DGERFS", infot, nout, lerr, ok);
+        Chkxer("Rgerfs", infot, nout, lerr, ok);
         infot = 12;
         Rgerfs("N", 2, 1, a, 2, af, 2, ip, b, 2, x, 1, r1, r2, w, iw, info);
-        Chkxer("DGERFS", infot, nout, lerr, ok);
+        Chkxer("Rgerfs", infot, nout, lerr, ok);
         //
         // Rgecon
         //
-        srnamt = "DGECON";
+        srnamt = "Rgecon";
         infot = 1;
         Rgecon("/", 0, a, 1, anrm, rcond, w, iw, info);
-        Chkxer("DGECON", infot, nout, lerr, ok);
+        Chkxer("Rgecon", infot, nout, lerr, ok);
         infot = 2;
         Rgecon("1", -1, a, 1, anrm, rcond, w, iw, info);
-        Chkxer("DGECON", infot, nout, lerr, ok);
+        Chkxer("Rgecon", infot, nout, lerr, ok);
         infot = 4;
         Rgecon("1", 2, a, 1, anrm, rcond, w, iw, info);
-        Chkxer("DGECON", infot, nout, lerr, ok);
+        Chkxer("Rgecon", infot, nout, lerr, ok);
         //
         // Rgeequ
         //
-        srnamt = "DGEEQU";
+        srnamt = "Rgeequ";
         infot = 1;
         Rgeequ(-1, 0, a, 1, r1, r2, rcond, ccond, anrm, info);
-        Chkxer("DGEEQU", infot, nout, lerr, ok);
+        Chkxer("Rgeequ", infot, nout, lerr, ok);
         infot = 2;
         Rgeequ(0, -1, a, 1, r1, r2, rcond, ccond, anrm, info);
-        Chkxer("DGEEQU", infot, nout, lerr, ok);
+        Chkxer("Rgeequ", infot, nout, lerr, ok);
         infot = 4;
         Rgeequ(2, 2, a, 1, r1, r2, rcond, ccond, anrm, info);
-        Chkxer("DGEEQU", infot, nout, lerr, ok);
+        Chkxer("Rgeequ", infot, nout, lerr, ok);
         //
     } else if (Mlsamen(2, c2.elems, "GB")) {
         //
@@ -203,135 +203,135 @@ void Rerrge(fem::str_cref path, INTEGER const nunit) {
         //
         // Rgbtrf
         //
-        srnamt = "DGBTRF";
+        srnamt = "Rgbtrf";
         infot = 1;
         Rgbtrf(-1, 0, 0, 0, a, 1, ip, info);
-        Chkxer("DGBTRF", infot, nout, lerr, ok);
+        Chkxer("Rgbtrf", infot, nout, lerr, ok);
         infot = 2;
         Rgbtrf(0, -1, 0, 0, a, 1, ip, info);
-        Chkxer("DGBTRF", infot, nout, lerr, ok);
+        Chkxer("Rgbtrf", infot, nout, lerr, ok);
         infot = 3;
         Rgbtrf(1, 1, -1, 0, a, 1, ip, info);
-        Chkxer("DGBTRF", infot, nout, lerr, ok);
+        Chkxer("Rgbtrf", infot, nout, lerr, ok);
         infot = 4;
         Rgbtrf(1, 1, 0, -1, a, 1, ip, info);
-        Chkxer("DGBTRF", infot, nout, lerr, ok);
+        Chkxer("Rgbtrf", infot, nout, lerr, ok);
         infot = 6;
         Rgbtrf(2, 2, 1, 1, a, 3, ip, info);
-        Chkxer("DGBTRF", infot, nout, lerr, ok);
+        Chkxer("Rgbtrf", infot, nout, lerr, ok);
         //
         // Rgbtf2
         //
-        srnamt = "DGBTF2";
+        srnamt = "Rgbtf2";
         infot = 1;
         Rgbtf2(-1, 0, 0, 0, a, 1, ip, info);
-        Chkxer("DGBTF2", infot, nout, lerr, ok);
+        Chkxer("Rgbtf2", infot, nout, lerr, ok);
         infot = 2;
         Rgbtf2(0, -1, 0, 0, a, 1, ip, info);
-        Chkxer("DGBTF2", infot, nout, lerr, ok);
+        Chkxer("Rgbtf2", infot, nout, lerr, ok);
         infot = 3;
         Rgbtf2(1, 1, -1, 0, a, 1, ip, info);
-        Chkxer("DGBTF2", infot, nout, lerr, ok);
+        Chkxer("Rgbtf2", infot, nout, lerr, ok);
         infot = 4;
         Rgbtf2(1, 1, 0, -1, a, 1, ip, info);
-        Chkxer("DGBTF2", infot, nout, lerr, ok);
+        Chkxer("Rgbtf2", infot, nout, lerr, ok);
         infot = 6;
         Rgbtf2(2, 2, 1, 1, a, 3, ip, info);
-        Chkxer("DGBTF2", infot, nout, lerr, ok);
+        Chkxer("Rgbtf2", infot, nout, lerr, ok);
         //
         // Rgbtrs
         //
-        srnamt = "DGBTRS";
+        srnamt = "Rgbtrs";
         infot = 1;
         Rgbtrs("/", 0, 0, 0, 1, a, 1, ip, b, 1, info);
-        Chkxer("DGBTRS", infot, nout, lerr, ok);
+        Chkxer("Rgbtrs", infot, nout, lerr, ok);
         infot = 2;
         Rgbtrs("N", -1, 0, 0, 1, a, 1, ip, b, 1, info);
-        Chkxer("DGBTRS", infot, nout, lerr, ok);
+        Chkxer("Rgbtrs", infot, nout, lerr, ok);
         infot = 3;
         Rgbtrs("N", 1, -1, 0, 1, a, 1, ip, b, 1, info);
-        Chkxer("DGBTRS", infot, nout, lerr, ok);
+        Chkxer("Rgbtrs", infot, nout, lerr, ok);
         infot = 4;
         Rgbtrs("N", 1, 0, -1, 1, a, 1, ip, b, 1, info);
-        Chkxer("DGBTRS", infot, nout, lerr, ok);
+        Chkxer("Rgbtrs", infot, nout, lerr, ok);
         infot = 5;
         Rgbtrs("N", 1, 0, 0, -1, a, 1, ip, b, 1, info);
-        Chkxer("DGBTRS", infot, nout, lerr, ok);
+        Chkxer("Rgbtrs", infot, nout, lerr, ok);
         infot = 7;
         Rgbtrs("N", 2, 1, 1, 1, a, 3, ip, b, 2, info);
-        Chkxer("DGBTRS", infot, nout, lerr, ok);
+        Chkxer("Rgbtrs", infot, nout, lerr, ok);
         infot = 10;
         Rgbtrs("N", 2, 0, 0, 1, a, 1, ip, b, 1, info);
-        Chkxer("DGBTRS", infot, nout, lerr, ok);
+        Chkxer("Rgbtrs", infot, nout, lerr, ok);
         //
         // Rgbrfs
         //
-        srnamt = "DGBRFS";
+        srnamt = "Rgbrfs";
         infot = 1;
         Rgbrfs("/", 0, 0, 0, 0, a, 1, af, 1, ip, b, 1, x, 1, r1, r2, w, iw, info);
-        Chkxer("DGBRFS", infot, nout, lerr, ok);
+        Chkxer("Rgbrfs", infot, nout, lerr, ok);
         infot = 2;
         Rgbrfs("N", -1, 0, 0, 0, a, 1, af, 1, ip, b, 1, x, 1, r1, r2, w, iw, info);
-        Chkxer("DGBRFS", infot, nout, lerr, ok);
+        Chkxer("Rgbrfs", infot, nout, lerr, ok);
         infot = 3;
         Rgbrfs("N", 1, -1, 0, 0, a, 1, af, 1, ip, b, 1, x, 1, r1, r2, w, iw, info);
-        Chkxer("DGBRFS", infot, nout, lerr, ok);
+        Chkxer("Rgbrfs", infot, nout, lerr, ok);
         infot = 4;
         Rgbrfs("N", 1, 0, -1, 0, a, 1, af, 1, ip, b, 1, x, 1, r1, r2, w, iw, info);
-        Chkxer("DGBRFS", infot, nout, lerr, ok);
+        Chkxer("Rgbrfs", infot, nout, lerr, ok);
         infot = 5;
         Rgbrfs("N", 1, 0, 0, -1, a, 1, af, 1, ip, b, 1, x, 1, r1, r2, w, iw, info);
-        Chkxer("DGBRFS", infot, nout, lerr, ok);
+        Chkxer("Rgbrfs", infot, nout, lerr, ok);
         infot = 7;
         Rgbrfs("N", 2, 1, 1, 1, a, 2, af, 4, ip, b, 2, x, 2, r1, r2, w, iw, info);
-        Chkxer("DGBRFS", infot, nout, lerr, ok);
+        Chkxer("Rgbrfs", infot, nout, lerr, ok);
         infot = 9;
         Rgbrfs("N", 2, 1, 1, 1, a, 3, af, 3, ip, b, 2, x, 2, r1, r2, w, iw, info);
-        Chkxer("DGBRFS", infot, nout, lerr, ok);
+        Chkxer("Rgbrfs", infot, nout, lerr, ok);
         infot = 12;
         Rgbrfs("N", 2, 0, 0, 1, a, 1, af, 1, ip, b, 1, x, 2, r1, r2, w, iw, info);
-        Chkxer("DGBRFS", infot, nout, lerr, ok);
+        Chkxer("Rgbrfs", infot, nout, lerr, ok);
         infot = 14;
         Rgbrfs("N", 2, 0, 0, 1, a, 1, af, 1, ip, b, 2, x, 1, r1, r2, w, iw, info);
-        Chkxer("DGBRFS", infot, nout, lerr, ok);
+        Chkxer("Rgbrfs", infot, nout, lerr, ok);
         //
         // Rgbcon
         //
-        srnamt = "DGBCON";
+        srnamt = "Rgbcon";
         infot = 1;
         Rgbcon("/", 0, 0, 0, a, 1, ip, anrm, rcond, w, iw, info);
-        Chkxer("DGBCON", infot, nout, lerr, ok);
+        Chkxer("Rgbcon", infot, nout, lerr, ok);
         infot = 2;
         Rgbcon("1", -1, 0, 0, a, 1, ip, anrm, rcond, w, iw, info);
-        Chkxer("DGBCON", infot, nout, lerr, ok);
+        Chkxer("Rgbcon", infot, nout, lerr, ok);
         infot = 3;
         Rgbcon("1", 1, -1, 0, a, 1, ip, anrm, rcond, w, iw, info);
-        Chkxer("DGBCON", infot, nout, lerr, ok);
+        Chkxer("Rgbcon", infot, nout, lerr, ok);
         infot = 4;
         Rgbcon("1", 1, 0, -1, a, 1, ip, anrm, rcond, w, iw, info);
-        Chkxer("DGBCON", infot, nout, lerr, ok);
+        Chkxer("Rgbcon", infot, nout, lerr, ok);
         infot = 6;
         Rgbcon("1", 2, 1, 1, a, 3, ip, anrm, rcond, w, iw, info);
-        Chkxer("DGBCON", infot, nout, lerr, ok);
+        Chkxer("Rgbcon", infot, nout, lerr, ok);
         //
         // Rgbequ
         //
-        srnamt = "DGBEQU";
+        srnamt = "Rgbequ";
         infot = 1;
         Rgbequ(-1, 0, 0, 0, a, 1, r1, r2, rcond, ccond, anrm, info);
-        Chkxer("DGBEQU", infot, nout, lerr, ok);
+        Chkxer("Rgbequ", infot, nout, lerr, ok);
         infot = 2;
         Rgbequ(0, -1, 0, 0, a, 1, r1, r2, rcond, ccond, anrm, info);
-        Chkxer("DGBEQU", infot, nout, lerr, ok);
+        Chkxer("Rgbequ", infot, nout, lerr, ok);
         infot = 3;
         Rgbequ(1, 1, -1, 0, a, 1, r1, r2, rcond, ccond, anrm, info);
-        Chkxer("DGBEQU", infot, nout, lerr, ok);
+        Chkxer("Rgbequ", infot, nout, lerr, ok);
         infot = 4;
         Rgbequ(1, 1, 0, -1, a, 1, r1, r2, rcond, ccond, anrm, info);
-        Chkxer("DGBEQU", infot, nout, lerr, ok);
+        Chkxer("Rgbequ", infot, nout, lerr, ok);
         infot = 6;
         Rgbequ(2, 2, 1, 1, a, 2, r1, r2, rcond, ccond, anrm, info);
-        Chkxer("DGBEQU", infot, nout, lerr, ok);
+        Chkxer("Rgbequ", infot, nout, lerr, ok);
     }
     //
     // Print a summary line.

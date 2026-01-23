@@ -302,7 +302,7 @@ void Cchksy_rook(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nn
                     // block factorization, LWORK is the length of AINV.
                     //
                     lwork = max((INTEGER)2, nb) * lda;
-                    srnamt = "ZSYTRF_ROOK";
+                    srnamt = "Csytrf_rook";
                     Csytrf_rook(uplo.elems, n, afac, lda, iwork, ainv, lwork, info);
                     //
                     // Adjust the expected value of INFO to account for
@@ -325,7 +325,7 @@ void Cchksy_rook(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nn
                     // Check error code from Csytrf_rook and handle error.
                     //
                     if (info != k) {
-                        Alaerh(path, "ZSYTRF_ROOK", info, k, uplo, n, n, -1, -1, nb, imat, nfail, nerrs, nout);
+                        Alaerh(path, "Csytrf_rook", info, k, uplo, n, n, -1, -1, nb, imat, nfail, nerrs, nout);
                     }
                     //
                     // Set the condition estimate flag if the INFO is not 0.
@@ -350,13 +350,13 @@ void Cchksy_rook(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nn
                     //
                     if (inb == 1 && !trfcon) {
                         Clacpy(uplo.elems, n, n, afac, lda, ainv, lda);
-                        srnamt = "ZSYTRI_ROOK";
+                        srnamt = "Csytri_rook";
                         Csytri_rook(uplo.elems, n, ainv, lda, iwork, work, info);
                         //
                         // Check error code from Csytri_rook and handle error.
                         //
                         if (info != 0) {
-                            Alaerh(path, "ZSYTRI_ROOK", info, -1, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                            Alaerh(path, "Csytri_rook", info, -1, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                         }
                         //
                         // Compute the residual for a symmetric matrix times
@@ -604,13 +604,13 @@ void Cchksy_rook(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nn
                         Clarhs(matpath, xtype, uplo, " ", n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
                         Clacpy("Full", n, nrhs, b, lda, x, lda);
                         //
-                        srnamt = "ZSYTRS_ROOK";
+                        srnamt = "Csytrs_rook";
                         Csytrs_rook(uplo.elems, n, nrhs, afac, lda, iwork, x, lda, info);
                         //
                         // Check error code from Csytrs_rook and handle error.
                         //
                         if (info != 0) {
-                            Alaerh(path, "ZSYTRS_ROOK", info, 0, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                            Alaerh(path, "Csytrs_rook", info, 0, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                         }
                         //
                         Clacpy("Full", n, nrhs, b, lda, work, lda);
@@ -649,13 +649,13 @@ void Cchksy_rook(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nn
                 //
                 statement_230:
                     anorm = Clansy("1", uplo.elems, n, a, lda, rwork);
-                    srnamt = "ZSYCON_ROOK";
+                    srnamt = "Csycon_rook";
                     Csycon_rook(uplo.elems, n, afac, lda, iwork, anorm, rcond, work, info);
                     //
                     // Check error code from Csycon_rook and handle error.
                     //
                     if (info != 0) {
-                        Alaerh(path, "ZSYCON_ROOK", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                        Alaerh(path, "Csycon_rook", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                     }
                     //
                     // Compute the test ratio to compare values of RCOND

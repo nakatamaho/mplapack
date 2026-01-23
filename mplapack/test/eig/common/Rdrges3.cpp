@@ -368,7 +368,7 @@ void Rdrges3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
                 Rgges3("V", "V", sort.elems, Rlctes, n, s, lda, t, lda, sdim, alphar, alphai, beta, q, ldq, z, ldq, work, lwork, bwork, iinfo);
                 if (iinfo != 0 && iinfo != n + 2) {
                     result[(1 + rsub + isort) - 1] = ulpinv;
-                    write(nounit, format_9999), "DGGES3", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "Rgges3", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     goto statement_160;
                 }

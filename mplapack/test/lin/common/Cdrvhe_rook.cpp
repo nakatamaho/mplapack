@@ -306,7 +306,7 @@ void Cdrvhe_rook(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nr
                         // Factor the matrix and solve the system using
                         // Chesv_rook.
                         //
-                        srnamt = "ZHESV_ROOK";
+                        srnamt = "Chesv_rook";
                         Chesv_rook(uplo.elems, n, nrhs, afac, lda, iwork, x, lda, work, lwork, info);
                         //
                         // Adjust the expected value of INFO to account for
@@ -329,7 +329,7 @@ void Cdrvhe_rook(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nr
                         // Check error code from Chesv_rook and handle error.
                         //
                         if (info != k) {
-                            Alaerh(path, "ZHESV_ROOK", info, k, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                            Alaerh(path, "Chesv_rook", info, k, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                             goto statement_120;
                         } else if (info != 0) {
                             goto statement_120;

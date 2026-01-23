@@ -99,13 +99,13 @@ void Cdrvrf2(INTEGER const nout, INTEGER const nn, INTEGER *nval, COMPLEX *a, IN
                     }
                 }
                 //
-                srnamt = "ZTRTTF";
+                srnamt = "Ctrttf";
                 Ctrttf(cform.elems, uplo.elems, n, a, lda, arf, info);
                 //
-                srnamt = "ZTFTTP";
+                srnamt = "Ctfttp";
                 Ctfttp(cform.elems, uplo.elems, n, arf, ap, info);
                 //
-                srnamt = "ZTPTTR";
+                srnamt = "Ctpttr";
                 Ctpttr(uplo.elems, n, ap, asav, lda, info);
                 //
                 ok1 = true;
@@ -129,13 +129,13 @@ void Cdrvrf2(INTEGER const nout, INTEGER const nn, INTEGER *nval, COMPLEX *a, IN
                 //
                 nrun++;
                 //
-                srnamt = "ZTRTTP";
+                srnamt = "Ctrttp";
                 Ctrttp(uplo.elems, n, a, lda, ap, info);
                 //
-                srnamt = "ZTPTTF";
+                srnamt = "Ctpttf";
                 Ctpttf(cform.elems, uplo.elems, n, ap, arf, info);
                 //
-                srnamt = "ZTFTTR";
+                srnamt = "Ctfttr";
                 Ctfttr(cform.elems, uplo.elems, n, arf, asav, lda, info);
                 //
                 ok2 = true;

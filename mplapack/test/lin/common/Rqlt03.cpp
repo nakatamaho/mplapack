@@ -73,7 +73,7 @@ void Rqlt03(INTEGER const m, INTEGER const n, INTEGER const k, REAL *af, REAL *c
     //
     // Generate the m-by-m matrix Q
     //
-    srnamt = "DORGQL";
+    srnamt = "Rorgql";
     INTEGER info = 0;
     Rorgql(m, m, k, q, lda, &tau[(minmn - k + 1) - 1], work, lwork, info);
     //
@@ -121,7 +121,7 @@ void Rqlt03(INTEGER const m, INTEGER const n, INTEGER const k, REAL *af, REAL *c
             //
             // Apply Q or Q' to C
             //
-            srnamt = "DORMQL";
+            srnamt = "Rormql";
             if (k > 0) {
                 Rormql(side.elems, trans.elems, mc, nc, k, &af[((n - k + 1) - 1) * lda], lda, &tau[(minmn - k + 1) - 1], cc, lda, work, lwork, info);
             }

@@ -69,19 +69,19 @@ void Rerrqp(fem::str_cref path, INTEGER const nunit) {
         //
         // Rgeqp3
         //
-        srnamt = "DGEQP3";
+        srnamt = "Rgeqp3";
         infot = 1;
         Rgeqp3(-1, 0, a, 1, ip, tau, w, lw, info);
-        Chkxer("DGEQP3", infot, nout, lerr, ok);
+        Chkxer("Rgeqp3", infot, nout, lerr, ok);
         infot = 2;
         Rgeqp3(1, -1, a, 1, ip, tau, w, lw, info);
-        Chkxer("DGEQP3", infot, nout, lerr, ok);
+        Chkxer("Rgeqp3", infot, nout, lerr, ok);
         infot = 4;
         Rgeqp3(2, 3, a, 1, ip, tau, w, lw, info);
-        Chkxer("DGEQP3", infot, nout, lerr, ok);
+        Chkxer("Rgeqp3", infot, nout, lerr, ok);
         infot = 8;
         Rgeqp3(2, 2, a, 2, ip, tau, w, lw - 10, info);
-        Chkxer("DGEQP3", infot, nout, lerr, ok);
+        Chkxer("Rgeqp3", infot, nout, lerr, ok);
     }
     //
     // Print a summary line.

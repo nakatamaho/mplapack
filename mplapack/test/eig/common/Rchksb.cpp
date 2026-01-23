@@ -331,7 +331,7 @@ void Rchksb(INTEGER const nsizes, INTEGER *nn, INTEGER const nwdths, INTEGER *kk
                 Rsbtrd("V", "U", n, k, work, lda, sd, se, u, ldu, &work[(lda * n + 1) - 1], iinfo);
                 //
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "DSBTRD(U)", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "Rsbtrd(U)", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -367,7 +367,7 @@ void Rchksb(INTEGER const nsizes, INTEGER *nn, INTEGER const nwdths, INTEGER *kk
                 Rsbtrd("V", "L", n, k, work, lda, sd, se, u, ldu, &work[(lda * n + 1) - 1], iinfo);
                 //
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "DSBTRD(L)", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9999), "Rsbtrd(L)", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;

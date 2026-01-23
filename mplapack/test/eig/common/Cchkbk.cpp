@@ -135,7 +135,7 @@ statement_10:
 //
 statement_60:
     //
-    write(nout, "(1x,'.. test output of ZGEBAK .. ')");
+    write(nout, "(1x,'.. test output of Cgebak.. ')");
     //
     write(nout, "(1x,'value of largest test error             = ',d12.3)"), rmax;
     write(nout, "(1x,'example number where info is not zero   = ',i4)"), lmax[1 - 1];

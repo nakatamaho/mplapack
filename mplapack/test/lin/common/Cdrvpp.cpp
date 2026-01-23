@@ -315,13 +315,13 @@ void Cdrvpp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                             Ccopy(npp, a, 1, afac, 1);
                             Clacpy("Full", n, nrhs, b, lda, x, lda);
                             //
-                            srnamt = "ZPPSV ";
+                            srnamt = "Cppsv";
                             Cppsv(uplo.elems, n, nrhs, afac, x, lda, info);
                             //
                             // Check error code from Cppsv .
                             //
                             if (info != izero) {
-                                Alaerh(path, "ZPPSV ", info, izero, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                                Alaerh(path, "Cppsv", info, izero, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                                 goto statement_70;
                             } else if (info != 0) {
                                 goto statement_70;
@@ -377,13 +377,13 @@ void Cdrvpp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         // Solve the system and compute the condition number
                         // and error bounds using Cppsvx.
                         //
-                        srnamt = "ZPPSVX";
+                        srnamt = "Cppsvx";
                         Cppsvx(fact.elems, uplo.elems, n, nrhs, a, afac, equed.elems, s, b, lda, x, lda, rcond, rwork, &rwork[(nrhs + 1) - 1], work, &rwork[(2 * nrhs + 1) - 1], info);
                         //
                         // Check the error code from Cppsvx.
                         //
                         if (info != izero) {
-                            Alaerh(path, "ZPPSVX", info, izero, fact + uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                            Alaerh(path, "Cppsvx", info, izero, fact + uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                             goto statement_90;
                         }
                         //

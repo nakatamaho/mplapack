@@ -314,13 +314,13 @@ void Rchkgb(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                             if (m > 0 && n > 0) {
                                 Rlacpy("Full", kl + ku + 1, n, a, lda, &afac[(kl + 1) - 1], ldafac);
                             }
-                            srnamt = "DGBTRF";
+                            srnamt = "Rgbtrf";
                             Rgbtrf(m, n, kl, ku, afac, ldafac, iwork, info);
                             //
                             // Check error code from Rgbtrf.
                             //
                             if (info != izero) {
-                                Alaerh(path, "DGBTRF", info, izero, " ", m, n, kl, ku, nb, imat, nfail, nerrs, nout);
+                                Alaerh(path, "Rgbtrf", info, izero, " ", m, n, kl, ku, nb, imat, nfail, nerrs, nout);
                             }
                             trfcon = false;
                             //
@@ -361,7 +361,7 @@ void Rchkgb(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                 //
                                 ldb = max((INTEGER)1, n);
                                 Rlaset("Full", n, n, zero, one, work, ldb);
-                                srnamt = "DGBTRS";
+                                srnamt = "Rgbtrs";
                                 Rgbtrs("No transpose", n, kl, ku, n, afac, ldafac, iwork, work, ldb, info);
                                 //
                                 // Compute the 1-norm condition number of A.
@@ -419,13 +419,13 @@ void Rchkgb(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                     xtype = "C";
                                     Rlacpy("Full", n, nrhs, b, ldb, x, ldb);
                                     //
-                                    srnamt = "DGBTRS";
+                                    srnamt = "Rgbtrs";
                                     Rgbtrs(trans.elems, n, kl, ku, nrhs, afac, ldafac, iwork, x, ldb, info);
                                     //
                                     // Check error code from Rgbtrs.
                                     //
                                     if (info != 0) {
-                                        Alaerh(path, "DGBTRS", info, 0, trans, n, n, kl, ku, -1, imat, nfail, nerrs, nout);
+                                        Alaerh(path, "Rgbtrs", info, 0, trans, n, n, kl, ku, -1, imat, nfail, nerrs, nout);
                                     }
                                     //
                                     Rlacpy("Full", n, nrhs, b, ldb, work, ldb);
@@ -441,13 +441,13 @@ void Rchkgb(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                     // Use iterative refinement to improve the
                                     // solution.
                                     //
-                                    srnamt = "DGBRFS";
+                                    srnamt = "Rgbrfs";
                                     Rgbrfs(trans.elems, n, kl, ku, nrhs, a, lda, afac, ldafac, iwork, b, ldb, x, ldb, rwork, &rwork[(nrhs + 1) - 1], work, &iwork[(n + 1) - 1], info);
                                     //
                                     // Check error code from Rgbrfs.
                                     //
                                     if (info != 0) {
-                                        Alaerh(path, "DGBRFS", info, 0, trans, n, n, kl, ku, nrhs, imat, nfail, nerrs, nout);
+                                        Alaerh(path, "Rgbrfs", info, 0, trans, n, n, kl, ku, nrhs, imat, nfail, nerrs, nout);
                                     }
                                     //
                                     Rget04(n, nrhs, x, ldb, xact, ldb, rcondc, result[4 - 1]);
@@ -481,13 +481,13 @@ void Rchkgb(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                     rcondc = rcondi;
                                     norm = "I";
                                 }
-                                srnamt = "DGBCON";
+                                srnamt = "Rgbcon";
                                 Rgbcon(norm.elems, n, kl, ku, afac, ldafac, iwork, anorm, rcond, work, &iwork[(n + 1) - 1], info);
                                 //
                                 // Check error code from Rgbcon.
                                 //
                                 if (info != 0) {
-                                    Alaerh(path, "DGBCON", info, 0, norm, n, n, kl, ku, -1, imat, nfail, nerrs, nout);
+                                    Alaerh(path, "Rgbcon", info, 0, norm, n, n, kl, ku, -1, imat, nfail, nerrs, nout);
                                 }
                                 //
                                 result[7 - 1] = Rget06(rcond, rcondc);

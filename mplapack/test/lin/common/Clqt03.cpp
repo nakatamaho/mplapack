@@ -56,7 +56,7 @@ void Clqt03(INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX *af, COMP
     //
     // Generate the n-by-n matrix Q
     //
-    srnamt = "ZUNGLQ";
+    srnamt = "Cunglq";
     INTEGER info = 0;
     Cunglq(n, n, k, q, lda, tau, work, lwork, info);
     //
@@ -105,7 +105,7 @@ void Clqt03(INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX *af, COMP
             //
             // Apply Q or Q' to C
             //
-            srnamt = "ZUNMLQ";
+            srnamt = "Cunmlq";
             Cunmlq(side.elems, trans.elems, mc, nc, k, af, lda, tau, cc, lda, work, lwork, info);
             //
             // Form explicit product and subtract

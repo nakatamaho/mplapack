@@ -192,7 +192,7 @@ void Rdrvac(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nns, IN
                     // Compute the L*L' or U'*U factorization of the
                     // matrix and solve the system.
                     //
-                    srnamt = "DSPOSV ";
+                    srnamt = "Rsposv";
                     kase++;
                     //
                     Rlacpy("All", n, n, a, lda, afac, lda);

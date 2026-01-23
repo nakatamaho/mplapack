@@ -353,7 +353,7 @@ void Cchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             //
             if (iinfo != 0) {
                 result[1 - 1] = ulpinv;
-                write(nounit, format_9999), "ZGEHRD", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Cgehrd", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 goto statement_240;
             }
@@ -382,7 +382,7 @@ void Cchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             //
             Chseqr("E", "N", n, ilo, ihi, t2, lda, w3, uz, ldu, work, nwork, iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "ZHSEQR(E)", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Chseqr(E)", iinfo, n, jtype, ioldsd;
                 if (iinfo <= n + 2) {
                     info = abs(iinfo);
                     goto statement_240;
@@ -395,7 +395,7 @@ void Cchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             //
             Chseqr("S", "N", n, ilo, ihi, t2, lda, w1, uz, ldu, work, nwork, iinfo);
             if (iinfo != 0 && iinfo <= n + 2) {
-                write(nounit, format_9999), "ZHSEQR(S)", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Chseqr(S)", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 goto statement_240;
             }
@@ -407,7 +407,7 @@ void Cchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             //
             Chseqr("S", "V", n, ilo, ihi, t1, lda, w1, uz, ldu, work, nwork, iinfo);
             if (iinfo != 0 && iinfo <= n + 2) {
-                write(nounit, format_9999), "ZHSEQR(V)", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Chseqr(V)", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 goto statement_240;
             }
@@ -459,7 +459,7 @@ void Cchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             }
             Ctrevc("Right", "All", select, n, t1, lda, cdumma, ldu, evectr, ldu, n, in, work, rwork, iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "ZTREVC(R,A)", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Ctrevc(R,A)", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 goto statement_240;
             }
@@ -477,7 +477,7 @@ void Cchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             //
             Ctrevc("Right", "Some", select, n, t1, lda, cdumma, ldu, evectl, ldu, n, in, work, rwork, iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "ZTREVC(R,S)", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Ctrevc(R,S)", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 goto statement_240;
             }
@@ -506,7 +506,7 @@ void Cchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             result[10 - 1] = ulpinv;
             Ctrevc("Left", "All", select, n, t1, lda, evectl, ldu, cdumma, ldu, n, in, work, rwork, iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "ZTREVC(L,A)", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Ctrevc(L,A)", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 goto statement_240;
             }
@@ -524,7 +524,7 @@ void Cchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             //
             Ctrevc("Left", "Some", select, n, t1, lda, evectr, ldu, cdumma, ldu, n, in, work, rwork, iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "ZTREVC(L,S)", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Ctrevc(L,S)", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 goto statement_240;
             }
@@ -557,7 +557,7 @@ void Cchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             //
             Chsein("Right", "Qr", "Ninitv", select, n, h, lda, w3, cdumma, ldu, evectx, ldu, n1, in, work, rwork, iwork, iwork, iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "ZHSEIN(R)", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Chsein(R)", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     goto statement_240;
@@ -587,7 +587,7 @@ void Cchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             //
             Chsein("Left", "Qr", "Ninitv", select, n, h, lda, w3, evecty, ldu, cdumma, ldu, n1, in, work, rwork, iwork, iwork, iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "ZHSEIN(L)", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Chsein(L)", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     goto statement_240;
@@ -614,7 +614,7 @@ void Cchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             //
             Cunmhr("Left", "No transpose", n, n, ilo, ihi, uu, ldu, tau, evectx, ldu, work, nwork, iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "ZUNMHR(L)", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Cunmhr(L)", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     goto statement_240;
@@ -638,7 +638,7 @@ void Cchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             //
             Cunmhr("Left", "No transpose", n, n, ilo, ihi, uu, ldu, tau, evecty, ldu, work, nwork, iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "ZUNMHR(L)", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9999), "Cunmhr(L)", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     goto statement_240;

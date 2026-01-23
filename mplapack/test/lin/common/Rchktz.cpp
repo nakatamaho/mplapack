@@ -142,7 +142,7 @@ void Rchktz(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                     // Call Rtzrzf to reduce the upper trapezoidal matrix to
                     // upper triangular form.
                     //
-                    srnamt = "DTZRZF";
+                    srnamt = "Rtzrzf";
                     Rtzrzf(m, n, a, lda, tau, work, lwork, info);
                     //
                     // Compute norm(svd(a) - svd(r))

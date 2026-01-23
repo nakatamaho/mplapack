@@ -55,7 +55,7 @@ void Rlqt02(INTEGER const m, INTEGER const n, INTEGER const k, REAL *a, REAL *af
     //
     // Generate the first n columns of the matrix Q
     //
-    srnamt = "DORGLQ";
+    srnamt = "Rorglq";
     INTEGER info = 0;
     Rorglq(m, n, k, q, lda, tau, work, lwork, info);
     //

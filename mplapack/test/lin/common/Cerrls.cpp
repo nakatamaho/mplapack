@@ -72,91 +72,91 @@ void Cerrls(fem::str_cref path, INTEGER const nunit) {
         //
         // Cgels
         //
-        srnamt = "ZGELS ";
+        srnamt = "Cgels";
         infot = 1;
         Cgels("/", 0, 0, 0, a, 1, b, 1, w, 1, info);
-        Chkxer("ZGELS ", infot, nout, lerr, ok);
+        Chkxer("Cgels", infot, nout, lerr, ok);
         infot = 2;
         Cgels("N", -1, 0, 0, a, 1, b, 1, w, 1, info);
-        Chkxer("ZGELS ", infot, nout, lerr, ok);
+        Chkxer("Cgels", infot, nout, lerr, ok);
         infot = 3;
         Cgels("N", 0, -1, 0, a, 1, b, 1, w, 1, info);
-        Chkxer("ZGELS ", infot, nout, lerr, ok);
+        Chkxer("Cgels", infot, nout, lerr, ok);
         infot = 4;
         Cgels("N", 0, 0, -1, a, 1, b, 1, w, 1, info);
-        Chkxer("ZGELS ", infot, nout, lerr, ok);
+        Chkxer("Cgels", infot, nout, lerr, ok);
         infot = 6;
         Cgels("N", 2, 0, 0, a, 1, b, 2, w, 2, info);
-        Chkxer("ZGELS ", infot, nout, lerr, ok);
+        Chkxer("Cgels", infot, nout, lerr, ok);
         infot = 8;
         Cgels("N", 2, 0, 0, a, 2, b, 1, w, 2, info);
-        Chkxer("ZGELS ", infot, nout, lerr, ok);
+        Chkxer("Cgels", infot, nout, lerr, ok);
         infot = 10;
         Cgels("N", 1, 1, 0, a, 1, b, 1, w, 1, info);
-        Chkxer("ZGELS ", infot, nout, lerr, ok);
+        Chkxer("Cgels", infot, nout, lerr, ok);
         //
         // Cgelss
         //
-        srnamt = "ZGELSS";
+        srnamt = "Cgelss";
         infot = 1;
         Cgelss(-1, 0, 0, a, 1, b, 1, s, rcond, irnk, w, 1, rw, info);
-        Chkxer("ZGELSS", infot, nout, lerr, ok);
+        Chkxer("Cgelss", infot, nout, lerr, ok);
         infot = 2;
         Cgelss(0, -1, 0, a, 1, b, 1, s, rcond, irnk, w, 1, rw, info);
-        Chkxer("ZGELSS", infot, nout, lerr, ok);
+        Chkxer("Cgelss", infot, nout, lerr, ok);
         infot = 3;
         Cgelss(0, 0, -1, a, 1, b, 1, s, rcond, irnk, w, 1, rw, info);
-        Chkxer("ZGELSS", infot, nout, lerr, ok);
+        Chkxer("Cgelss", infot, nout, lerr, ok);
         infot = 5;
         Cgelss(2, 0, 0, a, 1, b, 2, s, rcond, irnk, w, 2, rw, info);
-        Chkxer("ZGELSS", infot, nout, lerr, ok);
+        Chkxer("Cgelss", infot, nout, lerr, ok);
         infot = 7;
         Cgelss(2, 0, 0, a, 2, b, 1, s, rcond, irnk, w, 2, rw, info);
-        Chkxer("ZGELSS", infot, nout, lerr, ok);
+        Chkxer("Cgelss", infot, nout, lerr, ok);
         //
         // Cgelsy
         //
-        srnamt = "ZGELSY";
+        srnamt = "Cgelsy";
         infot = 1;
         Cgelsy(-1, 0, 0, a, 1, b, 1, ip, rcond, irnk, w, 10, rw, info);
-        Chkxer("ZGELSY", infot, nout, lerr, ok);
+        Chkxer("Cgelsy", infot, nout, lerr, ok);
         infot = 2;
         Cgelsy(0, -1, 0, a, 1, b, 1, ip, rcond, irnk, w, 10, rw, info);
-        Chkxer("ZGELSY", infot, nout, lerr, ok);
+        Chkxer("Cgelsy", infot, nout, lerr, ok);
         infot = 3;
         Cgelsy(0, 0, -1, a, 1, b, 1, ip, rcond, irnk, w, 10, rw, info);
-        Chkxer("ZGELSY", infot, nout, lerr, ok);
+        Chkxer("Cgelsy", infot, nout, lerr, ok);
         infot = 5;
         Cgelsy(2, 0, 0, a, 1, b, 2, ip, rcond, irnk, w, 10, rw, info);
-        Chkxer("ZGELSY", infot, nout, lerr, ok);
+        Chkxer("Cgelsy", infot, nout, lerr, ok);
         infot = 7;
         Cgelsy(2, 0, 0, a, 2, b, 1, ip, rcond, irnk, w, 10, rw, info);
-        Chkxer("ZGELSY", infot, nout, lerr, ok);
+        Chkxer("Cgelsy", infot, nout, lerr, ok);
         infot = 12;
         Cgelsy(0, 3, 0, a, 1, b, 3, ip, rcond, irnk, w, 1, rw, info);
-        Chkxer("ZGELSY", infot, nout, lerr, ok);
+        Chkxer("Cgelsy", infot, nout, lerr, ok);
         //
         // Cgelsd
         //
-        srnamt = "ZGELSD";
+        srnamt = "Cgelsd";
         infot = 1;
         Cgelsd(-1, 0, 0, a, 1, b, 1, s, rcond, irnk, w, 10, rw, ip, info);
-        Chkxer("ZGELSD", infot, nout, lerr, ok);
+        Chkxer("Cgelsd", infot, nout, lerr, ok);
         infot = 2;
         Cgelsd(0, -1, 0, a, 1, b, 1, s, rcond, irnk, w, 10, rw, ip, info);
-        Chkxer("ZGELSD", infot, nout, lerr, ok);
+        Chkxer("Cgelsd", infot, nout, lerr, ok);
         infot = 3;
         Cgelsd(0, 0, -1, a, 1, b, 1, s, rcond, irnk, w, 10, rw, ip, info);
-        Chkxer("ZGELSD", infot, nout, lerr, ok);
+        Chkxer("Cgelsd", infot, nout, lerr, ok);
         infot = 5;
         Cgelsd(2, 0, 0, a, 1, b, 2, s, rcond, irnk, w, 10, rw, ip, info);
-        Chkxer("ZGELSD", infot, nout, lerr, ok);
+        Chkxer("Cgelsd", infot, nout, lerr, ok);
         infot = 7;
         Cgelsd(2, 0, 0, a, 2, b, 1, s, rcond, irnk, w, 10, rw, ip, info);
-        Chkxer("ZGELSD", infot, nout, lerr, ok);
+        Chkxer("Cgelsd", infot, nout, lerr, ok);
         infot = 12;
         Cgelsd(2, 2, 1, a, 2, b, 2, s, rcond, irnk, w, 1, rw, ip, info);
-        Chkxer("ZGELSD", infot, nout, lerr, ok);
+        Chkxer("Cgelsd", infot, nout, lerr, ok);
     }
     //
     // Print a summary line.

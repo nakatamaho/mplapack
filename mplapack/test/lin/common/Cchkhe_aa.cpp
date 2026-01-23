@@ -273,7 +273,7 @@ void Cchkhe_aa(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
                     // block factorization, LWORK is the length of AINV.
                     //
                     lwork = max((INTEGER)1, (nb + 1) * lda);
-                    srnamt = "ZHETRF_AA";
+                    srnamt = "Chetrf_aa";
                     Chetrf_aa(uplo.elems, n, afac, lda, iwork, ainv, lwork, info);
                     //
                     // Adjust the expected value of INFO to account for
@@ -299,7 +299,7 @@ void Cchkhe_aa(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
                     // Check error code from Chetrf and handle error.
                     //
                     if (info != k) {
-                        Alaerh(path, "ZHETRF_AA", info, k, uplo, n, n, -1, -1, nb, imat, nfail, nerrs, nout);
+                        Alaerh(path, "Chetrf_aa", info, k, uplo, n, n, -1, -1, nb, imat, nfail, nerrs, nout);
                     }
                     //
                     // +    TEST 1
@@ -345,7 +345,7 @@ void Cchkhe_aa(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
                         Clarhs(matpath, xtype, uplo, " ", n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
                         Clacpy("Full", n, nrhs, b, lda, x, lda);
                         //
-                        srnamt = "ZHETRS_AA";
+                        srnamt = "Chetrs_aa";
                         lwork = max((INTEGER)1, 3 * n - 2);
                         Chetrs_aa(uplo.elems, n, nrhs, afac, lda, iwork, x, lda, work, lwork, info);
                         //
@@ -353,7 +353,7 @@ void Cchkhe_aa(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
                         //
                         if (info != 0) {
                             if (izero == 0) {
-                                Alaerh(path, "ZHETRS_AA", info, 0, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                                Alaerh(path, "Chetrs_aa", info, 0, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                             }
                         } else {
                             //

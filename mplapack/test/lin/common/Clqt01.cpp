@@ -54,7 +54,7 @@ void Clqt01(INTEGER const m, INTEGER const n, COMPLEX *a, COMPLEX *af, COMPLEX *
     //
     // Factorize the matrix A in the array AF.
     //
-    srnamt = "ZGELQF";
+    srnamt = "Cgelqf";
     INTEGER info = 0;
     Cgelqf(m, n, af, lda, tau, work, lwork, info);
     //
@@ -68,7 +68,7 @@ void Clqt01(INTEGER const m, INTEGER const n, COMPLEX *a, COMPLEX *af, COMPLEX *
     //
     // Generate the n-by-n matrix Q
     //
-    srnamt = "ZUNGLQ";
+    srnamt = "Cunglq";
     Cunglq(n, n, minmn, q, lda, tau, work, lwork, info);
     //
     // Copy L

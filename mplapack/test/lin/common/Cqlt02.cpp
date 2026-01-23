@@ -69,7 +69,7 @@ void Cqlt02(INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX *a, COMPL
     //
     // Generate the last n columns of the matrix Q
     //
-    srnamt = "ZUNGQL";
+    srnamt = "Cungql";
     INTEGER info = 0;
     Cungql(m, n, k, q, lda, &tau[(n - k + 1) - 1], work, lwork, info);
     //

@@ -317,7 +317,7 @@ void Cdrvsy_rk(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs
                         // Factor the matrix and solve the system using
                         // Csysv_rk.
                         //
-                        srnamt = "ZSYSV_RK";
+                        srnamt = "Csysv_rk";
                         Csysv_rk(uplo.elems, n, nrhs, afac, lda, e, iwork, x, lda, work, lwork, info);
                         //
                         // Adjust the expected value of INFO to account for
@@ -340,7 +340,7 @@ void Cdrvsy_rk(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs
                         // Check error code from Csysv_rk and handle error.
                         //
                         if (info != k) {
-                            Alaerh(path, "ZSYSV_RK", info, k, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                            Alaerh(path, "Csysv_rk", info, k, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                             goto statement_120;
                         } else if (info != 0) {
                             goto statement_120;

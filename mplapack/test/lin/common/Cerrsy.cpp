@@ -92,134 +92,134 @@ void Cerrsy(fem::str_cref path, INTEGER const nunit) {
         //
         // Csytrf
         //
-        srnamt = "ZSYTRF";
+        srnamt = "Csytrf";
         infot = 1;
         Csytrf("/", 0, a, 1, ip, w, 1, info);
-        Chkxer("ZSYTRF", infot, nout, lerr, ok);
+        Chkxer("Csytrf", infot, nout, lerr, ok);
         infot = 2;
         Csytrf("U", -1, a, 1, ip, w, 1, info);
-        Chkxer("ZSYTRF", infot, nout, lerr, ok);
+        Chkxer("Csytrf", infot, nout, lerr, ok);
         infot = 4;
         Csytrf("U", 2, a, 1, ip, w, 4, info);
-        Chkxer("ZSYTRF", infot, nout, lerr, ok);
+        Chkxer("Csytrf", infot, nout, lerr, ok);
         infot = 7;
         Csytrf("U", 0, a, 1, ip, w, 0, info);
-        Chkxer("ZSYTRF", infot, nout, lerr, ok);
+        Chkxer("Csytrf", infot, nout, lerr, ok);
         infot = 7;
         Csytrf("U", 0, a, 1, ip, w, -2, info);
-        Chkxer("ZSYTRF", infot, nout, lerr, ok);
+        Chkxer("Csytrf", infot, nout, lerr, ok);
         //
         // Csytf2
         //
-        srnamt = "ZSYTF2";
+        srnamt = "Csytf2";
         infot = 1;
         Csytf2("/", 0, a, 1, ip, info);
-        Chkxer("ZSYTF2", infot, nout, lerr, ok);
+        Chkxer("Csytf2", infot, nout, lerr, ok);
         infot = 2;
         Csytf2("U", -1, a, 1, ip, info);
-        Chkxer("ZSYTF2", infot, nout, lerr, ok);
+        Chkxer("Csytf2", infot, nout, lerr, ok);
         infot = 4;
         Csytf2("U", 2, a, 1, ip, info);
-        Chkxer("ZSYTF2", infot, nout, lerr, ok);
+        Chkxer("Csytf2", infot, nout, lerr, ok);
         //
         // Csytri
         //
-        srnamt = "ZSYTRI";
+        srnamt = "Csytri";
         infot = 1;
         Csytri("/", 0, a, 1, ip, w, info);
-        Chkxer("ZSYTRI", infot, nout, lerr, ok);
+        Chkxer("Csytri", infot, nout, lerr, ok);
         infot = 2;
         Csytri("U", -1, a, 1, ip, w, info);
-        Chkxer("ZSYTRI", infot, nout, lerr, ok);
+        Chkxer("Csytri", infot, nout, lerr, ok);
         infot = 4;
         Csytri("U", 2, a, 1, ip, w, info);
-        Chkxer("ZSYTRI", infot, nout, lerr, ok);
+        Chkxer("Csytri", infot, nout, lerr, ok);
         //
         // Csytri2
         //
-        srnamt = "ZSYTRI2";
+        srnamt = "Csytri2";
         infot = 1;
         Csytri2("/", 0, a, 1, ip, w, 1, info);
-        Chkxer("ZSYTRI2", infot, nout, lerr, ok);
+        Chkxer("Csytri2", infot, nout, lerr, ok);
         infot = 2;
         Csytri2("U", -1, a, 1, ip, w, 1, info);
-        Chkxer("ZSYTRI2", infot, nout, lerr, ok);
+        Chkxer("Csytri2", infot, nout, lerr, ok);
         infot = 4;
         Csytri2("U", 2, a, 1, ip, w, 1, info);
-        Chkxer("ZSYTRI2", infot, nout, lerr, ok);
+        Chkxer("Csytri2", infot, nout, lerr, ok);
         //
         // Csytri2x
         //
-        srnamt = "ZSYTRI2X";
+        srnamt = "Csytri2x";
         infot = 1;
         Csytri2x("/", 0, a, 1, ip, w, 1, info);
-        Chkxer("ZSYTRI2X", infot, nout, lerr, ok);
+        Chkxer("Csytri2x", infot, nout, lerr, ok);
         infot = 2;
         Csytri2x("U", -1, a, 1, ip, w, 1, info);
-        Chkxer("ZSYTRI2X", infot, nout, lerr, ok);
+        Chkxer("Csytri2x", infot, nout, lerr, ok);
         infot = 4;
         Csytri2x("U", 2, a, 1, ip, w, 1, info);
-        Chkxer("ZSYTRI2X", infot, nout, lerr, ok);
+        Chkxer("Csytri2x", infot, nout, lerr, ok);
         //
         // Csytrs
         //
-        srnamt = "ZSYTRS";
+        srnamt = "Csytrs";
         infot = 1;
         Csytrs("/", 0, 0, a, 1, ip, b, 1, info);
-        Chkxer("ZSYTRS", infot, nout, lerr, ok);
+        Chkxer("Csytrs", infot, nout, lerr, ok);
         infot = 2;
         Csytrs("U", -1, 0, a, 1, ip, b, 1, info);
-        Chkxer("ZSYTRS", infot, nout, lerr, ok);
+        Chkxer("Csytrs", infot, nout, lerr, ok);
         infot = 3;
         Csytrs("U", 0, -1, a, 1, ip, b, 1, info);
-        Chkxer("ZSYTRS", infot, nout, lerr, ok);
+        Chkxer("Csytrs", infot, nout, lerr, ok);
         infot = 5;
         Csytrs("U", 2, 1, a, 1, ip, b, 2, info);
-        Chkxer("ZSYTRS", infot, nout, lerr, ok);
+        Chkxer("Csytrs", infot, nout, lerr, ok);
         infot = 8;
         Csytrs("U", 2, 1, a, 2, ip, b, 1, info);
-        Chkxer("ZSYTRS", infot, nout, lerr, ok);
+        Chkxer("Csytrs", infot, nout, lerr, ok);
         //
         // Csyrfs
         //
-        srnamt = "ZSYRFS";
+        srnamt = "Csyrfs";
         infot = 1;
         Csyrfs("/", 0, 0, a, 1, af, 1, ip, b, 1, x, 1, r1, r2, w, r, info);
-        Chkxer("ZSYRFS", infot, nout, lerr, ok);
+        Chkxer("Csyrfs", infot, nout, lerr, ok);
         infot = 2;
         Csyrfs("U", -1, 0, a, 1, af, 1, ip, b, 1, x, 1, r1, r2, w, r, info);
-        Chkxer("ZSYRFS", infot, nout, lerr, ok);
+        Chkxer("Csyrfs", infot, nout, lerr, ok);
         infot = 3;
         Csyrfs("U", 0, -1, a, 1, af, 1, ip, b, 1, x, 1, r1, r2, w, r, info);
-        Chkxer("ZSYRFS", infot, nout, lerr, ok);
+        Chkxer("Csyrfs", infot, nout, lerr, ok);
         infot = 5;
         Csyrfs("U", 2, 1, a, 1, af, 2, ip, b, 2, x, 2, r1, r2, w, r, info);
-        Chkxer("ZSYRFS", infot, nout, lerr, ok);
+        Chkxer("Csyrfs", infot, nout, lerr, ok);
         infot = 7;
         Csyrfs("U", 2, 1, a, 2, af, 1, ip, b, 2, x, 2, r1, r2, w, r, info);
-        Chkxer("ZSYRFS", infot, nout, lerr, ok);
+        Chkxer("Csyrfs", infot, nout, lerr, ok);
         infot = 10;
         Csyrfs("U", 2, 1, a, 2, af, 2, ip, b, 1, x, 2, r1, r2, w, r, info);
-        Chkxer("ZSYRFS", infot, nout, lerr, ok);
+        Chkxer("Csyrfs", infot, nout, lerr, ok);
         infot = 12;
         Csyrfs("U", 2, 1, a, 2, af, 2, ip, b, 2, x, 1, r1, r2, w, r, info);
-        Chkxer("ZSYRFS", infot, nout, lerr, ok);
+        Chkxer("Csyrfs", infot, nout, lerr, ok);
         //
         // Csycon
         //
-        srnamt = "ZSYCON";
+        srnamt = "Csycon";
         infot = 1;
         Csycon("/", 0, a, 1, ip, anrm, rcond, w, info);
-        Chkxer("ZSYCON", infot, nout, lerr, ok);
+        Chkxer("Csycon", infot, nout, lerr, ok);
         infot = 2;
         Csycon("U", -1, a, 1, ip, anrm, rcond, w, info);
-        Chkxer("ZSYCON", infot, nout, lerr, ok);
+        Chkxer("Csycon", infot, nout, lerr, ok);
         infot = 4;
         Csycon("U", 2, a, 1, ip, anrm, rcond, w, info);
-        Chkxer("ZSYCON", infot, nout, lerr, ok);
+        Chkxer("Csycon", infot, nout, lerr, ok);
         infot = 6;
         Csycon("U", 1, a, 1, ip, -anrm, rcond, w, info);
-        Chkxer("ZSYCON", infot, nout, lerr, ok);
+        Chkxer("Csycon", infot, nout, lerr, ok);
         //
     } else if (Mlsamen(2, c2.elems, "SR")) {
         //
@@ -229,83 +229,83 @@ void Cerrsy(fem::str_cref path, INTEGER const nunit) {
         //
         // Csytrf_rook
         //
-        srnamt = "ZSYTRF_ROOK";
+        srnamt = "Csytrf_rook";
         infot = 1;
         Csytrf_rook("/", 0, a, 1, ip, w, 1, info);
-        Chkxer("ZSYTRF_ROOK", infot, nout, lerr, ok);
+        Chkxer("Csytrf_rook", infot, nout, lerr, ok);
         infot = 2;
         Csytrf_rook("U", -1, a, 1, ip, w, 1, info);
-        Chkxer("ZSYTRF_ROOK", infot, nout, lerr, ok);
+        Chkxer("Csytrf_rook", infot, nout, lerr, ok);
         infot = 4;
         Csytrf_rook("U", 2, a, 1, ip, w, 4, info);
-        Chkxer("ZSYTRF_ROOK", infot, nout, lerr, ok);
+        Chkxer("Csytrf_rook", infot, nout, lerr, ok);
         infot = 7;
         Csytrf_rook("U", 0, a, 1, ip, w, 0, info);
-        Chkxer("ZSYTRF_ROOK", infot, nout, lerr, ok);
+        Chkxer("Csytrf_rook", infot, nout, lerr, ok);
         infot = 7;
         Csytrf_rook("U", 0, a, 1, ip, w, -2, info);
-        Chkxer("ZSYTRF_ROOK", infot, nout, lerr, ok);
+        Chkxer("Csytrf_rook", infot, nout, lerr, ok);
         //
         // Csytf2_rook
         //
-        srnamt = "ZSYTF2_ROOK";
+        srnamt = "Csytf2_rook";
         infot = 1;
         Csytf2_rook("/", 0, a, 1, ip, info);
-        Chkxer("ZSYTF2_ROOK", infot, nout, lerr, ok);
+        Chkxer("Csytf2_rook", infot, nout, lerr, ok);
         infot = 2;
         Csytf2_rook("U", -1, a, 1, ip, info);
-        Chkxer("ZSYTF2_ROOK", infot, nout, lerr, ok);
+        Chkxer("Csytf2_rook", infot, nout, lerr, ok);
         infot = 4;
         Csytf2_rook("U", 2, a, 1, ip, info);
-        Chkxer("ZSYTF2_ROOK", infot, nout, lerr, ok);
+        Chkxer("Csytf2_rook", infot, nout, lerr, ok);
         //
         // Csytri_rook
         //
-        srnamt = "ZSYTRI_ROOK";
+        srnamt = "Csytri_rook";
         infot = 1;
         Csytri_rook("/", 0, a, 1, ip, w, info);
-        Chkxer("ZSYTRI_ROOK", infot, nout, lerr, ok);
+        Chkxer("Csytri_rook", infot, nout, lerr, ok);
         infot = 2;
         Csytri_rook("U", -1, a, 1, ip, w, info);
-        Chkxer("ZSYTRI_ROOK", infot, nout, lerr, ok);
+        Chkxer("Csytri_rook", infot, nout, lerr, ok);
         infot = 4;
         Csytri_rook("U", 2, a, 1, ip, w, info);
-        Chkxer("ZSYTRI_ROOK", infot, nout, lerr, ok);
+        Chkxer("Csytri_rook", infot, nout, lerr, ok);
         //
         // Csytrs_rook
         //
-        srnamt = "ZSYTRS_ROOK";
+        srnamt = "Csytrs_rook";
         infot = 1;
         Csytrs_rook("/", 0, 0, a, 1, ip, b, 1, info);
-        Chkxer("ZSYTRS_ROOK", infot, nout, lerr, ok);
+        Chkxer("Csytrs_rook", infot, nout, lerr, ok);
         infot = 2;
         Csytrs_rook("U", -1, 0, a, 1, ip, b, 1, info);
-        Chkxer("ZSYTRS_ROOK", infot, nout, lerr, ok);
+        Chkxer("Csytrs_rook", infot, nout, lerr, ok);
         infot = 3;
         Csytrs_rook("U", 0, -1, a, 1, ip, b, 1, info);
-        Chkxer("ZSYTRS_ROOK", infot, nout, lerr, ok);
+        Chkxer("Csytrs_rook", infot, nout, lerr, ok);
         infot = 5;
         Csytrs_rook("U", 2, 1, a, 1, ip, b, 2, info);
-        Chkxer("ZSYTRS_ROOK", infot, nout, lerr, ok);
+        Chkxer("Csytrs_rook", infot, nout, lerr, ok);
         infot = 8;
         Csytrs_rook("U", 2, 1, a, 2, ip, b, 1, info);
-        Chkxer("ZSYTRS_ROOK", infot, nout, lerr, ok);
+        Chkxer("Csytrs_rook", infot, nout, lerr, ok);
         //
         // Csycon_rook
         //
-        srnamt = "ZSYCON_ROOK";
+        srnamt = "Csycon_rook";
         infot = 1;
         Csycon_rook("/", 0, a, 1, ip, anrm, rcond, w, info);
-        Chkxer("ZSYCON_ROOK", infot, nout, lerr, ok);
+        Chkxer("Csycon_rook", infot, nout, lerr, ok);
         infot = 2;
         Csycon_rook("U", -1, a, 1, ip, anrm, rcond, w, info);
-        Chkxer("ZSYCON_ROOK", infot, nout, lerr, ok);
+        Chkxer("Csycon_rook", infot, nout, lerr, ok);
         infot = 4;
         Csycon_rook("U", 2, a, 1, ip, anrm, rcond, w, info);
-        Chkxer("ZSYCON_ROOK", infot, nout, lerr, ok);
+        Chkxer("Csycon_rook", infot, nout, lerr, ok);
         infot = 6;
         Csycon_rook("U", 1, a, 1, ip, -anrm, rcond, w, info);
-        Chkxer("ZSYCON_ROOK", infot, nout, lerr, ok);
+        Chkxer("Csycon_rook", infot, nout, lerr, ok);
         //
     } else if (Mlsamen(2, c2.elems, "SK")) {
         //
@@ -319,102 +319,102 @@ void Cerrsy(fem::str_cref path, INTEGER const nunit) {
         //
         // Csytrf_rk
         //
-        srnamt = "ZSYTRF_RK";
+        srnamt = "Csytrf_rk";
         infot = 1;
         Csytrf_rk("/", 0, a, 1, e, ip, w, 1, info);
-        Chkxer("ZSYTRF_RK", infot, nout, lerr, ok);
+        Chkxer("Csytrf_rk", infot, nout, lerr, ok);
         infot = 2;
         Csytrf_rk("U", -1, a, 1, e, ip, w, 1, info);
-        Chkxer("ZSYTRF_RK", infot, nout, lerr, ok);
+        Chkxer("Csytrf_rk", infot, nout, lerr, ok);
         infot = 4;
         Csytrf_rk("U", 2, a, 1, e, ip, w, 4, info);
-        Chkxer("ZSYTRF_RK", infot, nout, lerr, ok);
+        Chkxer("Csytrf_rk", infot, nout, lerr, ok);
         infot = 8;
         Csytrf_rk("U", 0, a, 1, e, ip, w, 0, info);
-        Chkxer("ZSYTRF_RK", infot, nout, lerr, ok);
+        Chkxer("Csytrf_rk", infot, nout, lerr, ok);
         infot = 8;
         Csytrf_rk("U", 0, a, 1, e, ip, w, -2, info);
-        Chkxer("ZSYTRF_RK", infot, nout, lerr, ok);
+        Chkxer("Csytrf_rk", infot, nout, lerr, ok);
         //
         // Csytf2_rk
         //
-        srnamt = "ZSYTF2_RK";
+        srnamt = "Csytf2_rk";
         infot = 1;
         Csytf2_rk("/", 0, a, 1, e, ip, info);
-        Chkxer("ZSYTF2_RK", infot, nout, lerr, ok);
+        Chkxer("Csytf2_rk", infot, nout, lerr, ok);
         infot = 2;
         Csytf2_rk("U", -1, a, 1, e, ip, info);
-        Chkxer("ZSYTF2_RK", infot, nout, lerr, ok);
+        Chkxer("Csytf2_rk", infot, nout, lerr, ok);
         infot = 4;
         Csytf2_rk("U", 2, a, 1, e, ip, info);
-        Chkxer("ZSYTF2_RK", infot, nout, lerr, ok);
+        Chkxer("Csytf2_rk", infot, nout, lerr, ok);
         //
         // Csytri_3
         //
-        srnamt = "ZSYTRI_3";
+        srnamt = "Csytri_3";
         infot = 1;
         Csytri_3("/", 0, a, 1, e, ip, w, 1, info);
-        Chkxer("ZSYTRI_3", infot, nout, lerr, ok);
+        Chkxer("Csytri_3", infot, nout, lerr, ok);
         infot = 2;
         Csytri_3("U", -1, a, 1, e, ip, w, 1, info);
-        Chkxer("ZSYTRI_3", infot, nout, lerr, ok);
+        Chkxer("Csytri_3", infot, nout, lerr, ok);
         infot = 4;
         Csytri_3("U", 2, a, 1, e, ip, w, 1, info);
-        Chkxer("ZSYTRI_3", infot, nout, lerr, ok);
+        Chkxer("Csytri_3", infot, nout, lerr, ok);
         infot = 8;
         Csytri_3("U", 0, a, 1, e, ip, w, 0, info);
-        Chkxer("ZSYTRI_3", infot, nout, lerr, ok);
+        Chkxer("Csytri_3", infot, nout, lerr, ok);
         infot = 8;
         Csytri_3("U", 0, a, 1, e, ip, w, -2, info);
-        Chkxer("ZSYTRI_3", infot, nout, lerr, ok);
+        Chkxer("Csytri_3", infot, nout, lerr, ok);
         //
         // Csytri_3x
         //
-        srnamt = "ZSYTRI_3X";
+        srnamt = "Csytri_3x";
         infot = 1;
         Csytri_3x("/", 0, a, 1, e, ip, w, 1, info);
-        Chkxer("ZSYTRI_3X", infot, nout, lerr, ok);
+        Chkxer("Csytri_3x", infot, nout, lerr, ok);
         infot = 2;
         Csytri_3x("U", -1, a, 1, e, ip, w, 1, info);
-        Chkxer("ZSYTRI_3X", infot, nout, lerr, ok);
+        Chkxer("Csytri_3x", infot, nout, lerr, ok);
         infot = 4;
         Csytri_3x("U", 2, a, 1, e, ip, w, 1, info);
-        Chkxer("ZSYTRI_3X", infot, nout, lerr, ok);
+        Chkxer("Csytri_3x", infot, nout, lerr, ok);
         //
         // Csytrs_3
         //
-        srnamt = "ZSYTRS_3";
+        srnamt = "Csytrs_3";
         infot = 1;
         Csytrs_3("/", 0, 0, a, 1, e, ip, b, 1, info);
-        Chkxer("ZSYTRS_3", infot, nout, lerr, ok);
+        Chkxer("Csytrs_3", infot, nout, lerr, ok);
         infot = 2;
         Csytrs_3("U", -1, 0, a, 1, e, ip, b, 1, info);
-        Chkxer("ZSYTRS_3", infot, nout, lerr, ok);
+        Chkxer("Csytrs_3", infot, nout, lerr, ok);
         infot = 3;
         Csytrs_3("U", 0, -1, a, 1, e, ip, b, 1, info);
-        Chkxer("ZSYTRS_3", infot, nout, lerr, ok);
+        Chkxer("Csytrs_3", infot, nout, lerr, ok);
         infot = 5;
         Csytrs_3("U", 2, 1, a, 1, e, ip, b, 2, info);
-        Chkxer("ZSYTRS_3", infot, nout, lerr, ok);
+        Chkxer("Csytrs_3", infot, nout, lerr, ok);
         infot = 9;
         Csytrs_3("U", 2, 1, a, 2, e, ip, b, 1, info);
-        Chkxer("ZSYTRS_3", infot, nout, lerr, ok);
+        Chkxer("Csytrs_3", infot, nout, lerr, ok);
         //
         // Csycon_3
         //
-        srnamt = "ZSYCON_3";
+        srnamt = "Csycon_3";
         infot = 1;
         Csycon_3("/", 0, a, 1, e, ip, anrm, rcond, w, info);
-        Chkxer("ZSYCON_3", infot, nout, lerr, ok);
+        Chkxer("Csycon_3", infot, nout, lerr, ok);
         infot = 2;
         Csycon_3("U", -1, a, 1, e, ip, anrm, rcond, w, info);
-        Chkxer("ZSYCON_3", infot, nout, lerr, ok);
+        Chkxer("Csycon_3", infot, nout, lerr, ok);
         infot = 4;
         Csycon_3("U", 2, a, 1, e, ip, anrm, rcond, w, info);
-        Chkxer("ZSYCON_3", infot, nout, lerr, ok);
+        Chkxer("Csycon_3", infot, nout, lerr, ok);
         infot = 7;
         Csycon_3("U", 1, a, 1, e, ip, -1.0, rcond, w, info);
-        Chkxer("ZSYCON_3", infot, nout, lerr, ok);
+        Chkxer("Csycon_3", infot, nout, lerr, ok);
         //
     } else if (Mlsamen(2, c2.elems, "SP")) {
         //
@@ -424,71 +424,71 @@ void Cerrsy(fem::str_cref path, INTEGER const nunit) {
         //
         // Csptrf
         //
-        srnamt = "ZSPTRF";
+        srnamt = "Csptrf";
         infot = 1;
         Csptrf("/", 0, a, ip, info);
-        Chkxer("ZSPTRF", infot, nout, lerr, ok);
+        Chkxer("Csptrf", infot, nout, lerr, ok);
         infot = 2;
         Csptrf("U", -1, a, ip, info);
-        Chkxer("ZSPTRF", infot, nout, lerr, ok);
+        Chkxer("Csptrf", infot, nout, lerr, ok);
         //
         // Csptri
         //
-        srnamt = "ZSPTRI";
+        srnamt = "Csptri";
         infot = 1;
         Csptri("/", 0, a, ip, w, info);
-        Chkxer("ZSPTRI", infot, nout, lerr, ok);
+        Chkxer("Csptri", infot, nout, lerr, ok);
         infot = 2;
         Csptri("U", -1, a, ip, w, info);
-        Chkxer("ZSPTRI", infot, nout, lerr, ok);
+        Chkxer("Csptri", infot, nout, lerr, ok);
         //
         // Csptrs
         //
-        srnamt = "ZSPTRS";
+        srnamt = "Csptrs";
         infot = 1;
         Csptrs("/", 0, 0, a, ip, b, 1, info);
-        Chkxer("ZSPTRS", infot, nout, lerr, ok);
+        Chkxer("Csptrs", infot, nout, lerr, ok);
         infot = 2;
         Csptrs("U", -1, 0, a, ip, b, 1, info);
-        Chkxer("ZSPTRS", infot, nout, lerr, ok);
+        Chkxer("Csptrs", infot, nout, lerr, ok);
         infot = 3;
         Csptrs("U", 0, -1, a, ip, b, 1, info);
-        Chkxer("ZSPTRS", infot, nout, lerr, ok);
+        Chkxer("Csptrs", infot, nout, lerr, ok);
         infot = 7;
         Csptrs("U", 2, 1, a, ip, b, 1, info);
-        Chkxer("ZSPTRS", infot, nout, lerr, ok);
+        Chkxer("Csptrs", infot, nout, lerr, ok);
         //
         // Csprfs
         //
-        srnamt = "ZSPRFS";
+        srnamt = "Csprfs";
         infot = 1;
         Csprfs("/", 0, 0, a, af, ip, b, 1, x, 1, r1, r2, w, r, info);
-        Chkxer("ZSPRFS", infot, nout, lerr, ok);
+        Chkxer("Csprfs", infot, nout, lerr, ok);
         infot = 2;
         Csprfs("U", -1, 0, a, af, ip, b, 1, x, 1, r1, r2, w, r, info);
-        Chkxer("ZSPRFS", infot, nout, lerr, ok);
+        Chkxer("Csprfs", infot, nout, lerr, ok);
         infot = 3;
         Csprfs("U", 0, -1, a, af, ip, b, 1, x, 1, r1, r2, w, r, info);
-        Chkxer("ZSPRFS", infot, nout, lerr, ok);
+        Chkxer("Csprfs", infot, nout, lerr, ok);
         infot = 8;
         Csprfs("U", 2, 1, a, af, ip, b, 1, x, 2, r1, r2, w, r, info);
-        Chkxer("ZSPRFS", infot, nout, lerr, ok);
+        Chkxer("Csprfs", infot, nout, lerr, ok);
         infot = 10;
         Csprfs("U", 2, 1, a, af, ip, b, 2, x, 1, r1, r2, w, r, info);
-        Chkxer("ZSPRFS", infot, nout, lerr, ok);
+        Chkxer("Csprfs", infot, nout, lerr, ok);
         //
         // Cspcon
         //
-        srnamt = "ZSPCON";
+        srnamt = "Cspcon";
         infot = 1;
         Cspcon("/", 0, a, ip, anrm, rcond, w, info);
-        Chkxer("ZSPCON", infot, nout, lerr, ok);
+        Chkxer("Cspcon", infot, nout, lerr, ok);
         infot = 2;
         Cspcon("U", -1, a, ip, anrm, rcond, w, info);
-        Chkxer("ZSPCON", infot, nout, lerr, ok);
+        Chkxer("Cspcon", infot, nout, lerr, ok);
         infot = 5;
         Cspcon("U", 1, a, ip, -anrm, rcond, w, info);
-        Chkxer("ZSPCON", infot, nout, lerr, ok);
+        Chkxer("Cspcon", infot, nout, lerr, ok);
         //
     } else if (Mlsamen(2, c2.elems, "SA")) {
         //
@@ -497,41 +497,41 @@ void Cerrsy(fem::str_cref path, INTEGER const nunit) {
         //
         // Csytrf_aa
         //
-        srnamt = "ZSYTRF_AA";
+        srnamt = "Csytrf_aa";
         infot = 1;
         Csytrf_aa("/", 0, a, 1, ip, w, 1, info);
-        Chkxer("ZSYTRF_AA", infot, nout, lerr, ok);
+        Chkxer("Csytrf_aa", infot, nout, lerr, ok);
         infot = 2;
         Csytrf_aa("U", -1, a, 1, ip, w, 1, info);
-        Chkxer("ZSYTRF_AA", infot, nout, lerr, ok);
+        Chkxer("Csytrf_aa", infot, nout, lerr, ok);
         infot = 4;
         Csytrf_aa("U", 2, a, 1, ip, w, 4, info);
-        Chkxer("ZSYTRF_AA", infot, nout, lerr, ok);
+        Chkxer("Csytrf_aa", infot, nout, lerr, ok);
         infot = 7;
         Csytrf_aa("U", 0, a, 1, ip, w, 0, info);
-        Chkxer("ZSYTRF_AA", infot, nout, lerr, ok);
+        Chkxer("Csytrf_aa", infot, nout, lerr, ok);
         infot = 7;
         Csytrf_aa("U", 0, a, 1, ip, w, -2, info);
-        Chkxer("ZSYTRF_AA", infot, nout, lerr, ok);
+        Chkxer("Csytrf_aa", infot, nout, lerr, ok);
         //
         // Csytrs_aa
         //
-        srnamt = "ZSYTRS_AA";
+        srnamt = "Csytrs_aa";
         infot = 1;
         Csytrs_aa("/", 0, 0, a, 1, ip, b, 1, w, 1, info);
-        Chkxer("ZSYTRS_AA", infot, nout, lerr, ok);
+        Chkxer("Csytrs_aa", infot, nout, lerr, ok);
         infot = 2;
         Csytrs_aa("U", -1, 0, a, 1, ip, b, 1, w, 1, info);
-        Chkxer("ZSYTRS_AA", infot, nout, lerr, ok);
+        Chkxer("Csytrs_aa", infot, nout, lerr, ok);
         infot = 3;
         Csytrs_aa("U", 0, -1, a, 1, ip, b, 1, w, 1, info);
-        Chkxer("ZSYTRS_AA", infot, nout, lerr, ok);
+        Chkxer("Csytrs_aa", infot, nout, lerr, ok);
         infot = 5;
         Csytrs_aa("U", 2, 1, a, 1, ip, b, 2, w, 1, info);
-        Chkxer("ZSYTRS_AA", infot, nout, lerr, ok);
+        Chkxer("Csytrs_aa", infot, nout, lerr, ok);
         infot = 8;
         Csytrs_aa("U", 2, 1, a, 2, ip, b, 1, w, 1, info);
-        Chkxer("ZSYTRS_AA", infot, nout, lerr, ok);
+        Chkxer("Csytrs_aa", infot, nout, lerr, ok);
         //
     } else if (Mlsamen(2, c2.elems, "S2")) {
         //
@@ -540,41 +540,41 @@ void Cerrsy(fem::str_cref path, INTEGER const nunit) {
         //
         // Csytrf_aa_2stage
         //
-        srnamt = "ZSYTRF_AA_2STAGE";
+        srnamt = "Csytrf_aa_2stage";
         infot = 1;
         Csytrf_aa_2stage("/", 0, a, 1, a, 1, ip, ip, w, 1, info);
-        Chkxer("ZSYTRF_AA_2STAGE", infot, nout, lerr, ok);
+        Chkxer("Csytrf_aa_2stage", infot, nout, lerr, ok);
         infot = 2;
         Csytrf_aa_2stage("U", -1, a, 1, a, 1, ip, ip, w, 1, info);
-        Chkxer("ZSYTRF_AA_2STAGE", infot, nout, lerr, ok);
+        Chkxer("Csytrf_aa_2stage", infot, nout, lerr, ok);
         infot = 4;
         Csytrf_aa_2stage("U", 2, a, 1, a, 2, ip, ip, w, 1, info);
-        Chkxer("ZSYTRF_AA_2STAGE", infot, nout, lerr, ok);
+        Chkxer("Csytrf_aa_2stage", infot, nout, lerr, ok);
         infot = 6;
         Csytrf_aa_2stage("U", 2, a, 2, a, 1, ip, ip, w, 1, info);
-        Chkxer("ZSYTRF_AA_2STAGE", infot, nout, lerr, ok);
+        Chkxer("Csytrf_aa_2stage", infot, nout, lerr, ok);
         infot = 10;
         Csytrf_aa_2stage("U", 2, a, 2, a, 8, ip, ip, w, 0, info);
-        Chkxer("ZSYTRF_AA_2STAGE", infot, nout, lerr, ok);
+        Chkxer("Csytrf_aa_2stage", infot, nout, lerr, ok);
         //
         // CHETRS_AA_2STAGE
         //
-        srnamt = "ZSYTRS_AA_2STAGE";
+        srnamt = "Csytrs_aa_2stage";
         infot = 1;
         Csytrs_aa_2stage("/", 0, 0, a, 1, a, 1, ip, ip, b, 1, info);
-        Chkxer("ZSYTRS_AA_2STAGE", infot, nout, lerr, ok);
+        Chkxer("Csytrs_aa_2stage", infot, nout, lerr, ok);
         infot = 2;
         Csytrs_aa_2stage("U", -1, 0, a, 1, a, 1, ip, ip, b, 1, info);
-        Chkxer("ZSYTRS_AA_2STAGE", infot, nout, lerr, ok);
+        Chkxer("Csytrs_aa_2stage", infot, nout, lerr, ok);
         infot = 3;
         Csytrs_aa_2stage("U", 0, -1, a, 1, a, 1, ip, ip, b, 1, info);
-        Chkxer("ZSYTRS_AA_2STAGE", infot, nout, lerr, ok);
+        Chkxer("Csytrs_aa_2stage", infot, nout, lerr, ok);
         infot = 5;
         Csytrs_aa_2stage("U", 2, 1, a, 1, a, 1, ip, ip, b, 1, info);
-        Chkxer("ZSYTRS_AA_2STAGE", infot, nout, lerr, ok);
+        Chkxer("Csytrs_aa_2stage", infot, nout, lerr, ok);
         infot = 7;
         Csytrs_aa_2stage("U", 2, 1, a, 2, a, 1, ip, ip, b, 1, info);
-        Chkxer("ZSYTRS_AA_2STAGE", infot, nout, lerr, ok);
+        Chkxer("Csytrs_aa_2stage", infot, nout, lerr, ok);
         infot = 11;
         Csytrs_aa_2stage("U", 2, 1, a, 2, a, 8, ip, ip, b, 1, info);
         Chkxer("ZSYTRS_AA_STAGE", infot, nout, lerr, ok);
