@@ -339,7 +339,7 @@ void Rdrgev(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             Rggev("V", "V", n, s, lda, t, lda, alphar, alphai, beta, q, ldq, z, ldq, work, lwork, ierr);
             if (ierr != 0 && ierr != n + 1) {
                 result[1 - 1] = ulpinv;
-                write(nounit, format_9999), "DGGEV1", ierr, n, jtype, ioldsd;
+                write(nounit, format_9999), "Rggev1", ierr, n, jtype, ioldsd;
                 info = abs(ierr);
                 goto statement_190;
             }
@@ -365,7 +365,7 @@ void Rdrgev(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             Rggev("N", "N", n, s, lda, t, lda, alphr1, alphi1, beta1, q, ldq, z, ldq, work, lwork, ierr);
             if (ierr != 0 && ierr != n + 1) {
                 result[1 - 1] = ulpinv;
-                write(nounit, format_9999), "DGGEV2", ierr, n, jtype, ioldsd;
+                write(nounit, format_9999), "Rggev2", ierr, n, jtype, ioldsd;
                 info = abs(ierr);
                 goto statement_190;
             }
@@ -411,7 +411,7 @@ void Rdrgev(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             Rggev("N", "V", n, s, lda, t, lda, alphr1, alphi1, beta1, q, ldq, qe, ldqe, work, lwork, ierr);
             if (ierr != 0 && ierr != n + 1) {
                 result[1 - 1] = ulpinv;
-                write(nounit, format_9999), "DGGEV4", ierr, n, jtype, ioldsd;
+                write(nounit, format_9999), "Rgvev4", ierr, n, jtype, ioldsd;
                 info = abs(ierr);
                 goto statement_190;
             }

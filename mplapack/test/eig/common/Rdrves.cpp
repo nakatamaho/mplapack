@@ -365,7 +365,7 @@ void Rdrves(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     Rgees("V", sort.elems, Rslect, n, h, lda, sdim, wr, wi, vs, ldvs, work, nnwork, bwork, iinfo);
                     if (iinfo != 0 && iinfo != n + 2) {
                         result[(1 + rsub) - 1] = ulpinv;
-                        write(nounit, format_9992), "DGEES1", iinfo, n, jtype, ioldsd;
+                        write(nounit, format_9992), "Rgees1", iinfo, n, jtype, ioldsd;
                         info = abs(iinfo);
                         goto statement_220;
                     }
@@ -434,7 +434,7 @@ void Rdrves(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     Rgees("N", sort.elems, Rslect, n, ht, lda, sdim, wrt, wit, vs, ldvs, work, nnwork, bwork, iinfo);
                     if (iinfo != 0 && iinfo != n + 2) {
                         result[(5 + rsub) - 1] = ulpinv;
-                        write(nounit, format_9992), "DGEES2", iinfo, n, jtype, ioldsd;
+                        write(nounit, format_9992), "Rgees2", iinfo, n, jtype, ioldsd;
                         info = abs(iinfo);
                         goto statement_220;
                     }

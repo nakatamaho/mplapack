@@ -148,9 +148,9 @@ void Rget23(bool const comp, fem::str_cref balanc, INTEGER const jtype, REAL con
     if (iinfo != 0) {
         result[1 - 1] = ulpinv;
         if (jtype != 22) {
-            write(nounit, format_9998), "DGEEVX1", iinfo, n, jtype, balanc, iseed;
+            write(nounit, format_9998), "Rgeevx1", iinfo, n, jtype, balanc, iseed;
         } else {
-            write(nounit, format_9999), "DGEEVX1", iinfo, n, iseed[1 - 1];
+            write(nounit, format_9999), "Rgeevx1", iinfo, n, iseed[1 - 1];
         }
         info = abs(iinfo);
         return;
@@ -235,9 +235,9 @@ void Rget23(bool const comp, fem::str_cref balanc, INTEGER const jtype, REAL con
         if (iinfo != 0) {
             result[1 - 1] = ulpinv;
             if (jtype != 22) {
-                write(nounit, format_9998), "DGEEVX2", iinfo, n, jtype, balanc, iseed;
+                write(nounit, format_9998), "Rgeevx2", iinfo, n, jtype, balanc, iseed;
             } else {
-                write(nounit, format_9999), "DGEEVX2", iinfo, n, iseed[1 - 1];
+                write(nounit, format_9999), "Rgeevx2", iinfo, n, iseed[1 - 1];
             }
             info = abs(iinfo);
             goto statement_190;
@@ -287,9 +287,9 @@ void Rget23(bool const comp, fem::str_cref balanc, INTEGER const jtype, REAL con
         if (iinfo != 0) {
             result[1 - 1] = ulpinv;
             if (jtype != 22) {
-                write(nounit, format_9998), "DGEEVX3", iinfo, n, jtype, balanc, iseed;
+                write(nounit, format_9998), "Rgeevx3", iinfo, n, jtype, balanc, iseed;
             } else {
-                write(nounit, format_9999), "DGEEVX3", iinfo, n, iseed[1 - 1];
+                write(nounit, format_9999), "Rgeevx3", iinfo, n, iseed[1 - 1];
             }
             info = abs(iinfo);
             goto statement_190;
@@ -349,9 +349,9 @@ void Rget23(bool const comp, fem::str_cref balanc, INTEGER const jtype, REAL con
         if (iinfo != 0) {
             result[1 - 1] = ulpinv;
             if (jtype != 22) {
-                write(nounit, format_9998), "DGEEVX4", iinfo, n, jtype, balanc, iseed;
+                write(nounit, format_9998), "Rgeevx4", iinfo, n, jtype, balanc, iseed;
             } else {
-                write(nounit, format_9999), "DGEEVX4", iinfo, n, iseed[1 - 1];
+                write(nounit, format_9999), "Rgeevx4", iinfo, n, iseed[1 - 1];
             }
             info = abs(iinfo);
             goto statement_190;
@@ -415,7 +415,7 @@ void Rget23(bool const comp, fem::str_cref balanc, INTEGER const jtype, REAL con
         Rgeevx("N", "V", "V", "B", n, h, lda, wr, wi, vl, ldvl, vr, ldvr, ilo, ihi, scale, abnrm, rconde, rcondv, work, lwork, iwork, iinfo);
         if (iinfo != 0) {
             result[1 - 1] = ulpinv;
-            write(nounit, format_9999), "DGEEVX5", iinfo, n, iseed[1 - 1];
+            write(nounit, format_9999), "Rgeevx5", iinfo, n, iseed[1 - 1];
             info = abs(iinfo);
             goto statement_250;
         }

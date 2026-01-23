@@ -366,7 +366,7 @@ void Cdrves(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     Cgees("V", sort.elems, Cslect, n, h, lda, sdim, w, vs, ldvs, work, nnwork, rwork, bwork, iinfo);
                     if (iinfo != 0) {
                         result[(1 + rsub) - 1] = ulpinv;
-                        write(nounit, format_9992), "ZGEES1", iinfo, n, jtype, ioldsd;
+                        write(nounit, format_9992), "Cgees1", iinfo, n, jtype, ioldsd;
                         info = abs(iinfo);
                         goto statement_190;
                     }
@@ -404,7 +404,7 @@ void Cdrves(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     Cgees("N", sort.elems, Cslect, n, ht, lda, sdim, wt, vs, ldvs, work, nnwork, rwork, bwork, iinfo);
                     if (iinfo != 0) {
                         result[(5 + rsub) - 1] = ulpinv;
-                        write(nounit, format_9992), "ZGEES2", iinfo, n, jtype, ioldsd;
+                        write(nounit, format_9992), "Cgees2", iinfo, n, jtype, ioldsd;
                         info = abs(iinfo);
                         goto statement_190;
                     }

@@ -343,7 +343,7 @@ void Cdrgev3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
             Cggev3("V", "V", n, s, lda, t, lda, alpha, beta, q, ldq, z, ldq, work, lwork, rwork, ierr);
             if (ierr != 0 && ierr != n + 1) {
                 result[1 - 1] = ulpinv;
-                write(nounit, format_9999), "ZGGEV31", ierr, n, jtype, ioldsd;
+                write(nounit, format_9999), "Cggev31", ierr, n, jtype, ioldsd;
                 info = abs(ierr);
                 goto statement_190;
             }
@@ -369,7 +369,7 @@ void Cdrgev3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
             Cggev3("N", "N", n, s, lda, t, lda, alpha1, beta1, q, ldq, z, ldq, work, lwork, rwork, ierr);
             if (ierr != 0 && ierr != n + 1) {
                 result[1 - 1] = ulpinv;
-                write(nounit, format_9999), "ZGGEV32", ierr, n, jtype, ioldsd;
+                write(nounit, format_9999), "Cggev32", ierr, n, jtype, ioldsd;
                 info = abs(ierr);
                 goto statement_190;
             }
@@ -388,7 +388,7 @@ void Cdrgev3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
             Cggev3("V", "N", n, s, lda, t, lda, alpha1, beta1, qe, ldqe, z, ldq, work, lwork, rwork, ierr);
             if (ierr != 0 && ierr != n + 1) {
                 result[1 - 1] = ulpinv;
-                write(nounit, format_9999), "ZGGEV33", ierr, n, jtype, ioldsd;
+                write(nounit, format_9999), "Cggev33", ierr, n, jtype, ioldsd;
                 info = abs(ierr);
                 goto statement_190;
             }
@@ -415,7 +415,7 @@ void Cdrgev3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
             Cggev3("N", "V", n, s, lda, t, lda, alpha1, beta1, q, ldq, qe, ldqe, work, lwork, rwork, ierr);
             if (ierr != 0 && ierr != n + 1) {
                 result[1 - 1] = ulpinv;
-                write(nounit, format_9999), "ZGGEV34", ierr, n, jtype, ioldsd;
+                write(nounit, format_9999), "Cggev34", ierr, n, jtype, ioldsd;
                 info = abs(ierr);
                 goto statement_190;
             }

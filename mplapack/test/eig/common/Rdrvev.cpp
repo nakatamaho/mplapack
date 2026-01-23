@@ -355,7 +355,7 @@ void Rdrvev(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 Rgeev("V", "V", n, h, lda, wr, wi, vl, ldvl, vr, ldvr, work, nnwork, iinfo);
                 if (iinfo != 0) {
                     result[1 - 1] = ulpinv;
-                    write(nounit, format_9993), "DGEEV1", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9993), "Rgeev1", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     goto statement_220;
                 }
@@ -432,7 +432,7 @@ void Rdrvev(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 Rgeev("N", "N", n, h, lda, wr1, wi1, dum, 1, dum, 1, work, nnwork, iinfo);
                 if (iinfo != 0) {
                     result[1 - 1] = ulpinv;
-                    write(nounit, format_9993), "DGEEV2", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9993), "Rgeev2", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     goto statement_220;
                 }
@@ -451,7 +451,7 @@ void Rdrvev(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 Rgeev("N", "V", n, h, lda, wr1, wi1, dum, 1, lre, ldlre, work, nnwork, iinfo);
                 if (iinfo != 0) {
                     result[1 - 1] = ulpinv;
-                    write(nounit, format_9993), "DGEEV3", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9993), "Rgeev3", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     goto statement_220;
                 }
@@ -480,7 +480,7 @@ void Rdrvev(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 Rgeev("V", "N", n, h, lda, wr1, wi1, lre, ldlre, dum, 1, work, nnwork, iinfo);
                 if (iinfo != 0) {
                     result[1 - 1] = ulpinv;
-                    write(nounit, format_9993), "DGEEV4", iinfo, n, jtype, ioldsd;
+                    write(nounit, format_9993), "Rgeev4", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     goto statement_220;
                 }

@@ -143,9 +143,9 @@ void Rget24(bool const comp, INTEGER const jtype, REAL const thresh, INTEGER *is
         if (iinfo != 0 && iinfo != n + 2) {
             result[(1 + rsub) - 1] = ulpinv;
             if (jtype != 22) {
-                write(nounit, format_9998), "DGEESX1", iinfo, n, jtype, iseed;
+                write(nounit, format_9998), "Rgeesx1", iinfo, n, jtype, iseed;
             } else {
-                write(nounit, format_9999), "DGEESX1", iinfo, n, iseed[1 - 1];
+                write(nounit, format_9999), "Rgeesx1", iinfo, n, iseed[1 - 1];
             }
             info = abs(iinfo);
             return;
@@ -244,9 +244,9 @@ void Rget24(bool const comp, INTEGER const jtype, REAL const thresh, INTEGER *is
         if (iinfo != 0 && iinfo != n + 2) {
             result[(5 + rsub) - 1] = ulpinv;
             if (jtype != 22) {
-                write(nounit, format_9998), "DGEESX2", iinfo, n, jtype, iseed;
+                write(nounit, format_9998), "Rgeesx2", iinfo, n, jtype, iseed;
             } else {
-                write(nounit, format_9999), "DGEESX2", iinfo, n, iseed[1 - 1];
+                write(nounit, format_9999), "Rgeesx2", iinfo, n, iseed[1 - 1];
             }
             info = abs(iinfo);
             goto statement_250;
@@ -308,9 +308,9 @@ void Rget24(bool const comp, INTEGER const jtype, REAL const thresh, INTEGER *is
             result[14 - 1] = ulpinv;
             result[15 - 1] = ulpinv;
             if (jtype != 22) {
-                write(nounit, format_9998), "DGEESX3", iinfo, n, jtype, iseed;
+                write(nounit, format_9998), "Rgeesx3", iinfo, n, jtype, iseed;
             } else {
-                write(nounit, format_9999), "DGEESX3", iinfo, n, iseed[1 - 1];
+                write(nounit, format_9999), "Rgeesx3", iinfo, n, iseed[1 - 1];
             }
             info = abs(iinfo);
             goto statement_250;
@@ -343,9 +343,9 @@ void Rget24(bool const comp, INTEGER const jtype, REAL const thresh, INTEGER *is
             result[14 - 1] = ulpinv;
             result[15 - 1] = ulpinv;
             if (jtype != 22) {
-                write(nounit, format_9998), "DGEESX4", iinfo, n, jtype, iseed;
+                write(nounit, format_9998), "Rgeesx4", iinfo, n, jtype, iseed;
             } else {
-                write(nounit, format_9999), "DGEESX4", iinfo, n, iseed[1 - 1];
+                write(nounit, format_9999), "Rgeesx4", iinfo, n, iseed[1 - 1];
             }
             info = abs(iinfo);
             goto statement_250;
@@ -386,9 +386,9 @@ void Rget24(bool const comp, INTEGER const jtype, REAL const thresh, INTEGER *is
         if (iinfo != 0 && iinfo != n + 2) {
             result[14 - 1] = ulpinv;
             if (jtype != 22) {
-                write(nounit, format_9998), "DGEESX5", iinfo, n, jtype, iseed;
+                write(nounit, format_9998), "Rgeesx5", iinfo, n, jtype, iseed;
             } else {
-                write(nounit, format_9999), "DGEESX5", iinfo, n, iseed[1 - 1];
+                write(nounit, format_9999), "Rgeesx5", iinfo, n, iseed[1 - 1];
             }
             info = abs(iinfo);
             goto statement_250;
@@ -426,9 +426,9 @@ void Rget24(bool const comp, INTEGER const jtype, REAL const thresh, INTEGER *is
         if (iinfo != 0 && iinfo != n + 2) {
             result[14 - 1] = ulpinv;
             if (jtype != 22) {
-                write(nounit, format_9998), "DGEESX6", iinfo, n, jtype, iseed;
+                write(nounit, format_9998), "Rgeesx6", iinfo, n, jtype, iseed;
             } else {
-                write(nounit, format_9999), "DGEESX6", iinfo, n, iseed[1 - 1];
+                write(nounit, format_9999), "Rgeesx6", iinfo, n, iseed[1 - 1];
             }
             info = abs(iinfo);
             goto statement_250;
@@ -466,9 +466,9 @@ void Rget24(bool const comp, INTEGER const jtype, REAL const thresh, INTEGER *is
         if (iinfo != 0 && iinfo != n + 2) {
             result[15 - 1] = ulpinv;
             if (jtype != 22) {
-                write(nounit, format_9998), "DGEESX7", iinfo, n, jtype, iseed;
+                write(nounit, format_9998), "Rgeesx7", iinfo, n, jtype, iseed;
             } else {
-                write(nounit, format_9999), "DGEESX7", iinfo, n, iseed[1 - 1];
+                write(nounit, format_9999), "Rgeesx7", iinfo, n, iseed[1 - 1];
             }
             info = abs(iinfo);
             goto statement_250;
@@ -506,9 +506,9 @@ void Rget24(bool const comp, INTEGER const jtype, REAL const thresh, INTEGER *is
         if (iinfo != 0 && iinfo != n + 2) {
             result[15 - 1] = ulpinv;
             if (jtype != 22) {
-                write(nounit, format_9998), "DGEESX8", iinfo, n, jtype, iseed;
+                write(nounit, format_9998), "Rgeesx8", iinfo, n, jtype, iseed;
             } else {
-                write(nounit, format_9999), "DGEESX8", iinfo, n, iseed[1 - 1];
+                write(nounit, format_9999), "Rgeesx8", iinfo, n, iseed[1 - 1];
             }
             info = abs(iinfo);
             goto statement_250;
@@ -591,7 +591,7 @@ statement_250:
         if (iinfo != 0 && iinfo != n + 2) {
             result[16 - 1] = ulpinv;
             result[17 - 1] = ulpinv;
-            write(nounit, format_9999), "DGEESX9", iinfo, n, iseed[1 - 1];
+            write(nounit, format_9999), "Rgeesx9", iinfo, n, iseed[1 - 1];
             info = abs(iinfo);
             goto statement_300;
         }

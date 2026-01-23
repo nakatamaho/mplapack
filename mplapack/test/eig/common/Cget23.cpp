@@ -151,9 +151,9 @@ void Cget23(bool const comp, INTEGER const isrt, fem::str_cref balanc, INTEGER c
     if (iinfo != 0) {
         result[1 - 1] = ulpinv;
         if (jtype != 22) {
-            write(nounit, format_9998), "ZGEEVX1", iinfo, n, jtype, balanc, iseed;
+            write(nounit, format_9998), "Cgeevx1", iinfo, n, jtype, balanc, iseed;
         } else {
-            write(nounit, format_9999), "ZGEEVX1", iinfo, n, iseed[1 - 1];
+            write(nounit, format_9999), "Cgeevx1", iinfo, n, iseed[1 - 1];
         }
         info = abs(iinfo);
         return;
@@ -224,9 +224,9 @@ void Cget23(bool const comp, INTEGER const isrt, fem::str_cref balanc, INTEGER c
         if (iinfo != 0) {
             result[1 - 1] = ulpinv;
             if (jtype != 22) {
-                write(nounit, format_9998), "ZGEEVX2", iinfo, n, jtype, balanc, iseed;
+                write(nounit, format_9998), "Cgeevx2", iinfo, n, jtype, balanc, iseed;
             } else {
-                write(nounit, format_9999), "ZGEEVX2", iinfo, n, iseed[1 - 1];
+                write(nounit, format_9999), "Cgeevx2", iinfo, n, iseed[1 - 1];
             }
             info = abs(iinfo);
             goto statement_190;
@@ -276,9 +276,9 @@ void Cget23(bool const comp, INTEGER const isrt, fem::str_cref balanc, INTEGER c
         if (iinfo != 0) {
             result[1 - 1] = ulpinv;
             if (jtype != 22) {
-                write(nounit, format_9998), "ZGEEVX3", iinfo, n, jtype, balanc, iseed;
+                write(nounit, format_9998), "Cgeevx3", iinfo, n, jtype, balanc, iseed;
             } else {
-                write(nounit, format_9999), "ZGEEVX3", iinfo, n, iseed[1 - 1];
+                write(nounit, format_9999), "Cgeevx3", iinfo, n, iseed[1 - 1];
             }
             info = abs(iinfo);
             goto statement_190;
@@ -338,9 +338,9 @@ void Cget23(bool const comp, INTEGER const isrt, fem::str_cref balanc, INTEGER c
         if (iinfo != 0) {
             result[1 - 1] = ulpinv;
             if (jtype != 22) {
-                write(nounit, format_9998), "ZGEEVX4", iinfo, n, jtype, balanc, iseed;
+                write(nounit, format_9998), "Cgeevx4", iinfo, n, jtype, balanc, iseed;
             } else {
-                write(nounit, format_9999), "ZGEEVX4", iinfo, n, iseed[1 - 1];
+                write(nounit, format_9999), "Cgeevx4", iinfo, n, iseed[1 - 1];
             }
             info = abs(iinfo);
             goto statement_190;
@@ -404,7 +404,7 @@ void Cget23(bool const comp, INTEGER const isrt, fem::str_cref balanc, INTEGER c
         Cgeevx("N", "V", "V", "B", n, h, lda, w, vl, ldvl, vr, ldvr, ilo, ihi, scale, abnrm, rconde, rcondv, work, lwork, rwork, iinfo);
         if (iinfo != 0) {
             result[1 - 1] = ulpinv;
-            write(nounit, format_9999), "ZGEEVX5", iinfo, n, iseed[1 - 1];
+            write(nounit, format_9999), "Cgeevx5", iinfo, n, iseed[1 - 1];
             info = abs(iinfo);
             goto statement_250;
         }
