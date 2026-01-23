@@ -182,7 +182,7 @@ statement_10:
 //
 statement_90:
     //
-    write(nout, "(' .. test output of Cggbal.. ')");
+    write(nout, "(' .. test output of Cggbal .. ')");
     //
     write(nout, "(' ratio of largest test error              = ',d12.3)"), rmax;
     write(nout, "(' example number where info is not zero    = ',i4)"), lmax[1 - 1];

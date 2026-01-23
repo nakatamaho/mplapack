@@ -254,7 +254,7 @@ void Cdrvrfp(INTEGER const nout, INTEGER const nn, INTEGER *nval, INTEGER const 
                             // always be INFO however if INFO is ZERO, Alaerh does not
                             // complain.
                             //
-                            Alaerh("ZPF", "ZPFSV ", info, izero, uplo, n, n, -1, -1, nrhs, iit, nfail, nerrs, nout);
+                            Alaerh("ZPF", "ZPFSV", info, izero, uplo, n, n, -1, -1, nrhs, iit, nfail, nerrs, nout);
                             goto statement_100;
                         }
                         //

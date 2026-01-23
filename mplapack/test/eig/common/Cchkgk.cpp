@@ -217,7 +217,7 @@ statement_10:
 //
 statement_100:
     //
-    write(nout, "(1x,'.. test output of Cggbak.. ')");
+    write(nout, "(1x,'.. test output of Cggbak .. ')");
     //
     write(nout, "(' value of largest test error                  =',d12.3)"), rmax;
     write(nout, "(' example number where Cggbal info is not 0    =',i4)"), lmax[1 - 1];

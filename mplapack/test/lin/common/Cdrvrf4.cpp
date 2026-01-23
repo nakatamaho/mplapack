@@ -206,7 +206,7 @@ void Cdrvrf4(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
                             if (result[1 - 1] >= thresh) {
                                 if (nfail == 0) {
                                     write(nout, star);
-                                    write(nout, "(1x,' *** Error(s) or Failure(s) while testing Chfrk"
+                                    write(nout, "(1x,' *** Error(s) or Failure(s) while testing Chfrk     "
                                                 "    ***')");
                                 }
                                 write(nout, "(1x,'     Failure in ',a5,', CFORM=''',a1,''',',' UPLO=''',"

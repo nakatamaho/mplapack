@@ -78,7 +78,7 @@ void Ccklse(INTEGER const nn, INTEGER *mval, INTEGER *pval, INTEGER *nval, INTEG
     const INTEGER ntests = 7;
     REAL result[ntests];
     INTEGER i = 0;
-    static const char *format_9999 = "(' Clatms in Ccklse INFO = ',i5)";
+    static const char *format_9999 = "(' Clatms in Ccklse   INFO = ',i5)";
     //
     // Initialize constants and the random number seed.
     //

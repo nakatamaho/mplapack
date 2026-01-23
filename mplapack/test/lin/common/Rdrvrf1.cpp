@@ -74,7 +74,7 @@ void Rdrvrf1(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
     REAL norma = 0.0;
     const INTEGER ntests = 1;
     REAL result[ntests];
-    static const char *format_9999 = "(1x,' *** Error(s) or Failure(s) while testing DLANSF         ***')";
+    static const char *format_9999 = "(1x,' *** Error(s) or Failure(s) while testing Rlansf         ***')";
     //
     // Initialize constants and the random number seed.
     //
