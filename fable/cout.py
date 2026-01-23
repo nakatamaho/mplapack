@@ -2855,6 +2855,7 @@ def rewrite_intrinsics(text: str) -> str:
     # --------------------------------------------------------------
     simple_map = {
         "fem::pow2":  "pow2",
+        "fem::pow4":  "pow4",
         "fem::mod":   "mod",
 
         # elementary math
