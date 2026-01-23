@@ -348,14 +348,14 @@ void Rdrgev(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             //
             Rget52(true, n, a, lda, b, lda, q, ldq, alphar, alphai, beta, work, &result[1 - 1]);
             if (result[2 - 1] > thresh) {
-                write(nounit, format_9998), "Left", "DGGEV1", result[2 - 1], n, jtype, ioldsd;
+                write(nounit, format_9998), "Left", "Rggev1", result[2 - 1], n, jtype, ioldsd;
             }
             //
             // Do the tests (3) and (4)
             //
             Rget52(false, n, a, lda, b, lda, z, ldq, alphar, alphai, beta, work, &result[3 - 1]);
             if (result[4 - 1] > thresh) {
-                write(nounit, format_9998), "Right", "DGGEV1", result[4 - 1], n, jtype, ioldsd;
+                write(nounit, format_9998), "Right", "Rggev1", result[4 - 1], n, jtype, ioldsd;
             }
             //
             // Do the test (5)

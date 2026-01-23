@@ -192,13 +192,13 @@ void Rdrgvx(INTEGER const nsize, REAL const thresh, INTEGER const nin, INTEGER c
                         result[1 - 1] = zero;
                         Rget52(true, n, a, lda, b, lda, vl, lda, alphar, alphai, beta, work, &result[1 - 1]);
                         if (result[2 - 1] > thresh) {
-                            write(nout, format_9998), "Left", "DGGEVX", result[2 - 1], n, iptype, iwa, iwb, iwx, iwy;
+                            write(nout, format_9998), "Left", "Rggevx", result[2 - 1], n, iptype, iwa, iwb, iwx, iwy;
                         }
                         //
                         result[2 - 1] = zero;
                         Rget52(false, n, a, lda, b, lda, vr, lda, alphar, alphai, beta, work, &result[2 - 1]);
                         if (result[3 - 1] > thresh) {
-                            write(nout, format_9998), "Right", "DGGEVX", result[3 - 1], n, iptype, iwa, iwb, iwx, iwy;
+                            write(nout, format_9998), "Right", "Rggevx", result[3 - 1], n, iptype, iwa, iwb, iwx, iwy;
                         }
                         //
                         // Test (3)
@@ -369,13 +369,13 @@ statement_90:
     result[1 - 1] = zero;
     Rget52(true, n, a, lda, b, lda, vl, lda, alphar, alphai, beta, work, &result[1 - 1]);
     if (result[2 - 1] > thresh) {
-        write(nout, format_9986), "Left", "DGGEVX", result[2 - 1], n, nptknt;
+        write(nout, format_9986), "Left", "Rggevx", result[2 - 1], n, nptknt;
     }
     //
     result[2 - 1] = zero;
     Rget52(false, n, a, lda, b, lda, vr, lda, alphar, alphai, beta, work, &result[2 - 1]);
     if (result[3 - 1] > thresh) {
-        write(nout, format_9986), "Right", "DGGEVX", result[3 - 1], n, nptknt;
+        write(nout, format_9986), "Right", "Rggevx", result[3 - 1], n, nptknt;
     }
     //
     // Test (3)

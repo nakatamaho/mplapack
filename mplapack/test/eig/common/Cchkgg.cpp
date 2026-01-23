@@ -472,7 +472,7 @@ void Cchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             Cget52(true, n, s1, lda, p1, lda, evectl, ldu, alpha1, beta1, work, rwork, &dumma[1 - 1]);
             result[9 - 1] = dumma[1 - 1];
             if (dumma[2 - 1] > thrshn) {
-                write(nounit, format_9998), "Left", "ZTGEVC(HOWMNY=S)", dumma[2 - 1], n, jtype, ioldsd;
+                write(nounit, format_9998), "Left", "Ctgevc(HOWMNY=S)", dumma[2 - 1], n, jtype, ioldsd;
             }
             //
             // 10: Compute the left eigenvector Matrix with
@@ -491,7 +491,7 @@ void Cchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             Cget52(true, n, h, lda, t, lda, evectl, ldu, alpha1, beta1, work, rwork, &dumma[1 - 1]);
             result[10 - 1] = dumma[1 - 1];
             if (dumma[2 - 1] > thrshn) {
-                write(nounit, format_9998), "Left", "ZTGEVC(HOWMNY=B)", dumma[2 - 1], n, jtype, ioldsd;
+                write(nounit, format_9998), "Left", "Ctgevc(HOWMNY=B)", dumma[2 - 1], n, jtype, ioldsd;
             }
             //
             // 11: Compute the right eigenvector Matrix without
@@ -536,7 +536,7 @@ void Cchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             Cget52(false, n, s1, lda, p1, lda, evectr, ldu, alpha1, beta1, work, rwork, &dumma[1 - 1]);
             result[11 - 1] = dumma[1 - 1];
             if (dumma[2 - 1] > thresh) {
-                write(nounit, format_9998), "Right", "ZTGEVC(HOWMNY=S)", dumma[2 - 1], n, jtype, ioldsd;
+                write(nounit, format_9998), "Right", "Ctgevc(HOWMNY=S)", dumma[2 - 1], n, jtype, ioldsd;
             }
             //
             // 12: Compute the right eigenvector Matrix with
@@ -555,7 +555,7 @@ void Cchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             Cget52(false, n, h, lda, t, lda, evectr, ldu, alpha1, beta1, work, rwork, &dumma[1 - 1]);
             result[12 - 1] = dumma[1 - 1];
             if (dumma[2 - 1] > thresh) {
-                write(nounit, format_9998), "Right", "ZTGEVC(HOWMNY=B)", dumma[2 - 1], n, jtype, ioldsd;
+                write(nounit, format_9998), "Right", "Ctgevc(HOWMNY=B)", dumma[2 - 1], n, jtype, ioldsd;
             }
             //
             // Tests 13--15 are done only on request

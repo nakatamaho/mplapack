@@ -191,13 +191,13 @@ void Cdrgvx(INTEGER const nsize, REAL const thresh, INTEGER const nin, INTEGER c
                         result[1 - 1] = zero;
                         Cget52(true, n, a, lda, b, lda, vl, lda, alpha, beta, work, rwork, &result[1 - 1]);
                         if (result[2 - 1] > thresh) {
-                            write(nout, format_9998), "Left", "ZGGEVX", result[2 - 1], n, iptype, iwa, iwb, iwx, iwy;
+                            write(nout, format_9998), "Left", "Cggevx", result[2 - 1], n, iptype, iwa, iwb, iwx, iwy;
                         }
                         //
                         result[2 - 1] = zero;
                         Cget52(false, n, a, lda, b, lda, vr, lda, alpha, beta, work, rwork, &result[2 - 1]);
                         if (result[3 - 1] > thresh) {
-                            write(nout, format_9998), "Right", "ZGGEVX", result[3 - 1], n, iptype, iwa, iwb, iwx, iwy;
+                            write(nout, format_9998), "Right", "Cggevx", result[3 - 1], n, iptype, iwa, iwb, iwx, iwy;
                         }
                         //
                         // Test (3)
@@ -367,13 +367,13 @@ statement_90:
     result[1 - 1] = zero;
     Cget52(true, n, a, lda, b, lda, vl, lda, alpha, beta, work, rwork, &result[1 - 1]);
     if (result[2 - 1] > thresh) {
-        write(nout, format_9986), "Left", "ZGGEVX", result[2 - 1], n, nptknt;
+        write(nout, format_9986), "Left", "Cggevx", result[2 - 1], n, nptknt;
     }
     //
     result[2 - 1] = zero;
     Cget52(false, n, a, lda, b, lda, vr, lda, alpha, beta, work, rwork, &result[2 - 1]);
     if (result[3 - 1] > thresh) {
-        write(nout, format_9986), "Right", "ZGGEVX", result[3 - 1], n, nptknt;
+        write(nout, format_9986), "Right", "Cggevx", result[3 - 1], n, nptknt;
     }
     //
     // Test (3)

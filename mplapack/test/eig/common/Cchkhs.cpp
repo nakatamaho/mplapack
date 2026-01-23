@@ -469,7 +469,7 @@ void Cchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             Cget22("N", "N", "N", n, t1, lda, evectr, ldu, w1, work, rwork, &dumma[1 - 1]);
             result[9 - 1] = dumma[1 - 1];
             if (dumma[2 - 1] > thresh) {
-                write(nounit, format_9998), "Right", "ZTREVC", dumma[2 - 1], n, jtype, ioldsd;
+                write(nounit, format_9998), "Right", "Ctrevc", dumma[2 - 1], n, jtype, ioldsd;
             }
             //
             // Compute selected right eigenvectors and confirm that
@@ -497,7 +497,7 @@ void Cchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             }
         statement_180:
             if (!match) {
-                write(nounit, format_9997), "Right", "ZTREVC", n, jtype, ioldsd;
+                write(nounit, format_9997), "Right", "Ctrevc", n, jtype, ioldsd;
             }
             //
             // Compute the Left eigenvector Matrix:
@@ -516,7 +516,7 @@ void Cchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             Cget22("C", "N", "C", n, t1, lda, evectl, ldu, w1, work, rwork, &dumma[3 - 1]);
             result[10 - 1] = dumma[3 - 1];
             if (dumma[4 - 1] > thresh) {
-                write(nounit, format_9998), "Left", "ZTREVC", dumma[4 - 1], n, jtype, ioldsd;
+                write(nounit, format_9998), "Left", "Ctrevc", dumma[4 - 1], n, jtype, ioldsd;
             }
             //
             // Compute selected left eigenvectors and confirm that
@@ -544,7 +544,7 @@ void Cchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             }
         statement_210:
             if (!match) {
-                write(nounit, format_9997), "Left", "ZTREVC", n, jtype, ioldsd;
+                write(nounit, format_9997), "Left", "Ctrevc", n, jtype, ioldsd;
             }
             //
             // Call Chsein for Right eigenvectors of H, do test 11
@@ -573,7 +573,7 @@ void Cchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     result[11 - 1] = dumma[1 - 1] * aninv;
                 }
                 if (dumma[2 - 1] > thresh) {
-                    write(nounit, format_9998), "Right", "ZHSEIN", dumma[2 - 1], n, jtype, ioldsd;
+                    write(nounit, format_9998), "Right", "Chsein", dumma[2 - 1], n, jtype, ioldsd;
                 }
             }
             //
@@ -603,7 +603,7 @@ void Cchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     result[12 - 1] = dumma[3 - 1] * aninv;
                 }
                 if (dumma[4 - 1] > thresh) {
-                    write(nounit, format_9998), "Left", "ZHSEIN", dumma[4 - 1], n, jtype, ioldsd;
+                    write(nounit, format_9998), "Left", "Chsein", dumma[4 - 1], n, jtype, ioldsd;
                 }
             }
             //

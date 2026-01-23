@@ -352,14 +352,14 @@ void Cdrgev(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             //
             Cget52(true, n, a, lda, b, lda, q, ldq, alpha, beta, work, rwork, &result[1 - 1]);
             if (result[2 - 1] > thresh) {
-                write(nounit, format_9998), "Left", "ZGGEV1", result[2 - 1], n, jtype, ioldsd;
+                write(nounit, format_9998), "Left", "Cggev1", result[2 - 1], n, jtype, ioldsd;
             }
             //
             // Do the tests (3) and (4)
             //
             Cget52(false, n, a, lda, b, lda, z, ldq, alpha, beta, work, rwork, &result[3 - 1]);
             if (result[4 - 1] > thresh) {
-                write(nounit, format_9998), "Right", "ZGGEV1", result[4 - 1], n, jtype, ioldsd;
+                write(nounit, format_9998), "Right", "Cggev1", result[4 - 1], n, jtype, ioldsd;
             }
             //
             // Do test (5)

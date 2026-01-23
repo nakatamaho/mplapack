@@ -494,7 +494,7 @@ void Rchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             Rget22("N", "N", "N", n, t1, lda, evectr, ldu, wr1, wi1, work, &dumma[1 - 1]);
             result[9 - 1] = dumma[1 - 1];
             if (dumma[2 - 1] > thresh) {
-                write(nounit, format_9998), "Right", "DTREVC", dumma[2 - 1], n, jtype, ioldsd;
+                write(nounit, format_9998), "Right", "Rtrevc", dumma[2 - 1], n, jtype, ioldsd;
             }
             //
             // Compute selected right eigenvectors and confirm that
@@ -530,7 +530,7 @@ void Rchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             }
         statement_180:
             if (!match) {
-                write(nounit, format_9997), "Right", "DTREVC", n, jtype, ioldsd;
+                write(nounit, format_9997), "Right", "Rtrevc", n, jtype, ioldsd;
             }
             //
             // Compute the Left eigenvector Matrix:
@@ -549,7 +549,7 @@ void Rchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             Rget22("Trans", "N", "Conj", n, t1, lda, evectl, ldu, wr1, wi1, work, &dumma[3 - 1]);
             result[10 - 1] = dumma[3 - 1];
             if (dumma[4 - 1] > thresh) {
-                write(nounit, format_9998), "Left", "DTREVC", dumma[4 - 1], n, jtype, ioldsd;
+                write(nounit, format_9998), "Left", "Rtrevc", dumma[4 - 1], n, jtype, ioldsd;
             }
             //
             // Compute selected left eigenvectors and confirm that
@@ -585,7 +585,7 @@ void Rchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             }
         statement_220:
             if (!match) {
-                write(nounit, format_9997), "Left", "DTREVC", n, jtype, ioldsd;
+                write(nounit, format_9997), "Left", "Rtrevc", n, jtype, ioldsd;
             }
             //
             // Call Rhsein for Right eigenvectors of H, do test 11
@@ -614,7 +614,7 @@ void Rchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     result[11 - 1] = dumma[1 - 1] * aninv;
                 }
                 if (dumma[2 - 1] > thresh) {
-                    write(nounit, format_9998), "Right", "DHSEIN", dumma[2 - 1], n, jtype, ioldsd;
+                    write(nounit, format_9998), "Right", "Rhsein", dumma[2 - 1], n, jtype, ioldsd;
                 }
             }
             //
@@ -644,7 +644,7 @@ void Rchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     result[12 - 1] = dumma[3 - 1] * aninv;
                 }
                 if (dumma[4 - 1] > thresh) {
-                    write(nounit, format_9998), "Left", "DHSEIN", dumma[4 - 1], n, jtype, ioldsd;
+                    write(nounit, format_9998), "Left", "Rhsein", dumma[4 - 1], n, jtype, ioldsd;
                 }
             }
             //
