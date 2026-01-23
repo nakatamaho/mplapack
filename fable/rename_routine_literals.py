@@ -77,7 +77,7 @@ TOKEN_RE = re.compile(
 
 # C/C++ normal string literal matcher (handles \" and \\).
 # NOTE: This is intentionally *not* a full C++ lexer; it is sufficient for
-# fable-generated code where format strings are emitted as normal literals.
+# fable-generated code where string literals are emitted as normal literals.
 CPP_STRING_RE = re.compile(r'"((?:\\.|[^"\\])*)"')
 
 # Match format_#### assignments that may use adjacent string literals:
@@ -86,6 +86,15 @@ CPP_STRING_RE = re.compile(r'"((?:\\.|[^"\\])*)"')
 #                "....";
 FORMAT_ASSIGN_RE = re.compile(
     r'(\bformat_\d+\s*=\s*)(?P<lits>(?:"(?:\\.|[^"\\])*"\s*)+);',
+    flags=re.DOTALL,
+)
+
+# Match fem-style write statements using the comma operator:
+#   write(unit, fmt), "Left", "DGGEV1", ...;
+# Capture everything after the first comma (after the write(...) call)
+# up to the terminating semicolon.
+WRITE_STMT_RE = re.compile(
+    r'(\bwrite\s*\(\s*[^)]*?\)\s*,)(?P<tail>.*?);',
     flags=re.DOTALL,
 )
 
@@ -117,8 +126,8 @@ def apply_patterns(text: str, mapping: Dict[str, str]) -> Tuple[str, int]:
     Targeted replacements only (avoid rewriting unrelated strings):
       - srnamt = "...."
       - write(unit, fmt), "...."
-      - write(unit, "....")  (format string inside parentheses)
-      - format_#### = "...." [possibly multi-literal]
+      - write(unit, fmt), ...;   (rewrite routine tokens inside any string literals)
+      - format_#### = "...."  (possibly multiple adjacent literals)
       - chkxer/Chkxer/chkxer2/... (case-insensitive)
       - Mxerbla/Mxerbla_array
       - Alaerh/Alahd/Alaesm ... , "...."
@@ -127,8 +136,6 @@ def apply_patterns(text: str, mapping: Dict[str, str]) -> Tuple[str, int]:
 
     patterns: List[re.Pattern] = [
         re.compile(r'(\bsrnamt\s*=\s*")([^"]*)(")'),
-
-        re.compile(r'(\bwrite\s*\(\s*[^)]*?\)\s*,\s*")([^"]*)(")'),
 
         re.compile(r'(\bwrite\s*\(\s*[^,]*,\s*")([^"]*)(")'),
 
@@ -156,8 +163,6 @@ def apply_patterns(text: str, mapping: Dict[str, str]) -> Tuple[str, int]:
         text = pat.sub(outer_repl, text)
 
     # format_#### assignments: rewrite routine tokens inside the format strings.
-    # This is needed because many tests print routine tags via FORMAT constants,
-    # not via direct string literals in write(...), "...".
     def format_repl(m: re.Match) -> str:
         nonlocal total_hits
         prefix = m.group(1)
@@ -175,6 +180,24 @@ def apply_patterns(text: str, mapping: Dict[str, str]) -> Tuple[str, int]:
 
     text = FORMAT_ASSIGN_RE.sub(format_repl, text)
 
+    # write(...), ...; statements: rewrite routine tokens inside any string literals
+    # in the comma-operator argument list.
+    def write_stmt_repl(m: re.Match) -> str:
+        nonlocal total_hits
+        prefix = m.group(1)
+        tail = m.group("tail")
+
+        def one_lit(sm: re.Match) -> str:
+            nonlocal total_hits
+            content = sm.group(1)
+            new_content, hits = rewrite_literal_content(content, mapping)
+            total_hits += hits
+            return '"' + new_content + '"'
+
+        new_tail = CPP_STRING_RE.sub(one_lit, tail)
+        return prefix + new_tail + ";"
+
+    text = WRITE_STMT_RE.sub(write_stmt_repl, text)
     return text, total_hits
 
 
