@@ -3,7 +3,7 @@ import argparse
 import os
 import re
 from pathlib import Path
-from typing import Dict, Tuple, List
+from typing import Dict, Tuple, List, Iterable
 
 
 def load_name_map(map_path: Path) -> Dict[str, str]:
@@ -21,9 +21,40 @@ def load_name_map(map_path: Path) -> Dict[str, str]:
     return mapping
 
 
+def _split_map_arg(map_arg: str) -> List[str]:
+    """
+    Allow either:
+      --map A --map B
+    or legacy convenience:
+      --map A,B
+    """
+    parts: List[str] = []
+    for x in map_arg.split(","):
+        x = x.strip()
+        if x:
+            parts.append(x)
+    return parts
+
+
+def load_name_maps(map_args: Iterable[str]) -> Dict[str, str]:
+    """
+    Load and merge multiple mapping files.
+    Precedence rule: later files override earlier ones.
+    """
+    merged: Dict[str, str] = {}
+    for arg in map_args:
+        for one in _split_map_arg(arg):
+            map_path = Path(os.path.expanduser(one))
+            if not map_path.exists():
+                raise FileNotFoundError(f"map file not found: {map_path}")
+            m = load_name_map(map_path)
+            merged.update(m)
+    return merged
+
+
 def map_token(token_with_spaces: str, mapping: Dict[str, str]) -> str | None:
     """
-    Map only by mplapack_name_map.txt.
+    Map only by mapping files.
     - Trim trailing spaces before lookup (e.g., "ZGGES " -> "zgges").
     - No fallback rules (D/S->R, C/Z->C are disabled).
     """
@@ -98,6 +129,7 @@ def apply_patterns(text: str, mapping: Dict[str, str]) -> Tuple[str, int]:
     ]
 
     for pat in patterns:
+
         def outer_repl(m: re.Match) -> str:
             nonlocal total_hits
             content = m.group(2)
@@ -130,9 +162,14 @@ def iter_files(paths: List[Path], suffixes: Tuple[str, ...]) -> List[Path]:
 
 def main() -> int:
     ap = argparse.ArgumentParser(
-        description="Rename LAPACK routine tokens inside string literals using mplapack_name_map.txt (map-only)"
+        description="Rename LAPACK routine tokens inside string literals using mapping txt files (map-only)"
     )
-    ap.add_argument("--map", required=True, help="Path to mplapack_name_map.txt")
+    ap.add_argument(
+        "--map",
+        action="append",
+        required=True,
+        help="Path to map txt (repeatable). Later maps override earlier ones.",
+    )
     ap.add_argument("--in-place", action="store_true", help="Rewrite files in place")
     ap.add_argument(
         "--suffix",
@@ -143,8 +180,7 @@ def main() -> int:
     ap.add_argument("paths", nargs="*", default=["."], help="Files/directories to scan")
     args = ap.parse_args()
 
-    map_path = Path(os.path.expanduser(args.map))
-    mapping = load_name_map(map_path)
+    mapping = load_name_maps(args.map)
 
     targets = [Path(os.path.expanduser(x)) for x in args.paths]
     suffixes = tuple(args.suffix)
