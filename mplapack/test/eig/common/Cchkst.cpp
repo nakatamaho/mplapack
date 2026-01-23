@@ -714,7 +714,7 @@ void Cchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 //
                 // Do test 17
                 //
-                temp2 = two * (two * n - one) * ulp * (one + eight * pow2(half)) / fem::pow4((one - half));
+                temp2 = two * (two * n - one) * ulp * (one + eight * pow2(half)) / pow4((one - half));
                 //
                 temp1 = zero;
                 for (j = 1; j <= n; j = j + 1) {
@@ -986,7 +986,7 @@ void Cchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     //
                     // Do test 27
                     //
-                    temp2 = two * (two * n - one) * ulp * (one + eight * pow2(half)) / fem::pow4((one - half));
+                    temp2 = two * (two * n - one) * ulp * (one + eight * pow2(half)) / pow4((one - half));
                     //
                     temp1 = zero;
                     for (j = 1; j <= n; j = j + 1) {
@@ -1021,7 +1021,7 @@ void Cchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                         //
                         // Do test 28
                         //
-                        temp2 = two * (two * n - one) * ulp * (one + eight * pow2(half)) / fem::pow4((one - half));
+                        temp2 = two * (two * n - one) * ulp * (one + eight * pow2(half)) / pow4((one - half));
                         //
                         temp1 = zero;
                         for (j = il; j <= iu; j = j + 1) {
