@@ -2677,12 +2677,25 @@ def _maybe_use_ld_variable(conv_info, ldexpr: str, default_ldname: str) -> str:
         return core
 
     # If the default name already exists as a Fortran identifier, prefer it
-    # (we assume the original code assigns it appropriately).
+    # only when it truly represents the array's leading dimension.
+    #
+    # Special case: In LAPACK test drivers (e.g. *chkaa), work arrays are
+    # sometimes declared as A((KDMAX+1)*NMAX, 7) while an unrelated scalar
+    # LDA exists for dense-matrix leading dimensions. In such cases, using
+    # "lda" as the stride is wrong; we generate "ldaw" (and similarly "ldbw").
     fproc = getattr(conv_info, "fproc", None)
-    fdecl_map = getattr(fproc, "fdecl_by_identifier",
-                        None) if fproc is not None else None
+    fdecl_map = getattr(fproc, "fdecl_by_identifier", None) if fproc is not None else None
     if fdecl_map is not None:
-        if default_ldname.lower() in fdecl_map or default_ldname in fdecl_map:
+        keys_lower = {str(k).lower() for k in fdecl_map.keys()}
+        if default_ldname.lower() in keys_lower:
+            if default_ldname.lower() in ("lda", "ldb"):
+                alt = default_ldname.lower() + "w"
+                if alt in keys_lower:
+                    return alt
+                if getattr(conv_info, "ld_constant_decls", None) is None:
+                    conv_info.ld_constant_decls = {}
+                conv_info.ld_constant_decls.setdefault(alt, core)
+                return alt
             return default_ldname
 
     # Otherwise, create a local ld variable initialized with the expression.
