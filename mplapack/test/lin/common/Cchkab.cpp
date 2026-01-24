@@ -88,6 +88,7 @@ void program_zchkab(int argc, char const *argv[]) {
     COMPLEX swork[nmax * (nmax + maxrhs)];
     INTEGER iwork[nmax];
     REAL s2 = 0.0;
+    INTEGER ldaw = ldamax * nmax;
     INTEGER ldb = nmax * maxrhs;
     static const char *format_9989 = "(/,1x,a6,' driver routines were not tested')";
     static const char *format_9990 = "(/,1x,a6,' routines were not tested')";
@@ -296,7 +297,7 @@ statement_130:
         }
         //
         if (tstdrv) {
-            Cdrvab(dotype, nm, mval, nns, nsval, thresh, lda, &a[0], &a[(2 - 1) * lda], &b[0], &b[(2 - 1) * ldb], work, rwork, swork, iwork, nout);
+            Cdrvab(dotype, nm, mval, nns, nsval, thresh, lda, &a[0], &a[(2 - 1) * ldaw], &b[0], &b[(2 - 1) * ldb], work, rwork, swork, iwork, nout);
         } else {
             write(nout, format_9989), "Ccgesv";
         }
@@ -313,7 +314,7 @@ statement_130:
         }
         //
         if (tstdrv) {
-            Cdrvac(dotype, nm, mval, nns, nsval, thresh, lda, &a[0], &a[(2 - 1) * lda], &b[0], &b[(2 - 1) * ldb], work, rwork, swork, nout);
+            Cdrvac(dotype, nm, mval, nns, nsval, thresh, lda, &a[0], &a[(2 - 1) * ldaw], &b[0], &b[(2 - 1) * ldb], work, rwork, swork, nout);
         } else {
             write(nout, format_9989), "Ccposv";
         }
