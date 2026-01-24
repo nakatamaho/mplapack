@@ -1367,6 +1367,7 @@ class conversion_info(global_conversion_info):
         "array_data_initializers",
         "hoisted_data_array_names",
         "ld_constant_decls",
+        "ld_stride_name_map",
     ]
 
     def __init__(O,
@@ -1401,6 +1402,10 @@ class conversion_info(global_conversion_info):
         # Map: auto-generated leading-dimension variable -> initializer expression.
         # This avoids hardcoding constants and repeating expressions in flattened 2D indexing.
         O.ld_constant_decls = {}
+
+        # Map: default leading-dimension base name (e.g. "lda") -> chosen stride variable name (e.g. "ldaw").
+        # This ensures repeated uses of the same array reuse the same stride variable.
+        O.ld_stride_name_map = {}
 
     def set_vmap_force_local(O, fdecl):
         identifier = fdecl.id_tok.value
@@ -2657,54 +2662,139 @@ _ident_re = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
 
 
 def _maybe_use_ld_variable(conv_info, ldexpr: str, default_ldname: str) -> str:
-    """Prefer a symbolic leading-dimension variable over an inlined expression.
+    """Decide the stride (leading-dimension) symbol to use for 2D/ND flattening.
 
-    Rules:
-      - If ldexpr is a simple identifier (e.g. "lda", "ldwork"), keep it.
-      - Otherwise, use default_ldname (e.g. "ldwork") and remember a declaration
-        "INTEGER ldwork = <ldexpr>;" to be emitted near the top of the generated function.
-
-    This avoids hardcoding constants (e.g. "2") and also avoids repeating
-    expressions (e.g. "n + nb + 1") in flattened 2D indexing.
+    Policy (MPLAPACK / safety-first):
+      - The ONLY source of truth is the array declaration's first-dimension *extent*
+        expression (ldexpr) extracted from the AST.
+      - If ldexpr is a single identifier:
+          * If that identifier is a PARAMETER: use it as-is (do not rename, do not create).
+          * Otherwise: use it directly as the stride (no redundant alias like "ldb = lda").
+      - If ldexpr is not a single identifier (compound expression): ALWAYS snapshot it into
+        a NEW stride variable.
+      - New stride variable naming:
+          * base name is default_ldname (already computed as lower-case, e.g. "lda"/"ldb"/"ldwork").
+          * if the base is already used, append trailing 'w' until unique:
+                lda, ldaw, ldaww, ...
+          * generated names are always lower-case.
     """
     if conv_info is None or default_ldname is None:
         return ldexpr
 
-    core = _strip_outer_parens_balanced(ldexpr)
+    # Reuse the chosen stride variable for this default name (per-array base).
+    stride_map = getattr(conv_info, "ld_stride_name_map", None)
+    key = str(default_ldname).lower()
+    if isinstance(stride_map, dict):
+        cached = stride_map.get(key)
+        if isinstance(cached, str) and cached:
+            return cached
 
-    # Already symbolic (single token): keep as-is.
-    if _ident_re.fullmatch(core):
+    core = _strip_outer_parens_balanced(str(ldexpr))
+
+    def _lookup_fdecl(name: str):
+        fproc = getattr(conv_info, "fproc", None)
+        fdecl_map = getattr(fproc, "fdecl_by_identifier", None) if fproc is not None else None
+        if not fdecl_map:
+            return None
+        return fdecl_map.get(name.lower()) or fdecl_map.get(name)
+
+    def _is_parameter_identifier(name: str) -> bool:
+        try:
+            fdecl = _lookup_fdecl(name)
+            if fdecl is None:
+                return False
+            return bool(getattr(fdecl, "is_parameter", lambda: False)())
+        except Exception:
+            return False
+
+    def _collect_used_lower_names() -> set:
+        used = set()
+        # Any Fortran identifier in this procedure counts as "used" (case-insensitive).
+        fproc = getattr(conv_info, "fproc", None)
+        fdecl_map = getattr(fproc, "fdecl_by_identifier", None) if fproc is not None else None
+        if fdecl_map:
+            for k in fdecl_map.keys():
+                try:
+                    used.add(str(k).lower())
+                except Exception:
+                    pass
+
+        # Already created stride variables / ld constants.
+        ld_map = getattr(conv_info, "ld_constant_decls", None)
+        if isinstance(ld_map, dict):
+            used.update({str(k).lower() for k in ld_map.keys()})
+
+        # Already decided stride names.
+        if isinstance(stride_map, dict):
+            used.update({str(v).lower() for v in stride_map.values() if isinstance(v, str)})
+
+        return used
+
+    def _unique_stride_name(base: str) -> str:
+        base = str(base).lower()
+        used = _collect_used_lower_names()
+        name = base
+        while name.lower() in used:
+            name = name + "w"
+        return name
+
+    def _record_stride(init_expr: str) -> str:
+        # Ensure maps exist
+        if getattr(conv_info, "ld_constant_decls", None) is None:
+            conv_info.ld_constant_decls = {}
+        if getattr(conv_info, "ld_stride_name_map", None) is None:
+            conv_info.ld_stride_name_map = {}
+        # Choose a unique generated name derived from the default base.
+        chosen = _unique_stride_name(default_ldname)
+
+        # Record declaration initializer (first-wins, deterministic for a given chosen name).
+        # If the chosen name somehow already exists with a different initializer, keep
+        # appending 'w' until we find an unused slot.
+        init_core = _strip_outer_parens_balanced(init_expr)
+        while True:
+            prev = conv_info.ld_constant_decls.get(chosen)
+            if prev is None:
+                conv_info.ld_constant_decls[chosen] = init_core
+                break
+            if str(prev).strip() == init_core:
+                break
+            chosen = chosen + "w"
+            # Keep appending until the name is globally unique in this procedure.
+            while chosen.lower() in _collect_used_lower_names():
+                chosen = chosen + "w"
+
+        conv_info.ld_stride_name_map[str(default_ldname).lower()] = chosen
+        return chosen
+
+    # ------------------------------------------------------------
+    # Rule 3-A: ldexpr is a PARAMETER identifier -> use as-is.
+    # ------------------------------------------------------------
+    if _ident_re.fullmatch(core) and _is_parameter_identifier(core):
+        # Do not rename; do not create a new stride variable.
+        if getattr(conv_info, "ld_stride_name_map", None) is None:
+            conv_info.ld_stride_name_map = {}
+        if isinstance(conv_info.ld_stride_name_map, dict):
+            conv_info.ld_stride_name_map.setdefault(key, core)
         return core
 
-    # If the default name already exists as a Fortran identifier, prefer it
-    # only when it truly represents the array's leading dimension.
-    #
-    # Special case: In LAPACK test drivers (e.g. *chkaa), work arrays are
-    # sometimes declared as A((KDMAX+1)*NMAX, 7) while an unrelated scalar
-    # LDA exists for dense-matrix leading dimensions. In such cases, using
-    # "lda" as the stride is wrong; we generate "ldaw" (and similarly "ldbw").
-    fproc = getattr(conv_info, "fproc", None)
-    fdecl_map = getattr(fproc, "fdecl_by_identifier", None) if fproc is not None else None
-    if fdecl_map is not None:
-        keys_lower = {str(k).lower() for k in fdecl_map.keys()}
-        if default_ldname.lower() in keys_lower:
-            if default_ldname.lower() in ("lda", "ldb"):
-                alt = default_ldname.lower() + "w"
-                if alt in keys_lower:
-                    return alt
-                if getattr(conv_info, "ld_constant_decls", None) is None:
-                    conv_info.ld_constant_decls = {}
-                conv_info.ld_constant_decls.setdefault(alt, core)
-                return alt
-            return default_ldname
+    # ------------------------------------------------------------
+    # Rule 3 (identifier): if ldexpr is a single identifier, use it
+    # directly (do not rename; do not introduce redundant snapshot vars
+    # like "ldb = lda"). Generated stride variables are only needed for
+    # compound expressions.
+    # ------------------------------------------------------------
+    if _ident_re.fullmatch(core):
+        if getattr(conv_info, "ld_stride_name_map", None) is None:
+            conv_info.ld_stride_name_map = {}
+        if isinstance(conv_info.ld_stride_name_map, dict):
+            conv_info.ld_stride_name_map.setdefault(key, core)
+        return core
 
-    # Otherwise, create a local ld variable initialized with the expression.
-    if getattr(conv_info, "ld_constant_decls", None) is None:
-        conv_info.ld_constant_decls = {}
-
-    # Keep the first initializer we saw (should be stable for a given array).
-    conv_info.ld_constant_decls.setdefault(default_ldname, core)
-    return default_ldname
+    # ------------------------------------------------------------
+    # Rule 2 (compound expression): ALWAYS snapshot into a new stride
+    # variable derived from default_ldname (lda/ldb/..., w-suffix).
+    # ------------------------------------------------------------
+    return _record_stride(core)
 
 
 def _emit_constant_ld_decls(top_scope, conv_info) -> None:
