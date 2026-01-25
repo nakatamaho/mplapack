@@ -1,5 +1,5 @@
---- lin/common/Cchkrfp.cpp_	2026-01-25 13:49:45.120729003 +0900
-+++ lin/common/Cchkrfp.cpp	2026-01-25 13:49:45.125729118 +0900
+--- lin/common/Cchkrfp.cpp_	2026-01-25 14:24:06.161059739 +0900
++++ lin/common/Cchkrfp.cpp	2026-01-25 14:24:06.168059886 +0900
 @@ -43,8 +43,10 @@
  #include <mplapack_matgen.h>
  #include <mplapack_lin.h>
@@ -46,12 +46,12 @@
 +    INTEGER lapack_vers_major = 0;
 +    INTEGER lapack_vers_minor = 0;
 +    INTEGER lapack_vers_patch = 0;
-+    iMlaver(mplapack_vers_major, mplapack_vers_minor, mplapack_vers_patch, lapack_vers_major, lapack_vers_ minor, lapack_vers_patch);
++    iMlaver(mplapack_vers_major, mplapack_vers_minor, mplapack_vers_patch, lapack_vers_major, lapack_vers_minor, lapack_vers_patch);
 +    write(nout, format_9994), mplapack_vers_major, mplapack_vers_minor, mplapack_vers_patch, lapack_vers_major, lapack_vers_minor, lapack_vers_patch;
      //
      // Read the values of N
      //
-@@ -235,24 +241,41 @@
+@@ -235,24 +241,42 @@
      // Test the routines: zpftrf, zpftri, zpftrs (as in Cdrvpo).
      // This also tests the routines: ztfsm, ztftri, ztfttr, ztrttf.
      //
@@ -73,6 +73,7 @@
 -    REAL d_work_zpot01[nmax];
 -    REAL d_work_zpot02[nmax];
 -    REAL d_work_zpot03[nmax];
++    auto worka_storage = std::make_unique<COMPLEX[]>(nmax * nmax);
 +    auto workasav_storage = std::make_unique<COMPLEX[]>(nmax * nmax);
 +    auto workafac_storage = std::make_unique<COMPLEX[]>(nmax * nmax);
 +    auto workainv_storage = std::make_unique<COMPLEX[]>(nmax * nmax);
@@ -111,7 +112,7 @@
      Cdrvrfp(nout, nn, nval, nns, nsval, nnt, ntval, thresh, worka, workasav, workafac, workainv, workb, workbsav, workxact, workx, workarf, workarfinv, z_work_zlatms, z_work_zpot02, z_work_zpot03, d_work_zlatms, d_work_zlanhe, d_work_zpot01, d_work_zpot02, d_work_zpot03);
      //
      // Test the routine: zlanhf
-@@ -282,4 +305,4 @@
+@@ -282,4 +306,4 @@
      //
  }
  

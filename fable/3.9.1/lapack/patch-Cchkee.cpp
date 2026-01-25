@@ -1,5 +1,5 @@
---- eig/common/Cchkee.cpp_	2026-01-25 13:49:45.074727946 +0900
-+++ eig/common/Cchkee.cpp	2026-01-25 13:49:45.081728106 +0900
+--- eig/common/Cchkee.cpp_	2026-01-25 14:24:06.116058794 +0900
++++ eig/common/Cchkee.cpp	2026-01-25 14:24:06.122058920 +0900
 @@ -43,19 +43,17 @@
  #include <mplapack_matgen.h>
  #include <mplapack_eig.h>
@@ -124,7 +124,7 @@
 -    ilaver(vers_major, vers_minor, vers_patch);
 -    write(nout, format_9972), vers_major, vers_minor, vers_patch;
 +    iMlaver(mplapack_vers_major, mplapack_vers_minor, mplapack_vers_patch, lapack_vers_major, lapack_vers_minor, lapack_vers_patch);
-+    write(nout, format_9972), mplapack_vers_major, mplapack_vers_minor, mplapck_vers_patch, lapack_vers_major, lapack_vers_minor, lapack_vers_patch;
++    write(nout, format_9972), mplapack_vers_major, mplapack_vers_minor, mplapack_vers_patch, lapack_vers_major, lapack_vers_minor, lapack_vers_patch;
      write(nout, format_9984);
      //
      // Read the number of values of M, P, and N.

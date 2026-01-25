@@ -1,5 +1,5 @@
---- lin/common/Rchkrfp.cpp_	2026-01-25 13:49:45.150729693 +0900
-+++ lin/common/Rchkrfp.cpp	2026-01-25 13:49:45.154729785 +0900
+--- lin/common/Rchkrfp.cpp_	2026-01-25 14:24:06.191060368 +0900
++++ lin/common/Rchkrfp.cpp	2026-01-25 14:24:06.197060495 +0900
 @@ -43,8 +43,10 @@
  #include <mplapack_matgen.h>
  #include <mplapack_lin.h>
@@ -26,7 +26,7 @@
      static const char *format_9993 = "(4x,a4,':  ',10i6,/,11x,10i6)";
      static const char *format_9992 = "(/,' Routines pass computational tests if test ratio is ','less than',"
                                       "f8.2,/)";
-@@ -68,15 +70,18 @@
+@@ -68,16 +70,19 @@
      // Read a dummy line.
      //
      const INTEGER nin = 5;
@@ -40,6 +40,7 @@
 -    INTEGER vers_patch = 0;
 -    ilaver(vers_major, vers_minor, vers_patch);
 -    const INTEGER nout = 6;
+-    write(nout, format_9994), vers_major, vers_minor, vers_patch;
 +    INTEGER mplapack_vers_major = 0;
 +    INTEGER mplapack_vers_minor = 0;
 +    INTEGER mplapack_vers_patch = 0;
@@ -47,9 +48,10 @@
 +    INTEGER lapack_vers_minor = 0;
 +    INTEGER lapack_vers_patch = 0;
 +    iMlaver(mplapack_vers_major, mplapack_vers_minor, mplapack_vers_patch, lapack_vers_major, lapack_vers_minor, lapack_vers_patch);
-     write(nout, format_9994), vers_major, vers_minor, vers_patch;
++    write(nout, format_9994), mplapack_vers_major, mplapack_vers_minor, mplapack_vers_patch, lapack_vers_major, lapack_vers_minor, lapack_vers_patch;
      //
      // Read the values of N
+     //
 @@ -236,23 +241,40 @@
      // Test the routines: dpftrf, dpftri, dpftrs (as in Rdrvpo).
      // This also tests the routines: dtfsm, dtftri, dtfttr, dtrttf.

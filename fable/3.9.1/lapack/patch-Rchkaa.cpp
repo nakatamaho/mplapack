@@ -1,5 +1,5 @@
---- lin/common/Rchkaa.cpp_	2026-01-25 13:49:45.135729348 +0900
-+++ lin/common/Rchkaa.cpp	2026-01-25 13:49:45.141729486 +0900
+--- lin/common/Rchkaa.cpp_	2026-01-25 14:24:06.176060054 +0900
++++ lin/common/Rchkaa.cpp	2026-01-25 14:24:06.182060180 +0900
 @@ -43,8 +43,10 @@
  #include <mplapack_matgen.h>
  #include <mplapack_lin.h>
