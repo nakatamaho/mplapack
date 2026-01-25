@@ -1,5 +1,5 @@
---- eig/common/Cchkee.cpp_	2026-01-25 13:32:01.476722506 +0900
-+++ eig/common/Cchkee.cpp	2026-01-25 13:32:01.485722752 +0900
+--- eig/common/Cchkee.cpp_	2026-01-25 13:49:45.074727946 +0900
++++ eig/common/Cchkee.cpp	2026-01-25 13:49:45.081728106 +0900
 @@ -43,19 +43,17 @@
  #include <mplapack_matgen.h>
  #include <mplapack_eig.h>
@@ -93,7 +93,7 @@
      static const char *format_9971 = "(/,' Tests of the Generalized Linear Regression Model ','routines')";
      static const char *format_9970 = "(/,' Tests of the Generalized QR and RQ routines')";
      static const char *format_9969 = "(/,' Tests of the Generalized Singular Value',' Decomposition routines')";
-@@ -205,13 +217,16 @@
+@@ -205,10 +217,19 @@
      static const char *format_9960 = "(/,' Tests of the CS Decomposition routines')";
      //
      //
@@ -109,13 +109,15 @@
 +    COMPLEX *b = b_storage.get();
 +    COMPLEX *c = c_storage.get();
 +    COMPLEX *dc = dc_storage.get();
++    const COMPLEX zero = COMPLEX(0.0);
++    std::fill_n(a, nmax * nmax * need, zero);
++    std::fill_n(b, nmax * nmax * 5, zero);
++    std::fill_n(c, ncmax * ncmax * ncmax * ncmax, zero);
++    std::fill_n(dc, nmax * 6, zero);
      s1 = dsecnd();
      fatal = false;
--    nunit = nout;
- //
- // Return to here to read multiple sets of data
- //
-@@ -329,8 +344,8 @@
+     nunit = nout;
+@@ -329,8 +350,8 @@
          write(nout, format_9992), path;
          goto statement_380;
      }
@@ -126,7 +128,7 @@
      write(nout, format_9984);
      //
      // Read the number of values of M, P, and N.
-@@ -1054,7 +1069,7 @@
+@@ -1054,7 +1075,7 @@
                      iseed[k - 1] = ioldsd[k - 1];
                  }
              }
@@ -135,7 +137,7 @@
              Cchkhs(nn, nval, maxtyp, dotype, iseed, thresh, nout, &a[0], nmax, &a[(2 - 1) * lda], &a[(3 - 1) * lda], &a[(4 - 1) * lda], &a[(5 - 1) * lda], nmax, &a[(6 - 1) * lda], &a[(7 - 1) * lda], &dc[0], &dc[(2 - 1) * nmax], &a[(8 - 1) * lda], &a[(9 - 1) * lda], &a[(10 - 1) * lda], &a[(11 - 1) * lda], &a[(12 - 1) * lda], &dc[(3 - 1) * nmax], work, lwork, rwork, iwork, logwrk, result, info);
              if (info != 0) {
                  write(nout, format_9980), "Cchkhs", info;
-@@ -1590,4 +1605,4 @@
+@@ -1590,4 +1611,4 @@
      //
  }
  

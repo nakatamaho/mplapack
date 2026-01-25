@@ -1,5 +1,5 @@
---- lin/common/Rchkaa.cpp_	2026-01-25 13:32:01.562724855 +0900
-+++ lin/common/Rchkaa.cpp	2026-01-25 13:32:01.568725019 +0900
+--- lin/common/Rchkaa.cpp_	2026-01-25 13:49:45.135729348 +0900
++++ lin/common/Rchkaa.cpp	2026-01-25 13:49:45.141729486 +0900
 @@ -43,8 +43,10 @@
  #include <mplapack_matgen.h>
  #include <mplapack_lin.h>
@@ -30,7 +30,7 @@
      INTEGER nm = 0;
      const INTEGER maxin = 12;
      INTEGER mval[maxin];
-@@ -93,10 +98,14 @@
+@@ -93,16 +98,22 @@
      INTEGER ntypes = 0;
      bool dotype[matmax];
      const INTEGER kdmax = nmax + (nmax + 1) / 4;
@@ -42,14 +42,24 @@
 +    auto b_storage = std::make_unique<REAL[]>(nmax * maxrhs * 4);
 +    auto work_storage = std::make_unique<REAL[]>(nmax * 3 * nmax + maxrhs + 30);
 +    auto rwork_storage = std::make_unique<REAL[]>(5 * nmax + 2 * maxrhs);
++    auto s_storage = std::make_unique<REAL[]>(2 * nmax);
++    auto e_storage = std::make_unique<REAL[]>(nmax);
 +    REAL *a = a_storage.get();
 +    REAL *b = b_storage.get();
 +    REAL *work = work_storage.get();
 +    REAL *rwork = rwork_storage.get();
++    REAL *s = s_storage.get();
++    REAL *e = e_storage.get();
      INTEGER iwork[25 * nmax];
-     REAL s[2 * nmax];
+-    REAL s[2 * nmax];
      INTEGER la = 0;
-@@ -112,8 +121,9 @@
+     INTEGER lafac = 0;
+     INTEGER piv[nmax];
+-    REAL e[nmax];
+     REAL s2 = 0.0;
+     INTEGER ldaw = (kdmax + 1) * nmax;
+     INTEGER ldb = nmax * maxrhs;
+@@ -112,8 +123,9 @@
      static const char *format_9997 = "(' Total time used = ',f12.2,' seconds',/)";
      static const char *format_9996 = "(' Invalid input value: ',a4,'=',i6,'; must be >=',i6)";
      static const char *format_9995 = "(' Invalid input value: ',a4,'=',i6,'; must be <=',i6)";
@@ -61,7 +71,7 @@
      static const char *format_9993 = "(4x,a4,':  ',10i6,/,11x,10i6)";
      static const char *format_9992 = "(/,' Routines pass computational tests if test ratio is ','less than',"
                                       "f8.2,/)";
-@@ -133,8 +143,8 @@
+@@ -133,8 +145,8 @@
      //
      // Report values of parameters.
      //
@@ -72,7 +82,7 @@
      //
      // Read the values of M
      //
-@@ -434,7 +444,7 @@
+@@ -434,7 +446,7 @@
      //
      // Check first character for correct precision.
      //
@@ -81,7 +91,7 @@
          write(nout, format_9990), path;
          //
      } else if (nmats <= 0) {
-@@ -935,4 +945,4 @@
+@@ -935,4 +947,4 @@
      //
  }
  

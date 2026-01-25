@@ -1,5 +1,5 @@
---- lin/common/Cchkaa.cpp_	2026-01-25 13:32:01.520723708 +0900
-+++ lin/common/Cchkaa.cpp	2026-01-25 13:32:01.526723872 +0900
+--- lin/common/Cchkaa.cpp_	2026-01-25 13:49:45.107728704 +0900
++++ lin/common/Cchkaa.cpp	2026-01-25 13:49:45.111728796 +0900
 @@ -43,8 +43,10 @@
  #include <mplapack_matgen.h>
  #include <mplapack_lin.h>
@@ -30,7 +30,7 @@
      INTEGER nm = 0;
      const INTEGER maxin = 12;
      INTEGER mval[maxin];
-@@ -93,12 +98,18 @@
+@@ -93,16 +98,23 @@
      INTEGER ntypes = 0;
      bool dotype[matmax];
      const INTEGER kdmax = nmax + (nmax + 1) / 4;
@@ -46,16 +46,22 @@
 +    auto rwork_storage = std::make_unique<REAL[]>(150 + 2 * maxrhs);
 +    auto iwork_storage = std::make_unique<INTEGER[]>(25 * nmax);
 +    auto s_storage = std::make_unique<REAL[]>(2 * nmax);
++    auto e_storage = std::make_unique<COMPLEX[]>(nmax);
 +    COMPLEX *a = a_storage.get();
 +    COMPLEX *b = b_storage.get();
 +    COMPLEX *work = work_storage.get();
 +    REAL *rwork = rwork_storage.get();
 +    INTEGER *iwork = iwork_storage.get();
 +    REAL *s = s_storage.get();
++    COMPLEX *e = e_storage.get();
      INTEGER la = 0;
      INTEGER lafac = 0;
      INTEGER piv[nmax];
-@@ -112,8 +123,9 @@
+-    COMPLEX e[nmax];
+     REAL s2 = 0.0;
+     INTEGER ldaw = (kdmax + 1) * nmax;
+     INTEGER ldb = nmax * maxrhs;
+@@ -112,8 +124,9 @@
      static const char *format_9997 = "(' Total time used = ',f12.2,' seconds',/)";
      static const char *format_9996 = "(' Invalid input value: ',a4,'=',i6,'; must be >=',i6)";
      static const char *format_9995 = "(' Invalid input value: ',a4,'=',i6,'; must be <=',i6)";
@@ -67,7 +73,7 @@
      static const char *format_9993 = "(4x,a4,':  ',10i6,/,11x,10i6)";
      static const char *format_9992 = "(/,' Routines pass computational tests if test ratio is ','less than',"
                                       "f8.2,/)";
-@@ -133,8 +145,8 @@
+@@ -133,8 +146,8 @@
      //
      // Report values of parameters.
      //
@@ -78,7 +84,7 @@
      //
      // Read the values of M
      //
-@@ -1082,4 +1094,4 @@
+@@ -1082,4 +1095,4 @@
      //
  }
  

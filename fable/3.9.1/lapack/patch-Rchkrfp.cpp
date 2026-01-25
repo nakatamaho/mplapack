@@ -1,5 +1,5 @@
---- lin/common/Rchkrfp.cpp_	2026-01-25 13:32:01.583725429 +0900
-+++ lin/common/Rchkrfp.cpp	2026-01-25 13:32:01.592725674 +0900
+--- lin/common/Rchkrfp.cpp_	2026-01-25 13:49:45.150729693 +0900
++++ lin/common/Rchkrfp.cpp	2026-01-25 13:49:45.154729785 +0900
 @@ -43,8 +43,10 @@
  #include <mplapack_matgen.h>
  #include <mplapack_lin.h>

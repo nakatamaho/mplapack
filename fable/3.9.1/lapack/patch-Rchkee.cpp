@@ -1,5 +1,5 @@
---- eig/common/Rchkee.cpp_	2026-01-25 13:32:01.498723107 +0900
-+++ eig/common/Rchkee.cpp	2026-01-25 13:32:01.506723325 +0900
+--- eig/common/Rchkee.cpp_	2026-01-25 13:49:45.092728359 +0900
++++ eig/common/Rchkee.cpp	2026-01-25 13:49:45.098728497 +0900
 @@ -42,20 +42,18 @@
  
  #include <mplapack_matgen.h>
@@ -82,7 +82,7 @@
      static const char *format_9971 = "(/,' Tests of the Generalized Linear Regression Model ','routines')";
      static const char *format_9970 = "(/,' Tests of the Generalized QR and RQ routines')";
      static const char *format_9969 = "(/,' Tests of the Generalized Singular Value',' Decomposition routines')";
-@@ -201,13 +209,16 @@
+@@ -201,10 +209,19 @@
      static const char *format_9960 = "(/,' Tests of the CS Decomposition routines')";
      //
      //
@@ -98,13 +98,15 @@
 +    REAL *b = b_storage.get();
 +    REAL *c = c_storage.get();
 +    REAL *d = d_storage.get();
++    const REAL zero = REAL(0.0);
++    std::fill_n(a, nmax * nmax * need, zero);
++    std::fill_n(b, nmax * nmax * 5, zero);
++    std::fill_n(c, ncmax * ncmax * ncmax * ncmax, zero);
++    std::fill_n(d, nmax * 12, zero);
      s1 = dsecnd();
      fatal = false;
--    nunit = nout;
- //
- // Return to here to read multiple sets of data
- //
-@@ -329,8 +340,8 @@
+     nunit = nout;
+@@ -329,8 +346,8 @@
          write(nout, format_9992), path;
          goto statement_10;
      }
@@ -115,7 +117,7 @@
      write(nout, format_9984);
      //
      // Read the number of values of M, P, and N.
-@@ -1588,4 +1599,4 @@
+@@ -1588,4 +1605,4 @@
      //
  }
  
