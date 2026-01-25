@@ -10,13 +10,13 @@
      INTEGER lwork = max((INTEGER)3, l) * mnb;
      //
 @@ -99,8 +100,8 @@
-     COMPLEX *q = __q_storage.get();
-     std::unique_ptr<COMPLEX[]> __r_storage(new COMPLEX[m * l]);
-     COMPLEX *r = __r_storage.get();
--    std::unique_ptr<COMPLEX[]> __rwork_storage(new COMPLEX[l]);
--    COMPLEX *rwork = __rwork_storage.get();
-+    std::unique_ptr<REAL[]> __rwork_storage(new REAL[l]);
-+    REAL *rwork = __rwork_storage.get();
+     COMPLEX *q = q_storage.get();
+     std::unique_ptr<COMPLEX[]> r_storage(new COMPLEX[m * l]);
+     COMPLEX *r = r_storage.get();
+-    std::unique_ptr<COMPLEX[]> rwork_storage(new COMPLEX[l]);
+-    COMPLEX *rwork = rwork_storage.get();
++    std::unique_ptr<REAL[]> rwork_storage(new REAL[l]);
++    REAL *rwork = rwork_storage.get();
      REAL anorm = 0.0;
      REAL resid = 0.0;
      const REAL zero = 0.0;
