@@ -46,7 +46,7 @@ using fem::common;
 void Cebchvxx(REAL const thresh, fem::str_cref path) {
     common cmn;
     common_write write(cmn);
-    INTEGER ldabw = (nmax - 1) + (nmax - 1) + 1;
+    INTEGER ldab = (nmax - 1) + (nmax - 1) + 1;
     INTEGER ldabcopy = (nmax - 1) + (nmax - 1) + 1;
     static const char *format_9999 = "(' Z',a2,'SVXX: N =',i2,', RHS = ',i2,', NWISE GUAR. = ',a,"
                                      "', CWISE GUAR. = ',a,' test(',i1,') =',g12.5)";
@@ -182,12 +182,12 @@ void Cebchvxx(REAL const thresh, fem::str_cref path) {
         // Store A in band format for GB tests
         for (j = 1; j <= n; j = j + 1) {
             for (i = 1; i <= kl + ku + 1; i = i + 1) {
-                ab[(i - 1) + (j - 1) * ldabw] = COMPLEX(0.0, 0.0);
+                ab[(i - 1) + (j - 1) * ldab] = COMPLEX(0.0, 0.0);
             }
         }
         for (j = 1; j <= n; j = j + 1) {
             for (i = max((INTEGER)1, j - ku); i <= min(n, j + kl); i = i + 1) {
-                ab[((ku + 1 + i - j) - 1) + (j - 1) * ldabw] = a[(i - 1) + (j - 1) * nmax];
+                ab[((ku + 1 + i - j) - 1) + (j - 1) * ldab] = a[(i - 1) + (j - 1) * nmax];
             }
         }
         //
